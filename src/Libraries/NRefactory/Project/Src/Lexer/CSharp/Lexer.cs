@@ -129,65 +129,25 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		Token ReadDigit(char ch, int x)
 		{
-			int y = line;
-			++col;
-			sb.Length = 0;
-			sb.Append(ch);
-			string prefix = null;
-			string suffix = null;
-			
-			bool ishex      = false;
-			bool isunsigned = false;
-			bool islong     = false;
-			bool isfloat    = false;
-			bool isdouble   = false;
-			bool isdecimal  = false;
-			
-			char peek = (char)reader.Peek();
-			
-			if (ch == '.')  {
-				isdouble = true;
+			unchecked { // prevent exception when Peek() = -1 is cast to char
+				int y = line;
 				++col;
+				sb.Length = 0;
+				sb.Append(ch);
+				string prefix = null;
+				string suffix = null;
 				
-				while (Char.IsDigit((char)reader.Peek())) { // read decimal digits beyond the dot
-					sb.Append((char)reader.Read());
-					++col;
-				}
-				peek = (char)reader.Peek();
-			} else if (ch == '0' && (peek == 'x' || peek == 'X')) {
-				reader.Read(); // skip 'x'
-				sb.Length = 0; // Remove '0' from 0x prefix from the stringvalue
-				++col;
-				while (IsHex((char)reader.Peek())) {
-					sb.Append(Char.ToUpper((char)reader.Read()));
-					++col;
-				}
-				ishex = true;
-				prefix = "0x";
-				peek = (char)reader.Peek();
-			} else {
-				while (Char.IsDigit((char)reader.Peek())) {
-					sb.Append((char)reader.Read());
-					++col;
-				}
-				peek = (char)reader.Peek();
-			}
-			
-			Token nextToken = null; // if we accedently read a 'dot'
-			if (peek == '.') { // read floating point number
-				reader.Read();
-				peek = (char)reader.Peek();
-				if (!Char.IsDigit(peek)) {
-					nextToken = new Token(Tokens.Dot, x, y);
-					peek = '.';
-				} else {
-					isdouble = true; // double is default
-					if (ishex) {
-						errors.Error(y, x, String.Format("No hexadecimal floating point values allowed"));
-					}
-					sb.Append('.');
-					
-					
+				bool ishex      = false;
+				bool isunsigned = false;
+				bool islong     = false;
+				bool isfloat    = false;
+				bool isdouble   = false;
+				bool isdecimal  = false;
+				
+				char peek = (char)reader.Peek();
+				
+				if (ch == '.')  {
+					isdouble = true;
 					++col;
 					
 					while (Char.IsDigit((char)reader.Peek())) { // read decimal digits beyond the dot
@@ -195,147 +155,189 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						++col;
 					}
 					peek = (char)reader.Peek();
-				}
-			}
-			
-			if (peek == 'e' || peek == 'E') { // read exponent
-				isdouble = true;
-				sb.Append((char)reader.Read());
-				++col;
-				peek = (char)reader.Peek();
-				if (peek == '-' || peek == '+') {
-					sb.Append((char)reader.Read());
+				} else if (ch == '0' && (peek == 'x' || peek == 'X')) {
+					reader.Read(); // skip 'x'
+					sb.Length = 0; // Remove '0' from 0x prefix from the stringvalue
 					++col;
+					while (IsHex((char)reader.Peek())) {
+						sb.Append(Char.ToUpper((char)reader.Read()));
+						++col;
+					}
+					ishex = true;
+					prefix = "0x";
+					peek = (char)reader.Peek();
+				} else {
+					while (Char.IsDigit((char)reader.Peek())) {
+						sb.Append((char)reader.Read());
+						++col;
+					}
+					peek = (char)reader.Peek();
 				}
-				while (Char.IsDigit((char)reader.Peek())) { // read exponent value
-					sb.Append((char)reader.Read());
-					++col;
-				}
-				isunsigned = true;
-				peek = (char)reader.Peek();
-			}
-			
-			if (peek == 'f' || peek == 'F') { // float value
-				reader.Read();
-				suffix = "f";
-				++col;
-				isfloat = true;
-			} else if (peek == 'd' || peek == 'D') { // double type suffix (obsolete, double is default)
-				reader.Read();
-				suffix = "d";
-				++col;
-				isdouble = true;
-			} else if (peek == 'm' || peek == 'M') { // decimal value
-				reader.Read();
-				suffix = "m";
-				++col;
-				isdecimal = true;
-			} else if (!isdouble) {
-				if (peek == 'u' || peek == 'U') {
+				
+				Token nextToken = null; // if we accedently read a 'dot'
+				if (peek == '.') { // read floating point number
 					reader.Read();
-					suffix = "u";
+					peek = (char)reader.Peek();
+					if (!Char.IsDigit(peek)) {
+						nextToken = new Token(Tokens.Dot, x, y);
+						peek = '.';
+					} else {
+						isdouble = true; // double is default
+						if (ishex) {
+							errors.Error(y, x, String.Format("No hexadecimal floating point values allowed"));
+						}
+						sb.Append('.');
+						
+						
+						++col;
+						
+						while (Char.IsDigit((char)reader.Peek())) { // read decimal digits beyond the dot
+							sb.Append((char)reader.Read());
+							++col;
+						}
+						peek = (char)reader.Peek();
+					}
+				}
+				
+				if (peek == 'e' || peek == 'E') { // read exponent
+					isdouble = true;
+					sb.Append((char)reader.Read());
 					++col;
+					peek = (char)reader.Peek();
+					if (peek == '-' || peek == '+') {
+						sb.Append((char)reader.Read());
+						++col;
+					}
+					while (Char.IsDigit((char)reader.Peek())) { // read exponent value
+						sb.Append((char)reader.Read());
+						++col;
+					}
 					isunsigned = true;
 					peek = (char)reader.Peek();
 				}
 				
-				if (peek == 'l' || peek == 'L') {
+				if (peek == 'f' || peek == 'F') { // float value
 					reader.Read();
-					peek = (char)reader.Peek();
+					suffix = "f";
 					++col;
-					islong = true;
-					if (!isunsigned && (peek == 'u' || peek == 'U')) {
+					isfloat = true;
+				} else if (peek == 'd' || peek == 'D') { // double type suffix (obsolete, double is default)
+					reader.Read();
+					suffix = "d";
+					++col;
+					isdouble = true;
+				} else if (peek == 'm' || peek == 'M') { // decimal value
+					reader.Read();
+					suffix = "m";
+					++col;
+					isdecimal = true;
+				} else if (!isdouble) {
+					if (peek == 'u' || peek == 'U') {
 						reader.Read();
-						suffix = "lu";
+						suffix = "u";
 						++col;
 						isunsigned = true;
+						peek = (char)reader.Peek();
+					}
+					
+					if (peek == 'l' || peek == 'L') {
+						reader.Read();
+						peek = (char)reader.Peek();
+						++col;
+						islong = true;
+						if (!isunsigned && (peek == 'u' || peek == 'U')) {
+							reader.Read();
+							suffix = "lu";
+							++col;
+							isunsigned = true;
+						} else {
+							suffix = isunsigned ? "ul" : "l";
+						}
+					}
+				}
+				
+				string digit       = sb.ToString();
+				string stringValue = prefix + digit + suffix;
+				
+				if (isfloat) {
+					try {
+						return new Token(Tokens.Literal, x, y, stringValue, Single.Parse(digit, CultureInfo.InvariantCulture));
+					} catch (Exception) {
+						errors.Error(y, x, String.Format("Can't parse float {0}", digit));
+						return new Token(Tokens.Literal, x, y, stringValue, 0f);
+					}
+				}
+				if (isdecimal) {
+					try {
+						return new Token(Tokens.Literal, x, y, stringValue, Decimal.Parse(digit, CultureInfo.InvariantCulture));
+					} catch (Exception) {
+						errors.Error(y, x, String.Format("Can't parse decimal {0}", digit));
+						return new Token(Tokens.Literal, x, y, stringValue, 0m);
+					}
+				}
+				if (isdouble) {
+					try {
+						return new Token(Tokens.Literal, x, y, stringValue, Double.Parse(digit, CultureInfo.InvariantCulture));
+					} catch (Exception) {
+						errors.Error(y, x, String.Format("Can't parse double {0}", digit));
+						return new Token(Tokens.Literal, x, y, stringValue, 0d);
+					}
+				}
+				
+				// Try to determine a parsable value using ranges. (Quick hack!)
+				double d = 0;
+				if (!ishex  && !Double.TryParse(digit,NumberStyles.Integer, null, out d)) {
+					errors.Error(y, x, String.Format("Can't parse integral constant {0}", digit));
+					return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0);
+				}
+				
+				if (d < long.MinValue || d > long.MaxValue) {
+					islong     = true;
+					isunsigned = true;	
+				} else if (d < uint.MinValue || d > uint.MaxValue) {
+					islong = true;	
+				} else if (d < int.MinValue || d > int.MaxValue) {
+					isunsigned = true;	
+				}
+				
+				Token token;
+				
+				if (islong) {
+					if (isunsigned) {
+						try {
+							token = new Token(Tokens.Literal, x, y, stringValue, UInt64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
+						} catch (Exception) {
+							errors.Error(y, x, String.Format("Can't parse unsigned long {0}", digit));
+							token = new Token(Tokens.Literal, x, y, stringValue, 0UL);
+						}
 					} else {
-						suffix = isunsigned ? "ul" : "l";
-					}
-				}
-			}
-			
-			string digit       = sb.ToString();
-			string stringValue = prefix + digit + suffix;
-			
-			if (isfloat) {
-				try {
-					return new Token(Tokens.Literal, x, y, stringValue, Single.Parse(digit, CultureInfo.InvariantCulture));
-				} catch (Exception) {
-					errors.Error(y, x, String.Format("Can't parse float {0}", digit));
-					return new Token(Tokens.Literal, x, y, stringValue, 0f);
-				}
-			}
-			if (isdecimal) {
-				try {
-					return new Token(Tokens.Literal, x, y, stringValue, Decimal.Parse(digit, CultureInfo.InvariantCulture));
-				} catch (Exception) {
-					errors.Error(y, x, String.Format("Can't parse decimal {0}", digit));
-					return new Token(Tokens.Literal, x, y, stringValue, 0m);
-				}
-			}
-			if (isdouble) {
-				try {
-					return new Token(Tokens.Literal, x, y, stringValue, Double.Parse(digit, CultureInfo.InvariantCulture));
-				} catch (Exception) {
-					errors.Error(y, x, String.Format("Can't parse double {0}", digit));
-					return new Token(Tokens.Literal, x, y, stringValue, 0d);
-				}
-			}
-			
-			// Try to determine a parsable value using ranges. (Quick hack!)
-			double d = 0;
-			if (!ishex  && !Double.TryParse(digit,NumberStyles.Integer, null, out d)) {
-				errors.Error(y, x, String.Format("Can't parse integral constant {0}", digit));
-				return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0);
-			}
-			
-			if (d < long.MinValue || d > long.MaxValue) {
-				islong     = true;
-				isunsigned = true;	
-			} else if (d < uint.MinValue || d > uint.MaxValue) {
-				islong = true;	
-			} else if (d < int.MinValue || d > int.MaxValue) {
-				isunsigned = true;	
-			}
-			
-			Token token;
-			
-			if (islong) {
-				if (isunsigned) {
-					try {
-						token = new Token(Tokens.Literal, x, y, stringValue, UInt64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-					} catch (Exception) {
-						errors.Error(y, x, String.Format("Can't parse unsigned long {0}", digit));
-						token = new Token(Tokens.Literal, x, y, stringValue, 0UL);
+						try {
+							token = new Token(Tokens.Literal, x, y, stringValue, Int64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
+						} catch (Exception) {
+							errors.Error(y, x, String.Format("Can't parse long {0}", digit));
+							token = new Token(Tokens.Literal, x, y, stringValue, 0L);
+						}
 					}
 				} else {
-					try {
-						token = new Token(Tokens.Literal, x, y, stringValue, Int64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-					} catch (Exception) {
-						errors.Error(y, x, String.Format("Can't parse long {0}", digit));
-						token = new Token(Tokens.Literal, x, y, stringValue, 0L);
+					if (isunsigned) {
+						try {
+							token = new Token(Tokens.Literal, x, y, stringValue, UInt32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
+						} catch (Exception) {
+							errors.Error(y, x, String.Format("Can't parse unsigned int {0}", digit));
+							token = new Token(Tokens.Literal, x, y, stringValue, 0U);
+						}
+					} else {
+						try {
+							token = new Token(Tokens.Literal, x, y, stringValue, Int32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
+						} catch (Exception) {
+							errors.Error(y, x, String.Format("Can't parse int {0}", digit));
+							token = new Token(Tokens.Literal, x, y, stringValue, 0);
+						}
 					}
 				}
-			} else {
-				if (isunsigned) {
-					try {
-						token = new Token(Tokens.Literal, x, y, stringValue, UInt32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-					} catch (Exception) {
-						errors.Error(y, x, String.Format("Can't parse unsigned int {0}", digit));
-						token = new Token(Tokens.Literal, x, y, stringValue, 0U);
-					}
-				} else {
-					try {
-						token = new Token(Tokens.Literal, x, y, stringValue, Int32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
-					} catch (Exception) {
-						errors.Error(y, x, String.Format("Can't parse int {0}", digit));
-						token = new Token(Tokens.Literal, x, y, stringValue, 0);
-					}
-				}
+				token.next = nextToken;
+				return token;
 			}
-			token.next = nextToken;
-			return token;
 		}
 		
 		Token ReadString()
@@ -631,16 +633,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					switch (reader.Peek()) {
 						case '<':
 							reader.Read();
-							if (reader.Peek() != -1) {
-								switch ((char)reader.Peek()) {
-									case '=':
-										reader.Read();
-										col += 2;
-										return new Token(Tokens.ShiftLeftAssign, x, y);
-									default:
-										++col;
-										break;
-								}
+							switch (reader.Peek()) {
+								case '=':
+									reader.Read();
+									col += 2;
+									return new Token(Tokens.ShiftLeftAssign, x, y);
+								default:
+									++col;
+									break;
 							}
 							return new Token(Tokens.ShiftLeft, x, y);
 						case '=':
@@ -686,7 +686,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				case ',':
 					return new Token(Tokens.Comma, x, y);
 				case '.':
-					if (Char.IsDigit((char)reader.Peek())) {
+					// Prevent OverflowException when Peek returns -1
+					int tmp = reader.Peek();
+					if (tmp > 0 && Char.IsDigit((char)tmp)) {
 						 col -= 2;
 						 return ReadDigit('.', col + 1);
 					}

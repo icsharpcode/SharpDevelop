@@ -30,9 +30,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		TextArea textArea  = null;
 		List<IMethod>    methods  = new List<IMethod>();
 		
-		int caretLineNumber;
-		int caretColumn;
-		
 		public int InsightDataCount {
 			get {
 				return methods.Count;
@@ -64,8 +61,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			word = word.Trim();
 			
 			// the parser works with 1 based coordinates
-			caretLineNumber      = document.GetLineNumberForOffset(textArea.Caret.Offset) + 1;
-			caretColumn          = textArea.Caret.Offset - document.GetLineSegment(caretLineNumber).Offset + 1;
+			int caretLineNumber = document.GetLineNumberForOffset(textArea.Caret.Offset) + 1;
+			int caretColumn     = textArea.Caret.Offset - document.GetLineSegment(caretLineNumber).Offset + 1;
 			
 			bool constructorInsight = false;
 			if (word.ToLower().StartsWith("new ")) {

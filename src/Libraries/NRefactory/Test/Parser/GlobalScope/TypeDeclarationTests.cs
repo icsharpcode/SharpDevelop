@@ -157,6 +157,22 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(1, td.StartLocation.Y, "start line");
+			Assert.AreEqual(2, td.EndLocation.Y, "end line");
+//			Assert.IsFalse(td.IsPartialType);
+		}
+		
+		[Test]
+		public void VBNetSimpleClassTypeDeclarationWithoutLastNewLineTest()
+		{
+			string program = "Class TestClass\n" +
+			                 "End Class";
+			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			
+			Assert.AreEqual("TestClass", td.Name);
+			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(1, td.StartLocation.Y, "start line");
+			Assert.AreEqual(2, td.EndLocation.Y, "end line");
 //			Assert.IsFalse(td.IsPartialType);
 		}
 		

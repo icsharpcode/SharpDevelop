@@ -42,9 +42,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			IAmbience conv = AmbienceService.CurrentAmbience;
 			conv.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			string documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(method.DocumentationTag);
-			return conv.Convert(method) + 
-			       "\n" + 
-			       CodeCompletionData.GetDocumentation(documentation); // new (by G.B.)
+			return conv.Convert(method) +
+				"\n" +
+				CodeCompletionData.GetDocumentation(documentation); // new (by G.B.)
 		}
 		
 		int initialOffset;
@@ -55,39 +55,32 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			this.textArea = textArea;
 			initialOffset = textArea.Caret.Offset;
 			
-			// TODO: Change this for the new resolver, or better merge IndexerInsight and MethodInsight.
-			
-			/*
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
-			string word  = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset) : expressionFinder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset - 1);
-						
-			string methodObject = word;
+			string word = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset) : expressionFinder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset - 1);
+			word = word.Trim();
 			
 			// the parser works with 1 based coordinates
-			int caretLineNumber      = document.GetLineNumberForOffset(textArea.Caret.Offset) + 1;
-			int caretColumn          = textArea.Caret.Offset - document.GetLineSegment(caretLineNumber - 1).Offset + 1;
-			ResolveResult results = ParserService.Resolve(methodObject,
-			                                              caretLineNumber,
-			                                              caretColumn,
-			                                              fileName,
-			                                              document.TextContent);
-			if (results != null && results.Type != null) {
-				foreach (IClass c in results.Type.ClassInheritanceTree) {
-					foreach (IIndexer indexer in c.Indexer) {
-						methods.Add(indexer);
-					}
+			int caretLineNumber = document.GetLineNumberForOffset(textArea.Caret.Offset) + 1;
+			int caretColumn     = textArea.Caret.Offset - document.GetLineSegment(caretLineNumber).Offset + 1;
+			
+			ResolveResult result = ParserService.Resolve(word, caretLineNumber, caretColumn, fileName, document.TextContent);
+			if (result == null)
+				return;
+			IReturnType type = result.ResolvedType;
+			if (type == null)
+				return;
+			IProjectContent projectContent = ParserService.CurrentProjectContent;
+			if (projectContent == null)
+				return;
+			IClass c = projectContent.GetClass(type.FullyQualifiedName);
+			bool canViewProtected = c.IsTypeInInheritanceTree(result.CallingClass);
+			if (c == null)
+				return;
+			foreach (IIndexer i in c.Indexer) {
+				if (i.IsAccessible(result.CallingClass, canViewProtected)) {
+					methods.Add(i);
 				}
-//				foreach (object o in results.ResolveContents) {
-//					if (o is IClass) {
-//						foreach (IClass c in ((IClass)o).ClassInheritanceTree) {
-//							foreach (IIndexer indexer in c.Indexer) {
-//								methods.Add(indexer);
-//							}
-//						}
-//					}
-//				}
 			}
-			*/
 		}
 		
 		public bool CaretOffsetChanged()

@@ -220,7 +220,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						if (s.Length != 1) {
 							errors.Error(line, col, String.Format("Chars can only have Length 1 "));
 						}
-						return new Token(Tokens.LiteralCharacter, x, y, '"' + s  + "\"C", s[0].ToString());
+						return new Token(Tokens.LiteralCharacter, x, y, '"' + s  + "\"C", s[0]);
 					}
 					return new Token(Tokens.LiteralString, x, y, '"' + s + '"', s);
 				}
@@ -325,7 +325,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			
-			if (reader.Peek() != -1 && "%&SIL".IndexOf(Char.ToUpper((char)reader.Peek())) != -1 || ishex || isokt) {
+			if (reader.Peek() != -1 && ("%&SIL".IndexOf(Char.ToUpper((char)reader.Peek())) != -1 || ishex || isokt)) {
 				ch = (char)reader.Peek();
 				sb.Append(ch); 
 				ch = Char.ToUpper(ch);
@@ -370,9 +370,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			Token nextToken = null; // if we accedently read a 'dot'
-			if (!isdouble && reader.Peek() != -1 && reader.Peek() == '.') { // read floating point number
+			if (!isdouble && reader.Peek() == '.') { // read floating point number
 				reader.Read();
-				if (Char.IsDigit((char)reader.Peek())) {
+				if (reader.Peek() != -1 && Char.IsDigit((char)reader.Peek())) {
 					isdouble = true; // double is default
 					if (ishex || isokt) {
 						errors.Error(line, col, String.Format("No hexadecimal or oktadecimal floating point values allowed"));
@@ -662,7 +662,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				case ',':
 					return new Token(Tokens.Comma, x, y);
 				case '.':
-					if (Char.IsDigit((char)reader.Peek())) {
+					// Prevent OverflowException when Peek returns -1
+					int tmp = reader.Peek();
+					if (tmp > 0 && Char.IsDigit((char)tmp)) {
 						 --col;
 						 return ReadDigit('.', col);
 					}

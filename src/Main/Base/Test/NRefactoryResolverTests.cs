@@ -131,7 +131,6 @@ End Class
 			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
 		}
 		
-		
 		// Issue SD-265
 		[Test]
 		public void VBNetStaticMembersonObjectTest()
@@ -141,7 +140,8 @@ End Class
 		Dim a As String
 		
 	End Sub
-End Class";
+End Class
+";
 			ResolveResult result = ResolveVB(program, "a", 4, 24);
 			Assert.IsNotNull(result, "result");
 			ArrayList arr = result.GetCompletionData(lastPC);
@@ -164,7 +164,8 @@ End Class";
 		Dim t As String()
 		
 	End Sub
-End Module";
+End Module
+";
 			ResolveResult result = ResolveVB(program, "t", 4, 24);
 			Assert.IsNotNull(result, "result");
 			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
@@ -207,6 +208,34 @@ End Module";
 				}
 			}
 			Assert.Fail("private field not visible from inner class");
+		}
+		
+		[Test]
+		public void InheritedInterfaceResolveTest()
+		{
+			string program = @"class A {
+	void Method(IInterface1 a) {
+		
+	}
+}
+interface IInterface1 : IInterface2 {
+	void Method1();
+}
+interface IInterface2 {
+	void Method2();
+}
+";
+			ResolveResult result = Resolve(program, "a", 3, 24);
+			Assert.IsNotNull(result, "result");
+			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
+			ArrayList arr = result.GetCompletionData(lastPC);
+			Assert.IsNotNull(arr, "arr");
+			Assert.AreEqual(2, arr.Count, "Number of CC results");
+			foreach (IMethod m in arr) {
+				if (m.Name == "Method2")
+					return;
+			}
+			Assert.Fail("Method2 not found");
 		}
 	}
 }
