@@ -105,11 +105,38 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				AttributeTarget target = AttributeTarget.None;
 				if (section.AttributeTarget != null && section.AttributeTarget != "") {
-					try {
-						target = (AttributeTarget)Enum.Parse(typeof (AttributeTarget), section.AttributeTarget);
-					} catch (Exception e) {
-						Console.WriteLine("Unexpected AttributeTarget, was " + section.AttributeTarget);
-						Console.WriteLine(e);
+					switch (section.AttributeTarget.ToUpper()) {
+						case "ASSEMBLY":
+							target = AttributeTarget.Assembly;
+							break;
+						case "FIELD":
+							target = AttributeTarget.Field;
+							break;
+						case "EVENT":
+							target = AttributeTarget.Event;
+							break;
+						case "METHOD":
+							target = AttributeTarget.Method;
+							break;
+						case "MODULE":
+							target = AttributeTarget.Module;
+							break;
+						case "PARAM":
+							target = AttributeTarget.Param;
+							break;
+						case "PROPERTY":
+							target = AttributeTarget.Property;
+							break;
+						case "RETURN":
+							target = AttributeTarget.Return;
+							break;
+						case "TYPE":
+							target = AttributeTarget.Type;
+							break;
+						default:
+							target = AttributeTarget.None;
+							break;
+		
 					}
 				}
 				IAttributeSection s = new AttributeSection(target, resultAttributes);

@@ -133,6 +133,9 @@ namespace ICSharpCode.Core
 									text = editable.Text;
 								}
 								int hash = text.Length;
+								if (!lastUpdateSize.ContainsKey(fileName)) {
+									lastUpdateSize[fileName] = 0;
+								}
 								if (lastUpdateSize[fileName] == null || (int)lastUpdateSize[fileName] != hash) {
 									parseInformation = ParseFile(fileName, text, !viewContent.IsUntitled, true);
 									lastUpdateSize[fileName] = hash;
@@ -146,7 +149,8 @@ namespace ICSharpCode.Core
 							}
 						}
 					}
-				} catch (Exception) {
+				} catch (Exception e) {
+					Console.WriteLine(e);
 				}
 				Thread.Sleep(2000);
 			}
