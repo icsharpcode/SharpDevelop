@@ -123,7 +123,6 @@ namespace ICSharpCode.TextEditor
 				if (virtualTop != newVirtualTop) {
 					virtualTop = newVirtualTop;
 					motherTextAreaControl.VScrollBar.Value = virtualTop.Y;
-					
 					Invalidate();
 				}
 			}

@@ -124,6 +124,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			grid = new PropertyGrid();
 			grid.PropertySort = PropertyService.Get("FormsDesigner.DesignerOptions.PropertyGridSortAlphabetical", false) ? PropertySort.Alphabetical : PropertySort.CategorizedAlphabetical;
 			grid.Dock = DockStyle.Fill;
+
+			comboBox = new ComboBox();
+			comboBox.Dock = DockStyle.Top;
+			comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+			comboBox.DrawMode = DrawMode.OwnerDrawFixed;
+			comboBox.Sorted = true;
 		}
 			
 		
@@ -132,15 +138,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			instance = this;
 			panel = new Panel();
 						
-			
-			comboBox = new ComboBox();
-			comboBox.Dock = DockStyle.Top;
-			comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-			comboBox.DrawMode = DrawMode.OwnerDrawFixed;
 			comboBox.DrawItem += new DrawItemEventHandler(ComboBoxDrawItem);
 			comboBox.MeasureItem += new MeasureItemEventHandler(ComboBoxMeasureItem);
 			comboBox.SelectedIndexChanged += new EventHandler(ComboBoxSelectedIndexChanged);
-			comboBox.Sorted = true;
+		
 			
 			panel.Controls.Add(grid);
 			panel.Controls.Add(comboBox);
