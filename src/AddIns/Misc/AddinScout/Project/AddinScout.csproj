@@ -1,10 +1,10 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.41115</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4B8F0F98-8BE1-402B-AA8B-C8D548577B38}</ProjectGuid>
+    <ProjectGuid>{4b8f0f98-8be1-402b-aa8b-c8d548577b38}</ProjectGuid>
     <RootNamespace>NewProject</RootNamespace>
     <AssemblyName>AddinScout</AssemblyName>
     <OutputTarget>Library</OutputTarget>
@@ -13,9 +13,6 @@
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <OutputType>Library</OutputType>
-    <StartupObject />
-    <ApplicationIcon />
-    <Win32Resource />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -63,8 +60,6 @@
       <Name>ICSharpCode.SharpDevelop</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

@@ -38,7 +38,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					referenceNode.AddTo(this);
 				}
 			}
+			UpdateIcon();
 		}
+		
 		protected override void Initialize()
 		{
 			ShowReferences();

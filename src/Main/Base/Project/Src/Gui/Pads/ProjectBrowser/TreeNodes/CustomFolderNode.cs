@@ -38,15 +38,20 @@ namespace ICSharpCode.SharpDevelop.Project
 		public CustomFolderNode()
 		{
 		}
-
-		public override void Refresh() 
+		
+		protected void UpdateIcon()
 		{
-			base.Refresh();
 			if (Nodes.Count == 0) {
 				SetIcon(ClosedImage);
 			} else if (IsExpanded) {
 				SetIcon(openedImage);
 			}
+		}
+		
+		public override void Refresh() 
+		{
+			base.Refresh();
+			UpdateIcon();
 		}
 		
 		public override void Expanding()

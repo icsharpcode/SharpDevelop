@@ -1,4 +1,5 @@
 using System;
+using System.Diagnostics;
 using System.IO;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -22,6 +23,23 @@ namespace ICSharpCode.SharpDevelop.Project
 			SetIcon("Icons.16x16.Reference");
 			Text = referenceProjectItem.Include;
 		}
+		
+		#region Cut & Paste
+		public override bool EnableDelete {
+			get {
+				return true;
+			}
+		}
+	
+		public override void Delete()
+		{
+			referenceProjectItem.Project.Items.Remove(referenceProjectItem);
+			Debug.Assert(Parent != null);
+			Debug.Assert(Parent is ReferenceFolder);
+			((ReferenceFolder)Parent).ShowReferences();
+			Project.Save();
+		}
+		#endregion
 		
 		public override object AcceptVisitor(ProjectBrowserTreeNodeVisitor visitor, object data)
 		{

@@ -37,7 +37,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void FileServiceFileRenamed(object sender, FileRenameEventArgs e)
 		{
-			Console.WriteLine("File service file renamed.");
 			if (OpenSolution == null) {
 				return;
 			}
@@ -57,19 +56,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			long y = 0;
 			foreach (IProject project in OpenSolution.Projects) {
-				foreach (ProjectItem item in project.Items) {
-					++y;
-					if (FileUtility.IsBaseDirectory(oldName, item.FileName)) {
-						item.FileName = FileUtility.RenameBaseDirectory(item.FileName, oldName, newName);
+				if (FileUtility.IsBaseDirectory(project.Directory, oldName)) {
+					foreach (ProjectItem item in project.Items) {
+						++y;
+						if (FileUtility.IsBaseDirectory(oldName, item.FileName)) {
+							item.FileName = FileUtility.RenameBaseDirectory(item.FileName, oldName, newName);
+						}
 					}
 				}
 			}
-			Console.WriteLine("File service file renamed. DONE. {0} //  {1}", x, y);
 		}
 		
 		static void FileServiceFileRemoved(object sender, FileEventArgs e)
 		{
-			Console.WriteLine("File service file removed.");
 			if (OpenSolution == null) {
 				return;
 			}
@@ -87,16 +86,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			foreach (IProject project in OpenSolution.Projects) {
-				for (int i = 0; i < project.Items.Count;) {
-					ProjectItem item =project.Items[i];
-					if (FileUtility.IsBaseDirectory(fileName, item.FileName)) {
-						project.Items.RemoveAt(i);
-					} else {
-						++i;
+				if (FileUtility.IsBaseDirectory(project.Directory, fileName)) {
+					for (int i = 0; i < project.Items.Count;) {
+						ProjectItem item =project.Items[i];
+						if (FileUtility.IsBaseDirectory(fileName, item.FileName)) {
+							project.Items.RemoveAt(i);
+						} else {
+							++i;
+						}
 					}
 				}
 			}
-			Console.WriteLine("File service file removed. DONE.");
 		}
 		
 		static void ActiveWindowChanged(object sender, EventArgs e)

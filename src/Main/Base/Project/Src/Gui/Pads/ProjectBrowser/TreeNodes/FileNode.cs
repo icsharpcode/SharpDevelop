@@ -152,12 +152,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return true;
 			}
 		}
-		
-		public override bool EnablePaste {
-			get {
-				return ((ExtTreeNode)Parent).EnablePaste;
-			}
-		}
+	
 		public override void Delete()
 		{
 			if (FileNodeStatus == FileNodeStatus.Missing) {
@@ -194,6 +189,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			Clipboard.SetDataObject(new DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(FileName, true)), true);
 		}
 		
+			
+		public override bool EnablePaste {
+			get {
+				return ((ExtTreeNode)Parent).EnablePaste;
+			}
+		}
 		public override void Paste()
 		{
 			((ExtTreeNode)Parent).Paste();
