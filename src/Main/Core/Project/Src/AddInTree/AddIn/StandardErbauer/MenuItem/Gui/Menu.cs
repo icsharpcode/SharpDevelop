@@ -28,9 +28,6 @@ namespace ICSharpCode.Core
 			this.subItems = subItems;
 			this.RightToLeft = RightToLeft.Inherit;
 			
-			if (subItems != null && subItems.Count > 0) {
-				DropDownItems.Add(new ToolStripMenuItem());
-			}
 			CreateDropDownItems();
 		}
 		
@@ -39,10 +36,6 @@ namespace ICSharpCode.Core
 			DropDownItems.Clear();
 			foreach (object item in subItems) {
 				if (item is ToolStripItem) {
-					if (item is IStatusUpdate) {
-						((IStatusUpdate)item).UpdateStatus();
-					}
-						
 					DropDownItems.Add((ToolStripItem)item);
 				} else {
 					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
@@ -53,7 +46,13 @@ namespace ICSharpCode.Core
 		protected override void OnDropDownShow(EventArgs e)
 		{
 			base.OnDropDownShow(e);
-			CreateDropDownItems();
+			foreach (object item in subItems) {
+				if (item is ToolStripItem) {
+					if (item is IStatusUpdate) {
+						((IStatusUpdate)item).UpdateStatus();
+					}
+				}
+			}
 		}
 
 		protected override void OnDropDownOpened(System.EventArgs e)

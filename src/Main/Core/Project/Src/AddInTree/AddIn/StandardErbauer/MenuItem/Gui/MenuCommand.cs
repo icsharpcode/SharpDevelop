@@ -33,21 +33,35 @@ namespace ICSharpCode.Core
 		
 		public IMenuCommand Command {
 			get {
-				
+				if (menuCommand == null) {
+					CreateCommand();
+				}
 				return menuCommand;
 			}
-		}		
+		}
 		
-		public MenuCommand(Codon codon, object caller)
+		void CreateCommand()
+		{
+			try {
+				menuCommand = (IMenuCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
+			} catch (Exception e) {
+				MessageService.ShowError(e, "Can't create menu command : " + codon.ID);
+			}
+		}
+
+		public MenuCommand(Codon codon, object caller) : this(codon, caller, false)
+		{
+			
+		}
+		
+		public MenuCommand(Codon codon, object caller, bool createCommand)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
 			this.caller        = caller;
 			this.codon         = codon;
 			
-			try {
-				menuCommand = (IMenuCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
-			} catch (Exception e) {
-				MessageService.ShowError(e, "Can't create menu command : " + codon.ID);
+			if (createCommand) {
+				CreateCommand();
 			}
 			
 			if (codon.Properties.Contains("shortcut")) {

@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -7,19 +7,24 @@
     <ProjectGuid>{CBC6C247-747B-4908-B09A-4D2E0F640B6B}</ProjectGuid>
     <AssemblyName>ResourceEditor</AssemblyName>
     <OutputTarget>Library</OutputTarget>
-    <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
-    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <OutputType>Library</OutputType>
+    <StartupObject />
+    <ApplicationIcon />
+    <Win32Resource />
+    <AssemblyOriginatorKeyFile />
+    <AssemblyKeyProviderName />
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <PreBuildEvent />
+    <PostBuildEvent />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <Optimize>True</Optimize>
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <OutputPath>..\..\..\AddIns\DisplayBindings\</OutputPath>
-    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\ResourceEditor\</OutputPath>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

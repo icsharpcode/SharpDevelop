@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-			
+			Image = IconService.GetBitmap("Icons.AboutImage");
 			
 			Font = ResourceService.LoadFont("Tahoma", 10);
 			text = new string[] {

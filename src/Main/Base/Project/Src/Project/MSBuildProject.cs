@@ -299,7 +299,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			BeforeBuild();
 			string runtimeDirectory    = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
 			ProcessStartInfo startInfo = new ProcessStartInfo("\"" + Path.Combine(runtimeDirectory, "msbuild.exe") + "\"");
-			startInfo.Arguments        = "/nologo \"" + FileName + "\" \"/t:" + target + "\"";
+			startInfo.Arguments        = "/nologo /verbosity:m \"" + FileName + "\" \"/t:" + target + "\"";
 			startInfo.WorkingDirectory = Directory;
 			
 			startInfo.UseShellExecute         = false;

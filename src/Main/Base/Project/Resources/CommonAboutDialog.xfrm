@@ -21,7 +21,6 @@
 			<Width    value = "400"/>
 			<Height   value = "224"/>
 			<Location value = "{X=8, Y=8}"/>
-			<Image value = "Icons.AboutImage"/>
 			<TabStop value = "False"/>
 		</ICSharpCode.SharpDevelop.Gui.ScrollBox>
 		

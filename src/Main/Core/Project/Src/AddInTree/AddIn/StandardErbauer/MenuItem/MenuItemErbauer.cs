@@ -11,7 +11,7 @@ namespace ICSharpCode.Core
 	{
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
 		{
-			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Item";
+			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Command";
 			
 			switch (type) {
 				case "Separator":
@@ -20,6 +20,8 @@ namespace ICSharpCode.Core
 					return new MenuCheckBox(codon, caller);
 				case "Item":
 					return new MenuCommand(codon, caller);
+				case "Command":
+					return new MenuCommand(codon, caller, false);
 				case "Menu":
 					return new Menu(codon, caller, subItems);
 				case "Builder":
