@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns:Conversion="urn:Conversion" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -8,28 +8,20 @@
     <RootNamespace>ICSharpCode.Core.Tests</RootNamespace>
     <AssemblyName>ICSharpCode.Core.Tests</AssemblyName>
     <OutputTarget>Library</OutputTarget>
-    <ApplicationIcon>
-    </ApplicationIcon>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>
-    </NoWarn>
-    <StartupObject>
-    </StartupObject>
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <OutputType>Library</OutputType>
+    <StartupObject />
+    <ApplicationIcon />
+    <Win32Resource />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <Optimize>False</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>
-    </DefineConstants>
     <OutputPath>..\..\..\..\bin\</OutputPath>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -38,36 +30,28 @@
     <Optimize>True</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
-    <DefineConstants>
-    </DefineConstants>
     <OutputPath>..\..\..\..\bin\</OutputPath>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System">
-    </Reference>
-    <Reference Include="System.Data">
-    </Reference>
-    <Reference Include="System.Drawing">
-    </Reference>
-    <Reference Include="System.Windows.Forms">
-    </Reference>
-    <Reference Include="System.Xml">
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
-    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="nunit.framework" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AssemblyInfo.cs">
-    </Compile>
-    <Compile Include="AddInTreeTests\AddInTreeLoadingTests.cs">
-    </Compile>
-    <Compile Include="AddInTreeTests\ExtPathTests.cs">
-    </Compile>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="AddInTreeTests\AddInTreeLoadingTests.cs" />
+    <Compile Include="AddInTreeTests\ExtPathTests.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="AddInTreeTests\">
-    </Folder>
+    <Folder Include="AddInTreeTests\" />
+    <ProjectReference Include="..\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
   </ItemGroup>
-  <ItemGroup />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

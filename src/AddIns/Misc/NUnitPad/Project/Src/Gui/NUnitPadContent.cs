@@ -192,6 +192,7 @@ namespace ICSharpCode.NUnitPad
 				string outputAssembly = project.OutputAssemblyFullPath;
 				try {
 					TestSuiteBuilder builder = new TestSuiteBuilder();
+					Console.WriteLine("Try : " + outputAssembly);
 					Test testDomain = builder.Build(outputAssembly);
 					testTreeView.PrintTests(outputAssembly, testDomain);
 				} catch (Exception e) {

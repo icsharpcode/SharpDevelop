@@ -128,7 +128,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.IsNotNull(addIn.Paths["/Path1"]);
 			Assert.AreEqual(1, addIn.Paths["/Path1"].Codons.Count);
 			Assert.AreEqual("Simple", addIn.Paths["/Path1"].Codons[0].Name);
-			Assert.AreEqual("Simple", addIn.Paths["/Path1"].Codons[0].ID);
+			Assert.AreEqual("Simple", addIn.Paths["/Path1"].Codons[0].Id);
 			Assert.AreEqual("a", addIn.Paths["/Path1"].Codons[0].Properties["attr"]);
 			Assert.AreEqual("b", addIn.Paths["/Path1"].Codons[0].Properties["attr2"]);
 		}
@@ -149,12 +149,12 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.IsNotNull(addIn.Paths["/Path1"]);
 			Assert.AreEqual(1, addIn.Paths["/Path1"].Codons.Count);
 			Assert.AreEqual("Sub", addIn.Paths["/Path1"].Codons[0].Name);
-			Assert.AreEqual("Path2", addIn.Paths["/Path1"].Codons[0].ID);
+			Assert.AreEqual("Path2", addIn.Paths["/Path1"].Codons[0].Id);
 			
 			Assert.IsNotNull(addIn.Paths["/Path1/Path2"]);
 			Assert.AreEqual(1, addIn.Paths["/Path1/Path2"].Codons.Count);
 			Assert.AreEqual("Codon2", addIn.Paths["/Path1/Path2"].Codons[0].Name);
-			Assert.AreEqual("Sub2", addIn.Paths["/Path1/Path2"].Codons[0].ID);
+			Assert.AreEqual("Sub2", addIn.Paths["/Path1/Path2"].Codons[0].Id);
 		}
 		
 		[Test]
@@ -164,7 +164,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 <AddIn>
 	<Path name = '/Path1'>
 		<Condition name='Equal' string='a' equal='b'>		
-			<Simple ID ='Simple' attr='a' attr2='b'/>
+			<Simple id ='Simple' attr='a' attr2='b'/>
 		</Condition>
 	</Path>
 </AddIn>";
@@ -175,7 +175,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual(1, path.Codons.Count);
 			Codon codon = path.Codons[0];
 			Assert.AreEqual("Simple", codon.Name);
-			Assert.AreEqual("Simple", codon["ID"]);
+			Assert.AreEqual("Simple", codon.Id);
 			Assert.AreEqual("a",      codon["attr"]);
 			Assert.AreEqual("b",      codon["attr2"]);
 			
@@ -197,11 +197,11 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 	<Path name = '/Path1'>
 		<Condition name='Equal' string='a' equal='b'>		
 			<Condition name='StackedCondition' string='1' equal='2'>		
-				<Simple ID ='Simple' attr='a' attr2='b'/>
+				<Simple id ='Simple' attr='a' attr2='b'/>
 			</Condition>
-			<Simple ID ='Simple2' attr='a' attr2='b'/>
+			<Simple id ='Simple2' attr='a' attr2='b'/>
 		</Condition>
-			<Simple ID ='Simple3' attr='a' attr2='b'/>
+			<Simple id ='Simple3' attr='a' attr2='b'/>
 	</Path>
 </AddIn>";
 			AddIn addIn = AddIn.Load(new StringReader(addInText));
@@ -212,7 +212,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual(3, path.Codons.Count);
 			Codon codon = path.Codons[0];
 			Assert.AreEqual("Simple", codon.Name);
-			Assert.AreEqual("Simple", codon["ID"]);
+			Assert.AreEqual("Simple", codon.Id);
 			Assert.AreEqual("a",      codon["attr"]);
 			Assert.AreEqual("b",      codon["attr2"]);
 			
@@ -258,7 +258,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 					<Condition name='Equal' string='a' equal='b'/>
 				</Or>
 			</And>
-			<Simple ID ='Simple' attr='a' attr2='b'/>
+			<Simple id ='Simple' attr='a' attr2='b'/>
 		</ComplexCondition>
 	</Path>
 </AddIn>";
@@ -269,7 +269,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual(1, path.Codons.Count);
 			Codon codon = path.Codons[0];
 			Assert.AreEqual("Simple", codon.Name);
-			Assert.AreEqual("Simple", codon["ID"]);
+			Assert.AreEqual("Simple", codon.Id);
 			Assert.AreEqual("a",      codon["attr"]);
 			Assert.AreEqual("b",      codon["attr2"]);
 			
