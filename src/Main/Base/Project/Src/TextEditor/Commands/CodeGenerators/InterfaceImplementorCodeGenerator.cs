@@ -43,6 +43,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			foreach (string className in currentClass.BaseTypes) {
 				IClass baseType = ParserService.CurrentProjectContent.GetClass(className);
+				
+				if (baseType == null) {
+					baseType = ParserService.CurrentProjectContent.GetClass(currentClass.Namespace + "." + className);
+				}
+
 				if (baseType == null) {
 					this.unit = currentClass == null ? null : currentClass.CompilationUnit;
 					if (unit != null) {
@@ -73,8 +78,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					
 					// search an enqueue all base interfaces
 					foreach (string interfaceName in intf.BaseTypes) {
-						IClass baseType = null;
-						if (unit != null && unit.Usings != null) {
+					
+						// first look if the interface is in the same namespace
+						IClass baseType = ParserService.CurrentProjectContent.GetClass(intf.Namespace + "." + interfaceName);
+						
+						if (baseType == null && unit != null && unit.Usings != null) {
 							foreach (IUsing u in unit.Usings) {
 								baseType = u.SearchType(interfaceName);
 								if (baseType != null) {
