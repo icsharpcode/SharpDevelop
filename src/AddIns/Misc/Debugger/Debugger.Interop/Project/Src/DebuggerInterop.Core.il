@@ -3221,37 +3221,37 @@
                                                                                                   31 32 45 33 32 30 33 00 00 )                      // 12E3203..
   .custom instance void [mscorlib]System.Runtime.InteropServices.InterfaceTypeAttribute::.ctor(int16) = ( 01 00 01 00 00 00 ) 
   .method public hidebysig newslot abstract virtual 
-          instance void  FunctionRemapOpportunity([in] class DebuggerInterop.Core.ICorDebugAppDomain  marshal( interface) pAppDomain,
-                                                  [in] class DebuggerInterop.Core.ICorDebugThread  marshal( interface) pThread,
-                                                  [in] class DebuggerInterop.Core.ICorDebugFunction  marshal( interface) pOldFunction,
-                                                  [in] class DebuggerInterop.Core.ICorDebugFunction  marshal( interface) pNewFunction,
+          instance void  FunctionRemapOpportunity([in] native int pAppDomain,
+                                                  [in] native int pThread,
+                                                  [in] native int pOldFunction,
+                                                  [in] native int pNewFunction,
                                                   [in] uint32 oldILOffset) runtime managed internalcall
   {
   } // end of method ICorDebugManagedCallback2::FunctionRemapOpportunity
 
   .method public hidebysig newslot abstract virtual 
-          instance void  CreateConnection([in] class DebuggerInterop.Core.ICorDebugProcess  marshal( interface) pProcess,
+          instance void  CreateConnection([in] native int pProcess,
                                           [in] uint32 dwConnectionId,
                                           [in] uint16& pConnName) runtime managed internalcall
   {
   } // end of method ICorDebugManagedCallback2::CreateConnection
 
   .method public hidebysig newslot abstract virtual 
-          instance void  ChangeConnection([in] class DebuggerInterop.Core.ICorDebugProcess  marshal( interface) pProcess,
+          instance void  ChangeConnection([in] native int pProcess,
                                           [in] uint32 dwConnectionId) runtime managed internalcall
   {
   } // end of method ICorDebugManagedCallback2::ChangeConnection
 
   .method public hidebysig newslot abstract virtual 
-          instance void  DestroyConnection([in] class DebuggerInterop.Core.ICorDebugProcess  marshal( interface) pProcess,
+          instance void  DestroyConnection([in] native int pProcess,
                                            [in] uint32 dwConnectionId) runtime managed internalcall
   {
   } // end of method ICorDebugManagedCallback2::DestroyConnection
 
   .method public hidebysig newslot abstract virtual 
-          instance void  Exception([in] class DebuggerInterop.Core.ICorDebugAppDomain  marshal( interface) pAppDomain,
-                                   [in] class DebuggerInterop.Core.ICorDebugThread  marshal( interface) pThread,
-                                   [in] class DebuggerInterop.Core.ICorDebugFrame  marshal( interface) pFrame,
+          instance void  Exception([in] native int pAppDomain,
+                                   [in] native int pThread,
+                                   [in] native int pFrame,
                                    [in] uint32 nOffset,
                                    [in] valuetype DebuggerInterop.Core.CorDebugExceptionCallbackType dwEventType,
                                    [in] uint32 dwFlags) runtime managed internalcall
@@ -3259,24 +3259,24 @@
   } // end of method ICorDebugManagedCallback2::Exception
 
   .method public hidebysig newslot abstract virtual 
-          instance void  ExceptionUnwind([in] class DebuggerInterop.Core.ICorDebugAppDomain  marshal( interface) pAppDomain,
-                                         [in] class DebuggerInterop.Core.ICorDebugThread  marshal( interface) pThread,
+          instance void  ExceptionUnwind([in] native int pAppDomain,
+                                         [in] native int pThread,
                                          [in] valuetype DebuggerInterop.Core.CorDebugExceptionUnwindCallbackType dwEventType,
                                          [in] uint32 dwFlags) runtime managed internalcall
   {
   } // end of method ICorDebugManagedCallback2::ExceptionUnwind
 
   .method public hidebysig newslot abstract virtual 
-          instance void  FunctionRemapComplete([in] class DebuggerInterop.Core.ICorDebugAppDomain  marshal( interface) pAppDomain,
-                                               [in] class DebuggerInterop.Core.ICorDebugThread  marshal( interface) pThread,
-                                               [in] class DebuggerInterop.Core.ICorDebugFunction  marshal( interface) pFunction) runtime managed internalcall
+          instance void  FunctionRemapComplete([in] native int pAppDomain,
+                                               [in] native int pThread,
+                                               [in] native int pFunction) runtime managed internalcall
   {
   } // end of method ICorDebugManagedCallback2::FunctionRemapComplete
 
   .method public hidebysig newslot abstract virtual 
-          instance void  MDANotification([in] class DebuggerInterop.Core.ICorDebugController  marshal( interface) pController,
-                                         [in] class DebuggerInterop.Core.ICorDebugThread  marshal( interface) pThread,
-                                         [in] class DebuggerInterop.Core.ICorDebugMDA  marshal( interface) pMDA) runtime managed internalcall
+          instance void  MDANotification([in] native int pController,
+                                         [in] native int pThread,
+                                         [in] native int pMDA) runtime managed internalcall
   {
   } // end of method ICorDebugManagedCallback2::MDANotification
 

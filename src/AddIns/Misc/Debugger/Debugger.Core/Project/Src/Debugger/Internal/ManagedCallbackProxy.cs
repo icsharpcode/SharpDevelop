@@ -10,10 +10,11 @@ using System.Windows.Forms;
 
 using DebuggerInterop.Core;
 
-// Function finding regular expresion:
-//    ^{\t*}{(:Ll| )*{:i} *\(((.# {:i}, |\))|())^6\)*}\n\t*\{(.|\n)@\}
+// Regular expresion:
+// ^{\t*}{(:Ll| )*{:i} *\(((.# {:i}, |\))|())^6\)*}\n\t*\{(.|\n)@\}
 // Output: \1 - intention   \2 - declaration \3 - function name  \4-9 parameters
 
+// Replace with:
 // \1\2\n\1{\n\1\tCallbackReceived("\3", new object[] {\4, \5, \6, \7, \8, \9});\n\1}
 
 namespace DebuggerLibrary
@@ -166,49 +167,51 @@ namespace DebuggerLibrary
 			CallbackReceived("UpdateModuleSymbols", new object[] {pAppDomain, pModule, pSymbolStream});
 		}
 
-        #region ICorDebugManagedCallback2 Members
 
-        public void ChangeConnection(ICorDebugProcess pProcess, uint dwConnectionId)
-        {
-            throw new NotImplementedException();
-        }
 
-        public void CreateConnection(ICorDebugProcess pProcess, uint dwConnectionId, ref ushort pConnName)
-        {
-            throw new NotImplementedException();
-        }
+		#region ICorDebugManagedCallback2 Members
 
-        public void DestroyConnection(ICorDebugProcess pProcess, uint dwConnectionId)
-        {
-            throw new NotImplementedException();
-        }
+		public void ChangeConnection(IntPtr pProcess, uint dwConnectionId)
+		{
+			CallbackReceived("ChangeConnection", new object[] {pProcess, dwConnectionId});
+		}
 
-        public void Exception(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFrame pFrame, uint nOffset, CorDebugExceptionCallbackType dwEventType, uint dwFlags)
-        {
-            pAppDomain.Continue(0);
-        }
+		public void CreateConnection(IntPtr pProcess, uint dwConnectionId, ref ushort pConnName)
+		{
+			CallbackReceived("CreateConnection", new object[] {pProcess, dwConnectionId, pConnName});
+		}
 
-        public void ExceptionUnwind(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
-        {
-            throw new NotImplementedException();
-        }
+		public void DestroyConnection(IntPtr pProcess, uint dwConnectionId)
+		{
+			CallbackReceived("DestroyConnection", new object[] {pProcess, dwConnectionId});
+		}
 
-        public void FunctionRemapComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pFunction)
-        {
-            throw new NotImplementedException();
-        }
+		public void Exception(IntPtr pAppDomain, IntPtr pThread, IntPtr pFrame, uint nOffset, CorDebugExceptionCallbackType dwEventType, uint dwFlags)
+		{
+			CallbackReceived("Exception2", new object[] {pAppDomain, pThread, pFrame, nOffset, dwEventType, dwFlags});
+		}
 
-        public void FunctionRemapOpportunity(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pOldFunction, ICorDebugFunction pNewFunction, uint oldILOffset)
-        {
-            throw new NotImplementedException();
-        }
+		public void ExceptionUnwind(IntPtr pAppDomain, IntPtr pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
+		{
+			CallbackReceived("ExceptionUnwind", new object[] {pAppDomain, pThread, dwEventType, dwFlags});
+		}
 
-        public void MDANotification(ICorDebugController c, ICorDebugThread t, ICorDebugMDA mda)
-        {
-            throw new NotImplementedException();
-        }
+		public void FunctionRemapComplete(IntPtr pAppDomain, IntPtr pThread, IntPtr pFunction)
+		{
+			CallbackReceived("FunctionRemapComplete", new object[] {pAppDomain, pThread, pFunction});
+		}
 
-        #endregion
+		public void FunctionRemapOpportunity(IntPtr pAppDomain, IntPtr pThread, IntPtr pOldFunction, IntPtr pNewFunction, uint oldILOffset)
+		{
+			CallbackReceived("FunctionRemapOpportunity", new object[] {pAppDomain, pThread, pOldFunction, pNewFunction, oldILOffset});
+		}
+
+		public void MDANotification(IntPtr pController, IntPtr pThread, IntPtr pMDA)
+		{
+			CallbackReceived("MDANotification", new object[] {pController, pThread, pMDA});
+		}
+
+		#endregion
 	}
 
 }

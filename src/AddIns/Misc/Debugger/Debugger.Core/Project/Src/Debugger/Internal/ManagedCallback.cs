@@ -2,6 +2,13 @@
 //     <owner name="David Srbecký" email="dsrbecky@post.cz"/>
 // </file>
 
+// Regular expresion:
+// ^{\t*}{(:Ll| )*{:i} *\(((.# {:i}, |\))|())^6\)*}\n\t*\{(.|\n)@\}
+// Output: \1 - intention   \2 - declaration \3 - function name  \4-9 parameters
+
+// Replace with:
+// \1\2\n\1{\n\1\tEnterCallback("\3");\n\1\t\n\1\tExitCallback_Continue(pAppDomain);\n\1}
+
 using System;
 using System.Runtime.InteropServices;
 
@@ -43,10 +50,10 @@ namespace DebuggerLibrary
 		
 		void ExitCallback_Paused(PausedReason reason)
 		{
-            if (reason != PausedReason.EvalComplete) {
-			    NDebugger.OnDebuggingPaused(reason);
-			    NDebugger.OnIsProcessRunningChanged();
-            }
+			if (reason != PausedReason.EvalComplete) {
+				NDebugger.OnDebuggingPaused(reason);
+				NDebugger.OnIsProcessRunningChanged();
+			}
 			handlingCallback = false;
 		}
 		
@@ -64,7 +71,7 @@ namespace DebuggerLibrary
 				NDebugger.StepOut();
 				return;
 			}
-            
+			
 			ExitCallback_Paused(PausedReason.StepComplete);
 		}
 		
@@ -110,10 +117,10 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("Exception");
 			
-			//if (!NDebugger.CatchHandledExceptions && (unhandled == 0)) {
-			//	ExitCallback_Continue();
-			//	return;
-			//}
+			if (!NDebugger.CatchHandledExceptions && (unhandled == 0)) {
+				ExitCallback_Continue();
+				return;
+			}
 
 			NDebugger.CurrentThread = NDebugger.Instance.GetThread(pThread);
 			NDebugger.CurrentThread.CurrentExceptionIsHandled = (unhandled == 0);
@@ -170,7 +177,7 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("DebuggerError");
 
-            System.Windows.Forms.MessageBox.Show("Debugger error: \nHR = " + errorHR.ToString() + "\nCode = " + errorCode.ToString());
+			System.Windows.Forms.MessageBox.Show("Debugger error: \nHR = " + errorHR.ToString() + "\nCode = " + errorCode.ToString());
 
 			ExitCallback_Paused(PausedReason.DebuggerError);
 		}
@@ -315,6 +322,66 @@ namespace DebuggerLibrary
 			NDebugger.Instance.ResetEnvironment();
 
 			pProcess.Continue(0); //TODO
+		}
+
+		#endregion
+
+		#region ICorDebugManagedCallback2 Members
+
+		public void ChangeConnection(ICorDebugProcess pProcess, uint dwConnectionId)
+		{
+			EnterCallback("ChangeConnection");
+			
+			ExitCallback_Continue();
+		}
+
+		public void CreateConnection(ICorDebugProcess pProcess, uint dwConnectionId, ref ushort pConnName)
+		{
+			EnterCallback("CreateConnection");
+			
+			ExitCallback_Continue();
+		}
+
+		public void DestroyConnection(ICorDebugProcess pProcess, uint dwConnectionId)
+		{
+			EnterCallback("DestroyConnection");
+			
+			ExitCallback_Continue();
+		}
+
+		public void Exception2(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFrame pFrame, uint nOffset, CorDebugExceptionCallbackType dwEventType, uint dwFlags)
+		{
+			EnterCallback("Exception2");
+			
+			ExitCallback_Continue(pAppDomain);
+		}
+
+		public void ExceptionUnwind(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
+		{
+			EnterCallback("ExceptionUnwind");
+			
+			ExitCallback_Continue(pAppDomain);
+		}
+
+		public void FunctionRemapComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pFunction)
+		{
+			EnterCallback("FunctionRemapComplete");
+			
+			ExitCallback_Continue(pAppDomain);
+		}
+
+		public void FunctionRemapOpportunity(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pOldFunction, ICorDebugFunction pNewFunction, uint oldILOffset)
+		{
+			EnterCallback("FunctionRemapOpportunity");
+			
+			ExitCallback_Continue(pAppDomain);
+		}
+
+		public void MDANotification(ICorDebugController c, ICorDebugThread t, ICorDebugMDA mda)
+		{
+			EnterCallback("MDANotification");
+			
+			ExitCallback_Continue();
 		}
 
 		#endregion
