@@ -150,10 +150,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 	
 	public class SaveAllFiles : AbstractMenuCommand
 	{
-		public override void Run()
+		public static void SaveAll()
 		{
-			
-			
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 				if (content.IsViewOnly) {
 					continue;
@@ -169,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 							fdiag.OverwritePrompt = true;
 							fdiag.AddExtension    = true;
 							
-							fdiag.Filter          = String.Join("|", (string[])(AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(this)).ToArray(typeof(string)));
+							fdiag.Filter          = String.Join("|", (string[])(AddInTree.GetTreeNode("/SharpDevelop/Workbench/FileFilter").BuildChildItems(null)).ToArray(typeof(string)));
 						
 							if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 								string fileName = fdiag.FileName;
@@ -189,6 +187,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 					FileUtility.ObservedSave(new FileOperationDelegate(content.Save), content.FileName);
 				}
 			}
+		}
+		
+		public override void Run()
+		{
+			SaveAll();
 		}
 	}
 	

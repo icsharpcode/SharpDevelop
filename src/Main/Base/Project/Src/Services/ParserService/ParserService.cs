@@ -97,7 +97,7 @@ namespace ICSharpCode.Core
 		}
 		
 		static bool doneParserThread = false;
-		static Hashtable lastUpdateSize = new Hashtable();
+		static Dictionary<string, int> lastUpdateSize = new Dictionary<string, int>();
 		
 		static void ParserUpdateThread()
 		{
@@ -126,7 +126,7 @@ namespace ICSharpCode.Core
 								if (text == null) {
 									text = editable.Text;
 								}
-								int hash = text.GetHashCode();
+								int hash = text.Length;
 								if (lastUpdateSize[fileName] == null || (int)lastUpdateSize[fileName] != hash) {
 									parseInformation = ParseFile(fileName, text, !viewContent.IsUntitled, true);
 									lastUpdateSize[fileName] = hash;
@@ -137,9 +137,6 @@ namespace ICSharpCode.Core
 										((IParseInformationListener)editable).ParseInformationUpdated(parseInformation);
 									}
 								}
-//								if (fn != null) {
-//									ParseFile(fn); // TODO: this one should update file parsings requested through queue
-//								}
 							}
 						}
 					}

@@ -17,10 +17,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 {
 	public class Build : AbstractMenuCommand
 	{
-		public static void ClearTasks()
+		public static void BeforeBuild()
 		{
 			TaskService.BuildMessageViewCategory.ClearText();
 			TaskService.Clear();
+			ICSharpCode.SharpDevelop.Commands.SaveAllFiles.SaveAll();
 		}
 			
 		public static void ShowResults(CompilerResults results)
@@ -38,8 +39,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			if (ProjectService.OpenSolution != null) {
-				Build.ClearTasks();
-				new ICSharpCode.SharpDevelop.Commands.SaveAllFiles().Run();
+				Build.BeforeBuild();
 				Build.ShowResults(ProjectService.OpenSolution.Build());
 			}
 		}
@@ -50,8 +50,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			if (ProjectService.OpenSolution != null) {
-				Build.ClearTasks();
-				new ICSharpCode.SharpDevelop.Commands.SaveAllFiles().Run();
+				Build.BeforeBuild();
 				Build.ShowResults(ProjectService.OpenSolution.Rebuild());
 			}
 		}
@@ -62,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			if (ProjectService.OpenSolution != null) {
-				Build.ClearTasks();
+				Build.BeforeBuild();
 				Build.ShowResults(ProjectService.OpenSolution.Clean());
 			}
 		}
@@ -73,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			if (ProjectService.OpenSolution != null) {
-				Build.ClearTasks();
+				Build.BeforeBuild();
 				Build.ShowResults(ProjectService.OpenSolution.Publish());
 			}
 		}
@@ -97,8 +96,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			if (ProjectService.CurrentProject != null) {
-				Build.ClearTasks();
-				new ICSharpCode.SharpDevelop.Commands.SaveAllFiles().Run();
+				Build.BeforeBuild();
 				BuildProject.ShowResults(ProjectService.CurrentProject.Build());
 			}
 		}
@@ -109,8 +107,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			if (ProjectService.CurrentProject != null) {
-				Build.ClearTasks();
-				new ICSharpCode.SharpDevelop.Commands.SaveAllFiles().Run();
+				Build.BeforeBuild();
 				BuildProject.ShowResults(ProjectService.CurrentProject.Rebuild());
 			}
 		}
@@ -121,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			if (ProjectService.CurrentProject != null) {
-				Build.ClearTasks();
+				Build.BeforeBuild();
 				BuildProject.ShowResults(ProjectService.CurrentProject.Clean());
 			}
 		}
@@ -132,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			if (ProjectService.CurrentProject != null) {
-				Build.ClearTasks();
+				Build.BeforeBuild();
 				BuildProject.ShowResults(ProjectService.CurrentProject.Publish());
 			}
 		}

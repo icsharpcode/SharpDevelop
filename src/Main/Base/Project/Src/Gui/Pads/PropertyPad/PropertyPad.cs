@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 	public class PropertyPad : AbstractPadContent, IHelpProvider
 	{
-		static PropertyPad   instance;
+		static PropertyPad instance;
 		
 		public static PropertyPad Instance {
 			get {
@@ -119,6 +119,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		static PropertyPad()
+		{
+			grid = new PropertyGrid();
+			grid.PropertyValueChanged += new PropertyValueChangedEventHandler(PropertyChanged);
+			grid.PropertySort = PropertyService.Get("FormsDesigner.DesignerOptions.PropertyGridSortAlphabetical", false) ? PropertySort.Alphabetical : PropertySort.CategorizedAlphabetical;
+			grid.Dock = DockStyle.Fill;
+		}
+			
+		
 		public PropertyPad()
 		{
 			instance = this;
@@ -134,10 +143,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			comboBox.SelectedIndexChanged += new EventHandler(ComboBoxSelectedIndexChanged);
 			comboBox.Sorted = true;
 			
-			grid = new PropertyGrid();
-			grid.PropertyValueChanged += new PropertyValueChangedEventHandler(PropertyChanged);
-			grid.PropertySort = PropertyService.Get("FormsDesigner.DesignerOptions.PropertyGridSortAlphabetical", false) ? PropertySort.Alphabetical : PropertySort.CategorizedAlphabetical;
-			grid.Dock = DockStyle.Fill;
 			panel.Controls.Add(grid);
 			panel.Controls.Add(comboBox);
 			
@@ -260,14 +265,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static void SetDesignableObject(object obj)
 		{
-			grid.SelectedObject  = obj;
-			SelectedObjectsChanged();
+			if (grid != null) {
+				grid.SelectedObject  = obj;
+				SelectedObjectsChanged();
+			}
 		}
 		
 		public static void SetDesignableObjects(object[] obj)
 		{
-			grid.SelectedObjects = obj;
-			SelectedObjectsChanged();
+			if (grid != null) {
+				grid.SelectedObjects = obj;
+				SelectedObjectsChanged();
+			}
 		}
 		
 		public static void RemoveHost(IDesignerHost host)
