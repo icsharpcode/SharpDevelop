@@ -59,7 +59,6 @@ namespace VBNetBinding.Parser
 				ICSharpCode.NRefactory.Parser.PreProcessingDirective directive = tracker.CurrentSpecials[i] as ICSharpCode.NRefactory.Parser.PreProcessingDirective;
 				if (directive != null)
 				{
-					System.Console.WriteLine("directive " + directive.Cmd.ToLower());
 					if (directive.Cmd.ToLower() == "#region")
 					{
 						int deep = 1;
@@ -68,7 +67,6 @@ namespace VBNetBinding.Parser
 							ICSharpCode.NRefactory.Parser.PreProcessingDirective nextDirective = tracker.CurrentSpecials[j] as ICSharpCode.NRefactory.Parser.PreProcessingDirective;
 							if (nextDirective != null)
 							{
-								System.Console.WriteLine("next directive " + nextDirective.Cmd.ToLower());
 								switch (nextDirective.Cmd.ToLower())
 								{
 									case "#region":
