@@ -27,7 +27,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public string ID {
+		public string Id {
 			get {
 				return properties["id"];
 			}

@@ -16,9 +16,9 @@ namespace ICSharpCode.Core
 	{
 		Codon codon;
 		
-		public string ID {
+		public string Id {
 			get {
-				return codon.ID;
+				return codon.Id;
 			}
 		}
 		

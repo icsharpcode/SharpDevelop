@@ -13,6 +13,8 @@
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Resources\StartUp.snk</AssemblyOriginatorKeyFile>
+    <OutputType>Exe</OutputType>
+    <ApplicationIcon>C:\Dokumente und Einstellungen\Omnibrain.DIABLO\Eigene Dateien\trunk\SharpDevelop\src\Main\StartUp\Project\Resources\SharpDevelop.ico</ApplicationIcon>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

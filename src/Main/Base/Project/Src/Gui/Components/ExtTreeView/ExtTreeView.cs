@@ -36,7 +36,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			HideSelection = false;
 			AllowDrop     = true;
 			this.TreeViewNodeSorter  = new ExtTreeViewComparer();
-			DoubleBuffered = true;
 			ImageList newImageList = new ImageList();
 			newImageList.ImageSize = new Size(16, 16);
 			newImageList.ColorDepth = ColorDepth.Depth32Bit;
@@ -132,15 +131,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SortNodes(e.Node.Parent);
 		}
 		#endregion
-		
+		bool inRefresh = false;
 		protected override void OnBeforeExpand(TreeViewCancelEventArgs e)
 		{
 			base.OnBeforeExpand(e);
+			inRefresh = true;
+			BeginUpdate();
 			if (e.Node is ExtTreeNode) {
 				((ExtTreeNode)e.Node).Expanding();
 			}
 			SortNodes(e.Node);
 		}
+		
+		protected override void OnAfterExpand(TreeViewEventArgs e)
+		{
+			base.OnAfterExpand(e);
+			inRefresh = false;
+			EndUpdate();
+		}
+		
 		
 		protected override void OnBeforeCollapse(TreeViewCancelEventArgs e)
 		{
@@ -198,12 +207,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected override void OnDrawNode(DrawTreeNodeEventArgs e)
 		{
-			ExtTreeNode node = e.Node as ExtTreeNode;
-			if (node != null && !node.DrawDefault) {
-				node.Draw(e);
-				e.DrawDefault = false;
+			if (!inRefresh) {
+				ExtTreeNode node = e.Node as ExtTreeNode;
+				if (node != null && !node.DrawDefault) {
+					node.Draw(e);
+					e.DrawDefault = false;
+				} else {
+					e.DrawDefault = true;
+				}
 			} else {
-				e.DrawDefault = true;
+				e.DrawDefault = false;
 			}
 			base.OnDrawNode(e);
 		}
@@ -266,7 +279,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			string imageKey = performCutBitmap ? (image + "_ghost") : image;
 			if (!imageIndexTable.ContainsKey(imageKey)) {
 				ImageList.Images.Add(performCutBitmap ? IconService.GetGhostBitmap(image) : IconService.GetBitmap(image));
-				Console.WriteLine("Add image : " + image);
 				imageIndexTable[imageKey] = ImageList.Images.Count - 1;
 				return ImageList.Images.Count - 1;
 			}

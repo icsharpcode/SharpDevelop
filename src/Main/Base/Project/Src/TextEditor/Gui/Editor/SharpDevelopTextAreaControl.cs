@@ -448,7 +448,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public void InitializeFormatter()
 		{
 			string formatterPath = formatingStrategyPath + "/" + Document.HighlightingStrategy.Name;
-			Console.WriteLine("try to get formatter: " + formatterPath);
 			if (AddInTree.ExistsTreeNode(formatterPath)) {
 				IFormattingStrategy[] formatter = (IFormattingStrategy[])(AddInTree.GetTreeNode(formatterPath).BuildChildItems(this)).ToArray(typeof(IFormattingStrategy));
 				if (formatter != null && formatter.Length > 0) {

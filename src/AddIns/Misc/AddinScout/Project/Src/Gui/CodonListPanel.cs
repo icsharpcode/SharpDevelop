@@ -82,7 +82,7 @@ namespace AddInScout
 			foreach (Codon c in node.Codons) {
 				ListViewItem lvi = new ListViewItem(c.Name);
 				lvi.Tag = c;
-				lvi.SubItems.Add(c.ID);
+				lvi.SubItems.Add(c.Id);
 				
 				lvi.SubItems.Add(c.Properties.Contains("class") ? c.Properties["class"] : "");
 				

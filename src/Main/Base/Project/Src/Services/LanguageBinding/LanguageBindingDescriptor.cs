@@ -49,7 +49,7 @@ namespace ICSharpCode.Core
 		
 		public string Language {
 			get {
-				return codon.ID;
+				return codon.Id;
 			}
 		}
 		

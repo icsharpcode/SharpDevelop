@@ -134,11 +134,8 @@ namespace ICSharpCode.NUnitPad
 		void AddNUnitReference(object sender, EventArgs e)
 		{
 			if (ProjectService.CurrentProject != null) {
-				Console.WriteLine("Add reference!");
 				ProjectService.AddReference(ProjectService.CurrentProject, new ReferenceProjectItem(ProjectService.CurrentProject, "nunit.framework"));
 				ProjectService.CurrentProject.Save();
-			} else {
-				Console.WriteLine("prj == null");
 			}
 		}
 		

@@ -36,7 +36,6 @@ namespace ICSharpCode.Core
 		
 		public static IProjectContent Create(IProject project)
 		{
-			Console.WriteLine("CREATE : " + project);
 			CaseSensitiveProjectContent newProjectContent = new CaseSensitiveProjectContent();
 			newProjectContent.references.Add(typeof(object).Assembly);
 			foreach (ProjectItem item in project.Items) {

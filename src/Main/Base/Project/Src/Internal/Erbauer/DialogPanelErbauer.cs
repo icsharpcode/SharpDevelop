@@ -23,13 +23,13 @@ namespace ICSharpCode.Core
 			
 			if (subItems == null || subItems.Count == 0) {				
 				if (codon.Properties.Contains("class")) {
-					return new DefaultDialogPanelDescriptor(codon.ID, StringParser.Parse(label), (IDialogPanel)codon.AddIn.CreateObject(codon.Properties["class"]));
+					return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label), (IDialogPanel)codon.AddIn.CreateObject(codon.Properties["class"]));
 				} else {
-					return new DefaultDialogPanelDescriptor(codon.ID, StringParser.Parse(label));
+					return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label));
 				}
 			}
 			
-			return new DefaultDialogPanelDescriptor(codon.ID, StringParser.Parse(label), subItems);
+			return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label), subItems);
 		}
 	}
 }

@@ -31,15 +31,6 @@
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="nunit.core, Version=2.2.2.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
-      <HintPath>..\..\..\..\..\bin\nunit.core.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.extensions, Version=2.2.2.0, Culture=neutral">
-      <HintPath>..\..\..\..\..\bin\nunit.extensions.dll</HintPath>
-    </Reference>
-    <Reference Include="nunit.framework, Version=2.2.2.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
-      <HintPath>..\..\..\..\..\bin\nunit.framework.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
@@ -68,6 +59,18 @@
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Tools\NUnit\src\NUnitFramework\extensions\nunit.extensions.dll.csproj">
+      <Project>{98B10E98-003C-45A0-9587-119142E39986}</Project>
+      <Name>nunit.extensions.dll</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Tools\NUnit\src\NUnitFramework\core\nunit.core.dll.csproj">
+      <Project>{EBD43A7F-AFCA-4281-BB53-5CDD91F966A3}</Project>
+      <Name>nunit.core.dll</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Tools\NUnit\src\NUnitFramework\framework\nunit.framework.dll.csproj">
+      <Project>{83DD7E12-A705-4DBA-9D71-09C8973D9382}</Project>
+      <Name>nunit.framework.dll</Name>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

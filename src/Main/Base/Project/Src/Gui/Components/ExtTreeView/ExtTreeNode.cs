@@ -287,9 +287,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			boldFont            = new Font("Tahoma", 9, FontStyle.Bold);
 			italicFont          = new Font("Tahoma", 9, FontStyle.Italic);
 			
-			monospacedFont                = new Font("Courier New", 10);
-			boldMonospacedFont            = new Font("Courier New", 10, FontStyle.Bold);
-			italicMonospacedFont          = new Font("Courier New", 10, FontStyle.Italic);
+			monospacedFont       = new Font("Courier New", 10);
+			boldMonospacedFont   = new Font("Courier New", 10, FontStyle.Bold);
+			italicMonospacedFont = new Font("Courier New", 10, FontStyle.Italic);
 		}
 		#endregion
 		

@@ -99,11 +99,47 @@ namespace SearchAndReplace
 		}
 	}
 	
-	public class ToggleTreeList : AbstractMenuCommand
+	public class SelectViewMode : AbstractMenuCommand
 	{
+		ToolBarDropDownButton dropDownButton;
+		
 		public override void Run()
 		{
 		}
+		
+		void SetViewMode(object sender, EventArgs e)
+		{
+			PadDescriptor searchResultPanel = WorkbenchSingleton.Workbench.GetPad(typeof(SearchResultPanel));
+			if (searchResultPanel != null) {
+				searchResultPanel.BringPadToFront();
+				SearchResultPanel.Instance.ViewMode = (SearchResultPanelViewMode)((ToolStripItem)sender).Tag;
+			} else {
+				MessageService.ShowError("SearchResultPanel can't be found.");
+			}
+		}
+		
+		void GenerateDropDownItems()
+		{
+			ToolStripItem newItem = new ToolStripMenuItem();
+			newItem.Text = "Per file";
+			newItem.Tag  = SearchResultPanelViewMode.PerFile;
+			newItem.Click += new EventHandler(SetViewMode);
+			dropDownButton.DropDownItems.Add(newItem);
+			
+			newItem = new ToolStripMenuItem();
+			newItem.Text = "Flat";
+			newItem.Tag  = SearchResultPanelViewMode.Flat;
+			newItem.Click += new EventHandler(SetViewMode);
+			dropDownButton.DropDownItems.Add(newItem);
+		}
+		
+		protected override void OnOwnerChanged(EventArgs e) 
+		{
+			base.OnOwnerChanged(e);
+			dropDownButton = (ToolBarDropDownButton)Owner;
+			GenerateDropDownItems();
+		}
 	}
+	
 	
 }

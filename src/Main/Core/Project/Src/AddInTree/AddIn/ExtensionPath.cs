@@ -60,7 +60,7 @@ namespace ICSharpCode.Core
 							Codon newCodon = new Codon(extensionPath.AddIn, elementName, Properties.ReadFromAttributes(reader), extensionPath.conditionStack.ToArray());
 							extensionPath.codons.Add(newCodon);
 							if (!reader.IsEmptyElement) {
-								ExtensionPath subPath = extensionPath.AddIn.GetExtensionPath(extensionPath.Name + "/" + newCodon.ID);
+								ExtensionPath subPath = extensionPath.AddIn.GetExtensionPath(extensionPath.Name + "/" + newCodon.Id);
 								foreach (ICondition condition in extensionPath.conditionStack) {
 									subPath.conditionStack.Push(condition);
 								}

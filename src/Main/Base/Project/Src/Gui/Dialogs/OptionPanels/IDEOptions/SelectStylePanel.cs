@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			AddInTreeNode treeNode = AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences");
 			foreach (Codon codon in treeNode.Codons) {
-				((ComboBox)ControlDictionary["selectAmbienceComboBox"]).Items.Add(codon.ID);
+				((ComboBox)ControlDictionary["selectAmbienceComboBox"]).Items.Add(codon.Id);
 			}			
 			
 			((ComboBox)ControlDictionary["selectAmbienceComboBox"]).Text = PropertyService.Get("SharpDevelop.UI.CurrentAmbience", "C#");

@@ -52,7 +52,7 @@ namespace ICSharpCode.Core
 			} catch (Exception) {
 			}
 			if (menuCommand == null) {
-				MessageService.ShowError("Can't create toolbar checkbox : " + codon.ID);
+				MessageService.ShowError("Can't create toolbar checkbox : " + codon.Id);
 			}
 			
 			if (Image == null && codon.Properties.Contains("icon")) {

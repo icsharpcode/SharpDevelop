@@ -1,4 +1,5 @@
 using System;
+using System.IO;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
@@ -24,7 +25,26 @@ namespace SearchAndReplace
 		Point startPosition;
 		Point endPosition;
 		string positionText;
+		bool showFileName = false;
+		public bool ShowFileName {
+			get {
+				return showFileName;
+			}
+			set {
+				showFileName = value;
+				if (showFileName) {
+					Text = positionText + document.GetText(line) + FileNameText;
+				} else {
+					Text = positionText + document.GetText(line);
+				}
+			}
+		}
 		
+		string FileNameText {
+			get {
+				return " in " + Path.GetFileName(result.FileName) + "(" + Path.GetDirectoryName(result.FileName) +")";
+			}
+		}
 		public SearchResultNode(IDocument document, SearchResult result)
 		{
 			drawDefault = false;
@@ -43,6 +63,9 @@ namespace SearchAndReplace
 			Graphics g = e.Graphics;
 			int x = MeasureTextWidth(g, positionText, BoldMonospacedFont);
 			x += MeasureTextWidth(g, document.GetText(line).Replace("\t", "   "), BoldMonospacedFont);
+			if (ShowFileName) {
+				x += MeasureTextWidth(g, FileNameText, ItalicFont);
+			}
 			return x;
 		}
 		protected override void DrawForeground(DrawTreeNodeEventArgs e)
@@ -53,7 +76,8 @@ namespace SearchAndReplace
 			
 			spaceSize = g.MeasureString("-", Font,  new PointF(0, 0), StringFormat.GenericTypographic);
 			
-			DrawLine(g, line, e.Bounds.Y, x);
+			x += DrawLine(g, line, e.Bounds.Y, x);
+			
 		}
 		
 		public override void ActivateItem()
@@ -75,7 +99,7 @@ namespace SearchAndReplace
 			             sf);
 			return wordSize.Width;
 		}
-		void DrawLine(Graphics g, LineSegment line, float yPos, float xPos)
+		float DrawLine(Graphics g, LineSegment line, float yPos, float xPos)
 		{
 			int logicalX = 0;
 			if (line.Words != null) {
@@ -119,14 +143,22 @@ namespace SearchAndReplace
 					}
 				}
 			} else {
-				DrawDocumentWord(g,
+				xPos += DrawDocumentWord(g,
 				                 document.GetText(line),
 				                 new PointF(xPos, yPos),
 				                 MonospacedFont,
 				                 Color.Black
 				                );
 			}
-			
+			if (ShowFileName) {
+				xPos += DrawDocumentWord(g,
+				                 FileNameText,
+				                 new PointF(xPos, yPos),
+				                 ItalicMonospacedFont,
+				                 Color.Gray
+				                );
+			}
+			return xPos;
 		}
 	}
 }

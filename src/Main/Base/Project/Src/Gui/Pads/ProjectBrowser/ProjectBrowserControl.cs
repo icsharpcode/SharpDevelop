@@ -68,9 +68,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		void ProjectServiceSolutionFolderRemoved(object sender, SolutionFolderEventArgs e)
 		{
-			Console.WriteLine("projectbrowser: Solution folder remove!!!");
 			CallVisitor(new SolutionFolderRemoveVisitor(e.SolutionFolder));
-			Console.WriteLine("projectbrowser: Solution folder remove done.!!!");
 		}
 		void ProjectServiceReferenceAdded(object sender, ProjectReferenceEventArgs e)
 		{
@@ -79,16 +77,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void FileServiceFileRemoving(object sender, FileEventArgs e)
 		{
-			Console.WriteLine("projectbrowser: Solution file removing!!!");
 			CallVisitor(new FileRemoveTreeNodeVisitor(e.FileName));
-			Console.WriteLine("projectbrowser: Solution file removing!!!");
 		}
 		
 		void FileServiceFileRenaming(object sender, FileRenameEventArgs e)
 		{
-			Console.WriteLine("projectbrowser: Solution file renaming!!!");
 			CallVisitor(new FileRenameTreeNodeVisitor(e.SourceFile, e.TargetFile));
-			Console.WriteLine("projectbrowser: Solution file renaming!!!");
 		}
 		
 		void SelectFile(ProjectNode projectNode, string fileName)

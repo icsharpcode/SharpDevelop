@@ -55,10 +55,11 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\ResourceEdit\ResourceItem.cs" />
-    <Compile Include="Src\ResourceEdit\ResourceItemHashtable.cs" />
     <Compile Include="Src\ResourceEdit\ResourceList.cs" />
     <Compile Include="Src\ResourceEdit\TextView.cs" />
-    <None Include="ResourceEditor.addin" />
+    <None Include="ResourceEditor.addin">
+      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

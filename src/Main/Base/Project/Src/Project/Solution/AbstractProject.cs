@@ -272,16 +272,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		public virtual void Dispose()
 		{
 			configurations.Clear();
-			configurations = null;
 			
 			foreach (ProjectItem item in items) {
 				item.Dispose();
 			}
 			items.Clear();
-			items = null;
 			
 			imports.Clear();
-			imports = null;
 		}
 		#endregion
 		

@@ -13,6 +13,7 @@ namespace ICSharpCode.Core
 		Dictionary<string, AddInTreeNode> childNodes = new Dictionary<string, AddInTreeNode>();
 		List<Codon> codons = new List<Codon>();
 		bool isSorted = false;
+		
 		public Dictionary<string, AddInTreeNode> ChildNodes {
 			get {
 				return childNodes;
@@ -63,7 +64,7 @@ namespace ICSharpCode.Core
 				// initialize visited to false and fill the indexOfName dictionary
 				for (int i = 0; i < node.codons.Count; ++i) {
 					visited[i] = false;
-					indexOfName[node.codons[i].ID] = i;
+					indexOfName[node.codons[i].Id] = i;
 				}
 			}
 			
@@ -76,9 +77,9 @@ namespace ICSharpCode.Core
 						if (indexOfName.ContainsKey(before)) {
 							string after = node.codons[indexOfName[before]].InsertAfter;
 							if (after == null || after == "") {
-								node.codons[indexOfName[before]].InsertAfter = node.codons[i].ID;
+								node.codons[indexOfName[before]].InsertAfter = node.codons[i].Id;
 							} else {
-								after += ',' + node.codons[i].ID;
+								after += ',' + node.codons[i].Id;
 							}
 						} else {
 							Console.WriteLine("Codon ({0}) specified in the insertbefore of the {1} codon does not exist!", before, node.codons[i]);
@@ -89,6 +90,7 @@ namespace ICSharpCode.Core
 			
 			public void Execute()
 			{
+				
 				InsertEdges();
 				
 				// Visit all codons
@@ -128,8 +130,8 @@ namespace ICSharpCode.Core
 			}
 			foreach (Codon codon in codons) {
 				ArrayList subItems = null;
-				if (childNodes.ContainsKey(codon.ID)) {
-					subItems = childNodes[codon.ID].BuildChildItems(caller);
+				if (childNodes.ContainsKey(codon.Id)) {
+					subItems = childNodes[codon.Id].BuildChildItems(caller);
 				}
 				items.Add(codon.BuildItem(caller, subItems));
 			}
@@ -139,7 +141,7 @@ namespace ICSharpCode.Core
 		public object BuildChildItem(string childItemID, object caller)
 		{
 			foreach (Codon codon in codons) {
-				if (codon.ID == childItemID) {
+				if (codon.Id == childItemID) {
 					return codon.BuildItem(caller, null);
 				}
 			}

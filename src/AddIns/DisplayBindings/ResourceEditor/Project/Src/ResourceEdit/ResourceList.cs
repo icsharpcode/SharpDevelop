@@ -13,6 +13,7 @@ using System.Diagnostics;
 using System.Drawing;
 using System.Drawing.Drawing2D;
 using System.Collections;
+using System.Collections.Generic;
 using System.Resources;
 using System.Runtime.Serialization.Formatters.Binary;
 
@@ -33,7 +34,7 @@ namespace ResourceEditor
 		ColumnHeader type     = new ColumnHeader();
 		ColumnHeader content  = new ColumnHeader();
 		
-		ResourceItemHashtable resources = new ResourceItemHashtable();
+		Dictionary<string, ResourceItem> resources = new Dictionary<string, ResourceItem>();
 		ImageList images = new ImageList();
 		
 		UndoStack undoStack = null;
@@ -51,7 +52,7 @@ namespace ResourceEditor
 			}
 		}
 		
-		public ResourceItemHashtable Resources
+		public Dictionary<string, ResourceItem> Resources
 		{
 			get {
 				return resources;
@@ -158,9 +159,9 @@ namespace ResourceEditor
 				// write XML resource
 				case ".RESX":
 					ResXResourceWriter rxw    = new ResXResourceWriter(filename);
-					foreach (DictionaryEntry entry in resources) {
+					foreach (KeyValuePair<string, ResourceItem> entry in resources) {
 						if (entry.Value != null) {
-							ResourceItem item = (ResourceItem)entry.Value;
+							ResourceItem item = entry.Value;
 							rxw.AddResource(item.Name, item.ResourceValue);
 						}
 					}
@@ -171,7 +172,7 @@ namespace ResourceEditor
 				// write default resource
 				default:
 					ResourceWriter rw = new ResourceWriter(filename);
-					foreach (DictionaryEntry entry in resources) {
+					foreach (KeyValuePair<string, ResourceItem> entry in resources) {
 						ResourceItem item = (ResourceItem)entry.Value;
 						rw.AddResource(item.Name, item.ResourceValue);
 					}
@@ -230,8 +231,8 @@ namespace ResourceEditor
 			BeginUpdate();
 			Items.Clear();
 			
-			foreach (DictionaryEntry entry in resources) {
-				ResourceItem item = (ResourceItem)entry.Value;
+			foreach (KeyValuePair<string, ResourceItem> entry in resources) {
+				ResourceItem item = entry.Value;
 				
 				string tmp  = item.ToString();
 				string type = item.ResourceValue.GetType().FullName;

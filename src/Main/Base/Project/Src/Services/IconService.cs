@@ -113,7 +113,7 @@ namespace ICSharpCode.Core
 			IconDescriptor[] icons = (IconDescriptor[])treeNode.BuildChildItems(null).ToArray(typeof(IconDescriptor));
 			for (int i = 0; i < icons.Length; ++i) {
 				IconDescriptor iconCodon = icons[i];
-				string imageName = iconCodon.Resource != null ? iconCodon.Resource : iconCodon.ID;
+				string imageName = iconCodon.Resource != null ? iconCodon.Resource : iconCodon.Id;
 				
 				if (iconCodon.Extensions != null) {
 					foreach (string ext in iconCodon.Extensions) {

@@ -27,7 +27,7 @@ namespace ICSharpCode.Core
 					try {
 						menuCommand = (ICheckableMenuCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
 					} catch (Exception e) {
-						MessageService.ShowError(e, "Can't create menu command : " + codon.ID);
+						MessageService.ShowError(e, "Can't create menu command : " + codon.Id);
 					}
 				}
 				return menuCommand;

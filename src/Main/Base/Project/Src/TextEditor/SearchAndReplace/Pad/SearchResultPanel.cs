@@ -22,6 +22,12 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace SearchAndReplace
 {
+	public enum SearchResultPanelViewMode {
+		Flat, 
+		PerFile,
+		Structural
+	}
+	
 	public class SearchResultPanel : AbstractPadContent
 	{
 		static SearchResultPanel instance;
@@ -32,15 +38,27 @@ namespace SearchAndReplace
 			}
 		}
 		
-		Panel       myPanel        = new Panel();
-		ExtTreeView resultTreeView = new ExtTreeView();
+		Panel                     myPanel        = new Panel();
+		ExtTreeView               resultTreeView = new ExtTreeView();
+		
+		string             curPattern = null;
+		List<SearchResult> curResults = null;
 		
 		public override Control Control {
 			get {
 				return myPanel;
 			}
 		}
-	
+		
+		public SearchResultPanelViewMode ViewMode {
+			get {
+				return PropertyService.Get("SearchAndReplace.SearchResultPanelViewMode", SearchResultPanelViewMode.Flat);
+			}
+			set {
+				PropertyService.Set("SearchAndReplace.SearchResultPanelViewMode", value);
+				ShowSearchResults(curPattern, curResults);
+			}
+		}
 		
 		public void ExpandAll()
 		{
@@ -76,25 +94,70 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public void ShowSearchResults(string pattern, List<SearchResult> results)
+		void ShowSearchResultsPerFile()
 		{
 			Dictionary<string, SearchFolderNode> folderNodes = new Dictionary<string, SearchFolderNode>();
-			foreach (SearchResult result in results) {
-				TreeNode newResult = new TreeNode();
+			foreach (SearchResult result in curResults) {
 				if (!folderNodes.ContainsKey(result.FileName)) {
 					folderNodes[result.FileName] = new SearchFolderNode(result.FileName);
 				}
 				folderNodes[result.FileName].Results.Add(result);
 			}
 			
-			SearchRootNode searchRootNode = new SearchRootNode(pattern, results);
+			SearchRootNode searchRootNode = new SearchRootNode(curPattern, curResults);
 			foreach (SearchFolderNode folderNode in folderNodes.Values) {
 				folderNode.SetText();
 				searchRootNode.Nodes.Add(folderNode);
 			}
-			resultTreeView.Nodes.Clear();
+			
 			resultTreeView.Nodes.Add(searchRootNode);
 			searchRootNode.Expand();
+		}
+		
+		void ShowSearchResultsFlat()
+		{
+			Dictionary<string, SearchFolderNode> folderNodes = new Dictionary<string, SearchFolderNode>();
+			foreach (SearchResult result in curResults) {
+				if (!folderNodes.ContainsKey(result.FileName)) {
+					folderNodes[result.FileName] = new SearchFolderNode(result.FileName);
+				}
+				folderNodes[result.FileName].Results.Add(result);
+			}
+			
+			SearchRootNode searchRootNode = new SearchRootNode(curPattern, curResults);
+			foreach (SearchFolderNode folderNode in folderNodes.Values) {
+				folderNode.PerformInitialization();
+				foreach (SearchResultNode node in folderNode.Nodes) {
+					node.ShowFileName = true;
+					searchRootNode.Nodes.Add(node);
+				}
+			}
+			
+			resultTreeView.Nodes.Add(searchRootNode);
+			searchRootNode.Expand();
+		}
+		
+		public void ShowSearchResults(string pattern, List<SearchResult> results)
+		{
+			this.curPattern = pattern;
+			this.curResults = results;
+			if (results == null) {
+				return;
+			}
+			resultTreeView.BeginUpdate();
+			resultTreeView.Nodes.Clear();
+			
+			switch (ViewMode) {
+				case SearchResultPanelViewMode.PerFile:
+					ShowSearchResultsPerFile();
+					break;
+				case SearchResultPanelViewMode.Flat:
+					ShowSearchResultsFlat();
+					break;
+			}
+			
+			
+			resultTreeView.EndUpdate();
 		}
 		
 		public SearchResultPanel()
