@@ -19,16 +19,29 @@ namespace DebuggerLibrary
 		bool enabled = true;
 		ICorDebugFunctionBreakpoint corBreakpoint;
 		IntPtr pBreakpoint;
+		object tag;
 		
 		public SourcecodeSegment SourcecodeSegment {
 			get {
 				return sourcecodeSegment;
 			}
 		}
+
+		public object Tag {
+			get {
+				return tag;
+			}
+			set {
+				tag = value;
+			}
+		}
 		
 		public bool HadBeenSet { 
 			get { 
 				return hadBeenSet;
+			}
+			internal set {
+				hadBeenSet = value;
 			}
 		}
 		
@@ -48,6 +61,7 @@ namespace DebuggerLibrary
 				{
 					corBreakpoint.Activate(enabled?1:0);
 				}
+				OnBreakpointStateChanged();
 			}
 		}
 		
@@ -92,6 +106,15 @@ namespace DebuggerLibrary
 			sourcecodeSegment.SourceFullFilename = sourceFilename;
 			sourcecodeSegment.StartLine = line;
 			sourcecodeSegment.StartColumn = column;
+		}
+
+		public Breakpoint(string sourceFilename, int line, int column, bool enabled)
+		{
+			sourcecodeSegment = new SourcecodeSegment();
+			sourcecodeSegment.SourceFullFilename = sourceFilename;
+			sourcecodeSegment.StartLine = line;
+			sourcecodeSegment.StartColumn = column;
+			this.enabled = enabled;
 		}
 		
 		internal bool Equals(IntPtr ptr) 

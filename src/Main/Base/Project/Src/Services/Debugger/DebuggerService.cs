@@ -8,11 +8,16 @@
 using System;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.TextEditor.Document;
+using ICSharpCode.TextEditor;
+using System.Drawing;
+using System.Windows.Forms;
 
 namespace ICSharpCode.Core
 {
@@ -23,13 +28,13 @@ namespace ICSharpCode.Core
 		static IDebugger                  defaultDebugger = null;
 		static IDebugger                  currentDebugger = null;
 		static ArrayList                  debugger        = null;
-		static ArrayList                  breakpoints     = new ArrayList();
+		//static ArrayList                  breakpoints     = new ArrayList();
 		
-		public static ArrayList Breakpoints {
+		/*public static ArrayList Breakpoints {
 			get {
 				return breakpoints;
 			}
-		}
+		}*/
 		
 		public static IDebugger CurrentDebugger {
 			get {
@@ -82,23 +87,10 @@ namespace ICSharpCode.Core
 		
 		static DebuggerService()
 		{
+			InitializeService();
+			InitializeService2();
 		}
 		
-		public static void ToggleBreakpointAt(string fileName, int line, int column)
-		{
-			try {
-				for (int i = 0; i < breakpoints.Count; ++i) {
-					Breakpoint bp = (Breakpoint)breakpoints[i];
-					if (bp.FileName == fileName && bp.LineNumber == line) {
-						breakpoints.RemoveAt(i);
-						return;
-					}
-				}
-				breakpoints.Add(new Breakpoint(fileName, line));
-			} finally {
-				OnBreakPointChanged(EventArgs.Empty);
-			}
-		}
 		static MessageViewCategory debugCategory = null;
 		
 		static void EnsureDebugCategory()
@@ -316,13 +308,281 @@ namespace ICSharpCode.Core
 //			base.OnModuleLoaded(e);
 //		}
 		
+		public static event EventHandler BreakPointChanged;
+		public static event EventHandler BreakPointAdded;
+		public static event EventHandler BreakPointRemoved;
+
 		static void OnBreakPointChanged(EventArgs e) 
 		{
 			if (BreakPointChanged != null) {
 				BreakPointChanged(null, e);
 			}
+		}		
+
+		static void OnBreakPointAdded(EventArgs e) 
+		{
+			if (BreakPointAdded != null) {
+				BreakPointAdded(null, e);
+			}
+		}	
+
+		static void OnBreakPointRemoved(EventArgs e) 
+		{
+			if (BreakPointRemoved != null) {
+				BreakPointRemoved(null, e);
+			}
+		}
+
+
+		static List<Breakpoint> breakpoints = new List<Breakpoint>();
+
+		public static IList<Breakpoint> Breakpoints {
+			get {
+				return breakpoints;
+			}
+		}
+
+		public static void ToggleBreakpointAt(string fileName, int line, int column)
+		{
+			foreach(Breakpoint b in breakpoints) {
+				if (b.FileName == fileName && b.LineNumber == line) {
+					breakpoints.Remove(b);
+					OnBreakPointRemoved(EventArgs.Empty);
+					return;
+				}
+			}
+			breakpoints.Add(new Breakpoint(fileName, line));
+			OnBreakPointAdded(EventArgs.Empty);
+		}
+
+
+
+
+
+
+
+		class BreakpointMarker: TextMarker
+		{			
+			public BreakpointMarker(int offset, int length, TextMarkerType textMarkerType, Color color, Color foreColor):base(offset, length, textMarkerType, color, foreColor)
+			{
+			}
+		}
+
+		class CurrentLineMarker: TextMarker
+		{			
+			public CurrentLineMarker(int offset, int length, TextMarkerType textMarkerType, Color color, Color foreColor):base(offset, length, textMarkerType, color, foreColor)
+			{
+			}
+		}
+
+		public static void InitializeService2()
+		{			
+			WorkbenchSingleton.WorkbenchCreated += new EventHandler(WorkspaceCreated);
+		}
+
+		static void WorkspaceCreated(object sender, EventArgs args)
+		{
+			WorkbenchSingleton.Workbench.ViewOpened += new ViewContentEventHandler(ViewContentOpened);
+			WorkbenchSingleton.Workbench.ViewClosed += new ViewContentEventHandler(ViewContentClosed);
+		}
+
+		static void ViewContentOpened(object sender, ViewContentEventArgs e)
+		{
+			if (e.Content.Control is TextEditor.TextEditorControl) {
+				TextArea textArea = ((TextEditor.TextEditorControl)e.Content.Control).ActiveTextAreaControl.TextArea;
+				
+				textArea.IconBarMargin.MouseDown += new MarginMouseEventHandler(IconBarMouseDown);
+				textArea.IconBarMargin.Painted   += new MarginPaintEventHandler(PaintIconBar);
+				textArea.MouseMove               += new MouseEventHandler(TextAreaMouseMove);
+				
+				RefreshBreakpointMarkersInEditor(textArea.MotherTextEditorControl);
+			}
 		}
 		
-		public static event EventHandler BreakPointChanged;
+		static void ViewContentClosed(object sender, ViewContentEventArgs e)
+		{
+			if (e.Content.Control is TextEditor.TextEditorControl) {
+				TextArea textArea = ((TextEditor.TextEditorControl)e.Content.Control).ActiveTextAreaControl.TextArea;
+				
+				textArea.IconBarMargin.MouseDown -= new MarginMouseEventHandler(IconBarMouseDown);
+				textArea.IconBarMargin.Painted   -= new MarginPaintEventHandler(PaintIconBar);
+				textArea.MouseMove               -= new MouseEventHandler(TextAreaMouseMove);
+			}
+		}
+
+
+		static TextMarker currentLineMarker;
+		static IDocument  currentLineMarkerParent;
+		
+		static public void RemoveCurrentLineMarker()
+		{
+			if (currentLineMarker != null) {
+				currentLineMarkerParent.MarkerStrategy.TextMarker.Remove(currentLineMarker);
+				currentLineMarkerParent.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
+				currentLineMarkerParent.CommitUpdate();
+				currentLineMarkerParent = null;
+				currentLineMarker       = null;
+			}
+		}
+
+		static public void JumpToCurrentLine(string SourceFullFilename, int StartLine, int StartColumn, int EndLine, int EndColumn)
+		{
+			RemoveCurrentLineMarker();
+
+			FileService.OpenFile(SourceFullFilename);
+			IWorkbenchWindow window = FileService.GetOpenFile(SourceFullFilename);
+			if (window != null) {
+				IViewContent content = window.ViewContent;
+			
+				if (content is IPositionable) {
+					((IPositionable)content).JumpTo((int)StartLine - 1, (int)StartColumn - 1);
+				}
+				
+				if (content.Control is TextEditorControl) {
+					IDocument document = ((TextEditorControl)content.Control).Document;
+					LineSegment line = document.GetLineSegment((int)StartLine - 1);
+					int offset = line.Offset + (int)StartColumn;
+					currentLineMarker = new CurrentLineMarker(offset, (int)EndColumn - (int)StartColumn, TextMarkerType.SolidBlock, Color.Yellow, Color.Blue);
+					currentLineMarkerParent = document;
+					currentLineMarkerParent.MarkerStrategy.TextMarker.Add(currentLineMarker);
+					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
+					document.CommitUpdate();
+				}
+			}
+		}
+
+
+
+		static void IconBarMouseDown(AbstractMargin iconBar, Point mousepos, MouseButtons mouseButtons)
+		{
+			Rectangle viewRect = iconBar.TextArea.TextView.DrawingPosition;
+			Point logicPos = iconBar.TextArea.TextView.GetLogicalPosition(0, mousepos.Y - viewRect.Top);
+			
+			if (logicPos.Y >= 0 && logicPos.Y < iconBar.TextArea.Document.TotalNumberOfLines) {
+				ToggleBreakpointAt(iconBar.TextArea.MotherTextEditorControl.FileName , logicPos.Y + 1, 0);
+				RefreshBreakpointMarkersInEditor(iconBar.TextArea.MotherTextEditorControl);
+				iconBar.TextArea.Refresh(iconBar);
+			}
+		}
+		
+				
+		static void RefreshBreakpointMarkersInEditor(TextEditorControl textEditor) 
+		{
+			IDocument document = textEditor.Document;
+			System.Collections.Generic.List<ICSharpCode.TextEditor.Document.TextMarker> markers = textEditor.Document.MarkerStrategy.TextMarker;
+			// Remove all breakpoint markers
+			for (int i = 0; i < markers.Count;) {
+				if (markers[i] is BreakpointMarker) {
+					markers.RemoveAt(i);
+				} else {
+					i++; // Check next one
+				}
+			}
+			// Add breakpoint markers
+			foreach (Breakpoint b in Breakpoints) {
+				if (b.FileName.ToLower() == textEditor.FileName.ToLower()) {
+					LineSegment lineSeg = document.GetLineSegment((int)b.LineNumber - 1);
+					document.MarkerStrategy.TextMarker.Add(new BreakpointMarker(lineSeg.Offset, lineSeg.Length , TextMarkerType.SolidBlock, Color.Red, Color.White));
+				}
+			}
+			// Perform editor update
+			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
+			document.CommitUpdate();
+		}
+
+		/// <summary>
+		/// Draw Breakpoint icon and the yellow arrow in the margin
+		/// </summary>
+		static void PaintIconBar(AbstractMargin iconBar, Graphics g, Rectangle rect)
+		{
+			foreach (Breakpoint breakpoint in Breakpoints) {
+				if (Path.GetFullPath(breakpoint.FileName) == Path.GetFullPath(iconBar.TextArea.MotherTextEditorControl.FileName)) {
+					int lineNumber = iconBar.TextArea.Document.GetVisibleLine((int)breakpoint.LineNumber - 1);
+					int yPos = (int)(lineNumber * iconBar.TextArea.TextView.FontHeight) - iconBar.TextArea.VirtualTop.Y;
+					if (yPos >= rect.Y && yPos <= rect.Bottom) {
+						((IconBarMargin)iconBar).DrawBreakpoint(g, yPos, breakpoint.IsEnabled);
+					}
+				}
+			}
+
+			foreach (TextMarker textMarker in iconBar.TextArea.Document.MarkerStrategy.TextMarker) {
+				CurrentLineMarker currentLineMarker = textMarker as CurrentLineMarker;
+				if (currentLineMarker != null) {
+					int lineNumber = iconBar.TextArea.Document.GetVisibleLine((int)iconBar.TextArea.Document.GetLineNumberForOffset(currentLineMarker.Offset));
+					int yPos = (int)(lineNumber * iconBar.TextArea.TextView.FontHeight) - iconBar.TextArea.VirtualTop.Y;
+					if (yPos >= rect.Y && yPos <= rect.Bottom) {
+						((IconBarMargin)iconBar).DrawArrow(g, yPos);
+					}
+				}
+			}
+		}
+
+		static TextMarker variableMarker;
+		static IDocument  variableMarkerParent;
+		
+		/// <summary>
+		/// This function shows variable values as tooltips
+		/// </summary>
+		static void TextAreaMouseMove(object sender, MouseEventArgs args)
+		{			
+			TextArea textArea = (TextArea)sender;
+			
+			Point mousepos = textArea.PointToClient(Control.MousePosition);
+			Rectangle viewRect = textArea.TextView.DrawingPosition;
+			if (viewRect.Contains(mousepos)) {
+				Point logicPos = textArea.TextView.GetLogicalPosition(mousepos.X - viewRect.Left,
+				                                                      mousepos.Y - viewRect.Top);
+				if (logicPos.Y >= 0 && logicPos.Y < textArea.Document.TotalNumberOfLines) {
+					IDocument doc = textArea.Document;
+					LineSegment seg = doc.GetLineSegment(logicPos.Y);
+					string line = doc.GetText(seg.Offset, seg.Length);
+					int startIndex = 0;
+					int length = 0;
+					string expresion = String.Empty;
+					for(int index = 0; index < seg.Length; index++) {
+						char chr = line[index];
+						if ((Char.IsLetterOrDigit(chr) || chr == '_' || chr == '.') == false || // invalid character
+						    (chr == '.' && logicPos.X <= index)) { // Start of sub-expresion at the right side of cursor
+							// End of expresion...
+							if ((startIndex <= logicPos.X && logicPos.X <= index) && // Correct position
+							    (startIndex != index)) { // Actualy something
+							    length = index - startIndex;
+								expresion = line.Substring(startIndex, length);
+								break;
+							} else {
+								// Let's try next one...
+								startIndex = index + 1;
+							}
+						}
+					}
+					//Console.WriteLine("MouseMove@" + logicPos + ":" + expresion);
+					if (variableMarker == null || variableMarker.Offset != (seg.Offset + startIndex) || variableMarker.Length != length) {
+						// Needs update
+						if (variableMarker != null) {
+							// Remove old marker
+							variableMarkerParent.MarkerStrategy.TextMarker.Remove(variableMarker);
+							variableMarkerParent.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
+							variableMarkerParent.CommitUpdate();
+							variableMarkerParent = null;
+							variableMarker       = null;
+						}
+						if (expresion != String.Empty) {
+							// Look if it is variable
+							try {
+								string value;
+								//value = selectedThread.LocalVariables[expresion].Value.ToString();
+								value = expresion;
+								variableMarker = new TextMarker(seg.Offset + startIndex, length, TextMarkerType.Underlined, Color.Blue); 
+								variableMarker.ToolTip = value;
+								variableMarkerParent = doc;
+								variableMarkerParent.MarkerStrategy.TextMarker.Add(variableMarker);
+								variableMarkerParent.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
+								variableMarkerParent.CommitUpdate();
+							} catch {}
+						}
+					}
+				}
+			}
+		}
 	}
 }

@@ -52,12 +52,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 		}
 		
-		class BreakpointMarker: TextMarker
-		{			
-			public BreakpointMarker(int offset, int length, TextMarkerType textMarkerType, Color color, Color fgColor) : base(offset, length, textMarkerType, color, fgColor)
-			{
-			}
-		}
+
 		
 		MessageViewCategory messageViewCategoryDebug;
 		MessageViewCategory messageViewCategoryDebuggerLog;
@@ -100,9 +95,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			NDebugger.DebuggingResumed        += new DebuggerEventHandler(DebuggingResumed);
 			NDebugger.DebuggingStopped        += new DebuggerEventHandler(DebuggingStopped);
 			NDebugger.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
-			
-			WorkbenchSingleton.WorkbenchCreated += new EventHandler(WorkspaceCreated);
+			NDebugger.Instance.BreakpointStateChanged += new DebuggerLibrary.BreakpointEventHandler(RestoreSharpdevelopBreakpoint);
 
+			DebuggerService.BreakPointAdded   += new EventHandler(RestoreNDebuggerBreakpoints);
+			DebuggerService.BreakPointRemoved += new EventHandler(RestoreNDebuggerBreakpoints);
+			DebuggerService.BreakPointChanged += new EventHandler(RestoreNDebuggerBreakpoints);
+			
 			if (Initialize != null) {
 				Initialize(this, null);  
 			}
@@ -115,6 +113,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			NDebugger.DebuggingStarted       -= new DebuggerEventHandler(DebuggingStarted);
 			NDebugger.DebuggingPaused        -= new DebuggingPausedEventHandler(DebuggingPaused);
 			NDebugger.IsProcessRunningChanged -= new DebuggerEventHandler(DebuggerStateChanged);
+			NDebugger.Instance.BreakpointStateChanged -= new DebuggerLibrary.BreakpointEventHandler(RestoreSharpdevelopBreakpoint);
+
+			DebuggerService.BreakPointAdded   -= new EventHandler(RestoreNDebuggerBreakpoints);
+			DebuggerService.BreakPointRemoved -= new EventHandler(RestoreNDebuggerBreakpoints);
+			DebuggerService.BreakPointChanged -= new EventHandler(RestoreNDebuggerBreakpoints);
 			
 			if (Unload != null) {
 				Unload(this, null);	
@@ -188,33 +191,26 @@ namespace ICSharpCode.SharpDevelop.Services
 		}
 		#endregion
 		
-		void WorkspaceCreated(object sender, EventArgs args)
-		{
-			WorkbenchSingleton.Workbench.ViewOpened += new ViewContentEventHandler(ViewContentOpened);
-			WorkbenchSingleton.Workbench.ViewClosed += new ViewContentEventHandler(ViewContentClosed);
-		}
+
 		
-		void ViewContentOpened(object sender, ViewContentEventArgs e)
+		public void RestoreNDebuggerBreakpoints(object sender, EventArgs e)
 		{
-			if (e.Content.Control is TextEditor.TextEditorControl) {
-				TextArea textArea = ((TextEditor.TextEditorControl)e.Content.Control).ActiveTextAreaControl.TextArea;
-				
-				textArea.IconBarMargin.MouseDown += new MarginMouseEventHandler(IconBarMouseDown);
-				textArea.IconBarMargin.Painted   += new MarginPaintEventHandler(PaintIconBar);
-				textArea.MouseMove               += new MouseEventHandler(TextAreaMouseMove);
-				
-				RefreshBreakpointMarkersInEditor(textArea.MotherTextEditorControl);
+			NDebugger.Instance.ClearBreakpoints();
+			foreach (ICSharpCode.Core.Breakpoint b in DebuggerService.Breakpoints) {
+				DebuggerLibrary.Breakpoint newBreakpoint = new DebuggerLibrary.Breakpoint(b.FileName, b.LineNumber, 0, b.IsEnabled); 
+				newBreakpoint.Tag = b;
+				b.Tag = newBreakpoint;
+				NDebugger.Instance.AddBreakpoint(newBreakpoint); 
 			}
 		}
-		
-		void ViewContentClosed(object sender, ViewContentEventArgs e)
+
+		public void RestoreSharpdevelopBreakpoint(object sender, BreakpointEventArgs e)
 		{
-			if (e.Content.Control is TextEditor.TextEditorControl) {
-				TextArea textArea = ((TextEditor.TextEditorControl)e.Content.Control).ActiveTextAreaControl.TextArea;
-				
-				textArea.IconBarMargin.MouseDown -= new MarginMouseEventHandler(IconBarMouseDown);
-				textArea.IconBarMargin.Painted   -= new MarginPaintEventHandler(PaintIconBar);
-				textArea.MouseMove               -= new MouseEventHandler(TextAreaMouseMove);
+			ICSharpCode.Core.Breakpoint sdBreakpoint = e.Breakpoint.Tag as ICSharpCode.Core.Breakpoint;
+			if (sdBreakpoint != null) {
+				sdBreakpoint.IsEnabled  = e.Breakpoint.Enabled;
+				sdBreakpoint.FileName   = e.Breakpoint.SourcecodeSegment.SourceFullFilename;
+				sdBreakpoint.LineNumber = e.Breakpoint.SourcecodeSegment.StartLine;
 			}
 		}
 		
@@ -293,7 +289,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			selectedThread = null;
 			selectedFunction = null;
-			RemoveCurrentLineMarker();
+			DebuggerService.RemoveCurrentLineMarker();
 		}
 		
 		void DebuggingStopped(object sender, DebuggerEventArgs e)
@@ -319,54 +315,18 @@ namespace ICSharpCode.SharpDevelop.Services
 			} catch (CurrentFunctionNotAviableException) {}
 		}
 		
-		TextMarker currentLineMarker;
-		IDocument  currentLineMarkerParent;
-		
-		void RemoveCurrentLineMarker()
-		{
-			if (currentLineMarker != null) {
-				currentLineMarkerParent.MarkerStrategy.TextMarker.Remove(currentLineMarker);
-				currentLineMarkerParent.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-				currentLineMarkerParent.CommitUpdate();
-				currentLineMarkerParent = null;
-				currentLineMarker       = null;
-			}
-		}
+
 
 		public void JumpToCurrentLine()
 		{
-			RemoveCurrentLineMarker();
-			
-            
-			
 			try {
 				if (selectedFunction == null) {
 					return;
 				}
 				SourcecodeSegment nextStatement = selectedFunction.NextStatement;
-				
-				FileService.OpenFile(nextStatement.SourceFullFilename);
-				IWorkbenchWindow window = FileService.GetOpenFile(nextStatement.SourceFullFilename);
-				if (window != null) {
-					IViewContent content = window.ViewContent;
-				
-					if (content is IPositionable) {
-						((IPositionable)content).JumpTo((int)nextStatement.StartLine - 1, (int)nextStatement.StartColumn - 1);
-					}
-					
-					if (content.Control is TextEditorControl) {
-						IDocument document = ((TextEditorControl)content.Control).Document;
-						LineSegment line = document.GetLineSegment((int)nextStatement.StartLine - 1);
-						int offset = line.Offset + (int)nextStatement.StartColumn;
-						currentLineMarker = new TextMarker(offset, (int)nextStatement.EndColumn - (int)nextStatement.StartColumn, TextMarkerType.SolidBlock, Color.Yellow);
-						currentLineMarkerParent = document;
-						currentLineMarkerParent.MarkerStrategy.TextMarker.Add(currentLineMarker);
-						document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-						document.CommitUpdate();
-					}
-				}
+				DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 			} catch (NextStatementNotAviableException) {
-				//System.Windows.Forms.MessageBox.Show("Source code not aviable!");
+				System.Diagnostics.Debug.Fail("Source code not aviable!");
 			}
 		}
 		
@@ -381,145 +341,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			//if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
 			//	  WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent.RedrawContent();
 			//}
-		}
-		
-		void IconBarMouseDown(AbstractMargin iconBar, Point mousepos, MouseButtons mouseButtons)
-		{
-			Rectangle viewRect = iconBar.TextArea.TextView.DrawingPosition;
-			Point logicPos = iconBar.TextArea.TextView.GetLogicalPosition(0, mousepos.Y - viewRect.Top);
-			
-			if (logicPos.Y >= 0 && logicPos.Y < iconBar.TextArea.Document.TotalNumberOfLines) {
-				NDebugger.Instance.ToggleBreakpointAt(iconBar.TextArea.MotherTextEditorControl.FileName , logicPos.Y + 1, 0);
-				RefreshBreakpointMarkersInEditor(iconBar.TextArea.MotherTextEditorControl);
-				iconBar.TextArea.Refresh(iconBar);
-			}
-		}
-		
-				
-		public void RefreshBreakpointMarkersInEditor(TextEditorControl textEditor) 
-		{
-			IDocument document = textEditor.Document;
-			System.Collections.Generic.List<ICSharpCode.TextEditor.Document.TextMarker> markers = textEditor.Document.MarkerStrategy.TextMarker;
-			// Remove all breakpoint markers
-			for (int i = 0; i < markers.Count;) {
-				if (markers[i] is BreakpointMarker) {
-					markers.RemoveAt(i);
-				} else {
-					i++; // Check next one
-				}
-			}
-			// Add breakpoint markers
-			foreach (DebuggerLibrary.Breakpoint b in NDebugger.Instance.Breakpoints) {
-				if (b.SourcecodeSegment.SourceFullFilename.ToLower() == textEditor.FileName.ToLower()) {
-					LineSegment lineSeg = document.GetLineSegment((int)b.SourcecodeSegment.StartLine - 1);
-					document.MarkerStrategy.TextMarker.Add(new BreakpointMarker(lineSeg.Offset, lineSeg.Length , TextMarkerType.SolidBlock, Color.Red, Color.White));
-				}
-			}
-			// Perform editor update
-			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-			document.CommitUpdate();
-		}
-		
-		
-		TextMarker variableMarker;
-		IDocument  variableMarkerParent;
-		
-		/// <summary>
-		/// This function shows variable values as tooltips
-		/// </summary>
-		void TextAreaMouseMove(object sender, MouseEventArgs args)
-		{			
-			if (!IsDebugging) return;
-			if (IsProcessRunning) return;
-			
-			TextArea textArea = (TextArea)sender;
-			
-			Point mousepos = textArea.PointToClient(Control.MousePosition);
-			Rectangle viewRect = textArea.TextView.DrawingPosition;
-			if (viewRect.Contains(mousepos)) {
-				Point logicPos = textArea.TextView.GetLogicalPosition(mousepos.X - viewRect.Left,
-				                                                      mousepos.Y - viewRect.Top);
-				if (logicPos.Y >= 0 && logicPos.Y < textArea.Document.TotalNumberOfLines) {
-					IDocument doc = textArea.Document;
-					LineSegment seg = doc.GetLineSegment(logicPos.Y);
-					string line = doc.GetText(seg.Offset, seg.Length);
-					int startIndex = 0;
-					int length = 0;
-					string expresion = String.Empty;
-					for(int index = 0; index < seg.Length; index++) {
-						char chr = line[index];
-						if ((Char.IsLetterOrDigit(chr) || chr == '_' || chr == '.') == false || // invalid character
-						    (chr == '.' && logicPos.X <= index)) { // Start of sub-expresion at the right side of cursor
-							// End of expresion...
-							if ((startIndex <= logicPos.X && logicPos.X <= index) && // Correct position
-							    (startIndex != index)) { // Actualy something
-							    length = index - startIndex;
-								expresion = line.Substring(startIndex, length);
-								break;
-							} else {
-								// Let's try next one...
-								startIndex = index + 1;
-							}
-						}
-					}
-					//Console.WriteLine("MouseMove@" + logicPos + ":" + expresion);
-					if (variableMarker == null || variableMarker.Offset != (seg.Offset + startIndex) || variableMarker.Length != length) {
-						// Needs update
-						if (variableMarker != null) {
-							// Remove old marker
-							variableMarkerParent.MarkerStrategy.TextMarker.Remove(variableMarker);
-							variableMarkerParent.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-							variableMarkerParent.CommitUpdate();
-							variableMarkerParent = null;
-							variableMarker       = null;
-						}
-						if (expresion != String.Empty) {
-							// Look if it is variable
-							try {
-								string value;
-								value = selectedThread.LocalVariables[expresion].Value.ToString();
-								variableMarker = new TextMarker(seg.Offset + startIndex, length, TextMarkerType.Underlined, Color.Blue); 
-								variableMarker.ToolTip = value;
-								variableMarkerParent = doc;
-								variableMarkerParent.MarkerStrategy.TextMarker.Add(variableMarker);
-								variableMarkerParent.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-								variableMarkerParent.CommitUpdate();
-							} catch {}
-						}
-					}
-				}
-			}
-		}
-
-		/// <summary>
-		/// Draw Breakpoint icon and the yellow arrow in the margin
-		/// </summary>
-		void PaintIconBar(AbstractMargin iconBar, Graphics g, Rectangle rect)
-		{
-			foreach (DebuggerLibrary.Breakpoint breakpoint in NDebugger.Instance.Breakpoints) {
-				if (Path.GetFullPath(breakpoint.SourcecodeSegment.SourceFullFilename) == Path.GetFullPath(iconBar.TextArea.MotherTextEditorControl.FileName)) {
-					int lineNumber = iconBar.TextArea.Document.GetVisibleLine((int)breakpoint.SourcecodeSegment.StartLine - 1);
-					int yPos = (int)(lineNumber * iconBar.TextArea.TextView.FontHeight) - iconBar.TextArea.VirtualTop.Y;
-					if (yPos >= rect.Y && yPos <= rect.Bottom) {
-						((IconBarMargin)iconBar).DrawBreakpoint(g, yPos, breakpoint.Enabled);
-					}
-				}
-			}
-
-			if (IsDebugging && !IsProcessRunning && selectedFunction != null) {
-				try {
-					SourcecodeSegment nextStatement = selectedFunction.NextStatement;//cache
-					
-					if (Path.GetFullPath(nextStatement.SourceFullFilename).ToLower() == Path.GetFullPath(iconBar.TextArea.MotherTextEditorControl.FileName).ToLower()) {
-						int lineNumber = iconBar.TextArea.Document.GetVisibleLine((int)nextStatement.StartLine - 1);
-						int yPos = (int)(lineNumber * iconBar.TextArea.TextView.FontHeight) - iconBar.TextArea.VirtualTop.Y;
-						if (yPos >= rect.Y && yPos <= rect.Bottom) {
-							((IconBarMargin)iconBar).DrawArrow(g, yPos);
-						}
-					}
-				} 
-				catch (NextStatementNotAviableException) {}
-			}
-		}
+		}		
 	}	
 }

@@ -108,11 +108,20 @@ namespace DebuggerLibrary
 			OnBreakpointRemoved( breakpoint);
 		}
 
-		internal void ResetBreakpoints()
+		public void ResetBreakpoints()
 		{
 			foreach (Breakpoint b in breakpointCollection) {
+				b.HadBeenSet = false;
 				b.ResetBreakpoint();
 			}
+		}
+
+		public void ClearBreakpoints()
+		{
+			foreach (Breakpoint b in breakpointCollection) {
+				OnBreakpointRemoved(b);
+			}
+			breakpointCollection.Clear();
 		}
 
 		internal void SetBreakpointsInModule(object sender, ModuleEventArgs e) 

@@ -19,6 +19,7 @@ namespace ICSharpCode.Core
 	{
 		string fileName;
 		int    lineNumber;
+		object tag;
 		
 		bool   isEnabled = true;
 		
@@ -26,11 +27,26 @@ namespace ICSharpCode.Core
 			get {
 				return fileName;
 			}
+			set {
+				fileName = value;
+			}
 		}
 		
 		public int LineNumber {
 			get {
 				return lineNumber;
+			}
+			set {
+				lineNumber = value;
+			}
+		}
+
+		public object Tag {
+			get {
+				return tag;
+			}
+			set {
+				tag = value;
 			}
 		}
 		
