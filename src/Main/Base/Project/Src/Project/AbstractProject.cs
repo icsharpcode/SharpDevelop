@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.CodeDom.Compiler;
 using System.Diagnostics;
 using System.IO;
@@ -25,6 +26,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		protected bool isDirty = false;
 		
+		[Browsable(false)]
 		public bool IsDirty {
 			get {
 				return isDirty;
@@ -34,6 +36,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public PropertyGroup BaseConfiguration {
 			get {
 				if (!configurations.ContainsKey("")) {
@@ -43,6 +46,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public PropertyGroup ActiveConfiguration {
 			get {
 				if (Platform != null && Platform.Length > 0) {
@@ -52,18 +56,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public List<ProjectItem> Items {
 			get {
 				return items;
 			}
 		}
 		
+		[Browsable(false)]
 		public List<string> Imports {
 			get {
 				return imports;
 			}
 		}
 		
+		[Browsable(false)]
 		public string FileName {
 			get {
 				if (fileName == null) {
@@ -76,6 +83,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string Directory {
 			get {
 				if (fileName == null) {
@@ -85,6 +93,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string Language {
 			get {
 				return language;
@@ -94,6 +103,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string Configuration {
 			get {
 				return BaseConfiguration["Configuration"];
@@ -103,6 +113,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string Platform {
 			get {
 				return BaseConfiguration["Platform"];
@@ -112,6 +123,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public OutputType OutputType {
 			get {
 				return BaseConfiguration.Get("OutputType", OutputType.Exe);
@@ -121,6 +133,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string OutputAssemblyFullPath {
 			get {
 				string outputPath = ActiveConfiguration["OutputPath"];
@@ -142,12 +155,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Legacy, only for VS.NET compatiblity reasons.
 		/// </summary>
+		[Browsable(false)]
 		public Guid Guid {
 			get {
 				return new Guid(BaseConfiguration["ProjectGuid"]);
 			}
 		}
 		
+		[Browsable(false)]
 		public string RootNamespace {
 			get {
 				return BaseConfiguration["RootNamespace"];
@@ -157,6 +172,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string AssemblyName {
 			get {
 				return BaseConfiguration["AssemblyName"];
@@ -166,6 +182,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string AppDesignerFolder {
 			get {
 				return BaseConfiguration["AppDesignerFolder"];
@@ -175,6 +192,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public override string TypeGuid {
 			get {
 				return LanguageBindingService.GetCodonPerLanguageName(Language).Guid;
