@@ -307,11 +307,14 @@ namespace ICSharpCode.TextEditor
 		/// <param name="offset">The offset.</param>
 		/// <param name="length">The length.</param>
 		/// <returns>The Brush or null when no marker was found.</returns>
-		Brush GetMarkerBrushAt(int offset, int length)
+		Brush GetMarkerBrushAt(int offset, int length, ref Color foreColor)
 		{
 			List<TextMarker> markers = Document.MarkerStrategy.GetMarkers(offset,  length);
 			foreach (TextMarker marker in markers) {
 				if (marker.TextMarkerType == TextMarkerType.SolidBlock) {
+					if (marker.OverrideForeColor) {
+						foreColor = marker.ForeColor;
+					}
 					return BrushRegistry.GetBrush(marker.Color);
 				}
 			}
@@ -385,11 +388,11 @@ namespace ICSharpCode.TextEditor
 							RectangleF spaceRectangle = new RectangleF(physicalXPos, lineRectangle.Y, (float)Math.Ceiling(spaceWidth), lineRectangle.Height);
 							
 							Brush spaceBackgroundBrush;
-							
+							Color spaceMarkerForeColor = spaceMarkerColor.Color;
 							if (ColumnRange.WholeColumn.Equals(selectionRange) || logicalColumn >= selectionRange.StartColumn && logicalColumn < selectionRange.EndColumn) {
 								spaceBackgroundBrush = selectionBackgroundBrush;
 							} else {
-								Brush markerBrush = GetMarkerBrushAt(currentLine.Offset + logicalColumn,  1);
+								Brush markerBrush = GetMarkerBrushAt(currentLine.Offset + logicalColumn,  1, ref spaceMarkerForeColor);
 								if (!drawLineMarker && markerBrush != null) {
 									spaceBackgroundBrush = markerBrush;
 								} else if (!drawLineMarker && currentWord.SyntaxColor != null && currentWord.SyntaxColor.HasBackground) {
@@ -401,7 +404,7 @@ namespace ICSharpCode.TextEditor
 							g.FillRectangle(spaceBackgroundBrush, spaceRectangle);
 							
 							if (TextEditorProperties.ShowSpaces) {
-								DrawSpaceMarker(g, spaceMarkerColor.Color, physicalXPos, lineRectangle.Y);
+								DrawSpaceMarker(g, spaceMarkerForeColor, physicalXPos, lineRectangle.Y);
 							}
 							foreach (TextMarker marker in markers) {
 								DrawMarker(g, marker, spaceRectangle);
@@ -420,11 +423,12 @@ namespace ICSharpCode.TextEditor
 							physicalColumn = (physicalColumn / TextEditorProperties.TabIndent) * TextEditorProperties.TabIndent;
 							float tabWidth = (physicalColumn - oldPhysicalColumn) * spaceWidth;
 							RectangleF tabRectangle = new RectangleF(physicalXPos, lineRectangle.Y, (float)Math.Ceiling(tabWidth), lineRectangle.Height);
+							Color tabMarkerForeColor  = tabMarkerColor.Color;
 							
 							if (ColumnRange.WholeColumn.Equals(selectionRange) || logicalColumn >= selectionRange.StartColumn && logicalColumn <= selectionRange.EndColumn - 1) {
 								spaceBackgroundBrush = selectionBackgroundBrush;
 							} else {
-								Brush markerBrush = GetMarkerBrushAt(currentLine.Offset + logicalColumn, 1);
+								Brush markerBrush = GetMarkerBrushAt(currentLine.Offset + logicalColumn, 1, ref tabMarkerForeColor);
 								if (!drawLineMarker && markerBrush != null) {
 									spaceBackgroundBrush = markerBrush;
 								} else if (!drawLineMarker && currentWord.SyntaxColor != null && currentWord.SyntaxColor.HasBackground) {
@@ -436,7 +440,7 @@ namespace ICSharpCode.TextEditor
 							g.FillRectangle(spaceBackgroundBrush, tabRectangle);
 							
 							if (TextEditorProperties.ShowTabs) {
-								DrawTabMarker(g, tabMarkerColor.Color, physicalXPos, lineRectangle.Y);
+								DrawTabMarker(g, tabMarkerForeColor, physicalXPos, lineRectangle.Y);
 							}
 							
 							foreach (TextMarker marker in markers) {
@@ -452,7 +456,8 @@ namespace ICSharpCode.TextEditor
 							string word    = currentWord.Word;
 							float  lastPos = physicalXPos;
 							
-							Brush bgMarkerBrush = GetMarkerBrushAt(currentLine.Offset + logicalColumn,  word.Length);
+							Color wordForeColor  = currentWord.Color;
+							Brush bgMarkerBrush = GetMarkerBrushAt(currentLine.Offset + logicalColumn,  word.Length, ref wordForeColor);
 							Brush wordBackgroundBrush;
 							if (!drawLineMarker && bgMarkerBrush != null) {
 								wordBackgroundBrush = bgMarkerBrush;
@@ -469,7 +474,7 @@ namespace ICSharpCode.TextEditor
 								                                 word,
 								                                 new Point((int)physicalXPos, lineRectangle.Y),
 								                                 currentWord.Font,
-								                                 selectionColor.HasForgeground ? selectionColor.Color : currentWord.Color,
+								                                 selectionColor.HasForgeground ? selectionColor.Color : wordForeColor,
 								                                 selectionBackgroundBrush);
 							} else {
 								if (ColumnRange.NoColumn.Equals(selectionRange)  /* || selectionRange.StartColumn > logicalColumn + word.Length || selectionRange.EndColumn  - 1 <= logicalColumn */) {
@@ -477,7 +482,7 @@ namespace ICSharpCode.TextEditor
 									                                 word,
 									                                 new Point((int)physicalXPos, lineRectangle.Y),
 									                                 currentWord.Font,
-									                                 currentWord.Color,
+									                                 wordForeColor,
 									                                 wordBackgroundBrush);
 								} else {
 									int offset1 = Math.Min(word.Length, Math.Max(0, selectionRange.StartColumn - logicalColumn ));
@@ -487,21 +492,21 @@ namespace ICSharpCode.TextEditor
 									                                 word.Substring(0, offset1),
 									                                 new Point((int)physicalXPos, lineRectangle.Y),
 									                                 currentWord.Font,
-									                                 currentWord.Color,
+									                                 wordForeColor,
 									                                 wordBackgroundBrush);
 									
 									physicalXPos += DrawDocumentWord(g,
 									                                 word.Substring(offset1, offset2 - offset1),
 									                                 new Point((int)physicalXPos, lineRectangle.Y),
 									                                 currentWord.Font,
-									                                 selectionColor.HasForgeground ? selectionColor.Color : currentWord.Color,
+									                                 selectionColor.HasForgeground ? selectionColor.Color : wordForeColor,
 									                                 selectionBackgroundBrush);
 									
 									physicalXPos += DrawDocumentWord(g,
 									                                 word.Substring(offset2),
 									                                 new Point((int)physicalXPos, lineRectangle.Y),
 									                                 currentWord.Font,
-									                                 currentWord.Color,
+									                                 wordForeColor,
 									                                 wordBackgroundBrush);
 								}
 							}

@@ -63,11 +63,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public IBaseViewContent ActiveViewContent {
 			get {
-				if (viewTabControl != null && viewTabControl.SelectedIndex > 0) {
-					return (IBaseViewContent)subViewContents[viewTabControl.SelectedIndex];
+				if (viewTabControl != null) {
+					int selectedIndex = 0;
+					if (viewTabControl.InvokeRequired) {
+						selectedIndex = (int)viewTabControl.Invoke(new MyDelegate(GetSelectedIndex));
+					} else {
+						selectedIndex = GetSelectedIndex();
+					}
+					
+
+					return (IBaseViewContent)subViewContents[selectedIndex];
 				}
 				return content;
 			}
+		}
+		delegate int MyDelegate();
+		int GetSelectedIndex()
+		{
+			return viewTabControl.SelectedIndex;
 		}
 		
 		protected override Size DefaultSize {

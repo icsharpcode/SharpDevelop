@@ -25,7 +25,9 @@ namespace ICSharpCode.TextEditor.Document
 	{
 		TextMarkerType textMarkerType;
 		Color          color;
+		Color          foreColor;
 		string         toolTip = null;
+		bool           overrideForeColor = false;
 		
 		public TextMarkerType TextMarkerType {
 			get {
@@ -36,6 +38,18 @@ namespace ICSharpCode.TextEditor.Document
 		public Color Color {
 			get {
 				return color;
+			}
+		}
+		
+		public Color ForeColor {
+			get {
+				return foreColor;
+			}
+		}
+		
+		public bool OverrideForeColor {
+			get {
+				return overrideForeColor;
 			}
 		}
 		
@@ -58,6 +72,16 @@ namespace ICSharpCode.TextEditor.Document
 			this.length          = length;
 			this.textMarkerType  = textMarkerType;
 			this.color           = color;
+		}
+		
+		public TextMarker(int offset, int length, TextMarkerType textMarkerType, Color color, Color foreColor)
+		{
+			this.offset          = offset;
+			this.length          = length;
+			this.textMarkerType  = textMarkerType;
+			this.color           = color;
+			this.foreColor       = foreColor;
+			this.overrideForeColor = true;
 		}
 	}
 }

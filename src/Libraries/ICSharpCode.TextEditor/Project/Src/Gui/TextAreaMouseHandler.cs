@@ -250,26 +250,30 @@ namespace ICSharpCode.TextEditor
 				doubleclick = false;
 				return;
 			}
-			gotmousedown = true;
-			button = e.Button;
-			if ((DateTime.Now - lastTime).Milliseconds < SystemInformation.DoubleClickTime) {
-				int deltaX   = Math.Abs(lastmousedownpos.X - e.X);
-				int deltaY   = Math.Abs(lastmousedownpos.Y - e.Y);
-				if (deltaX <= SystemInformation.DoubleClickSize.Width &&
-				    deltaY <= SystemInformation.DoubleClickSize.Height) {
-					DoubleClickSelectionExtend();
-					lastTime = DateTime.Now;
-					lastmousedownpos = new Point(e.X, e.Y);
-					return;
-				}
-			}
-			minSelection = nilPoint;
-			maxSelection = nilPoint;
-				
-			lastTime = DateTime.Now;
-			lastmousedownpos = mousedownpos = new Point(e.X, e.Y);
+			
 			
 			if (textArea.TextView.DrawingPosition.Contains(mousepos.X, mousepos.Y)) {
+				gotmousedown = true;
+				button = e.Button;
+				
+				if ((DateTime.Now - lastTime).Milliseconds < SystemInformation.DoubleClickTime) {
+					int deltaX   = Math.Abs(lastmousedownpos.X - e.X);
+					int deltaY   = Math.Abs(lastmousedownpos.Y - e.Y);
+					if (deltaX <= SystemInformation.DoubleClickSize.Width &&
+					    deltaY <= SystemInformation.DoubleClickSize.Height) {
+						DoubleClickSelectionExtend();
+						lastTime = DateTime.Now;
+						lastmousedownpos = new Point(e.X, e.Y);
+						return;
+					}
+				}
+				minSelection = nilPoint;
+				maxSelection = nilPoint;
+				
+				lastTime = DateTime.Now;
+				lastmousedownpos = mousedownpos = new Point(e.X, e.Y);
+				
+				
 				if (button == MouseButtons.Left) {
 					FoldMarker marker = textArea.TextView.GetFoldMarkerFromPosition(mousepos.X - textArea.TextView.DrawingPosition.X,
 					                                                                mousepos.Y - textArea.TextView.DrawingPosition.Y);

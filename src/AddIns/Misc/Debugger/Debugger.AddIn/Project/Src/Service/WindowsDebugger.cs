@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		class BreakpointMarker: TextMarker
 		{			
-			public BreakpointMarker(int offset, int length, TextMarkerType textMarkerType, Color color):base(offset, length, textMarkerType, color)
+			public BreakpointMarker(int offset, int length, TextMarkerType textMarkerType, Color color, Color fgColor) : base(offset, length, textMarkerType, color, fgColor)
 			{
 			}
 		}
@@ -412,7 +412,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			foreach (DebuggerLibrary.Breakpoint b in NDebugger.Instance.Breakpoints) {
 				if (b.SourcecodeSegment.SourceFullFilename.ToLower() == textEditor.FileName.ToLower()) {
 					LineSegment lineSeg = document.GetLineSegment((int)b.SourcecodeSegment.StartLine - 1);
-					document.MarkerStrategy.TextMarker.Add(new BreakpointMarker(lineSeg.Offset, lineSeg.Length , TextMarkerType.SolidBlock, Color.Red));
+					document.MarkerStrategy.TextMarker.Add(new BreakpointMarker(lineSeg.Offset, lineSeg.Length , TextMarkerType.SolidBlock, Color.Red, Color.White));
 				}
 			}
 			// Perform editor update
