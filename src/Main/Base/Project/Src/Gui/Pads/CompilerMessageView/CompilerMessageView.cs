@@ -18,6 +18,7 @@ using System.Diagnostics;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
@@ -35,8 +36,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		RichTextBox textEditorControl = new RichTextBox();
-		Panel       myPanel           = new Panel();
+//		RichTextBox textEditorControl = new RichTextBox();
+		
+		TextEditorControl textEditorControl = new TextEditorControl();
+		Panel             myPanel           = new Panel();
 		
 		List<MessageViewCategory> messageCategories = new List<MessageViewCategory>();
 		
@@ -93,8 +96,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			AddCategory(TaskService.BuildMessageViewCategory);
 			
 			myPanel.SuspendLayout();
-			textEditorControl.Dock     = DockStyle.Fill;
-			textEditorControl.ReadOnly = true;
+			textEditorControl.Dock              = DockStyle.Fill;
+			textEditorControl.ShowLineNumbers   = false;
+			textEditorControl.ShowInvalidLines  = false;
+			textEditorControl.EnableFolding     = false;
+			textEditorControl.IsIconBarVisible  = false;
+			textEditorControl.Document.ReadOnly = true;
+			textEditorControl.ShowHRuler        = false;
+			textEditorControl.ShowVRuler        = false;
+			textEditorControl.ShowSpaces        = false;
+			textEditorControl.ShowTabs          = false;
+			textEditorControl.ShowEOLMarkers    = false;
+			
 			textEditorControl.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");
 				
 			properties = (Properties)PropertyService.Get(OutputWindowOptionsPanel.OutputWindowsProperty, new Properties());
@@ -118,13 +131,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void SetWordWrap()
 		{
-			bool wordWrap = properties.Get("WordWrap", true);
-			textEditorControl.WordWrap = wordWrap;
-			if (wordWrap) {
-				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedBoth;
-			} else {
-				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedVertical;
-			}
+//			bool wordWrap = properties.Get("WordWrap", true);
+//			textEditorControl.WordWrap = wordWrap;
+//			if (wordWrap) {
+//				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedBoth;
+//			} else {
+//				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedVertical;
+//			}
 		}
 		
 		public override void RedrawContent()
@@ -154,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		void ClearText()
 		{
-			textEditorControl.Clear();
+			textEditorControl.Document.TextContent = "";
 		}
 		
 		void CategoryTextSet(object sender, TextEventArgs e)
@@ -174,7 +187,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void AppendText(string text)
 		{
 			if (text != null) {
-				textEditorControl.AppendText(text);
+				textEditorControl.Document.ReadOnly = false;
+				textEditorControl.Document.Insert(textEditorControl.Document.TextLength, text);
+				textEditorControl.Document.ReadOnly = true;
+				textEditorControl.ActiveTextAreaControl.Caret.Position = new Point(0, textEditorControl.Document.TotalNumberOfLines);
+				textEditorControl.ActiveTextAreaControl.ScrollTo(textEditorControl.Document.TotalNumberOfLines);
 			}
 		}
 		
@@ -183,10 +200,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (text == null) {
 				text = String.Empty;
 			}
-			textEditorControl.Text = text;
-			textEditorControl.Select(text.Length , 0);
-			textEditorControl.Select();
-			textEditorControl.ScrollToCaret();
+			textEditorControl.Document.TextContent = text;
+//			textEditorControl.Select(text.Length , 0);
+//			textEditorControl.Select();
+//			textEditorControl.ScrollToCaret();
 		}
 		
 				
@@ -234,26 +251,26 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		void TextEditorControlMouseDown(object sender, MouseEventArgs e)
 		{
-			// Double click?
-			if (e.Clicks == 2) {
-				// Any text?
-				if (textEditorControl.Text.Length > 0) {
-					
-					// Parse text line double clicked.
-					Point point = new Point(e.X, e.Y);
-					
-					int charIndex = textEditorControl.GetCharIndexFromPosition(point);
-					string textLine = GetTextLine(charIndex, textEditorControl.Text);
-										
-					FileLineReference lineReference = OutputTextLineParser.GetFileLineReference(textLine);
-					if (lineReference != null) {
-						// Open matching file.
-						JumpToFilePosition(Path.GetFullPath(lineReference.FileName), 
-						                   lineReference.Line, 
-						                   lineReference.Column);
-					}
-				}
-			}
+//			// Double click?
+//			if (e.Clicks == 2) {
+//				// Any text?
+//				if (textEditorControl.Text.Length > 0) {
+//					
+//					// Parse text line double clicked.
+//					Point point = new Point(e.X, e.Y);
+//					
+//					int charIndex = textEditorControl.GetCharIndexFromPosition(point);
+//					string textLine = GetTextLine(charIndex, textEditorControl.Text);
+//										
+//					FileLineReference lineReference = OutputTextLineParser.GetFileLineReference(textLine);
+//					if (lineReference != null) {
+//						// Open matching file.
+//						JumpToFilePosition(Path.GetFullPath(lineReference.FileName), 
+//						                   lineReference.Line, 
+//						                   lineReference.Column);
+//					}
+//				}
+//			}
 		}
 		/// <summary>
 		/// Gets the line of text that includes the specified
@@ -378,7 +395,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Copy()
 		{
-			textEditorControl.Copy();
+			new ICSharpCode.TextEditor.Actions.Copy().Execute(textEditorControl.ActiveTextAreaControl.TextArea);
 		}
 		
 		public void Paste()
@@ -391,7 +408,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SelectAll()
 		{
-			textEditorControl.SelectAll();
+			new ICSharpCode.TextEditor.Actions.SelectWholeDocument().Execute(textEditorControl.ActiveTextAreaControl.TextArea);
+//			textEditorControl.SelectAll();
 		}
 		#endregion
 			
