@@ -134,7 +134,6 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		
 		public bool ReadOnly {
 			get {
 				return readOnly;

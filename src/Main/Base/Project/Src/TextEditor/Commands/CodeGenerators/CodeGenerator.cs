@@ -30,16 +30,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public CodeGenerator(IClass currentClass)
 		{	
+			this.currentClass = currentClass;
 			try {
-				csa = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem("CSharp", this);
-				vba = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem("VBNET", this);
-			} catch {
+				csa = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem("C#", this);
+				csa.ConversionFlags = ConversionFlags.All;
+			} catch (Exception) {
 				Console.WriteLine("CSharpAmbience not found -- is the C# backend binding loaded???");
-				return;
 			}
 			
-			this.currentClass = currentClass;
-			csa.ConversionFlags = ConversionFlags.All;
+			try {
+				vba = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem("VBNET", this);
+			} catch (Exception) {
+				Console.WriteLine("VBNet ambience not found -- is the VB.NET backend binding loaded???");
+			}
 		}
 		
 		public abstract string CategoryName {

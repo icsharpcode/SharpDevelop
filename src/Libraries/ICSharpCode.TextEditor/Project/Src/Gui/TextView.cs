@@ -118,7 +118,7 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-#region Paint functions
+		#region Paint functions
 		public override void Paint(Graphics g, Rectangle rect)
 		{
 			if (rect.Width <= 0 || rect.Height <= 0) {
@@ -574,7 +574,7 @@ namespace ICSharpCode.TextEditor
 //			}
 			float wordWidth = g.MeasureString(word, font, 32768, measureStringFormat).Width;
 			g.FillRectangle(backBrush,
-			                new RectangleF(position.X, position.Y, (float)Math.Ceiling(wordWidth), FontHeight));
+			                new RectangleF(position.X, position.Y, (float)Math.Ceiling(wordWidth + 1), FontHeight));
 			
 			g.DrawString(word,
 			             font,
@@ -584,7 +584,7 @@ namespace ICSharpCode.TextEditor
 			             measureStringFormat);
 			return wordWidth;
 		}
-#endregion
+		#endregion
 		
 #region Conversion Functions
 		public float GetWidth(char ch)

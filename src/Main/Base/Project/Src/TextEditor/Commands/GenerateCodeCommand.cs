@@ -37,8 +37,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 			TextEditorControl textEditorControl = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
 			
-			
-			
 			ParseInformation parseInformation;
 			
 			if (window.ViewContent.IsUntitled) {
@@ -139,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			//  Must be called for initialization
 			this.InitializeComponents();
-			selectionListBox.Sorted = true;
+//			selectionListBox.Sorted = true;
 			Point caretPos  = textEditorControl.ActiveTextAreaControl.Caret.Position;
 			TextArea textArea = textEditorControl.ActiveTextAreaControl.TextArea;
 			TextView textView = textArea.TextView;
@@ -215,7 +213,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			selectionListBox.Items.Clear();
 			if (codeGenerator.Content.Count > 0) {
 				Hashtable objs = new Hashtable();
-				selectionListBox.Sorted = codeGenerator.Content.Count > 1;
+//				selectionListBox.Sorted = codeGenerator.Content.Count > 1;
 				foreach (object o in codeGenerator.Content) {
 					if (!objs.Contains(o.ToString())) {
 						selectionListBox.Items.Add(o);
