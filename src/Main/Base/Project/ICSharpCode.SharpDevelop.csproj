@@ -640,10 +640,6 @@
       <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
-    <ProjectReference Include="..\..\Core\Project\ICSharpCode.Core.csproj">
-      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
-      <Name>ICSharpCode.Core</Name>
-    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

@@ -180,8 +180,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void CategoryTextAppended(object sender, TextEventArgs e)
 		{
 			MessageViewCategory category = (MessageViewCategory)sender;
+			int oldCategory = SelectedCategoryIndex;
 			SelectCategory(category.Category);
-			WorkbenchSingleton.SafeThreadCall(this, "AppendText", StringParser.Parse(messageCategories[selectedCategory].Text));
+			if (oldCategory != SelectedCategoryIndex)
+				WorkbenchSingleton.SafeThreadCall(this, "SetText", StringParser.Parse(messageCategories[selectedCategory].Text));
+			else
+				WorkbenchSingleton.SafeThreadCall(this, "AppendText", StringParser.Parse(e.Text));
 		}
 		
 		void AppendText(string text)
