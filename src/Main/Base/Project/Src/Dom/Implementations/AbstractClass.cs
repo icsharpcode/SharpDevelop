@@ -352,7 +352,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			// enums must be handled specially, because there are several things defined we don't want to show
 			// and enum members have neither the modifier nor the modifier public
-			if (ClassType == ClassType.Enum) {
+			/*if (ClassType == ClassType.Enum) {
 				foreach (IField f in Fields) {
 					if (f.IsLiteral) {
 						members.Add(f);
@@ -360,7 +360,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				members.AddRange(ProjectContent.GetClass("System.Enum").GetAccessibleMembers(callingClass, showStatic).ToArray());
 				return members;
-			}
+			}*/
 			
 			bool isClassInInheritanceTree = false;
 			if (callingClass != null)

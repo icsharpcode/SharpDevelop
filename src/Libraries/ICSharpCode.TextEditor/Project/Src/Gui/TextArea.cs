@@ -55,6 +55,9 @@ namespace ICSharpCode.TextEditor
 		SelectionManager selectionManager;
 		Caret            caret;
 		
+		ToolTip toolTip = new ToolTip();
+		bool toolTipSet = false;
+		
 		public TextEditorControl MotherTextEditorControl {
 			get {
 				return motherTextEditorControl;
@@ -226,18 +229,18 @@ namespace ICSharpCode.TextEditor
 			}
 			foreach (BracketHighlightingSheme bracketsheme in bracketshemes) {
 //				if (bracketsheme.IsInside(textareapainter.Document, textareapainter.Document.Caret.Offset)) {
-					Highlight highlight = bracketsheme.GetHighlight(Document, Caret.Offset - 1);
-					if (textView.Highlight != null && textView.Highlight.OpenBrace.Y >=0 && textView.Highlight.OpenBrace.Y < Document.TotalNumberOfLines) {
-						UpdateLine(textView.Highlight.OpenBrace.Y);
-					}
-					if (textView.Highlight != null && textView.Highlight.CloseBrace.Y >=0 && textView.Highlight.CloseBrace.Y < Document.TotalNumberOfLines) {
-						UpdateLine(textView.Highlight.CloseBrace.Y);
-					}
-					textView.Highlight = highlight;
-					if (highlight != null) {
-						changed = true;
-						break; 
-					}
+				Highlight highlight = bracketsheme.GetHighlight(Document, Caret.Offset - 1);
+				if (textView.Highlight != null && textView.Highlight.OpenBrace.Y >=0 && textView.Highlight.OpenBrace.Y < Document.TotalNumberOfLines) {
+					UpdateLine(textView.Highlight.OpenBrace.Y);
+				}
+				if (textView.Highlight != null && textView.Highlight.CloseBrace.Y >=0 && textView.Highlight.CloseBrace.Y < Document.TotalNumberOfLines) {
+					UpdateLine(textView.Highlight.CloseBrace.Y);
+				}
+				textView.Highlight = highlight;
+				if (highlight != null) {
+					changed = true;
+					break;
+				}
 //				}
 			}
 			if (changed || textView.Highlight != null) {
@@ -293,9 +296,29 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
+		string oldToolTip;
+		public void SetToolTip(string text)
+		{
+			if (oldToolTip == text)
+				return;
+			ToolTip toolTip = this.toolTip;
+			if (text == null) {
+				toolTip.Hide(this.FindForm());
+			} else {
+				Point p = PointToClient(Control.MousePosition);
+				p.Offset(3, 3);
+				toolTip.Show(text, this, p);
+				toolTipSet = true;
+			}
+			oldToolTip = text;
+		}
+		
 		protected override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
 		{
+			toolTipSet = false;
 			base.OnMouseMove(e);
+			if (!toolTipSet)
+				SetToolTip(null);
 			foreach (AbstractMargin margin in leftMargins) {
 				if (margin.DrawingPosition.Contains(e.X, e.Y)) {
 					this.Cursor = margin.Cursor;
@@ -349,8 +372,8 @@ namespace ICSharpCode.TextEditor
 					Console.WriteLine("Got exception : " + ex);
 				}
 //				clipRectangle.Intersect(updateMargin.DrawingPosition);
-   			}
-   			
+			}
+			
 			if (clipRectangle.Width <= 0 || clipRectangle.Height <= 0) {
 				return;
 			}
@@ -512,7 +535,7 @@ namespace ICSharpCode.TextEditor
 					Caret.UpdateCaretPosition();
 				}
 				return true;
-			} 
+			}
 			return false;
 		}
 		
@@ -671,10 +694,11 @@ namespace ICSharpCode.TextEditor
 			base.Dispose(disposing);
 			if (disposing) {
 				Caret.Dispose();
+				toolTip.Dispose();
 			}
 		}
 		
-#region UPDATE Commands		
+		#region UPDATE Commands
 		internal void UpdateLine(int line)
 		{
 			UpdateLines(0, line, line);
@@ -684,8 +708,8 @@ namespace ICSharpCode.TextEditor
 		{
 			UpdateLines(0, lineBegin, lineEnd);
 		}
-	
-		internal void UpdateToEnd(int lineBegin) 
+		
+		internal void UpdateToEnd(int lineBegin)
 		{
 //			if (lineBegin > FirstPhysicalLine + textView.VisibleLineCount) {
 //				return;
@@ -695,8 +719,8 @@ namespace ICSharpCode.TextEditor
 			int y         = Math.Max(    0, (int)(lineBegin * textView.FontHeight));
 			y = Math.Max(0, y - this.virtualTop.Y);
 			Rectangle r = new Rectangle(0,
-			                            y, 
-			                            Width, 
+			                            y,
+			                            Width,
 			                            Height - y);
 			Invalidate(r);
 		}
@@ -732,13 +756,13 @@ namespace ICSharpCode.TextEditor
 			int height    = Math.Min(textView.DrawingPosition.Height, (int)((1 + lineEnd - lineBegin) * (textView.FontHeight + 1)));
 			
 			Rectangle r = new Rectangle(0,
-			                            y - 1 - this.virtualTop.Y, 
-			                            Width, 
+			                            y - 1 - this.virtualTop.Y,
+			                            Width,
 			                            height + 3);
 			
 			Invalidate(r);
 		}
-#endregion
+		#endregion
 		public event KeyEventHandler    KeyEventHandler;
 		public event DialogKeyProcessor DoProcessDialogKey;
 	}

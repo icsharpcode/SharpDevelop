@@ -13,6 +13,7 @@ using System.IO;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor;
@@ -128,7 +129,7 @@ namespace ICSharpCode.Core
 			if (debugger != null) {
 				debugger.Stop();
 			}
-						
+			
 			debugger.DebugStopped -= new EventHandler(HandleDebugStopped);
 			debugger.Dispose();
 			
@@ -195,7 +196,7 @@ namespace ICSharpCode.Core
 			startInfo.UseShellExecute  = false;
 			StartWithoutDebugging(startInfo);
 		}
-
+		
 		public static void Start(string fileName, string workingDirectory, string arguments)
 		{
 			if (IsProcessRuning) {
@@ -235,7 +236,7 @@ namespace ICSharpCode.Core
 				debugger.Continue();
 			}
 		}
-
+		
 		public static void Step(bool stepInto)
 		{
 			IDebugger debugger = CurrentDebugger;
@@ -280,7 +281,7 @@ namespace ICSharpCode.Core
 		{
 			standardProcess.Exited -= new EventHandler(StandardProcessExited);
 			standardProcess.Dispose();
-			standardProcess = null;	
+			standardProcess = null;
 			isRunning       = false;
 		}
 		
@@ -290,7 +291,7 @@ namespace ICSharpCode.Core
 //			OnTextMessage(new TextMessageEventArgs("Got Exception\n"));
 //			StopDebugger();
 //		}
-//		
+		//
 //		protected override void OnProcessExited(ProcessEventArgs e)
 //		{
 //			OnTextMessage(new TextMessageEventArgs(String.Format("The program '[{1}] {0}' exited with code {2}.{3}\n",
@@ -311,37 +312,37 @@ namespace ICSharpCode.Core
 		public static event EventHandler BreakPointChanged;
 		public static event EventHandler BreakPointAdded;
 		public static event EventHandler BreakPointRemoved;
-
-		static void OnBreakPointChanged(EventArgs e) 
+		
+		static void OnBreakPointChanged(EventArgs e)
 		{
 			if (BreakPointChanged != null) {
 				BreakPointChanged(null, e);
 			}
-		}		
-
-		static void OnBreakPointAdded(EventArgs e) 
+		}
+		
+		static void OnBreakPointAdded(EventArgs e)
 		{
 			if (BreakPointAdded != null) {
 				BreakPointAdded(null, e);
 			}
-		}	
-
-		static void OnBreakPointRemoved(EventArgs e) 
+		}
+		
+		static void OnBreakPointRemoved(EventArgs e)
 		{
 			if (BreakPointRemoved != null) {
 				BreakPointRemoved(null, e);
 			}
 		}
-
-
+		
+		
 		static List<Breakpoint> breakpoints = new List<Breakpoint>();
-
+		
 		public static IList<Breakpoint> Breakpoints {
 			get {
 				return breakpoints;
 			}
 		}
-
+		
 		public static void ToggleBreakpointAt(string fileName, int line, int column)
 		{
 			foreach(Breakpoint b in breakpoints) {
@@ -354,38 +355,38 @@ namespace ICSharpCode.Core
 			breakpoints.Add(new Breakpoint(fileName, line));
 			OnBreakPointAdded(EventArgs.Empty);
 		}
-
-
-
-
-
-
-
+		
+		
+		
+		
+		
+		
+		
 		class BreakpointMarker: TextMarker
-		{			
+		{
 			public BreakpointMarker(int offset, int length, TextMarkerType textMarkerType, Color color, Color foreColor):base(offset, length, textMarkerType, color, foreColor)
 			{
 			}
 		}
-
+		
 		class CurrentLineMarker: TextMarker
-		{			
+		{
 			public CurrentLineMarker(int offset, int length, TextMarkerType textMarkerType, Color color, Color foreColor):base(offset, length, textMarkerType, color, foreColor)
 			{
 			}
 		}
-
+		
 		public static void InitializeService2()
-		{			
+		{
 			WorkbenchSingleton.WorkbenchCreated += new EventHandler(WorkspaceCreated);
 		}
-
+		
 		static void WorkspaceCreated(object sender, EventArgs args)
 		{
 			WorkbenchSingleton.Workbench.ViewOpened += new ViewContentEventHandler(ViewContentOpened);
 			WorkbenchSingleton.Workbench.ViewClosed += new ViewContentEventHandler(ViewContentClosed);
 		}
-
+		
 		static void ViewContentOpened(object sender, ViewContentEventArgs e)
 		{
 			if (e.Content.Control is TextEditor.TextEditorControl) {
@@ -409,8 +410,8 @@ namespace ICSharpCode.Core
 				textArea.MouseMove               -= new MouseEventHandler(TextAreaMouseMove);
 			}
 		}
-
-
+		
+		
 		static TextMarker currentLineMarker;
 		static IDocument  currentLineMarkerParent;
 		
@@ -424,16 +425,16 @@ namespace ICSharpCode.Core
 				currentLineMarker       = null;
 			}
 		}
-
+		
 		static public void JumpToCurrentLine(string SourceFullFilename, int StartLine, int StartColumn, int EndLine, int EndColumn)
 		{
 			RemoveCurrentLineMarker();
-
+			
 			FileService.OpenFile(SourceFullFilename);
 			IWorkbenchWindow window = FileService.GetOpenFile(SourceFullFilename);
 			if (window != null) {
 				IViewContent content = window.ViewContent;
-			
+				
 				if (content is IPositionable) {
 					((IPositionable)content).JumpTo((int)StartLine - 1, (int)StartColumn - 1);
 				}
@@ -450,9 +451,9 @@ namespace ICSharpCode.Core
 				}
 			}
 		}
-
-
-
+		
+		
+		
 		static void IconBarMouseDown(AbstractMargin iconBar, Point mousepos, MouseButtons mouseButtons)
 		{
 			Rectangle viewRect = iconBar.TextArea.TextView.DrawingPosition;
@@ -465,8 +466,8 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-				
-		static void RefreshBreakpointMarkersInEditor(TextEditorControl textEditor) 
+		
+		static void RefreshBreakpointMarkersInEditor(TextEditorControl textEditor)
 		{
 			IDocument document = textEditor.Document;
 			System.Collections.Generic.List<ICSharpCode.TextEditor.Document.TextMarker> markers = textEditor.Document.MarkerStrategy.TextMarker;
@@ -489,7 +490,7 @@ namespace ICSharpCode.Core
 			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
 			document.CommitUpdate();
 		}
-
+		
 		/// <summary>
 		/// Draw Breakpoint icon and the yellow arrow in the margin
 		/// </summary>
@@ -504,7 +505,7 @@ namespace ICSharpCode.Core
 					}
 				}
 			}
-
+			
 			foreach (TextMarker textMarker in iconBar.TextArea.Document.MarkerStrategy.TextMarker) {
 				CurrentLineMarker currentLineMarker = textMarker as CurrentLineMarker;
 				if (currentLineMarker != null) {
@@ -516,15 +517,12 @@ namespace ICSharpCode.Core
 				}
 			}
 		}
-
-		static TextMarker variableMarker;
-		static IDocument  variableMarkerParent;
 		
 		/// <summary>
 		/// This function shows variable values as tooltips
 		/// </summary>
 		static void TextAreaMouseMove(object sender, MouseEventArgs args)
-		{			
+		{
 			TextArea textArea = (TextArea)sender;
 			
 			Point mousepos = textArea.PointToClient(Control.MousePosition);
@@ -538,16 +536,16 @@ namespace ICSharpCode.Core
 					string line = doc.GetText(seg.Offset, seg.Length);
 					int startIndex = 0;
 					int length = 0;
-					string expresion = String.Empty;
+					string expression = String.Empty;
 					for(int index = 0; index < seg.Length; index++) {
 						char chr = line[index];
 						if ((Char.IsLetterOrDigit(chr) || chr == '_' || chr == '.') == false || // invalid character
-						    (chr == '.' && logicPos.X <= index)) { // Start of sub-expresion at the right side of cursor
+						    (chr == '.' && logicPos.X <= index)) { // Start of sub-expression at the right side of cursor
 							// End of expresion...
 							if ((startIndex <= logicPos.X && logicPos.X <= index) && // Correct position
-							    (startIndex != index)) { // Actualy something
-							    length = index - startIndex;
-								expresion = line.Substring(startIndex, length);
+							    (startIndex != index)) { // Actually something
+								length = index - startIndex;
+								expression = line.Substring(startIndex, length);
 								break;
 							} else {
 								// Let's try next one...
@@ -555,33 +553,65 @@ namespace ICSharpCode.Core
 							}
 						}
 					}
-					//Console.WriteLine("MouseMove@" + logicPos + ":" + expresion);
-					if (variableMarker == null || variableMarker.Offset != (seg.Offset + startIndex) || variableMarker.Length != length) {
-						// Needs update
-						if (variableMarker != null) {
-							// Remove old marker
-							variableMarkerParent.MarkerStrategy.TextMarker.Remove(variableMarker);
-							variableMarkerParent.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-							variableMarkerParent.CommitUpdate();
-							variableMarkerParent = null;
-							variableMarker       = null;
-						}
-						if (expresion != String.Empty) {
-							// Look if it is variable
-							try {
-								string value;
-								//value = selectedThread.LocalVariables[expresion].Value.ToString();
-								value = expresion;
-								variableMarker = new TextMarker(seg.Offset + startIndex, length, TextMarkerType.Underlined, Color.Blue); 
-								variableMarker.ToolTip = value;
-								variableMarkerParent = doc;
-								variableMarkerParent.MarkerStrategy.TextMarker.Add(variableMarker);
-								variableMarkerParent.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-								variableMarkerParent.CommitUpdate();
-							} catch {}
+					//Console.WriteLine("MouseMove@" + logicPos + ":" + expression);
+					if (expression != String.Empty) {
+						// Look if it is variable
+						try {
+							//value = selectedThread.LocalVariables[expresion].Value.ToString();
+							ResolveResult result = ParserService.Resolve(expression, logicPos.Y, startIndex, textArea.MotherTextEditorControl.FileName, doc.TextContent);
+							string value = GetText(result);
+							if (value != null) {
+								textArea.SetToolTip(value);
+							}
+						} catch (Exception e) {
+							Console.Beep();
+							Console.WriteLine();
+							Console.WriteLine(e);
 						}
 					}
 				}
+			}
+		}
+		
+		static string GetText(ResolveResult result)
+		{
+			if (result == null)
+				return null;
+			IAmbience ambience = AmbienceService.CurrentAmbience;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags
+				| ConversionFlags.ShowAccessibility;
+			if (result is MemberResolveResult) {
+				MemberResolveResult rr = (MemberResolveResult)result;
+				IMember member = rr.ResolvedMember;
+				if (member is IIndexer)
+					return ambience.Convert(member as IIndexer);
+				if (member is IField)
+					return ambience.Convert(member as IField);
+				if (member is IProperty)
+					return ambience.Convert(member as IProperty);
+				if (member is IEvent)
+					return ambience.Convert(member as IEvent);
+				if (member is IMethod)
+					return ambience.Convert(member as IMethod);
+				return "unknown member " + member.ToString();
+			} else if (result is LocalResolveResult) {
+				LocalResolveResult rr = (LocalResolveResult)result;
+				ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedNames
+					| ConversionFlags.ShowReturnType
+					| ConversionFlags.QualifiedNamesOnlyForReturnTypes;
+				if (rr.IsParameter)
+					return "parameter " + ambience.Convert(rr.Field);
+				else
+					return "local variable " + ambience.Convert(rr.Field);
+			} else if (result is NamespaceResolveResult) {
+				return "namespace " + ((NamespaceResolveResult)result).Name;
+			} else if (result is TypeResolveResult) {
+				return ambience.Convert(((TypeResolveResult)result).ResolvedClass);
+			} else {
+				if (result.ResolvedType == null)
+					return null;
+				else
+					return "expression of type " + ambience.Convert(result.ResolvedType);
 			}
 		}
 	}

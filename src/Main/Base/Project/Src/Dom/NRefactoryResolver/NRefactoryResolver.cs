@@ -138,7 +138,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return new MemberResolveResult(callingClass, callingMember, method);
 			} else if (expr is FieldReferenceExpression) {
 				FieldReferenceExpression fieldReferenceExpression = (FieldReferenceExpression)expr;
-				IReturnType returnType = fieldReferenceExpression.TargetObject.AcceptVisitor(typeVisitor, null) as IReturnType;
+				IReturnType returnType;
+				if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName == "") {
+					if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
+						returnType = new ReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
+						IClass c = projectContent.GetClass(returnType.FullyQualifiedName);
+						if (c != null)
+							return new TypeResolveResult(callingClass, callingMember, returnType, c);
+					}
+				}
+				returnType = fieldReferenceExpression.TargetObject.AcceptVisitor(typeVisitor, null) as IReturnType;
 				if (returnType != null) {
 					string name = SearchNamespace(returnType.FullyQualifiedName, this.CompilationUnit);
 					if (name != null) {
@@ -193,10 +202,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (name != null && name != "") {
 				return new NamespaceResolveResult(callingClass, callingMember, name);
 			}
-			IClass c = SearchType(identifier, this.CallingClass, this.CompilationUnit);
-			if (c != null) {
-				return new TypeResolveResult(callingClass, callingMember, new ReturnType(c.FullyQualifiedName), c);
-			}
 			LocalLookupVariable var = SearchVariable(identifier);
 			if (var != null) {
 				IReturnType type = GetVariableType(var);
@@ -208,15 +213,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				IField field = new LocalVariableField(para.ReturnType, para.Name, para.Region, callingClass);
 				return new LocalResolveResult(callingClass, callingMember, field, true);
 			}
-			
 			IMember member = GetMember(callingClass, identifier);
 			if (member != null) {
 				return new MemberResolveResult(callingClass, callingMember, member);
 			}
-			
 			ResolveResult result = ResolveMethod(callingClass, identifier);
 			if (result != null)
 				return result;
+			
+			IClass c = SearchType(identifier, this.CallingClass, cu);
+			if (c != null) {
+				return new TypeResolveResult(callingClass, callingMember, new ReturnType(c.FullyQualifiedName), c);
+			}
 			
 			// try if there exists a static member in outer classes named typeName
 			List<IClass> classes = cu.GetOuterClasses(caretLine, caretColumn);
@@ -517,17 +525,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(c);
 			foreach (IClass curType in c.ClassInheritanceTree) {
 				foreach (IProperty p in curType.Properties) {
-					if (IsSameName(p.Name, memberName) && p.MustBeShown(callingClass, true, isClassInInheritanceTree)) {
+					if (IsSameName(p.Name, memberName) && p.IsAccessible(callingClass, isClassInInheritanceTree)) {
 						return p;
 					}
 				}
 				foreach (IField f in curType.Fields) {
-					if (IsSameName(f.Name, memberName) && f.MustBeShown(callingClass, true, isClassInInheritanceTree)) {
+					if (IsSameName(f.Name, memberName) && f.IsAccessible(callingClass, isClassInInheritanceTree)) {
 						return f;
 					}
 				}
 				foreach (IEvent e in curType.Events) {
-					if (IsSameName(e.Name, memberName) && e.MustBeShown(callingClass, true, isClassInInheritanceTree)) {
+					if (IsSameName(e.Name, memberName) && e.IsAccessible(callingClass, isClassInInheritanceTree)) {
 						return e;
 					}
 				}

@@ -21,7 +21,6 @@ namespace ICSharpCode.TextEditor
 	/// </summary>
 	public class TextAreaMouseHandler
 	{
-		ToolTip toolTip = new ToolTip();
 		TextArea  textArea;
 		bool      doubleclick = false;
 		Point     mousepos = new Point(0, 0);
@@ -54,7 +53,6 @@ namespace ICSharpCode.TextEditor
 			textArea.MouseLeave  += new EventHandler(OnMouseLeave);
 			textArea.MouseUp     += new MouseEventHandler(OnMouseUp);
 			textArea.LostFocus   += new EventHandler(TextAreaLostFocus);
-
 		}
 		
 		void ShowHiddenCursor()
@@ -150,7 +148,7 @@ namespace ICSharpCode.TextEditor
 						}
 					}
 					sb.Replace("\t", "    ");
-					toolTip.SetToolTip(textArea, sb.ToString());
+					textArea.SetToolTip(sb.ToString());
 					return;
 				}
 				
@@ -159,12 +157,10 @@ namespace ICSharpCode.TextEditor
 				List<TextMarker> markers = textArea.Document.MarkerStrategy.GetMarkers(clickPosition2);
 				foreach (TextMarker tm in markers) {
 					if (tm.ToolTip != null) {
-						toolTip.SetToolTip(textArea, tm.ToolTip.Replace("\t", "    "));
+						textArea.SetToolTip(tm.ToolTip.Replace("\t", "    "));
 						return;
 					}
 				}
-				
-				toolTip.SetToolTip(textArea, null);
 			}
 			
 			if (e.Button == MouseButtons.Left) {

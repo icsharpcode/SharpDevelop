@@ -13,10 +13,7 @@ namespace ICSharpCode.Core
 {
 	public abstract class AbstractAmbience : IAmbience
 	{
-		ConversionFlags conversionFlags = ConversionFlags.ShowParameterNames     |
-		                                  ConversionFlags.UseFullyQualifiedNames |
-		                                  ConversionFlags.ShowInheritanceList    |
-		                                  ConversionFlags.ShowModifiers;
+		ConversionFlags conversionFlags = ConversionFlags.StandardConversionFlags;
 		
 		public ConversionFlags ConversionFlags {
 			get {
