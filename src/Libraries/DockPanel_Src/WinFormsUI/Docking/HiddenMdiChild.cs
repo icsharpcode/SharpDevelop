@@ -14,9 +14,6 @@ using System.Windows.Forms;
 
 namespace WeifenLuo.WinFormsUI
 {
-	/// <summary>
-	/// Summary description for HiddenMdiChild.
-	/// </summary>
 	internal class HiddenMdiChild : Form
 	{
 		private DockContent m_content = null;

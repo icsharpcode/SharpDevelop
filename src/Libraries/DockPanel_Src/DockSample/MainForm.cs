@@ -12,6 +12,7 @@ using System;
 using System.Drawing;
 using System.Collections;
 using System.ComponentModel;
+using System.Reflection;
 using System.Windows.Forms;
 using System.Data;
 using System.IO;
@@ -24,6 +25,7 @@ namespace DockSample
 	/// </summary>
 	public class MainForm : System.Windows.Forms.Form
 	{
+		private DeserializeDockContent m_deserializeDockContent;
 		private DummySolutionExplorer m_solutionExplorer = new DummySolutionExplorer();
 		private DummyPropertyWindow m_propertyWindow = new DummyPropertyWindow();
 		private DummyToolbox m_toolbox = new DummyToolbox();
@@ -53,7 +55,6 @@ namespace DockSample
 		private System.Windows.Forms.ImageList imageList;
 		private System.Windows.Forms.ToolBarButton toolBarButtonNew;
 		private System.Windows.Forms.ToolBarButton toolBarButtonOpen;
-		private System.Windows.Forms.ToolBarButton toolBarButtonSeparator;
 		private System.Windows.Forms.ToolBarButton toolBarButtonSolutionExplorer;
 		private System.Windows.Forms.ToolBarButton toolBarButtonPropertyWindow;
 		private System.Windows.Forms.ToolBarButton toolBarButtonToolbox;
@@ -66,10 +67,18 @@ namespace DockSample
 		private System.Windows.Forms.MenuItem menuItemNewWindow;
 		private WeifenLuo.WinFormsUI.DockPanel dockPanel;
 		private System.Windows.Forms.MenuItem menuItemLockLayout;
+		private System.Windows.Forms.MenuItem menuItem2;
+		private System.Windows.Forms.ToolBarButton toolBarButtonSeparator1;
+		private System.Windows.Forms.ToolBarButton toolBarButtonSeparator2;
+		private System.Windows.Forms.MenuItem menuItemLayoutByCode;
+		private System.Windows.Forms.ToolBarButton toolBarButtonLayoutByCode;
+		private System.Windows.Forms.MenuItem menuItemLayoutByXml;
+		private System.Windows.Forms.ToolBarButton toolBarButtonLayoutByXml;
 		private System.ComponentModel.IContainer components;
 
 		public MainForm()
 		{
+			m_deserializeDockContent = new DeserializeDockContent(GetContentFromPersistString);
 			//
 			// Required for Windows Form Designer support
 			//
@@ -121,6 +130,9 @@ namespace DockSample
 			this.menuItem1 = new System.Windows.Forms.MenuItem();
 			this.menuItemToolBar = new System.Windows.Forms.MenuItem();
 			this.menuItemStatusBar = new System.Windows.Forms.MenuItem();
+			this.menuItem2 = new System.Windows.Forms.MenuItem();
+			this.menuItemLayoutByCode = new System.Windows.Forms.MenuItem();
+			this.menuItemLayoutByXml = new System.Windows.Forms.MenuItem();
 			this.menuItemTools = new System.Windows.Forms.MenuItem();
 			this.menuItemLockLayout = new System.Windows.Forms.MenuItem();
 			this.menuItemOptions = new System.Windows.Forms.MenuItem();
@@ -134,12 +146,15 @@ namespace DockSample
 			this.toolBar = new System.Windows.Forms.ToolBar();
 			this.toolBarButtonNew = new System.Windows.Forms.ToolBarButton();
 			this.toolBarButtonOpen = new System.Windows.Forms.ToolBarButton();
-			this.toolBarButtonSeparator = new System.Windows.Forms.ToolBarButton();
+			this.toolBarButtonSeparator1 = new System.Windows.Forms.ToolBarButton();
 			this.toolBarButtonSolutionExplorer = new System.Windows.Forms.ToolBarButton();
 			this.toolBarButtonPropertyWindow = new System.Windows.Forms.ToolBarButton();
 			this.toolBarButtonToolbox = new System.Windows.Forms.ToolBarButton();
 			this.toolBarButtonOutputWindow = new System.Windows.Forms.ToolBarButton();
 			this.toolBarButtonTaskList = new System.Windows.Forms.ToolBarButton();
+			this.toolBarButtonSeparator2 = new System.Windows.Forms.ToolBarButton();
+			this.toolBarButtonLayoutByCode = new System.Windows.Forms.ToolBarButton();
+			this.toolBarButtonLayoutByXml = new System.Windows.Forms.ToolBarButton();
 			this.SuspendLayout();
 			// 
 			// mainMenu
@@ -210,7 +225,10 @@ namespace DockSample
 																						 this.menuItemTaskList,
 																						 this.menuItem1,
 																						 this.menuItemToolBar,
-																						 this.menuItemStatusBar});
+																						 this.menuItemStatusBar,
+																						 this.menuItem2,
+																						 this.menuItemLayoutByCode,
+																						 this.menuItemLayoutByXml});
 			this.menuItemView.MergeOrder = 1;
 			this.menuItemView.Text = "&View";
 			// 
@@ -263,6 +281,23 @@ namespace DockSample
 			this.menuItemStatusBar.Index = 7;
 			this.menuItemStatusBar.Text = "Status B&ar";
 			this.menuItemStatusBar.Click += new System.EventHandler(this.menuItemStatusBar_Click);
+			// 
+			// menuItem2
+			// 
+			this.menuItem2.Index = 8;
+			this.menuItem2.Text = "-";
+			// 
+			// menuItemLayoutByCode
+			// 
+			this.menuItemLayoutByCode.Index = 9;
+			this.menuItemLayoutByCode.Text = "Layout By &Code";
+			this.menuItemLayoutByCode.Click += new System.EventHandler(this.menuItemLayoutByCode_Click);
+			// 
+			// menuItemLayoutByXml
+			// 
+			this.menuItemLayoutByXml.Index = 10;
+			this.menuItemLayoutByXml.Text = "Layout By &XML";
+			this.menuItemLayoutByXml.Click += new System.EventHandler(this.menuItemLayoutByXml_Click);
 			// 
 			// menuItemTools
 			// 
@@ -345,12 +380,15 @@ namespace DockSample
 			this.toolBar.Buttons.AddRange(new System.Windows.Forms.ToolBarButton[] {
 																					   this.toolBarButtonNew,
 																					   this.toolBarButtonOpen,
-																					   this.toolBarButtonSeparator,
+																					   this.toolBarButtonSeparator1,
 																					   this.toolBarButtonSolutionExplorer,
 																					   this.toolBarButtonPropertyWindow,
 																					   this.toolBarButtonToolbox,
 																					   this.toolBarButtonOutputWindow,
-																					   this.toolBarButtonTaskList});
+																					   this.toolBarButtonTaskList,
+																					   this.toolBarButtonSeparator2,
+																					   this.toolBarButtonLayoutByCode,
+																					   this.toolBarButtonLayoutByXml});
 			this.toolBar.DropDownArrows = true;
 			this.toolBar.ImageList = this.imageList;
 			this.toolBar.Location = new System.Drawing.Point(0, 0);
@@ -363,16 +401,16 @@ namespace DockSample
 			// toolBarButtonNew
 			// 
 			this.toolBarButtonNew.ImageIndex = 0;
-			this.toolBarButtonNew.ToolTipText = "New";
+			this.toolBarButtonNew.ToolTipText = "Show Layout From XML";
 			// 
 			// toolBarButtonOpen
 			// 
 			this.toolBarButtonOpen.ImageIndex = 1;
 			this.toolBarButtonOpen.ToolTipText = "Open";
 			// 
-			// toolBarButtonSeparator
+			// toolBarButtonSeparator1
 			// 
-			this.toolBarButtonSeparator.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
+			this.toolBarButtonSeparator1.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
 			// 
 			// toolBarButtonSolutionExplorer
 			// 
@@ -398,6 +436,19 @@ namespace DockSample
 			// 
 			this.toolBarButtonTaskList.ImageIndex = 6;
 			this.toolBarButtonTaskList.ToolTipText = "Task List";
+			// 
+			// toolBarButtonSeparator2
+			// 
+			this.toolBarButtonSeparator2.Style = System.Windows.Forms.ToolBarButtonStyle.Separator;
+			// 
+			// toolBarButtonLayoutByCode
+			// 
+			this.toolBarButtonLayoutByCode.ImageIndex = 7;
+			this.toolBarButtonLayoutByCode.ToolTipText = "Show Layout By Code";
+			// 
+			// toolBarButtonLayoutByXml
+			// 
+			this.toolBarButtonLayoutByXml.ImageIndex = 8;
 			// 
 			// MainForm
 			// 
@@ -477,6 +528,12 @@ namespace DockSample
 
 		private void menuItemNew_Click(object sender, System.EventArgs e)
 		{
+			DummyDoc dummyDoc = CreateNewDocument();
+			dummyDoc.Show(dockPanel);
+		}
+
+		private DummyDoc CreateNewDocument()
+		{
 			DummyDoc dummyDoc = new DummyDoc();
 
 			int count = 1;
@@ -487,7 +544,14 @@ namespace DockSample
 				text = "Document" + count.ToString();
 			}
 			dummyDoc.Text = text;
-			dummyDoc.Show(dockPanel);
+			return dummyDoc;
+		}
+
+		private DummyDoc CreateNewDocument(string text)
+		{
+			DummyDoc dummyDoc = new DummyDoc();
+			dummyDoc.Text = text;
+			return dummyDoc;
 		}
 
 		private void menuItemOpen_Click(object sender, System.EventArgs e)
@@ -539,6 +603,11 @@ namespace DockSample
 		}
 
 		private void menuItemCloseAll_Click(object sender, System.EventArgs e)
+		{
+			CloseAllDocuments();
+		}
+
+		private void CloseAllDocuments()
 		{
 			foreach (DockContent content in dockPanel.Documents)
 				content.Close();
@@ -619,7 +688,7 @@ namespace DockSample
 			string configFile = Path.Combine(Path.GetDirectoryName(Application.ExecutablePath), "DockPanel.config");
 
 			if (File.Exists(configFile))
-				dockPanel.LoadFromXml(configFile, new DeserializeDockContent(GetContentFromPersistString));
+				dockPanel.LoadFromXml(configFile, m_deserializeDockContent);
 		}
 
 		private void MainForm_Closing(object sender, System.ComponentModel.CancelEventArgs e)
@@ -654,6 +723,10 @@ namespace DockSample
 				menuItemOutputWindow_Click(null, null);
 			else if (e.Button == toolBarButtonTaskList)
 				menuItemTaskList_Click(null, null);
+			else if (e.Button == toolBarButtonLayoutByCode)
+				menuItemLayoutByCode_Click(null, null);
+			else if (e.Button == toolBarButtonLayoutByXml)
+				menuItemLayoutByXml_Click(null, null);
 		}
 
 		private void menuItemNewWindow_Click(object sender, System.EventArgs e)
@@ -671,7 +744,49 @@ namespace DockSample
 		private void menuItemLockLayout_Click(object sender, System.EventArgs e)
 		{
 			dockPanel.AllowRedocking = !dockPanel.AllowRedocking;
-	
+		}
+
+		private void menuItemLayoutByCode_Click(object sender, System.EventArgs e)
+		{
+			m_solutionExplorer.Show(dockPanel, DockState.DockRight);
+			m_propertyWindow.Show(m_solutionExplorer.Pane, m_solutionExplorer);
+			m_toolbox.Show(dockPanel, new Rectangle(98, 133, 200, 383));
+			m_outputWindow.Show(m_solutionExplorer.Pane, DockAlignment.Bottom, 0.35);
+			m_taskList.Show(m_toolbox.Pane, DockAlignment.Left, 0.4);
+
+			CloseAllDocuments();
+			DummyDoc doc1 = CreateNewDocument("Document1");
+			DummyDoc doc2 = CreateNewDocument("Document2");
+			DummyDoc doc3 = CreateNewDocument("Document3");
+			DummyDoc doc4 = CreateNewDocument("Document4");
+			doc1.Show(dockPanel, DockState.Document);
+			doc2.Show(doc1.Pane, null);
+			doc3.Show(doc1.Pane, DockAlignment.Bottom, 0.5);
+			doc4.Show(doc3.Pane, DockAlignment.Right, 0.5);
+		}
+
+		private void menuItemLayoutByXml_Click(object sender, System.EventArgs e)
+		{
+			// In order to load layout from XML, we need to close all the DockContents
+			CloseAllContents();
+
+			Assembly assembly = Assembly.GetAssembly(typeof(MainForm));
+			Stream xmlStream = assembly.GetManifestResourceStream("DockSample.Resources.DockPanel.xml");
+			dockPanel.LoadFromXml(xmlStream, m_deserializeDockContent);
+			xmlStream.Close();
+		}
+
+		private void CloseAllContents()
+		{
+			// we don't want to create another instance of tool window, set DockPanel to null
+			m_solutionExplorer.DockPanel = null;
+			m_propertyWindow.DockPanel = null;
+			m_toolbox.DockPanel = null;
+			m_outputWindow.DockPanel = null;
+			m_taskList.DockPanel = null;
+
+			// Close all other document windows
+			CloseAllDocuments();
 		}
 	}
 }

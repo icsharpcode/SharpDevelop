@@ -16,6 +16,7 @@ using System.ComponentModel;
 
 namespace WeifenLuo.WinFormsUI
 {
+	/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/ClassDef/*'/>
 	public class InertButton : Control
 	{
 		private IContainer components = new Container();
@@ -34,16 +35,20 @@ namespace WeifenLuo.WinFormsUI
 		private string m_toolTipText = "";
 		private Color m_borderColor = Color.Empty;
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Constructor[@name="Overloads"]/*'/>
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Constructor[@name="()"]/*'/>
 		public InertButton()
 		{
 			InternalConstruct(null, null);
 		}
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Constructor[@name="(Image)"]/*'/>
 		public InertButton(Image imageEnabled)
 		{
 			InternalConstruct(imageEnabled, null);
 		}
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Constructor[@name="(Image, Image)"]/*'/>
 		public InertButton(Image imageEnabled, Image imageDisabled)
 		{
 			InternalConstruct(imageEnabled, imageDisabled);
@@ -70,6 +75,7 @@ namespace WeifenLuo.WinFormsUI
 			SetStyle(ControlStyles.Selectable, false);
 		}
 
+		/// <exclude/>
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -80,6 +86,7 @@ namespace WeifenLuo.WinFormsUI
 			base.Dispose(disposing);
 		}
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="BorderColor"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("InertButton.BorderColor.Description")]
 		public Color BorderColor
@@ -100,6 +107,7 @@ namespace WeifenLuo.WinFormsUI
 			return (m_borderColor != Color.Empty);
 		}
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="BorderWidth"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("InertButton.BorderWidth.Description")]
 		[DefaultValue(1)]
@@ -119,6 +127,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="ImageEnabled"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("InertButton.ImageEnabled.Description")]
 		[DefaultValue(null)]
@@ -157,6 +166,7 @@ namespace WeifenLuo.WinFormsUI
 			return (m_imageEnabled != null);
 		}
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="ImageDisabled"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("InertButton.ImageDisabled.Description")]
 		[DefaultValue(null)]
@@ -195,6 +205,7 @@ namespace WeifenLuo.WinFormsUI
 			return (m_imageDisabled != null);
 		}
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="ImageList"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("InertButton.ImageList.Description")]
 		[DefaultValue(null)]
@@ -212,6 +223,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="ImageIndexEnabled"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("InertButton.ImageIndexEnabled.Description")]
 		[DefaultValue(-1)]
@@ -231,6 +243,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="ImageIndexDisabled"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("InertButton.ImageIndexDisabled.Description")]
 		[DefaultValue(-1)]
@@ -250,6 +263,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="IsPopup"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("InertButton.IsPopup.Description")]
 		[DefaultValue(false)]
@@ -267,6 +281,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="Monochrome"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("InertButton.Monochrom.Description")]
 		[DefaultValue(true)]
@@ -283,6 +298,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="TextAlign"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("InertButton.TextAlign.Description")]
 		[DefaultValue(ContentAlignment.MiddleCenter)]
@@ -299,6 +315,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <include file='CodeDoc\InertButton.xml' path='//CodeDoc/Class[@name="InertButton"]/Property[@name="ToolTipText"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("InertButton.ToolTipText.Description")]
 		[DefaultValue("")]
@@ -317,6 +334,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <exclude/>
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			base.OnMouseDown(e);
@@ -334,6 +352,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <exclude/>
 		protected override void OnMouseUp(MouseEventArgs e)
 		{
 			base.OnMouseUp(e);
@@ -353,6 +372,7 @@ namespace WeifenLuo.WinFormsUI
 			base.OnMouseUp(e);
 		}
 
+		/// <exclude/>
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
@@ -371,6 +391,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <exclude/>
 		protected override void OnMouseEnter(EventArgs e)
 		{
 			// Update state to reflect mouse over the button area
@@ -385,6 +406,7 @@ namespace WeifenLuo.WinFormsUI
 			base.OnMouseEnter(e);
 		}
 
+		/// <exclude/>
 		protected override void OnMouseLeave(EventArgs e)
 		{
 			// Update state to reflect mouse not over the button area
@@ -399,6 +421,7 @@ namespace WeifenLuo.WinFormsUI
 			base.OnMouseLeave(e);
 		}
 
+		/// <exclude/>
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
@@ -571,6 +594,7 @@ namespace WeifenLuo.WinFormsUI
 				colorRightBottom, m_borderWidth, bs);
 		}
 
+		/// <exclude/>
 		protected override void OnEnabledChanged(EventArgs e)
 		{
 			base.OnEnabledChanged(e);

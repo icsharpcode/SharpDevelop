@@ -11,15 +11,18 @@ using System;
 
 namespace WeifenLuo.WinFormsUI
 {
+	/// <include file='CodeDoc\EventArgs.xml' path='//CodeDoc/Class[@name="DockContentEventArgs"]/ClassDef/*'/>
 	public class DockContentEventArgs : EventArgs
 	{
-		public DockContent m_content;
+		private DockContent m_content;
 
+		/// <include file='CodeDoc\EventArgs.xml' path='//CodeDoc/Class[@name="DockContentEventArgs"]/Constructor[@name="(DockContent)"]/*'/>
 		public DockContentEventArgs(DockContent content)
 		{
 			m_content = content;
 		}
 
+		/// <include file='CodeDoc\EventArgs.xml' path='//CodeDoc/Class[@name="DockContentEventArgs"]/Property[@name="Content"]/*'/>
 		public DockContent Content
 		{
 			get	{	return m_content;	}

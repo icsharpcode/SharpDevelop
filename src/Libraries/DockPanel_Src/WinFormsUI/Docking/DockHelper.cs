@@ -12,9 +12,6 @@ using System;
 
 namespace WeifenLuo.WinFormsUI
 {
-	/// <summary>
-	/// Summary description for DockHelper.
-	/// </summary>
 	internal class DockHelper
 	{
 		public static bool IsDockStateAutoHide(DockState dockState)

@@ -15,9 +15,6 @@ using System.Windows.Forms;
 
 namespace WeifenLuo.WinFormsUI
 {
-	/// <summary>
-	/// Summary description for DrawHelper.
-	/// </summary>
 	internal class DrawHelper
 	{
 		private static IntPtr m_halfToneBrush = IntPtr.Zero;

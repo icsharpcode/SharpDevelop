@@ -1,0 +1,203 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Class name="DockContent">
+		<ClassDef>
+			<summary>The smallest dockable unit within the docking framework.</summary>
+			<remarks>
+				<para>
+					<see cref="DockContent" /> derives from <see cref="Form" /> class.
+					To use the DockPanel library, derive your form from <see cref="DockContent" /> class,
+					and implement your user interface in this class. There are several overloaded
+					<see cref="DockContent.Show" /> methods to show <see cref="DockContent" /> as specified docking state.
+					If <see cref="WeifenLuo.WinFormsUI.DockPanel.MdiIntegration" /> property is set to <b>true</b> and <see cref="DockContent.DockState" />
+					is <see cref="WeifenLuo.WinFormsUI.DockState.Document" />, the menu of the form will be merged into to the main form automatically.
+				</para>
+			</remarks>
+		</ClassDef>
+		<Constructor name="()">
+			<summary>Initialize a new DockContent instance.</summary>
+		</Constructor>
+		<Property name="AllowRedocking">
+			<summary>Gets or sets to specify whether drag and drop re-docking is allowed.</summary>
+			<value><b>True</b> if drag and drop re-docking is allowed, otherwise, <b>false</b>.</value>
+		</Property>
+		<Property name="AutoHidePortion">
+			<summary>Gets or sets to specify the portion of the screen size when showing in auto-hide mode.</summary>
+			<value>A value between 0 and 1 to specify the portion of the DockPanel to determine the size of the window when
+			displaying in auto-hide mode. The default value is 0.25 (25%).</value>
+			<exception cref="ArgumentOutOfRangeException">Thrown when value is not between 0 and 1.</exception>
+		</Property>
+		<Property name="CloseButton">
+			<summary>Gets or sets to enalbe/disable the close button for this DockContent in the DockPane.</summary>
+			<value><b>True</b> to enable the close button; <b>false</b> to disable.</value>
+		</Property>
+		<Property name="DockableAreas">
+			<summary>Gets or sets to specify the areas this DockContent can be displayed.</summary>
+			<value>
+				Combination of <see cref="DockAreas" /> values.
+				If <see cref="DockContent.DockState" /> conflicts with this value, a exception will be thrown.
+			</value>
+		</Property>
+		<Property name="DockPanel">
+			<summary>Gets or sets to attach/detach the DockContent to DockPanel.</summary>
+			<value><see cref="WeifenLuo.WinFormsUI.DockPanel" /> object to attach. <b>Null</b> to detach this DockContent to any DockPanel.</value>
+		</Property>
+		<Property name="DockState">
+			<summary>Gets or sets the docking state of <see cref="WeifenLuo.WinFormsUI.DockContent" />.</summary>
+			<value>
+				One of the <see cref="WeifenLuo.WinFormsUI.DockState" /> values:
+				<list type="table">
+					<listheader>
+						<term>Value</term>
+						<term>Description</term>
+					</listheader>
+					<item>
+						<description>
+							<see cref="WeifenLuo.WinFormsUI.DockState.Unknown" />
+						</description>
+						<description>Valid only when the <see cref="WeifenLuo.WinFormsUI.DockContent" /> is newly
+						initialized or detached from <see cref="WeifenLuo.WinFormsUI.DockPanel" />. Can not
+						be explicitly set.</description>
+					</item>
+					<item>
+						<description>
+							<see cref="WeifenLuo.WinFormsUI.DockState.Hidden" />
+						</description>
+						<description>Synchronized with the <see cref="WeifenLuo.WinFormsUI.DockContent.IsHidden" /> property.</description>
+					</item>
+					<item>
+						<description>
+							<b>Others</b>
+						</description>
+						<description>Synchronized with the docking state of
+						<see cref="WeifenLuo.WinFormsUI.DockContent.Pane" />.</description>
+					</item>
+				</list>
+			</value>
+			<include file='DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="Pane"]/remarks' />
+		</Property>
+		<Property name="FloatPane">
+			<summary>Gets or sets the containing <see cref="WeifenLuo.WinFormsUI.DockPane" /> object when floating.</summary>
+			<value>The containing <see cref="WeifenLuo.WinFormsUI.DockPane" /> object when floating.</value>
+			<include file='DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="Pane"]/remarks' />
+		</Property>
+		<Property name="HideOnClose">
+			<summary>Gets or sets to determine when clicking the close button, the DockContent form should be closed or hidden.</summary>
+			<value><b>True</b> to hide the form when clicking the close button; otherwise, <b>false</b>. The default value is <b>false</b>.</value>
+		</Property>
+		<Property name="IsActivated">
+			<summary>Gets to specified the DockContent object is currently activated.</summary>
+			<value><b>True</b> if the DockContent object is currently activated, otherwise, <b>false</b>.</value>
+		</Property>
+		<Property name="IsFloat">
+			<summary>Gets or sets whether the DockContent object is floating.</summary>
+			<value><b>True</b> if the DockContent object is floating; otherwise, false.</value>
+		</Property>
+		<Property name="IsHidden">
+			<summary>Gets or sets whether the DockContent object is hidden.</summary>
+			<value><b>True</b> if the DockContent object is hidden; otherwise, false.</value>
+		</Property>
+		<Property name="Pane">
+			<summary>Gets or sets the displayed containing <see cref="WeifenLuo.WinFormsUI.DockPane" /> object.</summary>
+			<value>The currently displayed containing <see cref="WeifenLuo.WinFormsUI.DockPane" /> object.</value>
+			<remarks>
+				A <see cref="WeifenLuo.WinFormsUI.DockContent" /> object can have two containing
+				<see cref="WeifenLuo.WinFormsUI.DockPane" /> objects: <see cref="WeifenLuo.WinFormsUI.DockContent.PanelPane" /> and
+				<see cref="WeifenLuo.WinFormsUI.DockContent.FloatPane" />. The <see cref="WeifenLuo.WinFormsUI.DockContent.Pane" />
+				property returns currently displaying containing <see cref="WeifenLuo.WinFormsUI.DockPane" />. The docking state of a
+				<see cref="WeifenLuo.WinFormsUI.DockContent" /> object is always synchronized with its displaying containing
+				<see cref="WeifenLuo.WinFormsUI.DockPane" />.
+			</remarks>
+		</Property>
+		<Property name="PanelPane">
+			<summary>Gets or sets the containing <see cref="WeifenLuo.WinFormsUI.DockPane" /> object when docked.</summary>
+			<value>The containing <see cref="WeifenLuo.WinFormsUI.DockPane" /> object when docked.</value>
+			<include file='DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="Pane"]/remarks' />
+		</Property>
+		<Property name="ShowHint">
+			<summary>Gets or sets the desired docking state for this DockContent object.</summary>
+			<value>One of the valid <see cref="WeifenLuo.WinFormsUI.DockState" /> values. This value should not
+			conflicts with <see cref="WeifenLuo.WinFormsUI.DockContent.DockableAreas" /> property.</value>
+		</Property>
+		<Property name="TabPageContextMenu">
+			<summary>Gets or sets the context menu for the DockPane tab page.</summary>
+			<value>The <see cref="System.Windows.Forms.ContextMenu" /> for the DockPane tab page.</value>
+		</Property>
+		<Property name="TabText">
+			<summary>Gets or sets the text to display for the DockPane tab strip.</summary>
+			<value>The text to display for the DockPane tab strip.</value>
+			<remarks>If this value is not set, the value of <see cref="Control.Text" /> will be used.</remarks>
+		</Property>
+		<Property name="ToolTipText">
+			<summary>Gets or sets the tooltip text for this form.</summary>
+			<value>The tooltip text for this form.</value>
+		</Property>
+		<Property name="VisibleState">
+			<summary>Gets or sets the visible docking state for this form.</summary>
+			<value>One of the <see cref="WeifenLuo.WinFormsUI.DockState" /> values for visible docking state of this form.</value>
+		</Property>
+		<Method name="Activate()">
+			<summary>Activates the DockContent form and gives it focus.</summary>
+			<remarks>Activating the DockContent form makes it the <see cref="WeifenLuo.WinFormsUI.DockPane.ActiveContent" /> of its
+			containing <see cref="WeifenLuo.WinFormsUI.DockPane" />. To determine the active DockContent in an application,
+			use <see cref="WeifenLuo.WinFormsUI.DockPanel.ActiveContent" /> property. To determine the active document
+			content, use <see cref="WeifenLuo.WinFormsUI.DockPanel.ActiveDocument" /> property.</remarks>
+		</Method>
+		<Method name="GetPersistString()">
+			<summary>Gets the string to persist this DockContent object.</summary>
+			<returns>The string to persist this DockContent object.</returns>
+			<include file='DockPanel.xml' path='//CodeDoc/Delegate[@name="DeserializeDockContent"]/remarks' />
+		</Method>
+		<Method name="IsDockStateValid(DockState)">
+			<summary>Test with <see cref="WeifenLuo.WinFormsUI.DockContent.DockableAreas" /> to see whether the specified
+			<see cref="WeifenLuo.WinFormsUI.DockState" /> is valid.</summary>
+			<param name="dockState">The specified <see cref="WeifenLuo.WinFormsUI.DockState" /> value to test.</param>
+		</Method>
+		<Method name="OnDockStateChanged(EventArgs)">
+			<summary>Raises the <see cref="WeifenLuo.WinFormsUI.DockContent.DockStateChanged" /> event.</summary>
+			<param name="e">An <see cref="System.EventArgs" /> that contains the event data.</param>
+		</Method>
+		<Method name="Show">
+			<overloads>
+				<summary>Displays the form. Overloaded.</summary>
+			</overloads>
+		</Method>
+		<Method name="Show()">
+			<summary>Displays the form, with default settings.</summary>
+			<remarks>If <see cref="WeifenLuo.WinFormsUI.DockContent.DockPanel"/> property is set, the form
+			will be displayed as <see cref="WeifenLuo.WinFormsUI.DockContent.ShowHint"/> docking state;
+			otherwise it will be displayed as normal form.</remarks>
+		</Method>
+		<Method name="Show(DockPane, DockAlignment, double)">
+			<summary>Displays the form, as specified nested docking.</summary>
+			<param name="prevPane">The target <see cref="WeifenLuo.WinFormsUI.DockPane"/> to dock.</param>
+			<param name="alignment">The edge of the target <see cref="WeifenLuo.WinFormsUI.DockPane"/> to dock.</param>
+			<param name="proportion">The proportion size of the source <see cref="WeifenLuo.WinFormsUI.DockPane"/> to take
+			inside the target <see cref="WeifenLuo.WinFormsUI.DockPane"/>.</param>
+		</Method>
+		<Method name="Show(DockPane, DockContent)">
+			<summary>Displays the form, at the specified tab location of DockPane</summary>
+			<param name="pane">The target <see cref="WeifenLuo.WinFormsUI.DockPane"/> to contain this DockContent.</param>
+			<param name="beforeContent">The position to show in the tab strip of the <see cref="WeifenLuo.WinFormsUI.DockPane"/>.
+			<b>Null</b> to show at the last position in the tab strip.
+			</param>
+		</Method>
+		<Method name="Show(DockPanel)">
+			<summary>Displays the form, attaching to specified DockPanel.</summary>
+			<param name="dockPanel">The <see cref="WeifenLuo.WinFormsUI.DockPanel"/> object to attach.</param>
+		</Method>
+		<Method name="Show(DockPanel, Rectangle)">
+			<summary>Displays the form, as floating window at the specified location and size.</summary>
+			<param name="dockPanel">The <see cref="WeifenLuo.WinFormsUI.DockPanel"/> object to attach.</param>
+			<param name="floatWindowBounds">The bounds of the floating window.</param>
+		</Method>
+		<Method name="Show(DockPanel, DockState)">
+			<summary>Displays the form, with specified docking state.</summary>
+			<param name="dockPanel">The <see cref="WeifenLuo.WinFormsUI.DockPanel"/> object to attach.</param>
+			<param name="dockState">The docking state to display.</param>
+		</Method>
+		<Event name="DockStateChanged">
+			<summary>Occurs when the <see cref="WeifenLuo.WinFormsUI.DockContent.DockState"/> property changed.</summary>
+		</Event>
+	</Class>
+</CodeDoc>

@@ -12,14 +12,10 @@ using System;
 using System.Drawing;
 using System.Reflection;
 using System.Resources;
-
 using System.Windows.Forms;
 
 namespace WeifenLuo.WinFormsUI
 {
-	/// <summary>
-	/// Summary description for ResourceHelper.
-	/// </summary>
 	internal class ResourceHelper
 	{
 		private static ResourceManager m_resourceManager;

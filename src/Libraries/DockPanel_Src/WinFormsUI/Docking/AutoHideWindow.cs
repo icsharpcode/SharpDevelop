@@ -95,6 +95,7 @@ namespace WeifenLuo.WinFormsUI
 					AnimateWindow(true);
 
 				DockPanel.ResumeLayout();
+				DockPanel.Invalidate();
 
 				SetTimerMouseTrack();
 			}

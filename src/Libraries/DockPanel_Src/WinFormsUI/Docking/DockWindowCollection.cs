@@ -13,6 +13,7 @@ using System.Collections;
 
 namespace WeifenLuo.WinFormsUI
 {
+	/// <include file='CodeDoc\DockWindowCollection.xml' path='//CodeDoc/Class[@name="DockWindowCollection"]/ClassDef/*'/>>
 	public class DockWindowCollection : ReadOnlyCollectionBase
 	{
 		internal DockWindowCollection(DockPanel dockPanel)
@@ -24,6 +25,7 @@ namespace WeifenLuo.WinFormsUI
 			InnerList.Add(new DockWindow(dockPanel, DockState.DockBottom));
 		}
 
+		/// <include file='CodeDoc\DockWindowCollection.xml' path='//CodeDoc/Class[@name="DockWindowCollection"]/Property[@name="Item"]/*'/>>
 		public DockWindow this [DockState dockState]
 		{
 			get

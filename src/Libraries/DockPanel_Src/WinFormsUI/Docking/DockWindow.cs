@@ -14,6 +14,7 @@ using System.Drawing;
 
 namespace WeifenLuo.WinFormsUI
 {
+	/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/ClassDef/*'/>
 	public class DockWindow : Panel, IDockListContainer
 	{
 		private DockPanel m_dockPanel;
@@ -63,32 +64,38 @@ namespace WeifenLuo.WinFormsUI
 			ResumeLayout();
 		}
 
+		/// <exclude/>
 		protected override Size DefaultSize
 		{
 			// Set the default size to empty to reduce the screen flicker
 			get	{	return Size.Empty;	}
 		}
 
+		/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/Property[@name="DisplayingList"]/*'/>
 		public DisplayingDockList DisplayingList
 		{
 			get	{	return DockList.DisplayingList;	}
 		}
 
+		/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/Property[@name="DockList"]/*'/>
 		public DockList DockList
 		{
 			get	{	return m_dockList;	}
 		}
 
+		/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/Property[@name="DockPanel"]/*'/>
 		public DockPanel DockPanel
 		{
 			get	{	return m_dockPanel;	}
 		}
 
+		/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/Property[@name="DockState"]/*'/>
 		public DockState DockState
 		{
 			get	{	return m_dockState;	}
 		}
 
+		/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/Property[@name="IsFloat"]/*'/>
 		public bool IsFloat
 		{
 			get	{	return DockState == DockState.Float;	}
@@ -99,6 +106,7 @@ namespace WeifenLuo.WinFormsUI
 			get	{	return DisplayingList.Count == 0 ? null : DisplayingList[0];	}
 		}
 
+		/// <include file='CodeDoc\DockWindow.xml' path='//CodeDoc/Class[@name="DockWindow"]/Property[@name="DisplayingRectangle"]/*'/>
 		public virtual Rectangle DisplayingRectangle
 		{
 			get
@@ -132,6 +140,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <exclude/>
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			// if DockWindow is document, draw the border
@@ -141,6 +150,7 @@ namespace WeifenLuo.WinFormsUI
 			base.OnPaint(e);
 		}
 
+		/// <exclude/>
 		protected override void OnLayout(LayoutEventArgs levent)
 		{
 			DisplayingList.Refresh();

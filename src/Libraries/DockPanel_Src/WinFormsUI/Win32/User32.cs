@@ -15,7 +15,6 @@ using WeifenLuo.WinFormsUI.Win32;
 
 namespace WeifenLuo.WinFormsUI
 {
-
     internal class User32
     {
 		[DllImport("User32.dll", CharSet=CharSet.Auto)]

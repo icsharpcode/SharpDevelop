@@ -74,7 +74,7 @@ namespace DockSample
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(272, 16);
 			this.label1.TabIndex = 1;
-			this.label1.Text = "DockSample, Version 1.1";
+			this.label1.Text = "DockSample, Version 1.2";
 			// 
 			// label2
 			// 
@@ -82,7 +82,7 @@ namespace DockSample
 			this.label2.Name = "label2";
 			this.label2.Size = new System.Drawing.Size(272, 32);
 			this.label2.TabIndex = 2;
-			this.label2.Text = "Copyright 2003, Weifen Luo";
+			this.label2.Text = "Copyright 2003 - 2005, Weifen Luo";
 			// 
 			// AboutDialog
 			// 

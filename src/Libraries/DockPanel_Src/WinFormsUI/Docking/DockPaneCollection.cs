@@ -15,12 +15,14 @@ using System.Windows.Forms;
 
 namespace WeifenLuo.WinFormsUI
 {
+	/// <include file='CodeDoc\DockPaneCollection.xml' path='//CodeDoc/Class[@name="DockPaneCollection"]/ClassDef/*'/>>
 	public class DockPaneCollection : ReadOnlyCollectionBase
 	{
 		internal DockPaneCollection()
 		{
 		}
 
+		/// <include file='CodeDoc\DockPaneCollection.xml' path='//CodeDoc/Class[@name="DockPaneCollection"]/Property[@name="Item"]/*'/>>
 		public DockPane this[int index]
 		{
 			get {  return InnerList[index] as DockPane;  }
@@ -58,6 +60,7 @@ namespace WeifenLuo.WinFormsUI
 				InnerList.Insert(IndexOf(paneBefore), pane);
 		}
 
+		/// <include file='CodeDoc\DockPaneCollection.xml' path='//CodeDoc/Class[@name="DockPaneCollection"]/Method[@name="Contains(DockPane)"]/*'/>>
 		public bool Contains(DockPane pane)
 		{
 			return InnerList.Contains(pane);
@@ -69,6 +72,7 @@ namespace WeifenLuo.WinFormsUI
 				this[i].Close();
 		}
 
+		/// <include file='CodeDoc\DockPaneCollection.xml' path='//CodeDoc/Class[@name="DockPaneCollection"]/Method[@name="IndexOf(DockPane)"]/*'/>>
 		public int IndexOf(DockPane pane)
 		{
 			return InnerList.IndexOf(pane);

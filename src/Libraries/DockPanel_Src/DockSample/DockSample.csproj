@@ -169,6 +169,7 @@
     <EmbeddedResource Include="OptionsDialog.resx">
       <DependentUpon>OptionsDialog.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Resources\DockPanel.xml" />
     <Content Include="App.ico" />
     <Content Include="Images\ArrowDown.bmp" />
     <Content Include="Images\ArrowUp.bmp" />
@@ -190,6 +191,7 @@
     <Content Include="Images\SolutionExplorer.ico" />
     <Content Include="Images\TaskListWindow.ico" />
     <Content Include="Images\ToolboxWindow.ico" />
+    <Content Include="Images\XmlFile.ico" />
     <None Include="RtfFiles\DummyDoc.cs.rtf" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

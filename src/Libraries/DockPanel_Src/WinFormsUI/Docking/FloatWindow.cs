@@ -15,20 +15,21 @@ using System.Windows.Forms;
 
 namespace WeifenLuo.WinFormsUI
 {
-	/// <summary>
-	/// Descripiton of class FloatWindow
-	/// </summary>
+	/// <include file='CodeDoc\FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/ClassDef/*'/>
 	public class FloatWindow : Form, IDockListContainer
 	{
 		private DockList m_dockList;
 		internal static Size DefaultWindowSize = new Size(300, 300);
 		internal const int WM_CHECKDISPOSE = (int)(Win32.Msgs.WM_USER + 1);
 
+		/// <include file='CodeDoc\FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Constructor[@name="Overloads"]/*'/>
+		/// <include file='CodeDoc\FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Constructor[@name="(DockPanel, DockPane)"]/*'/>
 		public FloatWindow(DockPanel dockPanel, DockPane pane)
 		{
 			InternalConstruct(dockPanel, pane, false, Rectangle.Empty);
 		}
 
+		/// <include file='CodeDoc\FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Constructor[@name="(DockPanel, DockPane, Rectangle)"]/*'/>
 		public FloatWindow(DockPanel dockPanel, DockPane pane, Rectangle bounds)
 		{
 			InternalConstruct(dockPanel, pane, true, bounds);
@@ -66,6 +67,7 @@ namespace WeifenLuo.WinFormsUI
 			ResumeLayout();
 		}
 
+		/// <exclude/>
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -78,38 +80,45 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private bool m_allowRedocking = true;
+		/// <include file='CodeDoc\FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Property[@name="AllowRedocking"]/*'/>
 		public bool AllowRedocking
 		{
 			get	{	return m_allowRedocking;	}
 			set	{	m_allowRedocking = value;	}
 		}
 
+		/// <exclude />
 		protected override Size DefaultSize
 		{
 			get	{	return FloatWindow.DefaultWindowSize;	}
 		}
 
+		/// <include file='CodeDoc\FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Property[@name="DockList"]/*'/>
 		public DockList DockList
 		{
 			get	{	return m_dockList;	}
 		}
 
+		/// <include file='CodeDoc\FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Property[@name="DisplayingList"]/*'/>
 		public DisplayingDockList DisplayingList
 		{
 			get	{	return DockList.DisplayingList;	}
 		}
 
 		private DockPanel m_dockPanel;
+		/// <include file='CodeDoc\FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Property[@name="DockPanel"]/*'/>
 		public DockPanel DockPanel
 		{
 			get	{	return m_dockPanel;	}
 		}
 
+		/// <include file='CodeDoc\FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Property[@name="DockState"]/*'/>
 		public DockState DockState
 		{
 			get	{	return DockState.Float;	}
 		}
 	
+		/// <include file='CodeDoc\FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Property[@name="IsFloat"]/*'/>
 		public bool IsFloat
 		{
 			get	{	return DockState == DockState.Float;	}
@@ -121,7 +130,7 @@ namespace WeifenLuo.WinFormsUI
 			get	{	return m_dummyControl;	}
 		}
 
-		public bool IsDockStateValid(DockState dockState)
+		internal bool IsDockStateValid(DockState dockState)
 		{
 			foreach (DockPane pane in DockList)
 				foreach (DockContent content in pane.Contents)
@@ -131,12 +140,14 @@ namespace WeifenLuo.WinFormsUI
 			return true;
 		}
 
+		/// <exclude/>
 		protected override void OnActivated(EventArgs e)
 		{
 			DockPanel.FloatWindows.BringWindowToFront(this);
 			base.OnActivated (e);
 		}
 
+		/// <exclude/>
 		protected override void OnLayout(LayoutEventArgs levent)
 		{
 			DisplayingList.Refresh();
@@ -158,6 +169,7 @@ namespace WeifenLuo.WinFormsUI
 				Text = theOnlyPane.ActiveContent.Text;
 		}
 
+		/// <exclude/>
 		protected override void WndProc(ref Message m)
 		{
 			if (m.Msg == (int)Win32.Msgs.WM_NCLBUTTONDOWN)
@@ -235,6 +247,7 @@ namespace WeifenLuo.WinFormsUI
 			base.WndProc(ref m);
 		}
 
+		/// <include file='CodeDoc\FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Property[@name="DisplayingRectangle"]/*'/>
 		public virtual Rectangle DisplayingRectangle
 		{
 			get	{	return ClientRectangle;	}

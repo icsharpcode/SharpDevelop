@@ -19,8 +19,10 @@ using System.Text;
 
 namespace WeifenLuo.WinFormsUI
 {
+	/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Delegate[@name="DeserializeDockContent"]/*'/>
 	public delegate DockContent DeserializeDockContent(string persistString);
 
+	/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/ClassDef/*'/>
 	[Designer(typeof(System.Windows.Forms.Design.ControlDesigner))]
 	public class DockPanel : Panel
 	{
@@ -59,6 +61,7 @@ namespace WeifenLuo.WinFormsUI
 			AutoHideDockStates[3] = DockState.DockBottomAutoHide;
 		}
 
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Constructor[@name="()"]/*'/>
 		public DockPanel()
 		{
 			m_dragHandler = new DragHandler(this);
@@ -115,6 +118,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private bool m_disposed = false;
+		/// <exclude/>
 		protected override void Dispose(bool disposing)
 		{
 			if (!m_disposed)
@@ -137,6 +141,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="ActiveAutoHideContent"]/*' />
 		[Browsable(false)]
 		public DockContent ActiveAutoHideContent
 		{
@@ -145,6 +150,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private DockContent m_activeContent = null;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="ActiveContent"]/*' />
 		[Browsable(false)]
 		public DockContent ActiveContent
 		{
@@ -169,6 +175,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private DockPane m_activePane = null;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="ActivePane"]/*' />
 		[Browsable(false)]
 		public DockPane ActivePane
 		{
@@ -195,19 +202,15 @@ namespace WeifenLuo.WinFormsUI
 			for (; control != null; control = control.Parent)
 			{
 				pane = control as DockPane;
-				if (pane != null)
+				if (pane != null && pane.DockPanel == this)
 					break;
 			}
 
-			if (pane == null)
-				return null;
-			else if (pane.DockPanel != this)
-				return null;
-			else
-				return pane;
+			return pane;
 		}
 
 		private DockContent m_activeDocument = null;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="ActiveDocument"]/*' />
 		[Browsable(false)]
 		public DockContent ActiveDocument
 		{
@@ -229,6 +232,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private DockPane m_activeDocumentPane = null;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="ActiveDocumentPane"]/*' />
 		[Browsable(false)]
 		public DockPane ActiveDocumentPane
 		{
@@ -264,6 +268,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private bool m_allowRedocking = true;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="AllowRedocking"]/*' />
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockPanel.AllowRedocking.Description")]
 		[DefaultValue(true)]
@@ -280,12 +285,14 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private DockContentCollection m_contents = new DockContentCollection();
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="Contents"]/*' />
 		[Browsable(false)]
 		public DockContentCollection Contents
 		{
 			get	{	return m_contents;	}
 		}
 
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="DockPaneFactory"]/*' />
 		protected internal virtual IDockPaneFactory DockPaneFactory
 		{
 			get	{	return DefaultDockPaneFactory;	}
@@ -298,6 +305,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private DockPaneCollection m_panes;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="Panes"]/*' />
 		[Browsable(false)]
 		public DockPaneCollection Panes
 		{
@@ -315,6 +323,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private double m_dockBottomPortion = 0.25;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="DockBottomPortion"]/*' />
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockPanel.DockBottomPortion.Description")]
 		[DefaultValue(0.25)]
@@ -339,6 +348,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private double m_dockLeftPortion = 0.25;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="DockLeftPortion"]/*' />
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockPanel.DockLeftPortion.Description")]
 		[DefaultValue(0.25)]
@@ -363,6 +373,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private double m_dockRightPortion = 0.25;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="DockRightPortion"]/*' />
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockPanel.DockRightPortion.Description")]
 		[DefaultValue(0.25)]
@@ -387,6 +398,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private double m_dockTopPortion = 0.25;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="DockTopPortion"]/*' />
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockPanel.DockTopPortion.Description")]
 		[DefaultValue(0.25)]
@@ -411,12 +423,14 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private DockWindowCollection m_dockWindows;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="DockWindows"]/*' />
 		[Browsable(false)]
 		public DockWindowCollection DockWindows
 		{
 			get	{	return m_dockWindows;	}
 		}
 
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="Documents"]/*' />
 		[Browsable(false)]
 		public DockContent[] Documents
 		{
@@ -459,12 +473,14 @@ namespace WeifenLuo.WinFormsUI
 			get	{	return m_dummyControl;	}
 		}
 
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="FloatWindowFactory"]/*' />
 		protected internal virtual IFloatWindowFactory FloatWindowFactory
 		{
 			get	{	return DefaultFloatWindowFactory;	}
 		}
 
 		private FloatWindowCollection m_floatWindows;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="FloatWindows"]/*' />
 		[Browsable(false)]
 		public FloatWindowCollection FloatWindows
 		{
@@ -472,6 +488,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private bool m_mdiIntegration = true;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="MdiIntegration"]/*' />
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockPanel.MdiIntegration.Description")]
 		[DefaultValue(true)]
@@ -489,6 +506,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private bool m_sdiDocument = false;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="SdiDocument"]/*' />
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockPanel.SdiDocument.Description")]
 		[DefaultValue(false)]
@@ -505,6 +523,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <exclude/>
 		protected override void OnLayout(LayoutEventArgs levent)
 		{
 			CalculateDockPadding();
@@ -538,6 +557,7 @@ namespace WeifenLuo.WinFormsUI
 			base.OnLayout(levent);
 		}
 
+		/// <exclude/>
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			base.OnMouseDown(e);
@@ -556,16 +576,14 @@ namespace WeifenLuo.WinFormsUI
 				content.Pane.Activate();
 		}
 
+		/// <exclude/>
 		protected override void OnMouseHover(EventArgs e)
 		{
 			base.OnMouseHover(e);
 
 			DockContent content = GetHitTest();
 			if (content != null && ActiveAutoHideContent != content)
-			{
 				ActiveAutoHideContent = content;
-				Invalidate();
-			}
 
 			// requires further tracking of mouse hover behavior,
 			// call TrackMouseEvent
@@ -573,6 +591,7 @@ namespace WeifenLuo.WinFormsUI
 			User32.TrackMouseEvent(ref tme);
 		}
 
+		/// <exclude/>
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			base.OnPaint(e);
@@ -674,12 +693,15 @@ namespace WeifenLuo.WinFormsUI
 				int x = MeasureAutoHideTab.TabGapLeft + rectTabStrip.X;
 				foreach (DockPane pane in Panes)
 				{
-					if (pane.DockState != dockState)
+					if (pane.DockState != dockState || pane.IsHidden)
 						continue;
 
 					int maxWidth = 0;
 					foreach (DockContent content in pane.Contents)
 					{
+						if (content.DockState != pane.DockState)
+							continue;
+
 						int width = imageWidth + MeasureAutoHideTab.ImageGapLeft +
 							MeasureAutoHideTab.ImageGapRight +
 							(int)g.MeasureString(content.TabText, Font).Width + 1 +
@@ -690,7 +712,7 @@ namespace WeifenLuo.WinFormsUI
 
 					foreach (DockContent content in pane.Contents)
 					{
-						if (content.IsHidden)
+						if (content.DockState != pane.DockState)
 							continue;
 
 						content.TabX = x;
@@ -780,7 +802,7 @@ namespace WeifenLuo.WinFormsUI
 
 				foreach (DockContent content in pane.Contents)
 				{
-					if (!content.IsHidden)
+					if (content.DockState == pane.DockState)
 						DrawTab(g, dockState, pane, content);
 				}
 			}
@@ -840,7 +862,7 @@ namespace WeifenLuo.WinFormsUI
 
 			foreach (DockPane pane in Panes)
 			{
-				if (pane.DockState == dockState)
+				if (pane.DockState == dockState && !pane.IsHidden)
 					result ++;
 			}
 
@@ -859,12 +881,12 @@ namespace WeifenLuo.WinFormsUI
 
 				foreach(DockPane pane in Panes)
 				{
-					if (pane.DockState != state)
+					if (pane.DockState != state || pane.IsHidden)
 						continue;
 
 					foreach(DockContent content in pane.Contents)
 					{
-						if (content.IsHidden)
+						if (content.DockState != pane.DockState)
 							continue;
 
 						Rectangle rectTab = GetTabRectangle(state, content, true);
@@ -1004,7 +1026,7 @@ namespace WeifenLuo.WinFormsUI
 			AutoHideWindow.RefreshActivePane();
 		}
 
-		public void RefreshMdiIntegration()
+		private void RefreshMdiIntegration()
 		{
 			foreach (DockPane pane in Panes)
 			{
@@ -1044,6 +1066,7 @@ namespace WeifenLuo.WinFormsUI
 			FloatWindows.Remove(floatWindow);
 		}
 
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Method[@name="SetPaneIndex(DockPane, int)"]/*'/>
 		public void SetPaneIndex(DockPane pane, int index)
 		{
 			int oldIndex = Panes.IndexOf(pane);
@@ -1136,6 +1159,7 @@ namespace WeifenLuo.WinFormsUI
 			dragHandler.DragOutline = DrawHelper.CreateDragOutline(rect, dragSize);
 		}
 
+		/// <exclude/>
 		protected override void WndProc(ref Message m)
 		{
 			if (m.Msg == WM_REFRESHACTIVEWINDOW)
@@ -1145,6 +1169,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private static readonly object ActiveDocumentChangedEvent = new object();
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Event[@name="ActiveDocumentChanged"]/*' />
 		[LocalizedCategory("Category.PropertyChanged")]
 		[LocalizedDescription("DockPanel.ActiveDocumentChanged.Description")]
 		public event EventHandler ActiveDocumentChanged
@@ -1152,6 +1177,7 @@ namespace WeifenLuo.WinFormsUI
 			add	{	Events.AddHandler(ActiveDocumentChangedEvent, value);	}
 			remove	{	Events.RemoveHandler(ActiveDocumentChangedEvent, value);	}
 		}
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Method[@name="OnActiveDocumentChanged(EventArgs)"]/*' />
 		protected virtual void OnActiveDocumentChanged(EventArgs e)
 		{
 			EventHandler handler = (EventHandler)Events[ActiveDocumentChangedEvent];
@@ -1160,6 +1186,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private static readonly object ActiveContentChangedEvent = new object();
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Event[@name="ActiveContentChanged"]/*' />
 		[LocalizedCategory("Category.PropertyChanged")]
 		[LocalizedDescription("DockPanel.ActiveContentChanged.Description")]
 		public event EventHandler ActiveContentChanged
@@ -1167,6 +1194,7 @@ namespace WeifenLuo.WinFormsUI
 			add	{	Events.AddHandler(ActiveContentChangedEvent, value);	}
 			remove	{	Events.RemoveHandler(ActiveContentChangedEvent, value);	}
 		}
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Method[@name="OnActiveContentChanged(EventArgs)"]/*' />
 		protected virtual void OnActiveContentChanged(EventArgs e)
 		{
 			EventHandler handler = (EventHandler)Events[ActiveContentChangedEvent];
@@ -1175,6 +1203,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private static readonly object ActivePaneChangedEvent = new object();
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Event[@name="ActivePaneChanged"]/*' />
 		[LocalizedCategory("Category.PropertyChanged")]
 		[LocalizedDescription("DockPanel.ActivePaneChanged.Description")]
 		public event EventHandler ActivePaneChanged
@@ -1182,6 +1211,7 @@ namespace WeifenLuo.WinFormsUI
 			add	{	Events.AddHandler(ActivePaneChangedEvent, value);	}
 			remove	{	Events.RemoveHandler(ActivePaneChangedEvent, value);	}
 		}
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Method[@name="OnActivePaneChanged(EventArgs)"]/*' />
 		protected virtual void OnActivePaneChanged(EventArgs e)
 		{
 			EventHandler handler = (EventHandler)Events[ActivePaneChangedEvent];
@@ -1189,8 +1219,10 @@ namespace WeifenLuo.WinFormsUI
 				handler(this, e);
 		}
 
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Delegate[@name="DockContentEventHandler"]/*'/>
 		public delegate void DockContentEventHandler(object sender, DockContentEventArgs e);
 		private static readonly object ContentAddedEvent = new object();
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Event[@name="ContentAdded"]/*' />
 		[LocalizedCategory("Category.DockingNotification")]
 		[LocalizedDescription("DockPanel.ContentAdded.Description")]
 		public event DockContentEventHandler ContentAdded
@@ -1198,6 +1230,7 @@ namespace WeifenLuo.WinFormsUI
 			add	{	Events.AddHandler(ContentAddedEvent, value);	}
 			remove	{	Events.RemoveHandler(ContentAddedEvent, value);	}
 		}
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Method[@name="OnContentAdded(DockContentEventArgs)"]/*' />
 		protected virtual void OnContentAdded(DockContentEventArgs e)
 		{
 			DockContentEventHandler handler = (DockContentEventHandler)Events[ContentAddedEvent];
@@ -1206,6 +1239,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private static readonly object ContentRemovedEvent = new object();
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Event[@name="ContentRemoved"]/*' />
 		[LocalizedCategory("Category.DockingNotification")]
 		[LocalizedDescription("DockPanel.ContentRemoved.Description")]
 		public event DockContentEventHandler ContentRemoved
@@ -1213,6 +1247,7 @@ namespace WeifenLuo.WinFormsUI
 			add	{	Events.AddHandler(ContentRemovedEvent, value);	}
 			remove	{	Events.RemoveHandler(ContentRemovedEvent, value);	}
 		}
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Method[@name="OnContentRemoved(DockContentEventArgs)"]/*' />
 		protected virtual void OnContentRemoved(DockContentEventArgs e)
 		{
 			DockContentEventHandler handler = (DockContentEventHandler)Events[ContentRemovedEvent];
@@ -1220,26 +1255,33 @@ namespace WeifenLuo.WinFormsUI
 				handler(this, e);
 		}
 
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Method[@name="SaveAsXml"]/*'/>
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Method[@name="SaveAsXml(string)"]/*'/>
 		public void SaveAsXml(string filename)
 		{
 			DockPanelPersist.SaveAsXml(this, filename);
 		}
 
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Method[@name="SaveAsXml(string, Encoding)"]/*'/>
 		public void SaveAsXml(string filename, Encoding encoding)
 		{
 			DockPanelPersist.SaveAsXml(this, filename, encoding);
 		}
 
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Method[@name="SaveAsXml(Stream, Encoding)"]/*'/>
 		public void SaveAsXml(Stream stream, Encoding encoding)
 		{
 			DockPanelPersist.SaveAsXml(this, stream, encoding);
 		}
 
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Method[@name="LoadFromXml"]/*'/>
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Method[@name="LoadFromXml(string, DeserializeDockContent)"]/*'/>
 		public void LoadFromXml(string filename, DeserializeDockContent deserializeContent)
 		{
 			DockPanelPersist.LoadFromXml(this, filename, deserializeContent);
 		}
 
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Method[@name="LoadFromXml(Stream, DeserializeDockContent)"]/*'/>
 		public void LoadFromXml(Stream stream, DeserializeDockContent deserializeContent)
 		{
 			DockPanelPersist.LoadFromXml(this, stream, deserializeContent);

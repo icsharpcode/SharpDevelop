@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.41115</ProductVersion>
@@ -6,7 +6,11 @@
     <ProjectGuid>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <AssemblyName>WeifenLuo.WinFormsUI</AssemblyName>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <AssemblyKeyContainerName>
+    </AssemblyKeyContainerName>
+    <AssemblyName>WeifenLuo.WinFormsUI.Docking</AssemblyName>
     <AssemblyOriginatorKeyFile>..\..\..\Main\Core\Project\Resources\ICSharpCode.Core.snk</AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
@@ -15,6 +19,10 @@
     <OutputType>Library</OutputType>
     <RootNamespace>WeifenLuo.WinFormsUI</RootNamespace>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <StartupObject>
+    </StartupObject>
+    <FileUpgradeFlags>
+    </FileUpgradeFlags>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -22,10 +30,15 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DocumentationFile>bin\Debug\CodeDoc.xml</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
     <Optimize>false</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
@@ -37,10 +50,16 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <ConfigurationOverrideFile>
+    </ConfigurationOverrideFile>
     <DefineConstants>TRACE</DefineConstants>
+    <DocumentationFile>
+    </DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
+    <NoWarn>
+    </NoWarn>
     <Optimize>true</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
@@ -48,97 +67,119 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Design" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.XML" />
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Design">
+      <Name>System.Design</Name>
+    </Reference>
+    <Reference Include="System.Drawing">
+      <Name>System.Drawing</Name>
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+      <Name>System.Windows.Forms</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="AutoHideWindow.cs" />
-    <Compile Include="AutoHideWindowSplitter.cs" />
-    <Compile Include="DisplayingDockList.cs">
+    <Compile Include="Controls\InertButton.cs">
+    </Compile>
+    <Compile Include="Docking\AutoHideWindow.cs">
+    </Compile>
+    <Compile Include="Docking\AutoHideWindowSplitter.cs">
+    </Compile>
+    <Compile Include="Docking\DisplayingDockList.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DockAreasEditor.cs">
+    <Compile Include="Docking\DockAreasEditor.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DockContent.cs">
+    <Compile Include="Docking\DockContent.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="DockContentCollection.cs">
+    <Compile Include="Docking\DockContentCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DockHelper.cs">
+    <Compile Include="Docking\DockHelper.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DockList.cs">
+    <Compile Include="Docking\DockList.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DockPane.cs">
+    <Compile Include="Docking\DockPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DockPaneCollection.cs">
+    <Compile Include="Docking\DockPaneCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DockPanel.cs" />
-    <Compile Include="DockPanelPersist.cs">
+    <Compile Include="Docking\DockPanel.cs">
+    </Compile>
+    <Compile Include="Docking\DockPanelPersist.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DockPaneSplitter.cs" />
-    <Compile Include="DockWindow.cs" />
-    <Compile Include="DockWindowCollection.cs">
+    <Compile Include="Docking\DockPaneSplitter.cs">
+    </Compile>
+    <Compile Include="Docking\DockWindow.cs">
+    </Compile>
+    <Compile Include="Docking\DockWindowCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DockWindowSplitter.cs" />
-    <Compile Include="DragHandler.cs">
+    <Compile Include="Docking\DockWindowSplitter.cs">
+    </Compile>
+    <Compile Include="Docking\DragHandler.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DragHandlerBase.cs">
+    <Compile Include="Docking\DragHandlerBase.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DrawHelper.cs">
+    <Compile Include="Docking\DummyControl.cs">
+    </Compile>
+    <Compile Include="Docking\Enums.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DummyControl.cs" />
-    <Compile Include="Enums.cs">
+    <Compile Include="Docking\EventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="EventArgs.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="FloatWindow.cs">
+    <Compile Include="Docking\FloatWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="FloatWindowCollection.cs">
+    <Compile Include="Docking\FloatWindowCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="HiddenMdiChild.cs">
+    <Compile Include="Docking\HiddenMdiChild.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="InertButton.cs" />
-    <Compile Include="Interfaces.cs">
+    <Compile Include="Docking\Interfaces.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Localization.cs">
+    <Compile Include="Docking\Measures.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="LocalWindowsHook.cs">
+    <Compile Include="Docking\NestedDockingStatus.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Measures.cs">
+    <Compile Include="Docking\SplitterBase.cs">
+    </Compile>
+    <Compile Include="Helpers\DrawHelper.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="NestedDockingStatus.cs">
+    <Compile Include="Helpers\Localization.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="ResourceHelper.cs">
+    <Compile Include="Helpers\LocalWindowsHook.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SplitterBase.cs" />
+    <Compile Include="Helpers\ResourceHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="Win32\Enums.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -162,6 +203,24 @@
     <EmbeddedResource Include="Resources\DockPane.ToolWindowCloseDisabled.bmp" />
     <EmbeddedResource Include="Resources\DockPane.ToolWindowCloseEnabled.bmp" />
     <EmbeddedResource Include="Strings.resX" />
+    <Content Include="Controls\CodeDoc\InertButton.xml" />
+    <Content Include="Docking\CodeDoc\DisplayingDockList.xml" />
+    <Content Include="Docking\CodeDoc\DockContent.xml" />
+    <Content Include="Docking\CodeDoc\DockContentCollection.xml" />
+    <Content Include="Docking\CodeDoc\DockList.xml" />
+    <Content Include="Docking\CodeDoc\DockPane.xml" />
+    <Content Include="Docking\CodeDoc\DockPaneCollection.xml" />
+    <Content Include="Docking\CodeDoc\DockPanel.xml" />
+    <Content Include="Docking\CodeDoc\DockWindow.xml" />
+    <Content Include="Docking\CodeDoc\DockWindowCollection.xml" />
+    <Content Include="Docking\CodeDoc\Enums.xml" />
+    <Content Include="Docking\CodeDoc\EventArgs.xml" />
+    <Content Include="Docking\CodeDoc\FloatWindow.xml" />
+    <Content Include="Docking\CodeDoc\FloatWindowCollection.xml" />
+    <Content Include="Docking\CodeDoc\Interfaces.xml" />
+    <Content Include="Docking\CodeDoc\NestedDockingStatus.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <None Include="..\..\..\Main\Core\Project\Resources\ICSharpCode.Core.snk">
       <Link>ICSharpCode.Core.snk</Link>
     </None>
@@ -170,4 +229,10 @@
     <Folder Include="Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
 </Project>

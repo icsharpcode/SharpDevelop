@@ -15,15 +15,14 @@ using System.Windows.Forms;
 
 namespace WeifenLuo.WinFormsUI
 {
-	/// <summary>
-	/// Summary description for FloatWindowCollection.
-	/// </summary>
+	/// <include file='CodeDoc\FloatWindowCollection.xml' path='//CodeDoc/Class[@name="FloatWindowCollection"]/ClassDef/*'/>>
 	public class FloatWindowCollection : ReadOnlyCollectionBase
 	{
 		internal FloatWindowCollection()
 		{
 		}
 
+		/// <include file='CodeDoc\FloatWindowCollection.xml' path='//CodeDoc/Class[@name="FloatWindowCollection"]/Property[@name="Item"]/*'/>>
 		public FloatWindow this[int index]
 		{
 			get {  return InnerList[index] as FloatWindow;  }
@@ -37,6 +36,7 @@ namespace WeifenLuo.WinFormsUI
 			return InnerList.Add(fw);
 		}
 
+		/// <include file='CodeDoc\FloatWindowCollection.xml' path='//CodeDoc/Class[@name="FloatWindowCollection"]/Method[@name="Contains(FloatWindow)"]/*'/>>
 		public bool Contains(FloatWindow fw)
 		{
 			return InnerList.Contains(fw);
@@ -48,6 +48,7 @@ namespace WeifenLuo.WinFormsUI
 				this[i].Close();
 		}
 
+		/// <include file='CodeDoc\FloatWindowCollection.xml' path='//CodeDoc/Class[@name="FloatWindowCollection"]/Method[@name="IndexOf(FloatWindow)"]/*'/>>
 		public int IndexOf(FloatWindow fw)
 		{
 			return InnerList.IndexOf(fw);

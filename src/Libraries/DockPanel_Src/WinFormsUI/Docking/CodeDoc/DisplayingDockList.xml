@@ -1,0 +1,73 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Class name='DisplayingDockList'>
+		<ClassDef>
+			<summary>Maintains a list of visible nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</summary>
+			<remarks>
+				<include file='Interfaces.xml' path='//Interface[@name="IDockListContainer"]/InterfaceDef/remarks/*' />
+			</remarks>
+			<seealso cref="WeifenLuo.WinFormsUI.DockPane">DockPane Class</seealso>
+		</ClassDef>
+		<Property name="DockList">
+			<summary>Gets the associated <b>DockList</b> object.</summary>
+			<value>A <see cref="WeifenLuo.WinFormsUI.DockList" /> object which associates with this <B>DisplayingDockList</B> object.</value>
+		</Property>
+		<Property name="Container">
+			<summary>Gets the container which owns the associated <see cref="WeifenLuo.WinFormsUI.DockList" /> object.</summary>
+			<value>A <see cref="WeifenLuo.WinFormsUI.IDockListContainer" /> which contains the associated
+			<see cref="WeifenLuo.WinFormsUI.DockList" /> object.</value>
+			<seealso cref='WeifenLuo.WinFormsUI.DockList'>DockList Class</seealso>
+		</Property>
+		<Property name="DockState">
+			<summary>Gets the docking state from the <see cref="WeifenLuo.WinFormsUI.DisplayingDockList.Container" />.</summary>
+			<include file='Interfaces.xml' path='//Interface[@name="IDockListContainer"]/Property[@name="DockState"]/value' />
+		</Property>
+		<Property name="IsFloat">
+			<summary>Determines whether the the <see cref="WeifenLuo.WinFormsUI.DisplayingDockList.Container" /> is floating.</summary>
+			<include file='Interfaces.xml' path='//Interface[@name="IDockListContainer"]/Property[@name="IsFloat"]/value' />
+		</Property>
+		<Property name="Item">
+			<summary>
+				<para>Gets a <see cref="WeifenLuo.WinFormsUI.DockPane"/> at the specified index.</para>
+				<para>In C#, this property is the indexer for the <see cref="WeifenLuo.WinFormsUI.DisplayingDockList"/> class.</para>
+			</summary>
+			<param name="index">
+			The zero-based <see cref="WeifenLuo.WinFormsUI.DockPane"/> to get.
+		</param>
+			<value>
+			The <see cref="WeifenLuo.WinFormsUI.DockPane" /> at the specified index.
+		</value>
+		</Property>
+		<Method name="Contains(DockPane)">
+			<summary>
+			Determines whether a <see cref="WeifenLuo.WinFormsUI.DockPane" /> is in the
+			<see cref="WeifenLuo.WinFormsUI.DisplayingDockList" />.
+		</summary>
+			<param name="pane">
+			The <see cref="WeifenLuo.WinFormsUI.DockPane" /> to locate in
+			<see cref="WeifenLuo.WinFormsUI.DisplayingDockList" />.
+		</param>
+			<returns>
+			<b>true</b> if <paramref name="pane" /> is found in the
+			<see cref="WeifenLuo.WinFormsUI.DisplayingDockList" />;
+			otherwise, <b>false</b>.
+		</returns>
+		</Method>
+		<Method name="IndexOf(DockPane)">
+			<summary>
+			Searches for the specified <see cref="WeifenLuo.WinFormsUI.DockPane" />
+			and returns the zero-based index within the entire
+			<see cref="WeifenLuo.WinFormsUI.DisplayingDockList" />.
+		</summary>
+			<param name="pane">
+			The <see cref="WeifenLuo.WinFormsUI.DockPane" />
+			to locate in the <see cref="WeifenLuo.WinFormsUI.DisplayingDockList" />
+		</param>
+			<returns>
+			The zero-based index of <paramref name="pane" /> within the entire
+			<see cref="WeifenLuo.WinFormsUI.DisplayingDockList" />, if found;
+			otherwise, -1.
+		</returns>
+		</Method>
+	</Class>
+</CodeDoc>

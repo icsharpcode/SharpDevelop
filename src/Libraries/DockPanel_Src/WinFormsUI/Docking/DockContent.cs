@@ -16,23 +16,20 @@ using System.Runtime.InteropServices;
 
 namespace WeifenLuo.WinFormsUI
 {
-	/// <summary>
-	/// Each DockContent instance represents a single dockable unit within the docking window framework.
-	/// </summary>
+	/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/ClassDef/*'/>
 	public class DockContent : Form
 	{
 		// Tab width and X position used by DockPane and DockPanel class
 		internal int TabWidth = 0;
 		internal int TabX = 0;
 
-		/// <summary>
-		/// Initialize a new DockContent instance.
-		/// </summary>
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Constructor[@name="()"]/*'/>
 		public DockContent()
 		{
 			RefreshMdiIntegration();
 		}
 
+		/// <exclude/>
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing)
@@ -50,9 +47,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private bool m_allowRedocking = true;
-		/// <summary>
-		/// This property determines if drag and drop re-docking is allowed.
-		/// </summary>
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="AllowRedocking"]/*'/>
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockContent.AllowRedocking.Description")]
 		[DefaultValue(true)]
@@ -63,9 +58,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private DockAreas m_allowedAreas = DockAreas.DockLeft | DockAreas.DockRight | DockAreas.DockTop | DockAreas.DockBottom | DockAreas.Document | DockAreas.Float;
-		/// <summary>
-		/// This property determines the areas this DockContent can be displayed.
-		/// </summary>
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="DockableAreas"]/*'/>
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockContent.DockableAreas.Description")]
 		[DefaultValue(DockAreas.DockLeft|DockAreas.DockRight|DockAreas.DockTop|DockAreas.DockBottom|DockAreas.Document|DockAreas.Float)]
@@ -88,9 +81,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private double m_autoHidePortion = 0.25;
-		/// <summary>
-		/// This property determines the portion of the screen size when showing in auto-hide mode.
-		/// </summary>
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="AutoHidePortion"]/*'/>
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockContent.AutoHidePortion.Description")]
 		[DefaultValue(0.25)]
@@ -116,9 +107,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private string m_tabText = null;
-		/// <summary>
-		/// This property determines the tab text displayed for the dock pane caption. By setting value to this property can display different text for dock pane tab and caption.
-		/// </summary>
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="TabText"]/*'/>
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockContent.TabText.Description")]
 		[DefaultValue(null)]
@@ -141,9 +130,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private bool m_closeButton = true;
-		/// <summary>
-		/// This property determines whether this DockContent can be closed by clicking the close button of its dock pane.
-		/// </summary>
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="CloseButton"]/*'/>
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockContent.CloseButton.Description")]
 		[DefaultValue(true)]
@@ -163,9 +150,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 		
 		private DockPanel m_dockPanel = null;
-		/// <summary>
-		/// This property determines the dock panel which this dock content attached to.
-		/// </summary>
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="DockPanel"]/*'/>
 		[Browsable(false)]
 		public DockPanel DockPanel
 		{
@@ -242,10 +227,8 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
-		/// <summary>
-		/// This property retrieves this content’s docking state. This value is identical to Pane.DockState property
-		/// </summary>
 		private DockState m_dockState = DockState.Unknown;
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="DockState"]/*'/>
 		[Browsable(false)]
 		public DockState DockState
 		{
@@ -262,10 +245,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
-		/// <summary>
-		/// This property determines the DockPane which contains this DockContent.
-		/// </summary>
-		[Browsable(false)]
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="Pane"]/*'/>
 		public DockPane Pane
 		{
 			get {	return IsFloat ? FloatPane : PanelPane; }
@@ -284,6 +264,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private bool m_isHidden = false;
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="IsHidden"]/*'/>
 		[Browsable(false)]
 		public bool IsHidden
 		{
@@ -298,6 +279,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private DockState m_visibleState = DockState.Unknown;
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="VisibleState"]/*'/>
 		[Browsable(false)]
 		public DockState VisibleState
 		{
@@ -312,6 +294,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private bool m_isFloat = false;
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="IsFloat"]/*'/>
 		[Browsable(false)]
 		public bool IsFloat
 		{
@@ -342,6 +325,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private DockPane m_panelPane = null;
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="PanelPane"]/*'/>
 		[Browsable(false)]
 		public DockPane PanelPane
 		{
@@ -374,6 +358,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private DockPane m_floatPane = null;
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="FloatPane"]/*'/>
 		[Browsable(false)]
 		public DockPane FloatPane
 		{
@@ -497,6 +482,7 @@ namespace WeifenLuo.WinFormsUI
 		{
 			get	{	return GetPersistString();	}
 		}
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="GetPersistString()"]/*'/>
 		protected virtual string GetPersistString()
 		{
 			return GetType().ToString();
@@ -509,9 +495,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private bool m_hideOnClose = false;
-		/// <summary>
-		/// HideOnClose Property
-		/// </summary>
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="HideOnClose"]/*'/>
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockContent.HideOnClose.Description")]
 		[DefaultValue(false)]
@@ -521,6 +505,7 @@ namespace WeifenLuo.WinFormsUI
 			set	{	m_hideOnClose = value;	}
 		}
 
+		/// <exclude/>
 		public new MainMenu Menu
 		{
 			get	{	return HiddenMdiChild == null ? base.Menu : HiddenMdiChild.Menu;	}
@@ -533,10 +518,8 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
-		/// <summary>
-		/// ShowHint Property
-		/// </summary>
 		private DockState m_showHint = DockState.Unknown;
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="ShowHint"]/*'/>
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockContent.ShowHint.Description")]
 		[DefaultValue(DockState.Unknown)]
@@ -556,6 +539,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private bool m_isActivated = false;
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="IsActivated"]/*'/>
 		[Browsable(false)]
 		public bool IsActivated
 		{
@@ -569,12 +553,14 @@ namespace WeifenLuo.WinFormsUI
 			m_isActivated = value;
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="IsDockStateValid(DockState)"]/*'/>
 		public bool IsDockStateValid(DockState dockState)
 		{
 			return DockHelper.IsDockStateValid(dockState, DockableAreas);
 		}
 
 		private ContextMenu m_tabPageContextMenu = null;
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="TabPageContextMenu"]/*'/>
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockContent.TabPageContextMenu.Description")]
 		[DefaultValue(null)]
@@ -585,6 +571,7 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		private string m_toolTipText = null;
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="ToolTipText"]/*'/>
 		[Category("Appearance")]
 		[LocalizedDescription("DockContent.ToolTipText.Description")]
 		[DefaultValue(null)]
@@ -594,6 +581,7 @@ namespace WeifenLuo.WinFormsUI
 			set {	m_toolTipText = value;	}
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Activate()"]/*'/>
 		public new void Activate()
 		{
 			if (DockPanel == null)
@@ -608,6 +596,7 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
+		/// <exclude/>
 		public new void Hide()
 		{
 			IsHidden = true;
@@ -620,17 +609,26 @@ namespace WeifenLuo.WinFormsUI
 
 			Control oldParent = Parent;
 
-			///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			/// Workaround for .Net Framework bug: removing control from Form may cause form
-			/// unclosable. Set focus to another dummy control.
-			///!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
-			Form form = FindForm();
+			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			// Workaround for .Net Framework bug: removing control from Form may cause form
+			// unclosable. Set focus to another dummy control.
+			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			Form form = null;
+			if (Parent is DockPane)
+				form = ((DockPane)Parent).FindForm();
 			if (ContainsFocus)
 			{
 				if (form is FloatWindow)
+				{
 					((FloatWindow)form).DummyControl.Focus();
+					form.ActiveControl = ((FloatWindow)form).DummyControl;
+				}
 				else if (DockPanel != null)
+				{
 					DockPanel.DummyControl.Focus();
+					if (form != null)
+						form.ActiveControl = DockPanel.DummyControl;
+				}
 			}
 			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
@@ -638,6 +636,8 @@ namespace WeifenLuo.WinFormsUI
 			Parent = value;
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Show"]/*'/>
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Show()"]/*'/>
 		public new void Show()
 		{
 			if (DockPanel == null)
@@ -646,6 +646,7 @@ namespace WeifenLuo.WinFormsUI
 				Show(DockPanel);
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Show(DockPanel)"]/*'/>
 		public void Show(DockPanel dockPanel)
 		{
 			if (dockPanel == null)
@@ -657,6 +658,7 @@ namespace WeifenLuo.WinFormsUI
 				Activate();
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Show(DockPanel, DockState)"]/*'/>
 		public void Show(DockPanel dockPanel, DockState dockState)
 		{
 			if (dockPanel == null)
@@ -667,7 +669,9 @@ namespace WeifenLuo.WinFormsUI
 
 			DockPanel = dockPanel;
 
-			if (Pane == null)
+			if (dockState == DockState.Float && FloatPane == null)
+				Pane = DockPanel.DockPaneFactory.CreateDockPane(this, DockState.Float, true);
+			else if (PanelPane == null)
 			{
 				DockPane paneExisting = null;
 				foreach (DockPane pane in DockPanel.Panes)
@@ -677,15 +681,78 @@ namespace WeifenLuo.WinFormsUI
 						break;
 					}
 
-				if (paneExisting == null || dockState == DockState.Float)
+				if (paneExisting == null)
 					Pane = DockPanel.DockPaneFactory.CreateDockPane(this, dockState, true);
 				else
 					Pane = paneExisting;
 			}
 
+			DockState = dockState;
 			Activate();
 		}
 
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Show(DockPanel, Rectangle)"]/*'/>
+		public void Show(DockPanel dockPanel, Rectangle floatWindowBounds)
+		{
+			if (dockPanel == null)
+				throw(new ArgumentNullException(ResourceHelper.GetString("DockContent.Show.NullDockPanel")));
+
+			DockPanel = dockPanel;
+			if (FloatPane == null)
+			{
+				IsHidden = true;	// to reduce the screen flicker
+				FloatPane = DockPanel.DockPaneFactory.CreateDockPane(this, DockState.Float, false);
+				FloatPane.FloatWindow.StartPosition = FormStartPosition.Manual;
+			}
+
+			FloatPane.FloatWindow.Bounds = floatWindowBounds;
+			
+			Show(dockPanel, DockState.Float);
+			Activate();
+		}
+
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Show(DockPane, DockContent)"]/*'/>
+		public void Show(DockPane pane, DockContent beforeContent)
+		{
+			if (pane == null)
+				throw(new ArgumentNullException(ResourceHelper.GetString("DockContent.Show.NullPane")));
+
+			if (beforeContent != null && pane.Contents.IndexOf(beforeContent) == -1)
+				throw(new ArgumentException(ResourceHelper.GetString("DockContent.Show.InvalidBeforeContent")));
+
+			DockPanel = pane.DockPanel;
+			Pane = pane;
+			pane.SetContentIndex(this, pane.Contents.IndexOf(beforeContent));
+			Show();
+		}
+
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="Show(DockPane, DockAlignment, double)"]/*'/>
+		public void Show(DockPane prevPane, DockAlignment alignment, double proportion)
+		{
+			if (prevPane == null)
+				throw(new ArgumentException(ResourceHelper.GetString("DockContent.Show.InvalidPrevPane")));
+
+			if (DockHelper.IsDockStateAutoHide(prevPane.DockState))
+				throw(new ArgumentException(ResourceHelper.GetString("DockContent.Show.InvalidPrevPane")));
+
+			DockPanel = prevPane.DockPanel;
+			DockPanel.DockPaneFactory.CreateDockPane(this, prevPane, alignment, proportion, true);
+			Show();
+		}
+
+		/// <exclude/>
+		public new void Close()
+		{
+			if (DockPanel != null)
+			{
+				DockPanel = null;
+				Dispose();
+			}
+			else
+				base.Close();
+		}
+				
+		/// <exclude/>
 		protected override void OnTextChanged(EventArgs e)
 		{
 			if (m_hiddenMdiChild != null)
@@ -748,6 +815,7 @@ namespace WeifenLuo.WinFormsUI
 
 		#region Events
 		private static readonly object DockStateChangedEvent = new object();
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Event[@name="DockStateChanged"]/*'/>
 		[LocalizedCategory("Category.PropertyChanged")]
 		[LocalizedDescription("Pane.DockStateChanged.Description")]
 		public event EventHandler DockStateChanged
@@ -755,6 +823,7 @@ namespace WeifenLuo.WinFormsUI
 			add	{	Events.AddHandler(DockStateChangedEvent, value);	}
 			remove	{	Events.RemoveHandler(DockStateChangedEvent, value);	}
 		}
+		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Method[@name="OnDockStateChanged(EventArgs)"]/*'/>
 		protected virtual void OnDockStateChanged(EventArgs e)
 		{
 			EventHandler handler = (EventHandler)Events[DockStateChangedEvent];

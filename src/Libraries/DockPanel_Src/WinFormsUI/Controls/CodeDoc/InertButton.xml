@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Class name="InertButton">
+		<ClassDef>
+			<summary>Image button with flat appearance, border visible only when activated by mouse.</summary>
+		</ClassDef>
+		<Constructor name="Overloads">
+			<overloads>
+				<summary>Initializes a new instance of the <see cref="WeifenLuo.WinFormsUI.InertButton" /> class.</summary>
+			</overloads>
+		</Constructor>
+		<Constructor name="()">
+			<summary>Initializes a new instance of the <see cref="WeifenLuo.WinFormsUI.InertButton" /> class, with default settings.</summary>
+		</Constructor>
+		<Constructor name="(Image)">
+			<summary>Initializes a new instance of the <see cref="WeifenLuo.WinFormsUI.InertButton" /> class, with specified image for enabled button.</summary>
+			<param name="imageEnabled">
+			The <see cref="System.Drawing.Image" /> object to show when the button is enabled. The disabled image will be draw based on this image.
+		</param>
+		</Constructor>
+		<Constructor name="(Image, Image)">
+			<summary>Initializes a new instance of the <see cref="WeifenLuo.WinFormsUI.InertButton" /> class, with specified images for enabled and disabled button.</summary>
+			<param name="imageEnabled">
+			The <see cref="System.Drawing.Image" /> object to show when the button is enabled.
+		</param>
+			<param name="imageDisabled">
+			The <see cref="System.Drawing.Image" /> object to show when the button is disabled.
+		</param>
+		</Constructor>
+		<Property name="BorderColor">
+			<summary>Gets or sets the border color for the control.</summary>
+			<value>A <see cref="System.Drawing.Color" /> object that represents the border color of the control.</value>
+		</Property>
+		<Property name="BorderWidth">
+			<summary>Gets or sets the border width for the control.</summary>
+			<value>A integer that represents the border width for the control, in pixel. The default is <b>1</b>.</value>
+		</Property>
+		<Property name="ImageDisabled">
+			<summary>Gets or sets the image to display for the control when disabled.</summary>
+			<value>A <see cref="System.Drawing.Image" /> object to display for the control when disabled.</value>
+		</Property>
+		<Property name="ImageEnabled">
+			<summary>Gets or sets the image to display for the control when enabled.</summary>
+			<value>A <see cref="System.Drawing.Image" /> object to display for the control when enabled.</value>
+		</Property>
+		<Property name="ImageIndexDisabled">
+			<summary>Gets or sets the index of the image to display for the control when disabled.</summary>
+			<value>The zero-base index of the image in the <see cref="System.Windows.Forms.ImageList" /> to display for the control when disabled.</value>
+		</Property>
+		<Property name="ImageIndexEnabled">
+			<summary>Gets or sets the index of the image to display for the control when enabled.</summary>
+			<value>The zero-base index of the image in the <see cref="System.Windows.Forms.ImageList" /> to display for the control when enabled.</value>
+		</Property>
+		<Property name="ImageList">
+			<summary>Gets or sets the <see cref="System.Windows.Forms.ImageList" /> that contains the images to display.</summary>
+			<value>The <see cref="System.Windows.Forms.ImageList" /> that contains the images to display.</value>
+		</Property>
+		<Property name="IsPopup">
+			<summary>Determines if the buttons is displayed as popup when activated.</summary>
+			<value><b>True</b> if the button is displayed as popup when activated; otherwise <b>false</b>. The default value is <b>true</b>.</value>
+		</Property>
+		<Property name="Monochrome">
+			<summary>Determines if the button is displayed as black and white.</summary>
+			<value><b>True</b> if the button is displayed as as black and white; otherwise <b>false</b>. The default value is <b>false</b>.</value>
+		</Property>
+		<Property name="TextAlign">
+			<summary>Gets or sets the alignment of the text in the button.</summary>
+			<value>One of the <see cref="System.Drawing.ContentAlignment" /> values. The default is <b>MiddleCenter</b>.</value>
+		</Property>
+		<Property name="ToolTipText">
+			<summary>Gets or sets the ToolTip text for this button.</summary>
+			<value>The ToolTip text for this button.</value>
+		</Property>
+	</Class>
+</CodeDoc>

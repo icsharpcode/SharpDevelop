@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Enum name="DockAlignment">
+		<EnumDef>
+			<summary>Specifies the edge for nested docking.</summary>
+		</EnumDef>
+		<Member name="Left">
+			<summary>The <see cref="WeifenLuo.WinFormsUI.DockPane" />'s left edge is docked to its
+			containing <see cref="WeifenLuo.WinFormsUI.DockPane" />'s left edge.</summary>
+		</Member>
+		<Member name="Right">
+			<summary>The <see cref="WeifenLuo.WinFormsUI.DockPane" />'s right edge is docked to its
+			containing <see cref="WeifenLuo.WinFormsUI.DockPane" />'s right edge.</summary>
+		</Member>
+		<Member name="Top">
+			<summary>The <see cref="WeifenLuo.WinFormsUI.DockPane" />'s top edge is docked to its
+			containing <see cref="WeifenLuo.WinFormsUI.DockPane" />'s top edge.</summary>
+		</Member>
+		<Member name="Bottom">
+			<summary>The <see cref="WeifenLuo.WinFormsUI.DockPane" />'s bottom edge is docked to its
+			containing <see cref="WeifenLuo.WinFormsUI.DockPane" />'s bottom edge.</summary>
+		</Member>
+	</Enum>
+	<Enum name="DockAreas">
+		<EnumDef>
+			<summary>Specifies all the available docking areas.</summary>
+		</EnumDef>
+		<Member name="Float">
+			<summary>The floating window docking area.</summary>
+		</Member>
+		<Member name="DockTop">
+			<summary>The top docking area of the <see cref="WeifenLuo.WinFormsUI.DockPanel" /></summary>
+		</Member>
+		<Member name="DockLeft">
+			<summary>The left docking area of the <see cref="WeifenLuo.WinFormsUI.DockPanel" />.</summary>
+		</Member>
+		<Member name="DockRight">
+			<summary>The right docking area of the <see cref="WeifenLuo.WinFormsUI.DockPanel" />.</summary>
+		</Member>
+		<Member name="DockBottom">
+			<summary>The bottom docking area of the <see cref="WeifenLuo.WinFormsUI.DockPanel" />.</summary>
+		</Member>
+		<Member name="Document">
+			<summary>The document area of the <see cref="WeifenLuo.WinFormsUI.DockPanel" />.</summary>
+		</Member>
+	</Enum>
+	<Enum name="DockState">
+		<EnumDef>
+			<summary>Specifies the docking state for docking windows.</summary>
+		</EnumDef>
+		<Member name="Unknown">
+			<summary>Unknown docking state.</summary>
+		</Member>
+		<Member name="Float">
+			<summary>Displayed inside float window.</summary>
+		</Member>
+		<Member name="DockTopAutoHide">
+			<summary>Displayed as auto-hide window, on the top edge.</summary>
+		</Member>
+		<Member name="DockLeftAutoHide">
+			<summary>Displayed as auto-hide window, on the left edge.</summary>
+		</Member>
+		<Member name="DockBottomAutoHide">
+			<summary>Displayed as auto-hide window, on the bottom edge.</summary>
+		</Member>
+		<Member name="DockRightAutoHide">
+			<summary>Displayed as auto-hide window, on the right edge.</summary>
+		</Member>
+		<Member name="Document">
+			<summary>Displayed as document window.</summary>
+		</Member>
+		<Member name="DockTop">
+			<summary>Docked to the top edge.</summary>
+		</Member>
+		<Member name="DockLeft">
+			<summary>Docked to the left edge.</summary>
+		</Member>
+		<Member name="DockRight">
+			<summary>Docked to the right edge.</summary>
+		</Member>
+		<Member name="DockBottom">
+			<summary>Docked to the bottom edge.</summary>
+		</Member>
+		<Member name="Hidden">
+			<summary>The window is hidden.</summary>
+		</Member>
+	</Enum>
+</CodeDoc>

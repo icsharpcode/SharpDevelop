@@ -313,4 +313,13 @@
 	<data name="DockPanel.MdiIntegration.Description">
 		<value>Determines if the documents are integrated as MDI child forms.</value>
 	</data>
+	<data name="DockContent.Show.NullPane">
+		<value>The Pane can not be null.</value>
+	</data>
+	<data name="DockContent.Show.InvalidBeforeContent">
+		<value>Invalid beforeContent, it must be contained by the pane.</value>
+	</data>
+	<data name="DockContent.Show.InvalidPrevPane">
+		<value>The prevPane is invalid. It can not be null, and its docking state must not be auto-hide.</value>
+	</data>
 </root>

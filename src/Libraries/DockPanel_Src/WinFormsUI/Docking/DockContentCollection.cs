@@ -13,12 +13,14 @@ using System.Collections;
 
 namespace WeifenLuo.WinFormsUI
 {
+	/// <include file='CodeDoc\DockContentCollection.xml' path='//CodeDoc/Class[@name="DockContentCollection"]/ClassDef/*'/>>
 	public class DockContentCollection : ReadOnlyCollectionBase
 	{
 		internal DockContentCollection()
 		{
 		}
 
+		/// <include file='CodeDoc\DockContentCollection.xml' path='//CodeDoc/Class[@name="DockContentCollection"]/Property[@name="Item"]/*'/>>
 		public DockContent this[int index]
 		{
 			get {  return InnerList[index] as DockContent;  }
@@ -59,11 +61,13 @@ namespace WeifenLuo.WinFormsUI
 			InnerList.Clear();
 		}
 
+		/// <include file='CodeDoc\DockContentCollection.xml' path='//CodeDoc/Class[@name="DockContentCollection"]/Method[@name="Contains(DockContent)"]/*'/>
 		public bool Contains(DockContent content)
 		{
 			return InnerList.Contains(content);
 		}
 
+		/// <include file='CodeDoc\DockContentCollection.xml' path='//CodeDoc/Class[@name="DockContentCollection"]/Method[@name="IndexOf(DockContent)"]/*'/>
 		public int IndexOf(DockContent content)
 		{
 			if (!Contains(content))
@@ -80,7 +84,7 @@ namespace WeifenLuo.WinFormsUI
 			InnerList.Remove(content);
 		}
 
-		public DockContent[] Select(DockAreas stateFilter)
+		internal DockContent[] Select(DockAreas stateFilter)
 		{
 			int count = 0;
 			foreach (DockContent c in this)

@@ -1,0 +1,18 @@
+﻿<?xml version="1.0" encoding="utf-8" ?> 
+
+<CodeDoc>
+	<Class name="DockContentEventArgs">
+		<ClassDef>
+			<summary>Provides data for <see cref="WeifenLuo.WinFormsUI.DockPanel.ContentAdded"/> and 
+			<see cref="WeifenLuo.WinFormsUI.DockPanel.ContentRemoved"/> events.</summary>
+		</ClassDef>
+		<Constructor name="(DockContent)">
+			<summary>Initializes a new instance of <see cref="WeifenLuo.WinFormsUI.DockContentEventArgs"/> class.</summary>
+			<param name="content">The <see cref="WeifenLuo.WinFormsUI.DockContent"/> object.</param>
+		</Constructor>
+		<Property name="Content">
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DockContent"/> object.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.DockContent"/> object.</value>
+		</Property>
+	</Class>
+</CodeDoc>

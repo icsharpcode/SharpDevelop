@@ -1,0 +1,89 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Interface name="IDockListContainer">
+		<InterfaceDef>
+			<summary>Container for nested docking <see cref='WeifenLuo.WinFormsUI.DockPane' /> objects.</summary>
+			<remarks>
+				<para>
+				<b>IDockListContainer</b> contains a list of <b>DockPane</b> objects
+				for nested docking. It maintans two lists: <see cref='WeifenLuo.WinFormsUI.DockList' />
+				and <see cref='WeifenLuo.WinFormsUI.DisplayingDockList' />. <b>DockList</b>
+				contains all <b>DockPane</b> objects, no matter it's visible or not; <b>DisplayingDockList</b> contains only
+				visible <b>DockPane</b> objects for this container.
+			</para>
+				<para>
+				Internally, <b>IDockListContainer</b> creates <b>DockList</b>, this <b>DockList</b> then creates <b>DisplayingDockList</b>,
+				and these two lists are always synchronized.
+			</para>
+			</remarks>
+		</InterfaceDef>
+		<Property name="DisplayingList">
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DisplayingDockList" /> which contains
+			a list of visible nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.DisplayingDockList" /> which contains
+			a list of visible nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</value>
+		</Property>
+		<Property name="DisplayingRectangle">
+			<summary>Gets the rectangle represents the displaying area for nested docking DockPane objects.</summary>
+			<value>A <see cref="System.Drawing.Rectangle" /> represents the displaying area for nested docking DockPane objects.</value>
+		</Property>
+		<Property name="DockList">
+			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.DockList" /> which contains
+			a list of nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</summary>
+			<value>The <see cref="WeifenLuo.WinFormsUI.DockList" /> which contains
+			a list of nested docking <see cref="WeifenLuo.WinFormsUI.DockPane" /> objects.</value>
+		</Property>
+		<Property name="DockState">
+			<summary>Gets the docking state of this container.</summary>
+			<value>One of the <see cref='WeifenLuo.WinFormsUI.DockState' /> values.</value>
+		</Property>
+		<Property name="IsDisposed">
+			<summary>Gets a value indicates the control has been disposed of.</summary>
+			<value><b>True</b> if the control has been disposed of, otherwise, <b>false</b>.</value>
+		</Property>
+		<Property name="IsFloat">
+			<summary>Determines if this container window is floating.</summary>
+			<value><b>True</b> if is floating; otherwise, <b>false</b>.</value>
+		</Property>
+	</Interface>
+	<Interface name="IDockPaneFactory">
+		<InterfaceDef>
+			<summary>Provides methods to initialize a instance of <see cref="WeifenLuo.WinFormsUI.DockPane"/>.</summary>
+			<remarks>You can derive your own class from <see cref="WeifenLuo.WinFormsUI.DockPane"/>, and
+			override the <see cref="WeifenLuo.WinFormsUI.DockPanel.DockPaneFactory"/> property to create instance
+			of the derived class.</remarks>
+		</InterfaceDef>
+		<Method name="CreateDockPane">
+			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="Overloads"]/*' />
+		</Method>
+		<Method name="CreateDockPane(DockContent, DockState, bool)">
+			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, DockState, bool)"]/*' />
+		</Method>
+		<Method name="CreateDockPane(DockContent, FloatWindow, bool)">
+			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, FloatWindow, bool)"]/*' />
+		</Method>
+		<Method name="CreateDockPane(DockContent, DockPane, DockAlignment, double, bool)">
+			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, DockPane, DockAlignment, double, bool)"]/*' />
+		</Method>
+		<Method name="CreateDockPane(DockContent, Rectangle, bool)">
+			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, Rectangle, bool)"]/*' />
+		</Method>
+	</Interface>
+	<Interface name="IFloatWindowFactory">
+		<InterfaceDef>
+			<summary>Provides methods to initialize a instance of <see cref="WeifenLuo.WinFormsUI.FloatWindow"/>.</summary>
+			<remarks>You can derive your own class from <see cref="WeifenLuo.WinFormsUI.FloatWindow"/>, and
+			override the <see cref="WeifenLuo.WinFormsUI.DockPanel.FloatWindowFactory"/> property to create instance
+			of the derived class.</remarks>
+		</InterfaceDef>
+		<Method name="CreateFloatWindow">
+			<include file='FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Constructor[@name="Overloads"]/*' />
+		</Method>
+		<Method name="CreateFloatWindow(DockPanel, DockPane)">
+			<include file='FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Constructor[@name="(DockPanel, DockPane)"]/*' />
+		</Method>
+		<Method name="CreateFloatWindow(DockPanel, DockPane, Rectangle)">
+			<include file='FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Constructor[@name="(DockPanel, DockPane, Rectangle)"]/*' />
+		</Method>
+	</Interface>
+</CodeDoc>

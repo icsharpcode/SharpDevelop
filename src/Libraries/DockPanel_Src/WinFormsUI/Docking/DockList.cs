@@ -13,6 +13,7 @@ using System.Drawing;
 
 namespace WeifenLuo.WinFormsUI
 {
+	/// <include file='CodeDoc/DockList.xml' path='//CodeDoc/Class[@name="DockList"]/ClassDef/*'/>
 	public class DockList : ReadOnlyCollectionBase
 	{
 		private IDockListContainer m_container;
@@ -24,36 +25,43 @@ namespace WeifenLuo.WinFormsUI
 			m_displayingList = new DisplayingDockList(this);
 		}
 
+		/// <include file='CodeDoc\DockList.xml' path='//CodeDoc/Class[@name="DockList"]/Property[@name="Container"]/*'/>
 		public IDockListContainer Container
 		{
 			get	{	return m_container;	}
 		}
 		
-		internal DisplayingDockList DisplayingList
+		/// <include file='CodeDoc\DockList.xml' path='//CodeDoc/Class[@name="DockList"]/Property[@name="DisplayingList"]/*'/>
+		public DisplayingDockList DisplayingList
 		{
 			get	{	return m_displayingList;	}
 		}
 
+		/// <include file='CodeDoc\DockList.xml' path='//CodeDoc/Class[@name="DockList"]/Property[@name="DockState"]/*'/>
 		public DockState DockState
 		{
 			get	{	return Container.DockState;	}
 		}
 
+		/// <include file='CodeDoc\DockList.xml' path='//CodeDoc/Class[@name="DockList"]/Property[@name="IsFloat"]/*'/>
 		public bool IsFloat
 		{
 			get	{	return DockState == DockState.Float;	}
 		}
 
+		/// <include file='CodeDoc\DockList.xml' path='//CodeDoc/Class[@name="DockList"]/Method[@name="Contains(DockPane)"]/*'/>
 		public bool Contains(DockPane pane)
 		{
 			return InnerList.Contains(pane);
 		}
 
+		/// <include file='CodeDoc\DockList.xml' path='//CodeDoc/Class[@name="DockList"]/Method[@name="IndexOf(DockPane)"]/*'/>
 		public int IndexOf(DockPane pane)
 		{
 			return InnerList.IndexOf(pane);
 		}
 
+		/// <include file='CodeDoc\DockList.xml' path='//CodeDoc/Class[@name="DockList"]/Property[@name="Item"]/*'/>
 		public DockPane this[int index]
 		{
 			get	{	return InnerList[index] as DockPane;	}
@@ -126,6 +134,7 @@ namespace WeifenLuo.WinFormsUI
 			statusPane.SetDisplayingBounds(Rectangle.Empty, Rectangle.Empty, Rectangle.Empty);
 		}
 
+		/// <include file='CodeDoc\DockList.xml' path='//CodeDoc/Class[@name="DockList"]/Method[@name="GetDefaultPrevPane(DockPane)"]/*'/>
 		public DockPane GetDefaultPrevPane(DockPane pane)
 		{
 			for (int i=Count-1; i>=0; i--)
