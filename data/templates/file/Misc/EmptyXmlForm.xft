@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		  name        = "Xml Form"
+		  icon        = "Icons.32x32.XMLFileIcon"
+		  category    = "${res:Templates.File.Categories.Misc}"
+		  defaultname = "XmlForm${Number}.xfrm"
+		  language    = "XmlForm"/>
+	 
+	<Description>Creates an empty xml form.</Description>
+
+	<Files>
+		<File name="${FullName}" language="XmlForm"><![CDATA[<Components version="1.0">
+  <System.Windows.Forms.Form>
+    <Name value="${FileNameWithoutExtension}" />
+    <ClientSize value="{Width=292, Height=266}" />
+    <DockPadding value="" />
+    <Text value="${FileNameWithoutExtension}" />
+  </System.Windows.Forms.Form>
+</Components>]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

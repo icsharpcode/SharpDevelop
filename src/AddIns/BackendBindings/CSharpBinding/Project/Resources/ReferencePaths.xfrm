@@ -1,0 +1,71 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="XmlUserControl1" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=360, Height=256}" />
+    <Controls>
+      <System.Windows.Forms.Button>
+        <Name value="removeButton" />
+        <Location value="{X=8,Y=216}" />
+        <Size value="{Width=88, Height=23}" />
+        <Text value="&amp;Remove" />
+        <TabIndex value="7" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.ListView>
+        <Name value="referencePathListView" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="6" />
+        <Location value="{X=8,Y=120}" />
+        <Size value="{Width=336, Height=88}" />
+      </System.Windows.Forms.ListView>
+      <System.Windows.Forms.Label>
+        <Name value="label2" />
+        <Text value="Reference &amp;Path:" />
+        <TextAlign value="BottomLeft" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="5" />
+        <Size value="{Width=336, Height=23}" />
+        <Location value="{X=8,Y=96}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Button>
+        <Name value="updateButton" />
+        <Location value="{X=112,Y=64}" />
+        <Size value="{Width=80, Height=23}" />
+        <Text value="&amp;Update" />
+        <TabIndex value="4" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="addFolderButton" />
+        <Location value="{X=8,Y=64}" />
+        <Size value="{Width=96, Height=23}" />
+        <Text value="&amp;Add Folder" />
+        <TabIndex value="3" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.TextBox>
+        <Name value="folderTextBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="1" />
+        <Location value="{X=8,Y=32}" />
+        <Size value="{Width=296, Height=21}" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="label1" />
+        <Text value="&amp;Folder:" />
+        <TextAlign value="BottomLeft" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="0" />
+        <Size value="{Width=344, Height=23}" />
+        <Location value="{X=8,Y=8}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Button>
+        <Name value="folderBrowseButton" />
+        <Location value="{X=312,Y=32}" />
+        <Size value="{Width=40, Height=23}" />
+        <Text value="..." />
+        <Anchor value="Top, Right" />
+        <TabIndex value="2" />
+      </System.Windows.Forms.Button>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

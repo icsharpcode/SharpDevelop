@@ -1,0 +1,126 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="MyUserControl" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=280, Height=296}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox" />
+        <TabIndex value="0" />
+        <Location value="{X=4,Y=8}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=272, Height=188}" />
+        <Text value="${res:Dialog.Options.IDEOptions.TaskListOptions.CommentTagsGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.Button>
+            <Name value="changeButton" />
+            <Location value="{X=128,Y=128}" />
+            <Text value="${res:Global.ChangeButtonText}" />
+            <TabIndex value="5" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.Button>
+            <Name value="addButton" />
+            <Location value="{X=128,Y=100}" />
+            <Text value="${res:Global.AddButtonText}" />
+            <TabIndex value="4" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.Button>
+            <Name value="removeButton" />
+            <Location value="{X=128,Y=156}" />
+            <Text value="${res:Global.RemoveButtonText}" />
+            <TabIndex value="6" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.Label>
+            <Name value="label2" />
+            <Text value="${res:Dialog.Options.IDEOptions.TaskListOptions.NameLabel}" />
+            <TextAlign value="BottomLeft" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="2" />
+            <Size value="{Width=136, Height=22}" />
+            <Location value="{X=128,Y=18}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="nameTextBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="3" />
+            <Location value="{X=128,Y=40}" />
+            <Size value="{Width=136, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="label" />
+            <Text value="${res:Dialog.Options.IDEOptions.TaskListOptions.TokenListLabel}" />
+            <TextAlign value="BottomLeft" />
+            <TabIndex value="0" />
+            <Size value="{Width=112, Height=20}" />
+            <Location value="{X=8,Y=20}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.ListView>
+            <Name value="taskListView" />
+            <MultiSelect value="False" />
+            <TabIndex value="1" />
+            <View value="Details" />
+            <Sorting value="Ascending" />
+            <FullRowSelect value="True" />
+            <Location value="{X=8,Y=40}" />
+            <Size value="{Width=112, Height=140}" />
+            <HeaderStyle value="None" />
+            <HideSelection value="False" />
+            <Columns>
+              <System.Windows.Forms.ColumnHeader>
+                <Width value="200" />
+                <Name value="columnHeader" />
+                <Text value="" />
+              </System.Windows.Forms.ColumnHeader>
+            </Columns>
+          </System.Windows.Forms.ListView>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="70" />
+    <Name value="columnHeader3" />
+    <Text value="Template" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="70" />
+    <Name value="columnHeader7" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Template}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="140" />
+    <Name value="columnHeader6" />
+    <Text value="Description" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="140" />
+    <Name value="columnHeader5" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Description}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="140" />
+    <Name value="columnHeader4" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Description}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="70" />
+    <Name value="columnHeader9" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Template}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="140" />
+    <Name value="columnHeader8" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Description}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="200" />
+    <Name value="columnHeader" />
+    <Text value="" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="70" />
+    <Name value="columnHeader10" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Template}" />
+  </System.Windows.Forms.ColumnHeader>
+</Components>

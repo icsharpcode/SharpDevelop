@@ -1,0 +1,574 @@
+<?xml version="1.0"?>
+<!-- syntaxdefinition for C# 2000 by Mike Krueger -->
+
+<SyntaxDefinition name = "ILAsm" extensions = ".il">
+	
+	<Properties>
+		<Property name="LineComment" value="//"/>
+	</Properties>
+	
+	<Digits name = "Digits" bold = "false" italic = "false" color = "DarkBlue"/>
+
+	<RuleSets>
+		<RuleSet ignorecase="false">
+			<Delimiters>&amp;&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	?</Delimiters>
+			
+		  	<Span name = "LineComment" rule = "CommentMarkerSet" bold = "false" italic = "false" color = "Gray" stopateol = "true">
+				<Begin>//</Begin>
+		  	</Span>
+		  
+			<Span name = "String" bold = "false" italic = "false" color = "Magenta" stopateol = "true">
+				<Begin>"</Begin>
+				<End>"</End>
+			</Span>
+			
+			<MarkPrevious bold = "true" italic = "false" color = "MidnightBlue">(</MarkPrevious>
+
+			<KeyWords name = "Punctuation" bold = "false" italic = "false" color = "DarkGreen">
+				<Key word = "?" />
+				<Key word = "," />
+				<Key word = ":" />
+				<Key word = ";" />
+				<Key word = "(" />
+				<Key word = ")" />
+				<Key word = "[" />
+				<Key word = "]" />
+				<Key word = "{" />
+				<Key word = "}" />
+				<Key word = "+" />
+				<Key word = "-" />
+				<Key word = "/" />
+				<Key word = "%" />
+				<Key word = "*" />
+				<Key word = "&lt;" />
+				<Key word = "&gt;" />
+				<Key word = "^" />
+				<Key word = "=" />
+				<Key word = "~" />
+				<Key word = "!" />
+				<Key word = "|" />
+				<Key word = "&amp;" />
+			</KeyWords>
+			
+			<KeyWords name = "Instructions" bold="false" italic="false" color="Blue">
+				<Key word = "nop" />
+				<Key word = "break" />
+				<Key word = "ldarg.0" />
+				<Key word = "ldarg.1" />
+				<Key word = "ldarg.2" />
+				<Key word = "ldarg.3" />
+				<Key word = "ldloc.0" />
+				<Key word = "ldloc.1" />
+				<Key word = "ldloc.2" />
+				<Key word = "ldloc.3" />
+				<Key word = "stloc.0" />
+				<Key word = "stloc.1" />
+				<Key word = "stloc.2" />
+				<Key word = "stloc.3" />
+				<Key word = "ldarg.s" />
+				<Key word = "ldarga.s" />
+				<Key word = "starg.s" />
+				<Key word = "ldloc.s" />
+				<Key word = "ldloca.s" />
+				<Key word = "stloc.s" />
+				<Key word = "ldnull" />
+				<Key word = "ldc.i4.m1" />
+				<Key word = "ldc.i4.0" />
+				<Key word = "ldc.i4.1" />
+				<Key word = "ldc.i4.2" />
+				<Key word = "ldc.i4.3" />
+				<Key word = "ldc.i4.4" />
+				<Key word = "ldc.i4.5" />
+				<Key word = "ldc.i4.6" />
+				<Key word = "ldc.i4.7" />
+				<Key word = "ldc.i4.8" />
+				<Key word = "ldc.i4.s" />
+				<Key word = "ldc.i4" />
+				<Key word = "ldc.i8" />
+				<Key word = "ldc.r4" />
+				<Key word = "ldc.r8" />
+				<Key word = "dup" />
+				<Key word = "pop" />
+				<Key word = "jmp" />
+				<Key word = "call" />
+				<Key word = "calli" />
+				<Key word = "ret" />
+				<Key word = "br.s" />
+				<Key word = "brfalse.s" />
+				<Key word = "brtrue.s" />
+				<Key word = "beq.s" />
+				<Key word = "bge.s" />
+				<Key word = "bgt.s" />
+				<Key word = "ble.s" />
+				<Key word = "blt.s" />
+				<Key word = "bne.un.s" />
+				<Key word = "bge.un.s" />
+				<Key word = "bgt.un.s" />
+				<Key word = "ble.un.s" />
+				<Key word = "blt.un.s" />
+				<Key word = "br" />
+				<Key word = "brfalse" />
+				<Key word = "brtrue" />
+				<Key word = "beq" />
+				<Key word = "bge" />
+				<Key word = "bgt" />
+				<Key word = "ble" />
+				<Key word = "blt" />
+				<Key word = "bne.un" />
+				<Key word = "bge.un" />
+				<Key word = "bgt.un" />
+				<Key word = "ble.un" />
+				<Key word = "blt.un" />
+				<Key word = "switch" />
+				<Key word = "ldind.i1" />
+				<Key word = "ldind.u1" />
+				<Key word = "ldind.i2" />
+				<Key word = "ldind.u2" />
+				<Key word = "ldind.i4" />
+				<Key word = "ldind.u4" />
+				<Key word = "ldind.i8" />
+				<Key word = "ldind.i" />
+				<Key word = "ldind.r4" />
+				<Key word = "ldind.r8" />
+				<Key word = "ldind.ref" />
+				<Key word = "stind.ref" />
+				<Key word = "stind.i1" />
+				<Key word = "stind.i2" />
+				<Key word = "stind.i4" />
+				<Key word = "stind.i8" />
+				<Key word = "stind.r4" />
+				<Key word = "stind.r8" />
+				<Key word = "add" />
+				<Key word = "sub" />
+				<Key word = "mul" />
+				<Key word = "div" />
+				<Key word = "div.un" />
+				<Key word = "rem" />
+				<Key word = "rem.un" />
+				<Key word = "and" />
+				<Key word = "or" />
+				<Key word = "xor" />
+				<Key word = "shl" />
+				<Key word = "shr" />
+				<Key word = "shr.un" />
+				<Key word = "neg" />
+				<Key word = "not" />
+				<Key word = "conv.i1" />
+				<Key word = "conv.i2" />
+				<Key word = "conv.i4" />
+				<Key word = "conv.i8" />
+				<Key word = "conv.r4" />
+				<Key word = "conv.r8" />
+				<Key word = "conv.u4" />
+				<Key word = "conv.u8" />
+				<Key word = "callvirt" />
+				<Key word = "cpobj" />
+				<Key word = "ldobj" />
+				<Key word = "ldstr" />
+				<Key word = "newobj" />
+				<Key word = "castclass" />
+				<Key word = "isinst" />
+				<Key word = "conv.r.un" />
+				<Key word = "unbox" />
+				<Key word = "throw" />
+				<Key word = "ldfld" />
+				<Key word = "ldflda" />
+				<Key word = "stfld" />
+				<Key word = "ldsfld" />
+				<Key word = "ldsflda" />
+				<Key word = "stsfld" />
+				<Key word = "stobj" />
+				<Key word = "conv.ovf.i1.un" />
+				<Key word = "conv.ovf.i2.un" />
+				<Key word = "conv.ovf.i4.un" />
+				<Key word = "conv.ovf.i8.un" />
+				<Key word = "conv.ovf.u1.un" />
+				<Key word = "conv.ovf.u2.un" />
+				<Key word = "conv.ovf.u4.un" />
+				<Key word = "conv.ovf.u8.un" />
+				<Key word = "conv.ovf.i.un" />
+				<Key word = "conv.ovf.u.un" />
+				<Key word = "box" />
+				<Key word = "newarr" />
+				<Key word = "ldlen" />
+				<Key word = "ldelema" />
+				<Key word = "ldelem.i1" />
+				<Key word = "ldelem.u1" />
+				<Key word = "ldelem.i2" />
+				<Key word = "ldelem.u2" />
+				<Key word = "ldelem.i4" />
+				<Key word = "ldelem.u4" />
+				<Key word = "ldelem.i8" />
+				<Key word = "ldelem.i" />
+				<Key word = "ldelem.r4" />
+				<Key word = "ldelem.r8" />
+				<Key word = "ldelem.ref" />
+				<Key word = "stelem.i" />
+				<Key word = "stelem.i1" />
+				<Key word = "stelem.i2" />
+				<Key word = "stelem.i4" />
+				<Key word = "stelem.i8" />
+				<Key word = "stelem.r4" />
+				<Key word = "stelem.r8" />
+				<Key word = "stelem.ref" />
+				<Key word = "conv.ovf.i1" />
+				<Key word = "conv.ovf.u1" />
+				<Key word = "conv.ovf.i2" />
+				<Key word = "conv.ovf.u2" />
+				<Key word = "conv.ovf.i4" />
+				<Key word = "conv.ovf.u4" />
+				<Key word = "conv.ovf.i8" />
+				<Key word = "conv.ovf.u8" />
+				<Key word = "refanyval" />
+				<Key word = "ckfinite" />
+				<Key word = "mkrefany" />
+				<Key word = "ldtoken" />
+				<Key word = "conv.u2" />
+				<Key word = "conv.u1" />
+				<Key word = "conv.i" />
+				<Key word = "conv.ovf.i" />
+				<Key word = "conv.ovf.u" />
+				<Key word = "add.ovf" />
+				<Key word = "add.ovf.un" />
+				<Key word = "mul.ovf" />
+				<Key word = "mul.ovf.un" />
+				<Key word = "sub.ovf" />
+				<Key word = "sub.ovf.un" />
+				<Key word = "endfinally" />
+				<Key word = "leave" />
+				<Key word = "leave.s" />
+				<Key word = "stind.i" />
+				<Key word = "conv.u" />
+				<Key word = "prefix7" />
+				<Key word = "prefix6" />
+				<Key word = "prefix5" />
+				<Key word = "prefix4" />
+				<Key word = "prefix3" />
+				<Key word = "prefix2" />
+				<Key word = "prefix1" />
+				<Key word = "prefixref" />
+	
+				<Key word = "arglist" />
+				<Key word = "ceq" />
+				<Key word = "cgt" />
+				<Key word = "cgt.un" />
+				<Key word = "clt" />
+				<Key word = "clt.un" />
+				<Key word = "ldftn" />
+				<Key word = "ldvirtftn" />
+				<Key word = "ldarg" />
+				<Key word = "ldarga" />
+				<Key word = "starg" />
+				<Key word = "ldloc" />
+				<Key word = "ldloca" />
+				<Key word = "stloc" />
+				<Key word = "localloc" />
+				<Key word = "endfilter" />
+				<Key word = "unaligned." />
+				<Key word = "volatile." />
+				<Key word = "tail." />
+				<Key word = "initobj" />
+				<Key word = "cpblk" />
+				<Key word = "initblk" />
+				<Key word = "rethrow" />
+				<Key word = "sizeof" />
+				<Key word = "refanytype" />
+				
+				<Key word = "illegal" />
+				<Key word = "endmac" />
+	
+				<Key word = "brnull" />
+				<Key word = "brnull.s" />
+				<Key word = "brzero" />
+				<Key word = "brzero.s" />
+				<Key word = "brinst" />
+				<Key word = "brinst.s" />
+				<Key word = "ldind.u8" />
+				<Key word = "ldelem.u8" />
+				<Key word = "ldc.i4.M1" />
+				<Key word = "endfault" />
+			</KeyWords>
+			
+			<KeyWords name = "Keywords" bold="true" italic="false" color="Blue">
+				<Key word = "void" />
+				<Key word = "bool" />
+				<Key word = "char" />
+				<Key word = "wchar" />
+				<Key word = "int" />
+				<Key word = "int8" />
+				<Key word = "int16" />
+				<Key word = "int32" />
+				<Key word = "int64" />
+				<Key word = "float" />
+				<Key word = "float32" />
+				<Key word = "float64" />
+				<Key word = "refany" />
+				<Key word = "typedref" />
+				<Key word = "object" />
+				<Key word = "string" />
+				<Key word = "native" />
+				<Key word = "unsigned" />
+				<Key word = "value" />
+				<Key word = "valuetype" />
+				<Key word = "class" />
+				<Key word = "const" />
+				<Key word = "vararg" />
+				<Key word = "default" />
+				<Key word = "stdcall" />
+				<Key word = "thiscall" />
+				<Key word = "fastcall" />
+				<Key word = "unmanaged" />
+				<Key word = "not_in_gc_heap" />
+				<Key word = "beforefieldinit" />
+				<Key word = "instance" />
+				<Key word = "filter" />
+				<Key word = "catch" />
+				<Key word = "static" />
+				<Key word = "public" />
+				<Key word = "private" />
+				<Key word = "synchronized" />
+				<Key word = "interface" />
+				<Key word = "extends" />
+				<Key word = "implements" />
+				<Key word = "handler" />
+				<Key word = "finally" />
+				<Key word = "fault" />
+				<Key word = "to" />
+				<Key word = "abstract" />
+				<Key word = "auto" />
+				<Key word = "sequential" />
+				<Key word = "explicit" />
+				<Key word = "wrapper" />
+				<Key word = "ansi" />
+				<Key word = "unicode" />
+				<Key word = "autochar" />
+				<Key word = "import" />
+				<Key word = "enum" />
+				<Key word = "virtual" />
+				<Key word = "notremotable" />
+				<Key word = "special" />
+				<Key word = "il" />
+				<Key word = "cil" />
+				<Key word = "optil" />
+				<Key word = "managed" />
+				<Key word = "preservesig" />
+				<Key word = "runtime" />
+				<Key word = "method" />
+				<Key word = "field" />
+				<Key word = "bytearray" />
+				<Key word = "final" />
+				<Key word = "sealed" />
+				<Key word = "specialname" />
+				<Key word = "family" />
+				<Key word = "assembly" />
+				<Key word = "famandassem" />
+				<Key word = "famorassem" />
+				<Key word = "privatescope" />
+				<Key word = "nested" />
+				<Key word = "hidebysig" />
+				<Key word = "newslot" />
+				<Key word = "rtspecialname" />
+				<Key word = "pinvokeimpl" />
+				<Key word = "unmanagedexp" />
+				<Key word = "reqsecobj" />
+				<Key word = ".ctor" />
+				<Key word = ".cctor" />
+				<Key word = "initonly" />
+				<Key word = "literal" />
+				<Key word = "notserialized" />
+				<Key word = "forwardref" />
+				<Key word = "internalcall" />
+				<Key word = "noinlining" />
+				<Key word = "nomangle" />
+				<Key word = "lasterr" />
+				<Key word = "winapi" />
+				<Key word = "cdecl" />
+				<Key word = "stdcall" />
+				<Key word = "thiscall" />
+				<Key word = "fastcall" />
+				<Key word = "as" />
+				<Key word = "pinned" />
+				<Key word = "modreq" />
+				<Key word = "modopt" />
+				<Key word = "serializable" />
+				<Key word = "at" />
+				<Key word = "tls" />
+				<Key word = "true" />
+				<Key word = "false" />
+		</KeyWords>
+		
+		<KeyWords name = "Assembler directives" bold="true" italic="false" color="Green">
+				<Key word = ".class" />
+				<Key word = ".namespace" />
+				<Key word = ".method" />
+				<Key word = ".field" />
+				<Key word = ".emitbyte" />
+				<Key word = ".try" />
+				<Key word = ".maxstack" />
+				<Key word = ".locals" />
+				<Key word = ".entrypoint" />
+				<Key word = ".zeroinit" />
+				<Key word = ".pdirect" />
+				<Key word = ".data" />
+
+				<Key word = ".event" />
+				<Key word = ".addon" />
+				<Key word = ".removeon" />
+				<Key word = ".fire" />
+				<Key word = ".other" />
+				<Key word = "protected" />
+
+				<Key word = ".property" />
+				<Key word = ".set" />
+				<Key word = ".get" />
+				<Key word = "default" />
+
+				<Key word = ".import" />
+
+				<Key word = ".permission" />
+				<Key word = ".permissionset" />
+		</KeyWords>
+
+		<KeyWords name = "Sequirty actions" bold="false" italic="false" color="Red">
+				<Key word = "request" />
+				<Key word = "demand" />
+				<Key word = "assert" />
+				<Key word = "deny" />
+				<Key word = "permitonly" />
+				<Key word = "linkcheck" />
+				<Key word = "inheritcheck" />
+				<Key word = "reqmin" />
+				<Key word = "reqopt" />
+				<Key word = "reqrefuse" />
+				<Key word = "prejitgrant" />
+				<Key word = "prejitdeny" />
+				<Key word = "noncasdemand" />
+				<Key word = "noncaslinkdemand" />
+				<Key word = "noncasinheritance" />
+		</KeyWords>
+
+		<KeyWords name = "Extern debug data specifier" bold="false" italic="false" color="Green">
+				<Key word = ".line" />
+				<Key word = ".language" />
+				<Key word = "#line" />
+		</KeyWords>
+				
+		<KeyWords name = "Misc keywords" bold="true" italic="false" color="Green">
+				<!-- custom value specifier -->
+				<Key word = ".custom" />
+				<!-- IL method attribute  -->
+				<Key word = "init" />
+				<!-- Class layout directives -->
+				<Key word = ".size" />
+				<Key word = ".pack" />
+				<!-- Manifest-related keywords -->
+				<Key word = ".file" />
+				<Key word = "nometadata" />
+				<Key word = ".hash" />
+				<Key word = ".assembly" />
+				<Key word = "implicitcom" />
+				<Key word = "noappdomain" />
+				<Key word = "noprocess" />
+				<Key word = "nomachine" />
+				<Key word = ".publickey" />
+				<Key word = ".publickeytoken" />
+				<Key word = "algorithm" />
+				<Key word = ".ver" />
+				<Key word = ".locale" />
+				<Key word = "extern" />
+				<Key word = ".export" />
+				<Key word = ".manifestres" />
+				<Key word = ".mresource" />
+				<Key word = ".localized" />
+				<Key word = ".module" />
+				
+				<!-- Field marshaling keywords -->
+				<Key word = "marshal" />
+				<Key word = "custom" />
+				<Key word = "sysstring" />
+				<Key word = "fixed" />
+				<Key word = "variant" />
+				<Key word = "currency" />
+				<Key word = "syschar" />
+				<Key word = "decimal" />
+				<Key word = "date" />
+				<Key word = "bstr" />
+				<Key word = "tbstr" />
+				<Key word = "lpstr" />
+				<Key word = "lpwstr" />
+				<Key word = "lptstr" />
+				<Key word = "objectref" />
+				<Key word = "iunknown" />
+				<Key word = "idispatch" />
+				<Key word = "struct" />
+				<Key word = "safearray" />
+				<Key word = "byvalstr" />
+				<Key word = "lpvoid" />
+				<Key word = "any" />
+				<Key word = "array" />
+				<Key word = "lpstruct" />
+				
+				<!-- VTable fixup keywords  -->
+				<Key word = ".vtfixup" />
+				<Key word = "fromunmanaged" />
+				<Key word = "callmostderived" />
+				<Key word = ".vtentry" />
+				
+				<!-- Parameter attributes  -->
+				<Key word = "in" />
+				<Key word = "out" />
+				<Key word = "opt" />
+				<Key word = "lcid" />
+				<Key word = "retval" />
+				<Key word = ".param" />
+				
+				<!-- Method implementations  -->
+				<Key word = ".override" />
+				<Key word = "with" />
+				
+				<!-- VariantType keywords  -->
+				<Key word = "null" />
+				<Key word = "error" />
+				<Key word = "hresult" />
+				<Key word = "carray" />
+				<Key word = "userdefined" />
+				<Key word = "record" />
+				<Key word = "filetime" />
+				<Key word = "blob" />
+				<Key word = "stream" />
+				<Key word = "storage" />
+				<Key word = "streamed_object" />
+				<Key word = "stored_object" />
+				<Key word = "blob_object" />
+				<Key word = "cf" />
+				<Key word = "clsid" />
+				<Key word = "vector" />
+				
+				<!-- Null reference keyword for InitOpt  -->
+				<Key word = "nullref" />
+				
+				<!-- Header flags keywords  -->
+				<Key word = ".subsystem" />
+				<Key word = ".corflags" />
+				<Key word = "alignment" />
+				<Key word = ".imagebase" />
+			</KeyWords>
+			
+			
+			
+		</RuleSet>
+		
+		<RuleSet name = "CommentMarkerSet" ignorecase = "true">
+		  	<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+			<KeyWords name = "ErrorWords" bold="true" italic="false" color="Red">
+				<Key word = "TODO" />
+				<Key word = "FIXME" />
+	 	 	</KeyWords>
+			<KeyWords name = "WarningWords" bold="true" italic="false" color="#EEE0E000">
+				<Key word = "HACK" />
+				<Key word = "UNDONE" />
+	 	 	</KeyWords>
+		</RuleSet>
+		
+	</RuleSets>
+</SyntaxDefinition>

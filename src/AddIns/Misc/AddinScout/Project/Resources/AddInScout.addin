@@ -1,0 +1,21 @@
+<AddIn name        = "AddInScout"
+       author      = "Satguru P Srivastava"
+       copyright   = "GPL"
+       url         = "http://home.mchsi.com/~ssatguru"
+       description = "Display AddIn Information"
+       version     = "0.1.0">
+
+	<Runtime>
+		<Import assembly="AddInScout.dll"/>
+	</Runtime>
+
+
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
+		<MenuItem id = "ShowAddInScout"
+			  insertafter = "Separator3" insertbefore = "Separator4"
+			  label = "AddIn Scout" 
+			  class = "AddInScout.AddInScoutCommand"/>
+	</Path>
+	
+	
+</AddIn>

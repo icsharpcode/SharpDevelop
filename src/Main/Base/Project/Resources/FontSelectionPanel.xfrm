@@ -1,0 +1,52 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="XmlUserControl1" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=352, Height=112}" />
+    <Controls>
+      <System.Windows.Forms.Label>
+        <Name value="fontPreviewLabel" />
+        <Text value="AaBbCcXxYyZz" />
+        <TextAlign value="MiddleCenter" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="19" />
+        <Size value="{Width=336, Height=40}" />
+        <Location value="{X=8,Y=64}" />
+        <BackColor value="Color [ControlLightLight]" />
+        <BorderStyle value="FixedSingle" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Label>
+        <Name value="fontSizeLabel" />
+        <Text value="${res:Dialog.Options.IDEOptions.TextEditor.General.FontSizeLabel}" />
+        <TextAlign value="BottomLeft" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="17" />
+        <Size value="{Width=112, Height=20}" />
+        <Location value="{X=232,Y=8}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.ComboBox>
+        <Name value="fontSizeComboBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="18" />
+        <Location value="{X=232,Y=32}" />
+        <Size value="{Width=112, Height=21}" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.ComboBox>
+        <Name value="fontListComboBox" />
+        <DrawMode value="OwnerDrawFixed" />
+        <TabIndex value="16" />
+        <Location value="{X=8,Y=32}" />
+        <Size value="{Width=216, Height=22}" />
+        <DropDownStyle value="DropDownList" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.Label>
+        <Name value="CreatedObject9" />
+        <Text value="${res:Dialog.Options.IDEOptions.TextEditor.General.TextfontLabel}" />
+        <TextAlign value="BottomLeft" />
+        <TabIndex value="15" />
+        <Size value="{Width=208, Height=20}" />
+        <Location value="{X=8,Y=8}" />
+      </System.Windows.Forms.Label>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

@@ -1,0 +1,156 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="MyUserControl" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=320, Height=320}" />
+    <Controls>
+      <System.Windows.Forms.Panel>
+        <Name value="editorPanel" />
+        <Location value="{X=8,Y=192}" />
+        <Size value="{Width=304, Height=120}" />
+        <DockPadding value="" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <TabIndex value="8" />
+        <Controls>
+          <System.Windows.Forms.TextBox>
+            <Name value="templateTextBox" />
+            <TabIndex value="0" />
+            <Dock value="Fill" />
+            <Location value="{X=0,Y=0}" />
+            <AcceptsReturn value="True" />
+            <Size value="{Width=304, Height=120}" />
+            <Multiline value="True" />
+            <AcceptsTab value="True" />
+            <AutoSize value="False" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+        </Controls>
+      </System.Windows.Forms.Panel>
+      <System.Windows.Forms.Button>
+        <Name value="removeButton" />
+        <Location value="{X=232,Y=160}" />
+        <Text value="${res:Global.RemoveButtonText}" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="7" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="editButton" />
+        <Location value="{X=232,Y=128}" />
+        <Text value="${res:Global.EditButtonText}" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="6" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="addButton" />
+        <Location value="{X=232,Y=96}" />
+        <Text value="${res:Global.AddButtonText}" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="5" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.ListView>
+        <Name value="templateListView" />
+        <GridLines value="True" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="4" />
+        <View value="Details" />
+        <Sorting value="Ascending" />
+        <FullRowSelect value="True" />
+        <Location value="{X=8,Y=72}" />
+        <Size value="{Width=216, Height=112}" />
+        <HideSelection value="False" />
+        <Columns>
+          <System.Windows.Forms.ColumnHeader>
+            <Width value="70" />
+            <Name value="columnHeader" />
+            <Text value="${res:Dialog.Options.CodeTemplate.Template}" />
+          </System.Windows.Forms.ColumnHeader>
+          <System.Windows.Forms.ColumnHeader>
+            <Width value="140" />
+            <Name value="columnHeader2" />
+            <Text value="${res:Dialog.Options.CodeTemplate.Description}" />
+          </System.Windows.Forms.ColumnHeader>
+        </Columns>
+      </System.Windows.Forms.ListView>
+      <System.Windows.Forms.Button>
+        <Name value="removeGroupButton" />
+        <Location value="{X=200,Y=40}" />
+        <Size value="{Width=96, Height=23}" />
+        <Text value="${res:Dialog.Options.CodeTemplate.RemoveGroupLabel}" />
+        <TabIndex value="3" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="addGroupButton" />
+        <Location value="{X=88,Y=40}" />
+        <Size value="{Width=104, Height=23}" />
+        <Text value="${res:Dialog.Options.CodeTemplate.AddGroupLabel}" />
+        <TabIndex value="2" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.ComboBox>
+        <Name value="groupComboBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="1" />
+        <Location value="{X=88,Y=8}" />
+        <Size value="{Width=228, Height=21}" />
+        <DropDownStyle value="DropDownList" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.Label>
+        <Name value="extensionLabel" />
+        <Text value="${res:Dialog.Options.CodeTemplate.ExtensionsLabel}" />
+        <TextAlign value="MiddleRight" />
+        <TabIndex value="0" />
+        <Size value="{Width=80, Height=23}" />
+        <Location value="{X=8,Y=8}" />
+      </System.Windows.Forms.Label>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="70" />
+    <Name value="columnHeader3" />
+    <Text value="Template" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="140" />
+    <Name value="columnHeader1" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Description}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="70" />
+    <Name value="columnHeader7" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Template}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="140" />
+    <Name value="columnHeader2" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Description}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="140" />
+    <Name value="columnHeader6" />
+    <Text value="Description" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="140" />
+    <Name value="columnHeader5" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Description}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="140" />
+    <Name value="columnHeader4" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Description}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="70" />
+    <Name value="columnHeader9" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Template}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="70" />
+    <Name value="columnHeader8" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Template}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="70" />
+    <Name value="columnHeader" />
+    <Text value="${res:Dialog.Options.CodeTemplate.Template}" />
+  </System.Windows.Forms.ColumnHeader>
+</Components>

@@ -1,0 +1,48 @@
+<AddIn name        = "IL Assembler binding"
+       author      = "Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "Binding for IL ASM"
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly = "ILAsmBinding.dll"/>
+	</Runtime>
+
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "ILASM"
+		            insertafter="SharpDevelop XFrms"
+		            insertbefore="AllFiles"
+		            name = "IL Files (*.il)"
+		            extensions = "*.il"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes">
+		<SyntaxMode id         = "IL Syntax Mode"
+		            name       = "ILAsm"
+		            extensions = ".il"
+		            resource   = "ILAsm-Mode.xshd" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+		<Condition activeproject="ILAsm">
+			<DialogPanel id = "ILAsmCompilerParametersPanel"
+			             label = "Compiler"
+			             class = "ICSharpCode.ILAsmBinding.CompilerParametersPanel"/>
+			<DialogPanel id = "ILAsmRuntimeCompilerPanel"
+			             label = "Runtime/Compiler"
+			             class = "ICSharpCode.ILAsmBinding.ChooseRuntimePanel"/>
+		</Condition>
+	</Path>
+
+<!-- TODO: 
+	<Path name = "/Workspace/Icons">
+	</Path>
+-->
+	
+	<Path name = "/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id    = "ILAsm"
+		                 supportedextensions = ".il"
+		                 class = "ICSharpCode.ILAsmBinding.ILAsmLanguageBinding" />
+	</Path>
+</AddIn>

@@ -1,0 +1,122 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="MyUserControl" />
+    <GridSize value="{Width=8, Height=8}" />
+    <DockPadding value="" />
+    <DrawGrid value="True" />
+    <Size value="{Width=304, Height=208}" />
+    <SnapToGrid value="True" />
+    <Controls>
+      <System.Windows.Forms.ComboBox>
+        <Name value="actionComboBox" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="7" />
+        <Location value="{X=192,Y=176}" />
+        <Size value="{Width=104, Height=21}" />
+        <DropDownStyle value="DropDownList" />
+        <Items>
+          <System.String value="${res:Dialog.Options.CombineOptions.Startup.Action.None}" />
+          <System.String value="${res:Dialog.Options.CombineOptions.Startup.Action.Execute}" />
+        </Items>
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.Label>
+        <Name value="label" />
+        <Text value="${res:Dialog.Options.CombineOptions.Startup.ActionLabel}" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="6" />
+        <Size value="{Width=104, Height=23}" />
+        <Location value="{X=192,Y=152}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Button>
+        <Name value="moveDownButton" />
+        <Location value="{X=192,Y=112}" />
+        <Text value="${res:Dialog.Options.CombineOptions.Startup.MoveDownButton}" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="5" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="moveUpButton" />
+        <Location value="{X=192,Y=80}" />
+        <Text value="${res:Dialog.Options.CombineOptions.Startup.MoveUpButton}" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="4" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.ListView>
+        <Name value="entryListView" />
+        <GridLines value="True" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="3" />
+        <View value="Details" />
+        <FullRowSelect value="True" />
+        <Location value="{X=24,Y=80}" />
+        <Size value="{Width=160, Height=120}" />
+        <Columns>
+          <System.Windows.Forms.ColumnHeader>
+            <Width value="156" />
+            <Name value="columnHeader" />
+            <Text value="${res:Dialog.Options.CombineOptions.Startup.EntryColumnHeader}" />
+          </System.Windows.Forms.ColumnHeader>
+          <System.Windows.Forms.ColumnHeader>
+            <Width value="62" />
+            <Name value="columnHeader2" />
+            <Text value="${res:Dialog.Options.CombineOptions.Startup.ActionColumnHeader}" />
+          </System.Windows.Forms.ColumnHeader>
+        </Columns>
+      </System.Windows.Forms.ListView>
+      <System.Windows.Forms.RadioButton>
+        <Name value="multipleRadioButton" />
+        <Location value="{X=8,Y=56}" />
+        <Size value="{Width=288, Height=24}" />
+        <Text value="${res:Dialog.Options.CombineOptions.Startup.MultipleStartupRadioButton}" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="2" />
+      </System.Windows.Forms.RadioButton>
+      <System.Windows.Forms.ComboBox>
+        <Name value="singleComboBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="1" />
+        <Location value="{X=24,Y=32}" />
+        <Size value="{Width=272, Height=21}" />
+        <DropDownStyle value="DropDownList" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.RadioButton>
+        <Name value="singleRadioButton" />
+        <Location value="{X=8,Y=8}" />
+        <Size value="{Width=288, Height=24}" />
+        <Text value="${res:Dialog.Options.CombineOptions.Startup.SingleStartupRadioButton}" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="0" />
+      </System.Windows.Forms.RadioButton>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="62" />
+    <Name value="columnHeader3" />
+    <Text value="${res:Dialog.Options.CombineOptions.Startup.ActionColumnHeader}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="62" />
+    <Name value="columnHeader2" />
+    <Text value="${res:Dialog.Options.CombineOptions.Startup.ActionColumnHeader}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="156" />
+    <Name value="columnHeader6" />
+    <Text value="Name" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="156" />
+    <Name value="columnHeader5" />
+    <Text value="${res:Dialog.Options.CombineOptions.Startup.EntryColumnHeader}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="62" />
+    <Name value="columnHeader4" />
+    <Text value="Action" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="156" />
+    <Name value="columnHeader" />
+    <Text value="${res:Dialog.Options.CombineOptions.Startup.EntryColumnHeader}" />
+  </System.Windows.Forms.ColumnHeader>
+</Components>

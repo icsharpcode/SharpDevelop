@@ -1,0 +1,139 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.41115</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</ProjectGuid>
+    <AssemblyName>FormDesigner</AssemblyName>
+    <OutputTarget>Library</OutputTarget>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <OutputType>Library</OutputType>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\FormDesigner\</OutputPath>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\FormDesigner\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Resources\AddSidebarComponentsDialog.xfrm" />
+    <EmbeddedResource Include="Resources\ConfigureSidebarDialog.xfrm" />
+    <EmbeddedResource Include="Resources\RenameSidebarCategoryDialog.xfrm" />
+    <EmbeddedResource Include="Resources\WindowsFormsGridOptions.xfrm" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Commands\FormCommands.cs" />
+    <Compile Include="Src\Commands\SideBarCommands.cs" />
+    <Compile Include="Src\FormDesigner\DesignerGenerator\CodeDOMGenerator.cs" />
+    <Compile Include="Src\FormDesigner\DesignerGenerator\CSharpDesignerGenerator.cs" />
+    <Compile Include="Src\FormDesigner\DesignerGenerator\IDesignerGenerator.cs" />
+    <Compile Include="Src\FormDesigner\DesignerGenerator\XmlDesignerGenerator.cs" />
+    <Compile Include="Src\FormDesigner\DesignerLoader\NRefactoryDesignerLoader.cs" />
+    <Compile Include="Src\FormDesigner\DesignerLoader\XmlDesignerLoader.cs" />
+    <Compile Include="Src\FormDesigner\FormDesignerSecondaryDisplayBinding.cs" />
+    <Compile Include="Src\FormDesigner\FormDesignerViewContent.cs" />
+    <Compile Include="Src\FormDesigner\FormKeyHandler.cs" />
+    <Compile Include="Src\FormDesigner\Gui\AddComponentsDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\FormDesigner\Gui\AssemblyList.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\FormDesigner\Gui\ComponentLibraryLoader.cs" />
+    <Compile Include="Src\FormDesigner\Gui\ConfigureSideBarDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\FormDesigner\Gui\CustomComponentsSideTab.cs" />
+    <Compile Include="Src\FormDesigner\Gui\OptionPanels\GridOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\FormDesigner\Gui\RenameCategoryDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\FormDesigner\Gui\ShowTabOrder\ITabOrder.cs" />
+    <Compile Include="Src\FormDesigner\Gui\ShowTabOrder\TabIndexControl.cs" />
+    <Compile Include="Src\FormDesigner\Gui\SideTabDesigner.cs" />
+    <Compile Include="Src\FormDesigner\Gui\SideTabItemDesigner.cs" />
+    <Compile Include="Src\FormDesigner\MenuDesigner\AbstractMenuEditorControl.cs" />
+    <Compile Include="Src\FormDesigner\MenuDesigner\ContextMenuEditorControl.cs" />
+    <Compile Include="Src\FormDesigner\MenuDesigner\ItemEditor.cs" />
+    <Compile Include="Src\FormDesigner\MenuDesigner\MainMenuEditorControl.cs" />
+    <Compile Include="Src\FormDesigner\MenuDesigner\MenuDesigner.cs" />
+    <Compile Include="Src\FormDesigner\MenuDesigner\MenuEditorService.cs" />
+    <Compile Include="Src\FormDesigner\MenuDesigner\SubMenuEditorControl.cs" />
+    <Compile Include="Src\FormDesigner\Services\DefaultServiceContainer.cs" />
+    <Compile Include="Src\FormDesigner\Services\DesignerEventService.cs" />
+    <Compile Include="Src\FormDesigner\Services\DesignerOptionService.cs" />
+    <Compile Include="Src\FormDesigner\Services\DesignerResourceService.cs" />
+    <Compile Include="Src\FormDesigner\Services\EventBindingService.cs" />
+    <Compile Include="Src\FormDesigner\Services\HelpService.cs" />
+    <Compile Include="Src\FormDesigner\Services\MenuCommandService.cs" />
+    <Compile Include="Src\FormDesigner\Services\PropertyValueUIService.cs" />
+    <Compile Include="Src\FormDesigner\Services\ToolboxService.cs" />
+    <Compile Include="Src\FormDesigner\Services\TypeDescriptorFilterService.cs" />
+    <Compile Include="Src\FormDesigner\Services\TypeResolutionService.cs" />
+    <Compile Include="Src\FormDesigner\Services\UIService.cs" />
+    <Compile Include="Src\FormDesigner\ToolboxProvider.cs" />
+    <Compile Include="Src\FormDesigner\UndoRedo\ComponentAddedUndoAction.cs" />
+    <Compile Include="Src\FormDesigner\UndoRedo\ComponentChangedUndoAction.cs" />
+    <Compile Include="Src\FormDesigner\UndoRedo\ComponentRemovedUndoAction.cs" />
+    <Compile Include="Src\FormDesigner\UndoRedo\SelectComponentsUndoAction.cs" />
+    <Compile Include="Src\FormDesigner\UndoRedo\UndoHandler.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>NRefactory</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Src\FormDesigner\Gui\ICSharpCode.SharpDevelop.FormDesigner.Gui.AssemblyList.resources" />
+    <EmbeddedResource Include="Src\FormDesigner\Gui\ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.ControlLibrariesPanel.resources" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="FormDesigner.addin">
+      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\FormDesigner\Util\" />
+    <Folder Include="Src\FormDesigner\Xml\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

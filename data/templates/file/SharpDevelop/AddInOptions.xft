@@ -1,0 +1,68 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		  name        = "AddIn Options"
+		  icon        = "C#.File.FullFile"
+		  category    = "#Develop"
+		  defaultname = "AddInOptions${Number}.cs"
+		  language    = "C#"/>
+	 
+	<Description>This class provides an easy access to persistent properties.</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+using System;
+using System.Diagnostics;
+using ICSharpCode.Core.Services;
+using ICSharpCode.Core.Properties;
+
+namespace ${StandardNamespace}
+{
+	public class AddInOptions
+	{
+		public static readonly string OptionsProperty = "${StandardNamespace}.Options";
+		
+		static IProperties properties;
+		
+		static AddInOptions()
+		{
+			PropertyService propertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
+			properties = (IProperties)propertyService.GetProperty(OptionsProperty, new DefaultProperties());
+		}
+		
+		static IProperties Properties {
+			get {
+				Debug.Assert(properties != null);
+				return properties;
+			}
+		}
+		
+		#region Properties
+//		public static string MyStringProperty {
+//			get {
+//				return Properties.GetProperty("MyStringProperty", "DefaultValue");
+//			}
+//			set {
+//				Properties.SetProperty("MyStringProperty", value);
+//			}
+//		}
+		#endregion
+	}
+}
+]]>
+		</File>
+	</Files>
+	
+	<AdditionalOptions/>
+	
+</Template>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.Resource.EmptyResourceFile.Name}"
+		  icon        = "Icons.32x32.ResourceFileIcon"
+		  category    = "${res:Templates.File.Categories.Misc}"
+		  defaultname = "Resource${Number}.resources"
+		  language    = "ResourceFiles"/>
+	 
+	<Description>${res:Templates.File.Resource.EmptyResourceFile.Description}</Description>
+
+	<Files>
+		<File name="${FullName}" language="ResourceFiles"/>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+

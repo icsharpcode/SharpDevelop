@@ -1,0 +1,148 @@
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <version value="$version"/>
+// </file>
+
+using System;
+using System.IO;
+using System.Collections;
+
+using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.TextEditor.Actions;
+using ICSharpCode.TextEditor;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Core;
+
+namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
+{
+	public abstract class CodeGenerator
+	{
+		ArrayList content = new ArrayList();
+		protected int       numOps  = 0;
+		protected IAmbience csa;
+		protected IAmbience vba;
+		protected IClass    currentClass = null;
+		protected TextArea editActionHandler;
+		
+		public CodeGenerator(IClass currentClass)
+		{	
+			try {
+				csa = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem("CSharp", this);
+				vba = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem("VBNET", this);
+			} catch {
+				Console.WriteLine("CSharpAmbience not found -- is the C# backend binding loaded???");
+				return;
+			}
+			
+			this.currentClass = currentClass;
+			csa.ConversionFlags = ConversionFlags.All;
+		}
+		
+		public abstract string CategoryName {
+			get;
+		}
+		
+		public abstract string Hint {
+			get;
+		}
+		
+		public abstract int ImageIndex {
+			get;
+		}
+		
+		public virtual bool IsActive {
+			get {
+				return content.Count > 0;
+			}
+		}
+		
+		public ArrayList Content {
+			get {
+				return content;
+			}
+		}
+		
+		protected bool StartCodeBlockInSameLine {
+			get {
+				
+				Properties p = (Properties)PropertyService.Get("SharpDevelop.UI.CodeGenerationOptions", new Properties());
+				return p.Get("StartBlockOnSameLine", true);
+			}
+		}
+		
+		public void GenerateCode(TextArea editActionHandler, IList items)
+		{
+			numOps = 0;
+			this.editActionHandler = editActionHandler;
+			editActionHandler.BeginUpdate();
+			
+			
+			bool save1         = editActionHandler.TextEditorProperties.AutoInsertCurlyBracket;
+			IndentStyle save2  = editActionHandler.TextEditorProperties.IndentStyle;
+			bool save3         = PropertyService.Get("VBBinding.TextEditor.EnableEndConstructs", true);
+			PropertyService.Set("VBBinding.TextEditor.EnableEndConstructs", false);
+			editActionHandler.TextEditorProperties.AutoInsertCurlyBracket = false;
+			editActionHandler.TextEditorProperties.IndentStyle            = IndentStyle.Smart;
+						
+			string extension = Path.GetExtension(editActionHandler.MotherTextEditorControl.FileName).ToLower();
+			StartGeneration(items, extension);
+			
+			if (numOps > 0) {
+				editActionHandler.Document.UndoStack.UndoLast(numOps);
+			}
+			// restore old property settings
+			editActionHandler.TextEditorProperties.AutoInsertCurlyBracket = save1;
+			editActionHandler.TextEditorProperties.IndentStyle            = save2;
+			PropertyService.Set("VBBinding.TextEditor.EnableEndConstructs", save3);
+			editActionHandler.EndUpdate();
+			
+			editActionHandler.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
+			editActionHandler.Document.CommitUpdate();
+		}
+		
+		protected abstract void StartGeneration(IList items, string fileExtension);
+		
+		protected void Indent()
+		{
+			
+			Properties p = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
+			
+			bool tabsToSpaces = p.Get("TabsToSpaces", false);
+			
+			int  tabSize      = p.Get("TabIndent", 4);
+			int  indentSize   = p.Get("IndentationSize", 4);
+			
+			if (tabsToSpaces) {
+				editActionHandler.InsertString(new String(' ', indentSize));
+			} else {
+				editActionHandler.InsertString(new String('\t', indentSize / tabSize));
+				int trailingSpaces = indentSize % tabSize;
+				if (trailingSpaces > 0) {
+					editActionHandler.InsertString(new String(' ', trailingSpaces));
+					++numOps;
+				}
+			}
+			++numOps;
+		}
+		
+		protected void Return()
+		{
+			IndentLine();
+			new Return().Execute(editActionHandler);++numOps;
+		}
+		
+		protected void IndentLine()
+		{
+			int delta = editActionHandler.Document.FormattingStrategy.IndentLine(editActionHandler, editActionHandler.Document.GetLineNumberForOffset(editActionHandler.Caret.Offset));
+			if (delta != 0) {
+				++numOps;
+				LineSegment caretLine = editActionHandler.Document.GetLineSegmentForOffset(editActionHandler.Caret.Offset);
+				editActionHandler.Caret.Position = editActionHandler.Document.OffsetToPosition(Math.Min(editActionHandler.Caret.Offset + delta, caretLine.Offset + caretLine.Length));
+			}
+		}
+	}
+}

@@ -1,0 +1,116 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="CreatedObject0" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=400, Height=344}" />
+    <Controls>
+      <System.Windows.Forms.TextBox>
+        <Name value="ProjectNamespaceTextBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="3" />
+        <Location value="{X=156,Y=32}" />
+        <Size value="{Width=236, Height=21}" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="label" />
+        <Text value="${res:Dialog.Options.PrjOptions.General.ProjectNamespaceLabel}" />
+        <TextAlign value="MiddleRight" />
+        <TabIndex value="2" />
+        <Size value="{Width=144, Height=16}" />
+        <Location value="{X=8,Y=32}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.RichTextBox>
+        <Name value="ProjectDescriptionTextBox" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <Size value="{Width=384, Height=88}" />
+        <Location value="{X=8,Y=80}" />
+        <Text value="" />
+        <TabIndex value="5" />
+      </System.Windows.Forms.RichTextBox>
+      <System.Windows.Forms.Label>
+        <Name value="CreatedObject1" />
+        <Text value="${res:Dialog.Options.PrjOptions.General.ProjectNameLabel}" />
+        <TextAlign value="MiddleRight" />
+        <TabIndex value="0" />
+        <Size value="{Width=144, Height=16}" />
+        <Location value="{X=8,Y=12}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.TextBox>
+        <Name value="ProjectNameTextBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="1" />
+        <Location value="{X=156,Y=8}" />
+        <Size value="{Width=236, Height=21}" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="CreatedObject4" />
+        <Text value="${res:Dialog.Options.PrjOptions.General.ProjectDescriptionLabel}" />
+        <TextAlign value="BottomLeft" />
+        <TabIndex value="4" />
+        <Size value="{Width=376, Height=16}" />
+        <Location value="{X=8,Y=60}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Label>
+        <Name value="CreatedObject7" />
+        <Text value="${res:Dialog.Options.PrjOptions.General.ProjectDocumentationLabel}" />
+        <TextAlign value="BottomLeft" />
+        <Anchor value="Bottom, Left, Right" />
+        <TabIndex value="7" />
+        <Size value="{Width=384, Height=16}" />
+        <Location value="{X=8,Y=264}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.TextBox>
+        <Name value="ProjectDocumentationLocationTextBox" />
+        <Anchor value="Bottom, Left, Right" />
+        <TabIndex value="8" />
+        <Location value="{X=8,Y=280}" />
+        <Size value="{Width=344, Height=21}" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Button>
+        <Name value="BrowseButton" />
+        <Location value="{X=360,Y=280}" />
+        <Size value="{Width=32, Height=21}" />
+        <Text value="..." />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="9" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.GroupBox>
+        <Name value="CreatedObject12" />
+        <TabIndex value="6" />
+        <Location value="{X=8,Y=176}" />
+        <Anchor value="Bottom, Left, Right" />
+        <Size value="{Width=384, Height=80}" />
+        <Text value="${res:Dialog.Options.PrjOptions.General.AutoFindFilesGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="NewFilesOnLoadCheckBox" />
+            <Location value="{X=10,Y=21}" />
+            <Size value="{Width=368, Height=24}" />
+            <Text value="${res:Dialog.Options.PrjOptions.General.SearchNewFileOnLoadCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="AutoInsertNewFilesCheckBox" />
+            <Location value="{X=24,Y=45}" />
+            <Size value="{Width=352, Height=32}" />
+            <Text value="${res:Dialog.Options.PrjOptions.General.AutoIncludeFilesCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="1" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="EnableViewStateCheckBox" />
+        <Location value="{X=8,Y=312}" />
+        <Size value="{Width=388, Height=24}" />
+        <Text value="${res:Dialog.Options.PrjOptions.General.ViewStateCheckBox}" />
+        <Anchor value="Bottom, Left, Right" />
+        <TabIndex value="10" />
+      </System.Windows.Forms.CheckBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

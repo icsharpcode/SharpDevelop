@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.#Develop.SimpleCommand.Name}"
+		  icon        = "C#.File.FullFile"
+		  category    = "#Develop"
+		  defaultname = "SimpleCommand${Number}.cs"
+		  language    = "C#"/>
+	 
+	<Description>${res:Templates.File.#Develop.SimpleCommand.Description}</Description>
+	
+	<Files>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+using System;
+using System.Windows.Forms;
+
+using ICSharpCode.Core.AddIns.Codons;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of  ${FileNameWithoutExtension}
+	/// </summary>
+	public class  ${FileNameWithoutExtension} : AbstractCommand
+	{
+		/// <summary>
+		/// Starts the command
+		/// </summary>
+		public override void Run()
+		{
+			// TODO: Add your code here !!!
+		}
+	}
+}]]>
+		</File>
+	</Files>
+	
+	<AdditionalOptions/>
+	
+</Template>

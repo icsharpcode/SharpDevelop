@@ -1,0 +1,60 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		name        = "${res:Templates.File.#Develop.MenuCommand.Name}"
+		icon        = "C#.File.FullFile"
+		category    = "#Develop"
+		defaultname = "Class${Number}.cs"
+		language    = "C#"/>
+	 
+	<Description>${res:Templates.File.#Develop.MenuCommand.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+using System;
+using System.Windows.Forms;
+
+using ICSharpCode.Core.AddIns.Codons;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of ${FileNameWithoutExtension}
+	/// </summary>
+	public class ${FileNameWithoutExtension} : AbstractMenuCommand
+	{
+		/// <summary>
+		/// Creates a new ${FileNameWithoutExtension}
+		/// </summary>
+		public ${FileNameWithoutExtension}()
+		{
+			// You can enable/disable the menu command using the
+			// IsEnabled property of the AbstractMenuCommand class
+		}
+	
+		/// <summary>
+		/// Starts the command
+		/// </summary>
+		public override void Run()
+		{
+			// TODO: Add your code here !!!
+		}
+	}
+}
+]]>
+		</File>
+	</Files>
+	
+	<AdditionalOptions/>
+	
+</Template>

@@ -1,0 +1,35 @@
+<AddIn name        = "Message Box Builder Wizard"
+       author      = "Mike Krueger"
+       copyright   = "GPL"
+       url         = "unknown"
+       description = "Creates a messagebox call"
+       version     = "1.0.0">
+
+	<Runtime>
+		<Import assembly="MessageBoxBuilder.dll"/>
+	</Runtime>
+	
+	<Path name = "Plugins/Wizards/MessageBoxBuilderWizard">
+		<DialogPanel id = "View"
+		             label = "${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.ViewPropertyPanel.PanelName}"
+		             class = "Plugins.Wizards.MessageBoxBuilder.DialogPanels.ViewPropertyPanel"/>
+		<DialogPanel id = "CodeGeneration"
+		             label = "${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.CodeGenerationPanel.PanelName}"
+		             class = "Plugins.Wizards.MessageBoxBuilder.DialogPanels.CodeGenerationPanel"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
+		<Condition>
+			<Or>
+				<Condition activewindow="ICSharpCode.SharpDevelop.FormDesigner.FormDesignerDisplayBindingWrapper"/>
+				<Condition activewindow="ICSharpCode.SharpDevelop.FormDesigner.CSharpDesignerDisplayBindingWrapper"/>
+                		<Condition activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBindingWrapper"/>
+			</Or>
+		        <MenuItem id = "MessageBox Wizard" 
+		                  insertafter = "Separator1" insertbefore = "Separator2"
+			          label       = "${res:Plugins.Wizards.MessageBoxBuilder.MessageBoxWizardMenuCommand}" 
+			          description = "${res:Plugins.Wizards.MessageBoxBuilder.MessageBoxWizardMenuCommand.Description}" 
+			          class       = "Plugins.Wizards.MessageBoxBuilder.Command.WizardCommand"/> 
+		</Condition>
+	</Path>
+</AddIn>

@@ -1,0 +1,41 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		name        = "${res:Templates.File.EmptyClass.Name}"
+		icon        = "VB.File.NewClass"
+		category    = "VB"
+		defaultname = "Class${Number}.vb"
+		language    = "VBNET"
+	/>
+	 
+	<Description>${res:Templates.File.EmptyClass.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
+
+Imports System
+
+Namespace ${StandardNamespace}
+
+	Public Class ${ClassName}
+	
+		Public Sub New()
+		End Sub
+	End Class
+End Namespace
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+

@@ -1,0 +1,281 @@
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <version value="$version"/>
+// </file>
+
+using System;
+using System.Reflection;
+using System.Collections;
+using System.Collections.Generic;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+
+namespace ICSharpCode.SharpDevelop.Dom
+{
+	[Serializable]
+	public abstract class AbstractClass : AbstractNamedEntity, IClass, IComparable
+	{
+		protected ClassType        classType;
+		protected IRegion          region;
+		protected IRegion          bodyRegion;
+		protected object           declaredIn;
+		
+		List<string>    baseTypes   = null;
+		
+		List<IClass>    innerClasses = null;
+		List<IField>    fields       = null;
+		List<IProperty> properties   = null;
+		List<IMethod>   methods      = null;
+		List<IEvent>    events       = null;
+		List<IIndexer>  indexer      = null;
+		
+		public abstract ICompilationUnit CompilationUnit {
+			get;
+		}
+		
+		public virtual ClassType ClassType {
+			get {
+				return classType;
+			}
+		}
+		
+		public virtual IRegion Region {
+			get {
+				return region;
+			}
+		}
+		
+		public virtual IRegion BodyRegion {
+			get {
+				return bodyRegion;
+			}
+		}
+		
+		public object DeclaredIn {
+			get {
+				return declaredIn;
+			}
+		}
+		
+		public virtual List<string> BaseTypes {
+			get {
+				if (baseTypes == null) {
+					baseTypes = new List<string>();
+				}
+				return baseTypes;
+			}
+		}
+		
+		public virtual List<IClass> InnerClasses {
+			get {
+				if (innerClasses == null) {
+					innerClasses = new List<IClass>();
+				}
+				return innerClasses;
+			}
+		}
+		
+		public virtual List<IField> Fields {
+			get {
+				if (fields == null) {
+					fields = new List<IField>();
+				}
+				return fields;
+			}
+		}
+		
+		public virtual List<IProperty> Properties {
+			get {
+				if (properties == null) {
+					properties = new List<IProperty>();
+				}
+				return properties;
+			}
+		}
+		
+		public virtual List<IIndexer> Indexer {
+			get {
+				if (indexer == null) {
+					indexer = new List<IIndexer>();
+				}
+				return indexer;
+			}
+		}
+		
+		public virtual List<IMethod> Methods {
+			get {
+				if (methods == null) {
+					methods = new List<IMethod>();
+				}
+				return methods;
+			}
+		}
+		
+		public virtual List<IEvent> Events {
+			get {
+				if (events == null) {
+					events = new List<IEvent>();
+				}
+				return events;
+			}
+		}
+		
+		
+		public virtual int CompareTo(IClass value)
+		{
+			int cmp;
+			
+			if(0 != (cmp = base.CompareTo((IDecoration)value))) {
+				return cmp;
+			}
+			
+			if (FullyQualifiedName != null) {
+				cmp = FullyQualifiedName.CompareTo(value.FullyQualifiedName);
+				if (cmp != 0) {
+					return cmp;
+				}
+			}
+			
+			if (Region != null) {
+				cmp = Region.CompareTo(value.Region);
+				if (cmp != 0) {
+					return cmp;
+				}
+			}
+			
+			cmp = DiffUtility.Compare(BaseTypes, value.BaseTypes);
+			if(cmp != 0)
+				return cmp;
+			
+			cmp = DiffUtility.Compare(InnerClasses, value.InnerClasses);
+			if(cmp != 0)
+				return cmp;
+			
+			cmp = DiffUtility.Compare(Fields, value.Fields);
+			if(cmp != 0)
+				return cmp;
+			
+			cmp = DiffUtility.Compare(Properties, value.Properties);
+			if(cmp != 0)
+				return cmp;
+			
+			cmp = DiffUtility.Compare(Indexer, value.Indexer);
+			if(cmp != 0)
+				return cmp;
+			
+			cmp = DiffUtility.Compare(Methods, value.Methods);
+			if(cmp != 0)
+				return cmp;
+			
+			return DiffUtility.Compare(Events, value.Events);
+		}
+		
+		int IComparable.CompareTo(object o) 
+		{
+			return CompareTo((IClass)o);
+		}
+		
+		public IEnumerable ClassInheritanceTree {
+			get {
+				return new ClassInheritanceEnumerator(this);
+			}
+		}
+		
+		protected override bool CanBeSubclass {
+			get {
+				return true;
+			}
+		}
+		
+		public class ClassInheritanceEnumerator : IEnumerator, IEnumerable
+		{
+			IClass topLevelClass;
+			IClass currentClass  = null;
+			Queue  baseTypeQueue = new Queue();
+
+			public ClassInheritanceEnumerator(IClass topLevelClass)
+			{
+				this.topLevelClass = topLevelClass;
+				baseTypeQueue.Enqueue(topLevelClass.FullyQualifiedName);
+				PutBaseClassesOnStack(topLevelClass);
+				baseTypeQueue.Enqueue("System.Object");
+			}
+			
+			public IEnumerator GetEnumerator()
+			{
+				return this;
+			}
+			
+			void PutBaseClassesOnStack(IClass c)
+			{
+				foreach (string baseTypeName in c.BaseTypes) {
+					baseTypeQueue.Enqueue(baseTypeName);
+				}
+			}
+			
+			public IClass Current {
+				get {
+					return currentClass;
+				}
+			}
+			
+			object IEnumerator.Current {
+				get {
+					return currentClass;
+				}
+			}
+			
+			public bool MoveNext()
+			{
+				try {
+					if (baseTypeQueue.Count == 0) {
+						return false;
+					}
+					string baseTypeName = baseTypeQueue.Dequeue().ToString();
+					
+					IClass baseType = ParserService.CurrentProjectContent.GetClass(baseTypeName);
+					
+					// search through all usings the top level class compilation unit has.
+					if (baseType == null) {
+						ICompilationUnit unit = currentClass == null ? null : currentClass.CompilationUnit;
+						if (unit != null) {
+							foreach (IUsing u in unit.Usings) {
+								baseType = u.SearchType(baseTypeName);
+								if (baseType != null) {
+									break;
+								}
+							}
+						}
+					}
+					
+					// search through all namespaces the top level class is defined in.
+					if (baseType == null) {
+						string[] namespaces = topLevelClass.Namespace.Split('.');
+						for (int i = namespaces.Length; i > 0 && baseType == null; --i) {
+							baseType = ParserService.CurrentProjectContent.GetClass(String.Join(".", namespaces, 0, i) + "." + baseTypeName);
+						}
+					}
+					
+					if (baseType != null) {
+						currentClass = baseType;
+						PutBaseClassesOnStack(currentClass);
+					}
+					return baseType != null;
+				} catch (Exception e) {
+					Console.WriteLine(e);
+				}
+				return false;
+			}
+			
+			public void Reset()
+			{
+				baseTypeQueue.Clear();
+				baseTypeQueue.Enqueue(topLevelClass.FullyQualifiedName);
+				PutBaseClassesOnStack(topLevelClass);
+				baseTypeQueue.Enqueue("System.Object");
+			}
+		}
+	}
+}

@@ -1,0 +1,72 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.WindowsForm.Name}"
+		  icon        = "C#.File.Form"
+		  category    = "C#"
+		  defaultname = "Form${Number}.cs"
+		  language    = "C#"/>
+	 
+	<Description>${res:Templates.File.WindowsForm.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+		${ClassName}                -> Class name (generally FileNameWithoutExtension w/o 'bad' characters)
+	 -->
+	<Files>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of ${ClassName}.
+	/// </summary>
+	public class ${ClassName} : System.Windows.Forms.Form
+	{
+		public ${ClassName}()
+		{
+			//
+			// The InitializeComponent() call is required for Windows Forms designer support.
+			//
+			InitializeComponent();
+			
+			//
+			// TODO: Add constructor code after the InitializeComponent() call.
+			//
+		}
+		
+		#region Windows Forms Designer generated code
+		/// <summary>
+		/// This method is required for Windows Forms designer support.
+		/// Do not change the method contents inside the source code editor. The Forms designer might
+		/// not be able to load this method if it was changed manually.
+		/// </summary>
+		private void InitializeComponent()
+		{
+			// 
+			// ${ClassName}
+			// 
+			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
+			this.ClientSize = new System.Drawing.Size(292, 266);
+			this.Text = "${ClassName}";
+			this.Name = "${ClassName}";
+		}
+		#endregion
+	}
+}
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

@@ -1,0 +1,109 @@
+<?xml version="1.0" ?>
+<!-- syntaxdefinition for XML 2000 by Mike Krueger -->
+<SyntaxDefinition name="Jay" extensions=".jay">
+	<Environment>
+		<Default      color = "SystemColors.WindowText"    bgcolor = "SystemColors.Window"/>
+		<Selection    color = "SystemColors.HighlightText" bgcolor = "SystemColors.Highlight"/>
+<!--		<Selection    bgcolor = "LightBlue"/> -->
+		<VRuler       color = "SystemColors.ControlLight"/>
+		<InvalidLines color = "Red"/>
+		<CaretMarker  color = "Yellow"/>
+		
+		<LineNumbers  color = "SystemColors.ControlDark" bgcolor = "SystemColors.Window"/>
+		
+		<FoldLine     color = "#808080" bgcolor="Black"/>
+		<FoldMarker   color = "#808080" bgcolor="White"/>
+		<SelectedFoldLine color = "Black" bgcolor="Black"/>
+
+		<EOLMarkers   color = "#E0E0E5"/>
+		<SpaceMarkers color = "#E0E0E5"/>
+		<TabMarkers   color = "#E0E0E5"/>
+	</Environment>
+	<Digits name="Digits" bold="false" italic="false" color="DarkBlue" />
+	<RuleSets>
+		<RuleSet ignorecase="false" noescapesequences="true">
+			<!-- It is not necessary to define span-delimiting characters as delimiters -->
+			<Delimiters></Delimiters>
+
+
+			<Span name="Jay" rule="CSharp" bold="false" italic="false" color="DarkSlateGray" stopateol="false">
+				<Begin  bold = "true" color = "Black">%{</Begin>
+				<End  bold = "true" color = "Black">%}</End>
+			</Span>
+
+			<Span name="Jay" rule="JayDecl" bold="false" italic="false" color="DarkSlateGray" stopateol="false">
+				<Begin>%%</Begin>
+				<End>%%</End>
+			</Span>
+			
+			<Span name = "LINECOMMENT" bold = "false" italic = "true" color = "Gray" stopateol = "true">
+			   	<Begin>//</Begin>
+			</Span>
+			
+			<Span name = "BLOCKCOMMENT" bold = "false" italic = "true" color = "Gray" stopateol = "false">
+				<Begin>/*</Begin>
+				<End>*/</End>
+			</Span>
+			
+			<Span name = "STRING" bold = "false" italic = "false" color = "Magenta" stopateol = "true">
+				<Begin>"</Begin>
+				<End>"</End>
+			</Span>
+			
+			<Span name = "CHAR" bold = "false" italic = "false" color = "Magenta" stopateol = "true">
+				<Begin>'</Begin>
+				<End>'</End>
+			</Span>
+			
+			<KeyWords name = "LexerDefinition" bold = "true" italic = "false" color = "Green">
+				<Key word = "%token" />
+				<Key word = "%nonassoc" />
+				<Key word = "%left" />
+				<Key word = "%right" />
+				<Key word = "%start" />
+			</KeyWords>
+
+		</RuleSet>
+
+		<RuleSet name="CSharp" reference = "C#" ignorecase="false" noescapesequences="true">
+			<Delimiters>/=</Delimiters>
+	
+			<KeyWords name = "LexerDefinition" bold = "true" italic = "false" color = "Red">
+				<Key word = "$1" />
+				<Key word = "$2" />
+				<Key word = "$3" />
+				<Key word = "$4" />
+				<Key word = "$$" />
+			</KeyWords>
+		</RuleSet>
+
+		<RuleSet name="JayDecl" ignorecase="false" noescapesequences="true">
+			<Delimiters>&amp;&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+			
+			<Span name="Jay" rule="CSharp" bold="false" italic="false" color="DarkSlateGray" stopateol="false">
+				<Begin bold = "true" color = "Black">{</Begin>
+				<End bold = "true" color = "Black">}</End>
+			</Span>
+			
+			<Span name = "LINECOMMENT" bold = "false" italic = "true" color = "Gray" stopateol = "true">
+			   	<Begin>//</Begin>
+			</Span>
+			
+			<Span name = "BLOCKCOMMENT" bold = "false" italic = "true" color = "Gray" stopateol = "false">
+				<Begin>/*</Begin>
+				<End>*/</End>
+			</Span>
+			
+			<MarkPrevious bold = "true" italic = "false" color = "Red">:</MarkPrevious>
+			
+			<KeyWords name = "Punctuation" bold = "true" italic = "false" color = "Black">
+				<Key word = ";" />
+				<Key word = "|" />
+				<Key word = ":" />
+			</KeyWords>
+		  
+
+		</RuleSet>
+	</RuleSets>
+</SyntaxDefinition>
+		

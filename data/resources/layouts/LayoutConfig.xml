@@ -1,0 +1,15 @@
+<LayoutConfig>
+	
+	<Layout name     = "Default"
+		file     = "Default.xml"
+		readonly = "False"/>
+	
+	<Layout name     = "Debug"
+		file     = "Debug.xml"
+		readonly = "False"/>
+	
+	<Layout name     = "Plain"
+		file     = "Plain.xml"
+		readonly = "True"/>
+		
+</LayoutConfig>

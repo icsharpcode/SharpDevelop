@@ -1,0 +1,194 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.41115</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <AssemblyName>WeifenLuo.WinFormsUI</AssemblyName>
+    <AssemblyOriginatorKeyFile>..\..\..\Main\Core\Project\Resources\ICSharpCode.Core.snk</AssemblyOriginatorKeyFile>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <DelaySign>false</DelaySign>
+    <OutputType>Library</OutputType>
+    <RootNamespace>WeifenLuo.WinFormsUI</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <SignAssembly>true</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>bin\Debug\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <Optimize>false</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System.Data1, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=x86">
+      <HintPath>..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v2.0.41115\System.Data.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System.Design1, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v2.0.41115\System.Design.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System.Drawing1, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v2.0.41115\System.Drawing.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System.Windows.Forms1, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v2.0.41115\System.Windows.Forms.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System.XML1, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v2.0.41115\System.XML.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System1, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
+      <HintPath>..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v2.0.41115\System.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AutoHideWindow.cs" />
+    <Compile Include="AutoHideWindowSplitter.cs" />
+    <Compile Include="DisplayingDockList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DockAreasEditor.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DockContent.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="DockContentCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DockHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DockList.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DockPane.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="DockPaneCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DockPanel.cs" />
+    <Compile Include="DockPanelPersist.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DockPaneSplitter.cs" />
+    <Compile Include="DockWindow.cs" />
+    <Compile Include="DockWindowCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DockWindowSplitter.cs" />
+    <Compile Include="DragHandler.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DragHandlerBase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DrawHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="DummyControl.cs" />
+    <Compile Include="Enums.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EventArgs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="FloatWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="FloatWindowCollection.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="HiddenMdiChild.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="InertButton.cs" />
+    <Compile Include="Interfaces.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Localization.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="LocalWindowsHook.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Measures.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NestedDockingStatus.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ResourceHelper.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SplitterBase.cs" />
+    <Compile Include="Win32\Enums.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Win32\Gdi32.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Win32\Structs.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Win32\User32.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <EmbeddedResource Include="Resources\DockPane.AutoHideNo.bmp" />
+    <EmbeddedResource Include="Resources\DockPane.AutoHideYes.bmp" />
+    <EmbeddedResource Include="Resources\DockPane.DocumentCloseDisabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPane.DocumentCloseEnabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPane.ScrollLeftDisabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPane.ScrollLeftEnabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPane.ScrollRightDisabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPane.ScrollRightEnabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPane.ToolWindowCloseDisabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPane.ToolWindowCloseEnabled.bmp" />
+    <EmbeddedResource Include="Strings.resX" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="..\..\..\Main\Core\Project\Resources\ICSharpCode.Core.snk">
+      <Link>ICSharpCode.Core.snk</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

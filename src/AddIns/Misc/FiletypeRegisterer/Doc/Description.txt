@@ -1,0 +1,22 @@
+This is my suggestion for the filetype associations in #d.
+
+The AddIn contains two classes:
+ - The RegisterFiletypesCommand, that is executed at startup and where the types are registered
+ - The RegisterFiletypesOptionPanel, that is shown in the IDE Options.
+
+In the Option panel, you can select the types you want #d to be associated with and whether #d should re-register the types at each startup.
+The command, which is autoexecuted at startup, checks if this option is turned on and then performs the task, if necessary.
+If this option is turned off, the only point where file types are registered is clicking OK in the option panel.
+
+The file types are listed in the Filetypes.xml file, which has to be located (as well as the icon files) in the subdir "filetypes" of "data\resources".
+So types can be dynamically added or deleted. (In case this file is malformed, the addin will load an internal list that is currently the same as in the XML file.)
+
+I don't exactly know how to manage that the option panel pops up the first time #d is started (like the code completion database wizard), but I think that's not a point of extremely much work.
+
+--------------------------------
+New Info
+--------------------------------
+- By default, cmbx and prjx are registered.
+- The Addin now automatically unregisters filetypes when they are deselected in the option panel.
+- An Unregister.exe is included that takes one parameter: the extension.
+- When registering file types, old associations are preserved and restored when unregistering.

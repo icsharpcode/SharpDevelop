@@ -1,0 +1,149 @@
+<?xml version="1.0"?>
+<Template originator   = "Mike Krueger"
+          created      = "02/01/2003"
+          lastModified = "02/01/2003">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.WindowsService.Name}</Name>
+		<Category>C#</Category>
+		<Icon>C#.Project.ServiceProject</Icon>
+		<LanguageName>C#</LanguageName>
+		<Description>${res:Templates.Project.WindowsService.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MyService.cs"/>
+	</Actions>
+
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			
+			<Options Target = "Library" PauseConsoleOutput = "False" />
+	
+			<Files>
+				<File name="MyService.cs"><![CDATA[${StandardHeader.C#}
+using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Data;
+using System.Diagnostics;
+using System.ServiceProcess;
+using System.Configuration.Install;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// This is the class for my Service
+	/// </summary>
+	public class MyService : System.ServiceProcess.ServiceBase
+	{
+		public MyService()
+		{
+			InitializeComponents();
+
+			// TODO: Add any further initialization code
+		}
+
+		private void InitializeComponents()
+		{
+			this.ServiceName = "MyService";
+		}
+		
+		/// <summary>
+		/// This method starts the service.
+		/// </summary>
+		public static void Main()
+		{
+			System.ServiceProcess.ServiceBase.Run(new System.ServiceProcess.ServiceBase[] {
+				new MyService() // To run more than one service you have to add them here
+			});
+		}
+
+		/// <summary>
+		/// Clean up any resources being used.
+		/// </summary>
+		protected override void Dispose(bool disposing)
+		{
+			// TODO: Add cleanup code here (if required)
+			base.Dispose(disposing);
+		}
+
+		/// <summary>
+		/// Start this service.
+		/// </summary>
+		protected override void OnStart(string[] args)
+		{
+			// TODO: Add start code here (if required)
+			//       to start your service.
+		}
+ 
+		/// <summary>
+		/// Stop this service.
+		/// </summary>
+		protected override void OnStop()
+		{
+			// TODO: Add tear-down code here (if required) 
+			//       to stop your service.
+		}
+	}
+}
+
+[RunInstaller(true)]
+public class ProjectInstaller : Installer
+{
+	public ProjectInstaller()
+	{
+		ServiceProcessInstaller spi = new ServiceProcessInstaller();
+		spi.Account = ServiceAccount.LocalSystem;
+		
+		ServiceInstaller si = new ServiceInstaller();
+		si.ServiceName = "Hello Service Template";
+		si.StartType = ServiceStartMode.Automatic;
+		Installers.AddRange(new Installer[] {spi, si});
+	}
+}
+]]></File>
+			<File name="AssemblyInfo.cs"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+// Information about this assembly is defined by the following
+// attributes.
+//
+// change them to the information which is associated with the assembly
+// you compile.
+
+[assembly: AssemblyTitle("")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+
+// The assembly version has following format :
+//
+// Major.Minor.Build.Revision
+//
+// You can specify all values by your own or you can build default build and revision
+// numbers with the '*' character (the default):
+
+[assembly: AssemblyVersion("1.0.*")]
+
+// The following attributes specify the key for the sign of your assembly. See the
+// .NET Framework documentation for more information about signing.
+// This is not required, if you don't want signing let these attributes like they're.
+[assembly: AssemblyDelaySign(false)]
+[assembly: AssemblyKeyFile("")]
+]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

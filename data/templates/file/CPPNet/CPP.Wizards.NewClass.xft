@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Template author="Roman Taranchenko" version="1.0">
+	
+	<Config
+		name        = "${res:Templates.File.NewClassWizard.Name}"
+		icon        = "C++.File.NewClass"
+		category    = "C++"
+		defaultname = "Class${Number}.cs"
+		language    = "C++.NET">
+		
+		<Wizard path = "/SharpDevelop/Templates/File/NewClassWizard"/>
+		
+	</Config>
+	
+	<Description>${res:Templates.File.NewClassWizard.Description}</Description>
+	
+	<Files/>
+	<AdditionalOptions/>
+</Template>

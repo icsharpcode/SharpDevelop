@@ -1,0 +1,69 @@
+<!-- Common About Box Dialog 1.0 by Mike Krueger
+     last change : 04/14/2002
+  -->
+<System.Windows.Forms.Form> 
+	<Text            value = "${res:Dialog.About.DialogName}"/>
+	<ClientSize      value = "{Width=416, Height=499}"/>
+	<ShowInTaskbar   value = "False"/>
+	<MaximizeBox     value = "False"/>
+	<MinimizeBox     value = "False"/>
+	<FormBorderStyle value = "FixedDialog"/>
+	<StartPosition   value = "CenterScreen"/>
+	<AcceptButton    value = "okButton"/>
+	<CancelButton    value = "okButton"/>
+
+	<Controls>
+		
+		<!-- The picture box showing the about box picture -->
+		<ICSharpCode.SharpDevelop.Gui.ScrollBox>
+			<Name     value = "aboutPictureScrollBox"/>
+			<TabIndex value = "0"/>
+			<Width    value = "400"/>
+			<Height   value = "224"/>
+			<Location value = "{X=8, Y=8}"/>
+			<Image value = "Icons.AboutImage"/>
+			<TabStop value = "False"/>
+		</ICSharpCode.SharpDevelop.Gui.ScrollBox>
+		
+		<!-- The copyright label -->
+		<System.Windows.Forms.Label>
+			<Text    value = "(c) 2000-2004 by icsharpcode.net"/>
+			<Width   value = "400"/>
+			<Height  value = "20"/>
+			<Location value = "{X=8, Y=234}"/>
+		</System.Windows.Forms.Label>
+		
+		<!-- The Tab Control showing user defined tabs -->
+		<System.Windows.Forms.TabControl>
+			<Width   value = "400"/>
+			<Height  value = "208"/>
+			<Location value = "{X=8, Y=256}"/>
+			<TabPages>
+				<System.Windows.Forms.TabPage>
+					<Text value="${res:Dialog.About.DialogName}"/>
+					<Controls>
+						<ICSharpCode.SharpDevelop.Gui.AboutSharpDevelopTabPage/>
+					</Controls>
+				</System.Windows.Forms.TabPage>
+				<System.Windows.Forms.TabPage>
+					<Text value="${res:Dialog.About.VersionInfoTabName}"/>
+					<Controls>
+						<ICSharpCode.SharpDevelop.Gui.VersionInformationTabPage/>
+					</Controls>
+				</System.Windows.Forms.TabPage>
+			</TabPages>
+		</System.Windows.Forms.TabControl>
+		
+		<!-- OK Button -->
+		<System.Windows.Forms.Button>
+			<Name    value = "okButton"/>
+			<Width   value = "80"/>
+			<Height  value = "24"/>
+			<Location value = "{X=328, Y=472}"/>
+			<TabIndex value = "1"/>
+			<Text     value = "${res:Global.OKButtonText}"/>
+			<FlatStyle value = "System"/>
+			<DialogResult value = "OK"/>
+		</System.Windows.Forms.Button>
+	</Controls>
+</System.Windows.Forms.Form>

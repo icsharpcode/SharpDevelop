@@ -1,0 +1,1852 @@
+<AddIn name        = "SharpDevelop Core"
+       author      = "Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "SharpDevelop core module"
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly="../bin/ICSharpCode.SharpDevelop.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/Ambiences">
+		<Class id    = ".NET"
+		       class = "ICSharpCode.Core.NetAmbience"/>
+	</Path>
+	
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id               = "Browser"
+		                supportedformats = "Web Pages"
+		                class            = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserDisplayBinding"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id         = "AllFiles"
+		            name       = "${res:SharpDevelop.FileFilter.AllFiles}"
+		            extensions = "*.*"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "ProjectBrowser"
+		     category = "Main"
+		     title    = "${res:MainWindow.Windows.ProjectScoutLabel}"
+		     icon     = "PadIcons.ProjectBrowser"
+		     shortcut = "Control|Alt|L"
+		     class    = "ICSharpCode.SharpDevelop.Project.ProjectBrowserPad"/>
+		
+		<Pad id       = "ClassBrowser"
+		     category = "Main"
+		     title    = "${res:MainWindow.Windows.ClassScoutLabel}"
+		     icon     = "PadIcons.ClassBrowser"
+		     shortcut = "Control|Shift|C"
+		     class    = "ICSharpCode.SharpDevelop.Gui.ClassBrowser"/>
+		
+		<Pad id       = "SideBar"
+		     category = "Main"
+		     title    = "${res:MainWindow.Windows.ToolbarLabel}"
+		     icon     = "PadIcons.Toolbar"
+		     shortcut = "Control|Alt|X"
+		     class    = "ICSharpCode.SharpDevelop.Gui.SideBarView"/>
+		
+		<Pad id       = "ErrorList"
+		     category = "Main"
+		     title    = "Error List"
+		     icon     = "PadIcons.ErrorList"
+		     class    = "ICSharpCode.SharpDevelop.Gui.ErrorList"/>
+		
+		<Pad id       = "OpenTaskView"
+		     category = "Main"
+		     title    = "${res:MainWindow.Windows.TaskList}"
+		     icon     = "PadIcons.TaskList"
+		     shortcut = "Control|Alt|K"
+		     class    = "ICSharpCode.SharpDevelop.Gui.OpenTaskView"/>
+		
+		<Pad id       = "CompilerMessageView"
+		     category = "Main"
+		     title    = "${res:MainWindow.Windows.OutputWindow}"
+		     icon     = "PadIcons.Output"
+		     shortcut = "Control|Alt|O"
+		     class    = "ICSharpCode.SharpDevelop.Gui.CompilerMessageView"/>
+		
+		<Pad id       = "PropertyPad"
+		     category = "Main"
+		     title    = "${res:MainWindow.Windows.PropertiesScoutLabel}"
+		     icon     = "Icons.16x16.PropertiesIcon"
+		     shortcut = "F4"
+		     class    = "ICSharpCode.SharpDevelop.Gui.PropertyPad"/>
+		
+		<Pad id       = "FileScout"
+		     category = "Tools"
+		     title    = "${res:MainWindow.Windows.FileScoutLabel}"
+		     icon     = "PadIcons.FileBrowser"
+		     shortcut = "Control|Alt|F"
+		     class    = "ICSharpCode.SharpDevelop.Gui.FileScout"/>
+		
+		<Pad id       = "HelpBrowser"
+		     category = "Tools"
+		     title    = "${res:MainWindow.Windows.HelpScoutLabel}"
+		     icon     = "Icons.16x16.HelpIcon"
+		     shortcut = "Control|Alt|H"
+		     class    = "ICSharpCode.SharpDevelop.Gui.HelpBrowser"/>
+	</Path>
+	
+		
+	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
+		<FileFilter id         = "Solution"
+		            name       = "Solutions"
+		            extensions = "*.sln"/>
+		
+		<FileFilter id         = "Combine"
+		            name       = "${res:SharpDevelop.FileFilter.CombineFiles}"
+		            extensions = "*.cmbx"/>
+		
+		<FileFilter id         = "Project"
+		            name       = "${res:SharpDevelop.FileFilter.ProjectFiles}"
+		            extensions = "*.prjx"/>
+		
+		<FileFilter id         = "AllFiles"
+		            name       = "${res:SharpDevelop.FileFilter.AllFiles}"
+		            extensions = "*.*"/>
+	</Path>
+	
+	<!-- Project browser Paths -->
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard">
+		<ToolbarItem id      = "Properties"
+		             icon    = "Icons.16x16.PropertiesIcon"
+		             tooltip = "Properties"
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+		<ToolbarItem id = "PropertySeparator" type = "Separator"/>
+		<ToolbarItem id      = "ShowAll"
+		             type    = "CheckBox"
+		             icon    = "ProjectBrowser.Toolbar.ShowHiddenFiles"
+		             tooltip = "ShowAll"
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.ToggleShowAll"/>
+		<ToolbarItem id      = "Refresh"
+		             icon    = "ProjectBrowser.Toolbar.Refresh"
+		             tooltip = "Refresh"
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ToolBar/File">
+		<ToolbarItem id      = "OpenFile"
+		             icon    = "Icons.16x16.OpenFileIcon"
+		             tooltip = "Open"
+		             class   = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
+	</Path>
+	
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode">
+		<MenuItem id = "Build"
+		          label = "Build"
+		          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
+		          shortcut = "F8"
+		          icon  = "Icons.16x16.BuildCombine"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.Build"/>
+		<MenuItem id = "Rebuild"
+		          label = "Rebuild"
+		          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
+		          icon  = "Icons.16x16.BuildCombine"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"/>
+		<MenuItem id = "Clean"
+		          label = "Clean"
+		          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
+		          icon  = "Icons.16x16.BuildCombine"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.Clean"/>
+		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
+		
+		<MenuItem id = "CombineAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu" >
+			<MenuItem id    = "AddNewProjectToSolution"
+			          label = "&amp;New Project..."
+			          icon  = "Icons.16x16.NewProjectIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewProjectToSolution"/>
+			<MenuItem id    = "AddExitingProjectToSolution"
+			          label = "&amp;Existing Project..."
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExitingProjectToSolution"/>
+			<MenuItem id    = "Separator1" type = "Separator" />
+			<MenuItem id    = "AddItem"
+			          label = "Add &amp;Item..."
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemToSolution"/>
+			<MenuItem id    = "AddNewSolutionFolderToSolution"
+			          icon  = "ProjectBrowser.SolutionFolder.CreateNew"
+			          label = "New Solution &amp;Folder"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewSolutionFolderToSolution"/>
+		</MenuItem>
+		
+		<MenuItem id = "AddSeparator" type = "Separator"/>
+		<MenuItem id    = "Paste"
+		          label = "Paste"
+		          icon  = "Icons.16x16.PasteIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
+		<MenuItem id       = "Rename"
+		          label    = "${res:ProjectComponent.ContextMenu.Rename}"
+		          shortcut = "F2"
+		          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+		<MenuItem id = "Separator3" type = "Separator"/>
+		<MenuItem id    = "Properties"
+		          icon  = "Icons.16x16.PropertiesIcon"
+		          label = "Properties"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+	</Path>
+	
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionFolderNode">
+		<MenuItem id = "CombineAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu">
+			<MenuItem id    = "AddNewProjectToSolution"
+			          label = "&amp;New Project..."
+			          icon  = "Icons.16x16.NewProjectIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewProjectToSolution"/>
+			<MenuItem id    = "AddExitingProjectToSolution"
+			          label = "&amp;Existing Project..."
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExitingProjectToSolution"/>
+			<MenuItem id    = "Separator1" type = "Separator" />
+			<MenuItem id    = "AddItem"
+			          label = "Add &amp;Item..."
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemToSolution"/>
+			<MenuItem id    = "AddNewSolutionFolderToSolution"
+			          icon  = "ProjectBrowser.SolutionFolder.CreateNew"
+			          label = "New Solution &amp;Folder"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewSolutionFolderToSolution"/>
+		</MenuItem>
+		
+		<MenuItem id = "AddSeparator" type = "Separator"/>
+		<MenuItem id = "Cut"
+		          label = "Cut"
+		          icon = "Icons.16x16.CutIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
+		<MenuItem id = "Paste"
+		          label = "Paste"
+		          icon = "Icons.16x16.PasteIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
+		<MenuItem id = "Remove"
+		          label = "Remove"
+		          icon  = "Icons.16x16.DeleteIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+		<MenuItem id       = "Rename"
+		          label    = "${res:ProjectComponent.ContextMenu.Rename}"
+		          shortcut = "F2"
+		          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+	</Path>
+	
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionItemNode">
+		<MenuItem id = "OpenFile"
+		          label = "${res:ProjectComponent.ContextMenu.Open}"
+		          icon  = "Icons.16x16.OpenFileIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
+		<MenuItem id = "OpenSeparator" type = "Separator" />
+		<MenuItem id = "Cut"
+		          label = "Cut"
+		          icon = "Icons.16x16.CutIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
+		<MenuItem id = "Copy"
+		          label = "Copy"
+		         icon = "Icons.16x16.CopyIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.CopyProjectBrowserNode"/>
+		<MenuItem id = "Remove"
+		          label = "Remove"
+		          icon  = "Icons.16x16.DeleteIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+		<MenuItem id       = "Rename"
+		          label    = "${res:ProjectComponent.ContextMenu.Rename}"
+		          shortcut = "F2"
+		          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+	</Path>
+	
+	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
+		<MenuItem id = "Build project"
+		          label = "Build project"
+		          description = "${res:XML.MainMenu.RunMenu.BuildProject.Description}"
+		          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.BuildProject"/>
+		<MenuItem id = "Rebuild project"
+		          label = "Rebuild project"
+		          description = "${res:XML.MainMenu.RunMenu.RebuildProject.Description}"
+		          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.RebuildProject"/>
+		<MenuItem id = "Clean project"
+		          label = "Clean project"
+		          description = "${res:XML.MainMenu.RunMenu.CleanProject.Description}"
+		          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.CleanProject"/>
+		<MenuItem id = "Publish project"
+		          label = "Publish project"
+		          description = "${res:XML.MainMenu.RunMenu.BuildProject.Description}"
+		          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>
+		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
+		
+		<MenuItem id = "ProjectAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu" >
+			<MenuItem id    = "New Item"
+			          label = "New Item..."
+			          icon  = "Icons.16x16.NewDocumentIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewItemsToProject"/>
+			<MenuItem id    = "Existing Item"
+			          label = "Existing Item..."
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject"/>
+			<MenuItem id    = "NewFolder"
+			          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
+			          icon  = "Icons.16x16.NewFolderIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewFolderToProject"/>
+		</MenuItem>
+		<MenuItem id    = "AddReference"
+		          label = "${res:ProjectComponent.ContextMenu.AddReference}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
+		<MenuItem id = "AddSeparator" type = "Separator"/>
+		<MenuItem id    = "SetAsStartupProject"
+		          label = "${res:ProjectComponent.ContextMenu.SetAsStartupProject}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.SetAsStartupProject"/>
+		<MenuItem id = "Separator2" type = "Separator"/>
+		<MenuItem id = "Cut"
+		          label = "Cut"
+		          icon = "Icons.16x16.CutIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
+		<MenuItem id = "Paste"
+		          label = "Paste"
+		          icon = "Icons.16x16.PasteIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
+		<MenuItem id = "Remove"
+		          label = "Remove"
+		          icon  = "Icons.16x16.DeleteIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+		<MenuItem id       = "Rename"
+		          label    = "${res:ProjectComponent.ContextMenu.Rename}"
+		          shortcut = "F2"
+		          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+		<MenuItem id = "CutCopyPasteSeparator" type = "Separator"/>
+		<MenuItem id    = "Properties"
+		          icon  = "Icons.16x16.PropertiesIcon"
+		          label = "Properties"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceFolderNode">
+		<MenuItem id    = "AddReference"
+		          label = "${res:ProjectComponent.ContextMenu.AddReference}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FileNode">
+		<MenuItem id = "OpenFile"
+		          label = "${res:ProjectComponent.ContextMenu.Open}"
+		          icon  = "Icons.16x16.OpenFileIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
+		<ComplexCondition>
+			<Not>
+				<Condition name = "Ownerstate" ownerstate = "Missing"/>
+			</Not>
+			<MenuItem id = "OpenSeparator" type = "Separator" />
+			
+			<Condition name = "Ownerstate" ownerstate = "InProject">
+				<MenuItem id = "Add" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type="Menu">
+					<MenuItem id    = "New Item"
+					          label = "New Item..."
+					          icon  = "Icons.16x16.NewDocumentIcon"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewItemsToProject"/>
+					<MenuItem id    = "Existing Item"
+					          label = "Existing Item..."
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject"/>
+					<MenuItem id    = "NewFolder"
+					          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
+					          icon  = "Icons.16x16.NewFolderIcon"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewFolderToProject"/>
+				</MenuItem>
+				<MenuItem id = "AddSeparator" type = "Separator"  />
+			</Condition>
+			
+			<ComplexCondition>
+				<Or>
+					<Condition name = "Ownerstate" ownerstate = "InProject"/>
+					<Condition name = "Ownerstate" ownerstate = "None"/>
+				</Or>
+				<Condition name = "Ownerstate" ownerstate = "InProject">
+					<MenuItem id    = "ExcludeFile"
+					          label = "Exclude From Project"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.ExcludeFileFromProject"/>
+				</Condition>
+				
+				<Condition name = "Ownerstate" ownerstate = "None">
+					<MenuItem id    = "IncludeFile"
+					          label = "Include In Project"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.IncludeFileInProject"/>
+				</Condition>
+				
+				<MenuItem id = "ExcludeSeparator" type = "Separator" />
+			</ComplexCondition>
+			<MenuItem id = "Cut"
+			          label = "Cut"
+			          icon = "Icons.16x16.CutIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
+			<MenuItem id = "Copy"
+			          label = "Copy"
+			         icon = "Icons.16x16.CopyIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.CopyProjectBrowserNode"/>
+			<MenuItem id    = "Paste"
+			          label = "Paste"
+			          icon  = "Icons.16x16.PasteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
+			<MenuItem id = "Delete"
+			          label = "Delete"
+			          icon  = "Icons.16x16.DeleteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+			<MenuItem id = "Rename"
+			          label    = "${res:ProjectComponent.ContextMenu.Rename}"
+			          shortcut = "F2"
+			          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode">
+		<ComplexCondition>
+			<Not>
+				<Condition name = "Ownerstate" ownerstate = "Missing"/>
+			</Not>
+			<MenuItem id = "Add" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type="Menu">
+					<MenuItem id    = "New Item"
+					          label = "New Item..."
+					          icon  = "Icons.16x16.NewDocumentIcon"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewItemsToProject"/>
+					<MenuItem id    = "Existing Item"
+					          label = "Existing Item..."
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject"/>
+					<MenuItem id    = "NewFolder"
+					          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
+					          icon  = "Icons.16x16.NewFolderIcon"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewFolderToProject"/>
+			</MenuItem>
+			<MenuItem id = "AddSeparator" type = "Separator"  />
+				
+			<ComplexCondition>
+				<Or>
+					<Condition name = "Ownerstate" ownerstate = "InProject"/>
+					<Condition name = "Ownerstate" ownerstate = "None"/>
+				</Or>
+				<Condition name = "Ownerstate" ownerstate = "InProject">
+					<MenuItem id    = "ExcludeFile"
+					          label = "Exclude From Project"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.ExcludeFileFromProject"/>
+				</Condition>
+				
+				<Condition name = "Ownerstate" ownerstate = "None">
+					<MenuItem id    = "IncludeFile"
+					          label = "Include In Project"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.IncludeFileInProject"/>
+				</Condition>
+				
+				<MenuItem id = "ExcludeSeparator" type = "Separator" />
+			</ComplexCondition>
+			
+			<MenuItem id = "Cut"
+			          label = "Cut"
+			          icon = "Icons.16x16.CutIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
+			<MenuItem id    = "Copy"
+			          label = "Copy"
+			          icon  = "Icons.16x16.CopyIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.CopyProjectBrowserNode"/>
+			<MenuItem id    = "Paste"
+			          label = "Paste"
+			          icon  = "Icons.16x16.PasteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
+			<MenuItem id = "Delete"
+			          label = "Delete"
+			          icon  = "Icons.16x16.DeleteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+			<MenuItem id = "Rename"
+			          label    = "${res:ProjectComponent.ContextMenu.Rename}"
+			          shortcut = "F2"
+			          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceNode">
+		<MenuItem id = "OpenFile"
+		          label = "${res:ProjectComponent.ContextMenu.Open}"
+		          icon  = "Icons.16x16.OpenFileIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
+		<MenuItem id = "OpenSeparator" type = "Separator"  />
+		<MenuItem id = "Remove"
+		          label = "Remove"
+		          icon  = "Icons.16x16.DeleteIcon"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+	</Path>
+	
+	
+	<!-- END Project Browser Paths-->
+	
+	<Path name = "/SharpDevelop/Pads/CompilerMessageView/Toolbar">
+		<ToolbarItem id    = "CategorySelect"
+		             type  = "ComboBox"
+		             label = "Show output from:"
+		             tooltip = "Show output from:"
+		             class = "ICSharpCode.SharpDevelop.Gui.ShowOutputFromComboBox"/>
+		<ToolbarItem id    = "CategorySelectSeparator" type  = "Separator"/>
+		<ToolbarItem id    = "Clear"
+		             icon  = "OutputPad.Toolbar.ClearOutputWindow"
+		             tooltip = "Clear All"
+		             class = "ICSharpCode.SharpDevelop.Gui.ClearOutputWindow"/>
+		<ToolbarItem id    = "ToggleWordWrap"
+		             type  = "CheckBox"
+		             icon  = "OutputPad.Toolbar.ToggleWordWrap"
+		             tooltip = "Toggle Word Wrap"
+		             class = "ICSharpCode.SharpDevelop.Gui.ToggleeMessageViewWordWrap"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ErrorList/Toolbar">
+		<ToolbarItem id    = "Errors"
+		             type  = "CheckBox"
+		             icon  = "Icons.16x16.Error"
+		             label = "${TaskService.Errors} Errors"
+		             tooltip = "${TaskService.Errors} Errors"
+		             class = "ICSharpCode.SharpDevelop.Gui.ShowErrorsToggleButton"/>
+		<ToolbarItem id    = "ErrorsSeparator" type  = "Separator"/>
+		
+		<ToolbarItem id    = "Warnings"
+		             type  = "CheckBox"
+		             icon  = "Icons.16x16.Warning"
+		             label = "${TaskService.Warnings} Warnings"
+		             tooltip = "${TaskService.Warnings} Warnings"
+		             class = "ICSharpCode.SharpDevelop.Gui.ShowWarningsToggleButton"/>
+		<ToolbarItem id    = "WarningsSeparator" type  = "Separator"/>
+		
+		<ToolbarItem id    = "Messages"
+		             type  = "CheckBox"
+		             icon  = "Icons.16x16.Information"
+		             label = "${TaskService.Messages} Messages"
+		             tooltip = "${TaskService.Messages} Messages"
+		             class = "ICSharpCode.SharpDevelop.Gui.ShowMessagesToggleButton"/>
+	</Path>
+	
+	<!-- ClassBrowser -->
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/Toolbar">
+		<ToolbarItem id      = "Back"
+		             icon    = "Icons.16x16.BrowserBefore"
+		             tooltip = "Back"
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserNavigateBackward"/>
+		<ToolbarItem id      = "Forward"
+		             icon    = "Icons.16x16.BrowserAfter"
+		             tooltip = "Forward"
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserNavigateForward"/>
+		
+		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
+		<ToolbarItem id      = "SelectFilter"
+		             type    = "DropDownButton"
+		             icon    = "Icons.16x16.FindInFiles"
+		             tooltip = "Class View Settings"
+		             class   = "ICSharpCode.SharpDevelop.Gui.SelectClassBrowserFilter">
+		
+			<MenuItem id    = "ShowProjectReferences"
+			          type  = "CheckBox"
+			          label = "Show &amp;Project References"
+			          class = "ICSharpCode.SharpDevelop.Gui.ShowProjectReferences"/>
+			<MenuItem id = "ReferenceSeparator" type = "Separator"  />
+			<MenuItem id    = "ShowPublicMembers"
+			          type  = "CheckBox"
+			          label = "&amp;Show Public Members"
+			          class = "ICSharpCode.SharpDevelop.Gui.ShowPublicMembers"/>
+
+			<MenuItem id    = "ShowPrivateMembers"
+			          type  = "CheckBox"
+			          label = "Show P&amp;rivate Members"
+			          class = "ICSharpCode.SharpDevelop.Gui.ShowPrivateMembers"/>
+
+			<MenuItem id    = "ShowProtectedMembers"
+			          type  = "CheckBox"
+			          label = "Show Pr&amp;otected Members"
+			          class = "ICSharpCode.SharpDevelop.Gui.ShowProtectedMembers"/>
+
+			<MenuItem id    = "ShowOtherMembers"
+			          type  = "CheckBox"
+			          label = "Show &amp;Other Members"
+			          class = "ICSharpCode.SharpDevelop.Gui.ShowOtherMembers"/>
+		</ToolbarItem>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/Searchbar">
+		<ToolbarItem id      = "Search"
+		             type    = "ComboBox"
+		             tooltip = "Class View Search"
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserSearchTerm"/>
+		
+		<ToolbarItem id      = "CommitSearch"
+		             icon    = "Icons.16x16.FindIcon"
+		             tooltip = "Search"
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserCommitSearch"/>
+		
+		<ToolbarItem id      = "CancelSearch"
+		             icon    = "OutputPad.Toolbar.ClearOutputWindow"
+		             tooltip = "Clear Search"
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserCancelSearch"/>
+	</Path>
+	
+	<!-- end ClassBrowser -->
+	
+	<!-- toolbars -->
+	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
+		<ToolbarItem id = "New"
+		             icon = "Icons.16x16.NewDocumentIcon"
+		             tooltip = "${res:XML.MainMenu.FileMenu.New.File.Description}"
+		             class = "ICSharpCode.SharpDevelop.Commands.CreateNewFile"/>
+		<ToolbarItem id = "Open"
+		             icon = "Icons.16x16.OpenFileIcon"
+		             tooltip = "${res:XML.MainMenu.FileMenu.Open.File.Description}"
+		             class = "ICSharpCode.SharpDevelop.Commands.OpenFile"/>
+		
+		<Condition name = "ActiveWindowState" windowstate="Dirty,Untitled" nowindowstate="ViewOnly" action="Disable">
+			<ToolbarItem id      = "Save"
+			             icon    = "Icons.16x16.SaveIcon"
+			             tooltip = "${res:XML.MainMenu.FileMenu.Save.Description}"
+			             class   = "ICSharpCode.SharpDevelop.Commands.SaveFile"/>
+		</Condition>
+		
+		<Condition name = "OpenWindowState" openwindowstate="Dirty" action="Disable">
+			<ToolbarItem id = "SaveAll"
+			             icon = "Icons.16x16.SaveAllIcon"
+			             tooltip = "${res:XML.MainMenu.FileMenu.SaveAll.Description}"
+			             class = "ICSharpCode.SharpDevelop.Commands.SaveAllFiles"/>
+		</Condition>
+		
+		<ToolbarItem id = "Separator1" type = "Separator"/>
+		
+		<ToolbarItem id = "Cut"
+		             icon = "Icons.16x16.CutIcon"
+		             tooltip = "${res:XML.MainMenu.EditMenu.Cut.Description}"
+		             class = "ICSharpCode.SharpDevelop.Commands.Cut"/>
+		<ToolbarItem id = "Copy"
+		             icon = "Icons.16x16.CopyIcon"
+		             tooltip = "${res:XML.MainMenu.EditMenu.Copy.Description}"
+		             class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
+		<ToolbarItem id = "Paste"
+		             icon = "Icons.16x16.PasteIcon"
+		             tooltip = "${res:XML.MainMenu.EditMenu.Paste.Description}"
+		             class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
+		<ToolbarItem id = "Delete"
+		             icon = "Icons.16x16.DeleteIcon"
+		             tooltip = "${res:XML.MainMenu.EditMenu.Delete.Description}"
+		             class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
+		<ToolbarItem id = "UndoRedoSeparator"  type = "Separator"/>
+		<ToolbarItem id      = "Undo"
+		             icon    = "Icons.16x16.UndoIcon"
+		             tooltip = "${res:XML.MainMenu.EditMenu.Undo.Description}"
+		             class   = "ICSharpCode.SharpDevelop.Commands.Undo"/>
+		<ToolbarItem id      = "Redo"
+		             icon    = "Icons.16x16.RedoIcon"
+		             tooltip = "${res:XML.MainMenu.EditMenu.Redo.Description}"
+		             class   = "ICSharpCode.SharpDevelop.Commands.Redo"/>
+
+		<ToolbarItem id = "CutSeparator" type = "Separator"/>
+		
+		<ToolbarItem id = "CompileSeparator" type = "Separator"/>
+		
+		<ComplexCondition action="Disable">
+			<Or>
+				<And>
+					<Or>
+						<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
+						<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.CSharpDesignerDisplayBindingWrapper"/>
+						<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.VBNetDesignerDisplayBindingWrapper"/>
+					</Or>
+					<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
+				</And>
+				<Condition name = "CombineOpen" iscombineopen="True"/>
+			</Or>
+			<ToolbarItem id      = "Compile"
+			             icon    = "Icons.16x16.BuildCombine"
+			             tooltip = "${res:XML.MainMenu.RunMenu.Compile.Description}"
+			             class   = "ICSharpCode.SharpDevelop.Project.Commands.Build"/>
+			
+			<ToolbarItem id      = "BuildProject"
+			             icon    = "Icons.16x16.BuildCurrentSelectedProject"
+			             tooltip = "${res:XML.MainMenu.RunMenu.BuildProject.Description}"
+			             class   = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"/>
+			
+			<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging = "False" action="Disable">
+				<Condition  name="DebuggerSupports" debuggersupports = "ExecutionControl">
+					<ToolbarItem id      = "Run"
+					             icon    = "Icons.16x16.RunProgramIcon"
+					             tooltip = "${res:XML.MainMenu.RunMenu.Run.Description}"
+					             class   = "ICSharpCode.SharpDevelop.Project.Commands.Execute"/>
+				</Condition>
+				
+				<ComplexCondition>
+					<Not>
+						<Condition name="DebuggerSupports" debuggersupports = "ExecutionControl"/>
+					</Not>
+					
+					<ToolbarItem id      = "RunWithoutDebugger"
+					             icon    = "Icons.16x16.RunProgramIcon"
+					             tooltip = "${res:XML.MainMenu.RunMenu.Run.Description}"
+					             class   = "ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger"/>
+				</ComplexCondition>
+			</Condition>
+			
+			<Condition name="IsProcessRunning" isprocessrunning="True" action="Disable">
+				<ToolbarItem id = "Stop"
+				             icon = "Icons.16x16.StopProcess"
+				             tooltip = "${res:XML.MainMenu.DebugMenu.Stop.Description}"
+				             class = "ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand"/>
+			</Condition>
+			
+			<Condition name="DebuggerSupports" debuggersupports = "ExecutionControl">
+				<ToolbarItem id = "ExecutionControlSeparator" type = "Separator"  />
+				<Condition name="IsProcessRunning"  isprocessrunning = "True" isdebugging = "True" action = "Disable"> 
+					<ToolbarItem id      = "Break"
+					             icon    = "Icons.16x16.Debug.Break"
+					             tooltip = "Break the debugging process"
+					             class   = "ICSharpCode.SharpDevelop.Project.Commands.BreakDebuggingCommand"/>
+				</Condition>
+				<Condition name="IsProcessRunning"  isprocessrunning = "False" isdebugging = "True" action = "Disable">
+					<ToolbarItem id      = "Continue"
+					             icon    = "Icons.16x16.Debug.Continue"
+					             tooltip = "${res:XML.MainMenu.DebugMenu.Continue.Description}" 
+					             class   = "ICSharpCode.SharpDevelop.Project.Commands.ContinueDebuggingCommand"/>
+					<ToolbarItem id      = "Step over"
+					             icon    = "Icons.16x16.Debug.StepOver"
+					             tooltip = "Step over"
+					             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand"/>
+					<ToolbarItem id      = "Step into"
+					             icon    = "Icons.16x16.Debug.StepInto"
+					             tooltip = "Step into"
+					             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand"/>
+					<ToolbarItem id      = "Step out"
+					             icon    = "Icons.16x16.Debug.StepOut"
+					             tooltip = "Step out" 
+					             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
+				</Condition>
+			</Condition>
+		<ToolbarItem id = "ChooseConfigurationSeparator" type = "Separator"/>
+		</ComplexCondition>
+		<ToolbarItem id    = "ChooseLayout"
+		             type  = "ComboBox"
+		             class = "ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand" />
+	</Path>
+	<!-- end toolbars -->
+
+	
+	<Path name = "/SharpDevelop/Workbench/OpenFileTab/ContextMenu">
+		<MenuItem id = "Close"
+		          label = "${res:OpenFileTabEventHandler.ContextMenu.Close}"
+		          icon  = "Icons.16x16.CloseFileIcon"
+		          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.CloseFileTab"/>
+		<MenuItem id    = "CloseAll"
+		          icon  = "Icons.16x16.CloseAllDocuments"
+		          label = "${res:XML.MainMenu.FileMenu.CloseAll}"
+		          class = "ICSharpCode.SharpDevelop.Commands.CloseAllWindows" />
+		<MenuItem id    = "CloseAllButThis"
+		          label = "${res:OpenFileTabEventHandler.ContextMenu.CloseAllButThis}"
+		          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.CloseAllButThisFileTab" />
+		
+		<MenuItem id = "CloseSeparator" type = "Separator" />
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name = "Ownerstate" ownerstate="FileDirty"/>
+				<Not>
+					<Condition name = "Ownerstate" ownerstate="FileUntitled"/>
+				</Not>
+			</And>
+			
+			<MenuItem id = "Save"
+			          label = "${res:OpenFileTabEventHandler.ContextMenu.Save}"
+			          icon  = "Icons.16x16.SaveIcon"
+			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.SaveFileTab"/>
+		</ComplexCondition>
+		<MenuItem id = "SaveAs"
+		          label = "${res:OpenFileTabEventHandler.ContextMenu.SaveAs}"
+		          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.SaveFileAsTab"/>
+		
+		<MenuItem id = "SaveSeparator" type = "Separator" />
+		<ComplexCondition action="Disable">
+			<Not>
+				<Condition name = "Ownerstate" ownerstate="FileUntitled" />
+			</Not>
+			<MenuItem id = "CopyPathName"
+			          label = "${res:OpenFileTabEventHandler.CopyPathName}"
+			          class = "ICSharpCode.SharpDevelop.Commands.TabStrip.CopyPathName"/>
+		</ComplexCondition>
+	</Path>
+		
+	<Path name = "/SharpDevelop/Views/PropertyPad/ContextMenu">
+		<MenuItem id    = "ResetProperty"
+		          label = "${res:ICSharpCode.SharpDevelop.Gui.Pads.PropertyPad.ContextMenu.Reset}"
+		          class = "ICSharpCode.SharpDevelop.Gui.PropertyPadResetCommand"/>
+		<MenuItem id = "Separator"  type = "Separator" />
+		<MenuItem id    = "ShowDescription"
+		          label = "${res:ICSharpCode.SharpDevelop.Gui.Pads.PropertyPad.ContextMenu.ShowDescription}"
+		          class = "ICSharpCode.SharpDevelop.Gui.PropertyPadShowDescriptionCommand"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/MainMenu">
+		
+	</Path>
+	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
+		<DialogPanel id    = "UIOptions"
+		             label = "${res:Dialog.Options.TreeViewOptions.SharpDevelopOptionsText}">
+			<DialogPanel id    = "SelectCulture"
+			             label = "${res:Dialog.Options.IDEOptions.SelectCulture.PanelName}"
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.IDEOptionPanel"/>
+			<DialogPanel id    = "SelectStyle"
+			             label = "${res:Dialog.Options.IDEOptions.SelectVisualStyle.PanelName}"
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel"/>
+			<DialogPanel id    = "LoadSave"
+			             label = "${res:Dialog.Options.IDEOptions.LoadSaveOptions.PanelName}"
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.LoadSavePanel"/>
+			<DialogPanel id    = "TaskListOptions"
+			             label = "${res:Dialog.Options.IDEOptions.TaskListOptions.PanelName}"
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.TaskListOptions"/>
+			<DialogPanel id    = "OutputWindowOptions"
+			             label = "Output Window"
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.OutputWindowOptionsPanel"/>
+		</DialogPanel>
+		<DialogPanel id    = "CodingOptions"
+		             label = "${res:Dialog.Options.IDEOptions.CodingOptionsText}">
+			<DialogPanel id    = "CodeGeneration"
+			             label = "${res:Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.Title}"
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CodeGenerationPanel"/>
+			<DialogPanel id    = "EditStandardHeaderPanel"
+			             label = "${res:Dialog.Options.IDEOptions.EditStandardHeaderPanel.Title}"
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.EditStandardHeaderPanel"/>
+		</DialogPanel>
+		
+		<DialogPanel id    = "ToolsOptions"
+		             label = "${res:Dialog.Options.IDEOptions.ToolsOptionsText}">
+			<DialogPanel id    = "ExternalTools"
+			             label = "${res:Dialog.Options.ExternalToolsText}"
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ExternalToolPane"/>
+		</DialogPanel>
+	</Path>
+	
+		
+	<Path name = "/SharpDevelop/CompletionDatabaseWizard">
+		<DialogPanel id    = "SetupPanel"
+		             label = "${res:Dialog.Wizards.CodeCompletionDatabaseWizard.SetupPanel.Title}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CompletionDatabaseWizard.SetupPanel"/>
+		<DialogPanel id    = "ChooseLocationPanel"
+		             label = "${res:Dialog.Wizards.CodeCompletionDatabaseWizard.ChooseLocationPanel.Title}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CompletionDatabaseWizard.ChooseLocationPanel"/>
+		<DialogPanel id    = "UseExistingFilePanel"
+		             label = "${res:Dialog.Wizards.CodeCompletionDatabaseWizard.UseExistingFilePanel.Title}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CompletionDatabaseWizard.UseExistingFilePanel"/>
+		<DialogPanel id    = "CreateDatabasePanel"
+		             label = "${res:Dialog.Wizards.CodeCompletionDatabaseWizard.CreateDatabasePanel.Title}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CompletionDatabaseWizard.CreateDatabasePanel"/>
+		<DialogPanel id    = "CreationSuccessful"
+		             label = "${res:Dialog.Wizards.CodeCompletionDatabaseWizard.FinishedPanel.Title}"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CompletionDatabaseWizard.CreationFinishedPanel"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/SharpDevelopSideBar/ContextMenu">
+		<Condition name = "Ownerstate" ownerstate = "TabCanBeDeleted" action="Disable">
+			<MenuItem id     = "DeleteTab"
+			          label = "${res:SideBarComponent.ContextMenu.DeleteTab}"
+			          class = "ICSharpCode.SharpDevelop.Commands.SideBarDeleteTabHeader"/>
+		</Condition>
+		
+		<MenuItem id    = "RenameTab"
+		          label = "${res:SideBarComponent.ContextMenu.RenameTab}"
+		          class = "ICSharpCode.SharpDevelop.Commands.SideBarRenameTabHeader"/>
+		
+		<MenuItem id = "Separator1" type = "Separator" />
+		<MenuItem id    = "AddTab"
+		          label = "${res:SideBarComponent.ContextMenu.AddTab}"
+		          class = "ICSharpCode.SharpDevelop.Commands.SideBarAddTabHeader"/>
+		
+		<MenuItem id = "Separator2" type = "Separator" />
+		<Condition name = "Ownerstate" ownerstate="CanMoveUp" action="Disable">
+			<MenuItem id    = "MoveTabUp"
+			          label = "${res:SideBarComponent.ContextMenu.MoveTabUp}"
+			          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveTabUp"/>
+		</Condition>
+		
+		<Condition name = "Ownerstate" ownerstate="CanMoveDown" action="Disable">
+			<MenuItem id    = "MoveTabDown"
+			          label = "${res:SideBarComponent.ContextMenu.MoveTabDown}"
+			          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveTabDown"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/SharpDevelopSideBar/SideTab/ContextMenu">
+		<MenuItem id = "RenameTabItem"
+		          label = "${res:SideBarComponent.ContextMenu.RenameTabItem}"
+		          class = "ICSharpCode.SharpDevelop.Commands.SideBarRenameTabItem" />
+		<MenuItem id = "DeleteTabItem"
+		          label = "${res:SideBarComponent.ContextMenu.DeleteTabItem}"
+		          class = "ICSharpCode.SharpDevelop.Commands.SideBarDeleteTabItem"/>
+		<Condition name = "Ownerstate" ownerstate="TabCanBeDeleted">
+			<MenuItem id = "Separator1" type = "Separator" />
+			<Condition name = "Ownerstate" ownerstate="CanMoveItemUp" action="Disable">
+				<MenuItem id = "MoveItemUp"
+				          label = "${res:SideBarComponent.ContextMenu.MoveTabItemUp}"
+				          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveActiveItemUp"/>
+			</Condition>
+			
+			<Condition name = "Ownerstate" ownerstate="CanMoveItemDown" action="Disable">
+				<MenuItem id = "MoveItemDown"
+				          label = "${res:SideBarComponent.ContextMenu.MoveTabItemDown}"
+				          class = "ICSharpCode.SharpDevelop.Commands.SideBarMoveActiveItemDown"/>
+			</Condition>
+		</Condition>
+	</Path>
+	
+	<!-- Main Menu -->
+	<Path name = "/SharpDevelop/Workbench/MainMenu">
+		<MenuItem id = "File" label    = "${res:XML.MainMenu.FileMenu}" type="Menu">
+			<MenuItem id = "New" label = "${res:XML.MainMenu.FileMenu.New}" type="Menu">
+				<MenuItem id           = "File"
+				          label        = "${res:XML.MainMenu.FileMenu.New.File}"
+				          icon         = "Icons.16x16.NewDocumentIcon"
+				          description  = "${res:XML.MainMenu.FileMenu.New.File.Description}"
+				          shortcut     = "Control|N"
+				          class        = "ICSharpCode.SharpDevelop.Commands.CreateNewFile"/>
+				
+				<MenuItem id          = "Project"
+				          label       = "${res:XML.MainMenu.FileMenu.New.Project}"
+				          icon        = "Icons.16x16.NewProjectIcon"
+				          description = "${res:XML.MainMenu.FileMenu.New.Project.Description}"
+				          shortcut    = "Control|Shift|N"
+				          class       = "ICSharpCode.SharpDevelop.Project.Commands.CreateNewSolution"/>
+			</MenuItem>
+			
+			
+			<MenuItem id = "Open" label = "${res:XML.MainMenu.FileMenu.Open}" type="Menu">
+				<MenuItem id          = "File"
+				          label       = "${res:XML.MainMenu.FileMenu.Open.File}"
+				          icon        = "Icons.16x16.OpenFileIcon"
+				          description = "${res:XML.MainMenu.FileMenu.Open.File.Description}"
+				          shortcut    = "Control|O"
+				          class       = "ICSharpCode.SharpDevelop.Commands.OpenFile"/>
+				
+				<MenuItem id = "Project"
+				          label = "${res:XML.MainMenu.FileMenu.Open.Project}"
+				          icon = "Icons.16x16.OpenProjectIcon"
+				          description = "${res:XML.MainMenu.FileMenu.Open.Project.Description}"
+				          shortcut = "Control|Shift|O"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.LoadSolution"/>
+			</MenuItem>
+			
+			<MenuItem id = "Close" label = "${res:XML.MainMenu.FileMenu.Close}" type="Menu">
+				<Condition name = "WindowActive" activewindow="*" action="Disable">
+					<MenuItem id = "CloseFile"
+					          label = "${res:XML.MainMenu.FileMenu.Close.File}"
+					          icon  = "Icons.16x16.CloseFileIcon"
+					          description = "${res:XML.MainMenu.FileMenu.Close.File.Desription}"
+					          shortcut = "Control|F4"
+					          class ="ICSharpCode.SharpDevelop.Commands.CloseFile"/>
+				</Condition>
+				<Condition name = "CombineOpen" iscombineopen="True" action="Disable">
+					<MenuItem id = "CloseCombine"
+					          label = "${res:XML.MainMenu.FileMenu.Close.Project}"
+					          description = "${res:XML.MainMenu.FileMenu.Close.Project.Desription}"
+					          shortcut = "Control|Shift|F4"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.CloseSolution"/>
+				</Condition>
+			</MenuItem>
+			
+			<MenuItem id = "ReloadSeparator" type = "Separator"  />
+			<Condition name = "WindowActive" activewindow="*" action="Disable">
+				<MenuItem id = "Reloadfile"
+				          label = "${res:XML.MainMenu.FileMenu.Reload}"
+				          shortcut = "Shift|Control|U"
+				          description = "${res:XML.MainMenu.FileMenu.Reload.Description}"
+				          class = "ICSharpCode.SharpDevelop.Commands.ReloadFile" />
+			</Condition>
+			
+			<MenuItem id = "SaveSeparator" type = "Separator"  />
+			
+			<Condition name = "ActiveWindowState" windowstate="Dirty, Untitled" nowindowstate="ViewOnly" action="Disable">
+				<MenuItem id = "Save"
+				          label = "${res:XML.MainMenu.FileMenu.Save}"
+				          icon = "Icons.16x16.SaveIcon"
+				          description = "${res:XML.MainMenu.FileMenu.Save.Description}"
+				          shortcut = "Control|S"
+				          class = "ICSharpCode.SharpDevelop.Commands.SaveFile"/>
+			</Condition>
+			
+			<Condition name = "ActiveWindowState" windowstate="None" nowindowstate="ViewOnly" action="Disable">
+				<MenuItem id = "SaveAs"
+				          label = "${res:XML.MainMenu.FileMenu.SaveAs}"
+				          description = "${res:XML.MainMenu.FileMenu.SaveAs.Description}"
+				          class = "ICSharpCode.SharpDevelop.Commands.SaveFileAs"/>
+			</Condition>
+			
+			<Condition name = "OpenWindowState" openwindowstate="Dirty" action="Disable">
+				<MenuItem id = "SaveAll"
+				          label = "${res:XML.MainMenu.FileMenu.SaveAll}"
+				          icon = "Icons.16x16.SaveAllIcon"
+				          shortcut = "Control|Shift|S"
+				          description = "${res:XML.MainMenu.FileMenu.SaveAll.Description}"
+				          class = "ICSharpCode.SharpDevelop.Commands.SaveAllFiles"/>
+			</Condition>
+			
+			<MenuItem id = "PrintSeparator" type = "Separator"  />
+			<Condition name = "WindowActive" activewindow="*" action="Disable">
+				<MenuItem id = "Print"
+				          label = "${res:XML.MainMenu.FileMenu.Print}"
+				          icon = "Icons.16x16.Print"
+				          description = "${res:XML.MainMenu.FileMenu.Print.Description}"
+				          shortcut = "Control|P"
+				          class = "ICSharpCode.SharpDevelop.Commands.Print"/>
+				<MenuItem id = "PrintPreview"
+				          label = "${res:XML.MainMenu.FileMenu.PrintPreview}"
+				          icon = "Icons.16x16.PreView"
+				          description = "${res:XML.MainMenu.FileMenu.PrintPreview.Description}"
+				          class = "ICSharpCode.SharpDevelop.Commands.PrintPreview"/>
+			</Condition>
+			
+			<MenuItem id = "RecentSeparator" type = "Separator"  />
+			<MenuItem id = "RecentFiles"    attribute = "RecentFiles" label = "${res:XML.MainMenu.FileMenu.RecentFiles}" type="Menu">
+				<MenuItem id = "RecentFilesBuilder" type = "Builder" class = "ICSharpCode.SharpDevelop.Commands.RecentFilesMenuBuilder" />
+				<MenuItem id = "RecentFilesSeparator" type = "Separator"  />
+				<MenuItem id = "ClearRecentFiles"
+				          label = "${res:XML.MainMenu.FileMenu.ClearRecentFiles}"
+				          description = "${res:XML.MainMenu.FileMenu.ClearRecentFiles.Description}"
+				          class = "ICSharpCode.SharpDevelop.Commands.ClearRecentFiles" />
+			</MenuItem>
+			
+			<MenuItem id = "RecentProjects" attribute = "RecentProjects" label = "${res:XML.MainMenu.FileMenu.RecentProjects}" type="Menu">
+				<MenuItem id = "RecentProjectsBuilder" type = "Builder" class = "ICSharpCode.SharpDevelop.Commands.RecentProjectsMenuBuilder" />
+				<MenuItem id = "RecentProjectsSeparator" type = "Separator"  />
+				<MenuItem id = "ClearRecentFiles"
+				          label = "${res:XML.MainMenu.FileMenu.ClearRecentProjects}"
+				          description = "${res:XML.MainMenu.FileMenu.ClearRecentProjects.Description}"
+				          class = "ICSharpCode.SharpDevelop.Commands.ClearRecentProjects" />
+			</MenuItem>
+			
+			<MenuItem id = "ExitSC:eparator" type = "Separator"  />
+			<MenuItem id = "Exit"
+			          label = "${res:XML.MainMenu.FileMenu.Exit}"
+			          icon = "Icons.16x16.CancelIcon"
+			          description = "${res:XML.MainMenu.FileMenu.Exit.Description}"
+			          class = "ICSharpCode.SharpDevelop.Commands.ExitWorkbenchCommand" />
+		</MenuItem> <!-- END File menu -->
+		
+		<MenuItem id = "Edit" label = "${res:XML.MainMenu.EditMenu}" type="Menu">
+			<Condition name = "WindowActive" activewindow="*" action="Disable">
+				<MenuItem id = "Undo"
+				          label = "${res:XML.MainMenu.EditMenu.Undo}"
+				          icon = "Icons.16x16.UndoIcon"
+				          description = "${res:XML.MainMenu.EditMenu.Undo.Description}"
+				          shortcut = "Control|Z"
+				          class = "ICSharpCode.SharpDevelop.Commands.Undo"/>
+				<MenuItem id = "Redo"
+				          label = "${res:XML.MainMenu.EditMenu.Redo}"
+				          icon = "Icons.16x16.RedoIcon"
+				          description = "${res:XML.MainMenu.EditMenu.Redo.Description}"
+				          shortcut = "Control|Y"
+				          class = "ICSharpCode.SharpDevelop.Commands.Redo"/>
+			</Condition>
+			<MenuItem id = "Separator1" type = "Separator"  />
+			<MenuItem id = "Cut"
+			          label = "${res:XML.MainMenu.EditMenu.Cut}"
+			          icon = "Icons.16x16.CutIcon"
+			          description = "${res:XML.MainMenu.EditMenu.Cut.Description}"
+			          shortcut = "Control|X"
+			          class = "ICSharpCode.SharpDevelop.Commands.Cut"/>
+			<MenuItem id = "Copy"
+			          label = "${res:XML.MainMenu.EditMenu.Copy}"
+			          icon = "Icons.16x16.CopyIcon"
+			          description = "${res:XML.MainMenu.EditMenu.Copy.Description}"
+			          shortcut = "Control|C"
+			          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
+			<MenuItem id = "Paste"
+			          label = "${res:XML.MainMenu.EditMenu.Paste}"
+			          icon = "Icons.16x16.PasteIcon"
+			          description = "${res:XML.MainMenu.EditMenu.Paste.Description}"
+			          shortcut = "Control|V"
+			          class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
+			<MenuItem id = "Delete"
+			          label = "${res:XML.MainMenu.EditMenu.Delete}"
+			          icon = "Icons.16x16.DeleteIcon"
+			          description = "${res:XML.MainMenu.EditMenu.Delete.Description}"
+			          class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
+			<MenuItem id = "SelectAll"
+			          label = "${res:XML.MainMenu.EditMenu.SelectAll}"
+			          description = "${res:XML.MainMenu.EditMenu.SelectAll.Description}"
+			          shortcut = "Control|A"
+			          class = "ICSharpCode.SharpDevelop.Commands.SelectAll"/>
+			<MenuItem id = "Separator4" type = "Separator"  />
+			<ComplexCondition action="Disable">
+				<Or>
+					<Condition name = "WindowActive" activewindow="*"/>
+					<Condition name = "CombineOpen" iscombineopen="True"/>
+				</Or>
+				<MenuItem id = "WordCount"
+				          label = "${res:XML.MainMenu.EditMenu.WordCount}"
+				          description = "${res:XML.MainMenu.EditMenu.WordCount.Description}"
+				          class = "ICSharpCode.SharpDevelop.Commands.WordCount"/>
+			</ComplexCondition>
+		</MenuItem> <!-- end EDIT menu -->
+		
+		
+		<MenuItem id = "View" label = "${res:XML.MainMenu.ViewMenu}" type="Menu">
+			<MenuItem id = "MainViewBuilder" type = "Builder" class = "ICSharpCode.SharpDevelop.Commands.MainSelectionMenuBuilder" />
+			<MenuItem id = "Tools" label = "${res:XML.MainMenu.ViewMenu.ToolsMenu}" type="Menu">
+				<MenuItem id = "ViewBuilder" type = "Builder" class = "ICSharpCode.SharpDevelop.Commands.SelectionMenuBuilder" />
+			</MenuItem>
+			<MenuItem id = "ViewItemsSeparator" type = "Separator" />
+			<MenuItem id = "FullScreen"
+			          label         = "${res:XML.MainMenu.ViewMenu.FullScreen}"
+			          icon        = "Icons.16x16.FullScreen"
+			          description = "${res:XML.MainMenu.ViewMenu.FullScreen.Description}"
+			          class       = "ICSharpCode.SharpDevelop.Commands.ToggleFullscreenCommand" />
+		</MenuItem> <!-- end VIEW menu -->
+		
+		<Condition name = "CombineOpen" iscombineopen="True">
+			<MenuItem id = "Project" label = "${res:XML.MainMenu.ProjectMenu}"  type="Menu">
+				<MenuItem id    = "AddReference"
+				          label = "${res:ProjectComponent.ContextMenu.AddReference}"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
+				<MenuItem id    = "SetAsStartupProject"
+				          label = "${res:ProjectComponent.ContextMenu.SetAsStartupProject}"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.SetAsStartupProject"/>
+					
+				<MenuItem id = "Separator2" type = "Separator" />
+					<MenuItem id = "Options"
+					          label = "${res:XML.MainMenu.ProjectMenu.Options}"
+					          description = "${res:XML.MainMenu.ProjectMenu.Options.Description}"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.ViewProjectOptions"/>
+			</MenuItem>
+		</Condition> <!-- end PROJECT menu -->
+		
+		<MenuItem id = "Run" label = "${res:XML.MainMenu.RunMenu}" type="Menu">
+			<ComplexCondition action="Disable">
+				<Or>
+					<And>
+						<Or>
+							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
+							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.CSharpDesignerDisplayBindingWrapper"/>
+							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.VBNetDesignerDisplayBindingWrapper"/>
+						</Or>
+						<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
+					</And>
+					<Condition name = "CombineOpen" iscombineopen="True"/>
+				</Or>
+				<MenuItem id = "Build"
+				          label = "Build"
+				          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
+				          shortcut = "F8"
+				          icon  = "Icons.16x16.BuildCombine"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.Build"/>
+				<MenuItem id = "Rebuild"
+				          label = "Rebuild"
+				          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
+				          shortcut = "F8"
+				          icon  = "Icons.16x16.BuildCombine"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"/>
+				<MenuItem id = "Clean"
+				          label = "Clean"
+				          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
+				          shortcut = "F8"
+				          icon  = "Icons.16x16.BuildCombine"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.Clean"/>
+				<MenuItem id = "Publish"
+				          label = "Publish"
+				          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
+				          shortcut = "F8"
+				          icon  = "Icons.16x16.BuildCombine"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.Publish"/>
+				<Condition name = "ProjectActive" activeproject="*">
+					<MenuItem id = "Separator1" type = "Separator" />
+					<MenuItem id = "Build project"
+					          label = "Build project"
+					          description = "${res:XML.MainMenu.RunMenu.BuildProject.Description}"
+					          shortcut = "F9"
+					          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.BuildProject"/>
+					<MenuItem id = "Rebuild project"
+					          label = "Rebuild project"
+					          description = "${res:XML.MainMenu.RunMenu.RebuildProject.Description}"
+					          shortcut = "F9"
+					          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.RebuildProject"/>
+					<MenuItem id = "Clean project"
+					          label = "Clean project"
+					          description = "${res:XML.MainMenu.RunMenu.CleanProject.Description}"
+					          shortcut = "F9"
+					          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.CleanProject"/>
+					<MenuItem id = "Publish project"
+					          label = "Publish project"
+					          description = "${res:XML.MainMenu.RunMenu.BuildProject.Description}"
+					          shortcut = "F9"
+					          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>
+				</Condition>
+			</ComplexCondition>
+		</MenuItem> <!-- end RUN menu -->
+		
+		<MenuItem id = "Debug" label = "${res:XML.MainMenu.DebugMenu}" type="Menu">
+			<ComplexCondition action="Disable">
+				<Or>
+					<And>
+						<Or>
+							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
+							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.CSharpDesignerDisplayBindingWrapper"/>
+							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.VBNetDesignerDisplayBindingWrapper"/>
+						</Or>
+						<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
+					</And>
+					<Condition name = "CombineOpen" iscombineopen="True"/>
+				</Or>
+				
+				<ComplexCondition>
+						<Not>
+							<Condition name="DebuggerSupports" debuggersupports = "ExecutionControl"/>
+						</Not>
+						<MenuItem id = "RunWithoutDebugger"
+						          label = "${res:XML.MainMenu.RunMenu.Run}"
+						          icon = "Icons.16x16.RunProgramIcon"
+						          description = "${res:XML.MainMenu.RunMenu.Run.Description}"
+						          shortcut = "F5"
+						          class = "ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger"/>
+				</ComplexCondition>
+				
+				<Condition name="DebuggerSupports" debuggersupports = "ExecutionControl">
+					<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False" action="Disable">
+						<MenuItem id = "Run"
+						          label = "${res:XML.MainMenu.RunMenu.Run}"
+						          icon = "Icons.16x16.RunProgramIcon"
+						          description = "${res:XML.MainMenu.RunMenu.Run.Description}"
+						          shortcut = "F5"
+						          class = "ICSharpCode.SharpDevelop.Project.Commands.Execute"/>
+						<MenuItem id = "RunWithout debug"
+						          label = "${res:XML.MainMenu.DebugMenu.RunWithoutDebug}"
+						          icon = "Icons.16x16.Debug.StartWithoutDebugging" 
+						          description = "${res:XML.MainMenu.DebugMenu.RunWithoutDebug.Description}"
+						          shortcut = "Control|F5"
+						          class = "ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger"/>
+					</Condition>
+					<MenuItem id = "RunSeparator" type = "Separator" />
+				</Condition>
+				
+				<Condition name="DebuggerSupports" debuggersupports = "ExecutionControl">
+					<Condition name="IsProcessRunning" isprocessrunning = "True" isdebugging = "True" action = "Disable"> 
+						<MenuItem id = "Break"
+						          label = "Break"
+						          icon="Icons.16x16.Debug.Break"
+						          description = "Break the debugging process"
+						          shortcut = "Control|Alt|B"
+						          class = "ICSharpCode.SharpDevelop.Project.Commands.BreakDebuggingCommand"/>
+					</Condition>
+					<Condition name="IsProcessRunning" isprocessrunning = "False" isdebugging = "True" action = "Disable">
+						<MenuItem id = "Continue"
+						          label = "${res:XML.MainMenu.DebugMenu.Continue}"
+						          icon="Icons.16x16.Debug.Continue"
+						          shortcut = "F6"
+						          description = "${res:XML.MainMenu.DebugMenu.Continue.Description}"
+						          class = "ICSharpCode.SharpDevelop.Project.Commands.ContinueDebuggingCommand"/>
+					</Condition>
+				</Condition>
+				
+				<Condition name="IsProcessRunning" isprocessrunning="True" action="Disable">
+					<MenuItem id = "Stop"
+					          label = "${res:XML.MainMenu.DebugMenu.Stop}"
+					          icon="Icons.16x16.StopProcess"
+					          description = "${res:XML.MainMenu.DebugMenu.Stop.Description}"
+					          class = "ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand"/>
+				</Condition>
+				
+				<Condition name="DebuggerSupports" debuggersupports = "Stepping">
+					<MenuItem id = "BeforeSteppingSeparator" type = "Separator" />
+					<Condition name="IsProcessRunning" isprocessrunning = "False" isdebugging = "True" action = "Disable">
+						<MenuItem id = "Step"
+						          label = "Step"
+						          icon="Icons.16x16.Debug.StepOver"
+						          description = "Step"
+						          shortcut = "F10"
+						          class = "ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand"/>
+						<MenuItem id = "Step into"
+						          label = "Step into"
+						          icon="Icons.16x16.Debug.StepInto"
+						          description = "Step into"
+						          shortcut = "F11"
+						          class = "ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand"/>
+						<MenuItem id = "Step out"
+						          label = "Step out"
+						          icon="Icons.16x16.Debug.StepOut"
+						          description = "Step out"
+						          shortcut = "Shift|F11"
+						          class = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
+					</Condition>
+				</Condition>
+			</ComplexCondition>
+		</MenuItem> <!-- end DEBUG menu -->
+	
+		<MenuItem id = "Tools" label = "${res:XML.MainMenu.ToolMenu}" type="Menu">
+			<MenuItem id = "ToolBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Commands.ToolMenuBuilder" />
+			<MenuItem id = "Separator1" type = "Separator" />
+			
+			<MenuItem id = "Separator4" type = "Separator" />
+			<ComplexCondition action = "Disable">
+				<Or>
+					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.FormDesignerDisplayBindingWrapper"/>
+					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.CSharpDesignerDisplayBindingWrapper"/>
+					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBindingWrapper"/>
+				</Or>
+				<Condition name="ActiveContentExtension" activeextension=".cs" action = "Disable">
+					<MenuItem id = "ConvertBuffer"
+					          label = "${res:XML.MainMenu.ToolMenu.ConvertBufferToVBNET}"
+					          description = "${res:XML.MainMenu.ToolMenu.ConvertBufferToVBNET.Description}"
+					          class = "ICSharpCode.SharpDevelop.Commands.VBConvertBuffer"/>
+				</Condition>
+				<Condition name="ActiveContentExtension" activeextension=".vb" action = "Disable">
+					<MenuItem id = "ConvertCSharpBuffer"
+					          label = "${res:XML.MainMenu.ToolMenu.ConvertBufferToCSharp}"
+					          description = "${res:XML.MainMenu.ToolMenu.ConvertBufferToSharp.Description}"
+					          class = "ICSharpCode.SharpDevelop.Commands.CSharpConvertBuffer"/>
+				</Condition>
+			</ComplexCondition>
+			<MenuItem id = "Separator5" type = "Separator" />
+			
+			<MenuItem id = "Options"
+			          label = "${res:XML.MainMenu.ToolMenu.Options}"
+			          icon = "Icons.16x16.Options"
+			          description = "${res:XML.MainMenu.ToolMenu.Options.Description}"
+			          class = "ICSharpCode.SharpDevelop.Commands.OptionsCommand"/>
+		</MenuItem> <!-- end TOOLS menu -->
+		
+		<MenuItem id = "Window" label = "${res:XML.MainMenu.WindowMenu}" type="Menu">
+			<Condition name = "WindowActive" activewindow="*"  action="Disable">
+				<MenuItem id  = "NextWindow"
+				          label = "${res:XML.MainMenu.WindowMenu.NxtWindow}"
+				          icon = "Icons.16x16.NextWindowIcon"
+				          description = "${res:XML.MainMenu.WindowMenu.NxtWindow.Description}"
+				          shortcut = "Control|Tab"
+				          class = "ICSharpCode.SharpDevelop.Commands.SelectNextWindow" />
+				<MenuItem id = "PrevWindow"
+				          label = "${res:XML.MainMenu.WindowMenu.PrvWindow}"
+				          icon = "Icons.16x16.PrevWindowIcon"
+				          description = "${res:XML.MainMenu.WindowMenu.PrvWindow.Description}"
+				          shortcut = "Shift|Control|Tab"
+				          class = "ICSharpCode.SharpDevelop.Commands.SelectPrevWindow" />
+				<MenuItem id ="NxtPrvSeparator" type = "Separator" />
+				<MenuItem id    = "CloseAll"
+				          label = "${res:XML.MainMenu.FileMenu.CloseAll}"
+				          icon  = "Icons.16x16.CloseAllDocuments"
+				          description = "${res:XML.MainMenu.FileMenu.CloseAll.Description}"
+				          class = "ICSharpCode.SharpDevelop.Commands.CloseAllWindows" />
+			</Condition>
+			<MenuItem id = "ContentBuilder"  type="Builder" class="ICSharpCode.SharpDevelop.Commands.OpenContentsMenuBuilder"/>
+		</MenuItem>	 <!-- end WINDOW menu -->
+
+		<MenuItem id = "Help" label = "${res:XML.MainMenu.HelpMenu}" type="Menu">
+			<MenuItem id = "DynamicHelp"
+			          label = "${res:XML.MainMenu.HelpMenu.DynamicHelp}"
+			          icon = "Icons.16x16.HelpIcon"
+			          description = "${res:XML.MainMenu.HelpMenu.DynamicHelp.Description}"
+			          shortcut = "F1"
+			          class = "ICSharpCode.SharpDevelop.Commands.ShowSensitiveHelp"/>
+			<MenuItem id = "Help"
+			          label = "${res:XML.MainMenu.HelpMenu.Topics}"
+			          description = "${res:XML.MainMenu.HelpMenu.Topics.Description}"
+			          shortcut = "Alt|F1"
+			          class = "ICSharpCode.SharpDevelop.Commands.ShowHelp"/>
+			<MenuItem id = "TipOfTheDay"
+			          label = "${res:XML.MainMenu.HelpMenu.Tips}"
+			          icon = "Icons.16x16.TipOfTheDay"
+			          description = "${res:XML.MainMenu.HelpMenu.Tips.Description}"
+			          class = "ICSharpCode.SharpDevelop.Commands.ViewTipOfTheDay" />
+			
+			<!--
+			<MenuItem id = "Separator1" type = "Separator" />
+			<MenuItem id = "ViewGPL"
+			          label = "${res:XML.MainMenu.HelpMenu.GPL}"
+			          icon = "Icons.16x16.CopyLeftIcon"
+			          description = "${res:XML.MainMenu.HelpMenu.GPL.Description}"
+			          class = "ICSharpCode.SharpDevelop.Commands.ViewGPL" />
+			
+			<MenuItem id = "ViewReadme"
+			          label       = "${res:XML.MainMenu.HelpMenu.ReadMe}"
+			          description = "${res:XML.MainMenu.HelpMenu.ReadMe.Description}"
+			          link        = "home://../doc/ReadMe.rtf" />
+			<MenuItem id = "ViewStyleguide"
+			          label = "${res:XML.MainMenu.HelpMenu.StyleGuide}"
+			          description = "${res:XML.MainMenu.HelpMenu.StyleGuide.Description}"
+			          link = "home://../doc/CodingStyleGuide.pdf" />
+			<MenuItem id = "Separator2" type = "Separator" />
+			<MenuItem id = "Web" label = "${res:XML.MainMenu.HelpMenu.WebMenu}" type="Menu">
+				<MenuItem id = "SharpDevelop" label = "SharpDevelop" type="Menu">
+					<MenuItem id = "Downloads" label = "Downloads" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SD/Download/" />
+					<MenuItem id = "Forum" label = "Community Forums" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SD/Forum/" />
+					<MenuItem id = "Announcement" label = "Announcement List" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SD/AnnouncementList.aspx" />
+					<MenuItem id = "Mail" label = "Send Us a Mail" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SD/ContactUs.asp" />
+				</MenuItem>
+				<MenuItem id = "C#" label = "C#" type="Menu">
+					<MenuItem id = "cshrp.net" label = "cshrp.net" icon = "Icons.16x16.WebSearchIcon" link = "http://www.cshrp.net/" />
+					<MenuItem id = "C# Help" label = "C# Help" icon = "Icons.16x16.WebSearchIcon" link = "http://www.csharphelp.com" />
+					<MenuItem id = "C# Corner" label = "C# Corner" icon = "Icons.16x16.WebSearchIcon" link = "http://www.c-sharpcorner.com" />
+					<MenuItem id = "GotDotNet" label = "GotDotNet" icon = "Icons.16x16.WebSearchIcon" description = "Visit one of the best NET sites on the web" link = "http://www.gotdotnet.com/" />
+				</MenuItem>
+				<MenuItem id = "IntegratedProjects" label = "Integrated Projects" type="Menu">
+					<MenuItem id = "DockManager Control" label = "DockPanel Suite" icon = "Icons.16x16.WebSearchIcon" description = "The DockPanel Suite is designed to achieve docking capability for MDI forms. It can be used to develop applications with same look and feel as Visual Studio .Net." link = "http://www.freewebs.com/weifenluo/DockManager.htm" />
+					<MenuItem id = "NUnit" label = "NUnit" icon = "Icons.16x16.WebSearchIcon" description = "I used the NDoc as the SharpDevelop documentation generator. Look out it is cool." link = "http://www.nunit.org/" />
+					<MenuItem id = "NProf" label = "NProf" icon = "Icons.16x16.WebSearchIcon" description = "Profiler for .NET" link = "http://nprof.sourceforge.net/Site/SiteHomeNews.html" />
+					<MenuItem id = "WiX" label = "WiX" icon = "Icons.16x16.WebSearchIcon" description = "Installer creator for .NET" link = "http://sourceforge.net/projects/wix/" />
+					<MenuItem id = "NAnt" label = "NAnt" icon = "Icons.16x16.WebSearchIcon" description = "THE .NET building tool." link = "http://nant.sourceforge.net/" />
+					<MenuItem id = "NDoc" label = "NDoc" icon = "Icons.16x16.WebSearchIcon" description = "I used the NDoc as the SharpDevelop documentation generator. Look out it is cool." link = "http://ndoc.sourceforge.net/" />
+					<MenuItem id = "#ZipLib" label = "#ZipLib" icon = "Icons.16x16.WebSearchIcon" description = "" link = "http://www.sharpdevelop.net/OpenSource/SharpZipLib/Default.aspx" />
+				</MenuItem>
+				<MenuItem id = "NETPlatforms" label = ".NET Platforms" type="Menu">
+					<MenuItem id = "MSNET"  label = "MS .NET" icon = "Icons.16x16.WebSearchIcon" description = "The first .NET implementation" link = "http://msdn.microsoft.com/net" />
+					<MenuItem id = "Mono"   label = "Mono Project" icon = "Icons.16x16.WebSearchIcon" description = "A free .NET implementation effort, worth visiting" link = "http://www.go-mono.com" />
+					<MenuItem id = "DotGNU" label = "DotGNU" icon = "Icons.16x16.WebSearchIcon" description = "The GNU .NET implementation" link = "http://www.dotgnu.org" />
+				</MenuItem>
+			</MenuItem> -->
+			<MenuItem id = "Separator3" type = "Separator" />
+			<MenuItem id = "About"
+			          label = "${res:XML.MainMenu.HelpMenu.About}"
+			          icon = "Icons.16x16.AboutIcon"
+			          description = "${res:XML.MainMenu.HelpMenu.About.Description}"
+			          class = "ICSharpCode.SharpDevelop.Commands.AboutSharpDevelop" />
+		</MenuItem> <!-- end HELP menu -->
+	</Path> <!-- end Main Menu -->
+	
+
+	<!-- TEXT EDITOR --> 
+	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
+		<DialogPanel id = "CodeTemplates"
+		             label = "${res:Dialog.Options.CodeTemplatesText}"
+		             class = "ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.CodeTemplatePane"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Views/ProjectBrowser/ContextMenu">
+		<!-- AddIn to the Project Add Menu -->
+		<Condition name = "Ownerstate" ownerstate="ProjectSelected">
+			<MenuItem id = "ExportToHtml"
+			          insertafter = "GenerateDocumentation"
+			          insertbefore = "Separator5"
+			          label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ExportProjectToHtml"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/AddIns/DefaultTextEditor/Formater">
+		<Condition name = "TextContent" textcontent = "XML">
+			<Class id ="XmlFormatter" class = "ICSharpCode.SharpDevelop.DefaultEditor.XmlFormattingStrategy"/>
+		</Condition>
+		<Class id ="DefaultFormatter" class = "ICSharpCode.TextEditor.Document.DefaultFormattingStrategy"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Project">
+		<!-- AddIn to the Project Add Menu -->
+		<Condition name = "ProjectActive" activeproject="*">
+			<MenuItem id = "ExportToHtml"
+			          insertafter = "GenerateDocumentation"
+			          insertbefore = "Separator2"
+			          label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ExportProjectToHtml"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
+		<!-- AddIn to the project browser context menu -->
+		<Condition name = "ProjectActive" activeproject="*">
+			<MenuItem id = "ExportToHtml"
+			          insertafter = "GenerateDocumentation"
+			          insertbefore = "SetAsStartupProjectSeparator"
+			          label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ExportProjectToHtml"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id    = "Text"
+		       insertafter = "Browser"
+		       supportedformats = "Text Files,Source Files"
+		       class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+		<MenuItem id = "Cut"
+		          label = "${res:XML.TextAreaContextMenu.Cut}"
+		          icon = "Icons.16x16.CutIcon"
+		          shortcut = "Control|X"
+		          class = "ICSharpCode.SharpDevelop.Commands.Cut"/>
+		<MenuItem id = "Copy"
+		          label = "${res:XML.TextAreaContextMenu.Copy}"
+		          icon = "Icons.16x16.CopyIcon"
+		          shortcut = "Control|C"
+		          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
+		<MenuItem id = "Paste"
+		          label = "${res:XML.TextAreaContextMenu.Paste}"
+		          icon = "Icons.16x16.PasteIcon"
+		          shortcut = "Control|V"
+		          class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
+		<MenuItem id = "Delete"
+		          label = "${res:XML.MainMenu.EditMenu.Delete}"
+		          icon = "Icons.16x16.DeleteIcon"
+		          class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
+		<MenuItem id = "Separator1" type = "Separator" />
+		<MenuItem id = "Save"
+		          label = "${res:XML.MainMenu.FileMenu.Save}"
+		          icon = "Icons.16x16.SaveIcon"
+		          shortcut = "Control|S"
+		          class = "ICSharpCode.SharpDevelop.Commands.SaveFile"/>
+		<MenuItem id = "SaveAs"
+		          label = "${res:XML.MainMenu.FileMenu.SaveAs}"
+		          class = "ICSharpCode.SharpDevelop.Commands.SaveFileAs"/>
+		<MenuItem id = "File"
+		          label = "${res:XML.MainMenu.FileMenu.Close}"
+		          class ="ICSharpCode.SharpDevelop.Commands.CloseFile"/>
+		<MenuItem id = "Separator2" type = "Separator" />
+		<MenuItem id = "Comment"
+		          icon  = "Icons.16x16.CommentRegion"
+		          label = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
+		          class= "ICSharpCode.SharpDevelop.DefaultEditor.Commands.CommentRegion"/>
+<!--		<MenuItem id = "Uncomment"
+		          icon  = "Icons.16x16.UnCommentRegion"
+                  label = "${res:XML.TextAreaContextMenu.UncommentSelection}"
+		          class= "ICSharpCode.SharpDevelop.DefaultEditor.Commands.UncommentRegion"/>-->
+		<MenuItem id = "Indent"
+		          label = "${res:XML.TextAreaContextMenu.Indent}"
+		          shortcut = "Control|I"
+		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
+		
+		<MenuItem id = "FileMode" label = "${res:XML.TextAreaContextMenu.FileMode}"  type="Menu">
+			<MenuItem id = "HighlightBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.HighlightingTypeBuilder" />
+		</MenuItem>
+		
+		<MenuItem id = "Separator3" type = "Separator" />
+		<MenuItem id = "Options"
+		          label = "${res:XML.TextAreaContextMenu.BufferOptions}"
+		          icon = "Icons.16x16.PropertiesIcon"
+		          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowBufferOptions"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
+			<ToolbarItem id = "SearchSeparator" type = "Separator"/>
+<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable"> -->
+				<ToolbarItem id = "Comment"
+				             icon = "Icons.16x16.CommentRegion" 
+				             tooltip = "${res:XML.TextAreaContextMenu.CommentUncommentSelection}"
+				             class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.CommentRegion"/>
+<!--				<ToolbarItem id = "Uncomment"
+				             icon = "Icons.16x16.UnCommentRegion"
+				             tooltip = "${res:XML.TextAreaContextMenu.UncommentSelection}"
+				             class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.UncommentRegion"/> -->
+			
+				<ToolbarItem id = "SearchSeparator2" type = "Separator"/>
+				<ToolbarItem id = "ToggleBookmark"
+				             icon = "Bookmarks.ToggleMark"
+				             tooltip = "${res:XML.MainMenu.SearchMenu.ToggleBookmark.Description}"
+				             class = "Bookmarks.ToggleBookmark"/>
+				<ToolbarItem id = "PrevBookmark"
+				             icon = "Bookmarks.GotoPrevInFile"
+				             tooltip = "${res:XML.MainMenu.SearchMenu.PrevBookmark.Description}"
+				             class = "Bookmarks.PrevBookmark"/>
+				<ToolbarItem id = "NextBookmark"
+				             icon = "Bookmarks.GotoNextInFile"
+				             tooltip = "${res:XML.MainMenu.SearchMenu.NextBookmark.Description}"
+				             class = "Bookmarks.NextBookmark"/>
+				<ToolbarItem id = "ClearBookmarks"
+				             icon = "Bookmarks.ClearAll"
+				             tooltip = "${res:XML.MainMenu.SearchMenu.ClrBookmark.Description}"
+				             class = "Bookmarks.ClearBookmarks"/>
+<!--			</Condition> -->
+	</Path>
+	
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu">
+		<MenuItem id = "Search" insertafter ="View" insertbefore ="Tools" label = "${res:XML.MainMenu.SearchMenu}" type="Menu">
+			<MenuItem id = "Find"
+			          label = "${res:XML.MainMenu.SearchMenu.Find}"
+			          icon = "Icons.16x16.FindIcon"
+			          description = "${res:XML.MainMenu.SearchMenu.Find.Description}"
+			          shortcut = "Control|F"
+			          class = "SearchAndReplace.Find"/>
+			<MenuItem id = "FindNext"
+			          label = "${res:XML.MainMenu.SearchMenu.FindNext}"
+			          icon = "Icons.16x16.FindNextIcon"
+			          description = "${res:XML.MainMenu.SearchMenu.FindNext.Description}"
+			          shortcut = "F3"
+			          class = "SearchAndReplace.FindNext"/>
+			<MenuItem id = "Replace"
+			          label = "${res:XML.MainMenu.SearchMenu.Replace}"
+			          icon = "Icons.16x16.ReplaceIcon"
+			          description = "${res:XML.MainMenu.SearchMenu.Replace.Description}"
+			          shortcut = "Control|R"
+			          class = "SearchAndReplace.Replace"/>
+			
+			<MenuItem id = "SearchInFilesSeparator" type = "Separator" />
+<!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable"> -->
+				<MenuItem id = "ToggleBookmark"
+				          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
+				          description = "${res:XML.MainMenu.SearchMenu.ToggleBookmark.Description}"
+				          shortcut = "Control|F2"
+				          icon = "Bookmarks.ToggleMark"
+				          class = "Bookmarks.ToggleBookmark"/>
+				<MenuItem id = "PrevBookmark"
+				          label = "${res:XML.MainMenu.SearchMenu.PrevBookmark}"
+				          description = "${res:XML.MainMenu.SearchMenu.PrevBookmark.Description}"
+				          shortcut = "Alt|F2"
+				          icon = "Bookmarks.GotoPrevInFile"
+				          class = "Bookmarks.PrevBookmark"/>
+				<MenuItem id = "NextBookmark"
+				          label = "${res:XML.MainMenu.SearchMenu.NextBookmark}"
+				          description = "${res:XML.MainMenu.SearchMenu.NextBookmark.Description}"
+				          shortcut = "F2"
+				          icon = "Bookmarks.GotoNextInFile"
+				          class = "Bookmarks.NextBookmark"/>
+				<MenuItem id = "ClearBookmarks"
+				          label = "${res:XML.MainMenu.SearchMenu.ClrBookmark}"
+				          description = "${res:XML.MainMenu.SearchMenu.ClrBookmark.Description}"
+				          icon = "Bookmarks.ClearAll"
+				          class = "Bookmarks.ClearBookmarks"/>
+				<MenuItem id = "Separator2" type = "Separator" />
+				<MenuItem id = "GotoLineNr"
+				          label = "${res:XML.MainMenu.SearchMenu.GotoLineNr}"
+				          description = "${res:XML.MainMenu.SearchMenu.GotoLineNr.Description}"
+				          shortcut = "Control|G"
+				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber"/>
+				<MenuItem id = "Separator3" type = "Separator" />
+				<MenuItem id = "GotoBrace"
+				          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"
+				          description = "${res:XML.MainMenu.SearchMenu.GotoBrace.Description}"
+				          shortcut = "Control|B"
+				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace"/>
+<!--			</Condition> -->
+		</MenuItem>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Window">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+			<MenuItem id = "SplitTextEditor"
+			          insertafter="NxtPrvSeparator"
+			          insertbefore="CloseAll"
+			          label = "${res:XML.MainMenu.WindowMenu.Split}"
+			          icon  = "Icons.16x16.SplitWindow"
+			          description = "${res:XML.MainMenu.WindowMenu.Split.Description}"
+			          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.SplitTextEditor"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Edit">
+		<MenuItem insertafter = "Delete" insertbefore = "SelectAll" id = "Separator2" type = "Separator" />
+		<MenuItem insertafter = "Separator2" insertbefore = "Separator3" id = "Format" label = "${res:XML.MainMenu.EditMenu.FormatMenu}" type="Menu">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+				
+				<MenuItem id = "RemoveLeadingWs"
+				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs}"
+				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs.Description}"
+				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.RemoveLeadingWS"/>
+				<MenuItem id = "RemoveTrailingWs"
+				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs}"
+				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs.Description}"
+				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.RemoveTrailingWS"/>
+				<MenuItem id = "Seperator1" type = "Separator" />
+				<MenuItem id = "UpperCase"
+				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase}"
+				          icon = "Icons.16x16.LowerToUpperCase"
+				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase.Description}"
+				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToUpperCase"/>
+				<MenuItem id = "LowerCase"
+				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase}"
+				          icon = "Icons.16x16.UpperToLowerCase"
+				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase.Description}"
+				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToLowerCase"/>
+				<MenuItem id = "Capitalize"
+				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize}"
+				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize.Description}"
+				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.CapitalizeAction"/>
+				<MenuItem id = "InvertCase"
+				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase}"
+				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase.Description}"
+				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.InvertCaseAction"/>
+				<MenuItem id = "Separator2" type = "Separator" />
+				<MenuItem id = "SortSelection"
+				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines}"
+				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines.Description}"
+				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.SortSelection"/>
+				<MenuItem id = "Separator3" type = "Separator" />
+				<MenuItem id = "Tabs2Spaces"
+				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space}"
+				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space.Description}"
+				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertTabsToSpaces"/>
+				<MenuItem id = "Spaces2Tabs"
+				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab}"
+				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab.Description}"
+				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertSpacesToTabs"/>
+				<MenuItem id = "LeadingTabs2Spaces"
+				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space}"
+				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space.Description}"
+				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertLeadingTabsToSpaces"/>
+				<MenuItem id = "LeadingSpaces2Tabs"
+				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab}"
+				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab.Description}"
+				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertLeadingSpacesToTabs"/>
+			</Condition>
+		</MenuItem>
+		<MenuItem insertafter = "Format" insertbefore = "Separator3" id = "Folding" label = "${res:XML.MainMenu.EditMenu.FoldingMenu}" type="Menu">
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+				<MenuItem id          = "ToggleFolding"
+				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding}"
+				          description = "Toggles the current selected folding"
+				          shortcut    = "Shift|Control|M"
+				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToggleFolding"/>
+				<MenuItem id          = "ToggleAllFoldings"
+				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleAllFoldings}"
+				          description = "Toggles all foldings"
+				          shortcut    = "Shift|Control|L"
+				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToggleAllFoldings"/>
+				<MenuItem id          = "ShowDefinitionsOnly"
+				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ShowDefinitions}"
+				          description = "Shows only the definitions"
+				          shortcut    = "Shift|Control|P"
+				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowDefinitionsOnly"/>
+			</Condition>
+		</MenuItem>
+		<MenuItem insertafter = "Separator2" insertbefore = "SelectAll" id = "Separator3" type = "Separator" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog">
+		<DialogPanel id = "General"
+		             label = "${res:Dialog.Options.IDEOptions.TextEditor.General.PanelName}"
+		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.GeneralTextEditorPanel"/>
+		<DialogPanel id = "Markers"
+		             label = "${res:Dialog.Options.IDEOptions.TextEditor.Markers.PanelName}"
+		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.MarkersTextEditorPanel"/>
+		<DialogPanel id = "Behavior"
+		             label = "${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.PanelName}"
+		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
+		<DialogPanel id    = "TextEditorOptions"
+		             insertafter = "CodingOptions"
+		             insertbefore = "ToolsOptions"
+		             label = "${res:Dialog.Options.IDEOptions.TextEditorOptionsText}">
+			<DialogPanel id = "General"
+			             label = "${res:Dialog.Options.IDEOptions.TextEditor.General.PanelName}"
+			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.GeneralTextEditorPanel"/>
+			<DialogPanel id = "Markers"
+			             label = "${res:Dialog.Options.IDEOptions.TextEditor.Markers.PanelName}"
+			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.MarkersTextEditorPanel"/>
+			<DialogPanel id = "Behavior"
+			             label = "${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.PanelName}"
+			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
+		</DialogPanel>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+			<MenuItem id = "InsertColor"
+			          insertafter = "Separator1" insertbefore = "Separator2"
+			          label = "${res:XML.MainMenu.ToolMenu.InsColor}" 
+			          description = "${res:XML.MainMenu.ToolMenu.InsColor.Description}" 
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowColorDialog"/> 
+			<MenuItem id = "Separator2" type = "Separator" />
+
+			<MenuItem id = "GenerateCodeAction"
+			          insertafter = "Separator2"
+			          label = "${res:XML.MainMenu.ToolMenu.GenerateCode}" 
+			          description = "${res:XML.MainMenu.ToolMenu.GenerateCode.Description}" 
+			          shortcut = "Alt|Insert"
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GenerateCodeAction"/>  
+			<MenuItem id = "ShowQuickHelp"
+			          insertafter = "GenerateCodeAction"
+			          insertbefore = "Separator5"
+			          label = "${res:XML.MainMenu.ToolMenu.QuickXmlDoc}" 
+			          description = "${res:XML.MainMenu.ToolMenu.QuickXmlDoc.Description}" 
+			          shortcut = "Control|Q"
+			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.QuickDocumentation"/> 
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/DefaultEditor/SearchAndReplace/WildcardHelpPath">
+		<MenuItem id    = "*Char"
+		          label = "* Zero or more of any character" />
+		<MenuItem id    = "?Char"
+		          label = "? Any single character" />
+		<MenuItem id    = "#Char"
+		          label = "# Any single digit" />
+		<MenuItem id    = "[]Char"
+		          label = "[] Any one character in the set" />
+		<MenuItem id    = "[!]Char"
+		          label = "[!] Any one character not in the set" />
+	</Path>
+	
+	<!-- Note : Most actions are put directly into the control, because 
+	            they're used for the standalone version too, only put keys in the
+	            tree that are sharpdevelop specific, general keys put into TextAreaControl.GenerateDefaultActions --> 
+<!--	<Path name = "/AddIns/DefaultTextEditor/EditActions">
+		<EditAction id = "TemplateCompletion"  class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.TemplateCompletion"  keys = "Control|J"/>
+		<EditAction id = "CodeCompletionPopup" class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.CodeCompletionPopup"  keys = "Control|Space"/>
+		<EditAction id = "IndentSelection"     class = "ICSharpCode.TextEditor.Actions.IndentSelection"  keys = "Control|I"/>
+	</Path> -->
+	
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "SearchResults"
+		     category = "Main"
+		     title    = "Search Results"
+		     icon     = "PadIcons.FindResults"
+		     class    = "SearchAndReplace.SearchResultPanel"/>
+		
+		<Pad id       = "Bookmarks"
+		     category = "Main"
+		     title    = "Bookmarks"
+		     icon     = "PadIcons.Bookmarks"
+		     class    = "Bookmark.BookmarkPad"/>
+	</Path>
+	
+	
+	<Path name = "/SharpDevelop/Pads/BookmarkPad/Toolbar">
+		<ToolbarItem id      = "GotoPrev"
+		             icon    = "Bookmarks.GotoPrev"
+		             tooltip = "Goto previous bookmark"
+		             class   = "Bookmark.GotoPrev"/>
+		<ToolbarItem id      = "GotoNext"
+		             icon    = "Bookmarks.GotoNext"
+		             tooltip = "Goto next bookmark"
+		             class   = "Bookmark.GotoNext"/>
+		<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
+		<ToolbarItem id      = "EnableDisableAll"
+		             icon    = "Bookmarks.EnableDisableAll"
+		             tooltip = "Enable/Disable all"
+		             class   = "Bookmark.EnableDisableAll"/>
+		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
+		
+		<ToolbarItem id      = "DeleteMark"
+		             icon    = "Bookmarks.DeleteMark"
+		             tooltip = "Delete bookmark"
+		             class   = "Bookmark.DeleteMark"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/SearchResultPanel/Toolbar">
+		
+		<ToolbarItem id      = "ExpandAll"
+		             icon    = "Icons.16x16.OpenAssembly"
+		             tooltip = "Expand all"
+		             class   = "SearchAndReplace.ExpandAll"/>
+		
+		<ToolbarItem id      = "CollapseAll"
+		             icon    = "Icons.16x16.Assembly"
+		             tooltip = "Collapse all"
+		             class   = "SearchAndReplace.CollapseAll"/>
+		<ToolbarItem id = "ExpandCollapseSeparator" type = "Separator" />
+		<!--
+		<ToolbarItem id      = "ToggleTreeList"
+		             icon    = "Icons.16x16.Error"
+		             tooltip = "Toggle Tree/List view"
+		             class   = "SearchAndReplace.ToggleTreeList"/>-->
+		
+		<ToolbarItem id      = "ShowLast"
+		             type    = "DropDownButton"
+		             icon    = "Icons.16x16.FindIcon"
+		             tooltip = "Show last searches"
+		             class   = "SearchAndReplace.ShowLastSearchResults"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
+		<ToolbarItem id = "FindSeparator" type = "Separator" />
+		<ToolbarItem id      = "Find"
+		             icon    = "Icons.16x16.FindIcon"
+		             tooltip = "Search"
+		             class   = "SearchAndReplace.Find"/>	
+		
+		<ToolbarItem id      = "FindComboBox"
+		             type    = "ComboBox"
+		             tooltip = "Search"
+		             class   = "SearchAndReplace.FindComboBox"/>
+		
+	</Path>
+	
+</AddIn>

@@ -1,0 +1,204 @@
+<?xml version="1.0"?>
+<Template originator   = "Mike Krueger"
+          created      = "22/01/2003"
+          lastModified = "20/10/2004">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.Direct3DApplication.Name}</Name>
+		<Category>C#</Category>
+		<Icon>C#.Project.FullProject</Icon>
+		<LanguageName>C#</LanguageName>
+		<Description>${res:Templates.Project.Direct3DApplication.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MainClass.cs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options/>
+			
+			<References>
+				<Reference type="Gac" refto="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Gac" refto="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+			</References>
+			
+			<Files>
+				<File name="MainClass.cs"><![CDATA[using System;
+using System.Collections;
+using System.ComponentModel;
+using System.Drawing;
+using System.Windows.Forms;
+
+using Microsoft.DirectX;
+using Microsoft.DirectX.Direct3D;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// This is the main class of my Direct3D application
+	/// </summary>
+	public class MainClass : Form
+	{
+		/// <summary>
+		/// The rendering device
+		/// </summary>
+		Device device = null;
+		
+		public MainClass()
+		{
+			this.ClientSize = new System.Drawing.Size(640, 480);
+			this.Text = "Direct3D Project";
+		}
+		
+		public bool InitializeGraphics()
+		{
+			try {
+				// Now let's setup the Direct3D stuff
+				PresentParameters presentParams = new PresentParameters();
+				presentParams.Windowed   = true;
+				presentParams.SwapEffect = SwapEffect.Discard;
+				
+				// Create the device
+				device = new Device(0, DeviceType.Hardware, this, CreateFlags.SoftwareVertexProcessing, presentParams);
+				
+				// Setup the event handlers for the device
+				device.DeviceLost     += new EventHandler(this.InvalidateDeviceObjects);
+				device.DeviceReset    += new EventHandler(this.RestoreDeviceObjects);
+				device.Disposing      += new EventHandler(this.DeleteDeviceObjects);
+				device.DeviceResizing += new CancelEventHandler(this.EnvironmentResizing);
+				
+				return true;
+			} catch (DirectXException) {
+				return false;
+			}
+		}
+		
+		protected virtual void InvalidateDeviceObjects(object sender, EventArgs e)
+		{
+		}
+		
+		protected virtual void RestoreDeviceObjects(object sender, EventArgs e)
+		{
+		}
+		
+		protected virtual void DeleteDeviceObjects(object sender, EventArgs e)
+		{
+		}
+		
+		protected virtual void EnvironmentResizing(object sender, CancelEventArgs e)
+		{
+		}
+		
+		/// <summary>
+		/// This method moves the scene
+		/// </summary>
+		protected virtual void FrameMove()
+		{
+			// TODO : Frame movement
+		}
+		
+		/// <summary>
+		/// This method renders the scene
+		/// </summary>
+		protected virtual void Render()
+		{
+			if (device != null) {
+				device.Clear(ClearFlags.Target, Color.Blue, 1.0f, 0);
+				device.BeginScene();
+				
+				// TODO : Scene rendering
+				
+				device.EndScene();
+				device.Present();
+			}
+		}
+		
+		/// <summary>
+		/// Our mainloop
+		/// </summary>
+		public void Run()
+		{
+			// While the form is still valid, render and process messages
+			while (Created) {
+				FrameMove();	
+				Render();
+				Application.DoEvents();
+			}
+		}
+		
+		protected override void OnPaint(PaintEventArgs e)
+		{
+			this.Render();
+		}
+		
+		protected override void OnKeyPress(KeyPressEventArgs e)
+		{
+			base.OnKeyPress(e);
+			if ((int)e.KeyChar == (int)System.Windows.Forms.Keys.Escape) {
+				this.Close(); 
+			}
+		}
+		
+		/// <summary>
+		/// The main entry point for the application
+		/// </summary>
+		static void Main()
+		{
+			using (MainClass mainClass = new MainClass()) {
+				if (!mainClass.InitializeGraphics()) {
+					MessageBox.Show("Error while initializing Direct3D");
+					return;
+				}
+				mainClass.Show();
+				mainClass.Run();
+			}
+		}
+	}
+}
+]]></File>
+			<File name="AssemblyInfo.cs"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+// Information about this assembly is defined by the following
+// attributes.
+//
+// change them to the information which is associated with the assembly
+// you compile.
+
+[assembly: AssemblyTitle("")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+
+// The assembly version has following format :
+//
+// Major.Minor.Build.Revision
+//
+// You can specify all values by your own or you can build default build and revision
+// numbers with the '*' character (the default):
+
+[assembly: AssemblyVersion("1.0.*")]
+
+// The following attributes specify the key for the sign of your assembly. See the
+// .NET Framework documentation for more information about signing.
+// This is not required, if you don't want signing let these attributes like they're.
+[assembly: AssemblyDelaySign(false)]
+[assembly: AssemblyKeyFile("")]
+]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

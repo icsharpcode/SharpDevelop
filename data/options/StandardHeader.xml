@@ -1,0 +1,29 @@
+<StandardProperties version="1.0">
+	<Property name = "StandardHeader.C#">/*
+ * Created by SharpDevelop.
+ * User: ${USER}
+ * Date: ${DATE}
+ * Time: ${TIME}
+ * 
+ * To change this template use Tools | Options | Coding | Edit Standard Headers.
+ */</Property>
+
+	<Property name = "StandardHeader.VBNET">'
+' Created by SharpDevelop.
+' User: ${USER}
+' Date: ${DATE}
+' Time: ${TIME}
+' 
+' To change this template use Tools | Options | Coding | Edit Standard Headers.
+'</Property>
+
+	<Property name = "StandardHeader.C++.NET">/*
+ * Created by SharpDevelop.
+ * User: ${USER}
+ * Date: ${DATE}
+ * Time: ${TIME}
+ * 
+ * To change this template use Tools | Options | Coding | Edit Standard Headers.
+ */</Property>
+
+</StandardProperties>

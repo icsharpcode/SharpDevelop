@@ -1,0 +1,26 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="CreatedObject0" />
+    <DockPadding value="" />
+    <Size value="{Width=344, Height=296}" />
+    <Controls>
+      <System.Windows.Forms.Label>
+        <Name value="label" />
+        <Text value="${res:Dialog.Options.PrjOptions.CompileFile.IncludeGroupBox}" />
+        <TextAlign value="MiddleLeft" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="2" />
+        <Size value="{Width=328, Height=24}" />
+        <Location value="{X=8,Y=0}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.CheckedListBox>
+        <Name value="IncludeFilesCheckedListBox" />
+        <Location value="{X=8,Y=24}" />
+        <Size value="{Width=328, Height=256}" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <TabIndex value="1" />
+        <IntegralHeight value="False" />
+      </System.Windows.Forms.CheckedListBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

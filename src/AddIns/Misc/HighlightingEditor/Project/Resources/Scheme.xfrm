@@ -1,0 +1,72 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="highlightingOptionPanel" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=312, Height=312}" />
+    <Controls>
+      <System.Windows.Forms.TextBox>
+        <Name value="extBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="4" />
+        <Location value="{X=128,Y=37}" />
+        <ClientSize value="{Width=180, Height=17}" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="label3" />
+        <Text value="${res:Dialog.HighlightingEditor.Scheme.Extensions}" />
+        <TabIndex value="3" />
+        <ClientSize value="{Width=128, Height=16}" />
+        <Location value="{X=0,Y=40}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.TextBox>
+        <Name value="nameBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="2" />
+        <Location value="{X=128,Y=5}" />
+        <ClientSize value="{Width=180, Height=17}" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="label3" />
+        <Text value="${res:Dialog.HighlightingEditor.Scheme.Name}" />
+        <TabIndex value="1" />
+        <ClientSize value="{Width=128, Height=16}" />
+        <Location value="{X=0,Y=8}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Panel>
+        <Name value="panel" />
+        <Location value="{X=0,Y=88}" />
+        <ClientSize value="{Width=312, Height=224}" />
+        <DockPadding value="" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <TabIndex value="0" />
+        <Controls>
+          <System.Windows.Forms.Label>
+            <Name value="explLabel" />
+            <Text value="${res:Dialog.HighlightingEditor.Scheme.Explanation}" />
+            <Anchor value="Top, Bottom, Left, Right" />
+            <TabIndex value="2" />
+            <ClientSize value="{Width=280, Height=200}" />
+            <Location value="{X=16,Y=24}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.Label>
+            <Name value="label" />
+            <Text value="${res:Dialog.HighlightingEditor.Explanation}" />
+            <TabIndex value="0" />
+            <ClientSize value="{Width=96, Height=16}" />
+            <Location value="{X=0,Y=0}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.Label>
+            <Name value="label2" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="1" />
+            <ClientSize value="{Width=308, Height=0}" />
+            <Location value="{X=0,Y=8}" />
+            <BorderStyle value="Fixed3D" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.Panel>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

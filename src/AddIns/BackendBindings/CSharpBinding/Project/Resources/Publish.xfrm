@@ -1,0 +1,250 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="XmlUserControl1" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=592, Height=480}" />
+    <Controls>
+      <System.Windows.Forms.Button>
+        <Name value="button5" />
+        <Location value="{X=472,Y=440}" />
+        <Size value="{Width=112, Height=23}" />
+        <Text value="Publish &amp;Now" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="5" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="button3" />
+        <Location value="{X=352,Y=440}" />
+        <Size value="{Width=112, Height=23}" />
+        <Text value="Publish &amp;Wizard..." />
+        <Anchor value="Top, Right" />
+        <TabIndex value="3" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox2" />
+        <TabIndex value="1" />
+        <Location value="{X=8,Y=192}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=576, Height=152}" />
+        <Text value="Install Mode and Settings" />
+        <Controls>
+          <System.Windows.Forms.Button>
+            <Name value="button8" />
+            <Location value="{X=456,Y=121}" />
+            <Size value="{Width=112, Height=23}" />
+            <Text value="O&amp;ptions..." />
+            <Anchor value="Top, Right" />
+            <TabIndex value="7" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.Button>
+            <Name value="button7" />
+            <Location value="{X=456,Y=89}" />
+            <Size value="{Width=112, Height=23}" />
+            <Text value="&amp;Updates..." />
+            <Anchor value="Top, Right" />
+            <TabIndex value="6" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.Button>
+            <Name value="button6" />
+            <Location value="{X=456,Y=57}" />
+            <Size value="{Width=112, Height=23}" />
+            <Text value="Pr&amp;erequisites..." />
+            <Anchor value="Top, Right" />
+            <TabIndex value="5" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.Button>
+            <Name value="button4" />
+            <Location value="{X=456,Y=25}" />
+            <Size value="{Width=112, Height=23}" />
+            <Text value="Application &amp;Files..." />
+            <Anchor value="Top, Right" />
+            <TabIndex value="4" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.CheckBox>
+            <Name value="checkBox1" />
+            <Location value="{X=8,Y=121}" />
+            <Size value="{Width=440, Height=24}" />
+            <Text value="For &amp;CD installations, automatically start Setup when CD is inserted" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="2" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.RadioButton>
+            <Name value="radioButton2" />
+            <Location value="{X=8,Y=49}" />
+            <Size value="{Width=440, Height=24}" />
+            <Text value="The application is avaiable offline as well (launchable from Start &amp;menu)" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="1" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="radioButton1" />
+            <Location value="{X=8,Y=25}" />
+            <Size value="{Width=440, Height=24}" />
+            <Text value="The application is avaiable &amp;online only" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.RadioButton>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox1" />
+        <TabIndex value="0" />
+        <Location value="{X=8,Y=8}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=576, Height=176}" />
+        <Text value="Publish Location" />
+        <Controls>
+          <System.Windows.Forms.Label>
+            <Name value="label2" />
+            <Text value="Documentation and &amp;support URL:" />
+            <TextAlign value="BottomLeft" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="18" />
+            <Size value="{Width=560, Height=16}" />
+            <Location value="{X=8,Y=122}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.ComboBox>
+            <Name value="comboBox2" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="19" />
+            <Location value="{X=8,Y=138}" />
+            <Size value="{Width=512, Height=21}" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Button>
+            <Name value="button2" />
+            <Location value="{X=528,Y=138}" />
+            <Size value="{Width=40, Height=21}" />
+            <Text value="..." />
+            <Anchor value="Top, Right" />
+            <TabIndex value="20" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.Label>
+            <Name value="label1" />
+            <Text value="&amp;Installation URL (if different than above):" />
+            <TextAlign value="BottomLeft" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="15" />
+            <Size value="{Width=528, Height=16}" />
+            <Location value="{X=40,Y=74}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.ComboBox>
+            <Name value="comboBox1" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="16" />
+            <Location value="{X=40,Y=90}" />
+            <Size value="{Width=480, Height=21}" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Button>
+            <Name value="button1" />
+            <Location value="{X=528,Y=90}" />
+            <Size value="{Width=40, Height=21}" />
+            <Text value="..." />
+            <Anchor value="Top, Right" />
+            <TabIndex value="17" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.Label>
+            <Name value="label5" />
+            <Text value="Pu&amp;blishing Location (web site, ftp server, or file path)" />
+            <TextAlign value="BottomLeft" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="12" />
+            <Size value="{Width=560, Height=16}" />
+            <Location value="{X=8,Y=26}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.ComboBox>
+            <Name value="applicationIconComboBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="13" />
+            <Location value="{X=8,Y=42}" />
+            <Size value="{Width=512, Height=21}" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Button>
+            <Name value="applicationIconBrowseButton" />
+            <Location value="{X=528,Y=42}" />
+            <Size value="{Width=40, Height=21}" />
+            <Text value="..." />
+            <Anchor value="Top, Right" />
+            <TabIndex value="14" />
+          </System.Windows.Forms.Button>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox3" />
+        <TabIndex value="2" />
+        <Location value="{X=8,Y=352}" />
+        <Size value="{Width=328, Height=112}" />
+        <Text value="Publish Version" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="checkBox2" />
+            <Location value="{X=8,Y=82}" />
+            <Size value="{Width=312, Height=24}" />
+            <Text value="&amp;Automatically increment revision with each release" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="8" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.Label>
+            <Name value="label7" />
+            <Text value="Revision:" />
+            <TextAlign value="BottomCenter" />
+            <TabIndex value="7" />
+            <Size value="{Width=56, Height=23}" />
+            <Location value="{X=200,Y=24}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="textBox4" />
+            <TabIndex value="6" />
+            <Location value="{X=200,Y=48}" />
+            <Size value="{Width=56, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="label6" />
+            <Text value="Build:" />
+            <TextAlign value="BottomCenter" />
+            <TabIndex value="5" />
+            <Size value="{Width=56, Height=23}" />
+            <Location value="{X=136,Y=24}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="textBox3" />
+            <TabIndex value="4" />
+            <Location value="{X=136,Y=48}" />
+            <Size value="{Width=56, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="label4" />
+            <Text value="Minor:" />
+            <TextAlign value="BottomCenter" />
+            <TabIndex value="3" />
+            <Size value="{Width=56, Height=23}" />
+            <Location value="{X=72,Y=24}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="textBox2" />
+            <TabIndex value="2" />
+            <Location value="{X=72,Y=48}" />
+            <Size value="{Width=56, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="label3" />
+            <Text value="Major:" />
+            <TextAlign value="BottomCenter" />
+            <TabIndex value="1" />
+            <Size value="{Width=56, Height=23}" />
+            <Location value="{X=8,Y=24}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="textBox1" />
+            <TabIndex value="0" />
+            <Location value="{X=8,Y=48}" />
+            <Size value="{Width=56, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

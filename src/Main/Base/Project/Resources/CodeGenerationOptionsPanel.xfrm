@@ -1,0 +1,93 @@
+<System.Windows.Forms.UserControl>
+  <DataBindings value="System.Windows.Forms.ControlBindingsCollection" />
+  <SnapToGrid value="True" />
+  <Size value="{Width=400, Height=256}" />
+  <DrawGrid value="True" />
+  <Name value="CreatedObject0" />
+  <DockPadding value="" />
+  <GridSize value="{Width=8, Height=8}" />
+  <Controls>
+    <System.Windows.Forms.GroupBox>
+      <Text value="${res:Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.CommentGenerationOptionsGroupBox}" />
+      <Size value="{Width=384, Height=80}" />
+      <Anchor value="Top, Left, Right" />
+      <DataBindings value="System.Windows.Forms.ControlBindingsCollection" />
+      <Location value="{X=8,Y=136}" />
+      <TabIndex value="1" />
+      <Name value="commentGeneratingGroupBox" />
+      <Controls>
+        <System.Windows.Forms.CheckBox>
+          <Name value="generateAdditonalCommentsCheckBox" />
+          <TabIndex value="1" />
+          <Anchor value="Top, Left, Right" />
+          <Text value="${res:Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.GenerateAdditionalCommentsCheckBox}" />
+          <Size value="{Width=368, Height=24}" />
+          <Location value="{X=8,Y=48}" />
+          <DataBindings value="System.Windows.Forms.ControlBindingsCollection" />
+          <Controls />
+        </System.Windows.Forms.CheckBox>
+        <System.Windows.Forms.CheckBox>
+          <Name value="generateDocCommentsCheckBox" />
+          <TabIndex value="0" />
+          <Anchor value="Top, Left, Right" />
+          <Text value="${res:Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.GenerateDocCommentsCheckBox}" />
+          <Size value="{Width=368, Height=24}" />
+          <Location value="{X=8,Y=24}" />
+          <DataBindings value="System.Windows.Forms.ControlBindingsCollection" />
+          <Controls />
+        </System.Windows.Forms.CheckBox>
+      </Controls>
+    </System.Windows.Forms.GroupBox>
+    <System.Windows.Forms.GroupBox>
+      <Text value="${res:Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.CodeGenerationOptionsGroupBox}" />
+      <Size value="{Width=384, Height=120}" />
+      <Anchor value="Top, Left, Right" />
+      <Name value="codeGenerationGroupBox" />
+      <DataBindings value="System.Windows.Forms.ControlBindingsCollection" />
+      <Location value="{X=8,Y=8}" />
+      <TabIndex value="0" />
+      <Controls>
+        <System.Windows.Forms.CheckBox>
+          <Name value="useFullTypeNamesCheckBox" />
+          <TabIndex value="3" />
+          <Anchor value="Top, Left, Right" />
+          <Text value="${res:Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.UseFullTypeNamesCheckBox}" />
+          <Size value="{Width=368, Height=24}" />
+          <Location value="{X=8,Y=88}" />
+          <DataBindings value="System.Windows.Forms.ControlBindingsCollection" />
+          <Controls />
+        </System.Windows.Forms.CheckBox>
+        <System.Windows.Forms.CheckBox>
+          <Name value="blankLinesBetweenMemberCheckBox" />
+          <TabIndex value="2" />
+          <Anchor value="Top, Left, Right" />
+          <Text value="${res:Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.BlankLinesBetweenMembersCheckBox}" />
+          <Size value="{Width=368, Height=24}" />
+          <Location value="{X=8,Y=64}" />
+          <DataBindings value="System.Windows.Forms.ControlBindingsCollection" />
+          <Controls />
+        </System.Windows.Forms.CheckBox>
+        <System.Windows.Forms.CheckBox>
+          <Name value="elseOnClosingCheckbox" />
+          <TabIndex value="1" />
+          <Anchor value="Top, Left, Right" />
+          <Text value="${res:Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.ElseOnClosingCheckBox}" />
+          <Size value="{Width=368, Height=24}" />
+          <Location value="{X=8,Y=40}" />
+          <DataBindings value="System.Windows.Forms.ControlBindingsCollection" />
+          <Controls />
+        </System.Windows.Forms.CheckBox>
+        <System.Windows.Forms.CheckBox>
+          <Name value="startBlockOnTheSameLineCheckBox" />
+          <TabIndex value="0" />
+          <Anchor value="Top, Left, Right" />
+          <Text value="${res:Dialog.Options.IDEOptions.CodeGenerationOptionsPanel.StartBlockOnTheSameLineCheckBox}" />
+          <Size value="{Width=368, Height=24}" />
+          <Location value="{X=8,Y=16}" />
+          <DataBindings value="System.Windows.Forms.ControlBindingsCollection" />
+          <Controls />
+        </System.Windows.Forms.CheckBox>
+      </Controls>
+    </System.Windows.Forms.GroupBox>
+  </Controls>
+</System.Windows.Forms.UserControl>

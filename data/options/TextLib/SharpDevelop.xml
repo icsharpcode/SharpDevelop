@@ -1,0 +1,46 @@
+<TextLibrary name = "#develop">
+      <Text display = "Get StringParserService"
+	      value = "StringParserService stringParserService = (StringParserService)ServiceManager.Services.GetService(typeof(StringParserService));"/>
+	<Text display = "Get PropertyService"
+	      value   = "PropertyService propertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));"/>
+
+      <Text display = "Get FileUtilityService" 
+	      value = "FileUtilityService fileUtilityService = (FileUtilityService)ServiceManager.Services.GetService(typeof(FileUtilityService));"/>
+
+      <Text display = "Get IconService"
+	      value = "IconService iconService = (IconService)ServiceManager.Services.GetService(typeof(IconService));"/>
+
+      <Text display = "Get MessageService"
+	      value = "IMessageService messageService =(IMessageService)ServiceManager.Services.GetService(typeof(IMessageService));"/>
+
+      <Text display = "Get MenuService"
+	      value = "MenuService menuService = (MenuService)ICSharpCode.Core.Services.ServiceManager.Services.GetService(typeof(MenuService));"/>
+
+      <Text display = "Get ClassBrowserIconsService"
+	      value = "ClassBrowserIconsService classBrowserIconService = (ClassBrowserIconsService)ServiceManager.Services.GetService(typeof(ClassBrowserIconsService));"/>
+
+	<Text display = "Get FileService"
+	      value = "IFileService fileService = (IFileService)ICSharpCode.Core.Services.ServiceManager.Services.GetService(typeof(IFileService));"/>
+
+      <Text display = "Get ProjectService"
+	      value = "IProjectService projectService = (IProjectService)ICSharpCode.Core.Services.ServiceManager.Services.GetService(typeof(IProjectService));"/>
+
+      <Text display = "Get TaskService"
+	      value = "TaskService taskService = (TaskService)ICSharpCode.Core.Services.ServiceManager.Services.GetService(typeof(TaskService));"/>
+	
+      <Text display = "Get StatusBarService"
+	      value = "IStatusBarService statusBarService = (IStatusBarService)ICSharpCode.Core.Services.ServiceManager.Services.GetService(typeof(IStatusBarService));"/>
+      
+      <Text display = "Get ToolbarService"
+	      value = "ToolbarService toolBarService = (ToolbarService)ICSharpCode.Core.Services.ServiceManager.Services.GetService(typeof(ToolbarService));"/>
+
+      <Text display = "Get ParserService"
+	      value = "IParserService parserService = (IParserService)ICSharpCode.Core.Services.ServiceManager.Services.GetService(typeof(IParserService));"/>
+      <Text display = "Get DebuggerService"
+	      value = "DebuggerService debuggerService = (DebuggerService)ServiceManager.Services.GetService(typeof(DebuggerService));"/>
+      <Text display = "Get AmbienceService"
+	      value = "AmbienceService ambienceService = (AmbienceService)ICSharpCode.Core.Services.ServiceManager.Services.GetService(typeof(AmbienceService));
+"/>
+      
+
+</TextLibrary>

@@ -1,0 +1,131 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.41115</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</ProjectGuid>
+    <RootNamespace>ICSharpCode.Core</RootNamespace>
+    <AssemblyName>ICSharpCode.Core</AssemblyName>
+    <OutputTarget>Library</OutputTarget>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <OutputType>Library</OutputType>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Resources\ICSharpCode.Core.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ICSharpCode.Core.doc" />
+    <None Include="Resources\ICSharpCode.Core.snk" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\AddInTree\AddIn\AddIn.cs" />
+    <Compile Include="Src\AddInTree\AddIn\AddInLoadException.cs" />
+    <Compile Include="Src\AddInTree\AddIn\Codon.cs" />
+    <Compile Include="Src\AddInTree\AddIn\ComplexCondition.cs" />
+    <Compile Include="Src\AddInTree\AddIn\Condition.cs" />
+    <Compile Include="Src\AddInTree\AddIn\ExtensionPath.cs" />
+    <Compile Include="Src\AddInTree\AddIn\IAuswerter.cs" />
+    <Compile Include="Src\AddInTree\AddIn\ICondition.cs" />
+    <Compile Include="Src\AddInTree\AddIn\IErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\Runtime.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardAuswerter\CompareAuswerter.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardAuswerter\LazyLoadAuswerter.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardAuswerter\OwnerStateAuswerter.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ClassErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\FileFilterErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\Icon\IconDescriptor.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\Icon\IconErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\LazyLoaderErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\AbstractCheckableMenuCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\AbstractMenuCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\Gui\IStatusUpdate.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\Gui\Menu.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\Gui\MenuCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\Gui\MenuCommand.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\Gui\MenuSeparator.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\ICheckableMenuCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\IMenuCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\ISubmenuBuilder.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\MenuItemErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\AbstractComboBoxCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\Gui\ToolBarCheckBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\Gui\ToolBarComboBox.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\Gui\ToolBarCommand.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\Gui\ToolBarDropDownButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\Gui\ToolBarSeparator.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\IComboBoxCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\ToolBarItemErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddInTree.cs" />
+    <Compile Include="Src\AddInTree\AddInTreeNode.cs" />
+    <Compile Include="Src\AddInTree\TreePathNotFoundException.cs" />
+    <Compile Include="Src\CoreException.cs" />
+    <Compile Include="Src\Services\FileUtility\FileNameEventHandler.cs" />
+    <Compile Include="Src\Services\FileUtility\FileUtility.cs" />
+    <Compile Include="Src\Services\FileUtility\SaveErrorChooseDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\Services\FileUtility\SaveErrorInformDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\Services\MenuService\MenuService.cs" />
+    <Compile Include="Src\Services\MessageService\CustomDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\Services\MessageService\MessageService.cs" />
+    <Compile Include="Src\Services\PropertyService\Properties.cs" />
+    <Compile Include="Src\Services\PropertyService\PropertyChangedEvent.cs" />
+    <Compile Include="Src\Services\PropertyService\PropertyService.cs" />
+    <Compile Include="Src\Services\ResourceService\ResourceNotFoundException.cs" />
+    <Compile Include="Src\Services\ResourceService\ResourceService.cs" />
+    <Compile Include="Src\Services\StringParser\IStringTagProvider.cs" />
+    <Compile Include="Src\Services\StringParser\StringParser.cs" />
+    <Compile Include="Src\Services\ToolBarService\ToolBarService.cs" />
+    <Compile Include="Src\Util\AbstractCommand.cs" />
+    <Compile Include="Src\Util\ICommand.cs" />
+    <Compile Include="Src\Util\RightToLeftConverter.cs" />
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

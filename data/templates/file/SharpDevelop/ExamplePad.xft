@@ -1,0 +1,83 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.#Develop.SimplePad.Name}"
+		  icon        = "C#.File.FullFile"
+		  category    = "#Develop"
+		  defaultname = "NewPad${Number}.cs"
+		  language    = "C#"/>
+	 
+	<Description>${res:Templates.File.#Develop.SimplePad.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+using System;
+using System.Windows.Forms;
+using ICSharpCode.SharpDevelop.Gui;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of the pad content
+	/// </summary>
+	public class ${FileNameWithoutExtension} : AbstractPadContent
+	{
+#region AbstractPadContent requirements
+		/// <summary>
+		/// The <see cref="System.Windows.Forms.Control"/> representing the pad
+		/// </summary>
+		public override Control Control {
+			get {
+				//
+				// TODO : Give back a working Windows.Forms Control
+				//
+				return null;
+			}
+		}
+		
+		/// <summary>
+		/// Creates a new ${FileNameWithoutExtension} object
+		/// </summary>
+		public ${FileNameWithoutExtension}() : base("The Title of ${FileNameWithoutExtension}")
+		{
+			// TODO: Optionally set the icon resource name with Icon = "YourIconResourceName";
+		}
+		
+		/// <summary>
+		/// Refreshes the pad
+		/// </summary>
+		public override void RedrawContent()
+		{
+			// TODO: Refresh the whole pad control here, renew all resource strings whatever
+			//       Note that you do not need to recreate the control.
+		}
+		
+		/// <summary>
+		/// Cleans up all used resources
+		/// </summary>
+		public override void Dispose()
+		{
+			// TODO: Clean up resources in this method
+			// Control.Dispose();
+		}
+#endregion
+	}
+	
+}
+]]>
+		</File>
+	</Files>
+	
+	<AdditionalOptions/>
+	
+</Template>

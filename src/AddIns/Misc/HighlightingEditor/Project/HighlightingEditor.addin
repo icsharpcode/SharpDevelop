@@ -1,0 +1,19 @@
+<AddIn name        = "#develop highlighting editor"
+       author      = "Georg Brandl"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "Editor for highlighting styles in #develop"
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly="HighlightingEditor.dll"/>
+	</Runtime>
+
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
+		<DialogPanel id = "EditHighlighting"
+		             label = "Highlighting"
+			     	 insertafter = "Behavior"
+		             class = "ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.EditHighlightingPanel"/>
+	</Path>
+	
+</AddIn>

@@ -1,0 +1,54 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		name        = "${res:Templates.File.SingletonClass.Name}"
+		icon        = "C#.File.NewClass"
+		category    = "C#"
+		defaultname = "SingletonClass${Number}.cs"
+		language    = "C#"
+	/>
+	 
+	<Description>${res:Templates.File.SingletonClass.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+
+using System;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of ${ClassName}.
+	/// </summary>
+	public sealed class ${ClassName}
+	{
+		private static ${ClassName} instance = new ${ClassName}();
+		
+		public static ${ClassName} Instance {
+			get {
+				return instance;
+			}
+		}
+		
+		private ${ClassName}()
+		{
+		}
+	}
+}
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+

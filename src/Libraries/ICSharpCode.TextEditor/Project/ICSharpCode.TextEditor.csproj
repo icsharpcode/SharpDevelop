@@ -1,0 +1,180 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.41115</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</ProjectGuid>
+    <AssemblyName>ICSharpCode.TextEditor</AssemblyName>
+    <OutputTarget>Library</OutputTarget>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <OutputType>Library</OutputType>
+    <SignAssembly>true</SignAssembly>
+    <AssemblyOriginatorKeyFile>Resources\ICSharpCode.TextEditor.snk</AssemblyOriginatorKeyFile>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Src\Document\DefaultDocument.cs" />
+    <Compile Include="Src\Document\DocumentEventArgs.cs" />
+    <Compile Include="Src\Document\DocumentFactory.cs" />
+    <Compile Include="Src\Document\IDocument.cs" />
+    <Compile Include="Src\Document\ISegment.cs" />
+    <Compile Include="Src\Document\TextUtilities.cs" />
+    <Compile Include="Src\Document\BookmarkManager\BookmarkManager.cs" />
+    <Compile Include="Src\Document\BookmarkManager\BookmarkManagerMemento.cs" />
+    <Compile Include="Src\Document\FormattingStrategy\DefaultFormattingStrategy.cs" />
+    <Compile Include="Src\Document\FormattingStrategy\IFormattingStrategy.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\DefaultHighlightingStrategy.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\FontContainer.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\HighlightBackground.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\HighlightColor.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\HighlightInfo.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\HighlightingColorNotFoundException.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\HighlightingDefinitionParser.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\HighlightingManager.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\HighlightingStrategyFactory.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\HighlightRuleSet.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\IHighlightingStrategy.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\NextMarker.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\PrevMarker.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\Span.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\TextWord.cs" />
+    <Compile Include="Src\Document\LineManager\DefaultLineManager.cs" />
+    <Compile Include="Src\Document\LineManager\ILineManager.cs" />
+    <Compile Include="Src\Document\LineManager\LineSegment.cs" />
+    <Compile Include="Src\Document\LineManager\LineManagerEventArgs.cs" />
+    <Compile Include="Src\Document\TextBufferStrategy\GapTextBufferStrategy.cs" />
+    <Compile Include="Src\Document\TextBufferStrategy\ITextBufferStrategy.cs" />
+    <Compile Include="Src\Document\TextBufferStrategy\StringTextBufferStrategy.cs" />
+    <Compile Include="Src\Util\LookupTable.cs" />
+    <Compile Include="Src\Util\TextUtility.cs" />
+    <Compile Include="Src\Undo\UndoableDelete.cs" />
+    <Compile Include="Src\Undo\UndoableInsert.cs" />
+    <Compile Include="Src\Undo\UndoableReplace.cs" />
+    <Compile Include="Src\Actions\ClipBoardActions.cs" />
+    <Compile Include="Src\Actions\CaretActions.cs" />
+    <Compile Include="Src\Actions\HomeEndActions.cs" />
+    <Compile Include="Src\Actions\IEditAction.cs" />
+    <Compile Include="Src\Actions\MiscActions.cs" />
+    <Compile Include="Src\Actions\SelectionActions.cs" />
+    <Compile Include="Src\Document\Selection\ISelection.cs" />
+    <Compile Include="Src\Document\Selection\DefaultSelection.cs" />
+    <Compile Include="Src\Document\FoldingStrategy\IFoldingStrategy.cs" />
+    <Compile Include="Src\Document\FoldingStrategy\IndentFoldingStrategy.cs" />
+    <Compile Include="Src\Gui\Ime.cs" />
+    <Compile Include="Src\Gui\TextAreaUpdate.cs" />
+    <Compile Include="Src\Document\Selection\SelectionManager.cs" />
+    <Compile Include="Src\Gui\CompletionWindow\ICompletionData.cs" />
+    <Compile Include="Src\Gui\CompletionWindow\ICompletionDataProvider.cs" />
+    <Compile Include="Src\Gui\CompletionWindow\CodeCompletionWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\CompletionWindow\DeclarationViewWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\InsightWindow\IInsightDataProvider.cs" />
+    <Compile Include="Src\Gui\InsightWindow\InsightWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\Util\RtfWriter.cs" />
+    <Compile Include="Src\Document\FoldingStrategy\FoldingManager.cs" />
+    <Compile Include="Src\Document\AbstractSegment.cs" />
+    <Compile Include="Src\Document\FoldingStrategy\FoldMarker.cs" />
+    <Compile Include="Src\Util\TipPainter.cs" />
+    <Compile Include="Src\Util\TipSection.cs" />
+    <Compile Include="Src\Util\TipText.cs" />
+    <Compile Include="Src\Util\TipSplitter.cs" />
+    <Compile Include="Src\Util\TipSpacer.cs" />
+    <Compile Include="Src\Util\TipPainterTools.cs" />
+    <Compile Include="Src\Document\ITextEditorProperties.cs" />
+    <Compile Include="Src\Gui\Caret.cs" />
+    <Compile Include="Src\Gui\TextArea.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\TextEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\TextEditorControlBase.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\TextAreaClipboardHandler.cs" />
+    <Compile Include="Src\Gui\TextView.cs" />
+    <Compile Include="Src\Gui\GutterMargin.cs" />
+    <Compile Include="Src\Gui\AbstractMargin.cs" />
+    <Compile Include="Src\Undo\IUndoableOperation.cs" />
+    <Compile Include="Src\Undo\UndoQueue.cs" />
+    <Compile Include="Src\Undo\UndoStack.cs" />
+    <Compile Include="Src\Gui\TextAreaControl.cs" />
+    <Compile Include="Src\Gui\TextAreaMouseHandler.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\SyntaxModes\ISyntaxModeFileProvider.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\SyntaxModes\SyntaxMode.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\SyntaxModes\ResourceSyntaxModeProvider.cs" />
+    <Compile Include="Src\Gui\IconBarMargin.cs" />
+    <Compile Include="Src\Gui\FoldMargin.cs" />
+    <Compile Include="Src\Document\HighlightingStrategy\SyntaxModes\FileSyntaxModeProvider.cs" />
+    <Compile Include="Src\Document\Selection\ColumnRange.cs" />
+    <Compile Include="Src\Gui\TextAreaDragDropHandler.cs" />
+    <Compile Include="Src\Gui\BracketHighlighter.cs" />
+    <Compile Include="Src\Actions\BookmarkActions.cs" />
+    <Compile Include="Src\Actions\FoldActions.cs" />
+    <Compile Include="Src\Actions\FormatActions.cs" />
+    <Compile Include="Src\Document\DefaultTextEditorProperties.cs" />
+    <Compile Include="Src\Document\MarkerStrategy\MarkerStrategy.cs" />
+    <Compile Include="Src\Document\MarkerStrategy\TextMarker.cs" />
+    <Compile Include="Src\Gui\CompletionWindow\AbstractCompletionWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\CompletionWindow\CodeCompletionListView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\BrushRegistry.cs" />
+    <Compile Include="Src\Gui\HRuler.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\Document\BookmarkManager\Bookmark.cs" />
+    <Compile Include="Src\Document\BookmarkManager\BookmarkEventHandler.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Resources\ASPX.xshd" />
+    <EmbeddedResource Include="Resources\BAT-Mode.xshd" />
+    <EmbeddedResource Include="Resources\CPP-Mode.xshd" />
+    <EmbeddedResource Include="Resources\Coco-Mode.xshd" />
+    <EmbeddedResource Include="Resources\CSharp-Mode.xshd" />
+    <EmbeddedResource Include="Resources\HTML-Mode.xshd" />
+    <None Include="Resources\ICSharpCode.TextEditor.snk" />
+    <EmbeddedResource Include="Resources\ICSharpCode.TextEditor.TextEditorControl.bmp" />
+    <EmbeddedResource Include="Resources\Java-Mode.xshd" />
+    <EmbeddedResource Include="Resources\JavaScript-Mode.xshd" />
+    <EmbeddedResource Include="Resources\Mode.xsd" />
+    <EmbeddedResource Include="Resources\PHP-Mode.xshd" />
+    <EmbeddedResource Include="Resources\RightArrow.cur" />
+    <EmbeddedResource Include="Resources\SyntaxModes.xml" />
+    <EmbeddedResource Include="Resources\Tex-Mode.xshd" />
+    <EmbeddedResource Include="Resources\VBNET-Mode.xshd" />
+    <EmbeddedResource Include="Resources\XML-Mode.xshd" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

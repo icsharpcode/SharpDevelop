@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.Xml.EmptyXml.Name}"
+		  icon        = "Icons.32x32.XMLFileIcon"
+		  category    = "${res:Templates.File.Categories.Misc}"
+		  defaultname = "Xml${Number}.xml"
+		  language    = "XML"/>
+	 
+	<Description>${res:Templates.File.Xml.EmptyXmlFile.Description}</Description>
+
+	<Files>
+		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0"?>
+<${FileNameWithoutExtension}>
+	
+</${FileNameWithoutExtension}>]]>
+		</File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

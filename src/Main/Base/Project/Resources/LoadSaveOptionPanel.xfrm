@@ -1,0 +1,62 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="MyUserControl" />
+    <DockPadding value="" />
+    <Size value="{Width=280, Height=208}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox2" />
+        <TabIndex value="1" />
+        <Location value="{X=8,Y=80}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=264, Height=112}" />
+        <Text value="${res:Dialog.Options.IDEOptions.LoadSaveOptions.SaveLabel}" />
+        <Controls>
+          <System.Windows.Forms.ComboBox>
+            <Name value="lineTerminatorStyleComboBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="2" />
+            <Location value="{X=8,Y=72}" />
+            <Size value="{Width=104, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="label" />
+            <Text value="${res:Dialog.Options.IDEOptions.LoadSaveOptions.LineTerminatorStyleGroupBox}" />
+            <TextAlign value="BottomLeft" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="1" />
+            <Size value="{Width=248, Height=23}" />
+            <Location value="{X=8,Y=49}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.CheckBox>
+            <Name value="createBackupCopyCheckBox" />
+            <Location value="{X=8,Y=25}" />
+            <Size value="{Width=248, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.LoadSaveOptions.CreateBackupCopyCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox" />
+        <TabIndex value="0" />
+        <Location value="{X=8,Y=8}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=264, Height=64}" />
+        <Text value="${res:Dialog.Options.IDEOptions.LoadSaveOptions.LoadLabel}" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="loadUserDataCheckBox" />
+            <Location value="{X=8,Y=25}" />
+            <Size value="{Width=248, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.LoadSaveOptions.LoadUserDataCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

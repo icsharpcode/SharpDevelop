@@ -1,0 +1,31 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.EmptyFile.Name}"
+		  icon        = "C#.File.EmptyFile"
+		  category    = "C#"
+		  defaultname = "Empty${Number}.cs"
+		  language    = "C#"/>
+	 
+	<Description>${res:Templates.File.EmptyFile.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+

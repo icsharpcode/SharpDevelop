@@ -1,0 +1,70 @@
+<AddIn name        = "ICSharpCode.Svn"
+       author      = "Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "Subversion plugin"
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly="SubversionAddIn.dll"/>
+	</Runtime>
+	
+	<Path name = "/Workspace/Autostart">
+		<Class id = "ICSharpCode.Svn.Commands.RegisterEventsCommand" 
+		       insertbefore = "StartWorkbenchCommand"
+		       class = "ICSharpCode.Svn.Commands.RegisterEventsCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Views/ProjectBrowser/Visitors">
+		<Class id = "ICSharpCode.Svn.Commands.SvnProjectBrowserVisitor" 
+		       class = "ICSharpCode.Svn.SvnProjectBrowserVisitor"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id               = "HistoryView"
+		                insertbefore     = "Text"
+		                supportedformats = "CSharp Forms/UserControls"
+		                class            = "ICSharpCode.Svn.HistoryViewDisplayBinding" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
+		<MenuItem id = "SvnUpdate"
+		          label = "Update"
+		          icon  = "Svn.Update"
+		          class = "ICSharpCode.Svn.Commands.UpdateCommand"/>
+		<MenuItem id = "SvnCommit"
+		          label = "Commit"
+		          icon  = "Svn.Commit"
+		          class = "ICSharpCode.Svn.Commands.CommitCommand"/>
+		
+		<MenuItem id = "SvnRevert"
+		          label = "Revert"
+		          class = "ICSharpCode.Svn.Commands.RevertCommand"/>
+		<MenuItem id = "SvnCreatePatch"
+		          label = "Create patch"
+		          icon  = "Svn.CreatePatch"
+		          class = "ICSharpCode.Svn.Commands.CreatePatchCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
+		<DialogPanel id    = "Subversion Options"
+		             label = "Subversion Options">
+			<DialogPanel id = "SubversionOptionsPanel"
+			             label = "Subversion Options"
+			             class = "ICSharpCode.Svn.Gui.SubversionOptionsPanel"/>
+		</DialogPanel>
+		             
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
+		<MenuItem id = "SvnExport"
+		          label = "Export"
+		          icon  = "Svn.Export"
+		          class = "ICSharpCode.Svn.Commands.ExportCommand"/>
+		<MenuItem id = "SvnCheckout"
+		          label = "Checkout"
+		          icon  = "Svn.Checkout"
+		          class = "ICSharpCode.Svn.Commands.CheckoutCommand"/>
+	</Path>
+	
+</AddIn>

@@ -1,0 +1,162 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="MyUserControl" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=472, Height=312}" />
+    <Controls>
+      <System.Windows.Forms.Button>
+        <Name value="previewButton" />
+        <Location value="{X=264,Y=248}" />
+        <Size value="{Width=88, Height=23}" />
+        <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.ViewPropertyPanel.PreviewButton}" />
+        <TabIndex value="3" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox3" />
+        <TabIndex value="2" />
+        <Location value="{X=8,Y=240}" />
+        <Size value="{Width=248, Height=64}" />
+        <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.ViewPropertyPanel.IconsGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.RadioButton>
+            <Name value="radioButton5" />
+            <Location value="{X=168,Y=24}" />
+            <Checked value="True" />
+            <Size value="{Width=72, Height=32}" />
+            <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.ViewPropertyPanel.IconsGroupBox.NoneRadioButton}" />
+            <TabStop value="True" />
+            <Anchor value="Bottom, Left" />
+            <CheckAlign value="BottomCenter" />
+            <TabIndex value="4" />
+            <TextAlign value="MiddleCenter" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="radioButton4" />
+            <Location value="{X=128,Y=24}" />
+            <Size value="{Width=32, Height=32}" />
+            <Anchor value="Bottom, Left" />
+            <CheckAlign value="BottomCenter" />
+            <TabIndex value="3" />
+            <TextAlign value="TopCenter" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="radioButton3" />
+            <Location value="{X=88,Y=24}" />
+            <Size value="{Width=32, Height=32}" />
+            <Anchor value="Bottom, Left" />
+            <CheckAlign value="BottomCenter" />
+            <TabIndex value="2" />
+            <TextAlign value="TopCenter" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="radioButton2" />
+            <Location value="{X=48,Y=24}" />
+            <Size value="{Width=32, Height=32}" />
+            <Anchor value="Bottom, Left" />
+            <CheckAlign value="BottomCenter" />
+            <TabIndex value="1" />
+            <TextAlign value="TopCenter" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="radioButton1" />
+            <Location value="{X=8,Y=24}" />
+            <Size value="{Width=32, Height=32}" />
+            <Anchor value="Bottom, Left" />
+            <CheckAlign value="BottomCenter" />
+            <TabIndex value="0" />
+            <TextAlign value="TopCenter" />
+          </System.Windows.Forms.RadioButton>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox2" />
+        <TabIndex value="1" />
+        <Location value="{X=8,Y=160}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=456, Height=72}" />
+        <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.ViewPropertyPanel.ButtonsGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.ComboBox>
+            <Name value="defaultButtonComboBox" />
+            <Anchor value="Bottom, Right" />
+            <TabIndex value="3" />
+            <Location value="{X=240,Y=40}" />
+            <Size value="{Width=172, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="label4" />
+            <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.ViewPropertyPanel.ButtonsGroupBox.DefaultButtonLabel}" />
+            <TextAlign value="BottomLeft" />
+            <Anchor value="Bottom, Right" />
+            <TabIndex value="2" />
+            <Size value="{Width=208, Height=16}" />
+            <Location value="{X=240,Y=24}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.ComboBox>
+            <Name value="buttonsComboBox" />
+            <Anchor value="Bottom, Left" />
+            <TabIndex value="1" />
+            <Location value="{X=8,Y=40}" />
+            <Size value="{Width=172, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="label3" />
+            <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.ViewPropertyPanel.ButtonsGroupBox.ButtonsShownLabel}" />
+            <TextAlign value="BottomLeft" />
+            <Anchor value="Bottom, Left" />
+            <TabIndex value="0" />
+            <Size value="{Width=160, Height=16}" />
+            <Location value="{X=8,Y=24}" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox" />
+        <TabIndex value="0" />
+        <Location value="{X=8,Y=8}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=456, Height=144}" />
+        <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.ViewPropertyPanel.TextGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.Label>
+            <Name value="label2" />
+            <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.ViewPropertyPanel.TextGroupBox.MessageLabel}" />
+            <TextAlign value="BottomLeft" />
+            <Anchor value="Bottom, Left, Right" />
+            <TabIndex value="2" />
+            <Size value="{Width=440, Height=16}" />
+            <Location value="{X=8,Y=64}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="captionTextBox" />
+            <Anchor value="Bottom, Left, Right" />
+            <TabIndex value="1" />
+            <Location value="{X=8,Y=32}" />
+            <Size value="{Width=440, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="label" />
+            <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.ViewPropertyPanel.TextGroupBox.CaptionLabel}" />
+            <TextAlign value="BottomLeft" />
+            <Anchor value="Bottom, Left, Right" />
+            <TabIndex value="0" />
+            <Size value="{Width=440, Height=16}" />
+            <Location value="{X=8,Y=16}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="messageTextBox" />
+            <Anchor value="Bottom, Left, Right" />
+            <TabIndex value="3" />
+            <Location value="{X=8,Y=80}" />
+            <Size value="{Width=440, Height=55}" />
+            <Multiline value="True" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

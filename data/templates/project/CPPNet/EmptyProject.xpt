@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<Template originator   = "Roman Taranchenko"
+          created      = "14/03/2004"
+          lastModified = "14/03/2004">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.EmptyProject.Name}</Name>
+		<Category>C++.NET</Category>
+		<Icon>C++.Project.EmptyProject</Icon>
+		<LanguageName>C++.NET</LanguageName>
+		<Description>${res:Templates.Project.EmptyProject.Description}</Description>
+	</TemplateConfiguration>
+	
+	<Combine name = "${ProjectName}" directory = ".">
+		<Project name = "${ProjectName}" directory = "."/>
+	</Combine>
+</Template>

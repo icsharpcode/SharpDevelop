@@ -1,0 +1,289 @@
+<Components version="1.0">
+  <System.Windows.Forms.Form>
+    <Name value="ConfigureSideBarDialog" />
+    <ShowInTaskbar value="False" />
+    <FormBorderStyle value="FixedDialog" />
+    <StartPosition value="CenterScreen" />
+    <ClientSize value="{Width=602, Height=402}" />
+    <MinimizeBox value="False" />
+    <DockPadding value="" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.DialogName}" />
+    <AcceptButton value="okButton [System.Windows.Forms.Button], Text: ${res:Global.OKButtonText}" />
+    <CancelButton value="cancelButton [System.Windows.Forms.Button], Text: ${res:Global.CancelButtonText}" />
+    <MaximizeBox value="False" />
+    <Controls>
+      <System.Windows.Forms.Button>
+        <Name value="renameCategoryButton" />
+        <Location value="{X=200,Y=371}" />
+        <ClientSize value="{Width=90, Height=23}" />
+        <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.RenameButton}" />
+        <Anchor value="Bottom, Left" />
+        <TabIndex value="3" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="cancelButton" />
+        <Location value="{X=519,Y=371}" />
+        <ClientSize value="{Width=75, Height=23}" />
+        <Text value="${res:Global.CancelButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="5" />
+        <DialogResult value="Cancel" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="okButton" />
+        <Location value="{X=439,Y=371}" />
+        <ClientSize value="{Width=75, Height=23}" />
+        <Text value="${res:Global.OKButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="4" />
+        <DialogResult value="OK" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="removeCategoryButton" />
+        <Location value="{X=104,Y=371}" />
+        <ClientSize value="{Width=90, Height=23}" />
+        <Text value="${res:Global.RemoveButtonText}" />
+        <Anchor value="Bottom, Left" />
+        <TabIndex value="2" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="newCategoryButton" />
+        <Location value="{X=8,Y=371}" />
+        <ClientSize value="{Width=90, Height=23}" />
+        <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.NewButton}" />
+        <Anchor value="Bottom, Left" />
+        <TabIndex value="1" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Panel>
+        <Name value="panel" />
+        <Location value="{X=8,Y=8}" />
+        <ClientSize value="{Width=586, Height=355}" />
+        <DockPadding value="" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <TabIndex value="0" />
+        <Controls>
+          <System.Windows.Forms.ListView>
+            <Name value="componentListView" />
+            <GridLines value="True" />
+            <Dock value="Fill" />
+            <TabIndex value="2" />
+            <View value="Details" />
+            <FullRowSelect value="True" />
+            <Location value="{X=166,Y=0}" />
+            <ClientSize value="{Width=416, Height=311}" />
+            <CheckBoxes value="True" />
+            <HideSelection value="False" />
+            <Columns>
+              <System.Windows.Forms.ColumnHeader>
+                <Width value="123" />
+                <Name value="columnHeader" />
+                <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Name}" />
+              </System.Windows.Forms.ColumnHeader>
+              <System.Windows.Forms.ColumnHeader>
+                <Width value="145" />
+                <Name value="columnHeader2" />
+                <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Namespace}" />
+              </System.Windows.Forms.ColumnHeader>
+              <System.Windows.Forms.ColumnHeader>
+                <Width value="148" />
+                <Name value="columnHeader3" />
+                <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Assembly}" />
+              </System.Windows.Forms.ColumnHeader>
+            </Columns>
+          </System.Windows.Forms.ListView>
+          <System.Windows.Forms.Panel>
+            <Name value="panel2" />
+            <Location value="{X=166,Y=315}" />
+            <ClientSize value="{Width=420, Height=40}" />
+            <DockPadding value="" />
+            <TabIndex value="3" />
+            <Dock value="Bottom" />
+            <Controls>
+              <System.Windows.Forms.Button>
+                <Name value="addComponentsButton" />
+                <Location value="{X=70,Y=8}" />
+                <ClientSize value="{Width=166, Height=23}" />
+                <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.AddComponentsButton}" />
+                <Anchor value="Bottom, Right" />
+                <TabIndex value="3" />
+              </System.Windows.Forms.Button>
+              <System.Windows.Forms.Button>
+                <Name value="removeComponentsButton" />
+                <Location value="{X=246,Y=8}" />
+                <ClientSize value="{Width=166, Height=23}" />
+                <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.RemoveComponentsButton}" />
+                <Anchor value="Bottom, Right" />
+                <TabIndex value="4" />
+              </System.Windows.Forms.Button>
+            </Controls>
+          </System.Windows.Forms.Panel>
+          <System.Windows.Forms.Splitter>
+            <Name value="splitter" />
+            <TabIndex value="1" />
+            <ClientSize value="{Width=6, Height=355}" />
+            <Location value="{X=160,Y=0}" />
+          </System.Windows.Forms.Splitter>
+          <System.Windows.Forms.ListView>
+            <Name value="categoryListView" />
+            <Dock value="Left" />
+            <MultiSelect value="False" />
+            <TabIndex value="0" />
+            <View value="Details" />
+            <FullRowSelect value="True" />
+            <Location value="{X=0,Y=0}" />
+            <ClientSize value="{Width=156, Height=351}" />
+            <CheckBoxes value="True" />
+            <HideSelection value="False" />
+            <Columns>
+              <System.Windows.Forms.ColumnHeader>
+                <Width value="156" />
+                <Name value="columnHeader5" />
+                <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Categories}" />
+              </System.Windows.Forms.ColumnHeader>
+            </Columns>
+          </System.Windows.Forms.ListView>
+        </Controls>
+      </System.Windows.Forms.Panel>
+    </Controls>
+  </System.Windows.Forms.Form>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="145" />
+    <Name value="columnHeader12" />
+    <Text value="Namespace" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="123" />
+    <Name value="columnHeader13" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="148" />
+    <Name value="columnHeader10" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Assembly}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="156" />
+    <Name value="columnHeader11" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Categories}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="148" />
+    <Name value="columnHeader16" />
+    <Text value="Assembly" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="148" />
+    <Name value="columnHeader17" />
+    <Text value="Assembly" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="123" />
+    <Name value="columnHeader14" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="145" />
+    <Name value="columnHeader15" />
+    <Text value="Namespace" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="156" />
+    <Name value="columnHeader18" />
+    <Text value="Categories" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="156" />
+    <Name value="columnHeader19" />
+    <Text value="Categories" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="123" />
+    <Name value="columnHeader20" />
+    <Text value="Name" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="145" />
+    <Name value="columnHeader23" />
+    <Text value="Namespace" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="148" />
+    <Name value="columnHeader22" />
+    <Text value="Assembly" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="145" />
+    <Name value="columnHeader25" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Namespace}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="123" />
+    <Name value="columnHeader24" />
+    <Text value="Name" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="123" />
+    <Name value="columnHeader27" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="123" />
+    <Name value="columnHeader26" />
+    <Text value="Name" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="148" />
+    <Name value="columnHeader28" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Assembly}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="145" />
+    <Name value="columnHeader2" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Namespace}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="156" />
+    <Name value="columnHeader7" />
+    <Text value="Categories" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="145" />
+    <Name value="columnHeader6" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Namespace}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="156" />
+    <Name value="columnHeader5" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Categories}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="145" />
+    <Name value="columnHeader4" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Namespace}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="148" />
+    <Name value="columnHeader9" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Assembly}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="156" />
+    <Name value="columnHeader8" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Categories}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="156" />
+    <Name value="columnHeader21" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Categories}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="123" />
+    <Name value="columnHeader" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="148" />
+    <Name value="columnHeader3" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSidebarDialog.Assembly}" />
+  </System.Windows.Forms.ColumnHeader>
+</Components>

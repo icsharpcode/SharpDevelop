@@ -1,0 +1,71 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.UnitTest.Name}"
+		  icon        = "VB.File.FullFile"
+		  category    = "VB"
+		  defaultname = "Test${Number}.vb"
+		  language    = "VBNET"/>
+	 
+	<Description>${res:Templates.File.UnitTest.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Properties>
+		<Property
+			name          = "AddSetupCode"
+			localizedName = "${res:Templates.File.Properties.AddSetupCode}"
+			type          = "System.Boolean"
+			defaultValue  = "False"
+			category      = "${res:Templates.File.Properties.OptionCategory}"
+			description   = "${res:Templates.File.Properties.AddSetupCode.Description}"
+		/>
+		<Property
+			name          = "AddTearDownCode"
+			localizedName = "${res:Templates.File.Properties.AddTearDownCode}"
+			type          = "System.Boolean"
+			defaultValue  = "False"
+			category      = "${res:Templates.File.Properties.OptionCategory}"
+			description   = "${res:Templates.File.Properties.AddTearDownCode.Description}"
+		/>
+	</Properties>
+		
+	<Files>
+		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
+Imports System
+Imports NUnit.Framework
+
+Namespace ${StandardNamespace}.Tests
+	
+	<TestFixture> _
+	Public Class ${ClassName}
+		<Test> _
+		Public Sub TestMethod
+			' TODO: Add your test.
+		End Sub<% if (AddSetupCode) { %>
+		
+		<TestFixtureSetUp> _
+		Public Sub Init
+			' TODO: Add Init code.
+		End Sub<% } if (AddTearDownCode) { %>
+		
+		<TestFixtureTearDown> _
+		Public Sub Dispose
+			' TODO: Add tear down code.
+		End Sub<% } %>
+	End Class
+End Namespace
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+

@@ -1,0 +1,81 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="highlightingOptionPanel" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=328, Height=288}" />
+    <Controls>
+      <System.Windows.Forms.Label>
+        <Name value="label4" />
+        <Text value="${res:Dialog.Options.TextEditorOptions.EditHighlighting.DescLabel}" />
+        <Anchor value="Bottom, Left, Right" />
+        <TabIndex value="4" />
+        <ClientSize value="{Width=312, Height=48}" />
+        <Location value="{X=8,Y=232}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Button>
+        <Name value="copyButton" />
+        <Location value="{X=8,Y=192}" />
+        <ClientSize value="{Width=152, Height=24}" />
+        <Text value="${res:Dialog.Options.TextEditorOptions.EditHighlighting.CopyButton}" />
+        <Anchor value="Bottom, Left" />
+        <TabIndex value="3" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.ListBox>
+        <Name value="builtinList" />
+        <IntegralHeight value="False" />
+        <ClientSize value="{Width=148, Height=132}" />
+        <Anchor value="Top, Bottom, Left" />
+        <HorizontalScrollbar value="True" />
+        <TabIndex value="2" />
+        <Location value="{X=8,Y=48}" />
+      </System.Windows.Forms.ListBox>
+      <System.Windows.Forms.Label>
+        <Name value="builtinLabel" />
+        <Text value="${res:Dialog.Options.TextEditorOptions.EditHighlighting.BuiltinLabel}" />
+        <TabIndex value="1" />
+        <ClientSize value="{Width=152, Height=16}" />
+        <Location value="{X=8,Y=32}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Label>
+        <Name value="capLabel" />
+        <Text value="${res:Dialog.Options.TextEditorOptions.EditHighlighting.CaptionLabel}" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="0" />
+        <ClientSize value="{Width=312, Height=16}" />
+        <Location value="{X=8,Y=8}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Label>
+        <Name value="userLabel" />
+        <Text value="${res:Dialog.Options.TextEditorOptions.EditHighlighting.UserLabel}" />
+        <TabIndex value="1" />
+        <ClientSize value="{Width=152, Height=16}" />
+        <Location value="{X=168,Y=32}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.ListBox>
+        <Name value="userList" />
+        <IntegralHeight value="False" />
+        <ClientSize value="{Width=148, Height=132}" />
+        <Anchor value="Top, Bottom, Left" />
+        <HorizontalScrollbar value="True" />
+        <TabIndex value="2" />
+        <Location value="{X=168,Y=48}" />
+      </System.Windows.Forms.ListBox>
+      <System.Windows.Forms.Button>
+        <Name value="deleteButton" />
+        <Location value="{X=168,Y=192}" />
+        <ClientSize value="{Width=72, Height=24}" />
+        <Text value="${res:Dialog.Options.TextEditorOptions.EditHighlighting.DeleteButton}" />
+        <Anchor value="Bottom, Left" />
+        <TabIndex value="3" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="modifyButton" />
+        <Location value="{X=248,Y=192}" />
+        <ClientSize value="{Width=72, Height=24}" />
+        <Text value="${res:Dialog.Options.TextEditorOptions.EditHighlighting.ModifyButton}" />
+        <Anchor value="Bottom, Left" />
+        <TabIndex value="3" />
+      </System.Windows.Forms.Button>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

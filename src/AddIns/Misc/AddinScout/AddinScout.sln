@@ -1,0 +1,6 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AddinScout", "src\AddinScout.csproj", "{4b8f0f98-8be1-402b-aa8b-c8d548577b38}"
+EndProject
+Global
+EndGlobal

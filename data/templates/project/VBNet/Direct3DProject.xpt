@@ -1,0 +1,188 @@
+<?xml version="1.0"?>
+<Template originator   = "Markus Palme"
+          created      = "07/03/2004"
+          lastModified = "20/10/2004">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.Direct3DApplication.Name}</Name>
+		<Category>VBNET</Category>
+		<Icon>VB.Project.FullProject</Icon>
+		<LanguageName>VBNET</LanguageName>
+		<Description>${res:Templates.Project.Direct3DApplication.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MainClass.vb"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options/>
+			
+			<References>
+				<Reference type="Gac" refto="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Gac" refto="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+			</References>
+			
+			<Files>
+				<File name="MainClass.vb"><![CDATA[${StandardHeader.VBNET}
+Imports System
+Imports System.Collections
+Imports System.ComponentModel
+Imports System.Drawing
+Imports System.Windows.Forms
+
+Imports Microsoft.DirectX
+Imports Microsoft.DirectX.Direct3D
+
+Namespace ${StandardNamespace}
+	
+	' This is the main class of my Direct3D application
+	Public Class MainClass
+		Inherits Form
+		
+		' The rendering device
+		Private device As Device
+		
+		Public Sub New()
+			Me.ClientSize = new System.Drawing.Size(640, 480)
+			Me.Text = "Direct3D Project"
+		End Sub
+		
+		Public Function InitializeGraphics() As Boolean
+		
+			Try
+				' Now let's setup the Direct3D stuff
+				Dim presentParams As New PresentParameters()
+				presentParams.Windowed   = true
+				presentParams.SwapEffect = SwapEffect.Discard
+				
+				' Create the device
+				device = new Device(0, DeviceType.Hardware, Me, CreateFlags.SoftwareVertexProcessing, presentParams)
+				
+				' Setup the event handlers for the device
+				AddHandler device.DeviceLost, AddressOf InvalidateDeviceObjects
+				AddHandler device.DeviceReset, AddressOf RestoreDeviceObjects
+				AddHandler device.Disposing, AddressOf DeleteDeviceObjects
+				AddHandler device.DeviceResizing, AddressOf EnvironmentResizing
+				
+				return True
+			Catch ex As DirectXException
+				Return False
+			End Try
+		End Function
+		
+		Protected Overridable Sub InvalidateDeviceObjects(sender As Object, e As EventArgs)
+		
+		End Sub
+		
+		Protected Overridable Sub RestoreDeviceObjects(sender As Object, e As EventArgs)
+		
+		End Sub
+		
+		Protected Overridable Sub DeleteDeviceObjects(sender As Object, e As EventArgs)
+		
+		End Sub
+		
+		Protected Overridable Sub EnvironmentResizing(sender As Object, e As CancelEventArgs)
+		
+		End Sub
+		
+		' This method moves the scene
+		Protected Overridable Sub FrameMove()
+			' TODO : Frame movement
+		End Sub
+		
+		' This method renders the scene
+		Protected Overridable Sub Render()
+			If Not device Is Nothing
+				device.Clear(ClearFlags.Target, Color.Blue, 1.0f, 0)
+				device.BeginScene()
+				
+				' TODO : Scene rendering
+				
+				device.EndScene()
+				device.Present()
+			End If
+		End Sub
+		
+		' Our mainloop
+		Public Sub Run()
+			' While the form is still valid, render and process messages
+			Do While Created
+				FrameMove()
+				Render()
+				Application.DoEvents()
+			Loop
+		End Sub
+		
+		Protected Overrides Sub OnPaint(e As PaintEventArgs)
+			Me.Render()
+		End Sub
+		
+		Protected Overrides Sub OnKeyPress(e As KeyPressEventArgs)
+			MyBase.OnKeyPress(e)
+			If Microsoft.VisualBasic.AscW(e.KeyChar) = CInt(System.Windows.Forms.Keys.Escape)
+				Close()
+			End If
+		End Sub
+		
+		' The main entry point for the application
+		Shared Sub Main()
+			Dim mainClass As New MainClass()
+			
+			If Not mainClass.InitializeGraphics()
+				MessageBox.Show("Error while initializing Direct3D")
+				Return
+			End If
+			
+			mainClass.Show()
+			mainClass.Run()
+		End Sub
+	End Class
+End Namespace
+]]></File>
+			<File name="AssemblyInfo.vb"><![CDATA[Imports System.Reflection
+Imports System.Runtime.CompilerServices
+
+' Information about this assembly is defined by the following
+' attributes.
+'	<ProjectOptions Target = "WinExe" PauseConsoleOutput = "False" />
+' change them to the information which is associated with the assembly
+' you compile.
+
+<assembly: AssemblyTitle("")>
+<assembly: AssemblyDescription("")>
+<assembly: AssemblyConfiguration("")>
+<assembly: AssemblyCompany("")>
+<assembly: AssemblyProduct("")>
+<assembly: AssemblyCopyright("")>
+<assembly: AssemblyTrademark("")>
+<assembly: AssemblyCulture("")>
+
+' The assembly version has following format :
+'
+' Major.Minor.Build.Revision
+'
+' You can specify all values by your own or you can build default build and revision
+' numbers with the '*' character (the default):
+
+<assembly: AssemblyVersion("1.0.*")>
+
+' The following attributes specify the key for the sign of your assembly. See the
+' .NET Framework documentation for more information about signing.
+' This is not required, if you don't want signing let these attributes like they're.
+<assembly: AssemblyDelaySign(false)>
+<assembly: AssemblyKeyFile("")>]]>
+</File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

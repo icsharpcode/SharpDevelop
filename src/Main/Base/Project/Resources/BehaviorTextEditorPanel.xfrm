@@ -1,0 +1,134 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="CreatedObject0" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=384, Height=328}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="CreatedObject2" />
+        <TabIndex value="0" />
+        <Location value="{X=8,Y=8}" />
+        <Anchor value="Top, Left, Right" />
+        <ClientSize value="{Width=368, Height=112}" />
+        <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.TabsGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="convertTabsToSpacesCheckBox" />
+            <Location value="{X=16,Y=80}" />
+            <ClientSize value="{Width=344, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.ConvertTabsToSpacesCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="6" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.Label>
+            <Name value="CreatedObject5" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentLabel}" />
+            <TextAlign value="BottomLeft" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="4" />
+            <ClientSize value="{Width=152, Height=24}" />
+            <Location value="{X=208,Y=18}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.ComboBox>
+            <Name value="indentStyleComboBox" />
+            <DropDownWidth value="128" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="5" />
+            <Location value="{X=208,Y=44}" />
+            <ClientSize value="{Width=152, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="CreatedObject13" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.TabSizeLabel}" />
+            <TextAlign value="MiddleRight" />
+            <TabIndex value="0" />
+            <ClientSize value="{Width=112, Height=24}" />
+            <Location value="{X=8,Y=16}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="tabSizeTextBox" />
+            <TabIndex value="1" />
+            <Location value="{X=120,Y=16}" />
+            <ClientSize value="{Width=52, Height=17}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="CreatedObject18" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentSizeLabel}" />
+            <TextAlign value="MiddleRight" />
+            <TabIndex value="2" />
+            <ClientSize value="{Width=112, Height=24}" />
+            <Location value="{X=8,Y=40}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="indentSizeTextBox" />
+            <TabIndex value="3" />
+            <Location value="{X=120,Y=40}" />
+            <ClientSize value="{Width=52, Height=17}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="CreatedObject27" />
+        <TabIndex value="1" />
+        <Location value="{X=8,Y=128}" />
+        <Anchor value="Top, Left, Right" />
+        <ClientSize value="{Width=368, Height=176}" />
+        <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.BehaviourGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="autoinsertCurlyBraceCheckBox" />
+            <Location value="{X=8,Y=68}" />
+            <ClientSize value="{Width=348, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.CurlyBracketCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="2" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="hideMouseCursorCheckBox" />
+            <Location value="{X=8,Y=92}" />
+            <ClientSize value="{Width=348, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.HideMouseCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="3" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="caretBehindEOLCheckBox" />
+            <Location value="{X=8,Y=20}" />
+            <ClientSize value="{Width=348, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.BehindEOLCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="auotInsertTemplatesCheckBox" />
+            <Location value="{X=8,Y=44}" />
+            <ClientSize value="{Width=348, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.TemplateInsertCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="1" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.ComboBox>
+            <Name value="mouseWhellDirectionComboBox" />
+            <Anchor value="Bottom, Left" />
+            <TabIndex value="5" />
+            <Location value="{X=8,Y=144}" />
+            <ClientSize value="{Width=152, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="label" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.MouseWhellGroupBox}" />
+            <TextAlign value="BottomLeft" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="4" />
+            <ClientSize value="{Width=160, Height=24}" />
+            <Location value="{X=8,Y=118}" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

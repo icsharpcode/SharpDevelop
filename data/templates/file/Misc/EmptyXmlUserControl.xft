@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		  name        = "Xml UserControl"
+		  icon        = "Icons.32x32.XMLFileIcon"
+		  category    = "${res:Templates.File.Categories.Misc}"
+		  defaultname = "XmlUserControl${Number}.xfrm"
+		  language    = "XmlForm"/>
+	 
+	<Description>Creates an empty xml form.</Description>
+
+	<Files>
+		<File name="${FullName}" language="XmlForm"><![CDATA[<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="${FileNameWithoutExtension}" />
+  </System.Windows.Forms.UserControl>
+</Components>]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

@@ -1,0 +1,23 @@
+<AddIn name        = "#develop Filetypes"
+       author      = "Georg Brandl"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "Registers filetypes for #develop"
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly="FiletypeRegisterer.dll"/>
+	</Runtime>
+
+	<Path name = "/Workspace/Autostart">
+		<Class id           = "RegisterFiletypes"
+		       class        = "ICSharpCode.FiletypeRegisterer.RegisterFiletypesCommand"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/UIOptions">
+		<DialogPanel id          = "RegisterFiletypes"
+		             label       = "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel.PanelName}"
+		             insertafter = "LoadSave"
+		             class       = "ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel"/>
+	</Path>
+</AddIn>

@@ -1,0 +1,125 @@
+<Components version="1.0">
+  <System.Windows.Forms.Form>
+    <Name value="GroupsForm" />
+    <FormBorderStyle value="FixedToolWindow" />
+    <ClientSize value="{Width=328, Height=218}" />
+    <DockPadding value="" />
+    <Text value="Groups" />
+    <Controls>
+      <System.Windows.Forms.Button>
+        <Name value="CloseButton" />
+        <Location value="{X=208,Y=184}" />
+        <ClientSize value="{Width=112, Height=24}" />
+        <Text value="${res:Global.OKButtonText}" />
+        <TabIndex value="4" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.ListView>
+        <Name value="GroupsListView" />
+        <GridLines value="True" />
+        <TabIndex value="2" />
+        <View value="Details" />
+        <FullRowSelect value="True" />
+        <Location value="{X=8,Y=8}" />
+        <ClientSize value="{Width=308, Height=164}" />
+        <Columns>
+          <System.Windows.Forms.ColumnHeader>
+            <Name value="columnHeader" />
+            <Text value="${res:RegExpTk.MainDialog.StringColumn}" />
+          </System.Windows.Forms.ColumnHeader>
+          <System.Windows.Forms.ColumnHeader>
+            <Name value="columnHeader2" />
+            <Text value="${res:RegExpTk.MainDialog.StartColumn}" />
+          </System.Windows.Forms.ColumnHeader>
+          <System.Windows.Forms.ColumnHeader>
+            <Name value="columnHeader3" />
+            <Text value="${res:RegExpTk.MainDialog.LengthColumn}" />
+          </System.Windows.Forms.ColumnHeader>
+          <System.Windows.Forms.ColumnHeader>
+            <Name value="columnHeader4" />
+            <Text value="Länge" />
+          </System.Windows.Forms.ColumnHeader>
+        </Columns>
+      </System.Windows.Forms.ListView>
+    </Controls>
+  </System.Windows.Forms.Form>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader3" />
+    <Text value="${res:RegExpTk.MainDialog.LengthColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader2" />
+    <Text value="${res:RegExpTk.MainDialog.StartColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader7" />
+    <Text value="${res:RegExpTk.MainDialog.LengthColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader6" />
+    <Text value="${res:RegExpTk.MainDialog.StartColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader5" />
+    <Text value="${res:RegExpTk.MainDialog.LengthColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader4" />
+    <Text value="Länge" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader9" />
+    <Text value="${res:RegExpTk.MainDialog.StringColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader8" />
+    <Text value="${res:RegExpTk.MainDialog.StartColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader" />
+    <Text value="${res:RegExpTk.MainDialog.StringColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader20" />
+    <Text value="${res:RegExpTk.MainDialog.LengthColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader12" />
+    <Text value="Länge" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader13" />
+    <Text value="${res:RegExpTk.MainDialog.StringColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader10" />
+    <Text value="Länge" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader11" />
+    <Text value="${res:RegExpTk.MainDialog.StringColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader16" />
+    <Text value="${res:RegExpTk.MainDialog.StartColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader17" />
+    <Text value="${res:RegExpTk.MainDialog.LengthColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader14" />
+    <Text value="Länge" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader15" />
+    <Text value="${res:RegExpTk.MainDialog.StringColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader18" />
+    <Text value="Länge" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader19" />
+    <Text value="${res:RegExpTk.MainDialog.StartColumn}" />
+  </System.Windows.Forms.ColumnHeader>
+</Components>

@@ -1,0 +1,327 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		name        = "${res:Templates.File.TypedHashTable.Name}"
+		icon        = "VB.File.FullFile"
+		category    = "VB"
+		defaultname = "Class${Number}.vb"
+		language    = "VBNET"
+	/>
+	
+	<Description>${res:Templates.File.TypedHashTable.Description}</Description>
+
+	<Properties>
+		<Property
+			name          = "KeyType"
+			localizedName = "${res:Templates.File.Properties.TypedHashtableWizard.KeyType}"
+			type          = "System.String"
+			category      = "${res:Templates.File.Properties.ContextCategory}"
+			description   = "${res:Templates.File.Properties.TypedHashtableWizard.KeyType.Description}"
+		/>
+		<Property
+			name          = "ValueType"
+			localizedName = "${res:Templates.File.Properties.TypedHashtableWizard.ValueType}"
+			type          = "System.String"
+			category      = "${res:Templates.File.Properties.ContextCategory}"
+			description   = "${res:Templates.File.Properties.TypedHashtableWizard.ValueType.Description}"
+		/>
+		<Property
+			name          = "Accessibility"
+			localizedName = "${res:Templates.File.Properties.Accessibility}"
+			type          = "Types:Accessibility"
+			category      = "${res:Templates.File.Properties.OptionCategory}"
+			defaultValue  = "Public"
+			description   = "${res:Templates.File.Properties.Accessibility.Description}"
+		/>
+	</Properties>
+	
+	<Types>
+		<Type name = "Accessibility">
+			<Enum name = "Public" value = "Public"/>
+			<Enum name = "Protected" value = "Protected"/>
+			<Enum name = "Private" value = "Private"/>
+			<Enum name = "Friend" value = "Friend"/>
+			<Enum name = "Protected Friend" value = "Protected Friend"/>
+		</Type>
+	</Types>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
+
+Option Strict On
+
+Imports System
+Imports System.Collections
+
+Namespace ${StandardNamespace}
+	
+	Public Class ${ClassName}
+		Implements IDictionary
+		Implements ICollection
+		Implements IEnumerable
+		Implements ICloneable
+		Protected innerHashtable As Hashtable
+		
+		#Region "Constructors"
+		Public Sub New()
+			innerHashtable = New Hashtable()
+		End Sub
+		
+		Public Sub New(ByVal original As ${ClassName})
+			innerHashtable = New Hashtable(original.innerHash)
+		End Sub
+		
+		Public Sub New(ByVal dictionary As IDictionary)
+			innerHashtable = New Hashtable(dictionary)
+		End Sub
+		
+		Public Sub New(ByVal capacity As Integer)
+			innerHashtable = New Hashtable(capacity)
+		End Sub
+		
+		Public Sub New(ByVal dictionary As IDictionary, ByVal loadFactor As Single)
+			innerHashtable = New Hashtable(dictionary, loadFactor)
+		End Sub
+		
+		Public Sub New(ByVal codeProvider As IHashCodeProvider, ByVal comparer As IComparer)
+			innerHashtable = New Hashtable(codeProvider, comparer)
+		End Sub
+		
+		Public Sub New(ByVal capacity As Integer, ByVal loadFactor As Integer)
+			innerHashtable = New Hashtable(capacity, loadFactor)
+		End Sub
+		
+		Public Sub New(ByVal dictionary As IDictionary, ByVal codeProvider As IHashCodeProvider, ByVal comparer As IComparer)
+			innerHashtable = New Hashtable(dictionary, codeProvider, comparer)
+		End Sub
+		
+		Public Sub New(ByVal capacity As Integer, ByVal codeProvider As IHashCodeProvider, ByVal comparer As IComparer)
+			innerHashtable = New Hashtable(capacity, codeProvider, comparer)
+		End Sub
+		
+		Public Sub New(ByVal dictionary As IDictionary, ByVal loadFactor As Single, ByVal codeProvider As IHashCodeProvider, ByVal comparer As IComparer)
+			innerHashtable = New Hashtable(dictionary, loadFactor, codeProvider, comparer)
+		End Sub
+		
+		Public Sub New(ByVal capacity As Integer, ByVal loadFactor As Integer, ByVal codeProvider As IHashCodeProvider, ByVal comparer As IComparer)
+			innerHashtable = New Hashtable(capacity, loadFactor, codeProvider, comparer)
+		End Sub
+		#End Region
+		
+		#Region "Implementation of IDictionary"
+		
+		Private Function _GetEnumerator() As IDictionaryEnumerator
+			Return New ${ClassName}Enumerator(Me)
+		End Function
+		
+		Public Function IDictionary_GetEnumerator() As IDictionaryEnumerator Implements IDictionary.GetEnumerator
+			Return _GetEnumerator()
+		End Function
+		
+		Public Function GetEnumerator() As IEnumerator Implements IEnumerable.GetEnumerator
+			Return _GetEnumerator()
+		End Function
+		
+		Public Sub Remove(ByVal key As ${Properties.KeyType})
+			innerHashtable.Remove(key)
+		End Sub
+		
+		Public Sub Remove(ByVal key As Object) Implements IDictionary.Remove
+			Remove(CType(key, ${Properties.KeyType}))
+		End Sub
+		
+		Public Function Contains(ByVal key As ${Properties.KeyType}) As Boolean
+			Return innerHashtable.Contains(key)
+		End Function
+		
+		Public Function Contains(ByVal key As Object) As Boolean Implements IDictionary.Contains
+			Return Contains(CType(key, ${Properties.KeyType}))
+		End Function
+		
+		Public Sub Clear() Implements IDictionary.Clear
+			innerHashtable.Clear()
+		End Sub
+		
+		Public Sub Add(ByVal key As ${Properties.KeyType}, ByVal value As ${Properties.ValueType})
+			innerHashtable.Add(key, value)
+		End Sub
+		
+		Public Sub Add(ByVal key As Object, ByVal value As Object) Implements IDictionary.Add
+			Add(CType(key, ${Properties.KeyType}), CType(value, ${Properties.ValueType}))
+		End Sub
+		
+		Public ReadOnly Property IsReadOnly() As Boolean Implements IDictionary.IsReadOnly
+			Get
+				Return innerHashtable.IsReadOnly
+			End Get
+		End Property
+		
+		Default Public Property Item(ByVal key As ${Properties.KeyType}) As ${Properties.ValueType}
+			Get
+				Return CType(innerHashtable(key), ${Properties.ValueType})
+			End Get
+			Set(ByVal Value As ${Properties.ValueType})
+				innerHashtable(key) = value
+			End Set
+		End Property
+		
+		Default Public Property Item(ByVal key As Object) As Object Implements IDictionary.Item
+			Get
+				Return item(CType(key, ${Properties.KeyType}))
+			End Get
+			Set(ByVal Value As Object)
+				item(CType(key, ${Properties.KeyType})) = CType(value, ${Properties.ValueType})
+			End Set
+		End Property
+		
+		Public ReadOnly Property Values() As System.Collections.ICollection Implements IDictionary.Values
+			Get
+				Return innerHashtable.Values
+			End Get
+		End Property
+		
+		Public ReadOnly Property Keys() As System.Collections.ICollection Implements IDictionary.Keys
+			Get
+				Return innerHashtable.Keys
+			End Get
+		End Property
+		
+		Public ReadOnly Property IsFixedSize() As Boolean Implements IDictionary.IsFixedSize
+			Get
+				Return innerHashtable.IsFixedSize
+			End Get
+		End Property
+		#End Region
+		
+		#Region "Implementation of ICollection"
+		Public Sub CopyTo(ByVal array As System.Array, ByVal index As Integer) Implements ICollection.CopyTo
+			innerHashtable.CopyTo(array, index)
+		End Sub
+		
+		Public ReadOnly Property IsSynchronized() As Boolean Implements System.Collections.ICollection.IsSynchronized
+			Get
+				Return innerHashtable.IsSynchronized
+			End Get
+		End Property
+		
+		Public ReadOnly Property Count() As Integer Implements System.Collections.ICollection.Count
+			Get
+				Return innerHashtable.Count
+			End Get
+		End Property
+		
+		Public ReadOnly Property SyncRoot() As Object Implements System.Collections.ICollection.SyncRoot
+			Get
+				Return innerHashtable.SyncRoot
+			End Get
+		End Property
+		#End Region
+		
+		#Region "Implementation of ICloneable"
+		Public Function Clone() As ${ClassName}
+			Dim innerClone As ${ClassName} = New ${ClassName}()
+			innerClone.innerHashtable = CType(innerHashtable.Clone(), Hashtable)
+			Return innerClone
+		End Function
+		
+		Public Function ICloneable_Clone() As Object Implements ICloneable.Clone
+			Return Clone()
+		End Function
+		#End Region
+		
+		#Region "HashTable Methods"
+		Public Function ContainsKey(ByVal key As ${Properties.KeyType}) As Boolean
+			Return innerHashtable.ContainsKey(key)
+		End Function
+		
+		Public Function ContainsValue(ByVal value As ${Properties.ValueType}) As Boolean
+			Return innerHashtable.ContainsValue(value)
+		End Function
+		
+		Public Shared Function Synchronized(ByVal nonSync As ${ClassName}) As ${ClassName}
+			Dim sync As ${ClassName} = New ${ClassName}()
+			sync.innerHashtable = Hashtable.Synchronized(nonSync.innerHash)
+			Return sync
+		End Function
+		#End Region
+		
+		Friend ReadOnly Property InnerHash() As Hashtable
+			Get
+				Return innerHashtable
+			End Get
+		End Property
+	End Class
+	
+	Public Class ${ClassName}Enumerator
+		Implements IDictionaryEnumerator
+		
+		Private innerEnumerator As IDictionaryEnumerator
+		
+		Friend Sub New(ByVal enumerable As ${ClassName})
+			innerEnumerator = enumerable.InnerHash.GetEnumerator()
+		End Sub
+		
+		#Region "Implementation of IDictionaryEnumerator"
+		Public ReadOnly Property Key() As ${Properties.KeyType}
+			Get
+				Return CType(innerEnumerator.Key, ${Properties.KeyType})
+			End Get
+		End Property
+		
+		Public ReadOnly Property IDictionaryEnumerator_Key() As Object Implements IDictionaryEnumerator.Key
+			Get
+				Return Key
+			End Get
+		End Property
+		
+		Public ReadOnly Property Value() As ${Properties.ValueType}
+			Get
+				Return CType(innerEnumerator.Value, ${Properties.ValueType})
+			End Get
+		End Property
+		
+		Public ReadOnly Property IDictionaryEnumerator_Value() As Object Implements IDictionaryEnumerator.Value
+			Get
+				Return Value
+			End Get
+		End Property
+		
+		Public ReadOnly Property Entry() As System.Collections.DictionaryEntry Implements IDictionaryEnumerator.Entry
+			Get
+				Return innerEnumerator.Entry
+			End Get
+		End Property
+		#End Region
+		
+		#Region "Implementation of IEnumerator"
+		Public Sub Reset() Implements IDictionaryEnumerator.Reset
+			innerEnumerator.Reset()
+		End Sub
+		
+		Public Function MoveNext() As Boolean Implements IDictionaryEnumerator.MoveNext
+			Return innerEnumerator.MoveNext()
+		End Function
+		
+		Public ReadOnly Property Current() As Object Implements IDictionaryEnumerator.Current
+			Get
+				Return innerEnumerator.Current
+			End Get
+		End Property
+		#End Region
+	End Class
+End Namespace
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

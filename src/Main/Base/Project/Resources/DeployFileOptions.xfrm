@@ -1,0 +1,91 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="CreatedObject0" />
+    <GridSize value="{Width=8, Height=6}" />
+    <DockPadding value="" />
+    <Size value="{Width=368, Height=336}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="CreatedObject2" />
+        <TabIndex value="0" />
+        <Location value="{X=8,Y=8}" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <Size value="{Width=352, Height=288}" />
+        <Text value="${res:Dialog.Options.PrjOptions.DeployFile.DeployGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.RadioButton>
+            <Name value="projectFileRadioButton" />
+            <Location value="{X=8,Y=16}" />
+            <Size value="{Width=328, Height=24}" />
+            <Text value="${res:Dialog.Options.PrjOptions.DeployFile.ProjectFilesRadioButton}" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.CheckedListBox>
+            <Name value="projectFilesCheckedListBox" />
+            <Location value="{X=8,Y=45}" />
+            <Size value="{Width=336, Height=148}" />
+            <Anchor value="Top, Bottom, Left, Right" />
+            <TabIndex value="1" />
+          </System.Windows.Forms.CheckedListBox>
+          <System.Windows.Forms.RadioButton>
+            <Name value="compiledAssemblyRadioButton" />
+            <Location value="{X=8,Y=201}" />
+            <Size value="{Width=336, Height=24}" />
+            <Text value="${res:Dialog.Options.PrjOptions.DeployFile.CompilationTargetRadioButton}" />
+            <Anchor value="Bottom, Left, Right" />
+            <TabIndex value="2" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="scriptFileRadioButton" />
+            <Location value="{X=8,Y=227}" />
+            <Size value="{Width=336, Height=24}" />
+            <Text value="${res:Dialog.Options.PrjOptions.DeployFile.ScriptFileRadioButton}" />
+            <Anchor value="Bottom, Left, Right" />
+            <TabIndex value="3" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.TextBox>
+            <Name value="deployScriptTextBox" />
+            <Anchor value="Bottom, Left, Right" />
+            <TabIndex value="4" />
+            <Location value="{X=24,Y=256}" />
+            <Size value="{Width=272, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Button>
+            <Name value="selectScriptFileButton" />
+            <Location value="{X=304,Y=256}" />
+            <Size value="{Width=32, Height=21}" />
+            <Text value="..." />
+            <Anchor value="Bottom, Right" />
+            <TabIndex value="5" />
+          </System.Windows.Forms.Button>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.Label>
+        <Name value="CreatedObject9" />
+        <Text value="${res:Dialog.Options.PrjOptions.DeployFile.DeployTargetLabel}" />
+        <TextAlign value="MiddleRight" />
+        <Anchor value="Bottom, Left" />
+        <TabIndex value="1" />
+        <Size value="{Width=88, Height=23}" />
+        <Location value="{X=8,Y=304}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.TextBox>
+        <Name value="deployTargetTextBox" />
+        <Anchor value="Bottom, Left, Right" />
+        <TabIndex value="2" />
+        <Location value="{X=96,Y=304}" />
+        <Size value="{Width=208, Height=21}" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Button>
+        <Name value="selectTargetButton" />
+        <Location value="{X=312,Y=304}" />
+        <Size value="{Width=32, Height=21}" />
+        <Text value="..." />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="3" />
+      </System.Windows.Forms.Button>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

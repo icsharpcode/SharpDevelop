@@ -1,0 +1,134 @@
+<?xml version="1.0"?>
+<Template originator   = "Markus Palme"
+          created      = "24/11/2002"
+          lastModified = "02/01/2003">
+
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.WindowsService.Name}</Name>
+		<Category>VBNET</Category>
+		<Icon>VB.Project.ServiceProject</Icon>
+		<LanguageName>VBNET</LanguageName>
+		<Description>${res:Templates.Project.WindowsService.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MyService.vb"/>
+	</Actions>
+	
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			
+			<Options Target = "Library" PauseConsoleOutput = "False"/>
+			
+			<Files>
+				<File name="MyService.vb"><![CDATA[${StandardHeader.VBNET}
+Imports System
+Imports System.Collections
+Imports System.ComponentModel
+Imports System.Data
+Imports System.Diagnostics
+Imports System.ServiceProcess
+Imports System.Configuration.Install
+
+Public Class MyService
+	Inherits System.ServiceProcess.ServiceBase
+
+	Public Sub New()
+		MyBase.New()
+		
+		InitializeComponents()
+		
+		' TODO: Add any further initialization code
+	End Sub
+	
+	<System.Diagnostics.DebuggerStepThrough()> _ 
+	Private Sub InitializeComponents()
+		Me.ServiceName = "Service1"
+	End Sub
+	
+	' This method starts the service.
+	<MTAThread()> _
+	Shared Sub Main()
+		
+		' To run more than one service you have to add them to the array
+		System.ServiceProcess.ServiceBase.Run(New System.ServiceProcess.ServiceBase() { _
+			New MyService _
+		})
+	End Sub
+	
+	' Clean up any resources being used.
+	Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
+		MyBase.Dispose(disposing)
+		' TODO: Add cleanup code here (if required)
+	End Sub
+	
+	Protected Overrides Sub OnStart(ByVal args() As String)
+		' TODO: Add start code here (if required)
+		'       to start your service.
+	End Sub
+	
+	Protected Overrides Sub OnStop()
+		' TODO: Add tear-down code here (if required) 
+		'       to stop your service.
+	End Sub
+
+End Class
+
+<RunInstaller(True)> _
+Public Class ProjectInstaller
+Inherits Installer
+
+	Public Sub New()
+		Dim spi As ServiceProcessInstaller = New ServiceProcessInstaller 
+		spi.Account = ServiceAccount.LocalSystem
+		Dim si As ServiceInstaller = New ServiceInstaller 
+		si.ServiceName = "Hello Service Template"
+		si.StartType = ServiceStartMode.Automatic
+		Installers.AddRange(New Installer()  {spi, si})
+	End Sub
+End Class 
+]]></File>
+		<File name="AssemblyInfo.vb">
+			<![CDATA[Imports System.Reflection
+Imports System.Runtime.CompilerServices
+
+' Information about this assembly is defined by the following
+' attributes.
+'
+' change them to the information which is associated with the assembly
+' you compile.
+
+<assembly: AssemblyTitle("")>
+<assembly: AssemblyDescription("")>
+<assembly: AssemblyConfiguration("")>
+<assembly: AssemblyCompany("")>
+<assembly: AssemblyProduct("")>
+<assembly: AssemblyCopyright("")>
+<assembly: AssemblyTrademark("")>
+<assembly: AssemblyCulture("")>
+
+' The assembly version has following format :
+'
+' Major.Minor.Build.Revision
+'
+' You can specify all values by your own or you can build default build and revision
+' numbers with the '*' character (the default):
+
+<assembly: AssemblyVersion("1.0.*")>
+
+' The following attributes specify the key for the sign of your assembly. See the
+' .NET Framework documentation for more information about signing.
+' This is not required, if you don't want signing let these attributes like they're.
+<assembly: AssemblyDelaySign(false)>
+<assembly: AssemblyKeyFile("")>]]></File>
+			</Files>
+		</Project>
+	</Combine>	
+</Template>
+

@@ -1,0 +1,90 @@
+﻿<Project DefaultTargets="Build" xmlns:Conversion="urn:Conversion" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.40607</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{4b8f0f98-8be1-402b-aa8b-c8d548577b38}</ProjectGuid>
+    <RootNamespace>NewProject</RootNamespace>
+    <AssemblyName>AddinScout</AssemblyName>
+    <OutputTarget>Library</OutputTarget>
+    <ApplicationIcon>
+    </ApplicationIcon>
+    <WarningLevel>4</WarningLevel>
+    <NoWarn>
+    </NoWarn>
+    <StartupObject>
+    </StartupObject>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
+    <PostBuildEvent>
+    </PostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>
+    </DefineConstants>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\AddinScout\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DefineConstants>
+    </DefineConstants>
+    <OutputPath>..\..\..\AddIns\Misc\AddinScout\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System">
+    </Reference>
+    <Reference Include="System.Data">
+    </Reference>
+    <Reference Include="System.Drawing">
+    </Reference>
+    <Reference Include="System.Windows.Forms">
+    </Reference>
+    <Reference Include="System.Xml">
+    </Reference>
+    <Reference Include="SharpDevelop.Base.dll">
+      <HintPath>..\..\..\..\..\bin\SharpDevelop.Base.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.Core.dll">
+      <HintPath>..\..\..\..\..\bin\ICSharpCode.Core.dll</HintPath>
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AddInScoutCommand.cs">
+    </Compile>
+    <Compile Include="AssemblyInfo.cs">
+    </Compile>
+    <Compile Include="AddInScoutViewContent.cs">
+    </Compile>
+    <Compile Include="Gui\AddinTreeView.cs">
+    </Compile>
+    <Compile Include="Gui\TreeTreeView.cs">
+    </Compile>
+    <Compile Include="Gui\AddInDetailsPanel.cs">
+    </Compile>
+    <Compile Include="Gui\CodonListPanel.cs">
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Gui\">
+    </Folder>
+  </ItemGroup>
+  <ItemGroup>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets">
+  </Import>
+</Project>

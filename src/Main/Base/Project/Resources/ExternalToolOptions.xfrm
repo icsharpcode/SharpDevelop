@@ -1,0 +1,163 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="MyUserControl" />
+    <DockPadding value="" />
+    <Size value="{Width=416, Height=328}" />
+    <Controls>
+      <System.Windows.Forms.CheckBox>
+        <Name value="useOutputPadCheckBox" />
+        <Location value="{X=8,Y=296}" />
+        <Size value="{Width=400, Height=24}" />
+        <Text value="${res:Dialog.Options.ExternalTool.UseOutputWindow}" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="18" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="promptArgsCheckBox" />
+        <Location value="{X=8,Y=272}" />
+        <Size value="{Width=400, Height=24}" />
+        <Text value="${res:Dialog.Options.ExternalTool.PromptForArgsCheckBox}" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="17" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.Button>
+        <Name value="workingDirQuickInsertButton" />
+        <Location value="{X=384,Y=248}" />
+        <Size value="{Width=24, Height=20}" />
+        <Text value="&gt;" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="16" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="argumentQuickInsertButton" />
+        <Location value="{X=384,Y=224}" />
+        <Size value="{Width=24, Height=20}" />
+        <Text value="&gt;" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="13" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.TextBox>
+        <Name value="workingDirTextBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="15" />
+        <Location value="{X=128,Y=248}" />
+        <Size value="{Width=248, Height=21}" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.TextBox>
+        <Name value="argumentTextBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="12" />
+        <Location value="{X=128,Y=224}" />
+        <Size value="{Width=248, Height=21}" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="argumentLabel" />
+        <Text value="${res:Dialog.Options.ExternalTool.ArgumentLabel}" />
+        <TextAlign value="MiddleRight" />
+        <TabIndex value="11" />
+        <Size value="{Width=120, Height=23}" />
+        <Location value="{X=8,Y=224}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Label>
+        <Name value="workingDirLabel" />
+        <Text value="${res:Dialog.Options.ExternalTool.WorkingDirLabel}" />
+        <TextAlign value="MiddleRight" />
+        <TabIndex value="14" />
+        <Size value="{Width=120, Height=23}" />
+        <Location value="{X=8,Y=248}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Label>
+        <Name value="commandLabel" />
+        <Text value="${res:Dialog.Options.ExternalTool.CommandLabel}" />
+        <TextAlign value="MiddleRight" />
+        <TabIndex value="8" />
+        <Size value="{Width=120, Height=23}" />
+        <Location value="{X=8,Y=200}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Label>
+        <Name value="titleLabel" />
+        <Text value="${res:Dialog.Options.ExternalTool.TitleLabel}" />
+        <TextAlign value="MiddleRight" />
+        <TabIndex value="6" />
+        <Size value="{Width=120, Height=23}" />
+        <Location value="{X=8,Y=176}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Button>
+        <Name value="browseButton" />
+        <Location value="{X=384,Y=200}" />
+        <Size value="{Width=24, Height=20}" />
+        <Text value="..." />
+        <Anchor value="Top, Right" />
+        <TabIndex value="10" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.TextBox>
+        <Name value="commandTextBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="9" />
+        <Location value="{X=128,Y=200}" />
+        <Size value="{Width=248, Height=21}" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.TextBox>
+        <Name value="titleTextBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="7" />
+        <Location value="{X=128,Y=176}" />
+        <Size value="{Width=280, Height=21}" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Button>
+        <Name value="moveDownButton" />
+        <Location value="{X=336,Y=144}" />
+        <Text value="${res:Dialog.Options.ExternalTool.MoveDownButton}" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="5" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="moveUpButton" />
+        <Location value="{X=336,Y=112}" />
+        <Text value="${res:Dialog.Options.ExternalTool.MoveUpButton}" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="4" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.ListBox>
+        <Name value="toolListBox" />
+        <Size value="{Width=320, Height=134}" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="1" />
+        <Location value="{X=8,Y=32}" />
+        <SelectionMode value="MultiExtended" />
+      </System.Windows.Forms.ListBox>
+      <System.Windows.Forms.Label>
+        <Name value="label" />
+        <Text value="${res:Dialog.Options.ExternalTool.ToolsLabel}" />
+        <TextAlign value="BottomLeft" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="0" />
+        <Size value="{Width=400, Height=23}" />
+        <Location value="{X=8,Y=8}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Button>
+        <Name value="removeButton" />
+        <Location value="{X=336,Y=64}" />
+        <Text value="${res:Global.RemoveButtonText}" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="3" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="addButton" />
+        <Location value="{X=336,Y=32}" />
+        <Text value="${res:Global.AddButtonText}" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="2" />
+      </System.Windows.Forms.Button>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="117" />
+    <Name value="columnHeader2" />
+    <Text value="${res:Dialog.Options.ExternalTool.ToolsLabel}" />
+  </System.Windows.Forms.ColumnHeader>
+</Components>

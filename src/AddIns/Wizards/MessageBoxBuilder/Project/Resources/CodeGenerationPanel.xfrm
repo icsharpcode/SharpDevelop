@@ -1,0 +1,72 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="MyUserControl" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=448, Height=328}" />
+    <Controls>
+      <System.Windows.Forms.Label>
+        <Name value="label2" />
+        <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.CodeGenerationPanel.CodePreviewLabel}" />
+        <TextAlign value="BottomLeft" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="1" />
+        <ClientSize value="{Width=432, Height=23}" />
+        <Location value="{X=8,Y=128}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.RichTextBox>
+        <Name value="richTextBox" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <ReadOnly value="True" />
+        <ClientSize value="{Width=428, Height=164}" />
+        <Font value="[Font: Name=Courier New, Size=10, Units=3, GdiCharSet=1, GdiVerticalFont=False]" />
+        <Location value="{X=8,Y=152}" />
+        <Text value="" />
+        <TabIndex value="2" />
+        <WordWrap value="False" />
+      </System.Windows.Forms.RichTextBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox" />
+        <TabIndex value="0" />
+        <Location value="{X=8,Y=8}" />
+        <Anchor value="Top, Left, Right" />
+        <ClientSize value="{Width=432, Height=112}" />
+        <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.CodeGenerationPanel.CodeGenerationGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="generateSwitchCaseCheckBox" />
+            <Location value="{X=8,Y=80}" />
+            <ClientSize value="{Width=416, Height=24}" />
+            <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.CodeGenerationPanel.CodeGenerationGroupBox.GenerateSwitchCaseCheckBox}" />
+            <Anchor value="Bottom, Left, Right" />
+            <TabIndex value="3" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.TextBox>
+            <Name value="variableNameTextBox" />
+            <Anchor value="Bottom, Left, Right" />
+            <TabIndex value="2" />
+            <Location value="{X=152,Y=48}" />
+            <ClientSize value="{Width=268, Height=17}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="label" />
+            <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.CodeGenerationPanel.CodeGenerationGroupBox.VariableNameLabel}" />
+            <TextAlign value="MiddleRight" />
+            <Anchor value="Bottom, Left" />
+            <TabIndex value="1" />
+            <ClientSize value="{Width=128, Height=23}" />
+            <Location value="{X=24,Y=48}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.CheckBox>
+            <Name value="generateReturnValueCheckBox" />
+            <Location value="{X=8,Y=24}" />
+            <ClientSize value="{Width=416, Height=24}" />
+            <Text value="${res:Plugins.Wizards.MessageBoxBuilder.DialogPanels.CodeGenerationPanel.CodeGenerationGroupBox.GenerateReturnValueCheckBox}" />
+            <Anchor value="Bottom, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

@@ -1,0 +1,379 @@
+<Components version="1.0">
+  <System.Windows.Forms.Form>
+    <Name value="AddComponentsDialog" />
+    <ShowInTaskbar value="False" />
+    <FormBorderStyle value="FixedDialog" />
+    <StartPosition value="CenterScreen" />
+    <ClientSize value="{Width=522, Height=394}" />
+    <MinimizeBox value="False" />
+    <DockPadding value="" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.DialogName}" />
+    <AcceptButton value="okButton [System.Windows.Forms.Button], Text: ${res:Global.OKButtonText}" />
+    <CancelButton value="cancelButton [System.Windows.Forms.Button], Text: ${res:Global.CancelButtonText}" />
+    <MaximizeBox value="False" />
+    <Controls>
+      <System.Windows.Forms.Button>
+        <Name value="cancelButton" />
+        <Location value="{X=437,Y=363}" />
+        <ClientSize value="{Width=75, Height=23}" />
+        <Text value="${res:Global.CancelButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="2" />
+        <DialogResult value="Cancel" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="okButton" />
+        <Location value="{X=357,Y=363}" />
+        <ClientSize value="{Width=75, Height=23}" />
+        <Text value="${res:Global.OKButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="1" />
+        <DialogResult value="OK" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Panel>
+        <Name value="panel" />
+        <Location value="{X=8,Y=8}" />
+        <ClientSize value="{Width=504, Height=347}" />
+        <DockPadding value="" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <TabIndex value="0" />
+        <Controls>
+          <System.Windows.Forms.ListView>
+            <Name value="componentListView" />
+            <GridLines value="True" />
+            <Dock value="Fill" />
+            <TabIndex value="3" />
+            <View value="Details" />
+            <FullRowSelect value="True" />
+            <Location value="{X=203,Y=16}" />
+            <ClientSize value="{Width=297, Height=327}" />
+            <CheckBoxes value="True" />
+            <HideSelection value="False" />
+            <Columns>
+              <System.Windows.Forms.ColumnHeader>
+                <Width value="82" />
+                <Name value="componentColumnHeader1" />
+                <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Name}" />
+              </System.Windows.Forms.ColumnHeader>
+              <System.Windows.Forms.ColumnHeader>
+                <Width value="88" />
+                <Name value="componentColumnHeader2" />
+                <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Namespace}" />
+              </System.Windows.Forms.ColumnHeader>
+              <System.Windows.Forms.ColumnHeader>
+                <Name value="componentColumnHeader3" />
+                <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Assembly}" />
+              </System.Windows.Forms.ColumnHeader>
+              <System.Windows.Forms.ColumnHeader>
+                <Name value="componentColumnHeader4" />
+                <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Location}" />
+              </System.Windows.Forms.ColumnHeader>
+            </Columns>
+          </System.Windows.Forms.ListView>
+          <System.Windows.Forms.Label>
+            <Name value="label2" />
+            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.ComponentsToAddLabel}" />
+            <TabIndex value="2" />
+            <ClientSize value="{Width=301, Height=16}" />
+            <Location value="{X=203,Y=0}" />
+            <Dock value="Top" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.Splitter>
+            <Name value="splitter" />
+            <TabIndex value="1" />
+            <ClientSize value="{Width=3, Height=347}" />
+            <Location value="{X=200,Y=0}" />
+          </System.Windows.Forms.Splitter>
+          <System.Windows.Forms.Panel>
+            <Name value="panel2" />
+            <Location value="{X=0,Y=0}" />
+            <ClientSize value="{Width=200, Height=347}" />
+            <DockPadding value="" />
+            <TabIndex value="0" />
+            <Dock value="Left" />
+            <Controls>
+              <System.Windows.Forms.TabControl>
+                <Name value="tabControl" />
+                <TabIndex value="1" />
+                <Dock value="Fill" />
+                <ClientSize value="{Width=200, Height=347}" />
+                <Location value="{X=0,Y=0}" />
+                <TabPages>
+                  <System.Windows.Forms.TabPage>
+                    <Name value="gacTabPage" />
+                    <DockPadding value="" />
+                    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GACTabPage}" />
+                    <ClientSize value="{Width=192, Height=321}" />
+                    <Location value="{X=4,Y=22}" />
+                    <Controls>
+                      <System.Windows.Forms.ListView>
+                        <Name value="gacListView" />
+                        <Dock value="Fill" />
+                        <MultiSelect value="False" />
+                        <TabIndex value="0" />
+                        <View value="Details" />
+                        <FullRowSelect value="True" />
+                        <Location value="{X=0,Y=0}" />
+                        <ClientSize value="{Width=188, Height=317}" />
+                        <HideSelection value="False" />
+                        <Columns>
+                          <System.Windows.Forms.ColumnHeader>
+                            <Width value="100" />
+                            <Name value="columnHeader5" />
+                            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GAC.Name}" />
+                          </System.Windows.Forms.ColumnHeader>
+                          <System.Windows.Forms.ColumnHeader>
+                            <Width value="80" />
+                            <Name value="columnHeader6" />
+                            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GAC.Version}" />
+                          </System.Windows.Forms.ColumnHeader>
+                        </Columns>
+                      </System.Windows.Forms.ListView>
+                    </Controls>
+                  </System.Windows.Forms.TabPage>
+                  <System.Windows.Forms.TabPage>
+                    <Name value="customTabPage" />
+                    <DockPadding value="" />
+                    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.CustomTabPage}" />
+                    <ClientSize value="{Width=192, Height=326}" />
+                    <Location value="{X=4,Y=22}" />
+                    <Controls>
+                      <System.Windows.Forms.Button>
+                        <Name value="browseButton" />
+                        <Location value="{X=157,Y=27}" />
+                        <ClientSize value="{Width=32, Height=20}" />
+                        <Text value="..." />
+                        <Anchor value="Top, Right" />
+                        <TabIndex value="2" />
+                      </System.Windows.Forms.Button>
+                      <System.Windows.Forms.TextBox>
+                        <Name value="fileNameTextBox" />
+                        <Anchor value="Top, Left, Right" />
+                        <TabIndex value="1" />
+                        <Location value="{X=8,Y=28}" />
+                        <ClientSize value="{Width=140, Height=17}" />
+                        <Text value="" />
+                      </System.Windows.Forms.TextBox>
+                      <System.Windows.Forms.Label>
+                        <Name value="label3" />
+                        <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponentsFileNameLabel}" />
+                        <TextAlign value="BottomLeft" />
+                        <Anchor value="Top, Left, Right" />
+                        <TabIndex value="0" />
+                        <ClientSize value="{Width=176, Height=16}" />
+                        <Location value="{X=8,Y=8}" />
+                      </System.Windows.Forms.Label>
+                      <System.Windows.Forms.Button>
+                        <Name value="loadButton" />
+                        <Location value="{X=8,Y=60}" />
+                        <ClientSize value="{Width=150, Height=23}" />
+                        <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ShowComponentsButton}" />
+                        <TabIndex value="3" />
+                      </System.Windows.Forms.Button>
+                    </Controls>
+                  </System.Windows.Forms.TabPage>
+                </TabPages>
+              </System.Windows.Forms.TabControl>
+            </Controls>
+          </System.Windows.Forms.Panel>
+        </Controls>
+      </System.Windows.Forms.Panel>
+    </Controls>
+  </System.Windows.Forms.Form>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="82" />
+    <Name value="columnHeader12" />
+    <Text value="Name" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="88" />
+    <Name value="columnHeader13" />
+    <Text value="Namespace" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="82" />
+    <Name value="columnHeader10" />
+    <Text value="Name" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader11" />
+    <Text value="Assembly" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="82" />
+    <Name value="columnHeader16" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="88" />
+    <Name value="columnHeader17" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Namespace}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader15" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Location}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader18" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Assembly}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader19" />
+    <Text value="Assembly" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader23" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Assembly}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="88" />
+    <Name value="columnHeader22" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Namespace}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="80" />
+    <Name value="columnHeader25" />
+    <Text value="Version" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader24" />
+    <Text value="Location" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader27" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Assembly}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="82" />
+    <Name value="columnHeader29" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="100" />
+    <Name value="columnHeader3" />
+    <Text value="Name" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="80" />
+    <Name value="columnHeader2" />
+    <Text value="Version" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader7" />
+    <Text value="Location" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="80" />
+    <Name value="columnHeader6" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GAC.Version}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="100" />
+    <Name value="columnHeader5" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GAC.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="100" />
+    <Name value="columnHeader4" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GAC.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="88" />
+    <Name value="columnHeader9" />
+    <Text value="Namespace" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="100" />
+    <Name value="columnHeader8" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GAC.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader30" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Location}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="80" />
+    <Name value="columnHeader31" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GAC.Version}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="80" />
+    <Name value="columnHeader32" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GAC.Version}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader33" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Assembly}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="82" />
+    <Name value="columnHeader35" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader36" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Location}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="88" />
+    <Name value="columnHeader37" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Namespace}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="80" />
+    <Name value="columnHeader38" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GAC.Version}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="100" />
+    <Name value="columnHeader28" />
+    <Text value="Name" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="componentColumnHeader4" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Location}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="82" />
+    <Name value="componentColumnHeader1" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="88" />
+    <Name value="componentColumnHeader2" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Namespace}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="componentColumnHeader3" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Assembly}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="100" />
+    <Name value="columnHeader14" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GAC.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="82" />
+    <Name value="columnHeader21" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader20" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Location}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="100" />
+    <Name value="columnHeader34" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GAC.Name}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="88" />
+    <Name value="columnHeader26" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.Components.Namespace}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="80" />
+    <Name value="columnHeader" />
+    <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.AddSidebarComponents.GAC.Version}" />
+  </System.Windows.Forms.ColumnHeader>
+</Components>

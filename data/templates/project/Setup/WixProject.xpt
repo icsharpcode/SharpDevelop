@@ -1,0 +1,451 @@
+<?xml version="1.0"?>
+<Template originator   = "Mike Krueger"
+          created      = "06/10/2001"
+          lastModified = "02/01/2003">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.SetupProject.Name}</Name>
+		<Category>Setup</Category>
+		<Icon>Icons.32x32.EmptyProjectIcon</Icon>
+		<LanguageName>WIX</LanguageName>
+		<Description>${res:Templates.Project.SetupProject.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Setup.wxs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options/>
+			<Files>
+				<File name="Setup.wxs"><![CDATA[<?xml version='1.0'?>
+<Wix xmlns='http://schemas.microsoft.com/wix/2003/01/wi'>
+	
+	<Product
+		Id           = 'A0AB2551-A579-42D3-9A90-D6424B3AC2CD'
+		Name         = 'Your Application'
+		Language     = '1033'
+		Version      = '1.0.0.0'
+		Manufacturer = 'Your Company'
+	>
+		
+		<Package
+			Id               = 'A0AB2551-A579-42D3-9A90-D6424B3AC2CD'
+			Description      = '#Description'
+			Comments         = 'Comments'
+			InstallerVersion = '200'
+			Compressed       = 'yes'
+		/>
+		
+		<Property Id="AcceptLicense">No</Property>
+		
+		<!--BUTTON TEXTS-->
+		<Property Id="Button_Back">&lt; &amp;Back</Property>
+		<Property Id="Button_Next">&amp;Next &gt;</Property>
+		<Property Id="Button_Finish">&amp;Finish</Property>
+		
+		<Property Id="Button_OK">OK</Property>
+		<Property Id="Button_Cancel">Cancel</Property>
+		
+		<Property Id="Button_Browse">Br&amp;owse...</Property>
+		<Property Id="Button_Exit">&amp;Exit</Property>
+		<Property Id="Button_Ignore">&amp;Ignore</Property>
+		<Property Id="Button_Install">&amp;Install</Property>
+		<Property Id="Button_Remove">&amp;Remove</Property>
+		<Property Id="Button_Repair">&amp;Repair</Property>
+		<Property Id="Button_Reset">&amp;Reset</Property>
+		<Property Id="Button_Resume">&amp;Resume</Property>
+		<Property Id="Button_Retry">&amp;Retry</Property>
+		<Property Id="Button_Return">&amp;Return</Property>
+		
+		<Property Id="Button_Yes">&amp;Yes</Property>
+		<Property Id="Button_No">&amp;No</Property>
+		<!--END BUTTON TEXTS-->
+		
+		<CustomAction Id="SET_TARGETDIR" Property="TARGETDIR" Value="[ProgramFilesFolder]\[ProductName]" Execute="firstSequence" />
+		
+		<!-- INSTALL DESCRIPTION -->
+		<Media Id='1' Cabinet='contents.cab' EmbedCab='yes' />
+		
+		<Directory Id='TARGETDIR' Name='SourceDir'>
+		</Directory>
+		
+		<Feature Id='MyFeature' Title='Required Files' Level='1'>
+		</Feature>
+		
+		<!-- END INSTALL DESCRIPTION -->
+		<UI>
+			<!-- FONT DEFINITION -->
+			<Property Id="TitleFont">{&amp;DlgFontBold8}</Property>
+			<Property Id="BigFont">{&amp;VerdanaBold13}</Property>
+			<Property Id="DefaultUIFont">DlgFont8</Property>
+			
+			<TextStyle Id="DlgFont8" FaceName="Tahoma" Size="8" />
+			<TextStyle Id="DlgFontBold8" FaceName="Tahoma" Size="8" Bold="yes" />
+			<TextStyle Id="VerdanaBold13" FaceName="Verdana" Size="13" Bold="yes" />
+			<!-- END FONT DEFINITION -->
+			
+			<!-- DIALOG DEFINITION -->
+			<Dialog Id="WelcomeDialog" Width="370" Height="270" Title="[ProductName] [Setup]">
+				<Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[Button_Next]">
+					<Publish Event="NewDialog" Value="ViewLicenseAgreement">1</Publish>
+				</Control>
+				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[Button_Cancel]">
+					<Publish Event="SpawnDialog" Value="CancelDialog">1</Publish>
+				</Control>
+				<Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" FixedSize="yes" TabSkip="no" Text="dialog.bmp" />
+				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Back]" />
+				
+				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
+				
+				<Control Id="Description" Type="Text" X="135" Y="70" Width="220" Height="90" Transparent="yes" NoPrefix="yes">
+					<Text>The installer will guide you through the steps required to install [ProductName] on your computer.</Text>
+				</Control>
+				<Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
+					<Text>[BigFont]Welcome to the [ProductName] installation</Text>
+				</Control>
+			</Dialog>
+			
+			<Dialog Id="ViewLicenseAgreement" Width="370" Height="270" Title="[ProductName]">
+				<Control Id="Buttons" Type="RadioButtonGroup" X="20" Y="187" Width="330" Height="40" Property="AcceptLicense" />
+				
+				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[Button_Back]">
+					<Publish Event="NewDialog" Value="WelcomeDialog">1</Publish>
+				</Control>
+				
+				<Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[Button_Next]">
+					<Publish Event="NewDialog" Value="SelectFolderDialog">AcceptLicense = "Yes"</Publish>
+					<Condition Action="disable">AcceptLicense &lt;&gt; "Yes"</Condition>
+					<Condition Action="enable">AcceptLicense = "Yes"</Condition>
+				</Control>
+				
+				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[Button_Cancel]">
+					<Publish Event="SpawnDialog" Value="CancelDialog">1</Publish>
+				</Control>
+				
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
+				
+				<Control Id="AgreementText" Type="ScrollableText" X="20" Y="60" Width="330" Height="120" Sunken="yes" TabSkip="no">
+					<Text src="$(sys.SOURCEFILEDIR)/license.rtf"/>
+				</Control>
+				
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
+				<Control Id="BottomLine" Type="Line" X="4" Y="234" Width="370" Height="0" />
+				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>Please read the following license agreement carefully!</Text>
+				</Control>
+				<Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>[TitleFont]End-User License Agreement</Text>
+				</Control>
+			</Dialog>
+			<RadioGroup Property="AcceptLicense">
+				<RadioButton Text="I &amp;accept the terms in the License Agreement" X="5" Y="0" Width="300" Height="15">Yes</RadioButton>
+				<RadioButton Text="I &amp;do not accept the terms in the License Agreement" X="5" Y="20" Width="300" Height="15">No</RadioButton>
+			</RadioGroup>
+			
+			<Dialog Id="SelectFolderDialog" Width="370" Height="270" Title="[ProductName]" TrackDiskSpace="yes">
+				<Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[Button_Next]">
+					<Publish Event="NewDialog" Value="VerifyReadyDialog">1</Publish>
+				</Control>
+				
+				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[Button_Cancel]">
+					<Publish Event="SpawnDialog" Value="CancelDialog">1</Publish>
+				</Control>
+					
+				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[Button_Back]">
+					<Publish Event="NewDialog" Value="ViewLicenseAgreement">1</Publish>
+				</Control>
+				
+				<Control Id="FolderEdit" Type="PathEdit" X="18" Y="126" Width="252" Height="18" Property="TARGETDIR" Sunken="yes" />
+				
+				<Control Id="Browse" Type="PushButton" X="276" Y="126" Width="90" Height="18" Text="[Button_Browse]">
+					<Publish Property="_BrowseProperty" Value="TARGETDIR">1</Publish>
+					<Publish Event="SpawnDialog" Value="BrowseDialog">1</Publish>
+				</Control>
+					
+				<Control Id="Text" Type="Text" X="25" Y="70" Width="320" Height="40">
+					<Text>To install in this folder, click "Next". To install to a different folder, enter it below or click "Browse".</Text>
+				</Control>
+				
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" Text="banner.bmp" />
+				
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
+				
+				<Control Id="BottomLine" Type="Line" X="4" Y="234" Width="370" Height="0" />
+				
+				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>This is the folder where [ProductName] will be installed.</Text>
+				</Control>
+				
+				<Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>[TitleFont]Select Installation Folder</Text>
+				</Control>
+				
+				<Control Id="FolderLabel" Type="Text" X="20" Y="114" Width="348" Height="12" Text="&amp;Folder:" />
+			</Dialog>
+			
+			<Dialog Id="VerifyReadyDialog" Width="370" Height="270" Title="[ProductName]" TrackDiskSpace="yes">
+				<Control Id="Install" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Text="[Button_Install]">
+					<Publish Event="EndDialog" Value="Return">OutOfDiskSpace &lt;&gt; 1</Publish>
+					<Publish Event="SpawnDialog" Value="OutOfRbDiskDlg">OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND (PROMPTROLLBACKCOST="P" OR NOT PROMPTROLLBACKCOST)</Publish>
+					<Publish Event="EndDialog" Value="Return">OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"</Publish>
+					<Publish Event="EnableRollback" Value="False">OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 0 AND PROMPTROLLBACKCOST="D"</Publish>
+					<Publish Event="SpawnDialog" Value="OutOfDiskDlg">(OutOfDiskSpace = 1 AND OutOfNoRbDiskSpace = 1) OR (OutOfDiskSpace = 1 AND PROMPTROLLBACKCOST="F")</Publish>
+				</Control>
+				
+				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Cancel="yes" Text="[Button_Cancel]">
+					<Publish Event="SpawnDialog" Value="CancelDialog">1</Publish>
+				</Control>
+				
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
+				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Text="[Button_Back]">
+					<!--					<Publish Event="NewDialog" Value="AdminInstallPointDlg">InstallMode = "Server Image"</Publish>
+					<Publish Event="NewDialog" Value="CustomizeDlg">InstallMode = "Custom" OR InstallMode = "Change"</Publish>
+					<Publish Event="NewDialog" Value="MaintenanceTypeDlg">InstallMode = "Repair"</Publish> InstallMode = "Typical" OR InstallMode = "Complete" -->
+					<Publish Event="NewDialog" Value="SelectFolderDialog"></Publish>
+				</Control>
+				
+				<Control Id="Text" Type="Text" X="25" Y="70" Width="320" Height="80">
+					<Text>Click Install to begin the installation.  If you want to review or change any of your installation settings, click Back.  Click Cancel to exit the wizard.</Text>
+				</Control>
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
+				<Control Id="BottomLine" Type="Line" X="4" Y="234" Width="370" Height="0" />
+				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>The [Wizard] is ready to begin the [InstallMode] installation</Text>
+				</Control>
+				<Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>[TitleFont]Ready to Install</Text>
+				</Control>
+			</Dialog>
+			
+			<Dialog Id="ProgressDialog" Width="370" Height="270" Title="[ProductName]" Modeless="yes">
+				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[Button_Cancel]">
+					<Publish Event="SpawnDialog" Value="CancelDialog">1</Publish>
+				</Control>
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
+				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Back]" />
+				<Control Id="Next" Type="PushButton" X="236" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Next]" />
+				<Control Id="Text" Type="Text" X="35" Y="65" Width="300" Height="20">
+					<Text>Please wait while [ProductName] is installed.</Text>
+				</Control>
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
+				<Control Id="BottomLine" Type="Line" X="4" Y="234" Width="370" Height="0" />
+				<Control Id="Title" Type="Text" X="20" Y="15" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>Install [ProductName]</Text>
+				</Control>
+				<Control Id="ActionText" Type="Text" X="70" Y="100" Width="265" Height="10">
+					<Subscribe Event="ActionText" Attribute="Text" />
+				</Control>
+				<Control Id="ProgressBar" Type="ProgressBar" X="35" Y="115" Width="300" Height="10" ProgressBlocks="yes" Text="Progress done">
+					<Subscribe Event="SetProgress" Attribute="Progress" />
+				</Control>
+				<Control Id="StatusLabel" Type="Text" X="35" Y="100" Width="35" Height="10" Text="Status:" />
+			</Dialog>
+			
+			<Dialog Id="CancelDialog" Width="260" Height="85" Title="[ProductName] [Setup]" NoMinimize="yes">
+				
+				<Control Id="Text" Type="Text" X="48" Y="15" Width="194" Height="30">
+					<Text>Are you sure you want to cancel [ProductName] installation?</Text>
+				</Control>
+
+				<Control Id="Yes" Type="PushButton" X="72" Y="57" Width="56" Height="17" Text="[Button_Yes]">
+					<Publish Event="EndDialog" Value="Exit">1</Publish>
+				</Control>
+				<Control Id="No" Type="PushButton" X="132" Y="57" Width="56" Height="17" Default="yes" Cancel="yes" Text="[Button_No]">
+					<Publish Event="EndDialog" Value="Return">1</Publish>
+				</Control>
+				
+				<Control Id="Icon" Type="Icon" X="15" Y="15" Width="24" Height="24" FixedSize="yes" IconSize="32" Text="info.bmp" />
+			</Dialog>
+			
+			<Dialog Id="BrowseDialog" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+				<Control Id="PathEdit" Type="PathEdit" X="84" Y="202" Width="261" Height="18" Property="_BrowseProperty" Indirect="yes" />
+				<Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Text="[Button_OK]">
+					<Publish Event="EndDialog" Value="Return">1</Publish>
+				</Control>
+				<Control Id="Cancel" Type="PushButton" X="240" Y="243" Width="56" Height="17" Cancel="yes" Text="[Button_Cancel]">
+					<Publish Event="Reset" Value="0">1</Publish>
+					<Publish Event="EndDialog" Value="Return">1</Publish>
+				</Control>
+				<Control Id="ComboLabel" Type="Text" X="25" Y="58" Width="44" Height="10" TabSkip="no" Text="&amp;Look in:" />
+				<Control Id="DirectoryCombo" Type="DirectoryCombo" X="70" Y="55" Width="220" Height="80" Property="_BrowseProperty" Indirect="yes" Fixed="yes" Remote="yes">
+					<Subscribe Event="IgnoreChange" Attribute="IgnoreChange" />
+				</Control>
+				<Control Id="Up" Type="PushButton" X="298" Y="55" Width="19" Height="19" Icon="yes" FixedSize="yes" IconSize="16" Text="up.bmp">
+					<Publish Event="DirectoryListUp" Value="0">1</Publish>
+				</Control>
+				<Control Id="NewFolder" Type="PushButton" X="325" Y="55" Width="19" Height="19" Icon="yes" FixedSize="yes" IconSize="16" Text="new.bmp">
+					<Publish Event="DirectoryListNew" Value="0">1</Publish>
+				</Control>
+				<Control Id="DirectoryList" Type="DirectoryList" X="25" Y="83" Width="320" Height="110" Property="_BrowseProperty" Sunken="yes" Indirect="yes" TabSkip="no" />
+				<Control Id="PathLabel" Type="Text" X="25" Y="205" Width="59" Height="10" TabSkip="no" Text="&amp;Folder name:" />
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
+				<Control Id="BottomLine" Type="Line" X="4" Y="234" Width="370" Height="0" />
+				<Control Id="Description" Type="Text" X="25" Y="23" Width="280" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>Browse to the destination folder</Text>
+				</Control>
+				<Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>[TitleFont]Change current destination folder</Text>
+				</Control>
+			</Dialog>
+			
+			<Dialog Id="UserExit" Width="370" Height="270" Title="[ProductName] [Setup]">
+				<Control Id="Finish" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[Button_Finish]">
+					<Publish Event="EndDialog" Value="Exit">1</Publish>
+				</Control>
+				
+				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Cancel]" />
+				<Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" FixedSize="yes" TabSkip="no" Text="dialog.bmp" />
+				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Back]" />
+				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
+				<Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
+					<Text>[BigFont][ProductName] installation was interrupted</Text>
+				</Control>
+				<Control Id="Description1" Type="Text" X="135" Y="70" Width="220" Height="40" Transparent="yes" NoPrefix="yes">
+					<Text>The installation was interrupted before [ProductName] could be installed. You need to restart the installer to try again.</Text>
+				</Control>
+				<Control Id="Description2" Type="Text" X="135" Y="215" Width="220" Height="20" Transparent="yes" NoPrefix="yes">
+					<Text>Click the Finish button to exit.</Text>
+				</Control>
+			</Dialog>
+			
+			<Dialog Id="ExitDialog" Width="370" Height="270" Title="[ProductName]" NoMinimize="yes">
+				<Control Id="Finish" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[Button_Finish]">
+					<Publish Event="EndDialog" Value="Return">1</Publish>
+				</Control>
+				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Cancel]" />
+				<Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" FixedSize="yes" TabSkip="no" Text="dialog.bmp" />
+				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Back]" />
+				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
+				<Control Id="Description" Type="Text" X="135" Y="70" Width="220" Height="20" Transparent="yes" NoPrefix="yes">
+					<Text>Click the Finish button to exit.</Text>
+				</Control>
+				<Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
+					<Text>[BigFont]Completing the [ProductName] installation.</Text>
+				</Control>
+			</Dialog>
+				
+			<Dialog Id="OutOfDiskDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+				<Control Id="OK" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[Button_OK]">
+					<Publish Event="EndDialog" Value="Return">1</Publish>
+				</Control>
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
+				<Control Id="Text" Type="Text" X="20" Y="53" Width="330" Height="40">
+					<Text>The highlighted volumes do not have enough disk space available for the currently selected features.  You can either remove some files from the highlighted volumes, or choose to install less features onto local drive(s), or select different destination drive(s).</Text>
+				</Control>
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
+				<Control Id="BottomLine" Type="Line" X="4" Y="234" Width="370" Height="0" />
+				<Control Id="Description" Type="Text" X="20" Y="20" Width="280" Height="20" Transparent="yes" NoPrefix="yes">
+					<Text>Disk space required for the installation exceeds available disk space.</Text>
+				</Control>
+				<Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>[TitleFont]Out of Disk Space</Text>
+				</Control>
+				<Control Id="VolumeList" Type="VolumeCostList" X="20" Y="100" Width="330" Height="120" Sunken="yes" Fixed="yes" Remote="yes">
+					<Text>{120}{70}{70}{70}{70}</Text>
+				</Control>
+			</Dialog>
+			
+			<Dialog Id="OutOfRbDiskDlg" Width="370" Height="270" Title="[ProductName] [Setup]" NoMinimize="yes">
+				<Control Id="No" Type="PushButton" X="304" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[Button_No]">
+					<Publish Event="EndDialog" Value="Return">1</Publish>
+				</Control>
+				<Control Id="Yes" Type="PushButton" X="240" Y="243" Width="56" Height="17" Text="[Button_Yes]">
+					<Publish Event="EnableRollback" Value="False">1</Publish>
+					<Publish Event="EndDialog" Value="Return">1</Publish>
+				</Control>
+				<Control Id="BannerBitmap" Type="Bitmap" X="0" Y="0" Width="374" Height="44" FixedSize="yes" TabSkip="no" Text="banner.bmp" />
+				<Control Id="Text" Type="Text" X="20" Y="53" Width="330" Height="40">
+					<Text>The highlighted volumes do not have enough disk space available for the currently selected features.  You can either remove some files from the highlighted volumes, or choose to install less features onto local drive(s), or select different destination drive(s).</Text>
+				</Control>
+				<Control Id="BannerLine" Type="Line" X="0" Y="44" Width="374" Height="0" />
+				<Control Id="BottomLine" Type="Line" X="4" Y="234" Width="370" Height="0" />
+				<Control Id="Description" Type="Text" X="20" Y="20" Width="280" Height="20" Transparent="yes" NoPrefix="yes">
+					<Text>Disk space required for the installation exceeds available disk space.</Text>
+				</Control>
+				<Control Id="Title" Type="Text" X="15" Y="6" Width="200" Height="15" Transparent="yes" NoPrefix="yes">
+					<Text>[TitleFont]Out of Disk Space</Text>
+				</Control>
+				<Control Id="VolumeList" Type="VolumeCostList" X="20" Y="140" Width="330" Height="80" Sunken="yes" Fixed="yes" Remote="yes" ShowRollbackCost="yes">
+					<Text>{120}{70}{70}{70}{70}</Text>
+				</Control>
+				<Control Id="Text2" Type="Text" X="20" Y="94" Width="330" Height="40">
+					<Text>Alternatively, you may choose to disable the installer's rollback functionality.  This allows the installer to restore your computer's original state should the installation be interrupted in any way.  Click Yes if you wish to take the risk to disable rollback.</Text>
+				</Control>
+			</Dialog>
+			
+			<Dialog Id="FatalError" Width="370" Height="270" Title="[ProductName]" NoMinimize="yes">
+				<Control Id="Finish" Type="PushButton" X="236" Y="243" Width="56" Height="17" Default="yes" Cancel="yes" Text="[Button_Finish]">
+					<Publish Event="EndDialog" Value="Exit">1</Publish>
+				</Control>
+				<Control Id="Cancel" Type="PushButton" X="304" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Cancel]" />
+				<Control Id="Bitmap" Type="Bitmap" X="0" Y="0" Width="370" Height="234" FixedSize="yes" TabSkip="no" Text="dialog.bmp" />
+				<Control Id="Back" Type="PushButton" X="180" Y="243" Width="56" Height="17" Disabled="yes" Text="[Button_Back]" />
+				<Control Id="BottomLine" Type="Line" X="0" Y="234" Width="374" Height="0" />
+				<Control Id="Title" Type="Text" X="135" Y="20" Width="220" Height="60" Transparent="yes" NoPrefix="yes">
+					<Text>[BigFont][ProductName] ended prematurely</Text>
+				</Control>
+				<Control Id="Description1" Type="Text" X="135" Y="70" Width="220" Height="40" Transparent="yes" NoPrefix="yes">
+					<Text>[ProductName] setup ended prematurely because of an error.  Your system has not been modified.  To install this program at a later time, please run the installation again.</Text>
+				</Control>
+				<Control Id="Description2" Type="Text" X="135" Y="115" Width="220" Height="20" Transparent="yes" NoPrefix="yes">
+					<Text>Click the Finish button to exit the.</Text>
+				</Control>
+			</Dialog>
+			<!-- END DIALOG DEFINITION -->
+			
+			<InstallUISequence>
+				<Custom Action="SET_TARGETDIR" Before="CostInitialize">TARGETDIR=""</Custom>
+				
+				<Show Dialog="WelcomeDialog" After="MigrateFeatureStates" />
+				
+				<Show Dialog="ProgressDialog" After="WelcomeDialog" />
+				
+				<Show Dialog="UserExit" OnExit="cancel" />
+				<Show Dialog="ExitDialog" OnExit="success" />
+				<Show Dialog="FatalError" OnExit="error" />
+			</InstallUISequence>
+			
+			<AdminUISequence>
+				<Custom Action="SET_TARGETDIR" Before="CostInitialize">TARGETDIR=""</Custom>
+				
+				<Show Dialog="WelcomeDialog" After="CostFinalize" />
+				
+				<Show Dialog="ProgressDialog" After="WelcomeDialog" />
+				
+				<Show Dialog="UserExit"   OnExit="cancel" />
+				<Show Dialog="ExitDialog" OnExit="success" />
+				<Show Dialog="FatalError" OnExit="error" />
+			</AdminUISequence>
+		</UI>
+		
+		<AdminExecuteSequence>
+		</AdminExecuteSequence>
+		
+		<InstallExecuteSequence>
+		</InstallExecuteSequence>
+		
+		<Binary Id="dialog.bmp" src = "$(var.DATADIR)/resources/InstallerBitmaps/default-dialog.bmp" />
+		<Binary Id="banner.bmp" src = "$(var.DATADIR)/resources/InstallerBitmaps/default-banner.bmp" />
+		<Binary Id="info.bmp"   src = "$(var.DATADIR)/resources/InstallerBitmaps/info.bmp" />
+		<Binary Id="up.bmp"     src = "$(var.DATADIR)/resources/InstallerBitmaps/up.bmp" />
+		<Binary Id="new.bmp"    src = "$(var.DATADIR)/resources/InstallerBitmaps/new.bmp" />
+	</Product>
+</Wix>
+]]></File>
+				<File name="license.rtf"><![CDATA[{\rtf1\ansi\ansicpg1252\deff0\deflang1031{\fonttbl{\f0\fswiss\fcharset0 Arial;}}
+{\*\generator Msftedit 5.41.21.2500;}\viewkind4\uc1\pard\lang1033\f0\fs20 Your License goes here.\lang1031\par
+}]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

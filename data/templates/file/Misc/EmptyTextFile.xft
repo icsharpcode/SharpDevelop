@@ -1,0 +1,18 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.Text.EmptyText.Name}"
+		  icon        = "Icons.32x32.TextFileIcon"
+		  category    = "${res:Templates.File.Categories.Misc}"
+		  defaultname = "Text${Number}.txt"
+		  language    = "Default"/>
+	 
+	<Description>${res:Templates.File.Text.EmptyTextFile.Description}</Description>
+
+	<Files>
+		<File name="${FullName}" language="Default"/>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

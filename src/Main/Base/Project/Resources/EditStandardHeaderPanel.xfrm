@@ -1,0 +1,56 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="MyUserControl" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=344, Height=296}" />
+    <Controls>
+      <System.Windows.Forms.Panel>
+        <Name value="panel1" />
+        <Location value="{X=8,Y=72}" />
+        <Size value="{Width=328, Height=216}" />
+        <DockPadding value="" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <TabIndex value="4" />
+        <Controls>
+          <System.Windows.Forms.TextBox>
+            <Name value="headerTextBox" />
+            <TabIndex value="3" />
+            <Dock value="Fill" />
+            <Location value="{X=0,Y=0}" />
+            <AcceptsReturn value="True" />
+            <Size value="{Width=328, Height=216}" />
+            <Multiline value="True" />
+            <AcceptsTab value="True" />
+            <AutoSize value="False" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+        </Controls>
+      </System.Windows.Forms.Panel>
+      <System.Windows.Forms.Label>
+        <Name value="label2" />
+        <Text value="${res:Dialog.Options.IDEOptions.EditStandardHeaderPanel.LanguageLabel}" />
+        <TextAlign value="MiddleRight" />
+        <TabIndex value="0" />
+        <Size value="{Width=136, Height=23}" />
+        <Location value="{X=4,Y=8}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Label>
+        <Name value="label" />
+        <Text value="${res:Dialog.Options.IDEOptions.EditStandardHeaderPanel.HeaderLabel}" />
+        <TextAlign value="BottomLeft" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="2" />
+        <Size value="{Width=328, Height=16}" />
+        <Location value="{X=8,Y=48}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.ComboBox>
+        <Name value="headerChooser" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="1" />
+        <Location value="{X=144,Y=8}" />
+        <Size value="{Width=192, Height=21}" />
+        <DropDownStyle value="DropDownList" />
+      </System.Windows.Forms.ComboBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

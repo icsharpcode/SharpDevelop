@@ -1,0 +1,164 @@
+<Components version="1.0">
+  <System.Windows.Forms.Form>
+    <Name value="MyForm" />
+    <ShowInTaskbar value="False" />
+    <StartPosition value="CenterParent" />
+    <ClientSize value="{Width=440, Height=294}" />
+    <MinimizeBox value="False" />
+    <DockPadding value="" />
+    <Text value="${res:Dialog.WordCountDialog.DialogName}" />
+    <AcceptButton value="startButton [System.Windows.Forms.Button], Text: ${res:Dialog.WordCountDialog.StartButton}" />
+    <CancelButton value="cancelButton [System.Windows.Forms.Button], Text: ${res:Global.CancelButtonText}" />
+    <SizeGripStyle value="Hide" />
+    <MaximizeBox value="False" />
+    <Controls>
+      <System.Windows.Forms.Button>
+        <Name value="cancelButton" />
+        <Location value="{X=358,Y=264}" />
+        <ClientSize value="{Width=75, Height=23}" />
+        <Text value="${res:Global.CancelButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="4" />
+        <DialogResult value="Cancel" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="startButton" />
+        <Location value="{X=278,Y=264}" />
+        <ClientSize value="{Width=75, Height=23}" />
+        <Text value="${res:Dialog.WordCountDialog.StartButton}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="3" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.ListView>
+        <Name value="resultListView" />
+        <GridLines value="True" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <TabIndex value="2" />
+        <View value="Details" />
+        <FullRowSelect value="True" />
+        <Location value="{X=8,Y=40}" />
+        <ClientSize value="{Width=420, Height=212}" />
+        <Columns>
+          <System.Windows.Forms.ColumnHeader>
+            <Width value="221" />
+            <Name value="columnHeader" />
+            <Text value="${res:Dialog.WordCountDialog.FileText}" />
+          </System.Windows.Forms.ColumnHeader>
+          <System.Windows.Forms.ColumnHeader>
+            <Name value="columnHeader2" />
+            <Text value="${res:Dialog.WordCountDialog.CharsText}" />
+          </System.Windows.Forms.ColumnHeader>
+          <System.Windows.Forms.ColumnHeader>
+            <Name value="columnHeader3" />
+            <Text value="${res:Dialog.WordCountDialog.WordsText}" />
+          </System.Windows.Forms.ColumnHeader>
+          <System.Windows.Forms.ColumnHeader>
+            <Name value="columnHeader4" />
+            <Text value="${res:Dialog.WordCountDialog.LinesText}" />
+          </System.Windows.Forms.ColumnHeader>
+        </Columns>
+      </System.Windows.Forms.ListView>
+      <System.Windows.Forms.ComboBox>
+        <Name value="locationComboBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="1" />
+        <Location value="{X=128,Y=8}" />
+        <ClientSize value="{Width=304, Height=21}" />
+        <DropDownStyle value="DropDownList" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.Label>
+        <Name value="label" />
+        <Text value="${res:Dialog.WordCountDialog.Label1Text}" />
+        <TextAlign value="MiddleRight" />
+        <TabIndex value="0" />
+        <ClientSize value="{Width=120, Height=23}" />
+        <Location value="{X=8,Y=8}" />
+      </System.Windows.Forms.Label>
+    </Controls>
+  </System.Windows.Forms.Form>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader3" />
+    <Text value="${res:Dialog.WordCountDialog.WordsText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader2" />
+    <Text value="${res:Dialog.WordCountDialog.CharsText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader7" />
+    <Text value="${res:Dialog.WordCountDialog.CharsText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader6" />
+    <Text value="${res:Dialog.WordCountDialog.CharsText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader5" />
+    <Text value="${res:Dialog.WordCountDialog.LinesText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader4" />
+    <Text value="${res:Dialog.WordCountDialog.LinesText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader9" />
+    <Text value="${res:Dialog.WordCountDialog.LinesText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader8" />
+    <Text value="${res:Dialog.WordCountDialog.CharsText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="221" />
+    <Name value="columnHeader" />
+    <Text value="${res:Dialog.WordCountDialog.FileText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="235" />
+    <Name value="columnHeader16" />
+    <Text value="${res:Dialog.WordCountDialog.FileText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader20" />
+    <Text value="${res:Dialog.WordCountDialog.WordsText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader12" />
+    <Text value="${res:Dialog.WordCountDialog.CharsText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="221" />
+    <Name value="columnHeader13" />
+    <Text value="${res:Dialog.WordCountDialog.FileText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader10" />
+    <Text value="${res:Dialog.WordCountDialog.WordsText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader11" />
+    <Text value="${res:Dialog.WordCountDialog.LinesText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader17" />
+    <Text value="${res:Dialog.WordCountDialog.WordsText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="235" />
+    <Name value="columnHeader14" />
+    <Text value="${res:Dialog.WordCountDialog.FileText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Width value="221" />
+    <Name value="columnHeader15" />
+    <Text value="${res:Dialog.WordCountDialog.FileText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader18" />
+    <Text value="${res:Dialog.WordCountDialog.LinesText}" />
+  </System.Windows.Forms.ColumnHeader>
+  <System.Windows.Forms.ColumnHeader>
+    <Name value="columnHeader19" />
+    <Text value="${res:Dialog.WordCountDialog.WordsText}" />
+  </System.Windows.Forms.ColumnHeader>
+</Components>

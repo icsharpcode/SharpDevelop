@@ -1,0 +1,5 @@
+<?xml version="1.0"?>
+<TIPS>
+        <TIP>${res:XML.StartupTips.Tip1}</TIP>
+        <TIP>${res:XML.StartupTips.Tip2}</TIP>
+</TIPS>

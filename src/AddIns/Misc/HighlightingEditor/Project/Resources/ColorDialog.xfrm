@@ -1,0 +1,134 @@
+<Components version="1.0">
+  <System.Windows.Forms.Form>
+    <Name value="InputBox" />
+    <ShowInTaskbar value="False" />
+    <FormBorderStyle value="FixedDialog" />
+    <StartPosition value="CenterParent" />
+    <ClientSize value="{Width=450, Height=288}" />
+    <MinimizeBox value="False" />
+    <DockPadding value="" />
+    <Text value="${res:Dialog.HighlightingEditor.ColorDlg.Title}" />
+    <AcceptButton value="acceptBtn [System.Windows.Forms.Button], Text: ${res:Global.OKButtonText}" />
+    <CancelButton value="cancelBtn [System.Windows.Forms.Button], Text: ${res:Global.CancelButtonText}" />
+    <MaximizeBox value="False" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="backBox" />
+        <TabIndex value="30" />
+        <Location value="{X=232,Y=72}" />
+        <ClientSize value="{Width=204, Height=174}" />
+        <Text value="${res:Dialog.HighlightingEditor.ColorDlg.Background}" />
+        <Controls>
+          <System.Windows.Forms.RadioButton>
+            <Name value="backUser" />
+            <Location value="{X=9,Y=54}" />
+            <ClientSize value="{Width=186, Height=18}" />
+            <Text value="${res:Dialog.HighlightingEditor.ColorDlg.UserDefined}" />
+            <TabIndex value="9" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="backNo" />
+            <Location value="{X=9,Y=18}" />
+            <Checked value="True" />
+            <ClientSize value="{Width=186, Height=30}" />
+            <Text value="${res:Dialog.HighlightingEditor.ColorDlg.NoColor}" />
+            <TabStop value="True" />
+            <TabIndex value="7" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="backSys" />
+            <Location value="{X=9,Y=114}" />
+            <ClientSize value="{Width=186, Height=18}" />
+            <Text value="${res:Dialog.HighlightingEditor.ColorDlg.SystemColor}" />
+            <TabIndex value="8" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.ComboBox>
+            <Name value="backList" />
+            <TabIndex value="8" />
+            <Location value="{X=30,Y=138}" />
+            <ClientSize value="{Width=166, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="foreBox" />
+        <TabIndex value="29" />
+        <Location value="{X=16,Y=72}" />
+        <ClientSize value="{Width=204, Height=174}" />
+        <Text value="${res:Dialog.HighlightingEditor.ColorDlg.Foreground}" />
+        <Controls>
+          <System.Windows.Forms.ComboBox>
+            <Name value="foreList" />
+            <TabIndex value="8" />
+            <Location value="{X=30,Y=138}" />
+            <ClientSize value="{Width=166, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.RadioButton>
+            <Name value="foreUser" />
+            <Location value="{X=12,Y=54}" />
+            <ClientSize value="{Width=186, Height=18}" />
+            <Text value="${res:Dialog.HighlightingEditor.ColorDlg.UserDefined}" />
+            <TabIndex value="1" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="foreNo" />
+            <Location value="{X=12,Y=18}" />
+            <Checked value="True" />
+            <ClientSize value="{Width=186, Height=30}" />
+            <Text value="${res:Dialog.HighlightingEditor.ColorDlg.NoColor}" />
+            <TabStop value="True" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="foreSys" />
+            <Location value="{X=12,Y=114}" />
+            <ClientSize value="{Width=186, Height=18}" />
+            <Text value="${res:Dialog.HighlightingEditor.ColorDlg.SystemColor}" />
+            <TabIndex value="1" />
+          </System.Windows.Forms.RadioButton>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.Label>
+        <Name value="label" />
+        <Text value="${res:Dialog.HighlightingEditor.ColorDlg.Caption}" />
+        <TabIndex value="28" />
+        <ClientSize value="{Width=432, Height=23}" />
+        <Location value="{X=8,Y=8}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Button>
+        <Name value="acceptBtn" />
+        <Location value="{X=280,Y=256}" />
+        <ClientSize value="{Width=75, Height=23}" />
+        <Text value="${res:Global.OKButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="27" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.CheckBox>
+        <Name value="boldBox" />
+        <Location value="{X=16,Y=40}" />
+        <ClientSize value="{Width=136, Height=18}" />
+        <Text value="${res:Dialog.HighlightingEditor.ColorDlg.Bold}" />
+        <TabIndex value="23" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="italicBox" />
+        <Location value="{X=160,Y=40}" />
+        <ClientSize value="{Width=102, Height=18}" />
+        <Text value="${res:Dialog.HighlightingEditor.ColorDlg.Italic}" />
+        <TabIndex value="24" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.Button>
+        <Name value="cancelBtn" />
+        <Location value="{X=360,Y=256}" />
+        <ClientSize value="{Width=75, Height=23}" />
+        <Text value="${res:Global.CancelButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="26" />
+        <DialogResult value="Cancel" />
+        <AccessibleDescription value="" />
+      </System.Windows.Forms.Button>
+    </Controls>
+  </System.Windows.Forms.Form>
+</Components>

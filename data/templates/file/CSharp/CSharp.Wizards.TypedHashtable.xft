@@ -1,0 +1,350 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		name        = "${res:Templates.File.TypedHashTable.Name}"
+		icon        = "C#.File.FullFile"
+		category    = "C#"
+		defaultname = "Class${Number}.cs"
+		language    = "C#"
+	/>
+	 
+	<Description>${res:Templates.File.TypedHashTable.Description}</Description>
+
+	<Properties>
+		<Property
+			name          = "KeyType"
+			localizedName = "${res:Templates.File.Properties.TypedHashtableWizard.KeyType}"
+			type          = "System.String"
+			category      = "${res:Templates.File.Properties.ContextCategory}"
+			description   = "${res:Templates.File.Properties.TypedHashtableWizard.KeyType.Description}"
+		/>
+		<Property
+			name          = "ValueType"
+			localizedName = "${res:Templates.File.Properties.TypedHashtableWizard.ValueType}"
+			type          = "System.String"
+			category      = "${res:Templates.File.Properties.ContextCategory}"
+			description   = "${res:Templates.File.Properties.TypedHashtableWizard.ValueType.Description}"
+		/>
+		<Property
+			name          = "Accessibility"
+			localizedName = "${res:Templates.File.Properties.Accessibility}"
+			type          = "Types:Accessibility"
+			category      = "${res:Templates.File.Properties.OptionCategory}"
+			defaultValue  = "public"
+			description   = "${res:Templates.File.Properties.Accessibility.Description}"
+		/>
+	</Properties>
+	
+	<Types>
+		<Type name = "Accessibility">
+			<Enum name = "Public" value = "public"/>
+			<Enum name = "Protected" value = "protected"/>
+			<Enum name = "Private" value = "private"/>
+			<Enum name = "Internal" value = "internal"/>
+			<Enum name = "Protected Internal" value = "protected internal"/>
+			<Enum name = "Internal Protected" value = "internal protected"/>
+		</Type>
+	</Types>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+
+using System;
+using System.Collections;
+
+namespace ${StandardNamespace}
+{
+	${Properties.Accessibility} class ${ClassName} : IDictionary, ICollection, IEnumerable, ICloneable
+	{
+		protected Hashtable innerHash;
+		
+		#region "Constructors"
+		public  ${ClassName}()
+		{
+			innerHash = new Hashtable();
+		}
+		
+		public ${ClassName}(${ClassName} original)
+		{
+			innerHash = new Hashtable(original.innerHash);
+		}
+		
+		public ${ClassName}(IDictionary dictionary)
+		{
+			innerHash = new Hashtable(dictionary);
+		}
+		
+		public ${ClassName}(int capacity)
+		{
+			innerHash = new Hashtable(capacity);
+		}
+		
+		public ${ClassName}(IDictionary dictionary, float loadFactor)
+		{
+			innerHash = new Hashtable(dictionary, loadFactor);
+		}
+		
+		public ${ClassName}(IHashCodeProvider codeProvider, IComparer comparer)
+		{
+			innerHash = new Hashtable(codeProvider, comparer);
+		}
+		
+		public ${ClassName}(int capacity, int loadFactor)
+		{
+			innerHash = new Hashtable(capacity, loadFactor);
+		}
+		
+		public ${ClassName}(IDictionary dictionary, IHashCodeProvider codeProvider, IComparer comparer)
+		{
+			innerHash = new Hashtable(dictionary, codeProvider, comparer);
+		}
+		
+		public ${ClassName}(int capacity, IHashCodeProvider codeProvider, IComparer comparer)
+		{
+			innerHash = new Hashtable(capacity, codeProvider, comparer);
+		}
+		
+		public ${ClassName}(IDictionary dictionary, float loadFactor, IHashCodeProvider codeProvider, IComparer comparer)
+		{
+			innerHash = new Hashtable(dictionary, loadFactor, codeProvider, comparer);
+		}
+		
+		public ${ClassName}(int capacity, float loadFactor, IHashCodeProvider codeProvider, IComparer comparer)
+		{
+			innerHash = new Hashtable(capacity, loadFactor, codeProvider, comparer);
+		}
+		#endregion
+
+		#region Implementation of IDictionary
+		public ${ClassName}Enumerator GetEnumerator()
+		{
+			return new ${ClassName}Enumerator(this);
+		}
+		
+		System.Collections.IDictionaryEnumerator IDictionary.GetEnumerator()
+		{
+			return new ${ClassName}Enumerator(this);
+		}
+		
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetEnumerator();
+		}
+		
+		public void Remove(${Properties.KeyType} key)
+		{
+			innerHash.Remove(key);
+		}
+		
+		void IDictionary.Remove(object key)
+		{
+			Remove ((${Properties.KeyType})key);
+		}
+		
+		public bool Contains(${Properties.KeyType} key)
+		{
+			return innerHash.Contains(key);
+		}
+		
+		bool IDictionary.Contains(object key)
+		{
+			return Contains((${Properties.KeyType})key);
+		}
+		
+		public void Clear()
+		{
+			innerHash.Clear();		
+		}
+		
+		public void Add(${Properties.KeyType} key, ${Properties.ValueType} value)
+		{
+			innerHash.Add(key, value);
+		}
+		
+		void IDictionary.Add(object key, object value)
+		{
+			Add ((${Properties.KeyType})key, (${Properties.ValueType})value);
+		}
+		
+		public bool IsReadOnly {
+			get {
+				return innerHash.IsReadOnly;
+			}
+		}
+		
+		public ${Properties.ValueType} this[${Properties.KeyType} key] {
+			get {
+				return (${Properties.ValueType}) innerHash[key];
+			}
+			set {
+				innerHash[key] = value;
+			}
+		}
+		
+		object IDictionary.this[object key] {
+			get {
+				return this[(${Properties.KeyType})key];
+			}
+			set {
+				this[(${Properties.KeyType})key] = (${Properties.ValueType})value;
+			}
+		}
+		
+		public System.Collections.ICollection Values {
+			get {
+				return innerHash.Values;
+			}
+		}
+		
+		public System.Collections.ICollection Keys {
+			get {
+				return innerHash.Keys;
+			}
+		}
+		
+		public bool IsFixedSize {
+			get {
+				return innerHash.IsFixedSize;
+			}
+		}
+		#endregion
+		
+		#region Implementation of ICollection
+		public void CopyTo(System.Array array, int index)
+		{
+			innerHash.CopyTo (array, index);
+		}
+		
+		public bool IsSynchronized {
+			get {
+				return innerHash.IsSynchronized;
+			}
+		}
+		
+		public int Count {
+			get {
+				return innerHash.Count;
+			}
+		}
+		
+		public object SyncRoot {
+			get {
+				return innerHash.SyncRoot;
+			}
+		}
+		#endregion
+		
+		#region Implementation of ICloneable
+		public ${ClassName} Clone()
+		{
+			${ClassName} clone = new ${ClassName}();
+			clone.innerHash = (Hashtable) innerHash.Clone();
+			return clone;
+		}
+		
+		object ICloneable.Clone()
+		{
+			return Clone();
+		}
+		#endregion
+		
+		#region "HashTable Methods"
+		public bool ContainsKey(${Properties.KeyType} key)
+		{
+			return innerHash.ContainsKey(key);
+		}
+		
+		public bool ContainsValue(${Properties.ValueType} value)
+		{
+			return innerHash.ContainsValue(value);
+		}
+		
+		public static ${ClassName} Synchronized(${ClassName} nonSync)
+		{
+			${ClassName} sync = new ${ClassName}();
+			sync.innerHash = Hashtable.Synchronized(nonSync.innerHash);
+			return sync;
+		}
+		#endregion
+
+		internal Hashtable InnerHash {
+			get {
+				return innerHash;
+			}
+		}
+	}
+	
+	public class ${ClassName}Enumerator : IDictionaryEnumerator
+	{
+		private IDictionaryEnumerator innerEnumerator;
+		
+		internal ${ClassName}Enumerator(${ClassName} enumerable)
+		{
+			innerEnumerator = enumerable.InnerHash.GetEnumerator();
+		}
+		
+		#region Implementation of IDictionaryEnumerator
+		public ${Properties.KeyType} Key {
+			get {
+				return (${Properties.KeyType})innerEnumerator.Key;
+			}
+		}
+		
+		object IDictionaryEnumerator.Key {
+			get {
+				return Key;
+			}
+		}
+		
+		public ${Properties.ValueType} Value {
+			get {
+				return (${Properties.ValueType})innerEnumerator.Value;
+			}
+		}
+		
+		object IDictionaryEnumerator.Value {
+			get {
+				return Value;
+			}
+		}
+		
+		public System.Collections.DictionaryEntry Entry {
+			get {
+				return innerEnumerator.Entry;
+			}
+		}
+		#endregion
+		
+		#region Implementation of IEnumerator
+		public void Reset()
+		{
+			innerEnumerator.Reset();
+		}
+		
+		public bool MoveNext()
+		{
+			return innerEnumerator.MoveNext();
+		}
+		
+		public object Current {
+			get {
+				return innerEnumerator.Current;
+			}
+		}
+		#endregion
+	}
+}]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

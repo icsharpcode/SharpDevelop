@@ -1,0 +1,61 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.40607</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{75dd61c0-b2a8-4232-bf99-8e86c484d5e7}</ProjectGuid>
+    <RootNamespace>NewProject</RootNamespace>
+    <AssemblyName>HelpBrowserApp</AssemblyName>
+    <OutputTarget>Exe</OutputTarget>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ICSharpCode.SharpZipLib.dll">
+      <HintPath>..\..\..\bin\ICSharpCode.SharpZipLib.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Main.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="HhcFileParser.cs" />
+    <Compile Include="HelpTreeBuilder\AssemblyLoader.cs" />
+    <Compile Include="HelpTreeBuilder\TypeNodeFactory.cs" />
+    <Compile Include="HelpTreeBuilder\ClassNodeBuilder.cs" />
+    <Compile Include="HelpTreeBuilder\ITypeNodeBuilder.cs" />
+    <Compile Include="HelpTreeBuilder\EnumNodeBuilder.cs" />
+    <Compile Include="HelpTreeBuilder\DelegateNodeBuilder.cs" />
+    <Compile Include="HelpTreeBuilder\InterfaceNodeBuilder.cs" />
+    <Compile Include="HelpTreeBuilder\StructNodeBuilder.cs" />
+    <Compile Include="HelpTreeBuilder\Generator.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="HelpTreeBuilder\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

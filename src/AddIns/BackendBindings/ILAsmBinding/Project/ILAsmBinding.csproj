@@ -1,0 +1,68 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.40607</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6e59af58-f635-459a-9a35-c9ac41c00339}</ProjectGuid>
+    <RootNamespace>ICSharpCode.WixBinding</RootNamespace>
+    <AssemblyName>ILAsmBinding</AssemblyName>
+    <OutputTarget>Library</OutputTarget>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\BackendBindings\ILAsmBinding\</OutputPath>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\BackendBindings\ILAsmBinding\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="SharpDevelop.Base.dll">
+      <HintPath>..\..\..\..\..\bin\SharpDevelop.Base.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.Core.dll">
+      <HintPath>..\..\..\..\..\bin\ICSharpCode.Core.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.XmlForms.dll">
+      <HintPath>..\..\..\..\..\bin\ICSharpCode.XmlForms.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="ILAsmLanguageBinding.cs" />
+    <Compile Include="ILAsmCompilerManager.cs" />
+    <Compile Include="ILAsmExecutionManager.cs" />
+    <Compile Include="Project\ILAsmCompilerParameters.cs" />
+    <Compile Include="Project\ILAsmProject.cs" />
+    <Compile Include="Gui\CompilerParametersPanel.cs" />
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Gui\ChooseRuntimePanel.cs" />
+    <EmbeddedResource Include="..\Resources\ChooseRuntimePanel.xfrm" />
+    <EmbeddedResource Include="..\Resources\ILAsm-Mode.xshd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Project\" />
+    <Folder Include="Gui\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

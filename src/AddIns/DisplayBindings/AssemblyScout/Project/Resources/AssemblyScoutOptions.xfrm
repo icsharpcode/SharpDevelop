@@ -1,0 +1,131 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="_panel" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=376, Height=336}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="treeGroupBox" />
+        <TabIndex value="5" />
+        <Location value="{X=8,Y=8}" />
+        <Anchor value="Top, Left, Right" />
+        <ClientSize value="{Width=360, Height=96}" />
+        <Text value="${res:Dialog.Options.IDEOptions.AssemblyScout.TypesGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.ComboBox>
+            <Name value="privateTypesBox" />
+            <Anchor value="Top, Right" />
+            <TabIndex value="3" />
+            <Location value="{X=248,Y=26}" />
+            <ClientSize value="{Width=96, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="privateMembers" />
+            <Text value="${res:Dialog.Options.IDEOptions.AssemblyScout.PrivateTypes}" />
+            <TextAlign value="MiddleLeft" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="2" />
+            <ClientSize value="{Width=232, Height=24}" />
+            <Location value="{X=16,Y=24}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.ComboBox>
+            <Name value="internalTypesBox" />
+            <Anchor value="Top, Right" />
+            <TabIndex value="1" />
+            <Location value="{X=248,Y=58}" />
+            <ClientSize value="{Width=96, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="internalMembers" />
+            <Text value="${res:Dialog.Options.IDEOptions.AssemblyScout.InternalTypes}" />
+            <TextAlign value="MiddleLeft" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+            <ClientSize value="{Width=232, Height=24}" />
+            <Location value="{X=16,Y=56}" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox" />
+        <TabIndex value="1" />
+        <Location value="{X=8,Y=216}" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <ClientSize value="{Width=360, Height=104}" />
+        <Text value="${res:Dialog.Options.IDEOptions.AssemblyScout.OtherGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showReturnTypesBox" />
+            <Location value="{X=16,Y=24}" />
+            <ClientSize value="{Width=336, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.AssemblyScout.ShowReturnTypesBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showResourcePreviewBox" />
+            <Location value="{X=16,Y=48}" />
+            <ClientSize value="{Width=336, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.AssemblyScout.ShowResourcePreviewBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showSpecialMethodsBox" />
+            <Location value="{X=16,Y=72}" />
+            <ClientSize value="{Width=336, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.AssemblyScout.ShowSpecialMethods}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="treeGroupBox" />
+        <TabIndex value="0" />
+        <Location value="{X=8,Y=112}" />
+        <Anchor value="Top, Left, Right" />
+        <ClientSize value="{Width=360, Height=96}" />
+        <Text value="${res:Dialog.Options.IDEOptions.AssemblyScout.MembersGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.ComboBox>
+            <Name value="privateMembersBox" />
+            <Anchor value="Top, Right" />
+            <TabIndex value="3" />
+            <Location value="{X=248,Y=26}" />
+            <ClientSize value="{Width=96, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="privateMembers" />
+            <Text value="${res:Dialog.Options.IDEOptions.AssemblyScout.PrivateMembers}" />
+            <TextAlign value="MiddleLeft" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="2" />
+            <ClientSize value="{Width=232, Height=24}" />
+            <Location value="{X=16,Y=24}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.ComboBox>
+            <Name value="internalMembersBox" />
+            <Anchor value="Top, Right" />
+            <TabIndex value="1" />
+            <Location value="{X=248,Y=58}" />
+            <ClientSize value="{Width=96, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="internalMembers" />
+            <Text value="${res:Dialog.Options.IDEOptions.AssemblyScout.InternalMembers}" />
+            <TextAlign value="MiddleLeft" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+            <ClientSize value="{Width=232, Height=24}" />
+            <Location value="{X=16,Y=56}" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

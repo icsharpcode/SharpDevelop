@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<Filetypes>
+	<Filetype ext="cmbx" icon="cmbx.ico">SharpDevelop Combine</Filetype>
+	<Filetype ext="prjx" icon="prjx.ico">SharpDevelop Project</Filetype>
+	<Filetype ext="cs" icon="cs.ico">C# Source File</Filetype>
+	<Filetype ext="vb" icon="vb.ico">VB.NET Source File</Filetype>
+	<Filetype ext="java" icon="java.ico">Java Source File</Filetype>
+	<Filetype ext="xfrm" icon="xfrm.ico">SharpDevelop XML Form</Filetype>
+	<Filetype ext="resx" icon="resx.ico">.NET Resource File</Filetype>
+	<Filetype ext="resources" icon="resx.ico">.NET Resource File (Binary)</Filetype>
+	<Filetype ext="xml" icon="xml.ico">XML Document</Filetype>
+</Filetypes>

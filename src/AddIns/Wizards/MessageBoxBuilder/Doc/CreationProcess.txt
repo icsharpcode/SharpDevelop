@@ -1,0 +1,13 @@
+Kurzzussammenfassung :
+
++ Neues Projet Erstellen (Anstatt exe, bibliothek erstellen)
++ Referenzen setzen, auf bin\SharpDevelop.exe AddIns\SharpDevelop.Base.dll
++ Panels machen, dabei beachten das die panels moeglichst mit anchor & dock
++ veraenderbar in der Groesse sind. Einfach mit irgendeinem designer machen, 
+  dann von AbstractOptionPanel aberben lassen anstatt von Form oder UserControl.
+
++ MessageBox Generator schreiben, um code zu generieren, er muss alle Optionen 
+  der panels unterstuetzen. Wenn das zeug compiliert XML erstellen und 
+  MessageBoxBuilder.dll und src/xml/MessageBoxBuilder.xml nach AddIns\Wizards kopieren.
+
+  Dann ausprobieren bis alles klappt.

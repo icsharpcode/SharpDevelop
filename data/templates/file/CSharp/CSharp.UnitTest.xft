@@ -1,0 +1,86 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.UnitTest.Name}"
+		  icon        = "C#.File.FullFile"
+		  category    = "C#"
+		  defaultname = "Test${Number}.cs"
+		  language    = "C#"/>
+	 
+	<Description>${res:Templates.File.UnitTest.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Properties>
+		<Property
+			name          = "ConditionalClass"
+			localizedName = "${res:Templates.File.Properties.AddIFDEFTest}"
+			type          = "System.Boolean"
+			defaultValue  = "False"
+			category      = "${res:Templates.File.Properties.ContextCategory}"
+			description   = "${res:Templates.File.Properties.AddIFDEFTest.Description}"
+		/>
+		<Property
+			name          = "AddSetupCode"
+			localizedName = "${res:Templates.File.Properties.AddSetupCode}"
+			type          = "System.Boolean"
+			defaultValue  = "False"
+			category      = "${res:Templates.File.Properties.OptionCategory}"
+			description   = "${res:Templates.File.Properties.AddSetupCode.Description}"
+		/>
+		<Property
+			name          = "AddTearDownCode"
+			localizedName = "${res:Templates.File.Properties.AddTearDownCode}"
+			type          = "System.Boolean"
+			defaultValue  = "False"
+			category      = "${res:Templates.File.Properties.OptionCategory}"
+			description   = "${res:Templates.File.Properties.AddTearDownCode.Description}"
+		/>
+	</Properties>
+		
+	<Files>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+<% if (ConditionalClass) { %>#if TEST
+<% } %>
+using System;
+using NUnit.Framework;
+
+namespace ${StandardNamespace}.Tests
+{
+	[TestFixture]
+	public class ${ClassName}
+	{
+		[Test]
+		public void TestMethod()
+		{
+			// TODO: Add your test.
+		}<% if (AddSetupCode) { %>
+		
+		[TestFixtureSetUp]
+		public void Init()
+		{
+			// TODO: Add Init code.
+		}<% } if (AddTearDownCode) { %>
+		
+		[TestFixtureTearDown]
+		public void Dispose()
+		{
+			// TODO: Add tear down code.
+		}<% } %>
+	}
+}
+<% if (ConditionalClass) { %>#endif
+<% } %>]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+

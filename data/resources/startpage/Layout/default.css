@@ -1,0 +1,136 @@
+.copy {
+	font-size:12px;
+	font-family:Arial,Helvetica,sans-serif;
+	color:Black;
+}
+.balken {
+	background-color:#DCDDDE;
+}
+.navi {
+	font-size:12px;
+	font-family:Arial,Helvetica,sans-serif;
+	color:Black;
+	font-style:normal;
+	font-weight:bold;
+}
+.naviActiv {
+	font-size:12px;
+	font-family:Arial,Helvetica,sans-serif;
+	color:#DB4E2E;
+	font-weight:bold;
+}
+.text {
+	background-color:White;
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:10px;
+	color:Black;
+}
+.head {
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:14;
+	color:White;
+	font-weight:bold;
+}
+.naviListDevelop {
+	font-size:12px;
+	font-family:Arial,Helvetica,sans-serif;
+	color:#808285;
+	font-style:normal;
+	font-weight:bold;
+}
+.naviListDevelopActiv {
+	font-size:12px;
+	font-family:Arial,Helvetica,sans-serif;
+	color:#808285;
+	font-style:normal;
+	font-weight:bold;
+}
+.naviListSupport {
+	font-size:12px;
+	font-family:Arial,Helvetica,sans-serif;
+	color:#bb141a;
+	font-style:normal;
+	font-weight:bold;
+}
+.naviListSupportActiv {
+	font-size:12px;
+	font-family:Arial,Helvetica,sans-serif;
+	color:#43b4d5;
+	font-style:normal;
+	font-weight:bold;
+}
+.milestoneText {
+	font-family:Arial,Helvetica,sans-serif;
+	font-size:14;
+	color:White;
+	font-weight:bold;
+}
+.headlineDevelop {
+	font-size:14px;
+	font-family: Arial, Helvetica, sans-serif;
+	color:#a58229;
+	font-weight:bold;
+	font-style:normal;
+}
+.headlineSupport {
+	font-size:14px;
+	font-family:Arial,Helvetica,sans-serif;
+	color:#808285;
+	font-weight:bold;
+	font-style:normal;
+}
+.copyBig {
+	font-size:12px;
+	font-family:Arial,Helvetica,sans-serif;
+	color:Black;
+	font-weight:bold;
+}
+.copyUnderlineBig {
+	font-size:12px;
+	font-family:Arial,Helvetica,sans-serif;
+	color:Black;
+	text-decoration:underline;
+	font-weight:bold;
+}
+
+
+/* TEST */
+div.tablediv
+	{
+	width: 100%; /* Forces tables to have correct right margins and top spacing */
+	margin-top: -.4em;
+	}
+ol div.tablediv, ul div.tablediv, ol div.HxLinkTable, ul div.HxLinkTable
+	{
+	margin-top: 0em; /* Forces tables to have correct right margins and top spacing */
+	}
+table.dtTABLE
+	{
+	width: 100%; /* Forces tables to have correct right margin */
+	margin-top: .6em;
+	margin-bottom: .3em;
+	border-width: 1px 1px 0px 0px;
+	border-style: solid;
+	border-color: #999999;
+	background-color: #999999; 
+	font-size: 100%; /* Text in Table is same size as text outside table */
+	}
+table.dtTABLE th, table.dtTABLE td
+	{ 
+	border-style: solid; /* Creates the cell border and color */
+	border-width: 0px 0px 1px 1px;
+	border-style: solid;
+	border-color: #999999;
+	padding: 4px 6px;
+	text-align: left;
+	}
+table.dtTABLE th	
+	{ 
+	background: #DDDDDD; /* Creates the shaded table header row */
+	vertical-align: bottom;
+	}
+table.dtTABLE td	
+	{
+	background: #ffffff;
+	vertical-align: top;
+	}

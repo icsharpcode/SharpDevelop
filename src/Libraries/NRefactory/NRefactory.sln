@@ -1,0 +1,8 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory.Tests", "Test\NRefactoryTests.csproj", "{870115dd-960a-4406-a6b9-600bcdc36a03}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ICSharpCode.NRefactory", "Project\NRefactory.csproj", "{3a9ae6aa-bc07-4a2f-972c-581e3ae2f195}"
+EndProject
+Global
+EndGlobal

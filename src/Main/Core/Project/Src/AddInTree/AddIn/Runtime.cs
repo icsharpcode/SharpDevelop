@@ -1,0 +1,103 @@
+using System;
+using System.Reflection;
+using System.IO;
+using System.Collections.Generic;
+using System.Xml;
+
+namespace ICSharpCode.Core
+{
+	public class Runtime
+	{
+		string           assembly;
+		Assembly         loadedAssembly = null;
+		List<Properties> definedErbauer    = new List<Properties>(1);
+		List<Properties> definedConditions = new List<Properties>(1);
+		
+		public string Assembly {
+			get { 
+				return assembly;
+			}
+		}
+		
+		public Assembly LoadedAssembly {
+			get {
+				if (loadedAssembly == null) {
+					loadedAssembly = System.Reflection.Assembly.LoadFrom(assembly);
+				}
+				return loadedAssembly;
+			}
+		}
+		
+		public List<Properties> DefinedErbauer {
+			get { 
+				return definedErbauer;
+			}
+		}
+		
+		public List<Properties> DefinedConditions {
+			get { 
+				return definedConditions;
+			}
+		}
+		
+		public object CreateInstance(string hintPath, string instance)
+		{
+			if (loadedAssembly == null) {
+				loadedAssembly = System.Reflection.Assembly.LoadFrom(Path.Combine(hintPath, assembly));
+			}
+			return LoadedAssembly.CreateInstance(instance);
+		}
+		
+		internal static Runtime Read(AddIn addIn, XmlTextReader reader)
+		{
+			Runtime	runtime = new Runtime();
+			if (reader.AttributeCount != 1) {
+				throw new AddInLoadException("Import node requires ONE attribute.");
+			}
+			runtime.assembly = reader.GetAttribute(0);
+			if (!reader.IsEmptyElement) {
+				while (reader.Read()) {
+					switch (reader.NodeType) {
+						case XmlNodeType.EndElement:
+							if (reader.LocalName == "Import") {
+								return runtime;
+							}
+							break;
+						case XmlNodeType.Element:
+							string nodeName = reader.LocalName;
+							Properties properties = Properties.ReadFromAttributes(reader);
+							switch (nodeName) {
+								case "Erbauer":
+									if (!reader.IsEmptyElement) {
+										throw new AddInLoadException("Erbauer nodes must be empty!");
+									}
+									LazyLoadErbauer lazyLoadErbauer = new LazyLoadErbauer(addIn, properties);
+									
+									if (AddInTree.Erbauer.ContainsKey(lazyLoadErbauer.Name)) {
+										throw new AddInLoadException("Duplicate erbauer: " + lazyLoadErbauer.Name);
+									}
+									AddInTree.Erbauer.Add(lazyLoadErbauer.Name, lazyLoadErbauer);
+									runtime.definedErbauer.Add(properties);
+									break;
+								case "Auswerter":
+									if (!reader.IsEmptyElement) {
+										throw new AddInLoadException("Auswerter nodes must be empty!");
+									}
+									LazyLoadAuswerter lazyLoadAuswerter = new LazyLoadAuswerter(addIn, properties);
+									if (AddInTree.Auswerter.ContainsKey(lazyLoadAuswerter.Name)) {
+										throw new AddInLoadException("Duplicate auswerter: " + lazyLoadAuswerter.Name);
+									}
+									AddInTree.Auswerter.Add(lazyLoadAuswerter.Name, lazyLoadAuswerter);
+									runtime.definedConditions.Add(properties);
+									break;
+								default:
+									throw new AddInLoadException("Unknown node in Import section:" + nodeName);
+							}
+							break;
+					}
+				}
+			}
+			return runtime;
+		}
+	}
+}

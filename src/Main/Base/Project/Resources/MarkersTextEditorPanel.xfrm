@@ -1,0 +1,131 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="CreatedObject0" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=408, Height=328}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="CreatedObject2" />
+        <TabIndex value="0" />
+        <Location value="{X=8,Y=8}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=392, Height=304}" />
+        <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.MarkersGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.ComboBox>
+            <Name value="bracketMatchingStyleComboBox" />
+            <Anchor value="Bottom, Right" />
+            <TabIndex value="9" />
+            <Location value="{X=216,Y=178}" />
+            <Size value="{Width=168, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.ComboBox>
+            <Name value="lineMarkerStyleComboBox" />
+            <DropDownWidth value="168" />
+            <Anchor value="Top, Right" />
+            <TabIndex value="5" />
+            <Location value="{X=192,Y=93}" />
+            <Size value="{Width=188, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showLineNumberCheckBox" />
+            <Location value="{X=8,Y=131}" />
+            <Size value="{Width=376, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.LineNumberCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="6" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showErrorsCheckBox" />
+            <Location value="{X=8,Y=155}" />
+            <Size value="{Width=376, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.UnderLineErrorsCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="7" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showBracketHighlighterCheckBox" />
+            <Location value="{X=8,Y=179}" />
+            <Size value="{Width=208, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.HiglightBracketCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="8" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showInvalidLinesCheckBox" />
+            <Location value="{X=8,Y=203}" />
+            <Size value="{Width=376, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.InvalidLinesCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="10" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showHRulerCheckBox" />
+            <Location value="{X=8,Y=16}" />
+            <Size value="{Width=176, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.HorizontalRulerCheckBox}" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showEOLMarkersCheckBox" />
+            <Location value="{X=8,Y=227}" />
+            <Size value="{Width=376, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.EOLMarkersCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="11" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showVRulerCheckBox" />
+            <Location value="{X=8,Y=42}" />
+            <Size value="{Width=176, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.VerticalRulerCheckBox}" />
+            <TabIndex value="1" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showTabCharsCheckBox" />
+            <Location value="{X=8,Y=275}" />
+            <Size value="{Width=376, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.TabsCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="13" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showSpaceCharsCheckBox" />
+            <Location value="{X=8,Y=251}" />
+            <Size value="{Width=376, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.SpacesCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="12" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.Label>
+            <Name value="CreatedObject23" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.AtRowLabel}" />
+            <TextAlign value="MiddleRight" />
+            <Anchor value="Top, Right" />
+            <TabIndex value="2" />
+            <Size value="{Width=104, Height=24}" />
+            <Location value="{X=208,Y=44}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="vRulerRowTextBox" />
+            <Anchor value="Top, Right" />
+            <TabIndex value="3" />
+            <Location value="{X=312,Y=42}" />
+            <Size value="{Width=64, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="CreatedObject28" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.Markers.LineMarkerLabel}" />
+            <TextAlign value="MiddleLeft" />
+            <TabIndex value="4" />
+            <Size value="{Width=152, Height=24}" />
+            <Location value="{X=8,Y=88}" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

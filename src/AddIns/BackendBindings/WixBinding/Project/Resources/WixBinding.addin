@@ -1,0 +1,36 @@
+<AddIn name        = "WiX binding"
+       author      = "Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "Binding for the WiX installer."
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly = "WixBinding.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "Wix"
+		            insertafter="SharpDevelop XFrms"
+		            insertbefore="AllFiles"
+		            name = "Wix Files (*.wxs)"
+		            extensions = "*.wxs"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+		<Condition activeproject="WIX">
+			<DialogPanel id = "WixCompilerParametersPanel"
+			             label = "Compiler"
+			             class = "ICSharpCode.WixBinding.CompilerParametersPanel"/>
+			<DialogPanel id = "WixLinkerParametersPanel"
+			             label = "Linker"
+			             class = "ICSharpCode.WixBinding.LinkerParametersPanel"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id    = "Wix"
+		                 supportedextensions = ".wxs"
+		                 class = "ICSharpCode.WixBinding.WixLanguageBinding" />
+	</Path>
+</AddIn>

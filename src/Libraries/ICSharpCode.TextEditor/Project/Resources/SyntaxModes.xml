@@ -1,0 +1,49 @@
+<SyntaxModes version="1.0">
+	<Mode file       = "Resources.ASPX.xshd"
+	      name       = "ASP3/XHTML"
+	      extensions = ".asp"/>
+	
+	<Mode file       = "Resources.BAT-Mode.xshd"
+	      name       = "BAT"
+	      extensions = ".bat"/>
+	
+	<Mode file       = "Resources.Coco-Mode.xshd"
+	      name       = "Coco"
+	      extensions = ".atg"/>
+	
+	<Mode file       = "Resources.CPP-Mode.xshd"
+	      name       = "C++.NET"
+	      extensions = ".c;.h;.cc;.C;.cpp;.hpp"/>
+	
+	<Mode file       = "Resources.CSharp-Mode.xshd"
+	      name       = "C#"
+	      extensions = ".cs"/>
+	
+	<Mode file       = "Resources.HTML-Mode.xshd"
+	      name       = "HTML"
+	      extensions = ".htm;.html"/>
+	
+	<Mode file       = "Resources.Java-Mode.xshd"
+	      name       = "Java"
+	      extensions = ".java"/>
+	
+	<Mode file       = "Resources.JavaScript-Mode.xshd"
+	      name       = "JavaScript"
+	      extensions = ".js"/>
+	
+	<Mode file       = "Resources.PHP-Mode.xshd"
+	      name       = "PHP"
+	      extensions = ".php"/>
+	
+	<Mode file       = "Resources.Tex-Mode.xshd"
+	      name       = "TeX"
+	      extensions = ".tex"/>
+	
+	<Mode file       = "Resources.VBNET-Mode.xshd"
+	      name       = "VBNET"
+	      extensions = ".vb"/>
+	
+	<Mode file       = "Resources.XML-Mode.xshd"
+	      name       = "XML"
+	      extensions = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs"/>
+</SyntaxModes>

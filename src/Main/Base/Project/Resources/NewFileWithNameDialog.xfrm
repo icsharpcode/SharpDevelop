@@ -1,0 +1,159 @@
+<Components version="1.0">
+  <System.Windows.Forms.Form>
+    <Name value="MyForm" />
+    <ShowInTaskbar value="False" />
+    <FormBorderStyle value="FixedDialog" />
+    <ClientSize value="{Width=542, Height=372}" />
+    <MinimizeBox value="False" />
+    <DockPadding value="" />
+    <Text value="${res:Dialog.NewFile.DialogName}" />
+    <AcceptButton value="openButton [System.Windows.Forms.Button], Text: ${res:Global.CreateButtonText}" />
+    <CancelButton value="cancelButton [System.Windows.Forms.Button], Text: ${res:Global.CancelButtonText}" />
+    <MaximizeBox value="False" />
+    <Controls>
+      <System.Windows.Forms.TextBox>
+        <Name value="fileNameTextBox" />
+        <Anchor value="Bottom, Left, Right" />
+        <TabIndex value="3" />
+        <Location value="{X=112,Y=316}" />
+        <Size value="{Width=424, Height=21}" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="label3" />
+        <ImageAlign value="MiddleRight" />
+        <Text value="${res:Dialog.NewFile.FileNameLabel}" />
+        <TextAlign value="MiddleRight" />
+        <Anchor value="Bottom, Left" />
+        <TabIndex value="2" />
+        <Location value="{X=8,Y=316}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Label>
+        <Name value="descriptionLabel" />
+        <TextAlign value="MiddleLeft" />
+        <Anchor value="Bottom, Left, Right" />
+        <TabIndex value="1" />
+        <Size value="{Width=526, Height=17}" />
+        <Location value="{X=8,Y=292}" />
+        <BorderStyle value="Fixed3D" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Button>
+        <Name value="cancelButton" />
+        <Location value="{X=460,Y=344}" />
+        <Text value="${res:Global.CancelButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="5" />
+        <DialogResult value="Cancel" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="openButton" />
+        <Location value="{X=380,Y=344}" />
+        <Text value="${res:Global.CreateButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="4" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Panel>
+        <Name value="backgroundPanel" />
+        <Location value="{X=8,Y=8}" />
+        <Size value="{Width=528, Height=280}" />
+        <DockPadding value="" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <TabIndex value="0" />
+        <Controls>
+          <System.Windows.Forms.Panel>
+            <Name value="templatePanel" />
+            <Location value="{X=147,Y=0}" />
+            <Size value="{Width=381, Height=280}" />
+            <DockPadding value="" />
+            <TabIndex value="2" />
+            <Dock value="Fill" />
+            <Controls>
+              <System.Windows.Forms.ListView>
+                <Name value="templateListView" />
+                <Dock value="Fill" />
+                <MultiSelect value="False" />
+                <TabIndex value="1" />
+                <Location value="{X=0,Y=23}" />
+                <Size value="{Width=381, Height=257}" />
+                <HoverSelection value="True" />
+                <HideSelection value="False" />
+              </System.Windows.Forms.ListView>
+              <System.Windows.Forms.Panel>
+                <Name value="panel2" />
+                <Location value="{X=0,Y=0}" />
+                <Size value="{Width=381, Height=23}" />
+                <DockPadding value="" />
+                <TabIndex value="4" />
+                <Dock value="Top" />
+                <Controls>
+                  <System.Windows.Forms.Label>
+                    <Name value="label2" />
+                    <Text value="${res:Dialog.NewFile.TemplateText}" />
+                    <TextAlign value="BottomLeft" />
+                    <Anchor value="Top, Left, Right" />
+                    <TabIndex value="0" />
+                    <Size value="{Width=312, Height=23}" />
+                    <Location value="{X=0,Y=0}" />
+                  </System.Windows.Forms.Label>
+                  <System.Windows.Forms.RadioButton>
+                    <Name value="largeIconsRadioButton" />
+                    <Location value="{X=358,Y=0}" />
+                    <Size value="{Width=22, Height=22}" />
+                    <Anchor value="Top, Right" />
+                    <TabIndex value="3" />
+                    <Appearance value="Button" />
+                  </System.Windows.Forms.RadioButton>
+                  <System.Windows.Forms.RadioButton>
+                    <Name value="smallIconsRadioButton" />
+                    <Location value="{X=334,Y=0}" />
+                    <Size value="{Width=22, Height=22}" />
+                    <Anchor value="Top, Right" />
+                    <TabIndex value="2" />
+                    <Appearance value="Button" />
+                  </System.Windows.Forms.RadioButton>
+                </Controls>
+              </System.Windows.Forms.Panel>
+            </Controls>
+          </System.Windows.Forms.Panel>
+          <System.Windows.Forms.Splitter>
+            <Name value="splitter" />
+            <TabIndex value="1" />
+            <Size value="{Width=3, Height=280}" />
+            <Location value="{X=144,Y=0}" />
+          </System.Windows.Forms.Splitter>
+          <System.Windows.Forms.Panel>
+            <Name value="categoryPanel" />
+            <Location value="{X=0,Y=0}" />
+            <Size value="{Width=144, Height=280}" />
+            <DockPadding value="" />
+            <TabIndex value="0" />
+            <Dock value="Left" />
+            <Controls>
+              <System.Windows.Forms.TreeView>
+                <Name value="categoryTreeView" />
+                <ImageIndex value="-1" />
+                <Dock value="Fill" />
+                <TabIndex value="1" />
+                <Scrollable value="False" />
+                <Location value="{X=0,Y=23}" />
+                <SelectedImageIndex value="-1" />
+                <Size value="{Width=144, Height=257}" />
+                <HotTracking value="True" />
+                <HideSelection value="False" />
+              </System.Windows.Forms.TreeView>
+              <System.Windows.Forms.Label>
+                <Name value="label" />
+                <Text value="${res:Dialog.NewFile.CategoryText}" />
+                <TextAlign value="BottomLeft" />
+                <TabIndex value="0" />
+                <Size value="{Width=144, Height=23}" />
+                <Location value="{X=0,Y=0}" />
+                <Dock value="Top" />
+              </System.Windows.Forms.Label>
+            </Controls>
+          </System.Windows.Forms.Panel>
+        </Controls>
+      </System.Windows.Forms.Panel>
+    </Controls>
+  </System.Windows.Forms.Form>
+</Components>

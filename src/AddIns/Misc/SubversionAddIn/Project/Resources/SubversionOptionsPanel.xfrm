@@ -1,0 +1,46 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="XmlUserControl1" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=296, Height=240}" />
+    <Controls>
+      <System.Windows.Forms.CheckBox>
+        <Name value="autoReloadProjectCheckBox" />
+        <Location value="{X=8,Y=176}" />
+        <Size value="{Width=280, Height=24}" />
+        <Text value="&amp;Re-load project after projectfile change" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="5" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="autoAddFilesCheckBox" />
+        <Location value="{X=8,Y=152}" />
+        <Size value="{Width=280, Height=24}" />
+        <Text value="&amp;Automatically add new files" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="4" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.TextBox>
+        <Name value="logMessageTextBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="3" />
+        <Location value="{X=8,Y=32}" />
+        <AcceptsReturn value="True" />
+        <Size value="{Width=280, Height=112}" />
+        <Multiline value="True" />
+        <WordWrap value="False" />
+        <AcceptsTab value="True" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="label1" />
+        <Text value="&amp;Standard commit message:" />
+        <TextAlign value="BottomLeft" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="2" />
+        <Size value="{Width=280, Height=23}" />
+        <Location value="{X=8,Y=8}" />
+      </System.Windows.Forms.Label>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

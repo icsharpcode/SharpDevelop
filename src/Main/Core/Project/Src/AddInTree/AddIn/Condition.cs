@@ -1,0 +1,118 @@
+using System;
+using System.Collections.Generic;
+using System.Xml;
+
+namespace ICSharpCode.Core
+{
+	/// <summary>
+	/// Description of Codon.
+	/// </summary>
+	public class Condition : ICondition
+	{
+		string                name;
+		Properties            properties;
+		ConditionFailedAction action;
+		/// <summary>
+		/// Returns the action which occurs, when this condition fails.
+		/// </summary>
+		public ConditionFailedAction Action {
+			get {
+				return action;
+			}
+		}
+		public string Name {
+			get {
+				return name;
+			}
+		}
+		
+		public string this[string key] {
+			get {
+				return properties[key];
+			}
+		}
+		
+		public Properties Properties {
+			get {
+				return properties;
+			}
+		}
+		
+		public Condition(string name, Properties properties)
+		{
+			this.name = name;
+			this.properties = properties;
+			action = properties.Get("action", ConditionFailedAction.Exclude);
+		}
+		
+		public bool IsValid(object caller)
+		{
+			try {
+				return AddInTree.Auswerter[name].IsValid(caller, this);
+			} catch (KeyNotFoundException) {
+				throw new CoreException("Auswerter " + name + " not found!");
+			}
+
+		}
+		
+		public static ICondition Read(XmlTextReader reader)
+		{
+			Properties properties = Properties.ReadFromAttributes(reader);
+			string conditionName = properties["name"];
+			return new Condition(conditionName, properties);
+		}
+		
+		public static ICondition ReadComplexCondition(XmlTextReader reader)
+		{
+			reader.Read();
+			while (reader.Read()) {
+				switch (reader.NodeType) {
+					case XmlNodeType.Element:
+						switch (reader.LocalName) {
+							case "And":
+								return AndCondition.Read(reader);
+							case "Or":
+								return OrCondition.Read(reader);
+							case "Not":
+								return NegatedCondition.Read(reader);
+							case "Condition":
+								return Condition.Read(reader);
+						}						
+						break;
+				}
+			}
+			return null;
+		}
+		
+		public static ICondition[] ReadConditionList(XmlTextReader reader, string endElement)
+		{
+			List<ICondition> conditions = new List<ICondition>();
+			while (reader.Read()) {
+				switch (reader.NodeType) {
+					case XmlNodeType.EndElement:
+						if (reader.LocalName == endElement) {
+							return conditions.ToArray();
+						}
+						break;
+					case XmlNodeType.Element:
+						switch (reader.LocalName) {
+							case "And":
+								conditions.Add(AndCondition.Read(reader));
+								break;
+							case "Or":
+								conditions.Add(OrCondition.Read(reader));
+								break;
+							case "Not":
+								conditions.Add(NegatedCondition.Read(reader));
+								break;
+							case "Condition":
+								conditions.Add(Condition.Read(reader));
+								break;
+						}
+						break;
+				}
+			}
+			return conditions.ToArray();
+		}
+	}
+}

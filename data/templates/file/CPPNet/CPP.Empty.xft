@@ -1,0 +1,22 @@
+<?xml version="1.0"?>
+<Template author="Roman Taranchenko" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.EmptyFile.Name}"
+		  icon        = "C++.File.EmptyFile"
+		  category    = "C++"
+		  defaultname = "Empty${Number}.cpp"
+		  language    = "C++.NET"/>
+	 
+	<Description>${res:Templates.File.EmptyFile.Description}</Description>
+	
+	<Files>
+		<File name="${FullName}" language="C++.NET"><![CDATA[${StandardHeader.C++.NET}
+
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+

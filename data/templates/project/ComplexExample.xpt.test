@@ -1,0 +1,117 @@
+<?xml version="1.0"?>
+<Template originator   = "Mike Krueger"
+          created      = "02/01/2003"
+          lastModified = "02/01/2003">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>Complex EXAMPLE</Name>
+		<Category>C#</Category>
+		<Icon>C#.Project.ConsoleCSharpProject</Icon>
+		<LanguageName>C#</LanguageName>
+		<Description>Creates a combine</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Main.cs"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Combine name = "Empty Sub Combine" directory = "SubCombine1"/>
+		
+		<Combine name = "VB.NET Sub Combine" directory = "VBNetSubCombine">
+			<Project name = "VBNetProject" directory = "." language="VBNET">
+				
+				<Options Target = "Exe" PauseConsoleOutput = "True"/>
+				
+				<References>
+					<Reference type="Gac" refto="System, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+				</References>
+				
+				<Files>
+			<File name="Main.vb">
+				<![CDATA[' project created on ${Date} at ${Time}
+	Imports System
+	Module Main
+	    Sub Main()
+	        Console.WriteLine("Hello World!")
+	    End Sub
+	End Module
+	]]></File>
+				</Files>
+			</Project>			
+		</Combine>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options/>
+			<Files>
+			<File name="Elements\Readme.txt"><![CDATA[// project ${ProjectName} and file ${FileName} created on ${Date}
+at ${Time}]]></File>
+<File name="Tables\Readme.txt"><![CDATA[// project created on ${Date} at
+${Time}]]></File>
+<File name="Forms\Readme.txt"><![CDATA[// project created on ${Date} at
+${Time}]]></File>
+<File name="Forms\Dialogs\Readme.txt"><![CDATA[// project created on
+${Date} at ${Time}]]></File>
+
+<File name="Forms\Controls\Readme.txt"><![CDATA[// project created on
+${Date} at ${Time}]]></File>
+<File name="Menu\Readme.txt"><![CDATA[// project created on ${Date} at
+${Time}]]></File>
+<File name="Reports\Readme.txt"><![CDATA[// project created on ${Date}
+at ${Time}]]></File>
+<File name="Batches\Readme.txt"><![CDATA[// project created on ${Date}
+at ${Time}]]></File>
+				<File name="Main.cs"><![CDATA[// project created on ${Date} at ${Time}
+using System;
+
+class MainClass
+{
+	public static void Main(string[] args)
+	{
+		Console.WriteLine("Hello World!");
+	}
+}]]></File>
+			<File name="AssemblyInfo.cs"><![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+// Information about this assembly is defined by the following
+// attributes.
+//
+// change them to the information which is associated with the assembly
+// you compile.
+
+[assembly: AssemblyTitle("")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+
+// The assembly version has following format :
+//
+// Major.Minor.Build.Revision
+//
+// You can specify all values by your own or you can build default build and revision
+// numbers with the '*' character (the default):
+
+[assembly: AssemblyVersion("1.0.*")]
+
+// The following attributes specify the key for the sign of your assembly. See the
+// .NET Framework documentation for more information about signing.
+// This is not required, if you don't want signing let these attributes like they're.
+[assembly: AssemblyDelaySign(false)]
+[assembly: AssemblyKeyFile("")]
+]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

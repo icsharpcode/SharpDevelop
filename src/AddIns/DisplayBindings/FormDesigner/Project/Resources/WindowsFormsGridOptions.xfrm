@@ -1,0 +1,83 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="CreatedUserControl" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=224, Height=224}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox2" />
+        <TabIndex value="1" />
+        <Location value="{X=8,Y=144}" />
+        <Anchor value="Top, Left, Right" />
+        <ClientSize value="{Width=208, Height=64}" />
+        <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PropertyGridGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="sortAlphabeticalCheckBox" />
+            <Location value="{X=8,Y=24}" />
+            <ClientSize value="{Width=192, Height=24}" />
+            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PropertyGridSortCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="4" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox" />
+        <TabIndex value="0" />
+        <Location value="{X=8,Y=8}" />
+        <Anchor value="Top, Left, Right" />
+        <ClientSize value="{Width=208, Height=128}" />
+        <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.GridPropertiesGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="snapToGridCheckBox" />
+            <Location value="{X=8,Y=96}" />
+            <ClientSize value="{Width=192, Height=24}" />
+            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.SnapToGridComboBox}" />
+            <Anchor value="Bottom, Left, Right" />
+            <TabIndex value="5" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showGridCheckBox" />
+            <Location value="{X=8,Y=72}" />
+            <ClientSize value="{Width=192, Height=24}" />
+            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.ShowGridComboBox}" />
+            <Anchor value="Bottom, Left, Right" />
+            <TabIndex value="4" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.TextBox>
+            <Name value="heightTextBox" />
+            <TabIndex value="3" />
+            <Location value="{X=104,Y=40}" />
+            <ClientSize value="{Width=68, Height=17}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="label" />
+            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.HeightLabel}" />
+            <TextAlign value="MiddleRight" />
+            <TabIndex value="2" />
+            <ClientSize value="{Width=88, Height=23}" />
+            <Location value="{X=8,Y=40}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="widthTextBox" />
+            <TabIndex value="1" />
+            <Location value="{X=104,Y=16}" />
+            <ClientSize value="{Width=68, Height=17}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="label" />
+            <Text value="${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.WidthLabel}" />
+            <TextAlign value="MiddleRight" />
+            <TabIndex value="0" />
+            <ClientSize value="{Width=88, Height=23}" />
+            <Location value="{X=8,Y=16}" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

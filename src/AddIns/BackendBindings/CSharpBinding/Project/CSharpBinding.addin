@@ -1,0 +1,79 @@
+<AddIn name        = "SharpDevelop Bindings"
+       author      = "Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "NCvs core module"
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly = "CSharpBinding.dll"/>
+	</Runtime>
+
+	<Path name = "/SharpDevelop/Workbench/Ambiences">
+		<Class id    = "C#"
+		       class = "ICSharpCode.Core.CSharpAmbience"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "C#"
+		            insertbefore="AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.CSharpFiles}"
+		            extensions = "*.cs"/>
+	</Path>
+
+	<Path name = "/Workspace/Parser">
+		<Parser id    = "C#" 
+			supportedextensions  = ".cs"
+			projectfileextension = ".csproj"
+			class = "CSharpBinding.Parser.TParser"/>
+	</Path>
+
+	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
+		<DialogPanel id    = "Application"
+		             label = "Application"
+		             class = "CSharpBinding.OptionPanels.ApplicationSettings"/>
+		<DialogPanel id    = "ReferencePaths"
+		             label = "Reference Paths"
+		             class = "CSharpBinding.OptionPanels.ReferencePaths"/>
+		<DialogPanel id    = "Signing"
+		             label = "Signing"
+		             class = "CSharpBinding.OptionPanels.Signing"/>
+		<DialogPanel id    = "BuildEvents"
+		             label = "Build Events"
+		             class = "CSharpBinding.OptionPanels.BuildEvents"/>
+		<DialogPanel id    = "BuildOptions"
+		             label = "Build"
+		             class = "CSharpBinding.OptionPanels.BuildOptions"/>
+		<DialogPanel id    = "DebugOptions"
+		             label = "Debug"
+		             class = "CSharpBinding.OptionPanels.DebugOptions"/>
+		<DialogPanel id    = "Publish"
+		             label = "Publish"
+		             class = "CSharpBinding.OptionPanels.Publish"/>
+	</Path>
+
+	<Path name = "/AddIns/DefaultTextEditor/Formater">
+		<Condition textcontent = "C#">
+			<Class id ="CSharpFormatter" insertbefore="DefaultFormatter" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/Workspace/Icons">
+		<!-- C# -->
+		<Icon id         = "C#Prj"
+		      language   = "C#"
+		      resource   = "C#.ProjectIcon"/>
+
+		<Icon id         = "C#File"
+		      extensions = ".cs"
+		      resource   = "C#.FileIcon"/>
+	</Path>
+	
+	<Path path = "/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id                   = "C#"
+		                 guid                 = "{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}"
+		                 supportedextensions  = ".cs"
+		                 projectfileextension = ".csproj"
+		                 class                = "CSharpBinding.CSharpLanguageBinding" />
+	</Path>
+</AddIn>

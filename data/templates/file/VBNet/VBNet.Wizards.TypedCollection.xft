@@ -1,0 +1,304 @@
+<?xml version="1.0"?>
+<Template author="Mike Krueger" version="1.0">
+	
+	<Config
+		name        = "${res:Templates.File.TypedCollection.Name}"
+		icon        = "VB.File.FullFile"
+		category    = "VB"
+		defaultname = "TypedCollection${Number}.vb"
+		language    = "VBNET"
+	/>
+	
+	<Description>${res:Templates.File.TypedCollection.Description}</Description>
+	
+	<Properties>
+		<Property
+			name          = "ItemType"
+			localizedName = "${res:Templates.File.Properties.TypedCollectionWizard.ItemType}"
+			type          = "System.String"
+			category      = "${res:Templates.File.Properties.ContextCategory}"
+			description   = "${res:Templates.File.Properties.TypedCollectionWizard.ItemType.Description}"
+		/>
+		<Property
+			name          = "Accessibility"
+			localizedName = "${res:Templates.File.Properties.Accessibility}"
+			type          = "Types:Accessibility"
+			category      = "${res:Templates.File.Properties.OptionCategory}"
+			defaultValue  = "Public"
+			description   = "${res:Templates.File.Properties.Accessibility.Description}"
+		/>
+		<Property
+			name          = "GenerateDocumentation"
+			localizedName = "${res:Templates.File.Properties.GenerateDocumentation}"
+			type          = "System.Boolean"
+			category      = "${res:Templates.File.Properties.OptionCategory}"
+			defaultValue  = "True"
+			description   = "${res:Templates.File.Properties.GenerateDocumentation}"
+		/>
+	</Properties>
+	
+	<Types>
+		<Type name = "Accessibility">
+			<Enum name = "Public" value = "Public"/>
+			<Enum name = "Protected" value = "Protected"/>
+			<Enum name = "Private" value = "Private"/>
+			<Enum name = "Friend" value = "Friend"/>
+			<Enum name = "Protected Friend" value = "Protected Friend"/>
+		</Type>
+	</Types>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
+
+Imports System
+Imports System.Collections
+
+Namespace ${StandardNamespace}
+	
+<%if (GenerateDocumentation) {%>	'<summary>
+	'    <para>
+	'      A collection that stores <see cref='.${Properties.ItemType}'/> objects.
+	'   </para>
+	'</summary>
+	'<seealso cref='.${ClassName}'/>
+<%}%>	<Serializable()>  _
+	${Properties.Accessibility} Class ${ClassName}
+		Inherits CollectionBase
+		
+<%if (GenerateDocumentation) {%>		'<summary>
+		'    <para>
+		'      Initializes a new instance of <see cref='.${ClassName}'/>.
+		'   </para>
+		'</summary>
+<%}%>		Public Sub New()
+			MyBase.New
+		End Sub
+		
+<%if (GenerateDocumentation) {%>		'<summary>
+		'    <para>
+		'      Initializes a new instance of <see cref='.${ClassName}'/> based on another <see cref='.${ClassName}'/>.
+		'   </para>
+		'</summary>
+		'<param name='value'>
+		'      A <see cref='.${ClassName}'/> from which the contents are copied
+		'</param>
+<%}%>		Public Sub New(ByVal value As ${ClassName})
+			MyBase.New
+			Me.AddRange(value)
+		End Sub
+		
+<%if (GenerateDocumentation) {%>		'<summary>
+		'    <para>
+		'      Initializes a new instance of <see cref='.${ClassName}'/> containing any array of <see cref='.${Properties.ItemType}'/> objects.
+		'   </para>
+		'</summary>
+		'<param name='value'>
+		'      A array of <see cref='.${Properties.ItemType}'/> objects with which to intialize the collection
+		'</param>
+<%}%>		Public Sub New(ByVal value() As ${Properties.ItemType})
+			MyBase.New
+			Me.AddRange(value)
+		End Sub
+		
+<%if (GenerateDocumentation) {%>		'<summary>
+		'<para>Represents the entry at the specified index of the <see cref='.${Properties.ItemType}'/>.</para>
+		'</summary>
+		'<param name='index'><para>The zero-based index of the entry to locate in the collection.</para></param>
+		'<value>
+		'   <para> The entry at the specified index of the collection.</para>
+		'</value>
+		'<exception cref='System.ArgumentOutOfRangeException'><paramref name='index'/> is outside the valid range of indexes for the collection.</exception>
+<%}%>		Public Default Property Item(ByVal index As Integer) As ${Properties.ItemType}
+			Get
+				Return CType(List(index),${Properties.ItemType})
+			End Get
+			Set
+				List(index) = value
+			End Set
+		End Property
+		
+<%if (GenerateDocumentation) {%>		'<summary>
+		'   <para>Adds a <see cref='.${Properties.ItemType}'/> with the specified value to the 
+		'   <see cref='.${ClassName}'/> .</para>
+		'</summary>
+		'<param name='value'>The <see cref='.${Properties.ItemType}'/> to add.</param>
+		'<returns>
+		'   <para>The index at which the new element was inserted.</para>
+		'</returns>
+		'<seealso cref='.${ClassName}.AddRange'/>
+<%}%>		Public Function Add(ByVal value As ${Properties.ItemType}) As Integer
+			Return List.Add(value)
+		End Function
+		
+<%if (GenerateDocumentation) {%>		'<summary>
+		'<para>Copies the elements of an array to the end of the <see cref='.${ClassName}'/>.</para>
+		'</summary>
+		'<param name='value'>
+		'   An array of type <see cref='.${Properties.ItemType}'/> containing the objects to add to the collection.
+		'</param>
+		'<returns>
+		'  <para>None.</para>
+		'</returns>
+		'<seealso cref='.${ClassName}.Add'/>
+<%}%>		Public Overloads Sub AddRange(ByVal value() As ${Properties.ItemType})
+			Dim i As Integer = 0
+			Do While (i < value.Length)
+				Me.Add(value(i))
+				i = (i + 1)
+			Loop
+		End Sub
+		
+<%if (GenerateDocumentation) {%>		'<summary>
+		'    <para>
+		'      Adds the contents of another <see cref='.${ClassName}'/> to the end of the collection.
+		'   </para>
+		'</summary>
+		'<param name='value'>
+		'   A <see cref='.${ClassName}'/> containing the objects to add to the collection.
+		'</param>
+		'<returns>
+		'  <para>None.</para>
+		'</returns>
+		'<seealso cref='.${ClassName}.Add'/>
+<%}%>		Public Overloads Sub AddRange(ByVal value As ${ClassName})
+			Dim i As Integer = 0
+			Do While (i < value.Count)
+				Me.Add(value(i))
+				i = (i + 1)
+			Loop
+		End Sub
+		
+<%if (GenerateDocumentation) {%>		'<summary>
+		'<para>Gets a value indicating whether the 
+		'   <see cref='.${ClassName}'/> contains the specified <see cref='.${Properties.ItemType}'/>.</para>
+		'</summary>
+		'<param name='value'>The <see cref='.${Properties.ItemType}'/> to locate.</param>
+		'<returns>
+		'<para><see langword='true'/> if the <see cref='.${Properties.ItemType}'/> is contained in the collection; 
+		'  otherwise, <see langword='false'/>.</para>
+		'</returns>
+		'<seealso cref='.${ClassName}.IndexOf'/>
+<%}%>		Public Function Contains(ByVal value As ${Properties.ItemType}) As Boolean
+			Return List.Contains(value)
+		End Function
+		
+<%if (GenerateDocumentation) {%>		'<summary>
+		'<para>Copies the <see cref='.${ClassName}'/> values to a one-dimensional <see cref='System.Array'/> instance at the 
+		'   specified index.</para>
+		'</summary>
+		'<param name='array'><para>The one-dimensional <see cref='System.Array'/> that is the destination of the values copied from <see cref='.${ClassName}'/> .</para></param>
+		'<param name='index'>The index in <paramref name='array'/> where copying begins.</param>
+		'<returns>
+		'  <para>None.</para>
+		'</returns>
+		'<exception cref='System.ArgumentException'><para><paramref name='array'/> is multidimensional.</para> <para>-or-</para> <para>The number of elements in the <see cref='.${ClassName}'/> is greater than the available space between <paramref name='arrayIndex'/> and the end of <paramref name='array'/>.</para></exception>
+		'<exception cref='System.ArgumentNullException'><paramref name='array'/> is <see langword='null'/>. </exception>
+		'<exception cref='System.ArgumentOutOfRangeException'><paramref name='arrayIndex'/> is less than <paramref name='array'/>'s lowbound. </exception>
+		'<seealso cref='System.Array'/>
+<%}%>		Public Sub CopyTo(ByVal array() As ${Properties.ItemType}, ByVal index As Integer)
+			List.CopyTo(array, index)
+		End Sub
+		
+<%if (GenerateDocumentation) {%>		'<summary>
+		'   <para>Returns the index of a <see cref='.${Properties.ItemType}'/> in 
+		'      the <see cref='.${ClassName}'/> .</para>
+		'</summary>
+		'<param name='value'>The <see cref='.${Properties.ItemType}'/> to locate.</param>
+		'<returns>
+		'<para>The index of the <see cref='.${Properties.ItemType}'/> of <paramref name='value'/> in the 
+		'<see cref='.${ClassName}'/>, if found; otherwise, -1.</para>
+		'</returns>
+		'<seealso cref='.${ClassName}.Contains'/>
+<%}%>		Public Function IndexOf(ByVal value As ${Properties.ItemType}) As Integer
+			Return List.IndexOf(value)
+		End Function
+		
+<%if (GenerateDocumentation) {%>		'<summary>
+		'<para>Inserts a <see cref='.${Properties.ItemType}'/> into the <see cref='.${ClassName}'/> at the specified index.</para>
+		'</summary>
+		'<param name='index'>The zero-based index where <paramref name='value'/> should be inserted.</param>
+		'<param name=' value'>The <see cref='.${Properties.ItemType}'/> to insert.</param>
+		'<returns><para>None.</para></returns>
+		'<seealso cref='.${ClassName}.Add'/>
+<%}%>		Public Sub Insert(ByVal index As Integer, ByVal value As ${Properties.ItemType})
+			List.Insert(index, value)
+		End Sub
+		
+<%if (GenerateDocumentation) {%>		'<summary>
+		'   <para>Returns an enumerator that can iterate through 
+		'      the <see cref='.${ClassName}'/> .</para>
+		'</summary>
+		'<returns><para>None.</para></returns>
+		'<seealso cref='System.Collections.IEnumerator'/>
+<%}%>		Public Shadows Function GetEnumerator() As ${Properties.ItemType}Enumerator
+			Return New ${Properties.ItemType}Enumerator(Me)
+		End Function
+		
+<%if (GenerateDocumentation) {%>		'<summary>
+		'   <para> Removes a specific <see cref='.${Properties.ItemType}'/> from the 
+		'   <see cref='.${ClassName}'/> .</para>
+		'</summary>
+		'<param name='value'>The <see cref='.${Properties.ItemType}'/> to remove from the <see cref='.${ClassName}'/> .</param>
+		'<returns><para>None.</para></returns>
+		'<exception cref='System.ArgumentException'><paramref name='value'/> is not found in the Collection. </exception>
+<%}%>		Public Sub Remove(ByVal value As ${Properties.ItemType})
+			List.Remove(value)
+		End Sub
+		
+		Public Class ${Properties.ItemType}Enumerator
+			Implements IEnumerator
+			
+			Private baseEnumerator As IEnumerator
+			
+			Private temp As IEnumerable
+			
+			Public Sub New(ByVal mappings As ${ClassName})
+				MyBase.New
+				Me.temp = CType(mappings,IEnumerable)
+				Me.baseEnumerator = temp.GetEnumerator
+			End Sub
+			
+			Public ReadOnly Property Current As ${Properties.ItemType}
+				Get
+					Return CType(baseEnumerator.Current,${Properties.ItemType})
+				End Get
+			End Property
+			
+			ReadOnly Property IEnumerator_Current As Object Implements IEnumerator.Current
+				Get
+					Return baseEnumerator.Current
+				End Get
+			End Property
+			
+			Public Function MoveNext() As Boolean
+				Return baseEnumerator.MoveNext
+			End Function
+			
+			Function IEnumerator_MoveNext() As Boolean Implements IEnumerator.MoveNext
+				Return baseEnumerator.MoveNext
+			End Function
+			
+			Public Sub Reset()
+				baseEnumerator.Reset
+			End Sub
+			
+			Sub IEnumerator_Reset() Implements IEnumerator.Reset
+				baseEnumerator.Reset
+			End Sub
+		End Class
+	End Class
+End Namespace
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

@@ -1,0 +1,286 @@
+<?xml version = "1.0"?>
+<!-- C# mode VS.NET style by Georg Brandl -->
+
+<SyntaxDefinition name = "VS-C#" extensions = ".cstemp">
+
+	<Environment> 
+		<Default      color = "SystemColors.WindowText"    bgcolor = "SystemColors.Window"/>
+		<Selection    color = "SystemColors.HighlightText" bgcolor = "SystemColors.Highlight"/>
+<!--		<Selection    bgcolor = "LightBlue"/> -->
+		<VRuler       color = "SystemColors.ControlLight"/>
+		<InvalidLines color = "Red"/>
+		<CaretMarker  color = "Yellow"/>
+		
+		<LineNumbers  color = "SystemColors.ControlDark" bgcolor = "SystemColors.Window"/>
+		
+		<FoldLine     color = "#808080" bgcolor="Black"/>
+		<FoldMarker   color = "#808080" bgcolor="White"/>
+		<SelectedFoldLine color = "Black" bgcolor="Black"/>
+
+		<EOLMarkers   color = "#E0E0E5"/>
+		<SpaceMarkers color = "#E0E0E5"/>
+		<TabMarkers   color = "#E0E0E5"/>
+	</Environment>
+	
+	<Properties>
+		<Property name="LineComment" value="//"/>
+	</Properties>
+	
+	<Digits name = "Digits" bold = "false" italic = "false" color = "DarkBlue"/>
+
+	<RuleSets>
+		<RuleSet ignorecase="false">
+			<Delimiters>&amp;&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+			<Span name = "PreprocessorDirectives" bold="false" italic="false" color="DarkViolet" stopateol = "true">
+				<Begin>#</Begin>
+			</Span>
+		  
+			<Span name = "LINECOMMENT" rule = "DocumentSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
+				<Begin bold = "false" italic = "false" color = "Gray">///</Begin>
+			</Span>
+		  
+			<Span name = "LINECOMMENT" rule = "TestSet" bold = "false" italic = "false" color = "Green" stopateol = "true">
+		   		<Begin>//@!/@</Begin>
+		  	</Span>
+		  
+			<Span name = "BLOCKCOMMENT" rule = "TestSet" bold = "false" italic = "false" color = "Green" stopateol = "false">
+				<Begin>/*</Begin>
+				<End>*/</End>
+			</Span>
+		  	
+			<Span name = "STRING" bold = "false" italic = "false" color = "SystemColors.WindowText" stopateol = "true">
+				<Begin bold = "false" italic = "false" color = "SystemColors.WindowText">"</Begin>
+				<End bold = "false" italic = "false" color = "SystemColors.WindowText">"</End>
+			</Span>
+			
+			<Span name = "MORELINEDSTRING" bold = "false" italic = "false" color = "SystemColors.WindowText" stopateol = "false" noescapesequences="true">
+				<Begin bold = "false" italic = "false" color = "SystemColors.WindowText">@@"</Begin>
+				<End bold = "false" italic = "false" color = "SystemColors.WindowText">"</End>
+			</Span>
+			
+			<Span name = "CHAR" bold = "false" italic = "false" color = "SystemColors.WindowText" stopateol = "true">
+				<Begin bold = "false" italic = "false" color = "SystemColors.WindowText">&apos;</Begin>
+				<End bold = "false" italic = "false" color = "SystemColors.WindowText">&apos;</End>
+			</Span>
+			
+			<KeyWords name = "Punctuation" bold = "false" italic = "false" color = "Green">
+				<Key word = "?" />
+				<Key word = "," />
+				<Key word = "." />
+				<Key word = ";" />
+				<Key word = "(" />
+				<Key word = ")" />
+				<Key word = "[" />
+				<Key word = "]" />
+				<Key word = "{" />
+				<Key word = "}" />
+				<Key word = "+" />
+				<Key word = "-" />
+				<Key word = "/" />
+				<Key word = "%" />
+				<Key word = "*" />
+				<Key word = "&lt;" />
+				<Key word = "&gt;" />
+				<Key word = "^" />
+				<Key word = "=" />
+				<Key word = "~" />
+				<Key word = "!" />
+				<Key word = "|" />
+			    <Key word = "&amp;" />
+		  	</KeyWords>
+		  
+			<KeyWords name = "Keywords" bold="true" italic="false" color="Blue">
+				<Key word = "this" />
+				<Key word = "base" />
+				
+				<Key word = "as" />
+				<Key word = "is" />
+				<Key word = "new" />
+				<Key word = "sizeof" />
+				<Key word = "typeof" />
+				<Key word = "true" />
+				<Key word = "false" />
+				<Key word = "stackalloc" />
+				
+				<Key word = "else" />
+				<Key word = "if" />
+				<Key word = "switch" />
+				<Key word = "case" />
+
+				<Key word = "do" />
+				<Key word = "for" />
+				<Key word = "foreach" />
+				<Key word = "in" />
+				<Key word = "while" />
+
+				<Key word = "break" />
+				<Key word = "continue" />
+				<Key word = "default" />
+				<Key word = "goto" />
+				<Key word = "return" />
+
+				<Key word = "try" />
+				<Key word = "throw" />
+				<Key word = "catch" />
+				<Key word = "finally" />
+		  
+			    <Key word = "namespace" />
+			    <Key word = "using" />
+
+			    <Key word = "get" />
+			    <Key word = "set" />
+			    <Key word = "add" />
+			    <Key word = "remove" />
+			</KeyWords>
+		  
+			<KeyWords name = "OtherKeywords" bold="false" italic="false" color="Blue">
+				<Key word = "checked" />
+				<Key word = "unchecked" />
+
+				<Key word = "fixed" />
+				<Key word = "unsafe" />
+
+			    <Key word = "bool" />
+			    <Key word = "byte" />
+			    <Key word = "char" />
+			    <Key word = "decimal" />
+			    <Key word = "double" />
+			    <Key word = "enum" />
+			    <Key word = "float" />
+			    <Key word = "int" />
+			    <Key word = "long" />
+			    <Key word = "sbyte" />
+			    <Key word = "short" />
+			    <Key word = "struct" />
+		    	<Key word = "uint" />
+			    <Key word = "ushort" />
+			    <Key word = "ulong" />
+
+			    <Key word = "class" />
+			    <Key word = "interface" />
+			    <Key word = "delegate" />
+			    <Key word = "object" />
+			    <Key word = "string" />
+
+			    <Key word = "void" />
+
+			    <Key word = "explicit" />
+			    <Key word = "implicit" />
+			    <Key word = "operator" />
+
+			    <Key word = "params" />
+			    <Key word = "ref" />
+			    <Key word = "out" />
+
+			    <Key word = "abstract" />
+			    <Key word = "const" />
+			    <Key word = "event" />
+			    <Key word = "extern" />
+			    <Key word = "override" />
+			    <Key word = "readonly" />
+			    <Key word = "sealed" />
+			    <Key word = "static" />
+			    <Key word = "virtual" />
+
+				<Key word = "public" />
+				<Key word = "protected" />
+				<Key word = "private" />
+				<Key word = "internal" />
+				
+			    <Key word = "lock" />
+
+			    <Key word = "null" />
+			    <Key word = "value" />
+		  	</KeyWords>
+		  
+			<KeyWords name = "PreprocessorDirectives" bold="false" italic="false" color="DarkViolet">
+				<Key word = "#if" />
+				<Key word = "#else" />
+			    <Key word = "#elif" />
+			    <Key word = "#endif" />
+			    <Key word = "#define" />
+			    <Key word = "#undef" />
+			    <Key word = "#warning" />
+			    <Key word = "#error" />
+			    <Key word = "#line" />
+			    <Key word = "#region" />
+			    <Key word = "#endregion" />
+		  	</KeyWords>
+		  
+		</RuleSet>
+		
+		<RuleSet name = "TestSet" ignorecase = "true">
+		  	<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+			<KeyWords name = "ErrorWords" bold="true" italic="true" color="Red">
+				<Key word = "TODO" />
+				<Key word = "FIXME" />
+	 	 	</KeyWords>
+			<KeyWords name = "WarningWords" bold="true" italic="true" color="#EEE0E000">
+				<Key word = "HACK" />
+				<Key word = "UNDONE" />
+	 	 	</KeyWords>
+		</RuleSet>
+		
+		<RuleSet name = "DocumentSet" ignorecase = "false">
+		  	<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+			
+			<Span name = "XMLTAG" rule = "XMLDocuSet" bold = "false" italic = "false" color = "Gray" stopateol = "true">
+				<Begin>&lt;</Begin>
+				<End>&gt;</End>
+			</Span>
+			
+			<KeyWords name = "ErrorWords" bold="true" italic="true" color="Red">
+				    <Key word = "TODO" />
+				    <Key word = "FIXME" />
+			</KeyWords>
+			
+			<KeyWords name = "WarningWords" bold="true" italic="true" color="#EEE0E000">
+				    <Key word = "HACK" />
+				    <Key word = "UNDONE" />
+			</KeyWords>
+		</RuleSet>
+		
+		<RuleSet name = "XMLDocuSet" ignorecase = "false">
+		  	<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+	  	    
+			<Span name = "STRING" bold = "true" italic = "false" color = "Silver" stopateol = "true">
+				<Begin>"</Begin>
+				<End>"</End>
+			</Span>
+	  	   
+			
+			<KeyWords name = "Punctuation" bold = "true" italic = "false" color = "Gray">
+				<Key word = "/" />
+				<Key word = "|" />
+				<Key word = "=" />
+		  	</KeyWords>
+		  	
+		 	<KeyWords name = "SpecialComment" bold="true" italic="false" color="Gray">
+				    <Key word = "c" />
+				    <Key word = "code" />
+				    <Key word = "example" />
+				    <Key word = "exception" />
+				    <Key word = "list" />
+				    <Key word = "para" />
+				    <Key word = "param" />
+				    <Key word = "paramref" />
+				    <Key word = "permission" />
+				    <Key word = "remarks" />
+				    <Key word = "returns" />
+				    <Key word = "see" />
+				    <Key word = "seealso" />
+				    <Key word = "summary" />
+				    <Key word = "value" />
+				    
+				    <Key word = "type" />
+				    <Key word = "name" />
+				    <Key word = "cref" />
+				    <Key word = "item" />
+				    <Key word = "term" />
+				    <Key word = "description" />
+				    <Key word = "listheader" />
+	 	 	</KeyWords>
+		</RuleSet>
+	</RuleSets>
+</SyntaxDefinition>
+

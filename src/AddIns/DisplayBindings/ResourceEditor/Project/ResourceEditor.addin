@@ -1,0 +1,70 @@
+<AddIn name        = "Resource Editor"
+       author      = "Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "A Display binding for *.resources and *.resx files."
+       version     = "1.0.0">
+
+	<Runtime>
+		<Import assembly="ResourceEditor.dll"/>
+	</Runtime>
+
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id           = "ResourceEditor"
+		                insertbefore = "Text"
+		                class        = "ResourceEditor.ResourceEditorDisplayBinding" />
+	</Path>
+	
+	<Path name="/SharpDevelop/ResourceEdtior/ResourceList/ContextMenu">
+			<MenuItem id="AddStringEntry"
+				      label="${res:ResourceEditor.ResourceEdit.ContextMenu.AddStringEntry}"
+				      class="ResourceEditor.AddStringCommand"
+				      shortcut = "Ins" />
+			
+			<MenuItem id="AddFile"
+			          label="${res:ResourceEditor.ResourceEdit.ContextMenu.AddFiles}"
+			          class="ResourceEditor.AddNewFileCommand" />
+			
+			<MenuItem id="Separator1"
+			          type = "Separator" />
+			<Condition name = "Ownerstate" ownerstate="ItemsSelected" action="Disable">
+				<MenuItem id="SaveAs"
+				          label="${res:XML.MainMenu.FileMenu.SaveAs}"
+				          class="ResourceEditor.SaveEntryAsCommand" />
+				<MenuItem id="Rename"
+				          label="${res:ResourceEditor.ResourceEdit.ContextMenu.Rename}"
+				          class="ResourceEditor.RenameEntryCommand"
+				          shortcut="F2" />
+				<MenuItem id="CopyResourceName"
+				          label="${res:ResourceEditor.ResourceEdit.ContextMenu.CopyResourceName}"
+				          class="ResourceEditor.CopyResourceNameCommand" />
+				<MenuItem id="Delete"
+				          label="${res:ResourceEditor.ResourceEdit.ContextMenu.Delete}"
+				          class="ResourceEditor.DeleteEntryCommand"
+				          shortcut="Del" />
+				
+				<MenuItem id="Separator2"
+				          type = "Separator" />
+			
+				<MenuItem id="Cut"
+				          label="${res:XML.MainMenu.EditMenu.Cut}"
+				          class="ICSharpCode.SharpDevelop.Commands.Cut" />
+				
+				<MenuItem id="Copy"
+				          label="${res:XML.MainMenu.EditMenu.Copy}"
+				          class="ICSharpCode.SharpDevelop.Commands.Copy" />
+			</Condition>
+			
+			<MenuItem id="Paste"
+			          label="${res:XML.MainMenu.EditMenu.Paste}"
+			          class="ICSharpCode.SharpDevelop.Commands.Paste" />
+			
+			<MenuItem id="Separator3"
+			          type = "Separator" />
+			
+			<MenuItem id="SelectAll"
+			          label="${res:XML.MainMenu.EditMenu.SelectAll}"
+			          class="ICSharpCode.SharpDevelop.Commands.SelectAll"
+			          shortcut="Ctrl|A" />
+	</Path>
+</AddIn>

@@ -1,0 +1,57 @@
+<TextLibrary name = "${res:SharpDevelop.SideBar.CSharpDocumentationTags}">
+	<Text display = "&lt;c&gt;" value = "&lt;c&gt;&lt;/c&gt;"/>
+	<Text display = "&lt;code&gt;" value = "&lt;code&gt;&lt;/code&gt;"/>
+	<Text display = "&lt;example&gt;" value = "&lt;example&gt;&lt;/example&gt;"/>
+	<Text display = "&lt;exception&gt;" value = "&lt;exception cref=&quot;@CReference Name@&quot;&gt;&lt;/exception&gt;"/>
+	
+	
+	<Text display = "list - bullet" value = "/// &lt;list type=&quot;bullet&quot;&gt;
+///	&lt;listheader&gt;
+///		&lt;term&gt;&lt;/term&gt;
+///		&lt;description&gt;&lt;/description&gt;
+///	&lt;/listheader&gt;
+///	&lt;item&gt;
+///		&lt;term&gt;&lt;/term&gt;
+///		&lt;description&gt;&lt;/description&gt;
+///	&lt;/item&gt;
+/// &lt;/list&gt;
+"/>
+
+	<text display = "list - number" value = "/// &lt;list type=&quot;number&quot;&gt;
+///	&lt;listheader&gt;
+///		&lt;term&gt;&lt;/term&gt;
+///		&lt;description&gt;&lt;/description&gt;
+///	&lt;/listheader&gt;
+///	&lt;item&gt;
+///		&lt;term&gt;&lt;/term&gt;
+///		&lt;description&gt;&lt;/description&gt;
+///	&lt;/item&gt;
+/// &lt;/list&gt;
+"/>
+
+	<Text display = "list - table" value = "/// &lt;list type=&quot;table&quot;&gt;
+///	&lt;listheader&gt;
+///		&lt;term&gt;&lt;/term&gt;
+///		&lt;description&gt;&lt;/description&gt;
+///	&lt;/listheader&gt;
+///	&lt;item&gt;
+///		&lt;term&gt;&lt;/term&gt;
+///		&lt;description&gt;&lt;/description&gt;
+///	&lt;/item&gt;
+/// &lt;/list&gt;
+"/>
+
+	<Text display = "list - &lt;listheader&gt;" value = "&lt;listheader&gt;&lt;/listheader&gt;"/>
+	<Text display = "list - &lt;item&gt;" value = "&lt;item&gt;&lt;/item&gt;"/>
+	<Text display = "list - &lt;term&gt;" value = "&lt;term&gt;&lt;/term&gt;"/>
+	<Text display = "list - &lt;description&gt;" value = "&lt;description&gt;&lt;/description&gt;"/>
+	<Text display = "&lt;param&gt;" value = "&lt;param&gt;&lt;/param&gt;"/>
+	<Text display = "&lt;paramref&gt;" value = "&lt;paramref name=&quot;@Parameter Name@&quot;/&gt;"/>
+	<Text display = "&lt;permission&gt;" value = "&lt;permission cref=&quot;@Reference@&quot;&gt;&lt;/permission&gt;"/>
+	<Text display = "&lt;remarks&gt;" value = "&lt;remarks&gt;&lt;/remarks&gt;"/>
+	<Text display = "&lt;returns&gt;" value = "&lt;returns&gt;&lt;/returns&gt;"/>
+	<Text display = "&lt;see&gt;" value = "&lt;see cref=&quot;@Reference@&quot;&gt;&lt;/see&gt;"/>
+	<Text display = "&lt;seealso&gt;" value = "&lt;seealso cref=&quot;@Reference@&quot;/&gt;"/>
+	<Text display = "&lt;summary&gt;" value = "&lt;summary&gt;&lt;/summary&gt;"/>
+	<Text display = "&lt;value&gt;" value = "&lt;value&gt;&lt;/value&gt;"/>
+</TextLibrary>

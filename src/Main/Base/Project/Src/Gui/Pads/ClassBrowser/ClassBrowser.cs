@@ -1,0 +1,304 @@
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <version value="$version"/>
+// </file>
+
+using System;
+using System.IO;
+using System.ComponentModel;
+using System.Windows.Forms;
+using System.Drawing;
+using System.Collections;
+using System.Collections.Generic;
+using System.Resources;
+using System.Xml;
+using System.Threading;
+using System.Text;
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
+
+namespace ICSharpCode.SharpDevelop.Gui
+{
+	[Flags]
+	public enum ClassBrowserFilter {
+		None = 0,
+		ShowProjectReferences = 1,
+		ShowBaseAndDerivedTypes = 32,
+		
+		ShowPublic = 2,
+		ShowProtected = 4,
+		ShowPrivate = 8,
+		ShowOther = 16, 
+		
+		All = ShowProjectReferences | ShowPublic | ShowProtected | ShowPrivate | ShowOther | ShowBaseAndDerivedTypes
+	}
+	
+	public class ClassBrowser : AbstractPadContent
+	{
+		static ClassBrowser instance;
+		
+		
+		public static ClassBrowser Instance {
+			get {
+				return instance;
+			}
+		}
+		ClassBrowserFilter filter               = ClassBrowserFilter.All;
+		Panel              contentPanel         = new Panel();
+		ExtTreeView        classBrowserTreeView = new ExtTreeView();
+		
+		public ClassBrowserFilter Filter {
+			get {
+				return filter;
+			}
+			set {
+				filter = value;
+				foreach (TreeNode node in classBrowserTreeView.Nodes) {
+					if (node is ExtTreeNode) {
+						((ExtTreeNode)node).UpdateVisibility();
+					}
+				}
+			}
+		}
+		
+		public override Control Control {
+			get {
+				return contentPanel;
+			}
+		}
+		ToolStrip toolStrip;
+		ToolStrip searchStrip;
+		
+		void UpdateToolbars()
+		{
+			foreach (object o in toolStrip.Items) {
+				if (o is IStatusUpdate) {
+					((IStatusUpdate)o).UpdateStatus();
+				}
+			}
+			toolStrip.Refresh();
+			
+			foreach (object o in searchStrip.Items) {
+				if (o is IStatusUpdate) {
+					((IStatusUpdate)o).UpdateStatus();
+				}
+			}
+			searchStrip.Refresh();
+		}
+		
+		public ClassBrowser()
+		{
+			instance = this;
+			classBrowserTreeView.Dock         = DockStyle.Fill;
+			classBrowserTreeView.ImageList    = ClassBrowserIconService.ImageList;
+			classBrowserTreeView.AfterSelect += new TreeViewEventHandler(ClassBrowserTreeViewAfterSelect);
+			
+			contentPanel.Controls.Add(classBrowserTreeView);
+			
+			searchStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ClassBrowser/Searchbar");
+			searchStrip.Stretch   = true;
+			searchStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			contentPanel.Controls.Add(searchStrip);
+			
+			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ClassBrowser/Toolbar");
+			toolStrip.Stretch   = true;
+			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
+			contentPanel.Controls.Add(toolStrip);
+			
+			ProjectService.SolutionLoaded += new SolutionEventHandler(ProjectServiceSolutionLoaded);
+			ProjectService.SolutionClosed += new EventHandler(ProjectServiceSolutionClosed);
+			
+			ParserService.ParseInformationUpdated += new ParseInformationEventHandler(ParserServiceParseInformationUpdated);
+			
+			AmbienceService.AmbienceChanged += new EventHandler(AmbienceServiceAmbienceChanged);
+			if (ProjectService.OpenSolution != null) {
+				ProjectServiceSolutionLoaded(null, null);
+			}
+			Application.Idle += new EventHandler(UpdateThread);
+			UpdateToolbars();
+		}
+		
+		List<ICompilationUnit[]> pending = new List<ICompilationUnit[]> ();
+		void UpdateThread(object sender, EventArgs ea)
+		{
+			lock (pending) {
+				foreach (ICompilationUnit[] units in pending) {
+					foreach (TreeNode node in classBrowserTreeView.Nodes) {
+						ProjectNode prjNode = node as ProjectNode;
+						if (prjNode != null && prjNode.Project.IsFileInProject(units[1].FileName)) {
+							prjNode.UpdateParseInformation(units[0], units[1]);
+						}
+					}
+				}
+				pending.Clear();
+			}
+		}
+		
+		public void ParserServiceParseInformationUpdated(object sender, ParseInformationEventArgs e)
+		{
+			lock (pending) {
+				pending.Add(new ICompilationUnit[] { e.ParseInformation.BestCompilationUnit as ICompilationUnit, e.CompilationUnit});
+			}
+		}
+		
+		#region Navigation
+		Stack<TreeNode> previousNodes = new Stack<TreeNode>();
+		Stack<TreeNode> nextNodes     = new Stack<TreeNode>();
+		bool navigateBack    = false;
+		bool navigateForward = false;
+		
+		public bool CanNavigateBackward {
+			get {
+				if (previousNodes.Count == 1 && this.classBrowserTreeView.SelectedNode == previousNodes.Peek()) {
+					return false;
+				}
+				return previousNodes.Count > 0;
+			}
+		}
+		
+		public bool CanNavigateForward {
+			get {
+				if (nextNodes.Count == 1 && this.classBrowserTreeView.SelectedNode == nextNodes.Peek()) {
+					return false;
+				}
+				return nextNodes.Count > 0;
+			}
+		}
+		
+		public void NavigateBackward()
+		{
+			if (previousNodes.Count > 0) {
+				if (this.classBrowserTreeView.SelectedNode == previousNodes.Peek()) {
+					nextNodes.Push(previousNodes.Pop());
+				}
+				if (previousNodes.Count > 0) {
+					navigateBack = true;
+					this.classBrowserTreeView.SelectedNode = previousNodes.Pop();
+				}
+			}
+			UpdateToolbars();
+		}
+		
+		public void NavigateForward()
+		{
+			if (nextNodes.Count > 0) {
+				if (this.classBrowserTreeView.SelectedNode == nextNodes.Peek()) {
+					previousNodes.Push(nextNodes.Pop());
+				}
+				if (nextNodes.Count > 0) {
+					navigateForward = true;
+					this.classBrowserTreeView.SelectedNode = nextNodes.Pop();
+				}
+			}
+			UpdateToolbars();
+		}
+		
+		void ClassBrowserTreeViewAfterSelect(object sender, TreeViewEventArgs e)
+		{
+			if (navigateBack) {
+				nextNodes.Push(e.Node);
+				navigateBack = false;
+			} else {
+				if (!navigateForward) {
+					nextNodes.Clear();
+				}
+				previousNodes.Push(e.Node);
+				navigateForward = false;
+			}
+			UpdateToolbars();
+		}
+		#endregion
+		
+		bool inSearchMode = false;
+		List<TreeNode> oldNodes = new List<TreeNode>();
+		string searchTerm = "";
+		
+		public bool IsInSearchMode {
+			get {
+				return inSearchMode;
+			}
+		}
+		public string SearchTerm {
+			get {
+				return searchTerm;
+			}
+			set {
+				searchTerm = value.ToUpper();
+			}
+		}
+		
+		public void StartSearch()
+		{
+			if (!inSearchMode) {
+				foreach (TreeNode node in classBrowserTreeView.Nodes) {
+					oldNodes.Add(node);
+				}
+				inSearchMode = true;
+				previousNodes.Clear();
+				nextNodes.Clear();
+				UpdateToolbars();
+			}
+			classBrowserTreeView.Nodes.Clear();
+			if (ProjectService.OpenSolution != null) {
+				foreach (IProject project in ProjectService.OpenSolution.Projects) {
+					IProjectContent projectContent = ParserService.GetProjectContent(project);
+					if (projectContent != null) {
+						foreach (IClass c in projectContent.Classes) {
+							if (c.Name.ToUpper().StartsWith(searchTerm)) {
+								new ClassNode(project, c).AddTo(classBrowserTreeView);
+							}
+						}
+					}
+				}
+			}
+			if (classBrowserTreeView.Nodes.Count == 0) {
+				ExtTreeNode notFoundMsg = new ExtTreeNode();
+				notFoundMsg.Text = "No search results found.";
+				notFoundMsg.AddTo(classBrowserTreeView);
+			}
+		}
+		
+		public void CancelSearch()
+		{
+			if (inSearchMode) {
+				classBrowserTreeView.Nodes.Clear();
+				foreach (TreeNode node in oldNodes) {
+					classBrowserTreeView.Nodes.Add(node);
+				}
+				oldNodes.Clear();
+				inSearchMode = false;
+				previousNodes.Clear();
+				nextNodes.Clear();
+				UpdateToolbars();
+			}
+		}
+		
+		void ProjectServiceSolutionLoaded(object sender, SolutionEventArgs e)
+		{
+			classBrowserTreeView.Nodes.Clear();
+			foreach (IProject project in ProjectService.OpenSolution.Projects) {
+				if (project is MissingProject || project is UnknownProject) {
+					continue;
+				}
+				new ProjectNode(project).AddTo(classBrowserTreeView);
+			}
+		}
+		
+		void ProjectServiceSolutionClosed(object sender, EventArgs e)
+		{
+			classBrowserTreeView.Nodes.Clear();
+			previousNodes.Clear();
+			nextNodes.Clear();
+			UpdateToolbars();
+		}
+		
+		void AmbienceServiceAmbienceChanged(object sender, EventArgs e)
+		{
+		}
+		
+	}
+}

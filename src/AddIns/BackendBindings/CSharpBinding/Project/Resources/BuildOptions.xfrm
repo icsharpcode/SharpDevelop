@@ -1,0 +1,189 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="XmlUserControl1" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=432, Height=480}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox3" />
+        <TabIndex value="8" />
+        <Location value="{X=8,Y=288}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=416, Height=168}" />
+        <Text value="Output" />
+        <Controls>
+          <System.Windows.Forms.Button>
+            <Name value="advancedOptionsButton" />
+            <Location value="{X=320,Y=142}" />
+            <Size value="{Width=84, Height=21}" />
+            <Text value="Ad&amp;vanced" />
+            <Anchor value="Top, Right" />
+            <TabIndex value="6" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.CheckBox>
+            <Name value="registerCOMInteropCheckBox" />
+            <Location value="{X=8,Y=123}" />
+            <Size value="{Width=308, Height=20}" />
+            <Text value="&amp;Register for COM Interop" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="5" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="xmlDocumentationCheckBox" />
+            <Location value="{X=8,Y=73}" />
+            <Size value="{Width=400, Height=20}" />
+            <Text value="&amp;XML Documentation File" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="3" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.TextBox>
+            <Name value="xmlDocumentationTextBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="4" />
+            <Location value="{X=24,Y=96}" />
+            <Size value="{Width=384, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="label5" />
+            <Text value="Ou&amp;tput Path:" />
+            <TextAlign value="BottomLeft" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+            <Size value="{Width=400, Height=16}" />
+            <Location value="{X=8,Y=27}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="outputPathTextBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="1" />
+            <Location value="{X=8,Y=45}" />
+            <Size value="{Width=352, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Button>
+            <Name value="outputPathBrowseButton" />
+            <Location value="{X=368,Y=45}" />
+            <Size value="{Width=40, Height=21}" />
+            <Text value="..." />
+            <Anchor value="Top, Right" />
+            <TabIndex value="2" />
+          </System.Windows.Forms.Button>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox2" />
+        <TabIndex value="7" />
+        <Location value="{X=8,Y=184}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=416, Height=100}" />
+        <Text value="Treat Warnings as Errors" />
+        <Controls>
+          <System.Windows.Forms.TextBox>
+            <Name value="specificWarningsTextBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="2" />
+            <Location value="{X=136,Y=44}" />
+            <Size value="{Width=272, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.RadioButton>
+            <Name value="allRadioButton" />
+            <Location value="{X=8,Y=68}" />
+            <Size value="{Width=128, Height=24}" />
+            <Text value="A&amp;ll" />
+            <TabIndex value="3" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="specificWarningsRadioButton" />
+            <Location value="{X=8,Y=44}" />
+            <Size value="{Width=128, Height=24}" />
+            <Text value="Sp&amp;ecific Warnings:" />
+            <TabIndex value="1" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="noneRadioButton" />
+            <Location value="{X=8,Y=20}" />
+            <Size value="{Width=128, Height=24}" />
+            <Text value="&amp;None" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.RadioButton>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox1" />
+        <TabIndex value="6" />
+        <Location value="{X=8,Y=96}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=416, Height=80}" />
+        <Text value="Errors and Warnings" />
+        <Controls>
+          <System.Windows.Forms.TextBox>
+            <Name value="suppressWarningsTextBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="3" />
+            <Location value="{X=164,Y=44}" />
+            <Size value="{Width=244, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Label>
+            <Name value="label4" />
+            <Text value="&amp;Suppress Warnings:" />
+            <TextAlign value="MiddleRight" />
+            <TabIndex value="2" />
+            <Size value="{Width=160, Height=23}" />
+            <Location value="{X=4,Y=44}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.ComboBox>
+            <Name value="warningLevelComboBox" />
+            <TabIndex value="1" />
+            <Location value="{X=164,Y=20}" />
+            <Size value="{Width=60, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="label3" />
+            <Text value="&amp;Warning Level:" />
+            <TextAlign value="MiddleRight" />
+            <TabIndex value="0" />
+            <Size value="{Width=160, Height=23}" />
+            <Location value="{X=4,Y=20}" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="optimizeCodeCheckBox" />
+        <Location value="{X=8,Y=48}" />
+        <Size value="{Width=416, Height=24}" />
+        <Text value="Opti&amp;mize code" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="4" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="allowUnsafeCodeCheckBox" />
+        <Location value="{X=8,Y=72}" />
+        <Size value="{Width=416, Height=24}" />
+        <Text value="Allow &amp;Unsafe code" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="5" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.TextBox>
+        <Name value="conditionalSymbolsTextBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="1" />
+        <Location value="{X=8,Y=24}" />
+        <Size value="{Width=416, Height=21}" />
+        <Text value="" />
+      </System.Windows.Forms.TextBox>
+      <System.Windows.Forms.Label>
+        <Name value="label1" />
+        <Text value="Con&amp;ditional Compilation Symbols:" />
+        <TextAlign value="BottomLeft" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="0" />
+        <Size value="{Width=416, Height=16}" />
+        <Location value="{X=8,Y=8}" />
+      </System.Windows.Forms.Label>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

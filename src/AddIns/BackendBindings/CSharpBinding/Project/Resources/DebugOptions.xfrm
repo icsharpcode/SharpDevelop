@@ -1,0 +1,114 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="XmlUserControl1" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=480, Height=312}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox1" />
+        <TabIndex value="0" />
+        <Location value="{X=8,Y=8}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=464, Height=100}" />
+        <Text value="Start Action" />
+        <Controls>
+          <System.Windows.Forms.TextBox>
+            <Name value="startBrowserInURLTextBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="8" />
+            <Location value="{X=156,Y=68}" />
+            <Size value="{Width=300, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Button>
+            <Name value="startExternalProgramBrowseButton" />
+            <Location value="{X=416,Y=44}" />
+            <Size value="{Width=40, Height=21}" />
+            <Text value="..." />
+            <Anchor value="Top, Right" />
+            <TabIndex value="7" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.TextBox>
+            <Name value="startExternalProgramTextBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="3" />
+            <Location value="{X=156,Y=44}" />
+            <Size value="{Width=252, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.RadioButton>
+            <Name value="startBrowserInURLRadioButton" />
+            <Location value="{X=4,Y=68}" />
+            <Size value="{Width=152, Height=20}" />
+            <Text value="Start browser in &amp;URL:" />
+            <TabIndex value="2" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="startExternalProgramRadioButton" />
+            <Location value="{X=4,Y=44}" />
+            <Size value="{Width=152, Height=20}" />
+            <Text value="Start e&amp;xternal program:" />
+            <TabIndex value="1" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.RadioButton>
+            <Name value="startProjectRadioButton" />
+            <Location value="{X=4,Y=20}" />
+            <Size value="{Width=152, Height=20}" />
+            <Text value="&amp;Start project" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.RadioButton>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox2" />
+        <TabIndex value="9" />
+        <Location value="{X=8,Y=120}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=464, Height=80}" />
+        <Text value="Start Options" />
+        <Controls>
+          <System.Windows.Forms.Label>
+            <Name value="label2" />
+            <Text value="&amp;Working directory:" />
+            <TextAlign value="MiddleRight" />
+            <TabIndex value="12" />
+            <Size value="{Width=148, Height=20}" />
+            <Location value="{X=4,Y=48}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.Label>
+            <Name value="label1" />
+            <Text value="Co&amp;mmand line arguments:" />
+            <TextAlign value="MiddleRight" />
+            <TabIndex value="11" />
+            <Size value="{Width=148, Height=20}" />
+            <Location value="{X=8,Y=20}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.TextBox>
+            <Name value="commandLineArgumentsTextBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="10" />
+            <Location value="{X=156,Y=20}" />
+            <Size value="{Width=300, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+          <System.Windows.Forms.Button>
+            <Name value="workingDirectoryBrowseButton" />
+            <Location value="{X=416,Y=52}" />
+            <Size value="{Width=40, Height=21}" />
+            <Text value="..." />
+            <Anchor value="Top, Right" />
+            <TabIndex value="7" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.TextBox>
+            <Name value="workingDirectoryTextBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="3" />
+            <Location value="{X=156,Y=52}" />
+            <Size value="{Width=252, Height=21}" />
+            <Text value="" />
+          </System.Windows.Forms.TextBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

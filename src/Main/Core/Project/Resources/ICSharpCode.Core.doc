@@ -1,0 +1,77 @@
+<!--
+	In this file we're writing all core documentation. 
+	Using an external file for documentation has some benefits:
+		- It can be translated.
+		- It's more user documentation than 'programmer' documentation therefore
+		  having this kind of documentation mixed up with the source code it distracts
+		  them from reading.
+ -->
+<Documentation>
+	<Type name = "ICSharpCode.Core.CoreException">
+		<Description>
+			<summary>
+				Base exception for all custom exceptions thrown by the SharpDevelop Core.
+			</summary>
+		</Description>
+		
+		<Member name = "#ctor()">
+			<summary>
+				Initializes a new instance of the <see cref = "ICSharpCode.Core.CoreException"/> class. 
+			</summary>
+		</Member>
+		
+		<Member name = "#ctor(String)">
+			<summary>
+				Initializes a new instance of the <see cref = "ICSharpCode.Core.CoreException"/> class with a specified error message.
+			</summary>
+		</Member>
+		
+		<Member name = "#ctor(String, Exception)">
+			<summary>
+				Initializes a new instance of the <see cref = "ICSharpCode.Core.CoreException"/> class with a specified error message and a reference to the inner exception that is the cause of this exception. 
+			</summary>
+		</Member>
+		
+		<Member name = "#ctor(SerializationInfo, StreamingContext)">
+			<summary>
+				Initializes a new instance of the <see cref = "ICSharpCode.Core.CoreException"/> class with serialized data. 
+			</summary>
+		</Member>
+	</Type>
+	
+	
+	<Type name = "ICSharpCode.Core.Services.IService">
+		<Description>
+			<summary>
+				This interface must be implemented by all core services.
+			</summary>
+		</Description>
+		
+		<Member name = "InitializeService()">
+			<summary>
+				This method is called after the services are loaded.
+			</summary>
+		</Member>
+		
+		<Member name = "UnloadService()">
+			<summary>
+				This method is called before the service is unloaded.
+			</summary>
+		</Member>
+		
+		<Member name = "Initialize">
+			<summary>
+				Event which is called when the service initializes.
+			</summary>
+		</Member>
+		
+		<Member name = "Unload">
+			<summary>
+				Event which is called when the service unloads.
+			</summary>
+		</Member>
+	</Type>
+	
+	
+	
+</Documentation>

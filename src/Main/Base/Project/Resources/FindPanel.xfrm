@@ -1,0 +1,131 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="XmlUserControl1" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=432, Height=312}" />
+    <Controls>
+      <System.Windows.Forms.Button>
+        <Name value="findAllButton" />
+        <Location value="{X=120,Y=280}" />
+        <Size value="{Width=96, Height=23}" />
+        <Text value="Find &amp;all" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="14" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.ComboBox>
+        <Name value="useComboBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="11" />
+        <Location value="{X=8,Y=248}" />
+        <Size value="{Width=416, Height=21}" />
+        <DropDownStyle value="DropDownList" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.Label>
+        <Name value="label4" />
+        <Text value="Us&amp;e:" />
+        <TextAlign value="BottomLeft" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="10" />
+        <Size value="{Width=416, Height=23}" />
+        <Location value="{X=8,Y=224}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.Button>
+        <Name value="findNextButton" />
+        <Location value="{X=224,Y=280}" />
+        <Size value="{Width=96, Height=23}" />
+        <Text value="&amp;Find next" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="12" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="bookmarkAllButton" />
+        <Location value="{X=328,Y=280}" />
+        <Size value="{Width=96, Height=23}" />
+        <Text value="&amp;Bookmark all" />
+        <Anchor value="Top, Right" />
+        <TabIndex value="13" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.CheckBox>
+        <Name value="matchWholeWordCheckBox" />
+        <Location value="{X=8,Y=200}" />
+        <Size value="{Width=416, Height=24}" />
+        <Text value="Match &amp;whole word" />
+        <Anchor value="Top, Left, Right" />
+        <RightToLeft value="No" />
+        <TabIndex value="9" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="matchCaseCheckBox" />
+        <Location value="{X=8,Y=176}" />
+        <Size value="{Width=416, Height=24}" />
+        <Text value="Match &amp;case" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="8" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.ComboBox>
+        <Name value="fileTypesComboBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="7" />
+        <Location value="{X=8,Y=152}" />
+        <Size value="{Width=416, Height=21}" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.Label>
+        <Name value="lookAtTypesLabel" />
+        <Text value="Look at these file &amp;types:" />
+        <TextAlign value="BottomLeft" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="6" />
+        <Size value="{Width=416, Height=23}" />
+        <Location value="{X=8,Y=128}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.CheckBox>
+        <Name value="includeSubFolderCheckBox" />
+        <Location value="{X=24,Y=104}" />
+        <Size value="{Width=400, Height=24}" />
+        <Text value="Include su&amp;b-folders" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="5" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.Button>
+        <Name value="lookInBrowseButton" />
+        <Location value="{X=400,Y=80}" />
+        <Size value="{Width=24, Height=21}" />
+        <Text value="..." />
+        <Anchor value="Top, Right" />
+        <TabIndex value="4" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.ComboBox>
+        <Name value="lookInComboBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="3" />
+        <Location value="{X=8,Y=80}" />
+        <Size value="{Width=384, Height=21}" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.Label>
+        <Name value="label2" />
+        <Text value="&amp;Look in:" />
+        <TextAlign value="BottomLeft" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="2" />
+        <Size value="{Width=416, Height=23}" />
+        <Location value="{X=8,Y=56}" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.ComboBox>
+        <Name value="findComboBox" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="1" />
+        <Location value="{X=8,Y=32}" />
+        <Size value="{Width=416, Height=21}" />
+      </System.Windows.Forms.ComboBox>
+      <System.Windows.Forms.Label>
+        <Name value="label1" />
+        <Text value="Fi&amp;nd what:" />
+        <TextAlign value="BottomLeft" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="0" />
+        <Size value="{Width=416, Height=23}" />
+        <Location value="{X=8,Y=8}" />
+      </System.Windows.Forms.Label>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<Filetypes>
+	<Filetype ext="cmbx" icon="cmbx.ico">${res:ICSharpCode.FiletypeRegisterer.SharpDevelopCombineFileAssozisation}</Filetype>
+	<Filetype ext="prjx" icon="prjx.ico">${res:ICSharpCode.FiletypeRegisterer.SharpDevelopProjectFileAssozisation}</Filetype>
+	<Filetype ext="cs"   icon="cs.ico">${res:ICSharpCode.FiletypeRegisterer.CSharpSourceFileAssozisation}</Filetype>
+	<Filetype ext="vb"   icon="vb.ico">${res:ICSharpCode.FiletypeRegisterer.VBNetSourceFileAssozisation}</Filetype>
+	<Filetype ext="java" icon="java.ico">${res:ICSharpCode.FiletypeRegisterer.JavaSourceFileAssozisation}</Filetype>
+	<Filetype ext="xfrm" icon="xfrm.ico">${res:ICSharpCode.FiletypeRegisterer.XMLFormFileAssozisation}</Filetype>
+	<Filetype ext="resx" icon="resx.ico">${res:ICSharpCode.FiletypeRegisterer.ResXResourceFilesFileAssozisation}</Filetype>
+	<Filetype ext="resources" icon="resx.ico">${res:ICSharpCode.FiletypeRegisterer.BinaryResourceFilesFileAssozisation}</Filetype>
+	<Filetype ext="xml" icon="xml.ico">${res:ICSharpCode.FiletypeRegisterer.XmlFileAssozisation}</Filetype>
+</Filetypes>

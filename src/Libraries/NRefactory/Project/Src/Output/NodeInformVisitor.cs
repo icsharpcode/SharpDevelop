@@ -1,0 +1,57 @@
+/*
+ * Created by SharpDevelop.
+ * User: Omnibrain
+ * Date: 14.09.2004
+ * Time: 21:15
+ * 
+ * To change this template use Tools | Options | Coding | Edit Standard Headers.
+ */
+
+using System;
+using System.Text;
+using System.Collections;
+using System.Diagnostics;
+
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.CSharp;
+using ICSharpCode.NRefactory.Parser.AST;
+
+namespace ICSharpCode.NRefactory.PrettyPrinter
+{
+	public delegate void InformNode(INode node);
+	
+	public class NodeTracker
+	{
+		IASTVisitor callVisitor;
+		
+		public NodeTracker(IASTVisitor callVisitor)
+		{
+			this.callVisitor = callVisitor;
+		}
+		
+		public void BeginNode(INode node)
+		{
+			if (NodeVisiting != null) {
+				NodeVisiting(node);
+			}
+		}
+		
+		public void EndNode(INode node)
+		{
+			if (NodeVisited != null) {
+				NodeVisited(node);
+			}
+		}
+		
+		public object TrackedVisit(INode node, object data)
+		{
+			BeginNode(node);
+			object ret = node.AcceptVisitor(callVisitor, data);
+			EndNode(node);
+			return ret;
+		}
+		
+		public event InformNode NodeVisiting;
+		public event InformNode NodeVisited;
+	}
+}

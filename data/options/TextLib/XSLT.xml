@@ -1,0 +1,36 @@
+<TextLibrary name = "${res:SharpDevelop.SideBar.XSLTTags}">
+	<Text display = "xsl:apply-imports" 	value = "&lt;xsl:apply-imports /&gt;"/>
+	<Text display = "xsl:apply-templates" 	value = "&lt;xsl:apply-templates select=&#34;&#34; /&gt;"/>
+	<Text display = "xsl:attribute" 	value = "&lt;xsl:attribute name=&#34;&#34;&gt;&lt;/xsl:attribute&gt;" />
+	<Text display = "xsl:attribute-set" 	value = "&lt;xsl:attribute-set name=&#34;&#34;&gt;&lt;/xsl:attribute-set&gt;" />
+	<Text display = "xsl:call-template" 	value = "&lt;xsl:call-template name=&#34;&#34; /&gt;" />
+	<Text display = "xsl:choose" 		value = "&lt;xsl:choose&gt;&lt;/xsl-choose&gt;" />
+	<Text display = "xsl:comment" 		value = "&lt;xsl:comment&gt;&lt;/xsl:comment&gt;" />
+	<Text display = "xsl-copy" 		value = "&lt;xsl:copy&gt;&lt;/xsl:copy&gt;" />
+	<Text display = "xsl-copy-of" 		value = "&lt;xsl:copy-of select=&#34;&#34; /&gt;" />
+	<Text display = "xsl:decimal-format" 	value = "&lt;xsl:decimal-format /&gt;" />
+	<Text display = "xsl:element" 		value = "&lt;xsl:element name=&#34;&#34; /&gt;" />
+	<Text display = "xsl:fallback" 		value = "&lt;xsl:fallback&gt;&lt;/xsl:fallback&gt;" />
+	<Text display = "xsl:for-each" 		value = "&lt;xsl:for-each select=&#34;&#34;&gt;&lt;/xsl:for-each&gt;" />
+	<Text display = "xsl:if" 		value = "&lt;xsl:if test=&#34;&#34;&gt;&lt;/xsl:if&gt;" />
+	<Text display = "xsl:import" 		value = "&lt;xsl:import href=&#34;&#34; /&gt;" />
+	<Text display = "xsl:key" 		value = "&lt;xsl:key name=&#34;&#34; match=&#34;&#34; use=&#34;&#34; /&gt;" />
+	<Text display = "xsl:message" 		value = "&lt;xsl:message&gt;&lt;/xsl:message&gt;" />
+	<Text display = "xsl:namespace-alias" 	value = "&lt;xsl:namespace-alias stylesheet-prefix=&#34;&#34; result-prefix=&#34;&#34; /&gt;"/>
+	<Text display = "xsl:number" 		value = "&lt;xsl:number /&gt;" />
+	<Text display = "xsl:otherwise" 	value = "&lt;xsl:otherwise&gt;&lt;/xsl:otherwise&gt;" />
+	<Text display = "xsl:output" 		value = "&lt;xsl:output /&gt;" />
+	<Text display = "xsl:param" 		value = "&lt;xsl:param name=&#34;&#34; /&gt;" />
+	<Text display = "xsl:preserve-space" 	value = "&lt;xsl:preserve-space elements=&#34;&#34; /&gt;" />
+	<Text display = "xsl:processing-instruction" value = "&lt;xsl:processing-instruction name=&#34;&#34; /&gt;" />
+	<Text display = "xsl:sort" 		value = "&lt;xsl:sort /&gt;" />
+	<Text display = "xsl:strip-space" 	value = "&lt;xsl:strip-space elements=&#34;&#34; /&gt;" />
+	<Text display = "xsl:stylesheet" 	value = "&lt;xsl:stylesheet version=&#34;&#34; /&gt;" />
+	<Text display = "xsl:template" 		value = "&lt;xsl:template&gt;&lt;/xsl:template&gt;" />
+	<Text display = "xsl:text" 		value = "&lt;xsl:text&gt;&lt;/xsl:text&gt;" />
+	<Text display = "xsl:transform"		value = "&lt;xsl:transform&gt;&lt;/xsl:transform&gt;" />
+	<Text display = "xsl:value-of" 		value = "&lt;xsl:value-of select=&#34;&#34; /&gt;" />
+	<Text display = "xsl:variable" 		value = "&lt;xsl:variable name=&#34;&#34; /&gt;" />
+	<Text display = "xsl:when" 		value = "&lt;xsl:when test=&#34;&#34;&gt;&lt;/xsl:when&gt;" />
+	<Text display = "xsl:with-param" 	value = "&lt;xsl:with-param name=&#34;&#34; /&gt;" />
+</TextLibrary>

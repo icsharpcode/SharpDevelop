@@ -1,0 +1,91 @@
+<AddIn name        = "C++.NET Binding"
+       author      = ""
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = ""
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly = "CPPNetBinding.dll"/>
+	</Runtime>
+
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "C++"
+		            insertafter="VBNET"
+		            insertbefore="AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.CPPFiles}"
+		            extensions = "*.cpp,*.c,*.hpp,*.h"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/ProjectOptions/ConfigurationProperties">
+		<Condition activeproject="C++.NET">
+			<DialogPanel id = "CPPCodeGenerationPanel"
+			             label = "Code Generation"
+			             class = "CPPBinding.CPPCodeGenerationPanel"/>
+			<!-- C++ compiler Options -->
+			<DialogPanel id = "GeneralCPPOptionsPanel"
+			             label = "General C++ Compiler Options"
+			             class = "CPPBinding.GeneralCPPOptionsPanel"/>
+			<DialogPanel id = "OptimizeCPPOptionsPanel"
+			             label = "Optimize C++ Compiler Options"
+			             class = "CPPBinding.OptimizeCPPOptionsPanel"/>
+			<DialogPanel id = "PreProcessorCPPOptionsPanel"
+			             label = "PreProcessor C++ Compiler Options"
+			             class = "CPPBinding.PreProcessorCPPOptionsPanel"/>
+			<DialogPanel id = "CodeGenerationCPPOptionsPanel"
+			             label = "Code Generation C++ Compiler Options"
+			             class = "CPPBinding.CodeGenerationCPPOptionsPanel"/>
+			<DialogPanel id = "LanguageCPPOptionsPanel"
+			             label = "Language C++ Compiler Options"
+			             class = "CPPBinding.LanguageCPPOptionsPanel"/>
+			<DialogPanel id = "PreCompiledHeaderCPPOptionsPanel"
+			             label = "PreCompiledHeaders C++ Compiler Options"
+			             class = "CPPBinding.PreCompiledHeaderCPPOptionsPanel"/>
+			<DialogPanel id = "OutputFileCPPOptionsPanel"
+			             label = "Output C++ Compiler Options"
+			             class = "CPPBinding.OutputFileCPPOptionsPanel"/>
+			<DialogPanel id = "InformationSearchCPPOptionsPanel"
+			             label = "InformationSearch C++ Compiler Options"
+			             class = "CPPBinding.InformationSearchCPPOptionsPanel"/>
+			<DialogPanel id = "ExtendedCPPOptionsPanel"
+			             label = "Extended C++ Compiler Options"
+			             class = "CPPBinding.ExtendedCPPOptionsPanel"/>
+			<!-- C++ linker Options -->
+			<DialogPanel id = "GeneralLinkerOptionsPanel"
+			             label = "General C++ Linker Options"
+			             class = "CPPBinding.GeneralLinkerOptionsPanel"/>
+			<DialogPanel id = "InputLinkerOptionsPanel"
+			             label = "Input C++ Linker Options"
+			             class = "CPPBinding.InputLinkerOptionsPanel"/>
+			<DialogPanel id = "DebugLinkerOptionsPanel"
+			             label = "Debug C++ Linker Options"
+			             class = "CPPBinding.DebugLinkerOptionsPanel"/>
+			<DialogPanel id = "SystemLinkerOptionsPanel"
+			             label = "System C++ Linker Options"
+			             class = "CPPBinding.SystemLinkerOptionsPanel"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/AddIns/DefaultTextEditor/Formater">
+		<Condition textcontent = "C++.NET">
+			<Class id ="CPPFormatter" insertbefore="DefaultFormatter" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/Workspace/Icons">
+		<!-- C++ -->
+                <Icon id         = "C++Project"
+		      language   = "C++.NET"
+		      resource   = "C++.ProjectIcon"/>
+                <Icon id         = "C++File"
+		      extensions = ".cpp"
+		      resource   = "C++.FileIcon"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id                  = "C++"
+		                 supportedextensions = ".cpp"
+		                 class               = "CPPBinding.CPPLanguageBinding" />
+	</Path>
+	
+</AddIn>

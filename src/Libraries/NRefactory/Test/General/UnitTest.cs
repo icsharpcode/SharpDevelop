@@ -1,0 +1,106 @@
+/*
+ * Created by SharpDevelop.
+ * User: Andrea
+ * Date: 25.03.2004
+ * Time: 11:07
+ * 
+ * To change this template use Tools | Options | File Templates.
+ */
+
+using System;
+using System.Reflection;
+using NUnit.Framework;
+using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.Parser;
+
+namespace ICSharpCode.NRefactory.Tests
+{
+	[TestFixture]
+	public class StructuralTest
+	{
+		[Test]
+		public void TestToStringMethods()
+		{
+			Type[] allTypes = typeof(INode).Assembly.GetTypes();
+			
+			foreach (Type type in allTypes) {
+				if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(INode).FullName) != null) {
+					MethodInfo methodInfo = type.GetMethod("ToString", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public);
+					Assert.IsNotNull(methodInfo, "ToString() not found in " + type.FullName);
+				}
+			}
+		}
+		
+//		[Test]
+//		public void TestAcceptVisitorMethods()
+//		{
+//			Type[] allTypes = typeof(AbstractNode).Assembly.GetTypes();
+//			
+//			foreach (Type type in allTypes) {
+//				if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(INode).FullName) != null) {
+//					MethodInfo methodInfo = type.GetMethod("AcceptVisitor", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public);
+//					Assertion.AssertNotNull("AcceptVisitor() not found in " + type.FullName, methodInfo);
+//				}
+//			}
+//		}
+		
+		[Test]
+		public void TestIASTVisitor()
+		{
+			Type[] allTypes = typeof(AbstractNode).Assembly.GetTypes();
+			Type visitor = typeof(IASTVisitor);
+			
+			foreach (Type type in allTypes) {
+				if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(INode).FullName) != null && !type.Name.StartsWith("Null")) {
+					MethodInfo methodInfo = visitor.GetMethod("Visit", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.ExactBinding, null, new Type[] {type, typeof(object)}, null);
+					Assert.IsNotNull(methodInfo, "Visit with parameter " + type.FullName + " not found");
+					Assert.AreEqual(2, methodInfo.GetParameters().Length);
+					ParameterInfo first = methodInfo.GetParameters()[0];
+					Assert.AreEqual(Char.ToLower(first.ParameterType.Name[0]) + first.ParameterType.Name.Substring(1), first.Name);
+					
+					ParameterInfo second = methodInfo.GetParameters()[1];
+					Assert.AreEqual(typeof(System.Object), second.ParameterType);
+					Assert.AreEqual("data", second.Name);
+				}
+			}
+		}
+		
+		[Test]
+		public void TestAbstractASTVisitorVisitor()
+		{
+			Type[] allTypes = typeof(AbstractNode).Assembly.GetTypes();
+			Type visitor = typeof(AbstractASTVisitor);
+			
+			foreach (Type type in allTypes) {
+				if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(INode).FullName) != null && !type.Name.StartsWith("Null")) {
+					MethodInfo methodInfo = visitor.GetMethod("Visit", BindingFlags.Instance | BindingFlags.DeclaredOnly | BindingFlags.Public | BindingFlags.ExactBinding, null, new Type[] {type, typeof(object)}, null);
+					Assert.IsNotNull(methodInfo, "Visit with parameter " + type.FullName + " not found");
+					
+					Assert.AreEqual(2, methodInfo.GetParameters().Length);
+					ParameterInfo first = methodInfo.GetParameters()[0];
+					Assert.AreEqual(Char.ToLower(first.ParameterType.Name[0]) + first.ParameterType.Name.Substring(1), first.Name);
+					
+					ParameterInfo second = methodInfo.GetParameters()[1];
+					Assert.AreEqual(typeof(System.Object), second.ParameterType);
+					Assert.AreEqual("data", second.Name);
+				}
+			}
+		}
+		
+		[Test]
+		public void TestIfINode()
+		{
+			Type[] allTypes = typeof(INode).Assembly.GetTypes();
+			foreach (Type type in allTypes) {
+				if (!type.IsInterface &&
+				    !type.IsEnum &&
+				    (type.BaseType == typeof(System.Delegate)) &&
+				    (type.GetInterface(typeof(IASTVisitor).FullName) == null) &&
+				    (type.FullName != "ICSharpCode.NRefactory.Parser.Error") &&
+				    (type.FullName != "ICSharpCode.NRefactory.Tests.StructuralTest")) {
+					Assert.IsNotNull(type.GetInterface(typeof(INode).FullName), type.FullName + " is not INode");
+				}
+			}
+		}
+	}
+}
