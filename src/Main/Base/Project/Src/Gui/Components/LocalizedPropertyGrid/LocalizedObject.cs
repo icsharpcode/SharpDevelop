@@ -105,5 +105,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			return this;
 		}
+		
+		public virtual void InformSetValue(LocalizedPropertyDescriptor localizedPropertyDescriptor, object component, object value)
+		{
+			
+		}
 	}
 }

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -13,6 +14,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		string                   location = null;
 		string                   name     = null;
 		
+		[Browsable(false)]
 		public string IdGuid {
 			get {
 				return idGuid;
@@ -22,6 +24,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string Location {
 			get {
 				return location;
@@ -31,6 +34,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string Name {
 			get {
 				return name;
@@ -40,6 +44,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public ISolutionFolderContainer Parent {
 			get {
 				return parent;
@@ -49,6 +54,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public virtual string TypeGuid {
 			get {
 				return typeGuid;

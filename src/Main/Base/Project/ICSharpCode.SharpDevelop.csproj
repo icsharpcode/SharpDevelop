@@ -426,7 +426,6 @@
     <Compile Include="Src\Gui\XmlForms\Lib\IObjectCreator.cs" />
     <Compile Include="Src\Internal\Erbauer\PadDescriptor.cs" />
     <Compile Include="Src\Project\MissingProject.cs" />
-    <Compile Include="Src\Project\Solution\AbstractProject.cs" />
     <Compile Include="Src\Project\UnknownProject.cs" />
     <Compile Include="Src\Gui\Pads\ErrorList\ErrorList.cs" />
     <Compile Include="Src\Gui\Pads\ErrorList\ErrorListToolbarCommands.cs" />
@@ -618,6 +617,7 @@
     <Compile Include="Src\TextEditor\CharacterEncodings.cs" />
     <Compile Include="Src\TextEditor\XmlFormattingStrategy.cs" />
     <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
+    <Compile Include="Src\Project\AbstractProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

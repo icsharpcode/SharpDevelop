@@ -1,9 +1,11 @@
 using System;
 using System.ComponentModel;
 using System.IO;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
+	
 	/// <summary>
 	/// Description of CompileProjectItem.
 	/// </summary>
@@ -17,15 +19,26 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public ItemType BuildAction {
+		public enum FileBuildAction {
+			None             = ItemType.None,
+			Compile          = ItemType.Compile,
+			EmbeddedResource = ItemType.EmbeddedResource,
+			Content          = ItemType.Content,
+		}
+		
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.BuildAction}",
+		                   Description ="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.BuildAction.Description}")]
+		public FileBuildAction BuildAction {
 			get {
-				return type;
+				return (FileBuildAction)type;
 			}
 			set {
-				type = value;
+				type = (ItemType)value;
 			}
 		}
 		
+		[LocalizedProperty("Copy to output Directory",
+		                   Description ="Specifies if the file should be copied to the output directory")]
 		public bool CopyToOutputDirectory {
 			get {
 				return base.Properties.Get("CopyToOutputDirectory", false);
@@ -35,6 +48,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[LocalizedProperty("Custom Tool",
+		                   Description ="Specifies the tool that converts the file to the output.")]
 		public string CustomTool {
 			get {
 				return base.Properties["Generator"];
@@ -44,6 +59,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[LocalizedProperty("Custom Tool Namespace",
+		                   Description ="Specifies the namespace the custom tool places it's output.")]
 		public string CustomToolNamespace {
 			get {
 				return base.Properties["CustomToolNamespace"];

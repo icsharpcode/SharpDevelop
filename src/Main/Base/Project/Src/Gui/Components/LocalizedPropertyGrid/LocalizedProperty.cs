@@ -31,8 +31,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		
-		
 		public object DefaultValue {
 			get {
 				return defaultValue;

@@ -129,6 +129,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else {
 				this.basePropertyDescriptor.SetValue(component, value);
 			}
+			if (component is LocalizedObject) {
+				((LocalizedObject)component).InformSetValue(this, component, value);
+			}
 		}
 		
 	}

@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using ICSharpCode.Core;
@@ -13,6 +14,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public  IProject ReferencedProject {
 			get {
 				throw new System.NotImplementedException();
@@ -20,6 +22,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[ReadOnly(true)]
 		public string ProjectGuid {
 			get {
 				return Properties["Project"];
@@ -29,6 +32,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[ReadOnly(true)]
 		public string ProjectName {
 			get {
 				return Properties["Name"];

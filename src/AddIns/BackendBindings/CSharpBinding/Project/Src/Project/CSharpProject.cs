@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Diagnostics;
 using System.Collections;
@@ -45,6 +46,7 @@ namespace CSharpBinding
 	/// </summary>
 	public class CSharpProject : MSBuildProject
 	{
+		[Browsable(false)]
 		public int WarningLevel {
 			get {
 				return BaseConfiguration.Get("WarningLevel", 4);
@@ -53,6 +55,7 @@ namespace CSharpBinding
 				BaseConfiguration.Set("WarningLevel", 4, value);
 			}
 		}
+		[Browsable(false)]
 		public string ApplicationIcon {
 			get {
 				return BaseConfiguration["ApplicationIcon"];
@@ -63,6 +66,7 @@ namespace CSharpBinding
 		}
 		
 		#region Signing
+		[Browsable(false)]
 		public bool SignAssembly {
 			get {
 				return BaseConfiguration.Get("SignAssembly", false);
@@ -72,6 +76,7 @@ namespace CSharpBinding
 			}
 		}
 		
+		[Browsable(false)]
 		public bool DelaySign {
 			get {
 				return BaseConfiguration.Get("DelaySign", false);
@@ -81,6 +86,7 @@ namespace CSharpBinding
 			}
 		}
 		
+		[Browsable(false)]
 		public string AssemblyOriginatorKeyFile {
 			get {
 				return BaseConfiguration["AssemblyOriginatorKeyFile"];
@@ -89,6 +95,8 @@ namespace CSharpBinding
 				BaseConfiguration.Set("AssemblyOriginatorKeyFile", value);
 			}
 		}
+	
+		[Browsable(false)]
 		public string AssemblyKeyProviderName {
 			get {
 				return BaseConfiguration["AssemblyKeyProviderName"];
@@ -98,6 +106,7 @@ namespace CSharpBinding
 			}
 		}
 		
+		[Browsable(false)]
 		public AssemblyOriginatorKeyMode AssemblyOriginatorKeyMode {
 			get {
 				return BaseConfiguration.Get("AssemblyOriginatorKeyMode", AssemblyOriginatorKeyMode.None);
@@ -108,6 +117,7 @@ namespace CSharpBinding
 		}
 		#endregion
 		 
+		[Browsable(false)]
 		public string StartupObject {
 			get {
 				return BaseConfiguration["StartupObject"];
@@ -116,6 +126,8 @@ namespace CSharpBinding
 				BaseConfiguration.Set("StartupObject", value);
 			}
 		}
+		
+		[Browsable(false)]
 		public string Win32Resource {
 			get {
 				return BaseConfiguration["Win32Resource"];
@@ -125,8 +137,8 @@ namespace CSharpBinding
 			}
 		}
 		
-		
 		#region Build events
+		[Browsable(false)]
 		public RunPostBuildEvent RunPostBuildEvent {
 			get {
 				return BaseConfiguration.Get("RunPostBuildEvent", RunPostBuildEvent.OnSuccessfulBuild);
@@ -136,6 +148,7 @@ namespace CSharpBinding
 			}
 		}
 		
+		[Browsable(false)]
 		public string PreBuildEvent {
 			get {
 				return BaseConfiguration["PreBuildEvent"];
@@ -145,7 +158,7 @@ namespace CSharpBinding
 			}
 		}
 		
-		
+		[Browsable(false)]
 		public string PostBuildEvent {
 			get {
 				return BaseConfiguration["PostBuildEvent"];
@@ -156,6 +169,7 @@ namespace CSharpBinding
 		}
 		#endregion
 		 	
+		[Browsable(false)]
 		public string PublishUrl {
 			get {
 				return BaseConfiguration["PublishUrl"];
@@ -165,6 +179,7 @@ namespace CSharpBinding
 			}
 		}
 		
+		[Browsable(false)]
 		public bool Install {
 			get {
 				return BaseConfiguration.Get("Install", false);
@@ -174,6 +189,7 @@ namespace CSharpBinding
 			}
 		}
 		
+		[Browsable(false)]
 		public bool UpdateEnabled {
 			get {
 				return BaseConfiguration.Get("UpdateEnabled", false);
@@ -183,6 +199,7 @@ namespace CSharpBinding
 			}
 		}
 		
+		[Browsable(false)]
 		public bool UpdatePeriodically {
 			get {
 				return BaseConfiguration.Get("UpdatePeriodically", false);
@@ -192,7 +209,7 @@ namespace CSharpBinding
 			}
 		}
 		
-		
+		[Browsable(false)]
 		public bool UpdateRequired {
 			get {
 				return BaseConfiguration.Get("UpdateRequired", false);
@@ -202,6 +219,7 @@ namespace CSharpBinding
 			}
 		}
 		
+		[Browsable(false)]
 		public bool UpdateUrlEnabled {
 			get {
 				return BaseConfiguration.Get("UpdateUrlEnabled", false);
@@ -211,6 +229,7 @@ namespace CSharpBinding
 			}
 		}
 		
+		[Browsable(false)]
 		public bool BootstrapperEnabled {
 			get {
 				return BaseConfiguration.Get("BootstrapperEnabled", false);
@@ -220,7 +239,7 @@ namespace CSharpBinding
 			}
 		}
 		
-				
+		[Browsable(false)]
 		public string InstallFrom {
 			get {
 				return BaseConfiguration["InstallFrom"];
@@ -229,7 +248,7 @@ namespace CSharpBinding
 				BaseConfiguration.Set("InstallFrom", value);
 			}
 		}
-				
+		[Browsable(false)]
 		public string FallbackCulture {
 			get {
 				return BaseConfiguration["FallbackCulture"];
@@ -238,7 +257,7 @@ namespace CSharpBinding
 				BaseConfiguration.Set("FallbackCulture", value);
 			}
 		}
-				
+		[Browsable(false)]
 		public string UpdateMode {
 			get {
 				return BaseConfiguration["UpdateMode"];
@@ -247,7 +266,7 @@ namespace CSharpBinding
 				BaseConfiguration.Set("UpdateMode", value);
 			}
 		}
-		
+		[Browsable(false)]
 		public string UpdateIntervalUnits {
 			get {
 				return BaseConfiguration["UpdateIntervalUnits"];
@@ -256,6 +275,8 @@ namespace CSharpBinding
 				BaseConfiguration.Set("UpdateIntervalUnits", value);
 			}
 		}
+		
+		[Browsable(false)]
 		public string ApplicationVersion {
 			get {
 				return BaseConfiguration["ApplicationVersion"];
@@ -264,7 +285,7 @@ namespace CSharpBinding
 				BaseConfiguration.Set("ApplicationVersion", value);
 			}
 		}
-		
+		[Browsable(false)]
 		public int UpdateInterval {
 			get {
 				return BaseConfiguration.Get("UpdateInterval", 0);
@@ -273,7 +294,7 @@ namespace CSharpBinding
 				BaseConfiguration.Set("UpdateInterval", 0, value);
 			}
 		}
-		
+		[Browsable(false)]
 		public int ApplicationRevision {
 			get {
 				return BaseConfiguration.Get("ApplicationRevision", 0);

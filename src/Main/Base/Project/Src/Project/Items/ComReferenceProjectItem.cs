@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 
@@ -12,6 +13,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[ReadOnly(true)]
 		public string Guid {
 			get {
 				return base.Properties["Guid"];
@@ -21,6 +23,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[ReadOnly(true)]
 		public int VersionMajor {
 			get {
 				return base.Properties.Get("VersionMajor", 1);
@@ -30,6 +33,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[ReadOnly(true)]
 		public int VersionMinor {
 			get {
 				return base.Properties.Get("VersionMinor", 0);
@@ -39,6 +43,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[ReadOnly(true)]
 		public string Lcid {
 			get {
 				return base.Properties["Lcid"];
@@ -48,6 +53,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[ReadOnly(true)]
 		public string WrapperTool {
 			get {
 				return base.Properties["WrapperTool"];
@@ -56,6 +62,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				base.Properties["WrapperTool"] = value;
 			}
 		}
+		
+		[ReadOnly(true)]
 		public bool Isolated {
 			get {
 				return base.Properties.Get("Isolated", false);

@@ -4,6 +4,7 @@ using System.ComponentModel;
 using System.Collections.Generic;
 using System.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -28,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		BootstrapperFile
 	}
 	
-	public abstract class ProjectItem : IDisposable
+	public abstract class ProjectItem : LocalizedObject, IDisposable
 	{
 		string        include;
 		PropertyGroup properties = new PropertyGroup();
@@ -39,6 +40,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
+		[Browsable(false)]
 		public IProject Project {
 			get {
 				return project;
@@ -65,12 +67,20 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public virtual string FileName {
 			get {
 				return Path.Combine(project.Directory, Include);
 			}
 			set {
 				Include = FileUtility.GetRelativePath(project.Directory, value);
+			}
+		}
+		
+		[Browsable(false)]
+		public virtual string Tag {
+			get {
+				return ItemType.ToString();
 			}
 		}
 		
@@ -102,11 +112,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			return newItem;
 		}
 		
-		public virtual string Tag {
-			get {
-				return ItemType.ToString();
-			}
-		}
 		
 		internal void WriteItem(XmlTextWriter writer)
 		{
@@ -142,6 +147,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				item.WriteItem(writer);
 			}
 			writer.WriteEndElement();
+		}
+		
+		public override void InformSetValue(LocalizedPropertyDescriptor localizedPropertyDescriptor, object component, object value)
+		{
+			Project.Save();
 		}
 	}
 }

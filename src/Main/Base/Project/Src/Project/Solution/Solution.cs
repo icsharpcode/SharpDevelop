@@ -1,4 +1,5 @@
 using System;
+using System.ComponentModel;
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Text;
@@ -51,6 +52,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		ProjectEnumerator projectEnumerator;
+		[Browsable(false)]
 		public ProjectEnumerator Projects {
 			get {
 				return projectEnumerator;
@@ -86,6 +88,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		SolutionFolderContainerEnumerator solutionFolderContainerEnumerator;
+		[Browsable(false)]
 		public SolutionFolderContainerEnumerator SolutionFolderContainers {
 			get {
 				return solutionFolderContainerEnumerator;
@@ -121,12 +124,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		SolutionFolderEnumerator solutionFolderEnumerator;
+		[Browsable(false)]
 		public SolutionFolderEnumerator SolutionFolders {
 			get {
 				return solutionFolderEnumerator;
 			}
 		}
 		
+		[Browsable(false)]
 		public IProject StartupProject {
 			get {
 				if (!HasProjects) {
@@ -142,6 +147,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public bool HasProjects {
 			get {
 				return Projects.GetEnumerator().MoveNext();
@@ -160,6 +166,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public bool IsDirty {
 			get {
 				foreach (IProject project in Projects) {

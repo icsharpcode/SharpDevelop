@@ -1,4 +1,6 @@
 using System;
+using System.ComponentModel;
+
 using System.CodeDom.Compiler;
 using System.IO;
 using System.Text;
@@ -14,6 +16,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		public const string FolderGuid = "{2150E333-8FDC-42A3-9474-1A3956D46DE8}";
 		
+		[Browsable(false)]
 		public override string TypeGuid {
 			get {
 				return FolderGuid;
@@ -23,6 +26,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public bool IsEmpty {
 			get {
 				return Folders.Count == 0 && SolutionItems.Items.Count == 0;
@@ -44,18 +48,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		List<ISolutionFolder> folders  = new List<ISolutionFolder>();
 		List<ProjectSection>  sections = new List<ProjectSection>();
 		
+		[Browsable(false)]
 		public List<ProjectSection> Sections {
 			get {
 				return sections;
 			}
 		}
 		
+		[Browsable(false)]
 		public List<ISolutionFolder> Folders {
 			get {
 				return folders;
 			}
 		}
 		
+		[Browsable(false)]
 		public virtual ProjectSection SolutionItems {
 			get {
 				foreach (ProjectSection section in sections) {

@@ -131,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					FileProjectItem projectFile = new FileProjectItem(project, ItemType.Compile);
 					
 					if (!project.CanCompile(fileName)) {
-						projectFile.BuildAction = ItemType.None;
+						projectFile.BuildAction = FileProjectItem.FileBuildAction.None;
 					}
 					
 					projectFile.Include = FileUtility.GetRelativePath(project.Directory, fileName);

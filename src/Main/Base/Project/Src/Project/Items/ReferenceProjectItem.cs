@@ -1,7 +1,10 @@
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
+
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -16,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string HintPath {
 			get {
 				return Properties["HintPath"];
@@ -25,12 +29,27 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[DefaultValue(false)]
+		[LocalizedProperty("Specific Version",
+		                   Description = "Indicates if this reference is bound to a specific version of the assembly.")]
 		public bool SpecificVersion {
 			get {
 				return Properties.Get("SpecificVersion", true);
 			}
 			set {
 				Properties.Set("SpecificVersion", value);
+			}
+		}
+		
+		[DefaultValue(false)]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy}",
+		                   Description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy.Description}")]
+		public bool Private {
+			get {
+				return Properties.Get("Private", false);
+			}
+			set {
+				Properties.Set("Private", value);
 			}
 		}
 		

@@ -57,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionFolderNode";
 			this.solution  = solution;
 			this.folder    = folder;
+			this.Tag       = folder;
 			Text           = folder.Name;
 			autoClearNodes = false;
 			if (!folder.IsEmpty) {
