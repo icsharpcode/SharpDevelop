@@ -22,8 +22,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 	{
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
 		{
+			Console.WriteLine("Try to create '{0}'", codon.Properties["class"]);
 			IEditAction editAction = (IEditAction)codon.AddIn.CreateObject(codon.Properties["class"]);
-							
+			Console.WriteLine("Action : " + editAction);
 			string[] keys = codon.Properties["keys"].Split(',');
 			
 			Keys[] actionKeys = new Keys[keys.Length];

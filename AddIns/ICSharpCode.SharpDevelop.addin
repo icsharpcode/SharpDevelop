@@ -7,6 +7,7 @@
 	
 	<Runtime>
 		<Import assembly="../bin/ICSharpCode.SharpDevelop.dll"/>
+		<Import assembly="../bin/ICSharpCode.TextEditor.dll"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
@@ -1827,11 +1828,11 @@
 	<!-- Note : Most actions are put directly into the control, because 
 	            they're used for the standalone version too, only put keys in the
 	            tree that are sharpdevelop specific, general keys put into TextAreaControl.GenerateDefaultActions --> 
-<!--	<Path name = "/AddIns/DefaultTextEditor/EditActions">
+	<Path name = "/AddIns/DefaultTextEditor/EditActions">
 		<EditAction id = "TemplateCompletion"  class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.TemplateCompletion"  keys = "Control|J"/>
 		<EditAction id = "CodeCompletionPopup" class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.CodeCompletionPopup"  keys = "Control|Space"/>
 		<EditAction id = "IndentSelection"     class = "ICSharpCode.TextEditor.Actions.IndentSelection"  keys = "Control|I"/>
-	</Path> -->
+	</Path>
 	
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">

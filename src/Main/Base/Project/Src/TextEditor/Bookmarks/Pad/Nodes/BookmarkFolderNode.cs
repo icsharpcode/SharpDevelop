@@ -57,7 +57,7 @@ namespace Bookmark
 			Graphics g = e.Graphics;
 			float x = e.Bounds.X;
 			if (icon != null) {
-				g.DrawImage(icon, x, e.Bounds.Y);
+				g.DrawImage(icon, x, e.Bounds.Y, icon.Width, icon.Height);
 				x += icon.Width;
 			}
 			DrawText(g, fileName, Brushes.Black, Font, ref x, e.Bounds.Y);

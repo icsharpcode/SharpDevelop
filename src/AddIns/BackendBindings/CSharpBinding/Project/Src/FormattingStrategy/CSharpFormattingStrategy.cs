@@ -179,6 +179,40 @@ namespace CSharpBinding.FormattingStrategy
 			return curlyCounter > 0;
 		}
 		
+		
+		bool IsInsideNonVerbatimString(TextArea textArea, LineSegment curLine, int cursorOffset)
+		{
+			// scan cur line if it is inside a string or single line comment (//)
+			bool insideString  = false;
+			char stringstart = ' ';
+			bool verbatim = false; // true if the current string is verbatim (@-string)
+			char c = ' ';
+			char lastchar;
+			
+			for (int i = curLine.Offset; i < cursorOffset; ++i) {
+				lastchar = c;
+				c = textArea.Document.GetCharAt(i);
+				if (insideString) {
+					if (c == stringstart) {
+						if (verbatim && i + 1 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '"') {
+							++i; // skip escaped character
+						} else {
+							insideString = false;
+						}
+					} else if (c == '\\' && !verbatim) {
+						++i; // skip escaped character
+					}
+				} else if (c == '/' && i + 1 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '/') {
+					return false;
+				} else if (c == '"' || c == '\'') {
+					stringstart = c;
+					insideString = true;
+					verbatim = (c == '"') && (lastchar == '@');
+				}
+			}
+			return insideString && !verbatim;
+		}
+		
 		bool IsInsideStringOrComment(TextArea textArea, LineSegment curLine, int cursorOffset)
 		{
 			// scan cur line if it is inside a string or single line comment (//)
@@ -187,15 +221,17 @@ namespace CSharpBinding.FormattingStrategy
 			bool verbatim = false; // true if the current string is verbatim (@-string)
 			char c = ' ';
 			char lastchar;
+			
 			for (int i = curLine.Offset; i < cursorOffset; ++i) {
 				lastchar = c;
 				c = textArea.Document.GetCharAt(i);
 				if (insideString) {
 					if (c == stringstart) {
-						if (verbatim && i + 1 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '"')
+						if (verbatim && i + 1 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '"') {
 							++i; // skip escaped character
-						else
+						} else {
 							insideString = false;
+						}
 					} else if (c == '\\' && !verbatim) {
 						++i; // skip escaped character
 					}
@@ -207,6 +243,7 @@ namespace CSharpBinding.FormattingStrategy
 					verbatim = (c == '"') && (lastchar == '@');
 				}
 			}
+			
 			return insideString;
 		}
 		
@@ -300,6 +337,21 @@ namespace CSharpBinding.FormattingStrategy
 		#endregion
 		
 		#region FormatLine
+		
+		bool NeedEndregion(IDocument document)
+		{
+			int regions = 0;
+			int endregions = 0;
+			foreach (LineSegment line in document.LineSegmentCollection) {
+				string text = document.GetText(line).Trim();
+				if (text.StartsWith("#region")) {
+					++regions;
+				} else if (text.StartsWith("#endregion")) {
+					++endregions;
+				}
+			}
+			return regions > endregions;
+		}
 		public override int FormatLine(TextArea textArea, int lineNr, int cursorOffset, char ch) // used for comment tag formater/inserter
 		{
 			LineSegment curLine   = textArea.Document.GetLineSegment(lineNr);
@@ -347,12 +399,12 @@ namespace CSharpBinding.FormattingStrategy
 				}
 				return 0;
 			}
+			
 			if (ch != '\n' && ch != '>') {
 				if (IsInsideStringOrComment(textArea, curLine, cursorOffset)) {
 					return 0;
 				}
 			}
-			
 			switch (ch) {
 				case '>':
 					if (IsInsideDocumentationComment(textArea, curLine, cursorOffset)) {
@@ -389,6 +441,12 @@ namespace CSharpBinding.FormattingStrategy
 				case '{':
 					return textArea.Document.FormattingStrategy.IndentLine(textArea, lineNr);
 				case '\n':
+					if (IsInsideNonVerbatimString(textArea, lineAbove, lineAbove.Offset + lineAbove.Length)) {
+						textArea.Document.Insert(lineAbove.Offset + lineAbove.Length,
+								                         "\" +");
+						textArea.Document.Insert(curLine.Offset, "\"");
+						return IndentLine(textArea, lineNr) + 1;
+					}
 					if (lineNr <= 0) {
 						return IndentLine(textArea, lineNr);
 					}
@@ -404,6 +462,11 @@ namespace CSharpBinding.FormattingStrategy
 					string      nextLineText  = lineNr + 1 < textArea.Document.TotalNumberOfLines ? textArea.Document.GetText(nextLine) : "";
 					
 					int addCursorOffset = 0;
+					
+					if (lineAboveText.Trim().StartsWith("#region") && NeedEndregion(textArea.Document)) {
+						textArea.Document.Insert(curLine.Offset, "#endregion");
+						return IndentLine(textArea, lineNr) + "#endregion".Length;
+					}
 					
 					if (lineAbove.HighlightSpanStack != null && lineAbove.HighlightSpanStack.Count > 0) {
 						if (!((Span)lineAbove.HighlightSpanStack.Peek()).StopEOL) {	// case for /* style comments
