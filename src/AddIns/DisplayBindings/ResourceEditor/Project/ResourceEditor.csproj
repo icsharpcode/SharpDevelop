@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{CBC6C247-747B-4908-B09A-4D2E0F640B6B}</ProjectGuid>
     <AssemblyName>ResourceEditor</AssemblyName>
@@ -42,23 +42,37 @@
     <Compile Include="Src\Commands\RenameEntryCommand.cs" />
     <Compile Include="Src\Commands\SaveEntryAsCommand.cs" />
     <Compile Include="Src\DisplayDefinition.cs" />
-    <Compile Include="Src\ResourceEdit\AbstractImageView.cs" />
+    <Compile Include="Src\ResourceEdit\AbstractImageView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\ResourceEdit\BinaryView.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\ResourceEdit\BitmapView.cs" />
-    <Compile Include="Src\ResourceEdit\BooleanView.cs" />
-    <Compile Include="Src\ResourceEdit\CursorView.cs" />
-    <Compile Include="Src\ResourceEdit\IconView.cs" />
+    <Compile Include="Src\ResourceEdit\BitmapView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\ResourceEdit\BooleanView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\ResourceEdit\CursorView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\ResourceEdit\IconView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\ResourceEdit\IResourceView.cs" />
     <Compile Include="Src\ResourceEdit\ResourceEditor.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\ResourceEdit\ResourceItem.cs" />
-    <Compile Include="Src\ResourceEdit\ResourceList.cs" />
-    <Compile Include="Src\ResourceEdit\TextView.cs" />
+    <Compile Include="Src\ResourceEdit\ResourceList.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\ResourceEdit\TextView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <None Include="ResourceEditor.addin">
-      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>

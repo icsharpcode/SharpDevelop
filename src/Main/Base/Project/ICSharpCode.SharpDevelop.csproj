@@ -1,8 +1,8 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</ProjectGuid>
     <AssemblyName>ICSharpCode.SharpDevelop</AssemblyName>
@@ -177,13 +177,15 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Components\SideBar\SharpDevelopSideTabItem.cs" />
-    <Compile Include="Src\Gui\Components\StatusBar\SdStatusBar.cs" />
+    <Compile Include="Src\Gui\Components\StatusBar\SdStatusBar.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\Gui\ContentInterfaces\IPrintable.cs" />
     <Compile Include="Src\Gui\Dialogs\AbstractOptionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\CommonAboutDialog.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\DirtyFilesDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\FolderDialog.cs" />
@@ -199,10 +201,10 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TipOfTheDay.cs">
-      <SubType>Form</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TreeViewOptions.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ViewGPLDialog.cs">
       <SubType>Form</SubType>
@@ -240,10 +242,18 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DeployFileOptions.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\GeneralProjectOptions.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AddWebReferenceDialog.cs" />
-    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AssemblyReferencePanel.cs" />
-    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\COMReferencePanel.cs" />
-    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\GacReferencePanel.cs" />
-    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ProjectReferencePanel.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AssemblyReferencePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\COMReferencePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\GacReferencePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\ProjectReferencePanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\SelectReferenceDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -261,7 +271,9 @@
     <Compile Include="Src\Gui\Dialogs\Wizard\WizardDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Pads\FileScout.cs" />
+    <Compile Include="Src\Gui\Pads\FileScout.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Pads\OpenTaskView.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPad.cs" />
     <Compile Include="Src\Gui\Pads\SideBarView.cs" />
@@ -274,7 +286,9 @@
     <Compile Include="Src\Gui\Workbench\Layouts\SdiWorkspaceWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\XmlForms\SharpDevelopObjectCreator.cs" />
+    <Compile Include="Src\Gui\XmlForms\SharpDevelopObjectCreator.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\Gui\XmlForms\SharpDevelopPropertyValueCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\SharpDevelopStringValueFilter.cs" />
     <Compile Include="Src\Services\IconService.cs" />
@@ -438,7 +452,9 @@
     <Compile Include="Src\Gui\Components\ExtTreeView\ExtTreeNode.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\Nodes\ClassNode.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\Nodes\MemberNode.cs" />
-    <Compile Include="Src\Gui\Components\ExtTreeView\ExtTreeView.cs" />
+    <Compile Include="Src\Gui\Components\ExtTreeView\ExtTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\Gui\Components\ExtTreeView\ExtFolderNode.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\TextEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\Nodes\ReferenceFolderNode.cs" />

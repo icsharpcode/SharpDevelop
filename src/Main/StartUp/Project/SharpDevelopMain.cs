@@ -144,6 +144,8 @@ namespace ICSharpCode.SharpDevelop
 				foreach (ICommand command in commands) {
 					command.Run();
 				}
+			} catch (TreePathNotFoundException) {
+				// Do nothing.
 			} catch (XmlException e) {
 				MessageBox.Show("Could not load XML :" + Environment.NewLine + e.Message);
 				return;

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</ProjectGuid>
     <AssemblyName>FormDesigner</AssemblyName>
@@ -71,7 +71,9 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\FormDesigner\Gui\ShowTabOrder\ITabOrder.cs" />
-    <Compile Include="Src\FormDesigner\Gui\ShowTabOrder\TabIndexControl.cs" />
+    <Compile Include="Src\FormDesigner\Gui\ShowTabOrder\TabIndexControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\FormDesigner\Gui\SideTabDesigner.cs" />
     <Compile Include="Src\FormDesigner\Gui\SideTabItemDesigner.cs" />
     <Compile Include="Src\FormDesigner\MenuDesigner\AbstractMenuEditorControl.cs" />
@@ -102,7 +104,7 @@
     <EmbeddedResource Include="Src\FormDesigner\Gui\ICSharpCode.SharpDevelop.FormDesigner.Gui.AssemblyList.resources" />
     <EmbeddedResource Include="Src\FormDesigner\Gui\ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.ControlLibrariesPanel.resources" />
     <None Include="FormDesigner.addin">
-      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -126,6 +128,8 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Src\FormDesigner\Util\" />
     <Folder Include="Src\FormDesigner\Xml\" />
   </ItemGroup>

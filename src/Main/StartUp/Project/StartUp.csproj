@@ -50,7 +50,7 @@
     <EmbeddedResource Include="Resources\BitmapResources.resources" />
     <None Include="Resources\StartUp.snk" />
     <None Include="SharpDevelop.exe.manifest">
-      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="Resources\SplashScreen.jpg" />
     <EmbeddedResource Include="Resources\StringResources.resources" />

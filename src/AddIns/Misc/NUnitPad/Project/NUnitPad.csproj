@@ -46,7 +46,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <None Include="NUnitPad.addin">
-      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -46,7 +46,7 @@
     <Compile Include="Src\Project\ILAsmProject.cs" />
     <EmbeddedResource Include="Resources\ILAsm-Mode.xshd" />
     <Compile Include="ILAsmBinding.addin">
-      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Compile>
   </ItemGroup>
   <ItemGroup>

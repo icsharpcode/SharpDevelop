@@ -1,7 +1,7 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -72,9 +72,15 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controls\InertButton.cs" />
-    <Compile Include="Docking\AutoHideWindow.cs" />
-    <Compile Include="Docking\AutoHideWindowSplitter.cs" />
+    <Compile Include="Controls\InertButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\AutoHideWindow.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\AutoHideWindowSplitter.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Docking\DisplayingDockList.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -99,23 +105,33 @@
     <Compile Include="Docking\DockPaneCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Docking\DockPanel.cs" />
+    <Compile Include="Docking\DockPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Docking\DockPanelPersist.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Docking\DockPaneSplitter.cs" />
-    <Compile Include="Docking\DockWindow.cs" />
+    <Compile Include="Docking\DockPaneSplitter.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockWindow.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Docking\DockWindowCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Docking\DockWindowSplitter.cs" />
+    <Compile Include="Docking\DockWindowSplitter.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Docking\DragHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Docking\DragHandlerBase.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Docking\DummyControl.cs" />
+    <Compile Include="Docking\DummyControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Docking\Enums.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -140,7 +156,9 @@
     <Compile Include="Docking\NestedDockingStatus.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Docking\SplitterBase.cs" />
+    <Compile Include="Docking\SplitterBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Helpers\DrawHelper.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -197,6 +215,8 @@
     <Content Include="Docking\CodeDoc\FloatWindowCollection.xml" />
     <Content Include="Docking\CodeDoc\Interfaces.xml" />
     <Content Include="Docking\CodeDoc\NestedDockingStatus.xml" />
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

@@ -96,12 +96,12 @@ namespace ICSharpCode.StartPage
 		{
 			e.Cancel = true;
 			// bug in webbrowser control?
-			string url = e.Url.Replace("about:blank", "");
+            string url = e.Url.AbsoluteUri.Replace("about:blank", "");
 			if (url.StartsWith("project://")) {
 				try {
 					ICSharpCode.Core.RecentOpen recOpen = (ICSharpCode.Core.RecentOpen)FileService.RecentOpen;
-					
-					string prjNumber = e.Url.Substring("project://".Length);
+
+                    string prjNumber = e.Url.AbsoluteUri.Substring("project://".Length);
 					prjNumber = prjNumber.Substring(0, prjNumber.Length - 1);
 					
 					string projectFile = page.projectFiles[int.Parse(prjNumber)];
@@ -118,13 +118,13 @@ namespace ICSharpCode.StartPage
 				NewBtnClicked(this, EventArgs.Empty);
 			} else if (url.EndsWith("/opensection")) {
 				Regex section = new Regex(@".*/(?<section>.+)/opensection", RegexOptions.Compiled);
-				Match match = section.Match(e.Url);
+                Match match = section.Match(e.Url.AbsoluteUri);
 				if (match.Success) {
 					curSection = match.Result("${section}");
 					webBrowser.DocumentText = page.Render(curSection);
 				}
 			} else {
-				System.Diagnostics.Process.Start(e.Url);
+                System.Diagnostics.Process.Start(e.Url.AbsoluteUri);
 			}
 			e.Cancel = true;
 		}

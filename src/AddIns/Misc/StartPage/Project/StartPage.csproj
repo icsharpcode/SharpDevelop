@@ -40,7 +40,7 @@
     <Compile Include="Src\Main.cs" />
     <Compile Include="Src\StartPage.cs" />
     <None Include="StartPage.addin">
-      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>

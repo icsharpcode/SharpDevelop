@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{4B8F0F98-8BE1-402B-AA8B-C8D548577B38}</ProjectGuid>
     <RootNamespace>NewProject</RootNamespace>
@@ -38,15 +38,23 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\Gui\AddInDetailsPanel.cs" />
-    <Compile Include="Src\Gui\AddinTreeView.cs" />
-    <Compile Include="Src\Gui\CodonListPanel.cs" />
-    <Compile Include="Src\Gui\TreeTreeView.cs" />
+    <Compile Include="Src\Gui\AddInDetailsPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\AddinTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\CodonListPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\TreeTreeView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\AddInScoutCommand.cs" />
     <Compile Include="Src\AddInScoutViewContent.cs" />
     <Compile Include="Src\AssemblyInfo.cs" />
     <None Include="AddInScout.addin">
-      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -60,6 +68,8 @@
       <Name>ICSharpCode.SharpDevelop</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

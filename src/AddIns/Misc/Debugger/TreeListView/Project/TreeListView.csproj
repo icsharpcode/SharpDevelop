@@ -1,8 +1,8 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{B08385CD-F0CC-488C-B4F4-EEB34B6D2688}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -52,7 +52,9 @@
     </Compile>
     <Compile Include="Src\TreeListView\ITreeListViewItemComparer.cs" />
     <Compile Include="Src\TreeListView\SelectedTreeListViewItemCollection.cs" />
-    <Compile Include="Src\TreeListView\TreeListView.cs" />
+    <Compile Include="Src\TreeListView\TreeListView.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\TreeListView\TreeListViewItem.cs" />
     <Compile Include="Src\TreeListView\TreeListViewItemCollection.cs" />
     <Compile Include="Src\TreeListView\TreeListViewSubItemEdit.cs" />

@@ -32,7 +32,7 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="Debugger.AddIn.addin">
-      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Pads\BreakPointsPad.cs" />

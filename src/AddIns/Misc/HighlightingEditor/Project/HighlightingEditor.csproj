@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{8A462940-E5E9-4E85-982D-D4C006EE31D4}</ProjectGuid>
     <AssemblyName>HighlightingEditor</AssemblyName>
@@ -52,7 +52,9 @@
     <EmbeddedResource Include="Resources\Scheme.xfrm" />
     <EmbeddedResource Include="Resources\Span.xfrm" />
     <EmbeddedResource Include="Resources\Spans.xfrm" />
-    <Compile Include="Src\ColorButton.cs" />
+    <Compile Include="Src\ColorButton.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\ColorDialog.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -107,7 +109,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <None Include="HighlightingEditor.addin">
-      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>

@@ -135,7 +135,7 @@ namespace ICSharpCode.FormDesigner
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerEventService), new DesignerEventService());
 //			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerOptionService), new ICSharpCode.FormDesigner.Services.DesignerOptionService());
 			
-			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerOptionService), new System.Windows.Forms.Design.WindowsFormsDesignerOptionService(serviceContainer));
+			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerOptionService), new System.Windows.Forms.Design.WindowsFormsDesignerOptionService());
 			
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
 			

@@ -5,7 +5,11 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	
+	public enum CopyToOutputDirectory {
+		Never,
+		Always,
+		PreserveNewest
+	}
 	/// <summary>
 	/// Description of CompileProjectItem.
 	/// </summary>
@@ -39,9 +43,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		[LocalizedProperty("Copy to output Directory",
 		                   Description ="Specifies if the file should be copied to the output directory")]
-		public bool CopyToOutputDirectory {
+		public CopyToOutputDirectory CopyToOutputDirectory {
 			get {
-				return base.Properties.Get("CopyToOutputDirectory", false);
+				return base.Properties.Get("CopyToOutputDirectory", CopyToOutputDirectory.Never);
 			}
 			set {
 				base.Properties.Set("CopyToOutputDirectory", value);

@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{BF38FB72-B380-4196-AF8C-95749D726C61}</ProjectGuid>
     <AssemblyName>VBNetBinding</AssemblyName>
@@ -59,7 +59,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\OptionPanels\BuildOptions.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\OptionPanels\DebugOptions.cs">
       <SubType>UserControl</SubType>
@@ -77,7 +77,7 @@
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Project\VBNetProject.cs" />
     <None Include="VBNetBinding.addin">
-      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
   </ItemGroup>
   <ItemGroup>
@@ -101,6 +101,8 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Src\PrettyPrinter\Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

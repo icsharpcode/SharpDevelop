@@ -1,8 +1,8 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</ProjectGuid>
     <AssemblyName>ICSharpCode.TextEditor</AssemblyName>
@@ -128,7 +128,9 @@
     <Compile Include="Src\Undo\IUndoableOperation.cs" />
     <Compile Include="Src\Undo\UndoQueue.cs" />
     <Compile Include="Src\Undo\UndoStack.cs" />
-    <Compile Include="Src\Gui\TextAreaControl.cs" />
+    <Compile Include="Src\Gui\TextAreaControl.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Src\Gui\TextAreaMouseHandler.cs" />
     <Compile Include="Src\Document\HighlightingStrategy\SyntaxModes\ISyntaxModeFileProvider.cs" />
     <Compile Include="Src\Document\HighlightingStrategy\SyntaxModes\SyntaxMode.cs" />

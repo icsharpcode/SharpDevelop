@@ -11,8 +11,8 @@ namespace DebuggerLibrary
 {        
     internal static class NativeMethods
     {
-        [System.Runtime.ConstrainedExecution.ReliabilityContract(System.Runtime.ConstrainedExecution.Consistency.WillNotCorruptState, System.Runtime.ConstrainedExecution.CER.Success),
-        DllImport("kernel32.dll")]
+//        [System.Runtime.ConstrainedExecution.ReliabilityContract(System.Runtime.ConstrainedExecution.Consistency.WillNotCorruptState, System.Runtime.ConstrainedExecution.CER.Success),
+		[DllImport("kernel32.dll")]
         public static extern bool CloseHandle(IntPtr handle);
 
         [DllImport("mscoree.dll", CharSet=CharSet.Unicode, PreserveSig=false)]
