@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			((Properties)CustomizationObject).Set("CursorBehindEOL",        ((CheckBox)ControlDictionary["caretBehindEOLCheckBox"]).Checked);
 			((Properties)CustomizationObject).Set("AutoInsertTemplates",    ((CheckBox)ControlDictionary["auotInsertTemplatesCheckBox"]).Checked);
 			
-			((Properties)CustomizationObject).Set("IndentStyle", ((ComboBox)ControlDictionary["indentStyleComboBox"]).SelectedIndex);
+			((Properties)CustomizationObject).Set("IndentStyle", (IndentStyle)((ComboBox)ControlDictionary["indentStyleComboBox"]).SelectedIndex);
 			
 			try {
 				int tabSize = Int32.Parse(ControlDictionary["tabSizeTextBox"].Text);

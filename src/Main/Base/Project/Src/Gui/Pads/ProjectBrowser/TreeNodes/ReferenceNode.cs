@@ -16,6 +16,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ReferenceNode(ReferenceProjectItem referenceProjectItem)
 		{
 			this.referenceProjectItem = referenceProjectItem;
+			Tag = referenceProjectItem;
+
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceNode";
 			SetIcon("Icons.16x16.Reference");
 			Text = referenceProjectItem.Include;

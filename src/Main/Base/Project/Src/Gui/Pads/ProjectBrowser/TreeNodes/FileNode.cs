@@ -35,6 +35,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				projectItem = value;
+				Tag = projectItem;
 			}
 		}
 		

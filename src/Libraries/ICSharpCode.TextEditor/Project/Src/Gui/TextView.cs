@@ -572,20 +572,17 @@ namespace ICSharpCode.TextEditor
 //				                      flags
 //				                     );
 //			}
-			SizeF wordSize = g.MeasureString(word, font, 32768, measureStringFormat);
+			float wordWidth = g.MeasureString(word, font, 32768, measureStringFormat).Width;
+			g.FillRectangle(backBrush,
+			                new RectangleF(position.X, position.Y, (float)Math.Ceiling(wordWidth), FontHeight));
 			
-			if (DrawingPosition.Left < position.X + DrawingPosition.X) {
-				g.FillRectangle(backBrush,
-				                new RectangleF(position.X, position.Y, (float)Math.Ceiling(wordSize.Width), FontHeight));
-				
-				g.DrawString(word,
-				             font,
-				             BrushRegistry.GetBrush(foreColor),
-				             position.X,
-				             position.Y, 
-				             measureStringFormat);
-			}
-			return wordSize.Width;
+			g.DrawString(word,
+			             font,
+			             BrushRegistry.GetBrush(foreColor),
+			             position.X,
+			             position.Y, 
+			             measureStringFormat);
+			return wordWidth;
 		}
 #endregion
 		
