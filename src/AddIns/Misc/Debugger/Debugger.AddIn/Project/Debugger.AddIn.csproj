@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -34,7 +34,7 @@
     <None Include="Debugger.AddIn.addin">
       <CopyToOutputDirectory>True</CopyToOutputDirectory>
     </None>
-    <Compile Include="Src\AssemblyInfo.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Pads\BreakPointsPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.cs" />
     <Compile Include="Src\Pads\LoadedModulesPad.cs" />
@@ -68,7 +68,6 @@
       <Name>TreeListView</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

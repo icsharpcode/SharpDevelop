@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -35,7 +35,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\AssemblyInfo.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Enums\ClassFieldAttribute.cs" />
     <Compile Include="Src\Enums\CorCallingConvention.cs" />
     <Compile Include="Src\Enums\CorElementType.cs" />
@@ -80,7 +80,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />
-    <Folder Include="Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

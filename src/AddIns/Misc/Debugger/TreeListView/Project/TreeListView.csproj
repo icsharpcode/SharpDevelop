@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -32,6 +32,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\APIs\APIsClipboard.cs" />
     <Compile Include="Src\APIs\APIsComctl32.cs" />
     <Compile Include="Src\APIs\APIsEnums.cs" />
@@ -46,7 +47,6 @@
     <Compile Include="Src\APIs\ColorUtil.cs" />
     <Compile Include="Src\APIs\COMInterfaces.cs" />
     <Compile Include="Src\APIs\TextUtil.cs" />
-    <Compile Include="Src\TreeListView\AssemblyInfo.cs" />
     <Compile Include="Src\TreeListView\Forms\TreeListViewItemsEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -69,9 +69,6 @@
     <None Include="Doc\Readme.txt" />
     <EmbeddedResource Include="Src\TreeListView\Icons\Minus.gif" />
     <EmbeddedResource Include="Src\TreeListView\Icons\Plus.gif" />
-  </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
