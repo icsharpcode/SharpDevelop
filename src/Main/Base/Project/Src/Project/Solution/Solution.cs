@@ -336,22 +336,40 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		
+		static Regex versionPattern       = new Regex("Microsoft Visual Studio Solution File, Format Version\\s+(?<Version>.*)", RegexOptions.Compiled);
+			
 		static Regex projectLinePattern   = new Regex("Project\\(\"(?<ProjectGuid>.*)\"\\)\\s+=\\s+\"(?<Title>.*)\",\\s*\"(?<Location>.*)\",\\s*\"(?<Guid>.*)\"", RegexOptions.Compiled);
 		static Regex globalSectionPattern = new Regex("\\s*GlobalSection\\((?<Name>.*)\\)\\s*=\\s*(?<Type>.*)", RegexOptions.Compiled);
 		
-		static void SetupSolution(Solution newSolution, string fileName)
+		static bool SetupSolution(Solution newSolution, string fileName)
 		{
 			string         solutionDirectory     = Path.GetDirectoryName(fileName);
 			ProjectSection nestedProjectsSection = null;
 			
 			using (StreamReader sr = File.OpenText(fileName)) {
+				string line = sr.ReadLine();
+				Console.WriteLine("line '{0}'", line);
+				Match match = versionPattern.Match(line);
+				if (!match.Success) {
+					MessageService.ShowError(fileName + " is not a valid solution file.");
+					return false;
+				}
+				
+				switch (match.Result("${Version}")) {
+					case "9.00":
+						break;
+					default:
+						MessageService.ShowError("Can't read Microsoft Solution file format " + match.Result("${Version}") + ". Use Visual Studio.NET to convert it to a newer version.");
+						return false;
+				}
+				
 				while (true) {
-					string line = sr.ReadLine();
+					line = sr.ReadLine();
 					
 					if (line == null) {
 						break;
 					}
-					Match match = projectLinePattern.Match(line);
+					match = projectLinePattern.Match(line);
 					if (match.Success) {
 						string projectGuid  = match.Result("${ProjectGuid}");
 						string title        = match.Result("${Title}");
@@ -404,6 +422,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					folder.AddFolder(newSolution.guidDictionary[from]);
 				}
 			}
+			return true;
 		}
 		
 		public static Solution Load(string fileName)
@@ -417,7 +436,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				ICSharpCode.SharpDevelop.Project.Converter.CombineToSolution.ConvertSolution(newSolution, fileName);
 			} else {
 				newSolution.fileName = fileName;
-				SetupSolution(newSolution, fileName);
+				if (!SetupSolution(newSolution, fileName)) {
+					return null;
+				}
 			}
 			return newSolution;
 		}
