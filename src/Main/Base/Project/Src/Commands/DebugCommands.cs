@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			new Build().Run();
 			IProject startupProject = ProjectService.OpenSolution.StartupProject;
 			if (startupProject != null) {
-				startupProject.Start(true);
+				startupProject.Start(false);
 			}
 		}
 	}
