@@ -1,35 +1,27 @@
-﻿<Project DefaultTargets="Build" xmlns:Conversion="urn:Conversion" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.40607</ProductVersion>
+    <ProductVersion>8.0.41115</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4b8f0f98-8be1-402b-aa8b-c8d548577b38}</ProjectGuid>
+    <ProjectGuid>{4B8F0F98-8BE1-402B-AA8B-C8D548577B38}</ProjectGuid>
     <RootNamespace>NewProject</RootNamespace>
     <AssemblyName>AddinScout</AssemblyName>
     <OutputTarget>Library</OutputTarget>
-    <ApplicationIcon>
-    </ApplicationIcon>
     <WarningLevel>4</WarningLevel>
-    <NoWarn>
-    </NoWarn>
-    <StartupObject>
-    </StartupObject>
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
+    <OutputType>Library</OutputType>
+    <StartupObject />
+    <ApplicationIcon />
+    <Win32Resource />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <Optimize>True</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>
-    </DefineConstants>
     <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\AddinScout\</OutputPath>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
@@ -38,53 +30,42 @@
     <Optimize>True</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
-    <DefineConstants>
-    </DefineConstants>
     <OutputPath>..\..\..\AddIns\Misc\AddinScout\</OutputPath>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System">
-    </Reference>
-    <Reference Include="System.Data">
-    </Reference>
-    <Reference Include="System.Drawing">
-    </Reference>
-    <Reference Include="System.Windows.Forms">
-    </Reference>
-    <Reference Include="System.Xml">
-    </Reference>
-    <Reference Include="SharpDevelop.Base.dll">
-      <HintPath>..\..\..\..\..\bin\SharpDevelop.Base.dll</HintPath>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Src\Gui\AddInDetailsPanel.cs" />
+    <Compile Include="Src\Gui\AddinTreeView.cs" />
+    <Compile Include="Src\Gui\CodonListPanel.cs" />
+    <Compile Include="Src\Gui\TreeTreeView.cs" />
+    <Compile Include="Src\AddInScoutCommand.cs" />
+    <Compile Include="Src\AddInScoutViewContent.cs" />
+    <Compile Include="Src\AssemblyInfo.cs" />
+    <None Include="AddInScout.addin">
+      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
-    </Reference>
-    <Reference Include="ICSharpCode.Core.dll">
-      <HintPath>..\..\..\..\..\bin\ICSharpCode.Core.dll</HintPath>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
       <Private>False</Private>
-    </Reference>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="AddInScoutCommand.cs">
-    </Compile>
-    <Compile Include="AssemblyInfo.cs">
-    </Compile>
-    <Compile Include="AddInScoutViewContent.cs">
-    </Compile>
-    <Compile Include="Gui\AddinTreeView.cs">
-    </Compile>
-    <Compile Include="Gui\TreeTreeView.cs">
-    </Compile>
-    <Compile Include="Gui\AddInDetailsPanel.cs">
-    </Compile>
-    <Compile Include="Gui\CodonListPanel.cs">
-    </Compile>
+    <Folder Include="Gui\" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Gui\">
-    </Folder>
-  </ItemGroup>
-  <ItemGroup>
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets">
-  </Import>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
