@@ -13,7 +13,6 @@
 		<MenuItem id = "RegExpTk" 
 				  insertafter = "ShowObjectBrowser" insertbefore = "Separator4"
 				  label       = "${res:XML.MainMenu.ToolsMenu.RegularExpressionToolkit}" 
-				  description = "${res:XML.MainMenu.ToolsMenu.RegularExpressionToolkit.Description}" 
 				  class       = "Plugins.RegExpTk.RegExpTkCommand"
 		/>
 	</Path>

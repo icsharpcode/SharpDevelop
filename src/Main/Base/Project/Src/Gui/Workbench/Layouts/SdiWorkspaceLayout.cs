@@ -103,7 +103,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 //			wbForm.Controls.Add(this.dockPanel);
 			
 			toolStripContainer.ContentPanel.Controls.Add(((DefaultWorkbench)workbench).TopMenu);
-			
+			StatusBarService.Control.Dock = DockStyle.Bottom;
+			toolStripContainer.ContentPanel.Controls.Add(StatusBarService.Control);
+						
 			wbForm.Controls.Add(toolStripContainer);
 			
 //			((System.ComponentModel.ISupportInitialize)(leftRaftingContainer)).EndInit();

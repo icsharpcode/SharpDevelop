@@ -139,18 +139,15 @@
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode">
 		<MenuItem id = "Build"
 		          label = "Build"
-		          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
 		          shortcut = "F8"
 		          icon  = "Icons.16x16.BuildCombine"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Build"/>
 		<MenuItem id = "Rebuild"
 		          label = "Rebuild"
-		          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
 		          icon  = "Icons.16x16.BuildCombine"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"/>
 		<MenuItem id = "Clean"
 		          label = "Clean"
-		          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
 		          icon  = "Icons.16x16.BuildCombine"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Clean"/>
 		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
@@ -260,22 +257,18 @@
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
 		<MenuItem id = "Build project"
 		          label = "Build project"
-		          description = "${res:XML.MainMenu.RunMenu.BuildProject.Description}"
 		          icon  = "Icons.16x16.BuildCurrentSelectedProject"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.BuildProject"/>
 		<MenuItem id = "Rebuild project"
 		          label = "Rebuild project"
-		          description = "${res:XML.MainMenu.RunMenu.RebuildProject.Description}"
 		          icon  = "Icons.16x16.BuildCurrentSelectedProject"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.RebuildProject"/>
 		<MenuItem id = "Clean project"
 		          label = "Clean project"
-		          description = "${res:XML.MainMenu.RunMenu.CleanProject.Description}"
 		          icon  = "Icons.16x16.BuildCurrentSelectedProject"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.CleanProject"/>
 		<MenuItem id = "Publish project"
 		          label = "Publish project"
-		          description = "${res:XML.MainMenu.RunMenu.BuildProject.Description}"
 		          icon  = "Icons.16x16.BuildCurrentSelectedProject"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>
 		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
@@ -304,7 +297,6 @@
 			<MenuItem id          = "Run"
 			          label       = "Sta&amp;rt Project"
 			          icon        = "Icons.16x16.RunProgramIcon"
-			          description = "${res:XML.MainMenu.RunMenu.Run.Description}"
 			          class       = "ICSharpCode.SharpDevelop.Project.Commands.RunProject"/>
 		</Condition>
 		<MenuItem id = "Separator2" type = "Separator"/>
@@ -525,12 +517,10 @@
 			          label = "${res:XML.MainMenu.EditMenu.Copy}"
 			          icon = "Icons.16x16.CopyIcon"
 			          type = "Item"
-			          description = "${res:XML.MainMenu.EditMenu.Copy.Description}"
 			          shortcut = "Control|C"
 			          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
 			<MenuItem id = "SelectAll"
 			          label = "${res:XML.MainMenu.EditMenu.SelectAll}"
-			          description = "${res:XML.MainMenu.EditMenu.SelectAll.Description}"
 			          type = "Item"
 			          shortcut = "Control|A"
 			          class = "ICSharpCode.SharpDevelop.Commands.SelectAll"/>
@@ -943,14 +933,12 @@
 				<MenuItem id           = "File"
 				          label        = "${res:XML.MainMenu.FileMenu.New.File}"
 				          icon         = "Icons.16x16.NewDocumentIcon"
-				          description  = "${res:XML.MainMenu.FileMenu.New.File.Description}"
 				          shortcut     = "Control|N"
 				          class        = "ICSharpCode.SharpDevelop.Commands.CreateNewFile"/>
 				
 				<MenuItem id          = "Project"
 				          label       = "${res:XML.MainMenu.FileMenu.New.Project}"
 				          icon        = "Icons.16x16.NewProjectIcon"
-				          description = "${res:XML.MainMenu.FileMenu.New.Project.Description}"
 				          shortcut    = "Control|Shift|N"
 				          class       = "ICSharpCode.SharpDevelop.Project.Commands.CreateNewSolution"/>
 			</MenuItem>
@@ -960,14 +948,12 @@
 				<MenuItem id          = "File"
 				          label       = "${res:XML.MainMenu.FileMenu.Open.File}"
 				          icon        = "Icons.16x16.OpenFileIcon"
-				          description = "${res:XML.MainMenu.FileMenu.Open.File.Description}"
 				          shortcut    = "Control|O"
 				          class       = "ICSharpCode.SharpDevelop.Commands.OpenFile"/>
 				
 				<MenuItem id = "Project"
 				          label = "${res:XML.MainMenu.FileMenu.Open.Project}"
 				          icon = "Icons.16x16.OpenProjectIcon"
-				          description = "${res:XML.MainMenu.FileMenu.Open.Project.Description}"
 				          shortcut = "Control|Shift|O"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.LoadSolution"/>
 			</MenuItem>
@@ -977,14 +963,12 @@
 					<MenuItem id = "CloseFile"
 					          label = "${res:XML.MainMenu.FileMenu.Close.File}"
 					          icon  = "Icons.16x16.CloseFileIcon"
-					          description = "${res:XML.MainMenu.FileMenu.Close.File.Desription}"
 					          shortcut = "Control|F4"
 					          class ="ICSharpCode.SharpDevelop.Commands.CloseFile"/>
 				</Condition>
 				<Condition name = "CombineOpen" iscombineopen="True" action="Disable">
 					<MenuItem id = "CloseCombine"
 					          label = "${res:XML.MainMenu.FileMenu.Close.Project}"
-					          description = "${res:XML.MainMenu.FileMenu.Close.Project.Desription}"
 					          shortcut = "Control|Shift|F4"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.CloseSolution"/>
 				</Condition>
@@ -995,7 +979,6 @@
 				<MenuItem id = "Reloadfile"
 				          label = "${res:XML.MainMenu.FileMenu.Reload}"
 				          shortcut = "Shift|Control|U"
-				          description = "${res:XML.MainMenu.FileMenu.Reload.Description}"
 				          class = "ICSharpCode.SharpDevelop.Commands.ReloadFile" />
 			</Condition>
 			
@@ -1005,7 +988,6 @@
 				<MenuItem id = "Save"
 				          label = "${res:XML.MainMenu.FileMenu.Save}"
 				          icon = "Icons.16x16.SaveIcon"
-				          description = "${res:XML.MainMenu.FileMenu.Save.Description}"
 				          shortcut = "Control|S"
 				          class = "ICSharpCode.SharpDevelop.Commands.SaveFile"/>
 			</Condition>
@@ -1013,7 +995,6 @@
 			<Condition name = "ActiveWindowState" windowstate="None" nowindowstate="ViewOnly" action="Disable">
 				<MenuItem id = "SaveAs"
 				          label = "${res:XML.MainMenu.FileMenu.SaveAs}"
-				          description = "${res:XML.MainMenu.FileMenu.SaveAs.Description}"
 				          class = "ICSharpCode.SharpDevelop.Commands.SaveFileAs"/>
 			</Condition>
 			
@@ -1022,7 +1003,6 @@
 				          label = "${res:XML.MainMenu.FileMenu.SaveAll}"
 				          icon = "Icons.16x16.SaveAllIcon"
 				          shortcut = "Control|Shift|S"
-				          description = "${res:XML.MainMenu.FileMenu.SaveAll.Description}"
 				          class = "ICSharpCode.SharpDevelop.Commands.SaveAllFiles"/>
 			</Condition>
 			
@@ -1031,13 +1011,11 @@
 				<MenuItem id = "Print"
 				          label = "${res:XML.MainMenu.FileMenu.Print}"
 				          icon = "Icons.16x16.Print"
-				          description = "${res:XML.MainMenu.FileMenu.Print.Description}"
 				          shortcut = "Control|P"
 				          class = "ICSharpCode.SharpDevelop.Commands.Print"/>
 				<MenuItem id = "PrintPreview"
 				          label = "${res:XML.MainMenu.FileMenu.PrintPreview}"
 				          icon = "Icons.16x16.PreView"
-				          description = "${res:XML.MainMenu.FileMenu.PrintPreview.Description}"
 				          class = "ICSharpCode.SharpDevelop.Commands.PrintPreview"/>
 			</Condition>
 			
@@ -1047,7 +1025,6 @@
 				<MenuItem id = "RecentFilesSeparator" type = "Separator"  />
 				<MenuItem id = "ClearRecentFiles"
 				          label = "${res:XML.MainMenu.FileMenu.ClearRecentFiles}"
-				          description = "${res:XML.MainMenu.FileMenu.ClearRecentFiles.Description}"
 				          class = "ICSharpCode.SharpDevelop.Commands.ClearRecentFiles" />
 			</MenuItem>
 			
@@ -1056,7 +1033,6 @@
 				<MenuItem id = "RecentProjectsSeparator" type = "Separator"  />
 				<MenuItem id = "ClearRecentFiles"
 				          label = "${res:XML.MainMenu.FileMenu.ClearRecentProjects}"
-				          description = "${res:XML.MainMenu.FileMenu.ClearRecentProjects.Description}"
 				          class = "ICSharpCode.SharpDevelop.Commands.ClearRecentProjects" />
 			</MenuItem>
 			
@@ -1064,7 +1040,6 @@
 			<MenuItem id = "Exit"
 			          label = "${res:XML.MainMenu.FileMenu.Exit}"
 			          icon = "Icons.16x16.CancelIcon"
-			          description = "${res:XML.MainMenu.FileMenu.Exit.Description}"
 			          class = "ICSharpCode.SharpDevelop.Commands.ExitWorkbenchCommand" />
 		</MenuItem> <!-- END File menu -->
 		
@@ -1074,14 +1049,12 @@
 				          label = "${res:XML.MainMenu.EditMenu.Undo}"
 				          icon = "Icons.16x16.UndoIcon"
 				          type = "Item"
-				          description = "${res:XML.MainMenu.EditMenu.Undo.Description}"
 				          shortcut = "Control|Z"
 				          class = "ICSharpCode.SharpDevelop.Commands.Undo"/>
 				<MenuItem id = "Redo"
 				          label = "${res:XML.MainMenu.EditMenu.Redo}"
 				          icon = "Icons.16x16.RedoIcon"
 				          type = "Item"
-				          description = "${res:XML.MainMenu.EditMenu.Redo.Description}"
 				          shortcut = "Control|Y"
 				          class = "ICSharpCode.SharpDevelop.Commands.Redo"/>
 			</Condition>
@@ -1090,32 +1063,27 @@
 			          label = "${res:XML.MainMenu.EditMenu.Cut}"
 			          icon = "Icons.16x16.CutIcon"
 			          type = "Item"
-			          description = "${res:XML.MainMenu.EditMenu.Cut.Description}"
 			          shortcut = "Control|X"
 			          class = "ICSharpCode.SharpDevelop.Commands.Cut"/>
 			<MenuItem id = "Copy"
 			          label = "${res:XML.MainMenu.EditMenu.Copy}"
 			          icon = "Icons.16x16.CopyIcon"
 			          type = "Item"
-			          description = "${res:XML.MainMenu.EditMenu.Copy.Description}"
 			          shortcut = "Control|C"
 			          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
 			<MenuItem id = "Paste"
 			          label = "${res:XML.MainMenu.EditMenu.Paste}"
 			          icon = "Icons.16x16.PasteIcon"
 			          type = "Item"
-			          description = "${res:XML.MainMenu.EditMenu.Paste.Description}"
 			          shortcut = "Control|V"
 			          class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
 			<MenuItem id = "Delete"
 			          label = "${res:XML.MainMenu.EditMenu.Delete}"
 			          icon = "Icons.16x16.DeleteIcon"
 			          type = "Item"
-			          description = "${res:XML.MainMenu.EditMenu.Delete.Description}"
 			          class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
 			<MenuItem id = "SelectAll"
 			          label = "${res:XML.MainMenu.EditMenu.SelectAll}"
-			          description = "${res:XML.MainMenu.EditMenu.SelectAll.Description}"
 			          type = "Item"
 			          shortcut = "Control|A"
 			          class = "ICSharpCode.SharpDevelop.Commands.SelectAll"/>
@@ -1127,7 +1095,6 @@
 				</Or>
 				<MenuItem id = "WordCount"
 				          label = "${res:XML.MainMenu.EditMenu.WordCount}"
-				          description = "${res:XML.MainMenu.EditMenu.WordCount.Description}"
 				          class = "ICSharpCode.SharpDevelop.Commands.WordCount"/>
 			</ComplexCondition>
 		</MenuItem> <!-- end EDIT menu -->
@@ -1142,7 +1109,6 @@
 			<MenuItem id = "FullScreen"
 			          label         = "${res:XML.MainMenu.ViewMenu.FullScreen}"
 			          icon        = "Icons.16x16.FullScreen"
-			          description = "${res:XML.MainMenu.ViewMenu.FullScreen.Description}"
 			          class       = "ICSharpCode.SharpDevelop.Commands.ToggleFullscreenCommand" />
 		</MenuItem> <!-- end VIEW menu -->
 		
@@ -1158,7 +1124,6 @@
 				<MenuItem id = "Separator2" type = "Separator" />
 					<MenuItem id = "Options"
 					          label = "${res:XML.MainMenu.ProjectMenu.Options}"
-					          description = "${res:XML.MainMenu.ProjectMenu.Options.Description}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.ViewProjectOptions"/>
 			</MenuItem>
 		</Condition> <!-- end PROJECT menu -->
@@ -1178,25 +1143,21 @@
 				</Or>
 				<MenuItem id = "Build"
 				          label = "Build"
-				          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
 				          shortcut = "F8"
 				          icon  = "Icons.16x16.BuildCombine"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.Build"/>
 				<MenuItem id = "Rebuild"
 				          label = "Rebuild"
-				          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
 				          shortcut = "F8"
 				          icon  = "Icons.16x16.BuildCombine"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"/>
 				<MenuItem id = "Clean"
 				          label = "Clean"
-				          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
 				          shortcut = "F8"
 				          icon  = "Icons.16x16.BuildCombine"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.Clean"/>
 				<MenuItem id = "Publish"
 				          label = "Publish"
-				          description = "${res:XML.MainMenu.RunMenu.Compile.Description}"
 				          shortcut = "F8"
 				          icon  = "Icons.16x16.BuildCombine"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.Publish"/>
@@ -1204,25 +1165,21 @@
 					<MenuItem id = "Separator1" type = "Separator" />
 					<MenuItem id = "Build project"
 					          label = "Build project"
-					          description = "${res:XML.MainMenu.RunMenu.BuildProject.Description}"
 					          shortcut = "F9"
 					          icon  = "Icons.16x16.BuildCurrentSelectedProject"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.BuildProject"/>
 					<MenuItem id = "Rebuild project"
 					          label = "Rebuild project"
-					          description = "${res:XML.MainMenu.RunMenu.RebuildProject.Description}"
 					          shortcut = "F9"
 					          icon  = "Icons.16x16.BuildCurrentSelectedProject"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.RebuildProject"/>
 					<MenuItem id = "Clean project"
 					          label = "Clean project"
-					          description = "${res:XML.MainMenu.RunMenu.CleanProject.Description}"
 					          shortcut = "F9"
 					          icon  = "Icons.16x16.BuildCurrentSelectedProject"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.CleanProject"/>
 					<MenuItem id = "Publish project"
 					          label = "Publish project"
-					          description = "${res:XML.MainMenu.RunMenu.BuildProject.Description}"
 					          shortcut = "F9"
 					          icon  = "Icons.16x16.BuildCurrentSelectedProject"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>
@@ -1251,7 +1208,6 @@
 						<MenuItem id = "RunWithoutDebugger"
 						          label = "${res:XML.MainMenu.RunMenu.Run}"
 						          icon = "Icons.16x16.RunProgramIcon"
-						          description = "${res:XML.MainMenu.RunMenu.Run.Description}"
 						          shortcut = "F5"
 						          class = "ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger"/>
 				</ComplexCondition>
@@ -1261,13 +1217,11 @@
 						<MenuItem id = "Run"
 						          label = "${res:XML.MainMenu.RunMenu.Run}"
 						          icon = "Icons.16x16.RunProgramIcon"
-						          description = "${res:XML.MainMenu.RunMenu.Run.Description}"
 						          shortcut = "F5"
 						          class = "ICSharpCode.SharpDevelop.Project.Commands.Execute"/>
 						<MenuItem id = "RunWithout debug"
 						          label = "${res:XML.MainMenu.DebugMenu.RunWithoutDebug}"
 						          icon = "Icons.16x16.Debug.StartWithoutDebugging" 
-						          description = "${res:XML.MainMenu.DebugMenu.RunWithoutDebug.Description}"
 						          shortcut = "Control|F5"
 						          class = "ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger"/>
 					</Condition>
@@ -1279,7 +1233,6 @@
 						<MenuItem id = "Break"
 						          label = "Break"
 						          icon="Icons.16x16.Debug.Break"
-						          description = "Break the debugging process"
 						          shortcut = "Control|Alt|B"
 						          class = "ICSharpCode.SharpDevelop.Project.Commands.BreakDebuggingCommand"/>
 					</Condition>
@@ -1288,7 +1241,6 @@
 						          label = "${res:XML.MainMenu.DebugMenu.Continue}"
 						          icon="Icons.16x16.Debug.Continue"
 						          shortcut = "F6"
-						          description = "${res:XML.MainMenu.DebugMenu.Continue.Description}"
 						          class = "ICSharpCode.SharpDevelop.Project.Commands.ContinueDebuggingCommand"/>
 					</Condition>
 				</Condition>
@@ -1297,7 +1249,6 @@
 					<MenuItem id = "Stop"
 					          label = "${res:XML.MainMenu.DebugMenu.Stop}"
 					          icon="Icons.16x16.StopProcess"
-					          description = "${res:XML.MainMenu.DebugMenu.Stop.Description}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand"/>
 				</Condition>
 				
@@ -1307,19 +1258,16 @@
 						<MenuItem id = "Step"
 						          label = "Step"
 						          icon="Icons.16x16.Debug.StepOver"
-						          description = "Step"
 						          shortcut = "F10"
 						          class = "ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand"/>
 						<MenuItem id = "Step into"
 						          label = "Step into"
 						          icon="Icons.16x16.Debug.StepInto"
-						          description = "Step into"
 						          shortcut = "F11"
 						          class = "ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand"/>
 						<MenuItem id = "Step out"
 						          label = "Step out"
 						          icon="Icons.16x16.Debug.StepOut"
-						          description = "Step out"
 						          shortcut = "Shift|F11"
 						          class = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
 					</Condition>
@@ -1341,13 +1289,11 @@
 				<Condition name="ActiveContentExtension" activeextension=".cs" action = "Disable">
 					<MenuItem id = "ConvertBuffer"
 					          label = "${res:XML.MainMenu.ToolMenu.ConvertBufferToVBNET}"
-					          description = "${res:XML.MainMenu.ToolMenu.ConvertBufferToVBNET.Description}"
 					          class = "ICSharpCode.SharpDevelop.Commands.VBConvertBuffer"/>
 				</Condition>
 				<Condition name="ActiveContentExtension" activeextension=".vb" action = "Disable">
 					<MenuItem id = "ConvertCSharpBuffer"
 					          label = "${res:XML.MainMenu.ToolMenu.ConvertBufferToCSharp}"
-					          description = "${res:XML.MainMenu.ToolMenu.ConvertBufferToSharp.Description}"
 					          class = "ICSharpCode.SharpDevelop.Commands.CSharpConvertBuffer"/>
 				</Condition>
 			</ComplexCondition>
@@ -1356,7 +1302,6 @@
 			<MenuItem id = "Options"
 			          label = "${res:XML.MainMenu.ToolMenu.Options}"
 			          icon = "Icons.16x16.Options"
-			          description = "${res:XML.MainMenu.ToolMenu.Options.Description}"
 			          class = "ICSharpCode.SharpDevelop.Commands.OptionsCommand"/>
 		</MenuItem> <!-- end TOOLS menu -->
 		
@@ -1365,20 +1310,17 @@
 				<MenuItem id  = "NextWindow"
 				          label = "${res:XML.MainMenu.WindowMenu.NxtWindow}"
 				          icon = "Icons.16x16.NextWindowIcon"
-				          description = "${res:XML.MainMenu.WindowMenu.NxtWindow.Description}"
 				          shortcut = "Control|Tab"
 				          class = "ICSharpCode.SharpDevelop.Commands.SelectNextWindow" />
 				<MenuItem id = "PrevWindow"
 				          label = "${res:XML.MainMenu.WindowMenu.PrvWindow}"
 				          icon = "Icons.16x16.PrevWindowIcon"
-				          description = "${res:XML.MainMenu.WindowMenu.PrvWindow.Description}"
 				          shortcut = "Shift|Control|Tab"
 				          class = "ICSharpCode.SharpDevelop.Commands.SelectPrevWindow" />
 				<MenuItem id ="NxtPrvSeparator" type = "Separator" />
 				<MenuItem id    = "CloseAll"
 				          label = "${res:XML.MainMenu.FileMenu.CloseAll}"
 				          icon  = "Icons.16x16.CloseAllDocuments"
-				          description = "${res:XML.MainMenu.FileMenu.CloseAll.Description}"
 				          class = "ICSharpCode.SharpDevelop.Commands.CloseAllWindows" />
 			</Condition>
 			<MenuItem id = "ContentBuilder"  type="Builder" class="ICSharpCode.SharpDevelop.Commands.OpenContentsMenuBuilder"/>
@@ -1388,18 +1330,15 @@
 			<MenuItem id = "DynamicHelp"
 			          label = "${res:XML.MainMenu.HelpMenu.DynamicHelp}"
 			          icon = "Icons.16x16.HelpIcon"
-			          description = "${res:XML.MainMenu.HelpMenu.DynamicHelp.Description}"
 			          shortcut = "F1"
 			          class = "ICSharpCode.SharpDevelop.Commands.ShowSensitiveHelp"/>
 			<MenuItem id = "Help"
 			          label = "${res:XML.MainMenu.HelpMenu.Topics}"
-			          description = "${res:XML.MainMenu.HelpMenu.Topics.Description}"
 			          shortcut = "Alt|F1"
 			          class = "ICSharpCode.SharpDevelop.Commands.ShowHelp"/>
 			<MenuItem id = "TipOfTheDay"
 			          label = "${res:XML.MainMenu.HelpMenu.Tips}"
 			          icon = "Icons.16x16.TipOfTheDay"
-			          description = "${res:XML.MainMenu.HelpMenu.Tips.Description}"
 			          class = "ICSharpCode.SharpDevelop.Commands.ViewTipOfTheDay" />
 			
 			<!--
@@ -1407,16 +1346,13 @@
 			<MenuItem id = "ViewGPL"
 			          label = "${res:XML.MainMenu.HelpMenu.GPL}"
 			          icon = "Icons.16x16.CopyLeftIcon"
-			          description = "${res:XML.MainMenu.HelpMenu.GPL.Description}"
 			          class = "ICSharpCode.SharpDevelop.Commands.ViewGPL" />
 			
 			<MenuItem id = "ViewReadme"
 			          label       = "${res:XML.MainMenu.HelpMenu.ReadMe}"
-			          description = "${res:XML.MainMenu.HelpMenu.ReadMe.Description}"
 			          link        = "home://../doc/ReadMe.rtf" />
 			<MenuItem id = "ViewStyleguide"
 			          label = "${res:XML.MainMenu.HelpMenu.StyleGuide}"
-			          description = "${res:XML.MainMenu.HelpMenu.StyleGuide.Description}"
 			          link = "home://../doc/CodingStyleGuide.pdf" />
 			<MenuItem id = "Separator2" type = "Separator" />
 			<MenuItem id = "Web" label = "${res:XML.MainMenu.HelpMenu.WebMenu}" type="Menu">
@@ -1430,28 +1366,27 @@
 					<MenuItem id = "cshrp.net" label = "cshrp.net" icon = "Icons.16x16.WebSearchIcon" link = "http://www.cshrp.net/" />
 					<MenuItem id = "C# Help" label = "C# Help" icon = "Icons.16x16.WebSearchIcon" link = "http://www.csharphelp.com" />
 					<MenuItem id = "C# Corner" label = "C# Corner" icon = "Icons.16x16.WebSearchIcon" link = "http://www.c-sharpcorner.com" />
-					<MenuItem id = "GotDotNet" label = "GotDotNet" icon = "Icons.16x16.WebSearchIcon" description = "Visit one of the best NET sites on the web" link = "http://www.gotdotnet.com/" />
+					<MenuItem id = "GotDotNet" label = "GotDotNet" icon = "Icons.16x16.WebSearchIcon" link = "http://www.gotdotnet.com/" />
 				</MenuItem>
 				<MenuItem id = "IntegratedProjects" label = "Integrated Projects" type="Menu">
-					<MenuItem id = "DockManager Control" label = "DockPanel Suite" icon = "Icons.16x16.WebSearchIcon" description = "The DockPanel Suite is designed to achieve docking capability for MDI forms. It can be used to develop applications with same look and feel as Visual Studio .Net." link = "http://www.freewebs.com/weifenluo/DockManager.htm" />
-					<MenuItem id = "NUnit" label = "NUnit" icon = "Icons.16x16.WebSearchIcon" description = "I used the NDoc as the SharpDevelop documentation generator. Look out it is cool." link = "http://www.nunit.org/" />
-					<MenuItem id = "NProf" label = "NProf" icon = "Icons.16x16.WebSearchIcon" description = "Profiler for .NET" link = "http://nprof.sourceforge.net/Site/SiteHomeNews.html" />
-					<MenuItem id = "WiX" label = "WiX" icon = "Icons.16x16.WebSearchIcon" description = "Installer creator for .NET" link = "http://sourceforge.net/projects/wix/" />
-					<MenuItem id = "NAnt" label = "NAnt" icon = "Icons.16x16.WebSearchIcon" description = "THE .NET building tool." link = "http://nant.sourceforge.net/" />
-					<MenuItem id = "NDoc" label = "NDoc" icon = "Icons.16x16.WebSearchIcon" description = "I used the NDoc as the SharpDevelop documentation generator. Look out it is cool." link = "http://ndoc.sourceforge.net/" />
-					<MenuItem id = "#ZipLib" label = "#ZipLib" icon = "Icons.16x16.WebSearchIcon" description = "" link = "http://www.sharpdevelop.net/OpenSource/SharpZipLib/Default.aspx" />
+					<MenuItem id = "DockManager Control" label = "DockPanel Suite" icon = "Icons.16x16.WebSearchIcon" link = "http://www.freewebs.com/weifenluo/DockManager.htm" />
+					<MenuItem id = "NUnit" label = "NUnit" icon = "Icons.16x16.WebSearchIcon" link = "http://www.nunit.org/" />
+					<MenuItem id = "NProf" label = "NProf" icon = "Icons.16x16.WebSearchIcon" link = "http://nprof.sourceforge.net/Site/SiteHomeNews.html" />
+					<MenuItem id = "WiX" label = "WiX" icon = "Icons.16x16.WebSearchIcon" link = "http://sourceforge.net/projects/wix/" />
+					<MenuItem id = "NAnt" label = "NAnt" icon = "Icons.16x16.WebSearchIcon" link = "http://nant.sourceforge.net/" />
+					<MenuItem id = "NDoc" label = "NDoc" icon = "Icons.16x16.WebSearchIcon" link = "http://ndoc.sourceforge.net/" />
+					<MenuItem id = "#ZipLib" label = "#ZipLib" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SharpZipLib/Default.aspx" />
 				</MenuItem>
 				<MenuItem id = "NETPlatforms" label = ".NET Platforms" type="Menu">
-					<MenuItem id = "MSNET"  label = "MS .NET" icon = "Icons.16x16.WebSearchIcon" description = "The first .NET implementation" link = "http://msdn.microsoft.com/net" />
-					<MenuItem id = "Mono"   label = "Mono Project" icon = "Icons.16x16.WebSearchIcon" description = "A free .NET implementation effort, worth visiting" link = "http://www.go-mono.com" />
-					<MenuItem id = "DotGNU" label = "DotGNU" icon = "Icons.16x16.WebSearchIcon" description = "The GNU .NET implementation" link = "http://www.dotgnu.org" />
+					<MenuItem id = "MSNET"  label = "MS .NET" icon = "Icons.16x16.WebSearchIcon" link = "http://msdn.microsoft.com/net" />
+					<MenuItem id = "Mono"   label = "Mono Project" icon = "Icons.16x16.WebSearchIcon" link = "http://www.go-mono.com" />
+					<MenuItem id = "DotGNU" label = "DotGNU" icon = "Icons.16x16.WebSearchIcon" link = "http://www.dotgnu.org" />
 				</MenuItem>
 			</MenuItem> -->
 			<MenuItem id = "Separator3" type = "Separator" />
 			<MenuItem id = "About"
 			          label = "${res:XML.MainMenu.HelpMenu.About}"
 			          icon = "Icons.16x16.AboutIcon"
-			          description = "${res:XML.MainMenu.HelpMenu.About.Description}"
 			          class = "ICSharpCode.SharpDevelop.Commands.AboutSharpDevelop" />
 		</MenuItem> <!-- end HELP menu -->
 	</Path> <!-- end Main Menu -->
@@ -1611,19 +1546,16 @@
 			<MenuItem id = "Find"
 			          label = "${res:XML.MainMenu.SearchMenu.Find}"
 			          icon = "Icons.16x16.FindIcon"
-			          description = "${res:XML.MainMenu.SearchMenu.Find.Description}"
 			          shortcut = "Control|F"
 			          class = "SearchAndReplace.Find"/>
 			<MenuItem id = "FindNext"
 			          label = "${res:XML.MainMenu.SearchMenu.FindNext}"
 			          icon = "Icons.16x16.FindNextIcon"
-			          description = "${res:XML.MainMenu.SearchMenu.FindNext.Description}"
 			          shortcut = "F3"
 			          class = "SearchAndReplace.FindNext"/>
 			<MenuItem id = "Replace"
 			          label = "${res:XML.MainMenu.SearchMenu.Replace}"
 			          icon = "Icons.16x16.ReplaceIcon"
-			          description = "${res:XML.MainMenu.SearchMenu.Replace.Description}"
 			          shortcut = "Control|R"
 			          class = "SearchAndReplace.Replace"/>
 			
@@ -1631,37 +1563,31 @@
 <!--			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable"> -->
 				<MenuItem id = "ToggleBookmark"
 				          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
-				          description = "${res:XML.MainMenu.SearchMenu.ToggleBookmark.Description}"
 				          shortcut = "Control|F2"
 				          icon = "Bookmarks.ToggleMark"
 				          class = "Bookmarks.ToggleBookmark"/>
 				<MenuItem id = "PrevBookmark"
 				          label = "${res:XML.MainMenu.SearchMenu.PrevBookmark}"
-				          description = "${res:XML.MainMenu.SearchMenu.PrevBookmark.Description}"
 				          shortcut = "Alt|F2"
 				          icon = "Bookmarks.GotoPrevInFile"
 				          class = "Bookmarks.PrevBookmark"/>
 				<MenuItem id = "NextBookmark"
 				          label = "${res:XML.MainMenu.SearchMenu.NextBookmark}"
-				          description = "${res:XML.MainMenu.SearchMenu.NextBookmark.Description}"
 				          shortcut = "F2"
 				          icon = "Bookmarks.GotoNextInFile"
 				          class = "Bookmarks.NextBookmark"/>
 				<MenuItem id = "ClearBookmarks"
 				          label = "${res:XML.MainMenu.SearchMenu.ClrBookmark}"
-				          description = "${res:XML.MainMenu.SearchMenu.ClrBookmark.Description}"
 				          icon = "Bookmarks.ClearAll"
 				          class = "Bookmarks.ClearBookmarks"/>
 				<MenuItem id = "Separator2" type = "Separator" />
 				<MenuItem id = "GotoLineNr"
 				          label = "${res:XML.MainMenu.SearchMenu.GotoLineNr}"
-				          description = "${res:XML.MainMenu.SearchMenu.GotoLineNr.Description}"
 				          shortcut = "Control|G"
 				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoLineNumber"/>
 				<MenuItem id = "Separator3" type = "Separator" />
 				<MenuItem id = "GotoBrace"
 				          label = "${res:XML.MainMenu.SearchMenu.GotoBrace}"
-				          description = "${res:XML.MainMenu.SearchMenu.GotoBrace.Description}"
 				          shortcut = "Control|B"
 				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GotoMatchingBrace"/>
 <!--			</Condition> -->
@@ -1675,7 +1601,6 @@
 			          insertbefore="CloseAll"
 			          label = "${res:XML.MainMenu.WindowMenu.Split}"
 			          icon  = "Icons.16x16.SplitWindow"
-			          description = "${res:XML.MainMenu.WindowMenu.Split.Description}"
 			          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.SplitTextEditor"/>
 		</Condition>
 	</Path>
@@ -1687,52 +1612,41 @@
 				
 				<MenuItem id = "RemoveLeadingWs"
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs}"
-				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.RlWs.Description}"
 				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.RemoveLeadingWS"/>
 				<MenuItem id = "RemoveTrailingWs"
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs}"
-				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.RtWs.Description}"
 				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.RemoveTrailingWS"/>
 				<MenuItem id = "Seperator1" type = "Separator" />
 				<MenuItem id = "UpperCase"
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase}"
 				          icon = "Icons.16x16.LowerToUpperCase"
-				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.UpperCase.Description}"
 				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToUpperCase"/>
 				<MenuItem id = "LowerCase"
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase}"
 				          icon = "Icons.16x16.UpperToLowerCase"
-				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.LowerCase.Description}"
 				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToLowerCase"/>
 				<MenuItem id = "Capitalize"
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize}"
-				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.Capitalize.Description}"
 				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.CapitalizeAction"/>
 				<MenuItem id = "InvertCase"
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase}"
-				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.InvertCase.Description}"
 				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.InvertCaseAction"/>
 				<MenuItem id = "Separator2" type = "Separator" />
 				<MenuItem id = "SortSelection"
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines}"
-				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.SortLines.Description}"
 				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.SortSelection"/>
 				<MenuItem id = "Separator3" type = "Separator" />
 				<MenuItem id = "Tabs2Spaces"
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space}"
-				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.Tab2Space.Description}"
 				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertTabsToSpaces"/>
 				<MenuItem id = "Spaces2Tabs"
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab}"
-				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.Space2Tab.Description}"
 				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertSpacesToTabs"/>
 				<MenuItem id = "LeadingTabs2Spaces"
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space}"
-				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.LdTab2Space.Description}"
 				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertLeadingTabsToSpaces"/>
 				<MenuItem id = "LeadingSpaces2Tabs"
 				          label = "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab}"
-				          description = "${res:XML.MainMenu.EditMenu.FormatMenu.LdSpace2Tab.Description}"
 				          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConvertLeadingSpacesToTabs"/>
 			</Condition>
 		</MenuItem>
@@ -1740,17 +1654,14 @@
 			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
 				<MenuItem id          = "ToggleFolding"
 				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleFolding}"
-				          description = "Toggles the current selected folding"
 				          shortcut    = "Shift|Control|M"
 				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToggleFolding"/>
 				<MenuItem id          = "ToggleAllFoldings"
 				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ToggleAllFoldings}"
-				          description = "Toggles all foldings"
 				          shortcut    = "Shift|Control|L"
 				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToggleAllFoldings"/>
 				<MenuItem id          = "ShowDefinitionsOnly"
 				          label       = "${res:XML.MainMenu.EditMenu.FoldingMenu.ShowDefinitions}"
-				          description = "Shows only the definitions"
 				          shortcut    = "Shift|Control|P"
 				          class       = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowDefinitionsOnly"/>
 			</Condition>
@@ -1792,21 +1703,18 @@
 			<MenuItem id = "InsertColor"
 			          insertafter = "Separator1" insertbefore = "Separator2"
 			          label = "${res:XML.MainMenu.ToolMenu.InsColor}" 
-			          description = "${res:XML.MainMenu.ToolMenu.InsColor.Description}" 
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowColorDialog"/> 
 			<MenuItem id = "Separator2" type = "Separator" />
 
 			<MenuItem id = "GenerateCodeAction"
 			          insertafter = "Separator2"
 			          label = "${res:XML.MainMenu.ToolMenu.GenerateCode}" 
-			          description = "${res:XML.MainMenu.ToolMenu.GenerateCode.Description}" 
 			          shortcut = "Alt|Insert"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GenerateCodeAction"/>  
 			<MenuItem id = "ShowQuickHelp"
 			          insertafter = "GenerateCodeAction"
 			          insertbefore = "Separator5"
 			          label = "${res:XML.MainMenu.ToolMenu.QuickXmlDoc}" 
-			          description = "${res:XML.MainMenu.ToolMenu.QuickXmlDoc.Description}" 
 			          shortcut = "Control|Q"
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.QuickDocumentation"/> 
 		</Condition>

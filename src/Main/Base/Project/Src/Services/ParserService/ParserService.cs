@@ -59,7 +59,9 @@ namespace ICSharpCode.Core
 		
 		static void ProjectServiceSolutionClosed(object sender, EventArgs e)
 		{
-			projectContents.Clear();
+			lock (projectContents) {
+				projectContents.Clear();
+			}
 		}
 		
 		public static void OpenCombine(object sender, SolutionEventArgs e)
@@ -74,7 +76,10 @@ namespace ICSharpCode.Core
 		{
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				try {
-					projectContents[project] = CaseSensitiveProjectContent.Create(project);
+					IProjectContent newContent = CaseSensitiveProjectContent.Create(project);
+					lock (projectContents) {
+						projectContents[project] = newContent;
+					}
 				} catch (Exception e) {
 					Console.WriteLine("Error while retrieving project contents from {0} : {1}", project, e);
 				}
@@ -92,6 +97,7 @@ namespace ICSharpCode.Core
 		public static void StartParserThread()
 		{
 			Thread parserThread = new Thread(new ThreadStart(ParserUpdateThread));
+			parserThread.Priority = ThreadPriority.Lowest;
 			parserThread.IsBackground  = true;
 			parserThread.Start();
 		}
@@ -186,13 +192,15 @@ namespace ICSharpCode.Core
 					parserOutput = parser.Parse(fileName);
 				}
 				
-				foreach (KeyValuePair<IProject, IProjectContent> projectContent in projectContents) {
-					if (projectContent.Key.IsFileInProject(fileName)) {
-						if (parsings.ContainsKey(fileName)) {
-							ParseInformation parseInformation = parsings[fileName];
-							projectContent.Value.UpdateCompilationUnit(parseInformation.MostRecentCompilationUnit as ICompilationUnit, parserOutput as ICompilationUnit, fileName, updateCommentTags);
-						} else {
-							projectContent.Value.UpdateCompilationUnit(null, parserOutput as ICompilationUnit, fileName, updateCommentTags);
+				lock (projectContents) {
+					foreach (KeyValuePair<IProject, IProjectContent> projectContent in projectContents) {
+						if (projectContent.Key.IsFileInProject(fileName)) {
+							if (parsings.ContainsKey(fileName)) {
+								ParseInformation parseInformation = parsings[fileName];
+								projectContent.Value.UpdateCompilationUnit(parseInformation.MostRecentCompilationUnit as ICompilationUnit, parserOutput as ICompilationUnit, fileName, updateCommentTags);
+							} else {
+								projectContent.Value.UpdateCompilationUnit(null, parserOutput as ICompilationUnit, fileName, updateCommentTags);
+							}
 						}
 					}
 				}

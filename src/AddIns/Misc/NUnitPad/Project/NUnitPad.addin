@@ -29,11 +29,9 @@
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Project">
 		<Condition name = "ProjectActive" activeproject="*" action="Disable">
-			<MenuItem id = "RunTests"
-			          insertbefore ="Deploy"
-			          label = "${res:XML.MainMenu.ProjectMenu.RunTests}" 
-			          description = "${res:XML.MainMenu.ProjectMenu.RunTests.Description}"
-			          class = "ICSharpCode.NUnitPad.RunTestsInProject"/>
+			<MenuItem id           = "RunTests"
+			          label        = "${res:XML.MainMenu.ProjectMenu.RunTests}" 
+			          class        = "ICSharpCode.NUnitPad.RunTestsInProject"/>
 		</Condition>
 	</Path>
 	
