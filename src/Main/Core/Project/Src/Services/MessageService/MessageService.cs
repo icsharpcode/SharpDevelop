@@ -51,6 +51,13 @@ namespace ICSharpCode.Core
 		
 		public static void ShowError(Exception ex, string message)
 		{
+			#if DEBUG
+			Console.WriteLine();
+				if (message != null)
+			Console.WriteLine(message);
+			Console.WriteLine(ex);
+			Console.Beep();
+			#else
 			string msg = String.Empty;
 			
 			if (message != null) {
@@ -66,6 +73,7 @@ namespace ICSharpCode.Core
 			}
 			
 			MessageBox.Show(MessageService.MainForm, StringParser.Parse(msg), StringParser.Parse("${res:Global.ErrorText}"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+			#endif
 		}
 		
 		public static void ShowWarning(string message)

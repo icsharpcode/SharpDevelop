@@ -568,9 +568,7 @@ namespace ICSharpCode.Core
 					}
 				}
 			} catch (Exception e) {
-				Console.Beep();
-				Console.WriteLine();
-				Console.WriteLine(e);
+				ICSharpCode.Core.MessageService.ShowError(e);
 			}
 		}
 		

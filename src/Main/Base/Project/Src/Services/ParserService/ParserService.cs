@@ -81,7 +81,8 @@ namespace ICSharpCode.Core
 						projectContents[project] = newContent;
 					}
 				} catch (Exception e) {
-					Console.WriteLine("Error while retrieving project contents from {0} : {1}", project, e);
+					Console.WriteLine("Error while retrieving project contents from {0}:", project);
+					ICSharpCode.Core.MessageService.ShowError(e);
 				}
 			}
 		}
@@ -150,9 +151,7 @@ namespace ICSharpCode.Core
 						}
 					}
 				} catch (Exception e) {
-					Console.Beep();
-					Console.WriteLine();
-					Console.WriteLine(e);
+					ICSharpCode.Core.MessageService.ShowError(e);
 				}
 				Thread.Sleep(2000);
 			}

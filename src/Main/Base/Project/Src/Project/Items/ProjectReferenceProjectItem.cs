@@ -14,11 +14,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		IProject referencedProject;
+		
 		[Browsable(false)]
-		public  IProject ReferencedProject {
+		public IProject ReferencedProject {
 			get {
-				throw new System.NotImplementedException();
-//				return null;
+				if (referencedProject == null)
+					referencedProject = ProjectService.GetProject(this.FileName);
+				return referencedProject;
 			}
 		}
 		
@@ -51,6 +54,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			Include     = FileUtility.GetRelativePath(project.Directory, referenceTo.FileName);
 			ProjectGuid = referenceTo.IdGuid;
 			ProjectName = referenceTo.Name;
+			this.referencedProject = referenceTo;
 		}
 		
 		public override string ToString()

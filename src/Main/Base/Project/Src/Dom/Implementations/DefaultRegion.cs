@@ -57,16 +57,16 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			}
 		}
 
-		public DefaultRegion(Point start, Point end) : this(start.Y, start.X, end.Y, end.X)
+		public DefaultRegion(Point start, Point end)
+			: this(start.Y, start.X, end.Y, end.X)
 		{
 		}
 		
-		public DefaultRegion(int beginLine, int beginColumn)
+		public DefaultRegion(Point start)
+			: this(start.Y, start.X)
 		{
-			this.beginLine   = beginLine;
-			this.beginColumn = beginColumn;
 		}
-
+		
 		public DefaultRegion(int beginLine, int beginColumn, int endLine, int endColumn)
 		{
 			this.beginLine   = beginLine;
@@ -74,7 +74,13 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			this.endLine     = endLine;
 			this.endColumn   = endColumn;
 		}
-
+		
+		public DefaultRegion(int beginLine, int beginColumn)
+		{
+			this.beginLine   = beginLine;
+			this.beginColumn = beginColumn;
+		}
+		
 		/// <remarks>
 		/// Returns true, if the given coordinates (row, column) are in the region.
 		/// This method assumes that for an unknown end the end line is == -1

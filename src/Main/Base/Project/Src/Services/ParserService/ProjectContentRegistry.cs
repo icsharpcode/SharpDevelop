@@ -37,12 +37,16 @@ namespace ICSharpCode.Core
 		
 		public static IProjectContent GetProjectContentForReference(ReferenceProjectItem item)
 		{
+			if (item is ProjectReferenceProjectItem) {
+				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
+			}
 			if (contents.ContainsKey(item.FileName)) {
 				return contents[item.FileName];
 			}
 			if (contents.ContainsKey(item.Include)) {
 				return contents[item.Include];
 			}
+			
 			Assembly assembly = null;
 			
 			try {

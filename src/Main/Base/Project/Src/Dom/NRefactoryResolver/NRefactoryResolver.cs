@@ -91,8 +91,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				expression = expression.ToLower();
 			}
 			
-			this.caretLine     = caretLineNumber;
-			this.caretColumn   = caretColumn;
+			this.caretLine   = caretLineNumber;
+			this.caretColumn = caretColumn;
 			
 			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
 			if (parseInfo == null) {
@@ -126,8 +126,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
 			
 			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
+			
 			if (cu != null) {
 				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
+				cu.FileName = fileName;
 			}
 			callingMember = GetCurrentMember();
 			
@@ -207,7 +209,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			LocalLookupVariable var = SearchVariable(identifier);
 			if (var != null) {
 				IReturnType type = GetVariableType(var);
-				IField field = new LocalVariableField(type, identifier, null, callingClass);
+				IField field = new LocalVariableField(type, identifier, new DefaultRegion(var.StartPos, var.EndPos), callingClass);
 				return new LocalResolveResult(callingMember, field, false);
 			}
 			IParameter para = SearchMethodParameter(identifier);

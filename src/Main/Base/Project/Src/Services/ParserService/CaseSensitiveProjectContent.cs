@@ -100,6 +100,7 @@ namespace ICSharpCode.Core
 			foreach (ProjectItem item in project.Items.ToArray()) {
 				switch (item.ItemType) {
 					case ItemType.Reference:
+					case ItemType.ProjectReference:
 						IProjectContent referencedContent = ProjectContentRegistry.GetProjectContentForReference(item as ReferenceProjectItem);
 						if (referencedContent != null) {
 							newProjectContent.referencedContents.Add(referencedContent);

@@ -16,6 +16,7 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
+    <DefineConstants>DEBUG</DefineConstants>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <OutputPath>..\..\..\..\bin\</OutputPath>
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>

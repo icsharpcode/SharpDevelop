@@ -385,9 +385,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		private void LogException(Exception ex)
 		{
-			Console.WriteLine();
-			Console.WriteLine("EXCEPTION: " + ex);
-			Console.Beep(); // notify user
+			ICSharpCode.Core.MessageService.ShowError(ex);
 		}
 		
 		public string GetWordBeforeCaret()

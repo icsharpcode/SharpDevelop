@@ -28,6 +28,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public static IProject GetProject(string filename)
+		{
+			filename = Path.GetFullPath(filename).ToLower();
+			foreach (IProject project in OpenSolution.Projects) {
+				if (project.FileName.ToLower() == filename) {
+					return project;
+				}
+			}
+			return null;
+		}
+		
 		static ProjectService()
 		{
 			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += new EventHandler(ActiveWindowChanged);
