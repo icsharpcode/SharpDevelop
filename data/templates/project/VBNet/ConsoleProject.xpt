@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.ConsoleProject.Name}</Name>
 		<Category>VBNet</Category>
-		<Icon>VB.Project.DOSProject</Icon>
+		<Icon>VBNet.Project.DOSProject</Icon>
 		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
 	</TemplateConfiguration>
@@ -17,6 +17,7 @@
 		<Open filename = "Main.vb"/>
 	</Actions>
 	
+
 	<!-- Template Content -->
 	<Combine name = "${ProjectName}" directory = ".">
 		<Options>
@@ -27,6 +28,13 @@
 			
 			<Options Target = "Exe" PauseConsoleOutput = "True"/>
 			
+				<References>
+					<Reference type="Gac" refto="System" />
+					<Reference type="Gac" refto="System.Data" />
+					<Reference type="Gac" refto="System.Drawing" />
+					<Reference type="Gac" refto="System.Xml" />
+				</References>
+				
 			<Files>
 		<File name="Main.vb">
 			<![CDATA[${StandardHeader.VBNET}

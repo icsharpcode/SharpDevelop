@@ -1,4 +1,5 @@
 @echo off
-..\..\SharpDevelop\src\Tools\nant\bin\nant
+resasm BitmapResources.res
+move BitmapResources.resources ..\..\SharpDevelop\Src\Main\StartUp\Project\Resources\BitmapResources.resources
 
 pause

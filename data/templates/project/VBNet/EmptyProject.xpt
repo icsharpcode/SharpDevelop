@@ -8,7 +8,7 @@
 		<Name>${res:Templates.Project.EmptyProject.Name}</Name>
 		<Category>VBNet</Category>
 		<LanguageName>VBNet</LanguageName>
-		<Icon>VB.Project.EmptyProject</Icon>
+		<Icon>VBNet.Project.EmptyProject</Icon>
 		<Description>${res:Templates.Project.EmptyProject.Description}</Description>
 	</TemplateConfiguration>
 	

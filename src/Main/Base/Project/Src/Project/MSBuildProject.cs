@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
-		public void Create(ProjectCreateInformation information)
+		protected void Create(ProjectCreateInformation information)
 		{
 			Name = information.ProjectName;
 			configurations[""] = new PropertyGroup();
@@ -42,8 +42,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			configurations["Release|AnyCPU"]["Optimize"] = @"true";
 			
 			fileName = information.OutputProjectFileName;
-			
-			imports.Add(@"$(MSBuildBinPath)\Microsoft.CSHARP.Targets");
 		}
 		
 		public override bool CanCompile(string fileName)

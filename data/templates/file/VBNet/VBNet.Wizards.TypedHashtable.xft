@@ -3,7 +3,7 @@
 	
 	<Config
 		name        = "${res:Templates.File.TypedHashTable.Name}"
-		icon        = "VB.File.FullFile"
+		icon        = "VBNet.File.FullFile"
 		category    = "VB"
 		defaultname = "Class${Number}.vb"
 		language    = "VBNET"

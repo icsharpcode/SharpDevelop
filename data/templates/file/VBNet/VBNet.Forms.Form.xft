@@ -3,7 +3,7 @@
 	
 	<Config
 		name        = "${res:Templates.File.WindowsForm.Name}"
-		icon        = "VB.File.Form"
+		icon        = "VBNet.File.Form"
 		category    = "VB"
 		defaultname = "Form${Number}.vb"
 		language    = "VB"

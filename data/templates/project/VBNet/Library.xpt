@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.ClassLibrary.Name}</Name>
 		<Category>VBNet</Category>
-		<Icon>VB.Project.Library</Icon>
+		<Icon>VBNet.Project.Library</Icon>
 		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
 	</TemplateConfiguration>
@@ -22,8 +22,17 @@
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
 		
+		
 		<Project name = "${ProjectName}" directory = ".">
 			<Options Target = "Library" PauseConsoleOutput = "False"/>	
+			
+			<References>
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Data" />
+				<Reference type="Gac" refto="System.Drawing" />
+				<Reference type="Gac" refto="System.Xml" />
+			</References>
+			
 			<Files>
 				<File name="NewClass.vb"><![CDATA[${StandardHeader.VBNET}
 Imports System

@@ -567,6 +567,7 @@ namespace CSharpBinding
 		{
 			Language = "C#";
 			Create(info);
+			imports.Add(@"$(MSBuildBinPath)\Microsoft.CSHARP.Targets");
 		}
 	}
 }

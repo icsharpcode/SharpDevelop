@@ -3,7 +3,7 @@
 	
 	<Config
 		  name        = "${res:Templates.File.UnitTest.Name}"
-		  icon        = "VB.File.FullFile"
+		  icon        = "VBNet.File.FullFile"
 		  category    = "VB"
 		  defaultname = "Test${Number}.vb"
 		  language    = "VBNET"/>

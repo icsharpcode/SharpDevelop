@@ -585,15 +585,16 @@ namespace VBNetBinding
 		public VBNetProject(string fileName, string projectName)
 		{
 			this.Name = projectName;
-			Language = "VB.NET";
+			Language = "VBNet";
 			SetupProject(fileName);
 			IdGuid = BaseConfiguration["ProjectGuid"];
 		}
 		
 		public VBNetProject(ProjectCreateInformation info)
 		{
-			Language = "VB.NET";
+			Language = "VBNet";
 			Create(info);
+			imports.Add(@"$(MSBuildBinPath)\Microsoft.VisualBasic.Targets");
 		}
 	}
 }

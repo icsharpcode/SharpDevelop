@@ -25,7 +25,7 @@ namespace VBNetBinding
 {
 	public class VBNetLanguageBinding : ILanguageBinding
 	{
-		public const string LanguageName = "C#";
+		public const string LanguageName = "VBNet";
 		
 		public string Language {
 			get {
@@ -42,7 +42,7 @@ namespace VBNetBinding
 			if (ext == null) {
 				return false;
 			}
-			return ext.ToUpper() == ".CS";
+			return ext.ToUpper() == ".VB";
 		}
 		
 		public string GetCompiledOutputName(string fileName)

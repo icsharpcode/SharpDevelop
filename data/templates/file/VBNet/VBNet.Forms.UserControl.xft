@@ -3,7 +3,7 @@
 	
 	<Config
 		name        = "${res:Templates.File.WindowsUserControl.Name}"
-		icon        = "VB.File.Form"
+		icon        = "VBNet.File.Form"
 		category    = "VB"
 		defaultname = "UserControl${Number}.vb"
 		language    = "VBNET"/>

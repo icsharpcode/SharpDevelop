@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.Direct3DApplication.Name}</Name>
 		<Category>VBNet</Category>
-		<Icon>VB.Project.FullProject</Icon>
+		<Icon>VBNet.Project.FullProject</Icon>
 		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.Direct3DApplication.Description}</Description>
 	</TemplateConfiguration>
@@ -27,8 +27,13 @@
 			<Options/>
 			
 			<References>
-				<Reference type="Gac" refto="Microsoft.DirectX, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
-				<Reference type="Gac" refto="Microsoft.DirectX.Direct3D, Version=1.0.2902.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35" />
+				<Reference type="Gac" refto="System" />
+				<Reference type="Gac" refto="System.Data" />
+				<Reference type="Gac" refto="System.Drawing" />
+				<Reference type="Gac" refto="System.Windows.Forms" />
+				<Reference type="Gac" refto="System.Xml" />
+				<Reference type="Gac" refto="Microsoft.DirectX" />
+				<Reference type="Gac" refto="Microsoft.DirectX.Direct3D" />
 			</References>
 			
 			<Files>
