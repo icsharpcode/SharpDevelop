@@ -398,7 +398,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// </remarks>
 		public IClass SearchType(string name, IClass curType)
 		{
-			return projectContent.SearchType(name, curType, caretLine, caretColumn);
+			IClass c = SearchLocalType(name);
+			if (c != null)
+				return c;
+			else
+				return projectContent.SearchType(name, curType, caretLine, caretColumn);
 		}
 		
 		/// <remarks>
@@ -406,7 +410,25 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// </remarks>
 		public IClass SearchType(string name, IClass curType, ICompilationUnit unit)
 		{
-			return projectContent.SearchType(name, curType, unit, caretLine, caretColumn);
+			IClass c = SearchLocalType(name);
+			if (c != null)
+				return c;
+			else
+				return projectContent.SearchType(name, curType, unit, caretLine, caretColumn);
+		}
+		
+		IClass SearchLocalType(string name)
+		{
+			if (cu == null) return null;
+			foreach (IClass c in cu.Classes) {
+				//foreach (IClass innerClass in c.InnerClasses) {
+				//	if (IsSameName(innerClass.FullyQualifiedName, name))
+				//		return innerClass;
+				//}
+				if (IsSameName(c.FullyQualifiedName, name))
+					return c;
+			}
+			return null;
 		}
 		
 		#region Helper for TypeVisitor
@@ -426,6 +448,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				curType = SearchType(type.FullyQualifiedName, null, null);
 			}
 			return SearchMethod(new ArrayList(), curType, memberName);
+		}
+		
+		/// <summary>
+		/// Gets the list of methods on the class that have the specified name.
+		/// </summary>
+		public ArrayList SearchMethod(IClass type, string memberName)
+		{
+			return SearchMethod(new ArrayList(), type, memberName);
 		}
 		
 		ArrayList SearchMethod(ArrayList methods, IClass curType, string memberName)

@@ -421,7 +421,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public void ParseInformationUpdated(ParseInformation parseInfo)
 		{
 			if (textAreaControl.TextEditorProperties.EnableFolding) {
-				textAreaControl.ActiveTextAreaControl.TextArea.Invoke(new ParseInformationDelegate(ParseInformationUpdatedInternal), new object[] { parseInfo });
+				TextArea textArea = textAreaControl.ActiveTextAreaControl.TextArea;
+				if (textArea.IsHandleCreated)
+					textArea.Invoke(new ParseInformationDelegate(ParseInformationUpdatedInternal), new object[] { parseInfo });
 			}
 		}
 		

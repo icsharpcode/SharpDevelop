@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
-			// TODO : Operators 
+			// TODO : Operators
 			return binaryOperatorExpression.Left.AcceptVisitor(this, data);
 		}
 		
@@ -51,29 +51,65 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return m.ReturnType;
 		}
 		
+		IMethod FindOverload(ArrayList methods, InvocationExpression invocationExpression, object data)
+		{
+			if (methods.Count <= 0) {
+				return null;
+			}
+			IMethod bestMethod = (IMethod)methods[0]; // when in doubt, use first method
+			if (methods.Count == 1)
+				return bestMethod;
+			
+			ArrayList arguments = invocationExpression.Parameters;
+			IReturnType[] types = new IReturnType[arguments.Count];
+			for (int i = 0; i < types.Length; ++i) {
+				types[i] = ((Expression)arguments[i]).AcceptVisitor(this, data) as IReturnType;
+			}
+			int bestScore = ScoreOverload(bestMethod, types);
+			
+			foreach (IMethod method in methods) {
+				if (method == bestMethod) continue;
+				int score = ScoreOverload(method, types);
+				if (score > bestScore) {
+					bestScore = score;
+					bestMethod = method;
+				}
+			}
+			
+			return bestMethod;
+		}
+		
+		int ScoreOverload(IMethod method, IReturnType[] types)
+		{
+			if (method.Parameters.Count == types.Length) {
+				int points = types.Length;
+				for (int i = 0; i < types.Length; ++i) {
+					IReturnType type = method.Parameters[i].ReturnType;
+					if (type != null && types[i] != null) {
+						if (type.CompareTo(types[i]) == 0)
+							points += 1;
+					}
+				}
+				return points;
+			} else {
+				return types.Length - Math.Abs(method.Parameters.Count - types.Length);
+			}
+		}
+		
 		public IMethod GetMethod(InvocationExpression invocationExpression, object data)
 		{
 			if (invocationExpression.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
 				IReturnType type = field.TargetObject.AcceptVisitor(this, data) as IReturnType;
 				ArrayList methods = resolver.SearchMethod(type, field.FieldName);
-				if (methods.Count <= 0) {
-					return null;
-				}
-				// TODO: Find the right method
-				return (IMethod)methods[0];
+				return FindOverload(methods, invocationExpression, data);
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				string id = ((IdentifierExpression)invocationExpression.TargetObject).Identifier;
 				if (resolver.CallingClass == null) {
 					return null;
 				}
-				IReturnType type = new ReturnType(resolver.CallingClass.FullyQualifiedName);
-				ArrayList methods = resolver.SearchMethod(type, id);
-				if (methods.Count <= 0) {
-					return null;
-				}
-				// TODO: Find the right method
-				return (IMethod)methods[0];
+				ArrayList methods = resolver.SearchMethod(resolver.CallingClass, id);
+				return FindOverload(methods, invocationExpression, data);
 			}
 			// invocationExpression is delegate call
 			IReturnType t = invocationExpression.AcceptChildren(this, data) as IReturnType;
@@ -82,11 +118,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			IClass c = resolver.SearchType(t.FullyQualifiedName, resolver.CallingClass, resolver.CompilationUnit);
 			if (c.ClassType == ClassType.Delegate) {
-				ArrayList methods = resolver.SearchMethod(t, "invoke");
-				if (methods.Count <= 0) {
-					return null;
-				}
-				return (IMethod)methods[0];
+				ArrayList methods = resolver.SearchMethod(t, "Invoke");
+				return FindOverload(methods, invocationExpression, data);
 			}
 			return null;
 		}
@@ -183,7 +216,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					--expressionType.PointerNestingLevel;
 					break;
 				case UnaryOperatorType.BitWiseAnd: // get reference
-					++expressionType.PointerNestingLevel; 
+					++expressionType.PointerNestingLevel;
 					break;
 				case UnaryOperatorType.None:
 					break;
@@ -250,7 +283,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return ((IIndexer)indexer[0]).ReturnType;
 			}
 			
-			// TODO: what is a[0] if a is pointer to array or array of pointer ? 
+			// TODO: what is a[0] if a is pointer to array or array of pointer ?
 			if (type.ArrayDimensions[type.ArrayDimensions.Length - 1] != indexerExpression.Indices.Count) {
 				return null;
 			}

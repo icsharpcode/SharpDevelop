@@ -17,13 +17,12 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 	[TestFixture]
 	public class TopologicalSortTest
 	{
-		[Test]
+		[Test, Ignore("TODO: Write test")]
 		public void Test()
 		{
-			
-			List<Codon> codons = new List<Codon>(5);
+			List<Codon> codons = new List<Codon>();
 			for (int i = 0; i < 5; ++i) {
-				codons[i] = new Codon(null, "codon" + i, null, null);
+				codons.Add(new Codon(null, "codon" + i, null, null));
 			}
 		}
 	}

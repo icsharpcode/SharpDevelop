@@ -11,9 +11,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 	[TestFixture]
 	public class NRefactoryResolverTests
 	{
+		#region Test helper methods
 		ICompilationUnit Parse(string fileName, string fileContent)
 		{
-			
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp, new StringReader(fileContent));
 			p.Parse();
 			IProjectContent pc = new CaseSensitiveProjectContent();
@@ -55,23 +55,23 @@ namespace ICSharpCode.SharpDevelop.Tests
 			ParserService.UpdateParseInformation(parserOutput, fileName, false, false);
 		}
 		
-		ResolveResult Resolve(string program, string expression, int line, int column)
+		ResolveResult Resolve(string program, string expression, int line)
 		{
 			AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet);
+			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp);
 			return resolver.Resolve(expression,
-			                        line, column,
+			                        line, 0,
 			                        "a.cs");
 		}
 		
-		ResolveResult ResolveVB(string program, string expression, int line, int column)
+		ResolveResult ResolveVB(string program, string expression, int line)
 		{
 			AddCompilationUnit(ParseVB("a.vb", program), "a.vb");
 			
 			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet);
 			return resolver.Resolve(expression,
-			                        line, column,
+			                        line, 0,
 			                        "a.vb");
 		}
 		
@@ -80,17 +80,11 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			corLib = CaseSensitiveProjectContent.Create(typeof(string).Assembly);
+			corLib = ProjectContentRegistry.GetMscorlibContent();
 		}
-		//
-//		public static void Main(string[] args)
-//		{
-//			NRefactoryResolverTests test = new NRefactoryResolverTests();
-//			test.Init();
-//			test.OuterclassPrivateFieldResolveTest();
-		//
-//		}
+		#endregion
 		
+		#region Test for old issues
 		// Issue SD-291
 		[Test]
 		public void VBNetMultipleVariableDeclarationsTest()
@@ -102,12 +96,12 @@ namespace ICSharpCode.SharpDevelop.Tests
 	End Sub
 End Class
 ";
-			ResolveResult result = ResolveVB(program, "a", 4, 24);
+			ResolveResult result = ResolveVB(program, "a", 4);
 			Assert.IsNotNull(result, "result");
 			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
 			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
 			
-			result = ResolveVB(program, "b", 4, 24);
+			result = ResolveVB(program, "b", 4);
 			Assert.IsNotNull(result, "result");
 			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
 			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
@@ -125,7 +119,7 @@ End Class
 	End Sub
 End Class
 ";
-			ResolveResult result = ResolveVB(program, "c", 4, 24);
+			ResolveResult result = ResolveVB(program, "c", 4);
 			Assert.IsNotNull(result, "result");
 			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
 			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
@@ -142,7 +136,7 @@ End Class
 	End Sub
 End Class
 ";
-			ResolveResult result = ResolveVB(program, "a", 4, 24);
+			ResolveResult result = ResolveVB(program, "a", 4);
 			Assert.IsNotNull(result, "result");
 			ArrayList arr = result.GetCompletionData(lastPC);
 			Assert.IsNotNull(arr, "arr");
@@ -166,7 +160,7 @@ End Class
 	End Sub
 End Module
 ";
-			ResolveResult result = ResolveVB(program, "t", 4, 24);
+			ResolveResult result = ResolveVB(program, "t", 4);
 			Assert.IsNotNull(result, "result");
 			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
 			
@@ -196,7 +190,7 @@ End Module
 	}
 }
 ";
-			ResolveResult result = Resolve(program, "a", 8, 24);
+			ResolveResult result = Resolve(program, "a", 8);
 			Assert.IsNotNull(result, "result");
 			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
 			ArrayList arr = result.GetCompletionData(lastPC);
@@ -209,7 +203,9 @@ End Module
 			}
 			Assert.Fail("private field not visible from inner class");
 		}
+		#endregion
 		
+		#region BasicTests
 		[Test]
 		public void InheritedInterfaceResolveTest()
 		{
@@ -225,7 +221,7 @@ interface IInterface2 {
 	void Method2();
 }
 ";
-			ResolveResult result = Resolve(program, "a", 3, 24);
+			ResolveResult result = Resolve(program, "a", 3);
 			Assert.IsNotNull(result, "result");
 			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
 			ArrayList arr = result.GetCompletionData(lastPC);
@@ -247,7 +243,7 @@ interface IInterface2 {
 	}
 }
 ";
-			ResolveResult result = Resolve(program, "b.ThisMethodDoesNotExistOnString()", 3, 24);
+			ResolveResult result = Resolve(program, "b.ThisMethodDoesNotExistOnString()", 3);
 			Assert.IsNull(result, "result");
 		}
 		
@@ -260,8 +256,46 @@ interface IInterface2 {
 	}
 }
 ";
-			ResolveResult result = Resolve(program, "new ThisClassDoesNotExist()", 3, 24);
+			ResolveResult result = Resolve(program, "new ThisClassDoesNotExist()", 3);
 			Assert.IsNull(result);
+		}
+		
+		[Test]
+		public void MethodCallTest()
+		{
+			string program = @"class A {
+	void Method() {
+		
+	}
+	
+	int TargetMethod() {
+		return 3;
+	}
+}
+";
+			ResolveResult result = Resolve(program, "TargetMethod()", 3);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is MemberResolveResult);
+			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName, "'TargetMethod()'");
+		}
+		
+		[Test]
+		public void ThisMethodCallTest()
+		{
+			string program = @"class A {
+	void Method() {
+		
+	}
+	
+	int TargetMethod() {
+		return 3;
+	}
+}
+";
+			ResolveResult result = Resolve(program, "this.TargetMethod()", 3);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is MemberResolveResult);
+			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName, "'this.TargetMethod()'");
 		}
 		
 		[Test]
@@ -276,15 +310,16 @@ interface IInterface2 {
 	double Multiply(double a, double b) { return a * b; }
 }
 ";
-			ResolveResult result = Resolve(program, "Multiply(1, 1)", 3, 24);
+			ResolveResult result = Resolve(program, "Multiply(1, 1)", 3);
 			Assert.IsNotNull(result);
-			Assert.IsTrue(result is MethodResolveResult, "'Multiply(1,1)' is MethodResolveResult");
+			Assert.IsTrue(result is MemberResolveResult, "'Multiply(1,1)' is MemberResolveResult");
 			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName, "'Multiply(1,1)'");
 			
-			result = Resolve(program, "Multiply(1.0, 1.0)", 3, 24);
+			result = Resolve(program, "Multiply(1.0, 1.0)", 3);
 			Assert.IsNotNull(result);
-			Assert.IsTrue(result is MethodResolveResult, "'Multiply(1.0,1.0)' is MethodResolveResult");
+			Assert.IsTrue(result is MemberResolveResult, "'Multiply(1.0,1.0)' is MemberResolveResult");
 			Assert.AreEqual("System.Double", result.ResolvedType.FullyQualifiedName, "'Multiply(1.0,1.0)'");
 		}
+		#endregion
 	}
 }
