@@ -122,7 +122,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		static PropertyPad()
 		{
 			grid = new PropertyGrid();
-			grid.PropertyValueChanged += new PropertyValueChangedEventHandler(PropertyChanged);
 			grid.PropertySort = PropertyService.Get("FormsDesigner.DesignerOptions.PropertyGridSortAlphabetical", false) ? PropertySort.Alphabetical : PropertySort.CategorizedAlphabetical;
 			grid.Dock = DockStyle.Fill;
 		}
@@ -148,6 +147,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ProjectService.SolutionClosed += new EventHandler(CombineClosedEvent);
 			
+			grid.PropertyValueChanged += new PropertyValueChangedEventHandler(PropertyChanged);
 			grid.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Views/PropertyPad/ContextMenu");
 		}
 		
