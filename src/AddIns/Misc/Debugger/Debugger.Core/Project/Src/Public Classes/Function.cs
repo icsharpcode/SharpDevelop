@@ -273,7 +273,7 @@ namespace DebuggerLibrary
 				AddScopeToVariableCollection(symRootScope, ref collection);
 				
 			// Properties		
-				/*IntPtr methodEnumPtr = IntPtr.Zero;
+				IntPtr methodEnumPtr = IntPtr.Zero;
 				uint methodsFetched;
 				while(true) {
 					uint methodToken;
@@ -297,17 +297,18 @@ namespace DebuggerLibrary
 						name = "Prop:" + name;
 						
 						ICorDebugValue[] evalArgs;
-						ICorFunction evalCorFunction;
-						Module.CorModule.GetFunctionFromToken(methodToken, out corFunction);
-						if (!isStatic) {
-							evalArgs = new ICorDebugValue[] {argThis};
-						} else {
+						ICorDebugFunction evalCorFunction;
+						Module.CorModule.GetFunctionFromToken(methodToken, out evalCorFunction);
+						if (isStatic) {
 							evalArgs = new ICorDebugValue[0];
+						} else {
+							evalArgs = new ICorDebugValue[] {argThis};
 						}
-						EvalQueue.AddEval(new Eval(evalCorFunction, evalArgs));
+						Eval eval = new Eval(evalCorFunction, evalArgs);
+						EvalQueue.AddEval(eval);
 						collection.Add(new PropertyVariable(eval, name));
 					}
-				}*/
+				}
 			} 
 			catch (FrameNotAviableException) {}
 			catch (SymbolsNotAviableException) {}

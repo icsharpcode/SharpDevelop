@@ -18,6 +18,7 @@ namespace DebuggerLibrary
 		ICorDebugEval     corEval;
 		ICorDebugFunction corFunction;
 		ICorDebugValue[]  args;
+		bool              complete = false;
 		
 		public event EventHandler EvalComplete;
 		
@@ -32,9 +33,26 @@ namespace DebuggerLibrary
 		{
 			this.corFunction = corFunction;
 			this.args = args;
+			NDebugger.ManagedCallback.CorDebugEvalCompleted += new CorDebugEvalEventHandler(CorDebugEvalCompleted);
 		}
 		
+		/// <summary>
+		/// Executes the evaluation and doesn't return until value is evaluated.
+		/// 
+		/// 
+		/// </summary>
 		public void PerformEval()
+		{
+			AsyncPerformEval();
+			while (!complete) {
+				System.Windows.Forms.Application.DoEvents();
+			}
+		}
+
+		/// <summary>
+		/// Executes the evaluation and resumes debugger.
+		/// </summary>
+		public void AsyncPerformEval()
 		{
 			if (NDebugger.IsProcessRunning) {
 				throw new DebuggerException("Debugger must be paused");
@@ -45,6 +63,28 @@ namespace DebuggerLibrary
 			corEval.CallFunction(corFunction, (uint)args.Length, args);
 			
 			NDebugger.Continue();
+		}
+		
+		public ICorDebugValue GetResult()
+		{
+			ICorDebugValue corValue;
+			corEval.GetResult(out corValue);
+			return corValue;
+		}
+		
+		protected virtual void OnEvalComplete(EventArgs e) 
+		{
+			if (EvalComplete != null) {
+				EvalComplete(this, e);
+			}
+		}
+		
+		void CorDebugEvalCompleted(object sender, CorDebugEvalEventArgs e) 
+		{
+			if (e.CorDebugEval == corEval) {
+				complete = true;
+				OnEvalComplete();
+			}
 		}
 	}
 }

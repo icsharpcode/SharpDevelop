@@ -21,10 +21,16 @@ namespace DebuggerLibrary
 			eval.EvalComplete += new EventHandler(EvalComplete);
 		}
 		
+		public bool IsEvaluated {
+			get {
+				return currentValue != null;
+			}
+		}
+		
 		public override object Value { 
 			get {
-				if (currentValue == null) {
-					return String.Empty;
+				if (!IsEvaluated) {
+					Evaluate();
 				}
 				return currentValue.Value;
 			}
@@ -32,8 +38,8 @@ namespace DebuggerLibrary
 		
 		public override string Type { 
 			get {
-				if (currentValue == null) {
-					return String.Empty;
+				if (!IsEvaluated) {
+					Evaluate();
 				}
 				return currentValue.Type;
 			}
@@ -41,22 +47,37 @@ namespace DebuggerLibrary
 		
 		public override VariableCollection SubVariables { 
 			get {
-				if (currentValue == null) {
-					return new VariableCollection();
+				if (!IsEvaluated) {
+					Evaluate();
 				}
 				return currentValue.SubVariables;
 			}
 		}
 		
-		internal void EvalComplete(object sender, EventArgs args)
+		/// <summary>
+		/// Executes evaluation of variable and doesn't return
+		/// until value is evaluated.
+		/// </summary>
+		public void Evaluate()
 		{
-			/*ICorDebugValue corValue;
-			eval.corEval.GetResult(out corValue);
-			currentValue = VariableFactory.CreateVariable(corValue, Name);
-			OnValueEvaluated();*/
+			eval.PerformEval();
 		}
 		
-		internal void OnValueEvaluated()
+		/// <summary>
+		/// Executes evaluation of variable and returns imideatly
+		/// </summary>
+		public void AsyncEvaluate()
+		{
+			eval.AsyncPerformEval();
+		}
+		
+		void EvalComplete(object sender, EventArgs args)
+		{
+			currentValue = VariableFactory.CreateVariable(eval.GetResult(), Name);
+			OnValueEvaluated();
+		}
+		
+		protected void OnValueEvaluated()
 		{
 			if (ValueEvaluated != null) {
 				ValueEvaluated(this, EventArgs.Empty);

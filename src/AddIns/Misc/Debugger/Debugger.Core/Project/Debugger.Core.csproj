@@ -43,6 +43,7 @@
     <Compile Include="Src\Enums\CorTokenType.cs" />
     <Compile Include="Src\Enums\PausedReason.cs" />
     <Compile Include="Src\EventHandlers\BreakpointEventHandler.cs" />
+    <Compile Include="Src\EventHandlers\CorDebugEvalEventHandler.cs" />
     <Compile Include="Src\EventHandlers\DebuggerEventHandler.cs" />
     <Compile Include="Src\EventHandlers\DebuggingIsResumingEventHandler.cs" />
     <Compile Include="Src\EventHandlers\DebuggingPausedEventHandler.cs" />

@@ -146,6 +146,12 @@ namespace DebuggerLibrary
 			}
 		}
 
+        internal static ManagedCallback ManagedCallback {
+			get {
+				return managedCallback;
+			}
+		}
+
 		#region Basic functions
 
 		static NDebugger()

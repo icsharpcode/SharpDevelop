@@ -13,6 +13,8 @@ namespace DebuggerLibrary
 	class ManagedCallback
 	{		
 		bool handlingCallback = false;
+		public event CorDebugEvalEventHandler CorDebugEvalCompleted;
+
 		
 		public bool HandlingCallback {
 			get {
@@ -42,8 +44,10 @@ namespace DebuggerLibrary
 		
 		void ExitCallback_Paused(PausedReason reason)
 		{
-			NDebugger.OnDebuggingPaused(reason);
-			NDebugger.OnIsProcessRunningChanged();
+            if (reason != PausedReason.EvalComplete) {
+			    NDebugger.OnDebuggingPaused(reason);
+			    NDebugger.OnIsProcessRunningChanged();
+            }
 			handlingCallback = false;
 		}
 		
@@ -155,20 +159,12 @@ namespace DebuggerLibrary
 		public void EvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval eval)
 		{
 			EnterCallback("EvalComplete");
-			/*
-			foreach (Eval e in Eval.waitingEvals) {
-				if (e.corEval == eval) {
-					Eval.waitingEvals.Remove(e);
-					e.OnEvalComplete();
-					break;
-				}
+			
+			if (CorDebugEvalCompleted != null) {
+				CorDebugEvalCompleted(this, new CorDebugEvalEventArgs(eval));
 			}
 			
-			NDebugger.OnIsProcessRunningChanged();
-			handlingCallback = false;
-			Eval.PerformNextEval();*/
-			
-			ExitCallback_Continue(pAppDomain);
+			ExitCallback_Paused(PausedReason.EvalComplete);
 		}
 
 		public void DebuggerError(ICorDebugProcess pProcess, int errorHR, uint errorCode)
