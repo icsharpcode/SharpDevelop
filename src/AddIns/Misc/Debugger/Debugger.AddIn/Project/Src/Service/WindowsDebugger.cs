@@ -253,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				
 				
 				//MessageBox.Show("Exception was thrown in debugee:\n" + NDebugger.CurrentThread.CurrentException.ToString());
-				/*ExceptionForm form = new ExceptionForm();
+				ExceptionForm form = new ExceptionForm();
 				form.label.Text = "Exception " + 
 				                  NDebugger.CurrentThread.CurrentException.Type +
                                   " was thrown in debugee:\n" +
@@ -270,7 +270,7 @@ namespace ICSharpCode.SharpDevelop.Services
 						NDebugger.CurrentThread.ClearCurrentException();
 						Continue();
 						return;
-				}*/
+				}
 			}
 			
 			try {
@@ -496,7 +496,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 			}
 
-			if (IsDebugging && !IsProcessRunning) {
+			if (IsDebugging && !IsProcessRunning && selectedFunction != null) {
 				try {
 					SourcecodeSegment nextStatement = selectedFunction.NextStatement;//cache
 					
@@ -507,7 +507,8 @@ namespace ICSharpCode.SharpDevelop.Services
 							((IconBarMargin)iconBar).DrawArrow(g, yPos);
 						}
 					}
-				} catch (NextStatementNotAviableException) {}
+				} 
+				catch (NextStatementNotAviableException) {}
 			}
 		}
 	}	

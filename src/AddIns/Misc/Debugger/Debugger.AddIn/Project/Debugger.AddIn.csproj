@@ -40,6 +40,9 @@
     <Compile Include="Src\Pads\LoadedModulesPad.cs" />
     <Compile Include="Src\Pads\LocalVarPad.cs" />
     <Compile Include="Src\Pads\RunningThreadsPad.cs" />
+    <Compile Include="Src\Service\ExceptionForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Src\Service\WindowsDebugger.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -68,6 +71,11 @@
       <Name>TreeListView</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Src\Service\ExceptionForm.resx">
+      <DependentUpon>ExceptionForm.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

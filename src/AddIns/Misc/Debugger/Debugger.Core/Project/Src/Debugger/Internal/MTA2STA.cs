@@ -109,10 +109,15 @@ namespace DebuggerInterop.Core
 				}
 			}
 			TraceMsg ("Invoke " + functionName + "{");
-			if (targetObject is Type) {
-				method.Invoke(null, outputParams);
-			} else {
-				method.Invoke(targetObject, outputParams);
+			try {
+				if (targetObject is Type) {
+					method.Invoke(null, outputParams);
+				} else {
+					method.Invoke(targetObject, outputParams);
+				}
+			} catch (System.Exception exception) {
+				System.Diagnostics.Trace.WriteLine(exception.ToString());
+				//System.Diagnostics.Debug.Fail("Invoke of " + functionName + " failed.", exception.ToString());
 			}
 			TraceMsg ("} \\\\ Invoke");
 		}

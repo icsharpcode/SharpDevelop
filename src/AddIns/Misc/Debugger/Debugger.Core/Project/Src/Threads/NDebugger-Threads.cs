@@ -81,9 +81,11 @@ namespace DebuggerLibrary
 
 		internal void ClearThreads()
 		{
-            foreach (Thread t in threadCollection) {
-				RemoveThread(t);
+            foreach (Thread thread in threadCollection) {
+				thread.ThreadStateChanged -= new ThreadEventHandler(OnThreadStateChanged);
+				OnThreadExited(thread);
 			}
+			threadCollection.Clear();
 		}
 	}
 }

@@ -321,7 +321,6 @@ namespace DebuggerLibrary
 
 			NDebugger.Instance.ResetEnvironment();
 
-			pProcess.Continue(0); //TODO
 		}
 
 		#endregion
