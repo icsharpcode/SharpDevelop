@@ -25,6 +25,7 @@ namespace DebuggerInterop.Core
 		
 		static object OnlyOneAtTimeLock = new Object();
 		static object DataLock = new Object();
+		object returnValue;
 		
 		public MTA2STA()
 		{
@@ -37,7 +38,7 @@ namespace DebuggerInterop.Core
 			System.Console.WriteLine("MTA2STA: " + msg);
 		}
 		
-		public void CallInSTA (object targetObject, string functionName, object[] functionParameters)
+		public object CallInSTA (object targetObject, string functionName, object[] functionParameters)
 		{
 			lock (OnlyOneAtTimeLock) {
 				TraceMsg("call to process: " + functionName + " {");
@@ -63,6 +64,7 @@ namespace DebuggerInterop.Core
 		
 				TraceMsg("} // MTA2STA: call processed: " + functionName);
 			}
+			return returnValue;
 		}
 		
 		void PerformCall(object sender, EventArgs e)
@@ -105,11 +107,12 @@ namespace DebuggerInterop.Core
 				}
 			}
 			TraceMsg ("Invoke " + functionName + "{");
+			returnValue = null;
 			try {
 				if (targetObject is Type) {
-					method.Invoke(null, outputParams);
+					returnValue = method.Invoke(null, outputParams);
 				} else {
-					method.Invoke(targetObject, outputParams);
+					returnValue = method.Invoke(targetObject, outputParams);
 				}
 			} catch (System.Exception exception) {
 				System.Diagnostics.Debug.Fail("Invoke of " + functionName + " failed.", exception.ToString());

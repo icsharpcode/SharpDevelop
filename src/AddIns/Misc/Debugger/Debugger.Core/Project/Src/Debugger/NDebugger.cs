@@ -40,48 +40,21 @@ namespace DebuggerLibrary
 			} 
 		}
 
-
 		static ICorDebug                  corDebug;
 		static ManagedCallback            managedCallback;
 		static ManagedCallbackProxy       managedCallbackProxy;
 
-		static bool                       isProcessRunning;
-		static ICorDebugProcess           mainProcess;
-		static Thread                     mainThread;
-		static Thread                     currentThread;
+		static Process                    mainProcess;
 		
 		public static bool CatchHandledExceptions = false;
 
-		#region Public propeties
-
-		static public SourcecodeSegment NextStatement { 
-			get{
-				try {
-					return CurrentThread.NextStatement; 
-				} catch (CurrentThreadNotAviableException) {
-					System.Diagnostics.Debug.Fail("Unable to get NextStatement. CurrentThreadNotAviableException");
-					throw new NextStatementNotAviableException();
-				}
-			} 
+		static internal ICorDebug CorDebug {
+			get {
+				return corDebug;
+			}
 		}
 
-		static public VariableCollection LocalVariables { 
-			get{
-				Thread thread;
-				try {
-					thread = CurrentThread;
-				} 
-				catch (CurrentThreadNotAviableException) {
-					//System.Diagnostics.Debug.Fail("Unable to get LocalVariables. CurrentThreadNotAviableException");
-					return new VariableCollection ();
-				}
-				return thread.LocalVariables;
-			} 
-		}
-
-		#endregion
-
-		static internal ICorDebugProcess MainProcess {
+		static internal Process CurrentProcess {
 			get {
 				return mainProcess;
 			}
@@ -99,41 +72,6 @@ namespace DebuggerLibrary
 					OnDebuggingStopped();
 					OnIsDebuggingChanged();
 				}
-			}
-		}
-		
-		public static Thread MainThread {
-			get {
-				return mainThread;
-			}
-			set {
-				mainThread = value;
-			}
-		}
-		
-		static public Thread CurrentThread {
-			get {
-				if (!IsDebugging) throw new CurrentThreadNotAviableException();
-				if (IsProcessRunning) throw new CurrentThreadNotAviableException();
-				if (currentThread != null) return currentThread;
-				if (mainThread != null) return mainThread;
-				throw new CurrentThreadNotAviableException();
-			}
-			set	{
-				currentThread = value;
-				if (mainThread == null) {
-					mainThread = value;
-				}
-				if (managedCallback.HandlingCallback == false) {
-					OnDebuggingPaused(PausedReason.CurrentThreadChanged);
-				}
-			}
-		}
-
-		static internal ICorDebugProcess corProcess {
-			get {
-				if (MainProcess != null) return MainProcess;
-				throw new UnableToGetPropertyException(null, "corProcess", "Make sure debuger is attached to process");
 			}
 		}
 
@@ -184,10 +122,7 @@ namespace DebuggerLibrary
 			
 			ClearThreads();
 			
-			MainProcess   = null;
-			mainThread    = null;
-			currentThread = null;
-			isProcessRunning = false;
+			CurrentProcess   = null;
 			
 			GC.Collect(GC.MaxGeneration);
 			GC.WaitForPendingFinalizers();
@@ -303,6 +238,13 @@ namespace DebuggerLibrary
 
 		#region Execution control
 
+		static internal void Continue(ICorDebugAppDomain pAppDomain)
+		{
+			ICorDebugProcess outProcess;
+			pAppDomain.GetProcess(out outProcess);
+			outProcess.Continue(0);
+		}
+
 		static public void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)
 		{		
 			System.Diagnostics.Process process;
@@ -310,157 +252,13 @@ namespace DebuggerLibrary
 			process.StartInfo = psi;
 			process.Start();
 		}
-
-		static MTA2STA m2s = new MTA2STA();
 		
 		static public void Start(string filename, string workingDirectory, string arguments)		
 		{
-			if (IsDebugging) {
-				System.Diagnostics.Debug.Fail("Invalid operation");
-				return;
-			}
-			m2s.CallInSTA(typeof(NDebugger), "StartInternal", new Object[] {filename, workingDirectory, arguments});
-			return;
+			CurrentProcess = Process.CreateProcess(filename, workingDirectory, arguments);
 		}
 
-		static public unsafe void StartInternal(string filename, string workingDirectory, string arguments)
-		{
-			TraceMessage("Executing " + filename);
 
-			_SECURITY_ATTRIBUTES secAttr = new _SECURITY_ATTRIBUTES();
-			secAttr.bInheritHandle = 0;
-			secAttr.lpSecurityDescriptor = IntPtr.Zero;
-			secAttr.nLength = (uint)sizeof(_SECURITY_ATTRIBUTES); //=12?
-
-			uint[] processStartupInfo = new uint[17];
-			processStartupInfo[0] = sizeof(uint) * 17;
-			uint[] processInfo = new uint[4];
-
-			ICorDebugProcess outProcess;
-
-			fixed (uint* pprocessStartupInfo = processStartupInfo)
-				fixed (uint* pprocessInfo = processInfo)
-					corDebug.CreateProcess(
-						filename,   // lpApplicationName
-						null,                       // lpCommandLine
-						ref secAttr,                       // lpProcessAttributes
-						ref secAttr,                      // lpThreadAttributes
-						1,//TRUE                    // bInheritHandles
-						0,                          // dwCreationFlags
-						IntPtr.Zero,                       // lpEnvironment
-						null,                       // lpCurrentDirectory
-						(uint)pprocessStartupInfo,        // lpStartupInfo
-						(uint)pprocessInfo,               // lpProcessInformation,
-						CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS,   // debuggingFlags
-						out outProcess      // ppProcess
-						);
-
-			isProcessRunning = true;
-			MainProcess = outProcess;
-		}
-
-		static public void Break()
-		{
-			if (!IsDebugging || !IsProcessRunning) {
-				System.Diagnostics.Debug.Fail("Invalid operation");
-				return;
-			}
-
-            corProcess.Stop(5000); // TODO: Hardcoded value
-
-			isProcessRunning = false;
-			OnDebuggingPaused(PausedReason.Break);
-			OnIsProcessRunningChanged();
-		}
-
-		static public void StepInto()
-		{
-			try {
-				CurrentThread.StepInto();
-			} catch (CurrentThreadNotAviableException) {
-				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentThreadNotAviableException");
-			}
-		}
-
-		static public void StepOver()
-		{
-			try {
-				CurrentThread.StepOver();
-			} catch (CurrentThreadNotAviableException) {
-				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentThreadNotAviableException");
-			}
-		}
-
-		static public void StepOut()
-		{
-			try {
-				CurrentThread.StepOut();
-			} catch (CurrentThreadNotAviableException) {
-				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentThreadNotAviableException");
-			}
-		}
-
-		static internal void Continue(ICorDebugAppDomain pAppDomain)
-		{
-			ICorDebugProcess outProcess;
-			pAppDomain.GetProcess(out outProcess);
-			if (MainProcess != outProcess) throw new DebuggerException("Request to continue AppDomain that does not belog to current process");
-			Continue();
-		}
-
-		static public void Continue()
-		{
-			if (!IsDebugging || IsProcessRunning) {
-				System.Diagnostics.Debug.Fail("Invalid operation");
-				return;
-			}
-
-			bool abort = false;
-			OnDebuggingIsResuming(ref abort);
-			if (abort == true) return;
-
-			isProcessRunning = true;
-			if (managedCallback.HandlingCallback == false) {
-				OnDebuggingResumed();
-				OnIsProcessRunningChanged();
-			}
-
-			corProcess.Continue(0);
-		}
-
-		static public void Terminate()
-		{
-			if (!IsDebugging) {
-				System.Diagnostics.Debug.Fail("Invalid operation");
-				return;
-			}
-
-			int running;
-			corProcess.IsRunning(out running);
-			// Resume stoped tread
-			if (running == 0) {
-				Continue(); // TODO: Remove this...
-			}
-			// Stop&terminate - both must be called
-			corProcess.Stop(5000); // TODO: ...and this
-			corProcess.Terminate(0);
-		}
-
-		static public bool IsProcessRunning { 
-			get {
-				if (!IsDebugging) return false;
-				return isProcessRunning;
-			}
-			set {
-				isProcessRunning = value;
-			}
-		}
-
-		static public bool IsDebugging { 
-			get { 
-				return (MainProcess != null);
-			}
-		}
 
 		#endregion
 
@@ -488,6 +286,84 @@ namespace DebuggerLibrary
 					}
 				}
 			}
+		}
+
+
+		static public bool IsProcessRunning { 
+			get {
+				if (!IsDebugging) return false;
+				return CurrentProcess.IsProcessRunning;
+			}
+			set {
+				if (CurrentProcess == null) return;
+				CurrentProcess.IsProcessRunning = value;
+			}
+		}
+
+		static public bool IsDebugging {
+			get {
+				return (CurrentProcess != null);
+			}
+		}
+
+		static public Thread CurrentThread {
+			get {
+				return CurrentProcess.CurrentThread;
+			}
+			set {
+				CurrentProcess.CurrentThread = value;
+			}
+		}
+
+		static public Thread MainThread {
+			get {
+				return CurrentProcess.MainThread;
+			}
+			set {
+				CurrentProcess.MainThread = value;
+			}
+		}
+
+		static public SourcecodeSegment NextStatement { 
+			get{
+				return CurrentProcess.NextStatement;
+			}
+		}
+
+		static public VariableCollection LocalVariables { 
+			get{
+				return CurrentProcess.LocalVariables;
+			}
+		}
+
+		static public void Break()
+		{
+			CurrentProcess.Break();
+		}
+
+		static public void StepInto()
+		{
+			CurrentProcess.StepInto();
+		}
+
+		static public void StepOver()
+		{
+			CurrentProcess.StepOver();
+		}
+
+		static public void StepOut()
+		{
+			CurrentProcess.StepOut();
+		}
+
+		static public void Continue()
+		{
+			CurrentProcess.Continue();
+		}
+
+		static public void Terminate()
+		{
+			CurrentProcess.Terminate();
 		}
 	}
 }
