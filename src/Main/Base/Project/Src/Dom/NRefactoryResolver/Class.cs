@@ -10,11 +10,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
 	public class Class : AbstractClass
 	{
-		ICompilationUnit cu;
-		
-		public Class(ICompilationUnit cu, ClassType t, Modifier m, IRegion region)
+		public Class(ICompilationUnit cu, ClassType t, Modifier m, IRegion region) : base(cu)
 		{
-			this.cu = cu;
 			classType = t;
 			this.region = region;
 			modifiers = (ModifierEnum)m;
@@ -56,12 +53,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				p.AddModifier(ModifierEnum.Public);
 			}
 			
-		}
-		
-		public override ICompilationUnit CompilationUnit {
-			get {
-				return cu;
-			}
 		}
 	}
 }

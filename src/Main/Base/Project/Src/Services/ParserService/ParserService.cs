@@ -163,6 +163,18 @@ namespace ICSharpCode.Core
 			return ParseFile(fileName, fileContent, true, true);
 		}
 		
+		static IProjectContent GetProjectContent(string fileName)
+		{
+			foreach (KeyValuePair<IProject, IProjectContent> projectContent in projectContents) {
+				if (projectContent.Key.IsFileInProject(fileName)) {
+					return projectContent.Value;
+				}
+			}
+			return null;
+		}
+		
+		static IProjectContent defaultProjectContent = new CaseSensitiveProjectContent();
+		
 		public static ParseInformation ParseFile(string fileName, string fileContent, bool updateCommentTags, bool fireUpdate)
 		{
 			IParser parser = GetParser(fileName);
@@ -170,7 +182,7 @@ namespace ICSharpCode.Core
 				return null;
 			}
 			
-			ICompilationUnitBase parserOutput = null;
+			ICompilationUnit parserOutput = null;
 			
 			if (fileContent == null) {
 				if (ProjectService.OpenSolution != null) {
@@ -183,13 +195,18 @@ namespace ICSharpCode.Core
 				}
 			}
 			try {
+				IProjectContent fileProjectContent = GetProjectContent(fileName);
+				if (fileProjectContent == null) {
+					fileProjectContent = defaultProjectContent;
+				}
+				
 				if (fileContent != null) {
-					parserOutput = parser.Parse(fileName, fileContent);
+					parserOutput = parser.Parse(fileProjectContent, fileName, fileContent);
 				} else {
 					if (!File.Exists(fileName)) {
 						return null;
 					}
-					parserOutput = parser.Parse(fileName);
+					parserOutput = parser.Parse(fileProjectContent, fileName);
 				}
 				
 				lock (projectContents) {
@@ -197,9 +214,9 @@ namespace ICSharpCode.Core
 						if (projectContent.Key.IsFileInProject(fileName)) {
 							if (parsings.ContainsKey(fileName)) {
 								ParseInformation parseInformation = parsings[fileName];
-								projectContent.Value.UpdateCompilationUnit(parseInformation.MostRecentCompilationUnit as ICompilationUnit, parserOutput as ICompilationUnit, fileName, updateCommentTags);
+								projectContent.Value.UpdateCompilationUnit(parseInformation.MostRecentCompilationUnit, parserOutput as ICompilationUnit, fileName, updateCommentTags);
 							} else {
-								projectContent.Value.UpdateCompilationUnit(null, parserOutput as ICompilationUnit, fileName, updateCommentTags);
+								projectContent.Value.UpdateCompilationUnit(null, parserOutput, fileName, updateCommentTags);
 							}
 						}
 					}
@@ -316,22 +333,22 @@ namespace ICSharpCode.Core
 		public static event ParseInformationEventHandler ParseInformationUpdated;
 	}
 	
-	[Serializable]
-	public class DummyCompilationUnit : AbstractCompilationUnit
-	{
-		List<IComment> miscComments = new List<IComment>();
-		List<IComment> dokuComments = new List<IComment>();
-		
-		public override List<IComment> MiscComments {
-			get {
-				return miscComments;
-			}
-		}
-		
-		public override List<IComment> DokuComments {
-			get {
-				return dokuComments;
-			}
-		}
-	}
+//	[Serializable]
+//	public class DummyCompilationUnit : AbstractCompilationUnit
+//	{
+//		List<IComment> miscComments = new List<IComment>();
+//		List<IComment> dokuComments = new List<IComment>();
+//		
+//		public override List<IComment> MiscComments {
+//			get {
+//				return miscComments;
+//			}
+//		}
+//		
+//		public override List<IComment> DokuComments {
+//			get {
+//				return dokuComments;
+//			}
+//		}
+//	}
 }

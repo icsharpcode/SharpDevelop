@@ -9,6 +9,7 @@ using System.Collections.Generic;
 using RefParser = ICSharpCode.NRefactory.Parser;
 using AST = ICSharpCode.NRefactory.Parser.AST;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
@@ -18,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 	
 	public class NRefactoryASTConvertVisitor : RefParser.AbstractASTVisitor
 	{
-		ICompilationUnit cu = new CompilationUnit();
+		ICompilationUnit cu;
 		Stack currentNamespace = new Stack();
 		Stack currentClass = new Stack();
 		
@@ -28,8 +29,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		class CompilationUnit : AbstractCompilationUnit
+		public NRefactoryASTConvertVisitor(IProjectContent projectContent)
 		{
+			cu = new CompilationUnit(projectContent);
+		}
+		
+		// TODO: kill abstract compilation unit, replace with implementation. Maybe the whole Abstract layer ?
+		public class CompilationUnit : AbstractCompilationUnit
+		{
+			public CompilationUnit(IProjectContent projectContent) : base(projectContent)
+			{
+			}
+			
 			public override List<IComment> MiscComments {
 				get {
 					return null;

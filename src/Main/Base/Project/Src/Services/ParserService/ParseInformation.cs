@@ -28,10 +28,10 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public class ParseInformation 
 	{
-		ICompilationUnitBase validCompilationUnit;
-		ICompilationUnitBase dirtyCompilationUnit;
+		ICompilationUnit validCompilationUnit;
+		ICompilationUnit dirtyCompilationUnit;
 		
-		public ICompilationUnitBase ValidCompilationUnit {
+		public ICompilationUnit ValidCompilationUnit {
 			get {
 				return validCompilationUnit;
 			}
@@ -40,7 +40,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public ICompilationUnitBase DirtyCompilationUnit {
+		public ICompilationUnit DirtyCompilationUnit {
 			get {
 				return dirtyCompilationUnit;
 			}
@@ -49,13 +49,13 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public ICompilationUnitBase BestCompilationUnit {
+		public ICompilationUnit BestCompilationUnit {
 			get {
 				return validCompilationUnit == null ? dirtyCompilationUnit : validCompilationUnit;
 			}
 		}
 		
-		public ICompilationUnitBase MostRecentCompilationUnit {
+		public ICompilationUnit MostRecentCompilationUnit {
 			get {
 				return dirtyCompilationUnit == null ? validCompilationUnit : dirtyCompilationUnit;
 			}

@@ -77,20 +77,14 @@ namespace CSharpBinding.Parser
 			}
 		}
 		
-		public ICompilationUnitBase Parse(string fileName)
+		public ICompilationUnit Parse(IProjectContent projectContent, string fileName)
 		{
-//			ICSharpCode.NRefactory.Parser.Parser p = new ICSharpCode.NRefactory.Parser.Parser();
-//			
-//			Lexer lexer = new Lexer(new FileReader(fileName));
-//			lexer.SpecialCommentTags = lexerTags;
-//			p.Parse(lexer);
-			
 			Properties textEditorProperties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(fileName, Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252)));
 			p.Lexer.SpecialCommentTags = lexerTags;
 			p.Parse();
 			
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor();
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
 			visitor.Visit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
 			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
@@ -99,19 +93,13 @@ namespace CSharpBinding.Parser
 			return visitor.Cu;
 		}
 		
-		public ICompilationUnitBase Parse(string fileName, string fileContent)
-		{
-//			ICSharpCode.NRefactory.Parser.Parser p = new ICSharpCode.NRefactory.Parser.Parser();
-//			
-//			Lexer lexer = new Lexer(new StringReader(fileContent));
-//			lexer.SpecialCommentTags = lexerTags;
-//			p.Parse(lexer);
-			
+		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
+		{	
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp, new StringReader(fileContent));
 			p.Lexer.SpecialCommentTags = lexerTags;
 			p.Parse();
 			
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor();
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
 			visitor.Visit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
 			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;

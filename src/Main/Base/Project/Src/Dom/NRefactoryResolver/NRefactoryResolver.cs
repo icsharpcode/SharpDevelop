@@ -144,7 +144,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			lookupTableVisitor = new LookupTableVisitor();
 			lookupTableVisitor.Visit(fileCompilationUnit, null);
 			
-			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor();
+			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
+			
 			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
 			if (cu != null) {
 				callingClass = projectContent.GetInnermostClass(cu, caretLine, caretColumn);
@@ -353,7 +354,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					methods.Add(m);
 				}
 			}
-			IClass baseClass = projectContent.BaseClass(curType);
+			IClass baseClass = curType.BaseClass;
 			if (baseClass != null) {
 				return SearchMethod(methods, baseClass, memberName);
 			}
@@ -378,7 +379,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					indexer.Add(i);
 				}
 			}
-			IClass baseClass = projectContent.BaseClass(curType);
+			IClass baseClass = curType.BaseClass;
 			if (baseClass != null) {
 				return SearchIndexer(indexer, baseClass);
 			}
@@ -674,7 +675,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (fileCompilationUnit == null) {
 				return null;
 			}
-			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor();
+			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
+			
 			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
 			if (cu != null) {
 				callingClass = projectContent.GetInnermostClass(cu, caretLine, caretColumn);
@@ -709,7 +711,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			lookupTableVisitor = new LookupTableVisitor();
 			lookupTableVisitor.Visit(fileCompilationUnit, null);
-			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor();
+			
+			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
 			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
 			if (cu != null) {
 				callingClass = projectContent.GetInnermostClass(cu, caretLine, caretColumn);

@@ -138,8 +138,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		bool CanParse(IProject project);
 		
-		ICompilationUnitBase Parse(string fileName);
-		ICompilationUnitBase Parse(string fileName, string fileContent);
+		ICompilationUnit Parse(IProjectContent projectContent, string fileName);
+		ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent);
 		
 		IResolver CreateResolver();
 	}

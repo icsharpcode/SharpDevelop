@@ -282,7 +282,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (resolver.CallingClass == null) {
 				return null;
 			}
-			IClass baseClass = resolver.ProjectContent.BaseClass(resolver.CallingClass);
+			IClass baseClass = resolver.CallingClass.BaseClass;
 			if (baseClass == null) {
 				return null;
 			}

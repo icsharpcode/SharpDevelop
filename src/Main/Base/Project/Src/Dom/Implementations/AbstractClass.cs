@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Diagnostics;
 using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
@@ -22,6 +23,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected IRegion          bodyRegion;
 		protected object           declaredIn;
 		
+		ICompilationUnit compilationUnit;
+		
 		List<string>    baseTypes   = null;
 		
 		List<IClass>    innerClasses = null;
@@ -37,9 +40,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public abstract ICompilationUnit CompilationUnit {
-			get;
+		protected AbstractClass(ICompilationUnit compilationUnit)
+		{
+			this.compilationUnit = compilationUnit;
 		}
+		
+		public ICompilationUnit CompilationUnit {
+			get {
+				return compilationUnit;
+			}
+		}
+		
+		public IProjectContent ProjectContent {
+			get {
+				return CompilationUnit.ProjectContent;
+			}
+		}
+		
 		
 		public virtual ClassType ClassType {
 			get {
@@ -128,7 +145,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		
 		public virtual int CompareTo(IClass value)
 		{
 			int cmp;
@@ -192,6 +208,35 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected override bool CanBeSubclass {
 			get {
 				return true;
+			}
+		}
+		
+		public IClass BaseClass {
+			get {
+				Debug.Assert(ProjectContent != null);
+				
+				if (BaseTypes.Count > 0) {
+					IClass baseClass = ProjectContent.SearchType(BaseTypes[0], this, Region != null ? Region.BeginLine : 0, Region != null ? Region.BeginColumn : 0);
+					if (baseClass != null && baseClass.ClassType != ClassType.Interface) {
+						return baseClass;
+					}
+				}
+				
+				// no baseType found
+				switch (ClassType) {
+					case ClassType.Enum:
+						return ProjectContent.GetClass("System.Enum");
+					case ClassType.Class:
+						if (FullyQualifiedName != "System.Object") {
+							return ProjectContent.GetClass("System.Object");
+						}
+						break;
+					case ClassType.Delegate:
+						return ProjectContent.GetClass("System.Delegate");
+					case ClassType.Struct:
+						return ProjectContent.GetClass("System.ValueType");
+				}
+				return null;
 			}
 		}
 		

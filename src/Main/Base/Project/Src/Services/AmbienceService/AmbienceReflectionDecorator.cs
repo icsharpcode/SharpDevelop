@@ -94,7 +94,7 @@ namespace ICSharpCode.Core
 		
 		public string Convert(Type type)
 		{
-			return conv.Convert(new ReflectionClass(type));
+			return conv.Convert(new ReflectionClass(null, type));
 		}
 		
 		public string Convert(FieldInfo field)

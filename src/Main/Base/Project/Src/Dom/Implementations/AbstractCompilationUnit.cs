@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Diagnostics;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -22,6 +23,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected List<FoldingRegion> foldingRegions = new List<FoldingRegion>();
 		protected string fileName          = "";
 		protected List<Tag> tagComments = new List<Tag>();
+		IProjectContent projectContent;
 		
 		public string FileName {
 			get {
@@ -30,6 +32,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			set {
 				Debug.Assert(value != null);
 				fileName = value;
+			}
+		}
+		
+		public IProjectContent ProjectContent {
+			get {
+				return projectContent;
 			}
 		}
 		
@@ -88,6 +96,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return tagComments;
 			}
 		}
+		
+		protected AbstractCompilationUnit(IProjectContent projectContent)
+		{
+			this.projectContent = projectContent;
+		}
+		
 		public override string ToString() {
 			return String.Format("[AbstractCompilationUnit: classes = {0}, fileName = {1}]",
 			                     classes.Count,

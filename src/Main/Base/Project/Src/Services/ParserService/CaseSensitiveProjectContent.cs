@@ -71,9 +71,12 @@ namespace ICSharpCode.Core
 		public static IProjectContent Create(Assembly assembly)
 		{
 			CaseSensitiveProjectContent newProjectContent = new CaseSensitiveProjectContent();
+			
+			ICompilationUnit assemblyCompilationUnit = new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryASTConvertVisitor.CompilationUnit(newProjectContent);
+			
 			foreach (Type type in assembly.GetTypes()) {
 				if (!type.FullName.StartsWith("<") && type.IsPublic) {
-					newProjectContent.AddClassToNamespaceList(new ReflectionClass(type));
+					newProjectContent.AddClassToNamespaceList(new ReflectionClass(assemblyCompilationUnit, type));
 				}
 			}
 			string fileName = LookupLocalizedXmlDoc(assembly.Location);
@@ -486,29 +489,6 @@ namespace ICSharpCode.Core
 			return false;
 		}
 		
-		public IClass BaseClass(IClass curClass)
-		{
-			foreach (string s in curClass.BaseTypes) {
-				IClass baseClass = SearchType(s, curClass, curClass.Region != null ? curClass.Region.BeginLine : 0, curClass.Region != null ? curClass.Region.BeginColumn : 0);
-				if (baseClass != null && baseClass.ClassType != ClassType.Interface) {
-					return baseClass;
-				}
-			}
-			// no baseType found
-			if (curClass.ClassType == ClassType.Enum) {
-				return GetClass("System.Enum");
-			} else if (curClass.ClassType == ClassType.Class) {
-				if (curClass.FullyQualifiedName != "System.Object") {
-					return GetClass("System.Object");
-				}
-			} else if (curClass.ClassType == ClassType.Delegate) {
-				return GetClass("System.Delegate");
-			} else if (curClass.ClassType == ClassType.Struct) {
-				return GetClass("System.ValueType");
-			}
-			return null;
-		}
-		
 		bool IsInnerClass(IClass c, IClass possibleInnerClass)
 		{
 			foreach (IClass inner in c.InnerClasses) {
@@ -563,7 +543,7 @@ namespace ICSharpCode.Core
 					types.Add(c);
 				}
 			}
-			IClass baseClass = BaseClass(curType);
+			IClass baseClass = curType.BaseClass;
 			if (baseClass != null) {
 				ListTypes(types, baseClass, callingClass);
 			}
@@ -629,7 +609,7 @@ namespace ICSharpCode.Core
 					}
 				}
 			} else {
-				IClass baseClass = BaseClass(curType);
+				IClass baseClass = curType.BaseClass;
 				if (baseClass != null) {
 					ListMembers(members, baseClass, callingClass, showStatic);
 				}
@@ -682,7 +662,7 @@ namespace ICSharpCode.Core
 					}
 				}
 			} else {
-				IClass c = BaseClass(declaringType);
+				IClass c = declaringType.BaseClass;
 				return SearchMember(c, memberName);
 			}
 			return null;

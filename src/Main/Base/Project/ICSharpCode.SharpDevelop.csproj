@@ -126,7 +126,6 @@
     <Compile Include="Src\Services\AmbienceService\NetAmbience.cs" />
     <Compile Include="Src\Services\AmbienceService\AmbienceReflectionDecorator.cs" />
     <Compile Include="Src\Services\AmbienceService\AbstractAmbience.cs" />
-    <Compile Include="Src\Dom\ICompilationUnitBase.cs" />
     <Compile Include="Src\Services\ParserService\ParseInformation.cs" />
     <Compile Include="Src\Services\ParserService\AssemblyInformation.cs" />
     <Compile Include="Src\Services\AmbienceService\AmbienceService.cs" />

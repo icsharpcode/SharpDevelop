@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Reflection;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -29,6 +30,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		ClassType ClassType {
 			get;
 		}		
+		
+		/// <summary>
+		/// The project content in which this class is defined.
+		/// </summary>
+		IProjectContent ProjectContent {
+			get;
+		}
 		
 		ICompilationUnit CompilationUnit {
 			get;
@@ -77,5 +85,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		object DeclaredIn {
 			get;
 		}
+		
+		IClass BaseClass {
+			get;
+		}
+		
 	}
 }

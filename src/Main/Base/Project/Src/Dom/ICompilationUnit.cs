@@ -6,11 +6,31 @@
 // </file>
 
 using System.Collections.Generic;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface ICompilationUnit : ICompilationUnitBase
+	public interface ICompilationUnit
 	{
+		string FileName {
+			get;
+			set;
+		}
+		
+		bool ErrorsDuringCompile {
+			get;
+			set;
+		}
+		
+		object Tag {
+			get;
+			set;
+		}
+		
+		IProjectContent ProjectContent {
+			get;
+		}
+		
 		List<IUsing> Usings {
 			get;
 		}

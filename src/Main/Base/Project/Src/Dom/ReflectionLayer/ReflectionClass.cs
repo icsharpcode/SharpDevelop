@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				List<IClass> innerClasses = new List<IClass>();
 				foreach (Type nestedType in type.GetNestedTypes(flags)) {
-					innerClasses.Add(new ReflectionClass(nestedType));
+					innerClasses.Add(new ReflectionClass(CompilationUnit, nestedType));
 				}
 				return innerClasses;
 			}
@@ -123,16 +123,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		/// <value>
-		/// A reflection class doesn't have a compilation unit (because
-		/// it is not parsed the information is gathered using reflection)
-		/// </value>
-		public override ICompilationUnit CompilationUnit {
-			get {
-				return null;
-			}
-		}
-		
 		public static bool IsDelegate(Type type)
 		{
 			return type.IsSubclassOf(typeof(Delegate)) && type != typeof(MulticastDelegate);
@@ -144,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionClass(Type type)
+		public ReflectionClass(ICompilationUnit compilationUnit, Type type) : base(compilationUnit)
 		{
 			this.type = type;
 			FullyQualifiedName = type.FullName.Replace("+", ".");

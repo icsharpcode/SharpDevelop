@@ -44,8 +44,9 @@ namespace ICSharpCode.Core
 		string SearchNamespace(string name, ICompilationUnit unit, int caretLine, int caretColumn);
 		IClass SearchType(string name, IClass curType, int caretLine, int caretColumn);
 		IClass SearchType(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
+		
 		bool IsClassInInheritanceTree(IClass possibleBaseClass, IClass c);
-		IClass BaseClass(IClass curClass);
+		
 		bool IsAccessible(IClass c, IDecoration member, IClass callingClass, bool isClassInInheritanceTree);
 		bool MustBeShown(IClass c, IDecoration member, IClass callingClass, bool showStatic, bool isClassInInheritanceTree);
 		ArrayList ListTypes(ArrayList types, IClass curType, IClass callingClass);
