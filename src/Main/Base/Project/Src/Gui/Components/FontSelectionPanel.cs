@@ -65,12 +65,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 				((ComboBox)ControlDictionary["fontSizeComboBox"]).Items.Add(i);
 			}
 			((ComboBox)ControlDictionary["fontSizeComboBox"]).TextChanged += new EventHandler(UpdateFontPreviewLabel);
-			
 			foreach (FontFamily fontFamily in installedFontCollection.Families) {
-				if (fontFamily.IsStyleAvailable(FontStyle.Regular) && fontFamily.IsStyleAvailable(FontStyle.Bold)  && fontFamily.IsStyleAvailable(FontStyle.Italic)) {
-					((ComboBox)ControlDictionary["fontListComboBox"]).Items.Add(new FontDescriptor(fontFamily.Name, IsMonospaced(fontFamily)));
+				if (fontFamily.IsStyleAvailable(FontStyle.Regular) && fontFamily.IsStyleAvailable(FontStyle.Bold) && fontFamily.IsStyleAvailable(FontStyle.Italic)) {
+					((ComboBox)ControlDictionary["fontListComboBox"]).Items.Add(new FontDescriptor(fontFamily));
 				}
 			}
+			Console.WriteLine("GET FONTS DONE!!!");
 			((ComboBox)ControlDictionary["fontListComboBox"]).TextChanged += new EventHandler(UpdateFontPreviewLabel);
 			((ComboBox)ControlDictionary["fontListComboBox"]).SelectedIndexChanged += new EventHandler(UpdateFontPreviewLabel);
 			((ComboBox)ControlDictionary["fontListComboBox"]).MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.MeasureComboBoxItem);
@@ -91,21 +91,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		bool IsMonospaced(FontFamily fontFamily)
-		{
-			using (Bitmap newBitmap = new Bitmap(1, 1)) {
-				using (Graphics g  = Graphics.FromImage(newBitmap)) {
-					using (Font f = new Font(fontFamily, 10)) {
-						// determine if the length of i == m because I see no other way of 
-						// getting if a font is monospaced or not.
-						int w1 = (int)g.MeasureString("i.", f).Width;
-						int w2 = (int)g.MeasureString("mw", f).Width;
-						return w1 == w2;
-					}
-				}
-			}
-		}
-		
+	
 		public static Font ParseFont(string font)
 		{
 			try {
@@ -146,31 +132,42 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		class FontDescriptor
 		{
-			string name;
-			bool   isMonospaced;
-			
+			FontFamily fontFamily;
+			bool       isMonospaced = false;
+			bool       initializedMonospace = false;
 			public string Name {
 				get {
-					return name;
-				}
-				set {
-					name = value;
+					return fontFamily.Name;
 				}
 			}
 			
 			public bool IsMonospaced {
 				get {
+					if (!initializedMonospace) {
+						isMonospaced = GetIsMonospaced(fontFamily);
+					}
 					return isMonospaced;
-				}
-				set {
-					isMonospaced = value;
 				}
 			}
 			
-			public FontDescriptor(string name, bool isMonospaced)
+			bool GetIsMonospaced(FontFamily fontFamily)
 			{
-				this.name = name;
-				this.isMonospaced = isMonospaced;
+				using (Bitmap newBitmap = new Bitmap(1, 1)) {
+					using (Graphics g  = Graphics.FromImage(newBitmap)) {
+						using (Font f = new Font(fontFamily, 10)) {
+							// determine if the length of i == m because I see no other way of
+							// getting if a font is monospaced or not.
+							int w1 = (int)g.MeasureString("i.", f).Width;
+							int w2 = (int)g.MeasureString("mw", f).Width;
+							return w1 == w2;
+						}
+					}
+				}
+			}
+			
+			public FontDescriptor(FontFamily fontFamily)
+			{
+				this.fontFamily = fontFamily;
 			}
 		}
 		

@@ -24,15 +24,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ICSharpCode.NRefactory.Parser.LookupTableVisitor lookupTableVisitor;
 		IProjectContent projectContent = null;
 		
-		public IProjectContent ProjectContent {
-			get {
-				return projectContent;
-			}
-			set {
-				projectContent = value;
-			}
-		}
-		
 		bool showStatic = false;
 		bool inNew = false;
 		
@@ -42,6 +33,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		int caretLine;
 		int caretColumn;
 		
+		public IProjectContent ProjectContent {
+			get {
+				return projectContent;
+			}
+			set {
+				projectContent = value;
+			}
+		}
 		
 		public ICompilationUnit CompilationUnit {
 			get {

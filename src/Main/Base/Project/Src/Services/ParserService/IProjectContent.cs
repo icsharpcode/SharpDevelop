@@ -27,6 +27,7 @@ namespace ICSharpCode.Core
 		XmlDoc XmlDoc {
 			get;
 		}
+		
 		ICollection<IClass> Classes {
 			get;
 		}
