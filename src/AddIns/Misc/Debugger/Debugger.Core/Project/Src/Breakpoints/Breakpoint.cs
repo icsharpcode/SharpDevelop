@@ -82,14 +82,14 @@ namespace DebuggerLibrary
 		public Breakpoint(string sourceFilename, int line)
 		{
 			sourcecodeSegment = new SourcecodeSegment();
-			sourcecodeSegment.SourceFilename = sourceFilename;
+			sourcecodeSegment.SourceFullFilename = sourceFilename;
 			sourcecodeSegment.StartLine = line;
 		}
 
 		public Breakpoint(string sourceFilename, int line, int column)
 		{
 			sourcecodeSegment = new SourcecodeSegment();
-			sourcecodeSegment.SourceFilename = sourceFilename;
+			sourcecodeSegment.SourceFullFilename = sourceFilename;
 			sourcecodeSegment.StartLine = line;
 			sourcecodeSegment.StartColumn = column;
 		}
@@ -140,7 +140,7 @@ namespace DebuggerLibrary
 				{
 					module = NDebugger.Instance.GetModule(seg.ModuleFilename);
 					symReader = NDebugger.Instance.GetModule(seg.ModuleFilename).SymReader;
-					symDoc = symReader.GetDocument(seg.SourceFilename,Guid.Empty,Guid.Empty,Guid.Empty);
+					symDoc = symReader.GetDocument(seg.SourceFullFilename,Guid.Empty,Guid.Empty,Guid.Empty);
 				}
 				catch {}
 			}
@@ -154,7 +154,7 @@ namespace DebuggerLibrary
 						continue;
 					}
 
-					symDoc = symReader.GetDocument(seg.SourceFilename,Guid.Empty,Guid.Empty,Guid.Empty);
+					symDoc = symReader.GetDocument(seg.SourceFullFilename,Guid.Empty,Guid.Empty,Guid.Empty);
 
 					if (symDoc != null) {
 						break;

@@ -4,6 +4,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -36,6 +37,8 @@ namespace ICSharpCode.SharpDevelop.Services
 	public class WindowsDebugger:IDebugger //, IService
 	{
 		public event EventHandler DebugStopped; // FIX: unused
+
+		List<DebuggerLibrary.Exception> exceptionHistory = new List<DebuggerLibrary.Exception>();
 		
 		protected virtual void OnDebugStopped(EventArgs e)
 		{
@@ -69,6 +72,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		public bool SupportsStepping {
 			get {
 				return true;
+			}
+		}
+
+		public IList<DebuggerLibrary.Exception> ExceptionHistory {
+			get {
+				return exceptionHistory.AsReadOnly();
 			}
 		}
 		
@@ -245,7 +254,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		void DebuggingPaused(object sender, DebuggingPausedEventArgs e)
 		{
 			if (e.Reason == PausedReason.Exception) {
-				if (NDebugger.CurrentThread.CurrentException.IsHandled && (NDebugger.CatchHandledExceptions == false)) {
+				exceptionHistory.Add(NDebugger.CurrentThread.CurrentException);
+				if (NDebugger.CurrentThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED && (NDebugger.CatchHandledExceptions == false)) {
 					// Ignore the exception
 					Continue();
 					return;
@@ -258,7 +268,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				                  NDebugger.CurrentThread.CurrentException.Type +
                                   " was thrown in debugee:\n" +
 				                  NDebugger.CurrentThread.CurrentException.Message;
-				form.pictureBox.Image = ResourceService.GetBitmap((NDebugger.CurrentThread.CurrentException.IsHandled)?"Icons.32x32.Warning":"Icons.32x32.Error");
+				form.pictureBox.Image = ResourceService.GetBitmap((NDebugger.CurrentThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED)?"Icons.32x32.Warning":"Icons.32x32.Error");
 				form.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
 				switch (form.result) {
 					case ExceptionForm.Result.Break: 
@@ -267,7 +277,7 @@ namespace ICSharpCode.SharpDevelop.Services
 						Continue();
 						return;
 					case ExceptionForm.Result.Ignore:
-						NDebugger.CurrentThread.ClearCurrentException();
+						System.Diagnostics.Debug.Fail("Not implemented");
 						Continue();
 						return;
 				}
@@ -288,7 +298,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void DebuggingStopped(object sender, DebuggerEventArgs e)
 		{
-			
+			exceptionHistory.Clear();
 			//DebuggerService.Stop();//TODO: delete
 		}
 		
@@ -335,8 +345,8 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 				SourcecodeSegment nextStatement = selectedFunction.NextStatement;
 				
-				FileService.OpenFile(nextStatement.SourceFilename);
-				IWorkbenchWindow window = FileService.GetOpenFile(nextStatement.SourceFilename);
+				FileService.OpenFile(nextStatement.SourceFullFilename);
+				IWorkbenchWindow window = FileService.GetOpenFile(nextStatement.SourceFullFilename);
 				if (window != null) {
 					IViewContent content = window.ViewContent;
 				
@@ -400,7 +410,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			// Add breakpoint markers
 			foreach (DebuggerLibrary.Breakpoint b in NDebugger.Instance.Breakpoints) {
-				if (b.SourcecodeSegment.SourceFilename.ToLower() == textEditor.FileName.ToLower()) {
+				if (b.SourcecodeSegment.SourceFullFilename.ToLower() == textEditor.FileName.ToLower()) {
 					LineSegment lineSeg = document.GetLineSegment((int)b.SourcecodeSegment.StartLine - 1);
 					document.MarkerStrategy.TextMarker.Add(new BreakpointMarker(lineSeg.Offset, lineSeg.Length , TextMarkerType.SolidBlock, Color.Red));
 				}
@@ -487,7 +497,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		void PaintIconBar(AbstractMargin iconBar, Graphics g, Rectangle rect)
 		{
 			foreach (DebuggerLibrary.Breakpoint breakpoint in NDebugger.Instance.Breakpoints) {
-				if (Path.GetFullPath(breakpoint.SourcecodeSegment.SourceFilename) == Path.GetFullPath(iconBar.TextArea.MotherTextEditorControl.FileName)) {
+				if (Path.GetFullPath(breakpoint.SourcecodeSegment.SourceFullFilename) == Path.GetFullPath(iconBar.TextArea.MotherTextEditorControl.FileName)) {
 					int lineNumber = iconBar.TextArea.Document.GetVisibleLine((int)breakpoint.SourcecodeSegment.StartLine - 1);
 					int yPos = (int)(lineNumber * iconBar.TextArea.TextView.FontHeight) - iconBar.TextArea.VirtualTop.Y;
 					if (yPos >= rect.Y && yPos <= rect.Bottom) {
@@ -500,7 +510,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				try {
 					SourcecodeSegment nextStatement = selectedFunction.NextStatement;//cache
 					
-					if (Path.GetFullPath(nextStatement.SourceFilename).ToLower() == Path.GetFullPath(iconBar.TextArea.MotherTextEditorControl.FileName).ToLower()) {
+					if (Path.GetFullPath(nextStatement.SourceFullFilename).ToLower() == Path.GetFullPath(iconBar.TextArea.MotherTextEditorControl.FileName).ToLower()) {
 						int lineNumber = iconBar.TextArea.Document.GetVisibleLine((int)nextStatement.StartLine - 1);
 						int yPos = (int)(lineNumber * iconBar.TextArea.TextView.FontHeight) - iconBar.TextArea.VirtualTop.Y;
 						if (yPos >= rect.Y && yPos <= rect.Bottom) {

@@ -13,15 +13,20 @@ namespace DebuggerLibrary
 {	
 	public class Exception
 	{
-		Thread         thread;
-		ICorDebugValue corValue;
-		Variable       runtimeVariable;
-		ObjectVariable runtimeVariableException;
+		Thread            thread;
+		ICorDebugValue    corValue;
+		Variable          runtimeVariable;
+		ObjectVariable    runtimeVariableException;
+		ExceptionType     exceptionType;
+		SourcecodeSegment location;
+		DateTime          creationTime;
 	
 		internal Exception(Thread thread)
 		{
+			creationTime = DateTime.Now;
 			this.thread = thread;
 			thread.CorThread.GetCurrentException(out corValue);
+			exceptionType = thread.CurrentExceptionType;
 			runtimeVariable    = VariableFactory.CreateVariable(corValue, "$exception");
 			runtimeVariableException = (ObjectVariable)runtimeVariable;
 			while (runtimeVariableException.Type != "System.Exception") {
@@ -31,6 +36,7 @@ namespace DebuggerLibrary
 				}
 				runtimeVariableException = runtimeVariableException.BaseClass;
 			}
+			location = thread.NextStatement;
 		}
 	
 		public override string ToString() {
@@ -50,10 +56,22 @@ namespace DebuggerLibrary
 				return runtimeVariableException.SubVariables["_message"].Value.ToString();
 			}
 		}
-		
-		public bool IsHandled {
+
+		public ExceptionType ExceptionType{
 			get {
-				return thread.CurrentExceptionIsHandled;
+				return exceptionType;
+			}
+		}
+
+		public SourcecodeSegment Location {
+			get {
+				return location;
+			}
+		}
+
+		public DateTime CreationTime {
+			get {
+				return creationTime;
 			}
 		}
 	}

@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -63,6 +63,7 @@
     <Compile Include="Src\Modules\ModuleEventHandler.cs" />
     <Compile Include="Src\Modules\NDebugger-Modules.cs" />
     <Compile Include="Src\Threads\Exception.cs" />
+    <Compile Include="Src\Threads\ExceptionType.cs" />
     <Compile Include="Src\Threads\Function.cs" />
     <Compile Include="Src\Threads\NDebugger-Threads.cs" />
     <Compile Include="Src\Threads\SourcecodeSegment.cs" />

@@ -116,7 +116,7 @@ namespace DebuggerLibrary
 		public unsafe void Exception(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int unhandled)
 		{
 			EnterCallback("Exception");
-			
+			/*
 			if (!NDebugger.CatchHandledExceptions && (unhandled == 0)) {
 				ExitCallback_Continue();
 				return;
@@ -124,7 +124,7 @@ namespace DebuggerLibrary
 
 			NDebugger.CurrentThread = NDebugger.Instance.GetThread(pThread);
 			NDebugger.CurrentThread.CurrentExceptionIsHandled = (unhandled == 0);
-
+			*/
 			ExitCallback_Paused(PausedReason.Exception);
 		}
 
@@ -352,7 +352,15 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("Exception2");
 			
-			ExitCallback_Continue(pAppDomain);
+			//if (!NDebugger.CatchHandledExceptions && dwEventType != CorDebugExceptionCallbackType.DEBUG_EXCEPTION_UNHANDLED) {
+			//	ExitCallback_Continue(pAppDomain);
+			//	return;
+			//}
+
+			NDebugger.CurrentThread = NDebugger.Instance.GetThread(pThread);
+			NDebugger.CurrentThread.CurrentExceptionType = (ExceptionType)dwEventType;
+
+			ExitCallback_Paused(PausedReason.Exception);
 		}
 
 		public void ExceptionUnwind(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)

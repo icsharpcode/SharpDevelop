@@ -109,9 +109,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				if (e.Breakpoint == item.Tag) {
 					item.SubItems.Clear();
 					item.Checked   = e.Breakpoint.Enabled;
-					item.Text = Path.GetFileName(e.Breakpoint.SourcecodeSegment.SourceFilename) + ", Line = " + e.Breakpoint.SourcecodeSegment.StartLine.ToString();
+					item.Text = Path.GetFileName(e.Breakpoint.SourcecodeSegment.SourceFullFilename) + ", Line = " + e.Breakpoint.SourcecodeSegment.StartLine.ToString();
 					item.ForeColor = e.Breakpoint.HadBeenSet ? Color.Black : Color.Gray;
-					item.SubItems.AddRange(new string[] {Path.GetDirectoryName(e.Breakpoint.SourcecodeSegment.SourceFilename)});
+					item.SubItems.AddRange(new string[] {Path.GetDirectoryName(e.Breakpoint.SourcecodeSegment.SourceFullFilename)});
 				}
 			}
 		}

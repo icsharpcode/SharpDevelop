@@ -10,7 +10,7 @@ namespace DebuggerLibrary
 	public class SourcecodeSegment
 	{
 		string moduleFilename;
-		string sourceFilename;
+		string sourceFullFilename;
 		int startLine;
 		int startColumn;
 		int endLine;
@@ -26,12 +26,18 @@ namespace DebuggerLibrary
 			}
 		}
 		
-		public string SourceFilename {
+		public string SourceFullFilename {
 			get {
-				return sourceFilename;
+				return sourceFullFilename;
 			}
 			set {
-				sourceFilename = value;
+				sourceFullFilename = value;
+			}
+		}
+
+		public string SourceFilename {
+			get {
+				return System.IO.Path.GetFileName(sourceFullFilename);
 			}
 		}
 		

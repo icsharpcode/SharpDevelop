@@ -59,5 +59,12 @@
 		     icon     = "PadIcons.ProjectBrowser"
 		     shortcut = "Control|Alt|V"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad"/>
-    </Path>
+
+        <Pad id    = "ExceptionHistoryPad" 
+             category = "Main"
+             title    = "Exception history"
+             icon     = "PadIcons.ProjectBrowser"
+             shortcut = "Control|Alt|E"
+             class = "ICSharpCode.SharpDevelop.Gui.Pads.ExceptionHistoryPad"/>
+        </Path>
 </AddIn>

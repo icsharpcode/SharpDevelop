@@ -14,7 +14,7 @@ namespace DebuggerLibrary
 {
 	public partial class Thread
 	{
-		internal bool currentExceptionIsHandled;
+		internal ExceptionType currentExceptionType;
 
 		uint id;
 		bool lastSuspendedState = false;
@@ -29,12 +29,12 @@ namespace DebuggerLibrary
 			} 
 		}
 		
-		public bool CurrentExceptionIsHandled {
+		public ExceptionType CurrentExceptionType {
 			get {
-				return currentExceptionIsHandled;
+				return currentExceptionType;
 			}
 			set {
-				currentExceptionIsHandled = value;
+				currentExceptionType = value;
 			}
 		}
 		
@@ -113,12 +113,6 @@ namespace DebuggerLibrary
 			return String.Format("ID = {0,-10} Name = {1,-20} Suspended = {2,-8}", ID, Name, Suspended);
 		}
 
-
-
-		public void ClearCurrentException()
-		{
-			corThread.ClearCurrentException();
-		}
 
 		public Exception CurrentException {
 			get {
