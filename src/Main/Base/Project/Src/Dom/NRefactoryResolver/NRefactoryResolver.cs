@@ -134,7 +134,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			callingMember = GetCurrentMember();
 			
 			TypeVisitor typeVisitor = new TypeVisitor(this);
-			if (expr is InvocationExpression) {
+			
+			if (expr is PrimitiveExpression) {
+				if (((PrimitiveExpression)expr).Value is int)
+					return null;
+			} else if (expr is InvocationExpression) {
 				IMethod method = typeVisitor.GetMethod((InvocationExpression)expr, null);
 				if (method != null)
 					return CreateMemberResolveResult(method);

@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				List<IParameter> parameters = new List<IParameter>();
 				foreach (ParameterInfo parameterInfo in propertyInfo.GetIndexParameters()) {
-					Parameters.Add(new ReflectionParameter(parameterInfo));
+					parameters.Add(new ReflectionParameter(parameterInfo));
 				}
 				return parameters;
 			}

@@ -196,9 +196,6 @@ namespace ICSharpCode.TextEditor
 			int   physicalLine = + (int)((mousepos.Y + textArea.VirtualTop.Y) / textArea.TextView.FontHeight);
 			int   realline     = textArea.Document.GetFirstLogicalLine(physicalLine);
 			
-			// focus the textarea if the user clicks on the line number view
-			textArea.Focus();
-			
 			if (!showFolding || realline < 0 || realline + 1 >= textArea.Document.TotalNumberOfLines) {
 				return;
 			}
