@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			//ivoko: please do not touch or discuss with me: we use another CCDP
 			return new CodeCompletionDataProvider(ctrlSpace, false);
 		}
-
+		
 		protected override void InitializeTextAreaControl(TextAreaControl newControl)
 		{
 			base.InitializeTextAreaControl(newControl);
@@ -88,19 +88,32 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			newControl.MouseWheel                       += new MouseEventHandler(TextAreaMouseWheel);
 			newControl.DoHandleMousewheel = false;
 		}
-		
+		protected override void Dispose(bool disposing)
+		{
+			base.Dispose(Disposing);
+			if (disposing) {
+				CloseCodeCompletionWindow(this, EventArgs.Empty);
+				CloseInsightWindow(this, EventArgs.Empty);
+			}
+		}
 		void CloseCodeCompletionWindow(object sender, EventArgs e)
 		{
-			codeCompletionWindow.Closed -= new EventHandler(CloseCodeCompletionWindow);
-			codeCompletionWindow.Dispose();
-			codeCompletionWindow = null;
+			if (codeCompletionWindow != null) {
+				codeCompletionWindow.Closed -= new EventHandler(CloseCodeCompletionWindow);
+				codeCompletionWindow.Dispose();
+				codeCompletionWindow = null;
+			}
 		}
+		
 		void CloseInsightWindow(object sender, EventArgs e)
 		{
-			insightWindow.Closed -= new EventHandler(CloseInsightWindow);
-			insightWindow.Dispose();
-			insightWindow = null;
+			if (insightWindow != null) {
+				insightWindow.Closed -= new EventHandler(CloseInsightWindow);
+				insightWindow.Dispose();
+				insightWindow = null;
+			}
 		}
+		
 		void TextAreaMouseWheel(object sender, MouseEventArgs e)
 		{
 			TextAreaControl textAreaControl = (TextAreaControl)sender;
@@ -163,7 +176,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void CaretPositionChanged(object sender, EventArgs e)
 		{
-			
 			StatusBarService.SetCaretPosition(ActiveTextAreaControl.TextArea.TextView.GetVisualColumn(ActiveTextAreaControl.Caret.Line, ActiveTextAreaControl.Caret.Column), ActiveTextAreaControl.Caret.Line, ActiveTextAreaControl.Caret.Column);
 		}
 		
@@ -454,11 +466,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					Document.FormattingStrategy = formatter[0];
 				}
 			}
-		}
-		
-		protected override void Dispose(bool dispose)
-		{
-			base.Dispose(dispose);
 		}
 		
 		public override string GetRangeDescription(int selectedItem, int itemCount)

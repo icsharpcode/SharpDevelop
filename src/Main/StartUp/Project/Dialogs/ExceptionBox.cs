@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			exceptionTextBox.Text = e.ToString();
 			
-			ResourceManager resources = new ResourceManager("BitmapResources", Assembly.GetEntryAssembly());
+			ResourceManager resources = new ResourceManager("Resources.BitmapResources", Assembly.GetEntryAssembly());
 			this.pictureBox.Image = (Bitmap)resources.GetObject("ErrorReport");
 		}
 		
