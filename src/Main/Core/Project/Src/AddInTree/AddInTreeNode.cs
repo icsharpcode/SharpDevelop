@@ -48,56 +48,55 @@ namespace ICSharpCode.Core
 //			}
 //		}
 		
-		class SortCodons
+		public class TopologicalSort
 		{
+			List<Codon> codons;
 			bool[] visited;
 			List<Codon> sortedCodons;
 			Dictionary<string, int> indexOfName;
-			AddInTreeNode node;
 			
-			public SortCodons(AddInTreeNode node)
+			public TopologicalSort(List<Codon> codons)
 			{
-				this.node = node;
-				visited = new bool[node.codons.Count];
-				sortedCodons = new List<Codon>(node.codons.Count);
-				indexOfName = new Dictionary<string, int>(node.codons.Count);
+				this.codons = codons;
+				visited = new bool[codons.Count];
+				sortedCodons = new List<Codon>(codons.Count);
+				indexOfName = new Dictionary<string, int>(codons.Count);
 				// initialize visited to false and fill the indexOfName dictionary
-				for (int i = 0; i < node.codons.Count; ++i) {
+				for (int i = 0; i < codons.Count; ++i) {
 					visited[i] = false;
-					indexOfName[node.codons[i].Id] = i;
+					indexOfName[codons[i].Id] = i;
 				}
 			}
 			
 			void InsertEdges()
 			{
 				// add the InsertBefore to the corresponding InsertAfter
-				for (int i = 0; i < node.codons.Count; ++i) {
-					string before = node.codons[i].InsertBefore;
+				for (int i = 0; i < codons.Count; ++i) {
+					string before = codons[i].InsertBefore;
 					if (before != null && before != "") {
 						if (indexOfName.ContainsKey(before)) {
-							string after = node.codons[indexOfName[before]].InsertAfter;
+							string after = codons[indexOfName[before]].InsertAfter;
 							if (after == null || after == "") {
-								node.codons[indexOfName[before]].InsertAfter = node.codons[i].Id;
+								codons[indexOfName[before]].InsertAfter = codons[i].Id;
 							} else {
-								after += ',' + node.codons[i].Id;
+								codons[indexOfName[before]].InsertAfter = after + ',' + codons[i].Id;
 							}
 						} else {
-							Console.WriteLine("Codon ({0}) specified in the insertbefore of the {1} codon does not exist!", before, node.codons[i]);
+							Console.WriteLine("Codon ({0}) specified in the insertbefore of the {1} codon does not exist!", before, codons[i]);
 						}
 					}
 				}
 			}
 			
-			public void Execute()
+			public List<Codon> Execute()
 			{
-				
 				InsertEdges();
 				
 				// Visit all codons
-				for (int i = 0; i < node.codons.Count; ++i) {
+				for (int i = 0; i < codons.Count; ++i) {
 					Visit(i);
 				}
-				node.codons = sortedCodons;
+				return sortedCodons;
 			}
 			
 			void Visit(int codonIndex)
@@ -105,7 +104,7 @@ namespace ICSharpCode.Core
 				if (visited[codonIndex]) {
 					return;
 				}
-				string[] after = node.codons[codonIndex].InsertAfter.Split(new char[] {','});
+				string[] after = codons[codonIndex].InsertAfter.Split(new char[] {','});
 				foreach (string s in after) {
 					if (s == null || s.Length == 0) {
 						continue;
@@ -113,10 +112,10 @@ namespace ICSharpCode.Core
 					if (indexOfName.ContainsKey(s)) {
 						Visit(indexOfName[s]);
 					} else {
-						Console.WriteLine("Codon ({0}) specified in the insertafter of the {1} codon does not exist!", node.codons[codonIndex].InsertAfter, node.codons[codonIndex]);
+						Console.WriteLine("Codon ({0}) specified in the insertafter of the {1} codon does not exist!", codons[codonIndex].InsertAfter, codons[codonIndex]);
 					}
 				}
-				sortedCodons.Add(node.codons[codonIndex]);
+				sortedCodons.Add(codons[codonIndex]);
 				visited[codonIndex] = true;
 			}
 		}
@@ -125,7 +124,7 @@ namespace ICSharpCode.Core
 		{
 			ArrayList items = new ArrayList(codons.Count);
 			if (!isSorted) {
-				(new SortCodons(this)).Execute();
+				codons = (new TopologicalSort(codons)).Execute();
 				isSorted = true;
 			}
 			foreach (Codon codon in codons) {
