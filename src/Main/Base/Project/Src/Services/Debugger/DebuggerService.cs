@@ -519,6 +519,9 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static string oldExpression, oldToolTip;
+		static int oldLine;
+		
 		/// <summary>
 		/// This function shows variable values as tooltips
 		/// </summary>
@@ -540,16 +543,26 @@ namespace ICSharpCode.Core
 						string textContent = doc.TextContent;
 						string expression = expressionFinder.FindFullExpression(textContent, seg.Offset + xPosition);
 						//Console.WriteLine("MouseMove@" + logicPos + ":" + expression);
-						if (expression != null && expression != String.Empty) {
-							// Look if it is variable
-							//value = selectedThread.LocalVariables[expresion].Value.ToString();
-							ResolveResult result = ParserService.Resolve(expression, logicPos.Y + 1, xPosition + 1, textArea.MotherTextEditorControl.FileName, textContent);
-							string value = GetText(result);
-							if (value != null) {
-								value = "expr: >" + expression + "<\n" + value;
-								textArea.SetToolTip(value);
+						if (expression != null && expression.Length > 0) {
+							if (expression == oldExpression && oldLine == logicPos.Y) {
+								// same expression in same line -> reuse old tooltip
+								textArea.SetToolTip(oldToolTip);
+								// SetToolTip must be called in every mousemove event,
+								// otherwise textArea will close the tooltip.
+							} else {
+								// Look if it is variable
+								//value = selectedThread.LocalVariables[expresion].Value.ToString();
+								ResolveResult result = ParserService.Resolve(expression, logicPos.Y + 1, xPosition + 1, textArea.MotherTextEditorControl.FileName, textContent);
+								string value = GetText(result);
+								if (value != null) {
+									value = "expr: >" + expression + "<\n" + value;
+									textArea.SetToolTip(value);
+								}
+								oldToolTip = value;
 							}
 						}
+						oldLine = logicPos.Y;
+						oldExpression = expression;
 					}
 				}
 			} catch (Exception e) {

@@ -299,16 +299,18 @@ namespace ICSharpCode.TextEditor
 		string oldToolTip;
 		public void SetToolTip(string text)
 		{
+			toolTipSet = (text != null);
 			if (oldToolTip == text)
 				return;
 			ToolTip toolTip = this.toolTip;
 			if (text == null) {
+				//Console.WriteLine("Tooltip disabled");
 				toolTip.Hide(this.FindForm());
 			} else {
+				//Console.WriteLine("Tooltip set to " + text);
 				Point p = PointToClient(Control.MousePosition);
 				p.Offset(3, 3);
 				toolTip.Show(text, this, p);
-				toolTipSet = true;
 			}
 			oldToolTip = text;
 		}

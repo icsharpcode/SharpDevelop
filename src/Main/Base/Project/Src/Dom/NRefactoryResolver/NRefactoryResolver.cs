@@ -420,7 +420,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			foreach (IMethod m in curType.Methods) {
 				if (IsSameName(m.Name, memberName) &&
-				    m.MustBeShown(callingClass, true, isClassInInheritanceTree) &&
+				    m.IsAccessible(callingClass, isClassInInheritanceTree) &&
 				    !((m.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
 					methods.Add(m);
 				}

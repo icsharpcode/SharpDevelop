@@ -97,7 +97,7 @@ namespace ICSharpCode.Core
 		{
 			CaseSensitiveProjectContent newProjectContent = new CaseSensitiveProjectContent();
 			newProjectContent.referencedContents.Add(ProjectContentRegistry.GetMscorlibContent());
-			foreach (ProjectItem item in project.Items) {
+			foreach (ProjectItem item in project.Items.ToArray()) {
 				switch (item.ItemType) {
 					case ItemType.Reference:
 						IProjectContent referencedContent = ProjectContentRegistry.GetProjectContentForReference(item as ReferenceProjectItem);
