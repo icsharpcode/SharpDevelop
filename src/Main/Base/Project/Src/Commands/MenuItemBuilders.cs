@@ -324,6 +324,16 @@ namespace ICSharpCode.SharpDevelop.Commands
 			}
 		}
 	}
+	
+	public class ToolsViewMenuBuilder : ViewMenuBuilder
+	{
+		protected override string Category {
+			get {
+				return "Tools";
+			}
+		}
+	}
+	
 	public class MainViewMenuBuilder : ViewMenuBuilder
 	{
 		protected override string Category {
@@ -333,97 +343,29 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 	
-	public class ViewMenuBuilder : ISubmenuBuilder
-	{
-		class MyMenuItem : MenuCheckBox
-		{
-			PadDescriptor padContent;
-			
-			bool IsPadVisible {
-				get {
-					return WorkbenchSingleton.Workbench.WorkbenchLayout.IsVisible(padContent); 
-				}
-			}
-			
-			public MyMenuItem(PadDescriptor padContent) : base(null, null)
-			{
-				this.padContent = padContent;
-				Checked = IsPadVisible;
-				Text = StringParser.Parse(padContent.Title);
-			}
-			
-			protected override void OnClick(EventArgs e)
-			{
-				base.OnClick(e);
-				if (IsPadVisible) {
-					WorkbenchSingleton.Workbench.WorkbenchLayout.HidePad(padContent);
-				} else {
-					WorkbenchSingleton.Workbench.WorkbenchLayout.ShowPad(padContent);
-				}
-				Checked = IsPadVisible;
-			}
-			public override  void UpdateStatus()
-			{
-				base.UpdateStatus();
-				
-				Checked = IsPadVisible;
-			}
-		}
-		protected virtual string Category {
-			get {
-				return null;
-			}
-		}
-		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
-		{
-			ArrayList items = new ArrayList();
-			foreach (PadDescriptor padContent in WorkbenchSingleton.Workbench.PadContentCollection) {
-				if (padContent.Category == Category) {
-					items.Add(new MyMenuItem(padContent));
-				}
-			}
-			return (ToolStripItem[])items.ToArray(typeof(ToolStripItem));
-		}
-	}
-	
-	public class DebugSelectionMenuBuilder : SelectionMenuBuilder
-	{
-		protected override string Category {
-			get {
-				return "Debugger";
-			}
-		}
-	}
-	public class MainSelectionMenuBuilder : SelectionMenuBuilder
-	{
-		protected override string Category {
-			get {
-				return "Main";
-			} 
-		}
-	}
-	
-	public class SelectionMenuBuilder : ISubmenuBuilder
+	public abstract class ViewMenuBuilder : ISubmenuBuilder
 	{
 		class MyMenuItem : MenuCommand
 		{
 			PadDescriptor padDescriptor;
 			
+			bool IsPadVisible {
+				get {
+					return WorkbenchSingleton.Workbench.WorkbenchLayout.IsVisible(padDescriptor); 
+				}
+			}
+			
 			public MyMenuItem(PadDescriptor padDescriptor) : base(null, null)
 			{
 				this.padDescriptor = padDescriptor;
 				Text = StringParser.Parse(padDescriptor.Title);
+				
 				if (padDescriptor.Icon != null) {
 					base.Image = IconService.GetBitmap(padDescriptor.Icon);
 				}
+				
 				if (padDescriptor.Shortcut != null) {
-					try {
-						foreach (string key in padDescriptor.Shortcut) {
-							ShortcutKeys |= (System.Windows.Forms.Keys)Enum.Parse(typeof(System.Windows.Forms.Keys), key);
-						}
-					} catch (Exception) {
-						ShortcutKeys = System.Windows.Forms.Keys.None;
-					}
+					ShortcutKeys = ICSharpCode.Core.MenuCommand.ParseShortcut(padDescriptor.Shortcut);
 				}
 			}
 			
@@ -432,18 +374,19 @@ namespace ICSharpCode.SharpDevelop.Commands
 				base.OnClick(e);
 				padDescriptor.BringPadToFront();
 			}
+			
 		}
-		
-		protected virtual string Category {
-			get {
-				return null;
-			}
+		protected abstract string Category {
+			get;
 		}
 		
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
+			Console.WriteLine("Sub menu : " + Category);
+			Console.WriteLine(WorkbenchSingleton.Workbench.PadContentCollection.Count);
 			ArrayList items = new ArrayList();
 			foreach (PadDescriptor padContent in WorkbenchSingleton.Workbench.PadContentCollection) {
+				Console.WriteLine(padContent.Category);
 				if (padContent.Category == Category) {
 					items.Add(new MyMenuItem(padContent));
 				}

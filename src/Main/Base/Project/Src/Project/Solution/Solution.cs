@@ -335,7 +335,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		
 		static Regex versionPattern       = new Regex("Microsoft Visual Studio Solution File, Format Version\\s+(?<Version>.*)", RegexOptions.Compiled);
 			
 		static Regex projectLinePattern   = new Regex("Project\\(\"(?<ProjectGuid>.*)\"\\)\\s+=\\s+\"(?<Title>.*)\",\\s*\"(?<Location>.*)\",\\s*\"(?<Guid>.*)\"", RegexOptions.Compiled);
@@ -348,7 +347,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			using (StreamReader sr = File.OpenText(fileName)) {
 				string line = sr.ReadLine();
-				Console.WriteLine("line '{0}'", line);
 				Match match = versionPattern.Match(line);
 				if (!match.Success) {
 					MessageService.ShowError(fileName + " is not a valid solution file.");
@@ -356,6 +354,16 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				
 				switch (match.Result("${Version}")) {
+					case "7.00":
+						if (!MessageService.AskQuestion("Found VS.NET 2000 Project. Should I convert it to Solution Format 9.00 (VS.NET 2005) ?")) {
+							return false;
+						}
+						break;
+					case "8.00":
+						if (!MessageService.AskQuestion("Found VS.NET 2003 Project. Should I convert it to Solution Format 9.00 (VS.NET 2005) ?")) {
+							return false;
+						}
+						break;
 					case "9.00":
 						break;
 					default:

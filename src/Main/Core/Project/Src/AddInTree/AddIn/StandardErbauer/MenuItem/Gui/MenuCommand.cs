@@ -54,6 +54,19 @@ namespace ICSharpCode.Core
 			
 		}
 		
+		public static Keys ParseShortcut(string shortcutString)
+		{
+			Keys shortCut = Keys.None;
+			try {
+				foreach (string key in shortcutString.Split('|')) {
+					shortCut  |= (System.Windows.Forms.Keys)Enum.Parse(typeof(System.Windows.Forms.Keys), key);
+				}
+			} catch (Exception) {
+				return System.Windows.Forms.Keys.None;
+			}
+			return shortCut;
+		}
+		
 		public MenuCommand(Codon codon, object caller, bool createCommand)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
@@ -65,15 +78,7 @@ namespace ICSharpCode.Core
 			}
 			
 			if (codon.Properties.Contains("shortcut")) {
-				Keys shortCut = Keys.None;
-				try {
-					foreach (string key in codon.Properties["shortcut"].Split('|')) {
-						shortCut  |= (System.Windows.Forms.Keys)Enum.Parse(typeof(System.Windows.Forms.Keys), key);
-					}
-				} catch (Exception) {
-					shortCut  = System.Windows.Forms.Keys.None;
-				}
-				ShortcutKeys = shortCut;
+				ShortcutKeys =  ParseShortcut(codon.Properties["shortcut"]);
 			}
 		}
 		

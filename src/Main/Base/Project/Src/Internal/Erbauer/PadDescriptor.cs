@@ -52,9 +52,9 @@ namespace ICSharpCode.Core
 		/// <summary>
 		/// Returns the menu shortcut for the view menu item.
 		/// </summary>
-		public string[] Shortcut {
+		public string Shortcut {
 			get {
-				return codon.Properties["category"].Split('|');
+				return codon.Properties["shortcut"];
 			}
 		}
 		

@@ -1101,10 +1101,16 @@
 		
 		
 		<MenuItem id = "View" label = "${res:XML.MainMenu.ViewMenu}" type="Menu">
-			<MenuItem id = "MainViewBuilder" type = "Builder" class = "ICSharpCode.SharpDevelop.Commands.MainSelectionMenuBuilder" />
+			<MenuItem id    = "MainViewMenuBuilder" 
+			          type  = "Builder" 
+			          class = "ICSharpCode.SharpDevelop.Commands.MainViewMenuBuilder" />
+			
 			<MenuItem id = "Tools" label = "${res:XML.MainMenu.ViewMenu.ToolsMenu}" type="Menu">
-				<MenuItem id = "ViewBuilder" type = "Builder" class = "ICSharpCode.SharpDevelop.Commands.SelectionMenuBuilder" />
+				<MenuItem id    = "ToolsViewMenuBuilder" 
+				          type  = "Builder" 
+				          class = "ICSharpCode.SharpDevelop.Commands.ToolsViewMenuBuilder" />
 			</MenuItem>
+			
 			<MenuItem id = "ViewItemsSeparator" type = "Separator" />
 			<MenuItem id = "FullScreen"
 			          label         = "${res:XML.MainMenu.ViewMenu.FullScreen}"

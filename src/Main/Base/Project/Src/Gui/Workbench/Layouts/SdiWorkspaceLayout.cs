@@ -368,6 +368,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void ShowPad(PadDescriptor content)
 		{
+			if (content == null) {
+				return;
+			}
 			if (!contentHash.ContainsKey(content.Class)) {
 				DockContent newContent = CreateContent(content);
 				newContent.Show(dockPanel);
