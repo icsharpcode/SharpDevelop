@@ -350,7 +350,6 @@ namespace ICSharpCode.SharpDevelop.Project
 					break;
 				}
 				TaskService.BuildMessageViewCategory.AppendText(line + Environment.NewLine);
-				Console.WriteLine(line);
 				Match match = projectName.Match(line);
 				if (match.Success) {
 					string name = match.Result("${name}");

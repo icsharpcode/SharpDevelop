@@ -38,7 +38,6 @@ namespace ICSharpCode.Core
 		{
 			DropDownItems.Clear();
 			foreach (object item in subItems) {
-				Console.WriteLine(item);
 				if (item is ToolStripItem) {
 					DropDownItems.Add((ToolStripItem)item);
 					((IStatusUpdate)item).UpdateStatus();

@@ -97,7 +97,6 @@ namespace ICSharpCode.StartPage
 			e.Cancel = true;
 			// bug in webbrowser control?
 			string url = e.Url.Replace("about:blank", "");
-			Console.WriteLine("'" + url + "'");
 			if (url.StartsWith("project://")) {
 				try {
 					ICSharpCode.Core.RecentOpen recOpen = (ICSharpCode.Core.RecentOpen)FileService.RecentOpen;

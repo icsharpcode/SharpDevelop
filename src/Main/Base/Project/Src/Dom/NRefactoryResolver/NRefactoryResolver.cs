@@ -71,7 +71,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			this.projectContent = ParserService.CurrentProjectContent;
 		}
 		
-		bool IsCaseSensitive(SupportedLanguages language) {
+		bool IsCaseSensitive(SupportedLanguages language) 
+		{
 			switch (language) {
 				case SupportedLanguages.CSharp:
 					return true;
@@ -87,9 +88,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		                             int caretColumn, 
 		                             string fileName)
 		{
-			if (!IsCaseSensitive(language)) {
-				caseSensitive = false;
-			}
+			caseSensitive = IsCaseSensitive(language);
+			
 			if (expression == null) {
 				expression = "";
 			}
@@ -97,6 +97,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (!caseSensitive) {
 				expression = expression.ToLower();
 			}
+			
 			// disable the code completion for numbers like 3.47
 			if (IsNumber(expression)) {
 				return null;
@@ -165,11 +166,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return TryNamespace(type);
 			}
 			if (inNew) {
-				return new ResolveResult(returnClass, projectContent.ListTypes(new ArrayList(), returnClass, callingClass));
+				return new ResolveResult(returnClass, returnClass.GetAccessibleTypes(callingClass));
 			} else {
-				ArrayList result = projectContent.ListMembers(new ArrayList(), returnClass, callingClass, showStatic);
+				ArrayList result = returnClass.GetAccessibleMembers(callingClass, showStatic);
 				if (!showStatic && language == SupportedLanguages.VBNet) {
-					result = projectContent.ListMembers(result, returnClass, callingClass, true);
+					result.AddRange(returnClass.GetAccessibleMembers(callingClass, true).ToArray());
 				}
 				return new ResolveResult(returnClass, result);
 			}
@@ -349,7 +350,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			foreach (IMethod m in curType.Methods) {
 				if (IsSameName(m.Name, memberName) &&
-				    projectContent.MustBeShown(curType, m, callingClass, showStatic, isClassInInheritanceTree) &&
+				    m.MustBeShown(callingClass, showStatic, isClassInInheritanceTree) &&
 				    !((m.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
 					methods.Add(m);
 				}
@@ -375,7 +376,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
 			foreach (IIndexer i in curType.Indexer) {
-				if (projectContent.MustBeShown(curType, i, callingClass, showStatic, isClassInInheritanceTree) && !((i.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
+				if (i.MustBeShown(callingClass, showStatic, isClassInInheritanceTree) && !((i.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
 					indexer.Add(i);
 				}
 			}
@@ -408,7 +409,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			if (curType.ClassType == ClassType.Enum) {
 				foreach (IField f in curType.Fields) {
-					if (IsSameName(f.Name, memberName) && projectContent.MustBeShown(curType, f, callingClass, showStatic, isClassInInheritanceTree)) {
+					if (IsSameName(f.Name, memberName) && f.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
 						showStatic = false;
 						return type; // enum members have the type of the enum
 					}
@@ -416,25 +417,25 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			if (showStatic) {
 				foreach (IClass c in curType.InnerClasses) {
-					if (IsSameName(c.Name, memberName) && projectContent.IsAccessible(curType, c, callingClass, isClassInInheritanceTree)) {
+					if (IsSameName(c.Name, memberName) && c.IsAccessible(callingClass, isClassInInheritanceTree)) {
 						return new ReturnType(c.FullyQualifiedName);
 					}
 				}
 			}
 			foreach (IProperty p in curType.Properties) {
-				if (IsSameName(p.Name, memberName) && projectContent.MustBeShown(curType, p, callingClass, showStatic, isClassInInheritanceTree)) {
+				if (IsSameName(p.Name, memberName) && p.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
 					showStatic = false;
 					return p.ReturnType;
 				}
 			}
 			foreach (IField f in curType.Fields) {
-				if (IsSameName(f.Name, memberName) && projectContent.MustBeShown(curType, f, callingClass, showStatic, isClassInInheritanceTree)) {
+				if (IsSameName(f.Name, memberName) && f.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
 					showStatic = false;
 					return f.ReturnType;
 				}
 			}
 			foreach (IEvent e in curType.Events) {
-				if (IsSameName(e.Name, memberName) && projectContent.MustBeShown(curType, e, callingClass, showStatic, isClassInInheritanceTree)) {
+				if (IsSameName(e.Name, memberName) && e.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
 					showStatic = false;
 					return e.ReturnType;
 				}
@@ -725,9 +726,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 					result.AddRange(projectContent.GetNamespaceContents(callingClass.Namespace));
 					bool inStatic = InStatic();
-					result = projectContent.ListMembers(result, callingClass, callingClass, inStatic);
+					result.AddRange(callingClass.GetAccessibleMembers(callingClass, inStatic).ToArray());
 					if (inStatic == false) {
-						result = projectContent.ListMembers(result, callingClass, callingClass, !inStatic);
+						result.AddRange(callingClass.GetAccessibleMembers(callingClass, !inStatic).ToArray());
 					}
 				}
 			}

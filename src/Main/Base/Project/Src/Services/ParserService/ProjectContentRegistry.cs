@@ -49,7 +49,6 @@ namespace ICSharpCode.Core
 			
 			try {
 				assembly = Assembly.ReflectionOnlyLoadFrom(item.FileName);
-				Console.WriteLine(assembly.Location);
 				if (assembly != null) {
 					contents[item.FileName] = CaseSensitiveProjectContent.Create(assembly);
 					return contents[item.FileName];
@@ -57,7 +56,6 @@ namespace ICSharpCode.Core
 			} catch (Exception) {
 				try {
 					assembly = Assembly.LoadWithPartialName(item.Include);
-					Console.WriteLine(assembly.Location);
 					if (assembly != null) {
 						contents[item.Include] = CaseSensitiveProjectContent.Create(assembly);
 						return contents[item.Include];

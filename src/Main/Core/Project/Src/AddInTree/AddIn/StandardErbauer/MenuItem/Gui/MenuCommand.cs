@@ -132,7 +132,6 @@ namespace ICSharpCode.Core
 					Image = ResourceService.GetBitmap(codon.Properties["icon"]);
 				}
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
-				Console.WriteLine("failed action {0}", failedAction);
 				Visible = failedAction != ConditionFailedAction.Exclude;
 				
 				if (localizedText == null) {

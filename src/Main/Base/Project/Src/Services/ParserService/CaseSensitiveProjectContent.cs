@@ -399,68 +399,6 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		
-		bool IsInnerClass(IClass c, IClass possibleInnerClass)
-		{
-			foreach (IClass inner in c.InnerClasses) {
-				if (inner.FullyQualifiedName == possibleInnerClass.FullyQualifiedName) {
-					return true;
-				}
-				if (IsInnerClass(inner, possibleInnerClass)) {
-					return true;
-				}
-			}
-			return false;
-		}
-		
-		// TODO: check inner classes for protected members too.
-		// TODO: look for FullyQualifiedName == FullyQualifiedName. Must be replaced by a function wich pays attention to the case.
-		//       Look at NRefactoryResolver.IsSameName. Also pay attention if you can put this Function in IClass, and if you have to
-		//       compare the names instead of the FullyQualifiedNames
-		public bool IsAccessible(IClass c, IDecoration member, IClass callingClass, bool isClassInInheritanceTree)
-		{
-			if ((member.Modifiers & ModifierEnum.Internal) == ModifierEnum.Internal) {
-				return true;
-			}
-			if ((member.Modifiers & ModifierEnum.Public) == ModifierEnum.Public) {
-				return true;
-			}
-			if ((member.Modifiers & ModifierEnum.Protected) == ModifierEnum.Protected && (isClassInInheritanceTree)) {
-				return true;
-			}
-			return c != null && callingClass != null && (c.FullyQualifiedName == callingClass.FullyQualifiedName || IsInnerClass(c, callingClass));
-		}
-		
-		public bool MustBeShown(IClass c, IDecoration member, IClass callingClass, bool showStatic, bool isClassInInheritanceTree)
-		{
-			if (c != null && c.ClassType == ClassType.Enum) {
-				return true;
-			}
-			if ((!showStatic &&  ((member.Modifiers & ModifierEnum.Static) == ModifierEnum.Static)) ||
-			    ( showStatic && !(((member.Modifiers & ModifierEnum.Static) == ModifierEnum.Static) ||
-			                      ((member.Modifiers & ModifierEnum.Const)  == ModifierEnum.Const)))) { // const is automatically static
-				return false;
-			}
-			return IsAccessible(c, member, callingClass, isClassInInheritanceTree);
-		}
-		
-		public ArrayList ListTypes(ArrayList types, IClass curType, IClass callingClass)
-		{
-//			Console.WriteLine("ListTypes()");
-			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
-			foreach (IClass c in curType.InnerClasses) {
-				if (((c.ClassType == ClassType.Class) || (c.ClassType == ClassType.Struct)) &&
-				      IsAccessible(curType, c, callingClass, isClassInInheritanceTree)) {
-					types.Add(c);
-				}
-			}
-			IClass baseClass = curType.BaseClass;
-			if (baseClass != null) {
-				ListTypes(types, baseClass, callingClass);
-			}
-			return types;
-		}
-		
 		public ArrayList ListMembers(ArrayList members, IClass curType, IClass callingClass, bool showStatic)
 		{
 //			Console.WriteLine("ListMembers()");
@@ -482,32 +420,32 @@ namespace ICSharpCode.Core
 			
 			if (showStatic) {
 				foreach (IClass c in curType.InnerClasses) {
-					if (IsAccessible(curType, c, callingClass, isClassInInheritanceTree)) {
+					if (c.IsAccessible(callingClass, isClassInInheritanceTree)) {
 						members.Add(c);
 					}
 				}
 			}
 			
 			foreach (IProperty p in curType.Properties) {
-				if (MustBeShown(curType, p, callingClass, showStatic, isClassInInheritanceTree)) {
+				if (p.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
 					members.Add(p);
 				}
 			}
 			
 			foreach (IMethod m in curType.Methods) {
-				if (MustBeShown(curType, m, callingClass, showStatic, isClassInInheritanceTree)) {
+				if (m.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
 					members.Add(m);
 				}
 			}
 			
 			foreach (IEvent e in curType.Events) {
-				if (MustBeShown(curType, e, callingClass, showStatic, isClassInInheritanceTree)) {
+				if (e.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
 					members.Add(e);
 				}
 			}
 			
 			foreach (IField f in curType.Fields) {
-				if (MustBeShown(curType, f, callingClass, showStatic, isClassInInheritanceTree)) {
+				if (f.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
 					members.Add(f);
 				}
 			}

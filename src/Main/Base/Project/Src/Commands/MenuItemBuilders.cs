@@ -382,11 +382,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
-			Console.WriteLine("Sub menu : " + Category);
-			Console.WriteLine(WorkbenchSingleton.Workbench.PadContentCollection.Count);
 			ArrayList items = new ArrayList();
 			foreach (PadDescriptor padContent in WorkbenchSingleton.Workbench.PadContentCollection) {
-				Console.WriteLine(padContent.Category);
 				if (padContent.Category == Category) {
 					items.Add(new MyMenuItem(padContent));
 				}

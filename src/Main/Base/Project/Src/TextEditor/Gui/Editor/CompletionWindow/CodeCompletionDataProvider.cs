@@ -144,9 +144,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 								if(oc.Name == expression || oc.FullyQualifiedName==expression) {
 									Debug.WriteLine(((IClass)o).Name);
 									// now we can set completion data
-									ArrayList members=new ArrayList();
-									AddResolveResults(ParserService.CurrentProjectContent.ListMembers(members,oc,oc,true));
-									members.Clear();
+									AddResolveResults(oc.GetAccessibleMembers(oc,true));
 									// clear objects to indicate end of loop for namespaces
 									objs.Clear();
 									objs=null;

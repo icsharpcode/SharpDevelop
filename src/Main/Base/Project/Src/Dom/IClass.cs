@@ -96,5 +96,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		IClass GetInnermostClass(int caretLine, int caretColumn);
 		
+		ArrayList GetAccessibleTypes(IClass callingClass);
+		ArrayList GetAccessibleMembers(IClass callingClass, bool showStatic);
+		
 	}
 }

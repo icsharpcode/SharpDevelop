@@ -39,6 +39,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		bool IsStatic {
 			get;
 		}
+		
+		bool IsConst {
+			get;
+		}
 
 		bool IsVirtual {
 			get;
@@ -97,5 +101,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 			set;
 		}
+		
+		bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree);
+		bool MustBeShown(IClass callingClass, bool showStatic, bool isClassInInheritanceTree);
+		
 	}
 }

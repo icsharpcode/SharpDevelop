@@ -72,6 +72,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return (modifiers & ModifierEnum.Static) == ModifierEnum.Static;
 			}
 		}
+		
+		public bool IsConst {
+			get {
+				return (modifiers & ModifierEnum.Const) == ModifierEnum.Const;
+			}
+		}
 
 		public bool IsVirtual {
 			get {
@@ -155,6 +161,50 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			this.declaringType = declaringType;
 		}
+		
+		bool IsInnerClass(IClass c, IClass possibleInnerClass)
+		{
+			foreach (IClass inner in c.InnerClasses) {
+				if (inner.FullyQualifiedName == possibleInnerClass.FullyQualifiedName) {
+					return true;
+				}
+				if (IsInnerClass(inner, possibleInnerClass)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		// TODO: check inner classes for protected members too.
+		// TODO: look for FullyQualifiedName == FullyQualifiedName. Must be replaced by a function wich pays attention to the case.
+		//       Look at NRefactoryResolver.IsSameName. Also pay attention if you can put this Function in IClass, and if you have to
+		//       compare the names instead of the FullyQualifiedNames
+		public bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree)
+		{
+			if (IsInternal) {
+				return true;
+			}
+			if (IsPublic) {
+				return true;
+			}
+			if (isClassInInheritanceTree && IsProtected) {
+				return true;
+			}
+			
+			return callingClass != null && (DeclaringType.FullyQualifiedName == callingClass.FullyQualifiedName || IsInnerClass(DeclaringType, callingClass));
+		}
+		
+		public bool MustBeShown(IClass callingClass, bool showStatic, bool isClassInInheritanceTree)
+		{
+			if (DeclaringType.ClassType == ClassType.Enum) {
+				return true;
+			}
+			if (!showStatic &&  IsStatic || (showStatic && !(IsStatic || IsConst))) { // const is automatically static
+				return false;
+			}
+			return IsAccessible(callingClass, isClassInInheritanceTree);
+		}
+		
 		
 		public virtual int CompareTo(IDecoration value) 
 		{

@@ -87,7 +87,6 @@ namespace ICSharpCode.FormDesigner
 					}
 				}
 			}
-			Console.WriteLine(componentName);
 			object newObject = host.CreateComponent(host.GetType(name), componentName);
 			
 			if (newObject is Control) {

@@ -45,12 +45,6 @@ namespace ICSharpCode.Core
 		IClass SearchType(string name, IClass curType, int caretLine, int caretColumn);
 		IClass SearchType(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
 		
-		bool IsAccessible(IClass c, IDecoration member, IClass callingClass, bool isClassInInheritanceTree);
-		bool MustBeShown(IClass c, IDecoration member, IClass callingClass, bool showStatic, bool isClassInInheritanceTree);
-		
-		ArrayList ListTypes(ArrayList types, IClass curType, IClass callingClass);
-		ArrayList ListMembers(ArrayList members, IClass curType, IClass callingClass, bool showStatic);
-		
 		Position GetPosition(string fullMemberName);
 	}
 }

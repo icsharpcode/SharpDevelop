@@ -326,6 +326,92 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return this;
 		}
 		
+		public ArrayList GetAccessibleTypes(IClass callingClass)
+		{
+			ArrayList types = new ArrayList();
+			
+			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(this);
+			foreach (IClass c in InnerClasses) {
+				if (((c.ClassType == ClassType.Class) || (c.ClassType == ClassType.Struct)) &&
+				      c.IsAccessible(callingClass, isClassInInheritanceTree)) {
+					types.Add(c);
+				}
+			}
+			IClass baseClass = BaseClass;
+			if (baseClass != null) {
+				types.AddRange(baseClass.GetAccessibleTypes(callingClass).ToArray());
+			}
+			return types;
+		}
+		
+		public ArrayList GetAccessibleMembers(IClass callingClass, bool showStatic)
+		{
+			ArrayList members = new ArrayList();
+			
+			DateTime now = DateTime.Now;
+			
+			// enums must be handled specially, because there are several things defined we don't want to show
+			// and enum members have neither the modifier nor the modifier public
+			if (ClassType == ClassType.Enum) {
+				foreach (IField f in Fields) {
+					if (f.IsLiteral) {
+						members.Add(f);
+					}
+				}
+				members.AddRange(ProjectContent.GetClass("System.Enum").GetAccessibleMembers(callingClass, showStatic).ToArray());
+				return members;
+			}
+			
+			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(this);
+			
+			if (showStatic) {
+				foreach (IClass c in InnerClasses) {
+					if (c.IsAccessible(callingClass, isClassInInheritanceTree)) {
+						members.Add(c);
+					}
+				}
+			}
+			
+			foreach (IProperty p in Properties) {
+				if (p.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
+					members.Add(p);
+				}
+			}
+			
+			foreach (IMethod m in Methods) {
+				if (m.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
+					members.Add(m);
+				}
+			}
+			
+			foreach (IEvent e in Events) {
+				if (e.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
+					members.Add(e);
+				}
+			}
+			
+			foreach (IField f in Fields) {
+				if (f.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
+					members.Add(f);
+				}
+			}
+			
+			if (ClassType == ClassType.Interface && !showStatic) {
+				foreach (string s in BaseTypes) {
+					IClass baseClass = ProjectContent.SearchType(s, this, Region != null ? Region.BeginLine : -1, Region != null ? Region.BeginColumn : -1);
+					if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
+						members.AddRange(baseClass.GetAccessibleMembers(callingClass, showStatic).ToArray());
+					}
+				}
+			} else {
+				IClass baseClass = BaseClass;
+				if (baseClass != null) {
+					members.AddRange(baseClass.GetAccessibleMembers(callingClass, showStatic).ToArray());
+				}
+			}
+			
+			return members;
+		}
 		
 		public class ClassInheritanceEnumerator : IEnumerator, IEnumerable
 		{
