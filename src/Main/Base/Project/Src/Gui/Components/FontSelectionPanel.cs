@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					((ComboBox)ControlDictionary["fontListComboBox"]).Items.Add(new FontDescriptor(fontFamily));
 				}
 			}
-			Console.WriteLine("GET FONTS DONE!!!");
+			
 			((ComboBox)ControlDictionary["fontListComboBox"]).TextChanged += new EventHandler(UpdateFontPreviewLabel);
 			((ComboBox)ControlDictionary["fontListComboBox"]).SelectedIndexChanged += new EventHandler(UpdateFontPreviewLabel);
 			((ComboBox)ControlDictionary["fontListComboBox"]).MeasureItem += new System.Windows.Forms.MeasureItemEventHandler(this.MeasureComboBoxItem);

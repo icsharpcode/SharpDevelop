@@ -144,7 +144,6 @@ namespace ICSharpCode.FormDesigner
 			}
 			return null;
 		}
-		#region BLA
 	
 		protected static string GenerateParams(EventDescriptor edesc, bool paramNames)
 		{
@@ -213,7 +212,6 @@ namespace ICSharpCode.FormDesigner
 			
 			return false;
 		}
-		#endregion
 		
 		public ICollection GetCompatibleMethods(EventDescriptor edesc)
 		{

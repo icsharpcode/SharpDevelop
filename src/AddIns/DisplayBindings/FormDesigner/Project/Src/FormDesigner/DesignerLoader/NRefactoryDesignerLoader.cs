@@ -111,7 +111,7 @@ namespace ICSharpCode.FormDesigner
 		{
 			provider.GenerateCodeFromCompileUnit(unit, Console.Out, null);
 		}
-
+		
 //		public void Reload()
 //		{
 //			base.Reload(BasicDesignerLoader.ReloadFlags.Default);

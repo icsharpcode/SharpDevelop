@@ -38,11 +38,9 @@ namespace ICSharpCode.Core
 		public static IProjectContent GetProjectContentForReference(ReferenceProjectItem item)
 		{
 			if (contents.ContainsKey(item.FileName)) {
-				Console.WriteLine("Get Content for : " + item.FileName);
 				return contents[item.FileName];
 			}
 			if (contents.ContainsKey(item.Include)) {
-				Console.WriteLine("Get Content for : " + item.Include);
 				return contents[item.Include];
 			}
 			Assembly assembly = null;

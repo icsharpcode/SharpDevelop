@@ -87,7 +87,6 @@ namespace ICSharpCode.Core
 			}
 			
 			if (fileName != null) {
-				Console.WriteLine("load xmldoc: " + fileName);
 				newProjectContent.xmlDoc = XmlDoc.Load(fileName);
 			}
 			

@@ -34,8 +34,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			if (el != null) {
 				foreach (XmlNode node in el.ChildNodes) {
 					if (node is XmlElement) {
-						Console.WriteLine("Node : " + node);
-				
 						envColorNames.Add(node.Name);
 						envColorDescriptions.Add("${res:Dialog.HighlightingEditor.EnvColors." + node.Name + "}");
 						envColors.Add(new EditorHighlightColor((XmlElement)node));
