@@ -133,11 +133,11 @@ namespace ICSharpCode.NUnitPad
 			}
 		}
 		
-		public void PrintTestErrors(string assembly)
+		public void PrintTestErrors(string assembly, Exception e)
 		{
 			TreeNode assemblyNode = new TreeNode(Path.GetFileName(assembly));
 			
-			TreeNode failedNode = new TreeNode(StringParser.Parse("${res:NUnitPad.NUnitPadContent.TestTreeView.LoadingErrorNode}"));
+			TreeNode failedNode = new TreeNode(StringParser.Parse("${res:NUnitPad.NUnitPadContent.TestTreeView.LoadingErrorNode}") + ":" + e.Message);
 			failedNode.ImageIndex = failedNode.SelectedImageIndex = 5;
 			assemblyNode.Nodes.Add(failedNode);
 			

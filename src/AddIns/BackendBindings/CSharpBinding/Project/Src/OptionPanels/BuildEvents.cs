@@ -48,6 +48,7 @@ namespace CSharpBinding.OptionPanels
 			project.PreBuildEvent  = Get<TextBox>("preBuildEvent").Text; 
 			project.PostBuildEvent = Get<TextBox>("postBuildEvent").Text; 
 			project.RunPostBuildEvent = (RunPostBuildEvent)Get<ComboBox>("runPostBuildEvent").SelectedIndex;
+			project.Save();
 			return true;
 		}
 	}

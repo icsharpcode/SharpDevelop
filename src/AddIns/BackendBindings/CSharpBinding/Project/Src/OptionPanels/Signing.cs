@@ -74,6 +74,7 @@ namespace CSharpBinding.OptionPanels
 			} else if (Get<RadioButton>("useKeyProvider").Checked) {
 				project.AssemblyOriginatorKeyMode = AssemblyOriginatorKeyMode.Provider;
 			}
+			project.Save();
 			
 			return true;
 		}

@@ -75,6 +75,7 @@ namespace CSharpBinding.OptionPanels
 			project.ApplicationIcon   = Get<ComboBox>("applicationIcon").Text;
 			project.Win32Resource     = Get<ComboBox>("win32ResourceFile").Text;
 			project.Name              = Path.GetFileNameWithoutExtension(Get<TextBox>("projectFile").Text);
+			project.Save();
 			return true;
 		}
 		

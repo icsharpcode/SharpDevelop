@@ -79,6 +79,7 @@ namespace CSharpBinding.OptionPanels
 			} else {
 				project.SetStartAction(Config, Platform, StartAction.StartURL);
 			}
+			project.Save();
 			
 			return true;
 		}

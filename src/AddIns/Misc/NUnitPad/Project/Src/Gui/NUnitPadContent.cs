@@ -12,7 +12,7 @@ using System.Windows.Forms;
 
 using NUnit.Core;
 using NUnit.Framework;
-using NUnit.Util;
+using NUnit.Extensions;
 
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Core;
@@ -133,16 +133,13 @@ namespace ICSharpCode.NUnitPad
 		
 		void AddNUnitReference(object sender, EventArgs e)
 		{
-//	TODO: Add NUnit reference.		
-//			IProject project = ProjectService.CurrentProject;
-//			if (project != null) {
-//				foreach (ProjectReference reference in project.ProjectReferences) {
-//					if (reference.ReferenceType == ReferenceType.Gac && reference.Reference.ToLower().StartsWith("nunit.framework")) {
-//						return;
-//					}
-//				}
-//				projectService.AddReferenceToProject(project, new ProjectReference(ReferenceType.Gac, "nunit.framework"));
-//			}
+			if (ProjectService.CurrentProject != null) {
+				Console.WriteLine("Add reference!");
+				ProjectService.AddReference(ProjectService.CurrentProject, new ReferenceProjectItem(ProjectService.CurrentProject, "nunit.framework"));
+				ProjectService.CurrentProject.Save();
+			} else {
+				Console.WriteLine("prj == null");
+			}
 		}
 		
 		void RunItemClick(object sender, EventArgs e)
@@ -172,11 +169,11 @@ namespace ICSharpCode.NUnitPad
 		
 		void UnloadAppDomains()
 		{
-			foreach (TestDomain domain in testDomains) {
+			/*foreach (TestDomain domain in testDomains) {
 				try {
 					domain.Unload();
 				} catch (Exception) {}
-			}
+			}*/
 			testDomains.Clear();
 			testTreeView.ClearTests();
 		}
@@ -196,15 +193,12 @@ namespace ICSharpCode.NUnitPad
 			
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				string outputAssembly = project.OutputAssemblyFullPath;
-				TestDomain testDomain = new TestDomain();
 				try {
-					Test testsFromAssembly = testDomain.Load(outputAssembly);
-					testTreeView.PrintTests(outputAssembly, testsFromAssembly);
-					testDomains.Add(testDomain);
+					TestSuiteBuilder builder = new TestSuiteBuilder();
+					Test testDomain = builder.Build(outputAssembly);
+					testTreeView.PrintTests(outputAssembly, testDomain);
 				} catch (Exception e) {
-					testDomain.Unload();
-					Console.WriteLine(e);
-					testTreeView.PrintTestErrors(outputAssembly);
+					testTreeView.PrintTestErrors(outputAssembly, e);
 				}
 				
 			}

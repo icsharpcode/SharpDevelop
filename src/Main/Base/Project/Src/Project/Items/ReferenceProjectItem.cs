@@ -62,6 +62,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
+		public ReferenceProjectItem(IProject project, string include) : base(project)
+		{
+			this.Include = include;
+		}
+		
 		public override string ToString()
 		{
 			return String.Format("[ReferenceProjectItem: Include={0}, Properties={1}]",

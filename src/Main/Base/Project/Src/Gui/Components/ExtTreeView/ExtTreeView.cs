@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			HideSelection = false;
 			AllowDrop     = true;
 			this.TreeViewNodeSorter  = new ExtTreeViewComparer();
-			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
+			DoubleBuffered = true;
 			ImageList newImageList = new ImageList();
 			newImageList.ImageSize = new Size(16, 16);
 			newImageList.ColorDepth = ColorDepth.Depth32Bit;

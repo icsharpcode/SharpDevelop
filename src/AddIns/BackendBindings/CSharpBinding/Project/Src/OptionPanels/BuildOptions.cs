@@ -116,6 +116,7 @@ namespace CSharpBinding.OptionPanels
 			}
 			
 			project.SetRegisterForComInterop(Config, Platform, Get<CheckBox>("registerCOMInterop").Checked);
+			project.Save();
 			
 			return true;
 		}

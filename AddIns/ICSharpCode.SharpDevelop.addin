@@ -344,6 +344,13 @@
 		          label = "${res:ProjectComponent.ContextMenu.Open}"
 		          icon  = "Icons.16x16.OpenFileIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
+		<Condition name = "Ownerstate" ownerstate = "Missing">
+			<MenuItem id = "Remove"
+			          label = "Remove"
+			          type = "Item"
+			          icon  = "Icons.16x16.DeleteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+		</Condition>
 		<ComplexCondition>
 			<Not>
 				<Condition name = "Ownerstate" ownerstate = "Missing"/>
