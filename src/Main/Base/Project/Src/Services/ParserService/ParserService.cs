@@ -150,6 +150,8 @@ namespace ICSharpCode.Core
 						}
 					}
 				} catch (Exception e) {
+					Console.Beep();
+					Console.WriteLine();
 					Console.WriteLine(e);
 				}
 				Thread.Sleep(2000);

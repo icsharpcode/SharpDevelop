@@ -39,6 +39,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			new string[] {"item", "A list item"},
 			new string[] {"term", "A term in a list"},
 			new string[] {"description", "A description to a term in a list"},
+			new string[] {"para", "A text paragraph"},
 			new string[] {"param name=\"\"", "A description for a parameter"},
 			new string[] {"paramref name=\"\"", "A reference to a parameter"},
 			new string[] {"permission cref=\"\"", ""},

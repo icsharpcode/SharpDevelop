@@ -45,9 +45,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			IAmbience conv = AmbienceService.CurrentAmbience;
 			conv.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			string documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(method.DocumentationTag);
-			return conv.Convert(method) + 
-			       "\n" + 
-			       CodeCompletionData.GetDocumentation(documentation); // new (by G.B.)
+			return conv.Convert(method) +
+				"\n" +
+				CodeCompletionData.GetDocumentation(documentation); // new (by G.B.)
 		}
 		
 		int initialOffset;
@@ -59,90 +59,48 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			this.textArea = textArea;
 			initialOffset = textArea.Caret.Offset;
 			
-			
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
-			string word  = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset) : expressionFinder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset- 1);
-			
-			string methodObject = word;
-			string methodName   =  null;
-			int idx = methodObject.LastIndexOf('.');
-			if (idx >= 0) {
-				methodName   = methodObject.Substring(idx + 1);
-				methodObject = methodObject.Substring(0, idx);
-			} else {
-				methodObject = fileName.EndsWith("vb") ? "Me" : "this";
-				methodName   = word;
-			}
-			if (methodName.Length == 0 || methodObject.Length == 0) {
-				return;
-			}
+			string word = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset) : expressionFinder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset - 1);
+			word = word.Trim();
 			
 			// the parser works with 1 based coordinates
 			caretLineNumber      = document.GetLineNumberForOffset(textArea.Caret.Offset) + 1;
 			caretColumn          = textArea.Caret.Offset - document.GetLineSegment(caretLineNumber).Offset + 1;
 			
-			string[] words = word.Split(' ');
-			bool contructorInsight = false;
-			if (words.Length > 1) {
-				contructorInsight = words[words.Length - 2] == "new";
-				if (contructorInsight) {
-					methodObject = words[words.Length - 1];
-				}
+			bool constructorInsight = false;
+			if (word.ToLower().StartsWith("new ")) {
+				constructorInsight = true;
+				word = word.Substring(4);
 			}
-			ResolveResult results = ParserService.Resolve(methodObject, caretLineNumber, caretColumn, fileName, document.TextContent);
-			
-			if (results != null && results.Type != null) {
-				if (contructorInsight) {
-					AddConstructors(results.Type);
-				} else {
-					foreach (IClass c in results.Type.ClassInheritanceTree) {
-						AddMethods(c, methodName, false);
-					}
-				}
-			}
-		}
-		Hashtable includedMethods = new Hashtable();
-		bool IsAlreadyIncluded(IMethod newMethod) 
-		{
-			foreach (IMethod method in methods) {
-				if (method.Name == newMethod.Name) {
-					if (newMethod.Parameters.Count != method.Parameters.Count) {
-						return false;
-					}
-					
-					for (int i = 0; i < newMethod.Parameters.Count; ++i) {
-						if (newMethod.Parameters[i].ReturnType != method.Parameters[i].ReturnType) {
-							return false;
+			ResolveResult results = ParserService.Resolve(word, caretLineNumber, caretColumn, fileName, document.TextContent);
+			if (constructorInsight) {
+				TypeResolveResult result = results as TypeResolveResult;
+				if (result == null)
+					return;
+				IClass c = result.ResolvedClass;
+				bool canViewProtected = c.IsTypeInInheritanceTree(result.CallingClass);
+				foreach (IMethod method in c.Methods) {
+					if (method.IsConstructor) {
+						if (method.IsAccessible(result.CallingClass, canViewProtected)) {
+							methods.Add(method);
 						}
 					}
-					
-//					// take out old method, when it isn't documented.
-//					if (method.Documentation == null || method.Documentation.Length == 0) {
-//						methods.Remove(method);
-//						return false;
-//					}
-					return true;
 				}
-			}
-			return false;
-		}
-		
-		void AddConstructors(IClass c)
-		{
-			foreach (IMethod method in c.Methods) {
-				if (method.IsConstructor && !method.IsStatic) {
-					methods.Add(method);
-				}
-			}
-		}
-		
-		void AddMethods(IClass c, string methodName, bool discardPrivate)
-		{
-			foreach (IMethod method in c.Methods) {
-				if (!(method.IsPrivate && discardPrivate) && 
-				    method.Name == methodName &&
-				    !IsAlreadyIncluded(method)) {
-					methods.Add(method);
+			} else {
+				MethodResolveResult result = results as MethodResolveResult;
+				if (result == null)
+					return;
+				IClass c = result.ContainingClass;
+				bool canViewProtected = c.IsTypeInInheritanceTree(result.CallingClass);
+				foreach (IClass curType in c.ClassInheritanceTree) {
+					foreach (IMethod method in curType.Methods) {
+						if (method.Name == result.Name) {
+							if (method.IsAccessible(result.CallingClass, canViewProtected)) {
+								// TODO: exclude methods that were overridden
+								methods.Add(method);
+							}
+						}
+					}
 				}
 			}
 		}

@@ -137,28 +137,28 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			if (sdtep != null) {
 				if (!sdtep.ShowQuickClassBrowserPanel) {
- 					RemoveQuickClassBrowserPanel();
+					RemoveQuickClassBrowserPanel();
 				} else {
 					ActivateQuickClassBrowserOnDemand();
 				}
 			}
 		}
-
+		
 //		void IconBarMouseDown(AbstractMargin iconBar, Point mousepos, MouseButtons mouseButtons)
 //		{
 //			int realline = iconBar.TextArea.TextView.GetLogicalLine(mousepos);
 //			if (realline >= 0 && realline < iconBar.TextArea.Document.TotalNumberOfLines) {
-//				
+		//
 //				if (DebuggerService.CurrentDebugger.SupportsExecutionControl) {
 //					DebuggerService.ToggleBreakpointAt(FileName, realline + 1, 0);
 //					iconBar.TextArea.Refresh(iconBar);
 //				}
 //			}
 //		}
-//		
+		//
 //		void PaintIconBarBreakPoints(AbstractMargin iconBar, Graphics g, Rectangle rect)
 //		{
-//			
+		//
 //			lock (DebuggerService.Breakpoints) {
 //				foreach (Breakpoint breakpoint in DebuggerService.Breakpoints) {
 //					try {
@@ -231,13 +231,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			ActivateQuickClassBrowserOnDemand();
 		}
 		
-//// Alex: routine for pulsing parser thread
+		//// Alex: routine for pulsing parser thread
 //		protected void PulseParser() {
 //			lock(DefaultParserService.ParserPulse) {
 //				Monitor.Pulse(DefaultParserService.ParserPulse);
 //			}
 //		}
-//// ALex: end of mod
+		//// ALex: end of mod
 		
 		InsightWindow                 insightWindow        = null;
 		internal CodeCompletionWindow codeCompletionWindow = null;
@@ -255,7 +255,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				return false;
 			}
 		}
-
+		
 		// some other languages could support it
 		protected virtual bool SupportsRoundBracket {
 			get {
@@ -273,7 +273,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			switch (ch) {
 				case ' ':
-					//TextEditorProperties.AutoInsertTemplates 
+					//TextEditorProperties.AutoInsertTemplates
 					string word = GetWordBeforeCaret();
 					try {
 						if ((isCSharpOrVBNet||SupportsNew) && word.ToLower() == "new") {
@@ -304,8 +304,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 								}
 							}
 						}
-					} catch (Exception e) { 
-						Console.WriteLine("EXCEPTION: " + e);
+					} catch (Exception e) {
+						LogException(e);
 					}
 					goto case '.';
 				case '<':
@@ -317,7 +317,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 							}
 						}
 					} catch (Exception e) {
-						Console.WriteLine("EXCEPTION: " + e);
+						LogException(e);
 					}
 					return false;
 				case '(':
@@ -335,7 +335,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 							}
 						}
 					} catch (Exception e) {
-						Console.WriteLine("EXCEPTION: " + e);
+						LogException(e);
 					}
 					return false;
 				case '[':
@@ -355,7 +355,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 						}
 						
 					} catch (Exception e) {
-						Console.WriteLine("EXCEPTION: " + e);
+						LogException(e);
 					}
 					return false;
 				case '.':
@@ -369,20 +369,26 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 						}
 //						TextAreaPainter.IHaveTheFocusLock = false;
 					} catch (Exception e) {
-						Console.WriteLine("EXCEPTION: " + e);
+						LogException(e);
 					}
 					return false;
-//// Alex: reparse file on ; - end of statement
+					//// Alex: reparse file on ; - end of statement
 //				case '}':
 //				case ';':
 //				case ')':	// reparse on closing bracket for foreach and for definitions
 //					PulseParser();
 //					return false;
-//// Alex: end of mod
+					//// Alex: end of mod
 			}
 			return false;
 		}
 		
+		private void LogException(Exception ex)
+		{
+			Console.WriteLine();
+			Console.WriteLine("EXCEPTION: " + ex);
+			Console.Beep(); // notify user
+		}
 		
 		public string GetWordBeforeCaret()
 		{
@@ -480,6 +486,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 //		{
 //			return new HtmlDeclarationViewWindow();
 //		}
-//		
+		//
 	}
 }

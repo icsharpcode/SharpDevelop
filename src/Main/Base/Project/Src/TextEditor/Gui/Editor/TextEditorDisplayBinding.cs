@@ -392,8 +392,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					parseInfo = ParserService.GetParseInformation(fileName);
 				}
 				textAreaControl.Document.FoldingManager.UpdateFoldings(fileName, parseInfo);
-//// Alex free parsings - not sure if better place is in UpdateFoldings asap
-				parseInfo=null;
 			}
 		}
 		
@@ -401,8 +399,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			if (textAreaControl.TextEditorProperties.EnableFolding) {
 				textAreaControl.Document.FoldingManager.UpdateFoldings(TitleName, parseInfo);
-//// Alex free parsings
-				parseInfo=null;
 				textAreaControl.ActiveTextAreaControl.TextArea.Invoke(new VoidDelegate(textAreaControl.ActiveTextAreaControl.TextArea.Refresh), new object[] { textAreaControl.ActiveTextAreaControl.TextArea.FoldMargin});
 			}
 		}

@@ -28,8 +28,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	/// </summary>
 	public class CodeCompletionDataProvider : ICompletionDataProvider
 	{
-		static 
-		Hashtable insertedElements           = new Hashtable();
+		static
+			Hashtable insertedElements           = new Hashtable();
 		Hashtable insertedPropertiesElements = new Hashtable();
 		Hashtable insertedEventElements      = new Hashtable();
 		
@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			string expression = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset) : expressionFinder.FindExpression(textArea.Document.GetText(0, textArea.Caret.Offset), textArea.Caret.Offset - 1);
 			ResolveResult results;
 			preSelection  = null;
-				
+			
 			if (ctrlSpace) {
 				if (isNewCompletion && expression == null) {
 					return null;
@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName));
 					return (ICompletionData[])completionData.ToArray(typeof(ICompletionData));
 				}
-					
+				
 				int idx = expression.LastIndexOf('.');
 				if (idx > 0) {
 					preSelection = expression.Substring(idx + 1);
@@ -204,16 +204,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 		}
-			
+		
 		void AddResolveResults(ResolveResult results)
 		{
 			insertedElements.Clear();
 			insertedPropertiesElements.Clear();
 			insertedEventElements.Clear();
-					
+			
 			if (results != null) {
-				AddResolveResults(results.Namespaces);
-				AddResolveResults(results.Members);
+				AddResolveResults(results.GetCompletionData(ParserService.CurrentProjectContent));
 			}
 		}
 	}

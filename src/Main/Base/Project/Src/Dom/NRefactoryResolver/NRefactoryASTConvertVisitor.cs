@@ -136,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						default:
 							target = AttributeTarget.None;
 							break;
-		
+							
 					}
 				}
 				IAttributeSection s = new AttributeSection(target, resultAttributes);
@@ -303,7 +303,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				for (int i = 0; i < fieldDeclaration.Fields.Count; ++i) {
 					AST.VariableDeclaration field = (AST.VariableDeclaration)fieldDeclaration.Fields[i];
 					
-					Field f = new Field(new ReturnType(fieldDeclaration.GetTypeForField(i)), field.Name, fieldDeclaration.Modifier, region, GetCurrentClass());
+					ReturnType retType;
+					if (c.ClassType == ClassType.Enum)
+						retType = new ReturnType(c.FullyQualifiedName);
+					else
+						retType = new ReturnType(fieldDeclaration.GetTypeForField(i));
+					Field f = new Field(retType, field.Name, fieldDeclaration.Modifier, region, GetCurrentClass());
 					f.Attributes.AddRange(VisitAttributes(fieldDeclaration.Attributes));
 					if (c.ClassType == ClassType.Enum) {
 						f.SetModifiers(ModifierEnum.Const | ModifierEnum.SpecialName);

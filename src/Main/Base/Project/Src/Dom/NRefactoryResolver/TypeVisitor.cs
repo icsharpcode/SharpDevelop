@@ -44,35 +44,36 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(InvocationExpression invocationExpression, object data)
 		{
+			IMethod m = GetMethod(invocationExpression, data);
+			if (m == null)
+				return null;
+			else
+				return m.ReturnType;
+		}
+		
+		public IMethod GetMethod(InvocationExpression invocationExpression, object data)
+		{
 			if (invocationExpression.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
 				IReturnType type = field.TargetObject.AcceptVisitor(this, data) as IReturnType;
-				if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
-					type = new ReturnType("System.Array");
-				}
 				ArrayList methods = resolver.SearchMethod(type, field.FieldName);
-				resolver.ShowStatic = false;
 				if (methods.Count <= 0) {
 					return null;
 				}
 				// TODO: Find the right method
-				return ((IMethod)methods[0]).ReturnType;
+				return (IMethod)methods[0];
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				string id = ((IdentifierExpression)invocationExpression.TargetObject).Identifier;
 				if (resolver.CallingClass == null) {
 					return null;
 				}
 				IReturnType type = new ReturnType(resolver.CallingClass.FullyQualifiedName);
-				if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
-					type = new ReturnType("System.Array");
-				}
 				ArrayList methods = resolver.SearchMethod(type, id);
-				resolver.ShowStatic = false;
 				if (methods.Count <= 0) {
 					return null;
 				}
 				// TODO: Find the right method
-				return ((IMethod)methods[0]).ReturnType;
+				return (IMethod)methods[0];
 			}
 			// invocationExpression is delegate call
 			IReturnType t = invocationExpression.AcceptChildren(this, data) as IReturnType;
@@ -85,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (methods.Count <= 0) {
 					return null;
 				}
-				return ((IMethod)methods[0]).ReturnType;
+				return (IMethod)methods[0];
 			}
 			return null;
 		}
@@ -98,7 +99,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			// int. generates a FieldreferenceExpression with TargetObject TypeReferenceExpression and no FieldName
 			if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName == "") {
 				if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
-					resolver.ShowStatic = true;
 					return new ReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
 				}
 			}
@@ -112,7 +112,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 					IClass c = resolver.SearchType(name + "." + fieldReferenceExpression.FieldName, resolver.CallingClass, resolver.CompilationUnit);
 					if (c != null) {
-						resolver.ShowStatic = true;
 						return new ReturnType(c.FullyQualifiedName);
 					}
 					return null;
@@ -147,7 +146,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			IClass c = resolver.SearchType(identifierExpression.Identifier, resolver.CallingClass, resolver.CompilationUnit);
 			if (c != null) {
-				resolver.ShowStatic = true;
 				return new ReturnType(c.FullyQualifiedName);
 			}
 			return resolver.DynamicLookup(identifierExpression.Identifier);

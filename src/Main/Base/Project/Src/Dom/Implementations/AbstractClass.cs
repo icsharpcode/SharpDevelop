@@ -362,7 +362,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return members;
 			}
 			
-			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(this);
+			bool isClassInInheritanceTree = false;
+			if (callingClass != null)
+				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(this);
 			
 			if (showStatic) {
 				foreach (IClass c in InnerClasses) {

@@ -55,7 +55,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			this.textArea = textArea;
 			initialOffset = textArea.Caret.Offset;
 			
+			// TODO: Change this for the new resolver, or better merge IndexerInsight and MethodInsight.
 			
+			/*
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
 			string word  = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset) : expressionFinder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset - 1);
 						
@@ -85,6 +87,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 //					}
 //				}
 			}
+			*/
 		}
 		
 		public bool CaretOffsetChanged()
