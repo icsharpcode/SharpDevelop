@@ -14,6 +14,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string FullyQualifiedName {
 			get;
 		}
+		
 		IRegion Region {
 			get;
 		}
@@ -21,13 +22,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string Name {
 			get;
 		}
-
+		
 		string Namespace {
 			get;
 		}
-
+		
 		IReturnType ReturnType {
 			get;
+			set;
 		}
 	}
 }

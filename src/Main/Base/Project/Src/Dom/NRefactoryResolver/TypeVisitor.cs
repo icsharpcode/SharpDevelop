@@ -289,7 +289,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			string name = resolver.SearchType(objectCreateExpression.CreateType.Type, resolver.CallingClass, resolver.CompilationUnit).FullyQualifiedName;
+			string name = objectCreateExpression.CreateType.Type;
+			IClass c = resolver.SearchType(name, resolver.CallingClass, resolver.CompilationUnit);
+			if (c != null)
+				name = c.FullyQualifiedName;
 			return new ReturnType(name, objectCreateExpression.CreateType.RankSpecifier, objectCreateExpression.CreateType.PointerNestingLevel);
 		}
 		

@@ -261,7 +261,7 @@ interface IInterface2 {
 }
 ";
 			ResolveResult result = Resolve(program, "new ThisClassDoesNotExist()", 3, 24);
-			Assert.IsNull(result, "result");
+			Assert.IsNull(result);
 		}
 	}
 }

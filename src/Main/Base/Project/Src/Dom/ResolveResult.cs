@@ -71,11 +71,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual ArrayList GetCompletionData(IProjectContent projectContent)
+		public virtual IClass GetResolvedClass(IProjectContent projectContent)
 		{
 			if (resolvedType == null)
 				return null;
-			IClass c = projectContent.GetClass(resolvedType.FullyQualifiedName);
+			if (resolvedType.ArrayCount > 0)
+				return ProjectContentRegistry.GetMscorlibContent().GetClass("System.Array");
+			return projectContent.GetClass(resolvedType.FullyQualifiedName);
+		}
+		
+		public virtual ArrayList GetCompletionData(IProjectContent projectContent)
+		{
+			IClass c = GetResolvedClass(projectContent);
 			if (c == null)
 				return null;
 			return c.GetAccessibleMembers(callingClass, false);
@@ -221,12 +228,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public override IClass GetResolvedClass(IProjectContent projectContent)
+		{
+			return resolvedClass;
+		}
+		
 		public override ArrayList GetCompletionData(IProjectContent projectContent)
 		{
-			if (resolvedClass == null)
+			IClass c = GetResolvedClass(projectContent);
+			if (c == null)
 				return null;
 			else
-				return resolvedClass.GetAccessibleMembers(this.CallingClass, true);
+				return c.GetAccessibleMembers(this.CallingClass, true);
 		}
 		
 		public override FilePosition GetDefinitionPosition()

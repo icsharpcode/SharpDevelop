@@ -12,9 +12,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			modifiers = modifiers | m;
 		}
 		
-		public Property(string fullyQualifiedName, ReturnType type, Modifier m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType)
+		public Property(string name, ReturnType type, Modifier m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType)
 		{
-			this.FullyQualifiedName = fullyQualifiedName;
+			this.FullyQualifiedName = declaringType.FullyQualifiedName + "." + name;
 			returnType = type;
 			this.region = region;
 			this.bodyRegion = bodyRegion;

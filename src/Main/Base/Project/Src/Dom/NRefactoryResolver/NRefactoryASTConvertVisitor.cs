@@ -233,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				cu.Classes.Add(c);
 			}
-			Method invokeMethod = new Method("Invoke", new ReturnType(delegateDeclaration.ReturnType), delegateDeclaration.Modifier, null, null, GetCurrentClass());
+			Method invokeMethod = new Method("Invoke", new ReturnType(delegateDeclaration.ReturnType), delegateDeclaration.Modifier, null, null, c);
 			c.Methods.Add(invokeMethod);
 			return c;
 		}
@@ -264,7 +264,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DefaultRegion region     = GetRegion(constructorDeclaration.StartLocation, constructorDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new Point(-1, -1));
-			Class c       = GetCurrentClass();
+			Class c = GetCurrentClass();
 			
 			Constructor constructor = new Constructor(constructorDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 			constructor.Attributes.AddRange(VisitAttributes(constructorDeclaration.Attributes));
@@ -286,7 +286,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion region     = GetRegion(destructorDeclaration.StartLocation, destructorDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(destructorDeclaration.EndLocation, destructorDeclaration.Body != null ? destructorDeclaration.Body.EndLocation : new Point(-1, -1));
 			
-			Class c       = GetCurrentClass();
+			Class c = GetCurrentClass();
 			
 			Destructor destructor = new Destructor(c.Name, destructorDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 			destructor.Attributes.AddRange(VisitAttributes(destructorDeclaration.Attributes));
@@ -308,7 +308,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						retType = new ReturnType(c.FullyQualifiedName);
 					else
 						retType = new ReturnType(fieldDeclaration.GetTypeForField(i));
-					Field f = new Field(retType, field.Name, fieldDeclaration.Modifier, region, GetCurrentClass());
+					Field f = new Field(retType, field.Name, fieldDeclaration.Modifier, region, c);
 					f.Attributes.AddRange(VisitAttributes(fieldDeclaration.Attributes));
 					if (c.ClassType == ClassType.Enum) {
 						f.SetModifiers(ModifierEnum.Const | ModifierEnum.SpecialName);

@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public Method(string name, ReturnType type, Modifier m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType)
 		{
-			FullyQualifiedName = name;
+			FullyQualifiedName = declaringType.FullyQualifiedName + "." + name;
 			returnType = type;
 			this.region     = region;
 			this.bodyRegion = bodyRegion;

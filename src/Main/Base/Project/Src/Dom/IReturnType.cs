@@ -13,15 +13,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string FullyQualifiedName {
 			get;
 		}
-
+		
 		string Name {
 			get;
 		}
-
+		
 		string Namespace {
 			get;
 		}
-
+		
 		int PointerNestingLevel {
 			get;
 		}
@@ -35,6 +35,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 		object DeclaredIn {
 			get;
 		}
-		
 	}
 }

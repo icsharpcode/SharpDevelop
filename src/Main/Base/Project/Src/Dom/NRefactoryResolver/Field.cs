@@ -12,10 +12,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			modifiers = modifiers | m;
 		}
 		
-		public Field(ReturnType type, string fullyQualifiedName, Modifier m, IRegion region, IClass declaringType) : base(declaringType)
+		public Field(ReturnType type, string name, Modifier m, IRegion region, IClass declaringType) : base(declaringType)
 		{
 			this.returnType = type;
-			this.FullyQualifiedName = fullyQualifiedName;
+			this.FullyQualifiedName = declaringType.FullyQualifiedName + "." + name;
 			this.region = region;
 			modifiers = (ModifierEnum)m;
 			if (modifiers == ModifierEnum.None) {

@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (expr is InvocationExpression) {
 				IMethod method = typeVisitor.GetMethod((InvocationExpression)expr, null);
 				if (method != null)
-					return new MemberResolveResult(callingClass, callingMember, method);
+					return CreateMemberResolveResult(method);
 			} else if (expr is FieldReferenceExpression) {
 				FieldReferenceExpression fieldReferenceExpression = (FieldReferenceExpression)expr;
 				IReturnType returnType;
@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 					IMember member = GetMember(returnType, fieldReferenceExpression.FieldName);
 					if (member != null)
-						return new MemberResolveResult(callingClass, callingMember, member);
+						return CreateMemberResolveResult(member);
 					ResolveResult result = ResolveMethod(returnType, fieldReferenceExpression.FieldName);
 					if (result != null)
 						return result;
@@ -181,11 +181,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (type == null || type.FullyQualifiedName == "" || type.PointerNestingLevel != 0) {
 				return null;
 			}
-			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
-				return new ResolveResult(callingClass, callingMember, new ReturnType("System.Array"));
-			else {
-				return new ResolveResult(callingClass, callingMember, FixType(type));
+			if (expr is ObjectCreateExpression && type.ArrayCount == 0) {
+				IClass c = projectContent.GetClass(type.FullyQualifiedName);
+				if (c == null)
+					return null;
+				foreach (IMethod m in c.Methods) {
+					if (m.IsConstructor)
+						return CreateMemberResolveResult(m);
+				}
+				return null;
 			}
+			return new ResolveResult(callingClass, callingMember, FixType(type));
 		}
 		
 		IReturnType FixType(IReturnType type)
@@ -194,7 +200,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			IClass returnClass = SearchType(type.FullyQualifiedName, callingClass, cu);
 			if (returnClass != null && returnClass.FullyQualifiedName != type.FullyQualifiedName)
-				return new ReturnType(returnClass.FullyQualifiedName);
+				return new ReturnType(returnClass.FullyQualifiedName, type.ArrayDimensions, type.PointerNestingLevel);
 			else
 				return type;
 		}
@@ -209,17 +215,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			LocalLookupVariable var = SearchVariable(identifier);
 			if (var != null) {
 				IReturnType type = GetVariableType(var);
-				IField field = new LocalVariableField(type, identifier, new DefaultRegion(var.StartPos, var.EndPos), callingClass);
+				IField field = new LocalVariableField(FixType(type), identifier, new DefaultRegion(var.StartPos, var.EndPos), callingClass);
 				return new LocalResolveResult(callingMember, field, false);
 			}
 			IParameter para = SearchMethodParameter(identifier);
 			if (para != null) {
-				IField field = new LocalVariableField(para.ReturnType, para.Name, para.Region, callingClass);
+				IField field = new LocalVariableField(FixType(para.ReturnType), para.Name, para.Region, callingClass);
 				return new LocalResolveResult(callingMember, field, true);
 			}
 			IMember member = GetMember(callingClass, identifier);
 			if (member != null) {
-				return new MemberResolveResult(callingClass, callingMember, member);
+				return CreateMemberResolveResult(member);
 			}
 			ResolveResult result = ResolveMethod(callingClass, identifier);
 			if (result != null)
@@ -252,6 +258,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		#endregion
+		
+		private ResolveResult CreateMemberResolveResult(IMember member)
+		{
+			member.ReturnType = FixType(member.ReturnType);
+			return new MemberResolveResult(callingClass, callingMember, member);
+		}
 		
 		#region ResolveMethod
 		ResolveResult ResolveMethod(IReturnType type, string identifier)
