@@ -36,9 +36,14 @@ namespace ICSharpCode.Core
 				if (currentDebugger != null) {
 					return currentDebugger;
 				}
+				if (debugger == null) {
+					InitializeService();
+				}
 				if (debugger != null) {
-					
-					IProject project = ProjectService.OpenSolution.StartupProject;
+					IProject project = null;
+					if (ProjectService.OpenSolution != null) {
+						project = ProjectService.OpenSolution.StartupProject;
+					}
 					foreach (IDebugger d in debugger) {
 						if (d.CanDebug(project)) {
 							currentDebugger = d;

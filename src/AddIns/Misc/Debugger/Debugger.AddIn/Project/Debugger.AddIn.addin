@@ -1,0 +1,63 @@
+﻿<AddIn name="SharpDevelop Debugger" author="David Srbecký" copyright="GPL" url="" description="SharpDevelop Managed Debugger" version="0.1.0.0">
+    <Runtime>
+        <Import assembly="Debugger.AddIn.dll"/>
+    </Runtime>
+
+    <Path name="/SharpDevelop/Services/DebuggerService/Debugger">
+        <Class id="DefaultDebugger" class="ICSharpCode.SharpDevelop.Services.WindowsDebugger"/>
+    </Path>
+
+    <!--<Path name = "/SharpDevelop/Workbench/MainMenu/View">
+        <MenuItem id = "Debugger" label = "${res:XML.MainMenu.ViewMenu.DebugMenu}">
+            <MenuItem id    = "DebugViewMenuBuilder" 
+                      type  = "Builder" 
+                      class = "ICSharpCode.SharpDevelop.Commands.DebugSelectionMenuBuilder" />
+        </MenuItem>
+    </Path>-->
+
+    <!--<Path name = "/SharpDevelop/Workbench/MainMenu/Debug">
+        <MenuItem id = "CatchHandledExceptionsSeparator"
+		          type = "Separator"
+		          insertafter = "Step out" />
+        <MenuItem id = "CatchHandledExceptions"
+		          label = ""
+		          class = "ICSharpCode.SharpDevelop.Services.DebbugerExceptionMenuBuilder"/>
+    </Path>-->
+
+    <Path name = "/SharpDevelop/Workbench/Pads">
+        <Pad id    = "BreakPointsPad3" 
+		     category = "Main"
+		     title    = "Breakpoints"
+		     icon     = "PadIcons.ProjectBrowser"
+		     shortcut = "Control|Alt|B"
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.BreakPointsPad"/>
+
+        <Pad id    = "CallStackPad3" 
+		     category = "Main"
+		     title    = "Callstack"
+		     icon     = "PadIcons.ProjectBrowser"
+		     shortcut = "Control|Alt|C"
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.CallStackPad"/>
+
+        <Pad id    = "LoadedModulesPad3" 
+		     category = "Main"
+		     title    = "Loaded modules"
+		     icon     = "PadIcons.ProjectBrowser"
+		     shortcut = "Control|Alt|U"
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LoadedModulesPad"/>
+
+        <Pad id    = "RunningThreadsPad3"
+		     category = "Main"
+		     title    = "Threads"
+		     icon     = "PadIcons.ProjectBrowser"
+		     shortcut = "Control|Alt|H"
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.RunningThreadsPad"/>
+
+        <Pad id    = "LocalVarPad3" 
+		     category = "Main"
+		     title    = "Local variables"
+		     icon     = "PadIcons.ProjectBrowser"
+		     shortcut = "Control|Alt|V"
+		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad"/>
+    </Path>
+</AddIn>

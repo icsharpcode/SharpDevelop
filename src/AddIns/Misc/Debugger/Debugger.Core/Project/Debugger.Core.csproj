@@ -1,0 +1,88 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.41115</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Debugger.Core</RootNamespace>
+    <AssemblyName>Debugger.Core</AssemblyName>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Debugger.Interop, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\RequiredLibraries\Debugger.Interop.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Src\AssemblyInfo.cs" />
+    <Compile Include="Src\Enums\ClassFieldAttribute.cs" />
+    <Compile Include="Src\Enums\CorCallingConvention.cs" />
+    <Compile Include="Src\Enums\CorElementType.cs" />
+    <Compile Include="Src\Enums\CorMethodAttr.cs" />
+    <Compile Include="Src\Enums\CorTokenType.cs" />
+    <Compile Include="Src\Enums\PausedReason.cs" />
+    <Compile Include="Src\EventHandlers\BreakpointEventHandler.cs" />
+    <Compile Include="Src\EventHandlers\DebuggerEventHandler.cs" />
+    <Compile Include="Src\EventHandlers\DebuggingIsResumingEventHandler.cs" />
+    <Compile Include="Src\EventHandlers\DebuggingPausedEventHandler.cs" />
+    <Compile Include="Src\EventHandlers\MessageEventHandler.cs" />
+    <Compile Include="Src\EventHandlers\ModuleEventHandler.cs" />
+    <Compile Include="Src\EventHandlers\ThreadEventHandler.cs" />
+    <Compile Include="Src\NativeMethods.cs" />
+    <Compile Include="Src\NDebugger.cs" />
+    <Compile Include="Src\Private Classes\Eval.cs" />
+    <Compile Include="Src\Private Classes\EvalQueue.cs" />
+    <Compile Include="Src\Private Classes\ManagedCallback.cs" />
+    <Compile Include="Src\Private Classes\ManagedCallbackProxy.cs" />
+    <Compile Include="Src\Private Classes\MTA2STA.cs" />
+    <Compile Include="Src\Private Classes\SignatureStream.cs" />
+    <Compile Include="Src\Public Classes\Breakpoint.cs" />
+    <Compile Include="Src\Public Classes\BreakpointCollection.cs" />
+    <Compile Include="Src\Public Classes\Exception.cs" />
+    <Compile Include="Src\Public Classes\Exceptions.cs" />
+    <Compile Include="Src\Public Classes\Function.cs" />
+    <Compile Include="Src\Public Classes\FunctionCollection.cs" />
+    <Compile Include="Src\Public Classes\Module.cs" />
+    <Compile Include="Src\Public Classes\ModuleCollection.cs" />
+    <Compile Include="Src\Public Classes\SourcecodeSegment.cs" />
+    <Compile Include="Src\Public Classes\Thread.cs" />
+    <Compile Include="Src\Public Classes\ThreadCollection.cs" />
+    <Compile Include="Src\Variables\ArrayVariable.cs" />
+    <Compile Include="Src\Variables\BuiltInVariable.cs" />
+    <Compile Include="Src\Variables\NullRefVariable.cs" />
+    <Compile Include="Src\Variables\ObjectVariable.cs" />
+    <Compile Include="Src\Variables\PropertyVariable.cs" />
+    <Compile Include="Src\Variables\UnknownVariable.cs" />
+    <Compile Include="Src\Variables\Variable.cs" />
+    <Compile Include="Src\Variables\VariableCollection.cs" />
+    <Compile Include="Src\Variables\VariableFactory.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="README.TXT" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

@@ -1,0 +1,365 @@
+// <file>
+//     <owner name="David Srbecký" email="dsrbecky@post.cz"/>
+// </file>
+
+using System;
+using System.Runtime.InteropServices;
+using System.Threading;
+
+using DebuggerInterop.Core;
+using DebuggerInterop.Symbols;
+using DebuggerInterop.MetaData;
+
+
+namespace DebuggerLibrary
+{
+	public class Function
+	{	
+		string name;
+		Module module;
+		uint token;
+		uint parentClassToken = 0;
+		uint attributes;
+		ICorDebugFrame    corFrame;
+		ICorDebugFunction corFunction;		
+
+		public string Name { 
+			get { 
+				return name; 
+			} 
+		}
+		
+		public Module Module { 
+			get { 
+				return module; 
+			} 
+		}
+	
+		internal unsafe Function(ICorDebugFrame corFrame) 
+		{
+			this.corFrame = corFrame;
+			corFrame.GetFunction(out corFunction);
+			corFunction.GetToken(out token);
+			ICorDebugModule corModule;
+			corFunction.GetModule(out corModule);
+			module = NDebugger.Modules[corModule];
+
+			Init();
+		}
+		
+		unsafe void Init()
+		{	
+			uint codeRVA;
+			uint implFlags;
+			IntPtr pSigBlob;
+			uint sigBlobSize;
+			module.MetaDataInterface.GetMethodProps(
+			                              token,
+                                          out parentClassToken,
+                                          NDebugger.pString,
+                                          NDebugger.pStringLen,
+                                          out NDebugger.unused, // real string lenght
+                                          out attributes,
+                                          new IntPtr(&pSigBlob),
+                                          out sigBlobSize,
+                                          out codeRVA,
+                                          out implFlags);
+			name = NDebugger.pStringAsUnicode;
+			
+			SignatureStream sig = new SignatureStream(pSigBlob, sigBlobSize);
+			
+			//Marshal.FreeCoTaskMem(pSigBlob);
+		}
+
+
+		#region Helpping proprerties
+
+		internal ICorDebugILFrame corILFrame {
+			get	{
+				return (ICorDebugILFrame) corFrame;
+			}
+		}
+
+		internal uint corInstructionPtr {
+			get	{
+				uint corInstructionPtr;
+				CorDebugMappingResult MappingResult;
+				corILFrame.GetIP(out corInstructionPtr,out MappingResult);
+				return corInstructionPtr;
+			}
+		}
+		
+		// Helpping properties for symbols
+
+		internal ISymUnmanagedReader symReader {
+			get	{
+				if (module.SymbolsLoaded == false) throw new SymbolsNotAviableException();
+				if (module.SymReader == null) throw new SymbolsNotAviableException();
+				return module.SymReader;
+			}
+		}
+
+		internal ISymUnmanagedMethod symMethod {
+			get	{
+				return symReader.GetMethod(token);
+			}
+		}
+
+		#endregion
+
+		public void StepInto()
+		{
+			Step(true);
+		}		
+
+		public void StepOver()
+		{
+			Step(false);
+		}
+
+		public void StepOut()
+		{
+			ICorDebugStepper stepper;
+			corFrame.CreateStepper(out stepper);
+			stepper.StepOut();
+
+			NDebugger.Continue();
+		}
+
+		private unsafe void Step(bool stepIn)
+		{
+			if (Module.SymbolsLoaded == false) return;
+
+			SourcecodeSegment nextSt;
+			try {
+				nextSt = NextStatement;// Cache
+			} catch (NextStatementNotAviableException) {
+				return;
+			}			
+
+			ICorDebugStepper stepper;
+			corFrame.CreateStepper(out stepper);
+
+			uint rangeCount;
+			symMethod.GetRanges(nextSt.SymUnmanagedDocument, nextSt.StartLine, 0, 0, out rangeCount, IntPtr.Zero);
+			IntPtr pRanges = Marshal.AllocHGlobal(4*(int)rangeCount);
+			symMethod.GetRanges(nextSt.SymUnmanagedDocument, nextSt.StartLine, 0, rangeCount, out rangeCount, pRanges);
+			stepper.StepRange(stepIn?1:0, pRanges, rangeCount);
+			Marshal.FreeHGlobal(pRanges);
+
+			NDebugger.Continue();
+		}
+		
+		
+		public SourcecodeSegment NextStatement {
+			get {
+				SourcecodeSegment retVal = new SourcecodeSegment();
+
+				ISymUnmanagedMethod symMethod;
+				try {
+					symMethod = this.symMethod; 
+				}
+				catch (FrameNotAviableException) {
+					throw new NextStatementNotAviableException();
+				}
+				catch (SymbolsNotAviableException) {
+					throw new NextStatementNotAviableException();
+				}
+
+				uint     sequencePointCount = symMethod.GetSequencePointCount();
+				
+				uint[]   offsets            = new uint[sequencePointCount];
+				uint[]   startLine          = new uint[sequencePointCount];
+				uint[]   startColumn        = new uint[sequencePointCount];
+				uint[]   endLine            = new uint[sequencePointCount];
+				uint[]   endColumn          = new uint[sequencePointCount];
+				
+				ISymUnmanagedDocument[] Doc = new ISymUnmanagedDocument[sequencePointCount];
+				
+				symMethod.GetSequencePoints(
+					sequencePointCount,
+					out sequencePointCount,
+					offsets,
+					Doc,
+					startLine,
+					startColumn,
+					endLine,
+					endColumn
+					);
+
+				uint corInstructionPtr = this.corInstructionPtr; // cache
+
+				for (uint i = sequencePointCount-1 ; i >= 0; i--) // backwards
+					if (offsets[i] <= corInstructionPtr)
+					{
+						// 0xFeeFee means "code generated by compiler"
+						if (startLine[i] == 0xFeeFee) throw new NextStatementNotAviableException();
+
+						retVal.SymUnmanagedDocument = Doc[i];
+
+						retVal.SymUnmanagedDocument.GetURL(NDebugger.pStringLen,
+						                       out NDebugger.unused, // real string lenght
+						                       NDebugger.pString);
+						retVal.SourceFilename = NDebugger.pStringAsUnicode;
+						
+						retVal.ModuleFilename = module.FullPath;
+
+						retVal.StartLine   = startLine[i];
+						retVal.StartColumn = startColumn[i];
+						retVal.EndLine     = endLine[i];
+						retVal.EndColumn   = endColumn[i];
+						return retVal;
+					}			
+				throw new NextStatementNotAviableException();
+			}
+		}
+		
+		public VariableCollection LocalVariables { 
+			get{
+				return GetLocalVariables();
+			} 
+		}
+
+		private unsafe VariableCollection GetLocalVariables()
+		{				
+			VariableCollection collection = new VariableCollection();
+			try {				
+			// parent class variables
+				ICorDebugClass corClass;
+				corFunction.GetClass(out corClass);
+				bool isStatic = (attributes&(uint)CorMethodAttr.mdStatic) != 0;
+				ICorDebugValue argThis = null;
+				if (!isStatic) {
+					corILFrame.GetArgument(0, out argThis);
+				}
+				collection = new ObjectVariable(argThis, "this", corClass).SubVariables;
+				
+			// arguments
+				ICorDebugValueEnum corValueEnum;
+				corILFrame.EnumerateArguments(out corValueEnum);
+				uint argCount;
+				corValueEnum.GetCount(out argCount);
+					
+				IntPtr paramEnumPtr = IntPtr.Zero;
+				uint paramsFetched;
+				for (uint i = (uint)(isStatic?0:1); i < argCount; i++) {
+					uint paramToken;
+					Module.MetaDataInterface.EnumParams(ref paramEnumPtr , token, out paramToken, 1, out paramsFetched);
+					if (paramsFetched == 0) break;
+					
+					ICorDebugValue arg;
+					corILFrame.GetArgument(i, out arg);					
+					
+					uint argPos, attr, type;
+					Module.MetaDataInterface.GetParamProps(
+					                                       paramToken,
+					                                       out NDebugger.unused,
+					                                       out argPos,
+					                                       NDebugger.pString,
+					                                       NDebugger.pStringLen,
+					                                       out NDebugger.unused, // real string lenght
+					                                       out attr,
+					                                       out type,
+					                                       IntPtr.Zero,
+					                                       out NDebugger.unused);
+					
+
+					collection.Add(VariableFactory.CreateVariable(arg, NDebugger.pStringAsUnicode));
+				}
+				
+			// local variables
+				ISymUnmanagedScope symRootScope;
+				symRootScope = symMethod.GetRootScope();
+				AddScopeToVariableCollection(symRootScope, ref collection);
+				
+			// Properties		
+				/*IntPtr methodEnumPtr = IntPtr.Zero;
+				uint methodsFetched;
+				while(true) {
+					uint methodToken;
+					Module.MetaDataInterface.EnumMethods(ref methodEnumPtr, parentClassToken, out methodToken, 1, out methodsFetched);
+					if (methodsFetched == 0) break;
+										
+					uint attrib;
+					module.MetaDataInterface.GetMethodProps(
+					                              methodToken,
+		                                          out NDebugger.unused,
+		                                          NDebugger.pString,
+		                                          NDebugger.pStringLen,
+		                                          out NDebugger.unused, // real string lenght
+		                                          out attrib,
+		                                          IntPtr.Zero,
+		                                          out NDebugger.unused,
+		                                          out NDebugger.unused,
+		                                          out NDebugger.unused);
+					string name = NDebugger.pStringAsUnicode;
+					if (name.StartsWith("get_") && (attrib & (uint)CorMethodAttr.mdSpecialName) != 0) {
+						name = "Prop:" + name;
+						
+						ICorDebugValue[] evalArgs;
+						ICorFunction evalCorFunction;
+						Module.CorModule.GetFunctionFromToken(methodToken, out corFunction);
+						if (!isStatic) {
+							evalArgs = new ICorDebugValue[] {argThis};
+						} else {
+							evalArgs = new ICorDebugValue[0];
+						}
+						EvalQueue.AddEval(new Eval(evalCorFunction, evalArgs));
+						collection.Add(new PropertyVariable(eval, name));
+					}
+				}*/
+			} 
+			catch (FrameNotAviableException) {}
+			catch (SymbolsNotAviableException) {}
+			return collection;
+		}
+
+		private unsafe void AddScopeToVariableCollection(ISymUnmanagedScope symScope, ref VariableCollection collection)
+		{
+			uint childScopesCount;
+			symScope.GetChildren(0, out childScopesCount, null);
+			
+			if (childScopesCount > 0) {
+				ISymUnmanagedScope[] childScopes = new ISymUnmanagedScope[childScopesCount];
+				
+				symScope.GetChildren(childScopesCount, out childScopesCount, childScopes);
+				
+				foreach(ISymUnmanagedScope childScope in childScopes) {
+					AddScopeToVariableCollection(childScope, ref collection);
+				}
+			}
+
+			AddVariablesToVariableCollection(symScope, ref collection);
+		}
+
+		private unsafe void AddVariablesToVariableCollection(ISymUnmanagedScope symScope, ref VariableCollection collection)
+		{
+			uint varCount;
+			varCount = symScope.GetLocalCount();
+
+			if (varCount > 0) {
+				ISymUnmanagedVariable[] symVars = new ISymUnmanagedVariable[varCount];
+			
+				symScope.GetLocals(varCount, out varCount, symVars);
+
+				foreach (ISymUnmanagedVariable symVar in symVars) {
+					AddVariableToVariableCollection(symVar , ref collection);
+				}
+			}
+		}
+
+		private unsafe void AddVariableToVariableCollection(ISymUnmanagedVariable symVar, ref VariableCollection collection)
+		{
+			ICorDebugValue runtimeVar;
+			uint address;
+			address = symVar.GetAddressField1();
+			corILFrame.GetLocalVariable(address, out runtimeVar);
+			
+			symVar.GetName(NDebugger.pStringLen, 
+			               out NDebugger.unused, // real string name
+			               NDebugger.pString);			
+
+			collection.Add(VariableFactory.CreateVariable(runtimeVar, NDebugger.pStringAsUnicode));
+		}
+	}
+}

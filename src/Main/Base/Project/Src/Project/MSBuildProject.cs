@@ -229,9 +229,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Start(bool withDebugging)
 		{
-			DebuggerService.StartWithoutDebugging(OutputAssemblyFullPath,
-			                                      Path.GetDirectoryName(OutputAssemblyFullPath),
-			                                      "");
+			if (withDebugging) {
+				DebuggerService.Start(OutputAssemblyFullPath,
+				                      Path.GetDirectoryName(OutputAssemblyFullPath),
+				                      "");
+			} else {
+				DebuggerService.StartWithoutDebugging(OutputAssemblyFullPath,
+				                                      Path.GetDirectoryName(OutputAssemblyFullPath),
+				                                      "");
+			}
 			
 		}
 		
