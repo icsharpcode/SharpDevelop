@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				List<IClass> innerClasses = new List<IClass>();
 				foreach (Type nestedType in type.GetNestedTypes(flags)) {
-					innerClasses.Add(new ReflectionClass(CompilationUnit, nestedType));
+					innerClasses.Add(new ReflectionClass(CompilationUnit, nestedType, this));
 				}
 				return innerClasses;
 			}
@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				List<IField> fields = new List<IField>();
 				foreach (FieldInfo field in type.GetFields(flags)) {
-					IField newField = new ReflectionField(field);
+					IField newField = new ReflectionField(field, this);
 					if (!newField.IsInternal) {
 						fields.Add(newField);
 					}
@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						p = propertyInfo.GetIndexParameters();
 					} catch (Exception) {}
 					if (p == null || p.Length == 0) {
-						properties.Add(new ReflectionProperty(propertyInfo));
+						properties.Add(new ReflectionProperty(propertyInfo, this));
 					}
 				}
 				
@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						p = propertyInfo.GetIndexParameters();
 					} catch (Exception) {}
 					if (p != null && p.Length != 0) {
-						indexer.Add(new ReflectionIndexer(propertyInfo));
+						indexer.Add(new ReflectionIndexer(propertyInfo, this));
 					}
 				}
 				
@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				List<IMethod> methods = new List<IMethod>();
 				
 				foreach (ConstructorInfo constructorInfo in type.GetConstructors(flags)) {
-					IMethod newMethod = new ReflectionMethod(constructorInfo);
+					IMethod newMethod = new ReflectionMethod(constructorInfo, this);
 					if (!newMethod.IsInternal) {
 						methods.Add(newMethod);
 					}
@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				
 				foreach (MethodInfo methodInfo in type.GetMethods(flags)) {
 					if (!methodInfo.IsSpecialName) {
-						IMethod newMethod = new ReflectionMethod(methodInfo);
+						IMethod newMethod = new ReflectionMethod(methodInfo, this);
 						if (!newMethod.IsInternal) {
 							methods.Add(newMethod);
 						}
@@ -113,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				List<IEvent> events = new List<IEvent>();
 				
 				foreach (EventInfo eventInfo in type.GetEvents(flags)) {
-					IEvent newEvent = new ReflectionEvent(eventInfo);
+					IEvent newEvent = new ReflectionEvent(eventInfo, this);
 					
 					if (!newEvent.IsInternal) {
 						events.Add(newEvent);
@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionClass(ICompilationUnit compilationUnit, Type type) : base(compilationUnit)
+		public ReflectionClass(ICompilationUnit compilationUnit, Type type, IClass declaringType) : base(compilationUnit, declaringType)
 		{
 			this.type = type;
 			FullyQualifiedName = type.FullName.Replace("+", ".");
@@ -143,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (IsDelegate(type)) {
 				classType = ClassType.Delegate;
 				MethodInfo invoke          = type.GetMethod("Invoke");
-				ReflectionMethod newMethod = new ReflectionMethod(invoke);
+				ReflectionMethod newMethod = new ReflectionMethod(invoke, this);
 				Methods.Add(newMethod);
 			} else if (type.IsInterface) {
 				classType = ClassType.Interface;

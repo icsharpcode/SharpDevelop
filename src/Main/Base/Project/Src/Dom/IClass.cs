@@ -90,5 +90,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		bool IsTypeInInheritanceTree(IClass possibleBaseClass);
+		
+		IMember SearchMember(string memberName);
+		
+		IClass GetInnermostClass(int caretLine, int caretColumn);
+		
 	}
 }

@@ -76,7 +76,7 @@ namespace ICSharpCode.Core
 			
 			foreach (Type type in assembly.GetTypes()) {
 				if (!type.FullName.StartsWith("<") && type.IsPublic) {
-					newProjectContent.AddClassToNamespaceList(new ReflectionClass(assemblyCompilationUnit, type));
+					newProjectContent.AddClassToNamespaceList(new ReflectionClass(assemblyCompilationUnit, type, null));
 				}
 			}
 			string fileName = LookupLocalizedXmlDoc(assembly.Location);
@@ -304,80 +304,6 @@ namespace ICSharpCode.Core
 			return true;
 		}
 		
-		/// <remarks>
-		/// Returns the innerst class in which the carret currently is, returns null
-		/// if the carret is outside any class boundaries.
-		/// </remarks>
-		public IClass GetInnermostClass(ICompilationUnit cu, int caretLine, int caretColumn)
-		{
-			if (cu != null) {
-				foreach (IClass c in cu.Classes) {
-					if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
-						return GetInnermostClass(c, caretLine, caretColumn);
-					}
-				}
-			}
-			return null;
-		}
-		
-		IClass GetInnermostClass(IClass curClass, int caretLine, int caretColumn)
-		{
-			if (curClass == null) {
-				return null;
-			}
-			if (curClass.InnerClasses == null) {
-				return curClass;
-			}
-			foreach (IClass c in curClass.InnerClasses) {
-				if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
-					return GetInnermostClass(c, caretLine, caretColumn);
-				}
-			}
-			return curClass;
-		}
-		
-		/// <remarks>
-		/// Returns all (nestet) classes in which the carret currently is exept
-		/// the innermost class, returns an empty collection if the carret is in 
-		/// no class or only in the innermost class.
-		/// the most outer class is the last in the collection.
-		/// </remarks>
-		public List<IClass> GetOuterClasses(ICompilationUnit cu, int caretLine, int caretColumn)
-		{
-			List<IClass> classes = new List<IClass>();
-			if (cu != null) {
-				foreach (IClass c in cu.Classes) {
-					if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
-						if (c != GetInnermostClass(cu, caretLine, caretColumn)) {
-							GetOuterClasses(classes, c, cu, caretLine, caretColumn);
-							if (!classes.Contains(c)) {
-								classes.Add(c);
-							}
-						}
-						break;
-					}
-				}
-			}
-			
-			return classes;
-		}
-		
-		void GetOuterClasses(List<IClass> classes, IClass curClass, ICompilationUnit cu, int caretLine, int caretColumn)
-		{
-			if (curClass != null) {
-				foreach (IClass c in curClass.InnerClasses) {
-					if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
-						if (c != GetInnermostClass(cu, caretLine, caretColumn)) {
-							GetOuterClasses(classes, c, cu, caretLine, caretColumn);
-							if (!classes.Contains(c)) {
-								classes.Add(c);
-							}
-						}
-						break;
-					}
-				}
-			}
-		}
 		
 		public string SearchNamespace(string name, ICompilationUnit unit, int caretLine, int caretColumn)
 		{
@@ -473,21 +399,6 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		public bool IsClassInInheritanceTree(IClass possibleBaseClass, IClass c)
-		{
-			if (possibleBaseClass == null || c == null) {
-				return false;
-			}
-			if (possibleBaseClass.FullyQualifiedName == c.FullyQualifiedName) {
-				return true;
-			}
-			foreach (string baseClass in c.BaseTypes) {
-				if (IsClassInInheritanceTree(possibleBaseClass, SearchType(baseClass, c, c.CompilationUnit, c.Region != null ? c.Region.BeginLine : -1, c.Region != null ? c.Region.BeginColumn : -1))) {
-					return true;
-				}
-			}
-			return false;
-		}
 		
 		bool IsInnerClass(IClass c, IClass possibleInnerClass)
 		{
@@ -536,7 +447,7 @@ namespace ICSharpCode.Core
 		public ArrayList ListTypes(ArrayList types, IClass curType, IClass callingClass)
 		{
 //			Console.WriteLine("ListTypes()");
-			bool isClassInInheritanceTree = IsClassInInheritanceTree(curType, callingClass);
+			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
 			foreach (IClass c in curType.InnerClasses) {
 				if (((c.ClassType == ClassType.Class) || (c.ClassType == ClassType.Struct)) &&
 				      IsAccessible(curType, c, callingClass, isClassInInheritanceTree)) {
@@ -567,7 +478,7 @@ namespace ICSharpCode.Core
 				return members;
 			}
 			
-			bool isClassInInheritanceTree = IsClassInInheritanceTree(curType, callingClass);
+			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
 			
 			if (showStatic) {
 				foreach (IClass c in curType.InnerClasses) {
@@ -618,55 +529,6 @@ namespace ICSharpCode.Core
 			return members;
 		}
 		
-		public IMember SearchMember(IClass declaringType, string memberName)
-		{
-			if (declaringType == null || memberName == null || memberName.Length == 0) {
-				return null;
-			}
-			foreach (IField f in declaringType.Fields) {
-				if (f.Name == memberName) {
-					return f;
-				}
-			}
-			foreach (IProperty p in declaringType.Properties) {
-				if (p.Name == memberName) {
-					return p;
-				}
-			}
-			foreach (IIndexer i in declaringType.Indexer) {
-				if (i.Name == memberName) {
-					return i;
-				}
-			}
-			foreach (IEvent e in declaringType.Events) {
-				if (e.Name == memberName) {
-					return e;
-				}
-			}
-			foreach (IMethod m in declaringType.Methods) {
-				if (m.Name == memberName) {
-					return m;
-				}
-			}
-			if (declaringType.ClassType == ClassType.Interface) {
-				foreach (string baseType in declaringType.BaseTypes) {
-					int line = -1;
-					int col = -1;
-					if (declaringType.Region != null) {
-						line = declaringType.Region.BeginLine;
-						col = declaringType.Region.BeginColumn;
-					}
-					IClass c = SearchType(baseType, declaringType, line, col);
-					if (c != null) {
-						return SearchMember(c, memberName);
-					}
-				}
-			} else {
-				IClass c = declaringType.BaseClass;
-				return SearchMember(c, memberName);
-			}
-			return null;
-		}
 		
 		public Position GetPosition(string fullMemberName)
 		{
@@ -699,7 +561,7 @@ namespace ICSharpCode.Core
 			if (i >= name.Length) {
 				return new Position(cu, curClass.Region != null ? curClass.Region.BeginLine : -1, curClass.Region != null ? curClass.Region.BeginColumn : -1);
 			}
-			IMember member = SearchMember(curClass, name[i]);
+			IMember member = curClass.SearchMember(name[i]);
 			if (member == null || member.Region == null) {
 				return new Position(cu, -1, -1);
 			}

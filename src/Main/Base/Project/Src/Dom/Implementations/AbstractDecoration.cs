@@ -17,7 +17,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected ModifierEnum            modifiers     = ModifierEnum.None;
 		protected List<IAttributeSection> attributes    = null;
 		
+		IClass declaringType;
 		object userData = null;
+		
+		public IClass DeclaringType {
+			get {
+				return declaringType;
+			}
+		}
+		
 		
 		public object UserData {
 			get {
@@ -143,19 +151,25 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual int CompareTo(IDecoration value) {
+		public AbstractDecoration(IClass declaringType)
+		{
+			this.declaringType = declaringType;
+		}
+		
+		public virtual int CompareTo(IDecoration value) 
+		{
 			int cmp;
 			
-			if(0 != (cmp = (int)(Modifiers - value.Modifiers)))
+			if (0 != (cmp = (int)(Modifiers - value.Modifiers))) {
 				return cmp;
+			}
 			
 			return DiffUtility.Compare(Attributes, value.Attributes);
 		}
 		
-		int IComparable.CompareTo(object value) {
+		int IComparable.CompareTo(object value) 
+		{
 			return CompareTo((IDecoration)value);
 		}
-		
-		
 	}
 }

@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionField(FieldInfo fieldInfo)
+		public ReflectionField(FieldInfo fieldInfo, IClass declaringType) : base(declaringType)
 		{
 			this.fieldInfo = fieldInfo;
 			System.Diagnostics.Debug.Assert(fieldInfo != null);

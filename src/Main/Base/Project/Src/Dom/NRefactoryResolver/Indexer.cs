@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			modifiers = modifiers | m;
 		}
 		
-		public Indexer(ReturnType type, List<IParameter> parameters, Modifier m, IRegion region, IRegion bodyRegion)
+		public Indexer(ReturnType type, List<IParameter> parameters, Modifier m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType)
 		{
 			returnType      = type;
 			this.Parameters = parameters;

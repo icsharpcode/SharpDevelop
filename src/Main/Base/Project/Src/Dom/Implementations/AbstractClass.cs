@@ -40,10 +40,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		protected AbstractClass(ICompilationUnit compilationUnit)
+		protected AbstractClass(ICompilationUnit compilationUnit, IClass declaringType) : base(declaringType)
 		{
 			this.compilationUnit = compilationUnit;
 		}
+		
+
 		
 		public ICompilationUnit CompilationUnit {
 			get {
@@ -239,6 +241,91 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return null;
 			}
 		}
+		
+		
+		public bool IsTypeInInheritanceTree(IClass possibleBaseClass)
+		{
+			if (possibleBaseClass == null) {
+				return false;
+			}
+			
+			if (FullyQualifiedName == possibleBaseClass.FullyQualifiedName) {
+				return true;
+			}
+			
+			foreach (string baseClassName in BaseTypes) {
+				IClass baseClass = ProjectContent.SearchType(baseClassName, this, CompilationUnit, Region != null ? Region.BeginLine : -1, Region != null ? Region.BeginColumn : -1);
+				if (baseClass != null && baseClass.IsTypeInInheritanceTree(possibleBaseClass)) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		public IMember SearchMember(string memberName)
+		{
+			if (memberName == null || memberName.Length == 0) {
+				return null;
+			}
+			foreach (IField f in Fields) {
+				if (f.Name == memberName) {
+					return f;
+				}
+			}
+			foreach (IProperty p in Properties) {
+				if (p.Name == memberName) {
+					return p;
+				}
+			}
+			foreach (IIndexer i in Indexer) {
+				if (i.Name == memberName) {
+					return i;
+				}
+			}
+			foreach (IEvent e in Events) {
+				if (e.Name == memberName) {
+					return e;
+				}
+			}
+			foreach (IMethod m in Methods) {
+				if (m.Name == memberName) {
+					return m;
+				}
+			}
+			if (ClassType == ClassType.Interface) {
+				foreach (string baseType in BaseTypes) {
+					int line = -1;
+					int col = -1;
+					if (Region != null) {
+						line = Region.BeginLine;
+						col = Region.BeginColumn;
+					}
+					IClass c = ProjectContent.SearchType(baseType, this, line, col);
+					if (c != null) {
+						return c.SearchMember(memberName);
+					}
+				}
+			} else {
+				IClass c = BaseClass;
+				return c.SearchMember(memberName);
+			}
+			return null;
+		}
+		
+		public IClass GetInnermostClass(int caretLine, int caretColumn)
+		{
+			if (InnerClasses == null) {
+				return this;
+			}
+			
+			foreach (IClass c in InnerClasses) {
+				if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
+					return c.GetInnermostClass(caretLine, caretColumn);
+				}
+			}
+			return this;
+		}
+		
 		
 		public class ClassInheritanceEnumerator : IEnumerator, IEnumerable
 		{

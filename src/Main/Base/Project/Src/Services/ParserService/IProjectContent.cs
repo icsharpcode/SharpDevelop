@@ -35,23 +35,22 @@ namespace ICSharpCode.Core
 		
 		Hashtable AddClassToNamespaceList(IClass addClass);
 		void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags);
+		
 		IClass GetClass(string typeName);
+		bool NamespaceExists(string name);
 		string[] GetNamespaceList(string subNameSpace);
 		ArrayList GetNamespaceContents(string subNameSpace);
-		bool NamespaceExists(string name);
-		IClass GetInnermostClass(ICompilationUnit cu, int caretLine, int caretColumn);
-		List<IClass> GetOuterClasses(ICompilationUnit cu, int caretLine, int caretColumn);
+		
 		string SearchNamespace(string name, ICompilationUnit unit, int caretLine, int caretColumn);
 		IClass SearchType(string name, IClass curType, int caretLine, int caretColumn);
 		IClass SearchType(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
 		
-		bool IsClassInInheritanceTree(IClass possibleBaseClass, IClass c);
-		
 		bool IsAccessible(IClass c, IDecoration member, IClass callingClass, bool isClassInInheritanceTree);
 		bool MustBeShown(IClass c, IDecoration member, IClass callingClass, bool showStatic, bool isClassInInheritanceTree);
+		
 		ArrayList ListTypes(ArrayList types, IClass curType, IClass callingClass);
 		ArrayList ListMembers(ArrayList members, IClass curType, IClass callingClass, bool showStatic);
-		IMember SearchMember(IClass declaringType, string memberName);
+		
 		Position GetPosition(string fullMemberName);
 	}
 }

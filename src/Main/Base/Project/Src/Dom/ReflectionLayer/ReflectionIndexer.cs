@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return propertyName.ToString();
 		}
 		
-		public ReflectionIndexer(PropertyInfo propertyInfo)
+		public ReflectionIndexer(PropertyInfo propertyInfo, IClass declaringType) : base(declaringType)
 		{
 			this.propertyInfo = propertyInfo;
 			// indexers does have the same name as the object that declare the indexers

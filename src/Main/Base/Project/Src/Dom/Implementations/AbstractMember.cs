@@ -36,5 +36,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				returnType = value;
 			}
 		}
+		public AbstractMember(IClass declaringType) : base(declaringType)
+		{
+		}
+
 	}
 }

@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionEvent(EventInfo eventInfo)
+		public ReflectionEvent(EventInfo eventInfo, IClass declaringType) : base(declaringType)
 		{
 			this.eventInfo = eventInfo;
 			FullyQualifiedName = String.Concat(eventInfo.DeclaringType.FullName, ".", eventInfo.Name);

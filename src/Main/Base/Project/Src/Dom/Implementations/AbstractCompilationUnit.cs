@@ -102,6 +102,60 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.projectContent = projectContent;
 		}
 		
+		public IClass GetInnermostClass(int caretLine, int caretColumn)
+		{
+			foreach (IClass c in Classes) {
+				if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
+					return c.GetInnermostClass(caretLine, caretColumn);
+				}
+			}
+			return null;
+		}
+		
+		
+		
+		/// <remarks>
+		/// Returns all (nestet) classes in which the carret currently is exept
+		/// the innermost class, returns an empty collection if the carret is in 
+		/// no class or only in the innermost class.
+		/// the most outer class is the last in the collection.
+		/// </remarks>
+		public List<IClass> GetOuterClasses(int caretLine, int caretColumn)
+		{
+			List<IClass> classes = new List<IClass>();
+			IClass innerMostClass = GetInnermostClass(caretLine, caretColumn);
+			foreach (IClass c in Classes) {
+				if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
+					if (c != innerMostClass) {
+						GetOuterClasses(classes, c, caretLine, caretColumn);
+						if (!classes.Contains(c)) {
+							classes.Add(c);
+						}
+					}
+					break;
+				}
+			}
+			return classes;
+		}
+		
+		void GetOuterClasses(List<IClass> classes, IClass curClass, int caretLine, int caretColumn)
+		{
+			if (curClass != null && curClass.InnerClasses.Count > 0) {
+				IClass innerMostClass = GetInnermostClass(caretLine, caretColumn);
+				foreach (IClass c in curClass.InnerClasses) {
+					if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
+						if (c != innerMostClass) {
+							GetOuterClasses(classes, c, caretLine, caretColumn);
+							if (!classes.Contains(c)) {
+								classes.Add(c);
+							}
+						}
+						break;
+					}
+				}
+			}
+		}
+		
 		public override string ToString() {
 			return String.Format("[AbstractCompilationUnit: classes = {0}, fileName = {1}]",
 			                     classes.Count,

@@ -12,10 +12,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public interface IDecoration: IComparable
 	{
+		IClass DeclaringType {
+			get;
+		}
+		
 		ModifierEnum Modifiers {
 			get;
 		}
-
+		
 		List<IAttributeSection> Attributes {
 			get;
 		}

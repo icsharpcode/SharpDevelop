@@ -46,7 +46,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return returnType == null || Name == "#ctor";
 			}
 		}
-
+		
+		public AbstractMethod(IClass declaringType) : base(declaringType)
+		{
+		}
+		
 		public override string ToString()
 		{
 			return String.Format("[AbstractMethod: FullyQualifiedName={0}, ReturnType = {1}, IsConstructor={2}, Modifier={3}]",

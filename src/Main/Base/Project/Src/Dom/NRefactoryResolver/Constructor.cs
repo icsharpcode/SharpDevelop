@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			modifiers = modifiers | m;
 		}
 		
-		public Constructor(Modifier m, IRegion region, IRegion bodyRegion)
+		public Constructor(Modifier m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType)
 		{
 			FullyQualifiedName = "#ctor";
 			this.region     = region;

@@ -80,5 +80,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return false;
 			}
 		}
+		
+		public AbstractNamedEntity(IClass declaringType) : base(declaringType)
+		{
+		}
 	}
 }

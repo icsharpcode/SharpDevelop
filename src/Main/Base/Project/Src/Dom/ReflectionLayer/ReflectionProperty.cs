@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			set {
 			}
 		}
-		public ReflectionProperty(PropertyInfo propertyInfo)
+		public ReflectionProperty(PropertyInfo propertyInfo, IClass declaringType) : base(declaringType)
 		{
 			this.propertyInfo = propertyInfo;
 			FullyQualifiedName = String.Concat(propertyInfo.DeclaringType.FullName, ".", propertyInfo.Name);

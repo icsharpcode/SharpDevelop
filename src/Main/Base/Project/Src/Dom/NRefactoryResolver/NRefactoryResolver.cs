@@ -148,7 +148,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
 			if (cu != null) {
-				callingClass = projectContent.GetInnermostClass(cu, caretLine, caretColumn);
+				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
 			}
 			
 			TypeVisitor typeVisitor = new TypeVisitor(this);
@@ -345,7 +345,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		ArrayList SearchMethod(ArrayList methods, IClass curType, string memberName)
 		{
-			bool isClassInInheritanceTree = projectContent.IsClassInInheritanceTree(curType, callingClass);
+			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
 			
 			foreach (IMethod m in curType.Methods) {
 				if (IsSameName(m.Name, memberName) &&
@@ -373,7 +373,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public ArrayList SearchIndexer(ArrayList indexer, IClass curType)
 		{
-			bool isClassInInheritanceTree = projectContent.IsClassInInheritanceTree(curType, callingClass);
+			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
 			foreach (IIndexer i in curType.Indexer) {
 				if (projectContent.MustBeShown(curType, i, callingClass, showStatic, isClassInInheritanceTree) && !((i.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
 					indexer.Add(i);
@@ -395,7 +395,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			}
 			IClass curType = SearchType(type.FullyQualifiedName, callingClass, cu);
-			bool isClassInInheritanceTree = projectContent.IsClassInInheritanceTree(curType, callingClass);
+			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
 			
 			if (curType == null) {
 				return null;
@@ -544,7 +544,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			// try if there exists a static member in outer classes named typeName
-			List<IClass> classes = projectContent.GetOuterClasses(cu, caretLine, caretColumn);
+			List<IClass> classes = cu.GetOuterClasses(caretLine, caretColumn);
 			foreach (IClass c in classes) {
 				t = SearchMember(callingClass == null ? null : new ReturnType(c.FullyQualifiedName), typeName);
 				if (t != null) {
@@ -679,7 +679,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
 			if (cu != null) {
-				callingClass = projectContent.GetInnermostClass(cu, caretLine, caretColumn);
+				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
 				if (callingClass != null) {
 					result.AddRange(projectContent.GetNamespaceContents(callingClass.Namespace));
 				}
@@ -715,12 +715,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
 			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
 			if (cu != null) {
-				callingClass = projectContent.GetInnermostClass(cu, caretLine, caretColumn);
+				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
 				if (callingClass != null) {
 					IMethod method = GetMethod(caretLine, caretColumn);
 					if (method != null) {
 						foreach (IParameter p in method.Parameters) {
-							result.Add(new Field(new ReturnType(p.ReturnType.Name, p.ReturnType.ArrayDimensions, p.ReturnType.PointerNestingLevel), p.Name, Modifier.None, method.Region));
+							result.Add(new Field(new ReturnType(p.ReturnType.Name, p.ReturnType.ArrayDimensions, p.ReturnType.PointerNestingLevel), p.Name, Modifier.None, method.Region, callingClass));
 						}
 					}
 					result.AddRange(projectContent.GetNamespaceContents(callingClass.Namespace));
@@ -738,7 +738,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
 							// LocalLookupVariable in no known Type in DisplayBindings.TextEditor
 							// so add Field for the Variables
-							result.Add(new Field(new ReturnType(v.TypeRef), name, Modifier.None, new DefaultRegion(v.StartPos, v.EndPos)));
+							result.Add(new Field(new ReturnType(v.TypeRef), name, Modifier.None, new DefaultRegion(v.StartPos, v.EndPos), callingClass));
 							break;
 						}
 					}

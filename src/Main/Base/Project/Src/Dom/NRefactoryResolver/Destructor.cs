@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			modifiers = modifiers | m;
 		}
 		
-		public Destructor(string className, Modifier m, IRegion region, IRegion bodyRegion)
+		public Destructor(string className, Modifier m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType)
 		{
 			FullyQualifiedName = "~" + className;
 			this.region     = region;

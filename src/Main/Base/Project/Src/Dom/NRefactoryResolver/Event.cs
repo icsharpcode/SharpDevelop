@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			modifiers = modifiers | m;
 		}
 		
-		public Event(string name, ReturnType type, Modifier m, IRegion region, IRegion bodyRegion)
+		public Event(string name, ReturnType type, Modifier m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType)
 		{
 			FullyQualifiedName = name;
 			returnType         = type;

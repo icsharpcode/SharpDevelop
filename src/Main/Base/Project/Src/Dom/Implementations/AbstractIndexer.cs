@@ -55,7 +55,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual int CompareTo(IIndexer value) {
+		public AbstractIndexer(IClass declaringType) : base(declaringType)
+		{
+		}
+		
+		public virtual int CompareTo(IIndexer value)
+		{
 			int cmp;
 			cmp = base.CompareTo((IDecoration)value);
 			if (cmp != 0) {

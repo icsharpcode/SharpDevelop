@@ -58,5 +58,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		List<FoldingRegion> FoldingRegions {
 			get;
 		}
+		
+		
+		/// <summary>
+		/// Returns the innerst class in which the carret currently is, returns null
+		/// if the carret is outside any class boundaries.
+		/// </summary>
+		IClass GetInnermostClass(int caretLine, int caretColumn);
+		
+		List<IClass> GetOuterClasses(int caretLine, int caretColumn);
 	}
 }

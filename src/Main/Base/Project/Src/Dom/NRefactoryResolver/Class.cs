@@ -10,7 +10,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
 	public class Class : AbstractClass
 	{
-		public Class(ICompilationUnit cu, ClassType t, Modifier m, IRegion region) : base(cu)
+		public Class(ICompilationUnit cu, ClassType t, Modifier m, IRegion region, IClass declaringType) : base(cu, declaringType)
 		{
 			classType = t;
 			this.region = region;

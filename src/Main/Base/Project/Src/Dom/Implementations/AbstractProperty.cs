@@ -82,7 +82,11 @@ namespace ICSharpCode.SharpDevelop.Dom {
 				return SetterRegion != null;
 			}
 		}
-
+		
+		public AbstractProperty(IClass declaringType) : base(declaringType)
+		{
+		}
+		
 		public virtual int CompareTo(IProperty value)
 		{
 			int cmp;

@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionMethod(MethodBase methodBase)
+		public ReflectionMethod(MethodBase methodBase, IClass declaringType) : base(declaringType)
 		{
 			this.methodBase = methodBase;
 			string name = methodBase.Name;

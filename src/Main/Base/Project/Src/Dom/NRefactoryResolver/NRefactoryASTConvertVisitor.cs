@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 	{
 		ICompilationUnit cu;
 		Stack currentNamespace = new Stack();
-		Stack currentClass = new Stack();
+		Stack<Class> currentClass = new Stack<Class>();
 		
 		public ICompilationUnit Cu {
 			get {
@@ -33,6 +33,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			cu = new CompilationUnit(projectContent);
 		}
+		
+		Class GetCurrentClass()
+		{
+			return currentClass.Count == 0 ? null : currentClass.Peek();
+		}
+		
 		
 		// TODO: kill abstract compilation unit, replace with implementation. Maybe the whole Abstract layer ?
 		public class CompilationUnit : AbstractCompilationUnit
@@ -155,11 +161,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(AST.TypeDeclaration typeDeclaration, object data)
 		{
 			DefaultRegion region = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
-			Class c = new Class(cu, TranslateClassType(typeDeclaration.Type), typeDeclaration.Modifier, region);
+			Class c = new Class(cu, TranslateClassType(typeDeclaration.Type), typeDeclaration.Modifier, region, GetCurrentClass());
 			c.Attributes.AddRange(VisitAttributes(typeDeclaration.Attributes));
 			
 			if (currentClass.Count > 0) {
-				Class cur = ((Class)currentClass.Peek());
+				Class cur = GetCurrentClass();
 				cur.InnerClasses.Add(c);
 				c.FullyQualifiedName = cur.FullyQualifiedName + '.' + typeDeclaration.Name;
 			} else {
@@ -185,11 +191,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(AST.DelegateDeclaration delegateDeclaration, object data)
 		{
 			DefaultRegion region = GetRegion(delegateDeclaration.StartLocation, delegateDeclaration.EndLocation);
-			Class c = new Class(cu, ClassType.Delegate, delegateDeclaration.Modifier, region);
+			Class c = new Class(cu, ClassType.Delegate, delegateDeclaration.Modifier, region, GetCurrentClass());
 			c.Attributes.AddRange(VisitAttributes(delegateDeclaration.Attributes));
 			c.BaseTypes.Add("System.Delegate");
 			if (currentClass.Count > 0) {
-				Class cur = ((Class)currentClass.Peek());
+				Class cur = GetCurrentClass();
 				cur.InnerClasses.Add(c);
 				c.FullyQualifiedName = cur.FullyQualifiedName + '.' + delegateDeclaration.Name;
 			} else {
@@ -200,7 +206,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				cu.Classes.Add(c);
 			}
-			Method invokeMethod = new Method("Invoke", new ReturnType(delegateDeclaration.ReturnType), delegateDeclaration.Modifier, null, null);
+			Method invokeMethod = new Method("Invoke", new ReturnType(delegateDeclaration.ReturnType), delegateDeclaration.Modifier, null, null, GetCurrentClass());
 			c.Methods.Add(invokeMethod);
 			return c;
 		}
@@ -210,9 +216,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new Point(-1, -1));
 			ReturnType type = new ReturnType(methodDeclaration.TypeReference);
-			Class c       = (Class)currentClass.Peek();
+			Class c       = GetCurrentClass();
 			
-			Method method = new Method(methodDeclaration.Name, type, methodDeclaration.Modifier, region, bodyRegion);
+			Method method = new Method(methodDeclaration.Name, type, methodDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 			method.Attributes.AddRange(VisitAttributes(methodDeclaration.Attributes));
 			List<IParameter> parameters = new List<IParameter>();
 			if (methodDeclaration.Parameters != null) {
@@ -231,9 +237,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DefaultRegion region     = GetRegion(constructorDeclaration.StartLocation, constructorDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new Point(-1, -1));
-			Class c       = (Class)currentClass.Peek();
+			Class c       = GetCurrentClass();
 			
-			Constructor constructor = new Constructor(constructorDeclaration.Modifier, region, bodyRegion);
+			Constructor constructor = new Constructor(constructorDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 			constructor.Attributes.AddRange(VisitAttributes(constructorDeclaration.Attributes));
 			List<IParameter> parameters = new List<IParameter>();
 			if (constructorDeclaration.Parameters != null) {
@@ -253,9 +259,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion region     = GetRegion(destructorDeclaration.StartLocation, destructorDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(destructorDeclaration.EndLocation, destructorDeclaration.Body != null ? destructorDeclaration.Body.EndLocation : new Point(-1, -1));
 			
-			Class c       = (Class)currentClass.Peek();
+			Class c       = GetCurrentClass();
 			
-			Destructor destructor = new Destructor(c.Name, destructorDeclaration.Modifier, region, bodyRegion);
+			Destructor destructor = new Destructor(c.Name, destructorDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 			destructor.Attributes.AddRange(VisitAttributes(destructorDeclaration.Attributes));
 			c.Methods.Add(destructor);
 			return null;
@@ -265,12 +271,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(AST.FieldDeclaration fieldDeclaration, object data)
 		{
 			DefaultRegion region = GetRegion(fieldDeclaration.StartLocation, fieldDeclaration.EndLocation);
-			Class c = (Class)currentClass.Peek();
+			Class c = GetCurrentClass();
 			if (currentClass.Count > 0) {
 				for (int i = 0; i < fieldDeclaration.Fields.Count; ++i) {
 					AST.VariableDeclaration field = (AST.VariableDeclaration)fieldDeclaration.Fields[i];
 					
-					Field f = new Field(new ReturnType(fieldDeclaration.GetTypeForField(i)), field.Name, fieldDeclaration.Modifier, region);
+					Field f = new Field(new ReturnType(fieldDeclaration.GetTypeForField(i)), field.Name, fieldDeclaration.Modifier, region, GetCurrentClass());
 					f.Attributes.AddRange(VisitAttributes(fieldDeclaration.Attributes));
 					if (c.ClassType == ClassType.Enum) {
 						f.SetModifiers(ModifierEnum.Const | ModifierEnum.SpecialName);
@@ -288,9 +294,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion bodyRegion = GetRegion(propertyDeclaration.BodyStart,     propertyDeclaration.BodyEnd);
 			
 			ReturnType type = new ReturnType(propertyDeclaration.TypeReference);
-			Class c = (Class)currentClass.Peek();
+			Class c = GetCurrentClass();
 			
-			Property property = new Property(propertyDeclaration.Name, type, propertyDeclaration.Modifier, region, bodyRegion);
+			Property property = new Property(propertyDeclaration.Name, type, propertyDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 			property.Attributes.AddRange(VisitAttributes(propertyDeclaration.Attributes));
 			c.Properties.Add(property);
 			return null;
@@ -301,17 +307,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion region     = GetRegion(eventDeclaration.StartLocation, eventDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(eventDeclaration.BodyStart,     eventDeclaration.BodyEnd);
 			ReturnType type = new ReturnType(eventDeclaration.TypeReference);
-			Class c = (Class)currentClass.Peek();
+			Class c = GetCurrentClass();
 			Event e = null;
 			
 			if (eventDeclaration.VariableDeclarators != null) {
 				foreach (ICSharpCode.NRefactory.Parser.AST.VariableDeclaration varDecl in eventDeclaration.VariableDeclarators) {
-					e = new Event(varDecl.Name, type, eventDeclaration.Modifier, region, bodyRegion);
+					e = new Event(varDecl.Name, type, eventDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 					e.Attributes.AddRange(VisitAttributes(eventDeclaration.Attributes));
 					c.Events.Add(e);
 				}
 			} else {
-				e = new Event(eventDeclaration.Name, type, eventDeclaration.Modifier, region, bodyRegion);
+				e = new Event(eventDeclaration.Name, type, eventDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 				e.Attributes.AddRange(VisitAttributes(eventDeclaration.Attributes));
 				c.Events.Add(e);
 			}
@@ -323,7 +329,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion region     = GetRegion(indexerDeclaration.StartLocation, indexerDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
 			List<IParameter> parameters = new List<IParameter>();
-			Indexer i = new Indexer(new ReturnType(indexerDeclaration.TypeReference), parameters, indexerDeclaration.Modifier, region, bodyRegion);
+			Indexer i = new Indexer(new ReturnType(indexerDeclaration.TypeReference), parameters, indexerDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 			i.Attributes.AddRange(VisitAttributes(indexerDeclaration.Attributes));
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
@@ -332,7 +338,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					parameters.Add(p);
 				}
 			}
-			Class c = (Class)currentClass.Peek();
+			Class c = GetCurrentClass();
 			c.Indexer.Add(i);
 			return null;
 		}

@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			modifiers = modifiers | m;
 		}
 		
-		public Field(ReturnType type, string fullyQualifiedName, Modifier m, IRegion region)
+		public Field(ReturnType type, string fullyQualifiedName, Modifier m, IRegion region, IClass declaringType) : base(declaringType)
 		{
 			this.returnType = type;
 			this.FullyQualifiedName = fullyQualifiedName;

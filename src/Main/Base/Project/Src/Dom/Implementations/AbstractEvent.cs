@@ -7,7 +7,8 @@
 using System;
 using System.Reflection;
 
-namespace ICSharpCode.SharpDevelop.Dom {
+namespace ICSharpCode.SharpDevelop.Dom 
+{
 	[Serializable]
 	public abstract class AbstractEvent : AbstractMember, IEvent
 	{
@@ -35,8 +36,13 @@ namespace ICSharpCode.SharpDevelop.Dom {
 				return eventAttributes;
 			}
 		}
-
-		public virtual int CompareTo(IEvent value) {
+		
+		public AbstractEvent(IClass declaringType) : base(declaringType)
+		{
+		}
+		
+		public virtual int CompareTo(IEvent value) 
+		{
 			int cmp;
 			
 			if(0 != (cmp = base.CompareTo((IDecoration)value)))
@@ -59,7 +65,8 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			return Region.CompareTo(value.Region);
 		}
 		
-		int IComparable.CompareTo(object value) {
+		int IComparable.CompareTo(object value) 
+		{
 			return CompareTo((IEvent)value);
 		}
 		

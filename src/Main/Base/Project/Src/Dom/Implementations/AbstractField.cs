@@ -7,7 +7,8 @@
 using System;
 using System.Reflection;
 
-namespace ICSharpCode.SharpDevelop.Dom {
+namespace ICSharpCode.SharpDevelop.Dom 
+{
 	[Serializable]
 	public abstract class AbstractField : AbstractMember, IField
 	{
@@ -15,6 +16,10 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			get {
 				return "F:" + this.FullyQualifiedName;
 			}
+		}
+		
+		public AbstractField(IClass declaringType) : base(declaringType)
+		{
 		}
 		
 		public virtual int CompareTo(IField field) 
