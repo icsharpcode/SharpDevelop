@@ -80,6 +80,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			location.Text    = "Location";
 			priority.Text    = "Priority";
 			breaked.Text     = "Breaked";
+
+            RefreshAllItems();
 		}
 
 		void RunningThreadsListItemActivate(object sender, EventArgs e)
@@ -112,8 +114,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					}
 					item.SubItems.Add(e.Thread.Priority.ToString());
 					item.SubItems.Add(e.Thread.Suspended.ToString());
+                    return;
 				}
             }
+            AddThread(this, e);
 		}
 
 		private void RemoveThread(object sender, ThreadEventArgs e) 

@@ -68,6 +68,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			name.Text        = "Name";
 			language.Text    = "Language";
+
+            RefreshList();
 		}
 		
 		void CallStackListItemActivate(object sender, EventArgs e)

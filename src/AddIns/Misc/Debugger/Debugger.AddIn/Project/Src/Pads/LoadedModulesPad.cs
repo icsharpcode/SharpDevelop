@@ -81,6 +81,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			program.Text      = StringParser.Parse("${res:MainWindow.Windows.Debug.ProgramColumn}");
 			timestamp.Text    = StringParser.Parse("${res:MainWindow.Windows.Debug.TimestampColumn}");
 			information.Text  = StringParser.Parse("${res:MainWindow.Windows.Debug.InformationColumn}");
+
+            loadedModulesList.Items.Clear();
+            foreach(Module m in NDebugger.Modules) {
+                AddModule(this, new ModuleEventArgs(m));
+            }
 		}
 
 		void AddModule(object sender, ModuleEventArgs e) 

@@ -68,6 +68,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			name.Text        = "Name";
 			path.Text        = "Path";
+
+            FillList();
 		}
 		
 		void BreakpointsListItemCheck(object sender, ItemCheckEventArgs e)
@@ -83,8 +85,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void FillList()
 		{
-			
-			
 			breakpointsList.ItemCheck -= new ItemCheckEventHandler(BreakpointsListItemCheck);
 			breakpointsList.BeginUpdate();
 			breakpointsList.Items.Clear();
