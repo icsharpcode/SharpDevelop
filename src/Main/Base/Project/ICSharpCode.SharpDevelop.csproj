@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -33,6 +33,19 @@
     <OutputPath>..\..\..\..\bin\</OutputPath>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="ICSharpCode.SharpZipLib, Version=0.82.0.1709, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
+      <HintPath>..\RequiredLibraries\ICSharpCode.SharpZipLib.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.DirectoryServices" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Web.Services" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Src\Internal\ExternalTool\ExternalTool.cs" />
     <Compile Include="Src\Internal\Templates\CodeTemplate.cs" />
@@ -171,7 +184,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\CommonAboutDialog.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\DirtyFilesDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\FolderDialog.cs" />
@@ -187,9 +200,10 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TipOfTheDay.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TreeViewOptions.cs">
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ViewGPLDialog.cs">
       <SubType>Form</SubType>
@@ -249,6 +263,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\FileScout.cs">
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\OpenTaskView.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPad.cs" />
@@ -259,9 +274,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Workbench\Layouts\SdiWorkspaceLayout.cs" />
-    <Compile Include="Src\Gui\Workbench\Layouts\SdiWorkspaceWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="Src\Gui\Workbench\Layouts\SdiWorkspaceWindow.cs" />
     <Compile Include="Src\Gui\XmlForms\SharpDevelopObjectCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\SharpDevelopPropertyValueCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\SharpDevelopStringValueFilter.cs" />
@@ -626,19 +639,6 @@
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.82.0.1709, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
-      <HintPath>..\RequiredLibraries\ICSharpCode.SharpZipLib.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Design" />
-    <Reference Include="System.DirectoryServices" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Web.Services" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.XML" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

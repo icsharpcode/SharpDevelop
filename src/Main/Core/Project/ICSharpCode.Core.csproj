@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -38,8 +38,6 @@
   <ItemGroup>
     <None Include="Resources\ICSharpCode.Core.doc" />
     <None Include="Resources\ICSharpCode.Core.snk" />
-  </ItemGroup>
-  <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\AddInTree\AddIn\AddIn.cs" />
     <Compile Include="Src\AddInTree\AddIn\AddInLoadException.cs" />
@@ -124,8 +122,6 @@
     <Compile Include="Src\Util\AbstractCommand.cs" />
     <Compile Include="Src\Util\ICommand.cs" />
     <Compile Include="Src\Util\RightToLeftConverter.cs" />
-  </ItemGroup>
-  <ItemGroup>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

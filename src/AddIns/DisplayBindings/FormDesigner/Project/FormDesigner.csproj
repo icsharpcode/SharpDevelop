@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -99,6 +99,11 @@
     <Compile Include="Src\FormDesigner\UndoRedo\ComponentRemovedUndoAction.cs" />
     <Compile Include="Src\FormDesigner\UndoRedo\SelectComponentsUndoAction.cs" />
     <Compile Include="Src\FormDesigner\UndoRedo\UndoHandler.cs" />
+    <EmbeddedResource Include="Src\FormDesigner\Gui\ICSharpCode.SharpDevelop.FormDesigner.Gui.AssemblyList.resources" />
+    <EmbeddedResource Include="Src\FormDesigner\Gui\ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.ControlLibrariesPanel.resources" />
+    <None Include="FormDesigner.addin">
+      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
@@ -121,17 +126,6 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <EmbeddedResource Include="Src\FormDesigner\Gui\ICSharpCode.SharpDevelop.FormDesigner.Gui.AssemblyList.resources" />
-    <EmbeddedResource Include="Src\FormDesigner\Gui\ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.ControlLibrariesPanel.resources" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="FormDesigner.addin">
-      <CopyToOutputDirectory>True</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Src\FormDesigner\Util\" />
     <Folder Include="Src\FormDesigner\Xml\" />
   </ItemGroup>

@@ -1,12 +1,10 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.41115</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{1152B71B-3C05-4598-B20D-823B5D40559E}</ProjectGuid>
-    <RootNamespace>
-    </RootNamespace>
     <AssemblyName>SharpDevelop</AssemblyName>
     <OutputTarget>Exe</OutputTarget>
     <WarningLevel>4</WarningLevel>
@@ -32,6 +30,12 @@
     <OutputPath>..\..\..\..\bin\</OutputPath>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
   <ItemGroup>
     <Compile Include="Dialogs\SplashScreen.cs">
       <SubType>Form</SubType>
@@ -60,12 +64,6 @@
       <Package>{00000000-0000-0000-0000-000000000000}</Package>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.XML" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

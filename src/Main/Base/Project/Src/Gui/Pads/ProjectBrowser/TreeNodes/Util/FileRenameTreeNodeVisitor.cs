@@ -24,16 +24,32 @@ namespace ICSharpCode.SharpDevelop.Project
 			return data;
 		}
 		
+		
+		public override object Visit(ProjectNode projectNode, object data)
+		{
+			if (FileUtility.IsBaseDirectory(oldName, projectNode.Directory) ||
+			    FileUtility.IsBaseDirectory(projectNode.Directory, oldName)) {
+				projectNode.AcceptChildren(this, data);
+			}
+			return data;
+		}
+		
 		public override object Visit(DirectoryNode directoryNode, object data)
 		{
-			directoryNode.Directory = FileUtility.RenameBaseDirectory(directoryNode.Directory, oldName, newName);
-			directoryNode.AcceptChildren(this, data);
+			if (FileUtility.IsBaseDirectory(oldName, directoryNode.Directory)) {
+				directoryNode.Directory = FileUtility.RenameBaseDirectory(directoryNode.Directory, oldName, newName);
+				directoryNode.AcceptChildren(this, data);
+			} else if (FileUtility.IsBaseDirectory(directoryNode.Directory, oldName)) {
+				directoryNode.AcceptChildren(this, data);
+			}
 			return data;
 		}
 		
 		public override object Visit(FileNode fileNode, object data)
 		{
-			fileNode.FileName = FileUtility.RenameBaseDirectory(fileNode.FileName, oldName, newName);
+			if (FileUtility.IsEqualFile(oldName, fileNode.FileName)) {
+				fileNode.FileName = FileUtility.RenameBaseDirectory(fileNode.FileName, oldName, newName);
+			}
 			fileNode.AcceptChildren(this, data);
 			return data;
 		}

@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -30,6 +30,12 @@
     <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\AdvancedBuildOptionsDialog.xfrm" />
     <EmbeddedResource Include="Resources\ApplicationSettings.xfrm" />
@@ -52,7 +58,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\OptionPanels\BuildOptions.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\OptionPanels\DebugOptions.cs">
       <SubType>UserControl</SubType>
@@ -69,6 +75,9 @@
     <Compile Include="Src\Parser\ExpressionFinder.cs" />
     <Compile Include="Src\Parser\Parser.cs" />
     <Compile Include="Src\Project\CSharpProject.cs" />
+    <None Include="CSharpBinding.addin">
+      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
@@ -91,19 +100,6 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-  </ItemGroup>
-  <ItemGroup>
-    <Reference Include="System" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.XML" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="CSharpBinding.addin">
-      <CopyToOutputDirectory>True</CopyToOutputDirectory>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Src\PrettyPrinter\Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -193,8 +193,6 @@
     <Content Include="Src\Parser\Frames\OldSharpCoco.exe" />
     <Content Include="Src\Parser\Frames\SharpCoco.exe" />
     <Content Include="Src\Parser\Frames\trace.txt" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Src\Parser\AST\CSharp\GlobalScope\" />
     <Folder Include="Src\Parser\AST\VBNet\Expressions\Tests\" />
     <Folder Include="Src\Parser\AST\VBNet\GlobalScope\Tests\" />

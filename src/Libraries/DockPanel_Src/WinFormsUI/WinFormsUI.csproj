@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.41115</ProductVersion>
@@ -48,30 +48,11 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="System.Data1, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=x86">
-      <HintPath>..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v2.0.41115\System.Data.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="System.Design1, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v2.0.41115\System.Design.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="System.Drawing1, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v2.0.41115\System.Drawing.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="System.Windows.Forms1, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v2.0.41115\System.Windows.Forms.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="System.XML1, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v2.0.41115\System.XML.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
-    <Reference Include="System1, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
-      <HintPath>..\..\..\..\..\..\WINDOWS\Microsoft.NET\Framework\v2.0.41115\System.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Design" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.XML" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs">
@@ -85,9 +66,7 @@
     <Compile Include="DockAreasEditor.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DockContent.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="DockContent.cs" />
     <Compile Include="DockContentCollection.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -97,9 +76,7 @@
     <Compile Include="DockList.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="DockPane.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="DockPane.cs" />
     <Compile Include="DockPaneCollection.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -129,15 +106,11 @@
     <Compile Include="EventArgs.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="FloatWindow.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="FloatWindow.cs" />
     <Compile Include="FloatWindowCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="HiddenMdiChild.cs">
-      <SubType>Form</SubType>
-    </Compile>
+    <Compile Include="HiddenMdiChild.cs" />
     <Compile Include="InertButton.cs" />
     <Compile Include="Interfaces.cs">
       <SubType>Code</SubType>
@@ -181,8 +154,6 @@
     <EmbeddedResource Include="Resources\DockPane.ToolWindowCloseDisabled.bmp" />
     <EmbeddedResource Include="Resources\DockPane.ToolWindowCloseEnabled.bmp" />
     <EmbeddedResource Include="Strings.resX" />
-  </ItemGroup>
-  <ItemGroup>
     <None Include="..\..\..\Main\Core\Project\Resources\ICSharpCode.Core.snk">
       <Link>ICSharpCode.Core.snk</Link>
     </None>

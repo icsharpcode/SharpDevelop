@@ -170,7 +170,7 @@ namespace ICSharpCode.TextEditor
 			
 			ResizeRedraw = true;
 			
-			SetStyle(ControlStyles.OptimizedDoubleBuffer, false);
+			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 //			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 //			SetStyle(ControlStyles.UserPaint, true);
 			SetStyle(ControlStyles.Opaque, false);

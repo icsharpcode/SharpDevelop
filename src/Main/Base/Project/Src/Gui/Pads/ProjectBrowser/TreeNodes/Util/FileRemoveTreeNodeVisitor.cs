@@ -24,6 +24,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			return data;
 		}
 		
+		
+		public override object Visit(ProjectNode projectNode, object data)
+		{
+			if (FileUtility.IsBaseDirectory(projectNode.Directory, fileName)) {
+				projectNode.AcceptChildren(this, data);
+			}
+			return data;
+		}
+		
 		public override object Visit(DirectoryNode directoryNode, object data)
 		{
 			if (FileUtility.IsBaseDirectory(fileName, directoryNode.Directory)) {
@@ -33,7 +42,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					parent.Refresh();
 				}
 			} else {
-				directoryNode.AcceptChildren(this, data);
+				if (FileUtility.IsBaseDirectory(directoryNode.Directory, fileName)) {
+					directoryNode.AcceptChildren(this, data);
+				}
 			}
 			return data;
 		}

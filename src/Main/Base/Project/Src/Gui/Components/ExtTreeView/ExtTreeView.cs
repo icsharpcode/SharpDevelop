@@ -36,6 +36,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			HideSelection = false;
 			AllowDrop     = true;
 			this.TreeViewNodeSorter  = new ExtTreeViewComparer();
+			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 		}
 		
 		public void SortNodes(TreeNode node)

@@ -37,6 +37,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void FileServiceFileRenamed(object sender, FileRenameEventArgs e)
 		{
+			Console.WriteLine("File service file renamed.");
 			if (OpenSolution == null) {
 				return;
 			}
@@ -60,10 +61,12 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
+			Console.WriteLine("File service file renamed. DONE.");
 		}
 		
 		static void FileServiceFileRemoved(object sender, FileEventArgs e)
 		{
+			Console.WriteLine("File service file removed.");
 			if (OpenSolution == null) {
 				return;
 			}
@@ -90,6 +93,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
+			Console.WriteLine("File service file removed. DONE.");
 		}
 		
 		static void ActiveWindowChanged(object sender, EventArgs e)
