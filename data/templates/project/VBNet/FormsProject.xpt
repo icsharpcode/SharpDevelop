@@ -6,9 +6,9 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.WindowsApplication.Name}</Name>
-		<Category>VBNET</Category>
+		<Category>VBNet</Category>
 		<Icon>VB.Project.Form</Icon>
-		<LanguageName>VBNET</LanguageName>
+		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.WindowsApplication.Description}</Description>
 	</TemplateConfiguration>
 	

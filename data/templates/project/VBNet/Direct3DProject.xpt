@@ -6,9 +6,9 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.Direct3DApplication.Name}</Name>
-		<Category>VBNET</Category>
+		<Category>VBNet</Category>
 		<Icon>VB.Project.FullProject</Icon>
-		<LanguageName>VBNET</LanguageName>
+		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.Direct3DApplication.Description}</Description>
 	</TemplateConfiguration>
 	

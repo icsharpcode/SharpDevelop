@@ -6,8 +6,8 @@
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.EmptyProject.Name}</Name>
-		<Category>VBNET</Category>
-		<LanguageName>VBNET</LanguageName>
+		<Category>VBNet</Category>
+		<LanguageName>VBNet</LanguageName>
 		<Icon>VB.Project.EmptyProject</Icon>
 		<Description>${res:Templates.Project.EmptyProject.Description}</Description>
 	</TemplateConfiguration>
