@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop
 		static void ShowErrorBox(object sender, ThreadExceptionEventArgs eargs)
 		{
 			DialogResult result = new ExceptionBox(eargs.Exception).ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
-
+			
 			switch (result) {
 				case DialogResult.Ignore:
 					break;

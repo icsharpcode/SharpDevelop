@@ -6,10 +6,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
 	public class Parameter : AbstractParameter
 	{
-		public Parameter(string name, ReturnType type)
+		public Parameter(string name, ReturnType type, IRegion region)
 		{
 			Name = name;
 			returnType = type;
+			this.region = region;
 		}
 	}
 }

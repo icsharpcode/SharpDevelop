@@ -28,7 +28,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		ParameterModifier Modifier {
 			get;
 		}
-
+		
+		IRegion Region {
+			get;
+		}
+		
 		string Documentation {
 			get;
 		}

@@ -22,8 +22,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		protected IReturnType         returnType;
 		protected ParameterModifier   modifier;
+		protected IRegion region;
 		List<IAttribute> attributes;
-
+		
+		
+		
+		public IRegion Region {
+			get {
+				return region;
+			}
+		}
 		public bool IsOut {
 			get {
 				return (modifier & ParameterModifier.Out) == ParameterModifier.Out;
@@ -80,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				modifier = value;
 			}
 		}
-
+		
 		public string Documentation {
 			get {
 				return documentation;

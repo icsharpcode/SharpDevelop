@@ -615,6 +615,7 @@
     <Compile Include="Src\Project\AbstractProject.cs" />
     <Compile Include="Src\Dom\XmlDoc.cs" />
     <Compile Include="Src\Services\ParserService\ProjectContentRegistry.cs" />
+    <Compile Include="Src\Dom\NRefactoryResolver\FilePosition.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

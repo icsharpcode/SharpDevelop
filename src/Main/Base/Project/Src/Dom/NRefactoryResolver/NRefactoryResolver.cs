@@ -33,6 +33,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		int caretLine;
 		int caretColumn;
 		
+		public SupportedLanguages Language {
+			get {
+				return language;
+			}
+		}
+		
 		public IProjectContent ProjectContent {
 			get {
 				return projectContent;
@@ -306,7 +312,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		bool InStatic()
 		{
-			IProperty property = Get();
+			IProperty property = GetProperty();
 			if (property != null) {
 				return property.IsStatic;
 			}
@@ -471,29 +477,32 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return between.Y < end.Y || between.X <= end.X;
 		}
 		
-		IReturnType SearchVariable(string name)
+		LocalLookupVariable SearchVariable(string name)
 		{
 			ArrayList variables = (ArrayList)lookupTableVisitor.variables[IsCaseSensitive(language) ? name : name.ToLower()];
 			if (variables == null || variables.Count <= 0) {
 				return null;
 			}
 			
-			IReturnType found = null;
 			foreach (LocalLookupVariable v in variables) {
 				if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
-					IClass c = SearchType(v.TypeRef.SystemType, callingClass, cu);
-					if (c != null) {
-						found = new ReturnType(c.FullyQualifiedName, v.TypeRef.RankSpecifier, v.TypeRef.PointerNestingLevel);
-					} else {
-						found = new ReturnType(v.TypeRef);
-					}
-					break;
+					return v;
 				}
 			}
-			if (found == null) {
+			return null;
+		}
+		
+		IReturnType GetVariableType(LocalLookupVariable v)
+		{
+			if (v == null) {
 				return null;
 			}
-			return found;
+			IClass c = SearchType(v.TypeRef.SystemType, callingClass, cu);
+			if (c != null) {
+				return new ReturnType(c.FullyQualifiedName, v.TypeRef.RankSpecifier, v.TypeRef.PointerNestingLevel);
+			} else {
+				return new ReturnType(v.TypeRef);
+			}
 		}
 		
 		/// <remarks>
@@ -502,7 +511,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public IReturnType DynamicLookup(string typeName)
 		{
 			// try if it exists a variable named typeName
-			IReturnType variable = SearchVariable(typeName);
+			IReturnType variable = GetVariableType(SearchVariable(typeName));
 			if (variable != null) {
 				showStatic = false;
 				return variable;
@@ -513,18 +522,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		
 			// try if typeName is a method parameter
-			IReturnType p = SearchMethodParameter(typeName);
-			if (p != null) {
+			IParameter parameter = SearchMethodParameter(typeName);
+			if (parameter != null) {
 				showStatic = false;
-				return p;
+				return parameter.ReturnType;
 			}
 			
 			// check if typeName == value in set method of a property
 			if (typeName == "value") {
-				p = SearchProperty();
-				if (p != null) {
+				IProperty property = GetProperty();
+				if (property != null && property.SetterRegion != null && property.SetterRegion.IsInside(caretLine, caretColumn)) {
 					showStatic = false;
-					return p;
+					return property.ReturnType;
 				}
 			}
 			
@@ -579,7 +588,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		IProperty Get()
+		IProperty GetProperty()
 		{
 			foreach (IProperty property in callingClass.Properties) {
 				if (property.BodyRegion != null && property.BodyRegion.IsInside(caretLine, caretColumn)) {
@@ -599,19 +608,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		IReturnType SearchProperty()
-		{
-			IProperty property = Get();
-			if (property == null) {
-				return null;
-			}
-			if (property.SetterRegion != null && property.SetterRegion.IsInside(caretLine, caretColumn)) {
-				return property.ReturnType;
-			}
-			return null;
-		}
-		
-		IReturnType SearchMethodParameter(string parameter)
+		IParameter SearchMethodParameter(string parameter)
 		{
 			IMethod method = GetMethod(caretLine, caretColumn);
 			if (method == null) {
@@ -619,7 +616,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			foreach (IParameter p in method.Parameters) {
 				if (IsSameName(p.Name, parameter)) {
-					return p.ReturnType;
+					return p;
 				}
 			}
 			return null;
@@ -663,6 +660,44 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			return projectContent.SearchType(name, curType, unit, caretLine, caretColumn);
 		}
+		
+		public FilePosition SearchDefinition(string expression, 
+		                                     int caretLineNumber, 
+		                                     int caretColumn, 
+		                                     string fileName)
+		{
+			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new System.IO.StringReader(expression));
+			Expression expr = p.ParseExpression();
+			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
+			if (parseInfo == null) {
+				return null;
+			}
+			if (expr is IdentifierExpression) {
+				ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
+				lookupTableVisitor = new LookupTableVisitor();
+				lookupTableVisitor.Visit(fileCompilationUnit, null);
+				
+				// try if it exists a variable named typeName
+				LocalLookupVariable variable = SearchVariable(expression);
+				if (variable != null) {
+					return new FilePosition(fileName, variable.StartPos);
+				}
+				
+				if (callingClass == null) {
+					return null;
+				}
+				
+				// try if typeName is a method parameter
+				IParameter parameter = SearchMethodParameter(expression);
+				if (parameter != null) {
+					return new FilePosition(fileName, new Point(parameter.Region.BeginLine, parameter.Region.BeginColumn));
+				}
+			}
+			
+			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
+			return null;
+		}
+
 		
 		public ArrayList NewCompletion(int caretLine, int caretColumn, string fileName)
 		{

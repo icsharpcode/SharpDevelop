@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IRegion Region {
 			get;
 		}
-
+		
 		string Name {
 			get;
 		}

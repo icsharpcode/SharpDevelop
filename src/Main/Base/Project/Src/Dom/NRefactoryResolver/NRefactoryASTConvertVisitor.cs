@@ -224,7 +224,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (methodDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter(par.ParameterName, parType);
+					Parameter p = new Parameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, methodDeclaration.Body.EndLocation));
 					parameters.Add(p);
 				}
 			}
@@ -245,7 +245,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (constructorDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter(par.ParameterName, parType);
+					Parameter p = new Parameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, constructorDeclaration.Body.EndLocation));
 					parameters.Add(p);
 				}
 			}
@@ -334,7 +334,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter(par.ParameterName, parType);
+					Parameter p = new Parameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, indexerDeclaration.EndLocation));
 					parameters.Add(p);
 				}
 			}
