@@ -38,6 +38,7 @@ namespace ICSharpCode.Core
 		{
 			DropDownItems.Clear();
 			foreach (object item in subItems) {
+				Console.WriteLine(item);
 				if (item is ToolStripItem) {
 					DropDownItems.Add((ToolStripItem)item);
 					((IStatusUpdate)item).UpdateStatus();
@@ -51,13 +52,13 @@ namespace ICSharpCode.Core
 		{
 			base.OnDropDownShow(e);
 			CreateDropDownItems();
-//			foreach (object item in subItems) {
-//				if (item is ToolStripItem) {
-//					if (item is IStatusUpdate) {
-//						((IStatusUpdate)item).UpdateStatus();
-//					}
-//				}
-//			}
+			foreach (object item in subItems) {
+				if (item is ToolStripItem) {
+					if (item is IStatusUpdate) {
+						((IStatusUpdate)item).UpdateStatus();
+					}
+				}
+			}
 		}
 
 		protected override void OnDropDownOpened(System.EventArgs e)

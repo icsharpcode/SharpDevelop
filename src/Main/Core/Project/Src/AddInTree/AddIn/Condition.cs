@@ -19,6 +19,9 @@ namespace ICSharpCode.Core
 			get {
 				return action;
 			}
+			set {
+				action = value;
+			}
 		}
 		public string Name {
 			get {
@@ -64,24 +67,35 @@ namespace ICSharpCode.Core
 		
 		public static ICondition ReadComplexCondition(XmlTextReader reader)
 		{
+			Properties properties = Properties.ReadFromAttributes(reader);
 			reader.Read();
+			ICondition condition = null;
 			while (reader.Read()) {
 				switch (reader.NodeType) {
 					case XmlNodeType.Element:
 						switch (reader.LocalName) {
 							case "And":
-								return AndCondition.Read(reader);
+								condition = AndCondition.Read(reader);
+								goto exit;
 							case "Or":
-								return OrCondition.Read(reader);
+								condition = OrCondition.Read(reader);
+								goto exit;
 							case "Not":
-								return NegatedCondition.Read(reader);
+								condition = NegatedCondition.Read(reader);
+								goto exit;
 							case "Condition":
-								return Condition.Read(reader);
+								condition = Condition.Read(reader);
+								goto exit;
 						}						
 						break;
 				}
 			}
-			return null;
+		exit:
+			if (condition != null) {
+				ConditionFailedAction action = properties.Get("action", ConditionFailedAction.Exclude);
+				condition.Action = action;
+			}
+			return condition;
 		}
 		
 		public static ICondition[] ReadConditionList(XmlTextReader reader, string endElement)

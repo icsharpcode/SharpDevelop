@@ -15,7 +15,6 @@
 		       class = "ICSharpCode.Core.NetAmbience"/>
 	</Path>
 	
-	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id               = "Browser"
 		                supportedformats = "Web Pages"
@@ -53,6 +52,7 @@
 		<Pad id       = "ErrorList"
 		     category = "Main"
 		     title    = "Error List"
+		     shortcut = "Control|Alt|K"
 		     icon     = "PadIcons.ErrorList"
 		     class    = "ICSharpCode.SharpDevelop.Gui.ErrorList"/>
 		
@@ -60,7 +60,6 @@
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.TaskList}"
 		     icon     = "PadIcons.TaskList"
-		     shortcut = "Control|Alt|K"
 		     class    = "ICSharpCode.SharpDevelop.Gui.OpenTaskView"/>
 		
 		<Pad id       = "CompilerMessageView"
@@ -90,9 +89,20 @@
 		     icon     = "Icons.16x16.HelpIcon"
 		     shortcut = "Control|Alt|H"
 		     class    = "ICSharpCode.SharpDevelop.Gui.HelpBrowser"/>
+		
+		<Pad id       = "SearchResults"
+		     category = "Tools"
+		     title    = "Search Results"
+		     icon     = "PadIcons.FindResults"
+		     class    = "SearchAndReplace.SearchResultPanel"/>
+		
+		<Pad id       = "Bookmarks"
+		     category = "Tools"
+		     title    = "Bookmarks"
+		     icon     = "PadIcons.Bookmarks"
+		     class    = "Bookmark.BookmarkPad"/>
 	</Path>
 	
-		
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id         = "Solution"
 		            name       = "Solutions"
@@ -138,17 +148,16 @@
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode">
 		<MenuItem id = "Build"
-		          label = "Build"
+		          label = "&amp;Build"
 		          shortcut = "F8"
 		          icon  = "Icons.16x16.BuildCombine"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Build"/>
 		<MenuItem id = "Rebuild"
-		          label = "Rebuild"
-		          icon  = "Icons.16x16.BuildCombine"
+		          label = "&amp;Rebuild"
+		          shortcut = "Alt|F8"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"/>
-		<MenuItem id = "Clean"
+		<MenuItem id = "&amp;Clean"
 		          label = "Clean"
-		          icon  = "Icons.16x16.BuildCombine"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Clean"/>
 		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
 		
@@ -256,20 +265,17 @@
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
 		<MenuItem id = "Build project"
-		          label = "Build project"
+		          label = "B&amp;uild"
 		          icon  = "Icons.16x16.BuildCurrentSelectedProject"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.BuildProject"/>
 		<MenuItem id = "Rebuild project"
-		          label = "Rebuild project"
-		          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+		          label = "R&amp;ebuild"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.RebuildProject"/>
 		<MenuItem id = "Clean project"
-		          label = "Clean project"
-		          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+		          label = "Clea&amp;n"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.CleanProject"/>
 		<MenuItem id = "Publish project"
-		          label = "Publish project"
-		          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+		          label = "Publis ${CurrentProjectName}h"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>
 		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
 		
@@ -1099,7 +1105,6 @@
 			</ComplexCondition>
 		</MenuItem> <!-- end EDIT menu -->
 		
-		
 		<MenuItem id = "View" label = "${res:XML.MainMenu.ViewMenu}" type="Menu">
 			<MenuItem id    = "MainViewMenuBuilder" 
 			          type  = "Builder" 
@@ -1148,46 +1153,33 @@
 					<Condition name = "CombineOpen" iscombineopen="True"/>
 				</Or>
 				<MenuItem id = "Build"
-				          label = "Build"
+				          label = "&amp;Build Solution"
 				          shortcut = "F8"
 				          icon  = "Icons.16x16.BuildCombine"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.Build"/>
 				<MenuItem id = "Rebuild"
-				          label = "Rebuild"
-				          shortcut = "F8"
-				          icon  = "Icons.16x16.BuildCombine"
+				          label = "&amp;Rebuild Solution"
+				          shortcut = "Alt|F8"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"/>
 				<MenuItem id = "Clean"
-				          label = "Clean"
-				          shortcut = "F8"
-				          icon  = "Icons.16x16.BuildCombine"
+				          label = "&amp;Clean Solution"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.Clean"/>
-				<MenuItem id = "Publish"
-				          label = "Publish"
-				          shortcut = "F8"
-				          icon  = "Icons.16x16.BuildCombine"
-				          class = "ICSharpCode.SharpDevelop.Project.Commands.Publish"/>
 				<Condition name = "ProjectActive" activeproject="*">
 					<MenuItem id = "Separator1" type = "Separator" />
 					<MenuItem id = "Build project"
-					          label = "Build project"
+					          label = "B&amp;uild ${CurrentProjectName}"
 					          shortcut = "F9"
 					          icon  = "Icons.16x16.BuildCurrentSelectedProject"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.BuildProject"/>
 					<MenuItem id = "Rebuild project"
-					          label = "Rebuild project"
-					          shortcut = "F9"
-					          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+					          label = "R&amp;ebuild ${CurrentProjectName}"
+					          shortcut = "ALT|F9"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.RebuildProject"/>
 					<MenuItem id = "Clean project"
-					          label = "Clean project"
-					          shortcut = "F9"
-					          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+					          label = "Clea&amp;n ${CurrentProjectName}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.CleanProject"/>
-					<MenuItem id = "Publish project"
-					          label = "Publish project"
-					          shortcut = "F9"
-					          icon  = "Icons.16x16.BuildCurrentSelectedProject"
+					<MenuItem id = "Publis&amp;h project"
+					          label = "Publish ${CurrentProjectName}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>
 				</Condition>
 			</ComplexCondition>
@@ -1748,22 +1740,6 @@
 		<EditAction id = "IndentSelection"     class = "ICSharpCode.TextEditor.Actions.IndentSelection"  keys = "Control|I"/>
 	</Path>
 	
-	
-	<Path name = "/SharpDevelop/Workbench/Pads">
-		<Pad id       = "SearchResults"
-		     category = "Main"
-		     title    = "Search Results"
-		     icon     = "PadIcons.FindResults"
-		     class    = "SearchAndReplace.SearchResultPanel"/>
-		
-		<Pad id       = "Bookmarks"
-		     category = "Main"
-		     title    = "Bookmarks"
-		     icon     = "PadIcons.Bookmarks"
-		     class    = "Bookmark.BookmarkPad"/>
-	</Path>
-	
-	
 	<Path name = "/SharpDevelop/Pads/BookmarkPad/Toolbar">
 		<ToolbarItem id      = "GotoPrev"
 		             icon    = "Bookmarks.GotoPrev"
@@ -1823,7 +1799,5 @@
 		             type    = "ComboBox"
 		             tooltip = "Search"
 		             class   = "SearchAndReplace.FindComboBox"/>
-		
 	</Path>
-	
 </AddIn>

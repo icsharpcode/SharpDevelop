@@ -25,9 +25,13 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		ConditionFailedAction action = ConditionFailedAction.Exclude;
 		public ConditionFailedAction Action {
 			get {
-				return ConditionFailedAction.Exclude;
+				return action;
+			}
+			set {
+				action = value;
 			}
 		}
 		
@@ -68,9 +72,13 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		ConditionFailedAction action = ConditionFailedAction.Exclude;
 		public ConditionFailedAction Action {
 			get {
-				return ConditionFailedAction.Exclude;
+				return action;
+			}
+			set {
+				action = value;
 			}
 		}
 		
@@ -117,9 +125,13 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		ConditionFailedAction action = ConditionFailedAction.Exclude;
 		public ConditionFailedAction Action {
 			get {
-				return ConditionFailedAction.Exclude;
+				return action;
+			}
+			set {
+				action = value;
 			}
 		}
 		

@@ -23,15 +23,15 @@ namespace ICSharpCode.SharpDevelop.Commands
 {
 	public class SharpDevelopStringTagProvider :  IStringTagProvider 
 	{
-		readonly static string[] tags = new string[] { "ItemPath", "ItemDir", "ItemFilename", "ItemExt",
-				                      "CurLine", "CurCol", "CurText",
-				                      "TargetPath", "TargetDir", "TargetName", "TargetExt",
-				                      "ProjectDir", "ProjectFilename",
-				                      "CombineDir", "CombineFilename",
-				                      "Startuppath",
-				                      "TaskService.Warnings",
-				                      "TaskService.Errors",
-				                      "TaskService.Messages"
+		readonly static string[] tags = new string[] { 
+			"ItemPath", "ItemDir", "ItemFilename", "ItemExt",
+			"CurLine", "CurCol", "CurText",
+			"TargetPath", "TargetDir", "TargetName", "TargetExt",
+			"CurrentProjectName",
+			"ProjectDir", "ProjectFilename",
+			"CombineDir", "CombineFilename",
+			"Startuppath",
+			"TaskService.Warnings", "TaskService.Errors", "TaskService.Messages"
 		};
 
 		
@@ -71,6 +71,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 					return TaskService.GetCount(TaskType.Error).ToString();
 				case "TaskService.Messages":
 					return TaskService.GetCount(TaskType.Message).ToString();
+				case "CurrentProjectName":
+					// TODO: Translate "<empty>"!!!!
+					return ProjectService.CurrentProject == null ? "<empty>" : ProjectService.CurrentProject.Name;
 					
 			}
 			switch (tag.ToUpper()) {

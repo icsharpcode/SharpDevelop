@@ -20,14 +20,13 @@ namespace ICSharpCode.Core
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			
-			IProject project = ProjectService.CurrentProject;
-			
 			string activeproject = condition.Properties["activeproject"];
 				
+			IProject project = ProjectService.CurrentProject;
 			if (activeproject == "*") {
 				return project != null;
 			}
+			
 			return project != null && project.Language == activeproject;
 		}
 	}

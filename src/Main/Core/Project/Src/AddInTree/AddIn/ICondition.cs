@@ -33,6 +33,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		ConditionFailedAction Action {
 			get;
+			set;
 		}
 		
 		/// <summary>
