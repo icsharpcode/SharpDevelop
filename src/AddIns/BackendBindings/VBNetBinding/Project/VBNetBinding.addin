@@ -1,0 +1,77 @@
+<AddIn name        = "SharpDevelop Bindings"
+       author      = "Mike Krueger, Markus Palme"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "SharpDevelop VB.NET language binding"
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly = "VBNetBinding.dll"/>
+	</Runtime>
+
+	<Path name = "/SharpDevelop/Workbench/Ambiences">
+		<Class id    = "VBNet"
+		       class = "VBNetBinding.VBNetAmbience"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "VBNet"
+		            insertbefore="AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.VBNetFiles}"
+		            extensions = "*.vb"/>
+	</Path>
+
+	<Path name = "/Workspace/Parser">
+		<Parser id    = "VBNet" 
+			supportedextensions  = ".vb"
+			projectfileextension = ".vbproj"
+			class = "VBNetBinding.Parser.TParser"/>
+	</Path>
+
+	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/VBNet">
+		<DialogPanel id    = "Application"
+		             label = "Application"
+		             class = "VBNetBinding.OptionPanels.ApplicationSettings"/>
+		<DialogPanel id    = "ReferencePaths"
+		             label = "Reference Paths"
+		             class = "VBNetBinding.OptionPanels.ReferencePaths"/>
+		<DialogPanel id    = "Signing"
+		             label = "Signing"
+		             class = "VBNetBinding.OptionPanels.Signing"/>
+		<DialogPanel id    = "BuildEvents"
+		             label = "Build Events"
+		             class = "VBNetBinding.OptionPanels.BuildEvents"/>
+		<DialogPanel id    = "BuildOptions"
+		             label = "Build"
+		             class = "VBNetBinding.OptionPanels.BuildOptions"/>
+		<DialogPanel id    = "DebugOptions"
+		             label = "Debug"
+		             class = "VBNetBinding.OptionPanels.DebugOptions"/>
+		<DialogPanel id    = "Publish"
+		             label = "Publish"
+		             class = "VBNetBinding.OptionPanels.Publish"/>
+	</Path>
+
+	<Path name = "/AddIns/DefaultTextEditor/Formatter/VBNet">
+		<Class id ="VBNetFormatter" insertbefore="DefaultFormatter" class = "CSharpBinding.FormattingStrategy.VBNetFormattingStrategy"/>
+	</Path>
+	
+	<Path name = "/Workspace/Icons">
+		<!-- C# -->
+		<Icon id         = "VBNetPrj"
+		      language   = "VBNet"
+		      resource   = "VBNet.ProjectIcon"/>
+
+		<Icon id         = "VBNetFile"
+		      extensions = ".vb"
+		      resource   = "VBNet.FileIcon"/>
+	</Path>
+	
+	<Path path = "/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id                   = "VBNet"
+		                 guid                 = "{634FA0F9-5C09-48ec-9E9E-29428AE97251}"
+		                 supportedextensions  = ".vb"
+		                 projectfileextension = ".vbproj"
+		                 class                = "VBNetBinding.VBNetLanguageBinding" />
+	</Path>
+</AddIn>

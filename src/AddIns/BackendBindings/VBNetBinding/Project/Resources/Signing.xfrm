@@ -1,0 +1,94 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="XmlUserControl1" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=392, Height=312}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox1" />
+        <TabIndex value="1" />
+        <Location value="{X=8,Y=28}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=368, Height=196}" />
+        <Text value="Key Selection" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="delaySignOnlyCheckBox" />
+            <Location value="{X=4,Y=169}" />
+            <Size value="{Width=356, Height=24}" />
+            <Text value="Dela&amp;y Sign only" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="8" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.ComboBox>
+            <Name value="containerComboBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="7" />
+            <Location value="{X=108,Y=133}" />
+            <Size value="{Width=252, Height=21}" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="label2" />
+            <Text value="&amp;Container:" />
+            <TextAlign value="MiddleRight" />
+            <TabIndex value="6" />
+            <Location value="{X=8,Y=128}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.ComboBox>
+            <Name value="providerNameComboBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="5" />
+            <Location value="{X=108,Y=105}" />
+            <Size value="{Width=252, Height=21}" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="label1" />
+            <Text value="Provider &amp;name:" />
+            <TextAlign value="MiddleRight" />
+            <TabIndex value="4" />
+            <Location value="{X=8,Y=100}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.RadioButton>
+            <Name value="useKeyProviderRadioButton" />
+            <Location value="{X=4,Y=77}" />
+            <Size value="{Width=356, Height=24}" />
+            <Text value="Use this key &amp;provider:" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="3" />
+          </System.Windows.Forms.RadioButton>
+          <System.Windows.Forms.ComboBox>
+            <Name value="keyFileComboBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="1" />
+            <Location value="{X=20,Y=49}" />
+            <Size value="{Width=184, Height=21}" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Button>
+            <Name value="changePasswordButton" />
+            <Location value="{X=212,Y=49}" />
+            <Size value="{Width=148, Height=21}" />
+            <Text value="Change Pass&amp;word..." />
+            <Anchor value="Top, Right" />
+            <TabIndex value="2" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.RadioButton>
+            <Name value="useKeyFileRadioButton" />
+            <Location value="{X=4,Y=25}" />
+            <Size value="{Width=356, Height=24}" />
+            <Text value="Use a key &amp;file:" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.RadioButton>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="signAssemblyCheckBox" />
+        <Location value="{X=8,Y=4}" />
+        <Size value="{Width=376, Height=24}" />
+        <Text value="Sign the &amp;assembly" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="0" />
+      </System.Windows.Forms.CheckBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>
