@@ -666,14 +666,25 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		                                     int caretColumn, 
 		                                     string fileName)
 		{
+			this.caretLine     = caretLineNumber;
+			this.caretColumn   = caretColumn;
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new System.IO.StringReader(expression));
 			Expression expr = p.ParseExpression();
 			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
 			if (parseInfo == null) {
 				return null;
 			}
+			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
+			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
+			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
+			if (cu != null) {
+				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
+			}
+			if (callingClass == null) {
+				return null;
+			}
+			
 			if (expr is IdentifierExpression) {
-				ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
 				lookupTableVisitor = new LookupTableVisitor();
 				lookupTableVisitor.Visit(fileCompilationUnit, null);
 				
@@ -683,18 +694,40 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return new FilePosition(fileName, variable.StartPos);
 				}
 				
-				if (callingClass == null) {
-					return null;
-				}
-				
 				// try if typeName is a method parameter
 				IParameter parameter = SearchMethodParameter(expression);
 				if (parameter != null) {
-					return new FilePosition(fileName, new Point(parameter.Region.BeginLine, parameter.Region.BeginColumn));
+					return new FilePosition(fileName, new Point(parameter.Region.BeginColumn, parameter.Region.BeginLine));
 				}
+				return null;
 			}
 			
-			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
+			string target = expression.Substring(0, expression.LastIndexOf('.'));
+			string member = expression.Substring(expression.LastIndexOf('.') + 1);
+			p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new System.IO.StringReader(target));
+			Expression targetExpr = p.ParseExpression();
+			
+			TypeVisitor typeVisitor = new TypeVisitor(this);
+			IReturnType type = expr.AcceptVisitor(typeVisitor, null) as IReturnType;
+			if (type == null || type.FullyQualifiedName == "" || type.PointerNestingLevel != 0) {
+				return null;
+			}
+			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
+				type = new ReturnType("System.Array");
+			}
+			IClass returnClass = SearchType(type.FullyQualifiedName, callingClass, cu);
+			if (returnClass == null) {
+				string n = SearchNamespace(type.FullyQualifiedName, cu);
+				if (n == null) {
+					return null;
+				}
+				returnClass = SearchType(n + '.' + member, callingClass, cu);
+				if (returnClass != null) {
+					return new FilePosition(fileName, new Point(returnClass.Region.BeginColumn, returnClass.Region.BeginLine));
+				}
+				return null;
+			}
+			
 			return null;
 		}
 
