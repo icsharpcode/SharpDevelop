@@ -293,6 +293,13 @@
 		<MenuItem id    = "SetAsStartupProject"
 		          label = "${res:ProjectComponent.ContextMenu.SetAsStartupProject}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.SetAsStartupProject"/>
+		<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False" action="Disable">
+			<MenuItem id          = "Run"
+			          label       = "Sta&amp;rt Project"
+			          icon        = "Icons.16x16.RunProgramIcon"
+			          description = "${res:XML.MainMenu.RunMenu.Run.Description}"
+			          class       = "ICSharpCode.SharpDevelop.Project.Commands.RunProject"/>
+		</Condition>
 		<MenuItem id = "Separator2" type = "Separator"/>
 		<MenuItem id = "Cut"
 		          label = "Cut"

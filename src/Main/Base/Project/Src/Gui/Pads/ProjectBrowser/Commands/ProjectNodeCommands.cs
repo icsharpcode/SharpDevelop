@@ -45,4 +45,16 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 //			}
 		}
 	}
+	
+	public class RunProject : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			AbstractProjectBrowserTreeNode node  = ProjectBrowserPad.Instance.SelectedNode;
+			if (node == null) {
+				return;
+			}
+			node.Project.Start(true);
+		}
+	}
 }

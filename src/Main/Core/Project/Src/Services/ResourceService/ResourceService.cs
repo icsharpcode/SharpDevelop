@@ -28,8 +28,8 @@ namespace ICSharpCode.Core
 	{
 		readonly static string uiLanguageProperty = "CoreProperties.UILanguage";
 
-		readonly static string stringResources = "Resources.StringResources";
-		readonly static string imageResources = "Resources.BitmapResources";
+		readonly static string stringResources = "StringResources";
+		readonly static string imageResources = "BitmapResources";
 		
 		static string resourceDirctory;
 		
@@ -99,12 +99,12 @@ namespace ICSharpCode.Core
 			localIconsResMgrs.Clear();
 			Assembly assembly = Assembly.GetEntryAssembly();
 			if (assembly != null) {
-				if (assembly.GetManifestResourceInfo(stringResources + ".resources") != null) {
-					localStringsResMgrs.Add(new ResourceManager(stringResources, assembly));
+				if (assembly.GetManifestResourceInfo("Resources." + stringResources + ".resources") != null) {
+					localStringsResMgrs.Add(new ResourceManager("Resources." + stringResources, assembly));
 				}
 				
-				if (assembly.GetManifestResourceInfo(imageResources + ".resources") != null) {	
-					localIconsResMgrs.Add(new ResourceManager(imageResources, assembly));
+				if (assembly.GetManifestResourceInfo("Resources." + imageResources + ".resources") != null) {	
+					localIconsResMgrs.Add(new ResourceManager("Resources." + imageResources, assembly));
 				}
 			}
 		}
