@@ -1494,6 +1494,10 @@
 		          label = "${res:XML.TextAreaContextMenu.Indent}"
 		          shortcut = "Control|I"
 		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
+		<MenuItem id = "GoToDefinition"
+		          label = "${res:XML.TextAreaContextMenu.GoToDefinition}"
+		          shortcut = "Control|Enter"
+		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GoToDefinition" />
 		
 		<MenuItem id = "FileMode" label = "${res:XML.TextAreaContextMenu.FileMode}"  type="Menu">
 			<MenuItem id = "HighlightBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.HighlightingTypeBuilder" />
@@ -1738,6 +1742,7 @@
 		<EditAction id = "TemplateCompletion"  class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.TemplateCompletion"  keys = "Control|J"/>
 		<EditAction id = "CodeCompletionPopup" class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.CodeCompletionPopup"  keys = "Control|Space"/>
 		<EditAction id = "IndentSelection"     class = "ICSharpCode.TextEditor.Actions.IndentSelection"  keys = "Control|I"/>
+		<EditAction id = "GoToDefinition"      class = "ICSharpCode.SharpDevelop.DefaultEditor.Actions.GoToDefinition"  keys = "Control|Enter"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/BookmarkPad/Toolbar">

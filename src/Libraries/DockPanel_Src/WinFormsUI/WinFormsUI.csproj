@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
     <ProductVersion>8.0.41115</ProductVersion>
@@ -6,10 +6,6 @@
     <ProjectGuid>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ApplicationIcon>
-    </ApplicationIcon>
-    <AssemblyKeyContainerName>
-    </AssemblyKeyContainerName>
     <AssemblyName>WeifenLuo.WinFormsUI.Docking</AssemblyName>
     <AssemblyOriginatorKeyFile>..\..\..\Main\Core\Project\Resources\ICSharpCode.Core.snk</AssemblyOriginatorKeyFile>
     <DefaultClientScript>JScript</DefaultClientScript>
@@ -19,10 +15,6 @@
     <OutputType>Library</OutputType>
     <RootNamespace>WeifenLuo.WinFormsUI</RootNamespace>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <StartupObject>
-    </StartupObject>
-    <FileUpgradeFlags>
-    </FileUpgradeFlags>
     <SignAssembly>true</SignAssembly>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -30,15 +22,11 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <ConfigurationOverrideFile>
-    </ConfigurationOverrideFile>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DocumentationFile>bin\Debug\CodeDoc.xml</DocumentationFile>
     <DebugSymbols>true</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
-    <NoWarn>
-    </NoWarn>
     <Optimize>false</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
@@ -50,16 +38,10 @@
     <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
     <BaseAddress>285212672</BaseAddress>
     <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <ConfigurationOverrideFile>
-    </ConfigurationOverrideFile>
     <DefineConstants>TRACE</DefineConstants>
-    <DocumentationFile>
-    </DocumentationFile>
     <DebugSymbols>false</DebugSymbols>
     <FileAlignment>4096</FileAlignment>
     <NoStdLib>false</NoStdLib>
-    <NoWarn>
-    </NoWarn>
     <Optimize>true</Optimize>
     <RegisterForComInterop>false</RegisterForComInterop>
     <RemoveIntegerChecks>false</RemoveIntegerChecks>
@@ -90,12 +72,9 @@
     <Compile Include="AssemblyInfo.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Controls\InertButton.cs">
-    </Compile>
-    <Compile Include="Docking\AutoHideWindow.cs">
-    </Compile>
-    <Compile Include="Docking\AutoHideWindowSplitter.cs">
-    </Compile>
+    <Compile Include="Controls\InertButton.cs" />
+    <Compile Include="Docking\AutoHideWindow.cs" />
+    <Compile Include="Docking\AutoHideWindowSplitter.cs" />
     <Compile Include="Docking\DisplayingDockList.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -120,28 +99,23 @@
     <Compile Include="Docking\DockPaneCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Docking\DockPanel.cs">
-    </Compile>
+    <Compile Include="Docking\DockPanel.cs" />
     <Compile Include="Docking\DockPanelPersist.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Docking\DockPaneSplitter.cs">
-    </Compile>
-    <Compile Include="Docking\DockWindow.cs">
-    </Compile>
+    <Compile Include="Docking\DockPaneSplitter.cs" />
+    <Compile Include="Docking\DockWindow.cs" />
     <Compile Include="Docking\DockWindowCollection.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Docking\DockWindowSplitter.cs">
-    </Compile>
+    <Compile Include="Docking\DockWindowSplitter.cs" />
     <Compile Include="Docking\DragHandler.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Docking\DragHandlerBase.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Docking\DummyControl.cs">
-    </Compile>
+    <Compile Include="Docking\DummyControl.cs" />
     <Compile Include="Docking\Enums.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -166,8 +140,7 @@
     <Compile Include="Docking\NestedDockingStatus.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Docking\SplitterBase.cs">
-    </Compile>
+    <Compile Include="Docking\SplitterBase.cs" />
     <Compile Include="Helpers\DrawHelper.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -203,6 +176,11 @@
     <EmbeddedResource Include="Resources\DockPane.ToolWindowCloseDisabled.bmp" />
     <EmbeddedResource Include="Resources\DockPane.ToolWindowCloseEnabled.bmp" />
     <EmbeddedResource Include="Strings.resX" />
+    <None Include="..\..\..\Main\Core\Project\Resources\ICSharpCode.Core.snk">
+      <Link>ICSharpCode.Core.snk</Link>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
     <Content Include="Controls\CodeDoc\InertButton.xml" />
     <Content Include="Docking\CodeDoc\DisplayingDockList.xml" />
     <Content Include="Docking\CodeDoc\DockContent.xml" />
@@ -219,20 +197,7 @@
     <Content Include="Docking\CodeDoc\FloatWindowCollection.xml" />
     <Content Include="Docking\CodeDoc\Interfaces.xml" />
     <Content Include="Docking\CodeDoc\NestedDockingStatus.xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="..\..\..\Main\Core\Project\Resources\ICSharpCode.Core.snk">
-      <Link>ICSharpCode.Core.snk</Link>
-    </None>
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
-  <PropertyGroup>
-    <PreBuildEvent>
-    </PreBuildEvent>
-    <PostBuildEvent>
-    </PostBuildEvent>
-  </PropertyGroup>
 </Project>

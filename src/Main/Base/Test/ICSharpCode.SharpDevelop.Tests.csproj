@@ -13,11 +13,6 @@
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <OutputType>Library</OutputType>
-    <StartupObject />
-    <ApplicationIcon />
-    <Win32Resource />
-    <AssemblyOriginatorKeyFile />
-    <AssemblyKeyProviderName />
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">

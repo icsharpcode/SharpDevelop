@@ -10,20 +10,32 @@
 using System;
 using System.Drawing;
 
-namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
+namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
 	/// Description of SearchDefinition.
 	/// </summary>
 	public class FilePosition
 	{
-		string filename = "";
-		Point position = new Point(0, 0);
+		string filename;
+		Point position;
 		
 		public FilePosition(string filename, Point position)
 		{
 			this.filename = filename;
 			this.position = position;
+		}
+		
+		public string Filename {
+			get {
+				return filename;
+			}
+		}
+		
+		public Point Position {
+			get {
+				return position;
+			}
 		}
 	}
 }

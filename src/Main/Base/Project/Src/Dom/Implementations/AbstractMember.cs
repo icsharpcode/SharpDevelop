@@ -12,19 +12,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public abstract class AbstractMember : AbstractNamedEntity, IMember
 	{
-		protected IClass declaringType;
 		protected IReturnType returnType;
-		protected IRegion          region;
+		protected IRegion     region;
 		
 		public virtual IRegion Region {
 			get {
 				return region;
-			}
-		}
-		
-		public IClass DeclaringType {
-			get {
-				return declaringType;
 			}
 		}
 		
@@ -36,9 +29,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				returnType = value;
 			}
 		}
+		
 		public AbstractMember(IClass declaringType) : base(declaringType)
 		{
 		}
-
 	}
 }

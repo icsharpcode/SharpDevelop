@@ -208,12 +208,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (var != null) {
 				IReturnType type = GetVariableType(var);
 				IField field = new LocalVariableField(type, identifier, null, callingClass);
-				return new LocalResolveResult(callingClass, callingMember, field, false);
+				return new LocalResolveResult(callingMember, field, false);
 			}
 			IParameter para = SearchMethodParameter(identifier);
 			if (para != null) {
 				IField field = new LocalVariableField(para.ReturnType, para.Name, para.Region, callingClass);
-				return new LocalResolveResult(callingClass, callingMember, field, true);
+				return new LocalResolveResult(callingMember, field, true);
 			}
 			IMember member = GetMember(callingClass, identifier);
 			if (member != null) {

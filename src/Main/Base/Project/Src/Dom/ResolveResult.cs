@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Drawing;
 
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Core;
@@ -79,6 +80,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return null;
 			return c.GetAccessibleMembers(callingClass, false);
 		}
+		
+		public virtual FilePosition GetDefinitionPosition()
+		{
+			// this is only possible on some subclasses of ResolveResult
+			return null;
+		}
 	}
 	#endregion
 	
@@ -96,8 +103,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IField field;
 		bool isParameter;
 		
-		public LocalResolveResult(IClass callingClass, IMember callingMember, IField field, bool isParameter)
-			: base(callingClass, callingMember, field.ReturnType)
+		public LocalResolveResult(IMember callingMember, IField field, bool isParameter)
+			: base(callingMember.DeclaringType, callingMember, field.ReturnType)
 		{
 			if (callingMember == null)
 				throw new ArgumentNullException("callingMember");
@@ -123,6 +130,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return isParameter;
 			}
+		}
+		
+		public override FilePosition GetDefinitionPosition()
+		{
+			ICompilationUnit cu = this.CallingClass.CompilationUnit;
+			if (cu == null) {
+				Console.WriteLine("callingClass.CompilationUnit is null");
+				return null;
+			}
+			if (cu.FileName == null || cu.FileName.Length == 0) {
+				Console.WriteLine("callingClass.CompilationUnit.FileName is empty");
+				return null;
+			}
+			IRegion reg = field.Region;
+			if (reg != null)
+				return new FilePosition(cu.FileName, new Point(reg.BeginLine, reg.BeginColumn));
+			else
+				return new FilePosition(cu.FileName, Point.Empty);
 		}
 	}
 	#endregion
@@ -203,6 +228,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 			else
 				return resolvedClass.GetAccessibleMembers(this.CallingClass, true);
 		}
+		
+		public override FilePosition GetDefinitionPosition()
+		{
+			ICompilationUnit cu = resolvedClass.CompilationUnit;
+			if (cu == null) {
+				Console.WriteLine("resolvedClass.CompilationUnit is null");
+				return null;
+			}
+			if (cu.FileName == null || cu.FileName.Length == 0) {
+				Console.WriteLine("resolvedClass.CompilationUnit.FileName is empty");
+				return null;
+			}
+			IRegion reg = resolvedClass.Region;
+			if (reg != null)
+				return new FilePosition(cu.FileName, new Point(reg.BeginLine, reg.BeginColumn));
+			else
+				return new FilePosition(cu.FileName, Point.Empty);
+		}
 	}
 	#endregion
 	
@@ -242,6 +285,29 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return resolvedMember;
 			}
+		}
+		
+		public override FilePosition GetDefinitionPosition()
+		{
+			IClass declaringType = resolvedMember.DeclaringType;
+			if (declaringType == null) {
+				Console.WriteLine("declaringType is null");
+				return null;
+			}
+			ICompilationUnit cu = declaringType.CompilationUnit;
+			if (cu == null) {
+				Console.WriteLine("declaringType.CompilationUnit is null");
+				return null;
+			}
+			if (cu.FileName == null || cu.FileName.Length == 0) {
+				Console.WriteLine("declaringType.CompilationUnit.FileName is empty");
+				return null;
+			}
+			IRegion reg = resolvedMember.Region;
+			if (reg != null)
+				return new FilePosition(cu.FileName, new Point(reg.BeginLine, reg.BeginColumn));
+			else
+				return new FilePosition(cu.FileName, Point.Empty);
 		}
 	}
 	#endregion

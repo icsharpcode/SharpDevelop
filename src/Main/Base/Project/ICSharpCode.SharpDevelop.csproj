@@ -19,9 +19,9 @@
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <OutputPath>..\..\..\..\bin\</OutputPath>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
     <RunFxCop>false</RunFxCop>
-    <WarningLevel>0</WarningLevel>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>False</DebugSymbols>
@@ -29,7 +29,8 @@
     <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <OutputPath>..\..\..\..\bin\</OutputPath>
-    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="ICSharpCode.SharpZipLib, Version=0.82.0.1709, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
@@ -617,8 +618,9 @@
     <Compile Include="Src\Project\AbstractProject.cs" />
     <Compile Include="Src\Dom\XmlDoc.cs" />
     <Compile Include="Src\Services\ParserService\ProjectContentRegistry.cs" />
-    <Compile Include="Src\Dom\NRefactoryResolver\FilePosition.cs" />
     <Compile Include="Src\Dom\ResolveResult.cs" />
+    <Compile Include="Src\TextEditor\Commands\NavigationCommands.cs" />
+    <Compile Include="Src\Dom\FilePosition.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

@@ -29,9 +29,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IReturnType ReturnType {
 			get;
 		}
-
-		IClass DeclaringType {
-			get;
-		}
 	}
 }

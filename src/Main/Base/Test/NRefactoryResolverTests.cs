@@ -237,5 +237,31 @@ interface IInterface2 {
 			}
 			Assert.Fail("Method2 not found");
 		}
+		
+		[Test]
+		public void InvalidMethodCallTest()
+		{
+			string program = @"class A {
+	void Method(string b) {
+		
+	}
+}
+";
+			ResolveResult result = Resolve(program, "b.ThisMethodDoesNotExistOnString()", 3, 24);
+			Assert.IsNull(result, "result");
+		}
+		
+		[Test]
+		public void InvalidConstructorCallTest()
+		{
+			string program = @"class A {
+	void Method() {
+		
+	}
+}
+";
+			ResolveResult result = Resolve(program, "new ThisClassDoesNotExist()", 3, 24);
+			Assert.IsNull(result, "result");
+		}
 	}
 }
