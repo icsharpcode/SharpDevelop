@@ -66,11 +66,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			switch (tag) {
 				case "TaskService.Warnings":
-					return TaskService.Warnings.ToString();
+					return TaskService.GetCount(TaskType.Warning).ToString();
 				case "TaskService.Errors":
-					return TaskService.Errors.ToString();
+					return TaskService.GetCount(TaskType.Error).ToString();
 				case "TaskService.Messages":
-					return TaskService.Messages.ToString();
+					return TaskService.GetCount(TaskType.Message).ToString();
 					
 			}
 			switch (tag.ToUpper()) {

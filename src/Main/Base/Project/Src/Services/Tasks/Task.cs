@@ -18,6 +18,7 @@ namespace ICSharpCode.Core
 		Error,
 		Warning,
 		Message,
+		
 		Comment,
 	}
 	

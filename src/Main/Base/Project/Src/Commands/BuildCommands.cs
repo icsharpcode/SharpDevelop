@@ -20,19 +20,18 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public static void ClearTasks()
 		{
 			TaskService.BuildMessageViewCategory.ClearText();
-			TaskService.Tasks.Clear();
+			TaskService.Clear();
 		}
 			
 		public static void ShowResults(CompilerResults results)
 		{
 			if (results != null) {
 				foreach (CompilerError error in results.Errors) {
-					TaskService.Tasks.Add(new Task(error));
+					TaskService.Add(new Task(error));
 				}
 				if (results.Errors.Count > 0) {
 					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
 				}
-				TaskService.NotifyTaskChange();
 			}
 		}
 		
@@ -87,12 +86,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			if (results != null) {
 				foreach (CompilerError error in results.Errors) {
-					TaskService.Tasks.Add(new Task(error));
+					TaskService.Add(new Task(error));
 				}
 				if (results.Errors.Count > 0) {
 					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
 				}
-				TaskService.NotifyTaskChange();
 			}
 		}
 		

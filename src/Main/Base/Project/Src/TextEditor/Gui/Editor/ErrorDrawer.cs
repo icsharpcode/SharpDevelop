@@ -42,8 +42,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			this.textEditor = textEditor;
 			
-			
-			TaskService.TasksChanged += new EventHandler(SetErrors);
+//	TODO: Tasks Changed!!!		
+//			TaskService.TasksChanged += new EventHandler(SetErrors);
 			
 			textEditor.FileNameChanged += new EventHandler(SetErrors);
 		}

@@ -98,7 +98,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listView.Activation = ItemActivation.OneClick;
 			ListViewResize(this, EventArgs.Empty);
 			
-			TaskService.TasksChanged  += new EventHandler(ShowResults);
+			TaskService.Cleared += new EventHandler(TaskServiceCleared);
+			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
+			TaskService.Removed += new TaskEventHandler(TaskServiceRemoved);
 			
 			ProjectService.EndBuild   += new EventHandler(ProjectServiceEndBuild);
 			
@@ -156,7 +158,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ProjectServiceEndBuild(object sender, EventArgs e)
 		{
-			if (TaskService.Tasks.Count > 0) {
+			if (TaskService.TaskCount > 0) {
 				WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this.GetType().FullName);
 			}
 		}
@@ -203,61 +205,81 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public CompilerResults CompilerResults = null;
 		
-		void AddTasks(ICollection col)
+		void AddTask(Task task)
 		{
-			foreach (Task task in col) {
-				int imageIndex = 0;
-				switch (task.TaskType) {
-					case TaskType.Warning:
-						imageIndex = 1;
-						if (!ShowWarnings) {
-							continue;
-						}
-						break;
-					case TaskType.Error:
-						imageIndex = 0;
-						if (!ShowErrors) {
-							continue;
-						}
-						break;
-					case TaskType.Message:
-						imageIndex = 3;
-						if (!ShowMessages) {
-							continue;
-						}
-						break;						
-					default:
-						continue;
+			int imageIndex = 0;
+			switch (task.TaskType) {
+				case TaskType.Warning:
+					imageIndex = 1;
+					if (!ShowWarnings) {
+						return;
+					}
+					break;
+				case TaskType.Error:
+					imageIndex = 0;
+					if (!ShowErrors) {
+						return;
+					}
+					break;
+				case TaskType.Message:
+					imageIndex = 3;
+					if (!ShowMessages) {
+						return;
+					}
+					break;
+				default:
+					return;
+			}
+			
+			string tmpPath;
+			if (task.Project != null && task.FileName != null) {
+				tmpPath = FileUtility.GetRelativePath(task.Project.Directory, task.FileName);
+			} else {
+				tmpPath = task.FileName;
+			}
+			
+			string fileName = tmpPath;
+			string path     = tmpPath;
+			
+			try {
+				fileName = Path.GetFileName(tmpPath);
+			} catch (Exception) {}
+			
+			try {
+				path = Path.GetDirectoryName(tmpPath);
+			} catch (Exception) {}
+			
+			ListViewItem item = new ListViewItem(new string[] {
+			                                     	String.Empty,
+			                                     	(task.Line + 1).ToString(),
+			                                     	FormatDescription(task.Description),
+			                                     	fileName,
+			                                     	path
+			                                     });
+			item.ImageIndex = item.StateImageIndex = imageIndex;
+			item.Tag = task;
+			listView.Items.Add(item);
+		}
+		
+		
+		void TaskServiceCleared(object sender, EventArgs e)
+		{
+			listView.Items.Clear();
+		}
+		
+		void TaskServiceAdded(object sender, TaskEventArgs e)
+		{
+			AddTask(e.Task);
+		}
+		
+		void TaskServiceRemoved(object sender, TaskEventArgs e)
+		{
+			Task task = e.Task;
+			for (int i = 0; i < listView.Items.Count; ++i) {
+				if ((Task)listView.Items[i].Tag == task) {
+					listView.Items.RemoveAt(i);
+					break;
 				}
-				
-				string tmpPath;
-				if (task.Project != null && task.FileName != null) {
-					tmpPath = FileUtility.GetRelativePath(task.Project.Directory, task.FileName);
-				} else {
-					tmpPath = task.FileName;
-				}
-				
-				string fileName = tmpPath;
-				string path     = tmpPath;
-				
-				try {
-					fileName = Path.GetFileName(tmpPath);
-				} catch (Exception) {}
-				
-				try {
-					path = Path.GetDirectoryName(tmpPath);
-				} catch (Exception) {}
-				
-				ListViewItem item = new ListViewItem(new string[] {
-					String.Empty,
-					(task.Line + 1).ToString(),
-					FormatDescription(task.Description),
-					fileName,
-					path
-				});
-				item.ImageIndex = item.StateImageIndex = imageIndex;
-				item.Tag = task;
-				listView.Items.Add(item);
 			}
 		}
 		
@@ -290,14 +312,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listView.BeginUpdate();
 			listView.Items.Clear();
 			
-			AddTasks(TaskService.Tasks);
+			foreach (Task task in TaskService.Tasks) {
+				AddTask(task);
+			}
 			
 			listView.EndUpdate();
-		}
-		
-		public void ShowResults(object sender, EventArgs e)
-		{
-			WorkbenchSingleton.SafeThreadCall(this, "InternalShowResults");
 		}
 	}
 }

@@ -7,18 +7,17 @@
 
 using System;
 using System.IO;
-using System.Collections;
+using System.Collections.Generic;
 
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.Core
 {
 	public class TaskService
 	{
-		static ArrayList tasks          = new ArrayList();
-		static ArrayList commentTasks   = new ArrayList();
+		static List<Task>          tasks                    = new List<Task>();
 		static MessageViewCategory buildMessageViewCategory = new MessageViewCategory("Build", "${res:MainWindow.Windows.OutputWindow.BuildCategory}");
 		
 		public static MessageViewCategory BuildMessageViewCategory {
@@ -27,66 +26,66 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static ArrayList Tasks {
-			get {
-				return tasks;
+		public class TaskEnumerator {
+			public IEnumerator<Task> GetEnumerator()
+			{
+				foreach (Task task in tasks) {
+					if (task.TaskType != TaskType.Comment) {
+						yield return task;
+					}
+				}
 			}
 		}
 		
-		public static ArrayList CommentTasks {
+		public static int TaskCount {
 			get {
-				return commentTasks;
+				return tasks.Count - GetCount(TaskType.Comment);
+			}
+		}
+		public static TaskEnumerator Tasks {
+			get {
+				return new TaskEnumerator();
 			}
 		}
 		
-		static int warnings = 0;
-		static int errors   = 0;
-		static int messages = 0;
-		static int comments = 0;
-		
-		public static int Warnings {
+		public class CommentTaskEnumerator {
+			public IEnumerator<Task> GetEnumerator()
+			{
+				foreach (Task task in tasks) {
+					if (task.TaskType == TaskType.Comment) {
+						yield return task;
+					}
+				}
+			}
+		}
+		public static CommentTaskEnumerator CommentTasks {
 			get {
-				return warnings;
+				return new CommentTaskEnumerator();
 			}
 		}
 		
-		public static int Errors {
-			get {
-				return errors;
+		static Dictionary<TaskType, int> taskCount = new Dictionary<TaskType, int>();
+	
+		public static int GetCount(TaskType type)
+		{
+			if (!taskCount.ContainsKey(type)) {
+				return 0;
 			}
-		}
-		
-		public static int Messages {
-			get {
-				return messages;
-			}
-		}
-		
-		public static int Comments {
-			get {
-				return comments;
-			}
+			return taskCount[type];
 		}
 		
 		public static bool SomethingWentWrong {
 			get {
-				return errors + warnings > 0;
+				return GetCount(TaskType.Error) + GetCount(TaskType.Warning) > 0;
 			}
 		}
 		
 		public static bool HasCriticalErrors(bool treatWarningsAsErrors)
 		{
 			if (treatWarningsAsErrors) {
-				return errors + warnings > 0;
+				return SomethingWentWrong;
 			} else {
-				return errors > 0;
-			}
-		}
-		
-		static void OnTasksChanged(EventArgs e)
-		{
-			if (TasksChanged != null) {
-				TasksChanged(null, e);
+				return GetCount(TaskType.Error) > 0;
 			}
 		}
 		
@@ -100,93 +99,134 @@ namespace ICSharpCode.Core
 		
 		static void ProjectServiceSolutionClosed(object sender, EventArgs e)
 		{
-			tasks.Clear();
-			commentTasks.Clear();
-			NotifyTaskChange();
+			Clear();
 		}
 		
 		static void CheckFileRemove(object sender, FileEventArgs e)
 		{
-			bool somethingChanged = false;
 			for (int i = 0; i < tasks.Count; ++i) {
-				Task curTask = (Task)tasks[i];
-				bool doRemoveTask = false;
-				try {
-					doRemoveTask = Path.GetFullPath(curTask.FileName) == Path.GetFullPath(e.FileName);
-				} catch {
-					doRemoveTask = curTask.FileName == e.FileName;
-				}
-				if (doRemoveTask) {
-					tasks.RemoveAt(i);
+				Task curTask = tasks[i];
+				if (FileUtility.IsEqualFile(curTask.FileName, e.FileName)) {
+					Remove(curTask);
 					--i;
-					somethingChanged = true;
 				}
-			}
-			
-			if (somethingChanged) {
-				NotifyTaskChange();
 			}
 		}
 		
 		static void CheckFileRename(object sender, FileRenameEventArgs e)
 		{
-			bool somethingChanged = false;
-			foreach (Task curTask in tasks) {
-				if (Path.GetFullPath(curTask.FileName) == Path.GetFullPath(e.SourceFile)) {
+			for (int i = 0; i < tasks.Count; ++i) {
+				Task curTask = tasks[i];
+				if (FileUtility.IsEqualFile(curTask.FileName, e.SourceFile)) {
+					Remove(curTask);
 					curTask.FileName = Path.GetFullPath(e.TargetFile);
-					somethingChanged = true;
-				}
-			}
-			
-			foreach (Task curTask in commentTasks) {
-				if (Path.GetFullPath(curTask.FileName) == Path.GetFullPath(e.SourceFile)) {
-					curTask.FileName = Path.GetFullPath(e.TargetFile);
-					somethingChanged = true;
-				}
-			}
-			
-			
-			if (somethingChanged) {
-				NotifyTaskChange();
-			}
-		}
-		
-		public static void RemoveCommentTasks(string fileName)
-		{
-			bool removed = false;
-			for (int i = 0; i < commentTasks.Count; ++i) {
-				Task task = (Task)commentTasks[i];
-				if (Path.GetFullPath(task.FileName) == Path.GetFullPath(fileName)) {
-					commentTasks.RemoveAt(i);
-					removed = true;
+					Add(curTask);
 					--i;
 				}
 			}
-			if (removed) {
-				NotifyTaskChange();
+		}
+		
+		public static void Clear()
+		{
+			taskCount.Clear();
+			tasks.Clear();
+			OnCleared(EventArgs.Empty);
+		}
+		
+		public static void Add(Task task)
+		{
+			tasks.Add(task);
+			if (!taskCount.ContainsKey(task.TaskType)) {
+				taskCount[task.TaskType] = 1;
+			} else {
+				taskCount[task.TaskType]++;
+			}
+			OnAdded(new TaskEventArgs(task));
+		}
+		
+		public static void Remove(Task task)
+		{
+			if (tasks.Contains(task)) {
+				tasks.Remove(task);
+				taskCount[task.TaskType]--;
+				OnRemoved(new TaskEventArgs(task));
 			}
 		}
 		
-		public static void NotifyTaskChange()
+		public static void UpdateCommentTags(string fileName, List<Tag> tagComments)
 		{
-			warnings = errors = comments = 0;
-			foreach (Task task in tasks) {
-				switch (task.TaskType) {
-					case TaskType.Warning:
-						++warnings;
-						break;
-					case TaskType.Error:
-						++errors;
-						break;
-					default:
-						++comments;
-						break;
+			if (fileName == null || tagComments == null) {
+				return;
+			}
+				
+			List<Task> newTasks = new List<Task>();
+			foreach (Tag tag in tagComments) {
+				newTasks.Add(new Task(fileName, 
+				                      tag.Key + tag.CommentString, 
+				                      tag.Region.BeginColumn, 
+				                      tag.Region.BeginLine, 
+				                      TaskType.Comment));
+			}
+			List<Task> oldTasks = new List<Task>();
+			
+			foreach (Task task in CommentTasks) {
+				if (FileUtility.IsEqualFile(task.FileName, fileName)) {
+					oldTasks.Add(task);
 				}
 			}
-			OnTasksChanged(null);
+			
+			for (int i = 0; i < newTasks.Count; ++i) {
+				for (int j = 0; j < oldTasks.Count; ++j) {
+					if (newTasks[i].Line        == oldTasks[j].Line &&
+					    newTasks[i].Column      == oldTasks[j].Column &&
+					    newTasks[i].Description == oldTasks[j].Description) {
+						newTasks[i] = null;
+						oldTasks[j] = null;
+						++i;
+						if (i >= newTasks.Count) {
+							break;
+						}
+					}
+				}
+			}
+			
+			foreach (Task task in newTasks) {
+				if (task != null) {
+					Add(task);
+				}
+			}
+			
+			foreach (Task task in oldTasks) {
+				if (task != null) {
+					Remove(task);
+				}
+			}
+		}
+
+		static void OnCleared(EventArgs e)
+		{
+			if (Cleared != null) {
+				Cleared(null, e);
+			}
 		}
 		
-		public static event EventHandler TasksChanged;
+		static void OnAdded(TaskEventArgs e)
+		{
+			if (Added != null) {
+				Added(null, e);
+			}
+		}
+		
+		static void OnRemoved(TaskEventArgs e)
+		{
+			if (Removed != null) {
+				Removed(null, e);
+			}
+		}
+		
+		public static event TaskEventHandler Added;
+		public static event TaskEventHandler Removed;
+		public static event EventHandler     Cleared;
 	}
 
 }

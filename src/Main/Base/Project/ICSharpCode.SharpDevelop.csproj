@@ -617,6 +617,7 @@
     <Compile Include="Src\TextEditor\Actions.cs" />
     <Compile Include="Src\TextEditor\CharacterEncodings.cs" />
     <Compile Include="Src\TextEditor\XmlFormattingStrategy.cs" />
+    <Compile Include="Src\Services\Tasks\TaskEventHandler.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

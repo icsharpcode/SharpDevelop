@@ -106,14 +106,9 @@ namespace ICSharpCode.Core
 			
 		public void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags) 
 		{
+			
 			if (updateCommentTags) {
-				TaskService.RemoveCommentTasks(fileName);
-				if (parserOutput.TagComments.Count > 0) {
-					foreach (Tag tag in parserOutput.TagComments) {
-						TaskService.CommentTasks.Add(new Task(fileName, tag.Key + tag.CommentString, tag.Region.BeginColumn, tag.Region.BeginLine, TaskType.Comment));
-					}
-					TaskService.NotifyTaskChange();
-				}
+				TaskService.UpdateCommentTags(fileName, parserOutput.TagComments);
 			}
 			
 			if (oldUnit != null) {
@@ -462,7 +457,7 @@ namespace ICSharpCode.Core
 			return false;
 		}
 		
-		// TODO: check inner classes for protected members too
+		// TODO: check inner classes for protected members too.
 		// TODO: look for FullyQualifiedName == FullyQualifiedName. Must be replaced by a function wich pays attention to the case.
 		//       Look at NRefactoryResolver.IsSameName. Also pay attention if you can put this Function in IClass, and if you have to
 		//       compare the names instead of the FullyQualifiedNames

@@ -198,7 +198,7 @@ namespace ICSharpCode.NUnitPad
 				testRunnerCategory.ClearText();
 			}
 			
-			TaskService.Tasks.Clear();
+			TaskService.Clear();
 			
 			TreeNode selectedNode = treeView.SelectedNode;
 			
@@ -221,7 +221,7 @@ namespace ICSharpCode.NUnitPad
 			}
 			
 			// If any tasks bring task view to front.
-			if (TaskService.Tasks.Count > 0) {
+			if (TaskService.TaskCount > 0) {
 				IWorkbench Workbench = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench;
 				PadDescriptor padDescriptor = Workbench.GetPad(typeof(OpenTaskView));
 				
@@ -339,8 +339,7 @@ namespace ICSharpCode.NUnitPad
 										 LineRef.Line,
 										 TaskType.Error);
 					                     
-					TaskService.Tasks.Add(Task);
-					TaskService.NotifyTaskChange();
+					TaskService.Add(Task);
 				}
 			} else if (!result.Executed) {
 				
@@ -370,8 +369,7 @@ namespace ICSharpCode.NUnitPad
 										 LineRef.Line,
 										 TaskType.Warning);
 					                     
-					TaskService.Tasks.Add(Task);
-					TaskService.NotifyTaskChange();
+					TaskService.Add(Task);
 				}				
 			}
 			

@@ -185,7 +185,7 @@ namespace ICSharpCode.TextEditor
 				return;
 			}
 			textArea.Caret.Position = realmousepos;
-			if (minSelection != nilPoint) {
+			if (minSelection != nilPoint && textArea.SelectionManager.SelectionCollection.Count > 0) {
 				ISelection selection = textArea.SelectionManager.SelectionCollection[0];
 				Point min = textArea.SelectionManager.GreaterEqPos(minSelection, maxSelection) ? maxSelection : minSelection;
 				Point max = textArea.SelectionManager.GreaterEqPos(minSelection, maxSelection) ? minSelection : maxSelection;
