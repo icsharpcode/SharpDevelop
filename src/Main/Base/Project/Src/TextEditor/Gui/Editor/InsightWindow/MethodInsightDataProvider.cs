@@ -58,6 +58,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
 			string word = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset) : expressionFinder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset - 1);
+			if (word == null) // word can be null when cursor is in string/comment
+				return;
 			word = word.Trim();
 			
 			// the parser works with 1 based coordinates

@@ -24,7 +24,7 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	public class TextEditorDisplayBinding : IDisplayBinding
-	{	
+	{
 		// load #D-specific syntax highlighting files here
 		// don't know if this could be solved better by new codons,
 		// but this will do
@@ -75,13 +75,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			b2.ForceFoldingUpdate(language);
 			b2.textAreaControl.ActivateQuickClassBrowserOnDemand();
 			return b2;
-		}		
+		}
 	}
 	
 	public class TextEditorDisplayBindingWrapper : AbstractViewContent, IMementoCapable, IPrintable, IEditable, IUndoHandler, IPositionable, ITextEditorControlProvider, IParseInformationListener, IClipboardHandler, IHelpProvider
 	{
 		public SharpDevelopTextAreaControl textAreaControl = null;
-
+		
 		public TextEditorControl TextEditorControl {
 			get {
 				return textAreaControl;
@@ -103,18 +103,40 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				return textAreaControl.EnableRedo;
 			}
 		}
-
+		
+		// ParserUpdateThread uses the text property via IEditable, I had an exception
+		// because multiple threads were accessing the GapBufferStrategy at the same time.
+		
+		private delegate string GetTextDelegate();
+		private delegate void SetTextDelegate(string value);
+		
+		string GetText()
+		{
+			return textAreaControl.Document.TextContent;
+		}
+		
+		void SetText(string value)
+		{
+			textAreaControl.Document.TextContent = value;
+		}
+		
 		public string Text {
 			get {
-				return textAreaControl.Document.TextContent;
+				if (textAreaControl.InvokeRequired)
+					return (string)textAreaControl.Invoke(new GetTextDelegate(GetText));
+				else
+					return GetText();
 			}
 			set {
-				textAreaControl.Document.TextContent = value;
+				if (textAreaControl.InvokeRequired)
+					textAreaControl.Invoke(new SetTextDelegate(SetText));
+				else
+					SetText(value);
 			}
 		}
 		
 		public PrintDocument PrintDocument {
-			get { 
+			get {
 				return textAreaControl.PrintDocument;
 			}
 		}
@@ -162,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			return new SharpDevelopTextAreaControl();
 		}
-
+		
 		public TextEditorDisplayBindingWrapper()
 		{
 			textAreaControl = CreateSharpDevelopTextAreaControl();
@@ -226,7 +248,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					                    StringParser.Parse("${res:MainWindow.DialogName}"),
 					                    MessageBoxButtons.YesNo,
 					                    MessageBoxIcon.Question) == DialogResult.Yes) {
-					                    	Load(textAreaControl.FileName);
+						Load(textAreaControl.FileName);
 					} else {
 						IsDirty = true;
 					}
@@ -245,9 +267,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 		}
-
+		
 		// KSL End
-	
+		
 		void TextAreaChangedEvent(object sender, DocumentEventArgs e)
 		{
 			IsDirty = true;
@@ -319,7 +341,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			Properties properties = (Properties)memento;
 			textAreaControl.ActiveTextAreaControl.Caret.Position =  textAreaControl.Document.OffsetToPosition(Math.Min(textAreaControl.Document.TextLength, Math.Max(0, properties.Get("CaretOffset", textAreaControl.ActiveTextAreaControl.Caret.Offset))));
 //			textAreaControl.SetDesiredColumn();
-
+			
 			if (textAreaControl.Document.HighlightingStrategy.Name != properties.Get("HighlightingLanguage", textAreaControl.Document.HighlightingStrategy.Name)) {
 				IHighlightingStrategy highlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(properties.Get("HighlightingLanguage", textAreaControl.Document.HighlightingStrategy.Name));
 				if (highlightingStrategy != null) {
@@ -357,7 +379,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			StatusBarService.SetInsertMode(textAreaControl.ActiveTextAreaControl.Caret.CaretMode == CaretMode.InsertMode);
 		}
-				
+		
 		public override string FileName {
 			set {
 				if (Path.GetExtension(FileName) != Path.GetExtension(value)) {
@@ -403,7 +425,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-
+		
 		#region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation
 		public bool EnableCut {
 			get {

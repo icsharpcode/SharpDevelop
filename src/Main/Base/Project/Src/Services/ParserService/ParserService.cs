@@ -134,10 +134,7 @@ namespace ICSharpCode.Core
 									text = editable.Text;
 								}
 								int hash = text.Length;
-								if (!lastUpdateSize.ContainsKey(fileName)) {
-									lastUpdateSize[fileName] = 0;
-								}
-								if (lastUpdateSize[fileName] == null || (int)lastUpdateSize[fileName] != hash) {
+								if (!lastUpdateSize.ContainsKey(fileName) || (int)lastUpdateSize[fileName] != hash) {
 									parseInformation = ParseFile(fileName, text, !viewContent.IsUntitled, true);
 									lastUpdateSize[fileName] = hash;
 									updated = true;

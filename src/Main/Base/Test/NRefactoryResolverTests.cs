@@ -6,7 +6,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 
-namespace DefaultNamespace.Tests
+namespace ICSharpCode.SharpDevelop.Tests
 {
 	[TestFixture]
 	public class NRefactoryResolverTests
@@ -262,6 +262,29 @@ interface IInterface2 {
 ";
 			ResolveResult result = Resolve(program, "new ThisClassDoesNotExist()", 3, 24);
 			Assert.IsNull(result);
+		}
+		
+		[Test]
+		public void OverloadLookupTest()
+		{
+			string program = @"class A {
+	void Method() {
+		
+	}
+	
+	int Multiply(int a, int b) { return a * b; }
+	double Multiply(double a, double b) { return a * b; }
+}
+";
+			ResolveResult result = Resolve(program, "Multiply(1, 1)", 3, 24);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is MethodResolveResult, "'Multiply(1,1)' is MethodResolveResult");
+			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName, "'Multiply(1,1)'");
+			
+			result = Resolve(program, "Multiply(1.0, 1.0)", 3, 24);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is MethodResolveResult, "'Multiply(1.0,1.0)' is MethodResolveResult");
+			Assert.AreEqual("System.Double", result.ResolvedType.FullyQualifiedName, "'Multiply(1.0,1.0)'");
 		}
 	}
 }
