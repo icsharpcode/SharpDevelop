@@ -88,6 +88,7 @@ namespace ICSharpCode.Core
 			this.column      = column;
 			this.line        = line;
 		}
+		
 		public Task(IProject project, CompilerError error)
 		{
 			this.project = project;
@@ -100,6 +101,14 @@ namespace ICSharpCode.Core
 			} else {
 				fileName = error.FileName;
 			}
+		}
+		public Task(CompilerError error)
+		{
+			type         = error.IsWarning ? TaskType.Warning : TaskType.Error;
+			column       = error.Column - 1;
+			line         = error.Line - 1;
+			description  = error.ErrorText + "(" + error.ErrorNumber + ")";
+			fileName     = error.FileName;
 		}
 		
 		public void JumpToPosition()

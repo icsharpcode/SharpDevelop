@@ -421,57 +421,24 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 	
-		void ShowResults(IProject project, CompilerResults results)
-		{
-			if (results != null) {
-				foreach (CompilerError error in results.Errors) {
-					TaskService.Tasks.Add(new Task(project, error));
-				}
-				if (results.Errors.Count > 0) {
-					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
-				}
-				TaskService.NotifyTaskChange();
-			}
-		}
-		
 		public CompilerResults Build()
 		{
-			TaskService.BuildMessageViewCategory.ClearText();
-			TaskService.Tasks.Clear();
-			foreach (IProject project in Projects) {
-				ShowResults(project, project.Build());
-			}
-			return null;
+			return MSBuildProject.RunMSBuild(FileName, null);
 		}
 		
 		public CompilerResults Rebuild()
 		{
-			TaskService.BuildMessageViewCategory.ClearText();
-			TaskService.Tasks.Clear();
-			foreach (IProject project in Projects) {
-				ShowResults(project, project.Rebuild());
-			}
-			return null;
+			return MSBuildProject.RunMSBuild(FileName, "Rebuild");
 		}
 		
 		public CompilerResults Clean()
 		{
-			TaskService.BuildMessageViewCategory.ClearText();
-			TaskService.Tasks.Clear();
-			foreach (IProject project in Projects) {
-				ShowResults(project, project.Clean());
-			}
-			return null;
+			return MSBuildProject.RunMSBuild(FileName, "Clean");
 		}
 		
 		public CompilerResults Publish()
 		{
-			TaskService.BuildMessageViewCategory.ClearText();
-			TaskService.Tasks.Clear();
-			foreach (IProject project in Projects) {
-				ShowResults(project, project.Publish());
-			}
-			return null;
+			return MSBuildProject.RunMSBuild(FileName, "Publish");
 		}
 	}
 }

@@ -52,10 +52,8 @@
 		             class = "CSharpBinding.OptionPanels.Publish"/>
 	</Path>
 
-	<Path name = "/AddIns/DefaultTextEditor/Formater">
-		<Condition textcontent = "C#">
-			<Class id ="CSharpFormatter" insertbefore="DefaultFormatter" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy"/>
-		</Condition>
+	<Path name = "/AddIns/DefaultTextEditor/Formatter/C#">
+		<Class id ="CSharpFormatter" insertbefore="DefaultFormatter" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy"/>
 	</Path>
 	
 	<Path name = "/Workspace/Icons">

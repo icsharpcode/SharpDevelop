@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	{
 		readonly static string contextMenuPath       = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu";
 		readonly static string editActionsPath       = "/AddIns/DefaultTextEditor/EditActions";
-		readonly static string formatingStrategyPath = "/AddIns/DefaultTextEditor/Formater";
+		readonly static string formatingStrategyPath = "/AddIns/DefaultTextEditor/Formatter";
 		
 		QuickClassBrowserPanel quickClassBrowserPanel = null;
 		ErrorDrawer errorDrawer;
@@ -447,14 +447,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public void InitializeFormatter()
 		{
-			try {
-				IFormattingStrategy[] formater = (IFormattingStrategy[])(AddInTree.GetTreeNode(formatingStrategyPath).BuildChildItems(this)).ToArray(typeof(IFormattingStrategy));
-				if (formater != null && formater.Length > 0) {
-//					formater[0].Document = Document;
-					Document.FormattingStrategy = formater[0];
+			string formatterPath = formatingStrategyPath + "/" + Document.HighlightingStrategy.Name;
+			Console.WriteLine("try to get formatter: " + formatterPath);
+			if (AddInTree.ExistsTreeNode(formatterPath)) {
+				IFormattingStrategy[] formatter = (IFormattingStrategy[])(AddInTree.GetTreeNode(formatterPath).BuildChildItems(this)).ToArray(typeof(IFormattingStrategy));
+				if (formatter != null && formatter.Length > 0) {
+					Document.FormattingStrategy = formatter[0];
 				}
-			} catch (TreePathNotFoundException) {
-				Console.WriteLine(formatingStrategyPath + " doesn't exists in the AddInTree");
 			}
 		}
 		

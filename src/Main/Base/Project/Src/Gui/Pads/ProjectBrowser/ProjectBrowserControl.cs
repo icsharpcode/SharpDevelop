@@ -16,7 +16,6 @@ namespace ICSharpCode.SharpDevelop.Project
 	public class ProjectBrowserControl : System.Windows.Forms.UserControl
 	{
 		ExtTreeView treeView;
-		static ImageList projectBrowserImageList  = null;
 		static Dictionary<Image, int> projectBrowserImageIndex = new Dictionary<Image, int>();
 		
 		public bool ShowAll {
@@ -36,8 +35,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static ProjectBrowserControl()
 		{
-			projectBrowserImageList = new ImageList();
-			projectBrowserImageList.ColorDepth = ColorDepth.Depth32Bit;
 		}
 		
 		public AbstractProjectBrowserTreeNode SelectedNode {
@@ -55,7 +52,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ProjectBrowserControl()
 		{
 			InitializeComponent();
-			treeView.ImageList          = projectBrowserImageList;
 			treeView.AfterSelect       += new TreeViewEventHandler(TreeViewAfterSelect);
 			FileService.FileRenaming   += new FileRenameEventHandler(FileServiceFileRenaming);
 			FileService.FileRemoving   += new FileEventHandler(FileServiceFileRemoving);
@@ -154,17 +150,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#endregion
 		
-		
-		public static int GetImageIndexForImage(Image image)
-		{
-			if (!projectBrowserImageIndex.ContainsKey(image)) {
-				projectBrowserImageList.Images.Add(image);
-				projectBrowserImageIndex[image] = projectBrowserImageList.Images.Count - 1;
-				return projectBrowserImageList.Images.Count - 1;
-			}
-
-			return (int)projectBrowserImageIndex[image];
-		}
 		
 		void TreeViewAfterSelect(object sender, TreeViewEventArgs e)
 		{ // set current project & current combine

@@ -2,6 +2,7 @@
   <System.Windows.Forms.Form>
     <Name value="MainForm" />
     <ShowInTaskbar value="False" />
+    <FormBorderStyle value="SizableToolWindow" />
     <ClientSize value="{Width=456, Height=526}" />
     <Font value="[Font: Name=Tahoma, Size=11, Units=3, GdiCharSet=1, GdiVerticalFont=False]" />
     <DockPadding value="" />

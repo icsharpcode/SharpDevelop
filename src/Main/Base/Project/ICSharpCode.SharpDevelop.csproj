@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -7,21 +7,25 @@
     <ProjectGuid>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</ProjectGuid>
     <AssemblyName>ICSharpCode.SharpDevelop</AssemblyName>
     <OutputTarget>Library</OutputTarget>
-    <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
-    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <OutputType>Library</OutputType>
-    <SignAssembly>true</SignAssembly>
+    <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>Resources\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
+    <StartupObject />
+    <ApplicationIcon />
+    <Win32Resource />
+    <AssemblyKeyProviderName />
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <PreBuildEvent />
+    <PostBuildEvent />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <Optimize>True</Optimize>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <OutputPath>..\..\..\..\bin\</OutputPath>
-    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
     <RunFxCop>false</RunFxCop>
     <WarningLevel>0</WarningLevel>
   </PropertyGroup>
@@ -202,8 +206,7 @@
     <Compile Include="Src\Gui\Dialogs\TipOfTheDay.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\TreeViewOptions.cs">
-    </Compile>
+    <Compile Include="Src\Gui\Dialogs\TreeViewOptions.cs" />
     <Compile Include="Src\Gui\Dialogs\ViewGPLDialog.cs">
       <SubType>Form</SubType>
     </Compile>

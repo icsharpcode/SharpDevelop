@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,14 +10,7 @@
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
     <OutputType>Library</OutputType>
-    <StartupObject />
-    <ApplicationIcon />
-    <Win32Resource />
-    <AssemblyOriginatorKeyFile />
-    <AssemblyKeyProviderName />
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
-    <PreBuildEvent />
-    <PostBuildEvent />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

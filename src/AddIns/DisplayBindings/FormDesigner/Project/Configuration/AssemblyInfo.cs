@@ -35,4 +35,3 @@ using System.Runtime.CompilerServices;
 // .NET Framework documentation for more information about signing.
 // This is not required, if you don't want signing let these attributes like they're.
 [assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile("")]

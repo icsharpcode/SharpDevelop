@@ -56,6 +56,25 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public static bool ExistsTreeNode(string path)
+		{
+			if (path == null || path.Length == 0) {
+				return true;
+			}
+			
+			string[] splittedPath = path.Split('/');
+			AddInTreeNode curPath = rootNode;
+			int i = 0;
+			while (i < splittedPath.Length) {
+				if (!curPath.ChildNodes.ContainsKey(splittedPath[i])) {
+					return false;
+				}
+				curPath = curPath.ChildNodes[splittedPath[i]];
+				++i;
+			}
+			return true;
+		}
+		
 		public static AddInTreeNode GetTreeNode(string path)
 		{
 			if (path == null || path.Length == 0) {

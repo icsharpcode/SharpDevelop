@@ -15,9 +15,9 @@ namespace Plugins.RegExpTk {
 		
 		public override void Run()
 		{
-			using (RegExpTkDialog dialog = new RegExpTkDialog()) {
-				dialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
-			}
+			RegExpTkDialog dialog = new RegExpTkDialog();
+			dialog.Owner = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm;
+			dialog.Show();
 		}
 	}
 }

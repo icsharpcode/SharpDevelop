@@ -238,43 +238,43 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		
-		void BeforeBuild()
-		{
-			TaskService.NotifyTaskChange();
-			
-			StatusBarService.SetMessage("${res:MainWindow.StatusBar.CompilingMessage}");
-			
-			StringParser.Properties["Project"] = this.Name;
-			
-			TaskService.BuildMessageViewCategory.AppendText(StringParser.Parse("${res:MainWindow.CompilerMessages.BuildStartedOutput}", new string[,] {
-			                                                                 	{"PROJECT", this.Name},
-			                                                                 	{"CONFIG", this.Configuration + "|" + this.Platform}
-			                                                                   }) + Environment.NewLine);
-			TaskService.BuildMessageViewCategory.AppendText(StringParser.Parse("${res:MainWindow.CompilerMessages.PerformingMainCompilationOutput}") + Environment.NewLine);
-			// TODO :BEFORE COMPILE ACTION.
-			//TaskService.CompilerOutput += StringParser.Parse("${res:MainWindow.CompilerMessages.ExecuteScript}", new string[,] { {"SCRIPT", conf.ExecuteBeforeBuild} }) + "\n";
-		}
-		
-		void AfterBuild()
-		{
-			// TODO: After COMPILE ACTION.
-			//TaskService.CompilerOutput += StringParser.Parse("${res:MainWindow.CompilerMessages.ExecuteScript}", new string[,] { {"SCRIPT", conf.ExecuteAfterBuild} }) + "\n";
-			
-			TaskService.BuildMessageViewCategory.AppendText(StringParser.Parse("${res:MainWindow.CompilerMessages.ProjectStatsOutput}", new string[,] { {"ERRORS", TaskService.Errors.ToString()}, {"WARNINGS", TaskService.Warnings.ToString()} }) + Environment.NewLine + Environment.NewLine);
-			isDirty = TaskService.Errors != 0;
-		}
-		
+//		static void BeforeBuild()
+//		{
+//			TaskService.NotifyTaskChange();
+//			
+//			StatusBarService.SetMessage("${res:MainWindow.StatusBar.CompilingMessage}");
+//			
+//			StringParser.Properties["Project"] = this.Name;
+//			
+//			TaskService.BuildMessageViewCategory.AppendText(StringParser.Parse("${res:MainWindow.CompilerMessages.BuildStartedOutput}", new string[,] {
+//			                                                                 	{"PROJECT", this.Name},
+//			                                                                 	{"CONFIG", this.Configuration + "|" + this.Platform}
+//			                                                                   }) + Environment.NewLine);
+//			TaskService.BuildMessageViewCategory.AppendText(StringParser.Parse("${res:MainWindow.CompilerMessages.PerformingMainCompilationOutput}") + Environment.NewLine);
+//			// TODO :BEFORE COMPILE ACTION.
+//			//TaskService.CompilerOutput += StringParser.Parse("${res:MainWindow.CompilerMessages.ExecuteScript}", new string[,] { {"SCRIPT", conf.ExecuteBeforeBuild} }) + "\n";
+//		}
+//		
+//		static void AfterBuild()
+//		{
+//			// TODO: After COMPILE ACTION.
+//			//TaskService.CompilerOutput += StringParser.Parse("${res:MainWindow.CompilerMessages.ExecuteScript}", new string[,] { {"SCRIPT", conf.ExecuteAfterBuild} }) + "\n";
+//			
+//			TaskService.BuildMessageViewCategory.AppendText(StringParser.Parse("${res:MainWindow.CompilerMessages.ProjectStatsOutput}", new string[,] { {"ERRORS", TaskService.Errors.ToString()}, {"WARNINGS", TaskService.Warnings.ToString()} }) + Environment.NewLine + Environment.NewLine);
+//			isDirty = TaskService.Errors != 0;
+//		}
+//		
 		readonly static Regex normalError  = new Regex(@"^(?<file>\S.*)\((?<line>\d+),(?<column>\d+)\):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)$", RegexOptions.Compiled);
 		readonly static Regex generalError = new Regex(@"^(?<error>\S.+)\s+(?<number>[\d\w]+):\s+(?<message>.*)$", RegexOptions.Compiled);
 		
-		CompilerError GetCompilerError(string line)
+		static CompilerError GetCompilerError(string line, string workingPath)
 		{
 			Match match = normalError.Match(line);
 			if (match.Success) {
 				CompilerError error = new CompilerError();
 				error.Column      = Int32.Parse(match.Result("${column}"));
 				error.Line        = Int32.Parse(match.Result("${line}"));
-				error.FileName    = match.Result("${file}");
+				error.FileName    = Path.Combine(workingPath, match.Result("${file}"));
 				error.IsWarning   = match.Result("${error}") == "warning";
 				error.ErrorNumber = match.Result("${number}");
 				error.ErrorText   = match.Result("${message}");
@@ -292,15 +292,20 @@ namespace ICSharpCode.SharpDevelop.Project
 			return null;
 		}
 			
-		CompilerResults RunMSBuild(string target)
+		public static CompilerResults RunMSBuild(string fileName, string target)
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 			CompilerResults results = new CompilerResults(null);
-			BeforeBuild();
+//			BeforeBuild();
 			string runtimeDirectory    = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
 			ProcessStartInfo startInfo = new ProcessStartInfo("\"" + Path.Combine(runtimeDirectory, "msbuild.exe") + "\"");
-			startInfo.Arguments        = "/nologo /verbosity:m \"" + FileName + "\" \"/t:" + target + "\"";
-			startInfo.WorkingDirectory = Directory;
+			if (target != null) {
+				startInfo.Arguments = "/nologo /verbosity:m \"" + fileName + "\" \"/t:" + target + "\"";
+			} else {
+				startInfo.Arguments = "/nologo /verbosity:m \"" + fileName;
+			}
+			string workingDirectory = Path.GetDirectoryName(fileName);
+			startInfo.WorkingDirectory = workingDirectory;
 			
 			startInfo.UseShellExecute         = false;
 			startInfo.RedirectStandardOutput  = true;
@@ -311,7 +316,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				string line = reader.ReadLine();
 				if (line != null) {
 					TaskService.BuildMessageViewCategory.AppendText(line + Environment.NewLine);
-					CompilerError error = GetCompilerError(line);
+					CompilerError error = GetCompilerError(line, workingDirectory);
 					if (error != null) {
 						results.Errors.Add(error);
 					}
@@ -321,30 +326,30 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			TaskService.BuildMessageViewCategory.AppendText(reader.ReadToEnd() + Environment.NewLine);
 			p.WaitForExit();
-			AfterBuild();
+//			AfterBuild();
 			return results;
 		}
 		
 		public override CompilerResults Build()
 		{
-			return RunMSBuild("Build");
+			return RunMSBuild(FileName, "Build");
 		}
 		
 		public override CompilerResults Rebuild()
 		{
-			return RunMSBuild("Rebuild");
+			return RunMSBuild(FileName, "Rebuild");
 		}
 		
 		public override CompilerResults Clean()
 		{
-			CompilerResults result = RunMSBuild("Clean");
+			CompilerResults result = RunMSBuild(FileName, "Clean");
 			isDirty = true;
 			return result;
 		}
 		
 		public override CompilerResults Publish()
 		{
-			return RunMSBuild("Publish");
+			return RunMSBuild(FileName, "Publish");
 		}
 		
 		public override string ToString()

@@ -7,16 +7,42 @@
 
 using System;
 using System.Diagnostics;
+using System.CodeDom.Compiler;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.Core;
+
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
 {
 	public class Build : AbstractMenuCommand
 	{
+		public static void ClearTasks()
+		{
+			TaskService.BuildMessageViewCategory.ClearText();
+			TaskService.Tasks.Clear();
+		}
+			
+		public static void ShowResults(CompilerResults results)
+		{
+			if (results != null) {
+				foreach (CompilerError error in results.Errors) {
+					TaskService.Tasks.Add(new Task(error));
+				}
+				if (results.Errors.Count > 0) {
+					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
+				}
+				TaskService.NotifyTaskChange();
+			}
+		}
+		
 		public override void Run()
 		{
-			new ICSharpCode.SharpDevelop.Commands.SaveAllFiles().Run();
-			ProjectService.OpenSolution.Build();
+			if (ProjectService.OpenSolution != null) {
+				Build.ClearTasks();
+				new ICSharpCode.SharpDevelop.Commands.SaveAllFiles().Run();
+				Build.ShowResults(ProjectService.OpenSolution.Build());
+			}
 		}
 	}
 	
@@ -24,8 +50,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			new ICSharpCode.SharpDevelop.Commands.SaveAllFiles().Run();
-			ProjectService.OpenSolution.Rebuild();
+			if (ProjectService.OpenSolution != null) {
+				Build.ClearTasks();
+				new ICSharpCode.SharpDevelop.Commands.SaveAllFiles().Run();
+				Build.ShowResults(ProjectService.OpenSolution.Rebuild());
+			}
 		}
 	}
 	
@@ -33,7 +62,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			ProjectService.OpenSolution.Clean();
+			if (ProjectService.OpenSolution != null) {
+				Build.ClearTasks();
+				Build.ShowResults(ProjectService.OpenSolution.Clean());
+			}
 		}
 	}
 	
@@ -41,16 +73,36 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			ProjectService.OpenSolution.Clean();
+			if (ProjectService.OpenSolution != null) {
+				Build.ClearTasks();
+				Build.ShowResults(ProjectService.OpenSolution.Publish());
+			}
 		}
 	}
 	
 	public class BuildProject : AbstractMenuCommand
 	{
+	
+		public static void ShowResults(CompilerResults results)
+		{
+			if (results != null) {
+				foreach (CompilerError error in results.Errors) {
+					TaskService.Tasks.Add(new Task(ProjectService.CurrentProject, error));
+				}
+				if (results.Errors.Count > 0) {
+					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
+				}
+				TaskService.NotifyTaskChange();
+			}
+		}
+		
 		public override void Run()
 		{
-			new ICSharpCode.SharpDevelop.Commands.SaveAllFiles().Run();
-			ProjectService.CurrentProject.Build();
+			if (ProjectService.CurrentProject != null) {
+				Build.ClearTasks();
+				new ICSharpCode.SharpDevelop.Commands.SaveAllFiles().Run();
+				BuildProject.ShowResults(ProjectService.CurrentProject.Build());
+			}
 		}
 	}
 	
@@ -58,8 +110,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			new ICSharpCode.SharpDevelop.Commands.SaveAllFiles().Run();
-			ProjectService.CurrentProject.Rebuild();
+			if (ProjectService.CurrentProject != null) {
+				Build.ClearTasks();
+				new ICSharpCode.SharpDevelop.Commands.SaveAllFiles().Run();
+				BuildProject.ShowResults(ProjectService.CurrentProject.Rebuild());
+			}
 		}
 	}
 	
@@ -67,7 +122,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			ProjectService.CurrentProject.Clean();
+			if (ProjectService.CurrentProject != null) {
+				Build.ClearTasks();
+				BuildProject.ShowResults(ProjectService.CurrentProject.Clean());
+			}
 		}
 	}
 	
@@ -75,7 +133,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			ProjectService.CurrentProject.Clean();
+			if (ProjectService.CurrentProject != null) {
+				Build.ClearTasks();
+				BuildProject.ShowResults(ProjectService.CurrentProject.Publish());
+			}
 		}
 	}
 }

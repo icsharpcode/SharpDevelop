@@ -22,4 +22,3 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyVersion("3.0.0.1")]
 
 [assembly: AssemblyDelaySign(false)]
-//[assembly: AssemblyKeyFile("ICSharpCode.Core.key")]

@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			b2.textAreaControl.Dock = DockStyle.Fill;
 			b2.Load(fileName);
-//			b2.textAreaControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
+			b2.textAreaControl.Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
 			b2.textAreaControl.InitializeFormatter();
 			b2.ForceFoldingUpdate(null);
 			b2.textAreaControl.ActivateQuickClassBrowserOnDemand();
