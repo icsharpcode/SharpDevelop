@@ -241,7 +241,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 		}
 		
-		
 //		static void BeforeBuild()
 //		{
 //			TaskService.NotifyTaskChange();
@@ -267,111 +266,18 @@ namespace ICSharpCode.SharpDevelop.Project
 //			TaskService.BuildMessageViewCategory.AppendText(StringParser.Parse("${res:MainWindow.CompilerMessages.ProjectStatsOutput}", new string[,] { {"ERRORS", TaskService.Errors.ToString()}, {"WARNINGS", TaskService.Warnings.ToString()} }) + Environment.NewLine + Environment.NewLine);
 //			isDirty = TaskService.Errors != 0;
 //		}
-//		
-		readonly static Regex normalError   = new Regex(@"^(?<file>\S.*)\((?<line>\d+),(?<column>\d+)\):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)$", RegexOptions.Compiled);
-		readonly static Regex compilerError = new Regex(@"^(?<who>[^:]*):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)$", RegexOptions.Compiled);
-		readonly static Regex generalError  = new Regex(@"^(?<error>\S.+)\s+(?<number>[\d\w]+):\s+(?<message>.*)$", RegexOptions.Compiled);
-		
-		readonly static Regex projectName   = new Regex(@"^Project\s+\""[^""]*\""[^""]*\""(?<name>[^""]*)\""", RegexOptions.Compiled);
-		
-		
-		static CompilerError GetCompilerError(string line, string workingPath)
-		{
-			Match match = normalError.Match(line);
-			if (match.Success) {
-				CompilerError error = new CompilerError();
-				error.Column      = Int32.Parse(match.Result("${column}"));
-				error.Line        = Int32.Parse(match.Result("${line}"));
-				error.FileName    = Path.Combine(workingPath, match.Result("${file}"));
-				error.IsWarning   = match.Result("${error}") == "warning";
-				error.ErrorNumber = match.Result("${number}");
-				error.ErrorText   = match.Result("${message}");
-				return error;
-			}
-			match = compilerError.Match(line);
-			if (match.Success) {
-				CompilerError error = new CompilerError();
-				error.IsWarning   = match.Result("${error}") == "warning";
-				error.ErrorNumber = match.Result("${number}");
-				error.ErrorText   = match.Result("${who}") + ":" + match.Result("${message}");
-				return error;
-			}
-			
-			match = generalError.Match(line);
-			if (match.Success) {
-				CompilerError error = new CompilerError();
-				error.IsWarning   = match.Result("${error}") == "warning";
-				error.ErrorNumber = match.Result("${number}");
-				error.ErrorText   = match.Result("${message}");
-				return error;
-			}
-			return null;
-		}
 		
 		public static CompilerResults RunMSBuild(string fileName, string target)
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
-			CompilerResults results = new CompilerResults(null);
 //			BeforeBuild();
-			string runtimeDirectory    = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
-			ProcessStartInfo startInfo = new ProcessStartInfo("\"" + Path.Combine(runtimeDirectory, "msbuild.exe") + "\"");
-			if (target != null) {
-				startInfo.Arguments = "/nologo /verbosity:m \"" + fileName + "\" \"/t:" + target + "\"";
-			} else {
-				startInfo.Arguments = "/nologo /verbosity:m \"" + fileName;
-			}
-			string workingDirectory = Path.GetDirectoryName(fileName);
-			startInfo.WorkingDirectory = workingDirectory;
-			
-			startInfo.UseShellExecute         = false;
-			startInfo.RedirectStandardOutput  = true;
-			Process p = Process.Start(startInfo);
-			
-			StreamReader reader = p.StandardOutput;
-			while (!p.HasExited) {
-				string line = reader.ReadLine();
-				if (line != null) {
-					TaskService.BuildMessageViewCategory.AppendText(line + Environment.NewLine);
-					Match match = projectName.Match(line);
-					if (match.Success) {
-						string name = match.Result("${name}");
-						if (name != null) {
-							workingDirectory = Path.GetDirectoryName(name);
-						}
-					} else {
-						CompilerError error = GetCompilerError(line, workingDirectory);
-						if (error != null) {
-							results.Errors.Add(error);
-						}
-					} 
-					results.Output.Add(line);
-				}
-				System.Windows.Forms.Application.DoEvents();
-			}
-			while (true) {
-				string line = reader.ReadLine();
-				if (line == null) {
-					break;
-				}
-				TaskService.BuildMessageViewCategory.AppendText(line + Environment.NewLine);
-				Match match = projectName.Match(line);
-				if (match.Success) {
-					string name = match.Result("${name}");
-					if (name != null) {
-						workingDirectory = Path.GetDirectoryName(name);
-					}
-				} else {
-					CompilerError error = GetCompilerError(line, workingDirectory);
-					if (error != null) {
-						results.Errors.Add(error);
-					}
-				} 
-				results.Output.Add(line);
-			}
-//			TaskService.BuildMessageViewCategory.AppendText(reader.ReadToEnd() + Environment.NewLine);
-			p.WaitForExit();
+			MSBuildEngine engine = new MSBuildEngine();
+			engine.MessageView = TaskService.BuildMessageViewCategory;
+			if (target == null)
+				return engine.Run(fileName);
+			else
+				return engine.Run(fileName, new string[] { target });
 //			AfterBuild();
-			return results;
 		}
 		
 		public override CompilerResults Build()
