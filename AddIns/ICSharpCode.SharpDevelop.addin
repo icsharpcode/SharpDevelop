@@ -1884,17 +1884,18 @@
 		             tooltip = "Collapse all"
 		             class   = "SearchAndReplace.CollapseAll"/>
 		<ToolbarItem id = "ExpandCollapseSeparator" type = "Separator" />
-		<!--
-		<ToolbarItem id      = "ToggleTreeList"
-		             icon    = "Icons.16x16.Error"
-		             tooltip = "Toggle Tree/List view"
-		             class   = "SearchAndReplace.ToggleTreeList"/>-->
 		
 		<ToolbarItem id      = "ShowLast"
 		             type    = "DropDownButton"
 		             icon    = "Icons.16x16.FindIcon"
 		             tooltip = "Show last searches"
 		             class   = "SearchAndReplace.ShowLastSearchResults"/>
+		
+		<ToolbarItem id      = "SelectViewMode"
+		             type    = "DropDownButton"
+		             icon    = "Icons.16x16.FindIcon"
+		             tooltip = "Select search list mode"
+		             class   = "SearchAndReplace.SelectViewMode"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
