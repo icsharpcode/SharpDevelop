@@ -44,6 +44,9 @@ namespace ICSharpCode.Core
 			if (Image == null && codon.Properties.Contains("icon")) {
 				Image = ResourceService.GetBitmap(codon.Properties["icon"]);
 			}
+			
+			menuCommand = codon.AddIn.CreateObject(codon.Properties["class"]) as ICommand;
+			
 			UpdateStatus();
 		}
 		
@@ -64,12 +67,9 @@ namespace ICSharpCode.Core
 //			StatusBarService.SetMessage(description);
 //		}
 		
-		
-		public override bool Enabled {
+		public bool LastEnabledStatus = false;
+		public bool CurrentEnableStatus {
 			get {
-				if (codon == null) {
-					return base.Enabled;
-				}
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
 				
 				bool isEnabled = failedAction != ConditionFailedAction.Disable;
@@ -77,7 +77,14 @@ namespace ICSharpCode.Core
 				if (menuCommand != null && menuCommand is IMenuCommand) {
 					isEnabled &= ((IMenuCommand)menuCommand).IsEnabled;
 				}
-				
+				return isEnabled;
+			}
+		}
+		
+		public override bool Enabled {
+			get {
+				bool isEnabled = CurrentEnableStatus;
+				LastEnabledStatus  = isEnabled;
 				return isEnabled;
 			}
 		}
@@ -90,9 +97,6 @@ namespace ICSharpCode.Core
 				if (base.Visible != isVisible) {
 					base.Visible = isVisible;
 				}
-			}
-			if (menuCommand == null) {
-				menuCommand = codon.AddIn.CreateObject(codon.Properties["class"]) as ICommand;
 			}
 			
 			ToolTipText  = StringParser.Parse(localizedText);

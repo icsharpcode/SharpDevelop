@@ -264,11 +264,11 @@ namespace ICSharpCode.SharpDevelop.Project
 //			isDirty = TaskService.Errors != 0;
 //		}
 //		
-		readonly static Regex normalError   = new Regex(@"(?<file>\S.*)\((?<line>\d+),(?<column>\d+)\):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)", RegexOptions.Compiled);
-		readonly static Regex compilerError = new Regex(@"(?<who>[^:]*):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)", RegexOptions.Compiled);
-		readonly static Regex generalError  = new Regex(@"(?<error>\S.+)\s+(?<number>[\d\w]+):\s+(?<message>.*)", RegexOptions.Compiled);
+		readonly static Regex normalError   = new Regex(@"^(?<file>\S.*)\((?<line>\d+),(?<column>\d+)\):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)$", RegexOptions.Compiled);
+		readonly static Regex compilerError = new Regex(@"^(?<who>[^:]*):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)$", RegexOptions.Compiled);
+		readonly static Regex generalError  = new Regex(@"^(?<error>\S.+)\s+(?<number>[\d\w]+):\s+(?<message>.*)$", RegexOptions.Compiled);
 		
-		readonly static Regex projectName   = new Regex(@"Project\s+\""[^""]*\""[^""]*\""(?<name>[^""]*)\""", RegexOptions.Compiled);
+		readonly static Regex projectName   = new Regex(@"^Project\s+\""[^""]*\""[^""]*\""(?<name>[^""]*)\""", RegexOptions.Compiled);
 		
 		
 		static CompilerError GetCompilerError(string line, string workingPath)

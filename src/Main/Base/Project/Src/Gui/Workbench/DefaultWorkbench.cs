@@ -471,12 +471,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (ToolBars != null) {
 				foreach (ToolStrip ToolStrip in ToolBars) {
+					bool doRefresh = false;
 					foreach (ToolStripItem item in ToolStrip.Items) {
-						if (item is IStatusUpdate) {
-							((IStatusUpdate)item).UpdateStatus();
+						bool wasVisible = item.Visible;
+						if (item is ToolBarCommand) {
+							ToolBarCommand toolBarCommand = (ToolBarCommand)item;
+							doRefresh |= toolBarCommand.LastEnabledStatus != toolBarCommand.CurrentEnableStatus;
+							toolBarCommand.UpdateStatus();
+						} else {
+							if (item is IStatusUpdate) {
+								((IStatusUpdate)item).UpdateStatus();
+							}
 						}
+						doRefresh |= wasVisible != item.Visible;
 					}
-					ToolStrip.Refresh();
+					if (doRefresh) {
+						Console.WriteLine("Refresh TOOLBAR!!!");
+						ToolStrip.Refresh();
+					}
 				}
 			}
 		}
