@@ -5,7 +5,7 @@ using ICSharpCode.SharpDevelop.Dom;
 namespace CSharpBinding.Parser
 {
 	/// <summary>
-	/// Description of ExpressionFinder.	
+	/// Description of ExpressionFinder.
 	/// </summary>
 	public class ExpressionFinder : IExpressionFinder
 	{
@@ -32,6 +32,117 @@ namespace CSharpBinding.Parser
 			
 			return this.text.Substring(this.lastAccept + 1, offset - this.lastAccept);
 		}
+		
+		public string FindFullExpression(string inText, int offset)
+		{
+			string expressionBeforeOffset = FindExpression(inText, offset);
+			if (expressionBeforeOffset == null || expressionBeforeOffset.Length == 0)
+				return null;
+			StringBuilder b = new StringBuilder(expressionBeforeOffset);
+			// append characters after expression
+			for (int i = offset + 1; i < inText.Length; ++i) {
+				char c = inText[i];
+				if (Char.IsLetterOrDigit(c)) {
+					if (Char.IsWhiteSpace(inText, i - 1))
+						break;
+					b.Append(c);
+				} else if (Char.IsWhiteSpace(c)) {
+					// ignore whitespace
+				} else if (c == '(' || c == '[') {
+					int otherBracket = SearchBracketForward(inText, i + 1, c, (c == '(') ? ')' : ']');
+					if (otherBracket < 0)
+						break;
+					b.Append(inText, i, otherBracket - i + 1);
+					break;
+				} else {
+					break;
+				}
+			}
+			return b.ToString();
+		}
+		
+		#region SearchBracketForward
+		// like CSharpFormattingStrategy.SearchBracketForward, but operates on a string.
+		private int SearchBracketForward(string text, int offset, char openBracket, char closingBracket)
+		{
+			bool inString = false;
+			bool inChar   = false;
+			bool verbatim = false;
+			
+			bool lineComment  = false;
+			bool blockComment = false;
+			
+			if (offset < 0) return -1;
+			
+			int brackets = 1;
+			
+			for (; offset < text.Length; ++offset) {
+				char ch = text[offset];
+				switch (ch) {
+					case '\r':
+					case '\n':
+						lineComment = false;
+						inChar = false;
+						if (!verbatim) inString = false;
+						break;
+					case '/':
+						if (blockComment) {
+							if (offset > 0 && text[offset - 1] == '*') {
+								blockComment = false;
+							}
+						}
+						if (!inString && !inChar && offset + 1 < text.Length) {
+							if (!blockComment && text[offset + 1] == '/') {
+								lineComment = true;
+							}
+							if (!lineComment && text[offset + 1] == '*') {
+								blockComment = true;
+							}
+						}
+						break;
+					case '"':
+						if (!(inChar || lineComment || blockComment)) {
+							if (inString && verbatim) {
+								if (offset + 1 < text.Length && text[offset + 1] == '"') {
+									++offset; // skip escaped quote
+									inString = false; // let the string go on
+								} else {
+									verbatim = false;
+								}
+							} else if (!inString && offset > 0 && text[offset - 1] == '@') {
+								verbatim = true;
+							}
+							inString = !inString;
+						}
+						break;
+					case '\'':
+						if (!(inString || lineComment || blockComment)) {
+							inChar = !inChar;
+						}
+						break;
+					case '\\':
+						if ((inString && !verbatim) || inChar)
+							++offset; // skip next character
+						break;
+					default:
+						if (ch == openBracket) {
+							if (!(inString || inChar || lineComment || blockComment)) {
+								++brackets;
+							}
+						} else if (ch == closingBracket) {
+							if (!(inString || inChar || lineComment || blockComment)) {
+								--brackets;
+								if (brackets == 0) {
+									return offset;
+								}
+							}
+						}
+						break;
+				}
+			}
+			return -1;
+		}
+		#endregion
 		
 		#region Comment Filter and 'inside string watcher'
 		int initialOffset;
@@ -233,7 +344,7 @@ namespace CSharpBinding.Parser
 		void ReadNextToken()
 		{
 			char ch = GetNext();
-				
+			
 			curTokenType = Err;
 			if (ch == '\0') {
 				return;
@@ -287,7 +398,7 @@ namespace CSharpBinding.Parser
 							}
 						}
 					}
-
+					
 					break;
 			}
 		}
@@ -389,7 +500,7 @@ namespace CSharpBinding.Parser
 		}
 		#endregion
 		
-		#region finite state machine 
+		#region finite state machine
 		readonly static int ERROR  = 0;
 		readonly static int START  = 1;
 		readonly static int DOT    = 2;
@@ -403,18 +514,18 @@ namespace CSharpBinding.Parser
 		readonly static int ACCEPT2 = 9;
 		
 		readonly static string[] stateName = new string[] {
-			"ERROR", 
-			"START", 
-			"DOT", 
-			"MORE", 
-			"CURLY", 
-			"CURLY2", 
-			"CURLY3", 
-			"ACCEPT", 
-			"ACCEPTNOMORE", 
+			"ERROR",
+			"START",
+			"DOT",
+			"MORE",
+			"CURLY",
+			"CURLY2",
+			"CURLY3",
+			"ACCEPT",
+			"ACCEPTNOMORE",
 			"ACCEPT2"
 		};
-			
+		
 		string GetStateName(int state)
 		{
 			return stateName[state];
@@ -435,6 +546,6 @@ namespace CSharpBinding.Parser
 			/*ACCEPTNOMORE*/ { ERROR,   ERROR,   ERROR,   ERROR,        ERROR,  ERROR,   ERROR,   ERROR,   ERROR,        ERROR},
 			/*ACCEPT2*/      { ERROR,    MORE,   ERROR,  ACCEPT,       ACCEPT,  ERROR,   ERROR,   ERROR,   ERROR,        ACCEPT},
 		};
-		#endregion 
+		#endregion
 	}
 }

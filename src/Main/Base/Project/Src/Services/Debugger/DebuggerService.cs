@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
@@ -523,53 +524,38 @@ namespace ICSharpCode.Core
 		/// </summary>
 		static void TextAreaMouseMove(object sender, MouseEventArgs args)
 		{
-			TextArea textArea = (TextArea)sender;
-			
-			Point mousepos = textArea.PointToClient(Control.MousePosition);
-			Rectangle viewRect = textArea.TextView.DrawingPosition;
-			if (viewRect.Contains(mousepos)) {
-				Point logicPos = textArea.TextView.GetLogicalPosition(mousepos.X - viewRect.Left,
-				                                                      mousepos.Y - viewRect.Top);
-				if (logicPos.Y >= 0 && logicPos.Y < textArea.Document.TotalNumberOfLines) {
-					IDocument doc = textArea.Document;
-					LineSegment seg = doc.GetLineSegment(logicPos.Y);
-					string line = doc.GetText(seg.Offset, seg.Length);
-					int startIndex = 0;
-					int length = 0;
-					string expression = String.Empty;
-					for(int index = 0; index < seg.Length; index++) {
-						char chr = line[index];
-						if ((Char.IsLetterOrDigit(chr) || chr == '_' || chr == '.') == false || // invalid character
-						    (chr == '.' && logicPos.X <= index)) { // Start of sub-expression at the right side of cursor
-							// End of expresion...
-							if ((startIndex <= logicPos.X && logicPos.X <= index) && // Correct position
-							    (startIndex != index)) { // Actually something
-								length = index - startIndex;
-								expression = line.Substring(startIndex, length);
-								break;
-							} else {
-								// Let's try next one...
-								startIndex = index + 1;
-							}
-						}
-					}
-					//Console.WriteLine("MouseMove@" + logicPos + ":" + expression);
-					if (expression != String.Empty) {
-						// Look if it is variable
-						try {
+			try {
+				TextArea textArea = (TextArea)sender;
+				
+				Point mousepos = textArea.PointToClient(Control.MousePosition);
+				Rectangle viewRect = textArea.TextView.DrawingPosition;
+				if (viewRect.Contains(mousepos)) {
+					Point logicPos = textArea.TextView.GetLogicalPosition(mousepos.X - viewRect.Left,
+					                                                      mousepos.Y - viewRect.Top);
+					if (logicPos.Y >= 0 && logicPos.Y < textArea.Document.TotalNumberOfLines) {
+						IDocument doc = textArea.Document;
+						IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textArea.MotherTextEditorControl.FileName);
+						LineSegment seg = doc.GetLineSegment(logicPos.Y);
+						int xPosition = Math.Min(seg.Length - 1, logicPos.X);
+						string textContent = doc.TextContent;
+						string expression = expressionFinder.FindFullExpression(textContent, seg.Offset + xPosition);
+						//Console.WriteLine("MouseMove@" + logicPos + ":" + expression);
+						if (expression != null && expression != String.Empty) {
+							// Look if it is variable
 							//value = selectedThread.LocalVariables[expresion].Value.ToString();
-							ResolveResult result = ParserService.Resolve(expression, logicPos.Y, startIndex, textArea.MotherTextEditorControl.FileName, doc.TextContent);
+							ResolveResult result = ParserService.Resolve(expression, logicPos.Y + 1, xPosition + 1, textArea.MotherTextEditorControl.FileName, textContent);
 							string value = GetText(result);
 							if (value != null) {
+								value = "expr: >" + expression + "<\n" + value;
 								textArea.SetToolTip(value);
 							}
-						} catch (Exception e) {
-							Console.Beep();
-							Console.WriteLine();
-							Console.WriteLine(e);
 						}
 					}
 				}
+			} catch (Exception e) {
+				Console.Beep();
+				Console.WriteLine();
+				Console.WriteLine(e);
 			}
 		}
 		
@@ -581,19 +567,7 @@ namespace ICSharpCode.Core
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags
 				| ConversionFlags.ShowAccessibility;
 			if (result is MemberResolveResult) {
-				MemberResolveResult rr = (MemberResolveResult)result;
-				IMember member = rr.ResolvedMember;
-				if (member is IIndexer)
-					return ambience.Convert(member as IIndexer);
-				if (member is IField)
-					return ambience.Convert(member as IField);
-				if (member is IProperty)
-					return ambience.Convert(member as IProperty);
-				if (member is IEvent)
-					return ambience.Convert(member as IEvent);
-				if (member is IMethod)
-					return ambience.Convert(member as IMethod);
-				return "unknown member " + member.ToString();
+				return GetText(ambience, ((MemberResolveResult)result).ResolvedMember);
 			} else if (result is LocalResolveResult) {
 				LocalResolveResult rr = (LocalResolveResult)result;
 				ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedNames
@@ -606,13 +580,40 @@ namespace ICSharpCode.Core
 			} else if (result is NamespaceResolveResult) {
 				return "namespace " + ((NamespaceResolveResult)result).Name;
 			} else if (result is TypeResolveResult) {
-				return ambience.Convert(((TypeResolveResult)result).ResolvedClass);
+				return GetText(ambience, ((TypeResolveResult)result).ResolvedClass);
 			} else {
 				if (result.ResolvedType == null)
 					return null;
 				else
 					return "expression of type " + ambience.Convert(result.ResolvedType);
 			}
+		}
+		
+		static string GetText(IAmbience ambience, IDecoration member)
+		{
+			StringBuilder text = new StringBuilder();
+			if (member is IIndexer) {
+				text.Append(ambience.Convert(member as IIndexer));
+			} else if (member is IField) {
+				text.Append(ambience.Convert(member as IField));
+			} else if (member is IProperty) {
+				text.Append(ambience.Convert(member as IProperty));
+			} else if (member is IEvent) {
+				text.Append(ambience.Convert(member as IEvent));
+			} else if (member is IMethod) {
+				text.Append(ambience.Convert(member as IMethod));
+			} else if (member is IClass) {
+				text.Append(ambience.Convert(member as IClass));
+			} else {
+				text.Append("unknown member ");
+				text.Append(member.ToString());
+			}
+			string documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(member.DocumentationTag);
+			if (documentation != null && documentation.Length > 0) {
+				text.Append('\n');
+				text.Append(ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.GetDocumentation(documentation));
+			}
+			return text.ToString();
 		}
 	}
 }

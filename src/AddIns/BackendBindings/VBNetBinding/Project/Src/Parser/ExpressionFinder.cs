@@ -5,7 +5,7 @@ using ICSharpCode.SharpDevelop.Dom;
 namespace VBNetBinding.Parser
 {
 	/// <summary>
-	/// Description of ExpressionFinder.	
+	/// Description of ExpressionFinder.
 	/// </summary>
 	public class ExpressionFinder : IExpressionFinder
 	{
@@ -24,7 +24,7 @@ namespace VBNetBinding.Parser
 				ReadNextToken();
 				//Console.WriteLine("cur state {0} got token {1}/{3} going to {2}", GetStateName(state), GetTokenName(curTokenType), GetStateName(stateTable[state, curTokenType]), curTokenType);
 				state = stateTable[state, curTokenType];
-
+				
 				if (state == ACCEPT || state == ACCEPT2)
 				{
 					lastAccept = this.offset;
@@ -36,8 +36,63 @@ namespace VBNetBinding.Parser
 			}
 			return this.text.Substring(this.lastAccept + 1, offset - this.lastAccept);
 		}
-
-			#region Comment Filter and 'inside string watcher'
+		
+		public string FindFullExpression(string inText, int offset)
+		{
+			string expressionBeforeOffset = FindExpression(inText, offset);
+			if (expressionBeforeOffset == null || expressionBeforeOffset.Length == 0)
+				return null;
+			StringBuilder b = new StringBuilder(expressionBeforeOffset);
+			// append characters after expression
+			for (int i = offset + 1; i < inText.Length; ++i) {
+				char c = inText[i];
+				if (Char.IsLetterOrDigit(c)) {
+					if (Char.IsWhiteSpace(inText, i - 1))
+						break;
+					b.Append(c);
+				} else if (c == ' ') {
+					b.Append(c);
+				} else if (c == '(') {
+					int otherBracket = SearchBracketForward(inText, i + 1, '(', ')');
+					if (otherBracket < 0)
+						break;
+					b.Append(inText, i, otherBracket - i + 1);
+					break;
+				} else {
+					break;
+				}
+			}
+			return b.ToString();
+		}
+		
+		// Like VBNetFormattingStrategy.SearchBracketForward, but operates on a string.
+		private int SearchBracketForward(string text, int offset, char openBracket, char closingBracket)
+		{
+			bool inString  = false;
+			bool inComment = false;
+			int  brackets  = 1;
+			for (int i = offset; i < text.Length; ++i) {
+				char ch = text[i];
+				if (ch == '\n') {
+					inString  = false;
+					inComment = false;
+				}
+				if (inComment) continue;
+				if (ch == '"') inString = !inString;
+				if (inString)  continue;
+				if (ch == '\'') {
+					inComment = true;
+				} else if (ch == openBracket) {
+					++brackets;
+				} else if (ch == closingBracket) {
+					--brackets;
+					if (brackets == 0) return i;
+				}
+			}
+			return -1;
+		}
+		
+		#region Comment Filter and 'inside string watcher'
 		int initialOffset;
 		public string FilterComments(string text, ref int offset)
 		{
@@ -47,7 +102,7 @@ namespace VBNetBinding.Parser
 			while (curOffset <= initialOffset)
 			{
 				char ch = text[curOffset];
-
+				
 				switch (ch)
 				{
 					case '@':
@@ -88,10 +143,10 @@ namespace VBNetBinding.Parser
 						break;
 				}
 			}
-
+			
 			return outText.ToString();
 		}
-
+		
 		bool ReadToEOL(string text, ref int curOffset, ref int offset)
 		{
 			while (curOffset <= initialOffset)
@@ -105,7 +160,7 @@ namespace VBNetBinding.Parser
 			}
 			return false;
 		}
-
+		
 		bool ReadString(StringBuilder outText, string text, ref int curOffset)
 		{
 			while (curOffset <= initialOffset)
@@ -119,7 +174,7 @@ namespace VBNetBinding.Parser
 			}
 			return false;
 		}
-
+		
 		bool ReadVerbatimString(StringBuilder outText, string text, ref int curOffset)
 		{
 			while (curOffset <= initialOffset)
@@ -140,7 +195,7 @@ namespace VBNetBinding.Parser
 			}
 			return false;
 		}
-
+		
 		bool ReadMultiLineComment(string text, ref int curOffset, ref int offset)
 		{
 			while (curOffset <= initialOffset)
@@ -159,12 +214,12 @@ namespace VBNetBinding.Parser
 			}
 			return false;
 		}
-			#endregion
-
-			#region mini backward lexer
+		#endregion
+		
+		#region mini backward lexer
 		string text;
 		int offset;
-
+		
 		char GetNext()
 		{
 			if (offset >= 0)
@@ -173,7 +228,7 @@ namespace VBNetBinding.Parser
 			}
 			return '\0';
 		}
-
+		
 		char Peek()
 		{
 			if (offset >= 0)
@@ -182,12 +237,12 @@ namespace VBNetBinding.Parser
 			}
 			return '\0';
 		}
-
+		
 		void UnGet()
 		{
 			++offset;
 		}
-
+		
 		// tokens for our lexer
 		static int Err = 0;
 		static int Dot = 1;
@@ -199,7 +254,7 @@ namespace VBNetBinding.Parser
 		static int Curly = 7;
 		static int Using = 8;
 		int curTokenType;
-
+		
 		readonly static string[] tokenStateName = new string[] {
 			"Err", "Dot", "StrLit", "Ident", "New", "Bracket", "Paren", "Curly", "Using"
 		};
@@ -207,11 +262,11 @@ namespace VBNetBinding.Parser
 		{
 			return tokenStateName[state];
 		}
-
+		
 		void ReadNextToken()
 		{
 			char ch = GetNext();
-
+			
 			curTokenType = Err;
 			if (ch == '\0' || ch == '\n' || ch == '\r')
 			{
@@ -225,7 +280,7 @@ namespace VBNetBinding.Parser
 					return;
 				}
 			}
-
+			
 			switch (ch)
 			{
 				case '}':
@@ -279,7 +334,7 @@ namespace VBNetBinding.Parser
 					break;
 			}
 		}
-
+		
 		bool ReadStringLiteral(char litStart)
 		{
 			while (true)
@@ -299,7 +354,7 @@ namespace VBNetBinding.Parser
 				}
 			}
 		}
-
+		
 		bool ReadBracket(char openBracket, char closingBracket)
 		{
 			int curlyBraceLevel = 0;
@@ -317,7 +372,7 @@ namespace VBNetBinding.Parser
 					curlyBraceLevel++;
 					break;
 			}
-
+			
 			while (parenthesisLevel != 0 || squareBracketLevel != 0 || curlyBraceLevel != 0)
 			{
 				char ch = GetNext();
@@ -349,7 +404,7 @@ namespace VBNetBinding.Parser
 			}
 			return true;
 		}
-
+		
 		string ReadIdentifier(char ch)
 		{
 			string identifier = ch.ToString();
@@ -359,14 +414,14 @@ namespace VBNetBinding.Parser
 			}
 			return identifier;
 		}
-
+		
 		bool IsIdentifierPart(char ch)
 		{
 			return Char.IsLetterOrDigit(ch) || ch == '_';
 		}
-			#endregion
-
-			#region finite state machine
+		#endregion
+		
+		#region finite state machine
 		readonly static int ERROR = 0;
 		readonly static int START = 1;
 		readonly static int DOT = 2;
@@ -374,11 +429,11 @@ namespace VBNetBinding.Parser
 		readonly static int CURLY = 4;
 		readonly static int CURLY2 = 5;
 		readonly static int CURLY3 = 6;
-
+		
 		readonly static int ACCEPT = 7;
 		readonly static int ACCEPTNOMORE = 8;
 		readonly static int ACCEPT2 = 9;
-
+		
 		readonly static string[] stateName = new string[] {
 			"ERROR",
 			"START",
@@ -391,12 +446,12 @@ namespace VBNetBinding.Parser
 			"ACCEPTNOMORE",
 			"ACCEPT2"
 		};
-
+		
 		string GetStateName(int state)
 		{
 			return stateName[state];
 		}
-
+		
 		int state = 0;
 		int lastAccept = 0;
 		static int[,] stateTable = new int[,] {
@@ -412,6 +467,6 @@ namespace VBNetBinding.Parser
 			/*ACCEPTNOMORE*/ { ERROR,   ERROR,   ERROR,   ERROR,        ERROR,  ERROR,   ERROR,   ERROR,   ERROR},
 			/*ACCEPT2*/      { ERROR,    MORE,   ERROR,  ACCEPT,       ACCEPT,  ERROR,   ERROR,   ERROR,   ERROR},
 		};
-			#endregion
+		#endregion
 	}
 }

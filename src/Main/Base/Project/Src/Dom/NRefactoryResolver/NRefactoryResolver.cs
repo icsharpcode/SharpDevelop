@@ -188,6 +188,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IReturnType FixType(IReturnType type)
 		{
+			if (type == null)
+				return null;
 			IClass returnClass = SearchType(type.FullyQualifiedName, callingClass, cu);
 			if (returnClass != null && returnClass.FullyQualifiedName != type.FullyQualifiedName)
 				return new ReturnType(returnClass.FullyQualifiedName);
@@ -252,23 +254,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		#region ResolveMethod
 		ResolveResult ResolveMethod(IReturnType type, string identifier)
 		{
-			if (type == null || type.PointerNestingLevel != 0) {
+			if (type == null || type.PointerNestingLevel != 0)
 				return null;
-			}
 			IClass curType;
-			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
+			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
 				curType = SearchType("System.Array", null, null);
-			} else {
+			else
 				curType = SearchType(type.FullyQualifiedName, null, null);
-				if (curType == null) {
-					return null;
-				}
-			}
 			return ResolveMethod(curType, identifier);
 		}
 		
 		ResolveResult ResolveMethod(IClass c, string identifier)
 		{
+			if (c == null)
+				return null;
 			foreach (IClass curType in c.ClassInheritanceTree) {
 				foreach (IMethod method in c.Methods) {
 					if (IsSameName(identifier, method.Name))
@@ -340,6 +339,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IMember GetCurrentMember()
 		{
+			if (callingClass == null)
+				return null;
 			foreach (IProperty property in callingClass.Properties) {
 				if (property.BodyRegion != null && property.BodyRegion.IsInside(caretLine, caretColumn)) {
 					return property;
@@ -407,15 +408,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				curType = SearchType("System.Array", null, null);
 			} else {
 				curType = SearchType(type.FullyQualifiedName, null, null);
-				if (curType == null) {
-					return new ArrayList(1);
-				}
 			}
 			return SearchMethod(new ArrayList(), curType, memberName);
 		}
 		
 		ArrayList SearchMethod(ArrayList methods, IClass curType, string memberName)
 		{
+			if (curType == null)
+				return methods;
 			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
 			
 			foreach (IMethod m in curType.Methods) {
@@ -436,16 +436,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		#region SearchIndexer
 		public ArrayList SearchIndexer(IReturnType type)
 		{
+			// TODO: indexer for arrays
 			IClass curType = SearchType(type.FullyQualifiedName, null, null);
-			if (curType != null) {
-				return SearchIndexer(new ArrayList(), curType);
-			}
-			return new ArrayList(1);
+			return SearchIndexer(new ArrayList(), curType);
 		}
 		
 		ArrayList SearchIndexer(ArrayList indexer, IClass curType)
 		{
-			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
+			if (curType == null)
+				return indexer;
+			bool isClassInInheritanceTree = false;
+			if (callingClass != null)
+				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
 			foreach (IIndexer i in curType.Indexer) {
 				if (i.MustBeShown(callingClass, true, isClassInInheritanceTree) && !((i.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
 					indexer.Add(i);
@@ -475,10 +477,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			} else {
 				curType = SearchType(type.FullyQualifiedName, callingClass, cu);
 			}
-			if (curType == null)
-				return null;
-			else
-				return SearchMember(curType, memberName);
+			return SearchMember(curType, memberName);
 		}
 		
 		public IMember GetMember(IReturnType type, string memberName)
@@ -495,14 +494,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			} else {
 				curType = SearchType(type.FullyQualifiedName, callingClass, cu);
 			}
-			if (curType == null)
-				return null;
-			else
-				return GetMember(curType, memberName);
+			return GetMember(curType, memberName);
 		}
 		
 		public IReturnType SearchMember(IClass curType, string memberName)
 		{
+			if (curType == null)
+				return null;
 			bool isClassInInheritanceTree = false;
 			if (callingClass != null)
 				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
@@ -520,6 +518,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		private IMember GetMember(IClass c, string memberName)
 		{
+			if (c == null)
+				return null;
 			bool isClassInInheritanceTree = false;
 			if (callingClass != null)
 				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(c);

@@ -15,5 +15,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Finds an expression before the current offset.
 		/// </summary>
 		string FindExpression(string text, int offset);
+		
+		/// <summary>
+		/// Finds an expression around the current offset.
+		/// </summary>
+		string FindFullExpression(string text, int offset);
 	}
 }
