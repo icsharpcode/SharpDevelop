@@ -538,6 +538,8 @@ namespace ICSharpCode.Core
 					if (logicPos.Y >= 0 && logicPos.Y < textArea.Document.TotalNumberOfLines) {
 						IDocument doc = textArea.Document;
 						IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textArea.MotherTextEditorControl.FileName);
+						if (expressionFinder == null)
+							return;
 						LineSegment seg = doc.GetLineSegment(logicPos.Y);
 						int xPosition = Math.Min(seg.Length - 1, logicPos.X);
 						string textContent = doc.TextContent;

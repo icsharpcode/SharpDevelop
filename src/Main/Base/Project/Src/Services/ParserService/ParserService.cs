@@ -234,7 +234,7 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		static ParseInformation UpdateParseInformation(ICompilationUnit parserOutput, string fileName, bool updateCommentTags, bool fireEvent)
+		public static ParseInformation UpdateParseInformation(ICompilationUnit parserOutput, string fileName, bool updateCommentTags, bool fireEvent)
 		{
 			if (!parsings.ContainsKey(fileName)) {
 				parsings[fileName] = new ParseInformation();

@@ -1,4 +1,5 @@
 using System;
+using System.Collections;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.Core;
@@ -12,49 +13,82 @@ namespace DefaultNamespace.Tests
 	{
 		ICompilationUnit Parse(string fileName, string fileContent)
 		{
+			
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp, new StringReader(fileContent));
 			p.Parse();
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor();
+			IProjectContent pc = new CaseSensitiveProjectContent();
+			lastPC = pc;
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
 			visitor.Visit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
 			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
 			visitor.Cu.Tag = p.CompilationUnit;
+			foreach (IClass c in visitor.Cu.Classes) {
+				pc.AddClassToNamespaceList(c);
+			}
 			
 			return visitor.Cu;
 		}
+		
+		IProjectContent lastPC;
 		
 		ICompilationUnit ParseVB(string fileName, string fileContent)
 		{
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet, new StringReader(fileContent));
 			p.Parse();
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor();
+			IProjectContent pc = new CaseSensitiveProjectContent();
+			lastPC = pc;
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
 			visitor.Visit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
 			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
 			visitor.Cu.Tag = p.CompilationUnit;
+			foreach (IClass c in visitor.Cu.Classes) {
+				pc.AddClassToNamespaceList(c);
+			}
 			
 			return visitor.Cu;
 		}
 		
-		DefaultParserService ParserService;
+		void AddCompilationUnit(ICompilationUnit parserOutput, string fileName)
+		{
+			ParserService.UpdateParseInformation(parserOutput, fileName, false, false);
+		}
+		
+		ResolveResult Resolve(string program, string expression, int line, int column)
+		{
+			AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
+			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet);
+			return resolver.Resolve(expression,
+			                        line, column,
+			                        "a.cs");
+		}
+		
+		ResolveResult ResolveVB(string program, string expression, int line, int column)
+		{
+			AddCompilationUnit(ParseVB("a.vb", program), "a.vb");
+			
+			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet);
+			return resolver.Resolve(expression,
+			                        line, column,
+			                        "a.vb");
+		}
+		
+		IProjectContent corLib;
+		
 		[TestFixtureSetUp]
 		public void Init()
 		{
-			ParserService = new DefaultParserService();
-			ICSharpCode.Core.ServiceManager.Services.AddService(ParserService);
-			
-			foreach (Type type in typeof(System.String).Assembly.GetTypes()) {
-				ParserService.AddClassToNamespaceList(new ReflectionClass(type, null));
-			}
+			corLib = CaseSensitiveProjectContent.Create(typeof(string).Assembly);
 		}
-//		
+		//
 //		public static void Main(string[] args)
 //		{
 //			NRefactoryResolverTests test = new NRefactoryResolverTests();
 //			test.Init();
 //			test.OuterclassPrivateFieldResolveTest();
-//				
+		//
 //		}
 		
 		// Issue SD-291
@@ -68,18 +102,15 @@ namespace DefaultNamespace.Tests
 	End Sub
 End Class
 ";
-			ParserService.AddCompilationUnit(ParseVB("a.vb", program), 
-			                                 "a.vb",
-			                                 false);
+			ResolveResult result = ResolveVB(program, "a", 4, 24);
+			Assert.IsNotNull(result, "result");
+			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
+			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
 			
-			NRefactoryResolver resolover = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet);
-			ResolveResult result = resolover.Resolve(ParserService,
-			                                         "a",
-			                                         4, 24,
-			                                         "a.vb");
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result.Members.Count > 0);
-			
+			result = ResolveVB(program, "b", 4, 24);
+			Assert.IsNotNull(result, "result");
+			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
+			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
 		}
 		
 		// Issue SD-258
@@ -90,24 +121,15 @@ End Class
 	Shared Sub Main()
 		For Each c As String In MyColl
 			
-		Next 
-	End Sub 
+		Next
+	End Sub
 End Class
 ";
-			ParserService.AddCompilationUnit(ParseVB("a.vb", program), 
-			                                 "a.vb",
-			                                 false);
-			
-			NRefactoryResolver resolover = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet);
-			ResolveResult result = resolover.Resolve(ParserService,
-			                                         "c",
-			                                         4, 24,
-			                                         "a.vb");
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result.Members.Count > 0);
-			
+			ResolveResult result = ResolveVB(program, "c", 4, 24);
+			Assert.IsNotNull(result, "result");
+			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
+			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
 		}
-		
 		
 		
 		// Issue SD-265
@@ -120,27 +142,17 @@ End Class
 		
 	End Sub
 End Class";
-			ParserService.AddCompilationUnit(ParseVB("a.vb", program), 
-			                                 "a.vb",
-			                                 false);
-			
-			NRefactoryResolver resolover = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet);
-			ResolveResult result = resolover.Resolve(ParserService,
-			                                         "a",
-			                                         4, 24,
-			                                         "a.vb");
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result.Members.Count > 0);
-			
-			IField field = null;
-			foreach (object o in result.Members) {
-				if (o is IField) {
-					field = o as IField;
-					break;
+			ResolveResult result = ResolveVB(program, "a", 4, 24);
+			Assert.IsNotNull(result, "result");
+			ArrayList arr = result.GetCompletionData(lastPC);
+			Assert.IsNotNull(arr, "arr");
+			foreach (object o in arr) {
+				if (o is IMember) {
+					if (((IMember)o).FullyQualifiedName == "System.String.Empty")
+						return;
 				}
 			}
-			Assert.IsNotNull(field);
-			Assert.AreEqual(field.Name, "Empty");
+			Assert.Fail("Static member empty not found on string instance!");
 		}
 		
 		// Issue SD-217
@@ -153,19 +165,20 @@ End Class";
 		
 	End Sub
 End Module";
-			ParserService.AddCompilationUnit(ParseVB("a.vb", program), 
-			                                 "a.vb",
-			                                 false);
+			ResolveResult result = ResolveVB(program, "t", 4, 24);
+			Assert.IsNotNull(result, "result");
+			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
 			
-			NRefactoryResolver resolover = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet);
-			ResolveResult result = resolover.Resolve(ParserService,
-			                                         "t(0)",
-			                                         4, 24,
-			                                         "a.vb");
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result.Members.Count > 0);
+			ArrayList arr = result.GetCompletionData(lastPC);
+			Assert.IsNotNull(arr, "arr");
+			foreach (object o in arr) {
+				if (o is IMember) {
+					if (((IMember)o).FullyQualifiedName == "System.Array.Length")
+						return;
+				}
+			}
+			Assert.Fail("Length not found on array instance (resolve result was " + result.ResolvedType.ToString() + ")");
 		}
-
 		
 		[Test]
 		public void OuterclassPrivateFieldResolveTest()
@@ -182,26 +195,18 @@ End Module";
 	}
 }
 ";
-			ParserService.AddCompilationUnit(Parse("a.cs", program), 
-			                                 "a.cs",
-			                                 false);
-			
-			NRefactoryResolver resolover = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp);
-			ResolveResult result = resolover.Resolve(ParserService,
-			                                         "a",
-			                                         8, 24,
-			                                         "a.cs");
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result.Members.Count > 0);
-			IField field = null;
-			foreach (object o in result.Members) {
+			ResolveResult result = Resolve(program, "a", 8, 24);
+			Assert.IsNotNull(result, "result");
+			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
+			ArrayList arr = result.GetCompletionData(lastPC);
+			Assert.IsNotNull(arr, "arr");
+			foreach (object o in arr) {
 				if (o is IField) {
-					field = o as IField;
-					break;
+					Assert.AreEqual("myField", ((IField)o).Name);
+					return;
 				}
 			}
-			Assert.IsNotNull(field);
-			Assert.AreEqual(field.Name, "myField");
+			Assert.Fail("private field not visible from inner class");
 		}
 	}
 }
