@@ -264,9 +264,12 @@ namespace ICSharpCode.SharpDevelop.Project
 //			isDirty = TaskService.Errors != 0;
 //		}
 //		
-		readonly static Regex normalError  = new Regex(@"^(?<file>\S.*)\((?<line>\d+),(?<column>\d+)\):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)$", RegexOptions.Compiled);
-		readonly static Regex generalError = new Regex(@"^(?<error>\S.+)\s+(?<number>[\d\w]+):\s+(?<message>.*)$", RegexOptions.Compiled);
-		readonly static Regex projectName  = new Regex(@"^Project\s+\""(?<name>[^""]*)\""", RegexOptions.Compiled);
+		readonly static Regex normalError   = new Regex(@"(?<file>\S.*)\((?<line>\d+),(?<column>\d+)\):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)", RegexOptions.Compiled);
+		readonly static Regex compilerError = new Regex(@"(?<who>[^:]*):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)", RegexOptions.Compiled);
+		readonly static Regex generalError  = new Regex(@"(?<error>\S.+)\s+(?<number>[\d\w]+):\s+(?<message>.*)", RegexOptions.Compiled);
+		
+		readonly static Regex projectName   = new Regex(@"Project\s+\""[^""]*\""[^""]*\""(?<name>[^""]*)\""", RegexOptions.Compiled);
+		
 		
 		static CompilerError GetCompilerError(string line, string workingPath)
 		{
@@ -281,6 +284,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				error.ErrorText   = match.Result("${message}");
 				return error;
 			}
+			match = compilerError.Match(line);
+			if (match.Success) {
+				CompilerError error = new CompilerError();
+				error.IsWarning   = match.Result("${error}") == "warning";
+				error.ErrorNumber = match.Result("${number}");
+				error.ErrorText   = match.Result("${who}") + ":" + match.Result("${message}");
+				return error;
+			}
 			
 			match = generalError.Match(line);
 			if (match.Success) {
@@ -292,7 +303,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return null;
 		}
-			
+		
 		public static CompilerResults RunMSBuild(string fileName, string target)
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
@@ -317,11 +328,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				string line = reader.ReadLine();
 				if (line != null) {
 					TaskService.BuildMessageViewCategory.AppendText(line + Environment.NewLine);
-					
 					Match match = projectName.Match(line);
 					if (match.Success) {
 						string name = match.Result("${name}");
-						
 						if (name != null) {
 							workingDirectory = Path.GetDirectoryName(name);
 						}
@@ -330,12 +339,33 @@ namespace ICSharpCode.SharpDevelop.Project
 						if (error != null) {
 							results.Errors.Add(error);
 						}
-					}
+					} 
 					results.Output.Add(line);
 				}
 				System.Windows.Forms.Application.DoEvents();
 			}
-			TaskService.BuildMessageViewCategory.AppendText(reader.ReadToEnd() + Environment.NewLine);
+			while (true) {
+				string line = reader.ReadLine();
+				if (line == null) {
+					break;
+				}
+				TaskService.BuildMessageViewCategory.AppendText(line + Environment.NewLine);
+				Console.WriteLine(line);
+				Match match = projectName.Match(line);
+				if (match.Success) {
+					string name = match.Result("${name}");
+					if (name != null) {
+						workingDirectory = Path.GetDirectoryName(name);
+					}
+				} else {
+					CompilerError error = GetCompilerError(line, workingDirectory);
+					if (error != null) {
+						results.Errors.Add(error);
+					}
+				} 
+				results.Output.Add(line);
+			}
+//			TaskService.BuildMessageViewCategory.AppendText(reader.ReadToEnd() + Environment.NewLine);
 			p.WaitForExit();
 //			AfterBuild();
 			return results;

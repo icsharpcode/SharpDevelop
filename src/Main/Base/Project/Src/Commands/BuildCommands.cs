@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			if (results != null) {
 				foreach (CompilerError error in results.Errors) {
-					TaskService.Tasks.Add(new Task(ProjectService.CurrentProject, error));
+					TaskService.Tasks.Add(new Task(error));
 				}
 				if (results.Errors.Count > 0) {
 					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();

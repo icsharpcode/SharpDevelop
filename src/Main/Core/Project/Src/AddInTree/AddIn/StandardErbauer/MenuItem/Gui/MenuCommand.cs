@@ -18,7 +18,7 @@ namespace ICSharpCode.Core
 	{
 		object caller;
 		Codon codon;
-		IMenuCommand menuCommand = null;
+		ICommand menuCommand = null;
 		string description = "";
 		string localizedText = null;
 		
@@ -31,7 +31,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public IMenuCommand Command {
+		public ICommand Command {
 			get {
 				if (menuCommand == null) {
 					CreateCommand();
@@ -43,7 +43,7 @@ namespace ICSharpCode.Core
 		void CreateCommand()
 		{
 			try {
-				menuCommand = (IMenuCommand)codon.AddIn.CreateObject(codon.Properties["class"]);
+				menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
 			} catch (Exception e) {
 				MessageService.ShowError(e, "Can't create menu command : " + codon.ID);
 			}
@@ -113,8 +113,8 @@ namespace ICSharpCode.Core
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
 				bool isEnabled = failedAction != ConditionFailedAction.Disable;
 				
-				if (menuCommand != null) {
-					isEnabled &= menuCommand.IsEnabled;
+				if (menuCommand != null && menuCommand is IMenuCommand) {
+					isEnabled &= ((IMenuCommand)menuCommand).IsEnabled;
 				}
 				return isEnabled;
 			}

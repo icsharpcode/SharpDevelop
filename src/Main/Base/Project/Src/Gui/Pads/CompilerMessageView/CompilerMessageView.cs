@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// This class displays the errors and warnings which the compiler outputs and
 	/// allows the user to jump to the source of the warnig / error
 	/// </summary>
-	public class CompilerMessageView : AbstractPadContent
+	public class CompilerMessageView : AbstractPadContent, IClipboardHandler
 	{
 		static CompilerMessageView instance;
 		
@@ -95,7 +95,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			myPanel.SuspendLayout();
 			textEditorControl.Dock     = DockStyle.Fill;
 			textEditorControl.ReadOnly = true;
-			
+			textEditorControl.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");
+				
 			properties = (Properties)PropertyService.Get(OutputWindowOptionsPanel.OutputWindowsProperty, new Properties());
 			
 			textEditorControl.Font     = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", new Font("Courier New", 10).ToString()).ToString());
@@ -340,5 +341,59 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public event EventHandler MessageCategoryAdded;
 		public event EventHandler SelectedCategoryIndexChanged;
 		
+	#region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation
+		public bool EnableCut {
+			get {
+				return false;
+			}
+		}
+		
+		public bool EnableCopy {
+			get {
+				return true;
+			}
+		}
+		
+		public bool EnablePaste {
+			get {
+				return false;
+			}
+		}
+		
+		public bool EnableDelete {
+			get {
+				return false;
+			}
+		}
+		
+		public bool EnableSelectAll {
+			get {
+				return true;
+			}
+		}
+		
+		public void Cut()
+		{
+		}
+		
+		public void Copy()
+		{
+			textEditorControl.Copy();
+		}
+		
+		public void Paste()
+		{
+		}
+		
+		public void Delete()
+		{
+		}
+		
+		public void SelectAll()
+		{
+			textEditorControl.SelectAll();
+		}
+		#endregion
+			
 	}
 }

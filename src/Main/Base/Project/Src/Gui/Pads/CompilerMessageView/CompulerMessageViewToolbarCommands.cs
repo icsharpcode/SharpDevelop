@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 	}
 	
-	public class ClearOutputWindow : AbstractComboBoxCommand
+	public class ClearOutputWindow : AbstractCommand
 	{
 		public override void Run()
 		{

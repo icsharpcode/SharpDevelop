@@ -512,6 +512,25 @@
 		             tooltip = "Toggle Word Wrap"
 		             class = "ICSharpCode.SharpDevelop.Gui.ToggleeMessageViewWordWrap"/>
 	</Path>
+	<Path name = "/SharpDevelop/Pads/CompilerMessageView/ContextMenu">
+			<MenuItem id = "Copy"
+			          label = "${res:XML.MainMenu.EditMenu.Copy}"
+			          icon = "Icons.16x16.CopyIcon"
+			          type = "Item"
+			          description = "${res:XML.MainMenu.EditMenu.Copy.Description}"
+			          shortcut = "Control|C"
+			          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
+			<MenuItem id = "SelectAll"
+			          label = "${res:XML.MainMenu.EditMenu.SelectAll}"
+			          description = "${res:XML.MainMenu.EditMenu.SelectAll.Description}"
+			          type = "Item"
+			          shortcut = "Control|A"
+			          class = "ICSharpCode.SharpDevelop.Commands.SelectAll"/>
+			<MenuItem id    = "Clear"
+			             icon  = "OutputPad.Toolbar.ClearOutputWindow"
+			             label = "Clear All"
+			             class = "ICSharpCode.SharpDevelop.Gui.ClearOutputWindow"/>
+	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ErrorList/Toolbar">
 		<ToolbarItem id    = "Errors"
