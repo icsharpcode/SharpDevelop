@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<Template author="Daniel Grunwald" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.Interface.Name}"
+		  icon        = "C#.File.NewClass"
+		  category    = "C#"
+		  defaultname = "Interface${Number}.cs"
+		  language    = "C#"/>
+	 
+	<Description>${res:Templates.File.Interface.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+		${ClassName}                -> Class name (generally FileNameWithoutExtension w/o 'bad' characters)
+	 -->
+	<Files>
+		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+
+using System;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of ${ClassName}.
+	/// </summary>
+	public interface I${ClassName}
+	{
+		
+	}
+}
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+

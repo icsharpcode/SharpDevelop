@@ -239,29 +239,23 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 //		}
 		//// ALex: end of mod
 		
-		InsightWindow                 insightWindow        = null;
-		internal CodeCompletionWindow codeCompletionWindow = null;
+		static ICodeCompletionBinding[] codeCompletionBindings;
 		
-		// some other languages could support it
-		protected virtual bool SupportsNew {
+		public static ICodeCompletionBinding[] CodeCompletionBindings {
 			get {
-				return false;
+				if (codeCompletionBindings == null) {
+					try {
+						codeCompletionBindings = (ICodeCompletionBinding[])(AddInTree.GetTreeNode("/AddIns/DefaultTextEditor/CodeCompletion").BuildChildItems(null)).ToArray(typeof(ICodeCompletionBinding));
+					} catch (TreePathNotFoundException) {
+						codeCompletionBindings = new ICodeCompletionBinding[] {};
+					}
+				}
+				return codeCompletionBindings;
 			}
 		}
 		
-		// some other languages could support it
-		protected virtual bool SupportsDot {
-			get {
-				return false;
-			}
-		}
-		
-		// some other languages could support it
-		protected virtual bool SupportsRoundBracket {
-			get {
-				return false;
-			}
-		}
+		InsightWindow insightWindow = null;
+		CodeCompletionWindow codeCompletionWindow = null;
 		
 		bool HandleKeyPress(char ch)
 		{
@@ -269,118 +263,56 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (codeCompletionWindow != null && !codeCompletionWindow.IsDisposed) {
 				codeCompletionWindow.ProcessKeyEvent(ch);
 			}
-			bool isCSharpOrVBNet = Path.GetExtension(fileName) == ".cs" || Path.GetExtension(fileName) == ".vb";
 			
-			switch (ch) {
-				case ' ':
-					//TextEditorProperties.AutoInsertTemplates
-					string word = GetWordBeforeCaret();
-					try {
-						if ((isCSharpOrVBNet||SupportsNew) && word.ToLower() == "new") {
-							if (((SharpDevelopTextEditorProperties)Document.TextEditorProperties).EnableCodeCompletion) {
+			try {
+				foreach (ICodeCompletionBinding ccBinding in CodeCompletionBindings) {
+					if (ccBinding.HandleKeyPress(this, ch))
+						return false;
+				}
+				string word = GetWordBeforeCaret();
+				if (word != null) {
+					CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(FileName);
+					if (templateGroup != null) {
+						foreach (CodeTemplate template in templateGroup.Templates) {
+							if (template.Shortcut == word) {
+								if (word.Length > 0) {
+									int newCaretOffset = DeleteWordBeforeCaret();
+									//// set new position in text area
+									ActiveTextAreaControl.TextArea.Caret.Position = Document.OffsetToPosition(newCaretOffset);
+								}
 								
-								codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow(((Form)WorkbenchSingleton.Workbench), this, this.FileName, new CodeCompletionDataProvider(true, true), ch);
-								if (codeCompletionWindow != null) {
-									codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
-								}
-								return false;
-							}
-						} else {
-							if (word != null) {
-								CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(FileName);
-								if (templateGroup != null) {
-									foreach (CodeTemplate template in templateGroup.Templates) {
-										if (template.Shortcut == word) {
-											if (word.Length > 0) {
-												int newCaretOffset = DeleteWordBeforeCaret();
-												//// set new position in text area
-												ActiveTextAreaControl.TextArea.Caret.Position = Document.OffsetToPosition(newCaretOffset);
-											}
-											
-											InsertTemplate(template);
-											return true;
-										}
-									}
-								}
+								InsertTemplate(template);
+								return true;
 							}
 						}
-					} catch (Exception e) {
-						LogException(e);
 					}
-					goto case '.';
-				case '<':
-					try {
-						if (((SharpDevelopTextEditorProperties)Document.TextEditorProperties).EnableCodeCompletion) {
-							codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow(((Form)WorkbenchSingleton.Workbench), this, fileName, new CommentCompletionDataProvider(), '<');
-							if (codeCompletionWindow != null) {
-								codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
-							}
-						}
-					} catch (Exception e) {
-						LogException(e);
-					}
-					return false;
-				case '(':
-					try {
-						if (((SharpDevelopTextEditorProperties)Document.TextEditorProperties).EnableCodeCompletion) {
-							if (insightWindow == null || insightWindow.IsDisposed) {
-								insightWindow = new InsightWindow(((Form)WorkbenchSingleton.Workbench), this, fileName);
-								if (insightWindow != null) {
-									insightWindow.Closed += new EventHandler(CloseInsightWindow);
-								}
-							}
-							if (insightWindow != null) {
-								insightWindow.AddInsightDataProvider(new MethodInsightDataProvider());
-								insightWindow.ShowInsightWindow();
-							}
-						}
-					} catch (Exception e) {
-						LogException(e);
-					}
-					return false;
-				case '[':
-					try {
-						if (((SharpDevelopTextEditorProperties)Document.TextEditorProperties).EnableCodeCompletion) {
-							if (insightWindow == null || insightWindow.IsDisposed) {
-								insightWindow = new InsightWindow(((Form)WorkbenchSingleton.Workbench), this, fileName);
-								if (insightWindow != null) {
-									insightWindow.Closed += new EventHandler(CloseInsightWindow);
-								}
-							}
-							
-							if (insightWindow != null) {
-								insightWindow.AddInsightDataProvider(new IndexerInsightDataProvider());
-								insightWindow.ShowInsightWindow();
-							}
-						}
-						
-					} catch (Exception e) {
-						LogException(e);
-					}
-					return false;
-				case '.':
-					try {
-//						TextAreaPainter.IHaveTheFocusLock = true;
-						if (((SharpDevelopTextEditorProperties)Document.TextEditorProperties).EnableCodeCompletion && (isCSharpOrVBNet||SupportsDot)) {
-							codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow(((Form)WorkbenchSingleton.Workbench), this, fileName, CreateCodeCompletionDataProvider(false), ch);
-							if (codeCompletionWindow != null) {
-								codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
-							}
-						}
-//						TextAreaPainter.IHaveTheFocusLock = false;
-					} catch (Exception e) {
-						LogException(e);
-					}
-					return false;
-					//// Alex: reparse file on ; - end of statement
-//				case '}':
-//				case ';':
-//				case ')':	// reparse on closing bracket for foreach and for definitions
-//					PulseParser();
-//					return false;
-					//// Alex: end of mod
+				}
+			} catch (Exception ex) {
+				LogException(ex);
 			}
 			return false;
+		}
+		
+		public void ShowInsightWindow(IInsightDataProvider insightDataProvider)
+		{
+			if (insightWindow == null || insightWindow.IsDisposed) {
+				insightWindow = new InsightWindow(((Form)WorkbenchSingleton.Workbench), this, FileName);
+				if (insightWindow != null) {
+					insightWindow.Closed += new EventHandler(CloseInsightWindow);
+				}
+			}
+			if (insightWindow != null) {
+				insightWindow.AddInsightDataProvider(insightDataProvider);
+				insightWindow.ShowInsightWindow();
+			}
+		}
+		
+		public void ShowCompletionWindow(ICompletionDataProvider completionDataProvider, char ch)
+		{
+			codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow((Form)WorkbenchSingleton.Workbench, this, this.FileName, completionDataProvider, ch);
+			if (codeCompletionWindow != null) {
+				codeCompletionWindow.Closed += new EventHandler(CloseCodeCompletionWindow);
+			}
 		}
 		
 		private void LogException(Exception ex)

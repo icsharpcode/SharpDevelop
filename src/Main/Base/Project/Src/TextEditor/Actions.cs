@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 		{
 			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
 			services.AutoClearSelection = false;
-			sdtac.codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow(((Form)WorkbenchSingleton.Workbench), services.MotherTextEditorControl, services.MotherTextEditorControl.FileName, new TemplateCompletionDataProvider(), '\0');
+			sdtac.ShowCompletionWindow(new TemplateCompletionDataProvider(), '\0');
 		}
 	}
 	
@@ -36,10 +36,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 		{
 			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
 			
-			sdtac.codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow(((Form)WorkbenchSingleton.Workbench),
-			                                                                       services.MotherTextEditorControl,
-			                                                                       services.MotherTextEditorControl.FileName,
-			                                                                       sdtac.CreateCodeCompletionDataProvider(true), '\0');
+			sdtac.ShowCompletionWindow(sdtac.CreateCodeCompletionDataProvider(true), '\0');
 		}
 	}
 	

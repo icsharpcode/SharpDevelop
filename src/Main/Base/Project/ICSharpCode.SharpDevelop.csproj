@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -641,6 +641,7 @@
     <Compile Include="Src\TextEditor\Commands\NavigationCommands.cs" />
     <Compile Include="Src\Dom\FilePosition.cs" />
     <Compile Include="Src\Project\MSBuildEngine.cs" />
+    <Compile Include="Src\TextEditor\Gui\Editor\CodeCompletionBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

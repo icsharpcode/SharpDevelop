@@ -1,14 +1,14 @@
-<AddIn name        = "SharpDevelop Bindings"
+<AddIn name        = "C# Binding"
        author      = "Mike Krueger"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "NCvs core module"
+       description = "Backing binding for C#"
        version     = "1.0.0">
 	
 	<Runtime>
 		<Import assembly = "CSharpBinding.dll"/>
 	</Runtime>
-
+	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
 		<Class id    = "C#"
 		       class = "ICSharpCode.Core.CSharpAmbience"/>
@@ -20,14 +20,19 @@
 		            name = "${res:SharpDevelop.FileFilter.CSharpFiles}"
 		            extensions = "*.cs"/>
 	</Path>
-
+	
 	<Path name = "/Workspace/Parser">
 		<Parser id    = "C#" 
 			supportedextensions  = ".cs"
 			projectfileextension = ".csproj"
 			class = "CSharpBinding.Parser.TParser"/>
 	</Path>
-
+	
+	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+		<Class id    = "CSharpCompletionBinding"
+		       class = "CSharpBinding.CSharpCompletionBinding"/>
+	</Path>
+	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
 		<DialogPanel id    = "Application"
 		             label = "Application"
@@ -51,7 +56,7 @@
 		             label = "Publish"
 		             class = "CSharpBinding.OptionPanels.Publish"/>
 	</Path>
-
+	
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/C#">
 		<Class id ="CSharpFormatter" insertbefore="DefaultFormatter" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy"/>
 	</Path>

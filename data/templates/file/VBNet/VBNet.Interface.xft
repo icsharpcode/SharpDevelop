@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<Template author="Daniel Grunwald" version="1.0">
+	
+	<Config
+		name        = "${res:Templates.File.Interface.Name}"
+		icon        = "VBNet.File.NewClass"
+		category    = "VB"
+		defaultname = "Interface${Number}.vb"
+		language    = "VBNET"
+	/>
+	 
+	<Description>${res:Templates.File.Interface.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
+
+Imports System
+
+Namespace ${StandardNamespace}
+	Public Interface ${ClassName}
+		
+	End Class
+End Namespace
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+

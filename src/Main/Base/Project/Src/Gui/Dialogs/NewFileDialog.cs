@@ -295,6 +295,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return StringParser.Parse(SelectedTemplate.DefaultName);
 		}
 		
+		bool isNameModified = false;
+		
 		// list view event handlers
 		void SelectedIndexChange(object sender, EventArgs e)
 		{
@@ -304,14 +306,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (SelectedTemplate.HasProperties) {
 					ShowPropertyGrid();
 				}
-				if (!this.allowUntitledFiles) {
+				if (!this.allowUntitledFiles && !isNameModified) {
 					ControlDictionary["fileNameTextBox"].Text = GenerateCurrentFileName();
+					isNameModified = false;
 				}
 			} else {
 				ControlDictionary["descriptionLabel"].Text = String.Empty;
 				ControlDictionary["openButton"].Enabled = false;
 				HidePropertyGrid();
 			}
+		}
+		
+		void FileNameChanged(object sender, EventArgs e)
+		{
+			isNameModified = true;
 		}
 		
 		// button events
@@ -489,6 +497,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.NewFileDialog.xfrm"));
 			} else {
 				SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.NewFileWithNameDialog.xfrm"));
+				ControlDictionary["fileNameTextBox"].TextChanged += new EventHandler(FileNameChanged);
 			}
 			
 			ImageList imglist = new ImageList();
@@ -506,7 +515,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			((ListView)ControlDictionary["templateListView"]).DoubleClick          += new EventHandler(OpenEvent);
 			
 			ControlDictionary["openButton"].Click += new EventHandler(OpenEvent);
-			
 			
 			((RadioButton)ControlDictionary["largeIconsRadioButton"]).Checked = PropertyService.Get("Dialogs.NewProjectDialog.LargeImages", true);
 			((RadioButton)ControlDictionary["largeIconsRadioButton"]).CheckedChanged += new EventHandler(CheckedChange);

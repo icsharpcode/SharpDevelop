@@ -232,6 +232,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (current != null && !current.ReadOnly) {
 						
 						string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
+						if (!Directory.Exists(configPath))
+							Directory.CreateDirectory(configPath);
 						dockPanel.SaveAsXml(Path.Combine(configPath, current.FileName));
 					}
 				}
