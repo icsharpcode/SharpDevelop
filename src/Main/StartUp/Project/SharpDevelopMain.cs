@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop
 			"System.Messaging.dll",
 			"System.Runtime.Remoting.dll",
 			"System.Runtime.Serialization.Formatters.Soap.dll",
-
+			
 			"System.Security.dll",
 			"System.ServiceProcess.dll",
 			"System.Web.Services.dll",
@@ -82,6 +82,16 @@ namespace ICSharpCode.SharpDevelop
 		/// </summary>
 		[STAThread()]
 		public static void Main(string[] args)
+		{
+			try {
+				Run(args);
+			} catch (Exception ex) {
+				Console.WriteLine(ex);
+				Application.Run(new ExceptionBox(ex));
+			}
+		}
+		
+		static void Run(string[] args)
 		{
 			commandLineArgs = args;
 			bool noLogo = false;
@@ -102,7 +112,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
 			
-//	TODO:		
+//	TODO:
 //			bool ignoreDefaultPath = false;
 //			string [] addInDirs = ICSharpCode.SharpDevelop.AddInSettingsHandler.GetAddInDirectories(out ignoreDefaultPath);
 //			SetAddInDirectories(addInDirs, ignoreDefaultPath);
@@ -162,7 +172,7 @@ namespace ICSharpCode.SharpDevelop
 			try {
 				new ICSharpCode.SharpDevelop.Commands.StartWorkbenchCommand().Run();
 			} finally {
-				// unloading 
+				// unloading
 				ProjectService.CloseSolution();
 				FileService.Unload();
 				PropertyService.Save();

@@ -29,17 +29,18 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		protected TextArea editActionHandler;
 		
 		public CodeGenerator(IClass currentClass)
-		{	
+		{
 			this.currentClass = currentClass;
 			try {
 				csa = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem("C#", this);
-				csa.ConversionFlags = ConversionFlags.All;
+				csa.ConversionFlags = ConversionFlags.QualifiedNamesOnlyForReturnTypes | ConversionFlags.ShowReturnType;
 			} catch (Exception) {
 				Console.WriteLine("CSharpAmbience not found -- is the C# backend binding loaded???");
 			}
 			
 			try {
 				vba = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem("VBNET", this);
+				vba.ConversionFlags = ConversionFlags.QualifiedNamesOnlyForReturnTypes | ConversionFlags.ShowReturnType;
 			} catch (Exception) {
 				Console.WriteLine("VBNet ambience not found -- is the VB.NET backend binding loaded???");
 			}
@@ -90,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			PropertyService.Set("VBBinding.TextEditor.EnableEndConstructs", false);
 			editActionHandler.TextEditorProperties.AutoInsertCurlyBracket = false;
 			editActionHandler.TextEditorProperties.IndentStyle            = IndentStyle.Smart;
-						
+			
 			string extension = Path.GetExtension(editActionHandler.MotherTextEditorControl.FileName).ToLower();
 			StartGeneration(items, extension);
 			
@@ -135,7 +136,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		protected void Return()
 		{
 			IndentLine();
-			new Return().Execute(editActionHandler);++numOps;
+			new Return().Execute(editActionHandler);
+			++numOps;
 		}
 		
 		protected void IndentLine()

@@ -212,16 +212,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (name != null && name != "") {
 				return new NamespaceResolveResult(callingClass, callingMember, name);
 			}
-			LocalLookupVariable var = SearchVariable(identifier);
-			if (var != null) {
-				IReturnType type = GetVariableType(var);
-				IField field = new LocalVariableField(FixType(type), identifier, new DefaultRegion(var.StartPos, var.EndPos), callingClass);
-				return new LocalResolveResult(callingMember, field, false);
-			}
-			IParameter para = SearchMethodParameter(identifier);
-			if (para != null) {
-				IField field = new LocalVariableField(FixType(para.ReturnType), para.Name, para.Region, callingClass);
-				return new LocalResolveResult(callingMember, field, true);
+			if (callingMember != null) { // LocalResolveResult requires callingMember to be set
+				LocalLookupVariable var = SearchVariable(identifier);
+				if (var != null) {
+					IReturnType type = GetVariableType(var);
+					IField field = new LocalVariableField(FixType(type), identifier, new DefaultRegion(var.StartPos, var.EndPos), callingClass);
+					return new LocalResolveResult(callingMember, field, false);
+				}
+				IParameter para = SearchMethodParameter(identifier);
+				if (para != null) {
+					IField field = new LocalVariableField(FixType(para.ReturnType), para.Name, para.Region, callingClass);
+					return new LocalResolveResult(callingMember, field, true);
+				}
 			}
 			IMember member = GetMember(callingClass, identifier);
 			if (member != null) {
@@ -430,7 +432,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (curType == null)
 				return methods;
-			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
+			bool isClassInInheritanceTree = false;
+			if (callingClass != null)
+				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
 			
 			foreach (IMethod m in curType.Methods) {
 				if (IsSameName(m.Name, memberName) &&

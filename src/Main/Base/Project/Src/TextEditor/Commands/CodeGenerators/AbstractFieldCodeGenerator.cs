@@ -37,8 +37,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			public override string ToString()
 			{
-				
-				return AmbienceService.CurrentAmbience.Convert(field);
+				IAmbience ambience = AmbienceService.CurrentAmbience;
+				ambience.ConversionFlags = ConversionFlags.ShowReturnType | ConversionFlags.ShowModifiers;
+				return ambience.Convert(field);
 			}
 		}
 	}

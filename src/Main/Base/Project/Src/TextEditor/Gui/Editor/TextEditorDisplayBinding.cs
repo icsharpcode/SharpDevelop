@@ -396,7 +396,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			textAreaControl.ActiveTextAreaControl.JumpTo(line, column);
 		}
-		delegate void VoidDelegate(AbstractMargin margin);
 		
 		public void ForceFoldingUpdate(string language)
 		{
@@ -417,12 +416,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
+		delegate void ParseInformationDelegate(ParseInformation parseInfo);
+		
 		public void ParseInformationUpdated(ParseInformation parseInfo)
 		{
 			if (textAreaControl.TextEditorProperties.EnableFolding) {
-				textAreaControl.Document.FoldingManager.UpdateFoldings(TitleName, parseInfo);
-				textAreaControl.ActiveTextAreaControl.TextArea.Invoke(new VoidDelegate(textAreaControl.ActiveTextAreaControl.TextArea.Refresh), new object[] { textAreaControl.ActiveTextAreaControl.TextArea.FoldMargin});
+				textAreaControl.ActiveTextAreaControl.TextArea.Invoke(new ParseInformationDelegate(ParseInformationUpdatedInternal), new object[] { parseInfo });
 			}
+		}
+		
+		void ParseInformationUpdatedInternal(ParseInformation parseInfo)
+		{
+			textAreaControl.Document.FoldingManager.UpdateFoldings(TitleName, parseInfo);
+			textAreaControl.ActiveTextAreaControl.TextArea.Refresh(textAreaControl.ActiveTextAreaControl.TextArea.FoldMargin);
 		}
 		
 		

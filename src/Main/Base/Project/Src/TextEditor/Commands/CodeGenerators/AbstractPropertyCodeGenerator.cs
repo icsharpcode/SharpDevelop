@@ -27,14 +27,24 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
+		string GetPropertyName(string fieldName)
+		{
+			if (fieldName.StartsWith("_") && fieldName.Length > 1)
+				return Char.ToUpper(fieldName[1]) + fieldName.Substring(2);
+			else if (fieldName.StartsWith("m_") && fieldName.Length > 2)
+				return Char.ToUpper(fieldName[2]) + fieldName.Substring(3);
+			else
+				return Char.ToUpper(fieldName[0]) + fieldName.Substring(1);
+		}
+		
 		protected override void StartGeneration(IList items, string fileExtension)
 		{
 			for (int i = 0; i < items.Count; ++i) {
 				FieldWrapper fw = (FieldWrapper)items[i];
 				if (fileExtension == ".vb") {
-					editActionHandler.InsertString("Public " + (fw.Field.IsStatic ? "Shared " : "") + "Property " + (Char.ToUpper(fw.Field.Name[0]) + fw.Field.Name.Substring(1)) + " As " + vba.Convert(fw.Field.ReturnType));
+					editActionHandler.InsertString("Public " + (fw.Field.IsStatic ? "Shared " : "") + "Property " + GetPropertyName(fw.Field.Name) + " As " + vba.Convert(fw.Field.ReturnType));
 				} else {
-					editActionHandler.InsertString("public " + (fw.Field.IsStatic ? "static " : "") + csa.Convert(fw.Field.ReturnType) + " " + Char.ToUpper(fw.Field.Name[0]) + fw.Field.Name.Substring(1));
+					editActionHandler.InsertString("public " + (fw.Field.IsStatic ? "static " : "") + csa.Convert(fw.Field.ReturnType) + " " + GetPropertyName(fw.Field.Name));
 					if (StartCodeBlockInSameLine) {
 						editActionHandler.InsertString(" {");
 					} else {
@@ -85,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			} else {
 				editActionHandler.InsertString("return " + fw.Field.Name+ ";");
 			}
-			++numOps;	
+			++numOps;
 			Return();
 			if (fileExtension == ".vb") {
 				editActionHandler.InsertString("End Get");
