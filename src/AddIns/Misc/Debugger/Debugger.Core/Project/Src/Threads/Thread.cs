@@ -3,6 +3,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -11,7 +12,7 @@ using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary
 {
-	public class Thread
+	public partial class Thread
 	{
 		internal bool currentExceptionIsHandled;
 
@@ -125,9 +126,9 @@ namespace DebuggerLibrary
 			}
 		}
 
-		public unsafe FunctionCollection Callstack {
+		public unsafe List<Function> Callstack {
 			get {
-				FunctionCollection callstack = new FunctionCollection();
+				List<Function> callstack = new List<Function>();
 
 				if (!NDebugger.IsDebugging)    return callstack;
 				if (NDebugger.IsProcessRunning) return callstack;
@@ -171,7 +172,7 @@ namespace DebuggerLibrary
 				ICorDebugFrame corFrame;
 				corThread.GetActiveFrame(out corFrame);
 				if (corFrame == null) {
-					FunctionCollection callstack = Callstack;
+					List<Function> callstack = Callstack;
 					if (callstack.Count > 0) {
 						return callstack[0];
 					} else {

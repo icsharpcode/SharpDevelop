@@ -65,9 +65,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			breaked.Width = 80;
 		
 			
-			NDebugger.Threads.ThreadAdded += new ThreadEventHandler(AddThread);
-			NDebugger.Threads.ThreadStateChanged += new ThreadEventHandler(RefreshThread);
-			NDebugger.Threads.ThreadRemoved += new ThreadEventHandler(RemoveThread);
+			NDebugger.Instance.ThreadStarted += new ThreadEventHandler(AddThread);
+			NDebugger.Instance.ThreadStateChanged += new ThreadEventHandler(RefreshThread);
+			NDebugger.Instance.ThreadExited += new ThreadEventHandler(RemoveThread);
 			NDebugger.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
 	
 			RedrawContent();
@@ -135,7 +135,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 		private void RefreshAllItems()
 		{
-			foreach (Thread t in NDebugger.Threads) {
+			foreach (Thread t in NDebugger.Instance.Threads) {
 				RefreshThread(this, new ThreadEventArgs(t));
 			}
 		}

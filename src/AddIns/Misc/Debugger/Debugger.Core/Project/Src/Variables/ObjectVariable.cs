@@ -145,7 +145,7 @@ namespace DebuggerLibrary
 				fullTypeName = NDebugger.pStringAsUnicode;
 
 				superCallsToken = 0;
-				foreach (Module m in NDebugger.Modules)
+				foreach (Module m in NDebugger.Instance.Modules)
 				{
 					// TODO: Does not work for nested
 					//       see FindTypeDefByName in dshell.cpp

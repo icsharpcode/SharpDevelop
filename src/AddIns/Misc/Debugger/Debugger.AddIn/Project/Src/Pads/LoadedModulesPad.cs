@@ -64,8 +64,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			timestamp.Width = 0;//80;
 			information.Width = 130;
 
-			NDebugger.Modules.ModuleAdded += new DebuggerLibrary.ModuleEventHandler(AddModule);
-			NDebugger.Modules.ModuleRemoved += new DebuggerLibrary.ModuleEventHandler(RemoveModule);
+			NDebugger.Instance.ModuleLoaded += new DebuggerLibrary.ModuleEventHandler(AddModule);
+			NDebugger.Instance.ModuleUnloaded += new DebuggerLibrary.ModuleEventHandler(RemoveModule);
 
 			RedrawContent();
 		}
@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			information.Text  = StringParser.Parse("${res:MainWindow.Windows.Debug.InformationColumn}");
 
             loadedModulesList.Items.Clear();
-            foreach(Module m in NDebugger.Modules) {
+            foreach(Module m in NDebugger.Instance.Modules) {
                 AddModule(this, new ModuleEventArgs(m));
             }
 		}

@@ -56,10 +56,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			path.Width = 400;
 			
 			NDebugger.DebuggingResumed += new DebuggerEventHandler(debuggerService_OnDebuggingResumed);
-			NDebugger.Breakpoints.BreakpointAdded += new DebuggerLibrary.BreakpointEventHandler(AddBreakpoint);
-			NDebugger.Breakpoints.BreakpointStateChanged += new DebuggerLibrary.BreakpointEventHandler(RefreshBreakpoint);
-			NDebugger.Breakpoints.BreakpointRemoved += new DebuggerLibrary.BreakpointEventHandler(RemoveBreakpoint);
-			NDebugger.Breakpoints.BreakpointHit += new DebuggerLibrary.BreakpointEventHandler(Breakpoints_OnBreakpointHit);
+			NDebugger.Instance.BreakpointAdded += new DebuggerLibrary.BreakpointEventHandler(AddBreakpoint);
+			NDebugger.Instance.BreakpointStateChanged += new DebuggerLibrary.BreakpointEventHandler(RefreshBreakpoint);
+			NDebugger.Instance.BreakpointRemoved += new DebuggerLibrary.BreakpointEventHandler(RemoveBreakpoint);
+			NDebugger.Instance.BreakpointHit += new DebuggerLibrary.BreakpointEventHandler(Breakpoints_OnBreakpointHit);
 			
 			RedrawContent();
 		}
@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			breakpointsList.ItemCheck -= new ItemCheckEventHandler(BreakpointsListItemCheck);
 			breakpointsList.BeginUpdate();
 			breakpointsList.Items.Clear();
-			foreach(DebuggerLibrary.Breakpoint b in NDebugger.Breakpoints) {
+			foreach(DebuggerLibrary.Breakpoint b in NDebugger.Instance.Breakpoints) {
 				AddBreakpoint(this, new BreakpointEventArgs(b));
 			}
 			breakpointsList.EndUpdate();
@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void debuggerService_OnDebuggingResumed(object sender, DebuggerEventArgs e)
 		{
 			breakpointsList.BeginUpdate();
-			foreach(DebuggerLibrary.Breakpoint b in NDebugger.Breakpoints)
+			foreach(DebuggerLibrary.Breakpoint b in NDebugger.Instance.Breakpoints)
 				RefreshBreakpoint(this, new BreakpointEventArgs(b));
 			breakpointsList.EndUpdate();
 		}

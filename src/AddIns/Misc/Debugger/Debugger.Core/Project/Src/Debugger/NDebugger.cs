@@ -13,8 +13,20 @@ using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary
 {
-	public class NDebugger
+	public partial class NDebugger
 	{
+		static NDebugger instance = new NDebugger();
+
+		public static NDebugger Instance {
+			get {
+				return instance;
+			}
+			set {
+				instance = value;
+			}
+		}
+
+
 		// Some variables that are used to get strings
 		// They are used all over the library and
 		// they are here so I don't have to decare them every time I need them
@@ -37,32 +49,10 @@ namespace DebuggerLibrary
 		static ICorDebugProcess           mainProcess;
 		static Thread                     mainThread;
 		static Thread                     currentThread;
-
-		static BreakpointCollection       breakpoints;
-		static ThreadCollection           threads;
-		static ModuleCollection           modules;
 		
 		public static bool CatchHandledExceptions = false;
 
 		#region Public propeties
-
-		static public BreakpointCollection Breakpoints { 
-			get{ 
-				return breakpoints; 
-			} 
-		}
-
-		static public ThreadCollection Threads { 
-			get{ 
-				return threads; 
-			} 
-		}
-
-		static public ModuleCollection Modules { 
-			get{ 
-				return modules; 
-			} 
-		}
 
 		static public SourcecodeSegment NextStatement { 
 			get{
@@ -153,24 +143,18 @@ namespace DebuggerLibrary
 
 		#region Basic functions
 
-		static NDebugger()
+		private NDebugger()
 		{
 			InitDebugger();
 			ResetEnvironment();
+
+			this.ModuleLoaded += new ModuleEventHandler(SetBreakpointsInModule);
 		}
 		
 		~NDebugger() //TODO
 		{
 			corDebug.Terminate();
 			Marshal.FreeHGlobal(pString);
-		}
-		
-		/// <summary>
-		/// It is not possible to implicitly create instance
-		/// </summary>
-		private NDebugger()
-		{
-			
 		}
 
 		static internal void InitDebugger()
@@ -190,27 +174,13 @@ namespace DebuggerLibrary
 			corDebug.SetManagedHandler(managedCallbackProxy);
 		}
 
-		static internal void ResetEnvironment()
+		internal void ResetEnvironment()
 		{
-			if (modules == null) {
-				modules = new ModuleCollection();
-			} else {
-				modules.Clear();
-			}
+			ClearModules();
 			
-			if (breakpoints == null) {
-				breakpoints = new BreakpointCollection();
-			} else {
-				foreach (Breakpoint b in breakpoints) {
-					b.ResetBreakpoint();
-				}
-			}
+			ResetBreakpoints();
 			
-			if (threads == null) {
-				threads = new ThreadCollection();
-			} else {
-				threads.Clear();
-			}
+			ClearThreads();
 			
 			MainProcess   = null;
 			mainThread    = null;
@@ -476,7 +446,7 @@ namespace DebuggerLibrary
 
 		#endregion
 
-		static public void ToggleBreakpointAt(string fileName, int line, int column) 
+		public void ToggleBreakpointAt(string fileName, int line, int column) 
 		{
 			// Check if there is breakpoint on that line
 			foreach (Breakpoint breakpoint in Breakpoints) {
@@ -488,15 +458,14 @@ namespace DebuggerLibrary
 			}
 
 			// Add the breakpoint 
-			int index = Breakpoints.Add(fileName, line, column);
-			Breakpoint addedBreakpoint = breakpoints[index];
+			Breakpoint addedBreakpoint = AddBreakpoint(fileName, line, column);
 
             // Check if it wasn't forced to move to different line with breakpoint
 			foreach (Breakpoint breakpoint in Breakpoints) {
 				if (breakpoint != addedBreakpoint) { // Only the old ones
 					if (breakpoint.SourcecodeSegment.StartLine == addedBreakpoint.SourcecodeSegment.StartLine) {
 						// Whops! We have two breakpoint on signle line, delete one
-						Breakpoints.Remove(addedBreakpoint);
+						RemoveBreakpoint(addedBreakpoint);
 						return;
 					}
 				}

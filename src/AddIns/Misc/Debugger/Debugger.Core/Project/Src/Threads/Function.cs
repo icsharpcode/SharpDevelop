@@ -44,7 +44,7 @@ namespace DebuggerLibrary
             this.token = new SymbolToken((int)functionToken);
 			ICorDebugModule corModule;
 			corFunction.GetModule(out corModule);
-			module = NDebugger.Modules[corModule];
+			module = NDebugger.Instance.GetModule(corModule);
 
 			Init();
 		}

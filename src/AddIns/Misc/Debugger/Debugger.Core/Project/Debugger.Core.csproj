@@ -1,4 +1,4 @@
-﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -9,6 +9,9 @@
     <RootNamespace>Debugger.Core</RootNamespace>
     <AssemblyName>Debugger.Core</AssemblyName>
     <WarningLevel>4</WarningLevel>
+    <AssemblyOriginatorKeyFile />
+    <AssemblyKeyProviderName />
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -38,8 +41,8 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Breakpoints\Breakpoint.cs" />
-    <Compile Include="Src\Breakpoints\BreakpointCollection.cs" />
     <Compile Include="Src\Breakpoints\BreakpointEventHandler.cs" />
+    <Compile Include="Src\Breakpoints\NDebugger-Breakpoints.cs" />
     <Compile Include="Src\Debugger\DebuggerEvents\DebuggerEventHandler.cs" />
     <Compile Include="Src\Debugger\DebuggerEvents\DebuggingIsResumingEventHandler.cs" />
     <Compile Include="Src\Debugger\DebuggerEvents\DebuggingPausedEventHandler.cs" />
@@ -57,14 +60,13 @@
     <Compile Include="Src\Interop enums\CorMethodAttr.cs" />
     <Compile Include="Src\Interop enums\CorTokenType.cs" />
     <Compile Include="Src\Modules\Module.cs" />
-    <Compile Include="Src\Modules\ModuleCollection.cs" />
     <Compile Include="Src\Modules\ModuleEventHandler.cs" />
+    <Compile Include="Src\Modules\NDebugger-Modules.cs" />
     <Compile Include="Src\Threads\Exception.cs" />
     <Compile Include="Src\Threads\Function.cs" />
-    <Compile Include="Src\Threads\FunctionCollection.cs" />
+    <Compile Include="Src\Threads\NDebugger-Threads.cs" />
     <Compile Include="Src\Threads\SourcecodeSegment.cs" />
     <Compile Include="Src\Threads\Thread.cs" />
-    <Compile Include="Src\Threads\ThreadCollection.cs" />
     <Compile Include="Src\Threads\ThreadEventHandler.cs" />
     <Compile Include="Src\Variables\ArrayVariable.cs" />
     <Compile Include="Src\Variables\BuiltInVariable.cs" />

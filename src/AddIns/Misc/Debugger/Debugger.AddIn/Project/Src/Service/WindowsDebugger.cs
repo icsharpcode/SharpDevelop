@@ -379,7 +379,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			Point logicPos = iconBar.TextArea.TextView.GetLogicalPosition(0, mousepos.Y - viewRect.Top);
 			
 			if (logicPos.Y >= 0 && logicPos.Y < iconBar.TextArea.Document.TotalNumberOfLines) {
-				NDebugger.ToggleBreakpointAt(iconBar.TextArea.MotherTextEditorControl.FileName , logicPos.Y + 1, 0);
+				NDebugger.Instance.ToggleBreakpointAt(iconBar.TextArea.MotherTextEditorControl.FileName , logicPos.Y + 1, 0);
 				RefreshBreakpointMarkersInEditor(iconBar.TextArea.MotherTextEditorControl);
 				iconBar.TextArea.Refresh(iconBar);
 			}
@@ -399,7 +399,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 			}
 			// Add breakpoint markers
-			foreach (DebuggerLibrary.Breakpoint b in NDebugger.Breakpoints) {
+			foreach (DebuggerLibrary.Breakpoint b in NDebugger.Instance.Breakpoints) {
 				if (b.SourcecodeSegment.SourceFilename.ToLower() == textEditor.FileName.ToLower()) {
 					LineSegment lineSeg = document.GetLineSegment((int)b.SourcecodeSegment.StartLine - 1);
 					document.MarkerStrategy.TextMarker.Add(new BreakpointMarker(lineSeg.Offset, lineSeg.Length , TextMarkerType.SolidBlock, Color.Red));
@@ -486,7 +486,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		void PaintIconBar(AbstractMargin iconBar, Graphics g, Rectangle rect)
 		{
-			foreach (DebuggerLibrary.Breakpoint breakpoint in NDebugger.Breakpoints) {
+			foreach (DebuggerLibrary.Breakpoint breakpoint in NDebugger.Instance.Breakpoints) {
 				if (Path.GetFullPath(breakpoint.SourcecodeSegment.SourceFilename) == Path.GetFullPath(iconBar.TextArea.MotherTextEditorControl.FileName)) {
 					int lineNumber = iconBar.TextArea.Document.GetVisibleLine((int)breakpoint.SourcecodeSegment.StartLine - 1);
 					int yPos = (int)(lineNumber * iconBar.TextArea.TextView.FontHeight) - iconBar.TextArea.VirtualTop.Y;

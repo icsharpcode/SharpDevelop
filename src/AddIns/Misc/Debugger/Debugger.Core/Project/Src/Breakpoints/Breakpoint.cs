@@ -138,8 +138,8 @@ namespace DebuggerLibrary
 			{
 				try 
 				{
-					module = NDebugger.Modules[seg.ModuleFilename];
-					symReader = NDebugger.Modules[seg.ModuleFilename].SymReader;
+					module = NDebugger.Instance.GetModule(seg.ModuleFilename);
+					symReader = NDebugger.Instance.GetModule(seg.ModuleFilename).SymReader;
 					symDoc = symReader.GetDocument(seg.SourceFilename,Guid.Empty,Guid.Empty,Guid.Empty);
 				}
 				catch {}
@@ -147,7 +147,7 @@ namespace DebuggerLibrary
 
 			// search all modules
 			if (symDoc == null) {
-				foreach (Module m in NDebugger.Modules) {
+				foreach (Module m in NDebugger.Instance.Modules) {
 					module    = m;
 					symReader = m.SymReader;
 					if (symReader == null) {
