@@ -35,34 +35,29 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="SharpDevelop.Base.dll">
-      <HintPath>..\..\..\..\..\bin\SharpDevelop.Base.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ICSharpCode.Core.dll">
-      <HintPath>..\..\..\..\..\bin\ICSharpCode.Core.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
-    <Reference Include="ICSharpCode.XmlForms.dll">
-      <HintPath>..\..\..\..\..\bin\ICSharpCode.XmlForms.dll</HintPath>
-      <Private>True</Private>
-    </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ILAsmLanguageBinding.cs" />
-    <Compile Include="ILAsmCompilerManager.cs" />
-    <Compile Include="ILAsmExecutionManager.cs" />
-    <Compile Include="Project\ILAsmCompilerParameters.cs" />
-    <Compile Include="Project\ILAsmProject.cs" />
-    <Compile Include="Gui\CompilerParametersPanel.cs" />
-    <Compile Include="AssemblyInfo.cs" />
-    <Compile Include="Gui\ChooseRuntimePanel.cs" />
-    <EmbeddedResource Include="..\Resources\ChooseRuntimePanel.xfrm" />
-    <EmbeddedResource Include="..\Resources\ILAsm-Mode.xshd" />
+    <Compile Include="Src\Gui\CompilerParametersPanel.cs" />
+    <Compile Include="Src\AssemblyInfo.cs" />
+    <Compile Include="Src\ILAsmCompilerManager.cs" />
+    <Compile Include="Src\ILAsmExecutionManager.cs" />
+    <Compile Include="Src\ILAsmLanguageBinding.cs" />
+    <Compile Include="Src\Project\ILAsmCompilerParameters.cs" />
+    <Compile Include="Src\Project\ILAsmProject.cs" />
+    <EmbeddedResource Include="Resources\ILAsm-Mode.xshd" />
+    <Compile Include="ILAsmBinding.addin">
+      <CopyToOutputDirectory>True</CopyToOutputDirectory>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Project\" />
-    <Folder Include="Gui\" />
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

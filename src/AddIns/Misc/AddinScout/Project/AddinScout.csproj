@@ -4,7 +4,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.41115</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{4b8f0f98-8be1-402b-aa8b-c8d548577b38}</ProjectGuid>
+    <ProjectGuid>{4B8F0F98-8BE1-402B-AA8B-C8D548577B38}</ProjectGuid>
     <RootNamespace>NewProject</RootNamespace>
     <AssemblyName>AddinScout</AssemblyName>
     <OutputTarget>Library</OutputTarget>

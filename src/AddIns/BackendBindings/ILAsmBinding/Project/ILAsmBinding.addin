@@ -34,11 +34,6 @@
 			             class = "ICSharpCode.ILAsmBinding.ChooseRuntimePanel"/>
 		</Condition>
 	</Path>
-
-<!-- TODO: 
-	<Path name = "/Workspace/Icons">
-	</Path>
--->
 	
 	<Path name = "/SharpDevelop/Workbench/LanguageBindings">
 		<LanguageBinding id    = "ILAsm"
