@@ -37,12 +37,6 @@ namespace DebuggerInterop.Core
 			System.Console.WriteLine("MTA2STA: " + msg);
 		}
 		
-		void ErrorMsg(string msg)
-		{
-			System.Console.WriteLine("MTA2STA: ERROR: " + msg);
-			MessageBox.Show(msg);
-		}
-		
 		public void CallInSTA (object targetObject, string functionName, object[] functionParameters)
 		{
 			lock (OnlyOneAtTimeLock) {
@@ -100,7 +94,9 @@ namespace DebuggerInterop.Core
 								try{
 									outputParams[i] = null;
 									outputParams[i] = Marshal.GetTypedObjectForIUnknown((IntPtr)inputParams[i], outputParamsInfo[i].ParameterType);
-								}catch {} // TODO: Walkaround
+								} catch (System.Exception exception) {
+									System.Diagnostics.Debug.Fail("Marshaling of argument " + i.ToString() + " of " + functionName + " failed.", exception.ToString());
+								}
 							}
 						} else {
 							outputParams[i] = inputParams[i];
@@ -116,8 +112,7 @@ namespace DebuggerInterop.Core
 					method.Invoke(targetObject, outputParams);
 				}
 			} catch (System.Exception exception) {
-				System.Diagnostics.Trace.WriteLine(exception.ToString());
-				//System.Diagnostics.Debug.Fail("Invoke of " + functionName + " failed.", exception.ToString());
+				System.Diagnostics.Debug.Fail("Invoke of " + functionName + " failed.", exception.ToString());
 			}
 			TraceMsg ("} \\\\ Invoke");
 		}

@@ -130,12 +130,16 @@ namespace DebuggerLibrary
 
 		private unsafe void Step(bool stepIn)
 		{
-			if (Module.SymbolsLoaded == false) return;
+			if (Module.SymbolsLoaded == false) {
+				System.Diagnostics.Debug.Fail("Unable to step. No symbols loaded.");
+				return;
+			}
 
 			SourcecodeSegment nextSt;
 			try {
 				nextSt = NextStatement;// Cache
 			} catch (NextStatementNotAviableException) {
+				System.Diagnostics.Debug.Fail("Unable to step. Next statement not aviable");
 				return;
 			}			
 
@@ -316,8 +320,12 @@ namespace DebuggerLibrary
 					}
 				}
 			} 
-			catch (FrameNotAviableException) {}
-			catch (SymbolsNotAviableException) {}
+			catch (FrameNotAviableException) {
+				System.Diagnostics.Debug.Fail("Unable to get local variables. Frame is not aviable");
+			}
+			catch (SymbolsNotAviableException) {
+				System.Diagnostics.Debug.Fail("Unable to get local variables. Symbols are not aviable");
+			}
 			return collection;
 		}
 

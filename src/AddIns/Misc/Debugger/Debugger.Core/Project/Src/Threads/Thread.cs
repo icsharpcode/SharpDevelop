@@ -20,8 +20,18 @@ namespace DebuggerLibrary
 		bool lastSuspendedState = false;
 		ThreadPriority lastPriority = ThreadPriority.Normal;
 		string lastName = string.Empty;
+		bool hasBeenLoaded = false;
 		
 		readonly ICorDebugThread corThread;
+
+		internal bool HasBeenLoaded {
+			get {
+				return hasBeenLoaded;
+			}
+			set {
+				hasBeenLoaded = value;
+			}
+		}
 
 		public uint ID { 
 			get{ 
@@ -66,18 +76,20 @@ namespace DebuggerLibrary
 
 		public ThreadPriority Priority {
 			get {
+				if (!HasBeenLoaded) return lastPriority;
 				if (NDebugger.IsProcessRunning) return lastPriority;
 
-				Variable runTimeVar = runtimeVariable;
+				Variable runTimeVar = RuntimeVariable;
 				if (runTimeVar is NullRefVariable) return ThreadPriority.Normal;
-				lastPriority = (ThreadPriority)(int)(runtimeVariable.SubVariables["m_Priority"] as BuiltInVariable).Value;
+				lastPriority = (ThreadPriority)(int)(runTimeVar.SubVariables["m_Priority"] as BuiltInVariable).Value;
 				return lastPriority;
 			}
 		}
 
 
-		public Variable runtimeVariable {
+		public Variable RuntimeVariable {
 			get {
+				if (!HasBeenLoaded) throw new UnableToGetPropertyException(this, "runtimeVariable", "Thread has not started jet");
 				if (NDebugger.IsProcessRunning) throw new UnableToGetPropertyException(this, "runtimeVariable", "Process is running");
 				ICorDebugValue corValue;
 				corThread.GetObject(out corValue);
@@ -88,8 +100,9 @@ namespace DebuggerLibrary
 
 		public string Name {
 			get	{
+				if (!HasBeenLoaded) return lastName;
 				if (NDebugger.IsProcessRunning) return lastName;
-				Variable runtimeVar  = runtimeVariable;
+				Variable runtimeVar  = RuntimeVariable;
 				if (runtimeVar is NullRefVariable) return lastName;
 				Variable runtimeName = runtimeVar.SubVariables["m_Name"];
 				if (runtimeName is NullRefVariable) return string.Empty;
@@ -124,7 +137,7 @@ namespace DebuggerLibrary
 			get {
 				List<Function> callstack = new List<Function>();
 
-				if (!NDebugger.IsDebugging)    return callstack;
+				if (!NDebugger.IsDebugging)     return callstack;
 				if (NDebugger.IsProcessRunning) return callstack;
 
 				ICorDebugChainEnum corChainEnum;
@@ -153,7 +166,9 @@ namespace DebuggerLibrary
                         try {
                             callstack.Add(new Function(corFrames[0]));					                                                
                         }
-                        catch (COMException) {};
+                        catch (COMException) {
+							//System.Diagnostics.Debug.Fail("Error during adding function to callstack");
+						};
 					}
 				} // for(;;)
 				return callstack;
@@ -181,21 +196,27 @@ namespace DebuggerLibrary
 		{
 			try {
 				CurrentFunction.StepInto();
-			} catch (CurrentFunctionNotAviableException) {}
+			} catch (CurrentFunctionNotAviableException) {
+				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentFunctionNotAviableException");
+			}
 		}		
 
 		public void StepOver()
 		{
 			try {
 				CurrentFunction.StepOver();
-			} catch (CurrentFunctionNotAviableException) {}
+			} catch (CurrentFunctionNotAviableException) {
+				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentFunctionNotAviableException");
+			}
 		}
 
 		public void StepOut()
 		{
 			try {
 				CurrentFunction.StepOut();
-			} catch (CurrentFunctionNotAviableException) {}
+			} catch (CurrentFunctionNotAviableException) {
+				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentFunctionNotAviableException");
+			}
 		}
 		
 		public SourcecodeSegment NextStatement {
@@ -208,7 +229,8 @@ namespace DebuggerLibrary
 			get {
 				try {
 					return CurrentFunction.LocalVariables;	
-				} catch (NotAviableException) {
+				} catch (NotAviableException exception) {
+					System.Diagnostics.Debug.Fail("Unable to get LocalVariables." + exception.ToString());
 					return new VariableCollection();
 				}
 			}

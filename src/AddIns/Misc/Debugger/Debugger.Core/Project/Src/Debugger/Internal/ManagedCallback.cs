@@ -236,7 +236,9 @@ namespace DebuggerLibrary
 			if (pThread != null)
 			{
 				EnterCallback("NameChange: pThread");
-				NDebugger.Instance.GetThread(pThread).OnThreadStateChanged();
+				Thread thread = NDebugger.Instance.GetThread(pThread);
+				thread.HasBeenLoaded = true;
+				thread.OnThreadStateChanged();
 				ExitCallback_Continue();
 				return;
 			}
@@ -303,9 +305,7 @@ namespace DebuggerLibrary
 			
 			NDebugger.Instance.RemoveThread(thread);
 
-			try { // TODO
-				ExitCallback_Continue(pAppDomain);
-			} catch {}
+			ExitCallback_Continue(pAppDomain);
 		}
 
 		public void ExitAppDomain(ICorDebugProcess pProcess, ICorDebugAppDomain pAppDomain)

@@ -59,6 +59,7 @@ namespace DebuggerLibrary
 				try {
 					return CurrentThread.NextStatement; 
 				} catch (CurrentThreadNotAviableException) {
+					System.Diagnostics.Debug.Fail("Unable to get NextStatement. CurrentThreadNotAviableException");
 					throw new NextStatementNotAviableException();
 				}
 			} 
@@ -71,6 +72,7 @@ namespace DebuggerLibrary
 					thread = CurrentThread;
 				} 
 				catch (CurrentThreadNotAviableException) {
+					//System.Diagnostics.Debug.Fail("Unable to get LocalVariables. CurrentThreadNotAviableException");
 					return new VariableCollection ();
 				}
 				return thread.LocalVariables;
@@ -313,7 +315,10 @@ namespace DebuggerLibrary
 		
 		static public void Start(string filename, string workingDirectory, string arguments)		
 		{
-			if (IsDebugging) return;
+			if (IsDebugging) {
+				System.Diagnostics.Debug.Fail("Invalid operation");
+				return;
+			}
 			m2s.CallInSTA(typeof(NDebugger), "StartInternal", new Object[] {filename, workingDirectory, arguments});
 			return;
 		}
@@ -356,8 +361,10 @@ namespace DebuggerLibrary
 
 		static public void Break()
 		{
-			if (!IsDebugging) return;
-			if (!IsProcessRunning) return;
+			if (!IsDebugging || !IsProcessRunning) {
+				System.Diagnostics.Debug.Fail("Invalid operation");
+				return;
+			}
 
             corProcess.Stop(5000); // TODO: Hardcoded value
 
@@ -370,21 +377,27 @@ namespace DebuggerLibrary
 		{
 			try {
 				CurrentThread.StepInto();
-			} catch (CurrentThreadNotAviableException) {}
+			} catch (CurrentThreadNotAviableException) {
+				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentThreadNotAviableException");
+			}
 		}
 
 		static public void StepOver()
 		{
 			try {
 				CurrentThread.StepOver();
-			} catch (CurrentThreadNotAviableException) {}
+			} catch (CurrentThreadNotAviableException) {
+				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentThreadNotAviableException");
+			}
 		}
 
 		static public void StepOut()
 		{
 			try {
 				CurrentThread.StepOut();
-			} catch (CurrentThreadNotAviableException) {}
+			} catch (CurrentThreadNotAviableException) {
+				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentThreadNotAviableException");
+			}
 		}
 
 		static internal void Continue(ICorDebugAppDomain pAppDomain)
@@ -397,8 +410,10 @@ namespace DebuggerLibrary
 
 		static public void Continue()
 		{
-			if (!IsDebugging) return;
-			if (IsProcessRunning) return;
+			if (!IsDebugging || IsProcessRunning) {
+				System.Diagnostics.Debug.Fail("Invalid operation");
+				return;
+			}
 
 			bool abort = false;
 			OnDebuggingIsResuming(ref abort);
@@ -415,7 +430,10 @@ namespace DebuggerLibrary
 
 		static public void Terminate()
 		{
-			if (!IsDebugging) return;
+			if (!IsDebugging) {
+				System.Diagnostics.Debug.Fail("Invalid operation");
+				return;
+			}
 
 			int running;
 			corProcess.IsRunning(out running);
@@ -452,7 +470,7 @@ namespace DebuggerLibrary
 			foreach (Breakpoint breakpoint in Breakpoints) {
 				// TODO check filename too
 				if (breakpoint.SourcecodeSegment.StartLine == line) {
-					Breakpoints.Remove(breakpoint);
+					RemoveBreakpoint(breakpoint);
 					return;
 				}
 			}

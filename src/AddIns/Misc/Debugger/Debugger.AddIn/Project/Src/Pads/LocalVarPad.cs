@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			val.Text  = "Value";
 			type.Text = "Type";
 
-            if (NDebugger.IsProcessRunning == false) {
+            if (NDebugger.IsDebugging && NDebugger.IsProcessRunning == false) {
                 debuggerService_OnDebuggingPaused(this, new DebuggingPausedEventArgs(PausedReason.StepComplete));
             }
 		}

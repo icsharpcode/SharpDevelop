@@ -20,6 +20,8 @@ namespace DebuggerLibrary
 		ExceptionType     exceptionType;
 		SourcecodeSegment location;
 		DateTime          creationTime;
+		string            type;
+		string            message;
 	
 		internal Exception(Thread thread)
 		{
@@ -28,15 +30,23 @@ namespace DebuggerLibrary
 			thread.CorThread.GetCurrentException(out corValue);
 			exceptionType = thread.CurrentExceptionType;
 			runtimeVariable    = VariableFactory.CreateVariable(corValue, "$exception");
-			runtimeVariableException = (ObjectVariable)runtimeVariable;
-			while (runtimeVariableException.Type != "System.Exception") {
-				if (runtimeVariableException.HasBaseClass == false) {
-					runtimeVariableException = null;
-					break;
+			runtimeVariableException = runtimeVariable as ObjectVariable;
+			if (runtimeVariableException != null) {
+				while (runtimeVariableException.Type != "System.Exception") {
+					if (runtimeVariableException.HasBaseClass == false) {
+						runtimeVariableException = null;
+						break;
+					}
+					runtimeVariableException = runtimeVariableException.BaseClass;
 				}
-				runtimeVariableException = runtimeVariableException.BaseClass;
+				message = runtimeVariableException.SubVariables["_message"].Value.ToString();
 			}
-			location = thread.NextStatement;
+			try {
+				location = thread.NextStatement;
+			} catch (NextStatementNotAviableException) {
+				location = new SourcecodeSegment();
+			}
+			type = runtimeVariable.Type;
 		}
 	
 		public override string ToString() {
@@ -47,13 +57,13 @@ namespace DebuggerLibrary
 	
 	    public string Type {
 			get {
-				return runtimeVariable.Type;
+				return type;
 			}
 		}
 	
 		public string Message {
 			get {
-				return runtimeVariableException.SubVariables["_message"].Value.ToString();
+				return message;
 			}
 		}
 

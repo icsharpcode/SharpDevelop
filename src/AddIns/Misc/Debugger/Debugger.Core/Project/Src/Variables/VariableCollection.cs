@@ -15,8 +15,9 @@ namespace DebuggerLibrary
 		internal void Add(Variable variable)
 		{
 			System.Diagnostics.Trace.Assert(variable != null);
-			if (variable != null)
+			if (variable != null) {
 				InnerList.Add(variable);
+			}
 		}
 
 		public Variable this[int index] {
@@ -28,9 +29,11 @@ namespace DebuggerLibrary
 		public Variable this[string variableName]
 		{
 			get {
-				foreach (Variable v in InnerList) 
-					if (v.Name == variableName)
+				foreach (Variable v in InnerList) {
+					if (v.Name == variableName) {
 						return v;
+					}
+				}
 
 				throw new UnableToGetPropertyException(this, "this[string]", "Variable \"" + variableName + "\" is not in collection");
 			}
