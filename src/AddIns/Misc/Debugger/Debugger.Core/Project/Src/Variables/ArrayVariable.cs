@@ -7,7 +7,6 @@ using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 
 using DebuggerInterop.Core;
-using DebuggerInterop.Symbols;
 
 //TODO: Support for lower bound
 

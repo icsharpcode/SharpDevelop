@@ -3,10 +3,10 @@
 // </file>
 
 using System;
+using System.Diagnostics.SymbolStore;
 using System.Runtime.InteropServices;
 
 using DebuggerInterop.Core;
-using DebuggerInterop.Symbols;
 using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary
@@ -20,7 +20,7 @@ namespace DebuggerLibrary
 		
 		int orderOfLoading = 0;
 		readonly ICorDebugModule corModule;
-		ISymUnmanagedReader symReader;
+		ISymbolReader symReader;
 		object pMetaDataInterface;
 		IMetaDataImport metaDataInterface;
 		
@@ -29,7 +29,7 @@ namespace DebuggerLibrary
 				return metaDataInterface;
 			}
 		}
-		public ISymUnmanagedReader SymReader {
+		public ISymbolReader SymReader {
 			get {
 				return symReader;
 			}
@@ -112,13 +112,16 @@ namespace DebuggerLibrary
 			pModule.GetName(NDebugger.pStringLen,
 			                out NDebugger.unused, // real string lenght
 			                NDebugger.pString);
-			fullPath = NDebugger.pStringAsUnicode;		
+			fullPath = NDebugger.pStringAsUnicode;	
+	
+            
 			
-			ISymUnmanagedBinder symBinder = new CorSymBinder_SxSClass();
-			int hr = symBinder.GetReaderForFile (pMetaDataInterface, NDebugger.pString, IntPtr.Zero, out symReader);
-			if (hr != 0) {
-				symReader = null;
-			}
+			SymBinder symBinder = new SymBinder();
+            try {
+			    symReader = symBinder.GetReader(Marshal.GetIUnknownForObject(metaDataInterface), fullPath, string.Empty);
+            } catch (System.Exception e) {
+                symReader = null;
+            }
 		}
 	}
 }

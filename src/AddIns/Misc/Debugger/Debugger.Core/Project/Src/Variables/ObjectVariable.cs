@@ -9,7 +9,6 @@ using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 
 using DebuggerInterop.Core;
-using DebuggerInterop.Symbols;
 using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary

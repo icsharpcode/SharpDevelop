@@ -9,7 +9,6 @@ using System.Threading;
 using System.Windows.Forms;
 
 using DebuggerInterop.Core;
-using DebuggerInterop.Symbols;
 
 // Function finding regular expresion:
 //    ^{\t*}{(:Ll| )*{:i} *\(((.# {:i}, |\))|())^6\)*}\n\t*\{(.|\n)@\}

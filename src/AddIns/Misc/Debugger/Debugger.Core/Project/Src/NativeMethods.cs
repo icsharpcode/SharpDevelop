@@ -5,7 +5,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 using DebuggerInterop.Core;
-using DebuggerInterop.Symbols;
 using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary

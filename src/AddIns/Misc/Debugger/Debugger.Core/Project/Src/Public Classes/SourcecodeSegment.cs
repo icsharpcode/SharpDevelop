@@ -3,8 +3,7 @@
 // </file>
 
 using System;
-
-using DebuggerInterop.Symbols;
+using System.Diagnostics.SymbolStore;
 
 namespace DebuggerLibrary
 {
@@ -12,11 +11,11 @@ namespace DebuggerLibrary
 	{
 		string moduleFilename;
 		string sourceFilename;
-		uint startLine;
-		uint startColumn;
-		uint endLine;
-		uint endColumn;
-		ISymUnmanagedDocument symUnmanagedDocument;
+		int startLine;
+		int startColumn;
+		int endLine;
+		int endColumn;
+		ISymbolDocument symUnmanagedDocument;
 		
 		public string ModuleFilename {
 			get {
@@ -36,7 +35,7 @@ namespace DebuggerLibrary
 			}
 		}
 		
-		public uint StartLine {
+		public int StartLine {
 			get {
 				return startLine;
 			}
@@ -45,7 +44,7 @@ namespace DebuggerLibrary
 			}
 		}
 		
-		public uint StartColumn {
+		public int StartColumn {
 			get {
 				return startColumn;
 			}
@@ -54,7 +53,7 @@ namespace DebuggerLibrary
 			}
 		}
 		
-		public uint EndLine {
+		public int EndLine {
 			get {
 				return endLine;
 			}
@@ -63,7 +62,7 @@ namespace DebuggerLibrary
 			}
 		}
 		
-		public uint EndColumn {
+		public int EndColumn {
 			get {
 				return endColumn;
 			}
@@ -72,7 +71,7 @@ namespace DebuggerLibrary
 			}
 		}
 		
-		public ISymUnmanagedDocument SymUnmanagedDocument {
+		public ISymbolDocument SymbolDocument {
 			get {
 				return symUnmanagedDocument;
 			}

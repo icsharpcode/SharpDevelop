@@ -5,7 +5,6 @@
 using System;
 
 using DebuggerInterop.Core;
-using DebuggerInterop.Symbols;
 
 namespace DebuggerLibrary 
 {

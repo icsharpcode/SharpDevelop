@@ -7,7 +7,6 @@ using System.Runtime.InteropServices;
 using System.Collections;
 
 using DebuggerInterop.Core;
-using DebuggerInterop.Symbols;
 using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary
@@ -105,17 +104,17 @@ namespace DebuggerLibrary
 			return Add(new Breakpoint(segment));
 		}
 
-		public int Add(uint line)
+		public int Add(int line)
 		{
 			return Add(new Breakpoint(line));
 		}
 
-		public int Add(string sourceFilename, uint line)
+		public int Add(string sourceFilename, int line)
 		{
 			return Add(new Breakpoint(sourceFilename, line));
 		}
 
-		public int Add(string sourceFilename, uint line, uint column)
+		public int Add(string sourceFilename, int line, int column)
 		{
 			return Add(new Breakpoint(sourceFilename, line, column));
 		}

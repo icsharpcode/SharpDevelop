@@ -29,6 +29,7 @@
       <HintPath>..\RequiredLibraries\Debugger.Interop.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="ISymWrapper" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Windows.Forms" />

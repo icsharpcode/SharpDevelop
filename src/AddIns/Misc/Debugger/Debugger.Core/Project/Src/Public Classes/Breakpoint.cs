@@ -3,11 +3,11 @@
 // </file>
 
 using System;
+using System.Diagnostics.SymbolStore;
 using System.Collections;
 using System.Runtime.InteropServices;
 
 using DebuggerInterop.Core;
-using DebuggerInterop.Symbols;
 
 namespace DebuggerLibrary
 {
@@ -73,20 +73,20 @@ namespace DebuggerLibrary
 			sourcecodeSegment = segment;
 		}
 
-		public Breakpoint(uint line)
+		public Breakpoint(int line)
 		{
 			sourcecodeSegment = new SourcecodeSegment();
 			sourcecodeSegment.StartLine = line;
 		}
 
-		public Breakpoint(string sourceFilename, uint line)
+		public Breakpoint(string sourceFilename, int line)
 		{
 			sourcecodeSegment = new SourcecodeSegment();
 			sourcecodeSegment.SourceFilename = sourceFilename;
 			sourcecodeSegment.StartLine = line;
 		}
 
-		public Breakpoint(string sourceFilename, uint line, uint column)
+		public Breakpoint(string sourceFilename, int line, int column)
 		{
 			sourcecodeSegment = new SourcecodeSegment();
 			sourcecodeSegment.SourceFilename = sourceFilename;
@@ -129,9 +129,9 @@ namespace DebuggerLibrary
 
 			SourcecodeSegment seg = sourcecodeSegment;
 
-			Module                 module  = null;
-			ISymUnmanagedReader    symReader  = null;
-			ISymUnmanagedDocument  symDoc     = null;
+			Module           module     = null;
+			ISymbolReader    symReader  = null;
+			ISymbolDocument  symDoc     = null;
 
 			// Try to get doc from seg.moduleFilename
 			if (seg.ModuleFilename != null)
@@ -167,7 +167,7 @@ namespace DebuggerLibrary
 				return;
 			}
 
-			uint validStartLine;
+			int validStartLine;
 			validStartLine = symDoc.FindClosestLine(seg.StartLine);
 			if (validStartLine != seg.StartLine) {
 				seg.StartLine = validStartLine;
@@ -176,18 +176,18 @@ namespace DebuggerLibrary
 				seg.EndColumn = 0;
 			}
 
-			ISymUnmanagedMethod symMethod;
+			ISymbolMethod symMethod;
 			symMethod = symReader.GetMethodFromDocumentPosition(symDoc, seg.StartLine, seg.StartColumn);
 			
-			uint corInstructionPtr = symMethod.GetOffset(symDoc, seg.StartLine, seg.StartColumn);
+			int corInstructionPtr = symMethod.GetOffset(symDoc, seg.StartLine, seg.StartColumn);
 
 			ICorDebugFunction corFunction;
-			module.CorModule.GetFunctionFromToken(symMethod.GetToken(), out corFunction);
+			module.CorModule.GetFunctionFromToken((uint)symMethod.Token.GetToken(), out corFunction);
 
 			ICorDebugCode code;
 			corFunction.GetILCode(out code);
 
-			code.CreateBreakpoint(corInstructionPtr, out corBreakpoint);
+			code.CreateBreakpoint((uint)corInstructionPtr, out corBreakpoint);
 			
 			hadBeenSet = true;
 			corBreakpoint.Activate(enabled?1:0);

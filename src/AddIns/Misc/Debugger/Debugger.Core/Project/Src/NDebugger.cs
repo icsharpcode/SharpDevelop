@@ -9,7 +9,6 @@ using System.Runtime.InteropServices;
 using System.Text;
 
 using DebuggerInterop.Core;
-using DebuggerInterop.Symbols;
 using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary
@@ -482,14 +481,14 @@ namespace DebuggerLibrary
 			// Check if there is breakpoint on that line
 			foreach (Breakpoint breakpoint in Breakpoints) {
 				// TODO check filename too
-				if (breakpoint.SourcecodeSegment.StartLine == (uint)line) {
+				if (breakpoint.SourcecodeSegment.StartLine == line) {
 					Breakpoints.Remove(breakpoint);
 					return;
 				}
 			}
 
 			// Add the breakpoint 
-			int index = Breakpoints.Add(fileName, (uint)line, (uint)column);
+			int index = Breakpoints.Add(fileName, line, column);
 			Breakpoint addedBreakpoint = breakpoints[index];
 
             // Check if it wasn't forced to move to different line with breakpoint

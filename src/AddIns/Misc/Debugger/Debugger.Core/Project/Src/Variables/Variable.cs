@@ -7,7 +7,6 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 
 using DebuggerInterop.Core;
-using DebuggerInterop.Symbols;
 
 namespace DebuggerLibrary
 {

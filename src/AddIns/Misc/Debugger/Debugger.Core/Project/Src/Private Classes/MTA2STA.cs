@@ -9,7 +9,6 @@ using System.Threading;
 using System.Windows.Forms;
 
 using DebuggerInterop.Core;
-using DebuggerInterop.Symbols;
 
 namespace DebuggerInterop.Core
 {
