@@ -16,7 +16,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected IRegion bodyRegion;
 		
 		List<IParameter> parameters = null;
-
+		
+		public override string DocumentationTag {
+			get {
+				return "M:" + this.FullyQualifiedName;
+			}
+		}
+		
 		public virtual IRegion BodyRegion {
 			get {
 				return bodyRegion;

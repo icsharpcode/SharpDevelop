@@ -22,6 +22,12 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		protected IMethod     setterMethod;
 		List<IParameter> parameters = null;
 		
+		public override string DocumentationTag {
+			get {
+				return "P:" + this.FullyQualifiedName;
+			}
+		}
+		
 		public virtual IRegion BodyRegion {
 			get {
 				return bodyRegion;

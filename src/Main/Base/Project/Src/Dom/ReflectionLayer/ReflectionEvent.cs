@@ -24,17 +24,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionEvent(EventInfo eventInfo, Hashtable xmlComments)
+		public ReflectionEvent(EventInfo eventInfo)
 		{
 			this.eventInfo = eventInfo;
 			FullyQualifiedName = String.Concat(eventInfo.DeclaringType.FullName, ".", eventInfo.Name);
-			
-			if (xmlComments != null) {
-				XmlNode node = xmlComments["E:" + FullyQualifiedName] as XmlNode;
-				if (node != null) {
-					Documentation = node.InnerXml;
-				}
-			}
 			
 			// get modifiers
 			MethodInfo methodBase = null;

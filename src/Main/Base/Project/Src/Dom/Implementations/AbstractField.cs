@@ -11,6 +11,12 @@ namespace ICSharpCode.SharpDevelop.Dom {
 	[Serializable]
 	public abstract class AbstractField : AbstractMember, IField
 	{
+		public override string DocumentationTag {
+			get {
+				return "F:" + this.FullyQualifiedName;
+			}
+		}
+		
 		public virtual int CompareTo(IField field) 
 		{
 			int cmp;

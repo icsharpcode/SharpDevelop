@@ -24,18 +24,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionField(FieldInfo fieldInfo, Hashtable xmlComments)
+		public ReflectionField(FieldInfo fieldInfo)
 		{
 			this.fieldInfo = fieldInfo;
 			System.Diagnostics.Debug.Assert(fieldInfo != null);
 			FullyQualifiedName = String.Concat(fieldInfo.DeclaringType.FullName, ".", fieldInfo.Name);
 			
-			if (xmlComments != null) {
-				XmlNode node = xmlComments["F:" + FullyQualifiedName] as XmlNode;
-				if (node != null) {
-					Documentation = node.InnerXml;
-				}
-			}
 			if (fieldInfo.IsInitOnly) {
 				modifiers |= ModifierEnum.Readonly;
 			}

@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		string Documentation {
+		string DocumentationTag {
 			get;
 		}
 

@@ -94,32 +94,32 @@ namespace ICSharpCode.Core
 		
 		public string Convert(Type type)
 		{
-			return conv.Convert(new ReflectionClass(type, null));
+			return conv.Convert(new ReflectionClass(type));
 		}
 		
 		public string Convert(FieldInfo field)
 		{
-			return conv.Convert(new ReflectionField(field, null));
+			return conv.Convert(new ReflectionField(field));
 		}
 		
 		public string Convert(PropertyInfo property)
 		{
-			return conv.Convert(new ReflectionProperty(property, null));
+			return conv.Convert(new ReflectionProperty(property));
 		}
 		
 		public string Convert(EventInfo e)
 		{
-			return conv.Convert(new ReflectionEvent(e, null));
+			return conv.Convert(new ReflectionEvent(e));
 		}
 		
 		public string Convert(MethodBase m)
 		{
-			return conv.Convert(new ReflectionMethod(m, null));
+			return conv.Convert(new ReflectionMethod(m));
 		}
 		
 		public string Convert(ParameterInfo param)
 		{
-			return conv.Convert(new ReflectionParameter(param, null));
+			return conv.Convert(new ReflectionParameter(param));
 		}
 		
 		public ArrayList LinkArrayList {

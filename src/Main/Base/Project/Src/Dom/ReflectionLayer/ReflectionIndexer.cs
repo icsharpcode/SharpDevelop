@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				List<IParameter> parameters = new List<IParameter>();
 				foreach (ParameterInfo parameterInfo in propertyInfo.GetIndexParameters()) {
-					Parameters.Add(new ReflectionParameter(parameterInfo, null));
+					Parameters.Add(new ReflectionParameter(parameterInfo));
 				}
 				return parameters;
 			}
@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return propertyName.ToString();
 		}
 		
-		public ReflectionIndexer(PropertyInfo propertyInfo, Hashtable xmlComments)
+		public ReflectionIndexer(PropertyInfo propertyInfo)
 		{
 			this.propertyInfo = propertyInfo;
 			// indexers does have the same name as the object that declare the indexers
@@ -69,14 +69,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				setterRegion = new DefaultRegion(0, 0, 0, 0);
 			} else {
 				setterRegion = null;
-			}
-			
-			XmlNode node = null;
-			if (xmlComments != null) {
-				node = xmlComments["P:" + FullyQualifiedName] as XmlNode;
-				if (node != null) {
-					Documentation = node.InnerXml;
-				}
 			}
 			
 			MethodInfo methodBase = null;

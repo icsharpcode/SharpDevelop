@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			set {
 			}
 		}
-		public ReflectionProperty(PropertyInfo propertyInfo, Hashtable xmlComments)
+		public ReflectionProperty(PropertyInfo propertyInfo)
 		{
 			this.propertyInfo = propertyInfo;
 			FullyQualifiedName = String.Concat(propertyInfo.DeclaringType.FullName, ".", propertyInfo.Name);
@@ -39,13 +39,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				setterRegion = new DefaultRegion(0, 0, 0, 0);
 			} else {
 				setterRegion = null;
-			}
-			
-			if (xmlComments != null) {
-				XmlNode node = xmlComments["P:" + FullyQualifiedName] as XmlNode;
-				if (node != null) {
-					Documentation = node.InnerXml;
-				}
 			}
 			
 			MethodInfo methodBase = null;

@@ -24,9 +24,14 @@ namespace ICSharpCode.Core
 {
 	public interface IProjectContent
 	{
+		XmlDoc XmlDoc {
+			get;
+		}
 		ICollection<IClass> Classes {
 			get;
 		}
+		
+		string GetXmlDocumentation(string memberTag);
 		
 		Hashtable AddClassToNamespaceList(IClass addClass);
 		void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags);

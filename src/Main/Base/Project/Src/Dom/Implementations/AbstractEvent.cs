@@ -17,6 +17,12 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		protected IMethod          removeMethod;
 		protected IMethod          raiseMethod;
 		
+		public override string DocumentationTag {
+			get {
+				return "E:" + this.FullyQualifiedName;
+			}
+		}
+		
 		public virtual IRegion BodyRegion {
 			get {
 				return bodyRegion;

@@ -97,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				Nodes.Clear();
 				foreach (Type type in assembly.GetTypes()) {
 					if (!type.FullName.StartsWith("<") && type.IsPublic) {
-						IClass c = new ReflectionClass(type, null);
+						IClass c = new ReflectionClass(type);
 						TreeNode node = GetNodeByPath(c.Namespace, true);
 						new ClassNode(item.Project, c).AddTo(node);
 					}

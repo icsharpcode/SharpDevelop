@@ -31,6 +31,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		List<IEvent>    events       = null;
 		List<IIndexer>  indexer      = null;
 		
+		public override string DocumentationTag {
+			get {
+				return "T:" + this.FullyQualifiedName;
+			}
+		}
+		
 		public abstract ICompilationUnit CompilationUnit {
 			get;
 		}

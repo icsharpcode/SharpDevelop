@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			return (ICompletionData[])completionData.ToArray(typeof(ICompletionData));
 		}
 		
-		void AddResolveResults(ICollection list) 
+		void AddResolveResults(ICollection list)
 		{
 			if (list == null) {
 				return;

@@ -17,9 +17,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class ReflectionClass : AbstractClass
 	{
 		Type type;
-		Hashtable xmlComments;
 		
-		BindingFlags flags = BindingFlags.Instance  | 
+		BindingFlags flags = BindingFlags.Instance  |
 		                     BindingFlags.Static    | 
 		                     BindingFlags.NonPublic |
 		                     BindingFlags.DeclaredOnly |
@@ -29,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				List<IClass> innerClasses = new List<IClass>();
 				foreach (Type nestedType in type.GetNestedTypes(flags)) {
-					innerClasses.Add(new ReflectionClass(nestedType, xmlComments));
+					innerClasses.Add(new ReflectionClass(nestedType));
 				}
 				return innerClasses;
 			}
@@ -39,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				List<IField> fields = new List<IField>();
 				foreach (FieldInfo field in type.GetFields(flags)) {
-					IField newField = new ReflectionField(field, xmlComments);
+					IField newField = new ReflectionField(field);
 					if (!newField.IsInternal) {
 						fields.Add(newField);
 					}
@@ -59,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						p = propertyInfo.GetIndexParameters();
 					} catch (Exception) {}
 					if (p == null || p.Length == 0) {
-						properties.Add(new ReflectionProperty(propertyInfo, xmlComments));
+						properties.Add(new ReflectionProperty(propertyInfo));
 					}
 				}
 				
@@ -78,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						p = propertyInfo.GetIndexParameters();
 					} catch (Exception) {}
 					if (p != null && p.Length != 0) {
-						indexer.Add(new ReflectionIndexer(propertyInfo, xmlComments));
+						indexer.Add(new ReflectionIndexer(propertyInfo));
 					}
 				}
 				
@@ -91,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				List<IMethod> methods = new List<IMethod>();
 				
 				foreach (ConstructorInfo constructorInfo in type.GetConstructors(flags)) {
-					IMethod newMethod = new ReflectionMethod(constructorInfo, xmlComments);
+					IMethod newMethod = new ReflectionMethod(constructorInfo);
 					if (!newMethod.IsInternal) {
 						methods.Add(newMethod);
 					}
@@ -99,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				
 				foreach (MethodInfo methodInfo in type.GetMethods(flags)) {
 					if (!methodInfo.IsSpecialName) {
-						IMethod newMethod = new ReflectionMethod(methodInfo, xmlComments);
+						IMethod newMethod = new ReflectionMethod(methodInfo);
 						if (!newMethod.IsInternal) {
 							methods.Add(newMethod);
 						}
@@ -114,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				List<IEvent> events = new List<IEvent>();
 				
 				foreach (EventInfo eventInfo in type.GetEvents(flags)) {
-					IEvent newEvent = new ReflectionEvent(eventInfo, xmlComments);
+					IEvent newEvent = new ReflectionEvent(eventInfo);
 					
 					if (!newEvent.IsInternal) {
 						events.Add(newEvent);
@@ -123,8 +122,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return events;
 			}
 		}
-		
-		
 		
 		/// <value>
 		/// A reflection class doesn't have a compilation unit (because
@@ -141,25 +138,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return type.IsSubclassOf(typeof(Delegate)) && type != typeof(MulticastDelegate);
 		}
 		
-		public ReflectionClass(Type type, Hashtable xmlComments)
+		public override string DocumentationTag {
+			get {
+				return "T:" + type.FullName;
+			}
+		}
+		
+		public ReflectionClass(Type type)
 		{
 			this.type = type;
-			this.xmlComments = xmlComments;
-			FullyQualifiedName = type.FullName;
-			if (xmlComments != null) {
-				XmlNode node = xmlComments["T:" + FullyQualifiedName] as XmlNode;
-				if (node != null) {
-					Documentation = node.InnerXml;
-				}
-			}
-			
-			FullyQualifiedName = FullyQualifiedName.Replace("+", ".");
+			FullyQualifiedName = type.FullName.Replace("+", ".");
 			
 			// set classtype
 			if (IsDelegate(type)) {
 				classType = ClassType.Delegate;
 				MethodInfo invoke          = type.GetMethod("Invoke");
-				ReflectionMethod newMethod = new ReflectionMethod(invoke, null);
+				ReflectionMethod newMethod = new ReflectionMethod(invoke);
 				Methods.Add(newMethod);
 			} else if (type.IsInterface) {
 				classType = ClassType.Interface;

@@ -70,10 +70,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 //					description = ambience.Convert(ParserService.GetClass(c.FullyQualifiedName));
 //					c = null;
 //				}
-				
+				if (documentation == null) {
+					return "";
+				}
 				// don't give a description string, if no documentation or description is provided
 				if (description.Length + documentation.Length == 0) {
-					return null;
+					return "";
 				}
 				if (!convertedDocumentation) {
 					convertedDocumentation = true;
@@ -99,7 +101,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public CodeCompletionData(string s, int imageIndex)
 		{
-			
 			ambience = AmbienceService.CurrentAmbience;
 			description = documentation = String.Empty;
 			text = s;
@@ -109,7 +110,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public CodeCompletionData(IClass c)
 		{
-			
 			ambience = AmbienceService.CurrentAmbience;
 			// save class (for the delegate description shortcut
 			this.c = c;
@@ -119,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedNames | ConversionFlags.ShowReturnType | ConversionFlags.ShowModifiers;
 //			Console.WriteLine("Convert : " + c);
 			description = ambience.Convert(c);
-			documentation = c.Documentation;
+			documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(c.DocumentationTag);
 		}
 		
 		public CodeCompletionData(IMethod method)
@@ -131,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			text        = method.Name;
 			description = ambience.Convert(method);
 			completionString = method.Name;
-			documentation = method.Documentation;
+			documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(method.DocumentationTag);
 		}
 		
 		public CodeCompletionData(IField field)
@@ -143,7 +143,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			text        = field.Name;
 			description = ambience.Convert(field);
 			completionString = field.Name;
-			documentation = field.Documentation;
+			documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(field.DocumentationTag);
 		}
 		
 		public CodeCompletionData(IProperty property)
@@ -155,7 +155,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			text        = property.Name;
 			description = ambience.Convert(property);
 			completionString = property.Name;
-			documentation = property.Documentation;
+			documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(property.DocumentationTag);
 		}
 		
 		public CodeCompletionData(IEvent e)
@@ -167,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			text        = e.Name;
 			description = ambience.Convert(e);
 			completionString = e.Name;
-			documentation = e.Documentation;
+			documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(e.DocumentationTag);
 		}
 		
 		public void InsertAction(TextEditorControl control)

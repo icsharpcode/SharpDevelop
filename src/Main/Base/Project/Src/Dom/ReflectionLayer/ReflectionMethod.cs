@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				List<IParameter> parameters = new List<IParameter>();
 				foreach (ParameterInfo paramInfo in methodBase.GetParameters()) {
-					parameters.Add(new ReflectionParameter(paramInfo, null));
+					parameters.Add(new ReflectionParameter(paramInfo));
 				}
 				return parameters;
 			}
@@ -65,7 +65,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return propertyName.ToString();
 		}
 		
-		public ReflectionMethod(MethodBase methodBase, Hashtable xmlComments)
+		public override string DocumentationTag {
+			get {
+				return "M:" + FullyQualifiedName + GetParamList(methodBase);
+			}
+		}
+		
+		public ReflectionMethod(MethodBase methodBase)
 		{
 			this.methodBase = methodBase;
 			string name = methodBase.Name;
@@ -74,15 +80,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				name = "#ctor";
 			}
 			FullyQualifiedName = methodBase.DeclaringType.FullName + "." + name;
-			
-			XmlNode node = null;
-			
-			if (xmlComments != null) {
-				node = xmlComments["M:" + FullyQualifiedName + GetParamList(methodBase)] as XmlNode;
-				if (node != null) {
-					Documentation = node.InnerXml;
-				}
-			}
 			
 			modifiers = ModifierEnum.None;
 			if (methodBase.IsStatic) {

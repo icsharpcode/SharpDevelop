@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionParameter(ParameterInfo parameterInfo, XmlNode methodNode)
+		public ReflectionParameter(ParameterInfo parameterInfo)
 		{
 			this.parameterInfo = parameterInfo;
 			Name       = parameterInfo.Name;
@@ -40,13 +40,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// seems there is no other way to determine a ref parameter
 			if (type.Name.EndsWith("&")) {
 				modifier |= ParameterModifier.Ref;
-			}
-			
-			if (methodNode != null) {
-				XmlNode paramDocu = methodNode.SelectSingleNode("member[@name='" + parameterInfo.Name + "']");
-				if (paramDocu != null) {
-					Documentation = paramDocu.InnerXml;
-				}
 			}
 		}
 	}

@@ -33,6 +33,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public override string DocumentationTag {
+			get {
+				return FullyQualifiedName;
+			}
+		}
 		
 		public string Name {
 			get {

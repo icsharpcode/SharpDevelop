@@ -41,9 +41,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			IIndexer method = methods[number];
 			IAmbience conv = AmbienceService.CurrentAmbience;
 			conv.ConversionFlags = ConversionFlags.StandardConversionFlags;
+			string documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(method.DocumentationTag);
 			return conv.Convert(method) + 
 			       "\n" + 
-			       CodeCompletionData.GetDocumentation(method.Documentation); // new (by G.B.)
+			       CodeCompletionData.GetDocumentation(documentation); // new (by G.B.)
 		}
 		
 		int initialOffset;

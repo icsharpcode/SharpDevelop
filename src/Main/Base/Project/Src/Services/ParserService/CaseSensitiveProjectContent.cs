@@ -24,31 +24,83 @@ namespace ICSharpCode.Core
 {
 	public class CaseSensitiveProjectContent : IProjectContent
 	{
-		List<Assembly>             references        = new List<Assembly>();
-		Dictionary<string, IClass> classes           = new Dictionary<string, IClass>();
-		Hashtable                  namespaces        = new Hashtable();
+		List<IProjectContent>      referencedContents = new List<IProjectContent>();
 		
+		Dictionary<string, IClass> classes            = new Dictionary<string, IClass>();
+		Hashtable                  namespaces         = new Hashtable();
+		XmlDoc                     xmlDoc             = new XmlDoc();
+		
+		public XmlDoc XmlDoc {
+			get {
+				return xmlDoc;
+			}
+		}
+
 		public ICollection<IClass> Classes {
 			get {
 				return classes.Values;
 			}
 		}
 		
+		public string GetXmlDocumentation(string memberTag)
+		{
+			if (xmlDoc.XmlDescription.ContainsKey(memberTag)) {
+				return xmlDoc.XmlDescription[memberTag];
+			}
+			foreach (IProjectContent referencedContent in referencedContents) {
+				if (referencedContent.XmlDoc.XmlDescription.ContainsKey(memberTag)) {
+					return referencedContent.XmlDoc.XmlDescription[memberTag];
+				}
+			}
+			return null;
+		}
+		
+		static string LookupLocalizedXmlDoc(string fileName)
+		{
+			string xmlFileName         = Path.ChangeExtension(fileName, ".xml");
+			string localizedXmlDocFile = FileUtility.Combine(System.IO.Path.GetDirectoryName(fileName), Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName, System.IO.Path.GetFileName(xmlFileName));
+			if (File.Exists(localizedXmlDocFile)) {
+				return localizedXmlDocFile;
+			}
+			if (File.Exists(xmlFileName)) {
+				return xmlFileName;
+			}
+			return null;
+		}
+		
+		public static IProjectContent Create(Assembly assembly)
+		{
+			CaseSensitiveProjectContent newProjectContent = new CaseSensitiveProjectContent();
+			foreach (Type type in assembly.GetTypes()) {
+				if (!type.FullName.StartsWith("<") && type.IsPublic) {
+					newProjectContent.AddClassToNamespaceList(new ReflectionClass(type));
+				}
+			}
+			string fileName = LookupLocalizedXmlDoc(assembly.Location);
+			// Not found -> look in runtime directory.
+			if (fileName == null) {
+				string runtimeDirectory = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
+				fileName = LookupLocalizedXmlDoc(Path.Combine(runtimeDirectory, Path.GetFileName(assembly.Location)));
+			}
+			
+			if (fileName != null) {
+				Console.WriteLine("load xmldoc: " + fileName);
+				newProjectContent.xmlDoc = XmlDoc.Load(fileName);
+			}
+			
+			return newProjectContent;
+		}
+		
 		public static IProjectContent Create(IProject project)
 		{
 			CaseSensitiveProjectContent newProjectContent = new CaseSensitiveProjectContent();
-			newProjectContent.references.Add(typeof(object).Assembly);
+			newProjectContent.referencedContents.Add(ProjectContentRegistry.GetMscorlibContent());
 			foreach (ProjectItem item in project.Items) {
 				switch (item.ItemType) {
 					case ItemType.Reference:
-						try {
-							newProjectContent.references.Add(Assembly.ReflectionOnlyLoadFrom(item.FileName));
-						} catch (Exception) {
-							try {
-								newProjectContent.references.Add(Assembly.LoadWithPartialName(item.Include));
-							} catch (Exception e) {
-								Console.WriteLine("Can't load assembly '{0}' : " + e.Message, item.Include);
-							}
+						IProjectContent referencedContent = ProjectContentRegistry.GetProjectContentForReference(item as ReferenceProjectItem);
+						if (referencedContent != null) {
+							newProjectContent.referencedContents.Add(referencedContent);
 						}
 						break;
 					case ItemType.Compile:
@@ -56,16 +108,6 @@ namespace ICSharpCode.Core
 						newProjectContent.UpdateCompilationUnit(null, parseInfo.BestCompilationUnit as ICompilationUnit, item.FileName, true);
 						break;
 				}
-			}
-			DateTime now = DateTime.Now;
-			foreach (Assembly asm in newProjectContent.references) {
-				try {
-					foreach (Type type in asm.GetTypes()) {
-						if (!type.FullName.StartsWith("<") && type.IsPublic) {
-							newProjectContent.AddClassToNamespaceList(new ReflectionClass(type, null));
-						}
-					}
-				} catch (Exception) {}
 			}
 			
 			return newProjectContent;
@@ -140,6 +182,14 @@ namespace ICSharpCode.Core
 				return classes[typeName];
 			}
 			
+			// Search in references:
+			foreach (IProjectContent content in referencedContents) {
+				IClass classFromContent = content.GetClass(typeName);
+				if (classFromContent != null) {
+					return classFromContent;
+				}
+			}
+			
 			// not found -> maybe nested type -> trying to find class that contains this one.
 			int lastIndex = typeName.LastIndexOf('.');
 			if (lastIndex > 0) {
@@ -161,35 +211,45 @@ namespace ICSharpCode.Core
 		{
 //			Console.WriteLine("GetNamespaceList({0})", subNameSpace);
 			System.Diagnostics.Debug.Assert(subNameSpace != null);
+			List<string> namespaceList = new List<string>();
+			
+			
+			foreach (IProjectContent content in referencedContents) {
+				string[] referencedNamespaces = content.GetNamespaceList(subNameSpace);
+				if (referencedNamespaces != null) {
+					namespaceList.AddRange(referencedNamespaces);
+				}
+			}
 			
 			string[] path = subNameSpace.Split('.');
 			Hashtable cur = namespaces;
-			
 			if (subNameSpace.Length > 0) {
 				for (int i = 0; i < path.Length; ++i) {
 					if (!(cur[path[i]] is Hashtable)) {
-						return null;
+						return namespaceList.ToArray();
 					}
 					cur = (Hashtable)cur[path[i]];
 				}
 			}
 			
-			ArrayList namespaceList = new ArrayList();
 			foreach (DictionaryEntry entry in cur) {
 				if (entry.Value is Hashtable && entry.Key.ToString().Length > 0) {
-					namespaceList.Add(entry.Key);
+					namespaceList.Add(entry.Key.ToString());
 				}
 			}
-			
-			return (string[])namespaceList.ToArray(typeof(string));
+			return namespaceList.ToArray();
 		}
 		
 		public ArrayList GetNamespaceContents(string subNameSpace)
 		{
-//			Console.WriteLine("GetNamespaceContents({0})", subNameSpace);
 			ArrayList namespaceList = new ArrayList();
 			if (subNameSpace == null) {
 				return namespaceList;
+			}
+			
+			foreach (IProjectContent content in referencedContents) {
+				ArrayList referencedNamespaceContents = content.GetNamespaceContents(subNameSpace);
+				namespaceList.AddRange(referencedNamespaceContents.ToArray());
 			}
 			
 			string[] path = subNameSpace.Split('.');
@@ -202,7 +262,6 @@ namespace ICSharpCode.Core
 							namespaceList.Add(entry.Key);
 						}
 					}
-					
 					return namespaceList;
 				}
 				cur = (Hashtable)cur[path[i]];
@@ -215,7 +274,6 @@ namespace ICSharpCode.Core
 					namespaceList.Add(entry.Value);
 				}
 			}
-			
 			return namespaceList;
 		}
 		
@@ -225,6 +283,13 @@ namespace ICSharpCode.Core
 			if (name == null) {
 				return false;
 			}
+			
+			foreach (IProjectContent content in referencedContents) {
+				if (content.NamespaceExists(name)) {
+					return true;
+				}
+			}
+			
 			string[] path = name.Split('.');
 			Hashtable cur = namespaces;
 			for (int i = 0; i < path.Length; ++i) {
@@ -664,30 +729,3 @@ namespace ICSharpCode.Core
 		
 	}
 }
-
-
-//readonly static string[] assemblyList = {
-//			"Microsoft.VisualBasic",
-//			"Microsoft.JScript",
-//			"mscorlib",
-//			"System.Data",
-//			"System.Design",
-//			"System.DirectoryServices",
-//			"System.Drawing.Design",
-//			"System.Drawing",
-//			"System.EnterpriseServices",
-//			"System.Management",
-//			"System.Messaging",
-//			"System.Runtime.Remoting",
-//			"System.Runtime.Serialization.Formatters.Soap",
-//
-//			"System.Security",
-//			"System.ServiceProcess",
-//			"System.Web.Services",
-//			"System.Web",
-//			"System.Windows.Forms",
-//			"System",
-//			"System.XML"
-//		};
-//		
-//		

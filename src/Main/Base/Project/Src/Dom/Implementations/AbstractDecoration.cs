@@ -14,11 +14,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public abstract class AbstractDecoration : MarshalByRefObject, IDecoration
 	{
-		protected ModifierEnum               modifiers     = ModifierEnum.None;
+		protected ModifierEnum            modifiers     = ModifierEnum.None;
 		protected List<IAttributeSection> attributes    = null;
-		string documentation = null;
-//		int    documentationHash = -1;
-//		public static Hashtable documentationHashtable = new Hashtable();
 		
 		object userData = null;
 		
@@ -46,24 +43,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 
-		public string Documentation {
-			get {
-				if (documentation == null) {
-					return String.Empty;
-				}
-				return documentation;
-//				if (documentationHash == -1) {
-//					return String.Empty;
-//				}
-//				return (string)documentationHashtable[documentationHash];
-			}
-			set {
-				documentation = value;
-//				documentationHash = value.GetHashCode();
-//				if (documentationHashtable[documentationHash] == null) {
-//					documentationHashtable[documentationHash] = value;
-//				}
-			}
+		public abstract string DocumentationTag {
+			get;
 		}
 		
 		public bool IsAbstract {

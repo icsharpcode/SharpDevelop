@@ -44,9 +44,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			IMethod method = methods[number];
 			IAmbience conv = AmbienceService.CurrentAmbience;
 			conv.ConversionFlags = ConversionFlags.StandardConversionFlags;
+			string documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(method.DocumentationTag);
 			return conv.Convert(method) + 
 			       "\n" + 
-			       CodeCompletionData.GetDocumentation(method.Documentation); // new (by G.B.)
+			       CodeCompletionData.GetDocumentation(documentation); // new (by G.B.)
 		}
 		
 		int initialOffset;
@@ -115,11 +116,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 						}
 					}
 					
-					// take out old method, when it isn't documented.
-					if (method.Documentation == null || method.Documentation.Length == 0) {
-						methods.Remove(method);
-						return false;
-					}
+//					// take out old method, when it isn't documented.
+//					if (method.Documentation == null || method.Documentation.Length == 0) {
+//						methods.Remove(method);
+//						return false;
+//					}
 					return true;
 				}
 			}
