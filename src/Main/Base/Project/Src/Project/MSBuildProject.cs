@@ -266,6 +266,7 @@ namespace ICSharpCode.SharpDevelop.Project
 //		
 		readonly static Regex normalError  = new Regex(@"^(?<file>\S.*)\((?<line>\d+),(?<column>\d+)\):\s+(?<error>\w+)\s+(?<number>[\d\w]+):\s+(?<message>.*)$", RegexOptions.Compiled);
 		readonly static Regex generalError = new Regex(@"^(?<error>\S.+)\s+(?<number>[\d\w]+):\s+(?<message>.*)$", RegexOptions.Compiled);
+		readonly static Regex projectName  = new Regex(@"^Project\s+\""(?<name>[^""]*)\""", RegexOptions.Compiled);
 		
 		static CompilerError GetCompilerError(string line, string workingPath)
 		{
@@ -316,9 +317,19 @@ namespace ICSharpCode.SharpDevelop.Project
 				string line = reader.ReadLine();
 				if (line != null) {
 					TaskService.BuildMessageViewCategory.AppendText(line + Environment.NewLine);
-					CompilerError error = GetCompilerError(line, workingDirectory);
-					if (error != null) {
-						results.Errors.Add(error);
+					
+					Match match = projectName.Match(line);
+					if (match.Success) {
+						string name = match.Result("${name}");
+						
+						if (name != null) {
+							workingDirectory = Path.GetDirectoryName(name);
+						}
+					} else {
+						CompilerError error = GetCompilerError(line, workingDirectory);
+						if (error != null) {
+							results.Errors.Add(error);
+						}
 					}
 					results.Output.Add(line);
 				}

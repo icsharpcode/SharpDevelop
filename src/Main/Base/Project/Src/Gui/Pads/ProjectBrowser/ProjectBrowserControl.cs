@@ -118,8 +118,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					}
 				}
 			}
-			treeView.SelectedNode         = null;
-			ProjectService.CurrentProject = null;
+//			treeView.SelectedNode         = null;
+//			ProjectService.CurrentProject = null;
 		}
 		
 		public void ViewSolution(Solution solution)
