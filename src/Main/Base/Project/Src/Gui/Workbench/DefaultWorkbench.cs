@@ -486,7 +486,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 						doRefresh |= wasVisible != item.Visible;
 					}
 					if (doRefresh) {
-						Console.WriteLine("Refresh TOOLBAR!!!");
 						ToolStrip.Refresh();
 					}
 				}

@@ -127,7 +127,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			AbstractProjectBrowserTreeNode solutionNode = new SolutionNode(solution);
 			treeView.Nodes.Clear();
 			solutionNode.AddTo(treeView);
-			DefaultDotNetNodeBuilder       nodeBuilder = new DefaultDotNetNodeBuilder();
+			DefaultDotNetNodeBuilder nodeBuilder = new DefaultDotNetNodeBuilder();
 			
 			foreach (object treeObject in solution.Folders) {
 				if (treeObject is IProject) {

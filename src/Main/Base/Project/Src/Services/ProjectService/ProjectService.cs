@@ -43,10 +43,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			string oldName = e.SourceFile;
 			string newName = e.TargetFile;
-			
+			long x = 0;
 			foreach (ISolutionFolderContainer container in OpenSolution.SolutionFolderContainers) {
 				foreach (SolutionItem item in container.SolutionItems.Items) {
 					string oldFullName  = Path.Combine(OpenSolution.Directory, item.Name);
+					++x;
 					if (FileUtility.IsBaseDirectory(oldName, oldFullName)) {
 						string newFullName = FileUtility.RenameBaseDirectory(oldFullName, oldName, newName);
 						item.Name = item.Location = FileUtility.GetRelativePath(OpenSolution.Directory, newFullName);
@@ -54,14 +55,16 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			
+			long y = 0;
 			foreach (IProject project in OpenSolution.Projects) {
 				foreach (ProjectItem item in project.Items) {
+					++y;
 					if (FileUtility.IsBaseDirectory(oldName, item.FileName)) {
 						item.FileName = FileUtility.RenameBaseDirectory(item.FileName, oldName, newName);
 					}
 				}
 			}
-			Console.WriteLine("File service file renamed. DONE.");
+			Console.WriteLine("File service file renamed. DONE. {0} //  {1}", x, y);
 		}
 		
 		static void FileServiceFileRemoved(object sender, FileEventArgs e)

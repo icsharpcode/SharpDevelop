@@ -12,13 +12,7 @@
     <OutputType>Library</OutputType>
     <SignAssembly>True</SignAssembly>
     <AssemblyOriginatorKeyFile>Resources\ICSharpCode.SharpDevelop.snk</AssemblyOriginatorKeyFile>
-    <StartupObject />
-    <ApplicationIcon />
-    <Win32Resource />
-    <AssemblyKeyProviderName />
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
-    <PreBuildEvent />
-    <PostBuildEvent />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

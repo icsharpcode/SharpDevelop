@@ -132,10 +132,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (!HasProjects) {
 					return null;
 				}
-				// TODO: Get the right startup project.
-				IEnumerator<IProject> enumerator = Projects.GetEnumerator();
-				enumerator.MoveNext();
-				return enumerator.Current;
+				foreach (IProject project in Projects) {
+					if (project.OutputType == OutputType.Exe ||
+					    project.OutputType == OutputType.WinExe) {
+						return project;
+					}
+				}
+				return null;
 			}
 		}
 		

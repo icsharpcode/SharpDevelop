@@ -50,7 +50,6 @@
     <None Include="Src\Parser\gen.bat" />
     <None Include="Src\Parser\VBNet\VBNET.ATG" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Lexer\AbstractLexer.cs" />
     <Compile Include="Src\Lexer\CSharp\Keywords.cs" />
     <Compile Include="Src\Lexer\CSharp\Lexer.cs" />

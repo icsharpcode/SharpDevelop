@@ -38,22 +38,10 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			}
 		}
 		
-		public override bool IsDirty {
-			get {
-				return true;
-			}
-		}
-		
-		public override bool IsUntitled {
-			get {
-				return false;
-			}
-		}
-		
 		public ProjectOptionsView(AddInTreeNode node, IProject project) : base("a", "a")
 		{
 			this.project    = project;
-			base.IsViewOnly = false;
+			base.IsViewOnly = true;
 			
 //			tabControl.Alignment = TabAlignment.Left;
 			tabControl.Dock      = DockStyle.Fill;

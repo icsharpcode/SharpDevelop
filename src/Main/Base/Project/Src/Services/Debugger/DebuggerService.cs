@@ -185,10 +185,10 @@ namespace ICSharpCode.Core
 				standardProcess.Exited += new EventHandler(StandardProcessExited);
 				standardProcess.EnableRaisingEvents = true;
 				standardProcess.Start();
-			} catch (Exception) {
-				throw new ApplicationException("Can't execute " + "\"" + psi.FileName + "\"\n");
+				isRunning = true;
+			} catch (Exception e) {
+				MessageService.ShowError(e, "Can't execute " + "\"" + psi.FileName + "\"\n");
 			}
-			isRunning = true;
 		}
 		
 		public static void StartWithoutDebugging(string fileName, string workingDirectory, string arguments)

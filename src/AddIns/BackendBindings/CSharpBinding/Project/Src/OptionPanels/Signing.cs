@@ -17,22 +17,39 @@ namespace CSharpBinding.OptionPanels
 			this.project = (CSharpProject)((Properties)CustomizationObject).Get("Project");
 			
 			Get<CheckBox>("signAssembly").Checked = project.SignAssembly;
+			Get<CheckBox>("signAssembly").CheckedChanged += new EventHandler(Save);
 			
 			Get<RadioButton>("useKeyFile").Checked         = project.AssemblyOriginatorKeyMode == AssemblyOriginatorKeyMode.File;
 			Get<RadioButton>("useKeyFile").CheckedChanged += new EventHandler(UpdateEnabledStates);
+			Get<RadioButton>("useKeyFile").CheckedChanged += new EventHandler(Save);
+			
 			
 			Get<RadioButton>("useKeyProvider").Checked = project.AssemblyOriginatorKeyMode == AssemblyOriginatorKeyMode.Provider;
 			Get<RadioButton>("useKeyProvider").CheckedChanged += new EventHandler(UpdateEnabledStates);
+			Get<RadioButton>("useKeyProvider").CheckedChanged += new EventHandler(Save);
 			
 			Get<ComboBox>("keyFile").Text = project.AssemblyOriginatorKeyFile;
+			Get<ComboBox>("keyFile").TextChanged += new EventHandler(Save);
 			
 			Get<ComboBox>("providerName").Text = project.AssemblyKeyProviderName;
 			Get<ComboBox>("providerName").Items.Add("TODO: GetKeyProviders()");
+			Get<ComboBox>("providerName").TextChanged += new EventHandler(Save);
+			
 			Get<ComboBox>("container").Text    = "TODO";
+			Get<ComboBox>("container").TextChanged += new EventHandler(Save);
 			
 			Get<CheckBox>("delaySignOnly").Checked = project.DelaySign;
+			Get<CheckBox>("delaySignOnly").CheckedChanged += new EventHandler(Save);
+			
 			UpdateEnabledStates(this, EventArgs.Empty);
 		}
+		
+		
+		void Save(object sender, EventArgs e) 
+		{
+			StorePanelContents();
+		}
+		
 		
 		void UpdateEnabledStates(object sender, EventArgs e)
 		{

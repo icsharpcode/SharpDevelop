@@ -19,7 +19,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (ProjectService.OpenSolution.IsDirty) {
 				ProjectService.OpenSolution.Build();
 			}
-			ProjectService.OpenSolution.StartupProject.Start(true);
+			IProject startupProject = ProjectService.OpenSolution.StartupProject;
+			if (startupProject != null) {
+				startupProject.Start(true);
+			}
 		}
 	}
 	public class ExecuteWithoutDebugger : AbstractMenuCommand
@@ -31,7 +34,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (ProjectService.OpenSolution.IsDirty) {
 				ProjectService.OpenSolution.Build();
 			}
-			ProjectService.OpenSolution.StartupProject.Start(false);
+			IProject startupProject = ProjectService.OpenSolution.StartupProject;
+			if (startupProject != null) {
+				startupProject.Start(true);
+			}
 		}
 	}
 	

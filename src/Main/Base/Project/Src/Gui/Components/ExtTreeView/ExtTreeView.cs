@@ -266,6 +266,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			string imageKey = performCutBitmap ? (image + "_ghost") : image;
 			if (!imageIndexTable.ContainsKey(imageKey)) {
 				ImageList.Images.Add(performCutBitmap ? IconService.GetGhostBitmap(image) : IconService.GetBitmap(image));
+				Console.WriteLine("Add image : " + image);
 				imageIndexTable[imageKey] = ImageList.Images.Count - 1;
 				return ImageList.Images.Count - 1;
 			}

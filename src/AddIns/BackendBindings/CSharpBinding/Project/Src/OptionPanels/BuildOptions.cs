@@ -34,32 +34,56 @@ namespace CSharpBinding.OptionPanels
 			Get<Button>("advancedOptions").Click += new EventHandler(ShowAdvancedOptions);
 			
 			Get<TextBox>("conditionalSymbols").Text = project.GetDefineConstants(Config, Platform);
+			Get<TextBox>("conditionalSymbols").TextChanged += new EventHandler(Save);
+			
 			
 			Get<CheckBox>("optimizeCode").Checked = project.GetOptimize(Config, Platform);
+			Get<CheckBox>("optimizeCode").CheckedChanged += new EventHandler(Save);
+
 			Get<CheckBox>("allowUnsafeCode").Checked = project.GetAllowUnsafeBlocks(Config, Platform);
+			Get<CheckBox>("allowUnsafeCode").CheckedChanged += new EventHandler(Save);
 			
 			Get<ComboBox>("warningLevel").Items.AddRange( new object[] {0, 1, 2, 3, 4});
 			Get<ComboBox>("warningLevel").Text = project.WarningLevel.ToString();
+			Get<ComboBox>("warningLevel").TextChanged += new EventHandler(Save);
+			
 			Get<TextBox>("suppressWarnings").Text = project.GetNoWarn(Config, Platform);
+			Get<TextBox>("suppressWarnings").TextChanged += new EventHandler(Save);
 			
 			Get<TextBox>("specificWarnings").Text = project.GetWarningsAsErrors(Config, Platform);
+			Get<TextBox>("specificWarnings").TextChanged += new EventHandler(Save);
 			
 			
 			WarningsAsErrors warningsAsErrors = project.GetTreatWarningsAsErrors(Config, Platform);
 			Get<RadioButton>("none").Checked             = warningsAsErrors == WarningsAsErrors.None;
+			Get<RadioButton>("none").CheckedChanged += new EventHandler(Save);
+			
 			Get<RadioButton>("specificWarnings").Checked = warningsAsErrors == WarningsAsErrors.Specific;
 			Get<RadioButton>("specificWarnings").CheckedChanged  += new EventHandler(UpdateEnabledStates);
+			Get<RadioButton>("specificWarnings").CheckedChanged += new EventHandler(Save);
+			
 			Get<RadioButton>("all").Checked              = warningsAsErrors == WarningsAsErrors.All;
+			Get<RadioButton>("all").CheckedChanged += new EventHandler(Save);
 			
 			Get<TextBox>("outputPath").Text = project.GetOutputPath(Config, Platform);
+			Get<TextBox>("outputPath").TextChanged += new EventHandler(Save);
 			
 			Get<TextBox>("xmlDocumentation").Text = project.GetDocumentationFile(Config, Platform);
+			Get<TextBox>("xmlDocumentation").TextChanged += new EventHandler(Save);
+			
 			Get<CheckBox>("xmlDocumentation").Checked = Get<TextBox>("xmlDocumentation").Text.Length > 0;
 			Get<CheckBox>("xmlDocumentation").CheckedChanged  += new EventHandler(UpdateEnabledStates);
 			
 			Get<CheckBox>("registerCOMInterop").Checked = project.GetRegisterForComInterop(Config, Platform);
+			Get<CheckBox>("registerCOMInterop").CheckedChanged += new EventHandler(Save);
+			
 			
 			UpdateEnabledStates(this, EventArgs.Empty);
+		}
+		
+		void Save(object sender, EventArgs e) 
+		{
+			StorePanelContents();
 		}
 		
 		void UpdateEnabledStates(object sender, EventArgs e)

@@ -4,6 +4,7 @@
 //     <owner name="Mike Krueger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -37,7 +38,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ExtTreeView tree = TreeView as ExtTreeView;
 			if (tree != null) {
-				ImageIndex = SelectedImageIndex = tree.GetImageIndexForImage(iconName, DoPerformCut);
+				int index = tree.GetImageIndexForImage(iconName, DoPerformCut);
+				if (ImageIndex != index) {
+					ImageIndex = SelectedImageIndex = index;
+				}
 			}
 		}
 		

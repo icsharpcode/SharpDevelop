@@ -30,8 +30,10 @@ namespace CSharpBinding.OptionPanels
 			
 			Get<TextBox>("assemblyName").Text = project.AssemblyName;
 			Get<TextBox>("assemblyName").TextChanged += new EventHandler(RefreshOutputNameTextBox);
+			Get<TextBox>("assemblyName").TextChanged += new EventHandler(Save);
 			
 			Get<TextBox>("rootNamespace").Text = project.RootNamespace;
+			Get<TextBox>("rootNamespace").TextChanged += new EventHandler(Save);
 			
 			Get<ComboBox>("outputType").Items.Add(StringParser.Parse("${res:Dialog.Options.PrjOptions.Configuration.CompileTarget.Exe}"));
 			Get<ComboBox>("outputType").Items.Add(StringParser.Parse("${res:Dialog.Options.PrjOptions.Configuration.CompileTarget.WinExe}"));
@@ -40,17 +42,28 @@ namespace CSharpBinding.OptionPanels
 			
 			Get<ComboBox>("outputType").SelectedIndex = (int)project.OutputType;
 			Get<ComboBox>("outputType").SelectedIndexChanged += new EventHandler(RefreshOutputNameTextBox);
+			Get<ComboBox>("outputType").SelectedIndexChanged += new EventHandler(Save);
 			
 			Get<ComboBox>("startupObject").Text   = project.StartupObject;
+			Get<ComboBox>("startupObject").SelectedIndexChanged += new EventHandler(Save);
 			
 			Get<ComboBox>("applicationIcon").Text = project.ApplicationIcon;
 			Get<ComboBox>("applicationIcon").TextChanged += new EventHandler(ApplicationIconComboBoxTextChanged);
+			Get<ComboBox>("applicationIcon").TextChanged += new EventHandler(Save);
 			
 			Get<ComboBox>("win32ResourceFile").Text = project.Win32Resource;
+			Get<ComboBox>("win32ResourceFile").TextChanged += new EventHandler(Save);
+			
 			Get<TextBox>("projectFolder").Text = project.Directory;
 			Get<TextBox>("projectFile").Text = Path.GetFileName(project.FileName);
+			Get<TextBox>("projectFile").TextChanged += new EventHandler(Save);
 			
 			RefreshOutputNameTextBox(null, EventArgs.Empty);
+		}
+		
+		void Save(object sender, EventArgs e) 
+		{
+			StorePanelContents();
 		}
 		
 		public override bool StorePanelContents()
@@ -58,7 +71,6 @@ namespace CSharpBinding.OptionPanels
 			project.AssemblyName      = Get<TextBox>("assemblyName").Text;
 			project.RootNamespace     = Get<TextBox>("rootNamespace").Text;
 			project.OutputType        = (OutputType)Get<ComboBox>("outputType").SelectedIndex;
-			Console.WriteLine("Set output type to : " + project.OutputType);
 			project.StartupObject     = Get<ComboBox>("startupObject").Text;
 			project.ApplicationIcon   = Get<ComboBox>("applicationIcon").Text;
 			project.Win32Resource     = Get<ComboBox>("win32ResourceFile").Text;
