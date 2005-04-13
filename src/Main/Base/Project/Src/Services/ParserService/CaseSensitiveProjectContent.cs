@@ -108,7 +108,9 @@ namespace ICSharpCode.Core
 						break;
 					case ItemType.Compile:
 						ParseInformation parseInfo = ParserService.ParseFile(item.FileName, null, true, false);
-						newProjectContent.UpdateCompilationUnit(null, parseInfo.BestCompilationUnit as ICompilationUnit, item.FileName, true);
+						if (parseInfo != null) {
+							newProjectContent.UpdateCompilationUnit(null, parseInfo.BestCompilationUnit as ICompilationUnit, item.FileName, true);
+						}
 						break;
 				}
 			}

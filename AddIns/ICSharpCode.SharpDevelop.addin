@@ -1805,4 +1805,45 @@
 		             tooltip = "Search"
 		             class   = "SearchAndReplace.FindComboBox"/>
 	</Path>
+	
+	<Path name = "/Workspace/Icons">
+		<!-- Resources -->
+		<Icon id         = "ResourceFileIcon"
+		      extensions = ".resources,.resx"
+		      resource   = "Icons.16x16.ResourceFileIcon" />
+		
+		<!-- XML -->
+		<Icon id         = "XmlFileIcon"
+		      extensions = ".xml"
+		      resource   = "FileIcons.XmlIcon" />
+		
+		<Icon id         = "DtdFileIcon"
+		      extensions = ".dtd"
+		      resource   = "Icons.16x16.DTDIcon"/>
+		
+		<Icon id         = "XsdFileIcon"
+		      extensions = ".xsd"
+		      resource   = "Icons.16x16.XSDIcon"/>
+		
+		<Icon id         = "XslFileIcon"
+		      extensions = ".xsl"
+		      resource   = "Icons.16x16.XSLIcon"/>
+		
+		<Icon id         = "HtmlFileIcon"
+		      extensions = ".html,.htm"
+		      resource   = "Icons.16x16.HTMLIcon"/>
+		
+		<Icon id         = "AspFileIcon"
+		      extensions = ".asp,.aspx"
+		      resource   = "Icons.16x16.ASPFileIcon"/>
+		
+		<!-- TextFiles -->
+		<Icon id         = "TextFileIcon"
+		      extensions = ".txt,.doc"
+		      resource   = "Icons.16x16.TextFileIcon"/>
+		
+		<Icon id         = "CssFileIcon"
+		      extensions = ".css"
+		      resource   = "Icons.16x16.CSSIcon"/>
+	</Path>
 </AddIn>

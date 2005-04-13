@@ -382,7 +382,7 @@ C++.Project.Library                               = backendicons\cpp\project\Lib
 C++.Project.ControlLibrary                        = backendicons\cpp\project\ControlLibrary.png
 
 # misc backend icons
-FileIcons.XmlIcon                                 = backendicons\miscFiles\XmlFileIcon.png
+FileIcons.XmlIcon                                 = backendicons\miscFiles\Icons.16x16.XMLFileIcon.png
 Icons.16x16.ResourceFileIcon                      = backendicons\miscFiles\Icons.16x16.ResourceFileIcon.png
 Icons.16x16.HTMLIcon                              = backendicons\miscFiles\Icons.16x16.HTMLIcon.png
 Icons.16x16.XMLFileIcon                           = backendicons\miscFiles\Icons.16x16.XMLFileIcon.png
@@ -395,8 +395,17 @@ Icons.32x32.EmptyFileIcon                         = backendicons\miscFiles\Icons
 Icons.32x32.HTMLFileIcon                          = backendicons\miscFiles\Icons.32x32.HTMLFileIcon.png
 Icons.32x32.XMLFileIcon                           = backendicons\miscFiles\Icons.32x32.XMLFileIcon.png
 Icons.32x32.TextFileIcon                          = backendicons\miscFiles\Icons.32x32.TextFileIcon.png
-Icons.32x32.ASPFileIcon                           = backendicons\miscFiles\Icons.32x32.ASPFileIcon.png
 Icons.32x32.EmptyProjectIcon                      = backendicons\miscFiles\Icons.32x32.EmptyProjectIcon.png
 Icons.32x32.CombineIcon                           = backendicons\miscFiles\Icons.32x32.CombineIcon.png
 Icons.32x32.ResourceFileIcon                      = backendicons\miscFiles\Icons.32x32.ResourceFileIcon.png
 
+Icons.16x16.CSSIcon = backendicons\miscFiles\CSS_16.png
+Icons.32x32.CSSIcon = backendicons\miscFiles\CSS_32.png
+Icons.16x16.DTDIcon = backendicons\miscFiles\DTD_16.png
+Icons.32x32.DTDIcon = backendicons\miscFiles\DTD_32.png
+Icons.16x16.XSDIcon = backendicons\miscFiles\XSD_16.png
+Icons.32x32.XSDIcon = backendicons\miscFiles\XSD_32.png
+Icons.16x16.XSLIcon = backendicons\miscFiles\XSL_16.png
+Icons.32x32.XSLIcon = backendicons\miscFiles\XSL_32.png
+Icons.16x16.ASPFileIcon = backendicons\miscFiles\ASP_16.png
+Icons.32x32.ASPFileIcon = backendicons\miscFiles\ASP_32.png
