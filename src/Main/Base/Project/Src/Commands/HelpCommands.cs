@@ -23,9 +23,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			IWorkbenchWindow window       = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 			IHelpProvider    helpProvider = window != null ? window.ActiveViewContent as IHelpProvider : null;
-			foreach (IPadContent padContent in WorkbenchSingleton.Workbench.PadContentCollection) {
-				if (padContent is IHelpProvider && padContent.Control.ContainsFocus) {
-					((IHelpProvider)padContent).ShowHelp();
+			foreach (PadDescriptor descriptor in WorkbenchSingleton.Workbench.PadContentCollection) {
+				if (descriptor.HasFocus && descriptor.PadContent is IHelpProvider) {
+					((IHelpProvider)descriptor.PadContent).ShowHelp();
 					return;
 				}
 			}

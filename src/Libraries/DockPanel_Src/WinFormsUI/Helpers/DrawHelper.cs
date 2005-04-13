@@ -24,21 +24,6 @@ namespace WeifenLuo.WinFormsUI
 			return CreateRectangleDragOutline(rect, indent);
 		}
 
-		public static Region CreateDragOutline(Rectangle[] rects, int indent)
-		{
-			Region region = CreateRectangleDragOutline(rects[0], indent);
-
-			for (int i=1; i<rects.Length; i++)
-			{
-				using (Region newRegion = CreateRectangleDragOutline(rects[i], indent))
-				{
-					region.Xor(newRegion);
-				}
-			}
-
-			return region;
-		}
-
 		private static Region CreateRectangleDragOutline(Rectangle rect, int indent)
 		{
 			// Create region for whole of the new rectangle

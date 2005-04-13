@@ -20,9 +20,6 @@ namespace WeifenLuo.WinFormsUI
 {	
 	internal class DockAreasEditor : UITypeEditor
 	{
-		/// <summary>
-		/// Summary description for DockAreasEditorControl.
-		/// </summary>
 		private class DockAreasEditorControl : System.Windows.Forms.UserControl
 		{
 			private IWindowsFormsEditorService m_edSvc;

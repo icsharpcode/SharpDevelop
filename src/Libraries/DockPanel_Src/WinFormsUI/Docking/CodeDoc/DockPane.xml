@@ -1,6 +1,17 @@
 <?xml version="1.0" encoding="utf-8" ?>
 <CodeDoc>
 	<Class name="DockPane">
+		<Enum name="AppearanceStyle">
+			<EnumDef>
+				<summary>Specifies the appearance style of <see cref="DockPane"/>.</summary>
+			</EnumDef>
+			<Member name="ToolWindow">
+				<summary>Tool window style <see cref="DockPane"/>.</summary>
+			</Member>
+			<Member name="Document">
+				<summary>Document style <see cref="DockPane"/>.</summary>
+			</Member>
+		</Enum>
 		<ClassDef>
 			<summary>The containing window for a collection of <see cref="WeifenLuo.WinFormsUI.DockContent" /> forms
 			displayed in a tabbed manner.</summary>
@@ -58,6 +69,10 @@
 			<summary>Gets or sets to specify whether drag and drop re-docking is allowed.</summary>
 			<value><b>True</b> if drag and drop re-docking is allowed, otherwise, <b>false</b>.</value>
 		</Property>
+		<Property name="Appearance">
+			<summary>Gets the <see cref="AppearanceStyle"/> of the <see cref="DockPane"/>.</summary>
+			<value>The <see cref="AppearanceStyle"/> of the <see cref="DockPane"/>.</value>
+		</Property>
 		<Property name="CaptionText">
 			<summary>Gets the text displayed for the caption.</summary>
 			<value>The text displayed for the caption.</value>
@@ -109,9 +124,11 @@
 				</para>
 			</remarks>
 		</Property>
-		<Property name="CountOfVisibleContents">
-			<summary>Gets the count of visible <see cref="WeifenLuo.WinFormsUI.DockContent" /> objects.</summary>
-			<value>Gets the count of visible <see cref="WeifenLuo.WinFormsUI.DockContent" /> objects.</value>
+		<Property name="DisplayingContents">
+			<summary>Gets the collection of displaying <see cref="DockContent" /> forms.</summary>
+			<value>The <see cref="DockContentCollection" /> which contains all the displaying
+			<see cref="DockContent" /> forms for this <see cref="DockPane" />.</value>
+			<seealso cref="DockPane.Contents"/>
 		</Property>
 		<Property name="DockListContainer">
 			<summary>Gets the <see cref="WeifenLuo.WinFormsUI.IDockListContainer" /> which contains this
@@ -211,18 +228,13 @@
 			<param name="proportion"></param>
 			<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Method[@name="AddToDockList(IDockListContainer)"]/returns' />
 		</Method>
+		<Method name="CloseActiveContent()">
+			<summary>Closes the currently active <see cref="DockContent"/>.</summary>
+		</Method>
 		<Method name="Float()">
 			<summary>Shows all contained <see cref="WeifenLuo.WinFormsUI.DockContent" /> forms as floating.</summary>
 			<returns>The new floating <see cref="WeifenLuo.WinFormsUI.DockPane" /> for the
 			<see cref="WeifenLuo.WinFormsUI.DockContent" /> forms.</returns>
-		</Method>
-		<Method name="GetVisibleContent(int)">
-			<summary>Gets the visible <see cref="WeifenLuo.WinFormsUI.DockContent" /> form at the specified
-			index.</summary>
-			<param name="index">The zero-based index for the visible <see cref="WeifenLuo.WinFormsUI.DockContent" /> form to
-			retrieve.</param>
-			<returns>The visible <see cref="WeifenLuo.WinFormsUI.DockContent" /> form at the specified
-			index.</returns>
 		</Method>
 		<Method name="IsDockStateValid(DockState)">
 			<summary>Tests if the giving docking state conforms to the

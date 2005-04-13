@@ -15,7 +15,10 @@ namespace WeifenLuo.WinFormsUI
 {
 	internal class AutoHideWindow : Panel
 	{
+		#region consts
 		private const int ANIMATE_TIME = 100;	// in mini-seconds
+		private const string _ExceptionInvalidActiveContent = "DockPanel.ActiveAutoHideContent.InvalidValue";
+		#endregion
 
 		private Timer m_timerMouseTrack;
 		private AutoHideWindowSplitter m_splitter;
@@ -78,7 +81,7 @@ namespace WeifenLuo.WinFormsUI
 				if (value != null)
 				{
 					if (!DockHelper.IsDockStateAutoHide(value.DockState) || value.DockPanel != DockPanel)
-						throw(new InvalidOperationException(ResourceHelper.GetString("DockPanel.ActiveAutoHideContent.InvalidValue")));
+						throw(new InvalidOperationException(ResourceHelper.GetString(_ExceptionInvalidActiveContent)));
 				}
 
 				DockPanel.SuspendLayout();
@@ -95,7 +98,7 @@ namespace WeifenLuo.WinFormsUI
 					AnimateWindow(true);
 
 				DockPanel.ResumeLayout();
-				DockPanel.Invalidate();
+				DockPanel.RefreshAutoHideStrip();
 
 				SetTimerMouseTrack();
 			}
@@ -379,7 +382,7 @@ namespace WeifenLuo.WinFormsUI
 			Point ptMouseInAutoHideWindow = PointToClient(Control.MousePosition);
 			Point ptMouseInDockPanel = DockPanel.PointToClient(Control.MousePosition);
 
-			Rectangle rectTabStrip = DockPanel.GetTabStripRectangle(pane.DockState, true);
+			Rectangle rectTabStrip = DockPanel.GetTabStripRectangle(pane.DockState);
 
 			if (!ClientRectangle.Contains(ptMouseInAutoHideWindow) && !rectTabStrip.Contains(ptMouseInDockPanel))
 			{

@@ -74,7 +74,7 @@ namespace DockSample
 			this.label1.Name = "label1";
 			this.label1.Size = new System.Drawing.Size(272, 16);
 			this.label1.TabIndex = 1;
-			this.label1.Text = "DockSample, Version 1.2";
+			this.label1.Text = "DockSample, Version 1.3";
 			// 
 			// label2
 			// 

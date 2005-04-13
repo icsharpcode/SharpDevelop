@@ -1,0 +1,166 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Class name='DockPanelExtender'>
+		<Interface name="IDockPaneFactory">
+			<InterfaceDef>
+				<summary>Provides methods to initialize a instance of <see cref="WeifenLuo.WinFormsUI.DockPane"/>.</summary>
+				<remarks>You can derive your own class from <see cref="WeifenLuo.WinFormsUI.DockPane"/>, and
+				set the <see cref="DockPanelExtender.DockPaneFactory"/> property to create instance
+				of the derived class.</remarks>
+			</InterfaceDef>
+			<Method name="CreateDockPane">
+				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="Overloads"]/*' />
+			</Method>
+			<Method name="CreateDockPane(DockContent, DockState, bool)">
+				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, DockState, bool)"]/*' />
+			</Method>
+			<Method name="CreateDockPane(DockContent, FloatWindow, bool)">
+				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, FloatWindow, bool)"]/*' />
+			</Method>
+			<Method name="CreateDockPane(DockContent, DockPane, DockAlignment, double, bool)">
+				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, DockPane, DockAlignment, double, bool)"]/*' />
+			</Method>
+			<Method name="CreateDockPane(DockContent, Rectangle, bool)">
+				<include file='DockPane.xml' path='//CodeDoc/Class[@name="DockPane"]/Constructor[@name="(DockContent, Rectangle, bool)"]/*' />
+			</Method>
+		</Interface>
+		<Interface name="IFloatWindowFactory">
+			<InterfaceDef>
+				<summary>Provides methods to initialize a instance of <see cref="WeifenLuo.WinFormsUI.FloatWindow"/>.</summary>
+				<remarks>You can derive your own class from <see cref="FloatWindow"/>, and
+				set the <see cref="DockPanelExtender.FloatWindowFactory"/> property to create instance
+				of the derived class.</remarks>
+			</InterfaceDef>
+			<Method name="CreateFloatWindow">
+				<include file='FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Constructor[@name="Overloads"]/*' />
+			</Method>
+			<Method name="CreateFloatWindow(DockPanel, DockPane)">
+				<include file='FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Constructor[@name="(DockPanel, DockPane)"]/*' />
+			</Method>
+			<Method name="CreateFloatWindow(DockPanel, DockPane, Rectangle)">
+				<include file='FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Constructor[@name="(DockPanel, DockPane, Rectangle)"]/*' />
+			</Method>
+		</Interface>
+		<Interface name="IDockPaneCaptionFactory">
+			<InterfaceDef>
+				<summary>Provides methods to initialize a instance of <see cref="DockPaneCaptionBase"/> derived class.</summary>
+				<remarks>You can derive your own class from <see cref="DockPaneCaptionBase"/>, and
+				set the <see cref="DockPanelExtender.DockPaneCaptionFactory"/> property to create instance
+				of the derived class.</remarks>
+			</InterfaceDef>
+			<Method name="CreateDockPaneCaption(DockPane)">
+				<summary>Creates a instance of <see cref="DockPaneCaptionBase"/> derived class.</summary>
+				<param name="pane">The <see cref="DockPane"/> to associate with.</param>
+				<returns>A instance of <see cref="DockPaneCaptionBase"/> derived class.</returns>
+			</Method>
+		</Interface>
+		<Interface name="IDockPaneStripFactory">
+			<InterfaceDef>
+				<summary>Provides methods to initialize a instance of <see cref="DockPaneStripBase"/> derived class.</summary>
+				<remarks>You can derive your own class from <see cref="DockPaneStripBase"/>, and
+				set the <see cref="DockPanelExtender.DockPaneStripFactory"/> property to create instance
+				of the derived class.</remarks>
+			</InterfaceDef>
+			<Method name="CreateDockPaneStrip(DockPane)">
+				<summary>Creates a instance of <see cref="DockPaneStripBase"/> derived class.</summary>
+				<param name="pane">The <see cref="DockPane"/> to associate with.</param>
+				<returns>A instance of <see cref="DockPaneStripBase"/> derived class.</returns>
+			</Method>
+		</Interface>
+		<Interface name="IAutoHideStripFactory">
+			<InterfaceDef>
+				<summary>Provides methods to initialize a instance of <see cref="AutoHideStripBase"/> derived class.</summary>
+				<remarks>You can derive your own class from <see cref="AutoHideStripBase"/>, and
+				set the <see cref="DockPanelExtender.AutoHideStripFactory"/> property to create instance
+				of the derived class.</remarks>
+			</InterfaceDef>
+			<Method name="CreateAutoHideStrip(DockPanel)">
+				<summary>Creates a instance of <see cref="AutoHideStripBase"/> derived class.</summary>
+				<param name="panel">The <see cref="DockPanel"/> to associate with.</param>
+				<returns>A instance of <see cref="AutoHideStripBase"/> derived class.</returns>
+			</Method>
+		</Interface>
+		<Interface name="IAutoHideTabFactory">
+			<InterfaceDef>
+				<summary>Provides methods to initialize a instance of <see cref="AutoHideTab"/>.</summary>
+				<remarks>You can derive your own class from <see cref="AutoHideTab"/>, and
+				set the <see cref="DockPanelExtender.AutoHideTabFactory"/> property to create instance
+				of the derived class.</remarks>
+			</InterfaceDef>
+			<Method name="CreateAutoHideTab(DockContent)">
+				<summary>Creates a instance of <see cref="AutoHideTab"/>.</summary>
+				<param name="content">The <see cref="DockContent"/> to associate with.</param>
+				<returns>A instance of <see cref="AutoHideTab"/>.</returns>
+			</Method>
+		</Interface>
+		<Interface name="IAutoHidePaneFactory">
+			<InterfaceDef>
+				<summary>Provides methods to initialize a instance of <see cref="AutoHidePane"/>.</summary>
+				<remarks>You can derive your own class from <see cref="AutoHidePane"/>, and
+				set the <see cref="DockPanelExtender.AutoHidePaneFactory"/> property to create instance
+				of the derived class.</remarks>
+			</InterfaceDef>
+			<Method name="CreateAutoHidePane(DockPane)">
+				<summary>Creates a instance of <see cref="AutoHidePane"/>.</summary>
+				<param name="pane">The <see cref="DockPane"/> to associate with.</param>
+				<returns>A instance of <see cref="AutoHidePane"/>.</returns>
+			</Method>
+		</Interface>
+		<Interface name="IDockPaneTabFactory">
+			<InterfaceDef>
+				<summary>Provides methods to initialize a instance of <see cref="DockPaneTab"/>.</summary>
+				<remarks>You can derive your own class from <see cref="DockPaneTab"/>, and
+				set the <see cref="DockPanelExtender.DockPaneTabFactory"/> property to create instance
+				of the derived class.</remarks>
+			</InterfaceDef>
+			<Method name="CreateDockPaneTab(DockContent)">
+				<summary>Creates a instance of <see cref="DockPaneTab"/>.</summary>
+				<param name="content">The <see cref="DockContent"/> to associate with.</param>
+				<returns>A instance of <see cref="DockPaneTab"/>.</returns>
+			</Method>
+		</Interface>
+		<ClassDef>
+			<summary>Provides class factories to plug in customized components into the <see cref="DockPanel"/>.</summary>
+		</ClassDef>
+		<Property name="DockPaneFactory">
+			<summary>Provides class factory to initialize <see cref="DockPane"/> instances.</summary>
+			<value>An object implements <see cref="IDockPaneFactory"/> to initialize <see cref="DockPane"/> instances.</value>
+			<remarks>Set this property can plug your own class derived from <see cref="DockPane"/> into the <see cref="DockPanel"/>.</remarks>
+		</Property>
+		<Property name="FloatWindowFactory">
+			<summary>Provides class factory to initialize <see cref="FloatWindow"/> instances.</summary>
+			<value>An object implements <see cref="IFloatWindowFactory"/> to initialize <see cref="FloatWindow"/> instances.</value>
+			<remarks>Set this property can plug your own class derived from <see cref="FloatWindow"/> into the <see cref="DockPanel"/>.</remarks>
+		</Property>
+		<Property name="DockPaneCaptionFactory">
+			<summary>Provides class factory to initialize <see cref="DockPaneCaptionBase"/> derived instances.</summary>
+			<value>An object implements <see cref="IDockPaneCaptionFactory"/> to initialize <see cref="DockPaneCaptionBase"/> derived instances.</value>
+			<remarks>Set this property can plug your own class derived from <see cref="DockPaneCaptionBase"/> into the <see cref="DockPanel"/>.</remarks>
+		</Property>
+		<Property name="DockPaneStripFactory">
+			<summary>Provides class factory to initialize <see cref="DockPaneStripBase"/> derived instances.</summary>
+			<value>An object implements <see cref="IDockPaneStripFactory"/> to initialize <see cref="DockPaneStripBase"/> derived instances.</value>
+			<remarks>Set this property can plug your own class derived from <see cref="DockPaneStripBase"/> into the <see cref="DockPanel"/>.</remarks>
+		</Property>
+		<Property name="AutoHideStripFactory">
+			<summary>Provides class factory to initialize <see cref="AutoHideStripBase"/> derived instances.</summary>
+			<value>An object implements <see cref="IAutoHideStripFactory"/> to initialize <see cref="AutoHideStripBase"/> derived instances.</value>
+			<remarks>Set this property can plug your own class derived from <see cref="AutoHideStripBase"/> into the <see cref="DockPanel"/>.</remarks>
+		</Property>
+		<Property name="DockPaneTabFactory">
+			<summary>Provides class factory to initialize <see cref="DockPaneTab"/> instances.</summary>
+			<value>An object implements <see cref="IDockPaneTabFactory"/> to initialize <see cref="DockPaneTab"/> instances.</value>
+			<remarks>Set this property can plug your own class derived from <see cref="DockPaneTab"/> into the <see cref="DockPanel"/>.</remarks>
+		</Property>
+		<Property name="AutoHidePaneFactory">
+			<summary>Provides class factory to initialize <see cref="AutoHidePane"/> instances.</summary>
+			<value>An object implements <see cref="IAutoHidePaneFactory"/> to initialize <see cref="AutoHidePane"/> instances.</value>
+			<remarks>Set this property can plug your own class derived from <see cref="AutoHidePane"/> into the <see cref="DockPanel"/>.</remarks>
+		</Property>
+		<Property name="AutoHideTabFactory">
+			<summary>Provides class factory to initialize <see cref="AutoHideTab"/> instances.</summary>
+			<value>An object implements <see cref="IAutoHideTabFactory"/> to initialize <see cref="AutoHideTab"/> instances.</value>
+			<remarks>Set this property can plug your own class derived from <see cref="AutoHideTab"/> into the <see cref="DockPanel"/>.</remarks>
+		</Property>
+	</Class>
+</CodeDoc>

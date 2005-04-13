@@ -20,6 +20,8 @@ namespace WeifenLuo.WinFormsUI
 
 		internal HiddenMdiChild(DockContent content) : base()
 		{
+			SetStyle(ControlStyles.Selectable, false);
+
 			if (content == null)
 				throw(new ArgumentNullException());
 
@@ -72,6 +74,12 @@ namespace WeifenLuo.WinFormsUI
 		{
 			if (m.Msg == (int)Win32.Msgs.WM_MDIACTIVATE && m.HWnd == m.LParam)
 				Content.Show();
+
+			if (m.Msg == (int)Win32.Msgs.WM_CLOSE && Content.DockState == DockState.Document && Content.Pane != null)
+			{
+				Content.Pane.CloseContent(Content);
+				return;
+			}
 
 			base.WndProc(ref m);
 		}

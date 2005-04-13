@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Class name="DockPaneCaptionBase">
+		<ClassDef>
+			<summary>Implements the basic functionality common to the caption of <see cref="DockPane"/>.</summary>
+		</ClassDef>
+		<Construct name="(DockPane)">
+			<summary>Creates a instance of <see cref="DockPaneCaptionBase"/>.</summary>
+			<param name="pane">The <see cref="DockPane"/> to associate with.</param>
+		</Construct>
+		<Property name="DockPane">
+			<summary>Gets the associated <see cref="DockPane"/>.</summary>
+			<value>The associated <see cref="DockPane"/>.</value>
+		</Property>
+		<Property name="Tabs">
+			<summary>Gets a collection of <see cref="DockPaneTab"/> objects for the <see cref="DockPane"/>.</summary>
+			<value>A <see cref="DockPaneTabCollection"/> that contains a collection of <see cref="DockPaneTab"/> objects for the <see cref="DockPane"/>.</value>
+		</Property>
+		<Property name="Appearance">
+			<summary>Gets the appearance style of the <see cref="DockPane"/>.</summary>
+			<value>A <see cref="WeifenLuo.WinFormsUI.DockPane.AppearanceStyle"/> value that specifies the appearance style of the <see cref="DockPaneTab"/> objects for the <see cref="DockPane"/>.</value>
+		</Property>
+		<Method name="OnRefreshChanges()">
+			<summary>Invoked when the underlying data has been changed and needs update of the control.</summary>
+			<remarks>Derived class should override to update the changes.</remarks>
+		</Method>
+		<Method name="MeasureHeight()">
+			<summary>Measures the height of the caption.</summary>
+		</Method>
+	</Class>
+</CodeDoc>

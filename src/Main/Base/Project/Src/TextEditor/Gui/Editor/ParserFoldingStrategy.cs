@@ -15,10 +15,6 @@ using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
-	/// <summary>
-	/// A simple folding strategy which calculates the folding level
-	/// using the indent level of the line.
-	/// </summary>
 	public class ParserFoldingStrategy : IFoldingStrategy
 	{
 		void AddClassMembers(IClass c, List<FoldMarker> foldMarkers, IDocument document)

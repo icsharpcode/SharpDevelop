@@ -97,20 +97,14 @@
 			<summary>Gets or sets the size of the top side <see cref="WeifenLuo.WinFormsUI.DockWindow"/>.</summary>
 			<value>A value between 0 and 1 to determine the size of the top side <see cref="WeifenLuo.WinFormsUI.DockWindow"/>.</value>
 		</Property>
-		<Property name="DockPaneFactory">
-			<summary>Provides class factory to initialize <see cref="WeifenLuo.WinFormsUI.DockPane"/> objects.</summary>
-			<value>An object implements <see cref="WeifenLuo.WinFormsUI.IDockPaneFactory"/> to initialize <see cref="WeifenLuo.WinFormsUI.DockPane"/> objects.</value>
-			<remarks>Override this property can implement your own class derived from <see cref="WeifenLuo.WinFormsUI.DockPane"/>.</remarks>
-		</Property>
-		<Property name="FloatWindowFactory">
-			<summary>Provides class factory to initialize <see cref="WeifenLuo.WinFormsUI.FloatWindow"/> objects.</summary>
-			<value>An object implements <see cref="WeifenLuo.WinFormsUI.IFloatWindowFactory"/> to initialize <see cref="WeifenLuo.WinFormsUI.FloatWindow"/> objects.</value>
-			<remarks>Override this property can implement your own class derived from <see cref="WeifenLuo.WinFormsUI.FloatWindow"/>.</remarks>
-		</Property>
 		<Property name="DockWindows">
 			<summary>Gets the collection of contained <see cref="WeifenLuo.WinFormsUI.DockWindow" /> controls.</summary>
 			<value>The <see cref="WeifenLuo.WinFormsUI.DockWindowCollection" /> which contains all the
 			<see cref="WeifenLuo.WinFormsUI.DockWindow" /> controls for this <see cref="WeifenLuo.WinFormsUI.DockPanel" />.</value>
+		</Property>
+		<Property name="Extender">
+			<summary>Gets the <see cref="DockPanelExtender"/> to customize the <see cref="DockPanel"/>.</summary>
+			<value>A <see cref="DockPanelExtender"/> to customize the <see cref="DockPanel"/>.</value>
 		</Property>
 		<Property name="FloatWindows">
 			<summary>Gets the collection of contained <see cref="WeifenLuo.WinFormsUI.FloatWindow" /> forms.</summary>

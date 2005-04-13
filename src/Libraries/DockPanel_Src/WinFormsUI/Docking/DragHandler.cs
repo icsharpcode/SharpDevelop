@@ -168,7 +168,7 @@ namespace WeifenLuo.WinFormsUI
 				else if (DragSource == DragSource.PaneSplitter)
 					return MeasurePaneSplitter.SplitterSize;
 				else
-					return MeasureOutline.BorderWidth;
+					return MeasureOutline.Width;
 			}
 		}
 
@@ -304,7 +304,8 @@ namespace WeifenLuo.WinFormsUI
 					if (ptMouse.X > location.X + size.Width)
 						location.X += ptMouse.X - (location.X + size.Width) + OutlineBorderWidth;
 
-					DragOutline = DrawHelper.CreateDragOutline(new Rectangle(location, size), OutlineBorderWidth);
+					Rectangle rect = new Rectangle(location, size);
+					DragOutline = DrawHelper.CreateDragOutline(rect, OutlineBorderWidth);
 				}
 				else
 					DragOutline = null;
@@ -441,7 +442,8 @@ namespace WeifenLuo.WinFormsUI
 					if (ptMouse.X > location.X + size.Width)
 						location.X += ptMouse.X - (location.X + size.Width) + OutlineBorderWidth;
 
-					DragOutline = DrawHelper.CreateDragOutline(new Rectangle(location, size), OutlineBorderWidth);
+					Rectangle rect = new Rectangle(location, size);
+					DragOutline = DrawHelper.CreateDragOutline(rect, OutlineBorderWidth);
 				}
 				else
 					DragOutline = null;
@@ -883,13 +885,18 @@ namespace WeifenLuo.WinFormsUI
 				proportions[i] = dockListFrom[i].NestedDockingStatus.Proportion;
 			}
 
-			panes[0].AddToDockList(dockListTo.Container, prevPane, alignment, proportion);
+			DockPane pane = panes[0].AddToDockList(dockListTo.Container, prevPane, alignment, proportion);
 			panes[0].DockState = dockListTo.DockState;
 			panes[0].Activate();
 
 			for (int i=1; i<count; i++)
 			{
-				panes[i].AddToDockList(dockListTo.Container, prevPanes[i], alignments[i], proportions[i]);
+				for (int j=i; j<count; j++)
+				{
+					if (prevPanes[j] == panes[i-1])
+						prevPanes[j] = pane;
+				}
+				pane = panes[i].AddToDockList(dockListTo.Container, prevPanes[i], alignments[i], proportions[i]);
 				panes[i].DockState = dockListTo.DockState;
 				panes[i].Activate();
 			}

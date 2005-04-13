@@ -139,13 +139,13 @@
 	<data name="DockPanel.DockLeftPortion.Description">
 		<value>Portion of the left docking window.</value>
 	</data>
-	<data name="DockPane.ToolTipAutoHide">
+	<data name="DockPaneCaption.ToolTipAutoHide">
 		<value>Auto Hide</value>
 	</data>
 	<data name="DockPane.ActiveContent.InvalidValue">
 		<value>Invalid Content: ActiveContent must be one of the visible contents, or null if there is no visible content.</value>
 	</data>
-	<data name="DockPane.ToolTipScrollLeft">
+	<data name="DockPaneStrip.ToolTipScrollLeft">
 		<value>Scroll Left</value>
 	</data>
 	<data name="DockContent.Show.NullDockPanel">
@@ -172,7 +172,7 @@
 	<data name="DockPanel.DockBottomPortion.Description">
 		<value>Portion of the bottom docking window.</value>
 	</data>
-	<data name="DockPane.ToolTipDocumentWindowClose">
+	<data name="DockPaneStrip.ToolTipClose">
 		<value>Close</value>
 	</data>
 	<data name="DockContent.DockableAreas.Description">
@@ -226,7 +226,7 @@
 	<data name="DockContent.CloseButton.Description">
 		<value>Enable/Disable the close button of the content.</value>
 	</data>
-	<data name="DockPane.ToolTipScrollRight">
+	<data name="DockPaneStrip.ToolTipScrollRight">
 		<value>Scroll Right</value>
 	</data>
 	<data name="DockContent.DockStateChanged.Description">
@@ -235,7 +235,7 @@
 	<data name="Category.PropertyChanged">
 		<value>Property Changed</value>
 	</data>
-	<data name="DockPane.ToolTipDockWindowClose">
+	<data name="DockPaneCaption.ToolTipClose">
 		<value>Close</value>
 	</data>
 	<data name="DockPanel.ActiveDocumentChanged.Description">

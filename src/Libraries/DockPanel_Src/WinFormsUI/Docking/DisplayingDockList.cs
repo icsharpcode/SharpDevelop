@@ -81,6 +81,7 @@ namespace WeifenLuo.WinFormsUI
 				if (pane.DockState != DockState || pane.IsHidden)
 				{
 					pane.Bounds = Rectangle.Empty;
+					pane.Splitter.Bounds = Rectangle.Empty;
 					Remove(pane);
 				}
 

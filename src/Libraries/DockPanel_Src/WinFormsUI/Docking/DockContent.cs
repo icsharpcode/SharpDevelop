@@ -19,10 +19,6 @@ namespace WeifenLuo.WinFormsUI
 	/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/ClassDef/*'/>
 	public class DockContent : Form
 	{
-		// Tab width and X position used by DockPane and DockPanel class
-		internal int TabWidth = 0;
-		internal int TabX = 0;
-
 		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Constructor[@name="()"]/*'/>
 		public DockContent()
 		{
@@ -41,6 +37,10 @@ namespace WeifenLuo.WinFormsUI
 				}
 
 				DockPanel = null;
+				if (AutoHideTab != null)
+					AutoHideTab.Dispose();
+				if (DockPaneTab != null)
+					DockPaneTab.Dispose();
 			}
 
 			base.Dispose(disposing);
@@ -108,6 +108,7 @@ namespace WeifenLuo.WinFormsUI
 
 		private string m_tabText = null;
 		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="TabText"]/*'/>
+		[Localizable(true)]
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockContent.TabText.Description")]
 		[DefaultValue(null)]
@@ -121,7 +122,7 @@ namespace WeifenLuo.WinFormsUI
 
 				m_tabText = value;
 				if (Pane != null)
-					Pane.Invalidate();
+					Pane.RefreshChanges();
 			}
 		}
 		private bool ShouldSerializeTabText()
@@ -145,7 +146,7 @@ namespace WeifenLuo.WinFormsUI
 				m_closeButton = value;
 				if (Pane != null)
 					if (Pane.ActiveContent == this)
-						Pane.Invalidate();
+						Pane.RefreshChanges();
 			}
 		}
 		
@@ -165,6 +166,18 @@ namespace WeifenLuo.WinFormsUI
 				if (m_dockPanel != null)
 					m_dockPanel.RemoveContent(this);
 
+				if (m_dockPaneTab != null)
+				{
+					m_dockPaneTab.Dispose();
+					m_dockPaneTab = null;
+				}
+
+				if (m_autoHideTab != null)
+				{
+					m_autoHideTab.Dispose();
+					m_autoHideTab = null;
+				}
+
 				m_dockPanel = value;
 
 				if (m_dockPanel != null)
@@ -175,6 +188,8 @@ namespace WeifenLuo.WinFormsUI
 					FormBorderStyle = FormBorderStyle.None;
 					ShowInTaskbar = false;
 					Visible = true;
+					m_dockPaneTab = DockPanel.DockPaneTabFactory.CreateDockPaneTab(this);
+					m_autoHideTab = DockPanel.AutoHideTabFactory.CreateAutoHideTab(this);
 				}
 
 				RefreshMdiIntegration();
@@ -473,9 +488,8 @@ namespace WeifenLuo.WinFormsUI
 
 		private void RefreshDockPane(DockPane pane)
 		{
+			pane.RefreshChanges();
 			pane.ValidateActiveContent();
-			pane.PerformLayout();
-			pane.Invalidate();
 		}
 
 		internal string PersistString
@@ -572,6 +586,7 @@ namespace WeifenLuo.WinFormsUI
 
 		private string m_toolTipText = null;
 		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="ToolTipText"]/*'/>
+		[Localizable(true)]
 		[Category("Appearance")]
 		[LocalizedDescription("DockContent.ToolTipText.Description")]
 		[DefaultValue(null)]
@@ -741,29 +756,32 @@ namespace WeifenLuo.WinFormsUI
 		}
 
 		/// <exclude/>
-		public new void Close()
+		protected override void OnClosed(EventArgs e)
 		{
-			if (DockPanel != null)
+			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			// Workaround of .Net Framework bug to avoid main form unclosable
+			//!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+			if (Environment.Version.Major == 1)
 			{
-				DockPanel = null;
-				Dispose();
+				if (DockPanel != null)
+					DockPanel = null;
 			}
-			else
-				base.Close();
+
+			base.OnClosed (e);
 		}
-				
+
 		/// <exclude/>
 		protected override void OnTextChanged(EventArgs e)
 		{
 			if (m_hiddenMdiChild != null)
 				m_hiddenMdiChild.Text = this.Text;
 			if (DockHelper.IsDockStateAutoHide(DockState))
-				DockPanel.Invalidate();
+				DockPanel.RefreshAutoHideStrip();
 			else if (Pane != null)
 			{
 				if (Pane.FloatWindow != null)
 					Pane.FloatWindow.SetText();
-				Pane.Invalidate();
+				Pane.RefreshChanges();
 			}
 
 			base.OnTextChanged(e);
@@ -811,6 +829,18 @@ namespace WeifenLuo.WinFormsUI
 					parentMdi = null;
 
 			return parentMdi;
+		}
+
+		private DockPaneTab m_dockPaneTab = null;
+		internal DockPaneTab DockPaneTab
+		{
+			get	{	return m_dockPaneTab;	}
+		}
+
+		private AutoHideTab m_autoHideTab = null;
+		internal AutoHideTab AutoHideTab
+		{
+			get	{	return m_autoHideTab;	}
 		}
 
 		#region Events

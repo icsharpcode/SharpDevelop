@@ -72,9 +72,9 @@ namespace DockSample
 			// 
 			this.richTextBox1.AcceptsTab = true;
 			this.richTextBox1.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.richTextBox1.Location = new System.Drawing.Point(0, 0);
+			this.richTextBox1.Location = new System.Drawing.Point(0, 4);
 			this.richTextBox1.Name = "richTextBox1";
-			this.richTextBox1.Size = new System.Drawing.Size(264, 337);
+			this.richTextBox1.Size = new System.Drawing.Size(264, 333);
 			this.richTextBox1.TabIndex = 0;
 			this.richTextBox1.Text = "";
 			// 
@@ -131,6 +131,7 @@ namespace DockSample
 			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.ClientSize = new System.Drawing.Size(264, 337);
 			this.Controls.Add(this.richTextBox1);
+			this.DockPadding.Top = 4;
 			this.Menu = this.mainMenu;
 			this.Name = "DummyDoc";
 			this.TabPageContextMenu = this.contextMenuTabPage;
@@ -187,7 +188,7 @@ namespace DockSample
 
 		private void menuItem2_Click(object sender, System.EventArgs e)
 		{
-			MessageBox.Show("This is to demostrate menu item has been successfully merged into the main form.");
+			MessageBox.Show("This is to demostrate menu item has been successfully merged into the main form. Form Text=" + Text);
 		}
 
 		private void menuItemCheckTest_Click(object sender, System.EventArgs e)

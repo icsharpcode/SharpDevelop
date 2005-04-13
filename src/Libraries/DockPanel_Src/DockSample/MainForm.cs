@@ -74,6 +74,11 @@ namespace DockSample
 		private System.Windows.Forms.ToolBarButton toolBarButtonLayoutByCode;
 		private System.Windows.Forms.MenuItem menuItemLayoutByXml;
 		private System.Windows.Forms.ToolBarButton toolBarButtonLayoutByXml;
+		private System.Windows.Forms.MenuItem menuItemSchemaDefault;
+		private System.Windows.Forms.MenuItem menuItemSchemaOverride;
+		private System.Windows.Forms.MenuItem menuItemSchemaFromBase;
+		private System.Windows.Forms.MenuItem menuItem3;
+		private System.Windows.Forms.MenuItem menuItem5;
 		private System.ComponentModel.IContainer components;
 
 		public MainForm()
@@ -135,6 +140,11 @@ namespace DockSample
 			this.menuItemLayoutByXml = new System.Windows.Forms.MenuItem();
 			this.menuItemTools = new System.Windows.Forms.MenuItem();
 			this.menuItemLockLayout = new System.Windows.Forms.MenuItem();
+			this.menuItem3 = new System.Windows.Forms.MenuItem();
+			this.menuItemSchemaDefault = new System.Windows.Forms.MenuItem();
+			this.menuItemSchemaOverride = new System.Windows.Forms.MenuItem();
+			this.menuItemSchemaFromBase = new System.Windows.Forms.MenuItem();
+			this.menuItem5 = new System.Windows.Forms.MenuItem();
 			this.menuItemOptions = new System.Windows.Forms.MenuItem();
 			this.menuItemWindow = new System.Windows.Forms.MenuItem();
 			this.menuItemNewWindow = new System.Windows.Forms.MenuItem();
@@ -304,6 +314,11 @@ namespace DockSample
 			this.menuItemTools.Index = 2;
 			this.menuItemTools.MenuItems.AddRange(new System.Windows.Forms.MenuItem[] {
 																						  this.menuItemLockLayout,
+																						  this.menuItem3,
+																						  this.menuItemSchemaDefault,
+																						  this.menuItemSchemaOverride,
+																						  this.menuItemSchemaFromBase,
+																						  this.menuItem5,
 																						  this.menuItemOptions});
 			this.menuItemTools.MergeOrder = 2;
 			this.menuItemTools.Text = "&Tools";
@@ -315,9 +330,38 @@ namespace DockSample
 			this.menuItemLockLayout.Text = "&Lock Layout";
 			this.menuItemLockLayout.Click += new System.EventHandler(this.menuItemLockLayout_Click);
 			// 
+			// menuItem3
+			// 
+			this.menuItem3.Index = 1;
+			this.menuItem3.Text = "-";
+			// 
+			// menuItemSchemaDefault
+			// 
+			this.menuItemSchemaDefault.Checked = true;
+			this.menuItemSchemaDefault.Index = 2;
+			this.menuItemSchemaDefault.Text = "Schema: &Default";
+			this.menuItemSchemaDefault.Click += new System.EventHandler(this.SetSchema);
+			// 
+			// menuItemSchemaOverride
+			// 
+			this.menuItemSchemaOverride.Index = 3;
+			this.menuItemSchemaOverride.Text = "Schema: &Override From Default";
+			this.menuItemSchemaOverride.Click += new System.EventHandler(this.SetSchema);
+			// 
+			// menuItemSchemaFromBase
+			// 
+			this.menuItemSchemaFromBase.Index = 4;
+			this.menuItemSchemaFromBase.Text = "Schema: &Built From Base";
+			this.menuItemSchemaFromBase.Click += new System.EventHandler(this.SetSchema);
+			// 
+			// menuItem5
+			// 
+			this.menuItem5.Index = 5;
+			this.menuItem5.Text = "-";
+			// 
 			// menuItemOptions
 			// 
-			this.menuItemOptions.Index = 1;
+			this.menuItemOptions.Index = 6;
 			this.menuItemOptions.Text = "&Options...";
 			this.menuItemOptions.Click += new System.EventHandler(this.menuItemOptions_Click);
 			// 
@@ -787,6 +831,25 @@ namespace DockSample
 
 			// Close all other document windows
 			CloseAllDocuments();
+		}
+
+		private void SetSchema(object sender, System.EventArgs e)
+		{
+			MenuItem schema = (MenuItem)sender;
+
+			CloseAllContents();
+
+			if (schema == menuItemSchemaDefault)
+				Extender.SetSchema(dockPanel, Extender.Schema.Default);
+			else if (schema == menuItemSchemaOverride)
+				Extender.SetSchema(dockPanel, Extender.Schema.Override);
+			else if (schema == menuItemSchemaFromBase)
+				Extender.SetSchema(dockPanel, Extender.Schema.FromBase);
+
+			menuItemSchemaDefault.Checked = false;
+			menuItemSchemaOverride.Checked = false;
+			menuItemSchemaFromBase.Checked = false;
+			schema.Checked = true;
 		}
 	}
 }

@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<CodeDoc>
+	<Class name="DockPaneTab">
+		<ClassDef>
+			<summary>Represent a <see cref="DockContent"/> displayed in the tab strip area of <see cref="DockPane"/>.</summary>
+			<remarks>When customizing the tab strip area of the <see cref="DockPane"/>, you can derive a class from <see cref="DockPaneStripBase"/>
+			class, and then plug it into the <see cref="DockPanel"/> through the <see cref="DockPanelExtender.DockPaneStripFactory"/> property of <see cref="DockPanel.Extender"/>. If you want to
+			associate data with the <see cref="DockContent"/>, you can derived a class from <see cref="DockPaneTab"/> class,
+			then plug it into the <see cref="DockPanel"/> through <see cref="DockPanelExtender.DockPaneTabFactory"/> property of <see cref="DockPanel.Extender"/>. The docking framework
+			will create the class instances and you can reference them through <see cref="DockPaneStripBase.Tabs"/> property.</remarks>
+		</ClassDef>
+		<Construct name="(DockContent)">
+			<summary>Creates a instance of <see cref="DockPaneTab"/> class.</summary>
+			<param name="content">The <see cref="DockContent"/> object to associate with.</param>
+			<remarks>Instance of <see cref="DockPaneTab"/> or derived class should only be created by the docking framework.
+			The constructor should only be called within the implementation of <see cref="DockPanelExtender.IDockPaneTabFactory"/> interface or derived class's constructor.</remarks>
+		</Construct>
+		<Property name="Content">
+			<summary>Gets the associated <see cref="DockContent"/> object.</summary>
+			<value>A <see cref="DockContent" /> object which associates with this <see cref="DockPaneTab"/> object.</value>
+		</Property>
+		<Method name="Dispose">
+			<overloads>
+				<summary>Releases the resources used by the <see cref="DockPaneTab"/> object.</summary>
+			</overloads>
+		</Method>
+		<Method name="Dispose()">
+			<summary>
+				Releases all the resources used by the <see cref="DockPaneTab"/> object.
+			</summary>
+		</Method>
+		<Method name="Dispose(bool)">
+			<summary>
+				Releases the unmanaged resources used by the <see cref="DockPaneTab"/> object and optionally releases the managed resources.
+			</summary>
+			<param name='disposing'>
+				<B>true</B> to release both managed and unmanaged resources;
+				<B>false</B> to release only unmanaged resources.
+			</param>
+		</Method>
+	</Class>
+</CodeDoc>

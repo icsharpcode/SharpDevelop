@@ -28,42 +28,12 @@ namespace WeifenLuo.WinFormsUI
 	{
 		const int WM_REFRESHACTIVEWINDOW = (int)Win32.Msgs.WM_USER + 1;
 
-		private static IFloatWindowFactory DefaultFloatWindowFactory;
-		private static IDockPaneFactory DefaultDockPaneFactory;
-		private static StringFormat StringFormatTabHorizontal;
-		private static StringFormat StringFormatTabVertical;
-		private static Matrix MatrixIdentity;
-		private static DockState[] AutoHideDockStates;
-
 		private LocalWindowsHook m_localWindowsHook;
-
-		static DockPanel()
-		{
-			DefaultFloatWindowFactory = new DefaultFloatWindowFactory();
-			DefaultDockPaneFactory = new DefaultDockPaneFactory();
-
-			StringFormatTabHorizontal = new StringFormat();
-			StringFormatTabHorizontal.Alignment = StringAlignment.Near;
-			StringFormatTabHorizontal.LineAlignment = StringAlignment.Center;
-			StringFormatTabHorizontal.FormatFlags = StringFormatFlags.NoWrap;
-
-			StringFormatTabVertical = new StringFormat();
-			StringFormatTabVertical.Alignment = StringAlignment.Near;
-			StringFormatTabVertical.LineAlignment = StringAlignment.Center;
-			StringFormatTabVertical.FormatFlags = StringFormatFlags.NoWrap | StringFormatFlags.DirectionVertical;
-
-			MatrixIdentity = new Matrix();
-
-			AutoHideDockStates = new DockState[4];
-			AutoHideDockStates[0] = DockState.DockLeftAutoHide;
-			AutoHideDockStates[1] = DockState.DockRightAutoHide;
-			AutoHideDockStates[2] = DockState.DockTopAutoHide;
-			AutoHideDockStates[3] = DockState.DockBottomAutoHide;
-		}
 
 		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Constructor[@name="()"]/*'/>
 		public DockPanel()
 		{
+			m_extender = new DockPanelExtender(this);
 			m_dragHandler = new DragHandler(this);
 			m_panes = new DockPaneCollection();
 			m_floatWindows = new FloatWindowCollection();
@@ -101,9 +71,33 @@ namespace WeifenLuo.WinFormsUI
             ResumeLayout();
         }
 
+		private AutoHideStripBase m_autoHideStripControl = null;
+		private AutoHideStripBase AutoHideStripControl
+		{
+			get
+			{	
+				if (m_autoHideStripControl == null)
+				{
+					m_autoHideStripControl = AutoHideStripFactory.CreateAutoHideStrip(this);
+					Controls.Add(m_autoHideStripControl);
+				}
+				return m_autoHideStripControl;
+			}
+		}
+
+		private bool m_inRefreshingActiveWindow = false;
+		internal bool InRefreshingActiveWindow
+		{
+			get	{	return m_inRefreshingActiveWindow;	}
+			set	{	m_inRefreshingActiveWindow = value;	}
+		}
+
 		// Windows hook event handler
 		private void HookEventHandler(object sender, HookEventArgs e)
 		{
+			if (InRefreshingActiveWindow)
+				return;
+
 			Win32.CWPRETSTRUCT cwpret = (Win32.CWPRETSTRUCT)Marshal.PtrToStructure(e.lParam, typeof(Win32.CWPRETSTRUCT));
 			int msg = cwpret.message;
 
@@ -226,7 +220,11 @@ namespace WeifenLuo.WinFormsUI
 			m_activeDocument = value;
 			if (m_activeDocument != null)
 				if (m_activeDocument.HiddenMdiChild != null)
+				{
+					IntPtr hWnd = User32.GetFocus();
 					m_activeDocument.HiddenMdiChild.Activate();
+					User32.SetFocus(hWnd);
+				}
 
 			OnActiveDocumentChanged(EventArgs.Empty);
 		}
@@ -292,16 +290,58 @@ namespace WeifenLuo.WinFormsUI
 			get	{	return m_contents;	}
 		}
 
-		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="DockPaneFactory"]/*' />
-		protected internal virtual IDockPaneFactory DockPaneFactory
-		{
-			get	{	return DefaultDockPaneFactory;	}
-		}
-
 		private DockContent m_dummyContent;
 		internal DockContent DummyContent
 		{
 			get	{	return m_dummyContent;	}
+		}
+
+		private DockPanelExtender m_extender;
+		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="Extender"]/*' />
+		[Browsable(false)]
+		public DockPanelExtender Extender
+		{
+			get	{	return m_extender;	}
+		}
+
+		internal DockPanelExtender.IDockPaneFactory DockPaneFactory
+		{
+			get	{	return Extender.DockPaneFactory;	}
+		}
+
+		internal DockPanelExtender.IFloatWindowFactory FloatWindowFactory
+		{
+			get	{	return Extender.FloatWindowFactory;	}
+		}
+
+		internal DockPanelExtender.IDockPaneCaptionFactory DockPaneCaptionFactory
+		{
+			get	{	return Extender.DockPaneCaptionFactory;	}
+		}
+
+		internal DockPanelExtender.IDockPaneTabFactory DockPaneTabFactory
+		{
+			get	{	return Extender.DockPaneTabFactory;	}
+		}
+
+		internal DockPanelExtender.IDockPaneStripFactory DockPaneStripFactory
+		{
+			get	{	return Extender.DockPaneStripFactory;	}
+		}
+
+		internal DockPanelExtender.IAutoHideTabFactory AutoHideTabFactory
+		{
+			get	{	return Extender.AutoHideTabFactory;	}
+		}
+
+		internal DockPanelExtender.IAutoHidePaneFactory AutoHidePaneFactory
+		{
+			get	{	return Extender.AutoHidePaneFactory;	}
+		}
+
+		internal DockPanelExtender.IAutoHideStripFactory AutoHideStripFactory
+		{
+			get	{	return Extender.AutoHideStripFactory;	}
 		}
 
 		private DockPaneCollection m_panes;
@@ -473,12 +513,6 @@ namespace WeifenLuo.WinFormsUI
 			get	{	return m_dummyControl;	}
 		}
 
-		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="FloatWindowFactory"]/*' />
-		protected internal virtual IFloatWindowFactory FloatWindowFactory
-		{
-			get	{	return DefaultFloatWindowFactory;	}
-		}
-
 		private FloatWindowCollection m_floatWindows;
 		/// <include file='CodeDoc\DockPanel.xml' path='//CodeDoc/Class[@name="DockPanel"]/Property[@name="FloatWindows"]/*' />
 		[Browsable(false)]
@@ -526,6 +560,8 @@ namespace WeifenLuo.WinFormsUI
 		/// <exclude/>
 		protected override void OnLayout(LayoutEventArgs levent)
 		{
+			AutoHideStripControl.Bounds = ClientRectangle;
+
 			CalculateDockPadding();
 
 			int width = ClientRectangle.Width - DockPadding.Left - DockPadding.Right;
@@ -557,38 +593,9 @@ namespace WeifenLuo.WinFormsUI
 			base.OnLayout(levent);
 		}
 
-		/// <exclude/>
-		protected override void OnMouseDown(MouseEventArgs e)
+		internal Rectangle GetTabStripRectangle(DockState dockState)
 		{
-			base.OnMouseDown(e);
-
-			if (e.Button != MouseButtons.Left)
-				return;
-
-			DockContent content = GetHitTest();
-			if (content == null)
-				return;
-
-			if (content != ActiveAutoHideContent)
-				ActiveAutoHideContent = content;
-
-			if (!content.Pane.IsActivated)
-				content.Pane.Activate();
-		}
-
-		/// <exclude/>
-		protected override void OnMouseHover(EventArgs e)
-		{
-			base.OnMouseHover(e);
-
-			DockContent content = GetHitTest();
-			if (content != null && ActiveAutoHideContent != content)
-				ActiveAutoHideContent = content;
-
-			// requires further tracking of mouse hover behavior,
-			// call TrackMouseEvent
-			Win32.TRACKMOUSEEVENTS tme = new Win32.TRACKMOUSEEVENTS(Win32.TRACKMOUSEEVENTS.TME_HOVER, Handle, Win32.TRACKMOUSEEVENTS.HOVER_DEFAULT);
-			User32.TrackMouseEvent(ref tme);
+			return AutoHideStripControl.GetTabStripRectangle(dockState);
 		}
 
 		/// <exclude/>
@@ -598,32 +605,6 @@ namespace WeifenLuo.WinFormsUI
 
 			Graphics g = e.Graphics;
 			g.FillRectangle(SystemBrushes.AppWorkspace, ClientRectangle);
-
-			CalculateTabs(DockState.DockLeftAutoHide);
-			CalculateTabs(DockState.DockRightAutoHide);
-			CalculateTabs(DockState.DockTopAutoHide);
-			CalculateTabs(DockState.DockBottomAutoHide);
-
-			int leftAutoHideWindows = GetCountOfAutoHidePanes(DockState.DockLeftAutoHide);
-			int rightAutoHideWindows = GetCountOfAutoHidePanes(DockState.DockRightAutoHide);
-			int topAutoHideWindows = GetCountOfAutoHidePanes(DockState.DockTopAutoHide);
-			int bottomAutoHideWindows = GetCountOfAutoHidePanes(DockState.DockBottomAutoHide);
-
-			Brush brush = Brushes.WhiteSmoke;
-			int height = GetTabStripHeight();
-			if (leftAutoHideWindows != 0 && topAutoHideWindows != 0)
-				g.FillRectangle(brush, 0, 0, height, height);
-			if (leftAutoHideWindows != 0 && bottomAutoHideWindows != 0)
-				g.FillRectangle(brush, 0, Height - height, height, height);
-			if (topAutoHideWindows != 0 && rightAutoHideWindows != 0)
-				g.FillRectangle(brush, Width - height, 0, height, height);
-			if (rightAutoHideWindows != 0 && bottomAutoHideWindows != 0)
-				g.FillRectangle(brush, Width - height, Height - height, height, height);
-			
-			DrawTabStrip(e.Graphics, DockState.DockLeftAutoHide);
-			DrawTabStrip(e.Graphics, DockState.DockRightAutoHide);
-			DrawTabStrip(e.Graphics, DockState.DockTopAutoHide);
-			DrawTabStrip(e.Graphics, DockState.DockBottomAutoHide);
 		}
 
 		internal void AddContent(DockContent content)
@@ -658,155 +639,16 @@ namespace WeifenLuo.WinFormsUI
 		{
 			DockPadding.All = 0;
 
-			foreach (DockState state in AutoHideDockStates)
-			{
-				int countAutoHidePanes = GetCountOfAutoHidePanes(state);
+			int height = AutoHideStripControl.MeasureHeight();
 
-				if (countAutoHidePanes == 0)
-					continue;
-
-				Rectangle rectTabStrip = GetTabStripRectangle(state);
-
-				if (state == DockState.DockLeftAutoHide)
-					DockPadding.Left = rectTabStrip.Height;
-				else if (state == DockState.DockRightAutoHide)
-					DockPadding.Right = rectTabStrip.Height;
-				else if (state == DockState.DockTopAutoHide)
-					DockPadding.Top = rectTabStrip.Height;
-				else if (state == DockState.DockBottomAutoHide)
-					DockPadding.Bottom = rectTabStrip.Height;
-			}
-		}
-
-		private void CalculateTabs(DockState dockState)
-		{
-			Rectangle rectTabStrip = GetTabStripRectangle(dockState);
-
-			int imageHeight = rectTabStrip.Height - MeasureAutoHideTab.ImageGapTop -
-				MeasureAutoHideTab.ImageGapBottom;
-			int imageWidth = MeasureAutoHideTab.ImageWidth;
-			if (imageHeight > MeasureAutoHideTab.ImageHeight)
-				imageWidth = MeasureAutoHideTab.ImageWidth * (imageHeight/MeasureAutoHideTab.ImageHeight);
-
-			using (Graphics g = this.CreateGraphics())
-			{
-				int x = MeasureAutoHideTab.TabGapLeft + rectTabStrip.X;
-				foreach (DockPane pane in Panes)
-				{
-					if (pane.DockState != dockState || pane.IsHidden)
-						continue;
-
-					int maxWidth = 0;
-					foreach (DockContent content in pane.Contents)
-					{
-						if (content.DockState != pane.DockState)
-							continue;
-
-						int width = imageWidth + MeasureAutoHideTab.ImageGapLeft +
-							MeasureAutoHideTab.ImageGapRight +
-							(int)g.MeasureString(content.TabText, Font).Width + 1 +
-							MeasureAutoHideTab.TextGapLeft + MeasureAutoHideTab.TextGapRight;
-						if (width > maxWidth)
-							maxWidth = width;
-					}
-
-					foreach (DockContent content in pane.Contents)
-					{
-						if (content.DockState != pane.DockState)
-							continue;
-
-						content.TabX = x;
-						if (content == pane.ActiveContent)
-							content.TabWidth = maxWidth;
-						else
-							content.TabWidth = imageWidth + MeasureAutoHideTab.ImageGapLeft + MeasureAutoHideTab.ImageGapRight;
-						x += content.TabWidth;
-					}
-					x += MeasureAutoHideTab.TabGapBetween;
-				}
-			}
-		}
-
-		private void DrawTab(Graphics g, DockState dockState, DockPane pane, DockContent content)
-		{
-			Rectangle rectTab = GetTabRectangle(dockState, content);
-			if (rectTab.IsEmpty)
-				return;
-
-			g.FillRectangle(SystemBrushes.Control, rectTab);
-
-			g.DrawLine(SystemPens.GrayText, rectTab.Left, rectTab.Top, rectTab.Left, rectTab.Bottom);
-			g.DrawLine(SystemPens.GrayText, rectTab.Right, rectTab.Top, rectTab.Right, rectTab.Bottom);
-			if (dockState == DockState.DockTopAutoHide || dockState == DockState.DockRightAutoHide)
-				g.DrawLine(SystemPens.GrayText, rectTab.Left, rectTab.Bottom, rectTab.Right, rectTab.Bottom);
-			else
-				g.DrawLine(SystemPens.GrayText, rectTab.Left, rectTab.Top, rectTab.Right, rectTab.Top);
-
-
-			// Set no rotate for drawing icon and text
-			Matrix matrixRotate = g.Transform;
-			g.Transform = MatrixIdentity;
-
-			// Draw the icon
-			Rectangle rectImage = rectTab;
-			rectImage.X += MeasureAutoHideTab.ImageGapLeft;
-			rectImage.Y += MeasureAutoHideTab.ImageGapTop;
-			int imageHeight = rectTab.Height - MeasureAutoHideTab.ImageGapTop -	MeasureAutoHideTab.ImageGapBottom;
-			int imageWidth = MeasureAutoHideTab.ImageWidth;
-			if (imageHeight > MeasureAutoHideTab.ImageHeight)
-				imageWidth = MeasureAutoHideTab.ImageWidth * (imageHeight/MeasureAutoHideTab.ImageHeight);
-			rectImage.Height = imageHeight;
-			rectImage.Width = imageWidth;
-			rectImage = GetTransformedRectangle(dockState, rectImage);
-			g.DrawIcon(content.Icon, rectImage);
-
-			// Draw the text
-			if (content == pane.ActiveContent)
-			{
-				Rectangle rectText = rectTab;
-				rectText.X += MeasureAutoHideTab.ImageGapLeft + imageWidth + MeasureAutoHideTab.ImageGapRight + MeasureAutoHideTab.TextGapLeft;
-				rectText.Width -= MeasureAutoHideTab.ImageGapLeft + imageWidth + MeasureAutoHideTab.ImageGapRight + MeasureAutoHideTab.TextGapLeft;
-				rectText = GetTransformedRectangle(dockState, rectText);
-				if (dockState == DockState.DockLeftAutoHide || dockState == DockState.DockRightAutoHide)
-					g.DrawString(content.TabText, Font, SystemBrushes.FromSystemColor(SystemColors.ControlDarkDark), rectText, StringFormatTabVertical);
-				else
-					g.DrawString(content.TabText, Font, SystemBrushes.FromSystemColor(SystemColors.ControlDarkDark), rectText, StringFormatTabHorizontal);
-			}
-
-			// Set rotate back
-			g.Transform = matrixRotate;
-		}
-
-		private void DrawTabStrip(Graphics g, DockState dockState)
-		{
-			Rectangle rectTabStrip = GetTabStripRectangle(dockState);
-
-			if (rectTabStrip.IsEmpty)
-				return;
-
-			Matrix matrixIdentity = g.Transform;
-			if (dockState == DockState.DockLeftAutoHide || dockState == DockState.DockRightAutoHide)
-			{
-				Matrix matrixRotated = new Matrix();
-				matrixRotated.RotateAt(90, new PointF((float)rectTabStrip.X + (float)rectTabStrip.Height / 2,
-					(float)rectTabStrip.Y + (float)rectTabStrip.Height / 2));
-				g.Transform = matrixRotated;
-			}
-
-			g.FillRectangle(Brushes.WhiteSmoke, rectTabStrip);
-
-			foreach (DockPane pane in Panes)
-			{
-				if (pane.DockState != dockState)
-					continue;
-
-				foreach (DockContent content in pane.Contents)
-				{
-					if (content.DockState == pane.DockState)
-						DrawTab(g, dockState, pane, content);
-				}
-			}
-			g.Transform = matrixIdentity;
+			if (AutoHideStripControl.GetPanes(DockState.DockLeftAutoHide).Count > 0)
+				DockPadding.Left = height;
+			if (AutoHideStripControl.GetPanes(DockState.DockRightAutoHide).Count > 0)
+				DockPadding.Right = height;
+			if (AutoHideStripControl.GetPanes(DockState.DockTopAutoHide).Count > 0)
+				DockPadding.Top = height;
+			if (AutoHideStripControl.GetPanes(DockState.DockBottomAutoHide).Count > 0)
+				DockPadding.Bottom = height;
 		}
 
 		internal Rectangle AutoHideWindowBounds
@@ -856,174 +698,29 @@ namespace WeifenLuo.WinFormsUI
 			}
 		}
 
-		private int GetCountOfAutoHidePanes(DockState dockState)
-		{
-			int result = 0;
-
-			foreach (DockPane pane in Panes)
-			{
-				if (pane.DockState == dockState && !pane.IsHidden)
-					result ++;
-			}
-
-			return result;
-		}
-
-		private DockContent GetHitTest()
-		{
-			Point ptMouse = PointToClient(Control.MousePosition);
-
-			foreach(DockState state in AutoHideDockStates)
-			{
-				Rectangle rectTabStrip = GetTabStripRectangle(state, true);
-				if (!rectTabStrip.Contains(ptMouse))
-					continue;
-
-				foreach(DockPane pane in Panes)
-				{
-					if (pane.DockState != state || pane.IsHidden)
-						continue;
-
-					foreach(DockContent content in pane.Contents)
-					{
-						if (content.DockState != pane.DockState)
-							continue;
-
-						Rectangle rectTab = GetTabRectangle(state, content, true);
-						rectTab.Intersect(rectTabStrip);
-						if (rectTab.Contains(ptMouse))
-							return content;
-					}
-				}
-			}
-			
-			return null;
-		}
-
-		private Rectangle GetTabRectangle(DockState dockState, DockContent content)
-		{
-			return GetTabRectangle(dockState, content, false);
-		}
-
-		private Rectangle GetTabRectangle(DockState dockState, DockContent content, bool transformed)
-		{
-			Rectangle rectTabStrip = GetTabStripRectangle(dockState);
-
-			if (rectTabStrip.IsEmpty)
-				return Rectangle.Empty;
-
-			int x = content.TabX;
-			int y = rectTabStrip.Y + 
-				(dockState == DockState.DockTopAutoHide || dockState == DockState.DockRightAutoHide ?
-				0 : MeasureAutoHideTab.TabGapTop);
-			int width = content.TabWidth;
-			int height = rectTabStrip.Height - MeasureAutoHideTab.TabGapTop;
-
-			if (!transformed)
-				return new Rectangle(x, y, width, height);
-			else
-				return GetTransformedRectangle(dockState, new Rectangle(x, y, width, height));
-		}
-
-		private int GetTabStripHeight()
-		{
-			return Math.Max(MeasureAutoHideTab.ImageGapBottom +
-				MeasureAutoHideTab.ImageGapTop + MeasureAutoHideTab.ImageHeight,
-				Font.Height) + MeasureAutoHideTab.TabGapTop;
-		}
-
-		private Rectangle GetTabStripRectangle(DockState dockState)
-		{
-			return GetTabStripRectangle(dockState, false);
-		}
-
-		internal Rectangle GetTabStripRectangle(DockState dockState, bool transformed)
-		{
-			if (!DockHelper.IsDockStateAutoHide(dockState))
-				return Rectangle.Empty;
-
-			int leftAutoHideWindows = GetCountOfAutoHidePanes(DockState.DockLeftAutoHide);
-			int rightAutoHideWindows = GetCountOfAutoHidePanes(DockState.DockRightAutoHide);
-			int topAutoHideWindows = GetCountOfAutoHidePanes(DockState.DockTopAutoHide);
-			int bottomAutoHideWindows = GetCountOfAutoHidePanes(DockState.DockBottomAutoHide);
-
-			int x, y, width, height;
-
-			height = GetTabStripHeight();
-			if (dockState == DockState.DockLeftAutoHide)
-			{
-				if (leftAutoHideWindows == 0)
-					return Rectangle.Empty;
-
-				x = 0;
-				y = (topAutoHideWindows == 0) ? 0 : height;
-				width = Height - (topAutoHideWindows == 0 ? 0 : height) - (bottomAutoHideWindows == 0 ? 0 :height);
-			}
-			else if (dockState == DockState.DockRightAutoHide)
-			{
-				if (rightAutoHideWindows == 0)
-					return Rectangle.Empty;
-
-				x = Width - height;
-				if (leftAutoHideWindows != 0 && x < height)
-					x = height;
-				y = (topAutoHideWindows == 0) ? 0 : height;
-				width = Height - (topAutoHideWindows == 0 ? 0 : height) - (bottomAutoHideWindows == 0 ? 0 :height);
-			}
-			else if (dockState == DockState.DockTopAutoHide)
-			{
-				if (topAutoHideWindows == 0)
-					return Rectangle.Empty;
-
-				x = leftAutoHideWindows == 0 ? 0 : height;
-				y = 0;
-				width = Width - (leftAutoHideWindows == 0 ? 0 : height) - (rightAutoHideWindows == 0 ? 0 : height);
-			}
-			else
-			{
-				if (bottomAutoHideWindows == 0)
-					return Rectangle.Empty;
-
-				x = leftAutoHideWindows == 0 ? 0 : height;
-				y = Height - height;
-				if (topAutoHideWindows != 0 && y < height)
-					y = height;
-				width = Width - (leftAutoHideWindows == 0 ? 0 : height) - (rightAutoHideWindows == 0 ? 0 : height);
-			}
-
-			if (!transformed)
-				return new Rectangle(x, y, width, height);
-			else
-				return GetTransformedRectangle(dockState, new Rectangle(x, y, width, height));
-		}
-
-		private Rectangle GetTransformedRectangle(DockState dockState, Rectangle rect)
-		{
-			if (dockState != DockState.DockLeftAutoHide && dockState != DockState.DockRightAutoHide)
-				return rect;
-
-			PointF[] pts = new PointF[1];
-			// the center of the rectangle
-			pts[0].X = (float)rect.X + (float)rect.Width / 2;
-			pts[0].Y = (float)rect.Y + (float)rect.Height / 2;
-			Rectangle rectTabStrip = GetTabStripRectangle(dockState);
-			Matrix matrix = new Matrix();
-			matrix.RotateAt(90, new PointF((float)rectTabStrip.X + (float)rectTabStrip.Height / 2,
-				(float)rectTabStrip.Y + (float)rectTabStrip.Height / 2));
-			matrix.TransformPoints(pts);
-
-			return new Rectangle((int)(pts[0].X - (float)rect.Height / 2 + .5F),
-				(int)(pts[0].Y - (float)rect.Width / 2 + .5F),
-				rect.Height, rect.Width);
-		}
-
 		internal void RefreshActiveWindow()
 		{
+			InRefreshingActiveWindow = true;
 			SetActivePane();
 			SetActiveContent();
 			SetActiveDocumentPane();
 			SetActiveDocument();
 			AutoHideWindow.RefreshActivePane();
+			InRefreshingActiveWindow = false;
+		}
+
+		internal void ReCreateAutoHideStripControl()
+		{
+			if (m_autoHideStripControl != null)
+			{
+				m_autoHideStripControl.Dispose();
+				m_autoHideStripControl = null;
+			}
+		}
+
+		internal void RefreshAutoHideStrip()
+		{
+			AutoHideStripControl.RefreshChanges();
 		}
 
 		private void RefreshMdiIntegration()

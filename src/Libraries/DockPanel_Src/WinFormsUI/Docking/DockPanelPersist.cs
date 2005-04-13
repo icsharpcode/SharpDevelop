@@ -611,31 +611,51 @@ namespace WeifenLuo.WinFormsUI
 				}
 			}
 
-			for (int i=0; i<contents.Length; i++)
-				dockPanel.Contents[i].IsHidden = contents[i].IsHidden;
-
-			if (panes.Length > 0)
+			// sort DockContent by its Pane's ZOrder
+			int[] sortedContents = null;
+			if (contents.Length > 0)
 			{
-				int[] sortedPanes = new int[panes.Length];
-				for (int i=0; i<panes.Length; i++)
-					sortedPanes[i] = i;
+				sortedContents = new int[contents.Length];
+				for (int i=0; i<contents.Length; i++)
+					sortedContents[i] = i;
 
-				for (int i=0; i<panes.Length-1; i++)
-					for (int j=i+1; j<panes.Length; j++)
-						if (panes[sortedPanes[j]].ZOrderIndex  < panes[sortedPanes[i]].ZOrderIndex)
-						{
-							int temp = sortedPanes[i];
-							sortedPanes[i] = sortedPanes[j];
-							sortedPanes[j] = temp;
-						}
-				
-				for (int i=0; i<sortedPanes.Length; i++)
+				int lastDocument = contents.Length;
+				for (int i=0; i<contents.Length - 1; i++)
 				{
-					int index = sortedPanes[i];
-					dockPanel.Panes[index].DockState = panes[index].DockState;
-					dockPanel.Panes[index].ActiveContent = panes[index].IndexActiveContent == -1 ? null : dockPanel.Contents[panes[index].IndexActiveContent];
+					for (int j=i+1; j<contents.Length; j++)
+					{
+						DockPane pane1 = dockPanel.Contents[sortedContents[i]].Pane;
+						int ZOrderIndex1 = pane1 == null ? 0 : panes[dockPanel.Panes.IndexOf(pane1)].ZOrderIndex;
+						DockPane pane2 = dockPanel.Contents[sortedContents[j]].Pane;
+						int ZOrderIndex2 = pane2 == null ? 0 : panes[dockPanel.Panes.IndexOf(pane2)].ZOrderIndex;
+						if (ZOrderIndex1 > ZOrderIndex2)
+						{
+							int temp = sortedContents[i];
+							sortedContents[i] = sortedContents[j];
+							sortedContents[j] = temp;
+						}
+					}
 				}
 			}
+
+			// show non-document DockContent first to avoid screen flickers
+			for (int i=0; i<contents.Length; i++)
+			{
+				DockContent content = dockPanel.Contents[sortedContents[i]];
+				if (content.Pane != null && content.Pane.DockState != DockState.Document)
+					content.IsHidden = contents[sortedContents[i]].IsHidden;
+			}
+
+			// after all non-document DockContent, show document DockContent
+			for (int i=0; i<contents.Length; i++)
+			{
+				DockContent content = dockPanel.Contents[sortedContents[i]];
+				if (content.Pane != null && content.Pane.DockState == DockState.Document)
+					content.IsHidden = contents[sortedContents[i]].IsHidden;
+			}
+
+			for (int i=0; i<panes.Length; i++)
+				dockPanel.Panes[i].ActiveContent = panes[i].IndexActiveContent == -1 ? null : dockPanel.Contents[panes[i].IndexActiveContent];
 
 			if (dockPanelStruct.IndexActiveDocumentPane != -1)
 				dockPanel.Panes[dockPanelStruct.IndexActiveDocumentPane].Activate();

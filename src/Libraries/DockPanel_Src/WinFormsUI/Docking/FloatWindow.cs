@@ -151,6 +151,7 @@ namespace WeifenLuo.WinFormsUI
 		protected override void OnLayout(LayoutEventArgs levent)
 		{
 			DisplayingList.Refresh();
+			RefreshChanges();
 			Visible = (DisplayingList.Count > 0);
 			SetText();
 
@@ -162,11 +163,25 @@ namespace WeifenLuo.WinFormsUI
 			DockPane theOnlyPane = (DisplayingList.Count == 1) ? DisplayingList[0] : null;
 
 			if (theOnlyPane == null)
-				Text = string.Empty;
+				Text = " ";	// use " " instead of string.Empty because the whole title bar will disappear when ControlBox is set to false.
 			else if (theOnlyPane.ActiveContent == null)
-				Text = string.Empty;
+				Text = " ";
 			else
 				Text = theOnlyPane.ActiveContent.Text;
+		}
+
+		/// <exclude/>
+		protected override void SetBoundsCore(int x, int y, int width, int height, BoundsSpecified specified)
+		{
+			Rectangle rectWorkArea = SystemInformation.WorkingArea;
+
+			if (y + height > rectWorkArea.Bottom)
+				y -= (y + height) - rectWorkArea.Bottom;
+
+			if (y < rectWorkArea.Top)
+				y += rectWorkArea.Top - y;
+
+			base.SetBoundsCore (x, y, width, height, specified);
 		}
 
 		/// <exclude/>
@@ -198,13 +213,16 @@ namespace WeifenLuo.WinFormsUI
 				
 				for (int i=DockList.Count - 1; i>=0; i--)
 				{
-					if (DockList[i].DockState != DockState.Float)
-						continue;
-
 					DockContentCollection contents = DockList[i].Contents;
 					for (int j=contents.Count - 1; j>=0; j--)
 					{
 						DockContent content = contents[j];
+						if (content.DockState != DockState.Float)
+							continue;
+
+						if (!content.CloseButton)
+							continue;
+
 						if (content.HideOnClose)
 							content.Hide();
 						else
@@ -245,6 +263,33 @@ namespace WeifenLuo.WinFormsUI
 			}
 
 			base.WndProc(ref m);
+		}
+
+		internal void RefreshChanges()
+		{
+			if (DisplayingList.Count == 0)
+			{
+				ControlBox = true;
+				return;
+			}
+
+			for (int i=DisplayingList.Count - 1; i>=0; i--)
+			{
+				DockContentCollection contents = DisplayingList[i].Contents;
+				for (int j=contents.Count - 1; j>=0; j--)
+				{
+					DockContent content = contents[j];
+					if (content.DockState != DockState.Float)
+						continue;
+
+					if (content.CloseButton)
+					{
+						ControlBox = true;
+						return;
+					}
+				}
+			}
+			ControlBox = false;
 		}
 
 		/// <include file='CodeDoc\FloatWindow.xml' path='//CodeDoc/Class[@name="FloatWindow"]/Property[@name="DisplayingRectangle"]/*'/>

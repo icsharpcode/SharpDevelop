@@ -75,6 +75,18 @@
     <Compile Include="Controls\InertButton.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Docking\AutoHidePane.cs" />
+    <Compile Include="Docking\AutoHidePaneCollection.cs" />
+    <Compile Include="Docking\AutoHideStateCollection.cs" />
+    <Compile Include="Docking\AutoHideStripBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\AutoHideStripVS2003.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\AutoHideTab.cs" />
+    <Compile Include="Docking\AutoHideTabCollection.cs" />
+    <Compile Include="Docking\AutoHideTabVS2003.cs" />
     <Compile Include="Docking\AutoHideWindow.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -102,18 +114,34 @@
     <Compile Include="Docking\DockPane.cs">
       <SubType>UserControl</SubType>
     </Compile>
+    <Compile Include="Docking\DockPaneCaptionBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPaneCaptionVS2003.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="Docking\DockPaneCollection.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Docking\DockPanel.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Docking\DockPanelExtender.cs" />
     <Compile Include="Docking\DockPanelPersist.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="Docking\DockPaneSplitter.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Docking\DockPaneStripBase.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPaneStripVS2003.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Docking\DockPaneTab.cs" />
+    <Compile Include="Docking\DockPaneTabCollection.cs" />
+    <Compile Include="Docking\DockPaneTabVS2003.cs" />
     <Compile Include="Docking\DockWindow.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -183,30 +211,30 @@
     <Compile Include="Win32\User32.cs">
       <SubType>Code</SubType>
     </Compile>
-    <EmbeddedResource Include="Resources\DockPane.AutoHideNo.bmp" />
-    <EmbeddedResource Include="Resources\DockPane.AutoHideYes.bmp" />
-    <EmbeddedResource Include="Resources\DockPane.DocumentCloseDisabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPane.DocumentCloseEnabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPane.ScrollLeftDisabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPane.ScrollLeftEnabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPane.ScrollRightDisabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPane.ScrollRightEnabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPane.ToolWindowCloseDisabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPane.ToolWindowCloseEnabled.bmp" />
     <EmbeddedResource Include="Strings.resX" />
-    <None Include="..\..\..\Main\Core\Project\Resources\ICSharpCode.Core.snk">
-      <Link>ICSharpCode.Core.snk</Link>
-    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Controls\CodeDoc\InertButton.xml" />
+    <Content Include="Docking\CodeDoc\AutoHidePane.xml" />
+    <Content Include="Docking\CodeDoc\AutoHidePaneCollection.xml" />
+    <Content Include="Docking\CodeDoc\AutoHideStripBase.xml" />
+    <Content Include="Docking\CodeDoc\AutoHideStripVS2003.xml" />
+    <Content Include="Docking\CodeDoc\AutoHideTab.xml" />
+    <Content Include="Docking\CodeDoc\AutoHideTabCollection.xml" />
     <Content Include="Docking\CodeDoc\DisplayingDockList.xml" />
     <Content Include="Docking\CodeDoc\DockContent.xml" />
     <Content Include="Docking\CodeDoc\DockContentCollection.xml" />
     <Content Include="Docking\CodeDoc\DockList.xml" />
     <Content Include="Docking\CodeDoc\DockPane.xml" />
+    <Content Include="Docking\CodeDoc\DockPaneCaptionBase.xml" />
+    <Content Include="Docking\CodeDoc\DockPaneCaptionVS2003.xml" />
     <Content Include="Docking\CodeDoc\DockPaneCollection.xml" />
     <Content Include="Docking\CodeDoc\DockPanel.xml" />
+    <Content Include="Docking\CodeDoc\DockPanelExtender.xml" />
+    <Content Include="Docking\CodeDoc\DockPaneStripBase.xml" />
+    <Content Include="Docking\CodeDoc\DockPaneStripVS2003.xml" />
+    <Content Include="Docking\CodeDoc\DockPaneTab.xml" />
+    <Content Include="Docking\CodeDoc\DockPaneTabCollection.xml" />
     <Content Include="Docking\CodeDoc\DockWindow.xml" />
     <Content Include="Docking\CodeDoc\DockWindowCollection.xml" />
     <Content Include="Docking\CodeDoc\Enums.xml" />
@@ -215,6 +243,16 @@
     <Content Include="Docking\CodeDoc\FloatWindowCollection.xml" />
     <Content Include="Docking\CodeDoc\Interfaces.xml" />
     <Content Include="Docking\CodeDoc\NestedDockingStatus.xml" />
+    <EmbeddedResource Include="Resources\DockPaneCaption.AutoHideNo.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneCaption.AutoHideYes.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneCaption.CloseDisabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneCaption.CloseEnabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneStrip.CloseDisabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneStrip.CloseEnabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneStrip.ScrollLeftDisabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneStrip.ScrollLeftEnabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneStrip.ScrollRightDisabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneStrip.ScrollRightEnabled.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Configuration\" />

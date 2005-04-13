@@ -44,7 +44,25 @@ namespace WeifenLuo.WinFormsUI
 					Cursor = Cursors.HSplit;
 				else
 					Cursor = Cursors.Default;
+			
+				if (DockPane.DockState == DockState.Document)
+					Invalidate();
 			}
+		}
+
+		protected override void OnPaint(PaintEventArgs e)
+		{
+			base.OnPaint(e);
+
+			if (DockPane.DockState != DockState.Document)
+				return;
+
+			Graphics g = e.Graphics;
+			Rectangle rect = ClientRectangle;
+			if (Alignment == DockAlignment.Top || Alignment == DockAlignment.Bottom)
+				g.DrawLine(SystemPens.ControlDark, rect.Left, rect.Bottom - 1, rect.Right, rect.Bottom - 1);
+			else if (Alignment == DockAlignment.Left || Alignment == DockAlignment.Right)
+				g.DrawLine(SystemPens.ControlDarkDark, rect.Right - 1, rect.Top, rect.Right - 1, rect.Bottom);
 		}
 
 		protected override void OnMouseDown(MouseEventArgs e)
