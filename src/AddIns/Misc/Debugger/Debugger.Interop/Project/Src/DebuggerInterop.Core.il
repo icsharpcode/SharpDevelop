@@ -1,5 +1,5 @@
 
-//  Microsoft (R) .NET Framework IL Disassembler.  Version 2.0.41115.19
+//  Microsoft (R) .NET Framework IL Disassembler.  Version 2.0.50215.44
 //  Copyright (C) Microsoft Corporation. All rights reserved.
 
 
@@ -193,177 +193,177 @@
                                                                                                   2D 31 31 44 33 2D 38 44 35 42 2D 30 30 31 30 34   // -11D3-8D5B-00104
                                                                                                   42 33 35 45 37 45 46 00 00 )                      // B35E7EF..
   .custom instance void [mscorlib]System.Runtime.InteropServices.InterfaceTypeAttribute::.ctor(int16) = ( 01 00 01 00 00 00 ) 
-    .method public hidebysig newslot abstract virtual 
-            instance void  Breakpoint([in] native int pAppDomain,
+  .method public hidebysig newslot abstract virtual 
+          instance void  Breakpoint([in] native int pAppDomain,
+                                    [in] native int pThread,
+                                    [in] native int pBreakpoint) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::Breakpoint
+
+  .method public hidebysig newslot abstract virtual 
+          instance void  StepComplete([in] native int pAppDomain,
                                       [in] native int pThread,
-                                      [in] native int pBreakpoint) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::Breakpoint
+                                      [in] native int pStepper,
+                                      [in] valuetype DebuggerInterop.Core.CorDebugStepReason reason) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::StepComplete
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  StepComplete([in] native int pAppDomain,
-                                        [in] native int pThread,
-                                        [in] native int pStepper,
-                                        [in] valuetype DebuggerInterop.Core.CorDebugStepReason reason) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::StepComplete
+  .method public hidebysig newslot abstract virtual 
+          instance void  Break([in] native int pAppDomain,
+                               [in] native int thread) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::Break
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  Break([in] native int pAppDomain,
-                                 [in] native int thread) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::Break
+  .method public hidebysig newslot abstract virtual 
+          instance void  Exception([in] native int pAppDomain,
+                                   [in] native int pThread,
+                                   [in] int32 unhandled) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::Exception
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  Exception([in] native int pAppDomain,
+  .method public hidebysig newslot abstract virtual 
+         instance void  EvalComplete([in] native int pAppDomain,
                                      [in] native int pThread,
-                                     [in] int32 unhandled) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::Exception
+                                     [in] native int pEval) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::EvalComplete
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  EvalComplete([in] native int pAppDomain,
-                                        [in] native int pThread,
-                                        [in] native int pEval) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::EvalComplete
+  .method public hidebysig newslot abstract virtual 
+          instance void  EvalException([in] native int pAppDomain,
+                                       [in] native int pThread,
+                                       [in] native int pEval) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::EvalException
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  EvalException([in] native int pAppDomain,
-                                         [in] native int pThread,
-                                         [in] native int pEval) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::EvalException
+  .method public hidebysig newslot abstract virtual 
+          instance void  CreateProcess([in] native int pProcess) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::CreateProcess
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  CreateProcess([in] native int pProcess) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::CreateProcess
+  .method public hidebysig newslot abstract virtual 
+          instance void  ExitProcess([in] native int pProcess) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::ExitProcess
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  ExitProcess([in] native int pProcess) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::ExitProcess
-
-    .method public hidebysig newslot abstract virtual 
-            instance void  CreateThread([in] native int pAppDomain,
-                                        [in] native int thread) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::CreateThread
-
-    .method public hidebysig newslot abstract virtual 
-            instance void  ExitThread([in] native int pAppDomain,
+  .method public hidebysig newslot abstract virtual 
+          instance void  CreateThread([in] native int pAppDomain,
                                       [in] native int thread) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::ExitThread
+  {
+  } // end of method ICorDebugManagedCallback::CreateThread
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  LoadModule([in] native int pAppDomain,
+  .method public hidebysig newslot abstract virtual 
+          instance void  ExitThread([in] native int pAppDomain,
+                                    [in] native int thread) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::ExitThread
+
+  .method public hidebysig newslot abstract virtual 
+          instance void  LoadModule([in] native int pAppDomain,
+                                    [in] native int pModule) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::LoadModule
+
+  .method public hidebysig newslot abstract virtual 
+          instance void  UnloadModule([in] native int pAppDomain,
                                       [in] native int pModule) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::LoadModule
+  {
+  } // end of method ICorDebugManagedCallback::UnloadModule
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  UnloadModule([in] native int pAppDomain,
-                                        [in] native int pModule) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::UnloadModule
+  .method public hidebysig newslot abstract virtual 
+          instance void  LoadClass([in] native int pAppDomain,
+                                   [in] native int c) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::LoadClass
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  LoadClass([in] native int pAppDomain,
+  .method public hidebysig newslot abstract virtual 
+          instance void  UnloadClass([in] native int pAppDomain,
                                      [in] native int c) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::LoadClass
+  {
+  } // end of method ICorDebugManagedCallback::UnloadClass
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  UnloadClass([in] native int pAppDomain,
-                                       [in] native int c) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::UnloadClass
+  .method public hidebysig newslot abstract virtual 
+          instance void  DebuggerError([in] native int pProcess,
+                                       [in] int32  marshal( error) errorHR,
+                                       [in] unsigned int32 errorCode) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::DebuggerError
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  DebuggerError([in] native int pProcess,
-                                         [in] int32  marshal( error) errorHR,
-                                         [in] unsigned int32 errorCode) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::DebuggerError
+  .method public hidebysig newslot abstract virtual 
+          instance void  LogMessage([in] native int pAppDomain,
+                                    [in] native int pThread,
+                                    [in] int32 lLevel,
+                                    [in] native int pLogSwitchName,
+                                    [in] native int pMessage) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::LogMessage
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  LogMessage([in] native int pAppDomain,
-                                      [in] native int pThread,
-                                      [in] int32 lLevel,
-                                      [in] native int pLogSwitchName,
-                                      [in] native int pMessage) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::LogMessage
+  .method public hidebysig newslot abstract virtual 
+          instance void  LogSwitch([in] native int pAppDomain,
+                                   [in] native int pThread,
+                                   [in] int32 lLevel,
+                                   [in] unsigned int32 ulReason,
+                                   [in] native int pLogSwitchName,
+                                   [in] native int pParentName) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::LogSwitch
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  LogSwitch([in] native int pAppDomain,
-                                     [in] native int pThread,
-                                     [in] int32 lLevel,
-                                     [in] unsigned int32 ulReason,
-                                     [in] native int pLogSwitchName,
-                                     [in] native int pParentName) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::LogSwitch
-
-    .method public hidebysig newslot abstract virtual 
-            instance void  CreateAppDomain([in] native int pProcess,
-                                           [in] native int pAppDomain) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::CreateAppDomain
-
-    .method public hidebysig newslot abstract virtual 
-            instance void  ExitAppDomain([in] native int pProcess,
+  .method public hidebysig newslot abstract virtual 
+          instance void  CreateAppDomain([in] native int pProcess,
                                          [in] native int pAppDomain) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::ExitAppDomain
+  {
+  } // end of method ICorDebugManagedCallback::CreateAppDomain
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  LoadAssembly([in] native int pAppDomain,
+  .method public hidebysig newslot abstract virtual 
+          instance void  ExitAppDomain([in] native int pProcess,
+                                       [in] native int pAppDomain) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::ExitAppDomain
+
+  .method public hidebysig newslot abstract virtual 
+          instance void  LoadAssembly([in] native int pAppDomain,
+                                      [in] native int pAssembly) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::LoadAssembly
+
+  .method public hidebysig newslot abstract virtual 
+          instance void  UnloadAssembly([in] native int pAppDomain,
                                         [in] native int pAssembly) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::LoadAssembly
+  {
+  } // end of method ICorDebugManagedCallback::UnloadAssembly
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  UnloadAssembly([in] native int pAppDomain,
-                                          [in] native int pAssembly) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::UnloadAssembly
+  .method public hidebysig newslot abstract virtual 
+         instance void  ControlCTrap([in] native int pProcess) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::ControlCTrap
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  ControlCTrap([in] native int pProcess) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::ControlCTrap
+  .method public hidebysig newslot abstract virtual 
+          instance void  NameChange([in] native int pAppDomain,
+                                    [in] native int pThread) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::NameChange
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  NameChange([in] native int pAppDomain,
-                                      [in] native int pThread) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::NameChange
+  .method public hidebysig newslot abstract virtual 
+          instance void  UpdateModuleSymbols([in] native int pAppDomain,
+                                             [in] native int pModule,
+                                             [in] native int pSymbolStream) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::UpdateModuleSymbols
 
-    .method public hidebysig newslot abstract virtual 
-            instance void  UpdateModuleSymbols([in] native int pAppDomain,
-                                               [in] native int pModule,
-                                               [in] native int pSymbolStream) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::UpdateModuleSymbols
-
-    .method public hidebysig newslot abstract virtual 
-            instance void  EditAndContinueRemap([in] native int pAppDomain,
-                                                [in] native int pThread,
-                                                [in] native int pFunction,
-                                                [in] int32 fAccurate) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::EditAndContinueRemap
-
-    .method public hidebysig newslot abstract virtual 
-            instance void  BreakpointSetError([in] native int pAppDomain,
+  .method public hidebysig newslot abstract virtual 
+          instance void  EditAndContinueRemap([in] native int pAppDomain,
                                               [in] native int pThread,
-                                              [in] native int pBreakpoint,
-                                              [in] unsigned int32 dwError) runtime managed internalcall
-    {
-    } // end of method ICorDebugManagedCallback::BreakpointSetError
+                                              [in] native int pFunction,
+                                              [in] int32 fAccurate) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::EditAndContinueRemap
+
+  .method public hidebysig newslot abstract virtual 
+          instance void  BreakpointSetError([in] native int pAppDomain,
+                                            [in] native int pThread,
+                                            [in] native int pBreakpoint,
+                                            [in] unsigned int32 dwError) runtime managed internalcall
+  {
+  } // end of method ICorDebugManagedCallback::BreakpointSetError
 
 } // end of class DebuggerInterop.Core.ICorDebugManagedCallback
 
@@ -1044,9 +1044,9 @@
   } // end of method ICorDebugStepper::Step
 
   .method public hidebysig newslot abstract virtual 
-            instance void  StepRange([in] int32 bStepIn,
-                                     [in] native int ranges,
-                                     [in] unsigned int32 cRangeCount) runtime managed internalcall
+          instance void  StepRange([in] int32 bStepIn,
+                                   [in] native int ranges,
+                                   [in] unsigned int32 cRangeCount) runtime managed internalcall
   {
   } // end of method ICorDebugStepper::StepRange
 
@@ -3017,6 +3017,7 @@
   .field public static literal valuetype DebuggerInterop.Core.CorDebugInternalFrameType STUBFRAME_APPDOMAIN_TRANSITION = int32(0x00000003)
   .field public static literal valuetype DebuggerInterop.Core.CorDebugInternalFrameType STUBFRAME_LIGHTWEIGHT_FUNCTION = int32(0x00000004)
   .field public static literal valuetype DebuggerInterop.Core.CorDebugInternalFrameType STUBFRAME_FUNC_EVAL = int32(0x00000005)
+  .field public static literal valuetype DebuggerInterop.Core.CorDebugInternalFrameType STUBFRAME_INTERNALCALL = int32(0x00000006)
 } // end of class DebuggerInterop.Core.CorDebugInternalFrameType
 
 .class interface public abstract auto ansi import DebuggerInterop.Core.ICorDebugNativeFrame
@@ -3344,7 +3345,6 @@
        extends [mscorlib]System.Enum
 {
   .field public specialname rtspecialname int32 value__
-  .field public static literal valuetype DebuggerInterop.Core.CorDebugMDAFlags MDA_FLAG_SEVERE = int32(0x00000001)
   .field public static literal valuetype DebuggerInterop.Core.CorDebugMDAFlags MDA_FLAG_SLIP = int32(0x00000002)
 } // end of class DebuggerInterop.Core.CorDebugMDAFlags
 
