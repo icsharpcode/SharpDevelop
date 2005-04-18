@@ -1,5 +1,5 @@
 // <file>
-//     <owner name="David Srbecký" email="dsrbecky@post.cz"/>
+//     <owner name="David Srbeck" email="dsrbecky@post.cz"/>
 // </file>
 
 using System;

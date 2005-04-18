@@ -16,9 +16,6 @@ namespace ICSharpCode.Core
 {
 	public class WindowActiveAuswerter : IAuswerter
 	{
-		Type prevType      = null;
-		bool prevValidFlag = false;
-		
 		public bool IsValid(object caller, Condition condition)
 		{
 			if (WorkbenchSingleton.Workbench == null) {

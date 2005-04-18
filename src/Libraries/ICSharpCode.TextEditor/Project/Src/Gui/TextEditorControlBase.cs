@@ -667,10 +667,7 @@ namespace ICSharpCode.TextEditor
 			try {
 				if (File.Exists(fileName)) {
 					string backupName = fileName + ".bak";
-					if (File.Exists(backupName)) {
-						File.Delete(backupName);
-					}
-					File.Copy(fileName, backupName);
+					File.Copy(fileName, backupName, true);
 				}
 			} catch (Exception) {
 //				

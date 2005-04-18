@@ -81,6 +81,12 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public Task(string fileName, string description, int column, int line, TaskType type, IProject project)
+			: this(fileName, description, column, line, type)
+		{
+			this.project = project;
+		}
+		
 		public Task(string fileName, string description, int column, int line, TaskType type)
 		{
 			this.type        = type;

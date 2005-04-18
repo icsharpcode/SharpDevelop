@@ -164,6 +164,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			base.OnKeyPress(e);
 			if (e.KeyChar == '\r') {
 				ActivateSelectedItem();
+				e.Handled = true;
 			}
 		}
 		

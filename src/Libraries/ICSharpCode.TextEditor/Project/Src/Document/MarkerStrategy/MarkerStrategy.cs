@@ -75,9 +75,8 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public List<TextMarker> GetMarkers(Point position)
 		{
-			List<TextMarker> markers = new List<TextMarker>();
 			if (position.Y >= document.TotalNumberOfLines || position.Y < 0) {
-				return markers;
+				return new List<TextMarker>();
 			}
 			LineSegment segment = document.GetLineSegment(position.Y);
 			return GetMarkers(segment.Offset + position.X);

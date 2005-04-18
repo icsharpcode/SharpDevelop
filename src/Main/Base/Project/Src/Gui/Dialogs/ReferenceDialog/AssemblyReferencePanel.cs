@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void AddReference(object sender, EventArgs e)
 		{
-			MessageBox.Show("This panel will contain a file browser, but so long use the browse button :)");
+			SelectReferenceDialog(null, null);
 		}
 	}
 }

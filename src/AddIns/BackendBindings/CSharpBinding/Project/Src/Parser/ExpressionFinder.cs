@@ -30,6 +30,9 @@ namespace CSharpBinding.Parser
 				}
 			}
 			
+			if (lastAccept < 0)
+				return null;
+			
 			return this.text.Substring(this.lastAccept + 1, offset - this.lastAccept);
 		}
 		
