@@ -93,7 +93,7 @@ namespace DebuggerLibrary
 		
 		~NDebugger() //TODO
 		{
-			corDebug.Terminate();
+			//corDebug.Terminate();
 			Marshal.FreeHGlobal(pString);
 		}
 
