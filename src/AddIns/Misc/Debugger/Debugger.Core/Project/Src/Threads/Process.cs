@@ -110,13 +110,13 @@ namespace DebuggerLibrary
 				fixed (uint* pprocessInfo = processInfo)
 					NDebugger.CorDebug.CreateProcess(
 						filename,   // lpApplicationName
-						null,                       // lpCommandLine
+						arguments,                       // lpCommandLine
 						ref secAttr,                       // lpProcessAttributes
 						ref secAttr,                      // lpThreadAttributes
 						1,//TRUE                    // bInheritHandles
 						0,                          // dwCreationFlags
 						IntPtr.Zero,                       // lpEnvironment
-						null,                       // lpCurrentDirectory
+                        workingDirectory,                       // lpCurrentDirectory
 						(uint)pprocessStartupInfo,        // lpStartupInfo
 						(uint)pprocessInfo,               // lpProcessInformation,
 						CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS,   // debuggingFlags
