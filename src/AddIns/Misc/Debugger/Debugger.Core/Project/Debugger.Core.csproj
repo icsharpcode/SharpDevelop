@@ -24,6 +24,7 @@
     <Optimize>true</Optimize>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Debugger.Interop, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
