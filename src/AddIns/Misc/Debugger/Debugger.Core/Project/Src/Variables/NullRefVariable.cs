@@ -21,7 +21,7 @@ namespace DebuggerLibrary
 		{
 			get
 			{
-				switch (corType)
+				switch (CorType)
 				{
 					case CorElementType.SZARRAY:
 					case CorElementType.ARRAY: return typeof(System.Array).ToString();

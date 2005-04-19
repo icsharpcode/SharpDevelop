@@ -95,17 +95,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			e.Item.Items.Clear();
 
 			ObjectVariable var = e.Item.Tag as ObjectVariable;
-			if (var != null && var.HasBaseClass && var.BaseClass.Type != "System.Object")
+			/*if (var != null && var.HasBaseClass && var.BaseClass.Type != "System.Object")
 			{
 				TreeListViewItem newItem = new TreeListViewItem();
-				newItem.Text = "<Base class>";
+				newItem.Text = "Base class";
 				newItem.SubItems.Add(var.BaseClass.Value.ToString());
 				newItem.SubItems.Add(var.BaseClass.Type);
 				newItem.Tag = var.BaseClass;
 				newItem.ImageIndex = 0; // Class
 				newItem.Items.Add(""); // Show plus icon
 				e.Item.Items.Add(newItem);
-			}
+			}*/
 			AddVariables(e.Item.Items, ((Variable)e.Item.Tag).SubVariables);
 
 			localVarList.EndUpdate();
@@ -132,21 +132,37 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			RefreshVariable((Variable)sender);
 		}		
-		
+
 		void RefreshVariable (Variable var)
 		{
-			foreach (TreeListViewItem item in localVarList.Items) {
+			RefreshVariableInItemConnection(var, localVarList.Items);
+		}
+		
+		void RefreshVariableInItemConnection (Variable var, TreeListViewItemCollection items)
+		{
+			foreach (TreeListViewItem item in items) {
+				// Refresh in sub trees
+				RefreshVariableInItemConnection(var, item.Items);
+
 				if (item.Tag == var) {
-					item.SubItems[1].Text = var.Value.ToString();
+					if (item.SubItems[1].Text == null) {
+						item.SubItems[1].Text = var.Value.ToString();
+					}
 					item.SubItems[2].Text = var.Type;
 					item.Items.Clear();
 					if (var is ObjectVariable && ((ObjectVariable)var).HasBaseClass) {
 						// It is a class
 						item.ImageIndex = 0; // Class
 						item.Items.Add(""); // Show plus icon
+
+						object devNull = (var as ObjectVariable).SubVariables; // Cache variables TODO: LAME
+
 					} else if (var is PropertyVariable){
 						// It is a property
 						item.ImageIndex = 2; // Property
+						if ((var as PropertyVariable).IsEvaluated && (var as PropertyVariable).Value is ObjectVariable) {
+							item.Items.Add(""); // Show plus icon
+						}
 					} else {
 						item.ImageIndex = 1; // Field
 					}

@@ -15,7 +15,7 @@ namespace DebuggerLibrary
 		{ 
 			get
 			{
-				if (corType == CorElementType.STRING)
+				if (CorType == CorElementType.STRING)
 				{
 					((ICorDebugStringValue)corValue).GetString(NDebugger.pStringLen,
 					                                           out NDebugger.unused,
@@ -26,7 +26,7 @@ namespace DebuggerLibrary
 				object retValue;
 				IntPtr pValue = Marshal.AllocHGlobal(8);
 				((ICorDebugGenericValue)corValue).GetValue(pValue);
-				switch(corType)
+				switch(CorType)
 				{
 					case CorElementType.BOOLEAN: retValue =  *((System.Boolean*)pValue); break;
 					case CorElementType.CHAR: retValue =  *((System.Char*)pValue); break;

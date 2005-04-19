@@ -15,6 +15,7 @@ namespace DebuggerLibrary
 		readonly string name;
 		protected ICorDebugValue corValue;
 		VariableCollection subVariables;
+		CorElementType? corType;
 
 
 		public string Name { 
@@ -27,15 +28,18 @@ namespace DebuggerLibrary
 			get; 
 		}
 		
-		internal CorElementType corType {
+		internal CorElementType CorType {
 			get {
-				return GetCorType(corValue);
+				if (!corType.HasValue) {
+					corType = GetCorType(corValue);
+				}
+				return corType.Value;
 			}
 		}
 		
 		public virtual string Type { 
 			get{ 
-				return CorTypeToString(corType); 
+				return CorTypeToString(CorType); 
 			}	
 		}
 
