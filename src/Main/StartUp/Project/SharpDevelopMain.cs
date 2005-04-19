@@ -83,11 +83,15 @@ namespace ICSharpCode.SharpDevelop
 		[STAThread()]
 		public static void Main(string[] args)
 		{
-			try {
+			if (Debugger.IsAttached) {
 				Run(args);
-			} catch (Exception ex) {
-				Console.WriteLine(ex);
-				Application.Run(new ExceptionBox(ex));
+			} else {
+				try {
+					Run(args);
+				} catch (Exception ex) {
+					Console.WriteLine(ex);
+					Application.Run(new ExceptionBox(ex));
+				}
 			}
 		}
 		
@@ -110,7 +114,9 @@ namespace ICSharpCode.SharpDevelop
 				SplashScreenForm.SplashScreen.Show();
 			}
 			
-			Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
+			if (!Debugger.IsAttached) {
+				Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
+			}
 			
 //	TODO:
 //			bool ignoreDefaultPath = false;
