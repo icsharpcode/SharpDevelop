@@ -1,5 +1,5 @@
 // <file>
-//     <owner name="David Srbecký" email="dsrbecky@post.cz"/>
+//     <owner name="David Srbeck" email="dsrbecky@post.cz"/>
 // </file>
 
 using System;
@@ -308,6 +308,7 @@ namespace DebuggerLibrary
 
 		static public Thread CurrentThread {
 			get {
+				if (!IsDebugging) return null;
 				return CurrentProcess.CurrentThread;
 			}
 			set {
@@ -317,6 +318,7 @@ namespace DebuggerLibrary
 
 		static public Thread MainThread {
 			get {
+				if (!IsDebugging) return null;
 				return CurrentProcess.MainThread;
 			}
 			set {
@@ -325,13 +327,15 @@ namespace DebuggerLibrary
 		}
 
 		static public SourcecodeSegment NextStatement { 
-			get{
+			get {
+				if (!IsDebugging) return null;
 				return CurrentProcess.NextStatement;
 			}
 		}
 
 		static public VariableCollection LocalVariables { 
-			get{
+			get {
+				if (!IsDebugging) return null;
 				return CurrentProcess.LocalVariables;
 			}
 		}

@@ -66,7 +66,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static bool IsProcessRuning {
+		public static bool IsProcessRunning {
 			get {
 				if (standardProcess != null) {
 					return isRunning;
@@ -175,7 +175,7 @@ namespace ICSharpCode.Core
 		
 		public static void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)
 		{
-			if (IsProcessRuning) {
+			if (IsProcessRunning) {
 				return;
 			}
 			try {
@@ -200,7 +200,7 @@ namespace ICSharpCode.Core
 		
 		public static void Start(string fileName, string workingDirectory, string arguments)
 		{
-			if (IsProcessRuning) {
+			if (IsProcessRunning) {
 				return;
 			}
 			oldLayoutConfiguration = LayoutConfiguration.CurrentLayoutName;
@@ -548,7 +548,9 @@ namespace ICSharpCode.Core
 						if (expression != null && expression.Length > 0) {
 							if (expression == oldExpression && oldLine == logicPos.Y) {
 								// same expression in same line -> reuse old tooltip
-								textArea.SetToolTip(oldToolTip);
+								if (oldToolTip != null) {
+									textArea.SetToolTip(oldToolTip);
+								}
 								// SetToolTip must be called in every mousemove event,
 								// otherwise textArea will close the tooltip.
 							} else {
@@ -586,10 +588,21 @@ namespace ICSharpCode.Core
 				ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedNames
 					| ConversionFlags.ShowReturnType
 					| ConversionFlags.QualifiedNamesOnlyForReturnTypes;
+				StringBuilder b = new StringBuilder();
 				if (rr.IsParameter)
-					return "parameter " + ambience.Convert(rr.Field);
+					b.Append("parameter ");
 				else
-					return "local variable " + ambience.Convert(rr.Field);
+					b.Append("local variable ");
+				b.Append(ambience.Convert(rr.Field));
+				IDebugger debugger = CurrentDebugger;
+				if (debugger != null) {
+					string currentValue = debugger.GetValueAsString(rr.Field.Name);
+					if (currentValue != null) {
+						b.Append(" = ");
+						b.Append(currentValue);
+					}
+				}
+				return b.ToString();
 			} else if (result is NamespaceResolveResult) {
 				return "namespace " + ((NamespaceResolveResult)result).Name;
 			} else if (result is TypeResolveResult) {

@@ -19,7 +19,7 @@ namespace ICSharpCode.Core
 			bool isprocessrunning = Boolean.Parse(condition.Properties["isprocessrunning"]);
 			string isDebugging = condition.Properties.Get("isdebugging", String.Empty);
 			IDebugger debugger = DebuggerService.CurrentDebugger;
-			return isprocessrunning == DebuggerService.IsProcessRuning && 
+			return isprocessrunning == DebuggerService.IsProcessRunning && 
 				   (isDebugging == String.Empty || 
 				    DebuggerService.IsDebugging == Boolean.Parse(isDebugging)
 				   );

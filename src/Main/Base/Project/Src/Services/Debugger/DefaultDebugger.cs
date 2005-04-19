@@ -134,5 +134,13 @@ namespace ICSharpCode.Core
 		}
 		
 		public event EventHandler DebugStopped;
+		
+		/// <summary>
+		/// Gets the current value of the variable as string that can be displayed in tooltips.
+		/// </summary>
+		public string GetValueAsString(string variable)
+		{
+			return null;
+		}
 	}
 }

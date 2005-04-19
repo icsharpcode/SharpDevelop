@@ -55,9 +55,6 @@ namespace ICSharpCode.TextEditor
 		SelectionManager selectionManager;
 		Caret            caret;
 		
-		ToolTip toolTip = new ToolTip();
-		bool toolTipSet = false;
-		
 		public TextEditorControl MotherTextEditorControl {
 			get {
 				return motherTextEditorControl;
@@ -296,18 +293,22 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		string oldToolTip;
+		
+		// static because the mouse can only be in one text area and we don't want to have
+		// tooltips of text areas from inactive tabs floating around.
+		static ToolTip toolTip;
+		static string oldToolTip;
+		bool toolTipSet;
+		
 		public void SetToolTip(string text)
 		{
+			if (toolTip == null) toolTip = new ToolTip();
 			toolTipSet = (text != null);
 			if (oldToolTip == text)
 				return;
-			ToolTip toolTip = this.toolTip;
 			if (text == null) {
-				//Console.WriteLine("Tooltip disabled");
-				toolTip.Hide(this.FindForm());
+				toolTip.Hide(this);
 			} else {
-				//Console.WriteLine("Tooltip set to " + text);
 				Point p = PointToClient(Control.MousePosition);
 				p.Offset(3, 3);
 				toolTip.Show(text, this, p);
@@ -696,7 +697,6 @@ namespace ICSharpCode.TextEditor
 			base.Dispose(disposing);
 			if (disposing) {
 				Caret.Dispose();
-				toolTip.Dispose();
 			}
 		}
 		

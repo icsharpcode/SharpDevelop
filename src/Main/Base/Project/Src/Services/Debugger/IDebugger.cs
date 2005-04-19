@@ -66,5 +66,10 @@ namespace ICSharpCode.Core
 		void StepOut();
 		
 		event EventHandler DebugStopped;
+		
+		/// <summary>
+		/// Gets the current value of the variable as string that can be displayed in tooltips.
+		/// </summary>
+		string GetValueAsString(string variable);
 	}
 }

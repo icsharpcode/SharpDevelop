@@ -341,6 +341,28 @@ namespace ICSharpCode.SharpDevelop.Services
 			//if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
 			//	  WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent.RedrawContent();
 			//}
-		}		
+		}
+		
+		/// <summary>
+		/// Gets the current value of the variable as string that can be displayed in tooltips.
+		/// </summary>
+		public string GetValueAsString(string variableName)
+		{
+			VariableCollection collection = NDebugger.LocalVariables;
+			if (collection == null)
+				return null;
+			foreach (Variable v in collection) {
+				if (v.Name == variableName) {
+					object val = v.Value;
+					if (val == null)
+						return "<null>";
+					else if (val is string)
+						return "\"" + val.ToString() + "\"";
+					else
+						return val.ToString();
+				}
+			}
+			return null;
+		}
 	}	
 }
