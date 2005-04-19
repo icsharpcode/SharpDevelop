@@ -43,9 +43,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void InitializeComponents()
 		{
+			ImageList imageList = new ImageList();
+			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.Class"));
+			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.Field"));
+			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.Property"));
+
 			//iconsService = (ClassBrowserIconsService)ServiceManager.Services.GetService(typeof(ClassBrowserIconsService));
 			localVarList = new TreeListView();
-			localVarList.SmallImageList = null;//iconsService.ImageList;
+			localVarList.SmallImageList = imageList;
 			localVarList.ShowPlusMinus = true;
 			localVarList.FullRowSelect = true;
 			localVarList.Dock = DockStyle.Fill;
@@ -97,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				newItem.SubItems.Add(var.BaseClass.Value.ToString());
 				newItem.SubItems.Add(var.BaseClass.Type);
 				newItem.Tag = var.BaseClass;
-				newItem.ImageIndex = 0;//iconsService.ClassIndex;
+				newItem.ImageIndex = 0; // Class
 				newItem.Items.Add(""); // Show plus icon
 				e.Item.Items.Add(newItem);
 			}
@@ -136,9 +141,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					item.SubItems[2].Text = var.Type;
 					item.Items.Clear();
 					if (var is ObjectVariable && ((ObjectVariable)var).HasBaseClass) {
+						// It is a class
+						item.ImageIndex = 0; // Class
 						item.Items.Add(""); // Show plus icon
+					} else if (var is PropertyVariable){
+						// It is a property
+						item.ImageIndex = 2; // Property
+					} else {
+						item.ImageIndex = 1; // Field
 					}
-					//item.ImageIndex = iconsService.FieldIndex;
 				}
 			}
 		}
