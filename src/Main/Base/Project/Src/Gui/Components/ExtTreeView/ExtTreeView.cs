@@ -141,6 +141,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 				((ExtTreeNode)e.Node).Expanding();
 			}
 			SortNodes(e.Node);
+			if (e.Node.Nodes.Count == 0) {
+				// when the node's subnodes have been removed by Expanding, AfterExpand is not called
+				inRefresh = false;
+				EndUpdate();
+			}
 		}
 		
 		protected override void OnAfterExpand(TreeViewEventArgs e)

@@ -85,7 +85,9 @@ namespace CSharpBinding.FormattingStrategy
 		
 		public void Step(IDocumentAccessor doc, IndentationSettings set)
 		{
-			string line = doc.Text.TrimStart();
+			string line = doc.Text;
+			if (line.Length == 0) return; // leave empty lines empty
+			line = line.TrimStart();
 			
 			StringBuilder indent = new StringBuilder();
 			if (line.Length == 0) {
@@ -273,7 +275,7 @@ namespace CSharpBinding.FormattingStrategy
 			
 			if (startInString) return;
 			if (startInComment && line[0] != '*') return;
-			if (doc.Text.StartsWith("//\t"))
+			if (doc.Text.StartsWith("//\t") || doc.Text == "//")
 				return;
 			
 			if (line[0] == '}') {
@@ -306,7 +308,7 @@ namespace CSharpBinding.FormattingStrategy
 			
 			if (doc.ReadOnly) {
 				// We can't change the current line, but we should accept the existing
-				// indentation if possible (so if the current statement is not a multiline
+				// indentation if possible (=if the current statement is not a multiline
 				// statement).
 				if (!oldBlock.Continuation && !oldBlock.OneLineBlock &&
 				    oldBlock.StartLine == block.StartLine &&
