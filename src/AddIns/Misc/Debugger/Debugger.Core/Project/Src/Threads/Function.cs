@@ -282,7 +282,8 @@ namespace DebuggerLibrary
 				symRootScope = symMethod.RootScope;
 				AddScopeToVariableCollection(symRootScope, ref collection);
 				
-			// Properties		
+			// Properties
+				/*
 				IntPtr methodEnumPtr = IntPtr.Zero;
 				uint methodsFetched;
 				while(true) {
@@ -319,6 +320,7 @@ namespace DebuggerLibrary
 						collection.Add(new PropertyVariable(eval, name));
 					}
 				}
+				*/
 			} 
 			catch (FrameNotAviableException) {
 				System.Diagnostics.Debug.Fail("Unable to get local variables. Frame is not aviable");
