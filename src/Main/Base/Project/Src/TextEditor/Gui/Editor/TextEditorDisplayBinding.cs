@@ -122,6 +122,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public string Text {
 			get {
+				if (textAreaControl.IsDisposed) return null;
 				if (textAreaControl.InvokeRequired)
 					return (string)textAreaControl.Invoke(new GetTextDelegate(GetText));
 				else

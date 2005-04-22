@@ -26,5 +26,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public virtual void Dispose()
 		{
 		}
+		
+		public bool IsVisible {
+			get {
+				return Control.Visible && Control.Width > 0;
+			}
+		}
 	}
 }

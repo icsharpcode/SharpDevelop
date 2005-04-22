@@ -349,12 +349,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			PadDescriptor padDescriptor;
 			
-			bool IsPadVisible {
-				get {
-					return WorkbenchSingleton.Workbench.WorkbenchLayout.IsVisible(padDescriptor); 
-				}
-			}
-			
 			public MyMenuItem(PadDescriptor padDescriptor) : base(null, null)
 			{
 				this.padDescriptor = padDescriptor;

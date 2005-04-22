@@ -110,43 +110,7 @@ namespace ICSharpCode.Core
 		{
 			while (!doneParserThread) {
 				try {
-					if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null && WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent != null) {
-						IEditable editable = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as IEditable;
-						if (editable != null) {
-							string fileName = null;
-							
-							IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent;
-							IParseableContent parseableContent = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as IParseableContent;
-							
-							//ivoko: Pls, do not throw text = parseableContent.ParseableText away. I NEED it.
-							string text = null;
-							if (parseableContent != null) {
-								fileName = parseableContent.ParseableContentName;
-								text = parseableContent.ParseableText;
-							} else {
-								fileName = viewContent.IsUntitled ? viewContent.UntitledName : viewContent.FileName;
-							}
-							
-							if (!(fileName == null || fileName.Length == 0)) {
-								ParseInformation parseInformation = null;
-								bool updated = false;
-								if (text == null) {
-									text = editable.Text;
-								}
-								int hash = text.Length;
-								if (!lastUpdateSize.ContainsKey(fileName) || (int)lastUpdateSize[fileName] != hash) {
-									parseInformation = ParseFile(fileName, text, !viewContent.IsUntitled, true);
-									lastUpdateSize[fileName] = hash;
-									updated = true;
-								}
-								if (updated) {
-									if (parseInformation != null && editable is IParseInformationListener) {
-										((IParseInformationListener)editable).ParseInformationUpdated(parseInformation);
-									}
-								}
-							}
-						}
-					}
+					ParserUpdateStep();
 				} catch (Exception e) {
 					ICSharpCode.Core.MessageService.ShowError(e);
 				}
@@ -154,7 +118,58 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-	
+		static void ParserUpdateStep()
+		{
+			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null && WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent != null) {
+				IEditable editable = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as IEditable;
+				if (editable != null) {
+					string fileName = null;
+					
+					IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent;
+					IParseableContent parseableContent = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as IParseableContent;
+					
+					//ivoko: Pls, do not throw text = parseableContent.ParseableText away. I NEED it.
+					string text = null;
+					if (parseableContent != null) {
+						fileName = parseableContent.ParseableContentName;
+						text = parseableContent.ParseableText;
+					} else {
+						fileName = viewContent.IsUntitled ? viewContent.UntitledName : viewContent.FileName;
+					}
+					
+					if (!(fileName == null || fileName.Length == 0)) {
+						ParseInformation parseInformation = null;
+						bool updated = false;
+						if (text == null) {
+							text = editable.Text;
+							if (text == null) return;
+						}
+						int hash = text.Length;
+						if (!lastUpdateSize.ContainsKey(fileName) || (int)lastUpdateSize[fileName] != hash) {
+							parseInformation = ParseFile(fileName, text, !viewContent.IsUntitled, true);
+							lastUpdateSize[fileName] = hash;
+							updated = true;
+						}
+						if (updated) {
+							if (parseInformation != null && editable is IParseInformationListener) {
+								((IParseInformationListener)editable).ParseInformationUpdated(parseInformation);
+							}
+						}
+						OnParserUpdateStepFinished(new ParserUpdateStepEventArgs(fileName, text, updated));
+					}
+				}
+			}
+		}
+		
+		public static event ParserUpdateStepEventHandler ParserUpdateStepFinished;
+		
+		static void OnParserUpdateStepFinished(ParserUpdateStepEventArgs e)
+		{
+			if (ParserUpdateStepFinished != null) {
+				ParserUpdateStepFinished(typeof(ParserService), e);
+			}
+		}
+		
 		public static ParseInformation ParseFile(string fileName)
 		{
 			return ParseFile(fileName, null);

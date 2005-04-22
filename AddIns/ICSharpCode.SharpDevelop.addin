@@ -101,6 +101,12 @@
 		     title    = "Bookmarks"
 		     icon     = "PadIcons.Bookmarks"
 		     class    = "Bookmark.BookmarkPad"/>
+		
+		<Pad id       = "DefinitionView"
+		     category = "Tools"
+		     title    = "Definition View"
+		     icon     = "PadIcons.Bookmarks"
+		     class    = "ICSharpCode.SharpDevelop.Gui.DefinitionViewPad"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">

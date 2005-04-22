@@ -46,6 +46,7 @@ namespace CSharpBinding.FormattingStrategy
 			
 			IndentationSettings set = new IndentationSettings();
 			set.IndentString = Tab.GetIndentationString(textArea.Document);
+			set.LeaveEmptyLines = false;
 			IndentationReformatter r = new IndentationReformatter();
 			
 			r.Reformat(acc, set);

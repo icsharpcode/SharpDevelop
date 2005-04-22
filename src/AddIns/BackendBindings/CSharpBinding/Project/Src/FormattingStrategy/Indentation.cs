@@ -7,6 +7,8 @@ namespace CSharpBinding.FormattingStrategy
 	public class IndentationSettings
 	{
 		public string IndentString = "\t";
+		/// <summary>Leave empty lines empty.</summary>
+		public bool LeaveEmptyLines = true;
 	}
 	
 	public class IndentationReformatter
@@ -86,7 +88,7 @@ namespace CSharpBinding.FormattingStrategy
 		public void Step(IDocumentAccessor doc, IndentationSettings set)
 		{
 			string line = doc.Text;
-			if (line.Length == 0) return; // leave empty lines empty
+			if (set.LeaveEmptyLines && line.Length == 0) return; // leave empty lines empty
 			line = line.TrimStart();
 			
 			StringBuilder indent = new StringBuilder();
