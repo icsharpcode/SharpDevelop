@@ -344,10 +344,24 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (newName == null) {
 				return;
 			}
+			string oldText = Text;
 			Text = newName;
 			if (Directory != null) {
 				string newPath = Path.Combine(Path.GetDirectoryName(Directory), newName);
-				FileService.RenameFile(Directory, newPath, true);
+				if (System.IO.Directory.Exists(newPath)) {
+					if (System.IO.Directory.GetFiles(Directory).Length == 0) {
+						System.IO.Directory.Delete(Directory); 
+					} else if (System.IO.Directory.GetFiles(newPath).Length == 0) {
+						System.IO.Directory.Delete(newPath);
+						FileService.RenameFile(Directory, newPath, true);
+					} else {
+						MessageService.ShowError("The folder already exists and contains files!");
+						Text = oldText;
+						return;
+					}
+				} else {
+					FileService.RenameFile(Directory, newPath, true);
+				}
 				
 				this.directory = newPath;
 				ProjectService.SaveSolution();
@@ -538,6 +552,4 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 	}
-	
-	
 }

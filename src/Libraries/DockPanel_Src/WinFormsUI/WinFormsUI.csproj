@@ -212,6 +212,16 @@
       <SubType>Code</SubType>
     </Compile>
     <EmbeddedResource Include="Strings.resX" />
+    <EmbeddedResource Include="Resources\DockPaneCaption.AutoHideNo.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneCaption.AutoHideYes.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneCaption.CloseDisabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneCaption.CloseEnabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneStrip.CloseDisabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneStrip.CloseEnabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneStrip.ScrollLeftDisabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneStrip.ScrollLeftEnabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneStrip.ScrollRightDisabled.bmp" />
+    <EmbeddedResource Include="Resources\DockPaneStrip.ScrollRightEnabled.bmp" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Controls\CodeDoc\InertButton.xml" />
@@ -243,18 +253,6 @@
     <Content Include="Docking\CodeDoc\FloatWindowCollection.xml" />
     <Content Include="Docking\CodeDoc\Interfaces.xml" />
     <Content Include="Docking\CodeDoc\NestedDockingStatus.xml" />
-    <EmbeddedResource Include="Resources\DockPaneCaption.AutoHideNo.bmp" />
-    <EmbeddedResource Include="Resources\DockPaneCaption.AutoHideYes.bmp" />
-    <EmbeddedResource Include="Resources\DockPaneCaption.CloseDisabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPaneCaption.CloseEnabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPaneStrip.CloseDisabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPaneStrip.CloseEnabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPaneStrip.ScrollLeftDisabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPaneStrip.ScrollLeftEnabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPaneStrip.ScrollRightDisabled.bmp" />
-    <EmbeddedResource Include="Resources\DockPaneStrip.ScrollRightEnabled.bmp" />
-  </ItemGroup>
-  <ItemGroup>
     <Folder Include="Configuration\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

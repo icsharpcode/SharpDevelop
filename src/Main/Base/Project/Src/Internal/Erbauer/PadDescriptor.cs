@@ -76,9 +76,7 @@ namespace ICSharpCode.Core
 		
 		public IPadContent PadContent {
 			get {
-				if (padContent == null) {
-					padContent = (IPadContent)codon.AddIn.CreateObject(Class);
-				}
+				if (padContent == null) CreatePad();
 				return padContent;
 			}
 		}

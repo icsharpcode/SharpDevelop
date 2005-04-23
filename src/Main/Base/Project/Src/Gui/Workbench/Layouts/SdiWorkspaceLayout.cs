@@ -4,7 +4,7 @@
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
- 
+
 using System;
 using System.IO;
 using System.Collections;
@@ -19,14 +19,14 @@ using ICSharpCode.Core;
 using WeifenLuo.WinFormsUI;
 
 namespace ICSharpCode.SharpDevelop.Gui
-{	
+{
 	/// <summary>
 	/// This is the a Workspace with a single document interface.
 	/// </summary>
 	public class SdiWorkbenchLayout : IWorkbenchLayout
 	{
 		Form wbForm;
-			
+		
 		DockPanel dockPanel;
 		Dictionary<string, PadContentWrapper> contentHash = new Dictionary<string, PadContentWrapper>();
 		ToolStripContainer toolStripContainer;
@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 //			RaftingContainer leftRaftingContainer = new System.Windows.Forms.RaftingContainer();
 //			RaftingContainer rightRaftingContainer = new System.Windows.Forms.RaftingContainer();
 //			RaftingContainer bottomRaftingContainer = new System.Windows.Forms.RaftingContainer();
-//			
+//
 //			((System.ComponentModel.ISupportInitialize)(leftRaftingContainer)).BeginInit();
 //			((System.ComponentModel.ISupportInitialize)(rightRaftingContainer)).BeginInit();
 //			((System.ComponentModel.ISupportInitialize)(topRaftingContainer)).BeginInit();
@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			LoadLayoutConfiguration();
 			ShowPads();
 			ShowViewContents();
-				
+			
 			RedrawAllComponents();
 			
 			dockPanel.ActiveDocumentChanged += new EventHandler(ActiveMdiChanged);
@@ -105,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			toolStripContainer.ContentPanel.Controls.Add(((DefaultWorkbench)workbench).TopMenu);
 			StatusBarService.Control.Dock = DockStyle.Bottom;
 			toolStripContainer.ContentPanel.Controls.Add(StatusBarService.Control);
-						
+			
 			wbForm.Controls.Add(toolStripContainer);
 			
 //			((System.ComponentModel.ISupportInitialize)(leftRaftingContainer)).EndInit();
@@ -161,12 +161,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			try {
 				if (File.Exists(LayoutConfiguration.CurrentLayoutFileName)) {
 					dockPanel.LoadFromXml(LayoutConfiguration.CurrentLayoutFileName, new DeserializeDockContent(GetContent));
+				} else {
+					LoadDefaultLayoutConfiguration();
 				}
-				ActivateVisiblePads();
-			} catch (Exception) {
-//				Console.WriteLine("can't load docking configuration, version clash ?" + e);
+			} catch {
+				LoadDefaultLayoutConfiguration();
 			}
-			
+			ActivateVisiblePads();
+		}
+		
+		void LoadDefaultLayoutConfiguration()
+		{
+			if (File.Exists(LayoutConfiguration.CurrentLayoutTemplateFileName)) {
+				dockPanel.LoadFromXml(LayoutConfiguration.CurrentLayoutTemplateFileName, new DeserializeDockContent(GetContent));
+			}
 		}
 		
 		void ShowToolBars()
@@ -184,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void HideToolBars()
 		{
 			// TODO: Implement HIDE TOOLBARS.
-//			DefaultWorkbench wb = (DefaultWorkbench)wbForm;			
+//			DefaultWorkbench wb = (DefaultWorkbench)wbForm;
 //			if (wb.ToolStripManager.ToolStrips.Count != 1) {
 //				wb.ToolStripManager.ToolStrips.Clear();
 //				wb.ToolStripManager.ToolStrips.Add(wb.TopMenu);
@@ -237,8 +245,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 						dockPanel.SaveAsXml(Path.Combine(configPath, current.FileName));
 					}
 				}
-			} catch (Exception e) { 
-				Console.WriteLine(e); 
+			} catch (Exception e) {
+				Console.WriteLine(e);
 			}
 		}
 		
@@ -288,8 +296,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 					dockPanel.Dispose();
 					dockPanel = null;
 				}
-			} catch (Exception e) { 
-				Console.WriteLine(e); 
+			} catch (Exception e) {
+				Console.WriteLine(e);
 			}
 			if (contentHash != null) {
 				contentHash.Clear();
@@ -308,14 +316,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return padDescriptor.PadContent;
 				}
 			}
-				
+			
 			public PadContentWrapper(PadDescriptor padDescriptor)
 			{
 				this.padDescriptor = padDescriptor;
-				this.DockableAreas = ((((WeifenLuo.WinFormsUI.DockAreas.Float | WeifenLuo.WinFormsUI.DockAreas.DockLeft) | 
-				                        WeifenLuo.WinFormsUI.DockAreas.DockRight) | 
-				                        WeifenLuo.WinFormsUI.DockAreas.DockTop) | 
-				                        WeifenLuo.WinFormsUI.DockAreas.DockBottom);
+				this.DockableAreas = ((((WeifenLuo.WinFormsUI.DockAreas.Float | WeifenLuo.WinFormsUI.DockAreas.DockLeft) |
+				                        WeifenLuo.WinFormsUI.DockAreas.DockRight) |
+				                       WeifenLuo.WinFormsUI.DockAreas.DockTop) |
+				                      WeifenLuo.WinFormsUI.DockAreas.DockBottom);
 				HideOnClose = true;
 			}
 			
@@ -421,9 +429,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			
 			if (PropertyService.Get("ICSharpCode.SharpDevelop.Gui.ToolBarVisible", true)) {
-				ShowToolBars(); 
+				ShowToolBars();
 			} else {
-				HideToolBars(); 
+				HideToolBars();
 			}
 		}
 		

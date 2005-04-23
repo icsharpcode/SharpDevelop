@@ -101,14 +101,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static string CurrentLayoutFileName {
 			get {
-				
 				string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
-				string dataPath   = Path.Combine(PropertyService.DataDirectory, "resources" + Path.DirectorySeparatorChar + "layouts");
 				LayoutConfiguration current = CurrentLayout;
 				if (current != null) {
-					if (File.Exists(Path.Combine(configPath, current.FileName))) {
-						return Path.Combine(configPath, current.FileName);
-					}
+					return Path.Combine(configPath, current.FileName);
+				}
+				return null;
+			}
+		}
+		
+		public static string CurrentLayoutTemplateFileName {
+			get {
+				string dataPath = Path.Combine(PropertyService.DataDirectory, "resources" + Path.DirectorySeparatorChar + "layouts");
+				LayoutConfiguration current = CurrentLayout;
+				if (current != null) {
 					return Path.Combine(dataPath, current.FileName);
 				}
 				return null;
@@ -117,10 +123,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public static LayoutConfiguration CurrentLayout {
 			get {
-				
-				string configPath = Path.Combine(PropertyService.ConfigDirectory, "layouts");
-				string dataPath   = Path.Combine(PropertyService.DataDirectory, "resources" + Path.DirectorySeparatorChar + "layouts");
-				
 				foreach (LayoutConfiguration config in Layouts) {
 					if (config.name == CurrentLayoutName) {
 						return config;
