@@ -316,15 +316,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 //		}
 //	}
 	
-	public class DebugViewMenuBuilder : ViewMenuBuilder
-	{
-		protected override string Category {
-			get {
-				return "Debugger";
-			}
-		}
-	}
-	
 	public class ToolsViewMenuBuilder : ViewMenuBuilder
 	{
 		protected override string Category {
