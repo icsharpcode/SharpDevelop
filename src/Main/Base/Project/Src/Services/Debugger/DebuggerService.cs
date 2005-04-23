@@ -529,6 +529,7 @@ namespace ICSharpCode.Core
 		{
 			try {
 				TextArea textArea = (TextArea)sender;
+				if (textArea.ToolTipVisible) return;
 				
 				Point mousepos = textArea.PointToClient(Control.MousePosition);
 				Rectangle viewRect = textArea.TextView.DrawingPosition;

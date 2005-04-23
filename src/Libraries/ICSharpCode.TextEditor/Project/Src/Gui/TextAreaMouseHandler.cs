@@ -127,7 +127,7 @@ namespace ICSharpCode.TextEditor
 				
 				return;
 			}
-			if (e.Button == MouseButtons.None) {
+			if (e.Button == MouseButtons.None && !textArea.ToolTipVisible) {
 				FoldMarker marker = textArea.TextView.GetFoldMarkerFromPosition(mousepos.X - textArea.TextView.DrawingPosition.X,
 				                                                                mousepos.Y - textArea.TextView.DrawingPosition.Y);
 				if (marker != null && marker.IsFolded) {

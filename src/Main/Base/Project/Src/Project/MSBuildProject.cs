@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			IdGuid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
 			BaseConfiguration["OutputType"]    = "Exe";
 			BaseConfiguration["RootNamespace"] = "RootNameSpace";
-			BaseConfiguration["AssemblyName"]  = "a";
+			BaseConfiguration["AssemblyName"]  = information.ProjectName;
 			BaseConfiguration["Configuration"] = "Debug";
 			BaseConfiguration.SetIsGuarded("Configuration", true);
 			BaseConfiguration["Platform"]      = "AnyCPU";
@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!System.IO.Directory.Exists(outputDirectory)) {
 				System.IO.Directory.CreateDirectory(outputDirectory);
 			}
-			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.Default)) {
+			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8)) {
 				writer.Formatting = Formatting.Indented;
 				
 				writer.WriteStartElement("Project");
@@ -203,7 +203,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			if (userConfigurations.Count > 0) {
 				string userSettingsFileName = fileName + ".user";
-				using (XmlTextWriter writer = new XmlTextWriter(userSettingsFileName, Encoding.Default)) {
+				using (XmlTextWriter writer = new XmlTextWriter(userSettingsFileName, Encoding.UTF8)) {
 					writer.Formatting = Formatting.Indented;
 					writer.WriteStartElement("Project");
 					writer.WriteAttributeString("xmlns", "http://schemas.microsoft.com/developer/msbuild/2003");

@@ -300,6 +300,12 @@ namespace ICSharpCode.TextEditor
 		static string oldToolTip;
 		bool toolTipSet;
 		
+		public bool ToolTipVisible {
+			get {
+				return toolTipSet;
+			}
+		}
+		
 		public void SetToolTip(string text)
 		{
 			if (toolTip == null) toolTip = new ToolTip();
