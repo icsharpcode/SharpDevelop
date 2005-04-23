@@ -157,7 +157,9 @@ namespace ICSharpCode.NRefactory.Parser
 			
 			if (curToken.next == null) {
 				curToken.next = Next();
-				specialTracker.InformToken(curToken.next.kind);
+				if (curToken.next != null) {
+					specialTracker.InformToken(curToken.next.kind);
+				}
 			}
 			
 			curToken  = curToken.next;

@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template originator   = "Mike Krueger"
           created      = "22/01/2003"
-          lastModified = "20/10/2004">
+          lastModified = "23/04/2005">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -38,7 +38,7 @@
 			
 			<Files>
 				<File name="MainClass.cs"><![CDATA[using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Windows.Forms;
@@ -134,7 +134,7 @@ namespace ${StandardNamespace}
 		{
 			// While the form is still valid, render and process messages
 			while (Created) {
-				FrameMove();	
+				FrameMove();
 				Render();
 				Application.DoEvents();
 			}
@@ -197,11 +197,6 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion("1.0.*")]
 
-// The following attributes specify the key for the sign of your assembly. See the
-// .NET Framework documentation for more information about signing.
-// This is not required, if you don't want signing let these attributes like they're.
-[assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile("")]
 ]]></File>
 			</Files>
 		</Project>

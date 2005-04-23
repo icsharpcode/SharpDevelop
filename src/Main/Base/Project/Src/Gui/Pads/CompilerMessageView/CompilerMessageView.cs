@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			textEditorControl.ShowEOLMarkers    = false;
 			
 			textEditorControl.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");
-				
+			
 			properties = (Properties)PropertyService.Get(OutputWindowOptionsPanel.OutputWindowsProperty, new Properties());
 			
 			textEditorControl.Font     = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", new Font("Courier New", 10).ToString()).ToString());
@@ -117,7 +117,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			textEditorControl.MouseDown += new MouseEventHandler(TextEditorControlMouseDown);
 			textEditorControl.BackColor = SystemColors.Window;
-				
+			
 			ToolStrip toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/CompilerMessageView/Toolbar");
 			toolStrip.Stretch   = true;
 			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
@@ -167,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		void ClearText()
 		{
-			textEditorControl.Document.TextContent = "";
+			textEditorControl.Text = "";
 		}
 		
 		void CategoryTextSet(object sender, TextEventArgs e)
@@ -204,13 +204,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (text == null) {
 				text = String.Empty;
 			}
-			textEditorControl.Document.TextContent = text;
+			textEditorControl.Text = text;
 //			textEditorControl.Select(text.Length , 0);
 //			textEditorControl.Select();
 //			textEditorControl.ScrollToCaret();
 		}
 		
-				
+		
 		public void SelectCategory(string categoryName)
 		{
 			for (int i = 0; i < messageCategories.Count; ++i) {
@@ -250,7 +250,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// Occurs when the mouse pointer is over the control and a 
+		/// Occurs when the mouse pointer is over the control and a
 		/// mouse button is pressed.
 		/// </summary>
 		void TextEditorControlMouseDown(object sender, MouseEventArgs e)
@@ -259,18 +259,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 //			if (e.Clicks == 2) {
 //				// Any text?
 //				if (textEditorControl.Text.Length > 0) {
-//					
+//
 //					// Parse text line double clicked.
 //					Point point = new Point(e.X, e.Y);
-//					
+//
 //					int charIndex = textEditorControl.GetCharIndexFromPosition(point);
 //					string textLine = GetTextLine(charIndex, textEditorControl.Text);
-//										
+//
 //					FileLineReference lineReference = OutputTextLineParser.GetFileLineReference(textLine);
 //					if (lineReference != null) {
 //						// Open matching file.
-//						JumpToFilePosition(Path.GetFullPath(lineReference.FileName), 
-//						                   lineReference.Line, 
+//						JumpToFilePosition(Path.GetFullPath(lineReference.FileName),
+//						                   lineReference.Line,
 //						                   lineReference.Column);
 //					}
 //				}
@@ -289,12 +289,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Debug.Assert(charIndex < textLines.Length, String.Concat("CharIndex out of range. charIndex=", charIndex, ", textLines.Length=", textLines.Length));
 			
 			string textLine = String.Empty;
-									
+			
 			int lineStartIndex = 0;
 			int lineLength = 0;
 			bool wasFound = false;
 			
-			for (int i = 0; i < textLines.Length; ++i) {				
+			for (int i = 0; i < textLines.Length; ++i) {
 				char ch = textLines[i];
 				
 				if (ch == '\r' || ch == '\n') {
@@ -304,8 +304,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						textLine = textLines.Substring(lineStartIndex, lineLength);
 						wasFound = true;
 						break;
-					}
-					else {
+					} else {
 						lineStartIndex = i + 1;
 						lineLength = 0;
 					}
@@ -362,7 +361,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public event EventHandler MessageCategoryAdded;
 		public event EventHandler SelectedCategoryIndexChanged;
 		
-	#region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation
+		#region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation
 		public bool EnableCut {
 			get {
 				return false;
@@ -416,6 +415,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 //			textEditorControl.SelectAll();
 		}
 		#endregion
-			
+		
 	}
 }

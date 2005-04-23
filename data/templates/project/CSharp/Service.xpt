@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template originator   = "Mike Krueger"
           created      = "02/01/2003"
-          lastModified = "02/01/2003">
+          lastModified = "23/04/2005">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -24,13 +24,12 @@
 		</Options>
 		
 		<Project name = "${ProjectName}" directory = ".">
-			
-			<Options Target = "Library" PauseConsoleOutput = "False" />
-	
+			<Options />
+
 			<Files>
 				<File name="MyService.cs"><![CDATA[${StandardHeader.C#}
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
@@ -47,10 +46,10 @@ namespace ${StandardNamespace}
 		public MyService()
 		{
 			InitializeComponents();
-
+			
 			// TODO: Add any further initialization code
 		}
-
+		
 		private void InitializeComponents()
 		{
 			this.ServiceName = "MyService";
@@ -137,11 +136,6 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion("1.0.*")]
 
-// The following attributes specify the key for the sign of your assembly. See the
-// .NET Framework documentation for more information about signing.
-// This is not required, if you don't want signing let these attributes like they're.
-[assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile("")]
 ]]></File>
 			</Files>
 		</Project>

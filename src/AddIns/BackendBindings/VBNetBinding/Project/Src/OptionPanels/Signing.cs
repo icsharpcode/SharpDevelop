@@ -17,6 +17,7 @@ namespace VBNetBinding.OptionPanels
 			this.project = (VBNetProject)((Properties)CustomizationObject).Get("Project");
 			
 			Get<CheckBox>("signAssembly").Checked = project.SignAssembly;
+			Get<CheckBox>("signAssembly").CheckedChanged += new EventHandler(UpdateEnabledStates);
 			Get<CheckBox>("signAssembly").CheckedChanged += new EventHandler(Save);
 			
 			Get<RadioButton>("useKeyFile").Checked         = project.AssemblyOriginatorKeyMode == AssemblyOriginatorKeyMode.File;
@@ -57,7 +58,7 @@ namespace VBNetBinding.OptionPanels
 			
 			Get<ComboBox>("providerName").Enabled = Get<ComboBox>("container").Enabled = Get<RadioButton>("useKeyProvider").Checked;
 			Get<ComboBox>("keyFile").Enabled = Get<RadioButton>("useKeyFile").Checked;
-			Get<CheckBox>("signAssembly").Enabled = Get<RadioButton>("useKeyFile").Checked;
+			Get<GroupBox>("signing").Enabled = Get<CheckBox>("signAssembly").Checked;
 		}
 		
 		public override bool StorePanelContents()

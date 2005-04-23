@@ -84,7 +84,9 @@ namespace VBNetBinding
 		
 		public IProject CreateProject(ProjectCreateInformation info, XmlElement projectOptions)
 		{
-			return new VBNetProject(info);
+			VBNetProject p = new VBNetProject(info);
+			p.ImportOptions(projectOptions.Attributes);
+			return p;
 		}
 	}
 }

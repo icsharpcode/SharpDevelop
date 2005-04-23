@@ -25,8 +25,7 @@
 		</Options>
 		
 		<Project name = "${ProjectName}" directory = ".">
-			
-			<Options Target = "Exe" PauseConsoleOutput = "True"/>
+			<Options />
 			
 				<References>
 					<Reference type="Gac" refto="System" />
@@ -39,6 +38,8 @@
 		<File name="Main.vb">
 			<![CDATA[${StandardHeader.VBNET}
 Imports System
+Imports System.Collections.Generic
+
 Module Main
 	Sub Main()
 		Console.WriteLine("Hello World!")

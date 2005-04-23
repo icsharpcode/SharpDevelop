@@ -33,7 +33,6 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 				t = typeof(String).Assembly.GetType(name);
 			}
 			
-			
 			// try to create the object from some assembly which is currently
 			// loaded by the running application.
 			if (t == null) {

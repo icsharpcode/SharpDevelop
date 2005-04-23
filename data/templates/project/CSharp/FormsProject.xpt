@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template originator   = "Mike Krueger"
           created      = "06/10/2001"
-          lastModified = "02/01/2003">
+          lastModified = "23/04/2005">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -23,8 +23,7 @@
 		</Options>
 		
 		<Project name = "${ProjectName}" directory = ".">
-			
-			<Options Target = "WinExe" PauseConsoleOutput = "False" />
+			<Options OutputType = "WinExe" />
 
 			<References>
 				<Reference type="Gac" refto="System" />
@@ -37,6 +36,7 @@
 			<Files>
 				<File name="MainForm.cs"><![CDATA[${StandardHeader.C#}
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -112,11 +112,6 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion("1.0.*")]
 
-// The following attributes specify the key for the sign of your assembly. See the
-// .NET Framework documentation for more information about signing.
-// This is not required, if you don't want signing let these attributes like they're.
-[assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile("")]
 ]]></File>
 			</Files>
 		</Project>

@@ -511,8 +511,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				escapeSequence = ReadEscapeSequence(out chValue);
 			}
 			
-			if ((char)reader.Read() != '\'') {
-				errors.Error(y, x, String.Format("Char not terminated"));
+			unchecked {
+				if ((char)reader.Read() != '\'') {
+					errors.Error(y, x, String.Format("Char not terminated"));
+				}
 			}
 			return new Token(Tokens.Literal, x, y, "'" + ch + escapeSequence + "'", chValue);
 		}

@@ -22,10 +22,8 @@
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
 		<Project name = "${ProjectName}" directory = ".">
+			<Options />
 			
-			<Options Target = "Library" PauseConsoleOutput = "False"/>
-			
-						
 			<References>
 				<Reference type="Gac" refto="System" />
 				<Reference type="Gac" refto="System.Data" />
@@ -37,7 +35,7 @@
 			<Files>
 				<File name="MyService.vb"><![CDATA[${StandardHeader.VBNET}
 Imports System
-Imports System.Collections
+Imports System.Collections.Generic
 Imports System.ComponentModel
 Imports System.Data
 Imports System.Diagnostics
@@ -129,12 +127,7 @@ Imports System.Runtime.CompilerServices
 ' numbers with the '*' character (the default):
 
 <assembly: AssemblyVersion("1.0.*")>
-
-' The following attributes specify the key for the sign of your assembly. See the
-' .NET Framework documentation for more information about signing.
-' This is not required, if you don't want signing let these attributes like they're.
-<assembly: AssemblyDelaySign(false)>
-<assembly: AssemblyKeyFile("")>]]></File>
+]]></File>
 			</Files>
 		</Project>
 	</Combine>	

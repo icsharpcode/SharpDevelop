@@ -24,8 +24,7 @@
 		</Options>
 		
 		<Project name = "${ProjectName}" directory = ".">
-	
-			<Options Target = "WinExe" PauseConsoleOutput = "False"/>
+			<Options OutputType = "WinExe" />
 			
 			<References>
 				<Reference type="Gac" refto="System" />
@@ -40,6 +39,7 @@
 				<File name="MainForm.vb">
 			<![CDATA[${StandardHeader.VBNET}
 Imports System
+Imports System.Collections.Generic
 Imports System.Drawing
 Imports System.Windows.Forms
 
@@ -49,8 +49,7 @@ Namespace ${StandardNamespace}
 		Inherits System.Windows.Forms.Form
 		
 		Public Shared Sub Main
-			Dim fMainForm As New MainForm
-			fMainForm.ShowDialog()
+			Application.Run(New MainForm())
 		End Sub
 		
 		Public Sub New()
@@ -109,12 +108,7 @@ Imports System.Runtime.CompilerServices
 ' numbers with the '*' character (the default):
 
 <assembly: AssemblyVersion("1.0.*")>
-
-' The following attributes specify the key for the sign of your assembly. See the
-' .NET Framework documentation for more information about signing.
-' This is not required, if you don't want signing let these attributes like they're.
-<assembly: AssemblyDelaySign(false)>
-<assembly: AssemblyKeyFile("")>]]></File>
+]]></File>
 			</Files>
 		</Project>
 	</Combine>	

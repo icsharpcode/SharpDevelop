@@ -23,7 +23,7 @@
 		</Options>
 		
 		<Project name = "${ProjectName}" directory = ".">
-			<Options Target = "Library" PauseConsoleOutput = "False"/>	
+			<Options OutputType = "Library" />
 			
 
 			<References>
@@ -37,12 +37,12 @@
 			<Files>
 				<File name="UserControl1.vb"><![CDATA[${StandardHeader.VBNET}
 Imports System
+Imports System.Collections.Generic
+Imports System.ComponentModel
 Imports System.Drawing
 Imports System.Windows.Forms
-Imports System.ComponentModel
 
 Namespace ${StandardNamespace}
-	
 	Public Class UserControl1
 		Inherits System.Windows.Forms.UserControl
 		
@@ -98,11 +98,7 @@ Imports System.Runtime.CompilerServices
 
 <assembly: AssemblyVersion("1.0.*")>
 
-' The following attributes specify the key for the sign of your assembly. See the
-' .NET Framework documentation for more information about signing.
-' This is not required, if you don't want signing let these attributes like they're.
-<assembly: AssemblyDelaySign(false)>
-<assembly: AssemblyKeyFile("")>]]></File>
+]]></File>
 			</Files>
 		</Project>
 	</Combine>	

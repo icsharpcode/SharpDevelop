@@ -84,7 +84,9 @@ namespace CSharpBinding
 		
 		public IProject CreateProject(ProjectCreateInformation info, XmlElement projectOptions)
 		{
-			return new CSharpProject(info);
+			CSharpProject p = new CSharpProject(info);
+			p.ImportOptions(projectOptions.Attributes);
+			return p;
 		}
 	}
 }

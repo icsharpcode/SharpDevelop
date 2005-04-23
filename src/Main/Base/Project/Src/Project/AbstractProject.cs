@@ -5,6 +5,7 @@ using System.Diagnostics;
 using System.IO;
 using System.Globalization;
 using System.Collections.Generic;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
@@ -23,6 +24,23 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		protected string fileName;
 		protected string language;
+		
+		/// <summary>
+		/// Import options from an attribute collection. This is used to read the template options.
+		/// </summary>
+		public void ImportOptions(XmlAttributeCollection attributes)
+		{
+			Type t = GetType();
+			foreach (XmlAttribute attr in attributes) {
+				PropertyInfo prop = t.GetProperty(attr.Name, BindingFlags.IgnoreCase | BindingFlags.Instance | BindingFlags.Public);
+				if (prop == null) {
+					MessageService.ShowError("Property '" + attr.Name + "' does not exist!");
+				} else {
+					TypeConverter desc = TypeDescriptor.GetConverter(prop.PropertyType);
+					prop.SetValue(this, desc.ConvertFromInvariantString(attr.Value), null);
+				}
+			}
+		}
 		
 		protected bool isDirty = false;
 		
