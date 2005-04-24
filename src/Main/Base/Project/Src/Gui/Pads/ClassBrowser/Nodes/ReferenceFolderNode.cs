@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				assembly = Assembly.ReflectionOnlyLoadFrom(item.FileName);
 			} catch (Exception) {
 				try {
-					assembly = Assembly.LoadWithPartialName(item.Include);
+					assembly = Assembly.ReflectionOnlyLoad(item.Include);
 				} catch (Exception e) {
 					Console.WriteLine("Can't load assembly '{0}' : " + e.Message, item.Include);
 				}

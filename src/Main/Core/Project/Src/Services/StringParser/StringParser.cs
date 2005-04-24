@@ -24,9 +24,9 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public static class StringParser
 	{
-		static Dictionary<string, string>             properties         = new Dictionary<string, string>();
-		static Dictionary<string, IStringTagProvider> stringTagProviders = new Dictionary<string, IStringTagProvider>();
-		static Dictionary<string, object>             propertyObjects    = new Dictionary<string, object>();
+		readonly static Dictionary<string, string>             properties;
+		readonly static Dictionary<string, IStringTagProvider> stringTagProviders;
+		readonly static Dictionary<string, object>             propertyObjects;
 		
 		public static Dictionary<string, string> Properties {
 			get {
@@ -42,13 +42,16 @@ namespace ICSharpCode.Core
 		
 		static StringParser()
 		{
-			Assembly entryAssembly =  System.Reflection.Assembly.GetEntryAssembly();
-			
+			Assembly entryAssembly = Assembly.GetEntryAssembly();
+			properties         = new Dictionary<string, string>(StringComparer.InvariantCultureIgnoreCase);
+			stringTagProviders = new Dictionary<string, IStringTagProvider>(StringComparer.InvariantCultureIgnoreCase);
+			propertyObjects    = new Dictionary<string, object>();
 			// entryAssembly == null might happen in unit test mode
 			if (entryAssembly != null) {
 				string exeName = entryAssembly.Location;
 				propertyObjects["exe"] = FileVersionInfo.GetVersionInfo(exeName);
 			}
+			properties["USER"] = Environment.UserName;
 		}
 		
 		public static string Parse(string input)
@@ -57,11 +60,11 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
-		/// Parses an array and replaces the elements
+		/// Parses an array and replaces the elements in the existing array.
 		/// </summary>
-		public static void Parse(ref string[] inputs)
+		public static void Parse(string[] inputs)
 		{
-			for (int i = inputs.GetLowerBound(0); i <= inputs.GetUpperBound(0); ++i) {
+			for (int i = 0; i < inputs.Length; ++i) {
 				inputs[i] = Parse(inputs[i], null);
 			}
 		}
@@ -73,7 +76,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		readonly static Regex pattern = new Regex(@"\$\{([^\}]*)\}");
+		readonly static Regex pattern = new Regex(@"\$\{([^\}]*)\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 		
 		/// <summary>
 		/// Expands ${xyz} style property values.
@@ -87,71 +90,13 @@ namespace ICSharpCode.Core
 						string token         = m.ToString();
 						string propertyName  = m.Groups[1].Captures[0].Value;
 						
-						string propertyNameUpper= propertyName.ToUpper();
-						string propertyValue = null;
-						switch (propertyName.ToUpper()) {
-							case "USER": // current user
-								propertyValue = Environment.UserName;
-								break;
-							case "DATE": // current date
-								propertyValue = DateTime.Today.ToShortDateString();
-								break;
-							case "TIME": // current time
-								propertyValue = DateTime.Now.ToShortTimeString();
-								break;
-							default:
-								propertyValue = null;
-								if (customTags != null) {
-									for (int j = 0; j < customTags.GetLength(0); ++j) {
-										if (propertyName.ToUpper() == customTags[j, 0].ToUpper()) {
-											propertyValue = customTags[j, 1];
-											break;
-										}
-									}
-								}
-								
-								if (propertyValue == null && properties.ContainsKey(propertyName)) {
-									propertyValue = properties[propertyName];
-								}
-								
-								if (propertyValue == null && properties.ContainsKey(propertyNameUpper)) {
-									propertyValue = properties[propertyNameUpper];
-								}
-								if (propertyValue == null && stringTagProviders.ContainsKey(propertyName)) {
-									propertyValue = stringTagProviders[propertyName].Convert(propertyName);
-								}
-								
-								if (propertyValue == null) {
-									int k = propertyName.IndexOf(':');
-									if (k > 0) {
-										switch (propertyName.Substring(0, k).ToUpper()) {
-												
-											case "ENV":
-												propertyValue = Environment.GetEnvironmentVariable(propertyName.Substring(k + 1));
-												break;
-												
-											case "RES":
-												try {
-													propertyValue = Parse(ResourceService.GetString(propertyName.Substring(k + 1)), customTags);
-												} catch (Exception) {
-													propertyValue = null;
-												}
-												break;
-
-											case "PROPERTY":
-												propertyValue = PropertyService.Get(propertyName.Substring(k + 1));
-												break;
-												
-											default:
-												object obj = propertyObjects[propertyName.Substring(0, k)];
-												propertyValue = Get(obj, propertyName.Substring(k + 1));
-												break;
-										}
-									}
-								}
-								break;
-						}
+						string propertyValue = GetValue(propertyName, customTags);
+						
 						if (propertyValue != null) {
+							if (m.Length == input.Length) {
+								// safe a replace operation when input is a property on its own.
+								return propertyValue;
+							}
 							output = output.Replace(token, propertyValue);
 						}
 					}
@@ -160,11 +105,64 @@ namespace ICSharpCode.Core
 			return output;
 		}
 		
-		static string Get(object obj, string name) 
+		static string GetValue(string propertyName, string[,] customTags)
 		{
-			if (obj == null) {
-				return null;
+			if (propertyName.StartsWith("res:")) {
+				// most properties start with res: in lowercase,
+				// so we can safe 2 string allocations here
+				try {
+					return Parse(ResourceService.GetString(propertyName.Substring(4)), customTags);
+				} catch (ResourceNotFoundException) {
+					return null;
+				}
 			}
+			if (propertyName.Equals("DATE", StringComparison.InvariantCultureIgnoreCase))
+				return DateTime.Today.ToShortDateString();
+			if (propertyName.Equals("TIME", StringComparison.InvariantCultureIgnoreCase))
+				return DateTime.Now.ToShortTimeString();
+			
+			if (customTags != null) {
+				for (int j = 0; j < customTags.GetLength(0); ++j) {
+					if (propertyName.Equals(customTags[j, 0], StringComparison.InvariantCultureIgnoreCase)) {
+						return customTags[j, 1];
+					}
+				}
+			}
+			
+			if (properties.ContainsKey(propertyName)) {
+				return properties[propertyName];
+			}
+			
+			if (stringTagProviders.ContainsKey(propertyName)) {
+				return stringTagProviders[propertyName].Convert(propertyName);
+			}
+			
+			int k = propertyName.IndexOf(':');
+			if (k <= 0)
+				return null;
+			string prefix = propertyName.Substring(0, k);
+			switch (prefix.ToUpper()) {
+				case "ENV":
+					return Environment.GetEnvironmentVariable(propertyName.Substring(k + 1));
+				case "RES":
+					try {
+						return Parse(ResourceService.GetString(propertyName.Substring(k + 1)), customTags);
+					} catch (ResourceNotFoundException) {
+						return null;
+					}
+				case "PROPERTY":
+					return PropertyService.Get(propertyName.Substring(k + 1));
+				default:
+					if (propertyObjects.ContainsKey(prefix)) {
+						return Get(propertyObjects[prefix], propertyName.Substring(k + 1));
+					} else {
+						return null;
+					}
+			}
+		}
+		
+		static string Get(object obj, string name)
+		{
 			Type type = obj.GetType();
 			PropertyInfo prop = type.GetProperty(name);
 			if (prop != null) {

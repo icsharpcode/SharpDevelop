@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			EnvironmentNode.ColorNames = (string[])envColorNames.ToArray(typeof(string));
 			this.ColorDescs = (string[])envColorDescriptions.ToArray(typeof(string));
 			this.Colors     = (EditorHighlightColor[])envColors.ToArray(typeof(EditorHighlightColor));
-			StringParser.Parse(ref ColorDescs);
+			StringParser.Parse(ColorDescs);
 			
 			Text = ResNodeName("EnvironmentColors");
 		
