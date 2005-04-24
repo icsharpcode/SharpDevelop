@@ -8,11 +8,11 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 	
-namespace VBNetBinding.OptionPanels
+namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	public class ApplicationSettings : AbstractOptionPanel
 	{
-		VBNetProject project;
+		AdvancedMSBuildProject project;
 		
 		public ApplicationSettings()
 		{
@@ -20,8 +20,8 @@ namespace VBNetBinding.OptionPanels
 		
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ApplicationSettings.xfrm"));
-			this.project = (VBNetProject)((Properties)CustomizationObject).Get("Project");
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ProjectOptions.ApplicationSettings.xfrm"));
+			this.project = (AdvancedMSBuildProject)((Properties)CustomizationObject).Get("Project");
 			
 			ConnectBrowseButton("applicationIconBrowseButton", "applicationIconComboBox", "${res:SharpDevelop.FileFilter.Icons}|*.ico|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 			

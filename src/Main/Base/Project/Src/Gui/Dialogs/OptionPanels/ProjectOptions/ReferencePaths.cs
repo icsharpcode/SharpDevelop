@@ -4,17 +4,18 @@ using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-	
-namespace VBNetBinding.OptionPanels
+using ICSharpCode.SharpDevelop.Project;
+
+namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	public class ReferencePaths : AbstractOptionPanel
 	{
-		VBNetProject project;
+		AdvancedMSBuildProject project;
 		
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ReferencePaths.xfrm"));
-			this.project = (VBNetProject)((Properties)CustomizationObject).Get("Project");
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ProjectOptions.ReferencePaths.xfrm"));
+			this.project = (AdvancedMSBuildProject)((Properties)CustomizationObject).Get("Project");
 		}
 		
 		public override bool StorePanelContents()

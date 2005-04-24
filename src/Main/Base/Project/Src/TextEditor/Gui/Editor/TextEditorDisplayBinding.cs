@@ -122,17 +122,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public string Text {
 			get {
-				if (textAreaControl.IsDisposed) return null;
-				if (textAreaControl.InvokeRequired)
-					return (string)textAreaControl.Invoke(new GetTextDelegate(GetText));
-				else
-					return GetText();
+				return (string)WorkbenchSingleton.SafeThreadCall(this, "GetText", null);
 			}
 			set {
-				if (textAreaControl.InvokeRequired)
-					textAreaControl.Invoke(new SetTextDelegate(SetText));
-				else
-					SetText(value);
+				WorkbenchSingleton.SafeThreadCall(this, "SetText", value);
 			}
 		}
 		

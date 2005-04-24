@@ -21,73 +21,6 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	class IDEContainer : Container
-	{
-		class IDESite : ISite
-		{
-			private string name = "";
-			private IComponent component;
-			private IDEContainer container;
-
-			public IDESite(IComponent sitedComponent, IDEContainer site, string aName)
-			{
-				component = sitedComponent;
-				container = site;
-				name = aName;
-			}
-
-			public IComponent Component{
-				get{ return component;}
-			}
-			public IContainer Container{
-				get{return container;}
-			}
-
-			public bool DesignMode{
-				get{return false;}
-			}
-
-			public string Name {
-				get{ return name;}
-				set{name=value;}
-			}
-
-			public object GetService(Type serviceType)
-			{
-				return container.GetService(serviceType);
-			}
-		}
-
-		public IDEContainer (IServiceProvider sp)
-		{
-			serviceProvider = sp;
-		}
-
-		protected override object GetService(Type serviceType)
-		{
-			object service = base.GetService(serviceType);
-			if (service == null) {
-				service = serviceProvider.GetService(serviceType);
-			}
-			return service;
-		}
-
-		public ISite CreateSite(IComponent component)
-		{
-			return CreateSite(component, "UNKNOWN_SITE");
-		}
-		
-		protected override ISite CreateSite(IComponent component,string name)
-		{
-			ISite site = base.CreateSite(component,name);
-			if (site == null) {
-			}
-			return new IDESite(component,this,name);
-		}
-		
-		private IServiceProvider serviceProvider;
-	}
-	
 	public class PropertyPad : AbstractPadContent, IHelpProvider
 	{
 		static PropertyPad instance;
@@ -97,7 +30,48 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return instance;
 			}
 		}
-			
+		
+		static PropertyContainer activeContainer;
+		
+		static void SetActiveContainer(PropertyContainer pc)
+		{
+			if (activeContainer == pc)
+				return;
+			if (pc == null)
+				return;
+			activeContainer = pc;
+			UpdateSelectedObjectIfActive(pc);
+			UpdateHostIfActive(pc);
+			UpdateSelectableIfActive(pc);
+		}
+		
+		internal static void UpdateSelectedObjectIfActive(PropertyContainer container)
+		{
+			if (activeContainer != container) return;
+			if (container.SelectedObjects != null)
+				SetDesignableObjects(container.SelectedObjects);
+			else
+				SetDesignableObject(container.SelectedObject);
+		}
+		
+		internal static void UpdateHostIfActive(PropertyContainer container)
+		{
+			if (activeContainer != container)
+				return;
+			if (host == container.Host)
+				return;
+			if (host != null)
+				RemoveHost(host);
+			if (container.Host != null)
+				SetDesignerHost(container.Host);
+		}
+		
+		internal static void UpdateSelectableIfActive(PropertyContainer container)
+		{
+			if (activeContainer != container)
+				return;
+			SetSelectableObjects(container.SelectableObjects);
+		}
 		
 		static Panel         panel   = null;
 		static ComboBox      comboBox = null;
@@ -130,8 +104,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
 			comboBox.DrawMode = DrawMode.OwnerDrawFixed;
 			comboBox.Sorted = true;
-		}
 			
+			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += WorkbenchWindowChanged;
+		}
+		
+		static void WorkbenchWindowChanged(object sender, EventArgs e)
+		{
+			IHasPropertyContainer c = WorkbenchSingleton.Workbench.ActiveContent as IHasPropertyContainer;
+			if (c == null) return;
+			SetActiveContainer(c.PropertyContainer);
+		}
 		
 		public PropertyPad()
 		{
@@ -264,7 +246,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public static void SetDesignableObject(object obj)
+		static void SetDesignableObject(object obj)
 		{
 			if (grid != null) {
 				grid.SelectedObject  = obj;
@@ -272,7 +254,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public static void SetDesignableObjects(object[] obj)
+		static void SetDesignableObjects(object[] obj)
 		{
 			if (grid != null) {
 				grid.SelectedObjects = obj;
@@ -280,11 +262,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public static void RemoveHost(IDesignerHost host)
+		static void RemoveHost(IDesignerHost host)
 		{
 			PropertyPad.host = null;
 			grid.Site = null;
-			SetDesignableObject(null);
 			
 			ISelectionService selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
 			if (selectionService != null) {
@@ -302,7 +283,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public static void SetDesignerHost(IDesignerHost host)
+		static void SetDesignerHost(IDesignerHost host)
 		{
 			PropertyPad.host = host;
 			if (host != null) {
@@ -325,11 +306,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			} else {
 				grid.Site = null;
-				
 			}
 		}
 		
-		public static void SetSelectableObjects(ICollection coll)
+		static void SetSelectableObjects(ICollection coll)
 		{
 			inUpdate = true;
 			try {
@@ -380,11 +360,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			shouldUpdateSelectableObjects = true;
 		}
 		
-		public static void SelectionChangingHandler(object sender, EventArgs args)
+		static void SelectionChangingHandler(object sender, EventArgs args)
 		{
 		}
 
-		public static void SelectionChangedHandler(object sender, EventArgs args)
+		static void SelectionChangedHandler(object sender, EventArgs args)
 		{
 			ISelectionService selectionService = sender as ISelectionService;
 			if (selectionService != null) {

@@ -44,7 +44,7 @@ using Microsoft.VisualBasic;
 
 namespace ICSharpCode.FormDesigner
 {
-	public class FormDesignerViewContent : AbstractViewContent, ISecondaryViewContent, IClipboardHandler, IUndoHandler
+	public class FormDesignerViewContent : AbstractViewContent, ISecondaryViewContent, IClipboardHandler, IUndoHandler, IHasPropertyContainer
 	{
 		protected bool failedDesignerInitialize;
 		
@@ -151,10 +151,15 @@ namespace ICSharpCode.FormDesigner
 			
 			designSurface.Flush();
 			
-			ICSharpCode.SharpDevelop.Gui.PropertyPad.SetDesignerHost(Host);
-			
-			
 			generator.Attach(this);
+		}
+		
+		PropertyContainer propertyContainer = new PropertyContainer();
+		
+		public PropertyContainer PropertyContainer {
+			get {
+				return propertyContainer;
+			}
 		}
 		
 		public override void Load(string fileName)
@@ -219,17 +224,33 @@ namespace ICSharpCode.FormDesigner
 		
 		public override void Selected()
 		{
+			IsFormDesignerVisible = true;
+			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
+				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
+					SharpDevelopSideBar.SideBar.Tabs.Add(tab);
+				}
+			}
+			SharpDevelopSideBar.SideBar.Refresh();
+			propertyContainer.Host = Host;
+			UpdateSelectableObjects();
 			Reload();
 		}
 		
 		public override void Deselected()
 		{
+			propertyContainer.Clear();
+			IsFormDesignerVisible = false;
+			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
+				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
+					return;
+				}
+				SharpDevelopSideBar.SideBar.Tabs.Remove(tab);
+			}
+			SharpDevelopSideBar.SideBar.Refresh();
 			if (!failedDesignerInitialize) {
 				MergeFormChanges();
 				textAreaControlProvider.TextEditorControl.Refresh();
-//				base.DeSelectMe(this, EventArgs.Empty);
 			}
-			
 //			DeselectAllComponents();
 		}
 		
@@ -249,54 +270,16 @@ namespace ICSharpCode.FormDesigner
 			MergeFormChanges();
 		}
 		
-			// AbstractViewContent members
-		protected override void OnWorkbenchWindowChanged(EventArgs e)
-		{
-			base.OnWorkbenchWindowChanged(e);
-			if (WorkbenchWindow != null) {
-				WorkbenchWindow.WindowSelected   += new EventHandler(SelectMe);
-				WorkbenchWindow.WindowDeselected += new EventHandler(DeSelectMe);
-			}
-		}
 		protected void UpdateSelectableObjects()
 		{
-			PropertyPad.SetSelectableObjects(Host.Container.Components);
+			propertyContainer.SelectableObjects = Host.Container.Components;
 			ISelectionService selectionService = (ISelectionService)Host.GetService(typeof(ISelectionService));
 			if (selectionService != null) {
-				ICSharpCode.SharpDevelop.Gui.PropertyPad.SetDesignableObject(selectionService.PrimarySelection);
+				propertyContainer.SelectedObject = selectionService.PrimarySelection;
 			}
 		}
 		
 		public bool IsFormDesignerVisible = false;
-		protected virtual void SelectMe(object sender, EventArgs e)
-		{
-//	TODO:		
-//			loader.TextContent = Document.TextContent;
-			IsFormDesignerVisible = true;
-			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
-				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
-					SharpDevelopSideBar.SideBar.Tabs.Add(tab);
-				}
-			}
-			SharpDevelopSideBar.SideBar.Refresh();
-			ICSharpCode.SharpDevelop.Gui.PropertyPad.SetDesignerHost(Host);
-			UpdateSelectableObjects();
-		}
-		
-		protected virtual void DeSelectMe(object sender, EventArgs e)
-		{
-			IsFormDesignerVisible = false;
-			ICSharpCode.SharpDevelop.Gui.PropertyPad.SetDesignableObject(null);
-			ICSharpCode.SharpDevelop.Gui.PropertyPad.SetSelectableObjects(null);
-			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
-				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
-					return;
-				}
-				SharpDevelopSideBar.SideBar.Tabs.Remove(tab);
-			}
-			SharpDevelopSideBar.SideBar.Refresh();
-			ICSharpCode.SharpDevelop.Gui.PropertyPad.RemoveHost(Host);
-		}
 		
 		#region IUndoHandler impelementation
 		public bool EnableUndo {

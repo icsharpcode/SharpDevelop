@@ -7,6 +7,7 @@
 	
 	<Runtime>
 		<Import assembly = "VBNetBinding.dll"/>
+		<Import assembly = "/ICSharpCode.SharpDevelop"/>
 	</Runtime>
 
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
@@ -31,25 +32,25 @@
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/VBNet">
 		<DialogPanel id    = "Application"
 		             label = "Application"
-		             class = "VBNetBinding.OptionPanels.ApplicationSettings"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettings"/>
 		<DialogPanel id    = "ReferencePaths"
 		             label = "Reference Paths"
-		             class = "VBNetBinding.OptionPanels.ReferencePaths"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>
 		<DialogPanel id    = "Signing"
 		             label = "Signing"
-		             class = "VBNetBinding.OptionPanels.Signing"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>
 		<DialogPanel id    = "BuildEvents"
 		             label = "Build Events"
-		             class = "VBNetBinding.OptionPanels.BuildEvents"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
 		<DialogPanel id    = "BuildOptions"
 		             label = "Build"
 		             class = "VBNetBinding.OptionPanels.BuildOptions"/>
 		<DialogPanel id    = "DebugOptions"
 		             label = "Debug"
-		             class = "VBNetBinding.OptionPanels.DebugOptions"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
 		<DialogPanel id    = "Publish"
 		             label = "Publish"
-		             class = "VBNetBinding.OptionPanels.Publish"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>
 	</Path>
 
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/VBNet">

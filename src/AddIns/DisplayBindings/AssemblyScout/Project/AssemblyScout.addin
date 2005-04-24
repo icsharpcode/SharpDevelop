@@ -1,0 +1,19 @@
+<AddIn name        = "Assembly Scout"
+       author      = "Mike Krueger"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "SharpDevelop Assembly Scout"
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly="AssemblyScout.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/View">
+		<MenuItem id = "ShowAssemblyScout"
+		          insertafter  = "ViewItemsSeparator"
+		          insertbefore = "FullScreen"
+		          label = "Assembly Scout"
+		          class = "ICSharpCode.SharpDevelop.AddIns.AssemblyScout.AssemblyScoutCommand"/>
+	</Extension>
+</AddIn>

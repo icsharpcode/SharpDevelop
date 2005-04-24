@@ -4,12 +4,13 @@ using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-	
-namespace VBNetBinding.OptionPanels
+using ICSharpCode.SharpDevelop.Project;
+
+namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	public class DebugOptions : AbstractOptionPanel
 	{
-		VBNetProject project;
+		AdvancedMSBuildProject project;
 		
 		string Config   = "Debug";
 		string Platform = "AnyCPU";
@@ -20,10 +21,10 @@ namespace VBNetBinding.OptionPanels
 		
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.DebugOptions.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ProjectOptions.DebugOptions.xfrm"));
 			ConnectBrowseButton("startExternalProgramBrowseButton", "startExternalProgramTextBox", "${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 			ConnectBrowseFolder("workingDirectoryBrowseButton", "workingDirectoryTextBox");
-			this.project = (VBNetProject)((Properties)CustomizationObject).Get("Project");
+			this.project = (AdvancedMSBuildProject)((Properties)CustomizationObject).Get("Project");
 			
 			StartAction startAction = project.GetStartAction(Config, Platform);
 			
@@ -54,7 +55,7 @@ namespace VBNetBinding.OptionPanels
 			UpdateEnabledStates(this, EventArgs.Empty);
 		}
 		
-		void Save(object sender, EventArgs e) 
+		void Save(object sender, EventArgs e)
 		{
 			StorePanelContents();
 		}

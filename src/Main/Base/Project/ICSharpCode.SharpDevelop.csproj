@@ -236,9 +236,6 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\CompileFileProjectOptions.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DeployFileOptions.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\GeneralProjectOptions.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AddWebReferenceDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AssemblyReferencePanel.cs">
       <SubType>Component</SubType>
@@ -496,7 +493,6 @@
     <EmbeddedResource Include="Resources\ExternalToolOptions.xfrm" />
     <EmbeddedResource Include="Resources\FontSelectionPanel.xfrm" />
     <EmbeddedResource Include="Resources\NewFileWithNameDialog.xfrm" />
-    <EmbeddedResource Include="Resources\GeneralProjectOptions.xfrm" />
     <EmbeddedResource Include="Resources\InputBox.xfrm" />
     <EmbeddedResource Include="Resources\LoadSaveOptionPanel.xfrm" />
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
@@ -639,6 +635,21 @@
     <Compile Include="Src\Project\MSBuildEngine.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CodeCompletionBinding.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
+    <Compile Include="Src\Project\AdvancedMSBuildProject.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.cs" />
+    <EmbeddedResource Include="Resources\ProjectOptions\ApplicationSettings.xfrm" />
+    <Compile Include="Src\Gui\Pads\PropertyPad\IDEContainer.cs" />
+    <Compile Include="Src\Gui\Pads\PropertyPad\PropertyContainer.cs" />
+    <EmbeddedResource Include="Resources\ProjectOptions\Publish.xfrm" />
+    <EmbeddedResource Include="Resources\ProjectOptions\ReferencePaths.xfrm" />
+    <EmbeddedResource Include="Resources\ProjectOptions\Signing.xfrm" />
+    <EmbeddedResource Include="Resources\ProjectOptions\BuildEvents.xfrm" />
+    <EmbeddedResource Include="Resources\ProjectOptions\DebugOptions.xfrm" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Signing.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePaths.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Publish.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
@@ -657,6 +668,7 @@
       <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
+    <Folder Include="Resources\ProjectOptions" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

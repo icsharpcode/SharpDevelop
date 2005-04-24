@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// Description of ProjectBrowserControl.
 	/// </summary>
-	public class ProjectBrowserControl : System.Windows.Forms.UserControl
+	public class ProjectBrowserControl : System.Windows.Forms.UserControl, IHasPropertyContainer
 	{
 		ExtTreeView treeView;
 		static Dictionary<Image, int> projectBrowserImageIndex = new Dictionary<Image, int>();
@@ -153,7 +153,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				return;
 			}
 			ProjectService.CurrentProject = node.Project;
-			ICSharpCode.SharpDevelop.Gui.PropertyPad.SetDesignableObject(node.Tag);
+			propertyContainer.SelectedObject = node.Tag;
+		}
+		
+		PropertyContainer propertyContainer = new PropertyContainer();
+		
+		public PropertyContainer PropertyContainer {
+			get {
+				return propertyContainer;
+			}
 		}
 		
 		#region Windows Forms Designer generated code

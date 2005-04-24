@@ -8,7 +8,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// Description of ProjectBrowserPad.
 	/// </summary>
-	public class ProjectBrowserPad : AbstractPadContent, IClipboardHandler
+	public class ProjectBrowserPad : AbstractPadContent, IClipboardHandler, IHasPropertyContainer
 	{
 		static ProjectBrowserPad instance;
 		public static ProjectBrowserPad Instance {
@@ -33,6 +33,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override Control Control {
 			get {
 				return projectBrowserPanel;
+			}
+		}
+		
+		public PropertyContainer PropertyContainer {
+			get {
+				return projectBrowserPanel.ProjectBrowserControl.PropertyContainer;
 			}
 		}
 		

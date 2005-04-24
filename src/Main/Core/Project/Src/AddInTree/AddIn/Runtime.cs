@@ -8,10 +8,17 @@ namespace ICSharpCode.Core
 {
 	public class Runtime
 	{
+		string           hintPath;
 		string           assembly;
 		Assembly         loadedAssembly = null;
 		List<Properties> definedErbauer    = new List<Properties>(1);
 		List<Properties> definedConditions = new List<Properties>(1);
+		
+		public Runtime(string assembly, string hintPath)
+		{
+			this.assembly = assembly;
+			this.hintPath = hintPath;
+		}
 		
 		public string Assembly {
 			get { 
@@ -22,7 +29,11 @@ namespace ICSharpCode.Core
 		public Assembly LoadedAssembly {
 			get {
 				if (loadedAssembly == null) {
-					loadedAssembly = System.Reflection.Assembly.LoadFrom(assembly);
+					if (assembly[0] == '/') {
+						loadedAssembly = System.Reflection.Assembly.Load(assembly.Substring(1));
+					} else {
+						loadedAssembly = System.Reflection.Assembly.LoadFrom(Path.Combine(hintPath, assembly));
+					}
 				}
 				return loadedAssembly;
 			}
@@ -40,21 +51,17 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public object CreateInstance(string hintPath, string instance)
+		public object CreateInstance(string instance)
 		{
-			if (loadedAssembly == null) {
-				loadedAssembly = System.Reflection.Assembly.LoadFrom(Path.Combine(hintPath, assembly));
-			}
 			return LoadedAssembly.CreateInstance(instance);
 		}
 		
-		internal static Runtime Read(AddIn addIn, XmlTextReader reader)
+		internal static Runtime Read(AddIn addIn, XmlTextReader reader, string hintPath)
 		{
-			Runtime	runtime = new Runtime();
 			if (reader.AttributeCount != 1) {
 				throw new AddInLoadException("Import node requires ONE attribute.");
 			}
-			runtime.assembly = reader.GetAttribute(0);
+			Runtime	runtime = new Runtime(reader.GetAttribute(0), hintPath);
 			if (!reader.IsEmptyElement) {
 				while (reader.Read()) {
 					switch (reader.NodeType) {

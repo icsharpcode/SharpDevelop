@@ -7,6 +7,7 @@
 	
 	<Runtime>
 		<Import assembly = "CSharpBinding.dll"/>
+		<Import assembly = "/ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
@@ -36,25 +37,25 @@
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
 		<DialogPanel id    = "Application"
 		             label = "Application"
-		             class = "CSharpBinding.OptionPanels.ApplicationSettings"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettings"/>
 		<DialogPanel id    = "ReferencePaths"
 		             label = "Reference Paths"
-		             class = "CSharpBinding.OptionPanels.ReferencePaths"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>
 		<DialogPanel id    = "Signing"
 		             label = "Signing"
-		             class = "CSharpBinding.OptionPanels.Signing"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>
 		<DialogPanel id    = "BuildEvents"
 		             label = "Build Events"
-		             class = "CSharpBinding.OptionPanels.BuildEvents"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
 		<DialogPanel id    = "BuildOptions"
 		             label = "Build"
 		             class = "CSharpBinding.OptionPanels.BuildOptions"/>
 		<DialogPanel id    = "DebugOptions"
 		             label = "Debug"
-		             class = "CSharpBinding.OptionPanels.DebugOptions"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
 		<DialogPanel id    = "Publish"
 		             label = "Publish"
-		             class = "CSharpBinding.OptionPanels.Publish"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>
 	</Path>
 	
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/C#">

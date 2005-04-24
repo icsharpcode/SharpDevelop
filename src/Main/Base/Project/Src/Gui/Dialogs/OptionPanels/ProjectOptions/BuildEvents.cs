@@ -4,26 +4,27 @@ using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-	
-namespace VBNetBinding.OptionPanels
+using ICSharpCode.SharpDevelop.Project;
+
+namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	public class BuildEvents : AbstractOptionPanel
 	{
-		VBNetProject project;
+		AdvancedMSBuildProject project;
 		
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.BuildEvents.xfrm"));
-			ConnectBrowseButton("preBuildEventBrowseButton", 
-			                    "preBuildEventTextBox", 
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ProjectOptions.BuildEvents.xfrm"));
+			ConnectBrowseButton("preBuildEventBrowseButton",
+			                    "preBuildEventTextBox",
 			                    "${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-			ConnectBrowseButton("postBuildEventBrowseButton", 
-			                    "postBuildEventTextBox", 
+			ConnectBrowseButton("postBuildEventBrowseButton",
+			                    "postBuildEventTextBox",
 			                    "${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-
-			this.project = (VBNetProject)((Properties)CustomizationObject).Get("Project");
 			
-			Get<TextBox>("preBuildEvent").Text  = project.PreBuildEvent; 
+			this.project = (AdvancedMSBuildProject)((Properties)CustomizationObject).Get("Project");
+			
+			Get<TextBox>("preBuildEvent").Text  = project.PreBuildEvent;
 			Get<TextBox>("preBuildEvent").TextChanged += new EventHandler(Save);
 			
 			Get<TextBox>("postBuildEvent").Text = project.PostBuildEvent;
@@ -38,15 +39,15 @@ namespace VBNetBinding.OptionPanels
 			
 		}
 		
-		void Save(object sender, EventArgs e) 
+		void Save(object sender, EventArgs e)
 		{
 			StorePanelContents();
 		}
 		
 		public override bool StorePanelContents()
 		{
-			project.PreBuildEvent  = Get<TextBox>("preBuildEvent").Text; 
-			project.PostBuildEvent = Get<TextBox>("postBuildEvent").Text; 
+			project.PreBuildEvent  = Get<TextBox>("preBuildEvent").Text;
+			project.PostBuildEvent = Get<TextBox>("postBuildEvent").Text;
 			project.RunPostBuildEvent = (RunPostBuildEvent)Get<ComboBox>("runPostBuildEvent").SelectedIndex;
 			project.Save();
 			return true;

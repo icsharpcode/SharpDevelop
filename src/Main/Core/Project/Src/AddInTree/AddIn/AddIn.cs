@@ -18,7 +18,7 @@ namespace ICSharpCode.Core
 		public object CreateObject(string className)
 		{
 			foreach (Runtime runtime in runtimes) {
-				object o = runtime.CreateInstance(Path.GetDirectoryName(addInFileName), className);
+				object o = runtime.CreateInstance(className);
 				if (o != null) {
 					return o;
 				}
@@ -54,7 +54,7 @@ namespace ICSharpCode.Core
 		{
 		}
 		
-		static void SetupAddIn(XmlTextReader reader, AddIn addIn)
+		static void SetupAddIn(XmlTextReader reader, AddIn addIn, string hintPath)
 		{	
 			while (reader.Read()) {
 				if (reader.NodeType == XmlNodeType.Element && reader.IsStartElement()) {
@@ -68,7 +68,7 @@ namespace ICSharpCode.Core
 									if (reader.NodeType == XmlNodeType.Element && reader.IsStartElement()) {
 										switch (reader.LocalName) {
 											case "Import":
-												addIn.runtimes.Add(Runtime.Read(addIn, reader));
+												addIn.runtimes.Add(Runtime.Read(addIn, reader, hintPath));
 												break;
 											default:
 												throw new AddInLoadException("Unknown node in runtime section :" + reader.LocalName);
@@ -84,9 +84,9 @@ namespace ICSharpCode.Core
 							if (!reader.IsEmptyElement) {
 								throw new AddInLoadException("Include nodes must be empty!");
 							}
-							string fileName = reader.GetAttribute(0);
+							string fileName = Path.Combine(hintPath, reader.GetAttribute(0));
 							using (XmlTextReader includeReader = new XmlTextReader(fileName)) {
-								SetupAddIn(includeReader, addIn);
+								SetupAddIn(includeReader, addIn, Path.GetDirectoryName(fileName));
 							}
 							break;
 						case "Path":
@@ -116,6 +116,11 @@ namespace ICSharpCode.Core
 		
 		public static AddIn Load(TextReader textReader)
 		{
+			return Load(textReader, ".");
+		}
+		
+		public static AddIn Load(TextReader textReader, string hintPath)
+		{
 			AddIn addIn = new AddIn();
 			using (XmlTextReader reader = new XmlTextReader(textReader)) {
 				while (reader.Read()){
@@ -123,7 +128,7 @@ namespace ICSharpCode.Core
 						switch (reader.LocalName) {
 							case "AddIn":
 								addIn.properties = Properties.ReadFromAttributes(reader);
-								SetupAddIn(reader, addIn);
+								SetupAddIn(reader, addIn, hintPath);
 								break;
 							default:
 								throw new AddInLoadException("Unknown add-in file.");
@@ -138,7 +143,7 @@ namespace ICSharpCode.Core
 		{
 			try {
 				using (TextReader textReader = File.OpenText(fileName)) {
-					AddIn addIn = Load(textReader);
+					AddIn addIn = Load(textReader, Path.GetDirectoryName(fileName));
 					addIn.addInFileName = fileName;
 					return addIn;
 				}

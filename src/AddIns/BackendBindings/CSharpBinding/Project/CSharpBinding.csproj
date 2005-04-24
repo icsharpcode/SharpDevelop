@@ -34,38 +34,14 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\AdvancedBuildOptionsDialog.xfrm" />
-    <EmbeddedResource Include="Resources\ApplicationSettings.xfrm" />
-    <EmbeddedResource Include="Resources\BuildEvents.xfrm" />
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
-    <EmbeddedResource Include="Resources\DebugOptions.xfrm" />
-    <EmbeddedResource Include="Resources\Publish.xfrm" />
-    <EmbeddedResource Include="Resources\ReferencePaths.xfrm" />
-    <EmbeddedResource Include="Resources\Signing.xfrm" />
     <Compile Include="Src\CSharpAmbience.cs" />
     <Compile Include="Src\CSharpBindingExecutionManager.cs" />
     <Compile Include="Src\CSharpLanguageBinding.cs" />
     <Compile Include="Src\FormattingStrategy\CSharpFormattingStrategy.cs" />
     <Compile Include="Src\FormattingStrategy\DocumentAccessor.cs" />
     <Compile Include="Src\FormattingStrategy\Indentation.cs" />
-    <Compile Include="Src\OptionPanels\ApplicationSettings.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\OptionPanels\BuildEvents.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
     <Compile Include="Src\OptionPanels\BuildOptions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\OptionPanels\DebugOptions.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\OptionPanels\Publish.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\OptionPanels\ReferencePaths.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
-    <Compile Include="Src\OptionPanels\Signing.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Parser\ExpressionFinder.cs" />

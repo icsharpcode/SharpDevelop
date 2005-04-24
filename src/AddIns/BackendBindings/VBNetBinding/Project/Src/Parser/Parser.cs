@@ -19,7 +19,7 @@ namespace VBNetBinding.Parser
 {
 	public class TParser : IParser
 	{
-		///<summary>IParser Interface</summary> 
+		///<summary>IParser Interface</summary>
 		string[] lexerTags;
 
 		public string[] LexerTags
@@ -93,34 +93,36 @@ namespace VBNetBinding.Parser
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName)
 		{
 			Properties textEditorProperties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(fileName, Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252)));
-			p.Lexer.SpecialCommentTags = lexerTags;
-			p.Parse();
+			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(fileName, Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252)))) {
+				p.Lexer.SpecialCommentTags = lexerTags;
+				p.Parse();
 
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
-			visitor.Visit(p.CompilationUnit, null);
-			visitor.Cu.FileName = fileName;
-			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
-			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
-			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
-			return visitor.Cu;
+				NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
+				visitor.Visit(p.CompilationUnit, null);
+				visitor.Cu.FileName = fileName;
+				visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
+				RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
+				AddCommentTags(visitor.Cu, p.Lexer.TagComments);
+				return visitor.Cu;
+			}
 		}
 
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
-			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp, new StringReader(fileContent));
-			p.Lexer.SpecialCommentTags = lexerTags;
-			p.Parse();
+			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp, new StringReader(fileContent))) {
+				p.Lexer.SpecialCommentTags = lexerTags;
+				p.Parse();
 
-			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
-			visitor.Visit(p.CompilationUnit, null);
-			visitor.Cu.FileName = fileName;
-			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
-			visitor.Cu.Tag = p.CompilationUnit;
-
-			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
-			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
-			return visitor.Cu;
+				NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
+				visitor.Visit(p.CompilationUnit, null);
+				visitor.Cu.FileName = fileName;
+				visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
+				visitor.Cu.Tag = p.CompilationUnit;
+				
+				RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
+				AddCommentTags(visitor.Cu, p.Lexer.TagComments);
+				return visitor.Cu;
+			}
 		}
 
 		void AddCommentTags(ICompilationUnit cu, ArrayList tagComments)

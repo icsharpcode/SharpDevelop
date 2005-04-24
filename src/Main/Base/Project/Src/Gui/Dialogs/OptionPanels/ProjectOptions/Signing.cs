@@ -4,17 +4,18 @@ using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
-	
-namespace CSharpBinding.OptionPanels
+using ICSharpCode.SharpDevelop.Project;
+
+namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	public class Signing : AbstractOptionPanel
 	{
-		CSharpProject project;
+		AdvancedMSBuildProject project;
 		
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.Signing.xfrm"));
-			this.project = (CSharpProject)((Properties)CustomizationObject).Get("Project");
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ProjectOptions.Signing.xfrm"));
+			this.project = (AdvancedMSBuildProject)((Properties)CustomizationObject).Get("Project");
 			
 			Get<CheckBox>("signAssembly").Checked = project.SignAssembly;
 			Get<CheckBox>("signAssembly").CheckedChanged += new EventHandler(UpdateEnabledStates);
@@ -46,7 +47,7 @@ namespace CSharpBinding.OptionPanels
 		}
 		
 		
-		void Save(object sender, EventArgs e) 
+		void Save(object sender, EventArgs e)
 		{
 			StorePanelContents();
 		}
