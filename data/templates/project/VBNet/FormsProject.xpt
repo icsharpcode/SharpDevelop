@@ -71,7 +71,7 @@ Namespace ${StandardNamespace}
 			'
 			'Form1
 			'
-			Me.AutoScaleBaseSize = New System.Drawing.Size(5, 13)
+			Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
 			Me.ClientSize = New System.Drawing.Size(292, 266)
 			Me.Name = "MainForm"
 			Me.Text = "MainForm"
