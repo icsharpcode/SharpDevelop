@@ -15,6 +15,10 @@ namespace DebuggerLibrary
 		int startColumn;
 		int endLine;
 		int endColumn;
+		int ilOffset;
+		int ilStart;
+		int ilEnd;
+		int[] stepRanges;
 		ISymbolDocument symUnmanagedDocument;
 		
 		public string ModuleFilename {
@@ -83,6 +87,42 @@ namespace DebuggerLibrary
 			}
 			set {
 				symUnmanagedDocument = value;
+			}
+		}
+
+		public int[] StepRanges {
+			get {
+				return stepRanges;
+			}
+			set {
+				stepRanges = value;
+			}
+		}
+
+		public int ILOffset {
+			get { 
+				return ilOffset;
+			}
+			set {
+				ilOffset = value;
+			}
+		}
+
+		public int ILStart {
+			get { 
+				return ilStart;
+			}
+			set {
+				ilStart = value;
+			}
+		}
+
+		public int ILEnd {
+			get { 
+				return ilEnd;
+			}
+			set {
+				ilEnd = value;
 			}
 		}
 	}

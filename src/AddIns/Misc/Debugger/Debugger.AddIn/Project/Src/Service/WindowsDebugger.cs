@@ -319,12 +319,19 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		public void JumpToCurrentLine()
 		{
+			//StatusBarService.SetMessage("Source code not aviable!");
 			try {
 				if (selectedFunction == null) {
 					return;
 				}
 				SourcecodeSegment nextStatement = selectedFunction.NextStatement;
 				DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
+
+				string stepRanges = "";
+				foreach (int i in nextStatement.StepRanges) {
+					stepRanges += i.ToString("X") + " ";
+				}
+				//StatusBarService.SetMessage("IL:" + nextStatement.ILOffset.ToString("X") + " StepRange:" + stepRanges + "    ");
 			} catch (NextStatementNotAviableException) {
 				System.Diagnostics.Debug.Fail("Source code not aviable!");
 			}
