@@ -114,6 +114,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void AddVariables (TreeListViewItemCollection items, VariableCollection vars)
 		{
  			foreach (Variable var in vars) {
+				if (var.Name.StartsWith("CS$")) continue;
 				TreeListViewItem newItem = new TreeListViewItem();
 				newItem.Tag = var;
  				newItem.Text = var.Name;

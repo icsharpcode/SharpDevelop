@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					try {
 						item.SubItems.Add(e.Thread.CurrentFunction.Name);
 					} catch (CurrentFunctionNotAviableException) {
-						item.SubItems.Add("<unaviable>");
+						item.SubItems.Add("N/A");
 					}
 					item.SubItems.Add(e.Thread.Priority.ToString());
 					item.SubItems.Add(e.Thread.Suspended.ToString());

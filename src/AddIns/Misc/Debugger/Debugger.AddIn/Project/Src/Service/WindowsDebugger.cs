@@ -355,6 +355,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public string GetValueAsString(string variableName)
 		{
+			if (!NDebugger.IsDebugging || NDebugger.IsProcessRunning) return null;
 			VariableCollection collection = NDebugger.LocalVariables;
 			if (collection == null)
 				return null;
