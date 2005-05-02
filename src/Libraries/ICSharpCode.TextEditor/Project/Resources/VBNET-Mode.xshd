@@ -178,6 +178,7 @@
 		        <Key word = "Goto" />
 		        <Key word = "Overloads" />
 		        <Key word = "Overrides" />
+		        <Key word = "Shadows" />
 		        <Key word = "CantOverride" />
 		        <Key word = "MustOverride" />
 		        <Key word = "Protected" />
