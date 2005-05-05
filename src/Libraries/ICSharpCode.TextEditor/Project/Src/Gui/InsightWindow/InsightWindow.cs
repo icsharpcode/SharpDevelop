@@ -67,8 +67,9 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 			
 			int xpos = control.ActiveTextAreaControl.TextArea.TextView.GetDrawingXPos(caretPos.Y, caretPos.X);
 			int ypos = (control.ActiveTextAreaControl.Document.GetVisibleLine(caretPos.Y) + 1) * control.ActiveTextAreaControl.TextArea.TextView.FontHeight - control.ActiveTextAreaControl.TextArea.VirtualTop.Y;
+			int rulerHeight = control.TextEditorProperties.ShowHorizontalRuler ? control.ActiveTextAreaControl.TextArea.TextView.FontHeight : 0;
 			
-	 		Point p = control.ActiveTextAreaControl.PointToScreen(new Point(xpos, ypos));
+	 		Point p = control.ActiveTextAreaControl.PointToScreen(new Point(xpos, ypos + rulerHeight));
 			if (p.Y != Location.Y) {
 				Location = p;
 			}
