@@ -50,6 +50,9 @@ namespace ICSharpCode.TextEditor.Document
 			if (length == 0) {
 				return "";
 			}
+			if (offset == 0 && length >= storedText.Length) {
+				return storedText;
+			}
 			return storedText.Substring(offset, Math.Min(length, storedText.Length - offset));
 		}
 		

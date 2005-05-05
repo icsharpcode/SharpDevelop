@@ -395,7 +395,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						string[] subdirs = relPath.Split(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar);
 						StringBuilder standardNameSpace = new StringBuilder(project.RootNamespace);
 						foreach(string subdir in subdirs) {
-							if (subdir == "." || subdir == ".." || subdir == "")
+							if (subdir == "." || subdir == ".." || subdir == "" || subdir.Equals("src", StringComparison.OrdinalIgnoreCase))
 								continue;
 							standardNameSpace.Append('.');
 							standardNameSpace.Append(GenerateValidClassName(subdir));

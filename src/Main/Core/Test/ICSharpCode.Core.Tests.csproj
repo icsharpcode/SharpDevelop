@@ -43,6 +43,7 @@
     <Compile Include="AddInTreeTests\AddInTreeLoadingTests.cs" />
     <Compile Include="AddInTreeTests\ExtPathTests.cs" />
     <Compile Include="TopologicalSortTest.cs" />
+    <Compile Include="StringParserTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="AddInTreeTests\" />

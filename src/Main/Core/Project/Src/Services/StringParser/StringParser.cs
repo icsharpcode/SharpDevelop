@@ -76,13 +76,16 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		readonly static Regex pattern = new Regex(@"\$\{([^\}]*)\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
+		//readonly static Regex pattern = new Regex(@"\$\{([^\}]*)\}", RegexOptions.Compiled | RegexOptions.CultureInvariant);
 		
 		/// <summary>
 		/// Expands ${xyz} style property values.
 		/// </summary>
 		public static string Parse(string input, string[,] customTags)
 		{
+			// Parse is a important method and should have good performance,
+			// so we don't use an expensive Regex here.
+			/*
 			string output = input;
 			if (input != null) {
 				foreach (Match m in pattern.Matches(input)) {
@@ -103,6 +106,54 @@ namespace ICSharpCode.Core
 				}
 			}
 			return output;
+			 */
+			if (input == null)
+				return null;
+			int pos = 0;
+			StringBuilder output = null;
+			do {
+				int oldPos = pos;
+				pos = input.IndexOf("${", pos);
+				if (pos < 0) {
+					if (output == null) {
+						return input;
+					} else {
+						if (oldPos < input.Length) {
+							// normal text after last property
+							output.Append(input, oldPos, input.Length - oldPos);
+						}
+						return output.ToString();
+					}
+				}
+				if (output == null) {
+					if (pos == 0)
+						output = new StringBuilder();
+					else
+						output = new StringBuilder(input, 0, pos, pos + 16);
+				} else {
+					if (pos > oldPos) {
+						// normal text between two properties
+						output.Append(input, oldPos, pos - oldPos);
+					}
+				}
+				int end = input.IndexOf('}', pos + 1);
+				if (end < 0) {
+					output.Append("${");
+					pos += 2;
+				} else {
+					string property = input.Substring(pos + 2, end - pos - 2);
+					string val = GetValue(property, customTags);
+					if (val == null) {
+						output.Append("${");
+						output.Append(property);
+						output.Append('}');
+					} else {
+						output.Append(val);
+					}
+					pos = end + 1;
+				}
+			} while (pos < input.Length);
+			return output.ToString();
 		}
 		
 		static string GetValue(string propertyName, string[,] customTags)
@@ -116,14 +167,14 @@ namespace ICSharpCode.Core
 					return null;
 				}
 			}
-			if (propertyName.Equals("DATE", StringComparison.InvariantCultureIgnoreCase))
+			if (propertyName.Equals("DATE", StringComparison.OrdinalIgnoreCase))
 				return DateTime.Today.ToShortDateString();
-			if (propertyName.Equals("TIME", StringComparison.InvariantCultureIgnoreCase))
+			if (propertyName.Equals("TIME", StringComparison.OrdinalIgnoreCase))
 				return DateTime.Now.ToShortTimeString();
 			
 			if (customTags != null) {
 				for (int j = 0; j < customTags.GetLength(0); ++j) {
-					if (propertyName.Equals(customTags[j, 0], StringComparison.InvariantCultureIgnoreCase)) {
+					if (propertyName.Equals(customTags[j, 0], StringComparison.OrdinalIgnoreCase)) {
 						return customTags[j, 1];
 					}
 				}
