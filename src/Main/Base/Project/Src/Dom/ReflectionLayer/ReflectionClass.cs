@@ -14,7 +14,7 @@ using System.Collections.Generic;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class ReflectionClass : AbstractClass
+	public class ReflectionClass : DefaultClass
 	{
 		Type type;
 		
@@ -137,25 +137,25 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public ReflectionClass(ICompilationUnit compilationUnit, Type type, IClass declaringType) : base(compilationUnit, declaringType)
 		{
 			this.type = type;
-			FullyQualifiedName = type.FullName.Replace("+", ".");
+			FullyQualifiedName = type.FullName.Replace('+', '.');
 			
 			// set classtype
 			if (IsDelegate(type)) {
-				classType = ClassType.Delegate;
+				this.ClassType = ClassType.Delegate;
 				MethodInfo invoke          = type.GetMethod("Invoke");
 				ReflectionMethod newMethod = new ReflectionMethod(invoke, this);
 				Methods.Add(newMethod);
 			} else if (type.IsInterface) {
-				classType = ClassType.Interface;
+				this.ClassType = ClassType.Interface;
 			} else if (type.IsEnum) {
-				classType = ClassType.Enum;
+				this.ClassType = ClassType.Enum;
 			} else if (type.IsValueType) {
-				classType = ClassType.Struct;
+				this.ClassType = ClassType.Struct;
 			} else {
-				classType = ClassType.Class;
+				this.ClassType = ClassType.Class;
 			}
 			
-			modifiers = ModifierEnum.None;
+			ModifierEnum modifiers  = ModifierEnum.None;
 			
 			if (type.IsNestedAssembly) {
 				modifiers |= ModifierEnum.Internal;
@@ -181,6 +181,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				modifiers |= ModifierEnum.Protected;
 				modifiers |= ModifierEnum.Internal;
 			}
+			this.Modifiers = modifiers;
 			
 			// set base classes
 			if (type.BaseType != null) { // it's null for System.Object ONLY !!!

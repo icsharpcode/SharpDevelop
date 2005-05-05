@@ -13,15 +13,11 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
-	public class Using : AbstractUsing
-	{
-	}
-	
 	public class NRefactoryASTConvertVisitor : RefParser.AbstractASTVisitor
 	{
 		ICompilationUnit cu;
 		Stack currentNamespace = new Stack();
-		Stack<Class> currentClass = new Stack<Class>();
+		Stack<DefaultClass> currentClass = new Stack<DefaultClass>();
 		
 		public ICompilationUnit Cu {
 			get {
@@ -31,32 +27,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public NRefactoryASTConvertVisitor(IProjectContent projectContent)
 		{
-			cu = new CompilationUnit(projectContent);
+			cu = new DefaultCompilationUnit(projectContent);
 		}
 		
-		Class GetCurrentClass()
+		DefaultClass GetCurrentClass()
 		{
 			return currentClass.Count == 0 ? null : currentClass.Peek();
-		}
-		
-		
-		// TODO: kill abstract compilation unit, replace with implementation. Maybe the whole Abstract layer ?
-		public class CompilationUnit : AbstractCompilationUnit
-		{
-			public CompilationUnit(IProjectContent projectContent) : base(projectContent)
-			{
-			}
-			
-			public override List<IComment> MiscComments {
-				get {
-					return null;
-				}
-			}
-			public override List<IComment> DokuComments {
-				get {
-					return null;
-				}
-			}
 		}
 		
 		public override object Visit(AST.CompilationUnit compilationUnit, object data)
@@ -71,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(AST.UsingDeclaration usingDeclaration, object data)
 		{
-			Using us = new Using();
+			DefaultUsing us = new DefaultUsing(cu.ProjectContent, GetRegion(usingDeclaration.StartLocation, usingDeclaration.EndLocation));
 			foreach (AST.Using u in usingDeclaration.Usings) {
 				u.AcceptVisitor(this, us);
 			}
@@ -81,8 +57,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(AST.Using u, object data)
 		{
-			Debug.Assert(data is Using);
-			Using us = (Using)data;
+			Debug.Assert(data is DefaultUsing);
+			DefaultUsing us = (DefaultUsing)data;
 			if (u.IsAlias) {
 				us.Aliases[u.Alias] = u.Name;
 			} else {
@@ -98,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			foreach (AST.AttributeSection section in attributes) {
 				List<IAttribute> resultAttributes = new List<IAttribute>();
 				foreach (AST.Attribute attribute in section.Attributes) {
-					IAttribute a = new ASTAttribute(attribute.Name, new ArrayList(attribute.PositionalArguments), new SortedList());
+					IAttribute a = new DefaultAttribute(attribute.Name, new ArrayList(attribute.PositionalArguments), new SortedList());
 					foreach (AST.NamedArgumentExpression n in attribute.NamedArguments) {
 						a.NamedArguments[n.Name] = n.Expression;
 					}
@@ -139,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 							
 					}
 				}
-				IAttributeSection s = new AttributeSection(target, resultAttributes);
+				IAttributeSection s = new DefaultAttributeSection(target, resultAttributes);
 				result.Add(s);
 			}
 			return result;
@@ -188,11 +164,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(AST.TypeDeclaration typeDeclaration, object data)
 		{
 			DefaultRegion region = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
-			Class c = new Class(cu, TranslateClassType(typeDeclaration.Type), typeDeclaration.Modifier, region, GetCurrentClass());
+			DefaultClass c = new DefaultClass(cu, TranslateClassType(typeDeclaration.Type), (ModifierEnum)typeDeclaration.Modifier, region, GetCurrentClass());
 			c.Attributes.AddRange(VisitAttributes(typeDeclaration.Attributes));
 			
 			if (currentClass.Count > 0) {
-				Class cur = GetCurrentClass();
+				DefaultClass cur = GetCurrentClass();
 				cur.InnerClasses.Add(c);
 				c.FullyQualifiedName = cur.FullyQualifiedName + '.' + typeDeclaration.Name;
 			} else {
@@ -211,18 +187,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			currentClass.Push(c);
 			object ret = typeDeclaration.AcceptChildren(this, data);
 			currentClass.Pop();
-			c.UpdateModifier();
 			return ret;
 		}
 		
 		public override object Visit(AST.DelegateDeclaration delegateDeclaration, object data)
 		{
 			DefaultRegion region = GetRegion(delegateDeclaration.StartLocation, delegateDeclaration.EndLocation);
-			Class c = new Class(cu, ClassType.Delegate, delegateDeclaration.Modifier, region, GetCurrentClass());
+			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, (ModifierEnum)delegateDeclaration.Modifier, region, GetCurrentClass());
 			c.Attributes.AddRange(VisitAttributes(delegateDeclaration.Attributes));
 			c.BaseTypes.Add("System.Delegate");
 			if (currentClass.Count > 0) {
-				Class cur = GetCurrentClass();
+				DefaultClass cur = GetCurrentClass();
 				cur.InnerClasses.Add(c);
 				c.FullyQualifiedName = cur.FullyQualifiedName + '.' + delegateDeclaration.Name;
 			} else {
@@ -243,7 +218,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new Point(-1, -1));
 			ReturnType type = new ReturnType(methodDeclaration.TypeReference);
-			Class c       = GetCurrentClass();
+			DefaultClass c  = GetCurrentClass();
 			
 			Method method = new Method(methodDeclaration.Name, type, methodDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 			method.Attributes.AddRange(VisitAttributes(methodDeclaration.Attributes));
@@ -264,7 +239,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DefaultRegion region     = GetRegion(constructorDeclaration.StartLocation, constructorDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new Point(-1, -1));
-			Class c = GetCurrentClass();
+			DefaultClass c = GetCurrentClass();
 			
 			Constructor constructor = new Constructor(constructorDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 			constructor.Attributes.AddRange(VisitAttributes(constructorDeclaration.Attributes));
@@ -286,9 +261,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion region     = GetRegion(destructorDeclaration.StartLocation, destructorDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(destructorDeclaration.EndLocation, destructorDeclaration.Body != null ? destructorDeclaration.Body.EndLocation : new Point(-1, -1));
 			
-			Class c = GetCurrentClass();
+			DefaultClass c = GetCurrentClass();
 			
-			Destructor destructor = new Destructor(c.Name, destructorDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
+			Destructor destructor = new Destructor(region, bodyRegion, c);
 			destructor.Attributes.AddRange(VisitAttributes(destructorDeclaration.Attributes));
 			c.Methods.Add(destructor);
 			return null;
@@ -298,7 +273,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(AST.FieldDeclaration fieldDeclaration, object data)
 		{
 			DefaultRegion region = GetRegion(fieldDeclaration.StartLocation, fieldDeclaration.EndLocation);
-			Class c = GetCurrentClass();
+			DefaultClass c = GetCurrentClass();
 			if (currentClass.Count > 0) {
 				for (int i = 0; i < fieldDeclaration.Fields.Count; ++i) {
 					AST.VariableDeclaration field = (AST.VariableDeclaration)fieldDeclaration.Fields[i];
@@ -311,7 +286,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					Field f = new Field(retType, field.Name, fieldDeclaration.Modifier, region, c);
 					f.Attributes.AddRange(VisitAttributes(fieldDeclaration.Attributes));
 					if (c.ClassType == ClassType.Enum) {
-						f.SetModifiers(ModifierEnum.Const | ModifierEnum.SpecialName);
+						f.Modifiers = ModifierEnum.Const | ModifierEnum.Public;
 					}
 					
 					c.Fields.Add(f);
@@ -326,7 +301,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion bodyRegion = GetRegion(propertyDeclaration.BodyStart,     propertyDeclaration.BodyEnd);
 			
 			ReturnType type = new ReturnType(propertyDeclaration.TypeReference);
-			Class c = GetCurrentClass();
+			DefaultClass c = GetCurrentClass();
 			
 			Property property = new Property(propertyDeclaration.Name, type, propertyDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 			property.Attributes.AddRange(VisitAttributes(propertyDeclaration.Attributes));
@@ -339,17 +314,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion region     = GetRegion(eventDeclaration.StartLocation, eventDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(eventDeclaration.BodyStart,     eventDeclaration.BodyEnd);
 			ReturnType type = new ReturnType(eventDeclaration.TypeReference);
-			Class c = GetCurrentClass();
-			Event e = null;
+			DefaultClass c = GetCurrentClass();
+			DefaultEvent e = null;
 			
 			if (eventDeclaration.VariableDeclarators != null) {
 				foreach (ICSharpCode.NRefactory.Parser.AST.VariableDeclaration varDecl in eventDeclaration.VariableDeclarators) {
-					e = new Event(varDecl.Name, type, eventDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
+					e = new DefaultEvent(varDecl.Name, type, (ModifierEnum)eventDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 					e.Attributes.AddRange(VisitAttributes(eventDeclaration.Attributes));
 					c.Events.Add(e);
 				}
 			} else {
-				e = new Event(eventDeclaration.Name, type, eventDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
+				e = new DefaultEvent(eventDeclaration.Name, type, (ModifierEnum)eventDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
 				e.Attributes.AddRange(VisitAttributes(eventDeclaration.Attributes));
 				c.Events.Add(e);
 			}
@@ -370,7 +345,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					parameters.Add(p);
 				}
 			}
-			Class c = GetCurrentClass();
+			DefaultClass c = GetCurrentClass();
 			c.Indexer.Add(i);
 			return null;
 		}

@@ -23,10 +23,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			set {
 			}
 		}
-		public ReflectionProperty(PropertyInfo propertyInfo, IClass declaringType) : base(declaringType)
+		public ReflectionProperty(PropertyInfo propertyInfo, IClass declaringType) : base(declaringType, propertyInfo.Name)
 		{
 			this.propertyInfo = propertyInfo;
-			FullyQualifiedName = String.Concat(propertyInfo.DeclaringType.FullName, ".", propertyInfo.Name);
 			
 			// show the abstract layer that we have getter & setters
 			if (propertyInfo.CanRead) {
@@ -52,6 +51,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				} catch (Exception) {}
 			}
 			
+			ModifierEnum modifiers  = ModifierEnum.None;
 			if (methodBase != null) {
 				if (methodBase.IsStatic) {
 					modifiers |= ModifierEnum.Static;
@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} else { // assume public property, if no methodBase could be get.
 				modifiers = ModifierEnum.Public;
 			}
-			
+			this.Modifiers = modifiers;
 		}
 	}
 }

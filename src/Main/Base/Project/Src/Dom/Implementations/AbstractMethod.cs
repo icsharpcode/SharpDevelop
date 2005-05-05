@@ -40,14 +40,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 				parameters = value;
 			}
 		}
-
+		
 		public virtual bool IsConstructor {
 			get {
-				return returnType == null || Name == "#ctor";
+				return ReturnType == null || Name == "#ctor";
 			}
 		}
 		
-		public AbstractMethod(IClass declaringType) : base(declaringType)
+		public AbstractMethod(IClass declaringType, string name) : base(declaringType, name)
 		{
 		}
 		

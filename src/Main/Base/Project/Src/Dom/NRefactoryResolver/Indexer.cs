@@ -8,20 +8,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
 	public class Indexer : AbstractIndexer
 	{
-		public void AddModifier(ModifierEnum m)
-		{
-			modifiers = modifiers | m;
-		}
-		
 		public Indexer(ReturnType type, List<IParameter> parameters, Modifier m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType)
 		{
-			returnType      = type;
+			this.ReturnType      = type;
 			this.Parameters = parameters;
-			this.region     = region;
+			this.Region     = region;
 			this.bodyRegion = bodyRegion;
-			modifiers = (ModifierEnum)m;
-			if (modifiers == ModifierEnum.None) {
-				modifiers = ModifierEnum.Private;
+			Modifiers = (ModifierEnum)m;
+			if (Modifiers == ModifierEnum.None) {
+				Modifiers = ModifierEnum.Private;
 			}
 		}
 	}

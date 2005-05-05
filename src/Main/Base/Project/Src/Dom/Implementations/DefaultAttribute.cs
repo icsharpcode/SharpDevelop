@@ -11,12 +11,18 @@ using System.Collections.Generic;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class AbstractAttributeSection : IAttributeSection
+	public class DefaultAttributeSection : IAttributeSection
 	{
-		protected AttributeTarget     attributeTarget;
+		AttributeTarget attributeTarget;
 		List<IAttribute> attributes = null;
-
-		public virtual AttributeTarget AttributeTarget {
+		
+		public DefaultAttributeSection(AttributeTarget attributeTarget, List<IAttribute> attributes)
+		{
+			this.attributeTarget = attributeTarget;
+			this.attributes = attributes;
+		}
+		
+		public AttributeTarget AttributeTarget {
 			get {
 				return attributeTarget;
 			}
@@ -24,16 +30,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				attributeTarget = value;
 			}
 		}
-
-		public virtual List<IAttribute> Attributes {
+		
+		public List<IAttribute> Attributes {
 			get {
-				if (attributes == null) {
-					attributes = new List<IAttribute>();
-				}
 				return attributes;
-			}
-			set {
-				attributes = value;
 			}
 		}
 		
@@ -51,13 +51,27 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 	}
 	
-	public abstract class AbstractAttribute : IAttribute
+	public class DefaultAttribute : IAttribute
 	{
-		protected string name;
-		protected ArrayList positionalArguments = new ArrayList();
-		protected SortedList namedArguments = new SortedList();
-
-		public virtual string Name {
+		string name;
+		ArrayList positionalArguments;
+		SortedList namedArguments;
+		
+		public DefaultAttribute(string name)
+		{
+			this.name = name;
+			this.positionalArguments = new ArrayList();
+			this.namedArguments = new SortedList();
+		}
+		
+		public DefaultAttribute(string name, ArrayList positionalArguments, SortedList namedArguments)
+		{
+			this.name = name;
+			this.positionalArguments = positionalArguments;
+			this.namedArguments = namedArguments;
+		}
+		
+		public string Name {
 			get {
 				return name;
 			}
@@ -65,20 +79,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 				name = value;
 			}
 		}
-		public virtual ArrayList PositionalArguments { // [expression]
+		public ArrayList PositionalArguments { // [expression]
 			get {
 				return positionalArguments;
 			}
-			set {
-				positionalArguments = value;
-			}
 		}
-		public virtual SortedList NamedArguments { // string/expression
+		public SortedList NamedArguments { // string/expression
 			get {
 				return namedArguments;
-			}
-			set {
-				namedArguments = value;
 			}
 		}
 		

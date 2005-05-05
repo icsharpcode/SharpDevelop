@@ -72,7 +72,7 @@ namespace ICSharpCode.Core
 		{
 			CaseSensitiveProjectContent newProjectContent = new CaseSensitiveProjectContent();
 			
-			ICompilationUnit assemblyCompilationUnit = new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryASTConvertVisitor.CompilationUnit(newProjectContent);
+			ICompilationUnit assemblyCompilationUnit = new DefaultCompilationUnit(newProjectContent);
 			
 			foreach (Type type in assembly.GetTypes()) {
 				if (!type.FullName.StartsWith("<") && type.IsPublic) {
@@ -339,16 +339,18 @@ namespace ICSharpCode.Core
 		public IClass SearchType(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn)
 		{
 //			Console.WriteLine("SearchType({0})", name);
-			if (name == null || name == String.Empty) {
+			if (name == null || name.Length == 0) {
 				return null;
 			}
-			IClass c  = GetClass(name);
+			// Try if name is already the full type name
+			IClass c = GetClass(name);
 			if (c != null) {
 				return c;
 			}
 			if (unit != null) {
+				// Combine name with usings
 				foreach (IUsing u in unit.Usings) {
-					if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+					if (u != null) {
 						c = u.SearchType(name);
 						if (c != null) {
 							return c;
@@ -359,45 +361,22 @@ namespace ICSharpCode.Core
 			if (curType == null) {
 				return null;
 			}
+			// Try parent namespaces of the current class
 			string fullname = curType.FullyQualifiedName;
 			string[] namespaces = fullname.Split('.');
 			StringBuilder curnamespace = new StringBuilder();
 			for (int i = 0; i < namespaces.Length; ++i) {
 				curnamespace.Append(namespaces[i]);
 				curnamespace.Append('.');
-				StringBuilder nms=new StringBuilder(curnamespace.ToString());
-				nms.Append(name);
-				c = GetClass(nms.ToString());
+				
+				curnamespace.Append(name);
+				c = GetClass(curnamespace.ToString());
 				if (c != null) {
 					return c;
 				}
+				// remove class name again to try next namespace
+				curnamespace.Length -= name.Length;
 			}
-
-			//// Alex: try to find in namespaces referenced excluding system ones which were checked already
-			string[] innamespaces = GetNamespaceList("");
-			foreach (string ns in innamespaces) {
-//				if (Array.IndexOf(ParserService.assemblyList,ns)>=0) continue;
-				ArrayList objs=GetNamespaceContents(ns);
-				if (objs==null) continue;
-				foreach (object o in objs) {
-					if (o is IClass) {
-						IClass oc=(IClass)o;
-						//  || oc.Name==name
-						if (oc.FullyQualifiedName == name) {
-							//Debug.WriteLine(((IClass)o).Name);
-							/// now we can set completion data
-							objs.Clear();
-							objs = null;
-							return oc;
-						}
-					}
-				}
-				if (objs == null) {
-					break;
-				}
-			}
-			innamespaces=null;
-//// Alex: end of mod
 			return null;
 		}
 		

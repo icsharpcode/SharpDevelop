@@ -24,12 +24,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionField(FieldInfo fieldInfo, IClass declaringType) : base(declaringType)
+		public ReflectionField(FieldInfo fieldInfo, IClass declaringType) : base(declaringType, fieldInfo.Name)
 		{
 			this.fieldInfo = fieldInfo;
-			System.Diagnostics.Debug.Assert(fieldInfo != null);
-			FullyQualifiedName = String.Concat(fieldInfo.DeclaringType.FullName, ".", fieldInfo.Name);
 			
+			ModifierEnum modifiers  = ModifierEnum.None;
 			if (fieldInfo.IsInitOnly) {
 				modifiers |= ModifierEnum.Readonly;
 			}
@@ -58,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (fieldInfo.IsLiteral) {
 				modifiers |= ModifierEnum.Const;
 			}
+			this.Modifiers = modifiers;
 		}
 	}
 }

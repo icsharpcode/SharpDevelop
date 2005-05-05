@@ -7,20 +7,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
 	public class Property : AbstractProperty
 	{
-		public void AddModifier(ModifierEnum m)
+		public Property(string name, ReturnType type, Modifier m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType, name)
 		{
-			modifiers = modifiers | m;
-		}
-		
-		public Property(string name, ReturnType type, Modifier m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType)
-		{
-			this.FullyQualifiedName = declaringType.FullyQualifiedName + "." + name;
-			returnType = type;
-			this.region = region;
+			this.ReturnType = type;
+			this.Region = region;
 			this.bodyRegion = bodyRegion;
-			modifiers = (ModifierEnum)m;
-			if (modifiers == ModifierEnum.None) {
-				modifiers = ModifierEnum.Private;
+			Modifiers = (ModifierEnum)m;
+			if (Modifiers == ModifierEnum.None) {
+				Modifiers = ModifierEnum.Private;
 			}
 		}
 	}

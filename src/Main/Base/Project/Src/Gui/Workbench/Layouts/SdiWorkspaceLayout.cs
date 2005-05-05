@@ -165,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					LoadDefaultLayoutConfiguration();
 				}
 			} catch {
-				LoadDefaultLayoutConfiguration();
+				// ignore errors loading configuration
 			}
 			ActivateVisiblePads();
 		}

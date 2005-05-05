@@ -14,8 +14,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public abstract class AbstractDecoration : MarshalByRefObject, IDecoration
 	{
-		protected ModifierEnum            modifiers     = ModifierEnum.None;
-		protected List<IAttributeSection> attributes    = null;
+		ModifierEnum            modifiers  = ModifierEnum.None;
+		List<IAttributeSection> attributes = null;
 		
 		IClass declaringType;
 		object userData = null;
@@ -26,7 +26,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		
 		public object UserData {
 			get {
 				return userData;
@@ -36,13 +35,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual ModifierEnum Modifiers {
+		public ModifierEnum Modifiers {
 			get {
 				return modifiers;
 			}
+			set {
+				modifiers = value;
+			}
 		}
 		
-		public virtual List<IAttributeSection> Attributes {
+		public List<IAttributeSection> Attributes {
 			get {
 				if (attributes == null) {
 					attributes = new List<IAttributeSection>();
@@ -50,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return attributes;
 			}
 		}
-
+		
 		public abstract string DocumentationTag {
 			get;
 		}
@@ -60,13 +62,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return (modifiers & ModifierEnum.Abstract) == ModifierEnum.Abstract;
 			}
 		}
-
+		
 		public bool IsSealed {
 			get {
 				return (modifiers & ModifierEnum.Sealed) == ModifierEnum.Sealed;
 			}
 		}
-
+		
 		public bool IsStatic {
 			get {
 				return (modifiers & ModifierEnum.Static) == ModifierEnum.Static;
@@ -78,79 +80,79 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return (modifiers & ModifierEnum.Const) == ModifierEnum.Const;
 			}
 		}
-
+		
 		public bool IsVirtual {
 			get {
 				return (modifiers & ModifierEnum.Virtual) == ModifierEnum.Virtual;
 			}
 		}
-
+		
 		public bool IsPublic {
 			get {
 				return (modifiers & ModifierEnum.Public) == ModifierEnum.Public;
 			}
 		}
-
+		
 		public bool IsProtected {
 			get {
 				return (modifiers & ModifierEnum.Protected) == ModifierEnum.Protected;
 			}
 		}
-
+		
 		public bool IsPrivate {
 			get {
 				return (modifiers & ModifierEnum.Private) == ModifierEnum.Private;
 			}
 		}
-
+		
 		public bool IsInternal {
 			get {
 				return (modifiers & ModifierEnum.Internal) == ModifierEnum.Internal;
 			}
 		}
-
+		
 		public bool IsProtectedAndInternal {
 			get {
 				return (modifiers & (ModifierEnum.Internal | ModifierEnum.Protected)) == (ModifierEnum.Internal | ModifierEnum.Protected);
 			}
 		}
-
+		
 		public bool IsProtectedOrInternal {
 			get {
 				return (modifiers & ModifierEnum.ProtectedOrInternal) == ModifierEnum.ProtectedOrInternal;
 			}
 		}
-
+		
 		public bool IsLiteral {
 			get {
 				return (modifiers & ModifierEnum.Const) == ModifierEnum.Const;
 			}
 		}
-
+		
 		public bool IsReadonly {
 			get {
 				return (modifiers & ModifierEnum.Readonly) == ModifierEnum.Readonly;
 			}
 		}
-
+		
 		public bool IsOverride {
 			get {
 				return (modifiers & ModifierEnum.Override) == ModifierEnum.Override;
 			}
 		}
-
+		
 		public bool IsFinal {
 			get {
 				return (modifiers & ModifierEnum.Final) == ModifierEnum.Final;
 			}
 		}
-
+		
 		public bool IsSpecialName {
 			get {
 				return (modifiers & ModifierEnum.SpecialName) == ModifierEnum.SpecialName;
 			}
 		}
-
+		
 		public bool IsNew {
 			get {
 				return (modifiers & ModifierEnum.New) == ModifierEnum.New;
@@ -206,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		
-		public virtual int CompareTo(IDecoration value) 
+		public virtual int CompareTo(IDecoration value)
 		{
 			int cmp;
 			
@@ -217,7 +219,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return DiffUtility.Compare(Attributes, value.Attributes);
 		}
 		
-		int IComparable.CompareTo(object value) 
+		int IComparable.CompareTo(object value)
 		{
 			return CompareTo((IDecoration)value);
 		}

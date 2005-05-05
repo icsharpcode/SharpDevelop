@@ -9,7 +9,7 @@ using System;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class Tag : Comment
+	public class Tag : MarshalByRefObject //Comment
 	{
 		string key;
 		
@@ -19,9 +19,31 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public Tag(string key, IRegion region) : base(region)
+		string commentString;
+		IRegion region;
+		
+		public string CommentString {
+			get {
+				return commentString;
+			}
+			set {
+				commentString = value;
+			}
+		}
+		
+		public IRegion Region {
+			get {
+				return region;
+			}
+			set {
+				region = value;
+			}
+		}
+		
+		public Tag(string key, IRegion region)
 		{
 			this.key = key;
+			this.region = region;
 		}
 	}
 }

@@ -88,12 +88,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			
 			if (cu.DokuComments != null) {
-				foreach (Comment c in cu.DokuComments) {
+				foreach (IComment c in cu.DokuComments) {
 					foldMarkers.Add(new FoldMarker(document, c.Region.BeginLine - 1, c.Region.BeginColumn - 1,
 					                               c.Region.EndLine - 1, c.Region.EndColumn - 1));
 				}
 			}
-			
 			return foldMarkers;
 		}
 	}

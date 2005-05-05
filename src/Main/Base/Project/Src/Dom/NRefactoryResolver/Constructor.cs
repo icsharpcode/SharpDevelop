@@ -7,19 +7,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
 	public class Constructor : AbstractMethod
 	{
-		public void AddModifier(ModifierEnum m)
+		public Constructor(Modifier m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType, "#ctor")
 		{
-			modifiers = modifiers | m;
-		}
-		
-		public Constructor(Modifier m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType)
-		{
-			FullyQualifiedName = "#ctor";
-			this.region     = region;
+			this.Region     = region;
 			this.bodyRegion = bodyRegion;
-			modifiers = (ModifierEnum)m;
-			if (modifiers == ModifierEnum.None) {
-				modifiers = ModifierEnum.Private;
+			Modifiers = (ModifierEnum)m;
+			if (Modifiers == ModifierEnum.None) {
+				Modifiers = ModifierEnum.Private;
 			}
 		}
 	}

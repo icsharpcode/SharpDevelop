@@ -57,7 +57,7 @@ namespace ICSharpCode.Core
 				}
 			} catch (Exception) {
 				try {
-					assembly = Assembly.ReflectionOnlyLoad(item.Include);
+					assembly = LoadGACAssembly(item.Include, true);
 					if (assembly != null) {
 						contents[item.Include] = CaseSensitiveProjectContent.Create(assembly);
 						return contents[item.Include];
@@ -68,6 +68,13 @@ namespace ICSharpCode.Core
 			}
 			
 			return null;
+		}
+		
+		public static Assembly LoadGACAssembly(string partialName, bool reflectionOnly)
+		{
+			#pragma warning disable 618
+			return Assembly.LoadWithPartialName(partialName);
+			#pragma warning restore 618
 		}
 	}
 }

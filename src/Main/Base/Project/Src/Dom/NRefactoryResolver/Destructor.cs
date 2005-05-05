@@ -7,17 +7,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
 	public class Destructor : AbstractMethod
 	{
-		public void AddModifier(ModifierEnum m)
+		public Destructor(IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType, "~" + declaringType.Name)
 		{
-			modifiers = modifiers | m;
-		}
-		
-		public Destructor(string className, Modifier m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType)
-		{
-			FullyQualifiedName = "~" + className;
-			this.region     = region;
+			this.Region     = region;
 			this.bodyRegion = bodyRegion;
-			modifiers = (ModifierEnum)m;
 		}
 	}
 }

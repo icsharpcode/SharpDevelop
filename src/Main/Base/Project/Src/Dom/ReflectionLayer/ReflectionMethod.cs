@@ -71,17 +71,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionMethod(MethodBase methodBase, IClass declaringType) : base(declaringType)
+		public ReflectionMethod(MethodBase methodBase, IClass declaringType)
+			: base(declaringType, methodBase is ConstructorInfo ? "#ctor" : methodBase.Name)
 		{
 			this.methodBase = methodBase;
-			string name = methodBase.Name;
 			
-			if (methodBase is ConstructorInfo) {
-				name = "#ctor";
-			}
-			FullyQualifiedName = methodBase.DeclaringType.FullName + "." + name;
-			
-			modifiers = ModifierEnum.None;
+			ModifierEnum modifiers  = ModifierEnum.None;
 			if (methodBase.IsStatic) {
 				modifiers |= ModifierEnum.Static;
 			}
@@ -107,6 +102,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (methodBase.IsAbstract) {
 				modifiers |= ModifierEnum.Abstract;
 			}
+			this.Modifiers = modifiers;
 		}
 	}
 }

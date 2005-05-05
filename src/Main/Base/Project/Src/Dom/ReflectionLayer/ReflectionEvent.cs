@@ -12,7 +12,7 @@ using System.Xml;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class ReflectionEvent : AbstractEvent
+	public class ReflectionEvent : DefaultEvent
 	{
 		EventInfo eventInfo;
 		
@@ -24,10 +24,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionEvent(EventInfo eventInfo, IClass declaringType) : base(declaringType)
+		public ReflectionEvent(EventInfo eventInfo, IClass declaringType) : base(declaringType, eventInfo.Name)
 		{
 			this.eventInfo = eventInfo;
-			FullyQualifiedName = String.Concat(eventInfo.DeclaringType.FullName, ".", eventInfo.Name);
 			
 			// get modifiers
 			MethodInfo methodBase = null;
@@ -41,6 +40,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				} catch (Exception) {}
 			}
 			
+			ModifierEnum modifiers  = ModifierEnum.None;
 			if (methodBase != null) {
 				if (methodBase.IsStatic) {
 					modifiers |= ModifierEnum.Static;
@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				// assume public property, if no methodBase could be get.
 				modifiers = ModifierEnum.Public;
 			}
-			
+			this.Modifiers = modifiers;
 		
 		}
 	}

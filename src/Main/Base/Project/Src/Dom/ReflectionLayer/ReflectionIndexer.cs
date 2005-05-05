@@ -55,8 +55,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public ReflectionIndexer(PropertyInfo propertyInfo, IClass declaringType) : base(declaringType)
 		{
 			this.propertyInfo = propertyInfo;
-			// indexers does have the same name as the object that declare the indexers
-			FullyQualifiedName = propertyInfo.DeclaringType.FullName;
 			
 			// show the abstract layer that we have getter & setters
 			if (propertyInfo.CanRead) {
@@ -82,6 +80,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				} catch (Exception) {}
 			}
 			
+			ModifierEnum modifiers  = ModifierEnum.None;
 			if (methodBase != null) {
 				if (methodBase.IsStatic) {
 					modifiers |= ModifierEnum.Static;
@@ -106,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} else { // assume public property, if no methodBase could be get.
 				modifiers = ModifierEnum.Public;
 			}
-			
+			this.Modifiers = modifiers;
 		}
 	}
 }

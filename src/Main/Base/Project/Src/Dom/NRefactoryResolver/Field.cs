@@ -7,24 +7,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
 	public class Field : AbstractField
 	{
-		public void AddModifier(ModifierEnum m)
+		public Field(ReturnType type, string name, Modifier m, IRegion region, IClass declaringType) : base(declaringType, name)
 		{
-			modifiers = modifiers | m;
-		}
-		
-		public Field(ReturnType type, string name, Modifier m, IRegion region, IClass declaringType) : base(declaringType)
-		{
-			this.returnType = type;
-			this.FullyQualifiedName = declaringType.FullyQualifiedName + "." + name;
-			this.region = region;
-			modifiers = (ModifierEnum)m;
-			if (modifiers == ModifierEnum.None) {
-				modifiers = ModifierEnum.Private;
+			this.ReturnType = type;
+			this.Region = region;
+			Modifiers = (ModifierEnum)m;
+			if (Modifiers == ModifierEnum.None) {
+				Modifiers = ModifierEnum.Private;
 			}
-		}
-		public void SetModifiers(ModifierEnum m)
-		{
-			modifiers = m;
 		}
 	}
 }

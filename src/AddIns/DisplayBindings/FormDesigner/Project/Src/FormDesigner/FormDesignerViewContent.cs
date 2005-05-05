@@ -118,8 +118,14 @@ namespace ICSharpCode.FormDesigner
 			
 			this.viewContent             = viewContent;
 			this.textAreaControlProvider = viewContent as ITextEditorControlProvider;
-			Reload();
-			
+		}
+		
+		bool isInitialized = false;
+		
+		void Initialize()
+		{
+			if (isInitialized) return;
+			isInitialized = true;
 			DefaultServiceContainer serviceContainer = new DefaultServiceContainer();
 			serviceContainer.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService());
 			serviceContainer.AddService(typeof(System.Drawing.Design.IToolboxService), ToolboxProvider.ToolboxService);
@@ -168,6 +174,7 @@ namespace ICSharpCode.FormDesigner
 		
 		public void Reload()
 		{
+			Initialize();
 			bool dirty = viewContent.IsDirty;
 //	TODO:		
 //			loader.TextContent = Document.TextContent;
@@ -179,7 +186,7 @@ namespace ICSharpCode.FormDesigner
 					p.Controls.Add(designer);
 				}
 			} catch (Exception e) {
-				Console.WriteLine(e);
+				MessageService.ShowError(e);
 			}
 		}
 		
@@ -224,6 +231,7 @@ namespace ICSharpCode.FormDesigner
 		
 		public override void Selected()
 		{
+			Reload();
 			IsFormDesignerVisible = true;
 			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
 				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
@@ -233,7 +241,6 @@ namespace ICSharpCode.FormDesigner
 			SharpDevelopSideBar.SideBar.Refresh();
 			propertyContainer.Host = Host;
 			UpdateSelectableObjects();
-			Reload();
 		}
 		
 		public override void Deselected()

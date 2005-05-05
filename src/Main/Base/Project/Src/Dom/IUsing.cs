@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
@@ -21,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 
-		SortedList Aliases {
+		SortedList<string, string> Aliases {
 			get;
 		}
 

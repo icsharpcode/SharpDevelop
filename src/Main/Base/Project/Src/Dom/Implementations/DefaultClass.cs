@@ -16,12 +16,10 @@ using ICSharpCode.SharpDevelop;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public abstract class AbstractClass : AbstractNamedEntity, IClass, IComparable
+	public class DefaultClass : AbstractNamedEntity, IClass, IComparable
 	{
-		protected ClassType        classType;
-		protected IRegion          region;
-		protected IRegion          bodyRegion;
-		protected object           declaredIn;
+		ClassType classType;
+		IRegion region;
 		
 		ICompilationUnit compilationUnit;
 		
@@ -34,18 +32,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 		List<IEvent>    events       = null;
 		List<IIndexer>  indexer      = null;
 		
-		public override string DocumentationTag {
-			get {
-				return "T:" + this.FullyQualifiedName;
-			}
+		public DefaultClass(ICompilationUnit compilationUnit, string fullyQualifiedName) : base(null)
+		{
+			this.compilationUnit = compilationUnit;
+			this.FullyQualifiedName = fullyQualifiedName;
 		}
 		
-		protected AbstractClass(ICompilationUnit compilationUnit, IClass declaringType) : base(declaringType)
+		public DefaultClass(ICompilationUnit compilationUnit, IClass declaringType) : base(declaringType)
 		{
 			this.compilationUnit = compilationUnit;
 		}
 		
-
+		public DefaultClass(ICompilationUnit compilationUnit, ClassType classType, ModifierEnum modifiers, IRegion region, IClass declaringType) : base(declaringType)
+		{
+			this.compilationUnit = compilationUnit;
+			this.region = region;
+			this.classType = classType;
+			Modifiers = modifiers;
+		}
 		
 		public ICompilationUnit CompilationUnit {
 			get {
@@ -60,31 +64,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		
-		public virtual ClassType ClassType {
+		public ClassType ClassType {
 			get {
 				return classType;
 			}
+			set {
+				classType = value;
+			}
 		}
 		
-		public virtual IRegion Region {
+		public IRegion Region {
 			get {
 				return region;
 			}
 		}
 		
-		public virtual IRegion BodyRegion {
-			get {
-				return bodyRegion;
-			}
-		}
-		
-		public object DeclaredIn {
-			get {
-				return declaredIn;
-			}
-		}
-		
-		public virtual List<string> BaseTypes {
+		public List<string> BaseTypes {
 			get {
 				if (baseTypes == null) {
 					baseTypes = new List<string>();

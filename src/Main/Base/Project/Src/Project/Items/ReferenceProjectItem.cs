@@ -99,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			if (info.Length < 4) {
 				try {
-					Assembly refAssembly = Assembly.Load(referenceName);
+					Assembly refAssembly = ProjectContentRegistry.LoadGACAssembly(referenceName, true);
 					
 					// if it failed, then return just the short name
 					if (refAssembly == null) {

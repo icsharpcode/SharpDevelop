@@ -128,37 +128,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				                                caretColumn,
 				                                fileName,
 				                                document.TextContent);
-				// if expression references object in another namespace (using), no results are delivered
-				if (results != null) {
-					AddResolveResults(results);
-				} else {
-					string[] namespaces = ParserService.CurrentProjectContent.GetNamespaceList("");
-					
-					foreach(string ns in namespaces) {
-						ArrayList objs=ParserService.CurrentProjectContent.GetNamespaceContents(ns);
-						if (objs==null) continue;
-						
-						foreach(object o in objs) {
-							if (o is IClass) {
-								IClass oc = (IClass)o;
-								if(oc.Name == expression || oc.FullyQualifiedName==expression) {
-									Debug.WriteLine(((IClass)o).Name);
-									// now we can set completion data
-									AddResolveResults(oc.GetAccessibleMembers(oc,true));
-									// clear objects to indicate end of loop for namespaces
-									objs.Clear();
-									objs=null;
-									break;
-								}
-							}
-						}
-						if (objs == null) {
-							break;
-						}
-					}
-				}
-				results = null;
-				GC.Collect(0);
+				AddResolveResults(results);
 			}
 			
 			return (ICompletionData[])completionData.ToArray(typeof(ICompletionData));

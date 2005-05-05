@@ -13,16 +13,17 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public abstract class AbstractCompilationUnit : ICompilationUnit
+	public class DefaultCompilationUnit : ICompilationUnit
 	{
-		protected List<IUsing> usings = new List<IUsing>();
-		protected List<IClass> classes = new List<IClass>();
-		protected List<IAttributeSection> attributes = new List<IAttributeSection>();
-		protected bool errorsDuringCompile = false;
-		protected object tag               = null;
-		protected List<FoldingRegion> foldingRegions = new List<FoldingRegion>();
-		protected string fileName          = "";
-		protected List<Tag> tagComments = new List<Tag>();
+		List<IUsing> usings  = new List<IUsing>();
+		List<IClass> classes = new List<IClass>();
+		List<IAttributeSection> attributes = new List<IAttributeSection>();
+		List<FoldingRegion> foldingRegions = new List<FoldingRegion>();
+		List<Tag> tagComments = new List<Tag>();
+		
+		bool errorsDuringCompile = false;
+		object tag               = null;
+		string fileName          = "";
 		IProjectContent projectContent;
 		
 		public string FileName {
@@ -83,12 +84,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 
-		public abstract List<IComment> MiscComments {
-			get;
+		public virtual List<IComment> MiscComments {
+			get {
+				return null;
+			}
 		}
 
-		public abstract List<IComment> DokuComments {
-			get;
+		public virtual List<IComment> DokuComments {
+			get {
+				return null;
+			}
 		}
 
 		public virtual List<Tag> TagComments {
@@ -97,8 +102,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		protected AbstractCompilationUnit(IProjectContent projectContent)
+		public DefaultCompilationUnit(IProjectContent projectContent)
 		{
+			Debug.Assert(projectContent != null);
 			this.projectContent = projectContent;
 		}
 		
@@ -114,12 +120,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		
 		
-		/// <remarks>
-		/// Returns all (nestet) classes in which the carret currently is exept
-		/// the innermost class, returns an empty collection if the carret is in 
+		/// <summary>
+		/// Returns all (nested) classes in which the caret currently is exept
+		/// the innermost class, returns an empty collection if the caret is in 
 		/// no class or only in the innermost class.
-		/// the most outer class is the last in the collection.
-		/// </remarks>
+		/// Zhe most outer class is the last in the collection.
+		/// </summary>
 		public List<IClass> GetOuterClasses(int caretLine, int caretColumn)
 		{
 			List<IClass> classes = new List<IClass>();
@@ -157,7 +163,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		public override string ToString() {
-			return String.Format("[AbstractCompilationUnit: classes = {0}, fileName = {1}]",
+			return String.Format("[CompilationUnit: classes = {0}, fileName = {1}]",
 			                     classes.Count,
 			                     fileName);
 		}

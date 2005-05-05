@@ -168,6 +168,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void ClearText()
 		{
 			textEditorControl.Text = "";
+			textEditorControl.Refresh();
 		}
 		
 		void CategoryTextSet(object sender, TextEventArgs e)
@@ -205,6 +206,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				text = String.Empty;
 			}
 			textEditorControl.Text = text;
+			textEditorControl.Refresh();
 //			textEditorControl.Select(text.Length , 0);
 //			textEditorControl.Select();
 //			textEditorControl.ScrollToCaret();

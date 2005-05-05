@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public AbstractIndexer(IClass declaringType) : base(declaringType)
+		public AbstractIndexer(IClass declaringType) : base(declaringType, null)
 		{
 		}
 		

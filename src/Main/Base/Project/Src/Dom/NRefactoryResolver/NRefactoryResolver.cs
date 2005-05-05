@@ -255,12 +255,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		private class LocalVariableField : AbstractField
 		{
-			public LocalVariableField(IReturnType type, string name, IRegion region, IClass declaringType) : base(declaringType)
+			public LocalVariableField(IReturnType type, string name, IRegion region, IClass declaringType) : base(declaringType, name)
 			{
-				this.returnType = type;
-				this.FullyQualifiedName = name;
-				this.region = region;
-				this.modifiers = ModifierEnum.Private;
+				this.ReturnType = type;
+				this.Region = region;
+				this.Modifiers = ModifierEnum.Private;
 			}
 		}
 		#endregion
@@ -402,11 +401,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// </remarks>
 		public IClass SearchType(string name, IClass curType)
 		{
-			IClass c = SearchLocalType(name);
-			if (c != null)
-				return c;
-			else
-				return projectContent.SearchType(name, curType, caretLine, caretColumn);
+			return projectContent.SearchType(name, curType, caretLine, caretColumn);
 		}
 		
 		/// <remarks>
@@ -414,25 +409,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// </remarks>
 		public IClass SearchType(string name, IClass curType, ICompilationUnit unit)
 		{
-			IClass c = SearchLocalType(name);
-			if (c != null)
-				return c;
-			else
-				return projectContent.SearchType(name, curType, unit, caretLine, caretColumn);
-		}
-		
-		IClass SearchLocalType(string name)
-		{
-			if (cu == null) return null;
-			foreach (IClass c in cu.Classes) {
-				//foreach (IClass innerClass in c.InnerClasses) {
-				//	if (IsSameName(innerClass.FullyQualifiedName, name))
-				//		return innerClass;
-				//}
-				if (IsSameName(c.FullyQualifiedName, name))
-					return c;
-			}
-			return null;
+			return projectContent.SearchType(name, curType, unit, caretLine, caretColumn);
 		}
 		
 		#region Helper for TypeVisitor

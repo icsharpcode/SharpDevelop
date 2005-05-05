@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public AbstractField(IClass declaringType) : base(declaringType)
+		public AbstractField(IClass declaringType, string name) : base(declaringType, name)
 		{
 		}
 		

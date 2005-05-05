@@ -10,7 +10,7 @@ using System.Reflection;
 namespace ICSharpCode.SharpDevelop.Dom 
 {
 	[Serializable]
-	public abstract class AbstractEvent : AbstractMember, IEvent
+	public class DefaultEvent : AbstractMember, IEvent
 	{
 		protected IRegion          bodyRegion;
 		protected EventAttributes  eventAttributes;
@@ -29,7 +29,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return bodyRegion;
 			}
 		}
-		
 
 		public virtual EventAttributes EventAttributes {
 			get {
@@ -37,8 +36,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public AbstractEvent(IClass declaringType) : base(declaringType)
+		protected DefaultEvent(IClass declaringType, string name) : base(declaringType, name)
 		{
+		}
+		
+		public DefaultEvent(string name, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType, name)
+		{
+			this.ReturnType = type;
+			this.Region     = region;
+			this.bodyRegion = bodyRegion;
+			Modifiers       = (ModifierEnum)m;
+			if (Modifiers == ModifierEnum.None) {
+				Modifiers = ModifierEnum.Private;
+			}
 		}
 		
 		public virtual int CompareTo(IEvent value) 

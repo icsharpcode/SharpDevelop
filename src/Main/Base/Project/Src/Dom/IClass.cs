@@ -46,10 +46,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		IRegion BodyRegion {
-			get;
-		}
-		
 		List<string> BaseTypes {
 			get;
 		}
@@ -79,10 +75,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 
 		IEnumerable ClassInheritanceTree {
-			get;
-		}
-		
-		object DeclaredIn {
 			get;
 		}
 		

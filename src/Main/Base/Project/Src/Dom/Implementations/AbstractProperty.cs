@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			}
 		}
 		
-		public AbstractProperty(IClass declaringType) : base(declaringType)
+		public AbstractProperty(IClass declaringType, string name) : base(declaringType, name)
 		{
 		}
 		

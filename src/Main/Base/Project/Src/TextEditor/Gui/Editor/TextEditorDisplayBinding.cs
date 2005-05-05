@@ -423,8 +423,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void ParseInformationUpdatedInternal(ParseInformation parseInfo)
 		{
-			textAreaControl.Document.FoldingManager.UpdateFoldings(TitleName, parseInfo);
-			textAreaControl.ActiveTextAreaControl.TextArea.Refresh(textAreaControl.ActiveTextAreaControl.TextArea.FoldMargin);
+			try {
+				textAreaControl.Document.FoldingManager.UpdateFoldings(TitleName, parseInfo);
+				textAreaControl.ActiveTextAreaControl.TextArea.Refresh(textAreaControl.ActiveTextAreaControl.TextArea.FoldMargin);
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
 		}
 		
 		

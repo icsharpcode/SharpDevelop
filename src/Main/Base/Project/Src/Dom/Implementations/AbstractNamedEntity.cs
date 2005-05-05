@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string DocumentationTag {
 			get {
-				return FullyQualifiedName;
+				return "T:" + FullyQualifiedName;
 			}
 		}
 		
@@ -83,6 +83,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public AbstractNamedEntity(IClass declaringType) : base(declaringType)
 		{
+		}
+		
+		public AbstractNamedEntity(IClass declaringType, string name) : base(declaringType)
+		{
+			System.Diagnostics.Debug.Assert(declaringType != null);
+			this.name = name;
+			nspace = declaringType.FullyQualifiedName;
+			fullyQualifiedName = nspace + '.' + name;
 		}
 	}
 }

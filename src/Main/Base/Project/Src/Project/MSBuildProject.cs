@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			configurations[""] = new PropertyGroup();
 			IdGuid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
 			BaseConfiguration["OutputType"]    = "Exe";
-			BaseConfiguration["RootNamespace"] = "RootNameSpace";
+			BaseConfiguration["RootNamespace"] = information.ProjectName;
 			BaseConfiguration["AssemblyName"]  = information.ProjectName;
 			BaseConfiguration["Configuration"] = "Debug";
 			BaseConfiguration.SetIsGuarded("Configuration", true);
@@ -35,11 +35,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			configurations["Debug|AnyCPU"] = new PropertyGroup();
 			configurations["Debug|AnyCPU"]["OutputPath"] = @"bin\Debug\";
-			configurations["Debug|AnyCPU"]["Optimize"] = @"false";
+			configurations["Debug|AnyCPU"]["Optimize"] = "false";
+			configurations["Debug|AnyCPU"]["DefineConstants"] = "DEBUG;TRACE";
 			
 			configurations["Release|AnyCPU"] = new PropertyGroup();
 			configurations["Release|AnyCPU"]["OutputPath"] = @"bin\Release\";
-			configurations["Release|AnyCPU"]["Optimize"] = @"true";
+			configurations["Release|AnyCPU"]["Optimize"] = "true";
+			configurations["Release|AnyCPU"]["DefineConstants"] = "TRACE";
 			
 			fileName = information.OutputProjectFileName;
 		}
@@ -63,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{	
 			this.fileName = projectFileName;
 			using (XmlTextReader reader = new XmlTextReader(projectFileName)) {
-				while (reader.Read()){
+				while (reader.Read()) {
 					if (reader.IsStartElement()) {
 						switch (reader.LocalName) {
 							case "PropertyGroup":
