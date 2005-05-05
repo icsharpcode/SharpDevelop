@@ -92,6 +92,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			base.Dispose(Disposing);
 			if (disposing) {
+				errorDrawer.Dispose();
 				CloseCodeCompletionWindow(this, EventArgs.Empty);
 				CloseInsightWindow(this, EventArgs.Empty);
 			}

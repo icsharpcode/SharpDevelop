@@ -24,16 +24,26 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	/// </summary>
 	public class VisualError : TextMarker
 	{
-		public VisualError(int offset, int length, string description, bool isError) : base(offset, length, TextMarkerType.WaveLine, isError ? Color.Red : Color.Orange)
+		Task task;
+		
+		public Task Task {
+			get {
+				return task;
+			}
+		}
+		
+		public VisualError(int offset, int length, Task task)
+			: base(offset, length, TextMarkerType.WaveLine, (task.TaskType == TaskType.Error) ? Color.Red : Color.Orange)
 		{
-			base.ToolTip = description.Replace("&", "&&&");
+			this.task = task;
+			base.ToolTip = task.Description.Replace("&", "&&&");
 		}
 	}
 	
 	/// <summary>
 	/// This class draws error underlines.
 	/// </summary>
-	public class ErrorDrawer
+	public class ErrorDrawer : IDisposable
 	{
 		ArrayList       errors = new ArrayList();
 		TextEditorControl textEditor;
@@ -42,55 +52,111 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			this.textEditor = textEditor;
 			
-//	TODO: Tasks Changed!!!		
-//			TaskService.TasksChanged += new EventHandler(SetErrors);
-			
+			TaskService.Added   += new TaskEventHandler(OnAdded);
+			TaskService.Removed += new TaskEventHandler(OnRemoved);
+			TaskService.Cleared += new EventHandler(OnCleared);
 			textEditor.FileNameChanged += new EventHandler(SetErrors);
 		}
 		
-		void ClearErrors()
+		/// <summary>
+		/// Deregisters the event handlers so the error drawer (and associated TextEditorControl)
+		/// can be garbage collected.
+		/// </summary>
+		public void Dispose()
 		{
+			TaskService.Added   -= new TaskEventHandler(OnAdded);
+			TaskService.Removed -= new TaskEventHandler(OnRemoved);
+			TaskService.Cleared -= new EventHandler(OnCleared);
+			textEditor.FileNameChanged -= new EventHandler(SetErrors);
+			ClearErrors();
+		}
+		
+		void OnAdded(object sender, TaskEventArgs e)
+		{
+			AddTask(e.Task, true);
+		}
+		
+		void OnRemoved(object sender, TaskEventArgs e)
+		{
+			Task t = e.Task;
+			List<TextMarker> markers = textEditor.Document.MarkerStrategy.TextMarker;
+			for (int i = 0; i < markers.Count; ++i) {
+				VisualError ve = markers[i] as VisualError;
+				if (ve != null && ve.Task == t) {
+					markers.RemoveAt(i);
+					textEditor.Refresh();
+					break;
+				}
+			}
+		}
+		
+		void OnCleared(object sender, EventArgs e)
+		{
+			if (ClearErrors()) {
+				textEditor.Refresh();
+			}
+		}
+		
+		/// <summary>
+		/// Clears all TextMarkers representing errors.
+		/// </summary>
+		/// <returns>Returns true when there were markers deleted, false when there were no error markers.</returns>
+		bool ClearErrors()
+		{
+			bool removed = false;
 			List<TextMarker> markers = textEditor.Document.MarkerStrategy.TextMarker;
 			for (int i = 0; i < markers.Count;) {
 				if (markers[i] is VisualError) {
+					removed = true;
 					markers.RemoveAt(i);
 				} else {
 					i++; // Check next one
 				}
+			}
+			return removed;
+		}
+		
+		bool CheckTask(Task task)
+		{
+			if (textEditor.FileName == null)
+				return false;
+			if (task.FileName == null || task.FileName.Length == 0 || task.Column < 0)
+				return false;
+			if (task.TaskType != TaskType.Warning && task.TaskType != TaskType.Error)
+				return false;
+			return string.Equals(Path.GetFullPath(task.FileName), Path.GetFullPath(textEditor.FileName), StringComparison.CurrentCultureIgnoreCase);
+		}
+		
+		void AddTask(Task task, bool refresh)
+		{
+			if (!CheckTask(task)) return;
+			if (task.Line >= 0 && task.Line < textEditor.Document.TotalNumberOfLines) {
+				LineSegment line = textEditor.Document.GetLineSegment(task.Line);
+				if (line.Words != null) {
+					int offset = line.Offset + task.Column;
+					foreach (TextWord tw in line.Words) {
+						if (task.Column >= tw.Offset && task.Column < (tw.Offset + tw.Length)) {
+							textEditor.Document.MarkerStrategy.TextMarker.Add(new VisualError(offset, tw.Length, task));
+							if (refresh) {
+								textEditor.Refresh();
+							}
+							return;
+						}
+					}
+				}
+				/*
+						int startOffset = offset;//Math.Min(textEditor.Document.TextLength, TextUtilities.FindWordStart(textEditor.Document, offset));
+						int endOffset   = Math.Max(1, TextUtilities.FindWordEnd(textEditor.Document, offset));
+						textEditor.Document.MarkerStrategy.TextMarker.Add(new VisualError(startOffset, endOffset - startOffset + 1, task.Description, task.TaskType == TaskType.Error));*/
 			}
 		}
 		
 		void SetErrors(object sender, EventArgs e)
 		{
 			ClearErrors();
-			if (textEditor.FileName == null) {
-				return;
-			}
-			
 			foreach (Task task in TaskService.Tasks) {
-				if (task.FileName == null || task.FileName.Length == 0 || task.Column < 0) {
-					continue;
-				}
-				if (Path.GetFullPath(task.FileName).ToLower() == Path.GetFullPath(textEditor.FileName).ToLower() && (task.TaskType == TaskType.Warning || task.TaskType == TaskType.Error)) {
-					if (task.Line >= 0 && task.Line < textEditor.Document.TotalNumberOfLines) {
-						LineSegment line = textEditor.Document.GetLineSegment(task.Line);
-						if (line.Words != null) {
-							int offset = line.Offset + task.Column;
-							foreach (TextWord tw in line.Words) {
-								if (task.Column >= tw.Offset && task.Column < (tw.Offset + tw.Length)) {
-									textEditor.Document.MarkerStrategy.TextMarker.Add(new VisualError(offset, tw.Length, task.Description, task.TaskType == TaskType.Error));
-									break;
-								}
-							}
-						}
-						/*
-						int startOffset = offset;//Math.Min(textEditor.Document.TextLength, TextUtilities.FindWordStart(textEditor.Document, offset));
-						int endOffset   = Math.Max(1, TextUtilities.FindWordEnd(textEditor.Document, offset));
-						textEditor.Document.MarkerStrategy.TextMarker.Add(new VisualError(startOffset, endOffset - startOffset + 1, task.Description, task.TaskType == TaskType.Error));*/
-					}
-				}
+				AddTask(task, false);
 			}
-			
 			textEditor.Refresh();
 		}
 	}

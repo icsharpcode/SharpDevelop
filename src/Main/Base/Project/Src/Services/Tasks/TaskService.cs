@@ -177,15 +177,14 @@ namespace ICSharpCode.Core
 			
 			for (int i = 0; i < newTasks.Count; ++i) {
 				for (int j = 0; j < oldTasks.Count; ++j) {
-					if (newTasks[i].Line        == oldTasks[j].Line &&
+					if (oldTasks[j] != null &&
+					    newTasks[i].Line        == oldTasks[j].Line &&
 					    newTasks[i].Column      == oldTasks[j].Column &&
-					    newTasks[i].Description == oldTasks[j].Description) {
+					    newTasks[i].Description == oldTasks[j].Description)
+					{
 						newTasks[i] = null;
 						oldTasks[j] = null;
-						++i;
-						if (i >= newTasks.Count) {
-							break;
-						}
+						break;
 					}
 				}
 			}

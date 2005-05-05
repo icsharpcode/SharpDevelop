@@ -318,7 +318,7 @@ namespace ICSharpCode.Core
 			}
 			
 			foreach (IUsing u in unit.Usings) {
-				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+				if (u != null) {
 					string nameSpace = u.SearchNamespace(name);
 					if (nameSpace != null) {
 						return nameSpace;

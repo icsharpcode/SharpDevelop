@@ -75,9 +75,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (projectContent == null)
 				return;
 			IClass c = projectContent.GetClass(type.FullyQualifiedName);
-			bool canViewProtected = c.IsTypeInInheritanceTree(result.CallingClass);
 			if (c == null)
 				return;
+			bool canViewProtected = c.IsTypeInInheritanceTree(result.CallingClass);
 			foreach (IIndexer i in c.Indexer) {
 				if (i.IsAccessible(result.CallingClass, canViewProtected)) {
 					methods.Add(i);

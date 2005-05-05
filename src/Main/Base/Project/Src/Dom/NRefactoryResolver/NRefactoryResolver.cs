@@ -739,7 +739,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			result.AddRange(projectContent.GetNamespaceContents(""));
 			foreach (IUsing u in cu.Usings) {
-				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
+				if (u != null) {
 					foreach (string name in u.Usings) {
 						result.AddRange(projectContent.GetNamespaceContents(name));
 					}
