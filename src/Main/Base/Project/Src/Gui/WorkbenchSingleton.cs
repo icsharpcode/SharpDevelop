@@ -88,9 +88,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Form  form = (Form)WorkbenchSingleton.Workbench;
 			PerformCallDelegate performCallDelegate;
 			
+			#if DEBUG
+			string callerStack;
+			#endif
+			
 			public STAThreadCaller()
 			{
 				performCallDelegate = new PerformCallDelegate(DoPerformCall);
+				#if DEBUG
+				callerStack = Environment.StackTrace;
+				#endif
 			}
 			
 			public object Call(object target, string methodName, params object[] arguments)
@@ -103,6 +110,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				this.methodName = methodName;
 				this.arguments  = arguments;
 				
+				// TODO: This doesn't look like it's thread-safe, we're calling the target directly!
 				return DoPerformCall();
 			}
 			
@@ -125,8 +133,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 							return methodInfo.Invoke(target, arguments);
 						}
 					} catch (Exception ex) {
-						
 						MessageService.ShowError(ex, "Exception got. ");
+						#if DEBUG
+						Console.WriteLine("Stacktrace of source thread:");
+						Console.WriteLine(callerStack);
+						Console.WriteLine();
+						#endif
 					}
 				}
 				return null;

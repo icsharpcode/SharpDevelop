@@ -12,7 +12,7 @@ using System.Xml;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class ReflectionProperty : AbstractProperty 
+	public class ReflectionProperty : DefaultProperty 
 	{
 		PropertyInfo propertyInfo;
 		

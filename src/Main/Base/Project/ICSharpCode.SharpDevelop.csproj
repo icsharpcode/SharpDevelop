@@ -360,13 +360,6 @@
     <Compile Include="Src\Dom\NRefactoryResolver\TypeVisitor.cs" />
     <Compile Include="Src\Dom\NRefactoryResolver\NRefactoryASTConvertVisitor.cs" />
     <Compile Include="Src\Dom\NRefactoryResolver\ReturnType.cs" />
-    <Compile Include="Src\Dom\NRefactoryResolver\Constructor.cs" />
-    <Compile Include="Src\Dom\NRefactoryResolver\Destructor.cs" />
-    <Compile Include="Src\Dom\NRefactoryResolver\Field.cs" />
-    <Compile Include="Src\Dom\NRefactoryResolver\Indexer.cs" />
-    <Compile Include="Src\Dom\NRefactoryResolver\Method.cs" />
-    <Compile Include="Src\Dom\NRefactoryResolver\Parameter.cs" />
-    <Compile Include="Src\Dom\NRefactoryResolver\Property.cs" />
     <Compile Include="Src\Gui\Components\FontSelectionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>

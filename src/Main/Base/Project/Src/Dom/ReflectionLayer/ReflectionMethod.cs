@@ -14,7 +14,7 @@ using System.Xml;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class ReflectionMethod : AbstractMethod 
+	public class ReflectionMethod : DefaultMethod 
 	{
 		MethodBase methodBase;
 		

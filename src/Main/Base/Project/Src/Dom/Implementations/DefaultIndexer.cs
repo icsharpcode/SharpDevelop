@@ -10,7 +10,7 @@ using System.Collections.Generic;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public abstract class AbstractIndexer : AbstractMember, IIndexer
+	public class DefaultIndexer : AbstractMember, IIndexer
 	{
 		protected IRegion             bodyRegion;
 		protected IRegion             getterRegion;
@@ -55,8 +55,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public AbstractIndexer(IClass declaringType) : base(declaringType, null)
+		public DefaultIndexer(IClass declaringType) : base(declaringType, null)
 		{
+		}
+		
+		public DefaultIndexer(IReturnType type, List<IParameter> parameters, ModifierEnum m, IRegion region, IRegion bodyRegion, IClass declaringType) : this(declaringType)
+		{
+			this.ReturnType = type;
+			this.Parameters = parameters;
+			this.Region     = region;
+			this.bodyRegion = bodyRegion;
+			this.Modifiers = m;
 		}
 		
 		public virtual int CompareTo(IIndexer value)

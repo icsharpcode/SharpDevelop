@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace ICSharpCode.SharpDevelop.Dom {
 
 	[Serializable]
-	public abstract class AbstractProperty : AbstractMember, IProperty
+	public class DefaultProperty : AbstractMember, IProperty
 	{
 		protected IRegion bodyRegion;
 		
@@ -83,8 +83,16 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			}
 		}
 		
-		public AbstractProperty(IClass declaringType, string name) : base(declaringType, name)
+		public DefaultProperty(IClass declaringType, string name) : base(declaringType, name)
 		{
+		}
+		
+		public DefaultProperty(string name, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType, name)
+		{
+			this.ReturnType = type;
+			this.Region = region;
+			this.bodyRegion = bodyRegion;
+			Modifiers = m;
 		}
 		
 		public virtual int CompareTo(IProperty value)

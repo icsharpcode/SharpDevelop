@@ -10,9 +10,8 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-
 	[Serializable]
-	public abstract class AbstractParameter : System.MarshalByRefObject, IParameter
+	public class DefaultParameter : System.MarshalByRefObject, IParameter
 	{
 		string              name;
 		string              documentation;
@@ -25,7 +24,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected IRegion region;
 		List<IAttribute> attributes;
 		
+		protected DefaultParameter(string name)
+		{
+			Name = name;
+		}
 		
+		public DefaultParameter(string name, IReturnType type, IRegion region) : this(name)
+		{
+			returnType = type;
+			this.region = region;
+		}
 		
 		public IRegion Region {
 			get {

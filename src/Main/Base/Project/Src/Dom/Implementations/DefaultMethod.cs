@@ -11,7 +11,26 @@ using System.Collections.Generic;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public abstract class AbstractMethod : AbstractMember, IMethod
+	public class Constructor : DefaultMethod
+	{
+		public Constructor(ModifierEnum m, IRegion region, IRegion bodyRegion, IClass declaringType)
+			: base("#ctor", new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.ReturnType(declaringType.FullyQualifiedName),
+			       m, region, bodyRegion, declaringType)
+		{
+		}
+	}
+	
+	[Serializable]
+	public class Destructor : DefaultMethod
+	{
+		public Destructor(IRegion region, IRegion bodyRegion, IClass declaringType)
+			: base("#dtor", null, ModifierEnum.None, region, bodyRegion, declaringType)
+		{
+		}
+	}
+	
+	[Serializable]
+	public class DefaultMethod : AbstractMember, IMethod
 	{
 		protected IRegion bodyRegion;
 		
@@ -47,8 +66,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public AbstractMethod(IClass declaringType, string name) : base(declaringType, name)
+		public DefaultMethod(IClass declaringType, string name) : base(declaringType, name)
 		{
+		}
+		
+		public DefaultMethod(string name, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType, name)
+		{
+			this.ReturnType = type;
+			this.Region     = region;
+			this.bodyRegion = bodyRegion;
+			Modifiers = m;
 		}
 		
 		public override string ToString()

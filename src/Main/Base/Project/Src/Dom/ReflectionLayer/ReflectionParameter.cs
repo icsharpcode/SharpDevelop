@@ -11,7 +11,7 @@ using System.Xml;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class ReflectionParameter : AbstractParameter
+	public class ReflectionParameter : DefaultParameter
 	{
 		ParameterInfo parameterInfo;
 		public override IReturnType ReturnType {
@@ -22,10 +22,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionParameter(ParameterInfo parameterInfo)
+		public ReflectionParameter(ParameterInfo parameterInfo) : base(parameterInfo.Name)
 		{
 			this.parameterInfo = parameterInfo;
-			Name       = parameterInfo.Name;
 			
 			if (parameterInfo.IsOut) {
 				modifier |= ParameterModifier.Out;

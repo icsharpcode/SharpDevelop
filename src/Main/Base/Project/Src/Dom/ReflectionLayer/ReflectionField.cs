@@ -13,7 +13,7 @@ using System.Xml;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class ReflectionField : AbstractField
+	public class ReflectionField : DefaultField
 	{
 		FieldInfo fieldInfo;
 		public override IReturnType ReturnType {

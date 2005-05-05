@@ -14,7 +14,7 @@ using System.Xml;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class ReflectionIndexer : AbstractIndexer
+	public class ReflectionIndexer : DefaultIndexer
 	{
 		PropertyInfo propertyInfo;
 		

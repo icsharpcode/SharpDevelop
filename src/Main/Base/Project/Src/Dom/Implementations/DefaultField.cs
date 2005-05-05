@@ -7,10 +7,10 @@
 using System;
 using System.Reflection;
 
-namespace ICSharpCode.SharpDevelop.Dom 
+namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public abstract class AbstractField : AbstractMember, IField
+	public class DefaultField : AbstractMember, IField
 	{
 		public override string DocumentationTag {
 			get {
@@ -18,11 +18,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public AbstractField(IClass declaringType, string name) : base(declaringType, name)
+		public DefaultField(IClass declaringType, string name) : base(declaringType, name)
 		{
 		}
 		
-		public virtual int CompareTo(IField field) 
+		public DefaultField(IReturnType type, string name, ModifierEnum m, IRegion region, IClass declaringType) : base(declaringType, name)
+		{
+			this.ReturnType = type;
+			this.Region = region;
+			this.Modifiers = m;
+		}
+		
+		public virtual int CompareTo(IField field)
 		{
 			int cmp;
 			

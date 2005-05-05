@@ -220,12 +220,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				LocalLookupVariable var = SearchVariable(identifier);
 				if (var != null) {
 					IReturnType type = GetVariableType(var);
-					IField field = new LocalVariableField(FixType(type), identifier, new DefaultRegion(var.StartPos, var.EndPos), callingClass);
+					IField field = new DefaultField(FixType(type), identifier, ModifierEnum.None, new DefaultRegion(var.StartPos, var.EndPos), callingClass);
 					return new LocalResolveResult(callingMember, field, false);
 				}
 				IParameter para = SearchMethodParameter(identifier);
 				if (para != null) {
-					IField field = new LocalVariableField(FixType(para.ReturnType), para.Name, para.Region, callingClass);
+					IField field = new DefaultField(FixType(para.ReturnType), para.Name, ModifierEnum.None, para.Region, callingClass);
 					return new LocalResolveResult(callingMember, field, true);
 				}
 			}
@@ -251,16 +251,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			return null;
-		}
-		
-		private class LocalVariableField : AbstractField
-		{
-			public LocalVariableField(IReturnType type, string name, IRegion region, IClass declaringType) : base(declaringType, name)
-			{
-				this.ReturnType = type;
-				this.Region = region;
-				this.Modifiers = ModifierEnum.Private;
-			}
 		}
 		#endregion
 		
@@ -721,7 +711,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					IMethod method = callingMember as IMethod;
 					if (method != null) {
 						foreach (IParameter p in method.Parameters) {
-							result.Add(new Field(new ReturnType(p.ReturnType.Name, p.ReturnType.ArrayDimensions, p.ReturnType.PointerNestingLevel), p.Name, Modifier.None, method.Region, callingClass));
+							result.Add(new DefaultField(new ReturnType(p.ReturnType.Name, p.ReturnType.ArrayDimensions, p.ReturnType.PointerNestingLevel), p.Name, ModifierEnum.None, method.Region, callingClass));
 						}
 					}
 					result.AddRange(projectContent.GetNamespaceContents(callingClass.Namespace));
@@ -741,7 +731,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
 							// LocalLookupVariable in no known Type in DisplayBindings.TextEditor
 							// so add Field for the Variables
-							result.Add(new Field(new ReturnType(v.TypeRef), name, Modifier.None, new DefaultRegion(v.StartPos, v.EndPos), callingClass));
+							result.Add(new DefaultField(new ReturnType(v.TypeRef), name, ModifierEnum.None, new DefaultRegion(v.StartPos, v.EndPos), callingClass));
 							break;
 						}
 					}

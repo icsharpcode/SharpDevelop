@@ -35,6 +35,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return currentClass.Count == 0 ? null : currentClass.Peek();
 		}
 		
+		ModifierEnum ConvertModifier(AST.Modifier m)
+		{
+			return ConvertModifier(m, ModifierEnum.Private);
+		}
+		
+		ModifierEnum ConvertModifier(AST.Modifier m, ModifierEnum defaultModifier)
+		{
+			// TODO: Is this possible? I think we have to pay caution to defaultModifier
+			return (ModifierEnum)m;
+		}
+		
 		public override object Visit(AST.CompilationUnit compilationUnit, object data)
 		{
 			//TODO: usings, Comments
@@ -121,11 +132,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return result;
 		}
 		
-//		ModifierEnum VisitModifier(ICSharpCode.NRefactory.Parser.Modifier m)
-//		{
-//			return (ModifierEnum)m;
-//		}
-		
 		public override object Visit(AST.NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			string name;
@@ -164,7 +170,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(AST.TypeDeclaration typeDeclaration, object data)
 		{
 			DefaultRegion region = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
-			DefaultClass c = new DefaultClass(cu, TranslateClassType(typeDeclaration.Type), (ModifierEnum)typeDeclaration.Modifier, region, GetCurrentClass());
+			DefaultClass c = new DefaultClass(cu, TranslateClassType(typeDeclaration.Type), ConvertModifier(typeDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
 			c.Attributes.AddRange(VisitAttributes(typeDeclaration.Attributes));
 			
 			if (currentClass.Count > 0) {
@@ -193,7 +199,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(AST.DelegateDeclaration delegateDeclaration, object data)
 		{
 			DefaultRegion region = GetRegion(delegateDeclaration.StartLocation, delegateDeclaration.EndLocation);
-			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, (ModifierEnum)delegateDeclaration.Modifier, region, GetCurrentClass());
+			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, ConvertModifier(delegateDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
 			c.Attributes.AddRange(VisitAttributes(delegateDeclaration.Attributes));
 			c.BaseTypes.Add("System.Delegate");
 			if (currentClass.Count > 0) {
@@ -208,7 +214,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				cu.Classes.Add(c);
 			}
-			Method invokeMethod = new Method("Invoke", new ReturnType(delegateDeclaration.ReturnType), delegateDeclaration.Modifier, null, null, c);
+			DefaultMethod invokeMethod = new DefaultMethod("Invoke", new ReturnType(delegateDeclaration.ReturnType), ConvertModifier(delegateDeclaration.Modifier), null, null, c);
 			c.Methods.Add(invokeMethod);
 			return c;
 		}
@@ -220,13 +226,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			ReturnType type = new ReturnType(methodDeclaration.TypeReference);
 			DefaultClass c  = GetCurrentClass();
 			
-			Method method = new Method(methodDeclaration.Name, type, methodDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
+			DefaultMethod method = new DefaultMethod(methodDeclaration.Name, type, ConvertModifier(methodDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 			method.Attributes.AddRange(VisitAttributes(methodDeclaration.Attributes));
 			List<IParameter> parameters = new List<IParameter>();
 			if (methodDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, methodDeclaration.Body.EndLocation));
+					DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, methodDeclaration.Body.EndLocation));
 					parameters.Add(p);
 				}
 			}
@@ -241,13 +247,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new Point(-1, -1));
 			DefaultClass c = GetCurrentClass();
 			
-			Constructor constructor = new Constructor(constructorDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
+			Constructor constructor = new Constructor(ConvertModifier(constructorDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 			constructor.Attributes.AddRange(VisitAttributes(constructorDeclaration.Attributes));
 			List<IParameter> parameters = new List<IParameter>();
 			if (constructorDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, constructorDeclaration.Body.EndLocation));
+					DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, constructorDeclaration.Body.EndLocation));
 					parameters.Add(p);
 				}
 			}
@@ -283,7 +289,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						retType = new ReturnType(c.FullyQualifiedName);
 					else
 						retType = new ReturnType(fieldDeclaration.GetTypeForField(i));
-					Field f = new Field(retType, field.Name, fieldDeclaration.Modifier, region, c);
+					DefaultField f = new DefaultField(retType, field.Name, ConvertModifier(fieldDeclaration.Modifier), region, c);
 					f.Attributes.AddRange(VisitAttributes(fieldDeclaration.Attributes));
 					if (c.ClassType == ClassType.Enum) {
 						f.Modifiers = ModifierEnum.Const | ModifierEnum.Public;
@@ -303,7 +309,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			ReturnType type = new ReturnType(propertyDeclaration.TypeReference);
 			DefaultClass c = GetCurrentClass();
 			
-			Property property = new Property(propertyDeclaration.Name, type, propertyDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
+			DefaultProperty property = new DefaultProperty(propertyDeclaration.Name, type, ConvertModifier(propertyDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 			property.Attributes.AddRange(VisitAttributes(propertyDeclaration.Attributes));
 			c.Properties.Add(property);
 			return null;
@@ -319,12 +325,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			if (eventDeclaration.VariableDeclarators != null) {
 				foreach (ICSharpCode.NRefactory.Parser.AST.VariableDeclaration varDecl in eventDeclaration.VariableDeclarators) {
-					e = new DefaultEvent(varDecl.Name, type, (ModifierEnum)eventDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
+					e = new DefaultEvent(varDecl.Name, type, ConvertModifier(eventDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 					e.Attributes.AddRange(VisitAttributes(eventDeclaration.Attributes));
 					c.Events.Add(e);
 				}
 			} else {
-				e = new DefaultEvent(eventDeclaration.Name, type, (ModifierEnum)eventDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
+				e = new DefaultEvent(eventDeclaration.Name, type, ConvertModifier(eventDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 				e.Attributes.AddRange(VisitAttributes(eventDeclaration.Attributes));
 				c.Events.Add(e);
 			}
@@ -336,12 +342,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion region     = GetRegion(indexerDeclaration.StartLocation, indexerDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
 			List<IParameter> parameters = new List<IParameter>();
-			Indexer i = new Indexer(new ReturnType(indexerDeclaration.TypeReference), parameters, indexerDeclaration.Modifier, region, bodyRegion, GetCurrentClass());
+			DefaultIndexer i = new DefaultIndexer(new ReturnType(indexerDeclaration.TypeReference), parameters, ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 			i.Attributes.AddRange(VisitAttributes(indexerDeclaration.Attributes));
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
 					ReturnType parType = new ReturnType(par.TypeReference);
-					Parameter p = new Parameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, indexerDeclaration.EndLocation));
+					DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, indexerDeclaration.EndLocation));
 					parameters.Add(p);
 				}
 			}
