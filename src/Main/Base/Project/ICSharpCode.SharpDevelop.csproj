@@ -85,13 +85,13 @@
     <Compile Include="Src\Dom\ClassType.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultRegion.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultClass.cs" />
-    <Compile Include="Src\Dom\Implementations\AbstractProperty.cs" />
-    <Compile Include="Src\Dom\Implementations\AbstractField.cs" />
-    <Compile Include="Src\Dom\Implementations\AbstractEvent.cs" />
+    <Compile Include="Src\Dom\Implementations\DefaultProperty.cs" />
+    <Compile Include="Src\Dom\Implementations\DefaultField.cs" />
+    <Compile Include="Src\Dom\Implementations\DefaultEvent.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultComment.cs" />
-    <Compile Include="Src\Dom\Implementations\AbstractMethod.cs" />
+    <Compile Include="Src\Dom\Implementations\DefaultMethod.cs" />
     <Compile Include="Src\Dom\IParameter.cs" />
-    <Compile Include="Src\Dom\Implementations\AbstractParameter.cs" />
+    <Compile Include="Src\Dom\Implementations\DefaultParameter.cs" />
     <Compile Include="Src\Dom\IAttribute.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultAttribute.cs" />
     <Compile Include="Src\Dom\Implementations\AbstractReturnType.cs" />
@@ -109,7 +109,7 @@
     <Compile Include="Src\Dom\IIndexer.cs" />
     <Compile Include="Src\Dom\ParameterModifier.cs" />
     <Compile Include="Src\Dom\Implementations\AbstractDecoration.cs" />
-    <Compile Include="Src\Dom\Implementations\AbstractIndexer.cs" />
+    <Compile Include="Src\Dom\Implementations\DefaultIndexer.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultUsing.cs" />
     <Compile Include="Src\Dom\IParser.cs" />
     <Compile Include="Src\Dom\ReflectionLayer\ReflectionClass.cs" />
