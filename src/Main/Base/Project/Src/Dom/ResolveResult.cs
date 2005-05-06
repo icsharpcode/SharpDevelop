@@ -340,21 +340,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// <example>
 	/// Example expressions:
 	/// "System.Console.WriteLine"
+	/// "a.Add"      (where a is List&lt;string&gt;)
 	/// "SomeMethod" (when SomeMethod is a method in the current class)
 	/// </example>
 	public class MethodResolveResult : ResolveResult
 	{
 		string name;
-		IClass containingClass;
+		IReturnType containingType;
 		
-		public MethodResolveResult(IClass callingClass, IMember callingMember, IClass containingClass, string name)
+		public MethodResolveResult(IClass callingClass, IMember callingMember, IReturnType containingType, string name)
 			: base(callingClass, callingMember, null)
 		{
-			if (containingClass == null)
-				throw new ArgumentNullException("containingClass");
+			if (containingType == null)
+				throw new ArgumentNullException("containingType");
 			if (name == null)
 				throw new ArgumentNullException("name");
-			this.containingClass = containingClass;
+			this.containingType = containingType;
 			this.name = name;
 		}
 		
@@ -368,11 +369,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
-		/// Gets the class on that contains the method.
+		/// Gets the class that contains the method.
 		/// </summary>
-		public IClass ContainingClass {
+		public IReturnType ContainingType {
 			get {
-				return containingClass;
+				return containingType;
 			}
 		}
 	}

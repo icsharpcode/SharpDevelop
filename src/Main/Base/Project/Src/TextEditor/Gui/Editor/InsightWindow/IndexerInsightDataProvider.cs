@@ -71,17 +71,18 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			IReturnType type = result.ResolvedType;
 			if (type == null)
 				return;
+			/*
 			IProjectContent projectContent = ParserService.CurrentProjectContent;
 			if (projectContent == null)
 				return;
 			IClass c = projectContent.GetClass(type.FullyQualifiedName);
 			if (c == null)
 				return;
-			bool canViewProtected = c.IsTypeInInheritanceTree(result.CallingClass);
-			foreach (IIndexer i in c.Indexer) {
-				if (i.IsAccessible(result.CallingClass, canViewProtected)) {
+			bool canViewProtected = c.IsTypeInInheritanceTree(result.CallingClass);*/
+			foreach (IIndexer i in type.GetIndexers()) {
+				//if (i.IsAccessible(result.CallingClass, canViewProtected)) {
 					methods.Add(i);
-				}
+				//}
 			}
 		}
 		

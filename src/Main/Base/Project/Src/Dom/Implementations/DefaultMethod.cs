@@ -42,6 +42,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			DefaultMethod p = new DefaultMethod(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
 			p.parameters = DefaultParameter.Clone(this.Parameters);
+			p.documentationTag = DocumentationTag;
 			return p;
 		}
 		
@@ -54,23 +55,28 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		string documentationTag;
+		
 		public override string DocumentationTag {
 			get {
-				string dotnetName = this.DotNetName;
-				StringBuilder b = new StringBuilder("M:", dotnetName.Length + 2);
-				b.Append(dotnetName);
-				List<IParameter> paras = this.Parameters;
-				if (paras.Count > 0) {
-					b.Append('(');
-					for (int i = 0; i < paras.Count; ++i) {
-						if (i > 0) b.Append(',');
-						if (paras[i].ReturnType != null) {
-							b.Append(paras[i].ReturnType.DotNetName);
+				if (documentationTag == null) {
+					string dotnetName = this.DotNetName;
+					StringBuilder b = new StringBuilder("M:", dotnetName.Length + 2);
+					b.Append(dotnetName);
+					List<IParameter> paras = this.Parameters;
+					if (paras.Count > 0) {
+						b.Append('(');
+						for (int i = 0; i < paras.Count; ++i) {
+							if (i > 0) b.Append(',');
+							if (paras[i].ReturnType != null) {
+								b.Append(paras[i].ReturnType.DotNetName);
+							}
 						}
+						b.Append(')');
 					}
-					b.Append(')');
+					documentationTag = b.ToString();
 				}
-				return b.ToString();
+				return documentationTag;
 			}
 		}
 		

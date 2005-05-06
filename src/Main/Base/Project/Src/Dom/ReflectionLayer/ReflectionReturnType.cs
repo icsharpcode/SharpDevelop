@@ -30,7 +30,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return MakeArray(type, Create(member, type.GetElementType()));
 			} else if (type.IsGenericParameter) {
 				IClass c = member.DeclaringType;
-				return new GenericReturnType(c.TypeParameters[type.GenericParameterPosition]);
+				if (type.GenericParameterPosition < c.TypeParameters.Count) {
+					if (c.TypeParameters[type.GenericParameterPosition].Name == type.Name) {
+						return new GenericReturnType(c.TypeParameters[type.GenericParameterPosition]);
+					}
+				}
+				if (type.DeclaringMethod != null) {
+					IMethod method = member as IMethod;
+					if (method != null) {
+						// Create GenericReturnType for generic method
+					}
+				}
+				return new GenericReturnType(new DefaultTypeParameter(c, type));
 			}
 			return Create(member.DeclaringType.ProjectContent, type);
 		}

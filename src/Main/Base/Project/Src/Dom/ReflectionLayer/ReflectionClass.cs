@@ -155,7 +155,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (type.IsGenericTypeDefinition) {
 				foreach (Type g in type.GetGenericArguments()) {
-					this.TypeParameters.Add(new DefaultTypeParameter(g));
+					this.TypeParameters.Add(new DefaultTypeParameter(this, g));
 				}
 			}
 			

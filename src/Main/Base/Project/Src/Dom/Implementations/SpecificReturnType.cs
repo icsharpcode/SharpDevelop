@@ -20,6 +20,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		List<IReturnType> typeParameters;
 		IReturnType baseType;
 		
+		public List<IReturnType> TypeParameters {
+			get {
+				return typeParameters;
+			}
+		}
+		
 		public SpecificReturnType(IReturnType baseType, List<IReturnType> typeParameters)
 		{
 			if (baseType == null)
@@ -59,9 +65,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		bool CheckReturnType(IReturnType t)
 		{
-			GenericReturnType rt = t as GenericReturnType;
-			if (rt == null) return false;
-			return rt.TypeParameter.Method == null;
+			if (t is GenericReturnType) {
+				GenericReturnType rt = (GenericReturnType)t;
+				return rt.TypeParameter.Method == null;
+			} else if (t is ArrayReturnType) {
+				return CheckReturnType(((ArrayReturnType)t).ElementType);
+			} else {
+				return false;
+			}
 		}
 		
 		bool CheckParameters(List<IParameter> l)
@@ -74,11 +85,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		IReturnType TranslateType(IReturnType input)
 		{
-			GenericReturnType rt = input as GenericReturnType;
-			if (rt == null) return input;
-			if (rt.TypeParameter.Method != null) return input;
-			if (rt.TypeParameter.Index >= typeParameters.Count) return input;
-			return typeParameters[rt.TypeParameter.Index];
+			if (input is GenericReturnType) {
+				GenericReturnType rt = (GenericReturnType)input;
+				if (rt.TypeParameter.Method == null) {
+					if (rt.TypeParameter.Index < typeParameters.Count) {
+						return typeParameters[rt.TypeParameter.Index];
+					}
+				}
+			} else if (input is ArrayReturnType) {
+				IReturnType e = ((ArrayReturnType)input).ElementType;
+				IReturnType t = TranslateType(e);
+				if (e != t)
+					return new ArrayReturnType(t, input.ArrayDimensions);
+			}
+			return input;
 		}
 		
 		public override List<IMethod> GetMethods()
@@ -99,18 +119,39 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override List<IProperty> GetProperties()
 		{
 			List<IProperty> l = baseType.GetProperties();
+			for (int i = 0; i < l.Count; ++i) {
+				if (CheckReturnType(l[i].ReturnType) || CheckParameters(l[i].Parameters)) {
+					l[i] = (IProperty)l[i].Clone();
+					l[i].ReturnType = TranslateType(l[i].ReturnType);
+					for (int j = 0; j < l[i].Parameters.Count; ++j) {
+						l[i].Parameters[j].ReturnType = TranslateType(l[i].Parameters[j].ReturnType);
+					}
+				}
+			}
 			return l;
 		}
 		
 		public override List<IField> GetFields()
 		{
 			List<IField> l = baseType.GetFields();
+			for (int i = 0; i < l.Count; ++i) {
+				if (CheckReturnType(l[i].ReturnType)) {
+					l[i] = (IField)l[i].Clone();
+					l[i].ReturnType = TranslateType(l[i].ReturnType);
+				}
+			}
 			return l;
 		}
 		
 		public override List<IEvent> GetEvents()
 		{
 			List<IEvent> l = baseType.GetEvents();
+			for (int i = 0; i < l.Count; ++i) {
+				if (CheckReturnType(l[i].ReturnType)) {
+					l[i] = (IEvent)l[i].Clone();
+					l[i].ReturnType = TranslateType(l[i].ReturnType);
+				}
+			}
 			return l;
 		}
 		

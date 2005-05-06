@@ -76,29 +76,18 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				TypeResolveResult result = results as TypeResolveResult;
 				if (result == null)
 					return;
-				IClass c = result.ResolvedClass;
-				bool canViewProtected = c.IsTypeInInheritanceTree(result.CallingClass);
-				foreach (IMethod method in c.Methods) {
+				foreach (IMethod method in result.ResolvedType.GetMethods()) {
 					if (method.IsConstructor) {
-						if (method.IsAccessible(result.CallingClass, canViewProtected)) {
-							methods.Add(method);
-						}
+						methods.Add(method);
 					}
 				}
 			} else {
 				MethodResolveResult result = results as MethodResolveResult;
 				if (result == null)
 					return;
-				IClass c = result.ContainingClass;
-				bool canViewProtected = c.IsTypeInInheritanceTree(result.CallingClass);
-				foreach (IClass curType in c.ClassInheritanceTree) {
-					foreach (IMethod method in curType.Methods) {
-						if (method.Name == result.Name) {
-							if (method.IsAccessible(result.CallingClass, canViewProtected)) {
-								// TODO: exclude methods that were overridden
-								methods.Add(method);
-							}
-						}
+				foreach (IMethod method in result.ContainingType.GetMethods()) {
+					if (method.Name == result.Name) {
+						methods.Add(method);
 					}
 				}
 			}

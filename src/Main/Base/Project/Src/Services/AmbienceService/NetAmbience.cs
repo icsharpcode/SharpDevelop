@@ -257,28 +257,17 @@ namespace ICSharpCode.Core
 //				}
 			}
 			
+			string name = returnType.DotNetName;
 			if (UseFullyQualifiedNames) {
-				builder.Append(returnType.FullyQualifiedName);
+				builder.Append(name);
 			} else {
-				builder.Append(returnType.Name);
+				int pos = returnType.Namespace.Length;
+				builder.Append(name, pos, name.Length - pos);
 			}
 			
 			if (linkSet) {
 				builder.Append("</a>");
 			}
-			
-			// TODO: Re-write this!
-			/*for (int i = 0; i < returnType.PointerNestingLevel; ++i) {
-				builder.Append('*');
-			}
-			
-			for (int i = 0; i < returnType.ArrayCount; ++i) {
-				builder.Append('[');
-				for (int j = 1; j < returnType.ArrayDimensions[i]; ++j) {
-					builder.Append(',');
-				}
-				builder.Append(']');
-			}*/
 			
 			return builder.ToString();
 		}

@@ -62,9 +62,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.index = index;
 		}
 		
-		public DefaultTypeParameter(Type type)
+		public DefaultTypeParameter(IClass targetClass, Type type)
 		{
+			this.targetClass = targetClass;
 			this.name = type.Name;
+			this.index = type.GenericParameterPosition;
 		}
 		
 		public override string ToString()

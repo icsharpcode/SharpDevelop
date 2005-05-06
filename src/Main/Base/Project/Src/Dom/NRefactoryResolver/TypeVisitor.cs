@@ -268,36 +268,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(IndexerExpression indexerExpression, object data)
 		{
-			return null;
-			/*
 			IReturnType type = (IReturnType)indexerExpression.TargetObject.AcceptVisitor(this, data);
 			if (type == null) {
 				return null;
 			}
-			if (type.ArrayDimensions == null || type.ArrayDimensions.Length == 0) {
-				// check if ther is an indexer
-				if (indexerExpression.TargetObject is ThisReferenceExpression) {
-					if (resolver.CallingClass == null) {
-						return null;
-					}
-					type = new ReturnType(resolver.CallingClass.FullyQualifiedName);
-				}
-				ArrayList indexer = resolver.SearchIndexer(type);
-				if (indexer.Count == 0) {
-					return null;
-				}
-				// TODO: get the right indexer
-				return ((IIndexer)indexer[0]).ReturnType;
-			}
-			
-			// TODO: what is a[0] if a is pointer to array or array of pointer ?
-			if (type.ArrayDimensions[type.ArrayDimensions.Length - 1] != indexerExpression.Indices.Count) {
+			List<IIndexer> indexers = type.GetIndexers();
+			if (indexers.Count > 0)
+				return indexers[0].ReturnType;
+			else
 				return null;
-			}
-			int[] newArray = new int[type.ArrayDimensions.Length - 1];
-			Array.Copy(type.ArrayDimensions, 0, newArray, 0, type.ArrayDimensions.Length - 1);
-			return new ReturnType(type.Name, newArray, type.PointerNestingLevel);
-			 */
 		}
 		
 		public override object Visit(ClassReferenceExpression classReferenceExpression, object data)
@@ -330,12 +309,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
 		{
-			string name = objectCreateExpression.CreateType.Type;
-			IClass c = resolver.SearchType(name, resolver.CallingClass, resolver.CompilationUnit);
-			if (c != null)
-				name = c.FullyQualifiedName;
-			return c.DefaultReturnType;
-			//return new ReturnType(name, objectCreateExpression.CreateType.RankSpecifier, objectCreateExpression.CreateType.PointerNestingLevel);
+			return CreateReturnType(objectCreateExpression.CreateType);
 		}
 		
 		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)
@@ -372,8 +346,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public static IReturnType CreateReturnType(TypeReference reference, NRefactoryResolver resolver)
 		{
 			if (reference.IsNull) return null;
-			IResolveContext context = new SearchClassResolveContext(resolver.CallingClass, resolver.CaretLine, resolver.CaretColumn);
-			IReturnType t = new LazyReturnType(context, reference.SystemType);
+			IClass c = resolver.SearchType(reference.SystemType, resolver.CallingClass);
+			if (c == null) return null;
+			IReturnType t = c.DefaultReturnType;
 			if (reference.GenericTypes.Count > 0) {
 				List<IReturnType> para = new List<IReturnType>(reference.GenericTypes.Count);
 				for (int i = 0; i < reference.GenericTypes.Count; ++i) {
@@ -381,9 +356,29 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				t = new SpecificReturnType(t, para);
 			}
+			return WrapArray(t, reference);
+		}
+		
+		public static IReturnType CreateReturnType(TypeReference reference, IClass callingClass, int caretLine, int caretColumn)
+		{
+			if (reference.IsNull) return null;
+			IResolveContext context = new SearchClassResolveContext(callingClass, caretLine, caretColumn);
+			IReturnType t = new LazyReturnType(context, reference.SystemType);
+			if (reference.GenericTypes.Count > 0) {
+				List<IReturnType> para = new List<IReturnType>(reference.GenericTypes.Count);
+				for (int i = 0; i < reference.GenericTypes.Count; ++i) {
+					para.Add(CreateReturnType(reference.GenericTypes[i], callingClass, caretLine, caretColumn));
+				}
+				t = new SpecificReturnType(t, para);
+			}
+			return WrapArray(t, reference);
+		}
+		
+		static IReturnType WrapArray(IReturnType t, TypeReference reference)
+		{
 			if (reference.IsArrayType) {
 				for (int i = 0; i < reference.RankSpecifier.Length; ++i) {
-					t = new ArrayReturnType(t, reference.RankSpecifier[i]);
+					t = new ArrayReturnType(t, reference.RankSpecifier[i] + 1);
 				}
 			}
 			return t;

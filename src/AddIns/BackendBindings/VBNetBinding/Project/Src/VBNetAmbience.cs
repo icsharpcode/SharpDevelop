@@ -51,7 +51,7 @@ namespace VBNetBinding
 			
 			if (decoration.IsStatic) {
 				builder.Append("Shared ");
-			} 
+			}
 			if (decoration.IsAbstract) {
 				builder.Append("MustOverride ");
 			} else if (decoration.IsFinal) {
@@ -206,7 +206,7 @@ namespace VBNetBinding
 				}
 			}
 			
-			return builder.ToString();		
+			return builder.ToString();
 		}
 		
 		public override string ConvertEnd(IClass c)
@@ -253,7 +253,7 @@ namespace VBNetBinding
 					builder.Append("Shared ");
 				}
 			}
-						
+			
 			if (IncludeHTMLMarkup) {
 				builder.Append("</i>");
 				builder.Append("<b>");
@@ -272,9 +272,9 @@ namespace VBNetBinding
 			if (field.ReturnType != null && ShowReturnType) {
 				builder.Append(" As ");
 				builder.Append(Convert(field.ReturnType));
-			}			
+			}
 			
-			return builder.ToString();			
+			return builder.ToString();
 		}
 		
 		public override string Convert(IProperty property)
@@ -407,7 +407,7 @@ namespace VBNetBinding
 			if (m.ReturnType != null && ShowReturnType) {
 				builder.Append(" As ");
 				builder.Append(Convert(m.ReturnType));
-			}			
+			}
 			
 			return builder.ToString();
 		}
@@ -482,7 +482,7 @@ namespace VBNetBinding
 			StringBuilder builder = new StringBuilder();
 			
 			bool linkSet = false;
-//		TODO: #Assembly dependance:		
+//		TODO: #Assembly dependance:
 
 //			if (UseLinkArrayList) {
 //				SharpAssemblyReturnType ret = returnType as SharpAssemblyReturnType;
@@ -503,20 +503,16 @@ namespace VBNetBinding
 			if (linkSet) {
 				builder.Append("</a>");
 			}
-
-			/*
-			for (int i = 0; i < returnType.PointerNestingLevel; ++i) {
-				builder.Append('*');
-			}
 			
-			for (int i = 0; i < returnType.ArrayCount; ++i) {
-				builder.Append('(');
-				for (int j = 1; j < returnType.ArrayDimensions[i]; ++j) {
-					builder.Append(',');
+			if (returnType is SpecificReturnType) {
+				SpecificReturnType rt = (SpecificReturnType)returnType;
+				builder.Append("(Of");
+				for (int i = 0; i < rt.TypeParameters.Count; ++i) {
+					if (i > 0) builder.Append(", ");
+					builder.Append(Convert(rt.TypeParameters[i]));
 				}
 				builder.Append(')');
 			}
-			*/
 			
 			return builder.ToString();
 		}
@@ -528,7 +524,7 @@ namespace VBNetBinding
 				if (IncludeHTMLMarkup) {
 					builder.Append("<i>");
 				}
-			
+				
 				if (param.IsRef || param.IsOut) {
 					builder.Append("ByRef ");
 				} else if (param.IsParams) {
@@ -539,8 +535,8 @@ namespace VBNetBinding
 				if (IncludeHTMLMarkup) {
 					builder.Append("</i>");
 				}
-			
-			
+				
+				
 				builder.Append(param.Name);
 				builder.Append(" As ");
 			}

@@ -274,7 +274,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			foreach (IMethod method in type.GetMethods()) {
 				if (IsSameName(identifier, method.Name))
-					return new MethodResolveResult(callingClass, callingMember, method.DeclaringType, identifier);
+					return new MethodResolveResult(callingClass, callingMember, type, identifier);
 			}
 			return null;
 		}

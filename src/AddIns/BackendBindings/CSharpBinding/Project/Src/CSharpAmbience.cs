@@ -156,7 +156,7 @@ namespace ICSharpCode.Core
 				}
 				builder.Append(' ');
 			}
-			if (c.ClassType == ClassType.Delegate && c.Methods.Count > 0) {
+			if (ShowReturnType && c.ClassType == ClassType.Delegate) {
 				foreach(IMethod m in c.Methods) {
 					if (m.Name != "Invoke") continue;
 					
@@ -187,7 +187,7 @@ namespace ICSharpCode.Core
 				builder.Append('>');
 			}
 			
-			if (c.ClassType == ClassType.Delegate) {
+			if (ShowReturnType && c.ClassType == ClassType.Delegate) {
 				builder.Append(" (");
 				if (IncludeHTMLMarkup) builder.Append("<br>");
 				
@@ -534,19 +534,15 @@ namespace ICSharpCode.Core
 				builder.Append("</a>");
 			}
 			
-			/*
-			for (int i = 0; i < returnType.PointerNestingLevel; ++i) {
-				builder.Append('*');
-			}
-			
-			for (int i = 0; i < returnType.ArrayCount; ++i) {
-				builder.Append('[');
-				for (int j = 1; j < returnType.ArrayDimensions[i]; ++j) {
-					builder.Append(',');
+			if (returnType is SpecificReturnType) {
+				SpecificReturnType rt = (SpecificReturnType)returnType;
+				builder.Append('<');
+				for (int i = 0; i < rt.TypeParameters.Count; ++i) {
+					if (i > 0) builder.Append(", ");
+					builder.Append(Convert(rt.TypeParameters[i]));
 				}
-				builder.Append(']');
+				builder.Append('>');
 			}
-			*/
 			
 			return builder.ToString();
 		}

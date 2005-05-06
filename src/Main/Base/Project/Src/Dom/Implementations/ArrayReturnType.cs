@@ -19,8 +19,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public ArrayReturnType(IReturnType elementType, int dimensions)
 		{
+			if (dimensions <= 0)
+				throw new ArgumentOutOfRangeException("dimensions", dimensions, "dimensions must be positive");
+			if (elementType == null)
+				throw new ArgumentNullException("elementType");
 			this.elementType = elementType;
 			this.dimensions = dimensions;
+		}
+		
+		public IReturnType ElementType {
+			get {
+				return elementType;
+			}
 		}
 		
 		public override string FullyQualifiedName {

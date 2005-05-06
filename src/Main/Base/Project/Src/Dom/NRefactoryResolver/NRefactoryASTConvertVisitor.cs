@@ -354,7 +354,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IReturnType CreateReturnType(AST.TypeReference reference)
 		{
-			return null;
+			IClass c = GetCurrentClass();
+			if (c == null) return null;
+			return TypeVisitor.CreateReturnType(reference, c, c.Region.BeginLine + 1, 1);
 		}
 	}
 }
