@@ -29,6 +29,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Name = name;
 		}
 		
+		public DefaultParameter(IParameter p)
+		{
+			this.name = p.Name;
+			this.region = p.Region;
+			this.modifier = p.Modifier;
+			this.returnType = p.ReturnType;
+		}
+		
 		public DefaultParameter(string name, IReturnType type, IRegion region) : this(name)
 		{
 			returnType = type;
@@ -112,6 +120,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 //					AbstractDecoration.documentationHashtable[documentationHash] = value;
 //				}
 			}
+		}
+		
+		public static List<IParameter> Clone(List<IParameter> l)
+		{
+			List<IParameter> r = new List<IParameter>(l.Count);
+			for (int i = 0; i < l.Count; ++i) {
+				r.Add(new DefaultParameter(l[i]));
+			}
+			return r;
 		}
 		
 		public virtual int CompareTo(IParameter value) {

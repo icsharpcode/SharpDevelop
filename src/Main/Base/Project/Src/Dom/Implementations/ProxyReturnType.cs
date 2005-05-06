@@ -49,38 +49,38 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets the array ranks of the return type.
 		/// When the return type is not an array, this property returns null.
 		/// </summary>
-		public virtual int[] ArrayDimensions {
+		public virtual int ArrayDimensions {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.ArrayDimensions : null;
+				return (baseType != null) ? baseType.ArrayDimensions : 0;
 			}
 		}
 		
-		public List<IMethod> GetMethods()
+		public virtual List<IMethod> GetMethods()
 		{
 			IReturnType baseType = BaseType;
 			return (baseType != null) ? baseType.GetMethods() : new List<IMethod>();
 		}
 		
-		public List<IProperty> GetProperties()
+		public virtual List<IProperty> GetProperties()
 		{
 			IReturnType baseType = BaseType;
 			return (baseType != null) ? baseType.GetProperties() : new List<IProperty>();
 		}
 		
-		public List<IField> GetFields()
+		public virtual List<IField> GetFields()
 		{
 			IReturnType baseType = BaseType;
 			return (baseType != null) ? baseType.GetFields() : new List<IField>();
 		}
 		
-		public List<IEvent> GetEvents()
+		public virtual List<IEvent> GetEvents()
 		{
 			IReturnType baseType = BaseType;
 			return (baseType != null) ? baseType.GetEvents() : new List<IEvent>();
 		}
 		
-		public List<IIndexer> GetIndexers()
+		public virtual List<IIndexer> GetIndexers()
 		{
 			IReturnType baseType = BaseType;
 			return (baseType != null) ? baseType.GetIndexers() : new List<IIndexer>();

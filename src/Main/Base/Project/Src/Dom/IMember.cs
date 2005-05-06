@@ -9,7 +9,7 @@ using System.Reflection;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IMember : IDecoration
+	public interface IMember : IDecoration, ICloneable
 	{
 		string FullyQualifiedName {
 			get;

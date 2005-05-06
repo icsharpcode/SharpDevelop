@@ -58,6 +58,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
+		public int CaretLine {
+			get {
+				return caretLine;
+			}
+		}
+		
+		public int CaretColumn {
+			get {
+				return caretColumn;
+			}
+		}
+		
 		public NRefactoryResolver(SupportedLanguages language)
 		{
 			this.language = language;
@@ -550,13 +562,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (v == null) {
 				return null;
 			}
-			IClass c = SearchType(v.TypeRef.SystemType, callingClass, cu);
-			if (c != null) {
-				return c.DefaultReturnType;
-			} else {
-				//return new ReturnType(v.TypeRef);
-				return null;
-			}
+			return TypeVisitor.CreateReturnType(v.TypeRef, this);
 		}
 		
 		LocalLookupVariable SearchVariable(string name)

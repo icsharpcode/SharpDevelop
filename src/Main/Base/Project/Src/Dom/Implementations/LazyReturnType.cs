@@ -38,6 +38,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.data = data;
 		}
 		
+		public override bool Equals(object o)
+		{
+			LazyReturnType rt = o as LazyReturnType;
+			if (rt == null) return false;
+			if (!context.Equals(rt.context)) return false;
+			return data.Equals(rt.data);
+		}
+		
+		public override int GetHashCode()
+		{
+			return context.GetHashCode() ^ data.GetHashCode();
+		}
+		
 		public override IReturnType BaseType {
 			get {
 				return context.Resolve(data);
@@ -66,6 +79,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			IClass c = content.GetClass((string)data);
 			return (c != null) ? c.DefaultReturnType : null;
 		}
+		
+		public override bool Equals(object obj)
+		{
+			GetClassResolveContext b = obj as GetClassResolveContext;
+			if (b == null) return false;
+			return content == b.content;
+		}
+		
+		public override int GetHashCode()
+		{
+			return content.GetHashCode();
+		}
 	}
 	
 	public class SearchClassResolveContext : IResolveContext
@@ -85,6 +110,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IClass c = declaringClass.ProjectContent.SearchType((string)data, declaringClass, caretLine, caretColumn);
 			return (c != null) ? c.DefaultReturnType : null;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			SearchClassResolveContext b = obj as SearchClassResolveContext;
+			if (b == null) return false;
+			if (declaringClass != b.declaringClass) return false;
+			if (caretLine != b.caretLine) return false;
+			if (caretColumn != b.caretColumn) return false;
+			return true;
+		}
+		
+		public override int GetHashCode()
+		{
+			return declaringClass.GetHashCode() ^ caretLine ^ caretColumn;
 		}
 	}
 }

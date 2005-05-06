@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return c.Name;
 			}
 		}
-
+		
 		public override string Namespace {
 			get {
 				return c.Namespace;

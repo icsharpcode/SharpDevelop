@@ -38,6 +38,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		List<IParameter> parameters = null;
 		List<ITypeParameter> typeParameters = null;
 		
+		public override IMember Clone()
+		{
+			DefaultMethod p = new DefaultMethod(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
+			p.parameters = DefaultParameter.Clone(this.Parameters);
+			return p;
+		}
+		
 		public override string DotNetName {
 			get {
 				if (typeParameters == null || typeParameters.Count == 0)

@@ -643,6 +643,9 @@
     <Compile Include="Src\Dom\Implementations\ProxyReturnType.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultReturnType.cs" />
     <Compile Include="Src\Dom\Implementations\LazyReturnType.cs" />
+    <Compile Include="Src\Dom\Implementations\GenericReturnType.cs" />
+    <Compile Include="Src\Dom\Implementations\ArrayReturnType.cs" />
+    <Compile Include="Src\Dom\Implementations\SpecificReturnType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

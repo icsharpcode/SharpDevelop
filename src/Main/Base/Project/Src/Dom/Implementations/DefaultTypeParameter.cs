@@ -66,5 +66,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			this.name = type.Name;
 		}
+		
+		public override string ToString()
+		{
+			return String.Format("[{0}: {1}]", GetType().Name, name);
+		}
 	}
 }

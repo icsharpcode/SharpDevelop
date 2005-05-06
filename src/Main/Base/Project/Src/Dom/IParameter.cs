@@ -19,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 
 		IReturnType ReturnType {
 			get;
+			set;
 		}
 
 		List<IAttribute> Attributes {

@@ -15,20 +15,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class ReflectionParameter : DefaultParameter
 	{
 		ParameterInfo parameterInfo;
-		IProjectContent content;
+		IMember member;
 		
 		public override IReturnType ReturnType {
 			get {
-				return ReflectionReturnType.Create(content, parameterInfo.ParameterType);
+				return ReflectionReturnType.Create(member, parameterInfo.ParameterType);
 			}
 			set {
 			}
 		}
 		
-		public ReflectionParameter(ParameterInfo parameterInfo, IProjectContent content) : base(parameterInfo.Name)
+		public ReflectionParameter(ParameterInfo parameterInfo, IMember member) : base(parameterInfo.Name)
 		{
 			this.parameterInfo = parameterInfo;
-			this.content = content;
+			this.member = member;
 			
 			if (parameterInfo.IsOut) {
 				modifier |= ParameterModifier.Out;

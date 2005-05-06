@@ -24,14 +24,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public override IMember Clone()
+		{
+			return new DefaultIndexer(ReturnType, DefaultParameter.Clone(this.Parameters), Modifiers, Region, BodyRegion, DeclaringType);
+		}
 		
 		public virtual IRegion BodyRegion {
 			get {
 				return bodyRegion;
 			}
 		}
-
-
+		
 		public IRegion GetterRegion {
 			get {
 				return getterRegion;

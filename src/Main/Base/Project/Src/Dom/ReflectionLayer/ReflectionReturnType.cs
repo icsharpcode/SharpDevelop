@@ -15,16 +15,29 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public static IReturnType Create(IProjectContent content, Type type)
 		{
 			string name = type.FullName;
-			if (name == null) {
-				// this could be a generic type
+			if (name == null)
 				return null;
+			if (type.IsArray) {
+				return MakeArray(type, Create(content, type.GetElementType()));
+			} else {
+				return new LazyReturnType(new GetClassResolveContext(content), name);
 			}
-			return new LazyReturnType(new GetClassResolveContext(content), name);
 		}
 		
 		public static IReturnType Create(IMember member, Type type)
 		{
+			if (type.IsArray) {
+				return MakeArray(type, Create(member, type.GetElementType()));
+			} else if (type.IsGenericParameter) {
+				IClass c = member.DeclaringType;
+				return new GenericReturnType(c.TypeParameters[type.GenericParameterPosition]);
+			}
 			return Create(member.DeclaringType.ProjectContent, type);
+		}
+		
+		static IReturnType MakeArray(Type type, IReturnType baseType)
+		{
+			return new ArrayReturnType(baseType, type.GetArrayRank());
 		}
 	}
 	
@@ -74,5 +87,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 	}
-	*/
+	 */
 }

@@ -29,6 +29,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.Modifiers = m;
 		}
 		
+		public override IMember Clone()
+		{
+			return new DefaultField(ReturnType, Name, Modifiers, Region, DeclaringType);
+		}
+		
 		public virtual int CompareTo(IField field)
 		{
 			int cmp;

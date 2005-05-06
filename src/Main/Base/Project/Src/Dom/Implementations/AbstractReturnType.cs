@@ -19,6 +19,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public abstract List<IEvent>    GetEvents();
 		public abstract List<IIndexer>  GetIndexers();
 		
+		public override bool Equals(object o)
+		{
+			AbstractReturnType rt = o as AbstractReturnType;
+			if (rt == null) return false;
+			return this.fullyQualifiedName == rt.fullyQualifiedName;
+		}
+		
+		public override int GetHashCode()
+		{
+			return fullyQualifiedName.GetHashCode();
+		}
+		
 		string fullyQualifiedName = null;
 		
 		public virtual string FullyQualifiedName {
@@ -59,9 +71,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public int[] ArrayDimensions {
+		public int ArrayDimensions {
 			get {
-				return null;
+				return 0;
 			}
 		}
 	}

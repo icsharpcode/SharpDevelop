@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				List<IParameter> parameters = new List<IParameter>();
 				foreach (ParameterInfo paramInfo in methodBase.GetParameters()) {
-					parameters.Add(new ReflectionParameter(paramInfo, DeclaringType.ProjectContent));
+					parameters.Add(new ReflectionParameter(paramInfo, this));
 				}
 				return parameters;
 			}

@@ -30,9 +30,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		/// <summary>
 		/// Gets the array ranks of the return type.
-		/// When the return type is not an array, this property returns null.
+		/// When the return type is not an array, this property returns 0.
 		/// </summary>
-		int[] ArrayDimensions {
+		int ArrayDimensions {
 			get;
 		}
 		

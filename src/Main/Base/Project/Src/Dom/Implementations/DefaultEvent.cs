@@ -7,7 +7,7 @@
 using System;
 using System.Reflection;
 
-namespace ICSharpCode.SharpDevelop.Dom 
+namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
 	public class DefaultEvent : AbstractMember, IEvent
@@ -36,6 +36,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public override IMember Clone()
+		{
+			return new DefaultEvent(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
+		}
+		
 		protected DefaultEvent(IClass declaringType, string name) : base(declaringType, name)
 		{
 		}
@@ -51,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual int CompareTo(IEvent value) 
+		public virtual int CompareTo(IEvent value)
 		{
 			int cmp;
 			
@@ -64,11 +69,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return cmp;
 				}
 			}
-						
+			
 			return Region.CompareTo(value.Region);
 		}
 		
-		int IComparable.CompareTo(object value) 
+		int IComparable.CompareTo(object value)
 		{
 			return CompareTo((IEvent)value);
 		}

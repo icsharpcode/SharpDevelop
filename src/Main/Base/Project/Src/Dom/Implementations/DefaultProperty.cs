@@ -33,8 +33,14 @@ namespace ICSharpCode.SharpDevelop.Dom {
 				return bodyRegion;
 			}
 		}
-
-
+		
+		public override IMember Clone()
+		{
+			DefaultProperty p = new DefaultProperty(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
+			p.parameters = DefaultParameter.Clone(this.Parameters);
+			return p;
+		}
+		
 		public virtual List<IParameter> Parameters {
 			get {
 				if (parameters == null) {

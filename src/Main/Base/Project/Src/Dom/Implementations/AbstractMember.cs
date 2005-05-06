@@ -36,5 +36,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public AbstractMember(IClass declaringType, string name) : base(declaringType, name)
 		{
 		}
+		
+		public abstract IMember Clone();
+		
+		object ICloneable.Clone()
+		{
+			return this.Clone();
+		}
 	}
 }

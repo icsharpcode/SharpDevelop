@@ -2,6 +2,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
@@ -23,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(PrimitiveExpression primitiveExpression, object data)
 		{
 			if (primitiveExpression.Value != null) {
-				return ReflectionReturnType(primitiveExpression.Value.GetType());
+				return CreateReturnType(primitiveExpression.Value.GetType());
 			}
 			return null;
 		}
@@ -141,7 +142,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (name != null) {
 					string n = resolver.SearchNamespace(name + "." + fieldReferenceExpression.FieldName, null);
 					if (n != null) {
-						return NamespaceReturnType(n);
+						return CreateNamespaceReturnType(n);
 					}
 					IClass c = resolver.SearchType(name + "." + fieldReferenceExpression.FieldName, resolver.CallingClass, resolver.CompilationUnit);
 					if (c != null) {
@@ -178,11 +179,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			string name = resolver.SearchNamespace(identifierExpression.Identifier, resolver.CompilationUnit);
 			if (name != null && name != "") {
-				return NamespaceReturnType(name);
+				return CreateNamespaceReturnType(name);
 			}
 			IClass c = resolver.SearchType(identifierExpression.Identifier, resolver.CallingClass, resolver.CompilationUnit);
 			if (c != null) {
-				return c.DefaultReturnType;;
+				return c.DefaultReturnType;
 			}
 			return resolver.DynamicLookup(identifierExpression.Identifier);
 		}
@@ -234,12 +235,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(SizeOfExpression sizeOfExpression, object data)
 		{
-			return ReflectionReturnType(typeof(int));
+			return CreateReturnType(typeof(int));
 		}
 		
 		public override object Visit(TypeOfExpression typeOfExpression, object data)
 		{
-			return ReflectionReturnType(typeof(Type));
+			return CreateReturnType(typeof(Type));
 		}
 		
 		public override object Visit(CheckedExpression checkedExpression, object data)
@@ -365,17 +366,38 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IReturnType CreateReturnType(TypeReference reference)
 		{
-			return null;
+			return CreateReturnType(reference, resolver);
 		}
 		
-		IReturnType NamespaceReturnType(string namespaceName)
+		public static IReturnType CreateReturnType(TypeReference reference, NRefactoryResolver resolver)
+		{
+			if (reference.IsNull) return null;
+			IResolveContext context = new SearchClassResolveContext(resolver.CallingClass, resolver.CaretLine, resolver.CaretColumn);
+			IReturnType t = new LazyReturnType(context, reference.SystemType);
+			if (reference.GenericTypes.Count > 0) {
+				List<IReturnType> para = new List<IReturnType>(reference.GenericTypes.Count);
+				for (int i = 0; i < reference.GenericTypes.Count; ++i) {
+					para.Add(CreateReturnType(reference.GenericTypes[i], resolver));
+				}
+				t = new SpecificReturnType(t, para);
+			}
+			if (reference.IsArrayType) {
+				for (int i = 0; i < reference.RankSpecifier.Length; ++i) {
+					t = new ArrayReturnType(t, reference.RankSpecifier[i]);
+				}
+			}
+			return t;
+		}
+		
+		IReturnType CreateNamespaceReturnType(string namespaceName)
 		{
 			return null;
 		}
 		
-		IReturnType ReflectionReturnType(Type t)
+		IReturnType CreateReturnType(Type type)
 		{
-			return null;
+			return ReflectionReturnType.Create(ProjectContentRegistry.GetMscorlibContent(),
+			                                   type);
 		}
 	}
 }

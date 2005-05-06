@@ -60,36 +60,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public string Description {
 			get {
-				// get correct delegate description (when description is requested)
-				// in the classproxies aren't methods saved, therefore delegate methods
-				// must be get through the real class instead out of the proxy
-				//
-				// Mike
-//		TODO: Still useful ?
-//				if (c is ClassProxy && c.ClassType == ClassType.Delegate) {
-//					description = ambience.Convert(ParserService.GetClass(c.FullyQualifiedName));
-//					c = null;
-//				}
-				if (documentation == null) {
-					return "";
-				}
 				// don't give a description string, if no documentation or description is provided
-				if (description.Length + documentation.Length == 0) {
+				if (description.Length == 0 && (documentation == null || documentation.Length == 0)) {
 					return "";
 				}
-				if (!convertedDocumentation) {
+				if (!convertedDocumentation && documentation != null) {
 					convertedDocumentation = true;
-					try {
-						documentation = GetDocumentation(documentation);
-						// new (by G.B.)
-						// XmlDocument doc = new XmlDocument();
-						// doc.LoadXml("<doc>" + documentation + "</doc>");
-						// XmlNode root      = doc.DocumentElement;
-						// XmlNode paramDocu = root.SelectSingleNode("summary");
-						// documentation = paramDocu.InnerXml;
-					} catch (Exception e) {
-						Console.WriteLine(e.ToString());
-					}
+					documentation = GetDocumentation(documentation);
 				}
 				
 				return description + (overloads > 0 ? " " + StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.OverloadsCounter}", new string[,] {{"NumOverloads", overloads.ToString()}}) : String.Empty) + "\n" + documentation;
