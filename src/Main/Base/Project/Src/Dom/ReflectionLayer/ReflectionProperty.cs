@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override IReturnType ReturnType {
 			get {
-				return new ReflectionReturnType(propertyInfo.PropertyType);
+				return ReflectionReturnType.Create(this, propertyInfo.PropertyType);
 			}
 			set {
 			}

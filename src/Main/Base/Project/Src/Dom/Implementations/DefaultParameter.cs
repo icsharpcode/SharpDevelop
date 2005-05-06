@@ -123,10 +123,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return cmp;
 				}
 			}
-			if (ReturnType != null) {
-				if(0 != (cmp = ReturnType.CompareTo(value.ReturnType)))
-					return cmp;
-			}
 			
 			if(0 != (cmp = (int)(Modifier - value.Modifier)))
 				return cmp;

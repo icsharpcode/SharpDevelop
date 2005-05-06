@@ -6,9 +6,11 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
+
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IReturnType: IComparable
+	public interface IReturnType
 	{
 		string FullyQualifiedName {
 			get;
@@ -22,18 +24,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		int PointerNestingLevel {
+		string DotNetName {
 			get;
 		}
-		int ArrayCount { // ArrayDimensions.Length
-			get;
-		}
+		
+		/// <summary>
+		/// Gets the array ranks of the return type.
+		/// When the return type is not an array, this property returns null.
+		/// </summary>
 		int[] ArrayDimensions {
 			get;
 		}
 		
-		object DeclaredIn {
-			get;
-		}
+		List<IMethod>   GetMethods();
+		List<IProperty> GetProperties();
+		List<IField>    GetFields();
+		List<IEvent>    GetEvents();
+		List<IIndexer>  GetIndexers();
 	}
 }

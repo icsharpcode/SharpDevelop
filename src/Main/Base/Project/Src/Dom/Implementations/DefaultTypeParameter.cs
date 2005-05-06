@@ -24,9 +24,42 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public DefaultTypeParameter(string name)
+		int index;
+		
+		public int Index {
+			get {
+				return index;
+			}
+		}
+		
+		IMethod method;
+		IClass targetClass;
+		
+		public IMethod Method {
+			get {
+				return method;
+			}
+		}
+		
+		public IClass Class {
+			get {
+				return targetClass;
+			}
+		}
+		
+		public DefaultTypeParameter(IMethod method, string name, int index)
 		{
+			this.method = method;
+			this.targetClass = method.DeclaringType;
 			this.name = name;
+			this.index = index;
+		}
+		
+		public DefaultTypeParameter(IClass targetClass, string name, int index)
+		{
+			this.targetClass = targetClass;
+			this.name = name;
+			this.index = index;
 		}
 		
 		public DefaultTypeParameter(Type type)

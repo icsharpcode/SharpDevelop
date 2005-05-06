@@ -7,6 +7,7 @@
 using System;
 using System.Reflection;
 using System.Xml;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -14,22 +15,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class ReflectionParameter : DefaultParameter
 	{
 		ParameterInfo parameterInfo;
+		IProjectContent content;
+		
 		public override IReturnType ReturnType {
 			get {
-				return new ReflectionReturnType(parameterInfo.ParameterType);
+				return ReflectionReturnType.Create(content, parameterInfo.ParameterType);
 			}
 			set {
 			}
 		}
 		
-		public ReflectionParameter(ParameterInfo parameterInfo) : base(parameterInfo.Name)
+		public ReflectionParameter(ParameterInfo parameterInfo, IProjectContent content) : base(parameterInfo.Name)
 		{
 			this.parameterInfo = parameterInfo;
+			this.content = content;
 			
 			if (parameterInfo.IsOut) {
 				modifier |= ParameterModifier.Out;
 			}
-			
 			Type type = parameterInfo.ParameterType;
 			// TODO read param attribute
 			//if (type.IsArray && type != typeof(Array) && Attribute.IsDefined(parameterInfo, typeof(ParamArrayAttribute), true)) {

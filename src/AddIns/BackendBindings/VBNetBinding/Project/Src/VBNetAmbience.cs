@@ -504,6 +504,7 @@ namespace VBNetBinding
 				builder.Append("</a>");
 			}
 
+			/*
 			for (int i = 0; i < returnType.PointerNestingLevel; ++i) {
 				builder.Append('*');
 			}
@@ -515,6 +516,7 @@ namespace VBNetBinding
 				}
 				builder.Append(')');
 			}
+			*/
 			
 			return builder.ToString();
 		}

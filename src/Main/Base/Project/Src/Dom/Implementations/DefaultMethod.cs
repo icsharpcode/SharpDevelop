@@ -5,6 +5,7 @@
 //     <version value="$version"/>
 // </file>
 using System;
+using System.Text;
 using System.Reflection;
 using System.Collections.Generic;
 
@@ -14,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class Constructor : DefaultMethod
 	{
 		public Constructor(ModifierEnum m, IRegion region, IRegion bodyRegion, IClass declaringType)
-			: base("#ctor", new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.ReturnType(declaringType.FullyQualifiedName),
+			: base("#ctor", declaringType.DefaultReturnType,
 			       m, region, bodyRegion, declaringType)
 		{
 		}
@@ -35,16 +36,49 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected IRegion bodyRegion;
 		
 		List<IParameter> parameters = null;
+		List<ITypeParameter> typeParameters = null;
+		
+		public override string DotNetName {
+			get {
+				if (typeParameters == null || typeParameters.Count == 0)
+					return base.DotNetName;
+				else
+					return base.DotNetName + "``" + typeParameters.Count;
+			}
+		}
 		
 		public override string DocumentationTag {
 			get {
-				return "M:" + this.FullyQualifiedName;
+				string dotnetName = this.DotNetName;
+				StringBuilder b = new StringBuilder("M:", dotnetName.Length + 2);
+				b.Append(dotnetName);
+				List<IParameter> paras = this.Parameters;
+				if (paras.Count > 0) {
+					b.Append('(');
+					for (int i = 0; i < paras.Count; ++i) {
+						if (i > 0) b.Append(',');
+						if (paras[i].ReturnType != null) {
+							b.Append(paras[i].ReturnType.DotNetName);
+						}
+					}
+					b.Append(')');
+				}
+				return b.ToString();
 			}
 		}
 		
 		public virtual IRegion BodyRegion {
 			get {
 				return bodyRegion;
+			}
+		}
+		
+		public virtual List<ITypeParameter> TypeParameters {
+			get {
+				if (typeParameters == null) {
+					typeParameters = new List<ITypeParameter>();
+				}
+				return typeParameters;
 			}
 		}
 		
@@ -99,13 +133,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			if (FullyQualifiedName != null) {
 				cmp = FullyQualifiedName.CompareTo(value.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if (ReturnType != null) {
-				cmp = ReturnType.CompareTo(value.ReturnType);
 				if (cmp != 0) {
 					return cmp;
 				}

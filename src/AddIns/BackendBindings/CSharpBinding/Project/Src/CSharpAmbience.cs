@@ -534,6 +534,7 @@ namespace ICSharpCode.Core
 				builder.Append("</a>");
 			}
 			
+			/*
 			for (int i = 0; i < returnType.PointerNestingLevel; ++i) {
 				builder.Append('*');
 			}
@@ -545,6 +546,7 @@ namespace ICSharpCode.Core
 				}
 				builder.Append(']');
 			}
+			*/
 			
 			return builder.ToString();
 		}

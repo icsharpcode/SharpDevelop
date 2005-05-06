@@ -147,10 +147,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				IReturnType returnType;
 				if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName == "") {
 					if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
-						returnType = new ReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
+						// TODO: !!!
+						/*returnType = new ReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
 						IClass c = projectContent.GetClass(returnType.FullyQualifiedName);
 						if (c != null)
 							return new TypeResolveResult(callingClass, callingMember, returnType, c);
+						 */
 					}
 				}
 				returnType = fieldReferenceExpression.TargetObject.AcceptVisitor(typeVisitor, null) as IReturnType;
@@ -164,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						}
 						IClass c = SearchType(name, this.CallingClass, this.CompilationUnit);
 						if (c != null) {
-							return new TypeResolveResult(callingClass, callingMember, new ReturnType(c.FullyQualifiedName), c);
+							return new TypeResolveResult(callingClass, callingMember, c.DefaultReturnType, c);
 						}
 						return null;
 					}
@@ -182,15 +184,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			IReturnType type = expr.AcceptVisitor(typeVisitor, null) as IReturnType;
 			
-			if (type == null || type.FullyQualifiedName == "" || type.PointerNestingLevel != 0) {
+			if (type == null || type.FullyQualifiedName == "") {
 				return null;
 			}
-			if (expr is ObjectCreateExpression && type.ArrayCount == 0) {
-				IClass c = projectContent.GetClass(type.FullyQualifiedName);
-				if (c == null)
-					return null;
-				foreach (IMethod m in c.Methods) {
-					if (m.IsConstructor)
+			if (expr is ObjectCreateExpression) {
+				foreach (IMethod m in type.GetMethods()) {
+					if (m.IsConstructor && !m.IsStatic)
 						return CreateMemberResolveResult(m);
 				}
 				return null;
@@ -200,13 +199,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IReturnType FixType(IReturnType type)
 		{
-			if (type == null)
-				return null;
-			IClass returnClass = SearchType(type.FullyQualifiedName, callingClass, cu);
-			if (returnClass != null && returnClass.FullyQualifiedName != type.FullyQualifiedName)
-				return new ReturnType(returnClass.FullyQualifiedName, type.ArrayDimensions, type.PointerNestingLevel);
-			else
-				return type;
+			return type;
 		}
 		
 		#region Resolve Identifier
@@ -229,23 +222,25 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return new LocalResolveResult(callingMember, field, true);
 				}
 			}
-			IMember member = GetMember(callingClass, identifier);
-			if (member != null) {
-				return CreateMemberResolveResult(member);
-			}
-			ResolveResult result = ResolveMethod(callingClass, identifier);
-			if (result != null)
-				return result;
-			
-			IClass c = SearchType(identifier, this.CallingClass, cu);
-			if (c != null) {
-				return new TypeResolveResult(callingClass, callingMember, new ReturnType(c.FullyQualifiedName), c);
+			if (callingClass != null) {
+				IMember member = GetMember(callingClass.DefaultReturnType, identifier);
+				if (member != null) {
+					return CreateMemberResolveResult(member);
+				}
+				ResolveResult result = ResolveMethod(callingClass.DefaultReturnType, identifier);
+				if (result != null)
+					return result;
+				
+				IClass c = SearchType(identifier, callingClass, cu);
+				if (c != null) {
+					return new TypeResolveResult(callingClass, callingMember, c.DefaultReturnType, c);
+				}
 			}
 			
 			// try if there exists a static member in outer classes named typeName
 			List<IClass> classes = cu.GetOuterClasses(caretLine, caretColumn);
 			foreach (IClass c2 in classes) {
-				member = GetMember(c2, identifier);
+				IMember member = GetMember(c2.DefaultReturnType, identifier);
 				if (member != null && member.IsStatic) {
 					return new MemberResolveResult(callingClass, callingMember, member);
 				}
@@ -263,25 +258,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		#region ResolveMethod
 		ResolveResult ResolveMethod(IReturnType type, string identifier)
 		{
-			if (type == null || type.PointerNestingLevel != 0)
+			if (type == null)
 				return null;
-			IClass curType;
-			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0)
-				curType = SearchType("System.Array", null, null);
-			else
-				curType = SearchType(type.FullyQualifiedName, null, null);
-			return ResolveMethod(curType, identifier);
-		}
-		
-		ResolveResult ResolveMethod(IClass c, string identifier)
-		{
-			if (c == null)
-				return null;
-			foreach (IClass curType in c.ClassInheritanceTree) {
-				foreach (IMethod method in c.Methods) {
-					if (IsSameName(identifier, method.Name))
-						return new MethodResolveResult(callingClass, callingMember, c, identifier);
-				}
+			foreach (IMethod method in type.GetMethods()) {
+				if (IsSameName(identifier, method.Name))
+					return new MethodResolveResult(callingClass, callingMember, method.DeclaringType, identifier);
 			}
 			return null;
 		}
@@ -409,44 +390,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// </summary>
 		public ArrayList SearchMethod(IReturnType type, string memberName)
 		{
-			if (type == null || type.PointerNestingLevel != 0) {
-				return new ArrayList(1);
-			}
-			IClass curType;
-			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
-				curType = SearchType("System.Array", null, null);
-			} else {
-				curType = SearchType(type.FullyQualifiedName, null, null);
-			}
-			return SearchMethod(new ArrayList(), curType, memberName);
-		}
-		
-		/// <summary>
-		/// Gets the list of methods on the class that have the specified name.
-		/// </summary>
-		public ArrayList SearchMethod(IClass type, string memberName)
-		{
-			return SearchMethod(new ArrayList(), type, memberName);
-		}
-		
-		ArrayList SearchMethod(ArrayList methods, IClass curType, string memberName)
-		{
-			if (curType == null)
+			ArrayList methods = new ArrayList();
+			if (type == null)
 				return methods;
-			bool isClassInInheritanceTree = false;
-			if (callingClass != null)
-				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
 			
-			foreach (IMethod m in curType.Methods) {
-				if (IsSameName(m.Name, memberName) &&
-				    m.IsAccessible(callingClass, isClassInInheritanceTree) &&
-				    !((m.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
+			//bool isClassInInheritanceTree = false;
+			//if (callingClass != null)
+			//	isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
+			
+			foreach (IMethod m in type.GetMethods()) {
+				if (IsSameName(m.Name, memberName)
+				    // && m.IsAccessible(callingClass, isClassInInheritanceTree)
+				   ) {
 					methods.Add(m);
 				}
-			}
-			IClass baseClass = curType.BaseClass;
-			if (baseClass != null) {
-				return SearchMethod(methods, baseClass, memberName);
 			}
 			return methods;
 		}
@@ -484,79 +441,43 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		// no methods or indexer
 		public IReturnType SearchMember(IReturnType type, string memberName)
 		{
-			if (type == null || memberName == null || memberName == "") {
+			if (type == null)
 				return null;
-			}
-			if (type.PointerNestingLevel != 0) {
-				return null;
-			}
-			IClass curType;
-			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
-				curType = SearchType("System.Array", null, null);
-			} else {
-				curType = SearchType(type.FullyQualifiedName, callingClass, cu);
-			}
-			return SearchMember(curType, memberName);
-		}
-		
-		public IMember GetMember(IReturnType type, string memberName)
-		{
-			if (type == null || memberName == null || memberName == "") {
-				return null;
-			}
-			if (type.PointerNestingLevel != 0) {
-				return null;
-			}
-			IClass curType;
-			if (type.ArrayDimensions != null && type.ArrayDimensions.Length > 0) {
-				curType = SearchType("System.Array", null, null);
-			} else {
-				curType = SearchType(type.FullyQualifiedName, callingClass, cu);
-			}
-			return GetMember(curType, memberName);
-		}
-		
-		public IReturnType SearchMember(IClass curType, string memberName)
-		{
-			if (curType == null)
-				return null;
-			bool isClassInInheritanceTree = false;
-			if (callingClass != null)
-				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
-			foreach (IClass c in curType.InnerClasses) {
-				if (IsSameName(c.Name, memberName) && c.IsAccessible(callingClass, isClassInInheritanceTree)) {
-					return new ReturnType(c.FullyQualifiedName);
-				}
-			}
-			IMember member = GetMember(curType, memberName);
+			//bool isClassInInheritanceTree = false;
+			//if (callingClass != null)
+			//	isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
+			//foreach (IClass c in curType.InnerClasses) {
+			//	if (IsSameName(c.Name, memberName) && c.IsAccessible(callingClass, isClassInInheritanceTree)) {
+			//		return new ReturnType(c.FullyQualifiedName);
+			//	}
+			//}
+			IMember member = GetMember(type, memberName);
 			if (member == null)
 				return null;
 			else
 				return member.ReturnType;
 		}
 		
-		private IMember GetMember(IClass c, string memberName)
+		public IMember GetMember(IReturnType type, string memberName)
 		{
-			if (c == null)
+			if (type == null)
 				return null;
-			bool isClassInInheritanceTree = false;
-			if (callingClass != null)
-				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(c);
-			foreach (IClass curType in c.ClassInheritanceTree) {
-				foreach (IProperty p in curType.Properties) {
-					if (IsSameName(p.Name, memberName) && p.IsAccessible(callingClass, isClassInInheritanceTree)) {
-						return p;
-					}
+			//bool isClassInInheritanceTree = false;
+			//if (callingClass != null)
+			//	isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(c);
+			foreach (IProperty p in type.GetProperties()) {
+				if (IsSameName(p.Name, memberName)) {
+					return p;
 				}
-				foreach (IField f in curType.Fields) {
-					if (IsSameName(f.Name, memberName) && f.IsAccessible(callingClass, isClassInInheritanceTree)) {
-						return f;
-					}
+			}
+			foreach (IField f in type.GetFields()) {
+				if (IsSameName(f.Name, memberName)) {
+					return f;
 				}
-				foreach (IEvent e in curType.Events) {
-					if (IsSameName(e.Name, memberName) && e.IsAccessible(callingClass, isClassInInheritanceTree)) {
-						return e;
-					}
+			}
+			foreach (IEvent e in type.GetEvents()) {
+				if (IsSameName(e.Name, memberName)) {
+					return e;
 				}
 			}
 			return null;
@@ -594,7 +515,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			// try if there exists a nonstatic member named typeName
-			IReturnType t = SearchMember(callingClass, typeName);
+			IReturnType t = SearchMember(callingClass.DefaultReturnType, typeName);
 			if (t != null) {
 				return t;
 			}
@@ -602,7 +523,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			// try if there exists a static member in outer classes named typeName
 			List<IClass> classes = cu.GetOuterClasses(caretLine, caretColumn);
 			foreach (IClass c in classes) {
-				IMember member = GetMember(c, typeName);
+				IMember member = GetMember(c.DefaultReturnType, typeName);
 				if (member != null && member.IsStatic) {
 					return member.ReturnType;
 				}
@@ -631,9 +552,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			IClass c = SearchType(v.TypeRef.SystemType, callingClass, cu);
 			if (c != null) {
-				return new ReturnType(c.FullyQualifiedName, v.TypeRef.RankSpecifier, v.TypeRef.PointerNestingLevel);
+				return c.DefaultReturnType;
 			} else {
-				return new ReturnType(v.TypeRef);
+				//return new ReturnType(v.TypeRef);
+				return null;
 			}
 		}
 		
@@ -711,17 +633,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					IMethod method = callingMember as IMethod;
 					if (method != null) {
 						foreach (IParameter p in method.Parameters) {
-							result.Add(new DefaultField(new ReturnType(p.ReturnType.Name, p.ReturnType.ArrayDimensions, p.ReturnType.PointerNestingLevel), p.Name, ModifierEnum.None, method.Region, callingClass));
+							result.Add(new DefaultField(p.ReturnType, p.Name, ModifierEnum.None, method.Region, callingClass));
 						}
 					}
 					result.AddRange(projectContent.GetNamespaceContents(callingClass.Namespace));
 					bool inStatic = true;
 					if (callingMember != null)
 						inStatic = callingMember.IsStatic;
-					result.AddRange(callingClass.GetAccessibleMembers(callingClass, inStatic).ToArray());
-					if (inStatic == false) {
-						result.AddRange(callingClass.GetAccessibleMembers(callingClass, !inStatic).ToArray());
-					}
+					//result.AddRange(callingClass.GetAccessibleMembers(callingClass, inStatic).ToArray());
+					//if (inStatic == false) {
+					//	result.AddRange(callingClass.GetAccessibleMembers(callingClass, !inStatic).ToArray());
+					//}
 				}
 			}
 			foreach (string name in lookupTableVisitor.variables.Keys) {
@@ -731,7 +653,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
 							// LocalLookupVariable in no known Type in DisplayBindings.TextEditor
 							// so add Field for the Variables
-							result.Add(new DefaultField(new ReturnType(v.TypeRef), name, ModifierEnum.None, new DefaultRegion(v.StartPos, v.EndPos), callingClass));
+							//result.Add(new DefaultField(new ReturnType(v.TypeRef), name, ModifierEnum.None, new DefaultRegion(v.StartPos, v.EndPos), callingClass));
 							break;
 						}
 					}

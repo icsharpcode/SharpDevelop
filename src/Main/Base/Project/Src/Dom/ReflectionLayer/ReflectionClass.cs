@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		BindingFlags flags = BindingFlags.Instance  |
 			BindingFlags.Static    |
-			BindingFlags.NonPublic |
+			//BindingFlags.NonPublic |
 			BindingFlags.DeclaredOnly |
 			BindingFlags.Public;
 		
@@ -126,12 +126,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public static bool IsDelegate(Type type)
 		{
 			return type.IsSubclassOf(typeof(Delegate)) && type != typeof(MulticastDelegate);
-		}
-		
-		public override string DocumentationTag {
-			get {
-				return "T:" + type.FullName;
-			}
 		}
 		
 		public ReflectionClass(ICompilationUnit compilationUnit, Type type, IClass declaringType) : base(compilationUnit, declaringType)

@@ -6,9 +6,29 @@
 // </file>
 using System;
 using System.Collections;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
+	public static class ReflectionReturnType
+	{
+		public static IReturnType Create(IProjectContent content, Type type)
+		{
+			string name = type.FullName;
+			if (name == null) {
+				// this could be a generic type
+				return null;
+			}
+			return new LazyReturnType(new GetClassResolveContext(content), name);
+		}
+		
+		public static IReturnType Create(IMember member, Type type)
+		{
+			return Create(member.DeclaringType.ProjectContent, type);
+		}
+	}
+	
+	/*
 	[Serializable]
 	public class ReflectionReturnType : AbstractReturnType
 	{
@@ -54,4 +74,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 	}
+	*/
 }

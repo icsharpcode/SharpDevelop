@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		FieldInfo fieldInfo;
 		public override IReturnType ReturnType {
 			get {
-				return new ReflectionReturnType(fieldInfo.FieldType);
+				return ReflectionReturnType.Create(this, fieldInfo.FieldType);
 			}
 			set {
 			}

@@ -380,6 +380,7 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
+		/*
 		public ArrayList ListMembers(ArrayList members, IClass curType, IClass callingClass, bool showStatic)
 		{
 //			Console.WriteLine("ListMembers()");
@@ -447,7 +448,7 @@ namespace ICSharpCode.Core
 			
 			return members;
 		}
-		
+		*/
 		
 		public Position GetPosition(string fullMemberName)
 		{
@@ -480,13 +481,14 @@ namespace ICSharpCode.Core
 			if (i >= name.Length) {
 				return new Position(cu, curClass.Region != null ? curClass.Region.BeginLine : -1, curClass.Region != null ? curClass.Region.BeginColumn : -1);
 			}
-			IMember member = curClass.SearchMember(name[i]);
+			return new Position(cu, -1, -1);
+			// TODO: reimplement this
+			/*IMember member = curClass.SearchMember(name[i]);
 			if (member == null || member.Region == null) {
 				return new Position(cu, -1, -1);
 			}
-			return new Position(cu, member.Region.BeginLine, member.Region.BeginColumn);
+			return new Position(cu, member.Region.BeginLine, member.Region.BeginColumn);*/
 		}
 		#endregion
-		
 	}
 }

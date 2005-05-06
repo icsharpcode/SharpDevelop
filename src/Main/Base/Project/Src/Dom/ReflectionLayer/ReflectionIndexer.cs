@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override IReturnType ReturnType {
 			get {
-				return new ReflectionReturnType(propertyInfo.PropertyType);
+				return ReflectionReturnType.Create(this, propertyInfo.PropertyType);
 			}
 			set {
 			}
@@ -30,26 +30,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				List<IParameter> parameters = new List<IParameter>();
 				foreach (ParameterInfo parameterInfo in propertyInfo.GetIndexParameters()) {
-					parameters.Add(new ReflectionParameter(parameterInfo));
+					parameters.Add(new ReflectionParameter(parameterInfo, DeclaringType.ProjectContent));
 				}
 				return parameters;
 			}
 			set {
 			}
-		}
-		
-		string GetIndexerName(PropertyInfo propertyInfo)
-		{
-			StringBuilder propertyName = new StringBuilder("Item(");
-			ParameterInfo[] p = propertyInfo.GetIndexParameters();
-			for (int i = 0; i < p.Length; ++i) {
-				propertyName.Append(p[i].ParameterType.FullName);
-				if (i + 1 < p.Length) {
-					propertyName.Append(',');
-				}
-			}
-			propertyName.Append(')');
-			return propertyName.ToString();
 		}
 		
 		public ReflectionIndexer(PropertyInfo propertyInfo, IClass declaringType) : base(declaringType)

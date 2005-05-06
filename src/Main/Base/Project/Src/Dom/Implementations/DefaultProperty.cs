@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		
 		public override string DocumentationTag {
 			get {
-				return "P:" + this.FullyQualifiedName;
+				return "P:" + this.DotNetName;
 			}
 		}
 		
@@ -107,11 +107,6 @@ namespace ICSharpCode.SharpDevelop.Dom {
 				if (cmp != 0) {
 					return cmp;
 				}
-			}
-			
-			if (ReturnType != null) {
-				if(0 != (cmp = ReturnType.CompareTo(value.ReturnType)))
-					return cmp;
 			}
 			
 			if(0 != (cmp = Region.CompareTo(value.Region)))

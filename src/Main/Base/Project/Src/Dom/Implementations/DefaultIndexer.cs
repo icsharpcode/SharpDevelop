@@ -19,7 +19,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string DocumentationTag {
 			get {
-				return "P:" + this.FullyQualifiedName;
+				// TODO: We have to specify the parameters here
+				return "P:" + this.DotNetName;
 			}
 		}
 		
@@ -78,13 +79,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			if (FullyQualifiedName != null) {
 				cmp = FullyQualifiedName.CompareTo(value.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if (ReturnType != null) {
-				cmp = ReturnType.CompareTo(value.ReturnType);
 				if (cmp != 0) {
 					return cmp;
 				}

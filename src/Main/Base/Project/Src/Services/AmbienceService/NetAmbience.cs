@@ -267,7 +267,8 @@ namespace ICSharpCode.Core
 				builder.Append("</a>");
 			}
 			
-			for (int i = 0; i < returnType.PointerNestingLevel; ++i) {
+			// TODO: Re-write this!
+			/*for (int i = 0; i < returnType.PointerNestingLevel; ++i) {
 				builder.Append('*');
 			}
 			
@@ -277,7 +278,7 @@ namespace ICSharpCode.Core
 					builder.Append(',');
 				}
 				builder.Append(']');
-			}
+			}*/
 			
 			return builder.ToString();
 		}

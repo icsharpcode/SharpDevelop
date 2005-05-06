@@ -33,9 +33,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override string DocumentationTag {
+		public virtual string DotNetName {
 			get {
-				return "T:" + FullyQualifiedName;
+				if (this.DeclaringType != null) {
+					return this.DeclaringType.DotNetName + "." + this.Name;
+				} else {
+					return FullyQualifiedName;
+				}
 			}
 		}
 		

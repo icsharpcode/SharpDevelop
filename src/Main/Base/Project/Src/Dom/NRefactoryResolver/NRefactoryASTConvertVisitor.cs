@@ -214,7 +214,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				cu.Classes.Add(c);
 			}
-			DefaultMethod invokeMethod = new DefaultMethod("Invoke", new ReturnType(delegateDeclaration.ReturnType), ConvertModifier(delegateDeclaration.Modifier), null, null, c);
+			DefaultMethod invokeMethod = new DefaultMethod("Invoke", CreateReturnType(delegateDeclaration.ReturnType), ConvertModifier(delegateDeclaration.Modifier), null, null, c);
 			c.Methods.Add(invokeMethod);
 			return c;
 		}
@@ -223,20 +223,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DefaultRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new Point(-1, -1));
-			ReturnType type = new ReturnType(methodDeclaration.TypeReference);
+			IReturnType type = CreateReturnType(methodDeclaration.TypeReference);
 			DefaultClass c  = GetCurrentClass();
 			
 			DefaultMethod method = new DefaultMethod(methodDeclaration.Name, type, ConvertModifier(methodDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 			method.Attributes.AddRange(VisitAttributes(methodDeclaration.Attributes));
-			List<IParameter> parameters = new List<IParameter>();
 			if (methodDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
-					ReturnType parType = new ReturnType(par.TypeReference);
+					IReturnType parType = CreateReturnType(par.TypeReference);
 					DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, methodDeclaration.Body.EndLocation));
-					parameters.Add(p);
+					method.Parameters.Add(p);
 				}
 			}
-			method.Parameters = parameters;
 			c.Methods.Add(method);
 			return null;
 		}
@@ -249,15 +247,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			Constructor constructor = new Constructor(ConvertModifier(constructorDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 			constructor.Attributes.AddRange(VisitAttributes(constructorDeclaration.Attributes));
-			List<IParameter> parameters = new List<IParameter>();
 			if (constructorDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
-					ReturnType parType = new ReturnType(par.TypeReference);
+					IReturnType parType = CreateReturnType(par.TypeReference);
 					DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, constructorDeclaration.Body.EndLocation));
-					parameters.Add(p);
+					constructor.Parameters.Add(p);
 				}
 			}
-			constructor.Parameters = parameters;
 			c.Methods.Add(constructor);
 			return null;
 		}
@@ -284,11 +280,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				for (int i = 0; i < fieldDeclaration.Fields.Count; ++i) {
 					AST.VariableDeclaration field = (AST.VariableDeclaration)fieldDeclaration.Fields[i];
 					
-					ReturnType retType;
+					IReturnType retType;
 					if (c.ClassType == ClassType.Enum)
-						retType = new ReturnType(c.FullyQualifiedName);
+						retType = c.DefaultReturnType;
 					else
-						retType = new ReturnType(fieldDeclaration.GetTypeForField(i));
+						retType = CreateReturnType(fieldDeclaration.GetTypeForField(i));
 					DefaultField f = new DefaultField(retType, field.Name, ConvertModifier(fieldDeclaration.Modifier), region, c);
 					f.Attributes.AddRange(VisitAttributes(fieldDeclaration.Attributes));
 					if (c.ClassType == ClassType.Enum) {
@@ -306,7 +302,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion region     = GetRegion(propertyDeclaration.StartLocation, propertyDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(propertyDeclaration.BodyStart,     propertyDeclaration.BodyEnd);
 			
-			ReturnType type = new ReturnType(propertyDeclaration.TypeReference);
+			IReturnType type = CreateReturnType(propertyDeclaration.TypeReference);
 			DefaultClass c = GetCurrentClass();
 			
 			DefaultProperty property = new DefaultProperty(propertyDeclaration.Name, type, ConvertModifier(propertyDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
@@ -319,7 +315,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DefaultRegion region     = GetRegion(eventDeclaration.StartLocation, eventDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(eventDeclaration.BodyStart,     eventDeclaration.BodyEnd);
-			ReturnType type = new ReturnType(eventDeclaration.TypeReference);
+			IReturnType type = CreateReturnType(eventDeclaration.TypeReference);
 			DefaultClass c = GetCurrentClass();
 			DefaultEvent e = null;
 			
@@ -342,17 +338,22 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion region     = GetRegion(indexerDeclaration.StartLocation, indexerDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
 			List<IParameter> parameters = new List<IParameter>();
-			DefaultIndexer i = new DefaultIndexer(new ReturnType(indexerDeclaration.TypeReference), parameters, ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			DefaultIndexer i = new DefaultIndexer(CreateReturnType(indexerDeclaration.TypeReference), parameters, ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 			i.Attributes.AddRange(VisitAttributes(indexerDeclaration.Attributes));
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
-					ReturnType parType = new ReturnType(par.TypeReference);
+					IReturnType parType = CreateReturnType(par.TypeReference);
 					DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, indexerDeclaration.EndLocation));
 					parameters.Add(p);
 				}
 			}
 			DefaultClass c = GetCurrentClass();
 			c.Indexer.Add(i);
+			return null;
+		}
+		
+		IReturnType CreateReturnType(AST.TypeReference reference)
+		{
 			return null;
 		}
 	}

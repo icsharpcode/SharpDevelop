@@ -52,6 +52,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Modifiers = modifiers;
 		}
 		
+		IReturnType defaultReturnType;
+		
+		public IReturnType DefaultReturnType {
+			get {
+				if (defaultReturnType == null)
+					defaultReturnType = new DefaultReturnType(this);
+				return defaultReturnType;
+			}
+		}
+		
 		public ICompilationUnit CompilationUnit {
 			get {
 				return compilationUnit;
@@ -77,6 +87,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public IRegion Region {
 			get {
 				return region;
+			}
+		}
+		
+		public override string DotNetName {
+			get {
+				if (typeParameters == null || typeParameters.Count == 0) {
+					return FullyQualifiedName;
+				} else {
+					return FullyQualifiedName + "`" + typeParameters.Count;
+				}
+			}
+		}
+		
+		public override string DocumentationTag {
+			get {
+				return "T:" + DotNetName;
 			}
 		}
 		
@@ -247,7 +273,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		
 		public bool IsTypeInInheritanceTree(IClass possibleBaseClass)
 		{
 			if (possibleBaseClass == null) {
@@ -267,6 +292,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return false;
 		}
 		
+		/*
 		public IMember SearchMember(string memberName)
 		{
 			if (memberName == null || memberName.Length == 0) {
@@ -316,6 +342,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			return null;
 		}
+		*/
 		
 		public IClass GetInnermostClass(int caretLine, int caretColumn)
 		{
@@ -331,9 +358,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return this;
 		}
 		
-		public ArrayList GetAccessibleTypes(IClass callingClass)
+		public List<IClass> GetAccessibleTypes(IClass callingClass)
 		{
-			ArrayList types = new ArrayList();
+			List<IClass> types = new List<IClass>();
 			
 			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(this);
 			foreach (IClass c in InnerClasses) {
@@ -344,28 +371,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			IClass baseClass = BaseClass;
 			if (baseClass != null) {
-				types.AddRange(baseClass.GetAccessibleTypes(callingClass).ToArray());
+				types.AddRange(baseClass.GetAccessibleTypes(callingClass));
 			}
 			return types;
 		}
 		
+		/*
 		public ArrayList GetAccessibleMembers(IClass callingClass, bool showStatic)
 		{
 			ArrayList members = new ArrayList();
 			
 			DateTime now = DateTime.Now;
 			
-			// enums must be handled specially, because there are several things defined we don't want to show
-			// and enum members have neither the modifier nor the modifier public
-			/*if (ClassType == ClassType.Enum) {
-				foreach (IField f in Fields) {
-					if (f.IsLiteral) {
-						members.Add(f);
-					}
-				}
-				members.AddRange(ProjectContent.GetClass("System.Enum").GetAccessibleMembers(callingClass, showStatic).ToArray());
-				return members;
-			}*/
 			
 			bool isClassInInheritanceTree = false;
 			if (callingClass != null)
@@ -419,6 +436,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			return members;
 		}
+		*/
 		
 		public class ClassInheritanceEnumerator : IEnumerator, IEnumerable
 		{

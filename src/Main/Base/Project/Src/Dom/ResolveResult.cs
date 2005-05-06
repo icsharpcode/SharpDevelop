@@ -71,6 +71,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		/*
 		public virtual IClass GetResolvedClass(IProjectContent projectContent)
 		{
 			if (resolvedType == null)
@@ -79,13 +80,25 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return ProjectContentRegistry.GetMscorlibContent().GetClass("System.Array");
 			return projectContent.GetClass(resolvedType.FullyQualifiedName);
 		}
+		 */
 		
 		public virtual ArrayList GetCompletionData(IProjectContent projectContent)
 		{
-			IClass c = GetResolvedClass(projectContent);
-			if (c == null)
-				return null;
-			return c.GetAccessibleMembers(callingClass, false);
+			if (resolvedType == null) return null;
+			ArrayList res = new ArrayList();
+			foreach (IMethod m in resolvedType.GetMethods()) {
+				res.Add(m);
+			}
+			foreach (IEvent e in resolvedType.GetEvents()) {
+				res.Add(e);
+			}
+			foreach (IField f in resolvedType.GetFields()) {
+				res.Add(f);
+			}
+			foreach (IProperty p in resolvedType.GetProperties()) {
+				res.Add(p);
+			}
+			return res;
 		}
 		
 		public virtual FilePosition GetDefinitionPosition()
@@ -228,19 +241,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		/*
 		public override IClass GetResolvedClass(IProjectContent projectContent)
 		{
 			return resolvedClass;
 		}
-		
-		public override ArrayList GetCompletionData(IProjectContent projectContent)
-		{
-			IClass c = GetResolvedClass(projectContent);
-			if (c == null)
-				return null;
-			else
-				return c.GetAccessibleMembers(this.CallingClass, true);
-		}
+		*/
 		
 		public override FilePosition GetDefinitionPosition()
 		{

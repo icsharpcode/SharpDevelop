@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(PrimitiveExpression primitiveExpression, object data)
 		{
 			if (primitiveExpression.Value != null) {
-				return new ReturnType(primitiveExpression.Value.GetType().FullName);
+				return ReflectionReturnType(primitiveExpression.Value.GetType());
 			}
 			return null;
 		}
@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				for (int i = 0; i < types.Length; ++i) {
 					IReturnType type = method.Parameters[i].ReturnType;
 					if (type != null && types[i] != null) {
-						if (type.CompareTo(types[i]) == 0)
+						if (type.Equals(types[i]))
 							points += 1;
 					}
 				}
@@ -108,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (resolver.CallingClass == null) {
 					return null;
 				}
-				ArrayList methods = resolver.SearchMethod(resolver.CallingClass, id);
+				ArrayList methods = resolver.SearchMethod(resolver.CallingClass.DefaultReturnType, id);
 				return FindOverload(methods, invocationExpression, data);
 			}
 			// invocationExpression is delegate call
@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			// int. generates a FieldreferenceExpression with TargetObject TypeReferenceExpression and no FieldName
 			if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName == "") {
 				if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
-					return new ReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
+					return CreateReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
 				}
 			}
 			IReturnType returnType = fieldReferenceExpression.TargetObject.AcceptVisitor(this, data) as IReturnType;
@@ -141,11 +141,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (name != null) {
 					string n = resolver.SearchNamespace(name + "." + fieldReferenceExpression.FieldName, null);
 					if (n != null) {
-						return new ReturnType(n);
+						return NamespaceReturnType(n);
 					}
 					IClass c = resolver.SearchType(name + "." + fieldReferenceExpression.FieldName, resolver.CallingClass, resolver.CompilationUnit);
 					if (c != null) {
-						return new ReturnType(c.FullyQualifiedName);
+						return c.DefaultReturnType;
 					}
 					return null;
 				}
@@ -156,6 +156,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(PointerReferenceExpression pointerReferenceExpression, object data)
 		{
+			return null;
+			/*
 			ReturnType type = pointerReferenceExpression.TargetObject.AcceptVisitor(this, data) as ReturnType;
 			if (type == null) {
 				return null;
@@ -166,6 +168,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			}
 			return resolver.SearchMember(type, pointerReferenceExpression.Identifier);
+			 */
 		}
 		
 		public override object Visit(IdentifierExpression identifierExpression, object data)
@@ -175,18 +178,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			string name = resolver.SearchNamespace(identifierExpression.Identifier, resolver.CompilationUnit);
 			if (name != null && name != "") {
-				return new ReturnType(name);
+				return NamespaceReturnType(name);
 			}
 			IClass c = resolver.SearchType(identifierExpression.Identifier, resolver.CallingClass, resolver.CompilationUnit);
 			if (c != null) {
-				return new ReturnType(c.FullyQualifiedName);
+				return c.DefaultReturnType;;
 			}
 			return resolver.DynamicLookup(identifierExpression.Identifier);
 		}
 		
 		public override object Visit(TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			return new ReturnType(typeReferenceExpression.TypeReference);
+			return CreateReturnType(typeReferenceExpression.TypeReference);
 		}
 		
 		public override object Visit(UnaryOperatorExpression unaryOperatorExpression, object data)
@@ -194,7 +197,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (unaryOperatorExpression == null) {
 				return null;
 			}
-			ReturnType expressionType = unaryOperatorExpression.Expression.AcceptVisitor(this, data) as ReturnType;
+			IReturnType expressionType = unaryOperatorExpression.Expression.AcceptVisitor(this, data) as IReturnType;
 			// TODO: Little bug: unary operator MAY change the return type,
 			//                   but that is only a minor issue
 			switch (unaryOperatorExpression.Op) {
@@ -213,10 +216,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				case UnaryOperatorType.PostDecrement:
 					break;
 				case UnaryOperatorType.Star:       // dereference
-					--expressionType.PointerNestingLevel;
+					//--expressionType.PointerNestingLevel;
 					break;
 				case UnaryOperatorType.BitWiseAnd: // get reference
-					++expressionType.PointerNestingLevel;
+					//++expressionType.PointerNestingLevel;
 					break;
 				case UnaryOperatorType.None:
 					break;
@@ -231,12 +234,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(SizeOfExpression sizeOfExpression, object data)
 		{
-			return new ReturnType("System.Int32");
+			return ReflectionReturnType(typeof(int));
 		}
 		
 		public override object Visit(TypeOfExpression typeOfExpression, object data)
 		{
-			return new ReturnType("System.Type");
+			return ReflectionReturnType(typeof(Type));
 		}
 		
 		public override object Visit(CheckedExpression checkedExpression, object data)
@@ -251,18 +254,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(CastExpression castExpression, object data)
 		{
-			return new ReturnType(castExpression.CastTo.Type);
+			return CreateReturnType(castExpression.CastTo);
 		}
 		
 		public override object Visit(StackAllocExpression stackAllocExpression, object data)
 		{
-			ReturnType returnType = new ReturnType(stackAllocExpression.TypeReference);
+			/*ReturnType returnType = new ReturnType(stackAllocExpression.TypeReference);
 			++returnType.PointerNestingLevel;
-			return returnType;
+			return returnType;*/
+			return null;
 		}
 		
 		public override object Visit(IndexerExpression indexerExpression, object data)
 		{
+			return null;
+			/*
 			IReturnType type = (IReturnType)indexerExpression.TargetObject.AcceptVisitor(this, data);
 			if (type == null) {
 				return null;
@@ -290,6 +296,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			int[] newArray = new int[type.ArrayDimensions.Length - 1];
 			Array.Copy(type.ArrayDimensions, 0, newArray, 0, type.ArrayDimensions.Length - 1);
 			return new ReturnType(type.Name, newArray, type.PointerNestingLevel);
+			 */
 		}
 		
 		public override object Visit(ClassReferenceExpression classReferenceExpression, object data)
@@ -297,7 +304,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (resolver.CallingClass == null) {
 				return null;
 			}
-			return new ReturnType(resolver.CallingClass.FullyQualifiedName);
+			return resolver.CallingClass.DefaultReturnType;
 		}
 		
 		public override object Visit(ThisReferenceExpression thisReferenceExpression, object data)
@@ -305,7 +312,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (resolver.CallingClass == null) {
 				return null;
 			}
-			return new ReturnType(resolver.CallingClass.FullyQualifiedName);
+			return resolver.CallingClass.DefaultReturnType;
 		}
 		
 		public override object Visit(BaseReferenceExpression baseReferenceExpression, object data)
@@ -317,7 +324,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (baseClass == null) {
 				return null;
 			}
-			return new ReturnType(baseClass.FullyQualifiedName);
+			return baseClass.DefaultReturnType;
 		}
 		
 		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
@@ -326,18 +333,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			IClass c = resolver.SearchType(name, resolver.CallingClass, resolver.CompilationUnit);
 			if (c != null)
 				name = c.FullyQualifiedName;
-			return new ReturnType(name, objectCreateExpression.CreateType.RankSpecifier, objectCreateExpression.CreateType.PointerNestingLevel);
+			return c.DefaultReturnType;
+			//return new ReturnType(name, objectCreateExpression.CreateType.RankSpecifier, objectCreateExpression.CreateType.PointerNestingLevel);
 		}
 		
 		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			ReturnType type = new ReturnType(arrayCreateExpression.CreateType);
+			IReturnType type = CreateReturnType(arrayCreateExpression.CreateType);
+			/*
 			if (arrayCreateExpression.Parameters != null && arrayCreateExpression.Parameters.Count > 0) {
 				int[] newRank = new int[arrayCreateExpression.Rank.Length + 1];
 				newRank[0] = arrayCreateExpression.Parameters.Count - 1;
 				Array.Copy(type.ArrayDimensions, 0, newRank, 1, type.ArrayDimensions.Length);
 				type.ArrayDimensions = newRank;
 			}
+			 */
 			return type;
 		}
 		
@@ -350,6 +360,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(ArrayInitializerExpression arrayInitializerExpression, object data)
 		{
 			// no calls allowed !!!
+			return null;
+		}
+		
+		IReturnType CreateReturnType(TypeReference reference)
+		{
+			return null;
+		}
+		
+		IReturnType NamespaceReturnType(string namespaceName)
+		{
+			return null;
+		}
+		
+		IReturnType ReflectionReturnType(Type t)
+		{
 			return null;
 		}
 	}

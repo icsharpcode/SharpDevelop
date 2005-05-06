@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string DocumentationTag {
 			get {
-				return "E:" + this.FullyQualifiedName;
+				return "E:" + this.DotNetName;
 			}
 		}
 		
@@ -60,13 +60,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			if (FullyQualifiedName != null) {
 				cmp = FullyQualifiedName.CompareTo(value.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if (ReturnType != null) {
-				cmp = ReturnType.CompareTo(value.ReturnType);
 				if (cmp != 0) {
 					return cmp;
 				}

@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override IReturnType ReturnType {
 			get {
-				return new ReflectionReturnType(eventInfo.EventHandlerType);
+				return ReflectionReturnType.Create(this, eventInfo.EventHandlerType);
 			}
 			set {
 			}

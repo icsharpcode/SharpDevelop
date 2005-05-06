@@ -19,6 +19,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		/// <summary>
+		/// The default return type to use for this class.
+		/// </summary>
+		IReturnType DefaultReturnType { get; }
+		
+		/// <summary>
+		/// The fully qualified name in the internal .NET notation (with `1 for generic types)
+		/// </summary>
+		string DotNetName {
+			get;
+		}
+		
 		string Name {
 			get;
 		}
@@ -86,14 +98,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		IClass GetInnermostClass(int caretLine, int caretColumn);
+		List<IClass> GetAccessibleTypes(IClass callingClass);
+		
 		bool IsTypeInInheritanceTree(IClass possibleBaseClass);
 		
-		IMember SearchMember(string memberName);
+		//IMember SearchMember(string memberName);
 		
-		IClass GetInnermostClass(int caretLine, int caretColumn);
-		
-		ArrayList GetAccessibleTypes(IClass callingClass);
+		/*
 		ArrayList GetAccessibleMembers(IClass callingClass, bool showStatic);
-		
+		*/
 	}
 }

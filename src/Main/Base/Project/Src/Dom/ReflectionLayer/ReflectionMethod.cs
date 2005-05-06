@@ -14,7 +14,7 @@ using System.Xml;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class ReflectionMethod : DefaultMethod 
+	public class ReflectionMethod : DefaultMethod
 	{
 		MethodBase methodBase;
 		
@@ -28,8 +28,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override IReturnType ReturnType {
 			get {
 				if (methodBase is MethodInfo) {
-					return new ReflectionReturnType(((MethodInfo)methodBase).ReturnType);
-				} 
+					return ReflectionReturnType.Create(this, ((MethodInfo)methodBase).ReturnType);
+				}
 				return null;
 			}
 			set {
@@ -40,34 +40,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				List<IParameter> parameters = new List<IParameter>();
 				foreach (ParameterInfo paramInfo in methodBase.GetParameters()) {
-					parameters.Add(new ReflectionParameter(paramInfo));
+					parameters.Add(new ReflectionParameter(paramInfo, DeclaringType.ProjectContent));
 				}
 				return parameters;
 			}
 			set {
-			}
-		}
-		
-		string GetParamList(MethodBase methodBase)
-		{
-			StringBuilder propertyName = new StringBuilder("(");
-			ParameterInfo[] p = methodBase.GetParameters();
-			if (p.Length == 0) {
-				return String.Empty;
-			}
-			for (int i = 0; i < p.Length; ++i) {
-				propertyName.Append(p[i].ParameterType.FullName);
-				if (i + 1 < p.Length) {
-					propertyName.Append(',');
-				}
-			}
-			propertyName.Append(')');
-			return propertyName.ToString();
-		}
-		
-		public override string DocumentationTag {
-			get {
-				return "M:" + FullyQualifiedName + GetParamList(methodBase);
 			}
 		}
 		

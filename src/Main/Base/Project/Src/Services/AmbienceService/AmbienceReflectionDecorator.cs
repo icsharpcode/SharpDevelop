@@ -119,7 +119,7 @@ namespace ICSharpCode.Core
 		
 		public string Convert(ParameterInfo param)
 		{
-			return conv.Convert(new ReflectionParameter(param));
+			return conv.Convert(new ReflectionParameter(param, null));
 		}
 		
 		public ArrayList LinkArrayList {

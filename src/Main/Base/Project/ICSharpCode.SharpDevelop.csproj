@@ -359,7 +359,6 @@
     <Compile Include="Src\Dom\NRefactoryResolver\NRefactoryResolver.cs" />
     <Compile Include="Src\Dom\NRefactoryResolver\TypeVisitor.cs" />
     <Compile Include="Src\Dom\NRefactoryResolver\NRefactoryASTConvertVisitor.cs" />
-    <Compile Include="Src\Dom\NRefactoryResolver\ReturnType.cs" />
     <Compile Include="Src\Gui\Components\FontSelectionPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -641,6 +640,9 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.cs" />
     <Compile Include="Src\Dom\ITypeParameter.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultTypeParameter.cs" />
+    <Compile Include="Src\Dom\Implementations\ProxyReturnType.cs" />
+    <Compile Include="Src\Dom\Implementations\DefaultReturnType.cs" />
+    <Compile Include="Src\Dom\Implementations\LazyReturnType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
