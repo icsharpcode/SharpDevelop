@@ -142,7 +142,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (name != null) {
 					string n = resolver.SearchNamespace(name + "." + fieldReferenceExpression.FieldName, null);
 					if (n != null) {
-						return CreateNamespaceReturnType(n);
+						return new NamespaceReturnType(n);
 					}
 					IClass c = resolver.SearchType(name + "." + fieldReferenceExpression.FieldName, resolver.CallingClass, resolver.CompilationUnit);
 					if (c != null) {
@@ -179,7 +179,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			string name = resolver.SearchNamespace(identifierExpression.Identifier, resolver.CompilationUnit);
 			if (name != null && name != "") {
-				return CreateNamespaceReturnType(name);
+				return new NamespaceReturnType(name);
 			}
 			IClass c = resolver.SearchType(identifierExpression.Identifier, resolver.CallingClass, resolver.CompilationUnit);
 			if (c != null) {
@@ -384,9 +384,32 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return t;
 		}
 		
-		IReturnType CreateNamespaceReturnType(string namespaceName)
+		class NamespaceReturnType : AbstractReturnType
 		{
-			return null;
+			public NamespaceReturnType(string fullName)
+			{
+				this.FullyQualifiedName = fullName;
+			}
+			
+			public override List<IMethod> GetMethods() {
+				return new List<IMethod>();
+			}
+			
+			public override List<IProperty> GetProperties() {
+				return new List<IProperty>();
+			}
+			
+			public override List<IField> GetFields() {
+				return new List<IField>();
+			}
+			
+			public override List<IEvent> GetEvents() {
+				return new List<IEvent>();
+			}
+			
+			public override List<IIndexer> GetIndexers() {
+				return new List<IIndexer>();
+			}
 		}
 		
 		IReturnType CreateReturnType(Type type)

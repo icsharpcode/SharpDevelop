@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			Debug.Assert(data is DefaultUsing);
 			DefaultUsing us = (DefaultUsing)data;
 			if (u.IsAlias) {
-				us.Aliases[u.Alias] = u.Name;
+				us.Aliases[u.Name] = u.Alias;
 			} else {
 				us.Usings.Add(u.Name);
 			}

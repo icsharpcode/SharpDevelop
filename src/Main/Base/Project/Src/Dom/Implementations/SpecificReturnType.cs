@@ -13,7 +13,10 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
-	/// SpecificReturnType is a reference to class where the type parameters are specified.
+	/// SpecificReturnType is a reference to generic class that specifies the type parameters.
+	/// When getting the Members, this return type modifies the lists in such a way that the
+	/// <see cref="GenericReturnType"/>s are replaced with the return types in the type parameters
+	/// collection.
 	/// Example: List&lt;string&gt;
 	/// </summary>
 	public sealed class SpecificReturnType : ProxyReturnType

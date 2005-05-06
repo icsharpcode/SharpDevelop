@@ -10,6 +10,9 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
+	/// <summary>
+	/// Abstract return type for return types that are not a <see cref="ProxyReturnType"/>.
+	/// </summary>
 	[Serializable]
 	public abstract class AbstractReturnType : IReturnType
 	{

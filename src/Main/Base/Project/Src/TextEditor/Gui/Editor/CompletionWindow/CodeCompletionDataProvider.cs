@@ -115,8 +115,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (charTyped == ' ' && (expression.LastIndexOf("using")>=0 || expression.ToUpper().LastIndexOf("IMPORTS")>=0)) {
 				if (expression == "using" || expression.EndsWith(" using") || expression.EndsWith("\tusing")|| expression.EndsWith("\nusing")|| expression.EndsWith("\rusing") ||
 				    expression.ToUpper() == "IMPORTS" || expression.ToUpper().EndsWith(" IMPORTS") || expression.ToUpper().EndsWith("\tIMPORTS")|| expression.ToUpper().EndsWith("\nIMPORTS")|| expression.ToUpper().EndsWith("\rIMPORTS")) {
-					string[] namespaces = ParserService.CurrentProjectContent.GetNamespaceList("");
-					AddResolveResults(namespaces);
+					AddResolveResults(ParserService.CurrentProjectContent.GetNamespaceContents(""));
 				}
 			} else {
 				// we don't need to run parser on blank char here

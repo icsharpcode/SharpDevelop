@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public bool IsStatic {
 			get {
-				return (modifiers & ModifierEnum.Static) == ModifierEnum.Static;
+				return ((modifiers & ModifierEnum.Static) == ModifierEnum.Static) || IsConst;
 			}
 		}
 		

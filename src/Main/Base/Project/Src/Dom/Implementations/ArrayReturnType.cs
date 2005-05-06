@@ -12,6 +12,12 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
+	/// <summary>
+	/// The ArrayReturnType wraps around another type, converting it into an array
+	/// with the specified number of dimensions.
+	/// The element type is only used as return type for the indexer; all methods and fields
+	/// are retrieved from System.Array.
+	/// </summary>
 	public sealed class ArrayReturnType : ProxyReturnType
 	{
 		IReturnType elementType;

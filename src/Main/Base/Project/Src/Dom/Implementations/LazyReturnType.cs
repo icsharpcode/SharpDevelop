@@ -21,7 +21,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	
 	/// <summary>
 	/// The LazyReturnType is the most used return type:
-	/// It is not bound to a class, but only resolved when necessary.
+	/// It is not bound to a class, but only resolved on demand.
+	/// The LazyReturnType is nearly always used to point at a <see cref="DefaultReturnType"/>.
 	/// </summary>
 	public sealed class LazyReturnType : ProxyReturnType
 	{

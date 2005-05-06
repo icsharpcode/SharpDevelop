@@ -71,32 +71,30 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		/*
-		public virtual IClass GetResolvedClass(IProjectContent projectContent)
-		{
-			if (resolvedType == null)
-				return null;
-			if (resolvedType.ArrayCount > 0)
-				return ProjectContentRegistry.GetMscorlibContent().GetClass("System.Array");
-			return projectContent.GetClass(resolvedType.FullyQualifiedName);
-		}
-		 */
-		
 		public virtual ArrayList GetCompletionData(IProjectContent projectContent)
+		{
+			return GetCompletionData(false);
+		}
+		
+		protected ArrayList GetCompletionData(bool showStatic)
 		{
 			if (resolvedType == null) return null;
 			ArrayList res = new ArrayList();
 			foreach (IMethod m in resolvedType.GetMethods()) {
-				res.Add(m);
+				if (m.IsStatic == showStatic)
+					res.Add(m);
 			}
 			foreach (IEvent e in resolvedType.GetEvents()) {
-				res.Add(e);
+				if (e.IsStatic == showStatic)
+					res.Add(e);
 			}
 			foreach (IField f in resolvedType.GetFields()) {
-				res.Add(f);
+				if (f.IsStatic == showStatic)
+					res.Add(f);
 			}
 			foreach (IProperty p in resolvedType.GetProperties()) {
-				res.Add(p);
+				if (p.IsStatic == showStatic)
+					res.Add(p);
 			}
 			return res;
 		}
@@ -241,12 +239,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		/*
-		public override IClass GetResolvedClass(IProjectContent projectContent)
+		public override ArrayList GetCompletionData(IProjectContent projectContent)
 		{
-			return resolvedClass;
+			ArrayList ar = GetCompletionData(true);
+			ar.AddRange(resolvedClass.InnerClasses);
+			return ar;
 		}
-		*/
 		
 		public override FilePosition GetDefinitionPosition()
 		{

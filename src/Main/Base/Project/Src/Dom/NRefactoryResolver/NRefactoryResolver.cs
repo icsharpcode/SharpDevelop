@@ -159,12 +159,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				IReturnType returnType;
 				if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName == "") {
 					if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
-						// TODO: !!!
-						/*returnType = new ReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference);
-						IClass c = projectContent.GetClass(returnType.FullyQualifiedName);
-						if (c != null)
-							return new TypeResolveResult(callingClass, callingMember, returnType, c);
-						 */
+						returnType = TypeVisitor.CreateReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference, this);
+						if (returnType != null) {
+							IClass c = projectContent.GetClass(returnType.FullyQualifiedName);
+							if (c != null)
+								return new TypeResolveResult(callingClass, callingMember, returnType, c);
+						}
 					}
 				}
 				returnType = fieldReferenceExpression.TargetObject.AcceptVisitor(typeVisitor, null) as IReturnType;
@@ -361,21 +361,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// </remarks>
 		public string SearchNamespace(string name, ICompilationUnit unit)
 		{
-			/*if (projectContent.NamespaceExists(name)) {
-				return name;
-			}
-			
-			if (CallingClass != null) {
-				string callspace = this.CallingClass.Namespace;
-				for (int split = callspace.Length; split > 0; split = callspace.LastIndexOf('.', split - 1)) {
-					string fullname = callspace.Substring(0, split) + "." + name;
-					if (projectContent.NamespaceExists(fullname)) {
-						return fullname;
-					}
-				}
-			}
-			 */
-			// TODO: look if all the stuff before is nessessary
 			return projectContent.SearchNamespace(name, unit, caretLine, caretColumn);
 		}
 		
@@ -582,41 +567,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		#endregion
 		#endregion
 		
-		/*
-		public ArrayList NewCompletion(int caretLine, int caretColumn, string fileName)
-		{
-			if (!IsCaseSensitive(language)) {
-				caseSensitive = false;
-			}
-			ArrayList result = new ArrayList();
-			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
-			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
-			if (fileCompilationUnit == null) {
-				return null;
-			}
-			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
-			
-			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
-			if (cu != null) {
-				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
-				if (callingClass != null) {
-					result.AddRange(projectContent.GetNamespaceContents(callingClass.Namespace));
-				}
-			}
-			result.AddRange(projectContent.GetNamespaceContents(""));
-			foreach (IUsing u in cu.Usings) {
-				if (u != null && (u.Region == null || u.Region.IsInside(caretLine, caretColumn))) {
-					foreach (string name in u.Usings) {
-						result.AddRange(projectContent.GetNamespaceContents(name));
-					}
-					foreach (string alias in u.Aliases.Keys) {
-						result.Add(alias);
-					}
-				}
-			}
-			return result;
-		}*/
-		
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName)
 		{
 			if (!IsCaseSensitive(language)) {
@@ -659,7 +609,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
 							// LocalLookupVariable in no known Type in DisplayBindings.TextEditor
 							// so add Field for the Variables
-							//result.Add(new DefaultField(new ReturnType(v.TypeRef), name, ModifierEnum.None, new DefaultRegion(v.StartPos, v.EndPos), callingClass));
+							result.Add(new DefaultField(TypeVisitor.CreateReturnType(v.TypeRef, this), name, ModifierEnum.None, new DefaultRegion(v.StartPos, v.EndPos), callingClass));
 							break;
 						}
 					}
@@ -669,7 +619,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			foreach (IUsing u in cu.Usings) {
 				if (u != null) {
 					foreach (string name in u.Usings) {
-						result.AddRange(projectContent.GetNamespaceContents(name));
+						foreach (object o in projectContent.GetNamespaceContents(name)) {
+							if (!(o is string))
+								result.Add(o);
+						}
 					}
 					foreach (string alias in u.Aliases.Keys) {
 						result.Add(alias);

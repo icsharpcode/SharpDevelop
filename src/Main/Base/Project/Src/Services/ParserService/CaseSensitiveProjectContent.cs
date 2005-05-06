@@ -150,8 +150,8 @@ namespace ICSharpCode.Core
 				return cur;
 			}
 		}
-			
-		public void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags) 
+		
+		public void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags)
 		{
 			
 			if (updateCommentTags) {
@@ -212,39 +212,6 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		public string[] GetNamespaceList(string subNameSpace)
-		{
-//			Console.WriteLine("GetNamespaceList({0})", subNameSpace);
-			System.Diagnostics.Debug.Assert(subNameSpace != null);
-			List<string> namespaceList = new List<string>();
-			
-			
-			foreach (IProjectContent content in referencedContents) {
-				string[] referencedNamespaces = content.GetNamespaceList(subNameSpace);
-				if (referencedNamespaces != null) {
-					namespaceList.AddRange(referencedNamespaces);
-				}
-			}
-			
-			string[] path = subNameSpace.Split('.');
-			Hashtable cur = namespaces;
-			if (subNameSpace.Length > 0) {
-				for (int i = 0; i < path.Length; ++i) {
-					if (!(cur[path[i]] is Hashtable)) {
-						return namespaceList.ToArray();
-					}
-					cur = (Hashtable)cur[path[i]];
-				}
-			}
-			
-			foreach (DictionaryEntry entry in cur) {
-				if (entry.Value is Hashtable && entry.Key.ToString().Length > 0) {
-					namespaceList.Add(entry.Key.ToString());
-				}
-			}
-			return namespaceList.ToArray();
-		}
-		
 		public ArrayList GetNamespaceContents(string subNameSpace)
 		{
 			ArrayList namespaceList = new ArrayList();
@@ -253,32 +220,38 @@ namespace ICSharpCode.Core
 			}
 			
 			foreach (IProjectContent content in referencedContents) {
-				ArrayList referencedNamespaceContents = content.GetNamespaceContents(subNameSpace);
-				namespaceList.AddRange(referencedNamespaceContents.ToArray());
+				foreach (object o in content.GetNamespaceContents(subNameSpace)) {
+					if (o is string) {
+						if (!namespaceList.Contains(o))
+							namespaceList.Add(o);
+					} else {
+						namespaceList.Add(o);
+					}
+				}
 			}
 			
-			string[] path = subNameSpace.Split('.');
 			Hashtable cur = namespaces;
 			
-			for (int i = 0; i < path.Length; ++i) {
-				if (!(cur[path[i]] is Hashtable)) {
-					foreach (DictionaryEntry entry in cur)  {
-						if (entry.Value is Hashtable) {
-							namespaceList.Add(entry.Key);
-						}
+			if (subNameSpace.Length > 0) {
+				string[] path = subNameSpace.Split('.');
+				for (int i = 0; i < path.Length; ++i) {
+					if (!(cur[path[i]] is Hashtable)) {
+						// namespace does not exist in this project content
+						return namespaceList;
 					}
-					return namespaceList;
+					cur = (Hashtable)cur[path[i]];
 				}
-				cur = (Hashtable)cur[path[i]];
 			}
 			
 			foreach (DictionaryEntry entry in cur) {
 				if (entry.Value is Hashtable) {
-					namespaceList.Add(entry.Key);
+					if (!namespaceList.Contains(entry.Key))
+						namespaceList.Add(entry.Key);
 				} else {
 					namespaceList.Add(entry.Value);
 				}
 			}
+			
 			return namespaceList;
 		}
 		
@@ -448,7 +421,7 @@ namespace ICSharpCode.Core
 			
 			return members;
 		}
-		*/
+		 */
 		
 		public Position GetPosition(string fullMemberName)
 		{

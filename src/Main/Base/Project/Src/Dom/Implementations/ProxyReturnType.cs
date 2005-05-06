@@ -10,6 +10,9 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
+	/// <summary>
+	/// Base class for return types that wrap around other return types.
+	/// </summary>
 	[Serializable]
 	public abstract class ProxyReturnType : IReturnType
 	{

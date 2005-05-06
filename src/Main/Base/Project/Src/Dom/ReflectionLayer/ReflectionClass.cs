@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		BindingFlags flags = BindingFlags.Instance  |
 			BindingFlags.Static    |
-			//BindingFlags.NonPublic |
+			BindingFlags.NonPublic |
 			BindingFlags.DeclaredOnly |
 			BindingFlags.Public;
 		
@@ -38,9 +38,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				List<IField> fields = new List<IField>();
 				foreach (FieldInfo field in type.GetFields(flags)) {
-					IField newField = new ReflectionField(field, this);
-					if (!newField.IsInternal) {
-						fields.Add(newField);
+					if (!field.IsPublic && !field.IsFamily) continue;
+					if (!field.IsSpecialName) {
+						fields.Add(new ReflectionField(field, this));
 					}
 				}
 				return fields;
@@ -58,7 +58,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 						p = propertyInfo.GetIndexParameters();
 					} catch (Exception) {}
 					if (p == null || p.Length == 0) {
-						properties.Add(new ReflectionProperty(propertyInfo, this));
+						ReflectionProperty prop = new ReflectionProperty(propertyInfo, this);
+						if (prop.IsPublic || prop.IsProtected)
+							properties.Add(prop);
 					}
 				}
 				
@@ -90,18 +92,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 				List<IMethod> methods = new List<IMethod>();
 				
 				foreach (ConstructorInfo constructorInfo in type.GetConstructors(flags)) {
+					if (!constructorInfo.IsPublic && !constructorInfo.IsFamily) continue;
 					IMethod newMethod = new ReflectionMethod(constructorInfo, this);
-					if (!newMethod.IsInternal) {
-						methods.Add(newMethod);
-					}
+					methods.Add(newMethod);
 				}
 				
 				foreach (MethodInfo methodInfo in type.GetMethods(flags)) {
+					if (!methodInfo.IsPublic && !methodInfo.IsFamily) continue;
 					if (!methodInfo.IsSpecialName) {
 						IMethod newMethod = new ReflectionMethod(methodInfo, this);
-						if (!newMethod.IsInternal) {
-							methods.Add(newMethod);
-						}
+						methods.Add(newMethod);
 					}
 				}
 				return methods;
@@ -113,11 +113,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				List<IEvent> events = new List<IEvent>();
 				
 				foreach (EventInfo eventInfo in type.GetEvents(flags)) {
-					IEvent newEvent = new ReflectionEvent(eventInfo, this);
-					
-					if (!newEvent.IsInternal) {
-						events.Add(newEvent);
-					}
+					events.Add(new ReflectionEvent(eventInfo, this));
 				}
 				return events;
 			}

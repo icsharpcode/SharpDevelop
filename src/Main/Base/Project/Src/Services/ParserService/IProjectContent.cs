@@ -39,7 +39,6 @@ namespace ICSharpCode.Core
 		
 		IClass GetClass(string typeName);
 		bool NamespaceExists(string name);
-		string[] GetNamespaceList(string subNameSpace);
 		ArrayList GetNamespaceContents(string subNameSpace);
 		
 		string SearchNamespace(string name, ICompilationUnit unit, int caretLine, int caretColumn);

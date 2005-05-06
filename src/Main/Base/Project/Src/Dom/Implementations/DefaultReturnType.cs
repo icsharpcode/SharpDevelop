@@ -10,6 +10,11 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
+	/// <summary>
+	/// DefaultReturnType is a reference to a normal class or a reference to a generic class where
+	/// the type parameters are NOT specified.
+	/// E.g. "System.Int32", "System.Void", "System.String", "System.Collections.Generic.List"
+	/// </summary>
 	[Serializable]
 	public class DefaultReturnType : AbstractReturnType
 	{
@@ -26,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			List<IMethod> l = new List<IMethod>();
 			foreach (IClass bc in c.ClassInheritanceTree) {
-				if (bc.ClassType != c.ClassType)
+				if (bc.ClassType == ClassType.Interface && c.ClassType != ClassType.Interface)
 					continue; // ignore explicit interface implementations
 				
 				// do not add methods that were overridden
@@ -53,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			List<IProperty> l = new List<IProperty>();
 			foreach (IClass bc in c.ClassInheritanceTree) {
-				if (bc.ClassType != c.ClassType)
+				if (bc.ClassType == ClassType.Interface && c.ClassType != ClassType.Interface)
 					continue; // ignore explicit interface implementations
 				l.AddRange(bc.Properties);
 			}
@@ -64,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			List<IField> l = new List<IField>();
 			foreach (IClass bc in c.ClassInheritanceTree) {
-				if (bc.ClassType != c.ClassType)
+				if (bc.ClassType == ClassType.Interface && c.ClassType != ClassType.Interface)
 					continue; // ignore explicit interface implementations
 				l.AddRange(bc.Fields);
 			}
@@ -75,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			List<IEvent> l = new List<IEvent>();
 			foreach (IClass bc in c.ClassInheritanceTree) {
-				if (bc.ClassType != c.ClassType)
+				if (bc.ClassType == ClassType.Interface && c.ClassType != ClassType.Interface)
 					continue; // ignore explicit interface implementations
 				l.AddRange(bc.Events);
 			}
