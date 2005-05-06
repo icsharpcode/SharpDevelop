@@ -5,7 +5,7 @@
 //     <version value="$version"/>
 // </file>
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
@@ -17,6 +17,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			string name = type.FullName;
 			if (name == null)
 				return null;
+			if (name.Length > 2) {
+				if (name[name.Length - 2] == '`') {
+					name = name.Substring(0, name.Length - 2);
+				}
+			}
 			if (type.IsArray) {
 				return MakeArray(type, Create(content, type.GetElementType()));
 			} else {
@@ -28,6 +33,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (type.IsArray) {
 				return MakeArray(type, Create(member, type.GetElementType()));
+			} else if (type.IsGenericType && !type.IsGenericTypeDefinition) {
+				Type[] args = type.GetGenericArguments();
+				List<IReturnType> para = new List<IReturnType>(args.Length);
+				for (int i = 0; i < args.Length; ++i) {
+					para.Add(Create(member, args[i]));
+				}
+				return new SpecificReturnType(Create(member, type.GetGenericTypeDefinition()), para);
 			} else if (type.IsGenericParameter) {
 				IClass c = member.DeclaringType;
 				if (type.GenericParameterPosition < c.TypeParameters.Count) {

@@ -42,8 +42,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		ModifierEnum ConvertModifier(AST.Modifier m, ModifierEnum defaultModifier)
 		{
-			// TODO: Is this possible? I think we have to pay caution to defaultModifier
-			return (ModifierEnum)m;
+			ModifierEnum r = (ModifierEnum)m;
+			if (r == ModifierEnum.None)
+				return defaultModifier;
+			else
+				return r;
 		}
 		
 		public override object Visit(AST.CompilationUnit compilationUnit, object data)
@@ -190,6 +193,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					c.BaseTypes.Add(type);
 				}
 			}
+			int index = 0;
+			foreach (AST.TemplateDefinition template in typeDeclaration.Templates) {
+				c.TypeParameters.Add(new DefaultTypeParameter(c, template.Name, index++));
+			}
 			currentClass.Push(c);
 			object ret = typeDeclaration.AcceptChildren(this, data);
 			currentClass.Pop();
@@ -214,8 +221,29 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				cu.Classes.Add(c);
 			}
-			DefaultMethod invokeMethod = new DefaultMethod("Invoke", CreateReturnType(delegateDeclaration.ReturnType), ConvertModifier(delegateDeclaration.Modifier), null, null, c);
+			currentClass.Push(c); // necessary for CreateReturnType
+			DefaultMethod invokeMethod = new DefaultMethod("Invoke", CreateReturnType(delegateDeclaration.ReturnType), ModifierEnum.Public, null, null, c);
+			if (delegateDeclaration.Parameters != null) {
+				foreach (AST.ParameterDeclarationExpression par in delegateDeclaration.Parameters) {
+					IReturnType parType = CreateReturnType(par.TypeReference);
+					invokeMethod.Parameters.Add(new DefaultParameter(par.ParameterName, parType, null));
+				}
+			}
 			c.Methods.Add(invokeMethod);
+			invokeMethod = new DefaultMethod("BeginInvoke", CreateReturnType(typeof(IAsyncResult)), ModifierEnum.Public, null, null, c);
+			if (delegateDeclaration.Parameters != null) {
+				foreach (AST.ParameterDeclarationExpression par in delegateDeclaration.Parameters) {
+					IReturnType parType = CreateReturnType(par.TypeReference);
+					invokeMethod.Parameters.Add(new DefaultParameter(par.ParameterName, parType, null));
+				}
+			}
+			invokeMethod.Parameters.Add(new DefaultParameter("callback", CreateReturnType(typeof(AsyncCallback)), null));
+			invokeMethod.Parameters.Add(new DefaultParameter("object", CreateReturnType(typeof(object)), null));
+			c.Methods.Add(invokeMethod);
+			invokeMethod = new DefaultMethod("EndInvoke", CreateReturnType(delegateDeclaration.ReturnType), ModifierEnum.Public, null, null, c);
+			invokeMethod.Parameters.Add(new DefaultParameter("result", CreateReturnType(typeof(IAsyncResult)), null));
+			c.Methods.Add(invokeMethod);
+			currentClass.Pop();
 			return c;
 		}
 		
@@ -357,6 +385,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			IClass c = GetCurrentClass();
 			if (c == null) return null;
 			return TypeVisitor.CreateReturnType(reference, c, c.Region.BeginLine + 1, 1);
+		}
+		
+		IReturnType CreateReturnType(Type type)
+		{
+			return ReflectionReturnType.Create(ProjectContentRegistry.GetMscorlibContent(), type);
 		}
 	}
 }

@@ -26,7 +26,25 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			List<IMethod> l = new List<IMethod>();
 			foreach (IClass bc in c.ClassInheritanceTree) {
-				l.AddRange(bc.Methods);
+				if (bc.ClassType != c.ClassType)
+					continue; // ignore explicit interface implementations
+				
+				// do not add methods that were overridden
+				foreach (IMethod m in bc.Methods) {
+					bool ok = true;
+					foreach (IMethod oldMethod in l) {
+						if (string.Equals(oldMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
+							if (m.IsStatic == oldMethod.IsStatic) {
+								if (DiffUtility.Compare(oldMethod.Parameters, m.Parameters) == 0) {
+									ok = false;
+									break;
+								}
+							}
+						}
+					}
+					if (ok)
+						l.Add(m);
+				}
 			}
 			return l;
 		}
@@ -35,6 +53,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			List<IProperty> l = new List<IProperty>();
 			foreach (IClass bc in c.ClassInheritanceTree) {
+				if (bc.ClassType != c.ClassType)
+					continue; // ignore explicit interface implementations
 				l.AddRange(bc.Properties);
 			}
 			return l;
@@ -44,6 +64,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			List<IField> l = new List<IField>();
 			foreach (IClass bc in c.ClassInheritanceTree) {
+				if (bc.ClassType != c.ClassType)
+					continue; // ignore explicit interface implementations
 				l.AddRange(bc.Fields);
 			}
 			return l;
@@ -53,6 +75,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			List<IEvent> l = new List<IEvent>();
 			foreach (IClass bc in c.ClassInheritanceTree) {
+				if (bc.ClassType != c.ClassType)
+					continue; // ignore explicit interface implementations
 				l.AddRange(bc.Events);
 			}
 			return l;

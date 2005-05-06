@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using System.Text;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
@@ -70,6 +71,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return rt.TypeParameter.Method == null;
 			} else if (t is ArrayReturnType) {
 				return CheckReturnType(((ArrayReturnType)t).ElementType);
+			} else if (t is SpecificReturnType) {
+				foreach (IReturnType para in ((SpecificReturnType)t).TypeParameters) {
+					if (CheckReturnType(para)) return true;
+				}
+				return false;
 			} else {
 				return false;
 			}
@@ -81,6 +87,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (CheckReturnType(p.ReturnType)) return true;
 			}
 			return false;
+		}
+		
+		public override string DotNetName {
+			get {
+				StringBuilder b = new StringBuilder(baseType.DotNetName);
+				b.Append('{');
+				for (int i = 0; i < typeParameters.Count; ++i) {
+					if (i > 0) b.Append(',');
+					b.Append(typeParameters[i].DotNetName);
+				}
+				b.Append('}');
+				return b.ToString();
+			}
 		}
 		
 		IReturnType TranslateType(IReturnType input)
@@ -97,6 +116,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				IReturnType t = TranslateType(e);
 				if (e != t)
 					return new ArrayReturnType(t, input.ArrayDimensions);
+			} else if (input is SpecificReturnType) {
+				SpecificReturnType r = (SpecificReturnType)input;
+				List<IReturnType> para = new List<IReturnType>(r.TypeParameters.Count);
+				for (int i = 0; i < r.TypeParameters.Count; ++i) {
+					para.Add(TranslateType(r.TypeParameters[i]));
+				}
+				return new SpecificReturnType(r.baseType, para);
 			}
 			return input;
 		}
