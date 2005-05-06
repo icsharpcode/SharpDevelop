@@ -48,6 +48,14 @@ namespace ICSharpCode.Core
 			} else {
 				builder.Append(c.Name);
 			}
+			if (c.TypeParameters.Count > 0) {
+				builder.Append('<');
+				for (int i = 0; i < c.TypeParameters.Count; ++i) {
+					if (i > 0) builder.Append(", ");
+					builder.Append(c.TypeParameters[i].Name);
+				}
+				builder.Append('>');
+			}
 			
 			if (c.ClassType == ClassType.Delegate) {
 				builder.Append('(');

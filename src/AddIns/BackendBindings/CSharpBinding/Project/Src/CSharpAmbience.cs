@@ -78,7 +78,7 @@ namespace ICSharpCode.Core
 		}
 		
 		string GetModifier(IDecoration decoration)
-		{	
+		{
 			string ret = "";
 			
 			if (IncludeHTMLMarkup) {
@@ -122,7 +122,7 @@ namespace ICSharpCode.Core
 						case ClassType.Struct:
 						case ClassType.Enum:
 							break;
-						
+							
 						default:
 							builder.Append("sealed ");
 							break;
@@ -169,7 +169,7 @@ namespace ICSharpCode.Core
 				builder.Append("<b>");
 			}
 			
-	    	if (UseFullyQualifiedMemberNames) {
+			if (UseFullyQualifiedMemberNames) {
 				builder.Append(c.FullyQualifiedName);
 			} else {
 				builder.Append(c.Name);
@@ -177,6 +177,14 @@ namespace ICSharpCode.Core
 			
 			if (IncludeHTMLMarkup) {
 				builder.Append("</b>");
+			}
+			if (c.TypeParameters.Count > 0) {
+				builder.Append('<');
+				for (int i = 0; i < c.TypeParameters.Count; ++i) {
+					if (i > 0) builder.Append(", ");
+					builder.Append(c.TypeParameters[i].Name);
+				}
+				builder.Append('>');
 			}
 			
 			if (c.ClassType == ClassType.Delegate) {
@@ -213,7 +221,7 @@ namespace ICSharpCode.Core
 				builder.Append("\n{");
 			}
 			
-			return builder.ToString();		
+			return builder.ToString();
 		}
 		
 		public override string ConvertEnd(IClass c)
@@ -268,7 +276,7 @@ namespace ICSharpCode.Core
 			
 			if (IncludeBodies) builder.Append(";");
 			
-			return builder.ToString();			
+			return builder.ToString();
 		}
 		
 		public override string Convert(IProperty property)
@@ -303,7 +311,7 @@ namespace ICSharpCode.Core
 			if (property.Parameters.Count > 0) {
 				builder.Append("(");
 				if (IncludeHTMLMarkup) builder.Append("<br>");
-			
+				
 				for (int i = 0; i < property.Parameters.Count; ++i) {
 					if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
 					builder.Append(Convert(property.Parameters[i]));
@@ -502,7 +510,7 @@ namespace ICSharpCode.Core
 			bool linkSet = false;
 			
 			if (UseLinkArrayList) {
-//		TODO: #Assembly dependance:		
+//		TODO: #Assembly dependance:
 //				SharpAssemblyReturnType ret = returnType as SharpAssemblyReturnType;
 //				if (ret != null) {
 //					if (ret.UnderlyingClass != null) {
@@ -548,7 +556,7 @@ namespace ICSharpCode.Core
 			if (IncludeHTMLMarkup) {
 				builder.Append("<i>");
 			}
-						
+			
 			if (param.IsRef) {
 				builder.Append("ref ");
 			} else if (param.IsOut) {

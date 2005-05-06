@@ -19,10 +19,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		Type type;
 		
 		BindingFlags flags = BindingFlags.Instance  |
-		                     BindingFlags.Static    | 
-		                     BindingFlags.NonPublic |
-		                     BindingFlags.DeclaredOnly |
-		                     BindingFlags.Public;
+			BindingFlags.Static    |
+			BindingFlags.NonPublic |
+			BindingFlags.DeclaredOnly |
+			BindingFlags.Public;
 		
 		public override List<IClass> InnerClasses {
 			get {
@@ -137,7 +137,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public ReflectionClass(ICompilationUnit compilationUnit, Type type, IClass declaringType) : base(compilationUnit, declaringType)
 		{
 			this.type = type;
-			FullyQualifiedName = type.FullName.Replace('+', '.');
+			string name = type.FullName.Replace('+', '.');
+			if (name.Length > 2 && name[name.Length - 2] == '`') {
+				FullyQualifiedName = name.Substring(0, name.Length - 2);
+			} else {
+				FullyQualifiedName = name;
+			}
 			
 			// set classtype
 			if (IsDelegate(type)) {
@@ -153,6 +158,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				this.ClassType = ClassType.Struct;
 			} else {
 				this.ClassType = ClassType.Class;
+			}
+			if (type.IsGenericTypeDefinition) {
+				foreach (Type g in type.GetGenericArguments()) {
+					this.TypeParameters.Add(new DefaultTypeParameter(g));
+				}
 			}
 			
 			ModifierEnum modifiers  = ModifierEnum.None;
@@ -192,7 +202,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			foreach (Type iface in type.GetInterfaces()) {
 				BaseTypes.Add(iface.FullName);
 			}
-		
+			
 		}
 	}
 }

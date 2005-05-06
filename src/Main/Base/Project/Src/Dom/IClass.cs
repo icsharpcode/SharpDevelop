@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		ClassType ClassType {
 			get;
-		}		
+		}
 		
 		/// <summary>
 		/// The project content in which this class is defined.
@@ -71,6 +71,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 
 		List<IEvent> Events {
+			get;
+		}
+		
+		List<ITypeParameter> TypeParameters {
 			get;
 		}
 

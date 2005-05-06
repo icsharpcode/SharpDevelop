@@ -31,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		List<IMethod>   methods      = null;
 		List<IEvent>    events       = null;
 		List<IIndexer>  indexer      = null;
+		List<ITypeParameter> typeParameters = null;
 		
 		public DefaultClass(ICompilationUnit compilationUnit, string fullyQualifiedName) : base(null)
 		{
@@ -142,6 +143,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public virtual List<ITypeParameter> TypeParameters {
+			get {
+				if (typeParameters == null) {
+					typeParameters = new List<ITypeParameter>();
+				}
+				return typeParameters;
+			}
+		}
+		
 		public virtual int CompareTo(IClass value)
 		{
 			int cmp;
@@ -191,7 +201,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return DiffUtility.Compare(Events, value.Events);
 		}
 		
-		int IComparable.CompareTo(object o) 
+		int IComparable.CompareTo(object o)
 		{
 			return CompareTo((IClass)o);
 		}
@@ -328,7 +338,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(this);
 			foreach (IClass c in InnerClasses) {
 				if (((c.ClassType == ClassType.Class) || (c.ClassType == ClassType.Struct)) &&
-				      c.IsAccessible(callingClass, isClassInInheritanceTree)) {
+				    c.IsAccessible(callingClass, isClassInInheritanceTree)) {
 					types.Add(c);
 				}
 			}

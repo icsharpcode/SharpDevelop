@@ -639,6 +639,8 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Publish.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.cs" />
+    <Compile Include="Src\Dom\ITypeParameter.cs" />
+    <Compile Include="Src\Dom\Implementations\DefaultTypeParameter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

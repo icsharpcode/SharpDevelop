@@ -114,8 +114,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			// save class (for the delegate description shortcut
 			this.c = c;
 			imageIndex = ClassBrowserIconService.GetIcon(c);
-			text = c.Name;
-			completionString = c.Name;
+			ambience.ConversionFlags = ConversionFlags.None;
+			text = ambience.Convert(c);
+			completionString = text;
 			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedNames | ConversionFlags.ShowReturnType | ConversionFlags.ShowModifiers;
 //			Console.WriteLine("Convert : " + c);
 			description = ambience.Convert(c);

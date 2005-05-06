@@ -95,9 +95,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			public STAThreadCaller()
 			{
 				performCallDelegate = new PerformCallDelegate(DoPerformCall);
-				#if DEBUG
-				callerStack = Environment.StackTrace;
-				#endif
 			}
 			
 			public object Call(object target, string methodName, params object[] arguments)
@@ -109,6 +106,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				this.target     = target;
 				this.methodName = methodName;
 				this.arguments  = arguments;
+				
+				#if DEBUG
+				callerStack = Environment.StackTrace;
+				#endif
 				
 				// TODO: This doesn't look like it's thread-safe, we're calling the target directly!
 				return DoPerformCall();
