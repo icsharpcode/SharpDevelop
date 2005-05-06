@@ -68,8 +68,6 @@ namespace ICSharpCode.TextEditor
 			}
 			HighlightColor lineNumberPainterColor = textArea.Document.HighlightingStrategy.GetColorFor("LineNumbers");
 			int fontHeight = lineNumberPainterColor.Font.Height;
-//			DateTime now = DateTime.Now;
-			
 			Brush fillBrush = textArea.Enabled ? BrushRegistry.GetBrush(lineNumberPainterColor.BackgroundColor) : SystemBrushes.InactiveBorder;
 			Brush drawBrush = BrushRegistry.GetBrush(lineNumberPainterColor.Color);
 			for (int y = 0; y < (DrawingPosition.Height + textArea.TextView.VisibleLineDrawingRemainder) / fontHeight + 1; ++y) {
@@ -88,34 +86,6 @@ namespace ICSharpCode.TextEditor
 					}
 				}
 			}
-//			TextFormatFlags flags = TextFormatFlags.NoOverhangPadding |
-//			                        TextFormatFlags.NoPrefix |
-//			                        TextFormatFlags.NoFullWidthCharacterBreak |
-//			                        TextFormatFlags.NoClipping | 
-//			                        TextFormatFlags.PrefixOnly |
-//			                        TextFormatFlags.SingleLine;
-//			
-//			Brush fillBrush = textArea.Enabled ? BrushRegistry.GetBrush(lineNumberPainterColor.BackgroundColor) : SystemBrushes.InactiveBorder;
-//			
-//			for (int y = 0; y < (DrawingPosition.Height + textArea.TextView.VisibleLineDrawingRemainder) / fontHeight + 1; ++y) {
-//				int ypos = drawingPosition.Y + fontHeight * y  - textArea.TextView.VisibleLineDrawingRemainder;
-//				Rectangle backgroundRectangle = new Rectangle(drawingPosition.X, ypos, drawingPosition.Width, fontHeight);
-//				if (rect.IntersectsWith(backgroundRectangle)) {
-//					g.FillRectangle(fillBrush, backgroundRectangle);
-//					int curLine = textArea.Document.GetFirstLogicalLine(textArea.Document.GetVisibleLine(textArea.TextView.FirstVisibleLine) + y);
-//					
-//					if (curLine < textArea.Document.TotalNumberOfLines) {
-//						TextRenderer.DrawText(g,
-//						                      (curLine + 1).ToString(),
-//						                      lineNumberPainterColor.Font,
-//						                      backgroundRectangle,
-//						                      lineNumberPainterColor.Color,
-//						                      flags
-//						                     );
-//					}
-//				}
-//			}
-//			Console.WriteLine((DateTime.Now - now).TotalMilliseconds);
 		}
 		
 		Point selectionStartPos;
@@ -145,11 +115,28 @@ namespace ICSharpCode.TextEditor
 					Point realmousepos = new Point(0, realline);
 					if (realmousepos.Y < textArea.Document.TotalNumberOfLines) {
 						if (selectionStartPos.Y == realmousepos.Y) {
+							// this setselection defaults for an upward moving selection
 							textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, realmousepos, new Point(textArea.Document.GetLineSegment(realmousepos.Y).Length + 1, realmousepos.Y)));
 						} else  if (selectionStartPos.Y < realmousepos.Y && textArea.SelectionManager.HasSomethingSelected) {
+							// this fixes the selection for moving the selection down
+							if (realmousepos.Y - selectionStartPos.Y == 1) { // only fix for first line movement
+								Point lastmousepos = realmousepos;
+								lastmousepos.Y -= 1;
+								textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, lastmousepos, new Point(0, lastmousepos.Y)));
+							}
+
 							textArea.SelectionManager.ExtendSelection(textArea.SelectionManager.SelectionCollection[0].EndPosition, realmousepos);
 						} else {
-							textArea.SelectionManager.ExtendSelection(textArea.Caret.Position, realmousepos);
+							// this fixes the selection for moving the selection up
+							if (selectionStartPos.Y - realmousepos.Y == 1) { // only fix for first line movement
+								Point lastmousepos = realmousepos;
+								lastmousepos.Y += 1;
+								textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, lastmousepos, new Point(textArea.Document.GetLineSegment(lastmousepos.Y).Length + 1, lastmousepos.Y)));
+								// move the extendselection to here to fix textarea update issues
+								textArea.SelectionManager.ExtendSelection(lastmousepos, realmousepos);
+							} else {
+								textArea.SelectionManager.ExtendSelection(textArea.Caret.Position, realmousepos);
+							}
 						}
 						textArea.Caret.Position = realmousepos;
 					}
