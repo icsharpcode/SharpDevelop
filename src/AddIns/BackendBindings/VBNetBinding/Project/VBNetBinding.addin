@@ -53,8 +53,13 @@
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>
 	</Path>
 
-	<Path name = "/AddIns/DefaultTextEditor/Formatter/VBNet">
-		<Class id ="VBNetFormatter" insertbefore="DefaultFormatter" class = "CSharpBinding.FormattingStrategy.VBNetFormattingStrategy"/>
+	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+		<Class id    = "VBNetCompletionBinding"
+		       class = "VBNetBinding.VBNetCompletionBinding"/>
+	</Path>
+
+	<Path name = "/AddIns/DefaultTextEditor/Formatter/VBNET">
+		<Class id ="VBNetFormatter" insertbefore="DefaultFormatter" class = "VBNetBinding.FormattingStrategy.VBFormattingStrategy"/>
 	</Path>
 	
 	<Path name = "/Workspace/Icons">

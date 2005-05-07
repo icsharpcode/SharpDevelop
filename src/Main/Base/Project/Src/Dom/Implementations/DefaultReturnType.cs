@@ -34,8 +34,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (bc.ClassType == ClassType.Interface && c.ClassType != ClassType.Interface)
 					continue; // ignore explicit interface implementations
 				
-				// do not add methods that were overridden
 				foreach (IMethod m in bc.Methods) {
+					// do not add base class constructors
+					if (m.IsConstructor && c != bc)
+						continue;
+					
+					// do not add methods that were overridden
 					bool ok = true;
 					foreach (IMethod oldMethod in l) {
 						if (string.Equals(oldMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {

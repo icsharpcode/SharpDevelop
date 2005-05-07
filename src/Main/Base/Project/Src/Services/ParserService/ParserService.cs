@@ -39,7 +39,7 @@ namespace ICSharpCode.Core
 		public static IProjectContent CurrentProjectContent {
 			get {
 				if (ProjectService.CurrentProject == null || !projectContents.ContainsKey(ProjectService.CurrentProject)) {
-					return new CaseSensitiveProjectContent();
+					return defaultProjectContent;
 				}
 				return projectContents[ProjectService.CurrentProject];
 			}
@@ -74,14 +74,34 @@ namespace ICSharpCode.Core
 		
 		static void LoadSolutionProjects()
 		{
+			List<DefaultProjectContent> createdContents = new List<DefaultProjectContent>();
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				try {
-					IProjectContent newContent = CaseSensitiveProjectContent.Create(project);
+					IProjectContent newContent = DefaultProjectContent.CreateUninitalized(project);
 					lock (projectContents) {
 						projectContents[project] = newContent;
 					}
+					if (newContent is DefaultProjectContent) {
+						createdContents.Add((DefaultProjectContent)newContent);
+					}
 				} catch (Exception e) {
 					Console.WriteLine("Error while retrieving project contents from {0}:", project);
+					ICSharpCode.Core.MessageService.ShowError(e);
+				}
+			}
+			foreach (DefaultProjectContent newContent in createdContents) {
+				try {
+					newContent.Initialize1();
+				} catch (Exception e) {
+					Console.WriteLine("Error while initializing project references:" + newContent);
+					ICSharpCode.Core.MessageService.ShowError(e);
+				}
+			}
+			foreach (DefaultProjectContent newContent in createdContents) {
+				try {
+					newContent.Initialize2();
+				} catch (Exception e) {
+					Console.WriteLine("Error while initializing project contents:" + newContent);
 					ICSharpCode.Core.MessageService.ShowError(e);
 				}
 			}
@@ -190,7 +210,7 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		static IProjectContent defaultProjectContent = new CaseSensitiveProjectContent();
+		static IProjectContent defaultProjectContent = new DefaultProjectContent();
 		
 		public static ParseInformation ParseFile(string fileName, string fileContent, bool updateCommentTags, bool fireUpdate)
 		{
@@ -256,8 +276,8 @@ namespace ICSharpCode.Core
 			if (fireEvent) {
 				try {
 					OnParseInformationUpdated(new ParseInformationEventArgs(fileName, parseInformation, parserOutput));
-				} catch (Exception e) { 
-					Console.WriteLine(e); 
+				} catch (Exception e) {
+					Console.WriteLine(e);
 				}
 			}
 			
@@ -270,7 +290,7 @@ namespace ICSharpCode.Core
 			
 			return parseInformation;
 		}
-			
+		
 		
 		public static ParseInformation GetParseInformation(string fileName)
 		{
@@ -322,19 +342,19 @@ namespace ICSharpCode.Core
 		}
 		
 		public static ResolveResult Resolve(string expression,
-		                             int caretLineNumber,
-		                             int caretColumn,
-		                             string fileName,
-		                             string fileContent)
+		                                    int caretLineNumber,
+		                                    int caretColumn,
+		                                    string fileName,
+		                                    string fileContent)
 		{
 			// added exception handling here to prevent silly parser exceptions from
 			// being thrown and corrupting the textarea control
 			//try {
-				IParser parser = GetParser(fileName);
-				if (parser != null) {
-					return parser.CreateResolver().Resolve(expression, caretLineNumber, caretColumn, fileName);
-				}
-				return null;
+			IParser parser = GetParser(fileName);
+			if (parser != null) {
+				return parser.CreateResolver().Resolve(expression, caretLineNumber, caretColumn, fileName);
+			}
+			return null;
 			//} catch {
 //				return null;
 			//}
@@ -355,13 +375,13 @@ namespace ICSharpCode.Core
 //	{
 //		List<IComment> miscComments = new List<IComment>();
 //		List<IComment> dokuComments = new List<IComment>();
-//		
+//
 //		public override List<IComment> MiscComments {
 //			get {
 //				return miscComments;
 //			}
 //		}
-//		
+//
 //		public override List<IComment> DokuComments {
 //			get {
 //				return dokuComments;

@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp, new StringReader(fileContent));
 			p.Parse();
-			IProjectContent pc = new CaseSensitiveProjectContent();
+			IProjectContent pc = new DefaultProjectContent();
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
 			visitor.Visit(p.CompilationUnit, null);
@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet, new StringReader(fileContent));
 			p.Parse();
-			IProjectContent pc = new CaseSensitiveProjectContent();
+			IProjectContent pc = new DefaultProjectContent();
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
 			visitor.Visit(p.CompilationUnit, null);

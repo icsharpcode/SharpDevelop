@@ -221,6 +221,7 @@ namespace VBNetBinding
 		{
 			this.Name = projectName;
 			Language = "VBNet";
+			LanguageProperties = ICSharpCode.SharpDevelop.Dom.LanguageProperties.VBNet;
 			SetupProject(fileName);
 			IdGuid = BaseConfiguration["ProjectGuid"];
 		}
@@ -228,6 +229,7 @@ namespace VBNetBinding
 		public VBNetProject(ProjectCreateInformation info)
 		{
 			Language = "VBNet";
+			LanguageProperties = ICSharpCode.SharpDevelop.Dom.LanguageProperties.VBNet;
 			Create(info);
 			imports.Add(@"$(MSBuildBinPath)\Microsoft.VisualBasic.Targets");
 		}

@@ -99,9 +99,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		IClass GetInnermostClass(int caretLine, int caretColumn);
-		List<IClass> GetAccessibleTypes(IClass callingClass);
+		//List<IClass> GetAccessibleTypes(IClass callingClass);
 		
-		bool IsTypeInInheritanceTree(IClass possibleBaseClass);
+		//bool IsTypeInInheritanceTree(IClass possibleBaseClass);
 		
 		//IMember SearchMember(string memberName);
 		

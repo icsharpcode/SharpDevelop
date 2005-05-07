@@ -31,7 +31,7 @@ namespace ICSharpCode.Core
 			if (contents.ContainsKey("mscorlib")) {
 				return contents["mscorlib"];
 			}
-			contents["mscorlib"] = CaseSensitiveProjectContent.Create(typeof(object).Assembly);
+			contents["mscorlib"] = DefaultProjectContent.Create(typeof(object).Assembly);
 			return contents["mscorlib"];
 		}
 		
@@ -47,24 +47,27 @@ namespace ICSharpCode.Core
 				return contents[item.Include];
 			}
 			
+			int time = Environment.TickCount;
 			Assembly assembly = null;
 			
 			try {
 				assembly = Assembly.ReflectionOnlyLoadFrom(item.FileName);
 				if (assembly != null) {
-					contents[item.FileName] = CaseSensitiveProjectContent.Create(assembly);
+					contents[item.FileName] = DefaultProjectContent.Create(assembly);
 					return contents[item.FileName];
 				}
 			} catch (Exception) {
 				try {
 					assembly = LoadGACAssembly(item.Include, true);
 					if (assembly != null) {
-						contents[item.Include] = CaseSensitiveProjectContent.Create(assembly);
+						contents[item.Include] = DefaultProjectContent.Create(assembly);
 						return contents[item.Include];
 					}
 				} catch (Exception e) {
 					Console.WriteLine("Can't load assembly '{0}' : " + e.Message, item.Include);
 				}
+			} finally {
+				Console.WriteLine("Loaded {0} in {1}ms", item.Include, Environment.TickCount - time);
 			}
 			
 			return null;

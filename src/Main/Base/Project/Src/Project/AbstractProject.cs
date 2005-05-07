@@ -121,6 +121,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		ICSharpCode.SharpDevelop.Dom.LanguageProperties languageProperties = ICSharpCode.SharpDevelop.Dom.LanguageProperties.CSharp;
+		
+		[Browsable(false)]
+		public ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
+			get {
+				return languageProperties;
+			}
+			set {
+				languageProperties = value;
+			}
+		}
+		
 		[Browsable(false)]
 		public string Configuration {
 			get {

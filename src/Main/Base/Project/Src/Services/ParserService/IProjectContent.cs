@@ -32,6 +32,13 @@ namespace ICSharpCode.Core
 			get;
 		}
 		
+		/// <summary>
+		/// Gets the properties of the language this project content was written in.
+		/// </summary>
+		LanguageProperties Language {
+			get;
+		}
+		
 		string GetXmlDocumentation(string memberTag);
 		
 		Hashtable AddClassToNamespaceList(IClass addClass);
@@ -40,6 +47,10 @@ namespace ICSharpCode.Core
 		IClass GetClass(string typeName);
 		bool NamespaceExists(string name);
 		ArrayList GetNamespaceContents(string subNameSpace);
+		
+		IClass GetClass(string typeName, LanguageProperties language, bool lookInReferences);
+		bool NamespaceExists(string name, LanguageProperties language, bool lookInReferences);
+		void AddNamespaceContents(ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences);
 		
 		string SearchNamespace(string name, ICompilationUnit unit, int caretLine, int caretColumn);
 		IClass SearchType(string name, IClass curType, int caretLine, int caretColumn);

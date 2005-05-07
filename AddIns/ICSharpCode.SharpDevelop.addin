@@ -1415,7 +1415,7 @@
 		</Condition>
 	</Path>
 	
-	<Path name = "/AddIns/DefaultTextEditor/Formater">
+	<Path name = "/AddIns/DefaultTextEditor/Formatter">
 		<Condition name = "TextContent" textcontent = "XML">
 			<Class id ="XmlFormatter" class = "ICSharpCode.SharpDevelop.DefaultEditor.XmlFormattingStrategy"/>
 		</Condition>

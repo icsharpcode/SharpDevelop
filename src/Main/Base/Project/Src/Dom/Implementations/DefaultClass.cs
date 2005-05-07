@@ -273,6 +273,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		/*
 		public bool IsTypeInInheritanceTree(IClass possibleBaseClass)
 		{
 			if (possibleBaseClass == null) {
@@ -291,7 +292,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			return false;
 		}
-		
+		*/
 		/*
 		public IMember SearchMember(string memberName)
 		{
@@ -358,6 +359,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return this;
 		}
 		
+		/*
 		public List<IClass> GetAccessibleTypes(IClass callingClass)
 		{
 			List<IClass> types = new List<IClass>();
@@ -376,7 +378,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return types;
 		}
 		
-		/*
+		
 		public ArrayList GetAccessibleMembers(IClass callingClass, bool showStatic)
 		{
 			ArrayList members = new ArrayList();

@@ -377,7 +377,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		static IReturnType WrapArray(IReturnType t, TypeReference reference)
 		{
 			if (reference.IsArrayType) {
-				for (int i = 0; i < reference.RankSpecifier.Length; ++i) {
+				for (int i = reference.RankSpecifier.Length - 1; i >= 0; --i) {
 					t = new ArrayReturnType(t, reference.RankSpecifier[i] + 1);
 				}
 			}

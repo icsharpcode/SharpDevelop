@@ -25,8 +25,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ICSharpCode.NRefactory.Parser.LookupTableVisitor lookupTableVisitor;
 		IProjectContent projectContent = null;
 		
-		bool caseSensitive = true;
-		SupportedLanguages language = SupportedLanguages.CSharp;
+		SupportedLanguages language;
 		
 		int caretLine;
 		int caretColumn;
@@ -70,19 +69,25 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
+		LanguageProperties languageProperties;
+		
+		public LanguageProperties LanguageProperties {
+			get {
+				return languageProperties;
+			}
+		}
+		
 		public NRefactoryResolver(SupportedLanguages language)
 		{
 			this.language = language;
 			this.projectContent = ParserService.CurrentProjectContent;
-		}
-		
-		bool IsCaseSensitive(SupportedLanguages language)
-		{
 			switch (language) {
 				case SupportedLanguages.CSharp:
-					return true;
+					languageProperties = LanguageProperties.CSharp;
+					break;
 				case SupportedLanguages.VBNet:
-					return false;
+					languageProperties = LanguageProperties.VBNet;
+					break;
 				default:
 					throw new NotSupportedException("The language " + language + " is not supported in the resolver");
 			}
@@ -93,15 +98,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		                             int caretColumn,
 		                             string fileName)
 		{
-			caseSensitive = IsCaseSensitive(language);
-			
 			if (expression == null) {
 				expression = "";
 			}
 			expression = expression.TrimStart(null);
-			if (!caseSensitive) {
-				expression = expression.ToLower();
-			}
 			
 			this.caretLine   = caretLineNumber;
 			this.caretColumn = caretColumn;
@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 			}
-			lookupTableVisitor = new LookupTableVisitor();
+			lookupTableVisitor = new LookupTableVisitor(languageProperties.NameComparer);
 			lookupTableVisitor.Visit(fileCompilationUnit, null);
 			
 			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
@@ -312,11 +312,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		bool IsSameName(string name1, string name2)
 		{
-			if (IsCaseSensitive(language)) {
-				return name1 == name2;
-			} else {
-				return name1.ToLower() == name2.ToLower();
-			}
+			return languageProperties.NameComparer.Equals(name1, name2);
 		}
 		
 		bool IsInside(Point between, Point start, Point end)
@@ -403,34 +399,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			return methods;
-		}
-		#endregion
-		
-		#region SearchIndexer
-		public ArrayList SearchIndexer(IReturnType type)
-		{
-			// TODO: indexer for arrays
-			IClass curType = SearchType(type.FullyQualifiedName, null, null);
-			return SearchIndexer(new ArrayList(), curType);
-		}
-		
-		ArrayList SearchIndexer(ArrayList indexer, IClass curType)
-		{
-			if (curType == null)
-				return indexer;
-			bool isClassInInheritanceTree = false;
-			if (callingClass != null)
-				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
-			foreach (IIndexer i in curType.Indexer) {
-				if (i.MustBeShown(callingClass, true, isClassInInheritanceTree) && !((i.Modifiers & ModifierEnum.Override) == ModifierEnum.Override)) {
-					indexer.Add(i);
-				}
-			}
-			IClass baseClass = curType.BaseClass;
-			if (baseClass != null) {
-				return SearchIndexer(indexer, baseClass);
-			}
-			return indexer;
 		}
 		#endregion
 		
@@ -552,8 +520,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		LocalLookupVariable SearchVariable(string name)
 		{
-			ArrayList variables = (ArrayList)lookupTableVisitor.variables[IsCaseSensitive(language) ? name : name.ToLower()];
-			if (variables == null || variables.Count <= 0) {
+			if (!lookupTableVisitor.Variables.ContainsKey(name))
+				return null;
+			List<LocalLookupVariable> variables = lookupTableVisitor.Variables[name];
+			if (variables.Count <= 0) {
 				return null;
 			}
 			
@@ -569,16 +539,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName)
 		{
-			if (!IsCaseSensitive(language)) {
-				caseSensitive = false;
+			ArrayList result;
+			if (language == SupportedLanguages.VBNet) {
+				result = new ArrayList();
+				foreach (string primitive in TypeReference.GetPrimitiveTypesVB()) {
+					result.Add(Char.ToUpper(primitive[0]) + primitive.Substring(1));
+				}
+			} else {
+				result = new ArrayList(TypeReference.GetPrimitiveTypes());
 			}
-			ArrayList result = new ArrayList(TypeReference.GetPrimitiveTypes());
 			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
 			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
 			if (fileCompilationUnit == null) {
 				return null;
 			}
-			lookupTableVisitor = new LookupTableVisitor();
+			lookupTableVisitor = new LookupTableVisitor(languageProperties.NameComparer);
 			lookupTableVisitor.Visit(fileCompilationUnit, null);
 			
 			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
@@ -602,20 +577,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					//}
 				}
 			}
-			foreach (string name in lookupTableVisitor.variables.Keys) {
-				ArrayList variables = (ArrayList)lookupTableVisitor.variables[name];
-				if (variables != null && variables.Count > 0) {
-					foreach (LocalLookupVariable v in variables) {
+			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
+				if (pair.Value != null && pair.Value.Count > 0) {
+					foreach (LocalLookupVariable v in pair.Value) {
 						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
-							// LocalLookupVariable in no known Type in DisplayBindings.TextEditor
-							// so add Field for the Variables
-							result.Add(new DefaultField(TypeVisitor.CreateReturnType(v.TypeRef, this), name, ModifierEnum.None, new DefaultRegion(v.StartPos, v.EndPos), callingClass));
+							// convert to a field for display
+							result.Add(new DefaultField(TypeVisitor.CreateReturnType(v.TypeRef, this), pair.Key, ModifierEnum.None, new DefaultRegion(v.StartPos, v.EndPos), callingClass));
 							break;
 						}
 					}
 				}
 			}
-			result.AddRange(projectContent.GetNamespaceContents(""));
+			projectContent.AddNamespaceContents(result, "", languageProperties, true);
 			foreach (IUsing u in cu.Usings) {
 				if (u != null) {
 					foreach (string name in u.Usings) {

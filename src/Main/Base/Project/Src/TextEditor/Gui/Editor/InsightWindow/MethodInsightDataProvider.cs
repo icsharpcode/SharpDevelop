@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				if (result == null)
 					return;
 				foreach (IMethod method in result.ResolvedType.GetMethods()) {
-					if (method.IsConstructor) {
+					if (method.IsConstructor && !method.IsStatic) {
 						methods.Add(method);
 					}
 				}
@@ -85,8 +85,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				MethodResolveResult result = results as MethodResolveResult;
 				if (result == null)
 					return;
+				IProjectContent p = ParserService.CurrentProjectContent;
 				foreach (IMethod method in result.ContainingType.GetMethods()) {
-					if (method.Name == result.Name) {
+					if (p.Language.NameComparer.Equals(method.Name, result.Name)) {
 						methods.Add(method);
 					}
 				}

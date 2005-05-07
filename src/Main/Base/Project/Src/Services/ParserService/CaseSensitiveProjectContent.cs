@@ -22,23 +22,67 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.Core
 {
-	public class CaseSensitiveProjectContent : IProjectContent
+	public class DefaultProjectContent : IProjectContent
 	{
 		List<IProjectContent>      referencedContents = new List<IProjectContent>();
 		
-		Dictionary<string, IClass> classes            = new Dictionary<string, IClass>();
+		List<Dictionary<string, IClass>> classLists = new List<Dictionary<string, IClass>>();
 		Hashtable                  namespaces         = new Hashtable();
 		XmlDoc                     xmlDoc             = new XmlDoc();
+		
+		public List<Dictionary<string, IClass>> ClassLists {
+			get {
+				if (classLists.Count == 0) {
+					classLists.Add(new Dictionary<string, IClass>(language.NameComparer));
+				}
+				return classLists;
+			}
+		}
+		
+		Dictionary<string, IClass> GetClasses(LanguageProperties language)
+		{
+			for (int i = 0; i < classLists.Count; ++i) {
+				if (classLists[i].Comparer == language.NameComparer)
+					return classLists[i];
+			}
+			Dictionary<string, IClass> d;
+			if (classLists.Count > 0) {
+				Dictionary<string, IClass> oldList = classLists[0];
+				d = new Dictionary<string, IClass>(oldList.Count, language.NameComparer);
+				foreach (KeyValuePair<string, IClass> pair in oldList) {
+					d.Add(pair.Key, pair.Value);
+				}
+			} else {
+				d = new Dictionary<string, IClass>(language.NameComparer);
+			}
+			classLists.Add(d);
+			return d;
+		}
 		
 		public XmlDoc XmlDoc {
 			get {
 				return xmlDoc;
 			}
 		}
-
+		
 		public ICollection<IClass> Classes {
 			get {
-				return classes.Values;
+				return ClassLists[0].Values;
+			}
+		}
+		
+		LanguageProperties language = LanguageProperties.CSharp;
+		
+		/// <summary>
+		/// Gets the properties of the language this project content was written in.
+		/// </summary>
+		public LanguageProperties Language {
+			get {
+				return language;
+			}
+			set {
+				if (value == null) throw new ArgumentNullException();
+				language = value;
 			}
 		}
 		
@@ -70,13 +114,13 @@ namespace ICSharpCode.Core
 		
 		public static IProjectContent Create(Assembly assembly)
 		{
-			CaseSensitiveProjectContent newProjectContent = new CaseSensitiveProjectContent();
+			DefaultProjectContent newProjectContent = new DefaultProjectContent();
 			
 			ICompilationUnit assemblyCompilationUnit = new DefaultCompilationUnit(newProjectContent);
 			
 			foreach (Type type in assembly.GetTypes()) {
 				if (!type.FullName.StartsWith("<") && type.IsPublic) {
-					newProjectContent.AddClassToNamespaceList(new ReflectionClass(assemblyCompilationUnit, type, null));
+					newProjectContent.AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, null));
 				}
 			}
 			string fileName = LookupLocalizedXmlDoc(assembly.Location);
@@ -93,44 +137,78 @@ namespace ICSharpCode.Core
 			return newProjectContent;
 		}
 		
+		internal static IProjectContent CreateUninitalized(IProject project)
+		{
+			DefaultProjectContent newProjectContent = new DefaultProjectContent();
+			newProjectContent.project = project;
+			newProjectContent.language = project.LanguageProperties;
+			newProjectContent.referencedContents.Add(ProjectContentRegistry.GetMscorlibContent());
+			return newProjectContent;
+		}
+		
 		public static IProjectContent Create(IProject project)
 		{
-			CaseSensitiveProjectContent newProjectContent = new CaseSensitiveProjectContent();
-			newProjectContent.referencedContents.Add(ProjectContentRegistry.GetMscorlibContent());
+			IProjectContent newProjectContent = CreateUninitalized(project);
+			if (newProjectContent is DefaultProjectContent) {
+				((DefaultProjectContent)newProjectContent).Initialize1();
+				((DefaultProjectContent)newProjectContent).Initialize2();
+			}
+			return newProjectContent;
+		}
+		
+		IProject project;
+		// project is only used for initialization, the field is set to null after
+		// initialization has completed.
+		
+		internal void Initialize1()
+		{
 			foreach (ProjectItem item in project.Items.ToArray()) {
 				switch (item.ItemType) {
 					case ItemType.Reference:
 					case ItemType.ProjectReference:
 						IProjectContent referencedContent = ProjectContentRegistry.GetProjectContentForReference(item as ReferenceProjectItem);
 						if (referencedContent != null) {
-							newProjectContent.referencedContents.Add(referencedContent);
-						}
-						break;
-					case ItemType.Compile:
-						ParseInformation parseInfo = ParserService.ParseFile(item.FileName, null, true, false);
-						if (parseInfo != null) {
-							newProjectContent.UpdateCompilationUnit(null, parseInfo.BestCompilationUnit as ICompilationUnit, item.FileName, true);
+							referencedContents.Add(referencedContent);
 						}
 						break;
 				}
 			}
-			
-			return newProjectContent;
+		}
+		
+		internal void Initialize2()
+		{
+			foreach (ProjectItem item in project.Items.ToArray()) {
+				if (item.ItemType == ItemType.Compile) {
+					ParseInformation parseInfo = ParserService.ParseFile(item.FileName, null, true, false);
+					if (parseInfo != null) {
+						UpdateCompilationUnit(null, parseInfo.BestCompilationUnit as ICompilationUnit, item.FileName, true);
+					}
+				}
+			}
+			project = null;
 		}
 		
 		public Hashtable AddClassToNamespaceList(IClass addClass)
 		{
-			classes[addClass.FullyQualifiedName] = addClass;
+			lock (namespaces) {
+				return AddClassToNamespaceListInternal(addClass);
+			}
+		}
+		
+		Hashtable AddClassToNamespaceListInternal(IClass addClass)
+		{
+			foreach (Dictionary<string, IClass> classes in ClassLists) {
+				classes[addClass.FullyQualifiedName] = addClass;
+			}
 			string nSpace = addClass.Namespace;
 			if (nSpace == null) {
 				nSpace = String.Empty;
 			}
 			
-			string[] path = nSpace.Split('.');
+			Hashtable cur = namespaces;
 			
-			lock (namespaces) {
-				Hashtable cur = namespaces;
-				
+			if (nSpace.Length > 0) {
+				string[] path = nSpace.Split('.');
 				for (int i = 0; i < path.Length; ++i) {
 					object curPath   = cur[path[i]];
 					if (curPath == null) {
@@ -143,12 +221,12 @@ namespace ICSharpCode.Core
 					}
 					cur = (Hashtable)curPath;
 				}
-				
-				string name = addClass.Name == null ? "" : addClass.Name;
-				
-				cur[name] = addClass;
-				return cur;
 			}
+			
+			string name = addClass.Name == null ? "" : addClass.Name;
+			
+			cur[name] = addClass;
+			return cur;
 		}
 		
 		public void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags)
@@ -158,53 +236,66 @@ namespace ICSharpCode.Core
 				TaskService.UpdateCommentTags(fileName, parserOutput.TagComments);
 			}
 			
-			if (oldUnit != null) {
-				RemoveClasses(oldUnit);
-			}
-			
-			ICompilationUnit cu = (ICompilationUnit)parserOutput;
-			foreach (IClass c in cu.Classes) {
-				AddClassToNamespaceList(c);
+			lock (namespaces) {
+				if (oldUnit != null) {
+					RemoveClasses(oldUnit);
+				}
+				
+				ICompilationUnit cu = (ICompilationUnit)parserOutput;
+				foreach (IClass c in cu.Classes) {
+					AddClassToNamespaceListInternal(c);
+				}
 			}
 		}
 		
 		void RemoveClasses(ICompilationUnit cu)
 		{
 			if (cu != null) {
-				lock (classes) {
-					foreach (IClass c in cu.Classes) {
+				foreach (IClass c in cu.Classes) {
+					foreach (Dictionary<string, IClass> classes in ClassLists) {
 						classes.Remove(c.FullyQualifiedName);
 					}
 				}
+				// TODO: remove classes from namespace lists
 			}
 		}
 		
 		#region Default Parser Layer dependent functions
 		public IClass GetClass(string typeName)
 		{
+			return GetClass(typeName, language, true);
+		}
+		
+		public IClass GetClass(string typeName, LanguageProperties language, bool lookInReferences)
+		{
 //			Console.WriteLine("GetClass({0}) is known:{1}", typeName, classes.ContainsKey(typeName));
+			Dictionary<string, IClass> classes = GetClasses(language);
 			if (classes.ContainsKey(typeName)) {
 				return classes[typeName];
 			}
 			
 			// Search in references:
-			foreach (IProjectContent content in referencedContents) {
-				IClass classFromContent = content.GetClass(typeName);
-				if (classFromContent != null) {
-					return classFromContent;
+			if (lookInReferences) {
+				foreach (IProjectContent content in referencedContents) {
+					IClass classFromContent = content.GetClass(typeName, language, false);
+					if (classFromContent != null) {
+						return classFromContent;
+					}
 				}
 			}
 			
 			// not found -> maybe nested type -> trying to find class that contains this one.
 			int lastIndex = typeName.LastIndexOf('.');
 			if (lastIndex > 0) {
-				string innerName = typeName.Substring(lastIndex + 1);
 				string outerName = typeName.Substring(0, lastIndex);
-				IClass upperClass = GetClass(outerName);
-				if (upperClass != null && upperClass.InnerClasses != null) {
-					foreach (IClass c in upperClass.InnerClasses) {
-						if (c.Name == innerName) {
-							return c;
+				if (classes.ContainsKey(outerName)) {
+					IClass upperClass = classes[outerName];
+					if (upperClass.InnerClasses != null) {
+						string innerName = typeName.Substring(lastIndex + 1);
+						foreach (IClass c in upperClass.InnerClasses) {
+							if (language.NameComparer.Equals(c.Name, innerName)) {
+								return c;
+							}
 						}
 					}
 				}
@@ -215,18 +306,19 @@ namespace ICSharpCode.Core
 		public ArrayList GetNamespaceContents(string subNameSpace)
 		{
 			ArrayList namespaceList = new ArrayList();
+			AddNamespaceContents(namespaceList, subNameSpace, language, true);
+			return namespaceList;
+		}
+		
+		public void AddNamespaceContents(ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences)
+		{
 			if (subNameSpace == null) {
-				return namespaceList;
+				return;
 			}
 			
-			foreach (IProjectContent content in referencedContents) {
-				foreach (object o in content.GetNamespaceContents(subNameSpace)) {
-					if (o is string) {
-						if (!namespaceList.Contains(o))
-							namespaceList.Add(o);
-					} else {
-						namespaceList.Add(o);
-					}
+			if (lookInReferences) {
+				foreach (IProjectContent content in referencedContents) {
+					content.AddNamespaceContents(list, subNameSpace, language, false);
 				}
 			}
 			
@@ -237,7 +329,7 @@ namespace ICSharpCode.Core
 				for (int i = 0; i < path.Length; ++i) {
 					if (!(cur[path[i]] is Hashtable)) {
 						// namespace does not exist in this project content
-						return namespaceList;
+						return;
 					}
 					cur = (Hashtable)cur[path[i]];
 				}
@@ -245,26 +337,31 @@ namespace ICSharpCode.Core
 			
 			foreach (DictionaryEntry entry in cur) {
 				if (entry.Value is Hashtable) {
-					if (!namespaceList.Contains(entry.Key))
-						namespaceList.Add(entry.Key);
+					if (!list.Contains(entry.Key))
+						list.Add(entry.Key);
 				} else {
-					namespaceList.Add(entry.Value);
+					if (!list.Contains(entry.Value))
+						list.Add(entry.Value);
 				}
 			}
-			
-			return namespaceList;
 		}
 		
 		public bool NamespaceExists(string name)
 		{
-//			Console.WriteLine("NamespaceExists({0}) == ", name);
+			return NamespaceExists(name, language, true);
+		}
+		
+		public bool NamespaceExists(string name, LanguageProperties language, bool lookInReferences)
+		{
 			if (name == null) {
 				return false;
 			}
 			
-			foreach (IProjectContent content in referencedContents) {
-				if (content.NamespaceExists(name)) {
-					return true;
+			if (lookInReferences) {
+				foreach (IProjectContent content in referencedContents) {
+					if (content.NamespaceExists(name, language, false)) {
+						return true;
+					}
 				}
 			}
 			

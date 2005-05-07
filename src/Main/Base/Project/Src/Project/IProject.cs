@@ -32,6 +32,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
+		ICSharpCode.SharpDevelop.Dom.LanguageProperties LanguageProperties {
+			get;
+		}
+		
 		string FileName {
 			get;
 		}

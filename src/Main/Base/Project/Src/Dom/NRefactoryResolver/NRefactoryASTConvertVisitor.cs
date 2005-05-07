@@ -37,7 +37,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		ModifierEnum ConvertModifier(AST.Modifier m)
 		{
-			return ConvertModifier(m, ModifierEnum.Private);
+			if (currentClass.Count > 0 && currentClass.Peek().ClassType == ClassType.Interface)
+				return ConvertModifier(m, ModifierEnum.Public);
+			else
+				return ConvertModifier(m, ModifierEnum.Private);
 		}
 		
 		ModifierEnum ConvertModifier(AST.Modifier m, ModifierEnum defaultModifier)

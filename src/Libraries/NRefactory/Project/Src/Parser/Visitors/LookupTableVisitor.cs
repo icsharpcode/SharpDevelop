@@ -1,6 +1,6 @@
 using System;
 using System.Drawing;
-using System.Collections;
+using System.Collections.Generic;
 
 using ICSharpCode.NRefactory.Parser.AST;
 
@@ -38,18 +38,29 @@ namespace ICSharpCode.NRefactory.Parser
 	
 	public class LookupTableVisitor : AbstractASTVisitor
 	{
-		public Hashtable variables = new Hashtable();
+		Dictionary<string, List<LocalLookupVariable>> variables;
+		
+		public Dictionary<string, List<LocalLookupVariable>> Variables {
+			get {
+				return variables;
+			}
+		}
+		
+		public LookupTableVisitor(StringComparer nameComparer)
+		{
+			variables = new Dictionary<string, List<LocalLookupVariable>>(nameComparer);
+		}
 		
 		public void AddVariable(TypeReference typeRef, string name, Point startPos, Point endPos)
 		{
 			if (name == null || name.Length == 0) {
 				return;
 			}
-			ArrayList list;
-			if (variables[name] == null) {
-				variables[name] = list = new ArrayList();
+			List<LocalLookupVariable> list;
+			if (!variables.ContainsKey(name)) {
+				variables[name] = list = new List<LocalLookupVariable>();
 			} else {
-				list = (ArrayList)variables[name];
+				list = (List<LocalLookupVariable>)variables[name];
 			}
 			list.Add(new LocalLookupVariable(typeRef, startPos, endPos));
 		}
