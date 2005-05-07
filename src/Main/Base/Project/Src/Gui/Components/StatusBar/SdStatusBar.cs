@@ -19,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		ToolStripStatusLabel  txtStatusBarPanel    = new ToolStripStatusLabel();
 		ToolStripStatusLabel  cursorStatusBarPanel = new ToolStripStatusLabel();
 		ToolStripStatusLabel  modeStatusBarPanel   = new ToolStripStatusLabel();
+		ToolStripStatusLabel springLabel = new ToolStripStatusLabel();
 		
 		public ToolStripStatusLabel  CursorStatusBarPanel {
 			get {
@@ -67,11 +68,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 //			modeStatusBarPanel.AutoSize = StatusBarPanelAutoSize.None;
 //			modeStatusBarPanel.Alignment = HorizontalAlignment.Right;
 //			Panels.Add(modeStatusBarPanel);
-			ToolStripStatusLabel  springLabel = new ToolStripStatusLabel();
+			
 			springLabel.Spring = true;
-			jobNamePanel.Visible = false;
+			cursorStatusBarPanel.AutoSize = false;
+			cursorStatusBarPanel.Width = 160;
+			modeStatusBarPanel.AutoSize = false;
+			modeStatusBarPanel.Width = 35;
 			statusProgressBar.Visible = false;
-			statusProgressBar.Size = new Size(100, 20);
+			statusProgressBar.Width = 100;
 			
 			Items.AddRange(new ToolStripItem[] { txtStatusBarPanel, springLabel, jobNamePanel, statusProgressBar, cursorStatusBarPanel, modeStatusBarPanel });
 		}
@@ -132,7 +136,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void MakeInvisible()
 		{
-			jobNamePanel.Visible = false;
+			// Setting jobNamePanel.Visible = false will also hide the other labels to the right (WinForms Bug?)
+			jobNamePanel.Text = "";
 			statusProgressBar.Visible = false;
 		}
 		

@@ -59,7 +59,7 @@
 	</Path>
 	
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/C#">
-		<Class id ="CSharpFormatter" insertbefore="DefaultFormatter" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy"/>
+		<Class id ="CSharpFormatter" class = "CSharpBinding.FormattingStrategy.CSharpFormattingStrategy"/>
 	</Path>
 	
 	<Path name = "/Workspace/Icons">

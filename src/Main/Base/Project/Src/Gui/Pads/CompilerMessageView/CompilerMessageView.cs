@@ -126,7 +126,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			SetWordWrap();
 			myPanel.ResumeLayout(false);
-			WorkbenchSingleton.SafeThreadCall(this, "SetText", StringParser.Parse(messageCategories[selectedCategory].Text));
+			SetText(StringParser.Parse(messageCategories[selectedCategory].Text));
 		}
 		
 		void SetWordWrap()

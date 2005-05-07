@@ -22,7 +22,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>False</DebugSymbols>
     <Optimize>True</Optimize>
-    <OutputPath>..\..\..\AddIns\Misc\FiletypeRegisterer\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\FiletypeRegisterer\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System" />

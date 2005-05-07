@@ -28,11 +28,22 @@ namespace ICSharpCode.Core
 		
 		public static IProjectContent GetMscorlibContent()
 		{
-			if (contents.ContainsKey("mscorlib")) {
+			lock (contents) {
+				if (contents.ContainsKey("mscorlib")) {
+					return contents["mscorlib"];
+				}
+				#if DEBUG
+				Console.WriteLine("Loading mscorlib...");
+				int time = Environment.TickCount;
+				#endif
+				
+				contents["mscorlib"] = DefaultProjectContent.Create(typeof(object).Assembly);
+				
+				#if DEBUG
+				Console.WriteLine("mscorlib loaded in {0} ms", Environment.TickCount - time);
+				#endif
 				return contents["mscorlib"];
 			}
-			contents["mscorlib"] = DefaultProjectContent.Create(typeof(object).Assembly);
-			return contents["mscorlib"];
 		}
 		
 		public static IProjectContent GetProjectContentForReference(ReferenceProjectItem item)
@@ -40,37 +51,42 @@ namespace ICSharpCode.Core
 			if (item is ProjectReferenceProjectItem) {
 				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
 			}
-			if (contents.ContainsKey(item.FileName)) {
-				return contents[item.FileName];
-			}
-			if (contents.ContainsKey(item.Include)) {
-				return contents[item.Include];
-			}
-			
-			StatusBarService.ProgressMonitor.BeginTask("Loading " + item.Include + "...", 100);
-			int time = Environment.TickCount;
-			Assembly assembly = null;
-			try {
-				assembly = Assembly.ReflectionOnlyLoadFrom(item.FileName);
-				if (assembly != null) {
-					contents[item.FileName] = DefaultProjectContent.Create(assembly);
+			lock (contents) {
+				if (contents.ContainsKey(item.FileName)) {
 					return contents[item.FileName];
 				}
-			} catch (Exception) {
-				try {
-					assembly = LoadGACAssembly(item.Include, true);
-					if (assembly != null) {
-						contents[item.Include] = DefaultProjectContent.Create(assembly);
-						return contents[item.Include];
-					}
-				} catch (Exception e) {
-					Console.WriteLine("Can't load assembly '{0}' : " + e.Message, item.Include);
+				if (contents.ContainsKey(item.Include)) {
+					return contents[item.Include];
 				}
-			} finally {
-				Console.WriteLine("Loaded {0} in {1}ms", item.Include, Environment.TickCount - time);
-				StatusBarService.ProgressMonitor.Done();
+				
+				StatusBarService.ProgressMonitor.BeginTask("Loading " + item.Include + "...", 100);
+				#if DEBUG
+				int time = Environment.TickCount;
+				#endif
+				Assembly assembly = null;
+				try {
+					assembly = Assembly.ReflectionOnlyLoadFrom(item.FileName);
+					if (assembly != null) {
+						contents[item.FileName] = DefaultProjectContent.Create(assembly);
+						return contents[item.FileName];
+					}
+				} catch (Exception) {
+					try {
+						assembly = LoadGACAssembly(item.Include, true);
+						if (assembly != null) {
+							contents[item.Include] = DefaultProjectContent.Create(assembly);
+							return contents[item.Include];
+						}
+					} catch (Exception e) {
+						Console.WriteLine("Can't load assembly '{0}' : " + e.Message, item.Include);
+					}
+				} finally {
+					#if DEBUG
+					Console.WriteLine("Loaded {0} in {1}ms", item.Include, Environment.TickCount - time);
+					#endif
+					StatusBarService.ProgressMonitor.Done();
+				}
 			}
-			
 			return null;
 		}
 		

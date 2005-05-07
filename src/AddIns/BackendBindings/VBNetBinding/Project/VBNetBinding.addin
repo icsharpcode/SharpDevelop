@@ -59,7 +59,7 @@
 	</Path>
 
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/VBNET">
-		<Class id ="VBNetFormatter" insertbefore="DefaultFormatter" class = "VBNetBinding.FormattingStrategy.VBFormattingStrategy"/>
+		<Class id ="VBNetFormatter" class = "VBNetBinding.FormattingStrategy.VBFormattingStrategy"/>
 	</Path>
 	
 	<Path name = "/Workspace/Icons">

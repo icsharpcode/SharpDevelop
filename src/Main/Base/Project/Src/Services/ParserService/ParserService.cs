@@ -155,16 +155,22 @@ namespace ICSharpCode.Core
 			parserThread.Start();
 		}
 		
-		static bool doneParserThread = false;
 		static Dictionary<string, int> lastUpdateSize = new Dictionary<string, int>();
 		
 		static void ParserUpdateThread()
 		{
-			while (!doneParserThread) {
+			// preload mscorlib, we're going to need it anyway
+			ProjectContentRegistry.GetMscorlibContent();
+			
+			while (true) {
 				try {
 					ParserUpdateStep();
 				} catch (Exception e) {
 					ICSharpCode.Core.MessageService.ShowError(e);
+					
+					// don't fire an exception every 2 seconds at the user, give him at least
+					// time to read the first :-)
+					Thread.Sleep(10000);
 				}
 				Thread.Sleep(2000);
 			}

@@ -121,7 +121,9 @@ namespace ICSharpCode.Core
 		public static IProjectContent Create(Assembly assembly)
 		{
 			DefaultProjectContent newProjectContent = new DefaultProjectContent();
-			
+			if (typeof(object).Assembly != assembly) {
+				newProjectContent.referencedContents.Add(ProjectContentRegistry.GetMscorlibContent());
+			}
 			ICompilationUnit assemblyCompilationUnit = new DefaultCompilationUnit(newProjectContent);
 			
 			foreach (Type type in assembly.GetTypes()) {
@@ -253,8 +255,6 @@ namespace ICSharpCode.Core
 		
 		public void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags)
 		{
-			// TODO: UpdateCommentTags must run on the main thread
-			// (use fire+forget because main thread could be waiting on this thread to finish)
 			if (updateCommentTags) {
 				TaskService.UpdateCommentTags(fileName, parserOutput.TagComments);
 			}
