@@ -47,9 +47,9 @@ namespace ICSharpCode.Core
 				return contents[item.Include];
 			}
 			
+			StatusBarService.ProgressMonitor.BeginTask("Loading " + item.Include + "...", 100);
 			int time = Environment.TickCount;
 			Assembly assembly = null;
-			
 			try {
 				assembly = Assembly.ReflectionOnlyLoadFrom(item.FileName);
 				if (assembly != null) {
@@ -68,6 +68,7 @@ namespace ICSharpCode.Core
 				}
 			} finally {
 				Console.WriteLine("Loaded {0} in {1}ms", item.Include, Environment.TickCount - time);
+				StatusBarService.ProgressMonitor.Done();
 			}
 			
 			return null;

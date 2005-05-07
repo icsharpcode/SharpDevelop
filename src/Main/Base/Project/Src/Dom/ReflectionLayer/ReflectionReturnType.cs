@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (type.IsArray) {
 				return MakeArray(type, Create(content, type.GetElementType()));
 			} else {
-				return new LazyReturnType(new GetClassResolveContext(content), name);
+				return new GetClassReturnType(content, name);
 			}
 		}
 		

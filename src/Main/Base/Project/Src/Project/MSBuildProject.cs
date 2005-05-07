@@ -20,6 +20,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
+		protected char BuildConstantSeparator = ';';
+		
 		protected void Create(ProjectCreateInformation information)
 		{
 			Name = information.ProjectName;
@@ -36,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			configurations["Debug|AnyCPU"] = new PropertyGroup();
 			configurations["Debug|AnyCPU"]["OutputPath"] = @"bin\Debug\";
 			configurations["Debug|AnyCPU"]["Optimize"] = "false";
-			configurations["Debug|AnyCPU"]["DefineConstants"] = "DEBUG;TRACE";
+			configurations["Debug|AnyCPU"]["DefineConstants"] = "DEBUG" + BuildConstantSeparator + "TRACE";
 			
 			configurations["Release|AnyCPU"] = new PropertyGroup();
 			configurations["Release|AnyCPU"]["OutputPath"] = @"bin\Release\";
@@ -62,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		readonly static Regex configurationRegEx = new Regex(@"\s*'.*'\s*==\s*'(?<configuration>.*)'", RegexOptions.Compiled);
 		
 		protected void SetupProject(string projectFileName)
-		{	
+		{
 			this.fileName = projectFileName;
 			using (XmlTextReader reader = new XmlTextReader(projectFileName)) {
 				while (reader.Read()) {
@@ -246,11 +248,11 @@ namespace ICSharpCode.SharpDevelop.Project
 //		static void BeforeBuild()
 //		{
 //			TaskService.NotifyTaskChange();
-//			
+//
 //			StatusBarService.SetMessage("${res:MainWindow.StatusBar.CompilingMessage}");
-//			
+//
 //			StringParser.Properties["Project"] = this.Name;
-//			
+//
 //			TaskService.BuildMessageViewCategory.AppendText(StringParser.Parse("${res:MainWindow.CompilerMessages.BuildStartedOutput}", new string[,] {
 //			                                                                 	{"PROJECT", this.Name},
 //			                                                                 	{"CONFIG", this.Configuration + "|" + this.Platform}
@@ -259,12 +261,12 @@ namespace ICSharpCode.SharpDevelop.Project
 //			// TODO :BEFORE COMPILE ACTION.
 //			//TaskService.CompilerOutput += StringParser.Parse("${res:MainWindow.CompilerMessages.ExecuteScript}", new string[,] { {"SCRIPT", conf.ExecuteBeforeBuild} }) + "\n";
 //		}
-//		
+//
 //		static void AfterBuild()
 //		{
 //			// TODO: After COMPILE ACTION.
 //			//TaskService.CompilerOutput += StringParser.Parse("${res:MainWindow.CompilerMessages.ExecuteScript}", new string[,] { {"SCRIPT", conf.ExecuteAfterBuild} }) + "\n";
-//			
+//
 //			TaskService.BuildMessageViewCategory.AppendText(StringParser.Parse("${res:MainWindow.CompilerMessages.ProjectStatsOutput}", new string[,] { {"ERRORS", TaskService.Errors.ToString()}, {"WARNINGS", TaskService.Warnings.ToString()} }) + Environment.NewLine + Environment.NewLine);
 //			isDirty = TaskService.Errors != 0;
 //		}

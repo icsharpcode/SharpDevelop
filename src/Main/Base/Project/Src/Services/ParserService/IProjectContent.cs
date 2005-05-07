@@ -22,7 +22,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.Core
 {
-	public interface IProjectContent
+	public interface IProjectContent : IDisposable
 	{
 		XmlDoc XmlDoc {
 			get;

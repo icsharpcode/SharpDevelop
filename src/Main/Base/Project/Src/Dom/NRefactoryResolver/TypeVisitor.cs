@@ -362,8 +362,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public static IReturnType CreateReturnType(TypeReference reference, IClass callingClass, int caretLine, int caretColumn)
 		{
 			if (reference.IsNull) return null;
-			IResolveContext context = new SearchClassResolveContext(callingClass, caretLine, caretColumn);
-			IReturnType t = new LazyReturnType(context, reference.SystemType);
+			IReturnType t = new SearchClassReturnType(callingClass, caretLine, caretColumn, reference.SystemType);
 			if (reference.GenericTypes.Count > 0) {
 				List<IReturnType> para = new List<IReturnType>(reference.GenericTypes.Count);
 				for (int i = 0; i < reference.GenericTypes.Count; ++i) {

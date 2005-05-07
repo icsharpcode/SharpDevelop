@@ -8,25 +8,22 @@
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
-	/// This is a basic interface to a "progress bar" type of 
+	/// This is a basic interface to a "progress bar" type of
 	/// control.
 	/// </summary>
-	public interface IProgressMonitor 
+	public interface IProgressMonitor
 	{
 		void BeginTask(string name, int totalWork);
 		
-		void Worked(int work);
-		
-		void Done();
-		
-		bool Canceled {
+		int WorkDone {
 			get;
 			set;
 		}
 		
+		void Done();
+		
 		string TaskName {
 			get;
-			set;
 		}
 	}
 }

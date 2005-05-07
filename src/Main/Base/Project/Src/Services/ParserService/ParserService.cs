@@ -38,11 +38,22 @@ namespace ICSharpCode.Core
 		
 		public static IProjectContent CurrentProjectContent {
 			get {
+				if (forcedContent != null) return forcedContent;
+				
 				if (ProjectService.CurrentProject == null || !projectContents.ContainsKey(ProjectService.CurrentProject)) {
 					return defaultProjectContent;
 				}
 				return projectContents[ProjectService.CurrentProject];
 			}
+		}
+		
+		static IProjectContent forcedContent;
+		/// <summary>
+		/// Used for unit tests ONLY!!
+		/// </summary>
+		public static void ForceProjectContent(IProjectContent content)
+		{
+			forcedContent = content;
 		}
 		
 		static ParserService()
@@ -59,20 +70,39 @@ namespace ICSharpCode.Core
 		
 		static void ProjectServiceSolutionClosed(object sender, EventArgs e)
 		{
+			abortLoadSolutionProjectsThread = true;
 			lock (projectContents) {
+				foreach (IProjectContent content in projectContents.Values) {
+					content.Dispose();
+				}
 				projectContents.Clear();
 			}
 		}
 		
-		public static void OpenCombine(object sender, SolutionEventArgs e)
+		static Thread loadSolutionProjectsThread;
+		static bool   abortLoadSolutionProjectsThread;
+		
+		static void OpenCombine(object sender, SolutionEventArgs e)
 		{
-			Thread t = new Thread(new ThreadStart(LoadSolutionProjects));
-			t.Priority = ThreadPriority.Lowest;
-			t.IsBackground = true;
-			t.Start();
+			if (loadSolutionProjectsThread != null)
+				loadSolutionProjectsThread.Join();
+			loadSolutionProjectsThread = new Thread(new ThreadStart(LoadSolutionProjects));
+			loadSolutionProjectsThread.Priority = ThreadPriority.Lowest;
+			loadSolutionProjectsThread.IsBackground = true;
+			loadSolutionProjectsThread.Start();
 		}
 		
 		static void LoadSolutionProjects()
+		{
+			try {
+				abortLoadSolutionProjectsThread = false;
+				LoadSolutionProjectsInternal();
+			} finally {
+				loadSolutionProjectsThread = null;
+			}
+		}
+		
+		static void LoadSolutionProjectsInternal()
 		{
 			List<DefaultProjectContent> createdContents = new List<DefaultProjectContent>();
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
@@ -90,6 +120,7 @@ namespace ICSharpCode.Core
 				}
 			}
 			foreach (DefaultProjectContent newContent in createdContents) {
+				if (abortLoadSolutionProjectsThread) return;
 				try {
 					newContent.Initialize1();
 				} catch (Exception e) {
@@ -98,6 +129,7 @@ namespace ICSharpCode.Core
 				}
 			}
 			foreach (DefaultProjectContent newContent in createdContents) {
+				if (abortLoadSolutionProjectsThread) return;
 				try {
 					newContent.Initialize2();
 				} catch (Exception e) {

@@ -12,120 +12,141 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
-	/// Context used to resolve lazy return types.
+	/// The GetClassReturnType is used when the class should be resolved on demand, but the
+	/// full name is already known. Example: ReflectionReturnType
 	/// </summary>
-	public interface IResolveContext
+	public sealed class GetClassReturnType : ProxyReturnType
 	{
-		IReturnType Resolve(object data);
-	}
-	
-	/// <summary>
-	/// The LazyReturnType is the most used return type:
-	/// It is not bound to a class, but only resolved on demand.
-	/// The LazyReturnType is nearly always used to point at a <see cref="DefaultReturnType"/>.
-	/// </summary>
-	public sealed class LazyReturnType : ProxyReturnType
-	{
-		IResolveContext context;
-		object data;
+		IProjectContent content;
+		string fullName;
 		
-		public LazyReturnType(IResolveContext context, object data)
+		public GetClassReturnType(IProjectContent content, string fullName)
 		{
-			if (context == null)
-				throw new ArgumentNullException("context");
-			if (data == null)
-				throw new ArgumentNullException("data");
-			this.context = context;
-			this.data = data;
+			this.content = content;
+			this.fullName = fullName;
 		}
 		
 		public override bool Equals(object o)
 		{
-			LazyReturnType rt = o as LazyReturnType;
+			GetClassReturnType rt = o as GetClassReturnType;
 			if (rt == null) return false;
-			if (!context.Equals(rt.context)) return false;
-			return data.Equals(rt.data);
+			return fullName == rt.fullName;
 		}
 		
 		public override int GetHashCode()
 		{
-			return context.GetHashCode() ^ data.GetHashCode();
+			return content.GetHashCode() ^ fullName.GetHashCode();
 		}
 		
 		public override IReturnType BaseType {
 			get {
-				return context.Resolve(data);
+				IClass c = content.GetClass(fullName);
+				return (c != null) ? c.DefaultReturnType : null;
+			}
+		}
+		
+		public override string FullyQualifiedName {
+			get {
+				return fullName;
+			}
+		}
+		
+		public override string Name {
+			get {
+				IReturnType baseType = BaseType;
+				return (baseType != null) ? baseType.Name : fullName.Substring(fullName.LastIndexOf('.') + 1);
+			}
+		}
+		
+		public override string Namespace {
+			get {
+				IReturnType baseType = BaseType;
+				return (baseType != null) ? baseType.Namespace : fullName.Substring(0, fullName.LastIndexOf('.'));
+			}
+		}
+		
+		public override string DotNetName {
+			get {
+				IReturnType baseType = BaseType;
+				return (baseType != null) ? baseType.DotNetName : fullName;
 			}
 		}
 		
 		public override string ToString()
 		{
-			return String.Format("[LazyReturnType: context = {0}, data = {1}]",
-			                     context,
-			                     data);
+			return String.Format("[GetClassReturnType: {0}]", fullName);
 		}
 	}
 	
-	public class GetClassResolveContext : IResolveContext
-	{
-		IProjectContent content;
-		
-		public GetClassResolveContext(IProjectContent content)
-		{
-			this.content = content;
-		}
-		
-		public IReturnType Resolve(object data)
-		{
-			IClass c = content.GetClass((string)data);
-			return (c != null) ? c.DefaultReturnType : null;
-		}
-		
-		public override bool Equals(object obj)
-		{
-			GetClassResolveContext b = obj as GetClassResolveContext;
-			if (b == null) return false;
-			return content == b.content;
-		}
-		
-		public override int GetHashCode()
-		{
-			return content.GetHashCode();
-		}
-	}
-	
-	public class SearchClassResolveContext : IResolveContext
+	/// <summary>
+	/// The SearchClassReturnType is used when only a part of the class name is known and the
+	/// type can only be resolved on demand (the ConvertVisitor uses SearchClassReturnType's).
+	/// </summary>
+	public sealed class SearchClassReturnType : ProxyReturnType
 	{
 		IClass declaringClass;
 		int caretLine;
 		int caretColumn;
+		string name;
 		
-		public SearchClassResolveContext(IClass declaringClass, int caretLine, int caretColumn)
+		public SearchClassReturnType(IClass declaringClass, int caretLine, int caretColumn, string name)
 		{
 			this.declaringClass = declaringClass;
 			this.caretLine = caretLine;
 			this.caretColumn = caretColumn;
+			this.name = name;
 		}
 		
-		public IReturnType Resolve(object data)
+		public override bool Equals(object o)
 		{
-			IClass c = declaringClass.ProjectContent.SearchType((string)data, declaringClass, caretLine, caretColumn);
-			return (c != null) ? c.DefaultReturnType : null;
-		}
-		
-		public override bool Equals(object obj)
-		{
-			SearchClassResolveContext b = obj as SearchClassResolveContext;
-			if (b == null) return false;
-			if (declaringClass != b.declaringClass) return false;
-			if (caretLine != b.caretLine) return false;
-			if (caretColumn != b.caretColumn) return false;
-			return true;
+			SearchClassReturnType rt = o as SearchClassReturnType;
+			if (rt == null) return false;
+			if (declaringClass != rt.declaringClass) return false;
+			return name == rt.name;
 		}
 		
 		public override int GetHashCode()
 		{
-			return declaringClass.GetHashCode() ^ caretLine ^ caretColumn;
+			return declaringClass.GetHashCode() ^ name.GetHashCode();
+		}
+		
+		public override IReturnType BaseType {
+			get {
+				IClass c = declaringClass.ProjectContent.SearchType(name, declaringClass, caretLine, caretColumn);
+				return (c != null) ? c.DefaultReturnType : null;
+			}
+		}
+		
+		public override string FullyQualifiedName {
+			get {
+				IReturnType baseType = BaseType;
+				return (baseType != null) ? baseType.FullyQualifiedName : name;
+			}
+		}
+		
+		public override string Name {
+			get {
+				return name;
+			}
+		}
+		
+		public override string Namespace {
+			get {
+				IReturnType baseType = BaseType;
+				return (baseType != null) ? baseType.Namespace : "?";
+			}
+		}
+		
+		public override string DotNetName {
+			get {
+				IReturnType baseType = BaseType;
+				return (baseType != null) ? baseType.DotNetName : name;
+			}
+		}
+		
+		public override string ToString()
+		{
+			return String.Format("[SearchClassReturnType: {0}]", name);
 		}
 	}
 }

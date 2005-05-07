@@ -40,7 +40,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static WorkbenchSingleton()
 		{
-			caller = new STAThreadCaller();
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(TrackPropertyChanges);
 		}
 		
@@ -64,6 +63,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static void InitializeWorkbench()
 		{
 			workbench = new DefaultWorkbench();
+			caller = new STAThreadCaller(workbench);
 			
 			workbench.InitializeWorkspace();
 			
@@ -80,42 +80,48 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		public class STAThreadCaller
 		{
-			delegate object PerformCallDelegate(/*object target, string methodName, object[] arguments*/);
+			delegate object PerformCallDelegate(object target, string methodName, object[] arguments);
 			
-			object target;
-			string methodName;
-			object[] arguments;
-			Form  form = (Form)WorkbenchSingleton.Workbench;
+			Control ctl;
 			PerformCallDelegate performCallDelegate;
 			
 			#if DEBUG
 			string callerStack;
 			#endif
 			
-			public STAThreadCaller()
+			public STAThreadCaller(Control ctl)
 			{
+				this.ctl = ctl;
 				performCallDelegate = new PerformCallDelegate(DoPerformCall);
 			}
 			
-			public object Call(object target, string methodName, params object[] arguments)
+			public object Call(object target, string methodName, object[] arguments)
 			{
 				if (target == null) {
-					throw new System.ArgumentNullException("target");
+					throw new ArgumentNullException("target");
 				}
-
-				this.target     = target;
-				this.methodName = methodName;
-				this.arguments  = arguments;
 				
 				#if DEBUG
 				callerStack = Environment.StackTrace;
 				#endif
 				
-				// TODO: This doesn't look like it's thread-safe, we're calling the target directly!
-				return DoPerformCall();
+				return ctl.Invoke(performCallDelegate, new object[] {target, methodName, arguments});
 			}
 			
-			object DoPerformCall( /*object target, string methodName, object[] arguments */)
+			public void BeginCall(object target, string methodName, object[] arguments)
+			{
+				if (target == null) {
+					throw new ArgumentNullException("target");
+				}
+				
+				#if DEBUG
+				callerStack = Environment.StackTrace;
+				#endif
+				
+				ctl.BeginInvoke(performCallDelegate, new object[] {target, methodName, arguments});
+			}
+			
+			object DoPerformCall(object target, string methodName, object[] arguments)
 			{
 				MethodInfo methodInfo = null;
 				if (target is Type) {
@@ -134,7 +140,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 							return methodInfo.Invoke(target, arguments);
 						}
 					} catch (Exception ex) {
-						MessageService.ShowError(ex, "Exception got. ");
+						if (ex is TargetInvocationException && ex.InnerException != null) {
+							ex = ex.InnerException;
+						}
+						MessageService.ShowError(ex, "Exception got.");
 						#if DEBUG
 						Console.WriteLine("Stacktrace of source thread:");
 						Console.WriteLine(callerStack);
@@ -144,23 +153,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				return null;
 			}
-			
-			object InternalSafeThreadCall(/*object target, string methodName, params object[] arguments*/)
-			{
-				if (form.InvokeRequired) {
-					return form.Invoke(performCallDelegate, null /*new object[] { target, methodName, arguments } */);
-				} else {
-					return DoPerformCall(/*target, methodName, arguments*/);
-				}
-			}
 		}
 		
 		/// <summary>
-		/// Makes a call GUI threadsafe.
+		/// Makes a call GUI threadsafe. WARNING: This method waits for the result of the
+		/// operation, which can result in a dead-lock when the main thread waits for this
+		/// thread to exit!
 		/// </summary>
 		public static object SafeThreadCall(object target, string methodName, params object[] arguments)
 		{
 			return caller.Call(target, methodName, arguments);
+		}
+		
+		/// <summary>
+		/// Makes a call GUI threadsafe without waiting for the returned value.
+		/// </summary>
+		public static void SafeThreadAsyncCall(object target, string methodName, params object[] arguments)
+		{
+			caller.BeginCall(target, methodName, arguments);
 		}
 		#endregion
 		

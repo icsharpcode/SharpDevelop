@@ -71,6 +71,12 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public List<IProjectContent> ReferencedContents {
+			get {
+				return referencedContents;
+			}
+		}
+		
 		LanguageProperties language = LanguageProperties.CSharp;
 		
 		/// <summary>
@@ -163,6 +169,7 @@ namespace ICSharpCode.Core
 		internal void Initialize1()
 		{
 			foreach (ProjectItem item in project.Items.ToArray()) {
+				if (project == null) return; // abort initialization
 				switch (item.ItemType) {
 					case ItemType.Reference:
 					case ItemType.ProjectReference:
@@ -177,14 +184,29 @@ namespace ICSharpCode.Core
 		
 		internal void Initialize2()
 		{
-			foreach (ProjectItem item in project.Items.ToArray()) {
-				if (item.ItemType == ItemType.Compile) {
-					ParseInformation parseInfo = ParserService.ParseFile(item.FileName, null, true, false);
-					if (parseInfo != null) {
-						UpdateCompilationUnit(null, parseInfo.BestCompilationUnit as ICompilationUnit, item.FileName, true);
+			ProjectItem[] arr = project.Items.ToArray();
+			try {
+				StatusBarService.ProgressMonitor.BeginTask("Parsing " + project.Name + "...", arr.Length);
+				for (int i = 0; i < arr.Length; ++i) {
+					ProjectItem item = arr[i];
+					if ((i % 5) == 2)
+						StatusBarService.ProgressMonitor.WorkDone = i;
+					if (item.ItemType == ItemType.Compile) {
+						ParseInformation parseInfo = ParserService.ParseFile(item.FileName, null, true, false);
+						if (parseInfo != null) {
+							UpdateCompilationUnit(null, parseInfo.BestCompilationUnit as ICompilationUnit, item.FileName, true);
+						}
 					}
+					if (project == null) return;
 				}
+			} finally {
+				StatusBarService.ProgressMonitor.Done();
+				project = null;
 			}
+		}
+		
+		public void Dispose()
+		{
 			project = null;
 		}
 		
@@ -231,7 +253,8 @@ namespace ICSharpCode.Core
 		
 		public void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags)
 		{
-			
+			// TODO: UpdateCommentTags must run on the main thread
+			// (use fire+forget because main thread could be waiting on this thread to finish)
 			if (updateCommentTags) {
 				TaskService.UpdateCommentTags(fileName, parserOutput.TagComments);
 			}

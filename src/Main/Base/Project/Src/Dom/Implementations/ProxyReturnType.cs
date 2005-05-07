@@ -23,28 +23,28 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public virtual string FullyQualifiedName {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.FullyQualifiedName : null;
+				return (baseType != null) ? baseType.FullyQualifiedName : "?";
 			}
 		}
 		
 		public virtual string Name {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.Name : null;
+				return (baseType != null) ? baseType.Name : "?";
 			}
 		}
 		
 		public virtual string Namespace {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.Namespace : null;
+				return (baseType != null) ? baseType.Namespace : "?";
 			}
 		}
 		
 		public virtual string DotNetName {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.DotNetName : null;
+				return (baseType != null) ? baseType.DotNetName : "?";
 			}
 		}
 		

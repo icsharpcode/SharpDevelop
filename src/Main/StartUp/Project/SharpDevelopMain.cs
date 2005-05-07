@@ -97,6 +97,9 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void Run(string[] args)
 		{
+			#if DEBUG
+			Control.CheckForIllegalCrossThreadCalls = true;
+			#endif
 			commandLineArgs = args;
 			bool noLogo = false;
 			

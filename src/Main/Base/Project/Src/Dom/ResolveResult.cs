@@ -73,27 +73,27 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public virtual ArrayList GetCompletionData(IProjectContent projectContent)
 		{
-			return GetCompletionData(false);
+			return GetCompletionData(projectContent.Language, false);
 		}
 		
-		protected ArrayList GetCompletionData(bool showStatic)
+		protected ArrayList GetCompletionData(LanguageProperties language, bool showStatic)
 		{
 			if (resolvedType == null) return null;
 			ArrayList res = new ArrayList();
 			foreach (IMethod m in resolvedType.GetMethods()) {
-				if (m.IsStatic == showStatic)
+				if (language.ShowMember(m, showStatic))
 					res.Add(m);
 			}
 			foreach (IEvent e in resolvedType.GetEvents()) {
-				if (e.IsStatic == showStatic)
+				if (language.ShowMember(e, showStatic))
 					res.Add(e);
 			}
 			foreach (IField f in resolvedType.GetFields()) {
-				if (f.IsStatic == showStatic)
+				if (language.ShowMember(f, showStatic))
 					res.Add(f);
 			}
 			foreach (IProperty p in resolvedType.GetProperties()) {
-				if (p.IsStatic == showStatic)
+				if (language.ShowMember(p, showStatic))
 					res.Add(p);
 			}
 			return res;
@@ -241,7 +241,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override ArrayList GetCompletionData(IProjectContent projectContent)
 		{
-			ArrayList ar = GetCompletionData(true);
+			ArrayList ar = GetCompletionData(projectContent.Language, true);
 			ar.AddRange(resolvedClass.InnerClasses);
 			return ar;
 		}

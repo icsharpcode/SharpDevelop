@@ -65,7 +65,7 @@ namespace ICSharpCode.Core
 		}
 		
 		static Dictionary<TaskType, int> taskCount = new Dictionary<TaskType, int>();
-	
+		
 		public static int GetCount(TaskType type)
 		{
 			if (!taskCount.ContainsKey(type)) {
@@ -158,13 +158,17 @@ namespace ICSharpCode.Core
 			if (fileName == null || tagComments == null) {
 				return;
 			}
-				
+			WorkbenchSingleton.SafeThreadAsyncCall(typeof(TaskService), "UpdateCommentTagsInvoked", fileName, tagComments);
+		}
+		
+		static void UpdateCommentTagsInvoked(string fileName, List<Tag> tagComments)
+		{
 			List<Task> newTasks = new List<Task>();
 			foreach (Tag tag in tagComments) {
-				newTasks.Add(new Task(fileName, 
-				                      tag.Key + tag.CommentString, 
-				                      tag.Region.BeginColumn, 
-				                      tag.Region.BeginLine, 
+				newTasks.Add(new Task(fileName,
+				                      tag.Key + tag.CommentString,
+				                      tag.Region.BeginColumn,
+				                      tag.Region.BeginLine,
 				                      TaskType.Comment));
 			}
 			List<Task> oldTasks = new List<Task>();
