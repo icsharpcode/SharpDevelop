@@ -181,39 +181,6 @@ namespace CSharpBinding.FormattingStrategy
 		}
 		
 		
-		bool IsInsideNonVerbatimString(TextArea textArea, LineSegment curLine, int cursorOffset)
-		{
-			// scan cur line if it is inside a string or single line comment (//)
-			bool insideString  = false;
-			char stringstart = ' ';
-			bool verbatim = false; // true if the current string is verbatim (@-string)
-			char c = ' ';
-			char lastchar;
-			
-			for (int i = curLine.Offset; i < cursorOffset; ++i) {
-				lastchar = c;
-				c = textArea.Document.GetCharAt(i);
-				if (insideString) {
-					if (c == stringstart) {
-						if (verbatim && i + 1 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '"') {
-							++i; // skip escaped character
-						} else {
-							insideString = false;
-						}
-					} else if (c == '\\' && !verbatim) {
-						++i; // skip escaped character
-					}
-				} else if (c == '/' && i + 1 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '/') {
-					return false;
-				} else if (c == '"' || c == '\'') {
-					stringstart = c;
-					insideString = true;
-					verbatim = (c == '"') && (lastchar == '@');
-				}
-			}
-			return insideString && !verbatim;
-		}
-		
 		bool IsInsideStringOrComment(TextArea textArea, LineSegment curLine, int cursorOffset)
 		{
 			// scan cur line if it is inside a string or single line comment (//)
@@ -442,12 +409,6 @@ namespace CSharpBinding.FormattingStrategy
 				case '{':
 					return textArea.Document.FormattingStrategy.IndentLine(textArea, lineNr);
 				case '\n':
-					if (IsInsideNonVerbatimString(textArea, lineAbove, lineAbove.Offset + lineAbove.Length)) {
-						textArea.Document.Insert(lineAbove.Offset + lineAbove.Length,
-								                         "\" +");
-						textArea.Document.Insert(curLine.Offset, "\"");
-						return IndentLine(textArea, lineNr) + 1;
-					}
 					if (lineNr <= 0) {
 						return IndentLine(textArea, lineNr);
 					}
@@ -506,7 +467,7 @@ namespace CSharpBinding.FormattingStrategy
 								return indentation.Length + 4 /*+ curLineText.Length*/;
 							}
 							
-							if (IsInString(lineAboveText, curLineText)) {
+							if (IsInNonVerbatimString(lineAboveText, curLineText)) {
 								textArea.Document.Insert(lineAbove.Offset + lineAbove.Length,
 								                         "\" +");
 								curLine = textArea.Document.GetLineSegment(lineNr);
@@ -531,15 +492,31 @@ namespace CSharpBinding.FormattingStrategy
 			return 0;
 		}
 		
-		bool IsInString(string start, string end)
+		/// <summary>
+		/// Checks if the cursor is inside a non-verbatim string.
+		/// This method is used to check if a line break was inserted in a string.
+		/// The text editor has already broken the line for us, so we just need to check
+		/// the two lines.
+		/// </summary>
+		/// <param name="start">The part before the line break</param>
+		/// <param name="end">The part after the line break</param>
+		/// <returns>
+		/// True, when the line break was inside a non-verbatim-string, so when
+		/// start does not contain a comment, but a non-even number of ", and
+		/// end contains a non-even number of " before the first comment.
+		/// </returns>
+		bool IsInNonVerbatimString(string start, string end)
 		{
 			bool inString = false;
+			bool inChar = false;
 			for (int i = 0; i < start.Length; ++i) {
 				char c = start[i];
-				if (c == '"') {
+				if (c == '"' && !inChar) {
 					if (!inString && i > 0 && start[i - 1] == '@')
 						return false; // no string line break for verbatim strings
 					inString = !inString;
+				} else if (c == '\'' && !inString) {
+					inChar = !inChar;
 				}
 				if (!inString && i > 0 && start[i - 1] == '/' && (c == '/' || c == '*'))
 					return false;
@@ -548,20 +525,22 @@ namespace CSharpBinding.FormattingStrategy
 			}
 			if (!inString) return false;
 			// we are possibly in a string, or a multiline string has just ended here
-			// check if the closing double quote is in end.
+			// check if the closing double quote is in end
 			for (int i = 0; i < end.Length; ++i) {
 				char c = end[i];
-				if (c == '"') {
-					if (!inString && i > 0 && start[i - 1] == '@')
-						return false; // no string line break for verbatim strings
+				if (c == '"' && !inChar) {
+					if (!inString && i > 0 && end[i - 1] == '@')
+						break; // no string line break for verbatim strings
 					inString = !inString;
+				} else if (c == '\'' && !inString) {
+					inChar = !inChar;
 				}
-				if (!inString && i > 0 && start[i - 1] == '/' && (c == '/' || c == '*'))
+				if (!inString && i > 0 && end[i - 1] == '/' && (c == '/' || c == '*'))
 					break;
-				if (inString && start[i] == '\\')
+				if (inString && end[i] == '\\')
 					++i;
 			}
-			// return true if string was closed properly
+			// return true if the string was closed properly
 			return !inString;
 		}
 		#endregion
