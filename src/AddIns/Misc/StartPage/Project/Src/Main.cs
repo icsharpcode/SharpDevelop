@@ -4,10 +4,21 @@ using System.Drawing;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.BrowserDisplayBinding;
 
-namespace ICSharpCode.StartPage {
+namespace ICSharpCode.StartPage
+{
+	/// <summary>
+	/// This is the ViewContent implementation for the Start Page.
+	/// </summary>
+	public class StartPageView : BrowserPane
+	{
+		public StartPageView() : base(new Uri("startpage://start/"))
+		{
+		}
+	}
 	
 	public class ShowStartPageCommand : AbstractMenuCommand
 	{
@@ -19,9 +30,7 @@ namespace ICSharpCode.StartPage {
 					return;
 				}
 			}
-//			if (SharpDevelopMain.CommandLineArgs != null) {
-				WorkbenchSingleton.Workbench.ShowView(new StartPageView());
-//			}
+			WorkbenchSingleton.Workbench.ShowView(new StartPageView());
 		}
 	}
 }

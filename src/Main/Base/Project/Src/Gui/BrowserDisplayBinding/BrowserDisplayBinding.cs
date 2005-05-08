@@ -21,7 +21,10 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 	{
 		public bool CanCreateContentForFile(string fileName)
 		{
-			return fileName.StartsWith("http") || fileName.StartsWith("ftp");
+			return fileName.StartsWith("http:")
+				|| fileName.StartsWith("https:")
+				|| fileName.StartsWith("ftp:")
+				|| fileName.StartsWith("browser:");
 		}
 		
 		public bool CanCreateContentForLanguage(string language)
@@ -32,13 +35,17 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		public IViewContent CreateContentForFile(string fileName)
 		{
 			BrowserPane browserPane = new BrowserPane();
-			browserPane.Load(fileName);
+			if (fileName.StartsWith("browser:")) {
+				browserPane.Load(fileName.Substring("browser:".Length));
+			} else {
+				browserPane.Load(fileName);
+			}
 			return browserPane;
 		}
 		
 		public IViewContent CreateContentForLanguage(string language, string content)
 		{
 			return null;
-		}		
+		}
 	}
 }

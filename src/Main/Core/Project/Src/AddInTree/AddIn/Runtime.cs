@@ -29,6 +29,9 @@ namespace ICSharpCode.Core
 		public Assembly LoadedAssembly {
 			get {
 				if (loadedAssembly == null) {
+					#if DEBUG
+					Console.WriteLine("Loading addin " + assembly + "...");
+					#endif
 					if (assembly[0] == '/') {
 						loadedAssembly = System.Reflection.Assembly.Load(assembly.Substring(1));
 					} else {

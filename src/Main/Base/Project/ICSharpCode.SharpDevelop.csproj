@@ -646,6 +646,8 @@
     <Compile Include="Src\Dom\Implementations\ArrayReturnType.cs" />
     <Compile Include="Src\Dom\Implementations\SpecificReturnType.cs" />
     <Compile Include="Src\Dom\LanguageProperties.cs" />
+    <Compile Include="Src\Gui\BrowserDisplayBinding\SchemeExtension.cs" />
+    <Compile Include="Src\Gui\BrowserDisplayBinding\ExtendedWebBrowser.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

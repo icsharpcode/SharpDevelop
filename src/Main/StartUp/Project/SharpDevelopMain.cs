@@ -146,6 +146,7 @@ namespace ICSharpCode.SharpDevelop
 			AddInTree.Erbauer.Add("Parser", new ParserErbauer());
 			AddInTree.Erbauer.Add("EditAction", new ICSharpCode.SharpDevelop.DefaultEditor.Codons.EditActionErbauer());
 			AddInTree.Erbauer.Add("SyntaxMode", new ICSharpCode.SharpDevelop.DefaultEditor.Codons.SyntaxModeErbauer());
+			AddInTree.Erbauer.Add("BrowserSchemeExtension", new ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionErbauer());
 			
 			PropertyService.Load();
 			

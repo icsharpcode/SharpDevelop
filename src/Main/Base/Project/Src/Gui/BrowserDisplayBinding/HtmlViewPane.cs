@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Drawing.Printing;
@@ -47,6 +48,11 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			htmlViewPane.WebBrowser.DocumentTitleChanged += new EventHandler(TitleChange);
 		}
 		
+		public BrowserPane(Uri uri) : this(true)
+		{
+			htmlViewPane.Navigate(uri);
+		}
+		
 		public BrowserPane() : this(true)
 		{
 		}
@@ -68,13 +74,17 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		
 		void TitleChange(object sender, EventArgs e)
 		{
-			TitleName = htmlViewPane.WebBrowser.DocumentTitle;
+			string title = htmlViewPane.WebBrowser.DocumentTitle;
+            if (title == null || title.Length == 0)
+                TitleName = "Browser";
+            else
+                TitleName = title;
 		}
 	}
 	
 	public class HtmlViewPane : UserControl
 	{
-		WebBrowser webBrowser = null;
+		ExtendedWebBrowser webBrowser = null;
 		
 		Panel   topPanel   = new Panel();
 		ToolBar toolBar    = new ToolBar();
@@ -82,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		
 //		string lastUrl     = null;
 		
-		public WebBrowser WebBrowser {
+		public ExtendedWebBrowser WebBrowser {
 			get {
 				return webBrowser;
 			}
@@ -141,21 +151,22 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 				
 				topPanel.Controls.Add(urlTextBox);
 				
-			} 
+			}
 			
-			webBrowser = new WebBrowser();
+			webBrowser = new ExtendedWebBrowser();
 //			axWebBrowser.BeginInit();
 //			if (showNavigation) {
 //				int height = 48;
 //				axWebBrowser.Location = new Point(0, height);
-//				axWebBrowser.Size     = new Size(Width, Height - height); 
+//				axWebBrowser.Size     = new Size(Width, Height - height);
 //				axWebBrowser.Anchor   = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Top;
 //				axWebBrowser.Dock     = DockStyle.Fill;
 //			} else {
-				webBrowser.Dock = DockStyle.Fill;
+			webBrowser.Dock = DockStyle.Fill;
 //			}
-			webBrowser.DocumentTitleChanged += new EventHandler(TitleChange);
-			
+			webBrowser.Navigating += WebBrowserNavigating;
+			webBrowser.NewWindowExtended += NewWindow;
+			webBrowser.Navigated  += WebBrowserNavigated;
 			Controls.Add(webBrowser);
 			
 			if (showNavigation) {
@@ -165,14 +176,49 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 //			axWebBrowser.EndInit();
 		}
 		
-		void TitleChange(object sender, EventArgs e)
+		void NewWindow(object sender, NewWindowExtendedEventArgs e)
 		{
-			urlTextBox.Text = webBrowser.DocumentTitle ;
+			e.Cancel = true;
+			WorkbenchSingleton.Workbench.ShowView(new BrowserPane(e.Url));
+		}
+		
+		void WebBrowserNavigated(object sender, WebBrowserNavigatedEventArgs e)
+		{
+			urlTextBox.Text = webBrowser.Url.ToString();
+		}
+		
+		static ArrayList descriptors;
+		
+		void WebBrowserNavigating(object sender, WebBrowserNavigatingEventArgs e)
+		{
+			try {
+				if (descriptors == null) {
+					AddInTreeNode treeNode = null;
+					try {
+						treeNode = AddInTree.GetTreeNode("/SharpDevelop/Views/Browser/SchemeExtensions");
+					} catch (Exception) {
+					}
+					if (treeNode != null) {
+						descriptors = treeNode.BuildChildItems(null);
+					} else {
+						descriptors = new ArrayList();
+					}
+				}
+				string scheme = e.Url.Scheme;
+				foreach (SchemeExtensionDescriptor descriptor in descriptors) {
+					if (string.Equals(scheme, descriptor.SchemeName, StringComparison.OrdinalIgnoreCase)) {
+						descriptor.InterceptNavigate(this, e);
+					}
+				}
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
 		}
 		
 		void KeyPressEvent(object sender, KeyPressEventArgs ex)
 		{
 			if (ex.KeyChar == '\r') {
+				ex.Handled = true;
 				Navigate(urlTextBox.Text);
 			}
 		}
@@ -188,10 +234,10 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 						webBrowser.GoForward();
 						break;
 					case 2:
-//						webBrowser.Stop();
+						webBrowser.Stop();
 						break;
 					case 3:
-//						webBrowser.CtlRefresh();
+						webBrowser.Refresh();
 						break;
 				}
 			} catch (Exception) {
@@ -201,6 +247,11 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		public void Navigate(string name)
 		{
 			webBrowser.Navigate(new Uri(name));
+		}
+		
+		public void Navigate(Uri url)
+		{
+			webBrowser.Navigate(url);
 		}
 	}
 }

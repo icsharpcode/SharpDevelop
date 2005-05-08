@@ -25,4 +25,9 @@
 		<Class id = "ShowStartPageCommand"
 		       class = "ICSharpCode.StartPage.ShowStartPageCommand"/>
 	</Path>
+	
+	<Path name = "/SharpDevelop/Views/Browser/SchemeExtensions">
+		<BrowserSchemeExtension id    = "startpage"
+		                        class = "ICSharpCode.StartPage.StartPageScheme"/>
+	</Path>
 </AddIn>
