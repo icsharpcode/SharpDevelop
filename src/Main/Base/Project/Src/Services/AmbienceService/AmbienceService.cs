@@ -38,22 +38,34 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static AmbienceReflectionDecorator defaultAmbience;
+		
 		public static AmbienceReflectionDecorator CurrentAmbience {
 			get {
-				
-				string language = PropertyService.Get(ambienceProperty, "C#");
-				IAmbience ambience = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem(language, null);
-				if (ambience == null) {
-					MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError}");
-					return null;
+				ICSharpCode.SharpDevelop.Project.IProject p = ICSharpCode.SharpDevelop.Project.ProjectService.CurrentProject;
+				if (p != null) {
+					IAmbience ambience = p.Ambience;
+					if (ambience != null) {
+						return new AmbienceReflectionDecorator(ambience);
+					}
 				}
-				return new AmbienceReflectionDecorator(ambience);
+				if (defaultAmbience == null) {
+					string language = PropertyService.Get(ambienceProperty, "C#");
+					IAmbience ambience = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem(language, null);
+					if (ambience == null) {
+						MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError}");
+						return null;
+					}
+					defaultAmbience = new AmbienceReflectionDecorator(ambience);
+				}
+				return defaultAmbience;
 			}
 		}
 		
 		static void PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Key == ambienceProperty) {
+				defaultAmbience = null;
 				OnAmbienceChanged(EventArgs.Empty);
 			}
 		}

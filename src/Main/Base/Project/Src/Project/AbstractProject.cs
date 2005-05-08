@@ -134,6 +134,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
+		public virtual IAmbience Ambience {
+			get {
+				return null;
+			}
+		}
+		
+		[Browsable(false)]
 		public string Configuration {
 			get {
 				return BaseConfiguration["Configuration"];

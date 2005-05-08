@@ -71,9 +71,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			springLabel.Spring = true;
 			cursorStatusBarPanel.AutoSize = false;
-			cursorStatusBarPanel.Width = 160;
+			cursorStatusBarPanel.Width = 150;
 			modeStatusBarPanel.AutoSize = false;
-			modeStatusBarPanel.Width = 35;
+			modeStatusBarPanel.Width = 25;
 			statusProgressBar.Visible = false;
 			statusProgressBar.Width = 100;
 			

@@ -38,6 +38,13 @@ namespace CSharpBinding
 			}
 		}
 		
+		[Browsable(false)]
+		public override IAmbience Ambience {
+			get {
+				return CSharpAmbience.Instance;
+			}
+		}
+		
 		public bool GetDebugSymbols(string configurationName, string platform)
 		{
 			return GetConfiguration(configurationName, platform).Get("DebugSymbols", false);

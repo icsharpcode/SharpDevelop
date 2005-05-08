@@ -19,11 +19,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		IProjectContent content;
 		string fullName;
+		string shortName;
 		
 		public GetClassReturnType(IProjectContent content, string fullName)
 		{
 			this.content = content;
 			this.fullName = fullName;
+			int pos = fullName.LastIndexOf('.');
+			if (pos < 0)
+				shortName = fullName;
+			else
+				shortName = fullName.Substring(pos + 1);
 		}
 		
 		public override bool Equals(object o)
@@ -53,8 +59,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string Name {
 			get {
-				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.Name : fullName.Substring(fullName.LastIndexOf('.') + 1);
+				return shortName;
 			}
 		}
 		
@@ -88,6 +93,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		int caretLine;
 		int caretColumn;
 		string name;
+		string shortName;
 		
 		public SearchClassReturnType(IClass declaringClass, int caretLine, int caretColumn, string name)
 		{
@@ -95,6 +101,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.caretLine = caretLine;
 			this.caretColumn = caretColumn;
 			this.name = name;
+			int pos = name.LastIndexOf('.');
+			if (pos < 0)
+				shortName = name;
+			else
+				shortName = name.Substring(pos + 1);
 		}
 		
 		public override bool Equals(object o)
@@ -126,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string Name {
 			get {
-				return name;
+				return shortName;
 			}
 		}
 		

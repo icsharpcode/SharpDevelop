@@ -41,6 +41,15 @@ namespace VBNetBinding
 			}
 		}
 		
+		static VBNetAmbience instance;
+		
+		public static VBNetAmbience Instance {
+			get {
+				if (instance == null) instance = new VBNetAmbience();
+				return instance;
+			}
+		}
+		
 		string GetModifier(IDecoration decoration)
 		{
 			StringBuilder builder = new StringBuilder();
@@ -117,37 +126,39 @@ namespace VBNetBinding
 				builder.Append("</i>");
 			}
 			
-			switch (c.ClassType) {
-				case ClassType.Delegate:
-					builder.Append("Delegate ");
-					if (ShowReturnType) {
-						foreach (IMethod m in c.Methods) {
-							if (m.Name != "Invoke") {
-								continue;
-							}
-							
-							if (m.ReturnType == null || m.ReturnType.FullyQualifiedName == "System.Void") {
-								builder.Append("Sub");
-							} else {
-								builder.Append("Function");
+			if (ShowModifiers) {
+				switch (c.ClassType) {
+					case ClassType.Delegate:
+						builder.Append("Delegate ");
+						if (ShowReturnType) {
+							foreach (IMethod m in c.Methods) {
+								if (m.Name != "Invoke") {
+									continue;
+								}
+								
+								if (m.ReturnType == null || m.ReturnType.FullyQualifiedName == "System.Void") {
+									builder.Append("Sub");
+								} else {
+									builder.Append("Function");
+								}
 							}
 						}
-					}
-					break;
-				case ClassType.Class:
-					builder.Append("Class");
-					break;
-				case ClassType.Struct:
-					builder.Append("Structure");
-					break;
-				case ClassType.Interface:
-					builder.Append("Interface");
-					break;
-				case ClassType.Enum:
-					builder.Append("Enum");
-					break;
+						break;
+					case ClassType.Class:
+						builder.Append("Class");
+						break;
+					case ClassType.Struct:
+						builder.Append("Structure");
+						break;
+					case ClassType.Interface:
+						builder.Append("Interface");
+						break;
+					case ClassType.Enum:
+						builder.Append("Enum");
+						break;
+				}
+				builder.Append(' ');
 			}
-			builder.Append(' ');
 			
 			if (IncludeHTMLMarkup) {
 				builder.Append("<b>");
@@ -481,31 +492,35 @@ namespace VBNetBinding
 			}
 			StringBuilder builder = new StringBuilder();
 			
-			bool linkSet = false;
-//		TODO: #Assembly dependance:
-
-//			if (UseLinkArrayList) {
-//				SharpAssemblyReturnType ret = returnType as SharpAssemblyReturnType;
-//				if (ret != null) {
-//					if (ret.UnderlyingClass != null) {
-//						builder.Append("<a href='as://" + linkArrayList.Add(ret.UnderlyingClass) + "'>");
-//						linkSet = true;
-//					}
-//				}
-//			}
-			
-			if (returnType.FullyQualifiedName != null && typeConversionTable[returnType.FullyQualifiedName] != null) {
-				builder.Append(typeConversionTable[returnType.FullyQualifiedName].ToString());
+			string fullName = returnType.FullyQualifiedName;
+			if (fullName != null && typeConversionTable[fullName] != null) {
+				builder.Append(typeConversionTable[fullName].ToString());
 			} else {
-				builder.Append(UseFullyQualifiedNames ? returnType.FullyQualifiedName : returnType.Name);
+				if (UseFullyQualifiedNames) {
+					builder.Append(fullName);
+				} else {
+					builder.Append(returnType.Name);
+				}
 			}
 			
-			if (linkSet) {
-				builder.Append("</a>");
-			}
+			UnpackNestedType(builder, returnType);
 			
-			if (returnType is SpecificReturnType) {
+			return builder.ToString();
+		}
+		
+		void UnpackNestedType(StringBuilder builder, IReturnType returnType)
+		{
+			ArrayReturnType art = returnType as ArrayReturnType;
+			if (art != null) {
+				builder.Append('(');
+				for (int i = 1; i < art.ArrayDimensions; ++i) {
+					builder.Append(',');
+				}
+				builder.Append(')');
+				UnpackNestedType(builder, art.ElementType);
+			} else if (returnType is SpecificReturnType) {
 				SpecificReturnType rt = (SpecificReturnType)returnType;
+				UnpackNestedType(builder, rt.BaseType);
 				builder.Append("(Of");
 				for (int i = 0; i < rt.TypeParameters.Count; ++i) {
 					if (i > 0) builder.Append(", ");
@@ -513,8 +528,6 @@ namespace VBNetBinding
 				}
 				builder.Append(')');
 			}
-			
-			return builder.ToString();
 		}
 		
 		public override string Convert(IParameter param)

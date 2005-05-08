@@ -36,6 +36,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
+		ICSharpCode.Core.IAmbience Ambience {
+			get;
+		}
+		
 		string FileName {
 			get;
 		}

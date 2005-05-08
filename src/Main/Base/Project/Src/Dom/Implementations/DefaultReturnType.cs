@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return c.FullyQualifiedName;
 			}
 			set {
-				
+				throw new NotSupportedException();
 			}
 		}
 		

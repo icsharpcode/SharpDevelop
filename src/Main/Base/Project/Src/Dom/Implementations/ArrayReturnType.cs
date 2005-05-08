@@ -41,13 +41,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string FullyQualifiedName {
 			get {
-				return AppendArrayString(elementType.FullyQualifiedName);
+				return elementType.FullyQualifiedName;
 			}
 		}
 		
 		public override string Name {
 			get {
-				return AppendArrayString(elementType.Name);
+				return elementType.Name;
 			}
 		}
 		
