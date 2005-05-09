@@ -94,35 +94,29 @@ namespace VBNetBinding.Parser
 		{
 			Properties textEditorProperties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
 			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(fileName, Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252)))) {
-				p.Lexer.SpecialCommentTags = lexerTags;
-				p.Parse();
-
-				NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
-				visitor.Visit(p.CompilationUnit, null);
-				visitor.Cu.FileName = fileName;
-				visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
-				RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
-				AddCommentTags(visitor.Cu, p.Lexer.TagComments);
-				return visitor.Cu;
+				return Parse(p, fileName, projectContent);
 			}
 		}
 
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
 			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet, new StringReader(fileContent))) {
-				p.Lexer.SpecialCommentTags = lexerTags;
-				p.Parse();
-
-				NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
-				visitor.Visit(p.CompilationUnit, null);
-				visitor.Cu.FileName = fileName;
-				visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
-				visitor.Cu.Tag = p.CompilationUnit;
-				
-				RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
-				AddCommentTags(visitor.Cu, p.Lexer.TagComments);
-				return visitor.Cu;
+				return Parse(p, fileName, projectContent);
 			}
+		}
+		
+		ICompilationUnit Parse(ICSharpCode.NRefactory.Parser.IParser p, string fileName, IProjectContent projectContent)
+		{
+			p.Lexer.SpecialCommentTags = lexerTags;
+			p.Parse();
+			
+			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
+			visitor.Visit(p.CompilationUnit, null);
+			visitor.Cu.FileName = fileName;
+			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
+			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
+			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
+			return visitor.Cu;
 		}
 
 		void AddCommentTags(ICompilationUnit cu, ArrayList tagComments)

@@ -96,7 +96,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public ResolveResult Resolve(string expression,
 		                             int caretLineNumber,
 		                             int caretColumn,
-		                             string fileName)
+		                             string fileName,
+		                             string fileContent)
 		{
 			if (expression == null) {
 				expression = "";
@@ -110,12 +111,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (parseInfo == null) {
 				return null;
 			}
-			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
-			if (fileCompilationUnit == null) {
-//				ICSharpCode.NRefactory.Parser.Parser fileParser = new ICSharpCode.NRefactory.Parser.Parser();
-//				fileParser.Parse(new Lexer(new StringReader(fileContent)));
-				return null;
-			}
 			Expression expr = null;
 			if (expression == "") {
 				if ((expr = WithResolve()) == null) {
@@ -125,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (expr == null) {
 				expr = SpecialConstructs(expression);
 				if (expr == null) {
-					ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new System.IO.StringReader(expression));
+					ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser(language, new System.IO.StringReader(expression));
 					expr = p.ParseExpression();
 					if (expr == null) {
 						return null;
@@ -133,17 +128,23 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			lookupTableVisitor = new LookupTableVisitor(languageProperties.NameComparer);
-			lookupTableVisitor.Visit(fileCompilationUnit, null);
 			
-			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
-			
-			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
+			//NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
+			cu = parseInfo.MostRecentCompilationUnit; //(ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
 			
 			if (cu != null) {
 				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
 				cu.FileName = fileName;
 			}
 			callingMember = GetCurrentMember();
+			if (callingMember != null) {
+				System.IO.TextReader content = ExtractMethod(fileContent, callingMember);
+				if (content != null) {
+					ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser(language, content);
+					p.Parse();
+					lookupTableVisitor.Visit(p.CompilationUnit, null);
+				}
+			}
 			
 			TypeVisitor typeVisitor = new TypeVisitor(this);
 			
@@ -206,12 +207,71 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				return null;
 			}
-			return new ResolveResult(callingClass, callingMember, FixType(type));
+			return new ResolveResult(callingClass, callingMember, type);
 		}
 		
-		IReturnType FixType(IReturnType type)
+		/// <summary>
+		/// Creates a new class containing only the specified member.
+		/// This is useful because we only want to parse current method for local variables,
+		/// as all fields etc. are already prepared in the AST.
+		/// </summary>
+		System.IO.TextReader ExtractMethod(string fileContent, IMember member)
 		{
-			return type;
+			// As the parse information is always some seconds old, the end line could be wrong
+			// if the user just inserted a line in the method.
+			// We can ignore that case because it is sufficient for the parser when the first part of the
+			// method body is ok.
+			// Since we are operating directly on the edited buffer, the parser might not be
+			// able to resolve invalid declarations.
+			// We can ignore even that because the 'invalid line' is the line the user is currently
+			// editing, and the declarations he is using are always above that line.
+			
+			
+			// The ExtractMethod-approach has the advantage that the method contents do not have
+			// do be parsed and stored in memory before they are needed.
+			// Previous SharpDevelop versions always stored the SharpRefactory[VB] parse tree as 'Tag'
+			// to the AST CompilationUnit.
+			// This approach doesn't need that, so one could even go and implement a special parser
+			// mode that does not parse the method bodies for the normal run (in the ParserUpdateThread or
+			// SolutionLoadThread). That could improve the parser's speed dramatically.
+			
+			if (member.Region == null) return null;
+			int startLine = member.Region.BeginLine;
+			if (startLine < 1) return null;
+			IRegion bodyRegion;
+			if (member is IMethod) {
+				bodyRegion = ((IMethod)member).BodyRegion;
+			} else if (member is IProperty) {
+				bodyRegion = ((IProperty)member).BodyRegion;
+			} else if (member is IIndexer) {
+				bodyRegion = ((IIndexer)member).BodyRegion;
+			} else if (member is IEvent) {
+				bodyRegion = ((IEvent)member).BodyRegion;
+			} else {
+				return null;
+			}
+			if (bodyRegion == null) return null;
+			int endLine = bodyRegion.EndLine;
+			int offset = 0;
+			for (int i = 0; i < startLine - 1; ++i) { // -1 because the startLine must be included
+				offset = fileContent.IndexOf('\n', offset) + 1;
+				if (offset <= 0) return null;
+			}
+			int startOffset = offset;
+			for (int i = startLine - 1; i < endLine; ++i) {
+				int newOffset = fileContent.IndexOf('\n', offset) + 1;
+				if (newOffset <= 0) break;
+				offset = newOffset;
+			}
+//			Console.WriteLine("<source from={0} to={1}>", startLine, endLine);
+//			Console.Write(fileContent.Substring(startOffset, offset - startOffset));
+//			Console.WriteLine("</source>");
+			int length = offset - startOffset;
+			System.Text.StringBuilder b = new System.Text.StringBuilder("class A {", length + 10 + startLine);
+			b.Append('\n', startLine - 1);
+			b.Append(fileContent, startOffset, length);
+			b.Append("}\n");
+			return new System.IO.StringReader(b.ToString());
 		}
 		
 		#region Resolve Identifier
@@ -225,12 +285,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				LocalLookupVariable var = SearchVariable(identifier);
 				if (var != null) {
 					IReturnType type = GetVariableType(var);
-					IField field = new DefaultField(FixType(type), identifier, ModifierEnum.None, new DefaultRegion(var.StartPos, var.EndPos), callingClass);
+					IField field = new DefaultField(type, identifier, ModifierEnum.None, new DefaultRegion(var.StartPos, var.EndPos), callingClass);
 					return new LocalResolveResult(callingMember, field, false);
 				}
 				IParameter para = SearchMethodParameter(identifier);
 				if (para != null) {
-					IField field = new DefaultField(FixType(para.ReturnType), para.Name, ModifierEnum.None, para.Region, callingClass);
+					IField field = new DefaultField(para.ReturnType, para.Name, ModifierEnum.None, para.Region, callingClass);
 					return new LocalResolveResult(callingMember, field, true);
 				}
 			}
@@ -263,7 +323,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		private ResolveResult CreateMemberResolveResult(IMember member)
 		{
-			member.ReturnType = FixType(member.ReturnType);
 			return new MemberResolveResult(callingClass, callingMember, member);
 		}
 		
@@ -339,14 +398,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (callingClass == null)
 				return null;
+			foreach (IMethod method in callingClass.Methods) {
+				if (method.BodyRegion != null && method.BodyRegion.IsInside(caretLine, caretColumn)) {
+					return method;
+				}
+			}
 			foreach (IProperty property in callingClass.Properties) {
 				if (property.BodyRegion != null && property.BodyRegion.IsInside(caretLine, caretColumn)) {
 					return property;
 				}
 			}
-			foreach (IMethod method in callingClass.Methods) {
-				if (method.BodyRegion != null && method.BodyRegion.IsInside(caretLine, caretColumn)) {
-					return method;
+			foreach (IIndexer indexer in callingClass.Indexer) {
+				if (indexer.BodyRegion != null && indexer.BodyRegion.IsInside(caretLine, caretColumn)) {
+					return indexer;
 				}
 			}
 			return null;

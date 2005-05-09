@@ -401,7 +401,7 @@ namespace ICSharpCode.Core
 			//try {
 			IParser parser = GetParser(fileName);
 			if (parser != null) {
-				return parser.CreateResolver().Resolve(expression, caretLineNumber, caretColumn, fileName);
+				return parser.CreateResolver().Resolve(expression, caretLineNumber, caretColumn, fileName, fileContent);
 			}
 			return null;
 			//} catch {
