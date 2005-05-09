@@ -38,7 +38,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ctl = new TextEditorControl();
 			ctl.Document.ReadOnly = true;
 			ctl.TextEditorProperties = new SharpDevelopTextEditorProperties();
+			ctl.ActiveTextAreaControl.TextArea.DoubleClick += OnDoubleClick;
 			ParserService.ParserUpdateStepFinished += UpdateTick;
+		}
+		
+		void OnDoubleClick(object sender, EventArgs e)
+		{
+			string fileName = ctl.FileName;
+			if (fileName != null) {
+				Caret caret = ctl.ActiveTextAreaControl.Caret;
+				FileService.JumpToFilePosition(fileName, caret.Line, caret.Column);
+				
+				// refresh DefinitionView to show the definition of the expression that was double-clicked
+				UpdateTick(null, null);
+			}
 		}
 		
 		void UpdateTick(object sender, ParserUpdateStepEventArgs e)
@@ -58,13 +71,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ITextEditorControlProvider provider = window.ActiveViewContent as ITextEditorControlProvider;
 			if (provider == null) return null;
 			TextEditorControl ctl = provider.TextEditorControl;
-			if (ctl.FileName != e.FileName) return null;
-			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(e.FileName);
+			
+			// e might be null when this is a manually triggered update
+			string fileName = (e == null) ? ctl.FileName : e.FileName;
+			if (ctl.FileName != fileName) return null;
+			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
 			if (expressionFinder == null) return null;
 			Caret caret = ctl.ActiveTextAreaControl.Caret;
-			string expr = expressionFinder.FindFullExpression(e.Content, caret.Offset);
+			string content = (e == null) ? ctl.Text : e.Content;
+			string expr = expressionFinder.FindFullExpression(content, caret.Offset);
 			if (expr == null) return null;
-			return ParserService.Resolve(expr, caret.Line, caret.Column, e.FileName, e.Content);
+			return ParserService.Resolve(expr, caret.Line, caret.Column, fileName, content);
 		}
 		
 		delegate void OpenFileDelegate(FilePosition pos);
@@ -97,6 +114,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			ParserService.ParserUpdateStepFinished -= UpdateTick;
 			ctl.Dispose();
+			base.Dispose();
 		}
 	}
 }

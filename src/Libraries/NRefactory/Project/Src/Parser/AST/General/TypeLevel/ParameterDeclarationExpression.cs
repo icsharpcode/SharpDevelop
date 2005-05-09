@@ -5,7 +5,7 @@ using System.Diagnostics;
 using System.Collections;
 
 namespace ICSharpCode.NRefactory.Parser.AST
-{	
+{
 	public class ParameterDeclarationExpression : Expression
 	{
 		TypeReference  typeReference = TypeReference.Null;
@@ -64,7 +64,8 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName)
 		{
 			this.typeReference  = typeReference;
-			Debug.Assert(parameterName != null);
+			if (parameterName == null || parameterName.Length == 0)
+				parameterName = "?";
 			this.parameterName  = parameterName;
 			this.paramModifier = ParamModifier.In;
 		}
@@ -72,7 +73,8 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParamModifier paramModifier)
 		{
 			this.typeReference  = typeReference;
-			Debug.Assert(parameterName != null);
+			if (parameterName == null || parameterName.Length == 0)
+				parameterName = "?";
 			this.parameterName  = parameterName;
 			this.paramModifier = paramModifier;
 		}
@@ -80,7 +82,8 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName, ParamModifier paramModifier, Expression defaultValue)
 		{
 			this.typeReference  = typeReference;
-			Debug.Assert(parameterName != null);
+			if (parameterName == null || parameterName.Length == 0)
+				parameterName = "?";
 			this.parameterName  = parameterName;
 			this.paramModifier = paramModifier;
 			this.DefaultValue = defaultValue;

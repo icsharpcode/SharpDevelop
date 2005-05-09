@@ -22,10 +22,18 @@ namespace ICSharpCode.NRefactory.Tests.AST
 	{
 		public static object ParseGlobal(string program, Type type)
 		{
+			return ParseGlobal(program, type, false);
+		}
+		
+		public static object ParseGlobal(string program, Type type, bool expectError)
+		{
 			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(program));
 			parser.Parse();
 			Assert.IsNotNull(parser.Errors);
-			Assert.AreEqual("", parser.Errors.ErrorOutput);
+			if (expectError)
+				Assert.IsTrue(parser.Errors.ErrorOutput.Length > 0, "There were errors expected, but parser finished without errors.");
+			else
+				Assert.AreEqual("", parser.Errors.ErrorOutput);
 			Assert.IsNotNull(parser.CompilationUnit);
 			Assert.IsNotNull(parser.CompilationUnit.Children);
 			Assert.IsNotNull(parser.CompilationUnit.Children[0]);
@@ -36,7 +44,12 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		
 		public static object ParseTypeMember(string typeMember, Type type)
 		{
-			TypeDeclaration td = (TypeDeclaration)ParseGlobal("class MyClass {" + typeMember + "}", typeof(TypeDeclaration));
+			return ParseTypeMember(typeMember, type, false);
+		}
+		
+		public static object ParseTypeMember(string typeMember, Type type, bool expectError)
+		{
+			TypeDeclaration td = (TypeDeclaration)ParseGlobal("class MyClass {" + typeMember + "}", typeof(TypeDeclaration), expectError);
 			Assert.IsTrue(td.Children.Count > 0);
 			Assert.IsTrue(type.IsAssignableFrom(td.Children[0].GetType()), String.Format("Parsed expression was {0} instead of {1} ({2})", td.GetType(), type, td));
 			return td.Children[0];

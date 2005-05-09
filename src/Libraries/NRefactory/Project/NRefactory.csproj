@@ -4,7 +4,7 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.41115</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</ProjectGuid>
+    <ProjectGuid>{3a9ae6aa-bc07-4a2f-972c-581e3ae2f195}</ProjectGuid>
     <RootNamespace>ICSharpCode.NRefactory</RootNamespace>
     <AssemblyName>ICSharpCode.NRefactory</AssemblyName>
     <OutputTarget>Library</OutputTarget>
@@ -37,7 +37,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ICSharpCode.NRefactory.snk" />

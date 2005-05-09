@@ -817,23 +817,8 @@ namespace ICSharpCode.NRefactory.Parser
 		bool IsField(string type, string fieldName)
 		{
 			Type t       = null;
-			Assembly asm = null;
 			
-			t = this.GetType(type);
-			if (t == null) {
-				asm = typeof(System.Drawing.Point).Assembly;
-				t = asm.GetType(type);
-			}
-			
-			if (t == null) {
-				asm = typeof(System.Windows.Forms.Control).Assembly;
-				t = asm.GetType(type);
-			}
-			
-			if (t == null) {
-				asm = typeof(System.String).Assembly;
-				t = asm.GetType(type);
-			}
+			t = this.GetType(type); // search in all currently loaded assemblies
 			
 			bool isField = t != null && (t.IsEnum || t.GetField(fieldName) != null);
 			if (!isField) {
