@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		// KSL Start, New lines
 		FileSystemWatcher watcher;
 		bool wasChangedExternally = false;
-		// KSL End 
+		// KSL End
 		
 		public bool EnableUndo {
 			get {
@@ -107,9 +107,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		// ParserUpdateThread uses the text property via IEditable, I had an exception
 		// because multiple threads were accessing the GapBufferStrategy at the same time.
 		
-		private delegate string GetTextDelegate();
-		private delegate void SetTextDelegate(string value);
-		
 		string GetText()
 		{
 			return textAreaControl.Document.TextContent;
@@ -122,10 +119,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public string Text {
 			get {
-				return (string)WorkbenchSingleton.SafeThreadCall(this, "GetText", null);
+				if (WorkbenchSingleton.InvokeRequired)
+					return (string)WorkbenchSingleton.SafeThreadCall(this, "GetText", null);
+				else
+					return GetText();
 			}
 			set {
-				WorkbenchSingleton.SafeThreadCall(this, "SetText", value);
+				if (WorkbenchSingleton.InvokeRequired)
+					WorkbenchSingleton.SafeThreadCall(this, "SetText", value);
+				else
+					SetText(value);
 			}
 		}
 		
@@ -189,7 +192,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			// KSL Start, New lines
 //			textAreaControl.FileNameChanged += new EventHandler(FileNameChangedEvent);
 			((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Activated += new EventHandler(GotFocusEvent);
-			// KSL End 
+			// KSL End
 			
 			
 		}
@@ -233,32 +236,34 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		void GotFocusEvent(object sender, EventArgs e)
 		{
-			lock (this) {
-				if (wasChangedExternally) {
-					wasChangedExternally = false;
-					
-					string message = StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}", new string[,] {{"File", Path.GetFullPath(textAreaControl.FileName)}});
-					if (MessageBox.Show(message,
-					                    StringParser.Parse("${res:MainWindow.DialogName}"),
-					                    MessageBoxButtons.YesNo,
-					                    MessageBoxIcon.Question) == DialogResult.Yes) {
-						Load(textAreaControl.FileName);
-					} else {
-						IsDirty = true;
-					}
+			if (wasChangedExternally) {
+				wasChangedExternally = false;
+				
+				string message = StringParser.Parse("${res:ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding.FileAlteredMessage}", new string[,] {{"File", Path.GetFullPath(textAreaControl.FileName)}});
+				if (MessageBox.Show(message,
+				                    StringParser.Parse("${res:MainWindow.DialogName}"),
+				                    MessageBoxButtons.YesNo,
+				                    MessageBoxIcon.Question) == DialogResult.Yes) {
+					Load(textAreaControl.FileName);
+				} else {
+					IsDirty = true;
 				}
 			}
 		}
 		
 		void OnFileChangedEvent(object sender, FileSystemEventArgs e)
 		{
-			lock (this) {
-				if(e.ChangeType != WatcherChangeTypes.Deleted) {
-					wasChangedExternally = true;
-					if (((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Focused) {
-						GotFocusEvent(this, EventArgs.Empty);
-					}
-				}
+			if(e.ChangeType != WatcherChangeTypes.Deleted) {
+				wasChangedExternally = true;
+				if (textAreaControl.IsHandleCreated)
+					textAreaControl.BeginInvoke(new MethodInvoker(OnFileChangedEventInvoked));
+			}
+		}
+		
+		void OnFileChangedEventInvoked()
+		{
+			if (((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Focused) {
+				GotFocusEvent(this, EventArgs.Empty);
 			}
 		}
 		
@@ -278,6 +283,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public override void Dispose()
 		{
 			((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Activated -= new EventHandler(GotFocusEvent);
+			if (this.watcher != null) {
+				this.watcher.Dispose();
+			}
 			textAreaControl.Dispose();
 		}
 		
@@ -349,7 +357,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 //			int lineNr = textAreaControl.Document.GetLineNumberForOffset(textAreaControl.Document.Caret.Offset);
 //			LineSegment lineSegment = textAreaControl.Document.GetLineSegment(lineNr);
 //			textAreaControl.Document.Caret.Offset = Math.Min(lineSegment.Offset + lineSegment.Length, textAreaControl.Document.Caret.Offset);
-//			
+//
 //			textAreaControl.OptionsChanged();
 //			textAreaControl.Refresh();
 		}

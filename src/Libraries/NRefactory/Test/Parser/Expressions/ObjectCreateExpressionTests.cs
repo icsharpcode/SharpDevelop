@@ -34,6 +34,21 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			CheckSimpleObjectCreateExpression((ObjectCreateExpression)ParseUtilCSharp.ParseExpression("new MyObject(1, 2, 3)", typeof(ObjectCreateExpression)));
 		}
+		
+		[Test]
+		public void CSharpInvalidNestedObjectCreateExpressionTest()
+		{
+			// this test was written because this bug caused the AbstractASTVisitor to crash
+			
+			InvocationExpression expr = (InvocationExpression)ParseUtilCSharp.ParseExpression("WriteLine(new MyObject(1, 2, 3,))", typeof(InvocationExpression), true);
+			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
+			Assert.AreEqual("WriteLine", ((IdentifierExpression)expr.TargetObject).Identifier);
+			
+			Assert.AreEqual(1, expr.Parameters.Count); // here a second null parameter was added incorrectly
+			
+			Assert.IsTrue(expr.Parameters[0] is ObjectCreateExpression);
+			CheckSimpleObjectCreateExpression((ObjectCreateExpression)expr.Parameters[0]);
+		}
 		#endregion
 		
 		#region VB.NET

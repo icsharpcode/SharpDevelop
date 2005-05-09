@@ -46,6 +46,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		{
 			htmlViewPane = new HtmlViewPane(showNavigation);
 			htmlViewPane.WebBrowser.DocumentTitleChanged += new EventHandler(TitleChange);
+			htmlViewPane.Closed += PaneClosed;
 		}
 		
 		public BrowserPane(Uri uri) : this(true)
@@ -60,6 +61,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		public override void Dispose()
 		{
 			htmlViewPane.Dispose();
+			base.Dispose();
 		}
 		
 		public override void Load(string url)
@@ -72,13 +74,18 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			Load(url);
 		}
 		
+		void PaneClosed(object sender, EventArgs e)
+		{
+			WorkbenchWindow.CloseWindow(true);
+		}
+		
 		void TitleChange(object sender, EventArgs e)
 		{
 			string title = htmlViewPane.WebBrowser.DocumentTitle;
-            if (title == null || title.Length == 0)
-                TitleName = "Browser";
-            else
-                TitleName = title;
+			if (title == null || title.Length == 0)
+				TitleName = "Browser";
+			else
+				TitleName = title;
 		}
 	}
 	
@@ -95,6 +102,18 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		public ExtendedWebBrowser WebBrowser {
 			get {
 				return webBrowser;
+			}
+		}
+		
+		public event EventHandler Closed;
+		
+		/// <summary>
+		/// Closes the ViewContent that contains this HtmlViewPane.
+		/// </summary>
+		public void Close()
+		{
+			if (Closed != null) {
+				Closed(this, EventArgs.Empty);
 			}
 		}
 		

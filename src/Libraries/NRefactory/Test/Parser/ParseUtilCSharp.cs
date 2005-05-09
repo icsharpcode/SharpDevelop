@@ -3,7 +3,7 @@
  * User: Omnibrain
  * Date: 18.09.2004
  * Time: 06:36
- * 
+ *
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 
@@ -52,12 +52,19 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		
 		public static object ParseExpression(string expr, Type type)
 		{
+			return ParseExpression(expr, type, false);
+		}
+		
+		public static object ParseExpression(string expr, Type type, bool expectErrors)
+		{
 			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(expr + ";"));
 			object parsedExpression = parser.ParseExpression();
-			Assert.AreEqual("", parser.Errors.ErrorOutput);
+			if (expectErrors)
+				Assert.IsTrue(parser.Errors.ErrorOutput.Length > 0, "There were errors expected, but parser finished without errors.");
+			else
+				Assert.AreEqual("", parser.Errors.ErrorOutput);
 			Assert.IsTrue(type.IsAssignableFrom(parsedExpression.GetType()), String.Format("Parsed expression was {0} instead of {1} ({2})", parsedExpression.GetType(), type, parsedExpression));
 			return parsedExpression;
 		}
-		
 	}
 }

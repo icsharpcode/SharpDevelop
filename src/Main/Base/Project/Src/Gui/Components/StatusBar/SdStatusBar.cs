@@ -156,7 +156,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void SetWorkDone()
 		{
-			statusProgressBar.Value = workDone;
+			if (workDone < totalWork) {
+				statusProgressBar.Value = workDone;
+			}
 		}
 		
 		public void Done()

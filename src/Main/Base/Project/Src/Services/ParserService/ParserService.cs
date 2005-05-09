@@ -84,8 +84,11 @@ namespace ICSharpCode.Core
 		
 		static void OpenCombine(object sender, SolutionEventArgs e)
 		{
-			if (loadSolutionProjectsThread != null)
+			if (loadSolutionProjectsThread != null) {
+				if (!abortLoadSolutionProjectsThread)
+					throw new InvalidOperationException("Cannot open new combine without closing old combine!");
 				loadSolutionProjectsThread.Join();
+			}
 			loadSolutionProjectsThread = new Thread(new ThreadStart(LoadSolutionProjects));
 			loadSolutionProjectsThread.Priority = ThreadPriority.Lowest;
 			loadSolutionProjectsThread.IsBackground = true;
@@ -149,11 +152,19 @@ namespace ICSharpCode.Core
 		
 		public static void StartParserThread()
 		{
+			abortParserUpdateThread = false;
 			Thread parserThread = new Thread(new ThreadStart(ParserUpdateThread));
 			parserThread.Priority = ThreadPriority.Lowest;
 			parserThread.IsBackground  = true;
 			parserThread.Start();
 		}
+		
+		public static void StopParserThread()
+		{
+			abortParserUpdateThread = true;
+		}
+		
+		static bool abortParserUpdateThread = false;
 		
 		static Dictionary<string, int> lastUpdateSize = new Dictionary<string, int>();
 		
@@ -162,7 +173,7 @@ namespace ICSharpCode.Core
 			// preload mscorlib, we're going to need it anyway
 			ProjectContentRegistry.GetMscorlibContent();
 			
-			while (true) {
+			while (!abortParserUpdateThread) {
 				try {
 					ParserUpdateStep();
 				} catch (Exception e) {

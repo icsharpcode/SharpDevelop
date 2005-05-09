@@ -1899,8 +1899,11 @@ PrimaryExpr<out Expression pexpr>
 		/* Note: a delegate creation expression allow only a single Expr  *
 		 *       not an argument list, but this is not distinguished here */
 		(
-			"(" (. ObjectCreateExpression oce = new ObjectCreateExpression(type, parameters); .) [ Argument<out expr>          (. parameters.Add(expr); .)
-			{ "," Argument<out expr>          (. parameters.Add(expr); .) } ] ")" (. pexpr = oce; .)
+			"(" (. ObjectCreateExpression oce = new ObjectCreateExpression(type, parameters); .)
+			    [ Argument<out expr>          (. if (expr != null) { parameters.Add(expr); } .)
+			      { "," Argument<out expr>          (. if (expr != null) { parameters.Add(expr); } .) }
+			    ]
+			")" (. pexpr = oce; .)
 			/*--- array creation expression: */
 			| (. isArrayCreation = true; ArrayCreateExpression ace = new ArrayCreateExpression(type); pexpr = ace; .)
 			"[" (. int dims = 0; 
@@ -1951,8 +1954,8 @@ PrimaryExpr<out Expression pexpr>
 		| "." ident (. pexpr = new FieldReferenceExpression(pexpr, t.val);.)
 		/*--- invocation expression: */
 		| "("                        (. ArrayList parameters = new ArrayList(); .)
-			[ Argument<out expr>     (. parameters.Add(expr); .)
-			{ "," Argument<out expr> (. parameters.Add(expr); .)
+			[ Argument<out expr>     (. if (expr != null) {parameters.Add(expr);} .)
+			{ "," Argument<out expr> (. if (expr != null) {parameters.Add(expr);} .)
 			} ] ")"                  (. pexpr = new InvocationExpression(pexpr, parameters); .)
 		/*--- element access */
 		|  (. if (isArrayCreation) Error("element access not allow on array creation");

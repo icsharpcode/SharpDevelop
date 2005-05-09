@@ -155,6 +155,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		public static bool InvokeRequired {
+			get {
+				return ((Form)workbench).InvokeRequired;
+			}
+		}
+		
 		/// <summary>
 		/// Makes a call GUI threadsafe. WARNING: This method waits for the result of the
 		/// operation, which can result in a dead-lock when the main thread waits for this

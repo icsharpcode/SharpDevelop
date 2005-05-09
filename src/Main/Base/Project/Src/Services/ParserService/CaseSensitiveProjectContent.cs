@@ -151,6 +151,7 @@ namespace ICSharpCode.Core
 			newProjectContent.project = project;
 			newProjectContent.language = project.LanguageProperties;
 			newProjectContent.referencedContents.Add(ProjectContentRegistry.GetMscorlibContent());
+			newProjectContent.initializing = true;
 			return newProjectContent;
 		}
 		
@@ -165,27 +166,46 @@ namespace ICSharpCode.Core
 		}
 		
 		IProject project;
-		// project is only used for initialization, the field is set to null after
-		// initialization has completed.
+		bool initializing;
 		
 		internal void Initialize1()
 		{
-			foreach (ProjectItem item in project.Items.ToArray()) {
-				if (project == null) return; // abort initialization
+			ProjectItem[] items = project.Items.ToArray();
+			ProjectService.ReferenceAdded += OnReferenceAdded;
+			foreach (ProjectItem item in items) {
+				if (!initializing) return; // abort initialization
 				switch (item.ItemType) {
 					case ItemType.Reference:
 					case ItemType.ProjectReference:
-						IProjectContent referencedContent = ProjectContentRegistry.GetProjectContentForReference(item as ReferenceProjectItem);
-						if (referencedContent != null) {
-							referencedContents.Add(referencedContent);
-						}
+						AddReference(item as ReferenceProjectItem);
 						break;
 				}
 			}
 		}
 		
+		delegate void AddReferenceDelegate(ReferenceProjectItem reference);
+		
+		void AddReference(ReferenceProjectItem reference)
+		{
+			try {
+				IProjectContent referencedContent = ProjectContentRegistry.GetProjectContentForReference(reference);
+				if (referencedContent != null) {
+					referencedContents.Add(referencedContent);
+				}
+			} catch (Exception e) {
+				MessageService.ShowError(e);
+			}
+		}
+		
+		void OnReferenceAdded(object sender, ProjectReferenceEventArgs e)
+		{
+			if (e.Project != project) return;
+			new AddReferenceDelegate(AddReference).BeginInvoke(e.ReferenceProjectItem, null, null);
+		}
+		
 		internal void Initialize2()
 		{
+			if (!initializing) return;
 			ProjectItem[] arr = project.Items.ToArray();
 			try {
 				StatusBarService.ProgressMonitor.BeginTask("Parsing " + project.Name + "...", arr.Length);
@@ -199,17 +219,18 @@ namespace ICSharpCode.Core
 							UpdateCompilationUnit(null, parseInfo.BestCompilationUnit as ICompilationUnit, item.FileName, true);
 						}
 					}
-					if (project == null) return;
+					if (!initializing) return;
 				}
 			} finally {
 				StatusBarService.ProgressMonitor.Done();
-				project = null;
+				initializing = false;
 			}
 		}
 		
 		public void Dispose()
 		{
-			project = null;
+			ProjectService.ReferenceAdded -= OnReferenceAdded;
+			initializing = false;
 		}
 		
 		public Hashtable AddClassToNamespaceList(IClass addClass)

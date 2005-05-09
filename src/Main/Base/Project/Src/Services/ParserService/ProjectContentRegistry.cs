@@ -59,7 +59,12 @@ namespace ICSharpCode.Core
 					return contents[item.Include];
 				}
 				
-				StatusBarService.ProgressMonitor.BeginTask("Loading " + item.Include + "...", 100);
+				string shortName = item.Include;
+				int pos = shortName.IndexOf(',');
+				if (pos > 0)
+					shortName = shortName.Substring(0, pos);
+				
+				StatusBarService.ProgressMonitor.BeginTask("Loading " + shortName + "...", 100);
 				#if DEBUG
 				int time = Environment.TickCount;
 				#endif

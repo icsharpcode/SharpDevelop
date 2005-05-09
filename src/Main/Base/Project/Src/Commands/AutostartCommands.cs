@@ -114,8 +114,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		public override void Run()
 		{
-			ParserService.StartParserThread();
-			
 			Form f = (Form)WorkbenchSingleton.Workbench;
 			f.Show();
 			
@@ -156,9 +154,13 @@ namespace ICSharpCode.SharpDevelop.Commands
 			
 			f.Focus(); // windows.forms focus workaround	
 			
+			ParserService.StartParserThread();
+			
 			// finally run the workbench window ...
 			Application.AddMessageFilter(new FormKeyHandler());
 			Application.Run(f);
+			
+			ParserService.StopParserThread();
 			
 			// save the workbench memento in the ide properties
 			try {
