@@ -29,6 +29,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public static bool IsDefaultType(Type type)
+		{
+			return !type.IsArray && !type.IsGenericType && !type.IsGenericParameter;
+		}
+		
 		public static IReturnType Create(IMember member, Type type)
 		{
 			if (type.IsArray) {

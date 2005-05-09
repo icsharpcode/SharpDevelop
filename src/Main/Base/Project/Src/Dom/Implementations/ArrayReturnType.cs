@@ -82,6 +82,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public override bool IsDefaultReturnType {
+			get {
+				return false;
+			}
+		}
+		
 		string AppendArrayString(string a)
 		{
 			StringBuilder b = new StringBuilder(a, a.Length + 1 + dimensions);

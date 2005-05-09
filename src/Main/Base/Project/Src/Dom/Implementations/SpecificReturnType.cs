@@ -199,6 +199,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return l;
 		}
 		
+		public override bool IsDefaultReturnType {
+			get {
+				return false;
+			}
+		}
+		
 		public override string ToString()
 		{
 			return String.Format("[SpecificReturnType: {0}<{1}>]", baseType, typeParameters);

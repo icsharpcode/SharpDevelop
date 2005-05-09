@@ -32,10 +32,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 				shortName = fullName.Substring(pos + 1);
 		}
 		
+		public override bool IsDefaultReturnType {
+			get {
+				return true;
+			}
+		}
+		
 		public override bool Equals(object o)
 		{
 			GetClassReturnType rt = o as GetClassReturnType;
-			if (rt == null) return false;
+			if (rt == null) {
+				IReturnType rt2 = o as IReturnType;
+				if (rt2 != null && rt2.IsDefaultReturnType)
+					return rt2.FullyQualifiedName == fullName;
+				else
+					return false;
+			}
 			return fullName == rt.fullName;
 		}
 		
@@ -111,7 +123,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override bool Equals(object o)
 		{
 			SearchClassReturnType rt = o as SearchClassReturnType;
-			if (rt == null) return false;
+			if (rt == null) {
+				IReturnType rt2 = o as IReturnType;
+				if (rt2 != null && rt2.IsDefaultReturnType)
+					return rt2.FullyQualifiedName == this.FullyQualifiedName;
+				else
+					return false;
+			}
 			if (declaringClass != rt.declaringClass) return false;
 			return name == rt.name;
 		}
@@ -152,6 +170,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				IReturnType baseType = BaseType;
 				return (baseType != null) ? baseType.DotNetName : name;
+			}
+		}
+		
+		public override bool IsDefaultReturnType {
+			get {
+				return true;
 			}
 		}
 		

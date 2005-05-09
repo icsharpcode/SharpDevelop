@@ -24,9 +24,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override bool Equals(object o)
 		{
-			AbstractReturnType rt = o as AbstractReturnType;
+			IReturnType rt = o as IReturnType;
 			if (rt == null) return false;
-			return this.fullyQualifiedName == rt.fullyQualifiedName;
+			return rt.IsDefaultReturnType && this.FullyQualifiedName == rt.FullyQualifiedName;
 		}
 		
 		public override int GetHashCode()
@@ -77,6 +77,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public int ArrayDimensions {
 			get {
 				return 0;
+			}
+		}
+		
+		public virtual bool IsDefaultReturnType {
+			get {
+				return true;
 			}
 		}
 	}

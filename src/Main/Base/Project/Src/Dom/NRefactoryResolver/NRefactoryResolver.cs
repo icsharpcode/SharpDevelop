@@ -267,10 +267,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 //			Console.Write(fileContent.Substring(startOffset, offset - startOffset));
 //			Console.WriteLine("</source>");
 			int length = offset - startOffset;
-			System.Text.StringBuilder b = new System.Text.StringBuilder("class A {", length + 10 + startLine);
+			string classDecl, endClassDecl;
+			if (language == SupportedLanguages.VBNet) {
+				classDecl = "Class A";
+				endClassDecl = "End Class\n";
+			} else {
+				classDecl = "class A {";
+				endClassDecl = "}\n";
+			}
+			System.Text.StringBuilder b = new System.Text.StringBuilder(classDecl, length + classDecl.Length + endClassDecl.Length + startLine - 1);
 			b.Append('\n', startLine - 1);
 			b.Append(fileContent, startOffset, length);
-			b.Append("}\n");
+			b.Append(endClassDecl);
 			return new System.IO.StringReader(b.ToString());
 		}
 		

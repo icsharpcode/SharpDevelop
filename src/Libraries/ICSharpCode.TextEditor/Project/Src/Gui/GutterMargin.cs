@@ -90,17 +90,22 @@ namespace ICSharpCode.TextEditor
 		
 		Point selectionStartPos;
 		bool selectionComeFromGutter = false;
-		bool selectionGutterDirectionDown = false;
+		bool selectionGutterDirectionDown = false; // direction of gutter selection affects whether a selection starts at the start of a line or at the end of a line
 		public override void HandleMouseDown(Point mousepos, MouseButtons mouseButtons)
 		{
 			selectionComeFromGutter = true;
-			selectionGutterDirectionDown = false;
 			int realline = textArea.TextView.GetLogicalLine(mousepos);
 			if (realline >= 0 && realline < textArea.Document.TotalNumberOfLines) {
-				selectionStartPos = new Point(0, realline);
-				textArea.SelectionManager.ClearSelection();
-				textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, selectionStartPos, new Point(textArea.Document.GetLineSegment(realline).Length + 1, realline)));
-				textArea.Caret.Position = selectionStartPos;
+				if((Control.ModifierKeys & Keys.Shift) != 0 && textArea.SelectionManager.HasSomethingSelected) {
+					// let MouseMove handle a shift-click in a gutter
+					HandleMouseMove(mousepos, mouseButtons);
+				} else {
+					selectionGutterDirectionDown = false; // reset the flag for handling in mousemove
+					selectionStartPos = new Point(0, realline);
+					textArea.SelectionManager.ClearSelection();
+					textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, selectionStartPos, new Point(textArea.Document.GetLineSegment(realline).Length + 1, realline)));
+					textArea.Caret.Position = selectionStartPos;
+				}
 			}
 		}
 		
@@ -118,7 +123,7 @@ namespace ICSharpCode.TextEditor
 					Point realmousepos = new Point(0, realline);
 					if (realmousepos.Y < textArea.Document.TotalNumberOfLines) {
 						if (selectionStartPos.Y == realmousepos.Y) {
-							// this setselection defaults for a downward moving selection
+							// this setselection defaults for a upward moving selection
 							textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, realmousepos, new Point(textArea.Document.GetLineSegment(realmousepos.Y).Length + 1, realmousepos.Y)));
 							selectionGutterDirectionDown = false;
 						} else if (selectionStartPos.Y < realmousepos.Y && textArea.SelectionManager.HasSomethingSelected) {

@@ -31,6 +31,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return typeParameter.Equals(rt.typeParameter);
 		}
 		
+				public override bool IsDefaultReturnType {
+			get {
+				return false;
+			}
+		}
+		
 		public override int GetHashCode()
 		{
 			return typeParameter.GetHashCode();

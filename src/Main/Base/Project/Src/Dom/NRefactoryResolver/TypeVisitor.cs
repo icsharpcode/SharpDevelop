@@ -413,6 +413,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IReturnType CreateReturnType(Type type)
 		{
+			if (ReflectionReturnType.IsDefaultType(type)) {
+				IClass c = resolver.ProjectContent.GetClass(type.FullName);
+				if (c != null) return c.DefaultReturnType;
+			}
 			return ReflectionReturnType.Create(ProjectContentRegistry.GetMscorlibContent(), type);
 		}
 	}

@@ -88,5 +88,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			IReturnType baseType = BaseType;
 			return (baseType != null) ? baseType.GetIndexers() : new List<IIndexer>();
 		}
+		
+		public abstract bool IsDefaultReturnType {
+			get;
+		}
 	}
 }

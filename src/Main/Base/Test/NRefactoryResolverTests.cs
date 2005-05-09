@@ -24,7 +24,6 @@ namespace ICSharpCode.SharpDevelop.Tests
 			visitor.Visit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
 			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
-			visitor.Cu.Tag = p.CompilationUnit;
 			foreach (IClass c in visitor.Cu.Classes) {
 				pc.AddClassToNamespaceList(c);
 			}
@@ -47,7 +46,6 @@ namespace ICSharpCode.SharpDevelop.Tests
 			visitor.Visit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
 			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
-			visitor.Cu.Tag = p.CompilationUnit;
 			foreach (IClass c in visitor.Cu.Classes) {
 				pc.AddClassToNamespaceList(c);
 			}
@@ -67,7 +65,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp);
 			return resolver.Resolve(expression,
 			                        line, 0,
-			                        "a.cs");
+			                        "a.cs",
+			                        program);
 		}
 		
 		ResolveResult ResolveVB(string program, string expression, int line)
@@ -77,7 +76,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet);
 			return resolver.Resolve(expression,
 			                        line, 0,
-			                        "a.vb");
+			                        "a.vb",
+			                        program);
 		}
 		
 		IProjectContent corLib;

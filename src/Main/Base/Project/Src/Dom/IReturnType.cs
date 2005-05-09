@@ -36,6 +36,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		/// <summary>
+		/// Gets if the return type is a default type, i.e. no array, generic etc.
+		/// </summary>
+		bool IsDefaultReturnType {
+			get;
+		}
+		
 		List<IMethod>   GetMethods();
 		List<IProperty> GetProperties();
 		List<IField>    GetFields();
