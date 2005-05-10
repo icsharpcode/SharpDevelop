@@ -101,13 +101,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		string directoryName;
+		
 		[Browsable(false)]
 		public string Directory {
 			get {
-				if (fileName == null) {
-					return String.Empty;
+				if (directoryName == null) {
+					if (fileName == null) {
+						return String.Empty;
+					}
+					directoryName = Path.GetFullPath(Path.GetDirectoryName(fileName));
 				}
-				return Path.GetFullPath(Path.GetDirectoryName(fileName));
+				return directoryName;
 			}
 		}
 		
@@ -337,7 +342,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-				
+		
 		public virtual CompilerResults Build()
 		{
 			return null;

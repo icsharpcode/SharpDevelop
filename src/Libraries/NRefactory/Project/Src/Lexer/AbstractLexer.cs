@@ -3,7 +3,7 @@
  * User: Omnibrain
  * Date: 08.09.2004
  * Time: 23:13
- * 
+ *
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 
@@ -169,6 +169,14 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected abstract Token Next();
 		
+		/// <summary>
+		/// Skips to the end of the current code block.
+		/// </summary>
+		public virtual void SkipCurrentBlock()
+		{
+			throw new NotSupportedException();
+		}
+		
 		protected bool IsIdentifierPart(char ch)
 		{
 			return Char.IsLetterOrDigit(ch) || ch == '_';
@@ -224,7 +232,7 @@ namespace ICSharpCode.NRefactory.Parser
 			int nextChar;
 			while ((nextChar = reader.Read()) != -1) {
 				char ch = (char)nextChar;
-							
+				
 				// Return read string, if EOL is reached
 				if (HandleLineEnd(ch)) {
 					return sb.ToString();;

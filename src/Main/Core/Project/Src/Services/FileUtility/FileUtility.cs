@@ -41,6 +41,9 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public sealed class FileUtility
 	{
+		// TODO: GetFullPath is a **very** expensive method (performance-wise)!
+		// Call it only when necessary. (see IsEqualFile)
+		
 		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar, Path.VolumeSeparatorChar };
 		static string sharpDevelopRootPath;
 		const string fileNameRegEx = @"^(([a-zA-Z]:)|.)[^:]*$";
@@ -155,11 +158,28 @@ namespace ICSharpCode.Core
 		
 		public static bool IsEqualFile(string fileName1, string fileName2)
 		{
+			// Optimized for performance:
+			//return Path.GetFullPath(fileName1.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).ToLower() == Path.GetFullPath(fileName2.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).ToLower();
+			
+			
+			if (fileName1.Length == 0 || fileName2.Length == 0) return false;
+			char lastChar;
+			lastChar = fileName1[fileName1.Length - 1];
+			if (lastChar == Path.DirectorySeparatorChar || lastChar == Path.AltDirectorySeparatorChar)
+				fileName1 = fileName1.Substring(0, fileName1.Length - 1);
+			lastChar = fileName2[fileName2.Length - 1];
+			if (lastChar == Path.DirectorySeparatorChar || lastChar == Path.AltDirectorySeparatorChar)
+				fileName2 = fileName2.Substring(0, fileName2.Length - 1);
+			
 			try {
-				return Path.GetFullPath(fileName1.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).ToLower() == Path.GetFullPath(fileName2.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).ToLower();
+				if (fileName1.Length < 2 || fileName1[1] != ':')
+					fileName1 = Path.GetFullPath(fileName1);
+				if (fileName2.Length < 2 || fileName2[1] != ':')
+					fileName2 = Path.GetFullPath(fileName2);
 			} catch (Exception) {
 				return false;
 			}
+			return string.Equals(fileName1, fileName2, StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public static bool IsBaseDirectory(string baseDirectory, string testDirectory)

@@ -67,5 +67,10 @@ namespace ICSharpCode.NRefactory.Parser
 		/// </summary>
 		/// <returns>An <see cref="Token"/> object.</returns>
 		Token NextToken();
+		
+		/// <summary>
+		/// Skips to the end of the current code block.
+		/// </summary>
+		void SkipCurrentBlock();
 	}
 }

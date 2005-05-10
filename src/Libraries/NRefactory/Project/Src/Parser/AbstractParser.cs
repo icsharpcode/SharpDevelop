@@ -27,6 +27,17 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected CompilationUnit compilationUnit;
 		
+		protected bool parseMethodContents = true;
+		
+		public bool ParseMethodContents {
+			get {
+				return parseMethodContents;
+			}
+			set {
+				parseMethodContents = value;
+			}
+		}
+		
 		public ILexer Lexer {
 			get {
 				return lexer;

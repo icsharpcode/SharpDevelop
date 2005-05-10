@@ -112,6 +112,32 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			ILexer lexer = GenerateLexer(new StringReader("}"));
 			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.NextToken().kind);
 		}
+		
+		[Test]
+		public void TestEmptyBlock()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("{}"));
+			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.NextToken().kind);
+		}
+		
+		[Test]
+		public void TestSkippedEmptyBlock()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("{}"));
+			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
+			lexer.SkipCurrentBlock();
+			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.NextToken().kind);
+		}
+		
+		[Test]
+		public void TestSkippedNonEmptyBlock()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("{ TestMethod('}'); /* }}} */ break; }"));
+			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
+			lexer.SkipCurrentBlock();
+			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.NextToken().kind);
+		}
 
 		[Test]
 		public void TestOpenSquareBracket()

@@ -16,7 +16,7 @@ using ICSharpCode.NRefactory.Parser;
 
 namespace ICSharpCode.NRefactory.Parser.CSharp
 {
-	internal class Lexer : AbstractLexer
+	internal sealed class Lexer : AbstractLexer
 	{
 		public Lexer(TextReader reader) : base(reader)
 		{
@@ -801,6 +801,25 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			specialTracker.FinishComment();
 			// Reached EOF before end of multiline comment.
 			errors.Error(line, col, String.Format("Reached EOF before the end of a multiline comment"));
+		}
+		
+		/// <summary>
+		/// Skips to the end of the current code block.
+		/// </summary>
+		public override void SkipCurrentBlock()
+		{
+			int braceCount = 0;
+			Token t;
+			StartPeek();
+			while ((t = Peek()).kind != Tokens.EOF) {
+				if (t.kind == Tokens.OpenCurlyBrace) {
+					++braceCount;
+				} else if (t.kind == Tokens.CloseCurlyBrace) {
+					if (--braceCount < 0)
+						return;
+				}
+				NextToken();
+			}
 		}
 	}
 }
