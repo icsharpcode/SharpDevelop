@@ -29,6 +29,10 @@ namespace ICSharpCode.NRefactory.Parser
 			get;
 		}
 		
+		bool ParseMethodBodies {
+			get; set;
+		}
+		
 		void Parse();
 		
 		Expression ParseExpression();

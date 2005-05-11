@@ -122,6 +122,7 @@
     <Compile Include="Parser\Statements\YieldStatementTests.cs" />
     <Compile Include="Lexer\CSharp\NumberLexerTest.cs" />
     <Compile Include="Lexer\VBNet\LiteralsTests.cs" />
+    <Compile Include="Parser\SkipMethodBodiesTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="General\" />

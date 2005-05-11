@@ -47,6 +47,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				project = value;
+				fileNameCache = null;
 			}
 		}
 		
@@ -57,6 +58,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				include = value;
+				fileNameCache = null;
 			}
 		}
 		
@@ -67,12 +69,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		string fileNameCache;
+		
 		[Browsable(false)]
 		public virtual string FileName {
 			get {
-				return Path.Combine(project.Directory, Include);
+				if (fileNameCache == null)
+					fileNameCache = Path.Combine(project.Directory, include);
+				return fileNameCache;
 			}
 			set {
+				fileNameCache = null;
 				Include = FileUtility.GetRelativePath(project.Directory, value);
 			}
 		}

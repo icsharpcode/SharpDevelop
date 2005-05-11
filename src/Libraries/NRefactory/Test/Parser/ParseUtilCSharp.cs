@@ -27,7 +27,13 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		
 		public static object ParseGlobal(string program, Type type, bool expectError)
 		{
+			return ParseGlobal(program, type, expectError, false);
+		}
+		
+		public static object ParseGlobal(string program, Type type, bool expectError, bool skipMethodBodies)
+		{
 			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(program));
+			parser.ParseMethodBodies = !skipMethodBodies;
 			parser.Parse();
 			Assert.IsNotNull(parser.Errors);
 			if (expectError)

@@ -116,29 +116,37 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		[Test]
 		public void TestEmptyBlock()
 		{
-			ILexer lexer = GenerateLexer(new StringReader("{}"));
+			ILexer lexer = GenerateLexer(new StringReader("{}+"));
 			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
 			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
 		}
 		
 		[Test]
 		public void TestSkippedEmptyBlock()
 		{
-			ILexer lexer = GenerateLexer(new StringReader("{}"));
+			ILexer lexer = GenerateLexer(new StringReader("{}+"));
 			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
+			lexer.NextToken();
 			lexer.SkipCurrentBlock();
-			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.kind);
+			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
 		}
 		
 		[Test]
 		public void TestSkippedNonEmptyBlock()
 		{
-			ILexer lexer = GenerateLexer(new StringReader("{ TestMethod('}'); /* }}} */ break; }"));
+			ILexer lexer = GenerateLexer(new StringReader("{ TestMethod('}'); /* }}} */ while(1) {break;} }+"));
 			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
+			lexer.NextToken();
 			lexer.SkipCurrentBlock();
-			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.kind);
+			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
+			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
 		}
-
+		
 		[Test]
 		public void TestOpenSquareBracket()
 		{

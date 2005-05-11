@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected bool parseMethodContents = true;
 		
-		public bool ParseMethodContents {
+		public bool ParseMethodBodies {
 			get {
 				return parseMethodContents;
 			}

@@ -805,13 +805,15 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		/// <summary>
 		/// Skips to the end of the current code block.
+		/// For this, the lexer must have read the next token AFTER the token opening the
+		/// block (so that Lexer.Token is the block-opening token, not Lexer.LookAhead).
+		/// After the call, Lexer.LookAhead will be the block-closing token.
 		/// </summary>
 		public override void SkipCurrentBlock()
 		{
 			int braceCount = 0;
 			Token t;
-			StartPeek();
-			while ((t = Peek()).kind != Tokens.EOF) {
+			while ((t = LookAhead).kind != Tokens.EOF) {
 				if (t.kind == Tokens.OpenCurlyBrace) {
 					++braceCount;
 				} else if (t.kind == Tokens.CloseCurlyBrace) {

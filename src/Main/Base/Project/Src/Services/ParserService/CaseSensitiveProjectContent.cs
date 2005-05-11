@@ -203,27 +203,61 @@ namespace ICSharpCode.Core
 			new AddReferenceDelegate(AddReference).BeginInvoke(e.ReferenceProjectItem, null, null);
 		}
 		
+		delegate string GetParseableContentDelegate(string fileName);
+		
+		Encoding getParseableContentEncoding;
+		
+		string GetParseableFileContent(string fileName)
+		{
+			// Loading the source files is done asynchronously:
+			// While one file is parsed, the next is already loaded from disk.
+			string res = project.GetParseableFileContent(fileName);
+			if (res != null)
+				return res;
+			// load file
+			using (StreamReader r = new StreamReader(fileName, getParseableContentEncoding)) {
+				return r.ReadToEnd();
+			}
+		}
+		
 		internal void Initialize2()
 		{
 			if (!initializing) return;
 			ProjectItem[] arr = project.Items.ToArray();
 			try {
+				Properties textEditorProperties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
+				getParseableContentEncoding = Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252));
+				textEditorProperties = null;
+				
 				StatusBarService.ProgressMonitor.BeginTask("Parsing " + project.Name + "...", arr.Length);
+				GetParseableContentDelegate pcd = new GetParseableContentDelegate(GetParseableFileContent);
+				ProjectItem item;
+				ProjectItem nextItem = arr[0];
+				IAsyncResult res = null;
 				for (int i = 0; i < arr.Length; ++i) {
-					ProjectItem item = arr[i];
+					item = nextItem;
+					nextItem = (i < arr.Length - 1) ? arr[i + 1] : null;
 					if ((i % 5) == 2)
 						StatusBarService.ProgressMonitor.WorkDone = i;
 					if (item.ItemType == ItemType.Compile) {
-						ParseInformation parseInfo = ParserService.ParseFile(item.FileName, null, true, false);
-						if (parseInfo != null) {
-							UpdateCompilationUnit(null, parseInfo.BestCompilationUnit as ICompilationUnit, item.FileName, true);
-						}
+						string fileName = item.FileName;
+						string fileContent;
+						if (res != null)
+							fileContent = pcd.EndInvoke(res);
+						else
+							fileContent = GetParseableFileContent(fileName);
+						if (nextItem != null && nextItem.ItemType == ItemType.Compile)
+							res = pcd.BeginInvoke(nextItem.FileName, null, null);
+						else
+							res = null;
+						ParserService.ParseFile(this, fileName, fileContent, true, false);
 					}
 					if (!initializing) return;
 				}
 			} finally {
 				StatusBarService.ProgressMonitor.Done();
 				initializing = false;
+				getParseableContentEncoding = null;
 			}
 		}
 		

@@ -251,9 +251,11 @@ namespace ICSharpCode.Core
 		
 		static IProjectContent GetProjectContent(string fileName)
 		{
-			foreach (KeyValuePair<IProject, IProjectContent> projectContent in projectContents) {
-				if (projectContent.Key.IsFileInProject(fileName)) {
-					return projectContent.Value;
+			lock (projectContents) {
+				foreach (KeyValuePair<IProject, IProjectContent> projectContent in projectContents) {
+					if (projectContent.Key.IsFileInProject(fileName)) {
+						return projectContent.Value;
+					}
 				}
 			}
 			return null;
@@ -262,6 +264,11 @@ namespace ICSharpCode.Core
 		static IProjectContent defaultProjectContent = new DefaultProjectContent();
 		
 		public static ParseInformation ParseFile(string fileName, string fileContent, bool updateCommentTags, bool fireUpdate)
+		{
+			return ParseFile(null, fileName, fileContent, updateCommentTags, fireUpdate);
+		}
+		
+		public static ParseInformation ParseFile(IProjectContent fileProjectContent, string fileName, string fileContent, bool updateCommentTags, bool fireUpdate)
 		{
 			IParser parser = GetParser(fileName);
 			if (parser == null) {
@@ -281,9 +288,13 @@ namespace ICSharpCode.Core
 				}
 			}
 			try {
-				IProjectContent fileProjectContent = GetProjectContent(fileName);
 				if (fileProjectContent == null) {
-					fileProjectContent = defaultProjectContent;
+					// GetProjectContent is expensive because it compares all file names, so
+					// we accept the project content as optional parameter.
+					fileProjectContent = GetProjectContent(fileName);
+					if (fileProjectContent == null) {
+						fileProjectContent = defaultProjectContent;
+					}
 				}
 				
 				if (fileContent != null) {
@@ -295,17 +306,11 @@ namespace ICSharpCode.Core
 					parserOutput = parser.Parse(fileProjectContent, fileName);
 				}
 				
-				lock (projectContents) {
-					foreach (KeyValuePair<IProject, IProjectContent> projectContent in projectContents) {
-						if (projectContent.Key.IsFileInProject(fileName)) {
-							if (parsings.ContainsKey(fileName)) {
-								ParseInformation parseInformation = parsings[fileName];
-								projectContent.Value.UpdateCompilationUnit(parseInformation.MostRecentCompilationUnit, parserOutput as ICompilationUnit, fileName, updateCommentTags);
-							} else {
-								projectContent.Value.UpdateCompilationUnit(null, parserOutput, fileName, updateCommentTags);
-							}
-						}
-					}
+				if (parsings.ContainsKey(fileName)) {
+					ParseInformation parseInformation = parsings[fileName];
+					fileProjectContent.UpdateCompilationUnit(parseInformation.MostRecentCompilationUnit, parserOutput as ICompilationUnit, fileName, updateCommentTags);
+				} else {
+					fileProjectContent.UpdateCompilationUnit(null, parserOutput, fileName, updateCommentTags);
 				}
 				return UpdateParseInformation(parserOutput as ICompilationUnit, fileName, updateCommentTags, fireUpdate);
 			} catch (Exception e) {
