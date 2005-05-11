@@ -94,12 +94,14 @@ namespace ICSharpCode.Core
 		
 		public string GetXmlDocumentation(string memberTag)
 		{
-			if (xmlDoc.XmlDescription.ContainsKey(memberTag)) {
-				return xmlDoc.XmlDescription[memberTag];
+			string desc = xmlDoc.GetDocumentation(memberTag);
+			if (desc != null) {
+				return desc;
 			}
 			foreach (IProjectContent referencedContent in referencedContents) {
-				if (referencedContent.XmlDoc.XmlDescription.ContainsKey(memberTag)) {
-					return referencedContent.XmlDoc.XmlDescription[memberTag];
+				desc = referencedContent.XmlDoc.GetDocumentation(memberTag);
+				if (desc != null) {
+					return desc;
 				}
 			}
 			return null;
@@ -263,6 +265,7 @@ namespace ICSharpCode.Core
 		
 		public void Dispose()
 		{
+			xmlDoc.Dispose();
 			ProjectService.ReferenceAdded -= OnReferenceAdded;
 			initializing = false;
 		}

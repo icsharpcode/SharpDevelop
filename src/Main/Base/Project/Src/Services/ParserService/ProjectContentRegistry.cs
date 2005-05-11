@@ -24,7 +24,7 @@ namespace ICSharpCode.Core
 {
 	public class ProjectContentRegistry
 	{
-		static Dictionary<string, IProjectContent> contents = new Dictionary<string, IProjectContent>();
+		static Dictionary<string, IProjectContent> contents = new Dictionary<string, IProjectContent>(StringComparer.InvariantCultureIgnoreCase);
 		
 		public static IProjectContent GetMscorlibContent()
 		{
