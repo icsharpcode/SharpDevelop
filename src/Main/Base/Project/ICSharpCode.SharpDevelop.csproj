@@ -198,7 +198,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TipOfTheDay.cs">
-      <SubType>Form</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TreeViewOptions.cs">
       <SubType>Form</SubType>
@@ -266,7 +266,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\FileScout.cs">
-      <SubType>Component</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\OpenTaskView.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPad.cs" />
@@ -623,7 +623,9 @@
     <Compile Include="Src\TextEditor\Gui\Editor\CodeCompletionBinding.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
     <Compile Include="Src\Project\AdvancedMSBuildProject.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <EmbeddedResource Include="Resources\ProjectOptions\ApplicationSettings.xfrm" />
     <Compile Include="Src\Gui\Pads\PropertyPad\IDEContainer.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyContainer.cs" />
@@ -632,11 +634,21 @@
     <EmbeddedResource Include="Resources\ProjectOptions\Signing.xfrm" />
     <EmbeddedResource Include="Resources\ProjectOptions\BuildEvents.xfrm" />
     <EmbeddedResource Include="Resources\ProjectOptions\DebugOptions.xfrm" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Signing.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePaths.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Publish.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Signing.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ReferencePaths.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\Publish.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\DebugOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\BuildEvents.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Dom\ITypeParameter.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultTypeParameter.cs" />
     <Compile Include="Src\Dom\Implementations\ProxyReturnType.cs" />
@@ -647,7 +659,9 @@
     <Compile Include="Src\Dom\Implementations\SpecificReturnType.cs" />
     <Compile Include="Src\Dom\LanguageProperties.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\SchemeExtension.cs" />
-    <Compile Include="Src\Gui\BrowserDisplayBinding\ExtendedWebBrowser.cs" />
+    <Compile Include="Src\Gui\BrowserDisplayBinding\ExtendedWebBrowser.cs">
+      <SubType>Component</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
@@ -666,7 +680,6 @@
       <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
-    <Folder Include="Resources\ProjectOptions" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

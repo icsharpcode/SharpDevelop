@@ -110,9 +110,15 @@ namespace ICSharpCode.TextEditor
 			OptionsChanged();
 		}
 		
+		static int GetFontHeight(Font font)
+		{
+			int h = font.Height;
+			return (h < 16) ? h + 1 : h;
+		}
+		
 		public void OptionsChanged()
 		{
-			this.fontHeight = TextEditorProperties.Font.Height;
+			this.fontHeight = GetFontHeight(TextEditorProperties.Font);
 			if (this.charWitdh != null) {
 				this.charWitdh.Clear();
 			}
@@ -126,7 +132,7 @@ namespace ICSharpCode.TextEditor
 			}
 			
 			// Just to ensure that fontHeight and char widths are always correct...
-			if (fontHeight != TextEditorProperties.Font.Height) {
+			if (fontHeight != GetFontHeight(TextEditorProperties.Font)) {
 				OptionsChanged();
 				base.TextArea.Refresh();
 				return;

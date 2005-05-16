@@ -322,10 +322,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			TitleName = Path.GetFileName(fileName);
 			IsDirty     = false;
 			SetWatcher();
-			foreach (Bookmark.Bookmark mark in Bookmark.BookmarkManager.GetBookmarks(fileName)) {
-				textAreaControl.Document.BookmarkManager.Marks.Add(mark.CreateBookmark(textAreaControl.Document));
+			foreach (Bookmarks.SDBookmark mark in Bookmarks.BookmarkManager.GetBookmarks(fileName)) {
+				mark.Document = textAreaControl.Document;
+				textAreaControl.Document.BookmarkManager.Marks.Add(mark);
 			}
-			
 		}
 		
 		public Properties CreateMemento()

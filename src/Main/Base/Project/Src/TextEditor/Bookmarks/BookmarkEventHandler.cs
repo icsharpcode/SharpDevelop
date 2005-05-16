@@ -9,7 +9,7 @@
 
 using System;
 
-namespace Bookmark
+namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	public delegate void BookmarkEventHandler(object sender, BookmarkEventArgs e);
 	
@@ -18,15 +18,15 @@ namespace Bookmark
 	/// </summary>
 	public class BookmarkEventArgs : EventArgs
 	{
-		Bookmark bookmark;
+		SDBookmark bookmark;
 		
-		public Bookmark Bookmark {
+		public SDBookmark Bookmark {
 			get {
 				return bookmark;
 			}
 		}
 		
-		public BookmarkEventArgs(Bookmark bookmark)
+		public BookmarkEventArgs(SDBookmark bookmark)
 		{
 			this.bookmark = bookmark;
 		}

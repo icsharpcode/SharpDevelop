@@ -7,14 +7,14 @@ using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace Bookmark
+namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	/// <summary>
 	/// Description of SearchFolderNode.
 	/// </summary>
 	public class BookmarkNode : ExtTreeNode
 	{
-		Bookmark bookmark;
+		SDBookmark bookmark;
 		
 		SizeF  spaceSize;
 		static StringFormat sf = (StringFormat)System.Drawing.StringFormat.GenericTypographic.Clone();
@@ -23,13 +23,13 @@ namespace Bookmark
 		
 		string positionText;
 		
-		public Bookmark Bookmark {
+		public SDBookmark Bookmark {
 			get {
 				return bookmark;
 			}
 		}
 		
-		public BookmarkNode(Bookmark bookmark)
+		public BookmarkNode(SDBookmark bookmark)
 		{
 			drawDefault = false;
 			this.bookmark = bookmark;

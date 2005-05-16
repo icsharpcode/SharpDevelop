@@ -20,6 +20,7 @@ using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor;
 using System.Drawing;
 using System.Windows.Forms;
+using BM = ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.Core
 {
@@ -344,25 +345,6 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static void ToggleBreakpointAt(string fileName, int line, int column)
-		{
-			foreach(Breakpoint b in breakpoints) {
-				if (b.FileName == fileName && b.LineNumber == line) {
-					breakpoints.Remove(b);
-					OnBreakPointRemoved(EventArgs.Empty);
-					return;
-				}
-			}
-			breakpoints.Add(new Breakpoint(fileName, line));
-			OnBreakPointAdded(EventArgs.Empty);
-		}
-		
-		
-		
-		
-		
-		
-		
 		class BreakpointMarker: TextMarker
 		{
 			public BreakpointMarker(int offset, int length, TextMarkerType textMarkerType, Color color, Color foreColor):base(offset, length, textMarkerType, color, foreColor)
@@ -380,6 +362,28 @@ namespace ICSharpCode.Core
 		public static void InitializeService2()
 		{
 			WorkbenchSingleton.WorkbenchCreated += new EventHandler(WorkspaceCreated);
+			BM.BookmarkManager.Added   += BookmarkAdded;
+			BM.BookmarkManager.Removed += BookmarkRemoved;
+		}
+		
+		static void BookmarkAdded(object sender, BM.BookmarkEventArgs e)
+		{
+			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
+			if (bb != null) {
+				breakpoints.Add(bb.Breakpoint);
+				RefreshBreakpointMarkersInDocument(bb.Document);
+				OnBreakPointAdded(EventArgs.Empty);
+			}
+		}
+		
+		static void BookmarkRemoved(object sender, BM.BookmarkEventArgs e)
+		{
+			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
+			if (bb != null) {
+				breakpoints.Remove(bb.Breakpoint);
+				RefreshBreakpointMarkersInDocument(bb.Document);
+				OnBreakPointRemoved(EventArgs.Empty);
+			}
 		}
 		
 		static void WorkspaceCreated(object sender, EventArgs args)
@@ -397,7 +401,7 @@ namespace ICSharpCode.Core
 				textArea.IconBarMargin.Painted   += new MarginPaintEventHandler(PaintIconBar);
 				textArea.MouseMove               += new MouseEventHandler(TextAreaMouseMove);
 				
-				RefreshBreakpointMarkersInEditor(textArea.MotherTextEditorControl);
+				RefreshBreakpointMarkersInDocument(textArea.MotherTextEditorControl.Document);
 			}
 		}
 		
@@ -453,25 +457,35 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		
-		
 		static void IconBarMouseDown(AbstractMargin iconBar, Point mousepos, MouseButtons mouseButtons)
 		{
 			Rectangle viewRect = iconBar.TextArea.TextView.DrawingPosition;
 			Point logicPos = iconBar.TextArea.TextView.GetLogicalPosition(0, mousepos.Y - viewRect.Top);
 			
 			if (logicPos.Y >= 0 && logicPos.Y < iconBar.TextArea.Document.TotalNumberOfLines) {
-				ToggleBreakpointAt(iconBar.TextArea.MotherTextEditorControl.FileName , logicPos.Y + 1, 0);
-				RefreshBreakpointMarkersInEditor(iconBar.TextArea.MotherTextEditorControl);
+				ToggleBreakpointAt(iconBar.TextArea.Document, iconBar.TextArea.MotherTextEditorControl.FileName, logicPos.Y + 1);
 				iconBar.TextArea.Refresh(iconBar);
 			}
 		}
 		
-		
-		static void RefreshBreakpointMarkersInEditor(TextEditorControl textEditor)
+		static void ToggleBreakpointAt(IDocument document, string fileName, int lineNumber)
 		{
-			IDocument document = textEditor.Document;
-			System.Collections.Generic.List<ICSharpCode.TextEditor.Document.TextMarker> markers = textEditor.Document.MarkerStrategy.TextMarker;
+			foreach (Bookmark m in document.BookmarkManager.Marks) {
+				BreakpointBookmark bb = m as BreakpointBookmark;
+				if (bb != null) {
+					if (bb.Breakpoint.LineNumber == lineNumber) {
+						document.BookmarkManager.RemoveMark(m);
+						return;
+					}
+				}
+			}
+			document.BookmarkManager.AddMark(new Breakpoint(document, fileName, lineNumber).Bookmark);
+		}
+		
+		static void RefreshBreakpointMarkersInDocument(IDocument document)
+		{
+			if (document == null) return;
+			List<TextMarker> markers = document.MarkerStrategy.TextMarker;
 			// Remove all breakpoint markers
 			for (int i = 0; i < markers.Count;) {
 				if (markers[i] is BreakpointMarker) {
@@ -481,10 +495,10 @@ namespace ICSharpCode.Core
 				}
 			}
 			// Add breakpoint markers
-			foreach (Breakpoint b in Breakpoints) {
-				if (b.FileName.ToLower() == textEditor.FileName.ToLower()) {
-					LineSegment lineSeg = document.GetLineSegment((int)b.LineNumber - 1);
-					document.MarkerStrategy.TextMarker.Add(new BreakpointMarker(lineSeg.Offset, lineSeg.Length , TextMarkerType.SolidBlock, Color.Red, Color.White));
+			foreach (Bookmark b in document.BookmarkManager.Marks) {
+				if (b is BreakpointBookmark) {
+					LineSegment lineSeg = document.GetLineSegment(b.LineNumber);
+					document.MarkerStrategy.TextMarker.Add(new BreakpointMarker(lineSeg.Offset, lineSeg.Length, TextMarkerType.SolidBlock, Color.Red, Color.White));
 				}
 			}
 			// Perform editor update
@@ -497,16 +511,6 @@ namespace ICSharpCode.Core
 		/// </summary>
 		static void PaintIconBar(AbstractMargin iconBar, Graphics g, Rectangle rect)
 		{
-			foreach (Breakpoint breakpoint in Breakpoints) {
-				if (Path.GetFullPath(breakpoint.FileName) == Path.GetFullPath(iconBar.TextArea.MotherTextEditorControl.FileName)) {
-					int lineNumber = iconBar.TextArea.Document.GetVisibleLine((int)breakpoint.LineNumber - 1);
-					int yPos = (int)(lineNumber * iconBar.TextArea.TextView.FontHeight) - iconBar.TextArea.VirtualTop.Y;
-					if (yPos >= rect.Y && yPos <= rect.Bottom) {
-						((IconBarMargin)iconBar).DrawBreakpoint(g, yPos, breakpoint.IsEnabled);
-					}
-				}
-			}
-			
 			foreach (TextMarker textMarker in iconBar.TextArea.Document.MarkerStrategy.TextMarker) {
 				CurrentLineMarker currentLineMarker = textMarker as CurrentLineMarker;
 				if (currentLineMarker != null) {
@@ -556,11 +560,12 @@ namespace ICSharpCode.Core
 								// otherwise textArea will close the tooltip.
 							} else {
 								// Look if it is variable
-								//value = selectedThread.LocalVariables[expresion].Value.ToString();
 								ResolveResult result = ParserService.Resolve(expression, logicPos.Y + 1, xPosition + 1, textArea.MotherTextEditorControl.FileName, textContent);
 								string value = GetText(result);
 								if (value != null) {
+									#if DEBUG
 									value = "expr: >" + expression + "<\n" + value;
+									#endif
 									textArea.SetToolTip(value);
 								}
 								oldToolTip = value;
@@ -609,10 +614,9 @@ namespace ICSharpCode.Core
 			} else if (result is TypeResolveResult) {
 				return GetText(ambience, ((TypeResolveResult)result).ResolvedClass);
 			} else {
-				if (result.ResolvedType == null)
-					return null;
-				else
-					return "expression of type " + ambience.Convert(result.ResolvedType);
+//				if (result.ResolvedType != null)
+//					return "expression of type " + ambience.Convert(result.ResolvedType);
+				return null;
 			}
 		}
 		

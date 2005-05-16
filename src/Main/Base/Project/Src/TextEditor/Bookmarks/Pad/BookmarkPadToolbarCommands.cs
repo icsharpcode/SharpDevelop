@@ -22,7 +22,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
 using ICSharpCode.SharpDevelop;
 
-namespace Bookmark
+namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	public class GotoNext : AbstractMenuCommand
 	{

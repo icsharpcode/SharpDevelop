@@ -21,7 +21,7 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
 
-namespace Bookmark
+namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	public class BookmarkPad : AbstractPadContent
 	{
@@ -62,12 +62,12 @@ namespace Bookmark
 			BookmarkManager.Added   += new BookmarkEventHandler(BookmarkManagerAdded);
 			BookmarkManager.Removed += new BookmarkEventHandler(BookmarkManagerRemoved);
 			
-			foreach (Bookmark mark in BookmarkManager.Bookmarks) {
+			foreach (SDBookmark mark in BookmarkManager.Bookmarks) {
 				AddMark(mark);
 			}
 		}
 		
-		void AddMark(Bookmark mark)
+		void AddMark(SDBookmark mark)
 		{
 			if (!fileNodes.ContainsKey(mark.FileName)) {
 				BookmarkFolderNode folderNode = new BookmarkFolderNode(mark.FileName);
@@ -80,7 +80,7 @@ namespace Bookmark
 		
 		void BookmarkManagerAdded(object sender, BookmarkEventArgs e) 
 		{
-			AddMark(e.Bookmark);
+			AddMark((SDBookmark)e.Bookmark);
 		}
 		
 		void BookmarkManagerRemoved(object sender, BookmarkEventArgs e)
@@ -98,7 +98,7 @@ namespace Bookmark
 		{
 			TreeNode node = bookmarkTreeView.SelectedNode;
 			if (node != null) {
-				Bookmark mark = node.Tag as Bookmark;
+				SDBookmark mark = node.Tag as SDBookmark;
 				if (mark != null) {
 					FileService.JumpToFilePosition(mark.FileName, mark.LineNumber, 0);
 				}

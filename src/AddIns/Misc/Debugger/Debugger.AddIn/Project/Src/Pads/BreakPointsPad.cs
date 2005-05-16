@@ -68,8 +68,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			name.Text        = "Name";
 			path.Text        = "Path";
-
-            FillList();
+			
+			FillList();
 		}
 		
 		void BreakpointsListItemCheck(object sender, ItemCheckEventArgs e)
@@ -89,7 +89,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			breakpointsList.BeginUpdate();
 			breakpointsList.Items.Clear();
 			foreach(DebuggerLibrary.Breakpoint b in NDebugger.Instance.Breakpoints) {
-				AddBreakpoint(this, new BreakpointEventArgs(b));
+				AddBreakpoint(new BreakpointEventArgs(b));
 			}
 			breakpointsList.EndUpdate();
 			breakpointsList.ItemCheck += new ItemCheckEventHandler(BreakpointsListItemCheck);
@@ -97,23 +97,38 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void AddBreakpoint(object sender, BreakpointEventArgs e)
 		{
+			breakpointsList.ItemCheck -= new ItemCheckEventHandler(BreakpointsListItemCheck);
+			AddBreakpoint(e);
+			breakpointsList.ItemCheck += new ItemCheckEventHandler(BreakpointsListItemCheck);
+		}
+		
+		void AddBreakpoint(BreakpointEventArgs e)
+		{
 			ListViewItem item = new ListViewItem();
-			item.Tag       = e.Breakpoint;
+			item.Tag = e.Breakpoint;
 			breakpointsList.Items.Add(item);
-			RefreshBreakpoint(this, e);
+			RefreshBreakpoint(item, e);
 		}
 		
 		void RefreshBreakpoint(object sender, BreakpointEventArgs e)
 		{
+			breakpointsList.ItemCheck -= new ItemCheckEventHandler(BreakpointsListItemCheck);
 			foreach (ListViewItem item in breakpointsList.Items) {
 				if (e.Breakpoint == item.Tag) {
-					item.SubItems.Clear();
-					item.Checked   = e.Breakpoint.Enabled;
-					item.Text = Path.GetFileName(e.Breakpoint.SourcecodeSegment.SourceFullFilename) + ", Line = " + e.Breakpoint.SourcecodeSegment.StartLine.ToString();
-					item.ForeColor = e.Breakpoint.HadBeenSet ? Color.Black : Color.Gray;
-					item.SubItems.AddRange(new string[] {Path.GetDirectoryName(e.Breakpoint.SourcecodeSegment.SourceFullFilename)});
+					RefreshBreakpoint(item, e);
+					break;
 				}
 			}
+			breakpointsList.ItemCheck += new ItemCheckEventHandler(BreakpointsListItemCheck);
+		}
+		
+		void RefreshBreakpoint(ListViewItem item, BreakpointEventArgs e)
+		{
+			item.SubItems.Clear();
+			item.Checked = e.Breakpoint.Enabled;
+			item.Text = Path.GetFileName(e.Breakpoint.SourcecodeSegment.SourceFullFilename) + ", Line = " + e.Breakpoint.SourcecodeSegment.StartLine.ToString();
+			item.ForeColor = e.Breakpoint.HadBeenSet ? Color.Black : Color.Gray;
+			item.SubItems.AddRange(new string[] { Path.GetDirectoryName(e.Breakpoint.SourcecodeSegment.SourceFullFilename) });
 		}
 		
 		void RemoveBreakpoint(object sender, BreakpointEventArgs e)

@@ -25,7 +25,7 @@ using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Actions;
 using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
 
-namespace Bookmarks
+namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	public class ToggleBookmark : AbstractEditActionMenuCommand
 	{

@@ -8,40 +8,20 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
-using System.Text;
-using System.Threading;
-using System.Windows.Forms;
 using System.Drawing;
-using System.CodeDom.Compiler;
-using System.IO;
-using System.Diagnostics;
+using System.Text;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui.OptionPanels;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
+using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
-namespace Bookmark
+namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	/// <summary>
 	/// Description of Bookmark.
 	/// </summary>
-	public class Bookmark 
+	public class SDBookmark : Bookmark
 	{
-		ICSharpCode.TextEditor.Document.Bookmark bookmark;
 		string fileName;
-		
-		public ICSharpCode.TextEditor.Document.IDocument Document {
-			get {
-				return bookmark.Document;
-			}
-		}
-		
-		public ICSharpCode.TextEditor.Document.Bookmark CreateBookmark(ICSharpCode.TextEditor.Document.IDocument document)
-		{
-			this.bookmark = new ICSharpCode.TextEditor.Document.Bookmark(document, LineNumber, IsEnabled);
-			return bookmark;
-		}
 		
 		public string FileName {
 			get {
@@ -52,25 +32,33 @@ namespace Bookmark
 			}
 		}
 		
-		public int LineNumber {
-			get {
-				return bookmark.LineNumber;
-			}
-		}
-		
-		public bool IsEnabled {
-			get {
-				return bookmark.IsEnabled;
-			}
-			set {
-				bookmark.IsEnabled = value;
-			}
-		}
-		
-		public Bookmark(string fileName, ICSharpCode.TextEditor.Document.Bookmark bookmark)
+		public SDBookmark(string fileName, IDocument document, int lineNumber) : base(document, lineNumber)
 		{
 			this.fileName = fileName;
-			this.bookmark = bookmark;
+		}
+	}
+	
+	public class SDBookmarkFactory : IBookmarkFactory
+	{
+		string fileName;
+		ICSharpCode.TextEditor.Document.BookmarkManager manager;
+		
+		public SDBookmarkFactory(ICSharpCode.TextEditor.Document.BookmarkManager manager)
+		{
+			this.manager = manager;
+		}
+		
+		public void ChangeFilename(string newFileName)
+		{
+			fileName = newFileName;
+			foreach (SDBookmark mark in manager.Marks) {
+				mark.FileName = newFileName;
+			}
+		}
+		
+		public Bookmark CreateBookmark(IDocument document, int lineNumber)
+		{
+			return new SDBookmark(fileName, document, lineNumber);
 		}
 	}
 }

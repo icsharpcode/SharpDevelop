@@ -319,6 +319,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			public PadContentWrapper(PadDescriptor padDescriptor)
 			{
+				if (padDescriptor == null)
+					throw new ArgumentNullException("padDescriptor");
 				this.padDescriptor = padDescriptor;
 				this.DockableAreas = ((((WeifenLuo.WinFormsUI.DockAreas.Float | WeifenLuo.WinFormsUI.DockAreas.DockLeft) |
 				                        WeifenLuo.WinFormsUI.DockAreas.DockRight) |

@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krger" email="mike@icsharpcode.net"/>
+//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
 
@@ -12,33 +12,42 @@ using System.CodeDom.Compiler;
 using System.Collections;
 using System.IO;
 using System.Diagnostics;
+using ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.Core
 {
-	public class Breakpoint
+	public class Breakpoint 
 	{
-		string fileName;
-		int    lineNumber;
+		BreakpointBookmark bookmark;
 		object tag;
 		
-		bool   isEnabled = true;
+		public BreakpointBookmark Bookmark {
+			get {
+				return bookmark;
+			}
+		}
 		
 		public string FileName {
 			get {
-				return fileName;
+				return bookmark.FileName;
 			}
 			set {
-				fileName = value;
+				bookmark.FileName = value;
 			}
 		}
 		
 		public int LineNumber {
 			get {
-				return lineNumber;
+				return bookmark.LineNumber + 1;
 			}
 			set {
-				lineNumber = value;
+				bookmark.LineNumber = value - 1;
 			}
+		}
+		
+		public event EventHandler LineNumberChanged {
+			add    { bookmark.LineNumberChanged += value; }
+			remove { bookmark.LineNumberChanged -= value; }
 		}
 
 		public object Tag {
@@ -52,17 +61,37 @@ namespace ICSharpCode.Core
 		
 		public bool IsEnabled {
 			get {
-				return isEnabled;
+				return bookmark.IsEnabled;
 			}
 			set {
-				isEnabled = value;
+				bookmark.IsEnabled = value;
 			}
 		}
 		
-		public Breakpoint(string fileName, int lineNumber)
+		public Breakpoint(ICSharpCode.TextEditor.Document.IDocument document, string fileName, int lineNumber)
 		{
-			this.fileName = fileName;
-			this.lineNumber = lineNumber;
+			bookmark = new BreakpointBookmark(this, fileName, document, lineNumber - 1);
+		}
+	}
+	
+	public class BreakpointBookmark : SDBookmark
+	{
+		Breakpoint breakpoint;
+		
+		public Breakpoint Breakpoint {
+			get {
+				return breakpoint;
+			}
+		}
+		
+		public BreakpointBookmark(Breakpoint breakpoint, string fileName, ICSharpCode.TextEditor.Document.IDocument document, int lineNumber) : base(fileName, document, lineNumber)
+		{
+			this.breakpoint = breakpoint;
+		}
+		
+		public override void Draw(ICSharpCode.TextEditor.IconBarMargin margin, Graphics g, Point p)
+		{
+			margin.DrawBreakpoint(g, p.Y, IsEnabled);
 		}
 	}
 	

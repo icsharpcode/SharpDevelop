@@ -10,6 +10,11 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.TextEditor.Document
 {
+	public interface IBookmarkFactory
+	{
+		Bookmark CreateBookmark(IDocument document, int lineNumber);
+	}
+	
 	/// <summary>
 	/// This class handles the bookmarks for a buffer
 	/// </summary>
@@ -26,7 +31,13 @@ namespace ICSharpCode.TextEditor.Document
 				return bookmark;
 			}
 		}
-	
+		
+		public IDocument Document {
+			get {
+				return document;
+			}
+		}
+		
 		/// <summary>
 		/// Creates a new instance of <see cref="BookmarkManager"/>
 		/// </summary>
@@ -36,24 +47,53 @@ namespace ICSharpCode.TextEditor.Document
 			lineTracker.LineCountChanged += new LineManagerEventHandler(MoveIndices);
 		}
 		
-		/// <remarks>
+		IBookmarkFactory factory;
+		
+		public IBookmarkFactory Factory {
+			get {
+				return factory;
+			}
+			set {
+				factory = value;
+			}
+		}
+		
+		/// <summary>
 		/// Sets the mark at the line <code>lineNr</code> if it is not set, if the
 		/// line is already marked the mark is cleared.
-		/// </remarks>
+		/// </summary>
 		public void ToggleMarkAt(int lineNr)
 		{
 			for (int i = 0; i < bookmark.Count; ++i) {
-				if (bookmark[i].LineNumber == lineNr) {
-					Bookmark mark = bookmark[i];
+				Bookmark mark = bookmark[i];
+				if (mark.LineNumber == lineNr && mark.CanToggle) {
 					bookmark.RemoveAt(i);
 					OnRemoved(new BookmarkEventArgs(mark));
 					OnChanged(EventArgs.Empty);
 					return;
 				}
 			}
-			Bookmark newMark = new Bookmark(document, lineNr);
+			Bookmark newMark;
+			if (factory != null)
+				newMark = factory.CreateBookmark(document, lineNr);
+			else
+				newMark = new Bookmark(document, lineNr);
 			bookmark.Add(newMark);
 			OnAdded(new BookmarkEventArgs(newMark));
+			OnChanged(EventArgs.Empty);
+		}
+		
+		public void AddMark(Bookmark mark)
+		{
+			bookmark.Add(mark);
+			OnAdded(new BookmarkEventArgs(mark));
+			OnChanged(EventArgs.Empty);
+		}
+		
+		public void RemoveMark(Bookmark mark)
+		{
+			bookmark.Remove(mark);
+			OnRemoved(new BookmarkEventArgs(mark));
 			OnChanged(EventArgs.Empty);
 		}
 		
@@ -81,6 +121,7 @@ namespace ICSharpCode.TextEditor.Document
 				Bookmark mark = bookmark[i];
 				if (e.LinesMoved < 0 && mark.LineNumber == e.LineStart) {
 					bookmark.RemoveAt(i);
+					OnRemoved(new BookmarkEventArgs(mark));
 					--i;
 					changed = true;
 				} else if (mark.LineNumber > e.LineStart + 1 || (e.LinesMoved < 0 && mark.LineNumber > e.LineStart))  {
@@ -189,7 +230,7 @@ namespace ICSharpCode.TextEditor.Document
 			return prev;
 		}
 		
-		protected virtual void OnChanged(EventArgs e) 
+		protected virtual void OnChanged(EventArgs e)
 		{
 			if (Changed != null) {
 				Changed(this, e);
@@ -197,7 +238,7 @@ namespace ICSharpCode.TextEditor.Document
 		}
 		
 		
-		protected virtual void OnRemoved(BookmarkEventArgs e) 
+		protected virtual void OnRemoved(BookmarkEventArgs e)
 		{
 			if (Removed != null) {
 				Removed(this, e);
@@ -205,7 +246,7 @@ namespace ICSharpCode.TextEditor.Document
 		}
 		
 		
-		protected virtual void OnAdded(BookmarkEventArgs e) 
+		protected virtual void OnAdded(BookmarkEventArgs e)
 		{
 			if (Added != null) {
 				Added(this, e);

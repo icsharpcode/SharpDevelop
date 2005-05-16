@@ -1,27 +1,29 @@
 using System;
 using System.Collections.Generic;
 using ICSharpCode.Core;
+using ICSharpCode.TextEditor.Document;
 
-namespace Bookmark
+namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	/// <summary>
 	/// Description of BookmarkManager.
 	/// </summary>
 	public static class BookmarkManager
 	{
-		static List<Bookmark> bookmarks = new List<Bookmark>();
+		static List<SDBookmark> bookmarks = new List<SDBookmark>();
 		
-		public static List<Bookmark> Bookmarks {
+		public static List<SDBookmark> Bookmarks {
 			get {
 				return bookmarks;
 			}
 		}
 		
-		public static List<Bookmark> GetBookmarks(string fileName)
+		public static List<SDBookmark> GetBookmarks(string fileName)
 		{
-			List<Bookmark> marks = new List<Bookmark>();
+			List<SDBookmark> marks = new List<SDBookmark>();
 			
-			foreach (Bookmark mark in bookmarks) {
+			foreach (SDBookmark mark in bookmarks) {
+				if (mark.FileName == null) continue;
 				if (FileUtility.IsEqualFile(mark.FileName, fileName)) {
 					marks.Add(mark);
 				}
@@ -30,23 +32,17 @@ namespace Bookmark
 			return marks;
 		}
 		
-		public static void AddMark(string fileName, ICSharpCode.TextEditor.Document.Bookmark bookmark)
+		public static void AddMark(SDBookmark bookmark)
 		{
-			Bookmark mark = new Bookmark(fileName, bookmark);
-			bookmarks.Add(mark);
-			OnAdded(new BookmarkEventArgs(mark));
+			if (bookmarks.Contains(bookmark)) return;
+			bookmarks.Add(bookmark);
+			OnAdded(new BookmarkEventArgs(bookmark));
 		}
 		
-		public static void RemoveMark(string fileName, ICSharpCode.TextEditor.Document.Bookmark bookmark)
+		public static void RemoveMark(SDBookmark bookmark)
 		{
-			for (int i = 0; i < bookmarks.Count; ) {
-				if (FileUtility.IsEqualFile(bookmarks[i].FileName, fileName) && bookmarks[i].LineNumber == bookmark.LineNumber) {
-					OnRemoved(new BookmarkEventArgs(bookmarks[i]));
-					bookmarks.RemoveAt(i);
-				} else {
-					++i;
-				}
-			}
+			bookmarks.Remove(bookmark);
+			OnRemoved(new BookmarkEventArgs(bookmark));
 		}
 		
 		static void OnRemoved(BookmarkEventArgs e) 

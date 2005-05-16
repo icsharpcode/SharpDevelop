@@ -6,19 +6,19 @@ using ICSharpCode.TextEditor.Document;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace Bookmark
+namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	/// <summary>
 	/// Description of SearchFolderNode.
 	/// </summary>
 	public class BookmarkFolderNode : ExtFolderNode
 	{
-		List<Bookmark> marks = new List<Bookmark>();
+		List<SDBookmark> marks = new List<SDBookmark>();
 		string fileName;
 		string occurences;
 		Image icon;
 		
-		public List<Bookmark> Marks { 
+		public List<SDBookmark> Marks { 
 			get {
 				return marks;
 			}
@@ -64,7 +64,7 @@ namespace Bookmark
 			DrawText(g, occurences, Brushes.Gray,  ItalicFont, ref x, e.Bounds.Y);
 		}
 		
-		public void AddMark(Bookmark mark)
+		public void AddMark(SDBookmark mark)
 		{
 			marks.Add(mark);
 			
@@ -76,7 +76,7 @@ namespace Bookmark
 			SetText();
 		}
 		
-		public void RemoveMark(Bookmark mark)
+		public void RemoveMark(SDBookmark mark)
 		{
 			marks.Remove(mark);
 			if (isInitialized) {
@@ -98,7 +98,7 @@ namespace Bookmark
 				if (document.HighlightingStrategy == null) {
 					document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
 				}
-				foreach (Bookmark mark in marks) {
+				foreach (SDBookmark mark in marks) {
 					TreeNode newResult = new BookmarkNode(mark);
 					Nodes.Add(newResult);
 				}

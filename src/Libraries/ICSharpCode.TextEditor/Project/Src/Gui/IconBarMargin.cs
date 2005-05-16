@@ -1,13 +1,13 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike KrÃ¼ger" email="mike@icsharpcode.net"/>
+//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
 
 using System;
 using System.Windows.Forms;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Drawing;
 using System.Drawing.Drawing2D;
@@ -53,20 +53,40 @@ namespace ICSharpCode.TextEditor
 				int lineNumber = textArea.Document.GetVisibleLine(mark.LineNumber);
 				int yPos = (int)(lineNumber * textArea.TextView.FontHeight) - textArea.VirtualTop.Y;
 				if (yPos >= rect.Y && yPos <= rect.Bottom) {
-					DrawBookmark(g, yPos, mark.IsEnabled);
+					//DrawBookmark(g, yPos, mark.IsEnabled);
+					mark.Draw(this, g, new Point(0, yPos));
 				}
 			}
 			base.Paint(g, rect);
 		}
 		
-#region Drawing functions
+		public override void HandleMouseDown(Point mousePos, MouseButtons mouseButtons)
+		{
+			List<Bookmark> marks = textArea.Document.BookmarkManager.Marks;
+			int oldCount = marks.Count;
+			foreach (Bookmark mark in marks) {
+				int lineNumber = textArea.Document.GetVisibleLine(mark.LineNumber);
+				int fontHeight = textArea.TextView.FontHeight;
+				int yPos = lineNumber * fontHeight - textArea.VirtualTop.Y;
+				if (mousePos.Y > yPos && mousePos.Y < yPos + fontHeight) {
+					mark.Click(mouseButtons);
+					if (oldCount != marks.Count) {
+						textArea.UpdateLine(lineNumber);
+					}
+					return;
+				}
+			}
+			base.HandleMouseDown(mousePos, mouseButtons);
+		}
+		
+		#region Drawing functions
 		public void DrawBreakpoint(Graphics g, int y, bool isEnabled)
 		{
 			int delta = 1;
 			int radius = Math.Min(Size.Width, textArea.TextView.FontHeight);
 			Rectangle rect = new Rectangle(delta,
 			                               y,
-			                               radius, 
+			                               radius,
 			                               radius);
 			
 			
@@ -96,7 +116,7 @@ namespace ICSharpCode.TextEditor
 			Rectangle rect = new Rectangle(1, y + delta, base.drawingPosition.Width - 4, textArea.TextView.FontHeight - delta * 2);
 			
 			if (isEnabled) {
-				using (Brush brush = new LinearGradientBrush(new Point(rect.Left, rect.Top), 
+				using (Brush brush = new LinearGradientBrush(new Point(rect.Left, rect.Top),
 				                                             new Point(rect.Right, rect.Bottom),
 				                                             Color.SkyBlue,
 				                                             Color.White)) {
@@ -105,7 +125,7 @@ namespace ICSharpCode.TextEditor
 			} else {
 				FillRoundRect(g, Brushes.White, rect);
 			}
-			using (Brush brush = new LinearGradientBrush(new Point(rect.Left, rect.Top), 
+			using (Brush brush = new LinearGradientBrush(new Point(rect.Left, rect.Top),
 			                                             new Point(rect.Right, rect.Bottom),
 			                                             Color.SkyBlue,
 			                                             Color.Blue)) {
@@ -119,19 +139,19 @@ namespace ICSharpCode.TextEditor
 		{
 			int delta = textArea.TextView.FontHeight / 8;
 			Rectangle rect = new Rectangle(1, y + delta, base.drawingPosition.Width - 4, textArea.TextView.FontHeight - delta * 2);
-			using (Brush brush = new LinearGradientBrush(new Point(rect.Left, rect.Top), 
+			using (Brush brush = new LinearGradientBrush(new Point(rect.Left, rect.Top),
 			                                             new Point(rect.Right, rect.Bottom),
 			                                             Color.LightYellow,
 			                                             Color.Yellow)) {
 				FillArrow(g, brush, rect);
 			}
 			
-			using (Brush brush = new LinearGradientBrush(new Point(rect.Left, rect.Top), 
+			using (Brush brush = new LinearGradientBrush(new Point(rect.Left, rect.Top),
 			                                             new Point(rect.Right, rect.Bottom),
 			                                             Color.Yellow,
 			                                             Color.Brown)) {
 				using (Pen pen = new Pen(brush)) {
-					DrawArrow(g, pen, rect);	
+					DrawArrow(g, pen, rect);
 				}
 			}
 		}
@@ -141,7 +161,7 @@ namespace ICSharpCode.TextEditor
 			GraphicsPath gp = new GraphicsPath();
 			int halfX = r.Width / 2;
 			int halfY = r.Height/ 2;
-			gp.AddLine(r.X, r.Y + halfY/2, r.X + halfX, r.Y + halfY/2);			
+			gp.AddLine(r.X, r.Y + halfY/2, r.X + halfX, r.Y + halfY/2);
 			gp.AddLine(r.X + halfX, r.Y + halfY/2, r.X + halfX, r.Y);
 			gp.AddLine(r.X + halfX, r.Y, r.Right, r.Y + halfY);
 			gp.AddLine(r.Right, r.Y + halfY, r.X + halfX, r.Bottom);
@@ -200,6 +220,6 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 
-#endregion
+		#endregion
 	}
 }

@@ -45,6 +45,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			errorDrawer = new ErrorDrawer(this);
 			Document.FoldingManager.FoldingStrategy = new ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ParserFoldingStrategy();
+			Document.BookmarkManager.Factory = new Bookmarks.SDBookmarkFactory(Document.BookmarkManager);
 			Document.BookmarkManager.Added   += new BookmarkEventHandler(BookmarkAdded);
 			Document.BookmarkManager.Removed += new BookmarkEventHandler(BookmarkRemoved);
 			GenerateEditActions();
@@ -55,16 +56,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void BookmarkAdded(object sender, BookmarkEventArgs e)
 		{
-			if (FileName != null) {
-				Bookmark.BookmarkManager.AddMark(FileName, e.Bookmark);
-			}
+			Bookmarks.BookmarkManager.AddMark((Bookmarks.SDBookmark)e.Bookmark);
 		}
 		
 		void BookmarkRemoved(object sender, BookmarkEventArgs e)
 		{
-			if (FileName != null) {
-				Bookmark.BookmarkManager.RemoveMark(FileName, e.Bookmark);
-			}
+			Bookmarks.BookmarkManager.RemoveMark((Bookmarks.SDBookmark)e.Bookmark);
 		}
 		
 		public virtual ICompletionDataProvider CreateCodeCompletionDataProvider(bool ctrlSpace)
@@ -88,15 +85,17 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			newControl.MouseWheel                       += new MouseEventHandler(TextAreaMouseWheel);
 			newControl.DoHandleMousewheel = false;
 		}
+		
 		protected override void Dispose(bool disposing)
 		{
-			base.Dispose(Disposing);
+			base.Dispose(disposing);
 			if (disposing) {
 				errorDrawer.Dispose();
 				CloseCodeCompletionWindow(this, EventArgs.Empty);
 				CloseInsightWindow(this, EventArgs.Empty);
 			}
 		}
+		
 		void CloseCodeCompletionWindow(object sender, EventArgs e)
 		{
 			if (codeCompletionWindow != null) {
@@ -144,36 +143,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 		}
-		
-//		void IconBarMouseDown(AbstractMargin iconBar, Point mousepos, MouseButtons mouseButtons)
-//		{
-//			int realline = iconBar.TextArea.TextView.GetLogicalLine(mousepos);
-//			if (realline >= 0 && realline < iconBar.TextArea.Document.TotalNumberOfLines) {
-		//
-//				if (DebuggerService.CurrentDebugger.SupportsExecutionControl) {
-//					DebuggerService.ToggleBreakpointAt(FileName, realline + 1, 0);
-//					iconBar.TextArea.Refresh(iconBar);
-//				}
-//			}
-//		}
-		//
-//		void PaintIconBarBreakPoints(AbstractMargin iconBar, Graphics g, Rectangle rect)
-//		{
-		//
-//			lock (DebuggerService.Breakpoints) {
-//				foreach (Breakpoint breakpoint in DebuggerService.Breakpoints) {
-//					try {
-//						if (Path.GetFullPath(breakpoint.FileName) == Path.GetFullPath(FileName)) {
-//							int lineNumber = iconBar.TextArea.Document.GetVisibleLine(breakpoint.LineNumber - 1);
-//							int yPos = (int)(lineNumber * iconBar.TextArea.TextView.FontHeight) - iconBar.TextArea.VirtualTop.Y;
-//							if (yPos >= rect.Y && yPos <= rect.Bottom) {
-//								((IconBarMargin)iconBar).DrawBreakpoint(g, yPos, breakpoint.IsEnabled);
-//							}
-//						}
-//					} catch (Exception) {}
-//				}
-//			}
-//		}
 		
 		void CaretPositionChanged(object sender, EventArgs e)
 		{
@@ -229,6 +198,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		protected override void OnFileNameChanged(EventArgs e)
 		{
 			base.OnFileNameChanged(e);
+			((Bookmarks.SDBookmarkFactory)Document.BookmarkManager.Factory).ChangeFilename(this.FileName);
 			ActivateQuickClassBrowserOnDemand();
 		}
 		
