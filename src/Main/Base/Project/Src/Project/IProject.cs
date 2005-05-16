@@ -1,6 +1,7 @@
 using System;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -11,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		Module
 	};
 	
-	public interface IProject : ISolutionFolder, IDisposable
+	public interface IProject : ISolutionFolder, IDisposable, IMementoCapable
 	{
 		PropertyGroup BaseConfiguration {
 			get;

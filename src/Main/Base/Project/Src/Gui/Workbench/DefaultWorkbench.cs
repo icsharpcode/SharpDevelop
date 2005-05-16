@@ -276,7 +276,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			string fullFileName = Path.Combine(directory, fileName);
 			
 			if (FileUtility.IsValidFileName(fullFileName)) {
-				FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.ProvideAlternative);
+				FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
 			}
 		}
 		
@@ -371,8 +371,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnClosing(e);
 			
-			
-			ProjectService.SaveSolutionPreferences();
 			while (WorkbenchSingleton.Workbench.ViewContentCollection.Count > 0) {
 				IViewContent content = WorkbenchSingleton.Workbench.ViewContentCollection[0];
 				content.WorkbenchWindow.CloseWindow(false);
@@ -382,15 +380,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			ProjectService.CloseSolution();
-			
-			// TODO : Dirty Files Dialog
-			//			foreach (IViewContent content in ViewContentCollection) {
-			//				if (content.IsDirty) {
-			//					ICSharpCode.SharpDevelop.Gui.DirtyFilesDialog dfd = new ICSharpCode.SharpDevelop.Gui.DirtyFilesDialog();
-			//					e.Cancel = dfd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.Cancel;
-			//					return;
-			//				}
-			//			}
 		}
 		
 		protected override void OnClosed(EventArgs e)

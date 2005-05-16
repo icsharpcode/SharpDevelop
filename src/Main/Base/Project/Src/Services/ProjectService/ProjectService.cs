@@ -137,6 +137,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			openSolution = Solution.Load(fileName);
 			OnSolutionLoaded(new SolutionEventArgs(openSolution));
+			try {
+				foreach (IProject project in openSolution.Projects) {
+					string file = GetPreferenceFileName(project);
+					if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
+						project.SetMemento(Properties.Load(file));
+					}
+				}
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
 		}
 		
 		public static void SaveSolution()
@@ -150,9 +160,30 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		static string GetPreferenceFileName(IProject project)
+		{
+			string directory = PropertyService.ConfigDirectory + "preferences";
+			string fileName = project.FileName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(Path.DirectorySeparatorChar, '.');
+			string fullFileName = Path.Combine(directory, fileName + ".xml");
+			return fullFileName;
+		}
+		
 		public static void SaveSolutionPreferences()
 		{
-			// TODO:
+			string directory = PropertyService.ConfigDirectory + "preferences";
+			if (!Directory.Exists(directory)) {
+				Directory.CreateDirectory(directory);
+			}
+			
+			foreach (IProject project in OpenSolution.Projects) {
+				Properties memento = project.CreateMemento();
+				if (memento == null) continue;
+				
+				string fullFileName = GetPreferenceFileName(project);
+				if (FileUtility.IsValidFileName(fullFileName)) {
+					FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
+				}
+			}
 		}
 		
 		public static void CloseSolution()
@@ -160,6 +191,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (openSolution != null) {
 				OnSolutionClosing(new SolutionEventArgs(openSolution));
 				
+				SaveSolutionPreferences();
 				openSolution.Dispose();
 				openSolution = null;
 				
@@ -182,7 +214,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			project.IsDirty = true;
 		}
-			
+		
 		static void OnCurrentProjectChanged(ProjectEventArgs e)
 		{
 			if (CurrentProjectChanged != null) {
@@ -218,14 +250,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static void OnProjectConfigurationChanged(ProjectConfigurationEventArgs e) 
+		static void OnProjectConfigurationChanged(ProjectConfigurationEventArgs e)
 		{
 			if (ProjectConfigurationChanged != null) {
 				ProjectConfigurationChanged(null, e);
 			}
 		}
 		
-		static void OnSolutionConfigurationChanged(SolutionConfigurationEventArgs e) 
+		static void OnSolutionConfigurationChanged(SolutionConfigurationEventArgs e)
 		{
 			if (SolutionConfigurationChanged != null) {
 				SolutionConfigurationChanged(null, e);
@@ -246,7 +278,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static void OnEndBuild(EventArgs e) 
+		static void OnEndBuild(EventArgs e)
 		{
 			if (EndBuild != null) {
 				EndBuild(null, e);
@@ -267,7 +299,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static void OnSolutionFolderRemoved(SolutionFolderEventArgs e) 
+		static void OnSolutionFolderRemoved(SolutionFolderEventArgs e)
 		{
 			if (SolutionFolderRemoved != null) {
 				SolutionFolderRemoved(null, e);

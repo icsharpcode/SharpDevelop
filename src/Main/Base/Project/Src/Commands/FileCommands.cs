@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						
 						
 						ProjectService.MarkFileDirty(window.ViewContent.FileName);
-						FileUtility.ObservedSave(new FileOperationDelegate(window.ViewContent.Save), window.ViewContent.FileName);
+						FileUtility.ObservedSave(new FileOperationDelegate(window.ViewContent.Save), window.ViewContent.FileName, FileErrorPolicy.ProvideAlternative);
 					}
 				}
 			}

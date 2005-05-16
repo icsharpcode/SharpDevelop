@@ -60,6 +60,17 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
+		public static List<SDBookmark> GetProjectBookmarks(ICSharpCode.SharpDevelop.Project.IProject project)
+		{
+			List<SDBookmark> projectBookmarks = new List<SDBookmark>();
+			foreach (SDBookmark mark in bookmarks) {
+				if (mark.FileName != null && project.IsFileInProject(mark.FileName)) {
+					projectBookmarks.Add(mark);
+				}
+			}
+			return projectBookmarks;
+		}
+		
 		public static event BookmarkEventHandler Removed;
 		public static event BookmarkEventHandler Added;
 	}

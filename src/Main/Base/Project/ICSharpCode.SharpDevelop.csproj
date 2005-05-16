@@ -132,7 +132,6 @@
     <Compile Include="Src\Internal\Auswerter\WindowOpenAuswerter.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectDescriptor.cs" />
     <Compile Include="Src\Internal\Templates\Project\CombineDescriptor.cs" />
-    <Compile Include="Src\Gui\IMementoCapable.cs" />
     <Compile Include="Src\Gui\IProgressMonitor.cs" />
     <Compile Include="Src\Gui\IViewContent.cs" />
     <Compile Include="Src\Gui\IWorkbench.cs" />
@@ -662,6 +661,7 @@
     <Compile Include="Src\Gui\BrowserDisplayBinding\ExtendedWebBrowser.cs">
       <SubType>Component</SubType>
     </Compile>
+    <Compile Include="Src\TextEditor\Bookmarks\BookmarkConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

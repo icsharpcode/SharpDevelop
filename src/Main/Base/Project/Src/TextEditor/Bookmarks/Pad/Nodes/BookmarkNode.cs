@@ -37,15 +37,37 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			Checked = bookmark.IsEnabled;
 			positionText =  "(" + (bookmark.LineNumber + 1) + ") ";
 			
-			line = bookmark.Document.GetLineSegment(bookmark.LineNumber);
-			Text = positionText + bookmark.Document.GetText(line);
+			bookmark.DocumentChanged += BookmarkDocumentChanged;
+			bookmark.LineNumberChanged += BookmarkLineNumberChanged;
+			if (bookmark.Document != null) {
+				line = bookmark.Document.GetLineSegment(bookmark.LineNumber);
+				Text = positionText + bookmark.Document.GetText(line);
+			} else {
+				Text = positionText;
+			}
+		}
+		
+		void BookmarkDocumentChanged(object sender, EventArgs e)
+		{
+			if (bookmark.Document != null) {
+				line = bookmark.Document.GetLineSegment(bookmark.LineNumber);
+				Text = positionText + bookmark.Document.GetText(line);
+			}
+		}
+		
+		void BookmarkLineNumberChanged(object sender, EventArgs e)
+		{
+			positionText =  "(" + (bookmark.LineNumber + 1) + ") ";
+			BookmarkDocumentChanged(sender, e);
 		}
 		
 		protected override int MeasureItemWidth(DrawTreeNodeEventArgs e)
 		{
 			Graphics g = e.Graphics;
 			int x = MeasureTextWidth(g, positionText, BoldMonospacedFont);
-			x += MeasureTextWidth(g, bookmark.Document.GetText(line).Replace("\t", "   "), BoldMonospacedFont);
+			if (line != null) {
+				x += MeasureTextWidth(g, bookmark.Document.GetText(line).Replace("\t", "   "), BoldMonospacedFont);
+			}
 			return x;
 		}
 		
@@ -57,7 +79,9 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			
 			spaceSize = g.MeasureString("-", Font,  new PointF(0, 0), StringFormat.GenericTypographic);
 			
-			DrawLine(g, line, e.Bounds.Y, x);
+			if (line != null) {
+				DrawLine(g, line, e.Bounds.Y, x);
+			}
 		}
 		
 		public override void ActivateItem()

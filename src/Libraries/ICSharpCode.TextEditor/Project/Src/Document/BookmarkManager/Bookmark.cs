@@ -25,7 +25,19 @@ namespace ICSharpCode.TextEditor.Document
 				return document;
 			}
 			set {
-				document = value;
+				if (document != value) {
+					document = value;
+					OnDocumentChanged(EventArgs.Empty);
+				}
+			}
+		}
+		
+		public event EventHandler DocumentChanged;
+		
+		protected virtual void OnDocumentChanged(EventArgs e)
+		{
+			if (DocumentChanged != null) {
+				DocumentChanged(this, e);
 			}
 		}
 		
@@ -35,8 +47,10 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			set {
 				isEnabled = value;
-				document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, lineNumber));
-				document.CommitUpdate();
+				if (document != null) {
+					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, lineNumber));
+					document.CommitUpdate();
+				}
 			}
 		}
 		
@@ -80,7 +94,7 @@ namespace ICSharpCode.TextEditor.Document
 			this.lineNumber = lineNumber;
 			this.isEnabled  = isEnabled;
 		}
-	
+		
 		public virtual void Click(SWF.MouseButtons mouseButtons)
 		{
 			if (mouseButtons == SWF.MouseButtons.Left) {

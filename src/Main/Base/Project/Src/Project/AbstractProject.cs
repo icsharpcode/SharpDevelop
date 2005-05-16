@@ -362,5 +362,28 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			return null;
 		}
+		
+		
+		
+		/// <summary>
+		/// Saves project preferences (currently opened files, bookmarks etc.) to the
+		/// a property container.
+		/// </summary>
+		public virtual Properties CreateMemento()
+		{
+			Properties properties = new Properties();
+			properties.Set<ICSharpCode.SharpDevelop.Bookmarks.SDBookmark[]>("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(this).ToArray());
+			return properties;
+		}
+		
+		/// <summary>
+		/// Loads project preferences (currently opened files, bookmarks etc.).
+		/// </summary>
+		public virtual void SetMemento(Properties properties)
+		{
+			foreach (ICSharpCode.SharpDevelop.Bookmarks.SDBookmark mark in properties.Get<ICSharpCode.SharpDevelop.Bookmarks.SDBookmark[]>("bookmarks", new ICSharpCode.SharpDevelop.Bookmarks.SDBookmark[0])) {
+				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.AddMark(mark);
+			}
+		}
 	}
 }

@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
@@ -19,6 +20,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	/// <summary>
 	/// Description of Bookmark.
 	/// </summary>
+	[TypeConverter(typeof(BookmarkConverter))]
 	public class SDBookmark : Bookmark
 	{
 		string fileName;
