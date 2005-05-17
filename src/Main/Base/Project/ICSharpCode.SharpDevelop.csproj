@@ -662,6 +662,8 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkConverter.cs" />
+    <Compile Include="Src\TextEditor\Bookmarks\ClassMemberBookmark.cs" />
+    <Compile Include="Src\Commands\ClassMemberMenuBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

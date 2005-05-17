@@ -95,9 +95,9 @@ namespace ICSharpCode.TextEditor.Document
 			this.isEnabled  = isEnabled;
 		}
 		
-		public virtual void Click(SWF.MouseButtons mouseButtons)
+		public virtual void Click(SWF.Control parent, SWF.MouseEventArgs e)
 		{
-			if (mouseButtons == SWF.MouseButtons.Left) {
+			if (e.Button == SWF.MouseButtons.Left) {
 				document.BookmarkManager.RemoveMark(this);
 			}
 		}

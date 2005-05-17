@@ -415,6 +415,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					parseInfo = ParserService.GetParseInformation(fileName);
 				}
 				textAreaControl.Document.FoldingManager.UpdateFoldings(fileName, parseInfo);
+				UpdateClassMemberBookmarks(parseInfo);
 			}
 		}
 		
@@ -434,11 +435,32 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			try {
 				textAreaControl.Document.FoldingManager.UpdateFoldings(TitleName, parseInfo);
 				textAreaControl.ActiveTextAreaControl.TextArea.Refresh(textAreaControl.ActiveTextAreaControl.TextArea.FoldMargin);
+				UpdateClassMemberBookmarks(parseInfo);
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
 		}
 		
+		void UpdateClassMemberBookmarks(ParseInformation parseInfo)
+		{
+			BookmarkManager bm = textAreaControl.Document.BookmarkManager;
+			bm.RemoveMarks(new Predicate<Bookmark>(IsClassMemberBookmark));
+			foreach (IClass c in parseInfo.MostRecentCompilationUnit.Classes) {
+				foreach (IMethod m in c.Methods) {
+					if (m.Region == null || m.Region.BeginLine <= 0) continue;
+					bm.AddMark(new Bookmarks.MethodBookmark(textAreaControl.Document, m));
+				}
+				foreach (IProperty m in c.Properties) {
+					if (m.Region == null || m.Region.BeginLine <= 0) continue;
+					bm.AddMark(new Bookmarks.PropertyBookmark(textAreaControl.Document, m));
+				}
+			}
+		}
+		
+		bool IsClassMemberBookmark(Bookmark b)
+		{
+			return b is Bookmarks.ClassMemberBookmark;
+		}
 		
 		#region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation
 		public bool EnableCut {

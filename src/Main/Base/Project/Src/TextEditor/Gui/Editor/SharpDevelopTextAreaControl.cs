@@ -56,12 +56,18 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void BookmarkAdded(object sender, BookmarkEventArgs e)
 		{
-			Bookmarks.BookmarkManager.AddMark((Bookmarks.SDBookmark)e.Bookmark);
+			Bookmarks.SDBookmark b = e.Bookmark as Bookmarks.SDBookmark;
+			if (b != null) {
+				Bookmarks.BookmarkManager.AddMark(b);
+			}
 		}
 		
 		void BookmarkRemoved(object sender, BookmarkEventArgs e)
 		{
-			Bookmarks.BookmarkManager.RemoveMark((Bookmarks.SDBookmark)e.Bookmark);
+			Bookmarks.SDBookmark b = e.Bookmark as Bookmarks.SDBookmark;
+			if (b != null) {
+				Bookmarks.BookmarkManager.RemoveMark(b);
+			}
 		}
 		
 		public virtual ICompletionDataProvider CreateCodeCompletionDataProvider(bool ctrlSpace)

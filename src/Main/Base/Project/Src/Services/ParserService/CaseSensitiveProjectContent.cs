@@ -222,16 +222,22 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		internal int GetInitializationWorkAmount()
+		{
+			return project.Items.Count;
+		}
+		
 		internal void Initialize2()
 		{
 			if (!initializing) return;
 			ProjectItem[] arr = project.Items.ToArray();
+			int progressStart = StatusBarService.ProgressMonitor.WorkDone;
 			try {
 				Properties textEditorProperties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
 				getParseableContentEncoding = Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252));
 				textEditorProperties = null;
 				
-				StatusBarService.ProgressMonitor.BeginTask("Parsing " + project.Name + "...", arr.Length);
+				StatusBarService.ProgressMonitor.TaskName = "Parsing " + project.Name + "...";
 				GetParseableContentDelegate pcd = new GetParseableContentDelegate(GetParseableFileContent);
 				ProjectItem item;
 				ProjectItem nextItem = arr[0];
@@ -240,7 +246,7 @@ namespace ICSharpCode.Core
 					item = nextItem;
 					nextItem = (i < arr.Length - 1) ? arr[i + 1] : null;
 					if ((i % 5) == 2)
-						StatusBarService.ProgressMonitor.WorkDone = i;
+						StatusBarService.ProgressMonitor.WorkDone = progressStart + i;
 					if (item.ItemType == ItemType.Compile) {
 						string fileName = item.FileName;
 						string fileContent;
@@ -257,8 +263,8 @@ namespace ICSharpCode.Core
 					if (!initializing) return;
 				}
 			} finally {
-				StatusBarService.ProgressMonitor.Done();
 				initializing = false;
+				StatusBarService.ProgressMonitor.WorkDone = progressStart + arr.Length;
 				getParseableContentEncoding = null;
 			}
 		}

@@ -69,7 +69,7 @@ namespace ICSharpCode.TextEditor
 				int fontHeight = textArea.TextView.FontHeight;
 				int yPos = lineNumber * fontHeight - textArea.VirtualTop.Y;
 				if (mousePos.Y > yPos && mousePos.Y < yPos + fontHeight) {
-					mark.Click(mouseButtons);
+					mark.Click(textArea, new MouseEventArgs(mouseButtons, 1, mousePos.X, mousePos.Y, 0));
 					if (oldCount != marks.Count) {
 						textArea.UpdateLine(lineNumber);
 					}

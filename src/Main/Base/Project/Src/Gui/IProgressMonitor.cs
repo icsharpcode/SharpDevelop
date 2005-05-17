@@ -24,6 +24,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		string TaskName {
 			get;
+			set;
 		}
 	}
 }

@@ -97,6 +97,18 @@ namespace ICSharpCode.TextEditor.Document
 			OnChanged(EventArgs.Empty);
 		}
 		
+		public void RemoveMarks(Predicate<Bookmark> predicate)
+		{
+			for (int i = 0; i < bookmark.Count; ++i) {
+				Bookmark bm = bookmark[i];
+				if (predicate(bm)) {
+					bookmark.RemoveAt(i--);
+					OnRemoved(new BookmarkEventArgs(bm));
+				}
+			}
+			OnChanged(EventArgs.Empty);
+		}
+		
 		/// <returns>
 		/// true, if a mark at mark exists, otherwise false
 		/// </returns>

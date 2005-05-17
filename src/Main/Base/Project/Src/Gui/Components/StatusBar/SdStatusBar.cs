@@ -156,7 +156,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void SetWorkDone()
 		{
-			if (workDone < totalWork) {
+			if (workDone < statusProgressBar.Maximum) {
 				statusProgressBar.Value = workDone;
 			}
 		}
@@ -173,6 +173,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get {
 				return taskName;
 			}
+			set {
+				if (taskName == value) return;
+				taskName = value;
+				this.BeginInvoke(new MethodInvoker(SetTaskName));
+			}
+		}
+		
+		void SetTaskName()
+		{
+			jobNamePanel.Text = taskName;
 		}
 	}
 }

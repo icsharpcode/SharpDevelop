@@ -1451,6 +1451,10 @@
 		       class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBinding" />
 	</Path>
 	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">
+		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Commands.ClassMemberMenuBuilder" />
+	</Path>
+	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
 		<MenuItem id = "Cut"
 		          label = "${res:XML.TextAreaContextMenu.Cut}"

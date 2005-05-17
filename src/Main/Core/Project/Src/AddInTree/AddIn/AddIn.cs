@@ -23,7 +23,8 @@ namespace ICSharpCode.Core
 					return o;
 				}
 			}
-			throw new ArgumentException("Cannot create object: " + className);
+			MessageService.ShowError("Cannot create object: " + className);
+			return null;
 		}
 		
 		public List<Runtime> Runtimes {

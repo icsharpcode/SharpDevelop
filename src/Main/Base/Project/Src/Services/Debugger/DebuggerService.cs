@@ -459,6 +459,7 @@ namespace ICSharpCode.Core
 		
 		static void IconBarMouseDown(AbstractMargin iconBar, Point mousepos, MouseButtons mouseButtons)
 		{
+			if (mouseButtons != MouseButtons.Left) return;
 			Rectangle viewRect = iconBar.TextArea.TextView.DrawingPosition;
 			Point logicPos = iconBar.TextArea.TextView.GetLogicalPosition(0, mousepos.Y - viewRect.Top);
 			

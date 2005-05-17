@@ -122,15 +122,18 @@ namespace ICSharpCode.Core
 					ICSharpCode.Core.MessageService.ShowError(e);
 				}
 			}
+			int workAmount = 0;
 			foreach (DefaultProjectContent newContent in createdContents) {
 				if (abortLoadSolutionProjectsThread) return;
 				try {
 					newContent.Initialize1();
+					workAmount += newContent.GetInitializationWorkAmount();
 				} catch (Exception e) {
 					Console.WriteLine("Error while initializing project references:" + newContent);
 					ICSharpCode.Core.MessageService.ShowError(e);
 				}
 			}
+			StatusBarService.ProgressMonitor.BeginTask("Parsing...", workAmount);
 			foreach (DefaultProjectContent newContent in createdContents) {
 				if (abortLoadSolutionProjectsThread) return;
 				try {
@@ -140,6 +143,7 @@ namespace ICSharpCode.Core
 					ICSharpCode.Core.MessageService.ShowError(e);
 				}
 			}
+			StatusBarService.ProgressMonitor.Done();
 		}
 		
 		public static IProjectContent GetProjectContent(IProject project)
