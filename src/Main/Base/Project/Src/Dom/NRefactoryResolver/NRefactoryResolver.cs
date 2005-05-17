@@ -201,11 +201,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			}
 			if (expr is ObjectCreateExpression) {
+				ArrayList constructors = new ArrayList();
 				foreach (IMethod m in type.GetMethods()) {
 					if (m.IsConstructor && !m.IsStatic)
-						return CreateMemberResolveResult(m);
+						constructors.Add(m);
 				}
-				return null;
+				return CreateMemberResolveResult(typeVisitor.FindOverload(constructors, ((ObjectCreateExpression)expr).Parameters, null));
 			}
 			return new ResolveResult(callingClass, callingMember, type);
 		}
@@ -331,6 +332,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		private ResolveResult CreateMemberResolveResult(IMember member)
 		{
+			if (member == null) return null;
 			return new MemberResolveResult(callingClass, callingMember, member);
 		}
 		

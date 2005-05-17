@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return m.ReturnType;
 		}
 		
-		IMethod FindOverload(ArrayList methods, InvocationExpression invocationExpression, object data)
+		public IMethod FindOverload(ArrayList methods, ArrayList arguments, object data)
 		{
 			if (methods.Count <= 0) {
 				return null;
@@ -61,7 +61,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (methods.Count == 1)
 				return bestMethod;
 			
-			ArrayList arguments = invocationExpression.Parameters;
 			IReturnType[] types = new IReturnType[arguments.Count];
 			for (int i = 0; i < types.Length; ++i) {
 				types[i] = ((Expression)arguments[i]).AcceptVisitor(this, data) as IReturnType;
@@ -103,14 +102,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
 				IReturnType type = field.TargetObject.AcceptVisitor(this, data) as IReturnType;
 				ArrayList methods = resolver.SearchMethod(type, field.FieldName);
-				return FindOverload(methods, invocationExpression, data);
+				return FindOverload(methods, invocationExpression.Parameters, data);
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				string id = ((IdentifierExpression)invocationExpression.TargetObject).Identifier;
 				if (resolver.CallingClass == null) {
 					return null;
 				}
 				ArrayList methods = resolver.SearchMethod(resolver.CallingClass.DefaultReturnType, id);
-				return FindOverload(methods, invocationExpression, data);
+				return FindOverload(methods, invocationExpression.Parameters, data);
 			}
 			// invocationExpression is delegate call
 			IReturnType t = invocationExpression.AcceptChildren(this, data) as IReturnType;
@@ -120,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			IClass c = resolver.SearchType(t.FullyQualifiedName, resolver.CallingClass, resolver.CompilationUnit);
 			if (c.ClassType == ClassType.Delegate) {
 				ArrayList methods = resolver.SearchMethod(t, "Invoke");
-				return FindOverload(methods, invocationExpression, data);
+				return FindOverload(methods, invocationExpression.Parameters, data);
 			}
 			return null;
 		}

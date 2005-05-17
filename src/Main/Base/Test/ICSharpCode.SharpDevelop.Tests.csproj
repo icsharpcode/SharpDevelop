@@ -42,6 +42,7 @@
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="NRefactoryResolverTests.cs" />
+    <Compile Include="ReflectionLayerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\ICSharpCode.SharpDevelop.csproj">

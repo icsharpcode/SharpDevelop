@@ -172,9 +172,9 @@ namespace ICSharpCode.Core
 				fileName2 = fileName2.Substring(0, fileName2.Length - 1);
 			
 			try {
-				if (fileName1.Length < 2 || fileName1[1] != ':')
+				if (fileName1.Length < 2 || fileName1[1] != ':' || fileName1.IndexOf("/.") >= 0 || fileName1.IndexOf("\\.") >= 0)
 					fileName1 = Path.GetFullPath(fileName1);
-				if (fileName2.Length < 2 || fileName2[1] != ':')
+				if (fileName2.Length < 2 || fileName2[1] != ':' || fileName2.IndexOf("/.") >= 0 || fileName2.IndexOf("\\.") >= 0)
 					fileName2 = Path.GetFullPath(fileName2);
 			} catch (Exception) {
 				return false;

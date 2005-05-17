@@ -292,7 +292,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			return false;
 		}
-		*/
+		 */
 		/*
 		public IMember SearchMember(string memberName)
 		{
@@ -343,7 +343,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			return null;
 		}
-		*/
+		 */
 		
 		public IClass GetInnermostClass(int caretLine, int caretColumn)
 		{
@@ -438,20 +438,32 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			return members;
 		}
-		*/
+		 */
 		
 		public class ClassInheritanceEnumerator : IEnumerator, IEnumerable
 		{
 			IClass topLevelClass;
 			IClass currentClass  = null;
-			Queue  baseTypeQueue = new Queue();
-
+			
+			private struct BaseType {
+				internal IClass parent;
+				internal string name;
+				
+				internal BaseType(IClass parent, string name) {
+					this.parent = parent;
+					this.name = name;
+				}
+			}
+			
+			Queue<BaseType> baseTypeQueue = new Queue<BaseType>();
+			
+			List<IClass> finishedClasses = new List<IClass>();
+			
 			public ClassInheritanceEnumerator(IClass topLevelClass)
 			{
 				this.topLevelClass = topLevelClass;
-				baseTypeQueue.Enqueue(topLevelClass.FullyQualifiedName);
 				PutBaseClassesOnStack(topLevelClass);
-				baseTypeQueue.Enqueue("System.Object");
+				baseTypeQueue.Enqueue(new BaseType(null, "System.Object"));
 			}
 			
 			public IEnumerator GetEnumerator()
@@ -462,7 +474,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			void PutBaseClassesOnStack(IClass c)
 			{
 				foreach (string baseTypeName in c.BaseTypes) {
-					baseTypeQueue.Enqueue(baseTypeName);
+					baseTypeQueue.Enqueue(new BaseType(c, baseTypeName));
 				}
 			}
 			
@@ -478,42 +490,40 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
+			bool first = true;
+			
 			public bool MoveNext()
 			{
 				try {
+					if (first) {
+						first = false;
+						currentClass = topLevelClass;
+						return true;
+					}
 					if (baseTypeQueue.Count == 0) {
 						return false;
 					}
-					string baseTypeName = baseTypeQueue.Dequeue().ToString();
 					
-					IClass baseType = ParserService.CurrentProjectContent.GetClass(baseTypeName);
+					BaseType baseTypeStruct = baseTypeQueue.Dequeue();
 					
-					// search through all usings the top level class compilation unit has.
-					if (baseType == null) {
-						ICompilationUnit unit = currentClass == null ? null : currentClass.CompilationUnit;
-						if (unit != null) {
-							foreach (IUsing u in unit.Usings) {
-								baseType = u.SearchType(baseTypeName);
-								if (baseType != null) {
-									break;
-								}
-							}
-						}
+					IClass baseType;
+					if (baseTypeStruct.parent == null) {
+						baseType = ProjectContentRegistry.GetMscorlibContent().GetClass(baseTypeStruct.name);
+					} else {
+						baseType = baseTypeStruct.parent.ProjectContent.SearchType(baseTypeStruct.name, baseTypeStruct.parent, 1, 1);
 					}
-					
-					// search through all namespaces the top level class is defined in.
-					if (baseType == null) {
-						string[] namespaces = topLevelClass.Namespace.Split('.');
-						for (int i = namespaces.Length; i > 0 && baseType == null; --i) {
-							baseType = ParserService.CurrentProjectContent.GetClass(String.Join(".", namespaces, 0, i) + "." + baseTypeName);
-						}
-					}
-					
 					if (baseType != null) {
 						currentClass = baseType;
+						
+						// prevent enumerating interfaces multiple times and endless loops when
+						// circular inheritance is found
+						if (finishedClasses.Contains(currentClass)) {
+							return MoveNext();
+						}
+						finishedClasses.Add(currentClass);
 						PutBaseClassesOnStack(currentClass);
+						return true;
 					}
-					return baseType != null;
 				} catch (Exception e) {
 					Console.WriteLine(e);
 				}
@@ -522,10 +532,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			public void Reset()
 			{
+				first = true;
 				baseTypeQueue.Clear();
-				baseTypeQueue.Enqueue(topLevelClass.FullyQualifiedName);
+				finishedClasses.Clear();
 				PutBaseClassesOnStack(topLevelClass);
-				baseTypeQueue.Enqueue("System.Object");
+				baseTypeQueue.Enqueue(new BaseType(null, "System.Object"));
 			}
 		}
 	}

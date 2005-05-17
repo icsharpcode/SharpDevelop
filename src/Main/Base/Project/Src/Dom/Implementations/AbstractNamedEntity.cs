@@ -96,5 +96,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			nspace = declaringType.FullyQualifiedName;
 			fullyQualifiedName = nspace + '.' + name;
 		}
+		
+		public override string ToString()
+		{
+			return String.Format("[{0}: {1}]", GetType().Name, fullyQualifiedName);
+		}
 	}
 }
