@@ -13,8 +13,11 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Bookmarks;
+using ICSharpCode.SharpDevelop.Gui;
+using SearchAndReplace;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
@@ -74,37 +77,44 @@ namespace ICSharpCode.SharpDevelop.Commands
 			}
 		}
 		
-		IMember FindBaseMember(IMember member)
+		IMember FindSimilarMember(IClass type, IMember member)
 		{
-			IClass parentClass = member.DeclaringType;
-			IClass baseClass = parentClass.BaseClass;
-			if (baseClass == null) return null;
 			if (member is IMethod) {
 				IMethod parentMethod = (IMethod)member;
-				foreach (IClass childClass in baseClass.ClassInheritanceTree) {
-					foreach (IMethod m in childClass.Methods) {
-						if (string.Equals(parentMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
-							if (m.IsStatic == parentMethod.IsStatic) {
-								if (DiffUtility.Compare(parentMethod.Parameters, m.Parameters) == 0) {
-									return m;
-								}
+				foreach (IMethod m in type.Methods) {
+					if (string.Equals(parentMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
+						if (m.IsStatic == parentMethod.IsStatic) {
+							if (DiffUtility.Compare(parentMethod.Parameters, m.Parameters) == 0) {
+								return m;
 							}
 						}
 					}
 				}
 			} else if (member is IProperty) {
 				IProperty parentMethod = (IProperty)member;
-				foreach (IClass childClass in baseClass.ClassInheritanceTree) {
-					foreach (IProperty m in childClass.Properties) {
-						if (string.Equals(parentMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
-							if (m.IsStatic == parentMethod.IsStatic) {
-								if (DiffUtility.Compare(parentMethod.Parameters, m.Parameters) == 0) {
-									return m;
-								}
+				foreach (IProperty m in type.Properties) {
+					if (string.Equals(parentMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
+						if (m.IsStatic == parentMethod.IsStatic) {
+							if (DiffUtility.Compare(parentMethod.Parameters, m.Parameters) == 0) {
+								return m;
 							}
 						}
 					}
 				}
+			}
+			return null;
+		}
+		
+		IMember FindBaseMember(IMember member)
+		{
+			IClass parentClass = member.DeclaringType;
+			IClass baseClass = parentClass.BaseClass;
+			if (baseClass == null) return null;
+			
+			foreach (IClass childClass in baseClass.ClassInheritanceTree) {
+				IMember m = FindSimilarMember(childClass, member);
+				if (m != null)
+					return m;
 			}
 			return null;
 		}
@@ -121,7 +131,33 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
-			MessageService.ShowMessage("Not implemented.");
+			List<IClass> derivedClasses = RefactoringService.FindDerivedClasses(member.DeclaringType, ParserService.AllProjectContents);
+			List<SearchResult> results = new List<SearchResult>();
+			foreach (IClass derivedClass in derivedClasses) {
+				if (derivedClass.CompilationUnit == null) continue;
+				if (derivedClass.CompilationUnit.FileName == null) continue;
+				IMember m = FindSimilarMember(derivedClass, member);
+				if (m != null && m.Region != null) {
+					SearchResult res = new SimpleSearchResult(m.FullyQualifiedName, new Point(m.Region.BeginColumn - 1, m.Region.BeginLine - 1));
+					res.ProvidedDocumentInformation = GetDocumentInformation(derivedClass.CompilationUnit.FileName);
+					results.Add(res);
+				}
+			}
+			SearchReplaceInFilesManager.ShowSearchResults(results);
+		}
+		
+		ProvidedDocumentInformation GetDocumentInformation(string fileName)
+		{
+			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
+				if (content is ITextEditorControlProvider &&
+				    content.FileName != null &&
+				    FileUtility.IsEqualFile(content.FileName, fileName))
+				{
+					return new ProvidedDocumentInformation(((ITextEditorControlProvider)content).TextEditorControl.Document, fileName, 0);
+				}
+			}
+			ITextBufferStrategy strategy = StringTextBufferStrategy.CreateTextBufferFromFile(fileName);
+			return new ProvidedDocumentInformation(strategy, fileName, 0);
 		}
 		
 		void FindReferences(object sender, EventArgs e)

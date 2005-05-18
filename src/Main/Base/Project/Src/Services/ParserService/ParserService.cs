@@ -47,6 +47,12 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public static IEnumerable<IProjectContent> AllProjectContents {
+			get {
+				return projectContents.Values;
+			}
+		}
+		
 		static IProjectContent forcedContent;
 		/// <summary>
 		/// Used for unit tests ONLY!!

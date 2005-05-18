@@ -59,9 +59,8 @@ namespace SearchAndReplace
 				IDocument document;
 				string fileName = files[curIndex].ToString();
 				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-					// WINDOWS DEPENDENCY : ToUpper
 					if (content.FileName != null &&
-						Path.GetFullPath(content.FileName).ToUpper() == Path.GetFullPath(fileName).ToUpper()) {
+					    FileUtility.IsEqualFile(content.FileName, fileName)) {
 						document = ((ITextEditorControlProvider)content).TextEditorControl.Document;
 						return new ProvidedDocumentInformation(document,
 						                                       fileName,

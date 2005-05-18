@@ -77,6 +77,11 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public bool HasReferenceTo(IProjectContent content)
+		{
+			return referencedContents.Contains(content);
+		}
+		
 		LanguageProperties language = LanguageProperties.CSharp;
 		
 		/// <summary>

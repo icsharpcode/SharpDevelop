@@ -57,6 +57,11 @@ namespace SearchAndReplace
 		
 		static void FinishSearchInFiles(List<SearchResult> results)
 		{
+			ShowSearchResults(results);
+		}
+		
+		public static void ShowSearchResults(List<SearchResult> results)
+		{
 			PadDescriptor searchResultPanel = WorkbenchSingleton.Workbench.GetPad(typeof(SearchResultPanel));
 			if (searchResultPanel != null) {
 				searchResultPanel.BringPadToFront();

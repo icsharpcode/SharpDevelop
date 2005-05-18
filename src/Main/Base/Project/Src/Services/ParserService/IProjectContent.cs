@@ -32,6 +32,8 @@ namespace ICSharpCode.Core
 			get;
 		}
 		
+		bool HasReferenceTo(IProjectContent content);
+		
 		/// <summary>
 		/// Gets the properties of the language this project content was written in.
 		/// </summary>

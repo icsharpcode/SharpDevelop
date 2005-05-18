@@ -25,6 +25,7 @@ namespace SearchAndReplace
 		Point startPosition;
 		Point endPosition;
 		string positionText;
+		string specialText;
 		bool showFileName = false;
 		public bool ShowFileName {
 			get {
@@ -33,13 +34,21 @@ namespace SearchAndReplace
 			set {
 				showFileName = value;
 				if (showFileName) {
-					Text = positionText + document.GetText(line) + FileNameText;
+					Text = DisplayText + FileNameText;
 				} else {
-					Text = positionText + document.GetText(line);
+					Text = DisplayText;
 				}
 			}
 		}
 		
+		string DisplayText {
+			get {
+				if (specialText != null)
+					return positionText + specialText;
+				else
+					return positionText + document.GetText(line).Replace("\t", "   ");
+			}
+		}
 		string FileNameText {
 			get {
 				return " in " + Path.GetFileName(result.FileName) + "(" + Path.GetDirectoryName(result.FileName) +")";
@@ -50,19 +59,19 @@ namespace SearchAndReplace
 			drawDefault = false;
 			this.document = document;
 			this.result = result;
-			startPosition = document.OffsetToPosition(result.Offset);
-			endPosition   = document.OffsetToPosition(result.Offset + result.Length);
+			startPosition = result.GetStartPosition(document);
+			endPosition   = result.GetEndPosition(document);
 			positionText =  "(" + startPosition.Y + ", " + startPosition.X + ") ";
 			
 			line = document.GetLineSegment(startPosition.Y);
-			Text = positionText + document.GetText(line);
+			specialText = result.DisplayText;
+			Text = DisplayText;
 		}
 		
 		protected override int MeasureItemWidth(DrawTreeNodeEventArgs e)
 		{
 			Graphics g = e.Graphics;
-			int x = MeasureTextWidth(g, positionText, BoldMonospacedFont);
-			x += MeasureTextWidth(g, document.GetText(line).Replace("\t", "   "), BoldMonospacedFont);
+			int x = MeasureTextWidth(g, DisplayText, BoldMonospacedFont);
 			if (ShowFileName) {
 				x += MeasureTextWidth(g, FileNameText, ItalicFont);
 			}
@@ -76,8 +85,19 @@ namespace SearchAndReplace
 			
 			spaceSize = g.MeasureString("-", Font,  new PointF(0, 0), StringFormat.GenericTypographic);
 			
-			x += DrawLine(g, line, e.Bounds.Y, x);
-			
+			if (specialText != null) {
+				DrawText(g, specialText, Brushes.Black, Font, ref x, e.Bounds.Y);
+			} else {
+				x += DrawLine(g, line, e.Bounds.Y, x);
+			}
+			if (ShowFileName) {
+				x += DrawDocumentWord(g,
+				                      FileNameText,
+				                      new PointF(x, e.Bounds.Y),
+				                      ItalicMonospacedFont,
+				                      Color.Gray
+				                     );
+			}
 		}
 		
 		public override void ActivateItem()
@@ -144,19 +164,11 @@ namespace SearchAndReplace
 				}
 			} else {
 				xPos += DrawDocumentWord(g,
-				                 document.GetText(line),
-				                 new PointF(xPos, yPos),
-				                 MonospacedFont,
-				                 Color.Black
-				                );
-			}
-			if (ShowFileName) {
-				xPos += DrawDocumentWord(g,
-				                 FileNameText,
-				                 new PointF(xPos, yPos),
-				                 ItalicMonospacedFont,
-				                 Color.Gray
-				                );
+				                         document.GetText(line),
+				                         new PointF(xPos, yPos),
+				                         MonospacedFont,
+				                         Color.Black
+				                        );
 			}
 			return xPos;
 		}

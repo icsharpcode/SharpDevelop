@@ -664,6 +664,7 @@
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkConverter.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\ClassMemberBookmark.cs" />
     <Compile Include="Src\Commands\ClassMemberMenuBuilder.cs" />
+    <Compile Include="Src\Services\RefactoringService\RefactoringService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
@@ -682,6 +683,7 @@
       <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
+    <Folder Include="Src\Services\RefactoringService" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
