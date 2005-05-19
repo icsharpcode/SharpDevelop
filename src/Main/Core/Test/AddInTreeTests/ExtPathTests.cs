@@ -63,11 +63,11 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 		[Test]
 		public void TestIsEqualFile()
 		{
-			Assert.IsTrue(FileUtility.IsEqualFile(@"C:\.\Hello World.Exe", @"C:\HELLO WOrld.exe"));
-			Assert.IsTrue(FileUtility.IsEqualFile(@"C:\bla\..\a\my.file.is.this", @"C:\gg\..\.\.\.\.\a\..\a\MY.FILE.IS.THIS"));
+			Assert.IsTrue(FileUtility.IsEqualFileName(@"C:\.\Hello World.Exe", @"C:\HELLO WOrld.exe"));
+			Assert.IsTrue(FileUtility.IsEqualFileName(@"C:\bla\..\a\my.file.is.this", @"C:\gg\..\.\.\.\.\a\..\a\MY.FILE.IS.THIS"));
 			
-			Assert.IsFalse(FileUtility.IsEqualFile(@"C:\.\Hello World.Exe", @"C:\HELLO_WOrld.exe"));
-			Assert.IsFalse(FileUtility.IsEqualFile(@"C:\a\my.file.is.this", @"C:\gg\..\.\.\.\.\a\..\b\MY.FILE.IS.THIS"));
+			Assert.IsFalse(FileUtility.IsEqualFileName(@"C:\.\Hello World.Exe", @"C:\HELLO_WOrld.exe"));
+			Assert.IsFalse(FileUtility.IsEqualFileName(@"C:\a\my.file.is.this", @"C:\gg\..\.\.\.\.\a\..\b\MY.FILE.IS.THIS"));
 			
 		}
 		

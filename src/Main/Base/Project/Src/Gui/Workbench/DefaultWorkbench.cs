@@ -346,7 +346,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else {
 				foreach (IViewContent content in ViewContentCollection) {
 					if (content.FileName != null &&
-					    FileUtility.IsEqualFile(content.FileName, e.SourceFile)) {
+					    FileUtility.IsEqualFileName(content.FileName, e.SourceFile)) {
 						content.FileName  = e.TargetFile;
 						content.TitleName = Path.GetFileName(e.TargetFile);
 						return;

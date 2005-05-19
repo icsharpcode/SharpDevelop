@@ -172,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 				if (content is ITextEditorControlProvider &&
 				    content.FileName != null &&
-				    FileUtility.IsEqualFile(content.FileName, fileName))
+				    FileUtility.IsEqualFileName(content.FileName, fileName))
 				{
 					return new ProvidedDocumentInformation(((ITextEditorControlProvider)content).TextEditorControl.Document, fileName, 0);
 				}

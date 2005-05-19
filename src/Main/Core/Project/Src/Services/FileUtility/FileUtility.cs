@@ -156,7 +156,7 @@ namespace ICSharpCode.Core
 			return Path.GetFullPath(Path.Combine(baseDirectoryPath, relPath));
 		}
 		
-		public static bool IsEqualFile(string fileName1, string fileName2)
+		public static bool IsEqualFileName(string fileName1, string fileName2)
 		{
 			// Optimized for performance:
 			//return Path.GetFullPath(fileName1.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).ToLower() == Path.GetFullPath(fileName2.TrimEnd(Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar)).ToLower();

@@ -117,7 +117,7 @@ namespace ICSharpCode.Core
 				// WINDOWS DEPENDENCY : ToUpper()
 				if (content.FileName != null) {
 					try {
-						if (fileName.StartsWith("http://") ? content.FileName == fileName : FileUtility.IsEqualFile(content.FileName, fileName)) {
+						if (fileName.StartsWith("http://") ? content.FileName == fileName : FileUtility.IsEqualFileName(content.FileName, fileName)) {
 							content.WorkbenchWindow.SelectWindow();
 							return;
 						}
@@ -274,7 +274,7 @@ namespace ICSharpCode.Core
 					IViewContent viewContent = subViewContent as IViewContent;
 					if (viewContent != null && viewContent.FileName != null) {
 						try {
-							if (FileUtility.IsEqualFile(viewContent.FileName, fileName)) {
+							if (FileUtility.IsEqualFileName(viewContent.FileName, fileName)) {
 								if (viewContent is IPositionable) {
 									window.SwitchView(i);
 									((IPositionable)viewContent).JumpTo(Math.Max(0, line), Math.Max(0, column));

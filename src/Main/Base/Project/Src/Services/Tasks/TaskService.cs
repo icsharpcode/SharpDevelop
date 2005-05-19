@@ -106,7 +106,7 @@ namespace ICSharpCode.Core
 		{
 			for (int i = 0; i < tasks.Count; ++i) {
 				Task curTask = tasks[i];
-				if (FileUtility.IsEqualFile(curTask.FileName, e.FileName)) {
+				if (FileUtility.IsEqualFileName(curTask.FileName, e.FileName)) {
 					Remove(curTask);
 					--i;
 				}
@@ -117,7 +117,7 @@ namespace ICSharpCode.Core
 		{
 			for (int i = 0; i < tasks.Count; ++i) {
 				Task curTask = tasks[i];
-				if (FileUtility.IsEqualFile(curTask.FileName, e.SourceFile)) {
+				if (FileUtility.IsEqualFileName(curTask.FileName, e.SourceFile)) {
 					Remove(curTask);
 					curTask.FileName = Path.GetFullPath(e.TargetFile);
 					Add(curTask);
@@ -174,7 +174,7 @@ namespace ICSharpCode.Core
 			List<Task> oldTasks = new List<Task>();
 			
 			foreach (Task task in CommentTasks) {
-				if (FileUtility.IsEqualFile(task.FileName, fileName)) {
+				if (FileUtility.IsEqualFileName(task.FileName, fileName)) {
 					oldTasks.Add(task);
 				}
 			}

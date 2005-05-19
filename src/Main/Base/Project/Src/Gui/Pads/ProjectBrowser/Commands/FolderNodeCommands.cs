@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public static void CopyDirectory(string directoryName, DirectoryNode node)
 		{
 			string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(directoryName));
-			if (!FileUtility.IsEqualFile(directoryName, copiedFileName)) {
+			if (!FileUtility.IsEqualFileName(directoryName, copiedFileName)) {
 				FileUtility.DeepCopy(directoryName, copiedFileName, true);
 				DirectoryNode newNode = new DirectoryNode(copiedFileName);
 				newNode.AddTo(node);
@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				foreach (TreeNode childNode in node.Nodes) {
 					if (childNode is DirectoryNode) {
 						DirectoryNode directoryNode = (DirectoryNode)childNode;
-						if (FileUtility.IsEqualFile(directoryNode.Directory, copiedFileName)) {
+						if (FileUtility.IsEqualFileName(directoryNode.Directory, copiedFileName)) {
 							IncludeFileInProject.IncludeDirectoryNode(directoryNode, true);
 						}
 					}
@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public static void CopyFile(string fileName, DirectoryNode node, bool includeInProject)
 		{
 			string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(fileName));
-			if (!FileUtility.IsEqualFile(fileName, copiedFileName)) {
+			if (!FileUtility.IsEqualFileName(fileName, copiedFileName)) {
 				File.Copy(fileName, copiedFileName, true);
 				FileNode newNode = new FileNode(copiedFileName);
 				newNode.AddTo(node);
@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				foreach (TreeNode childNode in node.Nodes) {
 					if (childNode is FileNode) {
 						FileNode fileNode = (FileNode)childNode;
-						if (FileUtility.IsEqualFile(fileNode.FileName, copiedFileName)) {
+						if (FileUtility.IsEqualFileName(fileNode.FileName, copiedFileName)) {
 							IncludeFileInProject.IncludeFileNode(fileNode);
 						}
 					}

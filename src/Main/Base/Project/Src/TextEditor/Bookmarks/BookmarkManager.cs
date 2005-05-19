@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			
 			foreach (SDBookmark mark in bookmarks) {
 				if (mark.FileName == null) continue;
-				if (FileUtility.IsEqualFile(mark.FileName, fileName)) {
+				if (FileUtility.IsEqualFileName(mark.FileName, fileName)) {
 					marks.Add(mark);
 				}
 			}

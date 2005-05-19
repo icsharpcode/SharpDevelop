@@ -310,7 +310,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			for (int i = 0; i < items.Count; ++i) {
 				FileProjectItem fileItem = items[i] as FileProjectItem;
 				if (fileItem != null) {
-					if (FileUtility.IsEqualFile(fileItem.FileName, fileName)) {
+					if (FileUtility.IsEqualFileName(fileItem.FileName, fileName)) {
 						return true;
 					}
 				}

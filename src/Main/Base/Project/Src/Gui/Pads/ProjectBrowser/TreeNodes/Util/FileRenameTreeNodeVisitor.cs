@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override object Visit(SolutionItemNode solutionItemNode, object data)
 		{
-			if (FileUtility.IsEqualFile(oldName, solutionItemNode.FileName)) {
+			if (FileUtility.IsEqualFileName(oldName, solutionItemNode.FileName)) {
 				solutionItemNode.Text = Path.GetFileName(newName);
 			}
 			solutionItemNode.AcceptChildren(this, data);
@@ -47,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override object Visit(FileNode fileNode, object data)
 		{
-			if (FileUtility.IsEqualFile(oldName, fileNode.FileName)) {
+			if (FileUtility.IsEqualFileName(oldName, fileNode.FileName)) {
 				fileNode.FileName = FileUtility.RenameBaseDirectory(fileNode.FileName, oldName, newName);
 			}
 			fileNode.AcceptChildren(this, data);

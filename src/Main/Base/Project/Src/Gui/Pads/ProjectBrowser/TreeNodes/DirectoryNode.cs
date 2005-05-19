@@ -243,7 +243,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						bool isBelow = FileUtility.IsBaseDirectory(dirNode.Directory, cur.Value.FileName);
 						if (isBelow) {
 							// check if there is a 'folder' item.
-							if (FileUtility.IsEqualFile(dirNode.RelativePath, cur.Value.Include)) {
+							if (FileUtility.IsEqualFileName(dirNode.RelativePath, cur.Value.Include)) {
 								dirNode.ProjectItem = cur.Value;
 								if (cur.Value.ItemType == ItemType.WebReferences) {
 									dirNode.SpecialFolder = SpecialFolder.WebReferenceFolder;
@@ -261,7 +261,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					} else if (node is FileNode) {
 						FileNode fileNode = (FileNode)node;
-						if (cur.Value is FileProjectItem && FileUtility.IsEqualFile(fileNode.FileName, cur.Value.FileName)) {
+						if (cur.Value is FileProjectItem && FileUtility.IsEqualFileName(fileNode.FileName, cur.Value.FileName)) {
 							FileProjectItem fileProjectItem = cur.Value as FileProjectItem;
 							if (fileProjectItem != null && fileProjectItem.DependentUpon != null && fileProjectItem.DependentUpon.Length > 0) {
 								dependendFileDictionary[fileNode] = fileProjectItem.DependentUpon;
@@ -403,14 +403,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				if (dataObject.GetDataPresent(typeof(FileNode))) {
 					FileOperationClipboardObject clipboardObject = (FileOperationClipboardObject)dataObject.GetData(typeof(FileNode).ToString());
-					return !FileUtility.IsEqualFile(Directory, clipboardObject.FileName) && !FileUtility.IsEqualFile(Directory, Path.GetDirectoryName(clipboardObject.FileName)) && File.Exists(clipboardObject.FileName);
+					return !FileUtility.IsEqualFileName(Directory, clipboardObject.FileName) && !FileUtility.IsEqualFileName(Directory, Path.GetDirectoryName(clipboardObject.FileName)) && File.Exists(clipboardObject.FileName);
 				}
 				if (dataObject.GetDataPresent(typeof(DirectoryNode))) {
 					FileOperationClipboardObject clipboardObject = (FileOperationClipboardObject)dataObject.GetData(typeof(DirectoryNode).ToString());
 					if (FileUtility.IsBaseDirectory(clipboardObject.FileName, Directory)) {
 						return false;
 					}
-					return !FileUtility.IsEqualFile(Directory, clipboardObject.FileName) && !FileUtility.IsEqualFile(Directory, Path.GetDirectoryName(clipboardObject.FileName)) && System.IO.Directory.Exists(clipboardObject.FileName);
+					return !FileUtility.IsEqualFileName(Directory, clipboardObject.FileName) && !FileUtility.IsEqualFileName(Directory, Path.GetDirectoryName(clipboardObject.FileName)) && System.IO.Directory.Exists(clipboardObject.FileName);
 				}
 				return false;
 			}
@@ -489,7 +489,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject.GetDataPresent(typeof(FileNode))) {
 				FileNode fileNode = (FileNode)dataObject.GetData(typeof(FileNode));
 				
-				if (!FileUtility.IsEqualFile(Directory, fileNode.FileName) && !FileUtility.IsEqualFile(Directory, Path.GetDirectoryName(fileNode.FileName))) {
+				if (!FileUtility.IsEqualFileName(Directory, fileNode.FileName) && !FileUtility.IsEqualFileName(Directory, Path.GetDirectoryName(fileNode.FileName))) {
 					if (Project != fileNode.Project) {
 						return DragDropEffects.Copy;
 					}
@@ -502,7 +502,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (FileUtility.IsBaseDirectory(directoryNode.Directory, Directory)) {
 					return DragDropEffects.None;
 				}
-				if (!FileUtility.IsEqualFile(Directory, directoryNode.Directory) && !FileUtility.IsEqualFile(Directory, Path.GetDirectoryName(directoryNode.Directory))) {
+				if (!FileUtility.IsEqualFileName(Directory, directoryNode.Directory) && !FileUtility.IsEqualFileName(Directory, Path.GetDirectoryName(directoryNode.Directory))) {
 					if (Project != directoryNode.Project) {
 						return DragDropEffects.Copy;
 					}
