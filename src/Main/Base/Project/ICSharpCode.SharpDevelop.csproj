@@ -665,6 +665,8 @@
     <Compile Include="Src\TextEditor\Bookmarks\ClassMemberBookmark.cs" />
     <Compile Include="Src\Commands\ClassMemberMenuBuilder.cs" />
     <Compile Include="Src\Services\RefactoringService\RefactoringService.cs" />
+    <Compile Include="Src\Services\RefactoringService\Reference.cs" />
+    <Compile Include="Src\Services\ProjectService\ParseableFileContentEnumerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

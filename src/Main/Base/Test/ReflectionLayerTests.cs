@@ -42,5 +42,17 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreEqual("System.Runtime.InteropServices._Exception", subClasses[3].FullyQualifiedName);
 			Assert.AreEqual("System.Object", subClasses[4].FullyQualifiedName);
 		}
+		
+		[Test]
+		public void ParameterComparisonTest()
+		{
+			DefaultParameter p1 = new DefaultParameter("a", pc.GetClass("System.String").DefaultReturnType, null);
+			DefaultParameter p2 = new DefaultParameter("b", new GetClassReturnType(pc, "System.String"), null);
+			List<IParameter> a1 = new List<IParameter>();
+			List<IParameter> a2 = new List<IParameter>();
+			a1.Add(p1);
+			a2.Add(p2);
+			Assert.AreEqual(0, DiffUtility.Compare(a1, a2));
+		}
 	}
 }

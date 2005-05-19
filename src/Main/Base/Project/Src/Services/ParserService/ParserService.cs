@@ -47,12 +47,6 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static IEnumerable<IProjectContent> AllProjectContents {
-			get {
-				return projectContents.Values;
-			}
-		}
-		
 		static IProjectContent forcedContent;
 		/// <summary>
 		/// Used for unit tests ONLY!!
@@ -61,6 +55,14 @@ namespace ICSharpCode.Core
 		{
 			forcedContent = content;
 		}
+		
+		public static IEnumerable<IProjectContent> AllProjectContents {
+			get {
+				return projectContents.Values;
+			}
+		}
+		
+		
 		
 		static ParserService()
 		{
@@ -99,6 +101,12 @@ namespace ICSharpCode.Core
 			loadSolutionProjectsThread.Priority = ThreadPriority.Lowest;
 			loadSolutionProjectsThread.IsBackground = true;
 			loadSolutionProjectsThread.Start();
+		}
+		
+		public static bool LoadSolutionProjectsThreadRunning {
+			get {
+				return loadSolutionProjectsThread != null;
+			}
 		}
 		
 		static void LoadSolutionProjects()

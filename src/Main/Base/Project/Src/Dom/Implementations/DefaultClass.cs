@@ -512,14 +512,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 					} else {
 						baseType = baseTypeStruct.parent.ProjectContent.SearchType(baseTypeStruct.name, baseTypeStruct.parent, 1, 1);
 					}
-					if (baseType != null) {
-						currentClass = baseType;
-						
+					if (baseType == null || finishedClasses.Contains(baseType)) {
 						// prevent enumerating interfaces multiple times and endless loops when
 						// circular inheritance is found
-						if (finishedClasses.Contains(currentClass)) {
-							return MoveNext();
-						}
+						return MoveNext();
+					} else {
+						currentClass = baseType;
+						
 						finishedClasses.Add(currentClass);
 						PutBaseClassesOnStack(currentClass);
 						return true;

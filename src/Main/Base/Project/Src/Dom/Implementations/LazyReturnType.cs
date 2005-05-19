@@ -130,7 +130,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				else
 					return false;
 			}
-			if (declaringClass != rt.declaringClass) return false;
+			if (declaringClass.FullyQualifiedName != rt.declaringClass.FullyQualifiedName) return false;
 			return name == rt.name;
 		}
 		

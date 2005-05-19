@@ -131,24 +131,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return r;
 		}
 		
-		public virtual int CompareTo(IParameter value) {
+		public virtual int CompareTo(IParameter value)
+		{
+			if (value == null) return -1;
 			int cmp;
 			
-			if (Name != null) {
-				cmp = Name.CompareTo(value.Name);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if(0 != (cmp = (int)(Modifier - value.Modifier)))
+			if(0 != (cmp = ((int)Modifier - (int)value.Modifier)))
 				return cmp;
 			
-			return DiffUtility.Compare(attributes, value.Attributes);
+			if (ReturnType.Equals(value.ReturnType))
+				return 0;
+			else
+				return -1;
 		}
 		
-		int IComparable.CompareTo(object value) {
-			return CompareTo((IParameter)value);
+		int IComparable.CompareTo(object value)
+		{
+			return CompareTo(value as IParameter);
 		}
 	}
 }

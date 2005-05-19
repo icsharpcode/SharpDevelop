@@ -32,7 +32,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 			ClassMemberBookmark bookmark = (ClassMemberBookmark)owner;
 			IMember member = bookmark.Member;
 			List<ToolStripItem> list = new List<ToolStripItem>();
-			
 			cmd = new MenuCommand("&Rename", Rename);
 			cmd.Tag = member;
 			list.Add(cmd);
@@ -55,12 +54,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 			return list.ToArray();
 		}
 		
-		#region GoToBase
 		void GoToBase(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
-			IMember baseMember = FindBaseMember(member);
+			IMember baseMember = RefactoringService.FindBaseMember(member);
 			if (baseMember != null) {
 				ICompilationUnit cu = baseMember.DeclaringType.CompilationUnit;
 				if (cu != null) {
@@ -76,49 +74,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 			}
 		}
-		
-		IMember FindSimilarMember(IClass type, IMember member)
-		{
-			if (member is IMethod) {
-				IMethod parentMethod = (IMethod)member;
-				foreach (IMethod m in type.Methods) {
-					if (string.Equals(parentMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
-						if (m.IsStatic == parentMethod.IsStatic) {
-							if (DiffUtility.Compare(parentMethod.Parameters, m.Parameters) == 0) {
-								return m;
-							}
-						}
-					}
-				}
-			} else if (member is IProperty) {
-				IProperty parentMethod = (IProperty)member;
-				foreach (IProperty m in type.Properties) {
-					if (string.Equals(parentMethod.Name, m.Name, StringComparison.InvariantCultureIgnoreCase)) {
-						if (m.IsStatic == parentMethod.IsStatic) {
-							if (DiffUtility.Compare(parentMethod.Parameters, m.Parameters) == 0) {
-								return m;
-							}
-						}
-					}
-				}
-			}
-			return null;
-		}
-		
-		IMember FindBaseMember(IMember member)
-		{
-			IClass parentClass = member.DeclaringType;
-			IClass baseClass = parentClass.BaseClass;
-			if (baseClass == null) return null;
-			
-			foreach (IClass childClass in baseClass.ClassInheritanceTree) {
-				IMember m = FindSimilarMember(childClass, member);
-				if (m != null)
-					return m;
-			}
-			return null;
-		}
-		#endregion
 		
 		void Rename(object sender, EventArgs e)
 		{
@@ -136,12 +91,27 @@ namespace ICSharpCode.SharpDevelop.Commands
 			foreach (IClass derivedClass in derivedClasses) {
 				if (derivedClass.CompilationUnit == null) continue;
 				if (derivedClass.CompilationUnit.FileName == null) continue;
-				IMember m = FindSimilarMember(derivedClass, member);
+				IMember m = RefactoringService.FindSimilarMember(derivedClass, member);
 				if (m != null && m.Region != null) {
 					SearchResult res = new SimpleSearchResult(m.FullyQualifiedName, new Point(m.Region.BeginColumn - 1, m.Region.BeginLine - 1));
 					res.ProvidedDocumentInformation = GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 					results.Add(res);
 				}
+			}
+			SearchReplaceInFilesManager.ShowSearchResults(results);
+		}
+		
+		void FindReferences(object sender, EventArgs e)
+		{
+			MenuCommand item = (MenuCommand)sender;
+			IMember member = (IMember)item.Tag;
+			List<Reference> list = RefactoringService.FindReferences(member, null);
+			if (list == null) return;
+			List<SearchResult> results = new List<SearchResult>();
+			foreach (Reference r in list) {
+				SearchResult res = new SearchResult(r.Offset, r.Length);
+				res.ProvidedDocumentInformation = GetDocumentInformation(r.FileName);
+				results.Add(res);
 			}
 			SearchReplaceInFilesManager.ShowSearchResults(results);
 		}
@@ -158,13 +128,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 			}
 			ITextBufferStrategy strategy = StringTextBufferStrategy.CreateTextBufferFromFile(fileName);
 			return new ProvidedDocumentInformation(strategy, fileName, 0);
-		}
-		
-		void FindReferences(object sender, EventArgs e)
-		{
-			MenuCommand item = (MenuCommand)sender;
-			IMember member = (IMember)item.Tag;
-			MessageService.ShowMessage("Not implemented.");
 		}
 	}
 }
