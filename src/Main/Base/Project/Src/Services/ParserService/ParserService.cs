@@ -248,6 +248,15 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public static void ParseViewContent(IViewContent viewContent)
+		{
+			string text = ((IEditable)viewContent).Text;
+			ParseInformation parseInformation = ParseFile(viewContent.FileName, text, !viewContent.IsUntitled, true);
+			if (parseInformation != null && viewContent is IParseInformationListener) {
+				((IParseInformationListener)viewContent).ParseInformationUpdated(parseInformation);
+			}
+		}
+		
 		public static event ParserUpdateStepEventHandler ParserUpdateStepFinished;
 		
 		static void OnParserUpdateStepFinished(ParserUpdateStepEventArgs e)

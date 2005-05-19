@@ -11,6 +11,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -76,11 +77,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		string GetParseableFileContent(IProject project, string fileName)
 		{
+			//Console.WriteLine("Reading {0} from disk", fileName);
+			
 			// Loading the source files is done asynchronously:
 			// While one file is parsed, the next is already loaded from disk.
 			string res = project.GetParseableFileContent(fileName);
 			if (res != null)
 				return res;
+			
 			// load file
 			using (StreamReader r = new StreamReader(fileName, getParseableContentEncoding)) {
 				return r.ReadToEnd();
@@ -110,18 +114,38 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (item == null) return false;
 			if (item.ItemType != ItemType.Compile)
 				return MoveNext();
-			string fileName = item.FileName;
 			string fileContent;
-			if (res != null)
+			if (res != null) {
 				fileContent = pcd.EndInvoke(res);
-			else
-				fileContent = GetParseableFileContent(item.Project, fileName);
-			if (nextItem != null && nextItem.ItemType == ItemType.Compile)
+			} else {
+				fileContent = GetFileContent(item);
+			}
+			if (nextItem != null && nextItem.ItemType == ItemType.Compile && CanReadAsync(nextItem))
 				res = pcd.BeginInvoke(nextItem.Project, nextItem.FileName, null, null);
 			else
 				res = null;
-			current = new KeyValuePair<string, string>(fileName, fileContent);
+			current = new KeyValuePair<string, string>(item.FileName, fileContent);
 			return true;
+		}
+		
+		string GetFileContent(ProjectItem item)
+		{
+			string fileName = item.FileName;
+			IWorkbenchWindow window = FileService.GetOpenFile(fileName);
+			if (window != null) {
+				IViewContent viewContent = window.ViewContent;
+				IEditable editable = viewContent as IEditable;
+				if (editable != null) {
+					//Console.WriteLine("Reading {0} from editable", fileName);
+					return editable.Text;
+				}
+			}
+			return GetParseableFileContent(item.Project, fileName);
+		}
+		
+		bool CanReadAsync(ProjectItem item)
+		{
+			return !FileService.IsOpen(item.FileName);
 		}
 	}
 }

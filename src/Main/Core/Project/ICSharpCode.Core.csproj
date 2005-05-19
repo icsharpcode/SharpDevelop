@@ -123,6 +123,7 @@
     <Compile Include="Src\Util\AbstractCommand.cs" />
     <Compile Include="Src\Util\ICommand.cs" />
     <Compile Include="Src\Util\RightToLeftConverter.cs" />
+    <Compile Include="Src\Services\MessageService\InputBox.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

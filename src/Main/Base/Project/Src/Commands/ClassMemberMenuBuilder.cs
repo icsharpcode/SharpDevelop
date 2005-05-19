@@ -75,11 +75,62 @@ namespace ICSharpCode.SharpDevelop.Commands
 			}
 		}
 		
+		private struct Modification {
+			public IDocument Document;
+			public int Offset;
+			public int LengthDifference;
+			
+			public Modification(IDocument Document, int Offset, int LengthDifference)
+			{
+				this.Document = Document;
+				this.Offset = Offset;
+				this.LengthDifference = LengthDifference;
+			}
+		}
+		
 		void Rename(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
-			MessageService.ShowMessage("Not implemented.");
+			string newName = MessageService.ShowInputBox("Rename", "Enter the new name of the member", member.Name);
+			if (newName == null || newName.Length == 0) return;
+			
+			List<Reference> list = RefactoringService.FindReferences(member, null);
+			if (list == null) return;
+			List<IViewContent> modifiedContents = new List<IViewContent>();
+			List<Modification> modifications = new List<Modification>();
+			foreach (Reference r in list) {
+				FileService.OpenFile(r.FileName);
+				IViewContent viewContent = FileService.GetOpenFile(r.FileName).ViewContent;
+				if (!modifiedContents.Contains(viewContent)) {
+					modifiedContents.Add(viewContent);
+				}
+				ITextEditorControlProvider p = viewContent as ITextEditorControlProvider;
+				if (p != null) {
+					IDocument doc = p.TextEditorControl.Document;
+					int offset = r.Offset;
+					foreach (Modification m in modifications) {
+						if (m.Document != doc) continue;
+						if (m.Offset < offset) offset += m.LengthDifference;
+					}
+					int lengthDifference = newName.Length - r.Length;
+					doc.Replace(offset, r.Length, newName);
+					if (lengthDifference != 0) {
+						for (int i = 0; i < modifications.Count; ++i) {
+							Modification m = modifications[i];
+							if (m.Document != doc) continue;
+							if (m.Offset > offset) {
+								m.Offset += lengthDifference;
+								modifications[i] = m; // Modification is a value type
+							}
+						}
+						modifications.Add(new Modification(doc, offset, lengthDifference));
+					}
+				}
+			}
+			foreach (IViewContent viewContent in modifiedContents) {
+				ParserService.ParseViewContent(viewContent);
+			}
 		}
 		
 		void FindOverrides(object sender, EventArgs e)

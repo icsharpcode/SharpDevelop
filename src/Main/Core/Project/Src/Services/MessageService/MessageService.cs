@@ -115,10 +115,18 @@ namespace ICSharpCode.Core
 				return messageBox.Result;
 			}
 		}
-	
+		
 		public static int ShowCustomDialog(string caption, string dialogText, params string[] buttontexts)
 		{
 			return ShowCustomDialog(caption, dialogText, -1, -1, buttontexts);
+		}
+		
+		public static string ShowInputBox(string caption, string dialogText, string defaultValue)
+		{
+			using (InputBox inputBox = new InputBox(dialogText, caption, defaultValue)) {
+				inputBox.ShowDialog(MessageService.MainForm);
+				return inputBox.Result;
+			}
 		}
 		
 		public static void ShowMessage(string message)
