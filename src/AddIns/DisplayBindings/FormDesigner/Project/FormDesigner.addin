@@ -4,11 +4,11 @@
        url         = "http://www.icsharpcode.net"
        description = "SharpDevelop Form Designer"
        version     = "1.0.0">
-	
+
 	<Runtime>
 		<Import assembly="FormDesigner.dll"/>
 	</Runtime>
-	
+
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id               = "FormDesigner"
 		                type             = "Secondary"
@@ -16,7 +16,7 @@
 		                supportedformats = "Forms/UserControls"
 		                class            = "ICSharpCode.FormDesigner.FormDesignerSecondaryDisplayBinding" />
 	</Path>
-	
+
 	<Path name = "/SharpDevelop/FormsDesigner/ContextMenus/SelectionMenu">
 		<MenuItem id          = "ViewCode"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
@@ -32,7 +32,7 @@
 		          icon        = "Icons.16x16.FormsDesigner.SendToBack"
 		          class       = "ICSharpCode.FormDesigner.Commands.SendToBack"/>
 		<MenuItem id = "OrderSeparator" type = "Separator"/>
-		
+
 		<MenuItem id          = "AlignToGrid"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.SelectionMenu.AlignToGrid}"
 		          icon        = "Icons.16x16.FormsDesigner.AlignToGrid"
@@ -69,7 +69,7 @@
 		          icon        = "Icons.16x16.Property"
 		          class       = "ICSharpCode.FormDesigner.Commands.ShowProperties"/>
 	</Path>
-	
+
 	<Path name = "/SharpDevelop/FormsDesigner/ContextMenus/ContainerMenu">
 		<MenuItem id          = "ViewCode"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
@@ -94,7 +94,7 @@
 		          icon        = "Icons.16x16.Property"
 		          class       = "ICSharpCode.FormDesigner.Commands.ShowProperties"/>
 	</Path>
-	
+
 	<Path name = "/SharpDevelop/FormsDesigner/ContextMenus/TraySelectionMenu">
 		<MenuItem id          = "ViewCode"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
@@ -124,7 +124,7 @@
 		          icon        = "Icons.16x16.Property"
 		          class       = "ICSharpCode.FormDesigner.Commands.ShowProperties"/>
 	</Path>
-	
+
 	<Path name = "/SharpDevelop/FormsDesigner/ContextMenus/ComponentTrayMenu">
 		<MenuItem id          = "ViewCode"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
@@ -148,7 +148,7 @@
 		          label       = "${res:XML.MainMenu.FormatMenu.ShowLargeIcons}"
 		          class = "ICSharpCode.FormDesigner.Commands.ShowLargeIcons"/>
 	</Path>
-	
+
 	<Path name = "/SharpDevelop/Workbench/MainMenu">
 		<ComplexCondition>
 			<Or>
@@ -212,7 +212,7 @@
 					          class       = "ICSharpCode.FormDesigner.Commands.SizeToControl"/>
 				</MenuItem>
 				<MenuItem id = "FormatSeparator" type = "Separator"/>
-				
+
 				<MenuItem id = "HorizontalSpacingMenu" label = "${res:XML.MainMenu.FormatMenu.HorizontalSpacingMenu}" type = "Menu">
 					<MenuItem id          = "HorizSpaceMakeEqual"
 					          label       = "${res:XML.MainMenu.FormatMenu.HorizontalSpacingMenu.HorizSpaceMakeEqual}"
@@ -250,7 +250,7 @@
 					          class       = "ICSharpCode.FormDesigner.Commands.VertSpaceConcatenate"/>
 				</MenuItem>
 				<MenuItem id = "SpacingSeparator" type = "Separator"/>
-				
+
 				<MenuItem id = "CenterMenu" label = "${res:XML.MainMenu.FormatMenu.CenterMenu}" type = "Menu">
 					<MenuItem id          = "CenterHorizontally"
 					          label       = "${res:XML.MainMenu.FormatMenu.CenterMenu.CenterHorizontally}"
@@ -262,7 +262,7 @@
 					          class       = "ICSharpCode.FormDesigner.Commands.CenterVertically"/>
 				</MenuItem>
 				<MenuItem id = "CenterSeparator" type = "Separator"/>
-				
+
 				<MenuItem id = "OrderMenu" label = "${res:XML.MainMenu.FormatMenu.OrderMenu}" type = "Menu">
 					<MenuItem id          = "BringToFront"
 					          label       = "${res:XML.MainMenu.FormatMenu.OrderMenu.BringToFront}"
@@ -284,7 +284,7 @@
 			</MenuItem>
 		</ComplexCondition>
 	</Path>
-	
+
 	<Path name = "/SharpDevelop/Workbench/SharpDevelopSideBar/ContextMenu">
 		<MenuItem id    = "CustomizeSideBarSeparator"
 		          insertafter = "MoveTabDown"
@@ -292,18 +292,18 @@
 		<MenuItem id    = "CustomizeSideBar"
 		          label = "${res:XML.FormsDesigner.SideBar.CustomizeSidebar}"
 		          icon        = "Icons.16x16.Options"
-		          class = "ICSharpCode.SharpDevelop.FormDesigner.CustomizeSideBar"/>
+		          class = "ICSharpCode.FormDesigner.CustomizeSideBar"/>
 	</Path>
-	
+
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
 		<DialogPanel id          = "FormsDesignerOptions"
 		             insertafter = "ToolsOptions"
 		             label       = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.PanelName}">
-			
+
 			<DialogPanel id    = "GridOptions"
 			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel"/>
-		
+
 		</DialogPanel>
 	</Path>
 </AddIn>
