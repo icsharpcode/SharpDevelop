@@ -1961,6 +1961,7 @@ PrimaryExpr<out Expression pexpr>
 		| "sizeof" "(" Type<out type> ")" (. pexpr = new SizeOfExpression(type); .)
 		| "checked" "(" Expr<out expr> ")" (. pexpr = new CheckedExpression(expr); .)
 		| "unchecked" "(" Expr<out expr> ")" (. pexpr = new UncheckedExpression(expr); .)
+		| "delegate" AnonymousMethodExpr<out expr> (. pexpr = expr; .)
 	)
 	{
 		(
@@ -1983,6 +1984,28 @@ PrimaryExpr<out Expression pexpr>
 		{ "," Expr<out expr> (. if (expr != null) { indices.Add(expr); } .)
 		} "]" (. pexpr = new IndexerExpression(pexpr, indices); .)
 	}
+.
+
+AnonymousMethodExpr<out Expression outExpr>
+(.
+	AnonymousMethodExpression expr = new AnonymousMethodExpression();
+	Statement stmt;
+	ArrayList p;
+	outExpr = expr;
+.)
+=
+	"("
+	[ FormalParameterList<out p> (. expr.Parameters = p; .) ]
+	")"
+	/*--- ParseExpression doesn't set a compilation unit, */
+	/*--- so we can't use block then -> skip body of anonymous method */
+	(. if (compilationUnit != null) { .)
+		Block<out stmt>              (. expr.Body  = (BlockStatement)stmt; .)
+	(. } else { .)
+		"{"
+		(. lexer.SkipCurrentBlock(); .)
+		"}"
+	(. } .)
 .
 
 ConditionalOrExpr<ref Expression outExpr>

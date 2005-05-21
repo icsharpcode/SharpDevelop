@@ -1976,6 +1976,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		public object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
+		{
+			errors.Error(-1, -1, String.Format("AnonymousMethodExpression is unsupported"));
+			return null;
+		}
+		
 		public object Visit(CheckedExpression checkedExpression, object data)
 		{
 			errors.Error(-1, -1, String.Format("CheckedExpression is unsupported"));

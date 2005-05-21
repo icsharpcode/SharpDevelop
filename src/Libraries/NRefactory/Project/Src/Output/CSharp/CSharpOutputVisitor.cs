@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter = new OutputFormatter(prettyPrintOptions);
 			nodeTracker     = new NodeTracker(this);
-		}	
+		}
 		
 		#region ICSharpCode.NRefactory.Parser.IASTVisitor interface implementation
 		public object Visit(INode node, object data)
@@ -97,7 +97,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					return "void";
 				case "System.Object":
 					return "object";
-				
+					
 				case "System.UInt64":
 					return "ulong";
 				case "System.UInt32":
@@ -110,7 +110,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return typeString;
 		}
 		
-		public object Visit(TypeReference typeReference, object data) 
+		public object Visit(TypeReference typeReference, object data)
 		{
 			if (typeReference.Type == null || typeReference.Type.Length ==0) {
 				outputFormatter.PrintIdentifier("void");
@@ -187,10 +187,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.PrintToken(Tokens.CloseSquareBracket);
 			outputFormatter.NewLine();
-			return null;			
+			return null;
 		}
 		
-		public object Visit(ICSharpCode.NRefactory.Parser.AST.Attribute attribute, object data) 
+		public object Visit(ICSharpCode.NRefactory.Parser.AST.Attribute attribute, object data)
 		{
 			outputFormatter.PrintIdentifier(attribute.Name);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
@@ -211,7 +211,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(NamedArgumentExpression namedArgumentExpression, object data) 
+		public object Visit(NamedArgumentExpression namedArgumentExpression, object data)
 		{
 			outputFormatter.PrintIdentifier(namedArgumentExpression.Name);
 			outputFormatter.Space();
@@ -283,7 +283,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public object Visit(TypeDeclaration typeDeclaration, object data) 
+		public object Visit(TypeDeclaration typeDeclaration, object data)
 		{
 			VisitAttributes(typeDeclaration.Attributes, data);
 			outputFormatter.Indent();
@@ -364,7 +364,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(DelegateDeclaration delegateDeclaration, object data) 
+		public object Visit(DelegateDeclaration delegateDeclaration, object data)
 		{
 			VisitAttributes(delegateDeclaration.Attributes, data);
 			OutputModifier(delegateDeclaration.Modifier);
@@ -439,7 +439,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(PropertyGetRegion propertyGetRegion, object data) 
+		public object Visit(PropertyGetRegion propertyGetRegion, object data)
 		{
 			this.VisitAttributes(propertyGetRegion.Attributes, data);
 			outputFormatter.Indent();
@@ -486,7 +486,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(EventAddRegion eventAddRegion, object data) 
+		public object Visit(EventAddRegion eventAddRegion, object data)
 		{
 			VisitAttributes(eventAddRegion.Attributes, data);
 			outputFormatter.Indent();
@@ -645,7 +645,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 //			} else {
 //				Visit(operatorDeclaration.OpratorDeclarator.TypeReference, data);
 //			}
-//			
+//
 //			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 //			Visit(operatorDeclaration.OpratorDeclarator.FirstParameterType, data);
 //			outputFormatter.Space();
@@ -658,7 +658,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 //				outputFormatter.PrintIdentifier(operatorDeclaration.OpratorDeclarator.SecondParameterName);
 //			}
 //			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-//			
+//
 //			if (operatorDeclaration.Body.IsNull) {
 //				outputFormatter.PrintToken(Tokens.Semicolon);
 //			} else {
@@ -816,21 +816,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ReDimStatement reDimStatement, object data) 
+		public object Visit(ReDimStatement reDimStatement, object data)
 		{
 			// TODO: implement me
 			errors.Error(-1, -1, String.Format("ReDimStatement is unsupported"));
 			return null;
 		}
 		
-//		public object Visit(ReDimClause reDimClause, object data) 
+//		public object Visit(ReDimClause reDimClause, object data)
 //		{
 //			// TODO: implement me
 //			errors.Error(-1, -1, String.Format("ReDimClause is unsupported"));
 //			return null;
 //		}
 		
-		public object Visit(StatementExpression statementExpression, object data) 
+		public object Visit(StatementExpression statementExpression, object data)
 		{
 			nodeTracker.TrackedVisit(statementExpression.Expression, data);
 			outputFormatter.PrintToken(Tokens.Semicolon);
@@ -998,7 +998,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(GotoStatement gotoStatement, object data) 
+		public object Visit(GotoStatement gotoStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Goto);
 			outputFormatter.Space();
@@ -1007,7 +1007,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(SwitchStatement switchStatement, object data) 
+		public object Visit(SwitchStatement switchStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Switch);
 			if (this.prettyPrintOptions.SwitchParentheses) {
@@ -1045,14 +1045,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			// Check if a 'break' should be auto inserted.
 			if (switchSection.Children.Count == 0 ||
 			    !(switchSection.Children[switchSection.Children.Count - 1] is BreakStatement ||
-			      switchSection.Children[switchSection.Children.Count - 1] is ContinueStatement || 
+			      switchSection.Children[switchSection.Children.Count - 1] is ContinueStatement ||
 			      switchSection.Children[switchSection.Children.Count - 1] is ReturnStatement)) {
 				outputFormatter.Indent();
 				outputFormatter.PrintToken(Tokens.Break);
 				outputFormatter.PrintToken(Tokens.Semicolon);
 				outputFormatter.NewLine();
 			}
-			    
+			
 			--outputFormatter.IndentationLevel;
 			return null;
 		}
@@ -1253,7 +1253,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(TryCatchStatement tryCatchStatement, object data) 
+		public object Visit(TryCatchStatement tryCatchStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Try);
 			outputFormatter.Space();
@@ -1285,7 +1285,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(CatchClause catchClause, object data) 
+		public object Visit(CatchClause catchClause, object data)
 		{
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
@@ -1411,7 +1411,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(PrimitiveExpression primitiveExpression, object data) 
+		public object Visit(PrimitiveExpression primitiveExpression, object data)
 		{
 			outputFormatter.PrintIdentifier(primitiveExpression.StringValue);
 			return null;
@@ -1430,7 +1430,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.Space();
 					}
 					break;
-				
+					
 				case BinaryOperatorType.Subtract:
 					if (prettyPrintOptions.AroundAdditiveOperatorParentheses) {
 						outputFormatter.Space();
@@ -1440,7 +1440,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.Space();
 					}
 					break;
-				
+					
 				case BinaryOperatorType.Multiply:
 					if (prettyPrintOptions.AroundMultiplicativeOperatorParentheses) {
 						outputFormatter.Space();
@@ -1450,7 +1450,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.Space();
 					}
 					break;
-				
+					
 				case BinaryOperatorType.Divide:
 					if (prettyPrintOptions.AroundMultiplicativeOperatorParentheses) {
 						outputFormatter.Space();
@@ -1460,7 +1460,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.Space();
 					}
 					break;
-				
+					
 				case BinaryOperatorType.Modulus:
 					if (prettyPrintOptions.AroundMultiplicativeOperatorParentheses) {
 						outputFormatter.Space();
@@ -1470,7 +1470,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.Space();
 					}
 					break;
-				
+					
 				case BinaryOperatorType.ShiftLeft:
 					if (prettyPrintOptions.AroundShiftOperatorParentheses) {
 						outputFormatter.Space();
@@ -1480,7 +1480,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.Space();
 					}
 					break;
-				
+					
 				case BinaryOperatorType.ShiftRight:
 					if (prettyPrintOptions.AroundShiftOperatorParentheses) {
 						outputFormatter.Space();
@@ -1491,7 +1491,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.Space();
 					}
 					break;
-				
+					
 				case BinaryOperatorType.BitwiseAnd:
 					if (prettyPrintOptions.AroundBitwiseOperatorParentheses) {
 						outputFormatter.Space();
@@ -1519,7 +1519,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.Space();
 					}
 					break;
-				
+					
 				case BinaryOperatorType.LogicalAnd:
 					if (prettyPrintOptions.AroundLogicalOperatorParentheses) {
 						outputFormatter.Space();
@@ -1538,13 +1538,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.Space();
 					}
 					break;
-				
+					
 				case BinaryOperatorType.AS:
 					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.As);
 					outputFormatter.Space();
 					break;
-				
+					
 				case BinaryOperatorType.IS:
 					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.Is);
@@ -1807,6 +1807,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		public object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
+		{
+			outputFormatter.PrintToken(Tokens.Delegate);
+			
+			outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			AppendCommaSeparatedList(anonymousMethodExpression.Parameters);
+			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			OutputBlock(anonymousMethodExpression.Body, this.prettyPrintOptions.MethodBraceStyle);
+			
+			return null;
+		}
+		
 		public object Visit(CheckedExpression checkedExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Checked);
@@ -1840,7 +1852,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(CastExpression castExpression, object data) 
+		public object Visit(CastExpression castExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			nodeTracker.TrackedVisit(castExpression.CastTo, data);

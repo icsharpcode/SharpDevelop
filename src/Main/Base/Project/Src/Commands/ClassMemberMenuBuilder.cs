@@ -31,11 +31,14 @@ namespace ICSharpCode.SharpDevelop.Commands
 			MenuCommand cmd;
 			ClassMemberBookmark bookmark = (ClassMemberBookmark)owner;
 			IMember member = bookmark.Member;
+			IMethod method = member as IMethod;
 			List<ToolStripItem> list = new List<ToolStripItem>();
-			cmd = new MenuCommand("&Rename", Rename);
-			cmd.Tag = member;
-			list.Add(cmd);
 			
+			if (method == null || !method.IsConstructor) {
+				cmd = new MenuCommand("&Rename", Rename);
+				cmd.Tag = member;
+				list.Add(cmd);
+			}
 			if (member.IsOverride) {
 				cmd = new MenuCommand("Go to &base class", GoToBase);
 				cmd.Tag = member;

@@ -445,6 +445,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			BookmarkManager bm = textAreaControl.Document.BookmarkManager;
 			bm.RemoveMarks(new Predicate<Bookmark>(IsClassMemberBookmark));
+			if (parseInfo == null) return;
 			foreach (IClass c in parseInfo.MostRecentCompilationUnit.Classes) {
 				foreach (IMethod m in c.Methods) {
 					if (m.Region == null || m.Region.BeginLine <= 0) continue;

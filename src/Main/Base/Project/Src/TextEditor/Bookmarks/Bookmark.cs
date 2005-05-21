@@ -53,8 +53,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		public void ChangeFilename(string newFileName)
 		{
 			fileName = newFileName;
-			foreach (SDBookmark mark in manager.Marks) {
-				mark.FileName = newFileName;
+			foreach (Bookmark mark in manager.Marks) {
+				SDBookmark sdMark = mark as SDBookmark;
+				if (sdMark != null) {
+					sdMark.FileName = newFileName;
+				}
 			}
 		}
 		

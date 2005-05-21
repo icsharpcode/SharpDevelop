@@ -18,7 +18,6 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-#region ICSharpCode.NRefactory.Parser.IASTVisitor interface implementation
 		public virtual object Visit(INode node, object data)
 		{
 			Console.WriteLine("Warning, INode visited!");
@@ -75,7 +74,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return namedArgumentExpression.Expression.AcceptVisitor(this, data);
 		}
 		
-#region global scope
+		#region global scope
 		public virtual object Visit(Using @using, object data)
 		{
 			Debug.Assert(@using != null);
@@ -143,9 +142,9 @@ namespace ICSharpCode.NRefactory.Parser
 			Debug.Assert(optionDeclaration != null);
 			return data;
 		}
-#endregion
+		#endregion
 		
-#region type level
+		#region type level
 		public virtual object Visit(FieldDeclaration fieldDeclaration, object data)
 		{
 			Debug.Assert(fieldDeclaration != null);
@@ -420,9 +419,9 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 			return data;
 		}
-#endregion
+		#endregion
 		
-#region statements
+		#region statements
 		public virtual object Visit(BlockStatement blockStatement, object data)
 		{
 			Debug.Assert(blockStatement != null);
@@ -835,10 +834,10 @@ namespace ICSharpCode.NRefactory.Parser
 			forNextStatement.TypeReference.AcceptVisitor(this, data);
 			return data;
 		}
-				
-#endregion
 		
-#region expressions
+		#endregion
+		
+		#region expressions
 		public virtual object Visit(PrimitiveExpression primitiveExpression, object data)
 		{
 			Debug.Assert(primitiveExpression != null);
@@ -1024,6 +1023,22 @@ namespace ICSharpCode.NRefactory.Parser
 			return data;
 		}
 		
+		public object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
+		{
+			Debug.Assert(anonymousMethodExpression != null);
+			Debug.Assert(anonymousMethodExpression.Parameters != null);
+			Debug.Assert(anonymousMethodExpression.Body != null);
+			
+			foreach (ParameterDeclarationExpression p in anonymousMethodExpression.Parameters) {
+				p.AcceptVisitor(this, data);
+			}
+			blockStack.Push(anonymousMethodExpression.Body);
+			anonymousMethodExpression.Body.AcceptChildren(this, data);
+			blockStack.Pop();
+			
+			return data;
+		}
+		
 		public virtual object Visit(TypeOfIsExpression typeOfIsExpression, object data)
 		{
 			Debug.Assert(typeOfIsExpression != null);
@@ -1100,7 +1115,6 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 			return data;
 		}
-#endregion
-#endregion 
+		#endregion
 	}
 }

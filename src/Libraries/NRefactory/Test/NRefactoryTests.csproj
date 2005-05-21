@@ -123,6 +123,7 @@
     <Compile Include="Lexer\CSharp\NumberLexerTest.cs" />
     <Compile Include="Lexer\VBNet\LiteralsTests.cs" />
     <Compile Include="Parser\SkipMethodBodiesTest.cs" />
+    <Compile Include="Parser\Expressions\AnonymousMethodTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="General\" />

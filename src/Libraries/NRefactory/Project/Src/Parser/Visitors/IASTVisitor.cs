@@ -101,6 +101,7 @@ namespace ICSharpCode.NRefactory.Parser
 		object Visit(TypeOfExpression typeOfExpression, object data);
 		object Visit(TypeOfIsExpression typeOfIsExpression, object data);
 		object Visit(AddressOfExpression addressOfExpression, object data);
+		object Visit(AnonymousMethodExpression anonymousMethodExpression, object data);
 		object Visit(CheckedExpression checkedExpression, object data);
 		object Visit(UncheckedExpression uncheckedExpression, object data);
 		object Visit(PointerReferenceExpression pointerReferenceExpression, object data);

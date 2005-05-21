@@ -93,7 +93,7 @@ namespace CSharpBinding.FormattingStrategy
 			
 			StringBuilder indent = new StringBuilder();
 			if (line.Length == 0) {
-				// Special threatment for empty lines:
+				// Special treatment for empty lines:
 				if (blockComment || (inString && verbatim))
 					return;
 				indent.Append(block.InnerIndent);
@@ -303,7 +303,7 @@ namespace CSharpBinding.FormattingStrategy
 				if (IsSingleStatementKeyword(block.LastWord)) {
 					block.OneLineBlock = true;
 				}
-			} else if (block.LastWord == "else" && lastRealChar == 'e') {
+			} else if (lastRealChar == 'e' && block.LastWord == "else") {
 				block.OneLineBlock = true;
 				block.Continuation = false;
 			}
@@ -369,7 +369,7 @@ namespace CSharpBinding.FormattingStrategy
 			if (!Char.IsWhiteSpace(line[line.Length - 1])) return false;
 			
 			// one space after an empty comment is allowed
-			if (line.EndsWith("// "))
+			if (line.EndsWith("// ") || line.EndsWith("* "))
 				return false;
 			
 			doc.Text = line.TrimEnd();
