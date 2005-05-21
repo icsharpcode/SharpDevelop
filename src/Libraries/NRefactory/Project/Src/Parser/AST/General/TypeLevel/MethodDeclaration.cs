@@ -18,6 +18,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 namespace ICSharpCode.NRefactory.Parser.AST
@@ -29,6 +30,16 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		ArrayList     handlesClause    = new ArrayList();    // VB only
 		ArrayList     implementsClause = new ArrayList(); // VB only
 		AttributeSection returnTypeAttributeSection = AttributeSection.Null;
+		List<TemplateDefinition> templates = new List<TemplateDefinition>();
+		
+		public List<TemplateDefinition> Templates {
+			get {
+				return templates;
+			}
+			set {
+				templates = value;
+			}
+		}
 		
 		public AttributeSection ReturnTypeAttributeSection {
 			get {

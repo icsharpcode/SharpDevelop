@@ -29,8 +29,8 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("MyEvent", ((VariableDeclaration)ed.VariableDeclarators[0]).Name);
 			Assert.AreEqual("System.EventHandler", ed.TypeReference.Type);
 			
-			Assert.IsTrue(!ed.HasAddRegion);
-			Assert.IsTrue(!ed.HasRemoveRegion);
+			Assert.IsFalse(ed.HasAddRegion);
+			Assert.IsFalse(ed.HasRemoveRegion);
 		}
 		
 		[Test]

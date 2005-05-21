@@ -3,7 +3,7 @@
  * User: Omnibrain
  * Date: 13.09.2004
  * Time: 19:54
- * 
+ *
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
@@ -24,6 +24,10 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			Assert.AreEqual("System.Void", dd.ReturnType.SystemType);
 			Assert.AreEqual("MyDelegate", dd.Name);
+		}
+		
+		void TestParameters(DelegateDeclaration dd)
+		{
 			Assert.AreEqual(3, dd.Parameters.Count);
 			
 			Assert.AreEqual("a", ((ParameterDeclarationExpression)dd.Parameters[0]).ParameterName);
@@ -42,6 +46,27 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			string program = "public delegate void MyDelegate(int a, int secondParam, MyObj lastParam);\n";
 			TestDelegateDeclaration((DelegateDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(DelegateDeclaration)));
+		}
+		
+		[Test]
+		public void CSharpDelegateWithoutNameDeclarationTest()
+		{
+			string program = "public delegate void(int a, int secondParam, MyObj lastParam);\n";
+			DelegateDeclaration dd = (DelegateDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(DelegateDeclaration), true);
+			Assert.AreEqual("System.Void", dd.ReturnType.SystemType);
+			Assert.AreEqual("?", dd.Name);
+			TestParameters(dd);
+		}
+		
+		[Test]
+		public void CSharpGenericDelegateDeclarationTest()
+		{
+			string program = "public delegate T CreateObject<T>(int a, int secondParam, MyObj lastParam);\n";
+			DelegateDeclaration dd = (DelegateDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(DelegateDeclaration));
+			Assert.AreEqual("CreateObject", dd.Name);
+			Assert.AreEqual("T", dd.ReturnType.Type);
+			TestParameters(dd);
+			Assert.Fail("Getting type parameters not implemented.");
 		}
 		#endregion
 		

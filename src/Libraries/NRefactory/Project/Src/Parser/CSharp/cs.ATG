@@ -666,10 +666,11 @@ TypeDecl<Modifiers m, ArrayList attributes>
 	ArrayList names;
 	ArrayList p; 
 	string name;
-	List<TemplateDefinition> templates = new List<TemplateDefinition>();
+	List<TemplateDefinition> templates;
 .)
 = /*--- class declaration: */      (. m.Check(Modifier.Classes); .)
 	"class"                        (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
+	                                  templates = newType.Templates;
 	                                  compilationUnit.AddChild(newType);
 	                                  compilationUnit.BlockStart(newType);
 	                                  
@@ -691,7 +692,7 @@ TypeDecl<Modifiers m, ArrayList attributes>
 	                                .)
 	| /*--- struct declaration: */  (. m.Check(Modifier.StructsInterfacesEnumsDelegates); .)
 	( "struct"                      (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
-	                                   newType.Templates = templates;
+	                                   templates = newType.Templates;
 	                                   compilationUnit.AddChild(newType);
 	                                   compilationUnit.BlockStart(newType);
 	                                   newType.Type = Types.Struct; 
@@ -713,7 +714,7 @@ TypeDecl<Modifiers m, ArrayList attributes>
 	                                 .)
 	| /*--- interface declaration: */ 
 	"interface"                      (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
-	                                    newType.Templates = templates;
+	                                    templates = newType.Templates;
 	                                    compilationUnit.AddChild(newType);
 	                                    compilationUnit.BlockStart(newType);
 	                                    newType.Type = Types.Interface;
@@ -1035,6 +1036,7 @@ StructMemberDecl<Modifiers m, ArrayList attributes>
 	                                                                                                      attributes);
 	                                          methodDeclaration.StartLocation = startPos;
 	                                          methodDeclaration.EndLocation   = t.EndLocation;
+	                                          methodDeclaration.Templates = templates;
 	                                          compilationUnit.AddChild(methodDeclaration);
 	                                          compilationUnit.BlockStart(methodDeclaration);
 	                                       .)
@@ -1169,16 +1171,21 @@ StructMemberDecl<Modifiers m, ArrayList attributes>
 		(
 			/*--- "not void" method (function) declaration: */
 			(                              (. m.Check(Modifier.PropertysEventsMethods); .)
-			    "(" [ FormalParameterList<out p> ] ")" (. MethodDeclaration methodDeclaration = new MethodDeclaration(qualident, 
-	                                                                                                      m.Modifier, 
-	                                                                                                      type, 
-	                                                                                                      p, 
-	                                                                                                      attributes);
-	                                                      methodDeclaration.StartLocation = startPos;
-	                                                      methodDeclaration.EndLocation   = t.EndLocation;
-	                                                      compilationUnit.AddChild(methodDeclaration);
-	                                                   .)
-			     ( Block<out stmt> | ";" ) (. methodDeclaration.Body  = (BlockStatement)stmt; .)
+				/* .NET 2.0 */
+				[ TypeParameterList<templates> ]
+				"(" [ FormalParameterList<out p> ] ")" (.
+					MethodDeclaration methodDeclaration = new MethodDeclaration(qualident,
+					                                                            m.Modifier, 
+					                                                            type, 
+					                                                            p, 
+					                                                            attributes);
+					methodDeclaration.StartLocation = startPos;
+					methodDeclaration.EndLocation   = t.EndLocation;
+					methodDeclaration.Templates = templates;
+					compilationUnit.AddChild(methodDeclaration);
+				                                       .)
+				{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
+				( Block<out stmt> | ";" ) (. methodDeclaration.Body  = (BlockStatement)stmt; .)
 			
 			/*--- property declaration: */  
 			| "{" (. PropertyDeclaration pDecl = new PropertyDeclaration(qualident, type, m.Modifier, attributes); 

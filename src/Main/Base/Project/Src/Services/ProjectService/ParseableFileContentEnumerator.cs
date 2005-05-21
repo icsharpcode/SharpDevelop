@@ -115,10 +115,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (item.ItemType != ItemType.Compile)
 				return MoveNext();
 			string fileContent;
-			if (res != null) {
-				fileContent = pcd.EndInvoke(res);
-			} else {
-				fileContent = GetFileContent(item);
+			try {
+				if (res != null) {
+					fileContent = pcd.EndInvoke(res);
+				} else {
+					fileContent = GetFileContent(item);
+				}
+			} catch (IOException ex) {
+				res = null;
+				Console.WriteLine(ex);
+				return MoveNext(); // skip invalid files
 			}
 			if (nextItem != null && nextItem.ItemType == ItemType.Compile && CanReadAsync(nextItem))
 				res = pcd.BeginInvoke(nextItem.Project, nextItem.FileName, null, null);

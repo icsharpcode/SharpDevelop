@@ -37,6 +37,48 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual(1, md.Parameters.Count);
 			Assert.AreEqual("?", ((ParameterDeclarationExpression)md.Parameters[0]).ParameterName);
 		}
+		
+		[Test]
+		public void CSharpGenericVoidMethodDeclarationTest()
+		{
+			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("void MyMethod<T>(T a) {} ", typeof(MethodDeclaration));
+			Assert.AreEqual("void", md.TypeReference.Type);
+			Assert.AreEqual(1, md.Parameters.Count);
+			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
+			Assert.AreEqual("a", ((ParameterDeclarationExpression)md.Parameters[0]).ParameterName);
+			
+			Assert.AreEqual(1, md.Templates.Count);
+			Assert.AreEqual("T", md.Templates[0].Name);
+		}
+		
+		[Test]
+		public void CSharpGenericMethodDeclarationTest()
+		{
+			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("T MyMethod<T>(T a) {} ", typeof(MethodDeclaration));
+			Assert.AreEqual("T", md.TypeReference.Type);
+			Assert.AreEqual(1, md.Parameters.Count);
+			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
+			Assert.AreEqual("a", ((ParameterDeclarationExpression)md.Parameters[0]).ParameterName);
+			
+			Assert.AreEqual(1, md.Templates.Count);
+			Assert.AreEqual("T", md.Templates[0].Name);
+		}
+		
+		[Test]
+		public void CSharpGenericMethodDeclarationWithConstraintTest()
+		{
+			string program = "T MyMethod<T>(T a) where T : ISomeInterface {} ";
+			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember(program, typeof(MethodDeclaration));
+			Assert.AreEqual("T", md.TypeReference.Type);
+			Assert.AreEqual(1, md.Parameters.Count);
+			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
+			Assert.AreEqual("a", ((ParameterDeclarationExpression)md.Parameters[0]).ParameterName);
+			
+			Assert.AreEqual(1, md.Templates.Count);
+			Assert.AreEqual("T", md.Templates[0].Name);
+			Assert.AreEqual(1, md.Templates[0].Bases.Count);
+			Assert.AreEqual("ISomeInterface", md.Templates[0].Bases[0].Type);
+		}
 		#endregion
 		
 		#region VB.NET

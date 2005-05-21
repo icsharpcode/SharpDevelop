@@ -3,7 +3,7 @@
  * User: Omnibrain
  * Date: 13.09.2004
  * Time: 19:54
- * 
+ *
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 using System;
@@ -61,7 +61,8 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("G", td.Name);
 			Assert.AreEqual(Modifier.Public, td.Modifier);
 			Assert.AreEqual(0, td.BaseTypes.Count);
-			// TODO: test the generic stuff
+			Assert.AreEqual(1, td.Templates.Count);
+			Assert.AreEqual("T", td.Templates[0].Name);
 		}
 		
 		
@@ -69,7 +70,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void CSharpGenericClassWithWhere()
 		{
 			string declr = @"
-public class Test<T> where T : IMyInterface 
+public class Test<T> where T : IMyInterface
 {
 }
 ";
@@ -77,14 +78,17 @@ public class Test<T> where T : IMyInterface
 			
 			Assert.AreEqual(Types.Class, td.Type);
 			Assert.AreEqual("Test", td.Name);
-			// TODO: test the generic stuff
+			
+			Assert.AreEqual(1, td.Templates.Count);
+			Assert.AreEqual("T", td.Templates[0].Name);
+			Assert.AreEqual("IMyInterface", td.Templates[0].Bases[0].Type);
 		}
 		
 		[Test]
 		public void CSharpComplexGenericClassTypeDeclarationTest()
 		{
 			string declr = @"
-public class Generic<T, S> : System.IComparable where S : G<T[]> where  T : MyNamespace.IMyInterface 
+public class Generic<T, S> : System.IComparable where S : G<T[]> where  T : MyNamespace.IMyInterface
 {
 }
 ";
@@ -95,7 +99,17 @@ public class Generic<T, S> : System.IComparable where S : G<T[]> where  T : MyNa
 			Assert.AreEqual(Modifier.Public, td.Modifier);
 			Assert.AreEqual(1, td.BaseTypes.Count);
 			Assert.AreEqual("System.IComparable", td.BaseTypes[0]);
-			// TODO: test the generic stuff
+			
+			Assert.AreEqual(2, td.Templates.Count);
+			Assert.AreEqual("T", td.Templates[0].Name);
+			Assert.AreEqual("MyNamespace.IMyInterface", td.Templates[0].Bases[0].Type);
+			
+			Assert.AreEqual("S", td.Templates[1].Name);
+			Assert.AreEqual("G", td.Templates[1].Bases[0].Type);
+			Assert.AreEqual(1, td.Templates[1].Bases[0].GenericTypes.Count);
+			Assert.IsTrue(td.Templates[1].Bases[0].GenericTypes[0].IsArrayType);
+			Assert.AreEqual("T", td.Templates[1].Bases[0].GenericTypes[0].Type);
+			Assert.AreEqual(new int[] {0}, td.Templates[1].Bases[0].GenericTypes[0].RankSpecifier);
 		}
 		
 		[Test]
@@ -103,7 +117,7 @@ public class Generic<T, S> : System.IComparable where S : G<T[]> where  T : MyNa
 		{
 			string declr = @"
 [MyAttr()]
-public abstract class MyClass : MyBase, Interface1, My.Test.Interface2 
+public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 {
 }
 ";
@@ -152,40 +166,38 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		public void VBNetSimpleClassTypeDeclarationTest()
 		{
 			string program = "Class TestClass\n" +
-			                 "End Class\n";
+				"End Class\n";
 			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(Types.Class, td.Type);
 			Assert.AreEqual(1, td.StartLocation.Y, "start line");
 			Assert.AreEqual(2, td.EndLocation.Y, "end line");
-//			Assert.IsFalse(td.IsPartialType);
 		}
 		
 		[Test]
 		public void VBNetSimpleClassTypeDeclarationWithoutLastNewLineTest()
 		{
 			string program = "Class TestClass\n" +
-			                 "End Class";
+				"End Class";
 			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(Types.Class, td.Type);
 			Assert.AreEqual(1, td.StartLocation.Y, "start line");
 			Assert.AreEqual(2, td.EndLocation.Y, "end line");
-//			Assert.IsFalse(td.IsPartialType);
 		}
 		
 		[Test]
 		public void VBNetSimplePartialClassTypeDeclarationTest()
 		{
 			string program = "Partial Class TestClass\n" +
-			                 "End Class\n";
+				"End Class\n";
 			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(Types.Class, td.Type);
-//			Assert.IsTrue(td.IsPartialType);
+			Assert.AreEqual(Modifier.Partial, td.Modifier);
 		}
 		#endregion
 	}
