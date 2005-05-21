@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			ParserService.UpdateParseInformation(parserOutput, fileName, false, false);
 		}
 		
-		ResolveResult Resolve(string program, string expression, int line)
+		public ResolveResult Resolve(string program, string expression, int line)
 		{
 			AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                        program);
 		}
 		
-		ResolveResult ResolveVB(string program, string expression, int line)
+		public ResolveResult ResolveVB(string program, string expression, int line)
 		{
 			AddCompilationUnit(ParseVB("a.vb", program), "a.vb");
 			
@@ -80,13 +80,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                        program);
 		}
 		
-		IProjectContent corLib;
-		
-		[TestFixtureSetUp]
-		public void Init()
-		{
-			corLib = ProjectContentRegistry.GetMscorlibContent();
-		}
+		IProjectContent corLib = ProjectContentRegistry.GetMscorlibContent();
 		#endregion
 		
 		#region Test for old issues (Fidalgo)

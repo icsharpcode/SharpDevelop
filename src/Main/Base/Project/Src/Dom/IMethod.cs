@@ -19,7 +19,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		List<IParameter> Parameters {
 			get;
 		}
-
+		
+		List<ITypeParameter> TypeParameters {
+			get;
+		}
+		
 		bool IsConstructor {
 			get;
 		}

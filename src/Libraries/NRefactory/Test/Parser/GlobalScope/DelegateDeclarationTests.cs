@@ -61,12 +61,15 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGenericDelegateDeclarationTest()
 		{
-			string program = "public delegate T CreateObject<T>(int a, int secondParam, MyObj lastParam);\n";
+			string program = "public delegate T CreateObject<T>(int a, int secondParam, MyObj lastParam) where T : ICloneable;\n";
 			DelegateDeclaration dd = (DelegateDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(DelegateDeclaration));
 			Assert.AreEqual("CreateObject", dd.Name);
 			Assert.AreEqual("T", dd.ReturnType.Type);
 			TestParameters(dd);
-			Assert.Fail("Getting type parameters not implemented.");
+			Assert.AreEqual(1, dd.Templates.Count);
+			Assert.AreEqual("T", dd.Templates[0].Name);
+			Assert.AreEqual(1, dd.Templates[0].Bases.Count);
+			Assert.AreEqual("ICloneable", dd.Templates[0].Bases[0].Type);
 		}
 		#endregion
 		

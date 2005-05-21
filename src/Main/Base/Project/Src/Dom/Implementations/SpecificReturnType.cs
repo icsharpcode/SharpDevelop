@@ -21,6 +21,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public sealed class SpecificReturnType : ProxyReturnType
 	{
+		// Return types that should be substituted for the generic types
+		// If a substitution is unknown (type could not be resolved), the list
+		// contains a null entry.
 		List<IReturnType> typeParameters;
 		IReturnType baseType;
 		
@@ -35,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (baseType == null)
 				throw new ArgumentNullException("baseType");
 			if (typeParameters == null)
-				throw new ArgumentNullException("typeParameter");
+				throw new ArgumentNullException("typeParameters");
 			this.typeParameters = typeParameters;
 			this.baseType = baseType;
 		}
@@ -94,7 +97,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string DotNetName {
 			get {
-				StringBuilder b = new StringBuilder(baseType.DotNetName);
+				string baseName = baseType.DotNetName;
+				int pos = baseName.LastIndexOf('`');
+				StringBuilder b;
+				if (pos < 0)
+					b = new StringBuilder(baseName);
+				else
+					b = new StringBuilder(baseName, 0, pos, pos + 20);
 				b.Append('{');
 				for (int i = 0; i < typeParameters.Count; ++i) {
 					if (i > 0) b.Append(',');
@@ -117,7 +126,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} else if (input is ArrayReturnType) {
 				IReturnType e = ((ArrayReturnType)input).ElementType;
 				IReturnType t = TranslateType(e);
-				if (e != t)
+				if (e != t && t != null)
 					return new ArrayReturnType(t, input.ArrayDimensions);
 			} else if (input is SpecificReturnType) {
 				SpecificReturnType r = (SpecificReturnType)input;

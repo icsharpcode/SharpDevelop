@@ -174,6 +174,13 @@ namespace VBNetBinding
 				builder.Append("</b>");
 			}
 			
+			builder.Append("(Of");
+			for (int i = 0; i < c.TypeParameters.Count; ++i) {
+				if (i > 0) builder.Append(", ");
+				builder.Append(c.TypeParameters[i].Name);
+			}
+			builder.Append(')');
+			
 			if (c.ClassType == ClassType.Delegate) {
 				builder.Append("(");
 				if (IncludeHTMLMarkup) builder.Append("<br>");
@@ -440,7 +447,7 @@ namespace VBNetBinding
 			}
 
 			string dispName = UseFullyQualifiedMemberNames ? m.FullyQualifiedName : m.Name;
-			if (m.Name == "ctor" || m.Name == "cctor" || m.Name == "#ctor" || m.Name == "#cctor" || m.IsConstructor) {
+			if (m.Name == "#ctor" || m.Name == "#cctor" || m.IsConstructor) {
 				dispName = "New";
 			}
 			
@@ -453,6 +460,13 @@ namespace VBNetBinding
 			if (IncludeHTMLMarkup) {
 				builder.Append("</b>");
 			}
+			
+			builder.Append("(Of");
+			for (int i = 0; i < m.TypeParameters.Count; ++i) {
+				if (i > 0) builder.Append(", ");
+				builder.Append(m.TypeParameters[i].Name);
+			}
+			builder.Append(')');
 			
 			builder.Append("(");
 			if (IncludeHTMLMarkup) builder.Append("<br>");

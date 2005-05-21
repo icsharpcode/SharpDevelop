@@ -40,8 +40,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				return name;
 			}
 			set {
-				Debug.Assert(value != null);
-				name = value;
+				name = (value != null) ? value : "?";
 			}
 		}
 		
@@ -69,6 +68,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				return templates;
 			}
 			set {
+				Debug.Assert(value != null);
 				templates = value;
 			}
 		}

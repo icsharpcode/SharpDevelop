@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (type.DeclaringMethod != null) {
 					IMethod method = member as IMethod;
 					if (method != null) {
-						// Create GenericReturnType for generic method
+						return new GenericReturnType(new DefaultTypeParameter(method, type));
 					}
 				}
 				return new GenericReturnType(new DefaultTypeParameter(c, type));

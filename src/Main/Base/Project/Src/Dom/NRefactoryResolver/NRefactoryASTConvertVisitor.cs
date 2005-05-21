@@ -156,8 +156,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ClassType TranslateClassType(AST.Types type)
 		{
 			switch (type) {
-				case AST.Types.Class:
-					return ClassType.Class;
 				case AST.Types.Enum:
 					return ClassType.Enum;
 				case AST.Types.Interface:
@@ -165,6 +163,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				case AST.Types.Struct:
 					return ClassType.Struct;
 			}
+			// Class and Module
 			return ClassType.Class;
 		}
 		
@@ -196,14 +195,27 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					c.BaseTypes.Add(type);
 				}
 			}
-			int index = 0;
-			foreach (AST.TemplateDefinition template in typeDeclaration.Templates) {
-				c.TypeParameters.Add(new DefaultTypeParameter(c, template.Name, index++));
-			}
+			ConvertTemplates(typeDeclaration.Templates, c);
 			currentClass.Push(c);
 			object ret = typeDeclaration.AcceptChildren(this, data);
 			currentClass.Pop();
 			return ret;
+		}
+		
+		void ConvertTemplates(List<AST.TemplateDefinition> templateList, IClass c)
+		{
+			int index = 0;
+			foreach (AST.TemplateDefinition template in templateList) {
+				c.TypeParameters.Add(new DefaultTypeParameter(c, template.Name, index++));
+			}
+		}
+		
+		void ConvertTemplates(List<AST.TemplateDefinition> templateList, IMethod m)
+		{
+			int index = 0;
+			foreach (AST.TemplateDefinition template in templateList) {
+				m.TypeParameters.Add(new DefaultTypeParameter(m, template.Name, index++));
+			}
 		}
 		
 		public override object Visit(AST.DelegateDeclaration delegateDeclaration, object data)
@@ -225,6 +237,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				cu.Classes.Add(c);
 			}
 			currentClass.Push(c); // necessary for CreateReturnType
+			ConvertTemplates(delegateDeclaration.Templates, c);
 			DefaultMethod invokeMethod = new DefaultMethod("Invoke", CreateReturnType(delegateDeclaration.ReturnType), ModifierEnum.Public, null, null, c);
 			if (delegateDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in delegateDeclaration.Parameters) {
@@ -266,6 +279,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					method.Parameters.Add(p);
 				}
 			}
+			ConvertTemplates(methodDeclaration.Templates, method);
 			c.Methods.Add(method);
 			return null;
 		}

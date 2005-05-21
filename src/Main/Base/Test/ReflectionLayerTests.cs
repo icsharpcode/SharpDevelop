@@ -3,7 +3,7 @@
  * User: Daniel Grunwald
  * Date: 17.05.2005
  * Time: 21:33
- * 
+ *
  * To change this template use Tools | Options | Coding | Edit Standard Headers.
  */
 
@@ -53,6 +53,24 @@ namespace ICSharpCode.SharpDevelop.Tests
 			a1.Add(p1);
 			a2.Add(p2);
 			Assert.AreEqual(0, DiffUtility.Compare(a1, a2));
+		}
+		
+		IMethod GetMethod(IClass c, string name) {
+			return c.Methods.Find(delegate(IMethod m) { return m.Name == name; });
+		}
+		
+		[Test]
+		public void GenericDocumentationTagNamesTest()
+		{
+			IClass c = pc.GetClass("System.Collections.Generic.List");
+			Assert.AreEqual("T:System.Collections.Generic.List`1",
+			                c.DocumentationTag);
+			Assert.AreEqual("M:System.Collections.Generic.List`1.Add(`0)",
+			                GetMethod(c, "Add").DocumentationTag);
+			Assert.AreEqual("M:System.Collections.Generic.List`1.AddRange(System.Collections.Generic.IEnumerable{`0})",
+			                GetMethod(c, "AddRange").DocumentationTag);
+			Assert.AreEqual("M:System.Collections.Generic.List`1.ConvertAll``1(System.Converter{`0,``0})",
+			                GetMethod(c, "ConvertAll").DocumentationTag);
 		}
 	}
 }

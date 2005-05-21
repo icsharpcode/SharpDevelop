@@ -476,6 +476,15 @@ namespace ICSharpCode.Core
 				builder.Append("</b>");
 			}
 			
+			if (m.TypeParameters.Count > 0) {
+				builder.Append('<');
+				for (int i = 0; i < m.TypeParameters.Count; ++i) {
+					if (i > 0) builder.Append(", ");
+					builder.Append(m.TypeParameters[i].Name);
+				}
+				builder.Append('>');
+			}
+			
 			builder.Append("(");
 			if (IncludeHTMLMarkup) builder.Append("<br>");
 			

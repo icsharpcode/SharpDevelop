@@ -68,7 +68,7 @@ namespace ICSharpCode.Core
 						if (i + 1 < m.Parameters.Count) {
 							builder.Append(", ");
 						}
-					}					
+					}
 				}
 				
 				builder.Append(')');
@@ -92,7 +92,7 @@ namespace ICSharpCode.Core
 				builder.Append("\n{");
 			}
 			
-			return builder.ToString();		
+			return builder.ToString();
 		}
 		
 		public override string ConvertEnd(IClass c)
@@ -119,7 +119,7 @@ namespace ICSharpCode.Core
 				builder.Append(Convert(field.ReturnType));
 			}
 			
-			return builder.ToString();			
+			return builder.ToString();
 		}
 		
 		public override string Convert(IProperty property)
@@ -211,6 +211,14 @@ namespace ICSharpCode.Core
 			} else {
 				builder.Append(m.Name);
 			}
+			if (m.TypeParameters.Count > 0) {
+				builder.Append('<');
+				for (int i = 0; i < m.TypeParameters.Count; ++i) {
+					if (i > 0) builder.Append(", ");
+					builder.Append(m.TypeParameters[i].Name);
+				}
+				builder.Append('>');
+			}
 			builder.Append('(');
 			for (int i = 0; i < m.Parameters.Count; ++i) {
 				builder.Append(Convert(m.Parameters[i]));
@@ -235,7 +243,7 @@ namespace ICSharpCode.Core
 		public override string ConvertEnd(IMethod m)
 		{
 			return "}";
-		}	
+		}
 		
 		public override string Convert(IReturnType returnType)
 		{

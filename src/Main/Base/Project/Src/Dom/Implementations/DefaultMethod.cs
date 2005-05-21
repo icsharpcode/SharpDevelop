@@ -42,6 +42,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			DefaultMethod p = new DefaultMethod(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
 			p.parameters = DefaultParameter.Clone(this.Parameters);
+			p.typeParameters = this.typeParameters;
 			p.documentationTag = DocumentationTag;
 			return p;
 		}
@@ -68,8 +69,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 						b.Append('(');
 						for (int i = 0; i < paras.Count; ++i) {
 							if (i > 0) b.Append(',');
-							if (paras[i].ReturnType != null) {
-								b.Append(paras[i].ReturnType.DotNetName);
+							IReturnType rt = paras[i].ReturnType;
+							if (rt != null) {
+								b.Append(rt.DotNetName);
 							}
 						}
 						b.Append(')');

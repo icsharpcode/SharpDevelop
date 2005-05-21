@@ -750,14 +750,23 @@ TypeDecl<Modifiers m, ArrayList attributes>
 	                                 .)
 	| /*--- delegate declaration: */
 	"delegate"                       (. DelegateDeclaration delegateDeclr = new DelegateDeclaration(m.Modifier, attributes);
+	                                    templates = delegateDeclr.Templates;
 	                                    delegateDeclr.StartLocation = t.Location;
 	                                 .)
 	( IF (NotVoidPointer()) "void"   (. delegateDeclr.ReturnType = new TypeReference("void", 0, null); .)
 		| Type<out type>             (. delegateDeclr.ReturnType = type; .)
 	)
 	ident                            (. delegateDeclr.Name = t.val; .)
+	
+	/* .NET 2.0 */
+	[ TypeParameterList<templates> ]
+	
 	"(" [ FormalParameterList<out p> (. delegateDeclr.Parameters = p; .)
 	] ")"
+	
+	/* .NET 2.0 */
+	{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
+	
 	";"                              (. delegateDeclr.EndLocation = t.Location;
 	                                    compilationUnit.AddChild(delegateDeclr);
 	                                 .)

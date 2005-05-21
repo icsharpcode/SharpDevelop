@@ -29,6 +29,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				if (methodBase is MethodInfo) {
 					return ReflectionReturnType.Create(this, ((MethodInfo)methodBase).ReturnType);
+				} else if (methodBase is ConstructorInfo) {
+					return DeclaringType.DefaultReturnType;
 				}
 				return null;
 			}
@@ -52,6 +54,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			: base(declaringType, methodBase is ConstructorInfo ? "#ctor" : methodBase.Name)
 		{
 			this.methodBase = methodBase;
+			
+			if (methodBase.IsGenericMethodDefinition) {
+				foreach (Type g in methodBase.GetGenericArguments()) {
+					this.TypeParameters.Add(new DefaultTypeParameter(this, g));
+				}
+			}
 			
 			ModifierEnum modifiers  = ModifierEnum.None;
 			if (methodBase.IsStatic) {

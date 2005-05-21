@@ -18,6 +18,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -27,14 +28,14 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		TypeReference   returnType = TypeReference.Null;
 //		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>(1);
 		ArrayList parameters = new ArrayList(1);
+		List<TemplateDefinition> templates = new List<TemplateDefinition>();
 		
 		public string Name {
 			get {
 				return name;
 			}
 			set {
-				Debug.Assert(value != null);
-				name = value;
+				name = (value != null) ? value : "?";
 			}
 		}
 		
@@ -55,6 +56,16 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			set {
 				Debug.Assert(value != null);
 				parameters = value;
+			}
+		}
+		
+		public List<TemplateDefinition> Templates {
+			get {
+				return templates;
+			}
+			set {
+				Debug.Assert(value != null);
+				templates = value;
 			}
 		}
 		

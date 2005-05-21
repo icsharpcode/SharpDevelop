@@ -55,6 +55,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.index = index;
 		}
 		
+		public DefaultTypeParameter(IMethod method, Type type)
+		{
+			this.method = method;
+			this.targetClass = method.DeclaringType;
+			this.name = type.Name;
+			this.index = type.GenericParameterPosition;
+		}
+		
 		public DefaultTypeParameter(IClass targetClass, string name, int index)
 		{
 			this.targetClass = targetClass;
