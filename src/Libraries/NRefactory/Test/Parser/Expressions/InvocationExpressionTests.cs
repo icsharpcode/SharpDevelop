@@ -33,6 +33,17 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		}
 		
 		[Test]
+		public void CSharpGenericInvocationExpressionTest()
+		{
+			InvocationExpression expr = (InvocationExpression)ParseUtilCSharp.ParseExpression("myMethod<char>('a')", typeof(InvocationExpression));
+			Assert.AreEqual(1, expr.Parameters.Count);
+			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
+			Assert.AreEqual("myMethod", ((IdentifierExpression)expr.TargetObject).Identifier);
+			Assert.AreEqual(1, expr.TypeParameters.Count);
+			Assert.AreEqual("System.Char", expr.TypeParameters[0].SystemType);
+		}
+		
+		[Test]
 		public void CSharpInvalidNestedInvocationExpressionTest()
 		{
 			// this test was written because this bug caused the AbstractASTVisitor to crash

@@ -27,6 +27,18 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.IsTrue(fre.TargetObject is IdentifierExpression);
 			Assert.AreEqual("myTargetObject", ((IdentifierExpression)fre.TargetObject).Identifier);
 		}
+		
+		[Test]
+		public void CSharpGenericFieldReferenceExpressionTest()
+		{
+			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilCSharp.ParseExpression("SomeClass<string>.myField", typeof(FieldReferenceExpression));
+			Assert.AreEqual("myField", fre.FieldName);
+			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
+			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
+			Assert.AreEqual("SomeClass", tr.Type);
+			Assert.AreEqual(1, tr.GenericTypes.Count);
+			Assert.AreEqual("System.String", tr.GenericTypes[0].SystemType);
+		}
 		#endregion
 		
 		#region VB.NET

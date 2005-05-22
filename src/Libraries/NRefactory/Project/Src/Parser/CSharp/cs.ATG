@@ -309,6 +309,15 @@ bool IsLocalVarDecl () {
 	       pt.kind == Tokens.Identifier;
 }
 
+/* True if lookahead is type parameters (<...>) followed by the specified token */
+bool IsGenericFollowedBy(int token)
+{
+	Token t = la;
+	if (t.kind != Tokens.LessThan) return false;
+	StartPeek();
+	return SkipGeneric(ref t) && t.kind == token;
+}
+
 /* True, if lookahead ident is "where" */
 bool IdentIsWhere () {
 	return la.kind == Tokens.Identifier && la.val == "where";
@@ -1869,6 +1878,7 @@ UnaryExpr<out Expression uExpr>
 PrimaryExpr<out Expression pexpr>
 (.
 	TypeReference type = null;
+	List<TypeReference> typeList = null;
 	bool isArrayCreation = false;
 	Expression expr;
 	pexpr = null;
@@ -1976,6 +1986,11 @@ PrimaryExpr<out Expression pexpr>
 			[ Argument<out expr>     (. if (expr != null) {parameters.Add(expr);} .)
 			{ "," Argument<out expr> (. if (expr != null) {parameters.Add(expr);} .)
 			} ] ")"                  (. pexpr = new InvocationExpression(pexpr, parameters); .)
+		|   ( IF (IsGenericFollowedBy(Tokens.OpenParenthesis)) TypeArgumentList<out typeList> )
+			"("                      (. ArrayList parameters = new ArrayList(); .)
+			[ Argument<out expr>     (. if (expr != null) {parameters.Add(expr);} .)
+			{ "," Argument<out expr> (. if (expr != null) {parameters.Add(expr);} .)
+			} ] ")"                  (. pexpr = new InvocationExpression(pexpr, parameters, typeList); .)
 		/*--- element access */
 		|  (. if (isArrayCreation) Error("element access not allow on array creation");
 		      ArrayList indices = new ArrayList();

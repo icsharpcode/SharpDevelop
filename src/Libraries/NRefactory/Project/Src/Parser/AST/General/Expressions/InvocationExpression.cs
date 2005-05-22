@@ -1,6 +1,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST {
 	
@@ -9,6 +10,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 		Expression       targetObject;
 //		List<Expression> parameters;
 		ArrayList parameters;
+		List<TypeReference> typeParameters;
 		
 		public Expression TargetObject {
 			get {
@@ -28,10 +30,26 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
+		public List<TypeReference> TypeParameters {
+			get {
+				return typeParameters;
+			}
+			set {
+				typeParameters = value == null ? new List<TypeReference>(1) : value;
+			}
+		}
+		
 		public InvocationExpression(Expression targetObject, ArrayList parameters)
 		{
 			this.TargetObject = targetObject;
 			this.Parameters   = parameters;
+		}
+		
+		public InvocationExpression(Expression targetObject, ArrayList parameters, List<TypeReference> typeParameters)
+		{
+			this.TargetObject = targetObject;
+			this.Parameters   = parameters;
+			this.TypeParameters = typeParameters;
 		}
 		
 		public InvocationExpression(Expression targetObject)
