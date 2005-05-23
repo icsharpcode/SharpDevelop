@@ -31,6 +31,11 @@ class TestClass {
 		List<TestClass> list = new List<TestClass>();
 		
 	}
+	
+	T CloneIt<T>(T source) where T : ICloneable {
+		
+		return source.Clone();
+	}
 }
 ";
 		
@@ -67,6 +72,28 @@ class TestClass {
 			IMethod m = (IMethod)((MemberResolveResult)result).ResolvedMember;
 			Assert.AreEqual("TestClass", m.ReturnType.FullyQualifiedName);
 			Assert.AreEqual(1, m.ReturnType.ArrayDimensions);
+		}
+		
+		[Test]
+		public void ClassReferenceTest()
+		{
+			ResolveResult result = Resolve(listProgram, "List<string>", 5);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("System.Collections.Generic.List", ((TypeResolveResult)result).ResolvedClass.FullyQualifiedName);
+			Assert.IsTrue(result.ResolvedType is SpecificReturnType);
+			Assert.AreEqual("System.String", ((SpecificReturnType)result.ResolvedType).TypeParameters[0].FullyQualifiedName);
+		}
+		
+		[Test]
+		public void GenericMethodCallTest()
+		{
+			ResolveResult result = Resolve(listProgram, "CloneIt<TestClass>(null)", 5);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is MemberResolveResult);
+			Assert.AreEqual("TestClass", result.ResolvedType.FullyQualifiedName);
+			MemberResolveResult mrr = (MemberResolveResult) result;
+			Assert.AreEqual("TestClass.CloneIt", mrr.ResolvedMember.FullyQualifiedName);
 		}
 	}
 }

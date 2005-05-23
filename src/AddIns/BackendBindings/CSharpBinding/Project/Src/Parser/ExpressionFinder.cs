@@ -57,11 +57,42 @@ namespace CSharpBinding.Parser
 						break;
 					b.Append(inText, i, otherBracket - i + 1);
 					break;
+				} else if (c == '<') {
+					// accept only if this is a generic type reference
+					int typeParameterEnd = FindEndOfTypeParameters(inText, i);
+					if (typeParameterEnd < 0)
+						break;
+					b.Append(inText, i, typeParameterEnd - i + 1);
+					i = typeParameterEnd;
 				} else {
 					break;
 				}
 			}
 			return b.ToString();
+		}
+		
+		int FindEndOfTypeParameters(string inText, int offset)
+		{
+			int level = 0;
+			for (int i = offset; i < inText.Length; ++i) {
+				char c = inText[i];
+				if (Char.IsLetterOrDigit(c) || Char.IsWhiteSpace(c)) {
+					// ignore identifiers and whitespace
+				} else if (c == ',' || c == '?' || c == '[' || c == ']') {
+					// ,  : seperating generic type parameters
+					// ?  : nullable types
+					// [] : arrays
+				} else if (c == '<') {
+					++level;
+				} else if (c == '>') {
+					--level;
+				} else {
+					return -1;
+				}
+				if (level == 0)
+					return i;
+			}
+			return -1;
 		}
 		
 		#region SearchBracketForward
@@ -346,15 +377,16 @@ namespace CSharpBinding.Parser
 		
 		void ReadNextToken()
 		{
-			char ch = GetNext();
+			char ch;
 			
 			curTokenType = Err;
-			if (ch == '\0') {
-				return;
-			}
-			while (Char.IsWhiteSpace(ch)) {
+			do {
 				ch = GetNext();
-			}
+				if (ch == '\0') {
+					return;
+				}
+			} while (Char.IsWhiteSpace(ch));
+			
 			
 			switch (ch) {
 				case '}':
@@ -370,6 +402,12 @@ namespace CSharpBinding.Parser
 				case ']':
 					if (ReadBracket('[', ']')) {
 						curTokenType = Bracket;
+					}
+					break;
+				case '>':
+					if (ReadTypeParameters()) {
+						// hack: ignore type parameters and continue reading without changing state
+						ReadNextToken();
 					}
 					break;
 				case '.':
@@ -433,6 +471,32 @@ namespace CSharpBinding.Parser
 			}
 		}
 		
+		bool ReadTypeParameters()
+		{
+			int level = 1;
+			while (level > 0) {
+				char ch = GetNext();
+				switch (ch) {
+					case '?':
+					case '[':
+					case ',':
+					case ']':
+						break;
+					case '<':
+						--level;
+						break;
+					case '>':
+						++level;
+						break;
+					default:
+						if (!char.IsWhiteSpace(ch) && !char.IsLetterOrDigit(ch))
+							return false;
+						break;
+				}
+			}
+			return true;
+		}
+		
 		bool ReadBracket(char openBracket, char closingBracket)
 		{
 			int curlyBraceLevel    = 0;
@@ -452,10 +516,9 @@ namespace CSharpBinding.Parser
 			
 			while (parenthesisLevel != 0 || squareBracketLevel != 0 || curlyBraceLevel != 0) {
 				char ch = GetNext();
-				if (ch == '\0') {
-					return false;
-				}
 				switch (ch) {
+					case '\0':
+						return false;
 					case '(':
 						parenthesisLevel--;
 						break;

@@ -1023,7 +1023,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return data;
 		}
 		
-		public object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
+		public virtual object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			Debug.Assert(anonymousMethodExpression != null);
 			Debug.Assert(anonymousMethodExpression.Parameters != null);

@@ -47,30 +47,35 @@ namespace ICSharpCode.FormDesigner
 		
 		public void ConvertContentDefinition(TextWriter writer)
 		{
-			DesignerSerializationManager  serializationManager = (DesignerSerializationManager )host.GetService(typeof(IDesignerSerializationManager));
+			DesignerSerializationManager serializationManager = (DesignerSerializationManager)host.GetService(typeof(IDesignerSerializationManager));
 			IDisposable session = serializationManager.CreateSession();
 			DesignerResourceService designerResourceService = (DesignerResourceService)host.GetService(typeof(System.ComponentModel.Design.IResourceService));
 			designerResourceService.SerializationStarted(true);
 			
-			CodeDomSerializer rootSerializer = (CodeDomSerializer)serializationManager.GetSerializer(host.RootComponent.GetType(), typeof(CodeDomSerializer));
+			Type componentType = host.RootComponent.GetType();
+			ExpressionContext exprContext = new ExpressionContext(new CodeThisReferenceExpression(), componentType, host.RootComponent, host.RootComponent);
+			((IDesignerSerializationManager)serializationManager).Context.Append(exprContext);
+			
+			CodeDomSerializer rootSerializer = (CodeDomSerializer)serializationManager.GetSerializer(componentType, typeof(CodeDomSerializer));
 			
 			if (rootSerializer == null) {
 				throw new Exception("No root serializer found");
 			}
 			
 			ICollection statements = rootSerializer.Serialize(serializationManager, host.RootComponent) as ICollection;
-			codeDOMGeneratorUtility.CreateCodeGeneratorOptions.IndentString  = "\t\t";
+			CodeGeneratorOptions options = codeDOMGeneratorUtility.CreateCodeGeneratorOptions;
+			options.IndentString = "\t\t\t";
 			
 			foreach (CodeStatement statement in statements) {
 				if (!(statement is CodeVariableDeclarationStatement)) {
+					// indentation isn't generated when calling GenerateCodeFromStatement
+					writer.Write(options.IndentString);
 					try {
-						codeProvider.GenerateCodeFromStatement(statement, 
-						                                       writer, 
-						                                       codeDOMGeneratorUtility.CreateCodeGeneratorOptions);
+						codeProvider.GenerateCodeFromStatement(statement, writer, options);
 					} catch (Exception e) {
-						codeProvider.GenerateCodeFromStatement(new CodeCommentStatement("TODO: Error while generating statement : " + e.Message), 
-						                                       writer, 
-						                                       codeDOMGeneratorUtility.CreateCodeGeneratorOptions);
+						codeProvider.GenerateCodeFromStatement(new CodeCommentStatement("TODO: Error while generating statement : " + e.Message),
+						                                       writer,
+						                                       options);
 					}
 				}
 			}

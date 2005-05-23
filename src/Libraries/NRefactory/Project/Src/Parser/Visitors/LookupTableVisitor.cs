@@ -103,6 +103,14 @@ namespace ICSharpCode.NRefactory.Parser
 			return data;
 		}
 		
+		public override object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
+		{
+			foreach (ParameterDeclarationExpression p in anonymousMethodExpression.Parameters) {
+				AddVariable(p.TypeReference, p.ParameterName, anonymousMethodExpression.StartLocation, anonymousMethodExpression.EndLocation);
+			}
+			return base.Visit(anonymousMethodExpression, data);
+		}
+		
 		// ForStatement and UsingStatement use a LocalVariableDeclaration,
 		// so they don't need to be visited separately
 		
@@ -121,6 +129,8 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 			return foreachStatement.EmbeddedStatement.AcceptVisitor(this, data);
 		}
+		
+		
 		
 		public override object Visit(TryCatchStatement tryCatchStatement, object data)
 		{

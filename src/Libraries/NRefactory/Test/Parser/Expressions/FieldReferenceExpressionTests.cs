@@ -39,6 +39,18 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual(1, tr.GenericTypes.Count);
 			Assert.AreEqual("System.String", tr.GenericTypes[0].SystemType);
 		}
+		
+		[Test]
+		public void CSharpFullNamespaceGenericFieldReferenceExpressionTest()
+		{
+			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilCSharp.ParseExpression("Namespace.Subnamespace.SomeClass<string>.myField", typeof(FieldReferenceExpression));
+			Assert.AreEqual("myField", fre.FieldName);
+			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
+			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
+			Assert.AreEqual("Namespace.Subnamespace.SomeClass", tr.Type);
+			Assert.AreEqual(1, tr.GenericTypes.Count);
+			Assert.AreEqual("System.String", tr.GenericTypes[0].SystemType);
+		}
 		#endregion
 		
 		#region VB.NET

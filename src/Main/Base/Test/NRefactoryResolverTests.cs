@@ -15,6 +15,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		ICompilationUnit Parse(string fileName, string fileContent)
 		{
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp, new StringReader(fileContent));
+			p.ParseMethodBodies = false;
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
 			pc.ReferencedContents.Add(corLib);
@@ -36,6 +37,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		ICompilationUnit ParseVB(string fileName, string fileContent)
 		{
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet, new StringReader(fileContent));
+			p.ParseMethodBodies = false;
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
 			ParserService.ForceProjectContent(pc);
@@ -360,6 +362,51 @@ interface IInterface2 {
 			m = (IMethod)((MemberResolveResult)result).ResolvedMember;
 			Assert.AreEqual(1, m.Parameters.Count, "new A(11.1) parameter count");
 			Assert.AreEqual("dblVal", m.Parameters[0].Name, "new A(11.1) parameter");
+		}
+		
+		[Test]
+		public void AnonymousMethodParameters()
+		{
+			string program = @"class A {
+	void Method() {
+		SomeEvent += delegate(object sender, EventArgs e) {
+			
+		};
+	} }
+";
+			ResolveResult result = Resolve(program, "e", 4);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is LocalResolveResult);
+			Assert.AreEqual("System.EventArgs", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void DefaultTypeCSharp()
+		{
+			string program = @"class A {
+	void Method() {
+		
+	} }
+";
+			ResolveResult result = Resolve(program, "int", 3);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void DefaultTypeVB()
+		{
+			string program = @"Class A
+	Sub Method()
+		
+	End Sub
+End Class
+";
+			ResolveResult result = ResolveVB(program, "inTeGer", 3);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName);
 		}
 		#endregion
 	}

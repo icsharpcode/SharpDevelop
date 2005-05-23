@@ -372,6 +372,37 @@ bool IsShiftRight()
 	return (la.kind == Tokens.GreaterThan && next.kind == Tokens.GreaterThan);
 }
 
+bool IsTypeReferenceExpression(Expression expr)
+{
+	if (expr is TypeReferenceExpression) return ((TypeReferenceExpression)expr).TypeReference.GenericTypes.Count == 0;
+	while (expr is FieldReferenceExpression) {
+		expr = ((FieldReferenceExpression)expr).TargetObject;
+	}
+	return expr is IdentifierExpression;
+}
+
+TypeReferenceExpression GetTypeReferenceExpression(Expression expr, List<TypeReference> genericTypes)
+{
+	TypeReferenceExpression	tre = expr as TypeReferenceExpression;
+	if (tre != null) {
+		return new TypeReferenceExpression(new TypeReference(tre.TypeReference.Type, tre.TypeReference.PointerNestingLevel, tre.TypeReference.RankSpecifier, genericTypes));
+	}
+	StringBuilder b = new StringBuilder();
+	WriteFullTypeName(b, expr);
+	return new TypeReferenceExpression(new TypeReference(b.ToString(), 0, null, genericTypes));
+}
+
+void WriteFullTypeName(StringBuilder b, Expression expr)
+{
+	FieldReferenceExpression fre = expr as FieldReferenceExpression;
+	if (fre != null) {
+		WriteFullTypeName(b, fre.TargetObject);
+		b.Append('.');
+		b.Append(fre.FieldName);
+	} else if (expr is IdentifierExpression) {
+		b.Append(((IdentifierExpression)expr).Identifier);
+	}
+}
 
 /*------------------------------------------------------------------------*
  *----- LEXER TOKEN LIST  ------------------------------------------------*
@@ -1981,6 +2012,10 @@ PrimaryExpr<out Expression pexpr>
 		/*--- member access */
 		| "->" ident (. pexpr = new PointerReferenceExpression(pexpr, t.val); .)
 		| "." ident (. pexpr = new FieldReferenceExpression(pexpr, t.val);.)
+		/* member access on generic type */
+		|   ( IF (IsGenericFollowedBy(Tokens.Dot) && IsTypeReferenceExpression(pexpr))
+				TypeArgumentList<out typeList> )
+				"." ident (. pexpr = new FieldReferenceExpression(GetTypeReferenceExpression(pexpr, typeList), t.val);.)
 		/*--- invocation expression: */
 		| "("                        (. ArrayList parameters = new ArrayList(); .)
 			[ Argument<out expr>     (. if (expr != null) {parameters.Add(expr);} .)
@@ -2004,6 +2039,7 @@ PrimaryExpr<out Expression pexpr>
 AnonymousMethodExpr<out Expression outExpr>
 (.
 	AnonymousMethodExpression expr = new AnonymousMethodExpression();
+	expr.StartLocation = t.Location;
 	Statement stmt;
 	ArrayList p;
 	outExpr = expr;
@@ -2021,6 +2057,7 @@ AnonymousMethodExpr<out Expression outExpr>
 		(. lexer.SkipCurrentBlock(); .)
 		"}"
 	(. } .)
+	(. expr.EndLocation = t.Location; .)
 .
 
 ConditionalOrExpr<ref Expression outExpr>
