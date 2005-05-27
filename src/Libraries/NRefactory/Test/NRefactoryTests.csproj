@@ -124,6 +124,7 @@
     <Compile Include="Lexer\VBNet\LiteralsTests.cs" />
     <Compile Include="Parser\SkipMethodBodiesTest.cs" />
     <Compile Include="Parser\Expressions\AnonymousMethodTests.cs" />
+    <Compile Include="Output\CodeDOM\InvocationExpressionTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="General\" />

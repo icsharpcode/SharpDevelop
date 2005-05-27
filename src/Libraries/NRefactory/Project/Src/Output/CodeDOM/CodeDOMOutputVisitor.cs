@@ -648,6 +648,9 @@ namespace ICSharpCode.NRefactory.Parser
 				if (methodName == "ChrW") {
 					return new CodeCastExpression("System.Char", GetExpressionList(invocationExpression.Parameters)[0]);
 				}
+			} else if (target is IdentifierExpression) {
+				targetExpr = new CodeThisReferenceExpression();
+				methodName = ((IdentifierExpression)target).Identifier;
 			} else {
 				targetExpr = (CodeExpression)target.AcceptVisitor(this, data);
 			}

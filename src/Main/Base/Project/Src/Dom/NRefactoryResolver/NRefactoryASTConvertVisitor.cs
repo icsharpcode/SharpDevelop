@@ -267,19 +267,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DefaultRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new Point(-1, -1));
-			IReturnType type = CreateReturnType(methodDeclaration.TypeReference);
 			DefaultClass c  = GetCurrentClass();
 			
-			DefaultMethod method = new DefaultMethod(methodDeclaration.Name, type, ConvertModifier(methodDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			DefaultMethod method = new DefaultMethod(methodDeclaration.Name, null, ConvertModifier(methodDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			ConvertTemplates(methodDeclaration.Templates, method);
+			method.ReturnType = CreateReturnType(methodDeclaration.TypeReference, method);
 			method.Attributes.AddRange(VisitAttributes(methodDeclaration.Attributes));
 			if (methodDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
-					IReturnType parType = CreateReturnType(par.TypeReference);
+					IReturnType parType = CreateReturnType(par.TypeReference, method);
 					DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, methodDeclaration.Body.EndLocation));
 					method.Parameters.Add(p);
 				}
 			}
-			ConvertTemplates(methodDeclaration.Templates, method);
 			c.Methods.Add(method);
 			return null;
 		}
@@ -395,6 +395,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass c = GetCurrentClass();
 			c.Indexer.Add(i);
 			return null;
+		}
+		
+		IReturnType CreateReturnType(AST.TypeReference reference, IMethod method)
+		{
+			if (method.TypeParameters != null) {
+				foreach (ITypeParameter tp in method.TypeParameters) {
+					if (tp.Name.Equals(reference.SystemType, StringComparison.InvariantCultureIgnoreCase))
+						return new GenericReturnType(tp);
+				}
+			}
+			return CreateReturnType(reference);
 		}
 		
 		IReturnType CreateReturnType(AST.TypeReference reference)

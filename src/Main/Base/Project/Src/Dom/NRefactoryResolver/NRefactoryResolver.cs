@@ -93,6 +93,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
+		Expression ParseExpression(string expression)
+		{
+			using (ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser(language, new System.IO.StringReader(expression))) {
+				return p.ParseExpression();
+			}
+		}
+		
 		public ResolveResult Resolve(string expression,
 		                             int caretLineNumber,
 		                             int caretColumn,
@@ -120,8 +127,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (expr == null) {
 				expr = SpecialConstructs(expression);
 				if (expr == null) {
-					ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser(language, new System.IO.StringReader(expression));
-					expr = p.ParseExpression();
+					expr = ParseExpression(expression);
 					if (expr == null) {
 						return null;
 					}
@@ -147,6 +153,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			TypeVisitor typeVisitor = new TypeVisitor(this);
+			IReturnType type;
 			
 			if (expr is PrimitiveExpression) {
 				if (((PrimitiveExpression)expr).Value is int)
@@ -157,20 +164,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return CreateMemberResolveResult(method);
 			} else if (expr is FieldReferenceExpression) {
 				FieldReferenceExpression fieldReferenceExpression = (FieldReferenceExpression)expr;
-				IReturnType returnType;
 				if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName == "") {
 					if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
-						returnType = TypeVisitor.CreateReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference, this);
-						if (returnType != null) {
-							IClass c = projectContent.GetClass(returnType.FullyQualifiedName);
+						type = TypeVisitor.CreateReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference, this);
+						if (type != null) {
+							IClass c = projectContent.GetClass(type.FullyQualifiedName);
 							if (c != null)
-								return new TypeResolveResult(callingClass, callingMember, returnType, c);
+								return new TypeResolveResult(callingClass, callingMember, type, c);
 						}
 					}
 				}
-				returnType = fieldReferenceExpression.TargetObject.AcceptVisitor(typeVisitor, null) as IReturnType;
-				if (returnType != null) {
-					string name = SearchNamespace(returnType.FullyQualifiedName, this.CompilationUnit);
+				type = fieldReferenceExpression.TargetObject.AcceptVisitor(typeVisitor, null) as IReturnType;
+				if (type != null) {
+					string name = SearchNamespace(type.FullyQualifiedName, this.CompilationUnit);
 					if (name != null) {
 						name += "." + fieldReferenceExpression.FieldName;
 						string n = SearchNamespace(name, null);
@@ -183,10 +189,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						}
 						return null;
 					}
-					IMember member = GetMember(returnType, fieldReferenceExpression.FieldName);
+					IMember member = GetMember(type, fieldReferenceExpression.FieldName);
 					if (member != null)
 						return CreateMemberResolveResult(member);
-					ResolveResult result = ResolveMethod(returnType, fieldReferenceExpression.FieldName);
+					ResolveResult result = ResolveMethod(type, fieldReferenceExpression.FieldName);
 					if (result != null)
 						return result;
 				}
@@ -194,8 +200,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				ResolveResult result = ResolveIdentifier(((IdentifierExpression)expr).Identifier);
 				if (result != null)
 					return result;
+			} else if (expr is TypeReferenceExpression) {
+				type = TypeVisitor.CreateReturnType(((TypeReferenceExpression)expr).TypeReference, this);
+				if (type != null) {
+					IClass c = projectContent.GetClass(type.FullyQualifiedName);
+					if (c != null)
+						return new TypeResolveResult(callingClass, callingMember, type, c);
+				}
 			}
-			IReturnType type = expr.AcceptVisitor(typeVisitor, null) as IReturnType;
+			type = expr.AcceptVisitor(typeVisitor, null) as IReturnType;
 			
 			if (type == null || type.FullyQualifiedName == "") {
 				return null;
@@ -375,6 +388,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				} else if (expression == "myclass") {
 					return new ClassReferenceExpression();
 				}
+			} else if (language == SupportedLanguages.CSharp) {
+				// generic type names are no expressions, only property access on them is an expression
+				if (expression.EndsWith(">")) {
+					FieldReferenceExpression expr = ParseExpression(expression + ".Prop") as FieldReferenceExpression;
+					if (expr != null) {
+						return expr.TargetObject;
+					}
+				}
+				return null;
 			}
 			return null;
 		}

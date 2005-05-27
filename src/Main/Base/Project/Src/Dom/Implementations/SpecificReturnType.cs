@@ -114,29 +114,34 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		IReturnType TranslateType(IReturnType input)
+		public static IReturnType TranslateType(IReturnType input, List<IReturnType> typeParameters, bool convertForMethod)
 		{
 			if (input is GenericReturnType) {
 				GenericReturnType rt = (GenericReturnType)input;
-				if (rt.TypeParameter.Method == null) {
+				if (convertForMethod ? (rt.TypeParameter.Method != null) : (rt.TypeParameter.Method == null)) {
 					if (rt.TypeParameter.Index < typeParameters.Count) {
 						return typeParameters[rt.TypeParameter.Index];
 					}
 				}
 			} else if (input is ArrayReturnType) {
 				IReturnType e = ((ArrayReturnType)input).ElementType;
-				IReturnType t = TranslateType(e);
+				IReturnType t = TranslateType(e, typeParameters, convertForMethod);
 				if (e != t && t != null)
 					return new ArrayReturnType(t, input.ArrayDimensions);
 			} else if (input is SpecificReturnType) {
 				SpecificReturnType r = (SpecificReturnType)input;
 				List<IReturnType> para = new List<IReturnType>(r.TypeParameters.Count);
 				for (int i = 0; i < r.TypeParameters.Count; ++i) {
-					para.Add(TranslateType(r.TypeParameters[i]));
+					para.Add(TranslateType(r.TypeParameters[i], typeParameters, convertForMethod));
 				}
 				return new SpecificReturnType(r.baseType, para);
 			}
 			return input;
+		}
+		
+		IReturnType TranslateType(IReturnType input)
+		{
+			return TranslateType(input, typeParameters, false);
 		}
 		
 		public override List<IMethod> GetMethods()

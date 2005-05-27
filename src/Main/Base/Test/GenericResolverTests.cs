@@ -33,9 +33,11 @@ class TestClass {
 	}
 	
 	T CloneIt<T>(T source) where T : ICloneable {
-		
+		if (source == null) return new TestClass();
 		return source.Clone();
 	}
+	
+	public int PublicField;
 }
 ";
 		
@@ -94,6 +96,17 @@ class TestClass {
 			Assert.AreEqual("TestClass", result.ResolvedType.FullyQualifiedName);
 			MemberResolveResult mrr = (MemberResolveResult) result;
 			Assert.AreEqual("TestClass.CloneIt", mrr.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void FieldReferenceOnGenericMethodTest()
+		{
+			ResolveResult result = Resolve(listProgram, "CloneIt<TestClass>(null).PublicField", 5);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is MemberResolveResult);
+			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName);
+			MemberResolveResult mrr = (MemberResolveResult) result;
+			Assert.AreEqual("TestClass.PublicField", mrr.ResolvedMember.FullyQualifiedName);
 		}
 	}
 }

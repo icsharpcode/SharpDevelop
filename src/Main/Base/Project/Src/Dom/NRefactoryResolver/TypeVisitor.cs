@@ -81,6 +81,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		int ScoreOverload(IMethod method, IReturnType[] types)
 		{
+			if (method == null) return -1;
 			if (method.Parameters.Count == types.Length) {
 				int points = types.Length;
 				for (int i = 0; i < types.Length; ++i) {
@@ -102,6 +103,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
 				IReturnType type = field.TargetObject.AcceptVisitor(this, data) as IReturnType;
 				ArrayList methods = resolver.SearchMethod(type, field.FieldName);
+				InjectMethodTypeParameters(methods, invocationExpression);
 				return FindOverload(methods, invocationExpression.Parameters, data);
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				string id = ((IdentifierExpression)invocationExpression.TargetObject).Identifier;
@@ -109,6 +111,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return null;
 				}
 				ArrayList methods = resolver.SearchMethod(resolver.CallingClass.DefaultReturnType, id);
+				InjectMethodTypeParameters(methods, invocationExpression);
 				return FindOverload(methods, invocationExpression.Parameters, data);
 			}
 			// invocationExpression is delegate call
@@ -122,6 +125,26 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return FindOverload(methods, invocationExpression.Parameters, data);
 			}
 			return null;
+		}
+		
+		void InjectMethodTypeParameters(ArrayList methods, InvocationExpression invocationExpression)
+		{
+			if (invocationExpression.TypeParameters == null) return;
+			if (invocationExpression.TypeParameters.Count == 0) return;
+			List<IReturnType> typeParameters = CreateReturnType(invocationExpression.TypeParameters);
+			for (int i = 0; i < methods.Count; ++i) {
+				IMethod m = (IMethod)methods[i];
+				if (m.TypeParameters.Count == 0) {
+					m = null; // this is not the correct overload, ignore this method
+				} else {
+					m = (IMethod)m.Clone();
+					m.ReturnType = SpecificReturnType.TranslateType(m.ReturnType, typeParameters, true);
+					for (int j = 0; j < m.Parameters.Count; ++j) {
+						m.Parameters[j].ReturnType = SpecificReturnType.TranslateType(m.Parameters[j].ReturnType, typeParameters, true);
+					}
+				}
+				methods[i] = m;
+			}
 		}
 		
 		public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
@@ -177,7 +200,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			}
 			string name = resolver.SearchNamespace(identifierExpression.Identifier, resolver.CompilationUnit);
-			if (name != null && name != "") {
+			if (name != null && name.Length > 0) {
 				return new NamespaceReturnType(name);
 			}
 			IClass c = resolver.SearchType(identifierExpression.Identifier, resolver.CallingClass, resolver.CompilationUnit);
@@ -337,6 +360,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
+		List<IReturnType> CreateReturnType(List<TypeReference> references)
+		{
+			return references.ConvertAll<IReturnType>(new Converter<TypeReference, IReturnType>(CreateReturnType));
+		}
+		
 		IReturnType CreateReturnType(TypeReference reference)
 		{
 			return CreateReturnType(reference, resolver);
@@ -345,9 +373,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public static IReturnType CreateReturnType(TypeReference reference, NRefactoryResolver resolver)
 		{
 			if (reference.IsNull) return null;
-			IClass c = resolver.SearchType(reference.SystemType, resolver.CallingClass);
+			IClass callingClass = resolver.CallingClass;
+			IClass c = resolver.SearchType(reference.SystemType, callingClass);
 			if (c == null) return null;
 			IReturnType t = c.DefaultReturnType;
+			foreach (ITypeParameter tp in callingClass.TypeParameters) {
+				if (resolver.LanguageProperties.NameComparer.Equals(reference.SystemType, tp.Name)) {
+					t = new GenericReturnType(tp);
+					break;
+				}
+			}
 			if (reference.GenericTypes.Count > 0) {
 				List<IReturnType> para = new List<IReturnType>(reference.GenericTypes.Count);
 				for (int i = 0; i < reference.GenericTypes.Count; ++i) {
@@ -361,7 +396,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public static IReturnType CreateReturnType(TypeReference reference, IClass callingClass, int caretLine, int caretColumn)
 		{
 			if (reference.IsNull) return null;
-			IReturnType t = new SearchClassReturnType(callingClass, caretLine, caretColumn, reference.SystemType);
+			IReturnType t = null;
+			foreach (ITypeParameter tp in callingClass.TypeParameters) {
+				if (tp.Name.Equals(reference.SystemType, StringComparison.InvariantCultureIgnoreCase)) {
+					t = new GenericReturnType(tp);
+					break;
+				}
+			}
+			if (t == null) {
+				t = new SearchClassReturnType(callingClass, caretLine, caretColumn, reference.SystemType);
+			}
 			if (reference.GenericTypes.Count > 0) {
 				List<IReturnType> para = new List<IReturnType>(reference.GenericTypes.Count);
 				for (int i = 0; i < reference.GenericTypes.Count; ++i) {

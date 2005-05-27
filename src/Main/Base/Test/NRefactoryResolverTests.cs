@@ -367,14 +367,15 @@ interface IInterface2 {
 		[Test]
 		public void AnonymousMethodParameters()
 		{
-			string program = @"class A {
+			string program = @"using System;
+class A {
 	void Method() {
 		SomeEvent += delegate(object sender, EventArgs e) {
 			
 		};
 	} }
 ";
-			ResolveResult result = Resolve(program, "e", 4);
+			ResolveResult result = Resolve(program, "e", 5);
 			Assert.IsNotNull(result);
 			Assert.IsTrue(result is LocalResolveResult);
 			Assert.AreEqual("System.EventArgs", result.ResolvedType.FullyQualifiedName);
