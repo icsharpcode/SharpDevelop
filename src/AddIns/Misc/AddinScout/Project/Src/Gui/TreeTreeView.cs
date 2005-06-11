@@ -58,7 +58,10 @@ namespace AddInScout
 							break;
 						}
 					}
-					if (!found) {
+					if (found) {
+						if (i == name.Length - 1 && currentNode.Tag == null)
+							currentNode.Tag = ext;
+					} else {
 						TreeNode newNode = new TreeNode(name[i]);
 						newNode.ImageIndex = 3;
 						newNode.SelectedImageIndex = 4;

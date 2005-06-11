@@ -110,7 +110,7 @@ namespace ICSharpCode.TextEditor
 		}
 		public int MaxVScrollValue {
 			get {
-				return (Document.GetVisibleLine(Document.TotalNumberOfLines - 1) + 1 + TextView.VisibleLineCount * 2 / 3) * Document.TextEditorProperties.Font.Height;
+				return (Document.GetVisibleLine(Document.TotalNumberOfLines - 1) + 1 + TextView.VisibleLineCount * 2 / 3) * TextView.FontHeight;
 			}
 		}
 		

@@ -224,7 +224,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 						ret.Append(whitespace.Replace(xml.Value, " "));
 					}
 				} while(xml.Read());
-			} catch {
+			} catch (Exception ex) {
+				Console.WriteLine(ex);
 				return doc;
 			}
 			return ret.ToString();

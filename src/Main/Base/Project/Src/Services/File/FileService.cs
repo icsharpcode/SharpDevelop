@@ -68,33 +68,13 @@ namespace ICSharpCode.Core
 				DisplayBindingService.AttachSubWindows(newContent.WorkbenchWindow);
 			}
 		}
+		
 		public static bool IsOpen(string fileName)
 		{
-			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				if (content.IsUntitled) {
-					if (content.UntitledName == fileName) {
-						return true;
-					}
-				} else if (content.FileName == fileName) {
-					return true;
-				}
-				if (content.WorkbenchWindow == null || content.WorkbenchWindow.SubViewContents == null)
-					continue;
-				foreach(object subViewContent in content.WorkbenchWindow.SubViewContents) {
-					IViewContent viewContent = subViewContent as IViewContent;
-					if (viewContent != null && viewContent.FileName != null) {
-						try {
-							if (Path.GetFullPath(viewContent.FileName.ToUpper()) == Path.GetFullPath(fileName.ToUpper())) {
-								return true;
-							}
-						} catch (Exception) {
-						}
-					}
-				}
-			}
-			return false;
+			return GetOpenFile(fileName) != null;
 		}
-		public static void OpenFile(string fileName)
+		
+		public static IWorkbenchWindow OpenFile(string fileName)
 		{
 			// test, if file fileName exists
 			if (!fileName.StartsWith("http://")) {
@@ -105,23 +85,23 @@ namespace ICSharpCode.Core
 					foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 						if (content.IsUntitled && content.UntitledName == fileName) {
 							content.WorkbenchWindow.SelectWindow();
-							return;
+							return content.WorkbenchWindow;
 						}
 					}
 				} else if (!FileUtility.TestFileExists(fileName)) {
-					return;
+					return null;
 				}
 			}
 			
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				// WINDOWS DEPENDENCY : ToUpper()
 				if (content.FileName != null) {
 					try {
 						if (fileName.StartsWith("http://") ? content.FileName == fileName : FileUtility.IsEqualFileName(content.FileName, fileName)) {
 							content.WorkbenchWindow.SelectWindow();
-							return;
+							return content.WorkbenchWindow;
 						}
 					} catch (Exception) {
+						// TODO: what kind of exception is ignored here?
 					}
 				}
 				if (content.WorkbenchWindow == null || content.WorkbenchWindow.SubViewContents == null)
@@ -133,9 +113,10 @@ namespace ICSharpCode.Core
 							if (fileName.StartsWith("http://") ? viewContent.FileName == fileName :
 							    Path.GetFullPath(viewContent.FileName.ToUpper()) == Path.GetFullPath(fileName.ToUpper())) {
 								viewContent.WorkbenchWindow.SelectWindow();
-								return;
+								return content.WorkbenchWindow;
 							}
 						} catch (Exception) {
+							// TODO: what kind of exception is ignored here?
 						}
 					}
 				}
@@ -150,6 +131,7 @@ namespace ICSharpCode.Core
 			} else {
 				throw new ApplicationException("Can't open " + fileName + ", no display codon found.");
 			}
+			return GetOpenFile(fileName);
 		}
 		
 		public static IWorkbenchWindow NewFile(string defaultName, string language, string content)

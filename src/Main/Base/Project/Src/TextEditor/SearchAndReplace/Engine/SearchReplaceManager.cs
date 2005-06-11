@@ -169,8 +169,7 @@ namespace SearchAndReplace
 		static TextEditorControl OpenTextArea(string fileName) 
 		{
 			if (fileName != null) {
-				
-				FileService.OpenFile(fileName);
+				return ((ITextEditorControlProvider)FileService.OpenFile(fileName).ViewContent).TextEditorControl;
 			}
 			
 			return ((ITextEditorControlProvider)WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent).TextEditorControl;

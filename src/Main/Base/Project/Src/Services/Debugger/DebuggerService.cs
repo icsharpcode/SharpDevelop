@@ -614,6 +614,16 @@ namespace ICSharpCode.Core
 				return "namespace " + ((NamespaceResolveResult)result).Name;
 			} else if (result is TypeResolveResult) {
 				return GetText(ambience, ((TypeResolveResult)result).ResolvedClass);
+			} else if (result is MethodResolveResult) {
+				IReturnType container = ((MethodResolveResult)result).ContainingType;
+				List<IMethod> methods = container.GetMethods();
+				methods = methods.FindAll(delegate(IMethod m) {
+				                          	return m.Name == ((MethodResolveResult)result).Name;
+				                          });
+				if (methods.Count == 1)
+					return GetText(ambience, methods[0]);
+				else
+					return "Overload of " + ambience.Convert(container) + "." + ((MethodResolveResult)result).Name;
 			} else {
 //				if (result.ResolvedType != null)
 //					return "expression of type " + ambience.Convert(result.ResolvedType);
