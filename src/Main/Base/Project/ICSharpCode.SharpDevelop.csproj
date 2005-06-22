@@ -197,7 +197,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TipOfTheDay.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TreeViewOptions.cs">
       <SubType>Form</SubType>
@@ -265,7 +265,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\FileScout.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\OpenTaskView.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPad.cs" />
@@ -685,7 +685,6 @@
       <Project>{35cef10f-2d4c-45f2-9dd1-161e0fec583c}</Project>
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
-    <Folder Include="Src\Services\RefactoringService" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

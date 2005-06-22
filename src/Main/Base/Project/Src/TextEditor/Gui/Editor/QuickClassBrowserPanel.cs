@@ -131,7 +131,20 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				return 0;
 			}
 			
+			string cachedString;
+			
 			public override string ToString()
+			{
+				// ambience lookups can be expensive when the return type is
+				// resolved on the fly.
+				// Therefore, we need to cache the generated string because it is used
+				// very often for the sorting.
+				if (cachedString == null)
+					cachedString = ToStringInternal();
+				return cachedString;
+			}
+			
+			string ToStringInternal()
 			{
 				IAmbience ambience = AmbienceService.CurrentAmbience;
 				ambience.ConversionFlags = ConversionFlags.ShowParameterNames;
