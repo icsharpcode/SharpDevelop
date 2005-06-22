@@ -257,18 +257,22 @@ namespace CSharpBinding.Parser
 		
 		bool ReadChar(StringBuilder outText, string text, ref int curOffset)
 		{
-			char first = text[curOffset];
-			
-			if (curOffset <= initialOffset) {
-				outText.Append(text[curOffset++]);
-			}
-			if (curOffset <= initialOffset) {
-				outText.Append(text[curOffset++]);
-			}
-			
-			// special case: '\''
-			if(first == '\\' && curOffset <= initialOffset) {
-				outText.Append(text[curOffset++]);
+			char first = text[curOffset++];
+			outText.Append(first);
+			if (curOffset > initialOffset)
+				return false;
+			char second = text[curOffset++];
+			outText.Append(second);
+			if (first == '\\') {
+				// character is escape sequence, so read one char more
+				char next;
+				do {
+					if (curOffset > initialOffset)
+						return false;
+					next = text[curOffset++];
+					outText.Append(next);
+					// unicode or hexadecimal character literals can have more content characters
+				} while((second == 'u' || second == 'x') && char.IsLetterOrDigit(next));
 			}
 			return text[curOffset - 1] == '\'';
 		}
