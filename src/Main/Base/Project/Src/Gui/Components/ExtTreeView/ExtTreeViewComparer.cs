@@ -1,13 +1,13 @@
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class ExtTreeViewComparer : IComparer
+	public class ExtTreeViewComparer : IComparer<TreeNode>
 	{
-		public int Compare(object x, object y)
+		public int Compare(TreeNode x, TreeNode y)
 		{
 			Debug.Assert(x != null);
 			Debug.Assert(y != null);
@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ExtTreeNode node2 = y as ExtTreeNode;
 			
 			if (node1 == null || node2 == null) {
-				return ((TreeNode)x).Text.CompareTo(((TreeNode)y).Text);
+				return x.Text.CompareTo(y.Text);
 			}
 			
 			if (node1.SortOrder != node2.SortOrder) {

@@ -244,12 +244,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public IClass GetBaseClass(int index)
+		{
+			return ProjectContent.SearchType(BaseTypes[index], this, Region != null ? Region.BeginLine : 0, Region != null ? Region.BeginColumn : 0);
+		}
+		
 		public IClass BaseClass {
 			get {
 				Debug.Assert(ProjectContent != null);
 				
 				if (BaseTypes.Count > 0) {
-					IClass baseClass = ProjectContent.SearchType(BaseTypes[0], this, Region != null ? Region.BeginLine : 0, Region != null ? Region.BeginColumn : 0);
+					IClass baseClass = GetBaseClass(0);
 					if (baseClass != null && baseClass.ClassType != ClassType.Interface) {
 						return baseClass;
 					}

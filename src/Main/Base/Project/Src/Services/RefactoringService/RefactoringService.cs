@@ -33,12 +33,16 @@ namespace ICSharpCode.Core
 					continue;
 				}
 				foreach (IClass c in pc.Classes) {
-					if (c.BaseTypes.Count == 0) continue;
-					string baseType = c.BaseTypes[0];
-					if (pc.Language.NameComparer.Equals(baseType, baseClassName) ||
-					    pc.Language.NameComparer.Equals(baseType, baseClassFullName)) {
-						if (c.BaseClass.FullyQualifiedName == baseClass.FullyQualifiedName) {
-							list.Add(c);
+					int count = c.BaseTypes.Count;
+					for (int i = 0; i < count; i++) {
+						string baseType = c.BaseTypes[i];
+						if (pc.Language.NameComparer.Equals(baseType, baseClassName) ||
+						    pc.Language.NameComparer.Equals(baseType, baseClassFullName)) {
+							IClass possibleBaseClass = c.GetBaseClass(i);
+							if (possibleBaseClass != null &&
+							    possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName) {
+								list.Add(c);
+							}
 						}
 					}
 				}

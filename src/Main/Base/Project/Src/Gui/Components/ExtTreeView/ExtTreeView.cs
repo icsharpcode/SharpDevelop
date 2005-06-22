@@ -16,6 +16,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		List<ExtTreeNode> cutNodes = new List<ExtTreeNode>();
 		bool isSorted = true;
 		
+		/// <summary>
+		/// Gets/Sets whether the ExtTreeView does its own sorting.
+		/// </summary>
 		public bool IsSorted {
 			get {
 				return isSorted;
@@ -24,9 +27,45 @@ namespace ICSharpCode.SharpDevelop.Gui
 				isSorted = value;
 			}
 		}
+		
+		[Obsolete("Use IsSorted instead!")]
+		public new bool Sorted {
+			get {
+				return base.Sorted;
+			}
+			set {
+				base.Sorted = value;
+			}
+		}
+
 		public List<ExtTreeNode> CutNodes {
 			get {
 				return cutNodes;
+			}
+		}
+		
+		// using TreeView.TreeViewNodeSorter will result in TreeNodeCollection
+		// calling Sort() after every insertion. Therefore, we have to create
+		// our own NodeSorter property.
+		
+		IComparer<TreeNode> nodeSorter = new ExtTreeViewComparer();
+
+		public IComparer<TreeNode> NodeSorter {
+			get {
+				return nodeSorter;
+			}
+			set {
+				nodeSorter = value;
+			}
+		}
+		
+		[Obsolete("Use NodeSorter instead!")]
+		public new System.Collections.IComparer TreeViewNodeSorter {
+			get {
+				return base.TreeViewNodeSorter;
+			}
+			set {
+				base.TreeViewNodeSorter = value;
 			}
 		}
 		
@@ -35,7 +74,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			DrawMode      = TreeViewDrawMode.OwnerDrawText;
 			HideSelection = false;
 			AllowDrop     = true;
-			this.TreeViewNodeSorter  = new ExtTreeViewComparer();
 			ImageList newImageList = new ImageList();
 			newImageList.ImageSize = new Size(16, 16);
 			newImageList.ColorDepth = ColorDepth.Depth32Bit;
@@ -55,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			TreeNode[] nodeArray = new TreeNode[node.Nodes.Count];
 			node.Nodes.CopyTo(nodeArray, 0);
-			Array.Sort(nodeArray, TreeViewNodeSorter);
+			Array.Sort(nodeArray, nodeSorter);
 			node.Nodes.Clear();
 			node.Nodes.AddRange(nodeArray);
 			

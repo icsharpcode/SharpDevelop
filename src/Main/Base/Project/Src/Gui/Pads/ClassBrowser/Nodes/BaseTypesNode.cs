@@ -60,10 +60,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			base.Initialize();
 			Nodes.Clear();
 			
-			IProjectContent content = ParserService.GetProjectContent(project);
+			IProjectContent content = c.ProjectContent;
 			if (content != null) {
-				foreach (string baseType in c.BaseTypes) {
-					IClass baseClass = content.GetClass(baseType);
+				int count = c.BaseTypes.Count;
+				for (int i = 0; i < count; i++) {
+					IClass baseClass = c.GetBaseClass(i);
 					if (baseClass != null) {
 						new ClassNode(project, baseClass).AddTo(this);
 					}

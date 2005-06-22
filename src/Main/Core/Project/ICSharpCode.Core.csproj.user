@@ -2,7 +2,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <PropertyGroup>
-    <LastOpenVersion>8.0.41115</LastOpenVersion>
+    <LastOpenVersion>8.0.50215</LastOpenVersion>
     <ProjectView>ShowAllFiles</ProjectView>
     <ProjectTrust>0</ProjectTrust>
   </PropertyGroup>

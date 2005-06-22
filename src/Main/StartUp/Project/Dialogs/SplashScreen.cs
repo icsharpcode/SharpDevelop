@@ -6,9 +6,11 @@ using System.Reflection;
 using System.Resources;
 
 namespace ICSharpCode.SharpDevelop
-{	
+{
 	public class SplashScreenForm : Form
 	{
+		public const string VersionText = "Corsavy alpha";
+		
 		static SplashScreenForm splashScreen = new SplashScreenForm();
 		static ArrayList requestedFileList = new ArrayList();
 		static ArrayList parameterList = new ArrayList();
@@ -18,22 +20,32 @@ namespace ICSharpCode.SharpDevelop
 			get {
 				return splashScreen;
 			}
-		}		
+		}
 		
 		public SplashScreenForm()
 		{
-#if !DEBUG
+			#if !DEBUG
 			TopMost         = true;
-#endif
+			#endif
 			FormBorderStyle = FormBorderStyle.None;
 			StartPosition   = FormStartPosition.CenterScreen;
 			ShowInTaskbar   = false;
 			bitmap = new Bitmap(Assembly.GetEntryAssembly().GetManifestResourceStream("Resources.SplashScreen.jpg"));
 			Size            = bitmap.Size;
+			#if DEBUG
+			string versionText = VersionText + " (debug)";
+			#else
+			string versionText = VersionText;
+			#endif
+			using (Font font = new Font("Vrinda", 4)) {
+				using (Graphics g = Graphics.FromImage(bitmap)) {
+					g.DrawString(versionText, font, Brushes.Black, 116, 142);
+				}
+			}
 			BackgroundImage = bitmap;
 		}
 		
-		protected override void Dispose(bool disposing) 
+		protected override void Dispose(bool disposing)
 		{
 			if (disposing) {
 				if (bitmap != null) {

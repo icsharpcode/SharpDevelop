@@ -60,16 +60,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			base.Initialize();
 			Nodes.Clear();
 			
+			List<IProjectContent> contentList = new List<IProjectContent>(1);
+			contentList.Add(null);
 			if (ProjectService.OpenSolution != null) {
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
 					IProjectContent projectContent = ParserService.GetProjectContent(project);
 					if (projectContent != null) {
-						foreach (IClass possibleDerivedClass in projectContent.Classes) {
-							foreach (string baseType in possibleDerivedClass.BaseTypes) {
-								if (baseType == this.c.FullyQualifiedName) {
-									new ClassNode(project, possibleDerivedClass).AddTo(this);
-								}
-							}
+						contentList[0] = projectContent;
+						foreach (IClass derivedClass in RefactoringService.FindDerivedClasses(c, contentList)) {
+							new ClassNode(project, derivedClass).AddTo(this);
 						}
 					}
 				}

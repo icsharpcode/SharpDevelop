@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</ProjectGuid>
     <RootNamespace>ICSharpCode.Core</RootNamespace>
@@ -123,7 +123,9 @@
     <Compile Include="Src\Util\AbstractCommand.cs" />
     <Compile Include="Src\Util\ICommand.cs" />
     <Compile Include="Src\Util\RightToLeftConverter.cs" />
-    <Compile Include="Src\Services\MessageService\InputBox.cs" />
+    <Compile Include="Src\Services\MessageService\InputBox.cs">
+      <SubType>Form</SubType>
+    </Compile>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

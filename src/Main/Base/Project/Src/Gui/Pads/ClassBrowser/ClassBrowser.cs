@@ -227,12 +227,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return searchTerm;
 			}
 			set {
-				searchTerm = value.ToUpper();
+				searchTerm = value.ToUpper().Trim();
 			}
 		}
 		
 		public void StartSearch()
 		{
+			if (searchTerm.Length == 0) {
+				CancelSearch();
+				return;
+			}
 			if (!inSearchMode) {
 				foreach (TreeNode node in classBrowserTreeView.Nodes) {
 					oldNodes.Add(node);
@@ -242,6 +246,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				nextNodes.Clear();
 				UpdateToolbars();
 			}
+			classBrowserTreeView.BeginUpdate();
 			classBrowserTreeView.Nodes.Clear();
 			if (ProjectService.OpenSolution != null) {
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
@@ -260,6 +265,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				notFoundMsg.Text = "No search results found.";
 				notFoundMsg.AddTo(classBrowserTreeView);
 			}
+			classBrowserTreeView.EndUpdate();
 		}
 		
 		public void CancelSearch()

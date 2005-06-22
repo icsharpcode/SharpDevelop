@@ -62,6 +62,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		/// <summary>Gets the class associated with the base type with the same index.</summary>
+		IClass GetBaseClass(int index);
+		
 		List<IClass> InnerClasses {
 			get;
 		}
@@ -107,6 +110,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		/*
 		ArrayList GetAccessibleMembers(IClass callingClass, bool showStatic);
-		*/
+		 */
 	}
 }
