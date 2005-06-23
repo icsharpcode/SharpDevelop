@@ -265,6 +265,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				notFoundMsg.Text = "No search results found.";
 				notFoundMsg.AddTo(classBrowserTreeView);
 			}
+			classBrowserTreeView.Sort();
 			classBrowserTreeView.EndUpdate();
 		}
 		

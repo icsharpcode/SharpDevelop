@@ -206,7 +206,7 @@ End Module
 		}
 		#endregion
 		
-		#region BasicTests
+		#region Simple Tests
 		[Test]
 		public void InheritedInterfaceResolveTest()
 		{
@@ -408,6 +408,62 @@ End Class
 			Assert.IsNotNull(result);
 			Assert.IsTrue(result is TypeResolveResult);
 			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		// PrimitiveTypeOutsideClass and OtherTypeOutsideClass
+		// are necessary for delegate declarations and class inheritance
+		// (because "outside" is everything before {, so the reference to the
+		// base class is outside the class)
+		[Test]
+		public void PrimitiveTypeOutsideClass()
+		{
+			string program = @"class A {
+	
+}
+
+class B {
+	
+}
+";
+			ResolveResult result = Resolve(program, "int", 4);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void OtherTypeOutsideClass()
+		{
+			string program = @"using System;
+class A {
+	
+}
+
+class B {
+	
+}
+";
+			ResolveResult result = Resolve(program, "Activator", 5);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("System.Activator", result.ResolvedType.FullyQualifiedName);
+		}
+
+		[Test]
+		public void FullyQualifiedTypeOutsideClass()
+		{
+			string program = @"class A {
+	
+}
+
+class B {
+	
+}
+";
+			ResolveResult result = Resolve(program, "System.Activator", 4);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("System.Activator", result.ResolvedType.FullyQualifiedName);
 		}
 		#endregion
 	}

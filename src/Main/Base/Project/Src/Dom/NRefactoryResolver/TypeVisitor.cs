@@ -377,10 +377,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			IClass c = resolver.SearchType(reference.SystemType, callingClass);
 			if (c == null) return null;
 			IReturnType t = c.DefaultReturnType;
-			foreach (ITypeParameter tp in callingClass.TypeParameters) {
-				if (resolver.LanguageProperties.NameComparer.Equals(reference.SystemType, tp.Name)) {
-					t = new GenericReturnType(tp);
-					break;
+			if (callingClass != null) {
+				foreach (ITypeParameter tp in callingClass.TypeParameters) {
+					if (resolver.LanguageProperties.NameComparer.Equals(reference.SystemType, tp.Name)) {
+						t = new GenericReturnType(tp);
+						break;
+					}
 				}
 			}
 			if (reference.GenericTypes.Count > 0) {
@@ -431,6 +433,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			public NamespaceReturnType(string fullName)
 			{
 				this.FullyQualifiedName = fullName;
+			}
+			
+			public override IClass GetUnderlyingClass() {
+				return null;
 			}
 			
 			public override List<IMethod> GetMethods() {

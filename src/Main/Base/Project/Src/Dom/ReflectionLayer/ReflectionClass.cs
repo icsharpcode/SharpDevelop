@@ -188,11 +188,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				BaseTypes.Add(type.BaseType.FullName);
 			}
 			
-			// add members
 			foreach (Type iface in type.GetInterfaces()) {
 				BaseTypes.Add(iface.FullName);
 			}
-			
 		}
 	}
 }

@@ -219,6 +219,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					if (m.IsConstructor && !m.IsStatic)
 						constructors.Add(m);
 				}
+				
+				if (constructors.Count == 0) {
+					// Class has no constructors -> create default constructor
+					IClass c = type.GetUnderlyingClass();
+					if (c != null) {
+						return CreateMemberResolveResult(new Constructor(ModifierEnum.Public, c.Region, c.Region, c));
+					}
+				}
 				return CreateMemberResolveResult(typeVisitor.FindOverload(constructors, ((ObjectCreateExpression)expr).Parameters, null));
 			}
 			return new ResolveResult(callingClass, callingMember, type);
@@ -324,11 +332,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				ResolveResult result = ResolveMethod(callingClass.DefaultReturnType, identifier);
 				if (result != null)
 					return result;
-				
-				IClass c = SearchType(identifier, callingClass, cu);
-				if (c != null) {
-					return new TypeResolveResult(callingClass, callingMember, c.DefaultReturnType, c);
-				}
+			}
+			
+			IClass c = SearchType(identifier, callingClass, cu);
+			if (c != null) {
+				return new TypeResolveResult(callingClass, callingMember, c.DefaultReturnType, c);
 			}
 			
 			// try if there exists a static member in outer classes named typeName

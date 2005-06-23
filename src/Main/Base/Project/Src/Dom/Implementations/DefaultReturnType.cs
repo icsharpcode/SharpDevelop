@@ -27,6 +27,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.c = c;
 		}
 		
+		public override IClass GetUnderlyingClass()
+		{
+			return c;
+		}
+		
 		public override List<IMethod> GetMethods()
 		{
 			List<IMethod> l = new List<IMethod>();

@@ -16,6 +16,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public abstract class AbstractReturnType : IReturnType
 	{
+		public abstract IClass GetUnderlyingClass();
 		public abstract List<IMethod>   GetMethods();
 		public abstract List<IProperty> GetProperties();
 		public abstract List<IField>    GetFields();

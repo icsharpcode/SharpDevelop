@@ -274,14 +274,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			if (insightWindow == null || insightWindow.IsDisposed) {
 				insightWindow = new InsightWindow(((Form)WorkbenchSingleton.Workbench), this, FileName);
-				if (insightWindow != null) {
-					insightWindow.Closed += new EventHandler(CloseInsightWindow);
-				}
+				insightWindow.Closed += new EventHandler(CloseInsightWindow);
 			}
-			if (insightWindow != null) {
-				insightWindow.AddInsightDataProvider(insightDataProvider);
-				insightWindow.ShowInsightWindow();
-			}
+			insightWindow.AddInsightDataProvider(insightDataProvider);
+			insightWindow.ShowInsightWindow();
 		}
 		
 		public void ShowCompletionWindow(ICompletionDataProvider completionDataProvider, char ch)

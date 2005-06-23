@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			this.declaringType = declaringType;
 			modifiers = method.Modifiers;
-			Text = AmbienceService.CurrentAmbience.Convert(method);
+			Text = AppendReturnType(GetAmbience().Convert(method), method.ReturnType);
 			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(method);
 			if (method.Region != null) {
 				line   = method.Region.BeginLine;
@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			this.declaringType = declaringType;
 			modifiers = property.Modifiers;
-			Text = AmbienceService.CurrentAmbience.Convert(property);
+			Text = AppendReturnType(GetAmbience().Convert(property), property.ReturnType);
 			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(property);
 			if (property.Region != null) {
 				line   = property.Region.BeginLine;
@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			sortOrder = 13;
 			this.declaringType = declaringType;
 			modifiers = indexer.Modifiers;
-			Text = AmbienceService.CurrentAmbience.Convert(indexer);
+			Text = AppendReturnType(GetAmbience().Convert(indexer), indexer.ReturnType);
 			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(indexer);
 			if (indexer.Region != null) {
 				line   = indexer.Region.BeginLine;
@@ -96,10 +96,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public MemberNode(IClass declaringType, IField field)
 		{
 			sortOrder = 11;
-						
+			
 			this.declaringType = declaringType;
 			modifiers = field.Modifiers;
-			Text = AmbienceService.CurrentAmbience.Convert(field);
+			Text = AppendReturnType(GetAmbience().Convert(field), field.ReturnType);
 			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(field);
 			if (field.Region != null) {
 				line   = field.Region.BeginLine;
@@ -112,12 +112,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 			sortOrder = 14;
 			this.declaringType = declaringType;
 			modifiers = e.Modifiers;
-			Text = AmbienceService.CurrentAmbience.Convert(e);
+			Text = AppendReturnType(GetAmbience().Convert(e), e.ReturnType);
 			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(e);
 			if (e.Region != null) {
 				line   = e.Region.BeginLine;
 				column = e.Region.BeginColumn;
 			}
+		}
+		
+		IAmbience GetAmbience()
+		{
+			IAmbience ambience = AmbienceService.CurrentAmbience;
+			ambience.ConversionFlags = ConversionFlags.None;
+			return ambience;
+		}
+		
+		string AppendReturnType(string text, IReturnType rt)
+		{
+			// TODO: Give user the possibility to turn off visibility of the return type
+			return text + " : " + GetAmbience().Convert(rt);
 		}
 		
 		public override void ActivateItem()
@@ -126,10 +139,5 @@ namespace ICSharpCode.SharpDevelop.Gui
 				FileService.JumpToFilePosition(FileName, line - 1, column - 1);
 			}
 		}
-		
-					
-
-		
-		
 	}
 }

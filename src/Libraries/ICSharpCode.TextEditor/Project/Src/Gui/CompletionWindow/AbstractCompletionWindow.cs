@@ -27,12 +27,13 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		protected string            fileName;
 		protected Size              drawingSize;
 		Rectangle workingScreen;
+		Form parentForm;
 		
 		protected AbstractCompletionWindow(Form parentForm, TextEditorControl control, string fileName)
 		{
 			workingScreen = Screen.GetWorkingArea(parentForm);
 //			SetStyle(ControlStyles.Selectable, false);
-			
+			this.parentForm = parentForm;
 			this.control  = control;
 			this.fileName = fileName;
 			
@@ -41,7 +42,6 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			FormBorderStyle = FormBorderStyle.None;
 			ShowInTaskbar   = false;
 			Size            = new Size(1, 1);
-			Owner           = parentForm;
 		}
 		
 		protected virtual void SetLocation()
@@ -86,12 +86,14 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		protected void ShowCompletionWindow()
 		{
+			Owner = parentForm;
 			Enabled = true;
 			AbstractCompletionWindow.ShowWindow(base.Handle, AbstractCompletionWindow.SW_SHOWNA);
 			
 			control.Focus();
-			if (Owner != null) {
-				Owner.LocationChanged += new EventHandler(this.ParentFormLocationChanged);
+			
+			if (parentForm != null) {
+				parentForm.LocationChanged += new EventHandler(this.ParentFormLocationChanged);
 			}
 			
 			control.ActiveTextAreaControl.VScrollBar.ValueChanged     += new EventHandler(ParentFormLocationChanged);
@@ -141,9 +143,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			base.OnClosed(e);
 			
 			// take out the inserted methods
-			if (Owner != null) {
-				Owner.LocationChanged -= new EventHandler(this.ParentFormLocationChanged);
-			}
+			parentForm.LocationChanged -= new EventHandler(ParentFormLocationChanged);
 			
 			control.ActiveTextAreaControl.VScrollBar.ValueChanged     -= new EventHandler(ParentFormLocationChanged);
 			control.ActiveTextAreaControl.HScrollBar.ValueChanged     -= new EventHandler(ParentFormLocationChanged);

@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					foreach (AbstractProjectBrowserTreeNode node in treeView.Nodes) {
 						node.UpdateVisibility();
 					}
-					treeView.SortNodes(null);
+					treeView.Sort();
 				}
 			}
 		}

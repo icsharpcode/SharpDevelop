@@ -43,6 +43,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		/// <summary>
+		/// Gets the underlying class of this return type.
+		/// </summary>
+		IClass GetUnderlyingClass();
+		
 		List<IMethod>   GetMethods();
 		List<IProperty> GetProperties();
 		List<IField>    GetFields();

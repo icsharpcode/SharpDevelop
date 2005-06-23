@@ -62,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					((IStatusUpdate)item).UpdateStatus();
 				}
 			}
-				
+			
 			dropDownButton.DropDownItems.AddRange(items);
 		}
 	}
@@ -172,18 +172,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		ComboBox comboBox;
 		
-		protected override void OnOwnerChanged(EventArgs e) 
+		protected override void OnOwnerChanged(EventArgs e)
 		{
 			base.OnOwnerChanged(e);
 			ToolBarComboBox toolbarItem = (ToolBarComboBox)Owner;
 			comboBox = toolbarItem.ComboBox;
 			comboBox.DropDownStyle = ComboBoxStyle.DropDown;
-			comboBox.TextChanged += new EventHandler(ComboBoxTextChanged);
+			comboBox.TextChanged  += ComboBoxTextChanged;
 		}
 		
-		void ComboBoxTextChanged(object sender, EventArgs e) 
+		void ComboBoxTextChanged(object sender, EventArgs e)
 		{
 			ClassBrowser.Instance.SearchTerm = comboBox.Text;
+			Run(); // TODO: Enable live search via option
 		}
 		
 		public override void Run()

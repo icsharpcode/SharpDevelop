@@ -11,6 +11,10 @@
     <NoConfig>False</NoConfig>
     <OutputType>Library</OutputType>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <RootNamespace>ResourceEditor</RootNamespace>
+    <StartupObject />
+    <ApplicationIcon />
+    <Win32Resource />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

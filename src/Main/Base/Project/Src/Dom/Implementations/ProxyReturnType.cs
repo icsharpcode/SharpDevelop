@@ -59,6 +59,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		/// <summary>
+		/// Gets the underlying class of this return type.
+		/// </summary>
+		public virtual IClass GetUnderlyingClass()
+		{
+			IReturnType baseType = BaseType;
+			return (baseType != null) ? baseType.GetUnderlyingClass() : null;
+		}
+		
 		public virtual List<IMethod> GetMethods()
 		{
 			IReturnType baseType = BaseType;

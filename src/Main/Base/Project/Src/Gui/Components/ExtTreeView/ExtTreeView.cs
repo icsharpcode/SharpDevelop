@@ -47,7 +47,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		// using TreeView.TreeViewNodeSorter will result in TreeNodeCollection
 		// calling Sort() after every insertion. Therefore, we have to create
 		// our own NodeSorter property.
-		
 		IComparer<TreeNode> nodeSorter = new ExtTreeViewComparer();
 
 		public IComparer<TreeNode> NodeSorter {
@@ -79,26 +78,27 @@ namespace ICSharpCode.SharpDevelop.Gui
 			newImageList.ColorDepth = ColorDepth.Depth32Bit;
 			this.ImageList = newImageList;
 		}
-		
-		public void SortNodes(TreeNode node)
+
+		public new void Sort()
+		{
+			SortNodes(Nodes, true);
+		}
+
+		public void SortNodes(TreeNodeCollection nodes, bool recursive)
 		{
 			if (!isSorted) {
 				return;
 			}
-			if (node == null) {
-				foreach (TreeNode childNode in Nodes) {
-					SortNodes(childNode);
-				}
-				return;
-			}
-			TreeNode[] nodeArray = new TreeNode[node.Nodes.Count];
-			node.Nodes.CopyTo(nodeArray, 0);
+			TreeNode[] nodeArray = new TreeNode[nodes.Count];
+			nodes.CopyTo(nodeArray, 0);
 			Array.Sort(nodeArray, nodeSorter);
-			node.Nodes.Clear();
-			node.Nodes.AddRange(nodeArray);
-			
-			foreach (TreeNode childNode in nodeArray) {
-				SortNodes(childNode);
+			nodes.Clear();
+			nodes.AddRange(nodeArray);
+
+			if (recursive) {
+				foreach (TreeNode childNode in nodeArray) {
+					SortNodes(childNode.Nodes, true);
+				}
 			}
 		}
 		
@@ -166,7 +166,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (node != null) {
 				node.AfterLabelEdit(e.Label);
 			}
-			SortNodes(e.Node.Parent);
+			SortParentNodes(e.Node);
+		}
+
+		private void SortParentNodes(TreeNode treeNode)
+		{
+			TreeNode parent = treeNode.Parent;
+			SortNodes((parent == null) ? Nodes : parent.Nodes, false);
 		}
 		#endregion
 		bool inRefresh = false;
@@ -175,10 +181,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			base.OnBeforeExpand(e);
 			inRefresh = true;
 			BeginUpdate();
-			if (e.Node is ExtTreeNode) {
-				((ExtTreeNode)e.Node).Expanding();
+			try {
+				if (e.Node is ExtTreeNode) {
+					((ExtTreeNode)e.Node).Expanding();
+				}
+				SortNodes(e.Node.Nodes, true);
+			} catch (Exception ex) {
+				// catch error to prevent corrupting the TreeView component
+				MessageService.ShowError(ex);
 			}
-			SortNodes(e.Node);
 			if (e.Node.Nodes.Count == 0) {
 				// when the node's subnodes have been removed by Expanding, AfterExpand is not called
 				inRefresh = false;
@@ -273,7 +284,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				DataObject dataObject = node.DragDropDataObject;
 				if (dataObject != null) {
 					DoDragDrop(dataObject, DragDropEffects.All);
-					SortNodes(node.Parent);
+					SortParentNodes(node);
 				}
 			}
 		}
@@ -314,7 +325,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (node != null) {
 				node.DoDragDrop(e.Data, e.Effect);
-				SortNodes(node.Parent);
+				SortParentNodes(node);
 			}
 		}
 		

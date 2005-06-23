@@ -229,10 +229,12 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		protected override void OnClosed(EventArgs e)
 		{
-			codeCompletionListView.Close();
 			base.OnClosed(e);
-			declarationViewWindow.Close();
+			Dispose();
+			codeCompletionListView.Dispose();
+			codeCompletionListView = null;
 			declarationViewWindow.Dispose();
+			declarationViewWindow = null;
 		}
 		
 		void InsertSelectedItem()

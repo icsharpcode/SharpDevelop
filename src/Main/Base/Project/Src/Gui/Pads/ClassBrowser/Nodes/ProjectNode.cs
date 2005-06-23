@@ -122,11 +122,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		protected virtual string StripRootNamespace(string directory)
+		{
+			if (project != null) {
+				// TODO: Give user the option to always show the root namespace
+				string rootNamespace = project.RootNamespace;
+				if (directory.StartsWith(rootNamespace)) {
+					directory = directory.Substring(rootNamespace.Length);
+				}
+			}
+			return directory;
+		}
+		
 		public TreeNode GetNodeByPath(string directory, bool create)
 		{
+			directory = StripRootNamespace(directory);
+			
 			string[] treepath   = directory.Split(new char[] { '.' });
 			TreeNodeCollection curcollection = Nodes;
-			TreeNode           curnode       = null;
+			TreeNode           curnode       = this;
 			
 			foreach (string path in treepath) {
 				if (path.Length == 0 || path[0] == '.') {

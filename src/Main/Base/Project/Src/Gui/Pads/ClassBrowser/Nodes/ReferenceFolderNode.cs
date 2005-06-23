@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public ReferenceFolderNode(IProject project)
 		{
-			sortOrder = 0;
+			sortOrder = -1;
 			
 			this.project = project;
 			Text = "References";
@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Nodes.Clear();
 			foreach (ProjectItem item in project.Items) {
 				if (item.ItemType == ItemType.Reference) {
-					new ReferenceNode(item).AddTo(this);
+					new ReferenceNode((ReferenceProjectItem)item).AddTo(this);
 				}
 			}
 		}
@@ -67,9 +67,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 	
 	public class ReferenceNode : ProjectNode
 	{
-		ProjectItem item;
+		ReferenceProjectItem item;
 		
-		public ReferenceNode(ProjectItem item)
+		public ReferenceNode(ReferenceProjectItem item)
 		{
 			this.item = item;
 			Text = item.Include;
@@ -83,27 +83,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			isInitialized = true;
 			
-			Assembly assembly = null;
-			try {
-				assembly = Assembly.ReflectionOnlyLoadFrom(item.FileName);
-			} catch (Exception) {
-				try {
-					assembly = Assembly.ReflectionOnlyLoad(item.Include);
-				} catch (Exception e) {
-					Console.WriteLine("Can't load assembly '{0}' : " + e.Message, item.Include);
-				}
-			}
-			if (assembly != null) {
+			IProjectContent pc = ProjectContentRegistry.GetProjectContentForReference(item);
+			if (pc != null) {
 				Nodes.Clear();
-				foreach (Type type in assembly.GetTypes()) {
-					if (!type.FullName.StartsWith("<") && type.IsPublic) {
-						IClass c = new ReflectionClass(null, type, null);
-						TreeNode node = GetNodeByPath(c.Namespace, true);
-						new ClassNode(item.Project, c).AddTo(node);
-					}
+				foreach (IClass c in pc.Classes) {
+					TreeNode node = GetNodeByPath(c.Namespace, true);
+					new ClassNode(item.Project, c).AddTo(node);
 				}
 			}
-			
+		}
+		
+		protected override string StripRootNamespace(string directory)
+		{
+			string rootNamespace = item.Include;
+			if (directory.ToLower().StartsWith(rootNamespace.ToLower())) {
+				directory = directory.Substring(rootNamespace.Length);
+			}
+			return directory;
 		}
 	}
 }

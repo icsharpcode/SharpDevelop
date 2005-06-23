@@ -64,16 +64,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			base.Initialize();
 			Nodes.Clear();
 			
-			IAmbience languageConversion= AmbienceService.CurrentAmbience;
-			languageConversion.ConversionFlags = ConversionFlags.None;
-			
 			// don't insert delegate 'members'
 			if (c.ClassType == ClassType.Delegate) {
 				return;
 			}
 			
-			new BaseTypesNode(project, c).AddTo(this);
-			new DerivedTypesNode(project, c).AddTo(this);
+			if (c.BaseTypes.Count > 0) {
+				new BaseTypesNode(project, c).AddTo(this);
+			}
+			if ((c.Modifiers & ModifierEnum.Sealed) != ModifierEnum.Sealed) {
+				new DerivedTypesNode(project, c).AddTo(this);
+			}
 			
 			foreach (IClass innerClass in c.InnerClasses) {
 				new ClassNode(project, innerClass).AddTo(this);
@@ -99,8 +100,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				new MemberNode(c, e).AddTo(this);
 			}
 			UpdateVisibility();
-//	TODO: TreeNode comparer
-//			SortUtility.QuickSort(classNode.Nodes, TreeNodeComparer.Default);		}
 		}
 	}
 }
