@@ -6,7 +6,6 @@ using System.Threading;
 using System.IO;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.Dialogs;
 using NSvn.Common;
 using NSvn.Core;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
@@ -54,7 +53,7 @@ namespace ICSharpCode.Svn.Commands
 		
 		public ExportDialog()
 		{
-			SetupFromXmlStream(Assembly.GetCallingAssembly().GetManifestResourceStream("ExportDialog.xfrm"));
+			SetupFromXmlStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ICSharpCode.Svn.Resources.ExportDialog.xfrm"));
 			((ComboBox)ControlDictionary["revisionComboBox"]).Items.AddRange(new string[] {
 				"Head",
 				"Committed",

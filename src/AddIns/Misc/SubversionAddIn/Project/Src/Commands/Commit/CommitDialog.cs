@@ -28,7 +28,7 @@ namespace ICSharpCode.Svn.Commands
 		
 		public CommitDialog()
 		{
-			SetupFromXmlStream(Assembly.GetCallingAssembly().GetManifestResourceStream("CommitDialog.xfrm"));
+			SetupFromXmlStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ICSharpCode.Svn.Resources.CommitDialog.xfrm"));
 		}
 	}
 }

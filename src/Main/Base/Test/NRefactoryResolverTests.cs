@@ -465,6 +465,42 @@ class B {
 			Assert.IsTrue(result is TypeResolveResult);
 			Assert.AreEqual("System.Activator", result.ResolvedType.FullyQualifiedName);
 		}
+		
+		[Test]
+		public void NamespacePreferenceTest()
+		{
+			// Classes in the current namespace are preferred over classes from
+			// imported namespaces
+			string program = @"using System;
+namespace Testnamespace {
+class A {
+	
+}
+
+class Activator {
+	
+}
+}
+";
+			ResolveResult result = Resolve(program, "Activator", 4);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("Testnamespace.Activator", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void InnerClassTest()
+		{
+			string program = @"using System;
+class A {
+	
+}
+";
+			ResolveResult result = Resolve(program, "Environment.SpecialFolder", 3);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("System.Environment.SpecialFolder", result.ResolvedType.FullyQualifiedName);
+		}
 		#endregion
 	}
 }

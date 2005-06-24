@@ -60,7 +60,7 @@ namespace ICSharpCode.Svn.Gui
 		
 		public SslServerTrustDialog(SslServerCertificateInfo certificateInfo, SslFailures failures, bool maySave)
 		{
-			SetupFromXmlStream(Assembly.GetCallingAssembly().GetManifestResourceStream("SslServerTrustDialog.xfrm"));
+			SetupFromXmlStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ICSharpCode.Svn.Resources.SslServerTrustDialog.xfrm"));
 			this.CertificateInfo = certificateInfo;
 			this.Failures        = failures;
 			this.MaySave         = maySave;

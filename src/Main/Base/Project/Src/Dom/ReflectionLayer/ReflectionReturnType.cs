@@ -14,17 +14,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public static IReturnType Create(IProjectContent content, Type type)
 		{
-			string name = type.FullName;
-			if (name == null)
-				return null;
-			if (name.Length > 2) {
-				if (name[name.Length - 2] == '`') {
-					name = name.Substring(0, name.Length - 2);
-				}
-			}
 			if (type.IsArray) {
 				return MakeArray(type, Create(content, type.GetElementType()));
 			} else {
+				string name = type.FullName;
+				if (name == null)
+					return null;
+				if (name.Length > 2) {
+					if (name[name.Length - 2] == '`') {
+						name = name.Substring(0, name.Length - 2);
+					}
+				}
+				if (name.IndexOf('+') > 0) {
+					name = name.Replace('+', '.');
+				}
 				return new GetClassReturnType(content, name);
 			}
 		}

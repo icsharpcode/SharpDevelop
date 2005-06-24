@@ -39,6 +39,7 @@ namespace ICSharpCode.SharpDevelop
 			#endif
 			using (Font font = new Font("Vrinda", 4)) {
 				using (Graphics g = Graphics.FromImage(bitmap)) {
+					g.DrawRectangle(Pens.Black, 0, 0, bitmap.Size.Width - 1, bitmap.Size.Height - 1);
 					g.DrawString(versionText, font, Brushes.Black, 116, 142);
 				}
 			}

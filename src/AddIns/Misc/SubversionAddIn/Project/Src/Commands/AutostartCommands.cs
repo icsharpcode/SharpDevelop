@@ -10,18 +10,10 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-using ICSharpCode.Core.AddIns;
-
-using ICSharpCode.Core.Properties;
-using ICSharpCode.Core.AddIns.Codons;
-using ICSharpCode.Core.Services;
-using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.Components;
-using ICSharpCode.SharpDevelop.Internal.Project;
-using ICSharpCode.SharpDevelop.Gui.Dialogs;
-using ICSharpCode.SharpDevelop.Gui.Pads.ProjectBrowser;
 using NSvn.Common;
 using NSvn.Core;
 
@@ -35,12 +27,12 @@ namespace ICSharpCode.Svn.Commands
 		public override void Run()
 		{
 			
-			FileService.FileRemoved  += new FileEventHandler(FileRemoved);
-			FileService.FileRenaming += new FileEventHandler(FileRenamed);
+			FileService.FileRemoved  += FileRemoved;
+			FileService.FileRenaming += FileRenamed;
 			
 			
-			projectService.FileRemovedFromProject += new FileEventHandler(FileRemoved);
-			projectService.FileAddedToProject   += new FileEventHandler(FileAdded);
+			//projectService.FileRemovedFromProject += FileRemoved;
+			//projectService.FileAddedToProject   += FileAdded);
 			
 			
 			FileUtility.FileSaved += new FileNameEventHandler(FileSaved);
@@ -48,8 +40,9 @@ namespace ICSharpCode.Svn.Commands
 		
 		void FileSaved(object sender, FileNameEventArgs e)
 		{
-			ICSharpCode.SharpDevelop.Gui.Pads.ProjectBrowser.ProjectBrowserView pbv = (ICSharpCode.SharpDevelop.Gui.Pads.ProjectBrowser.ProjectBrowserView)WorkbenchSingleton.Workbench.GetPad(typeof(ICSharpCode.SharpDevelop.Gui.Pads.ProjectBrowser.ProjectBrowserView));
-			pbv.VisitRoot();
+			// TODO: Reimplement
+			//ICSharpCode.SharpDevelop.Gui.Pads.ProjectBrowser.ProjectBrowserView pbv = (ICSharpCode.SharpDevelop.Gui.Pads.ProjectBrowser.ProjectBrowserView)WorkbenchSingleton.Workbench.GetPad(typeof(ICSharpCode.SharpDevelop.Gui.Pads.ProjectBrowser.ProjectBrowserView));
+			//pbv.VisitRoot();
 		}
 		
 		void FileAdded(object sender, FileEventArgs e)
@@ -60,7 +53,7 @@ namespace ICSharpCode.Svn.Commands
 					SvnClient.Instance.Client.Add(Path.GetFullPath(e.FileName), false);
 				}
 			} catch (Exception ex) {
-				Console.WriteLine("File added exception: " + ex);
+				MessageService.ShowError("File added exception: " + ex);
 			}
 		}
 		
@@ -72,11 +65,11 @@ namespace ICSharpCode.Svn.Commands
 					Path.GetFullPath(e.FileName)
 				}, true);
 			} catch (Exception ex) {
-				Console.WriteLine("File removed exception: " + ex);
+				MessageService.ShowError("File removed exception: " + ex);
 			}
 		}
 		
-		void FileRenamed(object sender, FileEventArgs e)
+		void FileRenamed(object sender, FileRenameEventArgs e)
 		{
 //			Console.WriteLine("RENAME : " + e.FileName);
 			try {
@@ -86,7 +79,7 @@ namespace ICSharpCode.Svn.Commands
 				                               true
 				                              );
 			} catch (Exception ex) {
-				Console.WriteLine("File renamed exception: " + ex);
+				MessageService.ShowError("File renamed exception: " + ex);
 			}
 		}
 	}

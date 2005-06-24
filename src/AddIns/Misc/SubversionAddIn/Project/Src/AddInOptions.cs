@@ -1,7 +1,6 @@
 using System;
 using System.Diagnostics;
-using ICSharpCode.Core.Services;
-using ICSharpCode.Core.Properties;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.Svn
 {

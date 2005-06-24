@@ -176,23 +176,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				type = fieldReferenceExpression.TargetObject.AcceptVisitor(typeVisitor, null) as IReturnType;
 				if (type != null) {
-					string name = SearchNamespace(type.FullyQualifiedName, this.CompilationUnit);
-					if (name != null) {
-						name += "." + fieldReferenceExpression.FieldName;
-						string n = SearchNamespace(name, null);
-						if (n != null) {
-							return new NamespaceResolveResult(callingClass, callingMember, n);
-						}
-						IClass c = SearchType(name, this.CallingClass, this.CompilationUnit);
-						if (c != null) {
-							return new TypeResolveResult(callingClass, callingMember, c.DefaultReturnType, c);
-						}
-						return null;
-					}
-					IMember member = GetMember(type, fieldReferenceExpression.FieldName);
-					if (member != null)
-						return CreateMemberResolveResult(member);
-					ResolveResult result = ResolveMethod(type, fieldReferenceExpression.FieldName);
+					ResolveResult result = ResolveMemberReferenceExpression(type, fieldReferenceExpression);
 					if (result != null)
 						return result;
 				}
@@ -203,7 +187,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			} else if (expr is TypeReferenceExpression) {
 				type = TypeVisitor.CreateReturnType(((TypeReferenceExpression)expr).TypeReference, this);
 				if (type != null) {
-					IClass c = projectContent.GetClass(type.FullyQualifiedName);
+					IClass c = type.GetUnderlyingClass();
 					if (c != null)
 						return new TypeResolveResult(callingClass, callingMember, type, c);
 				}
@@ -230,6 +214,40 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return CreateMemberResolveResult(typeVisitor.FindOverload(constructors, ((ObjectCreateExpression)expr).Parameters, null));
 			}
 			return new ResolveResult(callingClass, callingMember, type);
+		}
+		
+		ResolveResult ResolveMemberReferenceExpression(IReturnType type, FieldReferenceExpression fieldReferenceExpression)
+		{
+			IClass c;
+			string name = SearchNamespace(type.FullyQualifiedName, this.CompilationUnit);
+			// TODO: Test directly for NamespaceReturnType
+			if (name != null) {
+				name += "." + fieldReferenceExpression.FieldName;
+				string n = SearchNamespace(name, null);
+				if (n != null) {
+					return new NamespaceResolveResult(callingClass, callingMember, n);
+				}
+				c = SearchType(name, this.CallingClass, this.CompilationUnit);
+				if (c != null) {
+					return new TypeResolveResult(callingClass, callingMember, c);
+				}
+				return null;
+			}
+			IMember member = GetMember(type, fieldReferenceExpression.FieldName);
+			if (member != null)
+				return CreateMemberResolveResult(member);
+			c = type.GetUnderlyingClass();
+			if (c != null) {
+				List<IClass> innerClasses = c.InnerClasses;
+				if (innerClasses != null) {
+					foreach (IClass innerClass in innerClasses) {
+						if (IsSameName(innerClass.Name, fieldReferenceExpression.FieldName)) {
+							return new TypeResolveResult(callingClass, callingMember, innerClass);
+						}
+					}
+				}
+			}
+			return ResolveMethod(type, fieldReferenceExpression.FieldName);
 		}
 		
 		/// <summary>

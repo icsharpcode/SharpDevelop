@@ -1,0 +1,93 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.Svn</RootNamespace>
+    <AssemblyName>SubversionAddIn</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{17F4D7E0-6933-4C2E-8714-FD7E98D625D5}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SubversionAddin\</OutputPath>
+    <Optimize>false</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SubversionAddin\</OutputPath>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="NSvn.Core">
+      <HintPath>..\RequiredLibraries\NSvn.Core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="NSvn.Common">
+      <HintPath>..\RequiredLibraries\NSvn.Common.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="System.Design, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="ICSharpCode.Svn.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="Resources\CheckoutDialog.xfrm" />
+    <Compile Include="Src\SvnClient.cs" />
+    <Compile Include="Src\InOperationDialog.cs" />
+    <Compile Include="Src\AddInOptions.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Resources\ClientCertDialog.xfrm" />
+    <EmbeddedResource Include="Resources\ClientCertPassphraseDialog.xfrm" />
+    <EmbeddedResource Include="Resources\CommitDialog.xfrm" />
+    <EmbeddedResource Include="Resources\ContentPanel.xfrm" />
+    <EmbeddedResource Include="Resources\DiffPanel.xfrm" />
+    <EmbeddedResource Include="Resources\ExportDialog.xfrm" />
+    <EmbeddedResource Include="Resources\InfoPanel.xfrm" />
+    <EmbeddedResource Include="Resources\LoginDialog.xfrm" />
+    <EmbeddedResource Include="Resources\SslServerTrustDialog.xfrm" />
+    <EmbeddedResource Include="Resources\SubversionOptionsPanel.xfrm" />
+    <Compile Include="Src\Commands\Checkout\CheckoutCommand.cs" />
+    <Compile Include="Src\Commands\Checkout\CheckoutDialog.cs" />
+    <Compile Include="Src\Commands\Commit\CommitCommand.cs" />
+    <Compile Include="Src\Commands\Commit\CommitDialog.cs" />
+    <Compile Include="Src\Commands\Export\ExportCommand.cs" />
+    <Compile Include="Src\Commands\Export\ExportDialog.cs" />
+    <Compile Include="Src\Commands\AutostartCommands.cs" />
+    <Compile Include="Src\Commands\ProjectBrowserCommands.cs" />
+    <Compile Include="Src\Gui\AuthentificationDialogs\ClientCertDialog.cs" />
+    <Compile Include="Src\Gui\AuthentificationDialogs\ClientCertPassphraseDialog.cs" />
+    <Compile Include="Src\Gui\AuthentificationDialogs\LoginDialog.cs" />
+    <Compile Include="Src\Gui\AuthentificationDialogs\SslServerTrustDialog.cs" />
+    <Compile Include="Src\Gui\HistoryViewDisplayBinding\ContentPanel.cs" />
+    <Compile Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.cs" />
+    <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryView.cs" />
+    <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryViewDisplayBinding.cs" />
+    <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryViewPanel.cs" />
+    <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.cs" />
+    <Compile Include="Src\Gui\ProjectBrowserVisitor\SvnProjectBrowserVisitor.cs" />
+    <Compile Include="Src\Gui\SubversionOptionsPanel.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>

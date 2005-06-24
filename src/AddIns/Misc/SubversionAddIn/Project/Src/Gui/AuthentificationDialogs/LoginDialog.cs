@@ -72,7 +72,7 @@ namespace ICSharpCode.Svn.Gui
 		
 		public LoginDialog(string realm, string userName, bool maySave)
 		{
-			SetupFromXmlStream(Assembly.GetCallingAssembly().GetManifestResourceStream("LoginDialog.xfrm"));
+			SetupFromXmlStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ICSharpCode.Svn.Resources.LoginDialog.xfrm"));
 			this.UserName = userName;
 			this.Realm    = realm;
 			this.MaySave  = maySave;

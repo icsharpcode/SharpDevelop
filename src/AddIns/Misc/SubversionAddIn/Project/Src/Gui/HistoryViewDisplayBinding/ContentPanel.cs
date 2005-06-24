@@ -15,11 +15,12 @@ using System.IO;
 using System.Windows.Forms;
 using System.Reflection;
 
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.XmlForms;
 using NSvn.Common;
 using NSvn.Core;
-using ICSharpCode.SharpDevelop.Gui.Dialogs;
-using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.Svn
 {

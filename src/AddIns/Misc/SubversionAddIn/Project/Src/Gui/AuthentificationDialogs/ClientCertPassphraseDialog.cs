@@ -55,7 +55,7 @@ namespace ICSharpCode.Svn.Gui
 		
 		public ClientCertPassphraseDialog(string realm, bool maySave)
 		{
-			SetupFromXmlStream(Assembly.GetCallingAssembly().GetManifestResourceStream("ClientCertPassphraseDialog.xfrm"));
+			SetupFromXmlStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ICSharpCode.Svn.Resources.ClientCertPassphraseDialog.xfrm"));
 			this.Realm   = realm;
 			this.MaySave = maySave;
 		}

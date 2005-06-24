@@ -346,9 +346,10 @@ namespace ICSharpCode.Core
 				string outerName = typeName.Substring(0, lastIndex);
 				if (classes.ContainsKey(outerName)) {
 					IClass upperClass = classes[outerName];
-					if (upperClass.InnerClasses != null) {
+					List<IClass> innerClasses = upperClass.InnerClasses;
+					if (innerClasses != null) {
 						string innerName = typeName.Substring(lastIndex + 1);
-						foreach (IClass c in upperClass.InnerClasses) {
+						foreach (IClass c in innerClasses) {
 							if (language.NameComparer.Equals(c.Name, innerName)) {
 								return c;
 							}
@@ -473,6 +474,24 @@ namespace ICSharpCode.Core
 			if (c != null) {
 				return c;
 			}
+			if (curType != null) {
+				// Try parent namespaces of the current class
+				string fullname = curType.FullyQualifiedName;
+				string[] namespaces = fullname.Split('.');
+				StringBuilder curnamespace = new StringBuilder();
+				for (int i = 0; i < namespaces.Length; ++i) {
+					curnamespace.Append(namespaces[i]);
+					curnamespace.Append('.');
+					
+					curnamespace.Append(name);
+					c = GetClass(curnamespace.ToString());
+					if (c != null) {
+						return c;
+					}
+					// remove class name again to try next namespace
+					curnamespace.Length -= name.Length;
+				}
+			}
 			if (unit != null) {
 				// Combine name with usings
 				foreach (IUsing u in unit.Usings) {
@@ -483,25 +502,6 @@ namespace ICSharpCode.Core
 						}
 					}
 				}
-			}
-			if (curType == null) {
-				return null;
-			}
-			// Try parent namespaces of the current class
-			string fullname = curType.FullyQualifiedName;
-			string[] namespaces = fullname.Split('.');
-			StringBuilder curnamespace = new StringBuilder();
-			for (int i = 0; i < namespaces.Length; ++i) {
-				curnamespace.Append(namespaces[i]);
-				curnamespace.Append('.');
-				
-				curnamespace.Append(name);
-				c = GetClass(curnamespace.ToString());
-				if (c != null) {
-					return c;
-				}
-				// remove class name again to try next namespace
-				curnamespace.Length -= name.Length;
 			}
 			return null;
 		}

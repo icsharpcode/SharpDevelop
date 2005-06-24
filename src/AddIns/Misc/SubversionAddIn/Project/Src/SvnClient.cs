@@ -14,9 +14,8 @@ using System.Windows.Forms;
 using NSvn.Common;
 using NSvn.Core;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.Pads;
 using ICSharpCode.Svn.Gui;
-using ICSharpCode.Core.Services;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.Svn
 {
@@ -196,7 +195,7 @@ namespace ICSharpCode.Svn
 		{
 			client = new Client();
 			svnCategory = new MessageViewCategory("Subversion", "Subversion");
-			CompilerMessageView compilerMessageView = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView));
+			CompilerMessageView compilerMessageView = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).PadContent;
 			compilerMessageView.AddCategory(svnCategory);
 			
 			client.LogMessage   += new LogMessageDelegate(SetLogMessage);

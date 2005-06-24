@@ -9,12 +9,14 @@
 
 using System;
 using System.IO;
-using ICSharpCode.SharpDevelop.Gui.Pads.ProjectBrowser;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
 using NSvn.Common;
 using NSvn.Core;
 
 namespace ICSharpCode.Svn
 {
+	/*
 	public class NodeStatusInformer 
 	{
 		NodeStatus nodeStatus;
@@ -150,4 +152,5 @@ namespace ICSharpCode.Svn
 			return NodeStatus.IndividualStatusesConflicting;
 		}
 	}
+	*/
 }

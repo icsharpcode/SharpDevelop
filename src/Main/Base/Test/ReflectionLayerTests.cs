@@ -56,7 +56,9 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		IMethod GetMethod(IClass c, string name) {
-			return c.Methods.Find(delegate(IMethod m) { return m.Name == name; });
+			IMethod result = c.Methods.Find(delegate(IMethod m) { return m.Name == name; });
+			Assert.IsNotNull(result, "Method " + name + " not found");
+			return result;
 		}
 		
 		[Test]
@@ -71,6 +73,27 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                GetMethod(c, "AddRange").DocumentationTag);
 			Assert.AreEqual("M:System.Collections.Generic.List`1.ConvertAll``1(System.Converter{`0,``0})",
 			                GetMethod(c, "ConvertAll").DocumentationTag);
+		}
+		
+		[Test]
+		public void InnerClassesTest()
+		{
+			IClass c = pc.GetClass("System.Environment.SpecialFolder");
+			Assert.IsNotNull(c, "c is null");
+			Assert.AreEqual("System.Environment.SpecialFolder", c.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void InnerClassReferenceTest()
+		{
+			IClass c = pc.GetClass("System.Environment");
+			Assert.IsNotNull(c, "System.Environment not found");
+			IReturnType rt = GetMethod(c, "GetFolderPath").Parameters[0].ReturnType;
+			Assert.IsNotNull(rt, "ReturnType is null");
+			Assert.AreEqual("System.Environment.SpecialFolder", rt.FullyQualifiedName);
+			IClass inner = rt.GetUnderlyingClass();
+			Assert.IsNotNull(inner, "UnderlyingClass");
+			Assert.AreEqual("System.Environment.SpecialFolder", inner.FullyQualifiedName);
 		}
 	}
 }

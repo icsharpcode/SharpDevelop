@@ -224,6 +224,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		IClass resolvedClass;
 		
+		public TypeResolveResult(IClass callingClass, IMember callingMember, IClass resolvedClass)
+			: base(callingClass, callingMember, resolvedClass.DefaultReturnType)
+		{
+			this.resolvedClass = resolvedClass;
+		}
+		
 		public TypeResolveResult(IClass callingClass, IMember callingMember, IReturnType resolvedType, IClass resolvedClass)
 			: base(callingClass, callingMember, resolvedType)
 		{

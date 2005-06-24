@@ -22,14 +22,10 @@ using System.ComponentModel.Design.Serialization;
 using System.Xml;
 
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Internal.Project;
 using ICSharpCode.SharpDevelop.Internal.Undo;
-using ICSharpCode.SharpDevelop.Gui.Components;
 
-using ICSharpCode.Core.Properties;
-using ICSharpCode.Core.AddIns;
-using ICSharpCode.Core.Services;
-using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 
 using System.CodeDom;

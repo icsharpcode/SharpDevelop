@@ -10,7 +10,8 @@ using System;
 using System.Threading;
 using System.Windows.Forms;
 
-using ICSharpCode.Core.AddIns.Codons;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using NSvn.Common;
 using NSvn.Core;
 

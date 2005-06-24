@@ -6,7 +6,6 @@ using System.Threading;
 using System.IO;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.Dialogs;
 using NSvn.Common;
 using NSvn.Core;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;

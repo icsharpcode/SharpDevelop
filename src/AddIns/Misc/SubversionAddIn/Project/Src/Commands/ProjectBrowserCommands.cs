@@ -10,18 +10,10 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Diagnostics;
 
-using ICSharpCode.Core.AddIns;
-
-using ICSharpCode.Core.Properties;
-using ICSharpCode.Core.AddIns.Codons;
-using ICSharpCode.Core.Services;
-using ICSharpCode.SharpDevelop.Services;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Gui.Components;
-using ICSharpCode.SharpDevelop.Internal.Project;
-using ICSharpCode.SharpDevelop.Gui.Dialogs;
-using ICSharpCode.SharpDevelop.Gui.Pads.ProjectBrowser;
 using NSvn.Common;
 using NSvn.Core;
 
@@ -41,6 +33,8 @@ namespace ICSharpCode.Svn.Commands
 		
 		public override void Run()
 		{
+			Console.WriteLine(Owner);
+			/*
 			ProjectBrowserView  browser = (ProjectBrowserView)Owner;
 			AbstractBrowserNode node    = browser.SelectedNode as AbstractBrowserNode;
 			
@@ -57,6 +51,7 @@ namespace ICSharpCode.Svn.Commands
 					projectService.ReloadCombine();
 				}
 			}
+			*/
 		}
 	}
 	
@@ -74,7 +69,7 @@ namespace ICSharpCode.Svn.Commands
 		
 		public override void Run()
 		{
-			ProjectBrowserView  browser = (ProjectBrowserView)Owner;
+			/*ProjectBrowserView  browser = (ProjectBrowserView)Owner;
 			AbstractBrowserNode node    = browser.SelectedNode as AbstractBrowserNode;
 			
 			if (node != null) {
@@ -90,7 +85,7 @@ namespace ICSharpCode.Svn.Commands
 				SvnClient.Instance.OperationStart("Revert", new ThreadStart(DoRevertCommand));
 				SvnClient.Instance.WaitForOperationEnd();
 				projectService.ReloadCombine();
-			}
+			}*/
 		}
 	}
 	
@@ -130,7 +125,7 @@ namespace ICSharpCode.Svn.Commands
 		
 		public override void Run()
 		{
-			ProjectBrowserView  browser = (ProjectBrowserView)Owner;
+			/*ProjectBrowserView  browser = (ProjectBrowserView)Owner;
 			AbstractBrowserNode node    = browser.SelectedNode as AbstractBrowserNode;
 			
 			if (node != null) {
@@ -151,7 +146,7 @@ namespace ICSharpCode.Svn.Commands
 				}
 				FileService.NewFile("a.patch", "txt", output);
 				
-			}
+			}*/
 		}
 	}
 }
