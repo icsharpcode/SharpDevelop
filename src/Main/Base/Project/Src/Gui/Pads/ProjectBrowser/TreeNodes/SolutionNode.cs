@@ -47,10 +47,10 @@ namespace ICSharpCode.SharpDevelop.Project
 //			new FileNode(fileName, FileNodeStatus.InProject).AddTo(this);
 		}
 		
-		protected override void Initialize()
-		{
-		
-		}
+//		protected override void Initialize()
+//		{
+//			base.Initialize();
+//		}
 		
 		#region Drag & Drop
 		public override DragDropEffects GetDragDropEffect(IDataObject dataObject, DragDropEffects proposedEffect)
@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			return DragDropEffects.None;
-		
+			
 		}
 		
 		public override void DoDragDrop(IDataObject dataObject, DragDropEffects effect)
@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject.GetDataPresent(typeof(SolutionFolderNode))) {
 				SolutionFolderNode folderNode = (SolutionFolderNode)dataObject.GetData(typeof(SolutionFolderNode));
 				parentNode = folderNode.Parent as AbstractProjectBrowserTreeNode;
-			
+				
 				folderNode.Remove();
 				folderNode.AddTo(this);
 				
@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject.GetDataPresent(typeof(ProjectNode))) {
 				ProjectNode projectNode = (ProjectNode)dataObject.GetData(typeof(ProjectNode));
 				parentNode = projectNode.Parent as AbstractProjectBrowserTreeNode;
-					
+				
 				projectNode.Remove();
 				projectNode.AddTo(this);
 				projectNode.EnsureVisible();

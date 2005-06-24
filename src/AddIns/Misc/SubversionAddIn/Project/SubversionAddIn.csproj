@@ -41,7 +41,6 @@
     <None Include="ICSharpCode.Svn.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <EmbeddedResource Include="Resources\CheckoutDialog.xfrm" />
     <Compile Include="Src\SvnClient.cs" />
     <Compile Include="Src\InOperationDialog.cs" />
     <Compile Include="Src\AddInOptions.cs" />
@@ -76,6 +75,7 @@
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.cs" />
     <Compile Include="Src\Gui\ProjectBrowserVisitor\SvnProjectBrowserVisitor.cs" />
     <Compile Include="Src\Gui\SubversionOptionsPanel.cs" />
+    <Compile Include="Src\Gui\ProjectBrowserVisitor\OverlayIconManager.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

@@ -24,6 +24,7 @@ namespace ICSharpCode.Svn.Commands
 	{
 		string from = String.Empty;
 		string to   = String.Empty;
+		bool recurse;
 		Revision revision = null;
 		
 		/// <summary>
@@ -37,7 +38,7 @@ namespace ICSharpCode.Svn.Commands
 		
 		void DoCheckoutCommand()
 		{
-			SvnClient.Instance.Client.Checkout(from, to, revision, true);
+			SvnClient.Instance.Client.Checkout(from, to, revision, recurse);
 		}
 		
 		/// <summary>
@@ -45,11 +46,12 @@ namespace ICSharpCode.Svn.Commands
 		/// </summary>
 		public override void Run()
 		{
-			using (ExportDialog exportDialog = new ExportDialog()) {
-				if (exportDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-					from = exportDialog.Source;
-					to   = exportDialog.Destination;
-					revision = exportDialog.Revision;
+			using (CheckoutDialog checkoutDialog = new CheckoutDialog()) {
+				if (checkoutDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+					from = checkoutDialog.Source;
+					to   = checkoutDialog.Destination;
+					revision = checkoutDialog.Revision;
+					recurse = !checkoutDialog.NonRecursive;
 					SvnClient.Instance.OperationStart("Checkout", new ThreadStart(DoCheckoutCommand));
 					SvnClient.Instance.WaitForOperationEnd();
 				}

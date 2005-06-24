@@ -66,8 +66,8 @@ namespace ICSharpCode.Svn.Commands
 			((ComboBox)ControlDictionary["revisionComboBox"]).TextChanged += new EventHandler(RevisionComboBoxTextChanged);
 			RevisionComboBoxTextChanged(this, EventArgs.Empty);
 			
-			((RadioButton)ControlDictionary["fromLocalDirRadioButton"]).Checked = true;
-			((RadioButton)ControlDictionary["fromLocalDirRadioButton"]).CheckedChanged += new EventHandler(FromLocalDirRadioButtonCheckedChanged);
+			Get<RadioButton>("fromLocalDir").Checked = true;
+			Get<RadioButton>("fromLocalDir").CheckedChanged += new EventHandler(FromLocalDirRadioButtonCheckedChanged);
 			FromLocalDirRadioButtonCheckedChanged(this, EventArgs.Empty);
 			
 			ControlDictionary["sourceDirectoryBrowseButton"].Click += new EventHandler(SourceDirectoryBrowseButtonClick);

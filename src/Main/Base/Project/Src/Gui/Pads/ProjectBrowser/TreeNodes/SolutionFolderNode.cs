@@ -8,7 +8,7 @@ using ICSharpCode.SharpDevelop.Project.Dialogs;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public interface ISolutionFolderNode 
+	public interface ISolutionFolderNode
 	{
 		Solution Solution {
 			get;
@@ -101,6 +101,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (SolutionItem item in folder.SolutionItems.Items) {
 				new SolutionItemNode(Solution, item).AddTo(this);
 			}
+			base.Initialize();
 		}
 		
 		#region Cut & Paste
@@ -236,7 +237,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject.GetDataPresent(typeof(SolutionFolderNode))) {
 				SolutionFolderNode folderNode = (SolutionFolderNode)dataObject.GetData(typeof(SolutionFolderNode));
 				AbstractProjectBrowserTreeNode parentNode = folderNode.Parent as AbstractProjectBrowserTreeNode;
-			
+				
 				folderNode.Remove();
 				folderNode.AddTo(this);
 				folderNode.EnsureVisible();
@@ -276,7 +277,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			solution.Save();
 			
-				
+			
 		}
 		#endregion
 		public override object AcceptVisitor(ProjectBrowserTreeNodeVisitor visitor, object data)

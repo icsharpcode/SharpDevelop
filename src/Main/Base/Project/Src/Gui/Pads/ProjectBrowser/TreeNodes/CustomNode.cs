@@ -27,6 +27,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (nodeInitializer != null) {
 				nodeInitializer(this);
 			}
+			base.Initialize();
 		}
 		public override object AcceptVisitor(ProjectBrowserTreeNodeVisitor visitor, object data)
 		{

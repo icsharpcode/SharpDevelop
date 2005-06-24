@@ -106,9 +106,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			FileService.OpenFile(FileName);
 		}
 		
-		protected override void Initialize()
-		{
-		}
+//		protected override void Initialize()
+//		{
+//			base.Initialize();
+//		}
 		
 		public override void AfterLabelEdit(string newName)
 		{

@@ -13,6 +13,7 @@ using System.Diagnostics;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
 using NSvn.Common;
 using NSvn.Core;
@@ -34,8 +35,16 @@ namespace ICSharpCode.Svn.Commands
 			//projectService.FileRemovedFromProject += FileRemoved;
 			//projectService.FileAddedToProject   += FileAdded);
 			
-			
 			FileUtility.FileSaved += new FileNameEventHandler(FileSaved);
+			AbstractProjectBrowserTreeNode.AfterNodeInitialize += TreeNodeInitialized;
+		}
+		
+		SvnProjectBrowserVisitor visitor = new SvnProjectBrowserVisitor();
+		
+		void TreeNodeInitialized(object sender, TreeViewEventArgs e)
+		{
+			AbstractProjectBrowserTreeNode node = e.Node as AbstractProjectBrowserTreeNode;
+			node.AcceptVisitor(visitor, null);
 		}
 		
 		void FileSaved(object sender, FileNameEventArgs e)

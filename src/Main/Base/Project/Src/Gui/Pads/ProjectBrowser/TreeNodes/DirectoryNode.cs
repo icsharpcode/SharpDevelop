@@ -312,6 +312,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					pair.Key.FileNodeStatus = FileNodeStatus.BehindFile;
 				}
 			}
+			base.Initialize();
 		}
 		
 		void SetOpenedImage()

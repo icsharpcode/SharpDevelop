@@ -31,7 +31,7 @@ namespace ICSharpCode.Svn
 		public DiffPanel(IViewContent viewContent)
 		{
 			this.viewContent = viewContent;
-			SetupFromXmlStream(Assembly.GetCallingAssembly().GetManifestResourceStream("DiffPanel.xfrm"));
+			SetupFromXmlStream(GetType().Assembly.GetManifestResourceStream("ICSharpCode.Svn.Resources.DiffPanel.xfrm"));
 			((ListView)ControlDictionary["fromRevisionListView"]).SelectedIndexChanged += new EventHandler(ShowDiff);
 			((ListView)ControlDictionary["toRevisionListView"]).SelectedIndexChanged += new EventHandler(ShowDiff);
 			

@@ -30,7 +30,7 @@ namespace ICSharpCode.Svn
 		MessageViewCategory svnCategory = null;
 		string logMessage = String.Empty;
 		
-		public Client Client {
+		public NSvn.Core.Client Client {
 			get {
 				return client;
 			}

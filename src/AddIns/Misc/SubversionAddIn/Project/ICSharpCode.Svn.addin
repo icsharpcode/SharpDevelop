@@ -15,11 +15,6 @@
 		       class = "ICSharpCode.Svn.Commands.RegisterEventsCommand"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Views/ProjectBrowser/Visitors">
-		<Class id = "ICSharpCode.Svn.Commands.SvnProjectBrowserVisitor" 
-		       class = "ICSharpCode.Svn.SvnProjectBrowserVisitor"/>
-	</Path>
-	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id               = "HistoryView"
 		                insertbefore     = "Text"
@@ -27,7 +22,7 @@
 		                class            = "ICSharpCode.Svn.HistoryViewDisplayBinding" />
 	</Path>
 	
-	<Path name = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode">
 		<MenuItem id = "SvnUpdate"
 		          label = "Update"
 		          icon  = "Svn.Update"

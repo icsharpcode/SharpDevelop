@@ -105,7 +105,6 @@ namespace ICSharpCode.Svn
 			// 
 			// InOperationDialog
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 14);
 			this.CancelButton = this.cancelButton;
 			this.ClientSize = new System.Drawing.Size(330, 104);
 			this.Controls.Add(this.cancelButton);
@@ -131,7 +130,7 @@ namespace ICSharpCode.Svn
 			try {
 				timer.Stop();
 			} catch (Exception e) {
-				Console.WriteLine(e);
+				ICSharpCode.Core.MessageService.ShowError(e);
 			}
 			
 			try {
@@ -139,7 +138,7 @@ namespace ICSharpCode.Svn
 					operation.Abort();
 				}
 			} catch (Exception e) {
-				Console.WriteLine(e);
+				ICSharpCode.Core.MessageService.ShowError(e);
 			}
 		}
 	}

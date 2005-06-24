@@ -135,6 +135,36 @@ namespace ICSharpCode.SharpDevelop.Project
 			return ret;
 		}
 		
+		/// <summary>
+		/// STATIC event called after the initialization of every tree node!
+		/// </summary>
+		public static event TreeViewEventHandler AfterNodeInitialize;
+		
+		protected override void Initialize()
+		{
+			base.Initialize();
+			if (AfterNodeInitialize != null)
+				AfterNodeInitialize(null, new TreeViewEventArgs(this));
+		}
+		
+		Image overlay;
+		
+		public Image Overlay {
+			get {
+				return overlay;
+			}
+			set {
+				if (overlay == value) return;
+				overlay = value;
+				if (TreeView != null && IsVisible) {
+					Rectangle r = this.Bounds;
+					r.Width += r.X;
+					r.X = 0;
+					TreeView.Invalidate(r);
+				}
+			}
+		}
+		
 		public abstract object AcceptVisitor(ProjectBrowserTreeNodeVisitor visitor, object data);
 		
 		public virtual object AcceptChildren(ProjectBrowserTreeNodeVisitor visitor, object data)
@@ -146,6 +176,5 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			return data;
 		}
-		
 	}
 }

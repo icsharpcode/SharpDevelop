@@ -29,7 +29,7 @@ namespace ICSharpCode.Svn
 		{
 			this.viewContent = viewContent;
 			
-			SetupFromXmlStream(Assembly.GetCallingAssembly().GetManifestResourceStream("InfoPanel.xfrm"));
+			SetupFromXmlStream(GetType().Assembly.GetManifestResourceStream("ICSharpCode.Svn.Resources.InfoPanel.xfrm"));
 			
 			((ListView)ControlDictionary["revisionListView"]).SelectedIndexChanged  += new EventHandler(RevisionListViewSelectionChanged);
 			ControlDictionary["commentRichTextBox"].Enabled = false;

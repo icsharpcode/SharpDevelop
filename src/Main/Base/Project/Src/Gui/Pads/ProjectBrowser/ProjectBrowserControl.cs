@@ -16,7 +16,6 @@ namespace ICSharpCode.SharpDevelop.Project
 	public class ProjectBrowserControl : System.Windows.Forms.UserControl, IHasPropertyContainer
 	{
 		ExtTreeView treeView;
-		static Dictionary<Image, int> projectBrowserImageIndex = new Dictionary<Image, int>();
 		
 		public bool ShowAll {
 			get {
@@ -24,11 +23,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				if (AbstractProjectBrowserTreeNode.ShowAll != value) {
+					treeView.BeginUpdate();
 					AbstractProjectBrowserTreeNode.ShowAll = value;
 					foreach (AbstractProjectBrowserTreeNode node in treeView.Nodes) {
 						node.UpdateVisibility();
 					}
 					treeView.Sort();
+					treeView.EndUpdate();
 				}
 			}
 		}
@@ -58,6 +59,21 @@ namespace ICSharpCode.SharpDevelop.Project
 
 			ProjectService.ReferenceAdded += new ProjectReferenceEventHandler(ProjectServiceReferenceAdded);
 			ProjectService.SolutionFolderRemoved += new SolutionFolderEventHandler(ProjectServiceSolutionFolderRemoved);
+			treeView.DrawNode += TreeViewDrawNode;
+		}
+		
+		void TreeViewDrawNode(object sender, DrawTreeNodeEventArgs e)
+		{
+			if (e.DrawDefault) {
+				AbstractProjectBrowserTreeNode node = e.Node as AbstractProjectBrowserTreeNode;
+				if (node != null) {
+					Image img = node.Overlay;
+					if (img != null) {
+						Graphics g = e.Graphics;
+						g.DrawImageUnscaled(img, e.Bounds.X - img.Width, e.Bounds.Bottom - img.Height);
+					}
+				}
+			}
 		}
 		
 		void CallVisitor(ProjectBrowserTreeNodeVisitor visitor)

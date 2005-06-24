@@ -33,7 +33,7 @@ namespace ICSharpCode.Svn
 			
 		public ContentPanel(IViewContent viewContent)
 		{
-			SetupFromXmlStream(Assembly.GetCallingAssembly().GetManifestResourceStream("ContentPanel.xfrm"));
+			SetupFromXmlStream(GetType().Assembly.GetManifestResourceStream("ICSharpCode.Svn.Resources.ContentPanel.xfrm"));
 			this.viewContent = viewContent;
 			((ListView)ControlDictionary["revisionListView"]).SelectedIndexChanged  += new EventHandler(RevisionListViewSelectionChanged);
 			ControlDictionary["contentRichTextBox"].Enabled = false;

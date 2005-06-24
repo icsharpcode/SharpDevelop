@@ -44,6 +44,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected override void Initialize()
 		{
 			ShowReferences();
+			base.Initialize();
 		}
 		
 		public override object AcceptVisitor(ProjectBrowserTreeNodeVisitor visitor, object data)

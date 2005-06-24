@@ -57,9 +57,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void AddTo(TreeNodeCollection nodes)
 		{
 			nodes.Add(this);
-			if (image != null) {
-				SetIcon(image);
-			}
 			Refresh();
 		}
 		
@@ -169,8 +166,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		#endregion
 		
 		#region System.IDisposable interface implementation
+		bool isDisposed = false;
+		
+		public bool IsDisposed {
+			get {
+				return isDisposed;
+			}
+		}
+		
 		public virtual void Dispose()
 		{
+			isDisposed = true;
 			foreach (TreeNode node in Nodes) {
 				if (node is IDisposable) {
 					((ExtTreeNode)node).Dispose();
@@ -308,7 +314,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Gets the drag & drop effect, when a DataObject is dragged over this node.
 		/// </summary>
 		/// <param name="proposedEffect">
-		/// The default effect DragDropEffects.Copy and DragDropEffects.Move, depending on the 
+		/// The default effect DragDropEffects.Copy and DragDropEffects.Move, depending on the
 		/// key the user presses while performing d&d.
 		/// </param>
 		/// <returns>
