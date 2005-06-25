@@ -31,7 +31,18 @@ namespace ICSharpCode.Svn
 		public HistoryViewPanel(IViewContent viewContent)
 		{
 			this.viewContent = viewContent;
-			
+		}
+		
+		protected override void OnVisibleChanged(EventArgs e)
+		{
+			base.OnVisibleChanged(e);
+			if (Visible && contentPanel == null) {
+				Initialize();
+			}
+		}
+		
+		void Initialize()
+		{
 			TabControl mainTab = new TabControl();
 			mainTab.Dock       = DockStyle.Fill;
 			mainTab.Alignment  = TabAlignment.Bottom;
@@ -71,8 +82,9 @@ namespace ICSharpCode.Svn
 		void GetLogMessages()
 		{
 			string fileName = Path.GetFullPath(viewContent.FileName);
+			Console.WriteLine("Get log of " + fileName);
 			if (File.Exists(fileName)) {
-				Client client = new Client();
+				Client client = SvnClient.Instance.Client;
 				client.Log(new string[] { fileName},
 				           Revision.FromNumber(1), // Revision start
 				           Revision.Working,       // Revision end

@@ -126,6 +126,8 @@
     <Compile Include="Src\Services\MessageService\InputBox.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Src\AddInTree\AddIn\IBuildItemsModifier.cs" />
+    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\IncludeErbauer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

@@ -13,88 +13,76 @@ using System.Diagnostics;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
-using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 using NSvn.Common;
 using NSvn.Core;
 
 namespace ICSharpCode.Svn.Commands
 {
-	/// <summary>
-	/// Description of ProjectBrowserCommands.
-	/// </summary>
-	public class UpdateCommand : AbstractMenuCommand
+	public abstract class SubversionCommand : AbstractMenuCommand
 	{
-		string fileName;
-		
-		void DoUpdateCommand()
-		{
-			SvnClient.Instance.Client.Update(Directory.Exists(fileName) ? fileName : Path.GetDirectoryName(fileName), Revision.Working, true);
-		}
+		protected string fileName;
 		
 		public override void Run()
 		{
-			Console.WriteLine(Owner);
-			/*
-			ProjectBrowserView  browser = (ProjectBrowserView)Owner;
-			AbstractBrowserNode node    = browser.SelectedNode as AbstractBrowserNode;
-			
+			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.SelectedNode;
 			if (node != null) {
-				fileName = node.FileName;
+				fileName = null;
+				if (node is DirectoryNode) {
+					fileName = ((DirectoryNode)node).Directory;
+				} else if (node is FileNode) {
+					fileName = ((FileNode)node).FileName;
+				}
 				if (fileName == null) {
 					return;
 				}
-				SvnClient.Instance.OperationStart("Update", new ThreadStart(DoUpdateCommand));
-				SvnClient.Instance.WaitForOperationEnd();
-				
-				if (AddInOptions.AutomaticallyReloadProject) {
+				if (StartOperation()) {
+					SvnClient.Instance.WaitForOperationEnd();
 					
-					projectService.ReloadCombine();
+					if (AddInOptions.AutomaticallyReloadProject) {
+						//projectService.ReloadCombine();
+					}
 				}
 			}
-			*/
+		}
+		
+		protected abstract bool StartOperation();
+	}
+	
+	public class UpdateCommand : SubversionCommand
+	{
+		void DoUpdateCommand()
+		{
+			SvnClient.Instance.Client.Update(Directory.Exists(fileName) ? fileName : Path.GetDirectoryName(fileName), Revision.Head, true);
+		}
+		
+		protected override bool StartOperation()
+		{
+			SvnClient.Instance.OperationStart("Update", new ThreadStart(DoUpdateCommand));
+			return true;
 		}
 	}
 	
-	/// <summary>
-	/// Description of ProjectBrowserCommands.
-	/// </summary>
-	public class RevertCommand : AbstractMenuCommand
+	public class RevertCommand : SubversionCommand
 	{
-		string fileName;
-		
 		void DoRevertCommand()
 		{
-			SvnClient.Instance.Client.Revert(new string[] { Path.GetDirectoryName(fileName) }, true);
+			SvnClient.Instance.Client.Revert(new string[] { fileName }, true);
 		}
 		
-		public override void Run()
+		protected override bool StartOperation()
 		{
-			/*ProjectBrowserView  browser = (ProjectBrowserView)Owner;
-			AbstractBrowserNode node    = browser.SelectedNode as AbstractBrowserNode;
-			
-			if (node != null) {
-				IProject project = node.Project;
-				if (project == null) {
-					return;
-				}
-				
-				fileName = projectService.GetFileName(project);
-				if (fileName == null) {
-					return;
-				}
-				SvnClient.Instance.OperationStart("Revert", new ThreadStart(DoRevertCommand));
-				SvnClient.Instance.WaitForOperationEnd();
-				projectService.ReloadCombine();
-			}*/
+			// TODO: Display warning message (Revert might cause loss of data)
+			SvnClient.Instance.OperationStart("Revert", new ThreadStart(DoRevertCommand));
+			return true;
 		}
 	}
 	
 	/// <summary>
 	/// Description of CreatePatchCommand
 	/// </summary>
-	public class CreatePatchCommand : AbstractMenuCommand
+	public class CreatePatchCommand : SubversionCommand
 	{
-		string fileName;
 		string output;
 		
 		void DoCreatePatchCommand()
@@ -104,18 +92,20 @@ namespace ICSharpCode.Svn.Commands
 				MemoryStream errStream = new MemoryStream();
 				
 				SvnClient.Instance.Client.Diff(new string [] {} ,
-				                fileName,
-					            Revision.Committed,
-					            fileName,
-					            Revision.Working,
-					            true,
-					            false,
-					            true,
-					            outStream,
-					            errStream);
+				                               fileName,
+				                               Revision.Committed,
+				                               fileName,
+				                               Revision.Working,
+				                               true,
+				                               false,
+				                               true,
+				                               outStream,
+				                               errStream);
 				output = Encoding.Default.GetString(outStream.ToArray());
+				// TODO: Invoke the following method:
+				// FileService.NewFile("a.patch", "txt", output);
 			} catch (Exception e) {
-				Console.WriteLine("Exception while patch generation : " + e);
+				MessageService.ShowError(e);
 			} finally {
 				if (output == null) {
 					output = "";
@@ -123,30 +113,10 @@ namespace ICSharpCode.Svn.Commands
 			}
 		}
 		
-		public override void Run()
+		protected override bool StartOperation()
 		{
-			/*ProjectBrowserView  browser = (ProjectBrowserView)Owner;
-			AbstractBrowserNode node    = browser.SelectedNode as AbstractBrowserNode;
-			
-			if (node != null) {
-				IProject project = node.Project;
-				if (project == null) {
-					return;
-				}
-				
-				fileName = projectService.GetFileName(project);
-				if (fileName == null) {
-					return;
-				}
-				fileName = Path.GetDirectoryName(fileName);
-				SvnClient.Instance.OperationStart("CreatePatch", new ThreadStart(DoCreatePatchCommand));
-				
-				while (output == null) {
-					Application.DoEvents();
-				}
-				FileService.NewFile("a.patch", "txt", output);
-				
-			}*/
+			SvnClient.Instance.OperationStart("CreatePatch", new ThreadStart(DoCreatePatchCommand));
+			return true;
 		}
 	}
 }

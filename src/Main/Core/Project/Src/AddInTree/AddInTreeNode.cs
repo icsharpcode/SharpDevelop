@@ -132,7 +132,15 @@ namespace ICSharpCode.Core
 				if (childNodes.ContainsKey(codon.Id)) {
 					subItems = childNodes[codon.Id].BuildChildItems(caller);
 				}
-				items.Add(codon.BuildItem(caller, subItems));
+				object result = codon.BuildItem(caller, subItems);
+				if (result == null)
+					continue;
+				IBuildItemsModifier mod = result as IBuildItemsModifier;
+				if (mod != null) {
+					mod.Apply(items);
+				} else {
+					items.Add(result);
+				}
 			}
 			return items;
 		}

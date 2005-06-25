@@ -16,13 +16,14 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id               = "HistoryView"
+		<DisplayBinding id               = "FormDesigner"
+		                type             = "Secondary"
 		                insertbefore     = "Text"
-		                supportedformats = "CSharp Forms/UserControls"
-		                class            = "ICSharpCode.Svn.HistoryViewDisplayBinding" />
+		                supportedformats = "Forms/UserControls"
+		                class            = "ICSharpCode.Svn.HistoryViewDisplayBinding"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode">
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SubversionItem">
 		<MenuItem id = "SvnUpdate"
 		          label = "Update"
 		          icon  = "Svn.Update"
@@ -39,6 +40,18 @@
 		          label = "Create patch"
 		          icon  = "Svn.CreatePatch"
 		          class = "ICSharpCode.Svn.Commands.CreatePatchCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
+		<Include id = "SubversionInclude" path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SubversionItem"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode">
+		<Include id = "SubversionInclude" path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SubversionItem"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FileNode">
+		<Include id = "SubversionInclude" path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SubversionItem"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">

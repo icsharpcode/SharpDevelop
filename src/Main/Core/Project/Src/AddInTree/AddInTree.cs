@@ -33,6 +33,7 @@ namespace ICSharpCode.Core
 			erbauer.Add("Icon", new IconErbauer());
 			erbauer.Add("MenuItem", new MenuItemErbauer());
 			erbauer.Add("ToolbarItem", new ToolbarItemErbauer());
+			erbauer.Add("Include", new IncludeErbauer());
 			
 			auswerter.Add("Compare", new CompareAuswerter());
 			auswerter.Add("Ownerstate", new OwnerStateAuswerter());
@@ -91,6 +92,18 @@ namespace ICSharpCode.Core
 				++i;
 			}
 			return curPath;
+		}
+		
+		/// <summary>
+		/// Builds a single item in the addin tree.
+		/// </summary>
+		public static object BuildItem(string path, object caller)
+		{
+			int pos = path.LastIndexOf('/');
+			string parent = path.Substring(0, pos);
+			string child = path.Substring(pos + 1);
+			AddInTreeNode node = GetTreeNode(parent);
+			return node.BuildChildItem(child, caller);
 		}
 		
 		static AddInTreeNode CreatePath(AddInTreeNode localRoot, string path)

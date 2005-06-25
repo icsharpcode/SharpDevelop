@@ -27,8 +27,21 @@ namespace ICSharpCode.Svn
 		public static SvnClient Instance = new SvnClient();
 		
 		Client client;
-		MessageViewCategory svnCategory = null;
 		string logMessage = String.Empty;
+		
+		
+		MessageViewCategory svnCategory;
+		
+		public MessageViewCategory SvnCategory {
+			get {
+				if (svnCategory == null) {
+					svnCategory = new MessageViewCategory("Subversion", "Subversion");
+					CompilerMessageView compilerMessageView = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).PadContent;
+					compilerMessageView.AddCategory(svnCategory);
+				}
+				return svnCategory;
+			}
+		}
 		
 		public NSvn.Core.Client Client {
 			get {
@@ -97,17 +110,17 @@ namespace ICSharpCode.Svn
 		void ReceiveNotification(object sender, NotificationEventArgs e)
 		{
 			if (e.Action == NotifyAction.UpdateCompleted) {
-				svnCategory.AppendText(Environment.NewLine + "Updated " + e.Path + " to revision " + e.RevisionNumber + ".");
+				SvnCategory.AppendText(Environment.NewLine + "Updated " + e.Path + " to revision " + e.RevisionNumber + ".");
 				return;
 			}
 			if (e.Action == NotifyAction.CommitPostfixTxDelta) {
-				svnCategory.AppendText(".");
+				SvnCategory.AppendText(".");
 				return;
 			}
 			
 			string kind   = GetKindString(e.NodeKind);
 			string action = GetActionString(e.Action);
-			svnCategory.AppendText(Environment.NewLine + kind + action + " : " + e.Path);
+			SvnCategory.AppendText(Environment.NewLine + kind + action + " : " + e.Path);
 		}
 		
 		void SetLogMessage(object sender, LogMessageEventArgs e)
@@ -121,9 +134,9 @@ namespace ICSharpCode.Svn
 		{
 			const int max = 40;
 			string filler = new String('-', max - str.Length / 2);
-			svnCategory.AppendText(Environment.NewLine + filler + " " + str + " " + filler);
+			SvnCategory.AppendText(Environment.NewLine + filler + " " + str + " " + filler);
 			if (str.Length % 2 == 0) {
-				svnCategory.AppendText("-");
+				SvnCategory.AppendText("-");
 			}
 		}
 		
@@ -194,10 +207,6 @@ namespace ICSharpCode.Svn
 		SvnClient()
 		{
 			client = new Client();
-			svnCategory = new MessageViewCategory("Subversion", "Subversion");
-			CompilerMessageView compilerMessageView = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).PadContent;
-			compilerMessageView.AddCategory(svnCategory);
-			
 			client.LogMessage   += new LogMessageDelegate(SetLogMessage);
 			client.Notification += new NotificationDelegate(ReceiveNotification);
 			

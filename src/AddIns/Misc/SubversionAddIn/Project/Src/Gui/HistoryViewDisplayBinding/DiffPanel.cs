@@ -32,37 +32,29 @@ namespace ICSharpCode.Svn
 		{
 			this.viewContent = viewContent;
 			SetupFromXmlStream(GetType().Assembly.GetManifestResourceStream("ICSharpCode.Svn.Resources.DiffPanel.xfrm"));
-			((ListView)ControlDictionary["fromRevisionListView"]).SelectedIndexChanged += new EventHandler(ShowDiff);
-			((ListView)ControlDictionary["toRevisionListView"]).SelectedIndexChanged += new EventHandler(ShowDiff);
+			Get<ListView>("fromRevision").SelectedIndexChanged += new EventHandler(ShowDiff);
+			Get<ListView>("toRevision").SelectedIndexChanged += new EventHandler(ShowDiff);
 			
 			ControlDictionary["diffRichTextBox"].Enabled = false;
 			ControlDictionary["diffRichTextBox"].Font = new Font("Courier New", 10);
 			ControlDictionary["splitter1"].Height = 3;
 			
-			ListViewItem newItem = new ListViewItem(new string[] {
-			                                        	"Head",
-			                                        	""
-			                                        });
-			((ListView)ControlDictionary["fromRevisionListView"]).Items.Add(newItem);
-			ListViewItem newItem2 = new ListViewItem(new string[] {
-			                                        	"Head",
-			                                        	""
-			                                        });
-			((ListView)ControlDictionary["toRevisionListView"]).Items.Add(newItem2);
+			ListViewItem newItem;
+			newItem = new ListViewItem(new string[] { "Base", "" });
+			newItem.Tag = Revision.Base;
+			Get<ListView>("fromRevision").Items.Add(newItem);
+			newItem = new ListViewItem(new string[] { "Base", "" });
+			newItem.Tag = Revision.Base;
+			Get<ListView>("toRevision").Items.Add(newItem);
+			newItem = new ListViewItem(new string[] { "Head", "" });
+			newItem.Tag = Revision.Head;
+			Get<ListView>("toRevision").Items.Add(newItem);
 		}
 		
 		string output = null;
 		string fileName = null;
-		LogMessage fromLogMessage;
-		LogMessage toLogMessage;
-		
-		Revision GetRevision(LogMessage msg)
-		{
-			if (fromLogMessage == null) {
-				return Revision.Head;
-			}
-			 return msg.Revision == 1 ? Revision.Base : Revision.FromNumber(msg.Revision);
-		}
+		Revision fromRevision;
+		Revision toRevision;
 		
 		void DoDiffOperation()
 		{
@@ -70,15 +62,15 @@ namespace ICSharpCode.Svn
 			MemoryStream outStream = new MemoryStream();
 			MemoryStream errStream = new MemoryStream();
 			SvnClient.Instance.Client.Diff(new string [] {} ,
-				            fileName,
-				            GetRevision(fromLogMessage),
-				            fileName,
-				            GetRevision(toLogMessage),
-				            false,
-				            false,
-				            true,
-				            outStream,
-				            errStream);
+			                               fileName,
+			                               fromRevision,
+			                               fileName,
+			                               toRevision,
+			                               false,
+			                               false,
+			                               true,
+			                               outStream,
+			                               errStream);
 			output = Encoding.Default.GetString(outStream.ToArray());
 			WorkbenchSingleton.SafeThreadCall(this, "SetOutput");
 		}
@@ -86,7 +78,7 @@ namespace ICSharpCode.Svn
 		void SetOutput()
 		{
 			ControlDictionary["diffRichTextBox"].Enabled = true;
-			ControlDictionary["diffLabel"].Text = "Diff from revision " + (fromLogMessage == null ? "Working" : fromLogMessage.Revision.ToString()) + " to " + (toLogMessage == null ? "Working" : toLogMessage.Revision.ToString()) + ":";
+			ControlDictionary["diffLabel"].Text = "Diff from revision " + fromRevision + " to " + toRevision + ":";
 			ControlDictionary["diffRichTextBox"].Text = output;
 		}
 		
@@ -101,13 +93,13 @@ namespace ICSharpCode.Svn
 		{
 			Disable();
 			
-			if (((ListView)ControlDictionary["fromRevisionListView"]).SelectedItems.Count == 0 || ((ListView)ControlDictionary["toRevisionListView"]).SelectedItems.Count == 0 ) {
+			if (Get<ListView>("fromRevision").SelectedItems.Count == 0 || Get<ListView>("toRevision").SelectedItems.Count == 0 ) {
 				return;
 			}
 			
-			fromLogMessage = ((ListView)ControlDictionary["fromRevisionListView"]).SelectedItems[0].Tag as LogMessage;
-			toLogMessage   = ((ListView)ControlDictionary["toRevisionListView"]).SelectedItems[0].Tag as LogMessage;
-			fileName       = Path.GetFullPath(viewContent.FileName);
+			fromRevision = Get<ListView>("fromRevision").SelectedItems[0].Tag as Revision;
+			toRevision   = Get<ListView>("toRevision").SelectedItems[0].Tag as Revision;
+			fileName     = Path.GetFullPath(viewContent.FileName);
 			
 			SvnClient.Instance.OperationStart("Diff", new ThreadStart(DoDiffOperation));
 		}
@@ -119,14 +111,14 @@ namespace ICSharpCode.Svn
 			                                        	logMessage.Date.ToString()
 			                                        });
 			newItem.Tag = logMessage;
-			((ListView)ControlDictionary["fromRevisionListView"]).Items.Add(newItem);
+			Get<ListView>("fromRevision").Items.Add(newItem);
 			
 			ListViewItem newItem2 = new ListViewItem(new string[] {
-			                                        	logMessage.Revision.ToString(),
-			                                        	logMessage.Date.ToString()
-			                                        });
+			                                         	logMessage.Revision.ToString(),
+			                                         	logMessage.Date.ToString()
+			                                         });
 			newItem2.Tag = logMessage;
-			((ListView)ControlDictionary["toRevisionListView"]).Items.Add(newItem2);
+			Get<ListView>("toRevision").Items.Add(newItem2);
 		}
 	}
 }

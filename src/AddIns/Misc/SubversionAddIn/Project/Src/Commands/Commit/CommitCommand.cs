@@ -28,46 +28,20 @@ using ICSharpCode.Svn.Gui;
 
 namespace ICSharpCode.Svn.Commands
 {
-	/// <summary>
-	/// Description of CommitCommand.
-	/// </summary>
-	public class CommitCommand : AbstractMenuCommand
+	
+	public class CommitCommand : SubversionCommand
 	{
-		public CommitCommand()
+		protected override bool StartOperation()
 		{
-		}
-		
-		void DoCommit()
-		{
-		}
-		
-		public override void Run()
-		{
-			/*
-			ProjectBrowserView  browser = (ProjectBrowserView)Owner;
-			AbstractBrowserNode node    = browser.SelectedNode as AbstractBrowserNode;
-			
-			if (node != null) {
-				IProject project = node.Project;
-				if (project == null) {
-					return;
-				}
-				
-				string fileName = projectService.GetFileName(project);
-				if (fileName == null) {
-					return;
-				}
-				fileName = Path.GetDirectoryName(fileName);
-				
-				using (CommitDialog commitDialog = new CommitDialog()) {
-					commitDialog.LogMessage = AddInOptions.DefaultLogMessage;
-					if (commitDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-						SvnClient.Instance.LogMessage = commitDialog.LogMessage;
-						SvnClient.Instance.OperationStart("Commit", new ThreadStart(DoCommit));
-					}
+			using (CommitDialog commitDialog = new CommitDialog()) {
+				commitDialog.LogMessage = AddInOptions.DefaultLogMessage;
+				if (commitDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+					SvnClient.Instance.LogMessage = commitDialog.LogMessage;
+					MessageService.ShowMessage("Not implemented.");
+					//SvnClient.Instance.OperationStart("Commit", new ThreadStart(DoCommit));
 				}
 			}
-			*/
+			return false;
 		}
 	}
 }

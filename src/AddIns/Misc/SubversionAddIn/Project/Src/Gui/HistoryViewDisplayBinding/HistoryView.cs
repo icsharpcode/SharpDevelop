@@ -39,6 +39,7 @@ namespace ICSharpCode.Svn
 	public class HistoryView : AbstractSecondaryViewContent
 	{
 		HistoryViewPanel historyViewPanel;
+		
 		#region ICSharpCode.SharpDevelop.Gui.AbstractSecondaryViewContent abstract class implementation
 		public override Control Control {
 			get {
@@ -51,7 +52,6 @@ namespace ICSharpCode.Svn
 				return "History";
 			}
 		}
-		
 		#endregion
 		
 		public HistoryView(IViewContent viewContent)

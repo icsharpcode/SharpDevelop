@@ -63,7 +63,6 @@
       <Name>ICSharpCode.SharpDevelop</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Folder Include="Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

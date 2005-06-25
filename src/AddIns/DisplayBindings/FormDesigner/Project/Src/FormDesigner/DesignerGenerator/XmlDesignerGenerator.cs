@@ -37,15 +37,19 @@ namespace ICSharpCode.FormDesigner
 		public void MergeFormChanges()
 		{
 			StringWriter writer = new StringWriter();
-			XmlElement el = GetElementFor(new XmlDocument(), viewContent.Host);
+			XmlTextWriter xml = new XmlTextWriter(writer);
+			xml.Formatting = Formatting.Indented;
 			
-			XmlDocument doc = new XmlDocument();
-			doc.LoadXml("<" + el.Name + " version=\"1.0\"/>");
+			//xml.WriteStartDocument();
+			XmlElement el = GetElementFor(new XmlDocument(), viewContent.Host);
+			xml.WriteStartElement(el.Name);
+			xml.WriteAttributeString("version", "1.0");
 			
 			foreach (XmlNode node in el.ChildNodes) {
-				doc.DocumentElement.AppendChild(doc.ImportNode(node, true));
+				node.WriteTo(xml);
 			}
-			doc.Save(writer);
+			xml.WriteEndElement();
+			//xml.WriteEndDocument();
 			viewContent.Document.TextContent = writer.ToString();
 		}
 		public bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out int position)

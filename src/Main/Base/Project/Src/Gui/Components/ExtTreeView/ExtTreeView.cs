@@ -185,7 +185,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (e.Node is ExtTreeNode) {
 					((ExtTreeNode)e.Node).Expanding();
 				}
-				SortNodes(e.Node.Nodes, true);
+				SortNodes(e.Node.Nodes, false);
 			} catch (Exception ex) {
 				// catch error to prevent corrupting the TreeView component
 				MessageService.ShowError(ex);
