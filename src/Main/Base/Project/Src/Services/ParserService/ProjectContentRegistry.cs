@@ -5,13 +5,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
-using System.Runtime.InteropServices;
-using System.Runtime.Serialization;
-using System.Runtime.Serialization.Formatters;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Security;
-using System.Security.Permissions;
-using System.Security.Policy;
 using System.Xml;
 using System.Text;
 
@@ -22,14 +15,17 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.Core
 {
-	public class ProjectContentRegistry
+	public static class ProjectContentRegistry
 	{
 		static Dictionary<string, IProjectContent> contents = new Dictionary<string, IProjectContent>(StringComparer.InvariantCultureIgnoreCase);
+		static IProjectContent mscorlibContent;
 		
 		public static IProjectContent GetMscorlibContent()
 		{
+			if (mscorlibContent != null) return mscorlibContent;
 			lock (contents) {
 				if (contents.ContainsKey("mscorlib")) {
+					mscorlibContent = contents["mscorlib"];
 					return contents["mscorlib"];
 				}
 				#if DEBUG
@@ -37,14 +33,30 @@ namespace ICSharpCode.Core
 				int time = Environment.TickCount;
 				#endif
 				
-				contents["mscorlib"] = DefaultProjectContent.Create(typeof(object).Assembly);
+				mscorlibContent = new ReflectionProjectContent(typeof(object).Assembly);
+				contents["mscorlib"] = mscorlibContent;
 				
 				#if DEBUG
 				Console.WriteLine("mscorlib loaded in {0} ms", Environment.TickCount - time);
 				#endif
-				return contents["mscorlib"];
+				return mscorlibContent;
 			}
 		}
+		
+		public static IProjectContent GetExistingProjectContent(AssemblyName assembly)
+		{
+			lock (contents) {
+				if (contents.ContainsKey(assembly.FullName)) {
+					return contents[assembly.FullName];
+				}
+				if (contents.ContainsKey(assembly.Name)) {
+					return contents[assembly.Name];
+				}
+				return null;
+			}
+		}
+		
+		static string lookupDirectory;
 		
 		public static IProjectContent GetProjectContentForReference(ReferenceProjectItem item)
 		{
@@ -63,35 +75,100 @@ namespace ICSharpCode.Core
 				int pos = shortName.IndexOf(',');
 				if (pos > 0)
 					shortName = shortName.Substring(0, pos);
-				
+
 				StatusBarService.ProgressMonitor.BeginTask("Loading " + shortName + "...", 100);
 				#if DEBUG
 				int time = Environment.TickCount;
+				string how = "??";
 				#endif
-				Assembly assembly = null;
+				Assembly assembly = GetDefaultAssembly(shortName);
 				try {
-					assembly = Assembly.ReflectionOnlyLoadFrom(item.FileName);
 					if (assembly != null) {
-						contents[item.FileName] = DefaultProjectContent.Create(assembly);
-						return contents[item.FileName];
+						contents[item.Include] = new ReflectionProjectContent(assembly);
+						#if DEBUG
+						how = "typeof";
+						#endif
+						return contents[item.Include];
 					}
-				} catch (Exception) {
+					lookupDirectory = Path.GetDirectoryName(item.FileName);
+					AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += AssemblyResolve;
+					try {
+						assembly = Assembly.ReflectionOnlyLoadFrom(item.FileName);
+						if (assembly != null) {
+							contents[item.FileName] = new ReflectionProjectContent(assembly);
+							#if DEBUG
+							how = "ReflectionOnly";
+							#endif
+							return contents[item.FileName];
+						}
+					} finally {
+						AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= AssemblyResolve;
+						lookupDirectory = null;
+					}
+				} catch (FileNotFoundException) {
 					try {
 						assembly = LoadGACAssembly(item.Include, true);
 						if (assembly != null) {
-							contents[item.Include] = DefaultProjectContent.Create(assembly);
+							contents[item.Include] = new ReflectionProjectContent(assembly);
+							#if DEBUG
+							how = "PartialName";
+							#endif
 							return contents[item.Include];
 						}
 					} catch (Exception e) {
 						Console.WriteLine("Can't load assembly '{0}' : " + e.Message, item.Include);
 					}
+				} catch (BadImageFormatException) {
+					Console.WriteLine("BadImageFormat: " + shortName);
 				} finally {
 					#if DEBUG
-					Console.WriteLine("Loaded {0} in {1}ms", item.Include, Environment.TickCount - time);
+					Console.WriteLine("Loaded {0} with {2} in {1}ms", item.Include, Environment.TickCount - time, how);
 					#endif
 					StatusBarService.ProgressMonitor.Done();
 				}
 			}
+			return null;
+		}
+		
+		static Assembly GetDefaultAssembly(string shortName)
+		{
+			// GAC Assemblies take some time because first the non-GAC try
+			// has to fail.
+			// Therefore, the most assemblies already used by SharpDevelop
+			// are used directly.
+			switch (shortName) {
+				case "System": // System != mscorlib !!!
+					return typeof(Uri).Assembly;
+				case "System.Design":
+					return typeof(System.ComponentModel.Design.DesignSurface).Assembly;
+				case "System.DirectoryServices":
+					return typeof(System.DirectoryServices.AuthenticationTypes).Assembly;
+				case "System.Drawing":
+					return typeof(System.Drawing.Color).Assembly;
+				case "System.Web.Services":
+					return typeof(System.Web.Services.WebService).Assembly;
+				case "System.Windows.Forms":
+					return typeof(System.Windows.Forms.Control).Assembly;
+				case "System.XML":
+					return typeof(XmlReader).Assembly;
+				default:
+					return null;
+			}
+		}
+		
+		static Assembly AssemblyResolve(object sender, ResolveEventArgs e)
+		{
+			string shortName = e.Name;
+			int pos = shortName.IndexOf(',');
+			if (pos > 0)
+				shortName = shortName.Substring(0, pos);
+			string path = Path.Combine(lookupDirectory, shortName);
+			if (File.Exists(path + ".dll"))
+				return Assembly.ReflectionOnlyLoadFrom(path + ".dll");
+			if (File.Exists(path + ".exe"))
+				return Assembly.ReflectionOnlyLoadFrom(path + ".exe");
+			if (File.Exists(path))
+				return Assembly.ReflectionOnlyLoadFrom(path);
 			return null;
 		}
 		

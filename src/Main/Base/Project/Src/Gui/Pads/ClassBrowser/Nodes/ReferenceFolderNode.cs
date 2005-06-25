@@ -96,6 +96,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected override string StripRootNamespace(string directory)
 		{
 			string rootNamespace = item.Include;
+			int pos = rootNamespace.IndexOf(',');
+			if (pos > 0)
+				rootNamespace = rootNamespace.Substring(0, pos);
 			if (directory.ToLower().StartsWith(rootNamespace.ToLower())) {
 				directory = directory.Substring(rootNamespace.Length);
 			}

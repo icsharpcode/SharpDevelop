@@ -28,7 +28,7 @@ namespace ICSharpCode.Core
 		
 		List<Dictionary<string, IClass>> classLists = new List<Dictionary<string, IClass>>();
 		Hashtable                  namespaces         = new Hashtable();
-		XmlDoc                     xmlDoc             = new XmlDoc();
+		protected XmlDoc           xmlDoc             = new XmlDoc();
 		
 		public List<Dictionary<string, IClass>> ClassLists {
 			get {
@@ -112,7 +112,7 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		static string LookupLocalizedXmlDoc(string fileName)
+		protected static string LookupLocalizedXmlDoc(string fileName)
 		{
 			string xmlFileName         = Path.ChangeExtension(fileName, ".xml");
 			string localizedXmlDocFile = FileUtility.Combine(System.IO.Path.GetDirectoryName(fileName), Thread.CurrentThread.CurrentUICulture.TwoLetterISOLanguageName, System.IO.Path.GetFileName(xmlFileName));
@@ -125,124 +125,9 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		public static IProjectContent Create(Assembly assembly)
-		{
-			DefaultProjectContent newProjectContent = new DefaultProjectContent();
-			if (typeof(object).Assembly != assembly) {
-				newProjectContent.referencedContents.Add(ProjectContentRegistry.GetMscorlibContent());
-			}
-			ICompilationUnit assemblyCompilationUnit = new DefaultCompilationUnit(newProjectContent);
-			
-			foreach (Type type in assembly.GetTypes()) {
-				if (!type.FullName.StartsWith("<") && type.IsPublic) {
-					newProjectContent.AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, null));
-				}
-			}
-			string fileName = LookupLocalizedXmlDoc(assembly.Location);
-			// Not found -> look in runtime directory.
-			if (fileName == null) {
-				string runtimeDirectory = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
-				fileName = LookupLocalizedXmlDoc(Path.Combine(runtimeDirectory, Path.GetFileName(assembly.Location)));
-			}
-			
-			if (fileName != null) {
-				newProjectContent.xmlDoc = XmlDoc.Load(fileName);
-			}
-			
-			return newProjectContent;
-		}
-		
-		internal static IProjectContent CreateUninitalized(IProject project)
-		{
-			DefaultProjectContent newProjectContent = new DefaultProjectContent();
-			newProjectContent.project = project;
-			newProjectContent.language = project.LanguageProperties;
-			newProjectContent.referencedContents.Add(ProjectContentRegistry.GetMscorlibContent());
-			newProjectContent.initializing = true;
-			return newProjectContent;
-		}
-		
-		public static IProjectContent Create(IProject project)
-		{
-			IProjectContent newProjectContent = CreateUninitalized(project);
-			if (newProjectContent is DefaultProjectContent) {
-				((DefaultProjectContent)newProjectContent).Initialize1();
-				((DefaultProjectContent)newProjectContent).Initialize2();
-			}
-			return newProjectContent;
-		}
-		
-		IProject project;
-		bool initializing;
-		
-		internal void Initialize1()
-		{
-			ProjectItem[] items = project.Items.ToArray();
-			ProjectService.ReferenceAdded += OnReferenceAdded;
-			foreach (ProjectItem item in items) {
-				if (!initializing) return; // abort initialization
-				switch (item.ItemType) {
-					case ItemType.Reference:
-					case ItemType.ProjectReference:
-						AddReference(item as ReferenceProjectItem);
-						break;
-				}
-			}
-		}
-		
-		delegate void AddReferenceDelegate(ReferenceProjectItem reference);
-		
-		void AddReference(ReferenceProjectItem reference)
-		{
-			try {
-				IProjectContent referencedContent = ProjectContentRegistry.GetProjectContentForReference(reference);
-				if (referencedContent != null) {
-					referencedContents.Add(referencedContent);
-				}
-			} catch (Exception e) {
-				MessageService.ShowError(e);
-			}
-		}
-		
-		void OnReferenceAdded(object sender, ProjectReferenceEventArgs e)
-		{
-			if (e.Project != project) return;
-			new AddReferenceDelegate(AddReference).BeginInvoke(e.ReferenceProjectItem, null, null);
-		}
-		
-		internal int GetInitializationWorkAmount()
-		{
-			return project.Items.Count;
-		}
-		
-		internal void Initialize2()
-		{
-			if (!initializing) return;
-			int progressStart = StatusBarService.ProgressMonitor.WorkDone;
-			ParseableFileContentEnumerator enumerator = new ParseableFileContentEnumerator(project);
-			try {
-				StatusBarService.ProgressMonitor.TaskName = "Parsing " + project.Name + "...";
-				while (enumerator.MoveNext()) {
-					int i = enumerator.Index;
-					if ((i % 5) == 2)
-						StatusBarService.ProgressMonitor.WorkDone = progressStart + i;
-					
-					ParserService.ParseFile(this, enumerator.CurrentFileName, enumerator.CurrentFileContent, true, false);
-					
-					if (!initializing) return;
-				}
-			} finally {
-				initializing = false;
-				StatusBarService.ProgressMonitor.WorkDone = progressStart + enumerator.ItemCount;
-				enumerator.Dispose();
-			}
-		}
-		
-		public void Dispose()
+		public virtual void Dispose()
 		{
 			xmlDoc.Dispose();
-			ProjectService.ReferenceAdded -= OnReferenceAdded;
-			initializing = false;
 		}
 		
 		public Hashtable AddClassToNamespaceList(IClass addClass)
@@ -252,7 +137,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		Hashtable AddClassToNamespaceListInternal(IClass addClass)
+		protected Hashtable AddClassToNamespaceListInternal(IClass addClass)
 		{
 			foreach (Dictionary<string, IClass> classes in ClassLists) {
 				classes[addClass.FullyQualifiedName] = addClass;

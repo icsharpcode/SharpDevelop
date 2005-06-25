@@ -37,6 +37,7 @@ namespace ICSharpCode.Core
 		static Dictionary<string, ParseInformation> parsings        = new Dictionary<string, ParseInformation>();
 		
 		public static IProjectContent CurrentProjectContent {
+			[DebuggerStepThrough]
 			get {
 				if (forcedContent != null) return forcedContent;
 				
@@ -121,23 +122,21 @@ namespace ICSharpCode.Core
 		
 		static void LoadSolutionProjectsInternal()
 		{
-			List<DefaultProjectContent> createdContents = new List<DefaultProjectContent>();
+			List<ParseProjectContent> createdContents = new List<ParseProjectContent>();
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				try {
-					IProjectContent newContent = DefaultProjectContent.CreateUninitalized(project);
+					ParseProjectContent newContent = ParseProjectContent.CreateUninitalized(project);
 					lock (projectContents) {
 						projectContents[project] = newContent;
 					}
-					if (newContent is DefaultProjectContent) {
-						createdContents.Add((DefaultProjectContent)newContent);
-					}
+					createdContents.Add(newContent);
 				} catch (Exception e) {
 					Console.WriteLine("Error while retrieving project contents from {0}:", project);
 					ICSharpCode.Core.MessageService.ShowError(e);
 				}
 			}
 			int workAmount = 0;
-			foreach (DefaultProjectContent newContent in createdContents) {
+			foreach (ParseProjectContent newContent in createdContents) {
 				if (abortLoadSolutionProjectsThread) return;
 				try {
 					newContent.Initialize1();
@@ -148,7 +147,7 @@ namespace ICSharpCode.Core
 				}
 			}
 			StatusBarService.ProgressMonitor.BeginTask("Parsing...", workAmount);
-			foreach (DefaultProjectContent newContent in createdContents) {
+			foreach (ParseProjectContent newContent in createdContents) {
 				if (abortLoadSolutionProjectsThread) return;
 				try {
 					newContent.Initialize2();

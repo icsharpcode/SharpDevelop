@@ -63,12 +63,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		public ICompilationUnit CompilationUnit {
+			[System.Diagnostics.DebuggerStepThrough]
 			get {
 				return compilationUnit;
 			}
 		}
 		
 		public IProjectContent ProjectContent {
+			[System.Diagnostics.DebuggerStepThrough]
 			get {
 				return CompilationUnit.ProjectContent;
 			}

@@ -7,6 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{17F4D7E0-6933-4C2E-8714-FD7E98D625D5}</ProjectGuid>
     <PostBuildEvent>..\..\..\..\src\AddIns\Misc\SubversionAddIn\Project\PostBuildEvent.bat</PostBuildEvent>
+    <ProductVersion>8.0.50215</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -43,7 +45,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Src\SvnClient.cs" />
-    <Compile Include="Src\InOperationDialog.cs" />
+    <Compile Include="Src\InOperationDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Src\AddInOptions.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\ClientCertDialog.xfrm" />
@@ -56,24 +60,46 @@
     <EmbeddedResource Include="Resources\SslServerTrustDialog.xfrm" />
     <EmbeddedResource Include="Resources\SubversionOptionsPanel.xfrm" />
     <Compile Include="Src\Commands\Checkout\CheckoutCommand.cs" />
-    <Compile Include="Src\Commands\Checkout\CheckoutDialog.cs" />
+    <Compile Include="Src\Commands\Checkout\CheckoutDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Src\Commands\Commit\CommitCommand.cs" />
-    <Compile Include="Src\Commands\Commit\CommitDialog.cs" />
+    <Compile Include="Src\Commands\Commit\CommitDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Src\Commands\Export\ExportCommand.cs" />
-    <Compile Include="Src\Commands\Export\ExportDialog.cs" />
+    <Compile Include="Src\Commands\Export\ExportDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Src\Commands\AutostartCommands.cs" />
     <Compile Include="Src\Commands\ProjectBrowserCommands.cs" />
-    <Compile Include="Src\Gui\AuthentificationDialogs\ClientCertDialog.cs" />
-    <Compile Include="Src\Gui\AuthentificationDialogs\ClientCertPassphraseDialog.cs" />
-    <Compile Include="Src\Gui\AuthentificationDialogs\LoginDialog.cs" />
-    <Compile Include="Src\Gui\AuthentificationDialogs\SslServerTrustDialog.cs" />
-    <Compile Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.cs" />
+    <Compile Include="Src\Gui\AuthentificationDialogs\ClientCertDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\AuthentificationDialogs\ClientCertPassphraseDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\AuthentificationDialogs\LoginDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\AuthentificationDialogs\SslServerTrustDialog.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\HistoryViewDisplayBinding\DiffPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryView.cs" />
     <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryViewDisplayBinding.cs" />
-    <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryViewPanel.cs" />
-    <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.cs" />
+    <Compile Include="Src\Gui\HistoryViewDisplayBinding\HistoryViewPanel.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\HistoryViewDisplayBinding\InfoPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Gui\ProjectBrowserVisitor\SvnProjectBrowserVisitor.cs" />
-    <Compile Include="Src\Gui\SubversionOptionsPanel.cs" />
+    <Compile Include="Src\Gui\SubversionOptionsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Gui\ProjectBrowserVisitor\OverlayIconManager.cs" />
     <None Include="PostBuildEvent.bat" />
   </ItemGroup>

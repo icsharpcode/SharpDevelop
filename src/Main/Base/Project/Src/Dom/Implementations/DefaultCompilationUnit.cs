@@ -37,6 +37,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		public IProjectContent ProjectContent {
+			[System.Diagnostics.DebuggerStepThrough]
 			get {
 				return projectContent;
 			}

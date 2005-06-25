@@ -17,6 +17,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		public static IProject CurrentProject {
+			[System.Diagnostics.DebuggerStepThrough]
 			get {
 				return currentProject;
 			}
