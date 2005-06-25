@@ -24,7 +24,6 @@ namespace ICSharpCode.Svn
 	{
 		IViewContent viewContent;
 		
-		ContentPanel contentPanel;
 		InfoPanel infoPanel;
 		DiffPanel diffPanel;
 		
@@ -36,7 +35,7 @@ namespace ICSharpCode.Svn
 		protected override void OnVisibleChanged(EventArgs e)
 		{
 			base.OnVisibleChanged(e);
-			if (Visible && contentPanel == null) {
+			if (Visible && infoPanel == null) {
 				Initialize();
 			}
 		}
@@ -47,11 +46,6 @@ namespace ICSharpCode.Svn
 			mainTab.Dock       = DockStyle.Fill;
 			mainTab.Alignment  = TabAlignment.Bottom;
 			
-			TabPage contentTabPage = new TabPage("Content");
-			contentPanel = new ContentPanel(viewContent);
-			contentPanel.Dock = DockStyle.Fill;
-			contentTabPage.Controls.Add(contentPanel);
-			mainTab.TabPages.Add(contentTabPage);
 			
 			TabPage infoTabPage = new TabPage("Info");
 			infoPanel = new InfoPanel(viewContent);
@@ -86,8 +80,8 @@ namespace ICSharpCode.Svn
 			if (File.Exists(fileName)) {
 				Client client = SvnClient.Instance.Client;
 				client.Log(new string[] { fileName},
-				           Revision.FromNumber(1), // Revision start
-				           Revision.Working,       // Revision end
+				           Revision.Head,          // Revision start
+				           Revision.FromNumber(1), // Revision end
 				           false,                  // bool discoverChangePath
 				           false,                  // bool strictNodeHistory
 				           new LogMessageReceiver(ReceiveLogMessage));
@@ -97,7 +91,6 @@ namespace ICSharpCode.Svn
 		void ReceiveLogMessage(LogMessage logMessage)
 		{
 			WorkbenchSingleton.SafeThreadCall(infoPanel, "AddLogMessage", logMessage);
-			WorkbenchSingleton.SafeThreadCall(contentPanel, "AddLogMessage", logMessage);
 			WorkbenchSingleton.SafeThreadCall(diffPanel, "AddLogMessage", logMessage);
 		}
 	}

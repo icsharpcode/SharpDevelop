@@ -1,154 +1,112 @@
 <Components version="1.0">
   <System.Windows.Forms.UserControl>
     <Name value="XmlUserControl1" />
-    <DockPadding value="" />
     <ClientSize value="{Width=608, Height=472}" />
     <Controls>
       <System.Windows.Forms.Panel>
-        <Name value="panel2" />
-        <Location value="{X=0,Y=203}" />
-        <Size value="{Width=608, Height=269}" />
-        <DockPadding value="" />
-        <TabIndex value="3" />
+        <Name value="panel1" />
+        <Location value="{X=0,Y=0}" />
+        <Size value="{Width=608, Height=196}" />
+        <TabIndex value="0" />
         <Dock value="Fill" />
         <Controls>
           <System.Windows.Forms.Label>
-            <Name value="commentLabel" />
-            <Text value="&amp;Comment:" />
-            <TextAlign value="BottomLeft" />
-            <Anchor value="Top, Left, Right" />
-            <TabIndex value="4" />
-            <Size value="{Width=592, Height=16}" />
-            <Location value="{X=8,Y=8}" />
-          </System.Windows.Forms.Label>
-          <System.Windows.Forms.RichTextBox>
-            <Name value="commentRichTextBox" />
-            <Anchor value="Top, Bottom, Left, Right" />
-            <ReadOnly value="True" />
-            <Size value="{Width=592, Height=236}" />
-            <Location value="{X=8,Y=24}" />
-            <Text value="" />
-            <TabIndex value="5" />
-            <WordWrap value="False" />
-          </System.Windows.Forms.RichTextBox>
-        </Controls>
-      </System.Windows.Forms.Panel>
-      <System.Windows.Forms.Splitter>
-        <Name value="splitter1" />
-        <TabIndex value="1" />
-        <Size value="{Width=608, Height=3}" />
-        <Location value="{X=0,Y=200}" />
-        <Dock value="Top" />
-      </System.Windows.Forms.Splitter>
-      <System.Windows.Forms.Panel>
-        <Name value="panel1" />
-        <Location value="{X=0,Y=0}" />
-        <Size value="{Width=608, Height=200}" />
-        <DockPadding value="" />
-        <TabIndex value="0" />
-        <Dock value="Top" />
-        <Controls>
-          <System.Windows.Forms.Label>
             <Name value="label2" />
+            <Location value="{X=8,Y=0}" />
             <Text value="&amp;Revision history:" />
             <TextAlign value="BottomLeft" />
-            <Anchor value="Top, Left, Right" />
-            <TabIndex value="1" />
             <Size value="{Width=592, Height=16}" />
-            <Location value="{X=8,Y=8}" />
+            <TabIndex value="1" />
+            <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.ListView>
             <Name value="revisionListView" />
+            <Size value="{Width=592, Height=171}" />
+            <TabIndex value="2" />
+            <FullRowSelect value="True" />
             <GridLines value="True" />
             <MultiSelect value="False" />
-            <Anchor value="Top, Bottom, Left, Right" />
-            <TabIndex value="2" />
             <View value="Details" />
-            <FullRowSelect value="True" />
-            <Location value="{X=8,Y=24}" />
-            <Size value="{Width=592, Height=168}" />
             <HideSelection value="False" />
+            <Location value="{X=8,Y=19}" />
+            <Anchor value="Top, Bottom, Left, Right" />
             <Columns>
               <System.Windows.Forms.ColumnHeader>
                 <Name value="columnHeader1" />
                 <Text value="Revision" />
               </System.Windows.Forms.ColumnHeader>
               <System.Windows.Forms.ColumnHeader>
-                <Width value="150" />
                 <Name value="columnHeader2" />
-                <Text value="Date" />
-              </System.Windows.Forms.ColumnHeader>
-              <System.Windows.Forms.ColumnHeader>
-                <Width value="150" />
-                <Name value="columnHeader3" />
+                <Width value="100" />
                 <Text value="Author" />
               </System.Windows.Forms.ColumnHeader>
               <System.Windows.Forms.ColumnHeader>
-                <Width value="180" />
-                <Name value="columnHeader4" />
+                <Width value="120" />
+                <Text value="Date" />
+                <Name value="columnHeader3" />
+              </System.Windows.Forms.ColumnHeader>
+              <System.Windows.Forms.ColumnHeader>
+                <Width value="400" />
                 <Text value="Comment" />
+                <Name value="columnHeader4" />
               </System.Windows.Forms.ColumnHeader>
             </Columns>
           </System.Windows.Forms.ListView>
         </Controls>
       </System.Windows.Forms.Panel>
+      <System.Windows.Forms.Splitter>
+        <Name value="splitter1" />
+        <Location value="{X=0,Y=196}" />
+        <Size value="{Width=608, Height=3}" />
+        <TabIndex value="4" />
+        <Dock value="Bottom" />
+      </System.Windows.Forms.Splitter>
+      <System.Windows.Forms.Panel>
+        <Name value="panel2" />
+        <Location value="{X=8,Y=205}" />
+        <Size value="{Width=499, Height=240}" />
+        <Dock value="Bottom" />
+        <TabIndex value="3" />
+        <Controls>
+          <System.Windows.Forms.ListView>
+            <Name value="changesListView" />
+            <Size value="{Width=483, Height=115}" />
+            <TabIndex value="6" />
+            <View value="Details" />
+            <Location value="{X=8,Y=114}" />
+            <Anchor value="Top, Bottom, Left, Right" />
+            <FullRowSelect value="true" />
+            <Columns>
+              <System.Windows.Forms.ColumnHeader>
+                <Width value="65" />
+                <Text value="Action" />
+                <Name value="actionColumnHeader" />
+              </System.Windows.Forms.ColumnHeader>
+              <System.Windows.Forms.ColumnHeader>
+                <Name value="pathColumnHeader" />
+                <Width value="70" />
+                <Text value="Path" />
+              </System.Windows.Forms.ColumnHeader>
+              <System.Windows.Forms.ColumnHeader>
+                <Name value="copyFromColumnHeader" />
+                <Width value="70" />
+                <Text value="Copy from" />
+              </System.Windows.Forms.ColumnHeader>
+            </Columns>
+          </System.Windows.Forms.ListView>
+          <System.Windows.Forms.RichTextBox>
+            <Name value="commentRichTextBox" />
+            <TabIndex value="5" />
+            <BackColor value="Color [Window]" />
+            <WordWrap value="False" />
+            <Text value="" />
+            <Anchor value="Top, Left, Right" />
+            <Location value="{X=8,Y=6}" />
+            <Size value="{Width=483, Height=102}" />
+            <ReadOnly value="True" />
+          </System.Windows.Forms.RichTextBox>
+        </Controls>
+      </System.Windows.Forms.Panel>
     </Controls>
   </System.Windows.Forms.UserControl>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="150" />
-    <Name value="columnHeader3" />
-    <Text value="Author" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="150" />
-    <Name value="columnHeader2" />
-    <Text value="Date" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Name value="columnHeader1" />
-    <Text value="Revision" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Name value="columnHeader7" />
-    <Text value="Revision" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="150" />
-    <Name value="columnHeader6" />
-    <Text value="Date" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="150" />
-    <Name value="columnHeader5" />
-    <Text value="Date" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="180" />
-    <Name value="columnHeader4" />
-    <Text value="Comment" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="180" />
-    <Name value="columnHeader8" />
-    <Text value="Comment" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="150" />
-    <Name value="columnHeader9" />
-    <Text value="Author" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="180" />
-    <Name value="columnHeader12" />
-    <Text value="Comment" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="150" />
-    <Name value="columnHeader10" />
-    <Text value="Author" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Name value="columnHeader11" />
-    <Text value="Revision" />
-  </System.Windows.Forms.ColumnHeader>
 </Components>

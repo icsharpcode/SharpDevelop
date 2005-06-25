@@ -49,9 +49,11 @@ namespace ICSharpCode.Svn.Commands
 		
 		void FileSaved(object sender, FileNameEventArgs e)
 		{
-			// TODO: Reimplement
-			//ICSharpCode.SharpDevelop.Gui.Pads.ProjectBrowser.ProjectBrowserView pbv = (ICSharpCode.SharpDevelop.Gui.Pads.ProjectBrowser.ProjectBrowserView)WorkbenchSingleton.Workbench.GetPad(typeof(ICSharpCode.SharpDevelop.Gui.Pads.ProjectBrowser.ProjectBrowserView));
-			//pbv.VisitRoot();
+			ProjectBrowserPad pad = ProjectBrowserPad.Instance;
+			if (pad == null) return;
+			FileNode node = pad.ProjectBrowserControl.FindFileNode(e.FileName);
+			if (node == null) return;
+			OverlayIconManager.Enqueue(node);
 		}
 		
 		void FileAdded(object sender, FileEventArgs e)
@@ -70,9 +72,11 @@ namespace ICSharpCode.Svn.Commands
 		{
 //			Console.WriteLine("REMOVE : " + e.FileName);
 			try {
-				SvnClient.Instance.Client.Delete( new string [] {
-					Path.GetFullPath(e.FileName)
-				}, true);
+				if (AddInOptions.AutomaticallyDeleteFiles) {
+					SvnClient.Instance.Client.Delete( new string [] {
+					                                 	Path.GetFullPath(e.FileName)
+					                                 }, true);
+				}
 			} catch (Exception ex) {
 				MessageService.ShowError("File removed exception: " + ex);
 			}
@@ -82,8 +86,8 @@ namespace ICSharpCode.Svn.Commands
 		{
 //			Console.WriteLine("RENAME : " + e.FileName);
 			try {
-				SvnClient.Instance.Client.Move(Path.GetFullPath(e.SourceFile), 
-				                               Revision.Unspecified,
+				SvnClient.Instance.Client.Move(Path.GetFullPath(e.SourceFile),
+				                               Revision.Unspecified, // TODO: Remove this line when upgrading to new NSvn version
 				                               Path.GetFullPath(e.TargetFile),
 				                               true
 				                              );

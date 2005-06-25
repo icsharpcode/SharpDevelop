@@ -40,15 +40,20 @@ namespace ICSharpCode.Svn
 			ControlDictionary["splitter1"].Height = 3;
 			
 			ListViewItem newItem;
-			newItem = new ListViewItem(new string[] { "Base", "" });
+			newItem = new ListViewItem(new string[] { "Base", "", "", "" });
 			newItem.Tag = Revision.Base;
 			Get<ListView>("fromRevision").Items.Add(newItem);
-			newItem = new ListViewItem(new string[] { "Base", "" });
-			newItem.Tag = Revision.Base;
+			newItem.Selected = true;
+			newItem = new ListViewItem(new string[] { "Work", "", "", "" });
+			newItem.Tag = Revision.Working;
 			Get<ListView>("toRevision").Items.Add(newItem);
-			newItem = new ListViewItem(new string[] { "Head", "" });
-			newItem.Tag = Revision.Head;
-			Get<ListView>("toRevision").Items.Add(newItem);
+		}
+		
+		protected override void OnLoad(EventArgs e)
+		{
+			// fix sizing problems
+			Get<ListView>("toRevision").Width -= 13;
+			ControlDictionary["fromRevisionPanel"].Width = ControlDictionary["topPanel"].Width / 2 - 2;
 		}
 		
 		string output = null;
@@ -101,23 +106,31 @@ namespace ICSharpCode.Svn
 			toRevision   = Get<ListView>("toRevision").SelectedItems[0].Tag as Revision;
 			fileName     = Path.GetFullPath(viewContent.FileName);
 			
-			SvnClient.Instance.OperationStart("Diff", new ThreadStart(DoDiffOperation));
+			if (fromRevision.ToString() == toRevision.ToString()) {
+				output = "";
+			} else {
+				SvnClient.Instance.OperationStart("Diff", new ThreadStart(DoDiffOperation));
+			}
 		}
 
 		public void AddLogMessage(LogMessage logMessage)
 		{
 			ListViewItem newItem = new ListViewItem(new string[] {
 			                                        	logMessage.Revision.ToString(),
-			                                        	logMessage.Date.ToString()
+			                                        	logMessage.Author,
+			                                        	logMessage.Date.ToString(),
+			                                        	logMessage.Message
 			                                        });
-			newItem.Tag = logMessage;
+			newItem.Tag = Revision.FromNumber(logMessage.Revision);
 			Get<ListView>("fromRevision").Items.Add(newItem);
 			
 			ListViewItem newItem2 = new ListViewItem(new string[] {
 			                                         	logMessage.Revision.ToString(),
-			                                         	logMessage.Date.ToString()
+			                                         	logMessage.Author,
+			                                         	logMessage.Date.ToString(),
+			                                         	logMessage.Message
 			                                         });
-			newItem2.Tag = logMessage;
+			newItem2.Tag = Revision.FromNumber(logMessage.Revision);
 			Get<ListView>("toRevision").Items.Add(newItem2);
 		}
 	}

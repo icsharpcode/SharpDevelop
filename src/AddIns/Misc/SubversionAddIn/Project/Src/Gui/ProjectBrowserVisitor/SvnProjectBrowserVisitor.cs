@@ -36,26 +36,7 @@ namespace ICSharpCode.Svn
 		
 		public override object Visit(ProjectNode node, object data)
 		{
-			node.BackColor = System.Drawing.Color.Yellow;
-			return node.AcceptChildren(this, data);
-			/*string fileName = node.FileName;
-			NodeStatus nodeStatus = NodeStatus.None;
-			if (fileName != null && fileName.Length > 0) {
-				Status status = client.SingleStatus(Path.GetFullPath(fileName));
-				nodeStatus = GetNodeStatus(status.TextStatus);
-			}
-			if (data != null) {
-				((NodeStatusInformer)data).Inform(nodeStatus);
-			}
-			object back = node.AcceptChildren(this, data);
-			
-			if (data != null) {
-				node.NodeStatus = ((NodeStatusInformer)data).NodeStatus;
-			} else {
-				node.NodeStatus = nodeStatus;
-			}
-			
-			return back;*/
+			return Visit((DirectoryNode)node, data);
 		}
 		
 		public override object Visit(DirectoryNode node, object data)
@@ -65,12 +46,6 @@ namespace ICSharpCode.Svn
 				return node.AcceptChildren(this, data);
 			}
 			return data;
-			/*
-			Status status = client.SingleStatus(Path.GetFullPath(node.FileName));
-			node.NodeStatus = GetNodeStatus(status.TextStatus);
-			if (data != null) {
-				((NodeStatusInformer)data).Inform(node.NodeStatus);
-			}*/
 		}
 		
 		public override object Visit(FileNode node, object data)

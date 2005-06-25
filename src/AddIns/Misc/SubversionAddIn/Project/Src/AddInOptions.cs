@@ -27,8 +27,8 @@ namespace ICSharpCode.Svn
 		public static string DefaultLogMessage {
 			get {
 				return Properties.Get("DefaultLogMessage",
-				                              "# All lines starting with a # will be ignored" + Environment.NewLine +
-				                              "# This template can be modified by using the 'Tools->IDE Options->Source Control->Subversion' panel");
+				                      "# All lines starting with a # will be ignored" + Environment.NewLine +
+				                      "# This template can be modified by using the 'Tools->IDE Options->Source Control->Subversion' panel");
 			}
 			set {
 				Properties.Set("DefaultLogMessage", value);
@@ -41,6 +41,15 @@ namespace ICSharpCode.Svn
 			}
 			set {
 				Properties.Set("AutomaticallyAddFiles", value);
+			}
+		}
+		
+		public static bool AutomaticallyDeleteFiles {
+			get {
+				return Properties.Get("AutomaticallyDeleteFiles", false);
+			}
+			set {
+				Properties.Set("AutomaticallyDeleteFiles", value);
 			}
 		}
 		

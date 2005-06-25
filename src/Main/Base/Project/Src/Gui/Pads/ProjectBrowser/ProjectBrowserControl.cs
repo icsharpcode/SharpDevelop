@@ -101,35 +101,37 @@ namespace ICSharpCode.SharpDevelop.Project
 			CallVisitor(new FileRenameTreeNodeVisitor(e.SourceFile, e.TargetFile));
 		}
 		
-		void SelectFile(ProjectNode projectNode, string fileName)
-		{
-			string relativeName = FileUtility.GetRelativePath(projectNode.Directory, fileName);
-			string file         = Path.GetFileName(relativeName);
-		}
-		
 		public void RefreshView()
 		{
 			// TODO implement refresh.
 		}
 		
+		FileNode FindFileNode(TreeNodeCollection nodes, string fileName)
+		{
+			FileNode fn;
+			foreach (TreeNode node in nodes) {
+				fn = node as FileNode;
+				if (fn != null) {
+					if (FileUtility.IsEqualFileName(fn.FileName, fileName))
+						return fn;
+				}
+				fn = FindFileNode(node.Nodes, fileName);
+				if (fn != null)
+					return fn;
+			}
+			return null;
+		}
+		
+		public FileNode FindFileNode(string fileName)
+		{
+			return FindFileNode(treeView.Nodes, fileName);
+		}
+		
 		public void SelectFile(string fileName)
 		{
-			if (treeView.Nodes.Count == 0) {
-				return;
-			}
-			
-			SolutionNode solutionNode = treeView.Nodes[0] as SolutionNode;
-			if (solutionNode!= null) {
-				foreach (object o in solutionNode.Nodes) {
-					ProjectNode projectNode = o as ProjectNode;
-					if (projectNode != null && projectNode.Project.IsFileInProject(fileName)) {
-						SelectFile(projectNode, fileName);
-						return;
-					}
-				}
-			}
-//			treeView.SelectedNode         = null;
-//			ProjectService.CurrentProject = null;
+			FileNode node = FindFileNode(fileName);
+			if (node != null)
+				treeView.SelectedNode = node;
 		}
 		
 		public void ViewSolution(Solution solution)

@@ -69,7 +69,23 @@ namespace ICSharpCode.Svn
 			return null;
 		}
 		
-		string GetActionString(NotifyAction action)
+		public static string GetActionString(ChangedPathAction action)
+		{
+			switch (action) {
+				case ChangedPathAction.Add:
+					return GetActionString(NotifyAction.CommitAdded);
+				case ChangedPathAction.Delete:
+					return GetActionString(NotifyAction.CommitDeleted);
+				case ChangedPathAction.Modify:
+					return GetActionString(NotifyAction.CommitModified);
+				case ChangedPathAction.Replace:
+					return GetActionString(NotifyAction.CommitReplaced);
+				default:
+					return "unknown";
+			}
+		}
+		
+		public static string GetActionString(NotifyAction action)
 		{
 			switch (action) {
 				case NotifyAction.Add:
@@ -103,8 +119,9 @@ namespace ICSharpCode.Svn
 					return "modified";
 				case NotifyAction.CommitReplaced:
 					return "replaced";
+				default:
+					return "unknown";
 			}
-			return "unknown";
 		}
 		
 		void ReceiveNotification(object sender, NotificationEventArgs e)
