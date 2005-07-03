@@ -37,7 +37,7 @@ namespace VBNetBinding.FormattingStrategy
 		{
 			
 			statements = new ArrayList();
-			statements.Add(new VBStatement("^if.*?then$", "^end ?if$", "End If", 1));
+			statements.Add(new VBStatement("^if.*?(then)?$", "^end ?if$", "End If", 1));
 			statements.Add(new VBStatement("\\bclass \\w+$", "^end class$", "End Class", 1));
 			statements.Add(new VBStatement("\\bnamespace \\w+$", "^end namespace$", "End Namespace", 1));
 			statements.Add(new VBStatement("\\bmodule \\w+$", "^end module$", "End Module", 1));
