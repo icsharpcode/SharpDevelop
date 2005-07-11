@@ -17,10 +17,27 @@ namespace DebuggerLibrary
 			{
 				if (CorType == CorElementType.STRING)
 				{
-					((ICorDebugStringValue)corValue).GetString(NDebugger.pStringLen,
-					                                           out NDebugger.unused,
-					                                           NDebugger.pString);
-					return NDebugger.pStringAsUnicode;
+					uint pStringLenght = 1; // Terminating character NOT included in pStringLenght
+					IntPtr pString = Marshal.AllocHGlobal(2);
+					
+					// For some reason this function does not accept IntPtr.Zero
+					((ICorDebugStringValue)corValue).GetString(pStringLenght,
+															   out pStringLenght,
+					                                           pString);
+					// Re-allocate string buffer
+					Marshal.FreeHGlobal(pString);
+					// Termination null is not included in pStringLenght
+					pStringLenght++;
+					pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
+
+					((ICorDebugStringValue)corValue).GetString(pStringLenght,
+															   out pStringLenght,
+					                                           pString);
+
+					string text = Marshal.PtrToStringUni(pString);
+					Marshal.FreeHGlobal(pString);
+
+					return text;
 				}
 
 				object retValue;

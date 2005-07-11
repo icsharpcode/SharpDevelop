@@ -18,10 +18,11 @@ namespace DebuggerLibrary
 		ICorDebugClass corClass;
 		ICorDebugModule corModule;
 		IMetaDataImport metaData;
-		uint classToken;
-		uint superCallsToken;
 		ICorDebugModule corModuleSuperclass;
 		ObjectVariable baseClass;
+		uint classToken;
+		uint superCallsToken;
+		uint typeDefFlags;
 		string type;
 		
 		public override object Value { 
@@ -55,13 +56,27 @@ namespace DebuggerLibrary
 			corClass.GetModule(out corModule);
 			metaData = new Module(corModule).MetaDataInterface; //TODO
 
+			uint pStringLenght = 0; // Terminating character included in pStringLenght
+			IntPtr pString = IntPtr.Zero;
+			// Get length of string 'type'
 			metaData.GetTypeDefProps(classToken,
-			                         NDebugger.pString,
-			                         NDebugger.pStringLen,
-			                         out NDebugger.unused, // real string lenght
-			                         out NDebugger.unused,
+									 pString,
+									 pStringLenght,
+									 out pStringLenght,
+									 out typeDefFlags,
 			                         out superCallsToken);
-			type = NDebugger.pStringAsUnicode;
+			// Allocate string buffer
+			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
+			// Get properties
+			metaData.GetTypeDefProps(classToken,
+									 pString,
+									 pStringLenght,
+									 out pStringLenght,
+									 out typeDefFlags,
+									 out superCallsToken);
+			type = Marshal.PtrToStringUni(pString);
+			Marshal.FreeHGlobal(pString);
+
 			corModuleSuperclass = corModule;
 		}
 
@@ -82,19 +97,39 @@ namespace DebuggerLibrary
 					break;
 				}
 
+				uint unused;
+				IntPtr unusedPtr = IntPtr.Zero;
+				uint pStringLenght = 0; // Terminating character included in pStringLenght
+				IntPtr pString = IntPtr.Zero;
 				uint attrib;
 				metaData.GetFieldProps(fieldToken,
-				                       out NDebugger.unused,
-			                           NDebugger.pString,
-			                           NDebugger.pStringLen,
-			                           out NDebugger.unused, // real string lenght
+				                       out unused,
+			                           pString,
+									   pStringLenght,
+									   out pStringLenght, // real string lenght
 				                       out attrib,
-				                       IntPtr.Zero,
-				                       out NDebugger.unused,
-				                       out NDebugger.unused,
-				                       out NDebugger.unusedPtr,
-				                       out NDebugger.unused);
-				string name = NDebugger.pStringAsUnicode;
+									   IntPtr.Zero,
+				                       out unused,
+				                       out unused,
+				                       out unusedPtr,
+				                       out unused);
+				// Allocate string buffer
+				pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
+
+				metaData.GetFieldProps(fieldToken,
+									   out unused,
+									   pString,
+									   pStringLenght,
+									   out pStringLenght, // real string lenght
+									   out attrib,
+									   IntPtr.Zero,
+									   out unused,
+									   out unused,
+									   out unusedPtr,
+									   out unused);
+
+				string name = Marshal.PtrToStringUni(pString);
+				Marshal.FreeHGlobal(pString);
 
 				ICorDebugValue innerValue;
 				if ((attrib & (uint)ClassFieldAttribute.fdStatic)!=0)
@@ -137,12 +172,25 @@ namespace DebuggerLibrary
 			// If referencing to external assembly
 			if ((superCallsToken & 0x01000000) != 0)
 			{
+				uint unused;
+				uint pStringLenght = 0; // Terminating character included in pStringLenght
+				IntPtr pString = IntPtr.Zero;
 				metaData.GetTypeRefProps(superCallsToken,
-				                         out NDebugger.unused,
-				                         NDebugger.pString,
-				                         NDebugger.pStringLen,
-				                         out NDebugger.unused); // real string lenght
-				fullTypeName = NDebugger.pStringAsUnicode;
+				                         out unused,
+				                         pString,
+				                         pStringLenght,
+										 out pStringLenght); // real string lenght
+				// Allocate string buffer
+				pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
+
+				metaData.GetTypeRefProps(superCallsToken,
+										 out unused,
+										 pString,
+										 pStringLenght,
+										 out pStringLenght); // real string lenght
+
+				fullTypeName = Marshal.PtrToStringUni(pString);
+				Marshal.FreeHGlobal(pString);
 
 				superCallsToken = 0;
 				foreach (Module m in NDebugger.Instance.Modules)

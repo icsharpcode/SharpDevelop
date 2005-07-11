@@ -108,12 +108,19 @@ namespace DebuggerLibrary
 			pModule.GetMetaDataInterface(ref metaDataInterfaceGuid, out pMetaDataInterface);
 			
 			metaDataInterface = (IMetaDataImport) pMetaDataInterface;
-			
-			pModule.GetName(NDebugger.pStringLen,
-			                out NDebugger.unused, // real string lenght
-			                NDebugger.pString);
-			fullPath = NDebugger.pStringAsUnicode;	
-	
+
+			uint pStringLenght = 0; // Terminating character included in pStringLenght
+			IntPtr pString = IntPtr.Zero;
+			pModule.GetName(pStringLenght,
+							out pStringLenght, // real string lenght
+			                pString);
+			// Allocate string buffer
+			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
+			pModule.GetName(pStringLenght,
+							out pStringLenght, // real string lenght
+			                pString);
+			fullPath = Marshal.PtrToStringUni(pString);
+			Marshal.FreeHGlobal(pString);
             
 			
 			SymBinder symBinder = new SymBinder();

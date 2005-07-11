@@ -51,7 +51,9 @@ namespace DebuggerLibrary
 		}
 		
 		unsafe void Init()
-		{	
+		{
+			uint pStringLenght = 0; // Terminating character included in pStringLenght
+			IntPtr pString = IntPtr.Zero;
 			uint codeRVA;
 			uint implFlags;
 			IntPtr pSigBlob;
@@ -59,15 +61,31 @@ namespace DebuggerLibrary
 			module.MetaDataInterface.GetMethodProps(
 			                              (uint)token.GetToken(),
                                           out parentClassToken,
-                                          NDebugger.pString,
-                                          NDebugger.pStringLen,
-                                          out NDebugger.unused, // real string lenght
+                                          pString,
+                                          pStringLenght,
+										  out pStringLenght, // real string lenght
                                           out attributes,
                                           new IntPtr(&pSigBlob),
                                           out sigBlobSize,
                                           out codeRVA,
                                           out implFlags);
-			name = NDebugger.pStringAsUnicode;
+			// Allocate string buffer
+			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
+
+			module.MetaDataInterface.GetMethodProps(
+			                              (uint)token.GetToken(),
+                                          out parentClassToken,
+                                          pString,
+                                          pStringLenght,
+										  out pStringLenght, // real string lenght
+                                          out attributes,
+                                          new IntPtr(&pSigBlob),
+                                          out sigBlobSize,
+                                          out codeRVA,
+                                          out implFlags);
+
+			name = Marshal.PtrToStringUni(pString);
+			Marshal.FreeHGlobal(pString);
 			
 			SignatureStream sig = new SignatureStream(pSigBlob, sigBlobSize);
 			
@@ -303,23 +321,40 @@ namespace DebuggerLibrary
 					if (paramsFetched == 0) break;
 					
 					ICorDebugValue arg;
-					corILFrame.GetArgument(i, out arg);					
-					
+					corILFrame.GetArgument(i, out arg);
+
+					uint unused;
+					uint pStringLenght = 0; // Terminating character included in pStringLenght
+					IntPtr pString = IntPtr.Zero;
 					uint argPos, attr, type;
-					Module.MetaDataInterface.GetParamProps(
-					                                       paramToken,
-					                                       out NDebugger.unused,
+					Module.MetaDataInterface.GetParamProps(paramToken,
+					                                       out unused,
 					                                       out argPos,
-					                                       NDebugger.pString,
-					                                       NDebugger.pStringLen,
-					                                       out NDebugger.unused, // real string lenght
+					                                       pString,
+					                                       pStringLenght,
+														   out pStringLenght, // real string lenght
 					                                       out attr,
 					                                       out type,
 					                                       IntPtr.Zero,
-					                                       out NDebugger.unused);
+					                                       out unused);
+					// Allocate string buffer
+					pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
 					
+					Module.MetaDataInterface.GetParamProps(paramToken,
+					                                       out unused,
+					                                       out argPos,
+					                                       pString,
+					                                       pStringLenght,
+														   out pStringLenght, // real string lenght
+					                                       out attr,
+					                                       out type,
+					                                       IntPtr.Zero,
+					                                       out unused);
 
-					collection.Add(VariableFactory.CreateVariable(arg, NDebugger.pStringAsUnicode));
+					string name = Marshal.PtrToStringUni(pString);
+					Marshal.FreeHGlobal(pString);
+
+					collection.Add(VariableFactory.CreateVariable(arg, name));
 				}
 				
 			// local variables

@@ -26,20 +26,6 @@ namespace DebuggerLibrary
 			}
 		}
 
-
-		// Some variables that are used to get strings
-		// They are used all over the library and
-		// they are here so I don't have to decare them every time I need them
-		static internal uint unused;
-		static internal IntPtr unusedPtr = IntPtr.Zero;
-		       internal const int pStringLen = 65536;
-		static internal IntPtr pString = Marshal.AllocHGlobal(pStringLen*2);
-		static internal string pStringAsUnicode { 
-			get { 
-				return Marshal.PtrToStringUni(pString); 
-			} 
-		}
-
 		static ICorDebug                  corDebug;
 		static ManagedCallback            managedCallback;
 		static ManagedCallbackProxy       managedCallbackProxy;
@@ -94,7 +80,6 @@ namespace DebuggerLibrary
 		~NDebugger() //TODO
 		{
 			//corDebug.Terminate();
-			Marshal.FreeHGlobal(pString);
 		}
 
 		static internal void InitDebugger()
