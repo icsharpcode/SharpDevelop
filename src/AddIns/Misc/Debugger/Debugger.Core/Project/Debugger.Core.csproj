@@ -82,9 +82,19 @@
     <Compile Include="Src\Variables\Variable.cs" />
     <Compile Include="Src\Variables\VariableCollection.cs" />
     <Compile Include="Src\Variables\VariableFactory.cs" />
+    <Compile Include="Src\RemotingSinks\InvokeOnSTASink\InvokeOnSTAServerChannelSinkProvider.cs" />
+    <Compile Include="Src\RemotingSinks\InvokeOnSTASink\InvokeOnSTAClientChannelSink.cs" />
+    <Compile Include="Src\RemotingSinks\InvokeOnSTASink\InvokeOnSTAClientChannelSinkProvider.cs" />
+    <Compile Include="Src\RemotingSinks\InvokeOnSTASink\InvokeOnSTAServerChannelSink.cs" />
+    <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\PrivateEventHandlersClientChannelSinkProvider.cs" />
+    <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\EventForwarder.cs" />
+    <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\PrivateEventHandlersClientChannelSink.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />
+    <Folder Include="Src\RemotingSinks" />
+    <Folder Include="Src\RemotingSinks\InvokeOnSTASink" />
+    <Folder Include="Src\RemotingSinks\PrivateEventHandlersSink" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

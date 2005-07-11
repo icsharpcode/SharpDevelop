@@ -1,0 +1,14 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "InvokeOnSTASink", "InvokeOnSTASink\InvokeOnSTASink.csproj", "{068578FE-412A-48DC-B90C-B7D2B8593DB4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PrivateEventHandlersSink", "PrivateEventHandlersSink\PrivateEventHandlersSink.csproj", "{6AF77F6A-775A-45DF-97B8-AAD76CD4023B}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestClient", "TestClient\TestClient.csproj", "{2DDD7699-76DC-492D-85A6-BB3B5CBB5FC3}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestCommonTypes", "TestCommonTypes\TestCommonTypes.csproj", "{C2A2838E-E87F-47C3-9440-556875E1BB5E}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TestServer", "TestServer\TestServer.csproj", "{1EE49A1D-7098-4B75-B174-B36C803EA9EB}"
+EndProject
+Global
+EndGlobal
