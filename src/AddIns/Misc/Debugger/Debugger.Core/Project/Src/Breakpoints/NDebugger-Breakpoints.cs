@@ -80,22 +80,22 @@ namespace DebuggerLibrary
 
 		public Breakpoint AddBreakpoint(SourcecodeSegment segment)
 		{
-			return AddBreakpoint(new Breakpoint(segment));
+			return AddBreakpoint(new Breakpoint(this, segment));
 		}
 
 		public Breakpoint AddBreakpoint(int line)
 		{
-			return AddBreakpoint(new Breakpoint(line));
+			return AddBreakpoint(new Breakpoint(this, line));
 		}
 
 		public Breakpoint AddBreakpoint(string sourceFilename, int line)
 		{
-			return AddBreakpoint(new Breakpoint(sourceFilename, line));
+			return AddBreakpoint(new Breakpoint(this, sourceFilename, line));
 		}
 
 		public Breakpoint AddBreakpoint(string sourceFilename, int line, int column)
 		{
-			return AddBreakpoint(new Breakpoint(sourceFilename, line, column));
+			return AddBreakpoint(new Breakpoint(this, sourceFilename, line, column));
 		}
 
 		public void RemoveBreakpoint(Breakpoint breakpoint)  

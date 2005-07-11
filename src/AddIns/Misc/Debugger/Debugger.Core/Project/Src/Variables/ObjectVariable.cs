@@ -38,13 +38,13 @@ namespace DebuggerLibrary
 		}
 
 
-		internal unsafe ObjectVariable(ICorDebugValue corValue, string name):base(corValue, name)
+		internal unsafe ObjectVariable(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
 		{
 			((ICorDebugObjectValue)this.corValue).GetClass(out corClass);
 			InitObjectVariable();
 		}
 
-		internal unsafe ObjectVariable(ICorDebugValue corValue, string name, ICorDebugClass corClass):base(corValue, name)
+		internal unsafe ObjectVariable(NDebugger debugger, ICorDebugValue corValue, string name, ICorDebugClass corClass):base(debugger, corValue, name)
 		{
 			this.corClass = corClass;
 			InitObjectVariable();
@@ -144,7 +144,7 @@ namespace DebuggerLibrary
 					((ICorDebugObjectValue)corValue).GetFieldValue(corClass, fieldToken, out innerValue);
 				}
 				
-				subVariables.Add(VariableFactory.CreateVariable(innerValue, name));
+				subVariables.Add(VariableFactory.CreateVariable(debugger, innerValue, name));
 			}
 
 			return subVariables;
@@ -193,7 +193,7 @@ namespace DebuggerLibrary
 				Marshal.FreeHGlobal(pString);
 
 				superCallsToken = 0;
-				foreach (Module m in NDebugger.Instance.Modules)
+				foreach (Module m in debugger.Modules)
 				{
 					// TODO: Does not work for nested
 					//       see FindTypeDefByName in dshell.cpp
@@ -219,7 +219,7 @@ namespace DebuggerLibrary
 			{
 				ICorDebugClass superClass;
 				corModuleSuperclass.GetClassFromToken(superCallsToken, out superClass);
-				return new ObjectVariable(corValue, Name, superClass);
+				return new ObjectVariable(debugger, corValue, Name, superClass);
 			}
 		}
 	}

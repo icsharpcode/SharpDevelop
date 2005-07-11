@@ -13,6 +13,7 @@ namespace DebuggerLibrary
 {	
 	public class Exception
 	{
+		NDebugger         debugger;
 		Thread            thread;
 		ICorDebugValue    corValue;
 		Variable          runtimeVariable;
@@ -23,13 +24,14 @@ namespace DebuggerLibrary
 		string            type;
 		string            message;
 	
-		internal Exception(Thread thread)
+		internal Exception(NDebugger debugger, Thread thread)
 		{
 			creationTime = DateTime.Now;
+			this.debugger = debugger;
 			this.thread = thread;
 			thread.CorThread.GetCurrentException(out corValue);
 			exceptionType = thread.CurrentExceptionType;
-			runtimeVariable    = VariableFactory.CreateVariable(corValue, "$exception");
+			runtimeVariable    = VariableFactory.CreateVariable(debugger, corValue, "$exception");
 			runtimeVariableException = runtimeVariable as ObjectVariable;
 			if (runtimeVariableException != null) {
 				while (runtimeVariableException.Type != "System.Exception") {

@@ -10,13 +10,13 @@ namespace DebuggerLibrary
 {
 	internal class VariableFactory
 	{
-		public static Variable CreateVariable(ICorDebugValue corValue, string name)
+		public static Variable CreateVariable(NDebugger debugger, ICorDebugValue corValue, string name)
 		{
 			CorElementType type = Variable.GetCorType(corValue);
 
 			if (Variable.DereferenceUnbox(corValue) == null)
 			{
-				return new NullRefVariable(corValue, name);
+				return new NullRefVariable(debugger, corValue, name);
 			}
 
 			switch(type)
@@ -36,19 +36,19 @@ namespace DebuggerLibrary
 				case CorElementType.I:
 				case CorElementType.U:
 				case CorElementType.STRING:
-					return new BuiltInVariable(corValue, name);
+					return new BuiltInVariable(debugger, corValue, name);
 
 				case CorElementType.ARRAY:
 				case CorElementType.SZARRAY: // Short-cut for single dimension zero lower bound array
-					return new ArrayVariable(corValue, name);
+					return new ArrayVariable(debugger, corValue, name);
 
 				case CorElementType.VALUETYPE:
 				case CorElementType.CLASS:
 				case CorElementType.OBJECT: // Short-cut for Class "System.Object"
-					return new ObjectVariable(corValue, name);
+					return new ObjectVariable(debugger, corValue, name);
 						
 				default: // Unknown type
-					return new UnknownVariable(corValue, name);
+					return new UnknownVariable(debugger, corValue, name);
 			}
 		}		
 	}

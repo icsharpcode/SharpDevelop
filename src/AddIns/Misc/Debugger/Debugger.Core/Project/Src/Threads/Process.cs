@@ -14,14 +14,17 @@ namespace DebuggerLibrary
 {
 	public class Process 
 	{
-		ICorDebugProcess           corProcess;
+		NDebugger debugger;
 
-		Thread                     mainThread;
-		Thread                     currentThread;
-		bool                       isProcessRunning;
+		ICorDebugProcess corProcess;
 
-		internal Process(ICorDebugProcess corProcess)
+		Thread mainThread;
+		Thread currentThread;
+		bool isProcessRunning;
+
+		internal Process(NDebugger debugger, ICorDebugProcess corProcess)
 		{
+			this.debugger = debugger;
 			this.corProcess = corProcess;
 		}
 
@@ -43,8 +46,8 @@ namespace DebuggerLibrary
 				if (mainThread == null) {
 					mainThread = value;
 				}
-				if (NDebugger.Instance.ManagedCallback.HandlingCallback == false) {
-					NDebugger.Instance.OnDebuggingPaused(PausedReason.CurrentThreadChanged);
+				if (debugger.ManagedCallback.HandlingCallback == false) {
+					debugger.OnDebuggingPaused(PausedReason.CurrentThreadChanged);
 				}
 			}
 		}
@@ -83,17 +86,17 @@ namespace DebuggerLibrary
 			} 
 		}
 		
-		static public Process CreateProcess(string filename, string workingDirectory, string arguments)
+		static public Process CreateProcess(NDebugger debugger, string filename, string workingDirectory, string arguments)
 		{
 			MTA2STA m2s = new MTA2STA();
 			Process createdProcess = null;
-			createdProcess = (Process)m2s.CallInSTA(typeof(Process), "StartInternal", new Object[] {filename, workingDirectory, arguments});
+			createdProcess = (Process)m2s.CallInSTA(typeof(Process), "StartInternal", new Object[] {debugger, filename, workingDirectory, arguments});
 			return createdProcess;
 		}
 
-		static public unsafe Process StartInternal(string filename, string workingDirectory, string arguments)
+		static public unsafe Process StartInternal(NDebugger debugger, string filename, string workingDirectory, string arguments)
 		{
-			NDebugger.Instance.TraceMessage("Executing " + filename);
+			debugger.TraceMessage("Executing " + filename);
 
 			_SECURITY_ATTRIBUTES secAttr = new _SECURITY_ATTRIBUTES();
 			secAttr.bInheritHandle = 0;
@@ -108,7 +111,7 @@ namespace DebuggerLibrary
 
 			fixed (uint* pprocessStartupInfo = processStartupInfo)
 				fixed (uint* pprocessInfo = processInfo)
-					NDebugger.Instance.CorDebug.CreateProcess(
+					debugger.CorDebug.CreateProcess(
 						filename,   // lpApplicationName
 						arguments,                       // lpCommandLine
 						ref secAttr,                       // lpProcessAttributes
@@ -123,7 +126,7 @@ namespace DebuggerLibrary
 						out outProcess      // ppProcess
 						);
 
-			return new Process(outProcess);
+			return new Process(debugger, outProcess);
 		}
 
 		public void Break()
@@ -136,8 +139,8 @@ namespace DebuggerLibrary
             corProcess.Stop(5000); // TODO: Hardcoded value
 
 			isProcessRunning = false;
-			NDebugger.Instance.OnDebuggingPaused(PausedReason.Break);
-			NDebugger.Instance.OnIsProcessRunningChanged();
+			debugger.OnDebuggingPaused(PausedReason.Break);
+			debugger.OnIsProcessRunningChanged();
 		}
 
 		public void StepInto()
@@ -175,13 +178,13 @@ namespace DebuggerLibrary
 			}
 
 			bool abort = false;
-			NDebugger.Instance.OnDebuggingIsResuming(ref abort);
+			debugger.OnDebuggingIsResuming(ref abort);
 			if (abort == true) return;
 
 			isProcessRunning = true;
-			if (NDebugger.Instance.ManagedCallback.HandlingCallback == false) {
-				NDebugger.Instance.OnDebuggingResumed();
-				NDebugger.Instance.OnIsProcessRunningChanged();
+			if (debugger.ManagedCallback.HandlingCallback == false) {
+				debugger.OnDebuggingResumed();
+				debugger.OnIsProcessRunningChanged();
 			}
 
 			corProcess.Continue(0);

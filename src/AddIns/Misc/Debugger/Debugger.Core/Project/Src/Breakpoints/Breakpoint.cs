@@ -13,6 +13,8 @@ namespace DebuggerLibrary
 {
 	public class Breakpoint
 	{
+		NDebugger debugger;
+
 		readonly SourcecodeSegment sourcecodeSegment;
 		
 		bool hadBeenSet = false;
@@ -82,34 +84,39 @@ namespace DebuggerLibrary
 				BreakpointHit(this, new BreakpointEventArgs(this));
 		}
 
-		public Breakpoint(SourcecodeSegment segment)
+		public Breakpoint(NDebugger debugger, SourcecodeSegment segment)
 		{
+			this.debugger = debugger;
 			sourcecodeSegment = segment;
 		}
 
-		public Breakpoint(int line)
+		public Breakpoint(NDebugger debugger, int line)
 		{
+			this.debugger = debugger;
 			sourcecodeSegment = new SourcecodeSegment();
 			sourcecodeSegment.StartLine = line;
 		}
 
-		public Breakpoint(string sourceFilename, int line)
+		public Breakpoint(NDebugger debugger, string sourceFilename, int line)
 		{
+			this.debugger = debugger;
 			sourcecodeSegment = new SourcecodeSegment();
 			sourcecodeSegment.SourceFullFilename = sourceFilename;
 			sourcecodeSegment.StartLine = line;
 		}
 
-		public Breakpoint(string sourceFilename, int line, int column)
+		public Breakpoint(NDebugger debugger, string sourceFilename, int line, int column)
 		{
+			this.debugger = debugger;
 			sourcecodeSegment = new SourcecodeSegment();
 			sourcecodeSegment.SourceFullFilename = sourceFilename;
 			sourcecodeSegment.StartLine = line;
 			sourcecodeSegment.StartColumn = column;
 		}
 
-		public Breakpoint(string sourceFilename, int line, int column, bool enabled)
+		public Breakpoint(NDebugger debugger, string sourceFilename, int line, int column, bool enabled)
 		{
+			this.debugger = debugger;
 			sourcecodeSegment = new SourcecodeSegment();
 			sourcecodeSegment.SourceFullFilename = sourceFilename;
 			sourcecodeSegment.StartLine = line;
@@ -161,8 +168,8 @@ namespace DebuggerLibrary
 			{
 				try 
 				{
-					module = NDebugger.Instance.GetModule(seg.ModuleFilename);
-					symReader = NDebugger.Instance.GetModule(seg.ModuleFilename).SymReader;
+					module = debugger.GetModule(seg.ModuleFilename);
+					symReader = debugger.GetModule(seg.ModuleFilename).SymReader;
 					symDoc = symReader.GetDocument(seg.SourceFullFilename,Guid.Empty,Guid.Empty,Guid.Empty);
 				}
 				catch {}
@@ -170,7 +177,7 @@ namespace DebuggerLibrary
 
 			// search all modules
 			if (symDoc == null) {
-				foreach (Module m in NDebugger.Instance.Modules) {
+				foreach (Module m in debugger.Modules) {
 					module    = m;
 					symReader = m.SymReader;
 					if (symReader == null) {

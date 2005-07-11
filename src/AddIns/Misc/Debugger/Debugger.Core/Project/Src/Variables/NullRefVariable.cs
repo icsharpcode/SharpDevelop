@@ -33,7 +33,7 @@ namespace DebuggerLibrary
 			}
 		}
 
-		internal unsafe NullRefVariable(ICorDebugValue corValue, string name):base(corValue, name)
+		internal unsafe NullRefVariable(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
 		{
 			
 		}

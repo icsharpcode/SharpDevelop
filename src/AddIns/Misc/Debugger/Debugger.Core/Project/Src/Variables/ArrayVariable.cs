@@ -51,7 +51,7 @@ namespace DebuggerLibrary
 		}
 
 
-		internal unsafe ArrayVariable(ICorDebugValue corValue, string name):base(corValue, name)
+		internal unsafe ArrayVariable(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
 		{
             corArrayValue = (ICorDebugArrayValue)this.corValue;
 			uint corElementTypeRaw;
@@ -98,7 +98,7 @@ namespace DebuggerLibrary
 				fixed (void* pIndices = indices)
 					corArrayValue.GetElement(rank, new IntPtr(pIndices), out element);
 
-				return VariableFactory.CreateVariable(element, elementName);
+				return VariableFactory.CreateVariable(debugger, element, elementName);
 			}
 		}
 

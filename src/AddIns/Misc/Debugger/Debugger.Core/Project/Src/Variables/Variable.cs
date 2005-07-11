@@ -12,6 +12,8 @@ namespace DebuggerLibrary
 {
 	public abstract class Variable
 	{
+		protected NDebugger debugger;
+
 		readonly string name;
 		protected ICorDebugValue corValue;
 		VariableCollection subVariables;
@@ -50,8 +52,9 @@ namespace DebuggerLibrary
 			} 
 		}
 
-		internal Variable(ICorDebugValue corValue, string name)
+		internal Variable(NDebugger debugger, ICorDebugValue corValue, string name)
 		{
+			this.debugger = debugger;
 			if (corValue != null) {
 				this.corValue = DereferenceUnbox(corValue);
 			}

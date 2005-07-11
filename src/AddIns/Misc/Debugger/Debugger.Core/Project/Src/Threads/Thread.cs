@@ -14,6 +14,10 @@ namespace DebuggerLibrary
 {
 	public partial class Thread
 	{
+		NDebugger debugger;
+
+		ICorDebugThread corThread;
+
 		internal ExceptionType currentExceptionType;
 
 		uint id;
@@ -21,8 +25,6 @@ namespace DebuggerLibrary
 		ThreadPriority lastPriority = ThreadPriority.Normal;
 		string lastName = string.Empty;
 		bool hasBeenLoaded = false;
-		
-		readonly ICorDebugThread corThread;
 
 		internal bool HasBeenLoaded {
 			get {
@@ -54,15 +56,16 @@ namespace DebuggerLibrary
 			}
 		}
 
-		internal Thread(ICorDebugThread corThread)
+		internal Thread(NDebugger debugger, ICorDebugThread corThread)
 		{
+			this.debugger = debugger;
 			this.corThread = corThread;
 			corThread.GetID(out id);
 		}
 
 		public bool Suspended {
 			get	{
-				if (NDebugger.Instance.IsProcessRunning) return lastSuspendedState;
+				if (debugger.IsProcessRunning) return lastSuspendedState;
 
 				CorDebugThreadState state;
 				corThread.GetDebugState(out state);
@@ -77,7 +80,7 @@ namespace DebuggerLibrary
 		public ThreadPriority Priority {
 			get {
 				if (!HasBeenLoaded) return lastPriority;
-				if (NDebugger.Instance.IsProcessRunning) return lastPriority;
+				if (debugger.IsProcessRunning) return lastPriority;
 
 				Variable runTimeVar = RuntimeVariable;
 				if (runTimeVar is NullRefVariable) return ThreadPriority.Normal;
@@ -90,10 +93,10 @@ namespace DebuggerLibrary
 		public Variable RuntimeVariable {
 			get {
 				if (!HasBeenLoaded) throw new UnableToGetPropertyException(this, "runtimeVariable", "Thread has not started jet");
-				if (NDebugger.Instance.IsProcessRunning) throw new UnableToGetPropertyException(this, "runtimeVariable", "Process is running");
+				if (debugger.IsProcessRunning) throw new UnableToGetPropertyException(this, "runtimeVariable", "Process is running");
 				ICorDebugValue corValue;
 				corThread.GetObject(out corValue);
-				return VariableFactory.CreateVariable(corValue, "Thread" + ID);
+				return VariableFactory.CreateVariable(debugger, corValue, "Thread" + ID);
 			}
 		}
 
@@ -101,7 +104,7 @@ namespace DebuggerLibrary
 		public string Name {
 			get	{
 				if (!HasBeenLoaded) return lastName;
-				if (NDebugger.Instance.IsProcessRunning) return lastName;
+				if (debugger.IsProcessRunning) return lastName;
 				Variable runtimeVar  = RuntimeVariable;
 				if (runtimeVar is NullRefVariable) return lastName;
 				Variable runtimeName = runtimeVar.SubVariables["m_Name"];
@@ -129,7 +132,7 @@ namespace DebuggerLibrary
 
 		public Exception CurrentException {
 			get {
-				return new Exception(this);
+				return new Exception(debugger, this);
 			}
 		}
 
@@ -137,8 +140,8 @@ namespace DebuggerLibrary
 			get {
 				List<Function> callstack = new List<Function>();
 
-				if (!NDebugger.Instance.IsDebugging) return callstack;
-				if (NDebugger.Instance.IsProcessRunning) return callstack;
+				if (!debugger.IsDebugging) return callstack;
+				if (debugger.IsProcessRunning) return callstack;
 
 				ICorDebugChainEnum corChainEnum;
 				corThread.EnumerateChains(out corChainEnum);
@@ -164,7 +167,7 @@ namespace DebuggerLibrary
 						if (framesFetched == 0) break; // We are done
 
                         try {
-                            callstack.Add(new Function(corFrames[0]));					                                                
+                            callstack.Add(new Function(debugger, corFrames[0]));					                                                
                         }
                         catch (COMException) {
 							//System.Diagnostics.Debug.Fail("Error during adding function to callstack");
@@ -177,7 +180,7 @@ namespace DebuggerLibrary
 		
 		public Function CurrentFunction {
 			get {
-				if (NDebugger.Instance.IsProcessRunning) throw new CurrentFunctionNotAviableException();
+				if (debugger.IsProcessRunning) throw new CurrentFunctionNotAviableException();
 				ICorDebugFrame corFrame;
 				corThread.GetActiveFrame(out corFrame);
 				if (corFrame == null) {
@@ -188,7 +191,7 @@ namespace DebuggerLibrary
 						throw new CurrentFunctionNotAviableException();
 					}
 				}
-				return new Function(corFrame);
+				return new Function(debugger, corFrame);
 			}
 		}
 		

@@ -18,10 +18,15 @@ namespace DebuggerLibrary
 {
 	class ManagedCallback
 	{
-		NDebugger debugger = NDebugger.Instance;
+		NDebugger debugger;
+
 		bool handlingCallback = false;
 		public event CorDebugEvalEventHandler CorDebugEvalCompleted;
 
+		public ManagedCallback(NDebugger debugger)
+		{
+			this.debugger = debugger;
+		}
 		
 		public bool HandlingCallback {
 			get {

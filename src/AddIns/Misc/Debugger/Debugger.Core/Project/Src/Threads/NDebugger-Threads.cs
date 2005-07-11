@@ -64,7 +64,7 @@ namespace DebuggerLibrary
 
 		internal void AddThread(ICorDebugThread corThread)
 		{
-			AddThread(new Thread(corThread));
+			AddThread(new Thread(this, corThread));
 		}
 
 		internal void RemoveThread(Thread thread)

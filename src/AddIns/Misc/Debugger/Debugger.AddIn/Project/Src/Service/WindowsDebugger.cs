@@ -134,12 +134,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void RestoreNDebuggerBreakpoints(object sender, EventArgs e)
 		{
-			NDebugger.Instance.ClearBreakpoints();
+			ClearBreakpoints();
 			foreach (ICSharpCode.Core.Breakpoint b in DebuggerService.Breakpoints) {
-				DebuggerLibrary.Breakpoint newBreakpoint = new DebuggerLibrary.Breakpoint(b.FileName, b.LineNumber, 0, b.IsEnabled); 
+				DebuggerLibrary.Breakpoint newBreakpoint = new DebuggerLibrary.Breakpoint(this, b.FileName, b.LineNumber, 0, b.IsEnabled); 
 				newBreakpoint.Tag = b;
 				b.Tag = newBreakpoint;
-				NDebugger.Instance.AddBreakpoint(newBreakpoint); 
+				AddBreakpoint(newBreakpoint); 
 			}
 		}
 

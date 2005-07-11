@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 		private void RefreshAllItems()
 		{
-			foreach (Thread t in NDebugger.Instance.Threads) {
+			foreach (Thread t in debugger.Threads) {
 				RefreshThread(this, new ThreadEventArgs(t));
 			}
 		}

@@ -14,6 +14,8 @@ namespace DebuggerLibrary
 {
 	class Eval 
 	{
+		NDebugger debugger;
+
 		ICorDebugEval     corEval;
 		ICorDebugFunction corFunction;
 		ICorDebugValue[]  args;
@@ -28,11 +30,12 @@ namespace DebuggerLibrary
 			}
 		}		
 		
-		public Eval(ICorDebugFunction corFunction, ICorDebugValue[] args)
+		public Eval(NDebugger debugger, ICorDebugFunction corFunction, ICorDebugValue[] args)
 		{
+			this.debugger = debugger;
 			this.corFunction = corFunction;
 			this.args = args;
-			NDebugger.Instance.ManagedCallback.CorDebugEvalCompleted += new CorDebugEvalEventHandler(CorDebugEvalCompleted);
+			debugger.ManagedCallback.CorDebugEvalCompleted += new CorDebugEvalEventHandler(CorDebugEvalCompleted);
 		}
 		
 		/// <summary>
@@ -53,15 +56,15 @@ namespace DebuggerLibrary
 		/// </summary>
 		public void AsyncPerformEval()
 		{
-			if (NDebugger.Instance.IsProcessRunning) {
+			if (debugger.IsProcessRunning) {
 				throw new DebuggerException("Debugger must be paused");
 			}
 
-			NDebugger.Instance.CurrentThread.CorThread.CreateEval(out corEval);
+			debugger.CurrentThread.CorThread.CreateEval(out corEval);
 			
 			corEval.CallFunction(corFunction, (uint)args.Length, args);
 
-			NDebugger.Instance.Continue();
+			debugger.Continue();
 		}
 		
 		public ICorDebugValue GetResult()

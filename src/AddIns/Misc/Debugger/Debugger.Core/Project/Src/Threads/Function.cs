@@ -16,6 +16,8 @@ namespace DebuggerLibrary
 {
 	public class Function
 	{	
+		NDebugger debugger;
+
 		string name;
 		Module module;
 		SymbolToken token;
@@ -36,8 +38,9 @@ namespace DebuggerLibrary
 			} 
 		}
 	
-		internal unsafe Function(ICorDebugFrame corFrame) 
+		internal unsafe Function(NDebugger debugger, ICorDebugFrame corFrame) 
 		{
+			this.debugger = debugger;
 			this.corFrame = corFrame;
 			corFrame.GetFunction(out corFunction);
             uint functionToken;
@@ -45,7 +48,7 @@ namespace DebuggerLibrary
             this.token = new SymbolToken((int)functionToken);
 			ICorDebugModule corModule;
 			corFunction.GetModule(out corModule);
-			module = NDebugger.Instance.GetModule(corModule);
+			module = debugger.GetModule(corModule);
 
 			Init();
 		}
@@ -144,7 +147,7 @@ namespace DebuggerLibrary
 			corFrame.CreateStepper(out stepper);
 			stepper.StepOut();
 
-			NDebugger.Instance.Continue();
+			debugger.Continue();
 		}
 
 		private unsafe void Step(bool stepIn)
@@ -169,7 +172,7 @@ namespace DebuggerLibrary
 				stepper.StepRange(stepIn?1:0, (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
 			}
 
-			NDebugger.Instance.Continue();
+			debugger.Continue();
 		}
 		
 		/// <summary>
@@ -305,7 +308,7 @@ namespace DebuggerLibrary
 				if (!isStatic) {
 					corILFrame.GetArgument(0, out argThis);
 				}
-				collection = new ObjectVariable(argThis, "this", corClass).SubVariables;
+				collection = new ObjectVariable(debugger, argThis, "this", corClass).SubVariables;
 				
 			// arguments
 				ICorDebugValueEnum corValueEnum;
@@ -354,7 +357,7 @@ namespace DebuggerLibrary
 					string name = Marshal.PtrToStringUni(pString);
 					Marshal.FreeHGlobal(pString);
 
-					collection.Add(VariableFactory.CreateVariable(arg, name));
+					collection.Add(VariableFactory.CreateVariable(debugger, arg, name));
 				}
 				
 			// local variables
@@ -430,7 +433,7 @@ namespace DebuggerLibrary
 		{
 			ICorDebugValue runtimeVar;
 			corILFrame.GetLocalVariable((uint)symVar.AddressField1, out runtimeVar);
-			collection.Add(VariableFactory.CreateVariable(runtimeVar, symVar.Name));
+			collection.Add(VariableFactory.CreateVariable(debugger, runtimeVar, symVar.Name));
 		}
 	}
 }

@@ -15,20 +15,6 @@ namespace DebuggerLibrary
 {
 	public partial class NDebugger
 	{
-		static NDebugger instance = null;
-
-		public static NDebugger Instance {
-			get {
-				if (instance == null) {
-					throw new System.Exception("Create instance of NDebugger first");
-				}
-				return instance;
-			}
-			set {
-				instance = value;
-			}
-		}
-
 		ICorDebug                  corDebug;
 		ManagedCallback            managedCallback;
 		ManagedCallbackProxy       managedCallbackProxy;
@@ -74,12 +60,6 @@ namespace DebuggerLibrary
 
 		public NDebugger()
 		{
-			if (instance != null) {
-				throw new System.Exception("You can create only one instance of NDebugger at the moment.");
-			} else {
-				instance = this;
-			}
-
 			InitDebugger();
 			ResetEnvironment();
 
@@ -101,7 +81,7 @@ namespace DebuggerLibrary
             NativeMethods.CreateDebuggingInterfaceFromVersion(3, sb.ToString(), out corDebug);
 
 			//corDebug              = new CorDebugClass();
-			managedCallback       = new ManagedCallback();
+			managedCallback       = new ManagedCallback(this);
 			managedCallbackProxy  = new ManagedCallbackProxy(managedCallback);
 
 			corDebug.Initialize();
@@ -262,7 +242,7 @@ namespace DebuggerLibrary
 		
 		public void Start(string filename, string workingDirectory, string arguments)		
 		{
-			CurrentProcess = Process.CreateProcess(filename, workingDirectory, arguments);
+			CurrentProcess = Process.CreateProcess(this, filename, workingDirectory, arguments);
 		}
 
 

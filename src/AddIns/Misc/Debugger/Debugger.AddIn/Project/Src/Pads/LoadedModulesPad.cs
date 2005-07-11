@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			information.Text  = StringParser.Parse("${res:MainWindow.Windows.Debug.InformationColumn}");
 
             loadedModulesList.Items.Clear();
-            foreach(Module m in NDebugger.Instance.Modules) {
+            foreach(Module m in debugger.Modules) {
                 AddModule(this, new ModuleEventArgs(m));
             }
 		}

@@ -23,7 +23,7 @@ namespace DebuggerLibrary
 			} 
 		}
 
-		internal unsafe UnknownVariable(ICorDebugValue corValue, string name):base(corValue, name)
+		internal unsafe UnknownVariable(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
 		{
 			
 		}

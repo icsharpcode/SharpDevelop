@@ -32,9 +32,6 @@ namespace DebuggerLibrary
 		
 		static public void PerformNextEval()
 		{
-			if (NDebugger.Instance.IsProcessRunning) {
-				return;
-			}
 			if (waitingEvals.Count == 0) {
 				return;
 			}

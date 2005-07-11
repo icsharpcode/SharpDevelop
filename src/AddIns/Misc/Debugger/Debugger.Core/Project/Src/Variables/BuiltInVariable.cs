@@ -66,7 +66,7 @@ namespace DebuggerLibrary
 			} 
 		}
 
-		internal BuiltInVariable(ICorDebugValue corValue, string name):base(corValue, name)
+		internal BuiltInVariable(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
 		{
 		}
 	}
