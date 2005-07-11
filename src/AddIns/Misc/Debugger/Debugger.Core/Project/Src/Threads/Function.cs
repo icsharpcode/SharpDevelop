@@ -144,7 +144,7 @@ namespace DebuggerLibrary
 			corFrame.CreateStepper(out stepper);
 			stepper.StepOut();
 
-			NDebugger.Continue();
+			NDebugger.Instance.Continue();
 		}
 
 		private unsafe void Step(bool stepIn)
@@ -167,9 +167,9 @@ namespace DebuggerLibrary
 
 			fixed (int* ranges = nextSt.StepRanges) {
 				stepper.StepRange(stepIn?1:0, (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
-			}  
+			}
 
-			NDebugger.Continue();
+			NDebugger.Instance.Continue();
 		}
 		
 		/// <summary>

@@ -22,11 +22,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class ExceptionHistoryPad : AbstractPadContent
 	{
+		WindowsDebugger debugger;
+
 		ListView  exceptionHistoryList;
-		
-		//
-		//WindowsDebugger DebuggerService = (WindowsDebugger)((DebuggerService)ServiceManager.Services.GetService(typeof(DebuggerService))).CurrentDebugger;
-        WindowsDebugger debugger;
 		
 		ColumnHeader time      = new ColumnHeader();
 		ColumnHeader exception = new ColumnHeader();
@@ -45,7 +43,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				
 		void InitializeComponents()
 		{
-            debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+
 			exceptionHistoryList = new ListView();
 			exceptionHistoryList.FullRowSelect = true;
 			exceptionHistoryList.AutoArrange = true;
@@ -60,8 +59,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			location.Width = 400;
 			time.Width = 80;
 			
-			NDebugger.IsDebuggingChanged += new DebuggerEventHandler(DebuggerStateChanged);
-			NDebugger.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
+			debugger.IsDebuggingChanged += new DebuggerEventHandler(DebuggerStateChanged);
+			debugger.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
 
 			RedrawContent();
 		}

@@ -22,11 +22,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class CallStackPad : AbstractPadContent
 	{
+		WindowsDebugger debugger;
+
 		ListView  callStackList;
-		
-		//
-		//WindowsDebugger DebuggerService = (WindowsDebugger)((DebuggerService)ServiceManager.Services.GetService(typeof(DebuggerService))).CurrentDebugger;
-        WindowsDebugger debugger;
 		
 		ColumnHeader name     = new ColumnHeader();
 		ColumnHeader language = new ColumnHeader();
@@ -45,6 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void InitializeComponents()
 		{
             debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+
 			callStackList = new ListView();
 			callStackList.FullRowSelect = true;
 			callStackList.AutoArrange = true;
@@ -58,8 +57,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			name.Width = 300;
 			language.Width = 400;
 			
-			NDebugger.IsDebuggingChanged += new DebuggerEventHandler(DebuggerStateChanged);
-			NDebugger.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
+			debugger.IsDebuggingChanged += new DebuggerEventHandler(DebuggerStateChanged);
+			debugger.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
 
 			RedrawContent();
 		}

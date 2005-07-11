@@ -15,10 +15,13 @@ namespace DebuggerLibrary
 {
 	public partial class NDebugger
 	{
-		static NDebugger instance = new NDebugger();
+		static NDebugger instance = null;
 
 		public static NDebugger Instance {
 			get {
+				if (instance == null) {
+					throw new System.Exception("Create instance of NDebugger first");
+				}
 				return instance;
 			}
 			set {
@@ -26,21 +29,21 @@ namespace DebuggerLibrary
 			}
 		}
 
-		static ICorDebug                  corDebug;
-		static ManagedCallback            managedCallback;
-		static ManagedCallbackProxy       managedCallbackProxy;
+		ICorDebug                  corDebug;
+		ManagedCallback            managedCallback;
+		ManagedCallbackProxy       managedCallbackProxy;
 
-		static Process                    mainProcess;
+		Process                    mainProcess;
 		
-		public static bool CatchHandledExceptions = false;
+		public bool CatchHandledExceptions = false;
 
-		static internal ICorDebug CorDebug {
+		internal ICorDebug CorDebug {
 			get {
 				return corDebug;
 			}
 		}
 
-		static internal Process CurrentProcess {
+		internal Process CurrentProcess {
 			get {
 				return mainProcess;
 			}
@@ -61,7 +64,7 @@ namespace DebuggerLibrary
 			}
 		}
 
-        internal static ManagedCallback ManagedCallback {
+        internal ManagedCallback ManagedCallback {
 			get {
 				return managedCallback;
 			}
@@ -69,8 +72,14 @@ namespace DebuggerLibrary
 
 		#region Basic functions
 
-		private NDebugger()
+		public NDebugger()
 		{
+			if (instance != null) {
+				throw new System.Exception("You can create only one instance of NDebugger at the moment.");
+			} else {
+				instance = this;
+			}
+
 			InitDebugger();
 			ResetEnvironment();
 
@@ -82,7 +91,7 @@ namespace DebuggerLibrary
 			//corDebug.Terminate();
 		}
 
-		static internal void InitDebugger()
+		internal void InitDebugger()
 		{
             int size;
             NativeMethods.GetCORVersion(null, 0, out size);
@@ -118,29 +127,31 @@ namespace DebuggerLibrary
 
 		#region Public events
 
-		static public event DebuggerEventHandler DebuggingStarted;
+		public event DebuggerEventHandler DebuggingStarted;
 
-		static internal void OnDebuggingStarted()
+		protected internal virtual void OnDebuggingStarted()
 		{
 			TraceMessage ("Debugger event: OnDebuggingStarted()");
-			if (DebuggingStarted != null)
+			if (DebuggingStarted != null) {
 				DebuggingStarted(null, new DebuggerEventArgs());
+			}
 		}
 
 
-		static public event DebuggingPausedEventHandler DebuggingPaused;
+		public event DebuggingPausedEventHandler DebuggingPaused;
 
-		static internal void OnDebuggingPaused(PausedReason reason)
+		protected internal virtual void OnDebuggingPaused(PausedReason reason)
 		{
 			TraceMessage ("Debugger event: OnDebuggingPaused(" + reason.ToString() + ")");
-			if (DebuggingPaused != null)
+			if (DebuggingPaused != null) {
 				DebuggingPaused(null, new DebuggingPausedEventArgs(reason));
+			}
 		}
 
 
-		static public event DebuggingIsResumingEventHandler DebuggingIsResuming;
+		public event DebuggingIsResumingEventHandler DebuggingIsResuming;
 
-		static internal void OnDebuggingIsResuming(ref bool abort)
+		protected internal virtual void OnDebuggingIsResuming(ref bool abort)
 		{
 			if (DebuggingIsResuming != null) {
 				TraceMessage ("Debugger event: OnDebuggingIsResuming(" + abort.ToString() + ")");
@@ -156,66 +167,77 @@ namespace DebuggerLibrary
 		}
 
 
-		static public event DebuggerEventHandler DebuggingResumed;
+		public event DebuggerEventHandler DebuggingResumed;
 
-		static internal void OnDebuggingResumed()
+		protected internal virtual void OnDebuggingResumed()
 		{
 			TraceMessage ("Debugger event: OnDebuggingResumed()");
-			if (DebuggingResumed != null)
+			if (DebuggingResumed != null) {
 				DebuggingResumed(null, new DebuggerEventArgs());
+			}
 		}
 
 
-		static public event DebuggerEventHandler DebuggingStopped;
+		public event DebuggerEventHandler DebuggingStopped;
 
-		static internal void OnDebuggingStopped()
+		protected internal virtual void OnDebuggingStopped()
 		{
 			TraceMessage ("Debugger event: OnDebuggingStopped()");
-			if (DebuggingStopped != null)
+			if (DebuggingStopped != null) {
 				DebuggingStopped(null, new DebuggerEventArgs());
+			}
 		}
 
 
-		static public event DebuggerEventHandler IsProcessRunningChanged;
+		public event DebuggerEventHandler IsProcessRunningChanged;
 
-		static internal void OnIsProcessRunningChanged()
+		protected internal virtual void OnIsProcessRunningChanged()
 		{
 			TraceMessage ("Debugger event: OnIsProcessRunningChanged()");
-			if (IsProcessRunningChanged != null)
+			if (IsProcessRunningChanged != null) {
 				IsProcessRunningChanged(null, new DebuggerEventArgs());
+			}
 		}
 
 		
-		static public event DebuggerEventHandler IsDebuggingChanged;
+		public event DebuggerEventHandler IsDebuggingChanged;
 
-		static internal void OnIsDebuggingChanged()
+		protected internal virtual void OnIsDebuggingChanged()
 		{
 			TraceMessage ("Debugger event: OnIsDebuggingChanged()");
-			if (IsDebuggingChanged != null)
+			if (IsDebuggingChanged != null) {
 				IsDebuggingChanged(null, new DebuggerEventArgs());
+			}
 		}
 
 		/// <summary>
 		/// Fired when System.Diagnostics.Trace.WriteLine() is called in debuged process
 		/// </summary>
-		static public event MessageEventHandler LogMessage;
+		public event MessageEventHandler LogMessage;
 
-		static internal void OnLogMessage(string message)
+		protected internal virtual void OnLogMessage(string message)
 		{
 			TraceMessage ("Debugger event: OnLogMessage(\"" + message + "\")");
-			if (LogMessage != null)
+			if (LogMessage != null) {
 				LogMessage(null, new MessageEventArgs(message));
+			}
 		}
 
 		/// <summary>
 		/// Internal: Used to debug the debugger library.
 		/// </summary>
-		static public event MessageEventHandler DebuggerTraceMessage;
+		public event MessageEventHandler DebuggerTraceMessage;
 
-		static internal void TraceMessage(string message)
+		protected internal virtual void OnDebuggerTraceMessage(string message)
 		{
-			if (DebuggerTraceMessage != null)
+			if (DebuggerTraceMessage != null) {
 				DebuggerTraceMessage(null, new MessageEventArgs(message));
+			}
+		}
+
+		internal void TraceMessage(string message)
+		{
+			OnDebuggerTraceMessage(message);
 		}
 
 
@@ -223,14 +245,14 @@ namespace DebuggerLibrary
 
 		#region Execution control
 
-		static internal void Continue(ICorDebugAppDomain pAppDomain)
+		internal void Continue(ICorDebugAppDomain pAppDomain)
 		{
 			ICorDebugProcess outProcess;
 			pAppDomain.GetProcess(out outProcess);
 			outProcess.Continue(0);
 		}
 
-		static public void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)
+		public void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)
 		{		
 			System.Diagnostics.Process process;
 			process = new System.Diagnostics.Process();
@@ -238,7 +260,7 @@ namespace DebuggerLibrary
 			process.Start();
 		}
 		
-		static public void Start(string filename, string workingDirectory, string arguments)		
+		public void Start(string filename, string workingDirectory, string arguments)		
 		{
 			CurrentProcess = Process.CreateProcess(filename, workingDirectory, arguments);
 		}
@@ -274,7 +296,7 @@ namespace DebuggerLibrary
 		}
 
 
-		static public bool IsProcessRunning { 
+		public bool IsProcessRunning { 
 			get {
 				if (!IsDebugging) return false;
 				return CurrentProcess.IsProcessRunning;
@@ -285,13 +307,13 @@ namespace DebuggerLibrary
 			}
 		}
 
-		static public bool IsDebugging {
+		public bool IsDebugging {
 			get {
 				return (CurrentProcess != null);
 			}
 		}
 
-		static public Thread CurrentThread {
+		public Thread CurrentThread {
 			get {
 				if (!IsDebugging) return null;
 				return CurrentProcess.CurrentThread;
@@ -301,7 +323,7 @@ namespace DebuggerLibrary
 			}
 		}
 
-		static public Thread MainThread {
+		public Thread MainThread {
 			get {
 				if (!IsDebugging) return null;
 				return CurrentProcess.MainThread;
@@ -311,46 +333,46 @@ namespace DebuggerLibrary
 			}
 		}
 
-		static public SourcecodeSegment NextStatement { 
+		public SourcecodeSegment NextStatement { 
 			get {
 				if (!IsDebugging) return null;
 				return CurrentProcess.NextStatement;
 			}
 		}
 
-		static public VariableCollection LocalVariables { 
+		public VariableCollection LocalVariables { 
 			get {
 				if (!IsDebugging) return null;
 				return CurrentProcess.LocalVariables;
 			}
 		}
 
-		static public void Break()
+		public void Break()
 		{
 			CurrentProcess.Break();
 		}
 
-		static public void StepInto()
+		public void StepInto()
 		{
 			CurrentProcess.StepInto();
 		}
 
-		static public void StepOver()
+		public void StepOver()
 		{
 			CurrentProcess.StepOver();
 		}
 
-		static public void StepOut()
+		public void StepOut()
 		{
 			CurrentProcess.StepOut();
 		}
 
-		static public void Continue()
+		public void Continue()
 		{
 			CurrentProcess.Continue();
 		}
 
-		static public void Terminate()
+		public void Terminate()
 		{
 			CurrentProcess.Terminate();
 		}

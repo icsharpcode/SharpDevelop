@@ -17,7 +17,8 @@ using DebuggerInterop.Core;
 namespace DebuggerLibrary
 {
 	class ManagedCallback
-	{		
+	{
+		NDebugger debugger = NDebugger.Instance;
 		bool handlingCallback = false;
 		public event CorDebugEvalEventHandler CorDebugEvalCompleted;
 
@@ -31,28 +32,28 @@ namespace DebuggerLibrary
 		void EnterCallback(string name)
 		{
 			handlingCallback = true;
-			NDebugger.IsProcessRunning = false;
-			NDebugger.CurrentThread = null;
-			NDebugger.TraceMessage("Callback: " + name);
+			debugger.IsProcessRunning = false;
+			debugger.CurrentThread = null;
+			debugger.TraceMessage("Callback: " + name);
 		}
 		
 		void ExitCallback_Continue(ICorDebugAppDomain pAppDomain)
 		{
-			NDebugger.Continue(pAppDomain);
+			debugger.Continue(pAppDomain);
 			handlingCallback = false;
 		}
 		
 		void ExitCallback_Continue()
 		{
-			NDebugger.Continue();
+			debugger.Continue();
 			handlingCallback = false;
 		}
 		
 		void ExitCallback_Paused(PausedReason reason)
 		{
 			if (reason != PausedReason.EvalComplete) {
-				NDebugger.OnDebuggingPaused(reason);
-				NDebugger.OnIsProcessRunningChanged();
+				debugger.OnDebuggingPaused(reason);
+				debugger.OnIsProcessRunningChanged();
 			}
 			handlingCallback = false;
 		}
@@ -64,11 +65,11 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("StepComplete");
 
-			NDebugger.CurrentThread = NDebugger.Instance.GetThread(pThread);
+			debugger.CurrentThread = debugger.GetThread(pThread);
 
-			if (NDebugger.CurrentThread.CurrentFunction.Module.SymbolsLoaded == false) {
-				NDebugger.TraceMessage(" - stepping out of code without symbols");
-				NDebugger.StepOut();
+			if (debugger.CurrentThread.CurrentFunction.Module.SymbolsLoaded == false) {
+				debugger.TraceMessage(" - stepping out of code without symbols");
+				debugger.StepOut();
 				return;
 			}
 			
@@ -78,12 +79,12 @@ namespace DebuggerLibrary
 		public void Breakpoint(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, IntPtr pBreakpoint)
 		{
 			EnterCallback("Breakpoint");
-			
-			NDebugger.CurrentThread = NDebugger.Instance.GetThread(pThread);
+
+			debugger.CurrentThread = debugger.GetThread(pThread);
 			
 			ExitCallback_Paused(PausedReason.Breakpoint);
 			
-			foreach (Breakpoint b in NDebugger.Instance.Breakpoints) {
+			foreach (Breakpoint b in debugger.Breakpoints) {
 				if (b.Equals(pBreakpoint)) {
 					b.OnBreakpointHit();
 				}
@@ -101,7 +102,7 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("Break");
 
-			NDebugger.CurrentThread = NDebugger.Instance.GetThread(pThread);
+			debugger.CurrentThread = debugger.GetThread(pThread);
 
 			ExitCallback_Paused(PausedReason.Break);
 		}
@@ -149,8 +150,8 @@ namespace DebuggerLibrary
 		public void LogMessage(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int lLevel, string pLogSwitchName, string pMessage)
 		{
 			EnterCallback("LogMessage");
-			
-			NDebugger.OnLogMessage(pMessage);
+
+			debugger.OnLogMessage(pMessage);
 
 			ExitCallback_Continue(pAppDomain);
 		}
@@ -220,7 +221,7 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("LoadModule");
 
-			NDebugger.Instance.AddModule(pModule);
+			debugger.AddModule(pModule);
 
 			ExitCallback_Continue(pAppDomain);
 		}
@@ -236,7 +237,7 @@ namespace DebuggerLibrary
 			if (pThread != null)
 			{
 				EnterCallback("NameChange: pThread");
-				Thread thread = NDebugger.Instance.GetThread(pThread);
+				Thread thread = debugger.GetThread(pThread);
 				thread.HasBeenLoaded = true;
 				thread.OnThreadStateChanged();
 				ExitCallback_Continue();
@@ -247,11 +248,11 @@ namespace DebuggerLibrary
 		public void CreateThread(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
 			EnterCallback("CreateThread");
-			
-			NDebugger.Instance.AddThread(pThread);
 
-			if (NDebugger.MainThread == null) {
-				NDebugger.MainThread = NDebugger.Instance.GetThread(pThread);
+			debugger.AddThread(pThread);
+
+			if (debugger.MainThread == null) {
+				debugger.MainThread = debugger.GetThread(pThread);
 			}
 
 			ExitCallback_Continue(pAppDomain);
@@ -279,7 +280,7 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("UnloadModule");
 
-			NDebugger.Instance.RemoveModule(pModule);
+			debugger.RemoveModule(pModule);
 
 			ExitCallback_Continue(pAppDomain);
 		}
@@ -294,16 +295,16 @@ namespace DebuggerLibrary
 		public void ExitThread(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
 			EnterCallback("ExitThread");
-			
-			Thread thread = NDebugger.Instance.GetThread(pThread);
 
-			if (NDebugger.CurrentThread == thread)
-				NDebugger.CurrentThread = null;
-			
-			if (NDebugger.MainThread == thread)
-				NDebugger.MainThread = null;
-			
-			NDebugger.Instance.RemoveThread(thread);
+			Thread thread = debugger.GetThread(pThread);
+
+			if (debugger.CurrentThread == thread)
+				debugger.CurrentThread = null;
+
+			if (debugger.MainThread == thread)
+				debugger.MainThread = null;
+
+			debugger.RemoveThread(thread);
 
 			ExitCallback_Continue(pAppDomain);
 		}
@@ -319,7 +320,7 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("ExitProcess");
 
-			NDebugger.Instance.ResetEnvironment();
+			debugger.ResetEnvironment();
 
 		}
 
@@ -357,8 +358,8 @@ namespace DebuggerLibrary
 			//	return;
 			//}
 
-			NDebugger.CurrentThread = NDebugger.Instance.GetThread(pThread);
-			NDebugger.CurrentThread.CurrentExceptionType = (ExceptionType)dwEventType;
+			debugger.CurrentThread = debugger.GetThread(pThread);
+			debugger.CurrentThread.CurrentExceptionType = (ExceptionType)dwEventType;
 
 			ExitCallback_Paused(PausedReason.Exception);
 		}

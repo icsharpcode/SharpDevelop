@@ -43,8 +43,8 @@ namespace DebuggerLibrary
 				if (mainThread == null) {
 					mainThread = value;
 				}
-				if (NDebugger.ManagedCallback.HandlingCallback == false) {
-					NDebugger.OnDebuggingPaused(PausedReason.CurrentThreadChanged);
+				if (NDebugger.Instance.ManagedCallback.HandlingCallback == false) {
+					NDebugger.Instance.OnDebuggingPaused(PausedReason.CurrentThreadChanged);
 				}
 			}
 		}
@@ -93,7 +93,7 @@ namespace DebuggerLibrary
 
 		static public unsafe Process StartInternal(string filename, string workingDirectory, string arguments)
 		{
-			NDebugger.TraceMessage("Executing " + filename);
+			NDebugger.Instance.TraceMessage("Executing " + filename);
 
 			_SECURITY_ATTRIBUTES secAttr = new _SECURITY_ATTRIBUTES();
 			secAttr.bInheritHandle = 0;
@@ -108,7 +108,7 @@ namespace DebuggerLibrary
 
 			fixed (uint* pprocessStartupInfo = processStartupInfo)
 				fixed (uint* pprocessInfo = processInfo)
-					NDebugger.CorDebug.CreateProcess(
+					NDebugger.Instance.CorDebug.CreateProcess(
 						filename,   // lpApplicationName
 						arguments,                       // lpCommandLine
 						ref secAttr,                       // lpProcessAttributes
@@ -136,8 +136,8 @@ namespace DebuggerLibrary
             corProcess.Stop(5000); // TODO: Hardcoded value
 
 			isProcessRunning = false;
-			NDebugger.OnDebuggingPaused(PausedReason.Break);
-			NDebugger.OnIsProcessRunningChanged();
+			NDebugger.Instance.OnDebuggingPaused(PausedReason.Break);
+			NDebugger.Instance.OnIsProcessRunningChanged();
 		}
 
 		public void StepInto()
@@ -175,13 +175,13 @@ namespace DebuggerLibrary
 			}
 
 			bool abort = false;
-			NDebugger.OnDebuggingIsResuming(ref abort);
+			NDebugger.Instance.OnDebuggingIsResuming(ref abort);
 			if (abort == true) return;
 
 			isProcessRunning = true;
-			if (NDebugger.ManagedCallback.HandlingCallback == false) {
-				NDebugger.OnDebuggingResumed();
-				NDebugger.OnIsProcessRunningChanged();
+			if (NDebugger.Instance.ManagedCallback.HandlingCallback == false) {
+				NDebugger.Instance.OnDebuggingResumed();
+				NDebugger.Instance.OnIsProcessRunningChanged();
 			}
 
 			corProcess.Continue(0);

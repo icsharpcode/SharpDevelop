@@ -62,7 +62,7 @@ namespace DebuggerLibrary
 
 		public bool Suspended {
 			get	{
-				if (NDebugger.IsProcessRunning) return lastSuspendedState;
+				if (NDebugger.Instance.IsProcessRunning) return lastSuspendedState;
 
 				CorDebugThreadState state;
 				corThread.GetDebugState(out state);
@@ -77,7 +77,7 @@ namespace DebuggerLibrary
 		public ThreadPriority Priority {
 			get {
 				if (!HasBeenLoaded) return lastPriority;
-				if (NDebugger.IsProcessRunning) return lastPriority;
+				if (NDebugger.Instance.IsProcessRunning) return lastPriority;
 
 				Variable runTimeVar = RuntimeVariable;
 				if (runTimeVar is NullRefVariable) return ThreadPriority.Normal;
@@ -90,7 +90,7 @@ namespace DebuggerLibrary
 		public Variable RuntimeVariable {
 			get {
 				if (!HasBeenLoaded) throw new UnableToGetPropertyException(this, "runtimeVariable", "Thread has not started jet");
-				if (NDebugger.IsProcessRunning) throw new UnableToGetPropertyException(this, "runtimeVariable", "Process is running");
+				if (NDebugger.Instance.IsProcessRunning) throw new UnableToGetPropertyException(this, "runtimeVariable", "Process is running");
 				ICorDebugValue corValue;
 				corThread.GetObject(out corValue);
 				return VariableFactory.CreateVariable(corValue, "Thread" + ID);
@@ -101,7 +101,7 @@ namespace DebuggerLibrary
 		public string Name {
 			get	{
 				if (!HasBeenLoaded) return lastName;
-				if (NDebugger.IsProcessRunning) return lastName;
+				if (NDebugger.Instance.IsProcessRunning) return lastName;
 				Variable runtimeVar  = RuntimeVariable;
 				if (runtimeVar is NullRefVariable) return lastName;
 				Variable runtimeName = runtimeVar.SubVariables["m_Name"];
@@ -137,8 +137,8 @@ namespace DebuggerLibrary
 			get {
 				List<Function> callstack = new List<Function>();
 
-				if (!NDebugger.IsDebugging)     return callstack;
-				if (NDebugger.IsProcessRunning) return callstack;
+				if (!NDebugger.Instance.IsDebugging) return callstack;
+				if (NDebugger.Instance.IsProcessRunning) return callstack;
 
 				ICorDebugChainEnum corChainEnum;
 				corThread.EnumerateChains(out corChainEnum);
@@ -177,7 +177,7 @@ namespace DebuggerLibrary
 		
 		public Function CurrentFunction {
 			get {
-				if (NDebugger.IsProcessRunning) throw new CurrentFunctionNotAviableException();
+				if (NDebugger.Instance.IsProcessRunning) throw new CurrentFunctionNotAviableException();
 				ICorDebugFrame corFrame;
 				corThread.GetActiveFrame(out corFrame);
 				if (corFrame == null) {

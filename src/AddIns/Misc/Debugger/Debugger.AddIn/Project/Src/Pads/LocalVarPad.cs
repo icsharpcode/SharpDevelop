@@ -22,9 +22,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class LocalVarPad : AbstractPadContent
 	{
-		TreeListView localVarList;
+		WindowsDebugger debugger;
 
-		//ClassBrowserIconsService iconsService;
+		TreeListView localVarList;
 		
 		ColumnHeader name = new ColumnHeader();
 		ColumnHeader val  = new ColumnHeader();
@@ -43,6 +43,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void InitializeComponents()
 		{
+			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+
 			ImageList imageList = new ImageList();
 			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.Class"));
 			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.Field"));
@@ -63,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 			localVarList.BeforeExpand += new TreeListViewCancelEventHandler(localVarList_BeforeExpand);
 			
-			NDebugger.DebuggingPaused += new DebuggingPausedEventHandler(debuggerService_OnDebuggingPaused);
+			debugger.DebuggingPaused += new DebuggingPausedEventHandler(debuggerService_OnDebuggingPaused);
 
 			RedrawContent();
 		}
@@ -74,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			val.Text  = "Value";
 			type.Text = "Type";
 
-            if (NDebugger.IsDebugging && NDebugger.IsProcessRunning == false) {
+            if (debugger.IsDebugging && debugger.IsProcessRunning == false) {
                 debuggerService_OnDebuggingPaused(this, new DebuggingPausedEventArgs(PausedReason.StepComplete));
             }
 		}
@@ -84,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.BeginUpdate();
 			localVarList.Items.Clear();
 
-			AddVariables(localVarList.Items, NDebugger.LocalVariables);
+			AddVariables(localVarList.Items, debugger.LocalVariables);
 
 			localVarList.EndUpdate();
 		}

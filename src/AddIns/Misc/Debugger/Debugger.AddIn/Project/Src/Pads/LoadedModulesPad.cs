@@ -21,6 +21,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class LoadedModulesPad : AbstractPadContent
 	{
+		WindowsDebugger debugger;
+
 		ListView  loadedModulesList;
 		
 		ColumnHeader name        = new ColumnHeader();
@@ -46,6 +48,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void InitializeComponents()
 		{
+			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+
 			loadedModulesList = new ListView();
 			loadedModulesList.FullRowSelect = true;
 			loadedModulesList.AutoArrange = true;
@@ -64,8 +68,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			timestamp.Width = 0;//80;
 			information.Width = 130;
 
-			NDebugger.Instance.ModuleLoaded += new DebuggerLibrary.ModuleEventHandler(AddModule);
-			NDebugger.Instance.ModuleUnloaded += new DebuggerLibrary.ModuleEventHandler(RemoveModule);
+			debugger.ModuleLoaded += new DebuggerLibrary.ModuleEventHandler(AddModule);
+			debugger.ModuleUnloaded += new DebuggerLibrary.ModuleEventHandler(RemoveModule);
 
 			RedrawContent();
 		}

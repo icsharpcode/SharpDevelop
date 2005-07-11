@@ -22,6 +22,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class BreakPointsPad : AbstractPadContent
 	{
+		WindowsDebugger debugger;
+
 		ListView  breakpointsList;
 		
 		ColumnHeader name     = new ColumnHeader();
@@ -40,6 +42,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void InitializeComponents()
 		{
+			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+
 			breakpointsList = new ListView();
 			breakpointsList.FullRowSelect = true;
 			breakpointsList.AutoArrange = true;
@@ -55,11 +59,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			name.Width = 300;
 			path.Width = 400;
 			
-			NDebugger.DebuggingResumed += new DebuggerEventHandler(debuggerService_OnDebuggingResumed);
-			NDebugger.Instance.BreakpointAdded += new DebuggerLibrary.BreakpointEventHandler(AddBreakpoint);
-			NDebugger.Instance.BreakpointStateChanged += new DebuggerLibrary.BreakpointEventHandler(RefreshBreakpoint);
-			NDebugger.Instance.BreakpointRemoved += new DebuggerLibrary.BreakpointEventHandler(RemoveBreakpoint);
-			NDebugger.Instance.BreakpointHit += new DebuggerLibrary.BreakpointEventHandler(Breakpoints_OnBreakpointHit);
+			debugger.DebuggingResumed += new DebuggerEventHandler(debuggerService_OnDebuggingResumed);
+			debugger.BreakpointAdded += new DebuggerLibrary.BreakpointEventHandler(AddBreakpoint);
+			debugger.BreakpointStateChanged += new DebuggerLibrary.BreakpointEventHandler(RefreshBreakpoint);
+			debugger.BreakpointRemoved += new DebuggerLibrary.BreakpointEventHandler(RemoveBreakpoint);
+			debugger.BreakpointHit += new DebuggerLibrary.BreakpointEventHandler(Breakpoints_OnBreakpointHit);
 			
 			RedrawContent();
 		}

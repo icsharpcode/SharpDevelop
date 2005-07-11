@@ -22,11 +22,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	public class RunningThreadsPad : AbstractPadContent
 	{
+		WindowsDebugger debugger;
+
 		ListView  runningThreadsList;
-		
-		//
-		//WindowsDebugger DebuggerService = (WindowsDebugger)((DebuggerService)ServiceManager.Services.GetService(typeof(DebuggerService))).CurrentDebugger;
-        WindowsDebugger debugger;
 		
 		ColumnHeader id          = new ColumnHeader();
 		ColumnHeader name        = new ColumnHeader();
@@ -47,7 +45,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 		void InitializeComponents()
 		{
-            debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+
 			runningThreadsList = new ListView();
 			runningThreadsList.FullRowSelect = true;
 			runningThreadsList.AutoArrange = true;
@@ -65,10 +64,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			breaked.Width = 80;
 		
 			
-			NDebugger.Instance.ThreadStarted += new ThreadEventHandler(AddThread);
-			NDebugger.Instance.ThreadStateChanged += new ThreadEventHandler(RefreshThread);
-			NDebugger.Instance.ThreadExited += new ThreadEventHandler(RemoveThread);
-			NDebugger.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
+			debugger.ThreadStarted += new ThreadEventHandler(AddThread);
+			debugger.ThreadStateChanged += new ThreadEventHandler(RefreshThread);
+			debugger.ThreadExited += new ThreadEventHandler(RemoveThread);
+			debugger.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
 	
 			RedrawContent();
 		}
