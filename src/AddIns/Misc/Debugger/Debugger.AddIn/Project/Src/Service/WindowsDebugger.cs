@@ -29,13 +29,64 @@ using ICSharpCode.SharpDevelop.Project;
 //using ICSharpCode.SharpDevelop.Internal.Project;
 //using ICSharpCode.SharpDevelop.Gui.Dialogs;
 using ICSharpCode.SharpDevelop.Services;
+using System.Runtime.Remoting;
+using System.Reflection;
+using System.Security.Policy;
 
 //using Reflector.UserInterface;
 
 namespace ICSharpCode.SharpDevelop.Services
 {	
-	public class WindowsDebugger:NDebugger, IDebugger //, IService
+	public class WindowsDebugger:IDebugger //, IService
 	{
+		[Serializable]
+		public class RemotingConfigurationHelpper
+		{
+			public string path;
+
+			public RemotingConfigurationHelpper(string path)
+			{
+				this.path = path;
+			}
+
+			public void Configure()
+			{
+				AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
+				
+				RemotingConfiguration.Configure(Path.Combine(path, "Client.config"));
+
+				string baseDir = Directory.GetDirectoryRoot(AppDomain.CurrentDomain.BaseDirectory);
+				string relDirs = AppDomain.CurrentDomain.BaseDirectory + ";" + path;
+				AppDomain serverAppDomain = AppDomain.CreateDomain("Debugging server",
+				                                                   new Evidence(AppDomain.CurrentDomain.Evidence),
+																   baseDir,
+																   relDirs,
+																   AppDomain.CurrentDomain.ShadowCopyFiles);
+				serverAppDomain.DoCallBack(new CrossAppDomainDelegate(ConfigureServer));
+			}
+
+			private void ConfigureServer()
+			{
+				AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
+				RemotingConfiguration.Configure(Path.Combine(path, "Server.config"));
+			}
+
+			Assembly AssemblyResolve(object sender, ResolveEventArgs args)
+			{
+				foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+					string fullFilename = assembly.Location;
+					if (Path.GetFileNameWithoutExtension(fullFilename).ToLower() == args.Name.ToLower()) {
+						return assembly;
+					}
+				}
+				return null;
+			}
+		}
+
+		bool useRemotingForThreadInterop = false;
+
+		NDebugger debugger;
+
 		public event EventHandler DebugStopped; // FIX: unused
 
 		List<DebuggerLibrary.Exception> exceptionHistory = new List<DebuggerLibrary.Exception>();
@@ -52,7 +103,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 		}
 		
-
+		public NDebugger DebuggerCore {
+			get {
+				return debugger;
+			}
+		}
 		
 		MessageViewCategory messageViewCategoryDebug;
 		MessageViewCategory messageViewCategoryDebuggerLog;
@@ -78,6 +133,25 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public WindowsDebugger()
 		{
+			if (useRemotingForThreadInterop) {
+				// This needs to be called before instance of NDebugger is created
+				string path = null;
+				foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
+					string fullFilename = assembly.Location;
+					if (Path.GetFileName(fullFilename).ToLower() == "debugger.core.dll") {
+						path = Path.GetDirectoryName(fullFilename);
+						break;
+					}
+				}
+
+				if (path == null) {
+					throw new System.Exception("Debugger.Core.dll is not loaded");
+				}
+				new RemotingConfigurationHelpper(path).Configure();
+			}
+
+			debugger = new NDebugger();
+
 			InitializeService();
 		}
 		
@@ -88,6 +162,15 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void InitializeService()
 		{
+			debugger.DebuggerTraceMessage    += new MessageEventHandler(DebuggerTraceMessage);
+			debugger.LogMessage              += new MessageEventHandler(LogMessage);
+			debugger.DebuggingStarted        += new DebuggerEventHandler(DebuggingStarted);
+			debugger.DebuggingPaused         += new DebuggingPausedEventHandler(DebuggingPaused);
+			debugger.DebuggingResumed        += new DebuggerEventHandler(DebuggingResumed);
+			debugger.DebuggingStopped        += new DebuggerEventHandler(DebuggingStopped);
+			debugger.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
+			debugger.BreakpointStateChanged += new DebuggerLibrary.BreakpointEventHandler(RestoreSharpdevelopBreakpoint);
+
 			DebuggerService.BreakPointAdded   += new EventHandler(RestoreNDebuggerBreakpoints);
 			DebuggerService.BreakPointRemoved += new EventHandler(RestoreNDebuggerBreakpoints);
 			DebuggerService.BreakPointChanged += new EventHandler(RestoreNDebuggerBreakpoints);
@@ -99,6 +182,13 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		public void UnloadService()
 		{
+			debugger.DebuggerTraceMessage   -= new MessageEventHandler(DebuggerTraceMessage);
+			debugger.LogMessage             -= new MessageEventHandler(LogMessage);
+			debugger.DebuggingStarted       -= new DebuggerEventHandler(DebuggingStarted);
+			debugger.DebuggingPaused        -= new DebuggingPausedEventHandler(DebuggingPaused);
+			debugger.IsProcessRunningChanged -= new DebuggerEventHandler(DebuggerStateChanged);
+			debugger.BreakpointStateChanged -= new DebuggerLibrary.BreakpointEventHandler(RestoreSharpdevelopBreakpoint);
+
 			DebuggerService.BreakPointAdded   -= new EventHandler(RestoreNDebuggerBreakpoints);
 			DebuggerService.BreakPointRemoved -= new EventHandler(RestoreNDebuggerBreakpoints);
 			DebuggerService.BreakPointChanged -= new EventHandler(RestoreNDebuggerBreakpoints);
@@ -110,6 +200,17 @@ namespace ICSharpCode.SharpDevelop.Services
 		#endregion		
 		
 		#region ICSharpCode.SharpDevelop.Services.IDebugger interface implementation
+		public bool IsDebugging { 
+			get { 
+				return debugger.IsDebugging; 
+			} 
+		}
+		
+		public bool IsProcessRunning { 
+			get { 
+				return debugger.IsProcessRunning; 
+			} 
+		}
 		
 		public bool SupportsStartStop { 
 			get { 
@@ -123,64 +224,90 @@ namespace ICSharpCode.SharpDevelop.Services
 			} 
 		}
 		
+		public void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)
+		{
+			debugger.StartWithoutDebugging(psi);
+		}
+		
+		public void Start(string fileName, string workingDirectory, string arguments)
+		{
+			debugger.Start(fileName, workingDirectory, arguments);
+		}
+		
 		public void Stop()
 		{
-			this.Terminate();
+			debugger.Terminate();
 		}
-
+		
+		public void Break()
+		{
+			debugger.Break();
+		}
+		
+		public void StepInto()
+		{
+			debugger.StepInto();
+		}
+		
+		public void StepOver()
+		{
+			debugger.StepOver();
+		}
+		
+		public void StepOut()
+		{
+			debugger.StepOut();
+		}
+		
+		public void Continue()
+		{
+			debugger.Continue();
+		}
 		#endregion
 		
 
 		
 		public void RestoreNDebuggerBreakpoints(object sender, EventArgs e)
 		{
-			ClearBreakpoints();
+			debugger.ClearBreakpoints();
 			foreach (ICSharpCode.Core.Breakpoint b in DebuggerService.Breakpoints) {
-				DebuggerLibrary.Breakpoint newBreakpoint = new DebuggerLibrary.Breakpoint(this, b.FileName, b.LineNumber, 0, b.IsEnabled); 
+				DebuggerLibrary.Breakpoint newBreakpoint = new DebuggerLibrary.Breakpoint(debugger, b.FileName, b.LineNumber, 0, b.IsEnabled); 
 				newBreakpoint.Tag = b;
 				b.Tag = newBreakpoint;
-				AddBreakpoint(newBreakpoint); 
+				debugger.AddBreakpoint(newBreakpoint); 
 			}
 		}
 
-		protected override void OnBreakpointStateChanged(object sender, BreakpointEventArgs e)
+		public void RestoreSharpdevelopBreakpoint(object sender, BreakpointEventArgs e)
 		{
-			RestoreSharpdevelopBreakpoint(e.Breakpoint);
-		}
-
-		public void RestoreSharpdevelopBreakpoint(DebuggerLibrary.Breakpoint breakpoint)
-		{
-			ICSharpCode.Core.Breakpoint sdBreakpoint = breakpoint.Tag as ICSharpCode.Core.Breakpoint;
+			ICSharpCode.Core.Breakpoint sdBreakpoint = e.Breakpoint.Tag as ICSharpCode.Core.Breakpoint;
 			if (sdBreakpoint != null) {
-				sdBreakpoint.IsEnabled  = breakpoint.Enabled;
-				sdBreakpoint.FileName   = breakpoint.SourcecodeSegment.SourceFullFilename;
-				sdBreakpoint.LineNumber = breakpoint.SourcecodeSegment.StartLine;
+				sdBreakpoint.IsEnabled  = e.Breakpoint.Enabled;
+				sdBreakpoint.FileName   = e.Breakpoint.SourcecodeSegment.SourceFullFilename;
+				sdBreakpoint.LineNumber = e.Breakpoint.SourcecodeSegment.StartLine;
 			}
 		}
 		
 		// Output messages that report status of debugger
-		protected override void OnDebuggerTraceMessage(string message)
+		void DebuggerTraceMessage(object sender, MessageEventArgs e)
 		{
-			base.OnDebuggerTraceMessage(message);
 			if (messageViewCategoryDebuggerLog != null) {
-				messageViewCategoryDebuggerLog.AppendText(message + "\n");
-				System.Console.WriteLine(message);
-			}
-		}
-
-		// Output messages form debuged program that are caused by System.Diagnostics.Trace.WriteLine(), etc...
-		protected override void OnLogMessage(string message)
-		{
-			base.OnLogMessage(message);
-			OnDebuggerTraceMessage(message);
-			if (messageViewCategoryDebug != null) {
-				messageViewCategoryDebug.AppendText(message + "\n");
+				messageViewCategoryDebuggerLog.AppendText(e.Message + "\n");
+				System.Console.WriteLine(e.Message);
 			}
 		}
 		
-		protected override void OnDebuggingStarted()
+		// Output messages form debuged program that are caused by System.Diagnostics.Trace.WriteLine(), etc...
+		void LogMessage(object sender, MessageEventArgs e)
 		{
-			base.OnDebuggingStarted();
+			DebuggerTraceMessage(this, e);
+			if (messageViewCategoryDebug != null) {
+				messageViewCategoryDebug.AppendText(e.Message + "\n");
+			}
+		}
+		
+		void DebuggingStarted(object sender, DebuggerEventArgs e)
+		{
 			// Initialize 
 			/*PadDescriptor cmv = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView));
 			if (messageViewCategoryDebug == null) {	
@@ -194,25 +321,24 @@ namespace ICSharpCode.SharpDevelop.Services
 			messageViewCategoryDebuggerLog.ClearText();*/
 		}
 
-		protected override void OnDebuggingPaused(PausedReason reason)
+		void DebuggingPaused(object sender, DebuggingPausedEventArgs e)
 		{
-			base.OnDebuggingPaused(reason);
-			if (reason == PausedReason.Exception) {
-				exceptionHistory.Add(CurrentThread.CurrentException);
-				if (CurrentThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED && (CatchHandledExceptions == false)) {
+			if (e.Reason == PausedReason.Exception) {
+				exceptionHistory.Add(debugger.CurrentThread.CurrentException);
+				if (debugger.CurrentThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED && (debugger.CatchHandledExceptions == false)) {
 					// Ignore the exception
 					Continue();
 					return;
 				}
 				
 				
-				//MessageBox.Show("Exception was thrown in debugee:\n" + NDebugger.CurrentThread.CurrentException.ToString());
+				//MessageBox.Show("Exception was thrown in debugee:\n" + debugger.CurrentThread.CurrentException.ToString());
 				ExceptionForm form = new ExceptionForm();
 				form.label.Text = "Exception " + 
-				                  CurrentThread.CurrentException.Type +
+				                  debugger.CurrentThread.CurrentException.Type +
                                   " was thrown in debugee:\n" +
-				                  CurrentThread.CurrentException.Message;
-				form.pictureBox.Image = ResourceService.GetBitmap((CurrentThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED)?"Icons.32x32.Warning":"Icons.32x32.Error");
+				                  debugger.CurrentThread.CurrentException.Message;
+				form.pictureBox.Image = ResourceService.GetBitmap((debugger.CurrentThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED)?"Icons.32x32.Warning":"Icons.32x32.Error");
 				form.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
 				switch (form.result) {
 					case ExceptionForm.Result.Break: 
@@ -228,22 +354,20 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			
 			try {
-				SelectThread(CurrentThread);
+				SelectThread(debugger.CurrentThread);
 			} catch (CurrentThreadNotAviableException) {}
 			JumpToCurrentLine();
 		}
 		
-		protected override void OnDebuggingResumed()
+		void DebuggingResumed(object sender, DebuggerEventArgs e)
 		{
-			base.OnDebuggingResumed();
 			selectedThread = null;
 			selectedFunction = null;
 			DebuggerService.RemoveCurrentLineMarker();
 		}
 		
-		protected override void OnDebuggingStopped()
+		void DebuggingStopped(object sender, DebuggerEventArgs e)
 		{
-			base.OnDebuggingStopped();
 			exceptionHistory.Clear();
 			//DebuggerService.Stop();//TODO: delete
 		}
@@ -287,9 +411,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		protected override void OnIsProcessRunningChanged()
+		public void DebuggerStateChanged(object sender, DebuggerEventArgs e)
 		{
-			base.OnIsProcessRunningChanged();
 			UpdateToolbars();
 		}
 		
@@ -306,8 +429,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public string GetValueAsString(string variableName)
 		{
-			if (!IsDebugging || IsProcessRunning) return null;
-			VariableCollection collection = LocalVariables;
+			if (!debugger.IsDebugging || debugger.IsProcessRunning) return null;
+			VariableCollection collection = debugger.LocalVariables;
 			if (collection == null)
 				return null;
 			foreach (Variable v in collection) {
@@ -323,5 +446,5 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			return null;
 		}
-	}	
+	}
 }

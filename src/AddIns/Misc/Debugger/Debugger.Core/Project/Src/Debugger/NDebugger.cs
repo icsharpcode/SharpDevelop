@@ -13,7 +13,7 @@ using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary
 {
-	public partial class NDebugger
+	public partial class NDebugger: MarshalByRefObject
 	{
 		ICorDebug                  corDebug;
 		ManagedCallback            managedCallback;

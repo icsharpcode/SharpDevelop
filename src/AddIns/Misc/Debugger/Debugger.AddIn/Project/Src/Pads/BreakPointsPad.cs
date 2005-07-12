@@ -23,6 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public class BreakPointsPad : AbstractPadContent
 	{
 		WindowsDebugger debugger;
+		NDebugger debuggerCore;
 
 		ListView  breakpointsList;
 		
@@ -43,6 +44,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+			debuggerCore = debugger.DebuggerCore;
 
 			breakpointsList = new ListView();
 			breakpointsList.FullRowSelect = true;
@@ -59,11 +61,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			name.Width = 300;
 			path.Width = 400;
 			
-			debugger.DebuggingResumed += new DebuggerEventHandler(debuggerService_OnDebuggingResumed);
-			debugger.BreakpointAdded += new DebuggerLibrary.BreakpointEventHandler(AddBreakpoint);
-			debugger.BreakpointStateChanged += new DebuggerLibrary.BreakpointEventHandler(RefreshBreakpoint);
-			debugger.BreakpointRemoved += new DebuggerLibrary.BreakpointEventHandler(RemoveBreakpoint);
-			debugger.BreakpointHit += new DebuggerLibrary.BreakpointEventHandler(Breakpoints_OnBreakpointHit);
+			debuggerCore.DebuggingResumed += new DebuggerEventHandler(debuggerService_OnDebuggingResumed);
+			debuggerCore.BreakpointAdded += new DebuggerLibrary.BreakpointEventHandler(AddBreakpoint);
+			debuggerCore.BreakpointStateChanged += new DebuggerLibrary.BreakpointEventHandler(RefreshBreakpoint);
+			debuggerCore.BreakpointRemoved += new DebuggerLibrary.BreakpointEventHandler(RemoveBreakpoint);
+			debuggerCore.BreakpointHit += new DebuggerLibrary.BreakpointEventHandler(Breakpoints_OnBreakpointHit);
 			
 			RedrawContent();
 		}
@@ -92,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			breakpointsList.ItemCheck -= new ItemCheckEventHandler(BreakpointsListItemCheck);
 			breakpointsList.BeginUpdate();
 			breakpointsList.Items.Clear();
-			foreach(DebuggerLibrary.Breakpoint b in debugger.Breakpoints) {
+			foreach(DebuggerLibrary.Breakpoint b in debuggerCore.Breakpoints) {
 				AddBreakpoint(new BreakpointEventArgs(b));
 			}
 			breakpointsList.EndUpdate();
@@ -157,7 +159,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void debuggerService_OnDebuggingResumed(object sender, DebuggerEventArgs e)
 		{
 			breakpointsList.BeginUpdate();
-			foreach(DebuggerLibrary.Breakpoint b in debugger.Breakpoints)
+			foreach(DebuggerLibrary.Breakpoint b in debuggerCore.Breakpoints)
 				RefreshBreakpoint(this, new BreakpointEventArgs(b));
 			breakpointsList.EndUpdate();
 		}

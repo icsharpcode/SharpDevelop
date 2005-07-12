@@ -63,6 +63,7 @@ namespace CustomSinks
 
 		IMessage IMessageSink.SyncProcessMessage(IMessage msg)
 		{
+			Console.WriteLine("Remoting message:" + msg.Properties["__MethodName"].ToString());
 			MethodCall methodCall = new MethodCall(msg);
 			if (methodCall.ArgCount > 0 && methodCall.Args[0] is Delegate) {
 				Delegate realDelegate = methodCall.Args[0] as Delegate;

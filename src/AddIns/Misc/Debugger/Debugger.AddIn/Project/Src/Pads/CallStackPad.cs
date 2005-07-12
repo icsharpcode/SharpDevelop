@@ -23,6 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public class CallStackPad : AbstractPadContent
 	{
 		WindowsDebugger debugger;
+		NDebugger debuggerCore;
 
 		ListView  callStackList;
 		
@@ -42,7 +43,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				
 		void InitializeComponents()
 		{
-            debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+			debuggerCore = debugger.DebuggerCore;
 
 			callStackList = new ListView();
 			callStackList.FullRowSelect = true;
@@ -57,8 +59,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			name.Width = 300;
 			language.Width = 400;
 			
-			debugger.IsDebuggingChanged += new DebuggerEventHandler(DebuggerStateChanged);
-			debugger.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
+			debuggerCore.IsDebuggingChanged += new DebuggerEventHandler(DebuggerStateChanged);
+			debuggerCore.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
 
 			RedrawContent();
 		}

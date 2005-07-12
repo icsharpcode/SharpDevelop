@@ -23,6 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public class LocalVarPad : AbstractPadContent
 	{
 		WindowsDebugger debugger;
+		NDebugger debuggerCore;
 
 		TreeListView localVarList;
 		
@@ -44,6 +45,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
+			debuggerCore = debugger.DebuggerCore;
 
 			ImageList imageList = new ImageList();
 			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.Class"));
@@ -65,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 			localVarList.BeforeExpand += new TreeListViewCancelEventHandler(localVarList_BeforeExpand);
 			
-			debugger.DebuggingPaused += new DebuggingPausedEventHandler(debuggerService_OnDebuggingPaused);
+			debuggerCore.DebuggingPaused += new DebuggingPausedEventHandler(debuggerService_OnDebuggingPaused);
 
 			RedrawContent();
 		}
@@ -86,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.BeginUpdate();
 			localVarList.Items.Clear();
 
-			AddVariables(localVarList.Items, debugger.LocalVariables);
+			AddVariables(localVarList.Items, debuggerCore.LocalVariables);
 
 			localVarList.EndUpdate();
 		}
