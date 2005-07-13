@@ -8,7 +8,7 @@ using DebuggerInterop.Core;
 
 namespace DebuggerLibrary 
 {
-	internal class VariableFactory
+	static class VariableFactory
 	{
 		public static Variable CreateVariable(NDebugger debugger, ICorDebugValue corValue, string name)
 		{

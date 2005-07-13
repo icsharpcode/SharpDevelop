@@ -8,6 +8,7 @@ namespace DebuggerLibrary
 {	
 	public delegate void ThreadEventHandler (object sender, ThreadEventArgs e);
 	
+	[Serializable]
 	public class ThreadEventArgs : System.EventArgs 
 	{
 		Thread thread;

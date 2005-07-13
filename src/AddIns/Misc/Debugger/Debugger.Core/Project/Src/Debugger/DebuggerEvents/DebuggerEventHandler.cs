@@ -8,6 +8,7 @@ namespace DebuggerLibrary
 {	
 	public delegate void DebuggerEventHandler (object sender, DebuggerEventArgs e);
 	
+	[Serializable]
 	public class DebuggerEventArgs : System.EventArgs 
 	{
 		// Some parameters are expected in the furture

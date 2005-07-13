@@ -75,7 +75,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			{
 				foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
 					string fullFilename = assembly.Location;
-					if (Path.GetFileNameWithoutExtension(fullFilename).ToLower() == args.Name.ToLower()) {
+					if (Path.GetFileNameWithoutExtension(fullFilename).ToLower() == args.Name.ToLower() ||
+						assembly.FullName == args.Name) {
 						return assembly;
 					}
 				}
@@ -86,6 +87,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		bool useRemotingForThreadInterop = false;
 
 		NDebugger debugger;
+		bool isDebuggingCache;
+		bool isProcessRunningCache;
 
 		public event EventHandler DebugStopped; // FIX: unused
 
@@ -168,12 +171,16 @@ namespace ICSharpCode.SharpDevelop.Services
 			debugger.DebuggingPaused         += new DebuggingPausedEventHandler(DebuggingPaused);
 			debugger.DebuggingResumed        += new DebuggerEventHandler(DebuggingResumed);
 			debugger.DebuggingStopped        += new DebuggerEventHandler(DebuggingStopped);
+			debugger.IsDebuggingChanged      += new DebuggerEventHandler(OnIsDebuggingChanged);
 			debugger.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
-			debugger.BreakpointStateChanged += new DebuggerLibrary.BreakpointEventHandler(RestoreSharpdevelopBreakpoint);
+			debugger.BreakpointStateChanged  += new DebuggerLibrary.BreakpointEventHandler(RestoreSharpdevelopBreakpoint);
 
 			DebuggerService.BreakPointAdded   += new EventHandler(RestoreNDebuggerBreakpoints);
 			DebuggerService.BreakPointRemoved += new EventHandler(RestoreNDebuggerBreakpoints);
 			DebuggerService.BreakPointChanged += new EventHandler(RestoreNDebuggerBreakpoints);
+
+			isDebuggingCache = debugger.IsDebugging;
+			isProcessRunningCache = debugger.IsProcessRunning;
 			
 			if (Initialize != null) {
 				Initialize(this, null);  
@@ -182,12 +189,15 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		public void UnloadService()
 		{
-			debugger.DebuggerTraceMessage   -= new MessageEventHandler(DebuggerTraceMessage);
-			debugger.LogMessage             -= new MessageEventHandler(LogMessage);
-			debugger.DebuggingStarted       -= new DebuggerEventHandler(DebuggingStarted);
-			debugger.DebuggingPaused        -= new DebuggingPausedEventHandler(DebuggingPaused);
+			debugger.DebuggerTraceMessage    -= new MessageEventHandler(DebuggerTraceMessage);
+			debugger.LogMessage              -= new MessageEventHandler(LogMessage);
+			debugger.DebuggingStarted        -= new DebuggerEventHandler(DebuggingStarted);
+			debugger.DebuggingPaused         -= new DebuggingPausedEventHandler(DebuggingPaused);
+			debugger.DebuggingResumed        -= new DebuggerEventHandler(DebuggingResumed);
+			debugger.DebuggingStopped        -= new DebuggerEventHandler(DebuggingStopped);
+			debugger.IsDebuggingChanged      -= new DebuggerEventHandler(OnIsDebuggingChanged);
 			debugger.IsProcessRunningChanged -= new DebuggerEventHandler(DebuggerStateChanged);
-			debugger.BreakpointStateChanged -= new DebuggerLibrary.BreakpointEventHandler(RestoreSharpdevelopBreakpoint);
+			debugger.BreakpointStateChanged  -= new DebuggerLibrary.BreakpointEventHandler(RestoreSharpdevelopBreakpoint);
 
 			DebuggerService.BreakPointAdded   -= new EventHandler(RestoreNDebuggerBreakpoints);
 			DebuggerService.BreakPointRemoved -= new EventHandler(RestoreNDebuggerBreakpoints);
@@ -202,13 +212,13 @@ namespace ICSharpCode.SharpDevelop.Services
 		#region ICSharpCode.SharpDevelop.Services.IDebugger interface implementation
 		public bool IsDebugging { 
 			get { 
-				return debugger.IsDebugging; 
+				return isDebuggingCache; 
 			} 
 		}
 		
 		public bool IsProcessRunning { 
 			get { 
-				return debugger.IsProcessRunning; 
+				return isProcessRunningCache; 
 			} 
 		}
 		
@@ -271,20 +281,21 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			debugger.ClearBreakpoints();
 			foreach (ICSharpCode.Core.Breakpoint b in DebuggerService.Breakpoints) {
-				DebuggerLibrary.Breakpoint newBreakpoint = new DebuggerLibrary.Breakpoint(debugger, b.FileName, b.LineNumber, 0, b.IsEnabled); 
-				newBreakpoint.Tag = b;
+				DebuggerLibrary.Breakpoint newBreakpoint = debugger.AddBreakpoint(b.FileName, b.LineNumber, 0, b.IsEnabled);
 				b.Tag = newBreakpoint;
-				debugger.AddBreakpoint(newBreakpoint); 
 			}
 		}
 
 		public void RestoreSharpdevelopBreakpoint(object sender, BreakpointEventArgs e)
 		{
-			ICSharpCode.Core.Breakpoint sdBreakpoint = e.Breakpoint.Tag as ICSharpCode.Core.Breakpoint;
-			if (sdBreakpoint != null) {
-				sdBreakpoint.IsEnabled  = e.Breakpoint.Enabled;
-				sdBreakpoint.FileName   = e.Breakpoint.SourcecodeSegment.SourceFullFilename;
-				sdBreakpoint.LineNumber = e.Breakpoint.SourcecodeSegment.StartLine;
+			foreach (ICSharpCode.Core.Breakpoint sdBreakpoint in DebuggerService.Breakpoints) {
+				if (sdBreakpoint.Tag == e.Breakpoint) {
+					if (sdBreakpoint != null) {
+						sdBreakpoint.IsEnabled  = e.Breakpoint.Enabled;
+						sdBreakpoint.FileName   = e.Breakpoint.SourcecodeSegment.SourceFullFilename;
+						sdBreakpoint.LineNumber = e.Breakpoint.SourcecodeSegment.StartLine;
+					}
+				}
 			}
 		}
 		
@@ -410,9 +421,17 @@ namespace ICSharpCode.SharpDevelop.Services
 				System.Diagnostics.Debug.Fail("Source code not aviable!");
 			}
 		}
+
+		void OnIsDebuggingChanged(object sender, DebuggerEventArgs e)
+		{
+			isDebuggingCache = debugger.IsDebugging;
+			isProcessRunningCache = debugger.IsProcessRunning;
+		}
 		
 		public void DebuggerStateChanged(object sender, DebuggerEventArgs e)
 		{
+			isDebuggingCache = debugger.IsDebugging;
+			isProcessRunningCache = debugger.IsProcessRunning;
 			UpdateToolbars();
 		}
 		

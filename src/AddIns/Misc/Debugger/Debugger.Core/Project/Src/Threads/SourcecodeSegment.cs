@@ -7,7 +7,7 @@ using System.Diagnostics.SymbolStore;
 
 namespace DebuggerLibrary
 {
-	public class SourcecodeSegment
+	public class SourcecodeSegment: MarshalByRefObject
 	{
 		string moduleFilename;
 		string sourceFullFilename;
@@ -20,6 +20,11 @@ namespace DebuggerLibrary
 		int ilEnd;
 		int[] stepRanges;
 		ISymbolDocument symUnmanagedDocument;
+
+		internal SourcecodeSegment()
+		{
+
+		}
 		
 		public string ModuleFilename {
 			get {

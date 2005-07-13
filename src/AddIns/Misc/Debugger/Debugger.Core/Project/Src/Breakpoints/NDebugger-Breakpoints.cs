@@ -65,7 +65,7 @@ namespace DebuggerLibrary
 			throw new UnableToGetPropertyException(this, "GetBreakpoint(ICorDebugBreakpoint corBreakpoint)", "Breakpoint is not in collection");
 		}
 
-		public Breakpoint AddBreakpoint(Breakpoint breakpoint)  
+		internal Breakpoint AddBreakpoint(Breakpoint breakpoint)  
 		{
 			breakpointCollection.Add(breakpoint);
 
@@ -96,6 +96,11 @@ namespace DebuggerLibrary
 		public Breakpoint AddBreakpoint(string sourceFilename, int line, int column)
 		{
 			return AddBreakpoint(new Breakpoint(this, sourceFilename, line, column));
+		}
+
+		public Breakpoint AddBreakpoint(string sourceFilename, int line, int column, bool enabled)
+		{
+			return AddBreakpoint(new Breakpoint(this, sourceFilename, line, column, enabled));
 		}
 
 		public void RemoveBreakpoint(Breakpoint breakpoint)  

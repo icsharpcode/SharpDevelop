@@ -10,7 +10,7 @@ using DebuggerInterop.Core;
 
 namespace DebuggerLibrary
 {
-	public abstract class Variable
+	public abstract class Variable: MarshalByRefObject
 	{
 		protected NDebugger debugger;
 

@@ -8,6 +8,7 @@ namespace DebuggerLibrary
 {	
 	public delegate void ModuleEventHandler (object sender, ModuleEventArgs e);
 	
+	[Serializable]
 	public class ModuleEventArgs : System.EventArgs 
 	{
 		Module module;

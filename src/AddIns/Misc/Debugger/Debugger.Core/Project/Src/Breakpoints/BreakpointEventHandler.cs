@@ -8,6 +8,7 @@ namespace DebuggerLibrary
 {	
 	public delegate void BreakpointEventHandler (object sender, BreakpointEventArgs e);
 	
+	[Serializable]
 	public class BreakpointEventArgs : System.EventArgs 
 	{
 		Breakpoint breakpoint;

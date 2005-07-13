@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			name.Width = 300;
 			path.Width = 400;
-			
+
 			debuggerCore.DebuggingResumed += new DebuggerEventHandler(debuggerService_OnDebuggingResumed);
 			debuggerCore.BreakpointAdded += new DebuggerLibrary.BreakpointEventHandler(AddBreakpoint);
 			debuggerCore.BreakpointStateChanged += new DebuggerLibrary.BreakpointEventHandler(RefreshBreakpoint);

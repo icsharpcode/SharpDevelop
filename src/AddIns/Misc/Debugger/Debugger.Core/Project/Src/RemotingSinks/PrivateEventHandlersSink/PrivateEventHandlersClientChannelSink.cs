@@ -63,18 +63,19 @@ namespace CustomSinks
 
 		IMessage IMessageSink.SyncProcessMessage(IMessage msg)
 		{
-			Console.WriteLine("Remoting message:" + msg.Properties["__MethodName"].ToString());
+			Console.WriteLine("Remoting call:" + msg.Properties["__MethodName"]);
 			MethodCall methodCall = new MethodCall(msg);
-			if (methodCall.ArgCount > 0 && methodCall.Args[0] is Delegate) {
+			if (methodCall.ArgCount == 1 && methodCall.Args[0] is Delegate) {
 				Delegate realDelegate = methodCall.Args[0] as Delegate;
-				Type type = realDelegate.GetType();
-				EventForwarder eventForwarder = new EventForwarder(realDelegate);
-				MethodInfo proxyMethod = typeof(EventForwarder).GetMethod("ForwardEvent" + realDelegate.Method.GetParameters().Length);
-				Delegate proxyDelegate = Delegate.CreateDelegate(type, eventForwarder, proxyMethod);
-				methodCall.Args[0] = proxyDelegate;
+				methodCall.Args[0] = new EventForwarder(realDelegate).ProxyDelegate;
 			}
 
-			return nextSink.SyncProcessMessage(methodCall);
+			AsyncMessageResponseSink responseSink = new AsyncMessageResponseSink();
+
+			// Send the message
+			nextSink.AsyncProcessMessage(methodCall, responseSink);
+
+			return responseSink.WaitForResponse();
 		}
 
 		// IChannelSinkBase Members

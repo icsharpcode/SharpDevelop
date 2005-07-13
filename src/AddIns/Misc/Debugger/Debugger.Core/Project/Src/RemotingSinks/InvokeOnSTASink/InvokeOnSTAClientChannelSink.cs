@@ -63,16 +63,15 @@ namespace CustomSinks
 		IMessage IMessageSink.SyncProcessMessage(IMessage msg)
 		{
 			IMessage response = null;
-			//Thread thread = new Thread(new ThreadStart(delegate {
+			Thread thread = new Thread(new ThreadStart(delegate {
 				response = nextSink.SyncProcessMessage(msg);
-			//}));
+			}));
 
-			//thread.Start();
-			//thread.Join();
+			thread.Start();
 
 			ThreadPriority oldPriority = Thread.CurrentThread.Priority;
 			Thread.CurrentThread.Priority = ThreadPriority.BelowNormal;
-			//while (thread.IsAlive) Application.DoEvents();
+			while (thread.IsAlive) Application.DoEvents();
 			Thread.CurrentThread.Priority = oldPriority;
 
 			return response;

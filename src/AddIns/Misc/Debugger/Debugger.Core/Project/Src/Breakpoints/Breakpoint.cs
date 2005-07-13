@@ -11,7 +11,7 @@ using DebuggerInterop.Core;
 
 namespace DebuggerLibrary
 {
-	public class Breakpoint
+	public class Breakpoint: MarshalByRefObject
 	{
 		NDebugger debugger;
 
@@ -21,20 +21,10 @@ namespace DebuggerLibrary
 		bool enabled = true;
 		ICorDebugFunctionBreakpoint corBreakpoint;
 		IntPtr pBreakpoint;
-		object tag;
 		
 		public SourcecodeSegment SourcecodeSegment {
 			get {
 				return sourcecodeSegment;
-			}
-		}
-
-		public object Tag {
-			get {
-				return tag;
-			}
-			set {
-				tag = value;
 			}
 		}
 		
@@ -84,20 +74,20 @@ namespace DebuggerLibrary
 				BreakpointHit(this, new BreakpointEventArgs(this));
 		}
 
-		public Breakpoint(NDebugger debugger, SourcecodeSegment segment)
+		internal Breakpoint(NDebugger debugger, SourcecodeSegment segment)
 		{
 			this.debugger = debugger;
 			sourcecodeSegment = segment;
 		}
 
-		public Breakpoint(NDebugger debugger, int line)
+		internal Breakpoint(NDebugger debugger, int line)
 		{
 			this.debugger = debugger;
 			sourcecodeSegment = new SourcecodeSegment();
 			sourcecodeSegment.StartLine = line;
 		}
 
-		public Breakpoint(NDebugger debugger, string sourceFilename, int line)
+		internal Breakpoint(NDebugger debugger, string sourceFilename, int line)
 		{
 			this.debugger = debugger;
 			sourcecodeSegment = new SourcecodeSegment();
@@ -105,7 +95,7 @@ namespace DebuggerLibrary
 			sourcecodeSegment.StartLine = line;
 		}
 
-		public Breakpoint(NDebugger debugger, string sourceFilename, int line, int column)
+		internal Breakpoint(NDebugger debugger, string sourceFilename, int line, int column)
 		{
 			this.debugger = debugger;
 			sourcecodeSegment = new SourcecodeSegment();
@@ -114,7 +104,7 @@ namespace DebuggerLibrary
 			sourcecodeSegment.StartColumn = column;
 		}
 
-		public Breakpoint(NDebugger debugger, string sourceFilename, int line, int column, bool enabled)
+		internal Breakpoint(NDebugger debugger, string sourceFilename, int line, int column, bool enabled)
 		{
 			this.debugger = debugger;
 			sourcecodeSegment = new SourcecodeSegment();

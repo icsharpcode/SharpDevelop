@@ -12,7 +12,7 @@ using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary
 {
-	public class Process 
+	public class Process: MarshalByRefObject
 	{
 		NDebugger debugger;
 

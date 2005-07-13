@@ -11,7 +11,7 @@ using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary
 {
-	public class Module
+	public class Module: MarshalByRefObject
 	{
 		string fullPath;
 		ulong  baseAdress;

@@ -10,8 +10,14 @@ using DebuggerInterop.Core;
 
 namespace DebuggerLibrary
 {
+	[Serializable]
 	public class VariableCollection: ReadOnlyCollectionBase
 	{
+		internal VariableCollection()
+		{
+
+		}
+
 		internal void Add(Variable variable)
 		{
 			System.Diagnostics.Trace.Assert(variable != null);
