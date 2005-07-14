@@ -11,7 +11,7 @@ using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary
 {	
-	public class Exception: MarshalByRefObject
+	public class Exception: RemotingObjectBase
 	{
 		NDebugger         debugger;
 		Thread            thread;

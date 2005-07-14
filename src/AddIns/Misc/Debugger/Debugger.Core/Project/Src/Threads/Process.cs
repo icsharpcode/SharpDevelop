@@ -12,7 +12,7 @@ using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary
 {
-	public class Process: MarshalByRefObject
+	public class Process: RemotingObjectBase
 	{
 		NDebugger debugger;
 
@@ -88,9 +88,13 @@ namespace DebuggerLibrary
 		
 		static public Process CreateProcess(NDebugger debugger, string filename, string workingDirectory, string arguments)
 		{
-			MTA2STA m2s = new MTA2STA();
 			Process createdProcess = null;
-			createdProcess = (Process)m2s.CallInSTA(typeof(Process), "StartInternal", new Object[] {debugger, filename, workingDirectory, arguments});
+			if (debugger.RequiredApartmentState == ApartmentState.STA) {
+				MTA2STA m2s = new MTA2STA();
+				createdProcess = (Process)m2s.CallInSTA(typeof(Process), "StartInternal", new Object[] {debugger, filename, workingDirectory, arguments});
+			} else {
+				createdProcess = StartInternal(debugger, filename, workingDirectory, arguments);
+			}
 			return createdProcess;
 		}
 

@@ -14,7 +14,7 @@ using System.Collections.Generic;
 
 namespace DebuggerLibrary
 {
-	public class Function: MarshalByRefObject
+	public class Function: RemotingObjectBase
 	{	
 		NDebugger debugger;
 

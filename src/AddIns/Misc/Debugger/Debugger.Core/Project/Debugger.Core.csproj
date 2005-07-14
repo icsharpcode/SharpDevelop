@@ -62,6 +62,8 @@
     <Compile Include="Src\Modules\ModuleEventHandler.cs" />
     <Compile Include="Src\Modules\NDebugger-Modules.cs" />
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\AsyncMessageResponseSink.cs" />
+    <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\MyProxy.cs" />
+    <Compile Include="Src\Debugger\Internal\RemotingObjectBase.cs" />
     <Compile Include="Src\Threads\Exception.cs" />
     <Compile Include="Src\Threads\ExceptionType.cs" />
     <Compile Include="Src\Threads\Function.cs" />

@@ -7,7 +7,7 @@ using System.Diagnostics.SymbolStore;
 
 namespace DebuggerLibrary
 {
-	public class SourcecodeSegment: MarshalByRefObject
+	public class SourcecodeSegment: RemotingObjectBase
 	{
 		string moduleFilename;
 		string sourceFullFilename;

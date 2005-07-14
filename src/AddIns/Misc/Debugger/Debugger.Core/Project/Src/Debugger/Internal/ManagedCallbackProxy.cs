@@ -21,18 +21,24 @@ namespace DebuggerLibrary
 {
 	class ManagedCallbackProxy :ICorDebugManagedCallback, ICorDebugManagedCallback2
 	{
-		MTA2STA mta2sta;
+		NDebugger debugger;
 		ManagedCallback realCallback;
+		MTA2STA mta2sta;
 		
-		public ManagedCallbackProxy(ManagedCallback realCallback)
+		public ManagedCallbackProxy(NDebugger debugger, ManagedCallback realCallback)
 		{
+			this.debugger = debugger;
 			this.realCallback = realCallback;
 			mta2sta = new MTA2STA();
 		}
 		
 		private void CallbackReceived (string function, object[] parameters)
 		{
-			mta2sta.CallInSTA(realCallback, function, parameters);
+			if (debugger.RequiredApartmentState == ApartmentState.STA) {
+				mta2sta.CallInSTA(realCallback, function, parameters);
+			} else {
+				mta2sta.Call(realCallback, function, parameters);
+			}
 		}
 		
 		

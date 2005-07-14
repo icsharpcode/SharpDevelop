@@ -11,7 +11,7 @@ using DebuggerInterop.Core;
 
 namespace DebuggerLibrary
 {
-	public class Breakpoint: MarshalByRefObject
+	public class Breakpoint: RemotingObjectBase
 	{
 		NDebugger debugger;
 

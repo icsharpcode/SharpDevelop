@@ -66,8 +66,13 @@ namespace DebuggerInterop.Core
 			}
 			return returnValue;
 		}
-		
+
 		void PerformCall(object sender, EventArgs e)
+		{
+			returnValue = Call(targetObject, functionName, functionParameters);
+		}
+
+		public object Call (object targetObject, string functionName, object[] functionParameters)
 		{
 			MethodInfo method;
 			object[] outputParams;
@@ -107,7 +112,7 @@ namespace DebuggerInterop.Core
 				}
 			}
 			TraceMsg ("Invoke " + functionName + "{");
-			returnValue = null;
+			object returnValue = null;
 			try {
 				if (targetObject is Type) {
 					returnValue = method.Invoke(null, outputParams);
@@ -118,6 +123,7 @@ namespace DebuggerInterop.Core
 				System.Diagnostics.Debug.Fail("Invoke of " + functionName + " failed.", exception.ToString());
 			}
 			TraceMsg ("} \\\\ Invoke");
+			return returnValue;
 		}
 	}
 }

@@ -12,7 +12,7 @@ using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary
 {
-	public partial class Thread: MarshalByRefObject
+	public partial class Thread: RemotingObjectBase
 	{
 		NDebugger debugger;
 

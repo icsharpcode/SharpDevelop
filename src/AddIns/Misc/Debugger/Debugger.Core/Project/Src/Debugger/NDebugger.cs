@@ -7,13 +7,14 @@ using System.Diagnostics;
 using System.Collections;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Threading;
 
 using DebuggerInterop.Core;
 using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary
 {
-	public partial class NDebugger: MarshalByRefObject
+	public partial class NDebugger: RemotingObjectBase
 	{
 		ICorDebug                  corDebug;
 		ManagedCallback            managedCallback;
@@ -22,6 +23,14 @@ namespace DebuggerLibrary
 		Process                    mainProcess;
 		
 		public bool CatchHandledExceptions = false;
+
+		ApartmentState requiredApartmentState;
+
+		public ApartmentState RequiredApartmentState {
+			get  {
+				 return requiredApartmentState;
+			}
+		}
 
 		internal ICorDebug CorDebug {
 			get {
@@ -60,6 +69,8 @@ namespace DebuggerLibrary
 
 		public NDebugger()
 		{
+			requiredApartmentState = System.Threading.Thread.CurrentThread.GetApartmentState();
+
 			InitDebugger();
 			ResetEnvironment();
 
@@ -82,7 +93,7 @@ namespace DebuggerLibrary
 
 			//corDebug              = new CorDebugClass();
 			managedCallback       = new ManagedCallback(this);
-			managedCallbackProxy  = new ManagedCallbackProxy(managedCallback);
+			managedCallbackProxy  = new ManagedCallbackProxy(this, managedCallback);
 
 			corDebug.Initialize();
 			corDebug.SetManagedHandler(managedCallbackProxy);
