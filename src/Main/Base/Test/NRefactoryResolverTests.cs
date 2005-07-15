@@ -207,6 +207,51 @@ End Module
 		#endregion
 		
 		#region Simple Tests
+		const string arrayListConflictProgram = @"using System.Collections;
+class A {
+	void Test() {
+		
+	}
+	
+	ArrayList arrayList;
+	public ArrayList ArrayList {
+		get {
+			return arrayList;
+		}
+	}
+}
+";
+		
+		[Test]
+		public void PropertyTypeConflictTest()
+		{
+			ResolveResult result = Resolve(arrayListConflictProgram, "arrayList", 4);
+			Assert.IsTrue(result is MemberResolveResult);
+			Assert.AreEqual("System.Collections.ArrayList", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void PropertyTypeConflictCompletionResultTest()
+		{
+			ResolveResult result = Resolve(arrayListConflictProgram, "ArrayList", 4);
+			// CC should offer both static and non-static results
+			ArrayList list = result.GetCompletionData(lastPC);
+			bool ok = false;
+			foreach (object o in list) {
+				IMethod method = o as IMethod;
+				if (method != null && method.Name == "AddRange")
+					ok = true;
+			}
+			Assert.IsTrue(ok, "AddRange should exist");
+			ok = false;
+			foreach (object o in list) {
+				IMethod method = o as IMethod;
+				if (method != null && method.Name == "Adapter")
+					ok = true;
+			}
+			Assert.IsTrue(ok, "Adapter should exist");
+		}
+		
 		[Test]
 		public void InheritedInterfaceResolveTest()
 		{

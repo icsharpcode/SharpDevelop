@@ -107,6 +107,37 @@ namespace ICSharpCode.SharpDevelop.Dom
 	}
 	#endregion
 	
+	#region MixedResolveResult
+	/// <summary>
+	/// The MixedResolveResult is used when an expression can have multiple meanings, for example
+	/// "Size" in a class deriving from "Control".
+	/// </summary>
+	public class MixedResolveResult : ResolveResult
+	{
+		ResolveResult primaryResult, secondaryResult;
+		
+		public MixedResolveResult(ResolveResult primaryResult, ResolveResult secondaryResult)
+			: base(primaryResult.CallingClass, primaryResult.CallingMember, primaryResult.ResolvedType)
+		{
+			this.primaryResult = primaryResult;
+			this.secondaryResult = secondaryResult;
+		}
+		
+		public override ArrayList GetCompletionData(IProjectContent projectContent)
+		{
+			ArrayList result = primaryResult.GetCompletionData(projectContent);
+			ArrayList result2 = secondaryResult.GetCompletionData(projectContent);
+			if (result == null)  return result2;
+			if (result2 == null) return result;
+			foreach (object o in result2) {
+				if (!result.Contains(o))
+					result.Add(o);
+			}
+			return result;
+		}
+	}
+	#endregion
+	
 	#region LocalResolveResult
 	/// <summary>
 	/// The LocalResolveResult is used when an expression was a simple local variable

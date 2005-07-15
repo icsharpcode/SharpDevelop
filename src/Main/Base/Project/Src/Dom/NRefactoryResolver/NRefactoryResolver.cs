@@ -329,6 +329,22 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (name != null && name != "") {
 				return new NamespaceResolveResult(callingClass, callingMember, name);
 			}
+			
+			ResolveResult result = ResolveIdentifierInternal(identifier);
+			ResolveResult result2 = null;
+			
+			IClass c = SearchType(identifier, callingClass, cu);
+			if (c != null) {
+				result2 = new TypeResolveResult(callingClass, callingMember, c.DefaultReturnType, c);
+			}
+			
+			if (result == null)  return result2;
+			if (result2 == null) return result;
+			return new MixedResolveResult(result, result2);
+		}
+		
+		ResolveResult ResolveIdentifierInternal(string identifier)
+		{
 			if (callingMember != null) { // LocalResolveResult requires callingMember to be set
 				LocalLookupVariable var = SearchVariable(identifier);
 				if (var != null) {
@@ -350,11 +366,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				ResolveResult result = ResolveMethod(callingClass.DefaultReturnType, identifier);
 				if (result != null)
 					return result;
-			}
-			
-			IClass c = SearchType(identifier, callingClass, cu);
-			if (c != null) {
-				return new TypeResolveResult(callingClass, callingMember, c.DefaultReturnType, c);
 			}
 			
 			// try if there exists a static member in outer classes named typeName
