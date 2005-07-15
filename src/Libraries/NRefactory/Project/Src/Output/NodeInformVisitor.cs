@@ -62,10 +62,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			foreach (INode child in node.Children) {
 				TrackedVisit(child, data);
 			}
+			if (NodeChildrenVisited != null) {
+				NodeChildrenVisited(node);
+			}
 			return data;
 		}
 		
 		public event InformNode NodeVisiting;
+		public event InformNode NodeChildrenVisited;
 		public event InformNode NodeVisited;
 	}
 }

@@ -1,13 +1,61 @@
 using System;
 using System.Drawing;
-using System.Text;
-using System.CodeDom;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser
 {
 	public class PreProcessingDirective : AbstractSpecial
 	{
+		public static void VBToCSharp(List<ISpecial> list)
+		{
+			for (int i = 0; i < list.Count; ++i) {
+				if (list[i] is PreProcessingDirective)
+					list[i] = VBToCSharp((PreProcessingDirective)list[i]);
+			}
+		}
+		
+		public static PreProcessingDirective VBToCSharp(PreProcessingDirective dir)
+		{
+			string cmd = dir.Cmd.ToLower();
+			string arg = dir.Arg;
+			switch (cmd) {
+				case "#end":
+					if (arg.ToLower().StartsWith("region")) {
+						cmd = "#endregion";
+						arg = "";
+					}
+					break;
+			}
+			return new PreProcessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
+		}
+		
+		public static void CSharpToVB(List<ISpecial> list)
+		{
+			for (int i = 0; i < list.Count; ++i) {
+				if (list[i] is PreProcessingDirective)
+					list[i] = CSharpToVB((PreProcessingDirective)list[i]);
+			}
+		}
+		
+		public static PreProcessingDirective CSharpToVB(PreProcessingDirective dir)
+		{
+			string cmd = dir.Cmd;
+			string arg = dir.Arg;
+			switch (cmd) {
+				case "#region":
+					cmd = "#Region";
+					if (!arg.StartsWith("\"")) {
+						arg = "\"" + arg.Trim() + "\"";
+					}
+					break;
+				case "#endregion":
+					cmd = "#End";
+					arg = "Region";
+					break;
+			}
+			return new PreProcessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
+		}
+		
 		string cmd;
 		string arg;
 		

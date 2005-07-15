@@ -1621,30 +1621,32 @@ Statement
 (.
 	TypeReference type;
 	Expression expr;
-	Statement stmt;
+	Statement stmt = null;
 	Point startPos = la.Location;
 .)
 =
-	/*--- labeled statement: */
-	IF (IsLabel()) ident (. compilationUnit.AddChild(new LabelStatement(t.val)); .)
-	":" Statement
-	/*--- local constant declaration: */
-	| "const" Type<out type> (. LocalVariableDeclaration var = new LocalVariableDeclaration(type, Modifier.Const); string ident = null; var.StartLocation = t.Location; .) 
-	  ident (. ident = t.val; .)
-	  "=" Expr<out expr> (. var.Variables.Add(new VariableDeclaration(ident, expr)); .)
-	  { "," ident (. ident = t.val; .) "=" Expr<out expr> (. var.Variables.Add(new VariableDeclaration(ident, expr)); .) }
-	  ";" (. compilationUnit.AddChild(var); .)
-	/*--- local variable declaration: */
-	| IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> ";" (. compilationUnit.AddChild(stmt); .)
-	| EmbeddedStatement<out stmt> (. compilationUnit.AddChild(stmt); .)
-	/* LL(1) confict: LocalVariableDecl *
-	 *            <-> StatementExpr     *
-	 * ident {"." ident} { "[" Expr ... */
-	
-	(. if (stmt != null) {
-		stmt.StartLocation = startPos;
-		stmt.EndLocation = t.EndLocation;
-	   }
+	(
+		/*--- labeled statement: */
+		IF (IsLabel()) ident (. compilationUnit.AddChild(new LabelStatement(t.val)); .)
+		":" Statement
+		/*--- local constant declaration: */
+		| "const" Type<out type> (. LocalVariableDeclaration var = new LocalVariableDeclaration(type, Modifier.Const); string ident = null; var.StartLocation = t.Location; .) 
+		  ident (. ident = t.val; .)
+		  "=" Expr<out expr> (. var.Variables.Add(new VariableDeclaration(ident, expr)); .)
+		  { "," ident (. ident = t.val; .) "=" Expr<out expr> (. var.Variables.Add(new VariableDeclaration(ident, expr)); .) }
+		  ";" (. compilationUnit.AddChild(var); .)
+		/*--- local variable declaration: */
+		| IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> ";" (. compilationUnit.AddChild(stmt); .)
+		| EmbeddedStatement<out stmt> (. compilationUnit.AddChild(stmt); .)
+		/* LL(1) confict: LocalVariableDecl *
+		 *            <-> StatementExpr     *
+		 * ident {"." ident} { "[" Expr ... */
+	)
+	(.
+		if (stmt != null) {
+			stmt.StartLocation = startPos;
+			stmt.EndLocation = t.EndLocation;
+		}
 	.)
 .
 

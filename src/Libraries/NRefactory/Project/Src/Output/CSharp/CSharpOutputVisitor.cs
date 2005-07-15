@@ -295,6 +295,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
+		TypeDeclaration currentType = null;
+		
 		public object Visit(TypeDeclaration typeDeclaration, object data)
 		{
 			VisitAttributes(typeDeclaration.Attributes, data);
@@ -347,11 +349,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 			}
 			
+			TypeDeclaration oldType = currentType;
+			currentType = typeDeclaration;
 			if (typeDeclaration.Type == Types.Enum) {
 				OutputEnumMembers(typeDeclaration, data);
 			} else {
 				nodeTracker.TrackedVisitChildren(typeDeclaration, data);
 			}
+			currentType = oldType;
 			outputFormatter.EndBrace();
 			
 			return null;
@@ -549,7 +554,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			VisitAttributes(constructorDeclaration.Attributes, data);
 			outputFormatter.Indent();
 			OutputModifier(constructorDeclaration.Modifier);
-			outputFormatter.PrintIdentifier(constructorDeclaration.Name);
+			if (currentType != null) {
+				outputFormatter.PrintIdentifier(currentType.Name);
+			} else {
+				outputFormatter.PrintIdentifier(constructorDeclaration.Name);
+			}
 			if (prettyPrintOptions.BeforeConstructorDeclarationParentheses) {
 				outputFormatter.Space();
 			}
@@ -736,8 +745,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		void OutputBlock(BlockStatement blockStatement, BraceStyle braceStyle)
 		{
+			nodeTracker.BeginNode(blockStatement);
 			if (blockStatement.IsNull) {
 				outputFormatter.PrintToken(Tokens.Semicolon);
+				outputFormatter.NewLine();
+				nodeTracker.EndNode(blockStatement);
 			} else {
 				outputFormatter.BeginBrace(braceStyle);
 				foreach (Statement stmt in blockStatement.Children) {
@@ -745,9 +757,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					nodeTracker.TrackedVisit(stmt, null);
 					outputFormatter.NewLine();
 				}
+				nodeTracker.EndNode(blockStatement);
 				outputFormatter.EndBrace();
 			}
-			outputFormatter.NewLine();
 		}
 		
 		public object Visit(BlockStatement blockStatement, object data)

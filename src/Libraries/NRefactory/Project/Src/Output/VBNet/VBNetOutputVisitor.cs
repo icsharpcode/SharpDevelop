@@ -268,7 +268,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(TypeDeclaration typeDeclaration, object data)
 		{
-			outputFormatter.NewLine();
 			VisitAttributes(typeDeclaration.Attributes, data);
 			
 			outputFormatter.Indent();
@@ -298,7 +297,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			foreach (TemplateDefinition templateDefinition in typeDeclaration.Templates) {
-				templateDefinition.AcceptVisitor(this, data);
+				nodeTracker.TrackedVisit(templateDefinition, data);
 			}
 			
 			++outputFormatter.IndentationLevel;
@@ -327,7 +326,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(DelegateDeclaration delegateDeclaration, object data)
 		{
-			outputFormatter.NewLine();
 			VisitAttributes(delegateDeclaration.Attributes, data);
 			OutputModifier(delegateDeclaration.Modifier);
 			outputFormatter.PrintToken(Tokens.Delegate);

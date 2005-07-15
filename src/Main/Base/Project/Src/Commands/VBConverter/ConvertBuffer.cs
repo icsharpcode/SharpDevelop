@@ -9,8 +9,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Drawing;
-using System.Drawing.Printing;
-using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Diagnostics;
@@ -44,10 +43,13 @@ namespace ICSharpCode.SharpDevelop.Commands
 				
 				ICSharpCode.NRefactory.PrettyPrinter.VBNetOutputVisitor vbv = new ICSharpCode.NRefactory.PrettyPrinter.VBNetOutputVisitor();
 				
-				SpecialNodesInserter sni = new SpecialNodesInserter(p.Lexer.SpecialTracker.CurrentSpecials,
+				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
+				PreProcessingDirective.CSharpToVB(specials);
+				SpecialNodesInserter sni = new SpecialNodesInserter(specials,
 				                                                    new SpecialOutputVisitor(vbv.OutputFormatter));
 				vbv.NodeTracker.NodeVisiting += sni.AcceptNodeStart;
 				vbv.NodeTracker.NodeVisited  += sni.AcceptNodeEnd;
+				vbv.NodeTracker.NodeChildrenVisited += sni.AcceptNodeEnd;
 				vbv.Visit(p.CompilationUnit, null);
 				sni.Finish();
 				

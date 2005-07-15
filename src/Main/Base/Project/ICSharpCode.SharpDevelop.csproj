@@ -669,8 +669,7 @@
     <Compile Include="Src\Services\ProjectService\ParseableFileContentEnumerator.cs" />
     <Compile Include="Src\Services\ParserService\ParseProjectContent.cs" />
     <Compile Include="Src\Services\ParserService\ReflectionProjectContent.cs" />
-    <Compile Include="Src\Dom\IMethod.cs" />
-  </ItemGroup>
+   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
       <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>

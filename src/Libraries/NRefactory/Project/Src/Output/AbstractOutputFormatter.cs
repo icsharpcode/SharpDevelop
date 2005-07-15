@@ -69,8 +69,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			this.prettyPrintOptions = prettyPrintOptions;
 		}
 		
-		bool isIndented = false;
-		
 		public void Indent()
 		{
 			if (DoIndent) {
@@ -87,7 +85,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						++indent;
 					}
 				}
-				isIndented = true;
 			}
 		}
 		
@@ -96,54 +93,38 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			text.Append(' ');
 		}
 		
-		bool gotBlankLine = true;
-		ArrayList specialsText = new ArrayList();
+		int lastLineStart = 0;
 		
 		public virtual void NewLine()
 		{
 			if (DoNewLine) {
-				text.Append(Environment.NewLine);
-				gotBlankLine = true;
-				isIndented = false;
-				WriteSpecials();
+				text.AppendLine();
+				lastLineStart = text.Length;
 			}
 		}
 		
 		public virtual void EndFile()
 		{
-			WriteSpecials();
 		}
 		
-		protected void WriteInNextNewLine(string text)
+		protected void WriteInPreviousLine(string txt)
 		{
-			specialsText.Add(text);
-			if (gotBlankLine) {
-				WriteSpecials();
-			}
-		}
-		
-		void WriteSpecials()
-		{
-			if (isIndented) {
-				foreach (string txt in specialsText) {
-					text.Append(txt);
-					text.Append(Environment.NewLine);
-					Indent();
-				}
+			if (text.Length == lastLineStart) {
+				Indent();
+				text.AppendLine(txt);
+				lastLineStart = text.Length;
 			} else {
-				foreach (string txt in specialsText) {
-					Indent();
-					text.Append(txt);
-					text.Append(Environment.NewLine);
-				}
-				isIndented = false;
+				string lastLine = text.ToString(lastLineStart, text.Length - lastLineStart);
+				text.Remove(lastLineStart, text.Length - lastLineStart);
+				Indent();
+				text.AppendLine(txt);
+				lastLineStart = text.Length;
+				text.Append(lastLine);
 			}
-			specialsText.Clear();
 		}
 		
 		public void PrintTokenList(ArrayList tokenList)
 		{
-			gotBlankLine = false;
 			foreach (int token in tokenList) {
 				PrintToken(token);
 				Space();
@@ -154,20 +135,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public virtual void PrintPreProcessingDirective(PreProcessingDirective directive)
 		{
-			WriteInNextNewLine(directive.Cmd + directive.Arg);
+			WriteInPreviousLine(directive.Cmd + " " + directive.Arg);
 		}
 		
 		public abstract void PrintToken(int token);
 		
 		protected void PrintToken(string text)
 		{
-			gotBlankLine = false;
 			this.text.Append(text);
 		}
 		
 		public void PrintIdentifier(string identifier)
 		{
-			gotBlankLine = false;
 			text.Append(identifier);
 		}
 	}

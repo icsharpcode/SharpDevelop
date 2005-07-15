@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				}
 				
 				if (Char.IsLetter(ch) || ch == '_') {
-					int x = col;
+					int x = col - 1; // col was incremented above, but we want the start of the identifier
 					int y = line;
 					string s = ReadIdent(ch);
 					int keyWordToken = Keywords.GetToken(s);
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						Point start = new Point(col - 1, line);
 						string directive = ReadIdent('#');
 						string argument  = ReadToEOL();
-						this.specialTracker.AddPreProcessingDirective(directive, argument, start, new Point(start.X + directive.Length + argument.Length, start.Y));
+						this.specialTracker.AddPreProcessingDirective(directive, argument.Trim(), start, new Point(start.X + directive.Length + argument.Length, start.Y));
 						continue;
 					case '"':
 						return ReadString();

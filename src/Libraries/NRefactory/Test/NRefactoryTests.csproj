@@ -2,9 +2,9 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.40607</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{870115dd-960a-4406-a6b9-600bcdc36a03}</ProjectGuid>
+    <ProjectGuid>{870115DD-960A-4406-A6B9-600BCDC36A03}</ProjectGuid>
     <RootNamespace>ICSharpCode.NRefactory.Tests</RootNamespace>
     <AssemblyName>ICSharpCode.NRefactory.Tests</AssemblyName>
     <OutputTarget>Library</OutputTarget>
@@ -12,6 +12,9 @@
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <OutputType>Library</OutputType>
+    <StartupObject>
+    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -36,7 +39,6 @@
     <Reference Include="nunit.framework, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
     <Compile Include="Lexer\CSharp\LexerTest.cs" />
     <Compile Include="General\UnitTest.cs" />
@@ -127,14 +129,6 @@
     <Compile Include="Output\CodeDOM\InvocationExpressionTest.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="General\" />
-    <Folder Include="Lexer\" />
-    <Folder Include="Lexer\CSharp\" />
-    <Folder Include="Lexer\VBNet\" />
-    <Folder Include="Parser\" />
-    <Folder Include="Output\" />
-    <Folder Include="Output\CSharp\" />
-    <Folder Include="Output\CodeDOM\" />
     <ProjectReference Include="..\Project\NRefactory.csproj">
       <Project>{3a9ae6aa-bc07-4a2f-972c-581e3ae2f195}</Project>
       <Name>ICSharpCode.NRefactory</Name>

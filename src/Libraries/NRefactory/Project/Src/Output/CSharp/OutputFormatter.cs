@@ -127,10 +127,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					PrintToken("*/");
 					break;
 				case CommentType.Documentation:
-					WriteInNextNewLine("///" + comment.CommentText);
+					WriteInPreviousLine("///" + comment.CommentText);
 					break;
 				default:
-					WriteInNextNewLine("//" + comment.CommentText);
+					WriteInPreviousLine("//" + comment.CommentText);
 					break;
 			}
 		}

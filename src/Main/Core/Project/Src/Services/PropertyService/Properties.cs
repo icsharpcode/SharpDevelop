@@ -163,10 +163,10 @@ namespace ICSharpCode.Core
 					writer.WriteAttributeString("name", entry.Key);
 					((Properties)val).WriteProperties(writer);
 					writer.WriteEndElement();
-				} else if (val is Array) {
+				} else if (val is Array || val is ArrayList) {
 					writer.WriteStartElement("Array");
 					writer.WriteAttributeString("name", entry.Key);
-					foreach (object o in (Array)val) {
+					foreach (object o in (IEnumerable)val) {
 						writer.WriteStartElement("Element");
 						WriteValue(writer, o);
 						writer.WriteEndElement();

@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -123,8 +123,8 @@ namespace ICSharpCode.TextEditor.Document
 			
 			this.FoldType = foldType;
 			this.foldText = foldText;
-			this.offset = startLineSegment.Offset + startColumn;
-			this.length = (endLineSegment.Offset + endColumn) - this.offset;
+			this.offset = startLineSegment.Offset + Math.Min(startColumn, startLineSegment.Length);
+			this.length = (endLineSegment.Offset + Math.Min(endColumn, endLineSegment.Length)) - this.offset;
 			this.isFolded = isFolded;
 		}
 		

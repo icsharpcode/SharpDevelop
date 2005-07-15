@@ -444,23 +444,4 @@ namespace ICSharpCode.Core
 
 		public static event ParseInformationEventHandler ParseInformationUpdated;
 	}
-	
-//	[Serializable]
-//	public class DummyCompilationUnit : AbstractCompilationUnit
-//	{
-//		List<IComment> miscComments = new List<IComment>();
-//		List<IComment> dokuComments = new List<IComment>();
-//
-//		public override List<IComment> MiscComments {
-//			get {
-//				return miscComments;
-//			}
-//		}
-//
-//		public override List<IComment> DokuComments {
-//			get {
-//				return dokuComments;
-//			}
-//		}
-//	}
 }

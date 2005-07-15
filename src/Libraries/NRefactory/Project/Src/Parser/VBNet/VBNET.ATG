@@ -1904,18 +1904,26 @@ Block<out Statement stmt>
 
 Statement
 	(.
-		Statement stmt;
+		Statement stmt = null;
+		Point startPos = la.Location;
 		string label = String.Empty;
 		
 	.) =
-| IF (IsLabel()) LabelName<out label>
-(.
-	compilationUnit.AddChild(new LabelStatement(t.val));
-.)
-":" Statement
-| EmbeddedStatement<out stmt>			(. compilationUnit.AddChild(stmt); .)
-| LocalDeclarationStatement<out stmt>	(. compilationUnit.AddChild(stmt); .)
-	
+	(
+		| IF (IsLabel()) LabelName<out label>
+		(.
+			compilationUnit.AddChild(new LabelStatement(t.val));
+		.)
+		":" Statement
+		| EmbeddedStatement<out stmt>			(. compilationUnit.AddChild(stmt); .)
+		| LocalDeclarationStatement<out stmt>	(. compilationUnit.AddChild(stmt); .)
+	)
+	(.
+		if (stmt != null) {
+			stmt.StartLocation = startPos;
+			stmt.EndLocation = t.Location;
+		}
+	.)
 .
 
 /* 10.2 */

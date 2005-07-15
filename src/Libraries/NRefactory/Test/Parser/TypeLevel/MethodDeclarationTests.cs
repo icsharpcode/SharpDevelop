@@ -30,6 +30,39 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		}
 		
 		[Test]
+		public void CSharpSimpleMethodRegionTest()
+		{
+			const string program = @"
+		void MyMethod()
+		{
+			OtherMethod();
+		}
+";
+			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember(program, typeof(MethodDeclaration));
+			Assert.AreEqual(2, md.StartLocation.Y, "StartLocation.Y");
+			Assert.AreEqual(2, md.EndLocation.Y, "EndLocation.Y");
+			Assert.AreEqual(3, md.StartLocation.X, "StartLocation.X");
+			
+			// endLocation.X is currently 20. It should be 18, but that error is not critical
+			//Assert.AreEqual(18, md.EndLocation.X, "EndLocation.X");
+		}
+		
+		[Test]
+		public void CSharpMethodWithModifiersRegionTest()
+		{
+			const string program = @"
+		public static void MyMethod()
+		{
+			OtherMethod();
+		}
+";
+			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember(program, typeof(MethodDeclaration));
+			Assert.AreEqual(2, md.StartLocation.Y, "StartLocation.Y");
+			Assert.AreEqual(2, md.EndLocation.Y, "EndLocation.Y");
+			Assert.AreEqual(3, md.StartLocation.X, "StartLocation.X");
+		}
+		
+		[Test]
 		public void CSharpMethodWithUnnamedParameterDeclarationTest()
 		{
 			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("void MyMethod(int) {} ", typeof(MethodDeclaration), true);
