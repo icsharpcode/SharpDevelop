@@ -754,7 +754,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					} else {
 						string tag = curWord.ToString();
 						curWord.Length = 0;
-						if (specialCommentHash[tag] != null) {
+						if (specialCommentHash.ContainsKey(tag)) {
 							Point p = new Point(col ,line);
 							string comment = ReadToEOL();
 							tagComments.Add(new TagComment(tag, comment, p));
@@ -771,14 +771,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		void ReadSingleLineComment(CommentType commentType)
 		{
-			specialTracker.StartComment(commentType, new Point(line, col));
+			specialTracker.StartComment(commentType, new Point(col, line));
 			specialTracker.AddString(ReadCommentToEOL());
 			specialTracker.FinishComment();
 		}
 		
 		void ReadMultiLineComment()
 		{
-			specialTracker.StartComment(CommentType.Block, new Point(line, col));
+			specialTracker.StartComment(CommentType.Block, new Point(col, line));
 			int nextChar;
 			while ((nextChar = reader.Read()) != -1) {
 				char ch = (char)nextChar;

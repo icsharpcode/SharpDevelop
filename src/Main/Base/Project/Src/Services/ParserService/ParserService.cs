@@ -128,7 +128,7 @@ namespace ICSharpCode.Core
 					ParseProjectContent newContent = ParseProjectContent.CreateUninitalized(project);
 					lock (projectContents) {
 						projectContents[project] = newContent;
-					}
+					} 
 					createdContents.Add(newContent);
 				} catch (Exception e) {
 					Console.WriteLine("Error while retrieving project contents from {0}:", project);
@@ -392,6 +392,8 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
+		public static readonly string[] DefaultTaskListTokens = {"HACK", "TODO", "UNDONE", "FIXME"};
+		
 		public static IParser GetParser(string fileName)
 		{
 			IParser curParser = null;
@@ -403,8 +405,7 @@ namespace ICSharpCode.Core
 			}
 			
 			if (curParser != null) {
-				string tasklisttokens = PropertyService.Get("SharpDevelop.TaskListTokens", "HACK;TODO;UNDONE;FIXME");
-				curParser.LexerTags = tasklisttokens.Split(';');
+				curParser.LexerTags = PropertyService.Get("SharpDevelop.TaskListTokens", DefaultTaskListTokens);
 			}
 			
 			return curParser;

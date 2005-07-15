@@ -23,7 +23,7 @@ using System.Text;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Actions;
- 
+
 namespace ICSharpCode.TextEditor
 {
 	/// <summary>
@@ -53,19 +53,19 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
+		Encoding encoding;
+		
 		/// <value>
 		/// Current file's character encoding
 		/// </value>
 		public Encoding Encoding {
 			get {
-				return TextEditorProperties.Encoding;
+				if (encoding == null)
+					return TextEditorProperties.Encoding;
+				return encoding;
 			}
 			set {
-//				if (encoding != null && value != null && !encoding.Equals(value) && !CharacterEncoding.IsUnicode(value)) {
-//					Byte[] bytes = encoding.GetBytes(Text);
-//					Text = new String(value.GetChars(bytes));
-//				}
-				TextEditorProperties.Encoding = value;
+				encoding = value;
 			}
 		}
 		
@@ -144,7 +144,7 @@ namespace ICSharpCode.TextEditor
 		[Browsable(false)]
 		public bool IsInUpdate {
 			get {
-				return this.updateLevel > 0; 
+				return this.updateLevel > 0;
 			}
 		}
 		
@@ -158,7 +158,7 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-#region Document Properties
+		#region Document Properties
 		/// <value>
 		/// If true spaces are shown in the textarea
 		/// </value>
@@ -182,10 +182,10 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(false)]
 		[Description("If true antialiased fonts are used inside the textarea")]
 		public bool UseAntiAliasFont {
-			get { 
+			get {
 				return document.TextEditorProperties.UseAntiAliasedFont;
 			}
-			set { 
+			set {
 				document.TextEditorProperties.UseAntiAliasedFont = value;
 				OptionsChanged();
 			}
@@ -198,7 +198,7 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(false)]
 		[Description("If true tabs are shown in the textarea")]
 		public bool ShowTabs {
-			get { 
+			get {
 				return document.TextEditorProperties.ShowTabs;
 			}
 			set {
@@ -230,10 +230,10 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(false)]
 		[Description("If true the horizontal ruler is shown in the textarea")]
 		public bool ShowHRuler {
-			get { 
+			get {
 				return document.TextEditorProperties.ShowHorizontalRuler;
 			}
-			set { 
+			set {
 				document.TextEditorProperties.ShowHorizontalRuler = value;
 				OptionsChanged();
 			}
@@ -294,10 +294,10 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(true)]
 		[Description("If true invalid lines are marked in the textarea")]
 		public bool ShowInvalidLines {
-			get { 
+			get {
 				return document.TextEditorProperties.ShowInvalidLines;
 			}
-			set { 
+			set {
 				document.TextEditorProperties.ShowInvalidLines = value;
 				OptionsChanged();
 			}
@@ -310,7 +310,7 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(true)]
 		[Description("If true folding is enabled in the textarea")]
 		public bool EnableFolding {
-			get { 
+			get {
 				return document.TextEditorProperties.EnableFolding;
 			}
 			set {
@@ -323,7 +323,7 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(true)]
 		[Description("If true matching brackets are highlighted")]
 		public bool ShowMatchingBracket {
-			get { 
+			get {
 				return document.TextEditorProperties.ShowMatchingBracket;
 			}
 			set {
@@ -336,7 +336,7 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(true)]
 		[Description("If true the icon bar is displayed")]
 		public bool IsIconBarVisible {
-			get { 
+			get {
 				return document.TextEditorProperties.IsIconBarVisible;
 			}
 			set {
@@ -352,10 +352,10 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(4)]
 		[Description("The width in spaces of a tab character")]
 		public int TabIndent {
-			get { 
+			get {
 				return document.TextEditorProperties.TabIndent;
 			}
-			set { 
+			set {
 				document.TextEditorProperties.TabIndent = value;
 				OptionsChanged();
 			}
@@ -368,10 +368,10 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(LineViewerStyle.None)]
 		[Description("The line viewer style")]
 		public LineViewerStyle LineViewerStyle {
-			get { 
+			get {
 				return document.TextEditorProperties.LineViewerStyle;
 			}
-			set { 
+			set {
 				document.TextEditorProperties.LineViewerStyle = value;
 				OptionsChanged();
 			}
@@ -384,10 +384,10 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(IndentStyle.Smart)]
 		[Description("The indent style")]
 		public IndentStyle IndentStyle {
-			get { 
+			get {
 				return document.TextEditorProperties.IndentStyle;
 			}
-			set { 
+			set {
 				document.TextEditorProperties.IndentStyle = value;
 				OptionsChanged();
 			}
@@ -400,10 +400,10 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(false)]
 		[Description("Converts tabs to spaces while typing")]
 		public bool ConvertTabsToSpaces {
-			get { 
+			get {
 				return document.TextEditorProperties.ConvertTabsToSpaces;
 			}
-			set { 
+			set {
 				document.TextEditorProperties.ConvertTabsToSpaces = value;
 				OptionsChanged();
 			}
@@ -416,10 +416,10 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(false)]
 		[Description("Creates a backup copy for overwritten files")]
 		public bool CreateBackupCopy {
-			get { 
+			get {
 				return document.TextEditorProperties.CreateBackupCopy;
 			}
-			set { 
+			set {
 				document.TextEditorProperties.CreateBackupCopy = value;
 				OptionsChanged();
 			}
@@ -432,10 +432,10 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(false)]
 		[Description("Hide the mouse cursor while typing")]
 		public bool HideMouseCursor {
-			get { 
+			get {
 				return document.TextEditorProperties.HideMouseCursor;
 			}
-			set { 
+			set {
 				document.TextEditorProperties.HideMouseCursor = value;
 				OptionsChanged();
 			}
@@ -448,10 +448,10 @@ namespace ICSharpCode.TextEditor
 		[DefaultValue(false)]
 		[Description("Allows the caret to be places beyonde the end of line")]
 		public bool AllowCaretBeyondEOL {
-			get { 
+			get {
 				return document.TextEditorProperties.AllowCaretBeyondEOL;
 			}
-			set { 
+			set {
 				document.TextEditorProperties.AllowCaretBeyondEOL = value;
 				OptionsChanged();
 			}
@@ -488,8 +488,8 @@ namespace ICSharpCode.TextEditor
 				OptionsChanged();
 			}
 		}
-			
-#endregion
+		
+		#endregion
 		public abstract TextAreaControl ActiveTextAreaControl {
 			get;
 		}
@@ -510,7 +510,7 @@ namespace ICSharpCode.TextEditor
 		}
 		
 		
-				
+		
 		internal IEditAction GetEditAction(Keys keyData)
 		{
 			if (!editactions.ContainsKey(keyData)) {
@@ -604,12 +604,16 @@ namespace ICSharpCode.TextEditor
 		
 		public void LoadFile(string fileName)
 		{
-			LoadFile(fileName, true);
+			LoadFile(fileName, true, true);
 		}
+		
 		/// <remarks>
 		/// Loads a file given by fileName
 		/// </remarks>
-		public void LoadFile(string fileName, bool autoLoadHighlighting)
+		/// <param name="fileName">The name of the file to open</param>
+		/// <param name="autoLoadHighlighting">Automatically load the highlighting for the file</param>
+		/// <param name="autodetectEncoding">Automatically detect file encoding and set Encoding property to the detected encoding.</param>
+		public void LoadFile(string fileName, bool autoLoadHighlighting, bool autodetectEncoding)
 		{
 			BeginUpdate();
 			document.TextContent = String.Empty;
@@ -619,14 +623,40 @@ namespace ICSharpCode.TextEditor
 				document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
 			}
 			
-			StreamReader stream;
-			if (Encoding != null) {
-				stream = new StreamReader(fileName, Encoding);
-			} else {
-				stream = new StreamReader(fileName);
+			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
+				StreamReader stream;
+				if (autodetectEncoding && fs.Length > 3) {
+					// the autodetection of StreamReader is not capable of detecting the difference
+					// between ISO-8859-1 and UTF-8 without BOM.
+					int firstByte = fs.ReadByte();
+					int secondByte = fs.ReadByte();
+					switch ((firstByte << 8) | secondByte) {
+						case 0x0000: // either UTF-32 Big Endian or a binary file; use StreamReader
+						case 0xfffe: // Unicode BOM (UTF-16 LE or UTF-32 LE)
+						case 0xfeff: // UTF-16 BE BOM
+						case 0xefbb: // start of UTF-8 BOM
+							// StreamReader autodetection works
+							fs.Position = 0;
+							stream = new StreamReader(fs);
+							break;
+						default:
+							stream = AutoDetect(fs, (byte)firstByte, (byte)secondByte);
+							break;
+					}
+				} else {
+					Encoding encoding = this.Encoding;
+					if (encoding != null) {
+						stream = new StreamReader(fs, encoding);
+					} else {
+						stream = new StreamReader(fs);
+					}
+				}
+				Document.TextContent = stream.ReadToEnd();
+				if (autodetectEncoding) {
+					Encoding = stream.CurrentEncoding;
+				}
+				stream.Close();
 			}
-			Document.TextContent = stream.ReadToEnd();
-			stream.Close();
 			
 			this.FileName = fileName;
 			OptionsChanged();
@@ -634,6 +664,103 @@ namespace ICSharpCode.TextEditor
 			EndUpdate();
 			
 			Refresh();
+		}
+		
+		StreamReader AutoDetect(FileStream fs, byte firstByte, byte secondByte)
+		{
+			int max = (int)Math.Min(fs.Length, 500000); // look at max. 500 KB
+			const int ASCII = 0;
+			const int Error = 1;
+			const int UTF8  = 2;
+			const int UTF8Sequence = 3;
+			int state = ASCII;
+			int sequenceLength = 0;
+			byte b;
+			for (int i = 0; i < max; i++) {
+				if (i == 0) {
+					b = firstByte;
+				} else if (i == 1) {
+					b = secondByte;
+				} else {
+					b = (byte)fs.ReadByte();
+				}
+				if (b < 0x80) {
+					// normal ASCII character
+					if (state == UTF8Sequence) {
+						state = Error;
+						break;
+					}
+				} else if (b < 0xc0) {
+					// 10xxxxxx : continues UTF8 byte sequence
+					if (state == UTF8Sequence) {
+						--sequenceLength;
+						if (sequenceLength < 0) {
+							state = Error;
+							break;
+						} else if (sequenceLength == 0) {
+							state = UTF8;
+						}
+					} else {
+						state = Error;
+						break;
+					}
+				} else if (b > 0xc2 && b < 0xf5) {
+					// beginning of byte sequence
+					if (state == UTF8 || state == ASCII) {
+						state = UTF8Sequence;
+						if (b < 0xe0) {
+							sequenceLength = 1; // one more byte following
+						} else if (b < 0xf0) {
+							sequenceLength = 2; // two more bytes following
+						} else {
+							sequenceLength = 3; // three more bytes following
+						}
+					} else {
+						state = Error;
+						break;
+					}
+				} else {
+					// 0xc0, 0xc1, 0xf5 to 0xff are invalid in UTF-8 (see RFC 3629)
+					state = Error;
+					break;
+				}
+			}
+			fs.Position = 0;
+			switch (state) {
+				case ASCII:
+					// when the file seems to be ASCII, we read it using the user-specified encoding
+					// so it is saved again using that encoding.
+					return new StreamReader(fs, this.TextEditorProperties.Encoding);
+				case Error:
+					Encoding defaultEncoding = this.TextEditorProperties.Encoding;
+					if (IsUnicode(defaultEncoding)) {
+						// the file is not Unicode, so don't read it using Unicode even if the
+						// user has choosen Unicode as the default encoding.
+						defaultEncoding = Encoding.Default; // use system encoding instead
+					}
+					return new StreamReader(fs, defaultEncoding);
+				default:
+					return new StreamReader(fs);
+			}
+		}
+		
+		/// <summary>
+		/// Gets if the document can be saved with the current encoding without losing data.
+		/// </summary>
+		public bool CanSaveWithCurrentEncoding()
+		{
+			if (encoding == null || IsUnicode(encoding))
+				return true;
+			// not a unicode codepage
+			string text = document.TextContent;
+			return encoding.GetString(encoding.GetBytes(text)) == text;
+		}
+		
+		bool IsUnicode(Encoding encoding)
+		{
+			int codepage = encoding.CodePage;
+			// return true if codepage is any UTF codepage
+			return codepage == 65001 || codepage == 65000 || codepage == 1200 || codepage == 1201;
 		}
 		
 		/// <remarks>
@@ -646,10 +773,11 @@ namespace ICSharpCode.TextEditor
 			}
 			
 			StreamWriter stream;
-			if (Encoding != null && Encoding.CodePage != 65001) {
-				stream = new StreamWriter(fileName, false, Encoding);
+			Encoding encoding = this.Encoding;
+			if (encoding == null) { // use UTF8 with BOM by default
+				stream = new StreamWriter(fileName, false, Encoding.UTF8);
 			} else {
-				stream = new StreamWriter(fileName, false);
+				stream = new StreamWriter(fileName, false, encoding);
 			}
 			
 			foreach (LineSegment line in Document.LineSegmentCollection) {
@@ -662,7 +790,7 @@ namespace ICSharpCode.TextEditor
 			this.FileName = fileName;
 		}
 		
-		void MakeBackupCopy(string fileName) 
+		void MakeBackupCopy(string fileName)
 		{
 			try {
 				if (File.Exists(fileName)) {
@@ -670,7 +798,7 @@ namespace ICSharpCode.TextEditor
 					File.Copy(fileName, backupName, true);
 				}
 			} catch (Exception) {
-//				
+//
 //				MessageService.ShowError(e, "Can not create backup copy of " + fileName);
 			}
 		}

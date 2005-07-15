@@ -136,6 +136,8 @@ namespace ICSharpCode.Core
 		
 		ArrayList ReadArray(XmlTextReader reader)
 		{
+			if (reader.IsEmptyElement)
+				return new ArrayList(0);
 			ArrayList l = new ArrayList();
 			while (reader.Read()) {
 				switch (reader.NodeType) {
@@ -239,7 +241,12 @@ namespace ICSharpCode.Core
 			
 			if (o is string && typeof(T) != typeof(string)) {
 				TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
-				o = c.ConvertFromInvariantString(o.ToString());
+				try {
+					o = c.ConvertFromInvariantString(o.ToString());
+				} catch (NotSupportedException ex) {
+					MessageService.ShowWarning("Error loading property '" + property + "': " + ex.Message);
+					o = defaultValue;
+				}
 				properties[property] = o; // store for future look up
 			} else if (o is ArrayList && typeof(T).IsArray) {
 				ArrayList list = (ArrayList)o;

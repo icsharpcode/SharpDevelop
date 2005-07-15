@@ -503,9 +503,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		void ReadComment()
 		{
-			specialTracker.StartComment(CommentType.SingleLine, new Point(line, col));
+			specialTracker.StartComment(CommentType.SingleLine, new Point(col, line));
 			sb.Length = 0;
-			StringBuilder curWord = new StringBuilder();
+			StringBuilder curWord = specialCommentHash != null ? new StringBuilder() : null;
 			int x = col;
 			int y = line;
 			int nextChar;
@@ -517,16 +517,20 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					break;
 				}
 				
-				if (Char.IsLetter(ch)) {
-					curWord.Append(ch);
-				} else {
-					string tag = curWord.ToString();
-					curWord.Length = 0;
-					if (specialCommentHash != null && specialCommentHash[tag] != null) {
-						Point p = new Point(col, line);
-						sb.Append(ReadToEOL());
-						tagComments.Add(new TagComment(tag, sb.ToString(), p));
-						break;
+				if (specialCommentHash != null) {
+					if (Char.IsLetter(ch)) {
+						curWord.Append(ch);
+					} else {
+						string tag = curWord.ToString();
+						curWord.Length = 0;
+						if (specialCommentHash.ContainsKey(tag)) {
+							Point p = new Point(col ,line);
+							string comment = ReadToEOL();
+							tagComments.Add(new TagComment(tag, comment, p));
+							sb.Append(tag);
+							sb.Append(comment);
+							break;
+						}
 					}
 				}
 			}

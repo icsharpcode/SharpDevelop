@@ -93,7 +93,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (pos.Equals(oldPosition)) return;
 			oldPosition = pos;
 			if (pos.Filename != ctl.FileName)
-				ctl.LoadFile(pos.Filename);
+				ctl.LoadFile(pos.Filename, true, true); // TODO: get AutoDetectEncoding from settings
 			ctl.ActiveTextAreaControl.ScrollTo(int.MaxValue); // scroll completely down
 			ctl.ActiveTextAreaControl.Caret.Line = pos.Line - 1;
 			ctl.ActiveTextAreaControl.ScrollToCaret(); // scroll up to search position

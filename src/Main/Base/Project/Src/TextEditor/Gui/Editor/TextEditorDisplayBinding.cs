@@ -304,6 +304,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			// KSL End
 			
+			if (!textAreaControl.CanSaveWithCurrentEncoding()) {
+				if (MessageService.AskQuestion("The file cannot be saved with the current encoding " +
+				                               textAreaControl.Encoding.EncodingName + " without losing data." +
+				                               "\nDo you want to save it using UTF-8 instead?")) {
+					textAreaControl.Encoding = System.Text.Encoding.UTF8;
+				}
+			}
+			
 			textAreaControl.SaveFile(fileName);
 			FileName  = fileName;
 			TitleName = Path.GetFileName(fileName);
@@ -317,7 +325,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			textAreaControl.IsReadOnly = (File.GetAttributes(fileName) & FileAttributes.ReadOnly) == FileAttributes.ReadOnly;
 			
-			textAreaControl.LoadFile(fileName);
+			bool autodetectEncoding = true;
+			textAreaControl.LoadFile(fileName, true, autodetectEncoding);
 			FileName  = fileName;
 			TitleName = Path.GetFileName(fileName);
 			IsDirty     = false;

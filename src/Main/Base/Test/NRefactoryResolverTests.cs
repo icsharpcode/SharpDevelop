@@ -365,6 +365,21 @@ interface IInterface2 {
 		}
 		
 		[Test]
+		public void DefaultCTorOverloadLookupTest()
+		{
+			string program = @"class A {
+	void Method() {
+		
+	}
+}
+";
+			ResolveResult result = Resolve(program, "new A()", 3);
+			Assert.IsNotNull(result);
+			IMethod m = (IMethod)((MemberResolveResult)result).ResolvedMember;
+			Assert.IsNotNull(m);
+		}
+		
+		[Test]
 		public void AnonymousMethodParameters()
 		{
 			string program = @"using System;
@@ -467,6 +482,22 @@ class B {
 		}
 		
 		[Test]
+		public void InnerClassTest()
+		{
+			string program = @"using System;
+class A {
+	
+}
+";
+			ResolveResult result = Resolve(program, "Environment.SpecialFolder", 3);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("System.Environment.SpecialFolder", result.ResolvedType.FullyQualifiedName);
+		}
+		#endregion
+		
+		#region Import namespace tests
+		[Test]
 		public void NamespacePreferenceTest()
 		{
 			// Classes in the current namespace are preferred over classes from
@@ -489,17 +520,75 @@ class Activator {
 		}
 		
 		[Test]
-		public void InnerClassTest()
+		public void ImportedSubnamespaceTestCSharp()
 		{
+			// using an import in this way is not possible in C#
 			string program = @"using System;
 class A {
-	
+	void Test() {
+		Collections.ArrayList a;
+		
+	}
 }
 ";
-			ResolveResult result = Resolve(program, "Environment.SpecialFolder", 3);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is TypeResolveResult);
-			Assert.AreEqual("System.Environment.SpecialFolder", result.ResolvedType.FullyQualifiedName);
+			ResolveResult result = Resolve(program, "Collections.ArrayList", 4);
+			Assert.IsNull(result, "Collections.ArrayList should not resolve");
+			LocalResolveResult local = Resolve(program, "a", 5) as LocalResolveResult;
+			Assert.IsNotNull(local, "a should resolve to a local variable");
+			Assert.AreEqual("Collections.ArrayList", local.ResolvedType.FullyQualifiedName,
+			                "the full type should not be resolved");
+		}
+		
+		[Test]
+		public void ImportedSubnamespaceTestVBNet()
+		{
+			// using an import this way IS possible in VB.NET
+			string program = @"Imports System
+Class A
+	Sub Test()
+		Dim a As Collections.ArrayList
+	
+	End Sub
+End Class
+";
+			TypeResolveResult type = ResolveVB(program, "Collections.ArrayList", 4) as TypeResolveResult;
+			Assert.IsNotNull(type, "Collections.ArrayList should resolve to a type");
+			Assert.AreEqual("System.Collections.ArrayList", type.ResolvedClass.FullyQualifiedName, "TypeResolveResult");
+			LocalResolveResult local = ResolveVB(program, "a", 5) as LocalResolveResult;
+			Assert.IsNotNull(local, "a should resolve to a local variable");
+			Assert.AreEqual("System.Collections.ArrayList", local.ResolvedType.FullyQualifiedName,
+			                "the full type should be resolved");
+		}
+		
+		[Test]
+		public void ImportAliasTest()
+		{
+			string program = @"using System.Collections = COL;
+class A {
+	void Test() {
+		COL.ArrayList a;
+		
+	}
+}
+";
+			TypeResolveResult type = Resolve(program, "COL.ArrayList", 4) as TypeResolveResult;
+			Assert.IsNotNull(type, "COL.ArrayList should resolve to a type");
+			Assert.AreEqual("System.Collections.ArrayList", type.ResolvedClass.FullyQualifiedName, "TypeResolveResult");
+			LocalResolveResult local = Resolve(program, "a", 5) as LocalResolveResult;
+			Assert.IsNotNull(local, "a should resolve to a local variable");
+			Assert.AreEqual("System.Collections.ArrayList", local.ResolvedType.FullyQualifiedName,
+			                "the full type should be resolved");
+		}
+		
+		[Test]
+		public void ImportAliasNamespaceResolveTest()
+		{
+			NamespaceResolveResult ns;
+			string program = "using System.Collections = COL;\r\nclass A {\r\n}\r\n";
+			ns = Resolve(program, "COL", 3) as NamespaceResolveResult;
+			Assert.AreEqual("System.Collections", ns.Name, "COL");
+			ns = Resolve(program, "COL.Generic", 3) as NamespaceResolveResult;
+			Assert.AreEqual("System.Collections.Generic", ns.Name, "COL.Generic");
 		}
 		#endregion
 	}

@@ -23,19 +23,20 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		const string changeButton        = "changeButton";
 		const string removeButton        = "removeButton";
 		const string addButton           = "addButton";
+		ListView taskList;
 		
 		public override void LoadPanelContents()
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.TaskListOptions.xfrm"));
 			
-			string tasklisttokens = PropertyService.Get("SharpDevelop.TaskListTokens", "HACK;TODO;UNDONE;FIXME");
-			string[] tokens = tasklisttokens.Split(';');
-			((ListView)ControlDictionary[taskListView]).BeginUpdate();
+			string[] tokens = PropertyService.Get("SharpDevelop.TaskListTokens", ParserService.DefaultTaskListTokens);
+			taskList = (ListView)ControlDictionary[taskListView];
+			taskList.BeginUpdate();
 			foreach (string token in tokens) {
-				((ListView)ControlDictionary[taskListView]).Items.Add(new ListViewItem(token));
+				taskList.Items.Add(token);
 			}
-			((ListView)ControlDictionary[taskListView]).EndUpdate();
-			((ListView)ControlDictionary[taskListView]).SelectedIndexChanged += new EventHandler(TaskListViewSelectedIndexChanged);
+			taskList.EndUpdate();
+			taskList.SelectedIndexChanged += new EventHandler(TaskListViewSelectedIndexChanged);
 			
 			ControlDictionary[changeButton].Click += new EventHandler(ChangeButtonClick);
 			ControlDictionary[removeButton].Click += new EventHandler(RemoveButtonClick);
@@ -47,11 +48,15 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public override bool StorePanelContents()
 		{
 			ArrayList tokens = new ArrayList();
-			foreach (ListViewItem item in ((ListView)ControlDictionary[taskListView]).Items) {
-				tokens.Add(item.Text);
+			
+			foreach (ListViewItem item in taskList.Items) {
+				string text = item.Text.Trim();
+				if (text.Length > 0) {
+					tokens.Add(text);
+				}
 			}
 			
-			PropertyService.Set("SharpDevelop.TaskListTokens", String.Join(";", (string[])tokens.ToArray(typeof(string))));
+			PropertyService.Set("SharpDevelop.TaskListTokens", tokens.ToArray(typeof(string)));
 			
 			return true;
 		}

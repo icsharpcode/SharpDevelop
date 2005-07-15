@@ -174,12 +174,14 @@ namespace VBNetBinding
 				builder.Append("</b>");
 			}
 			
-			builder.Append("(Of");
-			for (int i = 0; i < c.TypeParameters.Count; ++i) {
-				if (i > 0) builder.Append(", ");
-				builder.Append(c.TypeParameters[i].Name);
+			if (c.TypeParameters.Count > 0) {
+				builder.Append("(Of");
+				for (int i = 0; i < c.TypeParameters.Count; ++i) {
+					if (i > 0) builder.Append(", ");
+					builder.Append(c.TypeParameters[i].Name);
+				}
+				builder.Append(')');
 			}
-			builder.Append(')');
 			
 			if (c.ClassType == ClassType.Delegate) {
 				builder.Append("(");
@@ -461,12 +463,14 @@ namespace VBNetBinding
 				builder.Append("</b>");
 			}
 			
-			builder.Append("(Of");
-			for (int i = 0; i < m.TypeParameters.Count; ++i) {
-				if (i > 0) builder.Append(", ");
-				builder.Append(m.TypeParameters[i].Name);
+			if (m.TypeParameters.Count > 0) {
+				builder.Append("(Of");
+				for (int i = 0; i < m.TypeParameters.Count; ++i) {
+					if (i > 0) builder.Append(", ");
+					builder.Append(m.TypeParameters[i].Name);
+				}
+				builder.Append(')');
 			}
-			builder.Append(')');
 			
 			builder.Append("(");
 			if (IncludeHTMLMarkup) builder.Append("<br>");

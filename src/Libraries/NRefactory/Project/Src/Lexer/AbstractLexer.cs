@@ -70,10 +70,11 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 			set {
 				specialCommentTags = value;
-				specialCommentHash = new Hashtable();
-				if (specialCommentTags != null) {
+				specialCommentHash = null;
+				if (specialCommentTags != null && specialCommentTags.Length > 0) {
+					specialCommentHash = new Hashtable();
 					foreach (string str in specialCommentTags) {
-						specialCommentHash[str] = 0;
+						specialCommentHash.Add(str, null);
 					}
 				}
 			}
