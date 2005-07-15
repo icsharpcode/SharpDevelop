@@ -1622,6 +1622,7 @@ Statement
 	TypeReference type;
 	Expression expr;
 	Statement stmt;
+	Point startPos = la.Location;
 .)
 =
 	/*--- labeled statement: */
@@ -1639,6 +1640,12 @@ Statement
 	/* LL(1) confict: LocalVariableDecl *
 	 *            <-> StatementExpr     *
 	 * ident {"." ident} { "[" Expr ... */
+	
+	(. if (stmt != null) {
+		stmt.StartLocation = startPos;
+		stmt.EndLocation = t.EndLocation;
+	   }
+	.)
 .
 
 EmbeddedStatement<out Statement statement>

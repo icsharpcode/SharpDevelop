@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -41,9 +41,15 @@ namespace ICSharpCode.SharpDevelop.Commands
 					MessageService.ShowError("Correct source code errors first (only correct source code would convert).");
 					return;
 				}
-				ICSharpCode.NRefactory.PrettyPrinter.VBNetOutputVisitor vbv = new ICSharpCode.NRefactory.PrettyPrinter.VBNetOutputVisitor();
-				vbv.Visit(p.CompilationUnit, null);
 				
+				ICSharpCode.NRefactory.PrettyPrinter.VBNetOutputVisitor vbv = new ICSharpCode.NRefactory.PrettyPrinter.VBNetOutputVisitor();
+				
+				SpecialNodesInserter sni = new SpecialNodesInserter(p.Lexer.SpecialTracker.CurrentSpecials,
+				                                                    new SpecialOutputVisitor(vbv.OutputFormatter));
+				vbv.NodeTracker.NodeVisiting += sni.AcceptNodeStart;
+				vbv.NodeTracker.NodeVisited  += sni.AcceptNodeEnd;
+				vbv.Visit(p.CompilationUnit, null);
+				sni.Finish();
 				
 				FileService.NewFile("Generated.VB", "VBNET", vbv.Text);
 			}

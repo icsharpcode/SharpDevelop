@@ -60,7 +60,6 @@
     <Compile Include="Src\Lexer\Special\CommentType.cs" />
     <Compile Include="Src\Lexer\Special\PreProcessingDirective.cs" />
     <Compile Include="Src\Lexer\Special\SpecialTracker.cs" />
-    <Compile Include="Src\Lexer\Special\SpecialType.cs" />
     <Compile Include="Src\Lexer\Special\TagComment.cs" />
     <Compile Include="Src\Lexer\Token.cs" />
     <Compile Include="Src\Lexer\VBNet\Keywords.cs" />
@@ -184,6 +183,8 @@
     <Compile Include="Src\Parser\Visitors\IASTVisitor.cs" />
     <Compile Include="Src\Parser\Visitors\LookupTableVisitor.cs" />
     <Compile Include="Src\Parser\AST\CSharp\Expressions\AnonymousMethodExpression.cs" />
+    <Compile Include="Src\Lexer\Special\ISpecial.cs" />
+    <Compile Include="Src\Output\SpecialNodesInserter.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\CSharpKeywordList.txt" />

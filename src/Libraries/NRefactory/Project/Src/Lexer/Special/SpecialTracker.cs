@@ -1,20 +1,20 @@
 using System;
 using System.Text;
 using System.CodeDom;
-using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 
 namespace ICSharpCode.NRefactory.Parser
 {
 	public class SpecialTracker
 	{
-		ArrayList    currentSpecials = new ArrayList();
+		List<ISpecial> currentSpecials = new List<ISpecial>();
 		
 		CommentType   currentCommentType;
 		StringBuilder sb = new StringBuilder();
 		Point         startPosition;
 		
-		public ArrayList CurrentSpecials {
+		public List<ISpecial> CurrentSpecials {
 			get {
 				return currentSpecials;
 			}
@@ -22,19 +22,22 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public void InformToken(int kind)
 		{
-			currentSpecials.Add(kind);
+			
 		}
 		
-		public ArrayList RetrieveSpecials()
+		/// <summary>
+		/// Gets the specials from the SpecialTracker and resets the lists.
+		/// </summary>
+		public List<ISpecial> RetrieveSpecials()
 		{
-			ArrayList tmp = currentSpecials;
-			currentSpecials = new ArrayList();
+			List<ISpecial> tmp = currentSpecials;
+			currentSpecials = new List<ISpecial>();
 			return tmp;
 		}
 		
-		public void AddEndOfLine()
+		public void AddEndOfLine(Point point)
 		{
-			currentSpecials.Add(new BlankLine());
+			currentSpecials.Add(new BlankLine(point));
 		}
 		
 		public void AddPreProcessingDirective(string cmd, string arg, Point start, Point end)
@@ -60,9 +63,9 @@ namespace ICSharpCode.NRefactory.Parser
 			sb.Append(s);
 		}
 		
-		public void FinishComment()
+		public void FinishComment(Point endPosition)
 		{
-			currentSpecials.Add(new Comment(currentCommentType, sb.ToString(), startPosition));
+			currentSpecials.Add(new Comment(currentCommentType, sb.ToString(), startPosition, endPosition));
 		}
 	}
 }

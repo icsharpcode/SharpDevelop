@@ -76,7 +76,7 @@ namespace VBNetBinding.Parser
 										if (nextDirective.Arg.ToLower() == "region") {
 											--deep;
 											if (deep == 0) {
-												cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim('"'), new DefaultRegion(directive.Start, nextDirective.End)));
+												cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim('"'), new DefaultRegion(directive.StartPosition, nextDirective.EndPosition)));
 												goto end;
 											}
 										}
@@ -119,7 +119,7 @@ namespace VBNetBinding.Parser
 			return visitor.Cu;
 		}
 
-		void AddCommentTags(ICompilationUnit cu, ArrayList tagComments)
+		void AddCommentTags(ICompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)
 		{
 			foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in tagComments)
 			{

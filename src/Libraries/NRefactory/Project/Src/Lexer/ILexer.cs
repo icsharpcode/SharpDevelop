@@ -9,6 +9,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser
 {
@@ -46,7 +47,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// <summary>
 		/// Returns the comments that had been read and containing tag key words.
 		/// </summary>
-		ArrayList TagComments {
+		List<TagComment> TagComments {
 			get;
 		}
 		

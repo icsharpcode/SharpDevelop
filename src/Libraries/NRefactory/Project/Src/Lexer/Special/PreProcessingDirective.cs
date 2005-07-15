@@ -6,30 +6,10 @@ using System.Collections;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	public class PreProcessingDirective
+	public class PreProcessingDirective : AbstractSpecial
 	{
 		string cmd;
 		string arg;
-		Point  start;
-		Point  end;
-		
-		public Point Start {
-			get {
-				return start;
-			}
-			set {
-				start = value;
-			}
-		}
-		
-		public Point End {
-			get {
-				return end;
-			}
-			set {
-				end = value;
-			}
-		}
 		
 		public string Cmd {
 			get {
@@ -48,6 +28,7 @@ namespace ICSharpCode.NRefactory.Parser
 				arg = value;
 			}
 		}
+		
 		public override string ToString()
 		{
 			return String.Format("[PreProcessingDirective: Cmd = {0}, Arg = {1}]",
@@ -56,11 +37,15 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		public PreProcessingDirective(string cmd, string arg, Point start, Point end)
+			: base(start, end)
 		{
 			this.cmd = cmd;
 			this.arg = arg;
-			this.start = start;
-			this.end = end;
+		}
+		
+		public override object AcceptVisitor(ISpecialVisitor visitor, object data)
+		{
+			return visitor.Visit(this, data);
 		}
 	}
 }

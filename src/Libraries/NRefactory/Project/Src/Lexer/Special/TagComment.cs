@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public TagComment(string tag, string comment, Point startPosition) : base(CommentType.SingleLine, comment, startPosition)
+		public TagComment(string tag, string comment, Point startPosition, Point endPosition) : base(CommentType.SingleLine, comment, startPosition, endPosition)
 		{
 			this.tag = tag;
 		}

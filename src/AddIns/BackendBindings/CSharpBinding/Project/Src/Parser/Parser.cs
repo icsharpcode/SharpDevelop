@@ -64,7 +64,7 @@ namespace CSharpBinding.Parser
 									case "#endregion":
 										--deep;
 										if (deep == 0) {
-											cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim(), new DefaultRegion(directive.Start, new Point(nextDirective.End.X, nextDirective.End.Y))));
+											cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim(), new DefaultRegion(directive.StartPosition, nextDirective.EndPosition)));
 											goto end;
 										}
 										break;
@@ -107,7 +107,7 @@ namespace CSharpBinding.Parser
 			return visitor.Cu;
 		}
 		
-		void AddCommentTags(ICompilationUnit cu, ArrayList tagComments)
+		void AddCommentTags(ICompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)
 		{
 			foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in tagComments) {
 				DefaultRegion tagRegion = new DefaultRegion(tagComment.StartPosition.Y, tagComment.StartPosition.X);

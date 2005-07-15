@@ -21,16 +21,30 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	/// <summary>
 	/// Description of VBNetOutputFormatter.
 	/// </summary>
-	public class VBNetOutputFormatter : AbstractOutputFormatter
+	public sealed class VBNetOutputFormatter : AbstractOutputFormatter
 	{
-		
 		public VBNetOutputFormatter(VBNetPrettyPrintOptions prettyPrintOptions) : base(prettyPrintOptions)
 		{
 		}
 		
 		public override void PrintToken(int token)
 		{
-			text.Append(Tokens.GetTokenString(token));
+			PrintToken(Tokens.GetTokenString(token));
+		}
+		
+		public override void PrintComment(Comment comment)
+		{
+			switch (comment.CommentType) {
+				case CommentType.Block:
+					WriteInNextNewLine("'" + comment.CommentText.Replace("\n", "\n'"));
+					break;
+				case CommentType.Documentation:
+					WriteInNextNewLine("'''" + comment.CommentText);
+					break;
+				default:
+					WriteInNextNewLine("'" + comment.CommentText);
+					break;
+			}
 		}
 	}
 }

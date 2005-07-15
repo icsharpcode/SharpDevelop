@@ -6,11 +6,10 @@ using System.Drawing;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	public class Comment
+	public class Comment : AbstractSpecial
 	{
 		CommentType   commentType;
 		string        comment;
-		Point         startPosition;
 		
 		public CommentType CommentType {
 			get {
@@ -30,27 +29,22 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public Point StartPosition {
-			get {
-				return startPosition;
-			}
-			set {
-				startPosition = value;
-			}
-		}
-		
-		public Comment(CommentType commentType, string comment, Point startPosition)
+		public Comment(CommentType commentType, string comment, Point startPosition, Point endPosition)
+			: base(startPosition, endPosition)
 		{
 			this.commentType   = commentType;
 			this.comment       = comment;
-			this.startPosition = startPosition;
 		}
 		
 		public override string ToString()
 		{
-			return String.Format("[Comment: CommentType = {0}]",
-			                     CommentType);
+			return String.Format("[{0}: Type = {1}, Text = {2}, Start = {3}, End = {4}]",
+			                     GetType().Name, CommentType, CommentText, StartPosition, EndPosition);
 		}
 		
+		public override object AcceptVisitor(ISpecialVisitor visitor, object data)
+		{
+			return visitor.Visit(this, data);
+		}
 	}
 }

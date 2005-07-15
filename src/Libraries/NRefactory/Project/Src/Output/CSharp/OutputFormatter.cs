@@ -26,10 +26,8 @@ using ICSharpCode.NRefactory.Parser.AST;
 
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {
-	public class OutputFormatter : AbstractOutputFormatter
+	public sealed class CSharpOutputFormatter : AbstractOutputFormatter
 	{
-//		Lexer         lexer; 
-		
 		PrettyPrintOptions prettyPrintOptions;
 		
 		bool          emitSemicolon  = true;
@@ -43,91 +41,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-//		Token token;
-		public OutputFormatter(PrettyPrintOptions prettyPrintOptions) : base(prettyPrintOptions)
+		public CSharpOutputFormatter(PrettyPrintOptions prettyPrintOptions) : base(prettyPrintOptions)
 		{
 			this.prettyPrintOptions = prettyPrintOptions;
-//			lexer = new Lexer(new StringReader(originalSourceFile));
-//			token = lexer.NextToken();
-//			PrintSpecials(token.kind);
 		}
-		
-//		bool gotBlankLine  = false;
-//		int currentSpecial = 0;
-		
-//		void PrintSpecials(int tokenKind)
-//		{
-//			if (currentSpecial >= lexer.SpecialTracker.CurrentSpecials.Count) {
-//				return;
-//			}
-//			object o = lexer.SpecialTracker.CurrentSpecials[currentSpecial++];
-//			if (o is Comment) {
-////				Console.WriteLine("COMMENT " + o);	
-//				Comment comment = (Comment)o;
-//				switch (comment.CommentType) {
-//					case CommentType.SingleLine:
-//						text.Append("//");	
-//						text.Append(comment.CommentText);	
-//						text.Append("\n");
-//						Indent();
-//						break;
-//					case CommentType.Documentation:
-//						text.Append("///");	
-//						text.Append(comment.CommentText);	
-//						text.Append("\n");	
-//						Indent();
-//						break;
-//					case CommentType.Block:
-//						text.Append("/*");	
-//						text.Append(comment.CommentText);	
-//						text.Append("*/\n");	
-//						Indent();
-//						break;
-//				}
-//				PrintSpecials(tokenKind);
-//			} else if (o is BlankLine) {
-//				if (!gotBlankLine) {
-////						text.Append("\n");
-////						Indent();
-//				} 
-//				gotBlankLine = false;
-//				PrintSpecials(tokenKind);
-//			} else if (o is PreProcessingDirective) { 
-////				Console.WriteLine("PPD:" + o);	
-//				text.Append("\n");
-//				PreProcessingDirective ppd = (PreProcessingDirective)o;
-//				text.Append(ppd.Cmd);
-//				if (ppd.Arg != null && ppd.Arg.Length > 0) {
-//					text.Append(" ");
-//					text.Append(ppd.Arg);
-//				}
-//				text.Append("\n");
-//				Indent();
-//				PrintSpecials(tokenKind);
-//			} else {
-//				int kind = (int)o;
-////				Console.WriteLine(kind + " -- " + Tokens.GetTokenString(kind));
-//				if (kind != tokenKind) {
-//					PrintSpecials(tokenKind);
-//				}
-//			}
-//		}
 		
 		public override void PrintToken(int token)
 		{
-//			Console.WriteLine("PRINT TOKEN:" + token);
 			if (token == Tokens.Semicolon && !EmitSemicolon) {
 				return;
 			}
-//			while (this.token == null || this.token.kind > 0) {
-//				this.token = lexer.NextToken();
-////				PrintSpecials(this.token.kind);
-//				if (this.token.kind == token) {
-//					break;
-//				}
-//			}
-			text.Append(Tokens.GetTokenString(token));
-//			gotBlankLine = false;
+			PrintToken(Tokens.GetTokenString(token));
 		}
 		
 		Stack braceStack = new Stack();
@@ -136,7 +60,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			switch (style) {
 				case BraceStyle.EndOfLine:
-					text.Append(" ");
+					Space();
 					PrintToken(Tokens.OpenCurlyBrace);
 					NewLine();
 					++IndentationLevel;
@@ -194,12 +118,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public void BeginNode(INode node)
+		public override void PrintComment(Comment comment)
 		{
-		}
-		
-		public void EndNode(INode node)
-		{
+			switch (comment.CommentType) {
+				case CommentType.Block:	
+					PrintToken("/*");
+					PrintToken(comment.CommentText);
+					PrintToken("*/");
+					break;
+				case CommentType.Documentation:
+					WriteInNextNewLine("///" + comment.CommentText);
+					break;
+				default:
+					WriteInNextNewLine("//" + comment.CommentText);
+					break;
+			}
 		}
 	}
 }

@@ -24,6 +24,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	{
 		IASTVisitor callVisitor;
 		
+		public IASTVisitor CallVisitor {
+			get {
+				return callVisitor;
+			}
+		}
+		
 		public NodeTracker(IASTVisitor callVisitor)
 		{
 			this.callVisitor = callVisitor;
@@ -49,6 +55,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			object ret = node.AcceptVisitor(callVisitor, data);
 			EndNode(node);
 			return ret;
+		}
+		
+		public object TrackedVisitChildren(INode node, object data)
+		{
+			foreach (INode child in node.Children) {
+				TrackedVisit(child, data);
+			}
+			return data;
 		}
 		
 		public event InformNode NodeVisiting;

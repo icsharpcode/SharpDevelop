@@ -748,6 +748,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					break;
 				}
 				
+				sb.Append(ch);
 				if (specialCommentHash != null) {
 					if (Char.IsLetter(ch)) {
 						curWord.Append(ch);
@@ -755,16 +756,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						string tag = curWord.ToString();
 						curWord.Length = 0;
 						if (specialCommentHash.ContainsKey(tag)) {
-							Point p = new Point(col ,line);
+							Point p = new Point(col, line);
 							string comment = ReadToEOL();
-							tagComments.Add(new TagComment(tag, comment, p));
-							sb.Append(tag);
+							tagComments.Add(new TagComment(tag, comment, p, new Point(col, line)));
 							sb.Append(comment);
 							break;
 						}
 					}
 				}
-				sb.Append(ch);
 			}
 			return sb.ToString();
 		}
@@ -773,7 +772,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		{
 			specialTracker.StartComment(commentType, new Point(col, line));
 			specialTracker.AddString(ReadCommentToEOL());
-			specialTracker.FinishComment();
+			specialTracker.FinishComment(new Point(col, line));
 		}
 		
 		void ReadMultiLineComment()
@@ -793,12 +792,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				if (ch == '*' && reader.Peek() == '/') {
 					reader.Read();
 					++col;
-					specialTracker.FinishComment();
+					specialTracker.FinishComment(new Point(col, line));
 					return;
 				}
 				specialTracker.AddChar(ch);
 			}
-			specialTracker.FinishComment();
+			specialTracker.FinishComment(new Point(col, line));
 			// Reached EOF before end of multiline comment.
 			errors.Error(line, col, String.Format("Reached EOF before the end of a multiline comment"));
 		}

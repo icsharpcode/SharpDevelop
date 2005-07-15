@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -42,7 +42,12 @@ namespace ICSharpCode.SharpDevelop.Commands
 					return;
 				}
 				ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor vbv = new ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor();
+				SpecialNodesInserter sni = new SpecialNodesInserter(p.Lexer.SpecialTracker.CurrentSpecials,
+				                                                    new SpecialOutputVisitor(vbv.OutputFormatter));
+				vbv.NodeTracker.NodeVisiting += sni.AcceptNodeStart;
+				vbv.NodeTracker.NodeVisited  += sni.AcceptNodeEnd;
 				vbv.Visit(p.CompilationUnit, null);
+				sni.Finish();
 				
 				
 				FileService.NewFile("Generated.CS", "C#", vbv.Text);

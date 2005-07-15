@@ -88,13 +88,17 @@ namespace ICSharpCode.Core
 		static void AddReferences(List<Reference> list, IClass parentClass, IMember member, string fileName, string fileContent)
 		{
 			string lowerFileContent = fileContent.ToLower();
-			if (lowerFileContent.IndexOf(parentClass.Name.ToLower()) < 0) return;
+			
+			// The name of the class does not necessarily exist in the file if the name of a
+			// derived class exists.
+			//if (lowerFileContent.IndexOf(parentClass.Name.ToLower()) < 0) return;
+			
 			string lowerMemberName;
 			if (member is IMethod && ((IMethod)member).IsConstructor)
 				lowerMemberName = parentClass.Name.ToLower();
 			else
 				lowerMemberName = member.Name.ToLower();
-			//Console.WriteLine(fileName + "    /    " + lowerMemberName);
+			
 			int pos = -1;
 			IExpressionFinder expressionFinder = null;
 			while ((pos = lowerFileContent.IndexOf(lowerMemberName, pos + 1)) >= 0) {

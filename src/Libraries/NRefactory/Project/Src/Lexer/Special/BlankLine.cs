@@ -1,14 +1,17 @@
 using System;
-using System.Text;
-using System.CodeDom;
-using System.Collections;
+using System.Drawing;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	public class BlankLine
+	public class BlankLine : AbstractSpecial
 	{
-		public BlankLine()
+		public BlankLine(Point point) : base(point)
 		{
+		}
+		
+		public override object AcceptVisitor(ISpecialVisitor visitor, object data)
+		{
+			return visitor.Visit(this, data);
 		}
 	}
 }

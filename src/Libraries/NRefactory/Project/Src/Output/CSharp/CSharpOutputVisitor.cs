@@ -20,10 +20,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 {
 	public class CSharpOutputVisitor : IOutputASTVisitor
 	{
-		Errors             errors             = new Errors();
-		OutputFormatter    outputFormatter;
-		PrettyPrintOptions prettyPrintOptions = new PrettyPrintOptions();
-		NodeTracker        nodeTracker;
+		Errors                errors             = new Errors();
+		CSharpOutputFormatter outputFormatter;
+		PrettyPrintOptions    prettyPrintOptions = new PrettyPrintOptions();
+		NodeTracker           nodeTracker;
 //		Stack<WithStatement> withExpressionStack = new Stack<WithStatement>();
 		Stack withExpressionStack = new Stack();
 		
@@ -48,9 +48,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
+		public CSharpOutputFormatter OutputFormatter {
+			get {
+				return outputFormatter;
+			}
+		}
+		
+		public NodeTracker NodeTracker {
+			get {
+				return nodeTracker;
+			}
+		}
+		
 		public CSharpOutputVisitor()
 		{
-			outputFormatter = new OutputFormatter(prettyPrintOptions);
+			outputFormatter = new CSharpOutputFormatter(prettyPrintOptions);
 			nodeTracker     = new NodeTracker(this);
 		}
 		
@@ -63,7 +75,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(CompilationUnit compilationUnit, object data)
 		{
-			compilationUnit.AcceptChildren(this, data);
+			nodeTracker.TrackedVisitChildren(compilationUnit, data);
 			outputFormatter.EndFile();
 			return null;
 		}
@@ -243,7 +255,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(UsingDeclaration usingDeclaration, object data)
 		{
 			foreach (Using u in usingDeclaration.Usings) {
-				u.AcceptVisitor(this, data);
+				nodeTracker.TrackedVisit(u, data);
 			}
 			return null;
 		}
@@ -257,7 +269,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			outputFormatter.BeginBrace(this.prettyPrintOptions.NameSpaceBraceStyle);
 			
-			namespaceDeclaration.AcceptChildren(this, data);
+			nodeTracker.TrackedVisitChildren(namespaceDeclaration, data);
 			
 			outputFormatter.EndBrace();
 			
@@ -317,7 +329,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			foreach (TemplateDefinition templateDefinition in typeDeclaration.Templates) {
-				templateDefinition.AcceptVisitor(this, data);
+				nodeTracker.TrackedVisit(templateDefinition, data);
 			}
 			
 			switch (typeDeclaration.Type) {
@@ -338,7 +350,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (typeDeclaration.Type == Types.Enum) {
 				OutputEnumMembers(typeDeclaration, data);
 			} else {
-				typeDeclaration.AcceptChildren(this, data);
+				nodeTracker.TrackedVisitChildren(typeDeclaration, data);
 			}
 			outputFormatter.EndBrace();
 			
@@ -356,7 +368,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			for (int i = 0; i < templateDefinition.Bases.Count; ++i) {
 				outputFormatter.Space();
-				templateDefinition.Bases[i].AcceptVisitor(this, data);
+				nodeTracker.TrackedVisit(templateDefinition.Bases[i], data);
 				if (i + 1 < templateDefinition.Bases.Count) {
 					PrintFormattedComma();
 				}
@@ -865,7 +877,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			Debug.Assert(yieldStatement.Statement != null);
 			outputFormatter.PrintIdentifier("yield");
 			outputFormatter.Space();
-			yieldStatement.Statement.AcceptVisitor(this, data);
+			nodeTracker.TrackedVisit(yieldStatement.Statement, data);
 			return null;
 		}
 		

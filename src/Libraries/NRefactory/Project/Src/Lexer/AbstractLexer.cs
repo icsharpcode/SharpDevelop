@@ -10,6 +10,7 @@
 using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 namespace ICSharpCode.NRefactory.Parser
@@ -32,8 +33,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		string[]  specialCommentTags = null;
 		protected Hashtable specialCommentHash  = null;
-//		protected List<TagComment> tagComments  = new List<TagComment>();
-		protected ArrayList tagComments  = new ArrayList();
+		protected List<TagComment> tagComments  = new List<TagComment>();
 		protected StringBuilder sb              = new StringBuilder();
 		protected SpecialTracker specialTracker = new SpecialTracker();
 		
@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// <summary>
 		/// Returns the comments that had been read and containing tag key words.
 		/// </summary>
-		public ArrayList TagComments {
+		public List<TagComment> TagComments {
 			get {
 				return tagComments;
 			}

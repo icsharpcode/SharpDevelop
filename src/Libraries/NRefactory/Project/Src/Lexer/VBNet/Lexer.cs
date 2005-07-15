@@ -83,6 +83,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				if (ch == '_') {
 					if (reader.Peek() == -1) {
 						errors.Error(line, col, String.Format("No EOF expected after _"));
+						return new Token(Tokens.EOF);
 					}
 					++col;
 					if (!Char.IsWhiteSpace((char)reader.Peek())) {
@@ -517,6 +518,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					break;
 				}
 				
+				sb.Append(ch);
 				if (specialCommentHash != null) {
 					if (Char.IsLetter(ch)) {
 						curWord.Append(ch);
@@ -524,10 +526,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						string tag = curWord.ToString();
 						curWord.Length = 0;
 						if (specialCommentHash.ContainsKey(tag)) {
-							Point p = new Point(col ,line);
+							Point p = new Point(col, line);
 							string comment = ReadToEOL();
-							tagComments.Add(new TagComment(tag, comment, p));
-							sb.Append(tag);
+							tagComments.Add(new TagComment(tag, comment, p, new Point(col, line)));
 							sb.Append(comment);
 							break;
 						}
@@ -535,7 +536,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			specialTracker.AddString(sb.ToString());
-			specialTracker.FinishComment();
+			specialTracker.FinishComment(new Point(col, line));
 		}
 		
 		Token ReadOperator(char ch)

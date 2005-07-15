@@ -19,12 +19,12 @@ using ICSharpCode.NRefactory.Parser.AST;
 namespace ICSharpCode.NRefactory.PrettyPrinter
 {
 	/// <summary>
-	/// Description of VBNetOutputFormatter.
+	/// Base class of output formatters.
 	/// </summary>
 	public abstract class AbstractOutputFormatter
 	{
 		int           indentationLevel = 0;
-		protected StringBuilder text = new StringBuilder();
+		StringBuilder text = new StringBuilder();
 		
 		bool          indent         = true;
 		bool          doNewLine      = true;
@@ -69,6 +69,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			this.prettyPrintOptions = prettyPrintOptions;
 		}
 		
+		bool isIndented = false;
+		
 		public void Indent()
 		{
 			if (DoIndent) {
@@ -85,6 +87,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						++indent;
 					}
 				}
+				isIndented = true;
 			}
 		}
 		
@@ -93,52 +96,79 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			text.Append(' ');
 		}
 		
-		public void NewLine()
+		bool gotBlankLine = true;
+		ArrayList specialsText = new ArrayList();
+		
+		public virtual void NewLine()
 		{
 			if (DoNewLine) {
 				text.Append(Environment.NewLine);
-//				gotBlankLine = true;
+				gotBlankLine = true;
+				isIndented = false;
+				WriteSpecials();
 			}
 		}
 		
-		public void EndFile()
+		public virtual void EndFile()
 		{
-//			while (this.token == null || this.token.kind > 0) {
-//				this.token = lexer.NextToken();
-//				PrintSpecials(token.kind);
-//			}
-//			PrintSpecials(-1);
-//			foreach (object o in lexer.SpecialTracker.CurrentSpecials) {
-//				Console.WriteLine(o);
-//			}
+			WriteSpecials();
 		}
 		
+		protected void WriteInNextNewLine(string text)
+		{
+			specialsText.Add(text);
+			if (gotBlankLine) {
+				WriteSpecials();
+			}
+		}
+		
+		void WriteSpecials()
+		{
+			if (isIndented) {
+				foreach (string txt in specialsText) {
+					text.Append(txt);
+					text.Append(Environment.NewLine);
+					Indent();
+				}
+			} else {
+				foreach (string txt in specialsText) {
+					Indent();
+					text.Append(txt);
+					text.Append(Environment.NewLine);
+				}
+				isIndented = false;
+			}
+			specialsText.Clear();
+		}
 		
 		public void PrintTokenList(ArrayList tokenList)
 		{
-//			ArrayList trackList = (ArrayList)tokenList.Clone();
-//			while (this.token == null || trackList.Count > 0) {
-//				this.token = lexer.NextToken();
-////				PrintSpecials(this.token.kind);
-//				for (int i = 0; i < trackList.Count; ++i) {
-//					trackList.RemoveAt(i);
-//					break;
-//				}
-//			}
+			gotBlankLine = false;
 			foreach (int token in tokenList) {
 				PrintToken(token);
 				Space();
 			}
 		}
 		
+		public abstract void PrintComment(Comment comment);
+		
+		public virtual void PrintPreProcessingDirective(PreProcessingDirective directive)
+		{
+			WriteInNextNewLine(directive.Cmd + directive.Arg);
+		}
+		
 		public abstract void PrintToken(int token);
+		
+		protected void PrintToken(string text)
+		{
+			gotBlankLine = false;
+			this.text.Append(text);
+		}
 		
 		public void PrintIdentifier(string identifier)
 		{
-//			this.token = lexer.NextToken();
-//			PrintSpecials(token.kind);
+			gotBlankLine = false;
 			text.Append(identifier);
 		}
-		
 	}
 }
