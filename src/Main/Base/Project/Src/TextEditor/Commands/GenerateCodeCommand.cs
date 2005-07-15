@@ -147,7 +147,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			                      textView.DrawingPosition.X,
 			          (int)((1 + physicalline) * textView.FontHeight) - 
 			          textArea.VirtualTop.Y - 1 + textView.DrawingPosition.Y);
-			Location = textEditorControl.ActiveTextAreaControl.TextArea.PointToScreen(visualPos);
+			
+			Point tempLocation = textEditorControl.ActiveTextAreaControl.TextArea.PointToScreen(visualPos);
+			tempLocation.Y = (tempLocation.Y + Height) > Screen.FromPoint(tempLocation).WorkingArea.Bottom ? 
+				Screen.FromPoint(tempLocation).WorkingArea.Bottom - Height : tempLocation.Y;
+			tempLocation.X = (tempLocation.X + Width) > Screen.FromPoint(tempLocation).WorkingArea.Right ?
+				Screen.FromPoint(tempLocation).WorkingArea.Right - Width : tempLocation.X;
+			Location = tempLocation;
+
 			StartPosition   = FormStartPosition.Manual;
 			
 			
