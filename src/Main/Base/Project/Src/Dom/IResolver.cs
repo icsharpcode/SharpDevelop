@@ -30,6 +30,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		                      string fileName,
 		                      string fileContent);
 		
-		ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName);
+		ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent);
 	}
 }

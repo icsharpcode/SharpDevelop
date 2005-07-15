@@ -659,7 +659,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		#endregion
 		#endregion
 		
-		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName)
+		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent)
 		{
 			ArrayList result;
 			if (language == SupportedLanguages.VBNet) {
@@ -671,34 +671,51 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				result = new ArrayList(TypeReference.GetPrimitiveTypes());
 			}
 			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
-			ICSharpCode.NRefactory.Parser.AST.CompilationUnit fileCompilationUnit = parseInfo.MostRecentCompilationUnit.Tag as ICSharpCode.NRefactory.Parser.AST.CompilationUnit;
-			if (fileCompilationUnit == null) {
+			if (parseInfo == null) {
 				return null;
 			}
-			lookupTableVisitor = new LookupTableVisitor(languageProperties.NameComparer);
-			lookupTableVisitor.Visit(fileCompilationUnit, null);
 			
-			NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
-			cu = (ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
+			this.caretLine   = caretLine;
+			this.caretColumn = caretColumn;
+			
+			lookupTableVisitor = new LookupTableVisitor(languageProperties.NameComparer);
+			
+			cu = parseInfo.MostRecentCompilationUnit;
+			
 			if (cu != null) {
 				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
-				if (callingClass != null) {
-					IMethod method = callingMember as IMethod;
-					if (method != null) {
-						foreach (IParameter p in method.Parameters) {
-							result.Add(new DefaultField(p.ReturnType, p.Name, ModifierEnum.None, method.Region, callingClass));
-						}
-					}
-					result.AddRange(projectContent.GetNamespaceContents(callingClass.Namespace));
-					bool inStatic = true;
-					if (callingMember != null)
-						inStatic = callingMember.IsStatic;
-					//result.AddRange(callingClass.GetAccessibleMembers(callingClass, inStatic).ToArray());
-					//if (inStatic == false) {
-					//	result.AddRange(callingClass.GetAccessibleMembers(callingClass, !inStatic).ToArray());
-					//}
+				cu.FileName = fileName;
+			}
+			
+			callingMember = GetCurrentMember();
+			if (callingMember != null) {
+				System.IO.TextReader content = ExtractMethod(fileContent, callingMember);
+				if (content != null) {
+					ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser(language, content);
+					p.Parse();
+					lookupTableVisitor.Visit(p.CompilationUnit, null);
 				}
 			}
+			
+			IMethod method = callingMember as IMethod;
+			if (method != null) {
+				foreach (IParameter p in method.Parameters) {
+					result.Add(new DefaultField(p.ReturnType, p.Name, ModifierEnum.None, method.Region, callingClass));
+				}
+			}
+			if (callingClass != null) {
+				result.AddRange(projectContent.GetNamespaceContents(callingClass.Namespace));
+			}
+			
+			bool inStatic = true;
+			if (callingMember != null)
+				inStatic = callingMember.IsStatic;
+			
+			if (!inStatic) {
+				result.AddRange(callingClass.GetAccessibleMembers(callingClass, false));
+			}
+			result.AddRange(callingClass.GetAccessibleMembers(callingClass, true));
+			result.AddRange(callingClass.GetAccessibleTypes(callingClass));
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 				if (pair.Value != null && pair.Value.Count > 0) {
 					foreach (LocalLookupVariable v in pair.Value) {

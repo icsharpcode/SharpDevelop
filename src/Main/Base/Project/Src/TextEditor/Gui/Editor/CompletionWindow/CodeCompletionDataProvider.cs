@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					if (charTyped != '\0') {
 						preSelection = null;
 					}
-					AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName));
+					AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, document.TextContent));
 					return (ICompletionData[])completionData.ToArray(typeof(ICompletionData));
 				}
 				
@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					if (charTyped != '\0') {
 						preSelection = null;
 					}
-					AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName));
+					AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, document.TextContent));
 					return (ICompletionData[])completionData.ToArray(typeof(ICompletionData));
 				}
 			}

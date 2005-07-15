@@ -413,11 +413,11 @@ namespace ICSharpCode.Core
 		
 		////////////////////////////////////
 		
-		public static ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName)
+		public static ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent)
 		{
 			IParser parser = GetParser(fileName);
 			if (parser != null) {
-				return parser.CreateResolver().CtrlSpace(caretLine, caretColumn, fileName);
+				return parser.CreateResolver().CtrlSpace(caretLine, caretColumn, fileName, fileContent);
 			}
 			return null;
 		}
@@ -428,17 +428,11 @@ namespace ICSharpCode.Core
 		                                    string fileName,
 		                                    string fileContent)
 		{
-			// added exception handling here to prevent silly parser exceptions from
-			// being thrown and corrupting the textarea control
-			//try {
 			IParser parser = GetParser(fileName);
 			if (parser != null) {
 				return parser.CreateResolver().Resolve(expression, caretLineNumber, caretColumn, fileName, fileContent);
 			}
 			return null;
-			//} catch {
-//				return null;
-			//}
 		}
 
 		static void OnParseInformationUpdated(ParseInformationEventArgs e)

@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -102,14 +102,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		IClass GetInnermostClass(int caretLine, int caretColumn);
-		//List<IClass> GetAccessibleTypes(IClass callingClass);
 		
-		//bool IsTypeInInheritanceTree(IClass possibleBaseClass);
+		List<IClass> GetAccessibleTypes(IClass callingClass);
 		
 		//IMember SearchMember(string memberName);
 		
-		/*
-		ArrayList GetAccessibleMembers(IClass callingClass, bool showStatic);
-		 */
+		bool IsTypeInInheritanceTree(IClass possibleBaseClass);
+		
+		List<IMember> GetAccessibleMembers(IClass callingClass, bool showStatic);
 	}
 }

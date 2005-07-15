@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -280,7 +280,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		/*
 		public bool IsTypeInInheritanceTree(IClass possibleBaseClass)
 		{
 			if (possibleBaseClass == null) {
@@ -299,7 +298,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			return false;
 		}
-		 */
+		
 		/*
 		public IMember SearchMember(string memberName)
 		{
@@ -366,7 +365,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return this;
 		}
 		
-		/*
 		public List<IClass> GetAccessibleTypes(IClass callingClass)
 		{
 			List<IClass> types = new List<IClass>();
@@ -385,25 +383,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return types;
 		}
 		
-		
-		public ArrayList GetAccessibleMembers(IClass callingClass, bool showStatic)
+		public List<IMember> GetAccessibleMembers(IClass callingClass, bool showStatic)
 		{
-			ArrayList members = new ArrayList();
-			
-			DateTime now = DateTime.Now;
-			
+			List<IMember> members = new List<IMember>();
 			
 			bool isClassInInheritanceTree = false;
 			if (callingClass != null)
 				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(this);
-			
-			if (showStatic) {
-				foreach (IClass c in InnerClasses) {
-					if (c.IsAccessible(callingClass, isClassInInheritanceTree)) {
-						members.Add(c);
-					}
-				}
-			}
 			
 			foreach (IProperty p in Properties) {
 				if (p.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
@@ -445,7 +431,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			return members;
 		}
-		 */
 		
 		public class ClassInheritanceEnumerator : IEnumerator, IEnumerable
 		{
