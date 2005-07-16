@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -66,7 +66,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (viewTabControl != null) {
 					int selectedIndex = 0;
 					if (viewTabControl.InvokeRequired) {
-						selectedIndex = (int)viewTabControl.Invoke(new MyDelegate(GetSelectedIndex));
+						// the window might have been disposed just here, invoke on the
+						// Workbench instead
+						selectedIndex = (int)WorkbenchSingleton.SafeThreadCall(this, "GetSelectedIndex");
 					} else {
 						selectedIndex = GetSelectedIndex();
 					}
@@ -77,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return content;
 			}
 		}
-		delegate int MyDelegate();
+		
 		int GetSelectedIndex()
 		{
 			return viewTabControl.SelectedIndex;

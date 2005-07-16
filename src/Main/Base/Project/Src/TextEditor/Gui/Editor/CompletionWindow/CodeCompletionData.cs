@@ -97,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedNames | ConversionFlags.ShowReturnType | ConversionFlags.ShowModifiers;
 //			Console.WriteLine("Convert : " + c);
 			description = ambience.Convert(c);
-			documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(c.DocumentationTag);
+			documentation = c.Documentation;
 		}
 		
 		public CodeCompletionData(IMethod method)
@@ -109,7 +109,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			text        = method.Name;
 			description = ambience.Convert(method);
 			completionString = method.Name;
-			documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(method.DocumentationTag);
+			documentation = method.Documentation;
 		}
 		
 		public CodeCompletionData(IField field)
@@ -121,7 +121,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			text        = field.Name;
 			description = ambience.Convert(field);
 			completionString = field.Name;
-			documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(field.DocumentationTag);
+			documentation = field.Documentation;
 		}
 		
 		public CodeCompletionData(IProperty property)
@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			text        = property.Name;
 			description = ambience.Convert(property);
 			completionString = property.Name;
-			documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(property.DocumentationTag);
+			documentation = property.Documentation;
 		}
 		
 		public CodeCompletionData(IEvent e)
@@ -145,7 +145,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			text        = e.Name;
 			description = ambience.Convert(e);
 			completionString = e.Name;
-			documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(e.DocumentationTag);
+			documentation = e.Documentation;
 		}
 		
 		public void InsertAction(TextEditorControl control)

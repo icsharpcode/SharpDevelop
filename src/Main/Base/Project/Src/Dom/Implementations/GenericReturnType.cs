@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return typeParameter.Equals(rt.typeParameter);
 		}
 		
-				public override bool IsDefaultReturnType {
+		public override bool IsDefaultReturnType {
 			get {
 				return false;
 			}

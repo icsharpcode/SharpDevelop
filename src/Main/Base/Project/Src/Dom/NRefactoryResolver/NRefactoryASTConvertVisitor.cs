@@ -52,6 +52,86 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return r;
 		}
 		
+		List<RefParser.ISpecial> specials;
+		
+		/// <summary>
+		/// Gets/Sets the list of specials used to read the documentation.
+		/// The list must be sorted by the start position of the specials!
+		/// </summary>
+		public List<RefParser.ISpecial> Specials {
+			get {
+				return specials;
+			}
+			set {
+				specials = value;
+			}
+		}
+		
+		string GetDocumentation(int line)
+		{
+			List<string> lines = new List<string>();
+			int length = 0;
+			while (line > 0) {
+				string doku = GetDocumentationFromLine(--line);
+				if (doku == null)
+					break;
+				length += 2 + doku.Length;
+				lines.Add(doku);
+			}
+			StringBuilder b = new StringBuilder(length);
+			for (int i = lines.Count - 1; i >= 0; --i) {
+				b.AppendLine(lines[i]);
+			}
+			return b.ToString();
+		}
+		
+		string GetDocumentationFromLine(int line)
+		{
+			if (specials == null) return null;
+			if (line < 0) return null;
+			// specials is a sorted list: use interpolation search
+			int left = 0;
+			int right = specials.Count - 1;
+			int m;
+			
+			while (left <= right) {
+				int leftLine  = specials[left].StartPosition.Y;
+				if (line < leftLine)
+					break;
+				int rightLine = specials[right].StartPosition.Y;
+				if (line > rightLine)
+					break;
+				if (leftLine == rightLine) {
+					if (leftLine == line)
+						m = left;
+					else
+						break;
+				} else {
+					m = left + (line - leftLine) * (right - left) / (rightLine - leftLine);
+				}
+				
+				int mLine = specials[m].StartPosition.Y;
+				if (mLine < line) { // found line smaller than line we are looking for
+					left = m + 1;
+				} else if (mLine > line) {
+					right = m - 1;
+				} else {
+					// correct line found,
+					// look for first special in that line
+					while (--m >= 0 && specials[m].StartPosition.Y == line);
+					// look at all specials in that line: find doku-comment
+					while (++m < specials.Count && specials[m].StartPosition.Y == line) {
+						RefParser.Comment comment = specials[m] as RefParser.Comment;
+						if (comment != null && comment.CommentType == RefParser.CommentType.Documentation) {
+							return comment.CommentText;
+						}
+					}
+					break;
+				}
+			}
+			return null;
+		}
+		
 		public override object Visit(AST.CompilationUnit compilationUnit, object data)
 		{
 			//TODO: usings, Comments
@@ -177,6 +257,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion region = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
 			DefaultClass c = new DefaultClass(cu, TranslateClassType(typeDeclaration.Type), ConvertModifier(typeDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
 			c.Attributes.AddRange(VisitAttributes(typeDeclaration.Attributes));
+			c.Documentation = GetDocumentation(region.BeginLine);
 			
 			if (currentClass.Count > 0) {
 				DefaultClass cur = GetCurrentClass();
@@ -222,6 +303,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DefaultRegion region = GetRegion(delegateDeclaration.StartLocation, delegateDeclaration.EndLocation);
 			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, ConvertModifier(delegateDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
+			c.Documentation = GetDocumentation(region.BeginLine);
 			c.Attributes.AddRange(VisitAttributes(delegateDeclaration.Attributes));
 			c.BaseTypes.Add("System.Delegate");
 			if (currentClass.Count > 0) {
@@ -270,6 +352,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass c  = GetCurrentClass();
 			
 			DefaultMethod method = new DefaultMethod(methodDeclaration.Name, null, ConvertModifier(methodDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			method.Documentation = GetDocumentation(region.BeginLine);
 			ConvertTemplates(methodDeclaration.Templates, method);
 			method.ReturnType = CreateReturnType(methodDeclaration.TypeReference, method);
 			method.Attributes.AddRange(VisitAttributes(methodDeclaration.Attributes));
@@ -291,6 +374,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass c = GetCurrentClass();
 			
 			Constructor constructor = new Constructor(ConvertModifier(constructorDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			constructor.Documentation = GetDocumentation(region.BeginLine);
 			constructor.Attributes.AddRange(VisitAttributes(constructorDeclaration.Attributes));
 			if (constructorDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
@@ -321,6 +405,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DefaultRegion region = GetRegion(fieldDeclaration.StartLocation, fieldDeclaration.EndLocation);
 			DefaultClass c = GetCurrentClass();
+			string doku = GetDocumentation(region.BeginLine);
 			if (currentClass.Count > 0) {
 				for (int i = 0; i < fieldDeclaration.Fields.Count; ++i) {
 					AST.VariableDeclaration field = (AST.VariableDeclaration)fieldDeclaration.Fields[i];
@@ -332,6 +417,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						retType = CreateReturnType(fieldDeclaration.GetTypeForField(i));
 					DefaultField f = new DefaultField(retType, field.Name, ConvertModifier(fieldDeclaration.Modifier), region, c);
 					f.Attributes.AddRange(VisitAttributes(fieldDeclaration.Attributes));
+					f.Documentation = doku;
 					if (c.ClassType == ClassType.Enum) {
 						f.Modifiers = ModifierEnum.Const | ModifierEnum.Public;
 					}
@@ -351,6 +437,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass c = GetCurrentClass();
 			
 			DefaultProperty property = new DefaultProperty(propertyDeclaration.Name, type, ConvertModifier(propertyDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			property.Documentation = GetDocumentation(region.BeginLine);
 			property.Attributes.AddRange(VisitAttributes(propertyDeclaration.Attributes));
 			c.Properties.Add(property);
 			return null;
@@ -363,8 +450,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			IReturnType type = CreateReturnType(eventDeclaration.TypeReference);
 			DefaultClass c = GetCurrentClass();
 			DefaultEvent e = null;
-			
-			if (eventDeclaration.VariableDeclarators != null) {
+
+			if (eventDeclaration.VariableDeclarators != null && eventDeclaration.VariableDeclarators.Count > 0) {
 				foreach (ICSharpCode.NRefactory.Parser.AST.VariableDeclaration varDecl in eventDeclaration.VariableDeclarators) {
 					e = new DefaultEvent(varDecl.Name, type, ConvertModifier(eventDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 					e.Attributes.AddRange(VisitAttributes(eventDeclaration.Attributes));
@@ -375,6 +462,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				e.Attributes.AddRange(VisitAttributes(eventDeclaration.Attributes));
 				c.Events.Add(e);
 			}
+			if (e != null) {
+				e.Documentation = GetDocumentation(region.BeginLine);
+			} else {
+				Console.WriteLine("Warning: " + eventDeclaration + " has no events!");
+			}
 			return null;
 		}
 		
@@ -384,6 +476,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
 			List<IParameter> parameters = new List<IParameter>();
 			DefaultIndexer i = new DefaultIndexer(CreateReturnType(indexerDeclaration.TypeReference), parameters, ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			i.Documentation = GetDocumentation(region.BeginLine);
 			i.Attributes.AddRange(VisitAttributes(indexerDeclaration.Attributes));
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {

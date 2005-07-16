@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		string DocumentationTag {
+		string Documentation {
 			get;
 		}
 
@@ -104,6 +104,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree);
 		bool MustBeShown(IClass callingClass, bool showStatic, bool isClassInInheritanceTree);
-		
 	}
 }

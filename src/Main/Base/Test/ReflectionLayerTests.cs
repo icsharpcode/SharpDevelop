@@ -55,16 +55,16 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreEqual(0, DiffUtility.Compare(a1, a2));
 		}
 		
-		IMethod GetMethod(IClass c, string name) {
+		DefaultMethod GetMethod(IClass c, string name) {
 			IMethod result = c.Methods.Find(delegate(IMethod m) { return m.Name == name; });
 			Assert.IsNotNull(result, "Method " + name + " not found");
-			return result;
+			return (DefaultMethod)result;
 		}
 		
 		[Test]
 		public void GenericDocumentationTagNamesTest()
 		{
-			IClass c = pc.GetClass("System.Collections.Generic.List");
+			DefaultClass c = (DefaultClass)pc.GetClass("System.Collections.Generic.List");
 			Assert.AreEqual("T:System.Collections.Generic.List`1",
 			                c.DocumentationTag);
 			Assert.AreEqual("M:System.Collections.Generic.List`1.Add(`0)",

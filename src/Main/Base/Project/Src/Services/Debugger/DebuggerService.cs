@@ -650,7 +650,7 @@ namespace ICSharpCode.Core
 				text.Append("unknown member ");
 				text.Append(member.ToString());
 			}
-			string documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(member.DocumentationTag);
+			string documentation = member.Documentation;
 			if (documentation != null && documentation.Length > 0) {
 				text.Append('\n');
 				text.Append(ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionData.GetDocumentation(documentation));

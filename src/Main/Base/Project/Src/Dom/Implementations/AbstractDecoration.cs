@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -8,6 +8,7 @@ using System;
 using System.Collections;
 using System.Reflection;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -50,6 +51,31 @@ namespace ICSharpCode.SharpDevelop.Dom
 					attributes = new List<IAttributeSection>();
 				}
 				return attributes;
+			}
+		}
+		
+		string documentation;
+		
+		public string Documentation {
+			get {
+				if (documentation == null) {
+					string documentationTag = this.DocumentationTag;
+					if (documentationTag != null) {
+						IProjectContent pc = null;
+						if (this is IClass) {
+							pc = ((IClass)this).ProjectContent;
+						} else if (declaringType != null) {
+							pc = declaringType.ProjectContent;
+						}
+						if (pc != null) {
+							return pc.GetXmlDocumentation(documentationTag);
+						}
+					}
+				}
+				return documentation;
+			}
+			set {
+				documentation = value;
 			}
 		}
 		

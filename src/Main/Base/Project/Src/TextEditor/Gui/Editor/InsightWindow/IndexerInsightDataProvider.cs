@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			IIndexer method = methods[number];
 			IAmbience conv = AmbienceService.CurrentAmbience;
 			conv.ConversionFlags = ConversionFlags.StandardConversionFlags;
-			string documentation = ParserService.CurrentProjectContent.GetXmlDocumentation(method.DocumentationTag);
+			string documentation = method.Documentation;
 			return conv.Convert(method) +
 				"\n" +
 				CodeCompletionData.GetDocumentation(documentation); // new (by G.B.)
