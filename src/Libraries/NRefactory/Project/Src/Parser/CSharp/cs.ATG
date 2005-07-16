@@ -1052,7 +1052,7 @@ StructMemberDecl<Modifiers m, ArrayList attributes>
 	Expression expr;
 	ArrayList p = new ArrayList();
 	Statement stmt = null;
-	ArrayList variableDeclarators = new ArrayList();
+	List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>();
 	List<TemplateDefinition> templates = new List<TemplateDefinition>();
 .)
 =
@@ -1459,7 +1459,7 @@ InterfaceAccessors<out PropertyGetRegion getBlock, out PropertySetRegion setBloc
 	]
 .
 
-VariableDeclarator<ArrayList fieldDeclaration>
+VariableDeclarator<List<VariableDeclaration> fieldDeclaration>
 (. Expression expr = null; .)
 =
 	ident                                 (. VariableDeclaration f = new VariableDeclaration(t.val); .)
@@ -2133,8 +2133,8 @@ RelationalExpr<ref Expression outExpr>
 		UnaryExpr<out expr> ShiftExpr<ref expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
 		|
 		(
-			"is" (. op = BinaryOperatorType.IS; .)
-			| "as" (. op = BinaryOperatorType.AS; .)
+			"is" (. op = BinaryOperatorType.TypeCheck; .)
+			| "as" (. op = BinaryOperatorType.AsCast; .)
 		)
 		Type<out type> (.  outExpr = new BinaryOperatorExpression(outExpr, op, new TypeReferenceExpression(type)); .)
 	}

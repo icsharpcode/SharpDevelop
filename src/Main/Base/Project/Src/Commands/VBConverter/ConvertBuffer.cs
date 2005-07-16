@@ -45,6 +45,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				
 				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
 				PreProcessingDirective.CSharpToVB(specials);
+				new CSharpToVBNetConvertVisitor().Visit(p.CompilationUnit, null);
 				SpecialNodesInserter sni = new SpecialNodesInserter(specials,
 				                                                    new SpecialOutputVisitor(vbv.OutputFormatter));
 				vbv.NodeTracker.NodeVisiting += sni.AcceptNodeStart;

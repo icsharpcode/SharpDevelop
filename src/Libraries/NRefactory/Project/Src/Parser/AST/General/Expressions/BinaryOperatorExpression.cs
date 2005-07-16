@@ -8,37 +8,61 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	{
 		None,
 		
+		/// <summary>'&amp;' in C#, 'And' in VB.</summary>
 		BitwiseAnd,
+		/// <summary>'|' in C#, 'Or' in VB.</summary>
 		BitwiseOr,
-		LogicalAnd, // Lazy operator
-		LogicalOr,  // Lazy operator
+		/// <summary>'&amp;&amp;' in C#, 'AndAlso' in VB.</summary>
+		LogicalAnd,
+		/// <summary>'||' in C#, 'OrElse' in VB.</summary>
+		LogicalOr,
+		/// <summary>'^' in C#, 'Xor' in VB.</summary>
 		ExclusiveOr,
 		
+		/// <summary>&gt;</summary>
 		GreaterThan,
+		/// <summary>&gt;=</summary>
 		GreaterThanOrEqual,
+		/// <summary>'==' in C#, '=' in VB.</summary>
 		Equality,
+		/// <summary>'!=' in C#, '&lt;&gt;' in VB.</summary>
 		InEquality,
+		/// <summary>&lt;</summary>
 		LessThan,
+		/// <summary>&lt;=</summary>
 		LessThanOrEqual,
 		
+		/// <summary>+</summary>
 		Add,
+		/// <summary>-</summary>
 		Subtract,
+		/// <summary>*</summary>
 		Multiply,
+		/// <summary>/</summary>
 		Divide,
+		/// <summary>'%' in C#, 'Mod' in VB.</summary>
 		Modulus,
-		ValueEquality, // What was this for ?
-		// VB specific operators
+		/// <summary>VB-only: \</summary>
 		DivideInteger,
+		/// <summary>VB-only: ^</summary>
 		Power,
+		/// <summary>VB-only: &</summary>
 		Concat,
 		
-		// additional
+		/// <summary>C#: &lt;&lt;</summary>
 		ShiftLeft,
+		/// <summary>C#: &gt;&gt;</summary>
 		ShiftRight,
-		IS,
-		IsNot,
-		AS,
-		Like, // What was this for ?
+		/// <summary>VB-only: Is</summary>
+		ReferenceEquality,
+		/// <summary>VB-only: IsNot</summary>
+		ReferenceInequality,
+		/// <summary>C#: Is</summary>
+		TypeCheck,
+		/// <summary>C#: as-cast</summary>
+		AsCast,
+		/// <summary>VB-only: Like</summary>
+		Like,
 	}
 	
 	public class BinaryOperatorExpression : Expression

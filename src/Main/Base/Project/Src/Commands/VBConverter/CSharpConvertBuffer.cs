@@ -43,6 +43,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor vbv = new ICSharpCode.NRefactory.PrettyPrinter.CSharpOutputVisitor();
 				List<ISpecial> specials = p.Lexer.SpecialTracker.CurrentSpecials;
 				PreProcessingDirective.VBToCSharp(specials);
+				new VBNetToCSharpConvertVisitor().Visit(p.CompilationUnit, null);
 				SpecialNodesInserter sni = new SpecialNodesInserter(specials,
 				                                                    new SpecialOutputVisitor(vbv.OutputFormatter));
 				vbv.NodeTracker.NodeVisiting += sni.AcceptNodeStart;

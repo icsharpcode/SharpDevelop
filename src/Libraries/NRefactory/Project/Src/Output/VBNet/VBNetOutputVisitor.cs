@@ -499,7 +499,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			VisitAttributes(propertySetRegion.Attributes, data);
 			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.Get);
+			outputFormatter.PrintToken(Tokens.Set);
 			outputFormatter.NewLine();
 			
 			++outputFormatter.IndentationLevel;
@@ -508,7 +508,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.End);
 			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.Get);
+			outputFormatter.PrintToken(Tokens.Set);
 			outputFormatter.NewLine();
 			return null;
 		}
@@ -1729,8 +1729,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				case BinaryOperatorType.LogicalOr:
 					op = Tokens.OrElse;
 					break;
+				case BinaryOperatorType.ReferenceEquality:
+					op = Tokens.Is;
+					break;
+				case BinaryOperatorType.ReferenceInequality:
+					op = Tokens.IsNot;
+					break;
 					
-				case BinaryOperatorType.AS:
+				case BinaryOperatorType.AsCast:
 					outputFormatter.PrintIdentifier("CType(Microsoft.VisualBasic.IIf(TypeOf ");
 					nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
 					outputFormatter.PrintIdentifier(" Is ");
@@ -1741,21 +1747,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
 					outputFormatter.PrintIdentifier(")");
 					return null;
-				case BinaryOperatorType.IS:
-					outputFormatter.PrintToken(Tokens.TypeOf);
-					outputFormatter.Space();
+				case BinaryOperatorType.TypeCheck:
+					outputFormatter.PrintIdentifier("TypeOf ");
 					nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
-					outputFormatter.Space();
-					outputFormatter.PrintToken(Tokens.Is);
-					outputFormatter.Space();
+					outputFormatter.PrintIdentifier(" Is ");
 					nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
 					return null;
 					
 				case BinaryOperatorType.Equality:
 					op = Tokens.Assign;
-					if (binaryOperatorExpression.Right is PrimitiveExpression && ((PrimitiveExpression)binaryOperatorExpression.Right).Value == null) {
-						op = Tokens.Is;
-					}
 					break;
 				case BinaryOperatorType.GreaterThan:
 					op = Tokens.GreaterThan;

@@ -1798,7 +1798,7 @@ Modifiers m, ArrayList attributes) {
 		Expression expr;
 		ArrayList p = new ArrayList();
 		Statement stmt = null;
-		ArrayList variableDeclarators = new ArrayList();
+		List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>();
 		List<TemplateDefinition> templates = new List<TemplateDefinition>();
 		
 		if (la.kind == 58) {
@@ -2664,7 +2664,7 @@ out Statement stmt) {
 
 	void VariableDeclarator(
 #line  1462 "cs.ATG" 
-ArrayList fieldDeclaration) {
+List<VariableDeclaration> fieldDeclaration) {
 
 #line  1463 "cs.ATG" 
 		Expression expr = null; 
@@ -5068,12 +5068,12 @@ ref expr);
 					lexer.NextToken();
 
 #line  2136 "cs.ATG" 
-					op = BinaryOperatorType.IS; 
+					op = BinaryOperatorType.TypeCheck; 
 				} else if (la.kind == 48) {
 					lexer.NextToken();
 
 #line  2137 "cs.ATG" 
-					op = BinaryOperatorType.AS; 
+					op = BinaryOperatorType.AsCast; 
 				} else SynErr(183);
 				Type(
 #line  2139 "cs.ATG" 

@@ -19,6 +19,7 @@ using System;
 using System.Drawing;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 
 namespace ICSharpCode.NRefactory.Parser.AST
@@ -26,9 +27,8 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	public class EventDeclaration : ParametrizedNode
 	{
 		TypeReference   typeReference = TypeReference.Null;
-//		List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>(1); 
+		List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>(1); 
 //		ArrayList     implementsClause = new ArrayList(); // VB only
-		ArrayList variableDeclarators = new ArrayList(1); 
 		ArrayList     implementsClause = new ArrayList(); // VB only
 		EventAddRegion addRegion       = EventAddRegion.Null; // only for C#
 		EventRemoveRegion removeRegion = EventRemoveRegion.Null; // only for C#
@@ -43,12 +43,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				typeReference = TypeReference.CheckNull(value);
 			}
 		}
-		public ArrayList VariableDeclarators {
+		public List<VariableDeclaration> VariableDeclarators {
 			get {
 				return variableDeclarators;
 			}
 			set {
-				variableDeclarators = value == null ? new ArrayList(1) : value;
+				variableDeclarators = value == null ? new List<VariableDeclaration>(1) : value;
 			}
 		}
 		
@@ -110,7 +110,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		{
 		}
 		
-		public EventDeclaration(TypeReference typeReference, ArrayList variableDeclarators, Modifier modifier, ArrayList attributes) : base(modifier, attributes)
+		public EventDeclaration(TypeReference typeReference, List<VariableDeclaration> variableDeclarators, Modifier modifier, ArrayList attributes) : base(modifier, attributes)
 		{
 			this.TypeReference = typeReference;
 			this.VariableDeclarators = variableDeclarators;

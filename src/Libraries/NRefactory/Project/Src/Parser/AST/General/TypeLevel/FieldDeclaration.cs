@@ -18,6 +18,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -27,8 +28,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		ArrayList                 attributes;
 		TypeReference             typeReference = TypeReference.Null;
 		Modifier                  modifier      = Modifier.None;
-//		List<VariableDeclaration> fields        = new List<VariableDeclaration>(1); // [VariableDeclaration]
-		ArrayList                 fields        = new ArrayList(1); // [VariableDeclaration]
+		List<VariableDeclaration> fields        = new List<VariableDeclaration>(1);
 		
 		public ArrayList Attributes {
 			get {
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				modifier = value;
 			}
 		}
-		public ArrayList Fields {
+		public List<VariableDeclaration> Fields {
 			get {
 				return fields;
 			}

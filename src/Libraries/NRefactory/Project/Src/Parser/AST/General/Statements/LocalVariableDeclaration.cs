@@ -3,6 +3,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -10,8 +11,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	{
 		TypeReference             typeReference;
 		Modifier                  modifier = Modifier.None;
-//		List<VariableDeclaration> variables = new List<VariableDeclaration>(1);
-		ArrayList variables = new ArrayList(1);
+		List<VariableDeclaration> variables = new List<VariableDeclaration>(1);
 		BlockStatement            block     = BlockStatement.Null; // the block in witch the variable is declared; needed for the LookupTable
 		
 		public TypeReference TypeReference {
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList Variables {
+		public List<VariableDeclaration> Variables {
 			get {
 				return variables;
 			}

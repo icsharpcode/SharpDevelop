@@ -1,5 +1,6 @@
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Text;
 using ICSharpCode.NRefactory.Parser.AST;
@@ -832,7 +833,7 @@ ClassBaseType<out string name>
 StructureMemberDecl<Modifiers m, ArrayList attributes>
 	(.
 		TypeReference type = null; ArrayList p = null;
-		Statement stmt = null; ArrayList variableDeclarators = new ArrayList();
+		Statement stmt = null; List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>();
 	.)=
 	NonModuleDeclaration<m, attributes>
 	| /* 9.2.1 */
@@ -1056,7 +1057,7 @@ StructureMemberDecl<Modifiers m, ArrayList attributes>
 	"Const" (.  m.Add(Modifier.Const);  .)
 	(.
 		FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
-		fd.StartLocation = t.Location;ArrayList constantDeclarators = new ArrayList();
+		fd.StartLocation = t.Location;List<VariableDeclaration> constantDeclarators = new List<VariableDeclaration>();
 	.)
 	ConstantDeclarator<constantDeclarators>
 	{ "," ConstantDeclarator<constantDeclarators> }
@@ -1177,7 +1178,7 @@ SetAccessorDecl<out PropertySetRegion setBlock,ArrayList attributes>
 	.
 
 /* 9.5 */
-ConstantDeclarator<ArrayList constantDeclaration>
+ConstantDeclarator<List<VariableDeclaration> constantDeclaration>
 	(.
 		Expression expr = null;
 		TypeReference type = null;
@@ -1194,7 +1195,7 @@ ConstantDeclarator<ArrayList constantDeclaration>
 	.
 
 /* 9.6 */
-VariableDeclarator<ArrayList fieldDeclaration>
+VariableDeclarator<List<VariableDeclaration> fieldDeclaration>
 	(.
 		Expression expr = null;
 		TypeReference type = null;ArrayList rank = null;ArrayList dimension = null;
@@ -1547,8 +1548,8 @@ RelationalExpr<out Expression outExpr>
 		ShiftExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
 		|
 		/* 11.5.3 */
-		("Is" (. op = BinaryOperatorType.IS; .) |
-		"IsNot" (. op = BinaryOperatorType.IsNot; .) )
+		("Is" (. op = BinaryOperatorType.ReferenceEquality; .) |
+		"IsNot" (. op = BinaryOperatorType.ReferenceInequality; .) )
 		Expr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr); .)
 	}
 	.

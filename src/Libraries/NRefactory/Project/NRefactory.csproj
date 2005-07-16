@@ -185,6 +185,9 @@
     <Compile Include="Src\Parser\AST\CSharp\Expressions\AnonymousMethodExpression.cs" />
     <Compile Include="Src\Lexer\Special\ISpecial.cs" />
     <Compile Include="Src\Output\SpecialNodesInserter.cs" />
+    <Compile Include="Src\Parser\Visitors\CSharpToVBNetConvertVisitor.cs" />
+    <Compile Include="Src\Parser\Visitors\PrefixFieldsVisitor.cs" />
+    <Compile Include="Src\Parser\Visitors\VBNetToCSharpConvertVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\CSharpKeywordList.txt" />

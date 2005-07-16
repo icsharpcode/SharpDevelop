@@ -21,6 +21,9 @@ using System.Collections;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
+	/// <summary>
+	/// Base class for PropertyGetRegion and PropertySetRegion.
+	/// </summary>
 	public abstract class PropertyGetSetRegion : AttributedNode, INullable
 	{
 		BlockStatement block = BlockStatement.Null; // can be null if only the definition is there (interface declaration)

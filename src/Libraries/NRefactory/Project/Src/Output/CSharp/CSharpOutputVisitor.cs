@@ -824,7 +824,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(EraseStatement eraseStatement, object data)
 		{
-			errors.Error(-1, -1, String.Format("EraseStatement is unsupported"));
+			foreach (Expression expr in eraseStatement.Expressions) {
+				outputFormatter.Indent();
+				expr.AcceptVisitor(this, data);
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Assign);
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Null);
+				outputFormatter.PrintToken(Tokens.Semicolon);
+				outputFormatter.NewLine();
+			}
 			return null;
 		}
 		
@@ -1108,7 +1117,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(StopStatement stopStatement, object data)
 		{
-			outputFormatter.PrintIdentifier("Debugger.Break()");
+			outputFormatter.PrintIdentifier("System.Diagnostics.Debugger.Break()");
 			outputFormatter.PrintToken(Tokens.Semicolon);
 			return null;
 		}
@@ -1441,8 +1450,38 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		bool IsNullLiteralExpression(Expression expr)
+		{
+			PrimitiveExpression pe = expr as PrimitiveExpression;
+			if (pe == null) return false;
+			return pe.Value == null;
+		}
+		
 		public object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
+			// VB-operators that require special representation:
+			switch (binaryOperatorExpression.Op) {
+				case BinaryOperatorType.ReferenceEquality:
+				case BinaryOperatorType.ReferenceInequality:
+					if (IsNullLiteralExpression(binaryOperatorExpression.Left) || IsNullLiteralExpression(binaryOperatorExpression.Right)) {
+						// prefer a == null to object.ReferenceEquals(a, null)
+						break;
+					}
+					
+					if (binaryOperatorExpression.Op == BinaryOperatorType.ReferenceInequality)
+						outputFormatter.PrintToken(Tokens.Not);
+					outputFormatter.PrintIdentifier("object.ReferenceEquals");
+					if (prettyPrintOptions.BeforeMethodCallParentheses) {
+						outputFormatter.Space();
+					}
+					
+					outputFormatter.PrintToken(Tokens.OpenParenthesis);
+					nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
+					PrintFormattedComma();
+					nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
+					outputFormatter.PrintToken(Tokens.CloseParenthesis);
+					return null;
+			}
 			nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
 			switch (binaryOperatorExpression.Op) {
 				case BinaryOperatorType.Add:
@@ -1476,6 +1515,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 					
 				case BinaryOperatorType.Divide:
+				case BinaryOperatorType.DivideInteger:
 					if (prettyPrintOptions.AroundMultiplicativeOperatorParentheses) {
 						outputFormatter.Space();
 					}
@@ -1563,19 +1603,20 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					}
 					break;
 					
-				case BinaryOperatorType.AS:
+				case BinaryOperatorType.AsCast:
 					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.As);
 					outputFormatter.Space();
 					break;
 					
-				case BinaryOperatorType.IS:
+				case BinaryOperatorType.TypeCheck:
 					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.Is);
 					outputFormatter.Space();
 					break;
 					
 				case BinaryOperatorType.Equality:
+				case BinaryOperatorType.ReferenceEquality:
 					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
 						outputFormatter.Space();
 					}
@@ -1603,6 +1644,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					}
 					break;
 				case BinaryOperatorType.InEquality:
+				case BinaryOperatorType.ReferenceInequality:
 					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
 						outputFormatter.Space();
 					}

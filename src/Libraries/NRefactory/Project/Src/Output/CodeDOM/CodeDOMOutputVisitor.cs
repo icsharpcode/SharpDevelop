@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		string ConvType(string type) 
+		string ConvType(string type)
 		{
 			if (type == null) {
 				return null;
@@ -121,7 +121,7 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 
 		// FIXME: map all modifiers correctly
-		MemberAttributes ConvMemberAttributes(Modifier modifier) 
+		MemberAttributes ConvMemberAttributes(Modifier modifier)
 		{
 			MemberAttributes attr = (MemberAttributes)0;
 
@@ -161,7 +161,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return attr;
 		}
 
-#region ICSharpCode.SharpRefactory.Parser.IASTVisitor interface implementation
+		#region ICSharpCode.SharpRefactory.Parser.IASTVisitor interface implementation
 		public override object Visit(CompilationUnit compilationUnit, object data)
 		{
 			if (compilationUnit == null) {
@@ -236,7 +236,7 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 //			CodeTypeDelegate codeTypeDelegate = new CodeTypeDelegate(delegateDeclaration.Name);
 //			codeTypeDelegate.Parameters
-//			
+//
 //			((CodeNamespace)namespaceDeclarations.Peek()).Types.Add(codeTypeDelegate);
 			return null;
 		}
@@ -349,11 +349,11 @@ namespace ICSharpCode.NRefactory.Parser
 				VariableDeclaration var = (VariableDeclaration)localVariableDeclaration.Variables[i];
 				if (!var.Initializer.IsNull) {
 					declStmt = new CodeVariableDeclarationStatement(type,
-					                                             var.Name,
-					                                             (CodeExpression)((INode)var.Initializer).AcceptVisitor(this, data));
+					                                                var.Name,
+					                                                (CodeExpression)((INode)var.Initializer).AcceptVisitor(this, data));
 				} else {
 					declStmt = new CodeVariableDeclarationStatement(type,
-					                                             var.Name);
+					                                                var.Name);
 				}
 			}
 			
@@ -499,7 +499,7 @@ namespace ICSharpCode.NRefactory.Parser
 				codeStack.Pop();
 			}
 
-			foreach (CatchClause clause in tryCatchStatement.CatchClauses) 
+			foreach (CatchClause clause in tryCatchStatement.CatchClauses)
 			{
 				CodeCatchClause catchClause = new CodeCatchClause(clause.VariableName);
 				catchClause.CatchExceptionType = new CodeTypeReference(clause.TypeReference.Type);
@@ -558,6 +558,7 @@ namespace ICSharpCode.NRefactory.Parser
 					op = CodeBinaryOperatorType.BooleanOr;
 					break;
 				case BinaryOperatorType.Divide:
+				case BinaryOperatorType.DivideInteger:
 					op = CodeBinaryOperatorType.Divide;
 					break;
 				case BinaryOperatorType.GreaterThan:
@@ -587,23 +588,26 @@ namespace ICSharpCode.NRefactory.Parser
 				case BinaryOperatorType.Subtract:
 					op = CodeBinaryOperatorType.Subtract;
 					break;
-				case BinaryOperatorType.ValueEquality:
-					op = CodeBinaryOperatorType.ValueEquality;
-					break;
+				//case BinaryOperatorType.ValueEquality:
+				//	op = CodeBinaryOperatorType.ValueEquality;
+				//	break;
 				case BinaryOperatorType.ShiftLeft:
-					// CodeDOM suxx
-					op = CodeBinaryOperatorType.Multiply;
-					break;
 				case BinaryOperatorType.ShiftRight:
 					// CodeDOM suxx
 					op = CodeBinaryOperatorType.Multiply;
 					break;
-				case BinaryOperatorType.IS:
+				case BinaryOperatorType.ReferenceEquality:
 					op = CodeBinaryOperatorType.IdentityEquality;
 					break;
-				case BinaryOperatorType.AS:
-					op = CodeBinaryOperatorType.IdentityEquality;
+				case BinaryOperatorType.ReferenceInequality:
+					op = CodeBinaryOperatorType.IdentityInequality;
 					break;
+				case BinaryOperatorType.AsCast:
+				case BinaryOperatorType.TypeCheck:
+					// CodeDOM suxx
+					op = CodeBinaryOperatorType.Add;
+					break;
+					
 				case BinaryOperatorType.ExclusiveOr:
 					// TODO ExclusiveOr
 					op = CodeBinaryOperatorType.BitwiseAnd;
@@ -633,7 +637,7 @@ namespace ICSharpCode.NRefactory.Parser
 					FieldReferenceExpression fRef2 = (FieldReferenceExpression)fRef.TargetObject;
 					if (fRef2.FieldName != null && Char.IsUpper(fRef2.FieldName[0])) {
 						// an exception is thrown if it doesn't end in an indentifier exception
-						// for example for : this.MyObject.MyMethod() leads to an exception, which 
+						// for example for : this.MyObject.MyMethod() leads to an exception, which
 						// is correct in this case ... I know this is really HACKY :)
 						try {
 							CodeExpression tExpr = ConvertToIdentifier(fRef2);
@@ -691,10 +695,10 @@ namespace ICSharpCode.NRefactory.Parser
 							return new CodePrimitiveExpression(- (float)expression.Value);
 						}
 						
-					} 
+					}
 					return  new CodeBinaryOperatorExpression(new CodePrimitiveExpression(0),
-			                                        CodeBinaryOperatorType.Subtract,
-			                                        (CodeExpression)unaryOperatorExpression.Expression.AcceptVisitor(this, data));
+					                                         CodeBinaryOperatorType.Subtract,
+					                                         (CodeExpression)unaryOperatorExpression.Expression.AcceptVisitor(this, data));
 				case UnaryOperatorType.Plus:
 					return unaryOperatorExpression.Expression.AcceptVisitor(this, data);
 
@@ -703,36 +707,36 @@ namespace ICSharpCode.NRefactory.Parser
 					var = (CodeExpression)unaryOperatorExpression.Expression.AcceptVisitor(this, data);
 
 					return new CodeAssignStatement(var,
-									new CodeBinaryOperatorExpression(var,
-																	 CodeBinaryOperatorType.Add,
-																	 new CodePrimitiveExpression(1)));
+					                               new CodeBinaryOperatorExpression(var,
+					                                                                CodeBinaryOperatorType.Add,
+					                                                                new CodePrimitiveExpression(1)));
 
 				case UnaryOperatorType.PostDecrement:
 					// emulate i--, with i = i - 1
 					var = (CodeExpression)unaryOperatorExpression.Expression.AcceptVisitor(this, data);
 
 					return new CodeAssignStatement(var,
-						new CodeBinaryOperatorExpression(var,
-						CodeBinaryOperatorType.Subtract,
-						new CodePrimitiveExpression(1)));
+					                               new CodeBinaryOperatorExpression(var,
+					                                                                CodeBinaryOperatorType.Subtract,
+					                                                                new CodePrimitiveExpression(1)));
 
 				case UnaryOperatorType.Decrement:
 					// emulate --i, with i = i - 1
 					var = (CodeExpression)unaryOperatorExpression.Expression.AcceptVisitor(this, data);
 
 					return new CodeAssignStatement(var,
-						new CodeBinaryOperatorExpression(var,
-						CodeBinaryOperatorType.Subtract,
-						new CodePrimitiveExpression(1)));
+					                               new CodeBinaryOperatorExpression(var,
+					                                                                CodeBinaryOperatorType.Subtract,
+					                                                                new CodePrimitiveExpression(1)));
 
 				case UnaryOperatorType.Increment:
 					// emulate ++i, with i = i + 1
 					var = (CodeExpression)unaryOperatorExpression.Expression.AcceptVisitor(this, data);
 
 					return new CodeAssignStatement(var,
-						new CodeBinaryOperatorExpression(var,
-						CodeBinaryOperatorType.Add,
-						new CodePrimitiveExpression(1)));
+					                               new CodeBinaryOperatorExpression(var,
+					                                                                CodeBinaryOperatorType.Add,
+					                                                                new CodePrimitiveExpression(1)));
 
 			}
 			return null;
@@ -745,15 +749,15 @@ namespace ICSharpCode.NRefactory.Parser
 				methodReference = true;
 				CodeExpression methodInvoker = (CodeExpression)assignmentExpression.Right.AcceptVisitor(this, null);
 				methodReference = false;
-					
+				
 				if (assignmentExpression.Left is IdentifierExpression) {
 					AddStmt(new CodeAttachEventStatement(new CodeEventReferenceExpression(new CodeThisReferenceExpression(), ((IdentifierExpression)assignmentExpression.Left).Identifier),
-					                                                          methodInvoker));
+					                                     methodInvoker));
 				} else {
 					FieldReferenceExpression fr = (FieldReferenceExpression)assignmentExpression.Left;
 					
 					AddStmt(new CodeAttachEventStatement(new CodeEventReferenceExpression((CodeExpression)fr.TargetObject.AcceptVisitor(this, data), fr.FieldName),
-					                                                          methodInvoker));
+					                                     methodInvoker));
 				}
 			} else {
 				if (assignmentExpression.Left is IdentifierExpression) {
@@ -765,7 +769,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
-	
+		
 		public override object Visit(TypeOfExpression typeOfExpression, object data)
 		{
 			return new CodeTypeOfExpression(ConvType(typeOfExpression.TypeReference.Type));
@@ -957,10 +961,10 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		Type GetType(string typeName)
 		{
-			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) 
+			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
 			{
 				Type type = asm.GetType(typeName);
-				if (type != null) 
+				if (type != null)
 				{
 					return type;
 				}
