@@ -145,7 +145,11 @@ namespace DebuggerLibrary
 		{
 			TraceMessage ("Debugger event: OnDebuggingPaused(" + reason.ToString() + ")");
 			if (DebuggingPaused != null) {
-				DebuggingPaused(null, new DebuggingPausedEventArgs(reason));
+				DebuggingPausedEventArgs args = new DebuggingPausedEventArgs(reason);
+				DebuggingPaused(null, args);
+				if (args.ResumeDebugging) {
+					Continue();
+				}
 			}
 		}
 
@@ -343,7 +347,7 @@ namespace DebuggerLibrary
 
 		public VariableCollection LocalVariables { 
 			get {
-				if (!IsDebugging) return null;
+				if (!IsDebugging) return VariableCollection.Empty;
 				return CurrentProcess.LocalVariables;
 			}
 		}

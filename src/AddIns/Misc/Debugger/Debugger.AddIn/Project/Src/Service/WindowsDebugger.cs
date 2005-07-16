@@ -338,7 +338,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				exceptionHistory.Add(debugger.CurrentThread.CurrentException);
 				if (debugger.CurrentThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED && (debugger.CatchHandledExceptions == false)) {
 					// Ignore the exception
-					Continue();
+					e.ResumeDebuggingAfterEvent();
 					return;
 				}
 				
@@ -355,11 +355,11 @@ namespace ICSharpCode.SharpDevelop.Services
 					case ExceptionForm.Result.Break: 
 						break;
 					case ExceptionForm.Result.Continue:
-						Continue();
+						e.ResumeDebuggingAfterEvent();
 						return;
 					case ExceptionForm.Result.Ignore:
 						System.Diagnostics.Debug.Fail("Not implemented");
-						Continue();
+						e.ResumeDebuggingAfterEvent();
 						return;
 				}
 			}

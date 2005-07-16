@@ -12,11 +12,30 @@ namespace DebuggerLibrary
 	public class DebuggingPausedEventArgs : System.EventArgs 
 	{
 		PausedReason reason;
+
+		bool resumeDebugging = false;
 		
 		public PausedReason Reason {
 			get {
 				return reason;
 			}
+		}
+
+		internal bool ResumeDebugging {
+			get {
+				return resumeDebugging;
+			}
+		}
+
+		/// <summary>
+		/// Call this function to resume debugging when event is handled
+		/// 
+		/// This is prefered to calling Continue() since it ensures Continue is
+		/// called only once and never before all events are handled
+		/// </summary>
+		public void ResumeDebuggingAfterEvent()
+		{
+			resumeDebugging = true;
 		}
 		
 		public DebuggingPausedEventArgs(PausedReason reason)
