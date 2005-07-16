@@ -64,12 +64,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			name.Width = 250;
 			val.Width = 300;
 			type.Width = 250;
-
+			localVarList.Visible = false;
+			localVarList.SizeChanged += new EventHandler(localVarList_SizeChanged);
 			localVarList.BeforeExpand += new TreeListViewCancelEventHandler(localVarList_BeforeExpand);
 			
 			debuggerCore.DebuggingPaused += new DebuggingPausedEventHandler(debuggerService_OnDebuggingPaused);
 
 			RedrawContent();
+		}
+
+		// This is a walkarond for a visual issue
+		void localVarList_SizeChanged(object sender, EventArgs e)
+		{
+			localVarList.Visible = true;
 		}
 		
 		public override void RedrawContent()
