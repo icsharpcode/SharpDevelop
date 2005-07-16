@@ -45,8 +45,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			debuggerCore = debugger.DebuggerCore;
 
+			debugger.Initialize += delegate {
+				InitializeDebugger();
+			};
+			
 			ImageList imageList = new ImageList();
 			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.Class"));
 			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.Field"));
@@ -68,9 +71,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.SizeChanged += new EventHandler(localVarList_SizeChanged);
 			localVarList.BeforeExpand += new TreeListViewCancelEventHandler(localVarList_BeforeExpand);
 			
+			RedrawContent();
+		}
+
+		public void InitializeDebugger()
+		{
+			debuggerCore = debugger.DebuggerCore;
+
 			debuggerCore.DebuggingPaused += new DebuggingPausedEventHandler(debuggerService_OnDebuggingPaused);
 
-			RedrawContent();
+			RefreshList();
 		}
 
 		// This is a walkarond for a visual issue
@@ -84,7 +94,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			name.Text = "Name";
 			val.Text  = "Value";
 			type.Text = "Type";
+		}
 
+		void RefreshList()
+		{
             if (debugger.IsDebugging && debugger.IsProcessRunning == false) {
                 debuggerService_OnDebuggingPaused(this, new DebuggingPausedEventArgs(PausedReason.StepComplete));
             }

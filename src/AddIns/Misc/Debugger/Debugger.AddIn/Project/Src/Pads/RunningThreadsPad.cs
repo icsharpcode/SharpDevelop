@@ -47,8 +47,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			debuggerCore = debugger.DebuggerCore;
 
+			debugger.Initialize += delegate {
+				InitializeDebugger();
+			};
+			
 			runningThreadsList = new ListView();
 			runningThreadsList.FullRowSelect = true;
 			runningThreadsList.AutoArrange = true;
@@ -64,14 +67,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			location.Width = 250;
 			priority.Width = 120;
 			breaked.Width = 80;
-		
 			
+			RedrawContent();
+		}
+
+		public void InitializeDebugger()
+		{
+			debuggerCore = debugger.DebuggerCore;
+
 			debuggerCore.ThreadStarted += new ThreadEventHandler(AddThread);
 			debuggerCore.ThreadStateChanged += new ThreadEventHandler(RefreshThread);
 			debuggerCore.ThreadExited += new ThreadEventHandler(RemoveThread);
 			debuggerCore.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
-	
-			RedrawContent();
+
+			RefreshList();
 		}
 		
 		public override void RedrawContent()
@@ -81,8 +90,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			location.Text    = "Location";
 			priority.Text    = "Priority";
 			breaked.Text     = "Breaked";
-
-            RefreshAllItems();
 		}
 
 		void RunningThreadsListItemActivate(object sender, EventArgs e)
@@ -131,10 +138,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public void DebuggerStateChanged(object sender, DebuggerEventArgs e)
 		{
-			RefreshAllItems();
+			RefreshList();
 		}
 
-		private void RefreshAllItems()
+		private void RefreshList()
 		{
 			foreach (Thread t in debuggerCore.Threads) {
 				RefreshThread(this, new ThreadEventArgs(t));

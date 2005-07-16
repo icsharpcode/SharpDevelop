@@ -45,8 +45,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			debuggerCore = debugger.DebuggerCore;
 
+			debugger.Initialize += delegate {
+				InitializeDebugger();
+			};
+			
 			exceptionHistoryList = new ListView();
 			exceptionHistoryList.FullRowSelect = true;
 			exceptionHistoryList.AutoArrange = true;
@@ -61,10 +64,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			location.Width = 400;
 			time.Width = 80;
 			
+			RedrawContent();
+		}
+
+		public void InitializeDebugger()
+		{
+			debuggerCore = debugger.DebuggerCore;
+
 			debuggerCore.IsDebuggingChanged += new DebuggerEventHandler(DebuggerStateChanged);
 			debuggerCore.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
 
-			RedrawContent();
+			RefreshList();
 		}
 		
 		public override void RedrawContent()
@@ -72,8 +82,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			time.Text        = "Time";
 			exception.Text   = "Exception";
 			location.Text    = "Location";
-
-            RefreshList();
 		}
 		
 		void ExceptionHistoryListItemActivate(object sender, EventArgs e)

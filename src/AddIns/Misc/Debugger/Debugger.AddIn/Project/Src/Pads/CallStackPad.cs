@@ -44,7 +44,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			debuggerCore = debugger.DebuggerCore;
+
+			debugger.Initialize += delegate {
+				InitializeDebugger();
+			};
 
 			callStackList = new ListView();
 			callStackList.FullRowSelect = true;
@@ -58,19 +61,24 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			callStackList.ItemActivate += new EventHandler(CallStackListItemActivate);
 			name.Width = 300;
 			language.Width = 400;
-			
+
+			RedrawContent();
+		}
+
+		public void InitializeDebugger()
+		{
+			debuggerCore = debugger.DebuggerCore;
+
 			debuggerCore.IsDebuggingChanged += new DebuggerEventHandler(DebuggerStateChanged);
 			debuggerCore.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
 
-			RedrawContent();
+			RefreshList();
 		}
 		
 		public override void RedrawContent()
 		{
 			name.Text        = "Name";
 			language.Text    = "Language";
-
-            RefreshList();
 		}
 		
 		void CallStackListItemActivate(object sender, EventArgs e)

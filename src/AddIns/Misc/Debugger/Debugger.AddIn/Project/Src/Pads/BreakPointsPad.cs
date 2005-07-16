@@ -44,7 +44,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			debuggerCore = debugger.DebuggerCore;
+
+			debugger.Initialize += delegate {
+				InitializeDebugger();
+			};
 
 			breakpointsList = new ListView();
 			breakpointsList.FullRowSelect = true;
@@ -61,21 +64,26 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			name.Width = 300;
 			path.Width = 400;
 
+			RedrawContent();
+		}
+
+		public void InitializeDebugger()
+		{
+			debuggerCore = debugger.DebuggerCore;
+
 			debuggerCore.DebuggingResumed += new DebuggerEventHandler(debuggerService_OnDebuggingResumed);
 			debuggerCore.BreakpointAdded += new DebuggerLibrary.BreakpointEventHandler(AddBreakpoint);
 			debuggerCore.BreakpointStateChanged += new DebuggerLibrary.BreakpointEventHandler(RefreshBreakpoint);
 			debuggerCore.BreakpointRemoved += new DebuggerLibrary.BreakpointEventHandler(RemoveBreakpoint);
 			debuggerCore.BreakpointHit += new DebuggerLibrary.BreakpointEventHandler(Breakpoints_OnBreakpointHit);
-			
-			RedrawContent();
+
+			RefreshList();
 		}
 		
 		public override void RedrawContent()
 		{
 			name.Text        = "Name";
 			path.Text        = "Path";
-			
-			FillList();
 		}
 		
 		void BreakpointsListItemCheck(object sender, ItemCheckEventArgs e)
@@ -89,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 		
-		void FillList()
+		void RefreshList()
 		{
 			breakpointsList.ItemCheck -= new ItemCheckEventHandler(BreakpointsListItemCheck);
 			breakpointsList.BeginUpdate();

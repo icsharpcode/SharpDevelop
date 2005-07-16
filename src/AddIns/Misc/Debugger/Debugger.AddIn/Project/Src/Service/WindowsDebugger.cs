@@ -37,7 +37,7 @@ using System.Security.Policy;
 
 namespace ICSharpCode.SharpDevelop.Services
 {	
-	public class WindowsDebugger:IDebugger //, IService
+	public class WindowsDebugger:IDebugger//, IService
 	{
 		[Serializable]
 		public class RemotingConfigurationHelpper
@@ -87,8 +87,9 @@ namespace ICSharpCode.SharpDevelop.Services
 		bool useRemotingForThreadInterop = false;
 
 		NDebugger debugger;
-		bool isDebuggingCache;
-		bool isProcessRunningCache;
+		bool isDebuggingCache = false;
+		bool isProcessRunningCache = false;
+		bool serviceInitialized = false;
 
 		public event EventHandler DebugStopped; // FIX: unused
 
@@ -136,6 +137,16 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public WindowsDebugger()
 		{
+
+		}
+		
+		#region ICSharpCode.Core.Services.IService interface implementation
+		public event System.EventHandler Initialize;
+
+		public event System.EventHandler Unload;
+		
+		public void InitializeService()
+		{
 			if (useRemotingForThreadInterop) {
 				// This needs to be called before instance of NDebugger is created
 				string path = null;
@@ -155,16 +166,6 @@ namespace ICSharpCode.SharpDevelop.Services
 
 			debugger = new NDebugger();
 
-			InitializeService();
-		}
-		
-		#region ICSharpCode.Core.Services.IService interface implementation
-		public event System.EventHandler Initialize;
-
-		public event System.EventHandler Unload;
-		
-		public void InitializeService()
-		{
 			debugger.DebuggerTraceMessage    += new MessageEventHandler(DebuggerTraceMessage);
 			debugger.LogMessage              += new MessageEventHandler(LogMessage);
 			debugger.DebuggingStarted        += new DebuggerEventHandler(DebuggingStarted);
@@ -179,12 +180,16 @@ namespace ICSharpCode.SharpDevelop.Services
 			DebuggerService.BreakPointRemoved += new EventHandler(RestoreNDebuggerBreakpoints);
 			DebuggerService.BreakPointChanged += new EventHandler(RestoreNDebuggerBreakpoints);
 
+			RestoreNDebuggerBreakpoints(this, EventArgs.Empty);
+
 			isDebuggingCache = debugger.IsDebugging;
 			isProcessRunningCache = debugger.IsProcessRunning;
 			
 			if (Initialize != null) {
 				Initialize(this, null);  
 			}
+
+			serviceInitialized = true;
 		}
 
 		public void UnloadService()
@@ -236,11 +241,17 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)
 		{
-			debugger.StartWithoutDebugging(psi);
+			System.Diagnostics.Process process;
+			process = new System.Diagnostics.Process();
+			process.StartInfo = psi;
+			process.Start();
 		}
 		
 		public void Start(string fileName, string workingDirectory, string arguments)
 		{
+			if (!serviceInitialized) {
+				InitializeService();
+			}
 			debugger.Start(fileName, workingDirectory, arguments);
 		}
 		

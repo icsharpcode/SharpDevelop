@@ -50,8 +50,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			debuggerCore = debugger.DebuggerCore;
 
+			debugger.Initialize += delegate {
+				InitializeDebugger();
+			};
+			
 			loadedModulesList = new ListView();
 			loadedModulesList.FullRowSelect = true;
 			loadedModulesList.AutoArrange = true;
@@ -70,15 +73,21 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			timestamp.Width = 0;//80;
 			information.Width = 130;
 
+			RedrawContent();
+		}
+
+		public void InitializeDebugger()
+		{
+			debuggerCore = debugger.DebuggerCore;
+
 			debuggerCore.ModuleLoaded += new DebuggerLibrary.ModuleEventHandler(AddModule);
 			debuggerCore.ModuleUnloaded += new DebuggerLibrary.ModuleEventHandler(RemoveModule);
 
-			RedrawContent();
+			RefreshList();
 		}
 		
 		public override void RedrawContent()
 		{
-			
 			name.Text         = StringParser.Parse("${res:MainWindow.Windows.Debug.NameColumn}");
 			address.Text      = StringParser.Parse("${res:MainWindow.Windows.Debug.AddressColumn}");
 			path.Text         = StringParser.Parse("${res:MainWindow.Windows.Debug.PathColumn}");
@@ -87,7 +96,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			program.Text      = StringParser.Parse("${res:MainWindow.Windows.Debug.ProgramColumn}");
 			timestamp.Text    = StringParser.Parse("${res:MainWindow.Windows.Debug.TimestampColumn}");
 			information.Text  = StringParser.Parse("${res:MainWindow.Windows.Debug.InformationColumn}");
+		}
 
+		void RefreshList()
+		{
             loadedModulesList.Items.Clear();
             foreach(Module m in debuggerCore.Modules) {
                 AddModule(this, new ModuleEventArgs(m));
