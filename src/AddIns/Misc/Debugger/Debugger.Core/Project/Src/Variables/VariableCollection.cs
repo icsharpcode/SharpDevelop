@@ -13,13 +13,26 @@ namespace DebuggerLibrary
 	[Serializable]
 	public class VariableCollection: ReadOnlyCollectionBase
 	{
+		public static VariableCollection Empty;
+
+		bool readOnly = false;
+
 		internal VariableCollection()
 		{
 
 		}
 
+		static VariableCollection()
+		{
+			Empty = new VariableCollection();
+			Empty.readOnly = true;
+		}
+
 		internal void Add(Variable variable)
 		{
+			if (readOnly) {
+				throw new DebuggerException("VariableCollection is marked as readOnly"); 
+			}
 			System.Diagnostics.Trace.Assert(variable != null);
 			if (variable != null) {
 				InnerList.Add(variable);
@@ -53,5 +66,15 @@ namespace DebuggerLibrary
 			return txt;
 		}
 
+		public static VariableCollection Merge(params VariableCollection[] collections)
+		{
+			VariableCollection mergedCollection = new VariableCollection();
+			foreach(VariableCollection collection in collections) {
+				foreach(Variable variable in collection) {
+					mergedCollection.Add(variable);
+				}
+			}
+			return mergedCollection;
+		}
 	}
 }

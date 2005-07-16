@@ -10,6 +10,7 @@ using System.Threading;
 using DebuggerInterop.Core;
 using DebuggerInterop.MetaData;
 using System.Collections.Generic;
+using System.Diagnostics;
 
 
 namespace DebuggerLibrary
@@ -37,6 +38,38 @@ namespace DebuggerLibrary
 				return module; 
 			} 
 		}
+
+		public bool IsStatic {
+			get {
+				return (attributes & (uint)CorMethodAttr.mdStatic) != 0;
+			}
+		}
+
+		public uint Token {
+			get {
+				return (uint)token.GetToken();
+			}
+		}
+
+		internal ICorDebugClass ContaingClass {
+			get {
+				ICorDebugClass corClass;
+				corFunction.GetClass(out corClass);
+				return corClass;
+			}
+		}
+
+		public ObjectVariable ThisVariable {
+			get {
+				if (IsStatic) {
+					throw new DebuggerException("Static method does not have 'this' variable.");
+				} else {
+					ICorDebugValue argThis = null;
+					corILFrame.GetArgument(0, out argThis);
+					return new ObjectVariable(debugger, argThis, "this", ContaingClass);
+				}
+			}
+		}
 	
 		internal unsafe Function(NDebugger debugger, ICorDebugFrame corFrame) 
 		{
@@ -62,7 +95,7 @@ namespace DebuggerLibrary
 			IntPtr pSigBlob;
 			uint sigBlobSize;
 			module.MetaDataInterface.GetMethodProps(
-			                              (uint)token.GetToken(),
+			                              Token,
                                           out parentClassToken,
                                           pString,
                                           pStringLenght,
@@ -76,7 +109,7 @@ namespace DebuggerLibrary
 			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
 
 			module.MetaDataInterface.GetMethodProps(
-			                              (uint)token.GetToken(),
+			                              Token,
                                           out parentClassToken,
                                           pString,
                                           pStringLenght,
@@ -289,166 +322,188 @@ namespace DebuggerLibrary
 				throw new NextStatementNotAviableException();
 			}
 		}
-		
-		public VariableCollection LocalVariables { 
-			get{
-				return GetLocalVariables();
-			} 
+
+		public VariableCollection GetVariables()
+		{
+			return VariableCollection.Merge(
+			                                GetContaingClassVariables(),
+											GetArgumentVariables(),
+											GetLocalVariables()
+											//GetPropertyVariables()
+											);
 		}
 
-		private unsafe VariableCollection GetLocalVariables()
-		{				
-			VariableCollection collection = new VariableCollection();
-			try {				
-			// parent class variables
-				ICorDebugClass corClass;
-				corFunction.GetClass(out corClass);
-				bool isStatic = (attributes&(uint)CorMethodAttr.mdStatic) != 0;
-				ICorDebugValue argThis = null;
-				if (!isStatic) {
-					corILFrame.GetArgument(0, out argThis);
-				}
-				collection = new ObjectVariable(debugger, argThis, "this", corClass).SubVariables;
-				
-			// arguments
-				ICorDebugValueEnum corValueEnum;
-				corILFrame.EnumerateArguments(out corValueEnum);
+		public VariableCollection GetContaingClassVariables()
+		{
+			if (IsStatic) {
+				return VariableCollection.Empty;
+			} else {
+				return ThisVariable.SubVariables;
+			}
+		}
+
+		public string GetParameterName(int index)
+		{
+			uint paramToken = 0;
+
+			Module.MetaDataInterface.GetParamForMethodIndex(Token, (uint)index, ref paramToken);
+
+			uint unused;
+			uint pStringLenght = 0; // Terminating character included in pStringLenght
+			IntPtr pString = IntPtr.Zero;
+			uint argPos, attr, type;
+			Module.MetaDataInterface.GetParamProps(paramToken,
+			                                       out unused,
+			                                       out argPos,
+			                                       pString,
+			                                       pStringLenght,
+			                                       out pStringLenght, // real string lenght
+			                                       out attr,
+			                                       out type,
+			                                       IntPtr.Zero,
+			                                       out unused);
+			// Allocate string buffer
+			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
+			
+			Module.MetaDataInterface.GetParamProps(paramToken,
+			                                       out unused,
+			                                       out argPos,
+			                                       pString,
+			                                       pStringLenght,
+			                                       out pStringLenght, // real string lenght
+			                                       out attr,
+			                                       out type,
+			                                       IntPtr.Zero,
+			                                       out unused);
+
+			string name = Marshal.PtrToStringUni(pString);
+			Marshal.FreeHGlobal(pString);
+
+			return name;
+		}
+
+		public int GetArgumentCount {
+			get {
+				ICorDebugValueEnum argumentEnum;
+				corILFrame.EnumerateArguments(out argumentEnum);
 				uint argCount;
-				corValueEnum.GetCount(out argCount);
-					
-				IntPtr paramEnumPtr = IntPtr.Zero;
-				uint paramsFetched;
-				for (uint i = (uint)(isStatic?0:1); i < argCount; i++) {
-					uint paramToken;
-					Module.MetaDataInterface.EnumParams(ref paramEnumPtr , (uint)token.GetToken(), out paramToken, 1, out paramsFetched);
-					if (paramsFetched == 0) break;
-					
-					ICorDebugValue arg;
-					corILFrame.GetArgument(i, out arg);
-
-					uint unused;
-					uint pStringLenght = 0; // Terminating character included in pStringLenght
-					IntPtr pString = IntPtr.Zero;
-					uint argPos, attr, type;
-					Module.MetaDataInterface.GetParamProps(paramToken,
-					                                       out unused,
-					                                       out argPos,
-					                                       pString,
-					                                       pStringLenght,
-														   out pStringLenght, // real string lenght
-					                                       out attr,
-					                                       out type,
-					                                       IntPtr.Zero,
-					                                       out unused);
-					// Allocate string buffer
-					pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
-					
-					Module.MetaDataInterface.GetParamProps(paramToken,
-					                                       out unused,
-					                                       out argPos,
-					                                       pString,
-					                                       pStringLenght,
-														   out pStringLenght, // real string lenght
-					                                       out attr,
-					                                       out type,
-					                                       IntPtr.Zero,
-					                                       out unused);
-
-					string name = Marshal.PtrToStringUni(pString);
-					Marshal.FreeHGlobal(pString);
-
-					collection.Add(VariableFactory.CreateVariable(debugger, arg, name));
-				}
-				
-			// local variables
-				ISymbolScope symRootScope;
-				symRootScope = symMethod.RootScope;
-				AddScopeToVariableCollection(symRootScope, ref collection);
-				
-			// Properties
-				IntPtr methodEnumPtr = IntPtr.Zero;
-				uint methodsFetched;
-				while(true) {
-					uint methodToken;
-					Module.MetaDataInterface.EnumMethods(ref methodEnumPtr, parentClassToken, out methodToken, 1, out methodsFetched);
-					if (methodsFetched == 0) break;
-
-					uint unused;
-					uint pStringLenght = 0; // Terminating character included in pStringLenght
-					IntPtr pString = IntPtr.Zero;
-					uint attrib;
-					module.MetaDataInterface.GetMethodProps(
-					                              methodToken,
-		                                          out unused,
-		                                          pString,
-		                                          pStringLenght,
-		                                          out pStringLenght, // real string lenght
-		                                          out attrib,
-		                                          IntPtr.Zero,
-		                                          out unused,
-		                                          out unused,
-		                                          out unused);
-
-					// Allocate string buffer
-					pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
-
-					module.MetaDataInterface.GetMethodProps(
-					                              methodToken,
-		                                          out unused,
-		                                          pString,
-		                                          pStringLenght,
-		                                          out pStringLenght, // real string lenght
-		                                          out attrib,
-		                                          IntPtr.Zero,
-		                                          out unused,
-		                                          out unused,
-		                                          out unused);
-
-					string name = Marshal.PtrToStringUni(pString);
-					Marshal.FreeHGlobal(pString);
-
-					if (name.StartsWith("get_") && (attrib & (uint)CorMethodAttr.mdSpecialName) != 0) {
-						name = name.Remove(0,4);
-						
-						ICorDebugValue[] evalArgs;
-						ICorDebugFunction evalCorFunction;
-						Module.CorModule.GetFunctionFromToken(methodToken, out evalCorFunction);
-						if (isStatic) {
-							evalArgs = new ICorDebugValue[0];
-						} else {
-							evalArgs = new ICorDebugValue[] {argThis};
-						}
-						Eval eval = new Eval(debugger, evalCorFunction, evalArgs);
-						//debugger.EvalQueue.AddEval(eval);
-						//collection.Add(new PropertyVariable(debugger, eval, name));
-					}
-				}
-			} 
-			catch (FrameNotAviableException) {
-				System.Diagnostics.Debug.Fail("Unable to get local variables. Frame is not aviable");
+				argumentEnum.GetCount(out argCount);
+				return (int)argCount;
 			}
-			catch (SymbolsNotAviableException) {
-				System.Diagnostics.Debug.Fail("Unable to get local variables. Symbols are not aviable");
-			}
-			return collection;
+		}
+		
+		internal ICorDebugValue GetArgumentValue(int index)
+		{
+			ICorDebugValue arg;
+			corILFrame.GetArgument((uint)index, out arg);
+			return arg;
 		}
 
-		private unsafe void AddScopeToVariableCollection(ISymbolScope symScope, ref VariableCollection collection)
+		public VariableCollection GetArgumentVariables()
+		{
+			VariableCollection arguments = new VariableCollection();
+
+			int argCount = GetArgumentCount;
+
+			for (int i = (IsStatic?0:1); i < argCount; i++) {
+				arguments.Add(VariableFactory.CreateVariable(debugger, GetArgumentValue(i), GetParameterName(i)));
+			}
+
+			return arguments;
+		}
+
+		public VariableCollection GetLocalVariables()
+		{
+			VariableCollection localVariables = new VariableCollection();
+			ISymbolScope symRootScope;
+			symRootScope = symMethod.RootScope;
+			AddScopeToVariableCollection(symRootScope, ref localVariables);
+			return localVariables;
+		}
+
+		string GetMethodName(uint methodToken, out uint attrib)
+		{
+			uint unused;
+			uint pStringLenght = 0; // Terminating character included in pStringLenght
+			IntPtr pString = IntPtr.Zero;
+			module.MetaDataInterface.GetMethodProps(
+			                                        methodToken,
+			                                        out unused,
+			                                        pString,
+			                                        pStringLenght,
+			                                        out pStringLenght, // real string lenght
+			                                        out attrib,
+			                                        IntPtr.Zero,
+			                                        out unused,
+			                                        out unused,
+			                                        out unused);
+
+			// Allocate string buffer
+			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
+
+			module.MetaDataInterface.GetMethodProps(
+			                                        methodToken,
+			                                        out unused,
+			                                        pString,
+			                                        pStringLenght,
+			                                        out pStringLenght, // real string lenght
+			                                        out attrib,
+			                                        IntPtr.Zero,
+			                                        out unused,
+			                                        out unused,
+			                                        out unused);
+
+			string name = Marshal.PtrToStringUni(pString);
+			Marshal.FreeHGlobal(pString);
+
+			return name;
+		}
+
+		VariableCollection GetPropertyVariables()	
+		{
+			VariableCollection properties = new VariableCollection();
+
+			IntPtr methodEnumPtr = IntPtr.Zero;
+			while(true) {
+				uint methodToken;
+				uint methodsFetched;
+				Module.MetaDataInterface.EnumMethods(ref methodEnumPtr, parentClassToken, out methodToken, 1, out methodsFetched);
+				if (methodsFetched == 0) break;
+
+				uint attrib;
+				string name = GetMethodName(methodToken, out attrib);
+
+				if (name.StartsWith("get_") && (attrib & (uint)CorMethodAttr.mdSpecialName) != 0) {
+					name = name.Remove(0,4);
+					
+					ICorDebugValue[] evalArgs;
+					ICorDebugFunction evalCorFunction;
+					Module.CorModule.GetFunctionFromToken(methodToken, out evalCorFunction);
+					if (IsStatic) {
+						evalArgs = new ICorDebugValue[0];
+					} else {
+						evalArgs = new ICorDebugValue[] {ThisVariable.CorValue};
+					}
+					Eval eval = new Eval(debugger, evalCorFunction, evalArgs);
+					debugger.EvalQueue.AddEval(eval);
+					properties.Add(new PropertyVariable(debugger, eval, name));
+				}
+			}
+
+			return properties;
+		} 
+
+		void AddScopeToVariableCollection(ISymbolScope symScope, ref VariableCollection collection)
 		{
 			foreach(ISymbolScope childScope in symScope.GetChildren()) {
 				AddScopeToVariableCollection(childScope, ref collection);
 			}
-			AddVariablesToVariableCollection(symScope, ref collection);
-		}
-
-		private unsafe void AddVariablesToVariableCollection(ISymbolScope symScope, ref VariableCollection collection)
-		{
 			foreach (ISymbolVariable symVar in symScope.GetLocals()) {
 				AddVariableToVariableCollection(symVar , ref collection);
 			}
 		}
 
-		private unsafe void AddVariableToVariableCollection(ISymbolVariable symVar, ref VariableCollection collection)
+		void AddVariableToVariableCollection(ISymbolVariable symVar, ref VariableCollection collection)
 		{
 			ICorDebugValue runtimeVar;
 			corILFrame.GetLocalVariable((uint)symVar.AddressField1, out runtimeVar);

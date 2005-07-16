@@ -231,7 +231,7 @@ namespace DebuggerLibrary
 		public VariableCollection LocalVariables { 
 			get {
 				try {
-					return CurrentFunction.LocalVariables;	
+					return CurrentFunction.GetVariables();	
 				} catch (NotAviableException exception) {
 					System.Diagnostics.Debug.Fail("Unable to get LocalVariables." + exception.ToString());
 					return new VariableCollection();

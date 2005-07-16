@@ -25,6 +25,12 @@ namespace DebuggerLibrary
 				return name; 
 			} 
 		}
+
+		internal ICorDebugValue CorValue {
+			get {
+				return corValue;
+			}
+		}
 		
 		public abstract object Value { 
 			get; 
