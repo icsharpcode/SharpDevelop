@@ -22,20 +22,20 @@ namespace DebuggerLibrary
 		bool              complete = false;
 		
 		public event EventHandler EvalComplete;
-		
-		void OnEvalComplete()
+
+		protected virtual void OnEvalComplete(EventArgs e) 
 		{
 			if (EvalComplete != null) {
-				EvalComplete(this, EventArgs.Empty);
+				EvalComplete(this, e);
 			}
-		}		
+		}
 		
 		public Eval(NDebugger debugger, ICorDebugFunction corFunction, ICorDebugValue[] args)
 		{
 			this.debugger = debugger;
 			this.corFunction = corFunction;
 			this.args = args;
-			debugger.ManagedCallback.CorDebugEvalCompleted += new CorDebugEvalEventHandler(CorDebugEvalCompleted);
+			debugger.ManagedCallback.CorDebugEvalCompleted += new CorDebugEvalEventHandler(CorDebugEvalCompletedInManagedCallback);
 		}
 		
 		/// <summary>
@@ -74,18 +74,11 @@ namespace DebuggerLibrary
 			return corValue;
 		}
 		
-		protected virtual void OnEvalComplete(EventArgs e) 
-		{
-			if (EvalComplete != null) {
-				EvalComplete(this, e);
-			}
-		}
-		
-		void CorDebugEvalCompleted(object sender, CorDebugEvalEventArgs e) 
+		void CorDebugEvalCompletedInManagedCallback(object sender, CorDebugEvalEventArgs e) 
 		{
 			if (e.CorDebugEval == corEval) {
 				complete = true;
-				OnEvalComplete();
+				OnEvalComplete(EventArgs.Empty);
 			}
 		}
 	}

@@ -14,26 +14,26 @@ namespace DebuggerLibrary
 {
 	class EvalQueue
 	{
-		static ArrayList waitingEvals = new ArrayList();
+		ArrayList waitingEvals = new ArrayList();
 		
-		public static event EventHandler AllEvalsComplete;
+		public event EventHandler AllEvalsComplete;
 		
-		static public void AddEval(Eval eval)
+		public void AddEval(Eval eval)
 		{
 			waitingEvals.Add(eval);
 		}
 		
-		static public void PerformAllEvals()
+		public void PerformAllEvals()
 		{
 			while (waitingEvals.Count > 0) {
 				PerformNextEval();
 			}
 		}
 		
-		static public void PerformNextEval()
+		public void PerformNextEval()
 		{
 			if (waitingEvals.Count == 0) {
-				return;
+				throw new DebuggerException("No eval in queue to perform.");
 			}
 			Eval eval = (Eval)waitingEvals[0];
 			waitingEvals.Remove(eval);

@@ -26,6 +26,14 @@ namespace DebuggerLibrary
 
 		ApartmentState requiredApartmentState;
 
+		EvalQueue evalQueue = new EvalQueue();
+
+		internal EvalQueue EvalQueue {
+			get { 
+				return evalQueue;
+			}
+		}
+
 		public ApartmentState RequiredApartmentState {
 			get  {
 				 return requiredApartmentState;
@@ -108,6 +116,8 @@ namespace DebuggerLibrary
 			ClearThreads();
 			
 			CurrentProcess   = null;
+
+			evalQueue = new EvalQueue();
 			
 			GC.Collect(GC.MaxGeneration);
 			GC.WaitForPendingFinalizers();

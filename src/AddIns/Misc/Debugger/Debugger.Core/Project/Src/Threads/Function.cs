@@ -366,29 +366,49 @@ namespace DebuggerLibrary
 				AddScopeToVariableCollection(symRootScope, ref collection);
 				
 			// Properties
-				/*
 				IntPtr methodEnumPtr = IntPtr.Zero;
 				uint methodsFetched;
 				while(true) {
 					uint methodToken;
 					Module.MetaDataInterface.EnumMethods(ref methodEnumPtr, parentClassToken, out methodToken, 1, out methodsFetched);
 					if (methodsFetched == 0) break;
-										
+
+					uint unused;
+					uint pStringLenght = 0; // Terminating character included in pStringLenght
+					IntPtr pString = IntPtr.Zero;
 					uint attrib;
 					module.MetaDataInterface.GetMethodProps(
 					                              methodToken,
-		                                          out NDebugger.unused,
-		                                          NDebugger.pString,
-		                                          NDebugger.pStringLen,
-		                                          out NDebugger.unused, // real string lenght
+		                                          out unused,
+		                                          pString,
+		                                          pStringLenght,
+		                                          out pStringLenght, // real string lenght
 		                                          out attrib,
 		                                          IntPtr.Zero,
-		                                          out NDebugger.unused,
-		                                          out NDebugger.unused,
-		                                          out NDebugger.unused);
-					string name = NDebugger.pStringAsUnicode;
+		                                          out unused,
+		                                          out unused,
+		                                          out unused);
+
+					// Allocate string buffer
+					pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
+
+					module.MetaDataInterface.GetMethodProps(
+					                              methodToken,
+		                                          out unused,
+		                                          pString,
+		                                          pStringLenght,
+		                                          out pStringLenght, // real string lenght
+		                                          out attrib,
+		                                          IntPtr.Zero,
+		                                          out unused,
+		                                          out unused,
+		                                          out unused);
+
+					string name = Marshal.PtrToStringUni(pString);
+					Marshal.FreeHGlobal(pString);
+
 					if (name.StartsWith("get_") && (attrib & (uint)CorMethodAttr.mdSpecialName) != 0) {
-						name = "Prop:" + name;
+						name = name.Remove(0,4);
 						
 						ICorDebugValue[] evalArgs;
 						ICorDebugFunction evalCorFunction;
@@ -398,12 +418,11 @@ namespace DebuggerLibrary
 						} else {
 							evalArgs = new ICorDebugValue[] {argThis};
 						}
-						Eval eval = new Eval(evalCorFunction, evalArgs);
-						EvalQueue.AddEval(eval);
-						collection.Add(new PropertyVariable(eval, name));
+						Eval eval = new Eval(debugger, evalCorFunction, evalArgs);
+						//debugger.EvalQueue.AddEval(eval);
+						//collection.Add(new PropertyVariable(debugger, eval, name));
 					}
 				}
-				*/
 			} 
 			catch (FrameNotAviableException) {
 				System.Diagnostics.Debug.Fail("Unable to get local variables. Frame is not aviable");
