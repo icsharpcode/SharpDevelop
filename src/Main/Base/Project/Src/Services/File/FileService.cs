@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -232,15 +232,15 @@ namespace ICSharpCode.Core
 			OnFileRenamed(new FileRenameEventArgs(oldName, newName, isDirectory));
 		}
 		
-		public static void JumpToFilePosition(string fileName, int line, int column)
+		public static IViewContent JumpToFilePosition(string fileName, int line, int column)
 		{
 			if (fileName == null || fileName.Length == 0) {
-				return;
+				return null;
 			}
 			OpenFile(fileName);
 			IWorkbenchWindow window = GetOpenFile(fileName);
 			if (window == null) {
-				return;
+				return null;
 			}
 			IViewContent content = window.ViewContent;
 			if (content.WorkbenchWindow.SubViewContents == null) {
@@ -248,6 +248,7 @@ namespace ICSharpCode.Core
 					window.SwitchView(0);
 					((IPositionable)content).JumpTo(Math.Max(0, line), Math.Max(0, column));
 				}
+				return content;
 			}
 			else
 			{
@@ -261,6 +262,7 @@ namespace ICSharpCode.Core
 									window.SwitchView(i);
 									((IPositionable)viewContent).JumpTo(Math.Max(0, line), Math.Max(0, column));
 								}
+								return viewContent;
 							}
 						} catch (Exception) {
 						}
@@ -268,7 +270,7 @@ namespace ICSharpCode.Core
 					i++;
 				}
 			}
-			
+			return null;
 		}
 		
 		static void OnFileRemoved(FileEventArgs e)

@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -443,8 +443,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			try {
 				textAreaControl.Document.FoldingManager.UpdateFoldings(TitleName, parseInfo);
-				textAreaControl.ActiveTextAreaControl.TextArea.Refresh(textAreaControl.ActiveTextAreaControl.TextArea.FoldMargin);
 				UpdateClassMemberBookmarks(parseInfo);
+				textAreaControl.ActiveTextAreaControl.TextArea.Refresh(textAreaControl.ActiveTextAreaControl.TextArea.FoldMargin);
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
@@ -463,6 +463,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				foreach (IProperty m in c.Properties) {
 					if (m.Region == null || m.Region.BeginLine <= 0) continue;
 					bm.AddMark(new Bookmarks.PropertyBookmark(textAreaControl.Document, m));
+				}
+				foreach (IField f in c.Fields) {
+					if (f.Region == null || f.Region.BeginLine <= 0) continue;
+					bm.AddMark(new Bookmarks.FieldBookmark(textAreaControl.Document, f));
+				}
+				foreach (IEvent e in c.Events) {
+					if (e.Region == null || e.Region.BeginLine <= 0) continue;
+					bm.AddMark(new Bookmarks.EventBookmark(textAreaControl.Document, e));
 				}
 			}
 		}

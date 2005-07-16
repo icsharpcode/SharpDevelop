@@ -69,19 +69,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			projectBrowserPanel.Clear();
 		}
 		
+		string lastFileName;
+		
 		void ActiveWindowChanged(object sender, EventArgs e)
 		{
 			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
 				return;
 			}
 			string fileName = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName;
-			if (fileName == null) {
+			if (fileName == null || lastFileName == fileName) {
 				return;
 			}
 			
 			if (!FileUtility.IsValidFileName(fileName)) {
 				return;
 			}
+			lastFileName = fileName;
 			projectBrowserPanel.SelectFile(fileName);
 		}
 		

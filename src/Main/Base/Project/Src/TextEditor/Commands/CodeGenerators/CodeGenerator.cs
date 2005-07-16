@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -142,12 +142,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		protected void IndentLine()
 		{
-			int delta = editActionHandler.Document.FormattingStrategy.IndentLine(editActionHandler, editActionHandler.Document.GetLineNumberForOffset(editActionHandler.Caret.Offset));
-			if (delta != 0) {
-				++numOps;
-				LineSegment caretLine = editActionHandler.Document.GetLineSegmentForOffset(editActionHandler.Caret.Offset);
-				editActionHandler.Caret.Position = editActionHandler.Document.OffsetToPosition(Math.Min(editActionHandler.Caret.Offset + delta, caretLine.Offset + caretLine.Length));
-			}
+			editActionHandler.Document.FormattingStrategy.IndentLine(editActionHandler, editActionHandler.Caret.Line);
 		}
 	}
 }

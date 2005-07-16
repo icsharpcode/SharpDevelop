@@ -79,4 +79,34 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			DrawIcon(ClassBrowserIconService.GetIcon(method), g, p);
 		}
 	}
+	
+	public class FieldBookmark : ClassMemberBookmark
+	{
+		IField field;
+		
+		public FieldBookmark(IDocument document, IField field) : base(document, field)
+		{
+			this.field = field;
+		}
+		
+		public override void Draw(IconBarMargin margin, Graphics g, Point p)
+		{
+			DrawIcon(ClassBrowserIconService.GetIcon(field), g, p);
+		}
+	}
+	
+	public class EventBookmark : ClassMemberBookmark
+	{
+		IEvent @event;
+		
+		public EventBookmark(IDocument document, IEvent @event) : base(document, @event)
+		{
+			this.@event = @event;
+		}
+		
+		public override void Draw(IconBarMargin margin, Graphics g, Point p)
+		{
+			DrawIcon(ClassBrowserIconService.GetIcon(@event), g, p);
+		}
+	}
 }

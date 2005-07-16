@@ -41,12 +41,13 @@ namespace ICSharpCode.NRefactory.Parser
 						if (fre != null && "New".Equals(fre.FieldName, StringComparison.InvariantCultureIgnoreCase)) {
 							if (fre.TargetObject is BaseReferenceExpression || fre.TargetObject is ClassReferenceExpression) {
 								body.Children.RemoveAt(0);
-								ConstructorInitializer ci = constructorDeclaration.ConstructorInitializer;
+								ConstructorInitializer ci = new ConstructorInitializer();
 								ci.Arguments = ie.Parameters;
 								if (fre.TargetObject is BaseReferenceExpression)
 									ci.ConstructorInitializerType = ConstructorInitializerType.Base;
 								else
 									ci.ConstructorInitializerType = ConstructorInitializerType.This;
+								constructorDeclaration.ConstructorInitializer = ci;
 							}
 						}
 					}

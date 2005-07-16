@@ -18,6 +18,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 using SearchAndReplace;
+using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
@@ -54,7 +55,66 @@ namespace ICSharpCode.SharpDevelop.Commands
 			cmd.Tag = member;
 			list.Add(cmd);
 			
+			if (member is IField) {
+				string propertyName = AbstractPropertyCodeGenerator.GetPropertyName(member.Name);
+				LanguageProperties language = member.DeclaringType.ProjectContent.Language;
+				bool found = false;
+				foreach (IProperty prop in member.DeclaringType.Properties) {
+					if (language.NameComparer.Equals(propertyName, prop.Name)) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					cmd = new MenuCommand("Create &getter", CreateGetter);
+					cmd.Tag = member;
+					list.Add(cmd);
+					cmd = new MenuCommand("Create &property", CreateProperty);
+					cmd.Tag = member;
+					list.Add(cmd);
+				}
+			}
+			
 			return list.ToArray();
+		}
+		
+		TextEditorControl JumpBehindDefinition(IMember member)
+		{
+			IViewContent viewContent;
+			viewContent = FileService.JumpToFilePosition(member.DeclaringType.CompilationUnit.FileName,
+			                                             member.Region.EndLine, 0);
+			ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider tecp = viewContent as ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider;
+			return (tecp == null) ? null : tecp.TextEditorControl;
+		}
+		
+		void CreateProperty(object sender, EventArgs e)
+		{
+			CreateProperty(sender, e, true);
+		}
+		
+		void CreateGetter(object sender, EventArgs e)
+		{
+			CreateProperty(sender, e, false);
+		}
+		
+		void CreateProperty(object sender, EventArgs e, bool includeSetter)
+		{
+			MenuCommand item = (MenuCommand)sender;
+			IMember member = (IMember)item.Tag;
+			TextEditorControl textEditor = JumpBehindDefinition(member);
+			AbstractPropertyCodeGenerator generator;
+			if (includeSetter)
+				generator = new GetterAndSetterCodeGenerator(member.DeclaringType);
+			else
+				generator = new GetterCodeGenerator(member.DeclaringType);
+			List<AbstractFieldCodeGenerator.FieldWrapper> list = new List<AbstractFieldCodeGenerator.FieldWrapper>();
+			foreach (AbstractFieldCodeGenerator.FieldWrapper fw in generator.Content) {
+				if (fw.Field == member) {
+					list.Add(fw);
+				}
+			}
+			
+			generator.GenerateCode(textEditor.ActiveTextAreaControl.TextArea, list);
 		}
 		
 		void GoToBase(object sender, EventArgs e)

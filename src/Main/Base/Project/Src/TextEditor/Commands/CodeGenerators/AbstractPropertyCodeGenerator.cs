@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		string GetPropertyName(string fieldName)
+		public static string GetPropertyName(string fieldName)
 		{
 			if (fieldName.StartsWith("_") && fieldName.Length > 1)
 				return Char.ToUpper(fieldName[1]) + fieldName.Substring(2);

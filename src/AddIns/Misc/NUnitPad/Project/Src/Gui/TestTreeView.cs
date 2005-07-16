@@ -223,7 +223,7 @@ namespace ICSharpCode.NUnitPad
 			// If any tasks bring task view to front.
 			if (TaskService.TaskCount > 0) {
 				IWorkbench Workbench = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench;
-				PadDescriptor padDescriptor = Workbench.GetPad(typeof(OpenTaskView));
+				PadDescriptor padDescriptor = Workbench.GetPad(typeof(ErrorList));
 				
 				if (padDescriptor != null) {
 					padDescriptor.BringPadToFront();
