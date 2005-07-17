@@ -17,23 +17,21 @@ namespace DebuggerLibrary
 	{
 		ICorDebugClass corClass;
 		ICorDebugModule corModule;
-		IMetaDataImport metaData;
+		MetaData metaData;
 		ICorDebugModule corModuleSuperclass;
 		ObjectVariable baseClass;
-		uint classToken;
-		uint superCallsToken;
-		uint typeDefFlags;
-		string type;
+
+		TypeDefProps classProps;
 		
 		public override object Value { 
 			get{ 
-				return "{" + type + "}"; 
+				return "{" + Type + "}"; 
 			} 
 		}
 
 		public override string Type { 
 			get{ 
-				return type; 
+				return classProps.Name;
 			} 
 		}
 
@@ -52,30 +50,12 @@ namespace DebuggerLibrary
 
 		void InitObjectVariable ()
 		{
+			uint classToken;
 			corClass.GetToken(out classToken);
 			corClass.GetModule(out corModule);
-			metaData = new Module(corModule).MetaDataInterface; //TODO
+			metaData = new Module(corModule).MetaData;
 
-			uint pStringLenght = 0; // Terminating character included in pStringLenght
-			IntPtr pString = IntPtr.Zero;
-			// Get length of string 'type'
-			metaData.GetTypeDefProps(classToken,
-									 pString,
-									 pStringLenght,
-									 out pStringLenght,
-									 out typeDefFlags,
-			                         out superCallsToken);
-			// Allocate string buffer
-			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
-			// Get properties
-			metaData.GetTypeDefProps(classToken,
-									 pString,
-									 pStringLenght,
-									 out pStringLenght,
-									 out typeDefFlags,
-									 out superCallsToken);
-			type = Marshal.PtrToStringUni(pString);
-			Marshal.FreeHGlobal(pString);
+			classProps = metaData.GetTypeDefProps(classToken);
 
 			corModuleSuperclass = corModule;
 		}
@@ -85,66 +65,20 @@ namespace DebuggerLibrary
 		{
 			VariableCollection subVariables = new VariableCollection();
 
-			IntPtr fieldsEnumPtr = IntPtr.Zero;
-			for(;;)
-			{
-				uint fieldToken;
-				uint fieldCount;
-				metaData.EnumFields(ref fieldsEnumPtr, classToken, out fieldToken, 1, out fieldCount);
-				if (fieldCount == 0)
-				{
-					metaData.CloseEnum(fieldsEnumPtr);
-					break;
-				}
+			foreach(FieldProps field in metaData.EnumFields(classProps.Token)) {
 
-				uint unused;
-				IntPtr unusedPtr = IntPtr.Zero;
-				uint pStringLenght = 0; // Terminating character included in pStringLenght
-				IntPtr pString = IntPtr.Zero;
-				uint attrib;
-				metaData.GetFieldProps(fieldToken,
-				                       out unused,
-			                           pString,
-									   pStringLenght,
-									   out pStringLenght, // real string lenght
-				                       out attrib,
-									   IntPtr.Zero,
-				                       out unused,
-				                       out unused,
-				                       out unusedPtr,
-				                       out unused);
-				// Allocate string buffer
-				pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
+				ICorDebugValue filedValue;
+				if (field.IsStatic) {
+					if (field.IsLiteral) continue; // Try next field
 
-				metaData.GetFieldProps(fieldToken,
-									   out unused,
-									   pString,
-									   pStringLenght,
-									   out pStringLenght, // real string lenght
-									   out attrib,
-									   IntPtr.Zero,
-									   out unused,
-									   out unused,
-									   out unusedPtr,
-									   out unused);
-
-				string name = Marshal.PtrToStringUni(pString);
-				Marshal.FreeHGlobal(pString);
-
-				ICorDebugValue innerValue;
-				if ((attrib & (uint)ClassFieldAttribute.fdStatic)!=0)
-				{
-					if ((attrib & (uint)ClassFieldAttribute.fdLiteral)!=0) continue; // Get next field
-					corClass.GetStaticFieldValue(fieldToken, null, out innerValue);
-				}
-				else
-				{
+					corClass.GetStaticFieldValue(field.Token, null, out filedValue);
+				} else {
 					if (corValue == null) continue; // Try next field
 
-					((ICorDebugObjectValue)corValue).GetFieldValue(corClass, fieldToken, out innerValue);
+					((ICorDebugObjectValue)corValue).GetFieldValue(corClass, field.Token, out filedValue);
 				}
 				
-				subVariables.Add(VariableFactory.CreateVariable(debugger, innerValue, name));
+				subVariables.Add(VariableFactory.CreateVariable(debugger, filedValue, field.Name));
 			}
 
 			return subVariables;
@@ -170,36 +104,18 @@ namespace DebuggerLibrary
 			string fullTypeName = "<>";
 
 			// If referencing to external assembly
-			if ((superCallsToken & 0x01000000) != 0)
-			{
-				uint unused;
-				uint pStringLenght = 0; // Terminating character included in pStringLenght
-				IntPtr pString = IntPtr.Zero;
-				metaData.GetTypeRefProps(superCallsToken,
-				                         out unused,
-				                         pString,
-				                         pStringLenght,
-										 out pStringLenght); // real string lenght
-				// Allocate string buffer
-				pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
+			if ((classProps.SuperClassToken & 0x01000000) != 0)	{
 
-				metaData.GetTypeRefProps(superCallsToken,
-										 out unused,
-										 pString,
-										 pStringLenght,
-										 out pStringLenght); // real string lenght
+				fullTypeName = metaData.GetTypeRefProps(classProps.SuperClassToken).Name;
 
-				fullTypeName = Marshal.PtrToStringUni(pString);
-				Marshal.FreeHGlobal(pString);
-
-				superCallsToken = 0;
+				classProps.SuperClassToken = 0;
 				foreach (Module m in debugger.Modules)
 				{
 					// TODO: Does not work for nested
 					//       see FindTypeDefByName in dshell.cpp
 					// TODO: preservesig
 					try	{
-						m.MetaDataInterface.FindTypeDefByName(fullTypeName, 0, out superCallsToken);
+						m.MetaDataInterface.FindTypeDefByName(fullTypeName, 0, out classProps.SuperClassToken);
 					}
 					catch {
 						continue;
@@ -207,18 +123,15 @@ namespace DebuggerLibrary
 					corModuleSuperclass = m.CorModule;
 					break; 
 				}
-				if (superCallsToken == 0) throw new DebuggerException("Unable to get base class: " + fullTypeName);
+				if (classProps.SuperClassToken == 0) throw new DebuggerException("Unable to get base class: " + fullTypeName);
 			}
 
 			// If it has no base class
-			if ((superCallsToken & 0x00FFFFFF) == 0)
-			{
+			if ((classProps.SuperClassToken & 0x00FFFFFF) == 0)	{
 				return null;
-			}
-			else
-			{
+			} else {
 				ICorDebugClass superClass;
-				corModuleSuperclass.GetClassFromToken(superCallsToken, out superClass);
+				corModuleSuperclass.GetClassFromToken(classProps.SuperClassToken, out superClass);
 				return new ObjectVariable(debugger, corValue, Name, superClass);
 			}
 		}

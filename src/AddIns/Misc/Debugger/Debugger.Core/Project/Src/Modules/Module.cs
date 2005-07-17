@@ -29,6 +29,13 @@ namespace DebuggerLibrary
 				return metaDataInterface;
 			}
 		}
+
+		internal MetaData MetaData {
+			get {
+				return new MetaData(metaDataInterface);
+			}
+		}
+
 		public ISymbolReader SymReader {
 			get {
 				return symReader;
@@ -126,7 +133,7 @@ namespace DebuggerLibrary
 			SymBinder symBinder = new SymBinder();
             try {
 			    symReader = symBinder.GetReader(Marshal.GetIUnknownForObject(metaDataInterface), fullPath, string.Empty);
-            } catch (System.Exception e) {
+            } catch (System.Exception) {
                 symReader = null;
             }
 		}
