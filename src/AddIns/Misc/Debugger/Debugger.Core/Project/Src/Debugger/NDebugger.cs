@@ -341,14 +341,14 @@ namespace DebuggerLibrary
 		public SourcecodeSegment NextStatement { 
 			get {
 				if (!IsDebugging) return null;
-				return CurrentProcess.NextStatement;
+				return CurrentProcess.CurrentThread.CurrentFunction.NextStatement;
 			}
 		}
 
 		public VariableCollection LocalVariables { 
 			get {
 				if (!IsDebugging) return VariableCollection.Empty;
-				return CurrentProcess.LocalVariables;
+				return CurrentProcess.CurrentThread.CurrentFunction.GetLocalVariables();
 			}
 		}
 
@@ -359,17 +359,17 @@ namespace DebuggerLibrary
 
 		public void StepInto()
 		{
-			CurrentProcess.StepInto();
+			CurrentProcess.CurrentThread.CurrentFunction.StepInto();
 		}
 
 		public void StepOver()
 		{
-			CurrentProcess.StepOver();
+			CurrentProcess.CurrentThread.CurrentFunction.StepOver();
 		}
 
 		public void StepOut()
 		{
-			CurrentProcess.StepOut();
+			CurrentProcess.CurrentThread.CurrentFunction.StepOut();
 		}
 
 		public void Continue()

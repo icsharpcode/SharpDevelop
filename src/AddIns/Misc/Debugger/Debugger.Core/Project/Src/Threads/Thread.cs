@@ -194,49 +194,5 @@ namespace DebuggerLibrary
 				return new Function(debugger, corFrame);
 			}
 		}
-		
-		public void StepInto()
-		{
-			try {
-				CurrentFunction.StepInto();
-			} catch (CurrentFunctionNotAviableException) {
-				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentFunctionNotAviableException");
-			}
-		}		
-
-		public void StepOver()
-		{
-			try {
-				CurrentFunction.StepOver();
-			} catch (CurrentFunctionNotAviableException) {
-				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentFunctionNotAviableException");
-			}
-		}
-
-		public void StepOut()
-		{
-			try {
-				CurrentFunction.StepOut();
-			} catch (CurrentFunctionNotAviableException) {
-				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentFunctionNotAviableException");
-			}
-		}
-		
-		public SourcecodeSegment NextStatement {
-			get {	
-				return CurrentFunction.NextStatement;	
-			}
-		}
-		
-		public VariableCollection LocalVariables { 
-			get {
-				try {
-					return CurrentFunction.GetVariables();	
-				} catch (NotAviableException exception) {
-					System.Diagnostics.Debug.Fail("Unable to get LocalVariables." + exception.ToString());
-					return new VariableCollection();
-				}
-			}
-		}
 	}
 }

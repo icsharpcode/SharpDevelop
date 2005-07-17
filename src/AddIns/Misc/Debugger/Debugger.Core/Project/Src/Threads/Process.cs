@@ -60,31 +60,6 @@ namespace DebuggerLibrary
 				mainThread = value;
 			}
 		}
-
-		public SourcecodeSegment NextStatement { 
-			get{
-				try {
-					return CurrentThread.NextStatement; 
-				} catch (CurrentThreadNotAviableException) {
-					System.Diagnostics.Debug.Fail("Unable to get NextStatement. CurrentThreadNotAviableException");
-					throw new NextStatementNotAviableException();
-				}
-			} 
-		}
-
-		public VariableCollection LocalVariables { 
-			get{
-				Thread thread;
-				try {
-					thread = CurrentThread;
-				} 
-				catch (CurrentThreadNotAviableException) {
-					//System.Diagnostics.Debug.Fail("Unable to get LocalVariables. CurrentThreadNotAviableException");
-					return new VariableCollection ();
-				}
-				return thread.LocalVariables;
-			} 
-		}
 		
 		static public Process CreateProcess(NDebugger debugger, string filename, string workingDirectory, string arguments)
 		{
@@ -145,33 +120,6 @@ namespace DebuggerLibrary
 			isProcessRunning = false;
 			debugger.OnDebuggingPaused(PausedReason.Break);
 			debugger.OnIsProcessRunningChanged();
-		}
-
-		public void StepInto()
-		{
-			try {
-				CurrentThread.StepInto();
-			} catch (CurrentThreadNotAviableException) {
-				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentThreadNotAviableException");
-			}
-		}
-
-		public void StepOver()
-		{
-			try {
-				CurrentThread.StepOver();
-			} catch (CurrentThreadNotAviableException) {
-				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentThreadNotAviableException");
-			}
-		}
-
-		public void StepOut()
-		{
-			try {
-				CurrentThread.StepOut();
-			} catch (CurrentThreadNotAviableException) {
-				System.Diagnostics.Debug.Fail("Unable to prerform step. CurrentThreadNotAviableException");
-			}
 		}
 
 		public void Continue()
