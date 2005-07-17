@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -52,6 +52,10 @@
     <Compile Include="Src\Debugger\Internal\ManagedCallbackProxy.cs" />
     <Compile Include="Src\Debugger\Internal\MTA2STA.cs" />
     <Compile Include="Src\Debugger\Internal\NativeMethods.cs" />
+    <Compile Include="Src\Debugger\MetaData\FieldProps.cs" />
+    <Compile Include="Src\Debugger\MetaData\MetaData.cs" />
+    <Compile Include="Src\Debugger\MetaData\TypeDefProps.cs" />
+    <Compile Include="Src\Debugger\MetaData\TypeRefProps.cs" />
     <Compile Include="Src\Debugger\NDebugger.cs" />
     <Compile Include="Src\Interop enums\ClassFieldAttribute.cs" />
     <Compile Include="Src\Interop enums\CorCallingConvention.cs" />
@@ -95,9 +99,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />
-    <Folder Include="Src\RemotingSinks" />
-    <Folder Include="Src\RemotingSinks\InvokeOnSTASink" />
-    <Folder Include="Src\RemotingSinks\PrivateEventHandlersSink" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
