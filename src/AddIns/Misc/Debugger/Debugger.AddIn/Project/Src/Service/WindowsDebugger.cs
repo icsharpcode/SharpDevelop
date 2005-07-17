@@ -298,7 +298,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			debugger.ClearBreakpoints();
 			foreach (ICSharpCode.Core.Breakpoint b in DebuggerService.Breakpoints) {
-				DebuggerLibrary.Breakpoint newBreakpoint = debugger.AddBreakpoint(b.FileName, b.LineNumber, 0, b.IsEnabled);
+				DebuggerLibrary.Breakpoint newBreakpoint = debugger.AddBreakpoint(new SourcecodeSegment(b.FileName, b.LineNumber), b.IsEnabled);
 				b.Tag = newBreakpoint;
 			}
 		}

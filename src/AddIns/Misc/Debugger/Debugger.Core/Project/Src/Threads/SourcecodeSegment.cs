@@ -7,7 +7,8 @@ using System.Diagnostics.SymbolStore;
 
 namespace DebuggerLibrary
 {
-	public class SourcecodeSegment: RemotingObjectBase
+	[Serializable]
+	public class SourcecodeSegment
 	{
 		string moduleFilename;
 		string sourceFullFilename;
@@ -19,11 +20,35 @@ namespace DebuggerLibrary
 		int ilStart;
 		int ilEnd;
 		int[] stepRanges;
-		ISymbolDocument symUnmanagedDocument;
 
 		internal SourcecodeSegment()
 		{
 
+		}
+
+		public SourcecodeSegment(string sourceFilename, int line)
+		{
+			this.sourceFullFilename = sourceFilename;
+			this.startLine = line;
+			this.endLine = line;
+		}
+
+		public SourcecodeSegment(string sourceFilename, int line, int startColumn, int endColumn)
+		{
+			this.sourceFullFilename = sourceFilename;
+			this.startLine = line;
+			this.endLine = line;
+			this.startColumn = startColumn;
+			this.endColumn = endColumn;
+		}
+
+		public SourcecodeSegment(string sourceFilename, int startLine, int endLine, int startColumn, int endColumn)
+		{
+			this.sourceFullFilename = sourceFilename;
+			this.startLine = startLine;
+			this.endLine = endLine;
+			this.startColumn = startColumn;
+			this.endColumn = endColumn;
 		}
 		
 		public string ModuleFilename {
@@ -83,15 +108,6 @@ namespace DebuggerLibrary
 			}
 			set {
 				endColumn = value;
-			}
-		}
-		
-		public ISymbolDocument SymbolDocument {
-			get {
-				return symUnmanagedDocument;
-			}
-			set {
-				symUnmanagedDocument = value;
 			}
 		}
 

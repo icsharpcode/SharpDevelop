@@ -78,29 +78,9 @@ namespace DebuggerLibrary
 			return breakpoint;
 		}
 
-		public Breakpoint AddBreakpoint(SourcecodeSegment segment)
+		public Breakpoint AddBreakpoint(SourcecodeSegment segment, bool breakpointEnabled)
 		{
-			return AddBreakpoint(new Breakpoint(this, segment));
-		}
-
-		public Breakpoint AddBreakpoint(int line)
-		{
-			return AddBreakpoint(new Breakpoint(this, line));
-		}
-
-		public Breakpoint AddBreakpoint(string sourceFilename, int line)
-		{
-			return AddBreakpoint(new Breakpoint(this, sourceFilename, line));
-		}
-
-		public Breakpoint AddBreakpoint(string sourceFilename, int line, int column)
-		{
-			return AddBreakpoint(new Breakpoint(this, sourceFilename, line, column));
-		}
-
-		public Breakpoint AddBreakpoint(string sourceFilename, int line, int column, bool enabled)
-		{
-			return AddBreakpoint(new Breakpoint(this, sourceFilename, line, column, enabled));
+			return AddBreakpoint(new Breakpoint(this, segment, breakpointEnabled));
 		}
 
 		public void RemoveBreakpoint(Breakpoint breakpoint)  

@@ -234,7 +234,6 @@ namespace DebuggerLibrary
 
 						retVal.ModuleFilename = module.FullPath;
 
-						retVal.SymbolDocument = Doc[i];
 						retVal.SourceFullFilename = Doc[i].URL;
 
 						retVal.StartLine = startLine[i];

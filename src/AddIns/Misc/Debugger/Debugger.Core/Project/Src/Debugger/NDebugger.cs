@@ -286,7 +286,7 @@ namespace DebuggerLibrary
 			}
 
 			// Add the breakpoint 
-			Breakpoint addedBreakpoint = AddBreakpoint(fileName, line, column);
+			Breakpoint addedBreakpoint = AddBreakpoint(new SourcecodeSegment(fileName, line), true);
 
             // Check if it wasn't forced to move to different line with breakpoint
 			foreach (Breakpoint breakpoint in Breakpoints) {

@@ -15,7 +15,7 @@ namespace DebuggerLibrary
 	{
 		NDebugger debugger;
 
-		readonly SourcecodeSegment sourcecodeSegment;
+		SourcecodeSegment sourcecodeSegment;
 		
 		bool hadBeenSet = false;
 		bool enabled = true;
@@ -39,8 +39,7 @@ namespace DebuggerLibrary
 		
 		public bool Enabled	{
 			get {
-				if (HadBeenSet)
-				{
+				if (HadBeenSet) {
 					int active;
 					corBreakpoint.IsActive(out active);
 					enabled = (active == 1);
@@ -49,8 +48,7 @@ namespace DebuggerLibrary
 			}
 			set	{
 				enabled = value;
-				if (HadBeenSet)
-				{
+				if (HadBeenSet) {
 					corBreakpoint.Activate(enabled?1:0);
 				}
 				OnBreakpointStateChanged();
@@ -74,43 +72,10 @@ namespace DebuggerLibrary
 				BreakpointHit(this, new BreakpointEventArgs(this));
 		}
 
-		internal Breakpoint(NDebugger debugger, SourcecodeSegment segment)
+		internal Breakpoint(NDebugger debugger, SourcecodeSegment sourcecodeSegment, bool enabled)
 		{
 			this.debugger = debugger;
-			sourcecodeSegment = segment;
-		}
-
-		internal Breakpoint(NDebugger debugger, int line)
-		{
-			this.debugger = debugger;
-			sourcecodeSegment = new SourcecodeSegment();
-			sourcecodeSegment.StartLine = line;
-		}
-
-		internal Breakpoint(NDebugger debugger, string sourceFilename, int line)
-		{
-			this.debugger = debugger;
-			sourcecodeSegment = new SourcecodeSegment();
-			sourcecodeSegment.SourceFullFilename = sourceFilename;
-			sourcecodeSegment.StartLine = line;
-		}
-
-		internal Breakpoint(NDebugger debugger, string sourceFilename, int line, int column)
-		{
-			this.debugger = debugger;
-			sourcecodeSegment = new SourcecodeSegment();
-			sourcecodeSegment.SourceFullFilename = sourceFilename;
-			sourcecodeSegment.StartLine = line;
-			sourcecodeSegment.StartColumn = column;
-		}
-
-		internal Breakpoint(NDebugger debugger, string sourceFilename, int line, int column, bool enabled)
-		{
-			this.debugger = debugger;
-			sourcecodeSegment = new SourcecodeSegment();
-			sourcecodeSegment.SourceFullFilename = sourceFilename;
-			sourcecodeSegment.StartLine = line;
-			sourcecodeSegment.StartColumn = column;
+			this.sourcecodeSegment = sourcecodeSegment;
 			this.enabled = enabled;
 		}
 		
@@ -147,22 +112,17 @@ namespace DebuggerLibrary
 				return;
 			}
 
-			SourcecodeSegment seg = sourcecodeSegment;
-
 			Module           module     = null;
 			ISymbolReader    symReader  = null;
 			ISymbolDocument  symDoc     = null;
 
 			// Try to get doc from seg.moduleFilename
-			if (seg.ModuleFilename != null)
-			{
-				try 
-				{
-					module = debugger.GetModule(seg.ModuleFilename);
-					symReader = debugger.GetModule(seg.ModuleFilename).SymReader;
-					symDoc = symReader.GetDocument(seg.SourceFullFilename,Guid.Empty,Guid.Empty,Guid.Empty);
-				}
-				catch {}
+			if (sourcecodeSegment.ModuleFilename != null) {
+				try {
+					module = debugger.GetModule(sourcecodeSegment.ModuleFilename);
+					symReader = debugger.GetModule(sourcecodeSegment.ModuleFilename).SymReader;
+					symDoc = symReader.GetDocument(sourcecodeSegment.SourceFullFilename,Guid.Empty,Guid.Empty,Guid.Empty);
+				} catch {}
 			}
 
 			// search all modules
@@ -174,7 +134,7 @@ namespace DebuggerLibrary
 						continue;
 					}
 
-					symDoc = symReader.GetDocument(seg.SourceFullFilename,Guid.Empty,Guid.Empty,Guid.Empty);
+					symDoc = symReader.GetDocument(sourcecodeSegment.SourceFullFilename,Guid.Empty,Guid.Empty,Guid.Empty);
 
 					if (symDoc != null) {
 						break;
@@ -188,18 +148,18 @@ namespace DebuggerLibrary
 			}
 
 			int validStartLine;
-			validStartLine = symDoc.FindClosestLine(seg.StartLine);
-			if (validStartLine != seg.StartLine) {
-				seg.StartLine = validStartLine;
-				seg.EndLine = validStartLine;
-				seg.StartColumn = 0;
-				seg.EndColumn = 0;
+			validStartLine = symDoc.FindClosestLine(sourcecodeSegment.StartLine);
+			if (validStartLine != sourcecodeSegment.StartLine) {
+				sourcecodeSegment.StartLine = validStartLine;
+				sourcecodeSegment.EndLine = validStartLine;
+				sourcecodeSegment.StartColumn = 0;
+				sourcecodeSegment.EndColumn = 0;
 			}
 
 			ISymbolMethod symMethod;
-			symMethod = symReader.GetMethodFromDocumentPosition(symDoc, seg.StartLine, seg.StartColumn);
+			symMethod = symReader.GetMethodFromDocumentPosition(symDoc, sourcecodeSegment.StartLine, sourcecodeSegment.StartColumn);
 			
-			int corInstructionPtr = symMethod.GetOffset(symDoc, seg.StartLine, seg.StartColumn);
+			int corInstructionPtr = symMethod.GetOffset(symDoc, sourcecodeSegment.StartLine, sourcecodeSegment.StartColumn);
 
 			ICorDebugFunction corFunction;
 			module.CorModule.GetFunctionFromToken((uint)symMethod.Token.GetToken(), out corFunction);
