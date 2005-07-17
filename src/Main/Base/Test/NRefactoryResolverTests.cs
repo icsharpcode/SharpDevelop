@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			return visitor.Cu;
 		}
 		
-		IProjectContent lastPC;
+		public IProjectContent lastPC;
 		
 		ICompilationUnit ParseVB(string fileName, string fileContent)
 		{
@@ -174,35 +174,6 @@ End Module
 				}
 			}
 			Assert.Fail("Length not found on array instance (resolve result was " + result.ResolvedType.ToString() + ")");
-		}
-		
-		[Test]
-		public void OuterclassPrivateFieldResolveTest()
-		{
-			string program = @"class A
-{
-	int myField;
-	class B
-	{
-		void MyMethod(A a)
-		{
-		
-		}
-	}
-}
-";
-			ResolveResult result = Resolve(program, "a", 8);
-			Assert.IsNotNull(result, "result");
-			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
-			ArrayList arr = result.GetCompletionData(lastPC);
-			Assert.IsNotNull(arr, "arr");
-			foreach (object o in arr) {
-				if (o is IField) {
-					Assert.AreEqual("myField", ((IField)o).Name);
-					return;
-				}
-			}
-			Assert.Fail("private field not visible from inner class");
 		}
 		#endregion
 		
@@ -351,6 +322,80 @@ interface IInterface2 {
 			Assert.IsNotNull(result);
 			Assert.IsTrue(result is MemberResolveResult);
 			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName, "'this.TargetMethod()'");
+		}
+		
+		[Test]
+		public void EventCallTest()
+		{
+			string program = @"using System;
+class A {
+	void Method() {
+		
+	}
+	
+	public event EventHandler TestEvent;
+}
+";
+			ResolveResult result = Resolve(program, "TestEvent(this, EventArgs.Empty)", 4);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is MemberResolveResult);
+			Assert.AreEqual("A.TestEvent", (result as MemberResolveResult).ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void VoidTest()
+		{
+			string program = @"using System;
+class A {
+	void TestMethod() {
+		
+	}
+}
+";
+			ResolveResult result = Resolve(program, "TestMethod()", 4);
+			Assert.IsNotNull(result);
+			Assert.AreSame(ReflectionReturnType.Void, result.ResolvedType, result.ResolvedType.ToString());
+			Assert.AreEqual(0, result.GetCompletionData(lastPC).Count);
+		}
+		
+		[Test]
+		public void ThisEventCallTest()
+		{
+			string program = @"using System;
+class A {
+	void Method() {
+		
+	}
+	
+	public event EventHandler TestEvent;
+}
+";
+			ResolveResult result = Resolve(program, "this.TestEvent(this, EventArgs.Empty)", 4);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is MemberResolveResult);
+			Assert.AreEqual("A.TestEvent", (result as MemberResolveResult).ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void DelegateCallTest()
+		{
+			string program = @"using System.Reflection;
+class A {
+	void Method() {
+		ModuleResolveEventHandler eh = SomeClass.SomeProperty;
+		
+	}
+}
+";
+			ResolveResult result = Resolve(program, "eh(this, new ResolveEventArgs())", 5);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is LocalResolveResult);
+			Assert.AreEqual("eh", (result as LocalResolveResult).Field.Name);
+			
+			result = Resolve(program, "eh(this, new ResolveEventArgs()).GetType(\"bla\")", 5);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is MemberResolveResult);
+			Assert.AreEqual("System.Reflection.Module.GetType", (result as MemberResolveResult).ResolvedMember.FullyQualifiedName);
 		}
 		
 		[Test]
@@ -634,6 +679,80 @@ class A {
 			Assert.AreEqual("System.Collections", ns.Name, "COL");
 			ns = Resolve(program, "COL.Generic", 3) as NamespaceResolveResult;
 			Assert.AreEqual("System.Collections.Generic", ns.Name, "COL.Generic");
+		}
+		#endregion
+		
+		#region Visibility tests
+		[Test]
+		public void PrivateMemberTest()
+		{
+			string program = @"using System;
+class A {
+	void TestMethod(B b) {
+		
+	}
+}
+class B {
+	int member;
+}
+";
+			ResolveResult result = Resolve(program, "b", 4);
+			Assert.IsNotNull(result);
+			ArrayList cd = result.GetCompletionData(lastPC);
+			Assert.IsFalse(MemberExists(cd, "member"), "member should not be in completion lookup");
+			result = Resolve(program, "b.member", 4);
+			Assert.IsNotNull(result, "member should be found even though it is not visible!");
+		}
+		
+		[Test]
+		public void ProtectedVisibleMemberTest()
+		{
+			string program = @"using System;
+class A : B {
+	void TestMethod(B b) {
+		
+	}
+}
+class B {
+	protected int member;
+}
+";
+			ResolveResult result = Resolve(program, "b", 4);
+			Assert.IsNotNull(result);
+			ArrayList cd = result.GetCompletionData(lastPC);
+			Assert.IsTrue(MemberExists(cd, "member"), "member should be in completion lookup");
+			result = Resolve(program, "b.member", 4);
+			Assert.IsNotNull(result, "member should be found!");
+		}
+		
+		[Test]
+		public void ProtectedInvisibleMemberTest()
+		{
+			string program = @"using System;
+class A {
+	void TestMethod(B b) {
+		
+	}
+}
+class B {
+	protected int member;
+}
+";
+			ResolveResult result = Resolve(program, "b", 4);
+			Assert.IsNotNull(result);
+			ArrayList cd = result.GetCompletionData(lastPC);
+			Assert.IsFalse(MemberExists(cd, "member"), "member should not be in completion lookup");
+			result = Resolve(program, "b.member", 4);
+			Assert.IsNotNull(result, "member should be found even though it is not visible!");
+		}
+		
+		bool MemberExists(ArrayList members, string name)
+		{
+			foreach (object o in members) {
+				IMember m = o as IMember;
+				if (m.Name == name) return true;
+			}
+			return false;
 		}
 		#endregion
 	}

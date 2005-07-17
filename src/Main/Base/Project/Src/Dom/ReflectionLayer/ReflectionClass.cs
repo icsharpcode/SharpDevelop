@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -124,6 +124,37 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return type.IsSubclassOf(typeof(Delegate)) && type != typeof(MulticastDelegate);
 		}
 		
+		#region VoidClass / VoidReturnType
+		public class VoidClass : ReflectionClass
+		{
+			public VoidClass(ICompilationUnit compilationUnit) : base(compilationUnit, typeof(void), null) {}
+			
+			protected override IReturnType CreateDefaultReturnType() {
+				return new VoidReturnType(this);
+			}
+		}
+		
+		private class VoidReturnType : DefaultReturnType
+		{
+			public VoidReturnType(IClass c) : base(c) {}
+			public override List<IMethod> GetMethods() {
+				return new List<IMethod>(1);
+			}
+			public override List<IProperty> GetProperties() {
+				return new List<IProperty>(1);
+			}
+			public override List<IField> GetFields() {
+				return new List<IField>(1);
+			}
+			public override List<IEvent> GetEvents() {
+				return new List<IEvent>(1);
+			}
+			public override List<IIndexer> GetIndexers() {
+				return new List<IIndexer>(1);
+			}
+		}
+		#endregion
+		
 		public ReflectionClass(ICompilationUnit compilationUnit, Type type, IClass declaringType) : base(compilationUnit, declaringType)
 		{
 			this.type = type;
@@ -135,17 +166,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			// set classtype
-			if (IsDelegate(type)) {
-				this.ClassType = ClassType.Delegate;
-				MethodInfo invoke          = type.GetMethod("Invoke");
-				ReflectionMethod newMethod = new ReflectionMethod(invoke, this);
-				Methods.Add(newMethod);
-			} else if (type.IsInterface) {
+			if (type.IsInterface) {
 				this.ClassType = ClassType.Interface;
 			} else if (type.IsEnum) {
 				this.ClassType = ClassType.Enum;
 			} else if (type.IsValueType) {
 				this.ClassType = ClassType.Struct;
+			} else if (IsDelegate(type)) {
+				this.ClassType = ClassType.Delegate;
 			} else {
 				this.ClassType = ClassType.Class;
 			}
@@ -193,4 +221,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 	}
+	
 }

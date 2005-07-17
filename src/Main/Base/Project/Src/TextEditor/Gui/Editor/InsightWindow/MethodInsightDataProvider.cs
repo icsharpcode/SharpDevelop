@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			initialOffset = textArea.Caret.Offset;
 			
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
-			string word = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset) : expressionFinder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset - 1);
+			string word = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset) : expressionFinder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset - 1).Expression;
 			if (word == null) // word can be null when cursor is in string/comment
 				return;
 			word = word.Trim();

@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (c.ClassType == ClassType.Delegate) {
 				return;
 			}
-			if (c.Region != null && c.Region.EndLine > 0) {
+			if (c.Region != null && c.Region.BeginLine < c.Region.EndLine) {
 				FoldMarker newFoldMarker = new FoldMarker(document, c.Region.BeginLine - 1, c.Region.BeginColumn - 1,
 				                               c.Region.EndLine - 1, c.Region.EndColumn, FoldType.TypeBody);
 				if (newFoldMarker.Length > 0) {
@@ -34,28 +34,28 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			
 			foreach (IMethod m in c.Methods) {
-				if (m.BodyRegion != null && m.BodyRegion.EndLine > 0) {
+				if (m.BodyRegion != null && m.Region.EndLine < m.BodyRegion.EndLine) {
 					foldMarkers.Add(new FoldMarker(document, m.Region.EndLine - 1, m.Region.EndColumn - 1,
 					                               m.BodyRegion.EndLine - 1, m.BodyRegion.EndColumn - 1, FoldType.MemberBody));
 				}
 			}
 			
 			foreach (IIndexer indexer in c.Indexer) {
-				if (indexer.BodyRegion != null && indexer.BodyRegion.EndLine > 0) {
+				if (indexer.BodyRegion != null && indexer.Region.EndLine < indexer.BodyRegion.EndLine) {
 					foldMarkers.Add(new FoldMarker(document, indexer.Region.EndLine - 1,    indexer.Region.EndColumn - 1,
 					                               indexer.BodyRegion.EndLine- 1, indexer.BodyRegion.EndColumn - 1, FoldType.MemberBody));
 				}
 			}
 			
 			foreach (IProperty p in c.Properties) {
-				if (p.BodyRegion != null && p.BodyRegion.EndLine > 0) {
+				if (p.BodyRegion != null && p.Region.EndLine < p.BodyRegion.EndLine) {
 					foldMarkers.Add(new FoldMarker(document, p.Region.EndLine - 1, p.Region.EndColumn - 1,
 					                               p.BodyRegion.EndLine- 1, p.BodyRegion.EndColumn - 1, FoldType.MemberBody));
 				}
 			}
 			
 			foreach (IEvent evt in c.Events) {
-				if (evt.BodyRegion != null && evt.BodyRegion.EndLine > 0) {
+				if (evt.BodyRegion != null && evt.Region.EndLine < evt.BodyRegion.EndLine) {
 					if (evt.BodyRegion != null) {
 						foldMarkers.Add(new FoldMarker(document, evt.Region.EndLine - 1, evt.Region.EndColumn - 1,
 						                               evt.BodyRegion.EndLine- 1, evt.BodyRegion.EndColumn - 1, FoldType.MemberBody));

@@ -152,6 +152,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			
+			return ResolveInternal(expr);
+		}
+		
+		ResolveResult ResolveInternal(Expression expr)
+		{
 			TypeVisitor typeVisitor = new TypeVisitor(this);
 			IReturnType type;
 			
@@ -159,9 +164,31 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (((PrimitiveExpression)expr).Value is int)
 					return null;
 			} else if (expr is InvocationExpression) {
-				IMethod method = typeVisitor.GetMethod((InvocationExpression)expr, null);
-				if (method != null)
+				IMethod method = typeVisitor.GetMethod(expr as InvocationExpression, null);
+				if (method != null) {
 					return CreateMemberResolveResult(method);
+				} else {
+					// InvocationExpression can also be a delegate/event call
+					ResolveResult invocationTarget = ResolveInternal((expr as InvocationExpression).TargetObject);
+					if (invocationTarget == null)
+						return null;
+					type = invocationTarget.ResolvedType;
+					if (type == null)
+						return null;
+					IClass c = type.GetUnderlyingClass();
+					if (c == null || c.ClassType != ClassType.Delegate)
+						return null;
+					// We don't want to show "System.EventHandler.Invoke" in the tooltip
+					// of "EventCall(this, EventArgs.Empty)", we just show the event/delegate for now
+					
+					// but for DelegateCall(params).* completion, we use the delegate's
+					// return type instead of the delegate type itself
+					method = c.Methods.Find(delegate(IMethod innerMethod) { return innerMethod.Name == "Invoke"; });
+					if (method != null)
+						invocationTarget.ResolvedType = method.ReturnType;
+					
+					return invocationTarget;
+				}
 			} else if (expr is FieldReferenceExpression) {
 				FieldReferenceExpression fieldReferenceExpression = (FieldReferenceExpression)expr;
 				if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName == "") {
@@ -520,17 +547,27 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (type == null)
 				return methods;
 			
-			//bool isClassInInheritanceTree = false;
-			//if (callingClass != null)
-			//	isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
+			bool isClassInInheritanceTree = false;
+			if (callingClass != null)
+				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(type.GetUnderlyingClass());
 			
 			foreach (IMethod m in type.GetMethods()) {
 				if (IsSameName(m.Name, memberName)
-				    // && m.IsAccessible(callingClass, isClassInInheritanceTree)
+				    && m.IsAccessible(callingClass, isClassInInheritanceTree)
 				   ) {
 					methods.Add(m);
 				}
 			}
+//			if (methods.Count == 0) {
+//				foreach (IEvent m in type.GetEvents()) {
+//					if (IsSameName(m.Name, memberName)
+//					    && m.IsAccessible(callingClass, isClassInInheritanceTree)
+//					   ) {
+//						methods.Add(m);
+//						break;
+//					}
+//				}
+//			}
 			return methods;
 		}
 		#endregion
@@ -541,14 +578,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (type == null)
 				return null;
-			//bool isClassInInheritanceTree = false;
-			//if (callingClass != null)
-			//	isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
-			//foreach (IClass c in curType.InnerClasses) {
-			//	if (IsSameName(c.Name, memberName) && c.IsAccessible(callingClass, isClassInInheritanceTree)) {
-			//		return new ReturnType(c.FullyQualifiedName);
-			//	}
-			//}
 			IMember member = GetMember(type, memberName);
 			if (member == null)
 				return null;
@@ -560,9 +589,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (type == null)
 				return null;
-			//bool isClassInInheritanceTree = false;
-			//if (callingClass != null)
-			//	isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(c);
+			bool isClassInInheritanceTree = false;
+			if (callingClass != null)
+				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(type.GetUnderlyingClass());
 			foreach (IProperty p in type.GetProperties()) {
 				if (IsSameName(p.Name, memberName)) {
 					return p;

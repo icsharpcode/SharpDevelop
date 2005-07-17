@@ -33,14 +33,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			this.currentClass = currentClass;
 			try {
 				csa = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem("C#", this);
-				csa.ConversionFlags = ConversionFlags.QualifiedNamesOnlyForReturnTypes | ConversionFlags.ShowReturnType;
+				csa.ConversionFlags = ConversionFlags.ShowAccessibility | ConversionFlags.ShowModifiers | ConversionFlags.QualifiedNamesOnlyForReturnTypes | ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterNames;
 			} catch (Exception) {
 				Console.WriteLine("CSharpAmbience not found -- is the C# backend binding loaded???");
 			}
 			
 			try {
 				vba = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem("VBNET", this);
-				vba.ConversionFlags = ConversionFlags.QualifiedNamesOnlyForReturnTypes | ConversionFlags.ShowReturnType;
+				vba.ConversionFlags = ConversionFlags.ShowAccessibility | ConversionFlags.ShowModifiers | ConversionFlags.QualifiedNamesOnlyForReturnTypes | ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterNames;
 			} catch (Exception) {
 				Console.WriteLine("VBNet ambience not found -- is the VB.NET backend binding loaded???");
 			}

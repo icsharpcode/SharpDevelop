@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krueger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version value="$version"/>
 // </file>
 
@@ -69,6 +69,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return resolvedType;
 			}
+			set {
+				resolvedType = value;
+			}
 		}
 		
 		public virtual ArrayList GetCompletionData(IProjectContent projectContent)
@@ -80,20 +83,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (resolvedType == null) return null;
 			ArrayList res = new ArrayList();
+			bool isClassInInheritanceTree = false;
+			if (callingClass != null)
+				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(resolvedType.GetUnderlyingClass());
 			foreach (IMethod m in resolvedType.GetMethods()) {
-				if (language.ShowMember(m, showStatic))
+				if (language.ShowMember(m, showStatic) && m.IsAccessible(callingClass, isClassInInheritanceTree))
 					res.Add(m);
 			}
 			foreach (IEvent e in resolvedType.GetEvents()) {
-				if (language.ShowMember(e, showStatic))
+				if (language.ShowMember(e, showStatic) && e.IsAccessible(callingClass, isClassInInheritanceTree))
 					res.Add(e);
 			}
 			foreach (IField f in resolvedType.GetFields()) {
-				if (language.ShowMember(f, showStatic))
+				if (language.ShowMember(f, showStatic) && f.IsAccessible(callingClass, isClassInInheritanceTree))
 					res.Add(f);
 			}
 			foreach (IProperty p in resolvedType.GetProperties()) {
-				if (language.ShowMember(p, showStatic))
+				if (language.ShowMember(p, showStatic) && p.IsAccessible(callingClass, isClassInInheritanceTree))
 					res.Add(p);
 			}
 			return res;

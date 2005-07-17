@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -12,10 +12,87 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public static class ReflectionReturnType
 	{
-		public static IReturnType Create(IProjectContent content, Type type)
+		#region Primitive Types
+		static IReturnType @object, @int, @string, @bool, type, @void, array;
+		
+		/// <summary>Gets a ReturnType describing System.Object.</summary>
+		public static IReturnType Object {
+			get {
+				if (@object == null) {
+					@object = CreatePrimitive(typeof(object));
+				}
+				return @object;
+			}
+		}
+		/// <summary>Gets a ReturnType describing System.Int32.</summary>
+		public static IReturnType Int {
+			get {
+				if (@int == null) {
+					@int = CreatePrimitive(typeof(int));
+				}
+				return @int;
+			}
+		}
+		/// <summary>Gets a ReturnType describing System.String.</summary>
+		public static IReturnType String {
+			get {
+				if (@string == null) {
+					@string = CreatePrimitive(typeof(string));
+				}
+				return @string;
+			}
+		}
+		/// <summary>Gets a ReturnType describing System.Boolean.</summary>
+		public static IReturnType Bool {
+			get {
+				if (@bool == null) {
+					@bool = CreatePrimitive(typeof(bool));
+				}
+				return @bool;
+			}
+		}
+		/// <summary>Gets a ReturnType describing System.Type.</summary>
+		public static IReturnType Type {
+			get {
+				if (type == null) {
+					type = CreatePrimitive(typeof(Type));
+				}
+				return type;
+			}
+		}
+		/// <summary>Gets a ReturnType describing System.Void.</summary>
+		public static IReturnType Void {
+			get {
+				if (@void == null) {
+					@void = CreatePrimitive(typeof(void));
+				}
+				return @void;
+			}
+		}
+		/// <summary>Gets a ReturnType describing System.Array.</summary>
+		public static IReturnType Array {
+			get {
+				if (array == null) {
+					array = CreatePrimitive(typeof(Array));
+				}
+				return array;
+			}
+		}
+		
+		/// <summary>
+		/// Create a primitive return type.
+		/// Allowed are ONLY simple classes from MsCorlib (no arrays/generics etc.)
+		/// </summary>
+		public static IReturnType CreatePrimitive(Type type)
+		{
+			return ProjectContentRegistry.GetMscorlibContent().GetClass(type.FullName).DefaultReturnType;
+		}
+		#endregion
+		
+		public static IReturnType Create(IProjectContent content, Type type, bool createLazyReturnType)
 		{
 			if (type.IsArray) {
-				return MakeArray(type, Create(content, type.GetElementType()));
+				return MakeArray(type, Create(content, type.GetElementType(), createLazyReturnType));
 			} else {
 				string name = type.FullName;
 				if (name == null)
@@ -28,6 +105,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (name.IndexOf('+') > 0) {
 					name = name.Replace('+', '.');
 				}
+				if (!createLazyReturnType) {
+					IClass c = content.GetClass(name);
+					if (c != null)
+						return c.DefaultReturnType;
+					// example where name is not found: pointers like System.Char*
+					// or when the class is in a assembly that is not referenced
+				}
 				return new GetClassReturnType(content, name);
 			}
 		}
@@ -37,17 +121,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return !type.IsArray && !type.IsGenericType && !type.IsGenericParameter;
 		}
 		
-		public static IReturnType Create(IMember member, Type type)
+		public static IReturnType Create(IMember member, Type type, bool createLazyReturnType)
 		{
 			if (type.IsArray) {
-				return MakeArray(type, Create(member, type.GetElementType()));
+				return MakeArray(type, Create(member, type.GetElementType(), createLazyReturnType));
 			} else if (type.IsGenericType && !type.IsGenericTypeDefinition) {
 				Type[] args = type.GetGenericArguments();
 				List<IReturnType> para = new List<IReturnType>(args.Length);
 				for (int i = 0; i < args.Length; ++i) {
-					para.Add(Create(member, args[i]));
+					para.Add(Create(member, args[i], createLazyReturnType));
 				}
-				return new SpecificReturnType(Create(member, type.GetGenericTypeDefinition()), para);
+				return new SpecificReturnType(Create(member, type.GetGenericTypeDefinition(), createLazyReturnType), para);
 			} else if (type.IsGenericParameter) {
 				IClass c = member.DeclaringType;
 				if (type.GenericParameterPosition < c.TypeParameters.Count) {
@@ -63,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				return new GenericReturnType(new DefaultTypeParameter(c, type));
 			}
-			return Create(member.DeclaringType.ProjectContent, type);
+			return Create(member.DeclaringType.ProjectContent, type, createLazyReturnType);
 		}
 		
 		static IReturnType MakeArray(Type type, IReturnType baseType)
@@ -71,52 +155,4 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return new ArrayReturnType(baseType, type.GetArrayRank());
 		}
 	}
-	
-	/*
-	[Serializable]
-	public class ReflectionReturnType : AbstractReturnType
-	{
-		public ReflectionReturnType(Type type)
-		{
-			string fullyQualifiedName = type.FullName == null ? type.Name : type.FullName.Replace("+", ".").Trim('&');
-			
-			// base.FullyQualifiedName = fullyQualifiedName.TrimEnd('[', ']', ',', '*');
-			for (int i = fullyQualifiedName.Length; i > 0; i--) {
-				char c = fullyQualifiedName[i - 1];
-				if (c != '[' && c != ']' && c != ',' && c != '*') {
-					if (i < fullyQualifiedName.Length)
-						fullyQualifiedName = fullyQualifiedName.Substring(0, i);
-					break;
-				}
-			}
-			base.FullyQualifiedName = fullyQualifiedName;
-
-			SetPointerNestingLevel(type);
-			SetArrayDimensions(type);
-			if (arrays == null)
-				arrayDimensions = new int[0];
-			else
-				arrayDimensions = (int[])arrays.ToArray(typeof(int));
-		}
-		
-		ArrayList arrays = null;
-		void SetArrayDimensions(Type type)
-		{
-			if (type.IsArray && type != typeof(Array)) {
-				if (arrays == null)
-					arrays = new ArrayList();
-				arrays.Add(type.GetArrayRank());
-				SetArrayDimensions(type.GetElementType());
-			}
-		}
-		
-		void SetPointerNestingLevel(Type type)
-		{
-			if (type.IsPointer) {
-				SetPointerNestingLevel(type.GetElementType());
-				++pointerNestingLevel;
-			}
-		}
-	}
-	 */
 }

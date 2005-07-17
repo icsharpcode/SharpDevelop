@@ -78,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					
 					// search an enqueue all base interfaces
 					foreach (string interfaceName in intf.BaseTypes) {
-					
+						
 						// first look if the interface is in the same namespace
 						IClass baseType = ParserService.CurrentProjectContent.GetClass(intf.Namespace + "." + interfaceName);
 						
@@ -240,8 +240,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			public override string ToString()
 			{
-				
-				return AmbienceService.CurrentAmbience.Convert(c);
+				IAmbience ambience = AmbienceService.CurrentAmbience;
+				ambience.ConversionFlags = ConversionFlags.None;
+				return ambience.Convert(c);
 			}
 		}
 	}

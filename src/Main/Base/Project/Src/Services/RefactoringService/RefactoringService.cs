@@ -105,7 +105,7 @@ namespace ICSharpCode.Core
 				if (expressionFinder == null) {
 					expressionFinder = ParserService.GetExpressionFinder(fileName);
 				}
-				string expr = expressionFinder.FindFullExpression(fileContent, pos + 1);
+				string expr = expressionFinder.FindFullExpression(fileContent, pos + 1).Expression;
 				if (expr != null) {
 					Point position = GetPosition(fileContent, pos);
 					ResolveResult rr = ParserService.Resolve(expr, position.Y, position.X, fileName, fileContent);

@@ -28,8 +28,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	/// </summary>
 	public class CodeCompletionDataProvider : ICompletionDataProvider
 	{
-		static
-			Hashtable insertedElements           = new Hashtable();
+		Hashtable insertedElements           = new Hashtable();
 		Hashtable insertedPropertiesElements = new Hashtable();
 		Hashtable insertedEventElements      = new Hashtable();
 		
@@ -51,12 +50,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		ArrayList completionData = null;
 		bool ctrlSpace;
-		bool isNewCompletion;
+		ExpressionContext context;
 		
-		public CodeCompletionDataProvider(bool ctrlSpace, bool isNewCompletion)
+		public CodeCompletionDataProvider(bool ctrlSpace)
 		{
 			this.ctrlSpace = ctrlSpace;
-			this.isNewCompletion = isNewCompletion;
 		}
 		
 		public ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
@@ -70,14 +68,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			caretColumn          = textArea.Caret.Offset - document.GetLineSegment(caretLineNumber - 1).Offset + 1;
 			
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
-			string expression = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset) : expressionFinder.FindExpression(textArea.Document.GetText(0, textArea.Caret.Offset), textArea.Caret.Offset - 1);
+			string expression;
+			if (expressionFinder == null) {
+				expression = TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset);
+				context = ExpressionContext.Default;
+			} else {
+				ExpressionResult er = expressionFinder.FindExpression(textArea.Document.GetText(0, textArea.Caret.Offset), textArea.Caret.Offset - 1);
+				expression = er.Expression;
+				context = er.Context;
+			}
 			ResolveResult results;
 			preSelection  = null;
 			
 			if (ctrlSpace) {
-				if (isNewCompletion && expression == null) {
-					return null;
-				}
 				if (expression == null || expression.Length == 0) {
 					preSelection = "";
 					if (charTyped != '\0') {
@@ -110,25 +113,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (expression == null || expression.Length == 0) {
 				return null;
 			}
-			// do not instantiate service here as some checks might fail
-			// 
-			if (charTyped == ' ' && (expression.LastIndexOf("using")>=0 || expression.ToUpper().LastIndexOf("IMPORTS")>=0)) {
-				if (expression == "using" || expression.EndsWith(" using") || expression.EndsWith("\tusing")|| expression.EndsWith("\nusing")|| expression.EndsWith("\rusing") ||
-				    expression.ToUpper() == "IMPORTS" || expression.ToUpper().EndsWith(" IMPORTS") || expression.ToUpper().EndsWith("\tIMPORTS")|| expression.ToUpper().EndsWith("\nIMPORTS")|| expression.ToUpper().EndsWith("\rIMPORTS")) {
-					AddResolveResults(ParserService.CurrentProjectContent.GetNamespaceContents(""));
-				}
-			} else {
-				// we don't need to run parser on blank char here
-				if (charTyped == ' ') {
-					return null;
-				}
-				results = ParserService.Resolve(expression,
-				                                caretLineNumber,
-				                                caretColumn,
-				                                fileName,
-				                                document.TextContent);
-				AddResolveResults(results);
-			}
+			
+			results = ParserService.Resolve(expression,
+			                                caretLineNumber,
+			                                caretColumn,
+			                                fileName,
+			                                document.TextContent);
+			AddResolveResults(results);
 			
 			return (ICompletionData[])completionData.ToArray(typeof(ICompletionData));
 		}
@@ -140,6 +131,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			completionData.Capacity += list.Count;
 			foreach (object o in list) {
+				if (context == ExpressionContext.Namespace && !(o is string)) continue;
 				if (o is string) {
 					completionData.Add(new CodeCompletionData(o.ToString(), ClassBrowserIconService.NamespaceIndex));
 				} else if (o is IClass) {

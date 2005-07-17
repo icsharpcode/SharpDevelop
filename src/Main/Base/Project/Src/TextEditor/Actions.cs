@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -54,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textEditorControl.FileName);
 			if (expressionFinder == null)
 				return;
-			string expression = expressionFinder.FindFullExpression(textContent, textEditorControl.ActiveTextAreaControl.Caret.Offset);
+			string expression = expressionFinder.FindFullExpression(textContent, textEditorControl.ActiveTextAreaControl.Caret.Offset).Expression;
 			if (expression == null || expression.Length == 0)
 				return;
 			ResolveResult result = ParserService.Resolve(expression, caretLineNumber, caretColumn, textEditorControl.FileName, textContent);

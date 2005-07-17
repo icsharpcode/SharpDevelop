@@ -9,7 +9,20 @@ namespace VBNetBinding.Parser
 	/// </summary>
 	public class ExpressionFinder : IExpressionFinder
 	{
-		public string FindExpression(string inText, int offset)
+		ExpressionResult CreateResult(string expression)
+		{
+			if (expression != null && expression.Substring(0, 8).Equals("Imports ", StringComparison.InvariantCultureIgnoreCase))
+				return new ExpressionResult(expression.Substring(8).TrimStart(), ExpressionContext.Namespace, null);
+			else
+				return new ExpressionResult(expression);
+		}
+		
+		public ExpressionResult FindExpression(string inText, int offset)
+		{
+			return CreateResult(FindExpressionInternal(inText, offset));
+		}
+		
+		string FindExpressionInternal(string inText, int offset)
 		{
 			this.text = FilterComments(inText, ref offset);
 			this.offset = this.lastAccept = offset;
@@ -36,11 +49,11 @@ namespace VBNetBinding.Parser
 			return this.text.Substring(this.lastAccept + 1, offset - this.lastAccept);
 		}
 		
-		public string FindFullExpression(string inText, int offset)
+		public ExpressionResult FindFullExpression(string inText, int offset)
 		{
-			string expressionBeforeOffset = FindExpression(inText, offset);
+			string expressionBeforeOffset = FindExpressionInternal(inText, offset);
 			if (expressionBeforeOffset == null || expressionBeforeOffset.Length == 0)
-				return null;
+				return CreateResult(null);
 			StringBuilder b = new StringBuilder(expressionBeforeOffset);
 			// append characters after expression
 			for (int i = offset + 1; i < inText.Length; ++i) {
@@ -61,7 +74,7 @@ namespace VBNetBinding.Parser
 					break;
 				}
 			}
-			return b.ToString();
+			return CreateResult(b.ToString());
 		}
 		
 		// Like VBNetFormattingStrategy.SearchBracketForward, but operates on a string.

@@ -95,5 +95,13 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.IsNotNull(inner, "UnderlyingClass");
 			Assert.AreEqual("System.Environment.SpecialFolder", inner.FullyQualifiedName);
 		}
+		
+		[Test]
+		public void VoidTest()
+		{
+			IClass c = pc.GetClass("System.Void");
+			Assert.IsNotNull(c, "System.Void not found");
+			Assert.AreSame(c.DefaultReturnType, ReflectionReturnType.Void, "ReflectionReturnType.Void is c.DefaultReturnType");
+		}
 	}
 }

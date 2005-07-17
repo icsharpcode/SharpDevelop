@@ -113,9 +113,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			public override string ToString()
 			{
-				
 				IAmbience ambience = AmbienceService.CurrentAmbience;
-				ambience.ConversionFlags = ConversionFlags.None;
+				ambience.ConversionFlags = ConversionFlags.ShowParameterNames;
 				return ambience.Convert(method);
 			}
 		}

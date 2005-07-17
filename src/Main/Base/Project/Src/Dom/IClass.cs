@@ -107,6 +107,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		//IMember SearchMember(string memberName);
 		
+		/// <summary>Return true if the specified class is a base class of this class; otherwise return false.</summary>
+		/// <remarks>Returns false when possibleBaseClass is null.</remarks>
 		bool IsTypeInInheritanceTree(IClass possibleBaseClass);
 		
 		List<IMember> GetAccessibleMembers(IClass callingClass, bool showStatic);

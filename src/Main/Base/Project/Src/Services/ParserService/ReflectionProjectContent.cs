@@ -26,6 +26,13 @@ namespace ICSharpCode.Core
 					AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, null));
 				}
 			}
+			
+			if (assembly == typeof(void).Assembly) {
+				// Replace void through the special class (ReturnType(void).GetMethods() does not return
+				// the methods of System.Object and System.ValueType)
+				AddClassToNamespaceListInternal(new ReflectionClass.VoidClass(assemblyCompilationUnit));
+			}
+			
 			string fileName = LookupLocalizedXmlDoc(assembly.Location);
 			// Not found -> look in runtime directory.
 			if (fileName == null) {

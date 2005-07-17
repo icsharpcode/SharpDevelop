@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override IReturnType ReturnType {
 			get {
 				if (methodBase is MethodInfo) {
-					return ReflectionReturnType.Create(this, ((MethodInfo)methodBase).ReturnType);
+					return ReflectionReturnType.Create(this, ((MethodInfo)methodBase).ReturnType, false);
 				} else if (methodBase is ConstructorInfo) {
 					return DeclaringType.DefaultReturnType;
 				}

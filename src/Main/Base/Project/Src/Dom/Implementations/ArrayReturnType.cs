@@ -59,20 +59,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override IReturnType BaseType {
 			get {
-				return ProjectContentRegistry.GetMscorlibContent().GetClass("System.Array").DefaultReturnType;
+				return ReflectionReturnType.Array;
 			}
 		}
 		
 		public override List<IIndexer> GetIndexers()
 		{
-			IClass arr = ProjectContentRegistry.GetMscorlibContent().GetClass("System.Array");
-			IReturnType intRT = ProjectContentRegistry.GetMscorlibContent().GetClass("System.Int32").DefaultReturnType;
 			List<IParameter> p = new List<IParameter>();
 			for (int i = 0; i < dimensions; ++i) {
-				p.Add(new DefaultParameter("index", intRT, null));
+				p.Add(new DefaultParameter("index", ReflectionReturnType.Int, null));
 			}
 			List<IIndexer> l = new List<IIndexer>();
-			l.Add(new DefaultIndexer(elementType, p, ModifierEnum.Public, null, null, arr));
+			l.Add(new DefaultIndexer(elementType, p, ModifierEnum.Public, null, null, BaseType.GetUnderlyingClass()));
 			return l;
 		}
 		
@@ -88,6 +86,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		/// <summary>
+		/// Appends the array characters ([,,,]) to the string <paramref name="a"/>.
+		/// </summary>
 		string AppendArrayString(string a)
 		{
 			StringBuilder b = new StringBuilder(a, a.Length + 1 + dimensions);

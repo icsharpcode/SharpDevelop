@@ -24,32 +24,61 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(PrimitiveExpression primitiveExpression, object data)
 		{
 			if (primitiveExpression.Value != null) {
-				return CreateReturnType(primitiveExpression.Value.GetType());
+				return ReflectionReturnType.CreatePrimitive(primitiveExpression.Value.GetType());
 			}
 			return null;
 		}
 		
 		public override object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
-			// TODO : Operators
-			return binaryOperatorExpression.Left.AcceptVisitor(this, data);
+			switch (binaryOperatorExpression.Op) {
+				case BinaryOperatorType.AsCast:
+					return binaryOperatorExpression.Right.AcceptVisitor(this, data);
+				case BinaryOperatorType.DivideInteger:
+					return ReflectionReturnType.Int;
+				case BinaryOperatorType.Concat:
+					return ReflectionReturnType.String;
+				case BinaryOperatorType.Equality:
+				case BinaryOperatorType.InEquality:
+				case BinaryOperatorType.ReferenceEquality:
+				case BinaryOperatorType.ReferenceInequality:
+				case BinaryOperatorType.TypeCheck:
+				case BinaryOperatorType.LogicalAnd:
+				case BinaryOperatorType.LogicalOr:
+				case BinaryOperatorType.LessThan:
+				case BinaryOperatorType.LessThanOrEqual:
+				case BinaryOperatorType.GreaterThan:
+				case BinaryOperatorType.GreaterThanOrEqual:
+					return ReflectionReturnType.Bool;
+				default:
+					return binaryOperatorExpression.Left.AcceptVisitor(this, data);
+			}
 		}
 		
 		public override object Visit(ParenthesizedExpression parenthesizedExpression, object data)
 		{
-			if (parenthesizedExpression == null) {
-				return null;
-			}
 			return parenthesizedExpression.Expression.AcceptVisitor(this, data);
 		}
 		
 		public override object Visit(InvocationExpression invocationExpression, object data)
 		{
 			IMethod m = GetMethod(invocationExpression, data);
-			if (m == null)
-				return null;
-			else
+			if (m == null) {
+				// This might also be a delegate invocation:
+				// get the delegate's Invoke method
+				IReturnType targetType = invocationExpression.TargetObject.AcceptVisitor(this, data) as IReturnType;
+				if (targetType != null) {
+					IClass c = targetType.GetUnderlyingClass();
+					if (c != null && c.ClassType == ClassType.Delegate) {
+						// find the delegate's return type
+						m = c.Methods.Find(delegate(IMethod innerMethod) { return innerMethod.Name == "Invoke"; });
+					}
+				}
+			}
+			if (m != null)
 				return m.ReturnType;
+			else
+				return null;
 		}
 		
 		public IMethod FindOverload(ArrayList methods, ArrayList arguments, object data)
@@ -114,16 +143,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				InjectMethodTypeParameters(methods, invocationExpression);
 				return FindOverload(methods, invocationExpression.Parameters, data);
 			}
-			// invocationExpression is delegate call
-			IReturnType t = invocationExpression.AcceptChildren(this, data) as IReturnType;
-			if (t == null) {
-				return null;
-			}
-			IClass c = resolver.SearchType(t.FullyQualifiedName, resolver.CallingClass, resolver.CompilationUnit);
-			if (c.ClassType == ClassType.Delegate) {
-				ArrayList methods = resolver.SearchMethod(t, "Invoke");
-				return FindOverload(methods, invocationExpression.Parameters, data);
-			}
 			return null;
 		}
 		
@@ -133,7 +152,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (invocationExpression.TypeParameters.Count == 0) return;
 			List<IReturnType> typeParameters = CreateReturnType(invocationExpression.TypeParameters);
 			for (int i = 0; i < methods.Count; ++i) {
-				IMethod m = (IMethod)methods[i];
+				IMethod m = methods[i] as IMethod;
+				if (m == null) continue; // ignore Events
 				if (m.TypeParameters.Count == 0) {
 					m = null; // this is not the correct overload, ignore this method
 				} else {
@@ -362,7 +382,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		List<IReturnType> CreateReturnType(List<TypeReference> references)
 		{
-			return references.ConvertAll<IReturnType>(new Converter<TypeReference, IReturnType>(CreateReturnType));
+			return references.ConvertAll<IReturnType>(CreateReturnType);
 		}
 		
 		IReturnType CreateReturnType(TypeReference reference)
@@ -406,7 +426,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			if (t == null) {
-				t = new SearchClassReturnType(callingClass, caretLine, caretColumn, reference.SystemType);
+				if (reference.Type != reference.SystemType) {
+					// keyword-type like void, int, string etc.
+					t = ProjectContentRegistry.GetMscorlibContent().GetClass(reference.SystemType).DefaultReturnType;
+				} else {
+					t = new SearchClassReturnType(callingClass, caretLine, caretColumn, reference.SystemType);
+				}
 			}
 			if (reference.GenericTypes.Count > 0) {
 				List<IReturnType> para = new List<IReturnType>(reference.GenericTypes.Count);
@@ -460,13 +485,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		IReturnType CreateReturnType(Type type)
+		static IReturnType CreateReturnType(Type type)
 		{
-			if (ReflectionReturnType.IsDefaultType(type)) {
-				IClass c = resolver.ProjectContent.GetClass(type.FullName);
-				if (c != null) return c.DefaultReturnType;
-			}
-			return ReflectionReturnType.Create(ProjectContentRegistry.GetMscorlibContent(), type);
+			return ReflectionReturnType.Create(ProjectContentRegistry.GetMscorlibContent(), type, false);
 		}
 	}
 }

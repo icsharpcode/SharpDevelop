@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -362,6 +362,8 @@ namespace VBNetBinding
 			if (ShowModifiers) {
 				builder.Append(GetModifier(e));
 			}
+			
+			builder.Append("Event ");
 			
 			if (IncludeHTMLMarkup) {
 				builder.Append("<b>");

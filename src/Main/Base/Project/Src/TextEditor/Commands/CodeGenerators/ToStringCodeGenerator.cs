@@ -14,7 +14,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	public class ToStringCodeGenerator : CodeGenerator
+	public class ToStringCodeGenerator : AbstractFieldCodeGenerator
 	{
 		public override string CategoryName {
 			get {
@@ -36,9 +36,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public ToStringCodeGenerator(IClass currentClass) : base(currentClass)
 		{
-			foreach (IField field in currentClass.Fields) {
-				Content.Add(new FieldWrapper(field));
-			}
 		}
 		
 		protected override void StartGeneration(IList items, string fileExtension)
@@ -107,30 +104,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 			++numOps;
 			Return();
-		}
-
-		class FieldWrapper
-		{
-			IField field;
-			
-			public IField Field {
-				get {
-					return field;
-				}
-			}
-			
-			public FieldWrapper(IField field)
-			{
-				this.field = field;
-			}
-			
-			public override string ToString()
-			{
-				
-				IAmbience ambience = AmbienceService.CurrentAmbience;
-				ambience.ConversionFlags = ConversionFlags.None;
-				return ambience.Convert(field);
-			}
 		}
 	}
 }

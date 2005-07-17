@@ -142,7 +142,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void CSharpISTest()
 		{
 			BinaryOperatorExpression boe = (BinaryOperatorExpression)ParseUtilCSharp.ParseExpression("a is b", typeof(BinaryOperatorExpression));
-			Assert.AreEqual(BinaryOperatorType.IS, boe.Op);
+			Assert.AreEqual(BinaryOperatorType.TypeCheck, boe.Op);
 			
 			Assert.IsTrue(boe.Left is IdentifierExpression);
 			Assert.IsTrue(boe.Right is TypeReferenceExpression);
@@ -152,7 +152,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void CSharpASTest()
 		{
 			BinaryOperatorExpression boe = (BinaryOperatorExpression)ParseUtilCSharp.ParseExpression("a as b", typeof(BinaryOperatorExpression));
-			Assert.AreEqual(BinaryOperatorType.AS, boe.Op);
+			Assert.AreEqual(BinaryOperatorType.AsCast, boe.Op);
 			
 			Assert.IsTrue(boe.Left is IdentifierExpression);
 			Assert.IsTrue(boe.Right is TypeReferenceExpression);
@@ -298,13 +298,13 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetISTest()
 		{
-			VBNetTestBinaryOperatorExpressionTest("a is b", BinaryOperatorType.IS);
+			VBNetTestBinaryOperatorExpressionTest("a is b", BinaryOperatorType.ReferenceEquality);
 		}
 		
 		[Test]
 		public void VBNetISNotTest()
 		{
-			VBNetTestBinaryOperatorExpressionTest("a IsNot b", BinaryOperatorType.IsNot);
+			VBNetTestBinaryOperatorExpressionTest("a IsNot b", BinaryOperatorType.ReferenceInequality);
 		}
 		
 		[Test]

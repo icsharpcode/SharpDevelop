@@ -58,14 +58,18 @@ namespace ICSharpCode.SharpDevelop.Commands
 			if (member is IField) {
 				string propertyName = AbstractPropertyCodeGenerator.GetPropertyName(member.Name);
 				LanguageProperties language = member.DeclaringType.ProjectContent.Language;
-				bool found = false;
+				IProperty foundProperty = null;
 				foreach (IProperty prop in member.DeclaringType.Properties) {
 					if (language.NameComparer.Equals(propertyName, prop.Name)) {
-						found = true;
+						foundProperty = prop;
 						break;
 					}
 				}
-				if (!found) {
+				if (foundProperty != null) {
+					cmd = new MenuCommand("Go to &property", GotoProperty);
+					cmd.Tag = member;
+					list.Add(cmd);
+				} else {
 					cmd = new MenuCommand("Create &getter", CreateGetter);
 					cmd.Tag = member;
 					list.Add(cmd);
@@ -78,11 +82,38 @@ namespace ICSharpCode.SharpDevelop.Commands
 			return list.ToArray();
 		}
 		
+		TextEditorControl JumpToDefinition(IMember member)
+		{
+			IViewContent viewContent = null;
+			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
+			if (cu != null) {
+				string fileName = cu.FileName;
+				if (fileName != null) {
+					if (member.Region != null && member.Region.BeginLine > 0) {
+						viewContent = FileService.JumpToFilePosition(fileName, member.Region.BeginLine - 1, member.Region.BeginColumn - 1);
+					} else {
+						FileService.OpenFile(fileName);
+					}
+				}
+			}
+			ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider tecp = viewContent as ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider;
+			return (tecp == null) ? null : tecp.TextEditorControl;
+		}
+		
 		TextEditorControl JumpBehindDefinition(IMember member)
 		{
-			IViewContent viewContent;
-			viewContent = FileService.JumpToFilePosition(member.DeclaringType.CompilationUnit.FileName,
-			                                             member.Region.EndLine, 0);
+			IViewContent viewContent = null;
+			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
+			if (cu != null) {
+				string fileName = cu.FileName;
+				if (fileName != null) {
+					if (member.Region != null && member.Region.EndLine > 0) {
+						viewContent = FileService.JumpToFilePosition(fileName, member.Region.EndLine, 0);
+					} else {
+						FileService.OpenFile(fileName);
+					}
+				}
+			}
 			ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider tecp = viewContent as ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider;
 			return (tecp == null) ? null : tecp.TextEditorControl;
 		}
@@ -117,24 +148,27 @@ namespace ICSharpCode.SharpDevelop.Commands
 			generator.GenerateCode(textEditor.ActiveTextAreaControl.TextArea, list);
 		}
 		
+		void GotoProperty(object sender, EventArgs e)
+		{
+			MenuCommand item = (MenuCommand)sender;
+			IMember member = (IMember)item.Tag;
+			string propertyName = AbstractPropertyCodeGenerator.GetPropertyName(member.Name);
+			LanguageProperties language = member.DeclaringType.ProjectContent.Language;
+			foreach (IProperty prop in member.DeclaringType.Properties) {
+				if (language.NameComparer.Equals(propertyName, prop.Name)) {
+					JumpToDefinition(prop);
+					break;
+				}
+			}
+		}
+		
 		void GoToBase(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
 			IMember baseMember = RefactoringService.FindBaseMember(member);
 			if (baseMember != null) {
-				ICompilationUnit cu = baseMember.DeclaringType.CompilationUnit;
-				if (cu != null) {
-					string fileName = cu.FileName;
-					if (fileName != null) {
-						if (baseMember.Region != null && baseMember.Region.BeginLine > 0) {
-							FileService.JumpToFilePosition(fileName, baseMember.Region.BeginLine - 1, 0);
-						} else {
-							FileService.JumpToFilePosition(fileName, 0, 0);
-						}
-						return;
-					}
-				}
+				JumpToDefinition(baseMember);
 			}
 		}
 		

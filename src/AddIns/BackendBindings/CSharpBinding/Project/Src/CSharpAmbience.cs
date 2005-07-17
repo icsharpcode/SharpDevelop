@@ -359,6 +359,8 @@ namespace ICSharpCode.Core
 				builder.Append(GetModifier(e));
 			}
 			
+			builder.Append("event ");
+			
 			if (e.ReturnType != null && ShowReturnType) {
 				builder.Append(Convert(e.ReturnType));
 				builder.Append(' ');

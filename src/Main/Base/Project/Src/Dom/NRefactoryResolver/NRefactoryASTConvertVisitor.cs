@@ -336,7 +336,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			invokeMethod.Parameters.Add(new DefaultParameter("callback", CreateReturnType(typeof(AsyncCallback)), null));
-			invokeMethod.Parameters.Add(new DefaultParameter("object", CreateReturnType(typeof(object)), null));
+			invokeMethod.Parameters.Add(new DefaultParameter("object", ReflectionReturnType.Object, null));
 			c.Methods.Add(invokeMethod);
 			invokeMethod = new DefaultMethod("EndInvoke", CreateReturnType(delegateDeclaration.ReturnType), ModifierEnum.Public, null, null, c);
 			invokeMethod.Parameters.Add(new DefaultParameter("result", CreateReturnType(typeof(IAsyncResult)), null));
@@ -510,7 +510,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IReturnType CreateReturnType(Type type)
 		{
-			return ReflectionReturnType.Create(ProjectContentRegistry.GetMscorlibContent(), type);
+			return ReflectionReturnType.Create(ProjectContentRegistry.GetMscorlibContent(), type, false);
 		}
 	}
 }

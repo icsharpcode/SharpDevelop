@@ -57,9 +57,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public IReturnType DefaultReturnType {
 			get {
 				if (defaultReturnType == null)
-					defaultReturnType = new DefaultReturnType(this);
+					defaultReturnType = CreateDefaultReturnType();
 				return defaultReturnType;
 			}
+		}
+		
+		protected virtual IReturnType CreateDefaultReturnType()
+		{
+			return new DefaultReturnType(this);
 		}
 		
 		public ICompilationUnit CompilationUnit {
@@ -285,16 +290,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (possibleBaseClass == null) {
 				return false;
 			}
-			
 			if (FullyQualifiedName == possibleBaseClass.FullyQualifiedName) {
 				return true;
 			}
-			
-			foreach (string baseClassName in BaseTypes) {
-				IClass baseClass = ProjectContent.SearchType(baseClassName, this, CompilationUnit, Region != null ? Region.BeginLine : -1, Region != null ? Region.BeginColumn : -1);
-				if (baseClass != null && baseClass.IsTypeInInheritanceTree(possibleBaseClass)) {
+			foreach (IClass baseClass in this.ClassInheritanceTree) {
+				if (possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName)
 					return true;
-				}
 			}
 			return false;
 		}

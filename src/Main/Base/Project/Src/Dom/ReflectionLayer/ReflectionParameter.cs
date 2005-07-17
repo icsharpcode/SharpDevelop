@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override IReturnType ReturnType {
 			get {
-				return ReflectionReturnType.Create(member, parameterInfo.ParameterType);
+				return ReflectionReturnType.Create(member, parameterInfo.ParameterType, false);
 			}
 			set {
 			}
