@@ -45,10 +45,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-
-			debugger.Initialize += delegate {
-				InitializeDebugger();
-			};
 			
 			exceptionHistoryList = new ListView();
 			exceptionHistoryList.FullRowSelect = true;
@@ -65,6 +61,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			time.Width = 80;
 			
 			RedrawContent();
+
+			if (debugger.ServiceInitialized) {
+				InitializeDebugger();
+			} else {
+				debugger.Initialize += delegate {
+					InitializeDebugger();
+				};
+			}
 		}
 
 		public void InitializeDebugger()

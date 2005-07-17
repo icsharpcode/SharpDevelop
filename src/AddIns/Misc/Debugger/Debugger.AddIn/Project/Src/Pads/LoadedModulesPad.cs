@@ -50,10 +50,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-
-			debugger.Initialize += delegate {
-				InitializeDebugger();
-			};
 			
 			loadedModulesList = new ListView();
 			loadedModulesList.FullRowSelect = true;
@@ -74,6 +70,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			information.Width = 130;
 
 			RedrawContent();
+
+			if (debugger.ServiceInitialized) {
+				InitializeDebugger();
+			} else {
+				debugger.Initialize += delegate {
+					InitializeDebugger();
+				};
+			}
 		}
 
 		public void InitializeDebugger()

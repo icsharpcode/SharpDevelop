@@ -45,10 +45,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-
-			debugger.Initialize += delegate {
-				InitializeDebugger();
-			};
 			
 			ImageList imageList = new ImageList();
 			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.Class"));
@@ -72,6 +68,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.BeforeExpand += new TreeListViewCancelEventHandler(localVarList_BeforeExpand);
 			
 			RedrawContent();
+
+			if (debugger.ServiceInitialized) {
+				InitializeDebugger();
+			} else {
+				debugger.Initialize += delegate {
+					InitializeDebugger();
+				};
+			}
 		}
 
 		public void InitializeDebugger()

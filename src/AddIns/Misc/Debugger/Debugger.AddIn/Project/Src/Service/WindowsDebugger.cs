@@ -117,6 +117,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		MessageViewCategory messageViewCategoryDebuggerLog;
 		public Thread selectedThread;
 		public Function selectedFunction;
+
+		public bool ServiceInitialized {
+			get {
+				return serviceInitialized;
+			}
+		}
 		
 		public bool CanDebug(IProject project)
 		{

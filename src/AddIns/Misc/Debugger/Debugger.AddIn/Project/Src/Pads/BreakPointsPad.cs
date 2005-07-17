@@ -45,10 +45,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
 
-			debugger.Initialize += delegate {
-				InitializeDebugger();
-			};
-
 			breakpointsList = new ListView();
 			breakpointsList.FullRowSelect = true;
 			breakpointsList.AutoArrange = true;
@@ -65,6 +61,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			path.Width = 400;
 
 			RedrawContent();
+
+			if (debugger.ServiceInitialized) {
+				InitializeDebugger();
+			} else {
+				debugger.Initialize += delegate {
+					InitializeDebugger();
+				};
+			}
 		}
 
 		public void InitializeDebugger()

@@ -45,10 +45,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
 
-			debugger.Initialize += delegate {
-				InitializeDebugger();
-			};
-
 			callStackList = new ListView();
 			callStackList.FullRowSelect = true;
 			callStackList.AutoArrange = true;
@@ -63,6 +59,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			language.Width = 400;
 
 			RedrawContent();
+
+			if (debugger.ServiceInitialized) {
+				InitializeDebugger();
+			} else {
+				debugger.Initialize += delegate {
+					InitializeDebugger();
+				};
+			}
 		}
 
 		public void InitializeDebugger()

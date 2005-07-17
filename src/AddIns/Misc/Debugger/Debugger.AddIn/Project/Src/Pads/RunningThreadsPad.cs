@@ -47,10 +47,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-
-			debugger.Initialize += delegate {
-				InitializeDebugger();
-			};
 			
 			runningThreadsList = new ListView();
 			runningThreadsList.FullRowSelect = true;
@@ -69,6 +65,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			breaked.Width = 80;
 			
 			RedrawContent();
+
+			if (debugger.ServiceInitialized) {
+				InitializeDebugger();
+			} else {
+				debugger.Initialize += delegate {
+					InitializeDebugger();
+				};
+			}
 		}
 
 		public void InitializeDebugger()
