@@ -54,6 +54,8 @@
     <Compile Include="Src\Debugger\Internal\NativeMethods.cs" />
     <Compile Include="Src\Debugger\MetaData\FieldProps.cs" />
     <Compile Include="Src\Debugger\MetaData\MetaData.cs" />
+    <Compile Include="Src\Debugger\MetaData\MethodProps.cs" />
+    <Compile Include="Src\Debugger\MetaData\ParamProps.cs" />
     <Compile Include="Src\Debugger\MetaData\TypeDefProps.cs" />
     <Compile Include="Src\Debugger\MetaData\TypeRefProps.cs" />
     <Compile Include="Src\Debugger\NDebugger.cs" />
