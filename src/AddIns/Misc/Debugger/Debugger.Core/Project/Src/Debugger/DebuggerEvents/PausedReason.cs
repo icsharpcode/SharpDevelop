@@ -13,6 +13,7 @@ namespace DebuggerLibrary
 		Exception,
 		DebuggerError,
         EvalComplete,
-		CurrentThreadChanged
+		CurrentThreadChanged,
+		CurrentFunctionChanged
 	}
 }

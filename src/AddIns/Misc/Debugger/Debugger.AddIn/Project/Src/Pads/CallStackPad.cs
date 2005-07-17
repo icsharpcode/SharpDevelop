@@ -87,8 +87,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void CallStackListItemActivate(object sender, EventArgs e)
 		{
-			debugger.selectedFunction = (Function)(callStackList.SelectedItems[0].Tag);
-			debugger.JumpToCurrentLine();
+			if (!debuggerCore.IsProcessRunning) {
+				debuggerCore.CurrentThread.CurrentFunction = (Function)(callStackList.SelectedItems[0].Tag);
+			}
 		}
 
 		public void DebuggerStateChanged(object sender, DebuggerEventArgs e)
@@ -100,8 +101,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			callStackList.BeginUpdate();
 			callStackList.Items.Clear();
-			if (debugger.IsProcessRunning == false && debugger.selectedThread != null) {
-				foreach (Function f in debugger.selectedThread.Callstack) {
+			if (debugger.IsProcessRunning == false && debuggerCore.CurrentThread != null) {
+				foreach (Function f in debuggerCore.CurrentThread.Callstack) {
 					ListViewItem item = new ListViewItem(new string[] { f.Name, "" });
 					item.Tag = f;
 					item.ForeColor = f.Module.SymbolsLoaded ? Color.Black : Color.Gray;

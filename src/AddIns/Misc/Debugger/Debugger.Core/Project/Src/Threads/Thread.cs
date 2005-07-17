@@ -26,6 +26,8 @@ namespace DebuggerLibrary
 		string lastName = string.Empty;
 		bool hasBeenLoaded = false;
 
+		Function currentFunction;
+
 		internal bool HasBeenLoaded {
 			get {
 				return hasBeenLoaded;
@@ -181,17 +183,24 @@ namespace DebuggerLibrary
 		public Function CurrentFunction {
 			get {
 				if (debugger.IsProcessRunning) throw new CurrentFunctionNotAviableException();
-				ICorDebugFrame corFrame;
-				corThread.GetActiveFrame(out corFrame);
-				if (corFrame == null) {
-					List<Function> callstack = Callstack;
-					if (callstack.Count > 0) {
-						return callstack[0];
-					} else {
-						throw new CurrentFunctionNotAviableException();
+				return currentFunction;
+			}
+			set {
+				currentFunction = value;
+				if (debugger.ManagedCallback.HandlingCallback == false) {
+					debugger.OnDebuggingPaused(PausedReason.CurrentFunctionChanged);
+				}
+			}
+		}
+
+		public Function LastFunctionWithLoadedSymbols {
+			get {
+				foreach (Function function in Callstack) {
+					if (function.Module.SymbolsLoaded) {
+						return function;
 					}
 				}
-				return new Function(debugger, corFrame);
+				return null;
 			}
 		}
 	}

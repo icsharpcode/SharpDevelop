@@ -18,7 +18,6 @@ namespace DebuggerLibrary
 
 		ICorDebugProcess corProcess;
 
-		Thread mainThread;
 		Thread currentThread;
 		bool isProcessRunning;
 
@@ -38,26 +37,13 @@ namespace DebuggerLibrary
 			get {
 				if (IsProcessRunning) throw new CurrentThreadNotAviableException();
 				if (currentThread != null) return currentThread;
-				if (mainThread != null) return mainThread;
 				throw new CurrentThreadNotAviableException();
 			}
 			set	{
 				currentThread = value;
-				if (mainThread == null) {
-					mainThread = value;
-				}
 				if (debugger.ManagedCallback.HandlingCallback == false) {
 					debugger.OnDebuggingPaused(PausedReason.CurrentThreadChanged);
 				}
-			}
-		}
-
-		public Thread MainThread {
-			get {
-				return mainThread;
-			}
-			set {
-				mainThread = value;
 			}
 		}
 		

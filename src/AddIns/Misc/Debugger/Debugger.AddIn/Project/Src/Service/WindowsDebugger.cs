@@ -115,8 +115,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		MessageViewCategory messageViewCategoryDebug;
 		MessageViewCategory messageViewCategoryDebuggerLog;
-		public Thread selectedThread;
-		public Function selectedFunction;
 
 		public bool ServiceInitialized {
 			get {
@@ -381,16 +379,11 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 			}
 			
-			try {
-				SelectThread(debugger.CurrentThread);
-			} catch (CurrentThreadNotAviableException) {}
 			JumpToCurrentLine();
 		}
 		
 		void DebuggingResumed(object sender, DebuggerEventArgs e)
 		{
-			selectedThread = null;
-			selectedFunction = null;
 			DebuggerService.RemoveCurrentLineMarker();
 		}
 		
@@ -399,34 +392,12 @@ namespace ICSharpCode.SharpDevelop.Services
 			exceptionHistory.Clear();
 			//DebuggerService.Stop();//TODO: delete
 		}
-		
-		public void SelectThread(Thread thread) 
-		{
-			selectedThread = thread;
-			try {
-				selectedFunction = thread.CurrentFunction;
-				// Prefer first function on callstack that has symbols (source code)
-				if (selectedFunction.Module.SymbolsLoaded == false) {
-					foreach (Function f in thread.Callstack) {
-						if (f.Module.SymbolsLoaded) {
-							selectedFunction = f;
-							break;
-						}
-					}
-				}
-			} catch (CurrentFunctionNotAviableException) {}
-		}
-		
-
 
 		public void JumpToCurrentLine()
 		{
 			//StatusBarService.SetMessage("Source code not aviable!");
 			try {
-				if (selectedFunction == null) {
-					return;
-				}
-				SourcecodeSegment nextStatement = selectedFunction.NextStatement;
+				SourcecodeSegment nextStatement = debugger.NextStatement;
 				DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
 
 				string stepRanges = "";

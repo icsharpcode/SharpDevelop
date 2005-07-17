@@ -328,16 +328,6 @@ namespace DebuggerLibrary
 			}
 		}
 
-		public Thread MainThread {
-			get {
-				if (!IsDebugging) return null;
-				return CurrentProcess.MainThread;
-			}
-			set {
-				CurrentProcess.MainThread = value;
-			}
-		}
-
 		public SourcecodeSegment NextStatement { 
 			get {
 				if (!IsDebugging) return null;

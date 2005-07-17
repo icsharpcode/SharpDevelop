@@ -56,6 +56,7 @@ namespace DebuggerLibrary
 		
 		void ExitCallback_Paused(PausedReason reason)
 		{
+			debugger.CurrentThread.CurrentFunction = debugger.CurrentThread.LastFunctionWithLoadedSymbols;
 			if (reason != PausedReason.EvalComplete) {
 				debugger.OnDebuggingPaused(reason);
 				debugger.OnIsProcessRunningChanged();
@@ -256,10 +257,6 @@ namespace DebuggerLibrary
 
 			debugger.AddThread(pThread);
 
-			if (debugger.MainThread == null) {
-				debugger.MainThread = debugger.GetThread(pThread);
-			}
-
 			ExitCallback_Continue(pAppDomain);
 		}
 
@@ -305,9 +302,6 @@ namespace DebuggerLibrary
 
 			if (debugger.CurrentThread == thread)
 				debugger.CurrentThread = null;
-
-			if (debugger.MainThread == thread)
-				debugger.MainThread = null;
 
 			debugger.RemoveThread(thread);
 

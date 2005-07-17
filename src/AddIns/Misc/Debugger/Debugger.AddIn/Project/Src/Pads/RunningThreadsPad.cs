@@ -98,10 +98,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 		void RunningThreadsListItemActivate(object sender, EventArgs e)
 		{
-			debugger.SelectThread((Thread)(runningThreadsList.SelectedItems[0].Tag));
-			debugger.JumpToCurrentLine();
-			CallStackPad callStackPad = (CallStackPad)WorkbenchSingleton.Workbench.GetPad(typeof(CallStackPad)).PadContent;
-			callStackPad.RefreshList();
+			if (!debugger.IsProcessRunning) {
+				debuggerCore.CurrentThread = (Thread)(runningThreadsList.SelectedItems[0].Tag);
+			}
 		}
 
 
