@@ -19,17 +19,15 @@ namespace DebuggerLibrary
 	{	
 		NDebugger debugger;
 
-		string name;
 		Module module;
-		SymbolToken token;
-		uint parentClassToken = 0;
-		uint attributes;
 		ICorDebugFrame    corFrame;
-		ICorDebugFunction corFunction;		
+		ICorDebugFunction corFunction;
+
+		MethodProps methodProps;
 
 		public string Name { 
 			get { 
-				return name; 
+				return methodProps.Name; 
 			} 
 		}
 		
@@ -41,13 +39,7 @@ namespace DebuggerLibrary
 
 		public bool IsStatic {
 			get {
-				return (attributes & (uint)CorMethodAttr.mdStatic) != 0;
-			}
-		}
-
-		public uint Token {
-			get {
-				return (uint)token.GetToken();
+				return methodProps.IsStatic;
 			}
 		}
 
@@ -78,56 +70,12 @@ namespace DebuggerLibrary
 			corFrame.GetFunction(out corFunction);
             uint functionToken;
 			corFunction.GetToken(out functionToken);
-            this.token = new SymbolToken((int)functionToken);
 			ICorDebugModule corModule;
 			corFunction.GetModule(out corModule);
 			module = debugger.GetModule(corModule);
 
-			Init();
+			methodProps = module.MetaData.GetMethodProps(functionToken);
 		}
-		
-		unsafe void Init()
-		{
-			uint pStringLenght = 0; // Terminating character included in pStringLenght
-			IntPtr pString = IntPtr.Zero;
-			uint codeRVA;
-			uint implFlags;
-			IntPtr pSigBlob;
-			uint sigBlobSize;
-			module.MetaDataInterface.GetMethodProps(
-			                              Token,
-                                          out parentClassToken,
-                                          pString,
-                                          pStringLenght,
-										  out pStringLenght, // real string lenght
-                                          out attributes,
-                                          new IntPtr(&pSigBlob),
-                                          out sigBlobSize,
-                                          out codeRVA,
-                                          out implFlags);
-			// Allocate string buffer
-			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
-
-			module.MetaDataInterface.GetMethodProps(
-			                              Token,
-                                          out parentClassToken,
-                                          pString,
-                                          pStringLenght,
-										  out pStringLenght, // real string lenght
-                                          out attributes,
-                                          new IntPtr(&pSigBlob),
-                                          out sigBlobSize,
-                                          out codeRVA,
-                                          out implFlags);
-
-			name = Marshal.PtrToStringUni(pString);
-			Marshal.FreeHGlobal(pString);
-			
-			SignatureStream sig = new SignatureStream(pSigBlob, sigBlobSize);
-			
-			//Marshal.FreeCoTaskMem(pSigBlob);
-		}
-
 
 		#region Helpping proprerties
 
@@ -158,7 +106,7 @@ namespace DebuggerLibrary
 
 		internal ISymbolMethod symMethod {
 			get	{
-				return symReader.GetMethod(token);
+				return symReader.GetMethod(new SymbolToken((int)methodProps.Token));
 			}
 		}
 
@@ -344,42 +292,7 @@ namespace DebuggerLibrary
 
 		public string GetParameterName(int index)
 		{
-			uint paramToken = 0;
-
-			Module.MetaDataInterface.GetParamForMethodIndex(Token, (uint)index, ref paramToken);
-
-			uint unused;
-			uint pStringLenght = 0; // Terminating character included in pStringLenght
-			IntPtr pString = IntPtr.Zero;
-			uint argPos, attr, type;
-			Module.MetaDataInterface.GetParamProps(paramToken,
-			                                       out unused,
-			                                       out argPos,
-			                                       pString,
-			                                       pStringLenght,
-			                                       out pStringLenght, // real string lenght
-			                                       out attr,
-			                                       out type,
-			                                       IntPtr.Zero,
-			                                       out unused);
-			// Allocate string buffer
-			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
-			
-			Module.MetaDataInterface.GetParamProps(paramToken,
-			                                       out unused,
-			                                       out argPos,
-			                                       pString,
-			                                       pStringLenght,
-			                                       out pStringLenght, // real string lenght
-			                                       out attr,
-			                                       out type,
-			                                       IntPtr.Zero,
-			                                       out unused);
-
-			string name = Marshal.PtrToStringUni(pString);
-			Marshal.FreeHGlobal(pString);
-
-			return name;
+			return module.MetaData.GetParamForMethodIndex(methodProps.Token, (uint)index).Name;
 		}
 
 		public int GetArgumentCount {
@@ -421,64 +334,15 @@ namespace DebuggerLibrary
 			return localVariables;
 		}
 
-		string GetMethodName(uint methodToken, out uint attrib)
-		{
-			uint unused;
-			uint pStringLenght = 0; // Terminating character included in pStringLenght
-			IntPtr pString = IntPtr.Zero;
-			module.MetaDataInterface.GetMethodProps(
-			                                        methodToken,
-			                                        out unused,
-			                                        pString,
-			                                        pStringLenght,
-			                                        out pStringLenght, // real string lenght
-			                                        out attrib,
-			                                        IntPtr.Zero,
-			                                        out unused,
-			                                        out unused,
-			                                        out unused);
-
-			// Allocate string buffer
-			pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
-
-			module.MetaDataInterface.GetMethodProps(
-			                                        methodToken,
-			                                        out unused,
-			                                        pString,
-			                                        pStringLenght,
-			                                        out pStringLenght, // real string lenght
-			                                        out attrib,
-			                                        IntPtr.Zero,
-			                                        out unused,
-			                                        out unused,
-			                                        out unused);
-
-			string name = Marshal.PtrToStringUni(pString);
-			Marshal.FreeHGlobal(pString);
-
-			return name;
-		}
-
 		VariableCollection GetPropertyVariables()	
 		{
 			VariableCollection properties = new VariableCollection();
 
-			IntPtr methodEnumPtr = IntPtr.Zero;
-			while(true) {
-				uint methodToken;
-				uint methodsFetched;
-				Module.MetaDataInterface.EnumMethods(ref methodEnumPtr, parentClassToken, out methodToken, 1, out methodsFetched);
-				if (methodsFetched == 0) break;
-
-				uint attrib;
-				string name = GetMethodName(methodToken, out attrib);
-
-				if (name.StartsWith("get_") && (attrib & (uint)CorMethodAttr.mdSpecialName) != 0) {
-					name = name.Remove(0,4);
-					
+			foreach(MethodProps method in module.MetaData.EnumMethods(methodProps.ClassToken)) {
+				if (method.Name.StartsWith("get_") && method.HasSpecialName) {					
 					ICorDebugValue[] evalArgs;
 					ICorDebugFunction evalCorFunction;
-					Module.CorModule.GetFunctionFromToken(methodToken, out evalCorFunction);
+					Module.CorModule.GetFunctionFromToken(method.Token, out evalCorFunction);
 					if (IsStatic) {
 						evalArgs = new ICorDebugValue[0];
 					} else {
@@ -486,7 +350,7 @@ namespace DebuggerLibrary
 					}
 					Eval eval = new Eval(debugger, evalCorFunction, evalArgs);
 					debugger.EvalQueue.AddEval(eval);
-					properties.Add(new PropertyVariable(debugger, eval, name));
+					properties.Add(new PropertyVariable(debugger, eval, method.Name.Remove(0, 4)));
 				}
 			}
 

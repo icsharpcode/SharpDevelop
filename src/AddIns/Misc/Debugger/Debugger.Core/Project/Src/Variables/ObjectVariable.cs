@@ -115,9 +115,8 @@ namespace DebuggerLibrary
 					//       see FindTypeDefByName in dshell.cpp
 					// TODO: preservesig
 					try	{
-						m.MetaDataInterface.FindTypeDefByName(fullTypeName, 0, out classProps.SuperClassToken);
-					}
-					catch {
+						classProps.SuperClassToken = m.MetaData.FindTypeDefByName(fullTypeName, 0).Token;
+					} catch {
 						continue;
 					}
 					corModuleSuperclass = m.CorModule;

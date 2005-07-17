@@ -23,12 +23,6 @@ namespace DebuggerLibrary
 		ISymbolReader symReader;
 		object pMetaDataInterface;
 		IMetaDataImport metaDataInterface;
-		
-		public IMetaDataImport MetaDataInterface {
-			get {
-				return metaDataInterface;
-			}
-		}
 
 		internal MetaData MetaData {
 			get {
