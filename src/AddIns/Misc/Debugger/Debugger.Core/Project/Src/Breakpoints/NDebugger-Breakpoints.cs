@@ -62,7 +62,7 @@ namespace DebuggerLibrary
 				}
 			}
 
-			throw new UnableToGetPropertyException(this, "GetBreakpoint(ICorDebugBreakpoint corBreakpoint)", "Breakpoint is not in collection");
+			throw new DebuggerException("Breakpoint is not in collection");
 		}
 
 		internal Breakpoint AddBreakpoint(Breakpoint breakpoint)  

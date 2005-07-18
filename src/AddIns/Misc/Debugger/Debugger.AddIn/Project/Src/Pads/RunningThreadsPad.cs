@@ -118,9 +118,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					item.Text = e.Thread.ID.ToString();
 					item.Tag = e.Thread;
 					item.SubItems.Add(e.Thread.Name);
-					try {
+					Function location = e.Thread.LastFunctionWithLoadedSymbols;
+					if (location != null) {
 						item.SubItems.Add(e.Thread.CurrentFunction.Name);
-					} catch (CurrentFunctionNotAviableException) {
+					} else {
 						item.SubItems.Add("N/A");
 					}
 					item.SubItems.Add(e.Thread.Priority.ToString());

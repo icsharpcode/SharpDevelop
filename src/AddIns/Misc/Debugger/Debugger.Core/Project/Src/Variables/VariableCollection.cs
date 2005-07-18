@@ -54,7 +54,7 @@ namespace DebuggerLibrary
 					}
 				}
 
-				throw new UnableToGetPropertyException(this, "this[string]", "Variable \"" + variableName + "\" is not in collection");
+				throw new DebuggerException("Variable \"" + variableName + "\" is not in collection");
 			}
 		}
 

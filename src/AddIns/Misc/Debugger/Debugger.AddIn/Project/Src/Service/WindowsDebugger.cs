@@ -396,19 +396,18 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		public void JumpToCurrentLine()
 		{
-			//StatusBarService.SetMessage("Source code not aviable!");
-			try {
-				SourcecodeSegment nextStatement = debugger.NextStatement;
-				DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
-
-				string stepRanges = "";
-				foreach (int i in nextStatement.StepRanges) {
-					stepRanges += i.ToString("X") + " ";
-				}
-				//StatusBarService.SetMessage("IL:" + nextStatement.ILOffset.ToString("X") + " StepRange:" + stepRanges + "    ");
-			} catch (NextStatementNotAviableException) {
-				System.Diagnostics.Debug.Fail("Source code not aviable!");
+			SourcecodeSegment nextStatement = debugger.NextStatement;
+			if (nextStatement == null) {
+				//StatusBarService.SetMessage("Source code not aviable!");
+				return;
 			}
+			DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
+
+			string stepRanges = "";
+			foreach (int i in nextStatement.StepRanges) {
+				stepRanges += i.ToString("X") + " ";
+			}
+			//StatusBarService.SetMessage("IL:" + nextStatement.ILOffset.ToString("X") + " StepRange:" + stepRanges + "    ");
 		}
 
 		void OnIsDebuggingChanged(object sender, DebuggerEventArgs e)

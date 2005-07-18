@@ -46,7 +46,7 @@ namespace DebuggerLibrary
 				}
 			}
 
-			throw new UnableToGetPropertyException(this, "GetModule(string filename)", "Module \"" + filename + "\" is not in collection");
+			throw new DebuggerException("Module \"" + filename + "\" is not in collection");
 		}
 
 		internal Module GetModule(ICorDebugModule corModule) 
@@ -57,7 +57,7 @@ namespace DebuggerLibrary
 				}
 			}
 
-			throw new UnableToGetPropertyException(this, "GetModule(ICorDebugModule corModule)", "Module is not in collection");
+			throw new DebuggerException("Module is not in collection");
 		}
 
 		internal void AddModule(Module module)

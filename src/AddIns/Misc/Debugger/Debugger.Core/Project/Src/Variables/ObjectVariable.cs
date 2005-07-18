@@ -87,7 +87,7 @@ namespace DebuggerLibrary
 		public unsafe ObjectVariable BaseClass {
 			get	{
 				if (baseClass == null) baseClass = GetBaseClass();
-				if (baseClass == null) throw new UnableToGetPropertyException(this, "BaseClass", "Object doesn't have a base class");
+				if (baseClass == null) throw new DebuggerException("Object doesn't have a base class. You may use HasBaseClass to check this.");
 				return baseClass;
 			}
 		}

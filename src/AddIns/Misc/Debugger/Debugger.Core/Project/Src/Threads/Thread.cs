@@ -91,17 +91,15 @@ namespace DebuggerLibrary
 			}
 		}
 
-
 		public Variable RuntimeVariable {
 			get {
-				if (!HasBeenLoaded) throw new UnableToGetPropertyException(this, "runtimeVariable", "Thread has not started jet");
-				if (debugger.IsProcessRunning) throw new UnableToGetPropertyException(this, "runtimeVariable", "Process is running");
+				if (!HasBeenLoaded) throw new DebuggerException("Thread has not started jet");
+				if (debugger.IsProcessRunning) throw new DebuggerException("Process is running");
 				ICorDebugValue corValue;
 				corThread.GetObject(out corValue);
 				return VariableFactory.CreateVariable(debugger, corValue, "Thread" + ID);
 			}
 		}
-
 
 		public string Name {
 			get	{
@@ -182,7 +180,7 @@ namespace DebuggerLibrary
 		
 		public Function CurrentFunction {
 			get {
-				if (debugger.IsProcessRunning) throw new CurrentFunctionNotAviableException();
+				if (debugger.IsProcessRunning) throw new DebuggerException("Process must not be running");
 				return currentFunction;
 			}
 			set {

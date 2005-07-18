@@ -98,8 +98,8 @@ namespace DebuggerLibrary
 
 		internal ISymbolReader symReader {
 			get	{
-				if (module.SymbolsLoaded == false) throw new SymbolsNotAviableException();
-				if (module.SymReader == null) throw new SymbolsNotAviableException();
+				if (module.SymbolsLoaded == false) return null;
+				if (module.SymReader == null) return null;
 				return module.SymReader;
 			}
 		}
@@ -139,12 +139,12 @@ namespace DebuggerLibrary
 			}
 
 			SourcecodeSegment nextSt;
-			try {
-				nextSt = NextStatement;// Cache
-			} catch (NextStatementNotAviableException) {
+				
+			nextSt = NextStatement;// Cache
+			if (nextSt == null) {
 				System.Diagnostics.Debug.Fail("Unable to step. Next statement not aviable");
 				return;
-			}			
+			}
 
 			ICorDebugStepper stepper;
 			corFrame.CreateStepper(out stepper);
@@ -167,14 +167,10 @@ namespace DebuggerLibrary
 		public SourcecodeSegment NextStatement {
 			get {
 				ISymbolMethod symMethod;
-				try {
-					symMethod = this.symMethod; 
-				}
-				catch (FrameNotAviableException) {
-					throw new NextStatementNotAviableException();
-				}
-				catch (SymbolsNotAviableException) {
-					throw new NextStatementNotAviableException();
+					
+				symMethod = this.symMethod; 
+				if (symMethod == null) {
+					return null;
 				}
 
                 int sequencePointCount = symMethod.SequencePointCount;
@@ -229,7 +225,7 @@ namespace DebuggerLibrary
 						}
 						// Wow, there are no 'real' sequences
 						if (startLine[i] == 0xFeeFee) {
-							throw new NextStatementNotAviableException();
+							return null;
 						}
 
 						retVal.ModuleFilename = module.FullPath;
@@ -266,7 +262,7 @@ namespace DebuggerLibrary
 
 						return retVal;
 					}			
-				throw new NextStatementNotAviableException();
+				return null;
 			}
 		}
 

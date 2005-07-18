@@ -39,7 +39,7 @@ namespace DebuggerLibrary
 					return process;
 				}
 			}
-			throw new DebuggerException("Process not found");
+			throw new DebuggerException("Process is not in collection");
 		}
 
 		internal void AddProcess(Process process)

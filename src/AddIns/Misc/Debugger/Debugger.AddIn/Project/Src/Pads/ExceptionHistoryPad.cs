@@ -91,6 +91,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void ExceptionHistoryListItemActivate(object sender, EventArgs e)
 		{
 			SourcecodeSegment nextStatement = ((DebuggerLibrary.Exception)(exceptionHistoryList.SelectedItems[0].Tag)).Location;
+
+			if (nextStatement == null) {
+				return;
+			}
 			
 			FileService.OpenFile(nextStatement.SourceFullFilename);
 			IWorkbenchWindow window = FileService.GetOpenFile(nextStatement.SourceFullFilename);

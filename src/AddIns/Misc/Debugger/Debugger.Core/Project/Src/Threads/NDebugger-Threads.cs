@@ -52,7 +52,7 @@ namespace DebuggerLibrary
 				}
 			}
 
-			throw new UnableToGetPropertyException(this, "this[ICorDebugThread]", "Thread is not in collection");
+			throw new DebuggerException("Thread is not in collection");
 		}
 
 		internal void AddThread(Thread thread)

@@ -43,11 +43,8 @@ namespace DebuggerLibrary
 				}
 				message = runtimeVariableException.SubVariables["_message"].Value.ToString();
 			}
-			try {
-				location = thread.CurrentFunction.NextStatement;
-			} catch (NextStatementNotAviableException) {
-				location = new SourcecodeSegment();
-			}
+
+			location = thread.CurrentFunction.NextStatement;
 			type = runtimeVariable.Type;
 		}
 	

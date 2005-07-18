@@ -35,9 +35,9 @@ namespace DebuggerLibrary
 
 		public Thread CurrentThread {
 			get {
-				if (IsProcessRunning) throw new CurrentThreadNotAviableException();
+				if (IsProcessRunning) throw new DebuggerException("Process must not be running");
 				if (currentThread != null) return currentThread;
-				throw new CurrentThreadNotAviableException();
+				throw new DebuggerException("No current thread");
 			}
 			set	{
 				currentThread = value;
