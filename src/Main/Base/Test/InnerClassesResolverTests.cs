@@ -26,6 +26,36 @@ namespace ICSharpCode.SharpDevelop.Tests
 		#endregion
 		
 		[Test]
+		public void SimpleInnerClass()
+		{
+			string program = @"class A {
+	void Test() {
+		
+	}
+	class B { }
+}
+";
+			ResolveResult result = Resolve(program, "B", 3);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("A.B", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void ReflectionInnerClass()
+		{
+			string program = @"using System;
+class A {
+	void Test() {
+		
+	}
+}
+";
+			ResolveResult result = Resolve(program, "Environment.SpecialFolder", 3);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("System.Environment.SpecialFolder", result.ResolvedType.FullyQualifiedName);
+		}
+		
+		[Test]
 		public void OuterclassPrivateFieldResolveTest()
 		{
 			string program = @"class A
@@ -52,6 +82,23 @@ namespace ICSharpCode.SharpDevelop.Tests
 				}
 			}
 			Assert.Fail("private field not visible from inner class");
+		}
+		
+		[Test]
+		public void InheritedInnerClass()
+		{
+			string program = @"class A {
+	class B { }
+}
+class C : A {
+	void Main() {
+		
+	}
+}
+";
+			ResolveResult result = Resolve(program, "B", 6);
+			Assert.IsTrue(result is TypeResolveResult);
+			Assert.AreEqual("A.B", result.ResolvedType.FullyQualifiedName);
 		}
 	}
 }

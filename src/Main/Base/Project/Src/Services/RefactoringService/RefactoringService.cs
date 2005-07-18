@@ -102,12 +102,23 @@ namespace ICSharpCode.Core
 			int pos = -1;
 			IExpressionFinder expressionFinder = null;
 			while ((pos = lowerFileContent.IndexOf(lowerMemberName, pos + 1)) >= 0) {
+				if (pos > 0 && char.IsLetterOrDigit(fileContent, pos - 1)) {
+					continue; // memberName is not a whole word (a.SomeName cannot reference Name)
+				}
+				if (pos < fileContent.Length - lowerMemberName.Length - 1
+				    && char.IsLetterOrDigit(fileContent, pos + lowerMemberName.Length))
+				{
+					continue; // memberName is not a whole word (a.Name2 cannot reference Name)
+				}
+				
 				if (expressionFinder == null) {
 					expressionFinder = ParserService.GetExpressionFinder(fileName);
 				}
 				string expr = expressionFinder.FindFullExpression(fileContent, pos + 1).Expression;
 				if (expr != null) {
 					Point position = GetPosition(fileContent, pos);
+					// TODO: Optimize by re-using the same resolver if multiple expressions were
+					// found in this file (the resolver should parse all methods at once)
 					ResolveResult rr = ParserService.Resolve(expr, position.Y, position.X, fileName, fileContent);
 					if (IsReferenceToMember(member, rr)) {
 						list.Add(new Reference(fileName, pos, lowerMemberName.Length, expr, rr));
@@ -133,14 +144,39 @@ namespace ICSharpCode.Core
 		
 		static List<ProjectItem> GetPossibleFiles(IClass ownerClass, IMember member)
 		{
-			// TODO: Optimize when member is not public
 			List<ProjectItem> resultList = new List<ProjectItem>();
+			if (member.IsPrivate) {
+				string fileName = ownerClass.CompilationUnit.FileName;
+				foreach (IProject p in ProjectService.OpenSolution.Projects) {
+					foreach (ProjectItem item in p.Items) {
+						if (item.ItemType == ItemType.Compile) {
+							if (FileUtility.IsEqualFileName(fileName, item.FileName)) {
+								resultList.Add(item);
+								return resultList;
+							}
+						}
+					}
+				}
+			}
+			
+			if (member.IsProtected) {
+				// TODO: Optimize when member is protected
+			}
+			
+			bool internalOnly = member.IsInternal && !member.IsProtected;
+			
 			foreach (IProject p in ProjectService.OpenSolution.Projects) {
 				IProjectContent pc = ParserService.GetProjectContent(p);
 				if (pc == null) continue;
-				if (pc != ownerClass.ProjectContent && !pc.HasReferenceTo(ownerClass.ProjectContent)) {
-					// unreferences project contents cannot reference the class
-					continue;
+				if (pc != ownerClass.ProjectContent) {
+					if (internalOnly) {
+						// internal = can be only referenced from same project content
+						continue;
+					}
+					if (!pc.HasReferenceTo(ownerClass.ProjectContent)) {
+						// unreferences project contents cannot reference the class
+						continue;
+					}
 				}
 				foreach (ProjectItem item in p.Items) {
 					if (item.ItemType == ItemType.Compile) {

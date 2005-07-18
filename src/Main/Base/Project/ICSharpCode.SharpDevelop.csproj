@@ -197,10 +197,10 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TipOfTheDay.cs">
-      <SubType>Form</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TreeViewOptions.cs">
-      <SubType>Form</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ViewGPLDialog.cs">
       <SubType>Form</SubType>
@@ -652,7 +652,7 @@
     <Compile Include="Src\Dom\Implementations\DefaultTypeParameter.cs" />
     <Compile Include="Src\Dom\Implementations\ProxyReturnType.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultReturnType.cs" />
-    <Compile Include="Src\Dom\Implementations\LazyReturnType.cs" />
+    <Compile Include="Src\Dom\Implementations\GetClassReturnType.cs" />
     <Compile Include="Src\Dom\Implementations\GenericReturnType.cs" />
     <Compile Include="Src\Dom\Implementations\ArrayReturnType.cs" />
     <Compile Include="Src\Dom\Implementations\SpecificReturnType.cs" />
@@ -669,7 +669,10 @@
     <Compile Include="Src\Services\ProjectService\ParseableFileContentEnumerator.cs" />
     <Compile Include="Src\Services\ParserService\ParseProjectContent.cs" />
     <Compile Include="Src\Services\ParserService\ReflectionProjectContent.cs" />
-   </ItemGroup>
+    <Compile Include="Src\Dom\Implementations\SearchClassReturnType.cs" />
+    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\AbstractCompletionDataProvider.cs" />
+    <Compile Include="Src\Dom\ExpressionContext.cs" />
+  </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
       <Project>{D3C782BA-178E-4235-A3BA-8C11DEBB6BEE}</Project>

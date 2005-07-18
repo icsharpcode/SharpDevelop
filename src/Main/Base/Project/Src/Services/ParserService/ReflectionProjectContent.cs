@@ -21,10 +21,10 @@ namespace ICSharpCode.Core
 			
 			ICompilationUnit assemblyCompilationUnit = new DefaultCompilationUnit(this);
 			
-			foreach (Type type in assembly.GetTypes()) {
-				if (!type.FullName.StartsWith("<") && type.IsPublic) {
+			foreach (Type type in assembly.GetExportedTypes()) {
+				//if (!type.FullName.StartsWith("<") && type.IsPublic) {
 					AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, null));
-				}
+				//}
 			}
 			
 			if (assembly == typeof(void).Assembly) {

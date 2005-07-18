@@ -27,6 +27,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		// The following conversions should be implemented in the future:
 		//   Public Event EventName(param As String) -> automatic delegate declaration
+		//   Function A() \n A = SomeValue \n End Function -> convert to return statement
 		
 		public override object Visit(ConstructorDeclaration constructorDeclaration, object data)
 		{

@@ -751,11 +751,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (callingMember != null)
 				inStatic = callingMember.IsStatic;
 			
-			if (!inStatic) {
-				result.AddRange(callingClass.GetAccessibleMembers(callingClass, false));
+			if (callingClass != null) {
+				if (!inStatic) {
+					result.AddRange(callingClass.GetAccessibleMembers(callingClass, false));
+				}
+				result.AddRange(callingClass.GetAccessibleMembers(callingClass, true));
+				result.AddRange(callingClass.GetAccessibleTypes(callingClass));
 			}
-			result.AddRange(callingClass.GetAccessibleMembers(callingClass, true));
-			result.AddRange(callingClass.GetAccessibleTypes(callingClass));
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 				if (pair.Value != null && pair.Value.Count > 0) {
 					foreach (LocalLookupVariable v in pair.Value) {

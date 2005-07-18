@@ -103,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					}
 				case '.':
 					if (enableDotCompletion) {
-						editor.ShowCompletionWindow(editor.CreateCodeCompletionDataProvider(false), ch);
+						editor.ShowCompletionWindow(new CodeCompletionDataProvider(), ch);
 						return true;
 					} else {
 						return false;

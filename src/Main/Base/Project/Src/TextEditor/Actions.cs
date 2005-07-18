@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 		{
 			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
 			
-			sdtac.ShowCompletionWindow(sdtac.CreateCodeCompletionDataProvider(true), '\0');
+			sdtac.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Default), '\0');
 		}
 	}
 	

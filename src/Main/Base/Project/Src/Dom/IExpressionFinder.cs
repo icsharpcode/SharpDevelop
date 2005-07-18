@@ -23,27 +23,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 	}
 	
 	/// <summary>
-	/// Enumeration for possible contexts in which expressions can be.
-	/// </summary>
-	public enum ExpressionContext
-	{
-		/// <summary>Default/unknown context</summary>
-		Default,
-		/// <summary>Context expects a type name</summary>
-		/// <example>typeof(*expr*), is *expr*, using(*expr* ...)</example>
-		Type,
-		/// <summary>Context expects a type deriving from exception</summary>
-		/// <example>catch(*expr*), throw new *expr*</example>
-		ExceptionType,
-		/// <summary>Context expects a non-abstract type that has accessible constructors</summary>
-		/// <example>new *expr*();</example>
-		ConstructableType,
-		/// <summary>Context expects a namespace name.</summary>
-		/// <example>using *expr*;</example>
-		Namespace,
-	}
-	
-	/// <summary>
 	/// Structure containing the result of a call to an expression finder.
 	/// </summary>
 	public struct ExpressionResult

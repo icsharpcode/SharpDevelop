@@ -45,6 +45,7 @@
     <Compile Include="ReflectionLayerTests.cs" />
     <Compile Include="GenericResolverTests.cs" />
     <Compile Include="InnerClassesResolverTests.cs" />
+    <Compile Include="RefactoringTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\ICSharpCode.SharpDevelop.csproj">

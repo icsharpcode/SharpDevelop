@@ -70,12 +70,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		public virtual ICompletionDataProvider CreateCodeCompletionDataProvider(bool ctrlSpace)
-		{
-			//ivoko: please do not touch or discuss with me: we use another CCDP
-			return new CodeCompletionDataProvider(ctrlSpace);
-		}
-		
 		protected override void InitializeTextAreaControl(TextAreaControl newControl)
 		{
 			base.InitializeTextAreaControl(newControl);

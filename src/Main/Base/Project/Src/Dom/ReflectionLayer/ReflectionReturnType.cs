@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public static class ReflectionReturnType
 	{
 		#region Primitive Types
-		static IReturnType @object, @int, @string, @bool, type, @void, array;
+		static IReturnType @object, @int, @string, @bool, type, @void, array, disposable, exception;
 		
 		/// <summary>Gets a ReturnType describing System.Object.</summary>
 		public static IReturnType Object {
@@ -76,6 +76,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 					array = CreatePrimitive(typeof(Array));
 				}
 				return array;
+			}
+		}
+		/// <summary>Gets a ReturnType describing System.IDisposable.</summary>
+		public static IReturnType Disposable {
+			get {
+				if (disposable == null) {
+					disposable = CreatePrimitive(typeof(IDisposable));
+				}
+				return disposable;
+			}
+		}
+		/// <summary>Gets a ReturnType describing System.IDisposable.</summary>
+		public static IReturnType Exception {
+			get {
+				if (exception == null) {
+					exception = CreatePrimitive(typeof(Exception));
+				}
+				return exception;
 			}
 		}
 		

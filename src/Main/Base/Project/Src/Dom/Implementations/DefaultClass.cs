@@ -239,6 +239,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return CompareTo((IClass)o);
 		}
 		
+		// TODO: Cache ClassInheritanceTree as it is called many times (for GetFields(), GetProperties() etc.)
+		// and it is expensive to execute SearchType so often.
+		// ReflectionClass should cache it forever; DefaultClass only as long as no new CompilationUnits
+		// are created.
 		public IEnumerable ClassInheritanceTree {
 			get {
 				return new ClassInheritanceEnumerator(this);
