@@ -172,10 +172,10 @@ namespace ICSharpCode.SharpDevelop.Services
 
 			debugger.DebuggerTraceMessage    += new MessageEventHandler(DebuggerTraceMessage);
 			debugger.LogMessage              += new MessageEventHandler(LogMessage);
-			debugger.DebuggingStarted        += new DebuggerEventHandler(DebuggingStarted);
+			debugger.ProcessStarted          += new ProcessEventHandler(ProcessStarted);
 			debugger.DebuggingPaused         += new DebuggingPausedEventHandler(DebuggingPaused);
 			debugger.DebuggingResumed        += new DebuggerEventHandler(DebuggingResumed);
-			debugger.DebuggingStopped        += new DebuggerEventHandler(DebuggingStopped);
+			debugger.ProcessExited           += new ProcessEventHandler(ProcessExited);
 			debugger.IsDebuggingChanged      += new DebuggerEventHandler(OnIsDebuggingChanged);
 			debugger.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
 			debugger.BreakpointStateChanged  += new DebuggerLibrary.BreakpointEventHandler(RestoreSharpdevelopBreakpoint);
@@ -200,10 +200,10 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			debugger.DebuggerTraceMessage    -= new MessageEventHandler(DebuggerTraceMessage);
 			debugger.LogMessage              -= new MessageEventHandler(LogMessage);
-			debugger.DebuggingStarted        -= new DebuggerEventHandler(DebuggingStarted);
+			debugger.ProcessStarted          -= new ProcessEventHandler(ProcessStarted);
 			debugger.DebuggingPaused         -= new DebuggingPausedEventHandler(DebuggingPaused);
 			debugger.DebuggingResumed        -= new DebuggerEventHandler(DebuggingResumed);
-			debugger.DebuggingStopped        -= new DebuggerEventHandler(DebuggingStopped);
+			debugger.ProcessExited           -= new ProcessEventHandler(ProcessExited);
 			debugger.IsDebuggingChanged      -= new DebuggerEventHandler(OnIsDebuggingChanged);
 			debugger.IsProcessRunningChanged -= new DebuggerEventHandler(DebuggerStateChanged);
 			debugger.BreakpointStateChanged  -= new DebuggerLibrary.BreakpointEventHandler(RestoreSharpdevelopBreakpoint);
@@ -332,7 +332,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
-		void DebuggingStarted(object sender, DebuggerEventArgs e)
+		void ProcessStarted(object sender, ProcessEventArgs e)
 		{
 			// Initialize 
 			/*PadDescriptor cmv = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView));
@@ -387,10 +387,11 @@ namespace ICSharpCode.SharpDevelop.Services
 			DebuggerService.RemoveCurrentLineMarker();
 		}
 		
-		void DebuggingStopped(object sender, DebuggerEventArgs e)
+		void ProcessExited(object sender, ProcessEventArgs e)
 		{
-			exceptionHistory.Clear();
-			//DebuggerService.Stop();//TODO: delete
+			if (debugger.Processes.Count == 0) {
+				exceptionHistory.Clear();
+			}
 		}
 
 		public void JumpToCurrentLine()

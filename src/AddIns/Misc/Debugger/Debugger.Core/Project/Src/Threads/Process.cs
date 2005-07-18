@@ -19,7 +19,7 @@ namespace DebuggerLibrary
 		ICorDebugProcess corProcess;
 
 		Thread currentThread;
-		bool isProcessRunning;
+		bool isProcessRunning = true;
 
 		internal Process(NDebugger debugger, ICorDebugProcess corProcess)
 		{

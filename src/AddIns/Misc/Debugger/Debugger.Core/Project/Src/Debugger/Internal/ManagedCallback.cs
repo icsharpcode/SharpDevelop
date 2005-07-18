@@ -300,8 +300,9 @@ namespace DebuggerLibrary
 
 			Thread thread = debugger.GetThread(pThread);
 
-			if (debugger.CurrentThread == thread)
+			if (debugger.CurrentThread == thread) {
 				debugger.CurrentThread = null;
+			}
 
 			debugger.RemoveThread(thread);
 
@@ -319,8 +320,17 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("ExitProcess");
 
-			debugger.ResetEnvironment();
+			Process process = debugger.GetProcess(pProcess);
 
+			if (debugger.CurrentProcess == process) {
+				debugger.CurrentProcess = null;
+			}
+
+			debugger.RemoveProcess(process);
+
+			if (debugger.Processes.Count == 0) {
+				debugger.ResetEnvironment();
+			}
 		}
 
 		#endregion

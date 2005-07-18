@@ -73,8 +73,10 @@
     <Compile Include="Src\Threads\Exception.cs" />
     <Compile Include="Src\Threads\ExceptionType.cs" />
     <Compile Include="Src\Threads\Function.cs" />
+    <Compile Include="Src\Threads\NDebugger-Processes.cs" />
     <Compile Include="Src\Threads\NDebugger-Threads.cs" />
     <Compile Include="Src\Threads\Process.cs" />
+    <Compile Include="Src\Threads\ProcessEventHandler.cs" />
     <Compile Include="Src\Threads\SourcecodeSegment.cs" />
     <Compile Include="Src\Threads\Thread.cs" />
     <Compile Include="Src\Threads\ThreadEventHandler.cs" />

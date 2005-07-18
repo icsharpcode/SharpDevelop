@@ -11,6 +11,7 @@ using System.Threading;
 
 using DebuggerInterop.Core;
 using DebuggerInterop.MetaData;
+using System.Collections.Generic;
 
 namespace DebuggerLibrary
 {
@@ -19,8 +20,6 @@ namespace DebuggerLibrary
 		ICorDebug                  corDebug;
 		ManagedCallback            managedCallback;
 		ManagedCallbackProxy       managedCallbackProxy;
-
-		Process                    mainProcess;
 		
 		public bool CatchHandledExceptions = false;
 
@@ -43,27 +42,6 @@ namespace DebuggerLibrary
 		internal ICorDebug CorDebug {
 			get {
 				return corDebug;
-			}
-		}
-
-		internal Process CurrentProcess {
-			get {
-				return mainProcess;
-			}
-			set {
-				if (mainProcess == value) return;
-
-				mainProcess = value;
-				if (value != null) {
-					OnDebuggingStarted();
-					OnIsDebuggingChanged();
-					OnIsProcessRunningChanged();
-				} else {
-					//OnDebuggingPaused(PausedReason.ProcessExited);
-					OnIsProcessRunningChanged();
-					OnDebuggingStopped();
-					OnIsDebuggingChanged();
-				}
 			}
 		}
 
@@ -114,8 +92,11 @@ namespace DebuggerLibrary
 			ResetBreakpoints();
 			
 			ClearThreads();
+
+			OnIsProcessRunningChanged();
+			OnIsDebuggingChanged();
 			
-			CurrentProcess   = null;
+			currentProcess = null;
 
 			evalQueue = new EvalQueue();
 			
@@ -127,17 +108,6 @@ namespace DebuggerLibrary
 		#endregion
 
 		#region Public events
-
-		public event DebuggerEventHandler DebuggingStarted;
-
-		protected internal virtual void OnDebuggingStarted()
-		{
-			TraceMessage ("Debugger event: OnDebuggingStarted()");
-			if (DebuggingStarted != null) {
-				DebuggingStarted(null, new DebuggerEventArgs());
-			}
-		}
-
 
 		public event DebuggingPausedEventHandler DebuggingPaused;
 
@@ -179,17 +149,6 @@ namespace DebuggerLibrary
 			TraceMessage ("Debugger event: OnDebuggingResumed()");
 			if (DebuggingResumed != null) {
 				DebuggingResumed(null, new DebuggerEventArgs());
-			}
-		}
-
-
-		public event DebuggerEventHandler DebuggingStopped;
-
-		protected internal virtual void OnDebuggingStopped()
-		{
-			TraceMessage ("Debugger event: OnDebuggingStopped()");
-			if (DebuggingStopped != null) {
-				DebuggingStopped(null, new DebuggerEventArgs());
 			}
 		}
 
@@ -267,7 +226,10 @@ namespace DebuggerLibrary
 		
 		public void Start(string filename, string workingDirectory, string arguments)		
 		{
-			CurrentProcess = Process.CreateProcess(this, filename, workingDirectory, arguments);
+			Process process = Process.CreateProcess(this, filename, workingDirectory, arguments);
+			AddProcess(process);
+			OnIsDebuggingChanged();
+			OnIsProcessRunningChanged();
 		}
 
 
