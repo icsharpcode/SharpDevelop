@@ -97,8 +97,7 @@ namespace DebuggerLibrary
 		public void Break()
 		{
 			if (!IsProcessRunning) {
-				System.Diagnostics.Debug.Fail("Invalid operation");
-				return;
+				throw new DebuggerException("Invalid operation");
 			}
 
             corProcess.Stop(5000); // TODO: Hardcoded value
@@ -111,7 +110,7 @@ namespace DebuggerLibrary
 		public void Continue()
 		{
 			if (IsProcessRunning) {
-				System.Diagnostics.Debug.Fail("Invalid operation");
+				throw new DebuggerException("Invalid operation");
 				return;
 			}
 

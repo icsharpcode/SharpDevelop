@@ -10,7 +10,6 @@ using System.Threading;
 using DebuggerInterop.Core;
 using DebuggerInterop.MetaData;
 using System.Collections.Generic;
-using System.Diagnostics;
 
 
 namespace DebuggerLibrary
@@ -134,16 +133,14 @@ namespace DebuggerLibrary
 		private unsafe void Step(bool stepIn)
 		{
 			if (Module.SymbolsLoaded == false) {
-				System.Diagnostics.Debug.Fail("Unable to step. No symbols loaded.");
-				return;
+				throw new DebuggerException("Unable to step. No symbols loaded.");
 			}
 
 			SourcecodeSegment nextSt;
 				
 			nextSt = NextStatement;// Cache
 			if (nextSt == null) {
-				System.Diagnostics.Debug.Fail("Unable to step. Next statement not aviable");
-				return;
+				throw new DebuggerException("Unable to step. Next statement not aviable");
 			}
 
 			ICorDebugStepper stepper;

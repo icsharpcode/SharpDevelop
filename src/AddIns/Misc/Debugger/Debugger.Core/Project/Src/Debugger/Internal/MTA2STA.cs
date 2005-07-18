@@ -102,7 +102,7 @@ namespace DebuggerInterop.Core
 									outputParams[i] = null;
 									outputParams[i] = Marshal.GetTypedObjectForIUnknown((IntPtr)inputParams[i], outputParamsInfo[i].ParameterType);
 								} catch (System.Exception exception) {
-									System.Diagnostics.Debug.Fail("Marshaling of argument " + i.ToString() + " of " + functionName + " failed.", exception.ToString());
+									throw new DebuggerLibrary.DebuggerException("Marshaling of argument " + i.ToString() + " of " + functionName + " failed.", exception);
 								}
 							}
 						} else {
@@ -120,7 +120,7 @@ namespace DebuggerInterop.Core
 					returnValue = method.Invoke(targetObject, outputParams);
 				}
 			} catch (System.Exception exception) {
-				System.Diagnostics.Debug.Fail("Invoke of " + functionName + " failed.", exception.ToString());
+				throw new DebuggerLibrary.DebuggerException("Invoke of " + functionName + " failed.", exception);
 			}
 			TraceMsg ("} \\\\ Invoke");
 			return returnValue;

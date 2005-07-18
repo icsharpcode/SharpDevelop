@@ -373,9 +373,7 @@ namespace ICSharpCode.SharpDevelop.Services
 						e.ResumeDebuggingAfterEvent();
 						return;
 					case ExceptionForm.Result.Ignore:
-						System.Diagnostics.Debug.Fail("Not implemented");
-						e.ResumeDebuggingAfterEvent();
-						return;
+						throw new NotImplementedException();
 				}
 			}
 			

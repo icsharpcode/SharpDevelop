@@ -168,9 +168,8 @@ namespace DebuggerLibrary
 
                         try {
                             callstack.Add(new Function(debugger, corFrames[0]));					                                                
-                        }
-                        catch (COMException) {
-							//System.Diagnostics.Debug.Fail("Error during adding function to callstack");
+                        } catch (COMException) {
+							// TODO
 						};
 					}
 				} // for(;;)

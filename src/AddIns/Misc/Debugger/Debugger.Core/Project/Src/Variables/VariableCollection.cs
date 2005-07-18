@@ -4,7 +4,6 @@
 
 using System;
 using System.Collections;
-using System.Diagnostics;
 
 using DebuggerInterop.Core;
 
@@ -33,7 +32,6 @@ namespace DebuggerLibrary
 			if (readOnly) {
 				throw new DebuggerException("VariableCollection is marked as readOnly"); 
 			}
-			System.Diagnostics.Trace.Assert(variable != null);
 			if (variable != null) {
 				InnerList.Add(variable);
 			}
