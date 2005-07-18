@@ -208,13 +208,6 @@ namespace DebuggerLibrary
 
 		#region Execution control
 
-		internal void Continue(ICorDebugAppDomain pAppDomain)
-		{
-			ICorDebugProcess outProcess;
-			pAppDomain.GetProcess(out outProcess);
-			outProcess.Continue(0);
-		}
-
 		public void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)
 		{		
 			System.Diagnostics.Process process;

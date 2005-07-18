@@ -111,7 +111,6 @@ namespace DebuggerLibrary
 		{
 			if (IsProcessRunning) {
 				throw new DebuggerException("Invalid operation");
-				return;
 			}
 
 			bool abort = false;

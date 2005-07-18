@@ -20,6 +20,8 @@ namespace DebuggerLibrary
 
 		internal ExceptionType currentExceptionType;
 
+		Process process;
+
 		uint id;
 		bool lastSuspendedState = false;
 		ThreadPriority lastPriority = ThreadPriority.Normal;
@@ -34,6 +36,7 @@ namespace DebuggerLibrary
 			}
 			set {
 				hasBeenLoaded = value;
+				OnThreadStateChanged();
 			}
 		}
 
@@ -51,6 +54,12 @@ namespace DebuggerLibrary
 				currentExceptionType = value;
 			}
 		}
+
+		public Process Process {
+			get {
+				return process;
+			}
+		}
 		
 		public ICorDebugThread CorThread {
 			get {
@@ -63,6 +72,10 @@ namespace DebuggerLibrary
 			this.debugger = debugger;
 			this.corThread = corThread;
 			corThread.GetID(out id);
+
+			ICorDebugProcess corProcess;
+			corThread.GetProcess(out corProcess);
+			this.process = debugger.GetProcess(corProcess);
 		}
 
 		public bool Suspended {
@@ -117,7 +130,7 @@ namespace DebuggerLibrary
 
 		public event ThreadEventHandler ThreadStateChanged;
 
-		internal void OnThreadStateChanged()
+		protected void OnThreadStateChanged()
 		{
 			if (ThreadStateChanged != null)
 				ThreadStateChanged(this, new ThreadEventArgs(this));
