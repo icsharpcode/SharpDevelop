@@ -14,6 +14,7 @@
     <OutputType>Library</OutputType>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Resources\ICSharpCode.TextEditor.snk</AssemblyOriginatorKeyFile>
+    <RootNamespace>ICSharpCode.TextEditor</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -167,7 +168,7 @@
     <EmbeddedResource Include="Resources\CSharp-Mode.xshd" />
     <EmbeddedResource Include="Resources\HTML-Mode.xshd" />
     <None Include="Resources\ICSharpCode.TextEditor.snk" />
-    <EmbeddedResource Include="Resources\ICSharpCode.TextEditor.TextEditorControl.bmp" />
+    <EmbeddedResource Include="Resources\TextEditorControl.bmp" />
     <EmbeddedResource Include="Resources\Java-Mode.xshd" />
     <EmbeddedResource Include="Resources\JavaScript-Mode.xshd" />
     <EmbeddedResource Include="Resources\Mode.xsd" />

@@ -2,9 +2,8 @@ using System;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
-	
 	[Flags]
-	public enum Modifier
+	public enum Modifier // TODO: Rename to Modifiers
 	{
 		// Access 
 		Private   = 0x0001,
@@ -67,10 +66,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		            Extern   | Volatile | Unsafe    | Overloads | WithEvents
 	}
 	
-	/// <summary>
-	/// Summary description for Class1.
-	/// </summary>
-	public enum Types
+	public enum Types // TODO: Rename to ClassType
 	{
 		Class,
 		Module,
@@ -87,14 +83,15 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		Unknown
 	}
 	
-	public enum FieldDirection {
+	public enum FieldDirection
+	{
 		None,
 		In,
 		Out,
 		Ref
 	}
 	
-	public enum Members
+	public enum Members // TODO: Rename to MemberType
 	{
 		Constant,
 		Field,
@@ -110,8 +107,9 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	}
 	
 	[Flags]
-	public enum ParamModifier
+	public enum ParamModifier // TODO: Rename to ParamModifiers
 	{
+		// Values must be the same as in SharpDevelop's ParameterModifiers
 		None = 0,
 		In  = 1,
 		Out = 2,
@@ -119,8 +117,4 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		Params = 8,
 		Optional = 16
 	}
-	
-	
-	
-	
 }

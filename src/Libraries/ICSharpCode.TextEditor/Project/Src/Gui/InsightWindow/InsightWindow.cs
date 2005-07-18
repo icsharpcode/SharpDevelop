@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike KrÃ¼ger" email="mike@icsharpcode.net"/>
+//     <owner name="Mike Kr�ger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
 using System;
@@ -9,6 +9,7 @@ using System.Drawing;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Collections;
+using System.Collections.Generic;
 
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Util;
@@ -35,7 +36,7 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 				Refresh();
 			}
 		}
-				
+		
 		#region Event handling routines
 		protected override bool ProcessTextAreaKey(Keys keyData)
 		{
@@ -69,13 +70,13 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 			int ypos = (control.ActiveTextAreaControl.Document.GetVisibleLine(caretPos.Y) + 1) * control.ActiveTextAreaControl.TextArea.TextView.FontHeight - control.ActiveTextAreaControl.TextArea.VirtualTop.Y;
 			int rulerHeight = control.TextEditorProperties.ShowHorizontalRuler ? control.ActiveTextAreaControl.TextArea.TextView.FontHeight : 0;
 			
-	 		Point p = control.ActiveTextAreaControl.PointToScreen(new Point(xpos, ypos + rulerHeight));
+			Point p = control.ActiveTextAreaControl.PointToScreen(new Point(xpos, ypos + rulerHeight));
 			if (p.Y != Location.Y) {
 				Location = p;
 			}
 			
 			while (DataProvider != null && DataProvider.CaretOffsetChanged()) {
-				 CloseCurrentDataProvider();
+				CloseCurrentDataProvider();
 			}
 		}
 		
@@ -130,10 +131,10 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 			}
 			
 			drawingSize = TipPainterTools.GetDrawingSizeHelpTipFromCombinedDescription(this,
-			                                                                 pe.Graphics,
-			                                                                 Font,
-			                                                                 methodCountMessage,
-			                                                                 description);
+			                                                                           pe.Graphics,
+			                                                                           Font,
+			                                                                           methodCountMessage,
+			                                                                           description);
 			if (drawingSize != Size) {
 				SetLocation();
 			} else {
@@ -148,14 +149,14 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 		#endregion
 		
 		#region InsightDataProvider handling
-		Stack             insightDataProviderStack = new Stack();
+		Stack<InsightDataProviderStackElement> insightDataProviderStack = new Stack<InsightDataProviderStackElement>();
 		
 		int CurrentData {
 			get {
-				return ((InsightDataProviderStackElement)insightDataProviderStack.Peek()).currentData;
+				return insightDataProviderStack.Peek().currentData;
 			}
 			set {
-				((InsightDataProviderStackElement)insightDataProviderStack.Peek()).currentData = value;
+				insightDataProviderStack.Peek().currentData = value;
 			}
 		}
 		
@@ -164,7 +165,7 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 				if (insightDataProviderStack.Count == 0) {
 					return null;
 				}
-				return ((InsightDataProviderStackElement)insightDataProviderStack.Peek()).dataProvider;
+				return insightDataProviderStack.Peek().dataProvider;
 			}
 		}
 		
@@ -193,7 +194,7 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 			
 			public InsightDataProviderStackElement(IInsightDataProvider dataProvider)
 			{
-				this.currentData  = 0;
+				this.currentData  = Math.Max(dataProvider.DefaultIndex, 0);
 				this.dataProvider = dataProvider;
 			}
 		}

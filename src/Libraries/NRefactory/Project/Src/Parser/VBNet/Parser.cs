@@ -701,8 +701,8 @@ Modifiers m) {
 Modifiers m,ArrayList attributes) {
 
 #line  542 "VBNET.ATG" 
-		string name = String.Empty; ArrayList names = null;
-		/*bool isPartialClass = false;*/
+		string name = String.Empty;
+		ArrayList names = null;
 		
 		switch (la.kind) {
 		case 66: case 197: {
@@ -713,14 +713,13 @@ Modifiers m,ArrayList attributes) {
 				lexer.NextToken();
 
 #line  547 "VBNET.ATG" 
-				
+				m.Add(Modifier.Partial); 
 			}
 			Expect(66);
 
 #line  549 "VBNET.ATG" 
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
-			/*newType.IsPartialType = isPartialClass;*/
-			compilationUnit.AddChild(newType);
+								compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
 			
 			newType.Type       = Types.Class;
@@ -2916,6 +2915,9 @@ out expr);
 #line  1420 "VBNET.ATG" 
 out val);
 				Expect(10);
+
+#line  1421 "VBNET.ATG" 
+				t.val = ""; 
 				Identifier();
 
 #line  1421 "VBNET.ATG" 

@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 //		int documentationHash = -1;
 		
 		protected IReturnType         returnType;
-		protected ParameterModifier   modifier;
+		protected ParameterModifiers  modifier;
 		protected IRegion region;
 		List<IAttribute> attributes;
 		
@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			this.name = p.Name;
 			this.region = p.Region;
-			this.modifier = p.Modifier;
+			this.modifier = p.Modifiers;
 			this.returnType = p.ReturnType;
 		}
 		
@@ -50,17 +50,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		public bool IsOut {
 			get {
-				return (modifier & ParameterModifier.Out) == ParameterModifier.Out;
+				return (modifier & ParameterModifiers.Out) == ParameterModifiers.Out;
 			}
 		}
 		public bool IsRef {
 			get {
-				return (modifier & ParameterModifier.Ref) == ParameterModifier.Ref;
+				return (modifier & ParameterModifiers.Ref) == ParameterModifiers.Ref;
 			}
 		}
 		public bool IsParams {
 			get {
-				return (modifier & ParameterModifier.Params) == ParameterModifier.Params;
+				return (modifier & ParameterModifiers.Params) == ParameterModifiers.Params;
 			}
 		}
 
@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 
-		public virtual ParameterModifier Modifier {
+		public virtual ParameterModifiers Modifiers {
 			get {
 				return modifier;
 			}
@@ -136,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (value == null) return -1;
 			int cmp;
 			
-			if(0 != (cmp = ((int)Modifier - (int)value.Modifier)))
+			if(0 != (cmp = ((int)Modifiers - (int)value.Modifiers)))
 				return cmp;
 			
 			if (ReturnType.Equals(value.ReturnType))

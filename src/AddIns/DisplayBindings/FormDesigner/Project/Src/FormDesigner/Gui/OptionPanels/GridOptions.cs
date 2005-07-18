@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -22,7 +22,7 @@ namespace ICSharpCode.FormDesigner.Gui.OptionPanels
 	{
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.WindowsFormsGridOptions.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormDesigner.Resources.WindowsFormsGridOptions.xfrm"));
 			
 			ControlDictionary["widthTextBox"].Text                      = PropertyService.Get("FormsDesigner.DesignerOptions.GridSizeWidth", 8).ToString();
 			ControlDictionary["heightTextBox"].Text                     = PropertyService.Get("FormsDesigner.DesignerOptions.GridSizeHeight", 8).ToString();

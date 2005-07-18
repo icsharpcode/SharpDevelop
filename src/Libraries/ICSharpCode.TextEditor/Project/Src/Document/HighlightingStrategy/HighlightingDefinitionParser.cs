@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -29,7 +29,7 @@ namespace ICSharpCode.TextEditor.Document
 		{
 			try {
 				XmlReaderSettings settings = new XmlReaderSettings();
-				Stream shemaStream = Assembly.GetCallingAssembly().GetManifestResourceStream("Resources.Mode.xsd");
+				Stream shemaStream = typeof(HighlightingDefinitionParser).Assembly.GetManifestResourceStream("ICSharpCode.TextEditor.Resources.Mode.xsd");
 				settings.Schemas.Add("", new XmlTextReader(shemaStream));
 				settings.Schemas.ValidationEventHandler += new ValidationEventHandler(ValidationHandler);
 				settings.ValidationType = ValidationType.Schema;

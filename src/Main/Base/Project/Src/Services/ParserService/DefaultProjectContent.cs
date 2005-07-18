@@ -85,7 +85,7 @@ namespace ICSharpCode.Core
 		LanguageProperties language = LanguageProperties.CSharp;
 		
 		/// <summary>
-		/// Gets the properties of the language this project content was written in.
+		/// Gets/Sets the properties of the language this project content was written in.
 		/// </summary>
 		public LanguageProperties Language {
 			get {

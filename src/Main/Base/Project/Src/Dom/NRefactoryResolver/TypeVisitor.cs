@@ -86,33 +86,77 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (methods.Count <= 0) {
 				return null;
 			}
-			IMethod bestMethod = (IMethod)methods[0]; // when in doubt, use first method
 			if (methods.Count == 1)
-				return bestMethod;
+				return (IMethod)methods[0];
 			
 			IReturnType[] types = new IReturnType[arguments.Count];
 			for (int i = 0; i < types.Length; ++i) {
 				types[i] = ((Expression)arguments[i]).AcceptVisitor(this, data) as IReturnType;
 			}
-			int bestScore = ScoreOverload(bestMethod, types);
+			bool tmp;
+			return (IMethod)methods[FindOverload(methods, types, true, out tmp)];
+		}
+		
+		/// <summary>
+		/// Finds the index of the overload in <paramref name="methods"/> that is the best
+		/// match for a call with the specified return types.
+		/// </summary>
+		/// <param name="methods">ArrayList containing IMethodOrIndexers</param>
+		/// <param name="types">Array containing the types of the parameters.</param>
+		/// <param name="forceParameterCount">True when the parameter count should exactly be
+		/// types.Length; False when more parameters are possible</param>
+		/// <param name="singleBestOverload">Returns true when the overload returned is
+		/// the only overload that had the highest score or false when there were
+		/// multiple overloads with an equal score.</param>
+		public static int FindOverload(ArrayList methods, IReturnType[] types, bool forceParameterCount, out bool singleBestOverload)
+		{
+			singleBestOverload = true;
+			if (methods.Count == 1)
+				return 0;
 			
-			foreach (IMethod method in methods) {
-				if (method == bestMethod) continue;
-				int score = ScoreOverload(method, types);
+			IMethodOrIndexer bestMethod = (IMethodOrIndexer)methods[0];
+			int bestIndex = 0;
+			int bestScore = ScoreOverload(bestMethod, types, forceParameterCount);
+			
+			for (int i = 1; i < methods.Count; ++i) {
+				IMethodOrIndexer method = (IMethodOrIndexer)methods[i];
+				int score = ScoreOverload(method, types, forceParameterCount);
 				if (score > bestScore) {
 					bestScore = score;
 					bestMethod = method;
+					bestIndex = i;
+					singleBestOverload = true;
+				} else if (score == bestScore) {
+					singleBestOverload = false;
 				}
 			}
 			
-			return bestMethod;
+			return bestIndex;
 		}
 		
-		int ScoreOverload(IMethod method, IReturnType[] types)
+		/// <summary>
+		/// Calculates a score how good the specified <paramref name="method"/> matches
+		/// the <paramref name="types"/>.
+		/// </summary>
+		/// <param name="methods">ArrayList containing IMethodOrIndexers</param>
+		/// <param name="types">Array containing the types of the parameters.</param>
+		/// <param name="forceParameterCount">True when the parameter count should exactly be
+		/// types.Length; False when more parameters are possible</param>
+		/// <returns>
+		/// Integer score. When the parameter count matches, score is between 0 (no types matches)
+		/// and types.Length (all types matched).
+		/// When there were too many parameters but forceParameterCount was false, score is
+		/// between -1 for no matches and types.Length - 1 for all matches.
+		/// When the parameter count didn't match, score is -(Difference between parameter counts)
+		/// </returns>
+		public static int ScoreOverload(IMethodOrIndexer method, IReturnType[] types, bool forceParameterCount)
 		{
 			if (method == null) return -1;
-			if (method.Parameters.Count == types.Length) {
-				int points = types.Length;
+			if (forceParameterCount
+			    ? (method.Parameters.Count == types.Length)
+			    : (method.Parameters.Count >= types.Length))
+			{
+				int points = 0;
 				for (int i = 0; i < types.Length; ++i) {
 					IReturnType type = method.Parameters[i].ReturnType;
 					if (type != null && types[i] != null) {
@@ -120,9 +164,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 							points += 1;
 					}
 				}
-				return points;
+				if (method.Parameters.Count == types.Length)
+					return points;
+				else
+					return points - 1;
 			} else {
-				return types.Length - Math.Abs(method.Parameters.Count - types.Length);
+				return -Math.Abs(method.Parameters.Count - types.Length);
 			}
 		}
 		

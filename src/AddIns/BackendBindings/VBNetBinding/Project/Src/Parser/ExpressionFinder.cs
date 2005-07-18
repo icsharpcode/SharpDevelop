@@ -11,7 +11,7 @@ namespace VBNetBinding.Parser
 	{
 		ExpressionResult CreateResult(string expression)
 		{
-			if (expression != null && expression.Substring(0, 8).Equals("Imports ", StringComparison.InvariantCultureIgnoreCase))
+			if (expression != null && expression.Length > 8 && expression.Substring(0, 8).Equals("Imports ", StringComparison.InvariantCultureIgnoreCase))
 				return new ExpressionResult(expression.Substring(8).TrimStart(), ExpressionContext.Namespace, null);
 			else
 				return new ExpressionResult(expression);

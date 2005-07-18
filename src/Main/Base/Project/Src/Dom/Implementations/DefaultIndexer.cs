@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return setterRegion;
 			}
 		}
-
+		
 		public virtual List<IParameter> Parameters {
 			get {
 				if (parameters == null) {

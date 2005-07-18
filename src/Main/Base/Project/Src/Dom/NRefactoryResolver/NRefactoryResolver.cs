@@ -191,11 +191,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			} else if (expr is FieldReferenceExpression) {
 				FieldReferenceExpression fieldReferenceExpression = (FieldReferenceExpression)expr;
-				if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName == "") {
+				if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName.Length == 0) {
+					// NRefactory creates this "dummy" fieldReferenceExpression when it should
+					// parse a primitive type name (int, short; Integer, Decimal)
 					if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
 						type = TypeVisitor.CreateReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference, this);
 						if (type != null) {
-							IClass c = projectContent.GetClass(type.FullyQualifiedName);
+							IClass c = type.GetUnderlyingClass();
 							if (c != null)
 								return new TypeResolveResult(callingClass, callingMember, type, c);
 						}
@@ -235,7 +237,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					// Class has no constructors -> create default constructor
 					IClass c = type.GetUnderlyingClass();
 					if (c != null) {
-						return CreateMemberResolveResult(new Constructor(ModifierEnum.Public, c.Region, c.Region, c));
+						return CreateMemberResolveResult(Constructor.CreateDefault(c));
 					}
 				}
 				return CreateMemberResolveResult(typeVisitor.FindOverload(constructors, ((ObjectCreateExpression)expr).Parameters, null));
@@ -447,9 +449,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (language == SupportedLanguages.VBNet) {
 				// MyBase and MyClass are no expressions, only MyBase.Identifier and MyClass.Identifier
-				if (expression == "mybase") {
+				if ("mybase".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
 					return new BaseReferenceExpression();
-				} else if (expression == "myclass") {
+				} else if ("myclass".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
 					return new ClassReferenceExpression();
 				}
 			} else if (language == SupportedLanguages.CSharp) {

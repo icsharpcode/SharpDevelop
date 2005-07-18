@@ -19,7 +19,7 @@ namespace ICSharpCode.FormDesigner.Gui
 		
 		public RenameCategoryDialog(string categoryName, Form owner)
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.RenameSidebarCategoryDialog.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormDesigner.Resources.RenameSidebarCategoryDialog.xfrm"));
 			
 			this.Owner = owner;
 			

@@ -323,16 +323,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultMethod invokeMethod = new DefaultMethod("Invoke", CreateReturnType(delegateDeclaration.ReturnType), ModifierEnum.Public, null, null, c);
 			if (delegateDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in delegateDeclaration.Parameters) {
-					IReturnType parType = CreateReturnType(par.TypeReference);
-					invokeMethod.Parameters.Add(new DefaultParameter(par.ParameterName, parType, null));
+					invokeMethod.Parameters.Add(CreateParameter(par));
 				}
 			}
 			c.Methods.Add(invokeMethod);
 			invokeMethod = new DefaultMethod("BeginInvoke", CreateReturnType(typeof(IAsyncResult)), ModifierEnum.Public, null, null, c);
 			if (delegateDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in delegateDeclaration.Parameters) {
-					IReturnType parType = CreateReturnType(par.TypeReference);
-					invokeMethod.Parameters.Add(new DefaultParameter(par.ParameterName, parType, null));
+					invokeMethod.Parameters.Add(CreateParameter(par));
 				}
 			}
 			invokeMethod.Parameters.Add(new DefaultParameter("callback", CreateReturnType(typeof(AsyncCallback)), null));
@@ -343,6 +341,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			c.Methods.Add(invokeMethod);
 			currentClass.Pop();
 			return c;
+		}
+		
+		IParameter CreateParameter(AST.ParameterDeclarationExpression par)
+		{
+			IReturnType parType = CreateReturnType(par.TypeReference);
+			DefaultParameter p = new DefaultParameter(par.ParameterName, parType, null);
+			p.Modifiers = (ParameterModifiers)par.ParamModifier;
+			return p;
 		}
 		
 		public override object Visit(AST.MethodDeclaration methodDeclaration, object data)
@@ -358,9 +364,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			method.Attributes.AddRange(VisitAttributes(methodDeclaration.Attributes));
 			if (methodDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
-					IReturnType parType = CreateReturnType(par.TypeReference, method);
-					DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, methodDeclaration.Body.EndLocation));
-					method.Parameters.Add(p);
+					method.Parameters.Add(CreateParameter(par));
 				}
 			}
 			c.Methods.Add(method);
@@ -378,9 +382,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			constructor.Attributes.AddRange(VisitAttributes(constructorDeclaration.Attributes));
 			if (constructorDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
-					IReturnType parType = CreateReturnType(par.TypeReference);
-					DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, constructorDeclaration.Body.EndLocation));
-					constructor.Parameters.Add(p);
+					constructor.Parameters.Add(CreateParameter(par));
 				}
 			}
 			c.Methods.Add(constructor);
@@ -480,9 +482,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			i.Attributes.AddRange(VisitAttributes(indexerDeclaration.Attributes));
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
-					IReturnType parType = CreateReturnType(par.TypeReference);
-					DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, indexerDeclaration.EndLocation));
-					parameters.Add(p);
+					parameters.Add(CreateParameter(par));
 				}
 			}
 			DefaultClass c = GetCurrentClass();

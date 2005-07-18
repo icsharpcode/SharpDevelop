@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -18,9 +18,9 @@ using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
-namespace ICSharpCode.SharpDevelop.Gui.OptionPanels 
+namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class CodeTemplatePane : AbstractOptionPanel
+	public class CodeTemplatePanel : AbstractOptionPanel
 	{
 		ArrayList templateGroups;
 		int       currentSelectedGroup = -1;

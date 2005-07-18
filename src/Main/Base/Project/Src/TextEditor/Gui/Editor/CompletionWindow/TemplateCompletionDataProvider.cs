@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -22,10 +22,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	public class TemplateCompletionDataProvider : ICompletionDataProvider
 	{
 		ImageList imageList = new ImageList();
-	
+		
 		public ImageList ImageList {
 			get {
 				return imageList;
+			}
+		}
+		
+		public int DefaultIndex {
+			get {
+				return -1;
 			}
 		}
 		
@@ -78,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				((SharpDevelopTextAreaControl)control).InsertTemplate(template);
 			}
 			
-			public TemplateCompletionData(CodeTemplate template) 
+			public TemplateCompletionData(CodeTemplate template)
 			{
 				this.template = template;
 			}

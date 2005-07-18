@@ -539,15 +539,15 @@ NamespaceMemberDecl
 /* 6.4.2 */
 NonModuleDeclaration<Modifiers m,ArrayList attributes>
 			(.
-				string name = String.Empty; ArrayList names = null;
-				/*bool isPartialClass = false;*/
+				string name = String.Empty;
+				ArrayList names = null;
 			.) =
 	(. m.Check(Modifier.Classes); .)
 	/* Spec, 7.5 */
-	["Partial" (. /*isPartialClass = true;*/ .)]
+	["Partial" (. m.Add(Modifier.Partial); .)]
 	"Class"
 					(. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
-					    /*newType.IsPartialType = isPartialClass;*/
+						
 						compilationUnit.AddChild(newType);
 						compilationUnit.BlockStart(newType);
 						
@@ -1418,7 +1418,7 @@ SimpleExpr<out Expression pexpr>
 			| /* 11.4.2 */ "(" Expr<out expr> ")" 				(. pexpr = new ParenthesizedExpression(expr); .)
 			| /* 11.4.4 */ Identifier					(. pexpr = new IdentifierExpression(t.val); .)
 			| (. string val = String.Empty; .) PrimitiveTypeName<out val>
-			"." Identifier	(. pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); .)
+			"." (. t.val = ""; .) Identifier (. pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); .)
 			| "Me"												(. pexpr = new ThisReferenceExpression(); .)
 			| (. Expression retExpr = null; .)
 				( "MyBase"										(. retExpr = new BaseReferenceExpression(); .)

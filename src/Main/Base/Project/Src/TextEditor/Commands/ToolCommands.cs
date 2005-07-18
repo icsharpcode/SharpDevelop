@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -40,9 +40,24 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			using (ColorDialog cd = new ColorDialog()) {
 				if (cd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-					string colorstr = "#" + cd.Color.ToArgb().ToString("X");
-					if (cd.Color.IsKnownColor) {
-						colorstr = cd.Color.ToKnownColor().ToString();
+					string ext = Path.GetExtension(textarea.FileName).ToLower();
+					string colorstr;
+					if (ext == ".cs" || ext == ".vb" || ext == ".boo") {
+						if (cd.Color.IsKnownColor) {
+							colorstr = "Color." + cd.Color.ToKnownColor().ToString();
+						} else if (cd.Color.A < 255) {
+							colorstr = "Color.FromArgb(0x" + cd.Color.ToArgb().ToString("x") + ")";
+						} else {
+							colorstr = string.Format("Color.FromArgb({0}, {1}, {2})", cd.Color.R, cd.Color.G, cd.Color.B);
+						}
+					} else {
+						if (cd.Color.IsKnownColor) {
+							colorstr = cd.Color.ToKnownColor().ToString();
+						} else if (cd.Color.A < 255) {
+							colorstr = "#" + cd.Color.ToArgb().ToString("X");
+						} else {
+							colorstr = string.Format("#{0:X2}{1:X2}{2:X2}", cd.Color.R, cd.Color.G, cd.Color.B);
+						}
 					}
 					
 					textarea.Document.Insert(textarea.ActiveTextAreaControl.Caret.Offset, colorstr);
@@ -59,24 +74,24 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override void Run()
 		{
-//	TODO: New Projectfile system.					
+//	TODO: New Projectfile system.
 
 //			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-//			
+//
 //			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
 //				return;
 //			}
 //			TextEditorControl textAreaControl = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
-//			
+//
 //			int startLine = textAreaControl.Document.GetLineNumberForOffset(textAreaControl.ActiveTextAreaControl.Caret.Offset);
 //			int endLine   = startLine;
-//			
+//
 //			LineSegment line = textAreaControl.Document.GetLineSegment(startLine);
 //			string curLine   = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
 //			if (!curLine.StartsWith("///")) {
 //				return;
 //			}
-//			
+//
 //			while (startLine > 0) {
 //				line    = textAreaControl.Document.GetLineSegment(startLine);
 //				curLine = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
@@ -86,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 //					break;
 //				}
 //			}
-//			
+//
 //			while (endLine < textAreaControl.Document.TotalNumberOfLines - 1) {
 //				line    = textAreaControl.Document.GetLineSegment(endLine);
 //				curLine = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
@@ -96,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 //					break;
 //				}
 //			}
-//			
+//
 //			StringBuilder documentation = new StringBuilder();
 //			for (int lineNr = startLine + 1; lineNr < endLine; ++lineNr) {
 //				line    = textAreaControl.Document.GetLineSegment(lineNr);
@@ -105,12 +120,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 //				documentation.Append('\n');
 //			}
 //			string xml  = "<member>" + documentation.ToString() + "</member>";
-//			
+//
 //			string html = String.Empty;
-//			
+//
 //			try {
-//				
-//				
+//
+//
 //				html = ICSharpCode.SharpDevelop.Internal.Project.ConvertXml.ConvertData(xml,
 //				                   PropertyService.DataDirectory +
 //				                   Path.DirectorySeparatorChar + "ConversionStyleSheets" +
@@ -127,7 +142,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			public ToolWindowForm(TextEditorControl textEditorControl, string html)
 			{
 				Point caretPos  = textEditorControl.ActiveTextAreaControl.Caret.ScreenPosition;
-				Point visualPos = new Point(Math.Min(Math.Max(caretPos.X, textEditorControl.ActiveTextAreaControl.TextArea.TextView.DrawingPosition.Left), textEditorControl.ActiveTextAreaControl.TextArea.TextView.DrawingPosition.Right), 
+				Point visualPos = new Point(Math.Min(Math.Max(caretPos.X, textEditorControl.ActiveTextAreaControl.TextArea.TextView.DrawingPosition.Left), textEditorControl.ActiveTextAreaControl.TextArea.TextView.DrawingPosition.Right),
 				                            Math.Min(Math.Max(caretPos.Y, textEditorControl.ActiveTextAreaControl.TextArea.TextView.DrawingPosition.Top), textEditorControl.ActiveTextAreaControl.TextArea.TextView.DrawingPosition.Bottom));
 				
 				Location = textEditorControl.ActiveTextAreaControl.TextArea.PointToScreen(visualPos);
@@ -136,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				WebBrowser hc = new WebBrowser();
 				hc.DocumentText = html;
 				
-//		TODO: Stylesheet.		
+//		TODO: Stylesheet.
 //				hc.CascadingStyleSheet = PropertyService.DataDirectory +
 //				                   Path.DirectorySeparatorChar + "resources" +
 //				                   Path.DirectorySeparatorChar + "css" +
@@ -144,7 +159,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				hc.Dock = DockStyle.Fill;
 				hc.Navigating += new WebBrowserNavigatingEventHandler(BrowserNavigateCancel);
 				Controls.Add(hc);
-								
+				
 				ShowInTaskbar   = false;
 				FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
 				StartPosition   = FormStartPosition.Manual;
@@ -188,4 +203,23 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		}
 	}
 
+	public class InsertGuidCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
+				return;
+			}
+			
+			TextEditorControl textEditor = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+			if (textEditor == null) {
+				return;
+			}
+			
+			string newGuid = Guid.NewGuid().ToString().ToUpper();
+			
+			textEditor.ActiveTextAreaControl.TextArea.InsertString(newGuid);
+		}
+	}
 }

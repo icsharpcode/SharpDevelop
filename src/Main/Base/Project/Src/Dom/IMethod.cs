@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -10,7 +10,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IMethod : IMember
+	public interface IMethodOrIndexer : IMember
 	{
 		IRegion BodyRegion {
 			get;
@@ -19,7 +19,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		List<IParameter> Parameters {
 			get;
 		}
-		
+	}
+	
+	public interface IMethod : IMethodOrIndexer
+	{
 		List<ITypeParameter> TypeParameters {
 			get;
 		}

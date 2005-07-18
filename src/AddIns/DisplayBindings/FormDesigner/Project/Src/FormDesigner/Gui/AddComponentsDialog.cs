@@ -27,7 +27,7 @@ namespace ICSharpCode.FormDesigner.Gui
 		
 		public AddComponentsDialog()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.AddSidebarComponentsDialog.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormDesigner.Resources.AddSidebarComponentsDialog.xfrm"));
 			
 			Icon = null;
 			PrintGACCache();

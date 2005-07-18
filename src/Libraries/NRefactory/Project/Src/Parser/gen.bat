@@ -29,7 +29,6 @@ copy ..\VBNet\VBNET.ATG
 OldSharpCoco -trace GIPXA -namespace ICSharpCode.NRefactory.Parser.VB VBNET.ATG
 move Parser.cs ..\VBNet
 
-del Parser.cs.old >NUL
 del cs.ATG VBNET.ATG >NUL
 
 :exit

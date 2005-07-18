@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 
-		ParameterModifier Modifier {
+		ParameterModifiers Modifiers {
 			get;
 		}
 		

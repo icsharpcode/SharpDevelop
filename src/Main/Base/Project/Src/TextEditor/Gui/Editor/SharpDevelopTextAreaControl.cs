@@ -274,6 +274,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			insightWindow.ShowInsightWindow();
 		}
 		
+		public bool InsightWindowVisible {
+			get {
+				return insightWindow != null;
+			}
+		}
+		
 		public void ShowCompletionWindow(ICompletionDataProvider completionDataProvider, char ch)
 		{
 			codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow((Form)WorkbenchSingleton.Workbench, this, this.FileName, completionDataProvider, ch);

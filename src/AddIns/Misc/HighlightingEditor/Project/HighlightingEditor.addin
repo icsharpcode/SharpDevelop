@@ -13,7 +13,7 @@
 		<DialogPanel id = "EditHighlighting"
 		             label = "Highlighting"
 			     	 insertafter = "Behavior"
-		             class = "ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.EditHighlightingPanel"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.EditHighlightingPanel"/>
 	</Path>
 	
 </AddIn>

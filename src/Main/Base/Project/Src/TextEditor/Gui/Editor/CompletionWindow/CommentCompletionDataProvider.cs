@@ -29,6 +29,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		int caretLineNumber;
 		int caretColumn;
 		
+		public int DefaultIndex {
+			get {
+				return -1;
+			}
+		}
+		
 		string[][] commentTags = new string[][] {
 			new string[] {"c", "marks text as code"},
 			new string[] {"code", "marks text as code"},
@@ -117,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				((SharpDevelopTextAreaControl)control).ActiveTextAreaControl.TextArea.InsertString(text);
 			}
 			
-			public CommentCompletionData(string text, string description) 
+			public CommentCompletionData(string text, string description)
 			{
 				this.text        = text;
 				this.description = description;

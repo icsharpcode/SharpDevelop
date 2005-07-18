@@ -3,8 +3,6 @@
     <StartAction>Program</StartAction>
     <StartProgram>D:\Corsavy\SharpDevelop\bin\SharpDevelop.exe</StartProgram>
     <StartArguments>D:\Corsavy\SharpDevelop\src\Libraries\NRefactory\NRefactory.sln</StartArguments>
-    <StartWorkingDirectory>
-    </StartWorkingDirectory>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
   <PropertyGroup>

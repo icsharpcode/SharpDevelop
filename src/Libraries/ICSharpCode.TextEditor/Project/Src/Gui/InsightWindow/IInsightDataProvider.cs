@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -25,6 +25,10 @@ namespace ICSharpCode.TextEditor.Gui.InsightWindow
 		string GetInsightData(int number);
 		
 		int InsightDataCount {
+			get;
+		}
+		
+		int DefaultIndex {
 			get;
 		}
 	}

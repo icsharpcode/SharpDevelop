@@ -12,13 +12,13 @@ using System.Windows.Forms;
 namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 {
 	/// <summary>
-	/// Description of CodeCompletionListView.	
+	/// Description of CodeCompletionListView.
 	/// </summary>
 	public class CodeCompletionListView : System.Windows.Forms.UserControl
 	{
 		ICompletionData[] completionData;
 		int               firstItem    = 0;
-		int               selectedItem = 0;
+		int               selectedItem = -1;
 		ImageList         imageList;
 		
 		public ImageList ImageList {
@@ -76,7 +76,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 //			SetStyle(ControlStyles.DoubleBuffer, false);
 		}
 		
-		public void Close() 
+		public void Close()
 		{
 			if (completionData != null) {
 				Array.Clear(completionData, 0, completionData.Length);
@@ -151,9 +151,10 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			OnSelectedItemChanged(EventArgs.Empty);
 		}
 		
-	
+		
 		public void SelectItemWithStart(string startText)
 		{
+			if (startText == null || startText.Length == 0) return;
 			startText = startText.ToLower();
 			for (int i = 0; i < completionData.Length; ++i) {
 				if (completionData[i].Text[0].ToLower().StartsWith(startText)) {
@@ -223,7 +224,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 		}
 		
-		protected override void OnMouseWheel(MouseEventArgs mea) 
+		protected override void OnMouseWheel(MouseEventArgs mea)
 		{
 			int numberOfLines = mea.Delta * SystemInformation.MouseWheelScrollLines / 120;
 			//BeginUpdate();
@@ -235,7 +236,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				SelectNextItem();
 				numberOfLines++;
 			}
-			//EndUpdate();			
+			//EndUpdate();
 		}
 		
 		protected override void OnPaintBackground(PaintEventArgs pe)

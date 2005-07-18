@@ -76,14 +76,6 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		
 		[Test]
-		public void InnerClassesTest()
-		{
-			IClass c = pc.GetClass("System.Environment.SpecialFolder");
-			Assert.IsNotNull(c, "c is null");
-			Assert.AreEqual("System.Environment.SpecialFolder", c.FullyQualifiedName);
-		}
-		
-		[Test]
 		public void InnerClassReferenceTest()
 		{
 			IClass c = pc.GetClass("System.Environment");
@@ -94,6 +86,14 @@ namespace ICSharpCode.SharpDevelop.Tests
 			IClass inner = rt.GetUnderlyingClass();
 			Assert.IsNotNull(inner, "UnderlyingClass");
 			Assert.AreEqual("System.Environment.SpecialFolder", inner.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void InnerClassesTest()
+		{
+			IClass c = pc.GetClass("System.Environment.SpecialFolder");
+			Assert.IsNotNull(c, "c is null");
+			Assert.AreEqual("System.Environment.SpecialFolder", c.FullyQualifiedName);
 		}
 		
 		[Test]

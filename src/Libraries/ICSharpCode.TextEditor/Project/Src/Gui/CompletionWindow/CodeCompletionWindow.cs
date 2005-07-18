@@ -76,9 +76,16 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			declarationViewWindow.ShowDeclarationViewWindow();
 			control.Focus();
 			CodeCompletionListViewSelectedItemChanged(this, EventArgs.Empty);
+			
+			if (completionDataProvider.DefaultIndex >= 0) {
+				codeCompletionListView.SelectIndex(completionDataProvider.DefaultIndex);
+			}
+			
 			if (completionDataProvider.PreSelection != null) {
 				CaretOffsetChanged(this, EventArgs.Empty);
 			}
+			
+			
 			
 			vScrollBar.Scroll += new ScrollEventHandler(DoScroll);
 		}
@@ -132,11 +139,11 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		void CodeCompletionListViewSelectedItemChanged(object sender, EventArgs e)
 		{
 			ICompletionData data = codeCompletionListView.SelectedCompletionData;
-			if (data != null && data.Description != null) {
+			if (data != null && data.Description != null && data.Description.Length > 0) {
 				declarationViewWindow.Description = data.Description;
 				SetDeclarationViewLocation();
 			} else {
-				declarationViewWindow.Size = new Size(0, 0);
+				declarationViewWindow.Description = null;
 			}
 		}
 		

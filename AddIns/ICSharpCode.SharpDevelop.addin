@@ -1401,7 +1401,7 @@
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/CodingOptions">
 		<DialogPanel id = "CodeTemplates"
 		             label = "${res:Dialog.Options.CodeTemplatesText}"
-		             class = "ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.CodeTemplatePane"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CodeTemplatePanel"/>
 	</Path>
 
 	<Path name = "/SharpDevelop/Views/ProjectBrowser/ContextMenu">
@@ -1713,9 +1713,15 @@
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
 		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
 			<MenuItem id = "InsertColor"
-			          insertafter = "Separator1" insertbefore = "Separator2"
+			          insertafter = "Separator1" insertbefore = "InsertGuid"
 			          label = "${res:XML.MainMenu.ToolMenu.InsColor}" 
 			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowColorDialog"/> 
+			<MenuItem id           = "InsertGuid"
+			          insertafter  = "InsertColor"
+			          insertbefore = "Separator2"
+			          shortcut     = "Control|Shift|G"
+			          label        = "${res:XML.MainMenu.ToolMenu.InsGUID}"
+			          class        = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.InsertGuidCommand"/>
 			<MenuItem id = "Separator2" type = "Separator" />
 
 			<MenuItem id = "GenerateCodeAction"

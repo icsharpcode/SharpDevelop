@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -18,6 +18,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			: base("#ctor", declaringType.DefaultReturnType,
 			       m, region, bodyRegion, declaringType)
 		{
+		}
+		
+		/// <summary>
+		/// Creates a default constructor for the class.
+		/// The constructor has the region of the class and a documentation comment saying
+		/// it is a default constructor.
+		/// </summary>
+		public static Constructor CreateDefault(IClass c)
+		{
+			Constructor con = new Constructor(ModifierEnum.Public, c.Region, c.Region, c);
+			con.Documentation = "Default constructor of " + c.Name;
+			return con;
 		}
 	}
 	

@@ -302,7 +302,7 @@
 
 			<DialogPanel id    = "GridOptions"
 			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PanelName}"
-			             class = "ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel"/>
+			             class = "ICSharpCode.FormDesigner.Gui.OptionPanels.GridOptionsPanel"/>
 
 		</DialogPanel>
 	</Path>

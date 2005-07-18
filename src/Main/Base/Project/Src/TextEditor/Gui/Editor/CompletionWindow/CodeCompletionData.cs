@@ -30,6 +30,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		IClass   c;
 		bool     convertedDocumentation = false;
 		
+		/// <summary>
+		/// Gets the class this CodeCompletionData object was created for.
+		/// Returns null if the CodeCompletionData object was created for a method/property etc.
+		/// </summary>
+		public IClass Class {
+			get {
+				return c;
+			}
+		}
 		
 		public int Overloads {
 			get {

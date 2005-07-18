@@ -48,9 +48,17 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		
 		public static object ParseExpression(string expr, Type type)
 		{
+			return ParseExpression(expr, type, false);
+		}
+		
+		public static object ParseExpression(string expr, Type type, bool expectErrors)
+		{
 			IParser parser = ParserFactory.CreateParser(SupportedLanguages.VBNet, new StringReader(expr));
 			object parsedExpression = parser.ParseExpression();
-			Assert.AreEqual("", parser.Errors.ErrorOutput);
+			if (expectErrors)
+				Assert.IsFalse(parser.Errors.ErrorOutput.Length == 0, "Expected errors, but operation completed successfully");
+			else
+				Assert.AreEqual("", parser.Errors.ErrorOutput);
 			Assert.IsTrue(type.IsAssignableFrom(parsedExpression.GetType()), String.Format("Parsed expression was {0} instead of {1} ({2})", parsedExpression.GetType(), type, parsedExpression));
 			return parsedExpression;
 		}

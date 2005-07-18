@@ -6,16 +6,11 @@
 // </file>
 
 using System;
-using System.Drawing;
-using System.Diagnostics;
-using System.Windows.Forms;
-using System.Reflection;
 using System.Collections;
 using System.Collections.Specialized;
-using System.Xml;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor;
 using ICSharpCode.SharpDevelop.Dom;
@@ -32,6 +27,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public ImageList ImageList {
 			get {
 				return ClassBrowserIconService.ImageList;
+			}
+		}
+		
+		public int DefaultIndex {
+			get {
+				return -1;
 			}
 		}
 		

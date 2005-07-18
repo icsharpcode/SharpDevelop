@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.member = member;
 			
 			if (parameterInfo.IsOut) {
-				modifier |= ParameterModifier.Out;
+				modifier = ParameterModifiers.Out;
 			}
 			Type type = parameterInfo.ParameterType;
 			// TODO read param attribute
@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			// seems there is no other way to determine a ref parameter
 			if (type.Name.EndsWith("&")) {
-				modifier |= ParameterModifier.Ref;
+				modifier |= ParameterModifiers.Ref;
 			}
 		}
 	}

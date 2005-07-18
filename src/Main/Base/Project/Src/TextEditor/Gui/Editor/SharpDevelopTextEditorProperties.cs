@@ -1,4 +1,4 @@
-using System;
+﻿using System;
 using System.Text;
 using System.Drawing;
 
@@ -210,7 +210,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		public Encoding Encoding {
 			get {
-				return Encoding.GetEncoding(properties.Get("Encoding", 1252));
+				return Encoding.GetEncoding(properties.Get("Encoding", 65001));
 			}
 			set {
 				properties.Set("Encoding", value.CodePage);

@@ -107,7 +107,7 @@
     <Compile Include="Src\Dom\ModifierEnum.cs" />
     <Compile Include="Src\Dom\IDecoration.cs" />
     <Compile Include="Src\Dom\IIndexer.cs" />
-    <Compile Include="Src\Dom\ParameterModifier.cs" />
+    <Compile Include="Src\Dom\ParameterModifiers.cs" />
     <Compile Include="Src\Dom\Implementations\AbstractDecoration.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultIndexer.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultUsing.cs" />
@@ -672,6 +672,7 @@
     <Compile Include="Src\Dom\Implementations\SearchClassReturnType.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\AbstractCompletionDataProvider.cs" />
     <Compile Include="Src\Dom\ExpressionContext.cs" />
+    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CachedCompletionDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

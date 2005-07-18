@@ -11,7 +11,7 @@
 
 	<RuleSets>
 		<RuleSet ignorecase="false">
-			<Delimiters>&amp;&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+			<Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 			
 			<Span name = "PreprocessorDirectives" bold="false" italic="false" color="Green" stopateol = "true">
 				<Begin>#</Begin>
@@ -30,12 +30,12 @@
 				<End>*/</End>
 			</Span>
 		  	
-			<Span name = "String" bold = "false" italic = "false" color = "Magenta" stopateol = "true">
+			<Span name = "String" bold = "false" italic = "false" color = "Blue" stopateol = "true">
 				<Begin>"</Begin>
 				<End>"</End>
 			</Span>
 			
-			<Span name = "MultiLineString" bold = "false" italic = "false" color = "Magenta" stopateol = "false" noescapesequences="true">
+			<Span name = "MultiLineString" bold = "false" italic = "false" color = "Blue" stopateol = "false" noescapesequences="true">
 				<Begin>@@"</Begin>
 				<End>"</End>
 			</Span>
@@ -111,6 +111,7 @@
 				<Key word = "continue" />
 				<Key word = "goto" />
 				<Key word = "return" />
+				<Key word = "yield" />
 			</KeyWords>
 		  
 			<KeyWords name = "ExceptionHandlingStatements" bold="true" italic="false" color="Teal">
@@ -196,6 +197,7 @@
 			    <Key word = "sealed" />
 			    <Key word = "static" />
 			    <Key word = "virtual" />
+				<Key word = "volatile" />
 		  	</KeyWords>
 		  
 		  	<KeyWords name = "AccessModifiers" bold="true" italic="false" color="Blue">
@@ -227,7 +229,7 @@
 			</KeyWords>
 		</RuleSet>
 		
-		<RuleSet name = "CommentMarkerSet" ignorecase = "true">
+		<RuleSet name = "CommentMarkerSet" ignorecase = "false">
 		  	<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 			<KeyWords name = "ErrorWords" bold="true" italic="false" color="Red">
 				<Key word = "TODO" />

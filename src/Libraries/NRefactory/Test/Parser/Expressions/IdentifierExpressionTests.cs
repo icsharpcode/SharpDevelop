@@ -41,6 +41,13 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			IdentifierExpression ie = (IdentifierExpression)ParseUtilVBNet.ParseExpression("MyIdentifier", typeof(IdentifierExpression));
 			Assert.AreEqual("MyIdentifier", ie.Identifier);
 		}
+		
+		[Test]
+		public void VBNetIdentifierExpressionTest2()
+		{
+			IdentifierExpression ie = (IdentifierExpression)ParseUtilVBNet.ParseExpression("[Public]", typeof(IdentifierExpression));
+			Assert.AreEqual("Public", ie.Identifier);
+		}
 		#endregion
 		
 	}

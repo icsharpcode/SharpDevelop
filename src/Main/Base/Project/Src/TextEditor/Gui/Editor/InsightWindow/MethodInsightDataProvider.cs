@@ -1,18 +1,15 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike KrÃƒÂ¼ger" email="mike@icsharpcode.net"/>
+//     <owner name="Mike Kr�ger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
 
 using System;
 using System.Drawing;
-using System.Windows.Forms;
-using System.Reflection;
 using System.Collections;
 using System.Collections.Generic;
 
-using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.Dom;
@@ -25,10 +22,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	public class MethodInsightDataProvider : IInsightDataProvider
 	{
-		string              fileName = null;
+		string    fileName = null;
 		IDocument document = null;
 		TextArea textArea  = null;
-		List<IMethod>    methods  = new List<IMethod>();
+		protected List<IMethodOrIndexer> methods  = new List<IMethodOrIndexer>();
+		
+		public List<IMethodOrIndexer> Methods {
+			get {
+				return methods;
+			}
+		}
 		
 		public int InsightDataCount {
 			get {
@@ -36,36 +39,81 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
+		int defaultIndex = -1;
+		
+		public int DefaultIndex {
+			get {
+				return defaultIndex;
+			}
+			set {
+				defaultIndex = value;
+			}
+		}
+		
 		public string GetInsightData(int number)
 		{
-			IMethod method = methods[number];
+			IMember method = methods[number];
 			IAmbience conv = AmbienceService.CurrentAmbience;
 			conv.ConversionFlags = ConversionFlags.StandardConversionFlags;
 			string documentation = method.Documentation;
-			return conv.Convert(method) +
-				"\n" +
-				CodeCompletionData.GetDocumentation(documentation); // new (by G.B.)
+			string text;
+			if (method is IMethod) {
+				text = conv.Convert(method as IMethod);
+			} else if (method is IIndexer) {
+				text = conv.Convert(method as IIndexer);
+			} else {
+				text = method.ToString();
+			}
+			return text + "\n" + CodeCompletionData.GetDocumentation(documentation);
+		}
+		
+		int lookupOffset;
+		bool setupOnlyOnce;
+		
+		/// <summary>
+		/// Creates a MethodInsightDataProvider looking at the caret position.
+		/// </summary>
+		public MethodInsightDataProvider()
+		{
+			this.lookupOffset = -1;
+		}
+		
+		/// <summary>
+		/// Creates a MethodInsightDataProvider looking at the specified position.
+		/// </summary>
+		public MethodInsightDataProvider(int lookupOffset, bool setupOnlyOnce)
+		{
+			this.lookupOffset = lookupOffset;
+			this.setupOnlyOnce = setupOnlyOnce;
 		}
 		
 		int initialOffset;
+		
 		public void SetupDataProvider(string fileName, TextArea textArea)
 		{
+			if (setupOnlyOnce && this.textArea != null) return;
 			IDocument document = textArea.Document;
 			this.fileName = fileName;
 			this.document = document;
 			this.textArea = textArea;
-			initialOffset = textArea.Caret.Offset;
+			int useOffset = (lookupOffset < 0) ? textArea.Caret.Offset : lookupOffset;
+			initialOffset = useOffset;
+			
 			
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
-			string word = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset) : expressionFinder.FindExpression(textArea.Document.TextContent, textArea.Caret.Offset - 1).Expression;
+			string word = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(textArea, useOffset) : expressionFinder.FindExpression(textArea.Document.TextContent, useOffset - 1).Expression;
 			if (word == null) // word can be null when cursor is in string/comment
 				return;
 			word = word.Trim();
 			
 			// the parser works with 1 based coordinates
-			int caretLineNumber = document.GetLineNumberForOffset(textArea.Caret.Offset) + 1;
-			int caretColumn     = textArea.Caret.Offset - document.GetLineSegment(caretLineNumber).Offset + 1;
-			
+			int caretLineNumber = document.GetLineNumberForOffset(useOffset) + 1;
+			int caretColumn     = useOffset - document.GetLineSegment(caretLineNumber).Offset + 1;
+			SetupDataProvider(fileName, document, word, caretLineNumber, caretColumn);
+		}
+		
+		protected virtual void SetupDataProvider(string fileName, IDocument document, string word, int caretLineNumber, int caretColumn)
+		{
 			bool constructorInsight = false;
 			if (word.ToLower().StartsWith("new ")) {
 				constructorInsight = true;
@@ -80,6 +128,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					if (method.IsConstructor && !method.IsStatic) {
 						methods.Add(method);
 					}
+				}
+				if (methods.Count == 0 && !result.ResolvedClass.IsAbstract && !result.ResolvedClass.IsStatic) {
+					// add default constructor
+					methods.Add(Constructor.CreateDefault(result.ResolvedClass));
 				}
 			} else {
 				MethodResolveResult result = results as MethodResolveResult;

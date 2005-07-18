@@ -54,9 +54,25 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			this.context = context;
 		}
 		
+		bool forceNewExpression;
+		
+		/// <summary>
+		/// Gets/Sets whether the CtrlSpaceCompletionDataProvider creates a new completion
+		/// dropdown instead of completing an old expression.
+		/// Default value is false.
+		/// </summary>
+		public bool ForceNewExpression {
+			get {
+				return forceNewExpression;
+			}
+			set {
+				forceNewExpression = value;
+			}
+		}
+		
 		protected override void GenerateCompletionData(TextArea textArea, char charTyped)
 		{
-			string expression = GetExpression(textArea);
+			string expression = forceNewExpression ? null : GetExpression(textArea);
 			preSelection = null;
 			if (expression == null || expression.Length == 0) {
 				preSelection = "";

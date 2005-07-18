@@ -220,7 +220,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			try {
 				XmlValidatingReader validatingReader = new XmlValidatingReader(reader);
-				Stream schemaStream = typeof(SyntaxMode).Assembly.GetManifestResourceStream("Mode.xsd");
+				Stream schemaStream = typeof(SyntaxMode).Assembly.GetManifestResourceStream("ICSharpCode.TextEditor.Resources.Mode.xsd");
 				validatingReader.Schemas.Add("", new XmlTextReader(schemaStream));
 				validatingReader.ValidationType = ValidationType.Schema;
 				validatingReader.ValidationEventHandler += new ValidationEventHandler(ValidationHandler);

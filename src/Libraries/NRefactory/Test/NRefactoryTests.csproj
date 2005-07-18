@@ -13,8 +13,6 @@
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <OutputType>Library</OutputType>
-    <StartupObject>
-    </StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -127,6 +125,7 @@
     <Compile Include="Parser\SkipMethodBodiesTest.cs" />
     <Compile Include="Parser\Expressions\AnonymousMethodTests.cs" />
     <Compile Include="Output\CodeDOM\InvocationExpressionTest.cs" />
+    <Compile Include="Parser\Expressions\TypeReferenceExpressionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\NRefactory.csproj">

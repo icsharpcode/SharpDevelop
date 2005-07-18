@@ -19,12 +19,13 @@ namespace CSharpBinding.Parser
 		
 		public ExpressionResult FindExpression(string inText, int offset)
 		{
+			inText = FilterComments(inText, ref offset);
 			return CreateResult(FindExpressionInternal(inText, offset));
 		}
 		
-		string FindExpressionInternal(string inText, int offset)
+		public string FindExpressionInternal(string inText, int offset)
 		{
-			this.text = FilterComments(inText, ref offset);
+			this.text = inText;
 			this.offset = this.lastAccept = offset;
 			this.state  = START;
 			if (this.text == null) {
@@ -49,9 +50,17 @@ namespace CSharpBinding.Parser
 			return this.text.Substring(this.lastAccept + 1, offset - this.lastAccept);
 		}
 		
+		internal int LastExpressionStartPosition {
+			get {
+				return ((state == ACCEPTNOMORE) ? offset : lastAccept) + 1;
+			}
+		}
+		
 		public ExpressionResult FindFullExpression(string inText, int offset)
 		{
-			string expressionBeforeOffset = FindExpressionInternal(inText, offset);
+			int offsetWithoutComments = offset;
+			string textWithoutComments = FilterComments(inText, ref offsetWithoutComments);
+			string expressionBeforeOffset = FindExpressionInternal(textWithoutComments, offsetWithoutComments);
 			if (expressionBeforeOffset == null || expressionBeforeOffset.Length == 0)
 				return CreateResult(null);
 			StringBuilder b = new StringBuilder(expressionBeforeOffset);

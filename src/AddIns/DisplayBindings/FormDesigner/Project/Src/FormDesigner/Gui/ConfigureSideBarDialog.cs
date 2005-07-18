@@ -14,7 +14,7 @@ namespace ICSharpCode.FormDesigner.Gui
 		
 		public ConfigureSideBarDialog()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ConfigureSidebarDialog.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormDesigner.Resources.ConfigureSidebarDialog.xfrm"));
 			
 			oldComponents = ToolboxProvider.ComponentLibraryLoader.CopyCategories();
 			

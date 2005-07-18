@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -39,7 +39,12 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 			set {
 				description = value;
-				Refresh();
+				if (value == null && Visible) {
+					Visible = false;
+				} else if (value != null) {
+					if (!Visible) ShowDeclarationViewWindow();
+					Refresh();
+				}
 			}
 		}
 		
