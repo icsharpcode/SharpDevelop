@@ -135,8 +135,11 @@ namespace DebuggerLibrary
 		public void Dispose()
 		{
 			if (symReader != null) {
-				System.Reflection.MethodInfo m = symReader.GetType().GetMethod("Finalize");
-				m.Invoke(symReader, null);
+				try {
+					System.Reflection.MethodInfo m = symReader.GetType().GetMethod("{dtor}");
+					m.Invoke(symReader, null);
+				} catch {
+				}
 			}
 		}
 	}
