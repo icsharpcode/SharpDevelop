@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike KrÃ¼ger" email="mike@icsharpcode.net"/>
+//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
 
@@ -71,55 +71,6 @@ namespace ICSharpCode.Core
 		public Breakpoint(ICSharpCode.TextEditor.Document.IDocument document, string fileName, int lineNumber)
 		{
 			bookmark = new BreakpointBookmark(this, fileName, document, lineNumber - 1);
-		}
-	}
-	
-	public class BreakpointBookmark : SDBookmark
-	{
-		Breakpoint breakpoint;
-		
-		public Breakpoint Breakpoint {
-			get {
-				return breakpoint;
-			}
-		}
-		
-		public BreakpointBookmark(Breakpoint breakpoint, string fileName, ICSharpCode.TextEditor.Document.IDocument document, int lineNumber) : base(fileName, document, lineNumber)
-		{
-			this.breakpoint = breakpoint;
-		}
-		
-		public override void Draw(ICSharpCode.TextEditor.IconBarMargin margin, Graphics g, Point p)
-		{
-			margin.DrawBreakpoint(g, p.Y, IsEnabled);
-		}
-	}
-	
-	public class MethodCall
-	{
-		public static MethodCall NoDebugInformation = new MethodCall("<no debug information>", String.Empty);
-		public static MethodCall Unknown            = new MethodCall("<unknown>", String.Empty);
-		
-		string methodName;
-		string methodLanguage;
-		
-		public string Name {
-			get {
-				return methodName;
-			}
-		}
-		
-		public string Language {
-			get {
-				return methodLanguage;
-			}
-		}
-		
-		
-		public MethodCall(string methodName, string methodLanguage)
-		{
-			this.methodName = methodName;
-			this.methodLanguage = methodLanguage;
 		}
 	}
 }

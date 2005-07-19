@@ -31,13 +31,6 @@ namespace ICSharpCode.Core
 		static IDebugger                  defaultDebugger = null;
 		static IDebugger                  currentDebugger = null;
 		static ArrayList                  debugger        = null;
-		//static ArrayList                  breakpoints     = new ArrayList();
-		
-		/*public static ArrayList Breakpoints {
-			get {
-				return breakpoints;
-			}
-		}*/
 		
 		public static IDebugger CurrentDebugger {
 			get {
@@ -212,14 +205,7 @@ namespace ICSharpCode.Core
 				debugger.Start(fileName, workingDirectory, arguments);
 				debugger.DebugStopped += new EventHandler(HandleDebugStopped);
 			}
-			
-//			lock (breakpoints) {
-//				foreach (Breakpoint breakpoint in breakpoints) {
-//					if (breakpoint.Enabled) {
-//						brea.AddBreakpoint(fileName, breakpoint.FileName, breakpoint.Line);
-//					}
-//				}
-//			}
+
 			isRunning = true;
 		}
 		
@@ -286,30 +272,6 @@ namespace ICSharpCode.Core
 			standardProcess = null;
 			isRunning       = false;
 		}
-		
-//		protected override void OnException(ExceptionEventArgs e)
-//		{
-//			base.OnException(e);
-//			OnTextMessage(new TextMessageEventArgs("Got Exception\n"));
-//			StopDebugger();
-//		}
-		//
-//		protected override void OnProcessExited(ProcessEventArgs e)
-//		{
-//			OnTextMessage(new TextMessageEventArgs(String.Format("The program '[{1}] {0}' exited with code {2}.{3}\n",
-//			                                                 "Unknown",
-//			                                                 e.Process.ID,
-//			                                                 "Unknown",Environment.NewLine)));
-//			base.OnProcessExited(e);
-//		}
-//		protected override void OnModuleLoaded(ModuleEventArgs e)
-//		{
-//			OnTextMessage(new TextMessageEventArgs(String.Format("'{0}' : '{1}' loaded, {2}.{3}\n",
-//			                                                 "Unknown",
-//			                                                 e.Module.Name,
-//			                                                 "Unknown",Environment.NewLine)));
-//			base.OnModuleLoaded(e);
-//		}
 		
 		public static event EventHandler BreakPointChanged;
 		public static event EventHandler BreakPointAdded;
