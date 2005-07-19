@@ -75,12 +75,68 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			CheckToken("\"\"\"\"c", Tokens.LiteralCharacter, '"');
 		}
 		
-		/*
-		 * TODO : Test the following:
-		public const int LiteralDouble        = 6;
-		public const int LiteralSingle        = 7;
-		public const int LiteralDecimal       = 8;
-		public const int LiteralDate          = 9;
-		 */
+		[Test]
+		public void TestDateLiterals()
+		{
+			CheckToken("# 8/23/1970 #", Tokens.LiteralDate, new DateTime(1970, 8, 23, 0, 0, 0));
+			CheckToken("#8/23/1970#", Tokens.LiteralDate, new DateTime(1970, 8, 23, 0, 0, 0));
+			CheckToken("# 8/23/1970  3:45:39AM #", Tokens.LiteralDate, new DateTime(1970, 8, 23, 3, 45, 39));
+			CheckToken("# 3:45:39AM #", Tokens.LiteralDate, new DateTime(1, 1, 1, 3, 45, 39));
+			CheckToken("# 3:45:39  PM #", Tokens.LiteralDate, new DateTime(1, 1, 1, 15, 45, 39));
+			CheckToken("# 3:45:39 #", Tokens.LiteralDate, new DateTime(1, 1, 1, 3, 45, 39));
+			CheckToken("# 13:45:39 #", Tokens.LiteralDate, new DateTime(1, 1, 1, 13, 45, 39));
+			CheckToken("# 1AM #", Tokens.LiteralDate, new DateTime(1, 1, 1, 1, 0, 0));
+		}
+		
+		[Test]
+		public void TestDouble()
+		{
+			CheckToken("1.0", Tokens.LiteralDouble, 1.0);
+			CheckToken("1.1", Tokens.LiteralDouble, 1.1);
+			CheckToken("2e-5", Tokens.LiteralDouble, 2e-5);
+			CheckToken("2.0e-5", Tokens.LiteralDouble, 2e-5);
+			CheckToken("2e5", Tokens.LiteralDouble, 2e5);
+			CheckToken("2.2e5", Tokens.LiteralDouble, 2.2e5);
+			CheckToken("2e+5", Tokens.LiteralDouble, 2e5);
+			CheckToken("2.2e+5", Tokens.LiteralDouble, 2.2e5);
+			
+			CheckToken("1r", Tokens.LiteralDouble, 1.0);
+			CheckToken("1.0r", Tokens.LiteralDouble, 1.0);
+			CheckToken("1.1r", Tokens.LiteralDouble, 1.1);
+			CheckToken("2e-5r", Tokens.LiteralDouble, 2e-5);
+			CheckToken("2.0e-5r", Tokens.LiteralDouble, 2e-5);
+			CheckToken("2e5r", Tokens.LiteralDouble, 2e5);
+			CheckToken("2.2e5r", Tokens.LiteralDouble, 2.2e5);
+			CheckToken("2e+5r", Tokens.LiteralDouble, 2e5);
+			CheckToken("2.2e+5r", Tokens.LiteralDouble, 2.2e5);
+		}
+		
+		[Test]
+		public void TestSingle()
+		{
+			CheckToken("1f", Tokens.LiteralSingle, 1.0f);
+			CheckToken("1.0f", Tokens.LiteralSingle, 1.0f);
+			CheckToken("1.1f", Tokens.LiteralSingle, 1.1f);
+			CheckToken("2e-5f", Tokens.LiteralSingle, 2e-5f);
+			CheckToken("2.0e-5f", Tokens.LiteralSingle, 2e-5f);
+			CheckToken("2e5f", Tokens.LiteralSingle, 2e5f);
+			CheckToken("2.2e5f", Tokens.LiteralSingle, 2.2e5f);
+			CheckToken("2e+5f", Tokens.LiteralSingle, 2e5f);
+			CheckToken("2.2e+5f", Tokens.LiteralSingle, 2.2e5f);
+		}
+		
+		[Test]
+		public void TestDecimal()
+		{
+			CheckToken("1d", Tokens.LiteralDecimal, 1m);
+			CheckToken("1.0d", Tokens.LiteralDecimal, 1.0m);
+			CheckToken("1.1d", Tokens.LiteralDecimal, 1.1m);
+			CheckToken("2e-5d", Tokens.LiteralDecimal, 2e-5m);
+			CheckToken("2.0e-5d", Tokens.LiteralDecimal, 2.0e-5m);
+			CheckToken("2e5d", Tokens.LiteralDecimal, 2e5m);
+			CheckToken("2.2e5d", Tokens.LiteralDecimal, 2.2e5m);
+			CheckToken("2e+5d", Tokens.LiteralDecimal, 2e5m);
+			CheckToken("2.2e+5d", Tokens.LiteralDecimal, 2.2e5m);
+		}
 	}
 }

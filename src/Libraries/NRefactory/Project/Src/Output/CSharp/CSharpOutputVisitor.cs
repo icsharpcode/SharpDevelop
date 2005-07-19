@@ -1973,6 +1973,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		public object Visit(GlobalReferenceExpression globalReferenceExpression, object data) {
+			outputFormatter.PrintIdentifier("global::");
+			return null;
+		}
+		
 		public object Visit(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.New);

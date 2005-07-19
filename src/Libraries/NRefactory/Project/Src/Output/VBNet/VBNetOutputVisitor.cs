@@ -1737,13 +1737,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 					
 				case BinaryOperatorType.AsCast:
-					outputFormatter.PrintIdentifier("CType(Microsoft.VisualBasic.IIf(TypeOf ");
+					outputFormatter.PrintIdentifier("TryCast(");
 					nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
-					outputFormatter.PrintIdentifier(" Is ");
-					nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
 					outputFormatter.PrintIdentifier(", ");
-					nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
-					outputFormatter.PrintIdentifier(", Nothing), ");
 					nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
 					outputFormatter.PrintIdentifier(")");
 					return null;
@@ -2100,6 +2096,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(BaseReferenceExpression baseReferenceExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.MyBase);
+			return null;
+		}
+		
+		public object Visit(GlobalReferenceExpression globalReferenceExpression, object data)
+		{
+			outputFormatter.PrintToken(Tokens.Global);
+			outputFormatter.PrintToken(Tokens.Dot);
 			return null;
 		}
 		

@@ -169,6 +169,7 @@
 				<Key word = "Continue" />
 				<Key word = "Dim" />
 				<Key word = "ReDim" />
+				<Key word = "Preserve" />
 				<Key word = "Erase" />
 				<Key word = "On" />
 				<Key word = "Error" />

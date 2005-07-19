@@ -59,24 +59,47 @@ namespace VBNetBinding.FormattingStrategy
 			
 			keywords = new StringCollection();
 			keywords.AddRange(new string[] {
-				"AddHandler", "AddressOf", "Alias", "And", "AndAlso", "Ansi", "As", "Assembly",
-				"Auto", "Boolean", "ByRef", "Byte", "ByVal", "Call", "Case", "Catch",
-				"CBool", "CByte", "CChar", "CDate", "CDec", "CDbl", "Char", "CInt", "Class",
-				"CLng", "CObj", "Const", "CShort", "CSng", "CStr", "CType",
-				"Date", "Decimal", "Declare", "Default", "Delegate", "Dim", "DirectCast", "Do",
-				"Double", "Each", "Else", "ElseIf", "End", "Enum", "Erase", "Error",
-				"Event", "Exit", "False", "Finally", "For", "Friend", "Function", "Get",
-				"GetType", "GoSub", "GoTo", "Handles", "If", "Implements", "Imports", "In",
-				"Inherits", "Integer", "Interface", "Is", "Let", "Lib", "Like", "Long",
-				"Loop", "Me", "Mod", "Module", "MustInherit", "MustOverride", "MyBase", "MyClass",
-				"Namespace", "New", "Next", "Not", "Nothing", "NotInheritable", "NotOverridable", "Object",
-				"On", "Option", "Optional", "Or", "OrElse", "Overloads", "Overridable", "Overrides",
-				"ParamArray", "Preserve", "Private", "Property", "Protected", "Public", "RaiseEvent", "ReadOnly",
-				"ReDim", "Region", "REM", "RemoveHandler", "Resume", "Return", "Select", "Set", "Shadows",
-				"Shared", "Short", "Single", "Static", "Step", "Stop", "String", "Structure",
-				"Sub", "SyncLock", "Then", "Throw", "To", "True", "Try", "TypeOf",
-				"Unicode", "Until", "Variant", "When", "While", "With", "WithEvents", "WriteOnly", "Xor"
-			});
+			                  	"AddHandler", "AddressOf", "Alias", "And",
+			                  	"AndAlso", "As", "Boolean", "ByRef",
+			                  	"Byte", "ByVal", "Call", "Case",
+			                  	"Catch", "CBool", "CByte", "CChar",
+			                  	"CDate", "CDbl", "CDec", "Char",
+			                  	"CInt", "Class", "CLng", "CObj",
+			                  	"Const", "Continue", "CSByte", "CShort",
+			                  	"CSng", "CStr", "CType", "CUInt",
+			                  	"CULng", "CUShort", "Date", "Decimal",
+			                  	"Declare", "Default", "Delegate", "Dim",
+			                  	"DirectCast", "Do", "Double", "Each",
+			                  	"Else", "ElseIf", "End", "EndIf", // EndIf special case: converted to "End If"
+			                  	"Enum", "Erase", "Error", "Event",
+			                  	"Exit", "False", "Finally", "For",
+			                  	"Friend", "Function", "Get", "GetType",
+			                  	"Global", "GoSub", "GoTo", "Handles",
+			                  	"If", "Implements", "Imports", "In",
+			                  	"Inherits", "Integer", "Interface", "Is",
+			                  	"IsNot", "Let", "Lib", "Like",
+			                  	"Long", "Loop", "Me", "Mod",
+			                  	"Module", "MustInherit", "MustOverride", "MyBase",
+			                  	"MyClass", "Namespace", "Narrowing", "New",
+			                  	"Next", "Not", "Nothing", "NotInheritable",
+			                  	"NotOverridable", "Object", "Of", "On",
+			                  	"Operator", "Option", "Optional", "Or",
+			                  	"OrElse", "Overloads", "Overridable", "Overrides",
+			                  	"ParamArray", "Partial", "Private", "Property",
+			                  	"Protected", "Public", "RaiseEvent", "ReadOnly",
+			                  	"ReDim", "REM", "RemoveHandler", "Resume",
+			                  	"Return", "SByte", "Select", "Set",
+			                  	"Shadows", "Shared", "Short", "Single",
+			                  	"Static", "Step", "Stop", "String",
+			                  	"Structure", "Sub", "SyncLock", "Then",
+			                  	"Throw", "To", "True", "Try",
+			                  	"TryCast", "TypeOf", "UInteger", "ULong",
+			                  	"UShort", "Using", "Variant", "Wend",
+			                  	"When", "While", "Widening", "With",
+			                  	"WithEvents", "WriteOnly", "Xor",
+			                  	// these are not keywords, but context dependend
+			                  	"Until", "Ansi", "Unicode", "Region", "Preserve"
+			                  });
 		}
 		
 		/// <summary>
@@ -245,7 +268,10 @@ namespace VBNetBinding.FormattingStrategy
 							string regex = "(?:\\W|^)(" + keyword + ")(?:\\W|$)";
 							MatchCollection matches = Regex.Matches(texttoreplace, regex, RegexOptions.IgnoreCase | RegexOptions.Singleline);
 							foreach (Match match in matches) {
-								textArea.Document.Replace(lineAbove.Offset + match.Groups[1].Index, match.Groups[1].Length, keyword);
+								if (keyword == "EndIf") // special case
+									textArea.Document.Replace(lineAbove.Offset + match.Groups[1].Index, match.Groups[1].Length, "End If");
+								else
+									textArea.Document.Replace(lineAbove.Offset + match.Groups[1].Index, match.Groups[1].Length, keyword);
 								++undoCount;
 							}
 						}

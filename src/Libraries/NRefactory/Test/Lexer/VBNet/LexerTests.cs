@@ -1095,5 +1095,89 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			ILexer lexer = GenerateLexer(new StringReader("Xor"));
 			Assert.AreEqual(Tokens.Xor, lexer.NextToken().kind);
 		}
+		[Test()]
+		public void TestContinue()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Continue"));
+			Assert.AreEqual(Tokens.Continue, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestOperator()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Operator"));
+			Assert.AreEqual(Tokens.Operator, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestUsing()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Using"));
+			Assert.AreEqual(Tokens.Using, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestIsNot()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("IsNot"));
+			Assert.AreEqual(Tokens.IsNot, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestSByte()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("SByte"));
+			Assert.AreEqual(Tokens.SByte, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestUInteger()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("UInteger"));
+			Assert.AreEqual(Tokens.UInteger, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestULong()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("ULong"));
+			Assert.AreEqual(Tokens.ULong, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestUShort()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("UShort"));
+			Assert.AreEqual(Tokens.UShort, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestGlobal()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Global"));
+			Assert.AreEqual(Tokens.Global, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestTryCast()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("TryCast"));
+			Assert.AreEqual(Tokens.TryCast, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestOf()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Of"));
+			Assert.AreEqual(Tokens.Of, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestNarrowing()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Narrowing"));
+			Assert.AreEqual(Tokens.Narrowing, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestWidening()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Widening"));
+			Assert.AreEqual(Tokens.Widening, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestPartial()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Partial"));
+			Assert.AreEqual(Tokens.Partial, lexer.NextToken().kind);
+		}
 	}
 }

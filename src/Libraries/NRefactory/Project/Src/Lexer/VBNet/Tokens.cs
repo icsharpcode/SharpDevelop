@@ -205,12 +205,14 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		public const int UInteger             = 191;
 		public const int ULong                = 192;
 		public const int UShort               = 193;
-		public const int Of                   = 194;
-		public const int Narrowing            = 195;
-		public const int Widening             = 196;
-		public const int Partial              = 197;
+		public const int Global               = 194;
+		public const int TryCast              = 195;
+		public const int Of                   = 196;
+		public const int Narrowing            = 197;
+		public const int Widening             = 198;
+		public const int Partial              = 199;
 
-		public const int maxToken = 198;
+		public const int maxToken = 200;
 		static BitArray NewSet(params int[] values)
 		{
 			BitArray bitArray = new BitArray(maxToken);
@@ -420,6 +422,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"UInteger",
 			"ULong",
 			"UShort",
+			"Global",
+			"TryCast",
 			"Of",
 			"Narrowing",
 			"Widening",

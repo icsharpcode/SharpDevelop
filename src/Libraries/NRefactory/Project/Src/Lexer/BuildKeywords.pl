@@ -1,7 +1,7 @@
 #!/bin/perl
 
 # File names
-$keyword_file     = "CSharpKeywordList.txt";
+$keyword_file     = "KeywordList.txt";
 $keywords_outfile = "Keywords.cs";
 $tokens_outfile   = "Tokens.cs";
 $unittests_outfile = "LexerTests.cs";
@@ -19,10 +19,10 @@ print "done.\n";
 print "starting analysation ... this could take a few minutes.\n";
 
 foreach (@raw_data) {
-	if ($_=~/^\s*\$(\w+)\s*=\s*(\S+)$/) {
+	if ($_=~/^\s*\$(\w+)\s*=\s*(\S+)\s*$/) {
 		#properties form: $PROPERTY = "VALUE"
 		$properties{$1} = $2;
-	} elsif  ($_=~/^\s*(\w+)\s*=\s*(\S+)$/) {
+	} elsif  ($_=~/^\s*(\w+)\s*=\s*(\S+)\s*$/) {
 		#special characters form: name = "VALUE"
 		$specialCharLookup{$2} = $1;
 		$special_chars[$#special_chars + 1] = $1;
@@ -40,7 +40,11 @@ foreach (@raw_data) {
 	} elsif  ($_=~/^\s*(\w+)\s*$/) {
 		#special terminal classes form: name
 		$terminals[$#terminals + 1] = $1
-	} 
+	} elsif  ($_=~/^\s*(#.*)?$/) {
+		#ignore empty line
+	} else {
+		print "unknown line: $_";
+	}
 }
 
 

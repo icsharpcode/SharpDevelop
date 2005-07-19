@@ -159,6 +159,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"UINTEGER",
 			"ULONG",
 			"USHORT",
+			"GLOBAL",
+			"TRYCAST",
 			"OF",
 			"NARROWING",
 			"WIDENING",

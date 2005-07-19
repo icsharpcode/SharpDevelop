@@ -176,6 +176,18 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		}
 		
 		[Test]
+		public void VBNetEnumWithBaseClassDeclarationTest()
+		{
+			string program = "Enum TestEnum As Byte\n" +
+				"End Enum\n";
+			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			
+			Assert.AreEqual("TestEnum", td.Name);
+			Assert.AreEqual(Types.Enum, td.Type);
+			Assert.AreEqual("Byte", td.BaseTypes[0].ToString());
+		}
+		
+		[Test]
 		public void VBNetSimpleClassTypeDeclarationWithoutLastNewLineTest()
 		{
 			string program = "Class TestClass\n" +
@@ -198,6 +210,73 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(Types.Class, td.Type);
 			Assert.AreEqual(Modifier.Partial, td.Modifier);
+		}
+		
+		[Test]
+		public void VBNetGenericClassTypeDeclarationTest()
+		{
+			string declr = @"
+Public Class Test(Of T)
+
+End Class
+";
+			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(declr, typeof(TypeDeclaration));
+			
+			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual("Test", td.Name);
+			Assert.AreEqual(Modifier.Public, td.Modifier);
+			Assert.AreEqual(0, td.BaseTypes.Count);
+			Assert.AreEqual(1, td.Templates.Count);
+			Assert.AreEqual("T", td.Templates[0].Name);
+		}
+		
+		[Test]
+		public void VBNetGenericClassWithConstraint()
+		{
+			string declr = @"
+Public Class Test(Of T As IMyInterface)
+
+End Class
+";
+			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(declr, typeof(TypeDeclaration));
+			
+			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual("Test", td.Name);
+			
+			Assert.AreEqual(1, td.Templates.Count);
+			Assert.AreEqual("T", td.Templates[0].Name);
+			Assert.AreEqual("IMyInterface", td.Templates[0].Bases[0].Type);
+		}
+		
+		[Test]
+		public void VBNetComplexGenericClassTypeDeclarationTest()
+		{
+			string declr = @"
+Public Class Generic(Of T As MyNamespace.IMyInterface, S As {G(Of T()), IAnotherInterface})
+	Implements System.IComparable
+
+End Class
+";
+			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(declr, typeof(TypeDeclaration));
+			
+			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual("Generic", td.Name);
+			Assert.AreEqual(Modifier.Public, td.Modifier);
+			Assert.AreEqual(1, td.BaseTypes.Count);
+			Assert.AreEqual("System.IComparable", td.BaseTypes[0]);
+			
+			Assert.AreEqual(2, td.Templates.Count);
+			Assert.AreEqual("T", td.Templates[0].Name);
+			Assert.AreEqual("MyNamespace.IMyInterface", td.Templates[0].Bases[0].Type);
+			
+			Assert.AreEqual("S", td.Templates[1].Name);
+			Assert.AreEqual(2, td.Templates[1].Bases.Count);
+			Assert.AreEqual("G", td.Templates[1].Bases[0].Type);
+			Assert.AreEqual(1, td.Templates[1].Bases[0].GenericTypes.Count);
+			Assert.IsTrue(td.Templates[1].Bases[0].GenericTypes[0].IsArrayType);
+			Assert.AreEqual("T", td.Templates[1].Bases[0].GenericTypes[0].Type);
+			Assert.AreEqual(new int[] {0}, td.Templates[1].Bases[0].GenericTypes[0].RankSpecifier);
+			Assert.AreEqual("IAnotherInterface", td.Templates[1].Bases[1].Type);
 		}
 		#endregion
 	}

@@ -392,7 +392,10 @@ namespace ICSharpCode.Core
 			if (dict.ContainsKey(nameSpace)) {
 				NamespaceStruct ns = dict[nameSpace];
 				list.AddRange(ns.Classes);
-				list.AddRange(ns.SubNamespaces);
+				foreach (string subns in ns.SubNamespaces) {
+					if (!list.Contains(subns))
+						list.Add(subns);
+				}
 			}
 		}
 		

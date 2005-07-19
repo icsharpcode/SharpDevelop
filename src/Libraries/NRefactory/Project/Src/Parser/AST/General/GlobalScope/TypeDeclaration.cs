@@ -137,6 +137,8 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		public TemplateDefinition(string name, ArrayList attributes) : base(attributes)
 		{
+			if (name == null || name.Length == 0)
+				name = "?";
 			this.name = name;
 		}
 		

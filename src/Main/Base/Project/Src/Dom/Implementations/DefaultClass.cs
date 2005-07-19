@@ -254,10 +254,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return true;
 			}
 		}
-		
+
+		// used to prevent StackOverflowException because SearchType might search for inner classes in the base type
+		bool blockBaseClassSearch = false;
+
 		public IClass GetBaseClass(int index)
 		{
-			return ProjectContent.SearchType(BaseTypes[index], this, Region != null ? Region.BeginLine : 0, Region != null ? Region.BeginColumn : 0);
+			if (blockBaseClassSearch)
+				return null;
+			blockBaseClassSearch = true;
+			try {
+				return ProjectContent.SearchType(BaseTypes[index], this, Region != null ? Region.BeginLine : 0, Region != null ? Region.BeginColumn : 0);
+			} finally {
+				blockBaseClassSearch = false;
+			}
 		}
 		
 		public IClass BaseClass {
@@ -273,17 +283,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 				
 				// no baseType found
 				switch (ClassType) {
-					case ClassType.Enum:
-						return ProjectContent.GetClass("System.Enum");
 					case ClassType.Class:
 						if (FullyQualifiedName != "System.Object") {
-							return ProjectContent.GetClass("System.Object");
+							return ReflectionReturnType.Object.GetUnderlyingClass();
 						}
 						break;
+					case ClassType.Enum:
+						return ProjectContentRegistry.GetMscorlibContent().GetClass("System.Enum");
 					case ClassType.Delegate:
-						return ProjectContent.GetClass("System.Delegate");
+						return ProjectContentRegistry.GetMscorlibContent().GetClass("System.Delegate");
 					case ClassType.Struct:
-						return ProjectContent.GetClass("System.ValueType");
+						return ProjectContentRegistry.GetMscorlibContent().GetClass("System.ValueType");
 				}
 				return null;
 			}

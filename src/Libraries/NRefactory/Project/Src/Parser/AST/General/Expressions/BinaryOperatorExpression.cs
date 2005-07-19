@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		ReferenceInequality,
 		/// <summary>C#: Is</summary>
 		TypeCheck,
-		/// <summary>C#: as-cast</summary>
+		/// <summary>'as' in C#, 'TryCast(l, r)' in VB</summary>
 		AsCast,
 		/// <summary>VB-only: Like</summary>
 		Like,

@@ -119,9 +119,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			}
 			Expression expr = null;
-			if (expression == "") {
-				if ((expr = WithResolve()) == null) {
-					return null;
+			if (language == SupportedLanguages.VBNet) {
+				if (expression == "") {
+					if ((expr = WithResolve()) == null) {
+						return null;
+					}
+				} else if ("global".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
+					return new NamespaceResolveResult(null, null, "");
 				}
 			}
 			if (expr == null) {
@@ -453,7 +457,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return new BaseReferenceExpression();
 				} else if ("myclass".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
 					return new ClassReferenceExpression();
-				}
+				} // Global is handled in Resolve() because we don't need an expression for that
 			} else if (language == SupportedLanguages.CSharp) {
 				// generic type names are no expressions, only property access on them is an expression
 				if (expression.EndsWith(">")) {

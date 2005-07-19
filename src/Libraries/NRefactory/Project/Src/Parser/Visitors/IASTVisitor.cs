@@ -110,6 +110,7 @@ namespace ICSharpCode.NRefactory.Parser
 		object Visit(IndexerExpression indexerExpression, object data);
 		object Visit(ThisReferenceExpression thisReferenceExpression, object data);
 		object Visit(BaseReferenceExpression baseReferenceExpression, object data);
+		object Visit(GlobalReferenceExpression globalReferenceExpression, object data);
 		object Visit(ObjectCreateExpression objectCreateExpression, object data);
 		object Visit(ArrayCreateExpression arrayCreateExpression, object data);
 		object Visit(FieldReferenceExpression fieldReferenceExpression, object data);
