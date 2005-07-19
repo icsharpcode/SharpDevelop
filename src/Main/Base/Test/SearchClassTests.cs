@@ -23,7 +23,10 @@ namespace ICSharpCode.SharpDevelop.Tests
 			pc.ReferencedContents.Add(ProjectContentRegistry.GetMscorlibContent());
 			pc.Language = language;
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(pc);
-			cu.Usings.Add(CreateUsing(pc, "System"));
+			if (language == LanguageProperties.VBNet)
+				cu.Usings.Add(CreateUsing(pc, "syStEm"));
+			else
+				cu.Usings.Add(CreateUsing(pc, "System"));
 			return cu;
 		}
 		
@@ -37,25 +40,39 @@ namespace ICSharpCode.SharpDevelop.Tests
 		IClass SearchType(string type)
 		{
 			ICompilationUnit cu = Prepare(LanguageProperties.CSharp);
-			return cu.ProjectContent.SearchType(type, null, 1, 1);
+			IClass c = cu.ProjectContent.SearchType(type, null, cu, 1, 1);
+			Assert.IsNotNull(c, type + "not found");
+			return c;
 		}
 		
 		IClass SearchTypeVB(string type)
 		{
 			ICompilationUnit cu = Prepare(LanguageProperties.VBNet);
-			return cu.ProjectContent.SearchType(type, null, 1, 1);
+			IClass c = cu.ProjectContent.SearchType(type, null, cu, 1, 1);
+			Assert.IsNotNull(c, type + "not found");
+			return c;
 		}
-		
-		string SearchNamespace(string @namespace)
+
+		void CheckNamespace(string @namespace, string className)
 		{
-			ICompilationUnit cu = Prepare(LanguageProperties.CSharp);
-			return cu.ProjectContent.SearchNamespace(@namespace, null, 1, 1);
+			CheckNamespace(@namespace, className, LanguageProperties.CSharp);
 		}
-		
-		string SearchNamespaceVB(string @namespace)
+
+		void CheckNamespaceVB(string @namespace, string className)
 		{
-			ICompilationUnit cu = Prepare(LanguageProperties.VBNet);
-			return cu.ProjectContent.SearchNamespace(@namespace, null, 1, 1);
+			CheckNamespace(@namespace, className, LanguageProperties.VBNet);
+		}
+
+		void CheckNamespace(string @namespace, string className, LanguageProperties language)
+		{
+			ICompilationUnit cu = Prepare(language);
+			string ns = cu.ProjectContent.SearchNamespace(@namespace, cu, 1, 1);
+			Assert.IsNotNull(ns, @namespace + " not found");
+			foreach (object o in cu.ProjectContent.GetNamespaceContents(ns)) {
+				IClass c = o as IClass;
+				if (c != null && c.Name == className)
+					return;
+			}
 		}
 		#endregion
 		
@@ -74,13 +91,13 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void SearchFullyQualifiedNamespace()
 		{
-			Assert.AreEqual("System.Collections.Generic", SearchNamespace("System.Collections.Generic"));
+			CheckNamespace("System.Collections.Generic", "KeyNotFoundException");
 		}
 		
 		[Test]
 		public void SearchFullyQualifiedNamespaceVB()
 		{
-			Assert.AreEqual("System.Collections.Generic", SearchNamespace("SyStem.COllEctions.GeNEric"));
+			CheckNamespaceVB("SyStem.COllEctions.GeNEric", "KeyNotFoundException");
 		}
 		
 		[Test]
@@ -92,7 +109,35 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void SearchEnvironmentVB()
 		{
-			Assert.AreEqual("System.Environment", SearchType("EnVIroNmEnt").FullyQualifiedName);
+			Assert.AreEqual("System.Environment", SearchTypeVB("EnVIroNmEnt").FullyQualifiedName);
+		}
+
+		[Test]
+		public void SearchArrayList()
+		{
+			ICompilationUnit cu = Prepare(LanguageProperties.CSharp);
+			IClass c = cu.ProjectContent.SearchType("Collections.ArrayList", null, cu, 1, 1);
+			Assert.IsNull(c, "Namespaces should not be imported in C#");
+		}
+
+		[Test]
+		public void SearchArrayListVB()
+		{
+			Assert.AreEqual("System.Collections.ArrayList", SearchTypeVB("CoLLections.ArrAyLiSt").FullyQualifiedName);
+		}
+
+		[Test]
+		public void SearchNestedNamespace()
+		{
+			ICompilationUnit cu = Prepare(LanguageProperties.CSharp);
+			string ns = cu.ProjectContent.SearchNamespace("Collections.Generic", cu, 1, 1);
+			Assert.IsNull(ns, "Nested namespaces should not be found in C#");
+		}
+
+		[Test]
+		public void SearchNestedNamespaceVB()
+		{
+			CheckNamespaceVB("COllEctions.GeNEric", "KeyNotFoundException");
 		}
 	}
 }

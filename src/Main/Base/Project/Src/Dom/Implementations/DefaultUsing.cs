@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -52,9 +52,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			foreach (KeyValuePair<string, string> entry in aliases) {
 				string aliasString = entry.Key;
-				// TODO: case insensitive: partitialNamespaceName.ToLower().StartsWith(aliasString.ToLower())
-				if (partitialNamespaceName.StartsWith(aliasString)) {
-					if (aliasString.Length >= 0) {
+				if (projectContent.Language.NameComparer.Equals(partitialNamespaceName, aliasString))
+					return entry.Value;
+				if (partitialNamespaceName.Length > aliasString.Length) {
+					if (projectContent.Language.NameComparer.Equals(partitialNamespaceName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
 						string nsName = nsName = String.Concat(entry.Value, partitialNamespaceName.Remove(0, aliasString.Length));
 						if (projectContent.NamespaceExists(nsName)) {
 							return nsName;
@@ -62,27 +63,51 @@ namespace ICSharpCode.SharpDevelop.Dom
 					}
 				}
 			}
+			if (projectContent.Language.ImportNamespaces) {
+				foreach (string str in usings) {
+					string possibleNamespace = String.Concat(str, ".", partitialNamespaceName);
+					if (projectContent.NamespaceExists(possibleNamespace))
+						return possibleNamespace;
+				}
+			}
 			return null;
 		}
 		
 		public IClass SearchType(string partitialTypeName)
 		{
-			foreach (string str in usings) {
-				string possibleType = String.Concat(str, ".", partitialTypeName);
-				IClass c = projectContent.GetClass(possibleType);
-				if (c != null) {
-					return c;
-				}
-			}
-			
 			foreach (KeyValuePair<string, string> entry in aliases) {
 				string aliasString = entry.Key;
-				// TODO: case insensitive:  : partitialTypeName.ToLower().StartsWith(aliasString.ToLower())
-				if (partitialTypeName.StartsWith(aliasString)) {
-					string className = null;
-					if (aliasString.Length > 0) {
-						className = String.Concat(entry.Value, partitialTypeName.Remove(0, aliasString.Length));
+				if (partitialTypeName.Length > aliasString.Length) {
+					if (projectContent.Language.NameComparer.Equals(partitialTypeName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
+						string className = String.Concat(entry.Value, partitialTypeName.Remove(0, aliasString.Length));
 						IClass c = projectContent.GetClass(className);
+						if (c != null) {
+							return c;
+						}
+					}
+				}
+			}
+			if (projectContent.Language.ImportNamespaces) {
+				foreach (string str in usings) {
+					IClass c = projectContent.GetClass(str + "." + partitialTypeName);
+					if (c != null) {
+						return c;
+					}
+				}
+			} else {
+				int pos = partitialTypeName.IndexOf('.');
+				string className, subClassName;
+				if (pos < 0) {
+					className = partitialTypeName;
+					subClassName = null;
+				} else {
+					className = partitialTypeName.Substring(0, pos);
+					subClassName = partitialTypeName.Substring(pos + 1);
+				}
+				foreach (string str in usings) {
+					IClass c = projectContent.GetClass(str + "." + className);
+					if (c != null) {
+						c = projectContent.GetClass(str + "." + partitialTypeName);
 						if (c != null) {
 							return c;
 						}
@@ -94,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string ToString()
 		{
-			StringBuilder builder = new StringBuilder("[AbstractUsing: ");
+			StringBuilder builder = new StringBuilder("[DefaultUsing: ");
 			foreach (string str in usings) {
 				builder.Append(str);
 				builder.Append(", ");

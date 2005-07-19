@@ -12,6 +12,7 @@ using System.Windows.Forms;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 using NUnit.Core;
 using NUnit.Framework;
@@ -32,6 +33,22 @@ namespace ICSharpCode.NUnitPad
 			TestItemSelected       = 2,
 		}
 		
+		sealed class TestItemTag {
+			public readonly ITest Test;
+			public readonly IProject Project;
+			public TestItemTag(ITest test, IProject project) {
+				this.Test = test;
+				this.Project = project;
+			}
+			public void Run(EventListener listener) {
+				if (Test is Test)
+					(Test as Test).Run(listener);
+			}
+			public Position GetPosition() {
+				return ParserService.GetProjectContent(Project).GetPosition(Test.FullName.Replace('+', '.'));
+			}
+		}
+		
 		protected TestTreeViewState internalState = TestTreeViewState.Nothing;
 
 		public System.Enum InternalState {
@@ -50,10 +67,10 @@ namespace ICSharpCode.NUnitPad
 				if (treeView.SelectedNode == null) {
 					return false;
 				}
-				ITest test = treeView.SelectedNode.Tag as ITest;
+				TestItemTag test = treeView.SelectedNode.Tag as TestItemTag;
 				if (test != null) {
 					
-					Position position = ParserService.CurrentProjectContent.GetPosition(test.FullName.Replace('+', '.'));
+					Position position = test.GetPosition();
 					return position != null && position.Cu != null;
 				}
 				return false;
@@ -65,7 +82,7 @@ namespace ICSharpCode.NUnitPad
 				if (treeView.SelectedNode == null) {
 					return false;
 				}
-				ITest test = treeView.SelectedNode.Tag as ITest;
+				TestItemTag test = treeView.SelectedNode.Tag as TestItemTag;
 				return test != null;
 			}
 		}
@@ -144,26 +161,26 @@ namespace ICSharpCode.NUnitPad
 			treeView.Nodes.Add(assemblyNode);
 		}
 		
-		public void PrintTests(string assembly, Test test)
+		public void PrintTests(string assembly, Test test, IProject project)
 		{
 			TreeNode assemblyNode = new TreeNode(Path.GetFileName(assembly));
-			assemblyNode.Tag = test;
+			assemblyNode.Tag = new TestItemTag(test, project);
 			treeView.Nodes.Add(assemblyNode);
 			if (test != null) {
-				AddTests(assemblyNode, test);
+				AddTests(assemblyNode, test, project);
 			}
 			assemblyNode.Expand();
 		}
 		
-		public void AddTests(TreeNode node, ITest test)
+		public void AddTests(TreeNode node, ITest test, IProject project)
 		{
 			foreach (ITest childTest in test.Tests) {
 				TreeNode newNode = new TreeNode(childTest.Name);
 				treeNodeHash[childTest.UniqueName] = newNode;
 				newNode.ImageIndex = newNode.SelectedImageIndex = 0;
-				newNode.Tag = childTest;
+				newNode.Tag = new TestItemTag(childTest, project);
 				if (childTest.IsSuite) {
-					AddTests(newNode, childTest);
+					AddTests(newNode, childTest, project);
 					node.Expand();
 				}
 				node.Nodes.Add(newNode);
@@ -173,10 +190,10 @@ namespace ICSharpCode.NUnitPad
 		public void GotoDefinition()
 		{
 			if (treeView.SelectedNode != null) {
-				ITest test = treeView.SelectedNode.Tag as ITest;
-				if (test != null) {
+				TestItemTag testTag = treeView.SelectedNode.Tag as TestItemTag;
+				if (testTag != null) {
 					
-					Position position = ParserService.CurrentProjectContent.GetPosition(test.FullName.Replace('+', '.'));
+					Position position = testTag.GetPosition();
 					
 					if (position != null && position.Cu != null) {
 						
@@ -203,7 +220,7 @@ namespace ICSharpCode.NUnitPad
 			TreeNode selectedNode = treeView.SelectedNode;
 			
 			if (selectedNode != null) {
-				Test test = selectedNode.Tag as Test;
+				TestItemTag test = selectedNode.Tag as TestItemTag;
 				if (test != null) {
 					test.Run(this);
 				} else {
@@ -211,7 +228,7 @@ namespace ICSharpCode.NUnitPad
 				}
 			} else {
 				foreach (TreeNode node in treeView.Nodes) {
-					Test test = node.Tag as Test;
+					TestItemTag test = node.Tag as TestItemTag;
 					if (test != null) {
 						test.Run(this);
 					} else {

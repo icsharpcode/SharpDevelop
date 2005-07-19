@@ -127,7 +127,7 @@ namespace ICSharpCode.NUnitPad
 		void ProjectServiceEndBuild(object sender, EventArgs e)
 		{
 			if (autoLoadItems) {
-				testTreeView.Invoke(new ThreadStart(RefreshProjectAssemblies));
+				RefreshProjectAssemblies();
 			}
 		}
 		
@@ -159,9 +159,7 @@ namespace ICSharpCode.NUnitPad
 		
 		void ProjectServiceCombineClosed(object sender, EventArgs e)
 		{
-			if (testDomains.Count > 0) {
-				UnloadAppDomains();
-			}
+			UnloadAppDomains();
 		}
 		
 		void UnloadAppDomains()
@@ -177,10 +175,13 @@ namespace ICSharpCode.NUnitPad
 		
 		public void RunTests()
 		{
+			if (ProjectService.OpenSolution == null) return;
+			
 			if (!autoLoadItems) {
 				autoLoadItems = true;
 				RefreshProjectAssemblies();
 			}
+			
 			testTreeView.RunTests();
 		}
 		
@@ -188,13 +189,15 @@ namespace ICSharpCode.NUnitPad
 		{
 			UnloadAppDomains();
 			
+			if (ProjectService.OpenSolution == null) return;
+			
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				string outputAssembly = project.OutputAssemblyFullPath;
 				try {
 					TestSuiteBuilder builder = new TestSuiteBuilder();
 					Console.WriteLine("Try : " + outputAssembly);
 					Test testDomain = builder.Build(outputAssembly);
-					testTreeView.PrintTests(outputAssembly, testDomain);
+					testTreeView.PrintTests(outputAssembly, testDomain, project);
 				} catch (Exception e) {
 					testTreeView.PrintTestErrors(outputAssembly, e);
 				}

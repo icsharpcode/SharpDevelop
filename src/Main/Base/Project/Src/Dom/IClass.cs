@@ -105,7 +105,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		List<IClass> GetAccessibleTypes(IClass callingClass);
 		
-		//IMember SearchMember(string memberName);
+		/// <summary>
+		/// Searches the member with the specified name. Returns the first member/overload found.
+		/// </summary>
+		IMember SearchMember(string memberName, LanguageProperties language);
 		
 		/// <summary>Return true if the specified class is a base class of this class; otherwise return false.</summary>
 		/// <remarks>Returns false when possibleBaseClass is null.</remarks>

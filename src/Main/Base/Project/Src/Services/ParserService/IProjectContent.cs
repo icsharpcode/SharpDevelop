@@ -43,15 +43,18 @@ namespace ICSharpCode.Core
 		
 		string GetXmlDocumentation(string memberTag);
 		
-		Hashtable AddClassToNamespaceList(IClass addClass);
+		void AddClassToNamespaceList(IClass addClass);
 		void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags);
 		
 		IClass GetClass(string typeName);
 		bool NamespaceExists(string name);
-		ArrayList GetNamespaceContents(string subNameSpace);
+		ArrayList GetNamespaceContents(string nameSpace);
 		
 		IClass GetClass(string typeName, LanguageProperties language, bool lookInReferences);
 		bool NamespaceExists(string name, LanguageProperties language, bool lookInReferences);
+		/// <summary>
+		/// Adds the contents of the specified <paramref name="subNameSpace"/> to the <paramref name="list"/>.
+		/// </summary>
 		void AddNamespaceContents(ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences);
 		
 		string SearchNamespace(string name, ICompilationUnit unit, int caretLine, int caretColumn);

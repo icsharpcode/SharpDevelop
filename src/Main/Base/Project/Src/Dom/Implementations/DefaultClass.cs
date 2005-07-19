@@ -304,57 +304,42 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return false;
 		}
 		
-		/*
-		public IMember SearchMember(string memberName)
+		/// <summary>
+		/// Searches the member with the specified name. Returns the first member/overload found.
+		/// </summary>
+		public IMember SearchMember(string memberName, LanguageProperties language)
 		{
 			if (memberName == null || memberName.Length == 0) {
 				return null;
 			}
-			foreach (IField f in Fields) {
-				if (f.Name == memberName) {
-					return f;
-				}
-			}
+			StringComparer cmp = language.NameComparer;
 			foreach (IProperty p in Properties) {
-				if (p.Name == memberName) {
+				if (cmp.Equals(p.Name, memberName)) {
 					return p;
 				}
 			}
-			foreach (IIndexer i in Indexer) {
-				if (i.Name == memberName) {
-					return i;
-				}
-			}
 			foreach (IEvent e in Events) {
-				if (e.Name == memberName) {
+				if (cmp.Equals(e.Name, memberName)) {
 					return e;
 				}
 			}
+			foreach (IField f in Fields) {
+				if (cmp.Equals(f.Name, memberName)) {
+					return f;
+				}
+			}
+			foreach (IIndexer i in Indexer) {
+				if (cmp.Equals(i.Name, memberName)) {
+					return i;
+				}
+			}
 			foreach (IMethod m in Methods) {
-				if (m.Name == memberName) {
+				if (cmp.Equals(m.Name, memberName)) {
 					return m;
 				}
 			}
-			if (ClassType == ClassType.Interface) {
-				foreach (string baseType in BaseTypes) {
-					int line = -1;
-					int col = -1;
-					if (Region != null) {
-						line = Region.BeginLine;
-						col = Region.BeginColumn;
-					}
-					IClass c = ProjectContent.SearchType(baseType, this, line, col);
-					if (c != null) {
-						return c.SearchMember(memberName);
-					}
-				}
-			} else {
-				IClass c = BaseClass;
-				return c.SearchMember(memberName);
-			}
 			return null;
 		}
-		 */
 		
 		public IClass GetInnermostClass(int caretLine, int caretColumn)
 		{

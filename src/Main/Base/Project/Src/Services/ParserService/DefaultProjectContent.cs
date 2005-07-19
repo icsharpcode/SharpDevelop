@@ -24,11 +24,11 @@ namespace ICSharpCode.Core
 {
 	public class DefaultProjectContent : IProjectContent
 	{
-		List<IProjectContent>      referencedContents = new List<IProjectContent>();
+		List<IProjectContent> referencedContents = new List<IProjectContent>();
 		
 		List<Dictionary<string, IClass>> classLists = new List<Dictionary<string, IClass>>();
-		Hashtable                  namespaces         = new Hashtable();
-		protected XmlDoc           xmlDoc             = new XmlDoc();
+		List<Dictionary<string, NamespaceStruct>> namespaces = new List<Dictionary<string, NamespaceStruct>>();
+		protected XmlDoc xmlDoc = new XmlDoc();
 		
 		public List<Dictionary<string, IClass>> ClassLists {
 			get {
@@ -39,7 +39,28 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		Dictionary<string, IClass> GetClasses(LanguageProperties language)
+		protected List<Dictionary<string, NamespaceStruct>> Namespaces {
+			get {
+				if (namespaces.Count == 0) {
+					namespaces.Add(new Dictionary<string, NamespaceStruct>(language.NameComparer));
+				}
+				return namespaces;
+			}
+		}
+		
+		protected struct NamespaceStruct
+		{
+			public readonly List<IClass> Classes;
+			public readonly List<string> SubNamespaces;
+			
+			public NamespaceStruct(string name) // struct must have a parameter
+			{
+				this.Classes = new List<IClass>();
+				this.SubNamespaces = new List<string>();
+			}
+		}
+		
+		protected Dictionary<string, IClass> GetClasses(LanguageProperties language)
 		{
 			for (int i = 0; i < classLists.Count; ++i) {
 				if (classLists[i].Comparer == language.NameComparer)
@@ -56,6 +77,26 @@ namespace ICSharpCode.Core
 				d = new Dictionary<string, IClass>(language.NameComparer);
 			}
 			classLists.Add(d);
+			return d;
+		}
+		
+		protected Dictionary<string, NamespaceStruct> GetNamespaces(LanguageProperties language)
+		{
+			for (int i = 0; i < namespaces.Count; ++i) {
+				if (namespaces[i].Comparer == language.NameComparer)
+					return namespaces[i];
+			}
+			Dictionary<string, NamespaceStruct> d;
+			if (namespaces.Count > 0) {
+				Dictionary<string, NamespaceStruct> oldList = namespaces[0];
+				d = new Dictionary<string, NamespaceStruct>(oldList.Count, language.NameComparer);
+				foreach (KeyValuePair<string, NamespaceStruct> pair in oldList) {
+					d.Add(pair.Key, pair.Value);
+				}
+			} else {
+				d = new Dictionary<string, NamespaceStruct>(language.NameComparer);
+			}
+			namespaces.Add(d);
 			return d;
 		}
 		
@@ -130,14 +171,14 @@ namespace ICSharpCode.Core
 			xmlDoc.Dispose();
 		}
 		
-		public Hashtable AddClassToNamespaceList(IClass addClass)
+		public void AddClassToNamespaceList(IClass addClass)
 		{
 			lock (namespaces) {
-				return AddClassToNamespaceListInternal(addClass);
+				AddClassToNamespaceListInternal(addClass);
 			}
 		}
 		
-		protected Hashtable AddClassToNamespaceListInternal(IClass addClass)
+		protected void AddClassToNamespaceListInternal(IClass addClass)
 		{
 			foreach (Dictionary<string, IClass> classes in ClassLists) {
 				classes[addClass.FullyQualifiedName] = addClass;
@@ -146,29 +187,75 @@ namespace ICSharpCode.Core
 			if (nSpace == null) {
 				nSpace = String.Empty;
 			}
-			
-			Hashtable cur = namespaces;
-			
-			if (nSpace.Length > 0) {
-				string[] path = nSpace.Split('.');
-				for (int i = 0; i < path.Length; ++i) {
-					object curPath   = cur[path[i]];
-					if (curPath == null) {
-						Hashtable hashTable = new Hashtable();
-						cur[path[i]] = curPath = hashTable;
-					} else {
-						if (!(curPath is Hashtable)) {
-							return null;
-						}
-					}
-					cur = (Hashtable)curPath;
+			CreateNamespace(nSpace);
+			List<IClass> classList = GetNamespaces(this.language)[nSpace].Classes;
+			for (int i = 0; i < classList.Count; i++) {
+				if (classList[i].FullyQualifiedName == addClass.FullyQualifiedName) {
+					classList[i] = addClass;
+					return;
 				}
 			}
-			
-			string name = addClass.Name == null ? "" : addClass.Name;
-			
-			cur[name] = addClass;
-			return cur;
+			classList.Add(addClass);
+		}
+		
+		void CreateNamespace(string nSpace)
+		{
+			Dictionary<string, NamespaceStruct> dict = GetNamespaces(this.language);
+			if (dict.ContainsKey(nSpace))
+				return;
+			NamespaceStruct namespaceStruct = new NamespaceStruct(nSpace);
+			dict.Add(nSpace, namespaceStruct);
+			// use the same namespaceStruct for all dictionaries
+			foreach (Dictionary<string, NamespaceStruct> otherDict in namespaces) {
+				if (otherDict == dict) continue;
+				otherDict.Add(nSpace, namespaceStruct);
+			}
+			if (nSpace.Length == 0)
+				return;
+			// add to parent namespace
+			int pos = nSpace.LastIndexOf('.');
+			string parent;
+			string subNs;
+			if (pos < 0) {
+				parent = "";
+				subNs = nSpace;
+			} else {
+				parent = nSpace.Substring(0, pos);
+				subNs = nSpace.Substring(pos + 1);
+			}
+			CreateNamespace(parent);
+			dict[parent].SubNamespaces.Add(subNs);
+		}
+		
+		/// <summary>
+		/// Removes the specified namespace from all namespace lists if the namespace is empty.
+		/// </summary>
+		void RemoveEmptyNamespace(string nSpace)
+		{
+			if (nSpace == null || nSpace.Length == 0) return;
+			Dictionary<string, NamespaceStruct> dict = GetNamespaces(this.language);
+			if (!dict.ContainsKey(nSpace))
+				return;
+			// remove only if really empty
+			if (dict[nSpace].Classes.Count > 0 || dict[nSpace].SubNamespaces.Count > 0)
+				return;
+			// remove the namespace from all dictionaries
+			foreach (Dictionary<string, NamespaceStruct> anyDict in namespaces) {
+				anyDict.Remove(nSpace);
+			}
+			// remove the namespace from parent's SubNamespaces list
+			int pos = nSpace.LastIndexOf('.');
+			string parent;
+			string subNs;
+			if (pos < 0) {
+				parent = "";
+				subNs = nSpace;
+			} else {
+				parent = nSpace.Substring(0, pos);
+				subNs = nSpace.Substring(pos + 1);
+			}
+			dict[parent].SubNamespaces.Remove(subNs);
+			RemoveEmptyNamespace(parent); // remove parent if also empty
 		}
 		
 		public void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags)
@@ -178,26 +265,61 @@ namespace ICSharpCode.Core
 			}
 			
 			lock (namespaces) {
+				ICompilationUnit cu = (ICompilationUnit)parserOutput;
+				
 				if (oldUnit != null) {
-					RemoveClasses(oldUnit);
+					RemoveClasses(oldUnit, cu);
 				}
 				
-				ICompilationUnit cu = (ICompilationUnit)parserOutput;
 				foreach (IClass c in cu.Classes) {
 					AddClassToNamespaceListInternal(c);
 				}
 			}
 		}
 		
-		void RemoveClasses(ICompilationUnit cu)
+		void RemoveClasses(ICompilationUnit oldUnit, ICompilationUnit newUnit)
 		{
-			if (cu != null) {
-				foreach (IClass c in cu.Classes) {
-					foreach (Dictionary<string, IClass> classes in ClassLists) {
-						classes.Remove(c.FullyQualifiedName);
+			foreach (IClass c in oldUnit.Classes) {
+				bool found = false;
+				foreach (IClass c2 in newUnit.Classes) {
+					if (c.FullyQualifiedName == c2.FullyQualifiedName) {
+						found = true;
+						break;
 					}
 				}
-				// TODO: remove classes from namespace lists
+				if (!found) {
+					RemoveClass(c);
+				}
+			}
+		}
+		
+		void RemoveClass(IClass @class)
+		{
+			string nSpace = @class.Namespace;
+			if (nSpace == null) {
+				nSpace = String.Empty;
+			}
+			RemoveClass(@class.FullyQualifiedName, nSpace);
+		}
+		
+		void RemoveClass(string fullyQualifiedName, string nSpace)
+		{
+			foreach (Dictionary<string, IClass> classes in ClassLists) {
+				classes.Remove(fullyQualifiedName);
+			}
+			
+			
+			
+			// Remove class from namespace lists
+			List<IClass> classList = GetNamespaces(this.language)[nSpace].Classes;
+			for (int i = 0; i < classList.Count; i++) {
+				if (classList[i].FullyQualifiedName == fullyQualifiedName) {
+					classList.RemoveAt(i);
+					break;
+				}
+			}
+			if (classList.Count == 0) {
+				RemoveEmptyNamespace(nSpace);
 			}
 		}
 		
@@ -209,7 +331,6 @@ namespace ICSharpCode.Core
 		
 		public IClass GetClass(string typeName, LanguageProperties language, bool lookInReferences)
 		{
-//			Console.WriteLine("GetClass({0}) is known:{1}", typeName, classes.ContainsKey(typeName));
 			Dictionary<string, IClass> classes = GetClasses(language);
 			if (classes.ContainsKey(typeName)) {
 				return classes[typeName];
@@ -245,46 +366,33 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		public ArrayList GetNamespaceContents(string subNameSpace)
+		public ArrayList GetNamespaceContents(string nameSpace)
 		{
 			ArrayList namespaceList = new ArrayList();
-			AddNamespaceContents(namespaceList, subNameSpace, language, true);
+			AddNamespaceContents(namespaceList, nameSpace, language, true);
 			return namespaceList;
 		}
 		
-		public void AddNamespaceContents(ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences)
+		/// <summary>
+		/// Adds the contents of the specified <paramref name="nameSpace"/> to the <paramref name="list"/>.
+		/// </summary>
+		public void AddNamespaceContents(ArrayList list, string nameSpace, LanguageProperties language, bool lookInReferences)
 		{
-			if (subNameSpace == null) {
+			if (nameSpace == null) {
 				return;
 			}
 			
 			if (lookInReferences) {
 				foreach (IProjectContent content in referencedContents) {
-					content.AddNamespaceContents(list, subNameSpace, language, false);
+					content.AddNamespaceContents(list, nameSpace, language, false);
 				}
 			}
 			
-			Hashtable cur = namespaces;
-			
-			if (subNameSpace.Length > 0) {
-				string[] path = subNameSpace.Split('.');
-				for (int i = 0; i < path.Length; ++i) {
-					if (!(cur[path[i]] is Hashtable)) {
-						// namespace does not exist in this project content
-						return;
-					}
-					cur = (Hashtable)cur[path[i]];
-				}
-			}
-			
-			foreach (DictionaryEntry entry in cur) {
-				if (entry.Value is Hashtable) {
-					if (!list.Contains(entry.Key))
-						list.Add(entry.Key);
-				} else {
-					if (!list.Contains(entry.Value))
-						list.Add(entry.Value);
-				}
+			Dictionary<string, NamespaceStruct> dict = GetNamespaces(language);
+			if (dict.ContainsKey(nameSpace)) {
+				NamespaceStruct ns = dict[nameSpace];
+				list.AddRange(ns.Classes);
+				list.AddRange(ns.SubNamespaces);
 			}
 		}
 		
@@ -307,21 +415,12 @@ namespace ICSharpCode.Core
 				}
 			}
 			
-			string[] path = name.Split('.');
-			Hashtable cur = namespaces;
-			for (int i = 0; i < path.Length; ++i) {
-				if (!(cur[path[i]] is Hashtable)) {
-					return false;
-				}
-				cur = (Hashtable)cur[path[i]];
-			}
-			return true;
+			return GetNamespaces(language).ContainsKey(name);
 		}
 		
 		
 		public string SearchNamespace(string name, ICompilationUnit unit, int caretLine, int caretColumn)
 		{
-//			Console.WriteLine("SearchNamespace({0})", name);
 			if (NamespaceExists(name)) {
 				return name;
 			}
@@ -350,7 +449,6 @@ namespace ICSharpCode.Core
 		
 		public IClass SearchType(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn)
 		{
-//			Console.WriteLine("SearchType({0})", name);
 			if (name == null || name.Length == 0) {
 				return null;
 			}
@@ -376,6 +474,16 @@ namespace ICSharpCode.Core
 					// remove class name again to try next namespace
 					curnamespace.Length -= name.Length;
 				}
+				
+				if (name.IndexOf('.') < 0) {
+					// Try inner classes of parent classes
+					while ((curType = curType.BaseClass) != null) {
+						foreach (IClass innerClass in curType.InnerClasses) {
+							if (language.NameComparer.Equals(innerClass.Name, name))
+								return innerClass;
+						}
+					}
+				}
 			}
 			if (unit != null) {
 				// Combine name with usings
@@ -391,114 +499,29 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		/*
-		public ArrayList ListMembers(ArrayList members, IClass curType, IClass callingClass, bool showStatic)
-		{
-//			Console.WriteLine("ListMembers()");
-			DateTime now = DateTime.Now;
-			
-			// enums must be handled specially, because there are several things defined we don't want to show
-			// and enum members have neither the modifier nor the modifier public
-			if (curType.ClassType == ClassType.Enum) {
-				foreach (IField f in curType.Fields) {
-					if (f.IsLiteral) {
-						members.Add(f);
-					}
-				}
-				ListMembers(members, GetClass("System.Enum"), callingClass, showStatic);
-				return members;
-			}
-			
-			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(curType);
-			
-			if (showStatic) {
-				foreach (IClass c in curType.InnerClasses) {
-					if (c.IsAccessible(callingClass, isClassInInheritanceTree)) {
-						members.Add(c);
-					}
-				}
-			}
-			
-			foreach (IProperty p in curType.Properties) {
-				if (p.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
-					members.Add(p);
-				}
-			}
-			
-			foreach (IMethod m in curType.Methods) {
-				if (m.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
-					members.Add(m);
-				}
-			}
-			
-			foreach (IEvent e in curType.Events) {
-				if (e.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
-					members.Add(e);
-				}
-			}
-			
-			foreach (IField f in curType.Fields) {
-				if (f.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
-					members.Add(f);
-				}
-			}
-			
-			if (curType.ClassType == ClassType.Interface && !showStatic) {
-				foreach (string s in curType.BaseTypes) {
-					IClass baseClass = SearchType(s, curType, curType.Region != null ? curType.Region.BeginLine : -1, curType.Region != null ? curType.Region.BeginColumn : -1);
-					if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
-						ListMembers(members, baseClass, callingClass, showStatic);
-					}
-				}
-			} else {
-				IClass baseClass = curType.BaseClass;
-				if (baseClass != null) {
-					ListMembers(members, baseClass, callingClass, showStatic);
-				}
-			}
-			
-			return members;
-		}
-		 */
-		
+		/// <summary>
+		/// Gets the position of a member in this project content (not a referenced one).
+		/// </summary>
+		/// <param name="fullMemberName">Fully qualified member name (always case sensitive).</param>
 		public Position GetPosition(string fullMemberName)
 		{
-			string[] name = fullMemberName.Split(new char[] {'.'});
-			string curName = name[0];
-			int i = 1;
-			while (i < name.Length && NamespaceExists(curName)) {
-				curName += '.' + name[i];
-				++i;
+			IClass curClass = GetClass(fullMemberName, LanguageProperties.CSharp, false);
+			if (curClass != null) {
+				return new Position(curClass.CompilationUnit, curClass.Region != null ? curClass.Region.BeginLine : -1, curClass.Region != null ? curClass.Region.BeginColumn : -1);
 			}
-			Debug.Assert(i <= name.Length);
-			IClass curClass = GetClass(curName);
-			if (curClass == null) {
-				return new Position(null, -1, -1);
-			}
-			ICompilationUnit cu = curClass.CompilationUnit;
-			while (i < name.Length) {
-				List<IClass> innerClasses = curClass.InnerClasses;
-				foreach (IClass c in innerClasses) {
-					if (c.Name == name[i]) {
-						curClass = c;
-						break;
+			int pos = fullMemberName.LastIndexOf('.');
+			if (pos > 0) {
+				string className = fullMemberName.Substring(0, pos);
+				string memberName = fullMemberName.Substring(pos + 1);
+				curClass = GetClass(className, LanguageProperties.CSharp, false);
+				if (curClass != null) {
+					IMember member = curClass.SearchMember(memberName, LanguageProperties.CSharp);
+					if (member != null) {
+						return new Position(curClass.CompilationUnit, member.Region != null ? member.Region.BeginLine : -1, member.Region != null ? member.Region.BeginColumn : -1);
 					}
 				}
-				if (curClass.Name != name[i]) {
-					break;
-				}
-				++i;
 			}
-			if (i >= name.Length) {
-				return new Position(cu, curClass.Region != null ? curClass.Region.BeginLine : -1, curClass.Region != null ? curClass.Region.BeginColumn : -1);
-			}
-			return new Position(cu, -1, -1);
-			// TODO: reimplement this
-			/*IMember member = curClass.SearchMember(name[i]);
-			if (member == null || member.Region == null) {
-				return new Position(cu, -1, -1);
-			}
-			return new Position(cu, member.Region.BeginLine, member.Region.BeginColumn);*/
+			return new Position(null, -1, -1);
 		}
 		#endregion
 	}

@@ -614,7 +614,7 @@ class Activator {
 		{
 			// using an import in this way is not possible in C#
 			string program = @"using System;
-class A {
+class TestClass {
 	void Test() {
 		Collections.ArrayList a;
 		
@@ -625,8 +625,7 @@ class A {
 			Assert.IsNull(result, "Collections.ArrayList should not resolve");
 			LocalResolveResult local = Resolve(program, "a", 5) as LocalResolveResult;
 			Assert.IsNotNull(local, "a should resolve to a local variable");
-			Assert.AreEqual("Collections.ArrayList", local.ResolvedType.FullyQualifiedName,
-			                "the full type should not be resolved");
+			Assert.IsNull(local.ResolvedType, "the full type should not be resolved");
 		}
 		
 		[Test]
@@ -634,10 +633,10 @@ class A {
 		{
 			// using an import this way IS possible in VB.NET
 			string program = @"Imports System
-Class A
+Class TestClass
 	Sub Test()
 		Dim a As Collections.ArrayList
-	
+		
 	End Sub
 End Class
 ";
@@ -653,8 +652,8 @@ End Class
 		[Test]
 		public void ImportAliasTest()
 		{
-			string program = @"using System.Collections = COL;
-class A {
+			string program = @"using COL = System.Collections;
+class TestClass {
 	void Test() {
 		COL.ArrayList a;
 		
@@ -674,7 +673,7 @@ class A {
 		public void ImportAliasNamespaceResolveTest()
 		{
 			NamespaceResolveResult ns;
-			string program = "using System.Collections = COL;\r\nclass A {\r\n}\r\n";
+			string program = "using COL = System.Collections;\r\nclass A {\r\n}\r\n";
 			ns = Resolve(program, "COL", 3) as NamespaceResolveResult;
 			Assert.AreEqual("System.Collections", ns.Name, "COL");
 			ns = Resolve(program, "COL.Generic", 3) as NamespaceResolveResult;

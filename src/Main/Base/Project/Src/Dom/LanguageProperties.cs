@@ -22,6 +22,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 			{
 				return member.IsStatic || !showStatic;
 			}
+
+			public override bool ImportNamespaces {
+				get {
+					return true;
+				}
+			}
+
+			public override string ToString()
+			{
+				return "[LanguageProperties: VB.NET]";
+			}
 		}
 		
 		StringComparer nameComparer;
@@ -36,10 +47,27 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return nameComparer;
 			}
 		}
-		
+
+		/// <summary>
+		/// Gets if namespaces can be imported (i.e. Imports System, Dim a As Collections.ArrayList)
+		/// </summary>
+		public virtual bool ImportNamespaces {
+			get {
+				return false;
+			}
+		}
+
 		public virtual bool ShowMember(IMember member, bool showStatic)
 		{
 			return member.IsStatic == showStatic;
+		}
+
+		public override string ToString()
+		{
+			if (GetType() == typeof(LanguageProperties) && nameComparer == StringComparer.InvariantCulture)
+				return "[LanguageProperties: C#]";
+			else
+				return "[" + base.ToString() + "]";
 		}
 	}
 }

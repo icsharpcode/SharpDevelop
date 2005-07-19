@@ -255,6 +255,11 @@ namespace CSharpBinding.Parser
 							goto default;
 						}
 						break;
+					case '#':
+						if (!ReadToEOL(text, ref curOffset, ref offset)) {
+							return null;
+						}
+						break;
 					default:
 						outText.Append(ch);
 						++curOffset;
@@ -279,6 +284,8 @@ namespace CSharpBinding.Parser
 		
 		bool ReadChar(StringBuilder outText, string text, ref int curOffset)
 		{
+			if (curOffset > initialOffset)
+				return false;
 			char first = text[curOffset++];
 			outText.Append(first);
 			if (curOffset > initialOffset)
@@ -447,7 +454,7 @@ namespace CSharpBinding.Parser
 					break;
 				default:
 					if (IsDigit()) {
-						string digit = ReadDigit(ch);
+						ReadDigit(ch);
 						curTokenType = Digit;
 					} else if (IsIdentifierPart(ch)) {
 						string ident = ReadIdentifier(ch);
@@ -577,18 +584,19 @@ namespace CSharpBinding.Parser
 			return identifier;
 		}
 		
-		string ReadDigit(char ch)
+		void ReadDigit(char ch)
 		{
-			string digit = ch.ToString();
+			//string digit = ch.ToString();
 			while (Char.IsDigit(Peek()) || Peek() == '.') {
-				digit = GetNext() + digit;
+				GetNext();
+				//digit = GetNext() + digit;
 			}
-			return digit;
+			//return digit;
 		}
 		
 		bool IsIdentifierPart(char ch)
 		{
-			return Char.IsLetterOrDigit(ch) || ch == '_';
+			return Char.IsLetterOrDigit(ch) || ch == '_' || ch == '@';
 		}
 		#endregion
 		
