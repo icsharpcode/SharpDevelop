@@ -32,8 +32,25 @@ namespace ICSharpCode.Core
 
 		static DebuggerService()
 		{
-			InitializeService();
-			InitializeService2();
+			AddInTreeNode treeNode = null;
+			try {
+				treeNode = AddInTree.GetTreeNode("/SharpDevelop/Services/DebuggerService/Debugger");
+			} catch (Exception) {
+			}
+			if (treeNode != null) {
+				debuggers = treeNode.BuildChildItems(null);
+			}
+			if (debuggers == null) {
+				debuggers = new ArrayList();
+			}
+			
+			ProjectService.SolutionLoaded += delegate {
+				ClearDebugMessages();
+			};
+
+			WorkbenchSingleton.WorkbenchCreated += new EventHandler(WorkspaceCreated);
+			BM.BookmarkManager.Added   += BookmarkAdded;
+			BM.BookmarkManager.Removed += BookmarkRemoved;
 		}
 		
 		static IDebugger GetCompatibleDebugger()
@@ -65,6 +82,8 @@ namespace ICSharpCode.Core
 		{
 			//oldLayoutConfiguration = LayoutConfiguration.CurrentLayoutName;
 			//LayoutConfiguration.CurrentLayoutName = "Debug";
+
+			ClearDebugMessages();
 		}
 
 		static void DebugStopped(object sender, EventArgs e)
@@ -83,84 +102,110 @@ namespace ICSharpCode.Core
 				compilerMessageView.AddCategory(debugCategory);
 			}
 		}
+
 		public static void ClearDebugMessages()
 		{
 			EnsureDebugCategory();
 			debugCategory.ClearText();
 		}
+
 		public static void PrintDebugMessage(string msg)
 		{
-			try {
-				EnsureDebugCategory();
-				debugCategory.AppendText(msg);
-			} catch (Exception) {}
-		}
-		
-		#region ICSharpCode.Core.IService interface implementation
-		public static void InitializeService()
-		{
-			AddInTreeNode treeNode = null;
-			try {
-				treeNode = AddInTree.GetTreeNode("/SharpDevelop/Services/DebuggerService/Debugger");
-			} catch (Exception) {
-			}
-			if (treeNode != null) {
-				debuggers = treeNode.BuildChildItems(null);
-			}
-			if (debuggers == null) {
-				debuggers = new ArrayList();
-			}
-			
-			ProjectService.SolutionLoaded += new SolutionEventHandler(ClearOnCombineEvent);
-		}
-		
-		static void DebuggerServiceStarted(object sender, EventArgs e)
-		{
 			EnsureDebugCategory();
-			debugCategory.ClearText();
-			CompilerMessageView compilerMessageView = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).PadContent;
-			compilerMessageView.SelectCategory("Debug");
+			debugCategory.AppendText(msg);
 		}
-		
-		static void ClearOnCombineEvent(object sender, SolutionEventArgs e)
-		{
-			EnsureDebugCategory();
-			debugCategory.ClearText();
-		}
-		#endregion
 
-		public static event EventHandler BreakPointChanged;
-		public static event EventHandler BreakPointAdded;
-		public static event EventHandler BreakPointRemoved;
+
+		public static event EventHandler<BreakpointBookmarkEventArgs> BreakPointChanged;
+		public static event EventHandler<BreakpointBookmarkEventArgs> BreakPointAdded;
+		public static event EventHandler<BreakpointBookmarkEventArgs> BreakPointRemoved;
 		
-		static void OnBreakPointChanged(EventArgs e)
+		static void OnBreakPointChanged(BreakpointBookmarkEventArgs e)
 		{
 			if (BreakPointChanged != null) {
 				BreakPointChanged(null, e);
 			}
 		}
 		
-		static void OnBreakPointAdded(EventArgs e)
+		static void OnBreakPointAdded(BreakpointBookmarkEventArgs e)
 		{
 			if (BreakPointAdded != null) {
 				BreakPointAdded(null, e);
 			}
 		}
 		
-		static void OnBreakPointRemoved(EventArgs e)
+		static void OnBreakPointRemoved(BreakpointBookmarkEventArgs e)
 		{
 			if (BreakPointRemoved != null) {
 				BreakPointRemoved(null, e);
 			}
 		}
 		
-		
-		static List<Breakpoint> breakpoints = new List<Breakpoint>();
-		
-		public static IList<Breakpoint> Breakpoints {
+		public static IList<BreakpointBookmark> Breakpoints {
 			get {
+				List<BreakpointBookmark> breakpoints = new List<BreakpointBookmark>();
+				foreach (BM.SDBookmark bookmark in BM.BookmarkManager.Bookmarks) {
+					BreakpointBookmark breakpoint = bookmark as BreakpointBookmark;
+					if (breakpoint != null) {
+						breakpoints.Add(breakpoint);
+					}
+				}
 				return breakpoints;
 			}
+		}
+
+		static void BookmarkAdded(object sender, BM.BookmarkEventArgs e)
+		{
+			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
+			if (bb != null) {
+				RefreshBreakpointMarkersInDocument(bb.Document);
+				OnBreakPointAdded(new BreakpointBookmarkEventArgs(bb));
+			}
+		}
+		
+		static void BookmarkRemoved(object sender, BM.BookmarkEventArgs e)
+		{
+			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
+			if (bb != null) {
+				RefreshBreakpointMarkersInDocument(bb.Document);
+				OnBreakPointRemoved(new BreakpointBookmarkEventArgs(bb));
+			}
+		}
+
+		static void ToggleBreakpointAt(IDocument document, string fileName, int lineNumber)
+		{
+			foreach (Bookmark m in document.BookmarkManager.Marks) {
+				BreakpointBookmark breakpoint = m as BreakpointBookmark;
+				if (breakpoint != null) {
+					if (breakpoint.LineNumber == lineNumber) {
+						document.BookmarkManager.RemoveMark(m);
+						return;
+					}
+				}
+			}
+			document.BookmarkManager.AddMark(new BreakpointBookmark(fileName, document, lineNumber));
+		}
+		
+		static void RefreshBreakpointMarkersInDocument(IDocument document)
+		{
+			if (document == null) return;
+			List<TextMarker> markers = document.MarkerStrategy.TextMarker;
+			// Remove all breakpoint markers
+			for (int i = 0; i < markers.Count;) {
+				if (markers[i] is BreakpointMarker) {
+					markers.RemoveAt(i);
+				} else {
+					i++; // Check next one
+				}
+			}
+			// Add breakpoint markers
+			foreach (BreakpointBookmark b in Breakpoints) {
+				LineSegment lineSeg = document.GetLineSegment(b.LineNumber);
+				document.MarkerStrategy.TextMarker.Add(new BreakpointMarker(lineSeg.Offset, lineSeg.Length, TextMarkerType.SolidBlock, Color.Red, Color.White));
+			}
+			// Perform editor update
+			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
+			document.CommitUpdate();
 		}
 		
 		class BreakpointMarker: TextMarker
@@ -174,33 +219,6 @@ namespace ICSharpCode.Core
 		{
 			public CurrentLineMarker(int offset, int length, TextMarkerType textMarkerType, Color color, Color foreColor):base(offset, length, textMarkerType, color, foreColor)
 			{
-			}
-		}
-		
-		public static void InitializeService2()
-		{
-			WorkbenchSingleton.WorkbenchCreated += new EventHandler(WorkspaceCreated);
-			BM.BookmarkManager.Added   += BookmarkAdded;
-			BM.BookmarkManager.Removed += BookmarkRemoved;
-		}
-		
-		static void BookmarkAdded(object sender, BM.BookmarkEventArgs e)
-		{
-			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
-			if (bb != null) {
-				breakpoints.Add(bb.Breakpoint);
-				RefreshBreakpointMarkersInDocument(bb.Document);
-				OnBreakPointAdded(EventArgs.Empty);
-			}
-		}
-		
-		static void BookmarkRemoved(object sender, BM.BookmarkEventArgs e)
-		{
-			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
-			if (bb != null) {
-				breakpoints.Remove(bb.Breakpoint);
-				RefreshBreakpointMarkersInDocument(bb.Document);
-				OnBreakPointRemoved(EventArgs.Empty);
 			}
 		}
 		
@@ -282,47 +300,9 @@ namespace ICSharpCode.Core
 			Point logicPos = iconBar.TextArea.TextView.GetLogicalPosition(0, mousepos.Y - viewRect.Top);
 			
 			if (logicPos.Y >= 0 && logicPos.Y < iconBar.TextArea.Document.TotalNumberOfLines) {
-				ToggleBreakpointAt(iconBar.TextArea.Document, iconBar.TextArea.MotherTextEditorControl.FileName, logicPos.Y + 1);
+				ToggleBreakpointAt(iconBar.TextArea.Document, iconBar.TextArea.MotherTextEditorControl.FileName, logicPos.Y);
 				iconBar.TextArea.Refresh(iconBar);
 			}
-		}
-		
-		static void ToggleBreakpointAt(IDocument document, string fileName, int lineNumber)
-		{
-			foreach (Bookmark m in document.BookmarkManager.Marks) {
-				BreakpointBookmark bb = m as BreakpointBookmark;
-				if (bb != null) {
-					if (bb.Breakpoint.LineNumber == lineNumber) {
-						document.BookmarkManager.RemoveMark(m);
-						return;
-					}
-				}
-			}
-			document.BookmarkManager.AddMark(new Breakpoint(document, fileName, lineNumber).Bookmark);
-		}
-		
-		static void RefreshBreakpointMarkersInDocument(IDocument document)
-		{
-			if (document == null) return;
-			List<TextMarker> markers = document.MarkerStrategy.TextMarker;
-			// Remove all breakpoint markers
-			for (int i = 0; i < markers.Count;) {
-				if (markers[i] is BreakpointMarker) {
-					markers.RemoveAt(i);
-				} else {
-					i++; // Check next one
-				}
-			}
-			// Add breakpoint markers
-			foreach (Bookmark b in document.BookmarkManager.Marks) {
-				if (b is BreakpointBookmark) {
-					LineSegment lineSeg = document.GetLineSegment(b.LineNumber);
-					document.MarkerStrategy.TextMarker.Add(new BreakpointMarker(lineSeg.Offset, lineSeg.Length, TextMarkerType.SolidBlock, Color.Red, Color.White));
-				}
-			}
-			// Perform editor update
-			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-			document.CommitUpdate();
 		}
 		
 		/// <summary>

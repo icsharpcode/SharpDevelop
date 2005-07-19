@@ -9,7 +9,7 @@ namespace ICSharpCode.Core
 {
 	public class DefaultDebugger : IDebugger
 	{
-		System.Diagnostics.Process attachedProcess = null;
+		Process attachedProcess = null;
 		
 		public bool IsDebugging {
 			get {
@@ -35,7 +35,7 @@ namespace ICSharpCode.Core
 			}
 
 			try {
-				attachedProcess = new System.Diagnostics.Process();
+				attachedProcess = new Process();
 				attachedProcess.StartInfo = processStartInfo;
 				attachedProcess.Exited += new EventHandler(AttachedProcessExited);
 				attachedProcess.EnableRaisingEvents = true;
@@ -62,7 +62,10 @@ namespace ICSharpCode.Core
 
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
 		{
-			throw new NotSupportedException();
+			Process process;
+			process = new Process();
+			process.StartInfo = processStartInfo;
+			process.Start();
 		}
 
 		public bool SupportsStartWithoutDebugging {

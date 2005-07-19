@@ -315,13 +315,21 @@ namespace ICSharpCode.SharpDevelop.Services
 			debugger.ProcessExited           += new EventHandler<ProcessEventArgs>(ProcessExited);
 			debugger.IsDebuggingChanged      += new EventHandler<DebuggerEventArgs>(OnIsDebuggingChanged);
 			debugger.IsProcessRunningChanged += new EventHandler<DebuggerEventArgs>(DebuggerStateChanged);
-			debugger.BreakpointStateChanged  += new EventHandler<BreakpointEventArgs>(RestoreSharpdevelopBreakpoint);
+			debugger.BreakpointStateChanged  += delegate (object sender, BreakpointEventArgs e) {
+				RestoreSharpdevelopBreakpoint(e.Breakpoint);
+			};
+			DebuggerService.BreakPointAdded   += delegate (object sender, BreakpointBookmarkEventArgs e) {
+				AddBreakpoint(e.BreakpointBookmark);
+			};
+			DebuggerService.BreakPointRemoved += delegate (object sender, BreakpointBookmarkEventArgs e) {
+				RemoveBreakpoint(e.BreakpointBookmark);
+			};
+			DebuggerService.BreakPointChanged += delegate (object sender, BreakpointBookmarkEventArgs e) {
+				RemoveBreakpoint(e.BreakpointBookmark);
+				AddBreakpoint(e.BreakpointBookmark);
+			};
 
-			DebuggerService.BreakPointAdded   += new EventHandler(RestoreNDebuggerBreakpoints);
-			DebuggerService.BreakPointRemoved += new EventHandler(RestoreNDebuggerBreakpoints);
-			DebuggerService.BreakPointChanged += new EventHandler(RestoreNDebuggerBreakpoints);
-
-			RestoreNDebuggerBreakpoints(this, EventArgs.Empty);
+			RestoreNDebuggerBreakpoints();
 
 			isDebuggingCache = debugger.IsDebugging;
 			isProcessRunningCache = debugger.IsProcessRunning;
@@ -343,36 +351,43 @@ namespace ICSharpCode.SharpDevelop.Services
 			debugger.ProcessExited           -= new EventHandler<ProcessEventArgs>(ProcessExited);
 			debugger.IsDebuggingChanged      -= new EventHandler<DebuggerEventArgs>(OnIsDebuggingChanged);
 			debugger.IsProcessRunningChanged -= new EventHandler<DebuggerEventArgs>(DebuggerStateChanged);
-			debugger.BreakpointStateChanged  -= new EventHandler<BreakpointEventArgs>(RestoreSharpdevelopBreakpoint);
-
-			DebuggerService.BreakPointAdded   -= new EventHandler(RestoreNDebuggerBreakpoints);
-			DebuggerService.BreakPointRemoved -= new EventHandler(RestoreNDebuggerBreakpoints);
-			DebuggerService.BreakPointChanged -= new EventHandler(RestoreNDebuggerBreakpoints);
 			
 			if (Unload != null) {
 				Unload(this, null);	
 			}
 		}
-		#endregion		
-		
-		public void RestoreNDebuggerBreakpoints(object sender, EventArgs e)
+		#endregion
+
+		void AddBreakpoint(BreakpointBookmark breakpointBookmark)
 		{
-			debugger.ClearBreakpoints();
-			foreach (ICSharpCode.Core.Breakpoint b in DebuggerService.Breakpoints) {
-				DebuggerLibrary.Breakpoint newBreakpoint = debugger.AddBreakpoint(new SourcecodeSegment(b.FileName, b.LineNumber), b.IsEnabled);
-				b.Tag = newBreakpoint;
+			SourcecodeSegment seg = new SourcecodeSegment(breakpointBookmark.FileName, breakpointBookmark.LineNumber + 1); 
+			Breakpoint b = debugger.AddBreakpoint(seg, breakpointBookmark.IsEnabled);
+			breakpointBookmark.Tag = b;
+		}
+
+		void RemoveBreakpoint(BreakpointBookmark breakpointBookmark)
+		{
+			Breakpoint b = breakpointBookmark.Tag as Breakpoint;
+			if (b != null) {
+				debugger.RemoveBreakpoint(b);
 			}
 		}
 
-		public void RestoreSharpdevelopBreakpoint(object sender, BreakpointEventArgs e)
+		void RestoreNDebuggerBreakpoints()
 		{
-			foreach (ICSharpCode.Core.Breakpoint sdBreakpoint in DebuggerService.Breakpoints) {
-				if (sdBreakpoint.Tag == e.Breakpoint) {
-					if (sdBreakpoint != null) {
-						sdBreakpoint.IsEnabled  = e.Breakpoint.Enabled;
-						sdBreakpoint.FileName   = e.Breakpoint.SourcecodeSegment.SourceFullFilename;
-						sdBreakpoint.LineNumber = e.Breakpoint.SourcecodeSegment.StartLine;
-					}
+			debugger.ClearBreakpoints();
+			foreach (BreakpointBookmark b in DebuggerService.Breakpoints) {
+				AddBreakpoint(b);
+			}
+		}
+
+		void RestoreSharpdevelopBreakpoint(Breakpoint breakpoint)
+		{
+			foreach (BreakpointBookmark sdBreakpoint in DebuggerService.Breakpoints) {
+				if (sdBreakpoint.Tag == breakpoint) {
+					sdBreakpoint.IsEnabled  = breakpoint.Enabled;
+					sdBreakpoint.FileName   = breakpoint.SourcecodeSegment.SourceFullFilename;
+					sdBreakpoint.LineNumber = breakpoint.SourcecodeSegment.StartLine - 1;
 				}
 			}
 		}

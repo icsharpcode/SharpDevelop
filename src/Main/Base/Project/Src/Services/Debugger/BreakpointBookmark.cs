@@ -16,19 +16,22 @@ using ICSharpCode.SharpDevelop.Bookmarks;
 
 namespace ICSharpCode.Core
 {
-	public class BreakpointBookmark : SDBookmark
+	public class BreakpointBookmark: SDBookmark
 	{
-		Breakpoint breakpoint;
-		
-		public Breakpoint Breakpoint {
+		object tag;
+
+		public object Tag {
 			get {
-				return breakpoint;
+				return tag;
+			}
+			set {
+				tag = value;
 			}
 		}
-		
-		public BreakpointBookmark(Breakpoint breakpoint, string fileName, ICSharpCode.TextEditor.Document.IDocument document, int lineNumber) : base(fileName, document, lineNumber)
+
+		public BreakpointBookmark(string fileName, ICSharpCode.TextEditor.Document.IDocument document, int lineNumber) : base(fileName, document, lineNumber)
 		{
-			this.breakpoint = breakpoint;
+
 		}
 		
 		public override void Draw(ICSharpCode.TextEditor.IconBarMargin margin, Graphics g, Point p)
