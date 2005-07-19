@@ -170,15 +170,15 @@ namespace ICSharpCode.SharpDevelop.Services
 
 			debugger = new NDebugger();
 
-			debugger.DebuggerTraceMessage    += new MessageEventHandler(DebuggerTraceMessage);
-			debugger.LogMessage              += new MessageEventHandler(LogMessage);
-			debugger.ProcessStarted          += new ProcessEventHandler(ProcessStarted);
-			debugger.DebuggingPaused         += new DebuggingPausedEventHandler(DebuggingPaused);
-			debugger.DebuggingResumed        += new DebuggerEventHandler(DebuggingResumed);
-			debugger.ProcessExited           += new ProcessEventHandler(ProcessExited);
-			debugger.IsDebuggingChanged      += new DebuggerEventHandler(OnIsDebuggingChanged);
-			debugger.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
-			debugger.BreakpointStateChanged  += new DebuggerLibrary.BreakpointEventHandler(RestoreSharpdevelopBreakpoint);
+			debugger.DebuggerTraceMessage    += new EventHandler<MessageEventArgs>(DebuggerTraceMessage);
+			debugger.LogMessage              += new EventHandler<MessageEventArgs>(LogMessage);
+			debugger.ProcessStarted          += new EventHandler<ProcessEventArgs>(ProcessStarted);
+			debugger.DebuggingPaused         += new EventHandler<DebuggingPausedEventArgs>(DebuggingPaused);
+			debugger.DebuggingResumed        += new EventHandler<DebuggerEventArgs>(DebuggingResumed);
+			debugger.ProcessExited           += new EventHandler<ProcessEventArgs>(ProcessExited);
+			debugger.IsDebuggingChanged      += new EventHandler<DebuggerEventArgs>(OnIsDebuggingChanged);
+			debugger.IsProcessRunningChanged += new EventHandler<DebuggerEventArgs>(DebuggerStateChanged);
+			debugger.BreakpointStateChanged  += new EventHandler<BreakpointEventArgs>(RestoreSharpdevelopBreakpoint);
 
 			DebuggerService.BreakPointAdded   += new EventHandler(RestoreNDebuggerBreakpoints);
 			DebuggerService.BreakPointRemoved += new EventHandler(RestoreNDebuggerBreakpoints);
@@ -198,15 +198,15 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		public void UnloadService()
 		{
-			debugger.DebuggerTraceMessage    -= new MessageEventHandler(DebuggerTraceMessage);
-			debugger.LogMessage              -= new MessageEventHandler(LogMessage);
-			debugger.ProcessStarted          -= new ProcessEventHandler(ProcessStarted);
-			debugger.DebuggingPaused         -= new DebuggingPausedEventHandler(DebuggingPaused);
-			debugger.DebuggingResumed        -= new DebuggerEventHandler(DebuggingResumed);
-			debugger.ProcessExited           -= new ProcessEventHandler(ProcessExited);
-			debugger.IsDebuggingChanged      -= new DebuggerEventHandler(OnIsDebuggingChanged);
-			debugger.IsProcessRunningChanged -= new DebuggerEventHandler(DebuggerStateChanged);
-			debugger.BreakpointStateChanged  -= new DebuggerLibrary.BreakpointEventHandler(RestoreSharpdevelopBreakpoint);
+			debugger.DebuggerTraceMessage    -= new EventHandler<MessageEventArgs>(DebuggerTraceMessage);
+			debugger.LogMessage              -= new EventHandler<MessageEventArgs>(LogMessage);
+			debugger.ProcessStarted          -= new EventHandler<ProcessEventArgs>(ProcessStarted);
+			debugger.DebuggingPaused         -= new EventHandler<DebuggingPausedEventArgs>(DebuggingPaused);
+			debugger.DebuggingResumed        -= new EventHandler<DebuggerEventArgs>(DebuggingResumed);
+			debugger.ProcessExited           -= new EventHandler<ProcessEventArgs>(ProcessExited);
+			debugger.IsDebuggingChanged      -= new EventHandler<DebuggerEventArgs>(OnIsDebuggingChanged);
+			debugger.IsProcessRunningChanged -= new EventHandler<DebuggerEventArgs>(DebuggerStateChanged);
+			debugger.BreakpointStateChanged  -= new EventHandler<BreakpointEventArgs>(RestoreSharpdevelopBreakpoint);
 
 			DebuggerService.BreakPointAdded   -= new EventHandler(RestoreNDebuggerBreakpoints);
 			DebuggerService.BreakPointRemoved -= new EventHandler(RestoreNDebuggerBreakpoints);

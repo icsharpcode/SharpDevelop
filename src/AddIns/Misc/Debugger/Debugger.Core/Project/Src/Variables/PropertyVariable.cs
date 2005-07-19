@@ -12,12 +12,12 @@ namespace DebuggerLibrary
 	{
 		Eval           eval;
 		Variable       currentValue;
-		public event DebuggerEventHandler ValueEvaluated;
+		public event EventHandler<DebuggerEventArgs> ValueEvaluated;
 		
 		internal PropertyVariable(NDebugger debugger, Eval eval, string name):base(debugger, null, name)
 		{
 			this.eval = eval;
-			eval.EvalComplete += new DebuggerEventHandler(EvalComplete);
+			eval.EvalComplete += new EventHandler<DebuggerEventArgs>(EvalComplete);
 		}
 		
 		public bool IsEvaluated {

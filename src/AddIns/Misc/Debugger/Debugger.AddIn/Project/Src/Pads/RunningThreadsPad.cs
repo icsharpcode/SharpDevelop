@@ -79,10 +79,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debuggerCore = debugger.DebuggerCore;
 
-			debuggerCore.ThreadStarted += new ThreadEventHandler(AddThread);
-			debuggerCore.ThreadStateChanged += new ThreadEventHandler(RefreshThread);
-			debuggerCore.ThreadExited += new ThreadEventHandler(RemoveThread);
-			debuggerCore.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
+			debuggerCore.ThreadStarted += new EventHandler<ThreadEventArgs>(AddThread);
+			debuggerCore.ThreadStateChanged += new EventHandler<ThreadEventArgs>(RefreshThread);
+			debuggerCore.ThreadExited += new EventHandler<ThreadEventArgs>(RemoveThread);
+			debuggerCore.IsProcessRunningChanged += new EventHandler<DebuggerEventArgs>(DebuggerStateChanged);
 
 			RefreshList();
 		}

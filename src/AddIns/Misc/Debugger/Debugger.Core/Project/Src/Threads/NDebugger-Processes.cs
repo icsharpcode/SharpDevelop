@@ -11,8 +11,8 @@ namespace DebuggerLibrary
 
 		Process currentProcess;
 
-		public event ProcessEventHandler ProcessStarted;
-		public event ProcessEventHandler ProcessExited;
+		public event EventHandler<ProcessEventArgs> ProcessStarted;
+		public event EventHandler<ProcessEventArgs> ProcessExited;
 
 		public Process CurrentProcess {
 			get {

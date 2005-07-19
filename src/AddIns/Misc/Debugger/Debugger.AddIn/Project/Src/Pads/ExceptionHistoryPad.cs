@@ -75,8 +75,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debuggerCore = debugger.DebuggerCore;
 
-			debuggerCore.IsDebuggingChanged += new DebuggerEventHandler(DebuggerStateChanged);
-			debuggerCore.IsProcessRunningChanged += new DebuggerEventHandler(DebuggerStateChanged);
+			debuggerCore.IsDebuggingChanged += new EventHandler<DebuggerEventArgs>(DebuggerStateChanged);
+			debuggerCore.IsProcessRunningChanged += new EventHandler<DebuggerEventArgs>(DebuggerStateChanged);
 
 			RefreshList();
 		}

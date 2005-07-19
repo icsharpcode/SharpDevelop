@@ -22,7 +22,7 @@ namespace DebuggerLibrary
 
 		bool handlingCallback = false;
 
-		public event CorDebugEvalEventHandler CorDebugEvalCompleted;
+		public event EventHandler<CorDebugEvalEventArgs> CorDebugEvalCompleted;
 
 		public ManagedCallback(NDebugger debugger)
 		{

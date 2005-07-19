@@ -6,8 +6,6 @@ using System;
 
 namespace DebuggerLibrary 
 {	
-	public delegate void DebuggingPausedEventHandler (object sender, DebuggingPausedEventArgs e);
-	
 	[Serializable]
 	public class DebuggingPausedEventArgs : DebuggerEventArgs
 	{

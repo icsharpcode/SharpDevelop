@@ -75,11 +75,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debuggerCore = debugger.DebuggerCore;
 
-			debuggerCore.DebuggingResumed += new DebuggerEventHandler(debuggerService_OnDebuggingResumed);
-			debuggerCore.BreakpointAdded += new DebuggerLibrary.BreakpointEventHandler(AddBreakpoint);
-			debuggerCore.BreakpointStateChanged += new DebuggerLibrary.BreakpointEventHandler(RefreshBreakpoint);
-			debuggerCore.BreakpointRemoved += new DebuggerLibrary.BreakpointEventHandler(RemoveBreakpoint);
-			debuggerCore.BreakpointHit += new DebuggerLibrary.BreakpointEventHandler(Breakpoints_OnBreakpointHit);
+			debuggerCore.DebuggingResumed += new EventHandler<DebuggerEventArgs>(debuggerService_OnDebuggingResumed);
+			debuggerCore.BreakpointAdded += new EventHandler<BreakpointEventArgs>(AddBreakpoint);
+			debuggerCore.BreakpointStateChanged += new EventHandler<BreakpointEventArgs>(RefreshBreakpoint);
+			debuggerCore.BreakpointRemoved += new EventHandler<BreakpointEventArgs>(RemoveBreakpoint);
+			debuggerCore.BreakpointHit += new EventHandler<BreakpointEventArgs>(Breakpoints_OnBreakpointHit);
 
 			RefreshList();
 		}

@@ -6,8 +6,6 @@ using System;
 
 namespace DebuggerLibrary
 {
-	public delegate void ProcessEventHandler (object sender, ProcessEventArgs args);
-
 	[Serializable]
 	public class ProcessEventArgs: DebuggerEventArgs
 	{

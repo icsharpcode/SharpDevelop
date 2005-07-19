@@ -84,8 +84,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debuggerCore = debugger.DebuggerCore;
 
-			debuggerCore.ModuleLoaded += new DebuggerLibrary.ModuleEventHandler(AddModule);
-			debuggerCore.ModuleUnloaded += new DebuggerLibrary.ModuleEventHandler(RemoveModule);
+			debuggerCore.ModuleLoaded += new EventHandler<ModuleEventArgs>(AddModule);
+			debuggerCore.ModuleUnloaded += new EventHandler<ModuleEventArgs>(RemoveModule);
 
 			RefreshList();
 		}

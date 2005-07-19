@@ -56,7 +56,7 @@ namespace DebuggerLibrary
 		}
 		
 
-		public event BreakpointEventHandler BreakpointStateChanged;
+		public event EventHandler<BreakpointEventArgs> BreakpointStateChanged;
 
 		internal void OnBreakpointStateChanged()
 		{
@@ -64,7 +64,7 @@ namespace DebuggerLibrary
 				BreakpointStateChanged(this, new BreakpointEventArgs(debugger, this));
 		}
 
-		public event BreakpointEventHandler BreakpointHit;
+		public event EventHandler<BreakpointEventArgs> BreakpointHit;
 
 		internal void OnBreakpointHit()
 		{

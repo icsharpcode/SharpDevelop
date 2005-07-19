@@ -15,8 +15,8 @@ namespace DebuggerLibrary
 
 		List<Module> moduleCollection = new List<Module>();
 
-		public event ModuleEventHandler ModuleLoaded;
-		public event ModuleEventHandler ModuleUnloaded;
+		public event EventHandler<ModuleEventArgs> ModuleLoaded;
+		public event EventHandler<ModuleEventArgs> ModuleUnloaded;
 
 		protected void OnModuleLoaded(Module module)
 		{

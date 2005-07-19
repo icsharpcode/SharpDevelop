@@ -20,7 +20,7 @@ namespace DebuggerLibrary
 		ICorDebugValue[]  args;
 		bool              complete = false;
 		
-		public event DebuggerEventHandler EvalComplete;
+		public event EventHandler<DebuggerEventArgs> EvalComplete;
 
 		protected virtual void OnEvalComplete(DebuggerEventArgs e) 
 		{
@@ -34,7 +34,7 @@ namespace DebuggerLibrary
 			this.debugger = debugger;
 			this.corFunction = corFunction;
 			this.args = args;
-			debugger.ManagedCallback.CorDebugEvalCompleted += new CorDebugEvalEventHandler(CorDebugEvalCompletedInManagedCallback);
+			debugger.ManagedCallback.CorDebugEvalCompleted += new EventHandler<CorDebugEvalEventArgs>(CorDebugEvalCompletedInManagedCallback);
 		}
 		
 		/// <summary>

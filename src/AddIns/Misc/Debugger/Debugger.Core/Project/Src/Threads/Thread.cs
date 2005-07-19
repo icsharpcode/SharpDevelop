@@ -128,7 +128,7 @@ namespace DebuggerLibrary
 		}
 
 
-		public event ThreadEventHandler ThreadStateChanged;
+		public event EventHandler<ThreadEventArgs> ThreadStateChanged;
 
 		protected void OnThreadStateChanged()
 		{

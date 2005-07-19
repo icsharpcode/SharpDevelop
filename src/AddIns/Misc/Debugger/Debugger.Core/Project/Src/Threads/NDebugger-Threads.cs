@@ -13,9 +13,9 @@ namespace DebuggerLibrary
 	{
 		List<Thread> threadCollection = new List<Thread>();
 
-		public event ThreadEventHandler ThreadStarted;
-		public event ThreadEventHandler ThreadExited;
-		public event ThreadEventHandler ThreadStateChanged;
+		public event EventHandler<ThreadEventArgs> ThreadStarted;
+		public event EventHandler<ThreadEventArgs> ThreadExited;
+		public event EventHandler<ThreadEventArgs> ThreadStateChanged;
 
 		protected void OnThreadStarted(Thread thread)
 		{
@@ -58,7 +58,7 @@ namespace DebuggerLibrary
 		internal void AddThread(Thread thread)
 		{
 			threadCollection.Add(thread);
-			thread.ThreadStateChanged += new ThreadEventHandler(OnThreadStateChanged);
+			thread.ThreadStateChanged += new EventHandler<ThreadEventArgs>(OnThreadStateChanged);
 			OnThreadStarted(thread);
 		}
 
@@ -70,7 +70,7 @@ namespace DebuggerLibrary
 		internal void RemoveThread(Thread thread)
 		{
 			threadCollection.Remove(thread);
-			thread.ThreadStateChanged -= new ThreadEventHandler(OnThreadStateChanged);
+			thread.ThreadStateChanged -= new EventHandler<ThreadEventArgs>(OnThreadStateChanged);
 			OnThreadExited(thread);
 		}
 
@@ -82,7 +82,7 @@ namespace DebuggerLibrary
 		internal void ClearThreads()
 		{
             foreach (Thread thread in threadCollection) {
-				thread.ThreadStateChanged -= new ThreadEventHandler(OnThreadStateChanged);
+				thread.ThreadStateChanged -= new EventHandler<ThreadEventArgs>(OnThreadStateChanged);
 				OnThreadExited(thread);
 			}
 			threadCollection.Clear();

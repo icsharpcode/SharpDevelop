@@ -6,8 +6,6 @@ using System;
 
 namespace DebuggerLibrary 
 {	
-	public delegate void BreakpointEventHandler (object sender, BreakpointEventArgs e);
-	
 	[Serializable]
 	public class BreakpointEventArgs : DebuggerEventArgs
 	{

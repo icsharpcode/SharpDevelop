@@ -17,7 +17,7 @@ namespace DebuggerLibrary
 
 		ArrayList waitingEvals = new ArrayList();
 		
-		public event DebuggerEventHandler AllEvalsComplete;
+		public event EventHandler<DebuggerEventArgs> AllEvalsComplete;
 
 		public EvalQueue(NDebugger debugger)
 		{

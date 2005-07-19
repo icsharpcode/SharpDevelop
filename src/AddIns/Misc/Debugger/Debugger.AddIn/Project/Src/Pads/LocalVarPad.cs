@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debuggerCore = debugger.DebuggerCore;
 
-			debuggerCore.DebuggingPaused += new DebuggingPausedEventHandler(debuggerService_OnDebuggingPaused);
+			debuggerCore.DebuggingPaused += new EventHandler<DebuggingPausedEventArgs>(debuggerService_OnDebuggingPaused);
 
 			RefreshList();
 		}
@@ -152,7 +152,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
  				RefreshVariable(var);
  				
  				if (var is PropertyVariable) {
- 					((PropertyVariable)var).ValueEvaluated += new DebuggerEventHandler(PropertyEvaluated);
+ 					((PropertyVariable)var).ValueEvaluated += new EventHandler<DebuggerEventArgs>(PropertyEvaluated);
  				}
 			}           
 		}

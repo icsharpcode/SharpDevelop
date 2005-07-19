@@ -40,12 +40,12 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Breakpoints\Breakpoint.cs" />
-    <Compile Include="Src\Breakpoints\BreakpointEventHandler.cs" />
+    <Compile Include="Src\Breakpoints\BreakpointEventArgs.cs" />
     <Compile Include="Src\Breakpoints\NDebugger-Breakpoints.cs" />
-    <Compile Include="Src\Debugger\DebuggerEvents\DebuggerEventHandler.cs" />
-    <Compile Include="Src\Debugger\DebuggerEvents\DebuggingIsResumingEventHandler.cs" />
-    <Compile Include="Src\Debugger\DebuggerEvents\DebuggingPausedEventHandler.cs" />
-    <Compile Include="Src\Debugger\DebuggerEvents\MessageEventHandler.cs" />
+    <Compile Include="Src\Debugger\DebuggerEvents\DebuggerEventArgs.cs" />
+    <Compile Include="Src\Debugger\DebuggerEvents\DebuggingIsResumingEventArgs.cs" />
+    <Compile Include="Src\Debugger\DebuggerEvents\DebuggingPausedEventArgs.cs" />
+    <Compile Include="Src\Debugger\DebuggerEvents\MessageEventArgs.cs" />
     <Compile Include="Src\Debugger\DebuggerEvents\PausedReason.cs" />
     <Compile Include="Src\Debugger\Exceptions.cs" />
     <Compile Include="Src\Debugger\Internal\ManagedCallback.cs" />
@@ -65,7 +65,7 @@
     <Compile Include="Src\Interop enums\CorMethodAttr.cs" />
     <Compile Include="Src\Interop enums\CorTokenType.cs" />
     <Compile Include="Src\Modules\Module.cs" />
-    <Compile Include="Src\Modules\ModuleEventHandler.cs" />
+    <Compile Include="Src\Modules\ModuleEventArgs.cs" />
     <Compile Include="Src\Modules\NDebugger-Modules.cs" />
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\AsyncMessageResponseSink.cs" />
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\MyProxy.cs" />
@@ -76,13 +76,13 @@
     <Compile Include="Src\Threads\NDebugger-Processes.cs" />
     <Compile Include="Src\Threads\NDebugger-Threads.cs" />
     <Compile Include="Src\Threads\Process.cs" />
-    <Compile Include="Src\Threads\ProcessEventHandler.cs" />
+    <Compile Include="Src\Threads\ProcessEventArgs.cs" />
     <Compile Include="Src\Threads\SourcecodeSegment.cs" />
     <Compile Include="Src\Threads\Thread.cs" />
-    <Compile Include="Src\Threads\ThreadEventHandler.cs" />
+    <Compile Include="Src\Threads\ThreadEventArgs.cs" />
     <Compile Include="Src\Variables\ArrayVariable.cs" />
     <Compile Include="Src\Variables\BuiltInVariable.cs" />
-    <Compile Include="Src\Variables\Evals\CorDebugEvalEventHandler.cs" />
+    <Compile Include="Src\Variables\Evals\CorDebugEvalEventArgs.cs" />
     <Compile Include="Src\Variables\Evals\Eval.cs" />
     <Compile Include="Src\Variables\Evals\EvalQueue.cs" />
     <Compile Include="Src\Variables\NullRefVariable.cs" />

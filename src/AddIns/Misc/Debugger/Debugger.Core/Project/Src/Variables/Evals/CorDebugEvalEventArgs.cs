@@ -7,8 +7,7 @@ using DebuggerInterop.Core;
 
 namespace DebuggerLibrary 
 {	
-	delegate void CorDebugEvalEventHandler (object sender, CorDebugEvalEventArgs e);
-	
+	[Serializable]
 	class CorDebugEvalEventArgs : DebuggerEventArgs
 	{
 		ICorDebugEval corDebugEval;

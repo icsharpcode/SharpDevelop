@@ -59,7 +59,7 @@ namespace DebuggerLibrary
 			InitDebugger();
 			ResetEnvironment();
 
-			this.ModuleLoaded += new ModuleEventHandler(SetBreakpointsInModule);
+			this.ModuleLoaded += new EventHandler<ModuleEventArgs>(SetBreakpointsInModule);
 		}
 		
 		~NDebugger() //TODO
@@ -108,7 +108,7 @@ namespace DebuggerLibrary
 
 		#region Public events
 
-		public event DebuggingPausedEventHandler DebuggingPaused;
+		public event EventHandler<DebuggingPausedEventArgs> DebuggingPaused;
 
 		protected internal virtual void OnDebuggingPaused(PausedReason reason)
 		{
@@ -123,7 +123,7 @@ namespace DebuggerLibrary
 		}
 
 
-		public event DebuggingIsResumingEventHandler DebuggingIsResuming;
+		public event EventHandler<DebuggingIsResumingEventArgs> DebuggingIsResuming;
 
 		protected internal virtual void OnDebuggingIsResuming(ref bool abort)
 		{
@@ -141,7 +141,7 @@ namespace DebuggerLibrary
 		}
 
 
-		public event DebuggerEventHandler DebuggingResumed;
+		public event EventHandler<DebuggerEventArgs> DebuggingResumed;
 
 		protected internal virtual void OnDebuggingResumed()
 		{
@@ -152,7 +152,7 @@ namespace DebuggerLibrary
 		}
 
 
-		public event DebuggerEventHandler IsProcessRunningChanged;
+		public event EventHandler<DebuggerEventArgs> IsProcessRunningChanged;
 
 		protected internal virtual void OnIsProcessRunningChanged()
 		{
@@ -163,7 +163,7 @@ namespace DebuggerLibrary
 		}
 
 		
-		public event DebuggerEventHandler IsDebuggingChanged;
+		public event EventHandler<DebuggerEventArgs> IsDebuggingChanged;
 
 		protected internal virtual void OnIsDebuggingChanged()
 		{
@@ -176,7 +176,7 @@ namespace DebuggerLibrary
 		/// <summary>
 		/// Fired when System.Diagnostics.Trace.WriteLine() is called in debuged process
 		/// </summary>
-		public event MessageEventHandler LogMessage;
+		public event EventHandler<MessageEventArgs> LogMessage;
 
 		protected internal virtual void OnLogMessage(string message)
 		{
@@ -189,7 +189,7 @@ namespace DebuggerLibrary
 		/// <summary>
 		/// Internal: Used to debug the debugger library.
 		/// </summary>
-		public event MessageEventHandler DebuggerTraceMessage;
+		public event EventHandler<MessageEventArgs> DebuggerTraceMessage;
 
 		protected internal virtual void OnDebuggerTraceMessage(string message)
 		{
