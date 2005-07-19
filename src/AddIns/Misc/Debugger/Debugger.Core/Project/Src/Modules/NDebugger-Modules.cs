@@ -88,6 +88,7 @@ namespace DebuggerLibrary
 		{
 			foreach (Module m in moduleCollection) {
  				OnModuleUnloaded(m);
+				m.Dispose();
 			}
 			moduleCollection.Clear();
 			lastAssignedModuleOrderOfLoading = 0;

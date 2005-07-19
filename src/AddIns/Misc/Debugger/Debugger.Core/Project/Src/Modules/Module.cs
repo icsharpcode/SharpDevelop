@@ -11,7 +11,7 @@ using DebuggerInterop.MetaData;
 
 namespace DebuggerLibrary
 {
-	public class Module: RemotingObjectBase
+	public class Module: RemotingObjectBase, IDisposable
 	{
 		string fullPath;
 		ulong  baseAdress;
@@ -130,6 +130,14 @@ namespace DebuggerLibrary
             } catch (System.Exception) {
                 symReader = null;
             }
+		}
+
+		public void Dispose()
+		{
+			if (symReader != null) {
+				System.Reflection.MethodInfo m = symReader.GetType().GetMethod("Finalize");
+				m.Invoke(symReader, null);
+			}
 		}
 	}
 }
