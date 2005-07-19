@@ -9,7 +9,7 @@ namespace DebuggerLibrary
 	public delegate void DebuggingIsResumingEventHandler (object sender, DebuggingIsResumingEventArgs e);
 	
 	[Serializable]
-	public class DebuggingIsResumingEventArgs : System.EventArgs 
+	public class DebuggingIsResumingEventArgs : DebuggerEventArgs
 	{
 		bool abort;
 		
@@ -22,7 +22,7 @@ namespace DebuggerLibrary
 			}
 		}
 		
-		public DebuggingIsResumingEventArgs()
+		public DebuggingIsResumingEventArgs(NDebugger debugger): base(debugger)
 		{
 			this.abort = false;
 		}

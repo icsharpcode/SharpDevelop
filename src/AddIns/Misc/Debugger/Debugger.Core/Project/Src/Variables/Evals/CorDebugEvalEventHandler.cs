@@ -9,7 +9,7 @@ namespace DebuggerLibrary
 {	
 	delegate void CorDebugEvalEventHandler (object sender, CorDebugEvalEventArgs e);
 	
-	class CorDebugEvalEventArgs : System.EventArgs 
+	class CorDebugEvalEventArgs : DebuggerEventArgs
 	{
 		ICorDebugEval corDebugEval;
 		
@@ -19,7 +19,7 @@ namespace DebuggerLibrary
 			}
 		}
 		
-		public CorDebugEvalEventArgs(ICorDebugEval corDebugEval)
+		public CorDebugEvalEventArgs(NDebugger debugger, ICorDebugEval corDebugEval): base(debugger)
 		{
 			this.corDebugEval = corDebugEval;
 		}

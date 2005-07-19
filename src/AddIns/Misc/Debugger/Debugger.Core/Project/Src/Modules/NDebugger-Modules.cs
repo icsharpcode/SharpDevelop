@@ -21,14 +21,14 @@ namespace DebuggerLibrary
 		protected void OnModuleLoaded(Module module)
 		{
 			if (ModuleLoaded != null) {
-				ModuleLoaded(this, new ModuleEventArgs(module));
+				ModuleLoaded(this, new ModuleEventArgs(this, module));
 			}
 		}
 
 		protected void OnModuleUnloaded(Module module)
 		{
 			if (ModuleUnloaded != null) {
-				ModuleUnloaded(this, new ModuleEventArgs(module));
+				ModuleUnloaded(this, new ModuleEventArgs(this, module));
 			}
 		}
 

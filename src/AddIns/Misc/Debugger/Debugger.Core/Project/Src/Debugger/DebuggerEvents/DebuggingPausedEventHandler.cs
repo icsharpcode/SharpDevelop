@@ -9,7 +9,7 @@ namespace DebuggerLibrary
 	public delegate void DebuggingPausedEventHandler (object sender, DebuggingPausedEventArgs e);
 	
 	[Serializable]
-	public class DebuggingPausedEventArgs : System.EventArgs 
+	public class DebuggingPausedEventArgs : DebuggerEventArgs
 	{
 		PausedReason reason;
 
@@ -38,7 +38,7 @@ namespace DebuggerLibrary
 			resumeDebugging = true;
 		}
 		
-		public DebuggingPausedEventArgs(PausedReason reason)
+		public DebuggingPausedEventArgs(NDebugger debugger, PausedReason reason): base(debugger)
 		{
 			this.reason = reason;
 		}

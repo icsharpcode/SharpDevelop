@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
             loadedModulesList.Items.Clear();
             foreach(Module m in debuggerCore.Modules) {
-                AddModule(this, new ModuleEventArgs(m));
+                AddModule(this, new ModuleEventArgs(debuggerCore, m));
             }
 		}
 

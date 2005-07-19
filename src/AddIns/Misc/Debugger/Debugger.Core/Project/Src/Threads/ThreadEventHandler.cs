@@ -9,7 +9,7 @@ namespace DebuggerLibrary
 	public delegate void ThreadEventHandler (object sender, ThreadEventArgs e);
 	
 	[Serializable]
-	public class ThreadEventArgs : System.EventArgs 
+	public class ThreadEventArgs : DebuggerEventArgs
 	{
 		Thread thread;
 		
@@ -19,7 +19,7 @@ namespace DebuggerLibrary
 			}
 		}
 		
-		public ThreadEventArgs(Thread thread)
+		public ThreadEventArgs(NDebugger debugger, Thread thread): base(debugger)
 		{
 			this.thread = thread;
 		}

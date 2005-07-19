@@ -9,7 +9,7 @@ namespace DebuggerLibrary
 	public delegate void MessageEventHandler (object sender, MessageEventArgs e);
 	
 	[Serializable]
-	public class MessageEventArgs : System.EventArgs 
+	public class MessageEventArgs : DebuggerEventArgs
 	{
 		string message;
 		
@@ -19,7 +19,7 @@ namespace DebuggerLibrary
 			}
 		}
 		
-		public MessageEventArgs(string message)
+		public MessageEventArgs(NDebugger debugger, string message): base(debugger)
 		{
 			this.message = message;
 		}

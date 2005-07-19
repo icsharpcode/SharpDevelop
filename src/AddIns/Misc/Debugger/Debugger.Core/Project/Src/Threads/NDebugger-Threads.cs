@@ -20,21 +20,21 @@ namespace DebuggerLibrary
 		protected void OnThreadStarted(Thread thread)
 		{
 			if (ThreadStarted != null) {
-				ThreadStarted(this, new ThreadEventArgs(thread));
+				ThreadStarted(this, new ThreadEventArgs(this, thread));
 			}
 		}
 
 		protected void OnThreadExited(Thread thread)
 		{
 			if (ThreadExited != null) {
-				ThreadExited(this, new ThreadEventArgs(thread));
+				ThreadExited(this, new ThreadEventArgs(this, thread));
 			}
 		}
 
 		protected void OnThreadStateChanged(object sender, ThreadEventArgs e)
 		{
 			if (ThreadStateChanged != null) {
-				ThreadStateChanged(this, new ThreadEventArgs(e.Thread));
+				ThreadStateChanged(this, new ThreadEventArgs(this, e.Thread));
 			}
 		}
 

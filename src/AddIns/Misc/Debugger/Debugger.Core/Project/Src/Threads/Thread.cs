@@ -133,7 +133,7 @@ namespace DebuggerLibrary
 		protected void OnThreadStateChanged()
 		{
 			if (ThreadStateChanged != null)
-				ThreadStateChanged(this, new ThreadEventArgs(this));
+				ThreadStateChanged(this, new ThreadEventArgs(debugger, this));
 		}
 
 

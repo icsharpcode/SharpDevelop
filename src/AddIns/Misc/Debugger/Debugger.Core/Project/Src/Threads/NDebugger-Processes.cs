@@ -57,14 +57,14 @@ namespace DebuggerLibrary
 		protected virtual void OnProcessStarted(Process process)
 		{
 			if (ProcessStarted != null) {
-				ProcessStarted(this, new ProcessEventArgs(process));
+				ProcessStarted(this, new ProcessEventArgs(this, process));
 			}
 		}
 
 		protected virtual void OnProcessExited(Process process)
 		{
 			if (ProcessExited != null) {
-				ProcessExited(this, new ProcessEventArgs(process));
+				ProcessExited(this, new ProcessEventArgs(this, process));
 			}
 		}
 	}

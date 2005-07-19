@@ -9,7 +9,7 @@ namespace DebuggerLibrary
 	public delegate void BreakpointEventHandler (object sender, BreakpointEventArgs e);
 	
 	[Serializable]
-	public class BreakpointEventArgs : System.EventArgs 
+	public class BreakpointEventArgs : DebuggerEventArgs
 	{
 		Breakpoint breakpoint;
 		
@@ -19,7 +19,7 @@ namespace DebuggerLibrary
 			}
 		}
 		
-		public BreakpointEventArgs(Breakpoint breakpoint)
+		public BreakpointEventArgs(NDebugger debugger, Breakpoint breakpoint): base(debugger)
 		{
 			this.breakpoint = breakpoint;
 		}

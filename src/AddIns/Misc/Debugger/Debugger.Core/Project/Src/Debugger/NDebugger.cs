@@ -24,7 +24,7 @@ namespace DebuggerLibrary
 
 		ApartmentState requiredApartmentState;
 
-		EvalQueue evalQueue = new EvalQueue();
+		EvalQueue evalQueue;
 
 		internal EvalQueue EvalQueue {
 			get { 
@@ -97,7 +97,7 @@ namespace DebuggerLibrary
 			
 			currentProcess = null;
 
-			evalQueue = new EvalQueue();
+			evalQueue = new EvalQueue(this);
 			
 			GC.Collect(GC.MaxGeneration);
 			GC.WaitForPendingFinalizers();
@@ -114,8 +114,8 @@ namespace DebuggerLibrary
 		{
 			TraceMessage ("Debugger event: OnDebuggingPaused(" + reason.ToString() + ")");
 			if (DebuggingPaused != null) {
-				DebuggingPausedEventArgs args = new DebuggingPausedEventArgs(reason);
-				DebuggingPaused(null, args);
+				DebuggingPausedEventArgs args = new DebuggingPausedEventArgs(this, reason);
+				DebuggingPaused(this, args);
 				if (args.ResumeDebugging) {
 					Continue();
 				}
@@ -130,8 +130,8 @@ namespace DebuggerLibrary
 			if (DebuggingIsResuming != null) {
 				TraceMessage ("Debugger event: OnDebuggingIsResuming(" + abort.ToString() + ")");
 				foreach(Delegate d in DebuggingIsResuming.GetInvocationList()) {
-					DebuggingIsResumingEventArgs eventHandler = new DebuggingIsResumingEventArgs();
-					d.DynamicInvoke(new object[] {null, eventHandler});
+					DebuggingIsResumingEventArgs eventHandler = new DebuggingIsResumingEventArgs(this);
+					d.DynamicInvoke(new object[] {this, eventHandler});
 					if (eventHandler.Abort == true) {
 						abort = true;
 						break;
@@ -147,7 +147,7 @@ namespace DebuggerLibrary
 		{
 			TraceMessage ("Debugger event: OnDebuggingResumed()");
 			if (DebuggingResumed != null) {
-				DebuggingResumed(null, new DebuggerEventArgs());
+				DebuggingResumed(this, new DebuggerEventArgs(this));
 			}
 		}
 
@@ -158,7 +158,7 @@ namespace DebuggerLibrary
 		{
 			TraceMessage ("Debugger event: OnIsProcessRunningChanged()");
 			if (IsProcessRunningChanged != null) {
-				IsProcessRunningChanged(null, new DebuggerEventArgs());
+				IsProcessRunningChanged(this, new DebuggerEventArgs(this));
 			}
 		}
 
@@ -169,7 +169,7 @@ namespace DebuggerLibrary
 		{
 			TraceMessage ("Debugger event: OnIsDebuggingChanged()");
 			if (IsDebuggingChanged != null) {
-				IsDebuggingChanged(null, new DebuggerEventArgs());
+				IsDebuggingChanged(this, new DebuggerEventArgs(this));
 			}
 		}
 
@@ -182,7 +182,7 @@ namespace DebuggerLibrary
 		{
 			TraceMessage ("Debugger event: OnLogMessage(\"" + message + "\")");
 			if (LogMessage != null) {
-				LogMessage(null, new MessageEventArgs(message));
+				LogMessage(this, new MessageEventArgs(this, message));
 			}
 		}
 
@@ -194,7 +194,7 @@ namespace DebuggerLibrary
 		protected internal virtual void OnDebuggerTraceMessage(string message)
 		{
 			if (DebuggerTraceMessage != null) {
-				DebuggerTraceMessage(null, new MessageEventArgs(message));
+				DebuggerTraceMessage(this, new MessageEventArgs(this, message));
 			}
 		}
 

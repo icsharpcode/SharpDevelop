@@ -23,28 +23,28 @@ namespace DebuggerLibrary
 		protected virtual void OnBreakpointAdded(Breakpoint breakpoint)
 		{
 			if (BreakpointAdded != null) {
-				BreakpointAdded(this, new BreakpointEventArgs(breakpoint));
+				BreakpointAdded(this, new BreakpointEventArgs(this, breakpoint));
 			}
 		}
 
 		protected virtual void OnBreakpointRemoved(Breakpoint breakpoint)
 		{
 			if (BreakpointRemoved != null) {
-				BreakpointRemoved(this, new BreakpointEventArgs(breakpoint));
+				BreakpointRemoved(this, new BreakpointEventArgs(this, breakpoint));
 			}
 		}
 
 		protected virtual void OnBreakpointStateChanged(object sender, BreakpointEventArgs e)
 		{
 			if (BreakpointStateChanged != null) {
-				BreakpointStateChanged(this, new BreakpointEventArgs(e.Breakpoint));
+				BreakpointStateChanged(this, new BreakpointEventArgs(this, e.Breakpoint));
 			}
 		}
 
 		protected virtual void OnBreakpointHit(object sender, BreakpointEventArgs e)
 		{
 			if (BreakpointHit != null) {
-				BreakpointHit(this, new BreakpointEventArgs(e.Breakpoint));
+				BreakpointHit(this, new BreakpointEventArgs(this, e.Breakpoint));
 			}
 		}
 

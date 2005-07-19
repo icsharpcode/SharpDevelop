@@ -61,7 +61,7 @@ namespace DebuggerLibrary
 		internal void OnBreakpointStateChanged()
 		{
 			if (BreakpointStateChanged != null)
-				BreakpointStateChanged(this, new BreakpointEventArgs(this));
+				BreakpointStateChanged(this, new BreakpointEventArgs(debugger, this));
 		}
 
 		public event BreakpointEventHandler BreakpointHit;
@@ -69,7 +69,7 @@ namespace DebuggerLibrary
 		internal void OnBreakpointHit()
 		{
 			if (BreakpointHit != null)
-				BreakpointHit(this, new BreakpointEventArgs(this));
+				BreakpointHit(this, new BreakpointEventArgs(debugger, this));
 		}
 
 		internal Breakpoint(NDebugger debugger, SourcecodeSegment sourcecodeSegment, bool enabled)

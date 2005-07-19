@@ -148,7 +148,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		private void RefreshList()
 		{
 			foreach (Thread t in debuggerCore.Threads) {
-				RefreshThread(this, new ThreadEventArgs(t));
+				RefreshThread(this, new ThreadEventArgs(debuggerCore, t));
 			}
 		}
 	}

@@ -13,9 +13,16 @@ namespace DebuggerLibrary
 {
 	class EvalQueue
 	{
+		NDebugger debugger;
+
 		ArrayList waitingEvals = new ArrayList();
 		
-		public event EventHandler AllEvalsComplete;
+		public event DebuggerEventHandler AllEvalsComplete;
+
+		public EvalQueue(NDebugger debugger)
+		{
+			this.debugger = debugger;
+		}
 		
 		public void AddEval(Eval eval)
 		{
@@ -40,7 +47,7 @@ namespace DebuggerLibrary
 			
 			if (waitingEvals.Count == 0) {
 				if (AllEvalsComplete != null) {
-					AllEvalsComplete(null, EventArgs.Empty);
+					AllEvalsComplete(this, new DebuggerEventArgs(debugger));
 				}
 			}
 		}

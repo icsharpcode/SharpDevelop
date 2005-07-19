@@ -9,8 +9,19 @@ namespace DebuggerLibrary
 	public delegate void DebuggerEventHandler (object sender, DebuggerEventArgs e);
 	
 	[Serializable]
-	public class DebuggerEventArgs : System.EventArgs 
+	public class DebuggerEventArgs : EventArgs 
 	{
-		// Some parameters are expected in the furture
+		NDebugger debugger;
+
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
+
+		public DebuggerEventArgs(NDebugger debugger)
+		{
+			this.debugger = debugger;
+		}
 	}
 }

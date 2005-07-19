@@ -20,9 +20,9 @@ namespace DebuggerLibrary
 		ICorDebugValue[]  args;
 		bool              complete = false;
 		
-		public event EventHandler EvalComplete;
+		public event DebuggerEventHandler EvalComplete;
 
-		protected virtual void OnEvalComplete(EventArgs e) 
+		protected virtual void OnEvalComplete(DebuggerEventArgs e) 
 		{
 			if (EvalComplete != null) {
 				EvalComplete(this, e);
@@ -77,7 +77,7 @@ namespace DebuggerLibrary
 		{
 			if (e.CorDebugEval == corEval) {
 				complete = true;
-				OnEvalComplete(EventArgs.Empty);
+				OnEvalComplete(new DebuggerEventArgs(debugger));
 			}
 		}
 	}

@@ -103,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void RefreshList()
 		{
             if (debugger.IsDebugging && debugger.IsProcessRunning == false) {
-                debuggerService_OnDebuggingPaused(this, new DebuggingPausedEventArgs(PausedReason.StepComplete));
+                debuggerService_OnDebuggingPaused(this, new DebuggingPausedEventArgs(debuggerCore, PausedReason.StepComplete));
             }
 		}
 
@@ -152,12 +152,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
  				RefreshVariable(var);
  				
  				if (var is PropertyVariable) {
- 					((PropertyVariable)var).ValueEvaluated += new EventHandler(PropertyEvaluated);
+ 					((PropertyVariable)var).ValueEvaluated += new DebuggerEventHandler(PropertyEvaluated);
  				}
 			}           
 		}
 		
-		void PropertyEvaluated (object sender, EventArgs args)
+		void PropertyEvaluated (object sender, DebuggerEventArgs args)
 		{
 			RefreshVariable((Variable)sender);
 		}		

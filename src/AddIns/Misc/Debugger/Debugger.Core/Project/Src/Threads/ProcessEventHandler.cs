@@ -9,7 +9,7 @@ namespace DebuggerLibrary
 	public delegate void ProcessEventHandler (object sender, ProcessEventArgs args);
 
 	[Serializable]
-	public class ProcessEventArgs: EventArgs
+	public class ProcessEventArgs: DebuggerEventArgs
 	{
 		Process process;
 
@@ -19,7 +19,7 @@ namespace DebuggerLibrary
 			}
 		}
 
-		public ProcessEventArgs(Process process)
+		public ProcessEventArgs(NDebugger debugger, Process process): base(debugger)
 		{
 			this.process = process;
 		}

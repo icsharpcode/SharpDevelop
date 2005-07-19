@@ -9,7 +9,7 @@ namespace DebuggerLibrary
 	public delegate void ModuleEventHandler (object sender, ModuleEventArgs e);
 	
 	[Serializable]
-	public class ModuleEventArgs : System.EventArgs 
+	public class ModuleEventArgs : DebuggerEventArgs
 	{
 		Module module;
 		
@@ -19,7 +19,7 @@ namespace DebuggerLibrary
 			}
 		}
 		
-		public ModuleEventArgs(Module module)
+		public ModuleEventArgs(NDebugger debugger, Module module): base(debugger)
 		{
 			this.module = module;
 		}

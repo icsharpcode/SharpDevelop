@@ -195,7 +195,7 @@ namespace DebuggerLibrary
 			EnterCallback("EvalComplete", pThread);
 			
 			if (CorDebugEvalCompleted != null) {
-				CorDebugEvalCompleted(this, new CorDebugEvalEventArgs(eval));
+				CorDebugEvalCompleted(this, new CorDebugEvalEventArgs(debugger, eval));
 			}
 			
 			ExitCallback_Paused(PausedReason.EvalComplete);

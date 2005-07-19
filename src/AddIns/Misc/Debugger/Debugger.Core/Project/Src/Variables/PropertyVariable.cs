@@ -12,12 +12,12 @@ namespace DebuggerLibrary
 	{
 		Eval           eval;
 		Variable       currentValue;
-		public event EventHandler ValueEvaluated;
+		public event DebuggerEventHandler ValueEvaluated;
 		
 		internal PropertyVariable(NDebugger debugger, Eval eval, string name):base(debugger, null, name)
 		{
 			this.eval = eval;
-			eval.EvalComplete += new EventHandler(EvalComplete);
+			eval.EvalComplete += new DebuggerEventHandler(EvalComplete);
 		}
 		
 		public bool IsEvaluated {
@@ -70,7 +70,7 @@ namespace DebuggerLibrary
 			eval.AsyncPerformEval();
 		}
 		
-		void EvalComplete(object sender, EventArgs args)
+		void EvalComplete(object sender, DebuggerEventArgs args)
 		{
 			currentValue = VariableFactory.CreateVariable(debugger, eval.GetResult(), Name);
 			OnValueEvaluated();
@@ -79,7 +79,7 @@ namespace DebuggerLibrary
 		protected void OnValueEvaluated()
 		{
 			if (ValueEvaluated != null) {
-				ValueEvaluated(this, EventArgs.Empty);
+				ValueEvaluated(this, new DebuggerEventArgs(debugger));
 			}
 		}
 	}
