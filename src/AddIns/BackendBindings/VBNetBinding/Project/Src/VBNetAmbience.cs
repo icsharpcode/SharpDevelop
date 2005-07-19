@@ -63,7 +63,7 @@ namespace VBNetBinding
 			}
 			if (decoration.IsAbstract) {
 				builder.Append("MustOverride ");
-			} else if (decoration.IsFinal) {
+			} else if (decoration.IsSealed) {
 				builder.Append("NotOverridable ");
 			} else if (decoration.IsVirtual) {
 				builder.Append("Overridable ");

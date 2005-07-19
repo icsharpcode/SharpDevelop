@@ -65,11 +65,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 
-		bool IsFinal {
-			get;
-		}
-
-		bool IsSpecialName {
+		bool IsPartial {
 			get;
 		}
 

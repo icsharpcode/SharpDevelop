@@ -5,13 +5,13 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	[Flags]
 	public enum Modifier // TODO: Rename to Modifiers
 	{
-		// Access 
+		// Access
 		Private   = 0x0001,
 		Internal  = 0x0002, // == Friend
 		Protected = 0x0004,
 		Public    = 0x0008,
 		Dim	      = 0x0010,	// VB.NET SPECIFIC
-	
+		
 		// Scope
 		Abstract  = 0x0010,  // == 	MustOverride/MustInherit
 		Virtual   = 0x0020,
@@ -21,15 +21,15 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		Readonly  = 0x0200,
 		Const	  = 0x0400,
 		New       = 0x0800,  // == Shadows
-		Partial   = 0x40000,
+		Partial   = 0x1000,
 		
-		// Special 
-		Extern    = 0x1000,
-		Volatile  = 0x2000,
-		Unsafe    = 0x4000,
-		Overloads = 0x8000, // VB specific
-		WithEvents = 0x10000, // VB specific
-		Default    = 0x20000, // VB specific
+		// Special
+		Extern    = 0x2000,
+		Volatile  = 0x4000,
+		Unsafe    = 0x8000,
+		Overloads = 0x10000, // VB specific
+		WithEvents = 0x20000, // VB specific
+		Default    = 0x40000, // VB specific
 		// Modifier scopes
 		None      = 0x0000,
 		
@@ -61,9 +61,9 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		Constructors                    = Public | Protected | Internal | Private | Extern,
 		
 		All       = Private  | Internal | Protected | Public |
-		            Abstract | Virtual  | Sealed    | Static | Partial |
-		            Override | Readonly | Const     | New    |
-		            Extern   | Volatile | Unsafe    | Overloads | WithEvents
+			Abstract | Virtual  | Sealed    | Static | Partial |
+			Override | Readonly | Const     | New    |
+			Extern   | Volatile | Unsafe    | Overloads | WithEvents
 	}
 	
 	public enum Types // TODO: Rename to ClassType

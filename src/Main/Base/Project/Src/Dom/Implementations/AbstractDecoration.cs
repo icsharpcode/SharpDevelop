@@ -166,22 +166,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return (modifiers & ModifierEnum.Override) == ModifierEnum.Override;
 			}
 		}
-		
-		public bool IsFinal {
-			get {
-				return (modifiers & ModifierEnum.Final) == ModifierEnum.Final;
-			}
-		}
-		
-		public bool IsSpecialName {
-			get {
-				return (modifiers & ModifierEnum.SpecialName) == ModifierEnum.SpecialName;
-			}
-		}
-		
 		public bool IsNew {
 			get {
 				return (modifiers & ModifierEnum.New) == ModifierEnum.New;
+			}
+		}
+		public bool IsPartial {
+			get {
+				return (modifiers & ModifierEnum.Partial) == ModifierEnum.Partial;
 			}
 		}
 		

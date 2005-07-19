@@ -140,14 +140,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public abstract void PrintToken(int token);
 		
-		protected void PrintToken(string text)
+		public void PrintText(string text)
 		{
 			this.text.Append(text);
 		}
 		
-		public void PrintIdentifier(string identifier)
-		{
-			text.Append(identifier);
-		}
+		public abstract void PrintIdentifier(string identifier);
 	}
 }

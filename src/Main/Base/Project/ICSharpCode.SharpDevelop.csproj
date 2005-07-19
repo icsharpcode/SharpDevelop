@@ -674,6 +674,7 @@
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\AbstractCompletionDataProvider.cs" />
     <Compile Include="Src\Dom\ExpressionContext.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CachedCompletionDataProvider.cs" />
+    <Compile Include="Src\Dom\Implementations\CompoundClass.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

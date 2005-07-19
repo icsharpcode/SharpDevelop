@@ -81,7 +81,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		
 		public ClassType ClassType {
 			get {
 				return classType;
@@ -199,7 +198,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return cmp;
 				}
 			}
-			
+			return -1;
+			/*
 			if (Region != null) {
 				cmp = Region.CompareTo(value.Region);
 				if (cmp != 0) {
@@ -231,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if(cmp != 0)
 				return cmp;
 			
-			return DiffUtility.Compare(Events, value.Events);
+			return DiffUtility.Compare(Events, value.Events);*/
 		}
 		
 		int IComparable.CompareTo(object o)
@@ -355,10 +355,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public IClass GetInnermostClass(int caretLine, int caretColumn)
 		{
-			if (InnerClasses == null) {
-				return this;
-			}
-			
 			foreach (IClass c in InnerClasses) {
 				if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
 					return c.GetInnermostClass(caretLine, caretColumn);
@@ -517,7 +513,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						return true;
 					}
 				} catch (Exception e) {
-					Console.WriteLine(e);
+					MessageService.ShowError(e);
 				}
 				return false;
 			}

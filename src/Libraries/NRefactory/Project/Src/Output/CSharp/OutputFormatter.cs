@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (token == Tokens.Semicolon && !EmitSemicolon) {
 				return;
 			}
-			PrintToken(Tokens.GetTokenString(token));
+			PrintText(Tokens.GetTokenString(token));
 		}
 		
 		Stack braceStack = new Stack();
@@ -118,13 +118,20 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
+		public override void PrintIdentifier(string identifier)
+		{
+			if (Keywords.GetToken(identifier) >= 0)
+				PrintText("@");
+			PrintText(identifier);
+		}
+		
 		public override void PrintComment(Comment comment)
 		{
 			switch (comment.CommentType) {
 				case CommentType.Block:	
-					PrintToken("/*");
-					PrintToken(comment.CommentText);
-					PrintToken("*/");
+					PrintText("/*");
+					PrintText(comment.CommentText);
+					PrintText("*/");
 					break;
 				case CommentType.Documentation:
 					WriteInPreviousLine("///" + comment.CommentText);

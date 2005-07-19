@@ -29,7 +29,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override void PrintToken(int token)
 		{
-			PrintToken(Tokens.GetTokenString(token));
+			PrintText(Tokens.GetTokenString(token));
+		}
+		
+		public override void PrintIdentifier(string identifier)
+		{
+			if (Keywords.GetToken(identifier) < 0) {
+				PrintText(identifier);
+			} else {
+				PrintText("[");
+				PrintText(identifier);
+				PrintText("]");
+			}
 		}
 		
 		public override void PrintComment(Comment comment)

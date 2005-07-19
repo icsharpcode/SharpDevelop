@@ -180,6 +180,34 @@ namespace ICSharpCode.Core
 		
 		protected void AddClassToNamespaceListInternal(IClass addClass)
 		{
+			if (addClass.IsPartial) {
+				Console.WriteLine(addClass);
+				Console.Write("Adding partial class... ");
+				Dictionary<string, IClass> classes = GetClasses(language);
+				CompoundClass compound = null;
+				if (classes.ContainsKey(addClass.FullyQualifiedName))
+					compound = classes[addClass.FullyQualifiedName] as CompoundClass;
+				if (compound != null) {
+					// possibly replace existing class (look for CU with same filename)
+					for (int i = 0; i < compound.Parts.Count; i++) {
+						if (compound.Parts[i].CompilationUnit.FileName == addClass.CompilationUnit.FileName) {
+							compound.Parts[i] = addClass;
+							compound.UpdateInformationFromParts();
+							Console.WriteLine("Replaced!");
+							return;
+						}
+					}
+					compound.Parts.Add(addClass);
+					compound.UpdateInformationFromParts();
+					Console.WriteLine("Added!");
+					return;
+				} else {
+					addClass = new CompoundClass(addClass);
+					Console.WriteLine("Compound created!");
+					Console.WriteLine(addClass);
+				}
+			}
+			
 			foreach (Dictionary<string, IClass> classes in ClassLists) {
 				classes[addClass.FullyQualifiedName] = addClass;
 			}
@@ -295,6 +323,17 @@ namespace ICSharpCode.Core
 		
 		void RemoveClass(IClass @class)
 		{
+			if (@class.IsPartial) {
+				// remove a part of a partial class
+				CompoundClass compound = (CompoundClass)GetClasses(language)[@class.FullyQualifiedName];
+				compound.Parts.Remove(@class);
+				if (compound.Parts.Count > 0) {
+					compound.UpdateInformationFromParts();
+					return;
+				} else {
+					@class = compound; // all parts removed, remove compound class
+				}
+			}
 			string nSpace = @class.Namespace;
 			if (nSpace == null) {
 				nSpace = String.Empty;
@@ -307,8 +346,6 @@ namespace ICSharpCode.Core
 			foreach (Dictionary<string, IClass> classes in ClassLists) {
 				classes.Remove(fullyQualifiedName);
 			}
-			
-			
 			
 			// Remove class from namespace lists
 			List<IClass> classList = GetNamespaces(this.language)[nSpace].Classes;

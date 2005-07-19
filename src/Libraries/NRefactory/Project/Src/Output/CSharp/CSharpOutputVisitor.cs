@@ -10,6 +10,7 @@
 using System;
 using System.Text;
 using System.Collections;
+using System.Globalization;
 using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Parser;
@@ -125,13 +126,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(TypeReference typeReference, object data)
 		{
 			if (typeReference.Type == null || typeReference.Type.Length ==0) {
-				outputFormatter.PrintIdentifier("void");
+				outputFormatter.PrintText("void");
 			} else {
 				if (typeReference.SystemType.Length > 0) {
-					outputFormatter.PrintIdentifier(ConvertTypeString(typeReference.SystemType));
+					outputFormatter.PrintText(ConvertTypeString(typeReference.SystemType));
 				} else {
-					outputFormatter.PrintIdentifier(typeReference.Type);
+					outputFormatter.PrintText(typeReference.Type);
 				}
+			}
+			if (typeReference.GenericTypes != null && typeReference.GenericTypes.Count > 0) {
+				outputFormatter.PrintToken(Tokens.LessThan);
+				AppendCommaSeparatedList(typeReference.GenericTypes);
+				outputFormatter.PrintToken(Tokens.GreaterThan);
 			}
 			for (int i = 0; i < typeReference.PointerNestingLevel; ++i) {
 				outputFormatter.PrintToken(Tokens.Times);
@@ -183,7 +189,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			if (attributeSection.AttributeTarget != null && attributeSection.AttributeTarget != String.Empty) {
-				outputFormatter.PrintIdentifier(attributeSection.AttributeTarget);
+				outputFormatter.PrintText(attributeSection.AttributeTarget);
 				outputFormatter.PrintToken(Tokens.Colon);
 				outputFormatter.Space();
 			}
@@ -318,15 +324,27 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(typeDeclaration.Name);
+			
+			if (typeDeclaration.Templates != null && typeDeclaration.Templates.Count > 0) {
+				outputFormatter.PrintToken(Tokens.LessThan);
+				for (int i = 0; i < typeDeclaration.Templates.Count; i++) {
+					if (i > 0) {
+						PrintFormattedComma();
+					}
+					outputFormatter.PrintIdentifier(typeDeclaration.Templates[i].Name);
+				}
+				outputFormatter.PrintToken(Tokens.GreaterThan);
+			}
+			
 			if (typeDeclaration.BaseTypes != null && typeDeclaration.BaseTypes.Count > 0) {
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Colon);
+				outputFormatter.Space();
 				for (int i = 0; i < typeDeclaration.BaseTypes.Count; ++i) {
-					outputFormatter.Space();
-					outputFormatter.PrintIdentifier((string)typeDeclaration.BaseTypes[i]);
-					if (i + 1 < typeDeclaration.BaseTypes.Count) {
+					if (i > 0) {
 						PrintFormattedComma();
 					}
+					outputFormatter.PrintIdentifier((string)typeDeclaration.BaseTypes[i]);
 				}
 			}
 			
@@ -364,15 +382,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(TemplateDefinition templateDefinition, object data)
 		{
+			if (templateDefinition.Bases.Count == 0)
+				return null;
+			
 			outputFormatter.Space();
-			outputFormatter.PrintIdentifier("where");
+			outputFormatter.PrintText("where");
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(templateDefinition.Name);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Colon);
+			outputFormatter.Space();
 			
 			for (int i = 0; i < templateDefinition.Bases.Count; ++i) {
-				outputFormatter.Space();
 				nodeTracker.TrackedVisit(templateDefinition.Bases[i], data);
 				if (i + 1 < templateDefinition.Bases.Count) {
 					PrintFormattedComma();
@@ -460,7 +481,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			this.VisitAttributes(propertyGetRegion.Attributes, data);
 			outputFormatter.Indent();
-			outputFormatter.PrintIdentifier("get");
+			outputFormatter.PrintText("get");
 			OutputBlock(propertyGetRegion.Block, prettyPrintOptions.PropertyGetBraceStyle);
 			return null;
 		}
@@ -469,7 +490,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			this.VisitAttributes(propertySetRegion.Attributes, data);
 			outputFormatter.Indent();
-			outputFormatter.PrintIdentifier("set");
+			outputFormatter.PrintText("set");
 			OutputBlock(propertySetRegion.Block, prettyPrintOptions.PropertySetBraceStyle);
 			return null;
 		}
@@ -507,7 +528,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			VisitAttributes(eventAddRegion.Attributes, data);
 			outputFormatter.Indent();
-			outputFormatter.PrintIdentifier("add");
+			outputFormatter.PrintText("add");
 			OutputBlock(eventAddRegion.Block, prettyPrintOptions.EventAddBraceStyle);
 			return null;
 		}
@@ -516,7 +537,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			VisitAttributes(eventRemoveRegion.Attributes, data);
 			outputFormatter.Indent();
-			outputFormatter.PrintIdentifier("remove");
+			outputFormatter.PrintText("remove");
 			OutputBlock(eventRemoveRegion.Block, prettyPrintOptions.EventRemoveBraceStyle);
 			return null;
 		}
@@ -701,24 +722,24 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			VisitAttributes(declareDeclaration.Attributes, data);
 			outputFormatter.Indent();
-			outputFormatter.PrintIdentifier(String.Format("[System.Runtime.InteropServices.DllImport({0}", declareDeclaration.Library));
+			outputFormatter.PrintText(String.Format("[System.Runtime.InteropServices.DllImport({0}", declareDeclaration.Library));
 			if (declareDeclaration.Alias != null && declareDeclaration.Alias.Length >0) {
-				outputFormatter.PrintIdentifier(String.Format(", EntryPoint={0}", declareDeclaration.Alias));
+				outputFormatter.PrintText(String.Format(", EntryPoint={0}", declareDeclaration.Alias));
 			}
 			
 			switch (declareDeclaration.Charset) {
 				case CharsetModifier.ANSI:
-					outputFormatter.PrintIdentifier(", CharSet=System.Runtime.InteropServices.CharSet.Ansi");
+					outputFormatter.PrintText(", CharSet=System.Runtime.InteropServices.CharSet.Ansi");
 					break;
 				case CharsetModifier.Unicode:
-					outputFormatter.PrintIdentifier(", CharSet=System.Runtime.InteropServices.CharSet.Unicode");
+					outputFormatter.PrintText(", CharSet=System.Runtime.InteropServices.CharSet.Unicode");
 					break;
 				case CharsetModifier.Auto:
-					outputFormatter.PrintIdentifier(", CharSet=System.Runtime.InteropServices.CharSet.Auto");
+					outputFormatter.PrintText(", CharSet=System.Runtime.InteropServices.CharSet.Auto");
 					break;
 			}
 			
-			outputFormatter.PrintIdentifier(")]");
+			outputFormatter.PrintText(")]");
 			outputFormatter.NewLine();
 			outputFormatter.Indent();
 			
@@ -896,7 +917,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			Debug.Assert(yieldStatement != null);
 			Debug.Assert(yieldStatement.Statement != null);
-			outputFormatter.PrintIdentifier("yield");
+			outputFormatter.PrintText("yield");
 			outputFormatter.Space();
 			nodeTracker.TrackedVisit(yieldStatement.Statement, data);
 			return null;
@@ -1117,7 +1138,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(StopStatement stopStatement, object data)
 		{
-			outputFormatter.PrintIdentifier("System.Diagnostics.Debugger.Break()");
+			outputFormatter.PrintText("System.Diagnostics.Debugger.Break()");
 			outputFormatter.PrintToken(Tokens.Semicolon);
 			return null;
 		}
@@ -1130,7 +1151,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(EndStatement endStatement, object data)
 		{
-			outputFormatter.PrintIdentifier("System.Environment.Exit(0)");
+			outputFormatter.PrintText("System.Environment.Exit(0)");
 			outputFormatter.PrintToken(Tokens.Semicolon);
 			return null;
 		}
@@ -1422,7 +1443,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintToken(Tokens.Break);
 			outputFormatter.PrintToken(Tokens.Semicolon);
-			outputFormatter.PrintIdentifier("// might not be correct. Was : Exit " + exitStatement.ExitType);
+			outputFormatter.PrintText("// might not be correct. Was : Exit " + exitStatement.ExitType);
 			outputFormatter.NewLine();
 			return null;
 		}
@@ -1444,9 +1465,90 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		string ConvertCharLiteral(char ch)
+		{
+			if (ch == '\'') return "\\'";
+			return ConvertChar(ch);
+		}
+		
+		string ConvertChar(char ch)
+		{
+			switch (ch) {
+				case '\\':
+					return "\\\\";
+				case '\0':
+					return "\\0";
+				case '\a':
+					return "\\a";
+				case '\b':
+					return "\\b";
+				case '\f':
+					return "\\f";
+				case '\n':
+					return "\\n";
+				case '\r':
+					return "\\r";
+				case '\t':
+					return "\\t";
+				case '\v':
+					return "\\v";
+				default:
+					if (char.IsControl(ch)) {
+						return "\\u" + (int)ch;
+					} else {
+						return ch.ToString();
+					}
+			}
+		}
+		
+		string ConvertString(string str)
+		{
+			StringBuilder sb = new StringBuilder();
+			foreach (char ch in str) {
+				if (ch == '"')
+					sb.Append("\\\"");
+				else
+					sb.Append(ConvertChar(ch));
+			}
+			return sb.ToString();
+		}
+		
 		public object Visit(PrimitiveExpression primitiveExpression, object data)
 		{
-			outputFormatter.PrintIdentifier(primitiveExpression.StringValue);
+			if (primitiveExpression.Value == null) {
+				outputFormatter.PrintToken(Tokens.Null);
+				return null;
+			}
+			if (primitiveExpression.Value is bool) {
+				if ((bool)primitiveExpression.Value) {
+					outputFormatter.PrintToken(Tokens.True);
+				} else {
+					outputFormatter.PrintToken(Tokens.False);
+				}
+				return null;
+			}
+			
+			if (primitiveExpression.Value is string) {
+				outputFormatter.PrintText('"' + ConvertString(primitiveExpression.Value.ToString()) + '"');
+				return null;
+			}
+			
+			if (primitiveExpression.Value is char) {
+				outputFormatter.PrintText("'" + ConvertCharLiteral((char)primitiveExpression.Value) + "'");
+				return null;
+			}
+			
+			if (primitiveExpression.Value is decimal) {
+				outputFormatter.PrintText(((decimal)primitiveExpression.Value).ToString(NumberFormatInfo.InvariantInfo) + "m");
+				return null;
+			}
+			
+			if (primitiveExpression.Value is float) {
+				outputFormatter.PrintText(((float)primitiveExpression.Value).ToString(NumberFormatInfo.InvariantInfo) + "f");
+				return null;
+			}
+			
+			outputFormatter.PrintIdentifier(primitiveExpression.Value.ToString());
 			return null;
 		}
 		
@@ -1470,7 +1572,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					
 					if (binaryOperatorExpression.Op == BinaryOperatorType.ReferenceInequality)
 						outputFormatter.PrintToken(Tokens.Not);
-					outputFormatter.PrintIdentifier("object.ReferenceEquals");
+					outputFormatter.PrintText("object.ReferenceEquals");
 					if (prettyPrintOptions.BeforeMethodCallParentheses) {
 						outputFormatter.Space();
 					}
@@ -1974,7 +2076,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		}
 		
 		public object Visit(GlobalReferenceExpression globalReferenceExpression, object data) {
-			outputFormatter.PrintIdentifier("global::");
+			outputFormatter.PrintText("global::");
 			return null;
 		}
 		

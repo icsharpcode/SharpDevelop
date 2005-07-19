@@ -27,19 +27,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 		Readonly  = 0x0200,
 		Const	  = 0x0400,
 		New       = 0x0800,
+		Partial   = 0x1000,
 		
 		// Special 
 		Extern    = 0x1000,
 		Volatile  = 0x2000,
 		Unsafe    = 0x4000,
 		
-		ProtectedAndInternal = Internal | Protected,
-		ProtectedOrInternal = 0x8000,
-//		Literal             = 0x10000, <-- == Const now!!!
-		SpecialName         = 0x20000,
+		Overloads = 0x10000, // VB specific
+		WithEvents = 0x20000, // VB specific
+		Default    = 0x40000, // VB specific
 		
-		Final               = 0x40000,
-		Partial             = 0x80000,
+		ProtectedAndInternal = Internal | Protected,
+		ProtectedOrInternal = 0x80000,
 	}
 }
 

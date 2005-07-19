@@ -96,7 +96,7 @@ namespace ICSharpCode.Core
 			
 			if (decoration.IsStatic) {
 				ret += "static ";
-			} else if (decoration.IsFinal) {
+			} else if (decoration.IsSealed) {
 				ret += "final ";
 			} else if (decoration.IsVirtual) {
 				ret += "virtual ";
