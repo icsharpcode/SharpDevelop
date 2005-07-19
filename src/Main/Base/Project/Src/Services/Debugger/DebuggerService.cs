@@ -26,66 +26,52 @@ namespace ICSharpCode.Core
 {
 	public static class DebuggerService
 	{
-		static System.Diagnostics.Process standardProcess = null;
-		static bool                       isRunning       = false;
-		static IDebugger                  defaultDebugger = null;
-		static IDebugger                  currentDebugger = null;
-		static ArrayList                  debugger        = null;
-		
-		public static IDebugger CurrentDebugger {
-			get {
-				if (currentDebugger != null) {
-					return currentDebugger;
-				}
-				if (debugger == null) {
-					InitializeService();
-				}
-				if (debugger != null) {
-					IProject project = null;
-					if (ProjectService.OpenSolution != null) {
-						project = ProjectService.OpenSolution.StartupProject;
-					}
-					foreach (IDebugger d in debugger) {
-						if (d.CanDebug(project)) {
-							currentDebugger = d;
-							return d;
-						}
-					}
-				}
-				if (defaultDebugger == null) {
-					defaultDebugger = new DefaultDebugger();
-				}
-				currentDebugger = defaultDebugger;
-				return defaultDebugger;
-			}
-		}
-		
-		public static bool IsProcessRunning {
-			get {
-				if (standardProcess != null) {
-					return isRunning;
-				}
-				if (currentDebugger != null) {
-					return currentDebugger.IsProcessRunning;
-				}
-				return false;
-			}
-		}
-		
-		public static bool IsDebugging {
-			get {
-				if (currentDebugger == null) {
-					return false;
-				}
-				return currentDebugger.IsDebugging;
-			}
-		}
-		
+		static IDebugger   currentDebugger;
+		static ArrayList   debuggers;
+		static string      oldLayoutConfiguration = "Default";
+
 		static DebuggerService()
 		{
 			InitializeService();
 			InitializeService2();
 		}
+		
+		static IDebugger GetCompatibleDebugger()
+		{
+			IProject project = null;
+			if (ProjectService.OpenSolution != null) {
+				project = ProjectService.OpenSolution.StartupProject;
+			}
+			foreach (IDebugger d in debuggers) {
+				if (d.CanDebug(project)) {
+					return d;
+				}
+			}
+			return new DefaultDebugger();
+		}
+
+		public static IDebugger CurrentDebugger {
+			get {
+				if (currentDebugger == null) {
+					currentDebugger = GetCompatibleDebugger();
+					currentDebugger.DebugStarted += new EventHandler(DebugStarted);
+					currentDebugger.DebugStopped += new EventHandler(DebugStopped);
+				}
+				return currentDebugger;
+			}
+		}
+
+		static void DebugStarted(object sender, EventArgs e)
+		{
+			//oldLayoutConfiguration = LayoutConfiguration.CurrentLayoutName;
+			//LayoutConfiguration.CurrentLayoutName = "Debug";
+		}
+
+		static void DebugStopped(object sender, EventArgs e)
+		{
+			//LayoutConfiguration.CurrentLayoutName = oldLayoutConfiguration;
+		}
+
 		
 		static MessageViewCategory debugCategory = null;
 		
@@ -110,27 +96,6 @@ namespace ICSharpCode.Core
 			} catch (Exception) {}
 		}
 		
-		static string oldLayoutConfiguration = "Default";
-		static void HandleDebugStopped(object sender, EventArgs e)
-		{
-//			LayoutConfiguration.CurrentLayoutName = oldLayoutConfiguration;
-			//// Alex: if stopped - kill process which might be running or stuck
-			if (standardProcess != null) {
-				standardProcess.Kill();
-				standardProcess.Close();
-				standardProcess = null;
-			}
-			IDebugger debugger = CurrentDebugger;
-			if (debugger != null) {
-				debugger.Stop();
-			}
-			
-			debugger.DebugStopped -= new EventHandler(HandleDebugStopped);
-			debugger.Dispose();
-			
-			isRunning = false;
-		}
-		
 		#region ICSharpCode.Core.IService interface implementation
 		public static void InitializeService()
 		{
@@ -140,7 +105,10 @@ namespace ICSharpCode.Core
 			} catch (Exception) {
 			}
 			if (treeNode != null) {
-				debugger = treeNode.BuildChildItems(null);
+				debuggers = treeNode.BuildChildItems(null);
+			}
+			if (debuggers == null) {
+				debuggers = new ArrayList();
 			}
 			
 			ProjectService.SolutionLoaded += new SolutionEventHandler(ClearOnCombineEvent);
@@ -160,119 +128,7 @@ namespace ICSharpCode.Core
 			debugCategory.ClearText();
 		}
 		#endregion
-		
-		public static void GotoSourceFile(string fileName, int lineNumber, int column)
-		{
-			
-			FileService.JumpToFilePosition(fileName, lineNumber, column);
-		}
-		
-		public static void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)
-		{
-			if (IsProcessRunning) {
-				return;
-			}
-			try {
-				standardProcess = new System.Diagnostics.Process();
-				standardProcess.StartInfo = psi;
-				standardProcess.Exited += new EventHandler(StandardProcessExited);
-				standardProcess.EnableRaisingEvents = true;
-				standardProcess.Start();
-				isRunning = true;
-			} catch (Exception e) {
-				MessageService.ShowError(e, "Can't execute " + "\"" + psi.FileName + "\"\n");
-			}
-		}
-		
-		public static void StartWithoutDebugging(string fileName, string workingDirectory, string arguments)
-		{
-			ProcessStartInfo startInfo = new ProcessStartInfo(fileName, arguments);
-			startInfo.WorkingDirectory = workingDirectory;
-			startInfo.UseShellExecute  = false;
-			StartWithoutDebugging(startInfo);
-		}
-		
-		public static void Start(string fileName, string workingDirectory, string arguments)
-		{
-			if (IsProcessRunning) {
-				return;
-			}
-			oldLayoutConfiguration = LayoutConfiguration.CurrentLayoutName;
-//			LayoutConfiguration.CurrentLayoutName = "Debug";
-			
-			IDebugger debugger = CurrentDebugger;
-			if (debugger != null) {
-				debugger.Start(fileName, workingDirectory, arguments);
-				debugger.DebugStopped += new EventHandler(HandleDebugStopped);
-			}
 
-			isRunning = true;
-		}
-		
-		public static void Break()
-		{
-			IDebugger debugger = CurrentDebugger;
-			if (debugger != null && debugger.SupportsExecutionControl) {
-				debugger.Break();
-			}
-		}
-		
-		public static void Continue()
-		{
-			IDebugger debugger = CurrentDebugger;
-			if (debugger != null && debugger.SupportsExecutionControl) {
-				debugger.Continue();
-			}
-		}
-		
-		public static void Step(bool stepInto)
-		{
-			IDebugger debugger = CurrentDebugger;
-			if (debugger == null || !debugger.SupportsStepping) {
-				return;
-			}
-			if (stepInto) {
-				debugger.StepInto();
-			} else {
-				debugger.StepOver();
-			}
-		}
-		
-		public static void StepOut()
-		{
-			IDebugger debugger = CurrentDebugger;
-			if (debugger == null || !debugger.SupportsStepping) {
-				return;
-			}
-			debugger.StepOut();
-		}
-		
-		public static void Stop()
-		{
-			if (standardProcess != null) {
-//				OnTextMessage(new TextMessageEventArgs(String.Format("Killing {0}{1}\n",standardProcess.ProcessName,Environment.NewLine)));
-				standardProcess.Exited -= new EventHandler(StandardProcessExited);
-				standardProcess.Kill();
-				standardProcess.Close();
-				standardProcess.Dispose();
-				standardProcess = null;
-			} else {
-				IDebugger debugger = CurrentDebugger;
-				if (debugger != null) {
-					debugger.Stop();
-				}
-			}
-			isRunning = false;
-		}
-		
-		static void StandardProcessExited(object sender, EventArgs e)
-		{
-			standardProcess.Exited -= new EventHandler(StandardProcessExited);
-			standardProcess.Dispose();
-			standardProcess = null;
-			isRunning       = false;
-		}
-		
 		public static event EventHandler BreakPointChanged;
 		public static event EventHandler BreakPointAdded;
 		public static event EventHandler BreakPointRemoved;

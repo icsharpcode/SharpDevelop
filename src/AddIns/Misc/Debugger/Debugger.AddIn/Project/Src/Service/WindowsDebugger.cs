@@ -32,12 +32,13 @@ using ICSharpCode.SharpDevelop.Services;
 using System.Runtime.Remoting;
 using System.Reflection;
 using System.Security.Policy;
+using System.Diagnostics;
 
 //using Reflector.UserInterface;
 
 namespace ICSharpCode.SharpDevelop.Services
 {	
-	public class WindowsDebugger:IDebugger//, IService
+	public class WindowsDebugger:IDebugger //, IService
 	{
 		[Serializable]
 		public class RemotingConfigurationHelpper
@@ -91,21 +92,8 @@ namespace ICSharpCode.SharpDevelop.Services
 		bool isProcessRunningCache = false;
 		bool serviceInitialized = false;
 
-		public event EventHandler DebugStopped; // FIX: unused
 
 		List<DebuggerLibrary.Exception> exceptionHistory = new List<DebuggerLibrary.Exception>();
-		
-		protected virtual void OnDebugStopped(EventArgs e)
-		{
-			if (DebugStopped != null) {
-				DebugStopped(this, e);
-			}
-		}
-		
-		public void Dispose()// FIX: unused
-		{
-			
-		}
 		
 		public NDebugger DebuggerCore {
 			get {
@@ -121,17 +109,6 @@ namespace ICSharpCode.SharpDevelop.Services
 				return serviceInitialized;
 			}
 		}
-		
-		public bool CanDebug(IProject project)
-		{
-			return true;
-		}
-		
-		public bool SupportsStepping {
-			get {
-				return true;
-			}
-		}
 
 		public IList<DebuggerLibrary.Exception> ExceptionHistory {
 			get {
@@ -143,6 +120,166 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 
 		}
+
+		#region IDebugger Members
+
+		public bool IsDebugging { 
+			get { 
+				return isDebuggingCache; 
+			} 
+		}
+		
+		public bool IsProcessRunning { 
+			get { 
+				return isProcessRunningCache; 
+			} 
+		}
+		
+		public bool CanDebug(IProject project)
+		{
+			return true;
+		}
+		
+		public void Start(ProcessStartInfo processStartInfo)
+		{
+			if (!serviceInitialized) {
+				InitializeService();
+			}
+			debugger.Start(processStartInfo.FileName,
+			               processStartInfo.WorkingDirectory,
+						   processStartInfo.Arguments);
+		}
+
+		public bool SupportsStart {
+			get {
+				return true;
+			}
+		}
+
+		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
+		{
+			System.Diagnostics.Process process;
+			process = new System.Diagnostics.Process();
+			process.StartInfo = processStartInfo;
+			process.Start();
+		}
+
+		public bool SupportsStartWithoutDebugging {
+			get {
+				return true;
+			}
+		}
+
+		public void Stop()
+		{
+			debugger.Terminate();
+		}
+
+		public bool SupportsStop {
+			get {
+				return true;
+			}
+		}
+		
+		// ExecutionControl:
+		
+		public void Break()
+		{
+			debugger.Break();
+		}
+		
+		public void Continue()
+		{
+			debugger.Continue();
+		}
+
+		public bool SupportsExecutionControl {
+			get {
+				return true;
+			}
+		}
+
+		// Stepping:
+
+		public void StepInto()
+		{
+			debugger.StepInto();
+		}
+		
+		public void StepOver()
+		{
+			debugger.StepOver();
+		}
+		
+		public void StepOut()
+		{
+			debugger.StepOut();
+		}
+
+		public bool SupportsStepping {
+			get {
+				return true;
+			}
+		}
+
+		public event EventHandler DebugStarted;
+
+		protected virtual void OnDebugStarted(EventArgs e) 
+		{
+			if (DebugStarted != null) {
+				DebugStarted(this, e);
+			}
+		}
+
+
+		public event EventHandler IsProcessRunningChanged;
+		
+		protected virtual void OnIsProcessRunningChanged(EventArgs e)
+		{
+			if (IsProcessRunningChanged != null) {
+				IsProcessRunningChanged(this, e);
+			}
+		}
+
+
+		public event EventHandler DebugStopped;
+
+		protected virtual void OnDebugStopped(EventArgs e) 
+		{
+			if (DebugStopped != null) {
+				DebugStopped(this, e);
+			}
+		}
+		
+		/// <summary>
+		/// Gets the current value of the variable as string that can be displayed in tooltips.
+		/// </summary>
+		public string GetValueAsString(string variableName)
+		{
+			if (!debugger.IsDebugging || debugger.IsProcessRunning) return null;
+			VariableCollection collection = debugger.LocalVariables;
+			if (collection == null)
+				return null;
+			foreach (Variable v in collection) {
+				if (v.Name == variableName) {
+					object val = v.Value;
+					if (val == null)
+						return "<null>";
+					else if (val is string)
+						return "\"" + val.ToString() + "\"";
+					else
+						return val.ToString();
+				}
+			}
+			return null;
+		}
+
+		public void Dispose() 
+		{
+			Stop();
+		}
+
+		#endregion
 		
 		#region ICSharpCode.Core.Services.IService interface implementation
 		public event System.EventHandler Initialize;
@@ -218,80 +355,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		}
 		#endregion		
 		
-		#region ICSharpCode.SharpDevelop.Services.IDebugger interface implementation
-		public bool IsDebugging { 
-			get { 
-				return isDebuggingCache; 
-			} 
-		}
-		
-		public bool IsProcessRunning { 
-			get { 
-				return isProcessRunningCache; 
-			} 
-		}
-		
-		public bool SupportsStartStop { 
-			get { 
-				return true; 
-			} 
-		}
-		
-		public bool SupportsExecutionControl { 
-			get { 
-				return true; 
-			} 
-		}
-		
-		public void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)
-		{
-			System.Diagnostics.Process process;
-			process = new System.Diagnostics.Process();
-			process.StartInfo = psi;
-			process.Start();
-		}
-		
-		public void Start(string fileName, string workingDirectory, string arguments)
-		{
-			if (!serviceInitialized) {
-				InitializeService();
-			}
-			debugger.Start(fileName, workingDirectory, arguments);
-		}
-		
-		public void Stop()
-		{
-			debugger.Terminate();
-		}
-		
-		public void Break()
-		{
-			debugger.Break();
-		}
-		
-		public void StepInto()
-		{
-			debugger.StepInto();
-		}
-		
-		public void StepOver()
-		{
-			debugger.StepOver();
-		}
-		
-		public void StepOut()
-		{
-			debugger.StepOut();
-		}
-		
-		public void Continue()
-		{
-			debugger.Continue();
-		}
-		#endregion
-		
-
-		
 		public void RestoreNDebuggerBreakpoints(object sender, EventArgs e)
 		{
 			debugger.ClearBreakpoints();
@@ -334,6 +397,9 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void ProcessStarted(object sender, ProcessEventArgs e)
 		{
+			if (debugger.Processes.Count == 1) {
+				OnDebugStarted(EventArgs.Empty);
+			}
 			// Initialize 
 			/*PadDescriptor cmv = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView));
 			if (messageViewCategoryDebug == null) {	
@@ -349,6 +415,10 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		void DebuggingPaused(object sender, DebuggingPausedEventArgs e)
 		{
+			OnIsProcessRunningChanged(EventArgs.Empty);
+
+			JumpToCurrentLine();
+
 			if (e.Reason == PausedReason.Exception) {
 				exceptionHistory.Add(debugger.CurrentThread.CurrentException);
 				if (debugger.CurrentThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED && (debugger.CatchHandledExceptions == false)) {
@@ -376,8 +446,6 @@ namespace ICSharpCode.SharpDevelop.Services
 						throw new NotImplementedException();
 				}
 			}
-			
-			JumpToCurrentLine();
 		}
 		
 		void DebuggingResumed(object sender, DebuggerEventArgs e)
@@ -389,6 +457,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			if (debugger.Processes.Count == 0) {
 				exceptionHistory.Clear();
+				OnDebugStopped(EventArgs.Empty);
 			}
 		}
 
@@ -427,29 +496,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			//if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
 			//	  WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent.RedrawContent();
 			//}
-		}
-		
-		/// <summary>
-		/// Gets the current value of the variable as string that can be displayed in tooltips.
-		/// </summary>
-		public string GetValueAsString(string variableName)
-		{
-			if (!debugger.IsDebugging || debugger.IsProcessRunning) return null;
-			VariableCollection collection = debugger.LocalVariables;
-			if (collection == null)
-				return null;
-			foreach (Variable v in collection) {
-				if (v.Name == variableName) {
-					object val = v.Value;
-					if (val == null)
-						return "<null>";
-					else if (val is string)
-						return "\"" + val.ToString() + "\"";
-					else
-						return val.ToString();
-				}
-			}
-			return null;
 		}
 	}
 }

@@ -42,7 +42,7 @@
     <Compile Include="Src\FormattingStrategy\DocumentAccessor.cs" />
     <Compile Include="Src\FormattingStrategy\Indentation.cs" />
     <Compile Include="Src\OptionPanels\BuildOptions.cs">
-      <SubType>Form</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Parser\ExpressionFinder.cs" />
     <Compile Include="Src\Parser\Parser.cs" />
@@ -73,6 +73,8 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
     <Folder Include="Src\PrettyPrinter\Gui\" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

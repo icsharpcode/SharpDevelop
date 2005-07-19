@@ -47,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			DebuggerService.Continue();
+			DebuggerService.CurrentDebugger.Continue();
 		}
 	}
 	
@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			DebuggerService.Break();
+			DebuggerService.CurrentDebugger.Break();
 		}
 	}
 	
@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			DebuggerService.Stop();
+			DebuggerService.CurrentDebugger.Stop();
 		}
 	}
 	
@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			DebuggerService.Step(false);
+			DebuggerService.CurrentDebugger.StepOver();
 		}
 	}
 	
@@ -79,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			DebuggerService.Step(true);
+			DebuggerService.CurrentDebugger.StepInto();
 		}
 	}
 	
@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			DebuggerService.StepOut();
+			DebuggerService.CurrentDebugger.StepOut();
 		}
 	}
 }

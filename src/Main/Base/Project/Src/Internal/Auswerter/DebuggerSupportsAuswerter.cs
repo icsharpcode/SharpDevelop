@@ -12,8 +12,12 @@ namespace ICSharpCode.Core
 			IDebugger debugger = DebuggerService.CurrentDebugger as IDebugger;
 			if (debugger != null) {
 				switch (condition.Properties["debuggersupports"]) {
-					case "StartStop":
-						return debugger.SupportsStartStop;
+					case "Start":
+						return debugger.SupportsStart;
+					case "StartWithoutDebugging":
+						return debugger.SupportsStartWithoutDebugging;
+					case "Stop":
+						return debugger.SupportsStop;
 					case "ExecutionControl":
 						return debugger.SupportsExecutionControl;
 					case "Stepping":

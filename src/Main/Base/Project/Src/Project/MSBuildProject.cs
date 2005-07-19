@@ -233,16 +233,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Start(bool withDebugging)
 		{
+			ProcessStartInfo psi = new ProcessStartInfo();
+			psi.FileName = OutputAssemblyFullPath;
+			psi.WorkingDirectory = Path.GetDirectoryName(OutputAssemblyFullPath);
+			psi.Arguments = "";
+
 			if (withDebugging) {
-				DebuggerService.Start(OutputAssemblyFullPath,
-				                      Path.GetDirectoryName(OutputAssemblyFullPath),
-				                      "");
+				DebuggerService.CurrentDebugger.Start(psi);
 			} else {
-				DebuggerService.StartWithoutDebugging(OutputAssemblyFullPath,
-				                                      Path.GetDirectoryName(OutputAssemblyFullPath),
-				                                      "");
+				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
 			}
-			
 		}
 		
 //		static void BeforeBuild()

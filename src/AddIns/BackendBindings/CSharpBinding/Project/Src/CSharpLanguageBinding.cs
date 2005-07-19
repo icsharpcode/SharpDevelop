@@ -66,13 +66,20 @@ namespace CSharpBinding
 			
 			
 			if (debug) {
-				DebuggerService.Start(exe, Path.GetDirectoryName(exe), "");
-			} else {
-				ProcessStartInfo psi = new ProcessStartInfo(Environment.GetEnvironmentVariable("ComSpec"), "/c " + "\"" + exe + "\"" + " & pause");
+				ProcessStartInfo psi = new ProcessStartInfo();
+				psi.FileName = exe;
 				psi.WorkingDirectory = Path.GetDirectoryName(exe);
+				psi.Arguments = "";
+
+				DebuggerService.CurrentDebugger.Start(psi);
+			} else {
+				ProcessStartInfo psi = new ProcessStartInfo();
+				psi.FileName = Environment.GetEnvironmentVariable("ComSpec");
+				psi.WorkingDirectory = Path.GetDirectoryName(exe);
+				psi.Arguments = "/c " + "\"" + exe + "\"" + " & pause";
 				psi.UseShellExecute = false;
 				
-				DebuggerService.StartWithoutDebugging(psi);
+				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
 			}
 		}
 		#endregion

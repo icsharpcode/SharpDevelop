@@ -3,6 +3,7 @@ using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using System.Diagnostics;
 
 namespace ICSharpCode.Core 
 {
@@ -12,31 +13,13 @@ namespace ICSharpCode.Core
 		
 		public bool IsDebugging {
 			get {
-				return IsProcessRunning;
+				return attachedProcess != null;
 			}
 		}
 		
 		public bool IsProcessRunning {
 			get {
-				return attachedProcess != null;
-			}
-		}
-		
-		public bool SupportsStartStop {
-			get {
-				return true;
-			}
-		}
-		
-		public bool SupportsExecutionControl {
-			get {
-				return false;
-			}
-		}
-		
-		public bool SupportsStepping {
-			get {
-				return false;
+				return IsDebugging;
 			}
 		}
 		
@@ -45,25 +28,46 @@ namespace ICSharpCode.Core
 			return true;
 		}
 		
-		public void Start(string fileName, string workingDirectory, string arguments)
+		public void Start(ProcessStartInfo processStartInfo)
 		{
 			if (attachedProcess != null) {
 				return;
 			}
 
-			System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo();
-			psi.FileName = fileName;
-			psi.WorkingDirectory = workingDirectory;
-			psi.Arguments = arguments;
-
 			try {
 				attachedProcess = new System.Diagnostics.Process();
-				attachedProcess.StartInfo = psi;
+				attachedProcess.StartInfo = processStartInfo;
 				attachedProcess.Exited += new EventHandler(AttachedProcessExited);
 				attachedProcess.EnableRaisingEvents = true;
 				attachedProcess.Start();
+				OnDebugStarted(EventArgs.Empty);
 			} catch (Exception) {
-				throw new ApplicationException("Can't execute " + "\"" + psi.FileName + "\"\n");
+				throw new ApplicationException("Can't execute " + "\"" + processStartInfo.FileName + "\"\n");
+			}
+		}
+
+		void AttachedProcessExited(object sender, EventArgs e)
+		{
+			attachedProcess.Exited -= new EventHandler(AttachedProcessExited);
+			attachedProcess.Dispose();
+			attachedProcess = null;	
+			OnDebugStopped(EventArgs.Empty);
+		}
+
+		public bool SupportsStart {
+			get {
+				return true;
+			}
+		}
+
+		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
+		{
+			throw new NotSupportedException();
+		}
+
+		public bool SupportsStartWithoutDebugging {
+			get {
+				return false;
 			}
 		}
 
@@ -77,19 +81,12 @@ namespace ICSharpCode.Core
 				attachedProcess = null;
 			}
 		}
-		
-		#region System.IDisposable interface implementation
-		public void Dispose() 
-		{
-			if (attachedProcess != null) {
-				attachedProcess.Exited -= new EventHandler(AttachedProcessExited);
-				attachedProcess.Kill();
-				attachedProcess.Close();
-				attachedProcess.Dispose();
-				attachedProcess = null;
+
+		public bool SupportsStop {
+			get {
+				return true;
 			}
 		}
-		#endregion
 		
 		// ExecutionControl:
 		
@@ -102,6 +99,14 @@ namespace ICSharpCode.Core
 		{
 			throw new NotSupportedException();
 		}
+
+		public bool SupportsExecutionControl {
+			get {
+				return false;
+			}
+		}
+
+		// Stepping:
 
 		public void StepInto()
 		{
@@ -117,15 +122,35 @@ namespace ICSharpCode.Core
 		{
 			throw new NotSupportedException();
 		}
-		
-		void AttachedProcessExited(object sender, EventArgs e)
-		{
-			attachedProcess.Exited -= new EventHandler(AttachedProcessExited);
-			attachedProcess.Dispose();
-			attachedProcess = null;	
-			OnDebugStopped(EventArgs.Empty);
+
+		public bool SupportsStepping {
+			get {
+				return false;
+			}
 		}
+
+		public event EventHandler DebugStarted;
+
+		protected virtual void OnDebugStarted(EventArgs e) 
+		{
+			if (DebugStarted != null) {
+				DebugStarted(this, e);
+			}
+		}
+
+
+		public event EventHandler IsProcessRunningChanged;
 		
+		protected virtual void OnIsProcessRunningChanged(EventArgs e)
+		{
+			if (IsProcessRunningChanged != null) {
+				IsProcessRunningChanged(this, e);
+			}
+		}
+
+
+		public event EventHandler DebugStopped;
+
 		protected virtual void OnDebugStopped(EventArgs e) 
 		{
 			if (DebugStopped != null) {
@@ -133,14 +158,17 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public event EventHandler DebugStopped;
-		
 		/// <summary>
 		/// Gets the current value of the variable as string that can be displayed in tooltips.
 		/// </summary>
 		public string GetValueAsString(string variable)
 		{
 			return null;
+		}
+
+		public void Dispose() 
+		{
+			Stop();
 		}
 	}
 }
