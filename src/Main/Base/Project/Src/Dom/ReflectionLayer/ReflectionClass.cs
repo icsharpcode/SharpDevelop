@@ -175,6 +175,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} else if (IsDelegate(type)) {
 				this.ClassType = ClassType.Delegate;
 			} else {
+				// TODO: Check if class is a module.
 				this.ClassType = ClassType.Class;
 			}
 			if (type.IsGenericTypeDefinition) {

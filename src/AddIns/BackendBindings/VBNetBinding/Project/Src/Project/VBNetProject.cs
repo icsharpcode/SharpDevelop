@@ -239,6 +239,13 @@ namespace VBNetBinding
 			imports.Add(@"$(MSBuildBinPath)\Microsoft.VisualBasic.Targets");
 		}
 		
+		public override ParseProjectContent CreateProjectContent()
+		{
+			ParseProjectContent pc = base.CreateProjectContent();
+			MyNamespaceBuilder.BuildNamespace(this, pc);
+			return pc;
+		}
+		
 		void InitVB()
 		{
 			Language = "VBNet";

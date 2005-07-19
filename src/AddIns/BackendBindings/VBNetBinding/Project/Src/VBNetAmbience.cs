@@ -147,6 +147,9 @@ namespace VBNetBinding
 					case ClassType.Class:
 						builder.Append("Class");
 						break;
+					case ClassType.Module:
+						builder.Append("Module");
+						break;
 					case ClassType.Struct:
 						builder.Append("Structure");
 						break;
@@ -241,6 +244,9 @@ namespace VBNetBinding
 					break;
 				case ClassType.Class:
 					builder.Append("Class");
+					break;
+				case ClassType.Module:
+					builder.Append("Module");
 					break;
 				case ClassType.Struct:
 					builder.Append("Structure");

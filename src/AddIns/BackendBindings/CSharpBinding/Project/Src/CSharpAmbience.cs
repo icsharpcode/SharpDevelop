@@ -151,6 +151,7 @@ namespace ICSharpCode.Core
 						builder.Append("delegate");
 						break;
 					case ClassType.Class:
+					case ClassType.Module:
 						builder.Append("class");
 						break;
 					case ClassType.Struct:

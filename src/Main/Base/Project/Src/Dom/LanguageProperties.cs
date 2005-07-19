@@ -28,6 +28,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return true;
 				}
 			}
+			
+			public override bool ImportModules {
+				get {
+					return true;
+				}
+			}
 
 			public override string ToString()
 			{
@@ -57,6 +63,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 
+		/// <summary>
+		/// Gets if modules are imported with their namespace (i.e. Microsoft.VisualBasic.Randomize()).
+		/// </summary>
+		public virtual bool ImportModules {
+			get {
+				return false;
+			}
+		}
+		
 		public virtual bool ShowMember(IMember member, bool showStatic)
 		{
 			return member.IsStatic == showStatic;

@@ -242,9 +242,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return ClassType.Interface;
 				case AST.Types.Struct:
 					return ClassType.Struct;
+				case AST.Types.Module:
+					return ClassType.Module;
+				default:
+					return ClassType.Class;
 			}
-			// Class and Module
-			return ClassType.Class;
 		}
 		
 		DefaultRegion GetRegion(Point start, Point end)

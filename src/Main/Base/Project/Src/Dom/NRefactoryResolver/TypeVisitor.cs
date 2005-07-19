@@ -227,15 +227,24 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			IReturnType returnType = fieldReferenceExpression.TargetObject.AcceptVisitor(this, data) as IReturnType;
 			if (returnType != null) {
-				string name = resolver.SearchNamespace(returnType.FullyQualifiedName, resolver.CompilationUnit);
-				if (name != null) {
-					string n = resolver.SearchNamespace(name + "." + fieldReferenceExpression.FieldName, null);
-					if (n != null) {
-						return new NamespaceReturnType(n);
+				NamespaceReturnType namespaceRT = returnType as NamespaceReturnType;
+				if (namespaceRT != null) {
+					string name = namespaceRT.FullyQualifiedName;
+					string combinedName = name + "." + fieldReferenceExpression.FieldName;
+					if (resolver.ProjectContent.NamespaceExists(combinedName)) {
+						return new NamespaceReturnType(combinedName);
 					}
-					IClass c = resolver.SearchType(name + "." + fieldReferenceExpression.FieldName, resolver.CallingClass, resolver.CompilationUnit);
+					IClass c = resolver.ProjectContent.GetClass(combinedName);
 					if (c != null) {
 						return c.DefaultReturnType;
+					}
+					if (resolver.LanguageProperties.ImportModules) {
+						// go through the members of the modules
+						foreach (object o in resolver.ProjectContent.GetNamespaceContents(name)) {
+							IMember member = o as IMember;
+							if (member != null && resolver.IsSameName(member.Name, fieldReferenceExpression.FieldName))
+								return member.ReturnType;
+						}
 					}
 					return null;
 				}
@@ -500,7 +509,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return t;
 		}
 		
-		class NamespaceReturnType : AbstractReturnType
+		public class NamespaceReturnType : AbstractReturnType
 		{
 			public NamespaceReturnType(string fullName)
 			{

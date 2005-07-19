@@ -391,7 +391,19 @@ namespace ICSharpCode.Core
 			Dictionary<string, NamespaceStruct> dict = GetNamespaces(language);
 			if (dict.ContainsKey(nameSpace)) {
 				NamespaceStruct ns = dict[nameSpace];
-				list.AddRange(ns.Classes);
+				int newCapacity = list.Count + ns.Classes.Count + ns.SubNamespaces.Count;
+				if (list.Capacity < newCapacity)
+					list.Capacity = newCapacity;
+				if (language.ImportModules) {
+					foreach (IClass c in ns.Classes) {
+						list.Add(c);
+						if (c.ClassType == ClassType.Module) {
+							list.AddRange(c.GetAccessibleMembers(null, true));
+						}
+					}
+				} else {
+					list.AddRange(ns.Classes);
+				}
 				foreach (string subns in ns.SubNamespaces) {
 					if (!list.Contains(subns))
 						list.Add(subns);

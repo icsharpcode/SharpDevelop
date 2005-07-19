@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -29,6 +29,9 @@ namespace ICSharpCode.Core
 						break;
 					case ClassType.Class:
 						builder.Append("Class");
+						break;
+					case ClassType.Module:
+						builder.Append("Module");
 						break;
 					case ClassType.Struct:
 						builder.Append("Structure");

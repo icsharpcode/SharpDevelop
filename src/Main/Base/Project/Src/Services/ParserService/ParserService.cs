@@ -125,7 +125,7 @@ namespace ICSharpCode.Core
 			List<ParseProjectContent> createdContents = new List<ParseProjectContent>();
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				try {
-					ParseProjectContent newContent = ParseProjectContent.CreateUninitalized(project);
+					ParseProjectContent newContent = project.CreateProjectContent();
 					lock (projectContents) {
 						projectContents[project] = newContent;
 					} 

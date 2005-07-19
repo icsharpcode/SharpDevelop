@@ -252,21 +252,28 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ResolveResult ResolveMemberReferenceExpression(IReturnType type, FieldReferenceExpression fieldReferenceExpression)
 		{
 			IClass c;
-			string name = SearchNamespace(type.FullyQualifiedName, this.CompilationUnit);
-			// TODO: Test directly for NamespaceReturnType
-			if (name != null) {
-				name += "." + fieldReferenceExpression.FieldName;
-				string n = SearchNamespace(name, null);
-				if (n != null) {
-					return new NamespaceResolveResult(callingClass, callingMember, n);
+			IMember member;
+			TypeVisitor.NamespaceReturnType namespaceRT = type as TypeVisitor.NamespaceReturnType;
+			if (namespaceRT != null) {
+				string combinedName = namespaceRT.FullyQualifiedName + "." + fieldReferenceExpression.FieldName;
+				if (projectContent.NamespaceExists(combinedName)) {
+					return new NamespaceResolveResult(callingClass, callingMember, combinedName);
 				}
-				c = SearchType(name, this.CallingClass, this.CompilationUnit);
+				c = projectContent.GetClass(combinedName);
 				if (c != null) {
 					return new TypeResolveResult(callingClass, callingMember, c);
 				}
+				if (languageProperties.ImportModules) {
+					// go through the members of the modules
+					foreach (object o in projectContent.GetNamespaceContents(namespaceRT.FullyQualifiedName)) {
+						member = o as IMember;
+						if (member != null && IsSameName(member.Name, fieldReferenceExpression.FieldName))
+							return CreateMemberResolveResult(member);
+					}
+				}
 				return null;
 			}
-			IMember member = GetMember(type, fieldReferenceExpression.FieldName);
+			member = GetMember(type, fieldReferenceExpression.FieldName);
 			if (member != null)
 				return CreateMemberResolveResult(member);
 			c = type.GetUnderlyingClass();
@@ -471,7 +478,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		bool IsSameName(string name1, string name2)
+		public bool IsSameName(string name1, string name2)
 		{
 			return languageProperties.NameComparer.Equals(name1, name2);
 		}

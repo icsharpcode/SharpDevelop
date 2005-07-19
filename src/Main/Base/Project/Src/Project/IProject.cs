@@ -103,6 +103,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void Start(bool withDebugging);
 		
+		/// <summary>
+		/// Creates a new project content for this project.
+		/// This method should only be called by ParserService.LoadSolutionProjectsInternal()!
+		/// </summary>
+		ParseProjectContent CreateProjectContent();
+		
 		CompilerResults Build();
 		CompilerResults Rebuild();
 		CompilerResults Clean();

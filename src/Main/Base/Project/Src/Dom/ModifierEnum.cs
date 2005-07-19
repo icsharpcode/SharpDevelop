@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		Static    = 0x0080,
 		Override  = 0x0100,
 		Readonly  = 0x0200,
-		Const	  = 0X0400,
+		Const	  = 0x0400,
 		New       = 0x0800,
 		
 		// Special 
@@ -39,6 +39,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		SpecialName         = 0x20000,
 		
 		Final               = 0x40000,
+		Partial             = 0x80000,
 	}
 }
 

@@ -363,7 +363,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			return null;
 		}
 		
-		
+		/// <summary>
+		/// Creates a new project content for this project.
+		/// This method should only be called by ParserService.LoadSolutionProjectsInternal()!
+		/// </summary>
+		public virtual ParseProjectContent CreateProjectContent()
+		{
+			return ParseProjectContent.CreateUninitalized(this);
+		}
 		
 		/// <summary>
 		/// Saves project preferences (currently opened files, bookmarks etc.) to the

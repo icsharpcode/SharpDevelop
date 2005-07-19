@@ -288,6 +288,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 							return ReflectionReturnType.Object.GetUnderlyingClass();
 						}
 						break;
+					case ClassType.Module:
+						return null;
 					case ClassType.Enum:
 						return ProjectContentRegistry.GetMscorlibContent().GetClass("System.Enum");
 					case ClassType.Delegate:
@@ -371,8 +373,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(this);
 			foreach (IClass c in InnerClasses) {
-				if (((c.ClassType == ClassType.Class) || (c.ClassType == ClassType.Struct)) &&
-				    c.IsAccessible(callingClass, isClassInInheritanceTree)) {
+				if (c.IsAccessible(callingClass, isClassInInheritanceTree)) {
 					types.Add(c);
 				}
 			}
