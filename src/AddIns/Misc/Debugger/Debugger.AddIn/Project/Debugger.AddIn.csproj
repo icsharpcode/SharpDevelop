@@ -2,7 +2,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{EC06F96A-AEEC-49D6-B03D-AB87C6EB674C}</ProjectGuid>
     <OutputType>Library</OutputType>
@@ -50,6 +50,7 @@
     <Compile Include="Src\Service\ExceptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
+    <Compile Include="Src\Service\RemotingConfigurationHelpper.cs" />
     <Compile Include="Src\Service\WindowsDebugger.cs" />
     <EmbeddedResource Include="Src\Service\ExceptionForm.resx">
       <DependentUpon>ExceptionForm.cs</DependentUpon>

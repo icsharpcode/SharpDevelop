@@ -10,11 +10,8 @@ using System.CodeDom.Compiler;
 using System.Collections;
 using System.IO;
 using System.Diagnostics;
-//using ICSharpCode.Core.Services;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
-
-//using ICSharpCode.Core.Properties;
 
 using DebuggerLibrary;
 

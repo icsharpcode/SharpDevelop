@@ -11,10 +11,7 @@ using System.Collections;
 using System.IO;
 using System.Diagnostics;
 using ICSharpCode.Core;
-//using ICSharpCode.Core.Services;
 using ICSharpCode.SharpDevelop.Services;
-
-//using ICSharpCode.Core.Properties;
 
 using DebuggerLibrary;
 
