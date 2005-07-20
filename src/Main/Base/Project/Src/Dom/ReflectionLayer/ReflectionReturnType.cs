@@ -103,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		public static IReturnType CreatePrimitive(Type type)
 		{
-			return ProjectContentRegistry.GetMscorlibContent().GetClass(type.FullName).DefaultReturnType;
+			return ProjectContentRegistry.Mscorlib.GetClass(type.FullName).DefaultReturnType;
 		}
 		#endregion
 		

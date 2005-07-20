@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -30,7 +31,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		/// <summary>Context expects a non-abstract type that has accessible constructors</summary>
 		/// <example>new *expr*();</example>
-		public static ExpressionContext ConstructableType = new TypeExpressionContext(null, true);
+		public static ExpressionContext ObjectCreation = new TypeExpressionContext(null, true);
+		
+		/// <summary>Context expects a non-abstract type deriving from System.Attribute.</summary>
+		/// <example>[*expr*()]</example>
+		public static ExpressionContext Attribute = new TypeExpressionContext(ProjectContentRegistry.Mscorlib.GetClass("System.Attribute"), true);
 		
 		/// <summary>Context expects a type name which has special base type</summary>
 		/// <param name="baseClass">The class the expression must derive from.</param>

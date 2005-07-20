@@ -114,14 +114,14 @@ namespace ICSharpCode.Core
 				if (expressionFinder == null) {
 					expressionFinder = ParserService.GetExpressionFinder(fileName);
 				}
-				string expr = expressionFinder.FindFullExpression(fileContent, pos + 1).Expression;
-				if (expr != null) {
+				ExpressionResult expr = expressionFinder.FindFullExpression(fileContent, pos + 1);
+				if (expr.Expression != null) {
 					Point position = GetPosition(fileContent, pos);
 					// TODO: Optimize by re-using the same resolver if multiple expressions were
 					// found in this file (the resolver should parse all methods at once)
 					ResolveResult rr = ParserService.Resolve(expr, position.Y, position.X, fileName, fileContent);
 					if (IsReferenceToMember(member, rr)) {
-						list.Add(new Reference(fileName, pos, lowerMemberName.Length, expr, rr));
+						list.Add(new Reference(fileName, pos, lowerMemberName.Length, expr.Expression, rr));
 					}
 				}
 			}

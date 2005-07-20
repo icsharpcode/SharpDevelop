@@ -132,7 +132,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		public void SelectItemWithStart(char startCh)
 		{
 			for (int i = Math.Min(selectedItem + 1, completionData.Length - 1); i < completionData.Length; ++i) {
-				if (completionData[i].Text[0].ToLower()[0] == startCh) {
+				if (completionData[i].Text.ToLower()[0] == startCh) {
 					SelectIndex(i);
 					return;
 				}
@@ -140,7 +140,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			
 			// now loop from start to current one
 			for (int i = 0; i < selectedItem; ++i) {
-				if (completionData[i].Text[0].ToLower()[0] == startCh) {
+				if (completionData[i].Text.ToLower()[0] == startCh) {
 					SelectIndex(i);
 					return;
 				}
@@ -157,7 +157,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			if (startText == null || startText.Length == 0) return;
 			startText = startText.ToLower();
 			for (int i = 0; i < completionData.Length; ++i) {
-				if (completionData[i].Text[0].ToLower().StartsWith(startText)) {
+				if (completionData[i].Text.ToLower().StartsWith(startText)) {
 					SelectIndex(i);
 					return;
 				}
@@ -195,9 +195,9 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					
 					// draw text
 					if (curItem == selectedItem) {
-						g.DrawString(completionData[curItem].Text[0], Font, SystemBrushes.HighlightText, xPos, yPos);
+						g.DrawString(completionData[curItem].Text, Font, SystemBrushes.HighlightText, xPos, yPos);
 					} else {
-						g.DrawString(completionData[curItem].Text[0], Font, SystemBrushes.WindowText, xPos, yPos);
+						g.DrawString(completionData[curItem].Text, Font, SystemBrushes.WindowText, xPos, yPos);
 					}
 				}
 				

@@ -67,9 +67,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 			
-			public string[] Text {
+			public string Text {
 				get {
-					return new string[] { template.Shortcut + "\t" + template.Description };
+					return template.Shortcut + "\t" + template.Description;
+				}
+				set {
+					throw new NotSupportedException();
 				}
 			}
 			

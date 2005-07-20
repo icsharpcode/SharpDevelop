@@ -484,7 +484,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (t == null) {
 				if (reference.Type != reference.SystemType) {
 					// keyword-type like void, int, string etc.
-					t = ProjectContentRegistry.GetMscorlibContent().GetClass(reference.SystemType).DefaultReturnType;
+					t = ProjectContentRegistry.Mscorlib.GetClass(reference.SystemType).DefaultReturnType;
 				} else {
 					t = new SearchClassReturnType(callingClass, caretLine, caretColumn, reference.SystemType);
 				}
@@ -543,7 +543,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		static IReturnType CreateReturnType(Type type)
 		{
-			return ReflectionReturnType.Create(ProjectContentRegistry.GetMscorlibContent(), type, false);
+			return ReflectionReturnType.Create(ProjectContentRegistry.Mscorlib, type, false);
 		}
 	}
 }

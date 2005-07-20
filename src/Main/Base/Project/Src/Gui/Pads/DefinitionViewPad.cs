@@ -79,8 +79,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (expressionFinder == null) return null;
 			Caret caret = ctl.ActiveTextAreaControl.Caret;
 			string content = (e == null) ? ctl.Text : e.Content;
-			string expr = expressionFinder.FindFullExpression(content, caret.Offset).Expression;
-			if (expr == null) return null;
+			ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
+			if (expr.Expression == null) return null;
 			return ParserService.Resolve(expr, caret.Line, caret.Column, fileName, content);
 		}
 		

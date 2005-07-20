@@ -35,9 +35,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// </summary>
 		public IndexerInsightDataProvider(int lookupOffset, bool setupOnlyOnce) : base(lookupOffset, setupOnlyOnce) {}
 		
-		protected override void SetupDataProvider(string fileName, IDocument document, string word, int caretLineNumber, int caretColumn)
+		protected override void SetupDataProvider(string fileName, IDocument document, ExpressionResult expressionResult, int caretLineNumber, int caretColumn)
 		{
-			ResolveResult result = ParserService.Resolve(word, caretLineNumber, caretColumn, fileName, document.TextContent);
+			ResolveResult result = ParserService.Resolve(expressionResult, caretLineNumber, caretColumn, fileName, document.TextContent);
 			if (result == null)
 				return;
 			IReturnType type = result.ResolvedType;

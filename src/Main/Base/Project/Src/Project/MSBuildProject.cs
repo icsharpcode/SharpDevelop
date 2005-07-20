@@ -200,7 +200,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					ProjectItem.WriteItemGroup(writer, projectFiles);
 				}
 				
-				ProjectItem.WriteItemGroup(writer, other);
+				if (other.Count > 0) {
+					ProjectItem.WriteItemGroup(writer, other);
+				}
 				
 				foreach (string import in Imports) {
 					writer.WriteStartElement("Import");

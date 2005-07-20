@@ -106,9 +106,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 			
-			public string[] Text {
+			public string Text {
 				get {
-					return new string[] { text };
+					return text;
+				}
+				set {
+					text = value;
 				}
 			}
 			

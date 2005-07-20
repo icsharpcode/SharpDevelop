@@ -13,7 +13,7 @@ namespace ICSharpCode.Core
 			ParseProjectContent newProjectContent = new ParseProjectContent();
 			newProjectContent.project = project;
 			newProjectContent.Language = project.LanguageProperties;
-			newProjectContent.ReferencedContents.Add(ProjectContentRegistry.GetMscorlibContent());
+			newProjectContent.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
 			newProjectContent.initializing = true;
 			return newProjectContent;
 		}

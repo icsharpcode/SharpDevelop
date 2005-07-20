@@ -100,16 +100,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		public ResolveResult Resolve(string expression,
+		public ResolveResult Resolve(ExpressionResult expressionResult,
 		                             int caretLineNumber,
 		                             int caretColumn,
 		                             string fileName,
 		                             string fileContent)
 		{
+			string expression = expressionResult.Expression;
 			if (expression == null) {
 				expression = "";
 			}
-			expression = expression.TrimStart(null);
+			expression = expression.TrimStart();
 			
 			this.caretLine   = caretLineNumber;
 			this.caretColumn = caretColumn;
@@ -118,6 +119,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (parseInfo == null) {
 				return null;
 			}
+			
+			cu = parseInfo.MostRecentCompilationUnit;
+			
+			if (cu != null) {
+				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
+				cu.FileName = fileName;
+			}
+			
 			Expression expr = null;
 			if (language == SupportedLanguages.VBNet) {
 				if (expression == "") {
@@ -137,15 +146,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 			}
+			
+			if (expressionResult.Context == ExpressionContext.Attribute) {
+				return ResolveAttribute(expr);
+			}
+			
 			lookupTableVisitor = new LookupTableVisitor(languageProperties.NameComparer);
 			
-			//NRefactoryASTConvertVisitor cSharpVisitor = new NRefactoryASTConvertVisitor(parseInfo.MostRecentCompilationUnit != null ? parseInfo.MostRecentCompilationUnit.ProjectContent : null);
-			cu = parseInfo.MostRecentCompilationUnit; //(ICompilationUnit)cSharpVisitor.Visit(fileCompilationUnit, null);
-			
-			if (cu != null) {
-				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
-				cu.FileName = fileName;
-			}
 			callingMember = GetCurrentMember();
 			if (callingMember != null) {
 				System.IO.TextReader content = ExtractMethod(fileContent, callingMember);
@@ -157,6 +164,56 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			return ResolveInternal(expr);
+		}
+		
+		string GetAttributeName(Expression expr)
+		{
+			if (expr is IdentifierExpression) {
+				return (expr as IdentifierExpression).Identifier;
+			} else if (expr is FieldReferenceExpression) {
+				TypeVisitor typeVisitor = new TypeVisitor(this);
+				FieldReferenceExpression fieldReferenceExpression = (FieldReferenceExpression)expr;
+				IReturnType type = fieldReferenceExpression.TargetObject.AcceptVisitor(typeVisitor, null) as IReturnType;
+				if (type is TypeVisitor.NamespaceReturnType) {
+					return type.FullyQualifiedName + "." + fieldReferenceExpression.FieldName;
+				}
+			}
+			return null;
+		}
+		
+		IClass GetAttribute(string name)
+		{
+			if (name == null)
+				return null;
+			IClass c = SearchType(name);
+			if (c != null) {
+				if (c.IsTypeInInheritanceTree(ProjectContentRegistry.Mscorlib.GetClass("System.Attribute")))
+					return c;
+			}
+			return SearchType(name + "Attribute");
+		}
+		
+		ResolveResult ResolveAttribute(Expression expr)
+		{
+			string attributeName = GetAttributeName(expr);
+			IClass c = GetAttribute(attributeName);
+			if (attributeName != null) {
+				return new TypeResolveResult(callingClass, callingMember, c);
+			} else if (expr is InvocationExpression) {
+				InvocationExpression ie = (InvocationExpression)expr;
+				attributeName = GetAttributeName(ie.TargetObject);
+				c = GetAttribute(attributeName);
+				if (c != null) {
+					ArrayList ctors = new ArrayList();
+					foreach (IMethod m in c.Methods) {
+						if (m.IsConstructor && !m.IsStatic)
+							ctors.Add(m);
+					}
+					TypeVisitor typeVisitor = new TypeVisitor(this);
+					return CreateMemberResolveResult(typeVisitor.FindOverload(ctors, ie.Parameters, null));
+				}
+			}
+			return null;
 		}
 		
 		ResolveResult ResolveInternal(Expression expr)
@@ -253,9 +310,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			IClass c;
 			IMember member;
-			TypeVisitor.NamespaceReturnType namespaceRT = type as TypeVisitor.NamespaceReturnType;
-			if (namespaceRT != null) {
-				string combinedName = namespaceRT.FullyQualifiedName + "." + fieldReferenceExpression.FieldName;
+			if (type is TypeVisitor.NamespaceReturnType) {
+				string combinedName = type.FullyQualifiedName + "." + fieldReferenceExpression.FieldName;
 				if (projectContent.NamespaceExists(combinedName)) {
 					return new NamespaceResolveResult(callingClass, callingMember, combinedName);
 				}
@@ -265,7 +321,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				if (languageProperties.ImportModules) {
 					// go through the members of the modules
-					foreach (object o in projectContent.GetNamespaceContents(namespaceRT.FullyQualifiedName)) {
+					foreach (object o in projectContent.GetNamespaceContents(type.FullyQualifiedName)) {
 						member = o as IMember;
 						if (member != null && IsSameName(member.Name, fieldReferenceExpression.FieldName))
 							return CreateMemberResolveResult(member);

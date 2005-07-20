@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Resolves an expression.
 		/// The caretLineNumber and caretColumn is 1 based.
 		/// </summary>
-		ResolveResult Resolve(string expression,
+		ResolveResult Resolve(ExpressionResult expressionResult,
 		                      int caretLineNumber,
 		                      int caretColumn,
 		                      string fileName,

@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 		{
 			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
 			
-			sdtac.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Default), '\0');
+			sdtac.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(), '\0');
 		}
 	}
 	
@@ -67,8 +67,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textEditorControl.FileName);
 			if (expressionFinder == null)
 				return;
-			string expression = expressionFinder.FindFullExpression(textContent, textEditorControl.ActiveTextAreaControl.Caret.Offset).Expression;
-			if (expression == null || expression.Length == 0)
+			ExpressionResult expression = expressionFinder.FindFullExpression(textContent, textEditorControl.ActiveTextAreaControl.Caret.Offset);
+			if (expression.Expression == null || expression.Expression.Length == 0)
 				return;
 			ResolveResult result = ParserService.Resolve(expression, caretLineNumber, caretColumn, textEditorControl.FileName, textContent);
 			if (result != null) {

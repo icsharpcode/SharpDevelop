@@ -101,25 +101,31 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
-			string word = expressionFinder == null ? TextUtilities.GetExpressionBeforeOffset(textArea, useOffset) : expressionFinder.FindExpression(textArea.Document.TextContent, useOffset - 1).Expression;
-			if (word == null) // word can be null when cursor is in string/comment
+			ExpressionResult expressionResult;
+			if (expressionFinder == null)
+				expressionResult = new ExpressionResult(TextUtilities.GetExpressionBeforeOffset(textArea, useOffset));
+			else
+				expressionResult = expressionFinder.FindExpression(textArea.Document.TextContent, useOffset - 1);
+			if (expressionResult.Expression == null) // expression is null when cursor is in string/comment
 				return;
-			word = word.Trim();
+			expressionResult.Expression = expressionResult.Expression.Trim();
 			
 			// the parser works with 1 based coordinates
 			int caretLineNumber = document.GetLineNumberForOffset(useOffset) + 1;
 			int caretColumn     = useOffset - document.GetLineSegment(caretLineNumber).Offset + 1;
-			SetupDataProvider(fileName, document, word, caretLineNumber, caretColumn);
+			SetupDataProvider(fileName, document, expressionResult, caretLineNumber, caretColumn);
 		}
 		
-		protected virtual void SetupDataProvider(string fileName, IDocument document, string word, int caretLineNumber, int caretColumn)
+		protected virtual void SetupDataProvider(string fileName, IDocument document, ExpressionResult expressionResult, int caretLineNumber, int caretColumn)
 		{
 			bool constructorInsight = false;
-			if (word.ToLower().StartsWith("new ")) {
+			if (expressionResult.Context == ExpressionContext.ObjectCreation) {
 				constructorInsight = true;
-				word = word.Substring(4);
+				expressionResult.Context = ExpressionContext.Default;
+			} else if (expressionResult.Context == ExpressionContext.Attribute) {
+				constructorInsight = true;
 			}
-			ResolveResult results = ParserService.Resolve(word, caretLineNumber, caretColumn, fileName, document.TextContent);
+			ResolveResult results = ParserService.Resolve(expressionResult, caretLineNumber, caretColumn, fileName, document.TextContent);
 			if (constructorInsight) {
 				TypeResolveResult result = results as TypeResolveResult;
 				if (result == null)

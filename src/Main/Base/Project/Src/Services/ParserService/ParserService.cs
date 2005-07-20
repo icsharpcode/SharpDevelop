@@ -188,7 +188,7 @@ namespace ICSharpCode.Core
 		static void ParserUpdateThread()
 		{
 			// preload mscorlib, we're going to need it anyway
-			ProjectContentRegistry.GetMscorlibContent();
+			IProjectContent dummyVar = ProjectContentRegistry.Mscorlib;
 			
 			while (!abortParserUpdateThread) {
 				try {
@@ -422,7 +422,7 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		public static ResolveResult Resolve(string expression,
+		public static ResolveResult Resolve(ExpressionResult expressionResult,
 		                                    int caretLineNumber,
 		                                    int caretColumn,
 		                                    string fileName,
@@ -430,7 +430,7 @@ namespace ICSharpCode.Core
 		{
 			IParser parser = GetParser(fileName);
 			if (parser != null) {
-				return parser.CreateResolver().Resolve(expression, caretLineNumber, caretColumn, fileName, fileContent);
+				return parser.CreateResolver().Resolve(expressionResult, caretLineNumber, caretColumn, fileName, fileContent);
 			}
 			return null;
 		}

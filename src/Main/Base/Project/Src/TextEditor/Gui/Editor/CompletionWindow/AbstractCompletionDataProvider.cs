@@ -47,9 +47,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		protected ArrayList completionData = null;
-		protected ExpressionContext context = ExpressionContext.Default;
+		protected ExpressionContext overrideContext;
 		
-		public ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
+		public virtual ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
 			completionData = new ArrayList();
 			this.fileName = fileName;
@@ -64,23 +64,23 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			return (ICompletionData[])completionData.ToArray(typeof(ICompletionData));
 		}
 		
-		protected string GetExpression(TextArea textArea)
+		protected ExpressionResult GetExpression(TextArea textArea)
 		{
 			IDocument document = textArea.Document;
 			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(fileName);
 			if (expressionFinder == null) {
-				return TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset);
+				return new ExpressionResult(TextUtilities.GetExpressionBeforeOffset(textArea, textArea.Caret.Offset));
 			} else {
-				ExpressionResult er = expressionFinder.FindExpression(document.GetText(0, textArea.Caret.Offset), textArea.Caret.Offset - 1);
-				if (er.Context != ExpressionContext.Default)
-					context = er.Context;
-				return er.Expression;
+				ExpressionResult res = expressionFinder.FindExpression(document.GetText(0, textArea.Caret.Offset), textArea.Caret.Offset - 1);
+				if (overrideContext != null)
+					res.Context = overrideContext;
+				return res;
 			}
 		}
 		
 		protected abstract void GenerateCompletionData(TextArea textArea, char charTyped);
 		
-		protected void AddResolveResults(ICollection list)
+		protected void AddResolveResults(ICollection list, ExpressionContext context)
 		{
 			if (list == null) {
 				return;
@@ -123,14 +123,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		protected void AddResolveResults(ResolveResult results)
+		protected void AddResolveResults(ResolveResult results, ExpressionContext context)
 		{
 			insertedElements.Clear();
 			insertedPropertiesElements.Clear();
 			insertedEventElements.Clear();
 			
 			if (results != null) {
-				AddResolveResults(results.GetCompletionData(ParserService.CurrentProjectContent));
+				AddResolveResults(results.GetCompletionData(ParserService.CurrentProjectContent), context);
 			}
 		}
 	}

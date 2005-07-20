@@ -20,26 +20,27 @@ namespace ICSharpCode.Core
 		static Dictionary<string, IProjectContent> contents = new Dictionary<string, IProjectContent>(StringComparer.InvariantCultureIgnoreCase);
 		static IProjectContent mscorlibContent;
 		
-		public static IProjectContent GetMscorlibContent()
-		{
-			if (mscorlibContent != null) return mscorlibContent;
-			lock (contents) {
-				if (contents.ContainsKey("mscorlib")) {
-					mscorlibContent = contents["mscorlib"];
-					return contents["mscorlib"];
+		public static IProjectContent Mscorlib {
+			get {
+				if (mscorlibContent != null) return mscorlibContent;
+				lock (contents) {
+					if (contents.ContainsKey("mscorlib")) {
+						mscorlibContent = contents["mscorlib"];
+						return contents["mscorlib"];
+					}
+					#if DEBUG
+					Console.WriteLine("Loading mscorlib...");
+					int time = Environment.TickCount;
+					#endif
+					
+					mscorlibContent = new ReflectionProjectContent(typeof(object).Assembly);
+					contents["mscorlib"] = mscorlibContent;
+					
+					#if DEBUG
+					Console.WriteLine("mscorlib loaded in {0} ms", Environment.TickCount - time);
+					#endif
+					return mscorlibContent;
 				}
-				#if DEBUG
-				Console.WriteLine("Loading mscorlib...");
-				int time = Environment.TickCount;
-				#endif
-				
-				mscorlibContent = new ReflectionProjectContent(typeof(object).Assembly);
-				contents["mscorlib"] = mscorlibContent;
-				
-				#if DEBUG
-				Console.WriteLine("mscorlib loaded in {0} ms", Environment.TickCount - time);
-				#endif
-				return mscorlibContent;
 			}
 		}
 		

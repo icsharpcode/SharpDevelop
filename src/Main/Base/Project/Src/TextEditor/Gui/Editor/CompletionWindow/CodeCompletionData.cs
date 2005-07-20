@@ -26,7 +26,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		string   text;
 		string   description;
 		string   documentation;
-		string   completionString;
 		IClass   c;
 		bool     convertedDocumentation = false;
 		
@@ -58,12 +57,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		public string[] Text {
+		public string Text {
 			get {
-				return new string[] { text };
+				return text;
 			}
 			set {
-				text = value[0];
+				text = value;
 			}
 		}
 		
@@ -90,7 +89,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			ambience = AmbienceService.CurrentAmbience;
 			description = documentation = String.Empty;
 			text = s;
-			completionString = s;
 			this.imageIndex = imageIndex;
 		}
 		
@@ -102,7 +100,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			imageIndex = ClassBrowserIconService.GetIcon(c);
 			ambience.ConversionFlags = ConversionFlags.None;
 			text = ambience.Convert(c);
-			completionString = text;
 			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedNames | ConversionFlags.ShowReturnType | ConversionFlags.ShowModifiers;
 //			Console.WriteLine("Convert : " + c);
 			description = ambience.Convert(c);
@@ -117,7 +114,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			imageIndex  = ClassBrowserIconService.GetIcon(method);
 			text        = method.Name;
 			description = ambience.Convert(method);
-			completionString = method.Name;
 			documentation = method.Documentation;
 		}
 		
@@ -129,7 +125,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			imageIndex  = ClassBrowserIconService.GetIcon(field);
 			text        = field.Name;
 			description = ambience.Convert(field);
-			completionString = field.Name;
 			documentation = field.Documentation;
 		}
 		
@@ -141,7 +136,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			imageIndex  = ClassBrowserIconService.GetIcon(property);
 			text        = property.Name;
 			description = ambience.Convert(property);
-			completionString = property.Name;
 			documentation = property.Documentation;
 		}
 		
@@ -153,13 +147,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			imageIndex  = ClassBrowserIconService.GetIcon(e);
 			text        = e.Name;
 			description = ambience.Convert(e);
-			completionString = e.Name;
 			documentation = e.Documentation;
 		}
 		
 		public void InsertAction(TextEditorControl control)
 		{
-			((SharpDevelopTextAreaControl)control).ActiveTextAreaControl.TextArea.InsertString(completionString);
+			((SharpDevelopTextAreaControl)control).ActiveTextAreaControl.TextArea.InsertString(text);
 		}
 		
 		internal static Regex whitespace = new Regex(@"\s+");

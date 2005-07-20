@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -42,7 +42,7 @@ namespace ICSharpCode.TextEditor.Document
 					sb.Append('\t');
 					// if we had say 3 spaces then a tab and tabIndent was 4 then
 					// we would want to simply replace all of that with 1 tab
-					consecutiveSpaces = 0;					
+					consecutiveSpaces = 0;
 				}
 				else {
 					break;
@@ -142,7 +142,7 @@ namespace ICSharpCode.TextEditor.Document
 						break;
 				}
 			}
-			done:
+		done:
 			//// simple exit fails when : is inside comment line or any other character
 			//// we have to check if we got several ids in resulting line, which usually happens when
 			//// id. is typed on next line after comment one
@@ -153,13 +153,13 @@ namespace ICSharpCode.TextEditor.Document
 			if (pos>=0) {
 				offset+=pos+1;
 				//// whitespaces and tabs, which might be inside, will be skipped by trim below
-			}							
+			}
 			string expression = document.GetText(offset, textArea.Caret.Offset - offset ).Trim();
 			return expression;
 		}
 		
 		
-		public static CharacterType GetCharacterType(char c) 
+		public static CharacterType GetCharacterType(char c)
 		{
 			if(IsLetterDigitOrUnderscore(c))
 				return CharacterType.LetterDigitOrUnderscore;
@@ -228,8 +228,8 @@ namespace ICSharpCode.TextEditor.Document
 		public static int FindPrevWordStart(IDocument document, int offset)
 		{
 			int originalOffset = offset;
-			LineSegment line = document.GetLineSegmentForOffset(offset);
 			if (offset > 0) {
+				LineSegment line = document.GetLineSegmentForOffset(offset);
 				CharacterType t = GetCharacterType(document.GetCharAt(offset - 1));
 				while (offset > line.Offset && GetCharacterType(document.GetCharAt(offset - 1)) == t) {
 					--offset;
@@ -253,13 +253,11 @@ namespace ICSharpCode.TextEditor.Document
 			return document.GetText(line.Offset, line.Length);
 		}
 		
-		//[Obsolete("Use IFormattingStrategy.SearchBracketBackward instead.")]
 		public static int SearchBracketBackward(IDocument document, int offset, char openBracket, char closingBracket)
 		{
 			return document.FormattingStrategy.SearchBracketBackward(document, offset, openBracket, closingBracket);
 		}
 		
-		//[Obsolete("Use IFormattingStrategy.SearchBracketForward instead.")]
 		public static int SearchBracketForward(IDocument document, int offset, char openBracket, char closingBracket)
 		{
 			return document.FormattingStrategy.SearchBracketForward(document, offset, openBracket, closingBracket);

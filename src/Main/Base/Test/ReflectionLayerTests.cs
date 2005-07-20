@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	[TestFixture]
 	public class ReflectionLayerTests
 	{
-		IProjectContent pc = ProjectContentRegistry.GetMscorlibContent();
+		IProjectContent pc = ProjectContentRegistry.Mscorlib;
 		
 		[Test]
 		public void InheritanceTest()

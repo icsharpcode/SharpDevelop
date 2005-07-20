@@ -9,18 +9,61 @@ namespace CSharpBinding.Parser
 	/// </summary>
 	public class ExpressionFinder : IExpressionFinder
 	{
-		ExpressionResult CreateResult(string expression)
+		#region Capture Context
+		ExpressionResult CreateResult(string expression, string inText, int offset)
 		{
-			if (expression != null && expression.StartsWith("using "))
+			if (expression == null)
+				return new ExpressionResult(null);
+			if (expression.StartsWith("using "))
 				return new ExpressionResult(expression.Substring(6).TrimStart(), ExpressionContext.Namespace, null);
-			else
-				return new ExpressionResult(expression);
+			if (IsInAttribute(inText, offset))
+				return new ExpressionResult(expression, ExpressionContext.Attribute);
+			return new ExpressionResult(expression);
 		}
 		
+		bool IsInAttribute(string txt, int offset)
+		{
+			// Get line start:
+			int lineStart = offset;
+			while (--lineStart > 0 && txt[lineStart] != '\n');
+			
+			bool inAttribute = false;
+			int parens = 0;
+			for (int i = lineStart + 1; i < offset; i++) {
+				char ch = txt[i];
+				if (char.IsWhiteSpace(ch))
+					continue;
+				if (!inAttribute) {
+					// outside attribute
+					if (ch == '[')
+						inAttribute = true;
+					else
+						return false;
+				} else if (parens == 0) {
+					// inside attribute, outside parameter list
+					if (ch == ']')
+						inAttribute = false;
+					else if (ch == '(')
+						parens = 1;
+					else if (!char.IsLetterOrDigit(ch) && ch != ',')
+						return false;
+				} else {
+					// inside attribute, inside parameter list
+					if (ch == '(')
+						parens++;
+					else if (ch == ')')
+						parens--;
+				}
+			}
+			return inAttribute && parens == 0;
+		}
+		#endregion
+		
+		#region Find Expression
 		public ExpressionResult FindExpression(string inText, int offset)
 		{
 			inText = FilterComments(inText, ref offset);
-			return CreateResult(FindExpressionInternal(inText, offset));
+			return CreateResult(FindExpressionInternal(inText, offset), inText, offset);
 		}
 		
 		public string FindExpressionInternal(string inText, int offset)
@@ -55,14 +98,16 @@ namespace CSharpBinding.Parser
 				return ((state == ACCEPTNOMORE) ? offset : lastAccept) + 1;
 			}
 		}
+		#endregion
 		
+		#region FindFullExpression
 		public ExpressionResult FindFullExpression(string inText, int offset)
 		{
 			int offsetWithoutComments = offset;
 			string textWithoutComments = FilterComments(inText, ref offsetWithoutComments);
 			string expressionBeforeOffset = FindExpressionInternal(textWithoutComments, offsetWithoutComments);
 			if (expressionBeforeOffset == null || expressionBeforeOffset.Length == 0)
-				return CreateResult(null);
+				return CreateResult(null, textWithoutComments, offsetWithoutComments);
 			StringBuilder b = new StringBuilder(expressionBeforeOffset);
 			// append characters after expression
 			for (int i = offset + 1; i < inText.Length; ++i) {
@@ -90,7 +135,7 @@ namespace CSharpBinding.Parser
 					break;
 				}
 			}
-			return CreateResult(b.ToString());
+			return CreateResult(b.ToString(), textWithoutComments, offsetWithoutComments);
 		}
 		
 		int FindEndOfTypeParameters(string inText, int offset)
@@ -116,6 +161,7 @@ namespace CSharpBinding.Parser
 			}
 			return -1;
 		}
+		#endregion
 		
 		#region SearchBracketForward
 		// like CSharpFormattingStrategy.SearchBracketForward, but operates on a string.

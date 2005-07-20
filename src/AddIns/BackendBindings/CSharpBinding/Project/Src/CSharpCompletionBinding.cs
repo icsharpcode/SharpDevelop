@@ -10,6 +10,7 @@ using System.Collections;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -28,8 +29,10 @@ namespace CSharpBinding
 		{
 			if (!CheckExtension(editor))
 				return false;
+			CSharpBinding.Parser.ExpressionFinder ef = new CSharpBinding.Parser.ExpressionFinder();
+			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
+			ExpressionContext context;
 			if (ch == '(') {
-				ExpressionContext context;
 				switch (editor.GetWordBeforeCaret().Trim()) {
 					case "for":
 					case "lock":
@@ -52,15 +55,27 @@ namespace CSharpBinding
 						break;
 				}
 				if (context != null) {
-					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(context), ' ');
+					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(context), ch);
+					return true;
+				} else if (EnableMethodInsight) {
+					editor.ShowInsightWindow(new MethodInsightDataProvider());
+					return true;
+				}
+				return false;
+			} else if (ch == '[') {
+				LineSegment line = editor.Document.GetLineSegmentForOffset(cursor);
+				if (TextUtilities.FindPrevWordStart(editor.Document, cursor) <= line.Offset) {
+					// [ is first character on the line
+					// -> Attribute completion
+					editor.ShowCompletionWindow(new AttributesDataProvider(), ch);
 					return true;
 				}
 			} else if (ch == ',') {
 				// Show MethodInsightWindow or IndexerInsightWindow
-				CSharpBinding.Parser.ExpressionFinder ef = new CSharpBinding.Parser.ExpressionFinder();
 				string documentText = editor.Text;
-				int cursor = editor.ActiveTextAreaControl.Caret.Offset;
+				int oldCursor = cursor;
 				string textWithoutComments = ef.FilterComments(documentText, ref cursor);
+				int commentLength = oldCursor - cursor;
 				if (textWithoutComments != null) {
 					Stack<ResolveResult> parameters = new Stack<ResolveResult>();
 					char c = '\0';
@@ -69,16 +84,16 @@ namespace CSharpBinding
 						       ((c = textWithoutComments[cursor]) == ',' ||
 						        char.IsWhiteSpace(c)));
 						if (c == '(') {
-							ShowInsight(editor, new MethodInsightDataProvider(cursor, true), parameters, ch);
+							ShowInsight(editor, new MethodInsightDataProvider(cursor + commentLength, true), parameters, ch);
 							return true;
 						} else if (c == '[') {
-							ShowInsight(editor, new IndexerInsightDataProvider(cursor, true), parameters, ch);
+							ShowInsight(editor, new IndexerInsightDataProvider(cursor + commentLength, true), parameters, ch);
 							return true;
 						}
 						string expr = ef.FindExpressionInternal(textWithoutComments, cursor);
 						if (expr == null || expr.Length == 0)
 							break;
-						parameters.Push(ParserService.Resolve(expr,
+						parameters.Push(ParserService.Resolve(new ExpressionResult(expr),
 						                                      editor.ActiveTextAreaControl.Caret.Line,
 						                                      editor.ActiveTextAreaControl.Caret.Column,
 						                                      editor.FileName,
@@ -125,7 +140,7 @@ namespace CSharpBinding
 			IClass c = expected.GetUnderlyingClass();
 			if (c == null) return;
 			if (c.ClassType == ClassType.Enum) {
-				CtrlSpaceCompletionDataProvider cdp = new CtrlSpaceCompletionDataProvider(ExpressionContext.Default);
+				CtrlSpaceCompletionDataProvider cdp = new CtrlSpaceCompletionDataProvider();
 				cdp.ForceNewExpression = true;
 				CachedCompletionDataProvider cache = new CachedCompletionDataProvider(cdp);
 				cache.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, charTyped);
@@ -161,7 +176,7 @@ namespace CSharpBinding
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Type), ' ');
 					return true;
 				case "new":
-					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.ConstructableType), ' ');
+					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.ObjectCreation), ' ');
 					return true;
 				default:
 					return base.HandleKeyword(editor, word);

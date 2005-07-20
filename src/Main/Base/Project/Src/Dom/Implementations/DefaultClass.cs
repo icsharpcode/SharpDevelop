@@ -291,11 +291,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 					case ClassType.Module:
 						return null;
 					case ClassType.Enum:
-						return ProjectContentRegistry.GetMscorlibContent().GetClass("System.Enum");
+						return ProjectContentRegistry.Mscorlib.GetClass("System.Enum");
 					case ClassType.Delegate:
-						return ProjectContentRegistry.GetMscorlibContent().GetClass("System.Delegate");
+						return ProjectContentRegistry.Mscorlib.GetClass("System.Delegate");
 					case ClassType.Struct:
-						return ProjectContentRegistry.GetMscorlibContent().GetClass("System.ValueType");
+						return ProjectContentRegistry.Mscorlib.GetClass("System.ValueType");
 				}
 				return null;
 			}
@@ -497,7 +497,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					
 					IClass baseType;
 					if (baseTypeStruct.parent == null) {
-						baseType = ProjectContentRegistry.GetMscorlibContent().GetClass(baseTypeStruct.name);
+						baseType = ProjectContentRegistry.Mscorlib.GetClass(baseTypeStruct.name);
 					} else {
 						baseType = baseTypeStruct.parent.ProjectContent.SearchType(baseTypeStruct.name, baseTypeStruct.parent, 1, 1);
 					}

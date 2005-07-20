@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
 			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp);
-			return resolver.Resolve(expression,
+			return resolver.Resolve(new ExpressionResult(expression),
 			                        line, 0,
 			                        "a.cs",
 			                        program);
@@ -76,13 +76,13 @@ namespace ICSharpCode.SharpDevelop.Tests
 			AddCompilationUnit(ParseVB("a.vb", program), "a.vb");
 			
 			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet);
-			return resolver.Resolve(expression,
+			return resolver.Resolve(new ExpressionResult(expression),
 			                        line, 0,
 			                        "a.vb",
 			                        program);
 		}
 		
-		IProjectContent corLib = ProjectContentRegistry.GetMscorlibContent();
+		IProjectContent corLib = ProjectContentRegistry.Mscorlib;
 		#endregion
 		
 		#region Test for old issues (Fidalgo)

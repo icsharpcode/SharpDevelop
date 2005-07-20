@@ -31,9 +31,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public bool DebugMode = false;
 		#endif
 		
-		protected void GenerateCompletionData(TextArea textArea, string expression)
+		protected void GenerateCompletionData(TextArea textArea, ExpressionResult expressionResult)
 		{
-			if (expression == null || expression.Length == 0) {
+			if (expressionResult.Expression == null || expressionResult.Expression.Length == 0) {
 				return;
 			}
 			#if DEBUG
@@ -41,65 +41,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				Debugger.Break();
 			}
 			#endif
-			AddResolveResults(ParserService.Resolve(expression,
+			AddResolveResults(ParserService.Resolve(expressionResult,
 			                                        caretLineNumber,
 			                                        caretColumn,
 			                                        fileName,
-			                                        textArea.Document.TextContent));
-		}
-	}
-	
-	public class CtrlSpaceCompletionDataProvider : CodeCompletionDataProvider
-	{
-		public CtrlSpaceCompletionDataProvider(ExpressionContext context)
-		{
-			this.context = context;
-		}
-		
-		bool forceNewExpression;
-		
-		/// <summary>
-		/// Gets/Sets whether the CtrlSpaceCompletionDataProvider creates a new completion
-		/// dropdown instead of completing an old expression.
-		/// Default value is false.
-		/// </summary>
-		public bool ForceNewExpression {
-			get {
-				return forceNewExpression;
-			}
-			set {
-				forceNewExpression = value;
-			}
-		}
-		
-		protected override void GenerateCompletionData(TextArea textArea, char charTyped)
-		{
-			string expression = forceNewExpression ? null : GetExpression(textArea);
-			preSelection = null;
-			if (expression == null || expression.Length == 0) {
-				preSelection = "";
-				if (charTyped != '\0') {
-					preSelection = null;
-				}
-				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent));
-				return;
-			}
-			
-			int idx = expression.LastIndexOf('.');
-			if (idx > 0) {
-				preSelection = expression.Substring(idx + 1);
-				expression = expression.Substring(0, idx);
-				if (charTyped != '\0') {
-					preSelection = null;
-				}
-				GenerateCompletionData(textArea, expression);
-			} else {
-				preSelection = expression;
-				if (charTyped != '\0') {
-					preSelection = null;
-				}
-				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent));
-			}
+			                                        textArea.Document.TextContent),
+			                  expressionResult.Context);
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		ICompilationUnit Prepare(LanguageProperties language)
 		{
 			DefaultProjectContent pc = new DefaultProjectContent();
-			pc.ReferencedContents.Add(ProjectContentRegistry.GetMscorlibContent());
+			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
 			pc.Language = language;
 			DefaultCompilationUnit cu = new DefaultCompilationUnit(pc);
 			if (language == LanguageProperties.VBNet)

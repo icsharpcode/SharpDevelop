@@ -347,7 +347,8 @@ namespace ICSharpCode.Core
 						LineSegment seg = doc.GetLineSegment(logicPos.Y);
 						int xPosition = Math.Min(seg.Length - 1, logicPos.X);
 						string textContent = doc.TextContent;
-						string expression = expressionFinder.FindFullExpression(textContent, seg.Offset + xPosition).Expression;
+						ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, seg.Offset + xPosition);
+						string expression = expressionResult.Expression;
 						//Console.WriteLine("MouseMove@" + logicPos + ":" + expression);
 						if (expression != null && expression.Length > 0) {
 							if (expression == oldExpression && oldLine == logicPos.Y) {
@@ -359,7 +360,7 @@ namespace ICSharpCode.Core
 								// otherwise textArea will close the tooltip.
 							} else {
 								// Look if it is variable
-								ResolveResult result = ParserService.Resolve(expression, logicPos.Y + 1, xPosition + 1, textArea.MotherTextEditorControl.FileName, textContent);
+								ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, xPosition + 1, textArea.MotherTextEditorControl.FileName, textContent);
 								string value = GetText(result);
 								if (value != null) {
 									#if DEBUG
