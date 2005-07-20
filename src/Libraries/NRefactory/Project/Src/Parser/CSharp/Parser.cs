@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Text;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
+using ASTAttribute = ICSharpCode.NRefactory.Parser.AST.Attribute;
 /*
   Parser.frame file for NRefactory.
  */
@@ -490,15 +491,15 @@ out qualident);
 	void GlobalAttributeSection() {
 		Expect(17);
 
-#line  586 "cs.ATG" 
+#line  585 "cs.ATG" 
 		Point startPos = t.Location; 
 		Expect(1);
 
 #line  586 "cs.ATG" 
 		if (t.val != "assembly") Error("global attribute target specifier (\"assembly\") expected");
 		string attributeTarget = t.val;
-		ArrayList attributes = new ArrayList();
-		ICSharpCode.NRefactory.Parser.AST.Attribute attribute;
+		List<ASTAttribute> attributes = new List<ASTAttribute>();
+		ASTAttribute attribute;
 		
 		Expect(9);
 		Attribute(
@@ -535,7 +536,7 @@ out attribute);
 
 #line  678 "cs.ATG" 
 		AttributeSection section;
-		ArrayList attributes = new ArrayList();
+		List<AttributeSection> attributes = new List<AttributeSection>();
 		Modifiers m = new Modifiers();
 		string qualident;
 		
@@ -615,7 +616,7 @@ DotAndIdent()) {
 
 	void Attribute(
 #line  601 "cs.ATG" 
-out ICSharpCode.NRefactory.Parser.AST.Attribute attribute) {
+out ASTAttribute attribute) {
 
 #line  602 "cs.ATG" 
 		string qualident; 
@@ -624,14 +625,14 @@ out ICSharpCode.NRefactory.Parser.AST.Attribute attribute) {
 out qualident);
 
 #line  604 "cs.ATG" 
-		ArrayList positional = new ArrayList();
-		ArrayList named      = new ArrayList();
+		List<Expression> positional = new List<Expression>();
+		List<NamedArgumentExpression> named = new List<NamedArgumentExpression>();
 		string name = qualident;
 		
 		if (la.kind == 19) {
 			AttributeArguments(
 #line  608 "cs.ATG" 
-ref positional, ref named);
+positional, named);
 		}
 
 #line  608 "cs.ATG" 
@@ -640,7 +641,7 @@ ref positional, ref named);
 
 	void AttributeArguments(
 #line  611 "cs.ATG" 
-ref ArrayList positional, ref ArrayList named) {
+List<Expression> positional, List<NamedArgumentExpression> named) {
 
 #line  613 "cs.ATG" 
 		bool nameFound = false;
@@ -750,8 +751,8 @@ out AttributeSection section) {
 
 #line  647 "cs.ATG" 
 		string attributeTarget = "";
-		ArrayList attributes = new ArrayList();
-		ICSharpCode.NRefactory.Parser.AST.Attribute attribute;
+		List<ASTAttribute> attributes = new List<ASTAttribute>();
+		ASTAttribute attribute;
 		
 		
 		Expect(17);
@@ -894,12 +895,12 @@ Modifiers m) {
 
 	void TypeDecl(
 #line  703 "cs.ATG" 
-Modifiers m, ArrayList attributes) {
+Modifiers m, List<AttributeSection> attributes) {
 
 #line  705 "cs.ATG" 
 		TypeReference type;
 		ArrayList names;
-		ArrayList p; 
+		List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 		string name;
 		List<TemplateDefinition> templates;
 		
@@ -1121,7 +1122,7 @@ templates);
 				if (StartOf(9)) {
 					FormalParameterList(
 #line  804 "cs.ATG" 
-out p);
+p);
 
 #line  804 "cs.ATG" 
 					delegateDeclr.Parameters = p; 
@@ -1150,7 +1151,7 @@ List<TemplateDefinition> templates) {
 
 #line  2214 "cs.ATG" 
 		AttributeSection section;
-		ArrayList attributes = new ArrayList();
+		List<AttributeSection> attributes = new List<AttributeSection>();
 		
 		Expect(22);
 		while (la.kind == 17) {
@@ -1266,7 +1267,7 @@ out type);
 		while (StartOf(10)) {
 
 #line  840 "cs.ATG" 
-			ArrayList attributes = new ArrayList();
+			List<AttributeSection> attributes = new List<AttributeSection>();
 			Modifiers m = new Modifiers();
 			
 			while (la.kind == 17) {
@@ -1323,7 +1324,7 @@ out qualident);
 		while (StartOf(12)) {
 
 #line  864 "cs.ATG" 
-			ArrayList attributes = new ArrayList();
+			List<AttributeSection> attributes = new List<AttributeSection>();
 			Modifiers m = new Modifiers();
 			
 			while (la.kind == 17) {
@@ -1546,13 +1547,12 @@ IsPointerOrDims()) {
 
 	void FormalParameterList(
 #line  947 "cs.ATG" 
-out ArrayList parameter) {
+List<ParameterDeclarationExpression> parameter) {
 
-#line  949 "cs.ATG" 
-		parameter = new ArrayList();
+#line  950 "cs.ATG" 
 		ParameterDeclarationExpression p;
 		AttributeSection section;
-		ArrayList attributes = new ArrayList();
+		List<AttributeSection> attributes = new List<AttributeSection>();
 		
 		while (la.kind == 17) {
 			AttributeSection(
@@ -1576,7 +1576,7 @@ out p);
 				lexer.NextToken();
 
 #line  962 "cs.ATG" 
-				attributes = new ArrayList(); if (paramsFound) Error("params array must be at end of parameter list"); 
+				attributes = new List<AttributeSection>(); if (paramsFound) Error("params array must be at end of parameter list"); 
 				while (la.kind == 17) {
 					AttributeSection(
 #line  963 "cs.ATG" 
@@ -1748,7 +1748,7 @@ Modifiers m) {
 
 	void ClassMemberDecl(
 #line  1278 "cs.ATG" 
-Modifiers m, ArrayList attributes) {
+Modifiers m, List<AttributeSection> attributes) {
 
 #line  1279 "cs.ATG" 
 		Statement stmt = null; 
@@ -1790,13 +1790,13 @@ out stmt);
 
 	void StructMemberDecl(
 #line  1048 "cs.ATG" 
-Modifiers m, ArrayList attributes) {
+Modifiers m, List<AttributeSection> attributes) {
 
 #line  1050 "cs.ATG" 
 		string qualident = null;
 		TypeReference type;
 		Expression expr;
-		ArrayList p = new ArrayList();
+		List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 		Statement stmt = null;
 		List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>();
 		List<TemplateDefinition> templates = new List<TemplateDefinition>();
@@ -1869,15 +1869,15 @@ templates);
 			if (StartOf(9)) {
 				FormalParameterList(
 #line  1081 "cs.ATG" 
-out p);
+p);
 			}
 			Expect(20);
 
 #line  1081 "cs.ATG" 
-			MethodDeclaration methodDeclaration = new MethodDeclaration(qualident, 
-			                                                           m.Modifier, 
-			                                                           new TypeReference("void"), 
-			                                                           p, 
+			MethodDeclaration methodDeclaration = new MethodDeclaration(qualident,
+			                                                           m.Modifier,
+			                                                           new TypeReference("void"),
+			                                                           p,
 			                                                           attributes);
 			methodDeclaration.StartLocation = startPos;
 			methodDeclaration.EndLocation   = t.EndLocation;
@@ -1983,7 +1983,7 @@ IdentAndLPar()) {
 				m.Check(Modifier.Constructors); 
 				FormalParameterList(
 #line  1125 "cs.ATG" 
-out p);
+p);
 			}
 			Expect(20);
 
@@ -2056,7 +2056,7 @@ out stmt);
 			} else SynErr(143);
 
 #line  1148 "cs.ATG" 
-			ArrayList parameters = new ArrayList();
+			List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
 			parameters.Add(new ParameterDeclarationExpression(type, varName));
 			OperatorDeclaration operatorDeclaration = new OperatorDeclaration(m.Modifier, 
 			                                                                  attributes, 
@@ -2121,7 +2121,7 @@ out stmt);
 				} else SynErr(145);
 
 #line  1180 "cs.ATG" 
-				ArrayList parameters = new ArrayList();
+				List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
 				parameters.Add(new ParameterDeclarationExpression(firstType, firstName));
 				if (secondType != null) {
 					parameters.Add(new ParameterDeclarationExpression(secondType, secondName));
@@ -2164,7 +2164,7 @@ variableDeclarators);
 				Expect(17);
 				FormalParameterList(
 #line  1205 "cs.ATG" 
-out p);
+p);
 				Expect(18);
 
 #line  1205 "cs.ATG" 
@@ -2211,7 +2211,7 @@ templates);
 						if (StartOf(9)) {
 							FormalParameterList(
 #line  1225 "cs.ATG" 
-out p);
+p);
 						}
 						Expect(20);
 
@@ -2275,7 +2275,7 @@ out getRegion, out setRegion);
 					Expect(17);
 					FormalParameterList(
 #line  1258 "cs.ATG" 
-out p);
+p);
 					Expect(18);
 
 #line  1259 "cs.ATG" 
@@ -2311,11 +2311,11 @@ out getRegion, out setRegion);
 
 #line  1295 "cs.ATG" 
 		TypeReference type;
-		ArrayList p;
+		
 		AttributeSection section;
 		Modifier mod = Modifier.None;
-		ArrayList attributes = new ArrayList();
-		ArrayList parameters = new ArrayList();
+		List<AttributeSection> attributes = new List<AttributeSection>();
+		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
 		string name;
 		PropertyGetRegion getBlock;
 		PropertySetRegion setBlock;
@@ -2351,7 +2351,7 @@ NotVoidPointer()) {
 			if (StartOf(9)) {
 				FormalParameterList(
 #line  1313 "cs.ATG" 
-out parameters);
+parameters);
 			}
 			Expect(20);
 			Expect(11);
@@ -2385,7 +2385,7 @@ templates);
 						if (StartOf(9)) {
 							FormalParameterList(
 #line  1326 "cs.ATG" 
-out parameters);
+parameters);
 						}
 						Expect(20);
 						while (
@@ -2424,14 +2424,14 @@ out getBlock, out setBlock);
 					Expect(17);
 					FormalParameterList(
 #line  1339 "cs.ATG" 
-out p);
+parameters);
 					Expect(18);
 
 #line  1339 "cs.ATG" 
 					Point bracketEndLocation = t.EndLocation; 
 
 #line  1339 "cs.ATG" 
-					IndexerDeclaration id = new IndexerDeclaration(type, p, mod, attributes); compilationUnit.AddChild(id); 
+					IndexerDeclaration id = new IndexerDeclaration(type, parameters, mod, attributes); compilationUnit.AddChild(id); 
 					Expect(15);
 
 #line  1340 "cs.ATG" 
@@ -2472,7 +2472,7 @@ out FieldDeclaration f) {
 
 #line  1353 "cs.ATG" 
 		Expression expr = null;
-		ArrayList attributes = new ArrayList();
+		List<AttributeSection> attributes = new List<AttributeSection>();
 		AttributeSection section = null;
 		VariableDeclaration varDecl = null;
 		
@@ -2692,7 +2692,7 @@ out EventAddRegion addBlock, out EventRemoveRegion removeBlock) {
 
 #line  1412 "cs.ATG" 
 		AttributeSection section;
-		ArrayList attributes = new ArrayList();
+		List<AttributeSection> attributes = new List<AttributeSection>();
 		Statement stmt;
 		addBlock = null;
 		removeBlock = null;
@@ -2716,7 +2716,7 @@ IdentIsAdd()) {
 out stmt);
 
 #line  1422 "cs.ATG" 
-			attributes = new ArrayList(); addBlock.Block = (BlockStatement)stmt; 
+			attributes = new List<AttributeSection>(); addBlock.Block = (BlockStatement)stmt; 
 			while (la.kind == 17) {
 				AttributeSection(
 #line  1423 "cs.ATG" 
@@ -2739,7 +2739,7 @@ IdentIsRemove()) {
 out stmt);
 
 #line  1426 "cs.ATG" 
-			removeBlock = new EventRemoveRegion(attributes); removeBlock.Block = (BlockStatement)stmt; attributes = new ArrayList(); 
+			removeBlock = new EventRemoveRegion(attributes); removeBlock.Block = (BlockStatement)stmt; attributes = new List<AttributeSection>(); 
 			while (la.kind == 17) {
 				AttributeSection(
 #line  1427 "cs.ATG" 
@@ -2970,7 +2970,7 @@ out OverloadableOperatorType op) {
 out PropertyGetRegion getBlock, out PropertySetRegion setBlock) {
 
 #line  1371 "cs.ATG" 
-		ArrayList attributes = new ArrayList(); 
+		List<AttributeSection> attributes = new List<AttributeSection>(); 
 		AttributeSection section;
 		getBlock = null;
 		setBlock = null; 
@@ -2992,7 +2992,7 @@ out getBlock, attributes);
 			if (la.kind == 1 || la.kind == 17) {
 
 #line  1381 "cs.ATG" 
-				attributes = new ArrayList(); 
+				attributes = new List<AttributeSection>(); 
 				while (la.kind == 17) {
 					AttributeSection(
 #line  1382 "cs.ATG" 
@@ -3014,7 +3014,7 @@ out setBlock, attributes);
 			if (la.kind == 1 || la.kind == 17) {
 
 #line  1387 "cs.ATG" 
-				attributes = new ArrayList(); 
+				attributes = new List<AttributeSection>(); 
 				while (la.kind == 17) {
 					AttributeSection(
 #line  1388 "cs.ATG" 
@@ -3041,7 +3041,7 @@ out PropertyGetRegion getBlock, out PropertySetRegion setBlock) {
 
 #line  1435 "cs.ATG" 
 		AttributeSection section;
-		ArrayList attributes = new ArrayList();
+		List<AttributeSection> attributes = new List<AttributeSection>();
 		getBlock = null; setBlock = null;
 		
 		while (la.kind == 17) {
@@ -3075,7 +3075,7 @@ IdentIsSet()) {
 		Expect(11);
 
 #line  1446 "cs.ATG" 
-		attributes = new ArrayList(); 
+		attributes = new List<AttributeSection>(); 
 		if (la.kind == 1 || la.kind == 17) {
 			while (la.kind == 17) {
 				AttributeSection(
@@ -3115,7 +3115,7 @@ IdentIsSet()) {
 
 	void GetAccessorDecl(
 #line  1395 "cs.ATG" 
-out PropertyGetRegion getBlock, ArrayList attributes) {
+out PropertyGetRegion getBlock, List<AttributeSection> attributes) {
 
 #line  1396 "cs.ATG" 
 		Statement stmt = null; 
@@ -3137,7 +3137,7 @@ out stmt);
 
 	void SetAccessorDecl(
 #line  1403 "cs.ATG" 
-out PropertySetRegion setBlock, ArrayList attributes) {
+out PropertySetRegion setBlock, List<AttributeSection> attributes) {
 
 #line  1404 "cs.ATG" 
 		Statement stmt = null; 
@@ -4827,14 +4827,14 @@ out Expression outExpr) {
 		AnonymousMethodExpression expr = new AnonymousMethodExpression();
 		expr.StartLocation = t.Location;
 		Statement stmt;
-		ArrayList p;
+		List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 		outExpr = expr;
 		
 		Expect(19);
 		if (StartOf(9)) {
 			FormalParameterList(
 #line  2058 "cs.ATG" 
-out p);
+p);
 
 #line  2058 "cs.ATG" 
 			expr.Parameters = p; 

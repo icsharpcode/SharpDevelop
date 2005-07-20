@@ -17,22 +17,21 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
 	public abstract class AttributedNode : AbstractNode
 	{
-//		protected List<AttributeSection> attributes;
-		protected ArrayList attributes;
+		protected List<AttributeSection> attributes;
 		protected Modifier               modifier;
 		
-		public ArrayList Attributes {
+		public List<AttributeSection> Attributes {
 			get {
 				return attributes;
 			}
 			set {
-				attributes = value == null ? new ArrayList(1) : value;
+				attributes = value == null ? new List<AttributeSection>(1) : value;
 			}
 		}
 		
@@ -45,11 +44,11 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public AttributedNode(ArrayList attributes) : this(Modifier.None, attributes)
+		public AttributedNode(List<AttributeSection> attributes) : this(Modifier.None, attributes)
 		{
 		}
 		
-		public AttributedNode(Modifier modifier, ArrayList attributes)
+		public AttributedNode(Modifier modifier, List<AttributeSection> attributes)
 		{
 			this.modifier   = modifier;
 			

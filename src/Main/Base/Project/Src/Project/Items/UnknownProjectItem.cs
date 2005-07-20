@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override string Tag {
 			get {
-				return ItemType.ToString();
+				return tag;
 			}
 		}
 		

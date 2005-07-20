@@ -19,6 +19,7 @@ using System;
 using System.Drawing;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -29,8 +30,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		Point         bodyStart = new Point(-1, -1);
 		Point         bodyEnd   = new Point(-1, -1);
 		
-//		List<ParameterDeclarationExpression> parameters;
-		ArrayList parameters;
+		List<ParameterDeclarationExpression> parameters;
 		
 		PropertyGetRegion  propertyGetRegion = PropertyGetRegion.Null;
 		PropertySetRegion  propertySetRegion = PropertySetRegion.Null;
@@ -44,12 +44,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList Parameters {
+		public List<ParameterDeclarationExpression> Parameters {
 			get {
 				return parameters;
 			}
 			set {
-				parameters = value == null ? new ArrayList(1) : value;
+				parameters = value == null ? new List<ParameterDeclarationExpression>(1) : value;
 			}
 		}
 		
@@ -121,12 +121,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public IndexerDeclaration(Modifier modifier, ArrayList parameters, ArrayList attributes) : base(modifier, attributes)
+		public IndexerDeclaration(Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : base(modifier, attributes)
 		{
 			this.Parameters = parameters;
 		}
 		
-		public IndexerDeclaration(TypeReference typeReference, ArrayList parameters, Modifier modifier, ArrayList attributes) : base(modifier, attributes)
+		public IndexerDeclaration(TypeReference typeReference, List<ParameterDeclarationExpression> parameters, Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes)
 		{
 			this.TypeReference = typeReference;
 			this.Parameters    = parameters;

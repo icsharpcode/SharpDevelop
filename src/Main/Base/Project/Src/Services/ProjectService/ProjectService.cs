@@ -128,10 +128,28 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public static void AddReference(IProject project, ReferenceProjectItem reference)
+		/// <summary>
+		/// Adds a project item to the project, raising the ProjectItemAdded event.
+		/// </summary>
+		public static void AddProjectItem(IProject project, ProjectItem item)
 		{
-			project.Items.Add(reference);
-			OnReferenceAdded(new ProjectReferenceEventArgs(project, reference));
+			if (project == null) throw new ArgumentNullException("project");
+			if (item == null)    throw new ArgumentNullException("item");
+			project.Items.Add(item);
+			OnProjectItemAdded(new ProjectItemEventArgs(project, item));
+		}
+		
+		/// <summary>
+		/// Removes a project item from the project, raising the ProjectItemRemoved event.
+		/// </summary>
+		public static void RemoveProjectItem(IProject project, ProjectItem item)
+		{
+			if (project == null) throw new ArgumentNullException("project");
+			if (item == null)    throw new ArgumentNullException("item");
+			if (!project.Items.Remove(item)) {
+				throw new ArgumentException("The item was not found in the project!");
+			}
+			OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
 		}
 		
 		public static void LoadSolution(string fileName)
@@ -265,13 +283,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static void OnReferenceAdded(ProjectReferenceEventArgs e)
-		{
-			if (ReferenceAdded != null) {
-				ReferenceAdded(null, e);
-			}
-		}
-		
 		static void OnStartBuild(EventArgs e)
 		{
 			if (StartBuild != null) {
@@ -306,6 +317,20 @@ namespace ICSharpCode.SharpDevelop.Project
 				SolutionFolderRemoved(null, e);
 			}
 		}
+		
+		static void OnProjectItemAdded(ProjectItemEventArgs e)
+		{
+			if (ProjectItemAdded != null) {
+				ProjectItemAdded(null, e);
+			}
+		}
+		static void OnProjectItemRemoved(ProjectItemEventArgs e)
+		{
+			if (ProjectItemRemoved != null) {
+				ProjectItemRemoved(null, e);
+			}
+		}
+		
 		public static event SolutionFolderEventHandler SolutionFolderRemoved;
 		
 		public static event EventHandler StartBuild;
@@ -322,6 +347,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static event ProjectEventHandler CurrentProjectChanged;
 		
-		public static event ProjectReferenceEventHandler ReferenceAdded;
+		public static event EventHandler<ProjectItemEventArgs> ProjectItemAdded;
+		public static event EventHandler<ProjectItemEventArgs> ProjectItemRemoved;
 	}
 }

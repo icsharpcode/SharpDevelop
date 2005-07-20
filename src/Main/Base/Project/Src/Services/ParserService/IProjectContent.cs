@@ -57,7 +57,7 @@ namespace ICSharpCode.Core
 		/// </summary>
 		void AddNamespaceContents(ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences);
 		
-		string SearchNamespace(string name, ICompilationUnit unit, int caretLine, int caretColumn);
+		string SearchNamespace(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
 		IClass SearchType(string name, IClass curType, int caretLine, int caretColumn);
 		IClass SearchType(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
 		

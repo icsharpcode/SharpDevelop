@@ -404,7 +404,6 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ToolbarCommands.cs" />
     <Compile Include="Src\Services\LanguageBinding\LanguageBindingDescriptor.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingDescriptor.cs" />
-    <Compile Include="Src\Dom\IAttributeSection.cs" />
     <Compile Include="Src\Dom\FoldingRegion.cs" />
     <Compile Include="Src\Services\ParserService\Erbauer\ParserErbauer.cs" />
     <Compile Include="Src\Services\ParserService\Erbauer\ParserDescriptor.cs" />
@@ -457,7 +456,7 @@
     <Compile Include="Src\Project\Items\ComReferenceProjectItem.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\ReferenceFolder.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\ReferenceNode.cs" />
-    <Compile Include="Src\Services\ProjectService\ProjectReferenceEventHandler.cs" />
+    <Compile Include="Src\Services\ProjectService\ProjectItemEventHandler.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\Util\UpdateReferencesVisitor.cs" />
     <Compile Include="Src\Project\Items\TypeLibrary.cs" />
     <Compile Include="Src\Project\Items\UnknownProjectItem.cs" />
@@ -675,6 +674,7 @@
     <Compile Include="Src\Dom\ExpressionContext.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CachedCompletionDataProvider.cs" />
     <Compile Include="Src\Dom\Implementations\CompoundClass.cs" />
+    <Compile Include="Src\Project\Items\ImportProjectItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

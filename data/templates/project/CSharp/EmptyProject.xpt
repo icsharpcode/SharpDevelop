@@ -14,10 +14,10 @@
 	
 	<Combine name = "${ProjectName}" directory = ".">
 		<Project name = "${ProjectName}" directory = ".">
-			<References>
-				<Reference type="Gac" refto="System" />
-				<Reference type="Gac" refto="System.Xml" />
-			</References>
+			<ProjectItems>
+				<Reference Include="System" />
+				<Reference Include="System.Xml" />
+			</ProjectItems>
 		</Project>
 	</Combine>
 </Template>

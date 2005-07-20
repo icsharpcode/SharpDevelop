@@ -27,6 +27,13 @@ namespace ICSharpCode.Core
 		}
 		
 		IProject project;
+		
+		public IProject Project {
+			get {
+				return project;
+			}
+		}
+		
 		bool initializing;
 		
 		public override string ToString()
@@ -37,7 +44,9 @@ namespace ICSharpCode.Core
 		internal void Initialize1()
 		{
 			ProjectItem[] items = project.Items.ToArray();
-			ProjectService.ReferenceAdded += OnReferenceAdded;
+			ProjectService.ProjectItemAdded   += OnProjectItemAdded;
+			ProjectService.ProjectItemRemoved += OnProjectItemRemoved;
+			UpdateDefaultImports(items);
 			foreach (ProjectItem item in items) {
 				if (!initializing) return; // abort initialization
 				switch (item.ItemType) {
@@ -66,10 +75,39 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		void OnReferenceAdded(object sender, ProjectReferenceEventArgs e)
+		void OnProjectItemAdded(object sender, ProjectItemEventArgs e)
 		{
 			if (e.Project != project) return;
-			new AddReferenceDelegate(AddReference).BeginInvoke(e.ReferenceProjectItem, null, null);
+			ReferenceProjectItem reference = e.ProjectItem as ReferenceProjectItem;
+			if (reference != null) {
+				new AddReferenceDelegate(AddReference).BeginInvoke(reference, null, null);
+			}
+			if (e.ProjectItem.ItemType == ItemType.Import) {
+				UpdateDefaultImports(project.Items.ToArray());
+			}
+		}
+		
+		void OnProjectItemRemoved(object sender, ProjectItemEventArgs e)
+		{
+			if (e.Project != project) return;
+			if (e.ProjectItem.ItemType == ItemType.Import) {
+				UpdateDefaultImports(project.Items.ToArray());
+			}
+		}
+		
+		void UpdateDefaultImports(ProjectItem[] items)
+		{
+			DefaultImports.Clear();
+			DefaultUsing u = null;
+			foreach (ProjectItem item in items) {
+				if (item.ItemType == ItemType.Import) {
+					if (u == null) {
+						u = new DefaultUsing(this);
+						DefaultImports.Add(u);
+					}
+					u.Usings.Add(item.Include);
+				}
+			}
 		}
 		
 		internal int GetInitializationWorkAmount()
@@ -109,7 +147,8 @@ namespace ICSharpCode.Core
 		
 		public override void Dispose()
 		{
-			ProjectService.ReferenceAdded -= OnReferenceAdded;
+			ProjectService.ProjectItemAdded   -= OnProjectItemAdded;
+			ProjectService.ProjectItemRemoved -= OnProjectItemRemoved;
 			initializing = false;
 			base.Dispose();
 		}

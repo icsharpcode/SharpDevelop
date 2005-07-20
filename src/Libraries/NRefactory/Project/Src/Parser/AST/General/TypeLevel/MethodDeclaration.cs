@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public MethodDeclaration(string name, Modifier modifier, TypeReference typeReference, ArrayList parameters, ArrayList attributes) : base(modifier, attributes, name, parameters)
+		public MethodDeclaration(string name, Modifier modifier, TypeReference typeReference, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : base(modifier, attributes, name, parameters)
 		{
 			this.TypeReference = typeReference;
 		}

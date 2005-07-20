@@ -17,15 +17,14 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
 	public abstract class ParametrizedNode : AttributedNode
 	{
 		protected string                               name = String.Empty;
-//		protected List<ParameterDeclarationExpression> parameters;
-		protected ArrayList parameters;
+		protected List<ParameterDeclarationExpression> parameters;
 		
 		public string Name {
 			get {
@@ -36,24 +35,24 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList Parameters {
+		public List<ParameterDeclarationExpression> Parameters {
 			get {
 				return parameters;
 			}
 			set {
-				parameters = value == null ? new ArrayList(1) : value;
+				parameters = value == null ? new List<ParameterDeclarationExpression>(1) : value;
 			}
 		}
 		
-		public ParametrizedNode(Modifier modifier, ArrayList attributes) : this(modifier, attributes, null)
+		public ParametrizedNode(Modifier modifier, List<AttributeSection> attributes) : this(modifier, attributes, null)
 		{
 		}
 		
-		public ParametrizedNode(Modifier modifier, ArrayList attributes, string name) : this(modifier, attributes, name, null)
+		public ParametrizedNode(Modifier modifier, List<AttributeSection> attributes, string name) : this(modifier, attributes, name, null)
 		{
 		}
 		
-		public ParametrizedNode(Modifier modifier, ArrayList attributes, string name, ArrayList parameters) : base(modifier, attributes)
+		public ParametrizedNode(Modifier modifier, List<AttributeSection> attributes, string name, List<ParameterDeclarationExpression> parameters) : base(modifier, attributes)
 		{
 			// use properties because of the null check.
 			this.Name       = name;

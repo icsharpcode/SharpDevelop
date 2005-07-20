@@ -17,7 +17,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -66,12 +66,10 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	public class Attribute : AbstractNode
 	{
 		string name = "";
-//		List<Expression> positionalArguments;
-//		List<NamedArgumentExpression> namedArguments;
-		ArrayList positionalArguments;
-		ArrayList namedArguments;
+		List<Expression> positionalArguments;
+		List<NamedArgumentExpression> namedArguments;
 		
-		public Attribute(string name, ArrayList positionalArguments, ArrayList namedArguments)
+		public Attribute(string name, List<Expression> positionalArguments, List<NamedArgumentExpression> namedArguments)
 		{
 			Debug.Assert(name != null);
 			Debug.Assert(positionalArguments != null);
@@ -88,13 +86,13 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList PositionalArguments {
+		public List<Expression> PositionalArguments {
 			get {
 				return positionalArguments;
 			}
 		}
 		
-		public ArrayList NamedArguments {
+		public List<NamedArgumentExpression> NamedArguments {
 			get {
 				return namedArguments;
 			}
@@ -117,8 +115,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	public class AttributeSection : AbstractNode, INullable
 	{
 		string    attributeTarget = "";
-//		List<Attribute> attributes;
-		ArrayList attributes;
+		List<Attribute> attributes;
 		static AttributeSection nullSection = new NullAttributeSection();
 		
 		public virtual bool IsNull {
@@ -147,19 +144,20 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList Attributes {
+		public List<Attribute> Attributes {
 			get {
 				return attributes;
 			}
 			set {
-				attributes = value == null ? new ArrayList(1) : value;
+				attributes = value == null ? new List<Attribute>(1) : value;
 			}
 		}
 		
 		public AttributeSection() : this(null, null)
 		{
 		}
-		public AttributeSection(string attributeTarget, ArrayList attributes)
+		
+		public AttributeSection(string attributeTarget, List<Attribute> attributes)
 		{
 			this.AttributeTarget = attributeTarget;
 			this.Attributes     = attributes;

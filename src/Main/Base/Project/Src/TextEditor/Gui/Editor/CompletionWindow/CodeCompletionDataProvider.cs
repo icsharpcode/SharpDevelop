@@ -6,19 +6,12 @@
 // </file>
 
 using System;
-using System.Drawing;
 using System.Diagnostics;
-using System.Windows.Forms;
-using System.Reflection;
-using System.Collections;
-using System.Collections.Specialized;
-using System.Xml;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Templates;
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.TextEditor;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
@@ -34,11 +27,20 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			GenerateCompletionData(textArea, GetExpression(textArea));
 		}
 		
+		#if DEBUG
+		public bool DebugMode = false;
+		#endif
+		
 		protected void GenerateCompletionData(TextArea textArea, string expression)
 		{
 			if (expression == null || expression.Length == 0) {
 				return;
 			}
+			#if DEBUG
+			if (DebugMode) {
+				Debugger.Break();
+			}
+			#endif
 			AddResolveResults(ParserService.Resolve(expression,
 			                                        caretLineNumber,
 			                                        caretColumn,

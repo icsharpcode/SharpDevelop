@@ -25,6 +25,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					return new ProjectReferenceProjectItem(project);
 				case "COMReference":
 					return new ComReferenceProjectItem(project);
+				case "Import":
+					return new ImportProjectItem(project);
 					
 				case "None":
 				case "Compile":

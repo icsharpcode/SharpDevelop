@@ -7,6 +7,7 @@ using System.Collections.Specialized;
 using System.Text;
 using ICSharpCode.NRefactory.Parser.AST;
 using ICSharpCode.NRefactory.Parser.VB;
+using ASTAttribute = ICSharpCode.NRefactory.Parser.AST.Attribute;
 /*
   Parser.frame file for NRefactory.
  */
@@ -25,7 +26,7 @@ internal class Parser : AbstractParser
 	const  bool   x            = false;
 	
 
-#line  11 "VBNET.ATG" 
+#line  12 "VBNET.ATG" 
 private string assemblyName = null;
 private Stack withStatements;
 private StringBuilder qualidentBuilder = new StringBuilder();
@@ -34,7 +35,6 @@ public string ContainingAssembly
 {
 	set { assemblyName = value; }
 }
-
 Token t
 {
 	get {
@@ -359,9 +359,10 @@ out u);
 			lexer.NextToken();
 		} else SynErr(203);
 
-#line  1787 "VBNET.ATG" 
-		string attributeTarget = t.val.ToLower();ArrayList attributes = new ArrayList();
-		ICSharpCode.NRefactory.Parser.AST.Attribute attribute;
+#line  1786 "VBNET.ATG" 
+		string attributeTarget = t.val.ToLower();
+		List<ASTAttribute> attributes = new List<ASTAttribute>();
+		ASTAttribute attribute;
 		
 		Expect(13);
 		Attribute(
@@ -407,7 +408,7 @@ out attribute);
 
 #line  515 "VBNET.ATG" 
 		Modifiers m = new Modifiers();
-		AttributeSection section;ArrayList attributes = new ArrayList();
+		AttributeSection section;List<AttributeSection> attributes = new List<AttributeSection>();
 		string qualident;
 		
 		if (la.kind == 125) {
@@ -567,8 +568,8 @@ out name);
 out AttributeSection section) {
 
 #line  1856 "VBNET.ATG" 
-		string attributeTarget = "";ArrayList attributes = new ArrayList();
-		ICSharpCode.NRefactory.Parser.AST.Attribute attribute;
+		string attributeTarget = "";List<ASTAttribute> attributes = new List<ASTAttribute>();
+		ASTAttribute attribute;
 		
 		
 		Expect(26);
@@ -698,7 +699,7 @@ Modifiers m) {
 
 	void NonModuleDeclaration(
 #line  586 "VBNET.ATG" 
-Modifiers m,ArrayList attributes) {
+Modifiers m, List<AttributeSection> attributes) {
 
 #line  588 "VBNET.ATG" 
 		string name = String.Empty;
@@ -903,10 +904,10 @@ newType);
 
 #line  683 "VBNET.ATG" 
 			m.Check(Modifier.VBDelegates);
-			DelegateDeclaration delegateDeclr = new DelegateDeclaration(m.Modifier, attributes);ArrayList p = null;
+			DelegateDeclaration delegateDeclr = new DelegateDeclaration(m.Modifier, attributes);
 			delegateDeclr.ReturnType = new TypeReference("", "System.Void");
 			delegateDeclr.StartLocation = t.Location;
-			
+			List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 			
 			if (la.kind == 167) {
 				lexer.NextToken();
@@ -919,7 +920,7 @@ newType);
 					if (StartOf(4)) {
 						FormalParameterList(
 #line  691 "VBNET.ATG" 
-out p);
+p);
 					}
 					Expect(24);
 
@@ -937,7 +938,7 @@ out p);
 					if (StartOf(4)) {
 						FormalParameterList(
 #line  694 "VBNET.ATG" 
-out p);
+p);
 					}
 					Expect(24);
 
@@ -1125,7 +1126,7 @@ TypeDeclaration newType) {
 		while (StartOf(6)) {
 
 #line  713 "VBNET.ATG" 
-			ArrayList attributes = new ArrayList();
+			List<AttributeSection> attributes = new List<AttributeSection>();
 			Modifiers m = new Modifiers();
 			
 			while (la.kind == 26) {
@@ -1162,7 +1163,7 @@ TypeDeclaration newType) {
 		while (StartOf(6)) {
 
 #line  742 "VBNET.ATG" 
-			ArrayList attributes = new ArrayList();
+			List<AttributeSection> attributes = new List<AttributeSection>();
 			Modifiers m = new Modifiers();
 			
 			while (la.kind == 26) {
@@ -1199,7 +1200,7 @@ TypeDeclaration newType) {
 		while (StartOf(6)) {
 
 #line  727 "VBNET.ATG" 
-			ArrayList attributes = new ArrayList();
+			List<AttributeSection> attributes = new List<AttributeSection>();
 			Modifiers m = new Modifiers();
 			
 			while (la.kind == 26) {
@@ -1408,12 +1409,12 @@ TypeDeclaration newType) {
 
 	void FormalParameterList(
 #line  1888 "VBNET.ATG" 
-out ArrayList parameter) {
+List<ParameterDeclarationExpression> parameter) {
 
 #line  1890 "VBNET.ATG" 
-		parameter = new ArrayList();
 		ParameterDeclarationExpression p;
-		AttributeSection section;ArrayList attributes = new ArrayList(); 
+		AttributeSection section;
+		List<AttributeSection> attributes = new List<AttributeSection>();
 		
 		while (la.kind == 26) {
 			AttributeSection(
@@ -1590,7 +1591,7 @@ Modifiers m) {
 
 	void ClassMemberDecl(
 #line  867 "VBNET.ATG" 
-Modifiers m,ArrayList attributes) {
+Modifiers m, List<AttributeSection> attributes) {
 		StructureMemberDecl(
 #line  868 "VBNET.ATG" 
 m, attributes);
@@ -1598,10 +1599,10 @@ m, attributes);
 
 	void StructureMemberDecl(
 #line  882 "VBNET.ATG" 
-Modifiers m, ArrayList attributes) {
+Modifiers m, List<AttributeSection> attributes) {
 
 #line  884 "VBNET.ATG" 
-		TypeReference type = null; ArrayList p = null;
+		TypeReference type = null; List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 		Statement stmt = null; List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>();
 		
 		switch (la.kind) {
@@ -1634,7 +1635,7 @@ m, attributes);
 					if (StartOf(4)) {
 						FormalParameterList(
 #line  903 "VBNET.ATG" 
-out p);
+p);
 					}
 					Expect(24);
 				}
@@ -1704,7 +1705,7 @@ out stmt);
 					if (StartOf(4)) {
 						FormalParameterList(
 #line  948 "VBNET.ATG" 
-out p);
+p);
 					}
 					Expect(24);
 				}
@@ -1755,7 +1756,7 @@ out stmt);
 				if (StartOf(4)) {
 					FormalParameterList(
 #line  974 "VBNET.ATG" 
-out p);
+p);
 				}
 				Expect(24);
 			}
@@ -1873,7 +1874,7 @@ out charsetModifer);
 					if (StartOf(4)) {
 						FormalParameterList(
 #line  1043 "VBNET.ATG" 
-out p);
+p);
 					}
 					Expect(24);
 				}
@@ -1908,7 +1909,7 @@ out p);
 					if (StartOf(4)) {
 						FormalParameterList(
 #line  1056 "VBNET.ATG" 
-out p);
+p);
 					}
 					Expect(24);
 				}
@@ -1953,7 +1954,7 @@ out type);
 					if (StartOf(4)) {
 						FormalParameterList(
 #line  1079 "VBNET.ATG" 
-out p);
+p);
 					}
 					Expect(24);
 				}
@@ -2052,7 +2053,7 @@ constantDeclarators);
 				if (StartOf(4)) {
 					FormalParameterList(
 #line  1129 "VBNET.ATG" 
-out p);
+p);
 				}
 				Expect(24);
 			}
@@ -2125,7 +2126,7 @@ out getRegion, out setRegion);
 out FieldDeclaration f) {
 
 #line  851 "VBNET.ATG" 
-		Expression expr = null;ArrayList attributes = new ArrayList();
+		Expression expr = null;List<AttributeSection> attributes = new List<AttributeSection>();
 		AttributeSection section = null;
 		VariableDeclaration varDecl = null;
 		
@@ -2160,10 +2161,10 @@ out expr);
 	void InterfaceMemberDecl() {
 
 #line  774 "VBNET.ATG" 
-		TypeReference type =null;ArrayList p = null;
+		TypeReference type =null; List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 		AttributeSection section, returnTypeAttributeSection = null;
-		
-		Modifiers mod = new Modifiers();ArrayList attributes = new ArrayList();
+		Modifiers mod = new Modifiers();
+		List<AttributeSection> attributes = new List<AttributeSection>();
 		string name;
 		
 		if (StartOf(13)) {
@@ -2194,7 +2195,7 @@ mod);
 					if (StartOf(4)) {
 						FormalParameterList(
 #line  789 "VBNET.ATG" 
-out p);
+p);
 					}
 					Expect(24);
 				}
@@ -2225,7 +2226,7 @@ out type);
 					if (StartOf(4)) {
 						FormalParameterList(
 #line  801 "VBNET.ATG" 
-out p);
+p);
 					}
 					Expect(24);
 				}
@@ -2251,7 +2252,7 @@ out p);
 					if (StartOf(4)) {
 						FormalParameterList(
 #line  813 "VBNET.ATG" 
-out p);
+p);
 					}
 					Expect(24);
 				}
@@ -2291,7 +2292,7 @@ out type);
 					if (StartOf(4)) {
 						FormalParameterList(
 #line  829 "VBNET.ATG" 
-out p);
+p);
 					}
 					Expect(24);
 				}
@@ -2558,7 +2559,7 @@ out expr);
 out PropertyGetRegion getBlock, out PropertySetRegion setBlock) {
 
 #line  1176 "VBNET.ATG" 
-		ArrayList attributes = new ArrayList(); 
+		List<AttributeSection> attributes = new List<AttributeSection>(); 
 		AttributeSection section;
 		getBlock = null;
 		setBlock = null; 
@@ -2578,7 +2579,7 @@ out getBlock, attributes);
 			if (la.kind == 26 || la.kind == 156) {
 
 #line  1185 "VBNET.ATG" 
-				attributes = new ArrayList(); 
+				attributes = new List<AttributeSection>(); 
 				while (la.kind == 26) {
 					AttributeSection(
 #line  1186 "VBNET.ATG" 
@@ -2598,7 +2599,7 @@ out setBlock, attributes);
 			if (la.kind == 26 || la.kind == 100) {
 
 #line  1192 "VBNET.ATG" 
-				attributes = new ArrayList(); 
+				attributes = new List<AttributeSection>(); 
 				while (la.kind == 26) {
 					AttributeSection(
 #line  1193 "VBNET.ATG" 
@@ -2616,7 +2617,7 @@ out getBlock, attributes);
 
 	void GetAccessorDecl(
 #line  1200 "VBNET.ATG" 
-out PropertyGetRegion getBlock,ArrayList attributes) {
+out PropertyGetRegion getBlock, List<AttributeSection> attributes) {
 
 #line  1201 "VBNET.ATG" 
 		Statement stmt = null; 
@@ -2636,10 +2637,10 @@ out stmt);
 
 	void SetAccessorDecl(
 #line  1213 "VBNET.ATG" 
-out PropertySetRegion setBlock,ArrayList attributes) {
+out PropertySetRegion setBlock, List<AttributeSection> attributes) {
 
 #line  1215 "VBNET.ATG" 
-		Statement stmt = null;ArrayList p = null;
+		Statement stmt = null; List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 		
 		Expect(156);
 		if (la.kind == 23) {
@@ -2647,7 +2648,7 @@ out PropertySetRegion setBlock,ArrayList attributes) {
 			if (StartOf(4)) {
 				FormalParameterList(
 #line  1218 "VBNET.ATG" 
-out p);
+p);
 			}
 			Expect(24);
 		}
@@ -4993,19 +4994,19 @@ out int i) {
 out ICSharpCode.NRefactory.Parser.AST.Attribute attribute) {
 
 #line  1805 "VBNET.ATG" 
-		string qualident; 
+		string name; 
 		Qualident(
 #line  1806 "VBNET.ATG" 
-out qualident);
+out name);
 
 #line  1807 "VBNET.ATG" 
-		ArrayList positional = new ArrayList();ArrayList named   = new ArrayList();
-		string name = qualident;
+		List<Expression> positional = new List<Expression>();
+		List<NamedArgumentExpression> named = new List<NamedArgumentExpression>();
 		
 		if (la.kind == 23) {
 			AttributeArguments(
 #line  1810 "VBNET.ATG" 
-ref positional, ref named);
+positional, named);
 		}
 
 #line  1812 "VBNET.ATG" 
@@ -5015,7 +5016,7 @@ ref positional, ref named);
 
 	void AttributeArguments(
 #line  1817 "VBNET.ATG" 
-ref ArrayList positional, ref ArrayList named) {
+List<Expression> positional, List<NamedArgumentExpression> named) {
 
 #line  1819 "VBNET.ATG" 
 		bool nameFound = false;

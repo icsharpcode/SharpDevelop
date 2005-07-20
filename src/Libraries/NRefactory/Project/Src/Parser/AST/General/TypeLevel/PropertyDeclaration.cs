@@ -19,7 +19,7 @@ using System;
 using System.Drawing;
 using System.Diagnostics;
 using System.Collections;
-using System.Collections.Specialized;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public PropertyDeclaration(string name, TypeReference typeReference, Modifier modifier, ArrayList attributes) : base(modifier, attributes, name)
+		public PropertyDeclaration(string name, TypeReference typeReference, Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes, name)
 		{
 			Debug.Assert(typeReference != null);
 			this.typeReference = typeReference;

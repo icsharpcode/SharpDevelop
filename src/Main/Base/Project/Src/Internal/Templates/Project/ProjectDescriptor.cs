@@ -28,8 +28,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string relativePath;
 		string languageName = null;
 		
-		ArrayList files      = new ArrayList(); // contains FileTemplate classes
-		ArrayList references = new ArrayList();
+		List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate>(); // contains FileTemplate classes
+		List<ProjectItem> projectItems = new List<ProjectItem>();
 		
 		XmlElement projectOptions = null;
 		
@@ -40,15 +40,15 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 		
-		public ArrayList Files {
+		public List<FileDescriptionTemplate> Files {
 			get {
 				return files;
 			}
 		}
 		
-		public ArrayList References {
+		public List<ProjectItem> ProjectItems {
 			get {
-				return references;
+				return projectItems;
 			}
 		}
 		
@@ -88,8 +88,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				
 				
 				string newProjectName = StringParser.Parse(name, new string[,] {
-					{"ProjectName", projectCreateInformation.ProjectName}
-				});
+				                                           	{"ProjectName", projectCreateInformation.ProjectName}
+				                                           });
 				string projectLocation = FileUtility.Combine(projectCreateInformation.ProjectBasePath, newProjectName + LanguageBindingService.GetProjectFileExtension(language));
 				
 				projectCreateInformation.OutputProjectFileName = projectLocation;
@@ -119,10 +119,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 				project.RootNamespace = standardNamespace.ToString();
 				StringParser.Properties["StandardNamespace"] = project.RootNamespace;
-				// Add References
-				foreach (ReferenceProjectItem projectReference in references) {
-					projectReference.Project = project;
-					project.Items.Add(projectReference);
+				// Add Project items
+				foreach (ProjectItem projectItem in projectItems) {
+					projectItem.Project = project;
+					project.Items.Add(projectItem);
 				}
 				
 				// Add Files
@@ -204,16 +204,35 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 			}
 			if (element["References"] != null) {
+				MessageService.ShowWarning(element.OwnerDocument.DocumentElement.GetAttribute("fileName") + ")\n"
+				                           + "<References> is obsolete, use <ProjectItems> instead");
 				foreach (XmlNode node in element["References"].ChildNodes) {
 					if (node != null && node.Name == "Reference") {
 						ReferenceProjectItem referenceProjectItem = new ReferenceProjectItem(null);
 						referenceProjectItem.Include = node.Attributes["refto"].InnerXml;
 //						projectReference.ReferenceType = (ReferenceType)Enum.Parse(typeof(ReferenceType), node.Attributes["type"].InnerXml);
-						projectDescriptor.references.Add(referenceProjectItem);
+						projectDescriptor.projectItems.Add(referenceProjectItem);
 					}
 				}
 			}
+			if (element["ProjectItems"] != null) {
+				ReadProjectItems(projectDescriptor, element["ProjectItems"]);
+			}
 			return projectDescriptor;
+		}
+		
+		static void ReadProjectItems(ProjectDescriptor projectDescriptor, XmlElement xml)
+		{
+			//projectDescriptor.references
+			foreach (XmlNode node in xml.ChildNodes) {
+				XmlElement el = node as XmlElement;
+				if (el != null) {
+					XmlTextReader reader = new XmlTextReader(new StringReader(el.OuterXml));
+					reader.Read();
+					projectDescriptor.projectItems.Add(ProjectItem.ReadItem(reader, null, el.Name));
+					reader.Close();
+				}
+			}
 		}
 	}
 }

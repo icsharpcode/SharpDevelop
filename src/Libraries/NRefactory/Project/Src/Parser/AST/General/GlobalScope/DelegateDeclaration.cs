@@ -17,7 +17,6 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
 using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
@@ -26,8 +25,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	{
 		string          name = "";
 		TypeReference   returnType = TypeReference.Null;
-//		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>(1);
-		ArrayList parameters = new ArrayList(1);
+		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>(1);
 		List<TemplateDefinition> templates = new List<TemplateDefinition>();
 		
 		public string Name {
@@ -49,7 +47,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList Parameters {
+		public List<ParameterDeclarationExpression> Parameters {
 			get {
 				return parameters;
 			}
@@ -69,7 +67,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public DelegateDeclaration(Modifier modifier, ArrayList attributes) : base(modifier, attributes)
+		public DelegateDeclaration(Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes)
 		{
 		}
 		

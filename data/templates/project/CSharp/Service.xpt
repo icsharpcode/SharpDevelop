@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template originator   = "Mike Krueger"
           created      = "02/01/2003"
-          lastModified = "23/04/2005">
+          lastModified = "07/20/2005">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -14,7 +14,7 @@
 	
 	<!-- Actions -->
 	<Actions>
-		<Open filename = "MyService.cs"/>
+		<Open filename = "${ProjectName}.cs"/>
 	</Actions>
 
 	<!-- Template Content -->
@@ -26,45 +26,38 @@
 		<Project name = "${ProjectName}" directory = ".">
 			<Options />
 
+			<ProjectItems>
+				<Reference Include="System" />
+				<Reference Include="System.Data" />
+				<Reference Include="System.ServiceProcess" />
+				<Reference Include="System.Xml" />
+			</ProjectItems>
+
 			<Files>
-				<File name="MyService.cs"><![CDATA[${StandardHeader.C#}
+				<File name="${ProjectName}.cs"><![CDATA[${StandardHeader.C#}
+
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Data;
 using System.Diagnostics;
 using System.ServiceProcess;
-using System.Configuration.Install;
+using System.Text;
 
 namespace ${StandardNamespace}
 {
-	/// <summary>
-	/// This is the class for my Service
-	/// </summary>
-	public class MyService : System.ServiceProcess.ServiceBase
+	public class ${ProjectName} : ServiceBase
 	{
-		public MyService()
+		public ${ProjectName}()
 		{
-			InitializeComponents();
-			
-			// TODO: Add any further initialization code
+			InitializeComponent();
 		}
 		
-		private void InitializeComponents()
+		private void InitializeComponent()
 		{
-			this.ServiceName = "MyService";
+			this.ServiceName = "${ProjectName}";
 		}
 		
-		/// <summary>
-		/// This method starts the service.
-		/// </summary>
-		public static void Main()
-		{
-			System.ServiceProcess.ServiceBase.Run(new System.ServiceProcess.ServiceBase[] {
-				new MyService() // To run more than one service you have to add them here
-			});
-		}
-
 		/// <summary>
 		/// Clean up any resources being used.
 		/// </summary>
@@ -73,7 +66,7 @@ namespace ${StandardNamespace}
 			// TODO: Add cleanup code here (if required)
 			base.Dispose(disposing);
 		}
-
+		
 		/// <summary>
 		/// Start this service.
 		/// </summary>
@@ -82,7 +75,7 @@ namespace ${StandardNamespace}
 			// TODO: Add start code here (if required)
 			//       to start your service.
 		}
- 
+		
 		/// <summary>
 		/// Stop this service.
 		/// </summary>
@@ -93,23 +86,43 @@ namespace ${StandardNamespace}
 		}
 	}
 }
+		/// <summary>
+		/// This method starts the service.
+		/// </summary>
+		public static void Main()
+		{
+			System.ServiceProcess.ServiceBase.Run(new System.ServiceProcess.ServiceBase[] {
+				new MyService() 
+			});
+		}
+]]></File>
+				<File name="Program.cs"><![CDATA[${StandardHeader.C#}
 
-[RunInstaller(true)]
-public class ProjectInstaller : Installer
+using System;
+using System.Collections.Generic;
+using System.ServiceProcess;
+using System.Text;
+
+namespace ${ProjectName}
 {
-	public ProjectInstaller()
+	static class Program
 	{
-		ServiceProcessInstaller spi = new ServiceProcessInstaller();
-		spi.Account = ServiceAccount.LocalSystem;
-		
-		ServiceInstaller si = new ServiceInstaller();
-		si.ServiceName = "Hello Service Template";
-		si.StartType = ServiceStartMode.Automatic;
-		Installers.AddRange(new Installer[] {spi, si});
+		/// <summary>
+		/// The main entry point for the application.
+		/// </summary>
+		static void Main()
+		{
+			ServiceBase[] ServicesToRun;
+			
+			// To run more than one service you have to add them here
+			ServicesToRun = new ServiceBase[] { new ${ProjectName}() };
+			
+			ServiceBase.Run(ServicesToRun);
+		}
 	}
 }
 ]]></File>
-			<File name="AssemblyInfo.cs"><![CDATA[using System.Reflection;
+				<File name="AssemblyInfo.cs"><![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
 
 // Information about this assembly is defined by the following

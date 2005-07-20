@@ -5,11 +5,11 @@ using System.Collections.Specialized;
 using System.Text;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
+using ASTAttribute = ICSharpCode.NRefactory.Parser.AST.Attribute;
 
 COMPILER CS    /* AW 2002-12-30 renamed from CompilationUnit to CS  */
 
 /*----------------------------- token sets -------------------------------*/
-
 string        assemblyName     = null;
 StringBuilder qualidentBuilder = new StringBuilder();
 
@@ -582,11 +582,11 @@ UsingDirective
 
 GlobalAttributeSection
 =
-	
-	"[" (. Point startPos = t.Location; .) ident                   (. if (t.val != "assembly") Error("global attribute target specifier (\"assembly\") expected");
+	"[" (. Point startPos = t.Location; .) ident
+	                            (. if (t.val != "assembly") Error("global attribute target specifier (\"assembly\") expected");
 	                               string attributeTarget = t.val;
-	                               ArrayList attributes = new ArrayList();
-	                               ICSharpCode.NRefactory.Parser.AST.Attribute attribute;
+	                               List<ASTAttribute> attributes = new List<ASTAttribute>();
+	                               ASTAttribute attribute;
 	                            .)
 	":" Attribute<out attribute> (. attributes.Add(attribute); .)
 	{ IF (NotFinalComma()) "," Attribute<out attribute> (. attributes.Add(attribute); .)}
@@ -598,17 +598,17 @@ GlobalAttributeSection
 	                            .)
 .
 
-Attribute<out ICSharpCode.NRefactory.Parser.AST.Attribute attribute>
+Attribute<out ASTAttribute attribute>
 (. string qualident; .)
 =
-	Qualident<out qualident>           (. ArrayList positional = new ArrayList();
-	                                      ArrayList named      = new ArrayList();
+	Qualident<out qualident>           (. List<Expression> positional = new List<Expression>();
+	                                      List<NamedArgumentExpression> named = new List<NamedArgumentExpression>();
 	                                      string name = qualident;
 	                                   .)
-	[ AttributeArguments<ref positional, ref named> ] (. attribute  = new ICSharpCode.NRefactory.Parser.AST.Attribute(name, positional, named);.)
+	[ AttributeArguments<positional, named> ] (. attribute  = new ICSharpCode.NRefactory.Parser.AST.Attribute(name, positional, named);.)
 .
 
-AttributeArguments<ref ArrayList positional, ref ArrayList named>
+AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> named>
 (.
 	bool nameFound = false;
 	string name = "";
@@ -645,8 +645,8 @@ AttributeArguments<ref ArrayList positional, ref ArrayList named>
 AttributeSection<out AttributeSection section>
 (.
 	string attributeTarget = "";
-	ArrayList attributes = new ArrayList();
-	ICSharpCode.NRefactory.Parser.AST.Attribute attribute;
+	List<ASTAttribute> attributes = new List<ASTAttribute>();
+	ASTAttribute attribute;
 	
 .)
 =
@@ -676,7 +676,7 @@ AttributeSection<out AttributeSection section>
 NamespaceMemberDecl
 (.
 	AttributeSection section;
-	ArrayList attributes = new ArrayList();
+	List<AttributeSection> attributes = new List<AttributeSection>();
 	Modifiers m = new Modifiers();
 	string qualident;
 .)
@@ -700,11 +700,11 @@ NamespaceMemberDecl
 	  TypeDecl<m, attributes>
 .
 
-TypeDecl<Modifiers m, ArrayList attributes>
+TypeDecl<Modifiers m, List<AttributeSection> attributes>
 (.
 	TypeReference type;
 	ArrayList names;
-	ArrayList p; 
+	List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 	string name;
 	List<TemplateDefinition> templates;
 .)
@@ -801,7 +801,7 @@ TypeDecl<Modifiers m, ArrayList attributes>
 	/* .NET 2.0 */
 	[ TypeParameterList<templates> ]
 	
-	"(" [ FormalParameterList<out p> (. delegateDeclr.Parameters = p; .)
+	"(" [ FormalParameterList<p> (. delegateDeclr.Parameters = p; .)
 	] ")"
 	
 	/* .NET 2.0 */
@@ -837,7 +837,7 @@ ClassBody
 (. AttributeSection section; .)
 =
 	"{"
-	{                                  (.ArrayList attributes = new ArrayList();
+	{                                  (.List<AttributeSection> attributes = new List<AttributeSection>();
 		                                 Modifiers m = new Modifiers();
 		                               .)
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
@@ -861,7 +861,7 @@ StructBody
 (. AttributeSection section; .)
 =
 	"{" 
-	{                                    (.ArrayList attributes = new ArrayList();
+	{                                    (.List<AttributeSection> attributes = new List<AttributeSection>();
 		                                   Modifiers m = new Modifiers();
 		                                 .)
 		{ AttributeSection<out section>  (. attributes.Add(section); .) }
@@ -944,12 +944,12 @@ SimpleType<out string name>
 .
 
 
-FormalParameterList<out ArrayList parameter>
+FormalParameterList<List<ParameterDeclarationExpression> parameter>
 (.
-	parameter = new ArrayList();
+	
 	ParameterDeclarationExpression p;
 	AttributeSection section;
-	ArrayList attributes = new ArrayList();
+	List<AttributeSection> attributes = new List<AttributeSection>();
 .)
 =
 	{ AttributeSection<out section> (.attributes.Add(section); .) }
@@ -959,7 +959,7 @@ FormalParameterList<out ArrayList parameter>
 		                         parameter.Add(p);
 		                      .)
 		{
-			","                              (. attributes = new ArrayList(); if (paramsFound) Error("params array must be at end of parameter list"); .)
+			","                              (. attributes = new List<AttributeSection>(); if (paramsFound) Error("params array must be at end of parameter list"); .)
 			{ AttributeSection<out section> (.attributes.Add(section); .) }
 			(
 				FixedParameter<out p>        (. p.Attributes = attributes; parameter.Add(p); .)
@@ -1045,12 +1045,12 @@ MemberModifier<Modifiers m>
 	| "volatile"                       (. m.Add(Modifier.Volatile); .)
 .
 
-StructMemberDecl<Modifiers m, ArrayList attributes>
+StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 (.
 	string qualident = null;
 	TypeReference type;
 	Expression expr;
-	ArrayList p = new ArrayList();
+	List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 	Statement stmt = null;
 	List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>();
 	List<TemplateDefinition> templates = new List<TemplateDefinition>();
@@ -1078,17 +1078,17 @@ StructMemberDecl<Modifiers m, ArrayList attributes>
 	[ TypeParameterList<templates> ]
 	
 	"("
-	[ FormalParameterList<out p> ] ")"     (. MethodDeclaration methodDeclaration = new MethodDeclaration(qualident, 
-	                                                                                                      m.Modifier, 
-	                                                                                                      new TypeReference("void"), 
-	                                                                                                      p, 
-	                                                                                                      attributes);
-	                                          methodDeclaration.StartLocation = startPos;
-	                                          methodDeclaration.EndLocation   = t.EndLocation;
-	                                          methodDeclaration.Templates = templates;
-	                                          compilationUnit.AddChild(methodDeclaration);
-	                                          compilationUnit.BlockStart(methodDeclaration);
-	                                       .)
+	[ FormalParameterList<p> ] ")" (. MethodDeclaration methodDeclaration = new MethodDeclaration(qualident,
+	                                                                                              m.Modifier,
+	                                                                                              new TypeReference("void"),
+	                                                                                              p,
+	                                                                                              attributes);
+	                                  methodDeclaration.StartLocation = startPos;
+	                                  methodDeclaration.EndLocation   = t.EndLocation;
+	                                  methodDeclaration.Templates = templates;
+	                                  compilationUnit.AddChild(methodDeclaration);
+	                                  compilationUnit.BlockStart(methodDeclaration);
+	                               .)
 		
 	/* .NET 2.0 */
 	{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
@@ -1122,7 +1122,7 @@ StructMemberDecl<Modifiers m, ArrayList attributes>
 	/*--- constructor or static contructor declaration: */
 	| IF (IdentAndLPar())                  (. m.Check(Modifier.Constructors | Modifier.StaticConstructors); .)
 	ident (. string name = t.val; Point startPos = t.Location; .) "(" [  (. m.Check(Modifier.Constructors); .)
-	FormalParameterList<out p>
+	FormalParameterList<p>
 	]
 	")" (.ConstructorInitializer init = null;  .)
 	[                                      (. m.Check(Modifier.Constructors); .)
@@ -1145,7 +1145,7 @@ StructMemberDecl<Modifiers m, ArrayList attributes>
 	"(" Type<out type> ident (. string varName = t.val; .) ")" ( Block<out stmt> | ";" (. stmt = null; .) )
 	(.
 		
-		ArrayList parameters = new ArrayList();
+		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
 		parameters.Add(new ParameterDeclarationExpression(type, varName));
 		OperatorDeclaration operatorDeclaration = new OperatorDeclaration(m.Modifier, 
 		                                                                  attributes, 
@@ -1177,7 +1177,7 @@ StructMemberDecl<Modifiers m, ArrayList attributes>
 		)
 		")" ( Block<out stmt> | ";" )
 		(.
-			ArrayList parameters = new ArrayList();
+			List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
 			parameters.Add(new ParameterDeclarationExpression(firstType, firstName));
 			if (secondType != null) {
 				parameters.Add(new ParameterDeclarationExpression(secondType, secondName));
@@ -1202,7 +1202,7 @@ StructMemberDecl<Modifiers m, ArrayList attributes>
 		
 		/*--- unqualified indexer declaration (without interface name): */
 		|                                  (. m.Check(Modifier.Indexers); .)
-		"this" "[" FormalParameterList<out p> "]" (. Point endLocation = t.EndLocation; .) "{" (.
+		"this" "[" FormalParameterList<p> "]" (. Point endLocation = t.EndLocation; .) "{" (.
 			         IndexerDeclaration indexer = new IndexerDeclaration(type, p, m.Modifier, attributes);
 			         indexer.StartLocation = startPos;
 			         indexer.EndLocation   = endLocation;
@@ -1222,7 +1222,7 @@ StructMemberDecl<Modifiers m, ArrayList attributes>
 			(                              (. m.Check(Modifier.PropertysEventsMethods); .)
 				/* .NET 2.0 */
 				[ TypeParameterList<templates> ]
-				"(" [ FormalParameterList<out p> ] ")" (.
+				"(" [ FormalParameterList<p> ] ")" (.
 					MethodDeclaration methodDeclaration = new MethodDeclaration(qualident,
 					                                                            m.Modifier, 
 					                                                            type, 
@@ -1255,7 +1255,7 @@ StructMemberDecl<Modifiers m, ArrayList attributes>
 			
 			/*--- qualified indexer declaration (with interface name): */
 			|                              (. m.Check(Modifier.Indexers); .)
-			"." "this" "[" FormalParameterList<out p> "]" (.
+			"." "this" "[" FormalParameterList<p> "]" (.
 			         IndexerDeclaration indexer = new IndexerDeclaration(type, p, m.Modifier, attributes);
 			         indexer.StartLocation = startPos;
 			         indexer.EndLocation   = t.EndLocation;
@@ -1275,7 +1275,7 @@ StructMemberDecl<Modifiers m, ArrayList attributes>
 	)
 .
 
-ClassMemberDecl<Modifiers m, ArrayList attributes>
+ClassMemberDecl<Modifiers m, List<AttributeSection> attributes>
 (. Statement stmt = null; .)
 =
 	StructMemberDecl<m, attributes>
@@ -1293,11 +1293,11 @@ ClassMemberDecl<Modifiers m, ArrayList attributes>
 InterfaceMemberDecl
 (.
 	TypeReference type;
-	ArrayList p;
+	
 	AttributeSection section;
 	Modifier mod = Modifier.None;
-	ArrayList attributes = new ArrayList();
-	ArrayList parameters = new ArrayList();
+	List<AttributeSection> attributes = new List<AttributeSection>();
+	List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
 	string name;
 	PropertyGetRegion getBlock;
 	PropertySetRegion setBlock;
@@ -1310,7 +1310,7 @@ InterfaceMemberDecl
 	(
 		/*--- interface void method (procedure) declaration: */
 		IF (NotVoidPointer()) "void" (. if (startLocation.X == -1) startLocation = t.Location; .) ident (. name = t.val; .)
-		"(" [ FormalParameterList<out parameters> ] ")" ";" (. MethodDeclaration md = new MethodDeclaration(name, mod, new TypeReference("void"), parameters, attributes);
+		"(" [ FormalParameterList<parameters> ] ")" ";" (. MethodDeclaration md = new MethodDeclaration(name, mod, new TypeReference("void"), parameters, attributes);
 		                                              md.StartLocation = startLocation;
 		                                              md.EndLocation = t.EndLocation;
 		                                              compilationUnit.AddChild(md);
@@ -1323,7 +1323,7 @@ InterfaceMemberDecl
 					/*--- interface "not void" method (function) declaration: */
 					/* .NET 2.0 */
 					[ TypeParameterList<templates> ]
-					"(" [ FormalParameterList<out parameters> ] ")" 
+					"(" [ FormalParameterList<parameters> ] ")" 
 					/* .NET 2.0 */
 					{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
 					";" (. MethodDeclaration md = new MethodDeclaration(name, mod, type, parameters, attributes);
@@ -1336,7 +1336,7 @@ InterfaceMemberDecl
 					"{" (. Point bodyStart = t.Location;.) InterfaceAccessors<out getBlock, out setBlock> "}" (. pd.GetRegion = getBlock; pd.SetRegion = setBlock; pd.StartLocation = startLocation; pd.EndLocation = qualIdentEndLocation; pd.BodyStart = bodyStart; pd.BodyEnd = t.EndLocation; .)
 				)
 				/*--- interface indexer declaration: */
-				| "this" "[" FormalParameterList<out p> "]" (.Point bracketEndLocation = t.EndLocation; .)  (. IndexerDeclaration id = new IndexerDeclaration(type, p, mod, attributes); compilationUnit.AddChild(id); .)
+				| "this" "[" FormalParameterList<parameters> "]" (.Point bracketEndLocation = t.EndLocation; .)  (. IndexerDeclaration id = new IndexerDeclaration(type, parameters, mod, attributes); compilationUnit.AddChild(id); .)
 				"{" (. Point bodyStart = t.Location;.) InterfaceAccessors<out getBlock, out setBlock> "}" (. id.GetRegion = getBlock; id.SetRegion = setBlock; id.StartLocation = startLocation;  id.EndLocation = bracketEndLocation; id.BodyStart = bodyStart; id.BodyEnd = t.EndLocation;.)
 			)
 			/*--- interface event declaration: */
@@ -1351,7 +1351,7 @@ InterfaceMemberDecl
 EnumMemberDecl<out FieldDeclaration f>
 (.
 	Expression expr = null;
-	ArrayList attributes = new ArrayList();
+	List<AttributeSection> attributes = new List<AttributeSection>();
 	AttributeSection section = null;
 	VariableDeclaration varDecl = null;
 .)
@@ -1368,7 +1368,7 @@ EnumMemberDecl<out FieldDeclaration f>
 
 AccessorDecls<out PropertyGetRegion getBlock, out PropertySetRegion setBlock>
 (.
-	ArrayList attributes = new ArrayList(); 
+	List<AttributeSection> attributes = new List<AttributeSection>(); 
 	AttributeSection section;
 	getBlock = null;
 	setBlock = null; 
@@ -1378,13 +1378,13 @@ AccessorDecls<out PropertyGetRegion getBlock, out PropertySetRegion setBlock>
 	(
 		IF (IdentIsGet())
 			GetAccessorDecl<out getBlock, attributes>
-			[                       (. attributes = new ArrayList(); .)
+			[                       (. attributes = new List<AttributeSection>(); .)
 				{ AttributeSection<out section> (. attributes.Add(section); .) }
 				SetAccessorDecl<out setBlock, attributes>
 			]
 		| IF (IdentIsSet())
 			SetAccessorDecl<out setBlock, attributes>
-			[                        (. attributes = new ArrayList(); .)
+			[                        (. attributes = new List<AttributeSection>(); .)
 				{ AttributeSection<out section> (. attributes.Add(section); .) }
 				GetAccessorDecl<out getBlock, attributes>
 			]
@@ -1392,7 +1392,7 @@ AccessorDecls<out PropertyGetRegion getBlock, out PropertySetRegion setBlock>
 	)
 .
 
-GetAccessorDecl<out PropertyGetRegion getBlock, ArrayList attributes>
+GetAccessorDecl<out PropertyGetRegion getBlock, List<AttributeSection> attributes>
 (. Statement stmt = null; .)
 =
 	ident /* "get" is not a keyword!? */
@@ -1400,7 +1400,7 @@ GetAccessorDecl<out PropertyGetRegion getBlock, ArrayList attributes>
 	( Block<out stmt> | ";" ) (. getBlock = new PropertyGetRegion((BlockStatement)stmt, attributes); .)
 .
 
-SetAccessorDecl<out PropertySetRegion setBlock, ArrayList attributes>
+SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attributes>
 (. Statement stmt = null; .)
 =
 	ident /* "set" is not a keyword!? */
@@ -1410,7 +1410,7 @@ SetAccessorDecl<out PropertySetRegion setBlock, ArrayList attributes>
 
 EventAccessorDecls<out EventAddRegion addBlock, out EventRemoveRegion removeBlock>
 (. AttributeSection section;
-   ArrayList attributes = new ArrayList();
+   List<AttributeSection> attributes = new List<AttributeSection>();
    Statement stmt;
    addBlock = null;
    removeBlock = null;
@@ -1419,11 +1419,11 @@ EventAccessorDecls<out EventAddRegion addBlock, out EventRemoveRegion removeBloc
 	{ AttributeSection<out section> (. attributes.Add(section); .) }
 	(
 		IF (IdentIsAdd())            (. addBlock = new EventAddRegion(attributes); .)
-			AddAccessorDecl<out stmt>       (. attributes = new ArrayList(); addBlock.Block = (BlockStatement)stmt; .)
+			AddAccessorDecl<out stmt>       (. attributes = new List<AttributeSection>(); addBlock.Block = (BlockStatement)stmt; .)
 			{ AttributeSection<out section> (. attributes.Add(section); .)}
 			RemoveAccessorDecl<out stmt>    (. removeBlock = new EventRemoveRegion(attributes); removeBlock.Block = (BlockStatement)stmt; .)
 		| IF (IdentIsRemove())
-			RemoveAccessorDecl <out stmt>    (. removeBlock = new EventRemoveRegion(attributes); removeBlock.Block = (BlockStatement)stmt; attributes = new ArrayList(); .)
+			RemoveAccessorDecl <out stmt>    (. removeBlock = new EventRemoveRegion(attributes); removeBlock.Block = (BlockStatement)stmt; attributes = new List<AttributeSection>(); .)
 			{ AttributeSection<out section>  (. attributes.Add(section); .) }
 			AddAccessorDecl<out stmt>        (. addBlock = new EventAddRegion(attributes); addBlock.Block = (BlockStatement)stmt; .)
 		| ident (. Error("add or remove accessor declaration expected"); .)
@@ -1433,7 +1433,7 @@ EventAccessorDecls<out EventAddRegion addBlock, out EventRemoveRegion removeBloc
 InterfaceAccessors<out PropertyGetRegion getBlock, out PropertySetRegion setBlock>
 (.
 	AttributeSection section;
-	ArrayList attributes = new ArrayList();
+	List<AttributeSection> attributes = new List<AttributeSection>();
 	getBlock = null; setBlock = null;
 .)
 =
@@ -1443,7 +1443,7 @@ InterfaceAccessors<out PropertyGetRegion getBlock, out PropertySetRegion setBloc
 		| IF (IdentIsSet()) ident (. setBlock = new PropertySetRegion(null, attributes); .)
 		| ident                   (. Error("set or get expected"); .)
 	)
-	";"                           (. attributes = new ArrayList(); .)
+	";"                           (. attributes = new List<AttributeSection>(); .)
 	[
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
 		(
@@ -2050,12 +2050,12 @@ AnonymousMethodExpr<out Expression outExpr>
 	AnonymousMethodExpression expr = new AnonymousMethodExpression();
 	expr.StartLocation = t.Location;
 	Statement stmt;
-	ArrayList p;
+	List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 	outExpr = expr;
 .)
 =
 	"("
-	[ FormalParameterList<out p> (. expr.Parameters = p; .) ]
+	[ FormalParameterList<p> (. expr.Parameters = p; .) ]
 	")"
 	/*--- ParseExpression doesn't set a compilation unit, */
 	/*--- so we can't use block then -> skip body of anonymous method */
@@ -2212,7 +2212,7 @@ TypeArgumentList<out List<TypeReference> types>
 TypeParameterList<List<TemplateDefinition> templates>
 (.
 	AttributeSection section;
-	ArrayList attributes = new ArrayList();
+	List<AttributeSection> attributes = new List<AttributeSection>();
 .)
 =
 	"<" { AttributeSection<out section> (. attributes.Add(section); .) }

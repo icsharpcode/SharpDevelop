@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		CombineDescriptor combineDescriptor = null;
 		
-#region Template Properties
+		#region Template Properties
 		public string WizardPath {
 			get {
 				return wizardpath;
@@ -116,21 +116,27 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		[Browsable(false)]
 		public CombineDescriptor CombineDescriptor
 		{
-			get 
+			get
 			{
 				return combineDescriptor;
 			}
 		}
-#endregion
+		#endregion
 		
 		protected ProjectTemplate(string fileName)
 		{
 			XmlDocument doc = new XmlDocument();
-			doc.Load(fileName);
+			try {
+				doc.Load(fileName);
+			} catch (XmlException ex) {
+				MessageService.ShowError("Invalid xml: " + fileName + "\n" + ex.Message);
+				return;
+			}
 			
-			originator   = doc.DocumentElement.Attributes["originator"].InnerText;
-			created      = doc.DocumentElement.Attributes["created"].InnerText;
-			lastmodified = doc.DocumentElement.Attributes["lastModified"].InnerText;
+			doc.DocumentElement.SetAttribute("fileName", fileName); // needed for warning messages for unknown elements
+			originator   = doc.DocumentElement.GetAttribute("originator");
+			created      = doc.DocumentElement.GetAttribute("created");
+			lastmodified = doc.DocumentElement.GetAttribute("lastModified");
 			
 			XmlElement config = doc.DocumentElement["TemplateConfiguration"];
 			
@@ -168,8 +174,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 
 		public ProjectCreateInformation ProjectCreateInformation
 		{
-			get { 
-				return projectCreateInformation; 
+			get {
+				return projectCreateInformation;
 			}
 		}
 		
@@ -178,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			this.projectCreateInformation = projectCreateInformation;
 			
 			if (wizardpath != null) {
-//              TODO: WIZARD
+				//              TODO: WIZARD
 				Properties customizer = new Properties();
 				customizer.Set("ProjectCreateInformation", projectCreateInformation);
 				customizer.Set("ProjectTemplate", this);

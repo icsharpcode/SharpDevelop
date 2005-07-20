@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template originator   = "Shinsaku Nakagawa"
           created      = "11/28/2002"
-          lastModified = "02/01/2003">
+          lastModified = "07/20/2005">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -27,19 +27,23 @@
 		<Project name = "${ProjectName}" directory = ".">
 			<Options />
 			
-				<References>
-					<Reference type="Gac" refto="System" />
-					<Reference type="Gac" refto="System.Data" />
-					<Reference type="Gac" refto="System.Drawing" />
-					<Reference type="Gac" refto="System.Xml" />
-				</References>
+			<ProjectItems>
+				<Reference Include="System" />
+				<Reference Include="System.Data" />
+				<Reference Include="System.Deployment" />
+				<Reference Include="System.Xml" />
 				
+				<Import Include="Microsoft.VisualBasic" />
+				<Import Include="System" />
+				<Import Include="System.Collections" />
+				<Import Include="System.Collections.Generic" />
+				<Import Include="System.Data" />
+				<Import Include="System.Diagnostics" />
+			</ProjectItems>
+			
 			<Files>
 		<File name="Main.vb">
 			<![CDATA[${StandardHeader.VBNET}
-Imports System
-Imports System.Collections.Generic
-
 Module Main
 	Sub Main()
 		Console.WriteLine("Hello World!")

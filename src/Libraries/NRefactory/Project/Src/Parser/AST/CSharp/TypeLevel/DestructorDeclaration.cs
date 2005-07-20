@@ -17,7 +17,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public DestructorDeclaration(string name, Modifier modifier, ArrayList attributes) : base(modifier, attributes)
+		public DestructorDeclaration(string name, Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes)
 		{
 			this.Name = name;
 		}

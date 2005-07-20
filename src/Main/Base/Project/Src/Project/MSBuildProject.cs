@@ -165,6 +165,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				
 				List<ProjectItem> references   = new List<ProjectItem>();
+				List<ProjectItem> imports      = new List<ProjectItem>();
 				List<ProjectItem> projectFiles = new List<ProjectItem>();
 				List<ProjectItem> other        = new List<ProjectItem>();
 				
@@ -178,6 +179,9 @@ namespace ICSharpCode.SharpDevelop.Project
 						case ItemType.None:
 							projectFiles.Add(item);
 							break;
+						case ItemType.Import:
+							imports.Add(item);
+							break;
 						default:
 							other.Add(item);
 							break;
@@ -188,13 +192,15 @@ namespace ICSharpCode.SharpDevelop.Project
 					ProjectItem.WriteItemGroup(writer, references);
 				}
 				
+				if (imports.Count > 0) {
+					ProjectItem.WriteItemGroup(writer, imports);
+				}
+				
 				if (projectFiles.Count > 0) {
 					ProjectItem.WriteItemGroup(writer, projectFiles);
 				}
 				
-				if (other.Count > 0) {
-					ProjectItem.WriteItemGroup(writer, other);
-				}
+				ProjectItem.WriteItemGroup(writer, other);
 				
 				foreach (string import in Imports) {
 					writer.WriteStartElement("Import");

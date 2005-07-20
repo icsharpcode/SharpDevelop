@@ -16,6 +16,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		ProjectReference,
 		COMReference,
 		
+		Import,
+		
 		WebReferenceUrl,
 		
 		// FileProjectItem
@@ -109,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			                     Properties);
 		}
 		
-		static ProjectItem ReadItem(XmlTextReader reader, IProject project, string itemType)
+		public static ProjectItem ReadItem(XmlTextReader reader, IProject project, string itemType)
 		{
 			ProjectItem newItem = ProjectItemFactory.CreateProjectItem(project, itemType);
 			newItem.Include  = reader.GetAttribute("Include");

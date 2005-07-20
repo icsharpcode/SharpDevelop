@@ -81,6 +81,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// Gets the list of MSBuild Imports.
+		/// </summary>
+		/// <returns>
+		/// List of Import filenames, <example>$(MSBuildBinPath)\Microsoft.VisualBasic.targets</example>
+		/// </returns>
 		[Browsable(false)]
 		public List<string> Imports {
 			get {
@@ -166,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public OutputType OutputType {
+		public virtual OutputType OutputType {
 			get {
 				return BaseConfiguration.Get("OutputType", OutputType.Exe);
 			}

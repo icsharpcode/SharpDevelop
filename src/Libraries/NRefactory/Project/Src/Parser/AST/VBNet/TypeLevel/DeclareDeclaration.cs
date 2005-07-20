@@ -18,6 +18,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -77,7 +78,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public DeclareDeclaration(string name, Modifier modifier, TypeReference returnType, ArrayList parameters, ArrayList attributes, string library, string alias, CharsetModifier charset) : base(modifier, attributes, name, parameters)
+		public DeclareDeclaration(string name, Modifier modifier, TypeReference returnType, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string library, string alias, CharsetModifier charset) : base(modifier, attributes, name, parameters)
 		{
 			this.TypeReference = returnType;
 			this.Library = library;

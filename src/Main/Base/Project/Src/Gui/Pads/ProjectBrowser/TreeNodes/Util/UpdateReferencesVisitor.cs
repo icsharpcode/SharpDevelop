@@ -4,9 +4,9 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class UpdateReferencesVisitor : ProjectBrowserTreeNodeVisitor
 	{
-		ProjectReferenceEventArgs e;
+		ProjectItemEventArgs e;
 		
-		public UpdateReferencesVisitor(ProjectReferenceEventArgs e)
+		public UpdateReferencesVisitor(ProjectItemEventArgs e)
 		{
 			this.e = e;
 		}

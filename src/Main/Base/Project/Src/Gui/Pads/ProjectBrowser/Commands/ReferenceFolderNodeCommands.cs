@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			using (SelectReferenceDialog selDialog = new SelectReferenceDialog(ProjectService.CurrentProject)) {
 				if (selDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					foreach (ReferenceProjectItem reference in selDialog.ReferenceInformations) {
-						ProjectService.AddReference(ProjectService.CurrentProject, reference);
+						ProjectService.AddProjectItem(ProjectService.CurrentProject, reference);
 					}
 					ProjectService.SaveSolution();
 				}

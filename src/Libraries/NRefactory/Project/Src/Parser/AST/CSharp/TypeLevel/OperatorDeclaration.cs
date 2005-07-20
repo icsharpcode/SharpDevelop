@@ -18,6 +18,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -108,8 +109,8 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		/// <param name="modifier"></param>
 		/// <param name="List"></param>
 		public OperatorDeclaration(Modifier modifier,
-		                           ArrayList attributes,
-		                           ArrayList parameters, 
+		                           List<AttributeSection> attributes,
+		                           List<ParameterDeclarationExpression> parameters, 
 		                           TypeReference convertToType,
 		                           ConversionType conversionType
 		                           ) : base(null, modifier, TypeReference.Null, parameters, attributes)
@@ -124,8 +125,8 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		/// <param name="modifier"></param>
 		/// <param name="List"></param>
 		public OperatorDeclaration(Modifier modifier,
-		                           ArrayList attributes,
-		                           ArrayList parameters, 
+		                           List<AttributeSection> attributes,
+		                           List<ParameterDeclarationExpression> parameters, 
 		                           TypeReference typeReference,
 		                           OverloadableOperatorType overloadableOperator
 		                           ) : base(null, modifier, typeReference, parameters, attributes)

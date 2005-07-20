@@ -51,10 +51,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			ModifierEnum modifier = ModifierEnum.None;
 			this.BaseTypes.Clear();
 			this.TypeParameters.Clear();
+			this.Attributes.Clear();
 			foreach (IClass part in parts) {
 				modifier |= part.Modifiers;
 				this.BaseTypes.AddRange(part.BaseTypes);
 				this.TypeParameters.AddRange(part.TypeParameters);
+				this.Attributes.AddRange(part.Attributes);
 			}
 			this.Modifiers = modifier;
 		}

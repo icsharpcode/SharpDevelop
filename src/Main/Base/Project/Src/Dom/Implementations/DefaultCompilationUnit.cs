@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		List<IUsing> usings  = new List<IUsing>();
 		List<IClass> classes = new List<IClass>();
-		List<IAttributeSection> attributes = new List<IAttributeSection>();
+		List<IAttribute> attributes = new List<IAttribute>();
 		List<FoldingRegion> foldingRegions = new List<FoldingRegion>();
 		List<Tag> tagComments = new List<Tag>();
 		
@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 
-		public virtual List<IAttributeSection> Attributes {
+		public virtual List<IAttribute> Attributes {
 			get {
 				return attributes;
 			}

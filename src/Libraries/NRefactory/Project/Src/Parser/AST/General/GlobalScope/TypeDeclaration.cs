@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public TypeDeclaration(Modifier modifier, ArrayList attributes) : base(modifier, attributes)
+		public TypeDeclaration(Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes)
 		{
 		}
 		
@@ -135,7 +135,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public TemplateDefinition(string name, ArrayList attributes) : base(attributes)
+		public TemplateDefinition(string name, List<AttributeSection> attributes) : base(attributes)
 		{
 			if (name == null || name.Length == 0)
 				name = "?";

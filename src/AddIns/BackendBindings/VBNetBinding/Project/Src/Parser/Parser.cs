@@ -116,6 +116,18 @@ namespace VBNetBinding.Parser
 			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;
 			RetrieveRegions(visitor.Cu, p.Lexer.SpecialTracker);
 			AddCommentTags(visitor.Cu, p.Lexer.TagComments);
+			
+			string rootNamespace = null;
+			ParseProjectContent ppc = projectContent as ParseProjectContent;
+			if (ppc != null) {
+				rootNamespace = ppc.Project.RootNamespace;
+			}
+			if (rootNamespace != null && rootNamespace.Length > 0) {
+				foreach (IClass c in visitor.Cu.Classes) {
+					c.FullyQualifiedName = rootNamespace + "." + c.FullyQualifiedName;
+				}
+			}
+			
 			return visitor.Cu;
 		}
 

@@ -2,7 +2,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -11,7 +11,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		TypeReference  typeReference = TypeReference.Null;
 		string         parameterName = "";
 		ParamModifier  paramModifier = ParamModifier.In;
-		ArrayList attributes = new ArrayList(1);
+		List<AttributeSection> attributes = new List<AttributeSection>(1);
 		Expression     defaultValue  = Expression.Null;
 		
 		public Expression DefaultValue {
@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList Attributes {
+		public List<AttributeSection> Attributes {
 			get {
 				return attributes;
 			}

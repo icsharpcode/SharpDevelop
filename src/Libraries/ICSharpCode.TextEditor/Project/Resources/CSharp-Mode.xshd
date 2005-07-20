@@ -13,7 +13,7 @@
 		<RuleSet ignorecase="false">
 			<Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 			
-			<Span name = "PreprocessorDirectives" bold="false" italic="false" color="Green" stopateol = "true">
+			<Span name = "PreprocessorDirectives" rule = "PreprocessorSet" bold="false" italic="false" color="Green" stopateol = "true">
 				<Begin>#</Begin>
 			</Span>
 			
@@ -111,9 +111,15 @@
 				<Key word = "continue" />
 				<Key word = "goto" />
 				<Key word = "return" />
-				<Key word = "yield" />
 			</KeyWords>
-		  
+			
+			<KeyWords name = "ContextKeywords" bold="false" italic="false" color="Navy">
+				<Key word = "yield" />
+				<Key word = "partial" />
+				<Key word = "global" />
+				<Key word = "where" />
+			</KeyWords>
+			
 			<KeyWords name = "ExceptionHandlingStatements" bold="true" italic="false" color="Teal">
 				<Key word = "try" />
 				<Key word = "throw" />
@@ -130,37 +136,23 @@
 				<Key word = "fixed" />
 				<Key word = "unsafe" />
 			</KeyWords>
-		  
-			<KeyWords name = "PreprocessorDirectives" bold="false" italic="false" color="Green">
-				<Key word = "#if" />
-				<Key word = "#else" />
-			    <Key word = "#elif" />
-			    <Key word = "#endif" />
-			    <Key word = "#define" />
-			    <Key word = "#undef" />
-			    <Key word = "#warning" />
-			    <Key word = "#error" />
-			    <Key word = "#line" />
-			    <Key word = "#region" />
-			    <Key word = "#endregion" />
-		  	</KeyWords>
-		  
+			
 			<KeyWords name = "ValueTypes" bold="true" italic="false" color="Red">
-			    <Key word = "bool" />
-			    <Key word = "byte" />
-			    <Key word = "char" />
-			    <Key word = "decimal" />
-			    <Key word = "double" />
-			    <Key word = "enum" />
-			    <Key word = "float" />
-			    <Key word = "int" />
-			    <Key word = "long" />
-			    <Key word = "sbyte" />
-			    <Key word = "short" />
-			    <Key word = "struct" />
-		    	<Key word = "uint" />
-			    <Key word = "ushort" />
-			    <Key word = "ulong" />
+				<Key word = "bool" />
+				<Key word = "byte" />
+				<Key word = "char" />
+				<Key word = "decimal" />
+				<Key word = "double" />
+				<Key word = "enum" />
+				<Key word = "float" />
+				<Key word = "int" />
+				<Key word = "long" />
+				<Key word = "sbyte" />
+				<Key word = "short" />
+				<Key word = "struct" />
+				<Key word = "uint" />
+				<Key word = "ushort" />
+				<Key word = "ulong" />
 		  	</KeyWords>
 		  
 		  	<KeyWords name = "ReferenceTypes" bold="false" italic="false" color="Red">
@@ -257,6 +249,25 @@
 			<KeyWords name = "WarningWords" bold="true" italic="false" color="#EEE0E000">
 				    <Key word = "HACK" />
 				    <Key word = "UNDONE" />
+			</KeyWords>
+		</RuleSet>
+		
+		<RuleSet name = "PreprocessorSet" ignorecase="false">
+			<Delimiters>&amp;&lt;&gt;~!%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+			
+			<KeyWords name = "PreprocessorDirectives" bold="true" italic="false" color="Green">
+				<Key word = "if" />
+				<Key word = "else" />
+				<Key word = "elif" />
+				<Key word = "endif" />
+				<Key word = "define" />
+				<Key word = "undef" />
+				<Key word = "warning" />
+				<Key word = "error" />
+				<Key word = "line" />
+				<Key word = "region" />
+				<Key word = "endregion" />
+				<Key word = "pragma" />
 			</KeyWords>
 		</RuleSet>
 		

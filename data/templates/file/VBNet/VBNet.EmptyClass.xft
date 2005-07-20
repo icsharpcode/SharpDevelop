@@ -23,16 +23,9 @@
 	<Files>
 		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
 
-Imports System
-
-Namespace ${StandardNamespace}
-
-	Public Class ${ClassName}
+Public Class ${ClassName}
 	
-		Public Sub New()
-		End Sub
-	End Class
-End Namespace
+End Class
 ]]></File>
 	</Files>
 	

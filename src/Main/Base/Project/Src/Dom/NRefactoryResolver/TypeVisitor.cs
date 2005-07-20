@@ -275,11 +275,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (identifierExpression == null) {
 				return null;
 			}
-			string name = resolver.SearchNamespace(identifierExpression.Identifier, resolver.CompilationUnit);
+			string name = resolver.SearchNamespace(identifierExpression.Identifier);
 			if (name != null && name.Length > 0) {
 				return new NamespaceReturnType(name);
 			}
-			IClass c = resolver.SearchType(identifierExpression.Identifier, resolver.CallingClass, resolver.CompilationUnit);
+			IClass c = resolver.SearchType(identifierExpression.Identifier);
 			if (c != null) {
 				return c.DefaultReturnType;
 			}
@@ -450,7 +450,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (reference.IsNull) return null;
 			IClass callingClass = resolver.CallingClass;
-			IClass c = resolver.SearchType(reference.SystemType, callingClass);
+			IClass c = resolver.SearchType(reference.SystemType);
 			if (c == null) return null;
 			IReturnType t = c.DefaultReturnType;
 			if (callingClass != null) {

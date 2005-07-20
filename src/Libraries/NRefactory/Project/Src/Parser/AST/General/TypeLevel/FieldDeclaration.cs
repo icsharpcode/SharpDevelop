@@ -22,23 +22,11 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
-	public class FieldDeclaration : AbstractNode
+	public class FieldDeclaration : AttributedNode
 	{
-//		List<AttributeSection>    attributes;
-		ArrayList                 attributes;
 		TypeReference             typeReference = TypeReference.Null;
-		Modifier                  modifier      = Modifier.None;
 		List<VariableDeclaration> fields        = new List<VariableDeclaration>(1);
 		
-		public ArrayList Attributes {
-			get {
-				return attributes;
-			}
-			set {
-				Debug.Assert(value != null);
-				attributes = value;
-			}
-		}
 		public TypeReference TypeReference {
 			get {
 				return typeReference;
@@ -47,14 +35,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				typeReference = TypeReference.CheckNull(value);
 			}
 		}
-		public Modifier Modifier {
-			get {
-				return modifier;
-			}
-			set {
-				modifier = value;
-			}
-		}
+		
 		public List<VariableDeclaration> Fields {
 			get {
 				return fields;
@@ -80,18 +61,15 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		}
 		
 		// for enum members
-		public FieldDeclaration(ArrayList attributes)
+		public FieldDeclaration(List<AttributeSection> attributes) : base(attributes)
 		{
 			Debug.Assert(attributes != null);
-			this.attributes = attributes;
 		}
 		
 		// for all other cases
-		public FieldDeclaration(ArrayList attributes, TypeReference typeReference, Modifier modifier)
+		public FieldDeclaration(List<AttributeSection> attributes, TypeReference typeReference, Modifier modifier) : base(modifier, attributes)
 		{
-			this.attributes    = attributes;
 			this.TypeReference = typeReference;
-			this.modifier      = modifier;
 		}
 		
 		public VariableDeclaration GetVariableDeclaration(string variableName)

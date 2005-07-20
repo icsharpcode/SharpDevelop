@@ -164,18 +164,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return data;
 		}
 		
-		List<IAttributeSection> VisitAttributes(ArrayList attributes)
+		List<IAttribute> VisitAttributes(List<AST.AttributeSection> attributes)
 		{
 			// TODO Expressions???
-			List<IAttributeSection> result = new List<IAttributeSection>();
+			List<IAttribute> result = new List<IAttribute>();
 			foreach (AST.AttributeSection section in attributes) {
-				List<IAttribute> resultAttributes = new List<IAttribute>();
-				foreach (AST.Attribute attribute in section.Attributes) {
-					IAttribute a = new DefaultAttribute(attribute.Name, new ArrayList(attribute.PositionalArguments), new SortedList());
-					foreach (AST.NamedArgumentExpression n in attribute.NamedArguments) {
-						a.NamedArguments[n.Name] = n.Expression;
-					}
-				}
+				
 				AttributeTarget target = AttributeTarget.None;
 				if (section.AttributeTarget != null && section.AttributeTarget != "") {
 					switch (section.AttributeTarget.ToUpper()) {
@@ -212,8 +206,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 							
 					}
 				}
-				IAttributeSection s = new DefaultAttributeSection(target, resultAttributes);
-				result.Add(s);
+				
+				foreach (AST.Attribute attribute in section.Attributes) {
+					IAttribute a = new DefaultAttribute(attribute.Name, target, new ArrayList(attribute.PositionalArguments), new SortedList());
+					foreach (AST.NamedArgumentExpression n in attribute.NamedArguments) {
+						a.NamedArguments[n.Name] = n.Expression;
+					}
+					result.Add(a);
+				}
 			}
 			return result;
 		}
@@ -282,6 +282,22 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			currentClass.Push(c);
 			object ret = typeDeclaration.AcceptChildren(this, data);
 			currentClass.Pop();
+			
+			if (c.ClassType == ClassType.Module) {
+				foreach (IField f in c.Fields) {
+					f.Modifiers |= ModifierEnum.Static;
+				}
+				foreach (IMethod m in c.Methods) {
+					m.Modifiers |= ModifierEnum.Static;
+				}
+				foreach (IProperty p in c.Properties) {
+					p.Modifiers |= ModifierEnum.Static;
+				}
+				foreach (IEvent e in c.Events) {
+					e.Modifiers |= ModifierEnum.Static;
+				}
+			}
+			
 			return ret;
 		}
 		

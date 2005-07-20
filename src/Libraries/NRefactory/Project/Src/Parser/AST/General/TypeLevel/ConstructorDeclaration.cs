@@ -18,6 +18,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -44,11 +45,11 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ConstructorDeclaration(string name, Modifier modifier, ArrayList parameters, ArrayList attributes) : base(modifier, attributes, name, parameters)
+		public ConstructorDeclaration(string name, Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes) : base(modifier, attributes, name, parameters)
 		{
 		}
 		
-		public ConstructorDeclaration(string name, Modifier modifier, ArrayList parameters, ConstructorInitializer constructorInitializer, ArrayList attributes) : base(modifier, attributes, name, parameters)
+		public ConstructorDeclaration(string name, Modifier modifier, List<ParameterDeclarationExpression> parameters, ConstructorInitializer constructorInitializer, List<AttributeSection> attributes) : base(modifier, attributes, name, parameters)
 		{
 			this.ConstructorInitializer = constructorInitializer;
 		}

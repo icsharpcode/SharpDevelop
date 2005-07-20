@@ -29,6 +29,13 @@ namespace ICSharpCode.Core
 		List<Dictionary<string, IClass>> classLists = new List<Dictionary<string, IClass>>();
 		List<Dictionary<string, NamespaceStruct>> namespaces = new List<Dictionary<string, NamespaceStruct>>();
 		protected XmlDoc xmlDoc = new XmlDoc();
+		List<IUsing> defaultImports = new List<IUsing>();
+		
+		public List<IUsing> DefaultImports {
+			get {
+				return defaultImports;
+			}
+		}
 		
 		public List<Dictionary<string, IClass>> ClassLists {
 			get {
@@ -181,8 +188,7 @@ namespace ICSharpCode.Core
 		protected void AddClassToNamespaceListInternal(IClass addClass)
 		{
 			if (addClass.IsPartial) {
-				Console.WriteLine(addClass);
-				Console.Write("Adding partial class... ");
+				Console.WriteLine("Adding partial class " + addClass.Name + " from " + Path.GetFileName(addClass.CompilationUnit.FileName));
 				Dictionary<string, IClass> classes = GetClasses(language);
 				CompoundClass compound = null;
 				if (classes.ContainsKey(addClass.FullyQualifiedName))
@@ -193,18 +199,17 @@ namespace ICSharpCode.Core
 						if (compound.Parts[i].CompilationUnit.FileName == addClass.CompilationUnit.FileName) {
 							compound.Parts[i] = addClass;
 							compound.UpdateInformationFromParts();
-							Console.WriteLine("Replaced!");
+							Console.WriteLine("\tReplaced old part!");
 							return;
 						}
 					}
 					compound.Parts.Add(addClass);
 					compound.UpdateInformationFromParts();
-					Console.WriteLine("Added!");
+					Console.WriteLine("\tAdded new part!");
 					return;
 				} else {
 					addClass = new CompoundClass(addClass);
-					Console.WriteLine("Compound created!");
-					Console.WriteLine(addClass);
+					Console.WriteLine("\tCompound created!");
 				}
 			}
 			
@@ -431,15 +436,12 @@ namespace ICSharpCode.Core
 				int newCapacity = list.Count + ns.Classes.Count + ns.SubNamespaces.Count;
 				if (list.Capacity < newCapacity)
 					list.Capacity = newCapacity;
-				if (language.ImportModules) {
-					foreach (IClass c in ns.Classes) {
+				foreach (IClass c in ns.Classes) {
+					if (language.ShowInNamespaceCompletion(c))
 						list.Add(c);
-						if (c.ClassType == ClassType.Module) {
-							list.AddRange(c.GetAccessibleMembers(null, true));
-						}
+					if (language.ImportModules && c.ClassType == ClassType.Module) {
+						list.AddRange(c.GetAccessibleMembers(null, true));
 					}
-				} else {
-					list.AddRange(ns.Classes);
 				}
 				foreach (string subns in ns.SubNamespaces) {
 					if (!list.Contains(subns))
@@ -471,11 +473,12 @@ namespace ICSharpCode.Core
 		}
 		
 		
-		public string SearchNamespace(string name, ICompilationUnit unit, int caretLine, int caretColumn)
+		public string SearchNamespace(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn)
 		{
 			if (NamespaceExists(name)) {
 				return name;
 			}
+			
 			if (unit == null) {
 				return null;
 			}
@@ -485,6 +488,32 @@ namespace ICSharpCode.Core
 					string nameSpace = u.SearchNamespace(name);
 					if (nameSpace != null) {
 						return nameSpace;
+					}
+				}
+			}
+			foreach (IUsing u in defaultImports) {
+				string nameSpace = u.SearchNamespace(name);
+				if (nameSpace != null) {
+					return nameSpace;
+				}
+			}
+			if (curType != null) {
+				// Try parent namespaces of the current class
+				string fullname = curType.Namespace;
+				if (fullname != null && fullname.Length > 0) {
+					string[] namespaces = fullname.Split('.');
+					StringBuilder curnamespace = new StringBuilder();
+					for (int i = 0; i < namespaces.Length; ++i) {
+						curnamespace.Append(namespaces[i]);
+						curnamespace.Append('.');
+						
+						curnamespace.Append(name);
+						string nameSpace = curnamespace.ToString();
+						if (NamespaceExists(nameSpace)) {
+							return nameSpace;
+						}
+						// remove class name again to try next namespace
+						curnamespace.Length -= name.Length;
 					}
 				}
 			}
@@ -504,6 +533,7 @@ namespace ICSharpCode.Core
 			if (name == null || name.Length == 0) {
 				return null;
 			}
+			
 			// Try if name is already the full type name
 			IClass c = GetClass(name);
 			if (c != null) {
@@ -546,6 +576,12 @@ namespace ICSharpCode.Core
 							return c;
 						}
 					}
+				}
+			}
+			foreach (IUsing u in defaultImports) {
+				c = u.SearchType(name);
+				if (c != null) {
+					return c;
 				}
 			}
 			return null;

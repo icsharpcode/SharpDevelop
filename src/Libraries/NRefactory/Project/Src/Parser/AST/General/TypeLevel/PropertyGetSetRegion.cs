@@ -17,7 +17,7 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public PropertyGetSetRegion(BlockStatement block, ArrayList attributes) : base(attributes)
+		public PropertyGetSetRegion(BlockStatement block, List<AttributeSection> attributes) : base(attributes)
 		{
 			this.Block = block;
 		}
@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public PropertyGetRegion(BlockStatement block, ArrayList attributes) : base(block, attributes)
+		public PropertyGetRegion(BlockStatement block, List<AttributeSection> attributes) : base(block, attributes)
 		{}
 		public override object AcceptVisitor(IASTVisitor visitor, object data)
 		{
@@ -73,15 +73,14 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	
 	public class PropertySetRegion : PropertyGetSetRegion
 	{
-//		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>(1);
-		ArrayList parameters = new ArrayList(1);
+		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>(1);
 		
-		public ArrayList Parameters {
+		public List<ParameterDeclarationExpression> Parameters {
 			get {
 				return parameters;
 			}
 			set {
-				parameters = value == null ? new ArrayList(1) : value;
+				parameters = value == null ? new List<ParameterDeclarationExpression>(1) : value;
 			}
 		}
 		public static NullPropertySetRegion Null {
@@ -90,7 +89,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public PropertySetRegion(BlockStatement block, ArrayList attributes) : base(block, attributes)
+		public PropertySetRegion(BlockStatement block, List<AttributeSection> attributes) : base(block, attributes)
 		{}
 		public override object AcceptVisitor(IASTVisitor visitor, object data)
 		{

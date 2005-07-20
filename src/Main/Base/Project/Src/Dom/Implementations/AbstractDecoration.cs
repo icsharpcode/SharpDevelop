@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public abstract class AbstractDecoration : MarshalByRefObject, IDecoration
 	{
 		ModifierEnum            modifiers  = ModifierEnum.None;
-		List<IAttributeSection> attributes = null;
+		List<IAttribute> attributes = null;
 		
 		IClass declaringType;
 		object userData = null;
@@ -45,10 +45,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public List<IAttributeSection> Attributes {
+		public List<IAttribute> Attributes {
 			get {
 				if (attributes == null) {
-					attributes = new List<IAttributeSection>();
+					attributes = new List<IAttribute>();
 				}
 				return attributes;
 			}

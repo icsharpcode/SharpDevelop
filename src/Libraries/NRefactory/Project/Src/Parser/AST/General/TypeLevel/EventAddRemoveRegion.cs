@@ -18,6 +18,7 @@
 using System;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -51,7 +52,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public EventAddRemoveRegion(ArrayList attributes) : base(attributes)
+		public EventAddRemoveRegion(List<AttributeSection> attributes) : base(attributes)
 		{
 			Parameters = null;
 		}
@@ -70,7 +71,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public EventAddRegion(ArrayList attributes) : base (attributes)
+		public EventAddRegion(List<AttributeSection> attributes) : base (attributes)
 		{}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)
@@ -94,7 +95,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public EventRemoveRegion(ArrayList attributes) : base (attributes)
+		public EventRemoveRegion(List<AttributeSection> attributes) : base (attributes)
 		{}
 		public override object AcceptVisitor(IASTVisitor visitor, object data)
 		{
@@ -117,7 +118,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		NullEventAddRegion() : base(new ArrayList(1))
+		NullEventAddRegion() : base(new List<AttributeSection>(1))
 		{
 		}
 		
@@ -148,7 +149,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		NullEventRemoveRegion() : base(new ArrayList(1))
+		NullEventRemoveRegion() : base(new List<AttributeSection>(1))
 		{
 		}
 		

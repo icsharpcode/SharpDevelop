@@ -365,7 +365,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		#region Resolve Identifier
 		ResolveResult ResolveIdentifier(string identifier)
 		{
-			string name = SearchNamespace(identifier, this.CompilationUnit);
+			string name = SearchNamespace(identifier);
 			if (name != null && name != "") {
 				return new NamespaceResolveResult(callingClass, callingMember, name);
 			}
@@ -373,7 +373,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			ResolveResult result = ResolveIdentifierInternal(identifier);
 			ResolveResult result2 = null;
 			
-			IClass c = SearchType(identifier, callingClass, cu);
+			IClass c = SearchType(identifier);
 			if (c != null) {
 				result2 = new TypeResolveResult(callingClass, callingMember, c.DefaultReturnType, c);
 			}
@@ -528,25 +528,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// <remarks>
 		/// use the usings to find the correct name of a namespace
 		/// </remarks>
-		public string SearchNamespace(string name, ICompilationUnit unit)
+		public string SearchNamespace(string name)
 		{
-			return projectContent.SearchNamespace(name, unit, caretLine, caretColumn);
+			return projectContent.SearchNamespace(name, callingClass, cu, caretLine, caretColumn);
 		}
 		
 		/// <remarks>
 		/// use the usings and the name of the namespace to find a class
 		/// </remarks>
-		public IClass SearchType(string name, IClass curType)
+		public IClass SearchType(string name)
 		{
-			return projectContent.SearchType(name, curType, caretLine, caretColumn);
-		}
-		
-		/// <remarks>
-		/// use the usings and the name of the namespace to find a class
-		/// </remarks>
-		public IClass SearchType(string name, IClass curType, ICompilationUnit unit)
-		{
-			return projectContent.SearchType(name, curType, unit, caretLine, caretColumn);
+			return projectContent.SearchType(name, callingClass, cu, caretLine, caretColumn);
 		}
 		
 		#region Helper for TypeVisitor

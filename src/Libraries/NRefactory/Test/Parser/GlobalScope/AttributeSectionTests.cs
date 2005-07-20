@@ -20,21 +20,35 @@ namespace ICSharpCode.NRefactory.Tests.AST
 	public class AttributeSectionTests
 	{
 		[Test]
-		public void AttributeSection1Test()
+		public void AttributeOnStructure()
 		{
-//			string program = @"
-//< StructLayout( LayoutKind.Explicit )> _
-//Public Structure MyUnion
-//
-//	< FieldOffset( 0 )> Public i As Integer
-//	< FieldOffset( 0 )> Public d As Double
-//	
-//End Structure 'MyUnion
-//";
-//			IParser parser = ParserFactory.CreateParser(SupportedLanguages.VBNet, new StringReader(program));
-//			parser.Parse();
-//			Assert.IsTrue(parser.Errors.ErrorOutput.Length == 0);
+			string program = @"
+<StructLayout( LayoutKind.Explicit )> _
+Public Structure MyUnion
+
+	<FieldOffset( 0 )> Public i As Integer
+	< FieldOffset( 0 )> Public d As Double
+	
+End Structure 'MyUnion
+";
+			TypeDeclaration decl = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			Assert.AreEqual("StructLayout", decl.Attributes[0].Attributes[0].Name);
 		}
 		
+		[Test]
+		public void AttributeOnModule()
+		{
+			string program = @"
+<HideModule> _
+Public Module MyExtra
+
+	Public i As Integer
+	Public d As Double
+	
+End Module
+";
+			TypeDeclaration decl = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			Assert.AreEqual("HideModule", decl.Attributes[0].Attributes[0].Name);
+		}
 	}
 }

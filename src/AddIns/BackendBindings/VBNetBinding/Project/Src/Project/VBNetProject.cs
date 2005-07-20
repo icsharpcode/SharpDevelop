@@ -39,6 +39,26 @@ namespace VBNetBinding
 			}
 		}
 		
+		public override OutputType OutputType {
+			get {
+				return base.OutputType;
+			}
+			set {
+				base.OutputType = value;
+				switch (value) {
+					case OutputType.WinExe:
+						BaseConfiguration.Set("MyType", "", "WindowsForms");
+						break;
+					case OutputType.Exe:
+						BaseConfiguration.Set("MyType", "", "Console");
+						break;
+					default:
+						BaseConfiguration.Set("MyType", "", "Windows");
+						break;
+				}
+			}
+		}
+		
 		[Browsable(false)]
 		public override IAmbience Ambience {
 			get {
@@ -224,6 +244,8 @@ namespace VBNetBinding
 			GetConfiguration(configurationName, platform).Set("NoStdLib", false, val);
 		}
 		
+		
+		
 		public VBNetProject(string fileName, string projectName)
 		{
 			this.Name = projectName;
@@ -242,6 +264,8 @@ namespace VBNetBinding
 		public override ParseProjectContent CreateProjectContent()
 		{
 			ParseProjectContent pc = base.CreateProjectContent();
+			ReferenceProjectItem vbRef = new ReferenceProjectItem(this, "Microsoft.VisualBasic");
+			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(vbRef));
 			MyNamespaceBuilder.BuildNamespace(this, pc);
 			return pc;
 		}

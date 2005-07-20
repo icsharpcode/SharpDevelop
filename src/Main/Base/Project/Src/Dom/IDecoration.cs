@@ -18,9 +18,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		ModifierEnum Modifiers {
 			get;
+			set;
 		}
 		
-		List<IAttributeSection> Attributes {
+		List<IAttribute> Attributes {
 			get;
 		}
 		

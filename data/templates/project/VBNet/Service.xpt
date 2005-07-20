@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <Template originator   = "Markus Palme"
           created      = "24/11/2002"
-          lastModified = "02/01/2003">
+          lastModified = "07/20/2005">
 
 	<!-- Template Header -->
 	<TemplateConfiguration>
@@ -14,7 +14,7 @@
 	
 	<!-- Actions -->
 	<Actions>
-		<Open filename = "MyService.vb"/>
+		<Open filename = "${ProjectName}.vb"/>
 	</Actions>
 	
 	<Combine name = "${ProjectName}" directory = ".">
@@ -24,81 +24,48 @@
 		<Project name = "${ProjectName}" directory = ".">
 			<Options />
 			
-			<References>
-				<Reference type="Gac" refto="System" />
-				<Reference type="Gac" refto="System.Data" />
-				<Reference type="Gac" refto="System.Drawing" />
-				<Reference type="Gac" refto="System.Xml" />
-			</References>
+			<ProjectItems>
+				<Reference Include="System" />
+				<Reference Include="System.Data" />
+				<Reference Include="System.Deployment" />
+				<Reference Include="System.ServiceProcess" />
+				<Reference Include="System.Xml" />
+				
+				<Import Include="Microsoft.VisualBasic" />
+				<Import Include="System" />
+				<Import Include="System.Collections" />
+				<Import Include="System.Collections.Generic" />
+				<Import Include="System.Data" />
+				<Import Include="System.Diagnostics" />
+			</ProjectItems>
 				
 
 			<Files>
-				<File name="MyService.vb"><![CDATA[${StandardHeader.VBNET}
-Imports System
-Imports System.Collections.Generic
-Imports System.ComponentModel
-Imports System.Data
-Imports System.Diagnostics
-Imports System.ServiceProcess
-Imports System.Configuration.Install
+				<File name="${ProjectName}.vb"><![CDATA[${StandardHeader.VBNET}
 
-Public Class MyService
-	Inherits System.ServiceProcess.ServiceBase
-
-	Public Sub New()
-		MyBase.New()
-		
-		InitializeComponents()
-		
-		' TODO: Add any further initialization code
-	End Sub
+Public Class ${ProjectName}
 	
-	<System.Diagnostics.DebuggerStepThrough()> _ 
-	Private Sub InitializeComponents()
-		Me.ServiceName = "Service1"
-	End Sub
-	
-	' This method starts the service.
+	' The main entry point for the process
 	<MTAThread()> _
 	Shared Sub Main()
+		Dim ServicesToRun() As System.ServiceProcess.ServiceBase
 		
-		' To run more than one service you have to add them to the array
-		System.ServiceProcess.ServiceBase.Run(New System.ServiceProcess.ServiceBase() { _
-			New MyService _
-		})
-	End Sub
-	
-	' Clean up any resources being used.
-	Protected Overloads Overrides Sub Dispose(ByVal disposing As Boolean)
-		MyBase.Dispose(disposing)
-		' TODO: Add cleanup code here (if required)
+		' To run more than one service you have to add them here
+		ServicesToRun = New System.ServiceProcess.ServiceBase() {New ${ProjectName}}
+		
+		System.ServiceProcess.ServiceBase.Run(ServicesToRun)
 	End Sub
 	
 	Protected Overrides Sub OnStart(ByVal args() As String)
-		' TODO: Add start code here (if required)
-		'       to start your service.
+		' TODO: Add start code here to start your service.
 	End Sub
 	
 	Protected Overrides Sub OnStop()
-		' TODO: Add tear-down code here (if required) 
-		'       to stop your service.
+		' TODO: Add tear-down code here (if required) to stop your service.
 	End Sub
 
 End Class
 
-<RunInstaller(True)> _
-Public Class ProjectInstaller
-Inherits Installer
-
-	Public Sub New()
-		Dim spi As ServiceProcessInstaller = New ServiceProcessInstaller 
-		spi.Account = ServiceAccount.LocalSystem
-		Dim si As ServiceInstaller = New ServiceInstaller 
-		si.ServiceName = "Hello Service Template"
-		si.StartType = ServiceStartMode.Automatic
-		Installers.AddRange(New Installer()  {spi, si})
-	End Sub
-End Class 
 ]]></File>
 		<File name="AssemblyInfo.vb">
 			<![CDATA[Imports System.Reflection

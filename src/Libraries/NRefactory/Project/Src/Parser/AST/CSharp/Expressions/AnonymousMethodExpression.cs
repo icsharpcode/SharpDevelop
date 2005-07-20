@@ -8,16 +8,16 @@
  */
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
 	public class AnonymousMethodExpression : Expression
 	{
-		ArrayList parameters = new ArrayList(4);
+		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>(1);
 		
-		public ArrayList Parameters {
+		public List<ParameterDeclarationExpression> Parameters {
 			get {
 				return parameters;
 			}

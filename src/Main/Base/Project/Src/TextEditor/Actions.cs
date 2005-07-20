@@ -40,6 +40,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 		}
 	}
 	
+	#if DEBUG
+	public class DebugCodeCompletionAction : AbstractEditAction
+	{
+		public override void Execute(TextArea services)
+		{
+			SharpDevelopTextAreaControl sdtac = (SharpDevelopTextAreaControl)services.MotherTextEditorControl;
+			CodeCompletionDataProvider ccdp = new CodeCompletionDataProvider();
+			ccdp.DebugMode = true;
+			sdtac.ShowCompletionWindow(ccdp, '.');
+		}
+	}
+	#endif
+	
 	public class GoToDefinition : AbstractEditAction
 	{
 		public override void Execute(TextArea textArea)

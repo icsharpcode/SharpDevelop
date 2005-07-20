@@ -17,6 +17,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		string FullyQualifiedName {
 			get;
+			set;
 		}
 		
 		/// <summary>

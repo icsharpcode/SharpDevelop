@@ -1,15 +1,15 @@
 <?xml version="1.0"?>
-<Template author="Daniel Grunwald" version="1.0">
+<Template author="Mike Krueger" version="1.0">
 	
 	<Config
-		name        = "${res:Templates.File.Interface.Name}"
+		name        = "${res:Templates.File.MyExtensionClass.Name}"
 		icon        = "VBNet.File.NewClass"
 		category    = "VB"
-		defaultname = "Interface${Number}.vb"
+		defaultname = "Extension${Number}.vb"
 		language    = "VBNET"
 	/>
 	 
-	<Description>${res:Templates.File.Interface.Description}</Description>
+	<Description>${res:Templates.File.EmptyClass.Description}</Description>
 	
 	<!-- 
 	Special new file templates:
@@ -23,9 +23,28 @@
 	<Files>
 		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
 
-Public Interface ${ClassName}
+Namespace My
+	<HideModuleName> _
+	Friend Class My${ClassName}Class
+		' The methods of this class are shown when typing "My.${ClassName}."
+		
+		Public Sub TestMethod()
+			
+		End Sub
+	End Class
 	
-End Class
+	' Register extension in my namespace
+	<HideModuleName> _
+	Friend Module My${ClassName}Module
+		Private instance As New My${ClassName}Class
+		
+		Public ReadOnly Property ${ClassName}() As My${ClassName}Class
+			<DebuggerHidden> _
+			Get
+				Return instance
+			End Get
+		End Property
+	End Module
 End Namespace
 ]]></File>
 	</Files>

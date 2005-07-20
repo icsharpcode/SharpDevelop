@@ -106,23 +106,23 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public EventDeclaration(Modifier modifier, ArrayList attributes) : base(modifier, attributes)
+		public EventDeclaration(Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes)
 		{
 		}
 		
-		public EventDeclaration(TypeReference typeReference, List<VariableDeclaration> variableDeclarators, Modifier modifier, ArrayList attributes) : base(modifier, attributes)
+		public EventDeclaration(TypeReference typeReference, List<VariableDeclaration> variableDeclarators, Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes)
 		{
 			this.TypeReference = typeReference;
 			this.VariableDeclarators = variableDeclarators;
 		}
 		
-		public EventDeclaration(TypeReference typeReference, string name, Modifier modifier, ArrayList attributes)  : base(modifier, attributes, name)
+		public EventDeclaration(TypeReference typeReference, string name, Modifier modifier, List<AttributeSection> attributes)  : base(modifier, attributes, name)
 		{
 			this.TypeReference = typeReference;
 		}
 		
 		// for VB:
-		public EventDeclaration(TypeReference typeReference, Modifier modifier, ArrayList parameters, ArrayList attributes, string name, ArrayList implementsClause)  : base(modifier, attributes, name, parameters)
+		public EventDeclaration(TypeReference typeReference, Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string name, ArrayList implementsClause)  : base(modifier, attributes, name, parameters)
 		{
 			this.TypeReference    = typeReference;
 			this.ImplementsClause = implementsClause;
