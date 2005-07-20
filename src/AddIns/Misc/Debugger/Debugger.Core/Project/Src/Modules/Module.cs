@@ -132,6 +132,11 @@ namespace DebuggerLibrary
             }
 		}
 
+		public void ApplyChanges(byte[] metadata, byte[] il)
+		{
+			(corModule as ICorDebugModule2).ApplyChanges((uint)metadata.Length, metadata, (uint)il.Length, il);
+		}
+
 		public void Dispose()
 		{
 			if (symReader != null) {

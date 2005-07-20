@@ -3599,9 +3599,9 @@
 
   .method public hidebysig newslot abstract virtual 
           instance void  ApplyChanges([in] uint32 cbMetadata,
-                                      [in] uint8& pbMetadata,
+                                      [in] uint8[] marshal([]) pbMetadata,
                                       [in] uint32 cbIL,
-                                      [in] uint8& pbIL) runtime managed internalcall
+                                      [in] uint8[] marshal([]) pbIL) runtime managed internalcall
   {
   } // end of method ICorDebugModule2::ApplyChanges
 

@@ -37,6 +37,11 @@ namespace DebuggerLibrary
 			get {
 				if (IsProcessRunning) throw new DebuggerException("Process must not be running");
 				if (currentThread != null) return currentThread;
+				IList<Thread> threads = Threads;
+				if (currentThread == null && threads.Count > 0) {
+					currentThread = threads[0];
+					return currentThread;
+				}
 				throw new DebuggerException("No current thread");
 			}
 			set	{
@@ -44,6 +49,18 @@ namespace DebuggerLibrary
 				if (debugger.ManagedCallback.HandlingCallback == false) {
 					debugger.OnDebuggingPaused(PausedReason.CurrentThreadChanged);
 				}
+			}
+		}
+
+		public IList<Thread> Threads {
+			get {
+				List<Thread> threads = new List<Thread>();
+				foreach(Thread thread in debugger.Threads) {
+					if (thread.Process == this) {
+						threads.Add(thread);
+					}
+				}
+				return threads;
 			}
 		}
 		
@@ -73,6 +90,10 @@ namespace DebuggerLibrary
 			uint[] processInfo = new uint[4];
 
 			ICorDebugProcess outProcess;
+
+			if (workingDirectory == null || workingDirectory == "") {
+				workingDirectory = System.IO.Path.GetDirectoryName(filename);
+			}
 
 			fixed (uint* pprocessStartupInfo = processStartupInfo)
 				fixed (uint* pprocessInfo = processInfo)

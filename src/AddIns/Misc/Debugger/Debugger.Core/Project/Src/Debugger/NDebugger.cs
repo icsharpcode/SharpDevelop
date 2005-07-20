@@ -285,7 +285,11 @@ namespace DebuggerLibrary
 		public SourcecodeSegment NextStatement { 
 			get {
 				if (!IsDebugging) return null;
-				return CurrentProcess.CurrentThread.CurrentFunction.NextStatement;
+				if (CurrentProcess.CurrentThread.CurrentFunction == null) {
+					return null;
+				} else {
+					return CurrentProcess.CurrentThread.CurrentFunction.NextStatement;
+				}
 			}
 		}
 
