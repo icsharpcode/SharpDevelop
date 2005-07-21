@@ -437,6 +437,10 @@ namespace ICSharpCode.Core
 				if (list.Capacity < newCapacity)
 					list.Capacity = newCapacity;
 				foreach (IClass c in ns.Classes) {
+					if (c.IsInternal && !lookInReferences) {
+						// internal class and we are looking at it from another project content
+						continue;
+					}
 					if (language.ShowInNamespaceCompletion(c))
 						list.Add(c);
 					if (language.ImportModules && c.ClassType == ClassType.Module) {

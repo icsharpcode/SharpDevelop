@@ -9,7 +9,7 @@ namespace ICSharpCode.SharpDevelop
 {
 	public class SplashScreenForm : Form
 	{
-		public const string VersionText = "Corsavy alpha";
+		public const string VersionText = "Corsavy alpha rev. " + RevisionClass.Revision;
 		
 		static SplashScreenForm splashScreen = new SplashScreenForm();
 		static ArrayList requestedFileList = new ArrayList();

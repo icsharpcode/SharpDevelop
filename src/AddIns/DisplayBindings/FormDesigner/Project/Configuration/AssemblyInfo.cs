@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -16,9 +16,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("SharpDevelopFormDesigner")]
 [assembly: AssemblyDescription("A Windows.Forms designer implementation")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("IC#Code")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("(c) 2002-2003 by Mike Krueger")]
+[assembly: AssemblyCompany("www.icsharpcode.net")]
+[assembly: AssemblyProduct("SharpDevelop")]
+[assembly: AssemblyCopyright("(c) 2002-2005 by Mike Krüger")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

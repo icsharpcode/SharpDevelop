@@ -135,11 +135,12 @@ namespace ICSharpCode.Core
 		{
 			// GAC Assemblies take some time because first the non-GAC try
 			// has to fail.
-			// Therefore, the most assemblies already used by SharpDevelop
-			// are used directly.
+			// Therefore, assemblies already in use by SharpDevelop are used directly.
 			switch (shortName) {
 				case "System": // System != mscorlib !!!
 					return typeof(Uri).Assembly;
+				case "System.Data":
+					return typeof(System.Data.DataException).Assembly;
 				case "System.Design":
 					return typeof(System.ComponentModel.Design.DesignSurface).Assembly;
 				case "System.DirectoryServices":
@@ -150,8 +151,13 @@ namespace ICSharpCode.Core
 					return typeof(System.Web.Services.WebService).Assembly;
 				case "System.Windows.Forms":
 					return typeof(System.Windows.Forms.Control).Assembly;
+				case "System.Xml":
 				case "System.XML":
 					return typeof(XmlReader).Assembly;
+				case "Microsoft.Build.Engine":
+					return typeof(Microsoft.Build.BuildEngine.BuildSettings).Assembly;
+				case "Microsoft.Build.Framework":
+					return typeof(Microsoft.Build.Framework.LoggerVerbosity).Assembly;
 				default:
 					return null;
 			}

@@ -197,7 +197,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			string attributeName = GetAttributeName(expr);
 			IClass c = GetAttribute(attributeName);
-			if (attributeName != null) {
+			if (c != null) {
 				return new TypeResolveResult(callingClass, callingMember, c);
 			} else if (expr is InvocationExpression) {
 				InvocationExpression ie = (InvocationExpression)expr;

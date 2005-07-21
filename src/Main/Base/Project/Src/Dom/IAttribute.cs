@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -20,11 +20,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		ArrayList PositionalArguments { // [expression]
+		List<AttributeArgument> PositionalArguments {
 			get;
 		}
 		
-		SortedList NamedArguments { // string/expression
+		SortedList<string, AttributeArgument> NamedArguments {
 			get;
 		}
 	}
@@ -41,5 +41,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		Property,
 		Return,
 		Type
+	}
+	
+	public struct AttributeArgument
+	{
+		public readonly IReturnType Type;
+		public readonly object Value;
+		
+		public AttributeArgument(IReturnType type, object value)
+		{
+			this.Type = type;
+			this.Value = value;
+		}
 	}
 }

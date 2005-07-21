@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 
 // Information about this assembly is defined by the following
@@ -11,8 +11,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription("VB.NET language binding for #develop")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("www.icsharpcode.net")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("(c) 2005 Mike Krueger, Markus Palme")]
+[assembly: AssemblyProduct("SharpDevelop")]
+[assembly: AssemblyCopyright("(c) 2005 Mike Krüger, Markus Palme")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

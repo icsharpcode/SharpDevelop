@@ -7,9 +7,10 @@
 
 using System;
 using System.Collections;
-using System.Xml;
+//using System.Xml;
 using System.Reflection;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -155,6 +156,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		#endregion
 		
+		static void AddAttributes(IProjectContent pc, List<IAttribute> list, IList<CustomAttributeData> attributes)
+		{
+			foreach (CustomAttributeData att in attributes) {
+				DefaultAttribute a = new DefaultAttribute(att.Constructor.DeclaringType.FullName);
+				foreach (CustomAttributeTypedArgument arg in att.ConstructorArguments) {
+					IReturnType type = ReflectionReturnType.Create(pc, arg.ArgumentType, false);
+					a.PositionalArguments.Add(new AttributeArgument(type, arg.Value));
+				}
+				foreach (CustomAttributeNamedArgument arg in att.NamedArguments) {
+					IReturnType type = ReflectionReturnType.Create(pc, arg.TypedValue.ArgumentType, false);
+					a.NamedArguments.Add(arg.MemberInfo.Name, new AttributeArgument(type, arg.TypedValue.Value));
+				}
+				list.Add(a);
+			}
+		}
+		
 		public ReflectionClass(ICompilationUnit compilationUnit, Type type, IClass declaringType) : base(compilationUnit, declaringType)
 		{
 			this.type = type;
@@ -163,6 +180,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				FullyQualifiedName = name.Substring(0, name.Length - 2);
 			} else {
 				FullyQualifiedName = name;
+			}
+			
+			try {
+				AddAttributes(compilationUnit.ProjectContent, this.Attributes, CustomAttributeData.GetCustomAttributes(type));
+			} catch (Exception ex) {
+				ICSharpCode.Core.MessageService.ShowError(ex);
 			}
 			
 			// set classtype
@@ -175,8 +198,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} else if (IsDelegate(type)) {
 				this.ClassType = ClassType.Delegate;
 			} else {
-				// TODO: Check if class is a module.
 				this.ClassType = ClassType.Class;
+				foreach (IAttribute att in this.Attributes) {
+					if (att.Name == "Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute") {
+						this.ClassType = ClassType.Module;
+						break;
+					}
+				}
 			}
 			if (type.IsGenericTypeDefinition) {
 				foreach (Type g in type.GetGenericArguments()) {

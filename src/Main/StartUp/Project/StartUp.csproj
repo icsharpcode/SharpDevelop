@@ -9,11 +9,11 @@
     <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
-    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Resources\StartUp.snk</AssemblyOriginatorKeyFile>
     <OutputType>Exe</OutputType>
     <ApplicationIcon>.\Resources\SharpDevelop.ico</ApplicationIcon>
+    <PreBuildEvent>..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe StartupOnly</PreBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -53,6 +53,7 @@
     <EmbeddedResource Include="Resources\SplashScreen.jpg" />
     <EmbeddedResource Include="Resources\StringResources.resources" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <None Include="Configuration\AssemblyInfo.template" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Base\Project\ICSharpCode.SharpDevelop.csproj">

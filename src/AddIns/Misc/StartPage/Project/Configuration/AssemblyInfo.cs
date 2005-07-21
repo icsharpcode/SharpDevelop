@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 
 // Information about this assembly is defined by the following
@@ -10,9 +10,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("StartPage")]
 [assembly: AssemblyDescription("VS style Start Page for #develop")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Georg Brandl")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("(C) 2002")]
+[assembly: AssemblyCompany("www.icsharpcode.net")]
+[assembly: AssemblyProduct("SharpDevelop")]
+[assembly: AssemblyCopyright("(C) Georg Brandl, 2002; Daniel Grunwald, 2005")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

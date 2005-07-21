@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 
 // Information about this assembly is defined by the following
@@ -11,7 +11,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyDescription("Resource editor display binding for #develop")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("www.icsharpcode.net")]
-[assembly: AssemblyProduct("")]
+[assembly: AssemblyProduct("SharpDevelop")]
 [assembly: AssemblyCopyright("(c) Mike Krueger/Markus Palme")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]

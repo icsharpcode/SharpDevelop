@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 
 // Information about this assembly is defined by the following
@@ -10,9 +10,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("HighlightingEditor")]
 [assembly: AssemblyDescription("Editor for editor highlighting styles in #develop")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Georg Brandl")]
-[assembly: AssemblyProduct("")]
-[assembly: AssemblyCopyright("(C) 2003")]
+[assembly: AssemblyCompany("www.icsharpcode.net")]
+[assembly: AssemblyProduct("SharpDevelop")]
+[assembly: AssemblyCopyright("(C) Georg Brandl, 2003")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -208,11 +208,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				
 				foreach (AST.Attribute attribute in section.Attributes) {
-					IAttribute a = new DefaultAttribute(attribute.Name, target, new ArrayList(attribute.PositionalArguments), new SortedList());
-					foreach (AST.NamedArgumentExpression n in attribute.NamedArguments) {
-						a.NamedArguments[n.Name] = n.Expression;
-					}
-					result.Add(a);
+					//IAttribute a = new DefaultAttribute(attribute.Name, target, new ArrayList(attribute.PositionalArguments), new SortedList());
+					//foreach (AST.NamedArgumentExpression n in attribute.NamedArguments) {
+					//	a.NamedArguments[n.Name] = n.Expression;
+					//}
+					result.Add(new DefaultAttribute(attribute.Name, target));
 				}
 			}
 			return result;

@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krger" email="mike@icsharpcode.net"/>
@@ -13,12 +13,12 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("ICSharpCode.Core")]
 [assembly: AssemblyDescription("The ICSharpCode Core containing the AddInTree and service Subsystem")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("www.icsharpcode.net")]
 [assembly: AssemblyProduct("ICSharpCode.Core")]
-[assembly: AssemblyCopyright("Mike Krueger 2000-2005")]
+[assembly: AssemblyCopyright("Mike Krüger 2000-2005")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("3.0.0.1")]
+[assembly: AssemblyVersion("2.0.0.1")]
 
 [assembly: AssemblyDelaySign(false)]

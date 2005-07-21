@@ -13,18 +13,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class DefaultAttribute : IAttribute
 	{
 		string name;
-		ArrayList positionalArguments;
-		SortedList namedArguments;
+		List<AttributeArgument> positionalArguments;
+		SortedList<string, AttributeArgument> namedArguments;
 		AttributeTarget attributeTarget;
 		
-		public DefaultAttribute(string name)
+		public DefaultAttribute(string name) : this(name, AttributeTarget.None) {}
+		
+		public DefaultAttribute(string name, AttributeTarget attributeTarget)
 		{
 			this.name = name;
-			this.positionalArguments = new ArrayList();
-			this.namedArguments = new SortedList();
+			this.attributeTarget = attributeTarget;
+			this.positionalArguments = new List<AttributeArgument>();
+			this.namedArguments = new SortedList<string, AttributeArgument>();
 		}
 		
-		public DefaultAttribute(string name, AttributeTarget attributeTarget, ArrayList positionalArguments, SortedList namedArguments)
+		public DefaultAttribute(string name, AttributeTarget attributeTarget, List<AttributeArgument> positionalArguments, SortedList<string, AttributeArgument> namedArguments)
 		{
 			this.name = name;
 			this.attributeTarget = attributeTarget;
@@ -50,13 +53,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ArrayList PositionalArguments { // [expression]
+		public List<AttributeArgument> PositionalArguments {
 			get {
 				return positionalArguments;
 			}
 		}
 		
-		public SortedList NamedArguments { // string/expression
+		public SortedList<string, AttributeArgument> NamedArguments {
 			get {
 				return namedArguments;
 			}
@@ -70,12 +73,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return cmp;
 			}
 			
-			cmp = DiffUtility.Compare(PositionalArguments, value.PositionalArguments);
-			if (cmp != 0) {
-				return cmp;
-			}
-			
-			return DiffUtility.Compare(NamedArguments, value.NamedArguments);
+			return DiffUtility.Compare(PositionalArguments, value.PositionalArguments);
 		}
 		
 		int IComparable.CompareTo(object value) {

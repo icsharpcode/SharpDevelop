@@ -1,4 +1,4 @@
-using System.Reflection;
+﻿using System.Reflection;
 using System.Runtime.CompilerServices;
 
 // Information about this assembly is defined by the following
@@ -10,8 +10,8 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("AddInScout")]
 [assembly: AssemblyDescription("Display AddIn Information")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("")]
+[assembly: AssemblyCompany("www.icsharpcode.net")]
+[assembly: AssemblyProduct("SharpDevelop")]
 [assembly: AssemblyCopyright("Satguru P Srivastava")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
