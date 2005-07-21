@@ -228,13 +228,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public virtual int CompareTo(IDecoration value)
 		{
-			int cmp;
-			
-			if (0 != (cmp = (int)(Modifiers - value.Modifiers))) {
-				return cmp;
-			}
-			
-			return DiffUtility.Compare(Attributes, value.Attributes);
+			return this.Modifiers - value.Modifiers;
 		}
 		
 		int IComparable.CompareTo(object value)

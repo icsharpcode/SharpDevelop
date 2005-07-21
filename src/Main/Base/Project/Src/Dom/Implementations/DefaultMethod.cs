@@ -20,6 +20,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 		}
 		
+		public Constructor(ModifierEnum m, IReturnType returnType)
+			: base("#ctor", returnType, m, null, null, null)
+		{
+		}
+		
 		/// <summary>
 		/// Creates a default constructor for the class.
 		/// The constructor has the region of the class and a documentation comment saying
@@ -165,11 +170,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			if (Region != null) {
-				cmp = Region.CompareTo(value.Region);
-				if (cmp != 0) {
-					return cmp;
-				}
+			cmp = this.TypeParameters.Count - value.TypeParameters.Count;
+			if (cmp != 0) {
+				return cmp;
 			}
 			
 			return DiffUtility.Compare(Parameters, value.Parameters);

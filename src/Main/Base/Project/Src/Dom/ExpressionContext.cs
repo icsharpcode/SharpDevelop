@@ -12,12 +12,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
 	/// Class describing a contexts in which an expressions can be.
-	/// Serves as filter for code completion results.
+	/// Serves as filter for code completion results, but the contexts exposed as static fields
+	/// can also be used as a kind of enumeration for special behaviour in the resolver.
 	/// </summary>
 	public abstract class ExpressionContext
 	{
 		public abstract bool ShowEntry(object o);
 		
+		#region Default contexts (public fields)
 		/// <summary>Default/unknown context</summary>
 		public static ExpressionContext Default = new DefaultExpressionContext();
 		
@@ -31,10 +33,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		/// <summary>Context expects a non-abstract type that has accessible constructors</summary>
 		/// <example>new *expr*();</example>
+		/// <remarks>When using this context, a resolver should treat the expression as object creation,
+		/// even when the keyword "new" is not part of the expression.</remarks>
 		public static ExpressionContext ObjectCreation = new TypeExpressionContext(null, true);
 		
 		/// <summary>Context expects a non-abstract type deriving from System.Attribute.</summary>
 		/// <example>[*expr*()]</example>
+		/// <remarks>When using this context, a resolver should try resolving typenames with an
+		/// appended "Attribute" suffix and treat "invocations" of the attribute type as
+		/// object creation.</remarks>
 		public static ExpressionContext Attribute = new TypeExpressionContext(ProjectContentRegistry.Mscorlib.GetClass("System.Attribute"), true);
 		
 		/// <summary>Context expects a type name which has special base type</summary>
@@ -45,23 +52,39 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			return new TypeExpressionContext(baseClass, mustBeConstructable);
 		}
+		#endregion
 		
+		#region DefaultExpressionContext
 		class DefaultExpressionContext : ExpressionContext
 		{
 			public override bool ShowEntry(object o)
 			{
 				return true;
 			}
+			
+			public override string ToString()
+			{
+				return "[" + GetType().Name + "]";
+			}
 		}
+		#endregion
 		
+		#region NamespaceExpressionContext
 		class NamespaceExpressionContext : ExpressionContext
 		{
 			public override bool ShowEntry(object o)
 			{
 				return o is string;
 			}
+			
+			public override string ToString()
+			{
+				return "[" + GetType().Name + "]";
+			}
 		}
+		#endregion
 		
+		#region TypeExpressionContext
 		class TypeExpressionContext : ExpressionContext
 		{
 			IClass baseClass;
@@ -88,6 +111,70 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return true;
 				return c.IsTypeInInheritanceTree(baseClass);
 			}
+			
+			public override string ToString()
+			{
+				if (baseClass != null)
+					return "[" + GetType().Name + ": " + baseClass.FullyQualifiedName
+						+ " mustBeConstructable=" + mustBeConstructable + "]";
+				else
+					return "[" + GetType().Name + " mustBeConstructable=" + mustBeConstructable + "]";
+			}
 		}
+		#endregion
+		
+		#region CombinedExpressionContext
+		public static ExpressionContext operator | (ExpressionContext a, ExpressionContext b)
+		{
+			return new CombinedExpressionContext(0, a, b);
+		}
+		
+		public static ExpressionContext operator & (ExpressionContext a, ExpressionContext b)
+		{
+			return new CombinedExpressionContext(1, a, b);
+		}
+		
+		public static ExpressionContext operator ^ (ExpressionContext a, ExpressionContext b)
+		{
+			return new CombinedExpressionContext(2, a, b);
+		}
+		
+		class CombinedExpressionContext : ExpressionContext
+		{
+			byte opType; // 0 = or ; 1 = and ; 2 = xor
+			ExpressionContext a;
+			ExpressionContext b;
+			
+			public CombinedExpressionContext(byte opType, ExpressionContext a, ExpressionContext b)
+			{
+				if (a == null)
+					throw new ArgumentNullException("a");
+				if (b == null)
+					throw new ArgumentNullException("a");
+				this.opType = opType;
+				this.a = a;
+				this.b = b;
+			}
+			
+			public override bool ShowEntry(object o)
+			{
+				if (opType == 0)
+					return a.ShowEntry(o) || b.ShowEntry(o);
+				if (opType == 1)
+					return a.ShowEntry(o) && b.ShowEntry(o);
+				return a.ShowEntry(o) ^ b.ShowEntry(o);
+			}
+			
+			public override string ToString()
+			{
+				string op = " XOR ";
+				if (opType == 0)
+					op = " OR ";
+				else if (opType == 1)
+					op = " AND ";
+				return "[" + GetType().Name + ": " + a + op + b + "]";
+			}
+		}
+		#endregion
 	}
 }

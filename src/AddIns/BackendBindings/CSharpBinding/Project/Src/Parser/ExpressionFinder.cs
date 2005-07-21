@@ -16,6 +16,8 @@ namespace CSharpBinding.Parser
 				return new ExpressionResult(null);
 			if (expression.StartsWith("using "))
 				return new ExpressionResult(expression.Substring(6).TrimStart(), ExpressionContext.Namespace, null);
+			if (!hadParenthesis && expression.StartsWith("new "))
+				return new ExpressionResult(expression.Substring(4).TrimStart(), ExpressionContext.ObjectCreation, null);
 			if (IsInAttribute(inText, offset))
 				return new ExpressionResult(expression, ExpressionContext.Attribute);
 			return new ExpressionResult(expression);
@@ -71,6 +73,7 @@ namespace CSharpBinding.Parser
 			this.text = inText;
 			this.offset = this.lastAccept = offset;
 			this.state  = START;
+			hadParenthesis = false;
 			if (this.text == null) {
 				return null;
 			}
@@ -454,6 +457,12 @@ namespace CSharpBinding.Parser
 			return tokenStateName[state];
 		}
 		
+		/// <summary>
+		/// used to control whether an expression is in a ObjectCreation context (new *expr*),
+		/// or is in the default context (e.g. "new MainForm().Show()", 'new ' is there part of the expression
+		/// </summary>
+		bool hadParenthesis;
+		
 		void ReadNextToken()
 		{
 			char ch;
@@ -475,6 +484,7 @@ namespace CSharpBinding.Parser
 					break;
 				case ')':
 					if (ReadBracket('(', ')')) {
+						hadParenthesis = true;
 						curTokenType = Parent;
 					}
 					break;

@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -115,22 +115,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 				}
 			}
 			
-			if(0 != (cmp = Region.CompareTo(value.Region)))
-				return cmp;
-			
-			if(SetterRegion != null && value.SetterRegion == null)
-				return 1;
-			
-			if(SetterRegion == null && value.SetterRegion != null)
-				return -1;
-			
-			if(GetterRegion != null && value.GetterRegion == null)
-				return 1;
-			
-			if(GetterRegion == null && value.GetterRegion != null)
-				return -1;
-			
-			return 0;
+			return DiffUtility.Compare(Parameters, value.Parameters);
 		}
 		
 		int IComparable.CompareTo(object value) {

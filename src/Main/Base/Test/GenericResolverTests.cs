@@ -25,6 +25,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		}
 		#endregion
 		
+		#region Generic references
 		const string listProgram = @"using System.Collections.Generic;
 class TestClass {
 	void Method() {
@@ -108,5 +109,73 @@ class TestClass {
 			MemberResolveResult mrr = (MemberResolveResult) result;
 			Assert.AreEqual("TestClass.PublicField", mrr.ResolvedMember.FullyQualifiedName);
 		}
+		#endregion
+		
+		#region CodeCompletion inside generic classes
+		const string genericClass = @"using System;
+public class GenericClass<T> where T : IDisposable
+	void Method<G>(T par1, G par2) where G : IConvertible, IFormattable {
+		T var1; G var2;
+		
+	}
+}
+";
+		
+		[Test]
+		public void ClassTypeParameterResolveType()
+		{
+			ResolveResult rr = Resolve(genericClass, "T", 5);
+			Assert.IsNotNull(rr);
+			Assert.IsTrue(rr is TypeResolveResult);
+			Assert.IsNull((rr as TypeResolveResult).ResolvedClass);
+			Assert.IsTrue(rr.ResolvedType is GenericReturnType);
+		}
+		
+		[Test]
+		public void ClassTypeParameterResolveVariable()
+		{
+			ResolveResult rr = Resolve(genericClass, "var1", 5);
+			Assert.IsNotNull(rr);
+			Assert.IsTrue(rr is LocalResolveResult);
+			Assert.IsTrue(rr.ResolvedType is GenericReturnType);
+		}
+		
+		[Test]
+		public void ClassTypeParameterResolveParameter()
+		{
+			ResolveResult rr = Resolve(genericClass, "par1", 5);
+			Assert.IsNotNull(rr);
+			Assert.IsTrue(rr is LocalResolveResult);
+			Assert.IsTrue(rr.ResolvedType is GenericReturnType);
+		}
+		
+		[Test]
+		public void MethodTypeParameterResolveType()
+		{
+			ResolveResult rr = Resolve(genericClass, "G", 5);
+			Assert.IsNotNull(rr);
+			Assert.IsTrue(rr is TypeResolveResult);
+			Assert.IsNull((rr as TypeResolveResult).ResolvedClass);
+			Assert.IsTrue(rr.ResolvedType is GenericReturnType);
+		}
+		
+		[Test]
+		public void MethodTypeParameterResolveVariable()
+		{
+			ResolveResult rr = Resolve(genericClass, "var2", 5);
+			Assert.IsNotNull(rr);
+			Assert.IsTrue(rr is LocalResolveResult);
+			Assert.IsTrue(rr.ResolvedType is GenericReturnType);
+		}
+		
+		[Test]
+		public void MethodTypeParameterResolveParameter()
+		{
+			ResolveResult rr = Resolve(genericClass, "par2", 5);
+			Assert.IsNotNull(rr);
+			Assert.IsTrue(rr is LocalResolveResult);
+			Assert.IsTrue(rr.ResolvedType is GenericReturnType);
+		}
+		#endregion
 	}
 }

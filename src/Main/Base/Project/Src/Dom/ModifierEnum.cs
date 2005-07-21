@@ -9,7 +9,8 @@ using System;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Flags]
-	public enum ModifierEnum : uint {
+	public enum ModifierEnum : int // must be signed for AbstractDecoration.Compare
+	{
 		None       = 0,
 		
 		// Access 

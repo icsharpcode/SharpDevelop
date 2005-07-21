@@ -278,8 +278,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					c.BaseTypes.Add(type);
 				}
 			}
-			ConvertTemplates(typeDeclaration.Templates, c);
 			currentClass.Push(c);
+			
+			ConvertTemplates(typeDeclaration.Templates, c); // resolve constrains in context of the class
+			
 			object ret = typeDeclaration.AcceptChildren(this, data);
 			currentClass.Pop();
 			
@@ -305,7 +307,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			int index = 0;
 			foreach (AST.TemplateDefinition template in templateList) {
-				c.TypeParameters.Add(new DefaultTypeParameter(c, template.Name, index++));
+				c.TypeParameters.Add(ConvertConstraints(template, new DefaultTypeParameter(c, template.Name, index++)));
 			}
 		}
 		
@@ -313,8 +315,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			int index = 0;
 			foreach (AST.TemplateDefinition template in templateList) {
-				m.TypeParameters.Add(new DefaultTypeParameter(m, template.Name, index++));
+				m.TypeParameters.Add(ConvertConstraints(template, new DefaultTypeParameter(m, template.Name, index++)));
 			}
+		}
+		
+		DefaultTypeParameter ConvertConstraints(AST.TemplateDefinition template, DefaultTypeParameter typeParameter)
+		{
+			foreach (AST.TypeReference typeRef in template.Bases) {
+				typeParameter.Constraints.Add(CreateReturnType(typeRef));
+			}
+			return typeParameter;
 		}
 		
 		public override object Visit(AST.DelegateDeclaration delegateDeclaration, object data)
@@ -363,7 +373,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IParameter CreateParameter(AST.ParameterDeclarationExpression par)
 		{
-			IReturnType parType = CreateReturnType(par.TypeReference);
+			return CreateParameter(par, null);
+		}
+		
+		IParameter CreateParameter(AST.ParameterDeclarationExpression par, IMethod method)
+		{
+			IReturnType parType = CreateReturnType(par.TypeReference, method);
 			DefaultParameter p = new DefaultParameter(par.ParameterName, parType, null);
 			p.Modifiers = (ParameterModifiers)par.ParamModifier;
 			return p;
@@ -382,7 +397,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			method.Attributes.AddRange(VisitAttributes(methodDeclaration.Attributes));
 			if (methodDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
-					method.Parameters.Add(CreateParameter(par));
+					method.Parameters.Add(CreateParameter(par, method));
 				}
 			}
 			c.Methods.Add(method);
@@ -510,20 +525,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IReturnType CreateReturnType(AST.TypeReference reference, IMethod method)
 		{
-			if (method.TypeParameters != null) {
-				foreach (ITypeParameter tp in method.TypeParameters) {
-					if (tp.Name.Equals(reference.SystemType, StringComparison.InvariantCultureIgnoreCase))
-						return new GenericReturnType(tp);
-				}
-			}
-			return CreateReturnType(reference);
+			IClass c = GetCurrentClass();
+			if (c == null)
+				return null;
+			return TypeVisitor.CreateReturnType(reference, c, method, c.Region.BeginLine + 1, 1, cu.ProjectContent, true);
 		}
 		
 		IReturnType CreateReturnType(AST.TypeReference reference)
 		{
-			IClass c = GetCurrentClass();
-			if (c == null) return null;
-			return TypeVisitor.CreateReturnType(reference, c, c.Region.BeginLine + 1, 1);
+			return CreateReturnType(reference, null);
 		}
 		
 		IReturnType CreateReturnType(Type type)

@@ -197,41 +197,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (cmp != 0) {
 					return cmp;
 				}
+				return this.TypeParameters.Count - value.TypeParameters.Count;
 			}
 			return -1;
-			/*
-			if (Region != null) {
-				cmp = Region.CompareTo(value.Region);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			cmp = DiffUtility.Compare(BaseTypes, value.BaseTypes);
-			if(cmp != 0)
-				return cmp;
-			
-			cmp = DiffUtility.Compare(InnerClasses, value.InnerClasses);
-			if(cmp != 0)
-				return cmp;
-			
-			cmp = DiffUtility.Compare(Fields, value.Fields);
-			if(cmp != 0)
-				return cmp;
-			
-			cmp = DiffUtility.Compare(Properties, value.Properties);
-			if(cmp != 0)
-				return cmp;
-			
-			cmp = DiffUtility.Compare(Indexer, value.Indexer);
-			if(cmp != 0)
-				return cmp;
-			
-			cmp = DiffUtility.Compare(Methods, value.Methods);
-			if(cmp != 0)
-				return cmp;
-			
-			return DiffUtility.Compare(Events, value.Events);*/
 		}
 		
 		int IComparable.CompareTo(object o)

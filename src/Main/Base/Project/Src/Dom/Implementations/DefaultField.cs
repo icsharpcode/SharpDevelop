@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -44,21 +44,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			if (FullyQualifiedName != null) {
-				cmp = FullyQualifiedName.CompareTo(field.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if (FullyQualifiedName != null) {
-				cmp = FullyQualifiedName.CompareTo(field.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
-			}
-			
-			if (Region != null) {
-				return Region.CompareTo(field.Region);
+				return FullyQualifiedName.CompareTo(field.FullyQualifiedName);
 			}
 			return 0;
 		}

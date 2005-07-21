@@ -18,14 +18,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public sealed class SearchClassReturnType : ProxyReturnType
 	{
 		IClass declaringClass;
+		IProjectContent pc;
 		int caretLine;
 		int caretColumn;
 		string name;
 		string shortName;
 		
-		public SearchClassReturnType(IClass declaringClass, int caretLine, int caretColumn, string name)
+		public SearchClassReturnType(IProjectContent projectContent, IClass declaringClass, int caretLine, int caretColumn, string name)
 		{
+			if (declaringClass == null)
+				throw new ArgumentNullException("declaringClass");
 			this.declaringClass = declaringClass;
+			this.pc = projectContent;
 			this.caretLine = caretLine;
 			this.caretColumn = caretColumn;
 			this.name = name;
@@ -58,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		// TODO: Cache BaseType until a new CompilationUnit is generated (static counter in ParserService)
 		public override IReturnType BaseType {
 			get {
-				IClass c = declaringClass.ProjectContent.SearchType(name, declaringClass, caretLine, caretColumn);
+				IClass c = pc.SearchType(name, declaringClass, caretLine, caretColumn);
 				return (c != null) ? c.DefaultReturnType : null;
 			}
 		}

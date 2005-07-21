@@ -448,37 +448,33 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public static IReturnType CreateReturnType(TypeReference reference, NRefactoryResolver resolver)
 		{
+			return CreateReturnType(reference,
+			                        resolver.CallingClass, resolver.CallingMember,
+			                        resolver.CaretLine, resolver.CaretColumn,
+			                        resolver.ProjectContent, false);
+		}
+		
+		public static IReturnType CreateReturnType(TypeReference reference, IClass callingClass,
+		                                           IMember callingMember, int caretLine, int caretColumn,
+		                                           IProjectContent projectContent,
+		                                           bool useLazyReturnType)
+		{
+			if (reference == null) return null;
 			if (reference.IsNull) return null;
-			IClass callingClass = resolver.CallingClass;
-			IClass c = resolver.SearchType(reference.SystemType);
-			if (c == null) return null;
-			IReturnType t = c.DefaultReturnType;
+			LanguageProperties languageProperties = projectContent.Language;
+			IReturnType t = null;
 			if (callingClass != null) {
 				foreach (ITypeParameter tp in callingClass.TypeParameters) {
-					if (resolver.LanguageProperties.NameComparer.Equals(reference.SystemType, tp.Name)) {
+					if (languageProperties.NameComparer.Equals(tp.Name, reference.SystemType)) {
 						t = new GenericReturnType(tp);
 						break;
 					}
 				}
 			}
-			if (reference.GenericTypes.Count > 0) {
-				List<IReturnType> para = new List<IReturnType>(reference.GenericTypes.Count);
-				for (int i = 0; i < reference.GenericTypes.Count; ++i) {
-					para.Add(CreateReturnType(reference.GenericTypes[i], resolver));
-				}
-				t = new SpecificReturnType(t, para);
-			}
-			return WrapArray(t, reference);
-		}
-		
-		public static IReturnType CreateReturnType(TypeReference reference, IClass callingClass, int caretLine, int caretColumn)
-		{
-			if (reference.IsNull) return null;
-			IReturnType t = null;
-			foreach (ITypeParameter tp in callingClass.TypeParameters) {
-				if (tp.Name.Equals(reference.SystemType, StringComparison.InvariantCultureIgnoreCase)) {
-					t = new GenericReturnType(tp);
-					break;
+			if (callingMember is IMethod && (callingMember as IMethod).TypeParameters != null) {
+				foreach (ITypeParameter tp in (callingMember as IMethod).TypeParameters) {
+					if (languageProperties.NameComparer.Equals(tp.Name, reference.SystemType))
+						return new GenericReturnType(tp);
 				}
 			}
 			if (t == null) {
@@ -486,13 +482,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					// keyword-type like void, int, string etc.
 					t = ProjectContentRegistry.Mscorlib.GetClass(reference.SystemType).DefaultReturnType;
 				} else {
-					t = new SearchClassReturnType(callingClass, caretLine, caretColumn, reference.SystemType);
+					if (useLazyReturnType) {
+						t = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn, reference.SystemType);
+					} else {
+						IClass c = projectContent.SearchType(reference.SystemType, callingClass, caretLine, caretColumn);
+						if (c == null)
+							return null;
+						t = c.DefaultReturnType;
+					}
 				}
 			}
 			if (reference.GenericTypes.Count > 0) {
 				List<IReturnType> para = new List<IReturnType>(reference.GenericTypes.Count);
 				for (int i = 0; i < reference.GenericTypes.Count; ++i) {
-					para.Add(CreateReturnType(reference.GenericTypes[i], callingClass, caretLine, caretColumn));
+					para.Add(CreateReturnType(reference.GenericTypes[i], callingClass, callingMember, caretLine, caretColumn, projectContent, useLazyReturnType));
 				}
 				t = new SpecificReturnType(t, para);
 			}

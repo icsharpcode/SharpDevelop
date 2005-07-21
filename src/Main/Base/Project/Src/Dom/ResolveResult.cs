@@ -273,8 +273,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.resolvedClass = resolvedClass;
 		}
 		
+		public TypeResolveResult(IClass callingClass, IMember callingMember, IReturnType resolvedType)
+			: base(callingClass, callingMember, resolvedType)
+		{
+			this.resolvedClass = resolvedType.GetUnderlyingClass();
+		}
+		
 		/// <summary>
 		/// Gets the class corresponding to the resolved type.
+		/// This property can be null when the type has no class (for example a type parameter).
 		/// </summary>
 		public IClass ResolvedClass {
 			get {
@@ -285,19 +292,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override ArrayList GetCompletionData(IProjectContent projectContent)
 		{
 			ArrayList ar = GetCompletionData(projectContent.Language, true);
-			ar.AddRange(resolvedClass.InnerClasses);
+			if (resolvedClass != null) {
+				ar.AddRange(resolvedClass.InnerClasses);
+			}
 			return ar;
 		}
 		
 		public override FilePosition GetDefinitionPosition()
 		{
-			ICompilationUnit cu = resolvedClass.CompilationUnit;
-			if (cu == null) {
-				Console.WriteLine("resolvedClass.CompilationUnit is null");
+			if (resolvedClass == null) {
 				return null;
 			}
-			if (cu.FileName == null || cu.FileName.Length == 0) {
-				Console.WriteLine("resolvedClass.CompilationUnit.FileName is empty");
+			ICompilationUnit cu = resolvedClass.CompilationUnit;
+			if (cu == null || cu.FileName == null || cu.FileName.Length == 0) {
 				return null;
 			}
 			IRegion reg = resolvedClass.Region;

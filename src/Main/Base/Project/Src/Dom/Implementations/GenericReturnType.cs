@@ -76,11 +76,40 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public override IClass GetUnderlyingClass()
+		{
+			return null;
+		}
+		
 		public override IReturnType BaseType {
 			get {
-				return null;
-				// return typeParameter.Constraint;
+				int count = typeParameter.Constraints.Count;
+				if (count == 0)
+					return ReflectionReturnType.Object;
+				if (count == 1)
+					return typeParameter.Constraints[0];
+				return new CombinedReturnType(typeParameter.Constraints,
+				                              FullyQualifiedName,
+				                              Name, Namespace,
+				                              DotNetName);
 			}
+		}
+		
+		// remove static methods (T.ReferenceEquals() is not possible)
+		public override List<IMethod> GetMethods()
+		{
+			List<IMethod> list = base.GetMethods();
+			if (list != null) {
+				for (int i = 0; i < list.Count; i++) {
+					if (list[i].IsStatic) {
+						list.RemoveAt(i--);
+					}
+				}
+				if (typeParameter.HasConstructableContraint) {
+					list.Add(new Constructor(ModifierEnum.Public, this));
+				}
+			}
+			return list;
 		}
 		
 		public override string ToString()

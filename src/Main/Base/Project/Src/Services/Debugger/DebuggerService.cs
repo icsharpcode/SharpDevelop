@@ -385,8 +385,7 @@ namespace ICSharpCode.Core
 			if (result == null)
 				return null;
 			IAmbience ambience = AmbienceService.CurrentAmbience;
-			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags
-				| ConversionFlags.ShowAccessibility;
+			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowAccessibility;
 			if (result is MemberResolveResult) {
 				return GetText(ambience, ((MemberResolveResult)result).ResolvedMember);
 			} else if (result is LocalResolveResult) {
@@ -412,7 +411,11 @@ namespace ICSharpCode.Core
 			} else if (result is NamespaceResolveResult) {
 				return "namespace " + ((NamespaceResolveResult)result).Name;
 			} else if (result is TypeResolveResult) {
-				return GetText(ambience, ((TypeResolveResult)result).ResolvedClass);
+				IClass c = ((TypeResolveResult)result).ResolvedClass;
+				if (c != null)
+					return GetText(ambience, c);
+				else
+					return ambience.Convert(result.ResolvedType);
 			} else if (result is MethodResolveResult) {
 				IReturnType container = ((MethodResolveResult)result).ContainingType;
 				List<IMethod> methods = container.GetMethods();

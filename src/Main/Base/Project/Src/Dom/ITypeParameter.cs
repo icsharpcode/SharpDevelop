@@ -36,6 +36,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </summary>
 		IClass Class  { get; }
 		
-		// TODO: Constraint
+		/// <summary>
+		/// Gets the contraints of this type parameter.
+		/// </summary>
+		IList<IReturnType> Constraints { get; }
+		
+		/// <summary>
+		/// Gets if the type parameter has the 'new' constraint.
+		/// </summary>
+		bool HasConstructableContraint { get; }
 	}
 }

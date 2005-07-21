@@ -69,8 +69,18 @@ namespace UpdateAssemblyInfo
 			using (StreamReader r = new StreamReader(mainConfig + "AssemblyInfo.template")) {
 				content = r.ReadToEnd();
 			}
+			content = content.Replace("-INSERTREVISION-", revisionNumber);
+			if (File.Exists(mainConfig + "AssemblyInfo.cs")) {
+				using (StreamReader r = new StreamReader(mainConfig + "AssemblyInfo.cs")) {
+					if (r.ReadToEnd() == content) {
+						// nothing changed, do not overwrite file to prevent recompilation of StartUp
+						// every time.
+						return;
+					}
+				}
+			}
 			using (StreamWriter w = new StreamWriter(mainConfig + "AssemblyInfo.cs", false, Encoding.UTF8)) {
-				w.Write(content.Replace("-INSERTREVISION-", revisionNumber));
+				w.Write(content);
 			}
 		}
 		

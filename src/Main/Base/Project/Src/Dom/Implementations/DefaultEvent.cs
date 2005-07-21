@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -64,13 +64,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return cmp;
 			
 			if (FullyQualifiedName != null) {
-				cmp = FullyQualifiedName.CompareTo(value.FullyQualifiedName);
-				if (cmp != 0) {
-					return cmp;
-				}
+				return FullyQualifiedName.CompareTo(value.FullyQualifiedName);
 			}
 			
-			return Region.CompareTo(value.Region);
+			return 0;
 		}
 		
 		int IComparable.CompareTo(object value)

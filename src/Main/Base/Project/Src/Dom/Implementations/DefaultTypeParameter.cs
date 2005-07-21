@@ -17,6 +17,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class DefaultTypeParameter : ITypeParameter
 	{
 		string name;
+		IMethod method;
+		IClass targetClass;
+		int index;
+		List<IReturnType> constraints = new List<IReturnType>();
 		
 		public string Name {
 			get {
@@ -24,16 +28,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		int index;
-		
 		public int Index {
 			get {
 				return index;
 			}
 		}
-		
-		IMethod method;
-		IClass targetClass;
 		
 		public IMethod Method {
 			get {
@@ -46,6 +45,27 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return targetClass;
 			}
 		}
+		
+		public IList<IReturnType> Constraints {
+			get {
+				return constraints;
+			}
+		}
+		
+		bool hasConstructableContraint = false;
+		
+		/// <summary>
+		/// Gets if the type parameter has the 'new' constraint.
+		/// </summary>
+		public bool HasConstructableContraint {
+			get {
+				return hasConstructableContraint;
+			}
+			set {
+				hasConstructableContraint = value;
+			}
+		}
+		
 		
 		public DefaultTypeParameter(IMethod method, string name, int index)
 		{
@@ -61,6 +81,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.targetClass = method.DeclaringType;
 			this.name = type.Name;
 			this.index = type.GenericParameterPosition;
+			foreach (Type constraint in type.GetGenericParameterConstraints()) {
+				constraints.Add(ReflectionReturnType.Create(targetClass.ProjectContent, constraint, false));
+			}
 		}
 		
 		public DefaultTypeParameter(IClass targetClass, string name, int index)
@@ -75,6 +98,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.targetClass = targetClass;
 			this.name = type.Name;
 			this.index = type.GenericParameterPosition;
+			foreach (Type constraint in type.GetGenericParameterConstraints()) {
+				constraints.Add(ReflectionReturnType.Create(targetClass.ProjectContent, constraint, false));
+			}
 		}
 		
 		public override string ToString()

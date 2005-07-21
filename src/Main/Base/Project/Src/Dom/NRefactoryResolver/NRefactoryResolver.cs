@@ -57,6 +57,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
+		public IMember CallingMember {
+			get {
+				return callingMember;
+			}
+		}
+		
 		public int CaretLine {
 			get {
 				return caretLine;
@@ -111,6 +117,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				expression = "";
 			}
 			expression = expression.TrimStart();
+			
+			if (expressionResult.Context == ExpressionContext.ObjectCreation) {
+				expression = "new " + expression;
+			}
 			
 			this.caretLine   = caretLineNumber;
 			this.caretColumn = caretColumn;
@@ -258,9 +268,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					if (fieldReferenceExpression.TargetObject is TypeReferenceExpression) {
 						type = TypeVisitor.CreateReturnType(((TypeReferenceExpression)fieldReferenceExpression.TargetObject).TypeReference, this);
 						if (type != null) {
-							IClass c = type.GetUnderlyingClass();
-							if (c != null)
-								return new TypeResolveResult(callingClass, callingMember, type, c);
+							return new TypeResolveResult(callingClass, callingMember, type);
 						}
 					}
 				}
@@ -431,7 +439,22 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			IClass c = SearchType(identifier);
 			if (c != null) {
-				result2 = new TypeResolveResult(callingClass, callingMember, c.DefaultReturnType, c);
+				result2 = new TypeResolveResult(callingClass, callingMember, c);
+			} else {
+				if (callingClass != null) {
+					if (callingMember is IMethod) {
+						foreach (ITypeParameter typeParameter in (callingMember as IMethod).TypeParameters) {
+							if (IsSameName(identifier, typeParameter.Name)) {
+								return new TypeResolveResult(callingClass, callingMember, new GenericReturnType(typeParameter));
+							}
+						}
+					}
+					foreach (ITypeParameter typeParameter in callingClass.TypeParameters) {
+						if (IsSameName(identifier, typeParameter.Name)) {
+							return new TypeResolveResult(callingClass, callingMember, new GenericReturnType(typeParameter));
+						}
+					}
+				}
 			}
 			
 			if (result == null)  return result2;

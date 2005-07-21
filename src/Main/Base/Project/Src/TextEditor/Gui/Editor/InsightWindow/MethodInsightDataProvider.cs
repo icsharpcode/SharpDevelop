@@ -135,7 +135,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 						methods.Add(method);
 					}
 				}
-				if (methods.Count == 0 && !result.ResolvedClass.IsAbstract && !result.ResolvedClass.IsStatic) {
+				
+				if (methods.Count == 0 && result.ResolvedClass != null && !result.ResolvedClass.IsAbstract && !result.ResolvedClass.IsStatic) {
 					// add default constructor
 					methods.Add(Constructor.CreateDefault(result.ResolvedClass));
 				}
