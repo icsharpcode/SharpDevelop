@@ -642,6 +642,12 @@
 		             tooltip = "${res:XML.MainMenu.FileMenu.Open.File.Description}"
 		             class = "ICSharpCode.SharpDevelop.Commands.OpenFile"/>
 		
+		<ToolbarItem id = "OpenProject"
+				          tooltip = "${res:XML.MainMenu.FileMenu.Open.Project}"
+				          icon = "Icons.16x16.OpenProjectIcon"
+				          class = "ICSharpCode.SharpDevelop.Project.Commands.LoadSolution"
+		/>
+		
 		<Condition name = "ActiveWindowState" windowstate="Dirty,Untitled" nowindowstate="ViewOnly" action="Disable">
 			<ToolbarItem id      = "Save"
 			             icon    = "Icons.16x16.SaveIcon"
