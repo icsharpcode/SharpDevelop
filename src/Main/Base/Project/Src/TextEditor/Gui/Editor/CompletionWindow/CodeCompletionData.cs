@@ -1,11 +1,12 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike KrÃ¼ger" email="mike@icsharpcode.net"/>
+//     <owner name="Mike Kr�ger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
 
 using System;
+using System.Drawing;
 using System.Xml;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -28,6 +29,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		string   documentation;
 		IClass   c;
 		bool     convertedDocumentation = false;
+		double priority;
 		
 		/// <summary>
 		/// Gets the class this CodeCompletionData object was created for.
@@ -45,6 +47,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			set {
 				overloads = value;
+			}
+		}
+		
+		public double Priority {
+			get {
+				return priority;
+			}
+			set {
+				priority = value;
 			}
 		}
 		
@@ -84,18 +95,27 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
+		string dotnetName;
+		
+		void GetPriority(string dotnetName)
+		{
+			this.dotnetName = dotnetName;
+			priority = CodeCompletionDataUsageCache.GetPriority(dotnetName, true);
+		}
+		
 		public CodeCompletionData(string s, int imageIndex)
 		{
 			ambience = AmbienceService.CurrentAmbience;
 			description = documentation = String.Empty;
 			text = s;
 			this.imageIndex = imageIndex;
+			GetPriority(s);
 		}
 		
 		public CodeCompletionData(IClass c)
 		{
 			ambience = AmbienceService.CurrentAmbience;
-			// save class (for the delegate description shortcut
+			// save class (for the delegate description shortcut)
 			this.c = c;
 			imageIndex = ClassBrowserIconService.GetIcon(c);
 			ambience.ConversionFlags = ConversionFlags.None;
@@ -104,6 +124,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 //			Console.WriteLine("Convert : " + c);
 			description = ambience.Convert(c);
 			documentation = c.Documentation;
+			GetPriority(c.DotNetName);
 		}
 		
 		public CodeCompletionData(IMethod method)
@@ -115,6 +136,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			text        = method.Name;
 			description = ambience.Convert(method);
 			documentation = method.Documentation;
+			GetPriority(method.DotNetName);
 		}
 		
 		public CodeCompletionData(IField field)
@@ -126,6 +148,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			text        = field.Name;
 			description = ambience.Convert(field);
 			documentation = field.Documentation;
+			GetPriority(field.DotNetName);
 		}
 		
 		public CodeCompletionData(IProperty property)
@@ -137,6 +160,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			text        = property.Name;
 			description = ambience.Convert(property);
 			documentation = property.Documentation;
+			GetPriority(property.DotNetName);
 		}
 		
 		public CodeCompletionData(IEvent e)
@@ -148,17 +172,43 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			text        = e.Name;
 			description = ambience.Convert(e);
 			documentation = e.Documentation;
+			GetPriority(e.DotNetName);
 		}
 		
-		public void InsertAction(TextEditorControl control)
+		public bool InsertAction(TextArea textArea, char ch)
 		{
-			((SharpDevelopTextAreaControl)control).ActiveTextAreaControl.TextArea.InsertString(text);
+			if (dotnetName != null) {
+				CodeCompletionDataUsageCache.IncrementUsage(dotnetName);
+			}
+			if (c != null && text.Length > c.Name.Length) {
+				textArea.InsertString(text.Substring(0, c.Name.Length + 1));
+				Point start = textArea.Caret.Position;
+				Point end;
+				int pos = text.IndexOf(',');
+				if (pos < 0) {
+					textArea.InsertString(text.Substring(c.Name.Length + 1));
+					end = textArea.Caret.Position;
+					end.X -= 1;
+				} else {
+					textArea.InsertString(text.Substring(c.Name.Length + 1, pos - c.Name.Length - 1));
+					end = textArea.Caret.Position;
+					textArea.InsertString(text.Substring(pos));
+				}
+				textArea.Caret.Position = start;
+				textArea.SelectionManager.SetSelection(start, end);
+				if (!char.IsLetterOrDigit(ch)) {
+					return true;
+				}
+			} else {
+				textArea.InsertString(text);
+			}
+			return false;
 		}
 		
 		internal static Regex whitespace = new Regex(@"\s+");
 		
 		/// <summary>
-		/// 
+		/// Converts the xml documentation string into a plain text string.
 		/// </summary>
 		public static string GetDocumentation(string doc)
 		{

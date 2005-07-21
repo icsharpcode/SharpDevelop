@@ -179,6 +179,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected override void OnBeforeExpand(TreeViewCancelEventArgs e)
 		{
 			base.OnBeforeExpand(e);
+			if (e.Node == null)
+				return;
 			inRefresh = true;
 			BeginUpdate();
 			try {

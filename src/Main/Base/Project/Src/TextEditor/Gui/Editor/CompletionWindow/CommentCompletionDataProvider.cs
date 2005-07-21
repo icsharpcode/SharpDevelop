@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krger" email="mike@icsharpcode.net"/>
+//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
 
@@ -121,9 +121,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 			
-			public void InsertAction(TextEditorControl control)
+			public double Priority {
+				get {
+					return 0;
+				}
+			}
+			
+			public bool InsertAction(TextArea textArea, char ch)
 			{
-				((SharpDevelopTextAreaControl)control).ActiveTextAreaControl.TextArea.InsertString(text);
+				textArea.InsertString(text);
+				return false;
 			}
 			
 			public CommentCompletionData(string text, string description)

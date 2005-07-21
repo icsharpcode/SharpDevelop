@@ -150,8 +150,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		public override bool ProcessKeyEvent(char ch)
 		{
 			if (!Char.IsLetterOrDigit(ch) && ch != '_') {
-				InsertSelectedItem();
-				return false;
+				return InsertSelectedItem(ch);
 			}
 			++endOffset;
 			return base.ProcessKeyEvent(ch);
@@ -218,7 +217,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					return true;
 				case Keys.Tab:
 				case Keys.Return:
-					InsertSelectedItem();
+					InsertSelectedItem('\0');
 					return true;
 			}
 			return base.ProcessTextAreaKey(keyData);
@@ -226,7 +225,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		void CodeCompletionListViewDoubleClick(object sender, EventArgs e)
 		{
-			InsertSelectedItem();
+			InsertSelectedItem('\0');
 		}
 		
 		void CodeCompletionListViewClick(object sender, EventArgs e)
@@ -244,9 +243,10 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			declarationViewWindow = null;
 		}
 		
-		void InsertSelectedItem()
+		bool InsertSelectedItem(char ch)
 		{
 			ICompletionData data = codeCompletionListView.SelectedCompletionData;
+			bool result = false;
 			if (data != null) {
 				control.BeginUpdate();
 				
@@ -255,10 +255,11 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					control.Document.Remove(startOffset, endOffset - startOffset);
 					control.ActiveTextAreaControl.Caret.Position = control.Document.OffsetToPosition(startOffset);
 				}
-				data.InsertAction(control);
+				result = data.InsertAction(control.ActiveTextAreaControl.TextArea, ch);
 				control.EndUpdate();
 			}
 			Close();
+			return result;
 		}
 	}
 }

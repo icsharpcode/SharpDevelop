@@ -82,9 +82,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 			
-			public void InsertAction(TextEditorControl control)
+			public double Priority {
+				get {
+					return 0;
+				}
+			}
+			
+			public bool InsertAction(TextArea textArea, char ch)
 			{
-				((SharpDevelopTextAreaControl)control).InsertTemplate(template);
+				((SharpDevelopTextAreaControl)textArea.MotherTextEditorControl).InsertTemplate(template);
+				return false;
 			}
 			
 			public TemplateCompletionData(CodeTemplate template)

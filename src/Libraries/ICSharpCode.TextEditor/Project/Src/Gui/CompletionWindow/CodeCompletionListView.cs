@@ -129,42 +129,44 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			SelectIndex(selectedItem - 1);
 		}
 		
-		public void SelectItemWithStart(char startCh)
-		{
-			for (int i = Math.Min(selectedItem + 1, completionData.Length - 1); i < completionData.Length; ++i) {
-				if (completionData[i].Text.ToLower()[0] == startCh) {
-					SelectIndex(i);
-					return;
-				}
-			}
-			
-			// now loop from start to current one
-			for (int i = 0; i < selectedItem; ++i) {
-				if (completionData[i].Text.ToLower()[0] == startCh) {
-					SelectIndex(i);
-					return;
-				}
-			}
-			
-			// if not found leave selection as it is
-			Refresh();
-			OnSelectedItemChanged(EventArgs.Empty);
-		}
-		
-		
 		public void SelectItemWithStart(string startText)
 		{
 			if (startText == null || startText.Length == 0) return;
+			string originalStartText = startText;
 			startText = startText.ToLower();
+			int bestIndex = -1;
+			int bestQuality = -1;
+			// Qualities: 0 = match start
+			//            1 = match start case sensitive
+			//            2 = full match
+			//            3 = full match case sensitive
+			double bestPriority = 0;
 			for (int i = 0; i < completionData.Length; ++i) {
-				if (completionData[i].Text.ToLower().StartsWith(startText)) {
-					SelectIndex(i);
-					return;
+				string itemText = completionData[i].Text;
+				string lowerText = itemText.ToLower();
+				if (lowerText.StartsWith(startText)) {
+					if (i == selectedItem)
+						return;
+					double priority = completionData[i].Priority;
+					int quality;
+					if (lowerText == startText) {
+						if (itemText == originalStartText)
+							quality = 3;
+						else
+							quality = 2;
+					} else if (itemText.StartsWith(originalStartText)) {
+						quality = 1;
+					} else {
+						quality = 0;
+					}
+					if (bestQuality < quality || bestQuality == quality && bestPriority < priority) {
+						bestIndex = i;
+						bestPriority = priority;
+						bestQuality = quality;
+					}
 				}
 			}
-			selectedItem = -1;
-			Refresh();
-			OnSelectedItemChanged(EventArgs.Empty);
+			SelectIndex(bestIndex);
 		}
 		
 		protected override void OnPaint(PaintEventArgs pe)

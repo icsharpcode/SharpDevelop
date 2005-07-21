@@ -235,7 +235,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			string fileName = FileName;
 			if (codeCompletionWindow != null && !codeCompletionWindow.IsDisposed) {
-				codeCompletionWindow.ProcessKeyEvent(ch);
+				if (codeCompletionWindow.ProcessKeyEvent(ch)) {
+					return true;
+				}
 			}
 			
 			try {
