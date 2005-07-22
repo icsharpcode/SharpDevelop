@@ -9,7 +9,7 @@ enable-auto-props = yes
 
 ### Section for configuring automatic properties.
 [auto-props]
-*.cs = svn:keywords="Author Revision Id"
+*.cs = svn:keywords="Revision"
 
 
 However, this setting should be done on every developer's workstation (I could not
