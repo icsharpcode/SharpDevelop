@@ -1,9 +1,9 @@
-/*
- * Created by SharpDevelop.
- * User: Daniel Grunwald
- * Date: 18.05.2005
- * Time: 19:08
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.Collections;

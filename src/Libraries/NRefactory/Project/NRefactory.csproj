@@ -192,7 +192,7 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />
-    <Content Include="Src\Lexer\VBNet\VBNetKeywordList.txt" />
+    <Content Include="Src\Lexer\VBNet\KeywordList.txt" />
     <Content Include="Src\Parser\CSharp\trace.txt" />
     <Content Include="Src\Parser\Frames\OldSharpCoco.exe" />
     <Content Include="Src\Parser\Frames\SharpCoco.exe" />

@@ -1,4 +1,10 @@
-// created on 07.09.2003 at 22:09
+// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Georg Brandl" email="g.brandl@gmx.net"/>
+//     <version>$Revision$</version>
+// </file>
+
 using System;
 using System.Windows.Forms;
 using System.Reflection;

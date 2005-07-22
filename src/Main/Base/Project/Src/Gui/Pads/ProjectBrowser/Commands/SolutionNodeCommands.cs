@@ -1,8 +1,8 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
@@ -193,4 +193,3 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 //		}
 //	}
 }
-		

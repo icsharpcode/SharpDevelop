@@ -1,8 +1,8 @@
-// <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike KrÃ¼ger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
@@ -109,4 +109,3 @@ namespace ICSharpCode.TextEditor
 		public event EventHandler            MouseLeave;
 	}
 }
-

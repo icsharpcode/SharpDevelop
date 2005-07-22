@@ -1,3 +1,10 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <version>$Revision$</version>
+// </file>
+
 // project created on 2/6/2003 at 11:10 AM
 using System;
 using System.Windows.Forms;
@@ -50,7 +57,7 @@ namespace ICSharpCode.SharpDevelop
 			if (message != null) {
 				str += message + Environment.NewLine;
 			}
-			str += "Exception & thrown: " + Environment.NewLine;
+			str += "Exception thrown: " + Environment.NewLine;
 			str += exceptionThrown.ToString();
 			return str;
 		}

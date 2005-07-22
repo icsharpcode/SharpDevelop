@@ -1,8 +1,8 @@
 // <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Georg Brandl" email="g.brandl(at)gmx.net"/>
-//     <version value="$version"/>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Georg Brandl" email="g.brandl@gmx.net"/>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
@@ -115,4 +115,3 @@ namespace ICSharpCode.SharpDevelop.Gui
 	}
 
 }
-

@@ -1,4 +1,11 @@
-﻿using System.Reflection;
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Markus Palme" email="MarkusPalme@gmx.de"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 // Information about this assembly is defined by the following
@@ -29,4 +36,3 @@ using System.Runtime.CompilerServices;
 // .NET Framework documentation for more information about signing.
 // This is not required, if you don't want signing let these attributes like they're.
 [assembly: AssemblyDelaySign(false)]
-

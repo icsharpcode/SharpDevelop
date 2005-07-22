@@ -162,7 +162,6 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\FolderNodeCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ProjectNodeCommands.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\Commands\ReferenceFolderNodeCommands.cs" />
-    <Compile Include="Src\Commands\ProjectBrowserCommands\ResourceFolderNodeCommands.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserDisplayBinding.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\HtmlViewPane.cs">
       <SubType>UserControl</SubType>

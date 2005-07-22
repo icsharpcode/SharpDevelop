@@ -1,9 +1,9 @@
-/*
- * Created by SharpDevelop.
- * User: Omnibrain
- * Date: 23.11.2004
- * Time: 10:11
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.IO;

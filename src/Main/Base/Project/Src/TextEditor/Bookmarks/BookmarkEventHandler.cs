@@ -1,11 +1,9 @@
-/*
- * Created by SharpDevelop.
- * User: Omnibrain
- * Date: 27.12.2004
- * Time: 21:35
- * 
- * To change this template use Tools | Options | Coding | Edit Standard Headers.
- */
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 

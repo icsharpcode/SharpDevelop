@@ -1,11 +1,9 @@
-/*
- * Created by SharpDevelop.
- * User: Omnibrain
- * Date: 16.03.2004
- * Time: 12:28
- * 
- * To change this template use Tools | Options | File Templates.
- */
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.Collections;

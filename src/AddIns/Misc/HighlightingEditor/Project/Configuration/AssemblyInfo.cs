@@ -1,4 +1,11 @@
-﻿using System.Reflection;
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Georg Brandl" email="g.brandl@gmx.net"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 // Information about this assembly is defined by the following

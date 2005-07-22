@@ -1,6 +1,13 @@
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="none" email=""/>
+//     <version>$Revision$</version>
+// </file>
+
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike KrÃ¼ger" email="mike@icsharpcode.net"/>
+//     <owner name="Mike KrÃƒÂ¼ger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
 
