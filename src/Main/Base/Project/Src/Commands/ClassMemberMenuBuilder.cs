@@ -133,6 +133,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
 			TextEditorControl textEditor = JumpBehindDefinition(member);
+			
 			AbstractPropertyCodeGenerator generator;
 			if (includeSetter)
 				generator = new GetterAndSetterCodeGenerator(member.DeclaringType);
@@ -145,6 +146,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				}
 			}
 			
+			generator.BeginWithNewLine = true;
 			generator.GenerateCode(textEditor.ActiveTextAreaControl.TextArea, list);
 		}
 		

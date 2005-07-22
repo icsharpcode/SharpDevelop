@@ -1,0 +1,139 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="CodeCompletionOptionPanel" />
+    <ClientSize value="{Width=376, Height=344}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="groupBox" />
+        <Location value="{X=4,Y=55}" />
+        <Text value="Code completion detail settings" />
+        <Size value="{Width=369, Height=286}" />
+        <TabIndex value="2" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="refreshInsightOnCommaCheckBox" />
+            <Location value="{X=31,Y=186}" />
+            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+            <Text value="Re-open tooltip with better overload when pressing comma" />
+            <TabIndex value="10" />
+            <Size value="{Width=332, Height=24}" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="useDebugTooltipsOnlyCheckBox" />
+            <Location value="{X=31,Y=85}" />
+            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+            <Text value="Only in debug mode" />
+            <TabIndex value="6" />
+            <Size value="{Width=332, Height=24}" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.Button>
+            <Name value="clearDataUseCacheButton" />
+            <Location value="{X=225,Y=40}" />
+            <Text value="Clear cache" />
+            <Size value="{Width=101, Height=23}" />
+            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+            <TabIndex value="4" />
+          </System.Windows.Forms.Button>
+          <System.Windows.Forms.CheckBox>
+            <Name value="useTooltipsCheckBox" />
+            <Location value="{X=12,Y=66}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+            <Text value="Show tooltip when moving mouse over expression" />
+            <TabIndex value="5" />
+            <Size value="{Width=351, Height=24}" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="useInsightCheckBox" />
+            <Location value="{X=12,Y=167}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+            <Text value="Show tooltip when writing method calls" />
+            <TabIndex value="9" />
+            <Size value="{Width=351, Height=24}" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.Label>
+            <Name value="label4" />
+            <Location value="{X=6,Y=112}" />
+            <Text value="The following options are language-dependend, some options are not available in some programming languages." />
+            <Size value="{Width=357, Height=31}" />
+            <TabIndex value="7" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.CheckBox>
+            <Name value="useKeywordCompletionCheckBox" />
+            <Location value="{X=12,Y=146}" />
+            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+            <Text value="Trigger code completion after keywords" />
+            <TabIndex value="8" />
+            <Size value="{Width=351, Height=24}" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.Label>
+            <Name value="dataUsageCacheLabel2" />
+            <Location value="{X=154,Y=42}" />
+            <Text value="items" />
+            <TextAlign value="MiddleLeft" />
+            <Size value="{Width=65, Height=23}" />
+            <TabIndex value="3" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.NumericUpDown>
+            <Name value="dataUsageCacheItemCountNumericUpDown" />
+            <Value value="50" />
+            <TabIndex value="2" />
+            <Maximum value="10000" />
+            <Minimum value="50" />
+            <Increment value="50" />
+            <TextAlign value="Right" />
+            <Size value="{Width=68, Height=21}" />
+            <Location value="{X=80,Y=42}" />
+          </System.Windows.Forms.NumericUpDown>
+          <System.Windows.Forms.Label>
+            <Name value="dataUsageCacheLabel1" />
+            <Location value="{X=18,Y=42}" />
+            <Text value="Save" />
+            <TextAlign value="MiddleRight" />
+            <Size value="{Width=56, Height=21}" />
+            <TabIndex value="1" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.CheckBox>
+            <Name value="useDataUsageCacheCheckBox" />
+            <Location value="{X=12,Y=20}" />
+            <Checked value="True" />
+            <CheckState value="Checked" />
+            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+            <Text value="Pre-select recently used members" />
+            <TabIndex value="0" />
+            <Size value="{Width=351, Height=24}" />
+            <Anchor value="Top, Left, Right" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.Label>
+        <Name value="label1" />
+        <Location value="{X=8,Y=8}" />
+        <Text value="Use the following option to turn code completion completely off:" />
+        <TextAlign value="MiddleLeft" />
+        <Size value="{Width=365, Height=22}" />
+        <TabIndex value="0" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.CheckBox>
+        <Name value="codeCompletionEnabledCheckBox" />
+        <Location value="{X=16,Y=25}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="${res:Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox}" />
+        <TabIndex value="1" />
+        <Size value="{Width=357, Height=24}" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.CheckBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

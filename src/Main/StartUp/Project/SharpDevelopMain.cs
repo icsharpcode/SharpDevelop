@@ -40,16 +40,17 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void ShowErrorBox(object sender, ThreadExceptionEventArgs eargs)
 		{
-			DialogResult result = new ExceptionBox(eargs.Exception).ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
-			
-			switch (result) {
-				case DialogResult.Ignore:
-					break;
-				case DialogResult.Abort:
+			ShowErrorBox(eargs.Exception, null);
+		}
+		
+		static void ShowErrorBox(Exception exception, string message)
+		{
+			using (ExceptionBox box = new ExceptionBox(exception, message)) {
+				DialogResult result = box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+				
+				if (result == DialogResult.Abort) {
 					Application.Exit();
-					break;
-				case DialogResult.Yes:
-					break;
+				}
 			}
 		}
 		
@@ -90,7 +91,7 @@ namespace ICSharpCode.SharpDevelop
 					Run(args);
 				} catch (Exception ex) {
 					Console.WriteLine(ex);
-					Application.Run(new ExceptionBox(ex));
+					Application.Run(new ExceptionBox(ex, "Unhandled exception terminated SharpDevelop"));
 				}
 			}
 		}
@@ -118,8 +119,11 @@ namespace ICSharpCode.SharpDevelop
 			}
 			
 			if (!Debugger.IsAttached) {
-				Application.ThreadException += new ThreadExceptionEventHandler(ShowErrorBox);
+				Application.ThreadException += ShowErrorBox;
 			}
+			#if !DEBUG
+			MessageService.CustomErrorReporter = ShowErrorBox;
+			#endif
 			
 //	TODO:
 //			bool ignoreDefaultPath = false;

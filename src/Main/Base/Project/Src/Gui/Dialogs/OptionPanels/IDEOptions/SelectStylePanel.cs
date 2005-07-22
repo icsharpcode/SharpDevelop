@@ -24,17 +24,18 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.SelectStylePanel.xfrm"));
 			
-			((CheckBox)ControlDictionary["showExtensionsCheckBox"]).Checked  = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.ProjectBrowser.ShowExtensions", true);
+			Get<CheckBox>("showExtensions").Checked = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.ProjectBrowser.ShowExtensions", true);
 			
 			AddInTreeNode treeNode = AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences");
 			foreach (Codon codon in treeNode.Codons) {
 				((ComboBox)ControlDictionary["selectAmbienceComboBox"]).Items.Add(codon.Id);
-			}			
+			}
 			
-			((ComboBox)ControlDictionary["selectAmbienceComboBox"]).Text = PropertyService.Get("SharpDevelop.UI.CurrentAmbience", "C#");
+			ControlDictionary["selectAmbienceComboBox"].Text = PropertyService.Get("SharpDevelop.UI.CurrentAmbience", "C#");
+			Get<CheckBox>("preferProjectAmbience").Checked = AmbienceService.UseProjectAmbienceIfPossible;
 			
-			((CheckBox)ControlDictionary["showStatusBarCheckBox"]).Checked = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.StatusBarVisible", true);
-			((CheckBox)ControlDictionary["showToolBarCheckBox"]).Checked   = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.ToolBarVisible", true);
+			Get<CheckBox>("showStatusBar").Checked = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.StatusBarVisible", true);
+			Get<CheckBox>("showToolBar").Checked   = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.ToolBarVisible", true);
 		}
 		
 		public override bool StorePanelContents()
@@ -43,6 +44,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			PropertyService.Set("SharpDevelop.UI.CurrentAmbience", ((ComboBox)ControlDictionary["selectAmbienceComboBox"]).Text);
 			PropertyService.Set("ICSharpCode.SharpDevelop.Gui.StatusBarVisible", ((CheckBox)ControlDictionary["showStatusBarCheckBox"]).Checked);
 			PropertyService.Set("ICSharpCode.SharpDevelop.Gui.ToolBarVisible", ((CheckBox)ControlDictionary["showToolBarCheckBox"]).Checked);
+			AmbienceService.UseProjectAmbienceIfPossible = Get<CheckBox>("preferProjectAmbience").Checked;
 			return true;
 		}
 	}

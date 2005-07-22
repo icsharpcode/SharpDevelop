@@ -86,9 +86,20 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		public void SelectIndex(int index)
 		{
-			index = Math.Max(0, index);
 			int oldSelectedItem = selectedItem;
 			int oldFirstItem    = firstItem;
+			
+			if (index < 0) {
+				selectedItem = -1;
+				if (oldSelectedItem >= 0) {
+					Invalidate(new Rectangle(0, (oldSelectedItem - firstItem) * ItemHeight, Width, (oldSelectedItem - firstItem + 1) * ItemHeight));
+				}
+				Update();
+				OnSelectedItemChanged(EventArgs.Empty);
+				return;
+			}
+			
+			index = Math.Max(0, index);
 			selectedItem = Math.Max(0, Math.Min(completionData.Length - 1, index));
 			if (selectedItem < firstItem) {
 				FirstItem = selectedItem;

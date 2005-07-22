@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -49,8 +49,31 @@ namespace ICSharpCode.Core
 			ShowError(null, String.Format(StringParser.Parse(formatstring), formatitems));
 		}
 		
+		
+		public delegate void ShowErrorDelegate(Exception ex, string message);
+		
+		static ShowErrorDelegate customErrorReporter;
+		
+		/// <summary>
+		/// Gets/Sets the custom error reporter. If this property is null, a default
+		/// messagebox is used.
+		/// </summary>
+		public static ShowErrorDelegate CustomErrorReporter {
+			get {
+				return customErrorReporter;
+			}
+			set {
+				customErrorReporter = value;
+			}
+		}
+		
 		public static void ShowError(Exception ex, string message)
 		{
+			if (customErrorReporter != null && ex != null) {
+				customErrorReporter(ex, message);
+				return;
+			}
+			
 			#if DEBUG
 			Console.WriteLine();
 			if (message != null)

@@ -7,13 +7,13 @@ using System.Reflection;
 using System.Drawing;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop 
+namespace ICSharpCode.SharpDevelop
 {
 	public class ExceptionBox : System.Windows.Forms.Form
 	{
 		private System.Windows.Forms.TextBox exceptionTextBox;
 		private System.Windows.Forms.CheckBox copyErrorCheckBox;
-		private System.Windows.Forms.CheckBox includeSysInfoCheckBox;
+		//private System.Windows.Forms.CheckBox includeSysInfoCheckBox;
 		private System.Windows.Forms.Label label3;
 		private System.Windows.Forms.Label label2;
 		private System.Windows.Forms.Label label;
@@ -21,14 +21,16 @@ namespace ICSharpCode.SharpDevelop
 		private System.Windows.Forms.Button reportButton;
 		private System.Windows.Forms.PictureBox pictureBox;
 		Exception exceptionThrown;
+		string message;
 		
-		public ExceptionBox(Exception e)
+		public ExceptionBox(Exception e, string message)
 		{
 			this.exceptionThrown = e;
+			this.message = message;
 			InitializeComponent();
 			RightToLeftConverter.Convert(this);
 			
-			exceptionTextBox.Text = e.ToString();
+			exceptionTextBox.Text = getClipboardString();
 			
 			ResourceManager resources = new ResourceManager("Resources.BitmapResources", Assembly.GetEntryAssembly());
 			this.pictureBox.Image = (Bitmap)resources.GetObject("ErrorReport");
@@ -37,16 +39,18 @@ namespace ICSharpCode.SharpDevelop
 		string getClipboardString()
 		{
 			string str = "";
-			if (includeSysInfoCheckBox.Checked) {
-				str  = ".NET Version         : " + Environment.Version.ToString() + Environment.NewLine;
-				str += "OS Version           : " + Environment.OSVersion.ToString() + Environment.NewLine;
-				str += "Boot Mode            : " + SystemInformation.BootMode + Environment.NewLine;
-				str += "Working Set Memory   : " + (Environment.WorkingSet / 1024) + "kb" + Environment.NewLine + Environment.NewLine;
-				Version v = Assembly.GetEntryAssembly().GetName().Version;
-				str += "SharpDevelop Version : " + v.Major + "." + v.Minor + "." + v.Revision + "." + v.Build + Environment.NewLine;
-			}
+			str += ".NET Version         : " + Environment.Version.ToString() + Environment.NewLine;
+			str += "OS Version           : " + Environment.OSVersion.ToString() + Environment.NewLine;
+			str += "Boot Mode            : " + SystemInformation.BootMode + Environment.NewLine;
+			str += "Working Set Memory   : " + (Environment.WorkingSet / 1024) + "kb" + Environment.NewLine;
+			Version v = Assembly.GetEntryAssembly().GetName().Version;
+			str += "SharpDevelop Version : " + v.Major + "." + v.Minor + "." + v.Revision + "." + v.Build + Environment.NewLine;
+			str += Environment.NewLine;
 			
-			str += "Exception thrown: " + Environment.NewLine;
+			if (message != null) {
+				str += message + Environment.NewLine;
+			}
+			str += "Exception & thrown: " + Environment.NewLine;
 			str += exceptionThrown.ToString();
 			return str;
 		}
@@ -60,18 +64,37 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		// This method is used in the forms designer.
-		// Change this method on you own risk
 		void buttonClick(object sender, System.EventArgs e)
 		{
 			CopyInfoToClipboard();
+			
 			// open IE via process.start to our bug reporting forum
-			Process.Start("http://www.icsharpcode.net/OpenSource/SD/Forum/forum.asp?FORUM_ID=5");
+			//Process.Start("http://www.icsharpcode.net/OpenSource/SD/Forum/forum.asp?FORUM_ID=5");
+			
+			string text = "This version of SharpDevelop is an internal build, " +
+				"not a released version.\n" +
+				"Please report problems in the internal builds to the " +
+				"SVN-SharpDevelop-Users mailing list.";
+			
+			int result = MessageService.ShowCustomDialog("SharpDevelop", text,
+			                                             "Join the list", "Write mail", "Cancel");
+			if (result == 0) {
+				try {
+					Process.Start("http://www.glengamoi.com/mailman/listinfo/icsharpcode.svn-sharpdevelop-users");
+				} catch {}
+			} else if (result == 1) {
+				// clipboard text is too long to be inserted into the mail-url
+				string url = "mailto:icsharpcode.svn-sharpdevelop-users@glengamoi.com?subject=Bug Report&body="
+					+ Uri.EscapeDataString("Write an english description of what you were doing when the" +
+					                       "error occured and paste the exception text.");
+				try {
+					Process.Start(url);
+				} catch {}
+			}
 		}
 		
 		void continueButtonClick(object sender, System.EventArgs e)
 		{
-//			CopyInfoToClipboard();
 			DialogResult = System.Windows.Forms.DialogResult.Ignore;
 		}
 		
@@ -82,7 +105,7 @@ namespace ICSharpCode.SharpDevelop
 			this.label = new System.Windows.Forms.Label();
 			this.label2 = new System.Windows.Forms.Label();
 			this.label3 = new System.Windows.Forms.Label();
-			this.includeSysInfoCheckBox = new System.Windows.Forms.CheckBox();
+			//this.includeSysInfoCheckBox = new System.Windows.Forms.CheckBox();
 			this.copyErrorCheckBox = new System.Windows.Forms.CheckBox();
 			this.exceptionTextBox = new System.Windows.Forms.TextBox();
 			this.SuspendLayout();
@@ -121,8 +144,8 @@ namespace ICSharpCode.SharpDevelop
 			this.label.Size = new System.Drawing.Size(448, 48);
 			this.label.TabIndex = 6;
 			this.label.Text = "An unhandled exception has occurred in SharpDevelop. This is unexpected and we\'d " +
-"ask you to help us improve SharpDevelop by reporting this error to the SharpDeve" +
-"lop team. ";
+				"ask you to help us improve SharpDevelop by reporting this error to the SharpDeve" +
+				"lop team. ";
 			// 
 			// label2
 			// 
@@ -142,14 +165,14 @@ namespace ICSharpCode.SharpDevelop
 			// 
 			// includeSysInfoCheckBox
 			// 
-			this.includeSysInfoCheckBox.Checked = true;
+			/*this.includeSysInfoCheckBox.Checked = true;
 			this.includeSysInfoCheckBox.CheckState = System.Windows.Forms.CheckState.Checked;
 			this.includeSysInfoCheckBox.FlatStyle = System.Windows.Forms.FlatStyle.System;
 			this.includeSysInfoCheckBox.Location = new System.Drawing.Point(232, 392);
 			this.includeSysInfoCheckBox.Name = "includeSysInfoCheckBox";
 			this.includeSysInfoCheckBox.Size = new System.Drawing.Size(440, 24);
 			this.includeSysInfoCheckBox.TabIndex = 3;
-			this.includeSysInfoCheckBox.Text = "Include system information (version of Windows, .NET framework)";
+			this.includeSysInfoCheckBox.Text = "Include system information (version of Windows, .NET framework)";*/
 			// 
 			// copyErrorCheckBox
 			// 
@@ -182,7 +205,7 @@ namespace ICSharpCode.SharpDevelop
 			this.Controls.Add(this.label);
 			this.Controls.Add(this.continueButton);
 			this.Controls.Add(this.reportButton);
-			this.Controls.Add(this.includeSysInfoCheckBox);
+			//this.Controls.Add(this.includeSysInfoCheckBox);
 			this.Controls.Add(this.copyErrorCheckBox);
 			this.Controls.Add(this.exceptionTextBox);
 			this.Controls.Add(this.pictureBox);

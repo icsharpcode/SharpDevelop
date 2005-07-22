@@ -31,33 +31,32 @@ namespace CSharpBinding
 				return false;
 			CSharpBinding.Parser.ExpressionFinder ef = new CSharpBinding.Parser.ExpressionFinder();
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
-			ExpressionContext context;
+			ExpressionContext context = null;
 			if (ch == '(') {
-				switch (editor.GetWordBeforeCaret().Trim()) {
-					case "for":
-					case "lock":
-						context = ExpressionContext.Default;
-						break;
-					case "using":
-						context = ExpressionContext.TypeDerivingFrom(ReflectionReturnType.Disposable.GetUnderlyingClass(), false);
-						break;
-					case "catch":
-						context = ExpressionContext.TypeDerivingFrom(ReflectionReturnType.Exception.GetUnderlyingClass(), false);
-						break;
-					case "foreach":
-					case "typeof":
-					case "sizeof":
-					case "default":
-						context = ExpressionContext.Type;
-						break;
-					default:
-						context = null;
-						break;
+				if (CodeCompletionOptions.KeywordCompletionEnabled) {
+					switch (editor.GetWordBeforeCaret().Trim()) {
+						case "for":
+						case "lock":
+							context = ExpressionContext.Default;
+							break;
+						case "using":
+							context = ExpressionContext.TypeDerivingFrom(ReflectionReturnType.Disposable.GetUnderlyingClass(), false);
+							break;
+						case "catch":
+							context = ExpressionContext.TypeDerivingFrom(ReflectionReturnType.Exception.GetUnderlyingClass(), false);
+							break;
+						case "foreach":
+						case "typeof":
+						case "sizeof":
+						case "default":
+							context = ExpressionContext.Type;
+							break;
+					}
 				}
 				if (context != null) {
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(context), ch);
 					return true;
-				} else if (EnableMethodInsight) {
+				} else if (EnableMethodInsight && CodeCompletionOptions.InsightEnabled) {
 					editor.ShowInsightWindow(new MethodInsightDataProvider());
 					return true;
 				}
@@ -70,7 +69,7 @@ namespace CSharpBinding
 					editor.ShowCompletionWindow(new AttributesDataProvider(), ch);
 					return true;
 				}
-			} else if (ch == ',') {
+			} else if (ch == ',' && CodeCompletionOptions.InsightRefreshOnComma && CodeCompletionOptions.InsightEnabled) {
 				// Show MethodInsightWindow or IndexerInsightWindow
 				string documentText = editor.Text;
 				int oldCursor = cursor;

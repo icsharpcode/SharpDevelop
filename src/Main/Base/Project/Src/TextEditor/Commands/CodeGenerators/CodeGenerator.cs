@@ -70,11 +70,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		protected bool StartCodeBlockInSameLine {
+		public static bool BlankLinesBetweenMembers {
 			get {
-				
-				Properties p = (Properties)PropertyService.Get("SharpDevelop.UI.CodeGenerationOptions", new Properties());
-				return p.Get("StartBlockOnSameLine", true);
+				return AmbienceService.CodeGenerationProperties.Get("BlankLinesBetweenMembers", true);
+			}
+		}
+		
+		public static bool StartCodeBlockInSameLine {
+			get {
+				return AmbienceService.CodeGenerationProperties.Get("StartBlockOnSameLine", true);
 			}
 		}
 		

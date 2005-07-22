@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
@@ -81,14 +82,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				return false;
 			switch (ch) {
 				case '(':
-					if (enableMethodInsight) {
+					if (enableMethodInsight && CodeCompletionOptions.InsightEnabled) {
 						editor.ShowInsightWindow(new MethodInsightDataProvider());
 						return true;
 					} else {
 						return false;
 					}
 				case '[':
-					if (enableIndexerInsight) {
+					if (enableIndexerInsight && CodeCompletionOptions.InsightEnabled) {
 						editor.ShowInsightWindow(new IndexerInsightDataProvider());
 						return true;
 					} else {
@@ -109,6 +110,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 						return false;
 					}
 				case ' ':
+					if (!CodeCompletionOptions.KeywordCompletionEnabled)
+						return false;
 					string word = editor.GetWordBeforeCaret();
 					if (word != null)
 						return HandleKeyword(editor, word);

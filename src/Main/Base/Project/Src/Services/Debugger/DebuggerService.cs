@@ -333,6 +333,9 @@ namespace ICSharpCode.Core
 			try {
 				TextArea textArea = (TextArea)sender;
 				if (textArea.ToolTipVisible) return;
+				if (!CodeCompletionOptions.TooltipsEnabled) return;
+				
+				// TODO: if (CodeCompletionOptions.TooltipsOnlyWhenDebugging && !isDebugging) return;
 				
 				Point mousepos = textArea.PointToClient(Control.MousePosition);
 				Rectangle viewRect = textArea.TextView.DrawingPosition;
@@ -345,11 +348,11 @@ namespace ICSharpCode.Core
 						if (expressionFinder == null)
 							return;
 						LineSegment seg = doc.GetLineSegment(logicPos.Y);
-						int xPosition = Math.Min(seg.Length - 1, logicPos.X);
+						if (logicPos.X > seg.Length - 1)
+							return;
 						string textContent = doc.TextContent;
-						ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, seg.Offset + xPosition);
+						ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, seg.Offset + logicPos.X);
 						string expression = expressionResult.Expression;
-						//Console.WriteLine("MouseMove@" + logicPos + ":" + expression);
 						if (expression != null && expression.Length > 0) {
 							if (expression == oldExpression && oldLine == logicPos.Y) {
 								// same expression in same line -> reuse old tooltip
@@ -360,7 +363,7 @@ namespace ICSharpCode.Core
 								// otherwise textArea will close the tooltip.
 							} else {
 								// Look if it is variable
-								ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, xPosition + 1, textArea.MotherTextEditorControl.FileName, textContent);
+								ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, logicPos.X + 1, textArea.MotherTextEditorControl.FileName, textContent);
 								string value = GetText(result);
 								if (value != null) {
 									#if DEBUG

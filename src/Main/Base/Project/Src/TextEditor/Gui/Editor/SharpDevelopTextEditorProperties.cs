@@ -267,15 +267,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		public bool EnableCodeCompletion {
-			get {
-				return properties.Get("EnableCodeCompletion", true);
-			}
-			set {
-				properties.Set("EnableCodeCompletion", value);
-			}
-		}
-		
 		public BracketMatchingStyle  BracketMatchingStyle {
 			get {
 				return (BracketMatchingStyle)properties.Get("BracketMatchingStyle", BracketMatchingStyle.After);

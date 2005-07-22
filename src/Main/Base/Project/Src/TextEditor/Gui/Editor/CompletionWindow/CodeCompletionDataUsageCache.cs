@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
@@ -46,11 +47,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// <summary>Minimum number how often an item must be used to be saved to
 		/// the file. Items with less uses than this count also get a priority penalty.
 		/// (Because the first use would otherwise always be 100% priority)</summary>
-		const int MinUsesForSave = 3;
+		const int MinUsesForSave = 2;
 		/// <summary>Minimum percentage (Uses * 100 / ShowCount) an item must have to be saved.</summary>
-		const int MinPercentageForSave = 2; // 2%
-		/// <summary>Maximum number of items to save.</summary>
-		const int MaxSaveItems = 10;
+		const int MinPercentageForSave = 1;
 		
 		public static string CacheFilename {
 			get {
@@ -104,7 +103,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			writer.Write(magic);
 			writer.Write(version);
-			if (dict.Count < MaxSaveItems) {
+			int maxSaveItems = CodeCompletionOptions.DataUsageCacheItemCount;
+			if (dict.Count < maxSaveItems) {
 				writer.Write(dict.Count);
 				foreach (KeyValuePair<string, UsageStruct> entry in dict) {
 					writer.Write(entry.Key);
@@ -116,15 +116,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				List<KeyValuePair<string, UsageStruct>> saveItems = new List<KeyValuePair<string, UsageStruct>>();
 				foreach (KeyValuePair<string, UsageStruct> entry in dict) {
 					if (entry.Value.Uses > MinUsesForSave &&
-					    entry.Value.Uses * 100 / entry.Value.ShowCount > MinPercentageForSave)
+					    entry.Value.Uses * 100 / entry.Value.ShowCount >= MinPercentageForSave)
 					{
 						saveItems.Add(entry);
 					}
 				}
-				if (saveItems.Count > MaxSaveItems) {
+				if (saveItems.Count > maxSaveItems) {
 					saveItems.Sort(new SaveItemsComparer());
 				}
-				int count = Math.Min(MaxSaveItems, saveItems.Count);
+				int count = Math.Min(maxSaveItems, saveItems.Count);
 				writer.Write(count);
 				for (int i = 0; i < count; i++) {
 					KeyValuePair<string, UsageStruct> entry = saveItems[i];
@@ -159,6 +159,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public static double GetPriority(string dotnetName, bool incrementShowCount)
 		{
+			if (!CodeCompletionOptions.DataUsageCacheEnabled)
+				return 0;
 			if (dict == null) {
 				LoadCache();
 			}
@@ -177,6 +179,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public static void IncrementUsage(string dotnetName)
 		{
+			if (!CodeCompletionOptions.DataUsageCacheEnabled)
+				return;
 			if (dict == null) {
 				LoadCache();
 			}

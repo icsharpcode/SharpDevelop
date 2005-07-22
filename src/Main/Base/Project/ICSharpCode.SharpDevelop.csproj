@@ -679,6 +679,9 @@
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CtrlSpaceCompletionDataProvider.cs" />
     <Compile Include="Src\Dom\Implementations\CombinedReturnType.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionDataUsageCache.cs" />
+    <EmbeddedResource Include="Resources\CodeCompletionOptionPanel.xfrm" />
+    <Compile Include="Src\TextEditor\Gui\OptionPanels\CodeCompletionPanel.cs" />
+    <Compile Include="Src\Dom\CodeCompletionOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

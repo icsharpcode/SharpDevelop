@@ -241,9 +241,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			
 			try {
-				foreach (ICodeCompletionBinding ccBinding in CodeCompletionBindings) {
-					if (ccBinding.HandleKeyPress(this, ch))
-						return false;
+				if (ICSharpCode.SharpDevelop.Dom.CodeCompletionOptions.EnableCodeCompletion) {
+					foreach (ICodeCompletionBinding ccBinding in CodeCompletionBindings) {
+						if (ccBinding.HandleKeyPress(this, ch))
+							return false;
+					}
 				}
 				string word = GetWordBeforeCaret();
 				if (word != null) {

@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krger" email="mike@icsharpcode.net"/>
+//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
 //     <version value="$version"/>
 // </file>
 
@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			using (Bitmap newBitmap = new Bitmap(1, 1)) {
 				using (Graphics g  = Graphics.FromImage(newBitmap)) {
 					using (Font f = new Font(fontFamily, 10)) {
-						// determine if the length of i == m because I see no other way of 
+						// determine if the length of i == m because I see no other way of
 						// getting if a font is monospaced or not.
 						int w1 = (int)g.MeasureString("i.", f).Width;
 						int w2 = (int)g.MeasureString("mw", f).Width;
@@ -78,9 +78,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 		public override void LoadPanelContents()
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.GeneralTextEditorPanel.xfrm"));
-//			
+			
 			((CheckBox)ControlDictionary["enableDoublebufferingCheckBox"]).Checked = ((Properties)CustomizationObject).Get("DoubleBuffer", true);
-			((CheckBox)ControlDictionary["enableCodeCompletionCheckBox"]).Checked  = ((Properties)CustomizationObject).Get("EnableCodeCompletion", true);
+			//((CheckBox)ControlDictionary["enableCodeCompletionCheckBox"]).Checked  = ((Properties)CustomizationObject).Get("EnableCodeCompletion", true);
 			((CheckBox)ControlDictionary["enableFoldingCheckBox"]).Checked         = ((Properties)CustomizationObject).Get("EnableFolding", true);
 			((CheckBox)ControlDictionary["showQuickClassBrowserCheckBox"]).Checked = ((Properties)CustomizationObject).Get("ShowQuickClassBrowserPanel", true);
 			
@@ -197,7 +197,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			((Properties)CustomizationObject).Set("DoubleBuffer",         ((CheckBox)ControlDictionary["enableDoublebufferingCheckBox"]).Checked);
 			((Properties)CustomizationObject).Set("UseAntiAliasFont",     ((CheckBox)ControlDictionary["enableAAFontRenderingCheckBox"]).Checked);
 			((Properties)CustomizationObject).Set("MouseWheelTextZoom",   ((CheckBox)ControlDictionary["mouseWheelZoomCheckBox"]).Checked);
-			((Properties)CustomizationObject).Set("EnableCodeCompletion", ((CheckBox)ControlDictionary["enableCodeCompletionCheckBox"]).Checked);
+			//((Properties)CustomizationObject).Set("EnableCodeCompletion", ((CheckBox)ControlDictionary["enableCodeCompletionCheckBox"]).Checked);
 			((Properties)CustomizationObject).Set("EnableFolding",        ((CheckBox)ControlDictionary["enableFoldingCheckBox"]).Checked);
 			((Properties)CustomizationObject).Set("DefaultFont",          CurrentFont.ToString());
 			((Properties)CustomizationObject).Set("Encoding",             CharacterEncodings.GetCodePageByIndex(((ComboBox)ControlDictionary["textEncodingComboBox"]).SelectedIndex));

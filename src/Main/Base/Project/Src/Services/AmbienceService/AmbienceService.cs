@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -38,15 +38,26 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public static bool UseProjectAmbienceIfPossible {
+			get {
+				return PropertyService.Get("SharpDevelop.UI.UseProjectAmbience", true);
+			}
+			set {
+				PropertyService.Set("SharpDevelop.UI.UseProjectAmbience", value);
+			}
+		}
+		
 		static AmbienceReflectionDecorator defaultAmbience;
 		
 		public static AmbienceReflectionDecorator CurrentAmbience {
 			get {
-				ICSharpCode.SharpDevelop.Project.IProject p = ICSharpCode.SharpDevelop.Project.ProjectService.CurrentProject;
-				if (p != null) {
-					IAmbience ambience = p.Ambience;
-					if (ambience != null) {
-						return new AmbienceReflectionDecorator(ambience);
+				if (UseProjectAmbienceIfPossible) {
+					ICSharpCode.SharpDevelop.Project.IProject p = ICSharpCode.SharpDevelop.Project.ProjectService.CurrentProject;
+					if (p != null) {
+						IAmbience ambience = p.Ambience;
+						if (ambience != null) {
+							return new AmbienceReflectionDecorator(ambience);
+						}
 					}
 				}
 				if (defaultAmbience == null) {

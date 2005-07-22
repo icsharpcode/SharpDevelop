@@ -22,7 +22,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public override int ImageIndex {
 			get {
-				
 				return ClassBrowserIconService.PropertyIndex;
 			}
 		}
@@ -37,9 +36,28 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				return Char.ToUpper(fieldName[0]) + fieldName.Substring(1);
 		}
 		
+		bool beginWithNewLine;
+		
+		/// <summary>
+		/// Gets/Sets if the CodeGenerator should insert a blank line in front of the
+		/// first property.
+		/// </summary>
+		public bool BeginWithNewLine {
+			get {
+				return beginWithNewLine;
+			}
+			set {
+				beginWithNewLine = value;
+			}
+		}
+		
 		protected override void StartGeneration(IList items, string fileExtension)
 		{
 			for (int i = 0; i < items.Count; ++i) {
+				if ((i > 0 || BeginWithNewLine) && BlankLinesBetweenMembers) {
+					Return();
+					IndentLine();
+				}
 				FieldWrapper fw = (FieldWrapper)items[i];
 				if (fileExtension == ".vb") {
 					editActionHandler.InsertString("Public " + (fw.Field.IsStatic ? "Shared " : "") + "Property " + GetPropertyName(fw.Field.Name) + " As " + vba.Convert(fw.Field.ReturnType));
@@ -65,8 +83,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				} else {
 					editActionHandler.InsertChar('}');
 				}
-				
 				++numOps;
+				
 				Return();
 				IndentLine();
 			}

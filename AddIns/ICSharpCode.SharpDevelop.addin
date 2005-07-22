@@ -1702,6 +1702,9 @@
 		<DialogPanel id = "Behavior"
 		             label = "${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.PanelName}"
 		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
+		<DialogPanel id = "CodeCompletion"
+		             label = "${res:Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName}"
+		             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.CodeCompletionPanel"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
@@ -1718,6 +1721,9 @@
 			<DialogPanel id = "Behavior"
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.BehaviorTextEditorPanel"/>
+			<DialogPanel id = "CodeCompletion"
+			             label = "${res:Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName}"
+			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.CodeCompletionPanel"/>
 		</DialogPanel>
 	</Path>
 	
