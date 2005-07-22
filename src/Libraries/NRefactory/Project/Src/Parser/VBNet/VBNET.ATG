@@ -543,17 +543,20 @@ TypeParameterList<List<TemplateDefinition> templates>
 (.
 	TemplateDefinition template;
 .) =
-	"(" "Of" TypeParameter<out template>
-	(.
-		if (template != null) templates.Add(template);
-	.)
-	{
-		"," TypeParameter<out template>
+	[
+		IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
+		"(" "Of" TypeParameter<out template>
 		(.
 			if (template != null) templates.Add(template);
 		.)
-	}
-	")"
+		{
+			"," TypeParameter<out template>
+			(.
+				if (template != null) templates.Add(template);
+			.)
+		}
+		")"
+	]
 .
 
 /* 4.9.1 */
@@ -600,7 +603,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 						newType.Type       = Types.Class;
 					.)
 	Identifier			 (. newType.Name = t.val; newType.StartLocation = t.EndLocation; .) 
-	[ TypeParameterList<newType.Templates> ]
+	TypeParameterList<newType.Templates>
 	EndOfStmt
 	[ ClassBaseType<out name> (. newType.BaseTypes.Add(name); .) ]
 	{ TypeImplementsClause<out names> (. newType.BaseTypes.AddRange(names); .) }
@@ -634,7 +637,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			newType.Type = Types.Struct; ArrayList baseInterfaces = new ArrayList();
 		.)
 	Identifier			 (. newType.Name = t.val; newType.StartLocation = t.EndLocation; .) 
-	[ TypeParameterList<newType.Templates> ]
+	TypeParameterList<newType.Templates>
 	EOL { TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces);.) }
 	StructureBody<newType>
 	(.
@@ -670,7 +673,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			newType.Type = Types.Interface;ArrayList baseInterfaces;
 		.)
 	Identifier			 (. newType.Name = t.val; newType.StartLocation = t.EndLocation; .) 
-	[ TypeParameterList<newType.Templates> ]
+	TypeParameterList<newType.Templates>
 	EndOfStmt { InterfaceBase<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces.ToArray()); .) }
 	InterfaceBody<newType>
 	(.
@@ -688,9 +691,11 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 	.)
 	(
 		"Sub" Identifier (. delegateDeclr.Name = t.val; .)
+		TypeParameterList<delegateDeclr.Templates>
 		[ "(" [ FormalParameterList<p> ] ")" (. delegateDeclr.Parameters = p; .) ]
 		|
 		"Function" Identifier (. delegateDeclr.Name = t.val; .)
+		TypeParameterList<delegateDeclr.Templates>
 		[ "(" [ FormalParameterList<p> ] ")" (. delegateDeclr.Parameters = p; .) ]
 		[ "As" (. TypeReference type; .) TypeName<out type> (. delegateDeclr.ReturnType = type; .)]
 	)
@@ -771,7 +776,9 @@ InterfaceBody<TypeDeclaration newType> =
 */
 InterfaceMemberDecl
 	(.
-		TypeReference type =null; List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
+		TypeReference type =null;
+		List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
+		List<TemplateDefinition> templates = new List<TemplateDefinition>();
 		AttributeSection section, returnTypeAttributeSection = null;
 		Modifiers mod = new Modifiers();
 		List<AttributeSection> attributes = new List<AttributeSection>();
@@ -798,18 +805,21 @@ InterfaceMemberDecl
 		"Sub"
 		(. mod.Check(Modifier.VBInterfaceMethods); .)
 		Identifier (. name = t.val; .)
+		TypeParameterList<templates>
 		[ "(" [ FormalParameterList<p> ] ")" ]
 		EOL
 		(.
 			MethodDeclaration md = new MethodDeclaration(name, mod.Modifier, null, p, attributes);
 			md.TypeReference = new TypeReference("", "System.Void");
 			md.EndLocation = t.EndLocation;
+			md.Templates = templates;
 			compilationUnit.AddChild(md);
 		.)
 		|
 		"Function"
 		(. mod.Check(Modifier.VBInterfaceMethods); .)
 		Identifier (. name = t.val; .)
+		TypeParameterList<templates>
 		[ "(" [ FormalParameterList<p> ] ")" ]
 		[ "As" { AttributeSection<out returnTypeAttributeSection> } TypeName<out type> ]
 		(.
@@ -819,6 +829,7 @@ InterfaceMemberDecl
 			MethodDeclaration md = new MethodDeclaration(name, mod.Modifier, type, p, attributes);
 			md.ReturnTypeAttributeSection = returnTypeAttributeSection;
 			md.EndLocation = t.EndLocation;
+			md.Templates = templates;
 			compilationUnit.AddChild(md);
 		.)
 		EOL
@@ -881,8 +892,11 @@ ClassBaseType<out string name>
 /* 7.6.1 */
 StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	(.
-		TypeReference type = null; List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
-		Statement stmt = null; List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>();
+		TypeReference type = null;
+		List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
+		Statement stmt = null;
+		List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>();
+		List<TemplateDefinition> templates = new List<TemplateDefinition>();
 	.)=
 	NonModuleDeclaration<m, attributes>
 	| /* 9.2.1 */
@@ -900,6 +914,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			name = t.val;
 			m.Check(Modifier.VBMethods);
 		.)
+		TypeParameterList<templates>
 		[ "(" [ FormalParameterList<p> ] ")" ]
 		[
 			(
@@ -918,7 +933,8 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				methodDeclaration.StartLocation = startPos;
 				methodDeclaration.EndLocation   = endLocation;
 				methodDeclaration.TypeReference = new TypeReference("", "System.Void");
-			
+				
+				methodDeclaration.Templates = templates;
 				methodDeclaration.HandlesClause = handlesClause;
 				methodDeclaration.ImplementsClause = implementsClause;
 				
@@ -931,6 +947,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				methodDeclaration.EndLocation   = endLocation;
 				methodDeclaration.TypeReference = new TypeReference("", "System.Void");
 				
+				methodDeclaration.Templates = templates;
 				methodDeclaration.HandlesClause = handlesClause;
 				methodDeclaration.ImplementsClause = implementsClause;
 				
@@ -971,6 +988,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		AttributeSection returnTypeAttributeSection = null;
 	.)
 	Identifier			(. name = t.val; .)
+	TypeParameterList<templates>
 	[ "("	[ FormalParameterList<p> ] ")" ]
 	["As"  { AttributeSection<out returnTypeAttributeSection> } TypeName<out type> ]
 	(.
@@ -993,7 +1011,9 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				methodDeclaration = new MethodDeclaration(name, m.Modifier,  type, p, attributes);
 				methodDeclaration.StartLocation = startPos;
 				methodDeclaration.EndLocation   = t.EndLocation;
+				
 				methodDeclaration.HandlesClause = handlesClause;
+				methodDeclaration.Templates     = templates;
 				methodDeclaration.ImplementsClause = implementsClause;
 				methodDeclaration.ReturnTypeAttributeSection = returnTypeAttributeSection;
 				compilationUnit.AddChild(methodDeclaration);
@@ -1004,6 +1024,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				methodDeclaration.StartLocation = startPos;
 				methodDeclaration.EndLocation   = t.EndLocation;
 				
+				methodDeclaration.Templates     = templates;
 				methodDeclaration.HandlesClause = handlesClause;
 				methodDeclaration.ImplementsClause = implementsClause;
 				methodDeclaration.ReturnTypeAttributeSection = returnTypeAttributeSection;
@@ -1106,7 +1127,8 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	"Const" (.  m.Add(Modifier.Const);  .)
 	(.
 		FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
-		fd.StartLocation = t.Location;List<VariableDeclaration> constantDeclarators = new List<VariableDeclaration>();
+		fd.StartLocation = t.Location;
+		List<VariableDeclaration> constantDeclarators = new List<VariableDeclaration>();
 	.)
 	ConstantDeclarator<constantDeclarators>
 	{ "," ConstantDeclarator<constantDeclarators> }
@@ -1123,7 +1145,8 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	"Property"
 	(.
 		m.Check(Modifier.VBProperties);
-		Point startPos = t.Location;ArrayList implementsClause = null;
+		Point startPos = t.Location;
+		ArrayList implementsClause = null;
 	.)
 	Identifier (. string propertyName = t.val; .)
 	[ "("	[ FormalParameterList<p> ] ")" ]
@@ -1173,7 +1196,8 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 
 /* 9.7 */
 AccessorDecls<out PropertyGetRegion getBlock, out PropertySetRegion setBlock>
-	(.List<AttributeSection> attributes = new List<AttributeSection>(); 
+	(.
+		List<AttributeSection> attributes = new List<AttributeSection>();
 		AttributeSection section;
 		getBlock = null;
 		setBlock = null; 
