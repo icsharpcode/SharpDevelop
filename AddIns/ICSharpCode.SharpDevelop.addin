@@ -690,8 +690,6 @@
 		             tooltip = "${res:XML.MainMenu.EditMenu.Redo.Description}"
 		             class   = "ICSharpCode.SharpDevelop.Commands.Redo"/>
 
-		<ToolbarItem id = "CutSeparator" type = "Separator"/>
-		
 		<ToolbarItem id = "CompileSeparator" type = "Separator"/>
 		
 		<ComplexCondition action="Disable">
