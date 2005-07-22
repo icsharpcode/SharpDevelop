@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				while (stack.Count > 0) {
 					ISolutionFolder currentFolder = stack.Pop();
-				
+					
 					if (currentFolder is IProject) {
 						yield return ((IProject)currentFolder);
 					}
@@ -76,7 +76,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				while (stack.Count > 0) {
 					ISolutionFolder currentFolder = stack.Pop();
-				
+					
 					if (currentFolder is ISolutionFolderContainer) {
 						ISolutionFolderContainer currentContainer = (ISolutionFolderContainer)currentFolder;
 						yield return currentContainer;
@@ -113,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					ISolutionFolder currentFolder = stack.Pop();
 					
 					yield return currentFolder;
-				
+					
 					if (currentFolder is ISolutionFolderContainer) {
 						ISolutionFolderContainer currentContainer = (ISolutionFolderContainer)currentFolder;
 						foreach (ISolutionFolder subFolder in currentContainer.Folders) {
@@ -240,10 +240,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			StringBuilder projectSection        = new StringBuilder();
 			StringBuilder nestedProjectsSection = new StringBuilder();
 			
-			Stack<ISolutionFolder> stack = new Stack<ISolutionFolder>();
-			
-			foreach (ISolutionFolder solutionFolder in Folders) {
-				stack.Push(solutionFolder);
+			List<ISolutionFolder> folderList = Folders;
+			Stack<ISolutionFolder> stack = new Stack<ISolutionFolder>(folderList.Count);
+			// push folders in reverse order because it's a stack
+			for (int i = folderList.Count - 1; i >= 0; i--) {
+				stack.Push(folderList[i]);
 			}
 			
 			while (stack.Count > 0) {
@@ -253,7 +254,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				projectSection.Append(currentFolder.TypeGuid);
 				projectSection.Append("\")");
 				projectSection.Append(" = ");
-				projectSection.Append('"');projectSection.Append(currentFolder.Name);projectSection.Append("\", ");
+				projectSection.Append('"');
+				projectSection.Append(currentFolder.Name);
+				projectSection.Append("\", ");
 				string relativeLocation;
 				if (currentFolder is IProject) {
 					currentFolder.Location = ((IProject)currentFolder).FileName;
@@ -263,12 +266,16 @@ namespace ICSharpCode.SharpDevelop.Project
 				} else {
 					relativeLocation = currentFolder.Location;
 				}
-				projectSection.Append('"');projectSection.Append(relativeLocation);projectSection.Append("\", ");
-				projectSection.Append('"');projectSection.Append(currentFolder.IdGuid);projectSection.Append("\"");
-				projectSection.Append(Environment.NewLine);
+				projectSection.Append('"');
+				projectSection.Append(relativeLocation);
+				projectSection.Append("\", ");
+				projectSection.Append('"');
+				projectSection.Append(currentFolder.IdGuid);
+				projectSection.Append("\"");
+				projectSection.AppendLine();
 				
 				if (currentFolder is IProject) {
-//					IProject project = (IProject)currentFolder;
+					// IProject project = (IProject)currentFolder;
 					// currently nothing to do. (I don't know if projects may have sections).
 				} else if (currentFolder is SolutionFolder) {
 					SolutionFolder folder = (SolutionFolder)currentFolder;
@@ -318,25 +325,25 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			
 			using (StreamWriter sw = new StreamWriter(fileName)) {
-				sw.Write("Microsoft Visual Studio Solution File, Format Version 9.00");sw.Write(Environment.NewLine);
+				sw.WriteLine("Microsoft Visual Studio Solution File, Format Version 9.00");
 				Version v = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
-				sw.Write("# SharpDevelop " + v.Major + "." + v.Minor + "." + v.Build + "." + v.Revision);sw.Write(Environment.NewLine);
+				sw.WriteLine("# SharpDevelop " + v.Major + "." + v.Minor + "." + v.Build + "." + v.Revision);
 				sw.Write(projectSection.ToString());
 				
 				sw.Write(globalSection.ToString());
 				
 				if (nestedProjectsSection.Length > 0) {
-					sw.Write("\tGlobalSection(NestedProjects) = preSolution");sw.Write(Environment.NewLine);
+					sw.WriteLine("\tGlobalSection(NestedProjects) = preSolution");
 					sw.Write(nestedProjectsSection.ToString());
-					sw.Write("\tEndGlobalSection");sw.Write(Environment.NewLine);
+					sw.WriteLine("\tEndGlobalSection");
 				}
 				
-				sw.Write("EndGlobal");sw.Write(Environment.NewLine);
+				sw.WriteLine("EndGlobal");
 			}
 		}
 		
 		static Regex versionPattern       = new Regex("Microsoft Visual Studio Solution File, Format Version\\s+(?<Version>.*)", RegexOptions.Compiled);
-			
+		
 		static Regex projectLinePattern   = new Regex("Project\\(\"(?<ProjectGuid>.*)\"\\)\\s+=\\s+\"(?<Title>.*)\",\\s*\"(?<Location>.*)\",\\s*\"(?<Guid>.*)\"", RegexOptions.Compiled);
 		static Regex globalSectionPattern = new Regex("\\s*GlobalSection\\((?<Name>.*)\\)\\s*=\\s*(?<Type>.*)", RegexOptions.Compiled);
 		
@@ -459,7 +466,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		#endregion
-	
+		
 		public CompilerResults Build()
 		{
 			return MSBuildProject.RunMSBuild(FileName, null);

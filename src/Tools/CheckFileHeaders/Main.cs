@@ -1,0 +1,319 @@
+// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Text;
+using System.Text.RegularExpressions;
+
+namespace CheckFileHeaders
+{
+	class MainClass
+	{
+		static int Main(string[] args)
+		{
+			try {
+				MainClass m = new MainClass();
+				if (args.Length == 0) {
+					m.Run(@"D:\Corsavy\SharpDevelop\src\Main\StartUp");
+				} else {
+					m.Run(args[0]);
+				}
+			} catch (Exception ex) {
+				Console.WriteLine(ex);
+			}
+			Console.Write("Press any key to continue...");
+			Console.ReadKey(true);
+			return 0;
+		}
+		
+		void Run(string dir)
+		{
+			foreach (string file in Directory.GetFiles(dir, "*.cs")) {
+				ProcessFile(file);
+			}
+			foreach (string subdir in Directory.GetDirectories(dir)) {
+				if (!subdir.EndsWith("\\.svn")) {
+					Run(subdir);
+				}
+			}
+		}
+		
+		void ProcessFile(string file)
+		{
+			string content = GetFileContent(file);
+			string author, email;
+			int lastLine;
+			int headerType = AnalyzeHeader(content, out author, out email, out lastLine);
+			if (author == null)
+				author = "";
+			if (author == "") {
+				if (file.IndexOf("Main\\Core\\") >= 0) {
+					author = "Omnibrain";
+				} else {
+					Console.WriteLine(file);
+					Console.Write("  Mike? (Y/N): ");
+					if (char.ToUpper(Console.ReadKey().KeyChar) == 'Y') {
+						author = "Omnibrain";
+					}
+					Console.WriteLine();
+				}
+			}
+			bool ok = true;
+			switch (author) {
+				case "Mike Krger":
+				case "Mike Krüger":
+				case "Mike Krueger":
+				case "Omnibrain":
+					author = "Mike Krüger";
+					email = "mike@icsharpcode.net";
+					break;
+				case "Daniel Grunwald":
+					email = "daniel@danielgrunwald.de";
+					break;
+				default:
+					ok = false;
+					break;
+			}
+			if (ok) {
+				StringBuilder builder = new StringBuilder();
+				builder.AppendLine("// <file>");
+				builder.AppendLine("//     <copyright see=\"prj:///doc/copyright.txt\">2002-2005 AlphaSierraPapa</copyright>");
+				builder.AppendLine("//     <license see=\"prj:///doc/license.txt\">GNU General Public License</license>");
+				builder.Append("//     <owner name=\"");
+				builder.Append(author);
+				builder.Append("\" email=\"");
+				builder.Append(email);
+				builder.AppendLine("\"/>");
+				builder.AppendLine("//     <version>$Revision$</version>");
+				builder.AppendLine("// </file>");
+				builder.AppendLine();
+				int offset = FindLineOffset(content, lastLine + 1);
+				builder.Append(content.Substring(offset).Trim());
+				builder.AppendLine();
+				string newContent = builder.ToString();
+				if (newContent != content) {
+					Console.WriteLine("Write " + file);
+					using (StreamWriter w = new StreamWriter(file, false, GetOptimalEncoding(newContent))) {
+						w.Write(newContent);
+					}
+				}
+			} else {
+				Console.WriteLine("error, did not update " + file);
+			}
+		}
+		
+		Encoding GetOptimalEncoding(string content)
+		{
+			foreach (char ch in content) {
+				if ((int)ch >= 128)
+					return Encoding.UTF8;
+			}
+			return Encoding.ASCII;
+		}
+		
+		int FindLineOffset(string content, int lineNumber)
+		{
+			int num = 0;
+			for (int i = 0; i < content.Length; i++) {
+				if (num == lineNumber)
+					return i;
+				if (content[i] == '\n')
+					num++;
+			}
+			throw new ApplicationException("Cannot find line " + lineNumber);
+		}
+		
+		#region AnalyzeHeader
+		Regex gplRegex = new Regex(@"// Copyright \(C\) 200\d(?:\s?-\s?200\d)?(?:\s?,\s?200\d)*\s+(\w+ \w+) \((\w+@\w+\.\w+)\)", RegexOptions.IgnoreCase);
+		Regex xmlRegex = new Regex(@"<owner name=""(\w+ \w+)"" email=""(\w+@\w+\.\w+)""\s?/>");
+		Regex sdRegex = new Regex(@"\* User: .*");
+		
+		// Returns:
+		// 0 = no header
+		// 1 = XML header
+		// 2 = SharpDevelop header
+		// 3 = GPL header
+		// 4 = unknown header
+		int AnalyzeHeader(string content, out string author, out string email, out int lastLine)
+		{
+			author = null;
+			email = null;
+			int lineNumber = -1;
+			
+			byte state = 0;
+			// state:
+			// 0 = start
+			// 1 = parse XML header
+			// 2 = parse SharpDevelop header
+			// 3 = search end of GPL header
+			using (StringReader r = new StringReader(content)) {
+				string line;
+				while ((line = r.ReadLine()) != null) {
+					lineNumber++;
+					line = line.Trim();
+					if (state == 0) {
+						if (line.Length == 0)
+							continue;
+						if (line.StartsWith("using ")) {
+							lastLine = -1;
+							return 0;
+						} else if (line == "// <file>") {
+							state = 1;
+						} else if (line == "/*") {
+							// ignore
+						} else if (line == "* Created by SharpDevelop") {
+							state = 2;
+						} else if (gplRegex.IsMatch(line)) {
+							Match m = gplRegex.Match(line);
+							author = m.Groups[1].Value;
+							email = m.Groups[2].Value;
+							state = 3;
+						} else if (line.StartsWith("//")) {
+							// ignore
+						} else {
+							break;
+						}
+					} else if (state == 1) {
+						if (line == "// </file>") {
+							lastLine = lineNumber;
+							return 1;
+						} else if (xmlRegex.IsMatch(line)) {
+							Match m = xmlRegex.Match(line);
+							author = m.Groups[1].Value;
+							email = m.Groups[2].Value;
+						}
+					} else if (state == 2) {
+						if (line == "*/") {
+							lastLine = lineNumber;
+							return 2;
+						} else if (sdRegex.IsMatch(line)) {
+							Match m = sdRegex.Match(line);
+							author = m.Groups[1].Value;
+							email = m.Groups[2].Value;
+						}
+					} else if (state == 3) {
+						if (line.Length == 0)
+							continue;
+						if (!line.StartsWith("//")) {
+							lastLine = lineNumber;
+							return 3;
+						}
+					} else {
+						throw new NotSupportedException();
+					}
+				}
+			}
+			lastLine = lineNumber - 1;
+			return 4;
+		}
+		#endregion
+		
+		#region Reading files
+		string GetFileContent(string file)
+		{
+			using (StreamReader r = OpenFile(file)) {
+				return r.ReadToEnd();
+			}
+		}
+		
+		StreamReader OpenFile(string fileName)
+		{
+			bool autodetectEncoding = true;
+			FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read);
+			if (autodetectEncoding && fs.Length > 3) {
+				// the autodetection of StreamReader is not capable of detecting the difference
+				// between ISO-8859-1 and UTF-8 without BOM.
+				int firstByte = fs.ReadByte();
+				int secondByte = fs.ReadByte();
+				switch ((firstByte << 8) | secondByte) {
+					case 0x0000: // either UTF-32 Big Endian or a binary file; use StreamReader
+					case 0xfffe: // Unicode BOM (UTF-16 LE or UTF-32 LE)
+					case 0xfeff: // UTF-16 BE BOM
+					case 0xefbb: // start of UTF-8 BOM
+						// StreamReader autodetection works
+						fs.Position = 0;
+						return new StreamReader(fs);
+					default:
+						return AutoDetect(fs, (byte)firstByte, (byte)secondByte);
+				}
+			} else {
+				return new StreamReader(fs);
+			}
+		}
+		
+		StreamReader AutoDetect(FileStream fs, byte firstByte, byte secondByte)
+		{
+			int max = (int)Math.Min(fs.Length, 500000); // look at max. 500 KB
+			const int ASCII = 0;
+			const int Error = 1;
+			const int UTF8  = 2;
+			const int UTF8Sequence = 3;
+			int state = ASCII;
+			int sequenceLength = 0;
+			byte b;
+			for (int i = 0; i < max; i++) {
+				if (i == 0) {
+					b = firstByte;
+				} else if (i == 1) {
+					b = secondByte;
+				} else {
+					b = (byte)fs.ReadByte();
+				}
+				if (b < 0x80) {
+					// normal ASCII character
+					if (state == UTF8Sequence) {
+						state = Error;
+						break;
+					}
+				} else if (b < 0xc0) {
+					// 10xxxxxx : continues UTF8 byte sequence
+					if (state == UTF8Sequence) {
+						--sequenceLength;
+						if (sequenceLength < 0) {
+							state = Error;
+							break;
+						} else if (sequenceLength == 0) {
+							state = UTF8;
+						}
+					} else {
+						state = Error;
+						break;
+					}
+				} else if (b > 0xc2 && b < 0xf5) {
+					// beginning of byte sequence
+					if (state == UTF8 || state == ASCII) {
+						state = UTF8Sequence;
+						if (b < 0xe0) {
+							sequenceLength = 1; // one more byte following
+						} else if (b < 0xf0) {
+							sequenceLength = 2; // two more bytes following
+						} else {
+							sequenceLength = 3; // three more bytes following
+						}
+					} else {
+						state = Error;
+						break;
+					}
+				} else {
+					// 0xc0, 0xc1, 0xf5 to 0xff are invalid in UTF-8 (see RFC 3629)
+					state = Error;
+					break;
+				}
+			}
+			fs.Position = 0;
+			switch (state) {
+				case Error:
+					return new StreamReader(fs, Encoding.Default);
+				default:
+					return new StreamReader(fs);
+			}
+		}
+		#endregion
+	}
+}

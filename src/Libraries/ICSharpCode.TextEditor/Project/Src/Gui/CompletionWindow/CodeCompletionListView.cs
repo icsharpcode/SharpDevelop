@@ -63,10 +63,6 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		public CodeCompletionListView(ICompletionData[] completionData)
 		{
-			if (this.completionData != null) {
-				Array.Clear(this.completionData, 0, completionData.Length);
-			}
-			
 			Array.Sort(completionData);
 			this.completionData = completionData;
 			
@@ -89,16 +85,6 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			int oldSelectedItem = selectedItem;
 			int oldFirstItem    = firstItem;
 			
-			if (index < 0) {
-				selectedItem = -1;
-				if (oldSelectedItem >= 0) {
-					Invalidate(new Rectangle(0, (oldSelectedItem - firstItem) * ItemHeight, Width, (oldSelectedItem - firstItem + 1) * ItemHeight));
-				}
-				Update();
-				OnSelectedItemChanged(EventArgs.Empty);
-				return;
-			}
-			
 			index = Math.Max(0, index);
 			selectedItem = Math.Max(0, Math.Min(completionData.Length - 1, index));
 			if (selectedItem < firstItem) {
@@ -118,6 +104,17 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				Update();
 				OnSelectedItemChanged(EventArgs.Empty);
 			}
+		}
+		
+		public void ClearSelection()
+		{
+			if (selectedItem < 0)
+				return;
+			int itemNum = selectedItem - firstItem;
+			selectedItem = -1;
+			Invalidate(new Rectangle(0, itemNum * ItemHeight, Width, (itemNum + 1) * ItemHeight + 1));
+			Update();
+			OnSelectedItemChanged(EventArgs.Empty);
 		}
 		
 		public void PageDown()
@@ -170,14 +167,25 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					} else {
 						quality = 0;
 					}
-					if (bestQuality < quality || bestQuality == quality && bestPriority < priority) {
+					bool useThisItem;
+					if (bestQuality < quality) {
+						useThisItem = true;
+					} else {
+						useThisItem = bestQuality == quality && bestPriority < priority;
+						if (useThisItem && bestIndex == i)
+							useThisItem = false;
+					}
+					if (useThisItem) {
 						bestIndex = i;
 						bestPriority = priority;
 						bestQuality = quality;
 					}
 				}
 			}
-			SelectIndex(bestIndex);
+			if (bestIndex < 0)
+				ClearSelection();
+			else
+				SelectIndex(bestIndex);
 		}
 		
 		protected override void OnPaint(PaintEventArgs pe)
