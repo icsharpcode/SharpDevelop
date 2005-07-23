@@ -46,14 +46,23 @@ namespace DebuggerLibrary
 				return currentValue.Type;
 			}
 		}
-		
-		public override VariableCollection SubVariables { 
+
+		public override bool MayHaveSubVariables {
 			get {
-				if (!IsEvaluated) {
+				if (IsEvaluated) {
+					return currentValue.MayHaveSubVariables;
+				} else {
+					return true;
+				}
+			}
+		}
+
+		protected override VariableCollection GetSubVariables()
+		{
+			if (!IsEvaluated) {
 					Evaluate();
 				}
-				return currentValue.SubVariables;
-			}
+			return currentValue.SubVariables;
 		}
 		
 		/// <summary>

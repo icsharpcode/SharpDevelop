@@ -62,6 +62,11 @@ namespace DebuggerLibrary
 			corModuleSuperclass = corModule;
 		}
 
+		public override bool MayHaveSubVariables {
+			get {
+				return true;
+			}
+		}
 
 		protected override unsafe VariableCollection GetSubVariables()
 		{

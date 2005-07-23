@@ -41,12 +41,16 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Pads\BaseClassItem.cs" />
     <Compile Include="Src\Pads\BreakPointsPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.cs" />
     <Compile Include="Src\Pads\ExceptionHistoryPad.cs" />
     <Compile Include="Src\Pads\LoadedModulesPad.cs" />
     <Compile Include="Src\Pads\LocalVarPad.cs" />
+    <Compile Include="Src\Pads\PlaceHolderItem.cs" />
     <Compile Include="Src\Pads\RunningThreadsPad.cs" />
+    <Compile Include="Src\Pads\VariableItem.cs" />
+    <Compile Include="Src\Pads\VariableListItem.cs" />
     <Compile Include="Src\Service\ExceptionForm.cs">
       <SubType>Form</SubType>
     </Compile>

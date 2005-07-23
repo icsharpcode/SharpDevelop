@@ -299,7 +299,7 @@ namespace DebuggerLibrary
 		public VariableCollection LocalVariables { 
 			get {
 				if (!IsDebugging) return VariableCollection.Empty;
-				return CurrentProcess.CurrentThread.CurrentFunction.GetLocalVariables();
+				return CurrentProcess.CurrentThread.CurrentFunction.GetVariables();
 			}
 		}
 

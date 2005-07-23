@@ -24,6 +24,26 @@ namespace DebuggerLibrary
 
 		}
 
+		public bool Contains(Variable variable)
+		{
+			foreach (Variable v in InnerList) {
+				if (v == variable) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		public bool Contains(string variableName)
+		{
+			foreach (Variable v in InnerList) {
+				if (v.Name == variableName) {
+					return true;
+				}
+			}
+			return false;
+		}
+
 		static VariableCollection()
 		{
 			Empty = new VariableCollection();
@@ -46,8 +66,7 @@ namespace DebuggerLibrary
 			}
 		}
 
-		public Variable this[string variableName]
-		{
+		public Variable this[string variableName] {
 			get {
 				foreach (Variable v in InnerList) {
 					if (v.Name == variableName) {

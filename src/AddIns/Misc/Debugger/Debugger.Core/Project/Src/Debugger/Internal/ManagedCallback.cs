@@ -89,8 +89,8 @@ namespace DebuggerLibrary
 		void ExitCallback_Paused(PausedReason reason)
 		{
 			if (reason != PausedReason.EvalComplete) {
-				debugger.OnDebuggingPaused(reason);
 				debugger.OnIsProcessRunningChanged();
+				debugger.OnDebuggingPaused(reason);
 			}
 			handlingCallback = false;
 		}

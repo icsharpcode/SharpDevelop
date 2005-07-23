@@ -105,6 +105,11 @@ namespace DebuggerLibrary
 			}
 		}
 
+		public override bool MayHaveSubVariables {
+			get {
+				return true;
+			}
+		}
 
 		protected override VariableCollection GetSubVariables()
 		{

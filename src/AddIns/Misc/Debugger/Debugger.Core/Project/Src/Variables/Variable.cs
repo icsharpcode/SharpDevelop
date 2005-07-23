@@ -53,7 +53,11 @@ namespace DebuggerLibrary
 			}	
 		}
 
-		public virtual VariableCollection SubVariables {
+		public abstract bool MayHaveSubVariables {
+			get;
+		}
+
+		public VariableCollection SubVariables {
 			get{
 				if (subVariables == null) subVariables = GetSubVariables();
 				return subVariables;

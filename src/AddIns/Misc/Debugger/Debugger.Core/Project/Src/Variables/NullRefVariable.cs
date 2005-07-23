@@ -40,5 +40,11 @@ namespace DebuggerLibrary
 		{
 			
 		}
+
+		public override bool MayHaveSubVariables {
+			get {
+				return false;
+			}
+		}
 	}
 }

@@ -72,5 +72,11 @@ namespace DebuggerLibrary
 		internal BuiltInVariable(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
 		{
 		}
+
+		public override bool MayHaveSubVariables {
+			get {
+				return false;
+			}
+		}
 	}
 }
