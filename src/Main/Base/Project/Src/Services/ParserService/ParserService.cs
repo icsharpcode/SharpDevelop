@@ -204,15 +204,27 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static object[] GetWorkbench()
+		{
+			IWorkbenchWindow activeWorkbenchWindow = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			if (activeWorkbenchWindow == null)
+				return null;
+			IBaseViewContent activeViewContent = activeWorkbenchWindow.ActiveViewContent;
+			if (activeViewContent == null)
+				return null;
+			return new object[] { activeViewContent, activeWorkbenchWindow.ViewContent };
+		}
+		
 		static void ParserUpdateStep()
 		{
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null && WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent != null) {
-				IEditable editable = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as IEditable;
+			object[] workbench = (object[])WorkbenchSingleton.SafeThreadCall(typeof(ParserService), "GetWorkbench");
+			if (workbench != null) {
+				IEditable editable = workbench[0] as IEditable;
 				if (editable != null) {
 					string fileName = null;
 					
-					IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent;
-					IParseableContent parseableContent = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as IParseableContent;
+					IViewContent viewContent = (IViewContent)workbench[1];
+					IParseableContent parseableContent = workbench[0] as IParseableContent;
 					
 					//ivoko: Pls, do not throw text = parseableContent.ParseableText away. I NEED it.
 					string text = null;

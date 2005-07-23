@@ -31,25 +31,18 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 	
-	public class StartWorkbenchCommand : AbstractCommand
+	public class StartWorkbenchCommand // : AbstractCommand
 	{
 		const string workbenchMemento = "WorkbenchMemento";
-		
-		EventHandler idleEventHandler;
-		bool isCalled = false;
 		
 		/// <remarks>
 		/// The worst workaround in the whole project
 		/// </remarks>
 		void ShowTipOfTheDay(object sender, EventArgs e)
 		{
-			if (isCalled) {
-				Application.Idle -= idleEventHandler;
-				return;
-			}
-			isCalled = true;
-			// show tip of the day
+			Application.Idle -= ShowTipOfTheDay;
 			
+			// show tip of the day
 			if (PropertyService.Get("ShowTipsAtStartup", true)) {
 				ViewTipOfTheDay dview = new ViewTipOfTheDay();
 				dview.Run();
@@ -110,49 +103,51 @@ namespace ICSharpCode.SharpDevelop.Commands
 				return false;
 			}
 		}
-
 		
-		public override void Run()
+		public void Run(string[] fileList)
 		{
 			Form f = (Form)WorkbenchSingleton.Workbench;
 			f.Show();
 			
-			idleEventHandler = new EventHandler(ShowTipOfTheDay);
-			Application.Idle += idleEventHandler;
+			Application.Idle += ShowTipOfTheDay;
 			
-			/*
 			bool didLoadCombineOrFile = false;
 			
-			foreach (string file in SplashScreenForm.GetRequestedFileList()) {
+			foreach (string file in fileList) {
 				didLoadCombineOrFile = true;
-				switch (System.IO.Path.GetExtension(file).ToUpper()) {
+				switch (Path.GetExtension(file).ToUpper()) {
 					case ".CMBX":
 					case ".PRJX":
+					case ".SLN":
+					case ".CSPROJ":
+					case ".VBPROJ":
 						FileUtility.ObservedLoad(new NamedFileOperationDelegate(ProjectService.LoadSolution), file);
 						break;
 					default:
 						try {
 							FileService.OpenFile(file);
 						} catch (Exception e) {
-							Console.WriteLine("unable to open file {0} exception was :\n{1}", file, e.ToString());
+							MessageService.ShowError(e, "unable to open file " + file);
 						}
 						break;
 				}
 			}
-			*/
-			// !didLoadCombineOrFile && 
+			
 			// load previous combine
-			if ((bool)PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
-				object recentOpenObj = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.MainWindow.RecentOpen");
-				if (recentOpenObj is ICSharpCode.Core.RecentOpen) {
-					ICSharpCode.Core.RecentOpen recOpen = (ICSharpCode.Core.RecentOpen)recentOpenObj;
-					if (recOpen.RecentProject.Count > 0) { 
-						ProjectService.LoadSolution(recOpen.RecentProject[0].ToString());
-					}
+			if (!didLoadCombineOrFile && PropertyService.Get("SharpDevelop.LoadPrevProjectOnStartup", false)) {
+				if (FileService.RecentOpen.RecentProject.Count > 0) {
+					ProjectService.LoadSolution(FileService.RecentOpen.RecentProject[0].ToString());
+					didLoadCombineOrFile = true;
 				}
 			}
 			
-			f.Focus(); // windows.forms focus workaround	
+			if (!didLoadCombineOrFile) {
+				foreach (ICommand command in AddInTree.BuildItems("/Workspace/AutostartNothingLoaded", null, false)) {
+					command.Run();
+				}
+			}
+			
+			f.Focus(); // windows.forms focus workaround
 			
 			ParserService.StartParserThread();
 			
@@ -166,7 +161,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			try {
 				PropertyService.Set(workbenchMemento, WorkbenchSingleton.Workbench.CreateMemento());
 			} catch (Exception e) {
-				Console.WriteLine("Exception while saving workbench state: " + e.ToString());
+				MessageService.ShowError(e, "Exception while saving workbench state.");
 			}
 		}
 	}

@@ -18,9 +18,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public interface IWorkbenchLayout
 	{
-		/// <summary>
-		/// The active workbench window.
-		/// </summary>
 		IWorkbenchWindow ActiveWorkbenchwindow {
 			get;
 		}

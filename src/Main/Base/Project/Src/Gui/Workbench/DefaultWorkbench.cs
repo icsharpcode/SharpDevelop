@@ -359,11 +359,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 //		protected void OnTopMenuSelected(MenuCommand mc)
 //		{
-//			
-//			
+//
+//
 //			StatusBarService.SetMessage(mc.Description);
 //		}
-//		
+//
 //		protected void OnTopMenuDeselected(MenuCommand mc)
 //		{
 //			SetStandardStatusBar(null, null);
@@ -428,7 +428,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (pad.Class == type.FullName) {
 					return pad;
 				}
-			} 
+			}
 			return null;
 		}
 		void CreateMainMenu()

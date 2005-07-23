@@ -48,8 +48,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// the file. Items with less uses than this count also get a priority penalty.
 		/// (Because the first use would otherwise always be 100% priority)</summary>
 		const int MinUsesForSave = 2;
-		/// <summary>Minimum percentage (Uses * 100 / ShowCount) an item must have to be saved.</summary>
-		const int MinPercentageForSave = 1;
 		
 		public static string CacheFilename {
 			get {
@@ -78,6 +76,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 						string key = reader.ReadString();
 						int uses = reader.ReadInt32();
 						int showCount = reader.ReadInt32();
+						if (showCount > 1000) {
+							// reduce count because the usage in the next time
+							// should have more influence on the past
+							showCount /= 3;
+							uses /= 3;
+						}
 						dict.Add(key, new UsageStruct(uses, showCount));
 					}
 				}
@@ -115,9 +119,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			} else {
 				List<KeyValuePair<string, UsageStruct>> saveItems = new List<KeyValuePair<string, UsageStruct>>();
 				foreach (KeyValuePair<string, UsageStruct> entry in dict) {
-					if (entry.Value.Uses > MinUsesForSave &&
-					    entry.Value.Uses * 100 / entry.Value.ShowCount >= MinPercentageForSave)
-					{
+					if (entry.Value.Uses > MinUsesForSave) {
 						saveItems.Add(entry);
 					}
 				}

@@ -12,7 +12,7 @@
 	<Path name = "/SharpDevelop/Workbench/MainMenu/View">
 		<MenuItem id = "ShowStartPage"
 		          insertafter  = "ViewItemsSeparator"
-			  insertbefore = "StartPageSeparator"
+		          insertbefore = "StartPageSeparator"
 		          label = "${res:XML.MainMenu.ViewMenu.ShowStartPage}" 
 		          class = "ICSharpCode.StartPage.ShowStartPageCommand"/>
 		<MenuItem id = "StartPageSeparator"
@@ -21,7 +21,7 @@
 	</Path>
 	
 	<!-- TODO: Conditional to reflect Settings option -->
-	<Path name = "/Workspace/Autostart">
+	<Path name = "/Workspace/AutostartNothingLoaded">
 		<Class id = "ShowStartPageCommand"
 		       class = "ICSharpCode.StartPage.ShowStartPageCommand"/>
 	</Path>

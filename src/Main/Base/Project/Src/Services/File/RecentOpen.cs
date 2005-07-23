@@ -8,7 +8,7 @@
 using System;
 using System.Xml;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 
 
@@ -29,20 +29,20 @@ namespace ICSharpCode.Core
 		/// </summary>
 		int MAX_LENGTH = 10;
 		
-		ArrayList lastfile    = new ArrayList();
-		ArrayList lastproject = new ArrayList();
+		List<string> lastfile    = new List<string>();
+		List<string> lastproject = new List<string>();
 		
 		public event EventHandler RecentFileChanged;
 		public event EventHandler RecentProjectChanged;
 		
-		public ArrayList RecentFile {
+		public List<string> RecentFile {
 			get {
 				System.Diagnostics.Debug.Assert(lastfile != null, "RecentOpen : set string[] LastFile (value == null)");
 				return lastfile;
 			}
 		}
 
-		public ArrayList RecentProject {
+		public List<string> RecentProject {
 			get {
 				System.Diagnostics.Debug.Assert(lastproject != null, "RecentOpen : set string[] LastProject (value == null)");
 				return lastproject;
@@ -151,8 +151,8 @@ namespace ICSharpCode.Core
 		public Properties ToProperties()
 		{
 			Properties p = new Properties();
-			p["Files"]    = String.Join(",", (string[])lastfile.ToArray(typeof(string)));
-			p["Projects"] = String.Join(",", (string[])lastproject.ToArray(typeof(string)));
+			p["Files"]    = String.Join(",", lastfile.ToArray());
+			p["Projects"] = String.Join(",", lastproject.ToArray());
 			return p;
 		}
 		

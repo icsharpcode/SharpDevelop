@@ -180,19 +180,29 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static void LoadProject(string fileName)
 		{
-			openSolution = new Solution();
-			openSolution.Name = Path.GetFileNameWithoutExtension(fileName);
-			openSolution.Save(Path.ChangeExtension(fileName, ".sln"));
-			OnSolutionLoaded(new SolutionEventArgs(openSolution));
-			ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(fileName);
-			IProject newProject;
-			if (binding != null) {
-				newProject = binding.LoadProject(fileName, openSolution.Name);
-			} else {
-				newProject = new UnknownProject(fileName);
+			string solutionFile = Path.ChangeExtension(fileName, ".sln");
+			if (File.Exists(solutionFile)) {
+				LoadSolution(solutionFile);
+				return;
 			}
-			newProject.IdGuid = Guid.NewGuid().ToString();
-			openSolution.AddFolder(newProject);
+			Solution solution = new Solution();
+			solution.Name = Path.GetFileNameWithoutExtension(fileName);
+			ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(fileName);
+			IProject project;
+			if (binding != null) {
+				project = binding.LoadProject(fileName, solution.Name);
+			} else {
+				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new string[,] {{"FileName", fileName}}));
+				return;
+			}
+			solution.AddFolder(project);
+			solution.Save(solutionFile);
+			openSolution = solution;
+			OnSolutionLoaded(new SolutionEventArgs(openSolution));
+			string file = GetPreferenceFileName(project);
+			if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
+				project.SetMemento(Properties.Load(file));
+			}
 		}
 		
 		public static void SaveSolution()

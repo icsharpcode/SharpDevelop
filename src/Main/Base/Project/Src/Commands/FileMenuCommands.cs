@@ -44,9 +44,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						case ".SLN":
 							ProjectService.LoadSolution(fdiag.FileName);
 							break;
+						case ".CSPROJ":
+						case ".VBPROJ":
+							ProjectService.LoadProject(fdiag.FileName);
+							break;
 //						case ".PRJX":
-//							
-//							
+//
+//
 //							FileUtility.ObservedLoad(new NamedFileOperationDelegate(ProjectService.OpenSolution), fdiag.FileName);
 //							break;
 						default:

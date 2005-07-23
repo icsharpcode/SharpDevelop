@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Reflection;
+using System.Collections;
 using System.Collections.Generic;
 
 namespace ICSharpCode.Core
@@ -85,6 +86,11 @@ namespace ICSharpCode.Core
 		
 		public static AddInTreeNode GetTreeNode(string path)
 		{
+			return GetTreeNode(path, true);
+		}
+		
+		public static AddInTreeNode GetTreeNode(string path, bool throwOnNotFound)
+		{
 			if (path == null || path.Length == 0) {
 				return rootNode;
 			}
@@ -93,7 +99,10 @@ namespace ICSharpCode.Core
 			int i = 0;
 			while (i < splittedPath.Length) {
 				if (!curPath.ChildNodes.ContainsKey(splittedPath[i])) {
-					throw new TreePathNotFoundException(path);
+					if (throwOnNotFound)
+						throw new TreePathNotFoundException(path);
+					else
+						return null;
 				}
 				curPath = curPath.ChildNodes[splittedPath[i]];
 				++i;
@@ -111,6 +120,23 @@ namespace ICSharpCode.Core
 			string child = path.Substring(pos + 1);
 			AddInTreeNode node = GetTreeNode(parent);
 			return node.BuildChildItem(child, caller);
+		}
+		
+		/// <summary>
+		/// Builds the items in the path.
+		/// </summary>
+		/// <param name="path">A path in the addin tree.</param>
+		/// <param name="caller">The owner used to create the objects.</param>
+		/// <param name="throwOnNotFound">If true, throws an TreePathNotFoundException
+		/// if the path is not found. If false, an empty ArrayList is returned when the
+		/// path is not found.</param>
+		public static ArrayList BuildItems(string path, object caller, bool throwOnNotFound)
+		{
+			AddInTreeNode node = GetTreeNode(path, throwOnNotFound);
+			if (node == null)
+				return new ArrayList();
+			else
+				return node.BuildChildItems(caller);
 		}
 		
 		static AddInTreeNode CreatePath(AddInTreeNode localRoot, string path)
@@ -139,7 +165,7 @@ namespace ICSharpCode.Core
 				treePath.Codons.Add(codon);
 			}
 		}
-			
+		
 		static void InsertAddIn(AddIn addIn)
 		{
 			foreach (ExtensionPath path in addIn.Paths.Values) {
@@ -148,16 +174,16 @@ namespace ICSharpCode.Core
 			addIns.Add(addIn);
 		}
 		
-// As long as the show form takes 10 times of loading the xml representation I'm not implementing
-// binary serialization.
+		// As long as the show form takes 10 times of loading the xml representation I'm not implementing
+		// binary serialization.
 //		static Dictionary<string, ushort> nameLookupTable = new Dictionary<string, ushort>();
 //		static Dictionary<AddIn, ushort> addInLookupTable = new Dictionary<AddIn, ushort>();
-//		
+//
 //		public static ushort GetAddInOffset(AddIn addIn)
 //		{
 //			return addInLookupTable[addIn];
 //		}
-//		
+//
 //		public static ushort GetNameOffset(string name)
 //		{
 //			if (!nameLookupTable.ContainsKey(name)) {
@@ -165,7 +191,7 @@ namespace ICSharpCode.Core
 //			}
 //			return nameLookupTable[name];
 //		}
-//		
+//
 //		public static void BinarySerialize(string fileName)
 //		{
 //			for (int i = 0; i < addIns.Count; ++i) {
@@ -189,6 +215,6 @@ namespace ICSharpCode.Core
 			foreach (string fileName in addInFiles) {
 				InsertAddIn(AddIn.Load(fileName));
 			}
-		}		
+		}
 	}
 }

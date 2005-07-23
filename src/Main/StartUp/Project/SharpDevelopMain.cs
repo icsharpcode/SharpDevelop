@@ -20,6 +20,7 @@ using System.Runtime.Remoting;
 using System.Security.Policy;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Commands;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
@@ -168,22 +169,19 @@ namespace ICSharpCode.SharpDevelop
 			
 			PropertyService.Load();
 			
-			StringParser.RegisterStringTagProvider(new ICSharpCode.SharpDevelop.Commands.SharpDevelopStringTagProvider());
+			StringParser.RegisterStringTagProvider(new SharpDevelopStringTagProvider());
 			
 			AddInTree.Load();
 			
 			// .NET base autostarts
 			// taken out of the add-in tree for performance reasons (every tick in startup counts)
-			new ICSharpCode.SharpDevelop.Commands.InitializeWorkbenchCommand().Run();
+			new InitializeWorkbenchCommand().Run();
 			
 			// run workspace autostart commands
 			try {
-				ArrayList commands = AddInTree.GetTreeNode("/Workspace/Autostart").BuildChildItems(null);
-				foreach (ICommand command in commands) {
+				foreach (ICommand command in AddInTree.BuildItems("/Workspace/Autostart", null, false)) {
 					command.Run();
 				}
-			} catch (TreePathNotFoundException) {
-				// Do nothing.
 			} catch (XmlException e) {
 				MessageBox.Show("Could not load XML :" + Environment.NewLine + e.Message);
 				return;
@@ -198,7 +196,7 @@ namespace ICSharpCode.SharpDevelop
 			
 			// finally start the workbench.
 			try {
-				new ICSharpCode.SharpDevelop.Commands.StartWorkbenchCommand().Run();
+				new StartWorkbenchCommand().Run(SplashScreenForm.GetRequestedFileList());
 			} finally {
 				// unloading
 				ProjectService.CloseSolution();
