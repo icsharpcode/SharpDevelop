@@ -32,17 +32,30 @@ namespace ICSharpCode.Core
 				return assembly;
 			}
 		}
-		
+
+		bool isAssemblyLoaded;
+
 		public Assembly LoadedAssembly {
 			get {
-				if (loadedAssembly == null) {
+				if (!isAssemblyLoaded) {
 					#if DEBUG
 					Console.WriteLine("Loading addin " + assembly + "...");
 					#endif
-					if (assembly[0] == '/') {
-						loadedAssembly = System.Reflection.Assembly.Load(assembly.Substring(1));
-					} else {
-						loadedAssembly = System.Reflection.Assembly.LoadFrom(Path.Combine(hintPath, assembly));
+
+					isAssemblyLoaded = true;
+
+					try {
+						if (assembly[0] == '/') {
+							loadedAssembly = System.Reflection.Assembly.Load(assembly.Substring(1));
+						} else {
+							loadedAssembly = System.Reflection.Assembly.LoadFrom(Path.Combine(hintPath, assembly));
+						}
+
+						loadedAssembly.GetExportedTypes(); // preload assembly to provoke FileLoadException if dependencies are missing
+					} catch (FileNotFoundException ex) {
+						MessageService.ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
+					} catch (FileLoadException ex) {
+						MessageService.ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
 					}
 				}
 				return loadedAssembly;
@@ -63,7 +76,10 @@ namespace ICSharpCode.Core
 		
 		public object CreateInstance(string instance)
 		{
-			return LoadedAssembly.CreateInstance(instance);
+			Assembly asm = LoadedAssembly;
+			if (asm == null)
+				return null;
+			return asm.CreateInstance(instance);
 		}
 		
 		internal static Runtime Read(AddIn addIn, XmlTextReader reader, string hintPath)

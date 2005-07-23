@@ -156,7 +156,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			try {
 				ArrayList contents = AddInTree.GetTreeNode(viewContentPath).BuildChildItems(this);
 				foreach (PadDescriptor content in contents) {
-					ShowPad(content);
+					if (content != null) {
+						ShowPad(content);
+					}
 				}
 			} catch (TreePathNotFoundException) {}
 			

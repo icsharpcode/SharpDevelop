@@ -5,6 +5,7 @@
  * Time: 12:00
  */
 using System;
+using System.Diagnostics;
 using System.IO;
 using System.Text;
 using System.Text.RegularExpressions;
@@ -16,6 +17,7 @@ namespace UpdateAssemblyInfo
 	class MainClass
 	{
 		static Regex AssemblyVersion = new Regex(@"AssemblyVersion\(.*\)]");
+		static Regex BindingRedirect = new Regex(@"<bindingRedirect oldVersion=""2.0.0.1"" newVersion=""[\d\.]+""/>");
 		const string mainConfig = "Main/StartUp/Project/Configuration/";
 		
 		public static int Main(string[] args)
@@ -124,9 +126,10 @@ namespace UpdateAssemblyInfo
 				}
 				if (doSetVersion) {
 					Console.WriteLine("Set revision to file: " + fileName + " to " + versionNumber);
-					SetVersionInfo(fileName, versionNumber);
+					SetVersionInfo(fileName, AssemblyVersion, "AssemblyVersion(\"" + versionNumber + "\")]");
 				}
 			}
+			SetVersionInfo("Main/StartUp/Project/SharpDevelop.exe.config", BindingRedirect, "<bindingRedirect oldVersion=\"2.0.0.1\" newVersion=\"" + versionNumber + "\"/>");
 		}
 		
 		#region SearchDirectory
@@ -156,30 +159,17 @@ namespace UpdateAssemblyInfo
 		}
 		#endregion
 		
-		static void SetVersionInfo(string fileName, string version)
+		static void SetVersionInfo(string fileName, Regex regex, string replacement)
 		{
-			StreamReader inFile = null;
-			string       content;
-			
-			try {
-				inFile  = new StreamReader(fileName);
+			string content;
+			using (StreamReader inFile = new StreamReader(fileName)) {
 				content = inFile.ReadToEnd();
-			} catch (Exception e) {
-				Console.WriteLine(e);
-				return;
-			} finally {
-				if (inFile != null) {
-					inFile.Close();
-				}
 			}
-			
-			if (content != null) {
-				string newContent = AssemblyVersion.Replace(content, "AssemblyVersion(\"" + version + "\")]");
-				if (newContent == content)
-					return;
-				using (StreamWriter outFile = new StreamWriter(fileName, false, Encoding.UTF8)) {
-					outFile.Write(newContent);
-				}
+			string newContent = regex.Replace(content, replacement);
+			if (newContent == content)
+				return;
+			using (StreamWriter outFile = new StreamWriter(fileName, false, Encoding.UTF8)) {
+				outFile.Write(newContent);
 			}
 		}
 		
@@ -191,20 +181,30 @@ namespace UpdateAssemblyInfo
 				using (StreamReader reader = new StreamReader(@"..\REVISION")) {
 					return reader.ReadLine();
 				}
-			}
-			catch (Exception e) {
+			} catch (Exception e) {
 				Console.WriteLine(e.Message);
-				throw new Exception("Cannot read revision number from file: " + e.Message);
+				Console.WriteLine();
+				Console.WriteLine("The revision number of the SharpDevelop version being compiled could not be retrieved.");
+				Console.WriteLine("Add svn.exe to your path to fix the problem.");
+				Console.WriteLine();
+				Console.WriteLine("Build continues with revision number '9999'...");
+				try {
+					Process[] p = Process.GetProcessesByName("msbuild");
+					if (p != null && p.Length > 0) {
+						System.Threading.Thread.Sleep(3000);
+					}
+				} catch {}
+				return "9999";
 			}
 		}
 		static void RetrieveRevisionNumber()
 		{
-			System.Diagnostics.ProcessStartInfo psi = new System.Diagnostics.ProcessStartInfo("svn", "info");
+			ProcessStartInfo psi = new ProcessStartInfo("svn", "info");
 			psi.UseShellExecute = false;
 			psi.RedirectStandardOutput = true;
 			
 			try {
-				System.Diagnostics.Process process = System.Diagnostics.Process.Start(psi);
+				Process process = Process.Start(psi);
 				process.WaitForExit();
 				string output = process.StandardOutput.ReadToEnd();
 				
@@ -217,7 +217,7 @@ namespace UpdateAssemblyInfo
 					throw new Exception("Could not find revision number in svn output");
 				}
 			} catch (Exception e) {
-				Console.WriteLine(e.Message);
+				Console.WriteLine("Starting svn.exe failed: " + e.Message);
 				revisionNumber = ReadRevisionFromFile();
 			}
 			if (revisionNumber == null || revisionNumber.Length == 0 || revisionNumber == "0") {

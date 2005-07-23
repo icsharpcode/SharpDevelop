@@ -21,7 +21,9 @@ namespace ICSharpCode.Core
 		List<Runtime>       runtimes   = new List<Runtime>();
 		string              addInFileName = null;
 		Dictionary<string, ExtensionPath> paths = new Dictionary<string, ExtensionPath>();
-		
+
+		static bool hasShownErrorMessage = false;
+
 		public object CreateObject(string className)
 		{
 			foreach (Runtime runtime in runtimes) {
@@ -30,7 +32,11 @@ namespace ICSharpCode.Core
 					return o;
 				}
 			}
-			MessageService.ShowError("Cannot create object: " + className);
+			Console.WriteLine("Cannot create object: " + className);
+			if (!hasShownErrorMessage) {
+				hasShownErrorMessage = true;
+				MessageService.ShowError("Cannot create object: " + className + "\nFuture missing objects will not cause an error message.");
+			}
 			return null;
 		}
 		

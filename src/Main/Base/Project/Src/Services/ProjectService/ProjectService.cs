@@ -175,6 +175,26 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/// <summary>
+		/// Load a single project as solution.
+		/// </summary>
+		public static void LoadProject(string fileName)
+		{
+			openSolution = new Solution();
+			openSolution.Name = Path.GetFileNameWithoutExtension(fileName);
+			openSolution.Save(Path.ChangeExtension(fileName, ".sln"));
+			OnSolutionLoaded(new SolutionEventArgs(openSolution));
+			ILanguageBinding binding = LanguageBindingService.GetBindingPerProjectFile(fileName);
+			IProject newProject;
+			if (binding != null) {
+				newProject = binding.LoadProject(fileName, openSolution.Name);
+			} else {
+				newProject = new UnknownProject(fileName);
+			}
+			newProject.IdGuid = Guid.NewGuid().ToString();
+			openSolution.AddFolder(newProject);
+		}
+		
 		public static void SaveSolution()
 		{
 			if (openSolution != null) {

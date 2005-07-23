@@ -91,7 +91,11 @@ namespace ICSharpCode.SharpDevelop
 					Run(args);
 				} catch (Exception ex) {
 					Console.WriteLine(ex);
-					Application.Run(new ExceptionBox(ex, "Unhandled exception terminated SharpDevelop"));
+					try {
+						Application.Run(new ExceptionBox(ex, "Unhandled exception terminated SharpDevelop"));
+					} catch {
+						MessageBox.Show(ex.ToString(), "Critical error (cannot use ExceptionBox)");
+					}
 				}
 			}
 		}
@@ -117,7 +121,17 @@ namespace ICSharpCode.SharpDevelop
 			if (!noLogo) {
 				SplashScreenForm.SplashScreen.Show();
 			}
-			
+			try {
+				RunApplication();
+			} finally {
+				if (SplashScreenForm.SplashScreen != null) {
+					SplashScreenForm.SplashScreen.Dispose();
+				}
+			}
+		}
+		
+		static void RunApplication()
+		{
 			if (!Debugger.IsAttached) {
 				Application.ThreadException += ShowErrorBox;
 			}

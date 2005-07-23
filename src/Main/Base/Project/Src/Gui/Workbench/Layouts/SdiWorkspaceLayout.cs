@@ -338,10 +338,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			public void ActivateContent()
 			{
 				if (!isInitialized) {
-					Control control = padDescriptor.PadContent.Control;
+					isInitialized = true;
+					IPadContent content = padDescriptor.PadContent;
+					if (content == null)
+						return;
+					Control control = content.Control;
 					control.Dock = DockStyle.Fill;
 					Controls.Add(control);
-					isInitialized = true;
 				}
 			}
 			

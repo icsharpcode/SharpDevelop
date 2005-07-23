@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop
 			str += "Boot Mode            : " + SystemInformation.BootMode + Environment.NewLine;
 			str += "Working Set Memory   : " + (Environment.WorkingSet / 1024) + "kb" + Environment.NewLine;
 			Version v = Assembly.GetEntryAssembly().GetName().Version;
-			str += "SharpDevelop Version : " + v.Major + "." + v.Minor + "." + v.Revision + "." + v.Build + Environment.NewLine;
+			str += "SharpDevelop Version : " + v.Major + "." + v.Minor + "." + v.Build + "." + v.Revision + Environment.NewLine;
 			str += Environment.NewLine;
 			
 			if (message != null) {
@@ -103,6 +103,7 @@ namespace ICSharpCode.SharpDevelop
 		void continueButtonClick(object sender, System.EventArgs e)
 		{
 			DialogResult = System.Windows.Forms.DialogResult.Ignore;
+			Close();
 		}
 		
 		void InitializeComponent() {

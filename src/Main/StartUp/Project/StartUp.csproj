@@ -54,6 +54,9 @@
     <EmbeddedResource Include="Resources\StringResources.resources" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <None Include="Configuration\AssemblyInfo.template" />
+    <None Include="SharpDevelop.exe.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Base\Project\ICSharpCode.SharpDevelop.csproj">

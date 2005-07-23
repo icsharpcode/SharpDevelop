@@ -173,17 +173,30 @@ namespace ICSharpCode.Core
 		static Assembly AssemblyResolve(object sender, ResolveEventArgs e)
 		{
 			string shortName = e.Name;
+			Console.Write("AssemblyResolve: " + e.Name);
 			int pos = shortName.IndexOf(',');
 			if (pos > 0)
 				shortName = shortName.Substring(0, pos);
 			string path = Path.Combine(lookupDirectory, shortName);
-			if (File.Exists(path + ".dll"))
+			if (File.Exists(path + ".dll")) {
+				Console.WriteLine(" - found .dll file");
 				return Assembly.ReflectionOnlyLoadFrom(path + ".dll");
-			if (File.Exists(path + ".exe"))
+			}
+			if (File.Exists(path + ".exe")) {
+				Console.WriteLine(" - found .exe file");
 				return Assembly.ReflectionOnlyLoadFrom(path + ".exe");
-			if (File.Exists(path))
+			}
+			if (File.Exists(path)) {
+				Console.WriteLine(" - found file");
 				return Assembly.ReflectionOnlyLoadFrom(path);
-			return null;
+			}
+			try {
+				Console.WriteLine(" - try ReflectionOnlyLoad");
+				return Assembly.ReflectionOnlyLoad(e.Name);
+			} catch (FileNotFoundException ex) {
+				Console.WriteLine("AssemblyResolve: " + ex.Message);
+				return null;
+			}
 		}
 		
 		public static Assembly LoadGACAssembly(string partialName, bool reflectionOnly)

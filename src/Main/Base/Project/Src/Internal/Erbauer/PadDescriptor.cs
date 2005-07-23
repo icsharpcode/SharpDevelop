@@ -104,6 +104,7 @@ namespace ICSharpCode.Core
 		public void BringPadToFront()
 		{
 			CreatePad();
+			if (padContent == null) return;
 			if (!WorkbenchSingleton.Workbench.WorkbenchLayout.IsVisible(this)) {
 				WorkbenchSingleton.Workbench.WorkbenchLayout.ShowPad(this);
 			}
