@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Markus Palme" email="MarkusPalme@gmx.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -27,7 +27,8 @@ namespace VBNetBinding
 	{
 		public const string LanguageName = "VBNet";
 		
-		public string Language {
+		public string Language
+		{
 			get {
 				return LanguageName;
 			}

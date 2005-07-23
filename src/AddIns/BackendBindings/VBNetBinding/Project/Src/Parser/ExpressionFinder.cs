@@ -32,7 +32,7 @@ namespace VBNetBinding.Parser
 			return CreateResult(FindExpressionInternal(inText, offset));
 		}
 		
-		string FindExpressionInternal(string inText, int offset)
+		public string FindExpressionInternal(string inText, int offset)
 		{
 			this.text = FilterComments(inText, ref offset);
 			this.offset = this.lastAccept = offset;
@@ -57,6 +57,12 @@ namespace VBNetBinding.Parser
 				}
 			}
 			return this.text.Substring(this.lastAccept + 1, offset - this.lastAccept);
+		}
+		
+		internal int LastExpressionStartPosition {
+			get {
+				return ((state == ACCEPTNOMORE) ? offset : lastAccept) + 1;
+			}
 		}
 		
 		public ExpressionResult FindFullExpression(string inText, int offset)

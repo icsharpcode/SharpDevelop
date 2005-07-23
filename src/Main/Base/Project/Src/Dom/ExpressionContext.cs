@@ -52,6 +52,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			return new TypeExpressionContext(baseClass, mustBeConstructable);
 		}
+		
+		/// <summary>Context expeacts an interface</summary>
+		public static InterfaceExpressionContext Interface = new InterfaceExpressionContext();
+		
 		#endregion
 		
 		#region DefaultExpressionContext
@@ -173,6 +177,33 @@ namespace ICSharpCode.SharpDevelop.Dom
 				else if (opType == 1)
 					op = " AND ";
 				return "[" + GetType().Name + ": " + a + op + b + "]";
+			}
+		}
+		#endregion
+		
+		#region InterfaceExpressionContext
+		public class InterfaceExpressionContext : ExpressionContext
+		{
+			IClass baseClass;
+			
+			public InterfaceExpressionContext()
+			{
+			}
+			
+			public override bool ShowEntry(object o)
+			{
+				if (o is string)
+					return true;
+				IClass c = o as IClass;
+				if (c == null)
+					return false;
+				
+				return c.ClassType == ClassType.Interface;
+			}
+			
+			public override string ToString()
+			{
+				return "[" + GetType().Name + "]";
 			}
 		}
 		#endregion
