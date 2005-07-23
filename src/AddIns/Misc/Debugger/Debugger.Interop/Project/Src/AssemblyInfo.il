@@ -1,5 +1,8 @@
 // <file>
-//     <owner name="David Srbecký" email="dsrbecky@post.cz"/>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
+//     <version>$Revision$</version>
 // </file>
 
 // Metadata version: v2.0.50215
