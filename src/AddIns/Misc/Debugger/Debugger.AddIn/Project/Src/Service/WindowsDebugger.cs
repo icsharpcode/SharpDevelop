@@ -40,6 +40,15 @@ namespace ICSharpCode.SharpDevelop.Services
 		bool serviceInitialized = false;
 
 		List<DebuggerLibrary.Exception> exceptionHistory = new List<DebuggerLibrary.Exception>();
+
+		public event EventHandler ExceptionHistoryModified;
+
+		protected virtual void OnExceptionHistoryModified()
+		{
+			if (ExceptionHistoryModified != null) {
+				ExceptionHistoryModified(this, EventArgs.Empty);
+			}
+		}
 		
 		public NDebugger DebuggerCore {
 			get {
@@ -238,11 +247,9 @@ namespace ICSharpCode.SharpDevelop.Services
 
 			debugger.LogMessage              += new EventHandler<MessageEventArgs>(LogMessage);
 			debugger.ProcessStarted          += new EventHandler<ProcessEventArgs>(ProcessStarted);
+			debugger.ProcessExited           += new EventHandler<ProcessEventArgs>(ProcessExited);
 			debugger.DebuggingPaused         += new EventHandler<DebuggingPausedEventArgs>(DebuggingPaused);
 			debugger.DebuggingResumed        += new EventHandler<DebuggerEventArgs>(DebuggingResumed);
-			debugger.ProcessExited           += new EventHandler<ProcessEventArgs>(ProcessExited);
-			debugger.IsDebuggingChanged      += new EventHandler<DebuggerEventArgs>(OnIsDebuggingChanged);
-			debugger.IsProcessRunningChanged += new EventHandler<DebuggerEventArgs>(OnIsProcessRunningChanged);
 
 			debugger.BreakpointStateChanged  += delegate (object sender, BreakpointEventArgs e) {
 				RestoreSharpdevelopBreakpoint(e.Breakpoint);
@@ -313,6 +320,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			if (debugger.Processes.Count == 1) {
 				OnDebugStarted(EventArgs.Empty);
+				isDebuggingCache = true;
 			}
 		}
 
@@ -321,17 +329,20 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (debugger.Processes.Count == 0) {
 				exceptionHistory.Clear();
 				OnDebugStopped(EventArgs.Empty);
+				isDebuggingCache = false;
 			}
 		}
 
 		void DebuggingPaused(object sender, DebuggingPausedEventArgs e)
 		{
+			isProcessRunningCache = false;
 			OnIsProcessRunningChanged(EventArgs.Empty);
 
 			JumpToCurrentLine();
 
 			if (e.Reason == PausedReason.Exception) {
 				exceptionHistory.Add(debugger.CurrentThread.CurrentException);
+				OnExceptionHistoryModified();
 				if (debugger.CurrentThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED && (debugger.CatchHandledExceptions == false)) {
 					// Ignore the exception
 					e.ResumeDebuggingAfterEvent();
@@ -359,6 +370,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void DebuggingResumed(object sender, DebuggerEventArgs e)
 		{
+			isProcessRunningCache = true;
 			DebuggerService.RemoveCurrentLineMarker();
 		}
 
@@ -369,20 +381,6 @@ namespace ICSharpCode.SharpDevelop.Services
 				return;
 			}
 			DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);
-		}
-
-		void OnIsDebuggingChanged(object sender, DebuggerEventArgs e)
-		{
-			isDebuggingCache = debugger.IsDebugging;
-			isProcessRunningCache = debugger.IsProcessRunning;
-		}
-		
-		public void OnIsProcessRunningChanged(object sender, DebuggerEventArgs e)
-		{
-			isDebuggingCache = debugger.IsDebugging;
-			isProcessRunningCache = debugger.IsProcessRunning;
-
-			((DefaultWorkbench)WorkbenchSingleton.Workbench).Update();
 		}
 	}
 }

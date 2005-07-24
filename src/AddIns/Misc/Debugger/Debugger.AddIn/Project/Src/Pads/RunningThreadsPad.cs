@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			debuggerCore.ThreadStarted += new EventHandler<ThreadEventArgs>(AddThread);
 			debuggerCore.ThreadStateChanged += new EventHandler<ThreadEventArgs>(RefreshThread);
 			debuggerCore.ThreadExited += new EventHandler<ThreadEventArgs>(RemoveThread);
-			debuggerCore.IsProcessRunningChanged += new EventHandler<DebuggerEventArgs>(DebuggerStateChanged);
+			debuggerCore.DebuggingPaused += new EventHandler<DebuggingPausedEventArgs>(OnDebuggingPaused);
 
 			RefreshList();
 		}
@@ -102,6 +102,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 
+		void OnDebuggingPaused(object sender, DebuggingPausedEventArgs e)
+		{
+			RefreshList();
+		}
 
 		private void AddThread(object sender, ThreadEventArgs e) 
 		{
@@ -137,11 +141,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				if (e.Thread.ID.ToString() == item.Text)
 					item.Remove();
 			}
-		}
-		
-		public void DebuggerStateChanged(object sender, DebuggerEventArgs e)
-		{
-			RefreshList();
 		}
 
 		private void RefreshList()

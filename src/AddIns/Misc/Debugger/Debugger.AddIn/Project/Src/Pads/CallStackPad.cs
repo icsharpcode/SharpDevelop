@@ -72,8 +72,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debuggerCore = debugger.DebuggerCore;
 
-			debuggerCore.IsDebuggingChanged += new EventHandler<DebuggerEventArgs>(DebuggerStateChanged);
-			debuggerCore.IsProcessRunningChanged += new EventHandler<DebuggerEventArgs>(DebuggerStateChanged);
+			debuggerCore.DebuggingPaused += new EventHandler<DebuggingPausedEventArgs>(DebuggingPaused);
+			debuggerCore.DebuggingResumed += new EventHandler<DebuggerEventArgs>(DebuggingResumed);
 
 			RefreshList();
 		}
@@ -91,7 +91,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 
-		public void DebuggerStateChanged(object sender, DebuggerEventArgs e)
+		void DebuggingPaused(object sender, DebuggingPausedEventArgs e)
+		{
+			RefreshList();
+		}
+
+		void DebuggingResumed(object sender, DebuggerEventArgs e)
 		{
 			RefreshList();
 		}

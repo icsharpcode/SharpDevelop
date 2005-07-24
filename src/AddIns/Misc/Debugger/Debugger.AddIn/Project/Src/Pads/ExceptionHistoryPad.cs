@@ -74,8 +74,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debuggerCore = debugger.DebuggerCore;
 
-			debuggerCore.IsDebuggingChanged += new EventHandler<DebuggerEventArgs>(DebuggerStateChanged);
-			debuggerCore.IsProcessRunningChanged += new EventHandler<DebuggerEventArgs>(DebuggerStateChanged);
+			debugger.ExceptionHistoryModified += new EventHandler(ExceptionHistoryModified);
 
 			RefreshList();
 		}
@@ -117,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 
-		public void DebuggerStateChanged(object sender, DebuggerEventArgs e)
+		void ExceptionHistoryModified(object sender, EventArgs e)
 		{
 			RefreshList();
 		}

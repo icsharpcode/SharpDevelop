@@ -88,11 +88,11 @@ namespace DebuggerLibrary
 		
 		void ExitCallback_Paused(PausedReason reason)
 		{
-			if (debugger.CurrentThread != null) {
-				debugger.CurrentThread.DeactivateAllSteppers();
+			if (debugger.CurrentThread == null) {
+				throw new DebuggerException("You are not allowed to pause since CurrentThread is not set");
 			}
+			debugger.CurrentThread.DeactivateAllSteppers();
 			if (reason != PausedReason.EvalComplete) {
-				debugger.OnIsProcessRunningChanged();
 				debugger.OnDebuggingPaused(reason);
 			}
 			handlingCallback = false;

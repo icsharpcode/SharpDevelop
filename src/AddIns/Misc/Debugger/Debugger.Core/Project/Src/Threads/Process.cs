@@ -128,7 +128,6 @@ namespace DebuggerLibrary
 
 			isProcessRunning = false;
 			debugger.OnDebuggingPaused(PausedReason.Break);
-			debugger.OnIsProcessRunningChanged();
 		}
 
 		public void Continue()
@@ -137,14 +136,9 @@ namespace DebuggerLibrary
 				throw new DebuggerException("Invalid operation");
 			}
 
-			bool abort = false;
-			debugger.OnDebuggingIsResuming(ref abort);
-			if (abort == true) return;
-
 			isProcessRunning = true;
 			if (debugger.ManagedCallback.HandlingCallback == false) {
 				debugger.OnDebuggingResumed();
-				debugger.OnIsProcessRunningChanged();
 			}
 
 			corProcess.Continue(0);
@@ -167,7 +161,7 @@ namespace DebuggerLibrary
 			get {
 				return isProcessRunning;
 			}
-			set {
+			internal set {
 				isProcessRunning = value;
 			}
 		}

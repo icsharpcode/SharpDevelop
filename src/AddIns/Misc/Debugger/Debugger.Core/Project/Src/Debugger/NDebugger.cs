@@ -94,9 +94,6 @@ namespace DebuggerLibrary
 			ResetBreakpoints();
 			
 			ClearThreads();
-
-			OnIsProcessRunningChanged();
-			OnIsDebuggingChanged();
 			
 			currentProcess = null;
 
@@ -126,24 +123,6 @@ namespace DebuggerLibrary
 		}
 
 
-		public event EventHandler<DebuggingIsResumingEventArgs> DebuggingIsResuming;
-
-		protected internal virtual void OnDebuggingIsResuming(ref bool abort)
-		{
-			if (DebuggingIsResuming != null) {
-				TraceMessage ("Debugger event: OnDebuggingIsResuming(" + abort.ToString() + ")");
-				foreach(Delegate d in DebuggingIsResuming.GetInvocationList()) {
-					DebuggingIsResumingEventArgs eventHandler = new DebuggingIsResumingEventArgs(this);
-					d.DynamicInvoke(new object[] {this, eventHandler});
-					if (eventHandler.Abort == true) {
-						abort = true;
-						break;
-					}
-				}
-			}
-		}
-
-
 		public event EventHandler<DebuggerEventArgs> DebuggingResumed;
 
 		protected internal virtual void OnDebuggingResumed()
@@ -151,28 +130,6 @@ namespace DebuggerLibrary
 			TraceMessage ("Debugger event: OnDebuggingResumed()");
 			if (DebuggingResumed != null) {
 				DebuggingResumed(this, new DebuggerEventArgs(this));
-			}
-		}
-
-
-		public event EventHandler<DebuggerEventArgs> IsProcessRunningChanged;
-
-		protected internal virtual void OnIsProcessRunningChanged()
-		{
-			TraceMessage ("Debugger event: OnIsProcessRunningChanged()");
-			if (IsProcessRunningChanged != null) {
-				IsProcessRunningChanged(this, new DebuggerEventArgs(this));
-			}
-		}
-
-		
-		public event EventHandler<DebuggerEventArgs> IsDebuggingChanged;
-
-		protected internal virtual void OnIsDebuggingChanged()
-		{
-			TraceMessage ("Debugger event: OnIsDebuggingChanged()");
-			if (IsDebuggingChanged != null) {
-				IsDebuggingChanged(this, new DebuggerEventArgs(this));
 			}
 		}
 
@@ -224,10 +181,7 @@ namespace DebuggerLibrary
 		{
 			Process process = Process.CreateProcess(this, filename, workingDirectory, arguments);
 			AddProcess(process);
-			OnIsDebuggingChanged();
-			OnIsProcessRunningChanged();
 		}
-
 
 
 		#endregion
