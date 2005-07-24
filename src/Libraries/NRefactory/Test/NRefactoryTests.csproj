@@ -126,6 +126,7 @@
     <Compile Include="Parser\Expressions\AnonymousMethodTests.cs" />
     <Compile Include="Output\CodeDOM\InvocationExpressionTest.cs" />
     <Compile Include="Parser\Expressions\TypeReferenceExpressionTests.cs" />
+    <Compile Include="Parser\Expressions\GlobalReferenceExpressionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\NRefactory.csproj">

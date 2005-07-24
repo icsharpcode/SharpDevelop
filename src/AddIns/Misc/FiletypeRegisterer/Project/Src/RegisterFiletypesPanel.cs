@@ -15,18 +15,16 @@ using System.Collections;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.Core;
 using ICSharpCode.FiletypeRegisterer;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 
-namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
+namespace ICSharpCode.FiletypeRegisterer
 {
 	class RegisterFiletypesPanel : AbstractOptionPanel {
 		
 		ListView list   = new ListView();
 		Label    capLbl = new Label();
 		CheckBox regChk = new CheckBox();
-		
-		
-		
-		
 		
 		Hashtable wasChecked = new Hashtable();
 		
@@ -36,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			InitializeComponent();
 			
 			// Set previous values
-			SelectFiletypes(PropertyService.Get(RegisterFiletypesCommand.uiFiletypesProperty, "cmbx|prjx"));
+			SelectFiletypes(PropertyService.Get(RegisterFiletypesCommand.uiFiletypesProperty, RegisterFiletypesCommand.DefaultExtensions));
 			regChk.Checked = PropertyService.Get(RegisterFiletypesCommand.uiRegisterStartupProperty, true);
 		}
 		

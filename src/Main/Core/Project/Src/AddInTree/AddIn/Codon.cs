@@ -120,16 +120,24 @@ namespace ICSharpCode.Core
 		public object BuildItem(object owner, ArrayList subItems)
 		{
 			try {
-				return AddInTree.Erbauer[Name].BuildItem(owner, this, subItems);
+				IErbauer erbauer = AddInTree.Erbauer[Name];
+				if (!erbauer.HandleConditions && conditions.Length > 0) {
+					ConditionFailedAction action = GetFailedAction(owner);
+					if (action != ConditionFailedAction.Nothing) {
+						return null;
+					}
+				}
+				return erbauer.BuildItem(owner, this, subItems);
 			} catch (KeyNotFoundException) {
 				throw new CoreException("Erbauer " + Name + " not found!");
 			}
 		}
-		public override string ToString() {
+		
+		public override string ToString()
+		{
 			return String.Format("[Codon: name = {0}, addIn={1}]",
 			                     name,
 			                    addIn.FileName);
 		}
-		
 	}
 }

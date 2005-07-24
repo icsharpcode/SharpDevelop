@@ -14,6 +14,16 @@ namespace ICSharpCode.Core
 	public class DialogPanelErbauer : IErbauer
 	{
 		/// <summary>
+		/// Gets if the erbauer handles codon conditions on its own.
+		/// If this property return false, the item is excluded when the condition is not met.
+		/// </summary>
+		public bool HandleConditions {
+			get {
+				return false;
+			}
+		}
+		
+		/// <summary>
 		/// Creates an item with the specified sub items. And the current
 		/// Condition status for this item.
 		/// </summary>
@@ -21,7 +31,7 @@ namespace ICSharpCode.Core
 		{
 			string label = codon.Properties["label"];
 			
-			if (subItems == null || subItems.Count == 0) {				
+			if (subItems == null || subItems.Count == 0) {
 				if (codon.Properties.Contains("class")) {
 					return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label), (IDialogPanel)codon.AddIn.CreateObject(codon.Properties["class"]));
 				} else {

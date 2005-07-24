@@ -39,6 +39,16 @@ namespace ICSharpCode.Core
 			
 		}
 		
+		/// <summary>
+		/// Gets if the erbauer handles codon conditions on its own.
+		/// If this property return false, the item is excluded when the condition is not met.
+		/// </summary>
+		public bool HandleConditions {
+			get {
+				return false;
+			}
+		}
+		
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
 		{
 			IErbauer erbauer = (IErbauer)addIn.CreateObject(className);
@@ -46,7 +56,7 @@ namespace ICSharpCode.Core
 			return erbauer.BuildItem(caller, codon, subItems);
 		}
 		
-		public override string ToString() 
+		public override string ToString()
 		{
 			return String.Format("[LazyLoadErbauer: className = {0}, name = {1}]",
 			                     className,

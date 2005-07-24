@@ -214,7 +214,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				attributeName = GetAttributeName(ie.TargetObject);
 				c = GetAttribute(attributeName);
 				if (c != null) {
-					ArrayList ctors = new ArrayList();
+					List<IMethod> ctors = new List<IMethod>();
 					foreach (IMethod m in c.Methods) {
 						if (m.IsConstructor && !m.IsStatic)
 							ctors.Add(m);
@@ -296,7 +296,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			}
 			if (expr is ObjectCreateExpression) {
-				ArrayList constructors = new ArrayList();
+				List<IMethod> constructors = new List<IMethod>();
 				foreach (IMethod m in type.GetMethods()) {
 					if (m.IsConstructor && !m.IsStatic)
 						constructors.Add(m);
@@ -319,7 +319,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			IClass c;
 			IMember member;
 			if (type is TypeVisitor.NamespaceReturnType) {
-				string combinedName = type.FullyQualifiedName + "." + fieldReferenceExpression.FieldName;
+				string combinedName;
+				if (type.FullyQualifiedName == "")
+					combinedName = fieldReferenceExpression.FieldName;
+				else
+					combinedName = type.FullyQualifiedName + "." + fieldReferenceExpression.FieldName;
 				if (projectContent.NamespaceExists(combinedName)) {
 					return new NamespaceResolveResult(callingClass, callingMember, combinedName);
 				}
@@ -331,8 +335,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					// go through the members of the modules
 					foreach (object o in projectContent.GetNamespaceContents(type.FullyQualifiedName)) {
 						member = o as IMember;
-						if (member != null && IsSameName(member.Name, fieldReferenceExpression.FieldName))
+						if (member != null && IsSameName(member.Name, fieldReferenceExpression.FieldName)) {
 							return CreateMemberResolveResult(member);
+						}
 					}
 				}
 				return null;
@@ -429,12 +434,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		#region Resolve Identifier
 		ResolveResult ResolveIdentifier(string identifier)
 		{
-			string name = SearchNamespace(identifier);
-			if (name != null && name != "") {
-				return new NamespaceResolveResult(callingClass, callingMember, name);
-			}
-			
 			ResolveResult result = ResolveIdentifierInternal(identifier);
+			if (result is TypeResolveResult)
+				return result;
+			
 			ResolveResult result2 = null;
 			
 			IClass c = SearchType(identifier);
@@ -489,12 +492,37 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			// try if there exists a static member in outer classes named typeName
 			List<IClass> classes = cu.GetOuterClasses(caretLine, caretColumn);
-			foreach (IClass c2 in classes) {
-				IMember member = GetMember(c2.DefaultReturnType, identifier);
+			foreach (IClass c in classes) {
+				IMember member = GetMember(c.DefaultReturnType, identifier);
 				if (member != null && member.IsStatic) {
 					return new MemberResolveResult(callingClass, callingMember, member);
 				}
 			}
+			
+			string namespaceName = SearchNamespace(identifier);
+			if (namespaceName != null && namespaceName.Length > 0) {
+				return new NamespaceResolveResult(callingClass, callingMember, namespaceName);
+			}
+			
+			if (languageProperties.ImportModules) {
+				ArrayList list = new ArrayList();
+				AddImportedNamespaceContents(list);
+				foreach (object o in list) {
+					IClass c = o as IClass;
+					if (c != null && IsSameName(identifier, c.Name)) {
+						return new TypeResolveResult(callingClass, callingMember, c);
+					}
+					IMember member = o as IMember;
+					if (member != null && IsSameName(identifier, member.Name)) {
+						if (member is IMethod) {
+							return new MethodResolveResult(callingClass, callingMember, member.DeclaringType.DefaultReturnType, member.Name);
+						} else {
+							return CreateMemberResolveResult(member);
+						}
+					}
+				}
+			}
+			
 			return null;
 		}
 		#endregion
@@ -622,12 +650,31 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		#region Helper for TypeVisitor
 		#region SearchMethod
+		
+		public List<IMethod> SearchMethod(string memberName)
+		{
+			List<IMethod> methods = SearchMethod(callingClass.DefaultReturnType, memberName);
+			if (methods.Count > 0)
+				return methods;
+			if (languageProperties.ImportModules) {
+				ArrayList list = new ArrayList();
+				AddImportedNamespaceContents(list);
+				foreach (object o in list) {
+					IMethod m = o as IMethod;
+					if (m != null && IsSameName(m.Name, memberName)) {
+						methods.Add(m);
+					}
+				}
+			}
+			return methods;
+		}
+		
 		/// <summary>
 		/// Gets the list of methods on the return type that have the specified name.
 		/// </summary>
-		public ArrayList SearchMethod(IReturnType type, string memberName)
+		public List<IMethod> SearchMethod(IReturnType type, string memberName)
 		{
-			ArrayList methods = new ArrayList();
+			List<IMethod> methods = new List<IMethod>();
 			if (type == null)
 				return methods;
 			
@@ -642,16 +689,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					methods.Add(m);
 				}
 			}
-//			if (methods.Count == 0) {
-//				foreach (IEvent m in type.GetEvents()) {
-//					if (IsSameName(m.Name, memberName)
-//					    && m.IsAccessible(callingClass, isClassInInheritanceTree)
-//					   ) {
-//						methods.Add(m);
-//						break;
-//					}
-//				}
-//			}
 			return methods;
 		}
 		#endregion
@@ -783,16 +820,36 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		#endregion
 		#endregion
 		
+		IClass GetPrimitiveClass(string systemType, string newName)
+		{
+			IClass c = ProjectContentRegistry.Mscorlib.GetClass(systemType);
+			DefaultClass c2 = new DefaultClass(c.CompilationUnit, newName);
+			c2.ClassType = c.ClassType;
+			c2.Modifiers = c.Modifiers;
+			c2.Documentation = c.Documentation;
+			c2.BaseTypes.AddRange(c.BaseTypes);
+			c2.Methods.AddRange(c.Methods);
+			c2.Fields.AddRange(c.Fields);
+			c2.Properties.AddRange(c.Properties);
+			c2.Indexer.AddRange(c.Indexer);
+			c2.Events.AddRange(c.Events);
+			return c2;
+		}
+		
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent)
 		{
-			ArrayList result;
+			ArrayList result = new ArrayList();
 			if (language == SupportedLanguages.VBNet) {
-				result = new ArrayList();
-				foreach (string primitive in TypeReference.GetPrimitiveTypesVB()) {
-					result.Add(Char.ToUpper(primitive[0]) + primitive.Substring(1));
+				foreach (KeyValuePair<string, string> pair in TypeReference.GetPrimitiveTypesVB()) {
+					string primitive = Char.ToUpper(pair.Key[0]) + pair.Key.Substring(1);
+					if ("System." + primitive != pair.Value) {
+						result.Add(GetPrimitiveClass(pair.Value, primitive));
+					}
 				}
 			} else {
-				result = new ArrayList(TypeReference.GetPrimitiveTypes());
+				foreach (KeyValuePair<string, string> pair in TypeReference.GetPrimitiveTypesCSharp()) {
+					result.Add(GetPrimitiveClass(pair.Value, pair.Key));
+				}
 			}
 			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
 			if (parseInfo == null) {
@@ -827,9 +884,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					result.Add(new DefaultField(p.ReturnType, p.Name, ModifierEnum.None, method.Region, callingClass));
 				}
 			}
-			if (callingClass != null) {
-				result.AddRange(projectContent.GetNamespaceContents(callingClass.Namespace));
-			}
 			
 			bool inStatic = true;
 			if (callingMember != null)
@@ -840,7 +894,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					result.AddRange(callingClass.GetAccessibleMembers(callingClass, false));
 				}
 				result.AddRange(callingClass.GetAccessibleMembers(callingClass, true));
-				result.AddRange(callingClass.GetAccessibleTypes(callingClass));
 			}
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 				if (pair.Value != null && pair.Value.Count > 0) {
@@ -853,21 +906,42 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 			}
+			AddImportedNamespaceContents(result);
+			return result;
+		}
+		
+		void AddImportedNamespaceContents(ArrayList result)
+		{
+			if (callingClass != null) {
+				result.AddRange(callingClass.GetAccessibleTypes(callingClass));
+				result.AddRange(projectContent.GetNamespaceContents(callingClass.Namespace));
+			}
 			projectContent.AddNamespaceContents(result, "", languageProperties, true);
 			foreach (IUsing u in cu.Usings) {
-				if (u != null) {
-					foreach (string name in u.Usings) {
-						foreach (object o in projectContent.GetNamespaceContents(name)) {
-							if (!(o is string))
-								result.Add(o);
-						}
-					}
-					foreach (string alias in u.Aliases.Keys) {
-						result.Add(alias);
+				AddUsing(result, u);
+			}
+			AddUsing(result, projectContent.DefaultImports);
+		}
+		
+		void AddUsing(ArrayList result, IUsing u)
+		{
+			if (u == null) {
+				return;
+			}
+			bool importNamespaces = languageProperties.ImportNamespaces;
+			foreach (string name in u.Usings) {
+				if (importNamespaces) {
+					projectContent.AddNamespaceContents(result, name, languageProperties, true);
+				} else {
+					foreach (object o in projectContent.GetNamespaceContents(name)) {
+						if (!(o is string))
+							result.Add(o);
 					}
 				}
 			}
-			return result;
+			foreach (string alias in u.Aliases.Keys) {
+				result.Add(alias);
+			}
 		}
 	}
 }

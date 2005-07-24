@@ -10,11 +10,14 @@ using System.Collections;
 
 namespace ICSharpCode.Core
 {
-	/// <summary>
-	/// Description of Erbauer.
-	/// </summary>
 	public interface IErbauer
 	{
+		/// <summary>
+		/// Gets if the erbauer handles codon conditions on its own.
+		/// If this property return false, the item is excluded when the condition is not met.
+		/// </summary>
+		bool HandleConditions { get; }
+		
 		object BuildItem(object caller, Codon codon, ArrayList subItems);
 	}
 }

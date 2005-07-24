@@ -21,8 +21,8 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		int[]  rankSpecifier = null;
 		List<TypeReference> genericTypes = new List<TypeReference>(1);
 		
-		static Hashtable types = new Hashtable();
-		static Hashtable vbtypes = new Hashtable();
+		static Dictionary<string, string> types   = new Dictionary<string, string>();
+		static Dictionary<string, string> vbtypes = new Dictionary<string, string>();
 		
 		static TypeReference()
 		{
@@ -47,6 +47,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			// VB.NET types
 			vbtypes.Add("boolean", "System.Boolean");
 			vbtypes.Add("byte",    "System.Byte");
+			vbtypes.Add("sbyte",   "System.SByte");
 			vbtypes.Add("date",	   "System.DateTime");
 			vbtypes.Add("char",    "System.Char");
 			vbtypes.Add("decimal", "System.Decimal");
@@ -54,19 +55,22 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			vbtypes.Add("single",  "System.Single");
 			vbtypes.Add("integer", "System.Int32");
 			vbtypes.Add("long",    "System.Int64");
+			vbtypes.Add("uinteger","System.UInt32");
+			vbtypes.Add("ulong",   "System.UInt64");
 			vbtypes.Add("object",  "System.Object");
 			vbtypes.Add("short",   "System.Int16");
+			vbtypes.Add("ushort",  "System.UInt16");
 			vbtypes.Add("string",  "System.String");
 		}
 		
-		public static ICollection GetPrimitiveTypes()
+		public static IEnumerable<KeyValuePair<string, string>> GetPrimitiveTypesCSharp()
 		{
-			return types.Keys;
+			return types;
 		}
 		
-		public static ICollection GetPrimitiveTypesVB()
+		public static IEnumerable<KeyValuePair<string, string>> GetPrimitiveTypesVB()
 		{
-			return vbtypes.Keys;
+			return vbtypes;
 		}
 		
 		public string Type {
@@ -134,12 +138,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		string GetSystemType(string type)
 		{
-			if (types.Contains(type)) {
-				return (string)types[type];
+			if (types.ContainsKey(type)) {
+				return types[type];
 			}
 			string lowerType = type.ToLower();
-			if (vbtypes.Contains(lowerType)) {
-				return (string)vbtypes[lowerType];
+			if (vbtypes.ContainsKey(lowerType)) {
+				return vbtypes[lowerType];
 			}
 			return type;
 		}

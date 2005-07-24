@@ -36,11 +36,14 @@ namespace ICSharpCode.Core
 		List<Dictionary<string, IClass>> classLists = new List<Dictionary<string, IClass>>();
 		List<Dictionary<string, NamespaceStruct>> namespaces = new List<Dictionary<string, NamespaceStruct>>();
 		protected XmlDoc xmlDoc = new XmlDoc();
-		List<IUsing> defaultImports = new List<IUsing>();
+		IUsing defaultImports;
 		
-		public List<IUsing> DefaultImports {
+		public IUsing DefaultImports {
 			get {
 				return defaultImports;
+			}
+			set {
+				defaultImports = value;
 			}
 		}
 		
@@ -502,8 +505,8 @@ namespace ICSharpCode.Core
 					}
 				}
 			}
-			foreach (IUsing u in defaultImports) {
-				string nameSpace = u.SearchNamespace(name);
+			if (defaultImports != null) {
+				string nameSpace = defaultImports.SearchNamespace(name);
 				if (nameSpace != null) {
 					return nameSpace;
 				}
@@ -589,8 +592,8 @@ namespace ICSharpCode.Core
 					}
 				}
 			}
-			foreach (IUsing u in defaultImports) {
-				c = u.SearchType(name);
+			if (defaultImports != null) {
+				c = defaultImports.SearchType(name);
 				if (c != null) {
 					return c;
 				}

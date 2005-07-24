@@ -12,6 +12,7 @@
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <OutputType>Library</OutputType>
+    <RootNamespace>ICSharpCode.FiletypeRegisterer</RootNamespace>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -36,7 +37,36 @@
     <Compile Include="Src\RegisterFiletypesPanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <None Include="FiletypeRegisterer.addin" />
+    <None Include="FiletypeRegisterer.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="filetypes\cs.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="filetypes\cmbx.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="filetypes\Filetypes.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="filetypes\java.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="filetypes\prjx.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="filetypes\resx.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="filetypes\vb.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="filetypes\xfrm.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="filetypes\xml.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -49,16 +79,7 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
-    <Content Include="Src\filetypes\cmbx.ico" />
-    <Content Include="Src\filetypes\cs.ico" />
-    <Content Include="Src\filetypes\Filetypes.xml" />
-    <Content Include="Src\filetypes\java.ico" />
-    <Content Include="Src\filetypes\prjx.ico" />
-    <Content Include="Src\filetypes\resx.ico" />
-    <Content Include="Src\filetypes\vb.ico" />
-    <Content Include="Src\filetypes\xfrm.ico" />
-    <Content Include="Src\filetypes\xml.ico" />
-    <Folder Include="Resources\" />
+    <Folder Include="filetypes" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

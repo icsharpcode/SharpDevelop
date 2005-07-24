@@ -6,18 +6,20 @@
        version     = "1.0.0">
 	
 	<Runtime>
-		<Import assembly="FiletypeRegisterer.dll"/>
+		<Import assembly = "ICSharpCode.FiletypeRegisterer.dll"/>
 	</Runtime>
-
+	
 	<Path name = "/Workspace/Autostart">
-		<Class id           = "RegisterFiletypes"
-		       class        = "ICSharpCode.FiletypeRegisterer.RegisterFiletypesCommand"/>
+		<Condition name = "Compare" string = "${property:SharpDevelop.FiletypesRegisterStartup}" equals = "True">
+			<Class id    = "RegisterFiletypes"
+			       class = "ICSharpCode.FiletypeRegisterer.RegisterFiletypesCommand"/>
+		</Condition>
 	</Path>
-
+	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/UIOptions">
 		<DialogPanel id          = "RegisterFiletypes"
 		             label       = "${res:ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel.PanelName}"
 		             insertafter = "LoadSave"
-		             class       = "ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel"/>
+		             class       = "ICSharpCode.FiletypeRegisterer.RegisterFiletypesPanel"/>
 	</Path>
 </AddIn>

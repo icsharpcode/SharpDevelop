@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 		}
 		
-		public IMethod FindOverload(ArrayList methods, ArrayList arguments, object data)
+		public IMethod FindOverload(List<IMethod> methods, ArrayList arguments, object data)
 		{
 			if (methods.Count <= 0) {
 				return null;
@@ -101,7 +101,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				types[i] = ((Expression)arguments[i]).AcceptVisitor(this, data) as IReturnType;
 			}
 			bool tmp;
-			return (IMethod)methods[FindOverload(methods, types, true, out tmp)];
+			List<IMethodOrIndexer> methodList = methods.ConvertAll<IMethodOrIndexer>(delegate (IMethod m) { return m; });
+			return (IMethod)methods[FindOverload(methodList, types, true, out tmp)];
 		}
 		
 		/// <summary>
@@ -115,18 +116,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// <param name="singleBestOverload">Returns true when the overload returned is
 		/// the only overload that had the highest score or false when there were
 		/// multiple overloads with an equal score.</param>
-		public static int FindOverload(ArrayList methods, IReturnType[] types, bool forceParameterCount, out bool singleBestOverload)
+		public static int FindOverload(List<IMethodOrIndexer> methods, IReturnType[] types, bool forceParameterCount, out bool singleBestOverload)
 		{
 			singleBestOverload = true;
 			if (methods.Count == 1)
 				return 0;
 			
-			IMethodOrIndexer bestMethod = (IMethodOrIndexer)methods[0];
+			IMethodOrIndexer bestMethod = methods[0];
 			int bestIndex = 0;
 			int bestScore = ScoreOverload(bestMethod, types, forceParameterCount);
 			
 			for (int i = 1; i < methods.Count; ++i) {
-				IMethodOrIndexer method = (IMethodOrIndexer)methods[i];
+				IMethodOrIndexer method = methods[i];
 				int score = ScoreOverload(method, types, forceParameterCount);
 				if (score > bestScore) {
 					bestScore = score;
@@ -185,7 +186,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (invocationExpression.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
 				IReturnType type = field.TargetObject.AcceptVisitor(this, data) as IReturnType;
-				ArrayList methods = resolver.SearchMethod(type, field.FieldName);
+				List<IMethod> methods = resolver.SearchMethod(type, field.FieldName);
 				InjectMethodTypeParameters(methods, invocationExpression);
 				return FindOverload(methods, invocationExpression.Parameters, data);
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
@@ -193,14 +194,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (resolver.CallingClass == null) {
 					return null;
 				}
-				ArrayList methods = resolver.SearchMethod(resolver.CallingClass.DefaultReturnType, id);
+				List<IMethod> methods = resolver.SearchMethod(id);
 				InjectMethodTypeParameters(methods, invocationExpression);
 				return FindOverload(methods, invocationExpression.Parameters, data);
 			}
 			return null;
 		}
 		
-		void InjectMethodTypeParameters(ArrayList methods, InvocationExpression invocationExpression)
+		void InjectMethodTypeParameters(List<IMethod> methods, InvocationExpression invocationExpression)
 		{
 			if (invocationExpression.TypeParameters == null) return;
 			if (invocationExpression.TypeParameters.Count == 0) return;
@@ -234,10 +235,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			IReturnType returnType = fieldReferenceExpression.TargetObject.AcceptVisitor(this, data) as IReturnType;
 			if (returnType != null) {
-				NamespaceReturnType namespaceRT = returnType as NamespaceReturnType;
-				if (namespaceRT != null) {
-					string name = namespaceRT.FullyQualifiedName;
-					string combinedName = name + "." + fieldReferenceExpression.FieldName;
+				if (returnType is NamespaceReturnType) {
+					string name = returnType.FullyQualifiedName;
+					string combinedName;
+					if (name.Length == 0)
+						combinedName = fieldReferenceExpression.FieldName;
+					else
+						combinedName = name + "." + fieldReferenceExpression.FieldName;
 					if (resolver.ProjectContent.NamespaceExists(combinedName)) {
 						return new NamespaceReturnType(combinedName);
 					}
@@ -410,6 +414,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			}
 			return baseClass.DefaultReturnType;
+		}
+		
+		public override object Visit(GlobalReferenceExpression globalReferenceExpression, object data)
+		{
+			return new NamespaceReturnType("");
 		}
 		
 		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)

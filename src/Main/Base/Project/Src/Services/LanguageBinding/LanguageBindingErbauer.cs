@@ -17,6 +17,16 @@ namespace ICSharpCode.Core
 	public class LanguageBindingErbauer : IErbauer
 	{
 		/// <summary>
+		/// Gets if the erbauer handles codon conditions on its own.
+		/// If this property return false, the item is excluded when the condition is not met.
+		/// </summary>
+		public bool HandleConditions {
+			get {
+				return false;
+			}
+		}
+		
+		/// <summary>
 		/// Creates an item with the specified sub items. And the current
 		/// Condition status for this item.
 		/// </summary>

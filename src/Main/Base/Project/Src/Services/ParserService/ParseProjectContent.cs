@@ -104,15 +104,13 @@ namespace ICSharpCode.Core
 		
 		void UpdateDefaultImports(ProjectItem[] items)
 		{
-			DefaultImports.Clear();
-			DefaultUsing u = null;
+			DefaultImports = null;
 			foreach (ProjectItem item in items) {
 				if (item.ItemType == ItemType.Import) {
-					if (u == null) {
-						u = new DefaultUsing(this);
-						DefaultImports.Add(u);
+					if (DefaultImports == null) {
+						DefaultImports = new DefaultUsing(this);
 					}
-					u.Usings.Add(item.Include);
+					DefaultImports.Usings.Add(item.Include);
 				}
 			}
 		}

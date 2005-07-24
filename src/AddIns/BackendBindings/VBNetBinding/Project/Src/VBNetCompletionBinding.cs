@@ -146,7 +146,7 @@ namespace VBNetBinding
 						parameterTypes[i] = rr.ResolvedType;
 					}
 				}
-				dp.DefaultIndex = TypeVisitor.FindOverload(new ArrayList(methods), parameterTypes, false, out overloadIsSure);
+				dp.DefaultIndex = TypeVisitor.FindOverload(methods, parameterTypes, false, out overloadIsSure);
 			}
 			editor.ShowInsightWindow(dp);
 			if (overloadIsSure) {

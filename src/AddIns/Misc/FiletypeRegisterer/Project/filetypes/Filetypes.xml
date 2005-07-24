@@ -1,7 +1,10 @@
 <?xml version="1.0" ?>
 <Filetypes>
-	<Filetype ext="cmbx" icon="cmbx.ico">SharpDevelop Combine</Filetype>
-	<Filetype ext="prjx" icon="prjx.ico">SharpDevelop Project</Filetype>
+	<Filetype ext="cmbx" icon="cmbx.ico">SharpDevelop 1.x Combine</Filetype>
+	<Filetype ext="prjx" icon="prjx.ico">SharpDevelop 1.x Project</Filetype>
+	<Filetype ext="sln" icon="cmbx.ico">SharpDevelop Solution</Filetype>
+	<Filetype ext="csproj" icon="prjx.ico">SharpDevelop C# Project</Filetype>
+	<Filetype ext="vbproj" icon="prjx.ico">SharpDevelop VB Project</Filetype>
 	<Filetype ext="cs" icon="cs.ico">C# Source File</Filetype>
 	<Filetype ext="vb" icon="vb.ico">VB.NET Source File</Filetype>
 	<Filetype ext="java" icon="java.ico">Java Source File</Filetype>

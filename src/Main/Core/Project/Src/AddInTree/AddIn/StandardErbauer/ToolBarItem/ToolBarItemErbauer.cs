@@ -16,6 +16,16 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public class ToolbarItemErbauer : IErbauer
 	{
+		/// <summary>
+		/// Gets if the erbauer handles codon conditions on its own.
+		/// If this property return false, the item is excluded when the condition is not met.
+		/// </summary>
+		public bool HandleConditions {
+			get {
+				return true;
+			}
+		}
+		
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
 		{
 			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Item";

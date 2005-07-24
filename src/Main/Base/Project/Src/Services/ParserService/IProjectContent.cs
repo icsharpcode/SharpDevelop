@@ -48,6 +48,13 @@ namespace ICSharpCode.Core
 			get;
 		}
 		
+		/// <summary>
+		/// Gets the default imports of the project content. Can return null.
+		/// </summary>
+		IUsing DefaultImports {
+			get;
+		}
+		
 		string GetXmlDocumentation(string memberTag);
 		
 		void AddClassToNamespaceList(IClass addClass);
