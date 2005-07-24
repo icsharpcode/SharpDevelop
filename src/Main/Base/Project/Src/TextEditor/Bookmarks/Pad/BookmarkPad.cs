@@ -69,6 +69,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		
 		void AddMark(SDBookmark mark)
 		{
+			if (!mark.IsVisibleInBookmarkPad)
+				return;
 			if (!fileNodes.ContainsKey(mark.FileName)) {
 				BookmarkFolderNode folderNode = new BookmarkFolderNode(mark.FileName);
 				fileNodes.Add(mark.FileName, folderNode);

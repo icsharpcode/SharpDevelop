@@ -906,8 +906,10 @@ Type<out TypeReference type>
 		| "[" { "," (. ++i; .) } "]"     (. r.Add(i); .)
 		)
 	}
-	(. type.RankSpecifier = r.ToArray();
-	   type.PointerNestingLevel = pointer;
+	(. if (type != null) {
+		type.RankSpecifier = r.ToArray();
+		type.PointerNestingLevel = pointer;
+	   }
 	.)
 .
 
@@ -1303,11 +1305,16 @@ InterfaceMemberDecl
 	(
 		/*--- interface void method (procedure) declaration: */
 		IF (NotVoidPointer()) "void" (. if (startLocation.X == -1) startLocation = t.Location; .) ident (. name = t.val; .)
-		"(" [ FormalParameterList<parameters> ] ")" ";" (. MethodDeclaration md = new MethodDeclaration(name, mod, new TypeReference("void"), parameters, attributes);
-		                                              md.StartLocation = startLocation;
-		                                              md.EndLocation = t.EndLocation;
-		                                              compilationUnit.AddChild(md);
-		                                           .)
+		[ TypeParameterList<templates> ]
+		"(" [ FormalParameterList<parameters> ] ")"
+		{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
+		";"
+		(.  MethodDeclaration md = new MethodDeclaration(name, mod, new TypeReference("void"), parameters, attributes);
+			md.StartLocation = startLocation;
+			md.EndLocation = t.EndLocation;
+			md.Templates = templates;
+			compilationUnit.AddChild(md);
+		.)
 		| (
 			Type<out type> (. if (startLocation.X == -1) startLocation = t.Location; .)
 			(
@@ -1319,11 +1326,12 @@ InterfaceMemberDecl
 					"(" [ FormalParameterList<parameters> ] ")" 
 					/* .NET 2.0 */
 					{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
-					";" (. MethodDeclaration md = new MethodDeclaration(name, mod, type, parameters, attributes);
-					                                              md.StartLocation = startLocation;
-					                                              md.EndLocation = t.EndLocation;
-					                                              compilationUnit.AddChild(md);
-					                                           .)
+					";" (.  MethodDeclaration md = new MethodDeclaration(name, mod, type, parameters, attributes);
+							md.StartLocation = startLocation;
+							md.EndLocation = t.EndLocation;
+							md.Templates = templates;
+							compilationUnit.AddChild(md);
+						.)
 					/*--- interface property declaration: */
 					|                   (. PropertyDeclaration pd = new PropertyDeclaration(name, type, mod, attributes); compilationUnit.AddChild(pd); .)
 					"{" (. Point bodyStart = t.Location;.) InterfaceAccessors<out getBlock, out setBlock> "}" (. pd.GetRegion = getBlock; pd.SetRegion = setBlock; pd.StartLocation = startLocation; pd.EndLocation = qualIdentEndLocation; pd.BodyStart = bodyStart; pd.BodyEnd = t.EndLocation; .)

@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			List<SDBookmark> projectBookmarks = new List<SDBookmark>();
 			foreach (SDBookmark mark in bookmarks) {
-				if (mark.FileName != null && project.IsFileInProject(mark.FileName)) {
+				if (mark.IsSaved && mark.FileName != null && project.IsFileInProject(mark.FileName)) {
 					projectBookmarks.Add(mark);
 				}
 			}

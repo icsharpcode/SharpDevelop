@@ -111,6 +111,46 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual(1, md.Templates[0].Bases.Count);
 			Assert.AreEqual("ISomeInterface", md.Templates[0].Bases[0].Type);
 		}
+		
+		[Test]
+		public void CSharpGenericMethodInInterface()
+		{
+			const string program = @"interface MyInterface {
+	T MyMethod<T>(T a) where T : ISomeInterface;
+}
+";
+			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(TypeDeclaration));
+			MethodDeclaration md = (MethodDeclaration)td.Children[0];
+			Assert.AreEqual("T", md.TypeReference.Type);
+			Assert.AreEqual(1, md.Parameters.Count);
+			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
+			Assert.AreEqual("a", ((ParameterDeclarationExpression)md.Parameters[0]).ParameterName);
+			
+			Assert.AreEqual(1, md.Templates.Count);
+			Assert.AreEqual("T", md.Templates[0].Name);
+			Assert.AreEqual(1, md.Templates[0].Bases.Count);
+			Assert.AreEqual("ISomeInterface", md.Templates[0].Bases[0].Type);
+		}
+		
+		[Test]
+		public void CSharpGenericVoidMethodInInterface()
+		{
+			const string program = @"interface MyInterface {
+	void MyMethod<T>(T a) where T : ISomeInterface;
+}
+";
+			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(TypeDeclaration));
+			MethodDeclaration md = (MethodDeclaration)td.Children[0];
+			Assert.AreEqual("void", md.TypeReference.Type);
+			Assert.AreEqual(1, md.Parameters.Count);
+			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
+			Assert.AreEqual("a", ((ParameterDeclarationExpression)md.Parameters[0]).ParameterName);
+			
+			Assert.AreEqual(1, md.Templates.Count);
+			Assert.AreEqual("T", md.Templates[0].Name);
+			Assert.AreEqual(1, md.Templates[0].Bases.Count);
+			Assert.AreEqual("ISomeInterface", md.Templates[0].Bases[0].Type);
+		}
 		#endregion
 		
 		#region VB.NET

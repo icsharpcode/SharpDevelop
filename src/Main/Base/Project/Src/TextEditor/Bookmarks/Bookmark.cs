@@ -23,6 +23,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	[TypeConverter(typeof(BookmarkConverter))]
 	public class SDBookmark : Bookmark
 	{
+		public SDBookmark(string fileName, IDocument document, int lineNumber) : base(document, lineNumber)
+		{
+			this.fileName = fileName;
+		}
+		
 		string fileName;
 		
 		public string FileName {
@@ -34,9 +39,40 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
-		public SDBookmark(string fileName, IDocument document, int lineNumber) : base(document, lineNumber)
-		{
-			this.fileName = fileName;
+		bool isSaved = true;
+		
+		/// <summary>
+		/// Gets/Sets if the bookmark should be saved to the project memento file.
+		/// </summary>
+		/// <remarks>
+		/// Default is true, set this property to false if you are using the bookmark for
+		/// something special like like "CurrentLineBookmark" in the debugger.
+		/// </remarks>
+		public bool IsSaved {
+			get {
+				return isSaved;
+			}
+			set {
+				isSaved = value;
+			}
+		}
+		
+		bool isVisibleInBookmarkPad = true;
+		
+		/// <summary>
+		/// Gets/Sets if the bookmark is shown in the bookmark pad.
+		/// </summary>
+		/// <remarks>
+		/// Default is true, set this property to false if you are using the bookmark for
+		/// something special like like "CurrentLineBookmark" in the debugger.
+		/// </remarks>
+		public bool IsVisibleInBookmarkPad {
+			get {
+				return isVisibleInBookmarkPad;
+			}
+			set {
+				isVisibleInBookmarkPad = value;
+			}
 		}
 	}
 	

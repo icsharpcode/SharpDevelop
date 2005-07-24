@@ -11,15 +11,52 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
-	/// Class describing a contexts in which an expressions can be.
+	/// Class describing a context in which an expression can be.
 	/// Serves as filter for code completion results, but the contexts exposed as static fields
 	/// can also be used as a kind of enumeration for special behaviour in the resolver.
 	/// </summary>
 	public abstract class ExpressionContext
 	{
+		#region Instance members
 		public abstract bool ShowEntry(object o);
 		
-		#region Default contexts (public fields)
+		protected bool readOnly = true;
+		object suggestedItem;
+		
+		/// <summary>
+		/// Gets if the expression is in the context of an object creation.
+		/// </summary>
+		public virtual bool IsObjectCreation {
+			get {
+				return false;
+			}
+			set {
+				if (value)
+					throw new NotSupportedException();
+			}
+		}
+		
+		/// <summary>
+		/// Gets/Sets the default item that should be included in a code completion popup
+		/// in this context and selected as default value.
+		/// </summary>
+		/// <example>
+		/// "List&lt;TypeName&gt; var = new *expr*();" has as suggested item the pseudo-class
+		/// "List&lt;TypeName&gt;".
+		/// </example>
+		public object SuggestedItem {
+			get {
+				return suggestedItem;
+			}
+			set {
+				if (readOnly)
+					throw new NotSupportedException();
+				suggestedItem = value;
+			}
+		}
+		#endregion
+		
+		#region Default contexts (public static fields)
 		/// <summary>Default/unknown context</summary>
 		public static ExpressionContext Default = new DefaultExpressionContext();
 		
@@ -29,31 +66,32 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		/// <summary>Context expects a type name</summary>
 		/// <example>typeof(*expr*), is *expr*, using(*expr* ...)</example>
-		public static ExpressionContext Type = new TypeExpressionContext(null, false);
+		public static ExpressionContext Type = new TypeExpressionContext(null, false, true);
 		
 		/// <summary>Context expects a non-abstract type that has accessible constructors</summary>
 		/// <example>new *expr*();</example>
 		/// <remarks>When using this context, a resolver should treat the expression as object creation,
 		/// even when the keyword "new" is not part of the expression.</remarks>
-		public static ExpressionContext ObjectCreation = new TypeExpressionContext(null, true);
+		public static ExpressionContext ObjectCreation = new TypeExpressionContext(null, true, true);
 		
 		/// <summary>Context expects a non-abstract type deriving from System.Attribute.</summary>
 		/// <example>[*expr*()]</example>
 		/// <remarks>When using this context, a resolver should try resolving typenames with an
 		/// appended "Attribute" suffix and treat "invocations" of the attribute type as
 		/// object creation.</remarks>
-		public static ExpressionContext Attribute = new TypeExpressionContext(ProjectContentRegistry.Mscorlib.GetClass("System.Attribute"), true);
+		public static ExpressionContext Attribute = new TypeExpressionContext(ProjectContentRegistry.Mscorlib.GetClass("System.Attribute"), true, true);
 		
 		/// <summary>Context expects a type name which has special base type</summary>
 		/// <param name="baseClass">The class the expression must derive from.</param>
-		/// <param name="allowAbstract">Specifies whether classes must be constructable.</param>
+		/// <param name="isObjectCreation">Specifies whether classes must be constructable.</param>
 		/// <example>catch(*expr* ...), using(*expr* ...), throw new ***</example>
-		public static ExpressionContext TypeDerivingFrom(IClass baseClass, bool mustBeConstructable)
+		public static ExpressionContext TypeDerivingFrom(IClass baseClass, bool isObjectCreation)
 		{
-			return new TypeExpressionContext(baseClass, mustBeConstructable);
+			return new TypeExpressionContext(baseClass, isObjectCreation, false);
 		}
 		
-		/// <summary>Context expeacts an interface</summary>
+		/// <summary>Context expects an interface</summary>
+		/// <example>Implements *expr*</example>
 		public static InterfaceExpressionContext Interface = new InterfaceExpressionContext();
 		
 		#endregion
@@ -92,12 +130,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		class TypeExpressionContext : ExpressionContext
 		{
 			IClass baseClass;
-			bool mustBeConstructable;
+			bool isObjectCreation;
 			
-			public TypeExpressionContext(IClass baseClass, bool mustBeConstructable)
+			public TypeExpressionContext(IClass baseClass, bool isObjectCreation, bool readOnly)
 			{
 				this.baseClass = baseClass;
-				this.mustBeConstructable = mustBeConstructable;
+				this.isObjectCreation = isObjectCreation;
+				this.readOnly = readOnly;
 			}
 			
 			public override bool ShowEntry(object o)
@@ -107,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				IClass c = o as IClass;
 				if (c == null)
 					return false;
-				if (mustBeConstructable) {
+				if (isObjectCreation) {
 					if (c.IsAbstract || c.IsStatic)    return false;
 					if (c.ClassType == ClassType.Enum) return false;
 				}
@@ -116,13 +155,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return c.IsTypeInInheritanceTree(baseClass);
 			}
 			
+			public override bool IsObjectCreation {
+				get {
+					return isObjectCreation;
+				}
+				set {
+					if (readOnly && value != isObjectCreation)
+						throw new NotSupportedException();
+					isObjectCreation = value;
+				}
+			}
+			
 			public override string ToString()
 			{
 				if (baseClass != null)
 					return "[" + GetType().Name + ": " + baseClass.FullyQualifiedName
-						+ " mustBeConstructable=" + mustBeConstructable + "]";
+						+ " IsObjectCreation=" + IsObjectCreation + "]";
 				else
-					return "[" + GetType().Name + " mustBeConstructable=" + mustBeConstructable + "]";
+					return "[" + GetType().Name + " IsObjectCreation=" + IsObjectCreation + "]";
 			}
 		}
 		#endregion
@@ -184,8 +234,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region InterfaceExpressionContext
 		public class InterfaceExpressionContext : ExpressionContext
 		{
-			IClass baseClass;
-			
 			public InterfaceExpressionContext()
 			{
 			}

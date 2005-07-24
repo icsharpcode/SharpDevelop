@@ -118,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			expression = expression.TrimStart();
 			
-			if (expressionResult.Context == ExpressionContext.ObjectCreation) {
+			if (expressionResult.Context.IsObjectCreation) {
 				expression = "new " + expression;
 			}
 			

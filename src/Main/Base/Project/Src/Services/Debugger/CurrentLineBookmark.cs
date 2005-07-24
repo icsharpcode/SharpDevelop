@@ -23,7 +23,7 @@ namespace ICSharpCode.Core
 	public class CurrentLineBookmark: SDMarkerBookmark
 	{
 		static CurrentLineBookmark instance;
-
+		
 		static int startLine;
 		static int startColumn;
 		static int endLine;
@@ -41,12 +41,12 @@ namespace ICSharpCode.Core
 		public static void SetPosition(string fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
 		{
 			Remove();
-
+			
 			startLine   = makerStartLine;
 			startColumn = makerStartColumn;
 			endLine     = makerEndLine;
 			endColumn   = makerEndColumn;
-
+			
 			LineSegment line = document.GetLineSegment(startLine - 1);
 			int offset = line.Offset + startColumn;
 			instance = new CurrentLineBookmark(fileName, document, startLine - 1);
@@ -72,7 +72,8 @@ namespace ICSharpCode.Core
 		
 		public CurrentLineBookmark(string fileName, IDocument document,  int startLine) : base(fileName, document, startLine)
 		{
-
+			this.IsSaved = false;
+			this.IsVisibleInBookmarkPad = false;
 		}
 		
 		public override void Draw(IconBarMargin margin, Graphics g, Point p)
