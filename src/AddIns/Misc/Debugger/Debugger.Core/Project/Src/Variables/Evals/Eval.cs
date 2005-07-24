@@ -58,9 +58,7 @@ namespace DebuggerLibrary
 		/// </summary>
 		public void AsyncPerformEval()
 		{
-			if (debugger.IsProcessRunning) {
-				throw new DebuggerException("Debugger must be paused");
-			}
+			debugger.CheckThatCurrentProcessIsSafeForInspection();
 
 			debugger.CurrentThread.CorThread.CreateEval(out corEval);
 			

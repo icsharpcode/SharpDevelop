@@ -107,14 +107,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 		void RefreshList()
 		{
-            if (debugger.IsDebugging && debugger.IsProcessRunning == false) {
+            if (debuggerCore.IsCurrentProcessSafeForInspection) {
 				UpdateVariables(localVarList.Items, debuggerCore.LocalVariables);
             }
 		}
 
 		private void localVarList_BeforeExpand(object sender, TreeListViewCancelEventArgs e)
 		{
-			if (debugger.IsDebugging && debugger.IsProcessRunning == false) {
+			if (debuggerCore.IsCurrentProcessSafeForInspection) {
 				((VariableListItem)e.Item).PrepareForExpansion();
 			} else {
 				// TODO: Some message telling user that he can not explore variable since

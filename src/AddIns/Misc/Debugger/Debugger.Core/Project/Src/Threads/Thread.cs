@@ -84,7 +84,7 @@ namespace DebuggerLibrary
 
 		public bool Suspended {
 			get	{
-				if (debugger.IsProcessRunning) return lastSuspendedState;
+				if (!process.IsProcessSafeForInspection) return lastSuspendedState;
 
 				CorDebugThreadState state;
 				corThread.GetDebugState(out state);
@@ -99,7 +99,7 @@ namespace DebuggerLibrary
 		public ThreadPriority Priority {
 			get {
 				if (!HasBeenLoaded) return lastPriority;
-				if (debugger.IsProcessRunning) return lastPriority;
+				if (!process.IsProcessSafeForInspection) return lastPriority;
 
 				Variable runTimeVar = RuntimeVariable;
 				if (runTimeVar is NullRefVariable) return ThreadPriority.Normal;
@@ -111,7 +111,8 @@ namespace DebuggerLibrary
 		public Variable RuntimeVariable {
 			get {
 				if (!HasBeenLoaded) throw new DebuggerException("Thread has not started jet");
-				if (debugger.IsProcessRunning) throw new DebuggerException("Process is running");
+				process.CheckThatProcessIsSafeForInspection();
+
 				ICorDebugValue corValue;
 				corThread.GetObject(out corValue);
 				return VariableFactory.CreateVariable(debugger, corValue, "Thread" + ID);
@@ -121,7 +122,7 @@ namespace DebuggerLibrary
 		public string Name {
 			get	{
 				if (!HasBeenLoaded) return lastName;
-				if (debugger.IsProcessRunning) return lastName;
+				if (!process.IsProcessSafeForInspection) return lastName;
 				Variable runtimeVar  = RuntimeVariable;
 				if (runtimeVar is NullRefVariable) return lastName;
 				Variable runtimeName = runtimeVar.SubVariables["m_Name"];
@@ -180,8 +181,7 @@ namespace DebuggerLibrary
 			get {
 				List<Function> callstack = new List<Function>();
 
-				if (!debugger.IsDebugging) return callstack;
-				if (debugger.IsProcessRunning) return callstack;
+				if (!process.IsProcessSafeForInspection) return callstack;
 
 				ICorDebugChainEnum corChainEnum;
 				corThread.EnumerateChains(out corChainEnum);
@@ -219,7 +219,8 @@ namespace DebuggerLibrary
 		
 		public Function CurrentFunction {
 			get {
-				if (debugger.IsProcessRunning) throw new DebuggerException("Process must not be running");
+				process.CheckThatProcessIsSafeForInspection();
+
 				return currentFunction;
 			}
 			set {

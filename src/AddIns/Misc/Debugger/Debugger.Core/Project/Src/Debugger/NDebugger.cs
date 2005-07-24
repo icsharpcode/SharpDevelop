@@ -53,8 +53,6 @@ namespace DebuggerLibrary
 			}
 		}
 
-		#region Basic functions
-
 		public NDebugger()
 		{
 			requiredApartmentState = System.Threading.Thread.CurrentThread.GetApartmentState();
@@ -79,7 +77,6 @@ namespace DebuggerLibrary
 
             NativeMethods.CreateDebuggingInterfaceFromVersion(3, sb.ToString(), out corDebug);
 
-			//corDebug              = new CorDebugClass();
 			managedCallback       = new ManagedCallback(this);
 			managedCallbackProxy  = new ManagedCallbackProxy(this, managedCallback);
 
@@ -103,8 +100,6 @@ namespace DebuggerLibrary
 			GC.WaitForPendingFinalizers();
 			TraceMessage("Reset done");
 		}
-
-		#endregion
 
 		#region Public events
 
@@ -167,8 +162,6 @@ namespace DebuggerLibrary
 
 		#endregion
 
-		#region Execution control
-
 		public void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)
 		{		
 			System.Diagnostics.Process process;
@@ -183,56 +176,28 @@ namespace DebuggerLibrary
 			AddProcess(process);
 		}
 
+		public bool IsCurrentProcessSafeForInspection {
+			get {
+				if (CurrentProcess == null) {
+					return false;
+				} else {
+					return CurrentProcess.IsProcessSafeForInspection;
+				}
+			}
+		}
 
-		#endregion
-
-		public void ToggleBreakpointAt(string fileName, int line, int column) 
+		internal void CheckThatCurrentProcessIsSafeForInspection()
 		{
-			// Check if there is breakpoint on that line
-			foreach (Breakpoint breakpoint in Breakpoints) {
-				// TODO check filename too
-				if (breakpoint.SourcecodeSegment.StartLine == line) {
-					RemoveBreakpoint(breakpoint);
-					return;
-				}
-			}
-
-			// Add the breakpoint 
-			Breakpoint addedBreakpoint = AddBreakpoint(new SourcecodeSegment(fileName, line), true);
-
-            // Check if it wasn't forced to move to different line with breakpoint
-			foreach (Breakpoint breakpoint in Breakpoints) {
-				if (breakpoint != addedBreakpoint) { // Only the old ones
-					if (breakpoint.SourcecodeSegment.StartLine == addedBreakpoint.SourcecodeSegment.StartLine) {
-						// Whops! We have two breakpoint on signle line, delete one
-						RemoveBreakpoint(addedBreakpoint);
-						return;
-					}
-				}
-			}
-		}
-
-
-		public bool IsProcessRunning { 
-			get {
-				if (!IsDebugging) return false;
-				return CurrentProcess.IsProcessRunning;
-			}
-			set {
-				if (CurrentProcess == null) return;
-				CurrentProcess.IsProcessRunning = value;
-			}
-		}
-
-		public bool IsDebugging {
-			get {
-				return (CurrentProcess != null);
+			if (CurrentProcess == null) {
+				throw new DebuggerException("There is no process being debugged.");
+			} else {
+				CurrentProcess.CheckThatProcessIsSafeForInspection();
 			}
 		}
 
 		public Thread CurrentThread {
 			get {
-				if (!IsDebugging) return null;
+				if (CurrentProcess == null) return null;
 				return CurrentProcess.CurrentThread;
 			}
 			set {
@@ -242,7 +207,7 @@ namespace DebuggerLibrary
 
 		public SourcecodeSegment NextStatement { 
 			get {
-				if (!IsDebugging) return null;
+				if (!IsCurrentProcessSafeForInspection) return null;
 				if (CurrentProcess.CurrentThread.CurrentFunction == null) {
 					return null;
 				} else {
@@ -253,7 +218,7 @@ namespace DebuggerLibrary
 
 		public VariableCollection LocalVariables { 
 			get {
-				if (!IsDebugging) return VariableCollection.Empty;
+				if (!IsCurrentProcessSafeForInspection) return VariableCollection.Empty;
 				return CurrentProcess.CurrentThread.CurrentFunction.GetVariables();
 			}
 		}

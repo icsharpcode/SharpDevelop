@@ -38,14 +38,13 @@ namespace DebuggerLibrary
 
 		public Thread CurrentThread {
 			get {
-				if (IsProcessRunning) throw new DebuggerException("Process must not be running");
 				if (currentThread != null) return currentThread;
 				IList<Thread> threads = Threads;
 				if (currentThread == null && threads.Count > 0) {
 					currentThread = threads[0];
 					return currentThread;
 				}
-				throw new DebuggerException("No current thread");
+				return null;
 			}
 			set	{
 				currentThread = value;
@@ -120,7 +119,7 @@ namespace DebuggerLibrary
 
 		public void Break()
 		{
-			if (!IsProcessRunning) {
+			if (!isProcessRunning) {
 				throw new DebuggerException("Invalid operation");
 			}
 
@@ -132,7 +131,7 @@ namespace DebuggerLibrary
 
 		public void Continue()
 		{
-			if (IsProcessRunning) {
+			if (isProcessRunning) {
 				throw new DebuggerException("Invalid operation");
 			}
 
@@ -163,6 +162,28 @@ namespace DebuggerLibrary
 			}
 			internal set {
 				isProcessRunning = value;
+			}
+		}
+
+		public bool IsProcessSafeForInspection {
+			get {
+				if (isProcessRunning) return false;
+				if (CurrentThread == null) return false;
+
+				return true;
+			}
+		}
+
+		internal void CheckThatProcessIsSafeForInspection()
+		{
+			if (!IsProcessSafeForInspection) {
+				if (isProcessRunning) {
+					throw new DebuggerException("Process is not safe for inspection because it is running.");
+				} else if (CurrentThread == null){
+					throw new DebuggerException("Process is not safe for inspection because it has no thread.");
+				} else {
+					throw new DebuggerException("Process is not safe for inspection.");
+				}
 			}
 		}
 	}

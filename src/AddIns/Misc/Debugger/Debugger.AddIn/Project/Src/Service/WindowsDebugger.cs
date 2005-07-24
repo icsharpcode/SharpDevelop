@@ -208,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public string GetValueAsString(string variableName)
 		{
-			if (debugger == null || !debugger.IsDebugging || debugger.IsProcessRunning) return null;
+			if (debugger == null || !debugger.IsCurrentProcessSafeForInspection) return null;
 			VariableCollection collection = debugger.LocalVariables;
 			if (collection == null)
 				return null;
@@ -267,8 +267,8 @@ namespace ICSharpCode.SharpDevelop.Services
 
 			RestoreNDebuggerBreakpoints();
 
-			isDebuggingCache = debugger.IsDebugging;
-			isProcessRunningCache = debugger.IsProcessRunning;
+			isDebuggingCache = false;
+			isProcessRunningCache = true;
 			
 			if (Initialize != null) {
 				Initialize(this, null);  
