@@ -79,11 +79,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		void OnRemoved(object sender, TaskEventArgs e)
 		{
 			Task t = e.Task;
-			List<TextMarker> markers = textEditor.Document.MarkerStrategy.TextMarker;
-			for (int i = 0; i < markers.Count; ++i) {
-				VisualError ve = markers[i] as VisualError;
+			foreach (TextMarker marker in textEditor.Document.MarkerStrategy.TextMarker) {
+				VisualError ve = marker as VisualError;
 				if (ve != null && ve.Task == t) {
-					markers.RemoveAt(i);
+					textEditor.Document.MarkerStrategy.RemoveMarker(marker);
 					textEditor.Refresh();
 					break;
 				}
@@ -104,15 +103,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		bool ClearErrors()
 		{
 			bool removed = false;
-			List<TextMarker> markers = textEditor.Document.MarkerStrategy.TextMarker;
-			for (int i = 0; i < markers.Count;) {
-				if (markers[i] is VisualError) {
-					removed = true;
-					markers.RemoveAt(i);
-				} else {
-					i++; // Check next one
-				}
-			}
+			textEditor.Document.MarkerStrategy.RemoveAll(delegate (TextMarker marker) {
+			                                             	if (marker is VisualError) {
+			                                             		removed = true;
+			                                             		return true;
+			                                             	}
+			                                             	return false;});
 			return removed;
 		}
 		
@@ -136,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					int offset = line.Offset + task.Column;
 					foreach (TextWord tw in line.Words) {
 						if (task.Column >= tw.Offset && task.Column < (tw.Offset + tw.Length)) {
-							textEditor.Document.MarkerStrategy.TextMarker.Add(new VisualError(offset, tw.Length, task));
+							textEditor.Document.MarkerStrategy.AddMarker(new VisualError(offset, tw.Length, task));
 							if (refresh) {
 								textEditor.Refresh();
 							}

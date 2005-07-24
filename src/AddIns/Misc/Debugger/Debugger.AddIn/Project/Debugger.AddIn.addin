@@ -1,22 +1,10 @@
-<AddIn name="SharpDevelop Debugger" author="David Srbecký" copyright="GPL" url="" description="SharpDevelop Managed Debugger" version="0.1.0.0">
+﻿<AddIn name="SharpDevelop Debugger" author="David Srbecký" copyright="GPL" url="" description="SharpDevelop Managed Debugger" version="0.1.0.0">
 	<Runtime>
 		<Import assembly="Debugger.AddIn.dll"/>
 	</Runtime>
 
 	<Path name="/SharpDevelop/Services/DebuggerService/Debugger">
 		<Class id="DefaultDebugger" class="ICSharpCode.SharpDevelop.Services.WindowsDebugger"/>
-	</Path>
-	
-	<Path name = "/SharpDevelop/Workbench/MainMenu/View">
-		<MenuItem id    = "Debugger"
-		          label = "${res:XML.MainMenu.ViewMenu.DebugMenu}"
-		          type  = "Menu"
-		          insertafter  = "Tools"
-		          insertbefore = "ViewItemsSeparator">
-			<MenuItem id    = "DebugViewMenuBuilder"
-			          type  = "Builder"
-			          class = "ICSharpCode.SharpDevelop.Commands.DebugViewMenuBuilder"/>
-		</MenuItem>
 	</Path>
 	
 	<!--<Path name = "/SharpDevelop/Workbench/MainMenu/Debug">

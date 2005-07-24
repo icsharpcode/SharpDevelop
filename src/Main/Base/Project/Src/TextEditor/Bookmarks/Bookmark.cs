@@ -18,7 +18,7 @@ using ICSharpCode.TextEditor.Document;
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	/// <summary>
-	/// Description of Bookmark.
+	/// A bookmark that is persistant across SharpDevelop sessions.
 	/// </summary>
 	[TypeConverter(typeof(BookmarkConverter))]
 	public class SDBookmark : Bookmark
@@ -37,6 +37,50 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		public SDBookmark(string fileName, IDocument document, int lineNumber) : base(document, lineNumber)
 		{
 			this.fileName = fileName;
+		}
+	}
+	
+	/// <summary>
+	/// A bookmark that is persistant across SharpDevelop sessions and has a text marker assigned to it.
+	/// </summary>
+	public abstract class SDMarkerBookmark : SDBookmark
+	{
+		public SDMarkerBookmark(string fileName, IDocument document, int lineNumber) : base(fileName, document, lineNumber)
+		{
+			SetMarker();
+		}
+		
+		IDocument oldDocument;
+		TextMarker oldMarker;
+		
+		protected abstract TextMarker CreateMarker();
+		
+		void SetMarker()
+		{
+			RemoveMarker();
+			if (Document != null) {
+				TextMarker marker = CreateMarker();
+				// Perform editor update
+				Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, LineNumber));
+				Document.CommitUpdate();
+				oldMarker = marker;
+			}
+			oldDocument = Document;
+		}
+		
+		protected override void OnDocumentChanged(EventArgs e)
+		{
+			base.OnDocumentChanged(e);
+			SetMarker();
+		}
+		
+		public void RemoveMarker()
+		{
+			if (oldDocument != null) {
+				oldDocument.MarkerStrategy.RemoveMarker(oldMarker);
+			}
+			oldDocument = null;
+			oldMarker = null;
 		}
 	}
 	

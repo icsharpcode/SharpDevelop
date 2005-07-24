@@ -2608,7 +2608,7 @@ IsPointer()) {
 		}
 
 #line  929 "cs.ATG" 
-		type.PointerNestingLevel = pointer; 
+		if (type != null) { type.PointerNestingLevel = pointer; } 
 	}
 
 	void FixedParameter(

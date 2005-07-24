@@ -299,7 +299,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			System.Diagnostics.Debugger.Break();
 			return CreateReturnType(typeReferenceExpression.TypeReference);
 		}
 		

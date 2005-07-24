@@ -66,7 +66,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					items[i] = new MenuCommand(accelaratorKeyPrefix + recentOpen.RecentProject[i], new EventHandler(LoadRecentProject));
 					items[i].Tag = recentOpen.RecentProject[i].ToString();
 					items[i].Description = StringParser.Parse(ResourceService.GetString("Dialog.Componnents.RichMenuItem.LoadProjectDescription"),
-					                                         new string[,] { {"PROJECT", recentOpen.RecentProject[i].ToString()} });
+					                                          new string[,] { {"PROJECT", recentOpen.RecentProject[i].ToString()} });
 				}
 				return items;
 			}
@@ -173,15 +173,15 @@ namespace ICSharpCode.SharpDevelop.Commands
 						
 						MessageService.ShowError(ex, "External program execution failed.\nError while starting:\n '" + command + " " + args + "'");
 					}
-						break;
-					}
+					break;
 				}
 			}
 		}
-				
+	}
+	
 	public class OpenContentsMenuBuilder : ISubmenuBuilder
 	{
-				
+		
 		class MyMenuItem : MenuCheckBox
 		{
 			IViewContent content;
@@ -224,20 +224,20 @@ namespace ICSharpCode.SharpDevelop.Commands
 //	public class IncludeFilesBuilder : ISubmenuBuilder
 //	{
 //		public ProjectBrowserView browser;
-//		
+//
 //		MyMenuItem includeInCompileItem;
 //		MyMenuItem includeInDeployItem;
-//		
+//
 //		class MyMenuItem : MenuCheckBox
 //		{
 //			IncludeFilesBuilder builder;
-//			
+//
 //			public MyMenuItem(IncludeFilesBuilder builder, string name, EventHandler handler) : base(null, null, name)
 //			{
 //				base.Click += handler;
 //				this.builder = builder;
 //			}
-//			
+//
 //			public override void UpdateStatus()
 //			{
 //				base.UpdateStatus();
@@ -245,11 +245,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 //					return;
 //				}
 //				AbstractBrowserNode node = builder.browser.SelectedNode as AbstractBrowserNode;
-//				
+//
 //				if (node == null) {
 //					return;
 //				}
-//				
+//
 //				ProjectFile finfo = node.UserData as ProjectFile;
 //				if (finfo == null) {
 //					builder.includeInCompileItem.Enabled = builder.includeInCompileItem.Enabled = false;
@@ -262,27 +262,27 @@ namespace ICSharpCode.SharpDevelop.Commands
 //				}
 //			}
 //		}
-//		
+//
 //		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 //		{
 //			browser = (ProjectBrowserView)owner;
 //			includeInCompileItem = new MyMenuItem(this, "${res:ProjectComponent.ContextMenu.IncludeMenu.InCompile}", new EventHandler(ChangeCompileInclude));
 //			includeInDeployItem  = new MyMenuItem(this, "${res:ProjectComponent.ContextMenu.IncludeMenu.InDeploy}",  new EventHandler(ChangeDeployInclude));
-//			
+//
 //			return new ToolStripItem[] {
 //				includeInCompileItem,
 //				includeInDeployItem
 //			};
-//			
+//
 //		}
 //		void ChangeCompileInclude(object sender, EventArgs e)
 //		{
 //			AbstractBrowserNode node = browser.SelectedNode as AbstractBrowserNode;
-//			
+//
 //			if (node == null) {
 //				return;
 //			}
-//			
+//
 //			ProjectFile finfo = node.UserData as ProjectFile;
 //			if (finfo != null) {
 //				if (finfo.BuildAction == BuildAction.Compile) {
@@ -291,18 +291,18 @@ namespace ICSharpCode.SharpDevelop.Commands
 //					finfo.BuildAction = BuildAction.Compile;
 //				}
 //			}
-//			
+//
 //			ProjectService.SaveCombine();
 //		}
-//		
+//
 //		void ChangeDeployInclude(object sender, EventArgs e)
 //		{
 //			AbstractBrowserNode node = browser.SelectedNode as AbstractBrowserNode;
-//			
+//
 //			if (node == null) {
 //				return;
 //			}
-//			
+//
 //			ProjectFile finfo = node.UserData as ProjectFile;
 //			if (finfo != null) {
 //				if (node.Project.DeployInformation.IsFileExcluded(finfo.Name)) {
@@ -311,7 +311,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 //					node.Project.DeployInformation.AddExcludedFile(finfo.Name);
 //				}
 //			}
-//			
+//
 //			ProjectService.SaveCombine();
 //		}
 //	}
@@ -330,7 +330,16 @@ namespace ICSharpCode.SharpDevelop.Commands
 		protected override string Category {
 			get {
 				return "Main";
-			} 
+			}
+		}
+	}
+	
+	public class DebugViewMenuBuilder : ViewMenuBuilder
+	{
+		protected override string Category {
+			get {
+				return "Debugger";
+			}
 		}
 	}
 	

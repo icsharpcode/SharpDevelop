@@ -97,7 +97,7 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public virtual void Click(SWF.Control parent, SWF.MouseEventArgs e)
 		{
-			if (e.Button == SWF.MouseButtons.Left) {
+			if (e.Button == SWF.MouseButtons.Left && CanToggle) {
 				document.BookmarkManager.RemoveMark(this);
 			}
 		}

@@ -1877,4 +1877,16 @@
 		      extensions = ".css"
 		      resource   = "Icons.16x16.CSSIcon"/>
 	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/View">
+		<MenuItem id    = "Debugger"
+		          label = "${res:XML.MainMenu.ViewMenu.DebugMenu}"
+		          type  = "Menu"
+		          insertafter  = "Tools"
+		          insertbefore = "ViewItemsSeparator">
+			<MenuItem id    = "DebugViewMenuBuilder"
+			          type  = "Builder"
+			          class = "ICSharpCode.SharpDevelop.Commands.DebugViewMenuBuilder"/>
+		</MenuItem>
+	</Path>
 </AddIn>

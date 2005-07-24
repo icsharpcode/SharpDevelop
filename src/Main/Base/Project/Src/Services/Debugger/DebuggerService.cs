@@ -12,7 +12,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 
-using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Project;
@@ -32,22 +31,10 @@ namespace ICSharpCode.Core
 
 		static DebuggerService()
 		{
-			AddInTreeNode treeNode = null;
-			try {
-				treeNode = AddInTree.GetTreeNode("/SharpDevelop/Services/DebuggerService/Debugger");
-			} catch (Exception) {
-			}
-			if (treeNode != null) {
-				debuggers = treeNode.BuildChildItems(null);
-			}
-			if (debuggers == null) {
-				debuggers = new ArrayList();
-			}
-			
 			ProjectService.SolutionLoaded += delegate {
 				ClearDebugMessages();
 			};
-
+			
 			WorkbenchSingleton.WorkbenchCreated += new EventHandler(WorkspaceCreated);
 			BM.BookmarkManager.Added   += BookmarkAdded;
 			BM.BookmarkManager.Removed += BookmarkRemoved;
@@ -59,6 +46,9 @@ namespace ICSharpCode.Core
 			if (ProjectService.OpenSolution != null) {
 				project = ProjectService.OpenSolution.StartupProject;
 			}
+			if (debuggers == null) {
+				debuggers = AddInTree.BuildItems("/SharpDevelop/Services/DebuggerService/Debugger", null, false);
+			}
 			foreach (IDebugger d in debuggers) {
 				if (d.CanDebug(project)) {
 					return d;
@@ -66,7 +56,12 @@ namespace ICSharpCode.Core
 			}
 			return new DefaultDebugger();
 		}
-
+		
+		/// <summary>
+		/// Gets the current debugger. The debugger addin is loaded on demand; so if you
+		/// just want to check a property like IsDebugging, use <see cref="LoadedDebugger"/>
+		/// instead.
+		/// </summary>
 		public static IDebugger CurrentDebugger {
 			get {
 				if (currentDebugger == null) {
@@ -77,7 +72,16 @@ namespace ICSharpCode.Core
 				return currentDebugger;
 			}
 		}
-
+		
+		/// <summary>
+		/// Returns true if debugger is already loaded.
+		/// </summary>
+		public static bool IsDebuggerLoaded {
+			get {
+				return currentDebugger != null;
+			}
+		}
+		
 		static void DebugStarted(object sender, EventArgs e)
 		{
 			//oldLayoutConfiguration = LayoutConfiguration.CurrentLayoutName;
@@ -85,9 +89,10 @@ namespace ICSharpCode.Core
 
 			ClearDebugMessages();
 		}
-
+		
 		static void DebugStopped(object sender, EventArgs e)
 		{
+			CurrentLineBookmark.Remove();
 			//LayoutConfiguration.CurrentLayoutName = oldLayoutConfiguration;
 		}
 
@@ -153,12 +158,11 @@ namespace ICSharpCode.Core
 				return breakpoints;
 			}
 		}
-
+		
 		static void BookmarkAdded(object sender, BM.BookmarkEventArgs e)
 		{
 			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
 			if (bb != null) {
-				RefreshBreakpointMarkersInDocument(bb.Document);
 				OnBreakPointAdded(new BreakpointBookmarkEventArgs(bb));
 			}
 		}
@@ -167,11 +171,11 @@ namespace ICSharpCode.Core
 		{
 			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
 			if (bb != null) {
-				RefreshBreakpointMarkersInDocument(bb.Document);
+				bb.RemoveMarker();
 				OnBreakPointRemoved(new BreakpointBookmarkEventArgs(bb));
 			}
 		}
-
+		
 		static void ToggleBreakpointAt(IDocument document, string fileName, int lineNumber)
 		{
 			foreach (Bookmark m in document.BookmarkManager.Marks) {
@@ -186,42 +190,6 @@ namespace ICSharpCode.Core
 			document.BookmarkManager.AddMark(new BreakpointBookmark(fileName, document, lineNumber));
 		}
 		
-		static void RefreshBreakpointMarkersInDocument(IDocument document)
-		{
-			if (document == null) return;
-			List<TextMarker> markers = document.MarkerStrategy.TextMarker;
-			// Remove all breakpoint markers
-			for (int i = 0; i < markers.Count;) {
-				if (markers[i] is BreakpointMarker) {
-					markers.RemoveAt(i);
-				} else {
-					i++; // Check next one
-				}
-			}
-			// Add breakpoint markers
-			foreach (BreakpointBookmark b in Breakpoints) {
-				LineSegment lineSeg = document.GetLineSegment(b.LineNumber);
-				document.MarkerStrategy.TextMarker.Add(new BreakpointMarker(lineSeg.Offset, lineSeg.Length, TextMarkerType.SolidBlock, Color.Red, Color.White));
-			}
-			// Perform editor update
-			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-			document.CommitUpdate();
-		}
-		
-		class BreakpointMarker: TextMarker
-		{
-			public BreakpointMarker(int offset, int length, TextMarkerType textMarkerType, Color color, Color foreColor):base(offset, length, textMarkerType, color, foreColor)
-			{
-			}
-		}
-		
-		class CurrentLineMarker: TextMarker
-		{
-			public CurrentLineMarker(int offset, int length, TextMarkerType textMarkerType, Color color, Color foreColor):base(offset, length, textMarkerType, color, foreColor)
-			{
-			}
-		}
-		
 		static void WorkspaceCreated(object sender, EventArgs args)
 		{
 			WorkbenchSingleton.Workbench.ViewOpened += new ViewContentEventHandler(ViewContentOpened);
@@ -234,10 +202,7 @@ namespace ICSharpCode.Core
 				TextArea textArea = ((TextEditor.TextEditorControl)e.Content.Control).ActiveTextAreaControl.TextArea;
 				
 				textArea.IconBarMargin.MouseDown += new MarginMouseEventHandler(IconBarMouseDown);
-				textArea.IconBarMargin.Painted   += new MarginPaintEventHandler(PaintIconBar);
 				textArea.MouseMove               += new MouseEventHandler(TextAreaMouseMove);
-				
-				RefreshBreakpointMarkersInDocument(textArea.MotherTextEditorControl.Document);
 			}
 		}
 		
@@ -247,50 +212,19 @@ namespace ICSharpCode.Core
 				TextArea textArea = ((TextEditor.TextEditorControl)e.Content.Control).ActiveTextAreaControl.TextArea;
 				
 				textArea.IconBarMargin.MouseDown -= new MarginMouseEventHandler(IconBarMouseDown);
-				textArea.IconBarMargin.Painted   -= new MarginPaintEventHandler(PaintIconBar);
 				textArea.MouseMove               -= new MouseEventHandler(TextAreaMouseMove);
 			}
 		}
 		
-		
-		static TextMarker currentLineMarker;
-		static IDocument  currentLineMarkerParent;
-		
-		static public void RemoveCurrentLineMarker()
+		public static void RemoveCurrentLineMarker()
 		{
-			if (currentLineMarker != null) {
-				currentLineMarkerParent.MarkerStrategy.TextMarker.Remove(currentLineMarker);
-				currentLineMarkerParent.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-				currentLineMarkerParent.CommitUpdate();
-				currentLineMarkerParent = null;
-				currentLineMarker       = null;
-			}
+			CurrentLineBookmark.Remove();
 		}
 		
-		static public void JumpToCurrentLine(string SourceFullFilename, int StartLine, int StartColumn, int EndLine, int EndColumn)
+		public static void JumpToCurrentLine(string SourceFullFilename, int StartLine, int StartColumn, int EndLine, int EndColumn)
 		{
-			RemoveCurrentLineMarker();
-			
-			FileService.OpenFile(SourceFullFilename);
-			IWorkbenchWindow window = FileService.GetOpenFile(SourceFullFilename);
-			if (window != null) {
-				IViewContent content = window.ViewContent;
-				
-				if (content is IPositionable) {
-					((IPositionable)content).JumpTo((int)StartLine - 1, (int)StartColumn - 1);
-				}
-				
-				if (content.Control is TextEditorControl) {
-					IDocument document = ((TextEditorControl)content.Control).Document;
-					LineSegment line = document.GetLineSegment((int)StartLine - 1);
-					int offset = line.Offset + (int)StartColumn;
-					currentLineMarker = new CurrentLineMarker(offset, (int)EndColumn - (int)StartColumn, TextMarkerType.SolidBlock, Color.Yellow, Color.Blue);
-					currentLineMarkerParent = document;
-					currentLineMarkerParent.MarkerStrategy.TextMarker.Add(currentLineMarker);
-					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-					document.CommitUpdate();
-				}
-			}
+			IViewContent viewContent = FileService.JumpToFilePosition(SourceFullFilename, StartLine - 1, StartColumn - 1);
+			CurrentLineBookmark.SetPosition(viewContent, StartLine, StartColumn, EndLine, EndColumn);
 		}
 		
 		static void IconBarMouseDown(AbstractMargin iconBar, Point mousepos, MouseButtons mouseButtons)
@@ -305,23 +239,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		/// <summary>
-		/// Draw Breakpoint icon and the yellow arrow in the margin
-		/// </summary>
-		static void PaintIconBar(AbstractMargin iconBar, Graphics g, Rectangle rect)
-		{
-			foreach (TextMarker textMarker in iconBar.TextArea.Document.MarkerStrategy.TextMarker) {
-				CurrentLineMarker currentLineMarker = textMarker as CurrentLineMarker;
-				if (currentLineMarker != null) {
-					int lineNumber = iconBar.TextArea.Document.GetVisibleLine((int)iconBar.TextArea.Document.GetLineNumberForOffset(currentLineMarker.Offset));
-					int yPos = (int)(lineNumber * iconBar.TextArea.TextView.FontHeight) - iconBar.TextArea.VirtualTop.Y;
-					if (yPos >= rect.Y && yPos <= rect.Bottom) {
-						((IconBarMargin)iconBar).DrawArrow(g, yPos);
-					}
-				}
-			}
-		}
-		
+		#region Tool tips
 		static string oldExpression, oldToolTip;
 		static int oldLine;
 		
@@ -462,5 +380,6 @@ namespace ICSharpCode.Core
 			}
 			return text.ToString();
 		}
+		#endregion
 	}
 }

@@ -681,6 +681,7 @@
     <EmbeddedResource Include="Resources\CodeCompletionOptionPanel.xfrm" />
     <Compile Include="Src\TextEditor\Gui\OptionPanels\CodeCompletionPanel.cs" />
     <Compile Include="Src\Dom\CodeCompletionOptions.cs" />
+    <Compile Include="Src\Services\Debugger\CurrentLineBookmark.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

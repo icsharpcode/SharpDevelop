@@ -16,7 +16,7 @@ namespace ICSharpCode.Core
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			IDebugger debugger = DebuggerService.CurrentDebugger as IDebugger;
+			IDebugger debugger = DebuggerService.IsDebuggerLoaded ? DebuggerService.CurrentDebugger : new DefaultDebugger();
 			if (debugger != null) {
 				switch (condition.Properties["debuggersupports"]) {
 					case "Start":

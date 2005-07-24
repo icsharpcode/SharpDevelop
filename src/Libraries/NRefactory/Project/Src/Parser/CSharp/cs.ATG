@@ -926,7 +926,7 @@ NonArrayType<out TypeReference type>
 	{ IF (IsPointer())
 		"*" (. ++pointer; .)
 	}
-	(. type.PointerNestingLevel = pointer; .)
+	(. if (type != null) { type.PointerNestingLevel = pointer; } .)
 .
 
 SimpleType<out string name>

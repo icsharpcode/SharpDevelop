@@ -68,7 +68,7 @@ namespace ICSharpCode.TextEditor
 				int lineNumber = textArea.Document.GetVisibleLine(mark.LineNumber);
 				int fontHeight = textArea.TextView.FontHeight;
 				int yPos = lineNumber * fontHeight - textArea.VirtualTop.Y;
-				if (mousePos.Y > yPos && mousePos.Y < yPos + fontHeight) {
+				if (mousePos.Y >= yPos && mousePos.Y < yPos + fontHeight) {
 					mark.Click(textArea, new MouseEventArgs(mouseButtons, 1, mousePos.X, mousePos.Y, 0));
 					if (oldCount != marks.Count) {
 						textArea.UpdateLine(lineNumber);

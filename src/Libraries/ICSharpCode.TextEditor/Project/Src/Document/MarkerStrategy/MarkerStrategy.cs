@@ -12,9 +12,9 @@ using System.Diagnostics;
 using System.Collections.Generic;
 
 namespace ICSharpCode.TextEditor.Document
-{	
+{
 	/// <summary>
-	/// Description of MarkerStrategy.	
+	/// Description of MarkerStrategy.
 	/// </summary>
 	public class MarkerStrategy
 	{
@@ -27,10 +27,34 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		public List<TextMarker> TextMarker {
+		public IEnumerable<TextMarker> TextMarker {
 			get {
 				return textMarker;
 			}
+		}
+		
+		public void AddMarker(TextMarker item)
+		{
+			markersTable.Clear();
+			textMarker.Add(item);
+		}
+		
+		public void InsertMarker(int index, TextMarker item)
+		{
+			markersTable.Clear();
+			textMarker.Insert(index, item);
+		}
+		
+		public void RemoveMarker(TextMarker item)
+		{
+			markersTable.Clear();
+			textMarker.Remove(item);
+		}
+		
+		public void RemoveAll(Predicate<TextMarker> match)
+		{
+			markersTable.Clear();
+			textMarker.RemoveAll(match);
 		}
 		
 		public MarkerStrategy(IDocument document)
@@ -39,7 +63,6 @@ namespace ICSharpCode.TextEditor.Document
 			document.DocumentChanged += new DocumentEventHandler(DocumentChanged);
 		}
 		
-//// Alex: minimize GC allocations - it's heavy on heap
 		Dictionary<int, List<TextMarker>> markersTable = new Dictionary<int, List<TextMarker>>();
 		
 		public List<TextMarker> GetMarkers(int offset)
@@ -66,7 +89,7 @@ namespace ICSharpCode.TextEditor.Document
 				    marker.Offset <= offset + length && offset + length <= marker.Offset + marker.Length ||
 				    offset <= marker.Offset && marker.Offset <= offset + length ||
 				    offset <= marker.Offset + marker.Length && marker.Offset + marker.Length <= offset + length
-				    ) {
+				   ) {
 					markers.Add(marker);
 				}
 			}

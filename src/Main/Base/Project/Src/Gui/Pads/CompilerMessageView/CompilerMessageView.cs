@@ -222,7 +222,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					break;
 				}
 			}
-			ActivateThisPad();
+			if (!this.IsVisible) {
+				ActivateThisPad();
+			}
 		}
 		
 		public MessageViewCategory GetCategory(string categoryName)
