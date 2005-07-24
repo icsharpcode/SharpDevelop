@@ -78,6 +78,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			if (oldDocument != null) {
 				oldDocument.MarkerStrategy.RemoveMarker(oldMarker);
+				oldDocument.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, LineNumber));
+				oldDocument.CommitUpdate();
 			}
 			oldDocument = null;
 			oldMarker = null;

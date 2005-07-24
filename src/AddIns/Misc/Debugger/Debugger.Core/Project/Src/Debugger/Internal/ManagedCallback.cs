@@ -92,9 +92,9 @@ namespace DebuggerLibrary
 				throw new DebuggerException("You are not allowed to pause since CurrentThread is not set");
 			}
 			debugger.CurrentThread.DeactivateAllSteppers();
-			if (reason != PausedReason.EvalComplete) {
-				debugger.OnDebuggingPaused(reason);
-			}
+
+			debugger.OnDebuggingPaused(reason);
+
 			handlingCallback = false;
 		}
 		
@@ -154,11 +154,6 @@ namespace DebuggerLibrary
 			EnterCallback("Exception", pThread);
 
 			// Exception2 is used in .NET Framework 2.0
-
-			/*if (!debugger.CatchHandledExceptions && (unhandled == 0)) {
-				ExitCallback_Continue();
-				return;
-			}*/
 			
 			ExitCallback_Paused(PausedReason.Exception);
 		}
@@ -265,16 +260,21 @@ namespace DebuggerLibrary
 		public void NameChange(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread)
 		{
 			if (pAppDomain != null)	{
+
 				EnterCallback("NameChange: pAppDomain", pAppDomain);
+
 				ExitCallback_Continue();
-				return;
+
 			}
 			if (pThread != null) {
+
 				EnterCallback("NameChange: pThread", pThread);
+
 				Thread thread = debugger.GetThread(pThread);
 				thread.HasBeenLoaded = true;
+
 				ExitCallback_Continue();
-				return;
+
 			}
 		}
 
@@ -390,11 +390,6 @@ namespace DebuggerLibrary
 		public void Exception2(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFrame pFrame, uint nOffset, CorDebugExceptionCallbackType dwEventType, uint dwFlags)
 		{
 			EnterCallback("Exception2", pThread);
-			
-			//if (!NDebugger.CatchHandledExceptions && dwEventType != CorDebugExceptionCallbackType.DEBUG_EXCEPTION_UNHANDLED) {
-			//	ExitCallback_Continue();
-			//	return;
-			//}
 
 			debugger.CurrentThread.CurrentExceptionType = (ExceptionType)dwEventType;
 

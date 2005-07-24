@@ -84,8 +84,8 @@ namespace ICSharpCode.Core
 		
 		static void DebugStarted(object sender, EventArgs e)
 		{
-			//oldLayoutConfiguration = LayoutConfiguration.CurrentLayoutName;
-			//LayoutConfiguration.CurrentLayoutName = "Debug";
+			oldLayoutConfiguration = LayoutConfiguration.CurrentLayoutName;
+			LayoutConfiguration.CurrentLayoutName = "Debug";
 
 			ClearDebugMessages();
 		}
@@ -93,7 +93,7 @@ namespace ICSharpCode.Core
 		static void DebugStopped(object sender, EventArgs e)
 		{
 			CurrentLineBookmark.Remove();
-			//LayoutConfiguration.CurrentLayoutName = oldLayoutConfiguration;
+			LayoutConfiguration.CurrentLayoutName = oldLayoutConfiguration;
 		}
 
 		

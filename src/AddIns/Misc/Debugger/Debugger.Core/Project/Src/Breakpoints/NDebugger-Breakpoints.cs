@@ -99,7 +99,6 @@ namespace DebuggerLibrary
 		public void ResetBreakpoints()
 		{
 			foreach (Breakpoint b in breakpointCollection) {
-				b.HadBeenSet = false;
 				b.ResetBreakpoint();
 			}
 		}

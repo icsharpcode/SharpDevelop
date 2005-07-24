@@ -102,7 +102,7 @@ namespace DebuggerLibrary
 			return base.GetHashCode();
 		}
 		
-		internal unsafe void ResetBreakpoint() //TODO
+		internal unsafe void ResetBreakpoint()
 		{
 			hadBeenSet = false;
 			OnBreakpointStateChanged();

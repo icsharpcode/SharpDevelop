@@ -23,26 +23,34 @@ namespace ICSharpCode.Core
 	public class CurrentLineBookmark: SDMarkerBookmark
 	{
 		static CurrentLineBookmark instance;
+
+		static int startLine;
+		static int startColumn;
+		static int endLine;
+		static int endColumn;
 		
-		public static void SetPosition(IViewContent viewContent, int startLine, int startColumn, int endLine, int endColumn)
+		public static void SetPosition(IViewContent viewContent,  int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
 		{
 			ITextEditorControlProvider tecp = viewContent as ITextEditorControlProvider;
 			if (tecp != null)
-				SetPosition(tecp.TextEditorControl.FileName, tecp.TextEditorControl.Document, startLine, startColumn, endLine, endColumn);
+				SetPosition(tecp.TextEditorControl.FileName, tecp.TextEditorControl.Document, makerStartLine, makerStartColumn, makerEndLine, makerEndColumn);
 			else
 				Remove();
 		}
 		
-		public static void SetPosition(string fileName, IDocument document, int startLine, int startColumn, int endLine, int endColumn)
+		public static void SetPosition(string fileName, IDocument document, int makerStartLine, int makerStartColumn, int makerEndLine, int makerEndColumn)
 		{
 			Remove();
+
+			startLine   = makerStartLine;
+			startColumn = makerStartColumn;
+			endLine     = makerEndLine;
+			endColumn   = makerEndColumn;
+
 			LineSegment line = document.GetLineSegment(startLine - 1);
 			int offset = line.Offset + startColumn;
 			instance = new CurrentLineBookmark(fileName, document, startLine - 1);
 			document.BookmarkManager.AddMark(instance);
-			//currentLineMarker = new TextMarker(offset, endColumn - startColumn, TextMarkerType.SolidBlock, Color.Yellow, Color.Blue);
-			//currentLineMarkerParent = document;
-			//currentLineMarkerParent.MarkerStrategy.AddMarker(currentLineMarker);
 			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, startLine - 1));
 			document.CommitUpdate();
 		}
@@ -50,8 +58,8 @@ namespace ICSharpCode.Core
 		public static void Remove()
 		{
 			if (instance != null) {
-				instance.RemoveMarker();
 				instance.Document.BookmarkManager.RemoveMark(instance);
+				instance.RemoveMarker();
 				instance = null;
 			}
 		}
@@ -62,8 +70,9 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public CurrentLineBookmark(string fileName, IDocument document, int lineNumber) : base(fileName, document, lineNumber)
+		public CurrentLineBookmark(string fileName, IDocument document,  int startLine) : base(fileName, document, startLine)
 		{
+
 		}
 		
 		public override void Draw(IconBarMargin margin, Graphics g, Point p)
@@ -73,8 +82,8 @@ namespace ICSharpCode.Core
 		
 		protected override TextMarker CreateMarker()
 		{
-			LineSegment lineSeg = Document.GetLineSegment(LineNumber);
-			TextMarker marker = new TextMarker(lineSeg.Offset, lineSeg.Length, TextMarkerType.SolidBlock, Color.Yellow, Color.Blue);
+			LineSegment lineSeg = Document.GetLineSegment(startLine - 1);
+			TextMarker marker = new TextMarker(lineSeg.Offset + startColumn, endColumn - startColumn, TextMarkerType.SolidBlock, Color.Yellow, Color.Blue);
 			Document.MarkerStrategy.InsertMarker(0, marker);
 			return marker;
 		}

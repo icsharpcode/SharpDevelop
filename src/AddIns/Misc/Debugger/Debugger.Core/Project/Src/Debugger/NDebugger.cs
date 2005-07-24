@@ -22,8 +22,6 @@ namespace DebuggerLibrary
 		ICorDebug                  corDebug;
 		ManagedCallback            managedCallback;
 		ManagedCallbackProxy       managedCallbackProxy;
-		
-		public bool CatchHandledExceptions = false;
 
 		ApartmentState requiredApartmentState;
 

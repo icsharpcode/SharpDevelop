@@ -343,7 +343,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (e.Reason == PausedReason.Exception) {
 				exceptionHistory.Add(debugger.CurrentThread.CurrentException);
 				OnExceptionHistoryModified();
-				if (debugger.CurrentThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED && (debugger.CatchHandledExceptions == false)) {
+				if (debugger.CurrentThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED) {
 					// Ignore the exception
 					e.ResumeDebuggingAfterEvent();
 					return;
