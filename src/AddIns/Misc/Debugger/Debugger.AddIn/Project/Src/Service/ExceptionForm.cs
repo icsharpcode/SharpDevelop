@@ -96,7 +96,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			// ExceptionForm
 			// 
-			this.AutoScaleBaseSize = new System.Drawing.Size(7, 19);
 			this.ClientSize = new System.Drawing.Size(638, 203);
 			this.Controls.Add(this.label);
 			this.Controls.Add(this.pictureBox);

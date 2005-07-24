@@ -45,7 +45,7 @@ namespace CustomSinks
 
 				try {
 					RemotingServices.GetRealProxy(realObject).InitializeServerObject(ctorMsg);
-				} catch (Exception e) {
+				} catch {
 				}
 
 				ObjRef objRef = RemotingServices.Marshal(realObject);

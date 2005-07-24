@@ -108,7 +108,15 @@ namespace DebuggerLibrary
 
 		internal ISymbolMethod symMethod {
 			get	{
-				return symReader.GetMethod(new SymbolToken((int)methodProps.Token));
+				if (symReader == null) {
+					return null;
+				} else {
+					try {
+						return symReader.GetMethod(new SymbolToken((int)methodProps.Token));
+					} catch {
+						return null;
+					}
+				}
 			}
 		}
 

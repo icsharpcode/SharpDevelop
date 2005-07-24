@@ -93,9 +93,9 @@ namespace DebuggerLibrary
 			}
 			debugger.CurrentThread.DeactivateAllSteppers();
 
-			debugger.OnDebuggingPaused(reason);
-
 			handlingCallback = false;
+
+			debugger.OnDebuggingPaused(reason);
 		}
 		
 		
@@ -155,7 +155,7 @@ namespace DebuggerLibrary
 
 			// Exception2 is used in .NET Framework 2.0
 			
-			ExitCallback_Paused(PausedReason.Exception);
+			ExitCallback_Continue();
 		}
 
 		#endregion
@@ -392,8 +392,18 @@ namespace DebuggerLibrary
 			EnterCallback("Exception2", pThread);
 
 			debugger.CurrentThread.CurrentExceptionType = (ExceptionType)dwEventType;
-
-			ExitCallback_Paused(PausedReason.Exception);
+			
+			if (ExceptionType.DEBUG_EXCEPTION_UNHANDLED != (ExceptionType)dwEventType) {
+				// Handled exception
+				if (debugger.PauseOnHandledException) {
+					ExitCallback_Paused(PausedReason.Exception);
+				} else {
+					ExitCallback_Continue();					
+				}
+			} else {
+				// Unhandled exception				
+				ExitCallback_Paused(PausedReason.Exception);
+			}
 		}
 
 		public void ExceptionUnwind(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
@@ -419,7 +429,13 @@ namespace DebuggerLibrary
 
 		public void MDANotification(ICorDebugController c, ICorDebugThread t, ICorDebugMDA mda)
 		{
-			EnterCallback("MDANotification");
+			if (c is ICorDebugAppDomain) {
+				EnterCallback("MDANotification", (ICorDebugAppDomain)c);
+			} else if (c is ICorDebugProcess){
+				EnterCallback("MDANotification", (ICorDebugProcess)c);
+			} else {
+				throw new System.Exception("Unknown callback argument");
+			}
 			
 			ExitCallback_Continue();
 		}

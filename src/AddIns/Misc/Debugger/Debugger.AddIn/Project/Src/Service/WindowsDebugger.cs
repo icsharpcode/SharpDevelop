@@ -338,8 +338,6 @@ namespace ICSharpCode.SharpDevelop.Services
 			isProcessRunningCache = false;
 			OnIsProcessRunningChanged(EventArgs.Empty);
 
-			JumpToCurrentLine();
-
 			if (e.Reason == PausedReason.Exception) {
 				exceptionHistory.Add(debugger.CurrentThread.CurrentException);
 				OnExceptionHistoryModified();
@@ -348,6 +346,8 @@ namespace ICSharpCode.SharpDevelop.Services
 					e.ResumeDebuggingAfterEvent();
 					return;
 				}
+				
+				JumpToCurrentLine();
 
 				ExceptionForm form = new ExceptionForm();
 				form.label.Text = "Exception " + 
@@ -365,6 +365,8 @@ namespace ICSharpCode.SharpDevelop.Services
 					case ExceptionForm.Result.Ignore:
 						throw new NotImplementedException();
 				}
+			} else {
+				JumpToCurrentLine();
 			}
 		}
 		

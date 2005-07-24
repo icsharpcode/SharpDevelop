@@ -26,6 +26,8 @@ namespace DebuggerLibrary
 		ApartmentState requiredApartmentState;
 
 		EvalQueue evalQueue;
+		
+		bool pauseOnHandledException = false;
 
 		internal EvalQueue EvalQueue {
 			get { 
@@ -44,7 +46,16 @@ namespace DebuggerLibrary
 				return corDebug;
 			}
 		}
-
+		
+		public bool PauseOnHandledException {
+			get {
+				return pauseOnHandledException;
+			}
+			set {
+				pauseOnHandledException = value;
+			}
+		}
+		
         internal ManagedCallback ManagedCallback {
 			get {
 				return managedCallback;
@@ -153,7 +164,7 @@ namespace DebuggerLibrary
 
 		internal void TraceMessage(string message)
 		{
-			Console.WriteLine("Trace:" + message);
+			System.Diagnostics.Debug.WriteLine("Debugger:" + message);
 			OnDebuggerTraceMessage(message);
 		}
 
