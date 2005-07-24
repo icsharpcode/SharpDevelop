@@ -973,12 +973,6 @@ namespace ICSharpCode.NRefactory.Parser
 			return data;
 		}
 		
-		public virtual object Visit(GlobalReferenceExpression globalReferenceExpression, object data)
-		{
-			Debug.Assert(globalReferenceExpression != null);
-			return data;
-		}
-		
 		public virtual object Visit(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			Debug.Assert(objectCreateExpression != null);

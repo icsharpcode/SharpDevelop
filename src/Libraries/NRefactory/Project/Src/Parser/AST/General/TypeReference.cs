@@ -20,6 +20,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		int    pointerNestingLevel = 0;
 		int[]  rankSpecifier = null;
 		List<TypeReference> genericTypes = new List<TypeReference>(1);
+		bool isGlobal = false;
 		
 		static Dictionary<string, string> types   = new Dictionary<string, string>();
 		static Dictionary<string, string> vbtypes = new Dictionary<string, string>();
@@ -131,6 +132,18 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
+		/// <summary>
+		/// Gets/Sets if the type reference had a "global::" prefix.
+		/// </summary>
+		public bool IsGlobal {
+			get {
+				return isGlobal;
+			}
+			set {
+				isGlobal = value;
+			}
+		}
+		
 		public static TypeReference CheckNull(TypeReference typeReference)
 		{
 			return typeReference == null ? NullTypeReference.Instance : typeReference;
@@ -159,6 +172,13 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		{
 			this.type       = type;
 			this.systemType = systemType;
+		}
+		
+		public TypeReference(string type, List<TypeReference> genericTypes) : this(type)
+		{
+			if (genericTypes != null) {
+				this.genericTypes = genericTypes;
+			}
 		}
 		
 		public TypeReference(string type, int[] rankSpecifier) : this(type, 0, rankSpecifier)

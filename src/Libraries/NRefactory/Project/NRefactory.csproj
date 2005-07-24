@@ -188,7 +188,6 @@
     <Compile Include="Src\Parser\Visitors\CSharpToVBNetConvertVisitor.cs" />
     <Compile Include="Src\Parser\Visitors\PrefixFieldsVisitor.cs" />
     <Compile Include="Src\Parser\Visitors\VBNetToCSharpConvertVisitor.cs" />
-    <Compile Include="Src\Parser\AST\General\Expressions\GlobalReferenceExpression.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />

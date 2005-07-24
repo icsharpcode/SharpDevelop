@@ -509,6 +509,12 @@ namespace CSharpBinding.Parser
 				case '.':
 					curTokenType = Dot;
 					break;
+				case ':':
+					if (GetNext() == ':') {
+						// treat :: like dot
+						curTokenType = Dot;
+					}
+					break;
 				case '\'':
 				case '"':
 					if (ReadStringLiteral(ch)) {

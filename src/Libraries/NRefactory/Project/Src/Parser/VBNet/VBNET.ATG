@@ -588,8 +588,9 @@ TypeParameterConstraints<TemplateDefinition template>
 /* 6.4.2 */
 NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			(.
-				string name = String.Empty;
-				ArrayList names = null;
+				string name = null;
+				TypeReference typeRef = null;
+				List<TypeReference> baseInterfaces = null;
 			.) =
 	(. m.Check(Modifier.Classes); .)
 	/* Spec, 7.5 */
@@ -605,8 +606,8 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 	Identifier			 (. newType.Name = t.val; newType.StartLocation = t.EndLocation; .) 
 	TypeParameterList<newType.Templates>
 	EndOfStmt
-	[ ClassBaseType<out name> (. newType.BaseTypes.Add(name); .) ]
-	{ TypeImplementsClause<out names> (. newType.BaseTypes.AddRange(names); .) }
+	[ ClassBaseType<out typeRef> (. newType.BaseTypes.Add(typeRef); .) ]
+	{ TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces); .) }
 	ClassBody<newType>
 	(.
 		compilationUnit.BlockEnd();
@@ -634,7 +635,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
 			newType.StartLocation = t.Location;
-			newType.Type = Types.Struct; ArrayList baseInterfaces = new ArrayList();
+			newType.Type = Types.Struct;
 		.)
 	Identifier			 (. newType.Name = t.val; newType.StartLocation = t.EndLocation; .) 
 	TypeParameterList<newType.Templates>
@@ -656,7 +657,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			newType.Type = Types.Enum;
 		.)
 	Identifier			 (. newType.Name = t.val; newType.StartLocation = t.EndLocation; .) 
-	[ "As" PrimitiveTypeName<out name> (. newType.BaseTypes.Add(name); .) ]
+	[ "As" PrimitiveTypeName<out name> (. newType.BaseTypes.Add(new TypeReference(name)); .) ]
 	EOL
 	EnumBody<newType>
 	(.
@@ -670,11 +671,11 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
-			newType.Type = Types.Interface;ArrayList baseInterfaces;
+			newType.Type = Types.Interface;
 		.)
 	Identifier			 (. newType.Name = t.val; newType.StartLocation = t.EndLocation; .) 
 	TypeParameterList<newType.Templates>
-	EndOfStmt { InterfaceBase<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces.ToArray()); .) }
+	EndOfStmt { InterfaceBase<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces); .) }
 	InterfaceBody<newType>
 	(.
 		newType.EndLocation = t.Location;
@@ -879,15 +880,14 @@ ClassMemberDecl<Modifiers m, List<AttributeSection> attributes> =
 	StructureMemberDecl<m, attributes>
 	.
 
-ClassBaseType<out string name>
-	(.
-		TypeReference type;
-		name = String.Empty;
-	.) =
+ClassBaseType<out TypeReference typeRef>
+(.
+	typeRef = null;
+.) =
 	"Inherits"
-	TypeName<out type> (. name = type.Type; .)
+	TypeName<out typeRef>
 	EndOfStmt
-	.
+.
 
 /* 7.6.1 */
 StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
@@ -1368,33 +1368,33 @@ HandlesClause<out ArrayList handlesClause>
 	.
 
 /* 7.8. */
-InterfaceBase <out ArrayList bases>
+InterfaceBase <out List<TypeReference> bases>
 	(.
 		TypeReference type;
-		bases = new ArrayList();
+		bases = new List<TypeReference>();
 	.) =
 	"Inherits"
-	TypeName<out type> (. bases.Add(type.Type); .)
+	TypeName<out type> (. bases.Add(type); .)
 	{
 		","
-		TypeName<out type> (. bases.Add(type.Type); .)
+		TypeName<out type> (. bases.Add(type); .)
 	}
 	EOL
 	.
 
 /* 7.2 */
-TypeImplementsClause<out ArrayList baseInterfaces>
+TypeImplementsClause<out List<TypeReference> baseInterfaces>
 	(.
-		baseInterfaces = new ArrayList();
+		baseInterfaces = new List<TypeReference>();
 		TypeReference type = null;
 	.) =
 	"Implements" TypeName<out type>
 	(.
-		baseInterfaces.Add(type.Type);
+		baseInterfaces.Add(type);
 	.)
 	{
 		"," TypeName<out type>
-		(. baseInterfaces.Add(type.Type); .)
+		(. baseInterfaces.Add(type); .)
 	}
 	EndOfStmt
 	.
@@ -1496,9 +1496,9 @@ SimpleExpr<out Expression pexpr>
 			| (. Expression retExpr = null; .)
 				( "MyBase"										(. retExpr = new BaseReferenceExpression(); .)
 				| "MyClass"										(. retExpr = new ClassReferenceExpression(); .)
-				| "Global"										(. retExpr = new GlobalReferenceExpression(); .)
 				)
 				"." IdentifierOrKeyword<out name>				(. pexpr = new FieldReferenceExpression(retExpr, name); .)
+			| IF (la.kind == Tokens.Global) TypeName<out type>  (. pexpr = new TypeReferenceExpression(type); .)
 			| ObjectCreateExpression<out expr>					(. pexpr = expr; .)
 			| /* 11.11 */ ( "DirectCast" | "CType" ) "(" Expr<out expr> "," TypeName<out type> ")"	(. pexpr = new CastExpression(type, expr); .)
 			| /* 11.11 */ "TryCast" "(" Expr<out expr> "," TypeName<out type> ")"	(. pexpr = new BinaryOperatorExpression(expr, BinaryOperatorType.AsCast, new TypeReferenceExpression(type)); .)
@@ -1753,6 +1753,11 @@ NonArrayTypeName<out TypeReference typeref>
 			"(" "Of" TypeArgumentList<typeref.GenericTypes> ")"
 		]
 	| "Object" (. typeref = new TypeReference("System.Object"); .)
+	| "Global" "."	Qualident<out name>
+		(. typeref = new TypeReference(name); typeref.IsGlobal = true; .)
+		[IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
+			"(" "Of" TypeArgumentList<typeref.GenericTypes> ")"
+		]
 	| PrimitiveTypeName<out name> (. typeref = new TypeReference(name); .)
 .
 

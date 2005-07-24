@@ -125,6 +125,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 
 		public object Visit(TypeReference typeReference, object data)
 		{
+			if (typeReference.IsGlobal) {
+				outputFormatter.PrintToken(Tokens.Global);
+				outputFormatter.PrintToken(Tokens.Dot);
+			}
 			if (typeReference.Type == null || typeReference.Type.Length ==0) {
 				outputFormatter.PrintText("Void");
 			} else {
@@ -309,9 +313,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.NewLine();
 			
 			if (typeDeclaration.BaseTypes != null) {
-				foreach (string baseType in typeDeclaration.BaseTypes) {
+				foreach (TypeReference baseTypeRef in typeDeclaration.BaseTypes) {
 					outputFormatter.Indent();
 					
+					string baseType = baseTypeRef.Type;
 					bool baseTypeIsInterface = baseType.StartsWith("I") && (baseType.Length <= 1 || Char.IsUpper(baseType[1]));
 					
 					if (!baseTypeIsInterface || typeDeclaration.Type == Types.Interface) {
@@ -320,7 +325,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.PrintToken(Tokens.Implements);
 					}
 					outputFormatter.Space();
-					outputFormatter.PrintIdentifier(baseType);
+					nodeTracker.TrackedVisit(baseTypeRef, data);
 					outputFormatter.NewLine();
 				}
 			}
@@ -2123,13 +2128,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(BaseReferenceExpression baseReferenceExpression, object data)
 		{
 			outputFormatter.PrintToken(Tokens.MyBase);
-			return null;
-		}
-		
-		public object Visit(GlobalReferenceExpression globalReferenceExpression, object data)
-		{
-			outputFormatter.PrintToken(Tokens.Global);
-			outputFormatter.PrintToken(Tokens.Dot);
 			return null;
 		}
 		

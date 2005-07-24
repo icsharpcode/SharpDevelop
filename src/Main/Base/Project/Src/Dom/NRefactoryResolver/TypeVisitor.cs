@@ -299,6 +299,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(TypeReferenceExpression typeReferenceExpression, object data)
 		{
+			System.Diagnostics.Debugger.Break();
 			return CreateReturnType(typeReferenceExpression.TypeReference);
 		}
 		
@@ -416,11 +417,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return baseClass.DefaultReturnType;
 		}
 		
-		public override object Visit(GlobalReferenceExpression globalReferenceExpression, object data)
-		{
-			return new NamespaceReturnType("");
-		}
-		
 		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
 		{
 			return CreateReturnType(objectCreateExpression.CreateType);
@@ -479,18 +475,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (reference.IsNull) return null;
 			LanguageProperties languageProperties = projectContent.Language;
 			IReturnType t = null;
-			if (callingClass != null) {
+			if (callingClass != null && !reference.IsGlobal) {
 				foreach (ITypeParameter tp in callingClass.TypeParameters) {
 					if (languageProperties.NameComparer.Equals(tp.Name, reference.SystemType)) {
 						t = new GenericReturnType(tp);
 						break;
 					}
 				}
-			}
-			if (callingMember is IMethod && (callingMember as IMethod).TypeParameters != null) {
-				foreach (ITypeParameter tp in (callingMember as IMethod).TypeParameters) {
-					if (languageProperties.NameComparer.Equals(tp.Name, reference.SystemType))
-						return new GenericReturnType(tp);
+				if (t == null && callingMember is IMethod && (callingMember as IMethod).TypeParameters != null) {
+					foreach (ITypeParameter tp in (callingMember as IMethod).TypeParameters) {
+						if (languageProperties.NameComparer.Equals(tp.Name, reference.SystemType)) {
+							t = new GenericReturnType(tp);
+							break;
+						}
+					}
 				}
 			}
 			if (t == null) {
@@ -499,11 +497,30 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					t = ProjectContentRegistry.Mscorlib.GetClass(reference.SystemType).DefaultReturnType;
 				} else {
 					if (useLazyReturnType) {
-						t = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn, reference.SystemType);
+						if (reference.IsGlobal)
+							t = new GetClassReturnType(projectContent, reference.SystemType);
+						else
+							t = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn, reference.SystemType);
 					} else {
-						IClass c = projectContent.SearchType(reference.SystemType, callingClass, caretLine, caretColumn);
-						if (c == null)
+						IClass c;
+						if (reference.IsGlobal)
+							c = projectContent.GetClass(reference.SystemType);
+						else
+							c = projectContent.SearchType(reference.SystemType, callingClass, caretLine, caretColumn);
+						if (c == null) {
+							if (reference.GenericTypes.Count == 0 && !reference.IsArrayType) {
+								// reference to namespace is possible
+								if (reference.IsGlobal) {
+									if (projectContent.NamespaceExists(reference.Type))
+										return new NamespaceReturnType(reference.Type);
+								} else {
+									string name = projectContent.SearchNamespace(reference.Type, callingClass, (callingClass == null) ? null : callingClass.CompilationUnit, caretLine, caretColumn);
+									if (name != null)
+										return new NamespaceReturnType(name);
+								}
+							}
 							return null;
+						}
 						t = c.DefaultReturnType;
 					}
 				}

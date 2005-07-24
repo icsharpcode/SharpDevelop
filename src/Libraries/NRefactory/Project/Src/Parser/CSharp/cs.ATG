@@ -125,7 +125,7 @@ bool IsQualident(ref Token pt, out string qualident)
 	if (pt.kind == Tokens.Identifier) {
 		qualidentBuilder.Length = 0; qualidentBuilder.Append(pt.val);
 		pt = Peek();
-		while (pt.kind == Tokens.Dot) {
+	while (pt.kind == Tokens.Dot || pt.kind == Tokens.DoubleColon) {
 			pt = Peek();
 			if (pt.kind != Tokens.Identifier) {
 				qualident = String.Empty;
@@ -703,7 +703,7 @@ NamespaceMemberDecl
 TypeDecl<Modifiers m, List<AttributeSection> attributes>
 (.
 	TypeReference type;
-	ArrayList names;
+	List<TypeReference> names;
 	List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 	string name;
 	List<TemplateDefinition> templates;
@@ -780,9 +780,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	                                    newType.Type = Types.Enum;
 	                                  .)
 	ident                            (. newType.Name = t.val; .)
-	[ ":" IntegralType<out name>     (. newType.BaseTypes = new ArrayList(); 
-	                                    newType.BaseTypes.Add(name);
-	                                 .)
+	[ ":" IntegralType<out name>     (. newType.BaseTypes.Add(new TypeReference(name)); .)
 	]                                (. newType.StartLocation = t.EndLocation; .)
 	EnumBody 
 	[ ";" ]                          (. newType.EndLocation = t.Location; 
@@ -822,15 +820,14 @@ Qualident<out string qualident>
 	} (. qualident = qualidentBuilder.ToString(); .)
 .
 
-ClassBase<out ArrayList names>
+ClassBase<out List<TypeReference> names>
 (.
-	string qualident;
-	names = new ArrayList();
-	List<TypeReference> types;
+	TypeReference typeRef;
+	names = new List<TypeReference>();
 .)
 =
-	":" ClassType<out qualident, out types> (. names.Add(qualident); // TODO: enter the types .)
-	{ "," Qualident<out qualident>     (. names.Add(qualident); .) }
+	":" ClassType<out typeRef>  (. if (typeRef != null) { names.Add(typeRef); } .)
+	{ "," TypeName<out typeRef> (. if (typeRef != null) { names.Add(typeRef); } .) }
 .
 
 ClassBody
@@ -847,14 +844,14 @@ ClassBody
 	"}"
 .
 
-StructInterfaces<out ArrayList names>
+StructInterfaces<out List<TypeReference> names>
 (.
-	string qualident; 
-	names = new ArrayList();
+	TypeReference typeRef;
+	names = new List<TypeReference>();
 .)
 =
-	":" Qualident<out qualident>        (. names.Add(qualident); .)
-	{ "," Qualident<out qualident>      (. names.Add(qualident); .) }
+	":" TypeName<out typeRef>   (. if (typeRef != null) { names.Add(typeRef); } .)
+	{ "," TypeName<out typeRef> (. if (typeRef != null) { names.Add(typeRef); } .) }
 .
 
 StructBody
@@ -871,14 +868,14 @@ StructBody
 	"}" 
 .
 
-InterfaceBase<out ArrayList names>
+InterfaceBase<out List<TypeReference> names>
 (.
-	string qualident;
-	names = new ArrayList();
+	TypeReference typeRef;
+	names = new List<TypeReference>();
 .)
 =
-	":" Qualident<out qualident>    (. names.Add(qualident); .)
-	{ "," Qualident<out qualident>  (. names.Add(qualident); .) }
+	":" TypeName<out typeRef>   (. if (typeRef != null) { names.Add(typeRef); } .)
+	{ "," TypeName<out typeRef> (. if (typeRef != null) { names.Add(typeRef); } .) }
 .
 
 InterfaceBody
@@ -894,43 +891,42 @@ EnumBody                                 (. FieldDeclaration f; .)
 
 Type<out TypeReference type>
 (.
-	string name = "";
+	string name;
 	int pointer = 0;
-	List<TypeReference> types = null;
 	type = null;
 .)
 =
-	( ClassType<out name, out types>
-	| SimpleType<out name>
-	| "void" "*"                         (. pointer = 1; name = "void"; .)
-	)                                    (. ArrayList r = new ArrayList(); .)
+	( ClassType<out type>
+	| SimpleType<out name> (. type = new TypeReference(name); .)
+	| "void" "*"                         (. pointer = 1; type = new TypeReference("void"); .)
+	)                                    (. List<int> r = new List<int>(); .)
 	
 	{ IF (IsPointerOrDims())             (. int i = 0; .)
 		( "*"                            (. ++pointer; .)
 		| "[" { "," (. ++i; .) } "]"     (. r.Add(i); .)
 		)
-	}                                    (. int[] rank = new int[r.Count]; r.CopyTo(rank); 
-	                                        type = new TypeReference(name, pointer, rank, types);
-	                                     .)
+	}
+	(. type.RankSpecifier = r.ToArray();
+	   type.PointerNestingLevel = pointer;
+	.)
 .
 
 NonArrayType<out TypeReference type>
 (.
-	string name = "";
+	string name;
 	int pointer = 0;
-	List<TypeReference> genericTypes = null;
+	type = null;
 .)
 =
-	( ClassType<out name, out genericTypes>
-	| SimpleType<out name>
-	| "void" "*"                         (. pointer = 1; name = "void"; .)
-	)                                    
+	( ClassType<out type>
+	| SimpleType<out name> (. type = new TypeReference(name); .)
+	| "void" "*"           (. pointer = 1; type = new TypeReference("void"); .)
+	)
 	
 	{ IF (IsPointer())
 		"*" (. ++pointer; .)
-	}                                    (. 
-	                                        type = new TypeReference(name, pointer, null, genericTypes);
-	                                     .)
+	}
+	(. type.PointerNestingLevel = pointer; .)
 .
 
 SimpleType<out string name>
@@ -1003,15 +999,12 @@ TypeModifier<Modifiers m>
 	| ident                            (. if (t.val == "partial") { m.Add(Modifier.Partial); } .)
 .
 
-ClassType<out string name, out List<TypeReference> types>
-(. string qualident; name = "";
-   List<TypeReference> t;
-   types = null;
-.)
+ClassType<out TypeReference typeRef>
+(. TypeReference r; typeRef = null; .)
 =
-	TypeName<out qualident, out t>     (. name = qualident; types = t; .)
-	| "object"                         (. name = "object"; .)
-	| "string"                         (. name = "string"; .)
+	TypeName<out r>  (. typeRef = r; .)
+	| "object"       (. typeRef = new TypeReference("object"); .)
+	| "string"       (. typeRef = new TypeReference("string"); .)
 .
 
 IntegralType<out string name>          (. name = ""; .)
@@ -1793,17 +1786,22 @@ CatchClauses<out ArrayList catchClauses>
 	catchClauses = new ArrayList();
 .)
 =
-	"catch" (. string name;
-	           string identifier;
+	"catch" (. string identifier;
 	           Statement stmt;
-	           List<TypeReference> types;
+	           TypeReference typeRef;
 	        .)
 	/*--- general catch clause (as only catch clause) */
 	(
 		Block<out stmt> (. catchClauses.Add(new CatchClause(stmt)); .)
 		/*--- specific catch clause */
-		| "(" ClassType<out name, out types> (. identifier = null; .) [ ident (. identifier = t.val; .) ] ")" Block<out stmt>  (. catchClauses.Add(new CatchClause(new TypeReference(name, 0, null, types), identifier, stmt)); .)
-		{ IF (IsTypedCatch()) "catch" "(" ClassType<out name, out types> (. identifier = null; .) [ ident (. identifier = t.val; .) ] ")" Block<out stmt> (. catchClauses.Add(new CatchClause(new TypeReference(name, 0, null, types), identifier, stmt)); .) }
+		| "(" ClassType<out typeRef> (. identifier = null; .)
+			[ ident (. identifier = t.val; .) ]
+		   ")" Block<out stmt> 
+		   (. catchClauses.Add(new CatchClause(typeRef, identifier, stmt)); .)
+		{ IF (IsTypedCatch()) "catch" "(" ClassType<out typeRef> (. identifier = null; .)
+			[ ident (. identifier = t.val; .) ]
+		   ")" Block<out stmt>
+		   (. catchClauses.Add(new CatchClause(typeRef, identifier, stmt)); .) }
 		/*--- general catch clause (after specific catch clauses, optional) */
 		[ "catch" Block<out stmt> (. catchClauses.Add(new CatchClause(stmt)); .) ]
 	)
@@ -1929,6 +1927,8 @@ PrimaryExpr<out Expression pexpr>
 		| "false"                           (.pexpr = new PrimitiveExpression(false, "false"); .)
 		| "null"                            (.pexpr = new PrimitiveExpression(null, "null");  .)          /* from literal token */
 		| Literal                           (.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
+		| IF (la.kind == Tokens.Identifier && Peek(1).kind == Tokens.DoubleColon)
+			TypeName<out type> (. pexpr = new TypeReferenceExpression(type); .)
 		/*--- simple name: */
 		| ident (. pexpr = new IdentifierExpression(t.val); .)
 		/*--- parenthesized expression: */
@@ -2020,7 +2020,17 @@ PrimaryExpr<out Expression pexpr>
 		)
 		/*--- member access */
 		| "->" ident (. pexpr = new PointerReferenceExpression(pexpr, t.val); .)
-		| "." ident (. pexpr = new FieldReferenceExpression(pexpr, t.val);.)
+		| "." ident  (. pexpr = new FieldReferenceExpression(pexpr, t.val);.)
+		/*| "::" ident (.
+						if (pexpr is IdentifierExpression) {
+							if (((IdentifierExpression)pexpr).Identifier == "global") {
+								pexpr = new GlobalReferenceExpression();
+							}
+						} else {
+							Error("expression before :: must be an identifier");
+						}
+						pexpr = new FieldReferenceExpression(pexpr, t.val);
+					 .) */
 		/* member access on generic type */
 		|   ( IF (IsGenericFollowedBy(Tokens.Dot) && IsTypeReferenceExpression(pexpr))
 				TypeArgumentList<out typeList> )
@@ -2191,11 +2201,28 @@ MultiplicativeExpr<ref Expression outExpr>
 
 /* .NET 2.0 rules */	
 
-TypeName<out string qualident, out List<TypeReference> types>
-(. List<TypeReference> t; types = new List<TypeReference>(); .)
+TypeName<out TypeReference typeRef>
+(.	List<TypeReference> typeArguments = null;
+	string alias = null;
+	string qualident;
+.)
 =
+	[ IF (la.kind == Tokens.Identifier && Peek(1).kind == Tokens.DoubleColon)
+		ident (. alias = t.val; .)
+		"::"
+	]
 	Qualident<out qualident>
-	[ TypeArgumentList<out t> (. types = t; .)]
+	[ TypeArgumentList<out typeArguments> ]
+	(.
+		if (alias == null) {
+			typeRef = new TypeReference(qualident, typeArguments);
+		} else if (alias == "global") {
+			typeRef = new TypeReference(qualident, typeArguments);
+			typeRef.IsGlobal = true;
+		} else {
+			typeRef = new TypeReference(alias + "." + qualident, typeArguments);
+		}
+	.)
 .
 
 TypeArgumentList<out List<TypeReference> types>

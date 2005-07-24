@@ -123,6 +123,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(TypeReference typeReference, object data)
 		{
+			if (typeReference.IsGlobal) {
+				outputFormatter.PrintText("global::");
+			}
 			if (typeReference.Type == null || typeReference.Type.Length ==0) {
 				outputFormatter.PrintText("void");
 			} else {
@@ -342,7 +345,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					if (i > 0) {
 						PrintFormattedComma();
 					}
-					outputFormatter.PrintIdentifier((string)typeDeclaration.BaseTypes[i]);
+					nodeTracker.TrackedVisit(typeDeclaration.BaseTypes[i], data);
 				}
 			}
 			
@@ -2070,11 +2073,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(BaseReferenceExpression baseReferenceExpression, object data) {
 			outputFormatter.PrintToken(Tokens.Base);
-			return null;
-		}
-		
-		public object Visit(GlobalReferenceExpression globalReferenceExpression, object data) {
-			outputFormatter.PrintText("global::");
 			return null;
 		}
 		

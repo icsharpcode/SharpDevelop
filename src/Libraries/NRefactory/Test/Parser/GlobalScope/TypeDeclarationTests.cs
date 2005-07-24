@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			
 			Assert.AreEqual(Types.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
-			Assert.AreEqual("My.Base.Class", td.BaseTypes[0]);
+			Assert.AreEqual("My.Base.Class", td.BaseTypes[0].Type);
 			Assert.AreEqual(Modifier.None, td.Modifier);
 		}
 		
@@ -97,7 +97,7 @@ public class Generic<T, S> : System.IComparable where S : G<T[]> where  T : MyNa
 			Assert.AreEqual("Generic", td.Name);
 			Assert.AreEqual(Modifier.Public, td.Modifier);
 			Assert.AreEqual(1, td.BaseTypes.Count);
-			Assert.AreEqual("System.IComparable", td.BaseTypes[0]);
+			Assert.AreEqual("System.IComparable", td.BaseTypes[0].Type);
 			
 			Assert.AreEqual(2, td.Templates.Count);
 			Assert.AreEqual("T", td.Templates[0].Name);
@@ -127,9 +127,9 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			Assert.AreEqual(Modifier.Public | Modifier.Abstract, td.Modifier);
 			Assert.AreEqual(1, td.Attributes.Count);
 			Assert.AreEqual(3, td.BaseTypes.Count);
-			Assert.AreEqual("MyBase", td.BaseTypes[0]);
-			Assert.AreEqual("Interface1", td.BaseTypes[1]);
-			Assert.AreEqual("My.Test.Interface2", td.BaseTypes[2]);
+			Assert.AreEqual("MyBase", td.BaseTypes[0].Type);
+			Assert.AreEqual("Interface1", td.BaseTypes[1].Type);
+			Assert.AreEqual("My.Test.Interface2", td.BaseTypes[2].Type);
 		}
 		
 		[Test]
@@ -183,7 +183,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			
 			Assert.AreEqual("TestEnum", td.Name);
 			Assert.AreEqual(Types.Enum, td.Type);
-			Assert.AreEqual("Byte", td.BaseTypes[0].ToString());
+			Assert.AreEqual("Byte", td.BaseTypes[0].Type);
 		}
 		
 		[Test]
@@ -262,7 +262,7 @@ End Class
 			Assert.AreEqual("Generic", td.Name);
 			Assert.AreEqual(Modifier.Public, td.Modifier);
 			Assert.AreEqual(1, td.BaseTypes.Count);
-			Assert.AreEqual("System.IComparable", td.BaseTypes[0]);
+			Assert.AreEqual("System.IComparable", td.BaseTypes[0].Type);
 			
 			Assert.AreEqual(2, td.Templates.Count);
 			Assert.AreEqual("T", td.Templates[0].Name);

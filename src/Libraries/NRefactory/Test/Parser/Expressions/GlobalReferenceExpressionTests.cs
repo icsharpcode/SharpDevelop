@@ -16,22 +16,38 @@ namespace ICSharpCode.NRefactory.Tests.AST
 	[TestFixture]
 	public class GlobalReferenceExpressionTests
 	{
-		#region C#
 		[Test]
 		public void CSharpGlobalReferenceExpressionTest()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilCSharp.ParseExpression("global::System", typeof(FieldReferenceExpression));
-			Assert.IsTrue(fre.TargetObject is GlobalReferenceExpression);
+			TypeReferenceExpression tre = (TypeReferenceExpression)ParseUtilCSharp.ParseExpression("global::System", typeof(TypeReferenceExpression));
+			Assert.IsTrue(tre.TypeReference.IsGlobal);
+			Assert.AreEqual("System", tre.TypeReference.Type);
 		}
-		#endregion
 		
-		#region VB.NET
 		[Test]
 		public void VBNetGlobalReferenceExpressionTest()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilVBNet.ParseExpression("Global.System", typeof(FieldReferenceExpression));
-			Assert.IsTrue(fre.TargetObject is GlobalReferenceExpression);
+			TypeReferenceExpression tre = (TypeReferenceExpression)ParseUtilVBNet.ParseExpression("Global.System", typeof(TypeReferenceExpression));
+			Assert.IsTrue(tre.TypeReference.IsGlobal);
+			Assert.AreEqual("System", tre.TypeReference.Type);
 		}
-		#endregion
+		
+		[Test]
+		public void CSharpGlobalTypeDeclaration()
+		{
+			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("global::System.String a;", typeof(LocalVariableDeclaration));
+			TypeReference typeRef = lvd.GetTypeForVariable(0);
+			Assert.IsTrue(typeRef.IsGlobal);
+			Assert.AreEqual("System.String", typeRef.Type);
+		}
+		
+		[Test]
+		public void VBNetGlobalTypeDeclaration()
+		{
+			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim a As Global.System.String", typeof(LocalVariableDeclaration));
+			TypeReference typeRef = lvd.GetTypeForVariable(0);
+			Assert.IsTrue(typeRef.IsGlobal);
+			Assert.AreEqual("System.String", typeRef.Type);
+		}
 	}
 }

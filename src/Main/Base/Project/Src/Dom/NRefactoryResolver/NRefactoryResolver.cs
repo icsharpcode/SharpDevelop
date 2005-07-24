@@ -285,10 +285,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			} else if (expr is TypeReferenceExpression) {
 				type = TypeVisitor.CreateReturnType(((TypeReferenceExpression)expr).TypeReference, this);
 				if (type != null) {
+					if (type is TypeVisitor.NamespaceReturnType)
+						return new NamespaceResolveResult(callingClass, callingMember, type.FullyQualifiedName);
 					IClass c = type.GetUnderlyingClass();
 					if (c != null)
 						return new TypeResolveResult(callingClass, callingMember, type, c);
 				}
+				return null;
 			}
 			type = expr.AcceptVisitor(typeVisitor, null) as IReturnType;
 			
@@ -846,6 +849,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						result.Add(GetPrimitiveClass(pair.Value, primitive));
 					}
 				}
+				result.Add("Global");
 			} else {
 				foreach (KeyValuePair<string, string> pair in TypeReference.GetPrimitiveTypesCSharp()) {
 					result.Add(GetPrimitiveClass(pair.Value, pair.Key));

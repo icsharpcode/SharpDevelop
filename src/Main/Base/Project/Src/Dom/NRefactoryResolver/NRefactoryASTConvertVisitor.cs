@@ -281,8 +281,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				cu.Classes.Add(c);
 			}
 			if (typeDeclaration.BaseTypes != null) {
-				foreach (string type in typeDeclaration.BaseTypes) {
-					c.BaseTypes.Add(type);
+				foreach (AST.TypeReference type in typeDeclaration.BaseTypes) {
+					c.BaseTypes.Add(type.SystemType);
 				}
 			}
 			currentClass.Push(c);

@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		// Children of Enum:      FieldDeclaration
 		string name            = "";
 		Types type             = Types.Class; // Class | Interface | Struct | Enum
-		ArrayList bases = new ArrayList(); // TODO: can be generics too!
+		List<TypeReference> bases = new List<TypeReference>();
 		List<TemplateDefinition> templates = new List<TemplateDefinition>();
 		
 		public string Name {
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList BaseTypes {
+		public List<TypeReference> BaseTypes {
 			get {
 				return bases;
 			}
