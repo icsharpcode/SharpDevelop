@@ -38,7 +38,7 @@ namespace DebuggerInterop.Core
 		
 		void TraceMsg(string msg)
 		{
-			System.Console.WriteLine("MTA2STA: " + msg);
+			//System.Console.WriteLine("MTA2STA: " + msg);
 		}
 		
 		public object CallInSTA (object targetObject, string functionName, object[] functionParameters)

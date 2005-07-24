@@ -203,6 +203,7 @@ namespace DebuggerLibrary
 
 		internal void TraceMessage(string message)
 		{
+			Console.WriteLine("Trace:" + message);
 			OnDebuggerTraceMessage(message);
 		}
 

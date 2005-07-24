@@ -88,6 +88,9 @@ namespace DebuggerLibrary
 		
 		void ExitCallback_Paused(PausedReason reason)
 		{
+			if (debugger.CurrentThread != null) {
+				debugger.CurrentThread.DeactivateAllSteppers();
+			}
 			if (reason != PausedReason.EvalComplete) {
 				debugger.OnIsProcessRunningChanged();
 				debugger.OnDebuggingPaused(reason);
@@ -100,15 +103,16 @@ namespace DebuggerLibrary
 
 		public void StepComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugStepper pStepper, CorDebugStepReason reason)
 		{
-			EnterCallback("StepComplete", pThread);
+			EnterCallback("StepComplete (" + reason.ToString() + ")", pThread);
 
-			if (debugger.CurrentThread.CurrentFunction.Module.SymbolsLoaded == false) {
-				debugger.TraceMessage(" - stepping out of code without symbols");
-				debugger.StepOut();
-				return;
+			if (debugger.CurrentThread.LastFunction.Module.SymbolsLoaded == false) {
+				debugger.TraceMessage(" - leaving code without symbols");
+
+				ExitCallback_Continue();
+			} else {
+				
+				ExitCallback_Paused(PausedReason.StepComplete);
 			}
-			
-			ExitCallback_Paused(PausedReason.StepComplete);
 		}
 		
 		public void Breakpoint(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, IntPtr pBreakpoint)

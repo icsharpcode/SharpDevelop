@@ -97,6 +97,13 @@ namespace DebuggerLibrary
 				orderOfLoading = value;
 			}
 		}
+
+		public bool JMCStatus {
+			set {
+				uint unused = 0;
+				((ICorDebugModule2)corModule).SetJMCStatus(value?1:0, 0, ref unused);
+			}
+		}
 		
 		internal Module(ICorDebugModule pModule)
 		{
@@ -133,6 +140,8 @@ namespace DebuggerLibrary
             } catch (System.Exception) {
                 symReader = null;
             }
+
+			JMCStatus = SymbolsLoaded;
 		}
 
 		public void ApplyChanges(byte[] metadata, byte[] il)

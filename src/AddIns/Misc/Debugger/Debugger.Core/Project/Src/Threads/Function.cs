@@ -130,6 +130,8 @@ namespace DebuggerLibrary
 			corFrame.CreateStepper(out stepper);
 			stepper.StepOut();
 
+			debugger.CurrentThread.AddActiveStepper(stepper);
+
 			debugger.Continue();
 		}
 
@@ -147,11 +149,27 @@ namespace DebuggerLibrary
 			}
 
 			ICorDebugStepper stepper;
+
+			if (stepIn) {
+				corFrame.CreateStepper(out stepper);
+
+				fixed (int* ranges = nextSt.StepRanges) {
+					stepper.StepRange(1 /* true - step in*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
+				}
+
+				debugger.CurrentThread.AddActiveStepper(stepper);
+			}
+
+			// Mind that step in which ends in code without symblols is cotinued
+			// so the next step out ensures that we atleast do step over
+
 			corFrame.CreateStepper(out stepper);
 
 			fixed (int* ranges = nextSt.StepRanges) {
-				stepper.StepRange(stepIn?1:0, (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
+				stepper.StepRange(0 /* false - step over*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
 			}
+
+			debugger.CurrentThread.AddActiveStepper(stepper);
 
 			debugger.Continue();
 		}
