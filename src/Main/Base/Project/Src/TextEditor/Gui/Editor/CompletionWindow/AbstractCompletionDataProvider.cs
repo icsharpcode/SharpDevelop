@@ -30,9 +30,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
+		int defaultIndex;
+		
 		public int DefaultIndex {
 			get {
-				return -1;
+				return defaultIndex;
 			}
 		}
 		
@@ -85,42 +87,68 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (list == null) {
 				return;
 			}
+			System.Diagnostics.Debugger.Break();
 			completionData.Capacity += list.Count;
+			CodeCompletionData suggestedData = null;
 			foreach (object o in list) {
 				if (context != null && !context.ShowEntry(o))
 					continue;
-				if (o is string) {
-					completionData.Add(new CodeCompletionData(o.ToString(), ClassBrowserIconService.NamespaceIndex));
-				} else if (o is IClass) {
-					completionData.Add(new CodeCompletionData((IClass)o));
-				} else if (o is IProperty) {
-					IProperty property = (IProperty)o;
-					if (property.Name != null && insertedPropertiesElements[property.Name] == null) {
-						completionData.Add(new CodeCompletionData(property));
-						insertedPropertiesElements[property.Name] = property;
-					}
-				} else if (o is IMethod) {
-					IMethod method = (IMethod)o;
-					if (method.Name != null &&!method.IsConstructor) {
-						CodeCompletionData ccd = new CodeCompletionData(method);
-						if (insertedElements[method.Name] == null) {
-							completionData.Add(ccd);
-							insertedElements[method.Name] = ccd;
-						} else {
-							CodeCompletionData oldMethod = (CodeCompletionData)insertedElements[method.Name];
-							++oldMethod.Overloads;
-						}
-					}
-				} else if (o is IField) {
-					completionData.Add(new CodeCompletionData((IField)o));
-				} else if (o is IEvent) {
-					IEvent e = (IEvent)o;
-					if (e.Name != null && insertedEventElements[e.Name] == null) {
-						completionData.Add(new CodeCompletionData(e));
-						insertedEventElements[e.Name] = e;
+				CodeCompletionData ccd = CreateItem(o, context);
+				if (object.Equals(o, context.SuggestedItem))
+					suggestedData = ccd;
+				if (ccd != null)
+					completionData.Add(ccd);
+			}
+			if (context.SuggestedItem != null) {
+				if (suggestedData == null) {
+					suggestedData = CreateItem(context.SuggestedItem, context);
+					if (suggestedData != null) {
+						completionData.Add(suggestedData);
 					}
 				}
+				if (suggestedData != null) {
+					completionData.Sort();
+					defaultIndex = completionData.IndexOf(suggestedData);
+				}
 			}
+		}
+		
+		CodeCompletionData CreateItem(object o, ExpressionContext context)
+		{
+			if (o is string) {
+				return new CodeCompletionData(o.ToString(), ClassBrowserIconService.NamespaceIndex);
+			} else if (o is IClass) {
+				return new CodeCompletionData((IClass)o);
+			} else if (o is IProperty) {
+				IProperty property = (IProperty)o;
+				if (property.Name != null && insertedPropertiesElements[property.Name] == null) {
+					insertedPropertiesElements[property.Name] = property;
+					return new CodeCompletionData(property);
+				}
+			} else if (o is IMethod) {
+				IMethod method = (IMethod)o;
+				if (method.Name != null &&!method.IsConstructor) {
+					CodeCompletionData ccd = new CodeCompletionData(method);
+					if (insertedElements[method.Name] == null) {
+						insertedElements[method.Name] = ccd;
+						return ccd;
+					} else {
+						CodeCompletionData oldMethod = (CodeCompletionData)insertedElements[method.Name];
+						++oldMethod.Overloads;
+					}
+				}
+			} else if (o is IField) {
+				return new CodeCompletionData((IField)o);
+			} else if (o is IEvent) {
+				IEvent e = (IEvent)o;
+				if (e.Name != null && insertedEventElements[e.Name] == null) {
+					insertedEventElements[e.Name] = e;
+					return new CodeCompletionData(e);
+				}
+			} else {
+				throw new ApplicationException("Unknown object: " + o);
+			}
+			return null;
 		}
 		
 		protected void AddResolveResults(ResolveResult results, ExpressionContext context)

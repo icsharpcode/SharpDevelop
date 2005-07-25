@@ -60,17 +60,28 @@ namespace CSharpBinding.Parser
 					if (typeStart >= 0) {
 						string className = text.Substring(typeStart, typeEnd - typeStart);
 						int pos = className.IndexOf('<');
-						string nonGenericClassName;
-						if (pos > 0)
+						string nonGenericClassName, genericPart;
+						if (pos > 0) {
 							nonGenericClassName = className.Substring(0, pos);
-						else
+							genericPart = className.Substring(pos);
+						} else {
 							nonGenericClassName = className;
+							genericPart = null;
+						}
 						ClassFinder finder = new ClassFinder(fileName, text, typeStart);
 						IClass c = finder.SearchClass(nonGenericClassName);
 						if (c != null) {
 							ExpressionContext context = ExpressionContext.TypeDerivingFrom(c, true);
-							if (context.ShowEntry(c))
-								context.SuggestedItem = c;
+							if (context.ShowEntry(c)) {
+								if (genericPart != null) {
+									DefaultClass genericClass = new DefaultClass(c.CompilationUnit, c.ClassType, c.Modifiers, c.Region, c.DeclaringType);
+									genericClass.FullyQualifiedName = c.FullyQualifiedName + genericPart;
+									genericClass.Documentation = c.Documentation;
+									context.SuggestedItem = genericClass;
+								} else {
+									context.SuggestedItem = c;
+								}
+							}
 							return context;
 						}
 					}

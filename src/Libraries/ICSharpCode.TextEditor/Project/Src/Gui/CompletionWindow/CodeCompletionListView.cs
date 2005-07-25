@@ -153,8 +153,6 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				string itemText = completionData[i].Text;
 				string lowerText = itemText.ToLower();
 				if (lowerText.StartsWith(startText)) {
-					if (i == selectedItem)
-						return;
 					double priority = completionData[i].Priority;
 					int quality;
 					if (lowerText == startText) {
@@ -171,9 +169,13 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					if (bestQuality < quality) {
 						useThisItem = true;
 					} else {
-						useThisItem = bestQuality == quality && bestPriority < priority;
-						if (useThisItem && bestIndex == i)
+						if (bestIndex == selectedItem) {
 							useThisItem = false;
+						} else if (i == selectedItem) {
+							useThisItem = bestQuality == quality;
+						} else {
+							useThisItem = bestQuality == quality && bestPriority < priority;
+						}
 					}
 					if (useThisItem) {
 						bestIndex = i;
