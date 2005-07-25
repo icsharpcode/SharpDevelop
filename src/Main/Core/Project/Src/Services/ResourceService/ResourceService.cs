@@ -24,18 +24,18 @@ namespace ICSharpCode.Core
 	/// This Class contains two ResourceManagers, which handle string and image resources
 	/// for the application. It do handle localization strings on this level.
 	/// </summary>
-	public sealed class ResourceService 
+	public static class ResourceService
 	{
 		readonly static string uiLanguageProperty = "CoreProperties.UILanguage";
 
 		readonly static string stringResources = "StringResources";
 		readonly static string imageResources = "BitmapResources";
 		
-		static string resourceDirctory;
+		static string resourceDirectory;
 		
 		static ResourceService()
 		{
-			resourceDirctory = FileUtility.Combine(PropertyService.DataDirectory, "resources");
+			resourceDirectory = FileUtility.Combine(PropertyService.DataDirectory, "resources");
 			LoadLanguageResources();
 		}
 		
@@ -58,8 +58,8 @@ namespace ICSharpCode.Core
 		static void ChangeProperty(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.Key == uiLanguageProperty && e.OldValue != e.NewValue) {
-			    LoadLanguageResources();
-			} 
+				LoadLanguageResources();
+			}
 		}
 		
 		static void LoadLanguageResources()
@@ -73,7 +73,7 @@ namespace ICSharpCode.Core
 					Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(language.Split('-')[0]);
 				} catch (Exception) {}
 			}
-// TODO: AppSettings is obsolete
+			// TODO: AppSettings is obsolete
 //			if (System.Configuration.ConfigurationSettings.AppSettings["UserStrings"] != null) {
 //				string resourceName = System.Configuration.ConfigurationSettings.AppSettings["UserStrings"];
 //				resourceName = resourceName.Insert(resourceName.LastIndexOf(".resources"), "." + language);
@@ -103,7 +103,7 @@ namespace ICSharpCode.Core
 					localStringsResMgrs.Add(new ResourceManager("Resources." + stringResources, assembly));
 				}
 				
-				if (assembly.GetManifestResourceInfo("Resources." + imageResources + ".resources") != null) {	
+				if (assembly.GetManifestResourceInfo("Resources." + imageResources + ".resources") != null) {
 					localIconsResMgrs.Add(new ResourceManager("Resources." + imageResources, assembly));
 				}
 			}
@@ -111,23 +111,14 @@ namespace ICSharpCode.Core
 		
 		static void InitializeService()
 		{
-			RegisterAssembly(Assembly.GetEntryAssembly());
+			Assembly assembly = Assembly.GetEntryAssembly();
+			if (assembly != null) {
+				RegisterAssembly(assembly);
+			}
 			
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(ChangeProperty);
 			
 			LoadLanguageResources();
-		}
-		
-		// core service : Can't use Initialize, because all other stuff needs this service before initialize is called.
-		ResourceService()
-		{
-//			if (System.Configuration.ConfigurationSettings.AppSettings["UserStrings"] != null) {
-//				userStrings = Load(resourceDirctory +  Path.DirectorySeparatorChar + System.Configuration.ConfigurationSettings.AppSettings["UserStrings"]);
-//			}
-//			if (System.Configuration.ConfigurationSettings.AppSettings["UserIcons"] != null) {
-//				userIcons   = Load(resourceDirctory +  Path.DirectorySeparatorChar + System.Configuration.ConfigurationSettings.AppSettings["UserIcons"]);
-//			}
-			InitializeService();
 		}
 		
 		/// <summary>
@@ -210,7 +201,7 @@ namespace ICSharpCode.Core
 		
 		static Hashtable Load(string name, string language)
 		{
-			return Load(resourceDirctory + Path.DirectorySeparatorChar + name + "." + language + ".resources");
+			return Load(resourceDirectory + Path.DirectorySeparatorChar + name + "." + language + ".resources");
 			
 		}
 		
@@ -238,7 +229,7 @@ namespace ICSharpCode.Core
 			if (localStrings != null && localStrings[name] != null) {
 				return localStrings[name].ToString();
 			}
-	
+			
 			string s = null;
 			foreach (ResourceManager resourceManger in localStringsResMgrs) {
 				s = resourceManger.GetString(name);
@@ -337,7 +328,7 @@ namespace ICSharpCode.Core
 		
 		/// <summary>
 		/// Returns a bitmap from the resource database, it handles localization
-		/// transparent for the user. 
+		/// transparent for the user.
 		/// </summary>
 		/// <returns>
 		/// The bitmap in the (localized) resource database.

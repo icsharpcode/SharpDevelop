@@ -74,7 +74,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static string[] GetAvaiableRuntimeVersions()
+		public static string[] GetAvailableRuntimeVersions()
 		{
 			string   installRoot = NETFrameworkInstallRoot;
 			string[] files       = Directory.GetDirectories(installRoot);
@@ -95,19 +95,11 @@ namespace ICSharpCode.Core
 				return String.Empty;
 			}
 			
-			if (paths.Length == 1) {
-				return paths[0];
+			string result = paths[0];
+			for (int i = 1; i < paths.Length; i++) {
+				result = Path.Combine(result, paths[i]);
 			}
-			
-			string[] newPaths = new string[paths.Length - 1];
-			
-			newPaths[0] = Path.Combine(paths[0], paths[1]);
-			
-			Array.Copy(paths, 2, 
-			           newPaths, 1, 
-			           paths.Length - 2);
-			
-			return Combine(newPaths);
+			return result;
 		}
 		
 		

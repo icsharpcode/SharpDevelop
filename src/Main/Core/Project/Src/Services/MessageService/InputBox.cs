@@ -109,7 +109,6 @@ namespace ICSharpCode.Core
 			// InputBox
 			// 
 			this.AcceptButton = this.acceptButton;
-			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
 			this.CancelButton = this.cancelButton;
 			this.ClientSize = new System.Drawing.Size(338, 144);
 			this.Controls.Add(this.textBox);

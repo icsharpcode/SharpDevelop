@@ -28,13 +28,7 @@ namespace ICSharpCode.Core
 		
 		static AddInTree()
 		{
-			try {
-				// might fail in unit test mode
-				Assembly entryAssembly = Assembly.GetEntryAssembly();
-				defaultCoreDirectory = FileUtility.Combine(Path.GetDirectoryName(entryAssembly.Location), "..", "AddIns");
-			} catch (Exception) {
-				defaultCoreDirectory = "";
-			}
+			defaultCoreDirectory = FileUtility.Combine(FileUtility.SharpDevelopRootPath, "AddIns");
 			
 			erbauer.Add("Class", new ClassErbauer());
 			erbauer.Add("FileFilter", new FileFilterErbauer());

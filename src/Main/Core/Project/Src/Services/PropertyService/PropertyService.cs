@@ -19,7 +19,7 @@ namespace ICSharpCode.Core
 		const string propertyXmlRootNodeName = "SharpDevelopProperties";
 		
 		static string configDirectory = FileUtility.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".ICSharpCode", "Corsavy") + Path.DirectorySeparatorChar;
-		static string dataDirectory   = FileUtility.Combine(Path.GetDirectoryName(Assembly.GetEntryAssembly().Location), "..", "data");
+		static string dataDirectory   = FileUtility.Combine(FileUtility.SharpDevelopRootPath, "data");
 		
 		static Properties properties  = new Properties();
 		

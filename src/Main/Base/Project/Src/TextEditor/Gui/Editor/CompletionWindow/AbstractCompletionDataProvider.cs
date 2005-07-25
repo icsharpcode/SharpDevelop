@@ -87,7 +87,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (list == null) {
 				return;
 			}
-			System.Diagnostics.Debugger.Break();
 			completionData.Capacity += list.Count;
 			CodeCompletionData suggestedData = null;
 			foreach (object o in list) {
