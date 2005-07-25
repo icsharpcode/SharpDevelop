@@ -136,7 +136,12 @@ namespace DebuggerLibrary
 				((ICorDebugReferenceValue)corValue).IsNull(out isNull);
 				if (isNull == 0) {
 					ICorDebugValue dereferencedValue;
-					((ICorDebugReferenceValue)corValue).Dereference(out dereferencedValue);
+					try {
+						((ICorDebugReferenceValue)corValue).Dereference(out dereferencedValue);
+					} catch {
+						// Error during dereferencing
+						return null;
+					}
 					return DereferenceUnbox(dereferencedValue); // Try again
 				} else {
 					return null;

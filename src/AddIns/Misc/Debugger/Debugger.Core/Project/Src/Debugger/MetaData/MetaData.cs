@@ -175,7 +175,7 @@ namespace DebuggerLibrary
 
 			uint pStringLenght = 0; // Terminating character included in pStringLenght
 			IntPtr pString = IntPtr.Zero;
-			IntPtr pSigBlob;
+			//IntPtr pSigBlob;
 			uint sigBlobSize;
 			metaData.GetMethodProps(methodProps.Token,
 			                        out methodProps.ClassToken,
@@ -183,7 +183,7 @@ namespace DebuggerLibrary
 			                        pStringLenght,
 			                        out pStringLenght, // real string lenght
 			                        out methodProps.Flags,
-			                        new IntPtr(&pSigBlob),
+			                        IntPtr.Zero,//new IntPtr(&pSigBlob),
 			                        out sigBlobSize,
 			                        out methodProps.CodeRVA,
 			                        out methodProps.ImplFlags);
@@ -197,7 +197,7 @@ namespace DebuggerLibrary
 			                        pStringLenght,
 			                        out pStringLenght, // real string lenght
 			                        out methodProps.Flags,
-			                        new IntPtr(&pSigBlob),
+			                        IntPtr.Zero,//new IntPtr(&pSigBlob),
 			                        out sigBlobSize,
 			                        out methodProps.CodeRVA,
 			                        out methodProps.ImplFlags);
@@ -205,9 +205,10 @@ namespace DebuggerLibrary
 			methodProps.Name = Marshal.PtrToStringUni(pString);
 			Marshal.FreeHGlobal(pString);
 			
-			methodProps.Signature = new SignatureStream(pSigBlob, sigBlobSize);
+			methodProps.Signature = null;
+			//methodProps.Signature = new SignatureStream(pSigBlob, sigBlobSize);
 			
-			Marshal.FreeCoTaskMem(pSigBlob);
+			//Marshal.FreeCoTaskMem(pSigBlob);
 
 			return methodProps;
 		}

@@ -226,6 +226,13 @@ namespace DebuggerLibrary
 		public Function CurrentFunction {
 			get {
 				process.CheckThatProcessIsSafeForInspection();
+				
+				if (currentFunction == null) {
+					currentFunction = LastFunctionWithLoadedSymbols;
+				}
+				if (currentFunction == null) {
+					currentFunction = LastFunction;
+				}
 
 				return currentFunction;
 			}
@@ -250,7 +257,12 @@ namespace DebuggerLibrary
 
 		public Function LastFunction {
 			get {
-				return Callstack[0];
+				List<Function> callstack = Callstack;
+				if (callstack.Count > 0) {
+					return Callstack[0];
+				} else {
+					return null;
+				}
 			}
 		}
 	}
