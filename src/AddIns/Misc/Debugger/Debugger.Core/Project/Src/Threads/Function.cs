@@ -22,7 +22,7 @@ namespace DebuggerLibrary
 		NDebugger debugger;
 
 		Module module;
-		ICorDebugFrame    corFrame;
+		ICorDebugILFrame  corILFrame;
 		ICorDebugFunction corFunction;
 
 		MethodProps methodProps;
@@ -65,11 +65,11 @@ namespace DebuggerLibrary
 			}
 		}
 	
-		internal unsafe Function(NDebugger debugger, ICorDebugFrame corFrame) 
+		internal unsafe Function(NDebugger debugger, ICorDebugILFrame corILFrame) 
 		{
 			this.debugger = debugger;
-			this.corFrame = corFrame;
-			corFrame.GetFunction(out corFunction);
+			this.corILFrame = corILFrame;
+			corILFrame.GetFunction(out corFunction);
             uint functionToken;
 			corFunction.GetToken(out functionToken);
 			ICorDebugModule corModule;
@@ -81,9 +81,9 @@ namespace DebuggerLibrary
 
 		#region Helpping proprerties
 
-		internal ICorDebugILFrame corILFrame {
+		internal ICorDebugILFrame CorILFrame {
 			get	{
-				return (ICorDebugILFrame) corFrame;
+				return corILFrame;
 			}
 		}
 
@@ -135,7 +135,7 @@ namespace DebuggerLibrary
 		public void StepOut()
 		{
 			ICorDebugStepper stepper;
-			corFrame.CreateStepper(out stepper);
+			corILFrame.CreateStepper(out stepper);
 			stepper.StepOut();
 
 			debugger.CurrentThread.AddActiveStepper(stepper);
@@ -159,7 +159,7 @@ namespace DebuggerLibrary
 			ICorDebugStepper stepper;
 
 			if (stepIn) {
-				corFrame.CreateStepper(out stepper);
+				corILFrame.CreateStepper(out stepper);
 
 				fixed (int* ranges = nextSt.StepRanges) {
 					stepper.StepRange(1 /* true - step in*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
@@ -171,7 +171,7 @@ namespace DebuggerLibrary
 			// Mind that step in which ends in code without symblols is cotinued
 			// so the next step out ensures that we atleast do step over
 
-			corFrame.CreateStepper(out stepper);
+			corILFrame.CreateStepper(out stepper);
 
 			fixed (int* ranges = nextSt.StepRanges) {
 				stepper.StepRange(0 /* false - step over*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);

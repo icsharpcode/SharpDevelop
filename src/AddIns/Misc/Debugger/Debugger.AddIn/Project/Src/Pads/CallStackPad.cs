@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void CallStackListItemActivate(object sender, EventArgs e)
 		{
-			if (!debuggerCore.IsCurrentProcessSafeForInspection) {
+			if (debuggerCore.IsCurrentProcessSafeForInspection) {
 				debuggerCore.CurrentThread.CurrentFunction = (Function)(callStackList.SelectedItems[0].Tag);
 			}
 		}

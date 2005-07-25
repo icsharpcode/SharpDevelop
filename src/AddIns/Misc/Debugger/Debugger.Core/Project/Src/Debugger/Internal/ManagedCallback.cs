@@ -46,6 +46,9 @@ namespace DebuggerLibrary
 			Process process = debugger.GetProcess(pProcess);
 			process.IsProcessRunning = false;
 			debugger.CurrentProcess = process;
+			foreach(Thread t in process.Threads) {
+				t.CurrentFunction = null;
+			}
 		}
 
 		// Sets CurrentProcess
@@ -58,6 +61,9 @@ namespace DebuggerLibrary
 			Process process = debugger.GetProcess(pProcess);
 			process.IsProcessRunning = false;
 			debugger.CurrentProcess = process;
+			foreach(Thread t in process.Threads) {
+				t.CurrentFunction = null;
+			}
 		}
 
 		// Sets CurrentProcess, CurrentThread and CurrentFunction
@@ -71,6 +77,9 @@ namespace DebuggerLibrary
 			process.IsProcessRunning = false;
 			debugger.CurrentProcess = process;
 			process.CurrentThread = thread;
+			foreach(Thread t in process.Threads) {
+				t.CurrentFunction = null;
+			}
 			thread.CurrentFunction = thread.LastFunctionWithLoadedSymbols;
 		}
 

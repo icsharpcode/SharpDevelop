@@ -367,7 +367,7 @@ namespace ICSharpCode.SharpDevelop.Services
 						return;
 					case ExceptionForm.Result.Ignore:
 						debugger.CurrentThread.InterceptCurrentException();
-						return;
+						break;
 				}
 			} else {
 				JumpToCurrentLine();

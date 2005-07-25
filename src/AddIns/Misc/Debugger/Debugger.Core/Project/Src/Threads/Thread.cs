@@ -134,7 +134,7 @@ namespace DebuggerLibrary
 		
 		public void InterceptCurrentException()
 		{
-			((ICorDebugThread2)corThread).InterceptCurrentException(LastFunction.corILFrame);
+			((ICorDebugThread2)corThread).InterceptCurrentException(LastFunction.CorILFrame);
 			process.Continue();
 		}
 
@@ -213,7 +213,9 @@ namespace DebuggerLibrary
 						if (framesFetched == 0) break; // We are done
 
                         try {
-                            callstack.Add(new Function(debugger, corFrames[0]));					                                                
+							if (corFrames[0] is ICorDebugILFrame) {
+								callstack.Add(new Function(debugger, (ICorDebugILFrame)corFrames[0]));
+							}
                         } catch (COMException) {
 							// TODO
 						};
