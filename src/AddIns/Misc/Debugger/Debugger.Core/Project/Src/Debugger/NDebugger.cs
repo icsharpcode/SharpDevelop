@@ -144,7 +144,7 @@ namespace DebuggerLibrary
 
 		protected internal virtual void OnLogMessage(string message)
 		{
-			TraceMessage ("Debugger event: OnLogMessage(\"" + message + "\")");
+			TraceMessage ("Debugger event: OnLogMessage");
 			if (LogMessage != null) {
 				LogMessage(this, new MessageEventArgs(this, message));
 			}

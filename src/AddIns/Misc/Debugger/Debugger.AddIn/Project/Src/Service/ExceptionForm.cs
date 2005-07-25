@@ -7,6 +7,8 @@
 
 using System;
 using System.Windows.Forms;
+using ICSharpCode.Core;
+using DebuggerLibrary;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
@@ -14,18 +16,31 @@ namespace ICSharpCode.SharpDevelop.Services
 	{
 		public enum Result {Break, Continue, Ignore};
 
-		public Result result = Result.Continue;
+		private Result result = Result.Continue;
 
-		public System.Windows.Forms.Label label;
+		private System.Windows.Forms.TextBox textBox;
 		private System.Windows.Forms.Button buttonContinue;
 		private System.Windows.Forms.Button buttonIgnore;
-		public System.Windows.Forms.PictureBox pictureBox;
+		private System.Windows.Forms.PictureBox pictureBox;
 		private System.Windows.Forms.Button buttonBreak;
 
 
-		public ExceptionForm()
+		private ExceptionForm()
 		{
 			InitializeComponent();
+		}
+		
+		public static Result Show(DebuggerLibrary.Exception exception)
+		{
+			ExceptionForm form = new ExceptionForm();
+			form.textBox.Text = "Exception " + 
+			                    exception.Type +
+			                    " was thrown in debugee:\r\n" +
+			                    exception.Message + "\r\n\r\n" +
+								exception.Callstack.Replace("\n","\r\n");
+			form.pictureBox.Image = ResourceService.GetBitmap((exception.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED)?"Icons.32x32.Warning":"Icons.32x32.Error");
+			form.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+			return form.result;
 		}
 		
 		#region Windows Forms Designer generated code
@@ -39,7 +54,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.pictureBox = new System.Windows.Forms.PictureBox();
 			this.buttonIgnore = new System.Windows.Forms.Button();
 			this.buttonContinue = new System.Windows.Forms.Button();
-			this.label = new System.Windows.Forms.Label();
+			this.textBox = new System.Windows.Forms.TextBox();
 			((System.ComponentModel.ISupportInitialize)(this.pictureBox)).BeginInit();
 			this.SuspendLayout();
 			// 
@@ -85,19 +100,22 @@ namespace ICSharpCode.SharpDevelop.Services
 			// 
 			// label
 			// 
-			this.label.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			this.textBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
 						| System.Windows.Forms.AnchorStyles.Left)
 						| System.Windows.Forms.AnchorStyles.Right)));
-			this.label.Location = new System.Drawing.Point(91, 16);
-			this.label.Name = "label";
-			this.label.Size = new System.Drawing.Size(528, 144);
-			this.label.TabIndex = 4;
-			this.label.Text = "label";
+			this.textBox.Location = new System.Drawing.Point(91, 16);
+			this.textBox.Name = "textBox";
+			this.textBox.Multiline = true;
+			this.textBox.WordWrap = false;
+			this.textBox.ReadOnly = true;
+			this.textBox.Size = new System.Drawing.Size(528, 138);
+			this.textBox.TabIndex = 4;
+			this.textBox.Text = "";
 			// 
 			// ExceptionForm
 			// 
 			this.ClientSize = new System.Drawing.Size(638, 203);
-			this.Controls.Add(this.label);
+			this.Controls.Add(this.textBox);
 			this.Controls.Add(this.pictureBox);
 			this.Controls.Add(this.buttonIgnore);
 			this.Controls.Add(this.buttonContinue);

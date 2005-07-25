@@ -246,6 +246,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			debugger = new NDebugger();
 
 			debugger.LogMessage              += new EventHandler<MessageEventArgs>(LogMessage);
+			debugger.DebuggerTraceMessage    += new EventHandler<MessageEventArgs>(TraceMessage);
 			debugger.ProcessStarted          += new EventHandler<ProcessEventArgs>(ProcessStarted);
 			debugger.ProcessExited           += new EventHandler<ProcessEventArgs>(ProcessExited);
 			debugger.DebuggingPaused         += new EventHandler<DebuggingPausedEventArgs>(DebuggingPaused);
@@ -313,7 +314,12 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		void LogMessage(object sender, MessageEventArgs e)
 		{
-			DebuggerService.PrintDebugMessage(e.Message);
+			DebuggerService.PrintDebugMessage(">" + e.Message);
+		}
+		
+		void TraceMessage(object sender, MessageEventArgs e)
+		{
+			DebuggerService.PrintDebugMessage(e.Message + "\n");
 		}
 		
 		void ProcessStarted(object sender, ProcessEventArgs e)
@@ -349,14 +355,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				
 				JumpToCurrentLine();
 
-				ExceptionForm form = new ExceptionForm();
-				form.label.Text = "Exception " + 
-				                  debugger.CurrentThread.CurrentException.Type +
-                                  " was thrown in debugee:\n" +
-				                  debugger.CurrentThread.CurrentException.Message;
-				form.pictureBox.Image = ResourceService.GetBitmap((debugger.CurrentThread.CurrentException.ExceptionType != ExceptionType.DEBUG_EXCEPTION_UNHANDLED)?"Icons.32x32.Warning":"Icons.32x32.Error");
-				form.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
-				switch (form.result) {
+				switch (ExceptionForm.Show(debugger.CurrentThread.CurrentException)) {
 					case ExceptionForm.Result.Break: 
 						break;
 					case ExceptionForm.Result.Continue:

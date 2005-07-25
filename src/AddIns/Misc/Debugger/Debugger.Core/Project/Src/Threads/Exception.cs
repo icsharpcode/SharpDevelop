@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 
@@ -24,6 +25,7 @@ namespace DebuggerLibrary
 		ExceptionType     exceptionType;
 		SourcecodeSegment location;
 		DateTime          creationTime;
+		string            callstack;
 		string            type;
 		string            message;
 	
@@ -47,7 +49,17 @@ namespace DebuggerLibrary
 				message = runtimeVariableException.SubVariables["_message"].Value.ToString();
 			}
 
-			location = thread.CurrentFunction.NextStatement;
+			location = thread.LastFunctionWithLoadedSymbols.NextStatement;
+			callstack = "";
+			foreach(Function function in thread.Callstack) {
+				SourcecodeSegment loc = function.NextStatement;
+				callstack += function.Name + "()";
+				if (loc != null) {
+					callstack += " - " + loc.SourceFullFilename + ":" + loc.StartLine + "," + loc.StartColumn;
+				}
+				callstack += "\n";
+			}
+			
 			type = runtimeVariable.Type;
 		}
 	
@@ -66,6 +78,12 @@ namespace DebuggerLibrary
 		public string Message {
 			get {
 				return message;
+			}
+		}
+		
+		public string Callstack {
+			get {
+				return callstack;
 			}
 		}
 
