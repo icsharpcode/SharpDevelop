@@ -50,51 +50,51 @@
     <Compile Include="Src\AddInTree\AddIn\ICondition.cs" />
     <Compile Include="Src\AddInTree\AddIn\IErbauer.cs" />
     <Compile Include="Src\AddInTree\AddIn\Runtime.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardAuswerter\CompareAuswerter.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardAuswerter\LazyLoadAuswerter.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardAuswerter\OwnerStateAuswerter.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ClassErbauer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\FileFilterErbauer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\Icon\IconDescriptor.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\Icon\IconErbauer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\LazyLoaderErbauer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\AbstractCheckableMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\AbstractMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\Gui\IStatusUpdate.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\Gui\Menu.cs">
+    <Compile Include="Src\AddInTree\AddIn\DefaultConditionEvaluators\CompareAuswerter.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultConditionEvaluators\LazyLoadAuswerter.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultConditionEvaluators\OwnerStateAuswerter.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ClassErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\FileFilterErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Icon\IconDescriptor.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Icon\IconErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\LazyLoaderErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\AbstractCheckableMenuCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\AbstractMenuCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\Gui\IStatusUpdate.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\Gui\Menu.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\Gui\MenuCheckBox.cs">
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\Gui\MenuCheckBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\Gui\MenuCommand.cs">
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\Gui\MenuCommand.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\Gui\MenuSeparator.cs">
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\Gui\MenuSeparator.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\ICheckableMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\IMenuCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\ISubmenuBuilder.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\MenuItem\MenuItemErbauer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\AbstractComboBoxCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\Gui\ToolBarCheckBox.cs">
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\ICheckableMenuCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\IMenuCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\ISubmenuBuilder.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\MenuItemErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\AbstractComboBoxCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarCheckBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\Gui\ToolBarComboBox.cs">
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarComboBox.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\Gui\ToolBarCommand.cs">
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarCommand.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\Gui\ToolBarDropDownButton.cs">
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarDropDownButton.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\Gui\ToolBarSeparator.cs">
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarSeparator.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\IComboBoxCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\ToolBarItem\ToolBarItemErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\IComboBoxCommand.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ToolBarItemErbauer.cs" />
     <Compile Include="Src\AddInTree\AddInTree.cs" />
     <Compile Include="Src\AddInTree\AddInTreeNode.cs" />
     <Compile Include="Src\AddInTree\TreePathNotFoundException.cs" />
@@ -127,7 +127,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\AddInTree\AddIn\IBuildItemsModifier.cs" />
-    <Compile Include="Src\AddInTree\AddIn\StandardErbauer\IncludeErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\IncludeErbauer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

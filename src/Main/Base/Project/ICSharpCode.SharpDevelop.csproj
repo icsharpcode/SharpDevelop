@@ -60,12 +60,12 @@
     <Compile Include="Src\Services\Debugger\BreakpointBookmarkEventArgs.cs" />
     <Compile Include="Src\Services\File\RecentOpen.cs" />
     <Compile Include="Src\Services\Language\LanguageService.cs" />
-    <Compile Include="Src\Internal\Auswerter\WindowActiveAuswerter.cs" />
-    <Compile Include="Src\Internal\Auswerter\ProjectOpenAuswerter.cs" />
-    <Compile Include="Src\Internal\Erbauer\DefaultDialogPanelDescriptor.cs" />
-    <Compile Include="Src\Internal\Erbauer\DialogPanelErbauer.cs" />
-    <Compile Include="Src\Internal\Erbauer\IDialogPanel.cs" />
-    <Compile Include="Src\Internal\Erbauer\IDialogPanelDescriptor.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\WindowActiveAuswerter.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\ProjectOpenAuswerter.cs" />
+    <Compile Include="Src\Internal\Doozers\DefaultDialogPanelDescriptor.cs" />
+    <Compile Include="Src\Internal\Doozers\DialogPanelErbauer.cs" />
+    <Compile Include="Src\Internal\Doozers\IDialogPanel.cs" />
+    <Compile Include="Src\Internal\Doozers\IDialogPanelDescriptor.cs" />
     <Compile Include="Src\Services\File\FileService.cs" />
     <Compile Include="Src\Services\File\FileEventArgs.cs" />
     <Compile Include="Src\Services\Tasks\Task.cs" />
@@ -101,11 +101,11 @@
     <Compile Include="Src\Dom\Implementations\DefaultCompilationUnit.cs" />
     <Compile Include="Src\Services\ParserService\ParserService.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingErbauer.cs" />
-    <Compile Include="Src\Internal\Auswerter\CombineOpenAuswerter.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\CombineOpenAuswerter.cs" />
     <Compile Include="Src\Services\LanguageBinding\LanguageBindingErbauer.cs" />
     <Compile Include="Src\Services\Language\Language.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingService.cs" />
-    <Compile Include="Src\Internal\Auswerter\ProjectActiveAuswerter.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\ProjectActiveAuswerter.cs" />
     <Compile Include="Src\Dom\IUsing.cs" />
     <Compile Include="Src\Dom\ModifierEnum.cs" />
     <Compile Include="Src\Dom\IDecoration.cs" />
@@ -132,7 +132,7 @@
     <Compile Include="Src\Services\ParserService\AssemblyInformation.cs" />
     <Compile Include="Src\Services\AmbienceService\AmbienceService.cs" />
     <Compile Include="Src\Services\AmbienceService\CodeDOMGeneratorUtility.cs" />
-    <Compile Include="Src\Internal\Auswerter\WindowOpenAuswerter.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\WindowOpenAuswerter.cs" />
     <Compile Include="Src\Internal\Templates\Project\ProjectDescriptor.cs" />
     <Compile Include="Src\Internal\Templates\Project\CombineDescriptor.cs" />
     <Compile Include="Src\Gui\IProgressMonitor.cs" />
@@ -314,7 +314,7 @@
     <Compile Include="Src\Commands\CustomStringTagProvider.cs" />
     <Compile Include="Src\Internal\Templates\CodeTemplateGroup.cs" />
     <Compile Include="Src\Commands\VBConverter\CSharpConvertBuffer.cs" />
-    <Compile Include="Src\Internal\Auswerter\ActiveViewContentUntitledAuswerter.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\ActiveViewContentUntitledAuswerter.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerService.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\CompilerMessageView.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IHelpProvider.cs" />
@@ -328,8 +328,8 @@
     <Compile Include="Src\Internal\Templates\StandardHeaders.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedProperty.cs" />
     <Compile Include="Src\Dom\IExpressionFinder.cs" />
-    <Compile Include="Src\Internal\Auswerter\IsProcessRunningAuswerter.cs" />
-    <Compile Include="Src\Internal\Erbauer\PadErbauer.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\IsProcessRunningAuswerter.cs" />
+    <Compile Include="Src\Internal\Doozers\PadErbauer.cs" />
     <Compile Include="Src\Gui\Dialogs\InputBox.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -338,15 +338,15 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\TaskListOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Internal\Auswerter\ActiveContentExtensionAuswerter.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\ActiveContentExtensionAuswerter.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\IViewContentMemento.cs" />
     <Compile Include="Src\Commands\ChooseConfigurationCommand.cs" />
     <Compile Include="Src\Gui\Workbench\ViewContentEventHandler.cs" />
     <Compile Include="Src\Services\Debugger\IDebugger.cs" />
     <Compile Include="Src\Services\Debugger\DefaultDebugger.cs" />
-    <Compile Include="Src\Internal\Auswerter\ActiveWindowStateAuswerter.cs" />
-    <Compile Include="Src\Internal\Auswerter\OpenWindowStateAuswerter.cs" />
-    <Compile Include="Src\Internal\Auswerter\DebuggerSupportsAuswerter.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\ActiveWindowStateAuswerter.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\OpenWindowStateAuswerter.cs" />
+    <Compile Include="Src\Internal\ConditionEvaluators\DebuggerSupportsAuswerter.cs" />
     <Compile Include="Src\Commands\ChooseLayoutCommand.cs" />
     <Compile Include="Src\Gui\Workbench\Layouts\LayoutConfiguration.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\OutputWindowOptionsPanel.cs">
@@ -404,8 +404,8 @@
     <Compile Include="Src\Services\LanguageBinding\LanguageBindingDescriptor.cs" />
     <Compile Include="Src\Services\DisplayBinding\DisplayBindingDescriptor.cs" />
     <Compile Include="Src\Dom\FoldingRegion.cs" />
-    <Compile Include="Src\Services\ParserService\Erbauer\ParserErbauer.cs" />
-    <Compile Include="Src\Services\ParserService\Erbauer\ParserDescriptor.cs" />
+    <Compile Include="Src\Services\ParserService\Doozer\ParserErbauer.cs" />
+    <Compile Include="Src\Services\ParserService\Doozer\ParserDescriptor.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\IPropertyValueCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\IStringValueFilter.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\StringWrapper.cs" />
@@ -418,7 +418,7 @@
     </Compile>
     <Compile Include="Src\Gui\XmlForms\Lib\DefaultObjectCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\Lib\IObjectCreator.cs" />
-    <Compile Include="Src\Internal\Erbauer\PadDescriptor.cs" />
+    <Compile Include="Src\Internal\Doozers\PadDescriptor.cs" />
     <Compile Include="Src\Project\MissingProject.cs" />
     <Compile Include="Src\Project\UnknownProject.cs" />
     <Compile Include="Src\Gui\Pads\ErrorList\ErrorList.cs" />
