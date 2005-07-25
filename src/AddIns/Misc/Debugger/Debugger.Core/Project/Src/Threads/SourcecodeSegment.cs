@@ -8,6 +8,8 @@
 using System;
 using System.Diagnostics.SymbolStore;
 
+using DebuggerInterop.Core;
+
 namespace DebuggerLibrary
 {
 	[Serializable]
@@ -148,6 +150,71 @@ namespace DebuggerLibrary
 			set {
 				ilEnd = value;
 			}
+		}
+		
+		// Returns true if found
+		internal bool GetFunctionAndOffset(NDebugger debugger, bool normailize, out ICorDebugFunction function, out int ilOffset)
+		{
+			function = null;
+			ilOffset = 0;
+			
+			Module           module     = null;
+			ISymbolReader    symReader  = null;
+			ISymbolDocument  symDoc     = null;
+
+			// Try to get doc from moduleFilename
+			if (moduleFilename != null) {
+				try {
+					module = debugger.GetModule(ModuleFilename);
+					symReader = module.SymReader;
+					symDoc = symReader.GetDocument(SourceFullFilename,Guid.Empty,Guid.Empty,Guid.Empty);
+				} catch {}
+			}
+
+			// search all modules
+			if (symDoc == null) {
+				foreach (Module m in debugger.Modules) {
+					module    = m;
+					symReader = m.SymReader;
+					if (symReader == null) {
+						continue;
+					}
+
+					symDoc = symReader.GetDocument(SourceFullFilename,Guid.Empty,Guid.Empty,Guid.Empty);
+
+					if (symDoc != null) {
+						break;
+					}
+				}
+			}
+
+			if (symDoc == null) {
+				return false; //Not found
+			}
+
+			int validLine;
+			validLine = symDoc.FindClosestLine(StartLine);
+			if (validLine != StartLine) {
+				if (normailize) {
+					StartLine = validLine;
+					EndLine = validLine;
+					StartColumn = 0;
+					EndColumn = 0;
+				} else {
+					return false;
+				}
+			}
+
+			ISymbolMethod symMethod;
+			symMethod = symReader.GetMethodFromDocumentPosition(symDoc, StartLine, StartColumn);
+
+			ICorDebugFunction corFunction;
+			module.CorModule.GetFunctionFromToken((uint)symMethod.Token.GetToken(), out corFunction);
+			function = corFunction;
+			
+			ilOffset = symMethod.GetOffset(symDoc, StartLine, StartColumn);
+			
+			return true;
 		}
 	}
 }

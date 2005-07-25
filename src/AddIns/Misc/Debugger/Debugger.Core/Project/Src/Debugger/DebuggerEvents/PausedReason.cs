@@ -18,6 +18,7 @@ namespace DebuggerLibrary
 		EvalComplete,
 		CurrentThreadChanged,
 		CurrentFunctionChanged,
-		ExceptionIntercepted
+		ExceptionIntercepted,
+		SetIP
 	}
 }

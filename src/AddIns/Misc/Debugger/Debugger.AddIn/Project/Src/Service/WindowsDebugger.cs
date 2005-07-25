@@ -265,6 +265,10 @@ namespace ICSharpCode.SharpDevelop.Services
 				RemoveBreakpoint(e.BreakpointBookmark);
 				AddBreakpoint(e.BreakpointBookmark);
 			};
+			
+			DebuggerService.SetIPRequest += delegate (object sender, DebuggerService.SetIPArgs args) {
+				SourcecodeSegment seg = debugger.CurrentThread.CurrentFunction.SetIP(args.filename, args.line + 1, args.column);
+			};
 
 			RestoreNDebuggerBreakpoints();
 

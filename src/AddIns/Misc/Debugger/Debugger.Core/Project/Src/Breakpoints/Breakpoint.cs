@@ -109,74 +109,29 @@ namespace DebuggerLibrary
 		}
 		
 		
-		internal unsafe void SetBreakpoint()
+		internal unsafe bool SetBreakpoint()
 		{
 			if (hadBeenSet) {
-				return;
+				return true;
 			}
-
-			Module           module     = null;
-			ISymbolReader    symReader  = null;
-			ISymbolDocument  symDoc     = null;
-
-			// Try to get doc from seg.moduleFilename
-			if (sourcecodeSegment.ModuleFilename != null) {
-				try {
-					module = debugger.GetModule(sourcecodeSegment.ModuleFilename);
-					symReader = debugger.GetModule(sourcecodeSegment.ModuleFilename).SymReader;
-					symDoc = symReader.GetDocument(sourcecodeSegment.SourceFullFilename,Guid.Empty,Guid.Empty,Guid.Empty);
-				} catch {}
-			}
-
-			// search all modules
-			if (symDoc == null) {
-				foreach (Module m in debugger.Modules) {
-					module    = m;
-					symReader = m.SymReader;
-					if (symReader == null) {
-						continue;
-					}
-
-					symDoc = symReader.GetDocument(sourcecodeSegment.SourceFullFilename,Guid.Empty,Guid.Empty,Guid.Empty);
-
-					if (symDoc != null) {
-						break;
-					}
-				}
-			}
-
-			if (symDoc == null) {
-				//throw new Exception("Failed to add breakpoint - (module not loaded? wrong sourceFilename?)");
-				return;
-			}
-
-			int validStartLine;
-			validStartLine = symDoc.FindClosestLine(sourcecodeSegment.StartLine);
-			if (validStartLine != sourcecodeSegment.StartLine) {
-				sourcecodeSegment.StartLine = validStartLine;
-				sourcecodeSegment.EndLine = validStartLine;
-				sourcecodeSegment.StartColumn = 0;
-				sourcecodeSegment.EndColumn = 0;
-			}
-
-			ISymbolMethod symMethod;
-			symMethod = symReader.GetMethodFromDocumentPosition(symDoc, sourcecodeSegment.StartLine, sourcecodeSegment.StartColumn);
-			
-			int corInstructionPtr = symMethod.GetOffset(symDoc, sourcecodeSegment.StartLine, sourcecodeSegment.StartColumn);
 
 			ICorDebugFunction corFunction;
-			module.CorModule.GetFunctionFromToken((uint)symMethod.Token.GetToken(), out corFunction);
+			int ilOffset;
+			if (!sourcecodeSegment.GetFunctionAndOffset(debugger, true, out corFunction, out ilOffset)) {
+				return false;
+			}
 
 			ICorDebugCode code;
 			corFunction.GetILCode(out code);
 
-			code.CreateBreakpoint((uint)corInstructionPtr, out corBreakpoint);
+			code.CreateBreakpoint((uint)ilOffset, out corBreakpoint);
 			
 			hadBeenSet = true;
 			corBreakpoint.Activate(enabled?1:0);
 			pBreakpoint = Marshal.GetComInterfaceForObject(corBreakpoint, typeof(ICorDebugFunctionBreakpoint));
 			OnBreakpointStateChanged();
 			
+			return true;
 		}
 	}
 }
