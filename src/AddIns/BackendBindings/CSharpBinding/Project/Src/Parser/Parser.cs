@@ -32,10 +32,9 @@ namespace CSharpBinding.Parser
 			}
 		}
 		
-		public IExpressionFinder ExpressionFinder {
-			get {
-				return new ExpressionFinder();
-			}
+		public IExpressionFinder CreateExpressionFinder(string fileName)
+		{
+			return new ExpressionFinder(fileName);
 		}
 		
 		public bool CanParse(string fileName)

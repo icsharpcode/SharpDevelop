@@ -61,6 +61,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.Modifiers = modifier;
 		}
 		
+		/// <summary>
+		/// CompoundClass has a normal return type even though IsPartial is set.
+		/// </summary>
+		protected override IReturnType CreateDefaultReturnType()
+		{
+			return new DefaultReturnType(this);
+		}
+		
 		public override List<IClass> InnerClasses {
 			get {
 				List<IClass> l = new List<IClass>();

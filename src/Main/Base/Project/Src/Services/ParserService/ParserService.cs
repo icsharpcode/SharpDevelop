@@ -128,7 +128,7 @@ namespace ICSharpCode.Core
 					ParseProjectContent newContent = project.CreateProjectContent();
 					lock (projectContents) {
 						projectContents[project] = newContent;
-					} 
+					}
 					createdContents.Add(newContent);
 				} catch (Exception e) {
 					Console.WriteLine("Error while retrieving project contents from {0}:", project);
@@ -399,7 +399,7 @@ namespace ICSharpCode.Core
 		{
 			IParser parser = GetParser(fileName);
 			if (parser != null) {
-				return parser.ExpressionFinder;
+				return parser.CreateExpressionFinder(fileName);
 			}
 			return null;
 		}
@@ -434,15 +434,24 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
+		public static IResolver CreateResolver(string fileName)
+		{
+			IParser parser = GetParser(fileName);
+			if (parser != null) {
+				return parser.CreateResolver();
+			}
+			return null;
+		}
+		
 		public static ResolveResult Resolve(ExpressionResult expressionResult,
 		                                    int caretLineNumber,
 		                                    int caretColumn,
 		                                    string fileName,
 		                                    string fileContent)
 		{
-			IParser parser = GetParser(fileName);
-			if (parser != null) {
-				return parser.CreateResolver().Resolve(expressionResult, caretLineNumber, caretColumn, fileName, fileContent);
+			IResolver resolver = CreateResolver(fileName);
+			if (resolver != null) {
+				return resolver.Resolve(expressionResult, caretLineNumber, caretColumn, fileName, fileContent);
 			}
 			return null;
 		}

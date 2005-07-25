@@ -7,6 +7,7 @@
 
 using System;
 using System.Text;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace CSharpBinding.Parser
@@ -16,6 +17,13 @@ namespace CSharpBinding.Parser
 	/// </summary>
 	public class ExpressionFinder : IExpressionFinder
 	{
+		string fileName;
+		
+		public ExpressionFinder(string fileName)
+		{
+			this.fileName = fileName;
+		}
+		
 		#region Capture Context
 		ExpressionResult CreateResult(string expression, string inText, int offset)
 		{
@@ -23,11 +31,58 @@ namespace CSharpBinding.Parser
 				return new ExpressionResult(null);
 			if (expression.StartsWith("using "))
 				return new ExpressionResult(expression.Substring(6).TrimStart(), ExpressionContext.Namespace, null);
-			if (!hadParenthesis && expression.StartsWith("new "))
-				return new ExpressionResult(expression.Substring(4).TrimStart(), ExpressionContext.ObjectCreation, null);
+			if (!hadParenthesis && expression.StartsWith("new ")) {
+				return new ExpressionResult(expression.Substring(4).TrimStart(), GetCreationContext(), null);
+			}
 			if (IsInAttribute(inText, offset))
 				return new ExpressionResult(expression, ExpressionContext.Attribute);
 			return new ExpressionResult(expression);
+		}
+		
+		ExpressionContext GetCreationContext()
+		{
+			UnGetToken();
+			if (GetNextNonWhiteSpace() == '=') { // was: "= new"
+				ReadNextToken();
+				if (curTokenType == Ident) {     // was: "ident = new"
+					int typeEnd = offset;
+					ReadNextToken();
+					int typeStart = -1;
+					while (curTokenType == Ident) {
+						typeStart = offset + 1;
+						ReadNextToken();
+						if (curTokenType == Dot) {
+							ReadNextToken();
+						} else {
+							break;
+						}
+					}
+					if (typeStart >= 0) {
+						string className = text.Substring(typeStart, typeEnd - typeStart);
+						int pos = className.IndexOf('<');
+						string nonGenericClassName;
+						if (pos > 0)
+							nonGenericClassName = className.Substring(0, pos);
+						else
+							nonGenericClassName = className;
+						ClassFinder finder = new ClassFinder(fileName, text, typeStart);
+						IClass c = finder.SearchClass(nonGenericClassName);
+						if (c != null) {
+							ExpressionContext context = ExpressionContext.TypeDerivingFrom(c, true);
+							if (context.ShowEntry(c))
+								context.SuggestedItem = c;
+							return context;
+						}
+					}
+				}
+			} else {
+				UnGet();
+				ReadNextToken();
+				if (curTokenType == Ident && lastIdentifier == "throw") {
+					return ExpressionContext.TypeDerivingFrom(ProjectContentRegistry.Mscorlib.GetClass("System.Exception"), true);
+				}
+			}
+			return ExpressionContext.ObjectCreation;
 		}
 		
 		bool IsInAttribute(string txt, int offset)
@@ -93,6 +148,7 @@ namespace CSharpBinding.Parser
 					lastAccept = this.offset;
 				}
 				if (state == ACCEPTNOMORE) {
+					lastExpressionStartPosition = offset + 1;
 					return this.text.Substring(this.offset + 1, offset - this.offset);
 				}
 			}
@@ -100,12 +156,16 @@ namespace CSharpBinding.Parser
 			if (lastAccept < 0)
 				return null;
 			
+			lastExpressionStartPosition = lastAccept + 1;
+			
 			return this.text.Substring(this.lastAccept + 1, offset - this.lastAccept);
 		}
 		
+		int lastExpressionStartPosition;
+		
 		internal int LastExpressionStartPosition {
 			get {
-				return ((state == ACCEPTNOMORE) ? offset : lastAccept) + 1;
+				return lastExpressionStartPosition;
 			}
 		}
 		#endregion
@@ -421,6 +481,15 @@ namespace CSharpBinding.Parser
 			return '\0';
 		}
 		
+		char GetNextNonWhiteSpace()
+		{
+			char ch;
+			do {
+				ch = GetNext();
+			} while (char.IsWhiteSpace(ch));
+			return ch;
+		}
+		
 		char Peek(int n)
 		{
 			if (offset - n >= 0) {
@@ -440,6 +509,13 @@ namespace CSharpBinding.Parser
 		void UnGet()
 		{
 			++offset;
+		}
+		
+		void UnGetToken()
+		{
+			do {
+				UnGet();
+			} while (char.IsLetterOrDigit(Peek()));
 		}
 		
 		// tokens for our lexer
@@ -470,17 +546,17 @@ namespace CSharpBinding.Parser
 		/// </summary>
 		bool hadParenthesis;
 		
+		string lastIdentifier;
+		
 		void ReadNextToken()
 		{
-			char ch;
+			
 			
 			curTokenType = Err;
-			do {
-				ch = GetNext();
-				if (ch == '\0') {
-					return;
-				}
-			} while (Char.IsWhiteSpace(ch));
+			char ch = GetNextNonWhiteSpace();
+			if (ch == '\0') {
+				return;
+			}
 			
 			
 			switch (ch) {
@@ -537,6 +613,7 @@ namespace CSharpBinding.Parser
 									break;
 								default:
 									curTokenType = Ident;
+									lastIdentifier = ident;
 									break;
 							}
 						}

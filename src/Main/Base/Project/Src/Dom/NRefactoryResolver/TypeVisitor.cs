@@ -290,7 +290,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (name != null && name.Length > 0) {
 				return new NamespaceReturnType(name);
 			}
-			IClass c = resolver.SearchType(identifierExpression.Identifier);
+			IClass c = resolver.SearchClass(identifierExpression.Identifier);
 			if (c != null) {
 				return c.DefaultReturnType;
 			}

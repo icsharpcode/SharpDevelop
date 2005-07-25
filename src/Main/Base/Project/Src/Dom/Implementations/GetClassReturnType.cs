@@ -24,12 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public GetClassReturnType(IProjectContent content, string fullName)
 		{
 			this.content = content;
-			this.fullName = fullName;
-			int pos = fullName.LastIndexOf('.');
-			if (pos < 0)
-				shortName = fullName;
-			else
-				shortName = fullName.Substring(pos + 1);
+			SetFullyQualifiedName(fullName);
 		}
 		
 		public override bool IsDefaultReturnType {
@@ -68,6 +63,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return fullName;
 			}
+		}
+		
+		public void SetFullyQualifiedName(string fullName)
+		{
+			if (fullName == null)
+				throw new ArgumentNullException("fullName");
+			this.fullName = fullName;
+			int pos = fullName.LastIndexOf('.');
+			if (pos < 0)
+				shortName = fullName;
+			else
+				shortName = fullName.Substring(pos + 1);
 		}
 		
 		public override string Name {

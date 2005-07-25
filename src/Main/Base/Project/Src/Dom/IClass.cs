@@ -94,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 
-		IEnumerable ClassInheritanceTree {
+		IEnumerable<IClass> ClassInheritanceTree {
 			get;
 		}
 		

@@ -27,10 +27,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return fullyQualifiedName;
 			}
 			set {
+				if (fullyQualifiedName == value)
+					return;
 				fullyQualifiedName = value;
 				name   = null;
 				nspace = null;
+				OnFullyQualifiedNameChanged(EventArgs.Empty);
 			}
+		}
+		
+		protected virtual void OnFullyQualifiedNameChanged(EventArgs e)
+		{
 		}
 		
 		public virtual string DotNetName {

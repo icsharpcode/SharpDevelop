@@ -183,7 +183,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\CommonAboutDialog.cs">
-      <SubType>Form</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\DirtyFilesDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\FolderDialog.cs" />
@@ -202,7 +202,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TreeViewOptions.cs">
-      <SubType>Component</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\ViewGPLDialog.cs">
       <SubType>Form</SubType>
@@ -267,7 +267,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\FileScout.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\Gui\Pads\OpenTaskView.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPad.cs" />
@@ -682,6 +682,7 @@
     <Compile Include="Src\TextEditor\Gui\OptionPanels\CodeCompletionPanel.cs" />
     <Compile Include="Src\Dom\CodeCompletionOptions.cs" />
     <Compile Include="Src\Services\Debugger\CurrentLineBookmark.cs" />
+    <Compile Include="Src\Dom\ClassFinder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

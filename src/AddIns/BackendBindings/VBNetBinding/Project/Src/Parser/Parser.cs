@@ -35,12 +35,9 @@ namespace VBNetBinding.Parser
 			}
 		}
 
-		public IExpressionFinder ExpressionFinder
+		public IExpressionFinder CreateExpressionFinder(string fileName)
 		{
-			get
-			{
-				return new ExpressionFinder();
-			}
+			return new ExpressionFinder();
 		}
 
 		public bool CanParse(string fileName)

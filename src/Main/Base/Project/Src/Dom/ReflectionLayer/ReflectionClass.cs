@@ -182,6 +182,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 				FullyQualifiedName = name;
 			}
 			
+			this.UseInheritanceCache = true;
+			
 			try {
 				AddAttributes(compilationUnit.ProjectContent, this.Attributes, CustomAttributeData.GetCustomAttributes(type));
 			} catch (Exception ex) {

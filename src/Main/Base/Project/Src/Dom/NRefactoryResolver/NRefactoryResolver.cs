@@ -134,7 +134,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			if (cu != null) {
 				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
-				cu.FileName = fileName;
 			}
 			
 			Expression expr = null;
@@ -195,12 +194,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (name == null)
 				return null;
-			IClass c = SearchType(name);
+			IClass c = SearchClass(name);
 			if (c != null) {
 				if (c.IsTypeInInheritanceTree(ProjectContentRegistry.Mscorlib.GetClass("System.Attribute")))
 					return c;
 			}
-			return SearchType(name + "Attribute");
+			return SearchClass(name + "Attribute");
 		}
 		
 		ResolveResult ResolveAttribute(Expression expr)
@@ -443,7 +442,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			ResolveResult result2 = null;
 			
-			IClass c = SearchType(identifier);
+			IClass c = SearchClass(identifier);
 			if (c != null) {
 				result2 = new TypeResolveResult(callingClass, callingMember, c);
 			} else {
@@ -643,10 +642,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return projectContent.SearchNamespace(name, callingClass, cu, caretLine, caretColumn);
 		}
 		
+		public IClass GetClass(string fullName)
+		{
+			return projectContent.GetClass(fullName);
+		}
+		
 		/// <remarks>
 		/// use the usings and the name of the namespace to find a class
 		/// </remarks>
-		public IClass SearchType(string name)
+		public IClass SearchClass(string name)
 		{
 			return projectContent.SearchType(name, callingClass, cu, caretLine, caretColumn);
 		}
@@ -869,7 +873,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			if (cu != null) {
 				callingClass = cu.GetInnermostClass(caretLine, caretColumn);
-				cu.FileName = fileName;
 			}
 			
 			callingMember = GetCurrentMember();

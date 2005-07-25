@@ -31,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			object item;
 			string text;
 			int    iconIndex;
+			bool   isInCurrentPart;
 			
 			public int IconIndex {
 				get {
@@ -41,6 +42,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			public object Item {
 				get {
 					return item;
+				}
+			}
+			
+			public bool IsInCurrentPart {
+				get {
+					return isInCurrentPart;
 				}
 			}
 			
@@ -86,15 +93,18 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 			
-			public ComboBoxItem(object item, string text, int iconIndex)
+			public ComboBoxItem(object item, string text, int iconIndex, bool isInCurrentPart)
 			{
 				this.item = item;
 				this.text = text;
 				this.iconIndex = iconIndex;
+				this.isInCurrentPart = isInCurrentPart;
 			}
 			
 			public bool IsInside(int lineNumber)
 			{
+				if (!isInCurrentPart)
+					return false;
 				IClass classItem = item as IClass;
 				if (classItem != null) {
 					if (classItem.Region == null)
@@ -224,7 +234,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					UpdateClassComboBox();
 					UpdateMembersComboBox();
 				}
-			} catch (Exception) {}
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
 		}
 		
 		bool membersComboBoxSelectedMember = false;
@@ -323,51 +335,62 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			return false;
 		}
 		
+		IClass lastClassInMembersComboBox;
+		
 		void FillMembersComboBox()
 		{
 			IClass c = GetCurrentSelectedClass();
-			if (c != null) {
+			if (c != null && lastClassInMembersComboBox != c) {
+				lastClassInMembersComboBox = c;
 				ArrayList items = new ArrayList();
+				bool partialMode = false;
+				IClass currentPart = c;
+				if (c.IsPartial) {
+					CompoundClass cc = c.ProjectContent.GetClass(c.FullyQualifiedName) as CompoundClass;
+					if (cc != null && cc.Parts.Count > 0) {
+						partialMode = true;
+						c = cc;
+					}
+				}
 				
 				int lastIndex = 0;
 				IComparer comparer = new Comparer(System.Globalization.CultureInfo.InvariantCulture);
+				
 				foreach (IMethod m in c.Methods) {
-					items.Add(new ComboBoxItem(m, m.Name, ClassBrowserIconService.GetIcon(m)));
+					items.Add(new ComboBoxItem(m, m.Name, ClassBrowserIconService.GetIcon(m), partialMode ? currentPart.Methods.Contains(m) : true));
 				}
 				items.Sort(lastIndex, c.Methods.Count, comparer);
 				lastIndex = items.Count;
 				
 				foreach (IProperty p in c.Properties) {
-					items.Add(new ComboBoxItem(p, p.Name, ClassBrowserIconService.GetIcon(p)));
+					items.Add(new ComboBoxItem(p, p.Name, ClassBrowserIconService.GetIcon(p), partialMode ? currentPart.Properties.Contains(p) : true));
 				}
 				items.Sort(lastIndex, c.Properties.Count, comparer);
 				lastIndex = items.Count;
 				
 				foreach (IIndexer indexer in c.Indexer) {
-					items.Add(new ComboBoxItem(indexer, indexer.Name, ClassBrowserIconService.GetIcon(indexer)));
+					items.Add(new ComboBoxItem(indexer, indexer.Name, ClassBrowserIconService.GetIcon(indexer), partialMode ? currentPart.Indexer.Contains(indexer) : true));
 				}
 				items.Sort(lastIndex, c.Indexer.Count, comparer);
 				lastIndex = items.Count;
 				
 				foreach (IField f in c.Fields) {
-					items.Add(new ComboBoxItem(f, f.Name, ClassBrowserIconService.GetIcon(f)));
+					items.Add(new ComboBoxItem(f, f.Name, ClassBrowserIconService.GetIcon(f), partialMode ? currentPart.Fields.Contains(f) : true));
 				}
 				items.Sort(lastIndex, c.Fields.Count, comparer);
 				lastIndex = items.Count;
 				
 				foreach (IEvent evt in c.Events) {
-					items.Add(new ComboBoxItem(evt, evt.Name, ClassBrowserIconService.GetIcon(evt)));
+					items.Add(new ComboBoxItem(evt, evt.Name, ClassBrowserIconService.GetIcon(evt), partialMode ? currentPart.Events.Contains(evt) : true));
 				}
 				items.Sort(lastIndex, c.Events.Count, comparer);
 				lastIndex = items.Count;
 				
-				if (NeedtoUpdate(items, membersComboBox)) {
-					membersComboBox.BeginUpdate();
-					membersComboBox.Items.Clear();
-					membersComboBox.Items.AddRange(items.ToArray());
-					membersComboBox.EndUpdate();
-					UpdateMembersComboBox();
-				}
+				membersComboBox.BeginUpdate();
+				membersComboBox.Items.Clear();
+				membersComboBox.Items.AddRange(items.ToArray());
+				membersComboBox.EndUpdate();
+				UpdateMembersComboBox();
 			} else {
 				if (membersComboBox.Items.Count > 0) {
 					membersComboBox.Items.Clear();
@@ -377,9 +400,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void AddClasses(ArrayList items, ICollection classes)
 		{
-			
 			foreach (IClass c in classes) {
-				items.Add(new ComboBoxItem(c, c.FullyQualifiedName, ClassBrowserIconService.GetIcon(c)));
+				items.Add(new ComboBoxItem(c, c.FullyQualifiedName, ClassBrowserIconService.GetIcon(c), true));
 				AddClasses(items, c.InnerClasses);
 			}
 		}
@@ -388,17 +410,23 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			ArrayList items = new ArrayList();
 			AddClasses(items, currentCompilationUnit.Classes);
-			if (NeedtoUpdate(items, classComboBox)) {
-				if (isUpdateRequired) {
-					classComboBox.BeginUpdate();
-				}
-				classComboBox.Items.Clear();
-				classComboBox.Items.AddRange(items.ToArray());
-				if (isUpdateRequired) {
-					classComboBox.EndUpdate();
-				}
-				UpdateClassComboBox();
+			if (isUpdateRequired) {
+				classComboBox.BeginUpdate();
 			}
+			classComboBox.Items.Clear();
+			classComboBox.Items.AddRange(items.ToArray());
+			if (items.Count == 1) {
+				try {
+					autoselect = false;
+					classComboBox.SelectedIndex = 0;
+				} finally {
+					autoselect = true;
+				}
+			}
+			if (isUpdateRequired) {
+				classComboBox.EndUpdate();
+			}
+			UpdateClassComboBox();
 		}
 		
 		
@@ -462,9 +490,17 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (comboBox.SelectedIndex < 0) {
 				membersComboBox.Items.Clear();
 			} else if (autoselect) {
-				textAreaControl.ActiveTextAreaControl.Caret.Position = new Point(((ComboBoxItem)comboBox.Items[comboBox.SelectedIndex]).Column,
-				                                                                 ((ComboBoxItem)comboBox.Items[comboBox.SelectedIndex]).Line);
-				textAreaControl.ActiveTextAreaControl.TextArea.Focus();
+				ComboBoxItem item = (ComboBoxItem)comboBox.Items[comboBox.SelectedIndex];
+				if (item.IsInCurrentPart) {
+					textAreaControl.ActiveTextAreaControl.Caret.Position = new Point(item.Column, item.Line);
+					textAreaControl.ActiveTextAreaControl.TextArea.Focus();
+				} else {
+					IMember m = item.Item as IMember;
+					if (m != null) {
+						string fileName = m.DeclaringType.CompilationUnit.FileName;
+						FileService.JumpToFilePosition(fileName, item.Line, item.Column);
+					}
+				}
 			}
 		}
 		
@@ -493,7 +529,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				if ((e.State & DrawItemState.Selected) == DrawItemState.Selected) {
 					drawItemBrush = SystemBrushes.HighlightText;
 				}
-				if (e.State == DrawItemState.ComboBoxEdit && !item.IsInside(textAreaControl.ActiveTextAreaControl.Caret.Line)) {
+				if (!item.IsInCurrentPart) {
+					drawItemBrush = SystemBrushes.ControlDark;
+				} else if (e.State == DrawItemState.ComboBoxEdit && !item.IsInside(textAreaControl.ActiveTextAreaControl.Caret.Line)) {
 					drawItemBrush = SystemBrushes.ControlDark;
 				}
 				e.Graphics.DrawString(item.ToString(),

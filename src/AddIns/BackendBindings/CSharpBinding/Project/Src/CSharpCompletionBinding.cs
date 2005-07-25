@@ -29,7 +29,7 @@ namespace CSharpBinding
 		{
 			if (!CheckExtension(editor))
 				return false;
-			CSharpBinding.Parser.ExpressionFinder ef = new CSharpBinding.Parser.ExpressionFinder();
+			Parser.ExpressionFinder ef = new Parser.ExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
 			ExpressionContext context = null;
 			if (ch == '(') {
@@ -175,11 +175,25 @@ namespace CSharpBinding
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Type), ' ');
 					return true;
 				case "new":
-					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.ObjectCreation), ' ');
-					return true;
+					return ShowNewCompletion(editor);
+				case "override":
+					// TODO: Suggest list of virtual methods to override
+					return false;
 				default:
 					return base.HandleKeyword(editor, word);
 			}
+		}
+		
+		bool ShowNewCompletion(SharpDevelopTextAreaControl editor)
+		{
+			Parser.ExpressionFinder ef = new Parser.ExpressionFinder(editor.FileName);
+			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
+			ExpressionContext context = ef.FindExpression(editor.Document.GetText(0, cursor) + " T.", cursor + 2).Context;
+			if (context.IsObjectCreation) {
+				editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(context), ' ');
+				return true;
+			}
+			return false;
 		}
 	}
 }

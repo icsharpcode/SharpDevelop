@@ -64,7 +64,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		protected virtual IReturnType CreateDefaultReturnType()
 		{
-			return new DefaultReturnType(this);
+			if (IsPartial) {
+				return new GetClassReturnType(ProjectContent, FullyQualifiedName);
+			} else {
+				return new DefaultReturnType(this);
+			}
+		}
+		
+		protected override void OnFullyQualifiedNameChanged(EventArgs e)
+		{
+			base.OnFullyQualifiedNameChanged(e);
+			GetClassReturnType rt = defaultReturnType as GetClassReturnType;
+			if (rt != null) {
+				rt.SetFullyQualifiedName(FullyQualifiedName);
+			}
 		}
 		
 		public ICompilationUnit CompilationUnit {
@@ -207,15 +220,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return CompareTo((IClass)o);
 		}
 		
-		// TODO: Cache ClassInheritanceTree as it is called many times (for GetFields(), GetProperties() etc.)
-		// and it is expensive to execute SearchType so often.
-		// ReflectionClass should cache it forever; DefaultClass only as long as no new CompilationUnits
-		// are created.
-		public IEnumerable ClassInheritanceTree {
+		List<IClass> inheritanceTreeCache;
+		
+		public IEnumerable<IClass> ClassInheritanceTree {
 			get {
-				return new ClassInheritanceEnumerator(this);
+				if (UseInheritanceCache) {
+					if (inheritanceTreeCache == null) {
+						inheritanceTreeCache = new List<IClass>(new ClassInheritanceEnumerator(this));
+					}
+					return inheritanceTreeCache;
+				} else {
+					return new ClassInheritanceEnumerator(this);
+				}
 			}
 		}
+		
+		protected bool UseInheritanceCache = false;
 		
 		protected override bool CanBeSubclass {
 			get {
@@ -238,13 +258,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		IClass cachedBaseClass;
+		
 		public IClass BaseClass {
 			get {
 				Debug.Assert(ProjectContent != null);
 				
 				if (BaseTypes.Count > 0) {
+					if (UseInheritanceCache && cachedBaseClass != null)
+						return cachedBaseClass;
 					IClass baseClass = GetBaseClass(0);
 					if (baseClass != null && baseClass.ClassType != ClassType.Interface) {
+						if (UseInheritanceCache)
+							cachedBaseClass = baseClass;
 						return baseClass;
 					}
 				}
@@ -397,7 +423,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return members;
 		}
 		
-		public class ClassInheritanceEnumerator : IEnumerator, IEnumerable
+		public class ClassInheritanceEnumerator : IEnumerator<IClass>, IEnumerable<IClass>
 		{
 			IClass topLevelClass;
 			IClass currentClass  = null;
@@ -423,7 +449,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				baseTypeQueue.Enqueue(new BaseType(null, "System.Object"));
 			}
 			
-			public IEnumerator GetEnumerator()
+			public IEnumerator<IClass> GetEnumerator()
+			{
+				return this;
+			}
+			
+			IEnumerator IEnumerable.GetEnumerator()
 			{
 				return this;
 			}
@@ -493,6 +524,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 				finishedClasses.Clear();
 				PutBaseClassesOnStack(topLevelClass);
 				baseTypeQueue.Enqueue(new BaseType(null, "System.Object"));
+			}
+			
+			public void Dispose()
+			{
+				baseTypeQueue = null;
+				finishedClasses = null;
+				topLevelClass = null;
+				currentClass = null;
 			}
 		}
 	}

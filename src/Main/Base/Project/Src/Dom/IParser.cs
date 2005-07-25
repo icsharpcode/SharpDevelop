@@ -21,9 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			set;
 		}
 		
-		IExpressionFinder ExpressionFinder {
-			get;
-		}
+		IExpressionFinder CreateExpressionFinder(string fileName);
 		
 		/// <summary>
 		/// Gets if the parser can parse the specified file.
