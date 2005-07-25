@@ -46,18 +46,18 @@
     <Compile Include="Src\AddInTree\AddIn\ComplexCondition.cs" />
     <Compile Include="Src\AddInTree\AddIn\Condition.cs" />
     <Compile Include="Src\AddInTree\AddIn\ExtensionPath.cs" />
-    <Compile Include="Src\AddInTree\AddIn\IAuswerter.cs" />
+    <Compile Include="Src\AddInTree\AddIn\IConditionEvaluator.cs" />
     <Compile Include="Src\AddInTree\AddIn\ICondition.cs" />
-    <Compile Include="Src\AddInTree\AddIn\IErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\IDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\Runtime.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultConditionEvaluators\CompareAuswerter.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultConditionEvaluators\LazyLoadAuswerter.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultConditionEvaluators\OwnerStateAuswerter.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ClassErbauer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\FileFilterErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultConditionEvaluators\CompareConditionEvaluator.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultConditionEvaluators\LazyConditionEvaluator.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultConditionEvaluators\OwnerStateConditionEvaluator.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ClassDoozer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\FileFilterDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Icon\IconDescriptor.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Icon\IconErbauer.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\LazyLoaderErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\Icon\IconDoozer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\LazyDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\AbstractCheckableMenuCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\AbstractMenuCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\Gui\IStatusUpdate.cs" />
@@ -76,7 +76,7 @@
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\ICheckableMenuCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\IMenuCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\ISubmenuBuilder.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\MenuItemErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\MenuItem\MenuItemDoozer.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\AbstractComboBoxCommand.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\Gui\ToolBarCheckBox.cs">
       <SubType>Component</SubType>
@@ -94,7 +94,7 @@
       <SubType>Component</SubType>
     </Compile>
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\IComboBoxCommand.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ToolBarItemErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\ToolBarItem\ToolBarItemDoozer.cs" />
     <Compile Include="Src\AddInTree\AddInTree.cs" />
     <Compile Include="Src\AddInTree\AddInTreeNode.cs" />
     <Compile Include="Src\AddInTree\TreePathNotFoundException.cs" />
@@ -127,7 +127,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\AddInTree\AddIn\IBuildItemsModifier.cs" />
-    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\IncludeErbauer.cs" />
+    <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\IncludeDoozer.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
