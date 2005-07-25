@@ -232,14 +232,16 @@ namespace DebuggerLibrary
 				if (currentFunction == null) {
 					currentFunction = LastFunctionWithLoadedSymbols;
 				}
-				if (currentFunction == null) {
-					currentFunction = LastFunction;
-				}
 
 				return currentFunction;
 			}
 			set {
+				if (value != null && !value.HasSymbols) {
+					throw new DebuggerException("CurrentFunction must have symbols");
+				}
+				
 				currentFunction = value;
+				
 				if (debugger.ManagedCallback.HandlingCallback == false) {
 					debugger.OnDebuggingPaused(PausedReason.CurrentFunctionChanged);
 				}
@@ -249,7 +251,7 @@ namespace DebuggerLibrary
 		public Function LastFunctionWithLoadedSymbols {
 			get {
 				foreach (Function function in Callstack) {
-					if (function.Module.SymbolsLoaded) {
+					if (function.HasSymbols) {
 						return function;
 					}
 				}

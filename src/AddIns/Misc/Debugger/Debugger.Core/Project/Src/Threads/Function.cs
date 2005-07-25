@@ -44,6 +44,12 @@ namespace DebuggerLibrary
 				return methodProps.IsStatic;
 			}
 		}
+		
+		public bool HasSymbols {
+			get {
+				return module.SymbolsLoaded;
+			}
+		}
 
 		internal ICorDebugClass ContaingClass {
 			get {

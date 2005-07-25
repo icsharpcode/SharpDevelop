@@ -20,6 +20,12 @@ namespace DebuggerLibrary
 
 		public event EventHandler<ProcessEventArgs> ProcessStarted;
 		public event EventHandler<ProcessEventArgs> ProcessExited;
+		
+		public IList<Process> Processes {
+			get {
+				return processCollection.AsReadOnly();
+			}
+		}
 
 		public Process CurrentProcess {
 			get {
@@ -32,10 +38,23 @@ namespace DebuggerLibrary
 				currentProcess = value;
 			}
 		}
-
-		public IList<Process> Processes {
+		
+		public bool IsCurrentProcessSafeForInspection {
 			get {
-				return processCollection.AsReadOnly();
+				if (CurrentProcess == null) {
+					return false;
+				} else {
+					return CurrentProcess.IsProcessSafeForInspection;
+				}
+			}
+		}
+
+		internal void CheckThatCurrentProcessIsSafeForInspection()
+		{
+			if (CurrentProcess == null) {
+				throw new DebuggerException("There is no process being debugged.");
+			} else {
+				CurrentProcess.CheckThatProcessIsSafeForInspection();
 			}
 		}
 

@@ -384,6 +384,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			SourcecodeSegment nextStatement = debugger.NextStatement;
 			if (nextStatement == null) {
+				DebuggerService.RemoveCurrentLineMarker();
 				return;
 			}
 			DebuggerService.JumpToCurrentLine(nextStatement.SourceFullFilename, nextStatement.StartLine, nextStatement.StartColumn, nextStatement.EndLine, nextStatement.EndColumn);

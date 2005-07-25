@@ -184,50 +184,44 @@ namespace DebuggerLibrary
 			Process process = Process.CreateProcess(this, filename, workingDirectory, arguments);
 			AddProcess(process);
 		}
-
-		public bool IsCurrentProcessSafeForInspection {
+		
+		public Function CurrentFunction {
 			get {
-				if (CurrentProcess == null) {
-					return false;
+				if (IsCurrentThreadSafeForInspection)  {
+					return CurrentThread.CurrentFunction;
 				} else {
-					return CurrentProcess.IsProcessSafeForInspection;
+					return null;
+				}
+			}
+			set {
+				if (IsCurrentThreadSafeForInspection)  {
+					CurrentThread.CurrentFunction = value;
 				}
 			}
 		}
-
-		internal void CheckThatCurrentProcessIsSafeForInspection()
-		{
-			if (CurrentProcess == null) {
-				throw new DebuggerException("There is no process being debugged.");
-			} else {
-				CurrentProcess.CheckThatProcessIsSafeForInspection();
-			}
-		}
-
-		public Thread CurrentThread {
+		
+		public bool IsCurrentFunctionSafeForInspection {
 			get {
-				if (CurrentProcess == null) return null;
-				return CurrentProcess.CurrentThread;
-			}
-			set {
-				CurrentProcess.CurrentThread = value;
+				if (IsCurrentThreadSafeForInspection && 
+				   CurrentThread.CurrentFunction != null &&
+				   CurrentThread.CurrentFunction.HasSymbols) {
+					return true;
+				} else {
+					return false;
+				}				
 			}
 		}
 
 		public SourcecodeSegment NextStatement { 
 			get {
-				if (!IsCurrentProcessSafeForInspection) return null;
-				if (CurrentProcess.CurrentThread.CurrentFunction == null) {
-					return null;
-				} else {
-					return CurrentProcess.CurrentThread.CurrentFunction.NextStatement;
-				}
+				if (!IsCurrentFunctionSafeForInspection) return null;
+				return CurrentProcess.CurrentThread.CurrentFunction.NextStatement;
 			}
 		}
 
 		public VariableCollection LocalVariables { 
 			get {
-				if (!IsCurrentProcessSafeForInspection) return VariableCollection.Empty;
+				if (!IsCurrentFunctionSafeForInspection) return VariableCollection.Empty;
 				return CurrentProcess.CurrentThread.CurrentFunction.GetVariables();
 			}
 		}
