@@ -131,6 +131,12 @@ namespace DebuggerLibrary
 				return lastName;
 			}
 		}
+		
+		public void InterceptCurrentException()
+		{
+			((ICorDebugThread2)corThread).InterceptCurrentException(LastFunction.corILFrame);
+			process.Continue();
+		}
 
 		internal IList<ICorDebugStepper> ActiveSteppers {
 			get {

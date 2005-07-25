@@ -15,8 +15,9 @@ namespace DebuggerLibrary
 		ControlCTrap,
 		Exception,
 		DebuggerError,
-        EvalComplete,
+		EvalComplete,
 		CurrentThreadChanged,
-		CurrentFunctionChanged
+		CurrentFunctionChanged,
+		ExceptionIntercepted
 	}
 }

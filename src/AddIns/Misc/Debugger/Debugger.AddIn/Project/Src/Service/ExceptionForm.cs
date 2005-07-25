@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			// buttonIgnore
 			// 
 			this.buttonIgnore.Anchor = System.Windows.Forms.AnchorStyles.Bottom;
-			this.buttonIgnore.Enabled = false;
+			this.buttonIgnore.Enabled = true;
 			this.buttonIgnore.Location = new System.Drawing.Point(372, 160);
 			this.buttonIgnore.Name = "buttonIgnore";
 			this.buttonIgnore.Size = new System.Drawing.Size(91, 32);

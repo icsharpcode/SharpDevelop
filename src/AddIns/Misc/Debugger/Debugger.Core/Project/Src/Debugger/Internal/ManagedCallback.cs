@@ -410,7 +410,11 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("ExceptionUnwind", pThread);
 			
-			ExitCallback_Continue();
+			if (dwEventType == CorDebugExceptionUnwindCallbackType.DEBUG_EXCEPTION_INTERCEPTED) {
+				ExitCallback_Paused(PausedReason.ExceptionIntercepted);
+			} else {
+				ExitCallback_Continue();
+			}
 		}
 
 		public void FunctionRemapComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFunction pFunction)

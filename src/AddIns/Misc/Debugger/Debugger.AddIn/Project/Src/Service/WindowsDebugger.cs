@@ -362,7 +362,8 @@ namespace ICSharpCode.SharpDevelop.Services
 						e.ResumeDebuggingAfterEvent();
 						return;
 					case ExceptionForm.Result.Ignore:
-						throw new NotImplementedException();
+						debugger.CurrentThread.InterceptCurrentException();
+						return;
 				}
 			} else {
 				JumpToCurrentLine();
