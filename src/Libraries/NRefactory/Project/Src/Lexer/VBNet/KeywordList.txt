@@ -223,6 +223,7 @@ ConcatStringAssign = "&="
 "Narrowing"
 "Widening"
 "Partial"
+"Custom"
 
 #Sets
 Null("Nothing")

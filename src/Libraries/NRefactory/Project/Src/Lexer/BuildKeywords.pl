@@ -10,7 +10,7 @@ $ATGTokensSection = "ATGTokensSection.gen";
 #read infile
 print "\n";
 print "Reading keyword definition from '$keyword_file'.\n";
-open(DAT, $keyword_file) || die("Could not open file!");
+open(DAT, $keyword_file) || die("Could not open file '$keyword_file': $!");
 @raw_data=<DAT>;
 close(DAT);
 print "done.\n";

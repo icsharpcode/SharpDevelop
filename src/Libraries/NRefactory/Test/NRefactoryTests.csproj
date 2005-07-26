@@ -8,7 +8,6 @@
     <RootNamespace>ICSharpCode.NRefactory.Tests</RootNamespace>
     <AssemblyName>ICSharpCode.NRefactory.Tests</AssemblyName>
     <OutputTarget>Library</OutputTarget>
-    <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
@@ -16,11 +15,9 @@
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
-    <Optimize>False</Optimize>
-    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG</DefineConstants>
-    <OutputPath>..\..\..\..\bin\</OutputPath>
+    <OutputPath>C:\corsavy\trunk\SharpDevelop\bin</OutputPath>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
@@ -34,7 +31,14 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Drawing" />
-    <Reference Include="nunit.framework, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
+    <Reference Include="nunit.framework">
+      <HintPath>..\..\..\..\bin\nunit.framework.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="nunit.core">
+      <HintPath>..\..\..\..\bin\nunit.core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -127,6 +131,7 @@
     <Compile Include="Output\CodeDOM\InvocationExpressionTest.cs" />
     <Compile Include="Parser\Expressions\TypeReferenceExpressionTests.cs" />
     <Compile Include="Parser\Expressions\GlobalReferenceExpressionTests.cs" />
+    <Compile Include="Parser\TypeLevel\CustomEventTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\NRefactory.csproj">

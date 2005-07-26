@@ -70,13 +70,13 @@ namespace ICSharpCode.NRefactory
 //    
 //}
 //";
-//			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(program));
-//			parser.Parse();
-//			if (parser.Errors.ErrorOutput.Length > 0) {
-//				Console.WriteLine(parser.Errors.ErrorOutput);
-//				Console.ReadLine();
-//			}
-			
+			IParser parser = ParserFactory.CreateParser(@"c:\Dokumente und Einstellungen\Markus\Desktop\CustomEvents.vb");
+			parser.Parse();
+			if (parser.Errors.ErrorOutput.Length > 0) {
+				Console.WriteLine(parser.Errors.ErrorOutput);
+				Console.ReadLine();
+			}
+			/*
 			string searchPath = @"C:\Programme\Microsoft.NET\SDK\v1.1"; //Path.GetFullPath(Application.StartupPath + @"\..\..\..\..");
 			ArrayList files = SearchDirectory(searchPath, "*.cs", true);
 			ArrayList defs = new ArrayList();
@@ -87,7 +87,8 @@ namespace ICSharpCode.NRefactory
 				IParser parser = ParserFactory.CreateParser(str);
 				parser.Parse();
 			}
-		}
+			*/
+		}	
 	}
 }
 
@@ -106,6 +107,5 @@ namespace ICSharpCode.NRefactory
   Properties with Mixed Access Levels
   Operator Overloading 
   Generic Types 
-  Custom Events 
 
  */
