@@ -394,6 +394,7 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		public void JumpToCurrentLine()
 		{
+			WorkbenchSingleton.MainForm.Activate();
 			SourcecodeSegment nextStatement = debugger.NextStatement;
 			if (nextStatement == null) {
 				DebuggerService.RemoveCurrentLineMarker();

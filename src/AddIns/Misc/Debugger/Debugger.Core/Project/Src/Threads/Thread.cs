@@ -252,7 +252,7 @@ namespace DebuggerLibrary
 		{
 			CurrentFunction = function;
 			
-			debugger.FakePause(PausedReason.CurrentFunctionChanged);
+			debugger.FakePause(PausedReason.CurrentFunctionChanged, true);
 		}
 
 		public Function LastFunctionWithLoadedSymbols {

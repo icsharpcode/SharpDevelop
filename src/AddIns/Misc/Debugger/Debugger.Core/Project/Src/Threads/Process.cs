@@ -49,7 +49,7 @@ namespace DebuggerLibrary
 		{
 			CurrentThread = thread;
 			
-			debugger.FakePause(PausedReason.CurrentThreadChanged);
+			debugger.FakePause(PausedReason.CurrentThreadChanged, false);
 		}
 
 		public IList<Thread> Threads {

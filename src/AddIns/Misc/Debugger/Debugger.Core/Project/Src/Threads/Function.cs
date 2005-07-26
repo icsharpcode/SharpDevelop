@@ -335,7 +335,7 @@ namespace DebuggerLibrary
 							corILFrame.CanSetIP((uint)ilOffset);
 						} else {
 							corILFrame.SetIP((uint)ilOffset);
-							debugger.FakePause(PausedReason.SetIP);
+							debugger.FakePause(PausedReason.SetIP, false);
 						}
 					} catch {
 						return null;

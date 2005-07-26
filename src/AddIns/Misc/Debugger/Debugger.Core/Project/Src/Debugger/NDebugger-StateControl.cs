@@ -121,13 +121,13 @@ namespace DebuggerLibrary
 			OnDebuggingPaused(reason);
 		}
 		
-		internal void FakePause(PausedReason reason)
+		internal void FakePause(PausedReason reason, bool keepCurrentFunction)
 		{
 			Process process = CurrentProcess;
 			Thread thread = CurrentThread;
 			Function function = CurrentFunction;
 			Resume();
-			Pause(reason, process, thread, function);
+			Pause(reason, process, thread, keepCurrentFunction ? function : null);
 		}
 		
 		internal void Resume()
