@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		
 		#region VB.NET
 		[Test]
-		public void VBNetContinueStatementTest()
+		public void VBNetCustomEventsStatementTest()
 		{
 			string code = @" Public Custom Event TestEvent As EventHandler
         AddHandler(ByVal value As EventHandler)
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
             End If
         End RaiseEvent
     End Event";
-			CustomEventDeclaration customEventDecl = (CustomEventDeclaration)ParseUtilVBNet.ParseTypeMember(code, typeof(ContinueStatement));
+			CustomEventDeclaration customEventDecl = (CustomEventDeclaration)ParseUtilVBNet.ParseTypeMember(code, typeof(CustomEventDeclaration));
 			Assert.IsNotNull(customEventDecl);
 			Assert.AreEqual("TestEvent", customEventDecl.Name);
 		}
