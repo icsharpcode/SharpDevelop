@@ -115,8 +115,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (debuggerCore.IsPaused) {
 				((VariableListItem)e.Item).PrepareForExpansion();
 			} else {
-				// TODO: Some message telling user that he can not explore variable since
-				//       the debugger has been resumed. 
+				MessageBox.Show("You can not explore variables while the debuggee is running.");
 				e.Cancel = true;
 			}
 		}

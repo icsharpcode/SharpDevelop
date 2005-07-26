@@ -40,15 +40,16 @@ namespace DebuggerLibrary
 			get {
 				return currentThread;
 			}
-			set	{
+			internal set {
 				currentThread = value;
-				debugger.FakePause(PausedReason.CurrentThreadChanged);
 			}
 		}
 		
-		internal void SetCurrentThread(Thread thread)
+		public void SetCurrentThread(Thread thread)
 		{
-			currentThread = thread;
+			CurrentThread = thread;
+			
+			debugger.FakePause(PausedReason.CurrentThreadChanged);
 		}
 
 		public IList<Thread> Threads {
@@ -123,7 +124,7 @@ namespace DebuggerLibrary
             corProcess.Stop(5000); // TODO: Hardcoded value
 
 			isProcessRunning = false;
-			debugger.Pause(PausedReason.Break, this, null);
+			debugger.Pause(PausedReason.Break, this, null, null);
 		}
 
 		public void Continue()

@@ -78,6 +78,7 @@ namespace DebuggerLibrary
 		{
 			handlingCallback = true;
 			debugger.TraceMessage("Callback: " + name);
+			debugger.AssertRunning();
 		}
 		
 		void ExitCallback_Continue()
@@ -97,7 +98,7 @@ namespace DebuggerLibrary
 
 			handlingCallback = false;
 
-			debugger.Pause(reason, callingProcess, callingThread);
+			debugger.Pause(reason, callingProcess, callingThread, null);
 			
 			callingThread = null;
 			callingProcess = null;
@@ -337,7 +338,7 @@ namespace DebuggerLibrary
 			debugger.RemoveThread(thread);
 
 			if (thread.Process.CurrentThread == thread) {
-				thread.Process.SetCurrentThread(null);
+				thread.Process.CurrentThread = null;
 			}
 
 			ExitCallback_Continue();
@@ -357,10 +358,6 @@ namespace DebuggerLibrary
 			Process process = debugger.GetProcess(pProcess);
 
 			debugger.RemoveProcess(process);
-
-			if (debugger.CurrentProcess == process) {
-				debugger.CurrentProcess = null;
-			}
 
 			if (debugger.Processes.Count == 0) {
 				debugger.ResetEnvironment();

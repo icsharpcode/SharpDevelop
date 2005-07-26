@@ -155,17 +155,29 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		public void StepInto()
 		{
-			debugger.StepInto();
+			if (debugger.CurrentFunction == null) {
+				MessageBox.Show("You can not step because there is no function selected to be stepped","Step into");
+			} else {
+				debugger.StepInto();
+			}
 		}
 		
 		public void StepOver()
 		{
-			debugger.StepOver();
+			if (debugger.CurrentFunction == null) {
+				MessageBox.Show("You can not step because there is no function selected to be stepped","Step over");
+			} else {
+				debugger.StepOver();
+			}
 		}
 		
 		public void StepOut()
 		{
-			debugger.StepOut();
+			if (debugger.CurrentFunction == null) {
+				MessageBox.Show("You can not step because there is no function selected to be stepped","Step out");
+			} else {
+				debugger.StepOut();
+			}
 		}
 
 		public bool SupportsStepping {

@@ -64,9 +64,6 @@ namespace DebuggerLibrary
 					return currentProcess;
 				}
 			}
-			set {
-				currentProcess = value;
-			}
 		}
 		
 		public Thread CurrentThread {
@@ -74,11 +71,6 @@ namespace DebuggerLibrary
 				if (IsRunning) return null;
 				if (CurrentProcess == null) return null;
 				return CurrentProcess.CurrentThread;
-			}
-			set {
-				if (CurrentProcess != null) {
-					CurrentProcess.CurrentThread = value;
-				}
 			}
 		}
 		
@@ -89,11 +81,6 @@ namespace DebuggerLibrary
 					return null;
 				} else {
 					return CurrentThread.CurrentFunction;
-				}
-			}
-			set {
-				if (CurrentThread != null) {
-					CurrentThread.CurrentFunction = value;
 				}
 			}
 		}
@@ -124,13 +111,13 @@ namespace DebuggerLibrary
 			}
 		}
 		
-		internal void Pause(PausedReason reason, Process process, Thread thread)
+		internal void Pause(PausedReason reason, Process process, Thread thread, Function function)
 		{
 			if (IsPaused) {
 				throw new DebuggerException("Already paused");
 			}
 			isPaused = true;
-			SetUpEnvironment(process, thread);
+			SetUpEnvironment(process, thread, function);
 			OnDebuggingPaused(reason);
 		}
 		
@@ -138,8 +125,9 @@ namespace DebuggerLibrary
 		{
 			Process process = CurrentProcess;
 			Thread thread = CurrentThread;
+			Function function = CurrentFunction;
 			Resume();
-			Pause(reason, process, thread);
+			Pause(reason, process, thread, function);
 		}
 		
 		internal void Resume()
@@ -151,7 +139,7 @@ namespace DebuggerLibrary
 			isPaused = false;
 		}
 		
-		void SetUpEnvironment(Process process, Thread thread)
+		void SetUpEnvironment(Process process, Thread thread, Function function)
 		{
 			CleanEnvironment();
 				
@@ -166,18 +154,22 @@ namespace DebuggerLibrary
 			// Set the CurrentThread
 			if (process != null) {
 				if (thread != null) {
-					process.SetCurrentThread(thread);
+					process.CurrentThread = thread;
 				} else {
 					IList<Thread> threads = process.Threads;
 					if (threads.Count > 0) {
-						process.SetCurrentThread(threads[0]);
+						process.CurrentThread = threads[0];
 					} else {
-						process.SetCurrentThread(null);
+						process.CurrentThread = null;
 					}
 				}
 			}
 			
-			// CurrentFunctions in threads are fetched on request
+			// Set the CurrentFunction
+			// Other CurrentFunctions in threads are fetched on request
+			if (thread != null && function != null) {
+				thread.CurrentFunction = function;
+			}
 		}
 		
 		void CleanEnvironment()
@@ -186,12 +178,12 @@ namespace DebuggerLibrary
 			// they are disponsed between callbacks and
 			// they need to be regenerated
 			foreach(Thread t in Threads) {
-				t.ClearCurrentFunction();
+				t.CurrentFunction = null;
 			}
 			
 			// Clear current thread
 			if (currentProcess != null) {
-				currentProcess.SetCurrentThread(null);
+				currentProcess.CurrentThread = null;
 			}
 			// Clear current process
 			currentProcess = null;

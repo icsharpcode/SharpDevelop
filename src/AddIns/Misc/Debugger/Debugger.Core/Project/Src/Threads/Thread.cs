@@ -239,20 +239,20 @@ namespace DebuggerLibrary
 					return null;
 				}
 			}
-			set {
+			internal set {
 				if (value != null && !value.HasSymbols) {
 					throw new DebuggerException("CurrentFunction must have symbols");
 				}
 				
 				currentFunction = value;
-				
-				debugger.FakePause(PausedReason.CurrentFunctionChanged);
 			}
 		}
 		
-		internal void ClearCurrentFunction()
+		public void SetCurrentFunction(Function function)
 		{
-			currentFunction = null;
+			CurrentFunction = function;
+			
+			debugger.FakePause(PausedReason.CurrentFunctionChanged);
 		}
 
 		public Function LastFunctionWithLoadedSymbols {

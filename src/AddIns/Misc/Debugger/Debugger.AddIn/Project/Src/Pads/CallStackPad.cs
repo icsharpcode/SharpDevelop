@@ -89,8 +89,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (debuggerCore.IsPaused) {
 				Function f = (Function)(callStackList.SelectedItems[0].Tag);
 				if (f.HasSymbols) {
-					debuggerCore.CurrentFunction = f;
+					if (debuggerCore.CurrentThread != null) {
+						debuggerCore.CurrentThread.SetCurrentFunction(f);
+					}
+				} else {
+					MessageBox.Show("You can not switch to function without symbols", "Function switch");
 				}
+			} else {
+				MessageBox.Show("You can not switch functions while the debugger is running.", "Function switch");
 			}
 		}
 
@@ -112,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				foreach (Function f in debuggerCore.CurrentThread.Callstack) {
 					ListViewItem item = new ListViewItem(new string[] { f.Name, "" });
 					item.Tag = f;
-					item.ForeColor = f.Module.SymbolsLoaded ? Color.Black : Color.Gray;
+					item.ForeColor = f.HasSymbols ? Color.Black : Color.Gray;
 					callStackList.Items.Add(item);
 				}
 			}
