@@ -1461,7 +1461,11 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">
-		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Commands.ClassMemberMenuBuilder" />
+		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassMemberMenuBuilder" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
+		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassBookmarkMenuBuilder" />
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">

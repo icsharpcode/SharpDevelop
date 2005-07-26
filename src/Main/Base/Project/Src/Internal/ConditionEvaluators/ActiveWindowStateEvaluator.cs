@@ -19,10 +19,7 @@ namespace ICSharpCode.Core
 		ViewOnly = 4
 	}
 	
-	/// <summary>
-	/// Description of WindowStateCondition.
-	/// </summary>
-	public class ActiveWindowStateAuswerter : IAuswerter
+	public class ActiveWindowStateConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
 		{

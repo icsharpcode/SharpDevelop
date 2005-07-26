@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Core
 {
-	public class IsProcessRunningAuswerter : IAuswerter
+	public class IsProcessRunningConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
 		{

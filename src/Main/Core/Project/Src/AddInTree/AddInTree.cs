@@ -23,22 +23,22 @@ namespace ICSharpCode.Core
 		static List<AddIn>   addIns   = new List<AddIn>();
 		static AddInTreeNode rootNode = new AddInTreeNode();
 		
-		static Dictionary<string, IErbauer> erbauer = new Dictionary<string, IErbauer>();
-		static Dictionary<string, IAuswerter> auswerter = new Dictionary<string, IAuswerter>();
+		static Dictionary<string, IDoozer> doozers = new Dictionary<string, IDoozer>();
+		static Dictionary<string, IConditionEvaluator> conditionEvaluators = new Dictionary<string, IConditionEvaluator>();
 		
 		static AddInTree()
 		{
 			defaultCoreDirectory = FileUtility.Combine(FileUtility.SharpDevelopRootPath, "AddIns");
 			
-			erbauer.Add("Class", new ClassErbauer());
-			erbauer.Add("FileFilter", new FileFilterErbauer());
-			erbauer.Add("Icon", new IconErbauer());
-			erbauer.Add("MenuItem", new MenuItemErbauer());
-			erbauer.Add("ToolbarItem", new ToolbarItemErbauer());
-			erbauer.Add("Include", new IncludeErbauer());
+			doozers.Add("Class", new ClassDoozer());
+			doozers.Add("FileFilter", new FileFilterDoozer());
+			doozers.Add("Icon", new IconDoozer());
+			doozers.Add("MenuItem", new MenuItemDoozer());
+			doozers.Add("ToolbarItem", new ToolbarItemDoozer());
+			doozers.Add("Include", new IncludeDoozer());
 			
-			auswerter.Add("Compare", new CompareAuswerter());
-			auswerter.Add("Ownerstate", new OwnerStateAuswerter());
+			conditionEvaluators.Add("Compare", new CompareConditionEvaluator());
+			conditionEvaluators.Add("Ownerstate", new OwnerStateConditionEvaluator());
 		}
 		
 		public static List<AddIn> AddIns {
@@ -47,15 +47,15 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static Dictionary<string, IErbauer> Erbauer {
+		public static Dictionary<string, IDoozer> Doozers {
 			get {
-				return erbauer;
+				return doozers;
 			}
 		}
 		
-		public static Dictionary<string, IAuswerter> Auswerter {
+		public static Dictionary<string, IConditionEvaluator> ConditionEvaluators {
 			get {
-				return auswerter;
+				return conditionEvaluators;
 			}
 		}
 		

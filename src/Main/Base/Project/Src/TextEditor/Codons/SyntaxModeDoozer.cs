@@ -42,11 +42,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 		}
 	}
 	
-//	[CodonNameAttribute("SyntaxMode")]
-	public class SyntaxModeErbauer : IErbauer
+	public class SyntaxModeDoozer : IDoozer
 	{
 		/// <summary>
-		/// Gets if the erbauer handles codon conditions on its own.
+		/// Gets if the doozer handles codon conditions on its own.
 		/// If this property return false, the item is excluded when the condition is not met.
 		/// </summary>
 		public bool HandleConditions {

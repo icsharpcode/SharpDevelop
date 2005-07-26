@@ -120,16 +120,16 @@ namespace ICSharpCode.Core
 		public object BuildItem(object owner, ArrayList subItems)
 		{
 			try {
-				IErbauer erbauer = AddInTree.Erbauer[Name];
-				if (!erbauer.HandleConditions && conditions.Length > 0) {
+				IDoozer doozer = AddInTree.Doozers[Name];
+				if (!doozer.HandleConditions && conditions.Length > 0) {
 					ConditionFailedAction action = GetFailedAction(owner);
 					if (action != ConditionFailedAction.Nothing) {
 						return null;
 					}
 				}
-				return erbauer.BuildItem(owner, this, subItems);
+				return doozer.BuildItem(owner, this, subItems);
 			} catch (KeyNotFoundException) {
-				throw new CoreException("Erbauer " + Name + " not found!");
+				throw new CoreException("Doozer " + Name + " not found!");
 			}
 		}
 		

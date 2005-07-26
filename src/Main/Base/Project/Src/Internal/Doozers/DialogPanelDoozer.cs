@@ -11,10 +11,10 @@ using System.Reflection;
 
 namespace ICSharpCode.Core
 {
-	public class DialogPanelErbauer : IErbauer
+	public class DialogPanelDoozer : IDoozer
 	{
 		/// <summary>
-		/// Gets if the erbauer handles codon conditions on its own.
+		/// Gets if the doozer handles codon conditions on its own.
 		/// If this property return false, the item is excluded when the condition is not met.
 		/// </summary>
 		public bool HandleConditions {

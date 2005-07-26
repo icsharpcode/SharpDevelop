@@ -57,15 +57,15 @@ namespace SearchAndReplace
 		
 		static void FinishSearchInFiles(List<SearchResult> results)
 		{
-			ShowSearchResults(results);
+			ShowSearchResults(SearchOptions.FindPattern, results);
 		}
 		
-		public static void ShowSearchResults(List<SearchResult> results)
+		public static void ShowSearchResults(string pattern, List<SearchResult> results)
 		{
 			PadDescriptor searchResultPanel = WorkbenchSingleton.Workbench.GetPad(typeof(SearchResultPanel));
 			if (searchResultPanel != null) {
 				searchResultPanel.BringPadToFront();
-				SearchResultPanel.Instance.ShowSearchResults(SearchOptions.FindPattern, results);
+				SearchResultPanel.Instance.ShowSearchResults(pattern, results);
 			} else {
 				MessageService.ShowError("SearchResultPanel can't be created.");
 			}

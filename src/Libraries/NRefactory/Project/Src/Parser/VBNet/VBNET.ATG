@@ -597,13 +597,13 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 	["Partial" (. m.Add(Modifier.Partial); .)]
 	"Class"
 					(. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
-						
+						newType.StartLocation = t.Location;
 						compilationUnit.AddChild(newType);
 						compilationUnit.BlockStart(newType);
 						
 						newType.Type       = Types.Class;
 					.)
-	Identifier			 (. newType.Name = t.val; newType.StartLocation = t.EndLocation; .) 
+	Identifier			 (. newType.Name = t.val; .) 
 	TypeParameterList<newType.Templates>
 	EndOfStmt
 	[ ClassBaseType<out typeRef> (. newType.BaseTypes.Add(typeRef); .) ]
@@ -621,11 +621,10 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			newType.StartLocation = t.Location;
 			newType.Type = Types.Module;
 		.)
-	Identifier			 (. newType.Name = t.val; newType.StartLocation = t.EndLocation;  .) 
+	Identifier			 (. newType.Name = t.val; .)
 	EOL
 	ModuleBody<newType>
 	(.
-		newType.EndLocation = t.Location;
 		compilationUnit.BlockEnd();
 	.)
 	| "Structure"
@@ -637,12 +636,11 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			newType.StartLocation = t.Location;
 			newType.Type = Types.Struct;
 		.)
-	Identifier			 (. newType.Name = t.val; newType.StartLocation = t.EndLocation; .) 
+	Identifier			 (. newType.Name = t.val; .) 
 	TypeParameterList<newType.Templates>
 	EOL { TypeImplementsClause<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces);.) }
 	StructureBody<newType>
 	(.
-		newType.EndLocation = t.Location;
 		compilationUnit.BlockEnd();
 	.)
 	| /* 7.4 */
@@ -650,18 +648,18 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 		(.
 			m.Check(Modifier.VBEnums);
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
+			newType.StartLocation = t.Location;
 			
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
 			
 			newType.Type = Types.Enum;
 		.)
-	Identifier			 (. newType.Name = t.val; newType.StartLocation = t.EndLocation; .) 
+	Identifier			 (. newType.Name = t.val; .) 
 	[ "As" PrimitiveTypeName<out name> (. newType.BaseTypes.Add(new TypeReference(name)); .) ]
 	EOL
 	EnumBody<newType>
 	(.
-		newType.EndLocation = t.Location;
 		compilationUnit.BlockEnd();
 	.)
 	| /* 7.8 */
@@ -669,16 +667,16 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 		(.
 			m.Check(Modifier.VBInterfacs);
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
+			newType.StartLocation = t.Location;
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
 			newType.Type = Types.Interface;
 		.)
-	Identifier			 (. newType.Name = t.val; newType.StartLocation = t.EndLocation; .) 
+	Identifier			 (. newType.Name = t.val; .) 
 	TypeParameterList<newType.Templates>
 	EndOfStmt { InterfaceBase<out baseInterfaces> (. newType.BaseTypes.AddRange(baseInterfaces); .) }
 	InterfaceBody<newType>
 	(.
-		newType.EndLocation = t.Location;
 		compilationUnit.BlockEnd();
 	.)
 	| /* 7.10 */

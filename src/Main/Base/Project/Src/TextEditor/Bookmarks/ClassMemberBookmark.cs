@@ -50,6 +50,36 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		}
 	}
 	
+	public class ClassBookmark : Bookmark
+	{
+		IClass @class;
+
+		public IClass Class {
+			get {
+				return @class;
+			}
+			set {
+				@class = value;
+			}
+		}
+		
+		public ClassBookmark(IDocument document, IClass @class)
+			: base(document, @class.Region.BeginLine - 1)
+		{
+			this.@class = @class;
+		}
+		
+		public override void Click(Control parent, MouseEventArgs e)
+		{
+			MenuService.ShowContextMenu(this, "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu", parent, e.X, e.Y);
+		}
+		
+		public override void Draw(IconBarMargin margin, Graphics g, Point p)
+		{
+			g.DrawImageUnscaled(ClassBrowserIconService.ImageList.Images[ClassBrowserIconService.GetIcon(@class)], p);
+		}
+	}
+	
 	public class PropertyBookmark : ClassMemberBookmark
 	{
 		IProperty property;

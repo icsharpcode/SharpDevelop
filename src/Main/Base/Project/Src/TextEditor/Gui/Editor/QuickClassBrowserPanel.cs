@@ -281,9 +281,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				if (currentCompilationUnit != null) {
 					//// Alex: when changing between files in different compilation units whole process must be restarted
 					//// happens usually when files are opened from different project(s)
-					if (classComboBox.Items == null || classComboBox.Items.Count == 0) {
-						FillClassComboBox(false);
-					}
 					for (int i = 0; i < classComboBox.Items.Count; ++i) {
 						if (((ComboBoxItem)classComboBox.Items[i]).IsInside(textAreaControl.ActiveTextAreaControl.Caret.Line)) {
 							bool innerClassContainsCaret = false;
@@ -391,10 +388,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				membersComboBox.Items.AddRange(items.ToArray());
 				membersComboBox.EndUpdate();
 				UpdateMembersComboBox();
-			} else {
-				if (membersComboBox.Items.Count > 0) {
-					membersComboBox.Items.Clear();
-				}
 			}
 		}
 		
@@ -408,17 +401,20 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void FillClassComboBox(bool isUpdateRequired)
 		{
+			Console.WriteLine("FILL CLASS");
 			ArrayList items = new ArrayList();
 			AddClasses(items, currentCompilationUnit.Classes);
 			if (isUpdateRequired) {
 				classComboBox.BeginUpdate();
 			}
 			classComboBox.Items.Clear();
+			membersComboBox.Items.Clear();
 			classComboBox.Items.AddRange(items.ToArray());
 			if (items.Count == 1) {
 				try {
 					autoselect = false;
 					classComboBox.SelectedIndex = 0;
+					FillMembersComboBox();
 				} finally {
 					autoselect = true;
 				}
@@ -487,9 +483,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		void ComboBoxSelectedIndexChanged(object sender, System.EventArgs e)
 		{
 			ComboBox comboBox = (ComboBox)sender;
-			if (comboBox.SelectedIndex < 0) {
-				membersComboBox.Items.Clear();
-			} else if (autoselect) {
+			if (autoselect) {
 				ComboBoxItem item = (ComboBoxItem)comboBox.Items[comboBox.SelectedIndex];
 				if (item.IsInCurrentPart) {
 					textAreaControl.ActiveTextAreaControl.Caret.Position = new Point(item.Column, item.Line);

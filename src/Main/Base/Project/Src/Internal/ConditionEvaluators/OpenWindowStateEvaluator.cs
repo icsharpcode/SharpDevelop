@@ -15,7 +15,7 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Description of WindowStateCondition.
 	/// </summary>
-	public class OpenWindowStateAuswerter : IAuswerter
+	public class OpenWindowStateConditionEvaluator : IConditionEvaluator
 	{
 		WindowState windowState = WindowState.None;
 		WindowState nowindowState = WindowState.None;

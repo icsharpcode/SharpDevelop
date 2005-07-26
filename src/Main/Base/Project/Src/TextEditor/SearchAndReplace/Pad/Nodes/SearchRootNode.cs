@@ -21,6 +21,7 @@ namespace SearchAndReplace
 	{
 		List<SearchResult> results;
 		string             pattern;
+		int fileCount;
 		
 		public List<SearchResult> Results { 
 			get {
@@ -28,26 +29,27 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public SearchRootNode(string pattern, List<SearchResult> results)
+		public SearchRootNode(string pattern, List<SearchResult> results, int fileCount)
 		{
 			drawDefault = false;
 			this.results = results;
 			this.pattern = pattern;
+			this.fileCount = fileCount;
 			Text = GetText();
 		}
 		string GetText()
 		{
 			if (results.Count == 1) {
-				if (Nodes.Count == 1) {
+				if (fileCount == 1) {
 					return "Occurrences of '" + pattern + "' (1 occurence in 1 file)";
 				} else {
-					return "Occurrences of '" + pattern + "' (1 occurence in " + Nodes.Count + " files)";
+					return "Occurrences of '" + pattern + "' (1 occurence in " + fileCount + " files)";
 				}
 			} else {
-				if (Nodes.Count == 1) {
+				if (fileCount == 1) {
 					return "Occurrences of '" + pattern + "' (" + results.Count + " occurences in 1 file)";
 				} else {
-					return "Occurrences of '" + pattern + "' (" + results.Count + " occurences in " + Nodes.Count + " files)";
+					return "Occurrences of '" + pattern + "' (" + results.Count + " occurences in " + fileCount + " files)";
 				}
 			}
 		}

@@ -13,10 +13,10 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Includes the content of one path into another path.
 	/// </summary>
-	public class IncludeErbauer : IErbauer
+	public class IncludeDoozer : IDoozer
 	{
 		/// <summary>
-		/// Gets if the erbauer handles codon conditions on its own.
+		/// Gets if the doozer handles codon conditions on its own.
 		/// If this property return false, the item is excluded when the condition is not met.
 		/// </summary>
 		public bool HandleConditions {
@@ -36,7 +36,7 @@ namespace ICSharpCode.Core
 				// include path (=multiple items)
 				return new IncludeReturnItem(caller, path);
 			} else {
-				Console.WriteLine("<Include> requires the attribute 'item' (to include one item) or the attribute 'path' (to include multiple items)");
+				MessageService.ShowMessage("<Include> requires the attribute 'item' (to include one item) or the attribute 'path' (to include multiple items)");
 				return null;
 			}
 		}

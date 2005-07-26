@@ -10,9 +10,9 @@ using System;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Description of Erbauer.
+	/// Interface for classes that can evaluate conditions defined in the addin tree.
 	/// </summary>
-	public interface IAuswerter
+	public interface IConditionEvaluator
 	{
 		bool IsValid(object caller, Condition condition);
 	}

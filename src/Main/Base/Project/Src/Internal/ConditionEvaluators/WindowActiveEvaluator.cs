@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Core
 {
-	public class WindowActiveAuswerter : IAuswerter
+	public class WindowActiveConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
 		{

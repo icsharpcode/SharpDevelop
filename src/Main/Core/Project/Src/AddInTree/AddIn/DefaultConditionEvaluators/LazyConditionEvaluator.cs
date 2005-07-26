@@ -11,9 +11,9 @@ using System.Collections;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Description of ClassErbauer.
+	/// Condition evaluator that lazy-loads another condition evaluator and executes it.
 	/// </summary>
-	public class LazyLoadAuswerter : IAuswerter
+	public class LazyConditionEvaluator : IConditionEvaluator
 	{
 		AddIn addIn;
 		string name;
@@ -31,7 +31,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public LazyLoadAuswerter(AddIn addIn, Properties properties)
+		public LazyConditionEvaluator(AddIn addIn, Properties properties)
 		{
 			this.addIn      = addIn;
 			this.name       = properties["name"];
@@ -40,14 +40,14 @@ namespace ICSharpCode.Core
 		
 		public bool IsValid(object caller, Condition condition)
 		{
-			IAuswerter auswerter = (IAuswerter)addIn.CreateObject(className);
-			AddInTree.Auswerter[name] = auswerter;
-			return auswerter.IsValid(caller, condition);
+			IConditionEvaluator evaluator = (IConditionEvaluator)addIn.CreateObject(className);
+			AddInTree.ConditionEvaluators[name] = evaluator;
+			return evaluator.IsValid(caller, condition);
 		}
 		
 		public override string ToString()
 		{
-			return String.Format("[LazyLoadAuswerter: className = {0}, name = {1}]",
+			return String.Format("[LazyLoadConditionEvaluator: className = {0}, name = {1}]",
 			                     className,
 			                     name);
 		}

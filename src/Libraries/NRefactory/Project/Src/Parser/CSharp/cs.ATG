@@ -713,6 +713,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	                                  templates = newType.Templates;
 	                                  compilationUnit.AddChild(newType);
 	                                  compilationUnit.BlockStart(newType);
+	                                  newType.StartLocation = t.Location;
 	                                  
 	                                  newType.Type = Types.Class;
 	                                .)
@@ -721,7 +722,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	/* .NET 2.0 */
 	[ TypeParameterList<templates> ]
 	
-	[ ClassBase<out names>          (. newType.BaseTypes = names; .) ] (. newType.StartLocation = t.EndLocation; .)
+	[ ClassBase<out names>          (. newType.BaseTypes = names; .) ]
 	
 	/* .NET 2.0 */
 	{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
@@ -733,6 +734,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	| /*--- struct declaration: */  (. m.Check(Modifier.StructsInterfacesEnumsDelegates); .)
 	( "struct"                      (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 	                                   templates = newType.Templates;
+	                                   newType.StartLocation = t.Location;
 	                                   compilationUnit.AddChild(newType);
 	                                   compilationUnit.BlockStart(newType);
 	                                   newType.Type = Types.Struct; 
@@ -742,7 +744,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	/* .NET 2.0 */
 	[ TypeParameterList<templates> ]
 	
-	[ StructInterfaces<out names>    (. newType.BaseTypes = names; .) ] (. newType.StartLocation = t.EndLocation; .)
+	[ StructInterfaces<out names>    (. newType.BaseTypes = names; .) ]
 	
 	/* .NET 2.0 */
 	{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
@@ -757,6 +759,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	                                    templates = newType.Templates;
 	                                    compilationUnit.AddChild(newType);
 	                                    compilationUnit.BlockStart(newType);
+	                                    newType.StartLocation = t.Location;
 	                                    newType.Type = Types.Interface;
 	                                  .)
 	ident                            (. newType.Name = t.val; .)
@@ -764,7 +767,7 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	/* .NET 2.0 */
 	[ TypeParameterList<templates> ]
 	
-	[ InterfaceBase<out names>       (. newType.BaseTypes = names; .) ] (. newType.StartLocation = t.EndLocation; .)
+	[ InterfaceBase<out names>       (. newType.BaseTypes = names; .) ]
 	
 	/* .NET 2.0 */
 	{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
@@ -777,11 +780,12 @@ TypeDecl<Modifiers m, List<AttributeSection> attributes>
 	"enum"                           (. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 	                                    compilationUnit.AddChild(newType);
 	                                    compilationUnit.BlockStart(newType);
+	                                    newType.StartLocation = t.Location;
 	                                    newType.Type = Types.Enum;
 	                                  .)
 	ident                            (. newType.Name = t.val; .)
 	[ ":" IntegralType<out name>     (. newType.BaseTypes.Add(new TypeReference(name)); .)
-	]                                (. newType.StartLocation = t.EndLocation; .)
+	]
 	EnumBody 
 	[ ";" ]                          (. newType.EndLocation = t.Location; 
 	                                    compilationUnit.BlockEnd();

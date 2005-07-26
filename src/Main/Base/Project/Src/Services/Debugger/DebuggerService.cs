@@ -341,9 +341,8 @@ namespace ICSharpCode.Core
 				else
 					b.Append("local variable ");
 				b.Append(ambience.Convert(rr.Field));
-				IDebugger debugger = CurrentDebugger;
-				if (debugger != null) {
-					string currentValue = debugger.GetValueAsString(rr.Field.Name);
+				if (currentDebugger != null) {
+					string currentValue = currentDebugger.GetValueAsString(rr.Field.Name);
 					if (currentValue != null) {
 						b.Append(" = ");
 						b.Append(currentValue);

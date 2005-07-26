@@ -11,9 +11,9 @@ using System.Collections;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Description of ClassErbauer.
+	/// Condition evaluator that compares two strings.
 	/// </summary>
-	public class CompareAuswerter : IAuswerter
+	public class CompareConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
 		{

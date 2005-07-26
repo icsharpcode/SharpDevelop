@@ -78,29 +78,29 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 <AddIn>
 	<Runtime>
 		<Import assembly = '../bin/SharpDevelop.Base.dll'>
-			<Erbauer   name='MyErbauer'   class = 'ICSharpCode.Core.ClassErbauer'/>
-			<Auswerter name='MyCompare' class = 'ICSharpCode.Core.CompareCondition'/>
-			<Erbauer   name='Test'   class = 'ICSharpCode.Core.ClassErbauer2'/>
-			<Auswerter name='Condition2' class = 'Condition2Class'/>
+			<Doozer             name='MyDoozer'   class = 'ICSharpCode.Core.ClassDoozer'/>
+			<ConditionEvaluator name='MyCompare'  class = 'ICSharpCode.Core.CompareCondition'/>
+			<Doozer             name='Test'       class = 'ICSharpCode.Core.ClassDoozer2'/>
+			<ConditionEvaluator name='Condition2' class = 'Condition2Class'/>
 		</Import>
 	</Runtime>
 </AddIn>";
 			AddIn addIn = AddIn.Load(new StringReader(addInText));
 			Assert.AreEqual(1, addIn.Runtimes.Count);
 			Assert.AreEqual(addIn.Runtimes[0].Assembly, "../bin/SharpDevelop.Base.dll");
-			Assert.AreEqual(addIn.Runtimes[0].DefinedErbauer.Count, 2);
-			Assert.AreEqual(addIn.Runtimes[0].DefinedErbauer[0]["name"], "MyErbauer");
-			Assert.AreEqual(addIn.Runtimes[0].DefinedErbauer[0]["class"], "ICSharpCode.Core.ClassErbauer");
+			Assert.AreEqual(addIn.Runtimes[0].DefinedDoozers.Count, 2);
+			Assert.AreEqual(addIn.Runtimes[0].DefinedDoozers[0]["name"], "MyDoozer");
+			Assert.AreEqual(addIn.Runtimes[0].DefinedDoozers[0]["class"], "ICSharpCode.Core.ClassDoozer");
 			
-			Assert.AreEqual(addIn.Runtimes[0].DefinedErbauer[1]["name"], "Test");
-			Assert.AreEqual(addIn.Runtimes[0].DefinedErbauer[1]["class"], "ICSharpCode.Core.ClassErbauer2");
+			Assert.AreEqual(addIn.Runtimes[0].DefinedDoozers[1]["name"], "Test");
+			Assert.AreEqual(addIn.Runtimes[0].DefinedDoozers[1]["class"], "ICSharpCode.Core.ClassDoozer2");
 			
-			Assert.AreEqual(addIn.Runtimes[0].DefinedConditions.Count, 2);
-			Assert.AreEqual(addIn.Runtimes[0].DefinedConditions[0]["name"], "MyCompare");
-			Assert.AreEqual(addIn.Runtimes[0].DefinedConditions[0]["class"], "ICSharpCode.Core.CompareCondition");
+			Assert.AreEqual(addIn.Runtimes[0].DefinedConditionEvaluators.Count, 2);
+			Assert.AreEqual(addIn.Runtimes[0].DefinedConditionEvaluators[0]["name"], "MyCompare");
+			Assert.AreEqual(addIn.Runtimes[0].DefinedConditionEvaluators[0]["class"], "ICSharpCode.Core.CompareCondition");
 			
-			Assert.AreEqual(addIn.Runtimes[0].DefinedConditions[1]["name"], "Condition2");
-			Assert.AreEqual(addIn.Runtimes[0].DefinedConditions[1]["class"], "Condition2Class");
+			Assert.AreEqual(addIn.Runtimes[0].DefinedConditionEvaluators[1]["name"], "Condition2");
+			Assert.AreEqual(addIn.Runtimes[0].DefinedConditionEvaluators[1]["class"], "Condition2Class");
 		}
 		#endregion
 		

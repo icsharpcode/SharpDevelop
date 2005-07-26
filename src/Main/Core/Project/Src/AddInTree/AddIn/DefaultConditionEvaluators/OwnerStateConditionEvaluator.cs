@@ -17,9 +17,10 @@ namespace ICSharpCode.Core
 	}
 	
 	/// <summary>
-	/// Description of ClassErbauer.
+	/// Condition evaluator that compares the state of the caller/owner with a specified value.
+	/// The caller/owner has to implement <see cref="IOwnerState"/>.
 	/// </summary>
-	public class OwnerStateAuswerter : IAuswerter
+	public class OwnerStateConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
 		{

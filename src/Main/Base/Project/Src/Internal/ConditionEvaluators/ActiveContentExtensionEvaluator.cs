@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Core
 {
-	public class ActiveContentExtensionAuswerter : IAuswerter
+	public class ActiveContentExtensionConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
 		{

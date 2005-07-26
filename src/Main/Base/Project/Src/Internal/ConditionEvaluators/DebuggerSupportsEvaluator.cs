@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Core
 {
-	public class DebuggerSupportsAuswerter : IAuswerter
+	public class DebuggerSupportsConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
 		{

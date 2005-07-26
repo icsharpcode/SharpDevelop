@@ -104,7 +104,7 @@ namespace SearchAndReplace
 				folderNodes[result.FileName].Results.Add(result);
 			}
 			
-			SearchRootNode searchRootNode = new SearchRootNode(curPattern, curResults);
+			SearchRootNode searchRootNode = new SearchRootNode(curPattern, curResults, folderNodes.Count);
 			foreach (SearchFolderNode folderNode in folderNodes.Values) {
 				folderNode.SetText();
 				searchRootNode.Nodes.Add(folderNode);
@@ -124,7 +124,7 @@ namespace SearchAndReplace
 				folderNodes[result.FileName].Results.Add(result);
 			}
 			
-			SearchRootNode searchRootNode = new SearchRootNode(curPattern, curResults);
+			SearchRootNode searchRootNode = new SearchRootNode(curPattern, curResults, folderNodes.Count);
 			foreach (SearchFolderNode folderNode in folderNodes.Values) {
 				folderNode.PerformInitialization();
 				foreach (SearchResultNode node in folderNode.Nodes) {

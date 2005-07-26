@@ -58,9 +58,9 @@ namespace ICSharpCode.Core
 		public bool IsValid(object caller)
 		{
 			try {
-				return AddInTree.Auswerter[name].IsValid(caller, this);
+				return AddInTree.ConditionEvaluators[name].IsValid(caller, this);
 			} catch (KeyNotFoundException) {
-				throw new CoreException("Auswerter " + name + " not found!");
+				throw new CoreException("Condition evaluator " + name + " not found!");
 			}
 
 		}

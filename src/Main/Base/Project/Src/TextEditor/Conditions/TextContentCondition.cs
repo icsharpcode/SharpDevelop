@@ -16,7 +16,7 @@ using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Conditions
 {
-	public class TextContentAuswerter : IAuswerter
+	public class TextContentConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
 		{

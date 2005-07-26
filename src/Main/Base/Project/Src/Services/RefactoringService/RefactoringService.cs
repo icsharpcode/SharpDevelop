@@ -19,10 +19,14 @@ namespace ICSharpCode.Core
 	{
 		#region FindDerivedClasses
 		/// <summary>
-		/// Finds all classes deriving directly from baseClass.
+		/// Finds all classes deriving from baseClass.
 		/// </summary>
-		public static List<IClass> FindDerivedClasses(IClass baseClass, IEnumerable<IProjectContent> projectContents)
+		/// <param name="baseClass">The base class.</param>
+		/// <param name="projectContents">The project contents in which derived classes should be searched.</param>
+		/// <param name="directDerivationOnly">If true, gets only the classes that derive directly from <paramref name="baseClass"/>.</param>
+		public static List<IClass> FindDerivedClasses(IClass baseClass, IEnumerable<IProjectContent> projectContents, bool directDerivationOnly)
 		{
+			baseClass = FixClass(baseClass);
 			string baseClassName = baseClass.Name;
 			string baseClassFullName = baseClass.FullyQualifiedName;
 			List<IClass> list = new List<IClass>();
@@ -47,6 +51,16 @@ namespace ICSharpCode.Core
 					}
 				}
 			}
+			if (!directDerivationOnly) {
+				List<IClass> additional = new List<IClass>();
+				foreach (IClass c in list) {
+					additional.AddRange(FindDerivedClasses(c, projectContents, directDerivationOnly));
+				}
+				foreach (IClass c in additional) {
+					if (!list.Contains(c))
+						list.Add(c);
+				}
+			}
 			return list;
 		}
 		#endregion
@@ -57,11 +71,24 @@ namespace ICSharpCode.Core
 		/// </summary>
 		public static List<Reference> FindReferences(IMember member, IProgressMonitor progressMonitor)
 		{
+			return RunFindReferences(member.DeclaringType, member, progressMonitor);
+		}
+		
+		/// <summary>
+		/// Find all references to the specified class.
+		/// </summary>
+		public static List<Reference> FindReferences(IClass @class, IProgressMonitor progressMonitor)
+		{
+			return RunFindReferences(@class, null, progressMonitor);
+		}
+		
+		static List<Reference> RunFindReferences(IClass ownerClass, IMember member, IProgressMonitor progressMonitor)
+		{
 			if (ParserService.LoadSolutionProjectsThreadRunning) {
 				MessageService.ShowMessage("Find references cannot be executed until all files have been parsed.");
 				return null;
 			}
-			IClass ownerClass = member.DeclaringType;
+			ownerClass = FixClass(ownerClass);
 			List<ProjectItem> files = GetPossibleFiles(ownerClass, member);
 			ParseableFileContentEnumerator enumerator = new ParseableFileContentEnumerator(files.ToArray());
 			List<Reference> references = new List<Reference>();
@@ -88,25 +115,28 @@ namespace ICSharpCode.Core
 		static void AddReferences(List<Reference> list, IClass parentClass, IMember member, string fileName, string fileContent)
 		{
 			string lowerFileContent = fileContent.ToLower();
+			string searchedText; // the text that is searched for
 			
-			// The name of the class does not necessarily exist in the file if the name of a
-			// derived class exists.
-			//if (lowerFileContent.IndexOf(parentClass.Name.ToLower()) < 0) return;
-			
-			string lowerMemberName;
-			if (member is IMethod && ((IMethod)member).IsConstructor)
-				lowerMemberName = parentClass.Name.ToLower();
-			else
-				lowerMemberName = member.Name.ToLower();
+			if (member == null) {
+				searchedText = parentClass.Name.ToLower();
+			} else {
+				// When looking for a member, the name of the parent class does not always exist
+				// in the file where the member is accessed.
+				// (examples: derived classes, partial classes)
+				if (member is IMethod && ((IMethod)member).IsConstructor)
+					searchedText = parentClass.Name.ToLower();
+				else
+					searchedText = member.Name.ToLower();
+			}
 			
 			int pos = -1;
 			IExpressionFinder expressionFinder = null;
-			while ((pos = lowerFileContent.IndexOf(lowerMemberName, pos + 1)) >= 0) {
+			while ((pos = lowerFileContent.IndexOf(searchedText, pos + 1)) >= 0) {
 				if (pos > 0 && char.IsLetterOrDigit(fileContent, pos - 1)) {
 					continue; // memberName is not a whole word (a.SomeName cannot reference Name)
 				}
-				if (pos < fileContent.Length - lowerMemberName.Length - 1
-				    && char.IsLetterOrDigit(fileContent, pos + lowerMemberName.Length))
+				if (pos < fileContent.Length - searchedText.Length - 1
+				    && char.IsLetterOrDigit(fileContent, pos + searchedText.Length))
 				{
 					continue; // memberName is not a whole word (a.Name2 cannot reference Name)
 				}
@@ -120,8 +150,23 @@ namespace ICSharpCode.Core
 					// TODO: Optimize by re-using the same resolver if multiple expressions were
 					// found in this file (the resolver should parse all methods at once)
 					ResolveResult rr = ParserService.Resolve(expr, position.Y, position.X, fileName, fileContent);
-					if (IsReferenceToMember(member, rr)) {
-						list.Add(new Reference(fileName, pos, lowerMemberName.Length, expr.Expression, rr));
+					if (member != null) {
+						if (IsReferenceToMember(member, rr)) {
+							list.Add(new Reference(fileName, pos, searchedText.Length, expr.Expression, rr));
+						}
+					} else {
+						MemberResolveResult mrr = rr as MemberResolveResult;
+						if (mrr != null) {
+							if (mrr.ResolvedMember is IMethod && ((IMethod)mrr.ResolvedMember).IsConstructor) {
+								if (mrr.ResolvedMember.DeclaringType.FullyQualifiedName == parentClass.FullyQualifiedName) {
+									list.Add(new Reference(fileName, pos, searchedText.Length, expr.Expression, rr));
+								}
+							}
+						} else {
+							if (rr is TypeResolveResult && rr.ResolvedType.FullyQualifiedName == parentClass.FullyQualifiedName) {
+								list.Add(new Reference(fileName, pos, searchedText.Length, expr.Expression, rr));
+							}
+						}
 					}
 				}
 			}
@@ -142,17 +187,64 @@ namespace ICSharpCode.Core
 			return new Point(column, line);
 		}
 		
-		static List<ProjectItem> GetPossibleFiles(IClass ownerClass, IMember member)
+		/// <summary>
+		/// Gets the compound class if the class was partial.
+		/// </summary>
+		static IClass FixClass(IClass c)
 		{
+			return c.DefaultReturnType.GetUnderlyingClass();
+		}
+		
+		public static List<string> GetFileNames(IClass c)
+		{
+			List<string> list = new List<string>();
+			CompoundClass cc = c as CompoundClass;
+			if (cc != null) {
+				foreach (IClass part in cc.Parts) {
+					string fileName = part.CompilationUnit.FileName;
+					if (fileName != null)
+						list.Add(fileName);
+				}
+			} else {
+				string fileName = c.CompilationUnit.FileName;
+				if (fileName != null)
+					list.Add(fileName);
+			}
+			return list;
+		}
+		
+		/// <summary>
+		/// Gets the list of files that could have a reference to the specified class.
+		/// </summary>
+		static List<ProjectItem> GetPossibleFiles(IClass c)
+		{
+			if (c.DeclaringType != null) {
+				return GetPossibleFiles(c.DeclaringType, c);
+			}
+			List<ProjectItem> resultList = new List<ProjectItem>();
+			GetPossibleFilesInternal(resultList, c.ProjectContent, c.IsInternal);
+			return resultList;
+		}
+		
+		/// <summary>
+		/// Gets the files of files that could have a reference to the <paramref name="member"/>
+		/// int the <paramref name="ownerClass"/>.
+		/// </summary>
+		static List<ProjectItem> GetPossibleFiles(IClass ownerClass, IDecoration member)
+		{
+			if (member == null)
+				return GetPossibleFiles(ownerClass);
 			List<ProjectItem> resultList = new List<ProjectItem>();
 			if (member.IsPrivate) {
-				string fileName = ownerClass.CompilationUnit.FileName;
-				foreach (IProject p in ProjectService.OpenSolution.Projects) {
-					foreach (ProjectItem item in p.Items) {
-						if (item.ItemType == ItemType.Compile) {
-							if (FileUtility.IsEqualFileName(fileName, item.FileName)) {
-								resultList.Add(item);
-								return resultList;
+				List<string> fileNames = GetFileNames(ownerClass);
+				foreach (string fileName in fileNames) {
+					foreach (IProject p in ProjectService.OpenSolution.Projects) {
+						foreach (ProjectItem item in p.Items) {
+							if (item.ItemType == ItemType.Compile) {
+								if (FileUtility.IsEqualFileName(fileName, item.FileName)) {
+									resultList.Add(item);
+									return resultList;
+								}
 							}
 						}
 					}
@@ -163,17 +255,21 @@ namespace ICSharpCode.Core
 				// TODO: Optimize when member is protected
 			}
 			
-			bool internalOnly = member.IsInternal && !member.IsProtected;
-			
+			GetPossibleFilesInternal(resultList, ownerClass.ProjectContent, ownerClass.IsInternal || member.IsInternal && !member.IsProtected);
+			return resultList;
+		}
+		
+		static void GetPossibleFilesInternal(List<ProjectItem> resultList, IProjectContent ownerProjectContent, bool internalOnly)
+		{
 			foreach (IProject p in ProjectService.OpenSolution.Projects) {
 				IProjectContent pc = ParserService.GetProjectContent(p);
 				if (pc == null) continue;
-				if (pc != ownerClass.ProjectContent) {
+				if (pc != ownerProjectContent) {
 					if (internalOnly) {
 						// internal = can be only referenced from same project content
 						continue;
 					}
-					if (!pc.HasReferenceTo(ownerClass.ProjectContent)) {
+					if (!pc.HasReferenceTo(ownerProjectContent)) {
 						// unreferences project contents cannot reference the class
 						continue;
 					}
@@ -184,7 +280,6 @@ namespace ICSharpCode.Core
 					}
 				}
 			}
-			return resultList;
 		}
 		#endregion
 		

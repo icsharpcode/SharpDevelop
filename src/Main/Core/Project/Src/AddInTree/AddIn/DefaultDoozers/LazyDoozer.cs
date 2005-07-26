@@ -11,9 +11,9 @@ using System.Collections;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Description of ClassErbauer.
+	/// This doozer lazy-loads another doozer when it has to build an item.
 	/// </summary>
-	public class LazyLoadErbauer : IErbauer
+	public class LazyLoadDoozer : IDoozer
 	{
 		AddIn addIn;
 		string name;
@@ -31,7 +31,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public LazyLoadErbauer(AddIn addIn, Properties properties)
+		public LazyLoadDoozer(AddIn addIn, Properties properties)
 		{
 			this.addIn      = addIn;
 			this.name       = properties["name"];
@@ -40,25 +40,27 @@ namespace ICSharpCode.Core
 		}
 		
 		/// <summary>
-		/// Gets if the erbauer handles codon conditions on its own.
+		/// Gets if the doozer handles codon conditions on its own.
 		/// If this property return false, the item is excluded when the condition is not met.
 		/// </summary>
 		public bool HandleConditions {
 			get {
-				return false;
+				IDoozer doozer = (IDoozer)addIn.CreateObject(className);
+				AddInTree.Doozers[name] = doozer;
+				return doozer.HandleConditions;
 			}
 		}
 		
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
 		{
-			IErbauer erbauer = (IErbauer)addIn.CreateObject(className);
-			AddInTree.Erbauer[name] = erbauer;
-			return erbauer.BuildItem(caller, codon, subItems);
+			IDoozer doozer = (IDoozer)addIn.CreateObject(className);
+			AddInTree.Doozers[name] = doozer;
+			return doozer.BuildItem(caller, codon, subItems);
 		}
 		
 		public override string ToString()
 		{
-			return String.Format("[LazyLoadErbauer: className = {0}, name = {1}]",
+			return String.Format("[LazyLoadDoozer: className = {0}, name = {1}]",
 			                     className,
 			                     name);
 		}

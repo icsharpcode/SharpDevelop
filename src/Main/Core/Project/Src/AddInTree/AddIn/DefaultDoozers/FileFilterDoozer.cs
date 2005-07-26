@@ -10,13 +10,10 @@ using System.Collections;
 
 namespace ICSharpCode.Core
 {
-	/// <summary>
-	/// Description of ClassErbauer.
-	/// </summary>
-	public class FileFilterErbauer : IErbauer
+	public class FileFilterDoozer : IDoozer
 	{
 		/// <summary>
-		/// Gets if the erbauer handles codon conditions on its own.
+		/// Gets if the doozer handles codon conditions on its own.
 		/// If this property return false, the item is excluded when the condition is not met.
 		/// </summary>
 		public bool HandleConditions {

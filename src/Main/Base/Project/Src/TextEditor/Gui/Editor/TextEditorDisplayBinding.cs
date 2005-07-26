@@ -456,22 +456,33 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			bm.RemoveMarks(new Predicate<Bookmark>(IsClassMemberBookmark));
 			if (parseInfo == null) return;
 			foreach (IClass c in parseInfo.MostRecentCompilationUnit.Classes) {
-				foreach (IMethod m in c.Methods) {
-					if (m.Region == null || m.Region.BeginLine <= 0) continue;
-					bm.AddMark(new Bookmarks.MethodBookmark(textAreaControl.Document, m));
-				}
-				foreach (IProperty m in c.Properties) {
-					if (m.Region == null || m.Region.BeginLine <= 0) continue;
-					bm.AddMark(new Bookmarks.PropertyBookmark(textAreaControl.Document, m));
-				}
-				foreach (IField f in c.Fields) {
-					if (f.Region == null || f.Region.BeginLine <= 0) continue;
-					bm.AddMark(new Bookmarks.FieldBookmark(textAreaControl.Document, f));
-				}
-				foreach (IEvent e in c.Events) {
-					if (e.Region == null || e.Region.BeginLine <= 0) continue;
-					bm.AddMark(new Bookmarks.EventBookmark(textAreaControl.Document, e));
-				}
+				AddClassMemberBookmarks(bm, c);
+			}
+		}
+		
+		void AddClassMemberBookmarks(BookmarkManager bm, IClass c)
+		{
+			if (c.Region != null && c.Region.BeginLine > 0) {
+				bm.AddMark(new Bookmarks.ClassBookmark(textAreaControl.Document, c));
+			}
+			foreach (IClass innerClass in c.InnerClasses) {
+				AddClassMemberBookmarks(bm, innerClass);
+			}
+			foreach (IMethod m in c.Methods) {
+				if (m.Region == null || m.Region.BeginLine <= 0) continue;
+				bm.AddMark(new Bookmarks.MethodBookmark(textAreaControl.Document, m));
+			}
+			foreach (IProperty m in c.Properties) {
+				if (m.Region == null || m.Region.BeginLine <= 0) continue;
+				bm.AddMark(new Bookmarks.PropertyBookmark(textAreaControl.Document, m));
+			}
+			foreach (IField f in c.Fields) {
+				if (f.Region == null || f.Region.BeginLine <= 0) continue;
+				bm.AddMark(new Bookmarks.FieldBookmark(textAreaControl.Document, f));
+			}
+			foreach (IEvent e in c.Events) {
+				if (e.Region == null || e.Region.BeginLine <= 0) continue;
+				bm.AddMark(new Bookmarks.EventBookmark(textAreaControl.Document, e));
 			}
 		}
 		

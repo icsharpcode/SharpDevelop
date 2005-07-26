@@ -356,6 +356,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override FilePosition GetDefinitionPosition()
 		{
+			return GetDefinitionPosition(resolvedMember);
+		}
+		
+		public static FilePosition GetDefinitionPosition(IMember resolvedMember)
+		{
 			IClass declaringType = resolvedMember.DeclaringType;
 			if (declaringType == null) {
 				Console.WriteLine("declaringType is null");
@@ -423,6 +428,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return containingType;
 			}
+		}
+		
+		public override FilePosition GetDefinitionPosition()
+		{
+			List<IMethod> methods = containingType.GetMethods();
+			methods = methods.FindAll(delegate(IMethod m) { return m.Name == this.Name; });
+			if (methods.Count == 1) {
+				return MemberResolveResult.GetDefinitionPosition(methods[0]);
+			}
+			return base.GetDefinitionPosition();
 		}
 	}
 	#endregion

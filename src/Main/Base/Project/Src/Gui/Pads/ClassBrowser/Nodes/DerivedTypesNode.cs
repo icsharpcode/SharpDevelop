@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					IProjectContent projectContent = ParserService.GetProjectContent(project);
 					if (projectContent != null) {
 						contentList[0] = projectContent;
-						foreach (IClass derivedClass in RefactoringService.FindDerivedClasses(c, contentList)) {
+						foreach (IClass derivedClass in RefactoringService.FindDerivedClasses(c, contentList, true)) {
 							new ClassNode(project, derivedClass).AddTo(this);
 						}
 					}

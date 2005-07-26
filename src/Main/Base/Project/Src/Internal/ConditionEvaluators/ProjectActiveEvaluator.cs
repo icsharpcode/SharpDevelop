@@ -16,7 +16,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Core
 {
-	public class ProjectActiveAuswerter : IAuswerter
+	public class ProjectActiveConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
 		{

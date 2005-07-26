@@ -145,27 +145,27 @@ namespace ICSharpCode.SharpDevelop
 //			string [] addInDirs = ICSharpCode.SharpDevelop.AddInSettingsHandler.GetAddInDirectories(out ignoreDefaultPath);
 //			SetAddInDirectories(addInDirs, ignoreDefaultPath);
 			
-			AddInTree.Auswerter.Add("ActiveContentExtension", new ActiveContentExtensionAuswerter());
-			AddInTree.Auswerter.Add("ActiveViewContentUntitled", new ActiveViewContentUntitledAuswerter());
-			AddInTree.Auswerter.Add("ActiveWindowState", new ActiveWindowStateAuswerter());
-			AddInTree.Auswerter.Add("CombineOpen", new CombineOpenAuswerter());
-			AddInTree.Auswerter.Add("DebuggerSupports", new DebuggerSupportsAuswerter());
-			AddInTree.Auswerter.Add("IsProcessRunning", new IsProcessRunningAuswerter());
-			AddInTree.Auswerter.Add("OpenWindowState", new OpenWindowStateAuswerter());
-			AddInTree.Auswerter.Add("WindowActive", new WindowActiveAuswerter());
-			AddInTree.Auswerter.Add("WindowOpen", new WindowOpenAuswerter());
-			AddInTree.Auswerter.Add("ProjectActive", new ProjectActiveAuswerter());
-			AddInTree.Auswerter.Add("ProjectOpen", new ProjectOpenAuswerter());
-			AddInTree.Auswerter.Add("TextContent", new ICSharpCode.SharpDevelop.DefaultEditor.Conditions.TextContentAuswerter());
+			AddInTree.ConditionEvaluators.Add("ActiveContentExtension", new ActiveContentExtensionConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("ActiveViewContentUntitled", new ActiveViewContentUntitledConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("ActiveWindowState", new ActiveWindowStateConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("CombineOpen", new CombineOpenConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("DebuggerSupports", new DebuggerSupportsConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("IsProcessRunning", new IsProcessRunningConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("OpenWindowState", new OpenWindowStateConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("WindowActive", new WindowActiveConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("WindowOpen", new WindowOpenConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("ProjectActive", new ProjectActiveConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("ProjectOpen", new ProjectOpenConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("TextContent", new ICSharpCode.SharpDevelop.DefaultEditor.Conditions.TextContentConditionEvaluator());
 			
-			AddInTree.Erbauer.Add("DialogPanel", new DialogPanelErbauer());
-			AddInTree.Erbauer.Add("DisplayBinding", new DisplayBindingErbauer());
-			AddInTree.Erbauer.Add("Pad", new PadErbauer());
-			AddInTree.Erbauer.Add("LanguageBinding", new LanguageBindingErbauer());
-			AddInTree.Erbauer.Add("Parser", new ParserErbauer());
-			AddInTree.Erbauer.Add("EditAction", new ICSharpCode.SharpDevelop.DefaultEditor.Codons.EditActionErbauer());
-			AddInTree.Erbauer.Add("SyntaxMode", new ICSharpCode.SharpDevelop.DefaultEditor.Codons.SyntaxModeErbauer());
-			AddInTree.Erbauer.Add("BrowserSchemeExtension", new ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionErbauer());
+			AddInTree.Doozers.Add("DialogPanel", new DialogPanelDoozer());
+			AddInTree.Doozers.Add("DisplayBinding", new DisplayBindingDoozer());
+			AddInTree.Doozers.Add("Pad", new PadDoozer());
+			AddInTree.Doozers.Add("LanguageBinding", new LanguageBindingDoozer());
+			AddInTree.Doozers.Add("Parser", new ParserDoozer());
+			AddInTree.Doozers.Add("EditAction", new ICSharpCode.SharpDevelop.DefaultEditor.Codons.EditActionDoozer());
+			AddInTree.Doozers.Add("SyntaxMode", new ICSharpCode.SharpDevelop.DefaultEditor.Codons.SyntaxModeDoozer());
+			AddInTree.Doozers.Add("BrowserSchemeExtension", new ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer());
 			
 			PropertyService.Load();
 			

@@ -18,8 +18,8 @@ namespace ICSharpCode.Core
 		string           hintPath;
 		string           assembly;
 		Assembly         loadedAssembly = null;
-		List<Properties> definedErbauer    = new List<Properties>(1);
-		List<Properties> definedConditions = new List<Properties>(1);
+		List<Properties> definedDoozers    = new List<Properties>(1);
+		List<Properties> definedConditionEvaluators = new List<Properties>(1);
 		
 		public Runtime(string assembly, string hintPath)
 		{
@@ -62,15 +62,15 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public List<Properties> DefinedErbauer {
+		public List<Properties> DefinedDoozers {
 			get { 
-				return definedErbauer;
+				return definedDoozers;
 			}
 		}
 		
-		public List<Properties> DefinedConditions {
+		public List<Properties> DefinedConditionEvaluators {
 			get { 
-				return definedConditions;
+				return definedConditionEvaluators;
 			}
 		}
 		
@@ -100,28 +100,28 @@ namespace ICSharpCode.Core
 							string nodeName = reader.LocalName;
 							Properties properties = Properties.ReadFromAttributes(reader);
 							switch (nodeName) {
-								case "Erbauer":
+								case "Doozer":
 									if (!reader.IsEmptyElement) {
-										throw new AddInLoadException("Erbauer nodes must be empty!");
+										throw new AddInLoadException("Doozer nodes must be empty!");
 									}
-									LazyLoadErbauer lazyLoadErbauer = new LazyLoadErbauer(addIn, properties);
+									LazyLoadDoozer lazyLoadDoozer = new LazyLoadDoozer(addIn, properties);
 									
-									if (AddInTree.Erbauer.ContainsKey(lazyLoadErbauer.Name)) {
-										throw new AddInLoadException("Duplicate erbauer: " + lazyLoadErbauer.Name);
+									if (AddInTree.Doozers.ContainsKey(lazyLoadDoozer.Name)) {
+										throw new AddInLoadException("Duplicate doozer: " + lazyLoadDoozer.Name);
 									}
-									AddInTree.Erbauer.Add(lazyLoadErbauer.Name, lazyLoadErbauer);
-									runtime.definedErbauer.Add(properties);
+									AddInTree.Doozers.Add(lazyLoadDoozer.Name, lazyLoadDoozer);
+									runtime.definedDoozers.Add(properties);
 									break;
-								case "Auswerter":
+								case "ConditionEvaluator":
 									if (!reader.IsEmptyElement) {
-										throw new AddInLoadException("Auswerter nodes must be empty!");
+										throw new AddInLoadException("ConditionEvaluator nodes must be empty!");
 									}
-									LazyLoadAuswerter lazyLoadAuswerter = new LazyLoadAuswerter(addIn, properties);
-									if (AddInTree.Auswerter.ContainsKey(lazyLoadAuswerter.Name)) {
-										throw new AddInLoadException("Duplicate auswerter: " + lazyLoadAuswerter.Name);
+									LazyConditionEvaluator lazyLoadConditionEvaluator = new LazyConditionEvaluator(addIn, properties);
+									if (AddInTree.ConditionEvaluators.ContainsKey(lazyLoadConditionEvaluator.Name)) {
+										throw new AddInLoadException("Duplicate condition evaluator: " + lazyLoadConditionEvaluator.Name);
 									}
-									AddInTree.Auswerter.Add(lazyLoadAuswerter.Name, lazyLoadAuswerter);
-									runtime.definedConditions.Add(properties);
+									AddInTree.ConditionEvaluators.Add(lazyLoadConditionEvaluator.Name, lazyLoadConditionEvaluator);
+									runtime.definedConditionEvaluators.Add(properties);
 									break;
 								default:
 									throw new AddInLoadException("Unknown node in Import section:" + nodeName);

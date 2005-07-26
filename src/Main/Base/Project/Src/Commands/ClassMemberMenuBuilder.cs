@@ -20,12 +20,12 @@ using ICSharpCode.SharpDevelop.Gui;
 using SearchAndReplace;
 using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
 
-namespace ICSharpCode.SharpDevelop.Commands
+namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
 	/// <summary>
 	/// Build context menu for class members in the text editor.
 	/// </summary>
-	public class ClassMemberMenuBuilder : ISubmenuBuilder
+	public class ClassMemberMenuBuilder : ParserBookmarkMenuBuilderBase, ISubmenuBuilder
 	{
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
@@ -80,42 +80,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 			}
 			
 			return list.ToArray();
-		}
-		
-		TextEditorControl JumpToDefinition(IMember member)
-		{
-			IViewContent viewContent = null;
-			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
-			if (cu != null) {
-				string fileName = cu.FileName;
-				if (fileName != null) {
-					if (member.Region != null && member.Region.BeginLine > 0) {
-						viewContent = FileService.JumpToFilePosition(fileName, member.Region.BeginLine - 1, member.Region.BeginColumn - 1);
-					} else {
-						FileService.OpenFile(fileName);
-					}
-				}
-			}
-			ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider tecp = viewContent as ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider;
-			return (tecp == null) ? null : tecp.TextEditorControl;
-		}
-		
-		TextEditorControl JumpBehindDefinition(IMember member)
-		{
-			IViewContent viewContent = null;
-			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
-			if (cu != null) {
-				string fileName = cu.FileName;
-				if (fileName != null) {
-					if (member.Region != null && member.Region.EndLine > 0) {
-						viewContent = FileService.JumpToFilePosition(fileName, member.Region.EndLine, 0);
-					} else {
-						FileService.OpenFile(fileName);
-					}
-				}
-			}
-			ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider tecp = viewContent as ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider;
-			return (tecp == null) ? null : tecp.TextEditorControl;
 		}
 		
 		void CreateProperty(object sender, EventArgs e)
@@ -174,69 +138,23 @@ namespace ICSharpCode.SharpDevelop.Commands
 			}
 		}
 		
-		private struct Modification {
-			public IDocument Document;
-			public int Offset;
-			public int LengthDifference;
-			
-			public Modification(IDocument Document, int Offset, int LengthDifference)
-			{
-				this.Document = Document;
-				this.Offset = Offset;
-				this.LengthDifference = LengthDifference;
-			}
-		}
-		
 		void Rename(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
 			string newName = MessageService.ShowInputBox("Rename", "Enter the new name of the member", member.Name);
-			if (newName == null || newName.Length == 0) return;
+			if (!CheckName(newName)) return;
 			
 			List<Reference> list = RefactoringService.FindReferences(member, null);
 			if (list == null) return;
-			List<IViewContent> modifiedContents = new List<IViewContent>();
-			List<Modification> modifications = new List<Modification>();
-			foreach (Reference r in list) {
-				FileService.OpenFile(r.FileName);
-				IViewContent viewContent = FileService.GetOpenFile(r.FileName).ViewContent;
-				if (!modifiedContents.Contains(viewContent)) {
-					modifiedContents.Add(viewContent);
-				}
-				ITextEditorControlProvider p = viewContent as ITextEditorControlProvider;
-				if (p != null) {
-					IDocument doc = p.TextEditorControl.Document;
-					int offset = r.Offset;
-					foreach (Modification m in modifications) {
-						if (m.Document != doc) continue;
-						if (m.Offset < offset) offset += m.LengthDifference;
-					}
-					int lengthDifference = newName.Length - r.Length;
-					doc.Replace(offset, r.Length, newName);
-					if (lengthDifference != 0) {
-						for (int i = 0; i < modifications.Count; ++i) {
-							Modification m = modifications[i];
-							if (m.Document != doc) continue;
-							if (m.Offset > offset) {
-								m.Offset += lengthDifference;
-								modifications[i] = m; // Modification is a value type
-							}
-						}
-						modifications.Add(new Modification(doc, offset, lengthDifference));
-					}
-				}
-			}
-			foreach (IViewContent viewContent in modifiedContents) {
-				ParserService.ParseViewContent(viewContent);
-			}
+			RenameReferences(list, newName);
 		}
 		
 		void FindOverrides(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
-			List<IClass> derivedClasses = RefactoringService.FindDerivedClasses(member.DeclaringType, ParserService.AllProjectContents);
+			List<IClass> derivedClasses = RefactoringService.FindDerivedClasses(member.DeclaringType, ParserService.AllProjectContents, false);
 			List<SearchResult> results = new List<SearchResult>();
 			foreach (IClass derivedClass in derivedClasses) {
 				if (derivedClass.CompilationUnit == null) continue;
@@ -248,36 +166,14 @@ namespace ICSharpCode.SharpDevelop.Commands
 					results.Add(res);
 				}
 			}
-			SearchReplaceInFilesManager.ShowSearchResults(results);
+			SearchReplaceInFilesManager.ShowSearchResults("Overrides of " + member.Name, results);
 		}
 		
 		void FindReferences(object sender, EventArgs e)
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
-			List<Reference> list = RefactoringService.FindReferences(member, null);
-			if (list == null) return;
-			List<SearchResult> results = new List<SearchResult>();
-			foreach (Reference r in list) {
-				SearchResult res = new SearchResult(r.Offset, r.Length);
-				res.ProvidedDocumentInformation = GetDocumentInformation(r.FileName);
-				results.Add(res);
-			}
-			SearchReplaceInFilesManager.ShowSearchResults(results);
-		}
-		
-		ProvidedDocumentInformation GetDocumentInformation(string fileName)
-		{
-			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				if (content is ITextEditorControlProvider &&
-				    content.FileName != null &&
-				    FileUtility.IsEqualFileName(content.FileName, fileName))
-				{
-					return new ProvidedDocumentInformation(((ITextEditorControlProvider)content).TextEditorControl.Document, fileName, 0);
-				}
-			}
-			ITextBufferStrategy strategy = StringTextBufferStrategy.CreateTextBufferFromFile(fileName);
-			return new ProvidedDocumentInformation(strategy, fileName, 0);
+			ShowAsSearchResults("References to " + member.Name, RefactoringService.FindReferences(member, null));
 		}
 	}
 }
