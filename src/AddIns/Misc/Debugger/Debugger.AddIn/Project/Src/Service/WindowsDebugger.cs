@@ -208,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public string GetValueAsString(string variableName)
 		{
-			if (debugger == null || !debugger.IsCurrentProcessSafeForInspection) return null;
+			if (debugger == null || debugger.IsRunning) return null;
 			VariableCollection collection = debugger.LocalVariables;
 			if (collection == null)
 				return null;

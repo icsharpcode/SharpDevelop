@@ -27,37 +27,6 @@ namespace DebuggerLibrary
 			}
 		}
 
-		public Process CurrentProcess {
-			get {
-				if (currentProcess == null && Processes.Count > 0) {
-					currentProcess = Processes[0];
-				}
-				return currentProcess;
-			}
-			set {
-				currentProcess = value;
-			}
-		}
-		
-		public bool IsCurrentProcessSafeForInspection {
-			get {
-				if (CurrentProcess == null) {
-					return false;
-				} else {
-					return CurrentProcess.IsProcessSafeForInspection;
-				}
-			}
-		}
-
-		internal void CheckThatCurrentProcessIsSafeForInspection()
-		{
-			if (CurrentProcess == null) {
-				throw new DebuggerException("There is no process being debugged.");
-			} else {
-				CurrentProcess.CheckThatProcessIsSafeForInspection();
-			}
-		}
-
 		internal Process GetProcess(ICorDebugProcess corProcess)
 		{
 			foreach (Process process in Processes) {

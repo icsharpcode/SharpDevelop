@@ -38,20 +38,17 @@ namespace DebuggerLibrary
 
 		public Thread CurrentThread {
 			get {
-				if (currentThread != null) return currentThread;
-				IList<Thread> threads = Threads;
-				if (currentThread == null && threads.Count > 0) {
-					currentThread = threads[0];
-					return currentThread;
-				}
-				return null;
+				return currentThread;
 			}
 			set	{
 				currentThread = value;
-				if (debugger.ManagedCallback.HandlingCallback == false) {
-					debugger.OnDebuggingPaused(PausedReason.CurrentThreadChanged);
-				}
+				debugger.FakePause(PausedReason.CurrentThreadChanged);
 			}
+		}
+		
+		internal void SetCurrentThread(Thread thread)
+		{
+			currentThread = thread;
 		}
 
 		public IList<Thread> Threads {
@@ -117,7 +114,7 @@ namespace DebuggerLibrary
 			return new Process(debugger, outProcess);
 		}
 
-		public void Break()
+		internal void Break()
 		{
 			if (!isProcessRunning) {
 				throw new DebuggerException("Invalid operation");
@@ -126,7 +123,7 @@ namespace DebuggerLibrary
             corProcess.Stop(5000); // TODO: Hardcoded value
 
 			isProcessRunning = false;
-			debugger.OnDebuggingPaused(PausedReason.Break);
+			debugger.Pause(PausedReason.Break, this, null);
 		}
 
 		public void Continue()
@@ -135,11 +132,18 @@ namespace DebuggerLibrary
 				throw new DebuggerException("Invalid operation");
 			}
 
+			debugger.Resume();
 			isProcessRunning = true;
-			if (debugger.ManagedCallback.HandlingCallback == false) {
-				debugger.OnDebuggingResumed();
+			corProcess.Continue(0);
+		}
+		
+		internal void ContinueCallback()
+		{
+			if (isProcessRunning) {
+				throw new DebuggerException("Invalid operation");
 			}
 
+			isProcessRunning = true;
 			corProcess.Continue(0);
 		}
 
@@ -156,7 +160,7 @@ namespace DebuggerLibrary
 			corProcess.Terminate(0);
 		}
 
-		public bool IsProcessRunning { 
+		public bool IsRunning { 
 			get {
 				return isProcessRunning;
 			}
@@ -164,26 +168,17 @@ namespace DebuggerLibrary
 				isProcessRunning = value;
 			}
 		}
-
-		public bool IsProcessSafeForInspection {
+		
+		public bool IsPaused {
 			get {
-				if (isProcessRunning) return false;
-				if (CurrentThread == null) return false;
-
-				return true;
+				return !isProcessRunning;
 			}
 		}
-
-		internal void CheckThatProcessIsSafeForInspection()
+		
+		public void AssertPaused()
 		{
-			if (!IsProcessSafeForInspection) {
-				if (isProcessRunning) {
-					throw new DebuggerException("Process is not safe for inspection because it is running.");
-				} else if (CurrentThread == null){
-					throw new DebuggerException("Process is not safe for inspection because it has no thread.");
-				} else {
-					throw new DebuggerException("Process is not safe for inspection.");
-				}
+			if (!IsPaused) {
+				throw new DebuggerException("Process is not paused.");
 			}
 		}
 	}

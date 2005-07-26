@@ -58,7 +58,7 @@ namespace DebuggerLibrary
 		/// </summary>
 		public void AsyncPerformEval()
 		{
-			debugger.CheckThatCurrentProcessIsSafeForInspection();
+			debugger.AssertPaused();
 
 			debugger.CurrentThread.CorThread.CreateEval(out corEval);
 			

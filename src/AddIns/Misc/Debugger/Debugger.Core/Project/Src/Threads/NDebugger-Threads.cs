@@ -46,22 +46,6 @@ namespace DebuggerLibrary
 				return threadCollection.AsReadOnly();
 			}
 		}
-		
-		public Thread CurrentThread {
-			get {
-				if (CurrentProcess == null) return null;
-				return CurrentProcess.CurrentThread;
-			}
-			set {
-				CurrentProcess.CurrentThread = value;
-			}
-		}
-		
-		public bool IsCurrentThreadSafeForInspection {
-			get {
-				return IsCurrentProcessSafeForInspection;
-			}
-		}
 
 		internal Thread GetThread(ICorDebugThread corThread)
 		{

@@ -100,6 +100,7 @@
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\PrivateEventHandlersClientChannelSinkProvider.cs" />
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\EventForwarder.cs" />
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\PrivateEventHandlersClientChannelSink.cs" />
+    <Compile Include="Src\Debugger\NDebugger-StateControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

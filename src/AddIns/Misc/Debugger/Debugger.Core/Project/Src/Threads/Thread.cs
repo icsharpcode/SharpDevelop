@@ -84,7 +84,7 @@ namespace DebuggerLibrary
 
 		public bool Suspended {
 			get	{
-				if (!process.IsProcessSafeForInspection) return lastSuspendedState;
+				if (process.IsRunning) return lastSuspendedState;
 
 				CorDebugThreadState state;
 				corThread.GetDebugState(out state);
@@ -99,7 +99,7 @@ namespace DebuggerLibrary
 		public ThreadPriority Priority {
 			get {
 				if (!HasBeenLoaded) return lastPriority;
-				if (!process.IsProcessSafeForInspection) return lastPriority;
+				if (process.IsRunning) return lastPriority;
 
 				Variable runTimeVar = RuntimeVariable;
 				if (runTimeVar is NullRefVariable) return ThreadPriority.Normal;
@@ -111,7 +111,7 @@ namespace DebuggerLibrary
 		public Variable RuntimeVariable {
 			get {
 				if (!HasBeenLoaded) throw new DebuggerException("Thread has not started jet");
-				process.CheckThatProcessIsSafeForInspection();
+				process.AssertPaused();
 
 				ICorDebugValue corValue;
 				corThread.GetObject(out corValue);
@@ -122,7 +122,7 @@ namespace DebuggerLibrary
 		public string Name {
 			get	{
 				if (!HasBeenLoaded) return lastName;
-				if (!process.IsProcessSafeForInspection) return lastName;
+				if (process.IsRunning) return lastName;
 				Variable runtimeVar  = RuntimeVariable;
 				if (runtimeVar is NullRefVariable) return lastName;
 				Variable runtimeName = runtimeVar.SubVariables["m_Name"];
@@ -187,7 +187,7 @@ namespace DebuggerLibrary
 			get {
 				List<Function> callstack = new List<Function>();
 
-				if (!process.IsProcessSafeForInspection) return callstack;
+				if (process.IsRunning) return callstack;
 
 				ICorDebugChainEnum corChainEnum;
 				corThread.EnumerateChains(out corChainEnum);
@@ -227,13 +227,17 @@ namespace DebuggerLibrary
 		
 		public Function CurrentFunction {
 			get {
-				process.CheckThatProcessIsSafeForInspection();
+				process.AssertPaused();
 				
 				if (currentFunction == null) {
 					currentFunction = LastFunctionWithLoadedSymbols;
 				}
-
-				return currentFunction;
+				
+				if (currentFunction != null && currentFunction.HasSymbols) {
+					return currentFunction;
+				} else {
+					return null;
+				}
 			}
 			set {
 				if (value != null && !value.HasSymbols) {
@@ -242,10 +246,13 @@ namespace DebuggerLibrary
 				
 				currentFunction = value;
 				
-				if (debugger.ManagedCallback.HandlingCallback == false) {
-					debugger.OnDebuggingPaused(PausedReason.CurrentFunctionChanged);
-				}
+				debugger.FakePause(PausedReason.CurrentFunctionChanged);
 			}
+		}
+		
+		internal void ClearCurrentFunction()
+		{
+			currentFunction = null;
 		}
 
 		public Function LastFunctionWithLoadedSymbols {

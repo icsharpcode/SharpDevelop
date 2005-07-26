@@ -26,8 +26,6 @@ namespace DebuggerLibrary
 		ApartmentState requiredApartmentState;
 
 		EvalQueue evalQueue;
-		
-		bool pauseOnHandledException = false;
 
 		internal EvalQueue EvalQueue {
 			get { 
@@ -44,15 +42,6 @@ namespace DebuggerLibrary
 		internal ICorDebug CorDebug {
 			get {
 				return corDebug;
-			}
-		}
-		
-		public bool PauseOnHandledException {
-			get {
-				return pauseOnHandledException;
-			}
-			set {
-				pauseOnHandledException = value;
 			}
 		}
 		
@@ -110,32 +99,6 @@ namespace DebuggerLibrary
 			TraceMessage("Reset done");
 		}
 
-		#region Public events
-
-		public event EventHandler<DebuggingPausedEventArgs> DebuggingPaused;
-
-		protected internal virtual void OnDebuggingPaused(PausedReason reason)
-		{
-			TraceMessage ("Debugger event: OnDebuggingPaused(" + reason.ToString() + ")");
-			if (DebuggingPaused != null) {
-				DebuggingPausedEventArgs args = new DebuggingPausedEventArgs(this, reason);
-				DebuggingPaused(this, args);
-				if (args.ResumeDebugging) {
-					Continue();
-				}
-			}
-		}
-
-
-		public event EventHandler<DebuggerEventArgs> DebuggingResumed;
-
-		protected internal virtual void OnDebuggingResumed()
-		{
-			TraceMessage ("Debugger event: OnDebuggingResumed()");
-			if (DebuggingResumed != null) {
-				DebuggingResumed(this, new DebuggerEventArgs(this));
-			}
-		}
 
 		/// <summary>
 		/// Fired when System.Diagnostics.Trace.WriteLine() is called in debuged process
@@ -169,8 +132,6 @@ namespace DebuggerLibrary
 		}
 
 
-		#endregion
-
 		public void StartWithoutDebugging(System.Diagnostics.ProcessStartInfo psi)
 		{		
 			System.Diagnostics.Process process;
@@ -184,76 +145,25 @@ namespace DebuggerLibrary
 			Process process = Process.CreateProcess(this, filename, workingDirectory, arguments);
 			AddProcess(process);
 		}
-		
-		public Function CurrentFunction {
-			get {
-				if (IsCurrentThreadSafeForInspection)  {
-					return CurrentThread.CurrentFunction;
-				} else {
-					return null;
-				}
-			}
-			set {
-				if (IsCurrentThreadSafeForInspection)  {
-					CurrentThread.CurrentFunction = value;
-				}
-			}
-		}
-		
-		public bool IsCurrentFunctionSafeForInspection {
-			get {
-				if (IsCurrentThreadSafeForInspection && 
-				   CurrentThread.CurrentFunction != null &&
-				   CurrentThread.CurrentFunction.HasSymbols) {
-					return true;
-				} else {
-					return false;
-				}				
-			}
-		}
 
 		public SourcecodeSegment NextStatement { 
 			get {
-				if (!IsCurrentFunctionSafeForInspection) return null;
-				return CurrentProcess.CurrentThread.CurrentFunction.NextStatement;
+				if (CurrentFunction == null) {
+					return null;
+				} else {
+					return CurrentFunction.NextStatement;
+				}
 			}
 		}
 
 		public VariableCollection LocalVariables { 
 			get {
-				if (!IsCurrentFunctionSafeForInspection) return VariableCollection.Empty;
-				return CurrentProcess.CurrentThread.CurrentFunction.GetVariables();
+				if (CurrentFunction == null) {
+					return VariableCollection.Empty;
+				} else {
+					return CurrentFunction.GetVariables();
+				}
 			}
-		}
-
-		public void Break()
-		{
-			CurrentProcess.Break();
-		}
-
-		public void StepInto()
-		{
-			CurrentProcess.CurrentThread.CurrentFunction.StepInto();
-		}
-
-		public void StepOver()
-		{
-			CurrentProcess.CurrentThread.CurrentFunction.StepOver();
-		}
-
-		public void StepOut()
-		{
-			CurrentProcess.CurrentThread.CurrentFunction.StepOut();
-		}
-
-		public void Continue()
-		{
-			CurrentProcess.Continue();
-		}
-
-		public void Terminate()
-		{
-			CurrentProcess.Terminate();
 		}
 	}
 }

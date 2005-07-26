@@ -317,6 +317,8 @@ namespace DebuggerLibrary
 		
 		SourcecodeSegment SetIP(bool simulate, string filename, int line, int column)
 		{
+			debugger.AssertPaused();
+			
 			SourcecodeSegment suggestion = new SourcecodeSegment(filename, line, column, column);
 			ICorDebugFunction corFunction;
 			int ilOffset;
@@ -333,10 +335,7 @@ namespace DebuggerLibrary
 							corILFrame.CanSetIP((uint)ilOffset);
 						} else {
 							corILFrame.SetIP((uint)ilOffset);
-							Thread thread = debugger.CurrentThread;
-							debugger.OnDebuggingResumed();
-							thread.CurrentFunction = thread.LastFunctionWithLoadedSymbols;
-							debugger.OnDebuggingPaused(PausedReason.SetIP);
+							debugger.FakePause(PausedReason.SetIP);
 						}
 					} catch {
 						return null;

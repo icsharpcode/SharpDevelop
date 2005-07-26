@@ -24,6 +24,9 @@ namespace DebuggerLibrary
 		NDebugger debugger;
 
 		bool handlingCallback = false;
+		
+		Process callingProcess;
+		Thread callingThread;
 
 		public event EventHandler<CorDebugEvalEventArgs> CorDebugEvalCompleted;
 
@@ -32,7 +35,7 @@ namespace DebuggerLibrary
 			this.debugger = debugger;
 		}
 		
-		public bool HandlingCallback {
+		bool HandlingCallback {
 			get {
 				return handlingCallback;
 			}
@@ -43,12 +46,8 @@ namespace DebuggerLibrary
 		{
 			EnterCallback(name);
 
-			Process process = debugger.GetProcess(pProcess);
-			process.IsProcessRunning = false;
-			debugger.CurrentProcess = process;
-			foreach(Thread t in process.Threads) {
-				t.CurrentFunction = null;
-			}
+			callingProcess = debugger.GetProcess(pProcess);
+			callingProcess.IsRunning = false;
 		}
 
 		// Sets CurrentProcess
@@ -58,12 +57,9 @@ namespace DebuggerLibrary
 
 			ICorDebugProcess pProcess;
 			pAppDomain.GetProcess(out pProcess);
-			Process process = debugger.GetProcess(pProcess);
-			process.IsProcessRunning = false;
-			debugger.CurrentProcess = process;
-			foreach(Thread t in process.Threads) {
-				t.CurrentFunction = null;
-			}
+			
+			callingProcess = debugger.GetProcess(pProcess);
+			callingProcess.IsRunning = false;
 		}
 
 		// Sets CurrentProcess, CurrentThread and CurrentFunction
@@ -72,15 +68,10 @@ namespace DebuggerLibrary
 		{
 			EnterCallback(name);
 
-			Thread thread = debugger.GetThread(pThread);
-			Process process = thread.Process;
-			process.IsProcessRunning = false;
-			debugger.CurrentProcess = process;
-			process.CurrentThread = thread;
-			foreach(Thread t in process.Threads) {
-				t.CurrentFunction = null;
-			}
-			thread.CurrentFunction = thread.LastFunctionWithLoadedSymbols;
+			callingThread = debugger.GetThread(pThread);
+			
+			callingProcess = callingThread.Process;
+			callingProcess.IsRunning = false;
 		}
 
 		void EnterCallback(string name)
@@ -91,20 +82,25 @@ namespace DebuggerLibrary
 		
 		void ExitCallback_Continue()
 		{
-			debugger.Continue();
+			callingProcess.ContinueCallback();
+			
+			callingThread = null;
+			callingProcess = null;
 			handlingCallback = false;
 		}
 		
 		void ExitCallback_Paused(PausedReason reason)
 		{
-			if (debugger.CurrentThread == null) {
-				throw new DebuggerException("You are not allowed to pause since CurrentThread is not set");
+			if (callingThread != null) {
+				callingThread.DeactivateAllSteppers();
 			}
-			debugger.CurrentThread.DeactivateAllSteppers();
 
 			handlingCallback = false;
 
-			debugger.OnDebuggingPaused(reason);
+			debugger.Pause(reason, callingProcess, callingThread);
+			
+			callingThread = null;
+			callingProcess = null;
 		}
 		
 		
@@ -114,7 +110,7 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("StepComplete (" + reason.ToString() + ")", pThread);
 
-			if (debugger.CurrentThread.LastFunction.Module.SymbolsLoaded == false) {
+			if (callingThread.LastFunction.Module.SymbolsLoaded == false) {
 				debugger.TraceMessage(" - leaving code without symbols");
 
 				ExitCallback_Continue();
@@ -341,7 +337,7 @@ namespace DebuggerLibrary
 			debugger.RemoveThread(thread);
 
 			if (thread.Process.CurrentThread == thread) {
-				thread.Process.CurrentThread = null;
+				thread.Process.SetCurrentThread(null);
 			}
 
 			ExitCallback_Continue();
@@ -400,7 +396,7 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("Exception2", pThread);
 
-			debugger.CurrentThread.CurrentExceptionType = (ExceptionType)dwEventType;
+			callingThread.CurrentExceptionType = (ExceptionType)dwEventType;
 			
 			if (ExceptionType.DEBUG_EXCEPTION_UNHANDLED != (ExceptionType)dwEventType) {
 				// Handled exception

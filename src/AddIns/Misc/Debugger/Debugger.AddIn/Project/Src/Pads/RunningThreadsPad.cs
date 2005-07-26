@@ -97,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 
 		void RunningThreadsListItemActivate(object sender, EventArgs e)
 		{
-			if (debuggerCore.IsCurrentProcessSafeForInspection) {
+			if (debuggerCore.IsPaused) {
 				debuggerCore.CurrentThread = (Thread)(runningThreadsList.SelectedItems[0].Tag);
 			}
 		}

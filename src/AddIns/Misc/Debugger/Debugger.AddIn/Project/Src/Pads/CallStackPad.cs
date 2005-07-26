@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void CallStackListItemActivate(object sender, EventArgs e)
 		{
-			if (debuggerCore.IsCurrentThreadSafeForInspection) {
+			if (debuggerCore.IsPaused) {
 				Function f = (Function)(callStackList.SelectedItems[0].Tag);
 				if (f.HasSymbols) {
 					debuggerCore.CurrentFunction = f;
@@ -108,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			callStackList.BeginUpdate();
 			callStackList.Items.Clear();
-			if (debuggerCore.IsCurrentThreadSafeForInspection) {
+			if (debuggerCore.CurrentThread != null) {
 				foreach (Function f in debuggerCore.CurrentThread.Callstack) {
 					ListViewItem item = new ListViewItem(new string[] { f.Name, "" });
 					item.Tag = f;
