@@ -19,12 +19,13 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.OptionPanels;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
 	/// This class displays the errors and warnings which the compiler outputs and
-	/// allows the user to jump to the source of the warnig / error
+	/// allows the user to jump to the source of the warning / error
 	/// </summary>
 	public class CompilerMessageView : AbstractPadContent, IClipboardHandler
 	{
@@ -35,8 +36,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return instance;
 			}
 		}
-		
-//		RichTextBox textEditorControl = new RichTextBox();
 		
 		TextEditorControl textEditorControl = new TextEditorControl();
 		Panel             myPanel           = new Panel();
@@ -115,8 +114,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			textEditorControl.Font     = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", new Font("Courier New", 10).ToString()).ToString());
 			properties.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
 			
-			textEditorControl.MouseDown += new MouseEventHandler(TextEditorControlMouseDown);
-			textEditorControl.BackColor = SystemColors.Window;
+			textEditorControl.ActiveTextAreaControl.TextArea.DoubleClick += TextEditorControlDoubleClick;
 			
 			ToolStrip toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/CompilerMessageView/Toolbar");
 			toolStrip.Stretch   = true;
@@ -126,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			SetWordWrap();
 			myPanel.ResumeLayout(false);
-			SetText(StringParser.Parse(messageCategories[selectedCategory].Text));
+			SetText(messageCategories[selectedCategory]);
 		}
 		
 		void SetWordWrap()
@@ -161,37 +159,33 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void CategoryTextCleared(object sender, EventArgs e)
 		{
-			MessageViewCategory category = (MessageViewCategory)sender;
-			SelectCategory(category.Category);
-			WorkbenchSingleton.SafeThreadCall(this, "ClearText");
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "ClearText", sender);
 		}
-		void ClearText()
+		void ClearText(MessageViewCategory category)
 		{
+			SelectCategory(category.Category);
 			textEditorControl.Text = "";
 			textEditorControl.Refresh();
 		}
 		
 		void CategoryTextSet(object sender, TextEventArgs e)
 		{
-			MessageViewCategory category = (MessageViewCategory)sender;
-			SelectCategory(category.Category);
-			WorkbenchSingleton.SafeThreadCall(this, "SetText", StringParser.Parse(messageCategories[selectedCategory].Text));
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "SetText", (MessageViewCategory)sender);
 		}
 		
 		void CategoryTextAppended(object sender, TextEventArgs e)
 		{
-			MessageViewCategory category = (MessageViewCategory)sender;
-			int oldCategory = SelectedCategoryIndex;
-			SelectCategory(category.Category);
-			if (oldCategory != SelectedCategoryIndex)
-				WorkbenchSingleton.SafeThreadCall(this, "SetText", StringParser.Parse(messageCategories[selectedCategory].Text));
-			else
-				WorkbenchSingleton.SafeThreadCall(this, "AppendText", StringParser.Parse(e.Text));
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "AppendText", (MessageViewCategory)sender, e.Text);
 		}
 		
-		void AppendText(string text)
+		void AppendText(MessageViewCategory category, string text)
 		{
+			if (messageCategories[SelectedCategoryIndex] != category) {
+				SetText(category);
+				return;
+			}
 			if (text != null) {
+				text = StringParser.Parse(text);
 				textEditorControl.Document.ReadOnly = false;
 				textEditorControl.Document.Insert(textEditorControl.Document.TextLength, text);
 				textEditorControl.Document.ReadOnly = true;
@@ -200,8 +194,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void SetText(string text)
+		void SetText(MessageViewCategory category)
 		{
+			string text = StringParser.Parse(category.Text);
 			if (text == null) {
 				text = String.Empty;
 			}
@@ -248,91 +243,23 @@ namespace ICSharpCode.SharpDevelop.Gui
 			WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this.GetType().FullName);
 		}
 		
-		void MessageCategorySelectedIndexChanged(object sender, EventArgs e)
-		{
-			WorkbenchSingleton.SafeThreadCall(this, "SetText", StringParser.Parse(messageCategories[selectedCategory].Text));
-		}
-		
 		/// <summary>
 		/// Occurs when the mouse pointer is over the control and a
 		/// mouse button is pressed.
 		/// </summary>
-		void TextEditorControlMouseDown(object sender, MouseEventArgs e)
+		void TextEditorControlDoubleClick(object sender, EventArgs e)
 		{
-//			// Double click?
-//			if (e.Clicks == 2) {
-//				// Any text?
-//				if (textEditorControl.Text.Length > 0) {
-//
-//					// Parse text line double clicked.
-//					Point point = new Point(e.X, e.Y);
-//
-//					int charIndex = textEditorControl.GetCharIndexFromPosition(point);
-//					string textLine = GetTextLine(charIndex, textEditorControl.Text);
-//
-//					FileLineReference lineReference = OutputTextLineParser.GetFileLineReference(textLine);
-//					if (lineReference != null) {
-//						// Open matching file.
-//						JumpToFilePosition(Path.GetFullPath(lineReference.FileName),
-//						                   lineReference.Line,
-//						                   lineReference.Column);
-//					}
-//				}
-//			}
-		}
-		/// <summary>
-		/// Gets the line of text that includes the specified
-		/// character index.
-		/// </summary>
-		/// <remarks>
-		/// This is used instead of using the <see cref="RichTextBox.Lines"/>
-		/// array since we have to take into account word wrapping.
-		/// </remarks>
-		string GetTextLine(int charIndex, string textLines)
-		{
-			Debug.Assert(charIndex < textLines.Length, String.Concat("CharIndex out of range. charIndex=", charIndex, ", textLines.Length=", textLines.Length));
-			
-			string textLine = String.Empty;
-			
-			int lineStartIndex = 0;
-			int lineLength = 0;
-			bool wasFound = false;
-			
-			for (int i = 0; i < textLines.Length; ++i) {
-				char ch = textLines[i];
+			// Any text?
+			if (textEditorControl.Text.Length > 0) {
+				int line = textEditorControl.ActiveTextAreaControl.Caret.Line;
+				string textLine = TextUtilities.GetLineAsString(textEditorControl.Document, line);
 				
-				if (ch == '\r' || ch == '\n') {
-					// End of line.
-					if (i >= charIndex) {
-						// Found line.
-						textLine = textLines.Substring(lineStartIndex, lineLength);
-						wasFound = true;
-						break;
-					} else {
-						lineStartIndex = i + 1;
-						lineLength = 0;
-					}
-				} else {
-					++lineLength;
+				FileLineReference lineReference = OutputTextLineParser.GetFileLineReference(textLine);
+				if (lineReference != null) {
+					// Open matching file.
+					FileService.JumpToFilePosition(Path.GetFullPath(lineReference.FileName), lineReference.Line, lineReference.Column);
 				}
 			}
-			
-			if (!wasFound && (lineLength > 0)) {
-				textLine = textLines.Substring(lineStartIndex, lineLength);
-			}
-			
-			return textLine;
-		}
-		
-		/// <summary>
-		/// Jumps to the specified file line number and position.
-		/// </summary>
-		/// <param name="filename">The filename.</param>
-		/// <param name="line">The line number.</param>
-		/// <param name="column">The line column</param>
-		private void JumpToFilePosition(string filename, int line, int column)
-		{
-			FileService.JumpToFilePosition(filename, line, column);
 		}
 		
 		/// <summary>

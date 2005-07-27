@@ -262,7 +262,10 @@ namespace ICSharpCode.Core
 				if (textArea.ToolTipVisible) return;
 				if (!CodeCompletionOptions.TooltipsEnabled) return;
 				
-				// TODO: if (CodeCompletionOptions.TooltipsOnlyWhenDebugging && !isDebugging) return;
+				if (CodeCompletionOptions.TooltipsOnlyWhenDebugging) {
+					if (currentDebugger == null) return;
+					if (!currentDebugger.IsDebugging) return;
+				}
 				
 				Point mousepos = textArea.PointToClient(Control.MousePosition);
 				Rectangle viewRect = textArea.TextView.DrawingPosition;

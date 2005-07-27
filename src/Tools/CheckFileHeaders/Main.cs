@@ -21,10 +21,10 @@ namespace CheckFileHeaders
 			try {
 				MainClass m = new MainClass();
 				if (args.Length == 0) {
-					Console.WriteLine("Checking files in working directory...");
-					count = m.Run(@"D:\Corsavy\SharpDevelop\src");
+					Console.WriteLine("Checking files in {0}  ...", Path.GetFullPath(@"..\..\..\..\"));
+					count = m.Run(@"..\..\..\..\");
 				} else {
-					Console.WriteLine("Checking files in {0}...", args[0]);
+					Console.WriteLine("Checking files in {0}  ...", Path.GetFullPath(args[0]));
 					count = m.Run(args[0]);
 				}
 				Console.WriteLine("Finished! (checked {0} files, changed {1} files, ignored {2} files)", count, m.changeCount, m.ignoreCount);
@@ -36,7 +36,6 @@ namespace CheckFileHeaders
 			return 0;
 		}
 		int Run(string dir)
-			
 		{
 			int count = 0;
 			foreach (string file in Directory.GetFiles(dir, "*.cs")) {
@@ -73,7 +72,7 @@ namespace CheckFileHeaders
 		}
 		
 		// must be splitted because this file is under version control, too
-		Regex resetVersionRegex = new Regex(@"^//     <version>\$Revi" + @"sion: \d+ \$</version>$");
+		Regex resetVersionRegex = new Regex(@"//     <version>\$Revi" + @"sion: \d+ \$</version>", RegexOptions.Compiled);
 		
 		int changeCount, ignoreCount;
 		
@@ -90,39 +89,34 @@ namespace CheckFileHeaders
 			if (author == null)
 				author = "";
 			if (author == "") {
-				if (file.IndexOf("Main\\Core\\") >= 0) {
-					author = "Omnibrain";
-				} else {
-					Console.Write(file);
-					char ch;
-					do {
-						Console.WriteLine();
-						Console.Write("  Mike/Daniel/Other/None/Ignore (M/D/O/N/I): ");
-					}
-					while ((ch = char.ToUpper(Console.ReadKey().KeyChar)) != 'M'
-					       && ch != 'N' && ch != 'I' && ch != 'O' && ch != 'D');
-					if (ch == 'M') {
-						author = "Omnibrain";
-					} else if (ch == 'D') {
-						author = "Daniel Grunwald";
-					} else if (ch == 'O') {
-						Console.WriteLine();
-						bool ok;
-						do {
-							Console.Write("Enter author name: ");
-							author = Console.ReadLine();
-							if (author == "David") author = "David Srbecky";
-							if (author == "Markus") author = "Markus Palme";
-							email = CheckAuthor(ref author);
-							ok = author != null;
-						} while (!ok);
-					} else if (ch == 'I') {
-						ignoreCount++;
-						return;
-					} else {
-						author = "none";
-					}
+				Console.Write(file);
+				char ch;
+				do {
 					Console.WriteLine();
+					Console.Write("  Mike/Daniel/Other/None/Ignore (M/D/O/N/I): ");
+				}
+				while ((ch = char.ToUpper(Console.ReadKey().KeyChar)) != 'M'
+				       && ch != 'N' && ch != 'I' && ch != 'O' && ch != 'D');
+				Console.WriteLine();
+				if (ch == 'M') {
+					author = "Omnibrain";
+				} else if (ch == 'D') {
+					author = "Daniel Grunwald";
+				} else if (ch == 'O') {
+					bool ok;
+					do {
+						Console.Write("Enter author name: ");
+						author = Console.ReadLine();
+						if (author == "David") author = "David Srbecky";
+						if (author == "Markus") author = "Markus Palme";
+						email = CheckAuthor(ref author);
+						ok = author != null;
+					} while (!ok);
+				} else if (ch == 'I') {
+					ignoreCount++;
+					return;
+				} else {
+					author = "none";
 				}
 			}
 			string oldAuthor = author;
@@ -151,7 +145,8 @@ namespace CheckFileHeaders
 			builder.Append(content.Substring(offset).Trim());
 			builder.AppendLine();
 			string newContent = builder.ToString();
-			if (newContent != resetVersionRegex.Replace(content, versionLine)) {
+			string resettedVersion = resetVersionRegex.Replace(content, versionLine);
+			if (newContent != resettedVersion) {
 				using (StreamWriter w = new StreamWriter(file, false, GetOptimalEncoding(newContent))) {
 					changeCount++;
 					w.Write(newContent);
@@ -174,7 +169,7 @@ namespace CheckFileHeaders
 				case "David Srbecky":
 				case "David Srbeck":
 					author = "David Srbecký";
-					return "dsrbecky@post.cz";
+					return "dsrbecky@gmail.com";
 				case "Andrea Paatz":
 					//case "Andrea":
 					author = "Andrea Paatz";

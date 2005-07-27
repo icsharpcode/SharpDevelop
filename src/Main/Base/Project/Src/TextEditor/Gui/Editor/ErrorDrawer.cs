@@ -128,8 +128,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (!CheckTask(task)) return;
 			if (task.Line >= 0 && task.Line < textEditor.Document.TotalNumberOfLines) {
 				LineSegment line = textEditor.Document.GetLineSegment(task.Line);
+				int offset = line.Offset + task.Column;
 				if (line.Words != null) {
-					int offset = line.Offset + task.Column;
 					foreach (TextWord tw in line.Words) {
 						if (task.Column >= tw.Offset && task.Column < (tw.Offset + tw.Length)) {
 							textEditor.Document.MarkerStrategy.AddMarker(new VisualError(offset, tw.Length, task));
@@ -140,10 +140,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 						}
 					}
 				}
-				/*
-						int startOffset = offset;//Math.Min(textEditor.Document.TextLength, TextUtilities.FindWordStart(textEditor.Document, offset));
-						int endOffset   = Math.Max(1, TextUtilities.FindWordEnd(textEditor.Document, offset));
-						textEditor.Document.MarkerStrategy.TextMarker.Add(new VisualError(startOffset, endOffset - startOffset + 1, task.Description, task.TaskType == TaskType.Error));*/
+				int startOffset = offset;//Math.Min(textEditor.Document.TextLength, TextUtilities.FindWordStart(textEditor.Document, offset));
+				int endOffset   = Math.Max(1, TextUtilities.FindWordEnd(textEditor.Document, offset));
+				textEditor.Document.MarkerStrategy.AddMarker(new VisualError(startOffset, endOffset - startOffset + 1, task));
 			}
 		}
 		

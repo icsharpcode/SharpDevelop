@@ -414,7 +414,9 @@ namespace ICSharpCode.TextEditor
 								DrawSpaceMarker(g, spaceMarkerForeColor, physicalXPos, lineRectangle.Y);
 							}
 							foreach (TextMarker marker in markers) {
-								DrawMarker(g, marker, spaceRectangle);
+								if (marker.TextMarkerType != TextMarkerType.SolidBlock) {
+									DrawMarker(g, marker, spaceRectangle);
+								}
 							}
 							
 							physicalXPos += spaceWidth;
@@ -451,7 +453,9 @@ namespace ICSharpCode.TextEditor
 							}
 							
 							foreach (TextMarker marker in markers) {
-								DrawMarker(g, marker, tabRectangle);
+								if (marker.TextMarkerType != TextMarkerType.SolidBlock) {
+									DrawMarker(g, marker, tabRectangle);
+								}
 							}
 							
 							physicalXPos += tabWidth;
@@ -545,12 +549,12 @@ namespace ICSharpCode.TextEditor
 //				bgColorBrush.Dispose();
 //				bgColorBrush = null;
 //			}
-//			
+//
 //			if (selectionBackgroundBrush != null) {
 //				selectionBackgroundBrush.Dispose();
 //				selectionBackgroundBrush = null;
 //			}
-//			
+//
 //			if (unselectedBackgroundBrush != null) {
 //				unselectedBackgroundBrush.Dispose();
 //				unselectedBackgroundBrush = null;
@@ -568,16 +572,16 @@ namespace ICSharpCode.TextEditor
 //			TextFormatFlags flags = TextFormatFlags.NoOverhangPadding |
 //			                        TextFormatFlags.NoPrefix |
 //			                        TextFormatFlags.NoFullWidthCharacterBreak |
-//			                        TextFormatFlags.NoClipping | 
+//			                        TextFormatFlags.NoClipping |
 //			                        TextFormatFlags.PreserveGraphicsClipping |
 //			                        TextFormatFlags.PrefixOnly |
 //			                        TextFormatFlags.SingleLine;
 //			Size wordSize = TextRenderer.MeasureText(word, font, Size.Empty, flags);
-//			
+//
 //			if (DrawingPosition.Left < position.X + DrawingPosition.X) {
 //				TextRenderer.DrawText(g,
 //				                      word,
-//				                      font, 
+//				                      font,
 //				                      position,
 //				                      foreColor,
 //				                      ((SolidBrush)backBrush).Color,

@@ -99,8 +99,8 @@ namespace ICSharpCode.Core
 		public Task(CompilerError error)
 		{
 			type         = error.IsWarning ? TaskType.Warning : TaskType.Error;
-			column       = error.Column - 1;
-			line         = error.Line - 1;
+			column       = Math.Max(error.Column - 1, 0);
+			line         = Math.Max(error.Line - 1, 0);
 			description  = error.ErrorText + "(" + error.ErrorNumber + ")";
 			fileName     = error.FileName;
 		}
@@ -108,21 +108,6 @@ namespace ICSharpCode.Core
 		public void JumpToPosition()
 		{
 			FileService.JumpToFilePosition(fileName, line, column);
-//			CompilerResultListItem li = (CompilerResultListItem)OpenTaskView.FocusedItem;
-//			
-//			string filename   = li.FileName;
-//			
-//			if (filename == null || filename.Equals(""))
-//				return;
-//			
-//			if (File.Exists(filename)) {
-//				string directory  = Path.GetDirectoryName(filename);
-//				if (directory[directory.Length - 1] != Path.DirectorySeparatorChar) {
-//					directory += Path.DirectorySeparatorChar;
-//				}
-//				
-//				ContentWindow window = OpenWindow(filename);
-//			}
 		}
 	}
 }

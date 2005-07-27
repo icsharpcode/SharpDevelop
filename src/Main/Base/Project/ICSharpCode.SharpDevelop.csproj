@@ -423,7 +423,7 @@
     <Compile Include="Src\Project\UnknownProject.cs" />
     <Compile Include="Src\Gui\Pads\ErrorList\ErrorList.cs" />
     <Compile Include="Src\Gui\Pads\ErrorList\ErrorListToolbarCommands.cs" />
-    <Compile Include="Src\Gui\Pads\CompilerMessageView\CompulerMessageViewToolbarCommands.cs" />
+    <Compile Include="Src\Gui\Pads\CompilerMessageView\CompilerMessageViewToolbarCommands.cs" />
     <Compile Include="Src\Services\ParserService\DefaultProjectContent.cs" />
     <Compile Include="Src\Services\ParserService\IProjectContent.cs" />
     <Compile Include="Src\Gui\Pads\ClassBrowser\ClassBrowser.cs" />

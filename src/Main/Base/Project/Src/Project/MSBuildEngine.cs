@@ -159,11 +159,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			void AppendError(string file, int lineNumber, int columnNumber, string code, string message, bool isWarning)
 			{
+				if (projectFiles.Count > 0) {
+					file = Path.Combine(Path.GetDirectoryName(projectFiles.Peek()), file);
+				}
 				CompilerError error = new CompilerError(file, lineNumber, columnNumber, code, message);
 				error.IsWarning = isWarning;
 				AppendText(error.ToString());
-				if (projectFiles.Count > 0)
-					error.FileName = Path.Combine(Path.GetDirectoryName(projectFiles.Peek()), file);
 				results.Errors.Add(error);
 			}
 			
