@@ -366,7 +366,8 @@ namespace DebuggerLibrary
 
 		public string GetParameterName(int index)
 		{
-			return module.MetaData.GetParamForMethodIndex(methodProps.Token, (uint)index).Name;
+			// index = 0 is return parameter
+			return module.MetaData.GetParamForMethodIndex(methodProps.Token, (uint)index + 1).Name;
 		}
 
 		public int GetArgumentCount {
@@ -382,7 +383,8 @@ namespace DebuggerLibrary
 		internal ICorDebugValue GetArgumentValue(int index)
 		{
 			ICorDebugValue arg;
-			corILFrame.GetArgument((uint)index, out arg);
+			// Non-static functions include 'this' as first argument
+			corILFrame.GetArgument((uint)(IsStatic? index : (index + 1)), out arg);
 			return arg;
 		}
 
@@ -391,8 +393,12 @@ namespace DebuggerLibrary
 			VariableCollection arguments = new VariableCollection();
 
 			int argCount = GetArgumentCount;
+			
+			if (!IsStatic) {
+				argCount--; // Remove 'this' from count
+			}
 
-			for (int i = (IsStatic?0:1); i < argCount; i++) {
+			for (int i = 0; i < argCount; i++) {
 				arguments.Add(VariableFactory.CreateVariable(debugger, GetArgumentValue(i), GetParameterName(i)));
 			}
 
