@@ -50,8 +50,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		static ProjectService()
 		{
 			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += new EventHandler(ActiveWindowChanged);
-			FileService.FileRenamed += new FileRenameEventHandler(FileServiceFileRenamed);
-			FileService.FileRemoved += new FileEventHandler(FileServiceFileRemoved);
+			FileService.FileRenamed += FileServiceFileRenamed;
+			FileService.FileRemoved += FileServiceFileRemoved;
 		}
 		
 		static void FileServiceFileRenamed(object sender, FileRenameEventArgs e)
@@ -162,6 +162,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static void LoadSolution(string fileName)
 		{
 			openSolution = Solution.Load(fileName);
+			if (openSolution == null)
+				return;
 			OnSolutionLoaded(new SolutionEventArgs(openSolution));
 			try {
 				foreach (IProject project in openSolution.Projects) {

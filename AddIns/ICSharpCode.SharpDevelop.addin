@@ -111,7 +111,7 @@
 	
 	<Path name = "/SharpDevelop/Workbench/Combine/FileFilter">
 		<FileFilter id         = "Solution"
-		            name       = "Solutions"
+		            name       = "Solutions (*.sln)"
 		            extensions = "*.sln"/>
 		
 		<FileFilter id         = "Combine"
@@ -120,7 +120,7 @@
 		
 		<FileFilter id         = "Project"
 		            name       = "${res:SharpDevelop.FileFilter.ProjectFiles}"
-		            extensions = "*.prjx"/>
+		            extensions = "*.prjx;*.vbproj;*.csproj"/>
 		
 		<FileFilter id         = "AllFiles"
 		            name       = "${res:SharpDevelop.FileFilter.AllFiles}"

@@ -14,15 +14,15 @@
 					<xsl:value-of select = "/Project/Configurations/@active" />
 				</xsl:element>
 				<xsl:element name = "Platform" ><xsl:attribute name = "Condition"> '$(Platform)' == '' </xsl:attribute>AnyCPU</xsl:element>
-				<xsl:element name = "ProductVersion">8.0.40607</xsl:element>
+				<!--<xsl:element name = "ProductVersion">8.0.40607</xsl:element>-->
 				<xsl:element name = "SchemaVersion">2.0</xsl:element>
 				<xsl:element name = "ProjectGuid"><xsl:value-of select = "Conversion:GetGuid(/Project/@name)" /></xsl:element>
-				<xsl:element name = "RootNamespace"><xsl:value-of select = "/Project/@standardNamespace" /></xsl:element>
+				<xsl:element name = "RootNamespace"><xsl:value-of select = "Conversion:SetRootNamespace(/Project/@standardNamespace)" /></xsl:element>
 				
 				<!-- Copy global object from 'Debug' node -->
 				<xsl:for-each select="/Project/Configurations/Configuration[@name='Debug']">
 					<xsl:element name = "AssemblyName"><xsl:value-of select = "Output/@assembly" /></xsl:element>
-					<xsl:element name = "OutputTarget"><xsl:value-of select = "CodeGeneration/@target" /></xsl:element>
+					<xsl:element name = "OutputType"><xsl:value-of select = "CodeGeneration/@target" /></xsl:element>
 					
 					<xsl:element name = "ApplicationIcon"><xsl:value-of select = "CodeGeneration/@win32Icon" /></xsl:element>
 					
@@ -48,7 +48,7 @@
 					<xsl:element name = "CheckForOverflowUnderflow"><xsl:value-of select = "CodeGeneration/@generateoverflowchecks" /></xsl:element>
 					<xsl:element name = "DefineConstants"><xsl:value-of select = "CodeGeneration/@definesymbols" /></xsl:element>
 					<xsl:element name = "OutputPath"><xsl:value-of select = "Conversion:CanocializePath(Output/@directory)" /></xsl:element>
-					<xsl:element name = "TreatWarningsAsErrors"><xsl:value-of select = "@runwithwarnings" /></xsl:element>
+					<xsl:element name = "TreatWarningsAsErrors"><xsl:value-of select = "Conversion:Negate(@runwithwarnings)" /></xsl:element>
 				</xsl:element>
 			</xsl:for-each>
 			
@@ -67,8 +67,8 @@
 				
 				<xsl:for-each select="/Project/References/Reference[@type='Assembly']">
 					<xsl:element name = "Reference" >
-						<xsl:attribute name = "Include"><xsl:value-of select = "Conversion:GetFileName(@refto)" /></xsl:attribute>
-						<xsl:element name = "HintPath" ><xsl:value-of select = "@refto" /></xsl:element>
+						<xsl:attribute name = "Include"><xsl:value-of select = "Conversion:GetFileNameWithoutExtension(@refto)" /></xsl:attribute>
+						<xsl:element name = "HintPath" ><xsl:value-of select = "Conversion:CanocializeFileName(@refto)" /></xsl:element>
 						<xsl:element name = "Private" ><xsl:value-of select = "@localcopy" /></xsl:element>
 					</xsl:element>
 				</xsl:for-each>
@@ -82,7 +82,7 @@
 				</xsl:for-each>
 				<xsl:for-each select="/Project/Contents/File[@buildaction='EmbedAsResource']">
 					<xsl:element name = "EmbeddedResource" >
-						<xsl:attribute name = "Include"><xsl:value-of select = "Conversion:CanocializeFileName(@name)" /></xsl:attribute>
+						<xsl:attribute name = "Include"><xsl:value-of select = "Conversion:ConvertResource(@name)" /></xsl:attribute>
 					</xsl:element>
 				</xsl:for-each>
 				
@@ -107,14 +107,13 @@
 						<xsl:attribute name = "Include"><xsl:value-of select = "Conversion:GetRelativeProjectPath(@refto)" /></xsl:attribute>
 						
 						<xsl:element name = "Project"><xsl:value-of select = "Conversion:GetGuid(@refto)" /></xsl:element>
-						<xsl:element name = "Package">{00000000-0000-0000-0000-000000000000}</xsl:element>
 						<xsl:element name = "Name"><xsl:value-of select = "@refto" /></xsl:element>
 					</xsl:element>
 				</xsl:for-each>
 			</xsl:element>
 			
 			<xsl:element name = "Import" >
-				<xsl:attribute name = "Project">$(MSBuildBinPath)\Microsoft.CSHARP.Targets</xsl:attribute>
+				<xsl:attribute name = "Project">$(MSBuildBinPath)\Microsoft.<xsl:value-of select = "Conversion:GetLanguageName()" />.Targets</xsl:attribute>
 			</xsl:element>
 		
 		

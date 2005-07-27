@@ -33,10 +33,8 @@ namespace ICSharpCode.Svn.Commands
 	{
 		public override void Run()
 		{
-			
-			FileService.FileRemoved  += FileRemoved;
-			FileService.FileRenaming += FileRenamed;
-			
+			FileService.FileRemoving += FileRemoving;
+			FileService.FileRenaming += FileRenaming;
 			
 			//projectService.FileRemovedFromProject += FileRemoved;
 			//projectService.FileAddedToProject   += FileAdded);
@@ -64,7 +62,6 @@ namespace ICSharpCode.Svn.Commands
 		
 		void FileAdded(object sender, FileEventArgs e)
 		{
-//			Console.WriteLine("ADD : " + e.FileName);
 			try {
 				if (AddInOptions.AutomaticallyAddFiles) {
 					SvnClient.Instance.Client.Add(Path.GetFullPath(e.FileName), false);
@@ -74,31 +71,103 @@ namespace ICSharpCode.Svn.Commands
 			}
 		}
 		
-		void FileRemoved(object sender, FileEventArgs e)
+		void FileRemoving(object sender, FileCancelEventArgs e)
 		{
-//			Console.WriteLine("REMOVE : " + e.FileName);
+			if (e.Cancel) return;
+			if (e.IsDirectory) return;
+			if (!AddInOptions.AutomaticallyDeleteFiles) return;
+			string fullName = Path.GetFullPath(e.FileName);
 			try {
-				if (AddInOptions.AutomaticallyDeleteFiles) {
-					SvnClient.Instance.Client.Delete( new string [] {
-					                                 	Path.GetFullPath(e.FileName)
-					                                 }, true);
+				Status status = SvnClient.Instance.Client.SingleStatus(fullName);
+				switch (status.TextStatus) {
+					case StatusKind.Unversioned:
+						return; // nothing to do
+					case StatusKind.None:
+					case StatusKind.Normal:
+						// remove without problem
+						break;
+					case StatusKind.Modified:
+					case StatusKind.Replaced:
+						MessageService.ShowError("The file has local modifications. Do you really want to remove it?");
+						e.Cancel = true;
+						break;
+					case StatusKind.Added:
+						if (status.Copied) {
+							MessageService.ShowError("The file has just been moved to this location, do you really want to remove it?");
+							e.Cancel = true;
+							return;
+						}
+						SvnClient.Instance.Client.Revert(new string[] { fullName }, e.IsDirectory);
+						return;
+					default:
+						MessageService.ShowError("The file/directory cannot be removed because it is in subversion status '" + status.TextStatus + "'.");
+						e.Cancel = true;
+						return;
 				}
+				SvnClient.Instance.Client.Delete(new string [] { fullName }, true);
+				e.OperationAlreadyDone = true;
 			} catch (Exception ex) {
 				MessageService.ShowError("File removed exception: " + ex);
 			}
 		}
 		
-		void FileRenamed(object sender, FileRenameEventArgs e)
+		void FileRenaming(object sender, FileRenamingEventArgs e)
 		{
-//			Console.WriteLine("RENAME : " + e.FileName);
+			string fullSource = Path.GetFullPath(e.SourceFile);
 			try {
-				SvnClient.Instance.Client.Move(Path.GetFullPath(e.SourceFile),
+				Status status = SvnClient.Instance.Client.SingleStatus(fullSource);
+				switch (status.TextStatus) {
+					case StatusKind.Unversioned:
+						return; // nothing to do
+					case StatusKind.Normal:
+					case StatusKind.None:
+					case StatusKind.Modified:
+						// rename without problem
+						break;
+					case StatusKind.Added:
+					case StatusKind.Replaced:
+						if (status.Copied) {
+							MessageService.ShowError("The file was moved/copied and cannot be renamed without losing it's history.");
+							e.Cancel = true;
+						} else if (e.IsDirectory) {
+							goto default;
+						} else {
+							SvnClient.Instance.Client.Revert(new string[] { fullSource }, false);
+							FileService.FileRenamed += new AutoAddAfterRenameHelper(e).Renamed;
+						}
+						return;
+					default:
+						MessageService.ShowError("The file/directory cannot be renamed because it is in subversion status '" + status.TextStatus + "'.");
+						e.Cancel = true;
+						return;
+				}
+				SvnClient.Instance.Client.Move(fullSource,
 				                               Revision.Unspecified, // TODO: Remove this line when upgrading to new NSvn version
 				                               Path.GetFullPath(e.TargetFile),
 				                               true
 				                              );
+				e.OperationAlreadyDone = true;
 			} catch (Exception ex) {
 				MessageService.ShowError("File renamed exception: " + ex);
+			}
+		}
+		
+		class AutoAddAfterRenameHelper
+		{
+			FileRenamingEventArgs args;
+			
+			public AutoAddAfterRenameHelper(FileRenamingEventArgs args) {
+				this.args = args;
+			}
+			
+			public void Renamed(object sender, FileRenameEventArgs e)
+			{
+				FileService.FileRenamed -= Renamed;
+				if (args.Cancel || args.OperationAlreadyDone)
+					return;
+				if (args.SourceFile != e.SourceFile || args.TargetFile != e.TargetFile)
+					return;
+				SvnClient.Instance.Client.Add(e.TargetFile, false);
 			}
 		}
 	}

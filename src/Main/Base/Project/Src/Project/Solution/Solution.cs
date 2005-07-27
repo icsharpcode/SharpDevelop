@@ -354,10 +354,41 @@ namespace ICSharpCode.SharpDevelop.Project
 		static Regex projectLinePattern   = new Regex("Project\\(\"(?<ProjectGuid>.*)\"\\)\\s+=\\s+\"(?<Title>.*)\",\\s*\"(?<Location>.*)\",\\s*\"(?<Guid>.*)\"", RegexOptions.Compiled);
 		static Regex globalSectionPattern = new Regex("\\s*GlobalSection\\((?<Name>.*)\\)\\s*=\\s*(?<Type>.*)", RegexOptions.Compiled);
 		
+		/// <summary>
+		/// Reads the specified solution file. The project-location-guid information is written into the conversion class.
+		/// </summary>
+		/// <returns>The version number of the solution.</returns>
+		public static string ReadSolutionInformation(string solutionFileName, Converter.PrjxToSolutionProject.Conversion conversion)
+		{
+			string solutionDirectory = Path.GetDirectoryName(solutionFileName);
+			using (StreamReader sr = File.OpenText(solutionFileName)) {
+				string line = sr.ReadLine();
+				Match match = versionPattern.Match(line);
+				if (!match.Success) {
+					return null;
+				}
+				string version = match.Result("${Version}");
+				while ((line = sr.ReadLine()) != null) {
+					match = projectLinePattern.Match(line);
+					if (match.Success) {
+						string projectGuid  = match.Result("${ProjectGuid}");
+						string title        = match.Result("${Title}");
+						string location     = Path.Combine(solutionDirectory, match.Result("${Location}"));
+						string guid         = match.Result("${Guid}");
+						conversion.NameToGuid.Add(title, new Guid(guid));
+						conversion.NameToPath.Add(title, location);
+					}
+				}
+				return version;
+			}
+		}
+		
 		static bool SetupSolution(Solution newSolution, string fileName)
 		{
 			string         solutionDirectory     = Path.GetDirectoryName(fileName);
 			ProjectSection nestedProjectsSection = null;
+			
+			bool needsConversion = false;
 			
 			using (StreamReader sr = File.OpenText(fileName)) {
 				string line = sr.ReadLine();
@@ -369,19 +400,21 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				switch (match.Result("${Version}")) {
 					case "7.00":
-						if (!MessageService.AskQuestion("Found VS.NET 2000 Project. Should I convert it to Solution Format 9.00 (VS.NET 2005) ?")) {
+						needsConversion = true;
+						if (!MessageService.AskQuestion("Found Visual Studio.NET Project. Should I convert it to Solution Format 9.00 (Visual Studio 2005) ?")) {
 							return false;
 						}
 						break;
 					case "8.00":
-						if (!MessageService.AskQuestion("Found VS.NET 2003 Project. Should I convert it to Solution Format 9.00 (VS.NET 2005) ?")) {
+						needsConversion = true;
+						if (!MessageService.AskQuestion("Found Visual Studio.NET 2003 Project. Should I convert it to Solution Format 9.00 (Visual Studio 2005) ?")) {
 							return false;
 						}
 						break;
 					case "9.00":
 						break;
 					default:
-						MessageService.ShowError("Can't read Microsoft Solution file format " + match.Result("${Version}") + ". Use Visual Studio.NET to convert it to a newer version.");
+						MessageService.ShowError("Can't read Microsoft Solution file format " + match.Result("${Version}") + ".");
 						return false;
 				}
 				
@@ -444,16 +477,32 @@ namespace ICSharpCode.SharpDevelop.Project
 					folder.AddFolder(newSolution.guidDictionary[from]);
 				}
 			}
+			if (needsConversion) {
+				// save in new format
+				newSolution.Save();
+			}
 			return true;
+		}
+		
+		static Solution solutionBeingLoaded;
+		
+		public static Solution SolutionBeingLoaded {
+			get {
+				return solutionBeingLoaded;
+			}
 		}
 		
 		public static Solution Load(string fileName)
 		{
 			Solution newSolution = new Solution();
+			solutionBeingLoaded = newSolution;
 			newSolution.Name     = Path.GetFileNameWithoutExtension(fileName);
 			
 			bool loadCombine = Path.GetExtension(fileName).ToUpper() == ".CMBX";
 			if (loadCombine) {
+				if (!MessageService.AskQuestion("Should the SharpDevelop 1.x combine be converted into a SharpDevelop 2.x solution?")) {
+					return null;
+				}
 				newSolution.fileName = Path.ChangeExtension(fileName, ".sln");
 				ICSharpCode.SharpDevelop.Project.Converter.CombineToSolution.ConvertSolution(newSolution, fileName);
 			} else {
@@ -462,6 +511,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					return null;
 				}
 			}
+			
+			solutionBeingLoaded = null;
 			return newSolution;
 		}
 		

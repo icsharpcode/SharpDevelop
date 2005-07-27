@@ -16,9 +16,6 @@ using NSvn.Core;
 
 namespace ICSharpCode.Svn.Commands
 {
-	/// <summary>
-	/// Description of CheckoutCommand
-	/// </summary>
 	public class CheckoutCommand : AbstractMenuCommand
 	{
 		string from = String.Empty;
@@ -31,8 +28,7 @@ namespace ICSharpCode.Svn.Commands
 		/// </summary>
 		public CheckoutCommand()
 		{
-			// You can enable/disable the menu command using the
-			// IsEnabled property of the AbstractMenuCommand class
+			
 		}
 		
 		void DoCheckoutCommand()

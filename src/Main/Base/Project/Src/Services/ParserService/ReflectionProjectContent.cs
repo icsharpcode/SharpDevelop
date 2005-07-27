@@ -28,8 +28,12 @@ namespace ICSharpCode.Core
 			
 			ICompilationUnit assemblyCompilationUnit = new DefaultCompilationUnit(this);
 			
-			foreach (Type type in assembly.GetExportedTypes()) {
-				AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, null));
+			try {
+				foreach (Type type in assembly.GetExportedTypes()) {
+					AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, null));
+				}
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
 			}
 			
 			if (assembly == typeof(void).Assembly) {

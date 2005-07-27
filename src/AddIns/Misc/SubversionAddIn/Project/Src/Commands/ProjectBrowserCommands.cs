@@ -44,15 +44,20 @@ namespace ICSharpCode.Svn.Commands
 				}
 				if (StartOperation()) {
 					SvnClient.Instance.WaitForOperationEnd();
-					
-					if (AddInOptions.AutomaticallyReloadProject) {
-						//projectService.ReloadCombine();
-					}
+					OperationFinished();
+					OverlayIconManager.EnqueueRecursive(node);
 				}
 			}
 		}
 		
 		protected abstract bool StartOperation();
+		
+		protected virtual void OperationFinished()
+		{
+			//if (AddInOptions.AutomaticallyReloadProject) {
+			//	projectService.ReloadCombine();
+			//}
+		}
 	}
 	
 	public class UpdateCommand : SubversionCommand
@@ -78,9 +83,11 @@ namespace ICSharpCode.Svn.Commands
 		
 		protected override bool StartOperation()
 		{
-			// TODO: Display warning message (Revert might cause loss of data)
-			SvnClient.Instance.OperationStart("Revert", new ThreadStart(DoRevertCommand));
-			return true;
+			if (MessageService.AskQuestion("Revert removes all your local modifications to this file. Are you sure?", "Subversion revert")) {
+				SvnClient.Instance.OperationStart("Revert", new ThreadStart(DoRevertCommand));
+				return true;
+			}
+			return false;
 		}
 	}
 	
@@ -108,15 +115,15 @@ namespace ICSharpCode.Svn.Commands
 				                               outStream,
 				                               errStream);
 				output = Encoding.Default.GetString(outStream.ToArray());
-				// TODO: Invoke the following method:
-				// FileService.NewFile("a.patch", "txt", output);
+				ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.SafeThreadAsyncCall(this, "DisplayPatch");
 			} catch (Exception e) {
 				MessageService.ShowError(e);
-			} finally {
-				if (output == null) {
-					output = "";
-				}
 			}
+		}
+		
+		void DisplayPatch()
+		{
+			FileService.NewFile(Path.GetFileName(fileName) + ".patch", "patch", output);
 		}
 		
 		protected override bool StartOperation()

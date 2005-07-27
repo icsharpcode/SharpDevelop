@@ -10,12 +10,10 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Core
 {
-	public delegate void FileEventHandler(object sender, FileEventArgs e);
-	
 	public class FileEventArgs : EventArgs
 	{
 		string fileName   = null;
-	
+		
 		bool   isDirectory;
 		
 		public string FileName {
@@ -34,6 +32,35 @@ namespace ICSharpCode.Core
 		{
 			this.fileName = fileName;
 			this.isDirectory = isDirectory;
+		}
+	}
+	
+	public class FileCancelEventArgs : FileEventArgs
+	{
+		bool cancel;
+
+		public bool Cancel {
+			get {
+				return cancel;
+			}
+			set {
+				cancel = value;
+			}
+		}
+		
+		bool operationAlreadyDone;
+		
+		public bool OperationAlreadyDone {
+			get {
+				return operationAlreadyDone;
+			}
+			set {
+				operationAlreadyDone = value;
+			}
+		}
+		
+		public FileCancelEventArgs(string fileName, bool isDirectory) : base(fileName, isDirectory)
+		{
 		}
 	}
 }

@@ -144,11 +144,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ProjectService.CurrentProjectChanged += new ProjectEventHandler(SetProjectTitle);
 
-			FileService.FileRemoved += new FileEventHandler(CheckRemovedFile);
-			FileService.FileRenamed += new FileRenameEventHandler(CheckRenamedFile);
+			FileService.FileRemoved += CheckRemovedFile;
+			FileService.FileRenamed += CheckRenamedFile;
 			
-			FileService.FileRemoved += new FileEventHandler(FileService.RecentOpen.FileRemoved);
-			FileService.FileRenamed += new FileRenameEventHandler(FileService.RecentOpen.FileRenamed);
+			FileService.FileRemoved += FileService.RecentOpen.FileRemoved;
+			FileService.FileRenamed += FileService.RecentOpen.FileRenamed;
 			
 			CreateMainMenu();
 			CreateToolBars();
@@ -286,11 +286,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public Properties CreateMemento()
 		{
 			Properties properties = new Properties();
-			properties["bounds"]      = normalBounds.X + "," + normalBounds.Y + "," + normalBounds.Width + "," + normalBounds.Height;
+			properties["bounds"] = normalBounds.X + "," + normalBounds.Y + "," + normalBounds.Width + "," + normalBounds.Height;
 			
-			properties["windowstate"] = WindowState.ToString();
-			properties["defaultstate"]= defaultWindowState.ToString();
-			properties["fullscreen"]  = fullscreen.ToString();
+			if (FullScreen || WindowState == FormWindowState.Minimized)
+				properties["windowstate"] = defaultWindowState.ToString();
+			else
+				properties["windowstate"] = WindowState.ToString();
+			properties["defaultstate"] = defaultWindowState.ToString();
 			
 			return properties;
 		}
@@ -312,10 +314,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected override void OnResize(EventArgs e)
 		{
 			base.OnResize(e);
-			if (WindowState == FormWindowState.Normal) {
-				normalBounds = Bounds;
+			if (!FullScreen && WindowState != FormWindowState.Minimized) {
+				defaultWindowState = WindowState;
+				if (WindowState == FormWindowState.Normal) {
+					normalBounds = Bounds;
+				}
 			}
-			
 		}
 		
 		protected override void OnLocationChanged(EventArgs e)

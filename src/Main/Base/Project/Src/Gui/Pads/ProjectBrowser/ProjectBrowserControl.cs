@@ -60,9 +60,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ProjectBrowserControl()
 		{
 			InitializeComponent();
-			treeView.AfterSelect       += new TreeViewEventHandler(TreeViewAfterSelect);
-			FileService.FileRenaming   += new FileRenameEventHandler(FileServiceFileRenaming);
-			FileService.FileRemoving   += new FileEventHandler(FileServiceFileRemoving);
+			treeView.AfterSelect       += TreeViewAfterSelect;
+			FileService.FileRenaming   += FileServiceFileRenaming;
+			FileService.FileRemoving   += FileServiceFileRemoving;
 			
 			ProjectService.ProjectItemAdded += ProjectServiceProjectItemAdded;
 			ProjectService.SolutionFolderRemoved += ProjectServiceSolutionFolderRemoved;

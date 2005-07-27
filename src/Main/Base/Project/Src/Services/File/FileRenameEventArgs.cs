@@ -10,7 +10,35 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Core
 {
-	public delegate void FileRenameEventHandler(object sender, FileRenameEventArgs e);
+	public class FileRenamingEventArgs : FileRenameEventArgs
+	{
+		bool cancel;
+
+		public bool Cancel {
+			get {
+				return cancel;
+			}
+			set {
+				cancel = value;
+			}
+		}
+		
+		bool operationAlreadyDone;
+
+		public bool OperationAlreadyDone {
+			get {
+				return operationAlreadyDone;
+			}
+			set {
+				operationAlreadyDone = value;
+			}
+		}
+		
+		public FileRenamingEventArgs(string sourceFile, string targetFile, bool isDirectory)
+			: base(sourceFile, targetFile, isDirectory)
+		{
+		}
+	}
 	
 	public class FileRenameEventArgs : EventArgs
 	{

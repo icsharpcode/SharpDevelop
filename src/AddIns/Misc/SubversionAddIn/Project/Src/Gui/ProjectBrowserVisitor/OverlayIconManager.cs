@@ -9,6 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Threading;
+using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
@@ -74,6 +75,7 @@ namespace ICSharpCode.Svn
 				case StatusKind.Deleted:
 					return GetImage(StatusIcon.Deleted);
 				case StatusKind.Modified:
+				case StatusKind.Replaced:
 					return GetImage(StatusIcon.Modified);
 				case StatusKind.Normal:
 					return GetImage(StatusIcon.OK);
@@ -89,6 +91,32 @@ namespace ICSharpCode.Svn
 			lock (queue) {
 				queue.Enqueue(node);
 				if (queue.Count == 1) {
+					new ThreadStart(Run).BeginInvoke(null, null);
+				}
+			}
+		}
+		
+		public static void EnqueueRecursive(AbstractProjectBrowserTreeNode node)
+		{
+			lock (queue) {
+				bool wasEmpty = queue.Count == 0;
+				
+				queue.Enqueue(node);
+				// use breadth-first search
+				Queue<AbstractProjectBrowserTreeNode> q = new Queue<AbstractProjectBrowserTreeNode>();
+				q.Enqueue(node);
+				while (q.Count > 0) {
+					node = q.Dequeue();
+					foreach (TreeNode n in node.Nodes) {
+						node = n as AbstractProjectBrowserTreeNode;
+						if (node != null) {
+							q.Enqueue(node);
+							queue.Enqueue(node);
+						}
+					}
+				}
+				
+				if (wasEmpty) {
 					new ThreadStart(Run).BeginInvoke(null, null);
 				}
 			}
@@ -131,7 +159,7 @@ namespace ICSharpCode.Svn
 				}
 			}
 			if (node.TreeView != null) {
-				node.TreeView.BeginInvoke(new ThreadStart(delegate() {
+				node.TreeView.BeginInvoke(new ThreadStart(delegate {
 				                                          	node.Overlay = GetImage(status);
 				                                          }));
 			}

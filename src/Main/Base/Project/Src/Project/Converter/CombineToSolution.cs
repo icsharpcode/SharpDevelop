@@ -10,12 +10,11 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.IO;
 using System.Collections.Generic;
+using System.Xml;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project.Converter
 {
-	/// <summary>
-	/// Description of Class1.
-	/// </summary>
 	public static class CombineToSolution
 	{
 		static string ReadContent(string fileName)
@@ -43,6 +42,14 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 		}
 		
+		static bool IsVisualBasic(string prjx)
+		{
+			using (XmlTextReader reader = new XmlTextReader(prjx)) {
+				reader.Read();
+				return reader.GetAttribute("projecttype") == "VBNET";
+			}
+		}
+		
 		public static void ConvertSolution(Solution newSolution, string fileName)
 		{
 			List<string> projectFiles = new List<string>();
@@ -53,11 +60,33 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			foreach (string path in projectFiles) {
 				string name = PrjxToSolutionProject.Conversion.GetProjectName(path);
 				conversion.NameToGuid[name] = Guid.NewGuid();
-				conversion.NameToPath[name] = Path.ChangeExtension(path, ".csproj");
+				if (IsVisualBasic(path))
+					conversion.NameToPath[name] = Path.ChangeExtension(path, ".vbproj");
+				else
+					conversion.NameToPath[name] = Path.ChangeExtension(path, ".csproj");
 			}
 			foreach (string path in projectFiles) {
+				conversion.IsVisualBasic = IsVisualBasic(path);
 				IProject newProject = PrjxToSolutionProject.ConvertOldProject(path, conversion);
 				newSolution.AddFolder(newProject);
+			}
+			if (conversion.Resources != null) {
+				const string resourceWarning = "There were resource files in the project.\n" +
+					"SharpDevelop 2 compiles resources different: the resource name " +
+					"is not just the file name; but it is prefixed with the root namespace " +
+					"and the directory name.\n\n" +
+					"The resources files have been renamed/moved accordingly.";
+				if (conversion.Resources.Count == 0) {
+					MessageService.ShowMessage(resourceWarning);
+				} else {
+					StringBuilder txt = new StringBuilder(resourceWarning);
+					txt.AppendLine();
+					txt.AppendLine();
+					txt.AppendLine("The following files could not be renamed/moved automatically:");
+					foreach (string r in conversion.Resources)
+						txt.AppendLine(r);
+					MessageService.ShowMessage(txt.ToString());
+				}
 			}
 			newSolution.Save();
 		}

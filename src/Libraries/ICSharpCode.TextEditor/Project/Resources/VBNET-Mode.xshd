@@ -133,6 +133,7 @@
 			
 			<KeyWords name = "OtherModifiers" bold="false" italic="false" color="Blue">
 				<Key word = "Const" />
+				<Key word = "Custom" />
 				<Key word = "Default" />
 				<Key word = "Global" />
 				<Key word = "MustInherit" />
@@ -161,9 +162,6 @@
 				<Key word = "AddHandler" />
 				<Key word = "RemoveHandler" />
 				<Key word = "RaiseEvent" />
-				<Key word = "Custom" />
-				<Key word = "RemoveHandler" />
-				<Key word = "AddHandler" />
 				<Key word = "Option" />
 				<Key word = "Let" />
 				<Key word = "GoTo" />

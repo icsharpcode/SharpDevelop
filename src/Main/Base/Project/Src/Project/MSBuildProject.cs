@@ -74,17 +74,24 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.fileName = projectFileName;
 			using (XmlTextReader reader = new XmlTextReader(projectFileName)) {
-				while (reader.Read()) {
+				reader.Read();
+				if (reader.Name == "VisualStudioProject") {
+					reader.Close();
+					Converter.PrjxToSolutionProject.ConvertVSNetProject(projectFileName);
+					SetupProject(projectFileName);
+					return;
+				}
+				do {
 					if (reader.IsStartElement()) {
 						switch (reader.LocalName) {
 							case "PropertyGroup":
 								string condition = reader.GetAttribute("Condition");
-								
+
 								PropertyGroup propertyGroup = ReadPropertyGroup(reader);
 								if (condition == null) {
 									condition = String.Empty;
 								}
-								
+
 								string configuration;
 								Match match = configurationRegEx.Match(condition);
 								if (match.Success) {
@@ -107,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Project
 								break;
 						}
 					}
-				}
+				} while (reader.Read());
 			}
 			
 			string userSettingsFileName = projectFileName + ".user";

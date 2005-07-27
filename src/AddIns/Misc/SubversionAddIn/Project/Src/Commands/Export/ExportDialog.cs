@@ -42,8 +42,13 @@ namespace ICSharpCode.Svn.Commands
 		
 		public string Source {
 			get {
-				return SourceIsLocalDirectory ? ControlDictionary["sourceDirectoryTextBox"].Text : ControlDictionary["urlTextBox"].Text;
+				return SourceIsLocalDirectory ? ConvertPathToURL(ControlDictionary["sourceDirectoryTextBox"].Text) : ControlDictionary["urlTextBox"].Text;
 			}
+		}
+		
+		string ConvertPathToURL(string path)
+		{
+			return "file:///" + path.Replace('\\', '/');
 		}
 		
 		public string Destination {

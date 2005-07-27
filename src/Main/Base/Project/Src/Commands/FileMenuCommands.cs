@@ -7,6 +7,7 @@
 
 using System;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
@@ -34,8 +35,26 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			using (OpenFileDialog fdiag  = new OpenFileDialog()) {
+				AddInTreeNode addinTreeNode = AddInTree.GetTreeNode("/SharpDevelop/Workbench/Combine/FileFilter");
+				StringBuilder b = new StringBuilder("All known project formats|");
+				bool first = true;
+				foreach (Codon c in addinTreeNode.Codons) {
+					if (!first) {
+						b.Append(';');
+					} else {
+						first = false;
+					}
+					string ext = c.Properties.Get("extensions", "");
+					if (ext != "*.*" && ext.Length > 0) {
+						b.Append(ext);
+					}
+				}
+				foreach (string entry in addinTreeNode.BuildChildItems(this)) {
+					b.Append('|');
+					b.Append(entry);
+				}
 				fdiag.AddExtension    = true;
-				fdiag.Filter          = String.Join("|", (string[])(AddInTree.GetTreeNode("/SharpDevelop/Workbench/Combine/FileFilter").BuildChildItems(this)).ToArray(typeof(string)));
+				fdiag.Filter          = b.ToString();
 				fdiag.Multiselect     = false;
 				fdiag.CheckFileExists = true;
 				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {

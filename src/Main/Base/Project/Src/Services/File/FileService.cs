@@ -185,24 +185,29 @@ namespace ICSharpCode.Core
 		
 		public static void RemoveFile(string fileName, bool isDirectory)
 		{
-			OnFileRemoving(new FileEventArgs(fileName, isDirectory));
-			if (isDirectory) {
-				try {
-					if (Directory.Exists(fileName)) {
-						Directory.Delete(fileName, true);
-					}
-				} catch (Exception e) {
-					MessageService.ShowError(e, "Can't remove directory " + fileName);
+			FileCancelEventArgs eargs = new FileCancelEventArgs(fileName, isDirectory);
+			OnFileRemoving(eargs);
+			if (eargs.Cancel)
+				return;
+			if (!eargs.OperationAlreadyDone) {
+				if (isDirectory) {
+					try {
+						if (Directory.Exists(fileName)) {
+							Directory.Delete(fileName, true);
+						}
+					} catch (Exception e) {
+						MessageService.ShowError(e, "Can't remove directory " + fileName);
 //					return;
-				}
-			} else {
-				try {
-					if (File.Exists(fileName)) {
-						File.Delete(fileName);
 					}
-				} catch (Exception e) {
-					MessageService.ShowError(e, "Can't remove file " + fileName);
+				} else {
+					try {
+						if (File.Exists(fileName)) {
+							File.Delete(fileName);
+						}
+					} catch (Exception e) {
+						MessageService.ShowError(e, "Can't remove file " + fileName);
 //					return;
+					}
 				}
 			}
 			OnFileRemoved(new FileEventArgs(fileName, isDirectory));
@@ -210,24 +215,29 @@ namespace ICSharpCode.Core
 		
 		public static void RenameFile(string oldName, string newName, bool isDirectory)
 		{
-			OnFileRenaming(new FileRenameEventArgs(oldName, newName, isDirectory));
-			try {
-				if (isDirectory) {
-					if (Directory.Exists(oldName)) {
-						Directory.Move(oldName, newName);
+			FileRenamingEventArgs eargs = new FileRenamingEventArgs(oldName, newName, isDirectory);
+			OnFileRenaming(eargs);
+			if (eargs.Cancel)
+				return;
+			if (!eargs.OperationAlreadyDone) {
+				try {
+					if (isDirectory) {
+						if (Directory.Exists(oldName)) {
+							Directory.Move(oldName, newName);
+						}
+					} else {
+						if (File.Exists(oldName)) {
+							File.Move(oldName, newName);
+						}
 					}
-				} else {
-					if (File.Exists(oldName)) {
-						File.Move(oldName, newName);
+				} catch (Exception e) {
+					if (isDirectory) {
+						MessageService.ShowError(e, "Can't rename directory " + oldName);
+					} else {
+						MessageService.ShowError(e, "Can't rename file " + oldName);
 					}
+					return;
 				}
-			} catch (Exception e) {
-				if (isDirectory) {
-					MessageService.ShowError(e, "Can't rename directory " + oldName);
-				} else {
-					MessageService.ShowError(e, "Can't rename file " + oldName);
-				}
-//				return;
 			}
 			OnFileRenamed(new FileRenameEventArgs(oldName, newName, isDirectory));
 		}
@@ -280,7 +290,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		static void OnFileRemoving(FileEventArgs e) 
+		static void OnFileRemoving(FileCancelEventArgs e)
 		{
 			if (FileRemoving != null) {
 				FileRemoving(null, e);
@@ -294,16 +304,16 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		static void OnFileRenaming(FileRenameEventArgs e) {
+		static void OnFileRenaming(FileRenamingEventArgs e) {
 			if (FileRenaming != null) {
 				FileRenaming(null, e);
 			}
 		}
 		
-		public static event FileRenameEventHandler FileRenaming;
-		public static event FileRenameEventHandler FileRenamed;
+		public static event EventHandler<FileRenamingEventArgs> FileRenaming;
+		public static event EventHandler<FileRenameEventArgs> FileRenamed;
 		
-		public static event FileEventHandler FileRemoving;
-		public static event FileEventHandler FileRemoved;
+		public static event EventHandler<FileCancelEventArgs> FileRemoving;
+		public static event EventHandler<FileEventArgs> FileRemoved;
 	}
 }

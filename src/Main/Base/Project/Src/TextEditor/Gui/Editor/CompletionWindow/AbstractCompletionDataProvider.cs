@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		int defaultIndex;
+		int defaultIndex = -1;
 		
 		public int DefaultIndex {
 			get {

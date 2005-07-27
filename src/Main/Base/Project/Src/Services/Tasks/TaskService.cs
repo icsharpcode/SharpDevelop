@@ -91,8 +91,8 @@ namespace ICSharpCode.Core
 		
 		static TaskService()
 		{
-			FileService.FileRenamed += new FileRenameEventHandler(CheckFileRename);
-			FileService.FileRemoved += new FileEventHandler(CheckFileRemove);
+			FileService.FileRenamed += CheckFileRename;
+			FileService.FileRemoved += CheckFileRemove;
 			
 			ProjectService.SolutionClosed += new EventHandler(ProjectServiceSolutionClosed);
 		}

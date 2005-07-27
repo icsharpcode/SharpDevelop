@@ -53,7 +53,7 @@ namespace ICSharpCode.Svn
 		
 		public static bool AutomaticallyDeleteFiles {
 			get {
-				return Properties.Get("AutomaticallyDeleteFiles", false);
+				return Properties.Get("AutomaticallyDeleteFiles", true);
 			}
 			set {
 				Properties.Set("AutomaticallyDeleteFiles", value);

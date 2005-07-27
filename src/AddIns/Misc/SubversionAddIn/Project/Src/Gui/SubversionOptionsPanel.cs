@@ -32,6 +32,7 @@ namespace ICSharpCode.Svn.Gui
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.Svn.Resources.SubversionOptionsPanel.xfrm"));
 			ControlDictionary["logMessageTextBox"].Text                        = AddInOptions.DefaultLogMessage;
 			((CheckBox)ControlDictionary["autoAddFilesCheckBox"]).Checked      = AddInOptions.AutomaticallyAddFiles;
+			((CheckBox)ControlDictionary["autoDeleteFilesCheckBox"]).Checked   = AddInOptions.AutomaticallyDeleteFiles;
 			((CheckBox)ControlDictionary["autoReloadProjectCheckBox"]).Checked = AddInOptions.AutomaticallyReloadProject;
 		}
 		
@@ -39,6 +40,7 @@ namespace ICSharpCode.Svn.Gui
 		{
 			AddInOptions.DefaultLogMessage          = ControlDictionary["logMessageTextBox"].Text;
 			AddInOptions.AutomaticallyAddFiles      = ((CheckBox)ControlDictionary["autoAddFilesCheckBox"]).Checked;
+			AddInOptions.AutomaticallyDeleteFiles   = ((CheckBox)ControlDictionary["autoDeleteFilesCheckBox"]).Checked;
 			AddInOptions.AutomaticallyReloadProject = ((CheckBox)ControlDictionary["autoReloadProjectCheckBox"]).Checked;
 			
 			return true;

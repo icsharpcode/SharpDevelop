@@ -143,6 +143,7 @@ namespace CSharpBinding.Parser
 		
 		public string FindExpressionInternal(string inText, int offset)
 		{
+			// warning: Do not confuse this.offset and offset
 			this.text = inText;
 			this.offset = this.lastAccept = offset;
 			this.state  = START;
@@ -159,7 +160,7 @@ namespace CSharpBinding.Parser
 					lastAccept = this.offset;
 				}
 				if (state == ACCEPTNOMORE) {
-					lastExpressionStartPosition = offset + 1;
+					lastExpressionStartPosition = this.offset + 1;
 					return this.text.Substring(this.offset + 1, offset - this.offset);
 				}
 			}
@@ -167,7 +168,7 @@ namespace CSharpBinding.Parser
 			if (lastAccept < 0)
 				return null;
 			
-			lastExpressionStartPosition = lastAccept + 1;
+			lastExpressionStartPosition = this.lastAccept + 1;
 			
 			return this.text.Substring(this.lastAccept + 1, offset - this.lastAccept);
 		}

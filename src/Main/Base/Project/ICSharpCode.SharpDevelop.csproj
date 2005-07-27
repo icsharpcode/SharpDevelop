@@ -199,7 +199,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TipOfTheDay.cs">
-      <SubType>Form</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TreeViewOptions.cs">
       <SubType>Form</SubType>
@@ -679,7 +679,9 @@
     <Compile Include="Src\Dom\Implementations\CombinedReturnType.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\CodeCompletionDataUsageCache.cs" />
     <EmbeddedResource Include="Resources\CodeCompletionOptionPanel.xfrm" />
-    <Compile Include="Src\TextEditor\Gui\OptionPanels\CodeCompletionPanel.cs" />
+    <Compile Include="Src\TextEditor\Gui\OptionPanels\CodeCompletionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Dom\CodeCompletionOptions.cs" />
     <Compile Include="Src\Services\Debugger\CurrentLineBookmark.cs" />
     <Compile Include="Src\Dom\ClassFinder.cs" />
