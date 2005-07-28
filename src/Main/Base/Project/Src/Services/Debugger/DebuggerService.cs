@@ -329,6 +329,8 @@ namespace ICSharpCode.Core
 		{
 			if (result == null)
 				return null;
+			if (result is MixedResolveResult)
+				return GetText(((MixedResolveResult)result).PrimaryResult);
 			IAmbience ambience = AmbienceService.CurrentAmbience;
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowAccessibility;
 			if (result is MemberResolveResult) {

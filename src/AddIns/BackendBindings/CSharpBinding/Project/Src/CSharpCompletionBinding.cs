@@ -54,6 +54,7 @@ namespace CSharpBinding
 					}
 				}
 				if (context != null) {
+					if (IsInComment(editor)) return false;
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(context), ch);
 					return true;
 				} else if (EnableMethodInsight && CodeCompletionOptions.InsightEnabled) {
@@ -160,6 +161,13 @@ namespace CSharpBinding
 			}
 		}
 		
+		bool IsInComment(SharpDevelopTextAreaControl editor)
+		{
+			Parser.ExpressionFinder ef = new Parser.ExpressionFinder(editor.FileName);
+			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
+			return ef.FilterComments(editor.Document.GetText(0, cursor + 1), ref cursor) == null;
+		}
+		
 		public override bool HandleKeyword(SharpDevelopTextAreaControl editor, string word)
 		{
 			// TODO: Assistance writing Methods/Fields/Properties/Events:
@@ -167,18 +175,20 @@ namespace CSharpBinding
 			// and possible return types.
 			switch (word) {
 				case "using":
+					if (IsInComment(editor)) return false;
 					// TODO: check if we are inside class/namespace
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Namespace), ' ');
 					return true;
 				case "as":
 				case "is":
+					if (IsInComment(editor)) return false;
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Type), ' ');
 					return true;
-				case "new":
-					return ShowNewCompletion(editor);
 				case "override":
 					// TODO: Suggest list of virtual methods to override
 					return false;
+				case "new":
+					return ShowNewCompletion(editor);
 				default:
 					return base.HandleKeyword(editor, word);
 			}

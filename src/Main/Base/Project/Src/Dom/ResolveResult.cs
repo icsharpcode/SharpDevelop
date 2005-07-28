@@ -121,12 +121,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class MixedResolveResult : ResolveResult
 	{
 		ResolveResult primaryResult, secondaryResult;
+
+		public ResolveResult PrimaryResult {
+			get {
+				return primaryResult;
+			}
+		}
 		
 		public MixedResolveResult(ResolveResult primaryResult, ResolveResult secondaryResult)
 			: base(primaryResult.CallingClass, primaryResult.CallingMember, primaryResult.ResolvedType)
 		{
 			this.primaryResult = primaryResult;
 			this.secondaryResult = secondaryResult;
+		}
+		
+		public override FilePosition GetDefinitionPosition()
+		{
+			return primaryResult.GetDefinitionPosition();
 		}
 		
 		public override ArrayList GetCompletionData(IProjectContent projectContent)

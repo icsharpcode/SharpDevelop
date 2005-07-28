@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			caretColumn     = textArea.Caret.Column;
 			LineSegment caretLine = textArea.Document.GetLineSegment(caretLineNumber);
 			string lineText = textArea.Document.GetText(caretLine.Offset, caretLine.Length);
-			if (!lineText.Trim().StartsWith("///")) {
+			if (!lineText.Trim().StartsWith("///") && !lineText.Trim().StartsWith("'''")) {
 				return null;
 			}
 			

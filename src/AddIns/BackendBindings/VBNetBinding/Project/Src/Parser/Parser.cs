@@ -109,6 +109,7 @@ namespace VBNetBinding.Parser
 			p.Parse();
 			
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(projectContent);
+			visitor.Specials = p.Lexer.SpecialTracker.CurrentSpecials;
 			visitor.Visit(p.CompilationUnit, null);
 			visitor.Cu.FileName = fileName;
 			visitor.Cu.ErrorsDuringCompile = p.Errors.count > 0;

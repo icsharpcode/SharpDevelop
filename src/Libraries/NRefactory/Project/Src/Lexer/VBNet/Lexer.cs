@@ -552,9 +552,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		void ReadComment()
 		{
-			specialTracker.StartComment(CommentType.SingleLine, new Point(col, line));
+			Point startPos = new Point(col, line);
 			sb.Length = 0;
 			StringBuilder curWord = specialCommentHash != null ? new StringBuilder() : null;
+			int missingApostrophes = 2; // no. of ' missing until it is a documentation comment
 			int x = col;
 			int y = line;
 			int nextChar;
@@ -567,6 +568,19 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 				
 				sb.Append(ch);
+				
+				if (missingApostrophes > 0) {
+					if (ch == '\'' || ch == '\u2018' || ch == '\u2019') {
+						if (--missingApostrophes == 0) {
+							specialTracker.StartComment(CommentType.Documentation, startPos);
+							sb.Length = 0;
+						}
+					} else {
+						specialTracker.StartComment(CommentType.SingleLine, startPos);
+						missingApostrophes = 0;
+					}
+				}
+				
 				if (specialCommentHash != null) {
 					if (Char.IsLetter(ch)) {
 						curWord.Append(ch);
@@ -582,6 +596,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						}
 					}
 				}
+			}
+			if (missingApostrophes > 0) {
+				specialTracker.StartComment(CommentType.SingleLine, startPos);
 			}
 			specialTracker.AddString(sb.ToString());
 			specialTracker.FinishComment(new Point(col, line));

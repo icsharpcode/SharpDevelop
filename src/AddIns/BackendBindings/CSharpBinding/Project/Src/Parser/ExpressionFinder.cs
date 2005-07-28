@@ -192,11 +192,14 @@ namespace CSharpBinding.Parser
 				return CreateResult(null, textWithoutComments, offsetWithoutComments);
 			StringBuilder b = new StringBuilder(expressionBeforeOffset);
 			// append characters after expression
+			bool wordFollowing = false;
 			for (int i = offset + 1; i < inText.Length; ++i) {
 				char c = inText[i];
 				if (Char.IsLetterOrDigit(c)) {
-					if (Char.IsWhiteSpace(inText, i - 1))
+					if (Char.IsWhiteSpace(inText, i - 1)) {
+						wordFollowing = true;
 						break;
+					}
 					b.Append(c);
 				} else if (Char.IsWhiteSpace(c)) {
 					// ignore whitespace
@@ -217,7 +220,10 @@ namespace CSharpBinding.Parser
 					break;
 				}
 			}
-			return CreateResult(b.ToString(), textWithoutComments, offsetWithoutComments);
+			ExpressionResult res = CreateResult(b.ToString(), textWithoutComments, offsetWithoutComments);
+			if (res.Context == ExpressionContext.Default && wordFollowing)
+				res.Context = ExpressionContext.Type;
+			return res;
 		}
 		
 		int FindEndOfTypeParameters(string inText, int offset)

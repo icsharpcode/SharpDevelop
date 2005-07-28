@@ -172,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			
-			return ResolveInternal(expr);
+			return ResolveInternal(expr, expressionResult.Context);
 		}
 		
 		string GetAttributeName(Expression expr)
@@ -225,7 +225,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		ResolveResult ResolveInternal(Expression expr)
+		ResolveResult ResolveInternal(Expression expr, ExpressionContext context)
 		{
 			TypeVisitor typeVisitor = new TypeVisitor(this);
 			IReturnType type;
@@ -239,7 +239,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return CreateMemberResolveResult(method);
 				} else {
 					// InvocationExpression can also be a delegate/event call
-					ResolveResult invocationTarget = ResolveInternal((expr as InvocationExpression).TargetObject);
+					ResolveResult invocationTarget = ResolveInternal((expr as InvocationExpression).TargetObject, ExpressionContext.Default);
 					if (invocationTarget == null)
 						return null;
 					type = invocationTarget.ResolvedType;
@@ -278,7 +278,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						return result;
 				}
 			} else if (expr is IdentifierExpression) {
-				ResolveResult result = ResolveIdentifier(((IdentifierExpression)expr).Identifier);
+				ResolveResult result = ResolveIdentifier(((IdentifierExpression)expr).Identifier, context);
 				if (result != null)
 					return result;
 			} else if (expr is TypeReferenceExpression) {
@@ -434,7 +434,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		}
 		
 		#region Resolve Identifier
-		ResolveResult ResolveIdentifier(string identifier)
+		ResolveResult ResolveIdentifier(string identifier, ExpressionContext context)
 		{
 			ResolveResult result = ResolveIdentifierInternal(identifier);
 			if (result is TypeResolveResult)
@@ -464,6 +464,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			if (result == null)  return result2;
 			if (result2 == null) return result;
+			if (context == ExpressionContext.Type)
+				return result2;
 			return new MixedResolveResult(result, result2);
 		}
 		

@@ -24,6 +24,8 @@ namespace VBNetBinding.Parser
 				return new ExpressionResult(expression.Substring(8).TrimStart(), ExpressionContext.Namespace, null);
 			if (expression.Length > 4 && expression.Substring(0, 4).Equals("New ", StringComparison.InvariantCultureIgnoreCase))
 				return new ExpressionResult(expression.Substring(4).TrimStart(), ExpressionContext.ObjectCreation, null);
+			if (curTokenType == Ident && lastIdentifier.Equals("as", StringComparison.InvariantCultureIgnoreCase))
+				return new ExpressionResult(expression, ExpressionContext.Type);
 			return new ExpressionResult(expression);
 		}
 		
@@ -291,6 +293,8 @@ namespace VBNetBinding.Parser
 			return tokenStateName[state];
 		}
 		
+		string lastIdentifier;
+		
 		void ReadNextToken()
 		{
 			char ch = GetNext();
@@ -354,6 +358,7 @@ namespace VBNetBinding.Parser
 									curTokenType = Using;
 									break;
 								default:
+									lastIdentifier = ident;
 									curTokenType = Ident;
 									break;
 							}
