@@ -823,70 +823,70 @@ Modifiers m) {
 			lexer.NextToken();
 
 #line  997 "cs.ATG" 
-			m.Add(Modifier.New); 
+			m.Add(Modifier.New, t.Location); 
 			break;
 		}
 		case 96: {
 			lexer.NextToken();
 
 #line  998 "cs.ATG" 
-			m.Add(Modifier.Public); 
+			m.Add(Modifier.Public, t.Location); 
 			break;
 		}
 		case 95: {
 			lexer.NextToken();
 
 #line  999 "cs.ATG" 
-			m.Add(Modifier.Protected); 
+			m.Add(Modifier.Protected, t.Location); 
 			break;
 		}
 		case 82: {
 			lexer.NextToken();
 
 #line  1000 "cs.ATG" 
-			m.Add(Modifier.Internal); 
+			m.Add(Modifier.Internal, t.Location); 
 			break;
 		}
 		case 94: {
 			lexer.NextToken();
 
 #line  1001 "cs.ATG" 
-			m.Add(Modifier.Private); 
+			m.Add(Modifier.Private, t.Location); 
 			break;
 		}
 		case 117: {
 			lexer.NextToken();
 
 #line  1002 "cs.ATG" 
-			m.Add(Modifier.Unsafe); 
+			m.Add(Modifier.Unsafe, t.Location); 
 			break;
 		}
 		case 47: {
 			lexer.NextToken();
 
 #line  1003 "cs.ATG" 
-			m.Add(Modifier.Abstract); 
+			m.Add(Modifier.Abstract, t.Location); 
 			break;
 		}
 		case 101: {
 			lexer.NextToken();
 
 #line  1004 "cs.ATG" 
-			m.Add(Modifier.Sealed); 
+			m.Add(Modifier.Sealed, t.Location); 
 			break;
 		}
 		case 105: {
 			lexer.NextToken();
 
 #line  1005 "cs.ATG" 
-			m.Add(Modifier.Static); 
+			m.Add(Modifier.Static, t.Location); 
 			break;
 		}
 		case 1: {
 			lexer.NextToken();
 
 #line  1006 "cs.ATG" 
-			if (t.val == "partial") { m.Add(Modifier.Partial); } 
+			if (t.val == "partial") { m.Add(Modifier.Partial, t.Location); } 
 			break;
 		}
 		default: SynErr(128); break;
@@ -915,7 +915,7 @@ Modifiers m, List<AttributeSection> attributes) {
 			templates = newType.Templates;
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
-			newType.StartLocation = t.Location;
+			newType.StartLocation = m.GetDeclarationLocation(t.Location);
 			
 			newType.Type = Types.Class;
 			
@@ -962,7 +962,7 @@ templates);
 #line  735 "cs.ATG" 
 				TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 				templates = newType.Templates;
-				newType.StartLocation = t.Location;
+				newType.StartLocation = m.GetDeclarationLocation(t.Location);
 				compilationUnit.AddChild(newType);
 				compilationUnit.BlockStart(newType);
 				newType.Type = Types.Struct; 
@@ -1008,7 +1008,7 @@ templates);
 				templates = newType.Templates;
 				compilationUnit.AddChild(newType);
 				compilationUnit.BlockStart(newType);
-				newType.StartLocation = t.Location;
+				newType.StartLocation = m.GetDeclarationLocation(t.Location);
 				newType.Type = Types.Interface;
 				
 				Expect(1);
@@ -1051,7 +1051,7 @@ templates);
 				TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 				compilationUnit.AddChild(newType);
 				compilationUnit.BlockStart(newType);
-				newType.StartLocation = t.Location;
+				newType.StartLocation = m.GetDeclarationLocation(t.Location);
 				newType.Type = Types.Enum;
 				
 				Expect(1);
@@ -1082,7 +1082,7 @@ out name);
 #line  794 "cs.ATG" 
 				DelegateDeclaration delegateDeclr = new DelegateDeclaration(m.Modifier, attributes);
 				templates = delegateDeclr.Templates;
-				delegateDeclr.StartLocation = t.Location;
+				delegateDeclr.StartLocation = m.GetDeclarationLocation(t.Location);
 				
 				if (
 #line  798 "cs.ATG" 
@@ -1677,98 +1677,98 @@ Modifiers m) {
 			lexer.NextToken();
 
 #line  1032 "cs.ATG" 
-			m.Add(Modifier.Abstract); 
+			m.Add(Modifier.Abstract, t.Location); 
 			break;
 		}
 		case 69: {
 			lexer.NextToken();
 
 #line  1033 "cs.ATG" 
-			m.Add(Modifier.Extern); 
+			m.Add(Modifier.Extern, t.Location); 
 			break;
 		}
 		case 82: {
 			lexer.NextToken();
 
 #line  1034 "cs.ATG" 
-			m.Add(Modifier.Internal); 
+			m.Add(Modifier.Internal, t.Location); 
 			break;
 		}
 		case 87: {
 			lexer.NextToken();
 
 #line  1035 "cs.ATG" 
-			m.Add(Modifier.New); 
+			m.Add(Modifier.New, t.Location); 
 			break;
 		}
 		case 92: {
 			lexer.NextToken();
 
 #line  1036 "cs.ATG" 
-			m.Add(Modifier.Override); 
+			m.Add(Modifier.Override, t.Location); 
 			break;
 		}
 		case 94: {
 			lexer.NextToken();
 
 #line  1037 "cs.ATG" 
-			m.Add(Modifier.Private); 
+			m.Add(Modifier.Private, t.Location); 
 			break;
 		}
 		case 95: {
 			lexer.NextToken();
 
 #line  1038 "cs.ATG" 
-			m.Add(Modifier.Protected); 
+			m.Add(Modifier.Protected, t.Location); 
 			break;
 		}
 		case 96: {
 			lexer.NextToken();
 
 #line  1039 "cs.ATG" 
-			m.Add(Modifier.Public); 
+			m.Add(Modifier.Public, t.Location); 
 			break;
 		}
 		case 97: {
 			lexer.NextToken();
 
 #line  1040 "cs.ATG" 
-			m.Add(Modifier.Readonly); 
+			m.Add(Modifier.Readonly, t.Location); 
 			break;
 		}
 		case 101: {
 			lexer.NextToken();
 
 #line  1041 "cs.ATG" 
-			m.Add(Modifier.Sealed); 
+			m.Add(Modifier.Sealed, t.Location); 
 			break;
 		}
 		case 105: {
 			lexer.NextToken();
 
 #line  1042 "cs.ATG" 
-			m.Add(Modifier.Static); 
+			m.Add(Modifier.Static, t.Location); 
 			break;
 		}
 		case 117: {
 			lexer.NextToken();
 
 #line  1043 "cs.ATG" 
-			m.Add(Modifier.Unsafe); 
+			m.Add(Modifier.Unsafe, t.Location); 
 			break;
 		}
 		case 120: {
 			lexer.NextToken();
 
 #line  1044 "cs.ATG" 
-			m.Add(Modifier.Virtual); 
+			m.Add(Modifier.Virtual, t.Location); 
 			break;
 		}
 		case 122: {
 			lexer.NextToken();
 
 #line  1045 "cs.ATG" 
-			m.Add(Modifier.Volatile); 
+			m.Add(Modifier.Volatile, t.Location); 
 			break;
 		}
 		default: SynErr(137); break;
@@ -1795,7 +1795,7 @@ m, attributes);
 #line  1283 "cs.ATG" 
 			DestructorDeclaration d = new DestructorDeclaration(t.val, m.Modifier, attributes); 
 			d.Modifier = m.Modifier;
-			d.StartLocation = startPos;
+			d.StartLocation = m.GetDeclarationLocation(startPos);
 			
 			Expect(19);
 			Expect(20);
@@ -1845,7 +1845,7 @@ out type);
 
 #line  1061 "cs.ATG" 
 			FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier | Modifier.Const);
-			fd.StartLocation = startPos;
+			fd.StartLocation = m.GetDeclarationLocation(startPos);
 			VariableDeclaration f = new VariableDeclaration(t.val);
 			fd.Fields.Add(f);
 			
@@ -1908,7 +1908,7 @@ p);
 			                                                           new TypeReference("void"),
 			                                                           p,
 			                                                           attributes);
-			methodDeclaration.StartLocation = startPos;
+			methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
 			methodDeclaration.EndLocation   = t.EndLocation;
 			methodDeclaration.Templates = templates;
 			compilationUnit.AddChild(methodDeclaration);
@@ -2170,7 +2170,7 @@ IsVarDecl()) {
 #line  1195 "cs.ATG" 
 				m.Check(Modifier.Fields); 
 				FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
-				fd.StartLocation = startPos; 
+				fd.StartLocation = m.GetDeclarationLocation(startPos); 
 				
 				VariableDeclarator(
 #line  1199 "cs.ATG" 
@@ -2250,7 +2250,7 @@ p);
 						                                                           type, 
 						                                                           p, 
 						                                                           attributes);
-						methodDeclaration.StartLocation = startPos;
+						methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
 						methodDeclaration.EndLocation   = t.EndLocation;
 						methodDeclaration.Templates = templates;
 						compilationUnit.AddChild(methodDeclaration);
@@ -2277,7 +2277,7 @@ out stmt);
 
 #line  1240 "cs.ATG" 
 						PropertyDeclaration pDecl = new PropertyDeclaration(qualident, type, m.Modifier, attributes); 
-						pDecl.StartLocation = startPos;
+						pDecl.StartLocation = m.GetDeclarationLocation(startPos);
 						pDecl.EndLocation   = qualIdentEndLocation;
 						pDecl.BodyStart   = t.Location;
 						PropertyGetRegion getRegion;
@@ -2309,7 +2309,7 @@ p);
 
 #line  1259 "cs.ATG" 
 					IndexerDeclaration indexer = new IndexerDeclaration(type, p, m.Modifier, attributes);
-					indexer.StartLocation = startPos;
+					indexer.StartLocation = m.GetDeclarationLocation(startPos);
 					indexer.EndLocation   = t.EndLocation;
 					indexer.NamespaceName = qualident;
 					PropertyGetRegion getRegion;

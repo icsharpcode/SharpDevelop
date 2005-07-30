@@ -596,7 +596,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			.) =
 	(. m.Check(Modifier.Classes); .)
 	/* Spec, 7.5 */
-	["Partial" (. m.Add(Modifier.Partial); .)]
+	["Partial" (. m.Add(Modifier.Partial, t.Location); .)]
 	"Class"
 					(. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 						newType.StartLocation = t.Location;
@@ -620,7 +620,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
-			newType.StartLocation = t.Location;
+			newType.StartLocation = m.GetDeclarationLocation(t.Location);
 			newType.Type = Types.Module;
 		.)
 	Identifier			 (. newType.Name = t.val; .)
@@ -635,8 +635,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
-			newType.StartLocation = t.Location;
-			System.Console.WriteLine("XXX " + t.Location.ToString());
+			newType.StartLocation = m.GetDeclarationLocation(t.Location);
 			newType.Type = Types.Struct;
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
@@ -651,8 +650,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 		(.
 			m.Check(Modifier.VBEnums);
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
-			newType.StartLocation = t.Location;
-			
+			newType.StartLocation = m.GetDeclarationLocation(t.Location);
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
 			
@@ -670,7 +668,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 		(.
 			m.Check(Modifier.VBInterfacs);
 			TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
-			newType.StartLocation = t.Location;
+			newType.StartLocation = m.GetDeclarationLocation(t.Location);
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
 			newType.Type = Types.Interface;
@@ -688,7 +686,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 		m.Check(Modifier.VBDelegates);
 		DelegateDeclaration delegateDeclr = new DelegateDeclaration(m.Modifier, attributes);
 		delegateDeclr.ReturnType = new TypeReference("", "System.Void");
-		delegateDeclr.StartLocation = t.Location;
+		delegateDeclr.StartLocation = m.GetDeclarationLocation(t.Location);
 		List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 	.)
 	(
@@ -931,7 +929,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			IF(IsMustOverride(m))
 			(.
 				methodDeclaration = new MethodDeclaration(name, m.Modifier,  null, p, attributes);
-				methodDeclaration.StartLocation = startPos;
+				methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
 				methodDeclaration.EndLocation   = endLocation;
 				methodDeclaration.TypeReference = new TypeReference("", "System.Void");
 				
@@ -944,7 +942,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		|
 			(.
 				methodDeclaration = new MethodDeclaration(name, m.Modifier,  null, p, attributes);
-				methodDeclaration.StartLocation = startPos;
+				methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
 				methodDeclaration.EndLocation   = endLocation;
 				methodDeclaration.TypeReference = new TypeReference("", "System.Void");
 				
@@ -971,7 +969,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		"End" "Sub" (. Point endLocation = t.EndLocation; .) EOL
 		(.
 			ConstructorDeclaration cd = new ConstructorDeclaration("New", m.Modifier, p, attributes); 
-			cd.StartLocation = startPos;
+			cd.StartLocation = m.GetDeclarationLocation(startPos);
 			cd.EndLocation   = constructorEndLocation;
 			cd.Body = (BlockStatement)stmt;
 			cd.Body.EndLocation   = endLocation;
@@ -1010,7 +1008,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		IF(IsMustOverride(m))
 			(.
 				methodDeclaration = new MethodDeclaration(name, m.Modifier,  type, p, attributes);
-				methodDeclaration.StartLocation = startPos;
+				methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
 				methodDeclaration.EndLocation   = t.EndLocation;
 				
 				methodDeclaration.HandlesClause = handlesClause;
@@ -1022,7 +1020,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		|
 			(.
 				methodDeclaration = new MethodDeclaration(name, m.Modifier,  type, p, attributes);
-				methodDeclaration.StartLocation = startPos;
+				methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
 				methodDeclaration.EndLocation   = t.EndLocation;
 				
 				methodDeclaration.Templates     = templates;
@@ -1066,7 +1064,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			EOL
 			(.
 				DeclareDeclaration declareDeclaration = new DeclareDeclaration(name, m.Modifier, null, p, attributes, library, alias, charsetModifer);
-				declareDeclaration.StartLocation = startPos;
+				declareDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
 				declareDeclaration.EndLocation   = t.EndLocation;
 				compilationUnit.AddChild(declareDeclaration);
 			.)
@@ -1080,7 +1078,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			EOL
 			(.
 				DeclareDeclaration declareDeclaration = new DeclareDeclaration(name, m.Modifier, type, p, attributes, library, alias, charsetModifer);
-				declareDeclaration.StartLocation = startPos;
+				declareDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
 				declareDeclaration.EndLocation   = t.EndLocation;
 				compilationUnit.AddChild(declareDeclaration);
 			.)
@@ -1103,7 +1101,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	[ ImplementsClause<out implementsClause> ]
 	(.
 		eventDeclaration = new EventDeclaration(type, m.Modifier, p, attributes, name, implementsClause);
-		eventDeclaration.StartLocation = startPos;
+		eventDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
 		eventDeclaration.EndLocation = t.EndLocation;
 		compilationUnit.AddChild(eventDeclaration);
 	.)
@@ -1113,7 +1111,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	(.
 		m.Check(Modifier.Fields);
 		FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
-		fd.StartLocation = startPos; 
+		fd.StartLocation = m.GetDeclarationLocation(startPos); 
 	.)
 	VariableDeclarator<variableDeclarators>
 	{ "," VariableDeclarator<variableDeclarators> }
@@ -1125,10 +1123,10 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	.)
 	| /* 9.4 */
 	(. m.Check(Modifier.Fields); .)
-	"Const" (.  m.Add(Modifier.Const);  .)
+	"Const" (.  m.Add(Modifier.Const, t.Location);  .)
 	(.
 		FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
-		fd.StartLocation = t.Location;
+		fd.StartLocation = m.GetDeclarationLocation(t.Location);
 		List<VariableDeclaration> constantDeclarators = new List<VariableDeclaration>();
 	.)
 	ConstantDeclarator<constantDeclarators>
@@ -1164,7 +1162,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	IF(IsMustOverride(m))
 		(.
 			PropertyDeclaration pDecl = new PropertyDeclaration(propertyName, type, m.Modifier, attributes);
-			pDecl.StartLocation = startPos;
+			pDecl.StartLocation = m.GetDeclarationLocation(startPos);
 			pDecl.EndLocation   = t.Location;
 			pDecl.TypeReference = type;
 			pDecl.ImplementsClause = implementsClause;
@@ -1174,7 +1172,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	|
 		(.
 			PropertyDeclaration pDecl = new PropertyDeclaration(propertyName, type, m.Modifier, attributes);
-			pDecl.StartLocation = startPos;
+			pDecl.StartLocation = m.GetDeclarationLocation(startPos);
 			pDecl.EndLocation   = t.Location;
 			pDecl.BodyStart   = t.Location;
 			pDecl.TypeReference = type;
@@ -1242,7 +1240,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		}
 	
 		EventDeclaration decl = new EventDeclaration(type, customEventName, m.Modifier, attributes);
-		decl.StartLocation = startPos;
+		decl.StartLocation = m.GetDeclarationLocation(startPos);
 		decl.EndLocation = t.EndLocation;
 		compilationUnit.AddChild(decl);
 	.)
@@ -1283,7 +1281,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		operatorDeclaration.ConvertToType = returnType;
 		operatorDeclaration.ReturnTypeAttributes = returnTypeAttributes;
 		operatorDeclaration.Body = (BlockStatement)stmt;
-		operatorDeclaration.StartLocation = startPos;
+		operatorDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
 		operatorDeclaration.EndLocation = t.EndLocation;
 		compilationUnit.AddChild(operatorDeclaration);
 	.)
@@ -2217,8 +2215,8 @@ LocalDeclarationStatement<out Statement statement>
 	.) =
 	/* this differs from the spec: dim static x	compiles with vbc. */
 	{
-		"Const" 	(. m.Add(Modifier.Const); .)
-		| "Static"	(. m.Add(Modifier.Static); .)
+		"Const" 	(. m.Add(Modifier.Const, t.Location); .)
+		| "Static"	(. m.Add(Modifier.Static, t.Location); .)
 		| "Dim"		(. dimfound = true; .)
 	}
 	(.
@@ -2938,37 +2936,37 @@ ParameterModifier<ParamModifiers m>
 	.
 
 TypeModifier<Modifiers m>
-	= "Public"			(. m.Add(Modifier.Public); .)
-	| "Protected"		(. m.Add(Modifier.Protected); .)
-	| "Friend"			(. m.Add(Modifier.Internal); .)
-	| "Private"			(. m.Add(Modifier.Private); .)
-	| "Shared"			(. m.Add(Modifier.Static); .)
-	| "Shadows"			(. m.Add(Modifier.New); .)
-	| "MustInherit"		(. m.Add(Modifier.Abstract); .)
-	| "NotInheritable"	(. m.Add(Modifier.Sealed); .)
+	= "Public"			(. m.Add(Modifier.Public, t.Location); .)
+	| "Protected"		(. m.Add(Modifier.Protected, t.Location); .)
+	| "Friend"			(. m.Add(Modifier.Internal, t.Location); .)
+	| "Private"			(. m.Add(Modifier.Private, t.Location); .)
+	| "Shared"			(. m.Add(Modifier.Static, t.Location); .)
+	| "Shadows"			(. m.Add(Modifier.New, t.Location); .)
+	| "MustInherit"		(. m.Add(Modifier.Abstract, t.Location); .)
+	| "NotInheritable"	(. m.Add(Modifier.Sealed, t.Location); .)
 	.
 
 MemberModifier<Modifiers m> =
-	"MustInherit"		(.m.Add(Modifier.Abstract);.)
-	|"Default"			(.m.Add(Modifier.Default);.)
-	|"Friend"			(.m.Add(Modifier.Internal);.)
-	|"Shadows"			(.m.Add(Modifier.New);.)
-	|"Overrides"		(.m.Add(Modifier.Override);.)
-	|"MustOverride"		(.m.Add(Modifier.Abstract);.)
-	|"Private"			(.m.Add(Modifier.Private);.)
-	|"Protected"		(.m.Add(Modifier.Protected);.)
-	|"Public"			(.m.Add(Modifier.Public);.)
-	|"NotInheritable"	(.m.Add(Modifier.Sealed);.)
-	|"NotOverridable"	(.m.Add(Modifier.Sealed);.)
-	|"Shared"			(.m.Add(Modifier.Static);.)
-	|"Overridable"		(.m.Add(Modifier.Virtual);.)
-	|"Overloads"		(.m.Add(Modifier.Overloads);.)
+	"MustInherit"		(.m.Add(Modifier.Abstract, t.Location);.)
+	|"Default"			(.m.Add(Modifier.Default, t.Location);.)
+	|"Friend"			(.m.Add(Modifier.Internal, t.Location);.)
+	|"Shadows"			(.m.Add(Modifier.New, t.Location);.)
+	|"Overrides"		(.m.Add(Modifier.Override, t.Location);.)
+	|"MustOverride"		(.m.Add(Modifier.Abstract, t.Location);.)
+	|"Private"			(.m.Add(Modifier.Private, t.Location);.)
+	|"Protected"		(.m.Add(Modifier.Protected, t.Location);.)
+	|"Public"			(.m.Add(Modifier.Public, t.Location);.)
+	|"NotInheritable"	(.m.Add(Modifier.Sealed, t.Location);.)
+	|"NotOverridable"	(.m.Add(Modifier.Sealed, t.Location);.)
+	|"Shared"			(.m.Add(Modifier.Static, t.Location);.)
+	|"Overridable"		(.m.Add(Modifier.Virtual, t.Location);.)
+	|"Overloads"		(.m.Add(Modifier.Overloads, t.Location);.)
 	| "ReadOnly"		(. /* m.Add(Modifier.ReadOnly); */ .)
 	| "WriteOnly"		(. /* m.Add(Modifier.WriteOnly); */ .)
-	| "WithEvents"		(.m.Add(Modifier.WithEvents);.)
-	| "Dim"				(.m.Add(Modifier.Dim);.)
-	| "Widening"		(.m.Add(Modifier.Widening);.)
-	| "Narrowing"		(.m.Add(Modifier.Narrowing);.)
+	| "WithEvents"		(.m.Add(Modifier.WithEvents, t.Location);.)
+	| "Dim"				(.m.Add(Modifier.Dim, t.Location);.)
+	| "Widening"		(.m.Add(Modifier.Widening, t.Location);.)
+	| "Narrowing"		(.m.Add(Modifier.Narrowing, t.Location);.)
 	.
 
 END VBNET.
