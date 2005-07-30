@@ -37,8 +37,11 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		Overloads = 0x10000, // VB specific
 		WithEvents = 0x20000, // VB specific
 		Default    = 0x40000, // VB specific
+		Narrowing = 0x80000, // VB specific
+		Widening = 0x100000, // VB specific
 		// Modifier scopes
 		None      = 0x0000,
+		
 		
 		Classes                         = New | Public | Protected | Internal | Private | Abstract | Sealed | Partial | Static,
 		VBModules						= Private | Public | Protected | Internal,
@@ -50,6 +53,9 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		VBExternalMethods				= Private | Public | Protected | Internal | New | Overloads,
 		VBEvents						= Private | Public | Protected | Internal | New | Overloads,
 		VBProperties					= VBMethods | Default,
+		VBCustomEvents					= Private | Public | Protected | Internal | New | Overloads,
+		VBOperators						= Public  | Static | Overloads | New | Widening | Narrowing,
+		
 		
 		// this is not documented in the spec
 		VBInterfaceEvents				= New,

@@ -26,6 +26,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		Multiply,
 		Divide,
 		Modulus,
+		Concat,
 		
 		Not,
 		BitNot,
@@ -50,13 +51,20 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		True,
 		False,
 		
-		
+		// VB specific
+		IsTrue,
+		IsFalse,
+		Like,
+		Power,
+		CType,
+		DivideInteger
 	}
+	
 	public class OperatorDeclaration : MethodDeclaration
 	{
 		ConversionType conversionType = ConversionType.None;
 		TypeReference  convertToType;
-		
+		List<AttributeSection> returnTypeAttributes = new List<AttributeSection>();
 		OverloadableOperatorType overloadableOperator = OverloadableOperatorType.None;
 		
 		public ConversionType ConversionType {
@@ -68,6 +76,16 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
+		public List<AttributeSection> ReturnTypeAttributes
+		{
+			get {
+				return returnTypeAttributes;
+			}
+			set {
+				returnTypeAttributes = value;
+			}
+		}
+		
 		public TypeReference ConvertToType {
 			get {
 				return convertToType;
@@ -76,7 +94,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				convertToType = TypeReference.CheckNull(value);
 			}
 		}
-		
 		
 		public OverloadableOperatorType OverloadableOperator {
 			get {
@@ -122,7 +139,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		                           ) : base(null, modifier, typeReference, parameters, attributes)
 		{
 			this.overloadableOperator = overloadableOperator;
-			convertToType  = TypeReference.Null;
+			convertToType = TypeReference.Null;
 		}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)

@@ -98,7 +98,6 @@
     <Compile Include="Src\Parser\AST\CSharp\Statements\YieldStatement.cs" />
     <Compile Include="Src\Parser\AST\CSharp\TypeLevel\DestructorDeclaration.cs" />
     <Compile Include="Src\Parser\AST\CSharp\TypeLevel\IndexerDeclaration.cs" />
-    <Compile Include="Src\Parser\AST\CSharp\TypeLevel\OperatorDeclaration.cs" />
     <Compile Include="Src\Parser\AST\General\AttributeSection.cs" />
     <Compile Include="Src\Parser\AST\General\Enums.cs" />
     <Compile Include="Src\Parser\AST\General\Expressions\ArrayCreateExpression.cs" />
@@ -190,6 +189,7 @@
     <Compile Include="Src\Parser\Visitors\VBNetToCSharpConvertVisitor.cs" />
     <Compile Include="Src\Parser\AST\VBNet\TypeLevel\CustomEventDeclaration.cs" />
     <Compile Include="Src\Parser\AST\VBNet\TypeLevel\EventAccessorDeclaration.cs" />
+    <Compile Include="Src\Parser\AST\General\TypeLevel\OperatorDeclaration.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />

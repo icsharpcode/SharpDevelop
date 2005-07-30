@@ -51,7 +51,20 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		#endregion
 		
 		#region VB.NET
-		// No VB.NET representation
+		
+		[Test]
+		public void VBNetImplictOperatorDeclarationTest()
+		{
+			string programm = @"Public Shared Operator + (ByVal v As Complex) As Complex
+					Return v
+				End Operator";
+			
+			OperatorDeclaration od = (OperatorDeclaration)ParseUtilVBNet.ParseTypeMember(programm, typeof(OperatorDeclaration));
+			Assert.IsFalse(od.IsConversionOperator);
+			Assert.AreEqual(1, od.Parameters.Count);
+			Assert.AreEqual(ConversionType.None, od.ConversionType);
+			Assert.AreEqual("Complex", od.ConvertToType.Type);
+		}
 		#endregion 
 	}
 }
