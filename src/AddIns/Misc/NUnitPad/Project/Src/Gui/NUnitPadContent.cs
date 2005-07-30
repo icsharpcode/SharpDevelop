@@ -10,6 +10,7 @@ using System.Collections;
 using System.Threading;
 using System.Windows.Forms;
 
+using NUnit.Util;
 using NUnit.Core;
 using NUnit.Framework;
 using NUnit.Extensions;
@@ -189,15 +190,21 @@ namespace ICSharpCode.NUnitPad
 		{
 			UnloadAppDomains();
 			
-			if (ProjectService.OpenSolution == null) return;
+			if (ProjectService.OpenSolution == null) {
+				return;
+			}
 			
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				string outputAssembly = project.OutputAssemblyFullPath;
 				try {
-					TestSuiteBuilder builder = new TestSuiteBuilder();
-					Console.WriteLine("Try : " + outputAssembly);
-					Test testDomain = builder.Build(outputAssembly);
-					testTreeView.PrintTests(outputAssembly, testDomain, project);
+					TestDomain testDomain = new TestDomain();
+					NUnitProject prj = NUnitProject.LoadProject(outputAssembly);
+					Test test = testDomain.Load(prj);
+					
+//					TestSuiteBuilder builder = new TestSuiteBuilder();
+//					Console.WriteLine("Try to load '" + outputAssembly +"'");
+//					Test testDomain = builder.Build(outputAssembly);
+					testTreeView.PrintTests(outputAssembly, test, project);
 				} catch (Exception e) {
 					testTreeView.PrintTestErrors(outputAssembly, e);
 				}

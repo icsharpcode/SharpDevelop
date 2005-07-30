@@ -73,6 +73,10 @@
       <Project>{83DD7E12-A705-4DBA-9D71-09C8973D9382}</Project>
       <Name>nunit.framework.dll</Name>
     </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Tools\NUnit\src\ClientUtilities\util\nunit.util.dll.csproj">
+      <Project>{61CE9CE5-943E-44D4-A381-814DC1406767}</Project>
+      <Name>nunit.util.dll</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

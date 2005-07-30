@@ -28,7 +28,11 @@ namespace ICSharpCode.SharpDevelop.Project
 
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceNode";
 			SetIcon("Icons.16x16.Reference");
-			Text = referenceProjectItem.Include;
+			if (referenceProjectItem.ItemType == ItemType.ProjectReference) {
+				Text = Path.GetFileNameWithoutExtension(referenceProjectItem.Include);
+			} else {
+				Text = referenceProjectItem.Include;
+			}
 		}
 		
 		#region Cut & Paste

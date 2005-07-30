@@ -163,6 +163,7 @@ namespace ICSharpCode.NUnitPad
 		
 		public void PrintTests(string assembly, Test test, IProject project)
 		{
+			Console.WriteLine(assembly);
 			TreeNode assemblyNode = new TreeNode(Path.GetFileName(assembly));
 			assemblyNode.Tag = new TestItemTag(test, project);
 			treeView.Nodes.Add(assemblyNode);
