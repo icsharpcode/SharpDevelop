@@ -100,7 +100,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					while (Char.IsWhiteSpace(ch)) {
 						if (ch == '\n') {
 							++line;
-							col = 0;
+							col = 1;
 							break;
 						}
 						if (reader.Peek() != -1) {
@@ -160,11 +160,12 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					return new Token(Tokens.Identifier, x, y, s);
 				}
 				if (Char.IsLetter(ch)) {
-					int x = col - 2;
+					int x = col - 1;
 					int y = line;
 					string s = ReadIdent(ch);
 					int keyWordToken = Keywords.GetToken(s);
 					if (keyWordToken >= 0) {
+						System.Console.WriteLine("token: {0} X: {1} Y: {2}", keyWordToken.ToString(), x, y);
 						lineEnd = false;
 						return new Token(keyWordToken, x, y, s);
 					}
