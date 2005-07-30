@@ -1,77 +1,91 @@
 <SharpDevelopControlLibrary version="1.1.0">
   <Assemblies>
-    <Assembly assembly="MagicLibrary, Version=1.7.4.0, Culture=neutral, PublicKeyToken=3a6eb82f876a49bc" />
-    <Assembly assembly="System.Windows.Forms, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <Assembly assembly="System.Data, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-    <Assembly assembly="System, Version=2.0.3600.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Assembly assembly="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Assembly assembly="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Assembly assembly="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </Assemblies>
   <Categories>
     <Category name="Windows Forms" enabled="True">
-      <ToolComponent class="System.Windows.Forms.Label" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.LinkLabel" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.Button" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.TextBox" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.MainMenu" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.CheckBox" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.RadioButton" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.GroupBox" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.PictureBox" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.Panel" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.DataGrid" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.ListBox" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.CheckedListBox" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.ComboBox" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.ListView" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.TreeView" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.TabControl" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.DateTimePicker" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.MonthCalendar" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.HScrollBar" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.VScrollBar" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.Timer" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.Splitter" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.DomainUpDown" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.NumericUpDown" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.TrackBar" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.ProgressBar" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.RichTextBox" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.PropertyGrid" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.ImageList" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.HelpProvider" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.ToolTip" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.ContextMenu" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.ToolBar" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.StatusBar" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.NotifyIcon" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.OpenFileDialog" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.SaveFileDialog" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.FolderBrowserDialog" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.FontDialog" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.ColorDialog" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.PrintDialog" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.PrintPreviewControl" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.ErrorProvider" assembly="1" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.PageSetupDialog" assembly="1" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ToolStrip" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.BindingNavigator" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.BindingSource" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.Button" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.CheckBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ListBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.CheckedListBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ColorDialog" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ImageList" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ComboBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ContextMenuStrip" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.TextBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.DataGridView" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.DataGridViewComboBoxEditingControl" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.DataGridViewTextBoxEditingControl" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.DataNavigator" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.DateTimePicker" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.DomainUpDown" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ErrorProvider" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.Panel" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.FlowLayoutPanel" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.FolderBrowserDialog" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.FontDialog" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.GroupBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.HelpProvider" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.HScrollBar" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.Label" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.LinkLabel" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ListView" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.MaskedTextBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.MenuStrip" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.MonthCalendar" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.NotifyIcon" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.NumericUpDown" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.OpenFileDialog" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.PictureBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ProgressBar" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.PropertyGrid" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.RadioButton" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.RichTextBox" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.SaveFileDialog" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.SplitContainer" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.Splitter" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.SplitterPanel" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.StatusBar" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.StatusStrip" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.TabControl" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.TableLayoutPanel" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.Timer" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ToolBar" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ToolStripContainer" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.ToolTip" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.TrackBar" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.TreeView" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.VScrollBar" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.WebBrowser" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.PageSetupDialog" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.PrintDialog" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.PrintPreviewControl" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.PrintPreviewDialog" assembly="0" enabled="True" />
     </Category>
     <Category name="Data" enabled="True">
-      <ToolComponent class="System.Data.DataSet" assembly="2" enabled="True" />
-      <ToolComponent class="System.Data.Odbc.OdbcDataAdapter" assembly="2" enabled="True" />
-      <ToolComponent class="System.Data.Odbc.OdbcConnection" assembly="2" enabled="True" />
-      <ToolComponent class="System.Data.OleDb.OleDbCommand" assembly="2" enabled="True" />
-      <ToolComponent class="System.Data.SqlClient.SqlDataAdapter" assembly="2" enabled="True" />
-      <ToolComponent class="System.Data.SqlClient.SqlConnection" assembly="2" enabled="True" />
-      <ToolComponent class="System.Data.SqlClient.SqlCommand" assembly="2" enabled="True" />
-      <ToolComponent class="System.Data.OleDb.OleDbDataAdapter" assembly="2" enabled="True" />
-      <ToolComponent class="System.Data.OleDb.OleDbConnection" assembly="2" enabled="True" />
-      <ToolComponent class="System.Data.Odbc.OdbcCommand" assembly="2" enabled="True" />
-      <ToolComponent class="System.Data.DataView" assembly="2" enabled="True" />
+      <ToolComponent class="System.Data.DataSet" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.Odbc.OdbcDataAdapter" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.Odbc.OdbcConnection" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.OleDb.OleDbCommand" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.SqlClient.SqlDataAdapter" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.SqlClient.SqlConnection" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.SqlClient.SqlCommand" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.OleDb.OleDbDataAdapter" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.OleDb.OleDbConnection" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.Odbc.OdbcCommand" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.DataView" assembly="1" enabled="True" />
     </Category>
     <Category name="Components" enabled="True">
-      <ToolComponent class="System.IO.FileSystemWatcher" assembly="3" enabled="True" />
-      <ToolComponent class="System.Diagnostics.EventLog" assembly="3" enabled="True" />
-      <ToolComponent class="System.Diagnostics.PerformanceCounter" assembly="3" enabled="True" />
-      <ToolComponent class="System.Diagnostics.Process" assembly="3" enabled="True" />
-      <ToolComponent class="System.Timers.Timer" assembly="3" enabled="True" />
+      <ToolComponent class="System.IO.FileSystemWatcher" assembly="2" enabled="True" />
+      <ToolComponent class="System.Diagnostics.EventLog" assembly="2" enabled="True" />
+      <ToolComponent class="System.Diagnostics.PerformanceCounter" assembly="2" enabled="True" />
+      <ToolComponent class="System.Diagnostics.Process" assembly="2" enabled="True" />
+      <ToolComponent class="System.Timers.Timer" assembly="2" enabled="True" />
     </Category>
   </Categories>
 </SharpDevelopControlLibrary>
