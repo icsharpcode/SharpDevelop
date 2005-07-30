@@ -1590,21 +1590,21 @@
 				          label = "${res:XML.MainMenu.SearchMenu.ToggleBookmark}"
 				          shortcut = "Control|F2"
 				          icon = "Bookmarks.ToggleMark"
-				          class = "Bookmarks.ToggleBookmark"/>
+				          class = "ICSharpCode.SharpDevelop.Bookmarks.ToggleBookmark"/>
 				<MenuItem id = "PrevBookmark"
 				          label = "${res:XML.MainMenu.SearchMenu.PrevBookmark}"
 				          shortcut = "Alt|F2"
 				          icon = "Bookmarks.GotoPrevInFile"
-				          class = "Bookmarks.PrevBookmark"/>
+				          class = "ICSharpCode.SharpDevelop.Bookmarks.PrevBookmark"/>
 				<MenuItem id = "NextBookmark"
 				          label = "${res:XML.MainMenu.SearchMenu.NextBookmark}"
 				          shortcut = "F2"
 				          icon = "Bookmarks.GotoNextInFile"
-				          class = "Bookmarks.NextBookmark"/>
+				          class = "ICSharpCode.SharpDevelop.Bookmarks.NextBookmark"/>
 				<MenuItem id = "ClearBookmarks"
 				          label = "${res:XML.MainMenu.SearchMenu.ClrBookmark}"
 				          icon = "Bookmarks.ClearAll"
-				          class = "Bookmarks.ClearBookmarks"/>
+				          class = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>
 				<MenuItem id = "Separator2" type = "Separator" />
 				<MenuItem id = "GotoLineNr"
 				          label = "${res:XML.MainMenu.SearchMenu.GotoLineNr}"

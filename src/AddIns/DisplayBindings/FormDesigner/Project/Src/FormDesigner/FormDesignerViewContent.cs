@@ -200,7 +200,6 @@ namespace ICSharpCode.FormDesigner
 			IsDirty = isDirty;
 		}
 		
-		
 		public  void ShowSourceCode()
 		{
 			WorkbenchWindow.SwitchView(0);

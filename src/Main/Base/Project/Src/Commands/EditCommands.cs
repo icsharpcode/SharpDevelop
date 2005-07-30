@@ -66,7 +66,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override bool IsEnabled {
 			get {
-				Console.WriteLine("IsEnabled2>"  + WorkbenchSingleton.Workbench.ActiveContent);
 				IClipboardHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
 				if (editable != null) {
 					return editable.EnableCut;
