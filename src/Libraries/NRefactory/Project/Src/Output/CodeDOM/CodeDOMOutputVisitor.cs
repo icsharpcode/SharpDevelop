@@ -206,8 +206,8 @@ namespace ICSharpCode.NRefactory.Parser
 			codeTypeDeclaration.IsStruct    = typeDeclaration.Type == Types.Struct;
 			
 			if (typeDeclaration.BaseTypes != null) {
-				foreach (object o in typeDeclaration.BaseTypes) {
-					codeTypeDeclaration.BaseTypes.Add(new CodeTypeReference(o.ToString()));
+				foreach (TypeReference typeRef in typeDeclaration.BaseTypes) {
+					codeTypeDeclaration.BaseTypes.Add(new CodeTypeReference(typeRef.Type));
 				}
 			}
 			

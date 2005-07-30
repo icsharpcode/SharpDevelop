@@ -52,41 +52,46 @@ namespace ICSharpCode.FormDesigner.Services
 			if (name == null || name.Length == 0) {
 				return null;
 			}
-			Assembly lastAssembly = null;
-			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
-				Type t = asm.GetType(name, throwOnError);
-				if (t != null) {
-					lastAssembly = asm;
-				}
-			}
-			if (lastAssembly != null) {
-				return lastAssembly.GetType(name, throwOnError, ignoreCase);
-			}
-			
-			Type type = Type.GetType(name, throwOnError, ignoreCase);
-			
-			// type lookup for typename, assembly, xyz style lookups
-			if (type == null) {
-				int idx = name.IndexOf(",");
-				if (idx > 0) {
-					string[] splitName = name.Split(',');
-					string typeName     = splitName[0];
-					string assemblyName = splitName[1].Substring(1);
-					Assembly assembly = null;
-					try {
-						assembly = Assembly.Load(assemblyName);
-					} catch (Exception e) {
-						Console.WriteLine(e);
-					}
-					if (assembly != null) {
-						type = assembly.GetType(typeName, throwOnError, ignoreCase);
-					} else {
-						type = Type.GetType(typeName, throwOnError, ignoreCase);
+			try {
+				Assembly lastAssembly = null;
+				foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
+					Type t = asm.GetType(name, throwOnError);
+					if (t != null) {
+						lastAssembly = asm;
 					}
 				}
+				if (lastAssembly != null) {
+					return lastAssembly.GetType(name, throwOnError, ignoreCase);
+				}
+				
+				Type type = Type.GetType(name, throwOnError, ignoreCase);
+				
+				// type lookup for typename, assembly, xyz style lookups
+				if (type == null) {
+					int idx = name.IndexOf(",");
+					if (idx > 0) {
+						string[] splitName = name.Split(',');
+						string typeName     = splitName[0];
+						string assemblyName = splitName[1].Substring(1);
+						Assembly assembly = null;
+						try {
+							assembly = Assembly.Load(assemblyName);
+						} catch (Exception e) {
+							Console.WriteLine(e);
+						}
+						if (assembly != null) {
+							type = assembly.GetType(typeName, throwOnError, ignoreCase);
+						} else {
+							type = Type.GetType(typeName, throwOnError, ignoreCase);
+						}
+					}
+				}
+				
+				return type;
+			} catch (Exception e) {
+				Console.WriteLine(e); 
 			}
-			
-			return type;
+			return null;
 		}
 		
 		public void ReferenceAssembly(AssemblyName name)

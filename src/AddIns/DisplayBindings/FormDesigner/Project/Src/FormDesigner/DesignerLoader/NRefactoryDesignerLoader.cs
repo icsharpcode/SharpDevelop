@@ -101,8 +101,8 @@ namespace ICSharpCode.FormDesigner
 			CodeDOMVisitor visitor = new CodeDOMVisitor();
 			visitor.Visit(p.CompilationUnit, null);
 			
-//			// output generated CodeDOM to the console :
-//			provider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
+			// output generated CodeDOM to the console :
+			provider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
 			
 			return visitor.codeCompileUnit;
 		}
