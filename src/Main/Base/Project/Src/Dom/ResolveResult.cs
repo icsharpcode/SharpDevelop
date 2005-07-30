@@ -210,10 +210,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return null;
 			}
 			IRegion reg = field.Region;
-			if (reg != null)
+			if (reg != null) {
 				return new FilePosition(cu.FileName, new Point(reg.BeginLine, reg.BeginColumn));
-			else
+			} else {
+				Console.WriteLine("Fieldregion not set!");
 				return new FilePosition(cu.FileName, Point.Empty);
+			}
 		}
 	}
 	#endregion

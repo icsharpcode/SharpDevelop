@@ -386,7 +386,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		IParameter CreateParameter(AST.ParameterDeclarationExpression par, IMethod method)
 		{
 			IReturnType parType = CreateReturnType(par.TypeReference, method);
-			DefaultParameter p = new DefaultParameter(par.ParameterName, parType, null);
+			DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, par.EndLocation));
 			p.Modifiers = (ParameterModifiers)par.ParamModifier;
 			return p;
 		}

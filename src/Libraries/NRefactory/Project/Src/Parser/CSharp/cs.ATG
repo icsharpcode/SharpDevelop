@@ -976,13 +976,14 @@ FixedParameter<out ParameterDeclarationExpression p>
 (.
 	TypeReference type;
 	ParamModifier mod = ParamModifier.In;
+	System.Drawing.Point start = t.Location;
 .)
 =
 	[
 		"ref"    (. mod = ParamModifier.Ref; .)
 		| "out"  (. mod = ParamModifier.Out; .)
 	]
-	Type<out type> ident (. p = new ParameterDeclarationExpression(type, t.val, mod); .)
+	Type<out type> ident (. p = new ParameterDeclarationExpression(type, t.val, mod); p.StartLocation = start; p.EndLocation = t.Location; .)
 .
 
 ParameterArray<out ParameterDeclarationExpression p>
