@@ -37,7 +37,7 @@ namespace SearchAndReplace
 		static void SetSearchOptions()
 		{
 			find.SearchStrategy   = SearchReplaceUtilities.CreateSearchStrategy(SearchOptions.SearchStrategyType);
-			find.DocumentIterator = SearchReplaceUtilities.CreateDocumentIterator(DocumentIteratorType.CurrentDocument);
+			find.DocumentIterator = SearchReplaceUtilities.CreateDocumentIterator(SearchOptions.DocumentIteratorType);
 		}
 		
 		// TODO: Transform Replace Pattern

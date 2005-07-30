@@ -401,7 +401,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void FillClassComboBox(bool isUpdateRequired)
 		{
-			Console.WriteLine("FILL CLASS");
 			ArrayList items = new ArrayList();
 			AddClasses(items, currentCompilationUnit.Classes);
 			if (isUpdateRequired) {
