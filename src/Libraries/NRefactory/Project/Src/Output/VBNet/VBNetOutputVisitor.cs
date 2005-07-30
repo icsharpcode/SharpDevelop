@@ -689,6 +689,38 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		public object Visit(EventRaiseRegion eventRaiseRegion, object data)
+		{
+			VisitAttributes(eventRaiseRegion.Attributes, data);
+			outputFormatter.Indent();
+			outputFormatter.PrintText("RaiseEvent");
+			outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			if (eventRaiseRegion.Parameters.Count == 0) {
+				outputFormatter.PrintToken(Tokens.ByVal);
+				outputFormatter.Space();
+				outputFormatter.PrintIdentifier("value");
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				nodeTracker.TrackedVisit(currentEventType, data);
+			} else {
+				this.AppendCommaSeparatedList(eventRaiseRegion.Parameters);
+			}
+			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			outputFormatter.NewLine();
+			
+			++outputFormatter.IndentationLevel;
+			nodeTracker.TrackedVisit(eventRaiseRegion.Block, data);
+			--outputFormatter.IndentationLevel;
+			
+			outputFormatter.Indent();
+			outputFormatter.PrintToken(Tokens.End);
+			outputFormatter.Space();
+			outputFormatter.PrintText("RaiseEvent");
+			outputFormatter.NewLine();
+			return null;
+		}
+		
 		public object Visit(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
 			VisitAttributes(parameterDeclarationExpression.Attributes, data);

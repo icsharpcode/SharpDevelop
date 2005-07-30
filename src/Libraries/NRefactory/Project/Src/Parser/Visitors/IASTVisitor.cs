@@ -38,6 +38,7 @@ namespace ICSharpCode.NRefactory.Parser
 		object Visit(EventDeclaration eventDeclaration, object data);
 		object Visit(EventAddRegion eventAddRegion, object data);
 		object Visit(EventRemoveRegion eventRemoveRegion, object data);
+		object Visit(EventRaiseRegion eventRaiseRegion, object data); // VB.NET
 		
 		object Visit(ParameterDeclarationExpression parameterDeclarationExpression, object data);
 		object Visit(MethodDeclaration methodDeclaration, object data);

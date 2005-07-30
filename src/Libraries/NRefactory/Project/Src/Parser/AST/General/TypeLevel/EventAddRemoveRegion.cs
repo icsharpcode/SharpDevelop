@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	public abstract class EventAddRemoveRegion : AttributedNode, INullable
 	{
 		BlockStatement block = BlockStatement.Null;
-		ArrayList parameters;
+		List<ParameterDeclarationExpression> parameters;
 		
 		public BlockStatement Block {
 			get {
@@ -27,12 +27,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList Parameters {
+		public List<ParameterDeclarationExpression> Parameters {
 			get {
 				return parameters;
 			}
 			set {
-				parameters = value == null ? new ArrayList(1) : value;
+				parameters = value == null ? new List<ParameterDeclarationExpression>(1) : value;
 			}
 		}
 		
@@ -98,6 +98,30 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			                     Block);
 		}
 	}
+	
+	public class EventRaiseRegion : EventAddRemoveRegion
+	{
+		
+		public static EventRaiseRegion Null {
+			get {
+				return NullEventRaiseRegion.Instance;
+			}
+		}
+		
+		public EventRaiseRegion(List<AttributeSection> attributes) : base (attributes)
+		{}
+		public override object AcceptVisitor(IASTVisitor visitor, object data)
+		{
+			return visitor.Visit(this, data);
+		}
+		public override string ToString()
+		{
+			return String.Format("[EventRaiseRegion: Attributes = {0}, Block = {1}]",
+			                     GetCollectionString(Attributes),
+			                     Block);
+		}
+	}
+	
 	public class NullEventAddRegion : EventAddRegion
 	{
 		static NullEventAddRegion nullEventAddRegion = new NullEventAddRegion();
@@ -157,6 +181,37 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		public override string ToString()
 		{
 			return String.Format("[NullEventRemoveRegion]");
+		}
+	}
+	
+	public class NullEventRaiseRegion : EventRaiseRegion
+	{
+		static NullEventRaiseRegion nullEventRaiseRegion = new NullEventRaiseRegion();
+		
+		public static NullEventRaiseRegion Instance {
+			get {
+				return nullEventRaiseRegion;
+			}
+		}
+		
+		NullEventRaiseRegion() : base(new List<AttributeSection>(1))
+		{
+		}
+		
+		public override bool IsNull {
+			get {
+				return true;
+			}
+		}
+		
+		public override object AcceptVisitor(IASTVisitor visitor, object data)
+		{
+			return data;
+		}
+		
+		public override string ToString()
+		{
+			return String.Format("[NullEventRaiseRegion]");
 		}
 	}
 }

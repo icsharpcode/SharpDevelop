@@ -543,6 +543,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		public object Visit(EventRaiseRegion eventRaiseRegion, object data)
+		{
+			// VB.NET only
+			return null;
+		}
+		
 		public object Visit(ParameterDeclarationExpression parameterDeclarationExpression, object data)
 		{
 			VisitAttributes(parameterDeclarationExpression.Attributes, data);

@@ -1197,10 +1197,10 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	"Custom" (. Point startPos = t.Location; .) "Event"
 	(.
 		m.Check(Modifier.VBCustomEvents);
-		EventAccessorDeclaration eventAccessorDeclaration;
-		EventAccessorDeclaration addHandlerAccessorDeclaration = null;
-		EventAccessorDeclaration removeHandlerAccessorDeclaration = null;
-		EventAccessorDeclaration raiseEventAccessorDeclaration = null;
+		EventAddRemoveRegion eventAccessorDeclaration;
+		EventAddRemoveRegion addHandlerAccessorDeclaration = null;
+		EventAddRemoveRegion removeHandlerAccessorDeclaration = null;
+		EventAddRemoveRegion raiseEventAccessorDeclaration = null;
 		ArrayList implementsClause = null;
 	.)
 	Identifier (. string customEventName = t.val; .)
@@ -1210,15 +1210,15 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	{
 		EventAccessorDeclaration<out eventAccessorDeclaration>
 		(.
-			if(eventAccessorDeclaration.Type == EventAccessorType.AddHandlerAccessor)
+			if(eventAccessorDeclaration is EventAddRegion)
 			{
 				addHandlerAccessorDeclaration = eventAccessorDeclaration;
 			}
-			else if(eventAccessorDeclaration.Type == EventAccessorType.RemoveHandlerAccessor)
+			else if(eventAccessorDeclaration is EventRemoveRegion)
 			{
 				removeHandlerAccessorDeclaration = eventAccessorDeclaration;
 			}
-			else if(eventAccessorDeclaration.Type == EventAccessorType.RaiseEventAccessor)
+			else if(eventAccessorDeclaration is EventRaiseRegion)
 			{
 				raiseEventAccessorDeclaration = eventAccessorDeclaration;
 			}
@@ -1241,7 +1241,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			Error("Need to provide RaiseEvent accessor.");
 		}
 	
-		CustomEventDeclaration decl = new CustomEventDeclaration(m.Modifier, attributes, customEventName, addHandlerAccessorDeclaration, removeHandlerAccessorDeclaration, raiseEventAccessorDeclaration, implementsClause);
+		EventDeclaration decl = new EventDeclaration(type, customEventName, m.Modifier, attributes);
 		decl.StartLocation = startPos;
 		decl.EndLocation = t.EndLocation;
 		compilationUnit.AddChild(decl);
@@ -1352,7 +1352,7 @@ OverloadableOperator<out OverloadableOperatorType operatorType>
 	.)
 	.
 
-EventAccessorDeclaration<out EventAccessorDeclaration eventAccessorDeclaration>
+EventAccessorDeclaration<out EventAddRemoveRegion eventAccessorDeclaration>
 	(.
 		Statement stmt = null;
 		List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
@@ -1365,19 +1365,25 @@ EventAccessorDeclaration<out EventAccessorDeclaration eventAccessorDeclaration>
 			"AddHandler" [ "(" [ FormalParameterList<p> ] ")" ] EOL
 			Block<out stmt> "End" "AddHandler" EOL
 			(.
-				eventAccessorDeclaration = new EventAccessorDeclaration((BlockStatement)stmt, p, EventAccessorType.AddHandlerAccessor, attributes);
+				eventAccessorDeclaration = new EventAddRegion(attributes);
+				eventAccessorDeclaration.Block = (BlockStatement)stmt;
+				eventAccessorDeclaration.Parameters = p;
 			.)
 		|
 			"RemoveHandler" [ "(" [ FormalParameterList<p> ] ")" ] EOL
 			Block<out stmt> "End" "RemoveHandler" EOL
 			(.
-				eventAccessorDeclaration = new EventAccessorDeclaration((BlockStatement)stmt, p, EventAccessorType.RemoveHandlerAccessor, attributes);
+				eventAccessorDeclaration = new EventRemoveRegion(attributes);
+				eventAccessorDeclaration.Block = (BlockStatement)stmt;
+				eventAccessorDeclaration.Parameters = p;
 			.)
 		|
 			"RaiseEvent" [ "(" [ FormalParameterList<p> ] ")" ] EOL
 			Block<out stmt> "End" "RaiseEvent" EOL
 			(.
-				eventAccessorDeclaration = new EventAccessorDeclaration((BlockStatement)stmt, p, EventAccessorType.RaiseEventAccessor, attributes);
+				eventAccessorDeclaration = new EventRaiseRegion(attributes);
+				eventAccessorDeclaration.Block = (BlockStatement)stmt;
+				eventAccessorDeclaration.Parameters = p;
 			.)
 	)
 	.

@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
             End If
         End RaiseEvent
     End Event";
-			CustomEventDeclaration customEventDecl = (CustomEventDeclaration)ParseUtilVBNet.ParseTypeMember(code, typeof(CustomEventDeclaration));
+			EventDeclaration customEventDecl = (EventDeclaration)ParseUtilVBNet.ParseTypeMember(code, typeof(EventDeclaration));
 			Assert.IsNotNull(customEventDecl);
 			Assert.AreEqual("TestEvent", customEventDecl.Name);
 		}

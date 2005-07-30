@@ -271,6 +271,22 @@ namespace ICSharpCode.NRefactory.Parser
 			return data;
 		}
 		
+		public virtual object Visit(EventRaiseRegion eventRaiseRegion, object data)
+		{
+			Debug.Assert(eventRaiseRegion != null);
+			Debug.Assert(eventRaiseRegion.Attributes != null);
+			Debug.Assert(eventRaiseRegion.Block != null);
+			
+			foreach (AttributeSection section in eventRaiseRegion.Attributes) {
+				Debug.Assert(section != null);
+				section.AcceptVisitor(this, data);
+			}
+			blockStack.Push(eventRaiseRegion.Block);
+			eventRaiseRegion.Block.AcceptChildren(this, data);
+			blockStack.Pop();
+			return data;
+		}
+		
 		public virtual object Visit(EventRemoveRegion eventRemoveRegion, object data)
 		{
 			Debug.Assert(eventRemoveRegion != null);
