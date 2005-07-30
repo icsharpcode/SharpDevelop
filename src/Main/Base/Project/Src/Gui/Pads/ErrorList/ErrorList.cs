@@ -145,12 +145,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void OnCombineOpen(object sender, SolutionEventArgs e)
 		{
 			listView.Items.Clear();
+			UpdateToolstripStatus();
 		}
 		
 		void OnCombineClosed(object sender, EventArgs e)
 		{
 			try {
 				listView.Items.Clear();
+				UpdateToolstripStatus();
 			} catch (Exception ex) {
 				Console.WriteLine(ex);
 			}
@@ -161,6 +163,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (TaskService.TaskCount > 0) {
 				WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this.GetType().FullName);
 			}
+			UpdateToolstripStatus();
 		}
 		
 		void ListViewItemActivate(object sender, EventArgs e)
@@ -265,11 +268,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void TaskServiceCleared(object sender, EventArgs e)
 		{
 			listView.Items.Clear();
+			UpdateToolstripStatus();
+			
 		}
 		
 		void TaskServiceAdded(object sender, TaskEventArgs e)
 		{
 			AddTask(e.Task);
+			UpdateToolstripStatus();
 		}
 		
 		void TaskServiceRemoved(object sender, TaskEventArgs e)
@@ -281,6 +287,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					break;
 				}
 			}
+			UpdateToolstripStatus();
 		}
 		
 		/// <summary>
@@ -296,17 +303,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return FormattedDescription.Replace("\n", " ");
 		}
 		
+		void UpdateToolstripStatus()
+		{
+			Console.WriteLine("Updpate " + TaskService.TaskCount);
+			foreach (ToolStripItem item in toolStrip.Items) {
+				if (item is IStatusUpdate) {
+					((IStatusUpdate)item).UpdateStatus();
+				}
+			}
+		}
+		
 		void InternalShowResults()
 		{
 			// listView.CreateControl is called in the constructor now.
 			if (!listView.IsHandleCreated) {
 				return;
-			}
-			
-			foreach (ToolStripItem item in toolStrip.Items) {
-				if (item is IStatusUpdate) {
-					((IStatusUpdate)item).UpdateStatus();
-				}
 			}
 			
 			listView.BeginUpdate();
@@ -317,6 +328,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			
 			listView.EndUpdate();
+			UpdateToolstripStatus();
+			
 		}
 	}
 }

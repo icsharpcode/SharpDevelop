@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Drawing.Design;
@@ -249,6 +250,7 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public ToolboxItem DeserializeToolboxItem(object serializedObject)
 		{
+//			Console.WriteLine("DeserializeToolboxItem {0}", serializedObject);
 			if (serializedObject is System.Windows.Forms.IDataObject) {
 				if (((System.Windows.Forms.IDataObject)serializedObject).GetDataPresent(typeof(ToolboxItem))) {
 					return (ToolboxItem) ((System.Windows.Forms.IDataObject)serializedObject).GetData(typeof(ToolboxItem));
@@ -259,31 +261,38 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public ToolboxItem DeserializeToolboxItem(object serializedObject, IDesignerHost host)
 		{
+			Console.WriteLine("DeserializeToolboxItem {0} host {1}", serializedObject, host);
 			if (serializedObject is System.Windows.Forms.IDataObject) {
 				if (((System.Windows.Forms.IDataObject)serializedObject).GetDataPresent(typeof(ToolboxItem))) {
 					ToolboxItem item = (ToolboxItem) ((System.Windows.Forms.IDataObject)serializedObject).GetData(typeof(ToolboxItem));
+					
 					if (host != null) {
 						ArrayList list = (ArrayList)toolboxByHost[host];
 						if (list != null && list.Contains(item)) {
+							Console.WriteLine("Item1>" + item);
 							return item;
 						}
 						list = (ArrayList)toolboxByHost[ALL_HOSTS];
 						if (list != null && list.Contains(item)) {
+							Console.WriteLine("Item2>" + item + " type " + item.GetType());
 							return item;
 						}
 					}
 				}
 			}
+			Console.WriteLine("return null");
 			return null;
 		}
 		
 		public ToolboxItem GetSelectedToolboxItem()
 		{
+//			Console.WriteLine("GetSelectedToolboxItem");
 			return selectedItem;
 		}
 		
 		public ToolboxItem GetSelectedToolboxItem(IDesignerHost host)
 		{
+//			Console.WriteLine("GetSelectedToolboxItem host {0}", host);
 			IList list = (IList)toolboxByHost[host];
 			if (list != null && list.Contains(selectedItem)) {
 				return selectedItem;
@@ -298,6 +307,7 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public ToolboxItemCollection GetToolboxItems()
 		{
+//			Console.WriteLine("GetToolboxItems");
 			ToolboxItem[] items = new ToolboxItem[toolboxItems.Count];
 			toolboxItems.CopyTo(items);
 			return new ToolboxItemCollection(items);
@@ -305,6 +315,7 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public ToolboxItemCollection GetToolboxItems(string category)
 		{
+//			Console.WriteLine("GetToolboxItems category {0}", category);
 			if (category == null) {
 				category = ALL_CATEGORIES;
 			}
@@ -318,6 +329,7 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public ToolboxItemCollection GetToolboxItems(string category, IDesignerHost host)
 		{
+//			Console.WriteLine("GetToolboxItems category {0} host {1}", category, host);
 			if (category == null) {
 				category = ALL_CATEGORIES;
 			}
@@ -362,16 +374,19 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public bool IsSupported(object serializedObject, ICollection filterAttributes)
 		{
-			return false;
+//			Console.WriteLine("IsSupported serializedObiect {0} filterAttributes {1}", serializedObject, filterAttributes);
+			return true;
 		}
 		
 		public bool IsSupported(object serializedObject, IDesignerHost host)
 		{
-			return false;
+//			Console.WriteLine("IsSupported serializedObiect {0} host {1}", serializedObject, host);
+			return true;
 		}
 		
 		public bool IsToolboxItem(object serializedObject)
 		{
+//			Console.WriteLine("IsToolboxItem serializedObiect {0}", serializedObject);
 			if (serializedObject is System.Windows.Forms.IDataObject) {
 				if (((System.Windows.Forms.IDataObject)serializedObject).GetDataPresent(typeof(ToolboxItem))) {
 					return true;
@@ -382,17 +397,20 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public bool IsToolboxItem(object serializedObject, IDesignerHost host)
 		{
+//			Console.WriteLine("IsToolboxItem serializedObiect {0} host {1}", serializedObject, host);
 			// needed for Toolbox drag & drop
 			if (serializedObject is System.Windows.Forms.IDataObject) {
 				if (((System.Windows.Forms.IDataObject)serializedObject).GetDataPresent(typeof(ToolboxItem))) {
 					ToolboxItem item = (ToolboxItem) ((System.Windows.Forms.IDataObject)serializedObject).GetData(typeof(ToolboxItem));
 					if (host != null) {
 						ArrayList list = (ArrayList)toolboxByHost[host];
-						if (list != null && list.Contains(item))
-						  return true;
-						list = (ArrayList)toolboxByHost[ALL_HOSTS];
-						if (list != null && list.Contains(item))
+						if (list != null && list.Contains(item)) {
 							return true;
+						}
+						list = (ArrayList)toolboxByHost[ALL_HOSTS];
+						if (list != null && list.Contains(item)) {
+							return true;
+						}
 					}
 				}
 			}
@@ -432,11 +450,13 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public void SelectedToolboxItemUsed()
 		{
+//			Console.WriteLine("SelectedToolboxItemUsed");
 			FireSelectedItemUsed();
 		}
 		
 		public object SerializeToolboxItem(ToolboxItem toolboxItem)
 		{
+//			Console.WriteLine("SerializeToolboxItem");
 			return null;
 		}
 		
@@ -453,6 +473,7 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public void SetSelectedToolboxItem(ToolboxItem toolboxItem)
 		{
+//			Console.WriteLine("SetSelectedToolboxItem toolboxItem {0}", toolboxItem);
 			if (toolboxItem != selectedItem) {
 				FireSelectedItemChanging();
 				selectedItem = toolboxItem;

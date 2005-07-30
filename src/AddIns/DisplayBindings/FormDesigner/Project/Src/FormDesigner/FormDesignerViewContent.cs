@@ -145,7 +145,6 @@ namespace ICSharpCode.FormDesigner
 			
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
 			
-			
 			ICSharpCode.FormDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormDesigner.Services.EventBindingService();
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
