@@ -30,6 +30,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		
 		public static object ParseTypeMember(string typeMember, Type type)
 		{
+			System.Console.WriteLine("Class TestClass\n " + typeMember + "\n End Class\n");
 			TypeDeclaration td = (TypeDeclaration)ParseGlobal("Class TestClass\n " + typeMember + "\n End Class\n", typeof(TypeDeclaration));
 			Assert.IsTrue(td.Children.Count > 0);
 			Assert.IsTrue(type.IsAssignableFrom(td.Children[0].GetType()), String.Format("Parsed expression was {0} instead of {1} ({2})", td.GetType(), type, td));

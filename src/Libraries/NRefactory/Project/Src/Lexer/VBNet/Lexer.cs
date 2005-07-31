@@ -165,7 +165,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					string s = ReadIdent(ch);
 					int keyWordToken = Keywords.GetToken(s);
 					if (keyWordToken >= 0) {
-						System.Console.WriteLine("token: {0} X: {1} Y: {2}", keyWordToken.ToString(), x, y);
 						lineEnd = false;
 						return new Token(keyWordToken, x, y, s);
 					}

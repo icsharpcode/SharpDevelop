@@ -2925,7 +2925,6 @@ PrimitiveTypeName<out string type>
 	| "ULong"		(. type = "ULong"; .)
 	| "UShort"		(. type = "UShort"; .)
 	| "SByte"		(. type = "SByte"; .)
-	
 	.
 
 ParameterModifier<ParamModifiers m>

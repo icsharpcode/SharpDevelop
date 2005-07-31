@@ -45,7 +45,24 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		#endregion
 		
 		#region VB.NET
-			// TODO
+		[Test]
+		public void VBNetConstructorDeclarationTest1()
+		{
+			string program = @"Sub New()
+								End Sub";
+			ConstructorDeclaration cd = (ConstructorDeclaration)ParseUtilVBNet.ParseTypeMember(program, typeof(ConstructorDeclaration));
+			Assert.IsTrue(cd.ConstructorInitializer.IsNull);
+		}
+		
+		[Test]
+		public void VBNetConstructorDeclarationTest2()
+		{
+			ConstructorDeclaration cd = (ConstructorDeclaration)ParseUtilVBNet.ParseTypeMember("Sub New(x As Integer, Optional y As String) \nEnd Sub", typeof(ConstructorDeclaration));
+			Assert.AreEqual(2, cd.Parameters.Count);
+			Assert.AreEqual("Integer", cd.Parameters[0].TypeReference.Type);
+			Assert.AreEqual("String", cd.Parameters[1].TypeReference.Type);
+			Assert.AreEqual(ParamModifier.Optional, cd.Parameters[1].ParamModifier & ParamModifier.Optional);
+		}
 		#endregion 
 	}
 }

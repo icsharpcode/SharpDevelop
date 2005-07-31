@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		#endregion
 		
 		#region VB.NET
-			// TODO
+		// no vb.net representation (indexers are properties named "item" in vb.net)		
 		#endregion 
 	}
 }

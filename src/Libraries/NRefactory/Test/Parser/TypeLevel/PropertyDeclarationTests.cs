@@ -49,7 +49,32 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		#endregion
 		
 		#region VB.NET
-			// TODO
+		[Test]
+		public void VBNetSimpleGetSetPropertyDeclarationTest()
+		{
+			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilVBNet.ParseTypeMember("Property MyProperty As Integer \n Get \n End Get \n Set \n End Set\nEnd Property", typeof(PropertyDeclaration));
+			Assert.AreEqual("MyProperty", pd.Name);
+			Assert.IsTrue(pd.HasGetRegion);
+			Assert.IsTrue(pd.HasSetRegion);
+		}
+		
+		[Test]
+		public void VBNetSimpleGetPropertyDeclarationTest()
+		{
+			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilVBNet.ParseTypeMember("Property MyProperty \nGet\nEnd Get\nEnd Property", typeof(PropertyDeclaration));
+			Assert.AreEqual("MyProperty", pd.Name);
+			Assert.IsTrue(pd.HasGetRegion);
+			Assert.IsFalse(pd.HasSetRegion);
+		}
+		
+		[Test]
+		public void VBNetSimpleSetPropertyDeclarationTest()
+		{
+			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilVBNet.ParseTypeMember("Property MyProperty \n Set\nEnd Set\nEnd Property ", typeof(PropertyDeclaration));
+			Assert.AreEqual("MyProperty", pd.Name);
+			Assert.IsFalse(pd.HasGetRegion);
+			Assert.IsTrue(pd.HasSetRegion);
+		}
 		#endregion 
 	}
 }
