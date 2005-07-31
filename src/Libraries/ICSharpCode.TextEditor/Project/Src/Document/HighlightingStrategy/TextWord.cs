@@ -42,6 +42,13 @@ namespace ICSharpCode.TextEditor.Document
 				length = 1;
 				base.color  = color;
 			}
+			
+			public override Font Font {
+				get {
+					return null;
+				}
+			}
+			
 			public override TextWordType Type {
 				get {
 					return TextWordType.Space;
@@ -66,6 +73,11 @@ namespace ICSharpCode.TextEditor.Document
 				base.color  = color;
 			}
 			
+			public override Font Font {
+				get {
+					return null;
+				}
+			}
 			
 			public override TextWordType Type {
 				get {
@@ -129,7 +141,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		public Font Font {
+		public virtual Font Font {
 			get {
 				return color.Font;
 			}

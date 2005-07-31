@@ -630,6 +630,40 @@ namespace ICSharpCode.TextEditor
 			return (float)charWitdh[ch];
 		}
 		
+		Dictionary<Font, Dictionary<char, float>> fontBoundCharWidth = new Dictionary<Font, Dictionary<char, float>>();
+		public float GetWidth(char ch, Font font)
+		{
+			if (!fontBoundCharWidth.ContainsKey(font)) {
+				fontBoundCharWidth.Add(font, new Dictionary<char, float>());
+			}
+			if (!fontBoundCharWidth[font].ContainsKey(ch)) {
+				using (Graphics g = textArea.CreateGraphics()) {
+					return GetWidth(g, ch, font);
+				}
+			}
+			return (float)fontBoundCharWidth[font][ch];
+		}
+		
+		public float GetWidth(string text, Font font)
+		{
+			float width = 0;
+			for (int i = 0; i < text.Length; ++i) {
+				width += GetWidth(text[i], font);
+			}
+			return width;
+		}
+		
+		public float GetWidth(Graphics g, char ch, Font font)
+		{
+			if (!fontBoundCharWidth.ContainsKey(font)) {
+				fontBoundCharWidth.Add(font, new Dictionary<char, float>());
+			}
+			if (!fontBoundCharWidth[font].ContainsKey(ch)) {
+				fontBoundCharWidth[font].Add(ch, g.MeasureString(ch.ToString(), font, 2000, measureStringFormat).Width);
+			}
+			return (float)fontBoundCharWidth[font][ch];
+		}
+		
 		public int GetVisualColumn(int logicalLine, int logicalColumn)
 		{
 			return GetVisualColumn(Document.GetLineSegment(logicalLine), logicalColumn);
@@ -842,7 +876,12 @@ namespace ICSharpCode.TextEditor
 						break;
 					default:
 						++column;
-						drawingPos += GetWidth(ch);
+						TextWord word = line.GetWord(j);
+						if (word == null || word.Font == null) {
+							drawingPos += GetWidth(ch);
+						} else {
+							drawingPos += GetWidth(ch, word.Font);
+						}
 						break;
 				}
 			}

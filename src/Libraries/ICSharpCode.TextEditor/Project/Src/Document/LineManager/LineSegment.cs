@@ -19,6 +19,18 @@ namespace ICSharpCode.TextEditor.Document
 		List<TextWord> words              = null;
 		Stack<Span>    highlightSpanStack = null;
 		
+		public TextWord GetWord(int column)
+		{
+			int curColumn = 0;
+			foreach (TextWord word in words) {
+				if (column < curColumn + word.Length) {
+					return word;
+				}
+				curColumn += word.Length;
+			}
+			return null;
+		}
+		
 		public override int Length {
 			get	{
 				return length - delimiterLength;
