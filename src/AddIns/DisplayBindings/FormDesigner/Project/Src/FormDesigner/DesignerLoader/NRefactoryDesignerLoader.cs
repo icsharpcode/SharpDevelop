@@ -40,9 +40,9 @@ namespace ICSharpCode.FormDesigner
 	
 	public class NRefactoryDesignerLoader : CodeDomDesignerLoader, ICodeDomDesignerReload
 	{
-		bool                  loading               = false;
+		bool                  loading               = true;
 		IDesignerLoaderHost   designerLoaderHost    = null;
-		TypeResolutionService typeResolutionService = new TypeResolutionService();
+		ITypeResolutionService typeResolutionService = null;
 		SupportedLanguages    language;
 		Microsoft.CSharp.CSharpCodeProvider provider = new Microsoft.CSharp.CSharpCodeProvider();
 		
@@ -101,6 +101,20 @@ namespace ICSharpCode.FormDesigner
 		}
 		#endregion
 		
+		public override void BeginLoad(IDesignerLoaderHost host) 
+		{
+			this.loading = true;
+			typeResolutionService = (ITypeResolutionService)host.GetService(typeof(ITypeResolutionService));
+			base.BeginLoad(host);
+		}
+		protected override void OnEndLoad(bool successful, ICollection errors)
+		{
+			this.loading = false;
+			base.OnEndLoad(successful, errors);
+		}
+ 
+
+		
 		protected override CodeCompileUnit Parse()
 		{
 			Console.Write("ParseCompileUnit");
@@ -112,8 +126,9 @@ namespace ICSharpCode.FormDesigner
 			visitor.Visit(p.CompilationUnit, null);
 			
 			// output generated CodeDOM to the console :
-			CodeDOMVerboseOutputGenerator outputGenerator = new CodeDOMVerboseOutputGenerator();
-			outputGenerator.GenerateCodeFromMember(visitor.codeCompileUnit.Namespaces[0].Types[0], Console.Out, null);
+//			CodeDOMVerboseOutputGenerator outputGenerator = new CodeDOMVerboseOutputGenerator();
+//			outputGenerator.GenerateCodeFromMember(visitor.codeCompileUnit.Namespaces[0].Types[0], Console.Out, null);
+			
 //			provider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
 			
 			return visitor.codeCompileUnit;

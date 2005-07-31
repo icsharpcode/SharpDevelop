@@ -26,8 +26,7 @@ namespace ICSharpCode.FormDesigner.Services
 		{
 			return Assembly.Load(name);
 		}
-		
-		
+			
 		public string GetPathOfAssembly(AssemblyName name)
 		{
 			Assembly assembly = GetAssembly(name);

@@ -140,7 +140,7 @@ namespace ICSharpCode.FormDesigner
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
 			serviceContainer.AddService(typeof(ITypeResolutionService), ToolboxProvider.TypeResolutionService);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerEventService), new DesignerEventService());
-//			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerOptionService), new ICSharpCode.FormDesigner.Services.DesignerOptionService());
+			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerOptionService), new ICSharpCode.FormDesigner.Services.DesignerOptionService());
 			
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerOptionService), new System.Windows.Forms.Design.WindowsFormsDesignerOptionService());
 			
@@ -160,6 +160,7 @@ namespace ICSharpCode.FormDesigner
 			designSurface.Flush();
 			
 			generator.Attach(this);
+			Console.WriteLine("!!!!!! END LOAD");
 		}
 		
 		PropertyContainer propertyContainer = new PropertyContainer();

@@ -199,7 +199,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TipOfTheDay.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TreeViewOptions.cs">
       <SubType>Form</SubType>
