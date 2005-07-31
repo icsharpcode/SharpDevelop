@@ -133,6 +133,7 @@
     <Compile Include="Parser\Expressions\GlobalReferenceExpressionTests.cs" />
     <Compile Include="Parser\TypeLevel\CustomEventTests.cs" />
     <Compile Include="Lexer\CSharp\LexerPositionTests.cs" />
+    <Compile Include="Lexer\VBNet\LexerPositionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\NRefactory.csproj">

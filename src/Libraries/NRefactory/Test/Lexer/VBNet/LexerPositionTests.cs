@@ -13,14 +13,14 @@ using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.CSharp;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
-namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
+namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 {
 	[TestFixture]
 	public class LexerPositionTests
 	{
 		ILexer GenerateLexer(string s)
 		{
-			return ParserFactory.CreateLexer(SupportedLanguages.CSharp, new StringReader(s));
+			return ParserFactory.CreateLexer(SupportedLanguages.VBNet, new StringReader(s));
 		}
 		
 		[Test]
@@ -38,14 +38,14 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			t = l.NextToken();
 			Assert.AreEqual(new Point(8, 1), t.Location);
 		}
-		[Test]
-		public void TestReturn()
-		{
-			ILexer l = GenerateLexer("public\nstatic");
-			Token t = l.NextToken();
-			t = l.NextToken();
-			Assert.AreEqual(new Point(1, 2), t.Location);
-		}
+//		[Test]
+//		public void TestReturn()
+//		{
+//			ILexer l = GenerateLexer("public\nstatic");
+//			Token t = l.NextToken();
+//			t = l.NextToken();
+//			Assert.AreEqual(new Point(1, 2), t.Location);
+//		}
 		[Test]
 		public void TestSpace()
 		{
@@ -53,40 +53,40 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			Token t = l.NextToken();
 			Assert.AreEqual(new Point(3, 1), t.Location);
 		}
-		[Test]
-		public void TestOctNumber()
-		{
-			ILexer l = GenerateLexer("0142");
-			Token t = l.NextToken();
-			Assert.AreEqual(new Point(1, 1), t.Location);
-		}
-		[Test]
-		public void TestHexNumber()
-		{
-			ILexer l = GenerateLexer("0x142 public");
-			Token t = l.NextToken();
-			Assert.AreEqual(new Point(1, 1), t.Location);
-			t = l.NextToken();
-			Assert.AreEqual(new Point(7, 1), t.Location);
-		}
-		[Test]
-		public void TestHexNumberChar()
-		{
-			ILexer l = GenerateLexer("\'\\x224\' public");
-			Token t = l.NextToken();
-			Assert.AreEqual(new Point(1, 1), t.Location);
-			t = l.NextToken();
-			Assert.AreEqual(new Point(9, 1), t.Location);
-		}
-		[Test]
-		public void TestFloationPointNumber()
-		{
-			ILexer l = GenerateLexer("0.142 public");
-			Token t = l.NextToken();
-			Assert.AreEqual(new Point(1, 1), t.Location);
-			t = l.NextToken();
-			Assert.AreEqual(new Point(7, 1), t.Location);
-		}
+//		[Test]
+//		public void TestOctNumber()
+//		{
+//			ILexer l = GenerateLexer("0142");
+//			Token t = l.NextToken();
+//			Assert.AreEqual(new Point(1, 1), t.Location);
+//		}
+//		[Test]
+//		public void TestHexNumber()
+//		{
+//			ILexer l = GenerateLexer("0x142 public");
+//			Token t = l.NextToken();
+//			Assert.AreEqual(new Point(1, 1), t.Location);
+//			t = l.NextToken();
+//			Assert.AreEqual(new Point(7, 1), t.Location);
+//		}
+//		[Test]
+//		public void TestHexNumberChar()
+//		{
+//			ILexer l = GenerateLexer("\'\\x224\' public");
+//			Token t = l.NextToken();
+//			Assert.AreEqual(new Point(1, 1), t.Location);
+//			t = l.NextToken();
+//			Assert.AreEqual(new Point(9, 1), t.Location);
+//		}
+//		[Test]
+//		public void TestFloationPointNumber()
+//		{
+//			ILexer l = GenerateLexer("0.142 public");
+//			Token t = l.NextToken();
+//			Assert.AreEqual(new Point(1, 1), t.Location);
+//			t = l.NextToken();
+//			Assert.AreEqual(new Point(7, 1), t.Location);
+//		}
 //		[Test]
 //		public void TestVerbatimString()
 //		{
@@ -105,14 +105,14 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 //			t = l.NextToken();
 //			Assert.AreEqual(new Point(3, 1), t.Location);
 //		}
-		[Test]
-		public void TestNumber()
-		{
-			ILexer l = GenerateLexer("142\nstatic");
-			Token t = l.NextToken();
-			t = l.NextToken();
-			Assert.AreEqual(new Point(1, 2), t.Location);
-		}
+//		[Test]
+//		public void TestNumber()
+//		{
+//			ILexer l = GenerateLexer("142\nstatic");
+//			Token t = l.NextToken();
+//			t = l.NextToken();
+//			Assert.AreEqual(new Point(1, 2), t.Location);
+//		}
 		[Test]
 		public void TestNumber2()
 		{

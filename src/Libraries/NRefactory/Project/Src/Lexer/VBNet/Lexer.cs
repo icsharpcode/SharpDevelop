@@ -228,7 +228,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				return sb.ToString();
 			}
 			
-			if (peek != -1 && "%&@!#$".IndexOf((char)peek) != -1) {
+			if ("%&@!#$".IndexOf((char)peek) != -1) {
 				ReaderRead();
 			}
 			return sb.ToString();
