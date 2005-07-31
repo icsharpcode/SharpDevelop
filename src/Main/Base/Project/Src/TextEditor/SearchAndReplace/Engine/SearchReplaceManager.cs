@@ -27,12 +27,7 @@ namespace SearchAndReplace
 		static SearchReplaceManager()
 		{
 			find.TextIteratorBuilder = new ForwardTextIteratorBuilder();
-//			SearchOptions.SearchStrategyTypeChanged   += new EventHandler(InitializeSearchStrategy);
-//			SearchOptions.DocumentIteratorTypeChanged += new EventHandler(InitializeDocumentIterator);
-//			InitializeDocumentIterator(null, null);
-//			InitializeSearchStrategy(null, null);
-		}	
-		
+		}
 		
 		static void SetSearchOptions()
 		{

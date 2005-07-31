@@ -21,9 +21,6 @@ using ICSharpCode.TextEditor;
 
 namespace SearchAndReplace
 {
-	/// <summary>
-	/// Description of SearchAndReplacePanel.
-	/// </summary>
 	public class SearchAndReplacePanel : BaseSharpDevelopUserControl
 	{
 		SearchAndReplaceMode  searchAndReplaceMode;
@@ -43,6 +40,8 @@ namespace SearchAndReplace
 						break;
 					case SearchAndReplaceMode.Replace:
 						SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ReplacePanel.xfrm"));
+						Get<Button>("replace").Click += new EventHandler(ReplaceButtonClicked);
+						Get<Button>("replaceAll").Click += new EventHandler(ReplaceAllButtonClicked);
 						break;
 				}
 				
@@ -66,6 +65,18 @@ namespace SearchAndReplace
 		{
 			WritebackOptions();
 			SearchReplaceInFilesManager.FindAll();
+		}
+		
+		void ReplaceAllButtonClicked(object sender, EventArgs e)
+		{
+			WritebackOptions();
+			SearchReplaceManager.ReplaceAll();
+		}
+		
+		void ReplaceButtonClicked(object sender, EventArgs e)
+		{
+			WritebackOptions();
+			SearchReplaceManager.Replace();
 		}
 		
 		void WritebackOptions()
