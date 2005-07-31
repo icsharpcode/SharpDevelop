@@ -38,6 +38,26 @@ namespace ICSharpCode.NRefactory.Parser
 		// used for the original value of strings (with escape sequences).
 		protected StringBuilder originalValue = new StringBuilder();
 		
+		protected int Line {
+			get {
+				return line;
+			}
+		}
+		protected int Col {
+			get {
+				return col;
+			}
+		}
+		protected int ReaderRead()
+		{
+			++col;
+			return reader.Read();
+		}
+		protected int ReaderPeek()
+		{
+			return reader.Peek();
+		}
+		
 		public Errors Errors {
 			get {
 				return errors;

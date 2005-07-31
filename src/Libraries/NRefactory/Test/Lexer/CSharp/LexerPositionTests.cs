@@ -28,7 +28,95 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		{
 			ILexer l = GenerateLexer("public");
 			Token t = l.NextToken();
-			Assert.AreEqual(t.Location, new Point(1, 1));
+			Assert.AreEqual(new Point(1, 1), t.Location);
+		}
+		[Test]
+		public void Test2()
+		{
+			ILexer l = GenerateLexer("public static");
+			Token t = l.NextToken();
+			t = l.NextToken();
+			Assert.AreEqual(new Point(8, 1), t.Location);
+		}
+		[Test]
+		public void TestReturn()
+		{
+			ILexer l = GenerateLexer("public\nstatic");
+			Token t = l.NextToken();
+			t = l.NextToken();
+			Assert.AreEqual(new Point(1, 2), t.Location);
+		}
+		[Test]
+		public void TestSpace()
+		{
+			ILexer l = GenerateLexer("  public");
+			Token t = l.NextToken();
+			Assert.AreEqual(new Point(3, 1), t.Location);
+		}
+		[Test]
+		public void TestOctNumber()
+		{
+			ILexer l = GenerateLexer("0142");
+			Token t = l.NextToken();
+			Assert.AreEqual(new Point(1, 1), t.Location);
+		}
+		[Test]
+		public void TestHexNumber()
+		{
+			ILexer l = GenerateLexer("0x142 public");
+			Token t = l.NextToken();
+			Assert.AreEqual(new Point(1, 1), t.Location);
+			t = l.NextToken();
+			Assert.AreEqual(new Point(7, 1), t.Location);
+		}
+		[Test]
+		public void TestHexNumberChar()
+		{
+			ILexer l = GenerateLexer("\'\\x224\' public");
+			Token t = l.NextToken();
+			Assert.AreEqual(new Point(1, 1), t.Location);
+			t = l.NextToken();
+			Assert.AreEqual(new Point(9, 1), t.Location);
+		}
+		public void TestFloationPointNumber()
+		{
+			ILexer l = GenerateLexer("0.142 public");
+			Token t = l.NextToken();
+			Assert.AreEqual(new Point(1, 1), t.Location);
+			t = l.NextToken();
+			Assert.AreEqual(new Point(7, 1), t.Location);
+		}
+		public void TestVerbatimString()
+		{
+			ILexer l = GenerateLexer("@\"a\"\"a\" public");
+			Token t = l.NextToken();
+			Assert.AreEqual(new Point(1, 1), t.Location);
+			t = l.NextToken();
+			Assert.AreEqual(new Point(9, 1), t.Location);
+		}
+		public void TestNoFloationPointNumber()
+		{
+			ILexer l = GenerateLexer("0.a");
+			Token t = l.NextToken();
+			Assert.AreEqual(new Point(1, 1), t.Location);
+			t = l.NextToken();
+			Assert.AreEqual(new Point(3, 1), t.Location);
+		}
+		[Test]
+		public void TestNumber()
+		{
+			ILexer l = GenerateLexer("142\nstatic");
+			Token t = l.NextToken();
+			t = l.NextToken();
+			Assert.AreEqual(new Point(1, 2), t.Location);
+		}
+		[Test]
+		public void TestNumber2()
+		{
+			ILexer l = GenerateLexer("14 static");
+			Token t = l.NextToken();
+			t = l.NextToken();
+			Assert.AreEqual(new Point(4, 1), t.Location);
 		}
 	}
 }

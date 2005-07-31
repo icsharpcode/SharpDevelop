@@ -25,9 +25,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		protected override Token Next()
 		{
 			int nextChar;
-			while ((nextChar = reader.Read()) != -1) {
+			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
-				++col;
 				
 				if (Char.IsWhiteSpace(ch)) {
 					HandleLineEnd(ch);
@@ -46,12 +45,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				}
 				
 				if (Char.IsDigit(ch)) {
-					return ReadDigit(ch, col);
+					return ReadDigit(ch, col - 1);
 				}
 				
 				switch (ch) {
 					case '/':
-						int peek = reader.Peek();
+						int peek = ReaderPeek();
 						if (peek == '/' || peek == '*') {
 							ReadComment();
 							continue;
@@ -68,8 +67,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					case '\'':
 						return ReadChar();
 					case '@':
-						int next = reader.Read();
-						++col;
+						int next = ReaderRead();
 						if (next == -1) {
 							errors.Error(line, col, String.Format("EOF after @"));
 						} else {
@@ -109,17 +107,15 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			int curPos     = 1;
 			identBuffer[0] = ch;
 			int peek;
-			while ((peek = reader.Peek()) != -1 && (Char.IsLetterOrDigit(ch = (char)peek) || ch == '_')) {
-				reader.Read();
-				++col;
+			while ((peek = ReaderPeek()) != -1 && (Char.IsLetterOrDigit(ch = (char)peek) || ch == '_')) {
+				ReaderRead();
 				
 				if (curPos < MAX_IDENTIFIER_LENGTH) {
 					identBuffer[curPos++] = ch;
 				} else {
 					errors.Error(line, col, String.Format("Identifier too long"));
-					while ((peek = reader.Peek()) != -1 && (Char.IsLetterOrDigit(ch = (char)peek) || ch == '_')) {
-						reader.Read();
-						++col;
+					while ((peek = ReaderPeek()) != -1 && (Char.IsLetterOrDigit(ch = (char)peek) || ch == '_')) {
+						ReaderRead();
 					}
 					break;
 				}
@@ -129,9 +125,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		Token ReadDigit(char ch, int x)
 		{
-			unchecked { // prevent exception when Peek() = -1 is cast to char
+			unchecked { // prevent exception when ReaderPeek() = -1 is cast to char
 				int y = line;
-				++col;
 				sb.Length = 0;
 				sb.Append(ch);
 				string prefix = null;
@@ -144,40 +139,35 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				bool isdouble   = false;
 				bool isdecimal  = false;
 				
-				char peek = (char)reader.Peek();
+				char peek = (char)ReaderPeek();
 				
 				if (ch == '.')  {
 					isdouble = true;
-					++col;
 					
-					while (Char.IsDigit((char)reader.Peek())) { // read decimal digits beyond the dot
-						sb.Append((char)reader.Read());
-						++col;
+					while (Char.IsDigit((char)ReaderPeek())) { // read decimal digits beyond the dot
+						sb.Append((char)ReaderRead());
 					}
-					peek = (char)reader.Peek();
+					peek = (char)ReaderPeek();
 				} else if (ch == '0' && (peek == 'x' || peek == 'X')) {
-					reader.Read(); // skip 'x'
+					ReaderRead(); // skip 'x'
 					sb.Length = 0; // Remove '0' from 0x prefix from the stringvalue
-					++col;
-					while (IsHex((char)reader.Peek())) {
-						sb.Append(Char.ToUpper((char)reader.Read()));
-						++col;
+					while (IsHex((char)ReaderPeek())) {
+						sb.Append(Char.ToUpper((char)ReaderRead()));
 					}
 					ishex = true;
 					prefix = "0x";
-					peek = (char)reader.Peek();
+					peek = (char)ReaderPeek();
 				} else {
-					while (Char.IsDigit((char)reader.Peek())) {
-						sb.Append((char)reader.Read());
-						++col;
+					while (Char.IsDigit((char)ReaderPeek())) {
+						sb.Append((char)ReaderRead());
 					}
-					peek = (char)reader.Peek();
+					peek = (char)ReaderPeek();
 				}
 				
 				Token nextToken = null; // if we accedently read a 'dot'
 				if (peek == '.') { // read floating point number
-					reader.Read();
-					peek = (char)reader.Peek();
+					ReaderRead();
+					peek = (char)ReaderPeek();
 					if (!Char.IsDigit(peek)) {
 						nextToken = new Token(Tokens.Dot, x, y);
 						peek = '.';
@@ -188,67 +178,54 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						}
 						sb.Append('.');
 						
-						
-						++col;
-						
-						while (Char.IsDigit((char)reader.Peek())) { // read decimal digits beyond the dot
-							sb.Append((char)reader.Read());
-							++col;
+						while (Char.IsDigit((char)ReaderPeek())) { // read decimal digits beyond the dot
+							sb.Append((char)ReaderRead());
 						}
-						peek = (char)reader.Peek();
+						peek = (char)ReaderPeek();
 					}
 				}
 				
 				if (peek == 'e' || peek == 'E') { // read exponent
 					isdouble = true;
-					sb.Append((char)reader.Read());
-					++col;
-					peek = (char)reader.Peek();
+					sb.Append((char)ReaderRead());
+					peek = (char)ReaderPeek();
 					if (peek == '-' || peek == '+') {
-						sb.Append((char)reader.Read());
-						++col;
+						sb.Append((char)ReaderRead());
 					}
-					while (Char.IsDigit((char)reader.Peek())) { // read exponent value
-						sb.Append((char)reader.Read());
-						++col;
+					while (Char.IsDigit((char)ReaderPeek())) { // read exponent value
+						sb.Append((char)ReaderRead());
 					}
 					isunsigned = true;
-					peek = (char)reader.Peek();
+					peek = (char)ReaderPeek();
 				}
 				
 				if (peek == 'f' || peek == 'F') { // float value
-					reader.Read();
+					ReaderRead();
 					suffix = "f";
-					++col;
 					isfloat = true;
 				} else if (peek == 'd' || peek == 'D') { // double type suffix (obsolete, double is default)
-					reader.Read();
+					ReaderRead();
 					suffix = "d";
-					++col;
 					isdouble = true;
 				} else if (peek == 'm' || peek == 'M') { // decimal value
-					reader.Read();
+					ReaderRead();
 					suffix = "m";
-					++col;
 					isdecimal = true;
 				} else if (!isdouble) {
 					if (peek == 'u' || peek == 'U') {
-						reader.Read();
+						ReaderRead();
 						suffix = "u";
-						++col;
 						isunsigned = true;
-						peek = (char)reader.Peek();
+						peek = (char)ReaderPeek();
 					}
 					
 					if (peek == 'l' || peek == 'L') {
-						reader.Read();
-						peek = (char)reader.Peek();
-						++col;
+						ReaderRead();
+						peek = (char)ReaderPeek();
 						islong = true;
 						if (!isunsigned && (peek == 'u' || peek == 'U')) {
-							reader.Read();
+							ReaderRead();
 							suffix = "lu";
-							++col;
 							isunsigned = true;
 						} else {
 							suffix = isunsigned ? "ul" : "l";
@@ -342,7 +319,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		Token ReadString()
 		{
-			int x = col;
+			int x = col - 1;
 			int y = line;
 			
 			sb.Length = 0;
@@ -350,9 +327,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			originalValue.Append('"');
 			bool doneNormally = false;
 			int nextChar;
-			while ((nextChar = reader.Read()) != -1) {
+			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
-				++col;
 				
 				if (ch == '"') {
 					doneNormally = true;
@@ -388,18 +364,17 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			sb.Length            = 0;
 			originalValue.Length = 0;
 			originalValue.Append("@\"");
-			while ((nextChar = reader.Read()) != -1) {
+			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
-				++col;
 				
 				if (ch == '"') {
-					if (reader.Peek() != '"') {
+					if (ReaderPeek() != '"') {
 						originalValue.Append('"');
 						break;
 					}
 					originalValue.Append("\"\"");
 					sb.Append('"');
-					reader.Read();
+					ReaderRead();
 				}
 				if (HandleLineEnd(ch)) {
 					sb.Append('\n');
@@ -420,7 +395,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		char[] escapeSequenceBuffer = new char[12];
 		string ReadEscapeSequence(out char ch)
 		{
-			int nextChar = reader.Read();
+			int nextChar = ReaderRead();
 			if (nextChar == -1) {
 				errors.Error(line, col, String.Format("End of file reached inside escape sequence"));
 				ch = '\0';
@@ -429,7 +404,6 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			char c = (char)nextChar;
 			int curPos              = 1;
 			escapeSequenceBuffer[0] = c;
-			++col;
 			switch (c)  {
 				case '\'':
 					ch = '\'';
@@ -466,17 +440,16 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					break;
 				case 'u':
 				case 'x':
-					c = (char)reader.Read();
+					c = (char)ReaderRead();
 					int number = GetHexNumber(c);
 					escapeSequenceBuffer[curPos++] = c;
 					
 					if (number < 0) {
-						errors.Error(line, col, String.Format("Invalid char in literal : {0}", c));
+						errors.Error(line, col - 1, String.Format("Invalid char in literal : {0}", c));
 					}
 					for (int i = 0; i < 3; ++i) {
-						if (IsHex((char)reader.Peek())) {
-							c = (char)reader.Read();
-							
+						if (IsHex((char)ReaderPeek())) {
+							c = (char)ReaderRead();
 							int idx = GetHexNumber(c);
 							escapeSequenceBuffer[curPos++] = c;
 							number = 16 * number + idx;
@@ -496,23 +469,22 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		Token ReadChar()
 		{
-			int x = col;
+			int x = col - 1;
 			int y = line;
-			int nextChar = reader.Read();
+			int nextChar = ReaderRead();
 			if (nextChar == -1) {
 				errors.Error(y, x, String.Format("End of file reached inside character literal"));
 				return null;
 			}
 			char ch = (char)nextChar;
 			char chValue = ch;
-			++col;
 			string escapeSequence = String.Empty;
 			if (ch == '\\') {
 				escapeSequence = ReadEscapeSequence(out chValue);
 			}
 			
 			unchecked {
-				if ((char)reader.Read() != '\'') {
+				if ((char)ReaderRead() != '\'') {
 					errors.Error(y, x, String.Format("Char not terminated"));
 				}
 			}
@@ -523,154 +495,132 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		{
 			int x = col;
 			int y = line;
-			++col;
 			switch (ch) {
 				case '+':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '+':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.Increment, x, y);
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.PlusAssign, x, y);
 					}
 					return new Token(Tokens.Plus, x, y);
 				case '-':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '-':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.Decrement, x, y);
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.MinusAssign, x, y);
 						case '>':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.Pointer, x, y);
 					}
 					return new Token(Tokens.Minus, x, y);
 				case '*':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.TimesAssign, x, y);
 						default:
 							break;
 					}
 					return new Token(Tokens.Times, x, y);
 				case '/':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.DivAssign, x, y);
 					}
 					return new Token(Tokens.Div, x, y);
 				case '%':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.ModAssign, x, y);
 					}
 					return new Token(Tokens.Mod, x, y);
 				case '&':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '&':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.LogicalAnd, x, y);
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.BitwiseAndAssign, x, y);
 					}
 					return new Token(Tokens.BitwiseAnd, x, y);
 				case '|':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '|':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.LogicalOr, x, y);
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.BitwiseOrAssign, x, y);
 					}
 					return new Token(Tokens.BitwiseOr, x, y);
 				case '^':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.XorAssign, x, y);
 						default:
 							break;
 					}
 					return new Token(Tokens.Xor, x, y);
 				case '!':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.NotEqual, x, y);
 					}
 					return new Token(Tokens.Not, x, y);
 				case '~':
 					return new Token(Tokens.BitwiseComplement, x, y);
 				case '=':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.Equal, x, y);
 					}
 					return new Token(Tokens.Assign, x, y);
 				case '<':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '<':
-							reader.Read();
-							switch (reader.Peek()) {
+							ReaderRead();
+							switch (ReaderPeek()) {
 								case '=':
-									reader.Read();
-									col += 2;
+									ReaderRead();
 									return new Token(Tokens.ShiftLeftAssign, x, y);
 								default:
-									++col;
 									break;
 							}
 							return new Token(Tokens.ShiftLeft, x, y);
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.LessEqual, x, y);
 					}
 					return new Token(Tokens.LessThan, x, y);
 				case '>':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 // Removed because of generics:
 //						case '>':
-//							reader.Read();
-//							if (reader.Peek() != -1) {
-//								switch ((char)reader.Peek()) {
+//							ReaderRead();
+//							if (ReaderPeek() != -1) {
+//								switch ((char)ReaderPeek()) {
 //									case '=':
-//										reader.Read();
-//										col += 2;
+//										ReaderRead();
 //										return new Token(Tokens.ShiftRightAssign, x, y);
 //									default:
-//										++col;
 //										break;
 //								}
 //							}
 //							return new Token(Tokens.ShiftRight, x, y);
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.GreaterEqual, x, y);
 					}
 					return new Token(Tokens.GreaterThan, x, y);
@@ -679,20 +629,18 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				case ';':
 					return new Token(Tokens.Semicolon, x, y);
 				case ':':
-					if (reader.Peek() == ':') {
-						reader.Read();
-						++col;
+					if (ReaderPeek() == ':') {
+						ReaderRead();
 						return new Token(Tokens.DoubleColon, x, y);
 					}
 					return new Token(Tokens.Colon, x, y);
 				case ',':
 					return new Token(Tokens.Comma, x, y);
 				case '.':
-					// Prevent OverflowException when Peek returns -1
-					int tmp = reader.Peek();
+					// Prevent OverflowException when ReaderPeek returns -1
+					int tmp = ReaderPeek();
 					if (tmp > 0 && Char.IsDigit((char)tmp)) {
-						 col -= 2;
-						 return ReadDigit('.', col + 1);
+						 return ReadDigit('.', col - 1);
 					}
 					return new Token(Tokens.Dot, x, y);
 				case ')':
@@ -708,21 +656,19 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				case '{':
 					return new Token(Tokens.OpenCurlyBrace, x, y);
 				default:
-					--col;
 					return null;
 			}
 		}
 		
 		void ReadComment()
 		{
-			++col;
-			switch (reader.Read()) {
+			switch (ReaderRead()) {
 				case '*':
 					ReadMultiLineComment();
 					break;
 				case '/':
-					if (reader.Peek() == '/') {
-						reader.Read();
+					if (ReaderPeek() == '/') {
+						ReaderRead();
 						ReadSingleLineComment(CommentType.Documentation);
 					} else {
 						ReadSingleLineComment(CommentType.SingleLine);
@@ -740,9 +686,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			StringBuilder curWord = specialCommentHash != null ? new StringBuilder() : null;
 			
 			int nextChar;
-			while ((nextChar = reader.Read()) != -1) {
+			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
-				++col;
 				
 				if (HandleLineEnd(ch)) {
 					break;
@@ -779,9 +724,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		{
 			specialTracker.StartComment(CommentType.Block, new Point(col, line));
 			int nextChar;
-			while ((nextChar = reader.Read()) != -1) {
+			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
-				++col;
 				
 				if (HandleLineEnd(ch)) {
 					specialTracker.AddChar('\n');
@@ -789,9 +733,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				}
 				
 				// End of multiline comment reached ?
-				if (ch == '*' && reader.Peek() == '/') {
-					reader.Read();
-					++col;
+				if (ch == '*' && ReaderPeek() == '/') {
+					ReaderRead();
 					specialTracker.FinishComment(new Point(col, line));
 					return;
 				}
