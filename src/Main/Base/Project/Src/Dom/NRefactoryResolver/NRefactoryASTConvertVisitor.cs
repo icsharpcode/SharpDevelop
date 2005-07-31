@@ -411,6 +411,23 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
+		public override object Visit(AST.OperatorDeclaration operatorDeclaration, object data)
+		{
+			DefaultClass c  = GetCurrentClass();
+			DefaultRegion region     = GetRegion(operatorDeclaration.StartLocation, operatorDeclaration.EndLocation);
+			DefaultRegion bodyRegion = GetRegion(operatorDeclaration.EndLocation, operatorDeclaration.Body != null ? operatorDeclaration.Body.EndLocation : new Point(-1, -1));
+			
+			DefaultMethod method = new DefaultMethod(operatorDeclaration.Name, CreateReturnType(operatorDeclaration.ConvertToType), ConvertModifier(operatorDeclaration.Modifier), region, bodyRegion, c);
+			if(operatorDeclaration.Parameters != null)
+			{
+				foreach (AST.ParameterDeclarationExpression par in operatorDeclaration.Parameters) {
+					method.Parameters.Add(CreateParameter(par, method));
+				}
+			}
+			c.Methods.Add(method);
+			return null;
+		}
+		
 		public override object Visit(AST.ConstructorDeclaration constructorDeclaration, object data)
 		{
 			DefaultRegion region     = GetRegion(constructorDeclaration.StartLocation, constructorDeclaration.EndLocation);

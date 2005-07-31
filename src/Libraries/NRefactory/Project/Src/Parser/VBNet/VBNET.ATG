@@ -1244,7 +1244,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		decl.EndLocation = t.EndLocation;
 		compilationUnit.AddChild(decl);
 	.)
-	| /* UnaryOperatorDeclaration */
+	|
 	"Operator"
 	(.
 		m.Check(Modifier.VBOperators);
@@ -1269,7 +1269,8 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			(. parameters.Add(new ParameterDeclarationExpression(operandType, operandName, ParamModifier.In)); .)
 		}
 	")"
-	[ "As" { AttributeSection<out section> (. returnTypeAttributes.Add(section); .) } TypeName<out returnType> EOL ]
+	(. Point endPos = t.EndLocation; .)
+	[ "As" { AttributeSection<out section> (. returnTypeAttributes.Add(section); .) } TypeName<out returnType> (. endPos = t.EndLocation; .) EOL ]
 	Block<out stmt> "End" "Operator" EOL
 	(.
 		OperatorDeclaration operatorDeclaration = new OperatorDeclaration(m.Modifier, 
@@ -1282,7 +1283,9 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		operatorDeclaration.ReturnTypeAttributes = returnTypeAttributes;
 		operatorDeclaration.Body = (BlockStatement)stmt;
 		operatorDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-		operatorDeclaration.EndLocation = t.EndLocation;
+		operatorDeclaration.EndLocation = endPos;
+		operatorDeclaration.Body.StartLocation = startPos;
+		operatorDeclaration.Body.EndLocation = t.Location;
 		compilationUnit.AddChild(operatorDeclaration);
 	.)
 	.

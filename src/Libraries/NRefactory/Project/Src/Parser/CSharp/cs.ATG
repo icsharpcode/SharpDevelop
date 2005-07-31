@@ -1139,10 +1139,13 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	|                                      (. m.Check(Modifier.Operators);
 	                                          if (m.isNone) Error("at least one modifier must be set"); 
 	                                          bool isImplicit = true;
+	                                          Point startPos = Point.Empty;
 	                                       .)
-	( "implicit" | "explicit" (. isImplicit = false; .) ) 
+	( "implicit" (. startPos = t.Location; .) | "explicit" (. isImplicit = false; startPos = t.Location; .) ) 
 	"operator" Type<out type> (. TypeReference operatorType = type; .) 
-	"(" Type<out type> ident (. string varName = t.val; .) ")" ( Block<out stmt> | ";" (. stmt = null; .) )
+	"(" Type<out type> ident (. string varName = t.val; .) ")"
+	(. Point endPos = t.Location; .)
+	( Block<out stmt> | ";" (. stmt = null; .) )
 	(.
 		
 		List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
@@ -1154,6 +1157,8 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		                                                                  isImplicit ? ConversionType.Implicit : ConversionType.Explicit
 		                                                                  );
 		operatorDeclaration.Body = (BlockStatement)stmt;
+		operatorDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
+		operatorDeclaration.EndLocation = endPos;
 		compilationUnit.AddChild(operatorDeclaration);
 	.)
 	
@@ -1175,6 +1180,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		                                      }
 		                                   .)*/
 		)
+		(. Point endPos = t.Location; .)
 		")" ( Block<out stmt> | ";" )
 		(.
 			List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>();
@@ -1188,6 +1194,8 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			                                                                  type,
 			                                                                  op);
 			operatorDeclaration.Body = (BlockStatement)stmt;
+			operatorDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
+			operatorDeclaration.EndLocation = endPos;
 			compilationUnit.AddChild(operatorDeclaration);
 		.)
 		
