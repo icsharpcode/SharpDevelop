@@ -16,6 +16,7 @@ using System.Drawing;
 using System.Drawing.Design;
 using System.Reflection;
 using System.Windows.Forms;
+using System.Windows.Forms.Design;
 using System.Drawing.Printing;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -151,8 +152,10 @@ namespace ICSharpCode.FormDesigner
 			designSurface = new DesignSurface(serviceContainer);
 			eventBindingService.ServiceProvider = designSurface;
 			designerResourceService.Host = Host;
+			serviceContainer.AddService(typeof(IDesignerHost), Host);
 			
 			designSurface.BeginLoad(loader);
+			loader.Flush();
 			
 			designSurface.Flush();
 			
@@ -175,7 +178,7 @@ namespace ICSharpCode.FormDesigner
 		{
 			Initialize();
 			bool dirty = viewContent.IsDirty;
-//	TODO:		
+//	TODO:
 //			loader.TextContent = Document.TextContent;
 			
 			try {

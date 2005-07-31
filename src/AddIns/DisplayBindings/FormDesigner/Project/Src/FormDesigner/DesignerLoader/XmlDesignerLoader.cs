@@ -45,6 +45,7 @@ namespace ICSharpCode.FormDesigner
 				return textEditorControl.Document.TextContent;
 			}
 		}
+		
 		public XmlDesignerLoader(TextEditorControl textEditorControl)
 		{
 			this.textEditorControl = textEditorControl;

@@ -38,7 +38,7 @@ namespace ICSharpCode.FormDesigner
 		}
 	}
 	
-	public class NRefactoryDesignerLoader : CodeDomDesignerLoader
+	public class NRefactoryDesignerLoader : CodeDomDesignerLoader, ICodeDomDesignerReload
 	{
 		bool                  loading               = false;
 		IDesignerLoaderHost   designerLoaderHost    = null;
@@ -77,6 +77,7 @@ namespace ICSharpCode.FormDesigner
 		
 		protected override ITypeResolutionService TypeResolutionService {
 			get {
+				Console.WriteLine("type resolution service");
 				return typeResolutionService;
 			}
 		}
@@ -92,8 +93,17 @@ namespace ICSharpCode.FormDesigner
 			this.textEditorControl = textEditorControl;
 		}
 		
+		#region System.ComponentModel.Design.Serialization.ICodeDomDesignerReload interface implementation
+		public bool ShouldReloadDesigner(CodeCompileUnit newTree) 
+		{
+			Console.Write("AskReload");
+			return  IsReloadNeeded();
+		}
+		#endregion
+		
 		protected override CodeCompileUnit Parse()
 		{
+			Console.Write("ParseCompileUnit");
 			isReloadNeeded = false;
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new StringReader(TextContent));
 			p.Parse();
@@ -101,7 +111,9 @@ namespace ICSharpCode.FormDesigner
 			CodeDOMVisitor visitor = new CodeDOMVisitor();
 			visitor.Visit(p.CompilationUnit, null);
 			
-//			// output generated CodeDOM to the console :
+			// output generated CodeDOM to the console :
+			CodeDOMVerboseOutputGenerator outputGenerator = new CodeDOMVerboseOutputGenerator();
+			outputGenerator.GenerateCodeFromMember(visitor.codeCompileUnit.Namespaces[0].Types[0], Console.Out, null);
 //			provider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
 			
 			return visitor.codeCompileUnit;

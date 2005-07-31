@@ -102,7 +102,7 @@ namespace ICSharpCode.FormDesigner.Services
 //				Console.WriteLine("request missing service : {0} from Assembly {1} is not aviable.", serviceType, serviceType.Assembly.FullName);
 ////				Console.ReadLine();
 //			} else {
-//				Console.WriteLine("get service : {0} from Assembly {1}.", serviceType, serviceType.Assembly.FullName);
+////				Console.WriteLine("get service : {0} from Assembly {1}.", serviceType, serviceType.Assembly.FullName);
 //			}
 			return serviceContainer.GetService(serviceType);
 		}

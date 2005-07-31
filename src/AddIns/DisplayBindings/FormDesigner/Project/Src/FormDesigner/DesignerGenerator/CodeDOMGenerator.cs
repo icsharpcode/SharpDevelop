@@ -66,11 +66,16 @@ namespace ICSharpCode.FormDesigner
 			CodeGeneratorOptions options = codeDOMGeneratorUtility.CreateCodeGeneratorOptions;
 			options.IndentString = "\t\t\t";
 			
+			ICSharpCode.NRefactory.Parser.CodeDOMVerboseOutputGenerator outputGenerator = new ICSharpCode.NRefactory.Parser.CodeDOMVerboseOutputGenerator();
+			
+			Console.WriteLine("<<<<START.");
 			foreach (CodeStatement statement in statements) {
 				if (!(statement is CodeVariableDeclarationStatement)) {
 					// indentation isn't generated when calling GenerateCodeFromStatement
 					writer.Write(options.IndentString);
 					try {
+						outputGenerator.PublicGenerateCodeFromStatement(statement, Console.Out, options);
+						
 						codeProvider.GenerateCodeFromStatement(statement, writer, options);
 					} catch (Exception e) {
 						codeProvider.GenerateCodeFromStatement(new CodeCommentStatement("TODO: Error while generating statement : " + e.Message),
@@ -81,6 +86,7 @@ namespace ICSharpCode.FormDesigner
 			}
 			designerResourceService.SerializationEnded(true);
 			session.Dispose();
+			Console.WriteLine("<<<<END.");
 		}
 	}
 }

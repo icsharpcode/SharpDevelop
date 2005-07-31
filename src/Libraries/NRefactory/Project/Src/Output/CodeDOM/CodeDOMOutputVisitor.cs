@@ -654,8 +654,7 @@ namespace ICSharpCode.NRefactory.Parser
 		public override object Visit(IdentifierExpression expression, object data)
 		{
 			if (IsField(expression.Identifier)) {
-				return new CodeFieldReferenceExpression(new CodeThisReferenceExpression(),
-				                                        expression.Identifier);
+				return new CodeVariableReferenceExpression(expression.Identifier);
 			}
 			return new CodeVariableReferenceExpression(expression.Identifier);
 		}

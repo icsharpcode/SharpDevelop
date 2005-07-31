@@ -295,14 +295,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static CompilerResults RunMSBuild(string fileName, string target)
 		{
+			Console.WriteLine("Run : " + fileName);
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 //			BeforeBuild();
 			MSBuildEngine engine = new MSBuildEngine();
 			engine.MessageView = TaskService.BuildMessageViewCategory;
-			if (target == null)
+			if (target == null) {
 				return engine.Run(fileName);
-			else
-				return engine.Run(fileName, new string[] { target });
+			}
+			return engine.Run(fileName, new string[] { target });
 //			AfterBuild();
 		}
 		

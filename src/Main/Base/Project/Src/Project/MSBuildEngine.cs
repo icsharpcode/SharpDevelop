@@ -82,8 +82,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public void FlushText()
 			{
-				if (engine.MessageView != null)
+				if (engine.MessageView != null) {
 					engine.MessageView.AppendText(textToWrite.ToString());
+				}
 				textToWrite.Length = 0;
 			}
 			
