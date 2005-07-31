@@ -69,6 +69,10 @@ namespace ICSharpCode.Core
 		public static IProjectContent GetProjectContentForReference(ReferenceProjectItem item)
 		{
 			if (item is ProjectReferenceProjectItem) {
+                if (((ProjectReferenceProjectItem)item).ReferencedProject == null)
+                {
+                    return null;
+                }
 				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
 			}
 			lock (contents) {
