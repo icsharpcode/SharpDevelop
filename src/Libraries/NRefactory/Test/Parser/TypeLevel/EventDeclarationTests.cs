@@ -51,7 +51,6 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			EventDeclaration ed = (EventDeclaration)ParseUtilVBNet.ParseTypeMember("event MyEvent(x as Integer)", typeof(EventDeclaration));
 			Assert.AreEqual(1, ed.Parameters.Count);
 			Assert.AreEqual("MyEvent", ed.Name);
-			Assert.AreEqual("System.EventHandler", ed.TypeReference.Type);
 			Assert.IsFalse(ed.HasAddRegion);
 			Assert.IsFalse(ed.HasRemoveRegion);
 		}
