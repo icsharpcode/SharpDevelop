@@ -18,9 +18,9 @@ namespace ICSharpCode.NRefactory.Parser
 	/// </summary>
 	public abstract class AbstractLexer : ILexer
 	{
-		protected TextReader reader;
-		protected int col  = 1;
-		protected int line = 1;
+		TextReader reader;
+		int col  = 1;
+		int line = 1;
 		
 		protected Errors errors = new Errors();
 		

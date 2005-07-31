@@ -55,79 +55,63 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		protected override Token Next()
 		{
 			int nextChar;
-			while ((nextChar = reader.Read()) != -1) {
+			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
-				
-				++col;
 				if (Char.IsWhiteSpace(ch)) {
-					if (ch == '\n') {
-						int x = col - 1;
-						int y = line;
-						++line;
-						col = 1;
-						if (ReaderPeek() == '\r') {
-							reader.Read();
-							if (!lineEnd) {
-								lineEnd = true;
-								return new Token(Tokens.EOL, x -1 , y, "\n\r");
-							}
-						}
+					int x = Col;
+					int y = Line;
+					if (HandleLineEnd(ch)) {
 						if (!lineEnd) {
 							lineEnd = true;
-							return new Token(Tokens.EOL, x, y, "\n");
+							return new Token(Tokens.EOL, x, y);
 						}
 					}
 					continue;
-
 				}
 				if (ch == '_') {
 					if (ReaderPeek() == -1) {
-						errors.Error(line, col, String.Format("No EOF expected after _"));
+						errors.Error(Line, Col, String.Format("No EOF expected after _"));
 						return new Token(Tokens.EOF);
 					}
-					++col;
 					if (!Char.IsWhiteSpace((char)ReaderPeek())) {
-						--col;
-						int x = col;
-						int y = line;
+						int x = Col;
+						int y = Line;
 						string s = ReadIdent('_');
 						lineEnd = false;
-
 						return new Token(Tokens.Identifier, x, y, s);
 					}
-					ch = (char)reader.Read();
+					ch = (char)ReaderRead();
 					
+					lineEnd = false;
 					while (Char.IsWhiteSpace(ch)) {
-						if (ch == '\n') {
-							++line;
-							col = 1;
+						if (HandleLineEnd(ch)) {
+							lineEnd = true;
 							break;
 						}
 						if (ReaderPeek() != -1) {
-							ch = (char)reader.Read();
-							++col;
+							ch = (char)ReaderRead();
 						}
 					}
-					if (ch != '\n') {
-						errors.Error(line, col, String.Format("Return expected"));
+					if (!lineEnd) {
+						errors.Error(Line, Col, String.Format("Return expected"));
 					}
+					lineEnd = false;
 					continue;
 				}
 				
 				if (ch == '#') {
 					while (Char.IsWhiteSpace((char)ReaderPeek())) {
-						++col;
-						reader.Read();
+						ReaderRead();
 					}
 					if (Char.IsDigit((char)ReaderPeek())) {
-						int x = col;
-						int y = line;
+						int x = Col;
+						int y = Line;
 						string s = ReadDate();
 						DateTime time = new DateTime(1, 1, 1, 0, 0, 0);
 						try {
 							time = DateTime.Parse(s, System.Globalization.CultureInfo.InvariantCulture, DateTimeStyles.NoCurrentDateDefault);
 						} catch (Exception e) {
-							errors.Error(line, col, String.Format("Invalid date time {0}", e));
+							errors.Error(Line, Col, String.Format("Invalid date time {0}", e));
 						}
 						return new Token(Tokens.LiteralDate, x, y, s, time);
 					} else {
@@ -139,29 +123,27 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				if (ch == '[') { // Identifier
 					lineEnd = false;
 					if (ReaderPeek() == -1) {
-						errors.Error(line, col, String.Format("Identifier expected"));
+						errors.Error(Line, Col, String.Format("Identifier expected"));
 					}
-					ch = (char)reader.Read();
-					++col;
+					ch = (char)ReaderRead();
 					if (ch == ']' || Char.IsWhiteSpace(ch)) {
-						errors.Error(line, col, String.Format("Identifier expected"));
+						errors.Error(Line, Col, String.Format("Identifier expected"));
 					}
-					int x = col - 1;
-					int y = line;
+					int x = Col - 1;
+					int y = Line;
 					string s = ReadIdent(ch);
 					if (ReaderPeek() == -1) {
-						errors.Error(line, col, String.Format("']' expected"));
+						errors.Error(Line, Col, String.Format("']' expected"));
 					}
-					ch = (char)reader.Read();
-					++col;
+					ch = (char)ReaderRead();
 					if (!(ch == ']')) {
-						errors.Error(line, col, String.Format("']' expected"));
+						errors.Error(Line, Col, String.Format("']' expected"));
 					}
 					return new Token(Tokens.Identifier, x, y, s);
 				}
 				if (Char.IsLetter(ch)) {
-					int x = col - 1;
-					int y = line;
+					int x = Col - 1;
+					int y = Line;
 					string s = ReadIdent(ch);
 					int keyWordToken = Keywords.GetToken(s);
 					if (keyWordToken >= 0) {
@@ -185,7 +167,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 				if (Char.IsDigit(ch)) {
 					lineEnd = false;
-					return ReadDigit(ch, col);
+					return ReadDigit(ch, Col);
 				}
 				if (ch == '&') {
 					lineEnd = false;
@@ -193,16 +175,14 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						return ReadOperator('&');
 					}
 					ch = (char)ReaderPeek();
-					++col;
 					if (Char.ToUpper(ch) == 'H' || Char.ToUpper(ch) == 'O') {
-						--col;
-						return ReadDigit('&', col);
+						return ReadDigit('&', Col);
 					}
 					return ReadOperator('&');
 				}
 				if (ch == '\'' || ch == '\u2018' || ch == '\u2019') {
-					int x = col - 1;
-					int y = line;
+					int x = Col - 1;
+					int y = Line;
 					ReadComment();
 					if (!lineEnd) {
 						lineEnd = true;
@@ -212,14 +192,13 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 				if (ch == '"') {
 					lineEnd = false;
-					int x = col - 1;
-					int y = line;
+					int x = Col - 1;
+					int y = Line;
 					string s = ReadString();
 					if (ReaderPeek() != -1 && (ReaderPeek() == 'C' || ReaderPeek() == 'c')) {
-						reader.Read();
-						++col;
+						ReaderRead();
 						if (s.Length != 1) {
-							errors.Error(line, col, String.Format("Chars can only have Length 1 "));
+							errors.Error(Line, Col, String.Format("Chars can only have Length 1 "));
 						}
 						return new Token(Tokens.LiteralCharacter, x, y, '"' + s  + "\"C", s[0]);
 					}
@@ -230,7 +209,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					lineEnd = false;
 					return token;
 				}
-				errors.Error(line, col, String.Format("Unknown char({0}) which can't be read", ch));
+				errors.Error(Line, Col, String.Format("Unknown char({0}) which can't be read", ch));
 			}
 			
 			return new Token(Tokens.EOF);
@@ -242,20 +221,15 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			sb.Append(ch);
 			int peek;
 			while ((peek = ReaderPeek()) != -1 && (Char.IsLetterOrDigit(ch = (char)peek) || ch == '_')) {
-				reader.Read();
-				++col;
+				ReaderRead();
 				sb.Append(ch.ToString());
 			}
-			++col;
 			if (peek == -1) {
-				--col;
 				return sb.ToString();
 			}
 			
-			--col;
 			if (peek != -1 && "%&@!#$".IndexOf((char)peek) != -1) {
-				reader.Read();
-				++col;
+				ReaderRead();
 			}
 			return sb.ToString();
 		}
@@ -265,7 +239,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			sb.Length = 0;
 			sb.Append(ch);
 			
-			int y = line;
+			int y = Line;
 			string digit = "";
 			if (ch != '&') {
 				digit += ch;
@@ -279,7 +253,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			
 			if (ReaderPeek() == -1) {
 				if (ch == '&') {
-					errors.Error(line, col, String.Format("digit expected"));
+					errors.Error(Line, Col, String.Format("digit expected"));
 				}
 				return new Token(Tokens.LiteralInteger, x, y, sb.ToString() ,ch - '0');
 			}
@@ -287,42 +261,35 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				if (Char.IsDigit((char)ReaderPeek())) {
 					isdouble = true; // double is default
 					if (ishex || isokt) {
-						errors.Error(line, col, String.Format("No hexadecimal or oktadecimal floating point values allowed"));
+						errors.Error(Line, Col, String.Format("No hexadecimal or oktadecimal floating point values allowed"));
 					}
-					++col;
 					while (ReaderPeek() != -1 && Char.IsDigit((char)ReaderPeek())){ // read decimal digits beyond the dot
-						digit += (char)reader.Read();
-						++col;
+						digit += (char)ReaderRead();
 					}
 				}
 			} else if (ch == '&' && Char.ToUpper((char)ReaderPeek()) == 'H') {
 				const string hex = "0123456789ABCDEF";
-				sb.Append((char)reader.Read()); // skip 'H'
-				++col;
+				sb.Append((char)ReaderRead()); // skip 'H'
 				while (ReaderPeek() != -1 && hex.IndexOf(Char.ToUpper((char)ReaderPeek())) != -1) {
-					ch = (char)reader.Read();
+					ch = (char)ReaderRead();
 					sb.Append(ch);
 					digit += Char.ToUpper(ch);
-					++col;
 				}
 				ishex = true;
 			} else if (ReaderPeek() != -1 && ch == '&' && Char.ToUpper((char)ReaderPeek()) == 'O') {
 				const string okt = "01234567";
-				sb.Append((char)reader.Read()); // skip 'O'
-				++col;
+				sb.Append((char)ReaderRead()); // skip 'O'
 				while (ReaderPeek() != -1 && okt.IndexOf(Char.ToUpper((char)ReaderPeek())) != -1) {
-					ch = (char)reader.Read();
+					ch = (char)ReaderRead();
 					sb.Append(ch);
 					digit += Char.ToUpper(ch);
-					++col;
 				}
 				isokt = true;
 			} else {
 				while (ReaderPeek() != -1 && Char.IsDigit((char)ReaderPeek())) {
-					ch = (char)reader.Read();;
+					ch = (char)ReaderRead();;
 					digit += ch;
 					sb.Append(ch);
-					++col;
 				}
 			}
 			
@@ -336,12 +303,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					sb.Append(ch);
 					ch = Char.ToUpper(ch);
 					if (ch != 'I' && ch != 'L' && ch != 'S') {
-						errors.Error(line, col, "Invalid type character: U" + ch);
+						errors.Error(Line, Col, "Invalid type character: U" + ch);
 					}
 				}
-				++col;
 				if (isokt) {
-					reader.Read();
+					ReaderRead();
 					ulong number = 0L;
 					for (int i = 0; i < digit.Length; ++i) {
 						number = number * 8 + digit[i] - '0';
@@ -370,25 +336,24 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 				}
 				if (ch == 'S') {
-					reader.Read();
+					ReaderRead();
 					if (unsigned)
 						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt16.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
 					else
 						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int16.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
 				} else if (ch == '%' || ch == 'I') {
-					reader.Read();
+					ReaderRead();
 					if (unsigned)
 						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
 					else
 						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int32.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
 				} else if (ch == '&' || ch == 'L') {
-					reader.Read();
+					ReaderRead();
 					if (unsigned)
 						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), UInt64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
 					else
 						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
 				} else if (ishex) {
-					--col;
 					ulong number = UInt64.Parse(digit, NumberStyles.HexNumber);
 					if (number > uint.MaxValue) {
 						return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), unchecked((long)number));
@@ -399,17 +364,15 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 			Token nextToken = null; // if we accedently read a 'dot'
 			if (!isdouble && ReaderPeek() == '.') { // read floating point number
-				reader.Read();
+				ReaderRead();
 				if (ReaderPeek() != -1 && Char.IsDigit((char)ReaderPeek())) {
 					isdouble = true; // double is default
 					if (ishex || isokt) {
-						errors.Error(line, col, String.Format("No hexadecimal or oktadecimal floating point values allowed"));
+						errors.Error(Line, Col, String.Format("No hexadecimal or oktadecimal floating point values allowed"));
 					}
 					digit += '.';
-					++col;
 					while (ReaderPeek() != -1 && Char.IsDigit((char)ReaderPeek())){ // read decimal digits beyond the dot
-						digit += (char)reader.Read();
-						++col;
+						digit += (char)ReaderRead();
 					}
 				} else {
 					nextToken = new Token(Tokens.Dot, x, y);
@@ -418,15 +381,12 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			
 			if (ReaderPeek() != -1 && Char.ToUpper((char)ReaderPeek()) == 'E') { // read exponent
 				isdouble = true;
-				digit +=  (char)reader.Read();
-				++col;
+				digit +=  (char)ReaderRead();
 				if (ReaderPeek() != -1 && (ReaderPeek() == '-' || ReaderPeek() == '+')) {
-					digit += (char)reader.Read();
-					++col;
+					digit += (char)ReaderRead();
 				}
 				while (ReaderPeek() != -1 && Char.IsDigit((char)ReaderPeek())) { // read exponent value
-					digit += (char)reader.Read();
-					++col;
+					digit += (char)ReaderRead();
 				}
 			}
 			
@@ -434,20 +394,17 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				switch (char.ToUpper((char)ReaderPeek())) {
 					case 'R':
 					case '#':
-						reader.Read();
-						++col;
+						ReaderRead();
 						isdouble = true;
 						break;
 					case 'D':
 					case '@':
-						reader.Read();
-						++col;
+						ReaderRead();
 						isdecimal = true;
 						break;
 					case 'F':
 					case '!':
-						reader.Read();
-						++col;
+						ReaderRead();
 						issingle = true;
 						break;
 				}
@@ -464,7 +421,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					return new Token(Tokens.LiteralDouble, x, y, sb.ToString(), Double.Parse(digit, CultureInfo.InvariantCulture));
 				}
 			} catch (FormatException) {
-				errors.Error(line, col, String.Format("{0} is not a parseable number", digit));
+				errors.Error(Line, Col, String.Format("{0} is not a parseable number", digit));
 				if (issingle)
 					return new Token(Tokens.LiteralSingle, x, y, sb.ToString(), 0f);
 				if (isdecimal)
@@ -479,11 +436,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				try {
 					token = new Token(Tokens.LiteralInteger, x, y, sb.ToString(), Int64.Parse(digit, ishex ? NumberStyles.HexNumber : NumberStyles.Number));
 				} catch (FormatException) {
-					errors.Error(line, col, String.Format("{0} is not a parseable number", digit));
+					errors.Error(Line, Col, String.Format("{0} is not a parseable number", digit));
 					// fallback, when nothing helps :)
 					token = new Token(Tokens.LiteralInteger, x, y, sb.ToString(), 0);
 				} catch (OverflowException) {
-					errors.Error(line, col, String.Format("{0} is too long for a integer literal", digit));
+					errors.Error(Line, Col, String.Format("{0} is too long for a integer literal", digit));
 					// fallback, when nothing helps :)
 					token = new Token(Tokens.LiteralInteger, x, y, sb.ToString(), 0);
 				}
@@ -494,7 +451,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		void ReadPreprocessorDirective()
 		{
-			Point start = new Point(col - 1, line);
+			Point start = new Point(Col - 1, Line);
 			string directive = ReadIdent('#');
 			string argument  = ReadToEOL();
 			this.specialTracker.AddPreProcessingDirective(directive, argument.Trim(), start, new Point(start.X + directive.Length + argument.Length, start.Y));
@@ -505,19 +462,18 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			char ch = '\0';
 			sb.Length = 0;
 			int nextChar;
-			while ((nextChar = reader.Read()) != -1) {
+			while ((nextChar = ReaderRead()) != -1) {
 				ch = (char)nextChar;
-				++col;
 				if (ch == '#') {
 					break;
 				} else if (ch == '\n') {
-					errors.Error(line, col, String.Format("No return allowed inside Date literal"));
+					errors.Error(Line, Col, String.Format("No return allowed inside Date literal"));
 				} else {
 					sb.Append(ch);
 				}
 			}
 			if (ch != '#') {
-				errors.Error(line, col, String.Format("End of File reached before Date literal terminated"));
+				errors.Error(Line, Col, String.Format("End of File reached before Date literal terminated"));
 			}
 			return sb.ToString();
 		}
@@ -527,41 +483,38 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			char ch = '\0';
 			sb.Length = 0;
 			int nextChar;
-			while ((nextChar = reader.Read()) != -1) {
+			while ((nextChar = ReaderRead()) != -1) {
 				ch = (char)nextChar;
-				++col;
 				if (ch == '"') {
 					if (ReaderPeek() != -1 && ReaderPeek() == '"') {
 						sb.Append('"');
-						reader.Read();
-						++col;
+						ReaderRead();
 					} else {
 						break;
 					}
 				} else if (ch == '\n') {
-					errors.Error(line, col, String.Format("No return allowed inside String literal"));
+					errors.Error(Line, Col, String.Format("No return allowed inside String literal"));
 				} else {
 					sb.Append(ch);
 				}
 			}
 			if (ch != '"') {
-				errors.Error(line, col, String.Format("End of File reached before String terminated "));
+				errors.Error(Line, Col, String.Format("End of File reached before String terminated "));
 			}
 			return sb.ToString();
 		}
 		
 		void ReadComment()
 		{
-			Point startPos = new Point(col, line);
+			Point startPos = new Point(Col, Line);
 			sb.Length = 0;
 			StringBuilder curWord = specialCommentHash != null ? new StringBuilder() : null;
 			int missingApostrophes = 2; // no. of ' missing until it is a documentation comment
-			int x = col;
-			int y = line;
+			int x = Col;
+			int y = Line;
 			int nextChar;
-			while ((nextChar = reader.Read()) != -1) {
+			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
-				++col;
 				
 				if (HandleLineEnd(ch)) {
 					break;
@@ -588,9 +541,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						string tag = curWord.ToString();
 						curWord.Length = 0;
 						if (specialCommentHash.ContainsKey(tag)) {
-							Point p = new Point(col, line);
+							Point p = new Point(Col, Line);
 							string comment = ReadToEOL();
-							tagComments.Add(new TagComment(tag, comment, p, new Point(col, line)));
+							tagComments.Add(new TagComment(tag, comment, p, new Point(Col, Line)));
 							sb.Append(comment);
 							break;
 						}
@@ -601,19 +554,18 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				specialTracker.StartComment(CommentType.SingleLine, startPos);
 			}
 			specialTracker.AddString(sb.ToString());
-			specialTracker.FinishComment(new Point(col, line));
+			specialTracker.FinishComment(new Point(Col, Line));
 		}
 		
 		Token ReadOperator(char ch)
 		{
-			int x = col;
-			int y = line;
+			int x = Col;
+			int y = Line;
 			switch(ch) {
 				case '+':
 					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.PlusAssign, x, y);
 						default:
 							break;
@@ -622,8 +574,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				case '-':
 					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.MinusAssign, x, y);
 						default:
 							break;
@@ -632,8 +583,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				case '*':
 					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.TimesAssign, x, y);
 						default:
 							break;
@@ -642,8 +592,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				case '/':
 					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.DivAssign, x, y);
 						default:
 							break;
@@ -652,8 +601,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				case '\\':
 					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.DivIntegerAssign, x, y);
 						default:
 							break;
@@ -662,8 +610,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				case '&':
 					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.ConcatStringAssign, x, y);
 						default:
 							break;
@@ -672,8 +619,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				case '^':
 					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.PowerAssign, x, y);
 						default:
 							break;
@@ -686,22 +632,18 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				case '<':
 					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.LessEqual, x, y);
 						case '>':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.NotEqual, x, y);
 						case '<':
-							reader.Read();
+							ReaderRead();
 							switch (ReaderPeek()) {
 								case '=':
-									reader.Read();
-									col += 2;
+									ReaderRead();
 									return new Token(Tokens.ShiftLeftAssign, x, y);
 								default:
-									++col;
 									break;
 							}
 							return new Token(Tokens.ShiftLeft, x, y);
@@ -710,19 +652,16 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				case '>':
 					switch (ReaderPeek()) {
 						case '=':
-							reader.Read();
-							++col;
+							ReaderRead();
 							return new Token(Tokens.GreaterEqual, x, y);
 						case '>':
-							reader.Read();
+							ReaderRead();
 							if (ReaderPeek() != -1) {
 								switch (ReaderPeek()) {
 									case '=':
-										reader.Read();
-										col += 2;
+										ReaderRead();
 										return new Token(Tokens.ShiftRightAssign, x, y);
 									default:
-										++col;
 										break;
 								}
 							}
@@ -735,8 +674,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					// Prevent OverflowException when Peek returns -1
 					int tmp = ReaderPeek();
 					if (tmp > 0 && Char.IsDigit((char)tmp)) {
-						--col;
-						return ReadDigit('.', col);
+						return ReadDigit('.', Col);
 					}
 					return new Token(Tokens.Dot, x, y);
 				case '(':
