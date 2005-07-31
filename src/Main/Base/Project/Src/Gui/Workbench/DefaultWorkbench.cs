@@ -236,9 +236,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 					content.WorkbenchWindow.RedrawContent();
 				}
 			}
+			
 			foreach (PadDescriptor content in viewContentCollection) {
 				content.RedrawContent();
 			}
+			
 			layout.RedrawAllComponents();
 			
 			StatusBarService.RedrawStatusbar();

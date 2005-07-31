@@ -36,6 +36,14 @@ namespace ICSharpCode.Core
 		static ResourceService()
 		{
 			resourceDirectory = FileUtility.Combine(PropertyService.DataDirectory, "resources");
+			
+			Assembly assembly = Assembly.GetEntryAssembly();
+			if (assembly != null) {
+				RegisterAssembly(assembly);
+			}
+			
+//			PropertyService.PropertyChanged += new PropertyChangedEventHandler(ChangeProperty);
+			
 			LoadLanguageResources();
 		}
 		
@@ -55,12 +63,12 @@ namespace ICSharpCode.Core
 
 		static ArrayList assemblies = new ArrayList();
 		
-		static void ChangeProperty(object sender, PropertyChangedEventArgs e)
-		{
-			if (e.Key == uiLanguageProperty && e.OldValue != e.NewValue) {
-				LoadLanguageResources();
-			}
-		}
+//		static void ChangeProperty(object sender, PropertyChangedEventArgs e)
+//		{
+//			if (e.Key == uiLanguageProperty && e.NewValue != e.OldValue) {
+//				LoadLanguageResources();
+//			}
+//		}
 		
 		static void LoadLanguageResources()
 		{
@@ -111,14 +119,6 @@ namespace ICSharpCode.Core
 		
 		static void InitializeService()
 		{
-			Assembly assembly = Assembly.GetEntryAssembly();
-			if (assembly != null) {
-				RegisterAssembly(assembly);
-			}
-			
-			PropertyService.PropertyChanged += new PropertyChangedEventHandler(ChangeProperty);
-			
-			LoadLanguageResources();
 		}
 		
 		/// <summary>
@@ -205,6 +205,8 @@ namespace ICSharpCode.Core
 			
 		}
 		
+		static string lastLanguage = "";
+		
 		/// <summary>
 		/// Returns a string from the resource database, it handles localization
 		/// transparent for the user.
@@ -220,6 +222,11 @@ namespace ICSharpCode.Core
 		/// </exception>
 		public static string GetString(string name)
 		{
+			string currentLanguage = PropertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name);
+			if (currentLanguage != lastLanguage) {
+				LoadLanguageResources();
+				lastLanguage = currentLanguage;
+			}
 			if (localUserStrings != null && localUserStrings[name] != null) {
 				return localUserStrings[name].ToString();
 			}

@@ -19,7 +19,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 	{
 		public override void Run()
 		{
-			
 			using (TreeViewOptions optionsDialog = new TreeViewOptions((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()),
 			                                                           AddInTree.GetTreeNode("/SharpDevelop/Dialogs/OptionsDialog"))) {
 				optionsDialog.FormBorderStyle = FormBorderStyle.FixedDialog;
