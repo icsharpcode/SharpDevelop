@@ -34,8 +34,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				}
 				
 				if (Char.IsLetter(ch) || ch == '_') {
-					int x = col - 1; // col was incremented above, but we want the start of the identifier
-					int y = line;
+					int x = Col - 1; // Col was incremented above, but we want the start of the identifier
+					int y = Line;
 					string s = ReadIdent(ch);
 					int keyWordToken = Keywords.GetToken(s);
 					if (keyWordToken >= 0) {
@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				}
 				
 				if (Char.IsDigit(ch)) {
-					return ReadDigit(ch, col - 1);
+					return ReadDigit(ch, Col - 1);
 				}
 				
 				switch (ch) {
@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						}
 						break;
 					case '#':
-						Point start = new Point(col - 1, line);
+						Point start = new Point(Col - 1, Line);
 						string directive = ReadIdent('#');
 						string argument  = ReadToEOL();
 						this.specialTracker.AddPreProcessingDirective(directive, argument.Trim(), start, new Point(start.X + directive.Length + argument.Length, start.Y));
@@ -69,10 +69,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					case '@':
 						int next = ReaderRead();
 						if (next == -1) {
-							errors.Error(line, col, String.Format("EOF after @"));
+							errors.Error(Line, Col, String.Format("EOF after @"));
 						} else {
-							int x = col;
-							int y = line;
+							int x = Col;
+							int y = Line;
 							ch = (char)next;
 							if (ch == '"') {
 								return ReadVerbatimString();
@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				return token;
 			}
 			
-			return new Token(Tokens.EOF, col, line, String.Empty);
+			return new Token(Tokens.EOF, Col, Line, String.Empty);
 		}
 		
 		// The C# compiler has a fixed size length therefore we'll use a fixed size char array for identifiers
@@ -113,7 +113,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				if (curPos < MAX_IDENTIFIER_LENGTH) {
 					identBuffer[curPos++] = ch;
 				} else {
-					errors.Error(line, col, String.Format("Identifier too long"));
+					errors.Error(Line, Col, String.Format("Identifier too long"));
 					while ((peek = ReaderPeek()) != -1 && (Char.IsLetterOrDigit(ch = (char)peek) || ch == '_')) {
 						ReaderRead();
 					}
@@ -126,7 +126,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		Token ReadDigit(char ch, int x)
 		{
 			unchecked { // prevent exception when ReaderPeek() = -1 is cast to char
-				int y = line;
+				int y = Line;
 				sb.Length = 0;
 				sb.Append(ch);
 				string prefix = null;
@@ -319,8 +319,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		Token ReadString()
 		{
-			int x = col - 1;
-			int y = line;
+			int x = Col - 1;
+			int y = Line;
 			
 			sb.Length = 0;
 			originalValue.Length = 0;
@@ -358,8 +358,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		Token ReadVerbatimString()
 		{
-			int x = col;
-			int y = line;
+			int x = Col;
+			int y = Line;
 			int nextChar;
 			sb.Length            = 0;
 			originalValue.Length = 0;
@@ -397,7 +397,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		{
 			int nextChar = ReaderRead();
 			if (nextChar == -1) {
-				errors.Error(line, col, String.Format("End of file reached inside escape sequence"));
+				errors.Error(Line, Col, String.Format("End of file reached inside escape sequence"));
 				ch = '\0';
 				return String.Empty;
 			}
@@ -445,7 +445,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					escapeSequenceBuffer[curPos++] = c;
 					
 					if (number < 0) {
-						errors.Error(line, col - 1, String.Format("Invalid char in literal : {0}", c));
+						errors.Error(Line, Col - 1, String.Format("Invalid char in literal : {0}", c));
 					}
 					for (int i = 0; i < 3; ++i) {
 						if (IsHex((char)ReaderPeek())) {
@@ -460,7 +460,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					ch = (char)number;
 					break;
 				default:
-					errors.Error(line, col, String.Format("Unexpected escape sequence : {0}", c));
+					errors.Error(Line, Col, String.Format("Unexpected escape sequence : {0}", c));
 					ch = '\0';
 					break;
 			}
@@ -469,8 +469,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		Token ReadChar()
 		{
-			int x = col - 1;
-			int y = line;
+			int x = Col - 1;
+			int y = Line;
 			int nextChar = ReaderRead();
 			if (nextChar == -1) {
 				errors.Error(y, x, String.Format("End of file reached inside character literal"));
@@ -493,8 +493,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		Token ReadOperator(char ch)
 		{
-			int x = col;
-			int y = line;
+			int x = Col;
+			int y = Line;
 			switch (ch) {
 				case '+':
 					switch (ReaderPeek()) {
@@ -640,7 +640,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					// Prevent OverflowException when ReaderPeek returns -1
 					int tmp = ReaderPeek();
 					if (tmp > 0 && Char.IsDigit((char)tmp)) {
-						 return ReadDigit('.', col - 1);
+						 return ReadDigit('.', Col - 1);
 					}
 					return new Token(Tokens.Dot, x, y);
 				case ')':
@@ -675,7 +675,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					}
 					break;
 				default:
-					errors.Error(line, col, String.Format("Error while reading comment"));
+					errors.Error(Line, Col, String.Format("Error while reading comment"));
 					break;
 			}
 		}
@@ -701,9 +701,9 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						string tag = curWord.ToString();
 						curWord.Length = 0;
 						if (specialCommentHash.ContainsKey(tag)) {
-							Point p = new Point(col, line);
+							Point p = new Point(Col, Line);
 							string comment = ReadToEOL();
-							tagComments.Add(new TagComment(tag, comment, p, new Point(col, line)));
+							tagComments.Add(new TagComment(tag, comment, p, new Point(Col, Line)));
 							sb.Append(comment);
 							break;
 						}
@@ -715,14 +715,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		void ReadSingleLineComment(CommentType commentType)
 		{
-			specialTracker.StartComment(commentType, new Point(col, line));
+			specialTracker.StartComment(commentType, new Point(Col, Line));
 			specialTracker.AddString(ReadCommentToEOL());
-			specialTracker.FinishComment(new Point(col, line));
+			specialTracker.FinishComment(new Point(Col, Line));
 		}
 		
 		void ReadMultiLineComment()
 		{
-			specialTracker.StartComment(CommentType.Block, new Point(col, line));
+			specialTracker.StartComment(CommentType.Block, new Point(Col, Line));
 			int nextChar;
 			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
@@ -735,14 +735,14 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				// End of multiline comment reached ?
 				if (ch == '*' && ReaderPeek() == '/') {
 					ReaderRead();
-					specialTracker.FinishComment(new Point(col, line));
+					specialTracker.FinishComment(new Point(Col, Line));
 					return;
 				}
 				specialTracker.AddChar(ch);
 			}
-			specialTracker.FinishComment(new Point(col, line));
+			specialTracker.FinishComment(new Point(Col, Line));
 			// Reached EOF before end of multiline comment.
-			errors.Error(line, col, String.Format("Reached EOF before the end of a multiline comment"));
+			errors.Error(Line, Col, String.Format("Reached EOF before the end of a multiline comment"));
 		}
 		
 		/// <summary>

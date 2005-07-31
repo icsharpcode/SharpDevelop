@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						int y = line;
 						++line;
 						col = 1;
-						if (reader.Peek() == '\r') {
+						if (ReaderPeek() == '\r') {
 							reader.Read();
 							if (!lineEnd) {
 								lineEnd = true;
@@ -81,12 +81,12 @@ namespace ICSharpCode.NRefactory.Parser.VB
 
 				}
 				if (ch == '_') {
-					if (reader.Peek() == -1) {
+					if (ReaderPeek() == -1) {
 						errors.Error(line, col, String.Format("No EOF expected after _"));
 						return new Token(Tokens.EOF);
 					}
 					++col;
-					if (!Char.IsWhiteSpace((char)reader.Peek())) {
+					if (!Char.IsWhiteSpace((char)ReaderPeek())) {
 						--col;
 						int x = col;
 						int y = line;
@@ -103,7 +103,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 							col = 1;
 							break;
 						}
-						if (reader.Peek() != -1) {
+						if (ReaderPeek() != -1) {
 							ch = (char)reader.Read();
 							++col;
 						}
@@ -115,11 +115,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 				
 				if (ch == '#') {
-					while (Char.IsWhiteSpace((char)reader.Peek())) {
+					while (Char.IsWhiteSpace((char)ReaderPeek())) {
 						++col;
 						reader.Read();
 					}
-					if (Char.IsDigit((char)reader.Peek())) {
+					if (Char.IsDigit((char)ReaderPeek())) {
 						int x = col;
 						int y = line;
 						string s = ReadDate();
@@ -138,7 +138,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				
 				if (ch == '[') { // Identifier
 					lineEnd = false;
-					if (reader.Peek() == -1) {
+					if (ReaderPeek() == -1) {
 						errors.Error(line, col, String.Format("Identifier expected"));
 					}
 					ch = (char)reader.Read();
@@ -149,7 +149,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					int x = col - 1;
 					int y = line;
 					string s = ReadIdent(ch);
-					if (reader.Peek() == -1) {
+					if (ReaderPeek() == -1) {
 						errors.Error(line, col, String.Format("']' expected"));
 					}
 					ch = (char)reader.Read();
@@ -189,10 +189,10 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 				if (ch == '&') {
 					lineEnd = false;
-					if (reader.Peek() == -1) {
+					if (ReaderPeek() == -1) {
 						return ReadOperator('&');
 					}
-					ch = (char)reader.Peek();
+					ch = (char)ReaderPeek();
 					++col;
 					if (Char.ToUpper(ch) == 'H' || Char.ToUpper(ch) == 'O') {
 						--col;
@@ -215,7 +215,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					int x = col - 1;
 					int y = line;
 					string s = ReadString();
-					if (reader.Peek() != -1 && (reader.Peek() == 'C' || reader.Peek() == 'c')) {
+					if (ReaderPeek() != -1 && (ReaderPeek() == 'C' || ReaderPeek() == 'c')) {
 						reader.Read();
 						++col;
 						if (s.Length != 1) {
@@ -241,7 +241,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			sb.Length = 0;
 			sb.Append(ch);
 			int peek;
-			while ((peek = reader.Peek()) != -1 && (Char.IsLetterOrDigit(ch = (char)peek) || ch == '_')) {
+			while ((peek = ReaderPeek()) != -1 && (Char.IsLetterOrDigit(ch = (char)peek) || ch == '_')) {
 				reader.Read();
 				++col;
 				sb.Append(ch.ToString());
@@ -277,40 +277,40 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			bool isdouble   = false;
 			bool isdecimal  = false;
 			
-			if (reader.Peek() == -1) {
+			if (ReaderPeek() == -1) {
 				if (ch == '&') {
 					errors.Error(line, col, String.Format("digit expected"));
 				}
 				return new Token(Tokens.LiteralInteger, x, y, sb.ToString() ,ch - '0');
 			}
 			if (ch == '.') {
-				if (Char.IsDigit((char)reader.Peek())) {
+				if (Char.IsDigit((char)ReaderPeek())) {
 					isdouble = true; // double is default
 					if (ishex || isokt) {
 						errors.Error(line, col, String.Format("No hexadecimal or oktadecimal floating point values allowed"));
 					}
 					++col;
-					while (reader.Peek() != -1 && Char.IsDigit((char)reader.Peek())){ // read decimal digits beyond the dot
+					while (ReaderPeek() != -1 && Char.IsDigit((char)ReaderPeek())){ // read decimal digits beyond the dot
 						digit += (char)reader.Read();
 						++col;
 					}
 				}
-			} else if (ch == '&' && Char.ToUpper((char)reader.Peek()) == 'H') {
+			} else if (ch == '&' && Char.ToUpper((char)ReaderPeek()) == 'H') {
 				const string hex = "0123456789ABCDEF";
 				sb.Append((char)reader.Read()); // skip 'H'
 				++col;
-				while (reader.Peek() != -1 && hex.IndexOf(Char.ToUpper((char)reader.Peek())) != -1) {
+				while (ReaderPeek() != -1 && hex.IndexOf(Char.ToUpper((char)ReaderPeek())) != -1) {
 					ch = (char)reader.Read();
 					sb.Append(ch);
 					digit += Char.ToUpper(ch);
 					++col;
 				}
 				ishex = true;
-			} else if (reader.Peek() != -1 && ch == '&' && Char.ToUpper((char)reader.Peek()) == 'O') {
+			} else if (ReaderPeek() != -1 && ch == '&' && Char.ToUpper((char)ReaderPeek()) == 'O') {
 				const string okt = "01234567";
 				sb.Append((char)reader.Read()); // skip 'O'
 				++col;
-				while (reader.Peek() != -1 && okt.IndexOf(Char.ToUpper((char)reader.Peek())) != -1) {
+				while (ReaderPeek() != -1 && okt.IndexOf(Char.ToUpper((char)ReaderPeek())) != -1) {
 					ch = (char)reader.Read();
 					sb.Append(ch);
 					digit += Char.ToUpper(ch);
@@ -318,7 +318,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 				isokt = true;
 			} else {
-				while (reader.Peek() != -1 && Char.IsDigit((char)reader.Peek())) {
+				while (ReaderPeek() != -1 && Char.IsDigit((char)ReaderPeek())) {
 					ch = (char)reader.Read();;
 					digit += ch;
 					sb.Append(ch);
@@ -326,13 +326,13 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			
-			if (reader.Peek() != -1 && ("%&SILU".IndexOf(Char.ToUpper((char)reader.Peek())) != -1 || ishex || isokt)) {
-				ch = (char)reader.Peek();
+			if (ReaderPeek() != -1 && ("%&SILU".IndexOf(Char.ToUpper((char)ReaderPeek())) != -1 || ishex || isokt)) {
+				ch = (char)ReaderPeek();
 				sb.Append(ch);
 				ch = Char.ToUpper(ch);
 				bool unsigned = ch == 'U';
 				if (unsigned) {
-					ch = (char)reader.Peek();
+					ch = (char)ReaderPeek();
 					sb.Append(ch);
 					ch = Char.ToUpper(ch);
 					if (ch != 'I' && ch != 'L' && ch != 'S') {
@@ -398,16 +398,16 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			Token nextToken = null; // if we accedently read a 'dot'
-			if (!isdouble && reader.Peek() == '.') { // read floating point number
+			if (!isdouble && ReaderPeek() == '.') { // read floating point number
 				reader.Read();
-				if (reader.Peek() != -1 && Char.IsDigit((char)reader.Peek())) {
+				if (ReaderPeek() != -1 && Char.IsDigit((char)ReaderPeek())) {
 					isdouble = true; // double is default
 					if (ishex || isokt) {
 						errors.Error(line, col, String.Format("No hexadecimal or oktadecimal floating point values allowed"));
 					}
 					digit += '.';
 					++col;
-					while (reader.Peek() != -1 && Char.IsDigit((char)reader.Peek())){ // read decimal digits beyond the dot
+					while (ReaderPeek() != -1 && Char.IsDigit((char)ReaderPeek())){ // read decimal digits beyond the dot
 						digit += (char)reader.Read();
 						++col;
 					}
@@ -416,22 +416,22 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			
-			if (reader.Peek() != -1 && Char.ToUpper((char)reader.Peek()) == 'E') { // read exponent
+			if (ReaderPeek() != -1 && Char.ToUpper((char)ReaderPeek()) == 'E') { // read exponent
 				isdouble = true;
 				digit +=  (char)reader.Read();
 				++col;
-				if (reader.Peek() != -1 && (reader.Peek() == '-' || reader.Peek() == '+')) {
+				if (ReaderPeek() != -1 && (ReaderPeek() == '-' || ReaderPeek() == '+')) {
 					digit += (char)reader.Read();
 					++col;
 				}
-				while (reader.Peek() != -1 && Char.IsDigit((char)reader.Peek())) { // read exponent value
+				while (ReaderPeek() != -1 && Char.IsDigit((char)ReaderPeek())) { // read exponent value
 					digit += (char)reader.Read();
 					++col;
 				}
 			}
 			
-			if (reader.Peek() != -1) {
-				switch (char.ToUpper((char)reader.Peek())) {
+			if (ReaderPeek() != -1) {
+				switch (char.ToUpper((char)ReaderPeek())) {
 					case 'R':
 					case '#':
 						reader.Read();
@@ -531,7 +531,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				ch = (char)nextChar;
 				++col;
 				if (ch == '"') {
-					if (reader.Peek() != -1 && reader.Peek() == '"') {
+					if (ReaderPeek() != -1 && ReaderPeek() == '"') {
 						sb.Append('"');
 						reader.Read();
 						++col;
@@ -610,7 +610,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			int y = line;
 			switch(ch) {
 				case '+':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
 							reader.Read();
 							++col;
@@ -620,7 +620,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 					return new Token(Tokens.Plus, x, y);
 				case '-':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
 							reader.Read();
 							++col;
@@ -630,7 +630,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 					return new Token(Tokens.Minus, x, y);
 				case '*':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
 							reader.Read();
 							++col;
@@ -640,7 +640,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 					return new Token(Tokens.Times, x, y, "*");
 				case '/':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
 							reader.Read();
 							++col;
@@ -650,7 +650,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 					return new Token(Tokens.Div, x, y);
 				case '\\':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
 							reader.Read();
 							++col;
@@ -660,7 +660,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 					return new Token(Tokens.DivInteger, x, y);
 				case '&':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
 							reader.Read();
 							++col;
@@ -670,7 +670,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 					return new Token(Tokens.ConcatString, x, y);
 				case '^':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
 							reader.Read();
 							++col;
@@ -684,7 +684,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				case '=':
 					return new Token(Tokens.Assign, x, y);
 				case '<':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
 							reader.Read();
 							++col;
@@ -695,7 +695,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 							return new Token(Tokens.NotEqual, x, y);
 						case '<':
 							reader.Read();
-							switch (reader.Peek()) {
+							switch (ReaderPeek()) {
 								case '=':
 									reader.Read();
 									col += 2;
@@ -708,15 +708,15 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 					return new Token(Tokens.LessThan, x, y);
 				case '>':
-					switch (reader.Peek()) {
+					switch (ReaderPeek()) {
 						case '=':
 							reader.Read();
 							++col;
 							return new Token(Tokens.GreaterEqual, x, y);
 						case '>':
 							reader.Read();
-							if (reader.Peek() != -1) {
-								switch (reader.Peek()) {
+							if (ReaderPeek() != -1) {
+								switch (ReaderPeek()) {
 									case '=':
 										reader.Read();
 										col += 2;
@@ -733,7 +733,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					return new Token(Tokens.Comma, x, y);
 				case '.':
 					// Prevent OverflowException when Peek returns -1
-					int tmp = reader.Peek();
+					int tmp = ReaderPeek();
 					if (tmp > 0 && Char.IsDigit((char)tmp)) {
 						--col;
 						return ReadDigit('.', col);

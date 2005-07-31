@@ -53,9 +53,8 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetSimpleNamespaceTest()
 		{
-			string program = "Namespace TestNamespace\n" +
-			                 "End Namespace\n";
-			
+			string program = "Namespace TestNamespace" + Environment.NewLine +
+			                 "End Namespace" +Environment.NewLine;
 			NamespaceDeclaration ns = (NamespaceDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(NamespaceDeclaration));
 			Assert.AreEqual("TestNamespace", ns.Name);
 		}

@@ -19,7 +19,6 @@ namespace ICSharpCode.NRefactory.Parser
 	public abstract class AbstractLexer : ILexer
 	{
 		protected TextReader reader;
-		
 		protected int col  = 1;
 		protected int line = 1;
 		
@@ -103,6 +102,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// </summary>
 		public Token Token {
 			get {
+				Console.WriteLine("Call to Token");
 				return lastToken;
 			}
 		}
@@ -112,6 +112,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// </summary>
 		public Token LookAhead {
 			get {
+				Console.WriteLine("Call to LookAhead");
 				return curToken;
 			}
 		}
@@ -151,6 +152,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// <returns>An <see cref="Token"/> object.</returns>
 		public virtual Token Peek()
 		{
+			Console.WriteLine("Call to Peek");
 			if (peekToken.next == null) {
 				peekToken.next = Next();
 				specialTracker.InformToken(peekToken.next.kind);
