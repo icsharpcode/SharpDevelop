@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		Type type;
 		
-		BindingFlags flags = BindingFlags.Instance  |
+		const BindingFlags flags = BindingFlags.Instance  |
 			BindingFlags.Static    |
 			BindingFlags.NonPublic |
 			BindingFlags.DeclaredOnly |

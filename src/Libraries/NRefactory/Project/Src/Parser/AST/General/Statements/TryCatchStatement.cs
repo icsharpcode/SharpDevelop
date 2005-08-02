@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	
 	public class CatchClause : AbstractNode
 	{
-		TypeReference typeReference;
+		TypeReference typeReference = TypeReference.Null;
 		string     variableName = "";
 		Statement  statementBlock = Statement.Null;
 		Expression condition = Expression.Null;

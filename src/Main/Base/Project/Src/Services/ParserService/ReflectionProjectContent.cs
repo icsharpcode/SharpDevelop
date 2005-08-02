@@ -30,7 +30,9 @@ namespace ICSharpCode.Core
 			
 			try {
 				foreach (Type type in assembly.GetExportedTypes()) {
-					AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, null));
+					if (!type.IsNested) {
+						AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, null));
+					}
 				}
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
