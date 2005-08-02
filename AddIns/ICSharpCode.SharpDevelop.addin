@@ -1171,34 +1171,34 @@
 					</And>
 					<Condition name = "CombineOpen" iscombineopen="True"/>
 				</Or>
-				<MenuItem id = "Build"
-				          label = "&amp;Build Solution"
+				<MenuItem id       = "Build"
+				          label    = "${res:XML.MainMenu.BuildMenu.BuildSolution}"
 				          shortcut = "F8"
-				          icon  = "Icons.16x16.BuildCombine"
-				          class = "ICSharpCode.SharpDevelop.Project.Commands.Build"/>
-				<MenuItem id = "Rebuild"
-				          label = "&amp;Rebuild Solution"
+				          icon     = "Icons.16x16.BuildCombine"
+				          class    = "ICSharpCode.SharpDevelop.Project.Commands.Build"/>
+				<MenuItem id       = "Rebuild"
+				          label    = "${res:XML.MainMenu.BuildMenu.RebuildSolution}"
 				          shortcut = "Alt|F8"
-				          class = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"/>
-				<MenuItem id = "Clean"
-				          label = "&amp;Clean Solution"
+				          class    = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"/>
+				<MenuItem id    = "Clean"
+				          label = "${res:XML.MainMenu.BuildMenu.CleanSolution}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.Clean"/>
 				<Condition name = "ProjectActive" activeproject="*">
 					<MenuItem id = "Separator1" type = "Separator" />
-					<MenuItem id = "Build project"
-					          label = "B&amp;uild ${CurrentProjectName}"
+					<MenuItem id       = "Build project"
+					          label    = "${res:XML.MainMenu.BuildMenu.BuildProject}"
 					          shortcut = "F9"
-					          icon  = "Icons.16x16.BuildCurrentSelectedProject"
-					          class = "ICSharpCode.SharpDevelop.Project.Commands.BuildProject"/>
-					<MenuItem id = "Rebuild project"
-					          label = "R&amp;ebuild ${CurrentProjectName}"
+					          icon     = "Icons.16x16.BuildCurrentSelectedProject"
+					          class    = "ICSharpCode.SharpDevelop.Project.Commands.BuildProject"/>
+					<MenuItem id       = "Rebuild project"
+					          label    = "${res:XML.MainMenu.BuildMenu.RebuildProject}"
 					          shortcut = "ALT|F9"
-					          class = "ICSharpCode.SharpDevelop.Project.Commands.RebuildProject"/>
-					<MenuItem id = "Clean project"
-					          label = "Clea&amp;n ${CurrentProjectName}"
+					          class    = "ICSharpCode.SharpDevelop.Project.Commands.RebuildProject"/>
+					<MenuItem id    = "Clean project"
+					          label = "${res:XML.MainMenu.BuildMenu.CleanProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.CleanProject"/>
-					<MenuItem id = "Publis&amp;h project"
-					          label = "Publish ${CurrentProjectName}"
+					<MenuItem id    = "Publis&amp;h project"
+					          label = "${res:XML.MainMenu.BuildMenu.PublishProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>
 				</Condition>
 			</ComplexCondition>
@@ -1217,32 +1217,32 @@
 					</And>
 					<Condition name = "CombineOpen" iscombineopen="True"/>
 				</Or>
-
+				
 				<Condition name="DebuggerSupports" debuggersupports = "Start">
 					<Condition name="IsProcessRunning" isdebugging="False" action="Disable">
-						<MenuItem id = "Run"
-						          label = "${res:XML.MainMenu.RunMenu.Run}"
-						          icon = "Icons.16x16.RunProgramIcon"
+						<MenuItem id       = "Run"
+						          label    = "${res:XML.MainMenu.RunMenu.Run}"
+						          icon     = "Icons.16x16.RunProgramIcon"
 						          shortcut = "F5"
-						          class = "ICSharpCode.SharpDevelop.Project.Commands.Execute"/>
+						          class    = "ICSharpCode.SharpDevelop.Project.Commands.Execute"/>
 					</Condition>
 				</Condition>
-
+				
 				<Condition name="DebuggerSupports" debuggersupports = "StartWithoutDebugging">
-					<Condition name="IsProcessRunning" isdebugging="False" action="Disable">
-						<MenuItem id = "RunWithoutDebugger"
-						          label = "${res:XML.MainMenu.DebugMenu.RunWithoutDebug}"
-						          icon = "Icons.16x16.Debug.StartWithoutDebugging" 
+					<Condition name="IsProcessRunning" isdebugging="False" action="Disable"> 
+						<MenuItem id       = "RunWithoutDebugger"
+						          label    = "${res:XML.MainMenu.DebugMenu.RunWithoutDebug}"
+						          icon     = "Icons.16x16.Debug.StartWithoutDebugging" 
 						          shortcut = "Control|F5"
-						          class = "ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger"/>
+						          class    = "ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger"/>
 					</Condition>
 				</Condition>
-
+				
 				<Condition name="DebuggerSupports" debuggersupports = "Stop">
 					<Condition name="IsProcessRunning" isdebugging="True" action="Disable">
-						<MenuItem id = "Stop"
+						<MenuItem id    = "Stop"
 						          label = "${res:XML.MainMenu.DebugMenu.Stop}"
-						          icon="Icons.16x16.StopProcess"
+						          icon  = "Icons.16x16.StopProcess"
 						          class = "ICSharpCode.SharpDevelop.Project.Commands.StopDebuggingCommand"/>
 					</Condition>
 				</Condition>
@@ -1250,39 +1250,39 @@
 				<Condition name="DebuggerSupports" debuggersupports = "ExecutionControl">
 					<MenuItem id = "ExecutionControlSeparator" type = "Separator" />
 					<Condition name="IsProcessRunning" isprocessrunning = "True" isdebugging = "True" action = "Disable"> 
-						<MenuItem id = "Break"
-						          label = "Break"
-						          icon="Icons.16x16.Debug.Break"
+						<MenuItem id       = "Break"
+						          label    = "Break"
+						          icon     = "Icons.16x16.Debug.Break"
 						          shortcut = "Control|Alt|B"
-						          class = "ICSharpCode.SharpDevelop.Project.Commands.BreakDebuggingCommand"/>
+						          class    = "ICSharpCode.SharpDevelop.Project.Commands.BreakDebuggingCommand"/>
 					</Condition>
 					<Condition name="IsProcessRunning" isprocessrunning = "False" isdebugging = "True" action = "Disable">
-						<MenuItem id = "Continue"
-						          label = "${res:XML.MainMenu.DebugMenu.Continue}"
-						          icon="Icons.16x16.Debug.Continue"
+						<MenuItem id       = "Continue"
+						          label    = "${res:XML.MainMenu.DebugMenu.Continue}"
+						          icon     = "Icons.16x16.Debug.Continue"
 						          shortcut = "F6"
-						          class = "ICSharpCode.SharpDevelop.Project.Commands.ContinueDebuggingCommand"/>
+						          class    = "ICSharpCode.SharpDevelop.Project.Commands.ContinueDebuggingCommand"/>
 					</Condition>
 				</Condition>
 
 				<Condition name="DebuggerSupports" debuggersupports = "Stepping">
 					<Condition name="IsProcessRunning"  isprocessrunning = "False" isdebugging = "True" action = "Disable">
 						<MenuItem id = "BeforeSteppingSeparator" type = "Separator" />
-						<MenuItem id = "Step"
-						          label = "Step"
-						          icon="Icons.16x16.Debug.StepOver"
+						<MenuItem id       = "Step"
+						          label    = "${res:XML.MainMenu.DebugMenu.Step}"
+						          icon     = "Icons.16x16.Debug.StepOver"
 						          shortcut = "F10"
-						          class = "ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand"/>
-						<MenuItem id = "Step into"
-						          label = "Step into"
-						          icon="Icons.16x16.Debug.StepInto"
+						          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand"/>
+						<MenuItem id       = "Step into"
+						          label    = "${res:XML.MainMenu.DebugMenu.StepInto}"
+						          icon     = "Icons.16x16.Debug.StepInto"
 						          shortcut = "F11"
-						          class = "ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand"/>
-						<MenuItem id = "Step out"
-						          label = "Step out"
-						          icon="Icons.16x16.Debug.StepOut"
+						          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand"/>
+						<MenuItem id       = "Step out"
+						          label    = "${res:XML.MainMenu.DebugMenu.StepOut}"
+						          icon     = "Icons.16x16.Debug.StepOut"
 						          shortcut = "Shift|F11"
-						          class = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
+						          class    = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
 					</Condition>
 				</Condition>
 			</ComplexCondition>

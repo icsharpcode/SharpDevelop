@@ -77,7 +77,7 @@ namespace ICSharpCode.Core
 
 		public bool SupportsStartWithoutDebugging {
 			get {
-				return false;
+				return true;
 			}
 		}
 
