@@ -51,7 +51,7 @@
 		
 		<Pad id       = "ErrorList"
 		     category = "Main"
-		     title    = "Error List"
+		     title    = "${res:MainWindow.Windows.ErrorList}"
 		     shortcut = "Control|Alt|K"
 		     icon     = "PadIcons.ErrorList"
 		     class    = "ICSharpCode.SharpDevelop.Gui.ErrorList"/>
@@ -92,13 +92,13 @@
 		
 		<Pad id       = "SearchResults"
 		     category = "Tools"
-		     title    = "Search Results"
+		     title    = "${res:MainWindow.Windows.SearchResultsLabel}"
 		     icon     = "PadIcons.FindResults"
 		     class    = "SearchAndReplace.SearchResultPanel"/>
 		
 		<Pad id       = "Bookmarks"
 		     category = "Tools"
-		     title    = "Bookmarks"
+		     title    = "${res:MainWindow.Windows.BookmarksLabel}"
 		     icon     = "PadIcons.Bookmarks"
 		     class    = "ICSharpCode.SharpDevelop.Bookmarks.BookmarkPad"/>
 		
@@ -493,37 +493,42 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceNode">
-		<MenuItem id = "OpenFile"
+		<MenuItem id    = "OpenFile"
 		          label = "${res:ProjectComponent.ContextMenu.Open}"
 		          icon  = "Icons.16x16.OpenFileIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
-		<MenuItem id = "OpenSeparator" type = "Separator"  />
-		<MenuItem id = "Remove"
+		
+		<MenuItem id   = "OpenSeparator"
+		          type = "Separator"  />
+		
+		<MenuItem id    = "Remove"
 		          label = "Remove"
 		          icon  = "Icons.16x16.DeleteIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
 	</Path>
 	
-	
 	<!-- END Project Browser Paths-->
 	
 	<Path name = "/SharpDevelop/Pads/CompilerMessageView/Toolbar">
-		<ToolbarItem id    = "CategorySelect"
-		             type  = "ComboBox"
-		             label = "Show output from:"
-		             tooltip = "Show output from:"
-		             class = "ICSharpCode.SharpDevelop.Gui.ShowOutputFromComboBox"/>
+		<ToolbarItem id      = "CategorySelect"
+		             type    = "ComboBox"
+		             tooltip = "${res:MainWindow.Windows.CompilerMessageView.ShowOutputFromComboBox.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Gui.ShowOutputFromComboBox"/>
+		             
 		<ToolbarItem id    = "CategorySelectSeparator" type  = "Separator"/>
-		<ToolbarItem id    = "Clear"
-		             icon  = "OutputPad.Toolbar.ClearOutputWindow"
-		             tooltip = "Clear All"
-		             class = "ICSharpCode.SharpDevelop.Gui.ClearOutputWindow"/>
-		<ToolbarItem id    = "ToggleWordWrap"
-		             type  = "CheckBox"
-		             icon  = "OutputPad.Toolbar.ToggleWordWrap"
-		             tooltip = "Toggle Word Wrap"
-		             class = "ICSharpCode.SharpDevelop.Gui.ToggleeMessageViewWordWrap"/>
+		
+		<ToolbarItem id      = "Clear"
+		             icon    = "OutputPad.Toolbar.ClearOutputWindow"
+		             tooltip = "${res:MainWindow.Windows.CompilerMessageView.ClearAllButton.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Gui.ClearOutputWindow"/>
+		
+		<ToolbarItem id      = "ToggleWordWrap"
+		             type    = "CheckBox"
+		             icon    = "OutputPad.Toolbar.ToggleWordWrap"
+		             tooltip = "${res:MainWindow.Windows.CompilerMessageView.ToggleWordWrapButton.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Gui.ToggleeMessageViewWordWrap"/>
 	</Path>
+	
 	<Path name = "/SharpDevelop/Pads/CompilerMessageView/ContextMenu">
 			<MenuItem id = "Copy"
 			          label = "${res:XML.MainMenu.EditMenu.Copy}"
@@ -543,27 +548,28 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ErrorList/Toolbar">
-		<ToolbarItem id    = "Errors"
-		             type  = "CheckBox"
-		             icon  = "Icons.16x16.Error"
-		             label = "${TaskService.Errors} Errors"
-		             tooltip = "${TaskService.Errors} Errors"
-		             class = "ICSharpCode.SharpDevelop.Gui.ShowErrorsToggleButton"/>
+		<ToolbarItem id      = "Errors"
+		             type    = "CheckBox"
+		             icon    = "Icons.16x16.Error"
+		             label   = "${res:MainWindow.Windows.ErrorList.ErrorButton.Label}"
+		             tooltip = "${res:MainWindow.Windows.ErrorList.ErrorButton.ToolTip}"
+		             class   = "ICSharpCode.SharpDevelop.Gui.ShowErrorsToggleButton"/>
+		
 		<ToolbarItem id    = "ErrorsSeparator" type  = "Separator"/>
 		
 		<ToolbarItem id    = "Warnings"
 		             type  = "CheckBox"
 		             icon  = "Icons.16x16.Warning"
-		             label = "${TaskService.Warnings} Warnings"
-		             tooltip = "${TaskService.Warnings} Warnings"
+		             label = "${res:MainWindow.Windows.ErrorList.WarningButton.Label}"
+		             tooltip = "${res:MainWindow.Windows.ErrorList.WarningButton.ToolTip}"
 		             class = "ICSharpCode.SharpDevelop.Gui.ShowWarningsToggleButton"/>
 		<ToolbarItem id    = "WarningsSeparator" type  = "Separator"/>
 		
 		<ToolbarItem id    = "Messages"
 		             type  = "CheckBox"
 		             icon  = "Icons.16x16.Information"
-		             label = "${TaskService.Messages} Messages"
-		             tooltip = "${TaskService.Messages} Messages"
+		             label = "${res:MainWindow.Windows.ErrorList.MessageButton.Label}"
+		             tooltip = "${res:MainWindow.Windows.ErrorList.MessageButton.ToolTip}"
 		             class = "ICSharpCode.SharpDevelop.Gui.ShowMessagesToggleButton"/>
 	</Path>
 	
@@ -571,43 +577,43 @@
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/Toolbar">
 		<ToolbarItem id      = "Back"
 		             icon    = "Icons.16x16.BrowserBefore"
-		             tooltip = "Back"
+		             tooltip = "${res:MainWindow.Windows.ClassBrowser.BackButton.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserNavigateBackward"/>
 		<ToolbarItem id      = "Forward"
 		             icon    = "Icons.16x16.BrowserAfter"
-		             tooltip = "Forward"
+		             tooltip = "${res:MainWindow.Windows.ClassBrowser.ForwardButton.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserNavigateForward"/>
 		
 		<ToolbarItem id = "NavigationSeparator" type  = "Separator"/>
 		<ToolbarItem id      = "SelectFilter"
 		             type    = "DropDownButton"
 		             icon    = "Icons.16x16.FindInFiles"
-		             tooltip = "Class View Settings"
+		             tooltip = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettingsButton.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Gui.SelectClassBrowserFilter">
 		
 			<MenuItem id    = "ShowProjectReferences"
 			          type  = "CheckBox"
-			          label = "Show &amp;Project References"
+			          label = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowProjectReferences.Label}"
 			          class = "ICSharpCode.SharpDevelop.Gui.ShowProjectReferences"/>
 			<MenuItem id = "ReferenceSeparator" type = "Separator"  />
 			<MenuItem id    = "ShowPublicMembers"
 			          type  = "CheckBox"
-			          label = "&amp;Show Public Members"
+			          label = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowPublicMembers.Label}"
 			          class = "ICSharpCode.SharpDevelop.Gui.ShowPublicMembers"/>
 
 			<MenuItem id    = "ShowPrivateMembers"
 			          type  = "CheckBox"
-			          label = "Show P&amp;rivate Members"
+			          label = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowPrivateMembers.Label}"
 			          class = "ICSharpCode.SharpDevelop.Gui.ShowPrivateMembers"/>
 
 			<MenuItem id    = "ShowProtectedMembers"
 			          type  = "CheckBox"
-			          label = "Show Pr&amp;otected Members"
+			          label = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowProtectedMembers.Label}"
 			          class = "ICSharpCode.SharpDevelop.Gui.ShowProtectedMembers"/>
 
 			<MenuItem id    = "ShowOtherMembers"
 			          type  = "CheckBox"
-			          label = "Show &amp;Other Members"
+			          label = "${res:MainWindow.Windows.ClassBrowser.ClassViewSettings.ShowOtherMembers.Label}"
 			          class = "ICSharpCode.SharpDevelop.Gui.ShowOtherMembers"/>
 		</ToolbarItem>
 	</Path>
@@ -615,17 +621,17 @@
 	<Path name = "/SharpDevelop/Pads/ClassBrowser/Searchbar">
 		<ToolbarItem id      = "Search"
 		             type    = "ComboBox"
-		             tooltip = "Class View Search"
+		             tooltip = "${res:MainWindow.Windows.ClassBrowser.SearchButton.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserSearchTerm"/>
 		
 		<ToolbarItem id      = "CommitSearch"
 		             icon    = "Icons.16x16.FindIcon"
-		             tooltip = "Search"
+		             tooltip = "${res:MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserCommitSearch"/>
 		
 		<ToolbarItem id      = "CancelSearch"
 		             icon    = "OutputPad.Toolbar.ClearOutputWindow"
-		             tooltip = "Clear Search"
+		             tooltip = "${res:MainWindow.Windows.ClassBrowser.ClearSearch.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Gui.ClassBrowserCancelSearch"/>
 	</Path>
 	
@@ -633,19 +639,19 @@
 	
 	<!-- toolbars -->
 	<Path name = "/SharpDevelop/Workbench/ToolBar/Standard">
-		<ToolbarItem id = "New"
-		             icon = "Icons.16x16.NewDocumentIcon"
+		<ToolbarItem id      = "New"
+		             icon    = "Icons.16x16.NewDocumentIcon"
 		             tooltip = "${res:XML.MainMenu.FileMenu.New.File.Description}"
-		             class = "ICSharpCode.SharpDevelop.Commands.CreateNewFile"/>
-		<ToolbarItem id = "Open"
-		             icon = "Icons.16x16.OpenFileIcon"
+		             class   = "ICSharpCode.SharpDevelop.Commands.CreateNewFile"/>
+		<ToolbarItem id      = "Open"
+		             icon    = "Icons.16x16.OpenFileIcon"
 		             tooltip = "${res:XML.MainMenu.FileMenu.Open.File.Description}"
-		             class = "ICSharpCode.SharpDevelop.Commands.OpenFile"/>
+		             class   = "ICSharpCode.SharpDevelop.Commands.OpenFile"/>
 		
-		<ToolbarItem id = "OpenProject"
-				          tooltip = "${res:XML.MainMenu.FileMenu.Open.Project}"
-				          icon = "Icons.16x16.OpenProjectIcon"
-				          class = "ICSharpCode.SharpDevelop.Project.Commands.LoadSolution"
+		<ToolbarItem id      = "OpenProject"
+				     tooltip = "${res:XML.MainMenu.FileMenu.Open.Project}"
+				     icon    = "Icons.16x16.OpenProjectIcon"
+				     class   = "ICSharpCode.SharpDevelop.Project.Commands.LoadSolution"
 		/>
 		
 		<Condition name = "ActiveWindowState" windowstate="Dirty,Untitled" nowindowstate="ViewOnly" action="Disable">
@@ -1158,7 +1164,7 @@
 			</MenuItem>
 		</Condition> <!-- end PROJECT menu -->
 		
-		<MenuItem id = "Run" label = "${res:XML.MainMenu.RunMenu}" type="Menu">
+		<MenuItem id = "Run" label = "${res:XML.MainMenu.BuildMenu}" type="Menu">
 			<ComplexCondition action="Disable">
 				<Or>
 					<And>
@@ -1783,48 +1789,47 @@
 	<Path name = "/SharpDevelop/Pads/BookmarkPad/Toolbar">
 		<ToolbarItem id      = "GotoPrev"
 		             icon    = "Bookmarks.GotoPrev"
-		             tooltip = "Goto previous bookmark"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoPrev.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Bookmarks.GotoPrev"/>
 		<ToolbarItem id      = "GotoNext"
 		             icon    = "Bookmarks.GotoNext"
-		             tooltip = "Goto next bookmark"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.GotoNext.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Bookmarks.GotoNext"/>
 		<ToolbarItem id = "GotoInFolderSeparator" type = "Separator" />
 		<ToolbarItem id      = "EnableDisableAll"
 		             icon    = "Bookmarks.EnableDisableAll"
-		             tooltip = "Enable/Disable all"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.EnableDisableAll.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Bookmarks.EnableDisableAll"/>
 		<ToolbarItem id = "EnableDisableSeparator" type = "Separator" />
 		
 		<ToolbarItem id      = "DeleteMark"
 		             icon    = "Bookmarks.DeleteMark"
-		             tooltip = "Delete bookmark"
+		             tooltip = "${res:MainWindow.Windows.BookmarkPad.DeleteMark.ToolTip}"
 		             class   = "ICSharpCode.SharpDevelop.Bookmarks.DeleteMark"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/SearchResultPanel/Toolbar">
-		
 		<ToolbarItem id      = "ExpandAll"
 		             icon    = "Icons.16x16.OpenAssembly"
-		             tooltip = "Expand all"
+		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.ExpandAll.ToolTip}"
 		             class   = "SearchAndReplace.ExpandAll"/>
 		
 		<ToolbarItem id      = "CollapseAll"
 		             icon    = "Icons.16x16.Assembly"
-		             tooltip = "Collapse all"
+		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
 		             class   = "SearchAndReplace.CollapseAll"/>
 		<ToolbarItem id = "ExpandCollapseSeparator" type = "Separator" />
 		
 		<ToolbarItem id      = "ShowLast"
 		             type    = "DropDownButton"
 		             icon    = "Icons.16x16.FindIcon"
-		             tooltip = "Show last searches"
+		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.ShowLast.ToolTip}"
 		             class   = "SearchAndReplace.ShowLastSearchResults"/>
 		
 		<ToolbarItem id      = "SelectViewMode"
 		             type    = "DropDownButton"
 		             icon    = "Icons.16x16.FindIcon"
-		             tooltip = "Select search list mode"
+		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.SelectViewMode.ToolTip}"
 		             class   = "SearchAndReplace.SelectViewMode"/>
 	</Path>
 	
