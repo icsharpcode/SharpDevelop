@@ -152,7 +152,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// <returns>An <see cref="Token"/> object.</returns>
 		public virtual Token Peek()
 		{
-			Console.WriteLine("Call to Peek");
+//			Console.WriteLine("Call to Peek");
 			if (peekToken.next == null) {
 				peekToken.next = Next();
 				specialTracker.InformToken(peekToken.next.kind);
