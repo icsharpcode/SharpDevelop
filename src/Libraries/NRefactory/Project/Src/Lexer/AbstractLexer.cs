@@ -102,7 +102,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// </summary>
 		public Token Token {
 			get {
-				Console.WriteLine("Call to Token");
+//				Console.WriteLine("Call to Token");
 				return lastToken;
 			}
 		}
@@ -112,7 +112,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// </summary>
 		public Token LookAhead {
 			get {
-				Console.WriteLine("Call to LookAhead");
+//				Console.WriteLine("Call to LookAhead");
 				return curToken;
 			}
 		}

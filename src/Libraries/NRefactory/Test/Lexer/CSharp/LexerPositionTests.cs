@@ -78,33 +78,35 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			t = l.NextToken();
 			Assert.AreEqual(new Point(9, 1), t.Location);
 		}
+//		[Test]
+//		public void TestFloationPointNumber()
+//		{
+//			ILexer l = GenerateLexer("0.142 public");
+//			Token t = l.NextToken();
+//			Assert.AreEqual(new Point(1, 1), t.Location);
+//			t = l.NextToken();
+//			Assert.AreEqual(new Point(7, 1), t.Location);
+//		}
 		[Test]
-		public void TestFloationPointNumber()
+		public void TestVerbatimString()
 		{
-			ILexer l = GenerateLexer("0.142 public");
+			ILexer l = GenerateLexer("@\"a\"\"a\" public");
 			Token t = l.NextToken();
 			Assert.AreEqual(new Point(1, 1), t.Location);
 			t = l.NextToken();
-			Assert.AreEqual(new Point(7, 1), t.Location);
+			Assert.AreEqual(new Point(9, 1), t.Location);
 		}
-//		[Test]
-//		public void TestVerbatimString()
-//		{
-//			ILexer l = GenerateLexer("@\"a\"\"a\" public");
-//			Token t = l.NextToken();
-//			Assert.AreEqual(new Point(1, 1), t.Location);
-//			t = l.NextToken();
-//			Assert.AreEqual(new Point(9, 1), t.Location);
-//		}
-//		[Test]
-//		public void TestNoFloationPointNumber()
-//		{
-//			ILexer l = GenerateLexer("0.a");
-//			Token t = l.NextToken();
-//			Assert.AreEqual(new Point(1, 1), t.Location);
-//			t = l.NextToken();
-//			Assert.AreEqual(new Point(3, 1), t.Location);
-//		}
+		[Test]
+		public void TestNoFloationPointNumber()
+		{
+			ILexer l = GenerateLexer("0.a");
+			Token t = l.NextToken();
+			Console.WriteLine(t);
+			Assert.AreEqual(new Point(1, 1), t.Location);
+			t = l.NextToken();
+			Console.WriteLine(t);
+			Assert.AreEqual(new Point(3, 1), t.Location);
+		}
 		[Test]
 		public void TestNumber()
 		{

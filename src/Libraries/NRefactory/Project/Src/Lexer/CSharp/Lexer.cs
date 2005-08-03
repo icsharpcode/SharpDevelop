@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						if (next == -1) {
 							errors.Error(Line, Col, String.Format("EOF after @"));
 						} else {
-							int x = Col;
+							int x = Col - 1;
 							int y = Line;
 							ch = (char)next;
 							if (ch == '"') {
@@ -358,12 +358,12 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		Token ReadVerbatimString()
 		{
-			int x = Col;
-			int y = Line;
-			int nextChar;
 			sb.Length            = 0;
 			originalValue.Length = 0;
 			originalValue.Append("@\"");
+			int x = Col - 2; // @ and " already read
+			int y = Line;
+			int nextChar;
 			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
 				
