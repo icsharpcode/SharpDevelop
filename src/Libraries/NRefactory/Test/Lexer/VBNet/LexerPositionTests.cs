@@ -53,13 +53,13 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Token t = l.NextToken();
 			Assert.AreEqual(new Point(3, 1), t.Location);
 		}
-//		[Test]
-//		public void TestOctNumber()
-//		{
-//			ILexer l = GenerateLexer("0142");
-//			Token t = l.NextToken();
-//			Assert.AreEqual(new Point(1, 1), t.Location);
-//		}
+		[Test]
+		public void TestOctNumber()
+		{
+			ILexer l = GenerateLexer("0142");
+			Token t = l.NextToken();
+			Assert.AreEqual(new Point(1, 1), t.Location);
+		}
 //		[Test]
 //		public void TestHexNumber()
 //		{

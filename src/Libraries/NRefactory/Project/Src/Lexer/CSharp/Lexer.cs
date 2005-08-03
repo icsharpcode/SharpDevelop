@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 								return ReadVerbatimString();
 							}
 							if (Char.IsLetterOrDigit(ch)) {
-								return new Token(Tokens.Identifier, x, y, ReadIdent(ch));
+								return new Token(Tokens.Identifier, x - 1, y, ReadIdent(ch));
 							}
 							errors.Error(y, x, String.Format("Unexpected char in Lexer.Next() : {0}", ch));
 						}
@@ -169,7 +169,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					ReaderRead();
 					peek = (char)ReaderPeek();
 					if (!Char.IsDigit(peek)) {
-						nextToken = new Token(Tokens.Dot, x, y);
+						nextToken = new Token(Tokens.Dot, Col - 1, Line);
 						peek = '.';
 					} else {
 						isdouble = true; // double is default
@@ -493,7 +493,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		Token ReadOperator(char ch)
 		{
-			int x = Col;
+			int x = Col - 1;
 			int y = Line;
 			switch (ch) {
 				case '+':

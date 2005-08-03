@@ -58,7 +58,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
 				if (Char.IsWhiteSpace(ch)) {
-					int x = Col;
+					int x = Col - 1;
 					int y = Line;
 					if (HandleLineEnd(ch)) {
 						if (!lineEnd) {
@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						return new Token(Tokens.EOF);
 					}
 					if (!Char.IsWhiteSpace((char)ReaderPeek())) {
-						int x = Col;
+						int x = Col - 1;
 						int y = Line;
 						string s = ReadIdent('_');
 						lineEnd = false;
@@ -104,7 +104,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						ReaderRead();
 					}
 					if (Char.IsDigit((char)ReaderPeek())) {
-						int x = Col;
+						int x = Col - 1;
 						int y = Line;
 						string s = ReadDate();
 						DateTime time = new DateTime(1, 1, 1, 0, 0, 0);
@@ -167,7 +167,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 				if (Char.IsDigit(ch)) {
 					lineEnd = false;
-					return ReadDigit(ch, Col);
+					return ReadDigit(ch, Col - 1);
 				}
 				if (ch == '&') {
 					lineEnd = false;
@@ -176,7 +176,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 					ch = (char)ReaderPeek();
 					if (Char.ToUpper(ch) == 'H' || Char.ToUpper(ch) == 'O') {
-						return ReadDigit('&', Col);
+						return ReadDigit('&', Col - 1);
 					}
 					return ReadOperator('&');
 				}
@@ -559,7 +559,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		
 		Token ReadOperator(char ch)
 		{
-			int x = Col;
+			int x = Col - 1;
 			int y = Line;
 			switch(ch) {
 				case '+':
