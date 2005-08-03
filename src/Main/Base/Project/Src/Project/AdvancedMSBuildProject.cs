@@ -286,7 +286,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		#endregion
-
+		
 		#region Debug Options
 		public string GetStartProgram(string configurationName, string platform)
 		{

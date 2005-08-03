@@ -45,7 +45,7 @@
 				<File name="MainForm.vb">
 			<![CDATA[${StandardHeader.VBNET}
 Public Class MainForm
-	Inherits Form
+	Inherits System.Windows.Forms.Form
 	
 	Public Sub New()
 		'

@@ -23,7 +23,7 @@
 		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
 
 Public Class ${ClassName}
-	Inherits UserControl
+	Inherits System.Windows.Forms.UserControl
 	
 	Public Sub New()
 		' Must be called for initialization

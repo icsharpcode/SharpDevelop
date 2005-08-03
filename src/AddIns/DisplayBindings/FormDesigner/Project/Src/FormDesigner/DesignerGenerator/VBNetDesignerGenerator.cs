@@ -1,8 +1,8 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision$</version>
+//     <owner name="Mike Kr�ger" email="mike@icsharpcode.net"/>
+//     <version>$Revision: 230 $</version>
 // </file>
 
 using System;
@@ -45,7 +45,7 @@ using Microsoft.VisualBasic;
 
 namespace ICSharpCode.FormDesigner
 {
-	public class CSharpDesignerGenerator : IDesignerGenerator
+	public class VBNetDesignerGenerator : IDesignerGenerator
 	{
 		IClass  c;
 		IMethod initializeComponents;
@@ -85,7 +85,7 @@ namespace ICSharpCode.FormDesigner
 					Reparse(viewContent.Document.TextContent);
 				}
 				int endOffset = viewContent.Document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.EndLine));
-				viewContent.Document.Insert(endOffset, "\t\tprivate " + e.Component.GetType() + " " + e.Component.Site.Name + ";" + Environment.NewLine);
+				viewContent.Document.Insert(endOffset, "\tPrivate " + e.Component.Site.Name + " As " + e.Component.GetType() + Environment.NewLine);
 			} catch (Exception ex) { 
 				Console.WriteLine(ex);
 			}
@@ -98,17 +98,16 @@ namespace ICSharpCode.FormDesigner
 				if (field.Name == e.OldName) {
 					int startOffset = viewContent.Document.PositionToOffset(new Point(0, field.Region.BeginLine - 1));
 					int endOffset   = viewContent.Document.PositionToOffset(new Point(0, field.Region.EndLine));
-					viewContent.Document.Replace(startOffset, endOffset - startOffset, "\t\tprivate " + e.Component.GetType() + " " + e.NewName + ";" + Environment.NewLine);
+					viewContent.Document.Replace(startOffset, endOffset - startOffset, "\tPrivate " + e.NewName + " As " + e.Component.GetType() + Environment.NewLine);
 				}
 			}
 		}
 		
 		public void MergeFormChanges()
 		{
-			
 			// generate file and get initialize components string
 			StringWriter writer = new StringWriter();
-			new CodeDOMGenerator(viewContent.Host, new Microsoft.CSharp.CSharpCodeProvider()).ConvertContentDefinition(writer);
+			new CodeDOMGenerator(viewContent.Host, new Microsoft.VisualBasic.VBCodeProvider()).ConvertContentDefinition(writer);
 			string statements = writer.ToString();
 			
 			Reparse(viewContent.Document.TextContent);
@@ -152,7 +151,7 @@ namespace ICSharpCode.FormDesigner
 			string param = "";
 			IAmbience csa = null;
 			try {
-				csa = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem("CSharp", typeof(IAmbience));
+				csa = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem("VBNet", typeof(IAmbience));
 			} catch {}
 			
 			for (int i = 0; i < mInfo.GetParameters().Length; ++i)  {
@@ -204,9 +203,9 @@ namespace ICSharpCode.FormDesigner
 			
 			string param = GenerateParams(edesc, true);
 			
-			string text = "void " + eventMethodName + "(" + param + ")\n" +
-			"{\n" + body +
-			"\n}\n\n";
+			string text = "Sub " + eventMethodName + "(" + param + ")\n" +
+			body +
+			"\nEnd Sub\n\n";
 			viewContent.Document.Insert(offset, text);
 			viewContent.Document.FormattingStrategy.IndentLines(viewContent.TextEditorControl.ActiveTextAreaControl.TextArea, c.Region.EndLine - 1, c.Region.EndLine + 3);
 			

@@ -187,7 +187,7 @@
 		
 		<MenuItem id = "AddSeparator" type = "Separator"/>
 		<MenuItem id    = "Paste"
-		          label = "Paste"
+		          label = "${res:XML.MainMenu.EditMenu.Paste}"
 		          icon  = "Icons.16x16.PasteIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
 		<MenuItem id       = "Rename"
@@ -197,7 +197,7 @@
 		<MenuItem id = "Separator3" type = "Separator"/>
 		<MenuItem id    = "Properties"
 		          icon  = "Icons.16x16.PropertiesIcon"
-		          label = "Properties"
+		          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
 	</Path>
 	
@@ -222,18 +222,18 @@
 		
 		<MenuItem id = "AddSeparator" type = "Separator"/>
 		<MenuItem id    = "Cut"
-		          label = "Cut"
+		          label = "${res:XML.MainMenu.EditMenu.Cut}"
 		          type  = "Item"
 		          icon  = "Icons.16x16.CutIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
 		<MenuItem id    = "Paste"
-		          label = "Paste"
+		          label = "${res:XML.MainMenu.EditMenu.Paste}"
 		          type  = "Item"
 		          icon  = "Icons.16x16.PasteIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
 		<MenuItem id    = "Remove"
 		          type  = "Item"
-		          label = "Remove"
+		          label = "${res:Global.RemoveButtonText}"
 		          icon  = "Icons.16x16.DeleteIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
 		<MenuItem id       = "Rename"
@@ -249,17 +249,17 @@
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
 		<MenuItem id = "OpenSeparator" type = "Separator" />
 		<MenuItem id = "Cut"
-		          label = "Cut"
+		          label = "${res:XML.MainMenu.EditMenu.Cut}"
 		          type = "Item"
 		          icon = "Icons.16x16.CutIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
 		<MenuItem id = "Copy"
-		          label = "Copy"
+		          label = "${res:XML.MainMenu.EditMenu.Copy}"
 		          type = "Item"
 		          icon = "Icons.16x16.CopyIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.CopyProjectBrowserNode"/>
 		<MenuItem id = "Remove"
-		          label = "Remove"
+		          label = "${res:Global.RemoveButtonText}"
 		          type = "Item"
 		          icon  = "Icons.16x16.DeleteIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
@@ -313,17 +313,17 @@
 		</Condition>
 		<MenuItem id = "Separator2" type = "Separator"/>
 		<MenuItem id = "Cut"
-		          label = "Cut"
+		          label = "${res:XML.MainMenu.EditMenu.Cut}"
 		          type = "Item"
 		          icon = "Icons.16x16.CutIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
 		<MenuItem id = "Paste"
-		          label = "Paste"
+		          label = "${res:XML.MainMenu.EditMenu.Paste}"
 		          type = "Item"
 		          icon = "Icons.16x16.PasteIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
 		<MenuItem id = "Remove"
-		          label = "Remove"
+		          label = "${res:Global.RemoveButtonText}"
 		          type = "Item"
 		          icon  = "Icons.16x16.DeleteIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
@@ -334,7 +334,7 @@
 		<MenuItem id = "CutCopyPasteSeparator" type = "Separator"/>
 		<MenuItem id    = "Properties"
 		          icon  = "Icons.16x16.PropertiesIcon"
-		          label = "Properties"
+		          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
 	</Path>
 	
@@ -351,7 +351,7 @@
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
 		<Condition name = "Ownerstate" ownerstate = "Missing">
 			<MenuItem id = "Remove"
-			          label = "Remove"
+			          label = "${res:Global.RemoveButtonText}"
 			          type = "Item"
 			          icon  = "Icons.16x16.DeleteIcon"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
@@ -386,35 +386,35 @@
 				</Or>
 				<Condition name = "Ownerstate" ownerstate = "InProject">
 					<MenuItem id    = "ExcludeFile"
-					          label = "Exclude From Project"
+					          label = "${res:ProjectComponent.ContextMenu.ExcludeFileFromProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.ExcludeFileFromProject"/>
 				</Condition>
 				
 				<Condition name = "Ownerstate" ownerstate = "None">
 					<MenuItem id    = "IncludeFile"
-					          label = "Include In Project"
+					          label = "${res:ProjectComponent.ContextMenu.IncludeFileInProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.IncludeFileInProject"/>
 				</Condition>
 				
 				<MenuItem id = "ExcludeSeparator" type = "Separator" />
 			</ComplexCondition>
 			<MenuItem id = "Cut"
-			          label = "Cut"
+			          label = "${res:XML.MainMenu.EditMenu.Cut}"
 			          type = "Item"
 			          icon = "Icons.16x16.CutIcon"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
 			<MenuItem id = "Copy"
-			          label = "Copy"
+			          label = "${res:XML.MainMenu.EditMenu.Copy}"
 			          type = "Item"
 			          icon = "Icons.16x16.CopyIcon"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.CopyProjectBrowserNode"/>
 			<MenuItem id    = "Paste"
-			          label = "Paste"
+			          label = "${res:XML.MainMenu.EditMenu.Paste}"
 			          type = "Item"
 			          icon  = "Icons.16x16.PasteIcon"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
 			<MenuItem id = "Delete"
-			          label = "Delete"
+			          label = "${res:XML.MainMenu.EditMenu.Delete}"
 			          type = "Item"
 			          icon  = "Icons.16x16.DeleteIcon"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
@@ -466,22 +466,22 @@
 			</ComplexCondition>
 			
 			<MenuItem id = "Cut"
-			          label = "Cut"
+			          label = "${res:XML.MainMenu.EditMenu.Cut}"
 			          type = "Item"
 			          icon = "Icons.16x16.CutIcon"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.CutProjectBrowserNode"/>
 			<MenuItem id    = "Copy"
-			          label = "Copy"
+			          label = "${res:XML.MainMenu.EditMenu.Copy}"
 			          type = "Item"
 			          icon  = "Icons.16x16.CopyIcon"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.CopyProjectBrowserNode"/>
 			<MenuItem id    = "Paste"
-			          label = "Paste"
+			          label = "${res:XML.MainMenu.EditMenu.Paste}"
 			          icon  = "Icons.16x16.PasteIcon"
 			          type = "Item"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.PasteProjectBrowserNode"/>
 			<MenuItem id = "Delete"
-			          label = "Delete"
+			          label = "${res:XML.MainMenu.EditMenu.Delete}"
 			          type = "Item"
 			          icon  = "Icons.16x16.DeleteIcon"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
@@ -502,7 +502,7 @@
 		          type = "Separator"  />
 		
 		<MenuItem id    = "Remove"
-		          label = "Remove"
+		          label = "${res:Global.RemoveButtonText}"
 		          icon  = "Icons.16x16.DeleteIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
 	</Path>
@@ -1524,7 +1524,7 @@
 		          shortcut = "Control|I"
 		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
 		<MenuItem id = "GoToDefinition"
-		          label = "${res:XML.TextAreaContextMenu.GoToDefinition}"
+		          label = "${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
 		          shortcut = "Control|Enter"
 		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GoToDefinition" />
 		

@@ -109,6 +109,21 @@ namespace ICSharpCode.FormDesigner
 							}
 						}
 						break;
+					case ".vb":
+						info = ParserService.ParseFile(fileName, textAreaControlProvider.TextEditorControl.Document.TextContent, false, true);
+						if (info != null) {
+							ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
+							foreach (IClass c in cu.Classes) {
+								if (BaseClassIsFormOrControl(c)) {
+									IMethod method = GetInitializeComponents(c);
+									if (method == null) {
+										continue;
+									}
+									return true;
+								}
+							}
+						}
+						break;
 					case ".xfrm":
 						return true;
 				}
@@ -137,6 +152,10 @@ namespace ICSharpCode.FormDesigner
 				case ".cs":
 					loader    = new NRefactoryDesignerLoader(SupportedLanguages.CSharp, ((ITextEditorControlProvider)viewContent).TextEditorControl);
 					generator = new CSharpDesignerGenerator();
+					break;
+				case ".vb":
+					loader    = new NRefactoryDesignerLoader(SupportedLanguages.VBNet, ((ITextEditorControlProvider)viewContent).TextEditorControl);
+					generator = new VBNetDesignerGenerator();
 					break;
 				case ".xfrm":
 					loader    = new XmlDesignerLoader(((ITextEditorControlProvider)viewContent).TextEditorControl);

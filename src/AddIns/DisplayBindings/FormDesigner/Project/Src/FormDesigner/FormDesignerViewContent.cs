@@ -75,6 +75,12 @@ namespace ICSharpCode.FormDesigner
 			}
 		}
 		
+		public override string TabPageText {
+			get {
+				return "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
+			}
+		}
+		
 		public override bool IsDirty {
 			get {
 				if (viewContent == null) {
@@ -432,7 +438,4 @@ namespace ICSharpCode.FormDesigner
 		}
 		#endregion
 	}
-	
-	
-	
 }

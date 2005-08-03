@@ -24,7 +24,7 @@
 		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
 
 Public Class ${ClassName}
-	Inherits Form
+	Inherits System.Windows.Forms.Form
 	
 	Public Sub New()
 		'
