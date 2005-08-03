@@ -181,10 +181,10 @@ namespace ICSharpCode.Core
 				testDirectory = Path.GetFullPath(testDirectory.ToUpper());
 				
 				return baseDirectory.Length <= testDirectory.Length &&
-						testDirectory.StartsWith(baseDirectory) &&
-						(testDirectory.Length == baseDirectory.Length ||
-					 	 testDirectory[baseDirectory.Length] == Path.DirectorySeparatorChar ||
-					 	 testDirectory[baseDirectory.Length] == Path.AltDirectorySeparatorChar);
+					testDirectory.StartsWith(baseDirectory) &&
+					(testDirectory.Length == baseDirectory.Length ||
+					 testDirectory[baseDirectory.Length] == Path.DirectorySeparatorChar ||
+					 testDirectory[baseDirectory.Length] == Path.AltDirectorySeparatorChar);
 			} catch (Exception) {
 				return false;
 			}
@@ -276,10 +276,9 @@ namespace ICSharpCode.Core
 			}
 			
 			// platform independend : check for invalid path chars
-			foreach (char invalidChar in Path.GetInvalidPathChars()) {
-				if (fileName.IndexOf(invalidChar) >= 0) {
-					return false;
-				}
+			
+			if (fileName.IndexOfAny(Path.GetInvalidPathChars()) >= 0) {
+				return false;
 			}
 			if (fileName.IndexOf('?') >= 0 || fileName.IndexOf('*') >= 0) {
 				return false;
@@ -518,7 +517,7 @@ namespace ICSharpCode.Core
 			return ObservedLoad(saveFileAs, fileName, FileErrorPolicy.Inform);
 		}
 		
-		static  void OnFileLoaded(FileNameEventArgs e) 
+		static  void OnFileLoaded(FileNameEventArgs e)
 		{
 			if (FileLoaded != null) {
 				FileLoaded(null, e);

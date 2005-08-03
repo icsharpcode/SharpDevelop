@@ -51,6 +51,13 @@ namespace ICSharpCode.Core
 			RecentOpen.AddLastProject(e.Solution.FileName);
 		}
 		
+		public static bool CheckFileName(string fileName)
+		{
+			if (FileUtility.IsValidFileName(fileName))
+				return true;
+			MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", fileName}}));
+			return false;
+		}
 		
 		class LoadFileWrapper
 		{

@@ -76,6 +76,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void AfterLabelEdit(string newName)
 		{
+			if (!FileService.CheckFileName(newName)) {
+				return;
+			}
 			Text = folder.Location = folder.Name = newName;
 			ProjectService.SaveSolution();
 		}

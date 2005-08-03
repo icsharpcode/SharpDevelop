@@ -129,11 +129,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						
 						
 						
-						if (!FileUtility.IsValidFileName(fileName)) {
-							
-							
-							MessageService.ShowMessage(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.SaveFile.InvalidFileNameError}", new string[,] {{"FileName", fileName}}));
-							
+						if (!FileService.CheckFileName(fileName)) {
 							return;
 						}
 						

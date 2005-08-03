@@ -201,7 +201,7 @@ namespace ICSharpCode.Core
 		
 		public void Save(string fileName)
 		{
-			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.Default)) {
+			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8)) {
 				writer.Formatting = Formatting.Indented;
 				writer.WriteStartElement("Properties");
 				WriteProperties(writer);

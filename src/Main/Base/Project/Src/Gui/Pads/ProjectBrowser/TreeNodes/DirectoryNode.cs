@@ -124,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 		}
-		public override void Refresh() 
+		public override void Refresh()
 		{
 			base.Refresh();
 			if (Nodes.Count == 0) {
@@ -352,13 +352,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (newName == null) {
 				return;
 			}
+			if (!FileService.CheckFileName(newName)) {
+				return;
+			}
 			string oldText = Text;
 			Text = newName;
 			if (Directory != null) {
 				string newPath = Path.Combine(Path.GetDirectoryName(Directory), newName);
 				if (System.IO.Directory.Exists(newPath)) {
 					if (System.IO.Directory.GetFiles(Directory).Length == 0) {
-						System.IO.Directory.Delete(Directory); 
+						System.IO.Directory.Delete(Directory);
 					} else if (System.IO.Directory.GetFiles(newPath).Length == 0) {
 						System.IO.Directory.Delete(newPath);
 						FileService.RenameFile(Directory, newPath, true);

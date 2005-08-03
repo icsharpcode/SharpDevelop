@@ -122,6 +122,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (newName == null) {
 				return;
 			}
+			if (!FileService.CheckFileName(newName)) {
+				return;
+			}
 			Text = newName;
 			
 			string newFileName = Path.Combine(solution.Directory, newName);

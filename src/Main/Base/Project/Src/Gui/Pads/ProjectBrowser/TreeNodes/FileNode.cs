@@ -123,6 +123,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (newName == null) {
 				return;
 			}
+			if (!FileService.CheckFileName(newName)) {
+				return;
+			}
 			Text = newName;
 			if (FileName != null) {
 				string newFileName = Path.Combine(Path.GetDirectoryName(FileName), newName);
