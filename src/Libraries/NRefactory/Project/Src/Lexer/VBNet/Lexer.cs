@@ -156,7 +156,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						ReadComment();
 						if (!lineEnd) {
 							lineEnd = true;
-							return new Token(Tokens.EOL, x, y, "\n");
+							return new Token(Tokens.EOL, Col, Line, "\n");
 						}
 						continue;
 					}
@@ -375,7 +375,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						digit += (char)ReaderRead();
 					}
 				} else {
-					nextToken = new Token(Tokens.Dot, x, y);
+					nextToken = new Token(Tokens.Dot, Col - 1, Line);
 				}
 			}
 			
