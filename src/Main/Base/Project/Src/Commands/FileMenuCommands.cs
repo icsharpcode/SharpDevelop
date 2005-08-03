@@ -61,20 +61,14 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					switch (Path.GetExtension(fdiag.FileName).ToUpper()) {
 						case ".CMBX":
 						case ".SLN":
+						case ".PRJX": // converter is called by Solution.Load
 							ProjectService.LoadSolution(fdiag.FileName);
 							break;
 						case ".CSPROJ":
 						case ".VBPROJ":
 							ProjectService.LoadProject(fdiag.FileName);
 							break;
-//						case ".PRJX":
-//
-//
-//							FileUtility.ObservedLoad(new NamedFileOperationDelegate(ProjectService.OpenSolution), fdiag.FileName);
-//							break;
 						default:
-							
-							
 							MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new string[,] {{"FileName", fdiag.FileName}}));
 							break;
 					}
@@ -87,7 +81,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			ProjectService.CloseSolution();
+			ProjectService.SaveSolutionPreferences();
+			WorkbenchSingleton.Workbench.CloseAllViews();
+			if (WorkbenchSingleton.Workbench.ViewContentCollection.Count == 0) {
+				ProjectService.CloseSolution();
+			}
 		}
 	}
 }

@@ -52,10 +52,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ProjectBrowserPad()
 		{
 			instance = this;
-			ProjectService.SolutionLoaded += new SolutionEventHandler(ProjectServiceSolutionLoaded);
-			ProjectService.SolutionClosed += new EventHandler(ProjectServiceSolutionClosed);
+			ProjectService.SolutionLoaded += ProjectServiceSolutionLoaded;
+			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 			
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += new EventHandler(ActiveWindowChanged);
+			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += ActiveWindowChanged;
 			if (ProjectService.OpenSolution != null) {
 				projectBrowserPanel.ViewSolution(ProjectService.OpenSolution);
 			}

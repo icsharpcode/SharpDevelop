@@ -6,11 +6,10 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public delegate void SolutionEventHandler(object sender, SolutionEventArgs e);
-	
 	public class SolutionEventArgs : EventArgs
 	{
 		Solution solution;
@@ -22,6 +21,22 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		public SolutionEventArgs(Solution solution)
+		{
+			this.solution = solution;
+		}
+	}
+	
+	public class SolutionCancelEventArgs : CancelEventArgs
+	{
+		Solution solution;
+		
+		public Solution Solution {
+			get {
+				return solution;
+			}
+		}
+		
+		public SolutionCancelEventArgs(Solution solution)
 		{
 			this.solution = solution;
 		}

@@ -228,6 +228,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static void SaveSolutionPreferences()
 		{
+			if (openSolution == null)
+				return;
 			string directory = PropertyService.ConfigDirectory + "preferences";
 			if (!Directory.Exists(directory)) {
 				Directory.CreateDirectory(directory);
@@ -249,7 +251,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (openSolution != null) {
 				OnSolutionClosing(new SolutionEventArgs(openSolution));
 				
-				SaveSolutionPreferences();
 				openSolution.Dispose();
 				openSolution = null;
 				
@@ -378,11 +379,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static event ProjectConfigurationEventHandler ProjectConfigurationChanged;
 		public static event SolutionConfigurationEventHandler SolutionConfigurationChanged;
 		
-		public static event SolutionEventHandler SolutionLoaded;
-		public static event SolutionEventHandler SolutionSaved;
+		public static event EventHandler<SolutionEventArgs> SolutionLoaded;
+		public static event EventHandler<SolutionEventArgs> SolutionSaved;
 		
-		public static event SolutionEventHandler SolutionClosing;
-		public static event EventHandler         SolutionClosed;
+		public static event EventHandler<SolutionEventArgs> SolutionClosing;
+		public static event EventHandler                    SolutionClosed;
 		
 		public static event ProjectEventHandler CurrentProjectChanged;
 		

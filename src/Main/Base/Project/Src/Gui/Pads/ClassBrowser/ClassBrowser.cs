@@ -109,8 +109,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			contentPanel.Controls.Add(toolStrip);
 			
-			ProjectService.SolutionLoaded += new SolutionEventHandler(ProjectServiceSolutionLoaded);
-			ProjectService.SolutionClosed += new EventHandler(ProjectServiceSolutionClosed);
+			ProjectService.SolutionLoaded += ProjectServiceSolutionLoaded;
+			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 			
 			ParserService.ParseInformationUpdated += new ParseInformationEventHandler(ParserServiceParseInformationUpdated);
 			

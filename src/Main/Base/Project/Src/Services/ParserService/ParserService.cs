@@ -64,17 +64,12 @@ namespace ICSharpCode.Core
 		}
 		
 		
-		
 		static ParserService()
 		{
-			try {
-				parser = (ParserDescriptor[])(AddInTree.GetTreeNode("/Workspace/Parser").BuildChildItems(null)).ToArray(typeof(ParserDescriptor));
-			} catch (TreePathNotFoundException) {
-				parser = new ParserDescriptor[] {};
-			}
+			parser = (ParserDescriptor[])AddInTree.BuildItems("/Workspace/Parser", null, false).ToArray(typeof(ParserDescriptor));
 			
-			ProjectService.SolutionLoaded += new SolutionEventHandler(OpenCombine);
-			ProjectService.SolutionClosed += new EventHandler(ProjectServiceSolutionClosed);
+			ProjectService.SolutionLoaded += OpenCombine;
+			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 		}
 		
 		static void ProjectServiceSolutionClosed(object sender, EventArgs e)

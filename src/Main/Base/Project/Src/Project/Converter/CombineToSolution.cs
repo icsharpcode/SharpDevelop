@@ -54,7 +54,18 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		{
 			List<string> projectFiles = new List<string>();
 			ReadProjects(newSolution, fileName, projectFiles);
-			
+			Convert(newSolution, projectFiles);
+		}
+		
+		public static void ConvertProject(Solution newSolution, string projectFileName)
+		{
+			List<string> projectFiles = new List<string>();
+			projectFiles.Add(projectFileName);
+			Convert(newSolution, projectFiles);
+		}
+		
+		static void Convert(Solution newSolution, List<string> projectFiles)
+		{
 			PrjxToSolutionProject.Conversion conversion = new PrjxToSolutionProject.Conversion();
 			
 			foreach (string path in projectFiles) {

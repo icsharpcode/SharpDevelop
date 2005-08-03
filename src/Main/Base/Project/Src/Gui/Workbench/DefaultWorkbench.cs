@@ -379,6 +379,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.OnClosing(e);
 			
+			ProjectService.SaveSolutionPreferences();
+			
 			while (WorkbenchSingleton.Workbench.ViewContentCollection.Count > 0) {
 				IViewContent content = WorkbenchSingleton.Workbench.ViewContentCollection[0];
 				content.WorkbenchWindow.CloseWindow(false);

@@ -43,7 +43,7 @@ namespace ICSharpCode.Core
 		
 		static FileService()
 		{
-			ProjectService.SolutionLoaded += new SolutionEventHandler(ProjectServiceSolutionLoaded);
+			ProjectService.SolutionLoaded += ProjectServiceSolutionLoaded;
 		}
 		
 		static void ProjectServiceSolutionLoaded(object sender, SolutionEventArgs e)

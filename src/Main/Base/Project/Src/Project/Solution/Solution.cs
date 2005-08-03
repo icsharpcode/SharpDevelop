@@ -509,13 +509,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			solutionBeingLoaded = newSolution;
 			newSolution.Name     = Path.GetFileNameWithoutExtension(fileName);
 			
-			bool loadCombine = Path.GetExtension(fileName).ToUpper() == ".CMBX";
-			if (loadCombine) {
+			string extension = Path.GetExtension(fileName).ToUpper();
+			if (extension == ".CMBX") {
 				if (!MessageService.AskQuestion("Should the SharpDevelop 1.x combine be converted into a SharpDevelop 2.x solution?")) {
 					return null;
 				}
 				newSolution.fileName = Path.ChangeExtension(fileName, ".sln");
 				ICSharpCode.SharpDevelop.Project.Converter.CombineToSolution.ConvertSolution(newSolution, fileName);
+			} else if (extension == ".PRJX") {
+				if (!MessageService.AskQuestion("Should the SharpDevelop 1.x project be converted into a SharpDevelop 2.x project?")) {
+					return null;
+				}
+				newSolution.fileName = Path.ChangeExtension(fileName, ".sln");
+				ICSharpCode.SharpDevelop.Project.Converter.CombineToSolution.ConvertProject(newSolution, fileName);
 			} else {
 				newSolution.fileName = fileName;
 				if (!SetupSolution(newSolution, fileName)) {

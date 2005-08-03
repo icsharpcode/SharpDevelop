@@ -34,14 +34,14 @@ namespace ICSharpCode.FormDesigner.Gui
 		ArrayList projectAssemblies = new ArrayList();
 		ArrayList referencedAssemblies = new ArrayList();
 
-		static bool      loadReferencedAssemblies = true;
+		static bool loadReferencedAssemblies = true;
 		
 		///<summary>Load an assembly's controls</summary>
 		public CustomComponentsSideTab(AxSideBar sideTab, string name, IToolboxService toolboxService) : base(sideTab,name, toolboxService)
 		{
 			ScanProjectAssemblies();
-			ProjectService.EndBuild += new EventHandler(RescanProjectAssemblies2);
-			ProjectService.SolutionLoaded += new SolutionEventHandler(RescanProjectAssemblies);
+			ProjectService.EndBuild       += RescanProjectAssemblies;
+			ProjectService.SolutionLoaded += RescanProjectAssemblies;
 		}
 		
 		public static bool LoadReferencedAssemblies {
@@ -179,12 +179,7 @@ namespace ICSharpCode.FormDesigner.Gui
 			}
 		}
 		
-		void RescanProjectAssemblies2(object sender, EventArgs e)
-		{
-			RescanProjectAssemblies(sender, null);
-		}
-		
-		void RescanProjectAssemblies(object sender, SolutionEventArgs e)
+		void RescanProjectAssemblies(object sender, EventArgs e)
 		{
 			projectAssemblies.Clear();
 			referencedAssemblies.Clear();

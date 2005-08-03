@@ -102,10 +102,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
 			TaskService.Removed += new TaskEventHandler(TaskServiceRemoved);
 			
-			ProjectService.EndBuild   += new EventHandler(ProjectServiceEndBuild);
-			
-			ProjectService.SolutionLoaded += new SolutionEventHandler(OnCombineOpen);
-			ProjectService.SolutionClosed += new EventHandler(OnCombineClosed);
+			ProjectService.EndBuild       += ProjectServiceEndBuild;
+			ProjectService.SolutionLoaded += OnCombineOpen;
+			ProjectService.SolutionClosed += OnCombineClosed;
 			
 			ImageList imglist = new ImageList();
 			imglist.ColorDepth = ColorDepth.Depth32Bit;

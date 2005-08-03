@@ -17,6 +17,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Xml;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 
 namespace ICSharpCode.SharpDevelop.Project
@@ -392,7 +393,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		public virtual Properties CreateMemento()
 		{
 			Properties properties = new Properties();
-			properties.Set<ICSharpCode.SharpDevelop.Bookmarks.SDBookmark[]>("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(this).ToArray());
+			properties.Set("bookmarks", ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.GetProjectBookmarks(this).ToArray());
+			List<string> files = new List<string>();
+			foreach (IViewContent vc in WorkbenchSingleton.Workbench.ViewContentCollection) {
+				string fileName = vc.FileName;
+				if (fileName != null && IsFileInProject(fileName)) {
+					files.Add(fileName);
+				}
+			}
+			properties.Set("files", files.ToArray());
 			return properties;
 		}
 		
@@ -401,8 +410,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public virtual void SetMemento(Properties properties)
 		{
-			foreach (ICSharpCode.SharpDevelop.Bookmarks.SDBookmark mark in properties.Get<ICSharpCode.SharpDevelop.Bookmarks.SDBookmark[]>("bookmarks", new ICSharpCode.SharpDevelop.Bookmarks.SDBookmark[0])) {
+			foreach (ICSharpCode.SharpDevelop.Bookmarks.SDBookmark mark in properties.Get("bookmarks", new ICSharpCode.SharpDevelop.Bookmarks.SDBookmark[0])) {
 				ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.AddMark(mark);
+			}
+			foreach (string fileName in properties.Get("files", new string[0])) {
+				if (File.Exists(fileName)) {
+					FileService.OpenFile(fileName);
+				}
 			}
 		}
 	}

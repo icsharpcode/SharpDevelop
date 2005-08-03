@@ -86,10 +86,10 @@ namespace ICSharpCode.NUnitPad
 			contentPanel.Controls.Add(testTreeView);
 			contentPanel.Controls.Add(toolStrip);
 			
-			ProjectService.SolutionLoaded += new SolutionEventHandler(CombineEventHandler);
-			ProjectService.SolutionClosed += new EventHandler(ProjectServiceCombineClosed);
-			ProjectService.StartBuild += new EventHandler(ProjectServiceStartBuild);
-			ProjectService.EndBuild += new EventHandler(ProjectServiceEndBuild);
+			ProjectService.SolutionLoaded += CombineEventHandler;
+			ProjectService.SolutionClosed += ProjectServiceCombineClosed;
+			ProjectService.StartBuild += ProjectServiceStartBuild;
+			ProjectService.EndBuild   += ProjectServiceEndBuild;
 			testTreeView.SetAutoLoadState(autoLoadItems);
 		}
 		
