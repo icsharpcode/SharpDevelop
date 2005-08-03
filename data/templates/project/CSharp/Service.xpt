@@ -72,8 +72,7 @@ namespace ${StandardNamespace}
 		/// </summary>
 		protected override void OnStart(string[] args)
 		{
-			// TODO: Add start code here (if required)
-			//       to start your service.
+			// TODO: Add start code here (if required) to start your service.
 		}
 		
 		/// <summary>
@@ -81,20 +80,10 @@ namespace ${StandardNamespace}
 		/// </summary>
 		protected override void OnStop()
 		{
-			// TODO: Add tear-down code here (if required) 
-			//       to stop your service.
+			// TODO: Add tear-down code here (if required) to stop your service.
 		}
 	}
 }
-		/// <summary>
-		/// This method starts the service.
-		/// </summary>
-		public static void Main()
-		{
-			System.ServiceProcess.ServiceBase.Run(new System.ServiceProcess.ServiceBase[] {
-				new MyService() 
-			});
-		}
 ]]></File>
 				<File name="Program.cs"><![CDATA[${StandardHeader.C#}
 
@@ -108,16 +97,12 @@ namespace ${ProjectName}
 	static class Program
 	{
 		/// <summary>
-		/// The main entry point for the application.
+		/// This method starts the service.
 		/// </summary>
 		static void Main()
 		{
-			ServiceBase[] ServicesToRun;
-			
 			// To run more than one service you have to add them here
-			ServicesToRun = new ServiceBase[] { new ${ProjectName}() };
-			
-			ServiceBase.Run(ServicesToRun);
+			ServiceBase.Run(new ServiceBase[] { new ${ProjectName}() });
 		}
 	}
 }

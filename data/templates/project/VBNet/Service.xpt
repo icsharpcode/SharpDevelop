@@ -43,17 +43,16 @@
 			<Files>
 				<File name="${ProjectName}.vb"><![CDATA[${StandardHeader.VBNET}
 
+Imports System.ServiceProcess
+
 Public Class ${ProjectName}
+	Inherits ServiceBase
 	
 	' The main entry point for the process
 	<MTAThread()> _
 	Shared Sub Main()
-		Dim ServicesToRun() As System.ServiceProcess.ServiceBase
-		
 		' To run more than one service you have to add them here
-		ServicesToRun = New System.ServiceProcess.ServiceBase() {New ${ProjectName}}
-		
-		System.ServiceProcess.ServiceBase.Run(ServicesToRun)
+		ServiceBase.Run(New ServiceBase() {New ${ProjectName}})
 	End Sub
 	
 	Protected Overrides Sub OnStart(ByVal args() As String)
@@ -63,7 +62,6 @@ Public Class ${ProjectName}
 	Protected Overrides Sub OnStop()
 		' TODO: Add tear-down code here (if required) to stop your service.
 	End Sub
-
 End Class
 
 ]]></File>

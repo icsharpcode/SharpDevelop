@@ -32,7 +32,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		public void Run(ProjectCreateInformation projectCreateInformation)
 		{
-			string path = FileUtility.Combine(projectCreateInformation.ProjectBasePath, fileName);
+			string parsedFileName = StringParser.Parse(fileName, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} });
+			string path = FileUtility.Combine(projectCreateInformation.ProjectBasePath, parsedFileName);
 			FileService.OpenFile(path);
 		}
 	}
