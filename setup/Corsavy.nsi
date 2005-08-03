@@ -11,7 +11,7 @@
 !define MUI_WELCOMEFINISHPAGE_BITMAP "wizard-image.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "wizard-image.bmp"
 
-BrandingText "© 2000-2004 ic#code, http://www.icsharpcode.net/"
+BrandingText "© 2000-2005 ic#code, http://www.icsharpcode.net/"
 SetCompressor lzma
 CRCCheck on
 
@@ -61,11 +61,11 @@ ShowUnInstDetails show
 
 ; .NET Framework check
 ; http://msdn.microsoft.com/netframework/default.aspx?pull=/library/en-us/dnnetdep/html/redistdeploy1_1.asp
-; Section "Detecting that the .NET Framework 1.1 is installed"
+; Section "Detecting that the .NET Framework 2.0 Beta 2 is installed"
 Function .onInit
-	ReadRegDWORD $R0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v1.1.4322" Install
+	ReadRegDWORD $R0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50215" Install
 	StrCmp $R0 "" 0 CheckPreviousVersion
-	MessageBox MB_OK "Microsoft .NET Framework 1.1 was not found on this system.$\r$\n$\r$\nUnable to continue this installation."
+	MessageBox MB_OK "Microsoft .NET Framework 2.0 Beta 2 was not found on this system.$\r$\n$\r$\nUnable to continue this installation."
 	Abort
 
   CheckPreviousVersion:
@@ -85,20 +85,27 @@ Function .onInit
 FunctionEnd
 
 Section "MainSection" SEC01
-  SetOutPath "$INSTDIR"
   SetOverwrite ifnewer
 
-  ; Those files are included with the installer
-  File /r ..\AddIns
-  File /r ..\bin
-  File /r ..\data
-  File /r ..\doc
+  ; any file that would go in the root
+  SetOutPath "$INSTDIR"
+
+
+  SetOutPath "$INSTDIR\AddIns"
+  File /r ..\AddIns\*.*
+
+  SetOutPath "$INSTDIR\bin"
+  File /r ..\bin\*.*
+
+  SetOutPath "$INSTDIR\data"
+  File /r ..\data\*.*
+
+  SetOutPath "$INSTDIR\doc"
+  File /r ..\doc\*.*
   
   CreateDirectory "$SMPROGRAMS\SharpDevelop"
   CreateShortCut "$SMPROGRAMS\SharpDevelop\SharpDevelop.lnk" "$INSTDIR\bin\SharpDevelop.exe"
   CreateShortCut "$DESKTOP\SharpDevelop.lnk" "$INSTDIR\bin\SharpDevelop.exe"
-
-  CreateShortCut "$SMPROGRAMS\SharpDevelop\SharpDevelop Help.lnk" "$INSTDIR\doc\help\sharpdevelop.chm"
 
   ; Add default file associations
   ; CreateFileAssociation extension extType extDef exeCmd defIcon
@@ -122,23 +129,22 @@ Section -Post
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "URLInfoAbout" "${PRODUCT_WEB_SITE}"
   WriteRegStr ${PRODUCT_UNINST_ROOT_KEY} "${PRODUCT_UNINST_KEY}" "Publisher" "${PRODUCT_PUBLISHER}"
   
-  ; ExecShell "" "$INSTDIR\bin\tools\GacUtil2 /i ..\nunit.core.dll" "" SW_SHOWMINIMIZED
-  ; ExecShell "" "$INSTDIR\bin\tools\GacUtil2 /i ..\nunit.framework.dll" "" SW_SHOWMINIMIZED
-
   ; now finally call our post install tasks
-  ExecWait '"$SYSDIR\cscript.exe" "$INSTDIR\bin\setup\PostInstallTasks.vbs"'
+  SetOutPath "$INSTDIR\bin\setup"
+  ; return code goes to $0 -> don't fail setup when there are Help2 problems
+  ExecWait '"$INSTDIR\bin\setup\PostInstallTasks.bat"' $0
 SectionEnd
 
 Section Uninstall
   Delete "$DESKTOP\SharpDevelop.lnk"
   Delete "$SMPROGRAMS\SharpDevelop\*.*"
 
-  ; ExecShell "" "$INSTDIR\bin\tools\GacUtil2 /u ..\nunit.core.dll" "" SW_SHOWMINIMIZED
-  ; ExecShell "" "$INSTDIR\bin\tools\GacUtil2 /u ..\nunit.framework.dll" "" SW_SHOWMINIMIZED
-
   ; first, remove all dependencies from the GAC etc
-  ExecWait '"$SYSDIR\cscript.exe" "$INSTDIR\bin\setup\PreUninstallTasks.vbs"'
-
+  SetOutPath "$INSTDIR\bin\setup"
+  ExecWait '"$INSTDIR\bin\setup\PreUninstallTasks.bat"' $0
+  ; set OutPath to somewhere else because the current working directory cannot be deleted!
+  SetOutPath "$DESKTOP"
+  
   RMDir "$SMPROGRAMS\SharpDevelop"
   RMDir /r "$INSTDIR"
   

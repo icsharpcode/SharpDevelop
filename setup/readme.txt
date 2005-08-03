@@ -2,10 +2,18 @@ The setup program is maintained by Christoph Wille, christophw@alphasierrapapa.c
 
 Information
 
-Setup uses NSIS 2.0 Release - http://nsis.sourceforge.net
+Setup uses NSIS 2.06 Release - http://nsis.sourceforge.net
 
 
 CHANGELOG
+
+4/13/2005:
+* Fixed installation in path with spaces.
+
+4/12/2005:
+
+* SetOutputPath
+* Exclusion of directories
 
 10/07/2004:
 

@@ -354,6 +354,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		static Regex projectLinePattern   = new Regex("Project\\(\"(?<ProjectGuid>.*)\"\\)\\s+=\\s+\"(?<Title>.*)\",\\s*\"(?<Location>.*)\",\\s*\"(?<Guid>.*)\"", RegexOptions.Compiled);
 		static Regex globalSectionPattern = new Regex("\\s*GlobalSection\\((?<Name>.*)\\)\\s*=\\s*(?<Type>.*)", RegexOptions.Compiled);
 		
+		static string GetFirstNonCommentLine(TextReader sr)
+		{
+			string line = "";
+			while ((line = sr.ReadLine()) != null) {
+				line = line.Trim();
+				if (line.Length > 0 && line[0] != '#')
+					return line;
+			}
+			return "";
+		}
+		
 		/// <summary>
 		/// Reads the specified solution file. The project-location-guid information is written into the conversion class.
 		/// </summary>
@@ -362,7 +373,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			string solutionDirectory = Path.GetDirectoryName(solutionFileName);
 			using (StreamReader sr = File.OpenText(solutionFileName)) {
-				string line = sr.ReadLine();
+				string line = GetFirstNonCommentLine(sr);
 				Match match = versionPattern.Match(line);
 				if (!match.Success) {
 					return null;
@@ -391,7 +402,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			bool needsConversion = false;
 			
 			using (StreamReader sr = File.OpenText(fileName)) {
-				string line = sr.ReadLine();
+				string line = GetFirstNonCommentLine(sr);
 				Match match = versionPattern.Match(line);
 				if (!match.Success) {
 					MessageService.ShowError(fileName + " is not a valid solution file.");

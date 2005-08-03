@@ -10,6 +10,7 @@ echo.
 echo ICSharpCode.SharpZipLib.dll
 ..\tools\gacutil2.exe /i ..\ICSharpCode.SharpZipLib.dll
 echo.
-echo Installing and configuring help system
-BuildHelpIndex.exe
-REM pause
+rem echo Installing and configuring help system
+rem cd help
+rem call register.bat
+@IF %ERRORLEVEL% NEQ 0 PAUSE
