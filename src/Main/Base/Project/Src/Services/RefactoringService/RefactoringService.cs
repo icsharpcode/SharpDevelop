@@ -85,7 +85,7 @@ namespace ICSharpCode.Core
 		static List<Reference> RunFindReferences(IClass ownerClass, IMember member, IProgressMonitor progressMonitor)
 		{
 			if (ParserService.LoadSolutionProjectsThreadRunning) {
-				MessageService.ShowMessage("Find references cannot be executed until all files have been parsed.");
+				MessageService.ShowMessage("${res:SharpDevelop.Refactoring.LoadSolutionProjectsThreadRunning}");
 				return null;
 			}
 			ownerClass = FixClass(ownerClass);
@@ -94,7 +94,7 @@ namespace ICSharpCode.Core
 			List<Reference> references = new List<Reference>();
 			try {
 				if (progressMonitor != null) {
-					progressMonitor.BeginTask("Finding references...", files.Count);
+					progressMonitor.BeginTask("${res:SharpDevelop.Refactoring.FindingReferences}", files.Count);
 				}
 				while (enumerator.MoveNext()) {
 					if (progressMonitor != null) {

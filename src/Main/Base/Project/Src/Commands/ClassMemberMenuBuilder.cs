@@ -36,22 +36,22 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			List<ToolStripItem> list = new List<ToolStripItem>();
 			
 			if (method == null || !method.IsConstructor) {
-				cmd = new MenuCommand("&Rename", Rename);
+				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
 				cmd.Tag = member;
 				list.Add(cmd);
 			}
 			if (member.IsOverride) {
-				cmd = new MenuCommand("Go to &base class", GoToBase);
+				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToBaseClassCommand}", GoToBase);
 				cmd.Tag = member;
 				list.Add(cmd);
 			}
 			if (member.IsVirtual || member.IsAbstract || (member.IsOverride && !member.DeclaringType.IsSealed)) {
-				cmd = new MenuCommand("Find &overrides", FindOverrides);
+				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindOverridesCommand}", FindOverrides);
 				cmd.Tag = member;
 				list.Add(cmd);
 			}
 			
-			cmd = new MenuCommand("&Find references", FindReferences);
+			cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindReferencesCommand}", FindReferences);
 			cmd.Tag = member;
 			list.Add(cmd);
 			
@@ -66,14 +66,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					}
 				}
 				if (foundProperty != null) {
-					cmd = new MenuCommand("Go to &property", GotoProperty);
-					cmd.Tag = member;
+					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToProperty}", GotoProperty);
+					cmd.Tag = foundProperty;
 					list.Add(cmd);
 				} else {
-					cmd = new MenuCommand("Create &getter", CreateGetter);
+					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateGetter}", CreateGetter);
 					cmd.Tag = member;
 					list.Add(cmd);
-					cmd = new MenuCommand("Create &property", CreateProperty);
+					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateProperty}", CreateProperty);
 					cmd.Tag = member;
 					list.Add(cmd);
 				}
@@ -116,16 +116,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		void GotoProperty(object sender, EventArgs e)
 		{
-			MenuCommand item = (MenuCommand)sender;
-			IMember member = (IMember)item.Tag;
-			string propertyName = AbstractPropertyCodeGenerator.GetPropertyName(member.Name);
-			LanguageProperties language = member.DeclaringType.ProjectContent.Language;
-			foreach (IProperty prop in member.DeclaringType.Properties) {
-				if (language.NameComparer.Equals(propertyName, prop.Name)) {
-					JumpToDefinition(prop);
-					break;
-				}
-			}
+			JumpToDefinition((IMember)(sender as MenuCommand).Tag);
 		}
 		
 		void GoToBase(object sender, EventArgs e)
@@ -142,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
-			string newName = MessageService.ShowInputBox("Rename", "Enter the new name of the member", member.Name);
+			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameMemberText}", member.Name);
 			if (!CheckName(newName)) return;
 			
 			List<Reference> list = RefactoringService.FindReferences(member, null);

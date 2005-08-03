@@ -79,12 +79,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			if (name == null || name.Length == 0)
 				return false;
 			if (!char.IsLetter(name, 0) && name[0] != '_') {
-				MessageService.ShowError("Names must start with a letter or underscore.");
+				MessageService.ShowError("${res:SharpDevelop.Refactoring.InvalidNameStart}");
 				return false;
 			}
 			for (int i = 1; i < name.Length; i++) {
 				if (!char.IsLetterOrDigit(name, i) && name[i] != '_') {
-					MessageService.ShowError("Names may only contain letters, digits or underscores.");
+					MessageService.ShowError("${res:SharpDevelop.Refactoring.InvalidName}");
 					return false;
 				}
 			}

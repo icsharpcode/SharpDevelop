@@ -14,8 +14,7 @@
           <System.Windows.Forms.CheckBox>
             <Name value="refreshInsightOnCommaCheckBox" />
             <Location value="{X=31,Y=186}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <Text value="Re-open tooltip with better overload when pressing comma" />
+            <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.RefreshInsightOnComma}" />
             <TabIndex value="10" />
             <Size value="{Width=332, Height=24}" />
             <Anchor value="Top, Left, Right" />
@@ -23,8 +22,7 @@
           <System.Windows.Forms.CheckBox>
             <Name value="useDebugTooltipsOnlyCheckBox" />
             <Location value="{X=31,Y=85}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <Text value="Only in debug mode" />
+            <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.UseDebugTooltipsOnly}" />
             <TabIndex value="6" />
             <Size value="{Width=332, Height=24}" />
             <Anchor value="Top, Left, Right" />
@@ -32,9 +30,8 @@
           <System.Windows.Forms.Button>
             <Name value="clearDataUseCacheButton" />
             <Location value="{X=225,Y=40}" />
-            <Text value="Clear cache" />
+            <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.ClearCache}" />
             <Size value="{Width=101, Height=23}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <TabIndex value="4" />
           </System.Windows.Forms.Button>
           <System.Windows.Forms.CheckBox>
@@ -42,8 +39,7 @@
             <Location value="{X=12,Y=66}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <Text value="Show tooltip when moving mouse over expression" />
+            <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.UseTooltips}" />
             <TabIndex value="5" />
             <Size value="{Width=351, Height=24}" />
             <Anchor value="Top, Left, Right" />
@@ -53,8 +49,7 @@
             <Location value="{X=12,Y=167}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <Text value="Show tooltip when writing method calls" />
+            <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.UseInsight}" />
             <TabIndex value="9" />
             <Size value="{Width=351, Height=24}" />
             <Anchor value="Top, Left, Right" />
@@ -62,7 +57,7 @@
           <System.Windows.Forms.Label>
             <Name value="label4" />
             <Location value="{X=6,Y=112}" />
-            <Text value="The following options are language-dependend, some options are not available in some programming languages." />
+            <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.LanguageDependend}" />
             <Size value="{Width=357, Height=31}" />
             <TabIndex value="7" />
             <Anchor value="Top, Left, Right" />
@@ -70,8 +65,7 @@
           <System.Windows.Forms.CheckBox>
             <Name value="useKeywordCompletionCheckBox" />
             <Location value="{X=12,Y=146}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <Text value="Trigger code completion after keywords" />
+            <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.UseKeywordCompletion}" />
             <TabIndex value="8" />
             <Size value="{Width=351, Height=24}" />
             <Anchor value="Top, Left, Right" />
@@ -79,7 +73,7 @@
           <System.Windows.Forms.Label>
             <Name value="dataUsageCacheLabel2" />
             <Location value="{X=154,Y=42}" />
-            <Text value="items" />
+            <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.SaveItemCountAfterNumber}" />
             <TextAlign value="MiddleLeft" />
             <Size value="{Width=65, Height=23}" />
             <TabIndex value="3" />
@@ -98,7 +92,7 @@
           <System.Windows.Forms.Label>
             <Name value="dataUsageCacheLabel1" />
             <Location value="{X=18,Y=42}" />
-            <Text value="Save" />
+            <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.SaveItemCountBeforeNumber}" />
             <TextAlign value="MiddleRight" />
             <Size value="{Width=56, Height=21}" />
             <TabIndex value="1" />
@@ -108,8 +102,7 @@
             <Location value="{X=12,Y=20}" />
             <Checked value="True" />
             <CheckState value="Checked" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <Text value="Pre-select recently used members" />
+            <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.UseDataUsageCache}" />
             <TabIndex value="0" />
             <Size value="{Width=351, Height=24}" />
             <Anchor value="Top, Left, Right" />
@@ -119,7 +112,7 @@
       <System.Windows.Forms.Label>
         <Name value="label1" />
         <Location value="{X=8,Y=8}" />
-        <Text value="Use the following option to turn code completion completely off:" />
+        <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.MainOption}" />
         <TextAlign value="MiddleLeft" />
         <Size value="{Width=365, Height=22}" />
         <TabIndex value="0" />
@@ -128,7 +121,6 @@
       <System.Windows.Forms.CheckBox>
         <Name value="codeCompletionEnabledCheckBox" />
         <Location value="{X=16,Y=25}" />
-        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
         <Text value="${res:Dialog.Options.IDEOptions.TextEditor.General.CodeCompletionCheckBox}" />
         <TabIndex value="1" />
         <Size value="{Width=357, Height=24}" />

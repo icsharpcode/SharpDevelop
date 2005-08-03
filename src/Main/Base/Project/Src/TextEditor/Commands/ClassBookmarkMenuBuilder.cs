@@ -34,22 +34,22 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IClass c = bookmark.Class;
 			List<ToolStripItem> list = new List<ToolStripItem>();
 			
-			cmd = new MenuCommand("&Rename", Rename);
+			cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
 			cmd.Tag = c;
 			list.Add(cmd);
 			
 			if (c.BaseTypes.Count > 0) {
-				cmd = new MenuCommand("Go to &base class", GoToBase);
+				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToBaseCommand}", GoToBase);
 				cmd.Tag = c;
 				list.Add(cmd);
 			}
 			if (!c.IsSealed && !c.IsStatic) {
-				cmd = new MenuCommand("Find &derived classes", FindDerivedClasses);
+				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindDerivedClassesCommand}", FindDerivedClasses);
 				cmd.Tag = c;
 				list.Add(cmd);
 			}
 			
-			cmd = new MenuCommand("&Find references", FindReferences);
+			cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindReferencesCommand}", FindReferences);
 			cmd.Tag = c;
 			list.Add(cmd);
 			
@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			MenuCommand item = (MenuCommand)sender;
 			IClass c = (IClass)item.Tag;
 			c = c.DefaultReturnType.GetUnderlyingClass(); // get compound class if class is partial
-			string newName = MessageService.ShowInputBox("Rename", "Enter the new name of the class", c.Name);
+			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameClassText}", c.Name);
 			if (!CheckName(newName)) return;
 			
 			List<Reference> list = RefactoringService.FindReferences(c, null);
