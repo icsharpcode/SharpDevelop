@@ -4,9 +4,11 @@
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
 //     <version>$Revision: 230 $</version>
 // </file>
-/*
+
 using System;
 using System.Drawing;
+using System.Collections;
+using System.Collections.Generic;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Internal.Undo;
@@ -20,13 +22,13 @@ namespace SearchAndReplace
 	public class BoyerMooreSearchStrategy
 	{
 		// Shift table for chars present in the pattern
-		Hashtable PatternCharShifts;
+		Dictionary<char, int[]> patternCharShifts;
 		// Shifts for all other chars
-		int[] OtherCharShifts;
+		int[] otherCharShifts;
 		// the patern to search
 		string searchPattern;
 		// Length of the search pattern
-		int PatternLength;
+		int patternLength;
 		
 		/// <remarks>
 		/// Only with a call to this method the search strategy must
@@ -36,77 +38,89 @@ namespace SearchAndReplace
 		public void CompilePattern()
 		{
 			searchPattern = SearchOptions.MatchCase ? SearchOptions.FindPattern : SearchOptions.FindPattern.ToUpper();
-			PatternCharShifts = new Hashtable();
 			
 			// Building shift table
-			PatternLength = Pattern.Length;
-			int MaxShift = PatternLength;
+			patternLength = searchPattern.Length;
+			int maxShift = patternLength;
+			patternCharShifts = new Dictionary<char, int[]>();
 			// Constructing the table where number
 			// of columns is equal to PatternLength
 			// and number of rows is equal to the
 			// number of distinct chars in the pattern
-			for (int i = 0; i < PatternLength; ++i) {
-				if (!PatternCharShifts.ContainsKey(Pattern[i])) {
-					PatternCharShifts.Add(Pattern[i], new int[PatternLength]);
+			for (int i = 0; i < patternLength; ++i) {
+				if (!patternCharShifts.ContainsKey(searchPattern[i])) {
+					patternCharShifts.Add(searchPattern[i], new int[patternLength]);
 				}
 			}
-			OtherCharShifts = new int[PatternLength];
+			otherCharShifts = new int[patternLength];
 			// Filling the last column of the
 			// table with maximum shifts (pattern length)
-			foreach(DictionaryEntry Row in PatternCharShifts) {
-				((int[])Row.Value)[PatternLength - 1] = MaxShift;
+			foreach(KeyValuePair<char, int[]> row in patternCharShifts) {
+				row.Value[patternLength - 1] = maxShift;
 			}
-			OtherCharShifts[PatternLength - 1] = MaxShift;
+			otherCharShifts[patternLength - 1] = maxShift;
 			// Calculating other shifts (filling each column
 			// from PatternLength - 2 to 0 (from right to left)
-			for (int i = PatternLength - 1; i >= 0; --i)
+			for (int i = patternLength - 1; i >= 0; --i)
 			{
 				// Suffix string contains the characters
 				// right to the character being processsed
-				string Suffix = new String(Pattern.ToCharArray(),
-				                           i + 1,  PatternLength - i - 1);
+				string suffix = new String(searchPattern.ToCharArray(),
+				                           i + 1,  patternLength - i - 1);
 				// if Pattern begins with Suffix
 				// the maximum shift is equal to i + 1
-				if (Pattern.StartsWith(Suffix)) {
-					MaxShift = i + 1;
+				if (searchPattern.StartsWith(suffix)) {
+					maxShift = i + 1;
 				}
 				// Store shift for characters not present in the pattern
-				OtherCharShifts[i] = MaxShift;
+				otherCharShifts[i] = maxShift;
 				// We shorten patter by one char in NewPattern.
-				string NewPattern = new string(Pattern.ToCharArray(),
-				                               0, Pattern.Length -1);
-				if ((NewPattern.LastIndexOf(Suffix) > 0) || (Suffix.Length == 0)) {
-					foreach(DictionaryEntry Row in PatternCharShifts)
+				string newPattern = new string(searchPattern.ToCharArray(),
+				                               0, searchPattern.Length -1);
+				if ((newPattern.LastIndexOf(suffix) > 0) || (suffix.Length == 0)) {
+					foreach(KeyValuePair<char, int[]> row in patternCharShifts)
 					{
-						string NewSuffix  = (char)Row.Key + Suffix;
+						string newSuffix  = row.Key + suffix;
 						// Calculate shifts:
 						//Check if there are other occurences
 						//of the new suffix in the pattern
 						// If several occurences exist, we need the rightmost one
-						int NewSuffixPos = NewPattern.LastIndexOf(NewSuffix);
-						if (NewSuffixPos >= 0) {
-							((int[])Row.Value)[i] = i - NewSuffixPos;
+						int newSuffixPos = newPattern.LastIndexOf(newSuffix);
+						if (newSuffixPos >= 0) {
+							row.Value[i] = i - newSuffixPos;
 						} else {
-							((int[])Row.Value)[i] = MaxShift;
+							row.Value[i] = maxShift;
 						}
 						// Storing 0 if characters
 						// in a row and a columnt are the same
-						if ((char)Row.Key == Pattern[i]) {
-							((int[])Row.Value)[i] = 0;
+						if (row.Key == searchPattern[i]) {
+							row.Value[i] = 0;
 						}
 					}
 				} else {
-					foreach(DictionaryEntry Row in PatternCharShifts)
+					foreach(KeyValuePair<char, int[]> row in patternCharShifts)
 					{
 						// if Suffix doesn't occure in NewPattern
 						// we simply use previous shift value
-						((int[])Row.Value)[i] = MaxShift;
-						if ((char)Row.Key == Pattern[i]) {
-							((int[])Row.Value)[i] = 0;
+						row.Value[i] = maxShift;
+						if (row.Key == searchPattern[i]) {
+							row.Value[i] = 0;
 						}
 					}
 				}
 			}
+		}
+		
+		int InternalFindNext(ITextIterator textIterator)
+		{
+//			while (textIterator.MoveAhead(1)) {
+//				if (SearchOptions.MatchCase ? MatchCaseSensitive(textIterator.TextBuffer, textIterator.Position, searchPattern) : MatchCaseInsensitive(textIterator.TextBuffer, textIterator.Position, searchPattern)) {
+//					if (!SearchOptions.MatchWholeWord || IsWholeWordAt(textIterator.TextBuffer, textIterator.Position, searchPattern.Length)) {
+//						return textIterator.Position;
+//					}
+//				}
+//			}
+			return -1;
 		}
 		
 		/// <remarks>
@@ -115,8 +129,9 @@ namespace SearchAndReplace
 		/// </remarks>
 		public SearchResult FindNext(ITextIterator textIterator)
 		{
-			return null;
+			int offset = InternalFindNext(textIterator);
+			return offset >= 0 ? new SearchResult(offset, searchPattern.Length) : null;
 		}
 	}
 }
-*/
+
