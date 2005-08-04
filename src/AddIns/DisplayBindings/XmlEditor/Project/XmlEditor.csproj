@@ -68,6 +68,9 @@
     <EmbeddedResource Include="XmlSchemasPanel.xfrm" />
     <EmbeddedResource Include="SelectXmlSchema.xfrm" />
     <EmbeddedResource Include="XmlEditorOptionsPanel.xfrm" />
+    <None Include="XmlEditor.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

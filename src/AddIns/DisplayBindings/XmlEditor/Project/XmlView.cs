@@ -332,7 +332,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public void ParseInformationUpdated(ParseInformation parseInfo)
 		{
-			UpdateFolding();
+			xmlEditor.BeginInvoke(new MethodInvoker(UpdateFolding));
 		}
 		
 		#endregion

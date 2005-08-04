@@ -35,9 +35,6 @@ namespace ICSharpCode.XmlEditor
 		string namespacePrefix = String.Empty;
 		
 		static readonly string schemaAssociationElementName = "SchemaAssociation";
-		static readonly string extensionAttributeName = "extension";
-		static readonly string namespaceAttributeName = "namespace";
-		static readonly string prefixAttributeName = "prefix";
 		
 		public XmlSchemaAssociation(string extension)
 			: this(extension, String.Empty, String.Empty)
@@ -114,7 +111,7 @@ namespace ICSharpCode.XmlEditor
 					association = new XmlSchemaAssociation(extension, @"http://nant.sf.net/schemas/nant-0.84.win32.net-1.0.xsd");
 					break;
 				case ".addin":
-					association = new XmlSchemaAssociation(extension, @"http://www.icsharpcode.net/2004/addin");
+					association = new XmlSchemaAssociation(extension, @"http://www.icsharpcode.net/2005/addin");
 					break;
 				case ".xsl":
 				case ".xslt":
@@ -161,43 +158,15 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Creates an XmlSchemaAssociation from the saved xml.
 		/// </summary>
-		public object FromXmlElement(XmlElement element)
+		public static XmlSchemaAssociation ConvertFromString(string text)
 		{
-			return XmlSchemaAssociation.ConvertFromXmlElement(element);
+			string[] parts = text.Split(new char[] {'|'}, 3);
+			return new XmlSchemaAssociation(parts[0], parts[1], parts[2]);
 		}
 		
-		/// <summary>
-		/// Creates an XmlSchemaAssociation from the saved xml.
-		/// </summary>
-		public static object ConvertFromXmlElement(XmlElement element)
-		{
-			XmlSchemaAssociation association = null;
-			
-			if (element.ChildNodes.Count == 1) {
-				XmlElement childElement = element.ChildNodes[0] as XmlElement;
-				if (childElement != null) {
-					if (childElement.Name == schemaAssociationElementName) {
-						association = new XmlSchemaAssociation(childElement.GetAttribute(extensionAttributeName), childElement.GetAttribute(namespaceAttributeName), childElement.GetAttribute(prefixAttributeName));
-					} else {
-						throw new ApplicationException(childElement.Name);
-					}					
-				}
-			}
-			return association;
-		}
-		
-		/// <summary>
-		/// Creates an xml element from an XmlSchemaAssociation.
-		/// </summary>
-		public XmlElement ToXmlElement(XmlDocument doc)
+		public string ConvertToString()
 		{	
-			XmlElement element = doc.CreateElement(schemaAssociationElementName);
-			
-			element.SetAttribute(extensionAttributeName, extension);
-			element.SetAttribute(namespaceAttributeName, namespaceUri);
-			element.SetAttribute(prefixAttributeName, namespacePrefix);
-			
-			return element;	
+			return extension + "|" + namespaceUri + "|" + namespacePrefix;
 		}
 	}
 }

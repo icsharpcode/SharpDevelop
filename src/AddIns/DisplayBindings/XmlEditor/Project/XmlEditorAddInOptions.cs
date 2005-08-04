@@ -90,13 +90,11 @@ namespace ICSharpCode.XmlEditor
 		/// </remarks>
 		public static XmlSchemaAssociation GetSchemaAssociation(string extension)
 		{			
-			object property = Properties.Get(extension);
+			string property = Properties.Get("ext" + extension, "");
+			XmlSchemaAssociation association = null;
 			
-			XmlSchemaAssociation association = property as XmlSchemaAssociation;
-			XmlElement element = property as XmlElement;
-			
-			if (element != null) {
-				association = XmlSchemaAssociation.ConvertFromXmlElement(element) as XmlSchemaAssociation;
+			if (property.Length > 0) {
+				association = XmlSchemaAssociation.ConvertFromString(property);
 			}
 			
 			// Use default?
@@ -109,7 +107,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public static void SetSchemaAssociation(XmlSchemaAssociation association)
 		{
-			Properties.Set(association.Extension, association);
+			Properties.Set("ext" + association.Extension, association.ConvertToString());
 		}
 		
 		public static bool ShowAttributesWhenFolded {

@@ -135,6 +135,8 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void ReadSchemas()
 		{
+			// MSBuild schemas are in framework directory:
+			ReadSchemas(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory(), true);
 			ReadSchemas(SchemaFolder, true);
 			ReadSchemas(UserSchemaFolder, false);
 		}

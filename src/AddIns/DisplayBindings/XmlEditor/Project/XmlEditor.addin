@@ -4,28 +4,29 @@
        url         = "http://www.icsharpcode.net"
        description = "Xml Editor"
        version     = "1.0.0">
-       
+	
 	<Runtime>
-		<Import assembly="XmlEditor.dll"/>
-		<Import assembly="../../../../bin/SharpDevelop.DefaultTexteditor.dll"/>
+		<Import assembly = "XmlEditor.dll"/>
+		<Import assembly = "/ICSharpCode.SharpDevelop"/>
 	</Runtime>
-
+	
 	<!-- Xml Editor View -->
-	<Extension path = "/SharpDevelop/Workbench/DisplayBindings">
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id = "XmlEditor"
 		                insertbefore = "Text"
 		                supportedformats = "Text Files,Source Files"
 		                class = "ICSharpCode.XmlEditor.XmlDisplayBinding"/>
-	</Extension>
-
+	</Path>
+	
 	<!-- Xml parser used to initiate the folding update -->
-	<Extension path = "/Workspace/Parser">
-		<Class id = "XmlFoldingParser" 
-		       class = "ICSharpCode.XmlEditor.Parser"/>
-	</Extension>
+	<Path name = "/Workspace/Parser">
+		<Parser id = "XmlFoldingParser"
+		        supportedextensions  = ".xml"
+		        class = "ICSharpCode.XmlEditor.Parser"/>
+	</Path>
 	
 	<!-- Right click menu -->
-	<Extension path = "/SharpDevelop/ViewContent/XmlEditor/ContextMenu">
+	<Path name = "/SharpDevelop/ViewContent/XmlEditor/ContextMenu">
 		<MenuItem id = "Cut"
 		          label = "${res:XML.TextAreaContextMenu.Cut}"
 		          icon = "Icons.16x16.CutIcon"
@@ -45,7 +46,7 @@
 		          label = "${res:XML.MainMenu.EditMenu.Delete}"
 		          icon = "Icons.16x16.DeleteIcon"
 		          class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
-		<MenuItem id = "Separator1" label = "-" />
+		<MenuItem id = "Separator1" type = "Separator"/>
 		<MenuItem id = "Save"
 		          label = "${res:XML.MainMenu.FileMenu.Save}"
 		          icon = "Icons.16x16.SaveIcon"
@@ -57,44 +58,43 @@
 		<MenuItem id = "File"
 		          label = "${res:XML.MainMenu.FileMenu.Close}"
 		          class = "ICSharpCode.SharpDevelop.Commands.CloseFile"/>
-		<MenuItem id = "Separator2" label = "-" />
+		<MenuItem id = "Separator2" type = "Separator"/>
 		<MenuItem id = "CreateSchema"
 		          label = "${res:ICSharpCode.XmlEditor.CreateSchemaMenuLabel}"
 		          class = "ICSharpCode.XmlEditor.CreateSchemaCommand" />
 		<MenuItem id = "ValidateXml"
 		          label = "${res:ICSharpCode.XmlEditor.ValidateXmlMenuLabel}"
-                  class = "ICSharpCode.XmlEditor.ValidateXmlCommand"
+		          class = "ICSharpCode.XmlEditor.ValidateXmlCommand"
 		          shortcut = "Control|Shift|V" />
 		<MenuItem id = "Indent"
 		          label = "${res:XML.TextAreaContextMenu.Indent}"
 		          shortcut = "Control|I"
 		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
-		<MenuItem id = "FileMode" label = "${res:XML.TextAreaContextMenu.FileMode}">
-			<MenuItem id = "HighlightBuilder" label = "boguslabel" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.HighlightingTypeBuilder" />
+		<MenuItem id = "FileMode" label = "${res:XML.TextAreaContextMenu.FileMode}" type="Menu">
+			<MenuItem id = "HighlightBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.HighlightingTypeBuilder" />
 		</MenuItem>
-		<MenuItem id = "Separator3" label = "-" />
+		<MenuItem id = "Separator3" type = "Separator"/>
 		<MenuItem id = "Options"
 		          label = "${res:XML.TextAreaContextMenu.BufferOptions}"
 		          icon = "Icons.16x16.PropertiesIcon"
 		          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowBufferOptions"/>
-	</Extension>
-
+	</Path>
+	
 	<!-- Tools menu option -->
- 	<Extension path = "/SharpDevelop/Workbench/MainMenu/Tools">
-		 <Conditional activewindow = "ICSharpCode.XmlEditor.XmlView">
+	<Path path = "/SharpDevelop/Workbench/MainMenu/Tools">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.XmlEditor.XmlView">
 			<MenuItem id = "ValidateXml"
 			          insertbefore = "Separator4"
-				      label = "${res:ICSharpCode.XmlEditor.ValidateXmlMenuLabel}" 
-				      description = "Validates the xml against the known schemas." 
+			          label = "${res:ICSharpCode.XmlEditor.ValidateXmlMenuLabel}"
+			          description = "Validates the xml against the known schemas."
 			          class = "ICSharpCode.XmlEditor.ValidateXmlCommand"
 			          shortcut = "Control|Shift|V"
 			/>
-		 </Conditional>
-	</Extension>
-
+		</Condition>
+	</Path>
+	
 	<!-- Options panel -->
-	<Extension path = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
-
+	<Path path = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
 		<DialogPanel id = "XmlSchemasPanel"
 		             insertafter = "VBSpecificOptions"
 		             label = "${res:ICSharpCode.XmlEditor.XmlSchemasPanel.Title}"
@@ -104,10 +104,9 @@
 		             insertbefore = "XmlSchemasPanel"
 		             label = "${res:ICSharpCode.XmlEditor.XmlEditorOptionsPanel.Title}"
 		             class = "ICSharpCode.XmlEditor.XmlEditorOptionsPanel" />
-	</Extension>
-
-	<Extension path = "/AddIns/XmlEditor/EditActions">
-		<EditAction id = "XmlCompletionPopup" class = "ICSharpCode.XmlEditor.CodeCompletionPopupCommand"  keys = "Control|Space"/>		
-	</Extension>
-
+	</Path>
+	
+	<Path path = "/AddIns/XmlEditor/EditActions">
+		<EditAction id = "XmlCompletionPopup" class = "ICSharpCode.XmlEditor.CodeCompletionPopupCommand"  keys = "Control|Space"/>
+	</Path>
 </AddIn>
