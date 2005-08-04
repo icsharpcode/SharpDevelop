@@ -198,8 +198,8 @@ namespace ICSharpCode.NUnitPad
 				string outputAssembly = project.OutputAssemblyFullPath;
 				try {
 					TestDomain testDomain = new TestDomain();
-					NUnitProject prj = NUnitProject.LoadProject(outputAssembly);
-					Test test = testDomain.Load(prj);
+//					NUnitProject prj = NUnitProject.LoadProject(outputAssembly);
+					Test test = testDomain.Load(outputAssembly);
 					
 //					TestSuiteBuilder builder = new TestSuiteBuilder();
 //					Console.WriteLine("Try to load '" + outputAssembly +"'");

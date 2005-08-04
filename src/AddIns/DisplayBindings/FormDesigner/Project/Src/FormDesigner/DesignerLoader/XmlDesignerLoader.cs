@@ -54,6 +54,7 @@ namespace ICSharpCode.FormDesigner
 		IDesignerLoaderHost host;
 		public override void BeginLoad(IDesignerLoaderHost host)
 		{
+			Debug.Assert(host != null);
 			this.host = host;
 			host.AddService(typeof(INameCreationService), new NameCreationService(host));
 			
@@ -78,6 +79,7 @@ namespace ICSharpCode.FormDesigner
 		
 		object IObjectCreator.CreateObject(string name, XmlElement el)
 		{
+			Console.WriteLine("Name:" + name);
 			string componentName = null;
 			
 			if (el != null) {
@@ -88,7 +90,12 @@ namespace ICSharpCode.FormDesigner
 					}
 				}
 			}
-			object newObject = host.CreateComponent(host.GetType(name), componentName);
+			Debug.Assert(componentName != null);
+			
+			Type componentType = host.GetType(name);
+			Debug.Assert(componentType != null);
+			
+			object newObject = host.CreateComponent(componentType, componentName);
 			
 			if (newObject is Control) {
 				((Control)newObject).SuspendLayout();
