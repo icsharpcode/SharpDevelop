@@ -80,9 +80,9 @@ namespace ICSharpCode.Svn.Commands
 			try {
 				Status status = SvnClient.Instance.Client.SingleStatus(fullName);
 				switch (status.TextStatus) {
+					case StatusKind.None:
 					case StatusKind.Unversioned:
 						return; // nothing to do
-					case StatusKind.None:
 					case StatusKind.Normal:
 						// remove without problem
 						break;
@@ -118,9 +118,9 @@ namespace ICSharpCode.Svn.Commands
 				Status status = SvnClient.Instance.Client.SingleStatus(fullSource);
 				switch (status.TextStatus) {
 					case StatusKind.Unversioned:
+					case StatusKind.None:
 						return; // nothing to do
 					case StatusKind.Normal:
-					case StatusKind.None:
 					case StatusKind.Modified:
 						// rename without problem
 						break;
