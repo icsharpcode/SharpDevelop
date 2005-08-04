@@ -70,14 +70,20 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					IncludeFileInProject.IncludeFileNode(newNode);
 				}
 			} else if (includeInProject) {
-				foreach (TreeNode childNode in node.Nodes) {
+				FileNode fileNode;
+				foreach (TreeNode childNode in node.AllNodes) {
 					if (childNode is FileNode) {
-						FileNode fileNode = (FileNode)childNode;
+						fileNode = (FileNode)childNode;
 						if (FileUtility.IsEqualFileName(fileNode.FileName, copiedFileName)) {
 							IncludeFileInProject.IncludeFileNode(fileNode);
+							return;
 						}
 					}
 				}
+				fileNode = new FileNode(fileName);
+				fileNode.AddTo(node);
+				IncludeFileInProject.IncludeFileNode(fileNode);
+				
 			}
 		}
 		

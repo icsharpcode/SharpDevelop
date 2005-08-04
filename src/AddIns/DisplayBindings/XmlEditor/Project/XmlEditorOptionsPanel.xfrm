@@ -1,0 +1,45 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="XmlEditorOptionsPanel" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=352, Height=336}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="foldingGroupBox" />
+        <TabIndex value="0" />
+        <Location value="{X=8,Y=8}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=336, Height=56}" />
+        <Text value="${res:ICSharpCode.XmlEditor.XmlEditorOptionsPanel.FoldingGroupLabel}" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showAttributesWhenFoldedCheckBox" />
+            <Location value="{X=16,Y=26}" />
+            <Size value="{Width=304, Height=16}" />
+            <Text value="${res:ICSharpCode.XmlEditor.XmlEditorOptionsPanel.ShowAttributesWhenFoldedLabel}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
+        <Name value="xmlCompletionGroupBox" />
+        <TabIndex value="1" />
+        <Location value="{X=8,Y=72}" />
+        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=336, Height=56}" />
+        <Text value="${res:ICSharpCode.XmlEditor.XmlEditorOptionsPanel.XmlCompletionGroupLabel}" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="showSchemaAnnotationCheckBox" />
+            <Location value="{X=16,Y=27}" />
+            <Size value="{Width=304, Height=16}" />
+            <Text value="${res:ICSharpCode.XmlEditor.XmlEditorOptionsPanel.ShowSchemaAnnotationLabel}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>

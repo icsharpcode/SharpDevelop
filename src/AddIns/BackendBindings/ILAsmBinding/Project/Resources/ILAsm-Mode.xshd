@@ -553,12 +553,9 @@
 				<Key word = "alignment" />
 				<Key word = ".imagebase" />
 			</KeyWords>
-			
-			
-			
 		</RuleSet>
 		
-		<RuleSet name = "CommentMarkerSet" ignorecase = "true">
+		<RuleSet name = "CommentMarkerSet" ignorecase = "false">
 		  	<Delimiters>&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 			<KeyWords name = "ErrorWords" bold="true" italic="false" color="Red">
 				<Key word = "TODO" />
@@ -569,6 +566,5 @@
 				<Key word = "UNDONE" />
 	 	 	</KeyWords>
 		</RuleSet>
-		
 	</RuleSets>
 </SyntaxDefinition>

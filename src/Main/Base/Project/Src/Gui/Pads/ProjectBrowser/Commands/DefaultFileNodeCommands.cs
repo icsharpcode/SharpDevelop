@@ -55,6 +55,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			fileNode.Project.Items.Remove(fileNode.ProjectItem);
 			fileNode.ProjectItem = null;
 			fileNode.FileNodeStatus = FileNodeStatus.None;
+			if (fileNode.Parent is ExtTreeNode) {
+				((ExtTreeNode)fileNode.Parent).UpdateVisibility();
+			}
 		}
 		
 		void ExcludeDirectoryNode(DirectoryNode directoryNode)
@@ -117,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					IncludeDirectoryNode((DirectoryNode)fileNode.Parent, false);
 				}
 			}
-			 
+			
 			ItemType type = fileNode.Project.CanCompile(fileNode.FileName) ? ItemType.Compile : ItemType.Content;
 			
 			FileProjectItem newItem = new FileProjectItem(fileNode.Project, type);
@@ -126,6 +129,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			
 			fileNode.ProjectItem    = newItem;
 			fileNode.FileNodeStatus = FileNodeStatus.InProject;
+			
+			if (fileNode.Parent is ExtTreeNode) {
+				((ExtTreeNode)fileNode.Parent).UpdateVisibility();
+			}
 		}
 		
 		public static void IncludeDirectoryNode(DirectoryNode directoryNode, bool includeSubNodes)
@@ -164,7 +171,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				return;
 			}
 			node.Expanding();
-				
+			
 			if (node is FileNode) {
 				IncludeFileNode((FileNode)node);
 			} else if (node is DirectoryNode) {

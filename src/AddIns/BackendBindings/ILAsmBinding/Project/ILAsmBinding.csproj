@@ -13,9 +13,6 @@
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
     <OutputType>Library</OutputType>
-    <StartupObject />
-    <ApplicationIcon />
-    <Win32Resource />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -50,10 +47,12 @@
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />

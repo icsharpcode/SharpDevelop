@@ -1,0 +1,38 @@
+<Components version="1.0">
+  <System.Windows.Forms.Form>
+    <Name value="SelectXmlSchemaForm" />
+    <ShowInTaskbar value="False" />
+    <ClientSize value="{Width=376, Height=286}" />
+    <DockPadding value="" />
+    <Text value="${res:ICSharpCode.XmlEditor.SelectXmlSchema.DialogTitle}" />
+    <AcceptButton value="okButton [System.Windows.Forms.Button], Text: ${res:Global.OKButtonText}" />
+    <CancelButton value="cancelButton [System.Windows.Forms.Button], Text: ${res:Global.CancelButtonText}" />
+    <Controls>
+      <System.Windows.Forms.Button>
+        <Name value="okButton" />
+        <Location value="{X=248,Y=256}" />
+        <Size value="{Width=56, Height=24}" />
+        <Text value="${res:Global.OKButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="2" />
+        <DialogResult value="Cancel" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="cancelButton" />
+        <Location value="{X=312,Y=256}" />
+        <Size value="{Width=56, Height=24}" />
+        <Text value="${res:Global.CancelButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="1" />
+        <DialogResult value="Cancel" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.ListBox>
+        <Name value="schemaListBox" />
+        <Size value="{Width=360, Height=238}" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <TabIndex value="0" />
+        <Location value="{X=8,Y=8}" />
+      </System.Windows.Forms.ListBox>
+    </Controls>
+  </System.Windows.Forms.Form>
+</Components>

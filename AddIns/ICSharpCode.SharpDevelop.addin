@@ -1430,11 +1430,8 @@
 		</Condition>
 	</Path>
 	
-	<Path name = "/AddIns/DefaultTextEditor/Formatter">
-		<Condition name = "TextContent" textcontent = "XML">
-			<Class id ="XmlFormatter" class = "ICSharpCode.SharpDevelop.DefaultEditor.XmlFormattingStrategy"/>
-		</Condition>
-		<Class id ="DefaultFormatter" class = "ICSharpCode.TextEditor.Document.DefaultFormattingStrategy"/>
+	<Path name = "/AddIns/DefaultTextEditor/Formatter/XML">
+		<Class id ="XmlFormatter" class = "ICSharpCode.SharpDevelop.DefaultEditor.XmlFormattingStrategy"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Project">

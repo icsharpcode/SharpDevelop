@@ -1,0 +1,101 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{FC0FE702-A87D-4D70-A9B6-1ECCD611125F}</ProjectGuid>
+    <RootNamespace>XmlEditor.Tests</RootNamespace>
+    <AssemblyName>XmlEditor.Tests</AssemblyName>
+    <OutputType>Library</OutputType>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>True</DebugSymbols>
+    <Optimize>False</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\XmlEditor\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\DisplayBindings\XmlEditor\</OutputPath>
+    <TreatWarningsAsErrors>False</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="nunit.framework, Version=2.2.0.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77">
+      <Private>False</Private>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Schema\SingleElementSchemaTestFixture.cs" />
+    <Compile Include="Schema\ElementWithAttributeSchemaTestFixture.cs" />
+    <Compile Include="Schema\NestedElementSchemaTestFixture.cs" />
+    <Compile Include="Schema\TwoElementSchemaTestFixture.cs" />
+    <Compile Include="Schema\ReferencedElementsTestFixture.cs" />
+    <Compile Include="Schema\NamespaceCompletionTestFixture.cs" />
+    <Compile Include="Schema\SchemaTestFixtureBase.cs" />
+    <Compile Include="Parser\NamespaceDeclarationTestFixture.cs" />
+    <Compile Include="Parser\ParentElementPathTestFixture.cs" />
+    <Compile Include="Schema\NestedSequenceTestFixture.cs" />
+    <Compile Include="Schema\SequencedChoiceTestFixture.cs" />
+    <Compile Include="Schema\ChoiceTestFixture.cs" />
+    <Compile Include="Schema\AttributeGroupRefTestFixture.cs" />
+    <Compile Include="Schema\NestedAttributeGroupRefTestFixture.cs" />
+    <Compile Include="Schema\ComplexContentExtensionTestFixture.cs" />
+    <Compile Include="Schema\AttributeRefTestFixture.cs" />
+    <Compile Include="Schema\GroupRefTestFixture.cs" />
+    <Compile Include="Schema\DuplicateElementTestFixture.cs" />
+    <Compile Include="Schema\ExtensionElementTestFixture.cs" />
+    <Compile Include="Schema\RestrictionElementTestFixture.cs" />
+    <Compile Include="Parser\QualifiedNameTestFixture.cs" />
+    <Compile Include="Paths\NoElementPathTestFixture.cs" />
+    <Compile Include="Paths\SingleElementPathTestFixture.cs" />
+    <Compile Include="Paths\TwoElementPathTestFixture.cs" />
+    <Compile Include="Schema\NestedChoiceTestFixture.cs" />
+    <Compile Include="Schema\ChildElementAttributesTestFixture.cs" />
+    <Compile Include="Utils\ResourceManager.cs" />
+    <Compile Include="Schema\XhtmlStrictSchemaTestFixture.cs" />
+    <Compile Include="Schema\XsdSchemaTestFixture.cs" />
+    <Compile Include="Schema\GroupRefCompositorTestFixture.cs" />
+    <Compile Include="Schema\ElementAnnotationTestFixture.cs" />
+    <Compile Include="Parser\ActiveElementStartPathTestFixture.cs" />
+    <Compile Include="Schema\AttributeAnnotationTestFixture.cs" />
+    <Compile Include="Schema\EnumAttributeValueTestFixture.cs" />
+    <Compile Include="Parser\AttributeNameTestFixture.cs" />
+    <Compile Include="Schema\AttributeValueAnnotationTestFixture.cs" />
+    <Compile Include="Schema\ElementRefAnnotationTestFixture.cs" />
+    <Compile Include="Schema\SimpleContentWithAttributeTestFixture.cs" />
+    <EmbeddedResource Include="Resources\xhtml1-strict-modified.xsd" />
+    <EmbeddedResource Include="Resources\XMLSchema.xsd" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Schema\" />
+    <Folder Include="Parser\" />
+    <Folder Include="Paths\" />
+    <Folder Include="Utils\" />
+    <ProjectReference Include="..\Project\XmlEditor.csproj">
+      <Project>{63B6CA43-58D0-4BF0-9D4F-1ABE4009E488}</Project>
+      <Name>XmlEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
+      <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
+      <Name>ICSharpCode.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

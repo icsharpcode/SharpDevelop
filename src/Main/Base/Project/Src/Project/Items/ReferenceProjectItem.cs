@@ -48,12 +48,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[DefaultValue(false)]
+		[DefaultValue(true)]
 		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy}",
 		                   Description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.LocalCopy.Description}")]
 		public bool Private {
 			get {
-				return Properties.Get("Private", false);
+				return Properties.Get("Private", true);
 			}
 			set {
 				Properties.Set("Private", value);

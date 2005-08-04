@@ -19,53 +19,45 @@ namespace ICSharpCode.Svn
 		
 		static AddInOptions()
 		{
-			
-			properties = (Properties)PropertyService.Get(OptionsProperty, new Properties());
-		}
-		
-		static Properties Properties {
-			get {
-				Debug.Assert(properties != null);
-				return properties;
-			}
+			properties = PropertyService.Get(OptionsProperty, new Properties());
 		}
 		
 		#region Properties
 		public static string DefaultLogMessage {
 			get {
-				return Properties.Get("DefaultLogMessage",
+				return properties.Get("DefaultLogMessage",
 				                      "# All lines starting with a # will be ignored" + Environment.NewLine +
 				                      "# This template can be modified by using the 'Tools->IDE Options->Source Control->Subversion' panel");
 			}
 			set {
-				Properties.Set("DefaultLogMessage", value);
+				properties.Set("DefaultLogMessage", value);
 			}
 		}
 		
 		public static bool AutomaticallyAddFiles {
 			get {
-				return Properties.Get("AutomaticallyAddFiles", true);
+				return properties.Get("AutomaticallyAddFiles", true);
 			}
 			set {
-				Properties.Set("AutomaticallyAddFiles", value);
+				properties.Set("AutomaticallyAddFiles", value);
 			}
 		}
 		
 		public static bool AutomaticallyDeleteFiles {
 			get {
-				return Properties.Get("AutomaticallyDeleteFiles", true);
+				return properties.Get("AutomaticallyDeleteFiles", true);
 			}
 			set {
-				Properties.Set("AutomaticallyDeleteFiles", value);
+				properties.Set("AutomaticallyDeleteFiles", value);
 			}
 		}
 		
 		public static bool AutomaticallyReloadProject {
 			get {
-				return Properties.Get("AutomaticallyReloadProject", true);
+				return properties.Get("AutomaticallyReloadProject", true);
 			}
 			set {
-				Properties.Set("AutomaticallyReloadProject", value);
+				properties.Set("AutomaticallyReloadProject", value);
 			}
 		}
 		#endregion

@@ -45,12 +45,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		TreeNode internalParent;
+		
+		public new TreeNode Parent {
+			get {
+				return internalParent;
+			}
+		}
+		
 		public void AddTo(TreeNode node)
 		{
+			internalParent = node;
 			AddTo(node.Nodes);
 		}
 		public void AddTo(TreeView view)
 		{
+			internalParent = null;
 			AddTo(view.Nodes);
 		}
 		
@@ -129,6 +139,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public virtual bool Visible {
 			get {
 				return true;
+			}
+		}
+		
+		public IEnumerable<ExtTreeNode> AllNodes {
+			get {
+				foreach (ExtTreeNode n in Nodes) {
+					yield return n;
+				}
+				foreach (ExtTreeNode n in invisibleNodes) {
+					yield return n;
+				}
 			}
 		}
 		
