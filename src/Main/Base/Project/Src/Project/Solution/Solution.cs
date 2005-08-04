@@ -405,27 +405,27 @@ namespace ICSharpCode.SharpDevelop.Project
 				string line = GetFirstNonCommentLine(sr);
 				Match match = versionPattern.Match(line);
 				if (!match.Success) {
-					MessageService.ShowError(fileName + " is not a valid solution file.");
+					MessageService.ShowErrorFormatted("${res:SharpDevelop.Solution.InvalidSolutionFile}", fileName);
 					return false;
 				}
 				
 				switch (match.Result("${Version}")) {
 					case "7.00":
 						needsConversion = true;
-						if (!MessageService.AskQuestion("Found Visual Studio.NET Project. Should I convert it to Solution Format 9.00 (Visual Studio 2005) ?")) {
+						if (!MessageService.AskQuestion("${res:SharpDevelop.Solution.ConvertSolutionVersion7}")) {
 							return false;
 						}
 						break;
 					case "8.00":
 						needsConversion = true;
-						if (!MessageService.AskQuestion("Found Visual Studio.NET 2003 Project. Should I convert it to Solution Format 9.00 (Visual Studio 2005) ?")) {
+						if (!MessageService.AskQuestion("${res:SharpDevelop.Solution.ConvertSolutionVersion8}")) {
 							return false;
 						}
 						break;
 					case "9.00":
 						break;
 					default:
-						MessageService.ShowError("Can't read Microsoft Solution file format " + match.Result("${Version}") + ".");
+						MessageService.ShowErrorFormatted("${res:SharpDevelop.Solution.UnknownSolutionVersion}", match.Result("${Version}"));
 						return false;
 				}
 				
@@ -511,13 +511,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			string extension = Path.GetExtension(fileName).ToUpper();
 			if (extension == ".CMBX") {
-				if (!MessageService.AskQuestion("Should the SharpDevelop 1.x combine be converted into a SharpDevelop 2.x solution?")) {
+				if (!MessageService.AskQuestion("${res:SharpDevelop.Solution.ImportCmbx}")) {
 					return null;
 				}
 				newSolution.fileName = Path.ChangeExtension(fileName, ".sln");
 				ICSharpCode.SharpDevelop.Project.Converter.CombineToSolution.ConvertSolution(newSolution, fileName);
 			} else if (extension == ".PRJX") {
-				if (!MessageService.AskQuestion("Should the SharpDevelop 1.x project be converted into a SharpDevelop 2.x project?")) {
+				if (!MessageService.AskQuestion("${res:SharpDevelop.Solution.ImportPrjx}")) {
 					return null;
 				}
 				newSolution.fileName = Path.ChangeExtension(fileName, ".sln");

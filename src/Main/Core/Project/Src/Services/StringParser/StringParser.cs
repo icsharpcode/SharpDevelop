@@ -85,7 +85,8 @@ namespace ICSharpCode.Core
 		{
 			// Parse is a important method and should have good performance,
 			// so we don't use an expensive Regex here.
-			/*
+			
+			/* old code using regex:
 			string output = input;
 			if (input != null) {
 				foreach (Match m in pattern.Matches(input)) {
@@ -110,7 +111,7 @@ namespace ICSharpCode.Core
 			if (input == null)
 				return null;
 			int pos = 0;
-			StringBuilder output = null;
+			StringBuilder output = null; // don't use StringBuilder if input is a single property
 			do {
 				int oldPos = pos;
 				pos = input.IndexOf("${", pos);

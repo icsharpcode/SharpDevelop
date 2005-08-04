@@ -27,6 +27,10 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public static DefaultHighlightingStrategy Parse(SyntaxMode syntaxMode, XmlTextReader xmlTextReader)
 		{
+			if (syntaxMode == null)
+				throw new ArgumentNullException("syntaxMode");
+			if (xmlTextReader == null)
+				throw new ArgumentNullException("xmlTextReader");
 			try {
 				XmlReaderSettings settings = new XmlReaderSettings();
 				Stream shemaStream = typeof(HighlightingDefinitionParser).Assembly.GetManifestResourceStream("ICSharpCode.TextEditor.Resources.Mode.xsd");

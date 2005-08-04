@@ -1,8 +1,8 @@
 // <file>
-//     <copyright see="prj:///doc/copyright.txt"/>
-//     <license see="prj:///doc/license.txt"/>
-//     <owner name="Mike Krueger" email="mike@icsharpcode.net"/>
-//     <version value="$version"/>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
@@ -16,9 +16,10 @@ using System.Xml;
 using System.CodeDom.Compiler;
 using System.Threading;
 
-using ICSharpCode.SharpDevelop.Internal.Project;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.ILAsmBinding
 {
@@ -26,67 +27,76 @@ namespace ICSharpCode.ILAsmBinding
 	{
 		public const string LanguageName = "ILAsm";
 		
-		ILAsmExecutionManager executionManager = new ILAsmExecutionManager();
-		ILAsmCompilerManager  compilerManager  = new ILAsmCompilerManager();
-		
-		public string Language {
+		public string Language
+		{
 			get {
 				return LanguageName;
 			}
 		}
 		
-		public void Execute(string filename, bool debug)
+		#region routines for single file compilation
+		public bool CanCompile(string fileName)
 		{
-			Debug.Assert(executionManager != null);
-			executionManager.Execute(filename, debug);
-		}
-		
-		public void Execute(IProject project, bool debug)
-		{
-			Debug.Assert(executionManager != null);
-			executionManager.Execute(project, debug);
+			Debug.Assert(fileName != null);
+			
+			string ext = Path.GetExtension(fileName);
+			if (ext == null) {
+				return false;
+			}
+			return ext.ToUpper() == ".IL";
 		}
 		
 		public string GetCompiledOutputName(string fileName)
 		{
-			Debug.Assert(compilerManager != null);
-			return compilerManager.GetCompiledOutputName(fileName);
+			Debug.Assert(CanCompile(fileName));
+			
+			return Path.ChangeExtension(fileName, ".exe");
 		}
 		
-		public string GetCompiledOutputName(IProject project)
+		public CompilerResults CompileFile(string fileName)
 		{
-			Debug.Assert(compilerManager != null);
-			return compilerManager.GetCompiledOutputName(project);
+			Debug.Assert(CanCompile(fileName));
+			
+			// TODO: Implement me!
+			return null;
 		}
 		
-		public bool CanCompile(string fileName)
+		public void Execute(string fileName, bool debug)
 		{
-			Debug.Assert(compilerManager != null);
-			return compilerManager.CanCompile(fileName);
+			string exe = GetCompiledOutputName(fileName);
+			
+			
+			if (debug) {
+				ProcessStartInfo psi = new ProcessStartInfo();
+				psi.FileName = exe;
+				psi.WorkingDirectory = Path.GetDirectoryName(exe);
+				psi.Arguments = "";
+
+				DebuggerService.CurrentDebugger.Start(psi);
+			} else {
+				ProcessStartInfo psi = new ProcessStartInfo();
+				psi.FileName = Environment.GetEnvironmentVariable("ComSpec");
+				psi.WorkingDirectory = Path.GetDirectoryName(exe);
+				psi.Arguments = "/c " + "\"" + exe + "\"" + " & pause";
+				psi.UseShellExecute = false;
+				
+				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
+			}
 		}
+		#endregion
 		
-		public ICompilerResult CompileFile(string fileName)
+		public IProject LoadProject(string fileName, string projectName)
 		{
-			Debug.Assert(compilerManager != null);
-			ILAsmCompilerParameters param = new ILAsmCompilerParameters();
-			param.OutputAssembly = compilerManager.GetCompiledOutputName(fileName);
-			return compilerManager.CompileFile(fileName, param);
-		}
-		
-		public ICompilerResult CompileProject(IProject project)
-		{
-			Debug.Assert(compilerManager != null);
-			return compilerManager.CompileProject(project);
-		}
-		
-		public ICompilerResult RecompileProject(IProject project)
-		{
-			return CompileProject(project);
+			return new ILAsmProject(fileName, projectName);
 		}
 		
 		public IProject CreateProject(ProjectCreateInformation info, XmlElement projectOptions)
 		{
-			return new ILAsmProject(info, projectOptions);
+			ILAsmProject p = new ILAsmProject(info);
+			if (projectOptions != null) {
+				p.ImportOptions(projectOptions.Attributes);
+			}
+			return p;
 		}
 	}
 }

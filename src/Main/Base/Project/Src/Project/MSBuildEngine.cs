@@ -25,6 +25,12 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class MSBuildEngine
 	{
+		/// <summary>
+		/// Gets a list of the task names that cause a "Compiling ..." log message.
+		/// All names must be in lower case!
+		/// </summary>
+		public static readonly List<string> CompileTaskNames = new List<string>(new string[] {"csc", "vbc", "ilasm"});
+		
 		MessageViewCategory messageView;
 		
 		/// <summary>
@@ -46,11 +52,22 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public CompilerResults Run(string buildFile, string[] targets)
 		{
+			// HACK: Workaround for MSBuild bug:
+			// "unknown" MSBuild projects (projects with unknown type id, e.g. IL-projects)
+			// are looked up by MSBuild if the project files are MSBuild-compatible.
+			// That lookup method has a bug: it uses the working directory instead of the
+			// solution directory as base path for the lookup.
+			Environment.CurrentDirectory = Path.GetDirectoryName(buildFile);
+			
 			CompilerResults results = new CompilerResults(null);
+			BuildPropertyGroup properties = new BuildPropertyGroup();
+			string location = Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location);
+			properties.SetProperty("SharpDevelopBuildBinPath", location);
+			
 			Engine engine = new Engine(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
 			SharpDevelopLogger logger = new SharpDevelopLogger(this, results);
 			engine.RegisterLogger(logger);
-			engine.BuildProjectFile(buildFile, targets, null, null);
+			engine.BuildProjectFile(buildFile, targets, properties, null);
 			logger.FlushText();
 			return results;
 		}
@@ -134,12 +151,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			void OnTaskStarted(object sender, TaskStartedEventArgs e)
 			{
-				// TODO: Give addins ability to extend the logger
-				switch (e.TaskName.ToLower()) {
-					case "csc":
-					case "vbc":
-						AppendText("Compiling " + Path.GetFileNameWithoutExtension(e.ProjectFile));
-						break;
+				if (CompileTaskNames.Contains(e.TaskName.ToLower())) {
+					AppendText("Compiling " + Path.GetFileNameWithoutExtension(e.ProjectFile));
 				}
 			}
 			

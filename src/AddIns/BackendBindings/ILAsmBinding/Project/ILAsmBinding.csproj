@@ -1,28 +1,33 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProductVersion>8.0.40607</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6e59af58-f635-459a-9a35-c9ac41c00339}</ProjectGuid>
-    <RootNamespace>ICSharpCode.WixBinding</RootNamespace>
+    <RootNamespace>ICSharpCode.ILAsmBinding</RootNamespace>
     <AssemblyName>ILAsmBinding</AssemblyName>
     <OutputTarget>Library</OutputTarget>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <OutputType>Library</OutputType>
+    <StartupObject />
+    <ApplicationIcon />
+    <Win32Resource />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <Optimize>False</Optimize>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <OutputPath>..\..\..\..\..\AddIns\AddIns\BackendBindings\ILAsmBinding\</OutputPath>
+    <DebugType>full</DebugType>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugSymbols>False</DebugSymbols>
     <Optimize>True</Optimize>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <OutputPath>..\..\..\..\..\AddIns\AddIns\BackendBindings\ILAsmBinding\</OutputPath>
   </PropertyGroup>
   <ItemGroup>
@@ -33,17 +38,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Src\Gui\CompilerParametersPanel.cs" />
     <Compile Include="Src\AssemblyInfo.cs" />
-    <Compile Include="Src\ILAsmCompilerManager.cs" />
-    <Compile Include="Src\ILAsmExecutionManager.cs" />
     <Compile Include="Src\ILAsmLanguageBinding.cs" />
-    <Compile Include="Src\Project\ILAsmCompilerParameters.cs" />
-    <Compile Include="Src\Project\ILAsmProject.cs" />
     <EmbeddedResource Include="Resources\ILAsm-Mode.xshd" />
-    <Compile Include="ILAsmBinding.addin">
+    <None Include="ILAsmBinding.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Compile>
+    </None>
+    <Compile Include="Src\ILAsmProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

@@ -6,20 +6,13 @@
 // </file>
 
 using System;
-using System.IO;
+using System.Text;
 using System.Windows.Forms;
-using System.Collections;
-using System.Threading;
-using System.Resources;
-using System.Drawing;
-using System.Diagnostics;
-using System.Reflection;
-using System.Xml;
 
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// This interface must be implemented by all services.
+	/// Class with static methods to show message boxes.
 	/// </summary>
 	public static class MessageService
 	{
@@ -46,7 +39,7 @@ namespace ICSharpCode.Core
 		
 		public static void ShowErrorFormatted(string formatstring, params string[] formatitems)
 		{
-			ShowError(null, String.Format(StringParser.Parse(formatstring), formatitems));
+			ShowError(null, Format(formatstring, formatitems));
 		}
 		
 		
@@ -108,7 +101,7 @@ namespace ICSharpCode.Core
 		
 		public static void ShowWarningFormatted(string formatstring, params string[] formatitems)
 		{
-			ShowWarning(String.Format(StringParser.Parse(formatstring), formatitems));
+			ShowWarning(Format(formatstring, formatitems));
 		}
 		
 		public static bool AskQuestion(string question, string caption)
@@ -118,12 +111,12 @@ namespace ICSharpCode.Core
 		
 		public static bool AskQuestionFormatted(string caption, string formatstring, params string[] formatitems)
 		{
-			return AskQuestion(String.Format(StringParser.Parse(formatstring), formatitems), caption);
+			return AskQuestion(Format(formatstring, formatitems), caption);
 		}
 		
 		public static bool AskQuestionFormatted(string formatstring, params string[] formatitems)
 		{
-			return AskQuestion(String.Format(StringParser.Parse(formatstring), formatitems));
+			return AskQuestion(Format(formatstring, formatitems));
 		}
 		
 		public static bool AskQuestion(string question)
@@ -159,17 +152,31 @@ namespace ICSharpCode.Core
 		
 		public static void ShowMessageFormatted(string formatstring, params string[] formatitems)
 		{
-			ShowMessage(String.Format(StringParser.Parse(formatstring), formatitems));
+			ShowMessage(Format(formatstring, formatitems));
 		}
 		
 		public static void ShowMessageFormatted(string caption, string formatstring, params string[] formatitems)
 		{
-			ShowMessage(String.Format(StringParser.Parse(formatstring), formatitems), caption);
+			ShowMessage(Format(formatstring, formatitems), caption);
 		}
 		
 		public static void ShowMessage(string message, string caption)
 		{
 			MessageBox.Show(mainForm, StringParser.Parse(message), StringParser.Parse(caption), MessageBoxButtons.OK, MessageBoxIcon.Information);
+		}
+		
+		static string Format(string formatstring, string[] formatitems)
+		{
+			try {
+				return String.Format(StringParser.Parse(formatstring), formatitems);
+			} catch (FormatException) {
+				StringBuilder b = new StringBuilder(StringParser.Parse(formatstring));
+				foreach(string formatitem in formatitems) {
+					b.Append("\nItem: ");
+					b.Append(formatitem);
+				}
+				return b.ToString();
+			}
 		}
 	}
 }

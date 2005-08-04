@@ -82,18 +82,14 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				newSolution.AddFolder(newProject);
 			}
 			if (conversion.Resources != null) {
-				const string resourceWarning = "There were resource files in the project.\n" +
-					"SharpDevelop 2 compiles resources different: the resource name " +
-					"is not just the file name; but it is prefixed with the root namespace " +
-					"and the directory name.\n\n" +
-					"The resources files have been renamed/moved accordingly.";
+				const string resourceWarning = "${res:SharpDevelop.Solution.ImportResourceWarning}";
 				if (conversion.Resources.Count == 0) {
 					MessageService.ShowMessage(resourceWarning);
 				} else {
 					StringBuilder txt = new StringBuilder(resourceWarning);
 					txt.AppendLine();
 					txt.AppendLine();
-					txt.AppendLine("The following files could not be renamed/moved automatically:");
+					txt.AppendLine("${res:SharpDevelop.Solution.ImportResourceWarningErrorText}");
 					foreach (string r in conversion.Resources)
 						txt.AppendLine(r);
 					MessageService.ShowMessage(txt.ToString());
