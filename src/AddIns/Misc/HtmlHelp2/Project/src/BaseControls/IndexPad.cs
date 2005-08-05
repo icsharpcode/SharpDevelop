@@ -17,7 +17,6 @@ namespace HtmlHelp2
 	using MSHelpControls;
 	using MSHelpServices;
 	using HtmlHelp2Service;
-	using HtmlHelp2Browser;
 
 
 	public class ShowIndexMenuCommand : AbstractMenuCommand

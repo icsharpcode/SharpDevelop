@@ -53,7 +53,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public static event PropertyChangedEventHandler PropertyChanged {
 			add    { Properties.PropertyChanged += value; }
-			remove { Properties.PropertyChanged += value; }
+			remove { Properties.PropertyChanged -= value; }
 		}
 		
 		#region Properties

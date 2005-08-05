@@ -688,6 +688,8 @@
     <Compile Include="Src\TextEditor\Commands\ClassBookmarkMenuBuilder.cs" />
     <Compile Include="Src\TextEditor\Commands\ParserBookmarkMenuBuilderBase.cs" />
     <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchStrategy\BoyerMooreSearchStrategy.cs" />
+    <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserCommands.cs" />
+    <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

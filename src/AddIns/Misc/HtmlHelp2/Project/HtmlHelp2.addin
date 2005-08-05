@@ -56,7 +56,7 @@
 			          shortcut     = "Control|F1"
 			          class        = "HtmlHelp2.ShowDynamicHelpMenuCommand"/> -->
 		<MenuItem id           = "TocPadCommand"
-		          insertafter  = "DynamicHelp"
+		          insertafter  = "Separator1"
 		          label        = "${res:AddIns.HtmlHelp2.Contents}"
 		          icon         = "HtmlHelp2.16x16.Toc"
 		          shortcut     = "Control|Alt|F1"
@@ -79,7 +79,7 @@
 		          shortcut     = "Control|Alt|F"
 		          class        = "HtmlHelp2.ShowFavoritesMenuCommand"
 		          insertafter  = "SearchPadCommand"/>
-		<MenuItem id           = "HtmlHelp2Separator2"
+		<MenuItem id           = "HtmlHelp2Separator1"
 		          type         = "Separator"
 		          insertafter  = "FavoritesPadCommand"/>
 		<MenuItem id           = "IndexResultsPadCommand"
@@ -87,19 +87,36 @@
 		          icon         = "HtmlHelp2.16x16.IndexResults"
 		          shortcut     = "Shift|Alt|F2"
 		          class        = "HtmlHelp2.ShowIndexResultsMenuCommand"
-		          insertafter  = "HtmlHelp2Separator2"/>
+		          insertafter  = "HtmlHelp2Separator1"/>
 		<MenuItem id           = "SearchResultsPadCommand"
 		          label        = "${res:AddIns.HtmlHelp2.SearchResults}"
 		          icon         = "HtmlHelp2.16x16.SearchResults"
 		          shortcut     = "Shift|Alt|F3"
 		          class        = "HtmlHelp2.ShowSearchResultsMenuCommand"
-		          insertbefore = "Separator1"
 		          insertafter  = "IndexResultsPadCommand"/>
+		<MenuItem id           = "HtmlHelp2Separator2"
+		          type         = "Separator"
+		          insertafter  = "SearchResultsPadCommand"
+		          insertbefore = "ViewGPL"/>
 	</Path>
 	
-	<!--<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-			<DisplayBinding id               = "HtmlHelp2BrowserControlBinding"
-			                supportedformats = "Web Pages"
-			                class            = "HtmlHelp2Browser.HtmlHelp2BrowserControlBinding"/>
-	</Path> -->
+	<Path name = "/SharpDevelop/ViewContent/Browser/Toolbar">
+		<Condition name = "BrowserLocation" urlRegex = "^ms-help:\/\/" action="Exclude">
+			<ToolbarItem id      = "SyncHelpTopic"
+			             icon    = "Icons.16x16.ArrowLeftRight"
+			             tooltip = "${res:AddIns.HtmlHelp2.SyncTOC}"
+			             class   = "HtmlHelp2.SyncTocCommand"
+			             insertafter = "NewWindow"/>
+			<ToolbarItem id      = "PreviousHelpTopic"
+			             icon    = "Icons.16x16.ArrowUp"
+			             tooltip = "${res:AddIns.HtmlHelp2.PreviousTopic}"
+			             class   = "HtmlHelp2.PreviousTopicCommand"
+			             insertafter = "SyncHelpTopic"/>
+			<ToolbarItem id      = "NextHelpTopic"
+			             icon    = "Icons.16x16.ArrowDown"
+			             tooltip = "${res:AddIns.HtmlHelp2.NextTopic}"
+			             class   = "HtmlHelp2.NextTopicCommand"
+			             insertafter = "PreviousHelpTopic"/>
+		</Condition>
+	</Path>
 </AddIn>

@@ -79,6 +79,7 @@ namespace ResourceEditor
 		
 		public override void Dispose()
 		{
+			base.Dispose();
 			resourceEditor.Dispose();
 		}
 		

@@ -14,13 +14,13 @@
 		          insertafter  = "ViewItemsSeparator"
 		          insertbefore = "StartPageSeparator"
 		          label = "${res:XML.MainMenu.ViewMenu.ShowStartPage}" 
+		          icon  = "Icons.16x16.BrowserWindow"
 		          class = "ICSharpCode.StartPage.ShowStartPageCommand"/>
 		<MenuItem id = "StartPageSeparator"
 				  insertbefore = "FullScreen"
 				  type = "Separator"/>
 	</Path>
 	
-	<!-- TODO: Conditional to reflect Settings option -->
 	<Path name = "/Workspace/AutostartNothingLoaded">
 		<Class id = "ShowStartPageCommand"
 		       class = "ICSharpCode.StartPage.ShowStartPageCommand"/>

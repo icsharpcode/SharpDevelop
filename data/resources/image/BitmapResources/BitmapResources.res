@@ -52,6 +52,10 @@ Icons.16x16.OpenResourceFolder                    = ProjectBrowserIcons\Property
 Icons.16x16.ClosedResourceFolder                  = ProjectBrowserIcons\PropertyFolder.Closed.png
 
 
+Icons.16x16.ArrowLeftRight = BitmapResources-data\Icons.16x16.ArrowLeftRight.png
+Icons.16x16.ArrowDown      = BitmapResources-data\Icons.16x16.ArrowDown.png
+Icons.16x16.ArrowUp        = BitmapResources-data\Icons.16x16.ArrowUp.png
+
 Icons.16x16.Debug.Start                          = DebuggerIcons\Icons.16x16.Debug.Start.png
 Icons.16x16.Debug.StartWithoutDebugging          = DebuggerIcons\Icons.16x16.Debug.StartWithoutDebugging.png
 Icons.16x16.Debug.StopProcess                    = DebuggerIcons\Icons.16x16.Debug.StopProcess.png
@@ -89,6 +93,8 @@ Icons.16x16.CloseAllDocuments                     = BitmapResources-data\Icons.1
 Icons.16x16.HtmlElements.InputRadioElement        = BitmapResources-data\Icons.16x16.HtmlElements.InputRadioElement.png
 Icons.16x16.FormsDesigner.SendToBack              = BitmapResources-data\Icons.16x16.FormsDesigner.SendToBack.png
 Icons.16x16.BrowserAfter                          = BitmapResources-data\Icons.16x16.BrowserAfter.png
+Icons.16x16.BrowserHome                           = BitmapResources-data\Icons.16x16.BrowserHome.gif
+Icons.16x16.BrowserWindow                         = BitmapResources-data\Icons.16x16.BrowserWindow.png
 Icons.SharpDevelopIcon                            = BitmapResources-data\Icons.SharpDevelopIcon.ico
 Icons.16x16.HtmlElements.InputPasswordElement     = BitmapResources-data\Icons.16x16.HtmlElements.InputPasswordElement.png
 Icons.16x16.HtmlElements.InputCheckBoxElement     = BitmapResources-data\Icons.16x16.HtmlElements.InputCheckBoxElement.png

@@ -11,11 +11,10 @@ namespace HtmlHelp2
 {
 	using System;
 	using ICSharpCode.SharpDevelop.Gui;
+	using ICSharpCode.SharpDevelop.BrowserDisplayBinding;
 	using MSHelpServices;
-	using HtmlHelp2Browser;
 
-
-	public sealed class ShowHelpBrowser
+	public static class ShowHelpBrowser
 	{
 		static bool hiliteMatches = false;
 		static IHxTopic lastTopic = null;
@@ -39,7 +38,7 @@ namespace HtmlHelp2
 		{
 			hiliteMatches = hiliteMatchingWords;
 			lastTopic = topic;
-			HtmlHelp2BrowserPane help2Browser = GetActiveHelp2BrowserView();
+			BrowserPane help2Browser = GetActiveHelp2BrowserView();
 
 			if(help2Browser != null) {
 				help2Browser.Load(topicUrl);
@@ -47,52 +46,40 @@ namespace HtmlHelp2
 			}
 		}
 
-		public static HtmlHelp2BrowserPane GetActiveHelp2BrowserView()
+		public static BrowserPane GetActiveHelp2BrowserView()
 		{
-			HtmlHelp2BrowserPane tempPane = null;
-
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if(window != null && window.ActiveViewContent is HtmlHelp2BrowserPane) {
-				tempPane = (HtmlHelp2BrowserPane)window.ActiveViewContent;
-				return tempPane;
+			if(window != null) {
+				BrowserPane browserPane = window.ActiveViewContent as BrowserPane;
+				if (browserPane != null && browserPane.Url.Scheme == "ms-help")
+					return browserPane;
 			}
 
 			foreach(IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				if(view is HtmlHelp2BrowserPane) {
-					tempPane = (HtmlHelp2BrowserPane)view;
-					return tempPane;
-				}
+				BrowserPane browserPane = view as BrowserPane;
+				if (browserPane != null && browserPane.Url.Scheme == "ms-help")
+					return browserPane;
 			}
-
-			tempPane = CreateNewHelp2BrowserView();
-			return tempPane;
+			return CreateNewHelp2BrowserView();
 		}
-
-		public static HtmlHelp2BrowserPane CreateNewHelp2BrowserView()
+		
+		public static BrowserPane CreateNewHelp2BrowserView()
 		{
-			HtmlHelp2BrowserPane tempPane = new HtmlHelp2BrowserPane("");
+			BrowserPane tempPane = new BrowserPane();
 			WorkbenchSingleton.Workbench.ShowView(tempPane);
 			return tempPane;
 		}
-
+		
 		public static void HighlightDocument()
 		{
-			if(hiliteMatches && lastTopic != null) {
-				try {
-					IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-					if(window != null && window.ActiveViewContent is HtmlHelp2BrowserPane) {
-						HtmlHelp2BrowserPane help2Browser = (HtmlHelp2BrowserPane)window.ActiveViewContent;
-						HtmlHelp2BrowserControl browserControl = (HtmlHelp2BrowserControl)help2Browser.Control;
-						lastTopic.HighlightDocument(browserControl.AxWebBrowser.Document);
-					}
-				}
-				catch {
+			// FIXME: HighlightDocument is called nowhere
+			if (hiliteMatches && lastTopic != null) {
+				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+				if(window != null && window.ActiveViewContent is BrowserPane) {
+					BrowserPane help2Browser = (BrowserPane)window.ActiveViewContent;
+					lastTopic.HighlightDocument(help2Browser.HtmlViewPane.WebBrowser.Document.DomDocument);
 				}
 			}
-		}
-
-		ShowHelpBrowser()
-		{
 		}
 	}
 }

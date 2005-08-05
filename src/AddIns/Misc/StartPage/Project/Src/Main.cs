@@ -18,39 +18,37 @@ using ICSharpCode.SharpDevelop.BrowserDisplayBinding;
 
 namespace ICSharpCode.StartPage
 {
-	/// <summary>
-	/// This is the ViewContent implementation for the Start Page.
-	/// </summary>
-	public class StartPageView : BrowserPane
-	{
-		public StartPageView() : base(new Uri("startpage://start/"))
-		{
-			ProjectService.SolutionLoaded += HandleCombineOpened;
-		}
-		
-		void HandleCombineOpened(object sender, SolutionEventArgs e)
-		{
-			WorkbenchWindow.CloseWindow(true);
-		}
-		
-		public override void Dispose()
-		{
-			ProjectService.SolutionLoaded -= HandleCombineOpened;
-			base.Dispose();
-		}
-	}
-	
 	public class ShowStartPageCommand : AbstractMenuCommand
 	{
+		static bool isFirstStartPage = true;
+		
 		public override void Run()
 		{
+			if (isFirstStartPage) {
+				isFirstStartPage = false;
+				ProjectService.SolutionLoaded += delegate {
+					// close all start pages when loading a solution
+					foreach (IViewContent v in WorkbenchSingleton.Workbench.ViewContentCollection.ToArray()) {
+						BrowserPane b = v as BrowserPane;
+						if (b != null) {
+							if (b.Url.Scheme == "startpage") {
+								b.WorkbenchWindow.CloseWindow(true);
+							}
+						}
+					}
+				};
+			}
+			
 			foreach (IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				if (view is StartPageView) {
-					view.WorkbenchWindow.SelectWindow();
-					return;
+				BrowserPane b = view as BrowserPane;
+				if (b != null) {
+					if (b.Url.Scheme == "startpage") {
+						view.WorkbenchWindow.SelectWindow();
+						return;
+					}
 				}
 			}
-			WorkbenchSingleton.Workbench.ShowView(new StartPageView());
+			WorkbenchSingleton.Workbench.ShowView(new BrowserPane(new Uri("startpage://start/")));
 		}
 	}
 }

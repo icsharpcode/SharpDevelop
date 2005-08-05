@@ -21,6 +21,12 @@ namespace ICSharpCode.Core
 		string description   = String.Empty;
 		IComboBoxCommand menuCommand = null;
 		
+		public object Caller {
+			get {
+				return caller;
+			}
+		}
+		
 		public string Description {
 			get {
 				return description;

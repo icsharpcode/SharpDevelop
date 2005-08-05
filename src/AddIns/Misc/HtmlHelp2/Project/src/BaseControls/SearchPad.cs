@@ -112,7 +112,7 @@ namespace HtmlHelp2
 			hiliteTopics.Top                      = reuseMatches.Top + reuseMatches.Height - 4;
 			hiliteTopics.Text                     = StringParser.Parse("${res:AddIns.HtmlHelp2.HighlightMatches}");
 			hiliteTopics.TextAlign                = ContentAlignment.MiddleLeft;
-			hiliteTopics.Enabled                  = HtmlHelp2Environment.IsReady;
+			hiliteTopics.Enabled                  = true;
 
 			panel3.Dock                           = DockStyle.Fill;
 

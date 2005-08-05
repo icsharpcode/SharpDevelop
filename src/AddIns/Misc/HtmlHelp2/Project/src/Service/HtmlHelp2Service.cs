@@ -26,7 +26,7 @@ namespace HtmlHelp2Service
 		static IHxRegFilterList namespaceFilters         = null;
 		static IHxQuery fulltextSearch                   = null;
 		static IHxQuery dynamicHelp                      = null;
-		static string fidalgoNamespaceName               = "Corsavy";
+		static string fidalgoNamespaceName               = "Fidalgo";
 		static string currentSelectedFilterQuery         = "";
 		static string currentSelectedFilterName          = "";
 		static string defaultPage                        = "about:blank";
@@ -175,12 +175,8 @@ namespace HtmlHelp2Service
 
 		private static void ReloadDefaultPages()
 		{
-			try {
-				defaultPage = GetDefaultPage("HomePage", "DefaultPage", "about:blank");
-				searchPage  = GetDefaultPage("SearchHelpPage", "SearchWebPage", "http://msdn.microsoft.com");
-			}
-			catch {
-			}
+			defaultPage = GetDefaultPage("HomePage", "DefaultPage", "about:blank");
+			searchPage  = GetDefaultPage("SearchHelpPage", "SearchWebPage", "http://msdn.microsoft.com");
 		}
 
 		private static string GetDefaultPage(string pageName, string alternatePageName, string defaultValue)
@@ -197,13 +193,15 @@ namespace HtmlHelp2Service
 					topics = namedUrlIndex.GetTopicsFromString(alternatePageName, 0);
 				}
 
-				if(topics.Count > 0) resultString = topics.ItemAt(1).URL;
-					else resultString = defaultValue;
+				if(topics.Count > 0)
+					resultString = topics.ItemAt(1).URL;
+				if (resultString == null || resultString.Length == 0)
+					resultString = defaultValue;
 
 				return resultString;
 			}
 			catch {
-				return "";
+				return defaultValue;
 			}
 		}
 
@@ -248,7 +246,7 @@ namespace HtmlHelp2Service
 				if(namespaceFilters.Count == 0) filterCombobox.Items.Add(StringParser.Parse("${res:AddIns.HtmlHelp2.DefaultEmptyFilter}"));
 
 				if(currentSelectedFilterName == "") filterCombobox.SelectedIndex = 0;
-					else filterCombobox.SelectedIndex = filterCombobox.Items.IndexOf(currentSelectedFilterName);
+				else filterCombobox.SelectedIndex = filterCombobox.Items.IndexOf(currentSelectedFilterName);
 			}
 			catch {
 			}

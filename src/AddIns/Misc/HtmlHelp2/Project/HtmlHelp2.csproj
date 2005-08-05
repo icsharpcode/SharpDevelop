@@ -42,7 +42,6 @@
     <Compile Include="src\BaseControls\IndexResultsPad.cs" />
     <Compile Include="src\BaseControls\SearchPad.cs" />
     <Compile Include="src\BaseControls\SearchResultsPad.cs" />
-    <Compile Include="src\BrowserControl\Browser.cs" />
     <Compile Include="src\BrowserControl\ShowHelpBrowser.cs" />
     <None Include="HtmlHelp2.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
@@ -62,16 +61,7 @@
     <EmbeddedResource Include="Resources\HtmlHelp2Options.xfrm" />
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.TextZoom.png" />
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.AddToFavorites.png" />
-    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Back.png" />
-    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Forward.png" />
-    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Home.gif" />
-    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.NewWindow.png" />
-    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.NextTopic.png" />
-    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.PrevTopic.png" />
-    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Refresh.png" />
-    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.SearchSite.gif" />
-    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Stop.png" />
-    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.SyncToc.png" />
+    <Compile Include="src\BrowserControl\HelpBrowserCommands.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

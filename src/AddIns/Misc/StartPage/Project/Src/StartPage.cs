@@ -36,5 +36,15 @@ namespace ICSharpCode.StartPage
 				pane.WebBrowser.DocumentText = page.Render(host);
 			}
 		}
+		
+		public void GoHome(HtmlViewPane pane)
+		{
+			pane.Navigate("startpage://start/");
+		}
+		
+		public void GoSearch(HtmlViewPane pane)
+		{
+			pane.Navigate(HtmlViewPane.DefaultSearchUrl);
+		}
 	}
 }

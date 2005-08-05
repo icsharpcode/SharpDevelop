@@ -45,7 +45,9 @@ namespace ICSharpCode.Core
 				Image = ResourceService.GetBitmap(codon.Properties["icon"]);
 			}
 			
-			menuCommand = codon.AddIn.CreateObject(codon.Properties["class"]) as ICommand;
+			menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
+			if (menuCommand != null)
+				menuCommand.Owner = caller;
 			
 			UpdateStatus();
 		}
@@ -53,10 +55,7 @@ namespace ICSharpCode.Core
 		protected override void OnClick(System.EventArgs e)
 		{
 			base.OnClick(e);
-			if (codon != null) {
-				if (menuCommand == null) {
-					menuCommand = codon.AddIn.CreateObject(codon.Properties["class"]) as ICommand;
-				}
+			if (menuCommand != null) {
 				menuCommand.Run();
 			}
 		}

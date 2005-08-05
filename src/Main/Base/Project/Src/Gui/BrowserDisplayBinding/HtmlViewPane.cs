@@ -20,7 +20,13 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 {
 	public class BrowserPane : AbstractViewContent
 	{
-		protected HtmlViewPane htmlViewPane;
+		HtmlViewPane htmlViewPane;
+		
+		public HtmlViewPane HtmlViewPane {
+			get {
+				return htmlViewPane;
+			}
+		}
 		
 		public override Control Control {
 			get {
@@ -47,6 +53,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			htmlViewPane = new HtmlViewPane(showNavigation);
 			htmlViewPane.WebBrowser.DocumentTitleChanged += new EventHandler(TitleChange);
 			htmlViewPane.Closed += PaneClosed;
+			TitleChange(null, null);
 		}
 		
 		public BrowserPane(Uri uri) : this(true)
@@ -74,6 +81,12 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			Load(url);
 		}
 		
+		public Uri Url {
+			get {
+				return htmlViewPane.Url;
+			}
+		}
+		
 		void PaneClosed(object sender, EventArgs e)
 		{
 			WorkbenchWindow.CloseWindow(true);
@@ -82,6 +95,8 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		void TitleChange(object sender, EventArgs e)
 		{
 			string title = htmlViewPane.WebBrowser.DocumentTitle;
+			if (title != null)
+				title = title.Trim();
 			if (title == null || title.Length == 0)
 				TitleName = "Browser";
 			else
@@ -93,9 +108,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 	{
 		ExtendedWebBrowser webBrowser = null;
 		
-		Panel   topPanel   = new Panel();
-		ToolBar toolBar    = new ToolBar();
-		TextBox urlTextBox = new TextBox();
+		ToolStrip toolStrip;
 		
 //		string lastUrl     = null;
 		
@@ -130,69 +143,17 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			Dock = DockStyle.Fill;
 			Size = new Size(500, 500);
 			
-			if (showNavigation) {
-				
-				topPanel.Size = new Size(Width, 25);
-				topPanel.Dock = DockStyle.Top;
-				
-				Controls.Add(topPanel);
-				
-				toolBar.Dock = DockStyle.None;
-				
-				
-				for (int i = 0; i < 4; ++i) {
-					ToolBarButton toolBarButton = new ToolBarButton();
-					toolBarButton.ImageIndex    = i;
-					toolBar.Buttons.Add(toolBarButton);
-				}
-				
-				
-				toolBar.ImageList = new ImageList();
-				toolBar.ImageList.ColorDepth = ColorDepth.Depth32Bit;
-				toolBar.ImageList.Images.Add(ResourceService.GetBitmap("Icons.16x16.BrowserBefore"));
-				toolBar.ImageList.Images.Add(ResourceService.GetBitmap("Icons.16x16.BrowserAfter"));
-				toolBar.ImageList.Images.Add(ResourceService.GetBitmap("Icons.16x16.BrowserCancel"));
-				toolBar.ImageList.Images.Add(ResourceService.GetBitmap("Icons.16x16.BrowserRefresh"));
-				
-				toolBar.Appearance = ToolBarAppearance.Flat;
-				toolBar.Divider = false;
-				toolBar.ButtonClick += new ToolBarButtonClickEventHandler(ToolBarClick);
-				
-				toolBar.Location = new Point(0, 0);
-				toolBar.Size = new Size(4*toolBar.ButtonSize.Width, 25);
-				
-				topPanel.Controls.Add(toolBar);
-				
-				urlTextBox.Location  = new Point(4*toolBar.ButtonSize.Width, 2);
-				urlTextBox.Size      = new Size(Width - (4*toolBar.ButtonSize.Width) - 1, 21);
-				urlTextBox.Anchor    = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Top;
-				urlTextBox.KeyPress += new KeyPressEventHandler(KeyPressEvent);
-				
-				topPanel.Controls.Add(urlTextBox);
-				
-			}
-			
 			webBrowser = new ExtendedWebBrowser();
-//			axWebBrowser.BeginInit();
-//			if (showNavigation) {
-//				int height = 48;
-//				axWebBrowser.Location = new Point(0, height);
-//				axWebBrowser.Size     = new Size(Width, Height - height);
-//				axWebBrowser.Anchor   = AnchorStyles.Left | AnchorStyles.Right | AnchorStyles.Bottom | AnchorStyles.Top;
-//				axWebBrowser.Dock     = DockStyle.Fill;
-//			} else {
 			webBrowser.Dock = DockStyle.Fill;
-//			}
 			webBrowser.Navigating += WebBrowserNavigating;
 			webBrowser.NewWindowExtended += NewWindow;
 			webBrowser.Navigated  += WebBrowserNavigated;
 			Controls.Add(webBrowser);
 			
 			if (showNavigation) {
-				Controls.Add(topPanel);
+				toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/ViewContent/Browser/Toolbar");
+				Controls.Add(toolStrip);
 			}
-			
-//			axWebBrowser.EndInit();
 		}
 		
 		void NewWindow(object sender, NewWindowExtendedEventArgs e)
@@ -201,65 +162,37 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			WorkbenchSingleton.Workbench.ShowView(new BrowserPane(e.Url));
 		}
 		
-		void WebBrowserNavigated(object sender, WebBrowserNavigatedEventArgs e)
-		{
-			urlTextBox.Text = webBrowser.Url.ToString();
-		}
-		
 		static ArrayList descriptors;
+		
+		public static ISchemeExtension GetScheme(string name)
+		{
+			if (descriptors == null) {
+				descriptors = AddInTree.BuildItems("/SharpDevelop/Views/Browser/SchemeExtensions", null, false);
+			}
+			foreach (SchemeExtensionDescriptor descriptor in descriptors) {
+				if (string.Equals(name, descriptor.SchemeName, StringComparison.OrdinalIgnoreCase)) {
+					return descriptor.Extension;
+				}
+			}
+			return null;
+		}
 		
 		void WebBrowserNavigating(object sender, WebBrowserNavigatingEventArgs e)
 		{
 			try {
-				if (descriptors == null) {
-					AddInTreeNode treeNode = null;
-					try {
-						treeNode = AddInTree.GetTreeNode("/SharpDevelop/Views/Browser/SchemeExtensions");
-					} catch (Exception) {
-					}
-					if (treeNode != null) {
-						descriptors = treeNode.BuildChildItems(null);
-					} else {
-						descriptors = new ArrayList();
-					}
-				}
-				string scheme = e.Url.Scheme;
-				foreach (SchemeExtensionDescriptor descriptor in descriptors) {
-					if (string.Equals(scheme, descriptor.SchemeName, StringComparison.OrdinalIgnoreCase)) {
-						descriptor.InterceptNavigate(this, e);
+				ISchemeExtension extension = GetScheme(e.Url.Scheme);
+				if (extension != null) {
+					extension.InterceptNavigate(this, e);
+					if (e.TargetFrameName.Length == 0) {
+						if (e.Cancel == true) {
+							dummyUrl = e.Url.ToString();
+						} else if (e.Url.ToString() != "about:blank") {
+							dummyUrl = null;
+						}
 					}
 				}
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
-			}
-		}
-		
-		void KeyPressEvent(object sender, KeyPressEventArgs ex)
-		{
-			if (ex.KeyChar == '\r') {
-				ex.Handled = true;
-				Navigate(urlTextBox.Text);
-			}
-		}
-		
-		void ToolBarClick(object sender, ToolBarButtonClickEventArgs e)
-		{
-			try {
-				switch(toolBar.Buttons.IndexOf(e.Button)) {
-					case 0:
-						webBrowser.GoBack();
-						break;
-					case 1:
-						webBrowser.GoForward();
-						break;
-					case 2:
-						webBrowser.Stop();
-						break;
-					case 3:
-						webBrowser.Refresh();
-						break;
-				}
-			} catch (Exception) {
 			}
 		}
 		
@@ -271,6 +204,119 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		public void Navigate(Uri url)
 		{
 			webBrowser.Navigate(url);
+		}
+		
+		public const string DefaultHomepage = "http://www.icsharpcode.net/";
+		public const string DefaultSearchUrl = "http://www.google.com/";
+		
+		public void GoHome()
+		{
+			ISchemeExtension extension = GetScheme(Url.Scheme);
+			if (extension != null) {
+				extension.GoHome(this);
+			} else {
+				Navigate(DefaultHomepage);
+			}
+		}
+		
+		public void GoSearch()
+		{
+			ISchemeExtension extension = GetScheme(Url.Scheme);
+			if (extension != null) {
+				extension.GoSearch(this);
+			} else {
+				Navigate(DefaultSearchUrl);
+			}
+		}
+		
+		Control urlBox;
+		
+		public void SetUrlComboBox(ComboBox comboBox)
+		{
+			SetUrlBox(comboBox);
+			comboBox.DropDownStyle = ComboBoxStyle.DropDown;
+			comboBox.Items.Clear();
+			comboBox.Items.AddRange(PropertyService.Get("Browser.URLBoxHistory", new string[0]));
+			comboBox.AutoCompleteMode      = AutoCompleteMode.Suggest;
+			comboBox.AutoCompleteSource    = AutoCompleteSource.HistoryList;
+		}
+		
+		public void SetUrlBox(Control urlBox)
+		{
+			this.urlBox = urlBox;
+			urlBox.KeyUp += UrlBoxKeyUp;
+		}
+		
+		void UrlBoxKeyUp(object sender, KeyEventArgs e)
+		{
+			Control ctl = (Control)sender;
+			if (e.KeyData == Keys.Return) {
+				e.Handled = true;
+				UrlBoxNavigate(ctl);
+			}
+		}
+		
+		void UrlBoxNavigate(Control ctl)
+		{
+			string text = ctl.Text.Trim();
+			if (text.IndexOf(':') < 0) {
+				text = "http://" + text;
+			}
+			Navigate(text);
+			ComboBox comboBox = ctl as ComboBox;
+			if (comboBox != null) {
+				comboBox.Items.Remove(text);
+				comboBox.Items.Insert(0, text);
+				// Add to URLBoxHistory:
+				string[] history = PropertyService.Get("Browser.URLBoxHistory", new string[0]);
+				int pos = Array.IndexOf(history, text);
+				if (pos < 0 && history.Length >= 20) {
+					pos = history.Length - 1; // remove last entry and insert new at the beginning
+				}
+				if (pos < 0) {
+					// insert new item
+					string[] newHistory = new string[history.Length + 1];
+					history.CopyTo(newHistory, 1);
+					history = newHistory;
+				} else {
+					for (int i = pos; i > 0; i--) {
+						history[i] = history[i - 1];
+					}
+				}
+				history[0] = text;
+				PropertyService.Set("Browser.URLBoxHistory", history);
+			}
+		}
+		
+		string dummyUrl;
+		
+		public Uri Url {
+			get {
+				if (webBrowser.Url == null)
+					return null;
+				if (dummyUrl != null && webBrowser.Url.ToString() == "about:blank") {
+					return new Uri(dummyUrl);
+				} else {
+					return webBrowser.Url;
+				}
+			}
+		}
+		
+		void WebBrowserNavigated(object sender, WebBrowserNavigatedEventArgs e)
+		{
+			// do not use e.Url (frames!)
+			string url = webBrowser.Url.ToString();
+			if (dummyUrl != null && url == "about:blank") {
+				urlBox.Text = dummyUrl;
+			} else {
+				urlBox.Text = url;
+			}
+			// Update toolbar:
+			foreach (object o in toolStrip.Items) {
+				IStatusUpdate up = o as IStatusUpdate;
+				if (up != null)
+					up.UpdateStatus();
+			}
 		}
 	}
 }

@@ -440,7 +440,6 @@ namespace ICSharpCode.Core
 		// Observe LOAD functions
 		public static FileOperationResult ObservedLoad(FileOperationDelegate loadFile, string fileName, string message, FileErrorPolicy policy)
 		{
-			System.Diagnostics.Debug.Assert(IsValidFileName(fileName));
 			try {
 				loadFile();
 				OnFileLoaded(new FileNameEventArgs(fileName));

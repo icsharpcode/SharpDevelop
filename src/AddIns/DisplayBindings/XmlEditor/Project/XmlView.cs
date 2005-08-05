@@ -162,12 +162,13 @@ namespace ICSharpCode.XmlEditor
 		
 		public override void Dispose()
 		{
+			base.Dispose();
 			((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Activated -= new EventHandler(GotFocusEvent);
 			
 			XmlEditorAddInOptions.PropertyChanged -= PropertyChanged;
 			XmlSchemaManager.UserSchemaAdded -= new EventHandler(UserSchemaAdded);
 			XmlSchemaManager.UserSchemaRemoved -= new EventHandler(UserSchemaRemoved);
-
+			
 			xmlEditor.Dispose();
 		}
 		

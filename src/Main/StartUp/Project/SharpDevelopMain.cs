@@ -157,6 +157,7 @@ namespace ICSharpCode.SharpDevelop
 			AddInTree.ConditionEvaluators.Add("ProjectActive", new ProjectActiveConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("ProjectOpen", new ProjectOpenConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("TextContent", new ICSharpCode.SharpDevelop.DefaultEditor.Conditions.TextContentConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("BrowserLocation", new ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserLocationConditionEvaluator());
 			
 			AddInTree.Doozers.Add("DialogPanel", new DialogPanelDoozer());
 			AddInTree.Doozers.Add("DisplayBinding", new DisplayBindingDoozer());
@@ -166,6 +167,8 @@ namespace ICSharpCode.SharpDevelop
 			AddInTree.Doozers.Add("EditAction", new ICSharpCode.SharpDevelop.DefaultEditor.Codons.EditActionDoozer());
 			AddInTree.Doozers.Add("SyntaxMode", new ICSharpCode.SharpDevelop.DefaultEditor.Codons.SyntaxModeDoozer());
 			AddInTree.Doozers.Add("BrowserSchemeExtension", new ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer());
+			
+			MenuCommand.LinkCommandCreator = delegate(string link) { return new LinkCommand(link); };
 			
 			PropertyService.Load();
 			

@@ -16,6 +16,8 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 	public interface ISchemeExtension
 	{
 		void InterceptNavigate(HtmlViewPane pane, WebBrowserNavigatingEventArgs e);
+		void GoHome(HtmlViewPane pane);
+		void GoSearch(HtmlViewPane pane);
 	}
 	
 	public class SchemeExtensionDescriptor
@@ -38,14 +40,15 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 				schemeName = codon.Id;
 		}
 		
-		ISchemeExtension ext;
+		ISchemeExtension extension;
 		
-		public void InterceptNavigate(HtmlViewPane pane, WebBrowserNavigatingEventArgs e)
-		{
-			if (ext == null) {
-				ext = (ISchemeExtension)codon.AddIn.CreateObject(codon.Properties["class"]);
+		public ISchemeExtension Extension {
+			get {
+				if (extension == null) {
+					extension = (ISchemeExtension)codon.AddIn.CreateObject(codon.Properties["class"]);
+				}
+				return extension;
 			}
-			ext.InterceptNavigate(pane, e);
 		}
 	}
 	

@@ -14,7 +14,6 @@ namespace HtmlHelp2
 	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Gui;
 	using MSHelpServices;
-	using HtmlHelp2Browser;
 	using HtmlHelp2Service;
 
 

@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		ComboBox comboBox;
 		
-		protected override void OnOwnerChanged(EventArgs e) 
+		protected override void OnOwnerChanged(EventArgs e)
 		{
 			base.OnOwnerChanged(e);
 			ToolBarComboBox toolbarItem = (ToolBarComboBox)Owner;
@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 	}
 	
-	public class ToggleeMessageViewWordWrap : AbstractCheckableMenuCommand
+	public class ToggleMessageViewWordWrap : AbstractCheckableMenuCommand
 	{
 		ToolBarCheckBox checkBox;
 		
@@ -93,11 +93,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-			
 		public override void Run()
 		{
 			IsChecked = !IsChecked;
 		}
 	}
-	
 }

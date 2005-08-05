@@ -35,6 +35,7 @@ namespace AddInScout
 		
 		public override void Dispose()
 		{
+			base.Dispose();
 			control.Dispose();
 		}
 		

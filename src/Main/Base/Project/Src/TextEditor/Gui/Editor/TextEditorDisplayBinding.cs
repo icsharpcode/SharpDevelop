@@ -282,6 +282,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public override void Dispose()
 		{
+			base.Dispose();
 			((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Activated -= new EventHandler(GotFocusEvent);
 			if (this.watcher != null) {
 				this.watcher.Dispose();

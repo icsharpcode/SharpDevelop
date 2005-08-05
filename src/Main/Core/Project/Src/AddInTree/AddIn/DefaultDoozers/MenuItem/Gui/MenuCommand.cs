@@ -40,16 +40,25 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		// HACK: find a better way to allow the host app to process link commands
+		public static Converter<string, ICommand> LinkCommandCreator;
+		
 		void CreateCommand()
 		{
 			try {
-				menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
+				if (codon.Properties["link"] != null) {
+					if (LinkCommandCreator == null)
+						throw new NotSupportedException("MenuCommand.LinkCommandCreator is not set, cannot create LinkCommands.");
+					menuCommand = LinkCommandCreator(codon.Properties["link"]);
+				} else {
+					menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
+				}
 				menuCommand.Owner = caller;
 			} catch (Exception e) {
 				MessageService.ShowError(e, "Can't create menu command : " + codon.Id);
 			}
 		}
-
+		
 		public MenuCommand(Codon codon, object caller) : this(codon, caller, false)
 		{
 			

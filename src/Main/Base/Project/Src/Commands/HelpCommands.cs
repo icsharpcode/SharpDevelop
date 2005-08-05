@@ -16,7 +16,6 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
-	
 	public class ShowSensitiveHelp : AbstractMenuCommand
 	{
 		public override void Run()
@@ -41,10 +40,10 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			
-			string fileName = FileUtility.SharpDevelopRootPath + 
-			              Path.DirectorySeparatorChar + "doc" +
-			              Path.DirectorySeparatorChar + "help" +
-			              Path.DirectorySeparatorChar + "sharpdevelop.chm";
+			string fileName = FileUtility.SharpDevelopRootPath +
+				Path.DirectorySeparatorChar + "doc" +
+				Path.DirectorySeparatorChar + "help" +
+				Path.DirectorySeparatorChar + "sharpdevelop.chm";
 			if (FileUtility.TestFileExists(fileName)) {
 				Help.ShowHelp((Form)WorkbenchSingleton.Workbench, fileName);
 				((Form)WorkbenchSingleton.Workbench).Select();
@@ -63,40 +62,27 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 	
-	public class GotoWebSite : AbstractMenuCommand
+	public class LinkCommand : AbstractMenuCommand
 	{
 		string site;
 		
-		public GotoWebSite(string site)
+		public LinkCommand(string site)
 		{
 			this.site = site;
 		}
 		
 		public override void Run()
 		{
-			
-			FileService.OpenFile(site);
-		}
-	}
-	
-	public class GotoLink : AbstractMenuCommand
-	{
-		string site;
-		
-		public GotoLink(string site)
-		{
-			this.site = site;
-		}
-		
-		public override void Run()
-		{
-			
-			string file = site.StartsWith("home://") ? FileUtility.Combine(FileUtility.SharpDevelopRootPath, "bin", site.Substring(7).Replace('/', Path.DirectorySeparatorChar)) : site;
-			try {
-				Process.Start(file);
-			} catch (Exception) {
-				
-				MessageService.ShowError("Can't execute/view " + file + "\n Please check that the file exists and that you can open this file.");
+			if (site.StartsWith("home://")) {
+				string file = FileUtility.Combine(FileUtility.SharpDevelopRootPath, "bin", site.Substring(7).Replace('/', Path.DirectorySeparatorChar));
+				try {
+					Process.Start(file);
+				} catch (Exception) {
+					
+					MessageService.ShowError("Can't execute/view " + file + "\n Please check that the file exists and that you can open this file.");
+				}
+			} else {
+				FileService.OpenFile(site);
 			}
 		}
 	}
