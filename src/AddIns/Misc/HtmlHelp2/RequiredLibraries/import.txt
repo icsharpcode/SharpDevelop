@@ -1,0 +1,16 @@
+The "MSHelpControls.dll", "MSHelpServices.dll" and the "stdole.dll" are generated .NET wrappers. There is a fourth file, you can find in the "source\HtmlHelp2\Help2Service" folder, called "AxMSHelpControls.cs".
+
+If you want to re-generate the wrapper files, just call the "import.bat" file. But first make sure that all paths are valid. These are the two important lines
+
+	set AxImp="K:\Programme\Microsoft.NET\SDK\v2.0\Bin\AxImp.exe"
+	%AxImp% -source "%CommonProgramFiles%\Microsoft Shared\help\hxvz.dll"
+
+
+The AxImp tool will create an "AxMSHelpControls.cs" file and an "AxMSHelpControls.dll" file. My addin was build with the CSharp source file. Please copy the re-created version into the "source\HtmlHelp2\Help2Service" folder, overwriting the existing file.
+
+
+NOTE: It's not necessary to rename the wrapper libraries with some kind of an "Interop." prefix or something like that. There are no native Windows libraries with the same names.
+
+
+Mathias Simmack
+(2005-06-24)

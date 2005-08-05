@@ -417,3 +417,15 @@ Icons.16x16.XSLIcon = backendicons\miscFiles\XSL_16.png
 Icons.32x32.XSLIcon = backendicons\miscFiles\XSL_32.png
 Icons.16x16.ASPFileIcon = backendicons\miscFiles\ASP_16.png
 Icons.32x32.ASPFileIcon = backendicons\miscFiles\ASP_32.png
+
+HtmlHelp2.16x16.DynamicHelp   = PadIcons\HtmlHelp2.16x16.DynamicHelp.png
+HtmlHelp2.16x16.Favorites     = PadIcons\HtmlHelp2.16x16.Favorites.png
+HtmlHelp2.16x16.Index         = PadIcons\HtmlHelp2.16x16.Index.png
+HtmlHelp2.16x16.IndexResults  = PadIcons\HtmlHelp2.16x16.IndexResults.png
+HtmlHelp2.16x16.Search        = PadIcons\HtmlHelp2.16x16.Search.png
+HtmlHelp2.16x16.SearchResults = PadIcons\HtmlHelp2.16x16.SearchResults.png
+HtmlHelp2.16x16.Toc           = PadIcons\HtmlHelp2.16x16.Toc.png
+
+
+
+

@@ -1,0 +1,105 @@
+<AddIn name        = "Help 2.0 Environment for SharpDevelop"
+       author      = "Mathias Simmack"
+       copyright   = "Copyright (c) 2005"
+       url         = "unknown"
+       description = "integrates Microsoft's Help 2.0 Environment"
+       version     = "2.0.0.2">
+	
+	<Runtime>
+		<Import assembly="HtmlHelp2.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "TocPad"
+		     category = "Help2"
+		     title    = "${res:AddIns.HtmlHelp2.Contents}"
+		     icon     = "HtmlHelp2.16x16.Toc"
+		     class    = "HtmlHelp2.HtmlHelp2TocPad"/>
+		<Pad id       = "IndexPad"
+		     category = "Help2"
+		     title    = "${res:AddIns.HtmlHelp2.Index}"
+		     icon     = "HtmlHelp2.16x16.Index"
+		     class    = "HtmlHelp2.HtmlHelp2IndexPad"/>
+		<Pad id       = "SearchPad"
+		     category = "Help2"
+		     title    = "${res:AddIns.HtmlHelp2.Search}"
+		     icon     = "HtmlHelp2.16x16.Search"
+		     class    = "HtmlHelp2.HtmlHelp2SearchPad"/>
+		<Pad id       = "FavoritesPad"
+		     category = "Help2"
+		     title    = "${res:AddIns.HtmlHelp2.Favorites}"
+		     icon     = "HtmlHelp2.16x16.Favorites"
+		     class    = "HtmlHelp2.HtmlHelp2FavoritesPad"/>
+		<Pad id       = "IndexResultsPad"
+		     category = "Help2"
+		     title    = "${res:AddIns.HtmlHelp2.IndexResults}"
+		     icon     = "HtmlHelp2.16x16.IndexResults"
+		     class    = "HtmlHelp2.HtmlHelp2IndexResultsPad"/>
+		<Pad id       = "SearchResultsPad"
+		     category = "Help2"
+		     title    = "${res:AddIns.HtmlHelp2.SearchResults}"
+		     icon     = "HtmlHelp2.16x16.SearchResults"
+		     class    = "HtmlHelp2.HtmlHelp2SearchResultsPad"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<DialogPanel id    = "HtmlHelp2Options"
+		             label = "${res:AddIns.HtmlHelp2.Environment}"
+		             class = "HtmlHelp2Service.HtmlHelp2OptionsPanel"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Help">
+		<!-- <MenuItem id           = "DynamicHelpPadCommand"
+			          insertafter  = "DynamicHelp"
+			          label        = "${res:AddIns.HtmlHelp2.DynamicHelp}"
+			          icon         = "HtmlHelp2.16x16.DynamicHelp"
+			          shortcut     = "Control|F1"
+			          class        = "HtmlHelp2.ShowDynamicHelpMenuCommand"/> -->
+		<MenuItem id           = "TocPadCommand"
+		          insertafter  = "DynamicHelp"
+		          label        = "${res:AddIns.HtmlHelp2.Contents}"
+		          icon         = "HtmlHelp2.16x16.Toc"
+		          shortcut     = "Control|Alt|F1"
+		          class        = "HtmlHelp2.ShowTocMenuCommand"/>
+		<MenuItem id           = "IndexPadCommand"
+		          label        = "${res:AddIns.HtmlHelp2.Index}"
+		          icon         = "HtmlHelp2.16x16.Index"
+		          shortcut     = "Control|Alt|F2"
+		          class        = "HtmlHelp2.ShowIndexMenuCommand"
+		          insertafter  = "TocPadCommand"/>
+		<MenuItem id           = "SearchPadCommand"
+		          label        = "${res:AddIns.HtmlHelp2.SearchCommand}"
+		          icon         = "HtmlHelp2.16x16.Search"
+		          shortcut     = "Control|Alt|F3"
+		          class        = "HtmlHelp2.ShowSearchMenuCommand"
+		          insertafter  = "IndexPadCommand"/>
+		<MenuItem id           = "FavoritesPadCommand"
+		          label        = "${res:AddIns.HtmlHelp2.Favorites}"
+		          icon         = "HtmlHelp2.16x16.Favorites"
+		          shortcut     = "Control|Alt|F"
+		          class        = "HtmlHelp2.ShowFavoritesMenuCommand"
+		          insertafter  = "SearchPadCommand"/>
+		<MenuItem id           = "HtmlHelp2Separator2"
+		          type         = "Separator"
+		          insertafter  = "FavoritesPadCommand"/>
+		<MenuItem id           = "IndexResultsPadCommand"
+		          label        = "${res:AddIns.HtmlHelp2.IndexResults}"
+		          icon         = "HtmlHelp2.16x16.IndexResults"
+		          shortcut     = "Shift|Alt|F2"
+		          class        = "HtmlHelp2.ShowIndexResultsMenuCommand"
+		          insertafter  = "HtmlHelp2Separator2"/>
+		<MenuItem id           = "SearchResultsPadCommand"
+		          label        = "${res:AddIns.HtmlHelp2.SearchResults}"
+		          icon         = "HtmlHelp2.16x16.SearchResults"
+		          shortcut     = "Shift|Alt|F3"
+		          class        = "HtmlHelp2.ShowSearchResultsMenuCommand"
+		          insertbefore = "Separator1"
+		          insertafter  = "IndexResultsPadCommand"/>
+	</Path>
+	
+	<!--<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+			<DisplayBinding id               = "HtmlHelp2BrowserControlBinding"
+			                supportedformats = "Web Pages"
+			                class            = "HtmlHelp2Browser.HtmlHelp2BrowserControlBinding"/>
+	</Path> -->
+</AddIn>

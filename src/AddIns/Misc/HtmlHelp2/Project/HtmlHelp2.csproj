@@ -1,0 +1,89 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>HtmlHelp2</RootNamespace>
+    <AssemblyName>HtmlHelp2</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{918487B7-2153-4618-BBB3-344DBDDF2A2A}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\HtmlHelp2\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\HtmlHelp2\</OutputPath>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="stdole">
+      <HintPath>..\RequiredLibraries\stdole.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="MSHelpControls">
+      <HintPath>..\RequiredLibraries\MSHelpControls.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="MSHelpServices">
+      <HintPath>..\RequiredLibraries\MSHelpServices.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="src\BaseControls\TocPad.cs" />
+    <None Include="src\BaseControls\DynamicHelpPad.cs" />
+    <Compile Include="src\BaseControls\FavoritesPad.cs" />
+    <Compile Include="src\BaseControls\IndexPad.cs" />
+    <Compile Include="src\BaseControls\IndexResultsPad.cs" />
+    <Compile Include="src\BaseControls\SearchPad.cs" />
+    <Compile Include="src\BaseControls\SearchResultsPad.cs" />
+    <Compile Include="src\BrowserControl\Browser.cs" />
+    <Compile Include="src\BrowserControl\ShowHelpBrowser.cs" />
+    <None Include="HtmlHelp2.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Compile Include="src\Service\Help2RegistryWalker.cs" />
+    <Compile Include="src\Service\HtmlHelp2Dialog.cs" />
+    <Compile Include="src\Service\HtmlHelp2Service.cs" />
+    <Compile Include="src\Service\ResourcesHelper.cs" />
+    <Compile Include="src\Service\Help2ControlsValidation.cs" />
+    <Compile Include="src\Service\AxMSHelpControls.cs" />
+    <Compile Include="src\Service\HtmlHelp2Options.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <EmbeddedResource Include="Resources\Favorites.16x16.Delete.bmp" />
+    <EmbeddedResource Include="Resources\Favorites.16x16.MoveDown.bmp" />
+    <EmbeddedResource Include="Resources\Favorites.16x16.MoveUp.bmp" />
+    <EmbeddedResource Include="Resources\Favorites.16x16.Rename.bmp" />
+    <EmbeddedResource Include="Resources\HtmlHelp2Options.xfrm" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.TextZoom.png" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.AddToFavorites.png" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Back.png" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Forward.png" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Home.gif" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.NewWindow.png" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.NextTopic.png" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.PrevTopic.png" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Refresh.png" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.SearchSite.gif" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Stop.png" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.SyncToc.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>
