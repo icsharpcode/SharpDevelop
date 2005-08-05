@@ -171,7 +171,6 @@ namespace CheckFileHeaders
 					author = "David Srbecký";
 					return "dsrbecky@gmail.com";
 				case "Andrea Paatz":
-					//case "Andrea":
 					author = "Andrea Paatz";
 					return "andrea@icsharpcode.net";
 				case "Matthew Ward":
@@ -264,6 +263,14 @@ namespace CheckFileHeaders
 							return 5;
 						} else if (line == "/*") {
 							state = 4;
+						} else if (line == "/* ***********************************************************") {
+							// Mathias' style (preserve)
+							lastLine = -1;
+							return 5;
+						} else if (line == "//------------------------------------------------------------------------------") {
+							// TlbImp auto-generated style (preserve)
+							lastLine = -1;
+							return 5;
 						} else if (gplRegex.IsMatch(line)) {
 							Match m = gplRegex.Match(line);
 							author = m.Groups[1].Value;

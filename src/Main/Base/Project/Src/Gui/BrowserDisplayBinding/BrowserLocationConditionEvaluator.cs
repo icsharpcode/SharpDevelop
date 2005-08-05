@@ -1,9 +1,9 @@
-/*
- * Created by SharpDevelop.
- * User: Daniel Grunwald
- * Date: 05.08.2005
- * Time: 19:37
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.Text.RegularExpressions;
@@ -12,7 +12,7 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 {
 	/// <summary>
-	/// Description of BrowserLocationConditionEvaluator.
+	/// Conditions that tries to match the URL of a <see cref="HtmlViewPane"/> with a regex.
 	/// </summary>
 	public class BrowserLocationConditionEvaluator : IConditionEvaluator
 	{

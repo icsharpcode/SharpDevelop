@@ -148,6 +148,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			webBrowser.Navigating += WebBrowserNavigating;
 			webBrowser.NewWindowExtended += NewWindow;
 			webBrowser.Navigated  += WebBrowserNavigated;
+			webBrowser.StatusTextChanged += WebBrowserStatusTextChanged;
 			Controls.Add(webBrowser);
 			
 			if (showNavigation) {
@@ -160,6 +161,17 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		{
 			e.Cancel = true;
 			WorkbenchSingleton.Workbench.ShowView(new BrowserPane(e.Url));
+		}
+		
+		void WebBrowserStatusTextChanged(object sender, EventArgs e)
+		{
+			IWorkbenchWindow workbench = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+			if (workbench == null) return;
+			BrowserPane browser = workbench.ActiveViewContent as BrowserPane;
+			if (browser == null) return;
+			if (browser.HtmlViewPane == this) {
+				StatusBarService.SetMessage(webBrowser.StatusText);
+			}
 		}
 		
 		static ArrayList descriptors;

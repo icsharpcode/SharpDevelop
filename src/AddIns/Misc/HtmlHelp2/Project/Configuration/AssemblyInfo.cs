@@ -1,4 +1,12 @@
-﻿using System.Reflection;
+﻿/* ***********************************************************
+ *
+ * Help 2.0 Environment for SharpDevelop
+ * Dynamic Help Pad
+ * Copyright (c) 2005, Mathias Simmack. All rights reserved.
+ *
+ * ********************************************************* */
+
+using System.Reflection;
 using System.Runtime.CompilerServices;
 
 // Information about this assembly is defined by the following
