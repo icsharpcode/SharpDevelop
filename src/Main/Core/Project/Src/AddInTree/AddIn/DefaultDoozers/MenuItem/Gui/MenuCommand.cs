@@ -44,6 +44,7 @@ namespace ICSharpCode.Core
 		{
 			try {
 				menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
+				menuCommand.Owner = caller;
 			} catch (Exception e) {
 				MessageService.ShowError(e, "Can't create menu command : " + codon.Id);
 			}
@@ -127,14 +128,12 @@ namespace ICSharpCode.Core
 		
 		public virtual void UpdateStatus()
 		{
-//			Console.Write("Update status of : " + localizedText);
 			if (codon != null) {
 				if (Image == null && codon.Properties.Contains("icon")) {
 					Image = ResourceService.GetBitmap(codon.Properties["icon"]);
 				}
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
 				Visible = failedAction != ConditionFailedAction.Exclude;
-//				Console.Write(" failed action " + failedAction + " Visible : " + Visible);
 				
 				if (localizedText == null) {
 					localizedText = codon.Properties["label"];
@@ -143,7 +142,6 @@ namespace ICSharpCode.Core
 			if (localizedText != null) {
 				Text = StringParser.Parse(localizedText);
 			}
-//			Console.WriteLine();
 		}
 	}
 }

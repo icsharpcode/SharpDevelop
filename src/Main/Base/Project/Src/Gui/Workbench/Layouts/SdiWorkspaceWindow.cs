@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.DockPadding.All = 2;
 
 			SetTitleEvent(this, EventArgs.Empty);
-//			this.TabPageContextMenu  = MenuService.CreateContextMenu(this, contextMenuPath);
+			this.TabPageContextMenu  = MenuService.CreateContextMenu(this, contextMenuPath);
 			InitControls();
 		}
 		

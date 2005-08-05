@@ -32,6 +32,7 @@ namespace ICSharpCode.Core
 		
 		public static ContextMenuStrip CreateContextMenu(object owner, string addInTreePath)
 		{
+			Console.WriteLine("Create Owner == " + owner);
 			if (addInTreePath == null) {
 				return null;
 			}

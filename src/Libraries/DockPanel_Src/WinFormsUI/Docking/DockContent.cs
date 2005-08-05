@@ -573,12 +573,12 @@ namespace WeifenLuo.WinFormsUI
 			return DockHelper.IsDockStateValid(dockState, DockableAreas);
 		}
 
-		private ContextMenu m_tabPageContextMenu = null;
+		private ContextMenuStrip m_tabPageContextMenu = null;
 		/// <include file='CodeDoc\DockContent.xml' path='//CodeDoc/Class[@name="DockContent"]/Property[@name="TabPageContextMenu"]/*'/>
 		[LocalizedCategory("Category.Docking")]
 		[LocalizedDescription("DockContent.TabPageContextMenu.Description")]
 		[DefaultValue(null)]
-		public ContextMenu TabPageContextMenu
+		public ContextMenuStrip TabPageContextMenu
 		{
 			get	{	return m_tabPageContextMenu;	}
 			set	{	m_tabPageContextMenu = value;	}
