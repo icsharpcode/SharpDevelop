@@ -80,8 +80,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Actions
 						else
 							FileService.JumpToFilePosition(pos.Filename, pos.Position.X - 1, pos.Position.Y - 1);
 					} catch (Exception ex) {
-						Console.WriteLine("Error jumping to '" + pos.Filename + "':\n" + ex.ToString());
-						MessageBox.Show("Error jumping to '" + pos.Filename + "':\n" + ex.ToString());
+						MessageService.ShowError(ex, "Error jumping to '" + pos.Filename + "'.");
 					}
 				}
 			}

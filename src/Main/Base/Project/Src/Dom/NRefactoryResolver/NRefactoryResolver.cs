@@ -414,9 +414,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (newOffset <= 0) break;
 				offset = newOffset;
 			}
-//			Console.WriteLine("<source from={0} to={1}>", startLine, endLine);
-//			Console.Write(fileContent.Substring(startOffset, offset - startOffset));
-//			Console.WriteLine("</source>");
 			int length = offset - startOffset;
 			string classDecl, endClassDecl;
 			if (language == SupportedLanguages.VBNet) {

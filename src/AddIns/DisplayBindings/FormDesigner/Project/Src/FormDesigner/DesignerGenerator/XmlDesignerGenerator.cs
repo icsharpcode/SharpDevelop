@@ -170,7 +170,7 @@ namespace ICSharpCode.FormDesigner
 				
 				return el;
 			} catch (Exception e) {
-				Console.WriteLine(e.ToString());
+				ICSharpCode.Core.MessageService.ShowError(e);
 			}
 			return null;
 		}

@@ -101,11 +101,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void OnCombineClosed(object sender, EventArgs e)
 		{
-			try {
-				listView.Items.Clear();
-			} catch (Exception ex) {
-				Console.WriteLine(ex);
-			}
+			listView.Items.Clear();
 		}
 		
 		void SelectTaskView(object sender, EventArgs e)
@@ -143,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					taskToolTip.SetToolTip(listView, description);
 					taskToolTip.Active       = true;
 				} else {
-					taskToolTip.RemoveAll(); 
+					taskToolTip.RemoveAll();
 					taskToolTip.Active       = false;
 				}
 				currentListViewItem = item;
@@ -185,12 +181,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} catch (Exception) {}
 			
 			ListViewItem item = new ListViewItem(new string[] {
-				String.Empty,
-				(task.Line + 1).ToString(),
-				FormatDescription(task.Description),
-				fileName,
-				path
-			});
+			                                     	String.Empty,
+			                                     	(task.Line + 1).ToString(),
+			                                     	FormatDescription(task.Description),
+			                                     	fileName,
+			                                     	path
+			                                     });
 			item.ImageIndex = item.StateImageIndex = imageIndex;
 			item.Tag = task;
 			listView.Items.Add(item);
@@ -223,7 +219,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		/// <summary>
 		/// Removes new lines, carriage returns and tab characters from
-		/// the list view task description and replaces them with a space.  
+		/// the list view task description and replaces them with a space.
 		/// </summary>
 		/// <param name="description">The task list description.</param>
 		/// <returns>A formatted task list description.</returns>

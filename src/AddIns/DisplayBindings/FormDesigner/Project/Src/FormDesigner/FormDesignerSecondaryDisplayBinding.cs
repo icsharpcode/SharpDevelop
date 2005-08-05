@@ -86,12 +86,10 @@ namespace ICSharpCode.FormDesigner
 				ITextEditorControlProvider textAreaControlProvider = (ITextEditorControlProvider)viewContent;
 				string fileExtension = String.Empty;
 				string fileName      = viewContent.IsUntitled ? viewContent.UntitledName : viewContent.FileName;
+				if (fileName == null)
+					return false;
 				
-				try {
-					fileExtension = Path.GetExtension(fileName).ToLower();
-				} catch (Exception e) {
-					Console.WriteLine(e);
-				}
+				fileExtension = Path.GetExtension(fileName).ToLower();
 				
 				switch (fileExtension) {
 					case ".cs":
@@ -136,11 +134,7 @@ namespace ICSharpCode.FormDesigner
 			string fileExtension = String.Empty;
 			string fileName      = viewContent.IsUntitled ? viewContent.UntitledName : viewContent.FileName;
 			
-			try {
-				fileExtension = Path.GetExtension(fileName).ToLower();
-			} catch (Exception e) {
-				Console.WriteLine(e);
-			}
+			fileExtension = Path.GetExtension(fileName).ToLower();
 			
 			if (!FormKeyHandler.inserted) {
 				FormKeyHandler.Insert();

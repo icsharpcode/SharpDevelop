@@ -121,9 +121,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				} else {
 					fileContent = GetFileContent(item);
 				}
+			} catch (FileNotFoundException ex) {
+				res = null;
+				Console.WriteLine("ParseableFileContentEnumerator: " + ex.Message);
+				return MoveNext(); // skip files that were not found
 			} catch (IOException ex) {
 				res = null;
-				Console.WriteLine(ex);
+				Console.WriteLine("ParseableFileContentEnumerator: " + ex.Message);
 				return MoveNext(); // skip invalid files
 			}
 			if (nextItem != null && nextItem.ItemType == ItemType.Compile && CanReadAsync(nextItem))

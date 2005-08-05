@@ -219,7 +219,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					}
 				}
 			} catch (Exception ex) { 
-				Console.WriteLine(ex);
+				MessageService.ShowError(ex);
 			}
 			ControlDictionary["createInLabel"].Text = ResourceService.GetString("Dialog.NewProject.ProjectAtDescription")+ " " + solutionPath;
 		}

@@ -44,7 +44,7 @@ namespace ICSharpCode.FormDesigner.Services
 					try {
 						disposeMe.Dispose();
 					} catch (Exception e) {
-						Console.WriteLine("Exception while disposing " + disposeMe + ":" + e.ToString());
+						ICSharpCode.Core.MessageService.ShowError(e, "Exception while disposing " + disposeMe);
 					}
 				}
 			}

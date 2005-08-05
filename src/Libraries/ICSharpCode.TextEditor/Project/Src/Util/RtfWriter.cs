@@ -21,29 +21,24 @@ namespace ICSharpCode.TextEditor.Util
 		
 		public static string GenerateRtf(TextArea textArea)
 		{
-			try {
-				colors = new Dictionary<string, int>();
-				colorNum = 0;
-				colorString = new StringBuilder();
-				
-				
-				StringBuilder rtf = new StringBuilder();
-				
-				rtf.Append(@"{\rtf1\ansi\ansicpg1252\deff0\deflang1031");
-				BuildFontTable(textArea.Document, rtf);
-				rtf.Append('\n');
-				
-				string fileContent = BuildFileContent(textArea);
-				BuildColorTable(textArea.Document, rtf);
-				rtf.Append('\n');
-				rtf.Append(@"\viewkind4\uc1\pard");
-				rtf.Append(fileContent);
-				rtf.Append("}");
-				return rtf.ToString();
-			} catch (Exception e) {
-				Console.WriteLine(e.ToString());
-			}
-			return null;
+			colors = new Dictionary<string, int>();
+			colorNum = 0;
+			colorString = new StringBuilder();
+			
+			
+			StringBuilder rtf = new StringBuilder();
+			
+			rtf.Append(@"{\rtf1\ansi\ansicpg1252\deff0\deflang1031");
+			BuildFontTable(textArea.Document, rtf);
+			rtf.Append('\n');
+			
+			string fileContent = BuildFileContent(textArea);
+			BuildColorTable(textArea.Document, rtf);
+			rtf.Append('\n');
+			rtf.Append(@"\viewkind4\uc1\pard");
+			rtf.Append(fileContent);
+			rtf.Append("}");
+			return rtf.ToString();
 		}
 		
 		static void BuildColorTable(IDocument doc, StringBuilder rtf)

@@ -277,7 +277,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					}
 				} while(xml.Read());
 			} catch (Exception ex) {
-				Console.WriteLine(ex);
+				Console.WriteLine("Invalid XML documentation: " + ex.Message);
 				return doc;
 			}
 			return ret.ToString();

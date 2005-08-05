@@ -37,8 +37,7 @@ namespace ICSharpCode.FormDesigner.Gui.OptionPanels
 			int width = 0;
 			try {
 				width = Int32.Parse(ControlDictionary["widthTextBox"].Text);
-			} catch (Exception e) {
-				Console.WriteLine(e);
+			} catch {
 				MessageService.ShowError("Forms Designer grid with is invalid");
 				return false;
 			}
@@ -46,8 +45,7 @@ namespace ICSharpCode.FormDesigner.Gui.OptionPanels
 			int height = 0;
 			try {
 				height = Int32.Parse(ControlDictionary["heightTextBox"].Text);
-			} catch (Exception e) {
-				Console.WriteLine(e);
+			} catch {
 				MessageService.ShowError("Forms Designer height with is invalid");
 				return false;
 			}

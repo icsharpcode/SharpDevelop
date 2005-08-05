@@ -364,7 +364,7 @@ namespace ICSharpCode.Core
 				try {
 					OnParseInformationUpdated(new ParseInformationEventArgs(fileName, parseInformation, parserOutput));
 				} catch (Exception e) {
-					Console.WriteLine(e);
+					MessageService.ShowError(e);
 				}
 			}
 			

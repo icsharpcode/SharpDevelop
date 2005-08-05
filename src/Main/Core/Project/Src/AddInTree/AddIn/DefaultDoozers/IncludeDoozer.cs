@@ -58,8 +58,8 @@ namespace ICSharpCode.Core
 				try {
 					node = AddInTree.GetTreeNode(path);
 					items.AddRange(node.BuildChildItems(caller));
-				} catch (TreePathNotFoundException ex) {
-					Console.WriteLine(ex);
+				} catch (TreePathNotFoundException) {
+					MessageService.ShowError("IncludeDoozer: AddinTree-Path not found: " + path);
 				}
 			}
 		}

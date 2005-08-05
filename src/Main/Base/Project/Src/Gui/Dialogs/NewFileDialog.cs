@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 				((TreeView)ControlDictionary["categoryTreeView"]).Select();
 			} catch (Exception e) {
-				Console.WriteLine(e.ToString());
+				MessageService.ShowError(e);
 			}
 		}
 		
@@ -289,7 +289,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						++curNumber;
 					}
 				} catch (Exception e) {
-					Console.WriteLine(e);
+					MessageService.ShowError(e);
 				}
 			}
 			return StringParser.Parse(SelectedTemplate.DefaultName);

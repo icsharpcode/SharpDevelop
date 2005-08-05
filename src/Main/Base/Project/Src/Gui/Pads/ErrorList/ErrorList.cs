@@ -153,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				listView.Items.Clear();
 				UpdateToolstripStatus();
 			} catch (Exception ex) {
-				Console.WriteLine(ex);
+				MessageService.ShowError(ex);
 			}
 		}
 		
@@ -304,7 +304,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void UpdateToolstripStatus()
 		{
-			Console.WriteLine("Updpate " + TaskService.TaskCount);
 			foreach (ToolStripItem item in toolStrip.Items) {
 				if (item is IStatusUpdate) {
 					((IStatusUpdate)item).UpdateStatus();

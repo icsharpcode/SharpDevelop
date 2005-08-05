@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.FormEditor.Commands
 					menuCommandService.GlobalInvoke(CommandID);
 				}
 			} catch (Exception e) {
-				Console.WriteLine("Got Exception {0}", e);
+				MessageService.ShowError(e);
 			}
 		}
 	}
@@ -141,7 +141,7 @@ namespace ICSharpCode.SharpDevelop.FormEditor.Commands
 				try {
 					verb.Invoke();
 				} catch (Exception ex) {
-					Console.WriteLine("Got Exception {0}", ex);
+					MessageService.ShowError(ex);
 				}
 			}
 		}

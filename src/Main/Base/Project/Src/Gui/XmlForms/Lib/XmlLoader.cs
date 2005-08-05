@@ -318,8 +318,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 					}
 				}
 			} catch (Exception e) {
-				Console.WriteLine(e.ToString());
-				throw new ApplicationException("error while setting property " + propertyName + " of object "+ o.ToString() + " to value '" + val+ "'");
+				throw new ApplicationException("error while setting property " + propertyName + " of object "+ o.ToString() + " to value '" + val+ "'", e);
 			}
 		}
 		

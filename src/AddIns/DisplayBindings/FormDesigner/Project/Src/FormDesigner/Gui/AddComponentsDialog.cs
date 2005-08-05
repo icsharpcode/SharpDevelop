@@ -142,7 +142,7 @@ namespace ICSharpCode.FormDesigner.Gui
 						}
 					}
 				} catch (Exception e) {
-					Console.WriteLine("got exception : " + e.ToString());
+					MessageService.ShowError(e);
 				}
 			}
 			((ListView)ControlDictionary["componentListView"]).EndUpdate();

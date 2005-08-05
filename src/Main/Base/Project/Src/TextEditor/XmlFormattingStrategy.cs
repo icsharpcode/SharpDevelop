@@ -95,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor
 			try {
 				TryIndent(textArea, begin, end);
 			} catch (XmlException ex) {
-				Console.WriteLine(ex.ToString());
+				MessageService.ShowError(ex);
 			}
 		}
 		

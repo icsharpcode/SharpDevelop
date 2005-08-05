@@ -206,7 +206,7 @@ namespace ICSharpCode.Svn
 					inOperationForm = null;
 				}
 			} catch (Exception e) {
-				Console.WriteLine(e);
+				MessageService.ShowError(e);
 			} finally {
 				done = true;
 			}

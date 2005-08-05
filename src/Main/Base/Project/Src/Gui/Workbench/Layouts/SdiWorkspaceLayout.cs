@@ -253,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			} catch (Exception e) {
-				Console.WriteLine(e);
+				MessageService.ShowError(e);
 			}
 		}
 		
@@ -267,7 +267,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						padContentWrapper.DetachContent();
 						padContentWrapper.Dispose();
 					}
-				} catch (Exception e) { Console.WriteLine(e); }
+				} catch (Exception e) { MessageService.ShowError(e); }
 			}
 			if (dispose) {
 				contentHash.Clear();
@@ -286,7 +286,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						f.DetachContent();
 						f.Dispose();
 					}
-				} catch (Exception e) { Console.WriteLine(e); }
+				} catch (Exception e) { MessageService.ShowError(e); }
 			}
 		}
 		public void Detach()
@@ -304,7 +304,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					dockPanel = null;
 				}
 			} catch (Exception e) {
-				Console.WriteLine(e);
+				MessageService.ShowError(e);
 			}
 			if (contentHash != null) {
 				contentHash.Clear();

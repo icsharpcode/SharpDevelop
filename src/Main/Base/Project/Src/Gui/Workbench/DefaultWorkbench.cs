@@ -208,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						((IMementoCapable)content).SetMemento(memento);
 					}
 				} catch (Exception e) {
-					Console.WriteLine("Can't get/set memento : " + e.ToString());
+					MessageService.ShowError(e, "Can't get/set memento");
 				}
 			}
 			

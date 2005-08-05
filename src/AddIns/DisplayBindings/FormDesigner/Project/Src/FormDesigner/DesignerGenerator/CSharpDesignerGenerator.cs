@@ -74,7 +74,7 @@ namespace ICSharpCode.FormDesigner
 					}
 				}
 			} catch (Exception ex) {
-				Console.WriteLine(ex);
+				MessageService.ShowError(ex);
 			}
 		}
 		
@@ -87,7 +87,7 @@ namespace ICSharpCode.FormDesigner
 				int endOffset = viewContent.Document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.EndLine));
 				viewContent.Document.Insert(endOffset, "\t\tprivate " + e.Component.GetType() + " " + e.Component.Site.Name + ";" + Environment.NewLine);
 			} catch (Exception ex) { 
-				Console.WriteLine(ex);
+				MessageService.ShowError(ex);
 			}
 		}
 		

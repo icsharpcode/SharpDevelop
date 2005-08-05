@@ -32,7 +32,6 @@ namespace ICSharpCode.Core
 		
 		public static ContextMenuStrip CreateContextMenu(object owner, string addInTreePath)
 		{
-			Console.WriteLine("Create Owner == " + owner);
 			if (addInTreePath == null) {
 				return null;
 			}
@@ -51,7 +50,7 @@ namespace ICSharpCode.Core
 				ContextMenuPopupHandler(contextMenu, EventArgs.Empty);
 				return contextMenu;
 			} catch (TreePathNotFoundException) {
-				Console.WriteLine("Warning tree path '" + addInTreePath +"' not found.");
+				MessageService.ShowError("Warning tree path '" + addInTreePath +"' not found.");
 				return null;
 			} 
 		}
