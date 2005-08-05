@@ -46,7 +46,8 @@ namespace ICSharpCode.Core
 		void CreateCommand()
 		{
 			try {
-				if (codon.Properties["link"] != null) {
+				string link = codon.Properties["link"];
+				if (link != null && link.Length > 0) {
 					if (LinkCommandCreator == null)
 						throw new NotSupportedException("MenuCommand.LinkCommandCreator is not set, cannot create LinkCommands.");
 					menuCommand = LinkCommandCreator(codon.Properties["link"]);
