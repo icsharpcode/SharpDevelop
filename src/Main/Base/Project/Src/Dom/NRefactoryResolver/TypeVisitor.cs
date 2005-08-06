@@ -88,6 +88,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 		}
 		
+		public override object Visit(IndexerExpression indexerExpression, object data)
+		{
+			IIndexer i = GetIndexer(indexerExpression, data);
+			if (i != null)
+				return i.ReturnType;
+			else
+				return null;
+		}
+		
 		public IMethod FindOverload(List<IMethod> methods, ArrayList arguments, object data)
 		{
 			if (methods.Count <= 0) {
@@ -199,6 +208,27 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return FindOverload(methods, invocationExpression.Parameters, data);
 			}
 			return null;
+		}
+		
+		public IIndexer GetIndexer(IndexerExpression indexerExpression, object data)
+		{
+			IReturnType type = (IReturnType)indexerExpression.TargetObject.AcceptVisitor(this, data);
+			if (type == null) {
+				return null;
+			}
+			List<IIndexer> indexers = type.GetIndexers();
+			IReturnType[] parameters = new IReturnType[indexerExpression.Indices.Count];
+			for (int i = 0; i < parameters.Length; i++) {
+				Expression expr = indexerExpression.Indices[i] as Expression;
+				if (expr != null)
+					parameters[i] = (IReturnType)expr.AcceptVisitor(this, data);
+			}
+			bool tmp;
+			int num = FindOverload(new List<IMethodOrIndexer>(indexers.ToArray()), parameters, true, out tmp);
+			if (num < 0)
+				return null;
+			else
+				return indexers[num];
 		}
 		
 		void InjectMethodTypeParameters(List<IMethod> methods, InvocationExpression invocationExpression)
@@ -373,19 +403,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			++returnType.PointerNestingLevel;
 			return returnType;*/
 			return null;
-		}
-		
-		public override object Visit(IndexerExpression indexerExpression, object data)
-		{
-			IReturnType type = (IReturnType)indexerExpression.TargetObject.AcceptVisitor(this, data);
-			if (type == null) {
-				return null;
-			}
-			List<IIndexer> indexers = type.GetIndexers();
-			if (indexers.Count > 0)
-				return indexers[0].ReturnType;
-			else
-				return null;
 		}
 		
 		public override object Visit(ClassReferenceExpression classReferenceExpression, object data)

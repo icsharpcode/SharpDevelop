@@ -134,6 +134,26 @@ namespace CSharpBinding.Parser
 		}
 		#endregion
 		
+		#region RemoveLastPart
+		/// <summary>
+		/// Removed the last part of the expression.
+		/// </summary>
+		/// <example>
+		/// "arr[i]" => "arr"
+		/// "obj.Field" => "obj"
+		/// "obj.Method(args,...)" => "obj.Method"
+		/// </example>
+		public string RemoveLastPart(string expression)
+		{
+			text = expression;
+			offset = text.Length - 1;
+			ReadNextToken();
+			if (curTokenType == Ident && Peek() == '.')
+				GetNext();
+			return text.Substring(0, offset + 1);
+		}
+		#endregion
+		
 		#region Find Expression
 		public ExpressionResult FindExpression(string inText, int offset)
 		{

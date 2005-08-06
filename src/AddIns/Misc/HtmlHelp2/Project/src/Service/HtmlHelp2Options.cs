@@ -9,6 +9,7 @@ namespace HtmlHelp2Service
 {
 	using System;
 	using System.Drawing;
+	using System.Diagnostics;
 	using System.Collections;
 	using System.IO;
 	using System.Reflection;
@@ -28,6 +29,7 @@ namespace HtmlHelp2Service
 		public override void LoadPanelContents()
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("HtmlHelp2.Resources.HtmlHelp2Options.xfrm"));
+			ControlDictionary["reregisterButton"].Click += ReregisterButtonClick;
 			this.InitializeComponents();
 		}
 
@@ -81,6 +83,24 @@ namespace HtmlHelp2Service
 				xmldoc.Save(PropertyService.ConfigDirectory + help2EnvironmentFile);
 			}
 			catch {
+			}
+		}
+		
+		void ReregisterButtonClick(object sender, EventArgs e)
+		{
+			new MethodInvoker(DoReregister).BeginInvoke(null, null);
+		}
+		
+		void DoReregister()
+		{
+			try {
+				ProcessStartInfo info = new ProcessStartInfo("cmd", "/c call echo Unregistering... & unregister.bat & echo. & echo Registering... & call register.bat & pause");
+				info.WorkingDirectory = Path.Combine(FileUtility.SharpDevelopRootPath, "bin\\setup\\help");
+				Process p = Process.Start(info);
+				p.WaitForExit(45000);
+				WorkbenchSingleton.SafeThreadAsyncCall(typeof(HtmlHelp2Environment), "ReloadNamespace");
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
 			}
 		}
 	}

@@ -96,6 +96,11 @@ namespace ICSharpCode.Core
 				if (progressMonitor != null) {
 					progressMonitor.BeginTask("${res:SharpDevelop.Refactoring.FindingReferences}", files.Count);
 				}
+				#if DEBUG
+				if (System.Windows.Forms.Control.ModifierKeys == System.Windows.Forms.Keys.Control) {
+					System.Diagnostics.Debugger.Break();
+				}
+				#endif
 				while (enumerator.MoveNext()) {
 					if (progressMonitor != null) {
 						progressMonitor.WorkDone = enumerator.Index;
@@ -144,17 +149,28 @@ namespace ICSharpCode.Core
 				if (expressionFinder == null) {
 					expressionFinder = ParserService.GetExpressionFinder(fileName);
 				}
-				ExpressionResult expr = expressionFinder.FindFullExpression(fileContent, pos + 1);
+				ExpressionResult expr = expressionFinder.FindFullExpression(fileContent, pos);
 				if (expr.Expression != null) {
 					Point position = GetPosition(fileContent, pos);
+				repeatResolve:
 					// TODO: Optimize by re-using the same resolver if multiple expressions were
 					// found in this file (the resolver should parse all methods at once)
 					ResolveResult rr = ParserService.Resolve(expr, position.Y, position.X, fileName, fileContent);
 					if (member != null) {
+						// find reference to member
 						if (IsReferenceToMember(member, rr)) {
 							list.Add(new Reference(fileName, pos, searchedText.Length, expr.Expression, rr));
+						} else if (rr is MemberResolveResult && (rr as MemberResolveResult).ResolvedMember is IIndexer) {
+							// we got an indexer call as expression ("objectList[0].ToString()[2]")
+							// strip the index from the expression to resolve the underlying expression
+							string newExpr = expressionFinder.RemoveLastPart(expr.Expression);
+							if (newExpr.Length >= expr.Expression.Length)
+								throw new ApplicationException("new expression must be shorter than old expression");
+							expr.Expression = newExpr;
+							goto repeatResolve;
 						}
 					} else {
+						// find reference to class
 						MemberResolveResult mrr = rr as MemberResolveResult;
 						if (mrr != null) {
 							if (mrr.ResolvedMember is IMethod && ((IMethod)mrr.ResolvedMember).IsConstructor) {
@@ -270,7 +286,7 @@ namespace ICSharpCode.Core
 						continue;
 					}
 					if (!pc.HasReferenceTo(ownerProjectContent)) {
-						// unreferences project contents cannot reference the class
+						// project contents that do not reference the owner's content cannot reference the member
 						continue;
 					}
 				}
@@ -286,10 +302,13 @@ namespace ICSharpCode.Core
 		public static bool IsReferenceToMember(IMember member, ResolveResult rr)
 		{
 			MemberResolveResult mrr = rr as MemberResolveResult;
-			if (mrr != null)
+			if (mrr != null) {
 				return IsSimilarMember(mrr.ResolvedMember, member);
-			else
+			} else if (rr is MethodResolveResult) {
+				return IsSimilarMember((rr as MethodResolveResult).GetMethodIfSingleOverload(), member);
+			} else {
 				return false;
+			}
 		}
 		
 		/// <summary>
@@ -363,6 +382,7 @@ namespace ICSharpCode.Core
 		
 		public static IMember FindBaseMember(IMember member)
 		{
+			if (member == null) return null;
 			IClass parentClass = member.DeclaringType;
 			IClass baseClass = parentClass.BaseClass;
 			if (baseClass == null) return null;

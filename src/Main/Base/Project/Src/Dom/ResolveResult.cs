@@ -443,14 +443,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override FilePosition GetDefinitionPosition()
+		public IMethod GetMethodIfSingleOverload()
 		{
 			List<IMethod> methods = containingType.GetMethods();
 			methods = methods.FindAll(delegate(IMethod m) { return m.Name == this.Name; });
-			if (methods.Count == 1) {
-				return MemberResolveResult.GetDefinitionPosition(methods[0]);
-			}
-			return base.GetDefinitionPosition();
+			if (methods.Count == 1)
+				return methods[0];
+			else
+				return null;
+		}
+		
+		public override FilePosition GetDefinitionPosition()
+		{
+			IMethod m = GetMethodIfSingleOverload();
+			if (m != null)
+				return MemberResolveResult.GetDefinitionPosition(m);
+			else
+				return base.GetDefinitionPosition();
 		}
 	}
 	#endregion

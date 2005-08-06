@@ -363,15 +363,12 @@ namespace ICSharpCode.Core
 				else
 					return ambience.Convert(result.ResolvedType);
 			} else if (result is MethodResolveResult) {
-				IReturnType container = ((MethodResolveResult)result).ContainingType;
-				List<IMethod> methods = container.GetMethods();
-				methods = methods.FindAll(delegate(IMethod m) {
-				                          	return m.Name == ((MethodResolveResult)result).Name;
-				                          });
-				if (methods.Count == 1)
-					return GetText(ambience, methods[0]);
+				MethodResolveResult mrr = result as MethodResolveResult;
+				IMethod m = mrr.GetMethodIfSingleOverload();
+				if (m != null)
+					return GetText(ambience, m);
 				else
-					return "Overload of " + ambience.Convert(container) + "." + ((MethodResolveResult)result).Name;
+					return "Overload of " + ambience.Convert(mrr.ContainingType) + "." + mrr.Name;
 			} else {
 //				if (result.ResolvedType != null)
 //					return "expression of type " + ambience.Convert(result.ResolvedType);

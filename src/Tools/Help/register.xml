@@ -5,7 +5,7 @@
     <file Id="SharpZipLib" HxS="..\..\..\doc\help\3rdparty\ICSharpCode.SharpZipLib.HxS" HxI="..\..\..\doc\help\3rdparty\ICSharpCode.SharpZipLib.HxI" LangId="1033"/>
     <filter name="(no filter)"/>
     <plugin>
-    	<child name="MS.NETFrameworkSDKv1.1*"/>
+    	<child name="MS.NETFrameworkSDKv2*"/>
     </plugin>
   </namespace>
 </register>

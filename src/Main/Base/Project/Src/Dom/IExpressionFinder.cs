@@ -20,6 +20,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Finds an expression around the current offset.
 		/// </summary>
 		ExpressionResult FindFullExpression(string text, int offset);
+		
+		/// <summary>
+		/// Removed the last part of the expression.
+		/// </summary>
+		/// <example>
+		/// "arr[i]" => "arr"
+		/// "obj.Field" => "obj"
+		/// "obj.Method(args,...)" => "obj.Method"
+		/// </example>
+		string RemoveLastPart(string expression);
 	}
 	
 	/// <summary>

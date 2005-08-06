@@ -122,6 +122,23 @@ namespace VBNetBinding.Parser
 			return -1;
 		}
 		
+		/// <summary>
+		/// Removed the last part of the expression.
+		/// </summary>
+		/// <example>
+		/// "obj.Field" => "obj"
+		/// "obj.Method(args,...)" => "obj.Method"
+		/// </example>
+		public string RemoveLastPart(string expression)
+		{
+			text = expression;
+			offset = text.Length - 1;
+			ReadNextToken();
+			if (curTokenType == Ident && Peek() == '.')
+				GetNext();
+			return text.Substring(0, offset + 1);
+		}
+		
 		#region Comment Filter and 'inside string watcher'
 		int initialOffset;
 		public string FilterComments(string text, ref int offset)

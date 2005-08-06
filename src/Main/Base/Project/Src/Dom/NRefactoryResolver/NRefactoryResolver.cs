@@ -259,6 +259,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					
 					return invocationTarget;
 				}
+			} else if (expr is IndexerExpression) {
+				return CreateMemberResolveResult(typeVisitor.GetIndexer(expr as IndexerExpression, null));
 			} else if (expr is FieldReferenceExpression) {
 				FieldReferenceExpression fieldReferenceExpression = (FieldReferenceExpression)expr;
 				if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName.Length == 0) {
