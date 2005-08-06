@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<register>
+  <namespace name="Corsavy" description="SharpDevelop Help Collection" file="..\..\..\doc\help\sharpdevelop\fidalgo.HxC">
+    <file Id="SharpMain" HxS="..\..\..\doc\help\sharpdevelop\SharpDevelop.HxS" HxI="..\..\..\doc\help\sharpdevelop\SharpDevelop.HxI" LangId="1033"/>
+    <file Id="SharpZipLib" HxS="..\..\..\doc\help\3rdparty\ICSharpCode.SharpZipLib.HxS" HxI="..\..\..\doc\help\3rdparty\ICSharpCode.SharpZipLib.HxI" LangId="1033"/>
+    <filter name="(no filter)"/>
+    <plugin>
+    	<child name="MS.NETFrameworkSDKv1.1*"/>
+    </plugin>
+  </namespace>
+</register>

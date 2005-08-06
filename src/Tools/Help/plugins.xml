@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<register>
+	<plugin parent="Corsavy">
+		<child name="MS.NETFrameworkSDKv1.1.DE"/>
+	</plugin>
+</register>

@@ -26,7 +26,7 @@ namespace HtmlHelp2Service
 		static IHxRegFilterList namespaceFilters         = null;
 		static IHxQuery fulltextSearch                   = null;
 		static IHxQuery dynamicHelp                      = null;
-		static string fidalgoNamespaceName               = "Fidalgo";
+		static string corsavyNamespaceName               = "Corsavy";
 		static string currentSelectedFilterQuery         = "";
 		static string currentSelectedFilterName          = "";
 		static string defaultPage                        = "about:blank";
@@ -36,8 +36,8 @@ namespace HtmlHelp2Service
 		static HtmlHelp2Environment()
 		{
 			LoadHelp2Config();
-			fidalgoNamespaceName = Help2RegistryWalker.GetFirstNamespace(fidalgoNamespaceName);
-			InitializeNamespace(fidalgoNamespaceName);
+			corsavyNamespaceName = Help2RegistryWalker.GetFirstNamespace(corsavyNamespaceName);
+			InitializeNamespace(corsavyNamespaceName);
 		}
 
 		#region Properties
@@ -51,7 +51,7 @@ namespace HtmlHelp2Service
 		public static string CurrentSelectedNamespace
 		{
 			get {
-				return fidalgoNamespaceName;
+				return corsavyNamespaceName;
 			}
 		}
 
@@ -106,7 +106,7 @@ namespace HtmlHelp2Service
 				xmldoc.Load(PropertyService.ConfigDirectory + help2EnvironmentFile);
 
 				XmlNode node = xmldoc.SelectSingleNode("/help2environment/collection");
-				if(node != null) fidalgoNamespaceName = node.InnerText;
+				if(node != null) corsavyNamespaceName = node.InnerText;
 			}
 			catch {
 			}
@@ -115,8 +115,8 @@ namespace HtmlHelp2Service
 		public static void ReloadNamespace()
 		{
 			LoadHelp2Config();
-			fidalgoNamespaceName = Help2RegistryWalker.GetFirstNamespace(fidalgoNamespaceName);
-			InitializeNamespace(fidalgoNamespaceName);
+			corsavyNamespaceName = Help2RegistryWalker.GetFirstNamespace(corsavyNamespaceName);
+			InitializeNamespace(corsavyNamespaceName);
 			OnNamespaceReloaded(EventArgs.Empty);
 		}
 

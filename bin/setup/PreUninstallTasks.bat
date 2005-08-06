@@ -6,6 +6,6 @@ echo.
 ..\tools\gacutil2.exe /u ..\nunit.framework.dll
 echo.
 ..\tools\gacutil2.exe /u ..\ICSharpCode.SharpZipLib.dll
-rem cd help
-rem call unregister.bat
+cd help
+call unregister.bat
 @IF %ERRORLEVEL% NEQ 0 PAUSE

@@ -1,0 +1,33 @@
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
+	<ItemGroup>
+		<NDocFiles Include="ndoc\bin\*"/>
+		<WixFiles Include="wix\*"/>
+		<WixCaFiles Include="wix\ca\*"/>
+		<WixDocFiles Include="wix\doc\*"/>
+		<WixLibFiles Include="wix\doc\*"/>
+		<HelpToolFiles Include="Help\*"/>
+	</ItemGroup>
+	
+	<Target Name="Build">
+		<Copy SourceFiles="@(NDocFiles)" DestinationFolder="..\..\bin\Tools\NDoc"/>
+		<Copy SourceFiles="@(WixFiles)" DestinationFolder="..\..\bin\Tools\Wix"/>
+		<Copy SourceFiles="@(WixCaFiles)" DestinationFolder="..\..\bin\Tools\Wix\ca"/>
+		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc"/>
+		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib"/>
+		<CreateProperty Condition = "!Exists('..\..\bin\setup\help\register.bat')" Value="yes">
+			<Output TaskParameter="Value" PropertyName="NeedToRunRegister" />
+		</CreateProperty>
+		<Copy SourceFiles="@(HelpToolFiles)" DestinationFolder="..\..\bin\setup\help"/>
+		<Exec Command="register.bat" WorkingDirectory = "..\..\bin\setup\help" Timeout = "60000" IgnoreExitCode = "true" Condition = "'$(NeedToRunRegister)' == 'yes'" />
+	</Target>
+	
+	<Target Name="Rebuild" DependsOnTargets="Clean;Build"/>
+	
+	<Target Name="Publish" DependsOnTargets="Build"/>
+	
+	<Target Name="Clean">
+		<Exec Command="unregister.bat" WorkingDirectory="..\..\bin\setup\help" IgnoreExitCode = "true" Condition = "Exists('..\..\bin\setup\help\unregister.bat')"/>
+		<RemoveDir Directories="..\..\bin\Tools" />
+		<RemoveDir Directories="..\..\bin\setup\help" />
+	</Target>
+</Project>

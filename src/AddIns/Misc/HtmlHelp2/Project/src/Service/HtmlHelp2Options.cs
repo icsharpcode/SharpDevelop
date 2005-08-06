@@ -23,7 +23,7 @@ namespace HtmlHelp2Service
 		static string help2EnvironmentFile = "help2environment.xml";
 		bool Help2EnvIsReady               = false;
 		ComboBox help2Collections          = null;
-		string selectedHelp2Collection     = "Fidalgo";
+		string selectedHelp2Collection     = "Corsavy";
 
 		public override void LoadPanelContents()
 		{
