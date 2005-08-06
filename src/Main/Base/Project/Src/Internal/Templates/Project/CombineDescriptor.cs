@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string name;
 		string startupProject    = null;
 		string relativeDirectory = null;
-	
+		
 		#region public properties
 		public string StartupProject {
 			get {
@@ -77,10 +77,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			// Create sub projects
 			foreach (ProjectDescriptor projectDescriptor in projectDescriptors) {
 				IProject newProject = projectDescriptor.CreateProject(projectCreateInformation, defaultLanguage);
-				if (newProject != null) {
-					newProject.Location = FileUtility.GetRelativePath(oldCombinePath, newProject.FileName);
-					newCombine.AddFolder(newProject);
-				}
+				if (newProject == null)
+					return null;
+				newProject.Location = FileUtility.GetRelativePath(oldCombinePath, newProject.FileName);
+				newCombine.AddFolder(newProject);
 				projectCreateInformation.CreatedProjects.Add(newProject.FileName);
 			}
 			
@@ -92,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			projectCreateInformation.CombinePath = oldCombinePath;
 			projectCreateInformation.ProjectBasePath = oldProjectPath;
 			
- 			string combineLocation = Path.Combine(projectCreateInformation.CombinePath, newCombineName + ".sln");
+			string combineLocation = Path.Combine(projectCreateInformation.CombinePath, newCombineName + ".sln");
 			// Save combine
 			if (File.Exists(combineLocation)) {
 				

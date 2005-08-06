@@ -16,8 +16,15 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
-	/// Description of ParseableFileContentEnumerator.
+	/// An enumerator which enumerates through a list of project items, returning the
+	/// parseable file content of each item.
 	/// </summary>
+	/// <remarks>
+	/// This class is thread-safe in a very limited way:
+	/// It can be created from every thread, but may be only used by the thread that created it.
+	/// It automatically uses WorkbenchSingleton.SafeThreadCall for reading currently open
+	/// files when it is created/accessed from a thread.
+	/// </remarks>
 	public class ParseableFileContentEnumerator : IEnumerator<KeyValuePair<string, string>>
 	{
 		void IEnumerator.Reset() {
@@ -55,11 +62,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		ProjectItem[] projectItems;
+		bool isOnMainThread;
 		
 		public ParseableFileContentEnumerator(IProject project) : this(project.Items.ToArray()) { }
 		
 		public ParseableFileContentEnumerator(ProjectItem[] projectItems)
 		{
+			isOnMainThread = !WorkbenchSingleton.InvokeRequired;
 			this.projectItems = projectItems;
 			Properties textEditorProperties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
 			getParseableContentEncoding = Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252));
@@ -77,8 +86,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		string GetParseableFileContent(IProject project, string fileName)
 		{
-			//Console.WriteLine("Reading {0} from disk", fileName);
-			
 			// Loading the source files is done asynchronously:
 			// While one file is parsed, the next is already loaded from disk.
 			string res = project.GetParseableFileContent(fileName);
@@ -141,21 +148,35 @@ namespace ICSharpCode.SharpDevelop.Project
 		string GetFileContent(ProjectItem item)
 		{
 			string fileName = item.FileName;
+			string content;
+			if (isOnMainThread)
+				content = GetFileContentFromOpenFile(fileName);
+			else
+				content = (string)WorkbenchSingleton.SafeThreadCall(this, "GetFileContentFromOpenFile", fileName);
+			if (content != null)
+				return content;
+			return GetParseableFileContent(item.Project, fileName);
+		}
+		
+		string GetFileContentFromOpenFile(string fileName)
+		{
 			IWorkbenchWindow window = FileService.GetOpenFile(fileName);
 			if (window != null) {
 				IViewContent viewContent = window.ViewContent;
 				IEditable editable = viewContent as IEditable;
 				if (editable != null) {
-					//Console.WriteLine("Reading {0} from editable", fileName);
 					return editable.Text;
 				}
 			}
-			return GetParseableFileContent(item.Project, fileName);
+			return null;
 		}
 		
 		bool CanReadAsync(ProjectItem item)
 		{
-			return !FileService.IsOpen(item.FileName);
+			if (isOnMainThread)
+				return !FileService.IsOpen(item.FileName);
+			else
+				return !(bool)WorkbenchSingleton.SafeThreadCall(typeof(FileService), "IsOpen", item.FileName);
 		}
 	}
 }

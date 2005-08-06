@@ -78,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				
 				string language = languageName != null && languageName.Length > 0 ? languageName : defaultLanguage;
 				LanguageBindingDescriptor descriptor = LanguageBindingService.GetCodonPerLanguageName(language);
-				ILanguageBinding languageinfo = descriptor.Binding;
+				ILanguageBinding languageinfo = (descriptor != null) ? descriptor.Binding : null;
 				
 				if (languageinfo == null) {
 					StringParser.Properties["type"] = language;

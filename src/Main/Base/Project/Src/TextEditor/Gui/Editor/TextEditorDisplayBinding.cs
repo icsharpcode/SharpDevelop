@@ -429,18 +429,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		delegate void ParseInformationDelegate(ParseInformation parseInfo);
-		
 		public void ParseInformationUpdated(ParseInformation parseInfo)
 		{
 			if (textAreaControl.TextEditorProperties.EnableFolding) {
-				TextArea textArea = textAreaControl.ActiveTextAreaControl.TextArea;
-				if (textArea.IsHandleCreated)
-					textArea.Invoke(new ParseInformationDelegate(ParseInformationUpdatedInternal), new object[] { parseInfo });
+				WorkbenchSingleton.SafeThreadAsyncCall(this, "ParseInformationUpdatedInvoked", parseInfo);
 			}
 		}
 		
-		void ParseInformationUpdatedInternal(ParseInformation parseInfo)
+		void ParseInformationUpdatedInvoked(ParseInformation parseInfo)
 		{
 			try {
 				textAreaControl.Document.FoldingManager.UpdateFoldings(TitleName, parseInfo);
