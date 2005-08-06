@@ -6,8 +6,8 @@
        version     = "1.0.0">
 	
 	<Runtime>
-		<Import assembly="../bin/ICSharpCode.SharpDevelop.dll"/>
-		<Import assembly="../bin/ICSharpCode.TextEditor.dll"/>
+		<Import assembly="/ICSharpCode.SharpDevelop"/>
+		<Import assembly="/ICSharpCode.TextEditor"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
@@ -281,7 +281,7 @@
 		          label = "Clea&amp;n"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.CleanProject"/>
 		<MenuItem id = "Publish project"
-		          label = "Publis ${CurrentProjectName}h"
+		          label = "Publish ${CurrentProjectName}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>
 		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
 		
@@ -703,8 +703,7 @@
 				<And>
 					<Or>
 						<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
-						<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.CSharpDesignerDisplayBindingWrapper"/>
-						<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.VBNetDesignerDisplayBindingWrapper"/>
+						<Condition name = "WindowActive" activewindow="ICSharpCode.FormDesigner.FormDesignerViewContent"/>
 					</Or>
 					<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
 				</And>
@@ -1125,7 +1124,7 @@
 			          class       = "ICSharpCode.SharpDevelop.Commands.ToggleFullscreenCommand" />
 		</MenuItem> <!-- end VIEW menu -->
 		
-		<Condition name = "CombineOpen" iscombineopen="True">
+		<Condition name = "ProjectActive" activeproject="*">
 			<MenuItem id = "Project" label = "${res:XML.MainMenu.ProjectMenu}"  type="Menu">
 				<MenuItem id    = "AddReference"
 				          label = "${res:ProjectComponent.ContextMenu.AddReference}"
@@ -1133,7 +1132,9 @@
 				<MenuItem id    = "SetAsStartupProject"
 				          label = "${res:ProjectComponent.ContextMenu.SetAsStartupProject}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.SetAsStartupProject"/>
-				
+				<MenuItem id = "ExportToHtml"
+				          label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
+				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ExportProjectToHtml"/>
 				<MenuItem id = "Separator2" type = "Separator" />
 				<MenuItem id = "Options"
 				          label = "${res:XML.MainMenu.ProjectMenu.Options}"
@@ -1147,8 +1148,7 @@
 					<And>
 						<Or>
 							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
-							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.CSharpDesignerDisplayBindingWrapper"/>
-							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.VBNetDesignerDisplayBindingWrapper"/>
+							<Condition name = "WindowActive" activewindow="ICSharpCode.FormDesigner.FormDesignerViewContent"/>
 						</Or>
 						<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
 					</And>
@@ -1193,8 +1193,7 @@
 					<And>
 						<Or>
 							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
-							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.CSharpDesignerDisplayBindingWrapper"/>
-							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.VBNetDesignerDisplayBindingWrapper"/>
+							<Condition name = "WindowActive" activewindow="ICSharpCode.FormDesigner.FormDesignerViewContent"/>
 						</Or>
 						<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
 					</And>
@@ -1274,13 +1273,12 @@
 		<MenuItem id = "Tools" label = "${res:XML.MainMenu.ToolMenu}" type="Menu">
 			<MenuItem id = "ToolBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Commands.ToolMenuBuilder" />
 			<MenuItem id = "Separator1" type = "Separator" />
+			<MenuItem id = "Separator2" type = "Separator" />
 			
-			<MenuItem id = "Separator4" type = "Separator" />
 			<ComplexCondition action = "Disable">
 				<Or>
-					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.FormDesignerDisplayBindingWrapper"/>
-					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.FormDesigner.CSharpDesignerDisplayBindingWrapper"/>
-					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.TextEditorDisplayBindingWrapper"/>
+					<Condition name = "WindowActive" activewindow="ICSharpCode.FormDesigner.FormDesignerViewContent"/>
+					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
 				</Or>
 				<Condition name="ActiveContentExtension" activeextension=".cs" action = "Disable">
 					<MenuItem id = "ConvertBuffer"
@@ -1293,7 +1291,30 @@
 					          class = "ICSharpCode.SharpDevelop.Commands.CSharpConvertBuffer"/>
 				</Condition>
 			</ComplexCondition>
-			<MenuItem id = "Separator5" type = "Separator" />
+			
+			<MenuItem id = "Separator3" type = "Separator" />
+			
+			<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
+				<MenuItem id = "InsertColor"
+				          label = "${res:XML.MainMenu.ToolMenu.InsColor}"
+				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowColorDialog"/>
+				<MenuItem id       = "InsertGuid"
+				          shortcut = "Control|Shift|G"
+				          label    = "${res:XML.MainMenu.ToolMenu.InsGUID}"
+				          class    = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.InsertGuidCommand"/>
+				<MenuItem id = "Separator4" type = "Separator" />
+				
+				<MenuItem id = "GenerateCodeAction"
+				          label = "${res:XML.MainMenu.ToolMenu.GenerateCode}"
+				          shortcut = "Alt|Insert"
+				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GenerateCodeAction"/>
+				<MenuItem id = "ShowQuickHelp"
+				          label = "${res:XML.MainMenu.ToolMenu.QuickXmlDoc}"
+				          shortcut = "Control|Q"
+				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.QuickDocumentation"/>
+			</Condition>
+			
+			<MenuItem id = "LastSeparator" type = "Separator" />
 			
 			<MenuItem id = "Options"
 			          label = "${res:XML.MainMenu.ToolMenu.Options}"
@@ -1331,7 +1352,7 @@
 			<MenuItem id = "Help"
 			          label = "${res:XML.MainMenu.HelpMenu.Topics}"
 			          shortcut = "Alt|F1"
-			          class = "ICSharpCode.SharpDevelop.Commands.ShowHelp"/>
+			          link = "browser://ms-help://corsavy/"/>
 			<MenuItem id = "TipOfTheDay"
 			          label = "${res:XML.MainMenu.HelpMenu.Tips}"
 			          icon = "Icons.16x16.TipOfTheDay"
@@ -1394,30 +1415,8 @@
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.CodeTemplatePanel"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Views/ProjectBrowser/ContextMenu">
-		<!-- AddIn to the Project Add Menu -->
-		<Condition name = "Ownerstate" ownerstate="ProjectSelected">
-			<MenuItem id = "ExportToHtml"
-			          insertafter = "GenerateDocumentation"
-			          insertbefore = "Separator5"
-			          label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ExportProjectToHtml"/>
-		</Condition>
-	</Path>
-	
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/XML">
 		<Class id ="XmlFormatter" class = "ICSharpCode.SharpDevelop.DefaultEditor.XmlFormattingStrategy"/>
-	</Path>
-	
-	<Path name = "/SharpDevelop/Workbench/MainMenu/Project">
-		<!-- AddIn to the Project Add Menu -->
-		<Condition name = "ProjectActive" activeproject="*">
-			<MenuItem id = "ExportToHtml"
-			          insertafter = "GenerateDocumentation"
-			          insertbefore = "Separator2"
-			          label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ExportProjectToHtml"/>
-		</Condition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
@@ -1749,34 +1748,6 @@
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.CodeCompletion.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels.CodeCompletionPanel"/>
 		</DialogPanel>
-	</Path>
-	
-	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
-		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider" action="Disable">
-			<MenuItem id = "InsertColor"
-			          insertafter = "Separator1" insertbefore = "InsertGuid"
-			          label = "${res:XML.MainMenu.ToolMenu.InsColor}"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowColorDialog"/>
-			<MenuItem id           = "InsertGuid"
-			          insertafter  = "InsertColor"
-			          insertbefore = "Separator2"
-			          shortcut     = "Control|Shift|G"
-			          label        = "${res:XML.MainMenu.ToolMenu.InsGUID}"
-			          class        = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.InsertGuidCommand"/>
-			<MenuItem id = "Separator2" type = "Separator" />
-			
-			<MenuItem id = "GenerateCodeAction"
-			          insertafter = "Separator2"
-			          label = "${res:XML.MainMenu.ToolMenu.GenerateCode}"
-			          shortcut = "Alt|Insert"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GenerateCodeAction"/>
-			<MenuItem id = "ShowQuickHelp"
-			          insertafter = "GenerateCodeAction"
-			          insertbefore = "Separator5"
-			          label = "${res:XML.MainMenu.ToolMenu.QuickXmlDoc}"
-			          shortcut = "Control|Q"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.QuickDocumentation"/>
-		</Condition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/DefaultEditor/SearchAndReplace/WildcardHelpPath">

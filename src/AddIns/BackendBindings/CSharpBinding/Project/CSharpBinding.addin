@@ -23,15 +23,14 @@
 	</Path>
 	
 	<Path name = "/Workspace/Parser">
-		<Parser id    = "C#" 
-			supportedextensions  = ".cs"
-			projectfileextension = ".csproj"
-			class = "CSharpBinding.Parser.TParser"/>
+		<Parser id    = "C#"
+		        supportedextensions  = ".cs"
+		        projectfileextension = ".csproj"
+		        class = "CSharpBinding.Parser.TParser"/>
 	</Path>
 	
 	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
-		<Class id    = "CSharpCompletionBinding"
-		       class = "CSharpBinding.CSharpCompletionBinding"/>
+		<CodeCompletionBinding id = "CSharp" extensions = ".cs" class = "CSharpBinding.CSharpCompletionBinding"/>
 	</Path>
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/C#">
@@ -67,7 +66,7 @@
 		<Icon id         = "C#Prj"
 		      language   = "C#"
 		      resource   = "C#.ProjectIcon"/>
-
+		
 		<Icon id         = "C#File"
 		      extensions = ".cs"
 		      resource   = "C#.FileIcon"/>

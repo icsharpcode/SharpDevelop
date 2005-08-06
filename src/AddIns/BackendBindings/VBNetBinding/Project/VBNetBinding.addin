@@ -54,8 +54,7 @@
 	</Path>
 
 	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
-		<Class id    = "VBNetCompletionBinding"
-		       class = "VBNetBinding.VBNetCompletionBinding"/>
+		<CodeCompletionBinding id = "VBNet" extensions = ".vb" class = "VBNetBinding.VBNetCompletionBinding"/>
 	</Path>
 
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/VBNET">

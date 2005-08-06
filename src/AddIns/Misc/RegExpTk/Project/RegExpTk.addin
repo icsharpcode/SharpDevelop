@@ -4,16 +4,16 @@
        url         = "unknown"
        description = "Testing toolkit for regular expressions"
        version     = "1.0.0">
-
+	
 	<Runtime>
 		<Import assembly="RegExpTk.dll" />
 	</Runtime>
-
+	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
-		<MenuItem id = "RegExpTk" 
-				  insertafter = "ShowObjectBrowser" insertbefore = "Separator4"
-				  label       = "${res:XML.MainMenu.ToolsMenu.RegularExpressionToolkit}" 
-				  class       = "Plugins.RegExpTk.RegExpTkCommand"
+		<MenuItem id = "RegExpTk"
+		          insertafter = "Separator1" insertbefore = "Separator2"
+		          label       = "${res:XML.MainMenu.ToolsMenu.RegularExpressionToolkit}"
+		          class       = "Plugins.RegExpTk.RegExpTkCommand"
 		/>
 	</Path>
 </AddIn>

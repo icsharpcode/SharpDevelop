@@ -84,7 +84,8 @@ namespace ICSharpCode.Core
 		public static IWorkbenchWindow OpenFile(string fileName)
 		{
 			// test, if file fileName exists
-			if (!fileName.StartsWith("http://")) {
+			bool isURL = fileName.IndexOf("://") > 0;
+			if (!isURL) {
 				System.Diagnostics.Debug.Assert(FileUtility.IsValidFileName(fileName));
 				
 				// test, if an untitled file should be opened
@@ -103,7 +104,7 @@ namespace ICSharpCode.Core
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 				if (content.FileName != null) {
 					try {
-						if (fileName.StartsWith("http://") ? content.FileName == fileName : FileUtility.IsEqualFileName(content.FileName, fileName)) {
+						if (isURL ? content.FileName == fileName : FileUtility.IsEqualFileName(content.FileName, fileName)) {
 							content.WorkbenchWindow.SelectWindow();
 							return content.WorkbenchWindow;
 						}
@@ -117,8 +118,7 @@ namespace ICSharpCode.Core
 					IViewContent viewContent = subViewContent as IViewContent;
 					if (viewContent != null && viewContent.FileName != null) {
 						try {
-							if (fileName.StartsWith("http://") ? viewContent.FileName == fileName :
-							    Path.GetFullPath(viewContent.FileName.ToUpper()) == Path.GetFullPath(fileName.ToUpper())) {
+							if (isURL ? viewContent.FileName == fileName : FileUtility.IsEqualFileName(viewContent.FileName, fileName)) {
 								viewContent.WorkbenchWindow.SelectWindow();
 								return content.WorkbenchWindow;
 							}

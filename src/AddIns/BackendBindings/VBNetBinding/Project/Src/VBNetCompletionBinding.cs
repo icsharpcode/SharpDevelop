@@ -21,18 +21,8 @@ namespace VBNetBinding
 {
 	public class VBNetCompletionBinding : DefaultCodeCompletionBinding
 	{
-		public VBNetCompletionBinding() : base(".vb")
-		{
-			this.EnableXmlCommentCompletion = true;
-		}
-		
 		public override bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
 		{
-			if (!CheckExtension(editor))
-			{
-				return false;
-			}
-			
 			VBNetBinding.Parser.ExpressionFinder ef = new VBNetBinding.Parser.ExpressionFinder();
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
 			ExpressionContext context = null;

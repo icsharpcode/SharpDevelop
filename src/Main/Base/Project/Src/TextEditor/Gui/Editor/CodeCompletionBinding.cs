@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Collections;
 using System.IO;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
@@ -20,24 +22,56 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch);
 	}
 	
-	public class DefaultCodeCompletionBinding : ICodeCompletionBinding
+	public class CodeCompletionBindingDoozer : IDoozer
 	{
-		string extension;
-		
-		public DefaultCodeCompletionBinding(string extension)
-		{
-			this.extension = extension;
+		public bool HandleConditions {
+			get {
+				return false;
+			}
 		}
 		
-		public bool CheckExtension(SharpDevelopTextAreaControl editor)
+		public object BuildItem(object caller, Codon codon, ArrayList subItems)
+		{
+			string ext = codon.Properties["extensions"];
+			if (ext != null && ext.Length > 0)
+				return new LazyCodeCompletionBinding(codon, ext.Split(';'));
+			else
+				return codon.AddIn.CreateObject(codon.Properties["class"]);
+		}
+	}
+	
+	public sealed class LazyCodeCompletionBinding : ICodeCompletionBinding
+	{
+		Codon codon;
+		string[] extensions;
+		ICodeCompletionBinding binding;
+		
+		public LazyCodeCompletionBinding(Codon codon, string[] extensions)
+		{
+			this.codon = codon;
+			this.extensions = extensions;
+		}
+		
+		public bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
 		{
 			string ext = Path.GetExtension(editor.FileName);
-			return string.Compare(ext, extension, true) == 0;
+			foreach (string extension in extensions) {
+				if (ext.Equals(extension, StringComparison.InvariantCultureIgnoreCase)) {
+					if (binding == null) {
+						binding = (ICodeCompletionBinding)codon.AddIn.CreateObject(codon.Properties["class"]);
+					}
+					return binding.HandleKeyPress(editor, ch);
+				}
+			}
+			return false;
 		}
-		
+	}
+	
+	public class DefaultCodeCompletionBinding : ICodeCompletionBinding
+	{
 		bool enableMethodInsight = true;
 		bool enableIndexerInsight = true;
-		bool enableXmlCommentCompletion = false;
+		bool enableXmlCommentCompletion = true;
 		bool enableDotCompletion = true;
 		
 		public bool EnableMethodInsight {
@@ -78,8 +112,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public virtual bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
 		{
-			if (!CheckExtension(editor))
-				return false;
 			switch (ch) {
 				case '(':
 					if (enableMethodInsight && CodeCompletionOptions.InsightEnabled) {

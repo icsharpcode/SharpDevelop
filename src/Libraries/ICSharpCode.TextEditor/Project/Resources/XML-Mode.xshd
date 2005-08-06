@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!-- syntaxdefinition for XML 2000 by Mike Krueger -->
-<SyntaxDefinition name="XML" extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs">
+<SyntaxDefinition name="XML" extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.build;.xfrm">
 	
 	<Digits name="Digits" bold="false" italic="false" color="DarkBlue" />
 	<RuleSets>

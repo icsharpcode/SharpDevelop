@@ -45,5 +45,5 @@
 	
 	<Mode file       = "XML-Mode.xshd"
 	      name       = "XML"
-	      extensions = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs"/>
+	      extensions = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.build;.xfrm"/>
 </SyntaxModes>

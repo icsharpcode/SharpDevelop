@@ -20,8 +20,6 @@ namespace ICSharpCode.XmlEditor
 		string extension = String.Empty;
 		string namespacePrefix = String.Empty;
 		
-		static readonly string schemaAssociationElementName = "SchemaAssociation";
-		
 		public XmlSchemaAssociation(string extension)
 			: this(extension, String.Empty, String.Empty)
 		{

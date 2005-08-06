@@ -43,7 +43,7 @@ namespace ICSharpCode.Core
 		static DisplayBindingDescriptor GetCodonPerFileName(string filename)
 		{
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (!binding.IsSecondary && binding.Binding.CanCreateContentForFile(filename)) {
+				if (!binding.IsSecondary && binding.CanAttachToFile(filename) && binding.Binding.CanCreateContentForFile(filename)) {
 					return binding;
 				}
 			}
@@ -53,7 +53,7 @@ namespace ICSharpCode.Core
 		static DisplayBindingDescriptor GetCodonPerLanguageName(string languagename)
 		{
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (binding.Binding != null && binding.Binding.CanCreateContentForLanguage(languagename)) {
+				if (binding.Binding != null && binding.CanAttachToLanguage(languagename) && binding.Binding.CanCreateContentForLanguage(languagename)) {
 					return binding;
 				}
 			}

@@ -11,7 +11,7 @@ using System.Diagnostics;
 using System.Drawing.Text;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
- 
+
 namespace ICSharpCode.Core
 {
 	public class ToolBarCommand : ToolStripMenuItem, IStatusUpdate
@@ -21,7 +21,7 @@ namespace ICSharpCode.Core
 		string description   = String.Empty;
 		string localizedText = String.Empty;
 		ICommand menuCommand = null;
-	
+		
 		public string Description {
 			get {
 				return description;
@@ -45,17 +45,17 @@ namespace ICSharpCode.Core
 				Image = ResourceService.GetBitmap(codon.Properties["icon"]);
 			}
 			
-			menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
-			if (menuCommand != null)
-				menuCommand.Owner = caller;
-			
 			UpdateStatus();
 		}
 		
 		protected override void OnClick(System.EventArgs e)
 		{
 			base.OnClick(e);
+			if (menuCommand == null) {
+				menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
+			}
 			if (menuCommand != null) {
+				menuCommand.Owner = caller;
 				menuCommand.Run();
 			}
 		}

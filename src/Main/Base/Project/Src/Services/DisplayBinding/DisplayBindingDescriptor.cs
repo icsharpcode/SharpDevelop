@@ -11,12 +11,13 @@ using System.IO;
 using System.Collections;
 using System.Reflection;
 using System.CodeDom.Compiler;
+using System.Text.RegularExpressions;
 
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Core
 {
-	public class DisplayBindingDescriptor 
+	public class DisplayBindingDescriptor
 	{
 		object binding = null;
 		Codon codon;
@@ -56,5 +57,38 @@ namespace ICSharpCode.Core
 			this.codon = codon;
 		}
 		
+		/// <summary>
+		/// Gets if the display binding can possibly attach to the file.
+		/// If this method returns false, it cannot attach to it; if the method returns
+		/// true, it *might* attach to it.
+		/// </summary>
+		/// <remarks>
+		/// This method is used to skip loading addins like the ResourceEditor which cannot
+		/// attach to a certain file name for sure.
+		/// </remarks>
+		public bool CanAttachToFile(string fileName)
+		{
+			string fileNameRegex = codon.Properties["fileNamePattern"];
+			if (fileNameRegex == null || fileNameRegex.Length == 0) // no regex specified
+				return true;
+			return Regex.IsMatch(fileName, fileNameRegex, RegexOptions.IgnoreCase);
+		}
+		
+		/// <summary>
+		/// Gets if the display binding can possibly attach to the language.
+		/// If this method returns false, it cannot attach to it; if the method returns
+		/// true, it *might* attach to it.
+		/// </summary>
+		/// <remarks>
+		/// This method is used to skip loading addins like the ResourceEditor which cannot
+		/// attach to a most languages.
+		/// </remarks>
+		public bool CanAttachToLanguage(string language)
+		{
+			string languageRegex = codon.Properties["languagePattern"];
+			if (languageRegex == null || languageRegex.Length == 0) // no regex specified
+				return true;
+			return Regex.IsMatch(language, languageRegex, RegexOptions.IgnoreCase);
+		}
 	}
 }

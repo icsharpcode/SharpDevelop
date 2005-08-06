@@ -20,15 +20,8 @@ namespace CSharpBinding
 {
 	public class CSharpCompletionBinding : DefaultCodeCompletionBinding
 	{
-		public CSharpCompletionBinding() : base(".cs")
-		{
-			this.EnableXmlCommentCompletion = true;
-		}
-		
 		public override bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
 		{
-			if (!CheckExtension(editor))
-				return false;
 			Parser.ExpressionFinder ef = new Parser.ExpressionFinder(editor.FileName);
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
 			ExpressionContext context = null;

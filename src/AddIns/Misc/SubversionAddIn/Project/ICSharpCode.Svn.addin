@@ -10,8 +10,7 @@
 	</Runtime>
 	
 	<Path name = "/Workspace/Autostart">
-		<Class id = "ICSharpCode.Svn.Commands.RegisterEventsCommand" 
-		       insertbefore = "StartWorkbenchCommand"
+		<Class id = "ICSharpCode.Svn.Commands.RegisterEventsCommand"
 		       class = "ICSharpCode.Svn.Commands.RegisterEventsCommand"/>
 	</Path>
 	
@@ -61,7 +60,7 @@
 			             label = "Subversion Options"
 			             class = "ICSharpCode.Svn.Gui.SubversionOptionsPanel"/>
 		</DialogPanel>
-		             
+	
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
@@ -74,5 +73,5 @@
 		          icon  = "Svn.Checkout"
 		          class = "ICSharpCode.Svn.Commands.CheckoutCommand"/>
 	</Path>
-	
+
 </AddIn>
