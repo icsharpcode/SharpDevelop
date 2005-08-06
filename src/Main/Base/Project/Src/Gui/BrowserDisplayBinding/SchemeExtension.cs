@@ -16,8 +16,26 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 	public interface ISchemeExtension
 	{
 		void InterceptNavigate(HtmlViewPane pane, WebBrowserNavigatingEventArgs e);
+		void DocumentCompleted(HtmlViewPane pane, WebBrowserDocumentCompletedEventArgs e);
 		void GoHome(HtmlViewPane pane);
 		void GoSearch(HtmlViewPane pane);
+	}
+	
+	public class DefaultSchemeExtension : ISchemeExtension
+	{
+		public virtual void InterceptNavigate(HtmlViewPane pane, WebBrowserNavigatingEventArgs e) {}
+		
+		public virtual void DocumentCompleted(HtmlViewPane pane, WebBrowserDocumentCompletedEventArgs e) {}
+		
+		public virtual void GoHome(HtmlViewPane pane)
+		{
+			pane.Navigate(HtmlViewPane.DefaultHomepage);
+		}
+		
+		public virtual void GoSearch(HtmlViewPane pane)
+		{
+			pane.Navigate(HtmlViewPane.DefaultSearchUrl);
+		}
 	}
 	
 	public class SchemeExtensionDescriptor

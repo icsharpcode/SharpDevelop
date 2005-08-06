@@ -149,6 +149,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			webBrowser.NewWindowExtended += NewWindow;
 			webBrowser.Navigated  += WebBrowserNavigated;
 			webBrowser.StatusTextChanged += WebBrowserStatusTextChanged;
+			webBrowser.DocumentCompleted += WebBrowserDocumentCompleted;
 			Controls.Add(webBrowser);
 			
 			if (showNavigation) {
@@ -208,9 +209,21 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			}
 		}
 		
-		public void Navigate(string name)
+		void WebBrowserDocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
 		{
-			webBrowser.Navigate(new Uri(name));
+			try {
+				ISchemeExtension extension = GetScheme(e.Url.Scheme);
+				if (extension != null) {
+					extension.DocumentCompleted(this, e);
+				}
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
+		}
+		
+		public void Navigate(string url)
+		{
+			webBrowser.Navigate(new Uri(url));
 		}
 		
 		public void Navigate(Uri url)

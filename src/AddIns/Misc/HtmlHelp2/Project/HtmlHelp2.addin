@@ -9,6 +9,11 @@
 		<Import assembly="HtmlHelp2.dll"/>
 	</Runtime>
 	
+	<Path name = "/SharpDevelop/Views/Browser/SchemeExtensions">
+		<BrowserSchemeExtension id    = "ms-help"
+		                        class = "HtmlHelp2.BrowserScheme"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id       = "TocPad"
 		     category = "Help2"
@@ -25,11 +30,11 @@
 		     title    = "${res:AddIns.HtmlHelp2.Search}"
 		     icon     = "HtmlHelp2.16x16.Search"
 		     class    = "HtmlHelp2.HtmlHelp2SearchPad"/>
-		<Pad id       = "FavoritesPad"
+		<!--<Pad id       = "FavoritesPad"
 		     category = "Help2"
 		     title    = "${res:AddIns.HtmlHelp2.Favorites}"
 		     icon     = "HtmlHelp2.16x16.Favorites"
-		     class    = "HtmlHelp2.HtmlHelp2FavoritesPad"/>
+		     class    = "HtmlHelp2.HtmlHelp2FavoritesPad"/>-->
 		<Pad id       = "IndexResultsPad"
 		     category = "Help2"
 		     title    = "${res:AddIns.HtmlHelp2.IndexResults}"

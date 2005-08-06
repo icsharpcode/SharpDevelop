@@ -83,13 +83,6 @@
 		     shortcut = "Control|Alt|F"
 		     class    = "ICSharpCode.SharpDevelop.Gui.FileScout"/>
 		
-		<Pad id       = "HelpBrowser"
-		     category = "Tools"
-		     title    = "${res:MainWindow.Windows.HelpScoutLabel}"
-		     icon     = "Icons.16x16.HelpIcon"
-		     shortcut = "Control|Alt|H"
-		     class    = "ICSharpCode.SharpDevelop.Gui.HelpBrowser"/>
-		
 		<Pad id       = "SearchResults"
 		     category = "Tools"
 		     title    = "${res:MainWindow.Windows.SearchResultsLabel}"

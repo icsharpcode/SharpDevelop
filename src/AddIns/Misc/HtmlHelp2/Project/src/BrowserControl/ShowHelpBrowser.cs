@@ -70,15 +70,10 @@ namespace HtmlHelp2
 			return tempPane;
 		}
 		
-		public static void HighlightDocument()
+		public static void HighlightDocument(HtmlViewPane htmlViewPane)
 		{
-			// FIXME: HighlightDocument is called nowhere
 			if (hiliteMatches && lastTopic != null) {
-				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-				if(window != null && window.ActiveViewContent is BrowserPane) {
-					BrowserPane help2Browser = (BrowserPane)window.ActiveViewContent;
-					lastTopic.HighlightDocument(help2Browser.HtmlViewPane.WebBrowser.Document.DomDocument);
-				}
+				lastTopic.HighlightDocument(htmlViewPane.WebBrowser.Document.DomDocument);
 			}
 		}
 	}

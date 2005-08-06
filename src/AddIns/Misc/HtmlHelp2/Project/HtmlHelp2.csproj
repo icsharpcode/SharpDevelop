@@ -62,6 +62,7 @@
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.TextZoom.png" />
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.AddToFavorites.png" />
     <Compile Include="src\BrowserControl\HelpBrowserCommands.cs" />
+    <Compile Include="src\BrowserScheme.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

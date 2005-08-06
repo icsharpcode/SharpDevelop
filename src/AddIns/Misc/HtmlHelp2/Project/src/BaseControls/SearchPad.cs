@@ -23,7 +23,10 @@ namespace HtmlHelp2
 		public override void Run()
 		{
 			PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchPad));
-			if(search != null) search.BringPadToFront();
+			if (search != null) {
+				search.BringPadToFront();
+				((HtmlHelp2SearchPad)search.PadContent).FocusSearchTextBox();
+			}
 		}
 	}
 
@@ -31,7 +34,7 @@ namespace HtmlHelp2
 	public class HtmlHelp2SearchPad : AbstractPadContent
 	{
 		Panel mainPanel            = new Panel();
-		Button searchButton        = new Button();		
+		Button searchButton        = new Button();
 		ComboBox filterCombobox    = new ComboBox();
 		ComboBox searchTerm        = new ComboBox();
 		CheckBox titlesOnly        = new CheckBox();
@@ -48,6 +51,11 @@ namespace HtmlHelp2
 			get {
 				return mainPanel;
 			}
+		}
+		
+		public void FocusSearchTextBox()
+		{
+			searchTerm.Focus();
 		}
 
 		public override void RedrawContent()
@@ -112,7 +120,8 @@ namespace HtmlHelp2
 			hiliteTopics.Top                      = reuseMatches.Top + reuseMatches.Height - 4;
 			hiliteTopics.Text                     = StringParser.Parse("${res:AddIns.HtmlHelp2.HighlightMatches}");
 			hiliteTopics.TextAlign                = ContentAlignment.MiddleLeft;
-			hiliteTopics.Enabled                  = true;
+			hiliteTopics.Enabled                  = HtmlHelp2Environment.IsReady;
+			hiliteTopics.Checked                  = true;
 
 			panel3.Dock                           = DockStyle.Fill;
 
@@ -216,6 +225,7 @@ namespace HtmlHelp2
 		private void KeyPressed(object sender, KeyPressEventArgs e)
 		{
 			if(e.KeyChar == (char)13 && searchTerm.Text != null) {
+				e.Handled = true;
 				this.AddTermToList(searchTerm.Text);
 				this.PerformFTS(searchTerm.Text);
 			}

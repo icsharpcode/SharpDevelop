@@ -273,7 +273,6 @@
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPad.cs" />
     <Compile Include="Src\Gui\Pads\SideBarView.cs" />
     <Compile Include="Src\Gui\Pads\TreeViewMemento.cs" />
-    <Compile Include="Src\Gui\Pads\HelpBrowser\HelpBrowser.cs" />
     <Compile Include="Src\Gui\Workbench\DefaultWorkbench.cs">
       <SubType>Form</SubType>
     </Compile>

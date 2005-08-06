@@ -13,11 +13,11 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.StartPage
 {
-	public class StartPageScheme : ISchemeExtension
+	public class StartPageScheme : DefaultSchemeExtension
 	{
 		ICSharpCodePage page;
 		
-		public void InterceptNavigate(HtmlViewPane pane, WebBrowserNavigatingEventArgs e)
+		public override void InterceptNavigate(HtmlViewPane pane, WebBrowserNavigatingEventArgs e)
 		{
 			e.Cancel = true;
 			if (page == null) {
@@ -37,14 +37,9 @@ namespace ICSharpCode.StartPage
 			}
 		}
 		
-		public void GoHome(HtmlViewPane pane)
+		public override void GoHome(HtmlViewPane pane)
 		{
 			pane.Navigate("startpage://start/");
-		}
-		
-		public void GoSearch(HtmlViewPane pane)
-		{
-			pane.Navigate(HtmlViewPane.DefaultSearchUrl);
 		}
 	}
 }
