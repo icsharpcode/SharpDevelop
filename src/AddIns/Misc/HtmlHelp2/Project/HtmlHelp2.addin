@@ -35,11 +35,6 @@
 		     title    = "${res:AddIns.HtmlHelp2.IndexResults}"
 		     icon     = "HtmlHelp2.16x16.IndexResults"
 		     class    = "HtmlHelp2.HtmlHelp2IndexResultsPad"/>
-		<Pad id       = "SearchResultsPad"
-		     category = "Help2"
-		     title    = "${res:AddIns.HtmlHelp2.SearchResults}"
-		     icon     = "HtmlHelp2.16x16.SearchResults"
-		     class    = "HtmlHelp2.HtmlHelp2SearchResultsPad"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
@@ -73,7 +68,7 @@
 		          shortcut     = "Control|Alt|F3"
 		          class        = "HtmlHelp2.ShowSearchMenuCommand"
 		          insertafter  = "IndexPadCommand"/>
-		<MenuItem id           = "FavoritesPadCommand"
+		<!--<MenuItem id           = "FavoritesPadCommand"
 		          label        = "${res:AddIns.HtmlHelp2.Favorites}"
 		          icon         = "HtmlHelp2.16x16.Favorites"
 		          shortcut     = "Control|Alt|F"
@@ -81,22 +76,16 @@
 		          insertafter  = "SearchPadCommand"/>
 		<MenuItem id           = "HtmlHelp2Separator1"
 		          type         = "Separator"
-		          insertafter  = "FavoritesPadCommand"/>
+		          insertafter  = "FavoritesPadCommand"/>-->
 		<MenuItem id           = "IndexResultsPadCommand"
 		          label        = "${res:AddIns.HtmlHelp2.IndexResults}"
 		          icon         = "HtmlHelp2.16x16.IndexResults"
 		          shortcut     = "Shift|Alt|F2"
 		          class        = "HtmlHelp2.ShowIndexResultsMenuCommand"
-		          insertafter  = "HtmlHelp2Separator1"/>
-		<MenuItem id           = "SearchResultsPadCommand"
-		          label        = "${res:AddIns.HtmlHelp2.SearchResults}"
-		          icon         = "HtmlHelp2.16x16.SearchResults"
-		          shortcut     = "Shift|Alt|F3"
-		          class        = "HtmlHelp2.ShowSearchResultsMenuCommand"
-		          insertafter  = "IndexResultsPadCommand"/>
+		          insertafter  = "SearchPadCommand"/>
 		<MenuItem id           = "HtmlHelp2Separator2"
 		          type         = "Separator"
-		          insertafter  = "SearchResultsPadCommand"
+		          insertafter  = "IndexResultsPadCommand"
 		          insertbefore = "ViewGPL"/>
 	</Path>
 	

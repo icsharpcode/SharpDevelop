@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-			
+		
 		public override Control Control {
 			get {
 				return contentPanel;
@@ -123,7 +123,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listView.Resize       += new EventHandler(ListViewResize);
 			listView.CreateControl();
 			contentPanel.Controls.Add(listView);
-			 
+			
 			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ErrorList/Toolbar");
 			toolStrip.Stretch   = true;
 			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
@@ -188,7 +188,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					taskToolTip.SetToolTip(listView, description);
 					taskToolTip.Active       = true;
 				} else {
-					taskToolTip.RemoveAll(); 
+					taskToolTip.RemoveAll();
 					taskToolTip.Active       = false;
 				}
 				currentListViewItem = item;
@@ -291,7 +291,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		/// <summary>
 		/// Removes new lines, carriage returns and tab characters from
-		/// the list view task description and replaces them with a space.  
+		/// the list view task description and replaces them with a space.
 		/// </summary>
 		/// <param name="description">The task list description.</param>
 		/// <returns>A formatted task list description.</returns>
@@ -304,11 +304,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void UpdateToolstripStatus()
 		{
-			foreach (ToolStripItem item in toolStrip.Items) {
-				if (item is IStatusUpdate) {
-					((IStatusUpdate)item).UpdateStatus();
-				}
-			}
+			ToolbarService.UpdateToolbar(toolStrip);
 		}
 		
 		void InternalShowResults()
@@ -327,7 +323,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			listView.EndUpdate();
 			UpdateToolstripStatus();
-			
 		}
 	}
 }

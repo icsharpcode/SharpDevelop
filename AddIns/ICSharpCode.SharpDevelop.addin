@@ -790,7 +790,6 @@
 	</Path>
 	<!-- end toolbars -->
 	
-	
 	<Path name = "/SharpDevelop/Workbench/OpenFileTab/ContextMenu">
 		<MenuItem id = "Close"
 		          label = "${res:OpenFileTabEventHandler.ContextMenu.Close}"
@@ -1796,15 +1795,23 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/SearchResultPanel/Toolbar">
-		<ToolbarItem id      = "ExpandAll"
-		             icon    = "Icons.16x16.OpenAssembly"
-		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.ExpandAll.ToolTip}"
-		             class   = "SearchAndReplace.ExpandAll"/>
-		
-		<ToolbarItem id      = "CollapseAll"
-		             icon    = "Icons.16x16.Assembly"
-		             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
-		             class   = "SearchAndReplace.CollapseAll"/>
+		<Condition name = "Ownerstate" ownerstate = "DefaultMode" action = "Exclude">
+			<ToolbarItem id      = "ExpandAll"
+			             icon    = "Icons.16x16.OpenAssembly"
+			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.ExpandAll.ToolTip}"
+			             class   = "SearchAndReplace.ExpandAll"/>
+			
+			<ToolbarItem id      = "CollapseAll"
+			             icon    = "Icons.16x16.Assembly"
+			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
+			             class   = "SearchAndReplace.CollapseAll"/>
+		</Condition>
+		<Condition name = "Ownerstate" ownerstate = "SpecialPanelMode" action = "Exclude">
+			<ToolbarItem id      = "BackToNormalView"
+			             icon    = "Icons.16x16.Assembly"
+			             tooltip = "${res:MainWindow.Windows.SearchResultPanel.BackToNormalView.ToolTip}"
+			             class   = "SearchAndReplace.BackToNormalView"/>
+		</Condition>
 		<ToolbarItem id = "ExpandCollapseSeparator" type = "Separator" />
 		
 		<ToolbarItem id      = "ShowLast"

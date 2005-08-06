@@ -22,13 +22,14 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace SearchAndReplace
 {
-	public enum SearchResultPanelViewMode {
-		Flat, 
+	public enum SearchResultPanelViewMode
+	{
+		Flat,
 		PerFile,
 		Structural
 	}
 	
-	public class SearchResultPanel : AbstractPadContent
+	public class SearchResultPanel : AbstractPadContent, IOwnerState
 	{
 		static SearchResultPanel instance;
 		
@@ -38,8 +39,9 @@ namespace SearchAndReplace
 			}
 		}
 		
-		Panel                     myPanel        = new Panel();
-		ExtTreeView               resultTreeView = new ExtTreeView();
+		Panel       myPanel        = new Panel();
+		ExtTreeView resultTreeView = new ExtTreeView();
+		ToolStrip   toolStrip;
 		
 		string             curPattern = null;
 		List<SearchResult> curResults = null;
@@ -139,6 +141,8 @@ namespace SearchAndReplace
 		
 		public void ShowSearchResults(string pattern, List<SearchResult> results)
 		{
+			RemoveSpecialPanel();
+			
 			this.curPattern = pattern;
 			this.curResults = results;
 			if (results == null) {
@@ -167,12 +171,53 @@ namespace SearchAndReplace
 			resultTreeView.Dock = DockStyle.Fill;
 			resultTreeView.Font = ExtTreeNode.Font;
 			resultTreeView.IsSorted = false;
-			ToolStrip toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/SearchResultPanel/Toolbar");
+			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/SearchResultPanel/Toolbar");
 			toolStrip.Stretch   = true;
 			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			
 			myPanel.Controls.AddRange(new Control[] { resultTreeView, toolStrip} );
 		}
 		
+		// Special panel mode:
+		enum SearchResultPanelOwnerState
+		{
+			DefaultMode = 1,
+			SpecialPanelMode = 2,
+			// warning: OwnerState does a FLAG comparison!
+		}
+		
+		Control specialPanel;
+		
+		Enum IOwnerState.InternalState {
+			get {
+				return (specialPanel != null) ? SearchResultPanelOwnerState.SpecialPanelMode : SearchResultPanelOwnerState.DefaultMode;
+			}
+		}
+		
+		public void ShowSpecialPanel(Control ctl)
+		{
+			ctl.Dock = DockStyle.Fill;
+			if (specialPanel == ctl)
+				return;
+			if (specialPanel != null)
+				myPanel.Controls.Remove(specialPanel);
+			else
+				myPanel.Controls.Remove(resultTreeView);
+			specialPanel = ctl;
+			myPanel.Controls.Add(ctl);
+			myPanel.Controls.SetChildIndex(ctl, 0);
+			ToolbarService.UpdateToolbar(toolStrip);
+		}
+		
+		public void RemoveSpecialPanel()
+		{
+			if (specialPanel != null) {
+				specialPanel = null;
+				myPanel.Controls.Remove(specialPanel);
+				myPanel.Controls.Add(resultTreeView);
+				myPanel.Controls.SetChildIndex(resultTreeView, 0);
+				ToolbarService.UpdateToolbar(toolStrip);
+			}
+		}
 	}
 }

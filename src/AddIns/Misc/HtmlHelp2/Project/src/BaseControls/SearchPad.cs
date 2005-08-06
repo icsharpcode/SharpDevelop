@@ -237,10 +237,7 @@ namespace HtmlHelp2
 				return;
 			}
 
-			PadDescriptor searchResults = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchResultsPad));
-			if(searchResults == null) {
-				return;
-			}
+			HtmlHelp2SearchResultsView searchResults = HtmlHelp2SearchResultsView.Instance;
 
 			try {
 				searchIsBusy                 = true;
@@ -265,8 +262,8 @@ namespace HtmlHelp2
 				searchDialog.Dispose();
 
 				try {
-					((HtmlHelp2SearchResultsPad)searchResults.PadContent).CleanUp();
-					((HtmlHelp2SearchResultsPad)searchResults.PadContent).SearchResultsListView.BeginUpdate();
+					searchResults.CleanUp();
+					searchResults.SearchResultsListView.BeginUpdate();
 
 					for(int i = 1; i <= matchingTopics.Count; i++) {
 						IHxTopic topic = matchingTopics.ItemAt(i);
@@ -278,15 +275,15 @@ namespace HtmlHelp2
 							lvi.SubItems.Add(topic.Rank.ToString());
 							lvi.Tag          = topic;
 
-							((HtmlHelp2SearchResultsPad)searchResults.PadContent).SearchResultsListView.Items.Add(lvi);
+							searchResults.SearchResultsListView.Items.Add(lvi);
 						}
 					}
 
 					reuseMatches.Enabled = true;
 				}
 				finally {
-					((HtmlHelp2SearchResultsPad)searchResults.PadContent).SearchResultsListView.EndUpdate();
-					((HtmlHelp2SearchResultsPad)searchResults.PadContent).SetStatusMessage(searchTerm.Text);
+					searchResults.SearchResultsListView.EndUpdate();
+					searchResults.SetStatusMessage(searchTerm.Text);
 					searchResults.BringPadToFront();
 					searchIsBusy = false;
 				}

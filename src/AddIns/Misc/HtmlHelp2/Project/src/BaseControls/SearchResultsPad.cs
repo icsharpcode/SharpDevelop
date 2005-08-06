@@ -16,34 +16,35 @@ namespace HtmlHelp2
 	using MSHelpServices;
 	using HtmlHelp2Service;
 
-
-	public class ShowSearchResultsMenuCommand : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			PadDescriptor searchResults = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchResultsPad));
-			if(searchResults != null) searchResults.BringPadToFront();
-		}
-	}
-
-
-	public class HtmlHelp2SearchResultsPad : AbstractPadContent
+	public class HtmlHelp2SearchResultsView : UserControl
 	{
 		ListView listView         = new ListView();
 		ColumnHeader title        = new ColumnHeader();
 		ColumnHeader location     = new ColumnHeader();
 		ColumnHeader rank         = new ColumnHeader();
+		
+		static HtmlHelp2SearchResultsView instance;
 
-		public override Control Control
-		{
+		public static HtmlHelp2SearchResultsView Instance {
 			get {
-				return listView;
+				if (instance == null)
+					instance = new HtmlHelp2SearchResultsView();
+				return instance;
 			}
 		}
-
-		public override void RedrawContent()
+		
+		public void BringPadToFront()
+		{
+			PadDescriptor descriptor = WorkbenchSingleton.Workbench.GetPad(typeof(SearchAndReplace.SearchResultPanel));
+			SearchAndReplace.SearchResultPanel srp = (SearchAndReplace.SearchResultPanel)descriptor.PadContent;
+			srp.ShowSpecialPanel(this);
+			descriptor.BringPadToFront();
+		}
+		
+		public override void Refresh()
 		{
 			this.SetListViewHeader();
+			base.Refresh();
 		}
 
 		public ListView SearchResultsListView
@@ -53,7 +54,7 @@ namespace HtmlHelp2
 			}
 		}
 
-		public HtmlHelp2SearchResultsPad()
+		public HtmlHelp2SearchResultsView()
 		{
 			this.SetListViewHeader();
 			listView.Columns.Add(title);
@@ -71,7 +72,7 @@ namespace HtmlHelp2
 			listView.Resize           += new EventHandler(ListViewResize);
 			listView.DoubleClick      += new EventHandler(ListViewDoubleClick);
 			listView.ColumnClick      += new ColumnClickEventHandler(ColumnClick);
-			listView.CreateControl();
+			Controls.Add(listView);
 		}
 
 		private void SetListViewHeader()
@@ -123,14 +124,14 @@ namespace HtmlHelp2
 			 * better if I could write what was searched and how many topics are
 			 * matching.
 			 */
-			 string text = StringParser.Parse("${res:AddIns.HtmlHelp2.ResultsOfSearchResults}",
-			                                  new string[,]
-			                                  {{"0", indexTerm},
-			                                   {"1", listView.Items.Count.ToString()},
-			                                   {"2", (listView.Items.Count == 1)?"${res:AddIns.HtmlHelp2.SingleTopic}":"${res:AddIns.HtmlHelp2.MultiTopic}"}}
-			                                 );
+			string text = StringParser.Parse("${res:AddIns.HtmlHelp2.ResultsOfSearchResults}",
+			                                 new string[,]
+			                                 {{"0", indexTerm},
+			                                 	{"1", listView.Items.Count.ToString()},
+			                                 	{"2", (listView.Items.Count == 1)?"${res:AddIns.HtmlHelp2.SingleTopic}":"${res:AddIns.HtmlHelp2.MultiTopic}"}}
+			                                );
 
-			 StatusBarService.SetMessage(text);
+			StatusBarService.SetMessage(text);
 		}
 
 		#region Sorting
@@ -148,8 +149,8 @@ namespace HtmlHelp2
 						int a = Int32.Parse(((ListViewItem)x).SubItems[col].Text);
 						int b = Int32.Parse(((ListViewItem)y).SubItems[col].Text);
 						if(a > b) return 1;
-							else if(a < b) return -1;
-								else return 0;
+						else if(a < b) return -1;
+						else return 0;
 					default:
 						return String.Compare(((ListViewItem)x).SubItems[col].Text, ((ListViewItem)y).SubItems[col].Text);
 				}

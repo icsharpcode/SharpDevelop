@@ -11,7 +11,7 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core
 {
-	public static class ToolbarService 
+	public static class ToolbarService
 	{
 //		readonly static string toolBarPath = "/SharpDevelop/Workbench/ToolBar";
 		
@@ -35,14 +35,15 @@ namespace ICSharpCode.Core
 		{
 			ToolStrip toolStrip = new ToolStrip();
 			toolStrip.Items.AddRange(CreateToolStripItems(owner, treeNode));
+			UpdateToolbar(toolStrip); // setting Visible is only possible after the items have been added
 			return toolStrip;
 		}
 		
 		public static ToolStrip CreateToolStrip(object owner, string addInTreePath)
 		{
 			ToolStrip toolStrip = new ToolStrip();
-			toolStrip.ShowItemToolTips  = true;
 			toolStrip.Items.AddRange(CreateToolStripItems(owner, addInTreePath));
+			UpdateToolbar(toolStrip); // setting Visible is only possible after the items have been added
 			return toolStrip;
 		}
 		
@@ -53,13 +54,22 @@ namespace ICSharpCode.Core
 				treeNode = AddInTree.GetTreeNode(addInTreePath);
 			} catch (TreePathNotFoundException) {
 				return null;
-			
+				
 			}
 			List<ToolStrip> toolBars = new List<ToolStrip>();
 			foreach (AddInTreeNode childNode in treeNode.ChildNodes.Values) {
 				toolBars.Add(CreateToolStrip(owner, childNode));
 			}
 			return toolBars.ToArray();
+		}
+		
+		public static void UpdateToolbar(ToolStrip toolStrip)
+		{
+			foreach (ToolStripItem item in toolStrip.Items) {
+				if (item is IStatusUpdate) {
+					((IStatusUpdate)item).UpdateStatus();
+				}
+			}
 		}
 	}
 }
