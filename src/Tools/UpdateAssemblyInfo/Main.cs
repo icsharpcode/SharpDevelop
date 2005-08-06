@@ -7,6 +7,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Collections.Specialized;
@@ -185,7 +186,6 @@ namespace UpdateAssemblyInfo
 				Console.WriteLine(e.Message);
 				Console.WriteLine();
 				Console.WriteLine("The revision number of the SharpDevelop version being compiled could not be retrieved.");
-				Console.WriteLine("Add svn.exe to your path to fix the problem.");
 				Console.WriteLine();
 				Console.WriteLine("Build continues with revision number '9999'...");
 				try {
@@ -199,26 +199,36 @@ namespace UpdateAssemblyInfo
 		}
 		static void RetrieveRevisionNumber()
 		{
-			ProcessStartInfo psi = new ProcessStartInfo("svn", "info");
-			psi.UseShellExecute = false;
-			psi.RedirectStandardOutput = true;
-			
+			// we use NSvn to be independent from the installed subversion client
+			// NSvn is a quite big library (>1 MB).
+			// We don't want to have it twice in the repository, so we must use the version in the
+			// subversion addin directory without copying it to the UpdateAssemblyInfo directory.
+			// That means we have to use reflection on the library.
+			string oldWorkingDir = Environment.CurrentDirectory;
 			try {
-				Process process = Process.Start(psi);
-				process.WaitForExit();
-				string output = process.StandardOutput.ReadToEnd();
-				
-				Regex r = new Regex(@"Revision:\s+(\d+)");
-				Match m = r.Match(output);
-				if (m != null && m.Success && m.Groups[1] != null) {
-					revisionNumber = m.Groups[1].Value;
-				}
-				if (revisionNumber == null || revisionNumber.Equals("") || revisionNumber.Equals("0")) {
-					throw new Exception("Could not find revision number in svn output");
-				}
+				// Set working directory so msvcp70.dll and msvcr70.dll can be found
+				Environment.CurrentDirectory = Path.Combine(oldWorkingDir, "AddIns\\Misc\\SubversionAddIn\\RequiredLibraries");
+				Assembly asm = Assembly.LoadFrom(Path.Combine(Environment.CurrentDirectory, "NSvn.Core.dll"));
+				Type clientType = asm.GetType("NSvn.Core.Client");
+				object clientInstance = Activator.CreateInstance(clientType);
+				object statusInstance = clientType.InvokeMember("SingleStatus",
+				                                                BindingFlags.Instance | BindingFlags.InvokeMethod | BindingFlags.Public,
+				                                                null, clientInstance,
+				                                                new object[] { oldWorkingDir });
+				Type statusType = statusInstance.GetType();
+				object entryInstance = statusType.InvokeMember("Entry",
+				                                               BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.Public,
+				                                               null, statusInstance, new object[0]);
+				Type entryType = entryInstance.GetType();
+				int revision = (int)entryType.InvokeMember("Revision",
+				                                           BindingFlags.Instance | BindingFlags.GetProperty | BindingFlags.Public,
+				                                           null, entryInstance, new object[0]);
+				revisionNumber = revision.ToString();
 			} catch (Exception e) {
-				Console.WriteLine("Starting svn.exe failed: " + e.Message);
+				Console.WriteLine("Reading revision number with NSvn failed: " + e.Message);
 				revisionNumber = ReadRevisionFromFile();
+			} finally {
+				Environment.CurrentDirectory = oldWorkingDir;
 			}
 			if (revisionNumber == null || revisionNumber.Length == 0 || revisionNumber == "0") {
 				throw new ApplicationException("Error reading revision number");
