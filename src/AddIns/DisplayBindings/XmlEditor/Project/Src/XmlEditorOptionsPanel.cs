@@ -28,7 +28,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.XmlEditorOptionsPanel.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlEditorOptionsPanel.xfrm"));
 				
 			((CheckBox)ControlDictionary[showAttributesWhenFoldedCheckBoxName]).Checked = XmlEditorAddInOptions.ShowAttributesWhenFolded;
 			((CheckBox)ControlDictionary[showSchemaAnnotationCheckBoxName]).Checked = XmlEditorAddInOptions.ShowSchemaAnnotation;		

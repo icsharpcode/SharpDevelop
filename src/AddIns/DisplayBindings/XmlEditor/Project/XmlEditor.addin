@@ -7,7 +7,7 @@
 	
 	<Runtime>
 		<Import assembly = "XmlEditor.dll"/>
-		<Import assembly = "/ICSharpCode.SharpDevelop"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	
 	<!-- Xml Editor View -->

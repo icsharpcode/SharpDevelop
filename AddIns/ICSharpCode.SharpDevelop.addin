@@ -6,8 +6,8 @@
        version     = "1.0.0">
 	
 	<Runtime>
-		<Import assembly="/ICSharpCode.SharpDevelop"/>
-		<Import assembly="/ICSharpCode.TextEditor"/>
+		<Import assembly=":ICSharpCode.SharpDevelop"/>
+		<Import assembly=":ICSharpCode.TextEditor"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Ambiences">
@@ -734,7 +734,7 @@
 				<Condition name="IsProcessRunning" isdebugging="False" action="Disable">
 					<ToolbarItem id      = "RunWithoutDebugger"
 					             icon    = "Icons.16x16.Debug.StartWithoutDebugging"
-					             tooltip = "${res:XML.MainMenu.RunMenu.Run.Description}"
+					             tooltip = "${res:XML.MainMenu.DebugMenu.RunWithoutDebug.Description}"
 					             class   = "ICSharpCode.SharpDevelop.Project.Commands.ExecuteWithoutDebugger"/>
 				</Condition>
 			</Condition>

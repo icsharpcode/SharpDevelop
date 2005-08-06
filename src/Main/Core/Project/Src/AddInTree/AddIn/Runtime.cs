@@ -45,7 +45,7 @@ namespace ICSharpCode.Core
 					isAssemblyLoaded = true;
 
 					try {
-						if (assembly[0] == '/') {
+						if (assembly[0] == ':') {
 							loadedAssembly = System.Reflection.Assembly.Load(assembly.Substring(1));
 						} else {
 							loadedAssembly = System.Reflection.Assembly.LoadFrom(Path.Combine(hintPath, assembly));

@@ -7,7 +7,7 @@
 	
 	<Runtime>
 		<Import assembly = "ILAsmBinding.dll"/>
-		<Import assembly = "/ICSharpCode.SharpDevelop"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">

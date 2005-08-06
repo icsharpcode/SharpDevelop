@@ -45,7 +45,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.XmlSchemasPanel.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.XmlSchemasPanel.xfrm"));
 			
 			schemaListBox = (ListBox)ControlDictionary["schemaListBox"];
 			schemaListBox.DrawMode = DrawMode.OwnerDrawFixed;

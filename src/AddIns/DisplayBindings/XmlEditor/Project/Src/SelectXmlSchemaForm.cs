@@ -64,7 +64,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void Initialize()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.SelectXmlSchema.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.XmlEditor.Resources.SelectXmlSchema.xfrm"));
 			
 			NoSchemaSelectedText = StringParser.Parse("${res:Dialog.Options.IDEOptions.TextEditor.Behaviour.IndentStyle.None}");
 			
