@@ -88,8 +88,9 @@ namespace ICSharpCode.FormDesigner.Services
 				classStr  = helpKeyword.Substring(0, idx);
 				memberStr = helpKeyword.Substring(idx + 1);
 			}
-			HelpBrowser helpBrowser = (HelpBrowser)WorkbenchSingleton.Workbench.GetPad(typeof(HelpBrowser)).PadContent;
-			helpBrowser.ShowHelpFromType(classStr, memberStr);
+			throw new NotImplementedException();
+			//HelpBrowser helpBrowser = (HelpBrowser)WorkbenchSingleton.Workbench.GetPad(typeof(HelpBrowser)).PadContent;
+			//helpBrowser.ShowHelpFromType(classStr, memberStr);
 		}
 		public void ShowGeneralHelp()
 		{
@@ -102,8 +103,7 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public void ShowHelpFromUrl(string helpURL)
 		{
-			HelpBrowser helpBrowser = (HelpBrowser)WorkbenchSingleton.Workbench.GetPad(typeof(HelpBrowser)).PadContent;
-			helpBrowser.ShowHelpBrowser(helpURL);
+			ICSharpCode.Core.FileService.OpenFile("browser://" + helpURL);
 		}
 	}
 }

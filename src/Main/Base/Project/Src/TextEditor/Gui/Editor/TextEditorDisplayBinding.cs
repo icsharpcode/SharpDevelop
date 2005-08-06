@@ -202,18 +202,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		#region ICSharpCode.SharpDevelop.Gui.IHelpProvider interface implementation
 		public void ShowHelp()
 		{
-			string word = TextUtilities.GetWordAt(textAreaControl.Document, textAreaControl.ActiveTextAreaControl.Caret.Offset);
-			HelpBrowser helpBrowser = (HelpBrowser)WorkbenchSingleton.Workbench.GetPad(typeof(HelpBrowser)).PadContent;
-			IClass c = textAreaControl.QuickClassBrowserPanel != null ? textAreaControl.QuickClassBrowserPanel.GetCurrentSelectedClass() : null;
-			
-			
-			if (c != null) {
-				IClass cl = ParserService.CurrentProjectContent.SearchType(word, c, textAreaControl.ActiveTextAreaControl.Caret.Line, textAreaControl.ActiveTextAreaControl.Caret.Column);
-				if (cl != null) {
-					helpBrowser.ShowHelpFromType(cl.FullyQualifiedName);
-					return;
-				}
-			}
+			throw new NotImplementedException();
 		}
 		#endregion
 		
