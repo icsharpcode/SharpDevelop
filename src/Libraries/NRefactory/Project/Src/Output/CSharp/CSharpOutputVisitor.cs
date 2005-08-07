@@ -128,17 +128,22 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			if (typeReference.Type == null || typeReference.Type.Length ==0) {
 				outputFormatter.PrintText("void");
+			} else if (typeReference.SystemType == "System.Nullable" && typeReference.GenericTypes != null
+			          && typeReference.GenericTypes.Count == 1)
+			{
+				nodeTracker.TrackedVisit(typeReference.GenericTypes[0], data);
+				outputFormatter.PrintText("?");
 			} else {
 				if (typeReference.SystemType.Length > 0) {
 					outputFormatter.PrintText(ConvertTypeString(typeReference.SystemType));
 				} else {
 					outputFormatter.PrintText(typeReference.Type);
 				}
-			}
-			if (typeReference.GenericTypes != null && typeReference.GenericTypes.Count > 0) {
-				outputFormatter.PrintToken(Tokens.LessThan);
-				AppendCommaSeparatedList(typeReference.GenericTypes);
-				outputFormatter.PrintToken(Tokens.GreaterThan);
+				if (typeReference.GenericTypes != null && typeReference.GenericTypes.Count > 0) {
+					outputFormatter.PrintToken(Tokens.LessThan);
+					AppendCommaSeparatedList(typeReference.GenericTypes);
+					outputFormatter.PrintToken(Tokens.GreaterThan);
+				}
 			}
 			for (int i = 0; i < typeReference.PointerNestingLevel; ++i) {
 				outputFormatter.PrintToken(Tokens.Times);

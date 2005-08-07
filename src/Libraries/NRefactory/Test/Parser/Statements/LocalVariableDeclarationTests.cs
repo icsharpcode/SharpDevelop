@@ -113,6 +113,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual(1, type.GenericTypes.Count);
 			Assert.AreEqual("int", type.GenericTypes[0].Type);
 		}
+		
 		[Test]
 		public void CSharpSimpleLocalVariableDeclarationTest()
 		{
@@ -123,6 +124,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("MyVar", type.Type);
 			// TODO: Check initializer
 		}
+		
 		[Test]
 		public void CSharpSimpleLocalVariableDeclarationTest1()
 		{
@@ -134,6 +136,52 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			// TODO: Check initializer
 		}
 		
+		[Test]
+		public void CSharpNullableLocalVariableDeclarationTest1()
+		{
+			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("int? a;", typeof(LocalVariableDeclaration));
+			Assert.AreEqual(1, lvd.Variables.Count);
+			Assert.AreEqual("a", ((VariableDeclaration)lvd.Variables[0]).Name);
+			TypeReference type = lvd.GetTypeForVariable(0);
+			Assert.AreEqual("System.Nullable", type.SystemType);
+			Assert.AreEqual("System.Int32", type.GenericTypes[0].SystemType);
+		}
+		
+		[Test]
+		public void CSharpNullableLocalVariableDeclarationTest2()
+		{
+			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("DateTime? a;", typeof(LocalVariableDeclaration));
+			Assert.AreEqual(1, lvd.Variables.Count);
+			Assert.AreEqual("a", ((VariableDeclaration)lvd.Variables[0]).Name);
+			TypeReference type = lvd.GetTypeForVariable(0);
+			Assert.AreEqual("System.Nullable", type.SystemType);
+			Assert.AreEqual("DateTime", type.GenericTypes[0].Type);
+		}
+		
+		[Test]
+		public void CSharpNullableLocalVariableDeclarationTest3()
+		{
+			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("DateTime?[] a;", typeof(LocalVariableDeclaration));
+			Assert.AreEqual(1, lvd.Variables.Count);
+			Assert.AreEqual("a", ((VariableDeclaration)lvd.Variables[0]).Name);
+			TypeReference type = lvd.GetTypeForVariable(0);
+			Assert.IsTrue(type.IsArrayType);
+			Assert.AreEqual("System.Nullable", type.SystemType);
+			Assert.AreEqual("DateTime", type.GenericTypes[0].Type);
+		}
+		
+		[Test]
+		public void CSharpNullableLocalVariableDeclarationTest4()
+		{
+			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("SomeStruct<int?>? a;", typeof(LocalVariableDeclaration));
+			Assert.AreEqual(1, lvd.Variables.Count);
+			Assert.AreEqual("a", ((VariableDeclaration)lvd.Variables[0]).Name);
+			TypeReference type = lvd.GetTypeForVariable(0);
+			Assert.AreEqual("System.Nullable", type.SystemType);
+			Assert.AreEqual("SomeStruct", type.GenericTypes[0].Type);
+			Assert.AreEqual("System.Nullable", type.GenericTypes[0].GenericTypes[0].SystemType);
+			Assert.AreEqual("System.Int32", type.GenericTypes[0].GenericTypes[0].GenericTypes[0].SystemType);
+		}
 		#endregion
 		
 		#region VB.NET

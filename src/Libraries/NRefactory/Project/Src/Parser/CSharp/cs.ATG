@@ -263,8 +263,8 @@ bool LBrackAndCommaOrRBrack () {
 
 bool IsDims () { return LBrackAndCommaOrRBrack(); }
 
-/* True, if "[" is followed by "," or "]" *
- * or if the current token is "*"         */
+/* True, if "[" is followed by "," or "]" */
+/* or if the current token is "*"         */
 bool TimesOrLBrackAndCommaOrRBrack () {
 	return la.kind == Tokens.Times || LBrackAndCommaOrRBrack();
 }
@@ -287,12 +287,19 @@ bool SkipGeneric(ref Token pt)
 			}
 		}
 		pt = Peek();
-		return true;
 	}
 	return true;
 }
-/* True, if lookahead is a primitive type keyword, or *
- * if it is a type declaration followed by an ident   */
+bool SkipQuestionMark(ref Token pt)
+{
+	if (pt.kind == Tokens.Question) {
+		pt = Peek();
+	}
+	return true;
+}
+
+/* True, if lookahead is a primitive type keyword, or */
+/* if it is a type declaration followed by an ident   */
 bool IsLocalVarDecl () {
 	if (IsYieldStatement()) {
 		return false;
@@ -305,7 +312,7 @@ bool IsLocalVarDecl () {
 	Token pt = la ;
 	string ignore;
 	
-	return IsQualident(ref pt, out ignore) && SkipGeneric(ref pt) && IsPointerOrDims(ref pt) && 
+	return IsQualident(ref pt, out ignore) && SkipGeneric(ref pt) && SkipQuestionMark(ref pt) && IsPointerOrDims(ref pt) && 
 	       pt.kind == Tokens.Identifier;
 }
 
@@ -902,6 +909,7 @@ Type<out TypeReference type>
 =
 	( ClassType<out type>
 	| SimpleType<out name> (. type = new TypeReference(name); .)
+	  [ NullableQuestionMark<ref type> ]
 	| "void" "*"                         (. pointer = 1; type = new TypeReference("void"); .)
 	)                                    (. List<int> r = new List<int>(); .)
 	
@@ -926,6 +934,7 @@ NonArrayType<out TypeReference type>
 =
 	( ClassType<out type>
 	| SimpleType<out name> (. type = new TypeReference(name); .)
+	  [ NullableQuestionMark<ref type> ]
 	| "void" "*"           (. pointer = 1; type = new TypeReference("void"); .)
 	)
 	
@@ -2243,6 +2252,17 @@ TypeName<out TypeReference typeRef>
 		} else {
 			typeRef = new TypeReference(alias + "." + qualident, typeArguments);
 		}
+	.)
+	[ NullableQuestionMark<ref typeRef> ]
+.
+
+NullableQuestionMark<ref TypeReference typeRef>
+(. List<TypeReference> typeArguments = new List<TypeReference>(1); .)
+=
+	"?"
+	(.
+		if (typeRef != null) typeArguments.Add(typeRef);
+		typeRef = new TypeReference("System.Nullable", typeArguments);
 	.)
 .
 
