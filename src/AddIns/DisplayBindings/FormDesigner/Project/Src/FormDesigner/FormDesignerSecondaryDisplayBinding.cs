@@ -58,7 +58,14 @@ namespace ICSharpCode.FormDesigner
 		
 		public static bool BaseClassIsFormOrControl(IClass c)
 		{
-			IProjectContent pc = ProjectContentRegistry.GetExistingProjectContent(new AssemblyName("System.Windows.Forms"));
+			// Simple test for fully qualified name
+			foreach (IReturnType baseType in c.BaseTypes) {
+				if (baseType.Name == "System.Windows.Forms.Form" || baseType.Name == "System.Windows.Forms.UserControl") {
+					return true;
+				}
+			}
+			// Test for real base type (does not work while solution load thread is still running)
+			IProjectContent pc = ProjectContentRegistry.WinForms;
 			return c.IsTypeInInheritanceTree(pc.GetClass("System.Windows.Forms.Form")) ||
 				c.IsTypeInInheritanceTree(pc.GetClass("System.Windows.Forms.UserControl"));
 		}

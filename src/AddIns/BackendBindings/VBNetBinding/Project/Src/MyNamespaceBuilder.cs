@@ -76,16 +76,21 @@ namespace VBNetBinding
 			c.Attributes.Add(new DefaultAttribute("Microsoft.VisualBasic.HideModuleNameAttribute"));
 			switch (project.OutputType) {
 				case OutputType.WinExe:
-					c.BaseTypes.Add("Microsoft.VisualBasic.ApplicationServices.WindowsFormsApplicationBase");
+					c.BaseTypes.Add(CreateBaseType(cu, "Microsoft.VisualBasic.ApplicationServices.WindowsFormsApplicationBase"));
 					break;
 				case OutputType.Exe:
-					c.BaseTypes.Add("Microsoft.VisualBasic.ApplicationServices.ConsoleApplicationBase");
+					c.BaseTypes.Add(CreateBaseType(cu, "Microsoft.VisualBasic.ApplicationServices.ConsoleApplicationBase"));
 					break;
 				default:
-					c.BaseTypes.Add("Microsoft.VisualBasic.ApplicationServices.ApplicationBase");
+					c.BaseTypes.Add(CreateBaseType(cu, "Microsoft.VisualBasic.ApplicationServices.ApplicationBase"));
 					break;
 			}
 			return c;
+		}
+		
+		static IReturnType CreateBaseType(ICompilationUnit cu, string fullName)
+		{
+			return new GetClassReturnType(cu.ProjectContent, fullName);
 		}
 		
 		static IClass CreateMyComputer(ICompilationUnit cu, IProject project, string ns)
@@ -94,7 +99,7 @@ namespace VBNetBinding
 			c.ClassType = ClassType.Class;
 			c.Modifiers = ModifierEnum.Internal | ModifierEnum.Sealed | ModifierEnum.Partial;
 			c.Attributes.Add(new DefaultAttribute("Microsoft.VisualBasic.HideModuleNameAttribute"));
-			c.BaseTypes.Add("Microsoft.VisualBasic.Devices.Computer");
+			c.BaseTypes.Add(CreateBaseType(cu, "Microsoft.VisualBasic.Devices.Computer"));
 			return c;
 		}
 		

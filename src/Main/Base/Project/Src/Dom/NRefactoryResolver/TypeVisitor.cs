@@ -128,6 +128,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public static int FindOverload(List<IMethodOrIndexer> methods, IReturnType[] types, bool forceParameterCount, out bool singleBestOverload)
 		{
 			singleBestOverload = true;
+			if (methods.Count == 0)
+				return -1;
 			if (methods.Count == 1)
 				return 0;
 			

@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Drawing;
 using System.IO;
 using System.ComponentModel.Design;
 using System.CodeDom;
@@ -15,7 +16,7 @@ using System.ComponentModel.Design.Serialization;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
 
-
+using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
@@ -86,14 +87,14 @@ namespace ICSharpCode.FormDesigner
 		{
 			return isReloadNeeded | base.IsReloadNeeded();
 		}
-		 
+		
 		public NRefactoryDesignerLoader(SupportedLanguages language, TextEditorControl textEditorControl)
 		{
 			this.language = language;
 			this.textEditorControl = textEditorControl;
 		}
 		
-		public override void BeginLoad(IDesignerLoaderHost host) 
+		public override void BeginLoad(IDesignerLoaderHost host)
 		{
 			this.loading = true;
 			typeResolutionService = (ITypeResolutionService)host.GetService(typeof(ITypeResolutionService));
@@ -113,6 +114,10 @@ namespace ICSharpCode.FormDesigner
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new StringReader(TextContent));
 			p.Parse();
 			
+			// Try to fix the type names to fully qualified ones
+			ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
+			FixTypeNames(p.CompilationUnit, parseInfo.BestCompilationUnit);
+			
 			CodeDOMVisitor visitor = new CodeDOMVisitor();
 			visitor.Visit(p.CompilationUnit, null);
 			
@@ -122,6 +127,61 @@ namespace ICSharpCode.FormDesigner
 //			provider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
 			
 			return visitor.codeCompileUnit;
+		}
+		
+		void FixTypeNames(object o, ICSharpCode.SharpDevelop.Dom.ICompilationUnit domCu)
+		{
+			if (domCu == null)
+				return;
+			CompilationUnit cu = o as CompilationUnit;
+			if (cu != null) {
+				foreach (object c in cu.Children) {
+					FixTypeNames(c, domCu);
+				}
+				return;
+			}
+			NamespaceDeclaration namespaceDecl = o as NamespaceDeclaration;
+			if (namespaceDecl != null) {
+				foreach (object c in namespaceDecl.Children) {
+					FixTypeNames(c, domCu);
+				}
+				return;
+			}
+			TypeDeclaration typeDecl = o as TypeDeclaration;
+			if (typeDecl != null) {
+				foreach (TypeReference tref in typeDecl.BaseTypes) {
+					FixTypeReference(tref, typeDecl.StartLocation, domCu);
+				}
+				foreach (object c in typeDecl.Children) {
+					FixTypeNames(c, domCu);
+				}
+				return;
+			}
+			FieldDeclaration fieldDecl = o as FieldDeclaration;
+			if (fieldDecl != null) {
+				FixTypeReference(fieldDecl.TypeReference, fieldDecl.StartLocation, domCu);
+				foreach (VariableDeclaration var in fieldDecl.Fields) {
+					if (var != null) {
+						FixTypeReference(var.TypeReference, fieldDecl.StartLocation, domCu);
+					}
+				}
+			}
+		}
+		
+		void FixTypeReference(TypeReference type, Point location, ICSharpCode.SharpDevelop.Dom.ICompilationUnit domCu)
+		{
+			if (type == null)
+				return;
+			if (type.SystemType != type.Type)
+				return;
+			foreach (TypeReference tref in type.GenericTypes) {
+				FixTypeReference(tref, location, domCu);
+			}
+			ICSharpCode.SharpDevelop.Dom.IClass curType = domCu.GetInnermostClass(location.Y, location.X);
+			ICSharpCode.SharpDevelop.Dom.IReturnType rt = domCu.ProjectContent.SearchType(type.Type, curType, domCu, location.Y, location.X);
+			if (rt != null) {
+				type.Type = rt.FullyQualifiedName;
+			}
 		}
 		
 		protected override void Write(CodeCompileUnit unit)

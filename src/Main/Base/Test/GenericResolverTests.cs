@@ -116,6 +116,24 @@ class TestClass {
 			MemberResolveResult mrr = (MemberResolveResult) result;
 			Assert.AreEqual("TestClass.PublicField", mrr.ResolvedMember.FullyQualifiedName);
 		}
+		
+		[Test]
+		public void ImportAliasClassResolveTest()
+		{
+			string program = @"using COL = System.Collections.Generic.List<string>;
+class TestClass {
+	void Test() {
+		COL a = new COL();
+		
+	}
+}
+";
+			TypeResolveResult rr = Resolve(program, "COL", 4) as TypeResolveResult;
+			Assert.AreEqual("System.Collections.Generic.List", rr.ResolvedClass.FullyQualifiedName, "COL");
+			Assert.AreEqual("System.Collections.Generic.List{System.String}", rr.ResolvedType.DotNetName, "COL");
+			LocalResolveResult lr = Resolve(program, "a", 5) as LocalResolveResult;
+			Assert.AreEqual("System.Collections.Generic.List{System.String}", lr.ResolvedType.DotNetName, "a");
+		}
 		#endregion
 		
 		#region CodeCompletion inside generic classes

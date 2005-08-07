@@ -126,8 +126,7 @@ namespace ICSharpCode.Core
 					}
 					createdContents.Add(newContent);
 				} catch (Exception e) {
-					Console.WriteLine("Error while retrieving project contents from {0}:", project);
-					ICSharpCode.Core.MessageService.ShowError(e);
+					ICSharpCode.Core.MessageService.ShowError(e, "Error while retrieving project contents from " + project);
 				}
 			}
 			int workAmount = 0;
@@ -137,8 +136,7 @@ namespace ICSharpCode.Core
 					newContent.Initialize1();
 					workAmount += newContent.GetInitializationWorkAmount();
 				} catch (Exception e) {
-					Console.WriteLine("Error while initializing project references:" + newContent);
-					ICSharpCode.Core.MessageService.ShowError(e);
+					ICSharpCode.Core.MessageService.ShowError(e, "Error while initializing project references:" + newContent);
 				}
 			}
 			StatusBarService.ProgressMonitor.BeginTask("Parsing...", workAmount);
@@ -147,8 +145,7 @@ namespace ICSharpCode.Core
 				try {
 					newContent.Initialize2();
 				} catch (Exception e) {
-					Console.WriteLine("Error while initializing project contents:" + newContent);
-					ICSharpCode.Core.MessageService.ShowError(e);
+					ICSharpCode.Core.MessageService.ShowError(e, "Error while initializing project contents:" + newContent);
 				}
 			}
 			StatusBarService.ProgressMonitor.Done();

@@ -39,12 +39,11 @@ namespace ICSharpCode.Core
 				foreach (IClass c in pc.Classes) {
 					int count = c.BaseTypes.Count;
 					for (int i = 0; i < count; i++) {
-						string baseType = c.BaseTypes[i];
-						if (pc.Language.NameComparer.Equals(baseType, baseClassName) ||
-						    pc.Language.NameComparer.Equals(baseType, baseClassFullName)) {
+						string baseTypeName = c.BaseTypes[i].Name;
+						if (pc.Language.NameComparer.Equals(baseTypeName, baseClassName) ||
+						    pc.Language.NameComparer.Equals(baseTypeName, baseClassFullName)) {
 							IReturnType possibleBaseClass = c.GetBaseType(i);
-							if (possibleBaseClass != null &&
-							    possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName) {
+							if (possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName) {
 								list.Add(c);
 							}
 						}

@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		List<string> BaseTypes {
+		List<IReturnType> BaseTypes {
 			get;
 		}
 		

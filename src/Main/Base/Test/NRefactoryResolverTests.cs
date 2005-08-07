@@ -680,11 +680,28 @@ class TestClass {
 		public void ImportAliasNamespaceResolveTest()
 		{
 			NamespaceResolveResult ns;
-			string program = "using COL = System.Collections;\r\nclass A {\r\n}\r\n";
+			string program = "using COL = System.Collections;\r\nclass A {\r\n\r\n}\r\n";
 			ns = Resolve(program, "COL", 3) as NamespaceResolveResult;
 			Assert.AreEqual("System.Collections", ns.Name, "COL");
 			ns = Resolve(program, "COL.Generic", 3) as NamespaceResolveResult;
 			Assert.AreEqual("System.Collections.Generic", ns.Name, "COL.Generic");
+		}
+		
+		[Test]
+		public void ImportAliasClassResolveTest()
+		{
+			string program = @"using COL = System.Collections.ArrayList;
+class TestClass {
+	void Test() {
+		COL a = new COL();
+		
+	}
+}
+";
+			TypeResolveResult rr = Resolve(program, "COL", 4) as TypeResolveResult;
+			Assert.AreEqual("System.Collections.ArrayList", rr.ResolvedClass.FullyQualifiedName, "COL");
+			LocalResolveResult lr = Resolve(program, "a", 5) as LocalResolveResult;
+			Assert.AreEqual("System.Collections.ArrayList", lr.ResolvedType.FullyQualifiedName, "a");
 		}
 		#endregion
 		

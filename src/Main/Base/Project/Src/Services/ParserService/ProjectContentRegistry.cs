@@ -51,6 +51,17 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public static IProjectContent WinForms {
+			get {
+				lock (contents) {
+					if (contents.ContainsKey("System.Windows.Forms")) {
+						return contents["System.Windows.Forms"];
+					}
+				}
+				return GetProjectContentForReference(new ReferenceProjectItem(null, "System.Windows.Forms"));
+			}
+		}
+		
 		public static IProjectContent GetExistingProjectContent(AssemblyName assembly)
 		{
 			lock (contents) {
@@ -69,10 +80,10 @@ namespace ICSharpCode.Core
 		public static IProjectContent GetProjectContentForReference(ReferenceProjectItem item)
 		{
 			if (item is ProjectReferenceProjectItem) {
-                if (((ProjectReferenceProjectItem)item).ReferencedProject == null)
-                {
-                    return null;
-                }
+				if (((ProjectReferenceProjectItem)item).ReferencedProject == null)
+				{
+					return null;
+				}
 				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
 			}
 			lock (contents) {

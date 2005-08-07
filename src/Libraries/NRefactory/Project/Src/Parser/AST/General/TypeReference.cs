@@ -81,6 +81,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			set {
 				Debug.Assert(value != null);
 				type = value;
+				systemType = GetSystemType(type);
 			}
 		}
 		
@@ -163,9 +164,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		public TypeReference(string type)
 		{
-			Debug.Assert(type != null);
-			this.systemType = GetSystemType(type);
-			this.type = type;
+			this.Type = type;
 		}
 		
 		public TypeReference(string type, string systemType)

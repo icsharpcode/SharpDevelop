@@ -16,7 +16,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
 	public class AbstractClassImplementorCodeGenerator : CodeGenerator
 	{
-		ICompilationUnit unit;
 		
 		public override string CategoryName {
 			get {

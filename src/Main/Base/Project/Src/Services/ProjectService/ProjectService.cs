@@ -49,7 +49,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static ProjectService()
 		{
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += new EventHandler(ActiveWindowChanged);
+			if (WorkbenchSingleton.Workbench != null) {
+				WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += new EventHandler(ActiveWindowChanged);
+			}
 			FileService.FileRenamed += FileServiceFileRenamed;
 			FileService.FileRemoved += FileServiceFileRemoved;
 		}

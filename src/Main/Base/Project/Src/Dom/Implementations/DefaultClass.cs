@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		ICompilationUnit compilationUnit;
 		
-		List<string>    baseTypes   = null;
+		List<IReturnType> baseTypes   = null;
 		
 		List<IClass>    innerClasses = null;
 		List<IField>    fields       = null;
@@ -125,10 +125,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public List<string> BaseTypes {
+		public List<IReturnType> BaseTypes {
 			get {
 				if (baseTypes == null) {
-					baseTypes = new List<string>();
+					baseTypes = new List<IReturnType>();
 				}
 				return baseTypes;
 			}
@@ -224,14 +224,32 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public IEnumerable<IClass> ClassInheritanceTree {
 			get {
-				if (UseInheritanceCache) {
-					if (inheritanceTreeCache == null) {
-						inheritanceTreeCache = new List<IClass>(new ClassInheritanceEnumerator(this));
-					}
+				if (inheritanceTreeCache != null)
 					return inheritanceTreeCache;
-				} else {
-					return new ClassInheritanceEnumerator(this);
-				}
+				List<IClass> visitedList = new List<IClass>();
+				Queue<IReturnType> typesToVisit = new Queue<IReturnType>();
+				bool enqueuedLastBaseType = false;
+				IClass currentClass = this;
+				do {
+					if (!visitedList.Contains(currentClass)) {
+						visitedList.Add(currentClass);
+						foreach (IReturnType type in currentClass.BaseTypes) {
+							typesToVisit.Enqueue(type);
+						}
+					}
+					IReturnType nextType;
+					if (typesToVisit.Count > 0) {
+						nextType = typesToVisit.Dequeue();
+					} else {
+						nextType = enqueuedLastBaseType ? null : GetBaseTypeByClassType();
+						enqueuedLastBaseType = true;
+					}
+					currentClass = (nextType != null) ? nextType.GetUnderlyingClass() : null;
+				} while (currentClass != null);
+				if (UseInheritanceCache)
+					inheritanceTreeCache = visitedList;
+				currentClass = ReflectionReturnType.Object.GetUnderlyingClass();
+				return visitedList;
 			}
 		}
 		
@@ -243,55 +261,53 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 
-		// used to prevent StackOverflowException because SearchType might search for inner classes in the base type
-		bool blockBaseClassSearch = false;
-
 		public IReturnType GetBaseType(int index)
 		{
-			if (blockBaseClassSearch)
-				return null;
-			blockBaseClassSearch = true;
-			try {
-				return ProjectContent.SearchType(BaseTypes[index], this, Region != null ? Region.BeginLine : 0, Region != null ? Region.BeginColumn : 0);
-			} finally {
-				blockBaseClassSearch = false;
-			}
+			return BaseTypes[index];
 		}
-		
-		IClass cachedBaseClass;
 		
 		public IReturnType BaseType {
 			get {
-				IClass baseClass = cachedBaseClass;
-				return (baseClass != null) ? baseClass.DefaultReturnType : null;
+				foreach (IReturnType baseType in this.BaseTypes) {
+					IClass baseClass = baseType.GetUnderlyingClass();
+					if (baseClass != null && baseClass.ClassType == this.ClassType)
+						return baseType;
+				}
+				return GetBaseTypeByClassType();
 			}
+		}
+		
+		IReturnType GetBaseTypeByClassType()
+		{
+				switch (ClassType) {
+					case ClassType.Class:
+						if (FullyQualifiedName != "System.Object") {
+							return ReflectionReturnType.Object;
+						}
+						break;
+					case ClassType.Enum:
+						return ProjectContentRegistry.Mscorlib.GetClass("System.Enum").DefaultReturnType;
+					case ClassType.Delegate:
+						return ProjectContentRegistry.Mscorlib.GetClass("System.Delegate").DefaultReturnType;
+					case ClassType.Struct:
+						return ProjectContentRegistry.Mscorlib.GetClass("System.ValueType").DefaultReturnType;
+				}
+				return null;
 		}
 		
 		public IClass BaseClass {
 			get {
-				Debug.Assert(ProjectContent != null);
-				
-				if (BaseTypes.Count > 0) {
-					if (UseInheritanceCache && cachedBaseClass != null)
-						return cachedBaseClass;
-					IReturnType baseType = GetBaseType(0);
-					IClass baseClass = (baseType != null) ? baseType.GetUnderlyingClass() : null;
-					if (baseClass != null && baseClass.ClassType != ClassType.Interface) {
-						if (UseInheritanceCache)
-							cachedBaseClass = baseClass;
+				foreach (IReturnType baseType in this.BaseTypes) {
+					IClass baseClass = baseType.GetUnderlyingClass();
+					if (baseClass != null && baseClass.ClassType == this.ClassType)
 						return baseClass;
-					}
 				}
-				
-				// no baseType found
 				switch (ClassType) {
 					case ClassType.Class:
 						if (FullyQualifiedName != "System.Object") {
 							return ReflectionReturnType.Object.GetUnderlyingClass();
 						}
 						break;
-					case ClassType.Module:
-						return null;
 					case ClassType.Enum:
 						return ProjectContentRegistry.Mscorlib.GetClass("System.Enum");
 					case ClassType.Delegate:
@@ -307,9 +323,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (possibleBaseClass == null) {
 				return false;
-			}
-			if (FullyQualifiedName == possibleBaseClass.FullyQualifiedName) {
-				return true;
 			}
 			foreach (IClass baseClass in this.ClassInheritanceTree) {
 				if (possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName)
@@ -380,172 +393,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				types.AddRange(baseClass.GetAccessibleTypes(callingClass));
 			}
 			return types;
-		}
-		
-		/*
-		public List<IMember> GetAccessibleMembers(IClass callingClass, bool showStatic)
-		{
-			List<IMember> members = new List<IMember>();
-			
-			bool isClassInInheritanceTree = false;
-			if (callingClass != null)
-				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(this);
-			
-			foreach (IProperty p in Properties) {
-				if (p.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
-					members.Add(p);
-				}
-			}
-			
-			foreach (IMethod m in Methods) {
-				if (m.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
-					members.Add(m);
-				}
-			}
-			
-			foreach (IEvent e in Events) {
-				if (e.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
-					members.Add(e);
-				}
-			}
-			
-			foreach (IField f in Fields) {
-				if (f.MustBeShown(callingClass, showStatic, isClassInInheritanceTree)) {
-					members.Add(f);
-				}
-			}
-			
-			if (ClassType == ClassType.Interface && !showStatic) {
-				foreach (string s in BaseTypes) {
-					IReturnType baseType = ProjectContent.SearchType(s, this, Region != null ? Region.BeginLine : -1, Region != null ? Region.BeginColumn : -1);
-					List<IMember> baseTypeMembers = new List<IMember>();
-					if (baseType != null && baseType.GetUnderlyingClass() != null && baseType.GetUnderlyingClass().ClassType == ClassType.Interface) {
-						//members.AddRange(baseClass.GetAccessibleMembers(callingClass, showStatic).ToArray());
-						
-					}
-				}
-			} else {
-				IClass baseClass = BaseClass;
-				if (baseClass != null) {
-					members.AddRange(baseClass.GetAccessibleMembers(callingClass, showStatic));
-				}
-			}
-			
-			return members;
-		}
-		*/
-		
-		public class ClassInheritanceEnumerator : IEnumerator<IClass>, IEnumerable<IClass>
-		{
-			IClass topLevelClass;
-			IClass currentClass  = null;
-			
-			private struct BaseType {
-				internal IClass parent;
-				internal string name;
-				
-				internal BaseType(IClass parent, string name) {
-					this.parent = parent;
-					this.name = name;
-				}
-			}
-			
-			Queue<BaseType> baseTypeQueue = new Queue<BaseType>();
-			
-			List<IClass> finishedClasses = new List<IClass>();
-			
-			public ClassInheritanceEnumerator(IClass topLevelClass)
-			{
-				this.topLevelClass = topLevelClass;
-				PutBaseClassesOnStack(topLevelClass);
-				baseTypeQueue.Enqueue(new BaseType(null, "System.Object"));
-			}
-			
-			public IEnumerator<IClass> GetEnumerator()
-			{
-				return this;
-			}
-			
-			IEnumerator IEnumerable.GetEnumerator()
-			{
-				return this;
-			}
-			
-			void PutBaseClassesOnStack(IClass c)
-			{
-				foreach (string baseTypeName in c.BaseTypes) {
-					baseTypeQueue.Enqueue(new BaseType(c, baseTypeName));
-				}
-			}
-			
-			public IClass Current {
-				get {
-					return currentClass;
-				}
-			}
-			
-			object IEnumerator.Current {
-				get {
-					return currentClass;
-				}
-			}
-			
-			bool first = true;
-			
-			public bool MoveNext()
-			{
-				try {
-					if (first) {
-						first = false;
-						currentClass = topLevelClass;
-						return true;
-					}
-					if (baseTypeQueue.Count == 0) {
-						return false;
-					}
-					
-					BaseType baseTypeStruct = baseTypeQueue.Dequeue();
-					
-					IClass baseClass;
-					if (baseTypeStruct.parent == null) {
-						baseClass = ProjectContentRegistry.Mscorlib.GetClass(baseTypeStruct.name);
-					} else {
-						IReturnType baseType = baseTypeStruct.parent.ProjectContent.SearchType(baseTypeStruct.name, baseTypeStruct.parent, 1, 1);
-						baseClass = (baseType != null) ? baseType.GetUnderlyingClass() : null;
-					}
-					if (baseClass == null || finishedClasses.Contains(baseClass)) {
-						// prevent enumerating interfaces multiple times and endless loops when
-						// circular inheritance is found
-						return MoveNext();
-					} else {
-						currentClass = baseClass;
-						
-						finishedClasses.Add(currentClass);
-						PutBaseClassesOnStack(currentClass);
-						return true;
-					}
-				} catch (Exception e) {
-					MessageService.ShowError(e);
-				}
-				return false;
-			}
-			
-			public void Reset()
-			{
-				first = true;
-				baseTypeQueue.Clear();
-				finishedClasses.Clear();
-				PutBaseClassesOnStack(topLevelClass);
-				baseTypeQueue.Enqueue(new BaseType(null, "System.Object"));
-			}
-			
-			public void Dispose()
-			{
-				baseTypeQueue = null;
-				finishedClasses = null;
-				topLevelClass = null;
-				currentClass = null;
-			}
 		}
 	}
 }

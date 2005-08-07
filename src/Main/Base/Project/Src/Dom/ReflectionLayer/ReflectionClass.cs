@@ -244,11 +244,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			// set base classes
 			if (type.BaseType != null) { // it's null for System.Object ONLY !!!
-				BaseTypes.Add(type.BaseType.FullName);
+				BaseTypes.Add(ReflectionReturnType.Create(compilationUnit.ProjectContent, type.BaseType, false));
 			}
 			
 			foreach (Type iface in type.GetInterfaces()) {
-				BaseTypes.Add(iface.FullName);
+				BaseTypes.Add(ReflectionReturnType.Create(compilationUnit.ProjectContent, iface, false));
 			}
 		}
 	}

@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.IsNotNull(c, "c is null");
 			Assert.IsNotNull(c2, "c2 is null");
 			Assert.AreEqual(3, c.BaseTypes.Count); // 2 interfaces
-			Assert.AreEqual("System.Exception", c.BaseTypes[0]);
+			Assert.AreEqual("System.Exception", c.BaseTypes[0].FullyQualifiedName);
 			Assert.AreSame(c2, c.BaseClass);
 			
 			List<IClass> subClasses = new List<IClass>();

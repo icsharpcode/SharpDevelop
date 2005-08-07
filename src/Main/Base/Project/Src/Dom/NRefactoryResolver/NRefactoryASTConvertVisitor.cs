@@ -283,12 +283,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				cu.Classes.Add(c);
 			}
+			currentClass.Push(c);
+			
 			if (typeDeclaration.BaseTypes != null) {
 				foreach (AST.TypeReference type in typeDeclaration.BaseTypes) {
-					c.BaseTypes.Add(type.SystemType);
+					c.BaseTypes.Add(CreateReturnType(type));
 				}
 			}
-			currentClass.Push(c);
 			
 			ConvertTemplates(typeDeclaration.Templates, c); // resolve constrains in context of the class
 			
@@ -343,7 +344,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, ConvertModifier(delegateDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
 			c.Documentation = GetDocumentation(region.BeginLine);
 			c.Attributes.AddRange(VisitAttributes(delegateDeclaration.Attributes));
-			c.BaseTypes.Add("System.Delegate");
+			c.BaseTypes.Add(ReflectionReturnType.CreatePrimitive(typeof(Delegate)));
 			if (currentClass.Count > 0) {
 				DefaultClass cur = GetCurrentClass();
 				cur.InnerClasses.Add(c);

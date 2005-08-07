@@ -195,20 +195,37 @@ namespace ICSharpCode.NUnitPad
 			}
 			
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
-				string outputAssembly = project.OutputAssemblyFullPath;
-				try {
-					TestDomain testDomain = new TestDomain();
+				bool referenceFound = false;
+				foreach (ProjectItem item in project.Items) {
+					ReferenceProjectItem reference = item as ReferenceProjectItem;
+					if (reference != null) {
+						string include = reference.Include;
+						if (include.IndexOf(',') > 0) {
+							include = include.Substring(0, include.IndexOf(','));
+						}
+						if (string.Equals(include, "nunit.framework", StringComparison.InvariantCultureIgnoreCase)
+						    || string.Equals(include, "nunit.framework.dll", StringComparison.InvariantCultureIgnoreCase))
+						{
+							referenceFound = true;
+							break;
+						}
+					}
+				}
+				if (referenceFound) {
+					string outputAssembly = project.OutputAssemblyFullPath;
+					try {
+						TestDomain testDomain = new TestDomain();
 //					NUnitProject prj = NUnitProject.LoadProject(outputAssembly);
-					Test test = testDomain.Load(outputAssembly);
-					
+						Test test = testDomain.Load(outputAssembly);
+						
 //					TestSuiteBuilder builder = new TestSuiteBuilder();
 //					Console.WriteLine("Try to load '" + outputAssembly +"'");
 //					Test testDomain = builder.Build(outputAssembly);
-					testTreeView.PrintTests(outputAssembly, test, project);
-				} catch (Exception e) {
-					testTreeView.PrintTestErrors(outputAssembly, e);
+						testTreeView.PrintTests(outputAssembly, test, project);
+					} catch (Exception e) {
+						testTreeView.PrintTestErrors(outputAssembly, e);
+					}
 				}
-				
 			}
 		}
 	}
