@@ -14,11 +14,13 @@
 		<Copy SourceFiles="@(WixCaFiles)" DestinationFolder="..\..\bin\Tools\Wix\ca"/>
 		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc"/>
 		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib"/>
+		<!--
 		<CreateProperty Condition = "!Exists('..\..\bin\setup\help\register.bat')" Value="yes">
 			<Output TaskParameter="Value" PropertyName="NeedToRunRegister" />
 		</CreateProperty>
 		<Copy SourceFiles="@(HelpToolFiles)" DestinationFolder="..\..\bin\setup\help"/>
 		<Exec Command="register.bat" WorkingDirectory = "..\..\bin\setup\help" Timeout = "60000" IgnoreExitCode = "true" Condition = "'$(NeedToRunRegister)' == 'yes'" />
+		-->
 	</Target>
 	
 	<Target Name="Rebuild" DependsOnTargets="Clean;Build"/>
