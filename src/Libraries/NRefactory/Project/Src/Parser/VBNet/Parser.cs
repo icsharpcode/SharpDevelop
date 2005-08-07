@@ -315,7 +315,7 @@ ref val);
 	void ImportsStmt() {
 
 #line  474 "VBNET.ATG" 
-		ArrayList usings = new ArrayList();
+		List<Using> usings = new List<Using>();
 		
 		Expect(107);
 
@@ -488,43 +488,28 @@ out Using u) {
 
 #line  496 "VBNET.ATG" 
 		string qualident  = null;
-		string aliasident = null;
+		TypeReference aliasedType = null;
 		u = null;
 		
-		if (
-#line  500 "VBNET.ATG" 
-IsAssignment()) {
-			Identifier();
-
-#line  500 "VBNET.ATG" 
-			aliasident = t.val;  
-			Expect(11);
-		}
 		Qualident(
-#line  501 "VBNET.ATG" 
+#line  500 "VBNET.ATG" 
 out qualident);
+		if (la.kind == 11) {
+			lexer.NextToken();
+			TypeName(
+#line  501 "VBNET.ATG" 
+out aliasedType);
+		}
 
 #line  503 "VBNET.ATG" 
 		if (qualident != null && qualident.Length > 0) {
-		if (aliasident != null) {
-			u = new Using(aliasident, qualident);
+		if (aliasedType != null) {
+			u = new Using(qualident, aliasedType);
 		} else {
 			u = new Using(qualident);
 		}
 		}
 		
-	}
-
-	void Identifier() {
-		if (la.kind == 2) {
-			lexer.NextToken();
-		} else if (la.kind == 169) {
-			lexer.NextToken();
-		} else if (la.kind == 50) {
-			lexer.NextToken();
-		} else if (la.kind == 69) {
-			lexer.NextToken();
-		} else SynErr(209);
 	}
 
 	void Qualident(
@@ -553,6 +538,26 @@ out name);
 
 #line  2741 "VBNET.ATG" 
 		qualident = qualidentBuilder.ToString(); 
+	}
+
+	void TypeName(
+#line  1928 "VBNET.ATG" 
+out TypeReference typeref) {
+
+#line  1929 "VBNET.ATG" 
+		ArrayList rank = null; typeref = null; 
+		NonArrayTypeName(
+#line  1931 "VBNET.ATG" 
+out typeref);
+		ArrayTypeModifiers(
+#line  1932 "VBNET.ATG" 
+out rank);
+
+#line  1934 "VBNET.ATG" 
+		if (rank != null && typeref != null) {
+		typeref.RankSpecifier = (int[])rank.ToArray(typeof(int));
+		}
+		
 	}
 
 	void NamespaceBody() {
@@ -694,7 +699,7 @@ Modifiers m) {
 			m.Add(Modifier.Sealed, t.Location); 
 			break;
 		}
-		default: SynErr(210); break;
+		default: SynErr(209); break;
 		}
 	}
 
@@ -957,7 +962,7 @@ out type);
 #line  700 "VBNET.ATG" 
 					delegateDeclr.ReturnType = type; 
 				}
-			} else SynErr(211);
+			} else SynErr(210);
 
 #line  702 "VBNET.ATG" 
 			delegateDeclr.EndLocation = t.EndLocation; 
@@ -968,7 +973,7 @@ out type);
 			
 			break;
 		}
-		default: SynErr(212); break;
+		default: SynErr(211); break;
 		}
 	}
 
@@ -1019,6 +1024,18 @@ template);
 		}
 	}
 
+	void Identifier() {
+		if (la.kind == 2) {
+			lexer.NextToken();
+		} else if (la.kind == 169) {
+			lexer.NextToken();
+		} else if (la.kind == 50) {
+			lexer.NextToken();
+		} else if (la.kind == 69) {
+			lexer.NextToken();
+		} else SynErr(212);
+	}
+
 	void TypeParameterConstraints(
 #line  572 "VBNET.ATG" 
 TemplateDefinition template) {
@@ -1053,26 +1070,6 @@ out constraint);
 #line  586 "VBNET.ATG" 
 			if (constraint != null) { template.Bases.Add(constraint); } 
 		} else SynErr(213);
-	}
-
-	void TypeName(
-#line  1928 "VBNET.ATG" 
-out TypeReference typeref) {
-
-#line  1929 "VBNET.ATG" 
-		ArrayList rank = null; typeref = null; 
-		NonArrayTypeName(
-#line  1931 "VBNET.ATG" 
-out typeref);
-		ArrayTypeModifiers(
-#line  1932 "VBNET.ATG" 
-out rank);
-
-#line  1934 "VBNET.ATG" 
-		if (rank != null && typeref != null) {
-		typeref.RankSpecifier = (int[])rank.ToArray(typeof(int));
-		}
-		
 	}
 
 	void ClassBaseType(
@@ -7150,10 +7147,10 @@ out blockStmt);
 			case 206: s = "invalid NamespaceMemberDecl"; break;
 			case 207: s = "invalid OptionValue"; break;
 			case 208: s = "invalid EndOfStmt"; break;
-			case 209: s = "invalid Identifier"; break;
-			case 210: s = "invalid TypeModifier"; break;
+			case 209: s = "invalid TypeModifier"; break;
+			case 210: s = "invalid NonModuleDeclaration"; break;
 			case 211: s = "invalid NonModuleDeclaration"; break;
-			case 212: s = "invalid NonModuleDeclaration"; break;
+			case 212: s = "invalid Identifier"; break;
 			case 213: s = "invalid TypeParameterConstraints"; break;
 			case 214: s = "invalid PrimitiveTypeName"; break;
 			case 215: s = "invalid MemberModifier"; break;

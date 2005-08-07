@@ -221,7 +221,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string ToString()
 		{
-			return String.Format("[SpecificReturnType: {0}<{1}>]", baseType, typeParameters);
+			string r = "[SpecificReturnType: ";
+			r += baseType;
+			r += "<";
+			for (int i = 0; i < typeParameters.Count; i++) {
+				if (i > 0) r += ",";
+				r += typeParameters[i];
+			}
+			return r + ">]";
 		}
 	}
 }

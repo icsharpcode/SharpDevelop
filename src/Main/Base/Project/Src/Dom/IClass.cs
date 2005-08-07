@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>Gets the class associated with the base type with the same index.</summary>
-		IClass GetBaseClass(int index);
+		IReturnType GetBaseType(int index);
 		
 		List<IClass> InnerClasses {
 			get;
@@ -102,6 +102,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		IReturnType BaseType {
+			get;
+		}
+		
 		IClass GetInnermostClass(int caretLine, int caretColumn);
 		
 		List<IClass> GetAccessibleTypes(IClass callingClass);
@@ -114,7 +118,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>Return true if the specified class is a base class of this class; otherwise return false.</summary>
 		/// <remarks>Returns false when possibleBaseClass is null.</remarks>
 		bool IsTypeInInheritanceTree(IClass possibleBaseClass);
-		
-		List<IMember> GetAccessibleMembers(IClass callingClass, bool showStatic);
 	}
 }

@@ -20,11 +20,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 
-		SortedList<string, string> Aliases {
+		SortedList<string, IReturnType> Aliases {
 			get;
 		}
 
-		IClass SearchType(string partitialTypeName);
+		IReturnType SearchType(string partitialTypeName);
 		string SearchNamespace(string partitialNamespaceName);
 	}
 }

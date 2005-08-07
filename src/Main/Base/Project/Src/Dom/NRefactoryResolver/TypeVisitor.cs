@@ -426,11 +426,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (resolver.CallingClass == null) {
 				return null;
 			}
-			IClass baseClass = resolver.CallingClass.BaseClass;
-			if (baseClass == null) {
-				return null;
-			}
-			return baseClass.DefaultReturnType;
+			return resolver.CallingClass.BaseType;
 		}
 		
 		public override object Visit(ObjectCreateExpression objectCreateExpression, object data)
@@ -519,11 +515,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 							t = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn, reference.SystemType);
 					} else {
 						IClass c;
-						if (reference.IsGlobal)
+						if (reference.IsGlobal) {
 							c = projectContent.GetClass(reference.SystemType);
-						else
-							c = projectContent.SearchType(reference.SystemType, callingClass, caretLine, caretColumn);
-						if (c == null) {
+							t = (c != null) ? c.DefaultReturnType : null;
+						} else {
+							t = projectContent.SearchType(reference.SystemType, callingClass, caretLine, caretColumn);
+						}
+						if (t == null) {
 							if (reference.GenericTypes.Count == 0 && !reference.IsArrayType) {
 								// reference to namespace is possible
 								if (reference.IsGlobal) {
@@ -537,7 +535,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 							}
 							return null;
 						}
-						t = c.DefaultReturnType;
 					}
 				}
 			}

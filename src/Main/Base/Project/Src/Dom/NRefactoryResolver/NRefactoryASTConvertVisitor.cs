@@ -164,7 +164,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			Debug.Assert(data is DefaultUsing);
 			DefaultUsing us = (DefaultUsing)data;
 			if (u.IsAlias) {
-				us.Aliases[u.Name] = u.Alias;
+				IReturnType rt = CreateReturnType(u.Alias);
+				if (rt != null) {
+					us.Aliases[u.Name] = rt;
+				}
 			} else {
 				us.Usings.Add(u.Name);
 			}
@@ -550,9 +553,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		IReturnType CreateReturnType(AST.TypeReference reference, IMethod method)
 		{
 			IClass c = GetCurrentClass();
-			if (c == null)
-				return null;
-			return TypeVisitor.CreateReturnType(reference, c, method, c.Region.BeginLine + 1, 1, cu.ProjectContent, true);
+			if (c == null) {
+				return TypeVisitor.CreateReturnType(reference, new DefaultClass(cu, "___DummyClass"), method, 1, 1, cu.ProjectContent, true);
+			} else {
+				return TypeVisitor.CreateReturnType(reference, c, method, c.Region.BeginLine + 1, 1, cu.ProjectContent, true);
+			}
 		}
 		
 		IReturnType CreateReturnType(AST.TypeReference reference)

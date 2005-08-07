@@ -64,7 +64,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (content != null) {
 				int count = c.BaseTypes.Count;
 				for (int i = 0; i < count; i++) {
-					IClass baseClass = c.GetBaseClass(i);
+					IReturnType baseType = c.GetBaseType(i);
+					IClass baseClass = (baseType != null) ? baseType.GetUnderlyingClass() : null;
 					if (baseClass != null) {
 						new ClassNode(project, baseClass).AddTo(this);
 					}

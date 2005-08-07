@@ -230,13 +230,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Imports);
 			outputFormatter.Space();
 			for (int i = 0; i < usingDeclaration.Usings.Count; ++i) {
-				if (((Using)usingDeclaration.Usings[i]).IsAlias) {
-					outputFormatter.PrintIdentifier(((Using)usingDeclaration.Usings[i]).Alias);
-					outputFormatter.Space();
-					outputFormatter.PrintToken(Tokens.As);
-					outputFormatter.Space();
-				}
 				outputFormatter.PrintIdentifier(((Using)usingDeclaration.Usings[i]).Name);
+				if (((Using)usingDeclaration.Usings[i]).IsAlias) {
+					outputFormatter.Space();
+					outputFormatter.PrintToken(Tokens.Assign);
+					outputFormatter.Space();
+					nodeTracker.TrackedVisit(((Using)usingDeclaration.Usings[i]).Alias, data);
+				}
 				if (i + 1 < usingDeclaration.Usings.Count) {
 					outputFormatter.PrintToken(Tokens.Comma);
 					outputFormatter.Space();

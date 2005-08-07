@@ -69,7 +69,8 @@ namespace CSharpBinding.Parser
 							genericPart = null;
 						}
 						ClassFinder finder = new ClassFinder(fileName, text, typeStart);
-						IClass c = finder.SearchClass(nonGenericClassName);
+						IReturnType t = finder.SearchType(nonGenericClassName);
+						IClass c = (t != null) ? t.GetUnderlyingClass() : null;
 						if (c != null) {
 							ExpressionContext context = ExpressionContext.TypeDerivingFrom(c, true);
 							if (context.ShowEntry(c)) {

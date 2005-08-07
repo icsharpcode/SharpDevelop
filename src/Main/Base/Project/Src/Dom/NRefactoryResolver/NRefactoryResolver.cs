@@ -441,9 +441,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			ResolveResult result2 = null;
 			
-			IClass c = SearchClass(identifier);
-			if (c != null) {
-				result2 = new TypeResolveResult(callingClass, callingMember, c);
+			IReturnType t = SearchType(identifier);
+			if (t != null) {
+				result2 = new TypeResolveResult(callingClass, callingMember, t);
 			} else {
 				if (callingClass != null) {
 					if (callingMember is IMethod) {
@@ -652,6 +652,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// use the usings and the name of the namespace to find a class
 		/// </remarks>
 		public IClass SearchClass(string name)
+		{
+			IReturnType t = SearchType(name);
+			return (t != null) ? t.GetUnderlyingClass() : null;
+		}
+		
+		public IReturnType SearchType(string name)
 		{
 			return projectContent.SearchType(name, callingClass, cu, caretLine, caretColumn);
 		}
@@ -898,10 +904,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				inStatic = callingMember.IsStatic;
 			
 			if (callingClass != null) {
-				if (!inStatic) {
-					result.AddRange(callingClass.GetAccessibleMembers(callingClass, false));
+				ArrayList members = new ArrayList();
+				IReturnType t = callingClass.DefaultReturnType;
+				members.AddRange(t.GetMethods());
+				members.AddRange(t.GetFields());
+				members.AddRange(t.GetEvents());
+				members.AddRange(t.GetProperties());
+				members.AddRange(t.GetIndexers());
+				foreach (IMember m in members) {
+					if ((m.IsStatic || !inStatic) && m.IsAccessible(callingClass, true)) {
+						result.Add(m);
+					}
 				}
-				result.AddRange(callingClass.GetAccessibleMembers(callingClass, true));
 			}
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 				if (pair.Value != null && pair.Value.Count > 0) {

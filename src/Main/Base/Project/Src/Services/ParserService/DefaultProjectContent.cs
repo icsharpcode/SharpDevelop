@@ -454,7 +454,22 @@ namespace ICSharpCode.Core
 					if (language.ShowInNamespaceCompletion(c))
 						list.Add(c);
 					if (language.ImportModules && c.ClassType == ClassType.Module) {
-						list.AddRange(c.GetAccessibleMembers(null, true));
+						foreach (IMember m in c.Methods) {
+							if (m.IsAccessible(null, false))
+								list.Add(m);
+						}
+						foreach (IMember m in c.Events) {
+							if (m.IsAccessible(null, false))
+								list.Add(m);
+						}
+						foreach (IMember m in c.Fields) {
+							if (m.IsAccessible(null, false))
+								list.Add(m);
+						}
+						foreach (IMember m in c.Properties) {
+							if (m.IsAccessible(null, false))
+								list.Add(m);
+						}
 					}
 				}
 				foreach (string subns in ns.SubNamespaces) {
@@ -534,7 +549,7 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		public IClass SearchType(string name, IClass curType, int caretLine, int caretColumn)
+		public IReturnType SearchType(string name, IClass curType, int caretLine, int caretColumn)
 		{
 			if (curType == null) {
 				return SearchType(name, null, null, caretLine, caretColumn);
@@ -542,7 +557,7 @@ namespace ICSharpCode.Core
 			return SearchType(name, curType, curType.CompilationUnit, caretLine, caretColumn);
 		}
 		
-		public IClass SearchType(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn)
+		public IReturnType SearchType(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn)
 		{
 			if (name == null || name.Length == 0) {
 				return null;
@@ -551,7 +566,7 @@ namespace ICSharpCode.Core
 			// Try if name is already the full type name
 			IClass c = GetClass(name);
 			if (c != null) {
-				return c;
+				return c.DefaultReturnType;
 			}
 			if (curType != null) {
 				// Try parent namespaces of the current class
@@ -565,7 +580,7 @@ namespace ICSharpCode.Core
 					curnamespace.Append(name);
 					c = GetClass(curnamespace.ToString());
 					if (c != null) {
-						return c;
+						return c.DefaultReturnType;
 					}
 					// remove class name again to try next namespace
 					curnamespace.Length -= name.Length;
@@ -576,7 +591,7 @@ namespace ICSharpCode.Core
 					while ((curType = curType.BaseClass) != null) {
 						foreach (IClass innerClass in curType.InnerClasses) {
 							if (language.NameComparer.Equals(innerClass.Name, name))
-								return innerClass;
+								return innerClass.DefaultReturnType;
 						}
 					}
 				}
@@ -585,17 +600,17 @@ namespace ICSharpCode.Core
 				// Combine name with usings
 				foreach (IUsing u in unit.Usings) {
 					if (u != null) {
-						c = u.SearchType(name);
-						if (c != null) {
-							return c;
+						IReturnType r = u.SearchType(name);
+						if (r != null) {
+							return r;
 						}
 					}
 				}
 			}
 			if (defaultImports != null) {
-				c = defaultImports.SearchType(name);
-				if (c != null) {
-					return c;
+				IReturnType r = defaultImports.SearchType(name);
+				if (r != null) {
+					return r;
 				}
 			}
 			return null;

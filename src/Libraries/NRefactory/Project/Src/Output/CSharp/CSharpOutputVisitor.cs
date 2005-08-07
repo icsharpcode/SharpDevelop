@@ -246,14 +246,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Using);
 			outputFormatter.Space();
 			
+			outputFormatter.PrintIdentifier(u.Name);
+			
 			if (u.IsAlias) {
-				outputFormatter.PrintIdentifier(u.Alias);
 				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Assign);
 				outputFormatter.Space();
+				nodeTracker.TrackedVisit(u.Alias, data);
 			}
 			
-			outputFormatter.PrintIdentifier(u.Name);
 			outputFormatter.PrintToken(Tokens.Semicolon);
 			outputFormatter.NewLine();
 			return null;

@@ -62,8 +62,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		// TODO: Cache BaseType until a new CompilationUnit is generated (static counter in ParserService)
 		public override IReturnType BaseType {
 			get {
-				IClass c = pc.SearchType(name, declaringClass, caretLine, caretColumn);
-				return (c != null) ? c.DefaultReturnType : null;
+				return pc.SearchType(name, declaringClass, caretLine, caretColumn);
 			}
 		}
 		

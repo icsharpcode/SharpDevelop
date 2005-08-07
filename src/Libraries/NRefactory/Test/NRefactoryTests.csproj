@@ -17,7 +17,7 @@
     <DebugSymbols>True</DebugSymbols>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <DefineConstants>DEBUG</DefineConstants>
-    <OutputPath>C:\corsavy\trunk\SharpDevelop\bin</OutputPath>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
     <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">

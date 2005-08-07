@@ -42,7 +42,7 @@ namespace ICSharpCode.Core
 						string baseType = c.BaseTypes[i];
 						if (pc.Language.NameComparer.Equals(baseType, baseClassName) ||
 						    pc.Language.NameComparer.Equals(baseType, baseClassFullName)) {
-							IClass possibleBaseClass = c.GetBaseClass(i);
+							IReturnType possibleBaseClass = c.GetBaseType(i);
 							if (possibleBaseClass != null &&
 							    possibleBaseClass.FullyQualifiedName == baseClass.FullyQualifiedName) {
 								list.Add(c);

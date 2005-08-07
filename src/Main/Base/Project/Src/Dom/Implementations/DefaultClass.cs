@@ -246,7 +246,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		// used to prevent StackOverflowException because SearchType might search for inner classes in the base type
 		bool blockBaseClassSearch = false;
 
-		public IClass GetBaseClass(int index)
+		public IReturnType GetBaseType(int index)
 		{
 			if (blockBaseClassSearch)
 				return null;
@@ -260,6 +260,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		IClass cachedBaseClass;
 		
+		public IReturnType BaseType {
+			get {
+				IClass baseClass = cachedBaseClass;
+				return (baseClass != null) ? baseClass.DefaultReturnType : null;
+			}
+		}
+		
 		public IClass BaseClass {
 			get {
 				Debug.Assert(ProjectContent != null);
@@ -267,7 +274,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (BaseTypes.Count > 0) {
 					if (UseInheritanceCache && cachedBaseClass != null)
 						return cachedBaseClass;
-					IClass baseClass = GetBaseClass(0);
+					IReturnType baseType = GetBaseType(0);
+					IClass baseClass = (baseType != null) ? baseType.GetUnderlyingClass() : null;
 					if (baseClass != null && baseClass.ClassType != ClassType.Interface) {
 						if (UseInheritanceCache)
 							cachedBaseClass = baseClass;
@@ -374,6 +382,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return types;
 		}
 		
+		/*
 		public List<IMember> GetAccessibleMembers(IClass callingClass, bool showStatic)
 		{
 			List<IMember> members = new List<IMember>();
@@ -408,20 +417,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			if (ClassType == ClassType.Interface && !showStatic) {
 				foreach (string s in BaseTypes) {
-					IClass baseClass = ProjectContent.SearchType(s, this, Region != null ? Region.BeginLine : -1, Region != null ? Region.BeginColumn : -1);
-					if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
-						members.AddRange(baseClass.GetAccessibleMembers(callingClass, showStatic).ToArray());
+					IReturnType baseType = ProjectContent.SearchType(s, this, Region != null ? Region.BeginLine : -1, Region != null ? Region.BeginColumn : -1);
+					List<IMember> baseTypeMembers = new List<IMember>();
+					if (baseType != null && baseType.GetUnderlyingClass() != null && baseType.GetUnderlyingClass().ClassType == ClassType.Interface) {
+						//members.AddRange(baseClass.GetAccessibleMembers(callingClass, showStatic).ToArray());
+						
 					}
 				}
 			} else {
 				IClass baseClass = BaseClass;
 				if (baseClass != null) {
-					members.AddRange(baseClass.GetAccessibleMembers(callingClass, showStatic).ToArray());
+					members.AddRange(baseClass.GetAccessibleMembers(callingClass, showStatic));
 				}
 			}
 			
 			return members;
 		}
+		*/
 		
 		public class ClassInheritanceEnumerator : IEnumerator<IClass>, IEnumerable<IClass>
 		{
@@ -494,18 +506,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 					
 					BaseType baseTypeStruct = baseTypeQueue.Dequeue();
 					
-					IClass baseType;
+					IClass baseClass;
 					if (baseTypeStruct.parent == null) {
-						baseType = ProjectContentRegistry.Mscorlib.GetClass(baseTypeStruct.name);
+						baseClass = ProjectContentRegistry.Mscorlib.GetClass(baseTypeStruct.name);
 					} else {
-						baseType = baseTypeStruct.parent.ProjectContent.SearchType(baseTypeStruct.name, baseTypeStruct.parent, 1, 1);
+						IReturnType baseType = baseTypeStruct.parent.ProjectContent.SearchType(baseTypeStruct.name, baseTypeStruct.parent, 1, 1);
+						baseClass = (baseType != null) ? baseType.GetUnderlyingClass() : null;
 					}
-					if (baseType == null || finishedClasses.Contains(baseType)) {
+					if (baseClass == null || finishedClasses.Contains(baseClass)) {
 						// prevent enumerating interfaces multiple times and endless loops when
 						// circular inheritance is found
 						return MoveNext();
 					} else {
-						currentClass = baseType;
+						currentClass = baseClass;
 						
 						finishedClasses.Add(currentClass);
 						PutBaseClassesOnStack(currentClass);

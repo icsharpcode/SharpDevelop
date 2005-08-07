@@ -471,7 +471,7 @@ EndOfStmt =
 	.
 
 ImportsStmt
-	(.ArrayList usings = new ArrayList();
+	(.List<Using> usings = new List<Using>();
 	.) =
 	"Imports"
 	(.
@@ -494,15 +494,15 @@ ImportsStmt
 ImportClause<out Using u>
 	(.
 		string qualident  = null;
-		string aliasident = null;
+		TypeReference aliasedType = null;
 		u = null;
 	.) =
-	[ IF (IsAssignment()) Identifier (. aliasident = t.val;  .) "=" ]
 	Qualident<out qualident>
+	[ "=" TypeName<out aliasedType> ]
 	(.
 		if (qualident != null && qualident.Length > 0) {
-			if (aliasident != null) {
-				u = new Using(aliasident, qualident);
+			if (aliasedType != null) {
+				u = new Using(qualident, aliasedType);
 			} else {
 				u = new Using(qualident);
 			}

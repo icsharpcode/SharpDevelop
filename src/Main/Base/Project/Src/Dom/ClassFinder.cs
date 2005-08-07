@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return projectContent.GetClass(fullName);
 		}
 		
-		public IClass SearchClass(string name)
+		public IReturnType SearchType(string name)
 		{
 			return projectContent.SearchType(name, callingClass, cu, caretLine, caretColumn);
 		}

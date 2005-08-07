@@ -72,8 +72,8 @@ namespace ICSharpCode.Core
 		void AddNamespaceContents(ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences);
 		
 		string SearchNamespace(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
-		IClass SearchType(string name, IClass curType, int caretLine, int caretColumn);
-		IClass SearchType(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
+		IReturnType SearchType(string name, IClass curType, int caretLine, int caretColumn);
+		IReturnType SearchType(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
 		
 		Position GetPosition(string fullMemberName);
 	}

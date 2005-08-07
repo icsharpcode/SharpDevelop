@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		List<string> usings  = new List<string>();
-		SortedList<string, string> aliases = new SortedList<string, string>();
+		SortedList<string, IReturnType> aliases = new SortedList<string, IReturnType>();
 		
 		public IRegion Region {
 			get {
@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public SortedList<string, string> Aliases {
+		public SortedList<string, IReturnType> Aliases {
 			get {
 				return aliases;
 			}
@@ -51,13 +51,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public string SearchNamespace(string partitialNamespaceName)
 		{
-			foreach (KeyValuePair<string, string> entry in aliases) {
+			foreach (KeyValuePair<string, IReturnType> entry in aliases) {
+				if (!entry.Value.IsDefaultReturnType)
+					continue;
 				string aliasString = entry.Key;
 				if (projectContent.Language.NameComparer.Equals(partitialNamespaceName, aliasString))
-					return entry.Value;
+					return entry.Value.FullyQualifiedName;
 				if (partitialNamespaceName.Length > aliasString.Length) {
 					if (projectContent.Language.NameComparer.Equals(partitialNamespaceName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
-						string nsName = nsName = String.Concat(entry.Value, partitialNamespaceName.Remove(0, aliasString.Length));
+						string nsName = nsName = String.Concat(entry.Value.FullyQualifiedName, partitialNamespaceName.Remove(0, aliasString.Length));
 						if (projectContent.NamespaceExists(nsName)) {
 							return nsName;
 						}
@@ -74,16 +76,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return null;
 		}
 		
-		public IClass SearchType(string partitialTypeName)
+		public IReturnType SearchType(string partitialTypeName)
 		{
-			foreach (KeyValuePair<string, string> entry in aliases) {
+			foreach (KeyValuePair<string, IReturnType> entry in aliases) {
 				string aliasString = entry.Key;
+				if (projectContent.Language.NameComparer.Equals(partitialTypeName, aliasString)) {
+					return entry.Value;
+				}
 				if (partitialTypeName.Length > aliasString.Length) {
 					if (projectContent.Language.NameComparer.Equals(partitialTypeName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
 						string className = String.Concat(entry.Value, partitialTypeName.Remove(0, aliasString.Length));
 						IClass c = projectContent.GetClass(className);
 						if (c != null) {
-							return c;
+							return c.DefaultReturnType;
 						}
 					}
 				}
@@ -92,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (string str in usings) {
 					IClass c = projectContent.GetClass(str + "." + partitialTypeName);
 					if (c != null) {
-						return c;
+						return c.DefaultReturnType;
 					}
 				}
 			} else {
@@ -110,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if (c != null) {
 						c = projectContent.GetClass(str + "." + partitialTypeName);
 						if (c != null) {
-							return c;
+							return c.DefaultReturnType;
 						}
 					}
 				}
@@ -125,10 +130,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				builder.Append(str);
 				builder.Append(", ");
 			}
-			foreach (KeyValuePair<string, string> p in aliases) {
+			foreach (KeyValuePair<string, IReturnType> p in aliases) {
 				builder.Append(p.Key);
 				builder.Append("=");
-				builder.Append(p.Value);
+				builder.Append(p.Value.ToString());
 				builder.Append(", ");
 			}
 			builder.Length -= 2; // remove last ", "

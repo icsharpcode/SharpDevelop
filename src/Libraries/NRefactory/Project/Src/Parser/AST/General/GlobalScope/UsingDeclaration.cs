@@ -7,14 +7,14 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
 	public class Using : AbstractNode
 	{
 		string name;
-		string alias;
+		TypeReference alias;
 		
 		public string Name {
 			get {
@@ -25,23 +25,22 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public string Alias {
+		public TypeReference Alias {
 			get {
 				return alias;
 			}
 			set {
-				alias = value == null ? String.Empty : value;
+				alias = TypeReference.CheckNull(value);
 			}
 		}
 		
 		public bool IsAlias {
 			get {
-				Debug.Assert(alias != null);
-				return alias.Length > 0;
+				return !alias.IsNull;
 			}
 		}
 		
-		public Using(string name, string alias)
+		public Using(string name, TypeReference alias)
 		{
 			this.Name = name;
 			this.Alias = alias;
@@ -66,15 +65,14 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	
 	public class UsingDeclaration : AbstractNode
 	{
-//		List<Using> namespaces;
-		ArrayList usings;
+		List<Using> usings;
 		
-		public ArrayList Usings {
+		public List<Using> Usings {
 			get {
 				return usings;
 			}
 			set {
-				usings = value == null ? new ArrayList(1) : value;
+				usings = value == null ? new List<Using>(1) : value;
 			}
 		}
 			
@@ -82,14 +80,14 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		{
 		}
 		
-		public UsingDeclaration(string nameSpace, string alias)
+		public UsingDeclaration(string nameSpace, TypeReference alias)
 		{
 			Debug.Assert(nameSpace != null);
-			usings = new ArrayList(1);
+			usings = new List<Using>(1);
 			usings.Add(new Using(nameSpace, alias));
 		}
 		
-		public UsingDeclaration(ArrayList usings)
+		public UsingDeclaration(List<Using> usings)
 		{
 			this.Usings = usings;
 		}
@@ -101,7 +99,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		public override string ToString()
 		{
-			return String.Format("[UsingDeclaration: Namespace={0}]",
+			return String.Format("[UsingDeclaration: Usings={0}]",
 			                     GetCollectionString(usings));
 		}
 	}

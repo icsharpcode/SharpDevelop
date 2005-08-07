@@ -56,28 +56,11 @@ namespace ICSharpCode.FormDesigner
 			return null;
 		}
 		
-		static Hashtable oldTypes = new Hashtable();
-		
 		public static bool BaseClassIsFormOrControl(IClass c)
 		{
-			if (c == null || oldTypes.Contains(c.FullyQualifiedName)) {
-				oldTypes.Clear();
-				return false;
-			}
-			oldTypes.Add(c.FullyQualifiedName, null);
-			
-			foreach (string baseType in c.BaseTypes) {
-				IClass type = ParserService.CurrentProjectContent.SearchType(baseType, c, c.Region != null ? c.Region.BeginLine : 0, c.Region != null ? c.Region.BeginColumn : 0);
-				string typeName = type != null ? type.FullyQualifiedName : baseType;
-				if (typeName == "System.Windows.Forms.Form" ||
-				    typeName == "System.Windows.Forms.UserControl" ||
-				    BaseClassIsFormOrControl(type)) {
-					oldTypes.Clear();
-					return true;
-				}
-			}
-			oldTypes.Clear();
-			return false;
+			IProjectContent pc = ProjectContentRegistry.GetExistingProjectContent(new AssemblyName("System.Windows.Forms"));
+			return c.IsTypeInInheritanceTree(pc.GetClass("System.Windows.Forms.Form")) ||
+				c.IsTypeInInheritanceTree(pc.GetClass("System.Windows.Forms.UserControl"));
 		}
 		
 		public bool CanAttachTo(IViewContent viewContent)

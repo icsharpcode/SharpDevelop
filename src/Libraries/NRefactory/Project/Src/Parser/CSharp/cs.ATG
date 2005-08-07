@@ -559,17 +559,17 @@ CS
 
 UsingDirective
 (.
-	string qualident = null, aliasident = null;
+	string qualident = null; TypeReference aliasedType = null;
 .)
 =
 	"using"                     (. Point startPos = t.Location; .)
-	[ IF (IsAssignment()) ident (. aliasident = t.val; .) "="  ]  /*--- using alias directive */
-	Qualident<out qualident>    
+	Qualident<out qualident>
+	[ "=" NonArrayType<out aliasedType> ]
 	";"                         (. 
 	                               if (qualident != null && qualident.Length > 0) {
 	                                 INode node;
-	                                 if (aliasident != null) {
-	                                     node = new UsingDeclaration(aliasident, qualident);
+	                                 if (aliasedType != null) {
+	                                     node = new UsingDeclaration(qualident, aliasedType);
 	                                 } else {
 	                                     node = new UsingDeclaration(qualident);
 	                                 }

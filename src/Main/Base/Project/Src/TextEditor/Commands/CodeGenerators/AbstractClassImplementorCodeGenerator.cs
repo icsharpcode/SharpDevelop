@@ -39,23 +39,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public AbstractClassImplementorCodeGenerator(IClass currentClass) : base(currentClass)
 		{
-			
-			
-			foreach (string className in currentClass.BaseTypes) {
-				IClass baseType = ParserService.CurrentProjectContent.GetClass(className);
-				if (baseType == null) {
-					this.unit = currentClass == null ? null : currentClass.CompilationUnit;
-					if (unit != null) {
-						foreach (IUsing u in unit.Usings) {
-							baseType = u.SearchType(className);
-							if (baseType != null) {
-								break;
-							}
-						}
-					}
-				}
-				
-				if (baseType != null && baseType.ClassType == ClassType.Class && baseType.IsAbstract) {
+			for (int i = 0; i < currentClass.BaseTypes.Count; i++) {
+				IReturnType baseType = currentClass.GetBaseType(i);
+				IClass baseClass = (baseType != null) ? baseType.GetUnderlyingClass() : null;
+				if (baseClass != null && baseClass.ClassType == ClassType.Class && baseClass.IsAbstract) {
 					Content.Add(new ClassWrapper(baseType));
 				}
 			}
@@ -65,30 +52,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			for (int i = 0; i < items.Count; ++i) {
 				ClassWrapper cw = (ClassWrapper)items[i];
-				Queue interfaces = new Queue();
-				interfaces.Enqueue(cw.Class);
-				while (interfaces.Count > 0) {
-					IClass intf = (IClass)interfaces.Dequeue();
-					GenerateInterface(intf, fileExtension);
-					/*
-					// search an enqueue all base interfaces
-					foreach (string interfaceName in intf.BaseTypes) {
-						IClass baseType = null;
-						foreach (IUsing u in unit.Usings) {
-							baseType = u.SearchType(interfaceName);
-							if (baseType != null) {
-								break;
-							}
-						}
-						if (baseType != null) {
-							interfaces.Enqueue(baseType);
-						}
-					}*/
-				}
+				GenerateInterface(cw.ClassType, fileExtension);
 			}
 		}
 		
-		void GenerateInterface(IClass intf, string fileExtension)
+		void GenerateInterface(IReturnType intf, string fileExtension)
 		{
 			Return();Return();
 			
@@ -99,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 			++numOps;
 			
-			foreach (IProperty property in intf.Properties) {
+			foreach (IProperty property in intf.GetProperties()) {
 				if (!property.IsAbstract) {
 					continue;
 				}
@@ -183,14 +151,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				} else {
 					editActionHandler.InsertChar('}');++numOps;
 				}
-					
+				
 				Return();
 				Return();
 				IndentLine();
 			}
 			
-			for (int i = 0; i < intf.Methods.Count; ++i) {
-				IMethod method = intf.Methods[i];
+			foreach (IMethod method in intf.GetMethods()) {
 				string parameters = String.Empty;
 				string returnType = (fileExtension == ".vb" ? vba : csa).Convert(method.ReturnType);
 				if (!method.IsAbstract) {
@@ -249,13 +216,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				} else {
 					editActionHandler.InsertChar('}');++numOps;
 				}
-				if (i + 1 < intf.Methods.Count) {
-					Return();
-					Return();
-					IndentLine();
-				} else {
-					IndentLine();
-				}
+				Return();
+				Return();
+				IndentLine();
 			}
 			Return();
 			if (fileExtension == ".vb") {
@@ -294,21 +257,22 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		class ClassWrapper
 		{
-			IClass c;
-			public IClass Class {
+			IReturnType c;
+			public IReturnType ClassType {
 				get {
 					return c;
 				}
 			}
-			public ClassWrapper(IClass c)
+			public ClassWrapper(IReturnType c)
 			{
 				this.c = c;
 			}
 			
 			public override string ToString()
 			{
-				
-				return AmbienceService.CurrentAmbience.Convert(c);
+				IAmbience ambience = AmbienceService.CurrentAmbience;
+				ambience.ConversionFlags = ConversionFlags.None;
+				return ambience.Convert(c);
 			}
 		}
 	}
