@@ -1,7 +1,7 @@
 !verbose 3
 
 !define PRODUCT_NAME "SharpDevelop"
-!define PRODUCT_VERSION "Corsavy Alpha"
+!define PRODUCT_VERSION "Corsavy Tech Preview"
 !define PRODUCT_PUBLISHER "ic#code"
 !define PRODUCT_WEB_SITE "http://www.icsharpcode.net/opensource/sd/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\SharpDevelop.exe"
