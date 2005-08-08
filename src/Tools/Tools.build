@@ -6,6 +6,8 @@
 		<WixDocFiles Include="wix\doc\*"/>
 		<WixLibFiles Include="wix\doc\*"/>
 		<HelpToolFiles Include="Help\*"/>
+		<!-- <ToolProject Include="GacUtil2\GacUtil2.csproj" /> -->
+		<ToolFiles Include="GacUtil2\GacUtil2.exe"/>
 	</ItemGroup>
 	
 	<Target Name="Build">
@@ -14,6 +16,15 @@
 		<Copy SourceFiles="@(WixCaFiles)" DestinationFolder="..\..\bin\Tools\Wix\ca"/>
 		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc"/>
 		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib"/>
+		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools"/>
+		
+		<!--
+		<MSBuild Projects="@(ToolProject)" Targets="Build">
+			<Output TaskParameter="TargetOutputs" ItemName="CompiledToolFiles" />
+		</MSBuild>
+		<Copy SourceFiles="@(CompiledToolFiles)" DestinationFolder="..\..\bin\Tools"/>
+		-->
+		
 		<!--
 		<CreateProperty Condition = "!Exists('..\..\bin\setup\help\register.bat')" Value="yes">
 			<Output TaskParameter="Value" PropertyName="NeedToRunRegister" />

@@ -59,23 +59,52 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return declaringClass.GetHashCode() ^ name.GetHashCode();
 		}
 		
+		// we need to use a static Dictionary as cache to provide a easy was to clear all cached
+		// BaseTypes.
+		// When the cached BaseTypes could not be cleared as soon as the parse information is updated
+		// (in contrast to a check if the parse information was updated when the base type is needed
+		// the next time), we can get a memory leak:
+		// The cached type of a property in Class1 is Class2. Then Class2 is updated, but the property
+		// in Class1 is not needed again -> the reference causes the GC to keep the old version
+		// of Class2 in memory.
+		// The solution is this static cache which is cleared when some parse information updates.
+		// That way, there can never be any reference to an out-of-date class.
+		static Dictionary<SearchClassReturnType, IReturnType> cache;
+		
+		static SearchClassReturnType()
+		{
+			cache = new Dictionary<SearchClassReturnType, IReturnType>();
+			ParserService.ParserUpdateStepFinished += OnParserUpdateStepFinished;
+		}
+		
+		static void OnParserUpdateStepFinished(object sender, ParserUpdateStepEventArgs e)
+		{
+			if (e.Updated) {
+				// clear the cache completely when the information was updated
+				lock (cache) {
+					cache.Clear();
+				}
+			}
+		}
+		
 		bool isSearching;
-		IReturnType cachedBaseType;
-		int cachedVersion = -1;
 		
 		public override IReturnType BaseType {
 			get {
 				if (isSearching)
 					return null;
-				if (pc.Version == cachedVersion)
-					return cachedBaseType;
-				try {
-					isSearching = true;
-					cachedBaseType = pc.SearchType(name, declaringClass, caretLine, caretColumn);
-					cachedVersion = pc.Version;
-					return cachedBaseType;
-				} finally {
-					isSearching = false;
+				IReturnType type;
+				lock (cache) {
+					if (cache.TryGetValue(this, out type))
+						return type;
+					try {
+						isSearching = true;
+						type = pc.SearchType(name, declaringClass, caretLine, caretColumn);
+						cache[this] = type;
+						return type;
+					} finally {
+						isSearching = false;
+					}
 				}
 			}
 		}

@@ -1,0 +1,6 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.339
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "GacUtil2", "GacUtil2.csproj", "{938FAB27-5DE2-4980-B8AA-1B892F959C63}"
+EndProject
+Global
+EndGlobal

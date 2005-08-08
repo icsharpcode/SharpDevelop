@@ -191,11 +191,12 @@ namespace HtmlHelp2
 
 		private void FakeHelpControl()
 		{
-			tocControl              = null;
-			Panel nohelpPanel       = new Panel();
-			Controls.Add(nohelpPanel);
-			nohelpPanel.Dock        = DockStyle.Fill;
-			nohelpPanel.BorderStyle = BorderStyle.Fixed3D;
+			tocControl            = null;
+			Label nohelpLabel     = new Label();
+			nohelpLabel.Dock      = DockStyle.Fill;
+			nohelpLabel.Text      = StringParser.Parse("${res:AddIns.HtmlHelp2.HelpSystemNotAvailable}");
+			nohelpLabel.TextAlign = ContentAlignment.MiddleCenter;
+			Controls.Add(nohelpLabel);
 		}
 
 		public void LoadToc()

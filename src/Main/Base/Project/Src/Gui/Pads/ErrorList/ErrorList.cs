@@ -305,6 +305,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void UpdateToolstripStatus()
 		{
 			ToolbarService.UpdateToolbar(toolStrip);
+			ToolbarService.UpdateToolbarText(toolStrip);
 		}
 		
 		void InternalShowResults()
