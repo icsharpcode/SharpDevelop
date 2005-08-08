@@ -16,13 +16,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			Debug.Assert(ProjectService.OpenSolution != null);
-//			if (ProjectService.OpenSolution.IsDirty) {
-//				new 
-//			}
 			new Build().Run();
-			IProject startupProject = ProjectService.OpenSolution.StartupProject;
-			if (startupProject != null) {
-				startupProject.Start(true);
+			if (Build.LastErrorCount == 0) {
+				IProject startupProject = ProjectService.OpenSolution.StartupProject;
+				if (startupProject != null) {
+					startupProject.Start(true);
+				}
 			}
 		}
 	}
@@ -31,14 +30,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			Debug.Assert(ProjectService.OpenSolution != null);
-			
-//			if (ProjectService.OpenSolution.IsDirty) {
-//				ProjectService.OpenSolution.Build();
-//			}
 			new Build().Run();
-			IProject startupProject = ProjectService.OpenSolution.StartupProject;
-			if (startupProject != null) {
-				startupProject.Start(false);
+			if (Build.LastErrorCount == 0) {
+				IProject startupProject = ProjectService.OpenSolution.StartupProject;
+				if (startupProject != null) {
+					startupProject.Start(false);
+				}
 			}
 		}
 	}

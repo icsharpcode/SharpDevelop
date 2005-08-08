@@ -23,14 +23,17 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			TaskService.Clear();
 			ICSharpCode.SharpDevelop.Commands.SaveAllFiles.SaveAll();
 		}
-			
+		
+		public static int LastErrorCount;
+		
 		public static void ShowResults(CompilerResults results)
 		{
 			if (results != null) {
 				foreach (CompilerError error in results.Errors) {
 					TaskService.Add(new Task(error));
 				}
-				if (results.Errors.Count > 0) {
+				LastErrorCount = results.Errors.Count;
+				if (LastErrorCount > 0) {
 					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
 				}
 			}
@@ -80,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public class BuildProject : AbstractMenuCommand
 	{
-	
+		
 		public static void ShowResults(CompilerResults results)
 		{
 			if (results != null) {

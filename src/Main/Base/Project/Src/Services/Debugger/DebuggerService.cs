@@ -71,8 +71,8 @@ namespace ICSharpCode.Core
 			get {
 				if (currentDebugger == null) {
 					currentDebugger = GetCompatibleDebugger();
-					currentDebugger.DebugStarted += new EventHandler(DebugStarted);
-					currentDebugger.DebugStopped += new EventHandler(DebugStopped);
+					currentDebugger.DebugStarted += new EventHandler(OnDebugStarted);
+					currentDebugger.DebugStopped += new EventHandler(OnDebugStopped);
 				}
 				return currentDebugger;
 			}
@@ -96,18 +96,25 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		static void DebugStarted(object sender, EventArgs e)
+		public static event EventHandler DebugStarted;
+		public static event EventHandler DebugStopped;
+		
+		static void OnDebugStarted(object sender, EventArgs e)
 		{
 			oldLayoutConfiguration = LayoutConfiguration.CurrentLayoutName;
 			LayoutConfiguration.CurrentLayoutName = "Debug";
 
 			ClearDebugMessages();
+			if (DebugStarted != null)
+				DebugStarted(null, e);
 		}
 		
-		static void DebugStopped(object sender, EventArgs e)
+		static void OnDebugStopped(object sender, EventArgs e)
 		{
 			CurrentLineBookmark.Remove();
 			LayoutConfiguration.CurrentLayoutName = oldLayoutConfiguration;
+			if (DebugStopped != null)
+				DebugStopped(null, e);
 		}
 
 		

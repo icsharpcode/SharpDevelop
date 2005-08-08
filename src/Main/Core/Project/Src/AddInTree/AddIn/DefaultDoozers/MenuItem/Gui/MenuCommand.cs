@@ -109,9 +109,10 @@ namespace ICSharpCode.Core
 		protected override void OnClick(System.EventArgs e)
 		{
 			base.OnClick(e);
-			if (GetVisible() && Enabled) {
-				if (codon != null) {
-					Command.Run();
+			if (codon != null) {
+				if (GetVisible() && Enabled) {
+					ICommand cmd = Command;
+					if (cmd != null) cmd.Run();
 				}
 			}
 		}
@@ -140,7 +141,10 @@ namespace ICSharpCode.Core
 		
 		bool GetVisible()
 		{
-			return codon.GetFailedAction(caller) != ConditionFailedAction.Exclude;
+			if (codon == null)
+				return true;
+			else
+				return codon.GetFailedAction(caller) != ConditionFailedAction.Exclude;
 		}
 		
 		public virtual void UpdateStatus()

@@ -7,7 +7,6 @@
 
 using System;
 using System.IO;
-using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Text;
@@ -45,7 +44,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	/// </summary>
 	public class ErrorDrawer : IDisposable
 	{
-		ArrayList       errors = new ArrayList();
 		TextEditorControl textEditor;
 		
 		public ErrorDrawer(TextEditorControl textEditor)
@@ -56,7 +54,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			TaskService.Removed += new TaskEventHandler(OnRemoved);
 			TaskService.Cleared += new EventHandler(OnCleared);
 			textEditor.FileNameChanged += new EventHandler(SetErrors);
+			DebuggerService.CurrentDebugger.DebugStarted += OnDebugStarted;
+			DebuggerService.CurrentDebugger.DebugStopped += OnDebugStopped;
 		}
+		
+		bool isDisposed;
 		
 		/// <summary>
 		/// Deregisters the event handlers so the error drawer (and associated TextEditorControl)
@@ -64,11 +66,29 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// </summary>
 		public void Dispose()
 		{
+			if (isDisposed)
+				return;
+			isDisposed = true;
 			TaskService.Added   -= new TaskEventHandler(OnAdded);
 			TaskService.Removed -= new TaskEventHandler(OnRemoved);
 			TaskService.Cleared -= new EventHandler(OnCleared);
 			textEditor.FileNameChanged -= new EventHandler(SetErrors);
+			DebuggerService.CurrentDebugger.DebugStarted -= OnDebugStarted;
+			DebuggerService.CurrentDebugger.DebugStopped -= OnDebugStopped;
 			ClearErrors();
+		}
+		
+		void OnDebugStarted(object sender, EventArgs e)
+		{
+			ClearErrors();
+		}
+		
+		void OnDebugStopped(object sender, EventArgs e)
+		{
+			foreach (Task task in TaskService.Tasks) {
+				AddTask(task, false);
+			}
+			textEditor.Refresh();
 		}
 		
 		void OnAdded(object sender, TaskEventArgs e)
@@ -120,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				return false;
 			if (task.TaskType != TaskType.Warning && task.TaskType != TaskType.Error)
 				return false;
-			return string.Equals(Path.GetFullPath(task.FileName), Path.GetFullPath(textEditor.FileName), StringComparison.CurrentCultureIgnoreCase);
+			return FileUtility.IsEqualFileName(task.FileName, textEditor.FileName);
 		}
 		
 		void AddTask(Task task, bool refresh)
@@ -143,6 +163,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				int startOffset = offset;//Math.Min(textEditor.Document.TextLength, TextUtilities.FindWordStart(textEditor.Document, offset));
 				int endOffset   = Math.Max(1, TextUtilities.FindWordEnd(textEditor.Document, offset));
 				textEditor.Document.MarkerStrategy.AddMarker(new VisualError(startOffset, endOffset - startOffset + 1, task));
+				if (refresh) {
+					textEditor.Refresh();
+				}
 			}
 		}
 		
