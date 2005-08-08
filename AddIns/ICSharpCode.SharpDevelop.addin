@@ -122,20 +122,22 @@
 	
 	<!-- Project browser Paths -->
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard">
-		<ToolbarItem id      = "Properties"
-		             icon    = "Icons.16x16.PropertiesIcon"
-		             tooltip = "Properties"
-		             class   = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
-		<ToolbarItem id = "PropertySeparator" type = "Separator"/>
-		<ToolbarItem id      = "ShowAll"
-		             type    = "CheckBox"
-		             icon    = "ProjectBrowser.Toolbar.ShowHiddenFiles"
-		             tooltip = "ShowAll"
-		             class   = "ICSharpCode.SharpDevelop.Project.Commands.ToggleShowAll"/>
-		<ToolbarItem id      = "Refresh"
-		             icon    = "ProjectBrowser.Toolbar.Refresh"
-		             tooltip = "Refresh"
-		             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser"/>
+		<Condition name = "CombineOpen" iscombineopen="True" action="Disable">
+			<ToolbarItem id      = "Properties"
+			             icon    = "Icons.16x16.PropertiesIcon"
+			             tooltip = "Properties"
+			             class   = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+			<ToolbarItem id = "PropertySeparator" type = "Separator"/>
+			<ToolbarItem id      = "ShowAll"
+			             type    = "CheckBox"
+			             icon    = "ProjectBrowser.Toolbar.ShowHiddenFiles"
+			             tooltip = "ShowAll"
+			             class   = "ICSharpCode.SharpDevelop.Project.Commands.ToggleShowAll"/>
+			<ToolbarItem id      = "Refresh"
+			             icon    = "ProjectBrowser.Toolbar.Refresh"
+			             tooltip = "Refresh"
+			             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser"/>
+		</Condition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ToolBar/File">
