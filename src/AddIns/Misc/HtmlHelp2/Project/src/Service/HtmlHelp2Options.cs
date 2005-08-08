@@ -24,7 +24,7 @@ namespace HtmlHelp2Service
 		static string help2EnvironmentFile = "help2environment.xml";
 		bool Help2EnvIsReady               = false;
 		ComboBox help2Collections          = null;
-		string selectedHelp2Collection     = "Corsavy";
+		string selectedHelp2Collection     = HtmlHelp2Environment.DefaultNamespaceName;
 
 		public override void LoadPanelContents()
 		{

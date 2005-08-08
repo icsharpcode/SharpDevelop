@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="ISO-8859-1"?>
 <register>
 	<plugin parent="Corsavy">
-		<child name="MS.NETFrameworkSDKv2*"/>
+		<child name="MS.NETFramework.v20*"/>
 	</plugin>
 </register>
