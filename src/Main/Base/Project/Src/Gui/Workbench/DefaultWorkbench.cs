@@ -230,6 +230,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			RightToLeft = RightToLeftConverter.RightToLeft;
 			
+			foreach (ToolStripItem item in TopMenu.Items) {
+				if (item is IStatusUpdate)
+					((IStatusUpdate)item).UpdateText();
+			}
+				
 			foreach (IViewContent content in workbenchContentCollection) {
 				content.RedrawContent();
 				if (content.WorkbenchWindow != null) {

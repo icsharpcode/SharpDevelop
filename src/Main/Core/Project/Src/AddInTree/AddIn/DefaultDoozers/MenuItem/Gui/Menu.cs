@@ -28,7 +28,8 @@ namespace ICSharpCode.Core
 			this.subItems = subItems;
 			this.RightToLeft = RightToLeft.Inherit;
 			
-			CreateDropDownItems();
+			UpdateText();
+			CreateDropDownItems(); // must be created to support shortcuts
 			if (DropDownItems.Count == 0 && subItems.Count > 0) {
 				DropDownItems.Add(new ToolStripMenuItem());
 			}
@@ -40,7 +41,10 @@ namespace ICSharpCode.Core
 			foreach (object item in subItems) {
 				if (item is ToolStripItem) {
 					DropDownItems.Add((ToolStripItem)item);
-					((IStatusUpdate)item).UpdateStatus();
+					if (item is IStatusUpdate) {
+						((IStatusUpdate)item).UpdateStatus();
+						((IStatusUpdate)item).UpdateText();
+					}
 				} else {
 					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
 					DropDownItems.AddRange(submenuBuilder.BuildSubmenu(codon, caller));
@@ -49,20 +53,8 @@ namespace ICSharpCode.Core
 		}
 		protected override void OnDropDownShow(EventArgs e)
 		{
-			base.OnDropDownShow(e);
 			CreateDropDownItems();
-			foreach (object item in subItems) {
-				if (item is ToolStripItem) {
-					if (item is IStatusUpdate) {
-						((IStatusUpdate)item).UpdateStatus();
-					}
-				}
-			}
-		}
-
-		protected override void OnDropDownOpened(System.EventArgs e)
-		{
-			base.OnDropDownOpened(e);
+			base.OnDropDownShow(e);
 		}
 		
 		public override bool Enabled {
@@ -81,8 +73,13 @@ namespace ICSharpCode.Core
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
 				this.Visible = failedAction != ConditionFailedAction.Exclude;
 			}
-			
-			Text = StringParser.Parse(codon.Properties["label"]);
+		}
+		
+		public virtual void UpdateText()
+		{
+			if (codon != null) {
+				Text = StringParser.Parse(codon.Properties["label"]);
+			}
 		}
 	}
 }

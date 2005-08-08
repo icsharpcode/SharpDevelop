@@ -222,6 +222,8 @@ namespace ICSharpCode.Core
 		
 		public static void RenameFile(string oldName, string newName, bool isDirectory)
 		{
+			if (FileUtility.IsEqualFileName(oldName, newName))
+				return;
 			FileRenamingEventArgs eargs = new FileRenamingEventArgs(oldName, newName, isDirectory);
 			OnFileRenaming(eargs);
 			if (eargs.Cancel)

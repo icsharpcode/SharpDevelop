@@ -13,22 +13,9 @@ namespace ICSharpCode.Core
 {
 	public static class ToolbarService
 	{
-//		readonly static string toolBarPath = "/SharpDevelop/Workbench/ToolBar";
-		
 		public static ToolStripItem[] CreateToolStripItems(object owner, AddInTreeNode treeNode)
 		{
 			return (ToolStripItem[])(treeNode.BuildChildItems(owner)).ToArray(typeof(ToolStripItem));
-		}
-		
-		public static ToolStripItem[] CreateToolStripItems(object owner, string addInTreePath)
-		{
-			AddInTreeNode treeNode;
-			try {
-				treeNode = AddInTree.GetTreeNode(addInTreePath);
-			} catch (TreePathNotFoundException) {
-				return null;
-			}
-			return CreateToolStripItems(owner, treeNode);
 		}
 		
 		public static ToolStrip CreateToolStrip(object owner, AddInTreeNode treeNode)
@@ -36,15 +23,28 @@ namespace ICSharpCode.Core
 			ToolStrip toolStrip = new ToolStrip();
 			toolStrip.Items.AddRange(CreateToolStripItems(owner, treeNode));
 			UpdateToolbar(toolStrip); // setting Visible is only possible after the items have been added
+			new LanguageChangeWatcher(toolStrip);
 			return toolStrip;
+		}
+		
+		class LanguageChangeWatcher {
+			ToolStrip toolStrip;
+			public LanguageChangeWatcher(ToolStrip toolStrip) {
+				this.toolStrip = toolStrip;
+				toolStrip.Disposed += Disposed;
+				ResourceService.LanguageChanged += LanguageChanged;
+			}
+			void LanguageChanged(object sender, EventArgs e) {
+				ToolbarService.UpdateToolbarText(toolStrip);
+			}
+			void Disposed(object sender, EventArgs e) {
+				ResourceService.LanguageChanged -= LanguageChanged;
+			}
 		}
 		
 		public static ToolStrip CreateToolStrip(object owner, string addInTreePath)
 		{
-			ToolStrip toolStrip = new ToolStrip();
-			toolStrip.Items.AddRange(CreateToolStripItems(owner, addInTreePath));
-			UpdateToolbar(toolStrip); // setting Visible is only possible after the items have been added
-			return toolStrip;
+			return CreateToolStrip(owner, AddInTree.GetTreeNode(addInTreePath));
 		}
 		
 		public static ToolStrip[] CreateToolbars(object owner, string addInTreePath)
@@ -71,6 +71,15 @@ namespace ICSharpCode.Core
 				}
 			}
 			toolStrip.Refresh();
+		}
+		
+		public static void UpdateToolbarText(ToolStrip toolStrip)
+		{
+			foreach (ToolStripItem item in toolStrip.Items) {
+				if (item is IStatusUpdate) {
+					((IStatusUpdate)item).UpdateText();
+				}
+			}
 		}
 	}
 }

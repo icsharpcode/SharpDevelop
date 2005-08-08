@@ -183,7 +183,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\CommonAboutDialog.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\DirtyFilesDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\FolderDialog.cs" />

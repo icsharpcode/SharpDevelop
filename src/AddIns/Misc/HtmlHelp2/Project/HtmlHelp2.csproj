@@ -6,6 +6,8 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{918487B7-2153-4618-BBB3-344DBDDF2A2A}</ProjectGuid>
+    <ProductVersion>8.0.50215</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\HtmlHelp2\</OutputPath>
@@ -35,24 +37,36 @@
     <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="src\BaseControls\TocPad.cs" />
+    <Compile Include="src\BaseControls\TocPad.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <None Include="src\BaseControls\DynamicHelpPad.cs" />
     <Compile Include="src\BaseControls\FavoritesPad.cs" />
-    <Compile Include="src\BaseControls\IndexPad.cs" />
+    <Compile Include="src\BaseControls\IndexPad.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="src\BaseControls\IndexResultsPad.cs" />
     <Compile Include="src\BaseControls\SearchPad.cs" />
-    <Compile Include="src\BaseControls\SearchResultsPad.cs" />
+    <Compile Include="src\BaseControls\SearchResultsPad.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="src\BrowserControl\ShowHelpBrowser.cs" />
     <None Include="HtmlHelp2.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="src\Service\Help2RegistryWalker.cs" />
-    <Compile Include="src\Service\HtmlHelp2Dialog.cs" />
+    <Compile Include="src\Service\HtmlHelp2Dialog.cs">
+      <SubType>Component</SubType>
+    </Compile>
     <Compile Include="src\Service\HtmlHelp2Service.cs" />
     <Compile Include="src\Service\ResourcesHelper.cs" />
     <Compile Include="src\Service\Help2ControlsValidation.cs" />
-    <Compile Include="src\Service\AxMSHelpControls.cs" />
-    <Compile Include="src\Service\HtmlHelp2Options.cs" />
+    <Compile Include="src\Service\AxMSHelpControls.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="src\Service\HtmlHelp2Options.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <EmbeddedResource Include="Resources\Favorites.16x16.Delete.bmp" />
     <EmbeddedResource Include="Resources\Favorites.16x16.MoveDown.bmp" />

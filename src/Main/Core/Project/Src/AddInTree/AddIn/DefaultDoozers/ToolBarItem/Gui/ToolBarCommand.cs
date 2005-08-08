@@ -18,27 +18,16 @@ namespace ICSharpCode.Core
 	{
 		object caller;
 		Codon codon;
-		string description   = String.Empty;
-		string localizedText = String.Empty;
 		ICommand menuCommand = null;
 		
-		public string Description {
-			get {
-				return description;
-			}
-			set {
-				description = value;
-			}
-		}
-		
-		public ToolBarCommand(Codon codon, object caller)
+		public ToolBarCommand(Codon codon, object caller, bool createCommand)
 		{
 			this.RightToLeft = RightToLeft.Inherit;
 			this.caller        = caller;
 			this.codon         = codon;
 			
-			if (codon.Properties.Contains("tooltip")) {
-				localizedText = codon.Properties["tooltip"];
+			if (createCommand) {
+				menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
 			}
 			
 			if (Image == null && codon.Properties.Contains("icon")) {
@@ -46,6 +35,7 @@ namespace ICSharpCode.Core
 			}
 			
 			UpdateStatus();
+			UpdateText();
 		}
 		
 		protected override void OnClick(System.EventArgs e)
@@ -97,8 +87,13 @@ namespace ICSharpCode.Core
 					base.Visible = isVisible;
 				}
 			}
-			
-			ToolTipText  = StringParser.Parse(localizedText);
+		}
+		
+		public virtual void UpdateText()
+		{
+			if (codon != null) {
+				ToolTipText = StringParser.Parse(codon.Properties["tooltip"]);
+			}
 		}
 	}
 }

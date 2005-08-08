@@ -27,6 +27,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 				IUndoHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IUndoHandler;
 				if (editable != null) {
 					return editable.EnableUndo;
+				} else {
+					TextBoxBase textBox = WorkbenchSingleton.ActiveControl as TextBoxBase;
+					if (textBox != null) {
+						return textBox.CanUndo;
+					}
 				}
 				return false;
 			}
@@ -37,6 +42,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 			IUndoHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IUndoHandler;
 			if (editable != null) {
 				editable.Undo();
+			} else {
+				TextBoxBase textBox = WorkbenchSingleton.ActiveControl as TextBoxBase;
+				if (textBox != null) {
+					textBox.Undo();
+				}
 			}
 		}
 	}
@@ -61,14 +71,86 @@ namespace ICSharpCode.SharpDevelop.Commands
 			}
 		}
 	}
-
-	public class Cut : AbstractMenuCommand
+	
+	public abstract class AbstractClipboardCommand : AbstractMenuCommand
 	{
+		protected abstract bool GetEnabled(IClipboardHandler editable);
+		protected abstract void Run(IClipboardHandler editable);
+		
+		public static IClipboardHandler GetClipboardHandlerWrapper(Control ctl)
+		{
+			TextBoxBase tb = ctl as TextBoxBase;
+			if (tb != null)
+				return new TextBoxWrapper(tb);
+			ComboBox cb = ctl as ComboBox;
+			if (cb != null && cb.DropDownStyle != ComboBoxStyle.DropDownList)
+				return new ComboBoxWrapper(cb);
+			return null;
+		}
+		
+		private class TextBoxWrapper : IClipboardHandler
+		{
+			TextBoxBase textBox;
+			public TextBoxWrapper(TextBoxBase textBox) {
+				this.textBox = textBox;
+			}
+			public bool EnableCut {
+				get { return !textBox.ReadOnly && textBox.SelectionLength > 0; }
+			}
+			public bool EnableCopy {
+				get { return textBox.SelectionLength > 0; }
+			}
+			public bool EnablePaste {
+				get { return !textBox.ReadOnly; }
+			}
+			public bool EnableDelete {
+				get { return !textBox.ReadOnly && textBox.SelectionLength > 0; }
+			}
+			public bool EnableSelectAll {
+				get { return textBox.TextLength > 0; }
+			}
+			public void Cut()       { textBox.Cut(); }
+			public void Copy()      { textBox.Copy(); }
+			public void Paste()     { textBox.Paste(); }
+			public void Delete()    { textBox.SelectedText = ""; }
+			public void SelectAll() { textBox.SelectAll(); }
+		}
+		
+		private class ComboBoxWrapper : IClipboardHandler
+		{
+			ComboBox comboBox;
+			public ComboBoxWrapper(ComboBox comboBox) {
+				this.comboBox = comboBox;
+			}
+			public bool EnableCut {
+				get { return comboBox.SelectionLength > 0; }
+			}
+			public bool EnableCopy {
+				get { return comboBox.SelectionLength > 0; }
+			}
+			public bool EnablePaste {
+				get { return Clipboard.ContainsText(); }
+			}
+			public bool EnableDelete {
+				get { return true; }
+			}
+			public bool EnableSelectAll {
+				get { return comboBox.Text.Length > 0; }
+			}
+			public void Cut()       { Clipboard.SetText(comboBox.SelectedText); comboBox.SelectedText = ""; }
+			public void Copy()      { Clipboard.SetText(comboBox.SelectedText); }
+			public void Paste()     { comboBox.SelectedText = Clipboard.GetText(); }
+			public void Delete()    { comboBox.SelectedText = ""; }
+			public void SelectAll() { comboBox.SelectAll(); }
+		}
+		
 		public override bool IsEnabled {
 			get {
 				IClipboardHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
+				if (editable == null)
+					editable = GetClipboardHandlerWrapper(WorkbenchSingleton.ActiveControl);
 				if (editable != null) {
-					return editable.EnableCut;
+					return GetEnabled(editable);
 				}
 				return false;
 			}
@@ -78,100 +160,65 @@ namespace ICSharpCode.SharpDevelop.Commands
 		{
 			if (IsEnabled) {
 				IClipboardHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
+				if (editable == null)
+					editable = GetClipboardHandlerWrapper(WorkbenchSingleton.ActiveControl);
 				if (editable != null) {
-					editable.Cut();
+					Run(editable);
 				}
 			}
 		}
 	}
 	
-	public class Copy : AbstractMenuCommand
+	public class Cut : AbstractClipboardCommand
 	{
-		public override bool IsEnabled {
-			get {
-				IClipboardHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
-				if (editable != null) {
-					return editable.EnableCopy;
-				}
-				return false;
-			}
+		protected override bool GetEnabled(IClipboardHandler editable) {
+			return editable.EnableCut;
 		}
-		
-		public override void Run()
-		{
-			if (IsEnabled) {
-				IClipboardHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
-				if (editable != null) {
-					editable.Copy();
-				}
-			}
+		protected override void Run(IClipboardHandler editable) {
+			editable.Cut();
 		}
 	}
 	
-	public class Paste : AbstractMenuCommand
+	public class Copy : AbstractClipboardCommand
 	{
-		public override bool IsEnabled {
-			get {
-				IClipboardHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
-				if (editable != null) {
-					return editable.EnablePaste;
-				}
-				return false;
-			}
+		protected override bool GetEnabled(IClipboardHandler editable) {
+			return editable.EnableCopy;
 		}
-		public override void Run()
-		{
-			if (IsEnabled) {
-				IClipboardHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
-				if (editable != null) {
-					editable.Paste();
-				}
-			}
+		protected override void Run(IClipboardHandler editable) {
+			editable.Copy();
 		}
 	}
 	
-	public class Delete : AbstractMenuCommand
+	public class Paste : AbstractClipboardCommand
 	{
-		public override bool IsEnabled {
-			get {
-				IClipboardHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
-				if (editable != null) {
-					return editable.EnableDelete;
-				}
-				return false;
-			}
+		protected override bool GetEnabled(IClipboardHandler editable) {
+			return editable.EnablePaste;
 		}
-		public override void Run()
-		{
-			IClipboardHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
-			if (editable != null) {
-				editable.Delete();
-			}
+		protected override void Run(IClipboardHandler editable) {
+			editable.Paste();
 		}
 	}
 	
-	public class SelectAll : AbstractMenuCommand
+	public class Delete : AbstractClipboardCommand
 	{
-		public override bool IsEnabled {
-			get {
-				IClipboardHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
-				if (editable != null) {
-					return editable.EnableSelectAll;
-				}
-				return false;
-			}
+		protected override bool GetEnabled(IClipboardHandler editable) {
+			return editable.EnableDelete;
 		}
-		public override void Run()
-		{
-			if (IsEnabled) {
-				IClipboardHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
-				if (editable != null) {
-					editable.SelectAll();
-				}
-			}
+		protected override void Run(IClipboardHandler editable) {
+			editable.Delete();
 		}
 	}
-
+	
+	public class SelectAll : AbstractClipboardCommand
+	{
+		protected override bool GetEnabled(IClipboardHandler editable) {
+			return editable.EnableSelectAll;
+		}
+		protected override void Run(IClipboardHandler editable) {
+			editable.SelectAll();
+		}
+	}
+	
 	public class WordCount : AbstractMenuCommand
 	{
 		public override void Run()

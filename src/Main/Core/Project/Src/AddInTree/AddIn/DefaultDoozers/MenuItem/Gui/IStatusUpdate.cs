@@ -12,5 +12,6 @@ namespace ICSharpCode.Core
 	public interface IStatusUpdate
 	{
 		void UpdateStatus();
+		void UpdateText();
 	}
 }

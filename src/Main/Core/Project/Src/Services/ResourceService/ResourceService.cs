@@ -42,9 +42,8 @@ namespace ICSharpCode.Core
 				RegisterAssembly(assembly);
 			}
 			
-//			PropertyService.PropertyChanged += new PropertyChangedEventHandler(ChangeProperty);
-			
-			LoadLanguageResources();
+			PropertyService.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChange);
+			LoadLanguageResources(PropertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name));
 		}
 		
 		static Hashtable userStrings = null;
@@ -63,17 +62,19 @@ namespace ICSharpCode.Core
 
 		static ArrayList assemblies = new ArrayList();
 		
-//		static void ChangeProperty(object sender, PropertyChangedEventArgs e)
-//		{
-//			if (e.Key == uiLanguageProperty && e.NewValue != e.OldValue) {
-//				LoadLanguageResources();
-//			}
-//		}
-		
-		static void LoadLanguageResources()
+		static void OnPropertyChange(object sender, PropertyChangedEventArgs e)
 		{
-			string language = PropertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name);
-			
+			if (e.Key == uiLanguageProperty && e.NewValue != e.OldValue) {
+				LoadLanguageResources((string)e.NewValue);
+				if (LanguageChanged != null)
+					LanguageChanged(null, e);
+			}
+		}
+		
+		public static event EventHandler LanguageChanged;
+		
+		static void LoadLanguageResources(string language)
+		{
 			try {
 				Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(language);
 			} catch (Exception) {
@@ -205,8 +206,6 @@ namespace ICSharpCode.Core
 			
 		}
 		
-		static string lastLanguage = "";
-		
 		/// <summary>
 		/// Returns a string from the resource database, it handles localization
 		/// transparent for the user.
@@ -222,11 +221,6 @@ namespace ICSharpCode.Core
 		/// </exception>
 		public static string GetString(string name)
 		{
-			string currentLanguage = PropertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name);
-			if (currentLanguage != lastLanguage) {
-				LoadLanguageResources();
-				lastLanguage = currentLanguage;
-			}
 			if (localUserStrings != null && localUserStrings[name] != null) {
 				return localUserStrings[name].ToString();
 			}

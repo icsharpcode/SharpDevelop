@@ -11,25 +11,14 @@ using System.Diagnostics;
 using System.Drawing.Text;
 using System.Drawing.Imaging;
 using System.Windows.Forms;
- 
+
 namespace ICSharpCode.Core
 {
 	public class ToolBarDropDownButton : ToolStripDropDownButton , IStatusUpdate
 	{
 		object caller;
 		Codon codon;
-		string description   = String.Empty;
-		string localizedText = String.Empty;
 		ICommand menuCommand = null;
-	
-		public string Description {
-			get {
-				return description;
-			}
-			set {
-				description = value;
-			}
-		}
 		
 		public ToolBarDropDownButton(Codon codon, object caller)
 		{
@@ -37,16 +26,13 @@ namespace ICSharpCode.Core
 			this.caller        = caller;
 			this.codon         = codon;
 			
-			if (codon.Properties.Contains("tooltip")) {
-				localizedText = codon.Properties["tooltip"];
-			}
-			
 			if (Image == null && codon.Properties.Contains("icon")) {
 				Image = ResourceService.GetBitmap(codon.Properties["icon"]);
 			}
 			menuCommand = codon.AddIn.CreateObject(codon.Properties["class"]) as ICommand;
 			menuCommand.Owner = this;
 			UpdateStatus();
+			UpdateText();
 		}
 		
 		protected override void OnClick(System.EventArgs e)
@@ -79,6 +65,12 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public virtual void UpdateText()
+		{
+			if (codon != null) {
+				ToolTipText = StringParser.Parse(codon.Properties["tooltip"]);
+			}
+		}
 		
 		public virtual void UpdateStatus()
 		{
@@ -89,7 +81,6 @@ namespace ICSharpCode.Core
 					base.Visible = isVisible;
 				}
 			}
-			ToolTipText  = StringParser.Parse(localizedText);
 		}
 	}
 }

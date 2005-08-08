@@ -318,7 +318,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		public Uri Url {
 			get {
 				if (webBrowser.Url == null)
-					return null;
+					return new Uri("about:blank");
 				if (dummyUrl != null && webBrowser.Url.ToString() == "about:blank") {
 					return new Uri(dummyUrl);
 				} else {

@@ -52,6 +52,7 @@ namespace ICSharpCode.Core
 			this.RightToLeft = RightToLeft.Inherit;
 			this.caller = caller;
 			this.codon  = codon;
+			UpdateText();
 		}
 		
 		protected override void OnClick(System.EventArgs e)
@@ -79,9 +80,14 @@ namespace ICSharpCode.Core
 			if (codon != null) {
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
 				this.Visible = failedAction != ConditionFailedAction.Exclude;
-				
-				Text    = StringParser.Parse(codon.Properties["label"]);
 				Checked = MenuCommand.IsChecked;
+			}
+		}
+		
+		public virtual void UpdateText()
+		{
+			if (codon != null) {
+				Text = StringParser.Parse(codon.Properties["label"]);
 			}
 		}
 	}

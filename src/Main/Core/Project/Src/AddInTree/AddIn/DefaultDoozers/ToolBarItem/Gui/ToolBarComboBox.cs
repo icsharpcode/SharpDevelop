@@ -57,6 +57,7 @@ namespace ICSharpCode.Core
 			if (menuCommand == null) {
 				throw new NullReferenceException("Can't create combobox menu command");
 			}
+			UpdateText();
 			UpdateStatus();
 		}
 		
@@ -100,18 +101,20 @@ namespace ICSharpCode.Core
 			if (codon != null) {
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
 				isVisible &= failedAction != ConditionFailedAction.Exclude;
-				
-				if (codon.Properties.Contains("label")) {
-					Text        = StringParser.Parse(codon.Properties["label"]);
-				}
-				if (codon.Properties.Contains("tooltip")) {
-					ToolTipText = StringParser.Parse(codon.Properties["tooltip"]);
-				}
 			}
 			if (base.Visible != isVisible) {
 				Visible = isVisible;
 			}
-			
+		}
+		
+		public virtual void UpdateText()
+		{
+			if (codon.Properties.Contains("label")) {
+				Text = StringParser.Parse(codon.Properties["label"]);
+			}
+			if (codon.Properties.Contains("tooltip")) {
+				ToolTipText = StringParser.Parse(codon.Properties["tooltip"]);
+			}
 		}
 	}
 }

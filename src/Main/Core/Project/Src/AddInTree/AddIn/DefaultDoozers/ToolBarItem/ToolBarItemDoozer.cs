@@ -27,13 +27,15 @@ namespace ICSharpCode.Core
 		{
 			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Item";
 			
+			bool createCommand = codon.Properties["loadclasslazy"] == "false";
+			
 			switch (type) {
 				case "Separator":
 					return new ToolBarSeparator(codon, caller);
 				case "CheckBox":
 					return new ToolBarCheckBox(codon, caller);
 				case "Item":
-					return new ToolBarCommand(codon, caller);
+					return new ToolBarCommand(codon, caller, createCommand);
 				case "ComboBox":
 					return new ToolBarComboBox(codon, caller);
 				case "DropDownButton":

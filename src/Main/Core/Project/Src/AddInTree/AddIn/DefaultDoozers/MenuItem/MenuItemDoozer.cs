@@ -27,15 +27,17 @@ namespace ICSharpCode.Core
 		{
 			string type = codon.Properties.Contains("type") ? codon.Properties["type"] : "Command";
 			
+			bool createCommand = codon.Properties["loadclasslazy"] == "false";
+			
 			switch (type) {
 				case "Separator":
 					return new MenuSeparator(codon, caller);
 				case "CheckBox":
 					return new MenuCheckBox(codon, caller);
 				case "Item":
-					return new MenuCommand(codon, caller);
+					return new MenuCommand(codon, caller, createCommand);
 				case "Command":
-					return new MenuCommand(codon, caller, false);
+					return new MenuCommand(codon, caller, createCommand);
 				case "Menu":
 					return new Menu(codon, caller, subItems);
 				case "Builder":

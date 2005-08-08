@@ -668,27 +668,33 @@
 		<ToolbarItem id = "Cut"
 		             icon = "Icons.16x16.CutIcon"
 		             tooltip = "${res:XML.MainMenu.EditMenu.Cut.Description}"
+		             loadclasslazy = "false"
 		             class = "ICSharpCode.SharpDevelop.Commands.Cut"/>
 		<ToolbarItem id = "Copy"
 		             icon = "Icons.16x16.CopyIcon"
 		             tooltip = "${res:XML.MainMenu.EditMenu.Copy.Description}"
+		             loadclasslazy = "false"
 		             class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
 		<ToolbarItem id = "Paste"
 		             icon = "Icons.16x16.PasteIcon"
 		             tooltip = "${res:XML.MainMenu.EditMenu.Paste.Description}"
+		             loadclasslazy = "false"
 		             class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
 		<ToolbarItem id = "Delete"
 		             icon = "Icons.16x16.DeleteIcon"
 		             tooltip = "${res:XML.MainMenu.EditMenu.Delete.Description}"
+		             loadclasslazy = "false"
 		             class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
 		<ToolbarItem id = "UndoRedoSeparator"  type = "Separator"/>
 		<ToolbarItem id      = "Undo"
 		             icon    = "Icons.16x16.UndoIcon"
 		             tooltip = "${res:XML.MainMenu.EditMenu.Undo.Description}"
+		             loadclasslazy = "false"
 		             class   = "ICSharpCode.SharpDevelop.Commands.Undo"/>
 		<ToolbarItem id      = "Redo"
 		             icon    = "Icons.16x16.RedoIcon"
 		             tooltip = "${res:XML.MainMenu.EditMenu.Redo.Description}"
+		             loadclasslazy = "false"
 		             class   = "ICSharpCode.SharpDevelop.Commands.Redo"/>
 		
 		<ToolbarItem id = "CompileSeparator" type = "Separator"/>
@@ -1058,48 +1064,53 @@
 		</MenuItem> <!-- END File menu -->
 		
 		<MenuItem id = "Edit" label = "${res:XML.MainMenu.EditMenu}" type="Menu">
-			<Condition name = "WindowActive" activewindow="*" action="Disable">
-				<MenuItem id = "Undo"
-				          label = "${res:XML.MainMenu.EditMenu.Undo}"
-				          icon = "Icons.16x16.UndoIcon"
-				          type = "Item"
-				          shortcut = "Control|Z"
-				          class = "ICSharpCode.SharpDevelop.Commands.Undo"/>
-				<MenuItem id = "Redo"
-				          label = "${res:XML.MainMenu.EditMenu.Redo}"
-				          icon = "Icons.16x16.RedoIcon"
-				          type = "Item"
-				          shortcut = "Control|Y"
-				          class = "ICSharpCode.SharpDevelop.Commands.Redo"/>
-			</Condition>
+			<MenuItem id = "Undo"
+			          label = "${res:XML.MainMenu.EditMenu.Undo}"
+			          icon = "Icons.16x16.UndoIcon"
+			          type = "Item"
+			          shortcut = "Control|Z"
+			          loadclasslazy = "false"
+			          class = "ICSharpCode.SharpDevelop.Commands.Undo"/>
+			<MenuItem id = "Redo"
+			          label = "${res:XML.MainMenu.EditMenu.Redo}"
+			          icon = "Icons.16x16.RedoIcon"
+			          type = "Item"
+			          shortcut = "Control|Y"
+			          loadclasslazy = "false"
+			          class = "ICSharpCode.SharpDevelop.Commands.Redo"/>
 			<MenuItem id = "Separator1" type = "Separator"  />
 			<MenuItem id = "Cut"
 			          label = "${res:XML.MainMenu.EditMenu.Cut}"
 			          icon = "Icons.16x16.CutIcon"
 			          type = "Item"
 			          shortcut = "Control|X"
+			          loadclasslazy = "false"
 			          class = "ICSharpCode.SharpDevelop.Commands.Cut"/>
 			<MenuItem id = "Copy"
 			          label = "${res:XML.MainMenu.EditMenu.Copy}"
 			          icon = "Icons.16x16.CopyIcon"
 			          type = "Item"
 			          shortcut = "Control|C"
+			          loadclasslazy = "false"
 			          class = "ICSharpCode.SharpDevelop.Commands.Copy"/>
 			<MenuItem id = "Paste"
 			          label = "${res:XML.MainMenu.EditMenu.Paste}"
 			          icon = "Icons.16x16.PasteIcon"
 			          type = "Item"
 			          shortcut = "Control|V"
+			          loadclasslazy = "false"
 			          class = "ICSharpCode.SharpDevelop.Commands.Paste"/>
 			<MenuItem id = "Delete"
 			          label = "${res:XML.MainMenu.EditMenu.Delete}"
 			          icon = "Icons.16x16.DeleteIcon"
 			          type = "Item"
+			          loadclasslazy = "false"
 			          class = "ICSharpCode.SharpDevelop.Commands.Delete"/>
 			<MenuItem id = "SelectAll"
 			          label = "${res:XML.MainMenu.EditMenu.SelectAll}"
 			          type = "Item"
 			          shortcut = "Control|A"
+			          loadclasslazy = "false"
 			          class = "ICSharpCode.SharpDevelop.Commands.SelectAll"/>
 			<MenuItem id = "Separator4" type = "Separator"  />
 			<ComplexCondition action="Disable">

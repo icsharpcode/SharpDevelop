@@ -38,9 +38,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		public static Control ActiveControl {
+			get {
+				ContainerControl container = WorkbenchSingleton.MainForm;
+				Control ctl;
+				do {
+					ctl = container.ActiveControl;
+					if (ctl == null)
+						return container;
+					container = ctl as ContainerControl;
+				} while(container != null);
+				return ctl;
+			}
+		}
+		
 		static WorkbenchSingleton()
 		{
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(TrackPropertyChanges);
+			ResourceService.LanguageChanged += delegate { workbench.RedrawAllComponents(); };
 		}
 		
 		/// <remarks>
@@ -52,7 +67,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				switch (e.Key) {
 					case "ICSharpCode.SharpDevelop.Gui.StatusBarVisible":
 					case "ICSharpCode.SharpDevelop.Gui.VisualStyle":
-					case "CoreProperties.UILanguage":
 					case "ICSharpCode.SharpDevelop.Gui.ToolBarVisible":
 						workbench.RedrawAllComponents();
 						break;

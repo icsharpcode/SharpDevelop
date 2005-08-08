@@ -40,15 +40,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			projectBrowserControl.Dock = DockStyle.Fill;
 			Controls.Add(projectBrowserControl);
 			
-			toolStrip = new ToolStrip();
+			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard");
 			toolStrip.ShowItemToolTips  = true;
 			toolStrip.Dock = DockStyle.Top;
 			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			toolStrip.Stretch   = true;
-			standardItems = ToolbarService.CreateToolStripItems(this, "/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard");
-			if (standardItems != null) {
-				toolStrip.Items.AddRange(standardItems);
-			}
+			standardItems = new ToolStripItem[toolStrip.Items.Count];
+			toolStrip.Items.CopyTo(standardItems, 0);
 			Controls.Add(toolStrip);
 			projectBrowserControl.TreeView.AfterSelect += new TreeViewEventHandler(TreeViewAfterSelect);
 		}
@@ -64,7 +62,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			toolStrip.Items.AddRange(standardItems);
 			if (node.ToolbarAddinTreePath != null) {
 				toolStrip.Items.Add(new ToolStripSeparator());
-				toolStrip.Items.AddRange(ToolbarService.CreateToolStripItems(node, node.ToolbarAddinTreePath));
+				toolStrip.Items.AddRange((ToolStripItem[])AddInTree.BuildItems(node.ToolbarAddinTreePath, node, false).ToArray(typeof(ToolStripItem)));
 			}
 		}
 		

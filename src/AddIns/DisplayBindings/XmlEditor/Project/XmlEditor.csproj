@@ -11,6 +11,7 @@
     <NoStdLib>False</NoStdLib>
     <NoConfig>False</NoConfig>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <ProductVersion>8.0.50215</ProductVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -37,7 +38,9 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\XmlEditorControl.cs" />
+    <Compile Include="Src\XmlEditorControl.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\XmlCompletionDataProvider.cs" />
     <Compile Include="Src\XmlCompletionData.cs" />
     <Compile Include="Src\XmlCompletionDataImageList.cs" />
@@ -54,15 +57,23 @@
     <Compile Include="Src\XmlSchemaManager.cs" />
     <Compile Include="Src\Parser.cs" />
     <Compile Include="Src\ValidateXmlCommand.cs" />
-    <Compile Include="Src\XmlSchemasPanel.cs" />
+    <Compile Include="Src\XmlSchemasPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\XmlSchemaListBoxItem.cs" />
-    <Compile Include="Src\CodeCompletionWindow.cs" />
+    <Compile Include="Src\CodeCompletionWindow.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Src\XmlEditorAddInOptions.cs" />
-    <Compile Include="Src\SelectXmlSchemaForm.cs" />
+    <Compile Include="Src\SelectXmlSchemaForm.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <Compile Include="Src\CodeCompletionPopupCommand.cs" />
     <Compile Include="Src\XmlSchemaAssociation.cs" />
     <Compile Include="Src\XmlSchemaAssociationListBoxItem.cs" />
-    <Compile Include="Src\XmlEditorOptionsPanel.cs" />
+    <Compile Include="Src\XmlEditorOptionsPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\CreateSchemaCommand.cs" />
     <Compile Include="Src\EncodedStringWriter.cs" />
     <EmbeddedResource Include="Resources\XmlSchemasPanel.xfrm" />

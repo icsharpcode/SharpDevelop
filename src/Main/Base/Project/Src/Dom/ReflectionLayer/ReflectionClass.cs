@@ -24,12 +24,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			BindingFlags.NonPublic |
 			BindingFlags.DeclaredOnly |
 			BindingFlags.Public;
-		
+
+		List<IClass> innerClasses;
+
 		public override List<IClass> InnerClasses {
 			get {
-				List<IClass> innerClasses = new List<IClass>();
-				foreach (Type nestedType in type.GetNestedTypes(flags)) {
-					innerClasses.Add(new ReflectionClass(CompilationUnit, nestedType, this));
+				if (innerClasses == null) {
+					innerClasses = new List<IClass>();
+					foreach (Type nestedType in type.GetNestedTypes(flags)) {
+						innerClasses.Add(new ReflectionClass(CompilationUnit, nestedType, this));
+					}
 				}
 				return innerClasses;
 			}

@@ -19,10 +19,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		public bool IsValid(object caller, Condition condition)
 		{
 			HtmlViewPane pane = (HtmlViewPane)caller;
-			Uri uri = pane.Url;
-			if (uri == null)
-				return false;
-			string url = uri.ToString();
+			string url = pane.Url.ToString();
 			string pattern = condition.Properties["urlRegex"];
 			string options = condition.Properties["options"];
 			if (options != null && options.Length > 0)

@@ -39,5 +39,9 @@ namespace ICSharpCode.Core
 				this.Visible = failedAction != ConditionFailedAction.Exclude;
 			}
 		}
+		
+		public virtual void UpdateText()
+		{
+		}
 	}
 }

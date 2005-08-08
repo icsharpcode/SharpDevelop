@@ -20,7 +20,6 @@ namespace ICSharpCode.Core
 		Codon codon;
 		ICommand menuCommand = null;
 		string description = "";
-		string localizedText = null;
 		
 		public string Description {
 			get {
@@ -88,6 +87,7 @@ namespace ICSharpCode.Core
 				CreateCommand();
 			}
 			
+			UpdateText();
 			if (codon.Properties.Contains("shortcut")) {
 				ShortcutKeys =  ParseShortcut(codon.Properties["shortcut"]);
 			}
@@ -154,13 +154,13 @@ namespace ICSharpCode.Core
 					Image = ResourceService.GetBitmap(codon.Properties["icon"]);
 				}
 				Visible = GetVisible();
-				
-				if (localizedText == null) {
-					localizedText = codon.Properties["label"];
-				}
 			}
-			if (localizedText != null) {
-				Text = StringParser.Parse(localizedText);
+		}
+		
+		public virtual void UpdateText()
+		{
+			if (codon != null) {
+				Text = StringParser.Parse(codon.Properties["label"]);
 			}
 		}
 	}

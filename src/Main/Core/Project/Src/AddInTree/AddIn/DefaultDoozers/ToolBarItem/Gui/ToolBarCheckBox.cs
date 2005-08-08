@@ -58,6 +58,7 @@ namespace ICSharpCode.Core
 			if (Image == null && codon.Properties.Contains("icon")) {
 				Image = ResourceService.GetBitmap(codon.Properties["icon"]);
 			}
+			UpdateText();
 			UpdateStatus();
 		}
 		
@@ -84,12 +85,22 @@ namespace ICSharpCode.Core
 		{
 			if (codon != null) {
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
-				this.Visible = failedAction != ConditionFailedAction.Exclude;
-				if (codon.Properties.Contains("tooltip")) {
-					ToolTipText = StringParser.Parse(codon.Properties["tooltip"]);
+				bool isVisible = failedAction != ConditionFailedAction.Exclude;
+				if (isVisible != Visible)
+					Visible = isVisible;
+				if (menuCommand != null) {
+					bool isChecked = menuCommand.IsChecked;
+					if (isChecked != Checked)
+						Checked = isChecked;
 				}
-				Checked     = menuCommand.IsChecked;
-				Text        = StringParser.Parse(codon.Properties["label"]);
+			}
+		}
+		
+		public virtual void UpdateText()
+		{
+			Text = StringParser.Parse(codon.Properties["label"]);
+			if (codon.Properties.Contains("tooltip")) {
+				ToolTipText = StringParser.Parse(codon.Properties["tooltip"]);
 			}
 		}
 	}
