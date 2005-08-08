@@ -37,6 +37,21 @@ namespace ICSharpCode.Core
 		List<Dictionary<string, NamespaceStruct>> namespaces = new List<Dictionary<string, NamespaceStruct>>();
 		protected XmlDoc xmlDoc = new XmlDoc();
 		IUsing defaultImports;
+		int version;
+		
+		public int Version {
+			get {
+				return version;
+			}
+		}
+		
+		void IncrementVersion()
+		{
+			if (version == int.MaxValue)
+				version = 1;
+			else
+				version += 1;
+		}
 		
 		public IUsing DefaultImports {
 			get {
@@ -190,6 +205,7 @@ namespace ICSharpCode.Core
 		
 		public void AddClassToNamespaceList(IClass addClass)
 		{
+			IncrementVersion();
 			lock (namespaces) {
 				AddClassToNamespaceListInternal(addClass);
 			}
@@ -303,6 +319,7 @@ namespace ICSharpCode.Core
 		
 		public void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags)
 		{
+			IncrementVersion();
 			if (updateCommentTags) {
 				TaskService.UpdateCommentTags(fileName, parserOutput.TagComments);
 			}

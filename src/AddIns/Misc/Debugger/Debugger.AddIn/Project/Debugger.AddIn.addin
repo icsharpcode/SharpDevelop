@@ -4,7 +4,10 @@
 	</Runtime>
 
 	<Path name="/SharpDevelop/Services/DebuggerService/Debugger">
-		<Class id="DefaultDebugger" class="ICSharpCode.SharpDevelop.Services.WindowsDebugger"/>
+		<Debugger id="DefaultDebugger"
+		          supportsStepping = "true"
+		          supportsExecutionControl = "true"
+		          class="ICSharpCode.SharpDevelop.Services.WindowsDebugger"/>
 	</Path>
 	
 	<!--<Path name = "/SharpDevelop/Workbench/MainMenu/Debug">

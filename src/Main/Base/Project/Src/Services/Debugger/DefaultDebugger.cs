@@ -61,24 +61,9 @@ namespace ICSharpCode.Core
 			OnDebugStopped(EventArgs.Empty);
 		}
 
-		public bool SupportsStart {
-			get {
-				return true;
-			}
-		}
-
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
 		{
-			Process process;
-			process = new Process();
-			process.StartInfo = processStartInfo;
-			process.Start();
-		}
-
-		public bool SupportsStartWithoutDebugging {
-			get {
-				return true;
-			}
+			Process.Start(processStartInfo);
 		}
 
 		public void Stop()
@@ -89,12 +74,6 @@ namespace ICSharpCode.Core
 				attachedProcess.Close();
 				attachedProcess.Dispose();
 				attachedProcess = null;
-			}
-		}
-
-		public bool SupportsStop {
-			get {
-				return true;
 			}
 		}
 		
@@ -109,13 +88,6 @@ namespace ICSharpCode.Core
 		{
 			throw new NotSupportedException();
 		}
-
-		public bool SupportsExecutionControl {
-			get {
-				return false;
-			}
-		}
-
 		// Stepping:
 
 		public void StepInto()
@@ -131,12 +103,6 @@ namespace ICSharpCode.Core
 		public void StepOut()
 		{
 			throw new NotSupportedException();
-		}
-
-		public bool SupportsStepping {
-			get {
-				return false;
-			}
 		}
 
 		public event EventHandler DebugStarted;

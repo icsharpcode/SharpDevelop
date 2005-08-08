@@ -168,6 +168,7 @@ namespace ICSharpCode.SharpDevelop
 			AddInTree.Doozers.Add("SyntaxMode", new ICSharpCode.SharpDevelop.DefaultEditor.Codons.SyntaxModeDoozer());
 			AddInTree.Doozers.Add("BrowserSchemeExtension", new ICSharpCode.SharpDevelop.BrowserDisplayBinding.SchemeExtensionDoozer());
 			AddInTree.Doozers.Add("CodeCompletionBinding", new ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.CodeCompletionBindingDoozer());
+			AddInTree.Doozers.Add("Debugger", new DebuggerDoozer());
 			
 			MenuCommand.LinkCommandCreator = delegate(string link) { return new LinkCommand(link); };
 			

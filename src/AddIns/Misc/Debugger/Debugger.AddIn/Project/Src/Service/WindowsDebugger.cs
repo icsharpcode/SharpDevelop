@@ -102,35 +102,14 @@ namespace ICSharpCode.SharpDevelop.Services
 						   processStartInfo.Arguments);
 		}
 
-		public bool SupportsStart {
-			get {
-				return true;
-			}
-		}
-
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
 		{
-			System.Diagnostics.Process process;
-			process = new System.Diagnostics.Process();
-			process.StartInfo = processStartInfo;
-			process.Start();
-		}
-
-		public bool SupportsStartWithoutDebugging {
-			get {
-				return true;
-			}
+			System.Diagnostics.Process.Start(processStartInfo);
 		}
 
 		public void Stop()
 		{
 			debugger.Terminate();
-		}
-
-		public bool SupportsStop {
-			get {
-				return true;
-			}
 		}
 		
 		// ExecutionControl:
@@ -143,12 +122,6 @@ namespace ICSharpCode.SharpDevelop.Services
 		public void Continue()
 		{
 			debugger.Continue();
-		}
-
-		public bool SupportsExecutionControl {
-			get {
-				return true;
-			}
 		}
 
 		// Stepping:
@@ -177,12 +150,6 @@ namespace ICSharpCode.SharpDevelop.Services
 				MessageBox.Show("You can not step because there is no function selected to be stepped","Step out");
 			} else {
 				debugger.StepOut();
-			}
-		}
-
-		public bool SupportsStepping {
-			get {
-				return true;
 			}
 		}
 
@@ -352,6 +319,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				exceptionHistory.Clear();
 				OnDebugStopped(EventArgs.Empty);
 				isDebuggingCache = false;
+				isProcessRunningCache = false;
 			}
 		}
 

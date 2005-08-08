@@ -16,24 +16,21 @@ namespace ICSharpCode.Core
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			IDebugger debugger = DebuggerService.IsDebuggerLoaded ? DebuggerService.CurrentDebugger : new DefaultDebugger();
-			if (debugger != null) {
-				switch (condition.Properties["debuggersupports"]) {
-					case "Start":
-						return debugger.SupportsStart;
-					case "StartWithoutDebugging":
-						return debugger.SupportsStartWithoutDebugging;
-					case "Stop":
-						return debugger.SupportsStop;
-					case "ExecutionControl":
-						return debugger.SupportsExecutionControl;
-					case "Stepping":
-						return debugger.SupportsStepping;
-					default:
-						throw new ArgumentException("Unknown debugger support for : >" + condition.Properties["debuggersupports"] + "< please fix addin file.", "debuggersupports");
-				}
+			DebuggerDescriptor debugger = DebuggerService.Descriptor;
+			switch (condition.Properties["debuggersupports"]) {
+				case "Start":
+					return (debugger != null) ? debugger.SupportsStart : true;
+				case "StartWithoutDebugging":
+					return (debugger != null) ? debugger.SupportsStartWithoutDebugging : true;
+				case "Stop":
+					return (debugger != null) ? debugger.SupportsStop : true;
+				case "ExecutionControl":
+					return (debugger != null) ? debugger.SupportsExecutionControl : false;
+				case "Stepping":
+					return (debugger != null) ? debugger.SupportsStepping : false;
+				default:
+					throw new ArgumentException("Unknown debugger support for : >" + condition.Properties["debuggersupports"] + "< please fix addin file.", "debuggersupports");
 			}
-			return false;
 		}
 	}
 }

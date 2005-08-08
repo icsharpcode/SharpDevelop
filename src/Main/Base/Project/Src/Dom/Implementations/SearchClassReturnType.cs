@@ -59,16 +59,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return declaringClass.GetHashCode() ^ name.GetHashCode();
 		}
 		
-		// TODO: Cache BaseType until a new CompilationUnit is generated (static counter in ParserService)
 		bool isSearching;
+		IReturnType cachedBaseType;
+		int cachedVersion = -1;
 		
 		public override IReturnType BaseType {
 			get {
 				if (isSearching)
 					return null;
+				if (pc.Version == cachedVersion)
+					return cachedBaseType;
 				try {
 					isSearching = true;
-					return pc.SearchType(name, declaringClass, caretLine, caretColumn);
+					cachedBaseType = pc.SearchType(name, declaringClass, caretLine, caretColumn);
+					cachedVersion = pc.Version;
+					return cachedBaseType;
 				} finally {
 					isSearching = false;
 				}

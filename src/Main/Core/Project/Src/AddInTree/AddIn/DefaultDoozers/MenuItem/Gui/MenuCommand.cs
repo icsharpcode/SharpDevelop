@@ -109,8 +109,10 @@ namespace ICSharpCode.Core
 		protected override void OnClick(System.EventArgs e)
 		{
 			base.OnClick(e);
-			if (codon != null) {
-				Command.Run();
+			if (GetVisible() && Enabled) {
+				if (codon != null) {
+					Command.Run();
+				}
 			}
 		}
 		
@@ -136,14 +138,18 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		bool GetVisible()
+		{
+			return codon.GetFailedAction(caller) != ConditionFailedAction.Exclude;
+		}
+		
 		public virtual void UpdateStatus()
 		{
 			if (codon != null) {
 				if (Image == null && codon.Properties.Contains("icon")) {
 					Image = ResourceService.GetBitmap(codon.Properties["icon"]);
 				}
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
-				Visible = failedAction != ConditionFailedAction.Exclude;
+				Visible = GetVisible();
 				
 				if (localizedText == null) {
 					localizedText = codon.Properties["label"];

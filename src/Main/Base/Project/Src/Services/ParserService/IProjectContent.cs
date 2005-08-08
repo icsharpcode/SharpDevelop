@@ -55,6 +55,14 @@ namespace ICSharpCode.Core
 			get;
 		}
 		
+		/// <summary>
+		/// Gets the version number of the project content.
+		/// Is incremented whenever a CompilationUnit is updated.
+		/// </summary>
+		int Version {
+			get;
+		}
+		
 		string GetXmlDocumentation(string memberTag);
 		
 		void AddClassToNamespaceList(IClass addClass);

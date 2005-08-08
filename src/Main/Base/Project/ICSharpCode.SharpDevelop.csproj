@@ -689,6 +689,7 @@
     <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchStrategy\BoyerMooreSearchStrategy.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserCommands.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />
+    <Compile Include="Src\Services\Debugger\DebuggerDoozer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

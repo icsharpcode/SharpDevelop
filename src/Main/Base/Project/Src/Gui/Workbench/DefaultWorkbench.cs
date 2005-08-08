@@ -469,37 +469,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void UpdateToolbars()
 		{
 			if (ToolBars != null) {
-				foreach (ToolStrip ToolStrip in ToolBars) {
-					bool doRefresh = false;
-					foreach (ToolStripItem item in ToolStrip.Items) {
-						bool wasVisible = item.Visible;
-						if (item is ToolBarCommand) {
-							ToolBarCommand toolBarCommand = (ToolBarCommand)item;
-							doRefresh |= toolBarCommand.LastEnabledStatus != toolBarCommand.CurrentEnableStatus;
-							toolBarCommand.UpdateStatus();
-						} else {
-							if (item is IStatusUpdate) {
-								((IStatusUpdate)item).UpdateStatus();
-							}
-						}
-						doRefresh |= wasVisible != item.Visible;
-					}
-					if (doRefresh) {
-						ToolStrip.Refresh();
-					}
+				foreach (ToolStrip toolStrip in ToolBars) {
+					ToolbarService.UpdateToolbar(toolStrip);
 				}
 			}
 		}
 		
-		// this method simply copies over the enabled state of the toolbar,
-		// this assumes that no item is inserted or removed.
-		// TODO : make this method more add-in tree like, currently with Windows.Forms
-		//        toolbars this is not possible. (drawing fragments, slow etc.)
 		void CreateToolBars()
 		{
 			if (ToolBars == null) {
 				ToolBars = ToolbarService.CreateToolbars(this, "/SharpDevelop/Workbench/ToolBar");
-				UpdateToolbars();
 			}
 		}
 		

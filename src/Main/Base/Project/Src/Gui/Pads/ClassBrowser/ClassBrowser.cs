@@ -75,19 +75,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void UpdateToolbars()
 		{
-			foreach (object o in toolStrip.Items) {
-				if (o is IStatusUpdate) {
-					((IStatusUpdate)o).UpdateStatus();
-				}
-			}
-			toolStrip.Refresh();
-			
-			foreach (object o in searchStrip.Items) {
-				if (o is IStatusUpdate) {
-					((IStatusUpdate)o).UpdateStatus();
-				}
-			}
-			searchStrip.Refresh();
+			ToolbarService.UpdateToolbar(toolStrip);
+			ToolbarService.UpdateToolbar(searchStrip);
 		}
 		
 		public ClassBrowser()

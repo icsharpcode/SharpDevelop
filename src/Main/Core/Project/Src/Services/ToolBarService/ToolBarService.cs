@@ -70,6 +70,7 @@ namespace ICSharpCode.Core
 					((IStatusUpdate)item).UpdateStatus();
 				}
 			}
+			toolStrip.Refresh();
 		}
 	}
 }

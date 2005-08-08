@@ -26,7 +26,7 @@ namespace ICSharpCode.Core
 	public static class DebuggerService
 	{
 		static IDebugger   currentDebugger;
-		static ArrayList   debuggers;
+		static DebuggerDescriptor[] debuggers;
 		static string      oldLayoutConfiguration = "Default";
 
 		static DebuggerService()
@@ -40,18 +40,23 @@ namespace ICSharpCode.Core
 			BM.BookmarkManager.Removed += BookmarkRemoved;
 		}
 		
+		static void GetDescriptors()
+		{
+			if (debuggers == null) {
+				debuggers = (DebuggerDescriptor[])AddInTree.BuildItems("/SharpDevelop/Services/DebuggerService/Debugger", null, false).ToArray(typeof(DebuggerDescriptor));
+			}
+		}
+		
 		static IDebugger GetCompatibleDebugger()
 		{
+			GetDescriptors();
 			IProject project = null;
 			if (ProjectService.OpenSolution != null) {
 				project = ProjectService.OpenSolution.StartupProject;
 			}
-			if (debuggers == null) {
-				debuggers = AddInTree.BuildItems("/SharpDevelop/Services/DebuggerService/Debugger", null, false);
-			}
-			foreach (IDebugger d in debuggers) {
-				if (d.CanDebug(project)) {
-					return d;
+			foreach (DebuggerDescriptor d in debuggers) {
+				if (d.Debugger.CanDebug(project)) {
+					return d.Debugger;
 				}
 			}
 			return new DefaultDebugger();
@@ -59,8 +64,8 @@ namespace ICSharpCode.Core
 		
 		/// <summary>
 		/// Gets the current debugger. The debugger addin is loaded on demand; so if you
-		/// just want to check a property like IsDebugging, use <see cref="LoadedDebugger"/>
-		/// instead.
+		/// just want to check a property like IsDebugging, check <see cref="IsDebuggerLoaded"/>
+		/// before using this property.
 		/// </summary>
 		public static IDebugger CurrentDebugger {
 			get {
@@ -70,6 +75,15 @@ namespace ICSharpCode.Core
 					currentDebugger.DebugStopped += new EventHandler(DebugStopped);
 				}
 				return currentDebugger;
+			}
+		}
+		
+		public static DebuggerDescriptor Descriptor {
+			get {
+				GetDescriptors();
+				if (debuggers.Length > 0)
+					return debuggers[0];
+				return null;
 			}
 		}
 		

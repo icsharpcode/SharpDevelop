@@ -12,6 +12,16 @@ namespace ICSharpCode.TextEditor.Document
 {
 	public class GapTextBufferStrategy : ITextBufferStrategy
 	{
+		#if DEBUG
+		int creatorThread = System.Threading.Thread.CurrentThread.ManagedThreadId;
+		
+		void CheckThread()
+		{
+			if (System.Threading.Thread.CurrentThread.ManagedThreadId != creatorThread)
+				throw new InvalidOperationException("GapTextBufferStategy is not thread-safe!");
+		}
+		#endif
+		
 		char[] buffer = new char[0];
 		
 		int gapBeginOffset = 0;
@@ -48,6 +58,9 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public string GetText(int offset, int length) 
 		{
+			#if DEBUG
+			CheckThread();
+			#endif
 			int end = offset + length;
 			
 			if (end < gapBeginOffset) {

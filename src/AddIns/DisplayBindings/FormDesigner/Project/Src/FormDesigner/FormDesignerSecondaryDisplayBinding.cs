@@ -60,7 +60,7 @@ namespace ICSharpCode.FormDesigner
 		{
 			// Simple test for fully qualified name
 			foreach (IReturnType baseType in c.BaseTypes) {
-				if (baseType.Name == "System.Windows.Forms.Form" || baseType.Name == "System.Windows.Forms.UserControl") {
+				if (baseType.FullyQualifiedName == "System.Windows.Forms.Form" || baseType.FullyQualifiedName == "System.Windows.Forms.UserControl") {
 					return true;
 				}
 			}

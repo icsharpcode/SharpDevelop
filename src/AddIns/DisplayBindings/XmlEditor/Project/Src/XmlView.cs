@@ -196,12 +196,31 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		// ParserUpdateThread uses the text property via IEditable, I had an exception
+		// because multiple threads were accessing the GapBufferStrategy at the same time.
+		
+		string GetText()
+		{
+			return xmlEditor.Document.TextContent;
+		}
+		
+		void SetText(string value)
+		{
+			xmlEditor.Document.TextContent = value;
+		}
+		
 		public string Text {
 			get {
-				return xmlEditor.Document.TextContent;
+				if (WorkbenchSingleton.InvokeRequired)
+					return (string)WorkbenchSingleton.SafeThreadCall(this, "GetText", null);
+				else
+					return GetText();
 			}
 			set {
-				xmlEditor.Document.TextContent = value;
+				if (WorkbenchSingleton.InvokeRequired)
+					WorkbenchSingleton.SafeThreadCall(this, "SetText", value);
+				else
+					SetText(value);
 			}
 		}
 		
