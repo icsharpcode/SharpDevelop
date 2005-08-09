@@ -500,11 +500,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		// font - has to be static - don't create on each draw
 		static Font font = font = new Font("Arial", 8.25f);
 		static StringFormat drawStringFormat = new StringFormat(StringFormatFlags.NoWrap);
-//		static int drawingCount = 0;
 		
 		void ComboBoxDrawItem(object sender, System.Windows.Forms.DrawItemEventArgs e)
 		{
-//			Console.WriteLine("Draw " + (drawingCount++));
 			ComboBox comboBox = (ComboBox)sender;
 			e.DrawBackground();
 			

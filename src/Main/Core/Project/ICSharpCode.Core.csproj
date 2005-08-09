@@ -35,6 +35,10 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
+    <Reference Include="log4net">
+      <HintPath>..\..\..\Libraries\log4net\bin\net\1.1\release\log4net.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="Resources\ICSharpCode.Core.doc" />
@@ -128,6 +132,10 @@
     </Compile>
     <Compile Include="Src\AddInTree\AddIn\IBuildItemsModifier.cs" />
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\IncludeDoozer.cs" />
+    <Compile Include="Src\Services\LoggingService\LoggingService.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src\Services\LoggingService" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

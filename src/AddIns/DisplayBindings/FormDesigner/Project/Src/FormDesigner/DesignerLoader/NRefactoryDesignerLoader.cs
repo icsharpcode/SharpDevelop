@@ -78,7 +78,6 @@ namespace ICSharpCode.FormDesigner
 		
 		protected override ITypeResolutionService TypeResolutionService {
 			get {
-				Console.WriteLine("type resolution service");
 				return typeResolutionService;
 			}
 		}
@@ -109,7 +108,7 @@ namespace ICSharpCode.FormDesigner
 		
 		protected override CodeCompileUnit Parse()
 		{
-			Console.Write("ParseCompileUnit");
+			LoggingService.Debug("NRefactoryDesignerLoader.Parse()");
 			isReloadNeeded = false;
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new StringReader(TextContent));
 			p.Parse();

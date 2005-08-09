@@ -122,7 +122,7 @@ namespace ICSharpCode.FormDesigner
 						SideTabDesigner newTab = new SideTabDesigner(SharpDevelopSideBar.SideBar, category, toolboxService);
 						SideTabs.Add(newTab);
 					} catch (Exception e) {
-						Console.WriteLine("Can't add tab : " + e);
+						ICSharpCode.Core.LoggingService.Warn("Can't add tab : " + e);
 					}
 				}
 			}

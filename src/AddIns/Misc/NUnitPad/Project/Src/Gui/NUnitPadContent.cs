@@ -213,16 +213,14 @@ namespace ICSharpCode.NUnitPad
 				}
 				if (referenceFound) {
 					string outputAssembly = project.OutputAssemblyFullPath;
+					LoggingService.Debug("NUnitPad: Load " + outputAssembly);
 					try {
 						TestDomain testDomain = new TestDomain();
-//					NUnitProject prj = NUnitProject.LoadProject(outputAssembly);
 						Test test = testDomain.Load(outputAssembly);
 						
-//					TestSuiteBuilder builder = new TestSuiteBuilder();
-//					Console.WriteLine("Try to load '" + outputAssembly +"'");
-//					Test testDomain = builder.Build(outputAssembly);
 						testTreeView.PrintTests(outputAssembly, test, project);
 					} catch (Exception e) {
+						LoggingService.Warn("NUnitPad load error", e);
 						testTreeView.PrintTestErrors(outputAssembly, e);
 					}
 				}

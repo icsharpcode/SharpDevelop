@@ -46,12 +46,20 @@ namespace ICSharpCode.Svn
 			return new ICSharpCode.SharpDevelop.Gui.ISecondaryViewContent[] { new HistoryView(viewContent) };
 		}
 		
+		static Client client;
+		
 		public bool CanAttachTo(ICSharpCode.SharpDevelop.Gui.IViewContent content)
 		{
 			if (content.IsUntitled || content.FileName == null || !File.Exists(content.FileName)) {
 				return false;
 			}
-			Client client = new Client();
+			string svnDir = Path.Combine(Path.GetDirectoryName(content.FileName), ".svn");
+			if (!Directory.Exists(svnDir))
+				return false;
+			if (client == null) {
+				LoggingService.Info("SVN: HistoryViewDisplayBinding initializes client");
+				client = new Client();
+			}
 			Status status = client.SingleStatus(Path.GetFullPath(content.FileName));
 			return status != null && status.Entry != null;
 		}

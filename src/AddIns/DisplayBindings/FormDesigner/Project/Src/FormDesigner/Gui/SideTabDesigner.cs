@@ -136,7 +136,7 @@ namespace ICSharpCode.FormDesigner.Gui
 						stream.Close();
 					}
 				} catch (Exception e) {
-					Console.WriteLine(e);
+					LoggingService.Warn("Form Designer: GetToolboxItemsFromAssembly", e);
 				}
 			}
 			Module[] ms = assembly.GetModules(false);
@@ -176,7 +176,7 @@ namespace ICSharpCode.FormDesigner.Gui
 								try {
 									item.Bitmap = (Bitmap)images[imageName];
 								} catch (Exception ex) {
-									Console.WriteLine("Exception converting bitmap : " + images[imageName] + " : " + ex.ToString());
+									MessageService.ShowError(ex, "Exception converting bitmap : " + images[imageName] + " : ");
 								}
 							}
 							toolBoxItems.Add(item);

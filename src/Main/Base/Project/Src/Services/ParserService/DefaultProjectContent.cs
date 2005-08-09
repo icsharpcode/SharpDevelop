@@ -198,7 +198,7 @@ namespace ICSharpCode.Core
 		protected void AddClassToNamespaceListInternal(IClass addClass)
 		{
 			if (addClass.IsPartial) {
-				Console.WriteLine("Adding partial class " + addClass.Name + " from " + Path.GetFileName(addClass.CompilationUnit.FileName));
+				LoggingService.Debug("Adding partial class " + addClass.Name + " from " + Path.GetFileName(addClass.CompilationUnit.FileName));
 				Dictionary<string, IClass> classes = GetClasses(language);
 				CompoundClass compound = null;
 				if (classes.ContainsKey(addClass.FullyQualifiedName))
@@ -209,17 +209,17 @@ namespace ICSharpCode.Core
 						if (compound.Parts[i].CompilationUnit.FileName == addClass.CompilationUnit.FileName) {
 							compound.Parts[i] = addClass;
 							compound.UpdateInformationFromParts();
-							Console.WriteLine("\tReplaced old part!");
+							LoggingService.Debug("Replaced old part!");
 							return;
 						}
 					}
 					compound.Parts.Add(addClass);
 					compound.UpdateInformationFromParts();
-					Console.WriteLine("\tAdded new part!");
+					LoggingService.Debug("Added new part!");
 					return;
 				} else {
 					addClass = new CompoundClass(addClass);
-					Console.WriteLine("\tCompound created!");
+					LoggingService.Debug("Compound created!");
 				}
 			}
 			

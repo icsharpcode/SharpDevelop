@@ -52,6 +52,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public CompilerResults Run(string buildFile, string[] targets)
 		{
+			LoggingService.Debug("Run MSBuild on " + buildFile);
+			
 			// HACK: Workaround for MSBuild bug:
 			// "unknown" MSBuild projects (projects with unknown type id, e.g. IL-projects)
 			// are looked up by MSBuild if the project files are MSBuild-compatible.
@@ -69,6 +71,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			engine.RegisterLogger(logger);
 			engine.BuildProjectFile(buildFile, targets, properties, null);
 			logger.FlushText();
+			
+			LoggingService.Debug("MSBuild finished");
 			return results;
 		}
 		

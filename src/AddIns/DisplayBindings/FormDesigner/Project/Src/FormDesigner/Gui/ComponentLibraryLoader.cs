@@ -274,7 +274,7 @@ namespace ICSharpCode.FormDesigner.Gui
 					}
 				}
 			} catch (Exception e) {
-				Console.WriteLine(e);
+				ICSharpCode.Core.LoggingService.Warn("ComponentLibraryLoader.LoadToolComponentLibrary: " + e.Message);
 				return false;
 			}
 			return true;
@@ -304,7 +304,7 @@ namespace ICSharpCode.FormDesigner.Gui
 						b.MakeTransparent();
 				 	}
 				} catch (Exception e) {
-					Console.WriteLine(e);
+					ICSharpCode.Core.LoggingService.Warn("ComponentLibraryLoader.GetIcon: " + e.Message);
 				}
 			}
 			

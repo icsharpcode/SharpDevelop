@@ -62,17 +62,18 @@ namespace ICSharpCode.Core
 		
 		public static void ShowError(Exception ex, string message)
 		{
-			if (customErrorReporter != null && ex != null) {
-				customErrorReporter(ex, message);
-				return;
+			if (ex != null) {
+				LoggingService.Error(message, ex);
+				if (customErrorReporter != null) {
+					customErrorReporter(ex, message);
+					return;
+				}
+			} else {
+				LoggingService.Error(message);
 			}
 			
 			#if DEBUG
-			Console.WriteLine();
-			if (message != null)
-				Console.WriteLine(message);
 			if (ex != null) {
-				Console.WriteLine(ex);
 				Console.Beep();
 				return;
 			}
@@ -96,7 +97,9 @@ namespace ICSharpCode.Core
 		
 		public static void ShowWarning(string message)
 		{
-			MessageBox.Show(MessageService.MainForm, StringParser.Parse(message), StringParser.Parse("${res:Global.WarningText}"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			message = StringParser.Parse(message);
+			LoggingService.Warn(message);
+			MessageBox.Show(MessageService.MainForm, message, StringParser.Parse("${res:Global.WarningText}"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
 		}
 		
 		public static void ShowWarningFormatted(string formatstring, params string[] formatitems)
@@ -162,7 +165,9 @@ namespace ICSharpCode.Core
 		
 		public static void ShowMessage(string message, string caption)
 		{
-			MessageBox.Show(mainForm, StringParser.Parse(message), StringParser.Parse(caption), MessageBoxButtons.OK, MessageBoxIcon.Information);
+			message = StringParser.Parse(message);
+			LoggingService.Info(message);
+			MessageBox.Show(mainForm, message, StringParser.Parse(caption), MessageBoxButtons.OK, MessageBoxIcon.Information);
 		}
 		
 		static string Format(string formatstring, string[] formatitems)

@@ -126,7 +126,7 @@ namespace ICSharpCode.FormDesigner
 					try {
 						propertyValue = pd.GetValue(o);
 					} catch (Exception e) {
-						Console.WriteLine(e);
+						ICSharpCode.Core.LoggingService.Warn(e);
 						continue;
 					}
 					

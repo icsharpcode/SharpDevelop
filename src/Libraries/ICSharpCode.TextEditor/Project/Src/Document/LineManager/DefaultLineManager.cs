@@ -170,7 +170,6 @@ namespace ICSharpCode.TextEditor.Document
 			LineSegment line = (LineSegment)lineCollection[lineNumber];
 			if ((lineNumber == lineCollection.Count - 1) && removedLineEnds > 0) {
 				line.TotalLength -= length;
-//				Console.WriteLine("3:Line length of line {0} set to {1}", lineNumber, line.TotalLength - line.DelimiterLength);
 				line.DelimiterLength = 0;
 			} else {
 				++lineNumber;

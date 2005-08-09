@@ -44,14 +44,7 @@ namespace ICSharpCode.TextEditor
 		
 		public bool EnablePaste {
 			get {
-				// Clipboard.GetDataObject may throw an exception...
-				try {
-					IDataObject data = Clipboard.GetDataObject();
-					return data != null && data.GetDataPresent(DataFormats.Text);
-				} catch (Exception e) {
-					Console.WriteLine("Got exception while enablepaste : " + e);
-					return false;
-				}
+				return Clipboard.ContainsText();
 			}
 		}
 		
@@ -96,8 +89,8 @@ namespace ICSharpCode.TextEditor
 						OnCopyText(new CopyTextEventArgs(str));
 						Clipboard.SetDataObject(dataObject, true);
 						return true;
-					} catch (Exception e) {
-						Console.WriteLine("Got exception while Copy text to clipboard : " + e);
+					} catch (ExternalException) {
+						
 					}
 					Thread.Sleep(100);
 				}
@@ -139,8 +132,7 @@ namespace ICSharpCode.TextEditor
 							textArea.Document.UndoStack.UndoLast(redocounter + 1); // redo the whole operation
 						}					}
 				}
-			} catch (Exception ex) {
-				Console.WriteLine("Got exception while Paste : " + ex);
+			} catch (ExternalException) {
 			}
 		}
 		

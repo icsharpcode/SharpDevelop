@@ -121,7 +121,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			ambience.ConversionFlags = ConversionFlags.None;
 			text = ambience.Convert(c);
 			ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedNames | ConversionFlags.ShowReturnType | ConversionFlags.ShowModifiers;
-//			Console.WriteLine("Convert : " + c);
 			description = ambience.Convert(c);
 			documentation = c.Documentation;
 			GetPriority(c.DotNetName);
@@ -277,7 +276,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					}
 				} while(xml.Read());
 			} catch (Exception ex) {
-				Console.WriteLine("Invalid XML documentation: " + ex.Message);
+				LoggingService.Debug("Invalid XML documentation: " + ex.Message);
 				return doc;
 			}
 			return ret.ToString();

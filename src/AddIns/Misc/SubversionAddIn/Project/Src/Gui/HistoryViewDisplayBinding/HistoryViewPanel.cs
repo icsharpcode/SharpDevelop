@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Threading;
 using System.Windows.Forms;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using NSvn.Common;
 using NSvn.Core;
@@ -74,7 +75,7 @@ namespace ICSharpCode.Svn
 		void GetLogMessages()
 		{
 			string fileName = Path.GetFullPath(viewContent.FileName);
-			Console.WriteLine("Get log of " + fileName);
+			LoggingService.Info("SVN: Get log of " + fileName);
 			if (File.Exists(fileName)) {
 				Client client = SvnClient.Instance.Client;
 				client.Log(new string[] { fileName},

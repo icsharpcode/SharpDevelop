@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -13,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		public object Visit(AbstractProjectBrowserTreeNode abstractProjectBrowserTreeNode, object data)
 		{
-			Console.WriteLine("Warning visited default Visit() for : " + abstractProjectBrowserTreeNode);
+			LoggingService.Warn("Warning visited default Visit() for : " + abstractProjectBrowserTreeNode);
 			abstractProjectBrowserTreeNode.AcceptChildren(this, data);
 			return data;
 		}

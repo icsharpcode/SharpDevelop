@@ -36,6 +36,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (expressionResult.Expression == null || expressionResult.Expression.Length == 0) {
 				return;
 			}
+			if (LoggingService.IsDebugEnabled) {
+				if (expressionResult.Context == ExpressionContext.Default)
+					LoggingService.DebugFormatted("GenerateCompletionData for >>{0}<<", expressionResult.Expression);
+				else
+					LoggingService.DebugFormatted("GenerateCompletionData for >>{0}<<, context={1}", expressionResult.Expression, expressionResult.Context);
+			}
 			#if DEBUG
 			if (DebugMode) {
 				Debugger.Break();

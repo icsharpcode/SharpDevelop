@@ -309,7 +309,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						nestedProjectsSection.Append(Environment.NewLine);
 					}
 				} else {
-					Console.WriteLine("unknown folder : "+ currentFolder);
+					LoggingService.Warn("Solution.Load(): unknown folder : " + currentFolder);
 				}
 				projectSection.Append("EndProject");
 				projectSection.Append(Environment.NewLine);

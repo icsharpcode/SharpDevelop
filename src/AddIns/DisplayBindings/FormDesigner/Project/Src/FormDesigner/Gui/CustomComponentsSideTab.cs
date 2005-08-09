@@ -67,6 +67,7 @@ namespace ICSharpCode.FormDesigner.Gui
 		
 		Assembly MyResolveEventHandler(object sender, ResolveEventArgs args)
 		{
+			LoggingService.Debug("Form Designer: MyResolve: " + args.Name);
 			string file = args.Name;
 			int idx = file.IndexOf(',');
 			if (idx >= 0) {
@@ -74,13 +75,16 @@ namespace ICSharpCode.FormDesigner.Gui
 			}
 			try {
 				if (File.Exists(loadingPath + file + ".exe")) {
+					LoggingService.Debug("Form Designer: MyResolve: Load bytes from exe");
 					return Assembly.Load(GetBytes(loadingPath + file + ".exe"));
 				} 
 				if (File.Exists(loadingPath + file + ".dll")) {
+					LoggingService.Debug("Form Designer: MyResolve: Load bytes from dll");
 					return Assembly.Load(GetBytes(loadingPath + file + ".dll"));
 				} 
+				LoggingService.Info("Form Designer: MyResolve: did not find " + args.Name);
 			} catch (Exception ex) {
-				Console.WriteLine("Can't load assembly : " + ex.ToString());
+				LoggingService.Warn("Form Designer: MyResolve: Can't load assembly", ex);
 			}
 			return null;
 		}
@@ -173,7 +177,7 @@ namespace ICSharpCode.FormDesigner.Gui
 					}
 				}
 			} catch (Exception e) {
-				Console.WriteLine("Exception : " + e);
+				LoggingService.Warn("Form Designer: ScanProjectAssemblies", e);
 			} finally {
 				AppDomain.CurrentDomain.AssemblyResolve -= new ResolveEventHandler(MyResolveEventHandler);
 			}

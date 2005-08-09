@@ -102,8 +102,8 @@ namespace ICSharpCode.Core
 							return action = ConditionFailedAction.Exclude;
 						}
 					}
-				} catch (Exception) {
-					Console.WriteLine("Exception in AddIn : " + addIn.FileName);
+				} catch {
+					LoggingService.Error("Exception while getting failed action from " + addIn.FileName);
 					throw;
 				}
 			}

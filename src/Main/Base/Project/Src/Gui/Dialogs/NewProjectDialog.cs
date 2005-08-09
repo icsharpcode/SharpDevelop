@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					imglist.Images.Add(bitmap);
 					tmp[entry.Key] = ++i;
 				} else {
-					Console.WriteLine("can't load bitmap " + entry.Key.ToString() + " using default");
+					LoggingService.Warn("NewProjectDialog: can't load bitmap " + entry.Key.ToString() + " using default");
 				}
 			}
 			

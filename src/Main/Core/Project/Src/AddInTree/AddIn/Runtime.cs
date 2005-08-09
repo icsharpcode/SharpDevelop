@@ -38,9 +38,7 @@ namespace ICSharpCode.Core
 		public Assembly LoadedAssembly {
 			get {
 				if (!isAssemblyLoaded) {
-					#if DEBUG
-					Console.WriteLine("Loading addin " + assembly + "...");
-					#endif
+					LoggingService.Info("Loading addin " + assembly);
 
 					isAssemblyLoaded = true;
 

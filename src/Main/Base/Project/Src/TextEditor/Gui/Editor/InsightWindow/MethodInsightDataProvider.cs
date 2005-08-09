@@ -110,6 +110,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				return;
 			expressionResult.Expression = expressionResult.Expression.Trim();
 			
+			if (LoggingService.IsDebugEnabled) {
+				if (expressionResult.Context == ExpressionContext.Default)
+					LoggingService.DebugFormatted("ShowInsight for >>{0}<<", expressionResult.Expression);
+				else
+					LoggingService.DebugFormatted("ShowInsight for >>{0}<<, context={1}", expressionResult.Expression, expressionResult.Context);
+			}
+			
 			// the parser works with 1 based coordinates
 			int caretLineNumber = document.GetLineNumberForOffset(useOffset) + 1;
 			int caretColumn     = useOffset - document.GetLineSegment(caretLineNumber).Offset + 1;
@@ -119,11 +126,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		protected virtual void SetupDataProvider(string fileName, IDocument document, ExpressionResult expressionResult, int caretLineNumber, int caretColumn)
 		{
 			bool constructorInsight = false;
-			if (expressionResult.Context.IsObjectCreation) {
+			if (expressionResult.Context == ExpressionContext.Attribute) {
+				constructorInsight = true;
+			} else if (expressionResult.Context.IsObjectCreation) {
 				constructorInsight = true;
 				expressionResult.Context = ExpressionContext.Type;
-			} else if (expressionResult.Context == ExpressionContext.Attribute) {
-				constructorInsight = true;
 			}
 			ResolveResult results = ParserService.Resolve(expressionResult, caretLineNumber, caretColumn, fileName, document.TextContent);
 			if (constructorInsight) {

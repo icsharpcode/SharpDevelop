@@ -202,18 +202,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			ICompilationUnit cu = this.CallingClass.CompilationUnit;
 			if (cu == null) {
-				Console.WriteLine("callingClass.CompilationUnit is null");
 				return null;
 			}
 			if (cu.FileName == null || cu.FileName.Length == 0) {
-				Console.WriteLine("callingClass.CompilationUnit.FileName is empty");
 				return null;
 			}
 			IRegion reg = field.Region;
 			if (reg != null) {
 				return new FilePosition(cu.FileName, new Point(reg.BeginLine, reg.BeginColumn));
 			} else {
-				Console.WriteLine("Fieldregion not set!");
+				LoggingService.Warn("GetDefinitionPosition: field.Region is null");
 				return new FilePosition(cu.FileName, Point.Empty);
 			}
 		}
@@ -376,16 +374,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IClass declaringType = resolvedMember.DeclaringType;
 			if (declaringType == null) {
-				Console.WriteLine("declaringType is null");
 				return null;
 			}
 			ICompilationUnit cu = declaringType.CompilationUnit;
 			if (cu == null) {
-				Console.WriteLine("declaringType.CompilationUnit is null");
 				return null;
 			}
 			if (cu.FileName == null || cu.FileName.Length == 0) {
-				Console.WriteLine("declaringType.CompilationUnit.FileName is empty");
 				return null;
 			}
 			IRegion reg = resolvedMember.Region;

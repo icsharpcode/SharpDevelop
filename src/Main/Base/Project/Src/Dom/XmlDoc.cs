@@ -9,11 +9,13 @@ using System;
 using System.IO;
 using System.Collections.Generic;
 using System.Xml;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
-	/// Description of XmlDoc.
+	/// Class capable of loading xml documentation files. XmlDoc automatically creates a
+	/// binary cache for big xml files to reduce memory usage.
 	/// </summary>
 	public class XmlDoc : IDisposable
 	{
@@ -116,15 +118,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			int len = (int)fs.Length;
 			loader = new BinaryReader(fs);
 			if (loader.ReadInt64() != magic) {
-				Console.WriteLine("Wrong magic");
+				LoggingService.Warn("Cannot load XmlDoc: wrong magic");
 				return false;
 			}
 			if (loader.ReadInt16() != version) {
-				Console.WriteLine("Wrong version");
+				LoggingService.Warn("Cannot load XmlDoc: wrong version");
 				return false;
 			}
 			if (loader.ReadInt64() != fileDate.Ticks) {
-				Console.WriteLine("Wrong date");
+				LoggingService.Info("Not loading XmlDoc: file changed since cache was created");
 				return false;
 			}
 			fs.Position = loader.ReadInt32(); // go to start of index
@@ -151,6 +153,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public void Dispose()
 		{
+			LoggingService.Debug("Disposing XmlDoc object");
 			if (loader != null) {
 				loader.Close();
 				fs.Close();
@@ -190,12 +193,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static XmlDoc Load(string fileName)
 		{
+			LoggingService.Debug("Loading XmlDoc for " + fileName);
 			string cacheName = MakeTempPath() + "/" + Path.GetFileNameWithoutExtension(fileName)
 				+ "." + fileName.GetHashCode().ToString("x") + ".dat";
 			XmlDoc doc;
 			if (File.Exists(cacheName)) {
 				doc = new XmlDoc();
 				if (doc.LoadFromBinary(cacheName, File.GetLastWriteTimeUtc(fileName))) {
+					LoggingService.Debug("XmlDoc: Load from cache successful");
 					return doc;
 				} else {
 					doc.Dispose();
@@ -210,6 +215,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			if (doc.xmlDescription.Count > cacheLength * 2) {
+				LoggingService.Debug("XmlDoc: Creating cache");
 				DateTime date = File.GetLastWriteTimeUtc(fileName);
 				doc.Save(cacheName, date);
 				doc.Dispose();

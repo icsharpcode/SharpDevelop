@@ -35,17 +35,10 @@ namespace ICSharpCode.Core
 						mscorlibContent = contents["mscorlib"];
 						return contents["mscorlib"];
 					}
-					#if DEBUG
-					Console.WriteLine("Loading mscorlib...");
-					int time = Environment.TickCount;
-					#endif
-					
+					LoggingService.Debug("Loading PC for mscorlib...");
 					mscorlibContent = new ReflectionProjectContent(typeof(object).Assembly);
 					contents["mscorlib"] = mscorlibContent;
-					
-					#if DEBUG
-					Console.WriteLine("mscorlib loaded in {0} ms", Environment.TickCount - time);
-					#endif
+					LoggingService.Debug("Finished loading mscorlib");
 					return mscorlibContent;
 				}
 			}
@@ -95,10 +88,12 @@ namespace ICSharpCode.Core
 				}
 				
 				string shortName = item.Include;
+				LoggingService.Debug("Loading PC for " + shortName);
+				
 				int pos = shortName.IndexOf(',');
 				if (pos > 0)
 					shortName = shortName.Substring(0, pos);
-
+				
 				StatusBarService.ProgressMonitor.BeginTask("Loading " + shortName + "...", 100);
 				#if DEBUG
 				int time = Environment.TickCount;
@@ -139,13 +134,13 @@ namespace ICSharpCode.Core
 							return contents[item.Include];
 						}
 					} catch (Exception e) {
-						Console.WriteLine("Can't load assembly '{0}' : " + e.Message, item.Include);
+						LoggingService.Debug("Can't load assembly '" + item.Include + "' : " + e.Message);
 					}
 				} catch (BadImageFormatException) {
-					Console.WriteLine("BadImageFormat: " + shortName);
+					LoggingService.Warn("BadImageFormat: " + shortName);
 				} finally {
 					#if DEBUG
-					Console.WriteLine("Loaded {0} with {2} in {1}ms", item.Include, Environment.TickCount - time, how);
+					LoggingService.DebugFormatted("Loaded {0} with {2} in {1}ms", item.Include, Environment.TickCount - time, how);
 					#endif
 					StatusBarService.ProgressMonitor.Done();
 				}
@@ -188,28 +183,28 @@ namespace ICSharpCode.Core
 		static Assembly AssemblyResolve(object sender, ResolveEventArgs e)
 		{
 			string shortName = e.Name;
-			Console.Write("AssemblyResolve: " + e.Name);
+			LoggingService.Debug("ProjectContentRegistry.AssemblyResolve" + e.Name);
 			int pos = shortName.IndexOf(',');
 			if (pos > 0)
 				shortName = shortName.Substring(0, pos);
 			string path = Path.Combine(lookupDirectory, shortName);
 			if (File.Exists(path + ".dll")) {
-				Console.WriteLine(" - found .dll file");
+				LoggingService.Debug("AssemblyResolve ReflectionOnlyLoadFrom .dll file");
 				return Assembly.ReflectionOnlyLoadFrom(path + ".dll");
 			}
 			if (File.Exists(path + ".exe")) {
-				Console.WriteLine(" - found .exe file");
+				LoggingService.Debug("AssemblyResolve ReflectionOnlyLoadFrom .exe file");
 				return Assembly.ReflectionOnlyLoadFrom(path + ".exe");
 			}
 			if (File.Exists(path)) {
-				Console.WriteLine(" - found file");
+				LoggingService.Debug("AssemblyResolve ReflectionOnlyLoadFrom file");
 				return Assembly.ReflectionOnlyLoadFrom(path);
 			}
 			try {
-				Console.WriteLine(" - try ReflectionOnlyLoad");
+				LoggingService.Debug("AssemblyResolve trying ReflectionOnlyLoad");
 				return Assembly.ReflectionOnlyLoad(e.Name);
 			} catch (FileNotFoundException ex) {
-				Console.WriteLine("AssemblyResolve: " + ex.Message);
+				LoggingService.Warn("AssemblyResolve failed: " + ex.Message);
 				return null;
 			}
 		}

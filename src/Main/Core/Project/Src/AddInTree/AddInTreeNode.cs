@@ -89,7 +89,7 @@ namespace ICSharpCode.Core
 								codons[indexOfName[before]].InsertAfter = after + ',' + codons[i].Id;
 							}
 						} else {
-							Console.WriteLine("Codon ({0}) specified in the insertbefore of the {1} codon does not exist!", before, codons[i]);
+							LoggingService.WarnFormatted("Codon ({0}) specified in the insertbefore of the {1} codon does not exist!", before, codons[i]);
 						}
 					}
 				}
@@ -119,7 +119,7 @@ namespace ICSharpCode.Core
 					if (indexOfName.ContainsKey(s)) {
 						Visit(indexOfName[s]);
 					} else {
-						Console.WriteLine("Codon ({0}) specified in the insertafter of the {1} codon does not exist!", codons[codonIndex].InsertAfter, codons[codonIndex]);
+						LoggingService.WarnFormatted("Codon ({0}) specified in the insertafter of the {1} codon does not exist!", codons[codonIndex].InsertAfter, codons[codonIndex]);
 					}
 				}
 				sortedCodons.Add(codons[codonIndex]);

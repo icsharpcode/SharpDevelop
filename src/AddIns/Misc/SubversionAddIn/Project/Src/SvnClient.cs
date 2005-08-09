@@ -221,6 +221,7 @@ namespace ICSharpCode.Svn
 		
 		SvnClient()
 		{
+			LoggingService.Info("SVN: SvnClient initialized");
 			client = new Client();
 			client.LogMessage   += new LogMessageDelegate(SetLogMessage);
 			client.Notification += new NotificationDelegate(ReceiveNotification);

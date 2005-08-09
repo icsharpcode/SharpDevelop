@@ -79,7 +79,6 @@ namespace ICSharpCode.FormDesigner
 		
 		object IObjectCreator.CreateObject(string name, XmlElement el)
 		{
-			Console.WriteLine("Name:" + name);
 			string componentName = null;
 			
 			if (el != null) {

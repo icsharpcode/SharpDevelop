@@ -126,10 +126,14 @@ namespace ICSharpCode.Svn
 		
 		static void Run()
 		{
+			LoggingService.Debug("SVN: OverlayIconManager Thread started");
 			while (true) {
 				AbstractProjectBrowserTreeNode node;
 				lock (queue) {
-					if (queue.Count == 0) return;
+					if (queue.Count == 0) {
+						LoggingService.Debug("SVN: OverlayIconManager Thread finished");
+						return;
+					}
 					node = queue.Dequeue();
 				}
 				try {

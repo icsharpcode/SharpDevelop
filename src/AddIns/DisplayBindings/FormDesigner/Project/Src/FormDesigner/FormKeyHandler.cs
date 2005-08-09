@@ -118,7 +118,7 @@ namespace ICSharpCode.FormDesigner
 //							formDesigner.SetNextTabIndex(c.PointToScreen(p));
 //						}
 //					} catch (Exception e) {
-//						Console.WriteLine(e);
+//						MessageService.ShowError(e);
 //					}
 //				}	
 //				return false;

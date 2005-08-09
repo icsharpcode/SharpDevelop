@@ -47,6 +47,7 @@ namespace ICSharpCode.FormDesigner
 		
 		public void ConvertContentDefinition(TextWriter writer)
 		{
+			LoggingService.Info("Start CodeCOMGenerator.ConvertContentDefinition");
 			DesignerSerializationManager serializationManager = (DesignerSerializationManager)host.GetService(typeof(IDesignerSerializationManager));
 			IDisposable session = serializationManager.CreateSession();
 			DesignerResourceService designerResourceService = (DesignerResourceService)host.GetService(typeof(System.ComponentModel.Design.IResourceService));
@@ -67,7 +68,6 @@ namespace ICSharpCode.FormDesigner
 			options.IndentString = "\t\t\t";
 			
 //			ICSharpCode.NRefactory.Parser.CodeDOMVerboseOutputGenerator outputGenerator = new ICSharpCode.NRefactory.Parser.CodeDOMVerboseOutputGenerator();
-//			Console.WriteLine("<<<<START.");
 			
 			foreach (CodeStatement statement in statements) {
 				if (!(statement is CodeVariableDeclarationStatement)) {
@@ -86,7 +86,7 @@ namespace ICSharpCode.FormDesigner
 			}
 			designerResourceService.SerializationEnded(true);
 			session.Dispose();
-//			Console.WriteLine("<<<<END.");
+			LoggingService.Info("End CodeCOMGenerator.ConvertContentDefinition");
 		}
 	}
 }

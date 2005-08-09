@@ -159,9 +159,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						}
 						MessageService.ShowError(ex, "Exception got.");
 						#if DEBUG
-						Console.WriteLine("Stacktrace of source thread:");
-						Console.WriteLine(callerStack);
-						Console.WriteLine();
+						LoggingService.Info("Stacktrace of source thread:\n" + callerStack);
 						#endif
 					}
 				}

@@ -103,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					SolutionFolderNode folderNode = new SolutionFolderNode(solution, (SolutionFolder)treeObject);
 					folderNode.AddTo(this);
 				} else {
-					Console.WriteLine("unknown tree object : " + treeObject);
+					LoggingService.Warn("SolutionFolderNode.Initialize(): unknown tree object : " + treeObject);
 				}
 			}
 			

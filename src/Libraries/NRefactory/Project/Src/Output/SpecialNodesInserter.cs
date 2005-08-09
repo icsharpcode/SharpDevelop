@@ -76,7 +76,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		/// </summary>
 		public void AcceptNodeStart(INode node)
 		{
-			Console.Write("Start node " + node.GetType().Name + ": ");
 			AcceptPoint(node.StartLocation);
 		}
 		
@@ -85,7 +84,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		/// </summary>
 		public void AcceptNodeEnd(INode node)
 		{
-			Console.Write("End node " + node.GetType().Name + ": ");
 			AcceptPoint(node.EndLocation);
 		}
 		
@@ -94,7 +92,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		/// </summary>
 		public void AcceptPoint(Point a)
 		{
-			Console.WriteLine(a.Y + ", " + a.X);
 			while (available) {
 				Point b = enumerator.Current.StartPosition;
 				if (b.Y < a.Y || (b.Y == a.Y && b.X <= a.X)) {

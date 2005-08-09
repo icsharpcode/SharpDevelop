@@ -114,7 +114,6 @@ namespace ICSharpCode.XmlEditor
 		
 		void SetDeclarationViewLocation()
 		{
-			Console.WriteLine("SET DECLARATION VIEW LOCATION.");
 			//  This method uses the side with more free space
 			int leftSpace = Bounds.Left - workingScreen.Left;
 			int rightSpace = workingScreen.Right - Bounds.Right;
@@ -162,7 +161,6 @@ namespace ICSharpCode.XmlEditor
 		protected override void CaretOffsetChanged(object sender, EventArgs e)
 		{
 			int offset = control.ActiveTextAreaControl.Caret.Offset;
-			//Console.WriteLine("StartOffset {0} endOffset {1} - Offset {2}", startOffset, endOffset, offset);
 			if (offset < startOffset || offset > endOffset) {
 				Close();
 			} else {
@@ -253,7 +251,6 @@ namespace ICSharpCode.XmlEditor
 				control.BeginUpdate();
 				
 				if (endOffset - startOffset > 0) {
-					//Console.WriteLine("start {0} length {1}", startOffset, endOffset - startOffset);
 					control.Document.Remove(startOffset, endOffset - startOffset);
 					control.ActiveTextAreaControl.Caret.Position = control.Document.OffsetToPosition(startOffset);
 				}

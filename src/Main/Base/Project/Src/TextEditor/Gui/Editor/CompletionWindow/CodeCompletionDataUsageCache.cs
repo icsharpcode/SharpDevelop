@@ -64,11 +64,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			using (FileStream fs = new FileStream(CacheFilename, FileMode.Open, FileAccess.Read)) {
 				using (BinaryReader reader = new BinaryReader(fs)) {
 					if (reader.ReadInt64() != magic) {
-						Console.WriteLine("CodeCompletionDataUsageCache: wrong file magic");
+						LoggingService.Warn("CodeCompletionDataUsageCache: wrong file magic");
 						return;
 					}
 					if (reader.ReadInt16() != version) {
-						Console.WriteLine("CodeCompletionDataUsageCache: unknown file version");
+						LoggingService.Warn("CodeCompletionDataUsageCache: unknown file version");
 						return;
 					}
 					int itemCount = reader.ReadInt32();
@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					}
 				}
 			}
-			Console.WriteLine("Loaded CodeCompletionDataUsageCache (" + dict.Count + " items)");
+			LoggingService.Info("Loaded CodeCompletionDataUsageCache (" + dict.Count + " items)");
 		}
 		
 		public static void SaveCache()
@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					count = SaveCache(writer);
 				}
 			}
-			Console.WriteLine("Saved CodeCompletionDataUsageCache (" + count + " of " + dict.Count + " items)");
+			LoggingService.Info("Saved CodeCompletionDataUsageCache (" + count + " of " + dict.Count + " items)");
 		}
 		
 		static int SaveCache(BinaryWriter writer)
@@ -155,7 +155,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					File.Delete(CacheFilename);
 				}
 			} catch (Exception ex) {
-				Console.WriteLine("CodeCompletionDataUsageCache.ResetCache(): " + ex.Message);
+				LoggingService.Warn("CodeCompletionDataUsageCache.ResetCache(): " + ex.Message);
 			}
 		}
 		

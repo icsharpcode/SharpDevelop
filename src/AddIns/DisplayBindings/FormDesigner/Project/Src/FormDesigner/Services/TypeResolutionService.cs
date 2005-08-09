@@ -95,7 +95,7 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public void ReferenceAssembly(AssemblyName name)
 		{
-			Console.WriteLine("TODO!!! : Add Assembly reference : " + name);
+			ICSharpCode.Core.LoggingService.Warn("TODO: Add Assembly reference : " + name);
 		}
 	}
 }

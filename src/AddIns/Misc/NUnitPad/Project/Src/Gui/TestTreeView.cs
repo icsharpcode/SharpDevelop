@@ -163,7 +163,6 @@ namespace ICSharpCode.NUnitPad
 		
 		public void PrintTests(string assembly, Test test, IProject project)
 		{
-			Console.WriteLine(assembly);
 			TreeNode assemblyNode = new TreeNode(Path.GetFileName(assembly));
 			assemblyNode.Tag = new TestItemTag(test, project);
 			treeView.Nodes.Add(assemblyNode);
@@ -341,16 +340,9 @@ namespace ICSharpCode.NUnitPad
 				testRunnerCategory.AppendText(outputMessage + Environment.NewLine);
 				testRunnerCategory.AppendText(result.Description + Environment.NewLine);
 				testRunnerCategory.AppendText(result.StackTrace + Environment.NewLine);
-//				if (result.StackTrace != null ) {
-//					Console.WriteLine("result.StackTrace=" + result.StackTrace);
-//				}
-//				else {
-//					Console.WriteLine("result.StackTrace=null");
-//				}
 					
 				FileLineReference LineRef = OutputTextLineParser.GetNUnitOutputFileLineReference(result.StackTrace, true);
 				if (LineRef != null) {
-//					Console.WriteLine("Adding NUnit error task.");
 					Task Task = new Task(Path.GetFullPath(LineRef.FileName),
 					                     outputMessage,
 										 LineRef.Column,
@@ -370,17 +362,10 @@ namespace ICSharpCode.NUnitPad
 				testRunnerCategory.AppendText(result.Message + Environment.NewLine);
 				testRunnerCategory.AppendText(result.Description + Environment.NewLine);
 				testRunnerCategory.AppendText(result.StackTrace + Environment.NewLine);
-//				if (result.StackTrace != null ) {
-//					Console.WriteLine("result.StackTrace=" + result.StackTrace);
-//				}
-//				else {
-//					Console.WriteLine("result.StackTrace=null");
-//				}
 				
 				FileLineReference LineRef = OutputTextLineParser.GetNUnitOutputFileLineReference(result.StackTrace, true);
 				if (LineRef != null) {
 					
-//					Console.WriteLine("Adding NUnit warning task.");
 					Task Task = new Task(Path.GetFullPath(LineRef.FileName),
 										 outputMessage,
 										 LineRef.Column,

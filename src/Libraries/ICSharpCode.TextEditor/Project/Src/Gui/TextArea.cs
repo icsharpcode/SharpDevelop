@@ -375,11 +375,7 @@ namespace ICSharpCode.TextEditor
 			
 			
 			if (updateMargin != null) {
-				try {
-					updateMargin.Paint(g, updateMargin.DrawingPosition);
-				} catch (Exception ex) {
-					Console.WriteLine("Got exception : " + ex);
-				}
+				updateMargin.Paint(g, updateMargin.DrawingPosition);
 //				clipRectangle.Intersect(updateMargin.DrawingPosition);
 			}
 			
@@ -404,11 +400,7 @@ namespace ICSharpCode.TextEditor
 					if (clipRectangle.IntersectsWith(marginRectangle)) {
 						marginRectangle.Intersect(clipRectangle);
 						if (!marginRectangle.IsEmpty) {
-							try {
-								margin.Paint(g, marginRectangle);
-							} catch (Exception ex) {
-								Console.WriteLine("Got exception : " + ex);
-							}
+							margin.Paint(g, marginRectangle);
 						}
 					}
 				}
@@ -422,23 +414,15 @@ namespace ICSharpCode.TextEditor
 			if (clipRectangle.IntersectsWith(textViewArea)) {
 				textViewArea.Intersect(clipRectangle);
 				if (!textViewArea.IsEmpty) {
-					try {
-						textView.Paint(g, textViewArea);
-					} catch (Exception ex) {
-						Console.WriteLine("Got exception : " + ex);
-					}
+					textView.Paint(g, textViewArea);
 				}
 			}
 			
 			if (adjustScrollBars) {
-				try {
-					this.motherTextAreaControl.AdjustScrollBars(null, null);
-				} catch (Exception) {}
+				this.motherTextAreaControl.AdjustScrollBars(null, null);
 			}
 			
-			try {
-				Caret.UpdateCaretPosition();
-			} catch (Exception) {}
+			Caret.UpdateCaretPosition();
 			
 			base.OnPaint(e);
 		}
@@ -537,8 +521,6 @@ namespace ICSharpCode.TextEditor
 							}
 						}
 					}
-				} catch (Exception e) {
-					Console.WriteLine("Got Exception while executing action " + action + " : " + e.ToString());
 				} finally {
 					motherTextEditorControl.EndUpdate();
 					Caret.UpdateCaretPosition();

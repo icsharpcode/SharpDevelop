@@ -32,7 +32,7 @@ namespace ICSharpCode.Core
 					return o;
 				}
 			}
-			Console.WriteLine("Cannot create object: " + className);
+			LoggingService.Error("Cannot create object: " + className);
 			if (!hasShownErrorMessage) {
 				hasShownErrorMessage = true;
 				MessageService.ShowError("Cannot create object: " + className + "\nFuture missing objects will not cause an error message.");

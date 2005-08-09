@@ -163,7 +163,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					}
 				}
 			} catch (TreePathNotFoundException) {
-				Console.WriteLine(editActionsPath + " doesn't exists in the AddInTree");
+				LoggingService.Warn("EditAction " + editActionsPath + " doesn't exists in the AddInTree");
 			}
 		}
 		

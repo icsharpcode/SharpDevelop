@@ -79,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <remarks>When using this context, a resolver should try resolving typenames with an
 		/// appended "Attribute" suffix and treat "invocations" of the attribute type as
 		/// object creation.</remarks>
-		public static ExpressionContext Attribute = new TypeExpressionContext(ProjectContentRegistry.Mscorlib.GetClass("System.Attribute"), true, true);
+		public static ExpressionContext Attribute = new TypeExpressionContext(ProjectContentRegistry.Mscorlib.GetClass("System.Attribute"), false, true);
 		
 		/// <summary>Context expects a type name which has special base type</summary>
 		/// <param name="baseClass">The class the expression must derive from.</param>

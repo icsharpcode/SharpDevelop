@@ -36,7 +36,7 @@ namespace ICSharpCode.TextEditor
 		InsertMode,
 		
 		/// <summary>
-		/// If the caret is in overwirte mode typed characters will 
+		/// If the caret is in overwirte mode typed characters will
 		/// overwrite the character at the caret position
 		/// </summary>
 		OverwriteMode
@@ -212,7 +212,7 @@ namespace ICSharpCode.TextEditor
 			get {
 				int xpos = textArea.TextView.GetDrawingXPos(this.line, this.column);
 				return new Point(textArea.TextView.DrawingPosition.X + xpos,
-					             textArea.TextView.DrawingPosition.Y + (textArea.Document.GetVisibleLine(this.line)) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
+				                 textArea.TextView.DrawingPosition.Y + (textArea.Document.GetVisibleLine(this.line)) * textArea.TextView.FontHeight - textArea.TextView.TextArea.VirtualTop.Y);
 			}
 		}
 		int oldLine = -1;
@@ -228,39 +228,34 @@ namespace ICSharpCode.TextEditor
 			if (hidden || textArea.MotherTextEditorControl.IsUpdating) {
 				return;
 			}
-			try {
-				if (!caretCreated) {
-					CreateCaret();
-				}
-				if (caretCreated) {
-					ValidateCaretPos();
-					int lineNr = this.line;
-					int xpos = textArea.TextView.GetDrawingXPos(lineNr, this.column);
-					//LineSegment lineSegment = textArea.Document.GetLineSegment(lineNr);
-					Point pos = ScreenPosition;
-					if (xpos >= 0) {
-						bool success = SetCaretPos(pos.X, pos.Y);
-						if (!success) {
-							DestroyCaret();
-							caretCreated = false;
-							UpdateCaretPosition();
-						}
-					}
-					// set the input method editor location
-					if (ime == null) {
-						ime = new Ime(textArea.Handle, textArea.Document.TextEditorProperties.Font);
-					} else {
-						ime.Font = textArea.Document.TextEditorProperties.Font;
-					}
-					ime.SetIMEWindowLocation(pos.X + 2,
-					                         pos.Y);
-					
-					currentPos = pos;
-				}
-			} catch (Exception e) {
-				Console.WriteLine("Got exception while update caret position : " + e);
+			if (!caretCreated) {
+				CreateCaret();
 			}
-			
+			if (caretCreated) {
+				ValidateCaretPos();
+				int lineNr = this.line;
+				int xpos = textArea.TextView.GetDrawingXPos(lineNr, this.column);
+				//LineSegment lineSegment = textArea.Document.GetLineSegment(lineNr);
+				Point pos = ScreenPosition;
+				if (xpos >= 0) {
+					bool success = SetCaretPos(pos.X, pos.Y);
+					if (!success) {
+						DestroyCaret();
+						caretCreated = false;
+						UpdateCaretPosition();
+					}
+				}
+				// set the input method editor location
+				if (ime == null) {
+					ime = new Ime(textArea.Handle, textArea.Document.TextEditorProperties.Font);
+				} else {
+					ime.Font = textArea.Document.TextEditorProperties.Font;
+				}
+				ime.SetIMEWindowLocation(pos.X + 2,
+				                         pos.Y);
+				
+				currentPos = pos;
+			}
 		}
 		
 		public void Dispose()
@@ -291,7 +286,6 @@ namespace ICSharpCode.TextEditor
 			List<FoldMarker> foldings = textArea.Document.FoldingManager.GetFoldingsFromPosition(line, column);
 			bool  shouldUpdate = false;
 			foreach (FoldMarker foldMarker in foldings) {
-				//Console.WriteLine(foldMarker);
 				shouldUpdate |= foldMarker.IsFolded;
 				foldMarker.IsFolded = false;
 			}

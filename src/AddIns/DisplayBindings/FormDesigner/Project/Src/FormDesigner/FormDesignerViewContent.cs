@@ -133,6 +133,8 @@ namespace ICSharpCode.FormDesigner
 		{
 			if (isInitialized) return;
 			isInitialized = true;
+			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
+			
 			DefaultServiceContainer serviceContainer = new DefaultServiceContainer();
 			serviceContainer.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService());
 			serviceContainer.AddService(typeof(System.Drawing.Design.IToolboxService), ToolboxProvider.ToolboxService);
@@ -166,7 +168,7 @@ namespace ICSharpCode.FormDesigner
 			designSurface.Flush();
 			
 			generator.Attach(this);
-			Console.WriteLine("!!!!!! END LOAD");
+			LoggingService.Info("Form Designer: END INITIALIZE");
 		}
 		
 		PropertyContainer propertyContainer = new PropertyContainer();

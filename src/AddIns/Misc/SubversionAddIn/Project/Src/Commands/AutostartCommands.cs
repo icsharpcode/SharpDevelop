@@ -51,11 +51,19 @@ namespace ICSharpCode.Svn.Commands
 			node.AcceptVisitor(visitor, null);
 		}
 		
+		bool CanBeVersionControlled(string fileName)
+		{
+			string svnDir = Path.Combine(Path.GetDirectoryName(fileName), ".svn");
+			return Directory.Exists(svnDir);
+		}
+		
 		void FileSaved(object sender, FileNameEventArgs e)
 		{
 			ProjectBrowserPad pad = ProjectBrowserPad.Instance;
 			if (pad == null) return;
-			FileNode node = pad.ProjectBrowserControl.FindFileNode(e.FileName);
+			string fileName = e.FileName;
+			if (!CanBeVersionControlled(fileName)) return;
+			FileNode node = pad.ProjectBrowserControl.FindFileNode(fileName);
 			if (node == null) return;
 			OverlayIconManager.Enqueue(node);
 		}
@@ -64,6 +72,7 @@ namespace ICSharpCode.Svn.Commands
 		{
 			try {
 				if (AddInOptions.AutomaticallyAddFiles) {
+					if (!CanBeVersionControlled(e.FileName)) return;
 					SvnClient.Instance.Client.Add(Path.GetFullPath(e.FileName), false);
 				}
 			} catch (Exception ex) {
@@ -77,6 +86,7 @@ namespace ICSharpCode.Svn.Commands
 			if (e.IsDirectory) return;
 			if (!AddInOptions.AutomaticallyDeleteFiles) return;
 			string fullName = Path.GetFullPath(e.FileName);
+			if (!CanBeVersionControlled(fullName)) return;
 			try {
 				Status status = SvnClient.Instance.Client.SingleStatus(fullName);
 				switch (status.TextStatus) {
@@ -114,6 +124,7 @@ namespace ICSharpCode.Svn.Commands
 		void FileRenaming(object sender, FileRenamingEventArgs e)
 		{
 			string fullSource = Path.GetFullPath(e.SourceFile);
+			if (!CanBeVersionControlled(fullSource)) return;
 			try {
 				Status status = SvnClient.Instance.Client.SingleStatus(fullSource);
 				switch (status.TextStatus) {

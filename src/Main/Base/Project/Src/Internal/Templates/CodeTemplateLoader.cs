@@ -96,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		static CodeTemplateLoader()
 		{
 			if (!LoadTemplatesFromStream(Path.Combine(PropertyService.ConfigDirectory, TemplateFileName))) {
-				Console.WriteLine("Templates: can't load user defaults, reading system defaults");
+				LoggingService.Info("Templates: can't load user defaults, reading system defaults");
 				if (!LoadTemplatesFromStream(FileUtility.Combine(PropertyService.DataDirectory, "options", TemplateFileName))) {
 					MessageService.ShowWarning("${res:Internal.Templates.CodeTemplateLoader.CantLoadTemplatesWarning}");
 				}

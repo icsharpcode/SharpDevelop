@@ -112,7 +112,7 @@ namespace ICSharpCode.XmlEditor
 				SchemaCompletionDataItems.Add(schemaData);
 				OnUserSchemaAdded();
 			} else {
-				Console.WriteLine(String.Concat("Trying to add a schema that already exists.  Namespace=", schemaData.NamespaceUri));
+				LoggingService.Warn("Trying to add a schema that already exists.  Namespace=" + schemaData.NamespaceUri);
 			}
 		}		
 		
@@ -155,14 +155,14 @@ namespace ICSharpCode.XmlEditor
 						schemas.Add(data);
 					} else {
 						// Namespace already exists.
-						Console.WriteLine(String.Concat("Ignoring duplicate schema namespace ", data.NamespaceUri));
+						LoggingService.Warn("Ignoring duplicate schema namespace " + data.NamespaceUri);
 					} 
 				} else {
 					// Namespace is null.
-					Console.WriteLine(String.Concat("Ignoring schema with no namespace ", data.FileName));
+					LoggingService.Warn("Ignoring schema with no namespace " + data.FileName);
 				}
 			} catch (Exception ex) {
-				Console.WriteLine(String.Concat("Unable to read schema '", fileName, "'. ", ex.Message));
+				LoggingService.Warn("Unable to read schema '" + fileName + "'. ", ex);
 			}
 		}
 		

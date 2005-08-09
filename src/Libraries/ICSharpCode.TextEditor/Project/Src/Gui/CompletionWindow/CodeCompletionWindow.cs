@@ -159,7 +159,6 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		protected override void CaretOffsetChanged(object sender, EventArgs e)
 		{
 			int offset = control.ActiveTextAreaControl.Caret.Offset;
-			//Console.WriteLine("StartOffset {0} endOffset {1} - Offset {2}", startOffset, endOffset, offset);
 			if (offset < startOffset || offset > endOffset) {
 				Close();
 			} else {
@@ -251,7 +250,6 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				control.BeginUpdate();
 				
 				if (endOffset - startOffset > 0) {
-					//Console.WriteLine("start {0} length {1}", startOffset, endOffset - startOffset);
 					control.Document.Remove(startOffset, endOffset - startOffset);
 					control.ActiveTextAreaControl.Caret.Position = control.Document.OffsetToPosition(startOffset);
 				}

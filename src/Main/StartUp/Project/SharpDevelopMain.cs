@@ -41,6 +41,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void ShowErrorBox(object sender, ThreadExceptionEventArgs eargs)
 		{
+			LoggingService.Error("ThreadException caught", eargs.Exception);
 			ShowErrorBox(eargs.Exception, null);
 		}
 		
@@ -55,54 +56,45 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		readonly static string[] assemblyList = {
-			"Microsoft.VisualBasic.dll",
-			"Microsoft.JScript.dll",
-			"mscorlib.dll",
-			"System.Data.dll",
-			"System.Design.dll",
-			"System.DirectoryServices.dll",
-			"System.Drawing.Design.dll",
-			"System.Drawing.dll",
-			"System.EnterpriseServices.dll",
-			"System.Management.dll",
-			"System.Messaging.dll",
-			"System.Runtime.Remoting.dll",
-			"System.Runtime.Serialization.Formatters.Soap.dll",
-			
-			"System.Security.dll",
-			"System.ServiceProcess.dll",
-			"System.Web.Services.dll",
-			"System.Web.dll",
-			"System.Windows.Forms.dll",
-			"System.dll",
-			"System.XML.dll"
-		};
-		
 		/// <summary>
 		/// Starts the core of SharpDevelop.
 		/// </summary>
 		[STAThread()]
 		public static void Main(string[] args)
 		{
+			#if DEBUG
 			if (Debugger.IsAttached) {
 				Run(args);
-			} else {
-				try {
-					Run(args);
-				} catch (Exception ex) {
-					Console.WriteLine(ex);
-					try {
-						Application.Run(new ExceptionBox(ex, "Unhandled exception terminated SharpDevelop"));
-					} catch {
-						MessageBox.Show(ex.ToString(), "Critical error (cannot use ExceptionBox)");
-					}
-				}
+				return;
+			}
+			#endif
+			// Do not use LoggingService here (see comment in Run(string[]))
+			try {
+				Run(args);
+			} catch (Exception ex) {
+				HandleMainException(ex);
+			}
+		}
+		
+		static void HandleMainException(Exception ex)
+		{
+			LoggingService.Fatal(ex);
+			try {
+				Application.Run(new ExceptionBox(ex, "Unhandled exception terminated SharpDevelop"));
+			} catch {
+				MessageBox.Show(ex.ToString(), "Critical error (cannot use ExceptionBox)");
 			}
 		}
 		
 		static void Run(string[] args)
 		{
+			// DO NOT USE LoggingService HERE!
+			// LoggingService requires ICSharpCode.Core.dll and log4net.dll
+			// When a method containing a call to LoggingService is JITted, the
+			// libraries are loaded.
+			// We want to show the SplashScreen while those libraries are loaded, so
+			// don't call LoggingService.
+			
 			#if DEBUG
 			Control.CheckForIllegalCrossThreadCalls = true;
 			#endif
@@ -133,18 +125,36 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void RunApplication()
 		{
-			if (!Debugger.IsAttached) {
-				Application.ThreadException += ShowErrorBox;
+			LoggingService.Info("Starting SharpDevelop...");
+			try {
+				if (!Debugger.IsAttached) {
+					Application.ThreadException += ShowErrorBox;
+				}
+				#if !DEBUG
+				MessageService.CustomErrorReporter = ShowErrorBox;
+				#endif
+				
+				RegisterDoozers();
+				
+				InitializeCore();
+				
+				// finally start the workbench.
+				try {
+					LoggingService.Info("Starting workbench...");
+					new StartWorkbenchCommand().Run(SplashScreenForm.GetRequestedFileList());
+				} finally {
+					LoggingService.Info("Unloading services...");
+					ProjectService.CloseSolution();
+					FileService.Unload();
+					PropertyService.Save();
+				}
+			} finally {
+				LoggingService.Info("Leaving RunApplication()");
 			}
-			#if !DEBUG
-			MessageService.CustomErrorReporter = ShowErrorBox;
-			#endif
-			
-//	TODO:
-//			bool ignoreDefaultPath = false;
-//			string [] addInDirs = ICSharpCode.SharpDevelop.AddInSettingsHandler.GetAddInDirectories(out ignoreDefaultPath);
-//			SetAddInDirectories(addInDirs, ignoreDefaultPath);
-			
+		}
+		
+		static void RegisterDoozers()
+		{
 			AddInTree.ConditionEvaluators.Add("ActiveContentExtension", new ActiveContentExtensionConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("ActiveViewContentUntitled", new ActiveViewContentUntitledConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("ActiveWindowState", new ActiveWindowStateConditionEvaluator());
@@ -171,42 +181,37 @@ namespace ICSharpCode.SharpDevelop
 			AddInTree.Doozers.Add("Debugger", new DebuggerDoozer());
 			
 			MenuCommand.LinkCommandCreator = delegate(string link) { return new LinkCommand(link); };
-			
+		}
+		
+		static void InitializeCore()
+		{
+			LoggingService.Info("Loading properties...");
 			PropertyService.Load();
 			
 			StringParser.RegisterStringTagProvider(new SharpDevelopStringTagProvider());
 			
+			LoggingService.Info("Loading AddInTree...");
 			AddInTree.Load();
 			
+			LoggingService.Info("Initializing workbench...");
 			// .NET base autostarts
 			// taken out of the add-in tree for performance reasons (every tick in startup counts)
 			new InitializeWorkbenchCommand().Run();
 			
 			// run workspace autostart commands
 			try {
+				LoggingService.Info("Running autostart commands...");
 				foreach (ICommand command in AddInTree.BuildItems("/Workspace/Autostart", null, false)) {
 					command.Run();
 				}
 			} catch (XmlException e) {
+				LoggingService.Error("Could not load XML", e);
 				MessageBox.Show("Could not load XML :" + Environment.NewLine + e.Message);
-				return;
-			} catch (Exception e) {
-				MessageBox.Show("Loading error, please reinstall :"  + Environment.NewLine + e.ToString());
 				return;
 			} finally {
 				if (SplashScreenForm.SplashScreen != null) {
 					SplashScreenForm.SplashScreen.Dispose();
 				}
-			}
-			
-			// finally start the workbench.
-			try {
-				new StartWorkbenchCommand().Run(SplashScreenForm.GetRequestedFileList());
-			} finally {
-				// unloading
-				ProjectService.CloseSolution();
-				FileService.Unload();
-				PropertyService.Save();
 			}
 		}
 	}

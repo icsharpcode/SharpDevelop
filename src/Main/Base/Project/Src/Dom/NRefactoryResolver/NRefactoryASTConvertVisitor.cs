@@ -528,7 +528,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (e != null) {
 				e.Documentation = GetDocumentation(region.BeginLine);
 			} else {
-				Console.WriteLine("Warning: " + eventDeclaration + " has no events!");
+				LoggingService.Warn("NRefactoryASTConvertVisitor: " + eventDeclaration + " has no events!");
 			}
 			return null;
 		}

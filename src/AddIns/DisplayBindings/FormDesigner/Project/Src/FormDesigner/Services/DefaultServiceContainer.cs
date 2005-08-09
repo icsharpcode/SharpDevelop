@@ -13,6 +13,7 @@ using System.Drawing;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Windows.Forms.Design;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.FormDesigner.Services
 {
@@ -99,10 +100,9 @@ namespace ICSharpCode.FormDesigner.Services
 		public object GetService(System.Type serviceType)
 		{
 			if (IsServiceMissing(serviceType)) {
-				Console.WriteLine("request missing service : {0} from Assembly {1} is not aviable.", serviceType, serviceType.Assembly.FullName);
-//				Console.ReadLine();
+				LoggingService.InfoFormatted("request missing service : {0} from Assembly {1} is not aviable.", serviceType, serviceType.Assembly.FullName);
 			} else {
-//				Console.WriteLine("get service : {0} from Assembly {1}.", serviceType, serviceType.Assembly.FullName);
+				LoggingService.DebugFormatted("get service : {0} from Assembly {1}.", serviceType, serviceType.Assembly.FullName);
 			}
 			return serviceContainer.GetService(serviceType);
 		}
