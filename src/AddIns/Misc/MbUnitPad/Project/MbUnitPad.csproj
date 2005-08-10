@@ -6,13 +6,15 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{B1CE28A0-04E8-490D-8256-E0C4D52C93C8}</ProjectGuid>
+    <ProductVersion>8.0.50215</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\MbUnitPad\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <OutputPath>bin\Release\</OutputPath>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\MbUnitPad\</OutputPath>
     <Optimize>true</Optimize>
     <DefineConstants>TRACE</DefineConstants>
   </PropertyGroup>
@@ -40,7 +42,9 @@
     <Compile Include="Src\MbUnitPad.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\MbUnitCommands.cs" />
-    <Compile Include="Src\TestTreeView.cs" />
+    <Compile Include="Src\TestTreeView.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

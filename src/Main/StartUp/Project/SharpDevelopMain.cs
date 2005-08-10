@@ -39,20 +39,39 @@ namespace ICSharpCode.SharpDevelop
 			}
 		}
 		
-		static void ShowErrorBox(object sender, ThreadExceptionEventArgs eargs)
+		static void ShowErrorBox(object sender, ThreadExceptionEventArgs e)
 		{
-			LoggingService.Error("ThreadException caught", eargs.Exception);
-			ShowErrorBox(eargs.Exception, null);
+			LoggingService.Error("ThreadException caught", e.Exception);
+			ShowErrorBox(e.Exception, null);
+		}
+		
+		static void ShowErrorBox(object sender, UnhandledExceptionEventArgs e)
+		{
+			Exception ex = e.ExceptionObject as Exception;
+			LoggingService.Fatal("UnhandledException caught", ex);
+			if (e.IsTerminating)
+				LoggingService.Fatal("Runtime is terminating because of unhandled exception.");
+			ShowErrorBox(ex, "Unhandled exception", e.IsTerminating);
 		}
 		
 		static void ShowErrorBox(Exception exception, string message)
 		{
-			using (ExceptionBox box = new ExceptionBox(exception, message)) {
-				DialogResult result = box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
-				
-				if (result == DialogResult.Abort) {
-					Application.Exit();
+			ShowErrorBox(exception, message, false);
+		}
+		
+		static void ShowErrorBox(Exception exception, string message, bool mustTerminate)
+		{
+			try {
+				using (ExceptionBox box = new ExceptionBox(exception, message, mustTerminate)) {
+					try {
+						box.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+					} catch (InvalidOperationException) {
+						box.ShowDialog();
+					}
 				}
+			} catch (Exception ex) {
+				LoggingService.Warn("Error showing ExceptionBox", ex);
+				MessageBox.Show(exception.ToString());
 			}
 		}
 		
@@ -80,7 +99,7 @@ namespace ICSharpCode.SharpDevelop
 		{
 			LoggingService.Fatal(ex);
 			try {
-				Application.Run(new ExceptionBox(ex, "Unhandled exception terminated SharpDevelop"));
+				Application.Run(new ExceptionBox(ex, "Unhandled exception terminated SharpDevelop", true));
 			} catch {
 				MessageBox.Show(ex.ToString(), "Critical error (cannot use ExceptionBox)");
 			}
@@ -127,10 +146,12 @@ namespace ICSharpCode.SharpDevelop
 		{
 			LoggingService.Info("Starting SharpDevelop...");
 			try {
+				#if DEBUG
 				if (!Debugger.IsAttached) {
 					Application.ThreadException += ShowErrorBox;
+					AppDomain.CurrentDomain.UnhandledException += ShowErrorBox;
 				}
-				#if !DEBUG
+				#else
 				MessageService.CustomErrorReporter = ShowErrorBox;
 				#endif
 				

@@ -67,13 +67,29 @@ namespace MbUnitPad
 		
 		void OnSolutionClosed(object sender, EventArgs e)
 		{
-			LoggingService.Info("Solution closed");
-			treeView.RemoveAssemblies();
+			treeView.NewConfig();
+		}
+		
+		public void RunTests()
+		{
+			if (treeView.TypeTree.Nodes.Count == 0) {
+				treeView.TreePopulated += StartTestsAfterTreePopulation;
+				ReloadAssemblyList();
+			} else {
+				treeView.ThreadedRunTests();
+			}
+		}
+		
+		void StartTestsAfterTreePopulation(object sender, EventArgs e)
+		{
+			treeView.TreePopulated -= StartTestsAfterTreePopulation;
+			// we cannot run the tests on this thread because we have to wait for the worker thread to exit
+			WorkbenchSingleton.SafeThreadAsyncCall(treeView, "ThreadedRunTests");
 		}
 		
 		public void ReloadAssemblyList()
 		{
-			treeView.RemoveAssemblies();
+			treeView.TestDomains.Clear();
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				bool referenceFound = false;
 				foreach (ProjectItem item in project.Items) {
@@ -105,6 +121,7 @@ namespace MbUnitPad
 					}
 				}
 			}
+			treeView.ThreadedPopulateTree(true);
 		}
 		
 		/// <summary>

@@ -30,17 +30,24 @@ namespace ICSharpCode.SharpDevelop
 		Exception exceptionThrown;
 		string message;
 		
-		public ExceptionBox(Exception e, string message)
+		public ExceptionBox(Exception e, string message, bool mustTerminate)
 		{
 			this.exceptionThrown = e;
 			this.message = message;
 			InitializeComponent();
-			RightToLeftConverter.Convert(this);
+			if (mustTerminate) {
+				closeButton.Visible = false;
+				continueButton.Text = closeButton.Text;
+				continueButton.Left -= closeButton.Width - continueButton.Width;
+				continueButton.Width = closeButton.Width;
+			}
 			
 			exceptionTextBox.Text = getClipboardString();
 			
-			ResourceManager resources = new ResourceManager("Resources.BitmapResources", Assembly.GetEntryAssembly());
-			this.pictureBox.Image = (Bitmap)resources.GetObject("ErrorReport");
+			try {
+				ResourceManager resources = new ResourceManager("Resources.BitmapResources", Assembly.GetEntryAssembly());
+				this.pictureBox.Image = (Bitmap)resources.GetObject("ErrorReport");
+			} catch {}
 		}
 		
 		string getClipboardString()
@@ -157,8 +164,8 @@ namespace ICSharpCode.SharpDevelop
 			label.Size = new System.Drawing.Size(448, 48);
 			label.TabIndex = 6;
 			label.Text = "An unhandled exception has occurred in SharpDevelop. This is unexpected and we\'d " +
-			"ask you to help us improve SharpDevelop by reporting this error to the SharpDeve" +
-			"lop team.";
+				"ask you to help us improve SharpDevelop by reporting this error to the SharpDeve" +
+				"lop team.";
 			continueButton = new System.Windows.Forms.Button();
 			// 
 			// continueButton

@@ -8,6 +8,7 @@
 using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Project;
 using MbUnit.Forms;
 
 namespace MbUnitPad
@@ -20,11 +21,41 @@ namespace MbUnitPad
 		}
 	}
 	
+	public class UnloadCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			MbUnitPadContent.Instance.TreeView.RemoveAssemblies();
+		}
+	}
+	
 	public class RunTestsCommand : AbstractMenuCommand
 	{
 		public override void Run()
 		{
-			MbUnitPadContent.Instance.TreeView.ThreadedRunTests();
+			MbUnitPadContent.Instance.RunTests();
+		}
+	}
+	
+	public class AddNUnitReferenceCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			if (ProjectService.CurrentProject != null) {
+				ProjectService.AddProjectItem(ProjectService.CurrentProject, new ReferenceProjectItem(ProjectService.CurrentProject, "nunit.framework"));
+				ProjectService.CurrentProject.Save();
+			}
+		}
+	}
+	
+	public class AddMbUnitReferenceCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			if (ProjectService.CurrentProject != null) {
+				ProjectService.AddProjectItem(ProjectService.CurrentProject, new ReferenceProjectItem(ProjectService.CurrentProject, "MbUnit.Framework"));
+				ProjectService.CurrentProject.Save();
+			}
 		}
 	}
 }
