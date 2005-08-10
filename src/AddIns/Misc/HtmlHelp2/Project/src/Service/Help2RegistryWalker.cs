@@ -8,6 +8,7 @@
 namespace HtmlHelp2Service
 {
 	using System;
+	using System.Runtime.InteropServices;
 	using System.Windows.Forms;
 	using MSHelpServices;
 
@@ -82,8 +83,34 @@ namespace HtmlHelp2Service
 			}
 		}
 
+		public static string GetFirstMatchingNamespaceName(string matchingNamespaceName)
+		{
+			if(matchingNamespaceName == "") {
+				return "";
+			}
+
+			try {
+				HxRegistryWalker regWalker = new HxRegistryWalker();
+				IHxRegNamespaceList nl = regWalker.get_RegisteredNamespaceList("");
+				foreach(IHxRegNamespace currentNamespace in nl) {
+					if(PathMatchSpec(currentNamespace.Name, matchingNamespaceName)) {
+						return currentNamespace.Name;
+					}
+				}
+			}
+			catch {
+			}
+
+			return "";
+		}
+
 		public Help2RegistryWalker()
 		{
 		}
+
+		#region PatchMatchSpec@Win32API
+		[DllImport("shlwapi.dll")]
+		static extern bool PathMatchSpec(string pwszFile, string pwszSpec);
+		#endregion
 	}
 }

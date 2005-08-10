@@ -272,6 +272,7 @@ namespace HtmlHelp2
 				}
 				finally {
 					((HtmlHelp2IndexResultsPad)indexResults.PadContent).IndexResultsListView.EndUpdate();
+					((HtmlHelp2IndexResultsPad)indexResults.PadContent).SortLV(0);
 					((HtmlHelp2IndexResultsPad)indexResults.PadContent).SetStatusMessage(indexTerm);
 				}
 

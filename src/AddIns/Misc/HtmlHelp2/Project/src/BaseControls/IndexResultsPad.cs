@@ -73,6 +73,12 @@ namespace HtmlHelp2
 			listView.CreateControl();
 		}
 
+		public void SortLV(int listViewColumn)
+		{
+			listView.ListViewItemSorter = new ListViewItemComparer(listViewColumn);
+			listView.Sort();
+		}
+
 		private void SetListViewHeader()
 		{
 			title.Text     = StringParser.Parse("${res:AddIns.HtmlHelp2.Title}");
@@ -96,8 +102,7 @@ namespace HtmlHelp2
 
 		private void ColumnClick(object sender, ColumnClickEventArgs e)
 		{
-			listView.ListViewItemSorter = new ListViewItemComparer(e.Column);
-			listView.Sort();
+			this.SortLV(e.Column);
 		}
 
 		public void CleanUp()

@@ -22,9 +22,10 @@ namespace HtmlHelp2
 		
 		public override void GoSearch(HtmlViewPane pane)
 		{
-			new ShowSearchMenuCommand().Run();
+//			new ShowSearchMenuCommand().Run();
+			pane.Navigate(HtmlHelp2Service.HtmlHelp2Environment.SearchPage);
 		}
-		
+
 		public override void DocumentCompleted(HtmlViewPane pane, WebBrowserDocumentCompletedEventArgs e)
 		{
 			ShowHelpBrowser.HighlightDocument(pane);

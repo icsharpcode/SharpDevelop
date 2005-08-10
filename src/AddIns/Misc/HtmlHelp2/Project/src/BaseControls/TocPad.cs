@@ -149,6 +149,8 @@ namespace HtmlHelp2
 					tocControl.TreeStyle              = HxTreeStyleConstant.HxTreeStyle_TreelinesPlusMinusText;
 					#endif
 
+					printTopic.Image                  = ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Print.bmp");
+					printTopic.DisplayStyle           = ToolStripItemDisplayStyle.ImageAndText;
 					printTopic.Text                   = StringParser.Parse("${res:AddIns.HtmlHelp2.PrintTopic}");
 					printChildTopics.Text             = StringParser.Parse("${res:AddIns.HtmlHelp2.PrintSubtopics}");
 					printPopup.Items.Add(printTopic);

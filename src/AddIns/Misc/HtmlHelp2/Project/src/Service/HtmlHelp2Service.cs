@@ -26,7 +26,7 @@ namespace HtmlHelp2Service
 		static IHxRegFilterList namespaceFilters         = null;
 		static IHxQuery fulltextSearch                   = null;
 		static IHxQuery dynamicHelp                      = null;
-		public static string DefaultNamespaceName        = "MS.NETFramework.v20.en";
+		public static string DefaultNamespaceName        = "MS.NETFramework.v20*";
 		static string currentSelectedFilterQuery         = "";
 		static string currentSelectedFilterName          = "";
 		static string defaultPage                        = "about:blank";
@@ -36,7 +36,7 @@ namespace HtmlHelp2Service
 		static HtmlHelp2Environment()
 		{
 			LoadHelp2Config();
-			DefaultNamespaceName = Help2RegistryWalker.GetFirstNamespace(DefaultNamespaceName);
+			DefaultNamespaceName = Help2RegistryWalker.GetFirstMatchingNamespaceName(DefaultNamespaceName);
 			InitializeNamespace(DefaultNamespaceName);
 		}
 
