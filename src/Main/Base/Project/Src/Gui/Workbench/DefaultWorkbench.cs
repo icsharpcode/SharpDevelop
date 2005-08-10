@@ -234,7 +234,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (item is IStatusUpdate)
 					((IStatusUpdate)item).UpdateText();
 			}
-				
+			
 			foreach (IViewContent content in workbenchContentCollection) {
 				content.RedrawContent();
 				if (content.WorkbenchWindow != null) {
@@ -394,21 +394,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 					return;
 				}
 			}
+			
+			closeAll = true;
+			
+			layout.Detach();
+			foreach (PadDescriptor padDescriptor in PadContentCollection) {
+				padDescriptor.Dispose();
+			}
+			
 			ProjectService.CloseSolution();
 		}
 		
 		protected override void OnClosed(EventArgs e)
 		{
 			base.OnClosed(e);
-			
-			ProjectService.CloseSolution();
-
-			closeAll = true;
-
-			layout.Detach();
-			foreach (PadDescriptor padDescriptor in PadContentCollection) {
-				padDescriptor.Dispose();
-			}
 		}
 		
 		void SetProjectTitle(object sender,  ProjectEventArgs e)

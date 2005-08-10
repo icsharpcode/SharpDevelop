@@ -5,9 +5,11 @@
 		<WixCaFiles Include="wix\ca\*"/>
 		<WixDocFiles Include="wix\doc\*"/>
 		<WixLibFiles Include="wix\doc\*"/>
+		<MbUnitFiles Include="MbUnit\*"/>
 		<HelpToolFiles Include="Help\*"/>
 		<!-- <ToolProject Include="GacUtil2\GacUtil2.csproj" /> -->
 		<ToolFiles Include="GacUtil2\GacUtil2.exe"/>
+		<ToolFiles Include="GacUtil2\GacUtil2.exe.config"/>
 	</ItemGroup>
 	
 	<Target Name="Build">
@@ -16,6 +18,7 @@
 		<Copy SourceFiles="@(WixCaFiles)" DestinationFolder="..\..\bin\Tools\Wix\ca"/>
 		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc"/>
 		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib"/>
+		<Copy SourceFiles="@(MbUnitFiles)" DestinationFolder="..\..\bin\Tools\MbUnit"/>
 		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools"/>
 		
 		<!--

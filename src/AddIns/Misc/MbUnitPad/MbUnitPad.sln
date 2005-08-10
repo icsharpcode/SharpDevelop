@@ -1,0 +1,6 @@
+Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.339
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MbUnitPad", "Project\MbUnitPad.csproj", "{B1CE28A0-04E8-490D-8256-E0C4D52C93C8}"
+EndProject
+Global
+EndGlobal

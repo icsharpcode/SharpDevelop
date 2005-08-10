@@ -1,0 +1,38 @@
+<AddIn name        = "MbUnit-Addin"
+       author      = "Daniel Grunwald"
+       copyright   = "GNU General Public License"
+       url         = "http://www.icsharpcode.net"
+       description = "Integrated MbUnit test runner for #Develop"
+       version     = "1.0.0">
+	
+	<Runtime>
+		<!-- MbUnit is not in the path, so we need to load it manually -->
+		<Import assembly = "../../../../bin/Tools/MbUnit/MbUnit.GUI.exe"/>
+		<Import assembly = "MbUnitPad.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "MbUnitPad"
+		     category = "Main"
+		     title    = "Unit Tests"
+		     icon     = "PadIcons.UnitTest"
+		     shortcut = "Control|Alt|T"
+		     class    = "MbUnitPad.MbUnitPadContent"/>
+	</Path>
+	
+	<Path name = "/MbUnitPad/Toolbar">
+		<Condition name = "CombineOpen" iscombineopen="True" action="Disable">
+			<ToolbarItem id      = "Reload"
+			             icon    = "Icons.16x16.BrowserRefresh"
+			             tooltip = "${res:NUnitPad.NUnitPadContent.RefreshItem}"
+			             class   = "MbUnitPad.ReloadCommand"/>
+			<ToolbarItem id      = "Run"
+			             icon    = "Icons.16x16.RunProgramIcon"
+			             tooltip = "${res:NUnitPad.NUnitPadContent.RunItem}"
+			             class   = "MbUnitPad.RunTestsCommand"/>
+		</Condition>
+	</Path>
+	
+	<Path name = "/MbUnitPad/ContextMenu">
+	</Path>
+</AddIn>

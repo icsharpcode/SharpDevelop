@@ -154,6 +154,7 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 			
 			if (showNavigation) {
 				toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/ViewContent/Browser/Toolbar");
+				toolStrip.GripStyle = ToolStripGripStyle.Hidden;
 				Controls.Add(toolStrip);
 			}
 		}
