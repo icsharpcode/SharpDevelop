@@ -65,19 +65,22 @@ namespace ICSharpCode.SharpDevelop.Project
 				try
 				{
 					string hintPath = HintPath;
-					if (hintPath != null && hintPath.Length > 0)
-					{
+					if (hintPath != null && hintPath.Length > 0) {
 						return Path.Combine(Project.Directory, hintPath);
 					}
 					string name = Path.Combine(Project.Directory, Include);
-					if (File.Exists(name))
-					{
+					if (File.Exists(name)) {
 						return name;
+					}
+					if (File.Exists(name + ".dll")) {
+						return name + ".dll";
+					}
+					if (File.Exists(name + ".exe")) {
+						return name + ".exe";
 					}
 				}
 				catch (Exception) { }
-
-				return GetPathToGACAssembly(Include);
+				return Include;
 			}
 			set {
 				// Set by file name is unsupported by references. (otherwise GAC references might have strange renaming effects ...)
@@ -98,39 +101,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			return String.Format("[ReferenceProjectItem: Include={0}, Properties={1}]",
 			                     Include,
 			                     Properties);
-		}
-		
-		static string GetPathToGACAssembly(string referenceName)
-		{ 
-			string[] info = referenceName.Split(',');
-			
-			if (info.Length < 4) {
-				try {
-					Assembly refAssembly = ProjectContentRegistry.LoadGACAssembly(referenceName, true);
-					
-					// if it failed, then return just the short name
-					if (refAssembly == null) {
-						return info[0];
-					}
-					
-					// split up the peices again to find the assembly file path
-					info = refAssembly.FullName.Split(',');
-				} catch (Exception) {
-					return referenceName;
-				}
-			}
-			
-			string aName      = info[0];
-			string aVersion   = info[1].Substring(info[1].LastIndexOf('=') + 1);
-			string aPublicKey = info[3].Substring(info[3].LastIndexOf('=') + 1);
-			
-			return FileUtility.Combine(System.Environment.GetFolderPath(Environment.SpecialFolder.System),
-			                       "..",
-			                       "assembly",
-			                       "GAC",
-			                       aName,
-			                       aVersion + "__" + aPublicKey,
-			                       aName + ".dll");
 		}
 	}
 }

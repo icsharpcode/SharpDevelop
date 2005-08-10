@@ -19,6 +19,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Dom;
+using MSjogren.GacTool.FusionNative;
 
 namespace ICSharpCode.Core
 {
@@ -182,12 +183,9 @@ namespace ICSharpCode.Core
 		
 		static Assembly AssemblyResolve(object sender, ResolveEventArgs e)
 		{
-			string shortName = e.Name;
-			LoggingService.Debug("ProjectContentRegistry.AssemblyResolve" + e.Name);
-			int pos = shortName.IndexOf(',');
-			if (pos > 0)
-				shortName = shortName.Substring(0, pos);
-			string path = Path.Combine(lookupDirectory, shortName);
+			AssemblyName name = new AssemblyName(e.Name);
+			LoggingService.Debug("ProjectContentRegistry.AssemblyResolve " + e.Name);
+			string path = Path.Combine(lookupDirectory, name.Name);
 			if (File.Exists(path + ".dll")) {
 				LoggingService.Debug("AssemblyResolve ReflectionOnlyLoadFrom .dll file");
 				return Assembly.ReflectionOnlyLoadFrom(path + ".dll");
@@ -203,10 +201,80 @@ namespace ICSharpCode.Core
 			try {
 				LoggingService.Debug("AssemblyResolve trying ReflectionOnlyLoad");
 				return Assembly.ReflectionOnlyLoad(e.Name);
-			} catch (FileNotFoundException ex) {
-				LoggingService.Warn("AssemblyResolve failed: " + ex.Message);
-				return null;
+			} catch (FileNotFoundException) {
+				LoggingService.Warn("AssemblyResolve: ReflectionOnlyLoad failed for " + e.Name);
+				// We can't get the assembly we want.
+				// But propably we can get a similar version of it.
+				AssemblyName fixedName = FindBestMatchingAssemblyName(e.Name);
+				LoggingService.Info("AssemblyResolve: FixedName: " + fixedName);
+				return Assembly.ReflectionOnlyLoad(fixedName.FullName);
 			}
+		}
+		
+		public static AssemblyName FindBestMatchingAssemblyName(string name)
+		{
+			string[] info = name.Split(',');
+			string version = (info.Length > 1) ? info[1].Substring(info[1].LastIndexOf('=') + 1) : null;
+			string publicKey = (info.Length > 3) ? info[3].Substring(info[3].LastIndexOf('=') + 1) : null;
+			
+			IApplicationContext applicationContext = null;
+			IAssemblyEnum assemblyEnum = null;
+			IAssemblyName assemblyName;
+			Fusion.CreateAssemblyNameObject(out assemblyName, info[0], 0, 0);
+			Fusion.CreateAssemblyEnum(out assemblyEnum, null, assemblyName, 2, 0);
+			List<string> names = new List<string>();
+			
+			while (assemblyEnum.GetNextAssembly(out applicationContext, out assemblyName, 0) == 0) {
+				uint nChars = 0;
+				assemblyName.GetDisplayName(null, ref nChars, 0);
+				
+				StringBuilder sb = new StringBuilder((int)nChars);
+				assemblyName.GetDisplayName(sb, ref nChars, 0);
+				
+				string fullName = sb.ToString();
+				if (publicKey != null) {
+					info = fullName.Split(',');
+					if (publicKey != info[3].Substring(info[3].LastIndexOf('=') + 1)) {
+						// Assembly has wrong public key
+						continue;
+					}
+				}
+				names.Add(fullName);
+			}
+			if (names.Count == 0)
+				return null;
+			string best = null;
+			Version bestVersion = null;
+			Version currentVersion;
+			if (version != null) {
+				// use assembly with lowest version higher or equal to required version
+				Version requiredVersion = new Version(version);
+				for (int i = 0; i < names.Count; i++) {
+					info = names[i].Split(',');
+					currentVersion = new Version(info[1].Substring(info[1].LastIndexOf('=') + 1));
+					if (currentVersion.CompareTo(requiredVersion) < 0)
+						continue; // version not good enough
+					if (best == null || currentVersion.CompareTo(bestVersion) < 0) {
+						bestVersion = currentVersion;
+						best = names[i];
+					}
+				}
+				if (best != null)
+					return new AssemblyName(best);
+			}
+			// use assembly with highest version
+			best = names[0];
+			info = names[0].Split(',');
+			bestVersion = new Version(info[1].Substring(info[1].LastIndexOf('=') + 1));
+			for (int i = 1; i < names.Count; i++) {
+				info = names[i].Split(',');
+				currentVersion = new Version(info[1].Substring(info[1].LastIndexOf('=') + 1));
+				if (currentVersion.CompareTo(bestVersion) > 0) {
+					bestVersion = currentVersion;
+					best = names[i];
+				}
+			}
+			return new AssemblyName(best);
 		}
 		
 		public static Assembly LoadGACAssembly(string partialName, bool reflectionOnly)

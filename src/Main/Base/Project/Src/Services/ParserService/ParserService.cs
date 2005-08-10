@@ -109,8 +109,10 @@ namespace ICSharpCode.Core
 		{
 			try {
 				abortLoadSolutionProjectsThread = false;
+				LoggingService.Info("Start LoadSolutionProjects thread");
 				LoadSolutionProjectsInternal();
 			} finally {
+				LoggingService.Info("LoadSolutionProjects thread ended");
 				loadSolutionProjectsThread = null;
 			}
 		}
