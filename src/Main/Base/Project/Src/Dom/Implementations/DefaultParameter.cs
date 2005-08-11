@@ -64,7 +64,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return (modifier & ParameterModifiers.Params) == ParameterModifiers.Params;
 			}
 		}
-
+		public bool IsOptional {
+			get {
+				return (modifier & ParameterModifiers.Optional) == ParameterModifiers.Optional;
+			}
+		}
+		
 		public virtual string Name {
 			get {
 				return name;

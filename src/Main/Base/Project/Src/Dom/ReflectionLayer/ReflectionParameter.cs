@@ -31,18 +31,25 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.parameterInfo = parameterInfo;
 			this.member = member;
 			
+			Type type = parameterInfo.ParameterType;
+			
 			if (parameterInfo.IsOut) {
 				modifier = ParameterModifiers.Out;
+			} else if (type.Name.EndsWith("&")) {
+				// seems there is no other way to determine a ref parameter
+				modifier = ParameterModifiers.Ref;
 			}
-			Type type = parameterInfo.ParameterType;
-			// TODO read param attribute
-			//if (type.IsArray && type != typeof(Array) && Attribute.IsDefined(parameterInfo, typeof(ParamArrayAttribute), true)) {
-			//	modifier |= ParameterModifier.Params;
-			//}
 			
-			// seems there is no other way to determine a ref parameter
-			if (type.Name.EndsWith("&")) {
-				modifier |= ParameterModifiers.Ref;
+			if (parameterInfo.IsOptional) {
+				modifier |= ParameterModifiers.Optional;
+			}
+			if (type.IsArray && type != typeof(Array)) {
+				foreach (CustomAttributeData data in CustomAttributeData.GetCustomAttributes(parameterInfo)) {
+					if (data.Constructor.DeclaringType.FullName == typeof(ParamArrayAttribute).FullName) {
+						modifier |= ParameterModifiers.Params;
+						break;
+					}
+				}
 			}
 		}
 	}

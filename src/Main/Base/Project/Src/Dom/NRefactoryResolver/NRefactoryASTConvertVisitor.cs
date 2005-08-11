@@ -285,7 +285,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			currentClass.Push(c);
 			
-			if (typeDeclaration.BaseTypes != null) {
+			if (c.ClassType != ClassType.Enum && typeDeclaration.BaseTypes != null) {
 				foreach (AST.TypeReference type in typeDeclaration.BaseTypes) {
 					c.BaseTypes.Add(CreateReturnType(type));
 				}

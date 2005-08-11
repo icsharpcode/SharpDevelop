@@ -116,6 +116,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				string name = type.FullName;
 				if (name == null)
 					return null;
+				if (name.Length > 1) {
+					if (name[name.Length - 1] == '&') {
+						name = name.Substring(0, name.Length - 1);
+					}
+				}
 				if (name.Length > 2) {
 					if (name[name.Length - 2] == '`') {
 						name = name.Substring(0, name.Length - 2);

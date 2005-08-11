@@ -42,16 +42,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				else
 					LoggingService.DebugFormatted("GenerateCompletionData for >>{0}<<, context={1}", expressionResult.Expression, expressionResult.Context);
 			}
+			string textContent = textArea.Document.TextContent;
 			#if DEBUG
 			if (DebugMode) {
 				Debugger.Break();
 			}
 			#endif
-			AddResolveResults(ParserService.Resolve(expressionResult,
-			                                        caretLineNumber,
-			                                        caretColumn,
-			                                        fileName,
-			                                        textArea.Document.TextContent),
+			AddResolveResults(ParserService.Resolve(expressionResult, caretLineNumber, caretColumn, fileName, textContent),
 			                  expressionResult.Context);
 		}
 	}

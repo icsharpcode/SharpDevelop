@@ -101,16 +101,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		Expression ParseExpression(string expression)
 		{
-			using (ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser(language, new System.IO.StringReader(expression))) {
-				return p.ParseExpression();
+			Expression expr = SpecialConstructs(expression);
+			if (expr == null) {
+				using (ICSharpCode.NRefactory.Parser.IParser p = ParserFactory.CreateParser(language, new System.IO.StringReader(expression))) {
+					expr = p.ParseExpression();
+				}
 			}
+			return expr;
 		}
 		
-		public ResolveResult Resolve(ExpressionResult expressionResult,
-		                             int caretLineNumber,
-		                             int caretColumn,
-		                             string fileName,
-		                             string fileContent)
+		string GetFixedExpression(ExpressionResult expressionResult)
 		{
 			string expression = expressionResult.Expression;
 			if (expression == null) {
@@ -121,6 +121,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (expressionResult.Context.IsObjectCreation) {
 				expression = "new " + expression;
 			}
+			return expression;
+		}
+		
+		public ResolveResult Resolve(ExpressionResult expressionResult,
+		                             int caretLineNumber,
+		                             int caretColumn,
+		                             string fileName,
+		                             string fileContent)
+		{
+			string expression = GetFixedExpression(expressionResult);
 			
 			this.caretLine   = caretLineNumber;
 			this.caretColumn = caretColumn;
@@ -147,12 +157,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			if (expr == null) {
-				expr = SpecialConstructs(expression);
+				expr = ParseExpression(expression);
 				if (expr == null) {
-					expr = ParseExpression(expression);
-					if (expr == null) {
-						return null;
-					}
+					return null;
 				}
 			}
 			
@@ -160,6 +167,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return ResolveAttribute(expr);
 			}
 			
+			RunLookupTableVisitor(fileContent);
+			
+			return ResolveInternal(expr, expressionResult.Context);
+		}
+		
+		void RunLookupTableVisitor(string fileContent)
+		{
 			lookupTableVisitor = new LookupTableVisitor(languageProperties.NameComparer);
 			
 			callingMember = GetCurrentMember();
@@ -171,8 +185,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					lookupTableVisitor.Visit(p.CompilationUnit, null);
 				}
 			}
-			
-			return ResolveInternal(expr, expressionResult.Context);
 		}
 		
 		string GetAttributeName(Expression expr)

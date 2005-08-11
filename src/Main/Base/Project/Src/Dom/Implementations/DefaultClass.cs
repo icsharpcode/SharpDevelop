@@ -230,25 +230,28 @@ namespace ICSharpCode.SharpDevelop.Dom
 				Queue<IReturnType> typesToVisit = new Queue<IReturnType>();
 				bool enqueuedLastBaseType = false;
 				IClass currentClass = this;
+				IReturnType nextType;
 				do {
-					if (!visitedList.Contains(currentClass)) {
-						visitedList.Add(currentClass);
-						foreach (IReturnType type in currentClass.BaseTypes) {
-							typesToVisit.Enqueue(type);
+					if (currentClass != null) {
+						if (!visitedList.Contains(currentClass)) {
+							visitedList.Add(currentClass);
+							foreach (IReturnType type in currentClass.BaseTypes) {
+								typesToVisit.Enqueue(type);
+							}
 						}
 					}
-					IReturnType nextType;
 					if (typesToVisit.Count > 0) {
 						nextType = typesToVisit.Dequeue();
 					} else {
 						nextType = enqueuedLastBaseType ? null : GetBaseTypeByClassType();
 						enqueuedLastBaseType = true;
 					}
-					currentClass = (nextType != null) ? nextType.GetUnderlyingClass() : null;
-				} while (currentClass != null);
+					if (nextType != null) {
+						currentClass = nextType.GetUnderlyingClass();
+					}
+				} while (nextType != null);
 				if (UseInheritanceCache)
 					inheritanceTreeCache = visitedList;
-				currentClass = ReflectionReturnType.Object.GetUnderlyingClass();
 				return visitedList;
 			}
 		}
@@ -279,20 +282,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		IReturnType GetBaseTypeByClassType()
 		{
-				switch (ClassType) {
-					case ClassType.Class:
-						if (FullyQualifiedName != "System.Object") {
-							return ReflectionReturnType.Object;
-						}
-						break;
-					case ClassType.Enum:
-						return ProjectContentRegistry.Mscorlib.GetClass("System.Enum").DefaultReturnType;
-					case ClassType.Delegate:
-						return ProjectContentRegistry.Mscorlib.GetClass("System.Delegate").DefaultReturnType;
-					case ClassType.Struct:
-						return ProjectContentRegistry.Mscorlib.GetClass("System.ValueType").DefaultReturnType;
-				}
-				return null;
+			switch (ClassType) {
+				case ClassType.Class:
+					if (FullyQualifiedName != "System.Object") {
+						return ReflectionReturnType.Object;
+					}
+					break;
+				case ClassType.Enum:
+					return ProjectContentRegistry.Mscorlib.GetClass("System.Enum").DefaultReturnType;
+				case ClassType.Delegate:
+					return ProjectContentRegistry.Mscorlib.GetClass("System.Delegate").DefaultReturnType;
+				case ClassType.Struct:
+					return ProjectContentRegistry.Mscorlib.GetClass("System.ValueType").DefaultReturnType;
+			}
+			return null;
 		}
 		
 		public IClass BaseClass {

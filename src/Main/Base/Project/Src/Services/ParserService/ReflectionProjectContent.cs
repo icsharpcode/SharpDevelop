@@ -57,15 +57,33 @@ namespace ICSharpCode.Core
 		}
 		
 		bool initialized = false;
+		ArrayList missingNames;
 		
 		public void InitializeReferences()
 		{
-			if (initialized) return;
+			if (initialized) {
+				if (missingNames != null) {
+					for (int i = 0; i < missingNames.Count; i++) {
+						IProjectContent content = ProjectContentRegistry.GetExistingProjectContent((AssemblyName)missingNames[i]);
+						if (content != null) {
+							ReferencedContents.Add(content);
+							missingNames.RemoveAt(i--);
+						}
+					}
+					if (missingNames.Count == 0)
+						missingNames = null;
+				}
+				return;
+			}
 			initialized = true;
 			foreach (AssemblyName name in assembly.GetReferencedAssemblies()) {
 				IProjectContent content = ProjectContentRegistry.GetExistingProjectContent(name);
 				if (content != null) {
 					ReferencedContents.Add(content);
+				} else {
+					if (missingNames == null)
+						missingNames = new ArrayList();
+					missingNames.Add(name);
 				}
 			}
 		}

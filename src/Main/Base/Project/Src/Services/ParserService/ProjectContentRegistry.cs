@@ -81,16 +81,19 @@ namespace ICSharpCode.Core
 				return ParserService.GetProjectContent(((ProjectReferenceProjectItem)item).ReferencedProject);
 			}
 			lock (contents) {
-				if (contents.ContainsKey(item.FileName)) {
-					return contents[item.FileName];
+				string itemInclude = item.Include;
+				string itemFileName = item.FileName;
+				if (contents.ContainsKey(itemFileName)) {
+					return contents[itemFileName];
 				}
-				if (contents.ContainsKey(item.Include)) {
-					return contents[item.Include];
+				if (contents.ContainsKey(itemInclude)) {
+					return contents[itemInclude];
 				}
 				
-				string shortName = item.Include;
-				LoggingService.Debug("Loading PC for " + shortName);
 				
+				LoggingService.Debug("Loading PC for " + itemInclude);
+				
+				string shortName = itemInclude;
 				int pos = shortName.IndexOf(',');
 				if (pos > 0)
 					shortName = shortName.Substring(0, pos);
@@ -101,47 +104,46 @@ namespace ICSharpCode.Core
 				string how = "??";
 				#endif
 				Assembly assembly = GetDefaultAssembly(shortName);
+				if (assembly != null) {
+					contents[item.Include] = new ReflectionProjectContent(assembly);
+					#if DEBUG
+					how = "typeof";
+					#endif
+					return contents[itemInclude];
+				}
+				lookupDirectory = Path.GetDirectoryName(itemFileName);
+				AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += AssemblyResolve;
 				try {
+					assembly = Assembly.ReflectionOnlyLoadFrom(itemFileName);
 					if (assembly != null) {
-						contents[item.Include] = new ReflectionProjectContent(assembly);
+						contents[itemFileName] = new ReflectionProjectContent(assembly);
+						contents[assembly.FullName] = contents[itemFileName];
 						#if DEBUG
-						how = "typeof";
+						how = "ReflectionOnly";
 						#endif
-						return contents[item.Include];
-					}
-					lookupDirectory = Path.GetDirectoryName(item.FileName);
-					AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += AssemblyResolve;
-					try {
-						assembly = Assembly.ReflectionOnlyLoadFrom(item.FileName);
-						if (assembly != null) {
-							contents[item.FileName] = new ReflectionProjectContent(assembly);
-							#if DEBUG
-							how = "ReflectionOnly";
-							#endif
-							return contents[item.FileName];
-						}
-					} finally {
-						AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= AssemblyResolve;
-						lookupDirectory = null;
+						return contents[itemFileName];
 					}
 				} catch (FileNotFoundException) {
 					try {
-						assembly = LoadGACAssembly(item.Include, true);
+						assembly = LoadGACAssembly(itemInclude, true);
 						if (assembly != null) {
-							contents[item.Include] = new ReflectionProjectContent(assembly);
+							contents[itemInclude] = new ReflectionProjectContent(assembly);
+							contents[assembly.FullName] = contents[itemInclude];
 							#if DEBUG
 							how = "PartialName";
 							#endif
-							return contents[item.Include];
+							return contents[itemInclude];
 						}
 					} catch (Exception e) {
-						LoggingService.Debug("Can't load assembly '" + item.Include + "' : " + e.Message);
+						LoggingService.Debug("Can't load assembly '" + itemInclude + "' : " + e.Message);
 					}
 				} catch (BadImageFormatException) {
-					LoggingService.Warn("BadImageFormat: " + shortName);
+					LoggingService.Warn("BadImageFormat: " + itemInclude);
 				} finally {
+					AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= AssemblyResolve;
+					lookupDirectory = null;
 					#if DEBUG
-					LoggingService.DebugFormatted("Loaded {0} with {2} in {1}ms", item.Include, Environment.TickCount - time, how);
+					LoggingService.DebugFormatted("Loaded {0} with {2} in {1}ms", itemInclude, Environment.TickCount - time, how);
 					#endif
 					StatusBarService.ProgressMonitor.Done();
 				}
@@ -279,9 +281,16 @@ namespace ICSharpCode.Core
 		
 		public static Assembly LoadGACAssembly(string partialName, bool reflectionOnly)
 		{
-			#pragma warning disable 618
-			return Assembly.LoadWithPartialName(partialName);
-			#pragma warning restore 618
+			if (reflectionOnly) {
+				AssemblyName name = FindBestMatchingAssemblyName(partialName);
+				if (name == null)
+					return null;
+				return Assembly.ReflectionOnlyLoad(name.FullName);
+			} else {
+				#pragma warning disable 618
+				return Assembly.LoadWithPartialName(partialName);
+				#pragma warning restore 618
+			}
 		}
 	}
 }

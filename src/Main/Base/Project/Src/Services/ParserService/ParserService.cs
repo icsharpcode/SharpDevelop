@@ -181,6 +181,7 @@ namespace ICSharpCode.Core
 		
 		static void ParserUpdateThread()
 		{
+			LoggingService.Info("ParserUpdateThread started");
 			// preload mscorlib, we're going to need it anyway
 			IProjectContent dummyVar = ProjectContentRegistry.Mscorlib;
 			
@@ -196,6 +197,7 @@ namespace ICSharpCode.Core
 				}
 				Thread.Sleep(2000);
 			}
+			LoggingService.Info("ParserUpdateThread stopped");
 		}
 		
 		static object[] GetWorkbench()

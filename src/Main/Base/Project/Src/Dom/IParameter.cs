@@ -50,5 +50,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		bool IsParams {
 			get;
 		}
+		
+		bool IsOptional {
+			get;
+		}
 	}
 }

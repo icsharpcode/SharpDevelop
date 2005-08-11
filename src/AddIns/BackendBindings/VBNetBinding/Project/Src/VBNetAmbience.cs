@@ -564,12 +564,13 @@ namespace VBNetBinding
 					builder.Append("<i>");
 				}
 				
+				if (param.IsOptional) {
+					builder.Append("Optional ");
+				}
 				if (param.IsRef || param.IsOut) {
 					builder.Append("ByRef ");
 				} else if (param.IsParams) {
-					builder.Append("ByVal ParamArray ");
-				} else  {
-					builder.Append("ByVal ");
+					builder.Append("ParamArray ");
 				}
 				if (IncludeHTMLMarkup) {
 					builder.Append("</i>");
@@ -581,7 +582,7 @@ namespace VBNetBinding
 			}
 
 			builder.Append(Convert(param.ReturnType));
-
+			
 			return builder.ToString();
 		}
 

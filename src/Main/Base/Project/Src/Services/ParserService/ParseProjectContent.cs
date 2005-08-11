@@ -59,23 +59,33 @@ namespace ICSharpCode.Core
 				switch (item.ItemType) {
 					case ItemType.Reference:
 					case ItemType.ProjectReference:
-						AddReference(item as ReferenceProjectItem);
+						AddReference(item as ReferenceProjectItem, false);
 						break;
+				}
+			}
+			UpdateReferenceInterDependencies();
+		}
+		
+		void UpdateReferenceInterDependencies()
+		{
+			foreach (IProjectContent referencedContent in this.ReferencedContents) {
+				if (referencedContent is ReflectionProjectContent) {
+					((ReflectionProjectContent)referencedContent).InitializeReferences();
 				}
 			}
 		}
 		
-		delegate void AddReferenceDelegate(ReferenceProjectItem reference);
+		delegate void AddReferenceDelegate(ReferenceProjectItem reference, bool updateInterDependencies);
 		
-		void AddReference(ReferenceProjectItem reference)
+		void AddReference(ReferenceProjectItem reference, bool updateInterDependencies)
 		{
 			try {
 				IProjectContent referencedContent = ProjectContentRegistry.GetProjectContentForReference(reference);
 				if (referencedContent != null) {
 					ReferencedContents.Add(referencedContent);
 				}
-				if (referencedContent is ReflectionProjectContent) {
-					((ReflectionProjectContent)referencedContent).InitializeReferences();
+				if (updateInterDependencies) {
+					UpdateReferenceInterDependencies();
 				}
 			} catch (Exception e) {
 				MessageService.ShowError(e);
@@ -87,7 +97,7 @@ namespace ICSharpCode.Core
 			if (e.Project != project) return;
 			ReferenceProjectItem reference = e.ProjectItem as ReferenceProjectItem;
 			if (reference != null) {
-				new AddReferenceDelegate(AddReference).BeginInvoke(reference, null, null);
+				new AddReferenceDelegate(AddReference).BeginInvoke(reference, true, null, null);
 			}
 			if (e.ProjectItem.ItemType == ItemType.Import) {
 				UpdateDefaultImports(project.Items.ToArray());
