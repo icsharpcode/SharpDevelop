@@ -148,8 +148,10 @@ namespace ICSharpCode.SharpDevelop
 			try {
 				#if DEBUG
 				if (!Debugger.IsAttached) {
+					#endif
 					Application.ThreadException += ShowErrorBox;
 					AppDomain.CurrentDomain.UnhandledException += ShowErrorBox;
+					#if DEBUG
 				}
 				#else
 				MessageService.CustomErrorReporter = ShowErrorBox;

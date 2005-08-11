@@ -36,7 +36,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				return defaultValue;
 			}
 			TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
+			try {
 			return (T)c.ConvertFromInvariantString(properties[property]);
+			} catch (FormatException ex) {
+				ICSharpCode.Core.LoggingService.Warn("Cannot get property " + property, ex);
+				return defaultValue;
+			}
 		}
 		
 		public void Set<T>(string property, T defaultValue, T value)

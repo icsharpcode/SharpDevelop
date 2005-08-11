@@ -922,7 +922,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				members.AddRange(t.GetFields());
 				members.AddRange(t.GetEvents());
 				members.AddRange(t.GetProperties());
-				members.AddRange(t.GetIndexers());
 				foreach (IMember m in members) {
 					if ((m.IsStatic || !inStatic) && m.IsAccessible(callingClass, true)) {
 						result.Add(m);
