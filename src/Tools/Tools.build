@@ -13,11 +13,13 @@
 	</ItemGroup>
 	
 	<Target Name="Build">
+		<!--
 		<Copy SourceFiles="@(NDocFiles)" DestinationFolder="..\..\bin\Tools\NDoc"/>
 		<Copy SourceFiles="@(WixFiles)" DestinationFolder="..\..\bin\Tools\Wix"/>
 		<Copy SourceFiles="@(WixCaFiles)" DestinationFolder="..\..\bin\Tools\Wix\ca"/>
 		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc"/>
 		<Copy SourceFiles="@(WixLibFiles)" DestinationFolder="..\..\bin\Tools\Wix\lib"/>
+		-->
 		<Copy SourceFiles="@(MbUnitFiles)" DestinationFolder="..\..\bin\Tools\MbUnit"/>
 		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools"/>
 		
@@ -39,7 +41,14 @@
 	
 	<Target Name="Rebuild" DependsOnTargets="Clean;Build"/>
 	
-	<Target Name="Publish" DependsOnTargets="Build"/>
+	<ItemGroup>
+		<PublishHelperProject Include="SVNChangeLogToXml\SVNChangeLogToXml.csproj" />
+	</ItemGroup>
+	
+	<Target Name="Publish" DependsOnTargets="Build">
+		<MSBuild Projects="@(PublishHelperProject)" Targets="Build"/>
+		<Exec Command="SVNChangelogToXml.exe" WorkingDirectory = "SVNChangeLogToXml\bin\Release" Timeout = "60000" IgnoreExitCode = "false"/>
+	</Target>
 	
 	<Target Name="Clean">
 		<Exec Command="unregister.bat" WorkingDirectory="..\..\bin\setup\help" IgnoreExitCode = "true" Condition = "Exists('..\..\bin\setup\help\unregister.bat')"/>

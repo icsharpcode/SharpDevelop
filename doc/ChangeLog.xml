@@ -1,13 +1,422 @@
-<?xml version="1.0" encoding="utf-8"?><ChangeLog project="SharpDevelop"><Change author="Mike Krueger" date="11/21/2004">Added 'test' build target. This target runs all unit tests for #Develop. Worked on assembly analyser unit tests.</Change><Change author="Mike Krueger" date="11/21/2004">Updated to nant 0.85 nightly build. (mostly because of the ilasm task).</Change><Change author="Mike Krueger" date="11/21/2004">Fixed bug in text editor option panel.</Change><Change author="Mike Krueger" date="11/21/2004">Shift+Esc hides all pads. Status &amp; Toolbar can be turned off.</Change><Change author="Mike Krueger" date="11/21/2004">Added TreeListView library.</Change><Change author="Mike Krueger" date="11/21/2004">Changed NANT buildfile: C# binding now refrences NRefactory.</Change><Change author="Andrea Paatz" date="11/21/2004">added missing file</Change><Change author="Mike Krueger" date="11/21/2004">Added debugger from david. Removed ICSharpCode.Debugger.</Change><Change author="Andrea Paatz" date="11/21/2004">C# Binding now uses NRefactory. NRefactory still needes support for regions for the folding.</Change><Change author="Mike Krueger" date="11/21/2004">Spaces &amp; Tabs should now draw correctly with a background marker set.</Change><Change author="Daniel Grunwald" date="11/19/2004">PropertyService.DataDirectory can now be set in the startup application.</Change><Change author="Mike Krueger" date="11/17/2004">Made parts of the docu from C# external.</Change><Change author="Daniel Grunwald" date="11/17/2004">Added PropertyObjects to StringParserService.
-Added PropertyLink to PropertyService.
-Fixed bug in DefaultFileService.OpenFile: Assert failed for urls.
-</Change><Change author="Daniel Grunwald" date="11/17/2004">Properties are now also saved using TypeConverter</Change><Change author="Daniel Grunwald" date="11/17/2004">PropertySystem now uses TypeConverter
-Startup application can now override the default name for the property file.
-Corsavy now uses the filename 'CorsavyProperties.xml'</Change><Change author="Daniel Grunwald" date="11/17/2004">All core exceptions now are subclasses of CoreException
-Fixed core xml documentation (&lt;code&gt; is only for multiline codeblocks)</Change><Change author="Ivo Kovacka" date="11/16/2004">1.Check whether to load referenced assemblies.
-This change shouldn't affect #D at all. The property
-is set to true. The reason of change is ETM.
-2.Set Position of the ProgressBar to the end of the panel</Change><Change author="Roman Taranchenko" date="11/15/2004">Fixed linker invoking bug
-</Change><Change author="Daniel Grunwald" date="11/14/2004">Fixed bug in project converter: converted project has same project type as source project
-Fixed bug SharpRefactory (NRefactory is not affected).
-These are the same bugfixes as in Fidalgo rev. 1713</Change><Change author="Mike Krueger" date="11/14/2004">Replaced some String.Concat calls with '+' (they're compiled to the same IL).</Change><Change author="Andrea Paatz" date="11/14/2004">Ported NRefactory to .NET 1.1</Change><Change author="Mike Krueger" date="11/14/2004">Renamed IDialogPanelDescriptor.DialogPanelDescriptors to ChildDialogPanelDescriptors.</Change><Change author="Mike Krueger" date="11/13/2004">Added forms designer bugfix from forum user AaKaa.</Change><Change author="Mike Krueger" date="11/12/2004">Debugger implements the dispose pattern and as far as I see I clean up everything. But the SymbolReader is still locking the .pdb file.</Change><Change author="Mike Krueger" date="11/12/2004">Debugger Position is now visible again.</Change><Change author="Mike Krueger" date="11/12/2004">Added namespace lookup bugfix from #D Forum user Lelli</Change><Change author="Mike Krueger" date="11/12/2004">Fixed some debugger issues.</Change><Change author="Mike Krueger" date="11/12/2004">'language' of the method (CallStack) is now working.</Change><Change author="Mike Krueger" date="11/12/2004">Removed more uneccessary stuff.</Change><Change author="Mike Krueger" date="11/12/2004">Removed dll.</Change><Change author="Mike Krueger" date="11/12/2004">Moved CallStackPad to #Dev main. (It's easier for now to have most debugger pads in the editor but in the long run it's better to have pads that can be 'shared'.)</Change><Change author="Mike Krueger" date="11/12/2004">Worked on CallStack.</Change><Change author="Mike Krueger" date="11/11/2004">Worked on the debugger (local variables).</Change><Change author="Mike Krueger" date="11/11/2004">Breakpoints, Show Postion and Stepping (but not very good) is now working :)</Change><Change author="Mike Krueger" date="11/11/2004">Debugger position is shown again (Debugger.Break()). Break from Breakpoint aren't shown because I'm seeming not to get the Breakpoint event ???</Change><Change author="Mike Krueger" date="11/11/2004">added files.</Change><Change author="Mike Krueger" date="11/11/2004">Fixed buildfile. breakpoints in the debugger are now working (don't except to see the 'current' position).</Change><Change author="Mike Krueger" date="11/11/2004">Debugger: It's now possible to retrieve the currrent position in source code from a threa :) (it's highlighted too - breakpoints still not work but Debugger.Break() calls do the job too).</Change><Change author="Mike Krueger" date="11/11/2004">Worked on the debugger (currently I've the problem that I don't get a valid IUnmanagedSymReader object)</Change><Change author="Mike Krueger" date="11/11/2004">Fixed stupid DefaultParserService 'optimization'.</Change><Change author="Mike Krueger" date="11/10/2004">fixed bug in buildfile. set version to 2.0.0</Change><Change author="Mike Krueger" date="11/10/2004">made trunk tree</Change><Change author="Mike Krueger" date="11/10/2004">Initial import.</Change></ChangeLog>
+﻿<ChangeLog project="SharpDevelop">
+  <Change author="Daniel Grunwald" date="08/11/2005">Fixed two small code completion bugs:
+- code completion does not show members of base class when some interface of the class does not exist
+- when referenced assemblies had inter-dependencies (Assembly A depends on B), code completion on properties in A that used a type in B would not work.
+ReflectionParameter: Read "ref/out/params" modifier correctly.
+ReflectionProjectContent: Use ReflectionLoad also for GAC assemblies specified by partial name.</Change>
+  <Change author="Mathias Simmack" date="08/10/2005">minor fixes (MSDN is the default search page again) and cosmetic (printer picture for ContextMenuStrip in TocPad.cs)</Change>
+  <Change author="Daniel Grunwald" date="08/10/2005">Improved MbUnit addin.</Change>
+  <Change author="Daniel Grunwald" date="08/10/2005">Add MbUnit and MbUnit-addin.</Change>
+  <Change author="Daniel Grunwald" date="08/10/2005">When loading referenced assemblies for code completion that have missing dependencies, try to find best available version.
+For example, when using a library compiled against .NET 1.0; but only .NET 2.0 is installed, redirect the ReflectionOnlyAssemblyResolve event to load the .NET 2.0 version of System.dll instead.</Change>
+  <Change author="Daniel Grunwald" date="08/09/2005">Use LoggingService instead of Console.WriteLine.
+Fixed a little bug in attribute completion.</Change>
+  <Change author="Daniel Grunwald" date="08/08/2005">Update to log4net 1.2.9.0 and remove some parts of log4net (compiled documentation, NAnt, builds for mono) to reduce download size of repository.</Change>
+  <Change author="Daniel Grunwald" date="08/08/2005">Use .Net SDK help ("MS.NETFramework.v20.en") as default collection displayed in help addin.</Change>
+  <Change author="Daniel Grunwald" date="08/08/2005">Copy GacUtil2 to tools directory.
+Small bugfix for code completion and ErrorList.</Change>
+  <Change author="Daniel Grunwald" date="08/08/2005">Cut/Copy/Paste menu+toolbar commands now also work for normal text boxes and combo boxes (e.g. on the project's property pages).</Change>
+  <Change author="Daniel Grunwald" date="08/08/2005">Fixed SD2-397: Empty Project Scout has visually enabled (not grayed out) icons.</Change>
+  <Change author="Daniel Grunwald" date="08/08/2005">Fixed SD2-374: Compiler warnings during debugging.</Change>
+  <Change author="Daniel Grunwald" date="08/08/2005">Fixed SD2-405: Invisible menu item can be run by shortcut.
+Fixed SD2-376: Debugger: Menu consistency.
+Added caching to SearchClassReturnType (dramatically improves code completion performance in classes that have many base types like XmlView).</Change>
+  <Change author="Christoph Wille" date="08/08/2005">Setup message changed</Change>
+  <Change author="Christoph Wille" date="08/08/2005">Updated to v2.0 and added a 2.0 blurb to the Intro</Change>
+  <Change author="Daniel Grunwald" date="08/07/2005">Rename configuration folder from .ICSharpCode\Corsavy to .ICSharpCode\SharpDevelop2</Change>
+  <Change author="Daniel Grunwald" date="08/07/2005">Remove old help. Deactivate run of help register tool.</Change>
+  <Change author="Daniel Grunwald" date="08/07/2005">Fixed SD2-398: Add support for nullables to the C# parser.</Change>
+  <Change author="Daniel Grunwald" date="08/07/2005">Code completion improvements.
+Made forms designer capable of loading classes that don't use fully qualified names for the fields.
+Added solution that includes unit tests.</Change>
+  <Change author="Daniel Grunwald" date="08/07/2005">Fixed SD2-401: Using aliases for classes.
+Usings like "using StringCollection = System.Collections.Generic.List&lt;string&gt;" are now valid and code completion works correctly for them.</Change>
+  <Change author="Daniel Grunwald" date="08/06/2005">Fixed SD2-403: Find references does not find indexer calls.</Change>
+  <Change author="Daniel Grunwald" date="08/06/2005">Add SharpDevelop help / help register application.</Change>
+  <Change author="Daniel Grunwald" date="08/06/2005">Fixed compile errors.</Change>
+  <Change author="Daniel Grunwald" date="08/06/2005">Update default layouts. Fixed help document highlighting.</Change>
+  <Change author="Daniel Grunwald" date="08/06/2005">Made HtmlHelp2 addin use the normal search results pad.</Change>
+  <Change author="Daniel Grunwald" date="08/06/2005">Move XmlEditor files in Src/Resources subdirectories.</Change>
+  <Change author="Daniel Grunwald" date="08/06/2005">Fixed SD2-293 (Creating any C++ Project fails with a NullReferenceException).
+Fixed exception when quickly closing multiple files during the initial parser run.</Change>
+  <Change author="Daniel Grunwald" date="08/06/2005">Improved lazy-loading.</Change>
+  <Change author="Daniel Grunwald" date="08/06/2005">Made UpdateAssemblyInfo use NSvn instead of svn.exe.</Change>
+  <Change author="Daniel Grunwald" date="08/05/2005">Remove some Console.WriteLine() calls; catch some exceptions which previously were ignored silently or just dumped to the console.</Change>
+  <Change author="Daniel Grunwald" date="08/05/2005">Update XmlEditor file headers. Display browser's status text in status bar.</Change>
+  <Change author="Daniel Grunwald" date="08/05/2005">Critical bug fixed (MenuCommands didn't work)</Change>
+  <Change author="Daniel Grunwald" date="08/05/2005">Made Help addin use the default browser view content. (moved advanced toolbar from help addin to Base)</Change>
+  <Change author="Daniel Grunwald" date="08/05/2005">Added HtmlHelp2 addin.</Change>
+  <Change author="Mike Krüger" date="08/05/2005">File tabstrip context menu now working again. (Patched docking suite. Take care on dockin library updates.)</Change>
+  <Change author="Daniel Grunwald" date="08/04/2005">Included XmlEditor addin.</Change>
+  <Change author="Daniel Grunwald" date="08/04/2005">Added XmlEditor addin.
+Fixed some bugs.</Change>
+  <Change author="Daniel Grunwald" date="08/04/2005">Fixed SD2-395: Deleting a file from Project Scout causes NSvn.Core.NotVersionControlled Exception.</Change>
+  <Change author="Andrea Paatz" date="08/04/2005">Worked on Boyer-Moore search strategy</Change>
+  <Change author="Daniel Grunwald" date="08/04/2005">Added ILAsmBinding and ICSharpCode.Build.Tasks (library for additional MSBuild tasks like ILAsm)</Change>
+  <Change author="Mike Krüger" date="08/04/2005">Worked on forms designer.</Change>
+  <Change author="Daniel Grunwald" date="08/03/2005">Added checks for invalid filenames. (SD2-394)</Change>
+  <Change author="Daniel Grunwald" date="08/03/2005">Fixed SD2-384 and SD2-386.</Change>
+  <Change author="Andrea Paatz" date="08/03/2005">Finished the Lexer position test, please add some more VB test if you know the language better than me :)</Change>
+  <Change author="Daniel Grunwald" date="08/03/2005">Use translation database for code completion options panel and "refactoring bookmark".</Change>
+  <Change author="Andrea Paatz" date="08/03/2005">worked on VB Positions, added some C# tests</Change>
+  <Change author="Andrea Paatz" date="08/03/2005">removed one more Console.WriteLine</Change>
+  <Change author="Andrea Paatz" date="08/03/2005">worked on Positions and removed some debug Console.WriteLine</Change>
+  <Change author="Mike Krüger" date="08/03/2005">Worked on VB.NET Forms Designer.'</Change>
+  <Change author="Daniel Grunwald" date="08/03/2005">Fixed SD2-388 and SD2-389.</Change>
+  <Change author="Daniel Grunwald" date="08/03/2005">Fixed SD2-396: Opening a Visual Studio Solution with #D causes Error "... is not a valid solution file".</Change>
+  <Change author="Daniel Grunwald" date="08/02/2005">Fixed SD2-379 (Exception dialog box).
+Fixed bug with empty catch statements.</Change>
+  <Change author="Mike Krüger" date="08/02/2005">worked on translation.</Change>
+  <Change author="Mike Krüger" date="08/02/2005">worked on main menu translation.</Change>
+  <Change author="Andrea Paatz" date="07/31/2005">tryed to implement a BoyerMoore algorithm, commented out, only copied from a web site</Change>
+  <Change author="Andrea Paatz" date="07/31/2005">added some LexerPasotionTest for VB too. The Positions after a \n in VB not working in the Moment, kommented test out wich are not working...</Change>
+  <Change author="Mike Krüger" date="07/31/2005">Fixed text editor caret positioning bug. (occured with fonts that had different font withs for bold and plain chars)</Change>
+  <Change author="Andrea Paatz" date="07/31/2005">refactoring of the lexer is now ready: reader, line and col are now private in the AbstractLexer, the derived classes do not need to handle positioning stuff</Change>
+  <Change author="Mike Krüger" date="07/31/2005">Fixed option update bug.</Change>
+  <Change author="Andrea Paatz" date="07/31/2005">C# lexer ready, begin with vb lexer.</Change>
+  <Change author="Mike Krüger" date="07/31/2005">worked on forms designer loading.</Change>
+  <Change author="Markus Palme" date="07/31/2005">fixed wrong test</Change>
+  <Change author="Mike Krüger" date="07/31/2005">worked on codedom ast codegenerator. codedom code generation is now more in line with the .net codedom formsdesigner output.</Change>
+  <Change author="Markus Palme" date="07/31/2005">inserted operator declartions into DOM. fixed locations of operator declarations, this enabled folding for them</Change>
+  <Change author="Andrea Paatz" date="07/31/2005">added some Token position tests and refactored the c# Lexer. Want to put all line and col management in the AbstractLexer. BV Lexer needs to be updated to use the new ReaderRead and ReaderPeek functions. line and col should be private and Line and Col readonly.</Change>
+  <Change author="Markus Palme" date="07/31/2005">fixed exception when referenced project that was thrown when a referenced project wasn't part of the open project</Change>
+  <Change author="Markus Palme" date="07/31/2005">replace and replace all works</Change>
+  <Change author="Markus Palme" date="07/31/2005">unit tests for vb.net type level declarations</Change>
+  <Change author="Markus Palme" date="07/30/2005">assign correct document iterator</Change>
+  <Change author="Mike Krüger" date="07/30/2005">taken out test assemblies from main project.</Change>
+  <Change author="Mike Krüger" date="07/30/2005">nunit pad now working.</Change>
+  <Change author="Andrea Paatz" date="07/30/2005">Start to write PositionTest for the Lexer and added the NRefactoryTest Project to the SD combine</Change>
+  <Change author="Mike Krüger" date="07/30/2005">Errorlist labels are now updated.</Change>
+  <Change author="Markus Palme" date="07/30/2005">fixed positions</Change>
+  <Change author="Markus Palme" date="07/30/2005">correct positions of type members with modifiers</Change>
+  <Change author="Andrea Paatz" date="07/30/2005">go to definition now works for parameters too</Change>
+  <Change author="Markus Palme" date="07/30/2005">work on custom events</Change>
+  <Change author="Mike Krüger" date="07/30/2005">Worked on bookmarks</Change>
+  <Change author="Markus Palme" date="07/30/2005">added operator overload support to vb grammar</Change>
+  <Change author="Mike Krüger" date="07/30/2005">Fixed bug in ActiveContent property in SdiLayout. (Bug affected the functionalty of cut/copy/paste. updated the sidebar control library to .NET 2.</Change>
+  <Change author="Mike Krüger" date="07/30/2005">Fixed CodeDOM output bug which prevented the forms desinger from working.</Change>
+  <Change author="Daniel Grunwald" date="07/28/2005">Keyword completion is not activated in comments anymore.
+VB lexer now reads documentation comments.
+Resolver now distinguishes between Type and Default context -&gt; property declarations like "public Size Size {" resolve properly (TypeResolveResult for the first Size, MixedResolveResult for the second)</Change>
+  <Change author="Daniel Grunwald" date="07/27/2005">Small bug fixes.</Change>
+  <Change author="David Srbecký" date="07/27/2005">Bugfix - Arguments of static functions</Change>
+  <Change author="Daniel Grunwald" date="07/27/2005">Improved prjx imported.
+Added importer for VS.NET [2003] projects.</Change>
+  <Change author="Markus Palme" date="07/26/2005">correct test</Change>
+  <Change author="Markus Palme" date="07/26/2005">custom events support</Change>
+  <Change author="David Srbecký" date="07/26/2005">Fixed function switching bug, debugger window acivated if debugee pauses</Change>
+  <Change author="Daniel Grunwald" date="07/26/2005">Fixed some resolver bugs.
+Added "bookmark" for classes.
+Added support for finding references to classes and renaming classes.
+Renamed the Erbauer/Auswerter classes.</Change>
+  <Change author="David Srbecký" date="07/26/2005">Added some error messages, worked on function and thread switching</Change>
+  <Change author="David Srbecký" date="07/26/2005">Reworked debugger state control</Change>
+  <Change author="David Srbecký" date="07/25/2005">Bugfixes - Local variables on thread without symbols; Can't click on function without symbols; Added CurrentFunction to NDebugger</Change>
+  <Change author="Daniel Grunwald" date="07/25/2005">Ported some fixes for unit test mode from Fidalgo rev. 2014.</Change>
+  <Change author="Daniel Grunwald" date="07/25/2005">Rename Erbauer/Auswerter files.</Change>
+  <Change author="David Srbecký" date="07/25/2005">Bugfixes - Thread and Callstack switching; unmanaged functions refused</Change>
+  <Change author="David Srbecký" date="07/25/2005">Bugfixes - no CurrentFunction in Threads pad handled, Method signature blob ignored now, dereference fail handled</Change>
+  <Change author="David Srbecký" date="07/25/2005">Prototype of SetIP</Change>
+  <Change author="Daniel Grunwald" date="07/25/2005">Rename Erbauer/Auswerter directories.</Change>
+  <Change author="Daniel Grunwald" date="07/25/2005">When typing a variable declaration like "List&lt;string&gt; list = new ***", the new-completion popup preselects "List&lt;string&gt;".</Change>
+  <Change author="David Srbecký" date="07/25/2005">Exception interception</Change>
+  <Change author="David Srbecký" date="07/25/2005">Exception dialog uses TextBox and is bit more informative</Change>
+  <Change author="Daniel Grunwald" date="07/25/2005">Improved support for partial classes.
+Improved C# new completion.</Change>
+  <Change author="David Srbecký" date="07/24/2005">Bugfixing, handled exceptions handled faster</Change>
+  <Change author="Daniel Grunwald" date="07/24/2005">Fixed C# parser (added support for generic methods inside interfaces).
+Changed CurrentLineBookmark to be invisible in BookmarkPad and not saved.</Change>
+  <Change author="David Srbecký" date="07/24/2005">CurrentLineBookmark does not use whole line, 'Debug' layout used during debugging</Change>
+  <Change author="Daniel Grunwald" date="07/24/2005">Fixed parser crash introduced in last revision.
+Made debugger addin lazy-loading.
+Fixed bug in MarkerStrategy causing parts of removed markers still being rendered.</Change>
+  <Change author="David Srbecký" date="07/24/2005">IsProcessRunningd and IsDebugging replaced with IsCurrentProcessSafeForInspection</Change>
+  <Change author="David Srbecký" date="07/24/2005">Removed IsProcessRunningChanged and IsDebuggingChanged from NDebugger</Change>
+  <Change author="Daniel Grunwald" date="07/24/2005">Fixed code completion bugs regarding "global::"/"Global".</Change>
+  <Change author="David Srbecký" date="07/24/2005">Worked on stepping (sometimes it was necessary to step more times)</Change>
+  <Change author="Daniel Grunwald" date="07/24/2005">Fixed some code completion bugs.
+Reactivated FiletypeRegisterer addin.
+Added HandleConditions property to IErbauer.</Change>
+  <Change author="Markus Palme" date="07/23/2005">added vb.net completion after several expressions and keywords. added insight for vb.net</Change>
+  <Change author="David Srbecký" date="07/23/2005">Updating my headers</Change>
+  <Change author="David Srbecký" date="07/23/2005">Worked on Local variables pad</Change>
+  <Change author="Daniel Grunwald" date="07/23/2005">.csproj/.vbproj files can now be opened directly (.sln is automatically created)
+Files from command line arguments are opened instead of the start page.
+Made GetWorkbench() in ParserUpdateThread thread-safe. (fixes NullReferenceException when closing files while the parser thread is running).</Change>
+  <Change author="Daniel Grunwald" date="07/23/2005">Fixed bug in ReflectionOnly assembly loading.
+Fixed crash when a pad could not be loaded.
+Added publisher policy.</Change>
+  <Change author="Markus Palme" date="07/22/2005">added vb.net keyword completition. todo: add completition for special statements, show insight</Change>
+  <Change author="Daniel Grunwald" date="07/22/2005" />
+  <Change author="Daniel Grunwald" date="07/22/2005">Applied new header to all source files.</Change>
+  <Change author="Daniel Grunwald" date="07/22/2005">Fixed solution saving (the order of the solution folders would reverse every time the solution is saved).
+Added tool to set the file headers.</Change>
+  <Change author="Daniel Grunwald" date="07/22/2005">Added generic methods to VB.Net grammar.</Change>
+  <Change author="Daniel Grunwald" date="07/22/2005">Added panel with options for code completion.
+Fixed bug in CodeCompletionListView (when entering a name that did not exist in the list, the ListView didn't remove the current selection but selected the first entry).
+Made MessageService.ShowError use the ExceptionBox in release builds.
+Made ExceptionBox link to the mailing list instead of the bugs forum.</Change>
+  <Change author="Markus Palme" date="07/21/2005">added 'open solution' button to main toolbar (common task)</Change>
+  <Change author="Daniel Grunwald" date="07/21/2005">Code completion remembers frequently used items and prefers them in SelectItemWithStart().</Change>
+  <Change author="Daniel Grunwald" date="07/21/2005">Added code completion on type parameters in generic classes.</Change>
+  <Change author="Daniel Grunwald" date="07/21/2005">Added tool to put revision number into AssemblyInfo files.
+Included revision number in splash screen.
+Made ReflectionClass load custom attributes.</Change>
+  <Change author="David Srbecký" date="07/20/2005">Some error checking, Debugger.Interop update</Change>
+  <Change author="Daniel Grunwald" date="07/20/2005">Added code completion for attributes.</Change>
+  <Change author="Daniel Grunwald" date="07/20/2005">Added support for My.Forms.
+Added support for ImportProjectItems.
+Reworked NRefactory to use List&lt;AttributeSection&gt; instead of ArrayList for attributes and List&lt;ParameterDeclarationExpression&gt; instead of ArrayList for parameter declarations.
+Added Ctrl+'.' debug code completion.</Change>
+  <Change author="David Srbecký" date="07/19/2005">A little modification of the hack</Change>
+  <Change author="David Srbecký" date="07/19/2005">Really nasty hack to force release of debug symbols</Change>
+  <Change author="David Srbecký" date="07/19/2005">WindowsDebugger cleaned up</Change>
+  <Change author="David Srbecký" date="07/19/2005">Worked on breakpoints</Change>
+  <Change author="Daniel Grunwald" date="07/19/2005">Added support for code completion on partial classes.</Change>
+  <Change author="David Srbecký" date="07/19/2005">Reworked DebuggerService, IDebugger, DefaultDebugger and Debugger menu</Change>
+  <Change author="Daniel Grunwald" date="07/19/2005">Added code completion for the "My" namespace.</Change>
+  <Change author="Daniel Grunwald" date="07/19/2005">Added generics support to the VB.Net parser.</Change>
+  <Change author="David Srbecký" date="07/19/2005">Removed old code from DebuggerService</Change>
+  <Change author="David Srbecký" date="07/19/2005">Replacing EventHandler with generics EventHandler</Change>
+  <Change author="David Srbecký" date="07/19/2005">All events inherit from DebuggerEventArgs</Change>
+  <Change author="Daniel Grunwald" date="07/19/2005">Fixed some code completion bugs.</Change>
+  <Change author="Daniel Grunwald" date="07/18/2005">Worked on code completion.</Change>
+  <Change author="David Srbecký" date="07/18/2005">CurrentProcess, CurrentThread and CurrentFunction set in ManagedCallback</Change>
+  <Change author="David Srbecký" date="07/18/2005">System.Diagnostics not used in debugger anymore</Change>
+  <Change author="Daniel Grunwald" date="07/18/2005">Added code completion after keywords like 'using', 'new', 'as', 'is', ...</Change>
+  <Change author="David Srbecký" date="07/18/2005">Some custom exceptions removed</Change>
+  <Change author="David Srbecký" date="07/18/2005">Added Process collection</Change>
+  <Change author="David Srbecký" date="07/17/2005">Handling of CurrentThread and CurrentFunction changed</Change>
+  <Change author="Daniel Grunwald" date="07/17/2005">Improved code completion.</Change>
+  <Change author="David Srbecký" date="07/17/2005">Some call forwarders removed</Change>
+  <Change author="David Srbecký" date="07/17/2005">Created public constructors for SourcecodeSegment, changes in Breakpoint.cs</Change>
+  <Change author="David Srbecký" date="07/17/2005">Debugger lazy loading bug fixed</Change>
+  <Change author="David Srbecký" date="07/17/2005">Function.cs refactored to use MetaData wrapper</Change>
+  <Change author="David Srbecký" date="07/17/2005">Extended MetaData wrapper</Change>
+  <Change author="David Srbecký" date="07/17/2005">ObjectVariable.cs refactored to use MetaData wrapper</Change>
+  <Change author="David Srbecký" date="07/17/2005">Started MetaData wrapper</Change>
+  <Change author="David Srbecký" date="07/16/2005">Debugger lazy loading</Change>
+  <Change author="David Srbecký" date="07/16/2005">Continue postponed to OnDebuggingPaused()</Change>
+  <Change author="David Srbecký" date="07/16/2005">Finally found a walkaround for LocalVarPad visual issue</Change>
+  <Change author="Daniel Grunwald" date="07/16/2005">Small improvements.</Change>
+  <Change author="Daniel Grunwald" date="07/16/2005">Improved C# &lt;-&gt; VB.Net conversion.</Change>
+  <Change author="David Srbecký" date="07/16/2005">Refactoring function.cs</Change>
+  <Change author="David Srbecký" date="07/16/2005">A bit work on properties</Change>
+  <Change author="Daniel Grunwald" date="07/16/2005">Parser now inserts documentation into the AST.</Change>
+  <Change author="Markus Palme" date="07/15/2005">ported path from fidalgo revision 2003</Change>
+  <Change author="Daniel Grunwald" date="07/15/2005">Fixed C# code completion when an expression had two meanings (eg. type and property: 'Size' in classes deriving from Form)</Change>
+  <Change author="Daniel Grunwald" date="07/15/2005">Fixed some C# &lt;-&gt; VB conversion bugs.</Change>
+  <Change author="Daniel Grunwald" date="07/15/2005">Fixed ctrl-space code completion.</Change>
+  <Change author="Daniel Grunwald" date="07/15/2005">C# &lt;-&gt; VB.Net converters now convert comments.</Change>
+  <Change author="Daniel Grunwald" date="07/15/2005">TextEditorControl now auto-detects the file encoding. When saving, the file is saved with the old encoding.</Change>
+  <Change author="David Srbecký" date="07/14/2005">Added MyProxy, preparing NDebugger for MTA</Change>
+  <Change author="David Srbecký" date="07/13/2005">Playing with Remoting 2</Change>
+  <Change author="David Srbecký" date="07/12/2005">Playing with Remoting</Change>
+  <Change author="David Srbecký" date="07/11/2005">Added custom Remoting sinks</Change>
+  <Change author="David Srbecký" date="07/11/2005">Debugger made less static 2</Change>
+  <Change author="David Srbecký" date="07/11/2005">Debugger made less static</Change>
+  <Change author="David Srbecký" date="07/11/2005">Removed length limitation on unmanaged strings</Change>
+  <Change author="Markus Palme" date="07/03/2005">improved vb.net indentation (http://icsharpcode.net/OpenSource/SD/Forum/topic.asp?TOPIC_ID=9042)</Change>
+  <Change author="Daniel Grunwald" date="06/25/2005">Fixed code completion problems when one referenced assembly has references to other assemblies.</Change>
+  <Change author="Daniel Grunwald" date="06/25/2005">Worked on SubversionAddIn.</Change>
+  <Change author="Daniel Grunwald" date="06/25/2005">Move SubversionAddIn back (doesn't solve my problem with MSBuild)</Change>
+  <Change author="Daniel Grunwald" date="06/25/2005">Moved SubversionAddin.</Change>
+  <Change author="Daniel Grunwald" date="06/25/2005">Added &lt;Include&gt; erbauer.
+Worked on SubversionAddIn.</Change>
+  <Change author="Daniel Grunwald" date="06/24/2005">Worked on SubversionAddIn.</Change>
+  <Change author="Daniel Grunwald" date="06/24/2005">Fixed code completion bugs with inner classes.
+Modified SubversionAddIn to compile against Corsavy.</Change>
+  <Change author="Daniel Grunwald" date="06/23/2005">Fixed some issues with code completion and the class browser.</Change>
+  <Change author="Daniel Grunwald" date="06/22/2005">Fixed some ClassBrowser bugs. Included splashscreen from Korona.</Change>
+  <Change author="Daniel Grunwald" date="06/22/2005">Fixed code completion in files containing character literals like '\xFF'.</Change>
+  <Change author="Daniel Grunwald" date="06/22/2005">QuickClassBrowser performance fix.</Change>
+  <Change author="Daniel Grunwald" date="06/11/2005">Fixed some small bugs.</Change>
+  <Change author="Daniel Grunwald" date="05/27/2005">Fixed code completion for generic methods.</Change>
+  <Change author="Daniel Grunwald" date="05/23/2005">Fixed C# ExpressionFinder to support generics.
+Implemented field references on generic classes in c# parser ('SomeGenericClass&lt;string&gt;.StaticProperty = "Beispiel";')
+Fixed form designer code generic (use "this" instead of class name).</Change>
+  <Change author="Daniel Grunwald" date="05/22/2005">Added invocation of generic methods to c# parser.</Change>
+  <Change author="Daniel Grunwald" date="05/21/2005">Added anonymous methods to c# parser.</Change>
+  <Change author="Daniel Grunwald" date="05/21/2005">Fixed code completion bugs regarding generic methods.</Change>
+  <Change author="Daniel Grunwald" date="05/21/2005">Fixed generic class and method declarations in C# parser.</Change>
+  <Change author="Mathias Simmack" date="05/20/2005">'FormDesigner.addin'patches to access the Customize dialog (I needed some of the new .NET 2.0 controls; these *Strip* things :o))</Change>
+  <Change author="Daniel Grunwald" date="05/19/2005">Renamed FileUtility.IsEqualFile to FileUtility.IsEqualFileName (this was a successful test of 'rename').</Change>
+  <Change author="Daniel Grunwald" date="05/19/2005">Implemented "rename" refactoring.</Change>
+  <Change author="Daniel Grunwald" date="05/19/2005">Implemented "Find references".</Change>
+  <Change author="Daniel Grunwald" date="05/18/2005">Added "find overrides".</Change>
+  <Change author="Daniel Grunwald" date="05/17/2005">Added constructor overload lookup.</Change>
+  <Change author="Daniel Grunwald" date="05/17/2005">IconMargin now shows icons for methods and properties that can be clicked to execute actions on the properties/methods.
+Currently, only "go to base class" is available for overridden methods, which jumps to the method that was overridden.</Change>
+  <Change author="Daniel Grunwald" date="05/16/2005">Bookmarks (and breakpoints) are saved in the project preferences.</Change>
+  <Change author="Daniel Grunwald" date="05/16/2005" />
+  <Change author="Daniel Grunwald" date="05/16/2005">Breakpoints are now a special kind of bookmarks.</Change>
+  <Change author="Daniel Grunwald" date="05/11/2005">Added xml documentation cache. Xml documentation files with more than 300 entries are now converted into a binary format that does not require to be hold in memory to look up the documentation.</Change>
+  <Change author="Daniel Grunwald" date="05/11/2005">Even more performance improvements for the LoadSolutionProjectsThread. Fixed SkipCurrentBlock() in C# lexer.</Change>
+  <Change author="Daniel Grunwald" date="05/10/2005">Improved performance of parser run after opening a solution (really big improvement!!).</Change>
+  <Change author="Daniel Grunwald" date="05/09/2005">Fixed VB code completion. Fixed method overload lookup.</Change>
+  <Change author="Daniel Grunwald" date="05/09/2005">Resolver is now using ExtractMethod to parse only the current method to get local variables.
+This removes the need to save the NRefactory-CompilationUnit in the Tag property of the AST-CompilationUnit.</Change>
+  <Change author="Daniel Grunwald" date="05/09/2005">Fixed assertion when parsing method declaration with an unnamed parameter (when the user is still typing): use name '?' instead.
+Double-Clicking on the definition view pad now jumps to the location clicked on in the main view.</Change>
+  <Change author="Daniel Grunwald" date="05/09/2005">Fixed bug in C# parser that could generate null reference as method invocation argument (+added unit tests).
+Fixed bug regarding FileSystemWatcher to prevent crash when file was changed externally.</Change>
+  <Change author="Daniel Grunwald" date="05/08/2005">Fixed string splitting.</Change>
+  <Change author="Daniel Grunwald" date="05/08/2005">Implemented ExtendedWebBrowser to get the NewWindow event.</Change>
+  <Change author="Daniel Grunwald" date="05/08/2005">CurrentAmbience now uses the ambience of CurrentProject.</Change>
+  <Change author="Daniel Grunwald" date="05/07/2005">Small bug fixes (StatusBar, ProjectContent).
+Also, GetCorLibProjectContent() is now called directly after startup (so the classes are loaded while the user chooses the project)
+Fixed output path of some addins in release build.</Change>
+  <Change author="Daniel Grunwald" date="05/07/2005">Display parsing progress in status bar when opening project.
+Fixed cross thread calls on SWF controls.</Change>
+  <Change author="Daniel Grunwald" date="05/07/2005">Fixed code completion for VB.NET. Implemented LanguageProperties to control case sensivity for project content.
+Fixed solution loading to first create all project contents and then create the references to each other.</Change>
+  <Change author="Daniel Grunwald" date="05/06/2005">Fixed SD-338: Selecting text with the mouse by clicking in the gutter</Change>
+  <Change author="Daniel Grunwald" date="05/06/2005">More CC bugfixes.</Change>
+  <Change author="Daniel Grunwald" date="05/06/2005">Worked on code completion.</Change>
+  <Change author="Daniel Grunwald" date="05/06/2005">Implemented code completion for generics. Fixed code completion for arrays.</Change>
+  <Change author="Daniel Grunwald" date="05/06/2005">Worked on code completion for generics.</Change>
+  <Change author="Daniel Grunwald" date="05/06/2005">Worked on SharpDevelop.Dom (just a step closer to being able to begin working on generics support :)).</Change>
+  <Change author="Daniel Grunwald" date="05/06/2005">Ctrl-Space completion now shows generic type parameters after class name.</Change>
+  <Change author="Daniel Grunwald" date="05/05/2005">Fixed some bugs in code completion and error drawing.</Change>
+  <Change author="Daniel Grunwald" date="05/05/2005">Optimized StringParser.
+Included PieceTableTextBufferStrategy from David McCloskey, but it's currently commented out.</Change>
+  <Change author="Daniel Grunwald" date="05/05/2005">Merged Dom/Implementations/Abstact* and Dom/NRefactoryResolver/*.</Change>
+  <Change author="Daniel Grunwald" date="05/05/2005">Renamed some files Abstract* -&gt; Default*.</Change>
+  <Change author="Daniel Grunwald" date="05/05/2005">Worked on SharpDevelop.Dom (merging Implementations/Abstact* and NRefactoryResolver/*) + some bug fixes when creating new projects.</Change>
+  <Change author="Markus Palme" date="05/05/2005">fixed SD-353: Wrong position of insight window when horizontal ruler is visible</Change>
+  <Change author="Markus Palme" date="05/02/2005">added shadows keyword to syntax highglightning definition</Change>
+  <Change author="Mike Krüger" date="05/01/2005">Added log4net.</Change>
+  <Change author="Daniel Grunwald" date="05/01/2005">AddInBuildingGuide modified for Corsavy.</Change>
+  <Change author="David Srbecký" date="04/30/2005">Minor fixes</Change>
+  <Change author="David Srbecký" date="04/30/2005">Debugger stepping made more stable</Change>
+  <Change author="Daniel Grunwald" date="04/26/2005">Add SharpDevelopAddin project template.</Change>
+  <Change author="Daniel Grunwald" date="04/24/2005">Replaced LoadWithPartialName through Assembly.Load, it seems to do the same job in .NET 2.0.
+Optimized the StringParser a bit.</Change>
+  <Change author="Daniel Grunwald" date="04/24/2005">ParserService does not lock parsed files anymore.
+Moved common options panel from C# and VB.NET to base.
+Fixed bug in property pad by introducing PropertyContainer (combined set of DesignerHost, SelectableObjects and SelectedObject).
+The PropertyPad now automatically shows the PropertyContainer of the active ViewContent.</Change>
+  <Change author="Daniel Grunwald" date="04/23/2005">Fixed some properties in the project files.</Change>
+  <Change author="Daniel Grunwald" date="04/23/2005">Moved debugger pads into their own subcategory in the view menu.</Change>
+  <Change author="Daniel Grunwald" date="04/23/2005">Fixed project template options.</Change>
+  <Change author="Daniel Grunwald" date="04/23/2005">Fixed docking of project options panel.
+Definition tooltip does not try to override text marker tooltips anymore.</Change>
+  <Change author="Daniel Grunwald" date="04/22/2005">Add definition view pad.</Change>
+  <Change author="David Srbecký" date="04/21/2005">Property evaluation in the debbuger disabled</Change>
+  <Change author="Daniel Grunwald" date="04/20/2005">Fixed bug that prevented project scout treeview from redrawing when opening folder without contents.</Change>
+  <Change author="Daniel Grunwald" date="04/19/2005">Made tooltip static so only one tooltip can be displayed at one time.
+Tooltip now shows current value of local variables/parameters when debugging.</Change>
+  <Change author="David Srbecký" date="04/19/2005"> * Caching of Variable.CorType
+ * Base classes disabled in Local Variables Pad
+ * Icons in subtrees of Local Variables Pad fixed</Change>
+  <Change author="David Srbecký" date="04/19/2005">Icons in Local Variables Pad fixed</Change>
+  <Change author="David Srbecký" date="04/19/2005">ExceptionBox is not used if #D is started under debugger</Change>
+  <Change author="David Srbecký" date="04/18/2005">corDebug.Terminate() crashed the #D on exit</Change>
+  <Change author="David Srbecký" date="04/18/2005">Release build fixed (but nunit.framework still must be in GAC)</Change>
+  <Change author="David Srbecký" date="04/18/2005">"workingDirectory" and "arguments" used in CreateProcess 
+(Since 2.0.50215 this prevented the debugger to start)</Change>
+  <Change author="David Srbecký" date="04/18/2005">Debugger Interop updated to Beta 2</Change>
+  <Change author="Daniel Grunwald" date="04/18/2005">Fixed SD-318 and SD-347. Many small changes.</Change>
+  <Change author="Daniel Grunwald" date="04/13/2005">Improved XmlDoc to text conversion.</Change>
+  <Change author="Daniel Grunwald" date="04/13/2005">Update DockPanelSuite, fixes bug that views were not properly closed.</Change>
+  <Change author="Daniel Grunwald" date="04/13/2005">Included file icons from Wolfgang Bartelme.
+Fixed exception when loading project that has a .xml file declared as "compile".</Change>
+  <Change author="Daniel Grunwald" date="03/28/2005">Language bindings can now determine on what characters and keywords code completion should be triggered.</Change>
+  <Change author="Markus Palme" date="03/14/2005">adopted patch from fidalgo revision 1807</Change>
+  <Change author="Daniel Grunwald" date="03/13/2005">Fixed StackOverflowException when property ReflectionIndexer.Parameters is used.
+CC does not pop up on integer literals anymore.
+Fixed focus stealing when moving mouse over FoldMargin.</Change>
+  <Change author="Daniel Grunwald" date="03/13/2005">Resolver can now find correct overload in a method invocation.</Change>
+  <Change author="Daniel Grunwald" date="03/10/2005">Fixed some bugs.
+PropertyCodeGenerator can work with fields like '_fieldname' or 'm_fieldname'.</Change>
+  <Change author="Daniel Grunwald" date="03/10/2005">MSBuildProject now uses Microsoft.Build.Engine instead of calling MSBuild.exe.</Change>
+  <Change author="Daniel Grunwald" date="03/09/2005">Fixed bugs in ParserUpdateThread.
+Fixed bug in InsightDataProviders.
+Added unit test for CC lookup of a method with multiple overloads.</Change>
+  <Change author="Mike Krüger" date="02/28/2005">#D now runs under the latest .NET Framework.</Change>
+  <Change author="Daniel Grunwald" date="02/03/2005">Fixed MessageView bug.</Change>
+  <Change author="Daniel Grunwald" date="02/02/2005">Many bugfixes/improvements in the resolver.</Change>
+  <Change author="Daniel Grunwald" date="02/01/2005">ParserService now supports ProjectReferences.
+Go to definition now works for local variables.</Change>
+  <Change author="Daniel Grunwald" date="01/31/2005">Added feature: go to definition (Ctrl-Enter)
+Set warninglevel to 4 for Core + Base (somehow it was set to 0 -&gt; a bug in AbstractMember.cs was hidden)</Change>
+  <Change author="Daniel Grunwald" date="01/30/2005">Fixed Lexer bug (both C#/VB): OverflowException was thrown when dot was at end of expression.
+Fixed Lexer bug (C#): OverflowException was thrown when integer literal was at end of expression.
+Added unit tests for literals.</Change>
+  <Change author="Daniel Grunwald" date="01/30/2005">Reintroduced ICSharpCode.SharpDevelop.Tests, adjusted NRefactoryResolverTests for new Resolver.</Change>
+  <Change author="Daniel Grunwald" date="01/30/2005">Fixed tooltip flickering and a resolver bug.</Change>
+  <Change author="Daniel Grunwald" date="01/30/2005">Fixed some bugs in resolver; tooltip now uses ExpressionFinder and GetXmlDocumentation.</Change>
+  <Change author="Daniel Grunwald" date="01/29/2005">Tooltip now shows the type of variables.</Change>
+  <Change author="Daniel Grunwald" date="01/29/2005">Added new ResolveResult that gives information about the expression being resolved.
+Currently it is used for code completion and method insight.</Change>
+  <Change author="David Srbecký" date="01/28/2005">Introduced new debugger class Process</Change>
+  <Change author="David Srbecký" date="01/28/2005">Moved some code from WindowsDebugger to DebuggerService</Change>
+  <Change author="Mike Krüger" date="01/28/2005">Fixed parser update thread.</Change>
+  <Change author="Mike Krüger" date="01/28/2005">Text markers can now specify foreground color.</Change>
+  <Change author="David Srbecký" date="01/27/2005">Removed some silent fails. Bugfixing</Change>
+  <Change author="David Srbecký" date="01/27/2005">Worked on exceptions; Added ExceptionHistoryPad</Change>
+  <Change author="David Srbecký" date="01/26/2005">Added exception handling form</Change>
+  <Change author="David Srbecký" date="01/26/2005">Implemented custom marshalling for new debugging API callbacks</Change>
+  <Change author="Mike Krüger" date="01/24/2005">took out some writelines.</Change>
+  <Change author="David Srbecký" date="01/23/2005">Worked on replacing strong typed collections with generics ones</Change>
+  <Change author="David Srbecký" date="01/22/2005">Files in Debugger.Core reorganized</Change>
+  <Change author="David Srbecký" date="01/22/2005">DebuggerInterop.Symbols.il replaced by ISymWrapper.dll</Change>
+  <Change author="Mike Krüger" date="01/22/2005">Execute without debugger now works. (#D doesn't currently work in debugging mode).</Change>
+  <Change author="Mike Krüger" date="01/22/2005">updated dockpanel suite.</Change>
+  <Change author="Andrea Paatz" date="01/22/2005">worked on Resolver (SearchDefinition)</Change>
+  <Change author="David Srbecký" date="01/22/2005">Some unversioned directories marked to be ignored.</Change>
+  <Change author="David Srbecký" date="01/21/2005">Worked on evaluation of properties in debugger</Change>
+  <Change author="David Srbecký" date="01/20/2005">Fixed updating of debugger pads</Change>
+  <Change author="David Srbecký" date="01/20/2005">AssemblyInfo.cs moved to Configuration folder</Change>
+  <Change author="Mike Krüger" date="01/20/2005">worked on Resolver</Change>
+  <Change author="Andrea Paatz" date="01/20/2005">fixed bug in propertygrid</Change>
+  <Change author="Mike Krüger" date="01/20/2005">the compiler message view now uses our text editor.</Change>
+  <Change author="Mike Krüger" date="01/20/2005">Changed default layouts. (Because of the debugger panels.)</Change>
+  <Change author="Mike Krüger" date="01/20/2005">Font selection panel is now much faster in initalization.</Change>
+  <Change author="David Srbecký" date="01/19/2005">Initial Debugger Import</Change>
+  <Change author="Markus Palme" date="01/14/2005">removed debugging output</Change>
+  <Change author="Markus Palme" date="01/14/2005">vb.net folding works</Change>
+  <Change author="David Srbecký" date="01/12/2005">%windir% used to get Windows directory in batch files</Change>
+  <Change author="Mike Krüger" date="01/11/2005">VB.NET backend now works.</Change>
+  <Change author="Mike Krüger" date="01/11/2005">Worked on code completion layer.</Change>
+  <Change author="Mike Krüger" date="01/11/2005">Worked on main menu. Complex conditions now support failed actions</Change>
+  <Change author="Mike Krüger" date="01/11/2005">Worked on IL backend. But I don't know how to plug in a new msbuild 'language'.</Change>
+  <Change author="Mike Krüger" date="01/10/2005">Worked on code completion layer.</Change>
+  <Change author="Markus Palme" date="01/10/2005">#d builds again; work on the parser layer</Change>
+  <Change author="Markus Palme" date="01/10/2005">unitised vb.net language name; added vb.net binding to the main solution</Change>
+  <Change author="Markus Palme" date="01/10/2005">added initial vb.net binding (very c#-ish at the moment)</Change>
+  <Change author="Markus Palme" date="01/10/2005">removed old vb.net backend binding</Change>
+  <Change author="Mike Krüger" date="01/10/2005">The refactoring of the upper code completion layer has begun ...</Change>
+  <Change author="Mike Krüger" date="01/10/2005">project contents can now reference other project contents (greatly reducing loading times/memory consumption). XmlDocumentation is now loaded &amp; cached (greatly increasing loading times/memory consumption).</Change>
+  <Change author="Mike Krüger" date="01/09/2005">View menu builder works again.</Change>
+  <Change author="Mike Krüger" date="01/06/2005">Added Solution file format validation</Change>
+  <Change author="Mike Krüger" date="01/06/2005">taken out the description= tags of the menus (They're unused since a while ...)</Change>
+  <Change author="Mike Krüger" date="01/06/2005">Fixed compilation bug.</Change>
+  <Change author="Mike Krüger" date="01/06/2005">Fixed property grid bug (caused by lazy loading)."</Change>
+  <Change author="Andrea Paatz" date="01/06/2005">fixed bug in topological sort and startet to write tests for it.</Change>
+  <Change author="Andrea Paatz" date="01/06/2005">fixed build error: sharpDevelop.ico has an absolute path from Mike. Now the path is relativ and should work for everyone.</Change>
+  <Change author="Mike Krüger" date="01/06/2005">Core tests are in the solution.</Change>
+  <Change author="Mike Krüger" date="01/06/2005">Moved abstract project.</Change>
+  <Change author="Mike Krüger" date="01/06/2005">Exception box is now working again.</Change>
+  <Change author="Mike Krüger" date="01/05/2005">Worked on #D</Change>
+  <Change author="Mike Krüger" date="01/05/2005">overworked task subsystem a bit.</Change>
+  <Change author="Mike Krüger" date="01/05/2005">Code generator (Alt+ins) now works again. fixed texteditor drawing bug.</Change>
+  <Change author="Mike Krüger" date="01/05/2005">Forgot to check in some changes.</Change>
+  <Change author="Mike Krüger" date="01/05/2005">Worked on #Develop. Search &amp; Replace panel now has 2 different view modes. ExtTreeView drawing is now more smooth. Fixed some issues.</Change>
+  <Change author="Mike Krüger" date="01/05/2005">Removed nunit binaries.</Change>
+  <Change author="Mike Krüger" date="01/05/2005">Slightly improved C# formatting. custom edit actions are now working again.</Change>
+  <Change author="Mike Krüger" date="01/04/2005">References can now be removed. Rename/remove operations are now faster with really big projects</Change>
+  <Change author="Mike Krüger" date="01/04/2005">addin scout now working again.</Change>
+  <Change author="Mike Krüger" date="01/04/2005">Nunit pad is now working again. Switched to NUnit 2.2.2</Change>
+  <Change author="Mike Krüger" date="01/04/2005">Worked on project options.</Change>
+  <Change author="Mike Krüger" date="01/04/2005">Improved toolbar refresh.</Change>
+  <Change author="Mike Krüger" date="01/04/2005">Path of the errors in files are now parsed correctly.</Change>
+  <Change author="Mike Krüger" date="01/04/2005">Fixed little issues.</Change>
+  <Change author="Mike Krüger" date="01/04/2005">Fixed many little issues.</Change>
+  <Change author="Mike Krüger" date="01/04/2005">Removed winformsUI binaries.</Change>
+  <Change author="Mike Krüger" date="01/04/2005">Corrected output path of the filetype registerer (his job should be done by the installer) and resource editor.</Change>
+  <Change author="Mike Krüger" date="01/04/2005">Added start project as context menu command for projects.</Change>
+  <Change author="Mike Krüger" date="01/04/2005">Fixed bug in text editor options panel.</Change>
+  <Change author="Mike Krüger" date="01/04/2005">Corsavy is now self-hosting. Hopefully no more build files are out of sync with project files issues ...</Change>
+  <Change author="Mike Krüger" date="01/04/2005">created trunk folder.</Change>
+</ChangeLog>

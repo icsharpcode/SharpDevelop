@@ -530,13 +530,17 @@ namespace ICSharpCode.XmlEditor
 		
 		void OnFileChangedEvent(object sender, FileSystemEventArgs e)
 		{
-			lock (this) {
-				if(e.ChangeType != WatcherChangeTypes.Deleted) {
-					wasChangedExternally = true;
-					if (((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Focused) {
-						GotFocusEvent(this, EventArgs.Empty);
-					}
-				}
+			if(e.ChangeType != WatcherChangeTypes.Deleted) {
+				wasChangedExternally = true;
+				if (xmlEditor.IsHandleCreated)
+					xmlEditor.BeginInvoke(new MethodInvoker(OnFileChangedEventInvoked));
+			}
+		}
+		
+		void OnFileChangedEventInvoked()
+		{
+			if (((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Focused) {
+				GotFocusEvent(this, EventArgs.Empty);
 			}
 		}
 		

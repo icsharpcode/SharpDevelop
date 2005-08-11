@@ -56,6 +56,32 @@ namespace ICSharpCode.SharpDevelop.Project
 			FileService.FileRemoved += FileServiceFileRemoved;
 		}
 		
+		public static bool IsSolutionExtension(string ext)
+		{
+			return ext.Equals(".SLN", StringComparison.OrdinalIgnoreCase)
+				|| ext.Equals(".CMBX", StringComparison.OrdinalIgnoreCase)
+				|| ext.Equals(".PRJX", StringComparison.OrdinalIgnoreCase);
+			// prjx converter is called by Solution.Load, so treat prjx as solution
+		}
+		
+		public static bool IsProjectExtension(string ext)
+		{
+			return ext.Equals(".CSPROJ", StringComparison.OrdinalIgnoreCase)
+				|| ext.Equals(".VBPROJ", StringComparison.OrdinalIgnoreCase)
+				|| ext.Equals(".ILPROJ", StringComparison.OrdinalIgnoreCase);
+		}
+		
+		public static void LoadSolutionOrProject(string fileName)
+		{
+			string ext = Path.GetExtension(fileName);
+			if (ProjectService.IsSolutionExtension(ext))
+				ProjectService.LoadSolution(fileName);
+			else if (ProjectService.IsProjectExtension(ext))
+				ProjectService.LoadProject(fileName);
+			else
+				MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new string[,] {{"FileName", fileName}}));
+		}
+		
 		static void FileServiceFileRenamed(object sender, FileRenameEventArgs e)
 		{
 			if (OpenSolution == null) {

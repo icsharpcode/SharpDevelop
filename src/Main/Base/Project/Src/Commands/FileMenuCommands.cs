@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			using (OpenFileDialog fdiag  = new OpenFileDialog()) {
 				AddInTreeNode addinTreeNode = AddInTree.GetTreeNode("/SharpDevelop/Workbench/Combine/FileFilter");
-				StringBuilder b = new StringBuilder("All known project formats|");
+				StringBuilder b = new StringBuilder(StringParser.Parse("${res:SharpDevelop.Solution.AllKnownProjectFormats}|"));
 				bool first = true;
 				foreach (Codon c in addinTreeNode.Codons) {
 					if (!first) {
@@ -58,20 +58,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				fdiag.Multiselect     = false;
 				fdiag.CheckFileExists = true;
 				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-					switch (Path.GetExtension(fdiag.FileName).ToUpper()) {
-						case ".CMBX":
-						case ".SLN":
-						case ".PRJX": // converter is called by Solution.Load
-							ProjectService.LoadSolution(fdiag.FileName);
-							break;
-						case ".CSPROJ":
-						case ".VBPROJ":
-							ProjectService.LoadProject(fdiag.FileName);
-							break;
-						default:
-							MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.OpenCombine.InvalidProjectOrCombine}", new string[,] {{"FileName", fdiag.FileName}}));
-							break;
-					}
+					ProjectService.LoadSolutionOrProject(fdiag.FileName);
 				}
 			}
 		}

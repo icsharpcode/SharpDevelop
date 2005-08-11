@@ -125,17 +125,17 @@
 		<Condition name = "CombineOpen" iscombineopen="True" action="Disable">
 			<ToolbarItem id      = "Properties"
 			             icon    = "Icons.16x16.PropertiesIcon"
-			             tooltip = "Properties"
+			             tooltip = "${res:MainWindow.Windows.PropertiesScoutLabel}"
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
 			<ToolbarItem id = "PropertySeparator" type = "Separator"/>
 			<ToolbarItem id      = "ShowAll"
 			             type    = "CheckBox"
 			             icon    = "ProjectBrowser.Toolbar.ShowHiddenFiles"
-			             tooltip = "ShowAll"
+			             tooltip = "${res:Gui.ProjectBrowser.ShowAllFiles}"
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.ToggleShowAll"/>
 			<ToolbarItem id      = "Refresh"
 			             icon    = "ProjectBrowser.Toolbar.Refresh"
-			             tooltip = "Refresh"
+			             tooltip = "${res:AddIns.HtmlHelp2.Refresh}"
 			             class   = "ICSharpCode.SharpDevelop.Project.Commands.RefreshProjectBrowser"/>
 		</Condition>
 	</Path>

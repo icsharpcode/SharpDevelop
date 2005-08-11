@@ -25,15 +25,21 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		}
 		
 		public static int LastErrorCount;
+		public static int LastWarningCount;
 		
 		public static void ShowResults(CompilerResults results)
 		{
 			if (results != null) {
+				LastErrorCount = 0;
+				LastWarningCount = 0;
 				foreach (CompilerError error in results.Errors) {
 					TaskService.Add(new Task(error));
+					if (error.IsWarning)
+						LastWarningCount++;
+					else
+						LastErrorCount++;
 				}
-				LastErrorCount = results.Errors.Count;
-				if (LastErrorCount > 0) {
+				if (results.Errors.Count > 0) {
 					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
 				}
 			}

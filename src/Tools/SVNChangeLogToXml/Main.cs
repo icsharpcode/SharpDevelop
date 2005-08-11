@@ -4,45 +4,90 @@ using System.ComponentModel;
 using System.Text;
 using System.Xml;
 using System.Xml.Xsl;
+using System.Reflection;
 using System.Windows.Forms;
 using System.IO;
-using System.Diagnostics;
+using NSvn.Common;
+using NSvn.Core;
 
 class MainClass
 {
-	public static void Main(string[] args)
+	public static int Main(string[] args)
 	{
-		Console.WriteLine("Reading SVN changlog, this might take a while...");
-		
-		Process process = new Process();
-		process.StartInfo.UseShellExecute = false;
-		process.StartInfo.RedirectStandardOutput = true;
-		process.StartInfo.FileName = "svn";
-		process.StartInfo.Arguments = "log --xml";
-		
-		// this has to point to the root directory (/trunk/SharpDevelop)
-		process.StartInfo.WorkingDirectory = Path.Combine(Application.StartupPath, @"..\..");
+		Console.WriteLine("Initializing changelog application...");
 		try {
-			process.Start();
-		} catch(Win32Exception) {
-			// subversion not installed
-			return;
+			if (!File.Exists("SharpDevelop.sln")) {
+				if (File.Exists(@"..\..\..\..\SharpDevelop.sln")) {
+					Directory.SetCurrentDirectory(@"..\..\..\..");
+				}
+				if (File.Exists("..\\src\\SharpDevelop.sln")) {
+					Directory.SetCurrentDirectory("..\\src");
+				}
+			}
+			if (!File.Exists("SharpDevelop.sln")) {
+				Console.WriteLine("Working directory must be SharpDevelop\\src or SharpDevelop\\bin!");
+				return 2;
+			}
+			string appDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
+			File.Copy(@"AddIns\Misc\SubversionAddIn\RequiredLibraries\msvcr70.dll", Path.Combine(appDir, "msvcr70.dll"), true);
+			File.Copy(@"AddIns\Misc\SubversionAddIn\RequiredLibraries\msvcp70.dll", Path.Combine(appDir, "msvcp70.dll"), true);
+			ConvertChangeLog();
+			return 0;
+		} catch (Exception ex) {
+			Console.WriteLine(ex);
+			return 1;
 		}
-		string output = process.StandardOutput.ReadToEnd();
-		// convert date format
-		output = Regex.Replace(output, @"(\d{4})-(\d{2})-(\d{2}).*?</date>", "$2/$3/$1</date>");
+	}
+	
+	static void ConvertChangeLog()
+	{
+		Console.WriteLine("Reading SVN changelog, this might take a while...");
 		
-		MemoryStream ms = new MemoryStream(Encoding.UTF8.GetBytes(output));
-		XslTransform xsl = new XslTransform();
-		xsl.Load(Path.Combine(Application.StartupPath, @"..\..\data\ConversionStyleSheets\SVNChangelogToXml.xsl"));
+		Client client = new Client();
+		client.AuthBaton.Add(AuthenticationProvider.GetUsernameProvider());
+		client.AuthBaton.Add(AuthenticationProvider.GetSimpleProvider());
+		client.AuthBaton.Add(AuthenticationProvider.GetSimplePromptProvider(PasswordPrompt, 3));
 		
-		XmlDocument doc = new XmlDocument();
-		doc.Load(ms);
+		StringWriter writer = new StringWriter();
+		XmlTextWriter xmlWriter = new XmlTextWriter(writer);
+		xmlWriter.Formatting = Formatting.Indented;
+		xmlWriter.WriteStartDocument();
+		xmlWriter.WriteStartElement("log");
+		client.Log(new string[] {".."}, Revision.Head, Revision.FromNumber(2), false, false,
+		           delegate(LogMessage message) {
+		           	xmlWriter.WriteStartElement("logentry");
+		           	xmlWriter.WriteAttributeString("revision", message.Revision.ToString(System.Globalization.CultureInfo.InvariantCulture));
+		           	xmlWriter.WriteElementString("author", message.Author);
+		           	xmlWriter.WriteElementString("date", message.Date.ToString("MM/dd/yyyy", System.Globalization.CultureInfo.InvariantCulture));
+		           	xmlWriter.WriteElementString("msg", message.Message);
+		           	xmlWriter.WriteEndElement();
+		           });
+		xmlWriter.WriteEndDocument();
 		
-		StreamWriter tw = new StreamWriter(Path.Combine(Path.Combine(Application.StartupPath, @"..\..\doc"), "ChangeLog.xml"));
-		xsl.Transform(doc.CreateNavigator(), null, tw, null);
+		//Console.WriteLine(writer);
+		
+		XmlTextReader input = new XmlTextReader(new StringReader(writer.ToString()));
+		
+		XslCompiledTransform xsl = new XslCompiledTransform();
+		xsl.Load(@"..\data\ConversionStyleSheets\SVNChangelogToXml.xsl");
+		
+		StreamWriter tw = new StreamWriter(@"..\doc\ChangeLog.xml", false, Encoding.UTF8);
+		xmlWriter = new XmlTextWriter(tw);
+		xmlWriter.Formatting = Formatting.Indented;
+		xsl.Transform(input, xmlWriter);
+		xmlWriter.Close();
 		tw.Close();
-		ms.Close();
 		Console.WriteLine("Finished");
+	}
+	
+	static SimpleCredential PasswordPrompt(string realm, string userName, bool maySave)
+	{
+		Console.WriteLine();
+		Console.WriteLine("SUBVERSION: Authentication for realm: " + realm);
+		Console.Write("Username: ");
+		userName = Console.ReadLine();
+		Console.Write("Password: ");
+		string pwd = Console.ReadLine();
+		return new SimpleCredential(userName, pwd, maySave);
 	}
 }

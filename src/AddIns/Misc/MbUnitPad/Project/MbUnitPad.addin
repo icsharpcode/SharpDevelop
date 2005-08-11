@@ -13,7 +13,7 @@
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id       = "MbUnitPad"
-		     category = "Main"
+		     category = "Tools"
 		     title    = "MbUnit Tests"
 		     icon     = "PadIcons.UnitTest"
 		     shortcut = "Control|Alt|T"
@@ -33,11 +33,11 @@
 			<ToolbarItem id      = "Separator1" type = "Separator"/>
 			<ToolbarItem id      = "AddMbUnitReference"
 			             icon    = "Icons.16x16.Reference"
-			             tooltip = "Add reference to MbUnit."
+			             tooltip = "${res:MbUnitPad.ReferenceItem}"
 			             class   = "MbUnitPad.AddMbUnitReferenceCommand"/>
 			<ToolbarItem id      = "AddNUnitReference"
 			             icon    = "PadIcons.UnitTest"
-			             tooltip = "NUnitPad.NUnitPadContent.ReferenceItem"
+			             tooltip = "${res:NUnitPad.NUnitPadContent.ReferenceItem}"
 			             class   = "MbUnitPad.AddNUnitReferenceCommand"/>
 			<ToolbarItem id      = "Separator2" type = "Separator"/>
 			<ToolbarItem id      = "Run"

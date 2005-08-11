@@ -11,12 +11,12 @@ using System.Collections;
 using System.Text;
 using System.Windows.Forms;
 using System.Xml;
-
+using System.Xml.Xsl;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.StartPage 
+namespace ICSharpCode.StartPage
 {
 	public enum ColorScheme
 	{
@@ -132,7 +132,7 @@ namespace ICSharpCode.StartPage
 			get { return m_bShowContentBar; }
 			set { m_bShowContentBar = value; }
 		}
-  
+		
 		private ArrayList TopMenu;
 		private ArrayList LeftMenu;
 
@@ -210,7 +210,7 @@ namespace ICSharpCode.StartPage
 			
 			StaticStyleSheet = startPageLocation + "/Layout/default.css";
 			MetaAuthor = "Christoph Wille - christophw@alphasierrapapa.com";
-			MetaCopyright = "(c) 2001-2002 AlphaSierraPapa";
+			MetaCopyright = "(c) 2001-2005 AlphaSierraPapa";
 
 			ShowLeftMenu = false;
 			ShowRightBox = false;
@@ -220,7 +220,7 @@ namespace ICSharpCode.StartPage
 		public ColorScheme ColorScheme
 		{
 			get { return _ColorScheme; }
-			set 
+			set
 			{
 				_ColorScheme = value;
 				m_bShowMilestoneContentImage = false;
@@ -270,10 +270,10 @@ namespace ICSharpCode.StartPage
 			builder.Append("<link rel='stylesheet' type='text/css' href='");
 			
 			builder.Append(PropertyService.DataDirectory + Path.DirectorySeparatorChar +
-			                                  "resources" + Path.DirectorySeparatorChar +
-			                                  "startpage" + Path.DirectorySeparatorChar +
-			                                  "Layout" + Path.DirectorySeparatorChar +
-			                                  "default.css");
+			               "resources" + Path.DirectorySeparatorChar +
+			               "startpage" + Path.DirectorySeparatorChar +
+			               "Layout" + Path.DirectorySeparatorChar +
+			               "default.css");
 			builder.Append("'>\r\n");
 			
 			
@@ -393,7 +393,7 @@ namespace ICSharpCode.StartPage
 
 		public virtual void RenderFirstPageBodySection(StringBuilder builder)
 		{
-			builder.Append("<div class=\"text\" style=\"position:absolute;left:0px;top:120px\"><table border=0 cellspacing=0 cellpadding=0>\r\n");
+			builder.Append("<div class=\"text\" style=\"position:absolute;left:0px;top:120px\"><table width=\"100%\" border=0 cellspacing=0 cellpadding=0>\r\n");
 
 			if (ShowContentBar)
 			{
@@ -444,14 +444,14 @@ namespace ICSharpCode.StartPage
 				RenderLeftMenu(builder);
 			}
 
-			builder.Append("<td bgcolor=\"#d6d7d8\" valign=\"top\" height=270><table border=0 cellspacing=0 cellpadding=0>\r\n");
+			builder.Append("<td bgcolor=\"#d6d7d8\" valign=\"top\" height=270><table width=\"100%\" border=0 cellspacing=0 cellpadding=0>\r\n");
 			builder.Append("<tr><td width=15><img src=\""+ startPageLocation + "/Layout/Common/blind.gif\" width=15 height=15></td>");
 			builder.Append("<td><img src=\""+ startPageLocation + "/Layout/Common/blind.gif\" width=1 height=1></td>");
 			builder.Append("<td width=15><img src=\""+ startPageLocation + "/Layout/Common/blind.gif\" width=15 height=1></td>");
 			builder.Append("</tr><tr><td><img src=\""+ startPageLocation + "/Layout/Common/blind.gif\" width=1 height=1></td>");
 			builder.Append("<td class=\"copy\">\r\n");
 
-		
+			
 		}
 
 		public virtual void RenderFinalPageBodySection(StringBuilder builder)
@@ -530,7 +530,7 @@ namespace ICSharpCode.StartPage
 				                                    StringParser.Parse("${res:StartPage.StartMenu.NameTable}"),
 				                                    StringParser.Parse("${res:StartPage.StartMenu.ModifiedTable}"),
 				                                    StringParser.Parse("${res:StartPage.StartMenu.LocationTable}")
-				                                    ));
+				                                   ));
 				
 				try {
 					// Get the recent projects
@@ -556,11 +556,11 @@ namespace ICSharpCode.StartPage
 				} catch {}
 				projectSection.Append("</TABLE></DIV><BR/><BR/>");
 				projectSection.Append(String.Format("<input type=button value='{0}' onClick=\"location.href = 'startpage://opencombine/';\">\n",
-				                      StringParser.Parse("${res:StartPage.StartMenu.OpenCombineButton}")
-				                      ));
+				                                    StringParser.Parse("${res:StartPage.StartMenu.OpenCombineButton}")
+				                                   ));
 				projectSection.Append(String.Format("<input type=button value='{0}'  onClick=\"location.href('startpage://newcombine/');\">\n",
-				                      StringParser.Parse("${res:StartPage.StartMenu.NewCombineButton}")
-				                      ));
+				                                    StringParser.Parse("${res:StartPage.StartMenu.NewCombineButton}")
+				                                   ));
 				projectSection.Append("<BR/><BR/><BR/>");
 			}
 			builder.Append(projectSection.ToString());
@@ -569,17 +569,17 @@ namespace ICSharpCode.StartPage
 		public void RenderSectionAuthorBody(StringBuilder builder)
 		{
 			try {
-				builder.Append("<iframe name=\"iframe\" src=\"http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.Contributors\" width=\"800\" height=\"1400\" />");
-//				
-//				
-//				
+				builder.Append("<iframe name=\"iframe\" src=\"http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.Contributors\" width=\"100%\" height=\"1400\" />");
+//
+//
+//
 //				string html = ConvertXml.ConvertToString(Application.StartupPath +
 //				                   Path.DirectorySeparatorChar + ".." +
 //				                   Path.DirectorySeparatorChar + "doc" +
 //				                   Path.DirectorySeparatorChar + "AUTHORS.xml",
-//				                   
+//
 //				                   PropertyService.DataDirectory +
-//				                   Path.DirectorySeparatorChar + "ConversionStyleSheets" + 
+//				                   Path.DirectorySeparatorChar + "ConversionStyleSheets" +
 //				                   Path.DirectorySeparatorChar + "ShowAuthors.xsl");
 //				builder.Append(html);
 			} catch (Exception e) {
@@ -587,20 +587,20 @@ namespace ICSharpCode.StartPage
 			}
 		}
 
+		static string changeLogHtml;
+		
 		public void RenderSectionChangeLogBody(StringBuilder builder)
 		{
 			try {
-				/*string html = ConvertXml.ConvertToString(Application.StartupPath +
-				                   Path.DirectorySeparatorChar + ".." +
-				                   Path.DirectorySeparatorChar + "doc" +
-				                   Path.DirectorySeparatorChar + "ChangeLog.xml",
-				                   
-				                   Application.StartupPath + 
-				                   Path.DirectorySeparatorChar + ".." + 
-				                   Path.DirectorySeparatorChar + "data" + 
-				                   Path.DirectorySeparatorChar + "ConversionStyleSheets" + 
-				                   Path.DirectorySeparatorChar + "ShowChangeLog.xsl");
-				builder.Append(html);*/
+				if (changeLogHtml == null) {
+					XslCompiledTransform transform = new XslCompiledTransform();
+					transform.Load(Path.Combine(PropertyService.DataDirectory, "ConversionStyleSheets/ShowChangeLog.xsl"));
+					StringWriter writer = new StringWriter();
+					XmlTextWriter xmlWriter = new XmlTextWriter(writer);
+					transform.Transform(Path.Combine(FileUtility.SharpDevelopRootPath, "doc/ChangeLog.xml"), xmlWriter);
+					changeLogHtml = writer.ToString();
+				}
+				builder.Append(changeLogHtml);
 			} catch (Exception e) {
 				MessageBox.Show(e.ToString());
 			}
@@ -609,17 +609,17 @@ namespace ICSharpCode.StartPage
 		public void RenderSectionHelpWantedBody(StringBuilder builder)
 		{
 			try {
-				builder.Append("<iframe name=\"iframe\" src=\"http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.FeaturesYouCouldHelpUsWith\"  width=\"800\" height=\"1000\" />");
-//				
+				builder.Append("<iframe name=\"iframe\" src=\"http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.FeaturesYouCouldHelpUsWith\"  width=\"100%\" height=\"1000\" />");
+//
 //				string html = ConvertXml.ConvertToString(Application.StartupPath +
 //				                   Path.DirectorySeparatorChar + ".." +
 //				                   Path.DirectorySeparatorChar + "doc" +
 //				                   Path.DirectorySeparatorChar + "HowYouCanHelp.xml",
-//				                   
-//				                   Application.StartupPath + 
-//				                   Path.DirectorySeparatorChar + ".." + 
-//				                   Path.DirectorySeparatorChar + "data" + 
-//				                   Path.DirectorySeparatorChar + "ConversionStyleSheets" + 
+//
+//				                   Application.StartupPath +
+//				                   Path.DirectorySeparatorChar + ".." +
+//				                   Path.DirectorySeparatorChar + "data" +
+//				                   Path.DirectorySeparatorChar + "ConversionStyleSheets" +
 //				                   Path.DirectorySeparatorChar + "ShowHowYouCanHelp.xsl");
 //				builder.Append(html);
 			} catch (Exception e) {
@@ -627,7 +627,7 @@ namespace ICSharpCode.StartPage
 			}
 		}
 		
-		public string Render(string section) 
+		public string Render(string section)
 		{
 			startPageLocation = FileUtility.Combine(Application.StartupPath, "..", "data", "resources", "startpage");
 			switch (section.ToLower()) {

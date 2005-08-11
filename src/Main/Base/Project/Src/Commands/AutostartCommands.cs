@@ -115,21 +115,17 @@ namespace ICSharpCode.SharpDevelop.Commands
 			
 			foreach (string file in fileList) {
 				didLoadCombineOrFile = true;
-				switch (Path.GetExtension(file).ToUpper()) {
-					case ".CMBX":
-					case ".PRJX":
-					case ".SLN":
-					case ".CSPROJ":
-					case ".VBPROJ":
+				try {
+					string ext = Path.GetExtension(file);
+					if (ProjectService.IsSolutionExtension(ext)) {
 						FileUtility.ObservedLoad(new NamedFileOperationDelegate(ProjectService.LoadSolution), file);
-						break;
-					default:
-						try {
-							FileService.OpenFile(file);
-						} catch (Exception e) {
-							MessageService.ShowError(e, "unable to open file " + file);
-						}
-						break;
+					} else if (ProjectService.IsProjectExtension(ext)) {
+						FileUtility.ObservedLoad(new NamedFileOperationDelegate(ProjectService.LoadProject), file);
+					} else {
+						FileService.OpenFile(file);
+					}
+				} catch (Exception e) {
+					MessageService.ShowError(e, "unable to open file " + file);
 				}
 			}
 			

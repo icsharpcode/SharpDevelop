@@ -310,6 +310,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (debugger.Processes.Count == 1) {
 				OnDebugStarted(EventArgs.Empty);
 				isDebuggingCache = true;
+				isProcessRunningCache = true;
 			}
 		}
 

@@ -50,6 +50,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			set {
 				if (selectedCategory != value) {
 					selectedCategory = value;
+					textEditorControl.Text = (value < 0) ? "" : messageCategories[value].Text;
+					textEditorControl.Refresh();
 					OnSelectedCategoryIndexChanged(EventArgs.Empty);
 				}
 			}
@@ -163,9 +165,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		void ClearText(MessageViewCategory category)
 		{
-			SelectCategory(category.Category);
 			textEditorControl.Text = "";
-			textEditorControl.Refresh();
+			SelectCategory(category.Category);
 		}
 		
 		void CategoryTextSet(object sender, TextEventArgs e)
