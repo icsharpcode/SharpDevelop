@@ -95,7 +95,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			this.dockPanel.ActiveAutoHideContent = null;
 			this.dockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
-			this.dockPanel.ActiveContentChanged += new EventHandler(DockPanelActiveContentChanged);
 			
 			LoadLayoutConfiguration();
 			ShowPads();
@@ -134,12 +133,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 					ShowPad(content);
 				}
 			}
-			foreach (DockPane pane in dockPanel.Panes) {
-				PadContentWrapper pad = pane.ActiveContent as PadContentWrapper;
-				if (pad != null) {
-					pad.ActivateContent();
-				}
-			}
 		}
 		void ShowViewContents()
 		{
@@ -148,21 +141,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void DockPanelActiveContentChanged(object sender, EventArgs e)
-		{
-			PadContentWrapper padContent = dockPanel.ActiveContent as PadContentWrapper;
-			if (padContent != null) {
-				padContent.ActivateContent();
-			}
-		}
-		public void ActivateVisiblePads()
-		{
-			foreach (PadContentWrapper content in contentHash.Values) {
-				if (content.Visible) {
-					content.ActivateContent();
-				}
-			}
-		}
 		void LoadLayoutConfiguration()
 		{
 			try {
@@ -174,7 +152,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} catch {
 				// ignore errors loading configuration
 			}
-			ActivateVisiblePads();
+			foreach (PadContentWrapper content in contentHash.Values) {
+				content.AllowInitialize();
+			}
 		}
 		
 		void LoadDefaultLayoutConfiguration()
@@ -316,7 +296,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		class PadContentWrapper : DockContent
 		{
 			PadDescriptor padDescriptor;
-			bool        isInitialized = false;
+			bool isInitialized = false;
+			bool allowInitialize = false;
 			
 			public IPadContent PadContent {
 				get {
@@ -342,8 +323,31 @@ namespace ICSharpCode.SharpDevelop.Gui
 				padDescriptor = null;
 			}
 			
-			public void ActivateContent()
+			protected override void OnVisibleChanged(EventArgs e)
 			{
+				base.OnVisibleChanged(e);
+				if (Visible && Width > 0)
+					ActivateContent();
+			}
+			
+			protected override void OnSizeChanged(EventArgs e)
+			{
+				base.OnSizeChanged(e);
+				if (Visible && Width > 0)
+					ActivateContent();
+			}
+			
+			public void AllowInitialize()
+			{
+				allowInitialize = true;
+				if (Visible && Width > 0)
+					ActivateContent();
+			}
+			
+			void ActivateContent()
+			{
+				if (!allowInitialize)
+					return;
 				if (!isInitialized) {
 					isInitialized = true;
 					IPadContent content = padDescriptor.PadContent;
@@ -419,13 +423,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void ActivatePad(PadDescriptor padContent)
 		{
 			if (padContent != null && contentHash.ContainsKey(padContent.Class)) {
-				contentHash[padContent.Class].ActivateContent();
+				//contentHash[padContent.Class].ActivateContent();
 				contentHash[padContent.Class].Show();
 			}
 		}
 		public void ActivatePad(string fullyQualifiedTypeName)
 		{
-			contentHash[fullyQualifiedTypeName].ActivateContent();
+			//contentHash[fullyQualifiedTypeName].ActivateContent();
 			contentHash[fullyQualifiedTypeName].Show();
 		}
 		

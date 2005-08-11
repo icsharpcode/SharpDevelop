@@ -166,6 +166,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void ClearText(MessageViewCategory category)
 		{
 			textEditorControl.Text = "";
+			textEditorControl.Refresh();
 			SelectCategory(category.Category);
 		}
 		
