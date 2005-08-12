@@ -59,7 +59,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
 			TaskService.Removed += new TaskEventHandler(TaskServiceRemoved);
 			
-			ProjectService.EndBuild       += SelectTaskView;
 			ProjectService.SolutionLoaded += OnCombineOpen;
 			ProjectService.SolutionClosed += OnCombineClosed;
 			
@@ -81,7 +80,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listView.ItemActivate += new EventHandler(ListViewItemActivate);
 			listView.MouseMove    += new MouseEventHandler(ListViewMouseMove);
 			listView.Resize       += new EventHandler(ListViewResize);
-			listView.CreateControl();
 			
 			ShowResults2(null, null);
 		}
@@ -102,18 +100,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void OnCombineClosed(object sender, EventArgs e)
 		{
 			listView.Items.Clear();
-		}
-		
-		void SelectTaskView(object sender, EventArgs e)
-		{
-			if (TaskService.TaskCount > 0) {
-				WorkbenchSingleton.SafeThreadCall(this, "SelectTaskView2");
-			}
-		}
-		
-		void SelectTaskView2()
-		{
-			WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this.GetType().FullName);
 		}
 		
 		void ListViewItemActivate(object sender, EventArgs e)
@@ -189,9 +175,34 @@ namespace ICSharpCode.SharpDevelop.Gui
 			                                     });
 			item.ImageIndex = item.StateImageIndex = imageIndex;
 			item.Tag = task;
-			listView.Items.Add(item);
+			// insert new item into sorted list (binary search)
+			int left = 0;
+			int right = listView.Items.Count - 1;
+			while (left <= right) {
+				int m = left + (right - left) / 2;
+				if (CompareItems(item, listView.Items[m])) {
+					left = m + 1;
+				} else {
+					right = m - 1;
+				}
+			}
+			listView.Items.Insert(left, item);
 		}
 		
+		/// <summary>Returns true when a &gt; b</summary>
+		bool CompareItems(ListViewItem a, ListViewItem b)
+		{
+			// insert sorted by: Directory, FileName, Line
+			int res = string.Compare(a.SubItems[4].Text, b.SubItems[4].Text, StringComparison.InvariantCultureIgnoreCase);
+			if (res > 0) return true;
+			if (res < 0) return false;
+			res = string.Compare(a.SubItems[3].Text, b.SubItems[3].Text, StringComparison.InvariantCultureIgnoreCase);
+			if (res > 0) return true;
+			if (res < 0) return false;
+			Task x = (Task)a.Tag;
+			Task y = (Task)b.Tag;
+			return x.Line > y.Line;
+		}
 		
 		void TaskServiceCleared(object sender, EventArgs e)
 		{
@@ -208,10 +219,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void TaskServiceRemoved(object sender, TaskEventArgs e)
 		{
 			Task task = e.Task;
-			for (int i = 0; i < listView.Items.Count; ++i) {
-				if ((Task)listView.Items[i].Tag == task) {
-					listView.Items.RemoveAt(i);
-					break;
+			if (task.TaskType == TaskType.Comment) {
+				for (int i = 0; i < listView.Items.Count; ++i) {
+					if ((Task)listView.Items[i].Tag == task) {
+						listView.Items.RemoveAt(i);
+						break;
+					}
 				}
 			}
 		}
@@ -232,10 +245,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ShowResults2(object sender, EventArgs e)
 		{
-			// listView.CreateControl is called in the constructor now.
-			if (!listView.IsHandleCreated) {
-				return;
-			}
 			listView.BeginUpdate();
 			listView.Items.Clear();
 			

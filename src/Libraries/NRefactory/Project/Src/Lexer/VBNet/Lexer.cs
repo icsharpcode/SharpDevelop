@@ -542,7 +542,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						curWord.Length = 0;
 						if (specialCommentHash.ContainsKey(tag)) {
 							Point p = new Point(Col, Line);
-							string comment = ReadToEOL();
+							string comment = ch + ReadToEOL();
 							tagComments.Add(new TagComment(tag, comment, p, new Point(Col, Line)));
 							sb.Append(comment);
 							break;

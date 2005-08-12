@@ -44,9 +44,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					return new Token(Tokens.Identifier, x, y, s);
 				}
 				
-				if (Char.IsDigit(ch)) {
-					return ReadDigit(ch, Col - 1);
-				}
+				Token token;
 				
 				switch (ch) {
 					case '/':
@@ -54,6 +52,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						if (peek == '/' || peek == '*') {
 							ReadComment();
 							continue;
+						} else {
+							token = ReadOperator('/');
 						}
 						break;
 					case '#':
@@ -63,35 +63,43 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						this.specialTracker.AddPreProcessingDirective(directive, argument.Trim(), start, new Point(start.X + directive.Length + argument.Length, start.Y));
 						continue;
 					case '"':
-						return ReadString();
+						token = ReadString();
+						break;
 					case '\'':
-						return ReadChar();
+						token = ReadChar();
+						break;
 					case '@':
 						int next = ReaderRead();
 						if (next == -1) {
 							errors.Error(Line, Col, String.Format("EOF after @"));
+							continue;
 						} else {
 							int x = Col - 1;
 							int y = Line;
 							ch = (char)next;
 							if (ch == '"') {
-								return ReadVerbatimString();
+								token = ReadVerbatimString();
+							} else if (Char.IsLetterOrDigit(ch)) {
+								token = new Token(Tokens.Identifier, x - 1, y, ReadIdent(ch));
+							} else {
+								errors.Error(y, x, String.Format("Unexpected char in Lexer.Next() : {0}", ch));
+								continue;
 							}
-							if (Char.IsLetterOrDigit(ch)) {
-								return new Token(Tokens.Identifier, x - 1, y, ReadIdent(ch));
-							}
-							errors.Error(y, x, String.Format("Unexpected char in Lexer.Next() : {0}", ch));
+						}
+						break;
+					default:
+						if (Char.IsDigit(ch)) {
+							token = ReadDigit(ch, Col - 1);
+						} else {
+							token = ReadOperator(ch);
 						}
 						break;
 				}
 				
-				Token token = ReadOperator(ch);
-				
-				// try error recovery :)
-				if (token == null) {
-					return Next();
+				// try error recovery (token = null -> continue with next char)
+				if (token != null) {
+					return token;
 				}
-				return token;
 			}
 			
 			return new Token(Tokens.EOF, Col, Line, String.Empty);
@@ -270,11 +278,11 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				
 				if (d < long.MinValue || d > long.MaxValue) {
 					islong     = true;
-					isunsigned = true;	
+					isunsigned = true;
 				} else if (d < uint.MinValue || d > uint.MaxValue) {
-					islong = true;	
+					islong = true;
 				} else if (d < int.MinValue || d > int.MaxValue) {
-					isunsigned = true;	
+					isunsigned = true;
 				}
 				
 				Token token;
@@ -606,7 +614,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					return new Token(Tokens.LessThan, x, y);
 				case '>':
 					switch (ReaderPeek()) {
-// Removed because of generics:
+							// Removed because of generics:
 //						case '>':
 //							ReaderRead();
 //							if (ReaderPeek() != -1) {
@@ -640,7 +648,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					// Prevent OverflowException when ReaderPeek returns -1
 					int tmp = ReaderPeek();
 					if (tmp > 0 && Char.IsDigit((char)tmp)) {
-						 return ReadDigit('.', Col - 1);
+						return ReadDigit('.', Col - 1);
 					}
 					return new Token(Tokens.Dot, x, y);
 				case ')':
@@ -702,7 +710,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						curWord.Length = 0;
 						if (specialCommentHash.ContainsKey(tag)) {
 							Point p = new Point(Col, Line);
-							string comment = ReadToEOL();
+							string comment = ch + ReadToEOL();
 							tagComments.Add(new TagComment(tag, comment, p, new Point(Col, Line)));
 							sb.Append(comment);
 							break;
