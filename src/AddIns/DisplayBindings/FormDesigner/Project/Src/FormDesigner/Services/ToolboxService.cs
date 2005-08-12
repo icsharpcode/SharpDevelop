@@ -250,13 +250,7 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public ToolboxItem DeserializeToolboxItem(object serializedObject)
 		{
-			LoggingService.DebugFormatted("DeserializeToolboxItem {0}", serializedObject);
-			if (serializedObject is System.Windows.Forms.IDataObject) {
-				if (((System.Windows.Forms.IDataObject)serializedObject).GetDataPresent(typeof(ToolboxItem))) {
-					return (ToolboxItem) ((System.Windows.Forms.IDataObject)serializedObject).GetData(typeof(ToolboxItem));
-				}
-			}
-			return null;
+			return DeserializeToolboxItem(serializedObject, null);
 		}
 		
 		public ToolboxItem DeserializeToolboxItem(object serializedObject, IDesignerHost host)
@@ -266,19 +260,21 @@ namespace ICSharpCode.FormDesigner.Services
 				if (((System.Windows.Forms.IDataObject)serializedObject).GetDataPresent(typeof(ToolboxItem))) {
 					ToolboxItem item = (ToolboxItem) ((System.Windows.Forms.IDataObject)serializedObject).GetData(typeof(ToolboxItem));
 					
+					ArrayList list;
 					if (host != null) {
-						ArrayList list = (ArrayList)toolboxByHost[host];
+						list = (ArrayList)toolboxByHost[host];
 						if (list != null && list.Contains(item)) {
-							return item;
-						}
-						list = (ArrayList)toolboxByHost[ALL_HOSTS];
-						if (list != null && list.Contains(item)) {
+							LoggingService.Warn(item.TypeName);
 							return item;
 						}
 					}
+					list = (ArrayList)toolboxByHost[ALL_HOSTS];
+					if (list != null && list.Contains(item)) {
+						return item;
+					}
 				}
 			}
-			LoggingService.InfoFormatted("DeserializeToolboxItem {0} host {1} return null", serializedObject, host);
+			LoggingService.WarnFormatted("DeserializeToolboxItem {0} host {1} return null", serializedObject, host);
 			return null;
 		}
 		

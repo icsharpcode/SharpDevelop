@@ -53,7 +53,9 @@ namespace ICSharpCode.Core
 				} else {
 					menuCommand = (ICommand)codon.AddIn.CreateObject(codon.Properties["class"]);
 				}
-				menuCommand.Owner = caller;
+				if (menuCommand != null) {
+					menuCommand.Owner = caller;
+				}
 			} catch (Exception e) {
 				MessageService.ShowError(e, "Can't create menu command : " + codon.Id);
 			}

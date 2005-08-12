@@ -1079,11 +1079,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public string[] GetFormats()
 		{
-			return null;
+			return new string[0];
 		}
 		public string[] GetFormats(bool autoConvert)
 		{
-			return null;
+			return new string[0];
 		}
 		
 		public void SetData(object data)

@@ -30,9 +30,6 @@ namespace ICSharpCode.FormDesigner.Services
 	/// </remarks>
 	public class HelpService : IHelpService
 	{
-		Hashtable LocalContexts     = new Hashtable();
-		ArrayList ContextAttributes = new ArrayList();
-		
 		string f1Keyword      = null;
 		string generalKeyword = null;
 		
@@ -71,7 +68,6 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public void RemoveLocalContext(IHelpService localContext)
 		{
-			LocalContexts.Remove(LocalContexts);
 		}
 		
 		public void ShowHelpFromKeyword(string helpKeyword)
