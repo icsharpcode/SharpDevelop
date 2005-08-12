@@ -1419,12 +1419,12 @@ AccessorDecls<out PropertyGetRegion getBlock, out PropertySetRegion setBlock>
 GetAccessorDecl<out PropertyGetRegion getBlock, List<AttributeSection> attributes>
 	(. Statement stmt = null; .) =
 	"Get"
+	(. Point startLocation = t.Location; .)
 	EOL
 	Block<out stmt>
-	(.
-		getBlock = new PropertyGetRegion((BlockStatement)stmt, attributes);
-	.)
+	(. getBlock = new PropertyGetRegion((BlockStatement)stmt, attributes); .)
 	"End" "Get"
+	(. getBlock.StartLocation = startLocation; getBlock.EndLocation = t.EndLocation; .)
 	EOL
 	.
 
@@ -1434,6 +1434,7 @@ SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attribute
 		Statement stmt = null; List<ParameterDeclarationExpression> p = new List<ParameterDeclarationExpression>();
 	.) =
 	"Set"
+	(. Point startLocation = t.Location; .)
 	[ "("	[ FormalParameterList<p> ] ")" ]
 	EOL
 	Block<out stmt>
@@ -1442,6 +1443,7 @@ SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attribute
 		setBlock.Parameters = p;
 	.)
 	"End" "Set"
+	(. setBlock.StartLocation = startLocation; setBlock.EndLocation = t.EndLocation; .)
 	EOL
 	.
 

@@ -53,7 +53,7 @@ class MainClass
 		xmlWriter.Formatting = Formatting.Indented;
 		xmlWriter.WriteStartDocument();
 		xmlWriter.WriteStartElement("log");
-		client.Log(new string[] {".."}, Revision.Head, Revision.FromNumber(2), false, false,
+		client.Log(new string[] {".."}, Revision.Base, Revision.FromNumber(2), false, false,
 		           delegate(LogMessage message) {
 		           	xmlWriter.WriteStartElement("logentry");
 		           	xmlWriter.WriteAttributeString("revision", message.Revision.ToString(System.Globalization.CultureInfo.InvariantCulture));

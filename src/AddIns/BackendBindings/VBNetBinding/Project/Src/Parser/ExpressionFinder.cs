@@ -21,7 +21,7 @@ namespace VBNetBinding.Parser
 			if (expression == null)
 				return new ExpressionResult(null);
 			if (expression.Length > 8 && expression.Substring(0, 8).Equals("Imports ", StringComparison.InvariantCultureIgnoreCase))
-				return new ExpressionResult(expression.Substring(8).TrimStart(), ExpressionContext.Namespace, null);
+				return new ExpressionResult(expression.Substring(8).TrimStart(), ExpressionContext.Type, null);
 			if (expression.Length > 4 && expression.Substring(0, 4).Equals("New ", StringComparison.InvariantCultureIgnoreCase))
 				return new ExpressionResult(expression.Substring(4).TrimStart(), ExpressionContext.ObjectCreation, null);
 			if (curTokenType == Ident && lastIdentifier.Equals("as", StringComparison.InvariantCultureIgnoreCase))

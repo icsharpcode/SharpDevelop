@@ -28,7 +28,7 @@
 			             class   = "MbUnitPad.ReloadCommand"/>
 			<ToolbarItem id      = "Unload"
 			             icon    = "Icons.16x16.BrowserCancel"
-			             tooltip = "${res:NUnitPad.NUnitPadContent.UnloadItem}"
+			             tooltip = "${res:NUnitPad.NUnitPadContent.CancelItem}"
 			             class   = "MbUnitPad.UnloadCommand"/>
 			<ToolbarItem id      = "Separator1" type = "Separator"/>
 			<ToolbarItem id      = "AddMbUnitReference"

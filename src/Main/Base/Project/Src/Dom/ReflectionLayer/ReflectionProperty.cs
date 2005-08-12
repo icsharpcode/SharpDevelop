@@ -30,15 +30,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			// show the abstract layer that we have getter & setters
 			if (propertyInfo.CanRead) {
-				getterRegion = new DefaultRegion(0, 0, 0, 0);
+				GetterRegion = new DefaultRegion(0, 0, 0, 0);
 			} else {
-				getterRegion = null;
+				GetterRegion = null;
 			}
 			
 			if (propertyInfo.CanWrite) {
-				setterRegion = new DefaultRegion(0, 0, 0, 0);
+				SetterRegion = new DefaultRegion(0, 0, 0, 0);
 			} else {
-				setterRegion = null;
+				SetterRegion = null;
 			}
 			
 			MethodInfo methodBase = null;

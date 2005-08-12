@@ -500,6 +500,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass c = GetCurrentClass();
 			
 			DefaultProperty property = new DefaultProperty(propertyDeclaration.Name, type, ConvertModifier(propertyDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			if (propertyDeclaration.GetRegion != null) {
+				property.GetterRegion = GetRegion(propertyDeclaration.GetRegion.StartLocation, propertyDeclaration.GetRegion.EndLocation);
+			}
+			if (propertyDeclaration.SetRegion != null) {
+				property.SetterRegion = GetRegion(propertyDeclaration.SetRegion.StartLocation, propertyDeclaration.SetRegion.EndLocation);
+			}
 			property.Documentation = GetDocumentation(region.BeginLine);
 			property.Attributes.AddRange(VisitAttributes(propertyDeclaration.Attributes));
 			c.Properties.Add(property);

@@ -45,6 +45,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		/// <summary>
+		/// Gets if classes can be imported (i.e. Imports System.Math)
+		/// </summary>
+		public virtual bool CanImportClasses {
+			get {
+				return false;
+			}
+		}
+		
 		public virtual bool ShowInNamespaceCompletion(IClass c)
 		{
 			return true;
@@ -79,6 +88,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			
 			public override bool ImportModules {
+				get {
+					return true;
+				}
+			}
+			
+			public override bool CanImportClasses {
 				get {
 					return true;
 				}

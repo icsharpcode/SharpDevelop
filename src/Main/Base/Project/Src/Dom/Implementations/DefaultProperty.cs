@@ -16,8 +16,8 @@ namespace ICSharpCode.SharpDevelop.Dom {
 	{
 		protected IRegion bodyRegion;
 		
-		protected IRegion     getterRegion;
-		protected IRegion     setterRegion;
+		IRegion getterRegion;
+		IRegion setterRegion;
 
 		protected IMethod     getterMethod;
 		protected IMethod     setterMethod;
@@ -58,11 +58,17 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			get {
 				return getterRegion;
 			}
+			set {
+				getterRegion = value;
+			}
 		}
 
 		public IRegion SetterRegion {
 			get {
 				return setterRegion;
+			}
+			set {
+				setterRegion = value;
 			}
 		}
 
@@ -80,13 +86,13 @@ namespace ICSharpCode.SharpDevelop.Dom {
 
 		public virtual bool CanGet {
 			get {
-				return GetterRegion != null;
+				return getterRegion != null;
 			}
 		}
 
 		public virtual bool CanSet {
 			get {
-				return SetterRegion != null;
+				return setterRegion != null;
 			}
 		}
 		

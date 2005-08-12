@@ -494,6 +494,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					IField field = new DefaultField(para.ReturnType, para.Name, ModifierEnum.None, para.Region, callingClass);
 					return new LocalResolveResult(callingMember, field, true);
 				}
+				if (IsSameName(identifier, "value")) {
+					IProperty property = callingMember as IProperty;
+					if (property != null && property.SetterRegion != null && property.SetterRegion.IsInside(caretLine, caretColumn)) {
+						IField field = new DefaultField(property.ReturnType, "value", ModifierEnum.None, property.Region, callingClass);
+						return new LocalResolveResult(callingMember, field, true);
+					}
+				}
 			}
 			if (callingClass != null) {
 				IMember member = GetMember(callingClass.DefaultReturnType, identifier);
@@ -517,6 +524,23 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			string namespaceName = SearchNamespace(identifier);
 			if (namespaceName != null && namespaceName.Length > 0) {
 				return new NamespaceResolveResult(callingClass, callingMember, namespaceName);
+			}
+			
+			if (languageProperties.CanImportClasses) {
+				foreach (IUsing @using in cu.Usings) {
+					foreach (string import in @using.Usings) {
+						IClass c = projectContent.GetClass(import);
+						if (c != null) {
+							IMember member = GetMember(c.DefaultReturnType, identifier);
+							if (member != null) {
+								return CreateMemberResolveResult(member);
+							}
+							ResolveResult result = ResolveMethod(c.DefaultReturnType, identifier);
+							if (result != null)
+								return result;
+						}
+					}
+				}
 			}
 			
 			if (languageProperties.ImportModules) {
@@ -682,6 +706,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			List<IMethod> methods = SearchMethod(callingClass.DefaultReturnType, memberName);
 			if (methods.Count > 0)
 				return methods;
+			
+			if (languageProperties.CanImportClasses) {
+				foreach (IUsing @using in cu.Usings) {
+					foreach (string import in @using.Usings) {
+						IClass c = projectContent.GetClass(import);
+						if (c != null) {
+							methods = SearchMethod(c.DefaultReturnType, memberName);
+							if (methods.Count > 0)
+								return methods;
+						}
+					}
+				}
+			}
+			
 			if (languageProperties.ImportModules) {
 				ArrayList list = new ArrayList();
 				AddImportedNamespaceContents(list);
@@ -762,47 +800,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// <remarks>
 		/// does the dynamic lookup for the identifier
 		/// </remarks>
-		public IReturnType DynamicLookup(string typeName)
+		public IReturnType DynamicLookup(string identifier)
 		{
-			// try if it exists a variable named typeName
-			IReturnType variable = GetVariableType(SearchVariable(typeName));
-			if (variable != null) {
-				return variable;
-			}
-			
-			if (callingClass == null) {
-				return null;
-			}
-			
-			// try if typeName is a method parameter
-			IParameter parameter = SearchMethodParameter(typeName);
-			if (parameter != null) {
-				return parameter.ReturnType;
-			}
-			
-			// check if typeName == value in set method of a property
-			if (typeName == "value") {
-				IProperty property = callingMember as IProperty;
-				if (property != null && property.SetterRegion != null && property.SetterRegion.IsInside(caretLine, caretColumn)) {
-					return property.ReturnType;
-				}
-			}
-			
-			// try if there exists a nonstatic member named typeName
-			IReturnType t = SearchMember(callingClass.DefaultReturnType, typeName);
-			if (t != null) {
-				return t;
-			}
-			
-			// try if there exists a static member in outer classes named typeName
-			List<IClass> classes = cu.GetOuterClasses(caretLine, caretColumn);
-			foreach (IClass c in classes) {
-				IMember member = GetMember(c.DefaultReturnType, typeName);
-				if (member != null && member.IsStatic) {
-					return member.ReturnType;
-				}
-			}
-			return null;
+			ResolveResult rr = ResolveIdentifierInternal(identifier);
+			return (rr != null) ? rr.ResolvedType : null;
 		}
 		
 		IParameter SearchMethodParameter(string parameter)

@@ -21,10 +21,30 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	/// </summary>
 	public class CodeCompletionDataProvider : AbstractCompletionDataProvider
 	{
+		/// <summary>
+		/// Initialize a CodeCompletionDataProvider that reads the expression from the text area.
+		/// </summary>
+		public CodeCompletionDataProvider()
+		{
+		}
+		
+		/// <summary>
+		/// Initalize a CodeCompletionDataProvider with a fixed expression.
+		/// </summary>
+		public CodeCompletionDataProvider(ExpressionResult expression)
+		{
+			this.fixedExpression = expression;
+		}
+		
+		ExpressionResult fixedExpression;
+		
 		protected override void GenerateCompletionData(TextArea textArea, char charTyped)
 		{
 			preSelection = null;
-			GenerateCompletionData(textArea, GetExpression(textArea));
+			if (fixedExpression.Expression == null)
+				GenerateCompletionData(textArea, GetExpression(textArea));
+			else
+				GenerateCompletionData(textArea, fixedExpression);
 		}
 		
 		#if DEBUG

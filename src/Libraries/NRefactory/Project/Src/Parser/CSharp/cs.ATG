@@ -1420,7 +1420,10 @@ GetAccessorDecl<out PropertyGetRegion getBlock, List<AttributeSection> attribute
 =
 	ident /* "get" is not a keyword!? */
 	(. if (t.val != "get") Error("get expected"); .)
-	( Block<out stmt> | ";" ) (. getBlock = new PropertyGetRegion((BlockStatement)stmt, attributes); .)
+	(. Point startLocation = t.Location; .)
+	( Block<out stmt> | ";" )
+	(. getBlock = new PropertyGetRegion((BlockStatement)stmt, attributes); .)
+	(. getBlock.StartLocation = startLocation; getBlock.EndLocation = t.EndLocation; .)
 .
 
 SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attributes>
@@ -1428,7 +1431,10 @@ SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attribute
 =
 	ident /* "set" is not a keyword!? */
 	(. if (t.val != "set") Error("set expected"); .)
-	( Block<out stmt> | ";" ) (. setBlock = new PropertySetRegion((BlockStatement)stmt, attributes); .)
+	(. Point startLocation = t.Location; .)
+	( Block<out stmt> | ";" )
+	(. setBlock = new PropertySetRegion((BlockStatement)stmt, attributes); .)
+	(. setBlock.StartLocation = startLocation; setBlock.EndLocation = t.EndLocation; .)
 .
 
 EventAccessorDecls<out EventAddRegion addBlock, out EventRemoveRegion removeBlock>
@@ -1458,27 +1464,34 @@ InterfaceAccessors<out PropertyGetRegion getBlock, out PropertySetRegion setBloc
 	AttributeSection section;
 	List<AttributeSection> attributes = new List<AttributeSection>();
 	getBlock = null; setBlock = null;
+	PropertyGetSetRegion lastBlock = null;
 .)
 =
 	{ AttributeSection<out section> (. attributes.Add(section); .) }
+	(. Point startLocation = la.Location; .)
 	(
 		IF (IdentIsGet()) ident   (. getBlock = new PropertyGetRegion(null, attributes); .)
 		| IF (IdentIsSet()) ident (. setBlock = new PropertySetRegion(null, attributes); .)
 		| ident                   (. Error("set or get expected"); .)
 	)
-	";"                           (. attributes = new List<AttributeSection>(); .)
+	";"
+	(. if (getBlock != null) { getBlock.StartLocation = startLocation; getBlock.EndLocation = t.EndLocation; }
+	   if (setBlock != null) { setBlock.StartLocation = startLocation; setBlock.EndLocation = t.EndLocation; }
+	   attributes = new List<AttributeSection>(); .)
 	[
 		{ AttributeSection<out section> (. attributes.Add(section); .) }
+		(. startLocation = la.Location; .)
 		(
 			IF (IdentIsGet()) ident   (. if (getBlock != null) Error("get already declared");
-			                             else getBlock = new PropertyGetRegion(null, attributes);
+			                             else { getBlock = new PropertyGetRegion(null, attributes); lastBlock = getBlock; }
 			                          .)
 			| IF (IdentIsSet()) ident (. if (setBlock != null) Error("set already declared");
-			                             else setBlock = new PropertySetRegion(null, attributes);
+			                             else { setBlock = new PropertySetRegion(null, attributes); lastBlock = setBlock; }
 			                          .)
 			| ident                   (. Error("set or get expected"); .)
 		)
 		";"
+		(. if (lastBlock != null) { lastBlock.StartLocation = startLocation; lastBlock.EndLocation = t.EndLocation; } .)
 	]
 .
 

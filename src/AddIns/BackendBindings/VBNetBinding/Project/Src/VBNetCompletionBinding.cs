@@ -155,8 +155,7 @@ namespace VBNetBinding
 			// and possible return types.
 			switch (word.ToLower()) {
 				case "imports":
-					// TODO: check if we are inside class/namespace
-					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Namespace), ' ');
+					editor.ShowCompletionWindow(new CodeCompletionDataProvider(new ExpressionResult("Global", ExpressionContext.Type)), ' ');
 					return true;
 				case "as":
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Type), ' ');

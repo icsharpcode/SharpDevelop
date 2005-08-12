@@ -89,6 +89,22 @@ namespace ICSharpCode.SharpDevelop.Tests
 			                        program);
 		}
 		
+		public T Resolve<T>(string program, string expression, int line) where T : ResolveResult
+		{
+			ResolveResult rr = Resolve(program, expression, line);
+			Assert.IsNotNull(rr);
+			Assert.IsTrue(rr is T, "result is " + typeof(T).Name);
+			return (T)rr;
+		}
+		
+		public T ResolveVB<T>(string program, string expression, int line) where T : ResolveResult
+		{
+			ResolveResult rr = ResolveVB(program, expression, line);
+			Assert.IsNotNull(rr);
+			Assert.IsTrue(rr is T, "result is " + typeof(T).Name);
+			return (T)rr;
+		}
+		
 		IProjectContent corLib = ProjectContentRegistry.Mscorlib;
 		#endregion
 		
@@ -104,14 +120,10 @@ namespace ICSharpCode.SharpDevelop.Tests
 	End Sub
 End Class
 ";
-			ResolveResult result = ResolveVB(program, "a", 4);
-			Assert.IsNotNull(result, "result");
-			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
+			ResolveResult result = ResolveVB<LocalResolveResult>(program, "a", 4);
 			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
 			
-			result = ResolveVB(program, "b", 4);
-			Assert.IsNotNull(result, "result");
-			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
+			result = ResolveVB<LocalResolveResult>(program, "b", 4);
 			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
 		}
 		
@@ -127,9 +139,7 @@ End Class
 	End Sub
 End Class
 ";
-			ResolveResult result = ResolveVB(program, "c", 4);
-			Assert.IsNotNull(result, "result");
-			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
+			ResolveResult result = ResolveVB<LocalResolveResult>(program, "c", 4);
 			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
 		}
 		
@@ -168,9 +178,7 @@ End Class
 	End Sub
 End Module
 ";
-			ResolveResult result = ResolveVB(program, "t", 4);
-			Assert.IsNotNull(result, "result");
-			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
+			ResolveResult result = ResolveVB<LocalResolveResult>(program, "t", 4);
 			
 			ArrayList arr = result.GetCompletionData(lastPC);
 			Assert.IsNotNull(arr, "arr");
@@ -203,8 +211,7 @@ class A {
 		[Test]
 		public void PropertyTypeConflictTest()
 		{
-			ResolveResult result = Resolve(arrayListConflictProgram, "arrayList", 4);
-			Assert.IsTrue(result is MemberResolveResult);
+			ResolveResult result = Resolve<MemberResolveResult>(arrayListConflictProgram, "arrayList", 4);
 			Assert.AreEqual("System.Collections.ArrayList", result.ResolvedType.FullyQualifiedName);
 		}
 		
@@ -246,9 +253,7 @@ interface IInterface2 {
 	void Method2();
 }
 ";
-			ResolveResult result = Resolve(program, "a", 4);
-			Assert.IsNotNull(result, "result");
-			Assert.IsTrue(result is LocalResolveResult, "result is LocalResolveResult");
+			ResolveResult result = Resolve<LocalResolveResult>(program, "a", 4);
 			ArrayList arr = result.GetCompletionData(lastPC);
 			Assert.IsNotNull(arr, "arr");
 			bool m1 = false;
@@ -306,9 +311,7 @@ interface IInterface2 {
 	}
 }
 ";
-			ResolveResult result = Resolve(program, "TargetMethod()", 3);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is MemberResolveResult);
+			ResolveResult result = Resolve<MemberResolveResult>(program, "TargetMethod()", 3);
 			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName, "'TargetMethod()'");
 		}
 		
@@ -325,9 +328,7 @@ interface IInterface2 {
 	}
 }
 ";
-			ResolveResult result = Resolve(program, "this.TargetMethod()", 3);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is MemberResolveResult);
+			ResolveResult result = Resolve<MemberResolveResult>(program, "this.TargetMethod()", 3);
 			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName, "'this.TargetMethod()'");
 		}
 		
@@ -343,10 +344,8 @@ class A {
 	public event EventHandler TestEvent;
 }
 ";
-			ResolveResult result = Resolve(program, "TestEvent(this, EventArgs.Empty)", 4);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is MemberResolveResult);
-			Assert.AreEqual("A.TestEvent", (result as MemberResolveResult).ResolvedMember.FullyQualifiedName);
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "TestEvent(this, EventArgs.Empty)", 4);
+			Assert.AreEqual("A.TestEvent", result.ResolvedMember.FullyQualifiedName);
 		}
 		
 		[Test]
@@ -377,10 +376,8 @@ class A {
 	public event EventHandler TestEvent;
 }
 ";
-			ResolveResult result = Resolve(program, "this.TestEvent(this, EventArgs.Empty)", 4);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is MemberResolveResult);
-			Assert.AreEqual("A.TestEvent", (result as MemberResolveResult).ResolvedMember.FullyQualifiedName);
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "this.TestEvent(this, EventArgs.Empty)", 4);
+			Assert.AreEqual("A.TestEvent", result.ResolvedMember.FullyQualifiedName);
 		}
 		
 		[Test]
@@ -394,14 +391,10 @@ class A {
 	}
 }
 ";
-			ResolveResult result = Resolve(program, "eh(this, new ResolveEventArgs())", 5);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is LocalResolveResult);
+			ResolveResult result = Resolve<LocalResolveResult>(program, "eh(this, new ResolveEventArgs())", 5);
 			Assert.AreEqual("eh", (result as LocalResolveResult).Field.Name);
 			
-			result = Resolve(program, "eh(this, new ResolveEventArgs()).GetType(\"bla\")", 5);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is MemberResolveResult);
+			result = Resolve<MemberResolveResult>(program, "eh(this, new ResolveEventArgs()).GetType(\"bla\")", 5);
 			Assert.AreEqual("System.Reflection.Module.GetType", (result as MemberResolveResult).ResolvedMember.FullyQualifiedName);
 		}
 		
@@ -417,14 +410,10 @@ class A {
 	double Multiply(double a, double b) { return a * b; }
 }
 ";
-			ResolveResult result = Resolve(program, "Multiply(1, 1)", 3);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is MemberResolveResult, "'Multiply(1,1)' is MemberResolveResult");
+			ResolveResult result = Resolve<MemberResolveResult>(program, "Multiply(1, 1)", 3);
 			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName, "'Multiply(1,1)'");
 			
-			result = Resolve(program, "Multiply(1.0, 1.0)", 3);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is MemberResolveResult, "'Multiply(1.0,1.0)' is MemberResolveResult");
+			result = Resolve<MemberResolveResult>(program, "Multiply(1.0, 1.0)", 3);
 			Assert.AreEqual("System.Double", result.ResolvedType.FullyQualifiedName, "'Multiply(1.0,1.0)'");
 		}
 		
@@ -442,21 +431,18 @@ class A {
 	A(double dblVal) {}
 }
 ";
-			ResolveResult result = Resolve(program, "new A()", 3);
-			Assert.IsNotNull(result);
-			IMethod m = (IMethod)((MemberResolveResult)result).ResolvedMember;
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "new A()", 3);
+			IMethod m = (IMethod)result.ResolvedMember;
 			Assert.IsFalse(m.IsStatic, "new A() is static");
 			Assert.AreEqual(0, m.Parameters.Count, "new A() parameter count");
 			
-			result = Resolve(program, "new A(10)", 3);
-			Assert.IsNotNull(result);
-			m = (IMethod)((MemberResolveResult)result).ResolvedMember;
+			result = Resolve<MemberResolveResult>(program, "new A(10)", 3);
+			m = (IMethod)result.ResolvedMember;
 			Assert.AreEqual(1, m.Parameters.Count, "new A(10) parameter count");
 			Assert.AreEqual("intVal", m.Parameters[0].Name, "new A(10) parameter");
 			
-			result = Resolve(program, "new A(11.1)", 3);
-			Assert.IsNotNull(result);
-			m = (IMethod)((MemberResolveResult)result).ResolvedMember;
+			result = Resolve<MemberResolveResult>(program, "new A(11.1)", 3);
+			m = (IMethod)result.ResolvedMember;
 			Assert.AreEqual(1, m.Parameters.Count, "new A(11.1) parameter count");
 			Assert.AreEqual("dblVal", m.Parameters[0].Name, "new A(11.1) parameter");
 		}
@@ -470,10 +456,26 @@ class A {
 	}
 }
 ";
-			ResolveResult result = Resolve(program, "new A()", 3);
-			Assert.IsNotNull(result);
-			IMethod m = (IMethod)((MemberResolveResult)result).ResolvedMember;
+			MemberResolveResult result = Resolve<MemberResolveResult>(program, "new A()", 3);
+			IMethod m = (IMethod)result.ResolvedMember;
 			Assert.IsNotNull(m);
+		}
+		
+		[Test]
+		public void ValueInsideSetterTest()
+		{
+			string program = @"class A {
+	public string Property {
+		set {
+			
+		}
+	}
+}
+";
+			LocalResolveResult result = Resolve<LocalResolveResult>(program, "value", 4);
+			Assert.AreEqual("System.String", result.ResolvedType.FullyQualifiedName);
+			MemberResolveResult mrr = Resolve<MemberResolveResult>(program, "value.ToString()", 4);
+			Assert.AreEqual("System.String.ToString", mrr.ResolvedMember.FullyQualifiedName);
 		}
 		
 		[Test]
@@ -487,9 +489,7 @@ class A {
 		};
 	} }
 ";
-			ResolveResult result = Resolve(program, "e", 5);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is LocalResolveResult);
+			ResolveResult result = Resolve<LocalResolveResult>(program, "e", 5);
 			Assert.AreEqual("System.EventArgs", result.ResolvedType.FullyQualifiedName);
 		}
 		
@@ -501,9 +501,7 @@ class A {
 		
 	} }
 ";
-			ResolveResult result = Resolve(program, "int", 3);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is TypeResolveResult);
+			ResolveResult result = Resolve<TypeResolveResult>(program, "int", 3);
 			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName);
 		}
 		
@@ -516,9 +514,7 @@ class A {
 	End Sub
 End Class
 ";
-			ResolveResult result = ResolveVB(program, "inTeGer", 3);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is TypeResolveResult);
+			ResolveResult result = ResolveVB<TypeResolveResult>(program, "inTeGer", 3);
 			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName);
 		}
 		
@@ -537,9 +533,7 @@ class B {
 	
 }
 ";
-			ResolveResult result = Resolve(program, "int", 4);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is TypeResolveResult);
+			ResolveResult result = Resolve<TypeResolveResult>(program, "int", 4);
 			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName);
 		}
 		
@@ -555,9 +549,7 @@ class B {
 	
 }
 ";
-			ResolveResult result = Resolve(program, "Activator", 5);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is TypeResolveResult);
+			ResolveResult result = Resolve<TypeResolveResult>(program, "Activator", 5);
 			Assert.AreEqual("System.Activator", result.ResolvedType.FullyQualifiedName);
 		}
 
@@ -572,9 +564,7 @@ class B {
 	
 }
 ";
-			ResolveResult result = Resolve(program, "System.Activator", 4);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is TypeResolveResult);
+			ResolveResult result = Resolve<TypeResolveResult>(program, "System.Activator", 4);
 			Assert.AreEqual("System.Activator", result.ResolvedType.FullyQualifiedName);
 		}
 		
@@ -586,9 +576,7 @@ class A {
 	
 }
 ";
-			ResolveResult result = Resolve(program, "Environment.SpecialFolder", 3);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is TypeResolveResult);
+			ResolveResult result = Resolve<TypeResolveResult>(program, "Environment.SpecialFolder", 3);
 			Assert.AreEqual("System.Environment.SpecialFolder", result.ResolvedType.FullyQualifiedName);
 		}
 		#endregion
@@ -610,9 +598,7 @@ class Activator {
 }
 }
 ";
-			ResolveResult result = Resolve(program, "Activator", 4);
-			Assert.IsNotNull(result);
-			Assert.IsTrue(result is TypeResolveResult);
+			ResolveResult result = Resolve<TypeResolveResult>(program, "Activator", 4);
 			Assert.AreEqual("Testnamespace.Activator", result.ResolvedType.FullyQualifiedName);
 		}
 		
@@ -630,8 +616,7 @@ class TestClass {
 ";
 			ResolveResult result = Resolve(program, "Collections.ArrayList", 4);
 			Assert.IsNull(result, "Collections.ArrayList should not resolve");
-			LocalResolveResult local = Resolve(program, "a", 5) as LocalResolveResult;
-			Assert.IsNotNull(local, "a should resolve to a local variable");
+			LocalResolveResult local = Resolve<LocalResolveResult>(program, "a", 5);
 			Assert.IsNull(local.ResolvedType, "the full type should not be resolved");
 		}
 		
@@ -647,11 +632,9 @@ Class TestClass
 	End Sub
 End Class
 ";
-			TypeResolveResult type = ResolveVB(program, "Collections.ArrayList", 4) as TypeResolveResult;
-			Assert.IsNotNull(type, "Collections.ArrayList should resolve to a type");
+			TypeResolveResult type = ResolveVB<TypeResolveResult>(program, "Collections.ArrayList", 4);
 			Assert.AreEqual("System.Collections.ArrayList", type.ResolvedClass.FullyQualifiedName, "TypeResolveResult");
-			LocalResolveResult local = ResolveVB(program, "a", 5) as LocalResolveResult;
-			Assert.IsNotNull(local, "a should resolve to a local variable");
+			LocalResolveResult local = ResolveVB<LocalResolveResult>(program, "a", 5);
 			Assert.AreEqual("System.Collections.ArrayList", local.ResolvedType.FullyQualifiedName,
 			                "the full type should be resolved");
 		}
@@ -667,11 +650,10 @@ class TestClass {
 	}
 }
 ";
-			TypeResolveResult type = Resolve(program, "COL.ArrayList", 4) as TypeResolveResult;
+			TypeResolveResult type = Resolve<TypeResolveResult>(program, "COL.ArrayList", 4);
 			Assert.IsNotNull(type, "COL.ArrayList should resolve to a type");
 			Assert.AreEqual("System.Collections.ArrayList", type.ResolvedClass.FullyQualifiedName, "TypeResolveResult");
-			LocalResolveResult local = Resolve(program, "a", 5) as LocalResolveResult;
-			Assert.IsNotNull(local, "a should resolve to a local variable");
+			LocalResolveResult local = Resolve<LocalResolveResult>(program, "a", 5);
 			Assert.AreEqual("System.Collections.ArrayList", local.ResolvedType.FullyQualifiedName,
 			                "the full type should be resolved");
 		}
@@ -681,9 +663,9 @@ class TestClass {
 		{
 			NamespaceResolveResult ns;
 			string program = "using COL = System.Collections;\r\nclass A {\r\n\r\n}\r\n";
-			ns = Resolve(program, "COL", 3) as NamespaceResolveResult;
+			ns = Resolve<NamespaceResolveResult>(program, "COL", 3);
 			Assert.AreEqual("System.Collections", ns.Name, "COL");
-			ns = Resolve(program, "COL.Generic", 3) as NamespaceResolveResult;
+			ns = Resolve<NamespaceResolveResult>(program, "COL.Generic", 3);
 			Assert.AreEqual("System.Collections.Generic", ns.Name, "COL.Generic");
 		}
 		
@@ -698,10 +680,40 @@ class TestClass {
 	}
 }
 ";
-			TypeResolveResult rr = Resolve(program, "COL", 4) as TypeResolveResult;
+			TypeResolveResult rr = Resolve<TypeResolveResult>(program, "COL", 4);
 			Assert.AreEqual("System.Collections.ArrayList", rr.ResolvedClass.FullyQualifiedName, "COL");
-			LocalResolveResult lr = Resolve(program, "a", 5) as LocalResolveResult;
+			LocalResolveResult lr = Resolve<LocalResolveResult>(program, "a", 5);
 			Assert.AreEqual("System.Collections.ArrayList", lr.ResolvedType.FullyQualifiedName, "a");
+		}
+		#endregion
+		
+		#region Import class tests
+		const string importClassProgram = @"Imports System
+Imports System.Math
+
+Class TestClass
+	Sub Main()
+		
+	End Sub
+End Class
+";
+		
+		[Test]
+		public void TestImportClassMember()
+		{
+			MemberResolveResult mrr = ResolveVB<MemberResolveResult>(importClassProgram, "Pi", 6);
+			Assert.AreEqual("System.Math.PI", mrr.ResolvedMember.FullyQualifiedName);
+			mrr = ResolveVB<MemberResolveResult>(importClassProgram, "Pi.ToString()", 6);
+			Assert.AreEqual("System.Double.ToString", mrr.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void TestImportClassMethod()
+		{
+			MemberResolveResult mrr = ResolveVB<MemberResolveResult>(importClassProgram, "Sin(3)", 6);
+			Assert.AreEqual("System.Math.Sin", mrr.ResolvedMember.FullyQualifiedName);
+			mrr = ResolveVB<MemberResolveResult>(importClassProgram, "Sin(3).ToString()", 6);
+			Assert.AreEqual("System.Double.ToString", mrr.ResolvedMember.FullyQualifiedName);
 		}
 		#endregion
 		

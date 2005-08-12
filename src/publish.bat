@@ -9,10 +9,10 @@ pushd ..\setup
 call buildSetup.bat
 @IF %ERRORLEVEL% NEQ 0 EXIT
 popd
-echo.
-echo.
-echo.
-echo Publish.bat completed successfully.
-echo In the directory SharpDevelop\setup, you will find Setup.exe.
-echo.
-pause
+@echo.
+@echo.
+@echo.
+@echo Publish.bat completed successfully.
+@echo In the directory SharpDevelop\setup, you will find Setup.exe.
+@echo.
+@pause
