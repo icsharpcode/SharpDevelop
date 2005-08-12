@@ -30,15 +30,23 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
 			MenuCommand cmd;
-			ClassMemberBookmark bookmark = (ClassMemberBookmark)owner;
-			IMember member = bookmark.Member;
+			IMember member;
+			MemberNode memberNode = owner as MemberNode;
+			if (memberNode != null) {
+				member = memberNode.Member;
+			} else {
+				ClassMemberBookmark bookmark = (ClassMemberBookmark)owner;
+				member = bookmark.Member;
+			}
 			IMethod method = member as IMethod;
 			List<ToolStripItem> list = new List<ToolStripItem>();
 			
 			if (method == null || !method.IsConstructor) {
-				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
-				cmd.Tag = member;
-				list.Add(cmd);
+				if (!IsReadOnly(member.DeclaringType)) {
+					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
+					cmd.Tag = member;
+					list.Add(cmd);
+				}
 			}
 			if (member.IsOverride) {
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToBaseClassCommand}", GoToBase);
@@ -70,12 +78,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					cmd.Tag = foundProperty;
 					list.Add(cmd);
 				} else {
-					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateGetter}", CreateGetter);
-					cmd.Tag = member;
-					list.Add(cmd);
-					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateProperty}", CreateProperty);
-					cmd.Tag = member;
-					list.Add(cmd);
+					if (!IsReadOnly(member.DeclaringType)) {
+						cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateGetter}", CreateGetter);
+						cmd.Tag = member;
+						list.Add(cmd);
+						cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateProperty}", CreateProperty);
+						cmd.Tag = member;
+						list.Add(cmd);
+					}
 				}
 			}
 			

@@ -40,6 +40,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			sortOrder = 3;
 			
+			this.ContextmenuAddinTreePath = "/SharpDevelop/Pads/ClassBrowser/ClassContextMenu";
 			this.project = project;
 			this.c       = c;
 			Text = c.Name;
@@ -81,23 +82,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			
 			foreach (IMethod method in c.Methods) {
-				new MemberNode(c, method).AddTo(this);
+				new MemberNode(method).AddTo(this);
 			}
 			
 			foreach (IProperty property in c.Properties) {
-				new MemberNode(c, property).AddTo(this);
-			}
-			
-			foreach (IIndexer indexer in c.Indexer) {
-				new MemberNode(c, indexer).AddTo(this);
+				new MemberNode(property).AddTo(this);
 			}
 			
 			foreach (IField field in c.Fields) {
-				new MemberNode(c, field).AddTo(this);
+				new MemberNode(field).AddTo(this);
 			}
 			
 			foreach (IEvent e in c.Events) {
-				new MemberNode(c, e).AddTo(this);
+				new MemberNode(e).AddTo(this);
 			}
 			UpdateVisibility();
 		}

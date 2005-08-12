@@ -24,7 +24,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		bool errorsDuringCompile = false;
 		object tag               = null;
-		string fileName          = "";
+		string fileName          = null;
 		IProjectContent projectContent;
 		
 		public string FileName {

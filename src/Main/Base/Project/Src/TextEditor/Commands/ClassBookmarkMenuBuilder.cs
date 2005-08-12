@@ -30,13 +30,21 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
 			MenuCommand cmd;
-			ClassBookmark bookmark = (ClassBookmark)owner;
-			IClass c = bookmark.Class;
+			IClass c;
+			ClassNode classNode = owner as ClassNode;
+			if (classNode != null) {
+				c = classNode.Class;
+			} else {
+				ClassBookmark bookmark = (ClassBookmark)owner;
+				c = bookmark.Class;
+			}
 			List<ToolStripItem> list = new List<ToolStripItem>();
 			
-			cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
-			cmd.Tag = c;
-			list.Add(cmd);
+			if (!IsReadOnly(c)) {
+				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
+				cmd.Tag = c;
+				list.Add(cmd);
+			}
 			
 			if (c.BaseTypes.Count > 0) {
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToBaseCommand}", GoToBase);

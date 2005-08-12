@@ -26,10 +26,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
 	public class ExportProjectToHtml : AbstractMenuCommand
 	{
+		public override bool IsEnabled {
+			get {
+				return false;
+			}
+		}
+		
 		public override void Run()
 		{
-//	TODO: New Projectfile system.					
-
 //			IProjectService projectService = (IProjectService)ICSharpCode.Core.ServiceManager.Services.GetService(typeof(IProjectService));
 //			if (projectService.CurrentSelectedProject != null) {
 //				ExportProjectToHtmlDialog ephd = new ExportProjectToHtmlDialog(projectService.CurrentSelectedProject);

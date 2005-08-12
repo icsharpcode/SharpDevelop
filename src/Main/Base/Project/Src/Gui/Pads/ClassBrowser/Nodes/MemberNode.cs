@@ -49,75 +49,58 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public MemberNode(IClass declaringType, IMethod method)
+		IMember member;
+		
+		public IMember Member {
+			get {
+				return member;
+			}
+		}
+		
+		void InitMemberNode(IMember member)
 		{
+			this.member = member;
+			this.ContextmenuAddinTreePath = "/SharpDevelop/Pads/ClassBrowser/MemberContextMenu";
+			declaringType = member.DeclaringType;
+			modifiers = member.Modifiers;
+			if (member.Region != null) {
+				line   = member.Region.BeginLine;
+				column = member.Region.BeginColumn;
+			}
+		}
+		
+		public MemberNode(IMethod method)
+		{
+			InitMemberNode(method);
 			sortOrder = 10;
-			
-			this.declaringType = declaringType;
-			modifiers = method.Modifiers;
 			Text = AppendReturnType(GetAmbience().Convert(method), method.ReturnType);
 			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(method);
-			if (method.Region != null) {
-				line   = method.Region.BeginLine;
-				column = method.Region.BeginColumn;
-			}
 		}
 		
 		
-		public MemberNode(IClass declaringType, IProperty property)
+		public MemberNode(IProperty property)
 		{
+			InitMemberNode(property);
 			sortOrder = 12;
-			
-			this.declaringType = declaringType;
-			modifiers = property.Modifiers;
 			Text = AppendReturnType(GetAmbience().Convert(property), property.ReturnType);
 			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(property);
-			if (property.Region != null) {
-				line   = property.Region.BeginLine;
-				column = property.Region.BeginColumn;
-			}
 		}
 		
 		
-		public MemberNode(IClass declaringType, IIndexer indexer)
+		public MemberNode(IField field)
 		{
-			sortOrder = 13;
-			this.declaringType = declaringType;
-			modifiers = indexer.Modifiers;
-			Text = AppendReturnType(GetAmbience().Convert(indexer), indexer.ReturnType);
-			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(indexer);
-			if (indexer.Region != null) {
-				line   = indexer.Region.BeginLine;
-				column = indexer.Region.BeginColumn;
-			}
-		}
-		
-		
-		public MemberNode(IClass declaringType, IField field)
-		{
+			InitMemberNode(field);
 			sortOrder = 11;
-			
-			this.declaringType = declaringType;
-			modifiers = field.Modifiers;
 			Text = AppendReturnType(GetAmbience().Convert(field), field.ReturnType);
 			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(field);
-			if (field.Region != null) {
-				line   = field.Region.BeginLine;
-				column = field.Region.BeginColumn;
-			}
 		}
 		
-		public MemberNode(IClass declaringType, IEvent e)
+		public MemberNode(IEvent e)
 		{
+			InitMemberNode(e);
 			sortOrder = 14;
-			this.declaringType = declaringType;
-			modifiers = e.Modifiers;
 			Text = AppendReturnType(GetAmbience().Convert(e), e.ReturnType);
 			SelectedImageIndex = ImageIndex = ClassBrowserIconService.GetIcon(e);
-			if (e.Region != null) {
-				line   = e.Region.BeginLine;
-				column = e.Region.BeginColumn;
-			}
 		}
 		
 		IAmbience GetAmbience()

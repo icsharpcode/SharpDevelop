@@ -474,7 +474,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		bool IsClassMemberBookmark(Bookmark b)
 		{
-			return b is Bookmarks.ClassMemberBookmark;
+			return b is Bookmarks.ClassMemberBookmark || b is Bookmarks.ClassBookmark;
 		}
 		
 		#region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation

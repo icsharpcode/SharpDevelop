@@ -661,7 +661,7 @@
     </Compile>
     <Compile Include="Src\TextEditor\Bookmarks\BookmarkConverter.cs" />
     <Compile Include="Src\TextEditor\Bookmarks\ClassMemberBookmark.cs" />
-    <Compile Include="Src\Commands\ClassMemberMenuBuilder.cs" />
+    <Compile Include="Src\TextEditor\Commands\ClassMemberMenuBuilder.cs" />
     <Compile Include="Src\Services\RefactoringService\RefactoringService.cs" />
     <Compile Include="Src\Services\RefactoringService\Reference.cs" />
     <Compile Include="Src\Services\ProjectService\ParseableFileContentEnumerator.cs" />

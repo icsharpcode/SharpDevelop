@@ -38,6 +38,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			return new ProvidedDocumentInformation(strategy, fileName, 0);
 		}
 		
+		protected bool IsReadOnly(IClass c)
+		{
+			return c.CompilationUnit.FileName == null;
+		}
+		
 		protected TextEditorControl JumpToDefinition(IMember member)
 		{
 			IViewContent viewContent = null;

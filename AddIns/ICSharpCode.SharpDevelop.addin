@@ -1437,15 +1437,12 @@
 		<Class id ="XmlFormatter" class = "ICSharpCode.SharpDevelop.DefaultEditor.XmlFormattingStrategy"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Views/ProjectBrowser/ContextMenu/ProjectBrowserNode">
-		<!-- AddIn to the project browser context menu -->
-		<Condition name = "ProjectActive" activeproject="*">
-			<MenuItem id = "ExportToHtml"
-			          insertafter = "GenerateDocumentation"
-			          insertbefore = "SetAsStartupProjectSeparator"
-			          label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
-			          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ExportProjectToHtml"/>
-		</Condition>
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
+		<MenuItem id = "ExportToHtml"
+		          insertafter = "AddSeparator"
+		          insertbefore = "SetAsStartupProjectSeparator"
+		          label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
+		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ExportProjectToHtml"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
@@ -1460,6 +1457,14 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
+		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassBookmarkMenuBuilder" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/MemberContextMenu">
+		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassMemberMenuBuilder" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/ClassContextMenu">
 		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassBookmarkMenuBuilder" />
 	</Path>
 	
