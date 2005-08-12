@@ -53,7 +53,10 @@ namespace ICSharpCode.TextEditor
 				int lineNumber = textArea.Document.GetVisibleLine(mark.LineNumber);
 				int yPos = (int)(lineNumber * textArea.TextView.FontHeight) - textArea.VirtualTop.Y;
 				if (yPos >= rect.Y && yPos <= rect.Bottom) {
-					//DrawBookmark(g, yPos, mark.IsEnabled);
+					if (lineNumber == textArea.Document.GetVisibleLine(mark.LineNumber - 1)) {
+						// marker is inside folded region, do not draw it
+						continue;
+					}
 					mark.Draw(this, g, new Point(0, yPos));
 				}
 			}
