@@ -21,20 +21,21 @@ namespace ICSharpCode.Core
 {
 	public static class ClassBrowserIconService
 	{
-		const int namespaceIndex = 3;
-		const int combineIndex   = 14;
-		const int literalIndex   = 15;
+		public const int NamespaceIndex = 3;
+		public const int CombineIndex   = 14;
+		public const int LiteralIndex   = 15;
+		public const int GotoArrowIndex = 13;
 		
-		const int classIndex     = 16;
-		const int structIndex    = classIndex + 1 * 4;
-		const int interfaceIndex = classIndex + 2 * 4;
-		const int enumIndex      = classIndex + 3 * 4;
-		const int methodIndex    = classIndex + 4 * 4;
-		const int propertyIndex  = classIndex + 5 * 4;
-		const int fieldIndex     = classIndex + 6 * 4;
-		const int delegateIndex  = classIndex + 7 * 4;
-		const int eventIndex     = classIndex + 8 * 4;
-		const int indexerIndex   = classIndex + 9 * 4;
+		public const int ClassIndex     = 16;
+		public const int StructIndex    = ClassIndex + 1 * 4;
+		public const int InterfaceIndex = ClassIndex + 2 * 4;
+		public const int EnumIndex      = ClassIndex + 3 * 4;
+		public const int MethodIndex    = ClassIndex + 4 * 4;
+		public const int PropertyIndex  = ClassIndex + 5 * 4;
+		public const int FieldIndex     = ClassIndex + 6 * 4;
+		public const int DelegateIndex  = ClassIndex + 7 * 4;
+		public const int EventIndex     = ClassIndex + 8 * 4;
+		public const int IndexerIndex   = ClassIndex + 9 * 4;
 		
 		const int internalModifierOffset  = 1;
 		const int protectedModifierOffset = 2;
@@ -45,96 +46,6 @@ namespace ICSharpCode.Core
 		public static ImageList ImageList {
 			get {
 				return imglist;
-			}
-		}
-		
-		public static int CombineIndex {
-			get {
-				return combineIndex;
-			}
-		}
-		
-		public static int NamespaceIndex {
-			get {
-				return namespaceIndex;
-			}
-		}
-		
-		public static int LiteralIndex {
-			get {
-				return literalIndex;
-			}
-		}
-		
-		public static int ClassIndex {
-			get {
-				return classIndex;
-			}
-		}
-
-		public static int StructIndex {
-			get {
-				return structIndex;
-			}
-		}
-
-		public static int InterfaceIndex {
-			get {
-				return interfaceIndex;
-			}
-		}
-
-		public static int EnumIndex {
-			get {
-				return enumIndex;
-			}
-		}
-
-		public static int MethodIndex {
-			get {
-				return methodIndex;
-			}
-		}
-		
-		public static int PropertyIndex {
-			get {
-				return propertyIndex;
-			}
-		}
-
-		public static int FieldIndex {
-			get {
-				return fieldIndex;
-			}
-		}
-
-		public static int DelegateIndex {
-			get {
-				return delegateIndex;
-			}
-		}
-
-		public static int EventIndex {
-			get {
-				return eventIndex;
-			}
-		}
-
-		public static int InternalModifierOffset {
-			get {
-				return internalModifierOffset;
-			}
-		}
-
-		public static int ProtectedModifierOffset {
-			get {
-				return protectedModifierOffset;
-			}
-		}
-
-		public static int PrivateModifierOffset {
-			get {
-				return privateModifierOffset;
 			}
 		}
 		
@@ -154,47 +65,47 @@ namespace ICSharpCode.Core
 		
 		public static int GetIcon(IMethod method)
 		{
-			return methodIndex + GetModifierOffset(method.Modifiers);
+			return MethodIndex + GetModifierOffset(method.Modifiers);
 		}
 		
 		public static int GetIcon(IIndexer method)
 		{
-			return indexerIndex + GetModifierOffset(method.Modifiers);
+			return IndexerIndex + GetModifierOffset(method.Modifiers);
 		}
 		
 		public static int GetIcon(IProperty method)
 		{
-			return propertyIndex + GetModifierOffset(method.Modifiers);
+			return PropertyIndex + GetModifierOffset(method.Modifiers);
 		}
 		
 		public static int GetIcon(IField field)
 		{
 			if (field.IsLiteral) {
-				return literalIndex;
+				return LiteralIndex;
 			}
-			return fieldIndex + GetModifierOffset(field.Modifiers);
+			return FieldIndex + GetModifierOffset(field.Modifiers);
 		}
 		
 		public static int GetIcon(IEvent evt)
 		{
-			return eventIndex + GetModifierOffset(evt.Modifiers);
+			return EventIndex + GetModifierOffset(evt.Modifiers);
 		}
 		
 		public static int GetIcon(IClass c)
 		{
-			int imageIndex = classIndex;
+			int imageIndex = ClassIndex;
 			switch (c.ClassType) {
 				case ClassType.Delegate:
-					imageIndex = delegateIndex;
+					imageIndex = DelegateIndex;
 					break;
 				case ClassType.Enum:
-					imageIndex = enumIndex;
+					imageIndex = EnumIndex;
 					break;
 				case ClassType.Struct:
-					imageIndex = structIndex;
+					imageIndex = StructIndex;
 					break;
 				case ClassType.Interface:
-					imageIndex = interfaceIndex;
+					imageIndex = InterfaceIndex;
 					break;
 			}
 			return imageIndex + GetModifierOffset(c.Modifiers);
@@ -203,73 +114,73 @@ namespace ICSharpCode.Core
 		public static int GetIcon(MethodBase methodinfo)
 		{
 			if (methodinfo.IsAssembly) {
-				return methodIndex + internalModifierOffset;
+				return MethodIndex + internalModifierOffset;
 			}
 			if (methodinfo.IsPrivate) {
-				return methodIndex + privateModifierOffset; 
+				return MethodIndex + privateModifierOffset; 
 			}
 			if (!(methodinfo.IsPrivate || methodinfo.IsPublic)) { 
-				return methodIndex + protectedModifierOffset;
+				return MethodIndex + protectedModifierOffset;
 			}
 			
-			return methodIndex;
+			return MethodIndex;
 		}
 		
 		public static int GetIcon(PropertyInfo propertyinfo)
 		{
 			if (propertyinfo.CanRead && propertyinfo.GetGetMethod(true) != null) {
-				return propertyIndex + GetIcon(propertyinfo.GetGetMethod(true)) - methodIndex;
+				return PropertyIndex + GetIcon(propertyinfo.GetGetMethod(true)) - MethodIndex;
 			}
 			if (propertyinfo.CanWrite && propertyinfo.GetSetMethod(true) != null) {
-				return propertyIndex + GetIcon(propertyinfo.GetSetMethod(true)) - methodIndex;
+				return PropertyIndex + GetIcon(propertyinfo.GetSetMethod(true)) - MethodIndex;
 			}
-			return propertyIndex;
+			return PropertyIndex;
 		}
 		
 		public static int GetIcon(FieldInfo fieldinfo)
 		{
 			if (fieldinfo.IsLiteral) {
-				return 13;
+				return LiteralIndex;
 			}
 			
 			if (fieldinfo.IsAssembly) {
-				return fieldIndex + internalModifierOffset;
+				return FieldIndex + internalModifierOffset;
 			}
 			
 			if (fieldinfo.IsPrivate) {
-				return fieldIndex + privateModifierOffset;
+				return FieldIndex + privateModifierOffset;
 			}
 			
 			if (!(fieldinfo.IsPrivate || fieldinfo.IsPublic)) {
-				return fieldIndex + protectedModifierOffset;
+				return FieldIndex + protectedModifierOffset;
 			}
 			
-			return fieldIndex;
+			return FieldIndex;
 		}
 				
 		public static int GetIcon(EventInfo eventinfo)
 		{
 			if (eventinfo.GetAddMethod(true) != null) {
-				return eventIndex + GetIcon(eventinfo.GetAddMethod(true)) - methodIndex;
+				return EventIndex + GetIcon(eventinfo.GetAddMethod(true)) - MethodIndex;
 			}
-			return eventIndex;
+			return EventIndex;
 		}
 		
 		public static int GetIcon(System.Type type)
 		{
-			int BASE = classIndex;
+			int BASE = ClassIndex;
 			
 			if (type.IsValueType) {
-				BASE = structIndex;
+				BASE = StructIndex;
 			}
 			if (type.IsEnum) {
-				BASE = enumIndex;
+				BASE = EnumIndex;
 			}
 			if (type.IsInterface) {
-				BASE = interfaceIndex;
+				BASE = InterfaceIndex;
 			}
 			if (type.IsSubclassOf(typeof(System.Delegate))) {
-				BASE = delegateIndex;
+				BASE = DelegateIndex;
 			}
 			
 			if (type.IsNestedPrivate) {
@@ -307,7 +218,7 @@ namespace ICSharpCode.Core
 			
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ResourceFileIcon"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Event"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Literal"));
+			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Debug.Start"));
 			
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.CombineIcon"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Literal"));

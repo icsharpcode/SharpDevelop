@@ -46,6 +46,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					}
 				}
 			}
+			Content.Sort();
 		}
 		
 		protected override void StartGeneration(IList items, string fileExtension)
@@ -96,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 //			}
 		}
 		
-		class MethodWrapper
+		class MethodWrapper : IComparable
 		{
 			IMethod method;
 			
@@ -105,6 +106,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					return method;
 				}
 			}
+			
+			public int CompareTo(object other)
+			{
+				return method.Name.CompareTo(((MethodWrapper)other).method.Name);
+			}
+			
 			
 			public MethodWrapper(IMethod method)
 			{

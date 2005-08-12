@@ -397,6 +397,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			closeAll = true;
 			
+			ParserService.StopParserThread();
+			
 			layout.Detach();
 			foreach (PadDescriptor padDescriptor in PadContentCollection) {
 				padDescriptor.Dispose();

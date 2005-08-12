@@ -69,7 +69,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 			foreach (IClass bc in c.ClassInheritanceTree) {
 				if (bc.ClassType == ClassType.Interface && c.ClassType != ClassType.Interface)
 					continue; // ignore explicit interface implementations
-				l.AddRange(bc.Properties);
+				
+				foreach (IProperty p in bc.Properties) {
+					// do not add methods that were overridden
+					bool ok = true;
+					foreach (IProperty oldProperty in l) {
+						if (string.Equals(oldProperty.Name, p.Name, StringComparison.InvariantCultureIgnoreCase)) {
+							if (p.IsStatic == oldProperty.IsStatic) {
+								if (DiffUtility.Compare(oldProperty.Parameters, p.Parameters) == 0) {
+									ok = false;
+									break;
+								}
+							}
+						}
+					}
+					if (ok)
+						l.Add(p);
+				}
 			}
 			return l;
 		}

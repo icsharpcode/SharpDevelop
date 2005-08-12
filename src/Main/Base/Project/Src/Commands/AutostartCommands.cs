@@ -151,8 +151,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 			Application.AddMessageFilter(new FormKeyHandler());
 			Application.Run(f);
 			
-			ParserService.StopParserThread();
-			
 			// save the workbench memento in the ide properties
 			try {
 				PropertyService.Set(workbenchMemento, WorkbenchSingleton.Workbench.CreateMemento());

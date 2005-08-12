@@ -28,6 +28,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		string   description;
 		string   documentation;
 		IClass   c;
+		IMember  member;
 		bool     convertedDocumentation = false;
 		double priority;
 		
@@ -38,6 +39,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public IClass Class {
 			get {
 				return c;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the member this CodeCompletionData object was created for.
+		/// Returns null if the CodeCompletionData object was created for a class or namespace.
+		/// </summary>
+		public IMember Member {
+			get {
+				return member;
 			}
 		}
 		
@@ -128,7 +139,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public CodeCompletionData(IMethod method)
 		{
-			
+			member = method;
 			ambience = AmbienceService.CurrentAmbience;
 			ambience.ConversionFlags = ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterNames | ConversionFlags.ShowModifiers;
 			imageIndex  = ClassBrowserIconService.GetIcon(method);
@@ -140,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public CodeCompletionData(IField field)
 		{
-			
+			member = field;
 			ambience = AmbienceService.CurrentAmbience;
 			ambience.ConversionFlags = ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterNames | ConversionFlags.ShowModifiers;
 			imageIndex  = ClassBrowserIconService.GetIcon(field);
@@ -152,7 +163,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public CodeCompletionData(IProperty property)
 		{
-			
+			member = property;
 			ambience = AmbienceService.CurrentAmbience;
 			ambience.ConversionFlags = ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterNames | ConversionFlags.ShowModifiers;
 			imageIndex  = ClassBrowserIconService.GetIcon(property);
@@ -164,7 +175,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public CodeCompletionData(IEvent e)
 		{
-			
+			member = e;
 			ambience = AmbienceService.CurrentAmbience;
 			ambience.ConversionFlags = ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterNames | ConversionFlags.ShowModifiers;
 			imageIndex  = ClassBrowserIconService.GetIcon(e);

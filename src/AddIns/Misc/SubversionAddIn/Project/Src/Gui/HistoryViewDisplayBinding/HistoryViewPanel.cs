@@ -74,16 +74,21 @@ namespace ICSharpCode.Svn
 		
 		void GetLogMessages()
 		{
-			string fileName = Path.GetFullPath(viewContent.FileName);
-			LoggingService.Info("SVN: Get log of " + fileName);
-			if (File.Exists(fileName)) {
-				Client client = SvnClient.Instance.Client;
-				client.Log(new string[] { fileName},
-				           Revision.Head,          // Revision start
-				           Revision.FromNumber(1), // Revision end
-				           false,                  // bool discoverChangePath
-				           false,                  // bool strictNodeHistory
-				           new LogMessageReceiver(ReceiveLogMessage));
+			try {
+				string fileName = Path.GetFullPath(viewContent.FileName);
+				LoggingService.Info("SVN: Get log of " + fileName);
+				if (File.Exists(fileName)) {
+					Client client = SvnClient.Instance.Client;
+					client.Log(new string[] { fileName},
+					           Revision.Head,          // Revision start
+					           Revision.FromNumber(1), // Revision end
+					           false,                  // bool discoverChangePath
+					           false,                  // bool strictNodeHistory
+					           new LogMessageReceiver(ReceiveLogMessage));
+				}
+			} catch (Exception ex) {
+				// if exceptions aren't caught here, they force SD to exit
+				MessageService.ShowError(ex);
 			}
 		}
 		

@@ -30,10 +30,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override void Run()
 		{
-			if (!GotoLineNumberDialog.IsVisible) {
-				GotoLineNumberDialog gnd = new GotoLineNumberDialog();
-				gnd.Owner = (Form)WorkbenchSingleton.Workbench;
-				gnd.Show();
+			if (!GotoDialog.IsVisible) {
+				GotoDialog gnd = new GotoDialog();
+				gnd.Show(WorkbenchSingleton.MainForm);
 			}
 		}
 	}

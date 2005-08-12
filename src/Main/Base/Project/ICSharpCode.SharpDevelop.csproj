@@ -492,7 +492,7 @@
     <EmbeddedResource Include="Resources\ICSharpCode.SharpDevelop.snk" />
     <EmbeddedResource Include="Resources\BehaviorTextEditorPanel.xfrm" />
     <EmbeddedResource Include="Resources\FindPanel.xfrm" />
-    <EmbeddedResource Include="Resources\GotoLineNumberDialog.xfrm" />
+    <EmbeddedResource Include="Resources\GotoDialog.xfrm" />
     <EmbeddedResource Include="Resources\ReplacePanel.xfrm" />
     <EmbeddedResource Include="Resources\GeneralTextEditorPanel.xfrm" />
     <EmbeddedResource Include="Resources\CodeTemplatePanel.xfrm" />
@@ -534,7 +534,7 @@
     <Compile Include="Src\TextEditor\Commands\ToolCommands.cs" />
     <Compile Include="Src\TextEditor\Conditions\TextContentCondition.cs" />
     <Compile Include="Src\TextEditor\Gui\Dialogs\ExportProjectToHtmlDialog.cs" />
-    <Compile Include="Src\TextEditor\Gui\Dialogs\GotoLineNumberDialog.cs">
+    <Compile Include="Src\TextEditor\Gui\Dialogs\GotoDialog.cs">
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\TextEditor\Gui\Dialogs\SortOptionsDialog.cs">

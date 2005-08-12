@@ -152,9 +152,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				if (result == null)
 					return;
 				IProjectContent p = ParserService.CurrentProjectContent;
+				bool classIsInInheritanceTree = false;
+				if (result.CallingClass != null)
+					classIsInInheritanceTree = result.CallingClass.IsTypeInInheritanceTree(result.ContainingType.GetUnderlyingClass());
 				foreach (IMethod method in result.ContainingType.GetMethods()) {
 					if (p.Language.NameComparer.Equals(method.Name, result.Name)) {
-						methods.Add(method);
+						if (method.IsAccessible(result.CallingClass, classIsInInheritanceTree)) {
+							methods.Add(method);
+						}
 					}
 				}
 			}
