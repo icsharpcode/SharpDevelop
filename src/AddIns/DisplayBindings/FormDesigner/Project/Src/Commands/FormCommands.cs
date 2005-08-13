@@ -19,6 +19,7 @@ using System.Text;
 using System.ComponentModel.Design;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
@@ -26,7 +27,7 @@ using ICSharpCode.TextEditor;
 
 using ICSharpCode.FormDesigner;
 
-namespace ICSharpCode.SharpDevelop.FormEditor.Commands
+namespace ICSharpCode.FormDesigner.Commands
 {
 	/// <summary>
 	/// This is the base class for all designer menu commands
