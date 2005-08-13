@@ -283,7 +283,7 @@ namespace ICSharpCode.XmlEditor
 			
 			for(int i = 0; i < completionData.Length; ++i)
 			{
-				float itemWidth = graphics.MeasureString(completionData[i].Text[0].ToString(), codeCompletionListView.Font).Width;
+				float itemWidth = graphics.MeasureString(completionData[i].Text.ToString(), codeCompletionListView.Font).Width;
 				if(itemWidth > width) {
 					width = itemWidth;
 				}
