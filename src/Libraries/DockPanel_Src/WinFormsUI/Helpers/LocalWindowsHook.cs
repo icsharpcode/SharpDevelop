@@ -103,7 +103,9 @@ namespace WeifenLuo.WinFormsUI
 		// Install the hook
 		public void Install()
 		{
+			#pragma warning disable 618
 			m_hhook = SetWindowsHookEx(m_hookType, m_filterFunc, IntPtr.Zero, (int)AppDomain.GetCurrentThreadId());
+			#pragma warning restore 618
 		}
 
 		// Uninstall the hook

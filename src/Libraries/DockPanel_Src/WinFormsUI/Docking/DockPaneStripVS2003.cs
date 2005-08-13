@@ -383,7 +383,7 @@ namespace WeifenLuo.WinFormsUI
 			SetStyle(ControlStyles.ResizeRedraw, true);
 			SetStyle(ControlStyles.UserPaint, true);
 			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-			SetStyle(ControlStyles.DoubleBuffer, true);
+			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 
 			SuspendLayout();
 
@@ -838,10 +838,10 @@ namespace WeifenLuo.WinFormsUI
 			Rectangle rectTabStrip = TabsRectangle;
 
 			int index;
-			for (index=0; index<Tabs.Count; index++)
+			for (index=0; index<Tabs.Count - 1; index++)
 				if (GetTabRectangle(index).IntersectsWith(rectTabStrip))
 					break;
-
+			
 			Rectangle rectTab = GetTabRectangle(index);
 			if (rectTab.Left < rectTabStrip.Left)
 				OffsetX += rectTabStrip.Left - rectTab.Left;

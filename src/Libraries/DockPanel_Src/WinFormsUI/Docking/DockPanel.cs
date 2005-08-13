@@ -41,7 +41,7 @@ namespace WeifenLuo.WinFormsUI
 			SetStyle(ControlStyles.ResizeRedraw |
 				ControlStyles.UserPaint |
 				ControlStyles.AllPaintingInWmPaint |
-				ControlStyles.DoubleBuffer, true);
+				ControlStyles.OptimizedDoubleBuffer, true);
 
             SuspendLayout();
             Font = SystemInformation.MenuFont;

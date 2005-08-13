@@ -667,9 +667,9 @@ namespace WeifenLuo.WinFormsUI
 			if (dockPanel == null)
 				throw(new ArgumentNullException(ResourceHelper.GetString("DockContent.Show.NullDockPanel")));
 
-			if (DockState == DockState.Unknown)
+			if (DockState == DockState.Unknown || Pane == null)
 				Show(dockPanel, DefaultShowState);
-			else			
+			else
 				Activate();
 		}
 

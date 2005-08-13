@@ -109,7 +109,7 @@ namespace WeifenLuo.WinFormsUI
 			SetStyle(ControlStyles.ResizeRedraw, true);
 			SetStyle(ControlStyles.UserPaint, true);
 			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-			SetStyle(ControlStyles.DoubleBuffer, true);
+			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 			SetStyle(ControlStyles.Selectable, true);
 
 			m_isFloat = (dockState == DockState.Float);
@@ -597,8 +597,9 @@ namespace WeifenLuo.WinFormsUI
 				// Need to set the visible content first, otherwise keyboard focus will be lost
 				if (ActiveContent != null)
 				{
-					ActiveContent.Visible = true;
 					ActiveContent.Bounds = rectContent;
+					ActiveContent.BringToFront();
+					ActiveContent.Visible = true;
 				}
 
 				// Hide all inactive contents
