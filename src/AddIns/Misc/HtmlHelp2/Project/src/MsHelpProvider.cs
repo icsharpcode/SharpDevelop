@@ -7,6 +7,9 @@
 
 using System;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
+
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace HtmlHelp2
@@ -18,13 +21,27 @@ namespace HtmlHelp2
 		public override bool TryShowHelp(string fullTypeName)
 		{
 			LoggingService.Info("MsHelpProvider.TryShowHelp");
-			return false;
+
+			try {
+				PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchPad));
+				return ((HtmlHelp2SearchPad)search.PadContent).PerformF1FTS(fullTypeName);
+			}
+			catch {
+				return false;
+			}
 		}
 		
 		public override bool TryShowHelpByKeyword(string keyword)
 		{
 			LoggingService.Info("MsHelpProvider.TryShowHelpByKeyword");
-			return false;
+
+			try {
+				PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchPad));
+				return ((HtmlHelp2SearchPad)search.PadContent).PerformF1FTS(keyword);
+			}
+			catch {
+				return false;
+			}
 		}
 	}
 }

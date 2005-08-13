@@ -301,6 +301,19 @@ namespace HtmlHelp2
 			catch {
 			}
 		}
+
+		public bool PerformF1FTS(string fullTypeName)
+		{
+			if(!HtmlHelp2Environment.IsReady || searchIsBusy) {
+				return false;
+			}
+
+			// call internal "PerformFTS" method
+			this.PerformFTS(fullTypeName);
+
+			HtmlHelp2SearchResultsView searchResults = HtmlHelp2SearchResultsView.Instance;
+			return searchResults.SearchResultsListView.Items.Count > 0;
+		}
 		#endregion
 	}
 }
