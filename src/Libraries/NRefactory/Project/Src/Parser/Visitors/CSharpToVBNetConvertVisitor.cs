@@ -26,9 +26,11 @@ namespace ICSharpCode.NRefactory.Parser
 		//   Conflicting field/property names -> m_field
 		//   a == null -> a Is Nothing
 		//   a != null -> a Is Not Nothing
+		//   i++ / ++i as statement: convert to i += 1
+		//   i-- / --i as statement: convert to i -= 1
+		//   ForStatement -> ForNextStatement when for-loop is simple
 		
 		// The following conversions should be implemented in the future:
-		//   ForStatement -> ForNextStatement when for-loop is simple
 		//   if (Event != null) Event(this, bla); -> RaiseEvent Event(this, bla)
 		
 		public override object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
@@ -82,7 +84,133 @@ namespace ICSharpCode.NRefactory.Parser
 				}
 			}
 			new PrefixFieldsVisitor(conflicts, "m_").Run(td);
-			return base.Visit(td, data);
+			object result = base.Visit(td, data);
+			ConvertForStatements();
+			return result;
+		}
+		
+		public override object Visit(StatementExpression statementExpression, object data)
+		{
+			UnaryOperatorExpression uoe = statementExpression.Expression as UnaryOperatorExpression;
+			if (uoe != null) {
+				switch (uoe.Op) {
+					case UnaryOperatorType.Increment:
+					case UnaryOperatorType.PostIncrement:
+						statementExpression.Expression = new AssignmentExpression(uoe.Expression, AssignmentOperatorType.Add, new PrimitiveExpression(1, "1"));
+						break;
+					case UnaryOperatorType.Decrement:
+					case UnaryOperatorType.PostDecrement:
+						statementExpression.Expression = new AssignmentExpression(uoe.Expression, AssignmentOperatorType.Subtract, new PrimitiveExpression(1, "1"));
+						break;
+				}
+			}
+			return base.Visit(statementExpression, data);
+		}
+		
+		ArrayList forStatements = new ArrayList();
+		
+		public override object Visit(ForStatement forStatement, object data)
+		{
+			forStatements.Add(forStatement);
+			// post-pone conversion because the parent's collection cannot be modified while it
+			// is in use.
+			return base.Visit(forStatement, data);
+		}
+		
+		void ConvertForStatements()
+		{
+			foreach (ForStatement forStatement in forStatements) {
+				ConvertForStatement(forStatement);
+			}
+			forStatements.Clear();
+		}
+		
+		void ConvertForStatement(ForStatement forStatement)
+		{
+			//   ForStatement -> ForNextStatement when for-loop is simple
+			
+			// only the following forms of the for-statement are allowed:
+			// for (TypeReference name = start; name < oneAfterEnd; name += step)
+			// for (name = start; name < oneAfterEnd; name += step)
+			// for (TypeReference name = start; name <= end; name += step)
+			// for (name = start; name <= end; name += step)
+			// for (TypeReference name = start; name > oneAfterEnd; name -= step)
+			// for (name = start; name > oneAfterEnd; name -= step)
+			// for (TypeReference name = start; name >= end; name -= step)
+			// for (name = start; name >= end; name -= step)
+			
+			// check if the form is valid and collect TypeReference, name, start, end and step
+			if (forStatement.Initializers.Count != 1)
+				return;
+			if (forStatement.Iterator.Count != 1)
+				return;
+			StatementExpression statement = forStatement.Iterator[0] as StatementExpression;
+			if (statement == null)
+				return;
+			AssignmentExpression iterator = statement.Expression as AssignmentExpression;
+			if (iterator == null || (iterator.Op != AssignmentOperatorType.Add && iterator.Op != AssignmentOperatorType.Subtract))
+				return;
+			IdentifierExpression iteratorIdentifier = iterator.Left as IdentifierExpression;
+			if (iteratorIdentifier == null)
+				return;
+			PrimitiveExpression stepExpression = iterator.Right as PrimitiveExpression;
+			if (stepExpression == null || !(stepExpression.Value is int))
+				return;
+			int step = (int)stepExpression.Value;
+			if (iterator.Op == AssignmentOperatorType.Subtract)
+				step = -step;
+			
+			BinaryOperatorExpression condition = forStatement.Condition as BinaryOperatorExpression;
+			if (!(condition.Left is IdentifierExpression))
+				return;
+			if ((condition.Left as IdentifierExpression).Identifier != iteratorIdentifier.Identifier)
+				return;
+			Expression end;
+			if (iterator.Op == AssignmentOperatorType.Subtract) {
+				if (condition.Op == BinaryOperatorType.GreaterThanOrEqual)
+					end = condition.Right;
+				else if (condition.Op == BinaryOperatorType.GreaterThan)
+					end = new BinaryOperatorExpression(condition.Right, BinaryOperatorType.Add, new PrimitiveExpression(1, "1"));
+				else
+					return;
+			} else {
+				if (condition.Op == BinaryOperatorType.LessThanOrEqual)
+					end = condition.Right;
+				else if (condition.Op == BinaryOperatorType.LessThan)
+					end = new BinaryOperatorExpression(condition.Right, BinaryOperatorType.Subtract, new PrimitiveExpression(1, "1"));
+				else
+					return;
+			}
+			
+			Expression start;
+			TypeReference typeReference = null;
+			LocalVariableDeclaration varDecl = forStatement.Initializers[0] as LocalVariableDeclaration;
+			if (varDecl != null) {
+				if (varDecl.Variables.Count != 1
+				    || varDecl.Variables[0].Name != iteratorIdentifier.Identifier
+				    || varDecl.Variables[0].Initializer == null)
+					return;
+				typeReference = varDecl.GetTypeForVariable(0);
+				start = varDecl.Variables[0].Initializer;
+			} else {
+				statement = forStatement.Initializers[0] as StatementExpression;
+				if (statement == null)
+					return;
+				AssignmentExpression assign = statement.Expression as AssignmentExpression;
+				if (assign == null || assign.Op != AssignmentOperatorType.Assign)
+					return;
+				if (!(assign.Left is IdentifierExpression))
+					return;
+				if ((assign.Left as IdentifierExpression).Identifier != iteratorIdentifier.Identifier)
+					return;
+				start = assign.Right;
+			}
+			
+			ForNextStatement forNextStatement = new ForNextStatement(typeReference, iteratorIdentifier.Identifier,
+			                                                         start, end,
+			                                                         (step == 1) ? null : new PrimitiveExpression(step, step.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+			                                                         forStatement.EmbeddedStatement, null);
+			forStatement.Parent.Children[forStatement.Parent.Children.IndexOf(forStatement)] = forNextStatement;
 		}
 	}
 }

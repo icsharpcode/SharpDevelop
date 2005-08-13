@@ -1151,6 +1151,30 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Assert.AreEqual(Tokens.UShort, lexer.NextToken().kind);
 		}
 		[Test()]
+		public void TestCSByte()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("CSByte"));
+			Assert.AreEqual(Tokens.CSByte, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestCUShort()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("CUShort"));
+			Assert.AreEqual(Tokens.CUShort, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestCUInt()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("CUInt"));
+			Assert.AreEqual(Tokens.CUInt, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestCULng()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("CULng"));
+			Assert.AreEqual(Tokens.CULng, lexer.NextToken().kind);
+		}
+		[Test()]
 		public void TestGlobal()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Global"));
@@ -1185,6 +1209,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Partial"));
 			Assert.AreEqual(Tokens.Partial, lexer.NextToken().kind);
+		}
+		[Test()]
+		public void TestCustom()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("Custom"));
+			Assert.AreEqual(Tokens.Custom, lexer.NextToken().kind);
 		}
 	}
 }

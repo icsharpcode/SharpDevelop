@@ -2079,60 +2079,68 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(CastExpression castExpression, object data)
 		{
-			if (castExpression.IsSpecializedCast) {
-				switch (castExpression.CastTo.Type) {
-					case "System.Boolean":
-						outputFormatter.PrintToken(Tokens.CBool);
-						break;
-					case "System.Byte":
-						outputFormatter.PrintToken(Tokens.CByte);
-						break;
-					case "System.Char":
-						outputFormatter.PrintToken(Tokens.CChar);
-						break;
-					case "System.DateTime":
-						outputFormatter.PrintToken(Tokens.CDate);
-						break;
-					case "System.Decimal":
-						outputFormatter.PrintToken(Tokens.CDec);
-						break;
-					case "System.Double":
-						outputFormatter.PrintToken(Tokens.CDbl);
-						break;
-					case "System.Int32":
-						outputFormatter.PrintToken(Tokens.CInt);
-						break;
-					case "System.Int64":
-						outputFormatter.PrintToken(Tokens.CLng);
-						break;
-					case "System.Object":
-						outputFormatter.PrintToken(Tokens.CObj);
-						break;
-					case "System.Int16":
-						outputFormatter.PrintToken(Tokens.CShort);
-						break;
-					case "System.Single":
-						outputFormatter.PrintToken(Tokens.CSng);
-						break;
-					case "System.String":
-						outputFormatter.PrintToken(Tokens.CStr);
-						break;
-					default:
-						errors.Error(-1, -1, String.Format("Specialized cast of type {0} is unsupported", castExpression.CastTo.Type));
-						break;
-				}
-				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				nodeTracker.TrackedVisit(castExpression.Expression, data);
-				outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			} else {
-				outputFormatter.PrintToken(Tokens.CType);
-				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				nodeTracker.TrackedVisit(castExpression.Expression, data);
-				outputFormatter.PrintToken(Tokens.Comma);
-				outputFormatter.Space();
-				nodeTracker.TrackedVisit(castExpression.CastTo, data);
-				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			switch (castExpression.CastTo.SystemType) {
+				case "System.Boolean":
+					outputFormatter.PrintToken(Tokens.CBool);
+					break;
+				case "System.Byte":
+					outputFormatter.PrintToken(Tokens.CByte);
+					break;
+				case "System.SByte":
+					outputFormatter.PrintToken(Tokens.CSByte);
+					break;
+				case "System.Char":
+					outputFormatter.PrintToken(Tokens.CChar);
+					break;
+				case "System.DateTime":
+					outputFormatter.PrintToken(Tokens.CDate);
+					break;
+				case "System.Decimal":
+					outputFormatter.PrintToken(Tokens.CDec);
+					break;
+				case "System.Double":
+					outputFormatter.PrintToken(Tokens.CDbl);
+					break;
+				case "System.Int16":
+					outputFormatter.PrintToken(Tokens.CShort);
+					break;
+				case "System.Int32":
+					outputFormatter.PrintToken(Tokens.CInt);
+					break;
+				case "System.Int64":
+					outputFormatter.PrintToken(Tokens.CLng);
+					break;
+				case "System.UInt16":
+					outputFormatter.PrintToken(Tokens.CUShort);
+					break;
+				case "System.UInt32":
+					outputFormatter.PrintToken(Tokens.CInt);
+					break;
+				case "System.UInt64":
+					outputFormatter.PrintToken(Tokens.CLng);
+					break;
+				case "System.Object":
+					outputFormatter.PrintToken(Tokens.CObj);
+					break;
+				case "System.Single":
+					outputFormatter.PrintToken(Tokens.CSng);
+					break;
+				case "System.String":
+					outputFormatter.PrintToken(Tokens.CStr);
+					break;
+				default:
+					outputFormatter.PrintToken(Tokens.CType);
+					outputFormatter.PrintToken(Tokens.OpenParenthesis);
+					nodeTracker.TrackedVisit(castExpression.Expression, data);
+					outputFormatter.PrintToken(Tokens.Comma);
+					outputFormatter.Space();
+					nodeTracker.TrackedVisit(castExpression.CastTo, data);
+					outputFormatter.PrintToken(Tokens.CloseParenthesis);
+					return null;
 			}
+			outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			nodeTracker.TrackedVisit(castExpression.Expression, data);
+			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
 		

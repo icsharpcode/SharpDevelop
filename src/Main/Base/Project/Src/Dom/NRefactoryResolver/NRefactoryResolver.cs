@@ -912,7 +912,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			
-			bool inStatic = true;
+			bool inStatic = false;
 			if (callingMember != null)
 				inStatic = callingMember.IsStatic;
 			
@@ -924,7 +924,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				members.AddRange(t.GetEvents());
 				members.AddRange(t.GetProperties());
 				foreach (IMember m in members) {
-					if ((m.IsStatic || !inStatic) && m.IsAccessible(callingClass, true)) {
+					if ((!inStatic || m.IsStatic) && m.IsAccessible(callingClass, true)) {
 						result.Add(m);
 					}
 				}

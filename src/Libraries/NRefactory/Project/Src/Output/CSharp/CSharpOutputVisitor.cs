@@ -129,7 +129,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (typeReference.Type == null || typeReference.Type.Length ==0) {
 				outputFormatter.PrintText("void");
 			} else if (typeReference.SystemType == "System.Nullable" && typeReference.GenericTypes != null
-			          && typeReference.GenericTypes.Count == 1)
+			           && typeReference.GenericTypes.Count == 1)
 			{
 				nodeTracker.TrackedVisit(typeReference.GenericTypes[0], data);
 				outputFormatter.PrintText("?");
@@ -1454,7 +1454,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(ExitStatement exitStatement, object data)
 		{
-			outputFormatter.PrintToken(Tokens.Break);
+			if (exitStatement.ExitType == ExitType.Function || exitStatement.ExitType == ExitType.Sub || exitStatement.ExitType == ExitType.Property) {
+				outputFormatter.PrintToken(Tokens.Return);
+			} else {
+				outputFormatter.PrintToken(Tokens.Break);
+			}
 			outputFormatter.PrintToken(Tokens.Semicolon);
 			outputFormatter.PrintText("// might not be correct. Was : Exit " + exitStatement.ExitType);
 			outputFormatter.NewLine();
@@ -1463,10 +1467,42 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(ForNextStatement forNextStatement, object data)
 		{
-			// TODO: implement me
-			errors.Error(-1, -1, String.Format("For...next statement is unsupported."));
+			outputFormatter.PrintToken(Tokens.For);
+			outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			if (!forNextStatement.TypeReference.IsNull) {
+				nodeTracker.TrackedVisit(forNextStatement.TypeReference, data);
+				outputFormatter.Space();
+			}
+			outputFormatter.PrintIdentifier(forNextStatement.VariableName);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Assign);
+			outputFormatter.Space();
+			nodeTracker.TrackedVisit(forNextStatement.Start, data);
+			outputFormatter.PrintToken(Tokens.Semicolon);
+			outputFormatter.Space();
+			outputFormatter.PrintIdentifier(forNextStatement.VariableName);
+			outputFormatter.Space();
+			PrimitiveExpression pe = forNextStatement.Step as PrimitiveExpression;
+			if (pe == null || !(pe.Value is int) || ((int)pe.Value) >= 0)
+				outputFormatter.PrintToken(Tokens.LessEqual);
+			else
+				outputFormatter.PrintToken(Tokens.GreaterEqual);
+			outputFormatter.Space();
+			nodeTracker.TrackedVisit(forNextStatement.End, data);
+			outputFormatter.PrintToken(Tokens.Semicolon);
+			outputFormatter.Space();
+			outputFormatter.PrintIdentifier(forNextStatement.VariableName);
+			if (forNextStatement.Step.IsNull) {
+				outputFormatter.PrintToken(Tokens.Increment);
+			} else {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.PlusAssign);
+				outputFormatter.Space();
+				nodeTracker.TrackedVisit(forNextStatement.Step, data);
+			}
+			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			
-			return null;
+			return nodeTracker.TrackedVisit(forNextStatement.EmbeddedStatement, data);
 		}
 		#endregion
 		
