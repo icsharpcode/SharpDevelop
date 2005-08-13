@@ -34,9 +34,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		/// returns null if no sub view contents are attached.
 		/// </summary>
+		/*
 		ArrayList SubViewContents {
 			get;
 		}
+		*/
 		
 		IBaseViewContent ActiveViewContent {
 			get;
@@ -59,14 +61,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void SwitchView(int viewNumber);
 		
-//		void OnWindowSelected(EventArgs e);
 		/// <summary>
 		/// Only for internal use.
 		/// </summary>
 		void OnWindowSelected(EventArgs e);
 		void OnWindowDeselected(EventArgs e);
 		
-		void AttachSecondaryViewContent(ISecondaryViewContent secondaryViewContent);
+		//void AttachSecondaryViewContent(ISecondaryViewContent secondaryViewContent);
 		
 		/// <summary>
 		/// Is called when the window is selected.

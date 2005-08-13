@@ -122,7 +122,7 @@ namespace ICSharpCode.FormDesigner
 		protected void Reparse(string content)
 		{
 			// get new initialize components
-			ParseInformation info = ParserService.ParseFile(viewContent.FileName, content, false, true);
+			ParseInformation info = ParserService.ParseFile(viewContent.TextEditorControl.FileName, content, false, true);
 			ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
 			foreach (IClass c in cu.Classes) {
 				if (FormDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {

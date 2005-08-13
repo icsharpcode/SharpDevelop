@@ -14,7 +14,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using MbUnit.Forms;
 
-namespace MbUnitPad
+namespace ICSharpCode.MbUnitPad
 {
 	public class MbUnitPadContent : AbstractPadContent
 	{

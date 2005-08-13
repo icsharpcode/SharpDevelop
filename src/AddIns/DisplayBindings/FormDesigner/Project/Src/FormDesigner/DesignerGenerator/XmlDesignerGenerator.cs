@@ -26,14 +26,8 @@ namespace ICSharpCode.FormDesigner
 		public void Attach(FormDesignerViewContent viewContent)
 		{
 			this.viewContent = viewContent;
-			IComponentChangeService componentChangeService = (IComponentChangeService)viewContent.DesignSurface.GetService(typeof(IComponentChangeService));
-			componentChangeService.ComponentChanged    += new ComponentChangedEventHandler(ComponentChanged);
+		}
 		
-		}
-		void ComponentChanged(object sender, ComponentChangedEventArgs e)
-		{
-			viewContent.IsDirty = true;
-		}
 		public void MergeFormChanges()
 		{
 			StringWriter writer = new StringWriter();
@@ -93,7 +87,7 @@ namespace ICSharpCode.FormDesigner
 				}
 				
 				// add collections as last child elements in the xml (because it is better
-				// to set the properties first and then add items to controls (looks nicer 
+				// to set the properties first and then add items to controls (looks nicer
 				// in XML and CODE))
 				ArrayList childNodes = new ArrayList();
 				
@@ -107,7 +101,7 @@ namespace ICSharpCode.FormDesigner
 					if (pd.Name == "Name" && nameInserted) {
 						continue;
 					}
-					if (pd.Name == "DataBindings" || 
+					if (pd.Name == "DataBindings" ||
 					    // TabControl duplicate TabPages Workaround (TabPages got inserted twice : In Controls and in TabPages)
 					    (o.GetType().FullName == "System.Windows.Forms.TabControl" && pd.Name == "Controls")) {
 						continue;

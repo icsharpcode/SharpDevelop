@@ -17,7 +17,7 @@ using MbUnit.Core;
 using MbUnit.Core.Remoting;
 using MbUnit.Core.Reports.Serialization;
 
-namespace MbUnitPad
+namespace ICSharpCode.MbUnitPad
 {
 	public class TestTreeView : ReflectorTreeView
 	{

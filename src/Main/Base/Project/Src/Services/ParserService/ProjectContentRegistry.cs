@@ -103,52 +103,55 @@ namespace ICSharpCode.Core
 				int time = Environment.TickCount;
 				string how = "??";
 				#endif
-				Assembly assembly = GetDefaultAssembly(shortName);
-				if (assembly != null) {
-					contents[item.Include] = new ReflectionProjectContent(assembly);
-					#if DEBUG
-					how = "typeof";
-					#endif
-					return contents[itemInclude];
-				}
-				lookupDirectory = Path.GetDirectoryName(itemFileName);
-				AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += AssemblyResolve;
 				try {
-					assembly = Assembly.ReflectionOnlyLoadFrom(itemFileName);
+					Assembly assembly = GetDefaultAssembly(shortName);
 					if (assembly != null) {
-						contents[itemFileName] = new ReflectionProjectContent(assembly);
-						contents[assembly.FullName] = contents[itemFileName];
+						contents[item.Include] = new ReflectionProjectContent(assembly);
 						#if DEBUG
-						how = "ReflectionOnly";
+						how = "typeof";
 						#endif
-						return contents[itemFileName];
+						return contents[itemInclude];
 					}
-				} catch (FileNotFoundException) {
+					lookupDirectory = Path.GetDirectoryName(itemFileName);
+					AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += AssemblyResolve;
 					try {
-						assembly = LoadGACAssembly(itemInclude, true);
+						assembly = Assembly.ReflectionOnlyLoadFrom(itemFileName);
 						if (assembly != null) {
-							contents[itemInclude] = new ReflectionProjectContent(assembly);
-							contents[assembly.FullName] = contents[itemInclude];
+							contents[itemFileName] = new ReflectionProjectContent(assembly);
+							contents[assembly.FullName] = contents[itemFileName];
 							#if DEBUG
-							how = "PartialName";
+							how = "ReflectionOnly";
 							#endif
-							return contents[itemInclude];
+							return contents[itemFileName];
 						}
-					} catch (Exception e) {
-						LoggingService.Debug("Can't load assembly '" + itemInclude + "' : " + e.Message);
+					} catch (FileNotFoundException) {
+						try {
+							assembly = LoadGACAssembly(itemInclude, true);
+							if (assembly != null) {
+								contents[itemInclude] = new ReflectionProjectContent(assembly);
+								contents[assembly.FullName] = contents[itemInclude];
+								#if DEBUG
+								how = "PartialName";
+								#endif
+								return contents[itemInclude];
+							}
+						} catch (Exception e) {
+							LoggingService.Debug("Can't load assembly '" + itemInclude + "' : " + e.Message);
+						}
+					} catch (BadImageFormatException) {
+						LoggingService.Warn("BadImageFormat: " + itemInclude);
+					} finally {
+						AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= AssemblyResolve;
+						lookupDirectory = null;
 					}
-				} catch (BadImageFormatException) {
-					LoggingService.Warn("BadImageFormat: " + itemInclude);
 				} finally {
-					AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= AssemblyResolve;
-					lookupDirectory = null;
 					#if DEBUG
 					LoggingService.DebugFormatted("Loaded {0} with {2} in {1}ms", itemInclude, Environment.TickCount - time, how);
 					#endif
 					StatusBarService.ProgressMonitor.Done();
 				}
+				return null;
 			}
-			return null;
 		}
 		
 		static Assembly GetDefaultAssembly(string shortName)

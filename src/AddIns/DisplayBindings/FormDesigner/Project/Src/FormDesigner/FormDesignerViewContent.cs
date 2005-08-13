@@ -45,7 +45,7 @@ using Microsoft.VisualBasic;
 
 namespace ICSharpCode.FormDesigner
 {
-	public class FormDesignerViewContent : AbstractViewContent, ISecondaryViewContent, IClipboardHandler, IUndoHandler, IHasPropertyContainer
+	public class FormDesignerViewContent : AbstractSecondaryViewContent, IClipboardHandler, IUndoHandler, IHasPropertyContainer
 	{
 		protected bool failedDesignerInitialize;
 		
@@ -62,13 +62,6 @@ namespace ICSharpCode.FormDesigner
 		DesignerLoader    loader;
 		IDesignerGenerator generator;
 		
-		public override string FileName {
-			get {
-				string fileName = textAreaControlProvider.TextEditorControl.FileName;
-				return fileName == null ? viewContent.UntitledName : fileName;
-			}
-		}
-		
 		public override Control Control {
 			get {
 				return p;
@@ -78,20 +71,6 @@ namespace ICSharpCode.FormDesigner
 		public override string TabPageText {
 			get {
 				return "${res:FormsDesigner.DesignTabPages.DesignTabPage}";
-			}
-		}
-		
-		public override bool IsDirty {
-			get {
-				if (viewContent == null) {
-					return false;
-				}
-				return viewContent.IsDirty;
-			}
-			set {
-				if (viewContent != null) {
-					viewContent.IsDirty = value;
-				}
 			}
 		}
 		
@@ -168,6 +147,10 @@ namespace ICSharpCode.FormDesigner
 			designSurface.Flush();
 			
 			generator.Attach(this);
+			
+			IComponentChangeService componentChangeService = (IComponentChangeService)designSurface.GetService(typeof(IComponentChangeService));
+			componentChangeService.ComponentChanged += delegate { viewContent.IsDirty = true; };
+			
 			LoggingService.Info("Form Designer: END INITIALIZE");
 		}
 		
@@ -179,15 +162,10 @@ namespace ICSharpCode.FormDesigner
 			}
 		}
 		
-		public override void Load(string fileName)
-		{
-		}
-		
 		public void Reload()
 		{
 			Initialize();
-			bool dirty = viewContent.IsDirty;
-//	TODO:
+//	TODO: Reload code modifications
 //			loader.TextContent = Document.TextContent;
 			
 			try {
@@ -206,22 +184,22 @@ namespace ICSharpCode.FormDesigner
 			if (this.failedDesignerInitialize) {
 				return;
 			}
-			bool isDirty = IsDirty;
+			bool isDirty = viewContent.IsDirty;
 			generator.MergeFormChanges();
-			IsDirty = isDirty;
+			viewContent.IsDirty = isDirty;
 		}
 		
-		public  void ShowSourceCode()
+		public void ShowSourceCode()
 		{
 			WorkbenchWindow.SwitchView(0);
 		}
 		
-		public  void ShowSourceCode(int lineNumber)
+		public void ShowSourceCode(int lineNumber)
 		{
 			ShowSourceCode();
 			textAreaControlProvider.TextEditorControl.ActiveTextAreaControl.JumpTo(lineNumber, 255);
 		}
-	
+		
 		public void ShowSourceCode(IComponent component, EventDescriptor edesc, string eventMethodName)
 		{
 			int position;
@@ -271,20 +249,11 @@ namespace ICSharpCode.FormDesigner
 //			DeselectAllComponents();
 		}
 		
-		public void NotifyAfterSave(bool successful)
+		public override void NotifyBeforeSave()
 		{
-//			//ifko: save the resources if there are any
-//			if (successful) {
-//				DesignerResourceService designerResourceService = (DesignerResourceService)designSurface.GetService(typeof(System.ComponentModel.Design.IResourceService));
-//				if (designerResourceService != null) {
-//					designerResourceService.Save();
-//				}
-//			}
-		}
-
-		public void NotifyBeforeSave()
-		{
-			MergeFormChanges();
+			base.NotifyBeforeSave();
+			if (IsFormDesignerVisible)
+				MergeFormChanges();
 		}
 		
 		protected void UpdateSelectableObjects()
@@ -319,7 +288,7 @@ namespace ICSharpCode.FormDesigner
 		{
 			IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
 			menuCommandService.GlobalInvoke(StandardCommands.Redo);
-		}	
+		}
 		#endregion
 		
 		#region IClipboardHandler implementation
@@ -331,7 +300,7 @@ namespace ICSharpCode.FormDesigner
 				System.ComponentModel.Design.MenuCommand menuCommand = menuCommandService.FindCommand(StandardCommands.Cut);
 				if (menuCommand == null) {
 					return false;
-				}			
+				}
 				int status = menuCommand.OleStatus;
 				return menuCommand.Enabled;
 			}
@@ -345,7 +314,7 @@ namespace ICSharpCode.FormDesigner
 				System.ComponentModel.Design.MenuCommand menuCommand = menuCommandService.FindCommand(StandardCommands.Copy);
 				if (menuCommand == null) {
 					return false;
-				}			
+				}
 				int status = menuCommand.OleStatus;
 				return menuCommand.Enabled;
 			}
@@ -370,7 +339,7 @@ namespace ICSharpCode.FormDesigner
 				System.ComponentModel.Design.MenuCommand menuCommand = menuCommandService.FindCommand(StandardCommands.Delete);
 				if (menuCommand == null) {
 					return false;
-				}			
+				}
 				int status = menuCommand.OleStatus;
 				return menuCommand.Enabled;
 			}

@@ -11,7 +11,7 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Project;
 using MbUnit.Forms;
 
-namespace MbUnitPad
+namespace ICSharpCode.MbUnitPad
 {
 	public class ReloadCommand : AbstractMenuCommand
 	{

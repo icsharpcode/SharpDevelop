@@ -60,17 +60,15 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		public static void AttachSubWindows(IWorkbenchWindow workbenchWindow)
+		public static void AttachSubWindows(IViewContent viewContent)
 		{
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (binding.IsSecondary && binding.SecondaryBinding.CanAttachTo(workbenchWindow.ViewContent)) {
-					ISecondaryViewContent [] viewContents = binding.SecondaryBinding.CreateSecondaryViewContent(workbenchWindow.ViewContent);
-					if (viewContents != null) {
-						foreach (ISecondaryViewContent viewContent in viewContents) {
-							workbenchWindow.AttachSecondaryViewContent(viewContent);
-						}
+				if (binding.IsSecondary && binding.SecondaryBinding.CanAttachTo(viewContent)) {
+					ISecondaryViewContent[] subViewContents = binding.SecondaryBinding.CreateSecondaryViewContent(viewContent);
+					if (subViewContents != null) {
+						viewContent.SecondaryViewContents.AddRange(subViewContents);
 					} else {
-						MessageService.ShowError("Can't attach secondary view content. " + workbenchWindow.ViewContent + " returned null.\n(should never happen)");
+						MessageService.ShowError("Can't attach secondary view content. " + binding.SecondaryBinding + " returned null for " + viewContent + ".\n(should never happen)");
 					}
 				}
 			}

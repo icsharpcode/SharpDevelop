@@ -209,6 +209,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					if (lineNumber > 0) {
 						display += ", line " + lineNumber;
 					}
+					if (item.Project != null) {
+						display += " in " + item.Project.Name;
+					}
 					AddItem(display, ClassBrowserIconService.GotoArrowIndex, new FileLineReference(fileName, lineNumber), 0.5);
 				}
 			}

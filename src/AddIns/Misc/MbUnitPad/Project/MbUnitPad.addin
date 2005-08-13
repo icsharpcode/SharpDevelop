@@ -17,7 +17,7 @@
 		     title    = "MbUnit Tests"
 		     icon     = "PadIcons.UnitTest"
 		     shortcut = "Control|Alt|T"
-		     class    = "MbUnitPad.MbUnitPadContent"/>
+		     class    = "ICSharpCode.MbUnitPad.MbUnitPadContent"/>
 	</Path>
 	
 	<Path name = "/MbUnitPad/Toolbar">
@@ -25,25 +25,25 @@
 			<ToolbarItem id      = "Reload"
 			             icon    = "Icons.16x16.BrowserRefresh"
 			             tooltip = "${res:NUnitPad.NUnitPadContent.RefreshItem}"
-			             class   = "MbUnitPad.ReloadCommand"/>
+			             class   = "ICSharpCode.MbUnitPad.ReloadCommand"/>
 			<ToolbarItem id      = "Unload"
 			             icon    = "Icons.16x16.BrowserCancel"
 			             tooltip = "${res:NUnitPad.NUnitPadContent.CancelItem}"
-			             class   = "MbUnitPad.UnloadCommand"/>
+			             class   = "ICSharpCode.MbUnitPad.UnloadCommand"/>
 			<ToolbarItem id      = "Separator1" type = "Separator"/>
 			<ToolbarItem id      = "AddMbUnitReference"
 			             icon    = "Icons.16x16.Reference"
 			             tooltip = "${res:MbUnitPad.ReferenceItem}"
-			             class   = "MbUnitPad.AddMbUnitReferenceCommand"/>
+			             class   = "ICSharpCode.MbUnitPad.AddMbUnitReferenceCommand"/>
 			<ToolbarItem id      = "AddNUnitReference"
 			             icon    = "PadIcons.UnitTest"
 			             tooltip = "${res:NUnitPad.NUnitPadContent.ReferenceItem}"
-			             class   = "MbUnitPad.AddNUnitReferenceCommand"/>
+			             class   = "ICSharpCode.MbUnitPad.AddNUnitReferenceCommand"/>
 			<ToolbarItem id      = "Separator2" type = "Separator"/>
 			<ToolbarItem id      = "Run"
 			             icon    = "Icons.16x16.RunProgramIcon"
 			             tooltip = "${res:NUnitPad.NUnitPadContent.RunItem}"
-			             class   = "MbUnitPad.RunTestsCommand"/>
+			             class   = "ICSharpCode.MbUnitPad.RunTestsCommand"/>
 		</Condition>
 	</Path>
 	

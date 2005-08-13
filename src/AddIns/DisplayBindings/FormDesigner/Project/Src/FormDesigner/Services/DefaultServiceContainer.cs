@@ -99,11 +99,11 @@ namespace ICSharpCode.FormDesigner.Services
 		#region System.IServiceProvider interface implementation
 		public object GetService(System.Type serviceType)
 		{
-			if (IsServiceMissing(serviceType)) {
+			/* if (LoggingService.IsInfoEnabled && IsServiceMissing(serviceType)) {
 				LoggingService.InfoFormatted("request missing service : {0} from Assembly {1} is not aviable.", serviceType, serviceType.Assembly.FullName);
 			} else {
 				LoggingService.DebugFormatted("get service : {0} from Assembly {1}.", serviceType, serviceType.Assembly.FullName);
-			}
+			} */
 			return serviceContainer.GetService(serviceType);
 		}
 		#endregion

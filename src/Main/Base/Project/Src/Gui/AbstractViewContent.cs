@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Windows.Forms;
 
@@ -49,12 +50,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public virtual bool CreateAsSubViewContent {
+		List<ISecondaryViewContent> secondaryViewContents = new List<ISecondaryViewContent>();
+		
+		/// <summary>
+		/// Gets the list of secondary view contents attached to this view content.
+		/// </summary>
+		public List<ISecondaryViewContent> SecondaryViewContents {
 			get {
-				return false;
+				return secondaryViewContents;
 			}
 		}
-
+		
 		public AbstractViewContent()
 		{
 		}
@@ -90,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			get {
 				return false;
 			}
-		}		
+		}
 		
 		public virtual bool IsViewOnly {
 			get {
@@ -150,9 +156,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		
 		protected virtual void OnSaving(EventArgs e)
 		{
+			foreach (ISecondaryViewContent svc in SecondaryViewContents) {
+				svc.NotifyBeforeSave();
+			}
 			if (Saving != null) {
 				Saving(this, e);
 			}
@@ -160,6 +168,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected virtual void OnSaved(SaveEventArgs e)
 		{
+			foreach (ISecondaryViewContent svc in SecondaryViewContents) {
+				svc.NotifyAfterSave(e.Successful);
+			}
 			if (Saved != null) {
 				Saved(this, e);
 			}

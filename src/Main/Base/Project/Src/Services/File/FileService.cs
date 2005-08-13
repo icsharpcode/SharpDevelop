@@ -71,8 +71,8 @@ namespace ICSharpCode.Core
 			public void Invoke(string fileName)
 			{
 				IViewContent newContent = binding.CreateContentForFile(fileName);
+				DisplayBindingService.AttachSubWindows(newContent);
 				WorkbenchSingleton.Workbench.ShowView(newContent);
-				DisplayBindingService.AttachSubWindows(newContent.WorkbenchWindow);
 			}
 		}
 		
@@ -112,21 +112,6 @@ namespace ICSharpCode.Core
 						// TODO: what kind of exception is ignored here?
 					}
 				}
-				if (content.WorkbenchWindow == null || content.WorkbenchWindow.SubViewContents == null)
-					continue;
-				foreach(object subViewContent in content.WorkbenchWindow.SubViewContents) {
-					IViewContent viewContent = subViewContent as IViewContent;
-					if (viewContent != null && viewContent.FileName != null) {
-						try {
-							if (isURL ? viewContent.FileName == fileName : FileUtility.IsEqualFileName(viewContent.FileName, fileName)) {
-								viewContent.WorkbenchWindow.SelectWindow();
-								return content.WorkbenchWindow;
-							}
-						} catch (Exception) {
-							// TODO: what kind of exception is ignored here?
-						}
-					}
-				}
 			}
 			
 			IDisplayBinding binding = DisplayBindingService.GetBindingPerFileName(fileName);
@@ -152,9 +137,9 @@ namespace ICSharpCode.Core
 				}
 				newContent.UntitledName = defaultName;
 				newContent.IsDirty      = false;
-				WorkbenchSingleton.Workbench.ShowView(newContent);
+				DisplayBindingService.AttachSubWindows(newContent);
 				
-				DisplayBindingService.AttachSubWindows(newContent.WorkbenchWindow);
+				WorkbenchSingleton.Workbench.ShowView(newContent);
 				return newContent.WorkbenchWindow;
 			} else {
 				throw new ApplicationException("Can't create display binding for language " + language);
@@ -164,27 +149,10 @@ namespace ICSharpCode.Core
 		public static IWorkbenchWindow GetOpenFile(string fileName)
 		{
 			if (fileName != null && fileName.Length > 0) {
-				string normalizedFileName = (fileName.StartsWith("http://") ? fileName : Path.IsPathRooted(fileName) ? Path.GetFullPath(fileName) : fileName).ToLower();
 				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-					string normalizedContentName = content.IsUntitled ? content.UntitledName : (content.FileName == null ? "" : (content.FileName.StartsWith("http://") ? content.FileName : Path.GetFullPath(content.FileName)));
-					normalizedContentName = normalizedContentName.ToLower();
-					
-					if (normalizedContentName == normalizedFileName) {
+					string contentName = content.IsUntitled ? content.UntitledName : content.FileName;
+					if (FileUtility.IsEqualFileName(fileName, contentName))
 						return content.WorkbenchWindow;
-					}
-					if (content.WorkbenchWindow == null || content.WorkbenchWindow.SubViewContents == null)
-						continue;
-					foreach(object subViewContent in content.WorkbenchWindow.SubViewContents) {
-						IViewContent viewContent = subViewContent as IViewContent;
-						if (viewContent != null && viewContent.FileName != null) {
-							string normalizedViewContentName = viewContent.IsUntitled ? viewContent.UntitledName : (viewContent.FileName == null ? "" : (viewContent.FileName.StartsWith("http://") ? viewContent.FileName : Path.GetFullPath(viewContent.FileName)));
-							normalizedViewContentName = normalizedViewContentName.ToLower();
-							
-							if (normalizedViewContentName == normalizedFileName) {
-								return content.WorkbenchWindow;
-							}
-						}
-					}
 				}
 			}
 			return null;
@@ -262,34 +230,11 @@ namespace ICSharpCode.Core
 				return null;
 			}
 			IViewContent content = window.ViewContent;
-			if (content.WorkbenchWindow.SubViewContents == null) {
-				if (content is IPositionable) {
-					window.SwitchView(0);
-					((IPositionable)content).JumpTo(Math.Max(0, line), Math.Max(0, column));
-				}
-				return content;
+			if (content is IPositionable) {
+				window.SwitchView(0);
+				((IPositionable)content).JumpTo(Math.Max(0, line), Math.Max(0, column));
 			}
-			else
-			{
-				int i = 0;
-				foreach(object subViewContent in content.WorkbenchWindow.SubViewContents) {
-					IViewContent viewContent = subViewContent as IViewContent;
-					if (viewContent != null && viewContent.FileName != null) {
-						try {
-							if (FileUtility.IsEqualFileName(viewContent.FileName, fileName)) {
-								if (viewContent is IPositionable) {
-									window.SwitchView(i);
-									((IPositionable)viewContent).JumpTo(Math.Max(0, line), Math.Max(0, column));
-								}
-								return viewContent;
-							}
-						} catch (Exception) {
-						}
-					}
-					i++;
-				}
-			}
-			return null;
+			return content;
 		}
 		
 		static void OnFileRemoved(FileEventArgs e)

@@ -10,8 +10,6 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	/// <summary>
-	/// </summary>
 	public abstract class AbstractSecondaryViewContent : AbstractBaseViewContent, ISecondaryViewContent
 	{
 		public virtual void NotifyBeforeSave()

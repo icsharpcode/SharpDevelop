@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop.Gui
@@ -96,12 +97,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// If this property is true, content will be created in the tab page
+		/// Gets the list of secondary view contents attached to this view content.
 		/// </summary>
-		bool CreateAsSubViewContent {
+		List<ISecondaryViewContent> SecondaryViewContents {
 			get;
 		}
-
+		
 		/// <summary>
 		/// Saves this content to the last load/save location.
 		/// </summary>
