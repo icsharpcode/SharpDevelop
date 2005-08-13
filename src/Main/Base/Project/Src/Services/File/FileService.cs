@@ -103,13 +103,9 @@ namespace ICSharpCode.Core
 			
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 				if (content.FileName != null) {
-					try {
-						if (isURL ? content.FileName == fileName : FileUtility.IsEqualFileName(content.FileName, fileName)) {
-							content.WorkbenchWindow.SelectWindow();
-							return content.WorkbenchWindow;
-						}
-					} catch (Exception) {
-						// TODO: what kind of exception is ignored here?
+					if (isURL ? content.FileName == fileName : FileUtility.IsEqualFileName(content.FileName, fileName)) {
+						content.WorkbenchWindow.SelectWindow();
+						return content.WorkbenchWindow;
 					}
 				}
 			}
@@ -151,8 +147,10 @@ namespace ICSharpCode.Core
 			if (fileName != null && fileName.Length > 0) {
 				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 					string contentName = content.IsUntitled ? content.UntitledName : content.FileName;
-					if (FileUtility.IsEqualFileName(fileName, contentName))
-						return content.WorkbenchWindow;
+					if (contentName != null) {
+						if (FileUtility.IsEqualFileName(fileName, contentName))
+							return content.WorkbenchWindow;
+					}
 				}
 			}
 			return null;

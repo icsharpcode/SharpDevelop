@@ -26,7 +26,7 @@ namespace ICSharpCode.MbUnitPad
 		public TestTreeView()
 		{
 			TypeTree.ContextMenu = null;
-			TypeTree.ContextMenuStrip = MenuService.CreateContextMenu(this, "/MbUnitPad/ContextMenu");
+			TypeTree.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/MbUnitPad/ContextMenu");
 			this.StartTests  += OnTestsStarted;
 			this.FinishTests += delegate { BeginInvoke(new MethodInvoker(ExpandAllFailures)); };
 			this.Facade.Updated += OnFacadeUpdated;

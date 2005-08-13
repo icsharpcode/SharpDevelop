@@ -20,7 +20,7 @@
 		     class    = "ICSharpCode.MbUnitPad.MbUnitPadContent"/>
 	</Path>
 	
-	<Path name = "/MbUnitPad/Toolbar">
+	<Path name = "/SharpDevelop/Pads/MbUnitPad/Toolbar">
 		<Condition name = "CombineOpen" iscombineopen="True" action="Disable">
 			<ToolbarItem id      = "Reload"
 			             icon    = "Icons.16x16.BrowserRefresh"
@@ -47,6 +47,6 @@
 		</Condition>
 	</Path>
 	
-	<Path name = "/MbUnitPad/ContextMenu">
+	<Path name = "/SharpDevelop/Pads/MbUnitPad/ContextMenu">
 	</Path>
 </AddIn>

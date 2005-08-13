@@ -9,7 +9,7 @@
 		language    = "VBNET"
 	/>
 	 
-	<Description>${res:Templates.File.EmptyClass.Description}</Description>
+	<Description>${res:Templates.File.MyExtensionClass.Description}</Description>
 	
 	<!-- 
 	Special new file templates:

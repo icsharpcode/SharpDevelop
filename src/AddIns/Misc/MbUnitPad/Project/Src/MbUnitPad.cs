@@ -49,7 +49,7 @@ namespace ICSharpCode.MbUnitPad
 			treeView.Dock = DockStyle.Fill;
 			
 			ctl.Controls.Add(treeView);
-			ToolStrip toolStrip = ToolbarService.CreateToolStrip(this, "/MbUnitPad/Toolbar");
+			ToolStrip toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/MbUnitPad/Toolbar");
 			toolStrip.GripStyle = ToolStripGripStyle.Hidden;
 			ctl.Controls.Add(toolStrip);
 			

@@ -72,21 +72,7 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public void ShowHelpFromKeyword(string helpKeyword)
 		{
-			if (helpKeyword == null) {
-				helpKeyword = f1Keyword;
-			}
-			string classStr  = helpKeyword;
-			string memberStr = String.Empty;
-			
-			// show member help
-			if (helpKeyword == f1Keyword) {
-				int idx   = helpKeyword.LastIndexOf('.');
-				classStr  = helpKeyword.Substring(0, idx);
-				memberStr = helpKeyword.Substring(idx + 1);
-			}
-			throw new NotImplementedException();
-			//HelpBrowser helpBrowser = (HelpBrowser)WorkbenchSingleton.Workbench.GetPad(typeof(HelpBrowser)).PadContent;
-			//helpBrowser.ShowHelpFromType(classStr, memberStr);
+			ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelpByKeyword(helpKeyword);
 		}
 		public void ShowGeneralHelp()
 		{
@@ -94,7 +80,7 @@ namespace ICSharpCode.FormDesigner.Services
 		}
 		public void ShowHelp()
 		{
-			ShowHelpFromKeyword(f1Keyword);
+			ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(f1Keyword);
 		}
 		
 		public void ShowHelpFromUrl(string helpURL)

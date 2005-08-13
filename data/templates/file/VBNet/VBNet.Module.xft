@@ -8,7 +8,7 @@
 		  defaultname = "Module${Number}.vb"
 		  language    = "VBNET"/>
 	 
-	<Description>${res:Templates.File.SingletonClass.Description}</Description>
+	<Description>${res:Templates.File.Module.Description}</Description>
 	
 	<!-- 
 	Special new file templates:

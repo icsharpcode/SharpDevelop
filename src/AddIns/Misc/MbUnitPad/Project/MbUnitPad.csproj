@@ -8,9 +8,6 @@
     <ProjectGuid>{B1CE28A0-04E8-490D-8256-E0C4D52C93C8}</ProjectGuid>
     <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <StartupObject />
-    <ApplicationIcon />
-    <Win32Resource />
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\MbUnitPad\</OutputPath>

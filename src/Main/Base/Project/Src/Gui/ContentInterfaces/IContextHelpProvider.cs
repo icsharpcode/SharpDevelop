@@ -7,7 +7,7 @@
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public interface IHelpProvider
+	public interface IContextHelpProvider
 	{
 		void ShowHelp();
 	}

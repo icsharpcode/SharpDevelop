@@ -32,31 +32,26 @@ namespace ${StandardNamespace}
 	{
 		public static readonly string OptionsProperty = "${StandardNamespace}.Options";
 		
-		static IProperties properties;
+		static Properties properties;
 		
 		static AddInOptions()
 		{
-			PropertyService propertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
-			properties = (IProperties)propertyService.GetProperty(OptionsProperty, new DefaultProperties());
+			properties = PropertyService.GetProperty(OptionsProperty, new Properties());
 		}
 		
-		static IProperties Properties {
-			get {
-				Debug.Assert(properties != null);
-				return properties;
-			}
+		public static event PropertyChangedEventHandler PropertyChanged {
+			add    { Properties.PropertyChanged += value; }
+			remove { Properties.PropertyChanged -= value; }
 		}
 		
-		#region Properties
 //		public static string MyStringProperty {
 //			get {
-//				return Properties.GetProperty("MyStringProperty", "DefaultValue");
+//				return properties.GetProperty("MyStringProperty", "DefaultValue");
 //			}
 //			set {
-//				Properties.SetProperty("MyStringProperty", value);
+//				properties.SetProperty("MyStringProperty", value);
 //			}
 //		}
-		#endregion
 	}
 }
 ]]>

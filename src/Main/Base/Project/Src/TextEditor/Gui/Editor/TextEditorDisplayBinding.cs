@@ -78,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 	}
 	
-	public class TextEditorDisplayBindingWrapper : AbstractViewContent, IMementoCapable, IPrintable, IEditable, IUndoHandler, IPositionable, ITextEditorControlProvider, IParseInformationListener, IClipboardHandler, IHelpProvider
+	public class TextEditorDisplayBindingWrapper : AbstractViewContent, IMementoCapable, IPrintable, IEditable, IUndoHandler, IPositionable, ITextEditorControlProvider, IParseInformationListener, IClipboardHandler, IContextHelpProvider
 	{
 		public SharpDevelopTextAreaControl textAreaControl = null;
 		
@@ -198,13 +198,30 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		// KSL Start, new event handlers
 		
-		
-		#region ICSharpCode.SharpDevelop.Gui.IHelpProvider interface implementation
 		public void ShowHelp()
 		{
-			throw new NotImplementedException();
+			// Resolve expression at cursor and show help
+			TextArea textArea = textAreaControl.ActiveTextAreaControl.TextArea;
+			IDocument doc = textArea.Document;
+			IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textArea.MotherTextEditorControl.FileName);
+			if (expressionFinder == null)
+				return;
+			LineSegment seg = doc.GetLineSegment(textArea.Caret.Line);
+			string textContent = doc.TextContent;
+			ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, seg.Offset + textArea.Caret.Column);
+			string expression = expressionResult.Expression;
+			if (expression != null && expression.Length > 0) {
+				ResolveResult result = ParserService.Resolve(expressionResult, textArea.Caret.Line + 1, textArea.Caret.Column + 1, textAreaControl.FileName, textContent);
+				TypeResolveResult trr = result as TypeResolveResult;
+				if (trr != null) {
+					ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(trr.ResolvedClass);
+				}
+				MemberResolveResult mrr = result as MemberResolveResult;
+				if (mrr != null) {
+					ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(mrr.ResolvedMember);
+				}
+			}
 		}
-		#endregion
 		
 		void SetWatcher()
 		{

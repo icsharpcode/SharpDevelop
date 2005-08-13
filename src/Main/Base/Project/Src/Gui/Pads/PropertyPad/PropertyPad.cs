@@ -21,7 +21,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class PropertyPad : AbstractPadContent, IHelpProvider
+	public class PropertyPad : AbstractPadContent, IContextHelpProvider
 	{
 		static PropertyPad instance;
 		
@@ -330,9 +330,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 		#region ICSharpCode.SharpDevelop.Gui.IHelpProvider interface implementation
 		public void ShowHelp()
 		{
-			if (host != null) {
-				IHelpService helpService = (IHelpService)host.GetService(typeof(IHelpService));
-				helpService.ShowHelpFromKeyword(null);
+			LoggingService.Info("Show help on property pad");
+			GridItem gridItem = grid.SelectedGridItem;
+			if (gridItem != null) {
+				Type component = gridItem.PropertyDescriptor.ComponentType;
+				if (component != null) {
+					ICSharpCode.SharpDevelop.Dom.IClass c = ProjectContentRegistry.WinForms.GetClass(component.FullName);
+					if (c != null) {
+						foreach (ICSharpCode.SharpDevelop.Dom.IProperty p in c.DefaultReturnType.GetProperties()) {
+							ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(p);
+						}
+					}
+				}
 			}
 		}
 		#endregion

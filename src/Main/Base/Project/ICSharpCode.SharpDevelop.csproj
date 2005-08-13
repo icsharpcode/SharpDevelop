@@ -316,7 +316,7 @@
     <Compile Include="Src\Internal\ConditionEvaluators\ActiveViewContentUntitledEvaluator.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerService.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\CompilerMessageView.cs" />
-    <Compile Include="Src\Gui\ContentInterfaces\IHelpProvider.cs" />
+    <Compile Include="Src\Gui\ContentInterfaces\IContextHelpProvider.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\LocalizedTypeDescriptor.cs" />
     <Compile Include="Src\Internal\Templates\File\ScriptRunner.cs" />
     <Compile Include="Src\Gui\Components\LocalizedPropertyGrid\CustomTypeConverter\BooleanTypeConverter.cs" />
@@ -690,6 +690,7 @@
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserCommands.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerDoozer.cs" />
+    <Compile Include="Src\Dom\HelpProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

@@ -21,32 +21,16 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			IWorkbenchWindow window       = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			IHelpProvider    helpProvider = window != null ? window.ActiveViewContent as IHelpProvider : null;
+			IContextHelpProvider    helpProvider = window != null ? window.ActiveViewContent as IContextHelpProvider : null;
 			foreach (PadDescriptor descriptor in WorkbenchSingleton.Workbench.PadContentCollection) {
-				if (descriptor.HasFocus && descriptor.PadContent is IHelpProvider) {
-					((IHelpProvider)descriptor.PadContent).ShowHelp();
+				if (descriptor.HasFocus && descriptor.PadContent is IContextHelpProvider) {
+					((IContextHelpProvider)descriptor.PadContent).ShowHelp();
 					return;
 				}
 			}
 			
 			if (helpProvider != null) {
 				helpProvider.ShowHelp();
-			}
-		}
-	}
-	
-	public class ShowHelp : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			
-			string fileName = FileUtility.SharpDevelopRootPath +
-				Path.DirectorySeparatorChar + "doc" +
-				Path.DirectorySeparatorChar + "help" +
-				Path.DirectorySeparatorChar + "sharpdevelop.chm";
-			if (FileUtility.TestFileExists(fileName)) {
-				Help.ShowHelp((Form)WorkbenchSingleton.Workbench, fileName);
-				((Form)WorkbenchSingleton.Workbench).Select();
 			}
 		}
 	}
@@ -78,7 +62,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 				try {
 					Process.Start(file);
 				} catch (Exception) {
-					
 					MessageService.ShowError("Can't execute/view " + file + "\n Please check that the file exists and that you can open this file.");
 				}
 			} else {

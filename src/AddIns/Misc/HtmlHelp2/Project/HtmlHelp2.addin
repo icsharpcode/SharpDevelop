@@ -10,8 +10,11 @@
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Views/Browser/SchemeExtensions">
-		<BrowserSchemeExtension id    = "ms-help"
-		                        class = "HtmlHelp2.BrowserScheme"/>
+		<BrowserSchemeExtension id    = "ms-help" class = "HtmlHelp2.BrowserScheme"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Services/HelpProvider">
+		<Class id = "HtmlHelp2" class = "HtmlHelp2.MsHelpProvider"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">

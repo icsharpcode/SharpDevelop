@@ -78,6 +78,7 @@
     <Compile Include="src\BrowserControl\HelpBrowserCommands.cs" />
     <Compile Include="src\BrowserScheme.cs" />
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Print.bmp" />
+    <Compile Include="src\MsHelpProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

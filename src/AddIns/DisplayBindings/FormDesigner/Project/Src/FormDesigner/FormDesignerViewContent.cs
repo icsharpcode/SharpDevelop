@@ -45,7 +45,7 @@ using Microsoft.VisualBasic;
 
 namespace ICSharpCode.FormDesigner
 {
-	public class FormDesignerViewContent : AbstractSecondaryViewContent, IClipboardHandler, IUndoHandler, IHasPropertyContainer
+	public class FormDesignerViewContent : AbstractSecondaryViewContent, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider
 	{
 		protected bool failedDesignerInitialize;
 		
@@ -159,6 +159,17 @@ namespace ICSharpCode.FormDesigner
 		public PropertyContainer PropertyContainer {
 			get {
 				return propertyContainer;
+			}
+		}
+		
+		public void ShowHelp()
+		{
+			ISelectionService selectionService = (ISelectionService)Host.GetService(typeof(ISelectionService));
+			if (selectionService != null) {
+				Control ctl = selectionService.PrimarySelection as Control;
+				if (ctl != null) {
+					ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(ctl.GetType().FullName);
+				}
 			}
 		}
 		
