@@ -143,6 +143,8 @@ namespace VBNetBinding.Parser
 		int initialOffset;
 		public string FilterComments(string text, ref int offset)
 		{
+			if (text.Length <= offset)
+				return null;
 			this.initialOffset = offset;
 			StringBuilder outText = new StringBuilder();
 			int curOffset = 0;

@@ -37,6 +37,7 @@ namespace SearchAndReplace
 			this.TopMost         = false;
 			this.Text            = "Search and Replace";
 			this.StartPosition   = FormStartPosition.CenterParent;
+			this.KeyPreview = true;
 			
 			searchAndReplacePanel = new SearchAndReplacePanel();
 			searchAndReplacePanel.Dock = DockStyle.Fill;
@@ -61,7 +62,31 @@ namespace SearchAndReplace
 			
 			Controls.Add(toolStrip);
 			SetSearchAndReplaceMode();
+						this.StartPosition = FormStartPosition.Manual;
+			this.Location = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.SearchAndReplaceDialog.Location", GetDefaultLocation());
 		}
+		
+		Point GetDefaultLocation()
+		{
+			Rectangle parent = WorkbenchSingleton.MainForm.Bounds;
+			Size size = this.Size;
+			return new Point(parent.Left + (parent.Width - size.Width) / 2,
+			                     parent.Top + (parent.Height - size.Height) / 2);
+		}
+		
+		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
+		{
+			base.OnClosing(e);
+			PropertyService.Set("ICSharpCode.SharpDevelop.Gui.SearchAndReplaceDialog.Location", this.Location);
+		}
+		
+		protected override void OnKeyDown(KeyEventArgs e)
+		{
+			if (e.KeyData == Keys.Escape) {
+				Close();
+			}
+		}
+		
 		
 		void SearchButtonClick(object sender, EventArgs e)
 		{
@@ -86,7 +111,7 @@ namespace SearchAndReplace
 		void SetSearchAndReplaceMode()
 		{
 			searchAndReplacePanel.SearchAndReplaceMode = searchButton.Checked ? SearchAndReplaceMode.Search : SearchAndReplaceMode.Replace;
-			if (searchButton.Checked) { 
+			if (searchButton.Checked) {
 				this.ClientSize      = new Size(430, 335);
 			} else {
 				this.ClientSize      = new Size(430, 385);

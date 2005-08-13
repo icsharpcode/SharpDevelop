@@ -57,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void UpdateTick(object sender, ParserUpdateStepEventArgs e)
 		{
 			if (!this.IsVisible) return;
+			LoggingService.Debug("DefinitionViewPad.Update");
 			ResolveResult res = ResolveAtCaret(e);
 			if (res == null) return;
 			FilePosition pos = res.GetDefinitionPosition();
