@@ -243,6 +243,11 @@ namespace HtmlHelp2
 		#region FTS
 		private void PerformFTS(string searchWord)
 		{
+			this.PerformFTS(searchWord, false);
+		}
+
+		private void PerformFTS(string searchWord, bool useDynamicHelp)
+		{
 			if(!HtmlHelp2Environment.IsReady || searchIsBusy) {
 				return;
 			}
@@ -251,6 +256,7 @@ namespace HtmlHelp2
 
 			try {
 				searchIsBusy                 = true;
+				IHxTopicList matchingTopics  = null;
 
 				HxQuery_Options searchFlags  = HxQuery_Options.HxQuery_No_Option;
 				searchFlags                 |= (titlesOnly.Checked)?HxQuery_Options.HxQuery_FullTextSearch_Title_Only:HxQuery_Options.HxQuery_No_Option;
@@ -266,7 +272,14 @@ namespace HtmlHelp2
 				Application.DoEvents();
 
 				Cursor.Current               = Cursors.WaitCursor;
-				IHxTopicList matchingTopics  = HtmlHelp2Environment.FTS.Query(searchWord, searchFlags);
+				
+				if(useDynamicHelp) {
+					matchingTopics = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(searchWord);
+				}
+				else {
+					matchingTopics = HtmlHelp2Environment.FTS.Query(searchWord, searchFlags);
+				}
+				
 				Cursor.Current               = Cursors.Default;
 
 				searchDialog.Dispose();
@@ -302,14 +315,18 @@ namespace HtmlHelp2
 			}
 		}
 
-		public bool PerformF1FTS(string fullTypeName)
+		public bool PerformF1FTS(string keyword)
+		{
+			return this.PerformF1FTS(keyword, false);
+		}
+
+		public bool PerformF1FTS(string keyword, bool useDynamicHelp)
 		{
 			if(!HtmlHelp2Environment.IsReady || searchIsBusy) {
 				return false;
 			}
 
-			// call internal "PerformFTS" method
-			this.PerformFTS(fullTypeName);
+			this.PerformFTS(keyword, useDynamicHelp);
 
 			HtmlHelp2SearchResultsView searchResults = HtmlHelp2SearchResultsView.Instance;
 			return searchResults.SearchResultsListView.Items.Count > 0;

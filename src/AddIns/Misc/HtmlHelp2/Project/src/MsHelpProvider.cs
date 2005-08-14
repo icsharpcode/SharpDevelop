@@ -24,13 +24,13 @@ namespace HtmlHelp2
 
 			try {
 				PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchPad));
-				return ((HtmlHelp2SearchPad)search.PadContent).PerformF1FTS(fullTypeName);
+				return ((HtmlHelp2SearchPad)search.PadContent).PerformF1FTS(fullTypeName, true);
 			}
 			catch {
 				return false;
 			}
 		}
-		
+
 		public override bool TryShowHelpByKeyword(string keyword)
 		{
 			LoggingService.Info("MsHelpProvider.TryShowHelpByKeyword");
