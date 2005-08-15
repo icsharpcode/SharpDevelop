@@ -8,16 +8,15 @@
     <OutputType>Library</OutputType>
     <RootNamespace>Debugger.Core</RootNamespace>
     <AssemblyName>Debugger.Core</AssemblyName>
-    <WarningLevel>4</WarningLevel>
     <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
+    <NoWarn>108</NoWarn>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <AllowUnsafeBlocks>True</AllowUnsafeBlocks>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
@@ -27,10 +26,6 @@
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Debugger.Interop, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\RequiredLibraries\Debugger.Interop.dll</HintPath>
-      <SpecificVersion>False</SpecificVersion>
-    </Reference>
     <Reference Include="ISymWrapper" />
     <Reference Include="System" />
     <Reference Include="System.Data" />
@@ -101,6 +96,101 @@
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\EventForwarder.cs" />
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\PrivateEventHandlersClientChannelSink.cs" />
     <Compile Include="Src\Debugger\NDebugger-StateControl.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebug.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugChainReason.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugClass.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugCreateProcessFlags.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugExceptionCallbackType.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugExceptionUnwindCallbackType.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugHandleType.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugIntercept.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugInternalFrameType.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugMappingResult.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugMDAFlags.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugRegister.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugStepReason.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugThreadState.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugUnmappedStop.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\CorDebugUserState.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\COR_DEBUG_STEP_RANGE.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\EmbeddedCLRCorDebug.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\EmbeddedCLRCorDebugClass.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebug.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugAppDomain.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugAppDomain2.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugAppDomainEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugArrayValue.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugAssembly.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugAssemblyEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugBoxValue.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugBreakpoint.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugBreakpointEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugChain.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugChainEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugClass.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugClass2.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugCode.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugCodeEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugContext.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugController.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugEditAndContinueSnapshot.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugErrorInfoEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugEval.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugEval2.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugFrame.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugFrameEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugFunction.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugFunction2.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugFunctionBreakpoint.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugGenericValue.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugHandleValue.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugHeapValue.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugHeapValue2.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugILFrame.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugILFrame2.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugInternalFrame.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugManagedCallback.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugManagedCallback2.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugMDA.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugModule.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugModule2.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugModuleBreakpoint.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugModuleEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugNativeFrame.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugObjectEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugObjectValue.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugObjectValue2.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugProcess.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugProcess2.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugProcessEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugReferenceValue.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugRegisterSet.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugStepper.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugStepper2.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugStepperEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugStringValue.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugThread.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugThread2.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugThreadEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugType.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugTypeEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugUnmanagedCallback.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugValue.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugValue2.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugValueBreakpoint.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ICorDebugValueEnum.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\ISequentialStream.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\IStream.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\tagSTATSTG.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\_COR_IL_MAP.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\_COR_VERSION.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\_FILETIME.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\_LARGE_INTEGER.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\_SECURITY_ATTRIBUTES.cs" />
+    <Compile Include="Src\DebuggerInterop\Core\_ULARGE_INTEGER.cs" />
+    <Compile Include="Src\DebuggerInterop\MetaData\COR_FIELD_OFFSET.cs" />
+    <Compile Include="Src\DebuggerInterop\MetaData\IMetaDataImport.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

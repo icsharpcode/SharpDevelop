@@ -1,1 +1,0 @@
-ilasm /DLL /DEBUG  /OUTPUT=Debugger.Interop.dll DebuggerInterop.Core.il DebuggerInterop.MetaData.il AssemblyInfo.il
