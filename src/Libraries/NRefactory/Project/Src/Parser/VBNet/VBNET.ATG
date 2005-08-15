@@ -1200,9 +1200,9 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	(.
 		m.Check(Modifier.VBCustomEvents);
 		EventAddRemoveRegion eventAccessorDeclaration;
-		EventAddRemoveRegion addHandlerAccessorDeclaration = null;
-		EventAddRemoveRegion removeHandlerAccessorDeclaration = null;
-		EventAddRemoveRegion raiseEventAccessorDeclaration = null;
+		EventAddRegion addHandlerAccessorDeclaration = null;
+		EventRemoveRegion removeHandlerAccessorDeclaration = null;
+		EventRaiseRegion raiseEventAccessorDeclaration = null;
 		ArrayList implementsClause = null;
 	.)
 	Identifier (. string customEventName = t.val; .)
@@ -1214,15 +1214,15 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		(.
 			if(eventAccessorDeclaration is EventAddRegion)
 			{
-				addHandlerAccessorDeclaration = eventAccessorDeclaration;
+				addHandlerAccessorDeclaration = (EventAddRegion)eventAccessorDeclaration;
 			}
 			else if(eventAccessorDeclaration is EventRemoveRegion)
 			{
-				removeHandlerAccessorDeclaration = eventAccessorDeclaration;
+				removeHandlerAccessorDeclaration = (EventRemoveRegion)eventAccessorDeclaration;
 			}
 			else if(eventAccessorDeclaration is EventRaiseRegion)
 			{
-				raiseEventAccessorDeclaration = eventAccessorDeclaration;
+				raiseEventAccessorDeclaration = (EventRaiseRegion)eventAccessorDeclaration;
 			}
 		.)
 	}
@@ -1233,12 +1233,12 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			Error("Need to provide AddHandler accessor.");
 		}
 		
-		if(addHandlerAccessorDeclaration == null)
+		if(removeHandlerAccessorDeclaration == null)
 		{
 			Error("Need to provide RemoveHandler accessor.");
 		}
 		
-		if(addHandlerAccessorDeclaration == null)
+		if(raiseEventAccessorDeclaration == null)
 		{
 			Error("Need to provide RaiseEvent accessor.");
 		}
@@ -1246,6 +1246,9 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		EventDeclaration decl = new EventDeclaration(type, customEventName, m.Modifier, attributes);
 		decl.StartLocation = m.GetDeclarationLocation(startPos);
 		decl.EndLocation = t.EndLocation;
+		decl.AddRegion = addHandlerAccessorDeclaration;
+		decl.RemoveRegion = removeHandlerAccessorDeclaration;
+		decl.RaiseRegion = raiseEventAccessorDeclaration;
 		compilationUnit.AddChild(decl);
 	.)
 	|

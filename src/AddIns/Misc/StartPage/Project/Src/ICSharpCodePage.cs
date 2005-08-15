@@ -597,8 +597,9 @@ namespace ICSharpCode.StartPage
 					transform.Load(Path.Combine(PropertyService.DataDirectory, "ConversionStyleSheets/ShowChangeLog.xsl"));
 					StringWriter writer = new StringWriter();
 					XmlTextWriter xmlWriter = new XmlTextWriter(writer);
+					xmlWriter.Formatting = Formatting.None;
 					transform.Transform(Path.Combine(FileUtility.SharpDevelopRootPath, "doc/ChangeLog.xml"), xmlWriter);
-					changeLogHtml = writer.ToString();
+					changeLogHtml = writer.ToString().Replace("\n", "\n<br>");
 				}
 				builder.Append(changeLogHtml);
 			} catch (Exception e) {

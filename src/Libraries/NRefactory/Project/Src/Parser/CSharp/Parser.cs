@@ -3990,9 +3990,6 @@ out stmt);
 #line  1773 "cs.ATG" 
 				initializer.Add(stmt);
 			}
-
-#line  1773 "cs.ATG" 
-			initializer.Add(stmt);
 		} else SynErr(169);
 	}
 

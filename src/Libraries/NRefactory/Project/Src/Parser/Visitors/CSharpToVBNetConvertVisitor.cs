@@ -33,6 +33,22 @@ namespace ICSharpCode.NRefactory.Parser
 		// The following conversions should be implemented in the future:
 		//   if (Event != null) Event(this, bla); -> RaiseEvent Event(this, bla)
 		
+		
+		bool renameConflictingFieldNames = true;
+		
+		/// <summary>
+		/// Gets/Sets if fields that conflict with a property name should be renamed automatically by
+		/// prefixing them with "m_". Default is true.
+		/// </summary>
+		public bool RenameConflictingFieldNames {
+			get {
+				return renameConflictingFieldNames;
+			}
+			set {
+				renameConflictingFieldNames = value;
+			}
+		}
+		
 		public override object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			if (binaryOperatorExpression.Op == BinaryOperatorType.Equality || binaryOperatorExpression.Op == BinaryOperatorType.InEquality) {
@@ -83,7 +99,9 @@ namespace ICSharpCode.NRefactory.Parser
 					}
 				}
 			}
-			new PrefixFieldsVisitor(conflicts, "m_").Run(td);
+			if (renameConflictingFieldNames) {
+				new PrefixFieldsVisitor(conflicts, "m_").Run(td);
+			}
 			object result = base.Visit(td, data);
 			ConvertForStatements();
 			return result;
@@ -167,19 +185,21 @@ namespace ICSharpCode.NRefactory.Parser
 				return;
 			Expression end;
 			if (iterator.Op == AssignmentOperatorType.Subtract) {
-				if (condition.Op == BinaryOperatorType.GreaterThanOrEqual)
+				if (condition.Op == BinaryOperatorType.GreaterThanOrEqual) {
 					end = condition.Right;
-				else if (condition.Op == BinaryOperatorType.GreaterThan)
-					end = new BinaryOperatorExpression(condition.Right, BinaryOperatorType.Add, new PrimitiveExpression(1, "1"));
-				else
+				} else if (condition.Op == BinaryOperatorType.GreaterThan) {
+					end = AddInteger(condition.Right, 1);
+				} else {
 					return;
+				}
 			} else {
-				if (condition.Op == BinaryOperatorType.LessThanOrEqual)
+				if (condition.Op == BinaryOperatorType.LessThanOrEqual) {
 					end = condition.Right;
-				else if (condition.Op == BinaryOperatorType.LessThan)
-					end = new BinaryOperatorExpression(condition.Right, BinaryOperatorType.Subtract, new PrimitiveExpression(1, "1"));
-				else
+				} else if (condition.Op == BinaryOperatorType.LessThan) {
+					end = AddInteger(condition.Right, -1);
+				} else {
 					return;
+				}
 			}
 			
 			Expression start;
@@ -208,9 +228,29 @@ namespace ICSharpCode.NRefactory.Parser
 			
 			ForNextStatement forNextStatement = new ForNextStatement(typeReference, iteratorIdentifier.Identifier,
 			                                                         start, end,
-			                                                         (step == 1) ? null : new PrimitiveExpression(step, step.ToString(System.Globalization.CultureInfo.InvariantCulture)),
+			                                                         (step == 1) ? null : new PrimitiveExpression(step, step.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)),
 			                                                         forStatement.EmbeddedStatement, null);
 			forStatement.Parent.Children[forStatement.Parent.Children.IndexOf(forStatement)] = forNextStatement;
+		}
+		
+		/// <summary>
+		/// Returns the existing expression plus the specified integer value.
+		/// WARNING: This method modifies <paramref name="expr"/> and possibly returns <paramref name="expr"/>
+		/// again, but it might also create a new expression around <paramref name="expr"/>.
+		/// </summary>
+		public static Expression AddInteger(Expression expr, int value)
+		{
+			PrimitiveExpression pe = expr as PrimitiveExpression;
+			if (pe != null && pe.Value is int) {
+				int newVal = (int)pe.Value + value;
+				return new PrimitiveExpression(newVal, newVal.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
+			}
+			BinaryOperatorExpression boe = expr as BinaryOperatorExpression;
+			if (boe != null) {
+				boe.Right = AddInteger(boe.Right, value);
+				return boe;
+			}
+			return new BinaryOperatorExpression(expr, BinaryOperatorType.Add, new PrimitiveExpression(value, value.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)));
 		}
 	}
 }

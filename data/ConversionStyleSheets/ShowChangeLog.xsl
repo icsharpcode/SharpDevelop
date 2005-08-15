@@ -5,7 +5,7 @@
 		<HTML><HEAD></HEAD><BODY>
 			<TABLE CLASS="dtTABLE" cellspacing="0">
 				<TR>
-					<TH align="left" class="copy">Author</TH>
+					<TH align="left" class="copy" width="100">Author</TH>
 					<TH align="left" class="copy">Date</TH>
 					<TH align="left" class="copy">Change</TH>
 				</TR>

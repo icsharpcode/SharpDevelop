@@ -17,11 +17,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	public class EventDeclaration : ParametrizedNode
 	{
 		TypeReference   typeReference = TypeReference.Null;
-		List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>(1); 
+		List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>(1);
 //		ArrayList     implementsClause = new ArrayList(); // VB only
 		ArrayList     implementsClause = new ArrayList(); // VB only
-		EventAddRegion addRegion       = EventAddRegion.Null; // only for C#
-		EventRemoveRegion removeRegion = EventRemoveRegion.Null; // only for C#
+		EventAddRegion addRegion       = EventAddRegion.Null;
+		EventRemoveRegion removeRegion = EventRemoveRegion.Null;
+		EventRaiseRegion raiseRegion   = EventRaiseRegion.Null;
 		Point           bodyStart = new Point(-1, -1);
 		Point           bodyEnd = new Point(-1, -1);
 		
@@ -58,18 +59,31 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				removeRegion = value == null ? EventRemoveRegion.Null : value;
 			}
 		}
+		public EventRaiseRegion RaiseRegion {
+			get {
+				return raiseRegion;
+			}
+			set {
+				raiseRegion = value == null ? EventRaiseRegion.Null : value;
+			}
+		}
 		
 		public bool HasAddRegion {
 			get {
 				return !addRegion.IsNull;
 			}
 		}
-		
 		public bool HasRemoveRegion {
 			get {
 				return !removeRegion.IsNull;
 			}
 		}
+		public bool HasRaiseRegion {
+			get {
+				return !raiseRegion.IsNull;
+			}
+		}
+		
 		public Point BodyStart {
 			get {
 				return bodyStart;

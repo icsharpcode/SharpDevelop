@@ -153,7 +153,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public void Dispose()
 		{
-			LoggingService.Debug("Disposing XmlDoc object");
 			if (loader != null) {
 				loader.Close();
 				fs.Close();
