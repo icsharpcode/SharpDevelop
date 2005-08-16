@@ -106,6 +106,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Src\FormDesigner\DesignerGenerator\VBNetDesignerGenerator.cs" />
+    <Compile Include="Src\FormDesigner\DesignerLoader\DesignerLoaderProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

@@ -50,16 +50,16 @@ namespace ICSharpCode.FormDesigner
 		protected bool failedDesignerInitialize;
 		
 		protected IViewContent viewContent;
-		protected Hashtable    resources = null;
+		protected Hashtable resources = new Hashtable();
 		
-		protected              ITextEditorControlProvider textAreaControlProvider;
+		protected ITextEditorControlProvider textAreaControlProvider;
 		
-		protected string       compilationErrors;
+		protected string compilationErrors;
 		
 		Panel p = new Panel();
 		DesignSurface designSurface;
 		
-		DesignerLoader    loader;
+		IDesignerLoaderProvider loader;
 		IDesignerGenerator generator;
 		
 		public override Control Control {
@@ -93,10 +93,12 @@ namespace ICSharpCode.FormDesigner
 		
 		public IDesignerHost Host {
 			get {
+				if (designSurface == null)
+					return null;
 				return (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
 			}
 		}
-		public FormDesignerViewContent(IViewContent viewContent, DesignerLoader loader, IDesignerGenerator generator)
+		public FormDesignerViewContent(IViewContent viewContent, IDesignerLoaderProvider loader, IDesignerGenerator generator)
 		{
 			this.loader    = loader;
 			this.generator = generator;
@@ -106,12 +108,8 @@ namespace ICSharpCode.FormDesigner
 			this.textAreaControlProvider = viewContent as ITextEditorControlProvider;
 		}
 		
-		bool isInitialized = false;
-		
-		void Initialize()
+		void LoadDesigner()
 		{
-			if (isInitialized) return;
-			isInitialized = true;
 			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
 			
 			DefaultServiceContainer serviceContainer = new DefaultServiceContainer();
@@ -141,9 +139,9 @@ namespace ICSharpCode.FormDesigner
 			designerResourceService.Host = Host;
 			serviceContainer.AddService(typeof(IDesignerHost), Host);
 			
-			designSurface.BeginLoad(loader);
-			loader.Flush();
-			
+			DesignerLoader designerLoader = loader.CreateLoader();
+			designSurface.BeginLoad(designerLoader);
+			designerLoader.Flush();
 			designSurface.Flush();
 			
 			generator.Attach(this);
@@ -152,6 +150,14 @@ namespace ICSharpCode.FormDesigner
 			componentChangeService.ComponentChanged += delegate { viewContent.IsDirty = true; };
 			
 			LoggingService.Info("Form Designer: END INITIALIZE");
+		}
+		
+		void UnloadDesigner()
+		{
+			generator.Detach();
+			p.Controls.Clear();
+			designSurface.Dispose();
+			designSurface = null;
 		}
 		
 		PropertyContainer propertyContainer = new PropertyContainer();
@@ -175,11 +181,9 @@ namespace ICSharpCode.FormDesigner
 		
 		public void Reload()
 		{
-			Initialize();
-//	TODO: Reload code modifications
-//			loader.TextContent = Document.TextContent;
-			
 			try {
+				LoadDesigner();
+				
 				if (designSurface != null && p.Controls.Count == 0) {
 					Control designer = designSurface.View as Control;
 					designer.Dock = DockStyle.Fill;
@@ -196,7 +200,9 @@ namespace ICSharpCode.FormDesigner
 				return;
 			}
 			bool isDirty = viewContent.IsDirty;
+			LoggingService.Info("Merging form changes...");
 			generator.MergeFormChanges();
+			LoggingService.Info("Finished merging form changes");
 			viewContent.IsDirty = isDirty;
 		}
 		
@@ -244,6 +250,7 @@ namespace ICSharpCode.FormDesigner
 		
 		public override void Deselected()
 		{
+			LoggingService.Info("Deselected form designer, unloading...");
 			propertyContainer.Clear();
 			IsFormDesignerVisible = false;
 			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
@@ -257,7 +264,8 @@ namespace ICSharpCode.FormDesigner
 				MergeFormChanges();
 				textAreaControlProvider.TextEditorControl.Refresh();
 			}
-//			DeselectAllComponents();
+			UnloadDesigner();
+			LoggingService.Info("Unloading form designer finished");
 		}
 		
 		public override void NotifyBeforeSave()

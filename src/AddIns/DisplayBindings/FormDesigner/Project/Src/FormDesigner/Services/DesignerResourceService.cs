@@ -126,7 +126,7 @@ namespace ICSharpCode.FormDesigner.Services
 				}
 				return resourceWriter;
 			} catch (Exception e) {
-				System.Windows.Forms.MessageBox.Show(e.ToString());
+				MessageService.ShowError(e);
 				return null;
 			}
 		}
@@ -150,7 +150,7 @@ namespace ICSharpCode.FormDesigner.Services
 				}
 				return resourceReader;
 			} catch (Exception e) {
-				System.Windows.Forms.MessageBox.Show(e.ToString());
+				MessageService.ShowError(e);
 				return null;
 			}
 		}

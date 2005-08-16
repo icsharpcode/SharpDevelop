@@ -48,6 +48,7 @@ namespace ICSharpCode.FormDesigner
 	public interface IDesignerGenerator
 	{
 		void Attach(FormDesignerViewContent viewContent);
+		void Detach();
 		void MergeFormChanges();
 		bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out int position);
 		ICollection GetCompatibleMethods(EventDescriptor edesc);

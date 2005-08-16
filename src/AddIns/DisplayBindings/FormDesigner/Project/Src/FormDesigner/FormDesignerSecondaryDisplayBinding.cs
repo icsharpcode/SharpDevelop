@@ -129,22 +129,24 @@ namespace ICSharpCode.FormDesigner
 			if (!FormKeyHandler.inserted) {
 				FormKeyHandler.Insert();
 			}
-			DesignerLoader     loader    = new NRefactoryDesignerLoader(SupportedLanguages.CSharp, ((ITextEditorControlProvider)viewContent).TextEditorControl);
-			IDesignerGenerator generator = new CSharpDesignerGenerator();
+			IDesignerLoaderProvider loader;
+			IDesignerGenerator generator;
 			
 			switch (fileExtension) {
 				case ".cs":
-					loader    = new NRefactoryDesignerLoader(SupportedLanguages.CSharp, ((ITextEditorControlProvider)viewContent).TextEditorControl);
+					loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguages.CSharp, ((ITextEditorControlProvider)viewContent).TextEditorControl);
 					generator = new CSharpDesignerGenerator();
 					break;
 				case ".vb":
-					loader    = new NRefactoryDesignerLoader(SupportedLanguages.VBNet, ((ITextEditorControlProvider)viewContent).TextEditorControl);
+					loader    = new NRefactoryDesignerLoaderProvider(SupportedLanguages.VBNet, ((ITextEditorControlProvider)viewContent).TextEditorControl);
 					generator = new VBNetDesignerGenerator();
 					break;
 				case ".xfrm":
-					loader    = new XmlDesignerLoader(((ITextEditorControlProvider)viewContent).TextEditorControl);
+					loader    = new XmlDesignerLoaderProvider(((ITextEditorControlProvider)viewContent).TextEditorControl);
 					generator = new XmlDesignerGenerator();
 					break;
+				default:
+					throw new ApplicationException("Cannot create content for " + fileExtension);
 			}
 			return new ISecondaryViewContent[] { new FormDesignerViewContent(viewContent, loader, generator) };
 		}

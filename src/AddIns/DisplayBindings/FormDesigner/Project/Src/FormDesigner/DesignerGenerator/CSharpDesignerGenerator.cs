@@ -62,6 +62,15 @@ namespace ICSharpCode.FormDesigner
 			componentChangeService.ComponentRemoving += new ComponentEventHandler(ComponentRemoved);
 		}
 		
+		public void Detach()
+		{
+			IComponentChangeService componentChangeService = (IComponentChangeService)viewContent.DesignSurface.GetService(typeof(IComponentChangeService));
+			componentChangeService.ComponentAdded    -= new ComponentEventHandler(ComponentAdded);
+			componentChangeService.ComponentRename   -= new ComponentRenameEventHandler(ComponentRenamed);
+			componentChangeService.ComponentRemoving -= new ComponentEventHandler(ComponentRemoved);
+			this.viewContent = null;
+		}
+		
 		void ComponentRemoved(object sender, ComponentEventArgs e)
 		{
 			try {
@@ -86,7 +95,7 @@ namespace ICSharpCode.FormDesigner
 				}
 				int endOffset = viewContent.Document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.EndLine));
 				viewContent.Document.Insert(endOffset, "\t\tprivate " + e.Component.GetType() + " " + e.Component.Site.Name + ";" + Environment.NewLine);
-			} catch (Exception ex) { 
+			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
 		}
@@ -139,12 +148,12 @@ namespace ICSharpCode.FormDesigner
 		{
 			foreach (IMethod method in c.Methods) {
 				if ((method.Name == "InitializeComponents" || method.Name == "InitializeComponent") && method.Parameters.Count == 0) {
-					 return method;
+					return method;
 				}
 			}
 			return null;
 		}
-	
+		
 		protected static string GenerateParams(EventDescriptor edesc, bool paramNames)
 		{
 			System.Type type =  edesc.EventType;
@@ -164,8 +173,8 @@ namespace ICSharpCode.FormDesigner
 				}
 				param += typeStr;
 				if (paramNames == true) {
-						param += " ";
-						param += pInfo.Name;
+					param += " ";
+					param += pInfo.Name;
 				}
 				if (i + 1 < mInfo.GetParameters().Length) {
 					param += ", ";
@@ -205,8 +214,8 @@ namespace ICSharpCode.FormDesigner
 			string param = GenerateParams(edesc, true);
 			
 			string text = "void " + eventMethodName + "(" + param + ")\n" +
-			"{\n" + body +
-			"\n}\n\n";
+				"{\n" + body +
+				"\n}\n\n";
 			viewContent.Document.Insert(offset, text);
 			viewContent.Document.FormattingStrategy.IndentLines(viewContent.TextEditorControl.ActiveTextAreaControl.TextArea, c.Region.EndLine - 1, c.Region.EndLine + 3);
 			

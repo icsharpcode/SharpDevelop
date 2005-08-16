@@ -47,9 +47,6 @@ namespace ICSharpCode.FormDesigner
 		SupportedLanguages    language;
 		CodeDomProvider       provider = new Microsoft.CSharp.CSharpCodeProvider();
 		
-		protected Hashtable resources = null;
-		bool isReloadNeeded  = false;
-		
 		TextEditorControl textEditorControl;
 		
 		public string TextContent {
@@ -84,7 +81,7 @@ namespace ICSharpCode.FormDesigner
 		
 		protected override bool IsReloadNeeded()
 		{
-			return isReloadNeeded | base.IsReloadNeeded();
+			return base.IsReloadNeeded() || TextContent != lastTextContent;
 		}
 		
 		public NRefactoryDesignerLoader(SupportedLanguages language, TextEditorControl textEditorControl)
@@ -106,11 +103,14 @@ namespace ICSharpCode.FormDesigner
 			base.OnEndLoad(successful, errors);
 		}
 		
+		string lastTextContent;
+		
 		protected override CodeCompileUnit Parse()
 		{
 			LoggingService.Debug("NRefactoryDesignerLoader.Parse()");
-			isReloadNeeded = false;
-			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new StringReader(TextContent));
+			
+			lastTextContent = TextContent;
+			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new StringReader(lastTextContent));
 			p.Parse();
 			
 			// Try to fix the type names to fully qualified ones
@@ -125,6 +125,7 @@ namespace ICSharpCode.FormDesigner
 //			outputGenerator.GenerateCodeFromMember(visitor.codeCompileUnit.Namespaces[0].Types[0], Console.Out, null);
 //			provider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
 			
+			LoggingService.Debug("NRefactoryDesignerLoader.Parse() finished");
 			return visitor.codeCompileUnit;
 		}
 		
@@ -185,6 +186,7 @@ namespace ICSharpCode.FormDesigner
 		
 		protected override void Write(CodeCompileUnit unit)
 		{
+			LoggingService.Info("DesignerLoader.Write called");
 			provider.GenerateCodeFromCompileUnit(unit, Console.Out, null);
 		}
 		
@@ -206,13 +208,6 @@ namespace ICSharpCode.FormDesigner
 		public override void Dispose()
 		{
 			base.Dispose();
-			if (this.resources != null) {
-				foreach (DesignerResourceService.ResourceStorage storage in this.resources.Values) {
-					storage.Dispose();
-				}
-				resources.Clear();
-			}
-			resources = null;
 		}
 	}
 }

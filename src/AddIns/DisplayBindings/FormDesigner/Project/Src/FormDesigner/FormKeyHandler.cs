@@ -130,7 +130,10 @@ namespace ICSharpCode.FormDesigner
 			}
 			
 			if (keyPressed == Keys.Escape) {
-				formDesigner.HideTabOrder();
+				if (formDesigner.IsTabOrderMode)
+					formDesigner.HideTabOrder();
+				else
+					formDesigner.WorkbenchWindow.SwitchView(0);
 				return true;
 			}
 			

@@ -28,6 +28,11 @@ namespace ICSharpCode.FormDesigner
 			this.viewContent = viewContent;
 		}
 		
+		public void Detach()
+		{
+			this.viewContent = null;
+		}
+		
 		public void MergeFormChanges()
 		{
 			StringWriter writer = new StringWriter();
