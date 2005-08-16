@@ -125,7 +125,7 @@ namespace ICSharpCode.FormDesigner
 //			}
 			
 			Keys keyPressed = (Keys)m.WParam.ToInt32() | Control.ModifierKeys;
-			if (keyPressed == Keys.F1) {
+			if (keyPressed == Keys.F1 | keyPressed == Keys.F4) {
 				return false;
 			}
 			
