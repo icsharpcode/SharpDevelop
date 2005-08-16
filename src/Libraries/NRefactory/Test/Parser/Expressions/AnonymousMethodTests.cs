@@ -22,6 +22,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		}
 		
 		[Test]
+		public void AnonymousMethodWithoutParameterList()
+		{
+			AnonymousMethodExpression ame = Parse("delegate {}");
+			Assert.AreEqual(0, ame.Parameters.Count);
+			Assert.AreEqual(0, ame.Body.Children.Count);
+		}
+		
+		[Test]
 		public void EmptyAnonymousMethod()
 		{
 			AnonymousMethodExpression ame = Parse("delegate() {}");

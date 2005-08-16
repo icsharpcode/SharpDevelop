@@ -2107,9 +2107,11 @@ AnonymousMethodExpr<out Expression outExpr>
 	outExpr = expr;
 .)
 =
-	"("
-	[ FormalParameterList<p> (. expr.Parameters = p; .) ]
-	")"
+	[
+		"("
+		[ FormalParameterList<p> (. expr.Parameters = p; .) ]
+		")"
+	]
 	/*--- ParseExpression doesn't set a compilation unit, */
 	/*--- so we can't use block then -> skip body of anonymous method */
 	(. if (compilationUnit != null) { .)
