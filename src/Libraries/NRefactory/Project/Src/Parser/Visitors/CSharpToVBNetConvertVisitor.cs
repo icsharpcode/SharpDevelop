@@ -188,7 +188,7 @@ namespace ICSharpCode.NRefactory.Parser
 				if (condition.Op == BinaryOperatorType.GreaterThanOrEqual) {
 					end = condition.Right;
 				} else if (condition.Op == BinaryOperatorType.GreaterThan) {
-					end = AddInteger(condition.Right, 1);
+					end = Expression.AddInteger(condition.Right, 1);
 				} else {
 					return;
 				}
@@ -196,7 +196,7 @@ namespace ICSharpCode.NRefactory.Parser
 				if (condition.Op == BinaryOperatorType.LessThanOrEqual) {
 					end = condition.Right;
 				} else if (condition.Op == BinaryOperatorType.LessThan) {
-					end = AddInteger(condition.Right, -1);
+					end = Expression.AddInteger(condition.Right, -1);
 				} else {
 					return;
 				}
@@ -231,26 +231,6 @@ namespace ICSharpCode.NRefactory.Parser
 			                                                         (step == 1) ? null : new PrimitiveExpression(step, step.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)),
 			                                                         forStatement.EmbeddedStatement, null);
 			forStatement.Parent.Children[forStatement.Parent.Children.IndexOf(forStatement)] = forNextStatement;
-		}
-		
-		/// <summary>
-		/// Returns the existing expression plus the specified integer value.
-		/// WARNING: This method modifies <paramref name="expr"/> and possibly returns <paramref name="expr"/>
-		/// again, but it might also create a new expression around <paramref name="expr"/>.
-		/// </summary>
-		public static Expression AddInteger(Expression expr, int value)
-		{
-			PrimitiveExpression pe = expr as PrimitiveExpression;
-			if (pe != null && pe.Value is int) {
-				int newVal = (int)pe.Value + value;
-				return new PrimitiveExpression(newVal, newVal.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
-			}
-			BinaryOperatorExpression boe = expr as BinaryOperatorExpression;
-			if (boe != null) {
-				boe.Right = AddInteger(boe.Right, value);
-				return boe;
-			}
-			return new BinaryOperatorExpression(expr, BinaryOperatorType.Add, new PrimitiveExpression(value, value.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)));
 		}
 	}
 }

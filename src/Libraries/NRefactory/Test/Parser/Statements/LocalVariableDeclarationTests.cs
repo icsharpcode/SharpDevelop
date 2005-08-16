@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("a", ((VariableDeclaration)lvd.Variables[0]).Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("int", type.Type);
-			// TODO: Check initializer
+			Assert.AreEqual(5, ((PrimitiveExpression)lvd.Variables[0].Initializer).Value);
 		}
 		
 		[Test]
@@ -190,18 +190,35 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim a As Integer = 5", typeof(LocalVariableDeclaration));
 			Assert.AreEqual(1, lvd.Variables.Count);
-			Assert.AreEqual("a", ((VariableDeclaration)lvd.Variables[0]).Name);
+			Assert.AreEqual("a", lvd.Variables[0].Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("Integer", type.Type);
-			// TODO: Check initializer
+			Assert.AreEqual(5, ((PrimitiveExpression)lvd.Variables[0].Initializer).Value);
 		}
+		
+		[Test]
+		public void VBNetLocalArrayDeclarationTest()
+		{
+			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim a(10) As Integer", typeof(LocalVariableDeclaration));
+			Assert.AreEqual(1, lvd.Variables.Count);
+			Assert.AreEqual("a", lvd.Variables[0].Name);
+			TypeReference type = lvd.GetTypeForVariable(0);
+			Assert.AreEqual("Integer", type.Type);
+			Assert.AreEqual(new int[] { 0 } , type.RankSpecifier);
+			ArrayCreateExpression ace = (ArrayCreateExpression)lvd.Variables[0].Initializer;
+			Assert.AreEqual(1, ace.Parameters.Count);
+			ArrayCreationParameter acp = (ArrayCreationParameter)ace.Parameters[0];
+			Assert.AreEqual(1, acp.Expressions.Count);
+			Assert.AreEqual(11, ((PrimitiveExpression)acp.Expressions[0]).Value);
+		}
+		
 		
 		[Test]
 		public void VBNetComplexGenericLocalVariableDeclarationTest()
 		{
 			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim where As Generic(Of Printable, G(Of Printable()))", typeof(LocalVariableDeclaration));
 			Assert.AreEqual(1, lvd.Variables.Count);
-			Assert.AreEqual("where", ((VariableDeclaration)lvd.Variables[0]).Name);
+			Assert.AreEqual("where", lvd.Variables[0].Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("Generic", type.Type);
 			Assert.AreEqual(2, type.GenericTypes.Count);

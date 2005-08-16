@@ -1498,6 +1498,17 @@ VariableDeclarator<List<VariableDeclaration> fieldDeclaration>
 					} else {
 						type.RankSpecifier = (int[])rank.ToArray(typeof(int));
 					}
+				} else if (type != null && dimension != null) {
+					if(type.RankSpecifier != null) {
+						Error("array rank only allowed one time");
+					} else {
+						type.RankSpecifier = new int[] { dimension.Count - 1 };
+						for (int i = 0; i < dimension.Count; i++)
+							dimension[i] = Expression.AddInteger((Expression)dimension[i], 1);
+						rank = new ArrayList();
+						rank.Add(new ArrayCreationParameter(dimension));
+						expr = new ArrayCreateExpression(type, rank);
+					}
 				}
 			.)
 			[ "=" VariableInitializer<out expr> ]
