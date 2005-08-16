@@ -111,6 +111,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this.textBox.Size = new System.Drawing.Size(528, 138);
 			this.textBox.TabIndex = 4;
 			this.textBox.Text = "";
+			this.textBox.ScrollBars = ScrollBars.Both;
 			// 
 			// ExceptionForm
 			// 
