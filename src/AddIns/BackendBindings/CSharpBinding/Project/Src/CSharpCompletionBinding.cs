@@ -95,6 +95,39 @@ namespace CSharpBinding
 					}
 				}
 			}
+			else if(ch == '=')
+			{
+				LineSegment curLine = editor.Document.GetLineSegmentForOffset(cursor);
+				string curLineText = editor.ActiveTextAreaControl.Document.GetText(curLine);
+				
+				if(curLineText != null && curLineText.EndsWith("+"))
+				{
+					string documentText = editor.Text;
+					int position = editor.ActiveTextAreaControl.Caret.Offset - 2;
+					int oldCursor = position;
+					string textWithoutComments = ef.FilterComments(documentText, ref position);
+					int commentLength = oldCursor - position;
+					
+					if (textWithoutComments != null)
+					{
+						ExpressionResult result = ef.FindFullExpression(textWithoutComments, position);
+						
+						if(result.Expression != "")
+						{
+							IResolver resolver = ParserService.CreateResolver(editor.FileName);
+							ResolveResult resolveResult = resolver.Resolve(result, editor.ActiveTextAreaControl.Caret.Line, editor.ActiveTextAreaControl.Caret.Column, editor.FileName, documentText);
+							
+							if(resolveResult.ResolvedType.GetUnderlyingClass().IsTypeInInheritanceTree(ProjectContentRegistry.Mscorlib.GetClass("System.MulticastDelegate")))
+							{
+								EventHandlerCompletitionDataProvider eventHandlerProvider = new EventHandlerCompletitionDataProvider(result.Expression, resolveResult);
+								eventHandlerProvider.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, ch);
+								editor.ShowCompletionWindow(eventHandlerProvider, ch);
+							}
+						}
+					}
+				}
+			}
+			
 			return base.HandleKeyPress(editor, ch);
 		}
 		

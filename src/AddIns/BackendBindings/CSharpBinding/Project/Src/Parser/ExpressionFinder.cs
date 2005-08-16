@@ -591,14 +591,11 @@ namespace CSharpBinding.Parser
 		
 		void ReadNextToken()
 		{
-			
-			
 			curTokenType = Err;
 			char ch = GetNextNonWhiteSpace();
 			if (ch == '\0') {
 				return;
 			}
-			
 			
 			switch (ch) {
 				case '}':
