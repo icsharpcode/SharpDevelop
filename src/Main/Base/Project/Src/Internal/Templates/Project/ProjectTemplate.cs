@@ -54,10 +54,14 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string    description  = null;
 		string    icon         = null;
 		string    wizardpath   = null;
+		
+		bool   newProjectDialogVisible = true;
+		
 		ArrayList actions      = new ArrayList();
 
 		
 		CombineDescriptor combineDescriptor = null;
+		ProjectDescriptor projectDescriptor = null;
 		
 		#region Template Properties
 		public string WizardPath {
@@ -113,13 +117,25 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				return icon;
 			}
 		}
-
+		
+		public bool NewProjectDialogVisible {
+			get {
+				return newProjectDialogVisible;
+			}
+		}
+		
+		
 		[Browsable(false)]
-		public CombineDescriptor CombineDescriptor
-		{
-			get
-			{
+		public CombineDescriptor CombineDescriptor {
+			get {
 				return combineDescriptor;
+			}
+		}
+		
+		[Browsable(false)]
+		public ProjectDescriptor ProjectDescriptor {
+			get {
+				return projectDescriptor;
 			}
 		}
 		#endregion
@@ -138,6 +154,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			originator   = doc.DocumentElement.GetAttribute("originator");
 			created      = doc.DocumentElement.GetAttribute("created");
 			lastmodified = doc.DocumentElement.GetAttribute("lastModified");
+			
+			string newProjectDialogVisibleAttr  = doc.DocumentElement.GetAttribute("newprojectdialogvisible");
+			if (newProjectDialogVisibleAttr != null && newProjectDialogVisibleAttr.Length != 0) {
+				if (newProjectDialogVisibleAttr.ToLower() == "false")
+					newProjectDialogVisible = false;
+			}
 			
 			XmlElement config = doc.DocumentElement["TemplateConfiguration"];
 			
@@ -159,6 +181,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			
 			if (doc.DocumentElement["Combine"] != null) {
 				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(doc.DocumentElement["Combine"]);
+			}
+			
+			if (doc.DocumentElement["Project"] != null) {
+				projectDescriptor = ProjectDescriptor.CreateProjectDescriptor(doc.DocumentElement["Project"]);
 			}
 			
 			// Read Actions;
@@ -191,12 +217,18 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				customizer.Set("ProjectTemplate", this);
 				WizardDialog wizard = new WizardDialog("Project Wizard", customizer, wizardpath);
 				if (wizard.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-					lastCombine = combineDescriptor.CreateCombine(projectCreateInformation, this.languagename);
+					if (combineDescriptor != null)
+						lastCombine = combineDescriptor.CreateCombine(projectCreateInformation, this.languagename);
+					else if (projectDescriptor != null)
+						lastCombine = projectDescriptor.CreateProject(projectCreateInformation, this.languagename).FileName;
 				} else {
 					return null;
 				}
 			} else {
-				lastCombine = combineDescriptor.CreateCombine(projectCreateInformation, this.languagename);
+				if (combineDescriptor != null)
+					lastCombine = combineDescriptor.CreateCombine(projectCreateInformation, this.languagename);
+				else if (projectDescriptor != null)
+					lastCombine = projectDescriptor.CreateProject(projectCreateInformation, this.languagename).FileName;
 			}
 			
 			return lastCombine;

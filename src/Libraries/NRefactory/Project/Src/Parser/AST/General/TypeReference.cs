@@ -13,7 +13,7 @@ using System.Text;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
-	public class TypeReference : AbstractNode, INullable
+	public class TypeReference : AbstractNode, INullable, ICloneable
 	{
 		string type = "";
 		string systemType = "";
@@ -72,6 +72,25 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		public static IEnumerable<KeyValuePair<string, string>> GetPrimitiveTypesVB()
 		{
 			return vbtypes;
+		}
+		
+		object ICloneable.Clone()
+		{
+			return this.Clone();
+		}
+		
+		public TypeReference Clone()
+		{
+			TypeReference c = new TypeReference(type, systemType);
+			c.pointerNestingLevel = pointerNestingLevel;
+			if (rankSpecifier != null) {
+				c.rankSpecifier = (int[])rankSpecifier.Clone();
+			}
+			foreach (TypeReference r in genericTypes) {
+				c.genericTypes.Add(r.Clone());
+			}
+			c.isGlobal = isGlobal;
+			return c;
 		}
 		
 		public string Type {

@@ -1502,12 +1502,13 @@ VariableDeclarator<List<VariableDeclaration> fieldDeclaration>
 					if(type.RankSpecifier != null) {
 						Error("array rank only allowed one time");
 					} else {
-						type.RankSpecifier = new int[] { dimension.Count - 1 };
 						for (int i = 0; i < dimension.Count; i++)
 							dimension[i] = Expression.AddInteger((Expression)dimension[i], 1);
 						rank = new ArrayList();
 						rank.Add(new ArrayCreationParameter(dimension));
 						expr = new ArrayCreateExpression(type, rank);
+						type = type.Clone();
+						type.RankSpecifier = new int[] { dimension.Count - 1 };
 					}
 				}
 			.)

@@ -133,9 +133,9 @@ namespace HtmlHelp2
 						if(firstChild.tagName == "B" && firstChild.innerText == sectionName) {
 							if(spanChild.tagName == "SPAN" && (string)spanChild.getAttribute("className", 0) == "content") {
 								spanChild.insertAdjacentHTML("beforeEnd",
-									String.Format("<span class=\"link\" onmouseover=\"window.status='{0}'\" onmouseout=\"window.status=''\" onclick=\"Click('{0}');\">{1}</span><br>",
-								                  topicUrl, topicName)
-									);
+								                             String.Format("<span class=\"link\" onmouseover=\"window.status='{0}'\" onmouseout=\"window.status=''\" onclick=\"Click('{0}');\">{1}</span><br>",
+								                                           topicUrl, topicName)
+								                            );
 
 								return;
 							}
@@ -152,12 +152,12 @@ namespace HtmlHelp2
 				}
 
 				dynamicHelpBrowser.Document.body.insertAdjacentHTML("beforeEnd",
-					String.Format("<span class=\"section\"><img id=\"image_{0}\" src=\"OpenBook.png\" style=\"width:16px;height:16px;margin-right:5px;\">" +
-								  "<b style=\"cursor:pointer\" onclick=\"ExpandCollapse({0})\">{1}</b><br>" +
-								  "<span class=\"content\" id=\"content_{0}\">" +
-								  "<span class=\"link\" onmouseover=\"window.status='{2}'\" onmouseout=\"window.status=''\" onclick=\"Click('{2}');\">{3}</span><br></span></span>",
-								  this.internalIndex.ToString(), sectionName, topicUrl, topicName)
-				);
+				                                                    String.Format("<span class=\"section\"><img id=\"image_{0}\" src=\"OpenBook.png\" style=\"width:16px;height:16px;margin-right:5px;\">" +
+				                                                                  "<b style=\"cursor:pointer\" onclick=\"ExpandCollapse({0})\">{1}</b><br>" +
+				                                                                  "<span class=\"content\" id=\"content_{0}\">" +
+				                                                                  "<span class=\"link\" onmouseover=\"window.status='{2}'\" onmouseout=\"window.status=''\" onclick=\"Click('{2}');\">{3}</span><br></span></span>",
+				                                                                  this.internalIndex.ToString(), sectionName, topicUrl, topicName)
+				                                                   );
 
 				this.internalIndex++;
 			}
@@ -188,6 +188,12 @@ namespace HtmlHelp2
 
 		protected override void Dispose(bool disposing)
 		{
+			if (doc != null) {
+				mshtml.HTMLDocumentEvents2_Event docEvents = (mshtml.HTMLDocumentEvents2_Event)doc;
+				docEvents.oncontextmenu -= new HTMLDocumentEvents2_oncontextmenuEventHandler(DocumentEventsOnContextMenu);
+				int c = Marshal.ReleaseComObject(doc);
+				doc = null;
+			}
 			base.Dispose(disposing);
 			if (disposing) axWebBrowser.Dispose();
 		}
@@ -266,8 +272,14 @@ namespace HtmlHelp2
 		private void DocumentComplete(object sender, DWebBrowserEvents2_DocumentCompleteEvent e)
 		{
 			try {
+				mshtml.HTMLDocumentEvents2_Event docEvents;
+				if (doc != null) {
+					docEvents = (mshtml.HTMLDocumentEvents2_Event)doc;
+					docEvents.oncontextmenu -= new HTMLDocumentEvents2_oncontextmenuEventHandler(DocumentEventsOnContextMenu);
+					Marshal.ReleaseComObject(doc);
+				}
 				doc = (mshtml.HTMLDocument)axWebBrowser.Document;
-				mshtml.HTMLDocumentEvents2_Event docEvents = (mshtml.HTMLDocumentEvents2_Event)doc;
+				docEvents = (mshtml.HTMLDocumentEvents2_Event)doc;
 				docEvents.oncontextmenu += new HTMLDocumentEvents2_oncontextmenuEventHandler(DocumentEventsOnContextMenu);
 			}
 			catch {
@@ -276,8 +288,8 @@ namespace HtmlHelp2
 
 		private void StatusBarChanged(object sender, DWebBrowserEvents2_StatusTextChangeEvent e)
 		{
-			 IStatusBarService statusBarService = (IStatusBarService)ICSharpCode.Core.Services.ServiceManager.Services.GetService(typeof(IStatusBarService));
-			 statusBarService.SetMessage(e.text);
+			IStatusBarService statusBarService = (IStatusBarService)ICSharpCode.Core.Services.ServiceManager.Services.GetService(typeof(IStatusBarService));
+			statusBarService.SetMessage(e.text);
 		}
 
 		private bool DocumentEventsOnContextMenu(IHTMLEventObj e)

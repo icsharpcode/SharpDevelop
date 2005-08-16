@@ -29,13 +29,13 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 	/// </summary>
 	public class NewProjectDialog : BaseSharpDevelopForm
 	{
-		Container components = new System.ComponentModel.Container();
+		protected Container components = new System.ComponentModel.Container();
 		
-		ArrayList alltemplates = new ArrayList();
-		ArrayList categories   = new ArrayList();
-		Hashtable icons        = new Hashtable();
+		protected ArrayList alltemplates = new ArrayList();
+		protected ArrayList categories   = new ArrayList();
+		protected Hashtable icons        = new Hashtable();
 		
-		bool openCombine;
+		protected bool openCombine;
 		
 		public NewProjectDialog(bool openCombine)
 		{
@@ -47,12 +47,16 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			InitializeView();
 			
 			((TreeView)ControlDictionary["categoryTreeView"]).Select();
-			((TextBox)ControlDictionary["locationTextBox"]).Text = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.NewProjectDialog.DefaultPath", Path.Combine(System.Environment.GetFolderPath(System.Environment.SpecialFolder.Personal), "SharpDevelop Projects")).ToString();
+			((TextBox)ControlDictionary["locationTextBox"]).Text = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.DefaultPath", Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.Personal), "SharpDevelop Projects"));
 			StartPosition = FormStartPosition.CenterParent;
 			Icon = null;
 		}
 		
-		void InitializeView()
+		public NewProjectDialog()
+		{
+		}
+		
+		protected virtual void InitializeView()
 		{
 			ImageList smalllist = new ImageList();
 			ImageList imglist = new ImageList();
@@ -116,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		}
 		
 		// TODO : insert sub categories
-		Category GetCategory(string categoryname)
+		protected Category GetCategory(string categoryname)
 		{
 			foreach (Category category in categories) {
 				if (category.Text == categoryname)
@@ -127,22 +131,24 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			return newcategory;
 		}
 		
-		void InitializeTemplates()
+		protected virtual void InitializeTemplates()
 		{
 			foreach (ProjectTemplate template in ProjectTemplate.ProjectTemplates) {
 				TemplateItem titem = new TemplateItem(template);
 				if (titem.Template.Icon != null) {
 					icons[titem.Template.Icon] = 0; // "create template icon"
 				}
-				Category cat = GetCategory(titem.Template.Category);
-				cat.Templates.Add(titem);
-				if (cat.Templates.Count == 1)
-					titem.Selected = true;
+				if (template.NewProjectDialogVisible == true) {
+					Category cat = GetCategory(titem.Template.Category);
+					cat.Templates.Add(titem);
+					if (cat.Templates.Count == 1)
+						titem.Selected = true;
+				}
 				alltemplates.Add(titem);
 			}
 		}
 		
-		void CategoryChange(object sender, TreeViewEventArgs e)
+		protected void CategoryChange(object sender, TreeViewEventArgs e)
 		{
 			((ListView)ControlDictionary["templateListView"]).Items.Clear();
 			if (((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode != null) {
@@ -188,7 +194,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				return ProjectLocation + name;
 			}
 		}
-
+		
 		string ProjectLocation {
 			get {
 				string location = ((TextBox)ControlDictionary["locationTextBox"]).Text.TrimEnd('\\', '/', Path.DirectorySeparatorChar);
@@ -218,7 +224,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 						solutionPath = solutionPath.Substring(0, maxLength + 3) + "...";
 					}
 				}
-			} catch (Exception ex) { 
+			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
 			ControlDictionary["createInLabel"].Text = ResourceService.GetString("Dialog.NewProject.ProjectAtDescription")+ " " + solutionPath;
@@ -303,38 +309,38 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				
 				DialogResult = DialogResult.OK;
 				/*
-				if (item.Template.LanguageName != null && item.Template.LanguageName.Length > 0)  {
-					
-				}
-				
-				if (item.Template.WizardPath != null) {
-					Properties customizer = new Properties();
-					customizer.Set("Template", item.Template);
-					customizer.Set("Creator",  this);
-					WizardDialog wizard = new WizardDialog("Project Wizard", customizer, item.Template.WizardPath);
-					if (wizard.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-						DialogResult = DialogResult.OK;
-					}
-				}
-				
-				NewCombineLocation = FileUtility.GetDirectoryNameWithSeparator(ProjectLocation) + ((TextBox)ControlDictionary["nameTextBox"]).Text + ".cmbx";
-				
-				if (File.Exists(NewCombineLocation)) {
-					DialogResult result = MessageBox.Show("Combine file " + NewCombineLocation + " already exists, do you want to overwrite\nthe existing file ?", "File already exists", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
-					switch(result) {
-						case DialogResult.Yes:
+						if (item.Template.LanguageName != null && item.Template.LanguageName.Length > 0)  {
+							
+						}
+						
+						if (item.Template.WizardPath != null) {
+							Properties customizer = new Properties();
+							customizer.Set("Template", item.Template);
+							customizer.Set("Creator",  this);
+							WizardDialog wizard = new WizardDialog("Project Wizard", customizer, item.Template.WizardPath);
+							if (wizard.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+								DialogResult = DialogResult.OK;
+							}
+						}
+						
+						NewCombineLocation = FileUtility.GetDirectoryNameWithSeparator(ProjectLocation) + ((TextBox)ControlDictionary["nameTextBox"]).Text + ".cmbx";
+						
+						if (File.Exists(NewCombineLocation)) {
+							DialogResult result = MessageBox.Show("Combine file " + NewCombineLocation + " already exists, do you want to overwrite\nthe existing file ?", "File already exists", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2);
+							switch(result) {
+								case DialogResult.Yes:
+									cmb.SaveCombine(NewCombineLocation);
+									break;
+								case DialogResult.No:
+									break;
+							}
+						} else {
 							cmb.SaveCombine(NewCombineLocation);
-							break;
-						case DialogResult.No:
-							break;
+						}
+					} else {
+						MessageBox.Show(ResourceService.GetString("Dialog.NewProject.EmptyProjectFieldWarning"), "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
 					}
-				} else {
-					cmb.SaveCombine(NewCombineLocation);
-				}
-			} else {
-				MessageBox.Show(ResourceService.GetString("Dialog.NewProject.EmptyProjectFieldWarning"), "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-			}
-				*/
+				 */
 			}
 		}
 		
@@ -360,7 +366,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			}
 		}
 		
-		void InitializeComponents()
+		protected void InitializeComponents()
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.NewProjectDialog.xfrm"));
 			
@@ -413,11 +419,11 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		/// <summary>
 		///  Represents a category
 		/// </summary>
-		internal class Category : TreeNode
+		public class Category : TreeNode
 		{
 			ArrayList categories = new ArrayList();
 			ArrayList templates  = new ArrayList();
-//			string name;
+			//			string name;
 			
 			public Category(string name) : base(name)
 			{
@@ -425,11 +431,11 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				ImageIndex = 1;
 			}
 			
-//			public string Name {
-//				get {
-//					return name;
-//				}
-//			}
+			//			public string Name {
+			//				get {
+			//					return name;
+			//				}
+			//			}
 			public ArrayList Categories {
 				get {
 					return categories;
@@ -445,7 +451,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		/// <summary>
 		/// Holds a new file template
 		/// </summary>
-		internal class TemplateItem : ListViewItem
+		public class TemplateItem : ListViewItem
 		{
 			ProjectTemplate template;
 			

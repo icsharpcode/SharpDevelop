@@ -31,9 +31,10 @@ namespace HtmlHelp2Service
 		private static bool IsClassRegistered(string classId)
 		{
 			try {
-				RegistryKey tempRegKey = Registry.ClassesRoot.OpenSubKey(String.Format("CLSID\\{0}\\InprocServer32", classId));
-				string help2Dll        = (string)tempRegKey.GetValue("");
-				return (help2Dll != null && help2Dll != "" && File.Exists(help2Dll));
+				using (RegistryKey tempRegKey = Registry.ClassesRoot.OpenSubKey(String.Format("CLSID\\{0}\\InprocServer32", classId))) {
+					string help2Dll        = (string)tempRegKey.GetValue("");
+					return (help2Dll != null && help2Dll != "" && File.Exists(help2Dll));
+				}
 			}
 			catch {
 				return false;
