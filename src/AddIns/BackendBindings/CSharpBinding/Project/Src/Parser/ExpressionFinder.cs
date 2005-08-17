@@ -228,6 +228,19 @@ namespace CSharpBinding.Parser
 					int otherBracket = SearchBracketForward(inText, i + 1, c, (c == '(') ? ')' : ']');
 					if (otherBracket < 0)
 						break;
+					if (c == '[') {
+						// do not include [] when it is an array declaration (versus indexer call)
+						bool ok = false;
+						for (int j = i + 1; j < otherBracket; j++) {
+							if (inText[j] != ',' && !char.IsWhiteSpace(inText, j)) {
+								ok = true;
+								break;
+							}
+						}
+						if (!ok) {
+							break;
+						}
+					}
 					b.Append(inText, i, otherBracket - i + 1);
 					break;
 				} else if (c == '<') {
