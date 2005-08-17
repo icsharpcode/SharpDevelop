@@ -66,8 +66,7 @@ namespace ICSharpCode.FormDesigner
 			}
 			// Test for real base type (does not work while solution load thread is still running)
 			IProjectContent pc = ProjectContentRegistry.WinForms;
-			return c.IsTypeInInheritanceTree(pc.GetClass("System.Windows.Forms.Form")) ||
-				c.IsTypeInInheritanceTree(pc.GetClass("System.Windows.Forms.UserControl"));
+			return c.IsTypeInInheritanceTree(pc.GetClass("System.Windows.Forms.Form")) || c.IsTypeInInheritanceTree(pc.GetClass("System.Windows.Forms.UserControl"));
 		}
 		
 		public bool CanAttachTo(IViewContent viewContent)
@@ -92,6 +91,8 @@ namespace ICSharpCode.FormDesigner
 									if (method == null) {
 										continue;
 									}
+									Console.WriteLine("TRUE "+ info);
+									
 									return true;
 								}
 							}

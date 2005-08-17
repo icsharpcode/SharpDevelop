@@ -65,13 +65,19 @@
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
 		<MenuItem id = "SvnExport"
-		          label = "Export"
-		          icon  = "Svn.Export"
-		          class = "ICSharpCode.Svn.Commands.ExportCommand"/>
-		<MenuItem id = "SvnCheckout"
-		          label = "Checkout"
-		          icon  = "Svn.Checkout"
-		          class = "ICSharpCode.Svn.Commands.CheckoutCommand"/>
+		          label = "Subversion"
+				  insertbefore = "LastSeparator"
+				  type="Menu">
+			<MenuItem id = "SvnExport"
+					  label = "Export"
+					  icon  = "Svn.Export"
+					  class = "ICSharpCode.Svn.Commands.ExportCommand"/>
+			<MenuItem id = "SvnCheckout"
+					  label = "Checkout"
+					  icon  = "Svn.Checkout"
+					  class = "ICSharpCode.Svn.Commands.CheckoutCommand"/>
+		</MenuItem>
 	</Path>
+	
 
 </AddIn>
