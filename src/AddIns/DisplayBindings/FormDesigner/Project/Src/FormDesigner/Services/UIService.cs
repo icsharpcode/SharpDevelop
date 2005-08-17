@@ -65,28 +65,17 @@ namespace ICSharpCode.FormDesigner.Services
 		#region Show error functions
 		public void ShowError(Exception ex)
 		{
-			ShowError(ex, null);
+			MessageService.ShowError(ex);
 		}
 		
 		public void ShowError(string message)
 		{
-			ShowError(null, message);
+			MessageService.ShowError(message);
 		}
 		
 		public void ShowError(Exception ex, string message)
 		{
-//			string msg = String.Empty;
-//			
-//			if (ex != null) {
-//				msg = "Exception occurred: " + ex.ToString() + "\n";
-//			}
-//			
-//			if (message != null) {
-//				msg += message;
-//			}
-			
-			
-			MessageBox.Show(GetDialogOwnerWindow(), ex.Message, ResourceService.GetString("Global.ErrorText"), MessageBoxButtons.OK, MessageBoxIcon.Error);
+			MessageService.ShowError(ex, message);
 		}
 		#endregion
 		

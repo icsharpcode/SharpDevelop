@@ -99,7 +99,7 @@ namespace ICSharpCode.SharpDevelop
 			} else if (result == 1) {
 				// clipboard text is too long to be inserted into the mail-url
 				string url = "mailto:icsharpcode.svn-sharpdevelop-users@glengamoi.com?subject=Bug Report&body="
-					+ Uri.EscapeDataString("Write an english description of what you were doing when the" +
+					+ Uri.EscapeDataString("Write an english description of what you were doing when the " +
 					                       "error occured and paste the exception text.");
 				try {
 					Process.Start(url);

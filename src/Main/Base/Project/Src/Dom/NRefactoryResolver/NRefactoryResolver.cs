@@ -928,6 +928,20 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						result.Add(m);
 					}
 				}
+				if (callingClass.DeclaringType != null) {
+					result.Add(callingClass.DeclaringType);
+					members.Clear();
+					t = callingClass.DeclaringType.DefaultReturnType;
+					members.AddRange(t.GetMethods());
+					members.AddRange(t.GetFields());
+					members.AddRange(t.GetEvents());
+					members.AddRange(t.GetProperties());
+					foreach (IMember m in members) {
+						if (m.IsStatic) {
+							result.Add(m);
+						}
+					}
+				}
 			}
 			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
 				if (pair.Value != null && pair.Value.Count > 0) {
