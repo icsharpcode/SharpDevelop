@@ -97,7 +97,7 @@
 		
 		<Pad id       = "DefinitionView"
 		     category = "Tools"
-		     title    = "Definition View"
+		     title    = "${res:MainWindow.Windows.DefinitionViewLabel}"
 		     icon     = "PadIcons.Bookmarks"
 		     class    = "ICSharpCode.SharpDevelop.Gui.DefinitionViewPad"/>
 	</Path>

@@ -21,9 +21,9 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
-	public class SharpDevelopStringTagProvider :  IStringTagProvider 
+	public class SharpDevelopStringTagProvider :  IStringTagProvider
 	{
-		readonly static string[] tags = new string[] { 
+		readonly static string[] tags = new string[] {
 			"ItemPath", "ItemDir", "ItemFilename", "ItemExt",
 			"CurLine", "CurCol", "CurText",
 			"TargetPath", "TargetDir", "TargetName", "TargetExt",
@@ -31,9 +31,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 			"ProjectDir", "ProjectFilename",
 			"CombineDir", "CombineFilename",
 			"Startuppath",
-			"TaskService.Warnings", "TaskService.Errors", "TaskService.Messages"
+			"TaskService.Warnings", "TaskService.Errors", "TaskService.Messages",
+			"NetSdkDir"
 		};
-
 		
 		public string[] Tags {
 			get {
@@ -51,14 +51,13 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		string GetCurrentTargetPath()
 		{
-//	TODO:		
-//			if (ProjectService.CurrentProject != null) {
-//				return ProjectService.GetOutputAssemblyName(ProjectService.CurrentProject);
-//			}
-//			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-//				string fileName = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName;
-//				return ProjectService.GetOutputAssemblyName(fileName);
-//			}
+			if (ProjectService.CurrentProject != null) {
+				return ProjectService.CurrentProject.OutputAssemblyFullPath;
+			}
+			/*if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
+				string fileName = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName;
+				return ProjectService.GetOutputAssemblyName(fileName);
+			}*/
 			return String.Empty;
 		}
 		
@@ -77,7 +76,8 @@ namespace ICSharpCode.SharpDevelop.Commands
 					
 			}
 			switch (tag.ToUpper()) {
-					
+				case "NETSDKDIR":
+					return FileUtility.NetSdkInstallRoot;
 				case "ITEMPATH":
 					try {
 						return GetCurrentItemPath();
@@ -98,15 +98,15 @@ namespace ICSharpCode.SharpDevelop.Commands
 						return Path.GetExtension(GetCurrentItemPath());
 					} catch (Exception) {}
 					break;
-				
-				// TODO:
+					
+					// TODO:
 				case "CURLINE":
 					return String.Empty;
 				case "CURCOL":
 					return String.Empty;
 				case "CURTEXT":
 					return String.Empty;
-				
+					
 				case "TARGETPATH":
 					try {
 						return GetCurrentTargetPath();
@@ -127,7 +127,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						return Path.GetExtension(GetCurrentTargetPath());
 					} catch (Exception) {}
 					break;
-				
+					
 				case "PROJECTDIR":
 					if (ProjectService.CurrentProject != null) {
 						return ProjectService.CurrentProject.FileName;
@@ -140,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						} catch (Exception) {}
 					}
 					break;
-				
+					
 				case "COMBINEDIR":
 					return Path.GetDirectoryName(ProjectService.OpenSolution.FileName);
 				case "COMBINEFILENAME":

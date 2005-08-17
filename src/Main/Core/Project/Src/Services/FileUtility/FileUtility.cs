@@ -68,9 +68,19 @@ namespace ICSharpCode.Core
 		
 		public static string NETFrameworkInstallRoot {
 			get {
-				RegistryKey installRootKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\.NETFramework");
-				object o = installRootKey.GetValue("InstallRoot");
-				return o == null ? String.Empty : o.ToString();
+				using (RegistryKey installRootKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\.NETFramework")) {
+					object o = installRootKey.GetValue("InstallRoot");
+					return o == null ? String.Empty : o.ToString();
+				}
+			}
+		}
+		
+		public static string NetSdkInstallRoot {
+			get {
+				using (RegistryKey installRootKey = Registry.LocalMachine.OpenSubKey(@"SOFTWARE\Microsoft\.NETFramework")) {
+					object o = installRootKey.GetValue("sdkInstallRootv2.0");
+					return o == null ? String.Empty : o.ToString();
+				}
 			}
 		}
 		

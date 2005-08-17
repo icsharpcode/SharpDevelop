@@ -218,7 +218,7 @@ namespace ICSharpCode.Core
 			
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ResourceFileIcon"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Event"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Debug.Start"));
+			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.SelectionArrow"));
 			
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.CombineIcon"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Literal"));

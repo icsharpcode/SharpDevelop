@@ -30,6 +30,7 @@ namespace HtmlHelp2Service
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("HtmlHelp2.Resources.HtmlHelp2Options.xfrm"));
 			ControlDictionary["reregisterButton"].Click += ReregisterButtonClick;
+			ControlDictionary["reregisterButton"].Visible = false;
 			this.InitializeComponents();
 		}
 

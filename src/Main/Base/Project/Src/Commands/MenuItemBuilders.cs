@@ -170,8 +170,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 						}
 						process.Start();
 					} catch (Exception ex) {
-						
-						MessageService.ShowError(ex, "External program execution failed.\nError while starting:\n '" + command + " " + args + "'");
+						MessageService.ShowError("External program execution failed.\nError while starting:\n '" + command + " " + args + "'\n" + ex.Message);
 					}
 					break;
 				}

@@ -15,7 +15,7 @@
 		<Pad id       = "MbUnitPad"
 		     category = "Tools"
 		     title    = "MbUnit Tests"
-		     icon     = "PadIcons.UnitTest"
+		     icon     = "PadIcons.MbUnitTest"
 		     shortcut = "Control|Alt|T"
 		     class    = "ICSharpCode.MbUnitPad.MbUnitPadContent"/>
 	</Path>
@@ -36,7 +36,7 @@
 			             tooltip = "${res:MbUnitPad.ReferenceItem}"
 			             class   = "ICSharpCode.MbUnitPad.AddMbUnitReferenceCommand"/>
 			<ToolbarItem id      = "AddNUnitReference"
-			             icon    = "PadIcons.UnitTest"
+			             icon    = "PadIcons.NUnitTest"
 			             tooltip = "${res:NUnitPad.NUnitPadContent.ReferenceItem}"
 			             class   = "ICSharpCode.MbUnitPad.AddNUnitReferenceCommand"/>
 			<ToolbarItem id      = "Separator2" type = "Separator"/>

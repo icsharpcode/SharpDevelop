@@ -229,7 +229,6 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\LoadSavePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\ProjectAndCombinePanel.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectCulturePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -482,7 +481,6 @@
     <EmbeddedResource Include="Resources\NewFileDialog.xfrm" />
     <EmbeddedResource Include="Resources\NewProjectDialog.xfrm" />
     <EmbeddedResource Include="Resources\OutputWindowOptionsPanel.xfrm" />
-    <EmbeddedResource Include="Resources\ProjectAndCombineOptions.xfrm" />
     <EmbeddedResource Include="Resources\SelectStylePanel.xfrm" />
     <EmbeddedResource Include="Resources\TabbedOptionsDialog.xfrm" />
     <EmbeddedResource Include="Resources\TaskListOptions.xfrm" />
