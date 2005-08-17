@@ -150,9 +150,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			FileService.FileRemoved += FileService.RecentOpen.FileRemoved;
 			FileService.FileRenamed += FileService.RecentOpen.FileRenamed;
 			
-			CreateMainMenu();
-			CreateToolBars();
-			
 			try {
 				ArrayList contents = AddInTree.GetTreeNode(viewContentPath).BuildChildItems(this);
 				foreach (PadDescriptor content in contents) {
@@ -161,7 +158,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			} catch (TreePathNotFoundException) {}
-			
+
+			CreateMainMenu();
+			CreateToolBars();
+
 			toolbarUpdateTimer =  new System.Windows.Forms.Timer();
 			toolbarUpdateTimer.Tick += new EventHandler(UpdateMenu);
 			
