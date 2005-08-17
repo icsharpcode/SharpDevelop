@@ -30,7 +30,7 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="ICSharpCode.SharpZipLib, Version=0.82.0.1709, Culture=neutral, PublicKeyToken=1b03e6acf1164f73">
+    <Reference Include="ICSharpCode.SharpZipLib">
       <HintPath>..\RequiredLibraries\ICSharpCode.SharpZipLib.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>

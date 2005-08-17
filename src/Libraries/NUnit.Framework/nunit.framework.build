@@ -1,0 +1,39 @@
+<?xml version="1.0"?>
+<project name="NUnit.Framework" default="build">
+
+  <property name="project.src.dir" value="../.."
+    unless="${property::exists('project.src.dir')}"/>
+
+  <include buildfile="..\..\nunit.build.include"/>
+
+  <target name="clean" depends="set-build-dir">
+    <delete failonerror="false">
+      <fileset basedir="${current.build.dir}">
+        <include name="nunit.framework.dll"/>
+        <include name="nunit.framework.pdb"/>
+      </fileset>
+    </delete>
+  </target>
+
+  <target name="build" depends="make-build-dir">
+    <csc target="library" 
+        output="${current.build.dir}/nunit.framework.dll"
+        debug="${build.debug}" 
+        define="${build.defines.csc},StronglyNamedAssembly"
+        nowarn="618,672">
+      <sources basedir=".">
+        <include name="*.cs"/>
+      </sources>
+    </csc>
+  </target>
+
+  <target name="package">
+    <copy todir="${package.src.dir}/NUnitFramework/framework">
+       <fileset basedir=".">
+          <include name="nunit.framework.dll.csproj"/>
+          <include name="nunit.framework.build"/>
+          <include name="*.cs"/>
+      </fileset>
+    </copy>
+  </target> 
+</project>

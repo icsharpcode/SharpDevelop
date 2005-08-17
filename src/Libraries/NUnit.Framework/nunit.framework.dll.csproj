@@ -1,0 +1,143 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <ProjectType>Local</ProjectType>
+    <ProductVersion>8.0.41115</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{83DD7E12-A705-4DBA-9D71-09C8973D9382}</ProjectGuid>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <AssemblyName>nunit.framework</AssemblyName>
+    <DefaultClientScript>JScript</DefaultClientScript>
+    <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
+    <DefaultTargetSchema>IE50</DefaultTargetSchema>
+    <AssemblyOriginatorKeyFile>nunit.key</AssemblyOriginatorKeyFile>
+    <OutputType>Library</OutputType>
+    <RootNamespace>NUnit.Framework</RootNamespace>
+    <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <OutputPath>..\..\..\bin\</OutputPath>
+    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <BaseAddress>285212672</BaseAddress>
+    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
+    <DefineConstants>TRACE;StronglyNamedAssembly</DefineConstants>
+    <DebugSymbols>false</DebugSymbols>
+    <FileAlignment>4096</FileAlignment>
+    <NoStdLib>false</NoStdLib>
+    <Optimize>true</Optimize>
+    <RegisterForComInterop>false</RegisterForComInterop>
+    <RemoveIntegerChecks>false</RemoveIntegerChecks>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' " />
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug-Strong|AnyCPU' " />
+  <ItemGroup>
+    <Reference Include="System">
+      <Name>System</Name>
+    </Reference>
+    <Reference Include="System.Data">
+      <Name>System.Data</Name>
+    </Reference>
+    <Reference Include="System.Xml">
+      <Name>System.XML</Name>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AbstractAsserter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Assert.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Assertion.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AssertionException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="AssertionFailureMessage.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="CategoryAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ComparisonAsserter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ConditionAsserters.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EqualAsserter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="EqualityAsserter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ExpectedExceptionAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="ExplicitAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IAsserter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IgnoreAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="IgnoreException.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NotEqualAsserter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="NotSameAsserter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="OldTestCase.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="PlatformAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SameAsserter.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SetUpAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SuiteAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="SuiteBuilderAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TearDownAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TestAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TestContext.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TestFixtureAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TestFixtureSetUpAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="TestFixtureTearDownAttribute.cs">
+      <SubType>Code</SubType>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Configuration\" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+</Project>
