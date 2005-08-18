@@ -26,10 +26,21 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.IsTrue(ce.TrueExpression is InvocationExpression);
 			Assert.IsTrue(ce.FalseExpression is FieldReferenceExpression);
 		}
+		
+		[Test]
+		public void CSharpConditionalIsExpressionTest()
+		{
+			// (as is b?) ERROR (conflict with nullables, SD2-419)
+			ConditionalExpression ce = (ConditionalExpression)ParseUtilCSharp.ParseExpression("a is b ? a() : a.B", typeof(ConditionalExpression));
+			
+			Assert.IsTrue(ce.Condition is BinaryOperatorExpression);
+			Assert.IsTrue(ce.TrueExpression is InvocationExpression);
+			Assert.IsTrue(ce.FalseExpression is FieldReferenceExpression);
+		}
 		#endregion
 		
 		#region VB.NET
-			// No VB.NET representation
+		// No VB.NET representation
 		#endregion
 	}
 }

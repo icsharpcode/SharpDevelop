@@ -633,6 +633,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					}
 					return new Token(Tokens.GreaterThan, x, y);
 				case '?':
+					if (ReaderPeek() == '?') {
+						ReaderRead();
+						return new Token(Tokens.DoubleQuestion, x, y);
+					}
 					return new Token(Tokens.Question, x, y);
 				case ';':
 					return new Token(Tokens.Semicolon, x, y);

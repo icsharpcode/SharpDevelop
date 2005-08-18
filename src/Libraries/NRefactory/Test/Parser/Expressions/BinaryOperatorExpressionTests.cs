@@ -137,6 +137,12 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		}
 		
 		[Test]
+		public void CSharpNullCoalescingTest()
+		{
+			CSharpTestBinaryOperatorExpressionTest("a ?? b", BinaryOperatorType.NullCoalescing);
+		}
+		
+		[Test]
 		public void CSharpISTest()
 		{
 			BinaryOperatorExpression boe = (BinaryOperatorExpression)ParseUtilCSharp.ParseExpression("a is b", typeof(BinaryOperatorExpression));

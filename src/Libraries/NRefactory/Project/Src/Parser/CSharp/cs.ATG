@@ -433,6 +433,7 @@ TOKENS
 	"::"
 	";"
 	"?"
+	"??"
 	","
 	"."
 	"{"
@@ -1902,7 +1903,9 @@ Expr<out Expression expr>
 	UnaryExpr<out expr>
 	/*--- conditional expression: */
 	(	
-		ConditionalOrExpr<ref expr> [ "?" Expr<out expr1> ":" Expr<out expr2> (. expr = new ConditionalExpression(expr, expr1, expr2);  .) ] 
+		ConditionalOrExpr<ref expr>
+		[ "??" Expr<out expr1> (. expr = new BinaryOperatorExpression(expr, BinaryOperatorType.NullCoalescing, expr1); .) ]
+		[ "?" Expr<out expr1> ":" Expr<out expr2> (. expr = new ConditionalExpression(expr, expr1, expr2);  .) ]
 		/*--- assignment: */
 		| (. AssignmentOperatorType op; Expression val; .) AssignmentOperator<out op> Expr<out val> (. expr = new AssignmentExpression(expr, op, val); .)
 	)

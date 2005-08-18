@@ -93,6 +93,13 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		}
 
 		[Test]
+		public void TestDoubleQuestion()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("??"));
+			Assert.AreEqual(Tokens.DoubleQuestion, lexer.NextToken().kind);
+		}
+
+		[Test]
 		public void TestComma()
 		{
 			ILexer lexer = GenerateLexer(new StringReader(","));
@@ -119,41 +126,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			ILexer lexer = GenerateLexer(new StringReader("}"));
 			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.NextToken().kind);
 		}
-		
-		[Test]
-		public void TestEmptyBlock()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("{}+"));
-			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
-			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.NextToken().kind);
-			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
-			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
-		}
-		
-		[Test]
-		public void TestSkippedEmptyBlock()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("{}+"));
-			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
-			lexer.NextToken();
-			lexer.SkipCurrentBlock();
-			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.kind);
-			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
-			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
-		}
-		
-		[Test]
-		public void TestSkippedNonEmptyBlock()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("{ TestMethod('}'); /* }}} */ while(1) {break;} }+"));
-			Assert.AreEqual(Tokens.OpenCurlyBrace, lexer.NextToken().kind);
-			lexer.NextToken();
-			lexer.SkipCurrentBlock();
-			Assert.AreEqual(Tokens.CloseCurlyBrace, lexer.LookAhead.kind);
-			Assert.AreEqual(Tokens.Plus, lexer.NextToken().kind);
-			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind);
-		}
-		
+
 		[Test]
 		public void TestOpenSquareBracket()
 		{
@@ -294,13 +267,6 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			Assert.AreEqual(Tokens.ShiftLeft, lexer.NextToken().kind);
 		}
 
-//		[Test]
-//		public void TestShiftRight()
-//		{
-//			ILexer lexer = GenerateLexer(new StringReader(">>"));
-//			Assert.AreEqual(Tokens.ShiftRight, lexer.NextToken().kind);
-//		}
-
 		[Test]
 		public void TestPlusAssign()
 		{
@@ -363,13 +329,6 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			ILexer lexer = GenerateLexer(new StringReader("<<="));
 			Assert.AreEqual(Tokens.ShiftLeftAssign, lexer.NextToken().kind);
 		}
-
-//		[Test]
-//		public void TestShiftRightAssign()
-//		{
-//			ILexer lexer = GenerateLexer(new StringReader(">>="));
-//			Assert.AreEqual(Tokens.ShiftRightAssign, lexer.NextToken().kind);
-//		}
 
 		[Test()]
 		public void TestAbstract()

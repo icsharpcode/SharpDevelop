@@ -70,6 +70,8 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		AsCast,
 		/// <summary>VB-only: Like</summary>
 		Like,
+		/// <summary>C#: ??</summary>
+		NullCoalescing,
 	}
 	
 	public class BinaryOperatorExpression : Expression
