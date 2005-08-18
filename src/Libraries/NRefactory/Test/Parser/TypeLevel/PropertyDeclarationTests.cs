@@ -30,6 +30,15 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		}
 		
 		[Test]
+		public void CSharpGetSetPropertyDeclarationWithAccessorModifiers()
+		{
+			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilCSharp.ParseTypeMember("int MyProperty { private get {} protected internal set {} } ", typeof(PropertyDeclaration));
+			Assert.AreEqual("MyProperty", pd.Name);
+			Assert.IsTrue(pd.HasGetRegion);
+			Assert.IsTrue(pd.HasSetRegion);
+		}
+		
+		[Test]
 		public void CSharpSimpleGetPropertyDeclarationTest()
 		{
 			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilCSharp.ParseTypeMember("int MyProperty { get {} } ", typeof(PropertyDeclaration));
@@ -75,6 +84,6 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.IsFalse(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
 		}
-		#endregion 
+		#endregion
 	}
 }

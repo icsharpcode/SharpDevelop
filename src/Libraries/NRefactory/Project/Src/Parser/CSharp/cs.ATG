@@ -1002,6 +1002,16 @@ ParameterArray<out ParameterDeclarationExpression p>
 	"params" Type<out type> ident (. p = new ParameterDeclarationExpression(type, t.val, ParamModifier.Params); .)
 . 
 
+AccessorModifiers<out Modifiers m>
+(. m = new Modifiers(); .)
+=
+	"private"          (. m.Add(Modifier.Private, t.Location); .)
+	| "protected"      (. m.Add(Modifier.Protected, t.Location); .)
+	  ["internal"      (. m.Add(Modifier.Internal, t.Location); .)]
+	| "internal"       (. m.Add(Modifier.Internal, t.Location); .)
+	  ["protected"     (. m.Add(Modifier.Protected, t.Location); .)]
+.
+
 TypeModifier<Modifiers m>
 =
 	"new"                              (. m.Add(Modifier.New, t.Location); .)
@@ -1396,21 +1406,29 @@ AccessorDecls<out PropertyGetRegion getBlock, out PropertySetRegion setBlock>
 	AttributeSection section;
 	getBlock = null;
 	setBlock = null; 
+	Modifiers modifiers = null;
 .)
 =
 	{ AttributeSection<out section> (. attributes.Add(section); .) }
+	[ AccessorModifiers<out modifiers> ]
 	(
 		IF (IdentIsGet())
 			GetAccessorDecl<out getBlock, attributes>
-			[                       (. attributes = new List<AttributeSection>(); .)
+			(. if (modifiers != null) {getBlock.Modifier = modifiers.Modifier; } .)
+			[  (. attributes = new List<AttributeSection>(); modifiers = null; .)
 				{ AttributeSection<out section> (. attributes.Add(section); .) }
+				[ AccessorModifiers<out modifiers> ]
 				SetAccessorDecl<out setBlock, attributes>
+				(. if (modifiers != null) {setBlock.Modifier = modifiers.Modifier; } .)
 			]
 		| IF (IdentIsSet())
 			SetAccessorDecl<out setBlock, attributes>
-			[                        (. attributes = new List<AttributeSection>(); .)
+			(. if (modifiers != null) {setBlock.Modifier = modifiers.Modifier; } .)
+			[  (. attributes = new List<AttributeSection>(); modifiers = null; .)
 				{ AttributeSection<out section> (. attributes.Add(section); .) }
+				[ AccessorModifiers<out modifiers> ]
 				GetAccessorDecl<out getBlock, attributes>
+				(. if (modifiers != null) {getBlock.Modifier = modifiers.Modifier; } .)
 			]
 		| ident (. Error("get or set accessor declaration expected"); .)
 	)
@@ -1419,7 +1437,7 @@ AccessorDecls<out PropertyGetRegion getBlock, out PropertySetRegion setBlock>
 GetAccessorDecl<out PropertyGetRegion getBlock, List<AttributeSection> attributes>
 (. Statement stmt = null; .)
 =
-	ident /* "get" is not a keyword!? */
+	ident /* "get" is not a keyword! */
 	(. if (t.val != "get") Error("get expected"); .)
 	(. Point startLocation = t.Location; .)
 	( Block<out stmt> | ";" )
@@ -1430,7 +1448,7 @@ GetAccessorDecl<out PropertyGetRegion getBlock, List<AttributeSection> attribute
 SetAccessorDecl<out PropertySetRegion setBlock, List<AttributeSection> attributes>
 (. Statement stmt = null; .)
 =
-	ident /* "set" is not a keyword!? */
+	ident /* "set" is not a keyword! */
 	(. if (t.val != "set") Error("set expected"); .)
 	(. Point startLocation = t.Location; .)
 	( Block<out stmt> | ";" )
