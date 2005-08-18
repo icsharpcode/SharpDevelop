@@ -27,7 +27,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class GotoDialog : BaseSharpDevelopForm
 	{
-		public static bool IsVisible = false;
+		static GotoDialog Instance = null;
+		
+		public static void ShowSingleInstance()
+		{
+			if (Instance == null) {
+				Instance = new GotoDialog();
+				Instance.Show(WorkbenchSingleton.MainForm);
+			} else {
+				Instance.Focus();
+			}
+		}
 		
 		ListView listView;
 		TextBox textBox;
@@ -122,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected override void OnClosed(EventArgs e)
 		{
-			IsVisible = false;
+			Instance = null;
 			base.OnClosed(e);
 		}
 		
@@ -320,7 +330,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void CancelButtonClick(object sender, EventArgs e)
 		{
-			IsVisible = false;
 			Close();
 		}
 		
@@ -368,7 +377,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 					throw new NotImplementedException("Unknown tag: " + tag);
 				}
 			} finally {
-				IsVisible = false;
 				Close();
 			}
 		}

@@ -35,7 +35,7 @@ namespace SearchAndReplace
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 			
 			if (window != null && (window.ViewContent is ITextEditorControlProvider)) {
-				TextEditorControl textarea = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;				
+				TextEditorControl textarea = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
 				string selectedText = textarea.ActiveTextAreaControl.TextArea.SelectionManager.SelectedText;
 				if (selectedText != null && selectedText.Length > 0) {
 					SearchOptions.CurrentFindPattern = selectedText;
@@ -46,17 +46,7 @@ namespace SearchAndReplace
 		public override void Run()
 		{
 			SetSearchPattern();
-			
-			SearchAndReplaceDialog searchAndReplaceDialog = new SearchAndReplaceDialog(SearchAndReplaceMode.Search);
-			searchAndReplaceDialog.Show();
-			
-//			if (SearchReplaceManager.ReplaceDialog != null) {
-//				SearchReplaceManager.ReplaceDialog.SetSearchPattern(SearchReplaceManager.SearchOptions.SearchPattern);
-//			} else {
-//				ReplaceDialog rd = new ReplaceDialog(false);
-//				rd.Owner = (Form)WorkbenchSingleton.Workbench;
-//				rd.Show();
-//			}
+			SearchAndReplaceDialog.ShowSingleInstance(SearchAndReplaceMode.Search);
 		}
 	}
 	
@@ -64,31 +54,16 @@ namespace SearchAndReplace
 	{
 		public override void Run()
 		{
-			try {
-				SearchReplaceManager.FindNext();
-			} catch (Exception e) {
-				
-				MessageService.ShowError(e);
-			}
+			SearchReplaceManager.FindNext();
 		}
 	}
 	
 	public class Replace : AbstractMenuCommand
 	{
 		public override void Run()
-		{ 
+		{
 			Find.SetSearchPattern();
-			SearchAndReplaceDialog searchAndReplaceDialog = new SearchAndReplaceDialog(SearchAndReplaceMode.Replace);
-			searchAndReplaceDialog.Show();
-//			
-//			
-//			if (SearchReplaceManager.ReplaceDialog != null) {
-//				SearchReplaceManager.ReplaceDialog.SetSearchPattern(SearchReplaceManager.SearchOptions.SearchPattern);
-//			} else {
-//				ReplaceDialog rd = new ReplaceDialog(true);
-//				rd.Owner = (Form)WorkbenchSingleton.Workbench;
-//				rd.Show();
-//			}
+			SearchAndReplaceDialog.ShowSingleInstance(SearchAndReplaceMode.Replace);
 		}
 	}
 }

@@ -24,6 +24,23 @@ namespace SearchAndReplace
 		public static string SearchPattern  = "";
 		public static string ReplacePattern = "";
 		
+		static SearchAndReplaceDialog Instance;
+		
+		public static void ShowSingleInstance(SearchAndReplaceMode searchAndReplaceMode)
+		{
+			if (Instance == null) {
+				Instance = new SearchAndReplaceDialog(searchAndReplaceMode);
+				Instance.Show(WorkbenchSingleton.MainForm);
+			} else {
+				if (searchAndReplaceMode == SearchAndReplaceMode.Search) {
+					Instance.searchButton.PerformClick();
+				} else {
+					Instance.replaceButton.PerformClick();
+				}
+				Instance.Focus();
+			}
+		}
+		
 		ToolStripButton searchButton = new ToolStripButton();
 		ToolStripButton replaceButton = new ToolStripButton();
 		
@@ -62,7 +79,7 @@ namespace SearchAndReplace
 			
 			Controls.Add(toolStrip);
 			SetSearchAndReplaceMode();
-						this.StartPosition = FormStartPosition.Manual;
+			this.StartPosition = FormStartPosition.Manual;
 			this.Location = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.SearchAndReplaceDialog.Location", GetDefaultLocation());
 		}
 		
@@ -71,13 +88,14 @@ namespace SearchAndReplace
 			Rectangle parent = WorkbenchSingleton.MainForm.Bounds;
 			Size size = this.Size;
 			return new Point(parent.Left + (parent.Width - size.Width) / 2,
-			                     parent.Top + (parent.Height - size.Height) / 2);
+			                 parent.Top + (parent.Height - size.Height) / 2);
 		}
 		
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
 		{
 			base.OnClosing(e);
 			PropertyService.Set("ICSharpCode.SharpDevelop.Gui.SearchAndReplaceDialog.Location", this.Location);
+			Instance = null;
 		}
 		
 		protected override void OnKeyDown(KeyEventArgs e)

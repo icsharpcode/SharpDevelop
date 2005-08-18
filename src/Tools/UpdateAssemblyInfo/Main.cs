@@ -114,6 +114,7 @@ namespace UpdateAssemblyInfo
 			string[] dontTouchList = new string[] {
 				"Main/StartUp/Project/", // Startup is special case
 				"Libraries/log4net/",
+				"Libraries/NUnit.Framework/",
 				"Libraries/DockPanel_Src/",
 				"AddIns/Misc/Debugger/TreeListView/Project/",
 			};

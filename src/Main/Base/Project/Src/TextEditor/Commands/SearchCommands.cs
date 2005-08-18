@@ -30,10 +30,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override void Run()
 		{
-			if (!GotoDialog.IsVisible) {
-				GotoDialog gnd = new GotoDialog();
-				gnd.Show(WorkbenchSingleton.MainForm);
-			}
+			GotoDialog.ShowSingleInstance();
 		}
 	}
 	
