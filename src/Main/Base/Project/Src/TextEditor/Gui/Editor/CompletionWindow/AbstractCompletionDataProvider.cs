@@ -20,11 +20,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
 	public abstract class AbstractCompletionDataProvider : ICompletionDataProvider
 	{
-		Hashtable insertedElements           = new Hashtable();
-		Hashtable insertedPropertiesElements = new Hashtable();
-		Hashtable insertedEventElements      = new Hashtable();
-		
-		public ImageList ImageList {
+		public virtual ImageList ImageList {
 			get {
 				return ClassBrowserIconService.ImageList;
 			}
@@ -32,15 +28,18 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		int defaultIndex = -1;
 		
+		/// <summary>
+		/// Gets the index of the element in the list that is chosen by default.
+		/// </summary>
 		public int DefaultIndex {
 			get {
 				return defaultIndex;
 			}
+			set {
+				defaultIndex = value;
+			}
 		}
 		
-		protected int caretLineNumber;
-		protected int caretColumn;
-		protected string fileName;
 		protected string preSelection = null;
 		
 		public string PreSelection {
@@ -48,10 +47,44 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				return preSelection;
 			}
 		}
+		
+		bool insertSpace;
+		
+		/// <summary>
+		/// Gets/Sets if a space should be inserted in front of the completed expression.
+		/// </summary>
+		public bool InsertSpace {
+			get {
+				return insertSpace;
+			}
+			set {
+				insertSpace = value;
+			}
+		}
+		
+		/// <summary>
+		/// Generates the completion data. This method is called by the text editor control.
+		/// </summary>
+		public abstract ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped);
+	}
+	
+	public abstract class AbstractCodeCompletionDataProvider : AbstractCompletionDataProvider
+	{
+		Hashtable insertedElements           = new Hashtable();
+		Hashtable insertedPropertiesElements = new Hashtable();
+		Hashtable insertedEventElements      = new Hashtable();
+		
+		protected int caretLineNumber;
+		protected int caretColumn;
+		protected string fileName;
+		
 		protected ArrayList completionData = null;
 		protected ExpressionContext overrideContext;
 		
-		public virtual ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
+		/// <summary>
+		/// Generates the completion data. This method is called by the text editor control.
+		/// </summary>
+		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
 			completionData = new ArrayList();
 			this.fileName = fileName;
@@ -107,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 				if (suggestedData != null) {
 					completionData.Sort();
-					defaultIndex = completionData.IndexOf(suggestedData);
+					this.DefaultIndex = completionData.IndexOf(suggestedData);
 				}
 			}
 		}

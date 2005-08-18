@@ -24,16 +24,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	/// <summary>
 	/// Data provider for code completion.
 	/// </summary>
-	public class CommentCompletionDataProvider : ICompletionDataProvider
+	public class CommentCompletionDataProvider : AbstractCompletionDataProvider
 	{
 		int caretLineNumber;
 		int caretColumn;
-		
-		public int DefaultIndex {
-			get {
-				return -1;
-			}
-		}
 		
 		string[][] commentTags = new string[][] {
 			new string[] {"c", "marks text as code"},
@@ -58,18 +52,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			new string[] {"value", "A description of a property"}
 		};
 		
-		public ImageList ImageList {
-			get {
-				return ClassBrowserIconService.ImageList;
-			}
-		}
-		
-		public string PreSelection {
-			get {
-				return null;
-			}
-		}
-		
 		/// <remarks>
 		/// Returns true, if the given coordinates (row, column) are in the region.
 		/// </remarks>
@@ -78,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			return row >= region.BeginLine && (row <= region.EndLine || region.EndLine == -1);
 		}
 		
-		public ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
+		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
 			caretLineNumber = textArea.Caret.Line;
 			caretColumn     = textArea.Caret.Column;

@@ -49,4 +49,64 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		/// <paramref name="ch"/>; false when the character was not processed.</returns>
 		bool InsertAction(TextArea textArea, char ch);
 	}
+	
+	public class DefaultCompletionData : ICompletionData
+	{
+		string text;
+		string description;
+		int imageIndex;
+		
+		public int ImageIndex {
+			get {
+				return imageIndex;
+			}
+		}
+		
+		public string Text {
+			get {
+				return text;
+			}
+			set {
+				text = value;
+			}
+		}
+		
+		public string Description {
+			get {
+				return description;
+			}
+		}
+		
+		double priority;
+		
+		public double Priority {
+			get {
+				return priority;
+			}
+			set {
+				priority = value;
+			}
+		}
+		
+		public bool InsertAction(TextArea textArea, char ch)
+		{
+			textArea.InsertString(text);
+			return false;
+		}
+		
+		public DefaultCompletionData(string text, string description, int imageIndex)
+		{
+			this.text        = text;
+			this.description = description;
+			this.imageIndex  = imageIndex;
+		}
+		
+		public int CompareTo(object obj)
+		{
+			if (obj == null || !(obj is DefaultCompletionData)) {
+				return -1;
+			}
+			return text.CompareTo(((DefaultCompletionData)obj).Text);
+		}
+	}
 }

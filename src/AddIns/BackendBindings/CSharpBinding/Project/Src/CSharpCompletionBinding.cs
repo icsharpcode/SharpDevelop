@@ -94,35 +94,20 @@ namespace CSharpBinding
 						cursor = ef.LastExpressionStartPosition;
 					}
 				}
-			}
-			else if(ch == '=')
-			{
+			} else if(ch == '=') {
 				LineSegment curLine = editor.Document.GetLineSegmentForOffset(cursor);
-				string curLineText = editor.ActiveTextAreaControl.Document.GetText(curLine);
+				string documentText = editor.Text;
+				int position = editor.ActiveTextAreaControl.Caret.Offset - 2;
 				
-				if(curLineText != null && curLineText.EndsWith("+"))
-				{
-					string documentText = editor.Text;
-					int position = editor.ActiveTextAreaControl.Caret.Offset - 2;
-					int oldCursor = position;
-					string textWithoutComments = ef.FilterComments(documentText, ref position);
-					int commentLength = oldCursor - position;
+				if (position > 0 && (documentText[position + 1] == '+' || documentText[position + 1] == '-')) {
+					ExpressionResult result = ef.FindFullExpression(documentText, position);
 					
-					if (textWithoutComments != null)
-					{
-						ExpressionResult result = ef.FindFullExpression(textWithoutComments, position);
-						
-						if(result.Expression != "")
-						{
-							IResolver resolver = ParserService.CreateResolver(editor.FileName);
-							ResolveResult resolveResult = resolver.Resolve(result, editor.ActiveTextAreaControl.Caret.Line, editor.ActiveTextAreaControl.Caret.Column, editor.FileName, documentText);
-							
-							if(resolveResult.ResolvedType.GetUnderlyingClass().IsTypeInInheritanceTree(ProjectContentRegistry.Mscorlib.GetClass("System.MulticastDelegate")))
-							{
-								EventHandlerCompletitionDataProvider eventHandlerProvider = new EventHandlerCompletitionDataProvider(result.Expression, resolveResult);
-								eventHandlerProvider.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, ch);
-								editor.ShowCompletionWindow(eventHandlerProvider, ch);
-							}
+					if(result.Expression != null) {
+						ResolveResult resolveResult = ParserService.Resolve(result, editor.ActiveTextAreaControl.Caret.Line, editor.ActiveTextAreaControl.Caret.Column, editor.FileName, documentText);
+						if (resolveResult.ResolvedType.GetUnderlyingClass().IsTypeInInheritanceTree(ProjectContentRegistry.Mscorlib.GetClass("System.MulticastDelegate"))) {
+							EventHandlerCompletitionDataProvider eventHandlerProvider = new EventHandlerCompletitionDataProvider(result.Expression, resolveResult);
+							eventHandlerProvider.InsertSpace = true;
+							editor.ShowCompletionWindow(eventHandlerProvider, ch);
 						}
 					}
 				}
@@ -182,6 +167,7 @@ namespace CSharpBinding
 					}
 				}
 				if (cache.DefaultIndex >= 0) {
+					cache.InsertSpace = true;
 					editor.ShowCompletionWindow(cache, charTyped);
 				}
 			}

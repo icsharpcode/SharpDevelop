@@ -7,6 +7,7 @@
 
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Gui.CompletionWindow;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using System;
 using System.Collections;
 using System.Windows.Forms;
@@ -18,12 +19,11 @@ namespace ICSharpCode.XmlEditor
 	/// Provides the autocomplete (intellisense) data for an
 	/// xml document that specifies a known schema.
 	/// </summary>
-	public class XmlCompletionDataProvider : ICompletionDataProvider
+	public class XmlCompletionDataProvider : AbstractCompletionDataProvider
 	{
 		XmlSchemaCompletionDataCollection schemaCompletionDataItems;
 		XmlSchemaCompletionData defaultSchemaCompletionData;
 		string defaultNamespacePrefix = String.Empty;
-		string preSelection = null;
 		
 		public XmlCompletionDataProvider(XmlSchemaCompletionDataCollection schemaCompletionDataItems, XmlSchemaCompletionData defaultSchemaCompletionData, string defaultNamespacePrefix)
 		{
@@ -32,30 +32,14 @@ namespace ICSharpCode.XmlEditor
 			this.defaultNamespacePrefix = defaultNamespacePrefix;
 		}
 		
-		public ImageList ImageList {
+		public override ImageList ImageList {
 			get
 			{
 				return XmlCompletionDataImageList.GetImageList();
 			}
 		}
 		
-		/// <summary>
-		/// Gets the preselected text.
-		/// </summary>
-		public string PreSelection {
-			get
-			{
-				return preSelection;
-			}
-		}
-		
-		public int DefaultIndex {
-			get {
-				return -1;
-			}
-		}
-		
-		public ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
+		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
 			preSelection = null;
 			string text = String.Concat(textArea.Document.GetText(0, textArea.Caret.Offset), charTyped);

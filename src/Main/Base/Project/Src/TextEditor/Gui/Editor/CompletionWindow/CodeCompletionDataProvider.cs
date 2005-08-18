@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	/// <summary>
 	/// Data provider for code completion.
 	/// </summary>
-	public class CodeCompletionDataProvider : AbstractCompletionDataProvider
+	public class CodeCompletionDataProvider : AbstractCodeCompletionDataProvider
 	{
 		/// <summary>
 		/// Initialize a CodeCompletionDataProvider that reads the expression from the text area.

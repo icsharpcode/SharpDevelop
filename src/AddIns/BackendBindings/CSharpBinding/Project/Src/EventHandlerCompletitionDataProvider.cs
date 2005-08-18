@@ -20,7 +20,7 @@ using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 
 namespace CSharpBinding
 {
-	public class EventHandlerCompletitionDataProvider : ICompletionDataProvider
+	public class EventHandlerCompletitionDataProvider : AbstractCompletionDataProvider
 	{
 		string expression;
 		ResolveResult resolveResult;
@@ -31,95 +31,14 @@ namespace CSharpBinding
 			this.resolveResult = resolveResult;
 		}
 		
-		public ImageList ImageList
-		{
-			get
-			{
-				return ClassBrowserIconService.ImageList;
-			}
-		}
-		
-		public int DefaultIndex
-		{
-			get
-			{
-				return -1;
-			}
-		}
-		
-		public string PreSelection
-		{
-			get
-			{
-				return null;
-			}
-		}
-		
-		public ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
+		/// <summary>
+		/// Generates the completion data. This method is called by the text editor control.
+		/// </summary>
+		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
 			ArrayList completionData = new ArrayList();
-			completionData.Add(new EventHandlerCompletionData("new " + resolveResult.ResolvedType.FullyQualifiedName + "()", "Event handler"));
+			completionData.Add(new DefaultCompletionData("new " + resolveResult.ResolvedType.FullyQualifiedName + "()", "Event handler", ClassBrowserIconService.DelegateIndex));
 			return (ICompletionData[])completionData.ToArray(typeof(ICompletionData));
-		}
-		
-		class EventHandlerCompletionData : ICompletionData
-		{
-			string text;
-			string description;
-			
-			public int ImageIndex
-			{
-				get
-				{
-					return ClassBrowserIconService.MethodIndex;
-				}
-			}
-			
-			public string Text
-			{
-				get {
-					return text;
-				}
-				set {
-					text = value;
-				}
-			}
-			
-			public string Description
-			{
-				get {
-					return description;
-				}
-			}
-			
-			public double Priority
-			{
-				get {
-					return 0;
-				}
-			}
-			
-			public bool InsertAction(TextArea textArea, char ch)
-			{
-				textArea.InsertString(text);
-				return false;
-			}
-			
-			public EventHandlerCompletionData(string text, string description)
-			{
-				this.text        = text;
-				this.description = description;
-			}
-			
-			#region System.IComparable interface implementation
-			public int CompareTo(object obj)
-			{
-				if (obj == null || !(obj is EventHandlerCompletionData)) {
-					return -1;
-				}
-				return text.CompareTo(((EventHandlerCompletionData)obj).Text);
-			}
-			#endregion
 		}
 	}
 }

@@ -18,9 +18,10 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 {
 	public class CodeCompletionWindow : AbstractCompletionWindow
 	{
-		static ICompletionData[] completionData;
+		ICompletionData[] completionData;
 		CodeCompletionListView   codeCompletionListView;
 		VScrollBar    vScrollBar = new VScrollBar();
+		ICompletionDataProvider dataProvider;
 		
 		int                      startOffset;
 		int                      endOffset;
@@ -29,17 +30,20 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		public static CodeCompletionWindow ShowCompletionWindow(Form parent, TextEditorControl control, string fileName, ICompletionDataProvider completionDataProvider, char firstChar)
 		{
-			completionData = completionDataProvider.GenerateCompletionData(fileName, control.ActiveTextAreaControl.TextArea, firstChar);
+			ICompletionData[] completionData = completionDataProvider.GenerateCompletionData(fileName, control.ActiveTextAreaControl.TextArea, firstChar);
 			if (completionData == null || completionData.Length == 0) {
 				return null;
 			}
-			CodeCompletionWindow codeCompletionWindow = new CodeCompletionWindow(completionDataProvider, parent, control, fileName);
+			CodeCompletionWindow codeCompletionWindow = new CodeCompletionWindow(completionDataProvider, completionData, parent, control, fileName);
 			codeCompletionWindow.ShowCompletionWindow();
 			return codeCompletionWindow;
 		}
 		
-		CodeCompletionWindow(ICompletionDataProvider completionDataProvider, Form parentForm, TextEditorControl control, string fileName) : base(parentForm, control, fileName)
+		CodeCompletionWindow(ICompletionDataProvider completionDataProvider, ICompletionData[] completionData, Form parentForm, TextEditorControl control, string fileName) : base(parentForm, control, fileName)
 		{
+			this.dataProvider = completionDataProvider;
+			this.completionData = completionData;
+			
 			workingScreen = Screen.GetWorkingArea(Location);
 			startOffset = control.ActiveTextAreaControl.Caret.Offset + 1;
 			endOffset   = startOffset;
@@ -84,8 +88,6 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			if (completionDataProvider.PreSelection != null) {
 				CaretOffsetChanged(this, EventArgs.Empty);
 			}
-			
-			
 			
 			vScrollBar.Scroll += new ScrollEventHandler(DoScroll);
 		}
@@ -150,8 +152,14 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		public override bool ProcessKeyEvent(char ch)
 		{
 			if (!Char.IsLetterOrDigit(ch) && ch != '_') {
-				return InsertSelectedItem(ch);
+				if (ch == ' ' && dataProvider.InsertSpace) {
+					// increment start + end and process as normal space
+					++startOffset;
+				} else {
+					return InsertSelectedItem(ch);
+				}
 			}
+			dataProvider.InsertSpace = false;
 			++endOffset;
 			return base.ProcessKeyEvent(ch);
 		}
@@ -159,6 +167,9 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		protected override void CaretOffsetChanged(object sender, EventArgs e)
 		{
 			int offset = control.ActiveTextAreaControl.Caret.Offset;
+			if (offset == startOffset) {
+				return;
+			}
 			if (offset < startOffset || offset > endOffset) {
 				Close();
 			} else {
@@ -251,8 +262,13 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 				
 				if (endOffset - startOffset > 0) {
 					control.Document.Remove(startOffset, endOffset - startOffset);
-					control.ActiveTextAreaControl.Caret.Position = control.Document.OffsetToPosition(startOffset);
 				}
+				if (dataProvider.InsertSpace) {
+					Console.WriteLine("Inserting space..");
+					control.Document.Insert(startOffset++, " ");
+				}
+				control.ActiveTextAreaControl.Caret.Position = control.Document.OffsetToPosition(startOffset);
+				
 				result = data.InsertAction(control.ActiveTextAreaControl.TextArea, ch);
 				control.EndUpdate();
 			}

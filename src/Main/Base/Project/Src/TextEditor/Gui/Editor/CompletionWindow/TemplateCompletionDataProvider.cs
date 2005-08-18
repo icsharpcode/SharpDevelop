@@ -19,29 +19,17 @@ using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 {
-	public class TemplateCompletionDataProvider : ICompletionDataProvider
+	public class TemplateCompletionDataProvider : AbstractCompletionDataProvider
 	{
 		ImageList imageList = new ImageList();
 		
-		public ImageList ImageList {
+		public override ImageList ImageList {
 			get {
 				return imageList;
 			}
 		}
 		
-		public int DefaultIndex {
-			get {
-				return -1;
-			}
-		}
-		
-		public string PreSelection {
-			get {
-				return String.Empty;
-			}
-		}
-		
-		public ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
+		public override ICompletionData[] GenerateCompletionData(string fileName, TextArea textArea, char charTyped)
 		{
 			
 			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.TextFileIcon"));
