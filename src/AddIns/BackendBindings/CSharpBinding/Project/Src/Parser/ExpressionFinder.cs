@@ -662,6 +662,10 @@ namespace CSharpBinding.Parser
 								case "using":
 									curTokenType = Using;
 									break;
+								case "return":
+								case "throw":
+									// treat as error / end of expression
+									break;
 								default:
 									curTokenType = Ident;
 									lastIdentifier = ident;
