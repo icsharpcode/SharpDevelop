@@ -71,6 +71,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		}
 		
 		[Test]
+		public void TestLongHexadecimalInteger()
+		{
+			CheckToken("0x4244636f446c6d58", 0x4244636f446c6d58);
+		}
+		
+		[Test]
 		public void TestDouble()
 		{
 			CheckToken("1.0", 1.0);

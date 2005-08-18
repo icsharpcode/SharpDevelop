@@ -271,9 +271,13 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				
 				// Try to determine a parsable value using ranges. (Quick hack!)
 				double d = 0;
-				if (!ishex  && !Double.TryParse(digit,NumberStyles.Integer, null, out d)) {
-					errors.Error(y, x, String.Format("Can't parse integral constant {0}", digit));
-					return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0);
+				if (ishex) {
+					d = ulong.Parse(digit, NumberStyles.HexNumber);
+				} else {
+					if (!Double.TryParse(digit, NumberStyles.Integer, null, out d)) {
+						errors.Error(y, x, String.Format("Can't parse integral constant {0}", digit));
+						return new Token(Tokens.Literal, x, y, stringValue.ToString(), 0);
+					}
 				}
 				
 				if (d < long.MinValue || d > long.MaxValue) {

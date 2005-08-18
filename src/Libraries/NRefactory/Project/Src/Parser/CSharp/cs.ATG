@@ -58,34 +58,49 @@ bool IsTypeCast()
 }
 
 // "(" ( typeKW [ "[" {","} "]" | "*" ] | void  ( "[" {","} "]" | "*" ) ) ")"
+// only for built-in types, all others use GuessTypeCast!
 bool IsSimpleTypeCast ()
 {
 	// assert: la.kind == _lpar
 	lexer.StartPeek();
-	Token pt1 = lexer.Peek();
-	Token pt  = lexer.Peek();
+	Token pt = lexer.Peek();
 	
-	if (Tokens.TypeKW[pt1.kind]) {
-		if (pt.kind == Tokens.Times || pt.kind == Tokens.OpenSquareBracket) {
-			return IsPointerOrDims(ref pt) && pt.kind == Tokens.CloseParenthesis;
-		} else {
-		  return pt.kind == Tokens.CloseParenthesis;
-		}
-	} else if (pt1.kind == Tokens.Void) {
-		return IsPointerOrDims(ref pt) && pt.kind == Tokens.CloseParenthesis;
+	if (!IsTypeKWForTypeCast(ref pt)) {
+		return false;
 	}
-	
+	return pt.kind == Tokens.CloseParenthesis;
+}
+
+/* !!! Proceeds from current peek position !!! */
+bool IsTypeKWForTypeCast(ref Token pt)
+{
+	if (Tokens.TypeKW[pt.kind]) {
+		pt = lexer.Peek();
+		if (pt.kind == Tokens.Times || pt.kind == Tokens.OpenSquareBracket) {
+			return IsPointerOrDims(ref pt);
+		} else {
+		  return true;
+		}
+	} else if (pt.kind == Tokens.Void) {
+		pt = lexer.Peek();
+		return IsPointerOrDims(ref pt);
+	}
 	return false;
 }
 
-// "(" NonGenericTypeName ")" castFollower
-// NonGenericTypeName = ident [ "::" ident ] {  "." ident }
-bool GuessTypeCast ()
+/* !!! Proceeds from current peek position !!! */
+bool IsTypeNameOrKWForTypeCast(ref Token pt)
 {
-	// assert: la.kind == _lpar
-	StartPeek();
-	Token pt = Peek();
+	if (IsTypeKWForTypeCast(ref pt))
+		return true;
+	else
+		return IsTypeNameForTypeCast(ref pt);
+}
 
+// TypeName = ident [ "::" ident ] {  "." ident } ["<" TypeNameOrKW { "," TypeNameOrKW } ">" ] PointerOrDims
+/* !!! Proceeds from current peek position !!! */
+bool IsTypeNameForTypeCast(ref Token pt)
+{
 	// ident
 	if (pt.kind != Tokens.Identifier) {
 		return false;
@@ -107,13 +122,42 @@ bool GuessTypeCast ()
 		}
 		pt = Peek();
 	}
+	if (pt.kind == Tokens.LessThan) {
+		do {
+			pt = Peek();
+			if (!IsTypeNameOrKWForTypeCast(ref pt)) {
+				return false;
+			}
+		} while (pt.kind == Tokens.Comma);
+		if (pt.kind != Tokens.GreaterThan) {
+			return false;
+		}
+		pt = Peek();
+	}
+	if (pt.kind == Tokens.Times || pt.kind == Tokens.OpenSquareBracket) {
+		return IsPointerOrDims(ref pt);
+	}
+	return true;
+}
+
+// "(" TypeName ")" castFollower
+bool GuessTypeCast ()
+{
+	// assert: la.kind == _lpar
+	StartPeek();
+	Token pt = Peek();
+
+	if (!IsTypeNameForTypeCast(ref pt)) {
+		return false;
+	}
+	
 	// ")"
-  if (pt.kind != Tokens.CloseParenthesis) {
-  	return false;
-  }
-  // check successor
-  pt = Peek();
-  return Tokens.CastFollower[pt.kind] || (Tokens.TypeKW[pt.kind] && lexer.Peek().kind == Tokens.Dot);
+	if (pt.kind != Tokens.CloseParenthesis) {
+		return false;
+	}
+	// check successor
+	pt = Peek();
+	return Tokens.CastFollower[pt.kind] || (Tokens.TypeKW[pt.kind] && lexer.Peek().kind == Tokens.Dot);
 }
 // END IsTypeCast
 
@@ -2085,16 +2129,6 @@ PrimaryExpr<out Expression pexpr>
 		/*--- member access */
 		| "->" ident (. pexpr = new PointerReferenceExpression(pexpr, t.val); .)
 		| "." ident  (. pexpr = new FieldReferenceExpression(pexpr, t.val);.)
-		/*| "::" ident (.
-						if (pexpr is IdentifierExpression) {
-							if (((IdentifierExpression)pexpr).Identifier == "global") {
-								pexpr = new GlobalReferenceExpression();
-							}
-						} else {
-							Error("expression before :: must be an identifier");
-						}
-						pexpr = new FieldReferenceExpression(pexpr, t.val);
-					 .) */
 		/* member access on generic type */
 		|   ( IF (IsGenericFollowedBy(Tokens.Dot) && IsTypeReferenceExpression(pexpr))
 				TypeArgumentList<out typeList> )

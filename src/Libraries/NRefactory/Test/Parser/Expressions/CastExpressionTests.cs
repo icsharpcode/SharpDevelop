@@ -25,6 +25,47 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.IsFalse(ce.IsSpecializedCast);
 		}
+		
+		[Test]
+		public void CSharpArrayCastExpression()
+		{
+			CastExpression ce = (CastExpression)ParseUtilCSharp.ParseExpression("(MyType[])o", typeof(CastExpression));
+			Assert.AreEqual("MyType", ce.CastTo.Type);
+			Assert.AreEqual(new int[] { 0 }, ce.CastTo.RankSpecifier);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
+			Assert.IsFalse(ce.IsSpecializedCast);
+		}
+		
+		[Test]
+		public void GenericCastExpression()
+		{
+			CastExpression ce = (CastExpression)ParseUtilCSharp.ParseExpression("(List<string>)o", typeof(CastExpression));
+			Assert.AreEqual("List", ce.CastTo.Type);
+			Assert.AreEqual("string", ce.CastTo.GenericTypes[0].Type);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
+			Assert.IsFalse(ce.IsSpecializedCast);
+		}
+		
+		[Test]
+		public void GenericArrayCastExpression()
+		{
+			CastExpression ce = (CastExpression)ParseUtilCSharp.ParseExpression("(List<string>[])o", typeof(CastExpression));
+			Assert.AreEqual("List", ce.CastTo.Type);
+			Assert.AreEqual("string", ce.CastTo.GenericTypes[0].Type);
+			Assert.AreEqual(new int[] { 0 }, ce.CastTo.RankSpecifier);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
+			Assert.IsFalse(ce.IsSpecializedCast);
+		}
+		
+		[Test]
+		public void CSharpCastMemberReferenceOnParenthesizedExpression()
+		{
+			// yes, we really wanted to evaluate .Member on expr and THEN cast the result to MyType
+			CastExpression ce = (CastExpression)ParseUtilCSharp.ParseExpression("(MyType)(expr).Member", typeof(CastExpression));
+			Assert.AreEqual("MyType", ce.CastTo.Type);
+			Assert.IsTrue(ce.Expression is FieldReferenceExpression);
+			Assert.IsFalse(ce.IsSpecializedCast);
+		}
 		#endregion
 		
 		#region VB.NET
@@ -114,10 +155,35 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		}
 		
 		[Test]
+		public void VBNetSpecializedSByteCastExpression()
+		{
+			TestSpecializedCast("CSByte(o)", typeof(System.SByte));
+		}
+		
+		[Test]
+		public void VBNetSpecializedUInt16CastExpression()
+		{
+			TestSpecializedCast("CUShort(o)", typeof(System.UInt16));
+		}
+		
+		[Test]
+		public void VBNetSpecializedUInt32CastExpression()
+		{
+			TestSpecializedCast("CUInt(o)", typeof(System.UInt32));
+		}
+		
+		[Test]
+		public void VBNetSpecializedUInt64CastExpression()
+		{
+			TestSpecializedCast("CULng(o)", typeof(System.UInt64));
+		}
+		
+		
+		[Test]
 		public void VBNetSpecializedObjectCastExpression()
 		{
 			TestSpecializedCast("CObj(o)", typeof(System.Object));
-		}		
+		}
 		#endregion
 	}
 }
