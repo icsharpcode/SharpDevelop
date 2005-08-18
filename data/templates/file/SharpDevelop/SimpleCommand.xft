@@ -15,14 +15,14 @@
 using System;
 using System.Windows.Forms;
 
-using ICSharpCode.Core.AddIns.Codons;
+using ICSharpCode.Core;
 
 namespace ${StandardNamespace}
 {
 	/// <summary>
-	/// Description of  ${FileNameWithoutExtension}
+	/// Description of ${FileNameWithoutExtension}
 	/// </summary>
-	public class  ${FileNameWithoutExtension} : AbstractCommand
+	public class ${FileNameWithoutExtension} : AbstractCommand
 	{
 		/// <summary>
 		/// Starts the command

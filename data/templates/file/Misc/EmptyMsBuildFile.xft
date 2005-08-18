@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<Template author="Daniel Grunwald" version="1.0">
+	
+	<Config
+		  name        = "${res:Templates.File.MsBuild.Name}"
+		  icon        = "Icons.32x32.XMLFileIcon"
+		  category    = "${res:Templates.File.Categories.Misc}"
+		  defaultname = "Build${Number}.proj"
+		  language    = "XML"/>
+	 
+	<Description>${res:Templates.File.Xml.EmptyXmlFile.Description}</Description>
+
+	<Files>
+		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
+	<Target Name="Build">
+		
+	</Target>
+</Project>]]>
+		</File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>

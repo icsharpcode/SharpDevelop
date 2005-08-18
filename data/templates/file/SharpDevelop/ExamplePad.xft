@@ -21,36 +21,38 @@
 	 -->
 	<Files>
 		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
+
 using System;
 using System.Windows.Forms;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ${StandardNamespace}
+namespace ${ProjectName}
 {
 	/// <summary>
 	/// Description of the pad content
 	/// </summary>
 	public class ${FileNameWithoutExtension} : AbstractPadContent
 	{
-#region AbstractPadContent requirements
+	{
+		Panel ctl;
+		
+		/// <summary>
+		/// Creates a new ${FileNameWithoutExtension} object
+		/// </summary>
+		public ${FileNameWithoutExtension}()
+		{
+			ctl = new Panel();
+			// TODO: Initialize the panel's content.
+		}
+		
 		/// <summary>
 		/// The <see cref="System.Windows.Forms.Control"/> representing the pad
 		/// </summary>
 		public override Control Control {
 			get {
-				//
-				// TODO : Give back a working Windows.Forms Control
-				//
-				return null;
+				return ctl;
 			}
-		}
-		
-		/// <summary>
-		/// Creates a new ${FileNameWithoutExtension} object
-		/// </summary>
-		public ${FileNameWithoutExtension}() : base("The Title of ${FileNameWithoutExtension}")
-		{
-			// TODO: Optionally set the icon resource name with Icon = "YourIconResourceName";
 		}
 		
 		/// <summary>
@@ -67,12 +69,9 @@ namespace ${StandardNamespace}
 		/// </summary>
 		public override void Dispose()
 		{
-			// TODO: Clean up resources in this method
-			// Control.Dispose();
+			ctl.Dispose();
 		}
-#endregion
 	}
-	
 }
 ]]>
 		</File>

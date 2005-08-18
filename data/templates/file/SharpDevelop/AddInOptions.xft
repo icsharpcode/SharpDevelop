@@ -22,9 +22,7 @@
 	<Files>
 		<File name="${FullName}" language="C#"><![CDATA[${StandardHeader.C#}
 using System;
-using System.Diagnostics;
-using ICSharpCode.Core.Services;
-using ICSharpCode.Core.Properties;
+using ICSharpCode.Core;
 
 namespace ${StandardNamespace}
 {

@@ -24,7 +24,8 @@
 using System;
 using System.Windows.Forms;
 
-using ICSharpCode.Core.AddIns.Codons;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
 
 namespace ${StandardNamespace}
 {
@@ -33,15 +34,6 @@ namespace ${StandardNamespace}
 	/// </summary>
 	public class ${FileNameWithoutExtension} : AbstractMenuCommand
 	{
-		/// <summary>
-		/// Creates a new ${FileNameWithoutExtension}
-		/// </summary>
-		public ${FileNameWithoutExtension}()
-		{
-			// You can enable/disable the menu command using the
-			// IsEnabled property of the AbstractMenuCommand class
-		}
-	
 		/// <summary>
 		/// Starts the command
 		/// </summary>
