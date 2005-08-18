@@ -23,7 +23,15 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			TypeOfExpression toe = (TypeOfExpression)ParseUtilCSharp.ParseExpression("typeof(MyNamespace.N1.MyType)", typeof(TypeOfExpression));
 			Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
 		}
-		#endregion 
+		
+		[Test]
+		public void CSharpGenericTypeOfExpressionTest()
+		{
+			TypeOfExpression toe = (TypeOfExpression)ParseUtilCSharp.ParseExpression("typeof(MyNamespace.N1.MyType<string>)", typeof(TypeOfExpression));
+			Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
+			Assert.AreEqual("string", toe.TypeReference.GenericTypes[0].Type);
+		}
+		#endregion
 		
 		#region VB.NET
 		[Test]

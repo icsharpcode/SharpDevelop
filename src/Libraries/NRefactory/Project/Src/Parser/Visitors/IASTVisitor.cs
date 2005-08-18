@@ -12,6 +12,7 @@ namespace ICSharpCode.NRefactory.Parser
 {
 	public interface IASTVisitor
 	{
+		[Obsolete("Warning: you are visiting INode")]
 		object Visit(INode node, object data);
 		
 		object Visit(CompilationUnit compilationUnit, object data);
@@ -108,6 +109,7 @@ namespace ICSharpCode.NRefactory.Parser
 		object Visit(SizeOfExpression sizeOfExpression, object data);
 		object Visit(TypeOfExpression typeOfExpression, object data);
 		object Visit(TypeOfIsExpression typeOfIsExpression, object data);
+		object Visit(DefaultValueExpression defaultValueExpression, object data);
 		object Visit(AddressOfExpression addressOfExpression, object data);
 		object Visit(AnonymousMethodExpression anonymousMethodExpression, object data);
 		object Visit(CheckedExpression checkedExpression, object data);

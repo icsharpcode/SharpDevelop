@@ -1984,6 +1984,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		public object Visit(DefaultValueExpression defaultValueExpression, object data)
+		{
+			outputFormatter.PrintToken(Tokens.Default);
+			if (prettyPrintOptions.TypeOfParentheses) {
+				outputFormatter.Space();
+			}
+			outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			nodeTracker.TrackedVisit(defaultValueExpression.TypeReference, data);
+			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			return null;
+		}
+		
 		public object Visit(TypeOfIsExpression typeOfIsExpression, object data)
 		{
 			nodeTracker.TrackedVisit(typeOfIsExpression.Expression, data);

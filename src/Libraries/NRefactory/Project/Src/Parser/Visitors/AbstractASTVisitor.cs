@@ -1082,6 +1082,15 @@ namespace ICSharpCode.NRefactory.Parser
 			return data;
 		}
 		
+		public virtual object Visit(DefaultValueExpression defaultValueExpression, object data)
+		{
+			Debug.Assert(defaultValueExpression != null);
+			Debug.Assert(defaultValueExpression.TypeReference != null);
+			
+			defaultValueExpression.TypeReference.AcceptVisitor(this, data);
+			return data;
+		}
+		
 		public virtual object Visit(AddressOfExpression addressOfExpression, object data)
 		{
 			Debug.Assert(addressOfExpression != null);

@@ -2116,6 +2116,10 @@ PrimaryExpr<out Expression pexpr>
 			IF (NotVoidPointer()) "void" (. type = new TypeReference("void"); .)
 			| Type<out type>
 		) ")"                            (. pexpr = new TypeOfExpression(type); .)
+		
+		| IF (la.kind == Tokens.Default && Peek(1).kind == Tokens.OpenParenthesis)
+			/* possible conflict with switch's default */
+			"default" "(" Type<out type> ")" (. pexpr = new DefaultValueExpression(type); .)
 		| "sizeof" "(" Type<out type> ")" (. pexpr = new SizeOfExpression(type); .)
 		| "checked" "(" Expr<out expr> ")" (. pexpr = new CheckedExpression(expr); .)
 		| "unchecked" "(" Expr<out expr> ")" (. pexpr = new UncheckedExpression(expr); .)

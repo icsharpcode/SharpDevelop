@@ -130,6 +130,7 @@
     <Compile Include="Lexer\CSharp\LexerPositionTests.cs" />
     <Compile Include="Lexer\VBNet\LexerPositionTests.cs" />
     <Compile Include="Lexer\CSharp\CustomLexerTests.cs" />
+    <Compile Include="Parser\Expressions\DefaultValueExpressionTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\NRefactory.csproj">
