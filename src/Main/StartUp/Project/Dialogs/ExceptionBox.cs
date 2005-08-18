@@ -116,7 +116,7 @@ namespace ICSharpCode.SharpDevelop
 		
 		void CloseButtonClick(object sender, EventArgs e)
 		{
-			if (MessageService.AskQuestion("Do you really want to quit SharpDevelop?")) {
+			if (MessageBox.Show("Do you really want to quit SharpDevelop?", "SharpDevelop", MessageBoxButtons.YesNo, MessageBoxIcon.Question, MessageBoxDefaultButton.Button2) == DialogResult.Yes) {
 				Application.Exit();
 			}
 		}

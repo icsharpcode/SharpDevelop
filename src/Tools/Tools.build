@@ -10,9 +10,6 @@
 		<!-- <ToolProject Include="GacUtil2\GacUtil2.csproj" /> -->
 		<ToolFiles Include="GacUtil2\GacUtil2.exe"/>
 		<ToolFiles Include="GacUtil2\GacUtil2.exe.config"/>
-		
-		<!-- SharpZipLib is not copied automatically when it is in the GAC -->
-		<SDBinFiles Include="..\Main\Base\RequiredLibraries\ICSharpCode.SharpZipLib.dll"/>
 	</ItemGroup>
 	
 	<Target Name="Build">
@@ -25,7 +22,6 @@
 		-->
 		<Copy SourceFiles="@(MbUnitFiles)" DestinationFolder="..\..\bin\Tools\MbUnit"/>
 		<Copy SourceFiles="@(ToolFiles)" DestinationFolder="..\..\bin\Tools"/>
-		<Copy SourceFiles="@(SDBinFiles)" DestinationFolder="..\..\bin"/>
 		
 		<!--
 		<MSBuild Projects="@(ToolProject)" Targets="Build">

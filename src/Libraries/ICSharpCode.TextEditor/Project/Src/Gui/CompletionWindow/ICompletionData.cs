@@ -88,7 +88,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 		}
 		
-		public bool InsertAction(TextArea textArea, char ch)
+		public virtual bool InsertAction(TextArea textArea, char ch)
 		{
 			textArea.InsertString(text);
 			return false;

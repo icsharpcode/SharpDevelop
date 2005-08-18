@@ -3,8 +3,6 @@ echo Removing assemblies from the GAC
 echo.
 ..\tools\gacutil2.exe /u ..\nunit.framework.dll
 echo.
-..\tools\gacutil2.exe /u ..\ICSharpCode.SharpZipLib.dll
-echo.
 ..\tools\gacutil2.exe /u ..\tools\MbUnit\Refly.dll
 ..\tools\gacutil2.exe /u ..\tools\MbUnit\TestFu.dll
 ..\tools\gacutil2.exe /u ..\tools\MbUnit\QuickGraph.dll

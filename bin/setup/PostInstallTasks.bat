@@ -4,9 +4,6 @@ echo.
 echo NUnit.Framework.dll
 ..\tools\gacutil2.exe /i ..\nunit.framework.dll
 echo.
-echo ICSharpCode.SharpZipLib.dll
-..\tools\gacutil2.exe /i ..\ICSharpCode.SharpZipLib.dll
-echo.
 echo MbUnit requirements
 ..\tools\gacutil2.exe /i ..\tools\MbUnit\Refly.dll
 ..\tools\gacutil2.exe /i ..\tools\MbUnit\TestFu.dll
