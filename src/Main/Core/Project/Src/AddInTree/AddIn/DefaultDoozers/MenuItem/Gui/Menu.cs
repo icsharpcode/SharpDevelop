@@ -53,7 +53,9 @@ namespace ICSharpCode.Core
 		}
 		protected override void OnDropDownShow(EventArgs e)
 		{
-			CreateDropDownItems();
+			if (!this.DropDown.Visible) {
+				CreateDropDownItems();
+			}
 			base.OnDropDownShow(e);
 		}
 		
