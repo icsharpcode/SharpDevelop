@@ -1,11 +1,11 @@
 !verbose 3
 
-!define PRODUCT_NAME "SharpDevelop"
+!define PRODUCT_NAME "SharpDevelop 2.0"
 !define PRODUCT_VERSION "Corsavy Tech Preview"
 !define PRODUCT_PUBLISHER "ic#code"
 !define PRODUCT_WEB_SITE "http://www.icsharpcode.net/opensource/sd/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\SharpDevelop.exe"
-!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\SharpDevelop"
+!define PRODUCT_UNINST_KEY "Software\Microsoft\Windows\CurrentVersion\Uninstall\SharpDevelop2"
 !define PRODUCT_UNINST_ROOT_KEY "HKLM"
 
 !define MUI_WELCOMEFINISHPAGE_BITMAP "wizard-image.bmp"
@@ -54,7 +54,7 @@ CRCCheck on
 
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "Setup.exe"
-InstallDir "$PROGRAMFILES\SharpDevelop"
+InstallDir "$PROGRAMFILES\SharpDevelop\2.0\"
 InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
@@ -103,9 +103,9 @@ Section "MainSection" SEC01
   SetOutPath "$INSTDIR\doc"
   File /r ..\doc\*.*
   
-  CreateDirectory "$SMPROGRAMS\SharpDevelop"
-  CreateShortCut "$SMPROGRAMS\SharpDevelop\SharpDevelop.lnk" "$INSTDIR\bin\SharpDevelop.exe"
-  CreateShortCut "$DESKTOP\SharpDevelop.lnk" "$INSTDIR\bin\SharpDevelop.exe"
+  CreateDirectory "$SMPROGRAMS\SharpDevelop 2.0"
+  CreateShortCut "$SMPROGRAMS\SharpDevelop 2.0\SharpDevelop 2.0.lnk" "$INSTDIR\bin\SharpDevelop.exe"
+  CreateShortCut "$DESKTOP\SharpDevelop 2.0.lnk" "$INSTDIR\bin\SharpDevelop.exe"
 
   ; Add default file associations
   ; CreateFileAssociation extension extType extDef exeCmd defIcon
@@ -115,8 +115,8 @@ SectionEnd
 
 Section -AdditionalIcons
   WriteIniStr "$INSTDIR\${PRODUCT_NAME}.url" "InternetShortcut" "URL" "${PRODUCT_WEB_SITE}"
-  CreateShortCut "$SMPROGRAMS\SharpDevelop\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
-  CreateShortCut "$SMPROGRAMS\SharpDevelop\Uninstall.lnk" "$INSTDIR\uninst.exe"
+  CreateShortCut "$SMPROGRAMS\SharpDevelop 2.0\Website.lnk" "$INSTDIR\${PRODUCT_NAME}.url"
+  CreateShortCut "$SMPROGRAMS\SharpDevelop 2.0\Uninstall.lnk" "$INSTDIR\uninst.exe"
 SectionEnd
 
 Section -Post
@@ -136,8 +136,8 @@ Section -Post
 SectionEnd
 
 Section Uninstall
-  Delete "$DESKTOP\SharpDevelop.lnk"
-  Delete "$SMPROGRAMS\SharpDevelop\*.*"
+  Delete "$DESKTOP\SharpDevelop 2.0.lnk"
+  Delete "$SMPROGRAMS\SharpDevelop 2.0\*.*"
 
   ; first, remove all dependencies from the GAC etc
   SetOutPath "$INSTDIR\bin\setup"
@@ -145,7 +145,7 @@ Section Uninstall
   ; set OutPath to somewhere else because the current working directory cannot be deleted!
   SetOutPath "$DESKTOP"
   
-  RMDir "$SMPROGRAMS\SharpDevelop"
+  RMDir "$SMPROGRAMS\SharpDevelop 2.0"
   RMDir /r "$INSTDIR"
   
   ; NOTE: this application configuration deletion is now deactivated post-1.0 releases
