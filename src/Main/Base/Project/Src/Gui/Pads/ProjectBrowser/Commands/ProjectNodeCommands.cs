@@ -54,7 +54,11 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (node == null) {
 				return;
 			}
-			node.Project.Start(true);
+			if (node.Project.IsStartable) {
+				node.Project.Start(true);
+			} else {
+				MessageService.ShowError("${res:BackendBindings.ExecutionManager.CantExecuteDLLError}");
+			}
 		}
 	}
 }

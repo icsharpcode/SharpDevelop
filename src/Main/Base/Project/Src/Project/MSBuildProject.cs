@@ -253,6 +253,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
+		public override bool IsStartable {
+			get {
+				return OutputType == OutputType.Exe || OutputType == OutputType.WinExe;
+			}
+		}
+		
 		public override void Start(bool withDebugging)
 		{
 			ProcessStartInfo psi = new ProcessStartInfo();

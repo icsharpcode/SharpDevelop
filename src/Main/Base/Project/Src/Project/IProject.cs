@@ -107,6 +107,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		string GetParseableFileContent(string fileName);
 		
+		bool IsStartable { get; }
 		
 		void Start(bool withDebugging);
 		

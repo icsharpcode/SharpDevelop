@@ -145,8 +145,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					return null;
 				}
 				foreach (IProject project in Projects) {
-					if (project.OutputType == OutputType.Exe ||
-					    project.OutputType == OutputType.WinExe) {
+					if (project.IsStartable) {
 						return project;
 					}
 				}

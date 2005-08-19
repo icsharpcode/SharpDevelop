@@ -7,6 +7,9 @@
 
 using System;
 using System.ComponentModel;
+using System.Diagnostics;
+using System.IO;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -288,6 +291,61 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Debug Options
+		const string runConfiguration = "Debug";
+		const string runProcessor = "AnyCPU";
+		
+		public override bool IsStartable {
+			get {
+				StartAction action = GetStartAction(runConfiguration, runProcessor);
+				switch (action) {
+					case StartAction.Project:
+						return base.IsStartable;
+					case StartAction.Program:
+						return GetStartProgram(runConfiguration, runProcessor).Length > 0;
+					case StartAction.StartURL:
+						return GetStartURL(runConfiguration, runProcessor).Length > 0;
+				}
+				return false;
+			}
+		}
+		
+		void StartProgram(string program, bool withDebugging)
+		{
+			ProcessStartInfo psi = new ProcessStartInfo();
+			psi.FileName = Path.Combine(Directory, program);
+			string workingDir = GetStartWorkingDirectory(runConfiguration, runProcessor);
+			if (workingDir.Length == 0) {
+				psi.WorkingDirectory = Path.GetDirectoryName(psi.FileName);
+			} else {
+				psi.WorkingDirectory = Path.Combine(Directory, workingDir);
+			}
+			psi.Arguments = GetStartArguments(runConfiguration, runProcessor);
+			
+			if (withDebugging) {
+				DebuggerService.CurrentDebugger.Start(psi);
+			} else {
+				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
+			}
+		}
+		
+		public override void Start(bool withDebugging)
+		{
+			StartAction action = GetStartAction(runConfiguration, runProcessor);
+			switch (action) {
+				case StartAction.Project:
+					StartProgram(this.OutputAssemblyFullPath, withDebugging);
+					break;
+				case StartAction.Program:
+					StartProgram(GetStartProgram(runConfiguration, runProcessor), withDebugging);
+					break;
+				case StartAction.StartURL:
+					FileService.OpenFile("browser://" + GetStartURL(runConfiguration, runProcessor));
+					break;
+				default:
+					throw new ApplicationException("Unknown start action: " + action);
+			}
+		}
+		
 		public string GetStartProgram(string configurationName, string platform)
 		{
 			return GetUserConfiguration(configurationName, platform)["StartProgram"];

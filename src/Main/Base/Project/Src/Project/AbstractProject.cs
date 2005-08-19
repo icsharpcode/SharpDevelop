@@ -277,6 +277,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
+		public virtual bool IsStartable {
+			get {
+				return false;
+			}
+		}
+		
 		public string GetOutputPath(string configurationName, string platform)
 		{
 			return GetConfiguration(configurationName, platform)["OutputPath"];

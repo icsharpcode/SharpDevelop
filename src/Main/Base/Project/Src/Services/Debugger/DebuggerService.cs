@@ -296,6 +296,8 @@ namespace ICSharpCode.Core
 					if (logicPos.Y >= 0 && logicPos.Y < textArea.Document.TotalNumberOfLines) {
 						// This is for testing olny - it must be reworked properly
 						if (Control.ModifierKeys == Keys.Control) {
+							if (currentDebugger == null) return;
+							if (!currentDebugger.IsDebugging) return;
 							SetIPArgs a = new SetIPArgs();
 							a.filename = textArea.MotherTextEditorControl.FileName;
 							a.line = logicPos.Y;

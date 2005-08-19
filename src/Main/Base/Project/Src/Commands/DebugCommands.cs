@@ -21,6 +21,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				IProject startupProject = ProjectService.OpenSolution.StartupProject;
 				if (startupProject != null) {
 					startupProject.Start(true);
+				} else {
+					MessageService.ShowError("${res:BackendBindings.ExecutionManager.CantExecuteDLLError}");
 				}
 			}
 		}
@@ -35,6 +37,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				IProject startupProject = ProjectService.OpenSolution.StartupProject;
 				if (startupProject != null) {
 					startupProject.Start(false);
+				} else {
+					MessageService.ShowError("${res:BackendBindings.ExecutionManager.CantExecuteDLLError}");
 				}
 			}
 		}
