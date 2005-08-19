@@ -685,6 +685,7 @@
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerDoozer.cs" />
     <Compile Include="Src\Dom\HelpProvider.cs" />
+    <Compile Include="Src\Project\Solution\SolutionPreferences.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

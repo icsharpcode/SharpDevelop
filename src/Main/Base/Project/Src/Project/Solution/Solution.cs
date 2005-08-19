@@ -144,6 +144,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (!HasProjects) {
 					return null;
 				}
+				IProject startupProject = preferences.StartupProject;
+				if (startupProject != null)
+					return startupProject;
 				foreach (IProject project in Projects) {
 					if (project.IsStartable) {
 						return project;
@@ -206,8 +209,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#endregion
 		
+		SolutionPreferences preferences;
+		
+		public SolutionPreferences Preferences {
+			get {
+				return preferences;
+			}
+		}
+		
 		public Solution()
 		{
+			preferences = new SolutionPreferences(this);
 			solutionFolderEnumerator          = new SolutionFolderEnumerator(this);
 			solutionFolderContainerEnumerator = new SolutionFolderContainerEnumerator(this);
 			projectEnumerator                 = new ProjectEnumerator(this);
@@ -560,5 +572,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			return MSBuildProject.RunMSBuild(FileName, "Publish");
 		}
+		
 	}
 }

@@ -24,25 +24,16 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			throw new System.NotImplementedException();
-//			ProjectBrowserView browser = Owner as ProjectBrowserView;
-//			AbstractBrowserNode node   = null;
-//			
-//			if (browser != null) {
-//				node = browser.SelectedNode as FolderNode;
-//			} else {
-//				ICSharpCode.SharpDevelop.Gui.ProjectBrowser.ProjectBrowserView pbv = (ICSharpCode.SharpDevelop.Gui.ProjectBrowser.ProjectBrowserView)WorkbenchSingleton.Workbench.GetPad(typeof(ICSharpCode.SharpDevelop.Gui.ProjectBrowser.ProjectBrowserView));
-//				
-//				node = pbv.GetNodeFromProject(ProjectService.CurrentProject);
-//			}
-//			
-//			if (node != null) {
-//				Combine combine                = node.Combine;
-//				combine.SingleStartProjectName = node.Project.Name;
-//				combine.SingleStartupProject   = true;
-//				
-//				ProjectService.SaveCombine();
-//			}
+			AbstractProjectBrowserTreeNode node  = ProjectBrowserPad.Instance.SelectedNode;
+			Solution solution = ProjectService.OpenSolution;
+			if (node == null || solution == null) {
+				return;
+			}
+			if (node.Project.IsStartable) {
+				solution.Preferences.StartupProject = node.Project;
+			} else {
+				MessageService.ShowError("${res:BackendBindings.ExecutionManager.CantExecuteDLLError}");
+			}
 		}
 	}
 	

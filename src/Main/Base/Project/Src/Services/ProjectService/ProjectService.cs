@@ -194,8 +194,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				return;
 			OnSolutionLoaded(new SolutionEventArgs(openSolution));
 			try {
+				string file = GetPreferenceFileName(openSolution.FileName);
+				if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
+					openSolution.Preferences.SetMemento(Properties.Load(file));
+				}
 				foreach (IProject project in openSolution.Projects) {
-					string file = GetPreferenceFileName(project);
+					file = GetPreferenceFileName(project.FileName);
 					if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
 						project.SetMemento(Properties.Load(file));
 					}
@@ -229,7 +233,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			solution.Save(solutionFile);
 			openSolution = solution;
 			OnSolutionLoaded(new SolutionEventArgs(openSolution));
-			string file = GetPreferenceFileName(project);
+			string file = GetPreferenceFileName(project.FileName);
 			if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
 				project.SetMemento(Properties.Load(file));
 			}
@@ -246,10 +250,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static string GetPreferenceFileName(IProject project)
+		static string GetPreferenceFileName(string projectFileName)
 		{
 			string directory = PropertyService.ConfigDirectory + "preferences";
-			string fileName = project.FileName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(Path.DirectorySeparatorChar, '.');
+			string fileName = projectFileName.Substring(3).Replace('/', '.').Replace('\\', '.').Replace(Path.DirectorySeparatorChar, '.');
 			string fullFileName = Path.Combine(directory, fileName + ".xml");
 			return fullFileName;
 		}
@@ -263,11 +267,21 @@ namespace ICSharpCode.SharpDevelop.Project
 				Directory.CreateDirectory(directory);
 			}
 			
+			string fullFileName;
+			Properties memento = openSolution.Preferences.CreateMemento();
+			if (memento != null) {
+				fullFileName = GetPreferenceFileName(openSolution.FileName);
+				
+				if (FileUtility.IsValidFileName(fullFileName)) {
+					FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
+				}
+			}
+			
 			foreach (IProject project in OpenSolution.Projects) {
-				Properties memento = project.CreateMemento();
+				memento = project.CreateMemento();
 				if (memento == null) continue;
 				
-				string fullFileName = GetPreferenceFileName(project);
+				fullFileName = GetPreferenceFileName(project.FileName);
 				if (FileUtility.IsValidFileName(fullFileName)) {
 					FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
 				}
