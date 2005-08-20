@@ -184,6 +184,7 @@ namespace ICSharpCode.Core
 		{
 			BreakpointBookmark bb = e.Bookmark as BreakpointBookmark;
 			if (bb != null) {
+				bb.LineNumberChanged += BookmarkChanged;
 				OnBreakPointAdded(new BreakpointBookmarkEventArgs(bb));
 			}
 		}
@@ -194,6 +195,14 @@ namespace ICSharpCode.Core
 			if (bb != null) {
 				bb.RemoveMarker();
 				OnBreakPointRemoved(new BreakpointBookmarkEventArgs(bb));
+			}
+		}
+		
+		static void BookmarkChanged(object sender, EventArgs e)
+		{
+			BreakpointBookmark bb = sender as BreakpointBookmark;
+			if (bb != null) {
+				OnBreakPointChanged(new BreakpointBookmarkEventArgs(bb));
 			}
 		}
 		
