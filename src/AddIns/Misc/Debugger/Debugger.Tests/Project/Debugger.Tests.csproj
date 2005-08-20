@@ -1,0 +1,46 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>Debugger.Tests</RootNamespace>
+    <AssemblyName>Debugger.Tests</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{A4C858C8-51B6-4265-A695-A20FCEBA1D19}</ProjectGuid>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <OutputPath>..\..\..\..\..\..\AddIns\AddIns\Misc\Debugger\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <OutputPath>bin\Release\</OutputPath>
+    <Optimize>true</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="nunit.framework, Version=2.2.2.0, Culture=neutral, PublicKeyToken=96d09a1eb7f44a77" />
+    <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\DebuggerTests.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\SimpleProgram.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\ConsoleHelloWorld.cs" />
+    <EmbeddedResource Include="Src\TestPrograms\DiagnosticsDebugHelloWorld.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Src" />
+    <Folder Include="Configuration" />
+    <ProjectReference Include="..\..\Debugger.AddIn\Project\Debugger.AddIn.csproj">
+      <Project>{EC06F96A-AEEC-49D6-B03D-AB87C6EB674C}</Project>
+      <Name>Debugger.AddIn</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Debugger.Core\Project\Debugger.Core.csproj">
+      <Project>{1D18D788-F7EE-4585-A23B-34DC8EC63CB8}</Project>
+      <Name>Debugger.Core</Name>
+    </ProjectReference>
+    <Folder Include="Src\TestPrograms" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>
