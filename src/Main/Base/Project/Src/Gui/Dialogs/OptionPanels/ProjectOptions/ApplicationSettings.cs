@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
@@ -14,76 +15,44 @@ using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
-	
+
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class ApplicationSettings : AbstractOptionPanel
+	public class ApplicationSettings : AbstractProjectOptionPanel
 	{
-		AdvancedMSBuildProject project;
-		
-		public ApplicationSettings()
-		{
-		}
-		
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ProjectOptions.ApplicationSettings.xfrm"));
-			this.project = (AdvancedMSBuildProject)((Properties)CustomizationObject).Get("Project");
+			SetupFromXmlResource("ProjectOptions.ApplicationSettings.xfrm");
+			
+			InitializeHelper();
 			
 			ConnectBrowseButton("applicationIconBrowseButton", "applicationIconComboBox", "${res:SharpDevelop.FileFilter.Icons}|*.ico|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 			
 			// TODO: Suitable file filter.
 			ConnectBrowseButton("win32ResourceFileBrowseButton", "win32ResourceFileComboBox");
 			
-			Get<TextBox>("assemblyName").Text = project.AssemblyName;
+			helper.BindString("assemblyNameTextBox", "AssemblyName");
 			Get<TextBox>("assemblyName").TextChanged += new EventHandler(RefreshOutputNameTextBox);
-			Get<TextBox>("assemblyName").TextChanged += new EventHandler(Save);
 			
-			Get<TextBox>("rootNamespace").Text = project.RootNamespace;
-			Get<TextBox>("rootNamespace").TextChanged += new EventHandler(Save);
+			helper.BindString("rootNamespaceTextBox", "RootNamespace");
 			
-			Get<ComboBox>("outputType").Items.Add(StringParser.Parse("${res:Dialog.Options.PrjOptions.Configuration.CompileTarget.Exe}"));
-			Get<ComboBox>("outputType").Items.Add(StringParser.Parse("${res:Dialog.Options.PrjOptions.Configuration.CompileTarget.WinExe}"));
-			Get<ComboBox>("outputType").Items.Add(StringParser.Parse("${res:Dialog.Options.PrjOptions.Configuration.CompileTarget.Library}"));
-			Get<ComboBox>("outputType").Items.Add(StringParser.Parse("${res:Dialog.Options.PrjOptions.Configuration.CompileTarget.Module}"));
-			
-			Get<ComboBox>("outputType").SelectedIndex = (int)project.OutputType;
+			helper.BindEnum<OutputType>("outputTypeComboBox", "OutputType");
 			Get<ComboBox>("outputType").SelectedIndexChanged += new EventHandler(RefreshOutputNameTextBox);
-			Get<ComboBox>("outputType").SelectedIndexChanged += new EventHandler(Save);
 			
-			Get<ComboBox>("startupObject").Text   = project.StartupObject;
-			Get<ComboBox>("startupObject").SelectedIndexChanged += new EventHandler(Save);
+			helper.BindString("startupObjectComboBox", "StartupObject");
 			
-			Get<ComboBox>("applicationIcon").Text = project.ApplicationIcon;
+			helper.BindString("applicationIconComboBox", "ApplicationIcon");
 			Get<ComboBox>("applicationIcon").TextChanged += new EventHandler(ApplicationIconComboBoxTextChanged);
-			Get<ComboBox>("applicationIcon").TextChanged += new EventHandler(Save);
 			
-			Get<ComboBox>("win32ResourceFile").Text = project.Win32Resource;
-			Get<ComboBox>("win32ResourceFile").TextChanged += new EventHandler(Save);
+			helper.BindString("win32ResourceFileComboBox", "Win32Resource");
 			
 			Get<TextBox>("projectFolder").Text = project.Directory;
 			Get<TextBox>("projectFile").Text = Path.GetFileName(project.FileName);
-			Get<TextBox>("projectFile").TextChanged += new EventHandler(Save);
+			
+			// maybe make this writable again? Needs special care when saving!
+			Get<TextBox>("projectFile").ReadOnly = true;
 			
 			RefreshOutputNameTextBox(null, EventArgs.Empty);
-		}
-		
-		void Save(object sender, EventArgs e) 
-		{
-			StorePanelContents();
-		}
-		
-		public override bool StorePanelContents()
-		{
-			project.AssemblyName      = Get<TextBox>("assemblyName").Text;
-			project.RootNamespace     = Get<TextBox>("rootNamespace").Text;
-			project.OutputType        = (OutputType)Get<ComboBox>("outputType").SelectedIndex;
-			project.StartupObject     = Get<ComboBox>("startupObject").Text;
-			project.ApplicationIcon   = Get<ComboBox>("applicationIcon").Text;
-			project.Win32Resource     = Get<ComboBox>("win32ResourceFile").Text;
-			project.Name              = Path.GetFileNameWithoutExtension(Get<TextBox>("projectFile").Text);
-			project.Save();
-			return true;
 		}
 		
 		void RefreshOutputNameTextBox(object sender, EventArgs e)
@@ -93,9 +62,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		void ApplicationIconComboBoxTextChanged(object sender, EventArgs e)
 		{
-			string applicationIcon = Get<ComboBox>("applicationIcon").Text;
+			string applicationIcon = Path.Combine(baseDirectory, Get<ComboBox>("applicationIcon").Text);
 			if (File.Exists(applicationIcon)) {
-			    Get<PictureBox>("applicationIcon").Image = Image.FromFile(applicationIcon);
+				Get<PictureBox>("applicationIcon").Image = Image.FromFile(applicationIcon);
+			} else {
+				Get<PictureBox>("applicationIcon").Image = null;
 			}
 		}
 	}

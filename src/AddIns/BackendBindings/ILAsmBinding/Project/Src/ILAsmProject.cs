@@ -11,7 +11,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.ILAsmBinding
 {
-	public class ILAsmProject : AdvancedMSBuildProject
+	public class ILAsmProject : MSBuildProject
 	{
 		public ILAsmProject(string fileName, string projectName)
 		{

@@ -117,25 +117,39 @@ namespace ICSharpCode.SharpDevelop.Dom
 			fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 			int len = (int)fs.Length;
 			loader = new BinaryReader(fs);
-			if (loader.ReadInt64() != magic) {
-				LoggingService.Warn("Cannot load XmlDoc: wrong magic");
+			try {
+				if (loader.ReadInt64() != magic) {
+					LoggingService.Warn("Cannot load XmlDoc: wrong magic");
+					return false;
+				}
+				if (loader.ReadInt16() != version) {
+					LoggingService.Warn("Cannot load XmlDoc: wrong version");
+					return false;
+				}
+				if (loader.ReadInt64() != fileDate.Ticks) {
+					LoggingService.Info("Not loading XmlDoc: file changed since cache was created");
+					return false;
+				}
+				int indexStartPosition = loader.ReadInt32(); // go to start of index
+				if (indexStartPosition >= len) {
+					LoggingService.Error("XmlDoc: Cannot find index, cache invalid!");
+					return false;
+				}
+				fs.Position = indexStartPosition;
+				while (fs.Position < len) {
+					string key = loader.ReadString();
+					int pos = loader.ReadInt32();
+					indexDictionary.Add(key, pos);
+				}
+				if (fs.Position > len) {
+					LoggingService.Error("XmlDoc: Jumped over end of file, cache invalid!");
+					return false;
+				}
+				return true;
+			} catch (Exception ex) {
+				LoggingService.Error("Cannot load from cache", ex);
 				return false;
 			}
-			if (loader.ReadInt16() != version) {
-				LoggingService.Warn("Cannot load XmlDoc: wrong version");
-				return false;
-			}
-			if (loader.ReadInt64() != fileDate.Ticks) {
-				LoggingService.Info("Not loading XmlDoc: file changed since cache was created");
-				return false;
-			}
-			fs.Position = loader.ReadInt32(); // go to start of index
-			while (fs.Position < len) {
-				string key = loader.ReadString();
-				int pos = loader.ReadInt32();
-				indexDictionary.Add(key, pos);
-			}
-			return true;
 		}
 		
 		string LoadDocumentation(string key)
@@ -216,7 +230,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (doc.xmlDescription.Count > cacheLength * 2) {
 				LoggingService.Debug("XmlDoc: Creating cache");
 				DateTime date = File.GetLastWriteTimeUtc(fileName);
-				doc.Save(cacheName, date);
+				try {
+					doc.Save(cacheName, date);
+				} catch (Exception ex) {
+					LoggingService.Error("Cannot write to cache file", ex);
+					return doc;
+				}
 				doc.Dispose();
 				doc = new XmlDoc();
 				doc.LoadFromBinary(cacheName, date);

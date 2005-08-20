@@ -248,6 +248,14 @@ namespace ICSharpCode.FormDesigner
 			UpdateSelectableObjects();
 		}
 		
+		public override void Dispose()
+		{
+			if (IsFormDesignerVisible) {
+				Deselected();
+			}
+			base.Dispose();
+		}
+		
 		public override void Deselected()
 		{
 			LoggingService.Info("Deselected form designer, unloading...");

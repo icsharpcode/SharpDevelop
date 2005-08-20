@@ -31,9 +31,9 @@
 		<!--<DialogPanel id    = "ReferencePaths"
 		             label = "Reference Paths"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>-->
-		<DialogPanel id    = "Signing"
+		<!--<DialogPanel id    = "Signing"
 		             label = "Signing"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>-->
 		<DialogPanel id    = "BuildEvents"
 		             label = "Build Events"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
@@ -43,9 +43,9 @@
 		<DialogPanel id    = "DebugOptions"
 		             label = "Debug"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
-		<DialogPanel id    = "Publish"
+		<!--<DialogPanel id    = "Publish"
 		             label = "Publish"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>-->
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/LanguageBindings">

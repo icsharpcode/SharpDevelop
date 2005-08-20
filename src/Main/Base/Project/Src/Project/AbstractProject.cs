@@ -162,6 +162,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public string Configuration {
 			get {
+				// is always stored in BaseConfiguration
 				return BaseConfiguration["Configuration"];
 			}
 			set {
@@ -172,6 +173,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public string Platform {
 			get {
+				// is always stored in BaseConfiguration
 				return BaseConfiguration["Platform"];
 			}
 			set {
@@ -182,17 +184,17 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public virtual OutputType OutputType {
 			get {
-				return BaseConfiguration.Get("OutputType", OutputType.Exe);
+				return GetProperty("OutputType", OutputType.Exe);
 			}
 			set {
-				BaseConfiguration.Set("OutputType", value);
+				SetProperty("OutputType", value);
 			}
 		}
 		
 		[Browsable(false)]
 		public string OutputAssemblyFullPath {
 			get {
-				string outputPath = ActiveConfiguration["OutputPath"];
+				string outputPath = GetProperty("OutputPath");
 				return Path.Combine(Path.Combine(Directory, outputPath), AssemblyName + GetExtension(OutputType));
 			}
 		}
@@ -214,6 +216,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public Guid Guid {
 			get {
+				// is always in base config
 				return new Guid(BaseConfiguration["ProjectGuid"]);
 			}
 		}
@@ -221,30 +224,30 @@ namespace ICSharpCode.SharpDevelop.Project
 		[Browsable(false)]
 		public string RootNamespace {
 			get {
-				return BaseConfiguration["RootNamespace"];
+				return GetProperty("RootNamespace");
 			}
 			set {
-				BaseConfiguration["RootNamespace"] = value;
+				SetProperty("RootNamespace", value);
 			}
 		}
 		
 		[Browsable(false)]
 		public string AssemblyName {
 			get {
-				return BaseConfiguration["AssemblyName"];
+				return GetProperty("AssemblyName");
 			}
 			set {
-				BaseConfiguration["AssemblyName"] = value;
+				SetProperty("AssemblyName", value);
 			}
 		}
 		
 		[Browsable(false)]
 		public string AppDesignerFolder {
 			get {
-				return BaseConfiguration["AppDesignerFolder"];
+				return GetProperty("AppDesignerFolder");
 			}
 			set {
-				BaseConfiguration["AppDesignerFolder"] = value;
+				SetProperty("AppDesignerFolder", value);
 			}
 		}
 		
@@ -283,6 +286,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		/*
 		public string GetOutputPath(string configurationName, string platform)
 		{
 			return GetConfiguration(configurationName, platform)["OutputPath"];
@@ -292,33 +296,108 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			GetConfiguration(configurationName, platform)["OutputPath"] = val;
 		}
+		 */
 		
-		public PropertyGroup GetUserConfiguration(string configurationName)
+		public string GetProperty(string property)
 		{
-			return GetUserConfiguration(configurationName, null);
+			return GetProperty(property, "");
 		}
 		
-		public PropertyGroup GetUserConfiguration(string configurationName, string platform)
+		public T GetProperty<T>(string property, T defaultValue)
+		{
+			return GetProperty(this.Configuration, this.Platform, property, defaultValue);
+		}
+		
+		public T GetProperty<T>(string configurationName, string platform, string property, T defaultValue)
 		{
 			string configurationKey = platform != null ? configurationName + "|" + platform : configurationName;
-			if (!userConfigurations.ContainsKey(configurationKey)) {
-				userConfigurations.Add(configurationKey, new PropertyGroup());
+			PropertyGroup pg;
+			if (userConfigurations.TryGetValue(configurationKey, out pg)) {
+				if (pg.IsSet(property)) {
+					return pg.Get(property, defaultValue);
+				}
 			}
-			return userConfigurations[configurationKey];
+			if (configurations.TryGetValue(configurationKey, out pg)) {
+				if (pg.IsSet(property)) {
+					return pg.Get(property, defaultValue);
+				}
+			}
+			if (BaseConfiguration.IsSet(property)) {
+				return BaseConfiguration.Get(property, defaultValue);
+			}
+			return defaultValue;
 		}
 		
-		public PropertyGroup GetConfiguration(string configurationName)
+		public void SetProperty<T>(string property, T value)
 		{
-			return GetConfiguration(configurationName, null);
+			SetProperty(this.Configuration, this.Platform, property, value, PropertyStorageLocation.Unchanged);
 		}
 		
-		public PropertyGroup GetConfiguration(string configurationName, string platform)
+		public void SetProperty<T>(string property, T value, PropertyStorageLocation location)
+		{
+			SetProperty(this.Configuration, this.Platform, property, value, location);
+		}
+		
+		public void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocation location)
 		{
 			string configurationKey = platform != null ? configurationName + "|" + platform : configurationName;
-			if (!configurations.ContainsKey(configurationKey)) {
-				configurations.Add(configurationKey, new PropertyGroup());
+			PropertyGroup pg;
+			T defaultValue = (typeof(T) == typeof(string)) ? (T)(object)string.Empty : default(T);
+			switch (location) {
+				case PropertyStorageLocation.Unchanged:
+					if (userConfigurations.TryGetValue(configurationKey, out pg)) {
+						if (pg.IsSet(property)) {
+							pg.Set(property, defaultValue, value);
+							return;
+						}
+					}
+					if (configurations.TryGetValue(configurationKey, out pg)) {
+						if (pg.IsSet(property)) {
+							pg.Set(property, defaultValue, value);
+							return;
+						}
+					}
+					BaseConfiguration.Set(property, defaultValue, value);
+					return;
+				case PropertyStorageLocation.BaseConfiguration:
+					if (!BaseConfiguration.IsSet(property)) {
+						RemoveProperty(configurations, property);
+						RemoveProperty(userConfigurations, property);
+					}
+					BaseConfiguration.Set(property, defaultValue, value);
+					return;
+				case PropertyStorageLocation.SpecificConfiguration:
+					if (BaseConfiguration.IsSet(property)) {
+						BaseConfiguration.Remove(property);
+					}
+					RemoveProperty(userConfigurations, property);
+					if (!configurations.TryGetValue(configurationKey, out pg)) {
+						configurations[configurationKey] = pg = new PropertyGroup();
+					}
+					pg.Set(property, defaultValue, value);
+					return;
+				case PropertyStorageLocation.UserSpecificConfiguration:
+					if (BaseConfiguration.IsSet(property)) {
+						BaseConfiguration.Remove(property);
+					}
+					RemoveProperty(configurations, property);
+					if (!userConfigurations.TryGetValue(configurationKey, out pg)) {
+						userConfigurations[configurationKey] = pg = new PropertyGroup();
+					}
+					pg.Set(property, defaultValue, value);
+					return;
+				default:
+					throw new InvalidEnumArgumentException("location", (int)location, typeof(PropertyStorageLocation));
 			}
-			return configurations[configurationKey];
+		}
+		
+		static void RemoveProperty(Dictionary<string, PropertyGroup> dict, string property)
+		{
+			foreach (PropertyGroup pg in dict.Values) {
+				if (pg.IsSet(property)) {
+					pg.Remove(property);
+				}
+			}
 		}
 		
 		/// <summary>

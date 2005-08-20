@@ -6,86 +6,106 @@
 // </file>
 
 using System;
+using System.IO;
 using System.Windows.Forms;
 
-using ICSharpCode.SharpDevelop.Internal.ExternalTool;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
-	public class Signing : AbstractOptionPanel
+	public class Signing : AbstractProjectOptionPanel
 	{
-		AdvancedMSBuildProject project;
+		ComboBox keyFile;
+		
+		const string KeyFileExtensions = "*.snk;*.pfx;*.key";
 		
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ProjectOptions.Signing.xfrm"));
-			this.project = (AdvancedMSBuildProject)((Properties)CustomizationObject).Get("Project");
+			SetupFromXmlResource("ProjectOptions.Signing.xfrm");
+			InitializeHelper();
 			
-			Get<CheckBox>("signAssembly").Checked = project.SignAssembly;
+			helper.BindBoolean("signAssemblyCheckBox", "SignAssembly", false);
 			Get<CheckBox>("signAssembly").CheckedChanged += new EventHandler(UpdateEnabledStates);
-			Get<CheckBox>("signAssembly").CheckedChanged += new EventHandler(Save);
-			
-			Get<RadioButton>("useKeyFile").Checked         = project.AssemblyOriginatorKeyMode == AssemblyOriginatorKeyMode.File;
-			Get<RadioButton>("useKeyFile").CheckedChanged += new EventHandler(UpdateEnabledStates);
-			Get<RadioButton>("useKeyFile").CheckedChanged += new EventHandler(Save);
 			
 			
-			Get<RadioButton>("useKeyProvider").Checked = project.AssemblyOriginatorKeyMode == AssemblyOriginatorKeyMode.Provider;
-			Get<RadioButton>("useKeyProvider").CheckedChanged += new EventHandler(UpdateEnabledStates);
-			Get<RadioButton>("useKeyProvider").CheckedChanged += new EventHandler(Save);
+			keyFile = Get<ComboBox>("keyFile");
+			helper.BindString(keyFile, "AssemblyOriginatorKeyFile");
+			if (keyFile.Text.Length > 0) {
+				FindKeys(baseDirectory);
+				if (!keyFile.Items.Contains(keyFile.Text)) {
+					keyFile.Items.Add(keyFile.Text);
+				}
+			}
+			keyFile.Items.Add(StringParser.Parse("<${res:Global.CreateButtonText}...>"));
+			keyFile.Items.Add(StringParser.Parse("<${res:Global.BrowseText}...>"));
+			keyFile.SelectedIndexChanged += delegate {
+				if (keyFile.SelectedIndex == keyFile.Items.Count - 1) {
+					BeginInvoke(new MethodInvoker(BrowseKeyFile));
+				}
+				if (keyFile.SelectedIndex == keyFile.Items.Count - 2) {
+					BeginInvoke(new MethodInvoker(CreateKeyFile));
+				}
+			};
 			
-			Get<ComboBox>("keyFile").Text = project.AssemblyOriginatorKeyFile;
-			Get<ComboBox>("keyFile").TextChanged += new EventHandler(Save);
-			
-			Get<ComboBox>("providerName").Text = project.AssemblyKeyProviderName;
-			Get<ComboBox>("providerName").Items.Add("TODO: GetKeyProviders()");
-			Get<ComboBox>("providerName").TextChanged += new EventHandler(Save);
-			
-			Get<ComboBox>("container").Text    = "TODO";
-			Get<ComboBox>("container").TextChanged += new EventHandler(Save);
-			
-			Get<CheckBox>("delaySignOnly").Checked = project.DelaySign;
-			Get<CheckBox>("delaySignOnly").CheckedChanged += new EventHandler(Save);
+			helper.BindBoolean("delaySignOnlyCheckBox", "DelaySign", false);
 			
 			UpdateEnabledStates(this, EventArgs.Empty);
 		}
 		
-		
-		void Save(object sender, EventArgs e)
+		void FindKeys(string directory)
 		{
-			StorePanelContents();
+			directory = Path.GetFullPath(directory);
+			foreach (string fileName in Directory.GetFiles(directory, "*.snk")) {
+				keyFile.Items.Add(FileUtility.GetRelativePath(baseDirectory, fileName));
+			}
+			foreach (string fileName in Directory.GetFiles(directory, "*.pfx")) {
+				keyFile.Items.Add(FileUtility.GetRelativePath(baseDirectory, fileName));
+			}
+			foreach (string fileName in Directory.GetFiles(directory, "*.key")) {
+				keyFile.Items.Add(FileUtility.GetRelativePath(baseDirectory, fileName));
+			}
+			if (directory.Length > 3) {
+				FindKeys(Path.Combine(directory, ".."));
+			}
 		}
 		
+		void BrowseKeyFile()
+		{
+			keyFile.SelectedIndex = -1;
+			new BrowseButtonEvent(this, "keyFileComboBox", "${res:SharpDevelop.FileFilter.KeyFiles} (" + KeyFileExtensions + ")|" + KeyFileExtensions + "|${res:SharpDevelop.FileFilter.AllFiles}|*.*").Event(this, EventArgs.Empty);
+		}
+		
+		void CreateKeyFile()
+		{
+			if (File.Exists(CreateKeyForm.StrongNameTool)) {
+				using (CreateKeyForm createKey = new CreateKeyForm(baseDirectory)) {
+					createKey.KeyFile = project.Name;
+					if (createKey.ShowDialog(WorkbenchSingleton.MainForm) == DialogResult.OK) {
+						keyFile.Text = createKey.KeyFile;
+						return;
+					}
+				}
+			} else {
+				MessageService.ShowMessage("${res:Dialog.ProjectOptions.Signing.SNnotFound}");
+			}
+			keyFile.Text = "";
+		}
 		
 		void UpdateEnabledStates(object sender, EventArgs e)
 		{
-			Get<Button>("changePassword").Enabled = false;
+			ControlDictionary["strongNameSignPanel"].Enabled = Get<CheckBox>("signAssembly").Checked;
 			
-			Get<ComboBox>("providerName").Enabled = Get<ComboBox>("container").Enabled = Get<RadioButton>("useKeyProvider").Checked;
-			Get<ComboBox>("keyFile").Enabled = Get<RadioButton>("useKeyFile").Checked;
-			Get<GroupBox>("signing").Enabled = Get<CheckBox>("signAssembly").Checked;
+			Get<Button>("changePassword").Enabled = false;
 		}
 		
 		public override bool StorePanelContents()
 		{
-			project.SignAssembly              = Get<CheckBox>("signAssembly").Checked;
-			project.DelaySign                 = Get<CheckBox>("delaySignOnly").Checked;
-			
-			project.AssemblyOriginatorKeyFile = Get<ComboBox>("keyFile").Text;
-			project.AssemblyKeyProviderName   = Get<ComboBox>("providerName").Text;
-			// TODO : Container ????
-			
-			if (Get<RadioButton>("useKeyFile").Checked) {
-				project.AssemblyOriginatorKeyMode = AssemblyOriginatorKeyMode.File;
-			} else if (Get<RadioButton>("useKeyProvider").Checked) {
-				project.AssemblyOriginatorKeyMode = AssemblyOriginatorKeyMode.Provider;
+			if (IsDirty && Get<CheckBox>("signAssembly").Checked) {
+				helper.SetProperty("AssemblyOriginatorKeyMode", "File");
 			}
-			project.Save();
-			
-			return true;
+			return base.StorePanelContents();
 		}
 	}
 }

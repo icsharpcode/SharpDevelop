@@ -187,7 +187,6 @@
     <Compile Include="Src\Gui\Dialogs\NewFileDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\ProjectOptionsDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\SharpDevelopAboutPanels.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -465,10 +464,8 @@
     <EmbeddedResource Include="Resources\CombineStartupPanel.xfrm" />
     <EmbeddedResource Include="Resources\CommonAboutDialog.xfrm" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\CompileFileProjectOptions.xfrm" />
     <EmbeddedResource Include="Resources\EditStandardHeaderPanel.xfrm" />
     <EmbeddedResource Include="Resources\EditTemplateDialog.xfrm" />
-    <EmbeddedResource Include="Resources\DeployFileOptions.xfrm" />
     <EmbeddedResource Include="Resources\ExternalToolOptions.xfrm" />
     <EmbeddedResource Include="Resources\FontSelectionPanel.xfrm" />
     <EmbeddedResource Include="Resources\NewFileWithNameDialog.xfrm" />
@@ -613,7 +610,7 @@
     <Compile Include="Src\Project\MSBuildEngine.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CodeCompletionBinding.cs" />
     <Compile Include="Src\Gui\Pads\DefinitionViewPad.cs" />
-    <Compile Include="Src\Project\AdvancedMSBuildProject.cs" />
+    <Compile Include="Src\Project\MSBuildEnums.cs" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\ApplicationSettings.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -686,6 +683,12 @@
     <Compile Include="Src\Services\Debugger\DebuggerDoozer.cs" />
     <Compile Include="Src\Dom\HelpProvider.cs" />
     <Compile Include="Src\Project\Solution\SolutionPreferences.cs" />
+    <Compile Include="Src\Project\ConfigurationGuiHelper.cs" />
+    <Compile Include="Src\Gui\ContentInterfaces\ICanBeDirty.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractProjectOptionPanel.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\CreateKey.cs" />
+    <EmbeddedResource Include="Resources\ProjectOptions\CreateKey.xfrm" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractBuildOptions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

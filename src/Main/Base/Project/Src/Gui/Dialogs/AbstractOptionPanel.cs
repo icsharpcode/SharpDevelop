@@ -92,6 +92,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return true;
 		}
 		
+		protected string baseDirectory;
+		
 		protected void ConnectBrowseButton(string browseButton, string target)
 		{
 			ConnectBrowseButton(browseButton, target, "${res:SharpDevelop.FileFilter.AllFiles}|*.*");
@@ -113,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected void ConnectBrowseFolder(string browseButton, string target)
 		{
-			 // TODO: Translation:
+			// TODO: Translation:
 			ConnectBrowseFolder(browseButton, target, "Select folder");
 		}
 		protected void ConnectBrowseFolder(string browseButton, string target, string description)
@@ -130,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ControlDictionary[browseButton].Click += new EventHandler(new BrowseFolderEvent(this, target, description).Event);
 		}
 		
-		class BrowseButtonEvent
+		protected class BrowseButtonEvent
 		{
 			AbstractOptionPanel panel;
 			string target;
@@ -150,7 +152,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 					fdiag.Multiselect = false;
 					
 					if(fdiag.ShowDialog() == DialogResult.OK) {
-						panel.ControlDictionary[target].Text = fdiag.FileName;
+						string file = fdiag.FileName;
+						if (panel.baseDirectory != null) {
+							file = FileUtility.GetRelativePath(panel.baseDirectory, file);
+						}
+						panel.ControlDictionary[target].Text = file;
 					}
 				}
 			}
@@ -171,9 +177,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			public void Event(object sender, EventArgs e)
 			{
-				FolderDialog fdiag = new  FolderDialog();
+				FolderDialog fdiag = new FolderDialog();
 				if (fdiag.DisplayDialog(description) == DialogResult.OK) {
-					panel.ControlDictionary[target].Text = fdiag.Path;
+					string path = fdiag.Path;
+					if (panel.baseDirectory != null) {
+						path = FileUtility.GetRelativePath(panel.baseDirectory, path);
+					}
+					if (!path.EndsWith("\\") && !path.EndsWith("/"))
+						path += "\\";
+					panel.ControlDictionary[target].Text = path;
 				}
 			}
 		}

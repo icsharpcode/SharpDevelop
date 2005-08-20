@@ -33,7 +33,6 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\AdvancedBuildOptionsDialog.xfrm" />
     <EmbeddedResource Include="Resources\BuildOptions.xfrm" />
     <Compile Include="Src\CSharpAmbience.cs" />
     <Compile Include="Src\CSharpBindingExecutionManager.cs" />

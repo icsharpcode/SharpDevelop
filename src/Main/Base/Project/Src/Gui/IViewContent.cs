@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// IViewContent is the base interface for all editable data
 	/// inside SharpDevelop.
 	/// </summary>
-	public interface IViewContent : IBaseViewContent
+	public interface IViewContent : IBaseViewContent, ICanBeDirty
 	{
 		/// <summary>
 		/// A generic name for the file, when it does have no file name
@@ -71,15 +71,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </returns>
 		bool IsUntitled {
 			get;
-		}
-		
-		/// <summary>
-		/// If this property returns true the content has changed since
-		/// the last load/save operation.
-		/// </summary>
-		bool IsDirty {
-			get;
-			set;
 		}
 		
 		/// <summary>
@@ -122,12 +113,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// Is called each time the name for the content has changed.
 		/// </summary>
 		event EventHandler TitleNameChanged;
-		
-		/// <summary>
-		/// Is called when the content is changed after a save/load operation
-		/// and this signals that changes could be saved.
-		/// </summary>
-		event EventHandler DirtyChanged;
 		
 		event EventHandler     Saving;
 		event SaveEventHandler Saved;

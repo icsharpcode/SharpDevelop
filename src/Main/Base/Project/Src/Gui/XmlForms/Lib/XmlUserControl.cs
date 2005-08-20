@@ -15,7 +15,7 @@ using System.Reflection;
 using System.Windows.Forms;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.SharpDevelop.Gui.XmlForms 
+namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 {
 	/// <summary>
 	/// The basic xml generated user control.
@@ -53,17 +53,24 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 		{
 			return xmlLoader.Get<T>(name);
 		}
-//		
+//
 //		protected void SetupFromXml(string fileName)
 //		{
 //			if (fileName == null) {
 //				throw new System.ArgumentNullException("fileName");
 //			}
-//			
+//
 //			using (Stream stream = File.OpenRead(fileName)) {
 //				SetupFromXmlStream(stream);
 //			}
 //		}
+		
+		protected void SetupFromXmlResource(string resourceName)
+		{
+			Assembly caller = Assembly.GetCallingAssembly();
+			resourceName = "Resources." + resourceName;
+			SetupFromXmlStream(caller.GetManifestResourceStream(resourceName));
+		}
 		
 		protected void SetupFromXmlStream(Stream stream)
 		{

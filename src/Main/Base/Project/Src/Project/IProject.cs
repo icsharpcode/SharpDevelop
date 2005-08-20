@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.ComponentModel;
 using System.CodeDom.Compiler;
 using System.Collections.Generic;
 using ICSharpCode.Core;
@@ -13,9 +14,13 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.Project
 {
 	public enum OutputType {
-		Exe, 
-		WinExe, 
+		[Description("${res:Dialog.Options.PrjOptions.Configuration.CompileTarget.Exe}")]
+		Exe,
+		[Description("${res:Dialog.Options.PrjOptions.Configuration.CompileTarget.WinExe}")]
+		WinExe,
+		[Description("${res:Dialog.Options.PrjOptions.Configuration.CompileTarget.Library}")]
 		Library,
+		[Description("${res:Dialog.Options.PrjOptions.Configuration.CompileTarget.Module}")]
 		Module
 	};
 	
@@ -82,20 +87,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			set;
 		}
 		
-		PropertyGroup GetConfiguration(string configurationName);
-		PropertyGroup GetConfiguration(string configurationName, string platform);
-		
-		PropertyGroup GetUserConfiguration(string configurationName);
-		PropertyGroup GetUserConfiguration(string configurationName, string platform);
-		
-		
 		bool CanCompile(string fileName);
 		
 		void Save();
 		void Save(string fileName);
 		
 		/// <summary>
-		/// Returns true, if a specific file (given by it's name) 
+		/// Returns true, if a specific file (given by it's name)
 		/// is inside this project.
 		/// </summary>
 		bool IsFileInProject(string fileName);

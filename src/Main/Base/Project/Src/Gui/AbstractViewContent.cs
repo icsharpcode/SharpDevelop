@@ -61,6 +61,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		public override void Dispose()
+		{
+			foreach (ISecondaryViewContent svc in secondaryViewContents) {
+				svc.Dispose();
+			}
+			base.Dispose();
+		}
+		
 		public AbstractViewContent()
 		{
 		}

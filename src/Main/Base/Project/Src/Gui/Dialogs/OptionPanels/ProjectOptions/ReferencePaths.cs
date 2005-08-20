@@ -17,12 +17,12 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 {
 	public class ReferencePaths : AbstractOptionPanel
 	{
-		AdvancedMSBuildProject project;
+		MSBuildProject project;
 		
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.ProjectOptions.ReferencePaths.xfrm"));
-			this.project = (AdvancedMSBuildProject)((Properties)CustomizationObject).Get("Project");
+			SetupFromXmlResource("ProjectOptions.ReferencePaths.xfrm");
+			this.project = (MSBuildProject)((Properties)CustomizationObject).Get("Project");
 		}
 		
 		public override bool StorePanelContents()

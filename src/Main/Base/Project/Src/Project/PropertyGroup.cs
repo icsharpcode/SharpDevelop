@@ -18,6 +18,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// </summary>
 	public class PropertyGroup
 	{
+		// TODO: Isn't MSBuild case-insensitive ???
 		Dictionary<string, bool>   isGuardedProperty   = new Dictionary<string, bool>();
 		Dictionary<string, string> properties          = new Dictionary<string, string>();
 		
@@ -30,14 +31,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public T Get<T>(string property, T defaultValue) 
+		public T Get<T>(string property, T defaultValue)
 		{
 			if (!properties.ContainsKey(property)) {
 				return defaultValue;
 			}
 			TypeConverter c = TypeDescriptor.GetConverter(typeof(T));
 			try {
-			return (T)c.ConvertFromInvariantString(properties[property]);
+				return (T)c.ConvertFromInvariantString(properties[property]);
 			} catch (FormatException ex) {
 				ICSharpCode.Core.LoggingService.Warn("Cannot get property " + property, ex);
 				return defaultValue;
@@ -46,7 +47,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void Set<T>(string property, T defaultValue, T value)
 		{
-			if (value == null || defaultValue.Equals(value)) {
+			if (value == null || value.Equals(defaultValue)) {
 				properties.Remove(property);
 				return;
 			}
@@ -66,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public bool IsSet(string property)
 		{
 			return properties.ContainsKey(property);
-		}	
+		}
 		
 		public bool Remove(string property)
 		{

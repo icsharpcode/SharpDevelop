@@ -253,25 +253,102 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
+		#region Start / Run
 		public override bool IsStartable {
 			get {
-				return OutputType == OutputType.Exe || OutputType == OutputType.WinExe;
+				switch (this.StartAction) {
+					case StartAction.Project:
+						return OutputType == OutputType.Exe || OutputType == OutputType.WinExe;
+					case StartAction.Program:
+						return this.StartProgram.Length > 0;
+					case StartAction.StartURL:
+						return this.StartUrl.Length > 0;
+				}
+				return false;
 			}
 		}
 		
-		public override void Start(bool withDebugging)
+		void Start(string program, bool withDebugging)
 		{
 			ProcessStartInfo psi = new ProcessStartInfo();
-			psi.FileName = OutputAssemblyFullPath;
-			psi.WorkingDirectory = Path.GetDirectoryName(OutputAssemblyFullPath);
-			psi.Arguments = "";
-
+			psi.FileName = Path.Combine(Directory, program);
+			string workingDir = this.StartWorkingDirectory;
+			if (workingDir.Length == 0) {
+				psi.WorkingDirectory = Path.GetDirectoryName(psi.FileName);
+			} else {
+				psi.WorkingDirectory = Path.Combine(Directory, workingDir);
+			}
+			psi.Arguments = this.StartArguments;
+			
 			if (withDebugging) {
 				DebuggerService.CurrentDebugger.Start(psi);
 			} else {
 				DebuggerService.CurrentDebugger.StartWithoutDebugging(psi);
 			}
 		}
+		
+		public override void Start(bool withDebugging)
+		{
+			switch (this.StartAction) {
+				case StartAction.Project:
+					Start(this.OutputAssemblyFullPath, withDebugging);
+					break;
+				case StartAction.Program:
+					Start(this.StartProgram, withDebugging);
+					break;
+				case StartAction.StartURL:
+					FileService.OpenFile("browser://" + this.StartUrl);
+					break;
+				default:
+					throw new System.ComponentModel.InvalidEnumArgumentException("StartAction", (int)this.StartAction, typeof(StartAction));
+			}
+		}
+		
+		public string StartProgram {
+			get {
+				return GetProperty("StartProgram");
+			}
+			set {
+				SetProperty("StartProgram", value);
+			}
+		}
+		
+		public string StartUrl {
+			get {
+				return GetProperty("StartURL");
+			}
+			set {
+				SetProperty("StartURL", value);
+			}
+		}
+		
+		public StartAction StartAction {
+			get {
+				return GetProperty("StartAction", StartAction.Project);
+			}
+			set {
+				SetProperty("StartAction", value);
+			}
+		}
+		
+		public string StartArguments {
+			get {
+				return GetProperty("StartArguments");
+			}
+			set {
+				SetProperty("StartArguments", value);
+			}
+		}
+		
+		public string StartWorkingDirectory {
+			get {
+				return GetProperty("StartWorkingDirectory");
+			}
+			set {
+				SetProperty("StartWorkingDirectory", value);
+			}
+		}
+		#endregion
 		
 //		static void BeforeBuild()
 //		{

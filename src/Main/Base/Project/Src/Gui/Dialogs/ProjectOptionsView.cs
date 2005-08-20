@@ -30,16 +30,24 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			}
 		}
 		
+		public override string FileName {
+			get {
+				return project.FileName;
+			}
+			set {
+				throw new NotSupportedException();
+			}
+		}
+		
 		public override Control Control {
 			get {
 				return tabControl;
 			}
 		}
 		
-		public ProjectOptionsView(AddInTreeNode node, IProject project) : base("a", "a")
+		public ProjectOptionsView(AddInTreeNode node, IProject project)
 		{
 			this.project    = project;
-			base.IsViewOnly = true;
 			
 //			tabControl.Alignment = TabAlignment.Left;
 			
@@ -76,6 +84,10 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				if (descriptor != null && descriptor.DialogPanel != null && descriptor.DialogPanel.Control != null) { // may be null, if it is only a "path"
 					descriptor.DialogPanel.CustomizationObject = newProperties;
 					descriptor.DialogPanel.ReceiveDialogMessage(DialogMessage.Activated);
+					ICanBeDirty dirtyable = descriptor.DialogPanel as ICanBeDirty;
+					if (dirtyable != null) {
+						dirtyable.DirtyChanged += PanelDirtyChanged;
+					}
 					
 					TabPage page = new TabPage(descriptor.Label);
 					page.Controls.Add(descriptor.DialogPanel.Control);
@@ -88,12 +100,26 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			}
 		}
 		
+		void PanelDirtyChanged(object sender, EventArgs e)
+		{
+			bool dirty = false;
+			foreach (IDialogPanelDescriptor descriptor in descriptors) {
+				if (descriptor != null) { // may be null, if it is only a "path"
+					ICanBeDirty dirtyable = descriptor.DialogPanel as ICanBeDirty;
+					if (dirtyable != null) {
+						dirty |= dirtyable.IsDirty;
+					}
+				}
+			}
+			this.IsDirty = dirty;
+		}
+		
 		public override void Save(string fileName)
 		{
 			foreach (IDialogPanelDescriptor pane in descriptors) {
 				pane.DialogPanel.ReceiveDialogMessage(DialogMessage.OK);
 			}
-			ProjectService.SaveSolution();
+			project.Save();
 		}
 	}
 }

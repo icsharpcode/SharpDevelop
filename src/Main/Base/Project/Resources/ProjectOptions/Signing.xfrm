@@ -1,104 +1,95 @@
-<?xml version="1.0" encoding="utf-8"?>
 <Components version="1.0">
   <System.Windows.Forms.UserControl>
     <Name value="XmlUserControl1" />
     <ClientSize value="{Width=392, Height=312}" />
     <Controls>
       <System.Windows.Forms.GroupBox>
+        <Name value="clickOnceGroupBox" />
+        <Location value="{X=3,Y=156}" />
+        <Text value="ClickOnce signing" />
+        <Size value="{Width=368, Height=48}" />
+        <TabIndex value="2" />
+        <Anchor value="Top, Left, Right" />
+        <Controls>
+          <System.Windows.Forms.Label>
+            <Name value="label2" />
+            <Location value="{X=8,Y=17}" />
+            <Text value="ClickOnce signing is currently not supported." />
+            <Size value="{Width=352, Height=23}" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.Label>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+      <System.Windows.Forms.GroupBox>
         <Name value="signingGroupBox" />
-        <Location value="{X=8,Y=28}" />
-        <Text value="Key Selection" />
-        <Size value="{Width=368, Height=196}" />
+        <Location value="{X=3,Y=3}" />
+        <Text value="Strong name signing" />
+        <Size value="{Width=368, Height=147}" />
         <TabIndex value="1" />
         <Anchor value="Top, Left, Right" />
         <Controls>
+          <System.Windows.Forms.Panel>
+            <Name value="strongNameSignPanel" />
+            <Location value="{X=7,Y=41}" />
+            <Size value="{Width=353, Height=100}" />
+            <Anchor value="Top, Bottom, Left, Right" />
+            <TabIndex value="1" />
+            <Controls>
+              <System.Windows.Forms.Label>
+                <Name value="label1" />
+                <Location value="{X=0,Y=77}" />
+                <Text value="When delay signed, the project will not run or be debuggable." />
+                <Size value="{Width=354, Height=23}" />
+                <TabIndex value="10" />
+                <Anchor value="Top, Left, Right" />
+              </System.Windows.Forms.Label>
+              <System.Windows.Forms.CheckBox>
+                <Name value="delaySignOnlyCheckBox" />
+                <Location value="{X=0,Y=50}" />
+                <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+                <Text value="Dela&amp;y Sign only" />
+                <TabIndex value="8" />
+                <Size value="{Width=354, Height=24}" />
+                <Anchor value="Top, Left, Right" />
+              </System.Windows.Forms.CheckBox>
+              <System.Windows.Forms.ComboBox>
+                <Name value="keyFileComboBox" />
+                <TabIndex value="1" />
+                <Anchor value="Top, Left, Right" />
+                <Size value="{Width=198, Height=21}" />
+                <FormattingEnabled value="True" />
+                <Location value="{X=0,Y=23}" />
+              </System.Windows.Forms.ComboBox>
+              <System.Windows.Forms.Label>
+                <Name value="label3" />
+                <Location value="{X=0,Y=1}" />
+                <Text value="Choose a strong name key file:" />
+                <Size value="{Width=354, Height=19}" />
+                <TabIndex value="9" />
+                <Anchor value="Top, Left, Right" />
+              </System.Windows.Forms.Label>
+              <System.Windows.Forms.Button>
+                <Name value="changePasswordButton" />
+                <Location value="{X=204,Y=22}" />
+                <Text value="Change Pass&amp;word..." />
+                <Size value="{Width=150, Height=22}" />
+                <Anchor value="Top, Right" />
+                <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+                <TabIndex value="2" />
+              </System.Windows.Forms.Button>
+            </Controls>
+          </System.Windows.Forms.Panel>
           <System.Windows.Forms.CheckBox>
-            <Name value="delaySignOnlyCheckBox" />
-            <Location value="{X=4,Y=169}" />
+            <Name value="signAssemblyCheckBox" />
+            <Location value="{X=8,Y=20}" />
             <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <Text value="Dela&amp;y Sign only" />
-            <TabIndex value="8" />
-            <Size value="{Width=356, Height=24}" />
+            <Text value="Sign the &amp;assembly" />
+            <TabIndex value="0" />
+            <Size value="{Width=352, Height=24}" />
             <Anchor value="Top, Left, Right" />
           </System.Windows.Forms.CheckBox>
-          <System.Windows.Forms.ComboBox>
-            <Name value="containerComboBox" />
-            <TabIndex value="7" />
-            <Anchor value="Top, Left, Right" />
-            <Size value="{Width=252, Height=21}" />
-            <FormattingEnabled value="True" />
-            <Location value="{X=108,Y=133}" />
-          </System.Windows.Forms.ComboBox>
-          <System.Windows.Forms.Label>
-            <Name value="label2" />
-            <Location value="{X=8,Y=128}" />
-            <Text value="&amp;Container:" />
-            <TextAlign value="MiddleRight" />
-            <Size value="{Width=100, Height=23}" />
-            <TabIndex value="6" />
-          </System.Windows.Forms.Label>
-          <System.Windows.Forms.ComboBox>
-            <Name value="providerNameComboBox" />
-            <TabIndex value="5" />
-            <Anchor value="Top, Left, Right" />
-            <Size value="{Width=252, Height=21}" />
-            <FormattingEnabled value="True" />
-            <Location value="{X=108,Y=105}" />
-          </System.Windows.Forms.ComboBox>
-          <System.Windows.Forms.Label>
-            <Name value="label1" />
-            <Location value="{X=8,Y=100}" />
-            <Text value="Provider &amp;name:" />
-            <TextAlign value="MiddleRight" />
-            <Size value="{Width=100, Height=23}" />
-            <TabIndex value="4" />
-          </System.Windows.Forms.Label>
-          <System.Windows.Forms.RadioButton>
-            <Name value="useKeyProviderRadioButton" />
-            <Location value="{X=4,Y=77}" />
-            <Text value="Use this key &amp;provider:" />
-            <Size value="{Width=356, Height=24}" />
-            <Anchor value="Top, Left, Right" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <TabIndex value="3" />
-          </System.Windows.Forms.RadioButton>
-          <System.Windows.Forms.ComboBox>
-            <Name value="keyFileComboBox" />
-            <TabIndex value="1" />
-            <Anchor value="Top, Left, Right" />
-            <Size value="{Width=184, Height=21}" />
-            <FormattingEnabled value="True" />
-            <Location value="{X=20,Y=49}" />
-          </System.Windows.Forms.ComboBox>
-          <System.Windows.Forms.Button>
-            <Name value="changePasswordButton" />
-            <Location value="{X=212,Y=49}" />
-            <Text value="Change Pass&amp;word..." />
-            <Size value="{Width=148, Height=21}" />
-            <Anchor value="Top, Right" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <TabIndex value="2" />
-          </System.Windows.Forms.Button>
-          <System.Windows.Forms.RadioButton>
-            <Name value="useKeyFileRadioButton" />
-            <Location value="{X=4,Y=25}" />
-            <Text value="Use a key &amp;file:" />
-            <Size value="{Width=356, Height=24}" />
-            <Anchor value="Top, Left, Right" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <TabIndex value="0" />
-          </System.Windows.Forms.RadioButton>
         </Controls>
       </System.Windows.Forms.GroupBox>
-      <System.Windows.Forms.CheckBox>
-        <Name value="signAssemblyCheckBox" />
-        <Location value="{X=8,Y=4}" />
-        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-        <Text value="Sign the &amp;assembly" />
-        <TabIndex value="0" />
-        <Size value="{Width=376, Height=24}" />
-        <Anchor value="Top, Left, Right" />
-      </System.Windows.Forms.CheckBox>
     </Controls>
   </System.Windows.Forms.UserControl>
 </Components>

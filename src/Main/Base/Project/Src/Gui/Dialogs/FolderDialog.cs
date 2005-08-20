@@ -26,24 +26,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public FolderDialog()
-		{
-		}
-		
-		public DialogResult DisplayDialog()
-		{
-			return DisplayDialog("Select the directory in which the project will be created.");
-		}
-		
 		// Alain VIZZINI reminded me to try out the .NET folder browser, because
 		// the my documents bug seemed to have gone away ...
 		public DialogResult DisplayDialog(string description)
 		{
 			using (FolderBrowser folderBrowser = new FolderBrowser()) {
-				
 				folderBrowser.Description = StringParser.Parse(description);
 				DialogResult result = folderBrowser.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
 				path = folderBrowser.DirectoryPath;
+				LoggingService.Info("FolderDialog: user has choosen path " + path);
+				if (path == null || path.Length == 0)
+					return DialogResult.Cancel;
 				return result;
 			}
 		}
