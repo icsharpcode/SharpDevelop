@@ -33,7 +33,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				       !variable.Name.StartsWith("CS$");
 			}
 		}
-
+		
+		protected VariableItem()
+		{
+			
+		}
+		
 		public VariableItem(Variable variable): base()
 		{
 			this.variable = variable;
@@ -62,17 +67,17 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			} else {
 				ImageIndex = 1; // Field
 			}
-
-			if (variable.MayHaveSubVariables && !IsExpanded) {
-				Items.Add(new PlaceHolderItem()); // Show plus icon
-			}
-
+			
 			if (IsExpanded) {
 				UpdateSubVariables();
+			} else {
+				if (variable.MayHaveSubVariables) {
+					Items.Add(new PlaceHolderItem()); // Show plus icon
+				}
 			}
 		}
 
-		void UpdateSubVariables() {
+		protected void UpdateSubVariables() {
 			if (!baseClassItemAdded) {
 				VariableListItem baseClassItem = new BaseClassItem(variable);
 				if (baseClassItem.IsValid) {

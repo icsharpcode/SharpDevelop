@@ -156,7 +156,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				}
 
 				VariableItem variableItem = item as VariableItem;
-				if (variableItem != null && !variables.Contains(variableItem.Variable.Name)) {
+				if (variableItem != null && !(item is BaseClassItem) && !variables.Contains(variableItem.Variable.Name)) {
 					toBeRemoved.Add(item);
 				}
 			}

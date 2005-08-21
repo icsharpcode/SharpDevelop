@@ -12,21 +12,16 @@ using DebuggerLibrary;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
-	class BaseClassItem: VariableListItem
+	class BaseClassItem: VariableItem
 	{
-		ObjectVariable variable;
-
-		public override bool IsValid {
-			get {
-				return variable != null &&
-				       variable.HasBaseClass &&
-				       variable.BaseClass.Type != "System.Object";
-			}
-		}
-
-		public BaseClassItem(Variable baseClassOfVariable): base()
+		public BaseClassItem(Variable uncastedVariable)
 		{
-			this.variable = baseClassOfVariable as ObjectVariable;
+			ObjectVariable variable = uncastedVariable as ObjectVariable;
+			if (variable != null && variable.HasBaseClass && variable.BaseClass.Type != "System.Object") {
+				this.Variable = variable.BaseClass;
+			} else {
+				this.Variable = null;
+			}
 			Refresh();
 		}
 
@@ -35,15 +30,19 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (!IsValid) {
 				return;
 			}
-
+			
 			SetTexts("<Base class>",
-			         variable.BaseClass.Value.ToString(),
-			         variable.BaseClass.Type);
-
+			         Variable.Value.ToString(),
+			         Variable.Type);
+			
 			ImageIndex = 0; // Class
-
-			if (variable.BaseClass.MayHaveSubVariables) { // Always true
-				Items.Add(new PlaceHolderItem()); // Show plus icon
+			
+			if (IsExpanded) {
+				UpdateSubVariables();
+			} else {
+				if (Variable.MayHaveSubVariables) { // Always true
+					Items.Add(new PlaceHolderItem()); // Show plus icon
+				}
 			}
 		}
 	}

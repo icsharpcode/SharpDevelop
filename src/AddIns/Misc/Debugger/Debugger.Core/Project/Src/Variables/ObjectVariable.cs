@@ -101,7 +101,13 @@ namespace DebuggerLibrary
 
 		public bool HasBaseClass {
 			get {
-				if (baseClass == null) baseClass = GetBaseClass();
+				if (baseClass == null) {
+					try {
+						baseClass = GetBaseClass();
+					} catch (DebuggerException) {
+						baseClass = null;
+					}
+				}
 				return (baseClass != null);
 			}
 		}
@@ -129,12 +135,11 @@ namespace DebuggerLibrary
 					corModuleSuperclass = m.CorModule;
 					break; 
 				}
-				if (classProps.SuperClassToken == 0) throw new DebuggerException("Unable to get base class: " + fullTypeName);
 			}
 
 			// If it has no base class
 			if ((classProps.SuperClassToken & 0x00FFFFFF) == 0)	{
-				return null;
+				throw new DebuggerException("Unable to get base class: " + fullTypeName);
 			} else {
 				ICorDebugClass superClass;
 				corModuleSuperclass.GetClassFromToken(classProps.SuperClassToken, out superClass);
