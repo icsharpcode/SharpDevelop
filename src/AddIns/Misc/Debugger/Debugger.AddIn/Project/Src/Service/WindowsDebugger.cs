@@ -197,20 +197,23 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			if (debugger == null || debugger.IsRunning) return null;
 			VariableCollection collection = debugger.LocalVariables;
-			if (collection == null)
+			if (collection == null) {
 				return null;
-			foreach (Variable v in collection) {
-				if (v.Name == variableName) {
-					object val = v.Value;
-					if (val == null)
-						return "<null>";
-					else if (val is string)
-						return "\"" + val.ToString() + "\"";
-					else
-						return val.ToString();
-				}
 			}
-			return null;
+			
+			object val;
+			try {
+				val = collection[variableName].Value;
+			} catch (DebuggerException) {
+				return null;
+			}
+			if (val == null) {
+				return "<null>";
+			} else if (val is string) {
+				return "\"" + val.ToString() + "\"";
+			} else {
+				return val.ToString();
+			}
 		}
 
 		public void Dispose() 

@@ -68,9 +68,16 @@ namespace DebuggerLibrary
 
 		public Variable this[string variableName] {
 			get {
-				foreach (Variable v in InnerList) {
-					if (v.Name == variableName) {
-						return v;
+				int index = variableName.IndexOf('.');
+				if (index != -1) {
+					string rootVariable = variableName.Substring(0, index);
+					string subVariable = variableName.Substring(index + 1);
+					return this[rootVariable].SubVariables[subVariable];
+				} else {
+					foreach (Variable v in InnerList) {
+						if (v.Name == variableName) {
+							return v;
+						}
 					}
 				}
 
