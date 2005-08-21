@@ -32,9 +32,11 @@ namespace ICSharpCode.SharpDevelop.Services
 	public class WindowsDebugger:IDebugger
 	{
 		bool useRemotingForThreadInterop = false;
-
+		
 		NDebugger debugger;
-
+		
+		Properties properties;
+		
 		bool isDebuggingCache = false;
 		bool isProcessRunningCache = false;
 		bool serviceInitialized = false;
@@ -55,7 +57,13 @@ namespace ICSharpCode.SharpDevelop.Services
 				return debugger;
 			}
 		}
-
+		
+		public Properties Properties {
+			get {
+				return properties;
+			}
+		}
+		
 		public bool ServiceInitialized {
 			get {
 				return serviceInitialized;
@@ -70,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		public WindowsDebugger()
 		{
-
+			properties = PropertyService.Get("DebuggerProperties", new Properties());
 		}
 
 		#region IDebugger Members

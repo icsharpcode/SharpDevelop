@@ -10,6 +10,7 @@ using System.Windows.Forms;
 using System.Drawing;
 using System.CodeDom.Compiler;
 using System.Collections;
+using System.ComponentModel;
 using System.IO;
 using System.Diagnostics;
 using ICSharpCode.Core;
@@ -53,6 +54,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			callStackList.GridLines  = false;
 			callStackList.Activation = ItemActivation.OneClick;
 			callStackList.Columns.AddRange(new ColumnHeader[] {name, language} );
+			callStackList.ContextMenuStrip = CreateContextMenuStrip();
 			callStackList.ItemActivate += new EventHandler(CallStackListItemActivate);
 			name.Width = 300;
 			language.Width = 400;
@@ -84,6 +86,42 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			language.Text    = "Language";
 		}
 		
+		public bool ShowExternalMethods {
+			get {
+				return debugger.Properties.Get("ShowExternalMethods", false);
+			}
+			set {
+				debugger.Properties.Set("ShowExternalMethods", value);
+			}
+		}
+		
+		ContextMenuStrip CreateContextMenuStrip()
+		{
+			ContextMenuStrip menu = new ContextMenuStrip();			
+			menu.Opening += FillContextMenuStrip;
+			return menu;
+		}
+		
+		void FillContextMenuStrip(object sender, CancelEventArgs e)
+		{
+			ContextMenuStrip menu = sender as ContextMenuStrip;
+			menu.Items.Clear();
+			
+			ToolStripMenuItem extMethodsItem;
+			extMethodsItem = new ToolStripMenuItem();
+			extMethodsItem.Text = "Show external methods";
+			extMethodsItem.Checked = ShowExternalMethods;	
+			extMethodsItem.Click +=
+				delegate {
+					ShowExternalMethods = !ShowExternalMethods;
+					RefreshList();
+				};
+			
+			menu.Items.Add(extMethodsItem);
+			
+			e.Cancel = false;
+		}
+		
 		void CallStackListItemActivate(object sender, EventArgs e)
 		{
 			if (debuggerCore.IsPaused) {
@@ -112,11 +150,27 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 		public void RefreshList()
 		{
+			bool showExternalMethods = ShowExternalMethods;
+			bool lastItemIsExternalMethod = false;
+			
 			callStackList.BeginUpdate();
 			callStackList.Items.Clear();
-			if (debuggerCore.CurrentThread != null) {
+			if (debuggerCore != null && debuggerCore.CurrentThread != null) {
 				foreach (Function f in debuggerCore.CurrentThread.Callstack) {
-					ListViewItem item = new ListViewItem(new string[] { f.Name, "" });
+					ListViewItem item;
+					if (f.HasSymbols || showExternalMethods) {
+						// Show the method in the list
+						item = new ListViewItem(new string[] { f.Name, "" });
+						lastItemIsExternalMethod = false;
+					} else {
+						// Show [External methods] in the list
+						if (lastItemIsExternalMethod) {
+							continue;
+						} else {
+							item = new ListViewItem(new string[] { "[External methods]", "" });
+							lastItemIsExternalMethod = true;
+						}
+					}
 					item.Tag = f;
 					item.ForeColor = f.HasSymbols ? Color.Black : Color.Gray;
 					callStackList.Items.Add(item);
