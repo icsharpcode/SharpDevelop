@@ -67,6 +67,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.SizeChanged += new EventHandler(localVarList_SizeChanged);
 			localVarList.BeforeExpand += new TreeListViewCancelEventHandler(localVarList_BeforeExpand);
 			
+			debugger.DebugStopped += OnDebugStopped;
+			
 			RedrawContent();
 
 			if (debugger.ServiceInitialized) {
@@ -98,6 +100,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			name.Text = "Name";
 			val.Text  = "Value";
 			type.Text = "Type";
+		}
+		
+		void OnDebugStopped(object sender, EventArgs e)
+		{
+			localVarList.Items.Clear();
 		}
 
 		private void debuggerService_OnDebuggingPaused(object sender, DebuggingPausedEventArgs e)
