@@ -56,8 +56,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			callStackList.Columns.AddRange(new ColumnHeader[] {name, language} );
 			callStackList.ContextMenuStrip = CreateContextMenuStrip();
 			callStackList.ItemActivate += new EventHandler(CallStackListItemActivate);
-			name.Width = 300;
-			language.Width = 400;
+			name.Width = 500;
+			language.Width = 50;
 
 			RedrawContent();
 
@@ -86,6 +86,24 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			language.Text    = "Language";
 		}
 		
+		public bool ShowArgumentNames {
+			get {
+				return debugger.Properties.Get("ShowArgumentNames", true);
+			}
+			set {
+				debugger.Properties.Set("ShowArgumentNames", value);
+			}
+		}
+		
+		public bool ShowArgumentValues {
+			get {
+				return debugger.Properties.Get("ShowArgumentValues", true);
+			}
+			set {
+				debugger.Properties.Set("ShowArgumentValues", value);
+			}
+		}
+		
 		public bool ShowExternalMethods {
 			get {
 				return debugger.Properties.Get("ShowExternalMethods", false);
@@ -107,6 +125,26 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			ContextMenuStrip menu = sender as ContextMenuStrip;
 			menu.Items.Clear();
 			
+			ToolStripMenuItem argNamesItem;
+			argNamesItem = new ToolStripMenuItem();
+			argNamesItem.Text = "Show argument names";
+			argNamesItem.Checked = ShowArgumentNames;	
+			argNamesItem.Click +=
+				delegate {
+					ShowArgumentNames = !ShowArgumentNames;
+					RefreshList();
+				};
+			
+			ToolStripMenuItem argValuesItem;
+			argValuesItem = new ToolStripMenuItem();
+			argValuesItem.Text = "Show argument values";
+			argValuesItem.Checked = ShowArgumentValues;	
+			argValuesItem.Click +=
+				delegate {
+					ShowArgumentValues = !ShowArgumentValues;
+					RefreshList();
+				};
+			
 			ToolStripMenuItem extMethodsItem;
 			extMethodsItem = new ToolStripMenuItem();
 			extMethodsItem.Text = "Show external methods";
@@ -117,7 +155,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					RefreshList();
 				};
 			
-			menu.Items.Add(extMethodsItem);
+			menu.Items.AddRange(new ToolStripItem[] {
+			                    	argNamesItem,
+			                    	argValuesItem,
+			                    	extMethodsItem
+			                    });
 			
 			e.Cancel = false;
 		}
@@ -150,6 +192,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 		public void RefreshList()
 		{
+			bool showArgumentNames = ShowArgumentNames;
+			bool showArgumentValues = ShowArgumentValues;
 			bool showExternalMethods = ShowExternalMethods;
 			bool lastItemIsExternalMethod = false;
 			
@@ -160,7 +204,33 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					ListViewItem item;
 					if (f.HasSymbols || showExternalMethods) {
 						// Show the method in the list
-						item = new ListViewItem(new string[] { f.Name, "" });
+						string name = f.Name;
+						if (showArgumentNames || showArgumentValues) {
+							name += "(";
+							for (int i = 0; i < f.ArgumentCount; i++) {
+								if (showArgumentNames) {
+									name += f.GetParameterName(i);
+								}
+								if (showArgumentValues) {
+									try {
+										string argValue = f.GetArgumentVariable(i).Value.ToString();
+										if (showArgumentNames) {
+											name += "=";
+										}
+										name += argValue;
+									} catch {
+										if (!showArgumentNames) {
+											name += "n/a";
+										}
+									}
+								}
+								if (i < f.ArgumentCount - 1) {
+									name += ", ";
+								}
+							}
+							name += ")";
+						}
+						item = new ListViewItem(new string[] { name, "" });
 						lastItemIsExternalMethod = false;
 					} else {
 						// Show [External methods] in the list
