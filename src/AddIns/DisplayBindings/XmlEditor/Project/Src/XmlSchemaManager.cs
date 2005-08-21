@@ -148,7 +148,8 @@ namespace ICSharpCode.XmlEditor
 		void ReadSchema(string fileName, bool readOnly)
 		{
 			try {
-				XmlSchemaCompletionData data = new XmlSchemaCompletionData(fileName);
+				string baseUri = XmlSchemaCompletionData.GetUri(fileName);
+				XmlSchemaCompletionData data = new XmlSchemaCompletionData(baseUri, fileName);
 				if (data.NamespaceUri != null) {
 					if (schemas[data.NamespaceUri] == null) {
 						data.ReadOnly = readOnly;

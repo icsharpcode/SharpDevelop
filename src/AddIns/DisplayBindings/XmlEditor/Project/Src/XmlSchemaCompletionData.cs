@@ -47,7 +47,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public XmlSchemaCompletionData(TextReader reader)
 		{
-			ReadSchema(reader);
+			ReadSchema(String.Empty, reader);
 		}
 		
 		/// <summary>
@@ -63,10 +63,18 @@ namespace ICSharpCode.XmlEditor
 		/// <summary>
 		/// Creates the completion data from the specified schema file.
 		/// </summary>
-		public XmlSchemaCompletionData(string fileName)
+		public XmlSchemaCompletionData(string fileName) : this(String.Empty, fileName)
+		{
+		}
+		
+		/// <summary>
+		/// Creates the completion data from the specified schema file and uses
+		/// the specified baseUri to resolve any referenced schemas.
+		/// </summary>
+		public XmlSchemaCompletionData(string baseUri, string fileName)
 		{
 			StreamReader reader = new StreamReader(fileName, true);
-			ReadSchema(reader);
+			ReadSchema(baseUri, reader);
 			this.fileName = fileName;
 		}
 		
@@ -115,6 +123,22 @@ namespace ICSharpCode.XmlEditor
 		}
 
 		/// <summary>
+		/// Converts the filename into a valid Uri.
+		/// </summary>
+		public static string GetUri(string fileName)
+		{
+			string uri = String.Empty;
+			
+			if (fileName != null) {
+				if (fileName.Length > 0) {
+					uri = String.Concat("file:///", fileName.Replace('\\', '/'));
+				}
+			}
+			
+			return uri;
+		}
+
+		/// <summary>
 		/// Gets the possible root elements for an xml document using this schema.
 		/// </summary>
 		public ICompletionData[] GetElementCompletionData()
@@ -128,6 +152,7 @@ namespace ICSharpCode.XmlEditor
 		public ICompletionData[] GetElementCompletionData(string namespacePrefix)
 		{
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
+
 			foreach (XmlSchemaElement element in schema.Elements.Values) {
 				if (element.Name != null) {
 					AddElement(data, element.Name, namespacePrefix, element.Annotation);
@@ -222,9 +247,9 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
-		void ReadSchema(TextReader reader)
+		void ReadSchema(string baseUri, TextReader reader)
 		{
-			XmlTextReader xmlReader = new XmlTextReader(reader);
+			XmlTextReader xmlReader = new XmlTextReader(baseUri, reader);
 			
 			// Setting the resolver to null allows us to
 			// load the xhtml1-strict.xsd without any exceptions if
@@ -233,7 +258,7 @@ namespace ICSharpCode.XmlEditor
 			// for in the assembly's folder.
 			xmlReader.XmlResolver = null;
 			ReadSchema(xmlReader);
-		}		
+		}					
 		
 		/// <summary>
 		/// Finds an element in the schema.
@@ -329,7 +354,11 @@ namespace ICSharpCode.XmlEditor
 						name = childElement.RefName.Name;
 						XmlSchemaElement element = FindElement(childElement.RefName);
 						if (element != null) {
-							AddElement(data, name, prefix, element.Annotation);
+							if (element.IsAbstract) {
+								AddSubstitionGroupElements(data, element.QualifiedName, prefix);
+							} else {
+								AddElement(data, name, prefix, element.Annotation);
+							}
 						} else {
 							AddElement(data, name, prefix, childElement.Annotation);						
 						}
@@ -369,7 +398,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 			
-			XmlSchemaComplexType complexType = FindNamedType(extension.BaseTypeName);
+			XmlSchemaComplexType complexType = FindNamedType(schema, extension.BaseTypeName);
 			if (complexType != null) {
 				data = GetChildElementCompletionData(complexType, prefix);
 			}
@@ -550,7 +579,7 @@ namespace ICSharpCode.XmlEditor
 									
 			data.AddRange(GetAttributeCompletionData(restriction.Attributes));
 			
-			XmlSchemaComplexType baseComplexType = FindNamedType(restriction.BaseTypeName);
+			XmlSchemaComplexType baseComplexType = FindNamedType(schema, restriction.BaseTypeName);
 			if (baseComplexType != null) {
 				data.AddRange(GetAttributeCompletionData(baseComplexType));
 			}
@@ -589,7 +618,7 @@ namespace ICSharpCode.XmlEditor
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
 									
 			data.AddRange(GetAttributeCompletionData(extension.Attributes));
-			XmlSchemaComplexType baseComplexType = FindNamedType(extension.BaseTypeName);
+			XmlSchemaComplexType baseComplexType = FindNamedType(schema, extension.BaseTypeName);
 			if (baseComplexType != null) {
 				data.AddRange(GetAttributeCompletionData(baseComplexType));
 			}
@@ -625,7 +654,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			XmlSchemaComplexType complexType = element.SchemaType as XmlSchemaComplexType;
 			if (complexType == null) {
-				complexType = FindNamedType(element.SchemaTypeName);
+				complexType = FindNamedType(schema, element.SchemaTypeName);
 			}
 			
 			return complexType;
@@ -700,7 +729,7 @@ namespace ICSharpCode.XmlEditor
 		XmlCompletionDataCollection GetAttributeCompletionData(XmlSchemaAttributeGroupRef groupRef)
 		{
 			XmlCompletionDataCollection data = new XmlCompletionDataCollection();
-			XmlSchemaAttributeGroup group = FindAttributeGroup(groupRef.RefName.Name);
+			XmlSchemaAttributeGroup group = FindAttributeGroup(schema, groupRef.RefName.Name);
 			if (group != null) {
 				data = GetAttributeCompletionData(group.Attributes);
 			}
@@ -708,7 +737,7 @@ namespace ICSharpCode.XmlEditor
 			return data;
 		}
 		
-		XmlSchemaComplexType FindNamedType(XmlQualifiedName name)
+		static XmlSchemaComplexType FindNamedType(XmlSchema schema, XmlQualifiedName name)
 		{
 			XmlSchemaComplexType matchedComplexType = null;
 			
@@ -722,10 +751,23 @@ namespace ICSharpCode.XmlEditor
 						}
 					}
 				}
+			
+				// Try included schemas.
+				if (matchedComplexType == null) {				
+					foreach (XmlSchemaExternal external in schema.Includes) {
+						XmlSchemaInclude include = external as XmlSchemaInclude;
+						if (include != null) {
+							if (include.Schema != null) {	
+								matchedComplexType = FindNamedType(include.Schema, name);
+							}
+						}
+					}
+				}
 			}
 			
 			return matchedComplexType;
 		}	
+	
 		
 		/// <summary>
 		/// Finds an element that matches the specified <paramref name="name"/>
@@ -778,7 +820,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			XmlSchemaElement matchedElement = null;
 			
-			XmlSchemaComplexType complexType = FindNamedType(extension.BaseTypeName);
+			XmlSchemaComplexType complexType = FindNamedType(schema, extension.BaseTypeName);
 			if (complexType != null) {
 				matchedElement = FindChildElement(complexType, name);
 							
@@ -837,6 +879,12 @@ namespace ICSharpCode.XmlEditor
 					} else if (element.RefName != null) {
 						if (name.Name == element.RefName.Name) {
 							matchedElement = FindElement(element.RefName);
+						} else {
+							// Abstract element?
+							XmlSchemaElement abstractElement = FindElement(element.RefName);
+							if (abstractElement.IsAbstract) {
+								matchedElement = FindSubstitutionGroupElement(abstractElement.QualifiedName, name);
+							}
 						}
 					}
 				} else if (sequence != null) {
@@ -875,7 +923,7 @@ namespace ICSharpCode.XmlEditor
 			return matchedElement;
 		}
 		
-		XmlSchemaAttributeGroup FindAttributeGroup(string name)
+		static XmlSchemaAttributeGroup FindAttributeGroup(XmlSchema schema, string name)
 		{
 			XmlSchemaAttributeGroup matchedGroup = null;
 			
@@ -887,6 +935,18 @@ namespace ICSharpCode.XmlEditor
 						if (group.Name == name) {
 							matchedGroup = group;
 							break;
+						}
+					}
+				}
+				
+				// Try included schemas.
+				if (matchedGroup == null) {				
+					foreach (XmlSchemaExternal external in schema.Includes) {
+						XmlSchemaInclude include = external as XmlSchemaInclude;
+						if (include != null) {
+							if (include.Schema != null) {
+								matchedGroup = FindAttributeGroup(include.Schema, name);
+							}
 						}
 					}
 				}
@@ -1077,7 +1137,7 @@ namespace ICSharpCode.XmlEditor
 			XmlSchemaAttribute matchedAttribute = null;
 			
 			if (groupRef.RefName != null) {
-				XmlSchemaAttributeGroup group = FindAttributeGroup(groupRef.RefName.Name);
+				XmlSchemaAttributeGroup group = FindAttributeGroup(schema, groupRef.RefName.Name);
 				if (group != null) {
 					matchedAttribute = FindAttribute(group.Attributes, name);
 				}
@@ -1114,7 +1174,7 @@ namespace ICSharpCode.XmlEditor
 			XmlSchemaAttribute matchedAttribute = FindAttribute(restriction.Attributes, name);
 			
 			if (matchedAttribute == null) {
-				XmlSchemaComplexType complexType = FindNamedType(restriction.BaseTypeName);
+				XmlSchemaComplexType complexType = FindNamedType(schema, restriction.BaseTypeName);
 				if (complexType != null) {
 					matchedAttribute = FindAttribute(complexType, name);
 				}
@@ -1166,6 +1226,39 @@ namespace ICSharpCode.XmlEditor
 			}
 			
 			return matchedSimpleType;
+		}
+
+		/// <summary>
+		/// Adds any elements that have the specified substitution group.
+		/// </summary>
+		void AddSubstitionGroupElements(XmlCompletionDataCollection data, XmlQualifiedName group, string prefix)
+		{
+			foreach (XmlSchemaElement element in schema.Elements.Values) {
+				if (element.SubstitutionGroup == group) {
+					AddElement(data, element.Name, prefix, element.Annotation);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Looks for the substitution group element of the specified name.
+		/// </summary>
+		XmlSchemaElement FindSubstitutionGroupElement(XmlQualifiedName group, QualifiedName name)
+		{
+			XmlSchemaElement matchedElement = null;
+			
+			foreach (XmlSchemaElement element in schema.Elements.Values) {
+				if (element.SubstitutionGroup == group) {
+					if (element.Name != null) {
+						if (element.Name == name.Name) {	
+							matchedElement = element;
+							break;
+						}
+					}
+				}
+			}
+			
+			return matchedElement;
 		}
 	}
 }
