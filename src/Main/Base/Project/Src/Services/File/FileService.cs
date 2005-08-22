@@ -83,6 +83,7 @@ namespace ICSharpCode.Core
 		
 		public static IWorkbenchWindow OpenFile(string fileName)
 		{
+			LoggingService.Info("Open file " + fileName);
 			// test, if file fileName exists
 			bool isURL = fileName.IndexOf("://") > 0;
 			if (!isURL) {

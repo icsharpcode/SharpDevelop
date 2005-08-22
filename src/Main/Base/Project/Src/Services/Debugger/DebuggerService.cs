@@ -217,7 +217,12 @@ namespace ICSharpCode.Core
 					}
 				}
 			}
-			document.BookmarkManager.AddMark(new BreakpointBookmark(fileName, document, lineNumber));
+			foreach (char ch in document.GetText(document.GetLineSegment(lineNumber))) {
+				if (!char.IsWhiteSpace(ch)) {
+					document.BookmarkManager.AddMark(new BreakpointBookmark(fileName, document, lineNumber));
+					break;
+				}
+			}
 		}
 		
 		static void WorkspaceCreated(object sender, EventArgs args)
