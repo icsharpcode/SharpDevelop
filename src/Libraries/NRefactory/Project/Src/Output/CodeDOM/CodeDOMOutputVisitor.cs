@@ -627,20 +627,22 @@ namespace ICSharpCode.NRefactory.Parser
 			} else if (target is FieldReferenceExpression) {
 				FieldReferenceExpression fRef = (FieldReferenceExpression)target;
 				targetExpr = (CodeExpression)fRef.TargetObject.AcceptVisitor(this, data);
-				if (fRef.TargetObject is FieldReferenceExpression) {
-					FieldReferenceExpression fRef2 = (FieldReferenceExpression)fRef.TargetObject;
-					if (fRef2.FieldName != null && Char.IsUpper(fRef2.FieldName[0])) {
-						// an exception is thrown if it doesn't end in an indentifier exception
-						// for example for : this.MyObject.MyMethod() leads to an exception, which
-						// is correct in this case ... I know this is really HACKY :)
-						try {
-							CodeExpression tExpr = ConvertToIdentifier(fRef2);
-							if (tExpr != null) {
-								targetExpr = tExpr;
-							}
-						} catch (Exception) {}
-					}
-				}
+//	 Commented out because of SD2-428: Form designer does not load child controls in panels
+//
+//				if (fRef.TargetObject is FieldReferenceExpression) {
+//					FieldReferenceExpression fRef2 = (FieldReferenceExpression)fRef.TargetObject;
+//					if (fRef2.FieldName != null && Char.IsUpper(fRef2.FieldName[0])) {
+//						// an exception is thrown if it doesn't end in an indentifier exception
+//						// for example for : this.MyObject.MyMethod() leads to an exception, which
+//						// is correct in this case ... I know this is really HACKY :)
+//						try {
+//							CodeExpression tExpr = ConvertToIdentifier(fRef2);
+//							if (tExpr != null) {
+//								targetExpr = tExpr;
+//							}
+//						} catch (Exception) {}
+//					}
+//				}
 				methodName = fRef.FieldName;
 				// HACK for : Microsoft.VisualBasic.ChrW(NUMBER)
 				if (methodName == "ChrW") {
