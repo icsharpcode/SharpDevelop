@@ -111,7 +111,7 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("StepComplete (" + reason.ToString() + ")", pThread);
 
-			if (callingThread.LastFunction.Module.SymbolsLoaded == false) {
+			if (!callingThread.LastFunction.HasSymbols) {
 				debugger.TraceMessage(" - leaving code without symbols");
 
 				ExitCallback_Continue();

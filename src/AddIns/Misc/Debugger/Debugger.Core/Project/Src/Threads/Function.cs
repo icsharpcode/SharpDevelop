@@ -47,7 +47,7 @@ namespace DebuggerLibrary
 		
 		public bool HasSymbols {
 			get {
-				return module.SymbolsLoaded;
+				return symMethod != null;
 			}
 		}
 
@@ -412,9 +412,10 @@ namespace DebuggerLibrary
 		public VariableCollection GetLocalVariables()
 		{
 			VariableCollection localVariables = new VariableCollection();
-			ISymbolScope symRootScope;
-			symRootScope = symMethod.RootScope;
-			AddScopeToVariableCollection(symRootScope, ref localVariables);
+			if (symMethod != null) {
+				ISymbolScope symRootScope = symMethod.RootScope;
+				AddScopeToVariableCollection(symRootScope, ref localVariables);
+			}
 			return localVariables;
 		}
 
