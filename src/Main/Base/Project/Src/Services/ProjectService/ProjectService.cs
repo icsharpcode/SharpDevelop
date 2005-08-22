@@ -187,8 +187,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
 		}
 		
+		static void BeforeLoadSolution()
+		{
+			if (openSolution != null) {
+				SaveSolutionPreferences();
+				CloseSolution();
+			}
+		}
+		
 		public static void LoadSolution(string fileName)
 		{
+			BeforeLoadSolution();
 			openSolution = Solution.Load(fileName);
 			if (openSolution == null)
 				return;
@@ -214,6 +223,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		public static void LoadProject(string fileName)
 		{
+			BeforeLoadSolution();
 			string solutionFile = Path.ChangeExtension(fileName, ".sln");
 			if (File.Exists(solutionFile)) {
 				LoadSolution(solutionFile);
@@ -339,6 +349,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void OnSolutionLoaded(SolutionEventArgs e)
 		{
+			ParserService.OnSolutionLoaded();
 			if (SolutionLoaded != null) {
 				SolutionLoaded(null, e);
 			}

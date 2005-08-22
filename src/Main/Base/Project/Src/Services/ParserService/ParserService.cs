@@ -68,7 +68,6 @@ namespace ICSharpCode.Core
 		{
 			parser = (ParserDescriptor[])AddInTree.BuildItems("/Workspace/Parser", null, false).ToArray(typeof(ParserDescriptor));
 			
-			ProjectService.SolutionLoaded += OpenCombine;
 			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
 		}
 		
@@ -86,7 +85,9 @@ namespace ICSharpCode.Core
 		static Thread loadSolutionProjectsThread;
 		static bool   abortLoadSolutionProjectsThread;
 		
-		static void OpenCombine(object sender, SolutionEventArgs e)
+		// do not use an event for this because a solution might be loaded fore ParserService
+		// is initialized
+		internal static void OnSolutionLoaded()
 		{
 			if (loadSolutionProjectsThread != null) {
 				if (!abortLoadSolutionProjectsThread)
