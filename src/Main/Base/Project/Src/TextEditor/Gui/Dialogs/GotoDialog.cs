@@ -148,21 +148,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 			bestItem = null;
 			if (text.Length == 0)
 				return;
-			int pos = text.IndexOf('.');
+			int dotPos = text.IndexOf('.');
+			int commaPos = text.IndexOf(',');
+			if (commaPos < 0) {
+				// use "File, ##" or "File: ##" syntax for line numbers
+				commaPos = text.IndexOf(':');
+			}
 			if (char.IsDigit(text, 0)) {
 				ShowLineNumberItem(text);
-			} else if (text.IndexOf(',') > 0) {
-				pos = text.IndexOf(',');
-				string file = text.Substring(0, pos).Trim();
-				string line = text.Substring(pos + 1).Trim();
+			} else if (commaPos > 0) {
+				string file = text.Substring(0, commaPos).Trim();
+				string line = text.Substring(commaPos + 1).Trim();
+				if (line.StartsWith("line")) {
+					// remove the word "line"
+					line = line.Substring(4).Trim();
+				}
 				int lineNr;
 				if (!int.TryParse(line, out lineNr))
 					lineNr = 0;
 				AddSourceFiles(file, lineNr);
-			} else if (pos > 0) {
+			} else if (dotPos > 0) {
 				AddSourceFiles(text, 0);
-				string expression = text.Substring(0, pos).Trim();
-				text = text.Substring(pos + 1).Trim();
+				string expression = text.Substring(0, dotPos).Trim();
+				text = text.Substring(dotPos + 1).Trim();
 				ShowCompletionData(Resolve(expression), text);
 				foreach (IClass c in SearchClasses(expression)) {
 					if (c.Name.Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
