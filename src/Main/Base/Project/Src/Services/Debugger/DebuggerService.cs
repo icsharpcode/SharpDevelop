@@ -338,7 +338,7 @@ namespace ICSharpCode.Core
 							} else {
 								// Look if it is variable
 								ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, logicPos.X + 1, textArea.MotherTextEditorControl.FileName, textContent);
-								string value = GetText(result);
+								string value = GetText(result, expression);
 								if (value != null) {
 									#if DEBUG
 									value = "expr: >" + expression + "<\n" + value;
@@ -357,16 +357,16 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		static string GetText(ResolveResult result)
+		static string GetText(ResolveResult result, string expression)
 		{
 			if (result == null)
 				return null;
 			if (result is MixedResolveResult)
-				return GetText(((MixedResolveResult)result).PrimaryResult);
+				return GetText(((MixedResolveResult)result).PrimaryResult, expression);
 			IAmbience ambience = AmbienceService.CurrentAmbience;
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowAccessibility;
 			if (result is MemberResolveResult) {
-				return GetText(ambience, ((MemberResolveResult)result).ResolvedMember);
+				return GetMemberText(ambience, ((MemberResolveResult)result).ResolvedMember, expression);
 			} else if (result is LocalResolveResult) {
 				LocalResolveResult rr = (LocalResolveResult)result;
 				ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedNames
@@ -391,14 +391,14 @@ namespace ICSharpCode.Core
 			} else if (result is TypeResolveResult) {
 				IClass c = ((TypeResolveResult)result).ResolvedClass;
 				if (c != null)
-					return GetText(ambience, c);
+					return GetMemberText(ambience, c, expression);
 				else
 					return ambience.Convert(result.ResolvedType);
 			} else if (result is MethodResolveResult) {
 				MethodResolveResult mrr = result as MethodResolveResult;
 				IMethod m = mrr.GetMethodIfSingleOverload();
 				if (m != null)
-					return GetText(ambience, m);
+					return GetMemberText(ambience, m, expression);
 				else
 					return "Overload of " + ambience.Convert(mrr.ContainingType) + "." + mrr.Name;
 			} else {
@@ -408,15 +408,18 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		static string GetText(IAmbience ambience, IDecoration member)
+		static string GetMemberText(IAmbience ambience, IDecoration member, string expression)
 		{
+			bool tryDisplayValue = false;
 			StringBuilder text = new StringBuilder();
 			if (member is IIndexer) {
 				text.Append(ambience.Convert(member as IIndexer));
 			} else if (member is IField) {
 				text.Append(ambience.Convert(member as IField));
+				tryDisplayValue = true;
 			} else if (member is IProperty) {
 				text.Append(ambience.Convert(member as IProperty));
+				tryDisplayValue = true;
 			} else if (member is IEvent) {
 				text.Append(ambience.Convert(member as IEvent));
 			} else if (member is IMethod) {
@@ -426,6 +429,13 @@ namespace ICSharpCode.Core
 			} else {
 				text.Append("unknown member ");
 				text.Append(member.ToString());
+			}
+			if (tryDisplayValue && currentDebugger != null) {
+				string currentValue = currentDebugger.GetValueAsString(expression);
+				if (currentValue != null) {
+					text.Append(" = ");
+					text.Append(currentValue);
+				}
 			}
 			string documentation = member.Documentation;
 			if (documentation != null && documentation.Length > 0) {
