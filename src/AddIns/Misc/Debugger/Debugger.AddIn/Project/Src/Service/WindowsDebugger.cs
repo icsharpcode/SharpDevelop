@@ -308,12 +308,12 @@ namespace ICSharpCode.SharpDevelop.Services
 
 		void LogMessage(object sender, MessageEventArgs e)
 		{
-			DebuggerService.PrintDebugMessage(">" + e.Message);
+			DebuggerService.PrintDebugMessage(e.Message);
 		}
 		
 		void TraceMessage(object sender, MessageEventArgs e)
 		{
-			DebuggerService.PrintDebugMessage(e.Message + "\n");
+			LoggingService.Debug("Debugger: " + e.Message);
 		}
 		
 		void ProcessStarted(object sender, ProcessEventArgs e)

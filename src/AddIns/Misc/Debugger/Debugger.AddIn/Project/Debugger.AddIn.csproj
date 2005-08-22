@@ -41,16 +41,12 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <Compile Include="Src\Pads\BaseClassItem.cs" />
     <Compile Include="Src\Pads\BreakPointsPad.cs" />
     <Compile Include="Src\Pads\CallStackPad.cs" />
     <Compile Include="Src\Pads\ExceptionHistoryPad.cs" />
     <Compile Include="Src\Pads\LoadedModulesPad.cs" />
     <Compile Include="Src\Pads\LocalVarPad.cs" />
-    <Compile Include="Src\Pads\PlaceHolderItem.cs" />
     <Compile Include="Src\Pads\RunningThreadsPad.cs" />
-    <Compile Include="Src\Pads\VariableItem.cs" />
-    <Compile Include="Src\Pads\VariableListItem.cs" />
     <Compile Include="Src\Service\ExceptionForm.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -59,6 +55,10 @@
     <EmbeddedResource Include="Src\Service\ExceptionForm.resx">
       <DependentUpon>ExceptionForm.cs</DependentUpon>
     </EmbeddedResource>
+    <Compile Include="Src\Pads\VariableListItems\BaseClassItem.cs" />
+    <Compile Include="Src\Pads\VariableListItems\PlaceHolderItem.cs" />
+    <Compile Include="Src\Pads\VariableListItems\VariableItem.cs" />
+    <Compile Include="Src\Pads\VariableListItems\VariableListItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
