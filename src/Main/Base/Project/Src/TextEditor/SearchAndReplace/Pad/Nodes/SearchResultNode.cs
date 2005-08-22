@@ -68,7 +68,7 @@ namespace SearchAndReplace
 			this.result = result;
 			startPosition = result.GetStartPosition(document);
 			endPosition   = result.GetEndPosition(document);
-			positionText =  "(" + startPosition.Y + ", " + startPosition.X + ") ";
+			positionText =  "(" + (startPosition.Y + 1) + ", " + (startPosition.X + 1) + ") ";
 			
 			line = document.GetLineSegment(startPosition.Y);
 			specialText = result.DisplayText;
