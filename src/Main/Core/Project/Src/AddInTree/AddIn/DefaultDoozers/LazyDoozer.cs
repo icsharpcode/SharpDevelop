@@ -12,6 +12,7 @@ namespace ICSharpCode.Core
 {
 	/// <summary>
 	/// This doozer lazy-loads another doozer when it has to build an item.
+	/// It is used internally to wrap doozers specified in addins.
 	/// </summary>
 	public class LazyLoadDoozer : IDoozer
 	{

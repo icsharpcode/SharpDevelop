@@ -248,7 +248,7 @@ namespace ICSharpCode.Core
 		/// Finds all files which are valid to the mask <paramref name="filemask"/> in the path
 		/// <paramref name="directory"/> and all subdirectories
 		/// (if <paramref name="searchSubdirectories"/> is true).
-		/// The found files are added to the List<string>
+		/// The found files are added to the List&lt;string&gt;
 		/// <paramref name="collection"/>.
 		/// If <paramref name="ignoreHidden"/> is true, hidden files and folders are ignored.
 		/// </summary>

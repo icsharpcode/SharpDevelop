@@ -10,6 +10,18 @@ using System.Collections;
 
 namespace ICSharpCode.Core
 {
+	/// <summary>
+	/// Creates file filter entries for OpenFileDialogs or SaveFileDialogs.
+	/// </summary>
+	/// <attribute name="name">
+	/// The name of the file filter entry.
+	/// </attribute>
+	/// <attribute name="extensions">
+	/// The extensions associated with this file filter entry.
+	/// </attribute>
+	/// <returns>
+	/// String in the format "name|extensions".
+	/// </returns>
 	public class FileFilterDoozer : IDoozer
 	{
 		/// <summary>

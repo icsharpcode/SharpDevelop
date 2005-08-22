@@ -11,8 +11,21 @@ using System.Collections;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Includes the content of one path into another path.
+	/// Builds one or multiple items from another location in the addin tree.
+	/// This doozer can use the "item" OR the "path" attribute.
 	/// </summary>
+	/// <attribute name="item">
+	/// When this attribute is used, the include doozer builds the item that is at the
+	/// addin tree location specified by this attribute.
+	/// </attribute>
+	/// <attribute name="path">
+	/// When this attribute is used, the include doozer builds all items inside the
+	/// path addin tree location specified by this attribute and returns an
+	/// <see cref="IBuildItemsModifier"/> which includes all items in the output list.
+	/// </attribute>
+	/// <returns>
+	/// Any object, depending on the included codon(s).
+	/// </returns>
 	public class IncludeDoozer : IDoozer
 	{
 		/// <summary>

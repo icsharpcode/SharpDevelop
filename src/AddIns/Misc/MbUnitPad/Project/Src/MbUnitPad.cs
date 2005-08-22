@@ -103,8 +103,8 @@ namespace ICSharpCode.MbUnitPad
 							if (include.Substring(include.Length - 4).Equals(".dll", StringComparison.OrdinalIgnoreCase))
 								include = include.Substring(0, include.Length - 4);
 						}
-						if (string.Equals(include, "nunit.framework", StringComparison.InvariantCultureIgnoreCase)
-						    || string.Equals(include, "mbunit.framework", StringComparison.InvariantCultureIgnoreCase))
+						if (string.Equals(include, "nunit.framework", StringComparison.OrdinalIgnoreCase)
+						    || string.Equals(include, "mbunit.framework", StringComparison.OrdinalIgnoreCase))
 						{
 							referenceFound = true;
 							break;

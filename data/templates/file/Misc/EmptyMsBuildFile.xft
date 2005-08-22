@@ -8,7 +8,7 @@
 		  defaultname = "Build${Number}.proj"
 		  language    = "XML"/>
 	 
-	<Description>${res:Templates.File.Xml.EmptyXmlFile.Description}</Description>
+	<Description>${res:Templates.File.MsBuild.Description}</Description>
 
 	<Files>
 		<File name="${FullName}" language="XML"><![CDATA[<?xml version="1.0"?>

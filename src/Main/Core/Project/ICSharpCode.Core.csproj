@@ -17,6 +17,9 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
     <Optimize>False</Optimize>
+    <DebugType>Full</DebugType>
+    <DocumentationFile>..\..\..\..\bin\ICSharpCode.Core.xml</DocumentationFile>
+    <NoWarn>1591</NoWarn>
     <DefineConstants>DEBUG</DefineConstants>
     <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
     <OutputPath>..\..\..\..\bin\</OutputPath>

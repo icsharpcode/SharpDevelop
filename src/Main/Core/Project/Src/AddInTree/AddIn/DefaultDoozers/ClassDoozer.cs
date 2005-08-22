@@ -11,8 +11,15 @@ using System.Collections;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Builds an object using Reflection. The class name is specified in the addin tree.
+	/// Creates object instances by invocing a type's parameterless constructor
+	/// via System.Reflection.
 	/// </summary>
+	/// <attribute name="class">
+	/// The fully qualified type name of the attribute to create.
+	/// </attribute>
+	/// <returns>
+	/// Any kind of object.
+	/// </returns>
 	public class ClassDoozer : IDoozer
 	{
 		/// <summary>

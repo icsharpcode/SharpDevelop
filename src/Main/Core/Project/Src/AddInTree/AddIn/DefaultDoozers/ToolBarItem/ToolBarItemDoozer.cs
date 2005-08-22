@@ -11,6 +11,31 @@ using System.Collections;
 
 namespace ICSharpCode.Core
 {
+	/// <summary>
+	/// Creates tool bar items from a location in the addin tree.
+	/// </summary>
+	/// <attribute name="type">
+	/// This attribute must be specified and one of these values:
+	/// Separator, CheckBox, Item, ComboBox, DropDownButton
+	/// </attribute>
+	/// <attribute name="loadclasslazy">
+	/// Only for the type "Item". When set to false, the command class is loaded
+	/// immediately instead of the usual lazy-loading.
+	/// </attribute>
+	/// <attribute name="icon">
+	/// Icon of the tool bar item.
+	/// </attribute>
+	/// <attribute name="tooltip">
+	/// Tooltip of the tool bar item.
+	/// </attribute>
+	/// <attribute name="class">
+	/// Command class that is run when item is clicked; or class that manages
+	/// the ComboBox/DropDownButton.
+	/// </attribute>
+	/// <returns>
+	/// A ToolStrip* object, depending on the type attribute.
+	/// </returns>
+	/// <conditions>MenuMode</conditions>
 	public class ToolbarItemDoozer : IDoozer
 	{
 		/// <summary>

@@ -12,6 +12,25 @@ using System.Windows.Forms;
 
 namespace ICSharpCode.Core
 {
+	/// <summary>
+	/// Creates associations between file types or node types in the project browser and
+	/// icons in the resource service.
+	/// </summary>
+	/// <attribute name="resource">
+	/// This attribute must be specified. It is the name of a bitmap resource
+	/// in the resource service.
+	/// </attribute>
+	/// <attribute name="language">
+	/// This attribute is specified when a project icon association should be created.
+	/// It specifies the language of the project types that use the icon.
+	/// </attribute>
+	/// <attribute name="extensions">
+	/// This attribute is specified when a file icon association should be created.
+	/// It specifies the semicolon-separated list of file types that use the icon.
+	/// </attribute>
+	/// <returns>
+	/// An IconDescriptor object that exposes the attributes.
+	/// </returns>
 	public class IconDoozer : IDoozer
 	{
 		/// <summary>
