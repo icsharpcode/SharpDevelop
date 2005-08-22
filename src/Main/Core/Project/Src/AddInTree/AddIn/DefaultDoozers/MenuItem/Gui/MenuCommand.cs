@@ -69,12 +69,15 @@ namespace ICSharpCode.Core
 		public static Keys ParseShortcut(string shortcutString)
 		{
 			Keys shortCut = Keys.None;
-			try {
-				foreach (string key in shortcutString.Split('|')) {
-					shortCut  |= (System.Windows.Forms.Keys)Enum.Parse(typeof(System.Windows.Forms.Keys), key);
+			if (shortcutString.Length > 0) {
+				try {
+					foreach (string key in shortcutString.Split('|')) {
+						shortCut  |= (System.Windows.Forms.Keys)Enum.Parse(typeof(System.Windows.Forms.Keys), key);
+					}
+				} catch (Exception ex) {
+					MessageService.ShowError(ex);
+					return System.Windows.Forms.Keys.None;
 				}
-			} catch (Exception) {
-				return System.Windows.Forms.Keys.None;
 			}
 			return shortCut;
 		}

@@ -1193,7 +1193,7 @@
 					          class    = "ICSharpCode.SharpDevelop.Project.Commands.BuildProject"/>
 					<MenuItem id       = "Rebuild project"
 					          label    = "${res:XML.MainMenu.BuildMenu.RebuildProject}"
-					          shortcut = "ALT|F9"
+					          shortcut = "Alt|F9"
 					          class    = "ICSharpCode.SharpDevelop.Project.Commands.RebuildProject"/>
 					<MenuItem id    = "Clean project"
 					          label = "${res:XML.MainMenu.BuildMenu.CleanProject}"

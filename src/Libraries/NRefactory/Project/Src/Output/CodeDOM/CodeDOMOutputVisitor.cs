@@ -363,7 +363,11 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public override object Visit(ReturnStatement returnStatement, object data)
 		{
-			CodeMethodReturnStatement returnStmt = new CodeMethodReturnStatement((CodeExpression)returnStatement.Expression.AcceptVisitor(this,data));
+			CodeMethodReturnStatement returnStmt;
+			if (returnStatement.Expression.IsNull)
+				returnStmt = new CodeMethodReturnStatement();
+			else
+				returnStmt = new CodeMethodReturnStatement((CodeExpression)returnStatement.Expression.AcceptVisitor(this,data));
 
 			AddStmt(returnStmt);
 
