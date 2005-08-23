@@ -96,6 +96,9 @@
       <Name>ICSharpCode.TextEditor</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Content Include="XmlEditor.Tests.dll.config">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

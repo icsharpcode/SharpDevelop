@@ -130,8 +130,15 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} }));
 					FileProjectItem projectFile = new FileProjectItem(project, ItemType.Compile);
 					
-					if (!project.CanCompile(fileName)) {
-						projectFile.BuildAction = FileProjectItem.FileBuildAction.None;
+					if (file.BuildAction.Length > 0) {
+						projectFile.BuildAction = (FileProjectItem.FileBuildAction)Enum.Parse(typeof(FileProjectItem.FileBuildAction), file.BuildAction);
+					} else {
+						if (!project.CanCompile(fileName)) {
+							projectFile.BuildAction = FileProjectItem.FileBuildAction.None;
+						}
+					}
+					if (file.CopyToOutputDirectory.Length > 0) {
+						projectFile.CopyToOutputDirectory = (CopyToOutputDirectory)Enum.Parse(typeof(CopyToOutputDirectory), file.CopyToOutputDirectory);
 					}
 					
 					projectFile.Include = FileUtility.GetRelativePath(project.Directory, fileName);
@@ -196,10 +203,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				foreach (XmlNode node in element["Files"].ChildNodes) {
 					if (node != null && node.Name == "File") {
 						XmlElement filenode = (XmlElement)node;
-						FileDescriptionTemplate template = new FileDescriptionTemplate(filenode.GetAttribute("name"),
-						                                                               filenode.GetAttribute("language"),
-						                                                               filenode.InnerText);
-						projectDescriptor.files.Add(template);
+						projectDescriptor.files.Add(new FileDescriptionTemplate(filenode));
 					}
 				}
 			}

@@ -343,7 +343,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void GotoRegion(IRegion region, string fileName)
 		{
-			if (fileName != null) {
+			if (fileName != null && region != null) {
 				FileService.JumpToFilePosition(fileName, region.BeginLine - 1, region.BeginColumn - 1);
 			}
 		}

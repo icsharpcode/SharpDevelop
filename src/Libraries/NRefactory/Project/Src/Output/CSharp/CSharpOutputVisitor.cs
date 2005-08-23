@@ -297,7 +297,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				VisitAttributes(fieldDeclaration.Attributes, data);
 				outputFormatter.Indent();
 				outputFormatter.PrintIdentifier(f.Name);
-				if (f.Initializer != null) {
+				if (f.Initializer != null && !f.Initializer.IsNull) {
 					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.Assign);
 					outputFormatter.Space();
@@ -1597,7 +1597,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				return null;
 			}
 			
-			outputFormatter.PrintIdentifier(primitiveExpression.Value.ToString());
+			if (primitiveExpression.Value is IFormattable) {
+				outputFormatter.PrintText(((IFormattable)primitiveExpression.Value).ToString(null, NumberFormatInfo.InvariantInfo));
+			} else {
+				outputFormatter.PrintIdentifier(primitiveExpression.Value.ToString());
+			}
+			
 			return null;
 		}
 		
@@ -1934,8 +1939,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 				case AssignmentOperatorType.ShiftRight:
 					outputFormatter.PrintToken(Tokens.GreaterThan);
-					outputFormatter.PrintToken(Tokens.GreaterThan);
-					outputFormatter.PrintToken(Tokens.Equal);
+					outputFormatter.PrintToken(Tokens.GreaterEqual);
 					break;
 				case AssignmentOperatorType.ExclusiveOr:
 					outputFormatter.PrintToken(Tokens.XorAssign);

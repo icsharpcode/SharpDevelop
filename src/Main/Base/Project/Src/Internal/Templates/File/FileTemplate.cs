@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		}
 	}
 	
-	public class TemplateScript 
+	public class TemplateScript
 	{
 		string languageName;
 		string runAt;
@@ -291,10 +291,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			XmlElement files  = doc.DocumentElement["Files"];
 			XmlNodeList nodes = files.ChildNodes;
 			foreach (XmlElement filenode in nodes) {
-				FileDescriptionTemplate template = new FileDescriptionTemplate(filenode.GetAttribute("name"),
-				                                                               filenode.GetAttribute("language"),
-				                                                               filenode.InnerText);
-				this.files.Add(template);
+				this.files.Add(new FileDescriptionTemplate(filenode));
 			}
 			
 			// load scripts (if any)
@@ -312,9 +309,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		static FileTemplate()
 		{
-			List<string> files = FileUtility.SearchDirectory(PropertyService.DataDirectory + 
-			                            Path.DirectorySeparatorChar + "templates" + 
-			                            Path.DirectorySeparatorChar + "file", "*.xft");
+			List<string> files = FileUtility.SearchDirectory(PropertyService.DataDirectory +
+			                                                 Path.DirectorySeparatorChar + "templates" +
+			                                                 Path.DirectorySeparatorChar + "file", "*.xft");
 			foreach (string file in files) {
 				try {
 					if (Path.GetExtension(file) == ".xft") {

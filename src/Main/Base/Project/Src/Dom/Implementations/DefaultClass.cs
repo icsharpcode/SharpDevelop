@@ -107,6 +107,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				return region;
 			}
+			set {
+				region = value;
+			}
 		}
 		
 		public override string DotNetName {

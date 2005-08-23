@@ -18,6 +18,17 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string name;
 		string language;
 		string content;
+		string buildAction;
+		string copyToOutputDirectory;
+
+		public FileDescriptionTemplate(XmlElement xml)
+		{
+			name = xml.GetAttribute("name");
+			language = xml.GetAttribute("language");
+			buildAction = xml.GetAttribute("buildAction");
+			copyToOutputDirectory = xml.GetAttribute("copyToOutputDirectory");
+			content = xml.InnerText;
+		}
 		
 		public FileDescriptionTemplate(string name, string language, string content)
 		{
@@ -37,11 +48,29 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				return language;
 			}
 		}
+		
 		public string Content {
 			get {
 				return content;
 			}
 		}
 		
+		public string BuildAction {
+			get {
+				return buildAction ?? "";
+			}
+			set {
+				buildAction = value;
+			}
+		}
+		
+		public string CopyToOutputDirectory {
+			get {
+				return copyToOutputDirectory ?? "";
+			}
+			set {
+				copyToOutputDirectory = value;
+			}
+		}
 	}
 }

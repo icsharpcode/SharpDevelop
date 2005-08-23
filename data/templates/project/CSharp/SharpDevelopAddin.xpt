@@ -34,7 +34,7 @@
 			</ProjectItems>
 			
 			<Files>
-				<File name="${ProjectName}.addin"><![CDATA[<AddIn name        = "${ProjectName}"
+				<File name="${ProjectName}.addin" copyToOutputDirectory="Always"><![CDATA[<AddIn name        = "${ProjectName}"
        author      = "${USER}"
        copyright   = "GNU General Public License"
        url         = ""
@@ -55,7 +55,7 @@
 	</Path>
 </AddIn>
 ]]></File>
-		<File name="Resources/MyUserControl.xfrm">
+		<File name="Resources/MyUserControl.xfrm" buildAction="EmbeddedResource">
 			<![CDATA[<?xml version="1.0" encoding="utf-8"?>
 <Components version="1.0">
   <System.Windows.Forms.UserControl>

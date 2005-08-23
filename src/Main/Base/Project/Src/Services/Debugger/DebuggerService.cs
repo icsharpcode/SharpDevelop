@@ -309,9 +309,7 @@ namespace ICSharpCode.Core
 					                                                      mousepos.Y - viewRect.Top);
 					if (logicPos.Y >= 0 && logicPos.Y < textArea.Document.TotalNumberOfLines) {
 						// This is for testing olny - it must be reworked properly
-						if (Control.ModifierKeys == Keys.Control) {
-							if (currentDebugger == null) return;
-							if (!currentDebugger.IsDebugging) return;
+						if (Control.ModifierKeys == Keys.Control && currentDebugger != null && currentDebugger.IsDebugging) {
 							SetIPArgs a = new SetIPArgs();
 							a.filename = textArea.MotherTextEditorControl.FileName;
 							a.line = logicPos.Y;
@@ -345,9 +343,9 @@ namespace ICSharpCode.Core
 								ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, logicPos.X + 1, textArea.MotherTextEditorControl.FileName, textContent);
 								string value = GetText(result, expression);
 								if (value != null) {
-									#if DEBUG
-									value = "expr: >" + expression + "<\n" + value;
-									#endif
+									if (Control.ModifierKeys == Keys.Control) {
+										value = "expr: >" + expression + "<\n" + value;
+									}
 									textArea.SetToolTip(value);
 								}
 								oldToolTip = value;
@@ -364,8 +362,10 @@ namespace ICSharpCode.Core
 		
 		static string GetText(ResolveResult result, string expression)
 		{
-			if (result == null)
-				return null;
+			if (result == null) {
+				// when pressing control, show the expression even when it could not be resolved
+				return (Control.ModifierKeys == Keys.Control) ? "" : null;
+			}
 			if (result is MixedResolveResult)
 				return GetText(((MixedResolveResult)result).PrimaryResult, expression);
 			IAmbience ambience = AmbienceService.CurrentAmbience;
@@ -407,9 +407,14 @@ namespace ICSharpCode.Core
 				else
 					return "Overload of " + ambience.Convert(mrr.ContainingType) + "." + mrr.Name;
 			} else {
-//				if (result.ResolvedType != null)
-//					return "expression of type " + ambience.Convert(result.ResolvedType);
-				return null;
+				if (Control.ModifierKeys == Keys.Control) {
+					if (result.ResolvedType != null)
+						return "expression of type " + ambience.Convert(result.ResolvedType);
+					else
+						return "ResolveResult without ResolvedType";
+				} else {
+					return null;
+				}
 			}
 		}
 		

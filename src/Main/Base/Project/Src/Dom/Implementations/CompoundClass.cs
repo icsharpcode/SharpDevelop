@@ -47,6 +47,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			// Common for all parts:
 			this.ClassType = parts[0].ClassType;
+			this.CompilationUnit.FileName = parts[0].CompilationUnit.FileName;
+			this.Region = parts[0].Region;
 			
 			ModifierEnum modifier = ModifierEnum.None;
 			this.BaseTypes.Clear();

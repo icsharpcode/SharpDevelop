@@ -8,7 +8,7 @@
 		  defaultname = "XmlUserControl${Number}.xfrm"
 		  language    = "XmlForm"/>
 	 
-	<Description>Creates an empty xml form.</Description>
+	<Description>Creates an empty xml user control.</Description>
 
 	<Files>
 		<File name="${FullName}" language="XmlForm"><![CDATA[<Components version="1.0">
