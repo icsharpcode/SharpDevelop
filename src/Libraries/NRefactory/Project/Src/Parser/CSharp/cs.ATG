@@ -1675,7 +1675,8 @@ AssignmentOperator<out AssignmentOperatorType op>
 	| "|="  (. op = AssignmentOperatorType.BitwiseOr; .)
 	| "^="  (. op = AssignmentOperatorType.ExclusiveOr; .)
 	| "<<=" (. op = AssignmentOperatorType.ShiftLeft; .)
-	| ">" ">=" (. op = AssignmentOperatorType.ShiftRight; .)
+	| IF (la.kind == Tokens.GreaterThan && Peek(1).kind == Tokens.GreaterEqual)
+		">" ">=" (. op = AssignmentOperatorType.ShiftRight; .)
 .
 
 ArrayInitializer<out Expression outExpr>
@@ -1941,35 +1942,28 @@ ResourceAcquisition<out Statement stmt>
 .
 
 StatementExpr<out Statement stmt>
+(. Expression expr; .)
 =
-	/* We don't know why, but it's in the grammar. */
-	/* (see internal document: assignment.txt) */
-	(.
-		bool mustBeAssignment = la.kind == Tokens.Plus  || la.kind == Tokens.Minus ||
-		                        la.kind == Tokens.Not   || la.kind == Tokens.BitwiseComplement ||
-		                        la.kind == Tokens.Times || la.kind == Tokens.BitwiseAnd   || IsTypeCast();
-		Expression expr = null;
-	.)
-	
-	UnaryExpr<out expr>
-	/*--- assignment */
-	(
-		(. AssignmentOperatorType op; Expression val; .) AssignmentOperator<out op> Expr<out val> (. expr = new AssignmentExpression(expr, op, val); .)
-		| (. if (mustBeAssignment) Error("error in assignment."); .)
-	) (. stmt = new StatementExpression(expr); .)
+	Expr<out expr>
+	/* The grammar allows only assignments or method invocations here, */
+	/* but we don't enforce that here */
+	(. stmt = new StatementExpression(expr); .)
 .
 
 Expr<out Expression expr>
-(. expr = null; Expression expr1 = null, expr2 = null; .)
+(. expr = null; Expression expr1 = null, expr2 = null; AssignmentOperatorType op; .)
 =
 	UnaryExpr<out expr>
 	/*--- conditional expression: */
 	(	
-		ConditionalOrExpr<ref expr>
-		[ "??" Expr<out expr1> (. expr = new BinaryOperatorExpression(expr, BinaryOperatorType.NullCoalescing, expr1); .) ]
-		[ "?" Expr<out expr1> ":" Expr<out expr2> (. expr = new ConditionalExpression(expr, expr1, expr2);  .) ]
-		/*--- assignment: */
-		| (. AssignmentOperatorType op; Expression val; .) AssignmentOperator<out op> Expr<out val> (. expr = new AssignmentExpression(expr, op, val); .)
+		( AssignmentOperator<out op> Expr<out expr1> (. expr = new AssignmentExpression(expr, op, expr1); .) )
+		| IF (la.kind == Tokens.GreaterThan && Peek(1).kind == Tokens.GreaterEqual)
+		  ( AssignmentOperator<out op> Expr<out expr1> (. expr = new AssignmentExpression(expr, op, expr1); .) )
+		| (
+			ConditionalOrExpr<ref expr>
+			[ "??" Expr<out expr1> (. expr = new BinaryOperatorExpression(expr, BinaryOperatorType.NullCoalescing, expr1); .) ]
+			[ "?" Expr<out expr1> ":" Expr<out expr2> (. expr = new ConditionalExpression(expr, expr1, expr2);  .) ]
+		)
 	)
 .
 

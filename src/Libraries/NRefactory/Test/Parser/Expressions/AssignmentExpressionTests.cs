@@ -19,14 +19,12 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		#region C#
 		void CSharpTestAssignmentExpression(string program, AssignmentOperatorType op)
 		{
-			StatementExpression se = (StatementExpression)ParseUtilCSharp.ParseStatment(program + ";", typeof(StatementExpression));
-			AssignmentExpression ae = se.Expression as AssignmentExpression;
+			AssignmentExpression ae = (AssignmentExpression)ParseUtilCSharp.ParseExpression(program, typeof(AssignmentExpression));
 			
 			Assert.AreEqual(op, ae.Op);
 			
 			Assert.IsTrue(ae.Left is IdentifierExpression);
 			Assert.IsTrue(ae.Right is IdentifierExpression);
-			
 		}
 		
 		[Test]

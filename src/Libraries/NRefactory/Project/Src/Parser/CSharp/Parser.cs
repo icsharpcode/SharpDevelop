@@ -797,53 +797,62 @@ out expr);
 	}
 
 	void Expr(
-#line  1962 "cs.ATG" 
+#line  1953 "cs.ATG" 
 out Expression expr) {
 
-#line  1963 "cs.ATG" 
-		expr = null; Expression expr1 = null, expr2 = null; 
+#line  1954 "cs.ATG" 
+		expr = null; Expression expr1 = null, expr2 = null; AssignmentOperatorType op; 
 		UnaryExpr(
-#line  1965 "cs.ATG" 
+#line  1956 "cs.ATG" 
 out expr);
 		if (StartOf(6)) {
+			AssignmentOperator(
+#line  1959 "cs.ATG" 
+out op);
+			Expr(
+#line  1959 "cs.ATG" 
+out expr1);
+
+#line  1959 "cs.ATG" 
+			expr = new AssignmentExpression(expr, op, expr1); 
+		} else if (
+#line  1960 "cs.ATG" 
+la.kind == Tokens.GreaterThan && Peek(1).kind == Tokens.GreaterEqual) {
+			AssignmentOperator(
+#line  1961 "cs.ATG" 
+out op);
+			Expr(
+#line  1961 "cs.ATG" 
+out expr1);
+
+#line  1961 "cs.ATG" 
+			expr = new AssignmentExpression(expr, op, expr1); 
+		} else if (StartOf(7)) {
 			ConditionalOrExpr(
-#line  1968 "cs.ATG" 
+#line  1963 "cs.ATG" 
 ref expr);
 			if (la.kind == 13) {
 				lexer.NextToken();
 				Expr(
-#line  1969 "cs.ATG" 
+#line  1964 "cs.ATG" 
 out expr1);
 
-#line  1969 "cs.ATG" 
+#line  1964 "cs.ATG" 
 				expr = new BinaryOperatorExpression(expr, BinaryOperatorType.NullCoalescing, expr1); 
 			}
 			if (la.kind == 12) {
 				lexer.NextToken();
 				Expr(
-#line  1970 "cs.ATG" 
+#line  1965 "cs.ATG" 
 out expr1);
 				Expect(9);
 				Expr(
-#line  1970 "cs.ATG" 
+#line  1965 "cs.ATG" 
 out expr2);
 
-#line  1970 "cs.ATG" 
+#line  1965 "cs.ATG" 
 				expr = new ConditionalExpression(expr, expr1, expr2);  
 			}
-		} else if (StartOf(7)) {
-
-#line  1972 "cs.ATG" 
-			AssignmentOperatorType op; Expression val; 
-			AssignmentOperator(
-#line  1972 "cs.ATG" 
-out op);
-			Expr(
-#line  1972 "cs.ATG" 
-out val);
-
-#line  1972 "cs.ATG" 
-			expr = new AssignmentExpression(expr, op, val); 
 		} else SynErr(129);
 	}
 
@@ -1238,39 +1247,39 @@ templates);
 	}
 
 	void TypeParameterList(
-#line  2354 "cs.ATG" 
+#line  2348 "cs.ATG" 
 List<TemplateDefinition> templates) {
 
-#line  2356 "cs.ATG" 
+#line  2350 "cs.ATG" 
 		AttributeSection section;
 		List<AttributeSection> attributes = new List<AttributeSection>();
 		
 		Expect(23);
 		while (la.kind == 18) {
 			AttributeSection(
-#line  2360 "cs.ATG" 
+#line  2354 "cs.ATG" 
 out section);
 
-#line  2360 "cs.ATG" 
+#line  2354 "cs.ATG" 
 			attributes.Add(section); 
 		}
 		Expect(1);
 
-#line  2361 "cs.ATG" 
+#line  2355 "cs.ATG" 
 		templates.Add(new TemplateDefinition(t.val, attributes)); 
 		while (la.kind == 14) {
 			lexer.NextToken();
 			while (la.kind == 18) {
 				AttributeSection(
-#line  2362 "cs.ATG" 
+#line  2356 "cs.ATG" 
 out section);
 
-#line  2362 "cs.ATG" 
+#line  2356 "cs.ATG" 
 				attributes.Add(section); 
 			}
 			Expect(1);
 
-#line  2363 "cs.ATG" 
+#line  2357 "cs.ATG" 
 			templates.Add(new TemplateDefinition(t.val, attributes)); 
 		}
 		Expect(22);
@@ -1303,25 +1312,25 @@ out typeRef);
 	}
 
 	void TypeParameterConstraintsClause(
-#line  2367 "cs.ATG" 
+#line  2361 "cs.ATG" 
 List<TemplateDefinition> templates) {
 
-#line  2368 "cs.ATG" 
+#line  2362 "cs.ATG" 
 		string name = ""; TypeReference type; 
 		Expect(1);
 
-#line  2370 "cs.ATG" 
+#line  2364 "cs.ATG" 
 		if (t.val != "where") Error("where expected"); 
 		Expect(1);
 
-#line  2371 "cs.ATG" 
+#line  2365 "cs.ATG" 
 		name = t.val; 
 		Expect(9);
 		TypeParameterConstraintsClauseBase(
-#line  2373 "cs.ATG" 
+#line  2367 "cs.ATG" 
 out type);
 
-#line  2374 "cs.ATG" 
+#line  2368 "cs.ATG" 
 		TemplateDefinition td = null;
 		foreach (TemplateDefinition d in templates) {
 			if (d.Name == name) {
@@ -1334,10 +1343,10 @@ out type);
 		while (la.kind == 14) {
 			lexer.NextToken();
 			TypeParameterConstraintsClauseBase(
-#line  2383 "cs.ATG" 
+#line  2377 "cs.ATG" 
 out type);
 
-#line  2384 "cs.ATG" 
+#line  2378 "cs.ATG" 
 			td = null;
 			foreach (TemplateDefinition d in templates) {
 				if (d.Name == name) {
@@ -1738,33 +1747,33 @@ out r);
 	}
 
 	void TypeName(
-#line  2308 "cs.ATG" 
+#line  2302 "cs.ATG" 
 out TypeReference typeRef) {
 
-#line  2309 "cs.ATG" 
+#line  2303 "cs.ATG" 
 		List<TypeReference> typeArguments = null;
 		string alias = null;
 		string qualident;
 		
 		if (
-#line  2314 "cs.ATG" 
+#line  2308 "cs.ATG" 
 la.kind == Tokens.Identifier && Peek(1).kind == Tokens.DoubleColon) {
 			lexer.NextToken();
 
-#line  2315 "cs.ATG" 
+#line  2309 "cs.ATG" 
 			alias = t.val; 
 			Expect(10);
 		}
 		Qualident(
-#line  2318 "cs.ATG" 
+#line  2312 "cs.ATG" 
 out qualident);
 		if (la.kind == 23) {
 			TypeArgumentList(
-#line  2319 "cs.ATG" 
+#line  2313 "cs.ATG" 
 out typeArguments);
 		}
 
-#line  2321 "cs.ATG" 
+#line  2315 "cs.ATG" 
 		if (alias == null) {
 		typeRef = new TypeReference(qualident, typeArguments);
 		} else if (alias == "global") {
@@ -1776,7 +1785,7 @@ out typeArguments);
 		
 		if (la.kind == 12) {
 			NullableQuestionMark(
-#line  2330 "cs.ATG" 
+#line  2324 "cs.ATG" 
 ref typeRef);
 		}
 	}
@@ -2706,14 +2715,14 @@ out name);
 	}
 
 	void NullableQuestionMark(
-#line  2333 "cs.ATG" 
+#line  2327 "cs.ATG" 
 ref TypeReference typeRef) {
 
-#line  2334 "cs.ATG" 
+#line  2328 "cs.ATG" 
 		List<TypeReference> typeArguments = new List<TypeReference>(1); 
 		Expect(12);
 
-#line  2338 "cs.ATG" 
+#line  2332 "cs.ATG" 
 		if (typeRef != null) typeArguments.Add(typeRef);
 		typeRef = new TypeReference("System.Nullable", typeArguments);
 		
@@ -3434,78 +3443,78 @@ out expr);
 
 	void Statement() {
 
-#line  1721 "cs.ATG" 
+#line  1722 "cs.ATG" 
 		TypeReference type;
 		Expression expr;
 		Statement stmt = null;
 		Point startPos = la.Location;
 		
 		if (
-#line  1729 "cs.ATG" 
+#line  1730 "cs.ATG" 
 IsLabel()) {
 			Expect(1);
 
-#line  1729 "cs.ATG" 
+#line  1730 "cs.ATG" 
 			compilationUnit.AddChild(new LabelStatement(t.val)); 
 			Expect(9);
 			Statement();
 		} else if (la.kind == 59) {
 			lexer.NextToken();
 			Type(
-#line  1732 "cs.ATG" 
+#line  1733 "cs.ATG" 
 out type);
 
-#line  1732 "cs.ATG" 
+#line  1733 "cs.ATG" 
 			LocalVariableDeclaration var = new LocalVariableDeclaration(type, Modifier.Const); string ident = null; var.StartLocation = t.Location; 
 			Expect(1);
 
-#line  1733 "cs.ATG" 
+#line  1734 "cs.ATG" 
 			ident = t.val; 
 			Expect(3);
 			Expr(
-#line  1734 "cs.ATG" 
+#line  1735 "cs.ATG" 
 out expr);
 
-#line  1734 "cs.ATG" 
+#line  1735 "cs.ATG" 
 			var.Variables.Add(new VariableDeclaration(ident, expr)); 
 			while (la.kind == 14) {
 				lexer.NextToken();
 				Expect(1);
 
-#line  1735 "cs.ATG" 
+#line  1736 "cs.ATG" 
 				ident = t.val; 
 				Expect(3);
 				Expr(
-#line  1735 "cs.ATG" 
+#line  1736 "cs.ATG" 
 out expr);
 
-#line  1735 "cs.ATG" 
+#line  1736 "cs.ATG" 
 				var.Variables.Add(new VariableDeclaration(ident, expr)); 
 			}
 			Expect(11);
 
-#line  1736 "cs.ATG" 
+#line  1737 "cs.ATG" 
 			compilationUnit.AddChild(var); 
 		} else if (
-#line  1738 "cs.ATG" 
+#line  1739 "cs.ATG" 
 IsLocalVarDecl()) {
 			LocalVariableDecl(
-#line  1738 "cs.ATG" 
+#line  1739 "cs.ATG" 
 out stmt);
 			Expect(11);
 
-#line  1738 "cs.ATG" 
+#line  1739 "cs.ATG" 
 			compilationUnit.AddChild(stmt); 
 		} else if (StartOf(23)) {
 			EmbeddedStatement(
-#line  1739 "cs.ATG" 
+#line  1740 "cs.ATG" 
 out stmt);
 
-#line  1739 "cs.ATG" 
+#line  1740 "cs.ATG" 
 			compilationUnit.AddChild(stmt); 
 		} else SynErr(166);
 
-#line  1745 "cs.ATG" 
+#line  1746 "cs.ATG" 
 		if (stmt != null) {
 		stmt.StartLocation = startPos;
 		stmt.EndLocation = t.EndLocation;
@@ -3543,30 +3552,30 @@ out expr);
 	}
 
 	void ArrayInitializer(
-#line  1681 "cs.ATG" 
+#line  1682 "cs.ATG" 
 out Expression outExpr) {
 
-#line  1683 "cs.ATG" 
+#line  1684 "cs.ATG" 
 		Expression expr = null;
 		ArrayInitializerExpression initializer = new ArrayInitializerExpression();
 		
 		Expect(16);
 		if (StartOf(24)) {
 			VariableInitializer(
-#line  1688 "cs.ATG" 
+#line  1689 "cs.ATG" 
 out expr);
 
-#line  1688 "cs.ATG" 
+#line  1689 "cs.ATG" 
 			if (expr != null) { initializer.CreateExpressions.Add(expr); } 
 			while (
-#line  1688 "cs.ATG" 
+#line  1689 "cs.ATG" 
 NotFinalComma()) {
 				Expect(14);
 				VariableInitializer(
-#line  1688 "cs.ATG" 
+#line  1689 "cs.ATG" 
 out expr);
 
-#line  1688 "cs.ATG" 
+#line  1689 "cs.ATG" 
 				if (expr != null) { initializer.CreateExpressions.Add(expr); } 
 			}
 			if (la.kind == 14) {
@@ -3575,7 +3584,7 @@ out expr);
 		}
 		Expect(17);
 
-#line  1689 "cs.ATG" 
+#line  1690 "cs.ATG" 
 		outExpr = initializer; 
 	}
 
@@ -3585,150 +3594,128 @@ out AssignmentOperatorType op) {
 
 #line  1666 "cs.ATG" 
 		op = AssignmentOperatorType.None; 
-		switch (la.kind) {
-		case 3: {
+		if (la.kind == 3) {
 			lexer.NextToken();
 
 #line  1668 "cs.ATG" 
 			op = AssignmentOperatorType.Assign; 
-			break;
-		}
-		case 38: {
+		} else if (la.kind == 38) {
 			lexer.NextToken();
 
 #line  1669 "cs.ATG" 
 			op = AssignmentOperatorType.Add; 
-			break;
-		}
-		case 39: {
+		} else if (la.kind == 39) {
 			lexer.NextToken();
 
 #line  1670 "cs.ATG" 
 			op = AssignmentOperatorType.Subtract; 
-			break;
-		}
-		case 40: {
+		} else if (la.kind == 40) {
 			lexer.NextToken();
 
 #line  1671 "cs.ATG" 
 			op = AssignmentOperatorType.Multiply; 
-			break;
-		}
-		case 41: {
+		} else if (la.kind == 41) {
 			lexer.NextToken();
 
 #line  1672 "cs.ATG" 
 			op = AssignmentOperatorType.Divide; 
-			break;
-		}
-		case 42: {
+		} else if (la.kind == 42) {
 			lexer.NextToken();
 
 #line  1673 "cs.ATG" 
 			op = AssignmentOperatorType.Modulus; 
-			break;
-		}
-		case 43: {
+		} else if (la.kind == 43) {
 			lexer.NextToken();
 
 #line  1674 "cs.ATG" 
 			op = AssignmentOperatorType.BitwiseAnd; 
-			break;
-		}
-		case 44: {
+		} else if (la.kind == 44) {
 			lexer.NextToken();
 
 #line  1675 "cs.ATG" 
 			op = AssignmentOperatorType.BitwiseOr; 
-			break;
-		}
-		case 45: {
+		} else if (la.kind == 45) {
 			lexer.NextToken();
 
 #line  1676 "cs.ATG" 
 			op = AssignmentOperatorType.ExclusiveOr; 
-			break;
-		}
-		case 46: {
+		} else if (la.kind == 46) {
 			lexer.NextToken();
 
 #line  1677 "cs.ATG" 
 			op = AssignmentOperatorType.ShiftLeft; 
-			break;
-		}
-		case 22: {
-			lexer.NextToken();
+		} else if (
+#line  1678 "cs.ATG" 
+la.kind == Tokens.GreaterThan && Peek(1).kind == Tokens.GreaterEqual) {
+			Expect(22);
 			Expect(35);
 
-#line  1678 "cs.ATG" 
+#line  1679 "cs.ATG" 
 			op = AssignmentOperatorType.ShiftRight; 
-			break;
-		}
-		default: SynErr(167); break;
-		}
+		} else SynErr(167);
 	}
 
 	void LocalVariableDecl(
-#line  1692 "cs.ATG" 
+#line  1693 "cs.ATG" 
 out Statement stmt) {
 
-#line  1694 "cs.ATG" 
+#line  1695 "cs.ATG" 
 		TypeReference type;
 		VariableDeclaration      var = null;
 		LocalVariableDeclaration localVariableDeclaration; 
 		
 		Type(
-#line  1699 "cs.ATG" 
+#line  1700 "cs.ATG" 
 out type);
 
-#line  1699 "cs.ATG" 
+#line  1700 "cs.ATG" 
 		localVariableDeclaration = new LocalVariableDeclaration(type); localVariableDeclaration.StartLocation = t.Location; 
 		LocalVariableDeclarator(
-#line  1700 "cs.ATG" 
+#line  1701 "cs.ATG" 
 out var);
 
-#line  1700 "cs.ATG" 
+#line  1701 "cs.ATG" 
 		localVariableDeclaration.Variables.Add(var); 
 		while (la.kind == 14) {
 			lexer.NextToken();
 			LocalVariableDeclarator(
-#line  1701 "cs.ATG" 
+#line  1702 "cs.ATG" 
 out var);
 
-#line  1701 "cs.ATG" 
+#line  1702 "cs.ATG" 
 			localVariableDeclaration.Variables.Add(var); 
 		}
 
-#line  1702 "cs.ATG" 
+#line  1703 "cs.ATG" 
 		stmt = localVariableDeclaration; 
 	}
 
 	void LocalVariableDeclarator(
-#line  1705 "cs.ATG" 
+#line  1706 "cs.ATG" 
 out VariableDeclaration var) {
 
-#line  1706 "cs.ATG" 
+#line  1707 "cs.ATG" 
 		Expression expr = null; 
 		Expect(1);
 
-#line  1709 "cs.ATG" 
+#line  1710 "cs.ATG" 
 		var = new VariableDeclaration(t.val); 
 		if (la.kind == 3) {
 			lexer.NextToken();
 			VariableInitializer(
-#line  1709 "cs.ATG" 
+#line  1710 "cs.ATG" 
 out expr);
 
-#line  1709 "cs.ATG" 
+#line  1710 "cs.ATG" 
 			var.Initializer = expr; 
 		}
 	}
 
 	void EmbeddedStatement(
-#line  1752 "cs.ATG" 
+#line  1753 "cs.ATG" 
 out Statement statement) {
 
-#line  1754 "cs.ATG" 
+#line  1755 "cs.ATG" 
 		TypeReference type = null;
 		Expression expr = null;
 		Statement embeddedStatement = null;
@@ -3736,156 +3723,156 @@ out Statement statement) {
 		
 		if (la.kind == 16) {
 			Block(
-#line  1760 "cs.ATG" 
+#line  1761 "cs.ATG" 
 out statement);
 		} else if (la.kind == 11) {
 			lexer.NextToken();
 
-#line  1762 "cs.ATG" 
+#line  1763 "cs.ATG" 
 			statement = new EmptyStatement(); 
 		} else if (
-#line  1764 "cs.ATG" 
+#line  1765 "cs.ATG" 
 UnCheckedAndLBrace()) {
 
-#line  1764 "cs.ATG" 
+#line  1765 "cs.ATG" 
 			Statement block; bool isChecked = true; 
 			if (la.kind == 57) {
 				lexer.NextToken();
 			} else if (la.kind == 117) {
 				lexer.NextToken();
 
-#line  1765 "cs.ATG" 
+#line  1766 "cs.ATG" 
 				isChecked = false;
 			} else SynErr(168);
 			Block(
-#line  1766 "cs.ATG" 
+#line  1767 "cs.ATG" 
 out block);
 
-#line  1766 "cs.ATG" 
+#line  1767 "cs.ATG" 
 			statement = isChecked ? (Statement)new CheckedStatement(block) : (Statement)new UncheckedStatement(block); 
 		} else if (la.kind == 78) {
 			lexer.NextToken();
 
-#line  1768 "cs.ATG" 
+#line  1769 "cs.ATG" 
 			Statement elseStatement = null; 
 			Expect(20);
 			Expr(
-#line  1769 "cs.ATG" 
+#line  1770 "cs.ATG" 
 out expr);
 			Expect(21);
 			EmbeddedStatement(
-#line  1770 "cs.ATG" 
+#line  1771 "cs.ATG" 
 out embeddedStatement);
 			if (la.kind == 66) {
 				lexer.NextToken();
 				EmbeddedStatement(
-#line  1771 "cs.ATG" 
+#line  1772 "cs.ATG" 
 out elseStatement);
 			}
 
-#line  1772 "cs.ATG" 
+#line  1773 "cs.ATG" 
 			statement = elseStatement != null ? (Statement)new IfElseStatement(expr, embeddedStatement, elseStatement) :  (Statement)new IfElseStatement(expr, embeddedStatement); 
 		} else if (la.kind == 109) {
 			lexer.NextToken();
 
-#line  1773 "cs.ATG" 
+#line  1774 "cs.ATG" 
 			ArrayList switchSections = new ArrayList(); SwitchSection switchSection; 
 			Expect(20);
 			Expr(
-#line  1774 "cs.ATG" 
+#line  1775 "cs.ATG" 
 out expr);
 			Expect(21);
 			Expect(16);
 			while (la.kind == 54 || la.kind == 62) {
 				SwitchSection(
-#line  1775 "cs.ATG" 
+#line  1776 "cs.ATG" 
 out switchSection);
 
-#line  1775 "cs.ATG" 
+#line  1776 "cs.ATG" 
 				switchSections.Add(switchSection); 
 			}
 			Expect(17);
 
-#line  1776 "cs.ATG" 
+#line  1777 "cs.ATG" 
 			statement = new SwitchStatement(expr, switchSections); 
 		} else if (la.kind == 124) {
 			lexer.NextToken();
 			Expect(20);
 			Expr(
-#line  1778 "cs.ATG" 
+#line  1779 "cs.ATG" 
 out expr);
 			Expect(21);
 			EmbeddedStatement(
-#line  1780 "cs.ATG" 
+#line  1781 "cs.ATG" 
 out embeddedStatement);
 
-#line  1780 "cs.ATG" 
+#line  1781 "cs.ATG" 
 			statement = new DoLoopStatement(expr, embeddedStatement, ConditionType.While, ConditionPosition.Start);
 		} else if (la.kind == 64) {
 			lexer.NextToken();
 			EmbeddedStatement(
-#line  1781 "cs.ATG" 
+#line  1782 "cs.ATG" 
 out embeddedStatement);
 			Expect(124);
 			Expect(20);
 			Expr(
-#line  1782 "cs.ATG" 
+#line  1783 "cs.ATG" 
 out expr);
 			Expect(21);
 			Expect(11);
 
-#line  1782 "cs.ATG" 
+#line  1783 "cs.ATG" 
 			statement = new DoLoopStatement(expr, embeddedStatement, ConditionType.While, ConditionPosition.End); 
 		} else if (la.kind == 75) {
 			lexer.NextToken();
 
-#line  1783 "cs.ATG" 
+#line  1784 "cs.ATG" 
 			ArrayList initializer = null; ArrayList iterator = null; 
 			Expect(20);
 			if (StartOf(5)) {
 				ForInitializer(
-#line  1784 "cs.ATG" 
+#line  1785 "cs.ATG" 
 out initializer);
 			}
 			Expect(11);
 			if (StartOf(5)) {
 				Expr(
-#line  1785 "cs.ATG" 
+#line  1786 "cs.ATG" 
 out expr);
 			}
 			Expect(11);
 			if (StartOf(5)) {
 				ForIterator(
-#line  1786 "cs.ATG" 
+#line  1787 "cs.ATG" 
 out iterator);
 			}
 			Expect(21);
 			EmbeddedStatement(
-#line  1787 "cs.ATG" 
+#line  1788 "cs.ATG" 
 out embeddedStatement);
 
-#line  1787 "cs.ATG" 
+#line  1788 "cs.ATG" 
 			statement = new ForStatement(initializer, expr, iterator, embeddedStatement); 
 		} else if (la.kind == 76) {
 			lexer.NextToken();
 			Expect(20);
 			Type(
-#line  1788 "cs.ATG" 
+#line  1789 "cs.ATG" 
 out type);
 			Expect(1);
 
-#line  1788 "cs.ATG" 
+#line  1789 "cs.ATG" 
 			string varName = t.val; Point start = t.Location;
 			Expect(80);
 			Expr(
-#line  1789 "cs.ATG" 
+#line  1790 "cs.ATG" 
 out expr);
 			Expect(21);
 			EmbeddedStatement(
-#line  1790 "cs.ATG" 
+#line  1791 "cs.ATG" 
 out embeddedStatement);
 
-#line  1790 "cs.ATG" 
+#line  1791 "cs.ATG" 
 			statement = new ForeachStatement(type, varName , expr, embeddedStatement); 
 			statement.EndLocation = t.EndLocation;
 			
@@ -3893,34 +3880,34 @@ out embeddedStatement);
 			lexer.NextToken();
 			Expect(11);
 
-#line  1794 "cs.ATG" 
+#line  1795 "cs.ATG" 
 			statement = new BreakStatement(); 
 		} else if (la.kind == 60) {
 			lexer.NextToken();
 			Expect(11);
 
-#line  1795 "cs.ATG" 
+#line  1796 "cs.ATG" 
 			statement = new ContinueStatement(); 
 		} else if (la.kind == 77) {
 			GotoStatement(
-#line  1796 "cs.ATG" 
+#line  1797 "cs.ATG" 
 out statement);
 		} else if (
-#line  1797 "cs.ATG" 
+#line  1798 "cs.ATG" 
 IsYieldStatement()) {
 			Expect(1);
 			if (la.kind == 100) {
 				lexer.NextToken();
 				Expr(
-#line  1797 "cs.ATG" 
+#line  1798 "cs.ATG" 
 out expr);
 
-#line  1797 "cs.ATG" 
+#line  1798 "cs.ATG" 
 				statement = new YieldStatement(new ReturnStatement(expr)); 
 			} else if (la.kind == 52) {
 				lexer.NextToken();
 
-#line  1798 "cs.ATG" 
+#line  1799 "cs.ATG" 
 				statement = new YieldStatement(new BreakStatement()); 
 			} else SynErr(169);
 			Expect(11);
@@ -3928,510 +3915,488 @@ out expr);
 			lexer.NextToken();
 			if (StartOf(5)) {
 				Expr(
-#line  1799 "cs.ATG" 
+#line  1800 "cs.ATG" 
 out expr);
 			}
 			Expect(11);
 
-#line  1799 "cs.ATG" 
+#line  1800 "cs.ATG" 
 			statement = new ReturnStatement(expr); 
 		} else if (la.kind == 111) {
 			lexer.NextToken();
 			if (StartOf(5)) {
 				Expr(
-#line  1800 "cs.ATG" 
+#line  1801 "cs.ATG" 
 out expr);
 			}
 			Expect(11);
 
-#line  1800 "cs.ATG" 
+#line  1801 "cs.ATG" 
 			statement = new ThrowStatement(expr); 
 		} else if (StartOf(5)) {
 			StatementExpr(
-#line  1802 "cs.ATG" 
+#line  1803 "cs.ATG" 
 out statement);
 			Expect(11);
 		} else if (la.kind == 113) {
 			TryStatement(
-#line  1804 "cs.ATG" 
+#line  1805 "cs.ATG" 
 out statement);
 		} else if (la.kind == 85) {
 			lexer.NextToken();
 			Expect(20);
 			Expr(
-#line  1806 "cs.ATG" 
+#line  1807 "cs.ATG" 
 out expr);
 			Expect(21);
 			EmbeddedStatement(
-#line  1807 "cs.ATG" 
+#line  1808 "cs.ATG" 
 out embeddedStatement);
 
-#line  1807 "cs.ATG" 
+#line  1808 "cs.ATG" 
 			statement = new LockStatement(expr, embeddedStatement); 
 		} else if (la.kind == 120) {
 
-#line  1809 "cs.ATG" 
+#line  1810 "cs.ATG" 
 			Statement resourceAcquisitionStmt = null; 
 			lexer.NextToken();
 			Expect(20);
 			ResourceAcquisition(
-#line  1811 "cs.ATG" 
+#line  1812 "cs.ATG" 
 out resourceAcquisitionStmt);
 			Expect(21);
 			EmbeddedStatement(
-#line  1812 "cs.ATG" 
+#line  1813 "cs.ATG" 
 out embeddedStatement);
 
-#line  1812 "cs.ATG" 
+#line  1813 "cs.ATG" 
 			statement = new UsingStatement(resourceAcquisitionStmt, embeddedStatement); 
 		} else if (la.kind == 118) {
 			lexer.NextToken();
 			Block(
-#line  1814 "cs.ATG" 
+#line  1815 "cs.ATG" 
 out embeddedStatement);
 
-#line  1814 "cs.ATG" 
+#line  1815 "cs.ATG" 
 			statement = new UnsafeStatement(embeddedStatement); 
 		} else if (la.kind == 73) {
 			lexer.NextToken();
 			Expect(20);
 			Type(
-#line  1817 "cs.ATG" 
+#line  1818 "cs.ATG" 
 out type);
 
-#line  1817 "cs.ATG" 
+#line  1818 "cs.ATG" 
 			if (type.PointerNestingLevel == 0) Error("can only fix pointer types");
 			ArrayList pointerDeclarators = new ArrayList(1);
 			
 			Expect(1);
 
-#line  1820 "cs.ATG" 
+#line  1821 "cs.ATG" 
 			string identifier = t.val; 
 			Expect(3);
 			Expr(
-#line  1821 "cs.ATG" 
+#line  1822 "cs.ATG" 
 out expr);
 
-#line  1821 "cs.ATG" 
+#line  1822 "cs.ATG" 
 			pointerDeclarators.Add(new VariableDeclaration(identifier, expr)); 
 			while (la.kind == 14) {
 				lexer.NextToken();
 				Expect(1);
 
-#line  1823 "cs.ATG" 
+#line  1824 "cs.ATG" 
 				identifier = t.val; 
 				Expect(3);
 				Expr(
-#line  1824 "cs.ATG" 
+#line  1825 "cs.ATG" 
 out expr);
 
-#line  1824 "cs.ATG" 
+#line  1825 "cs.ATG" 
 				pointerDeclarators.Add(new VariableDeclaration(identifier, expr)); 
 			}
 			Expect(21);
 			EmbeddedStatement(
-#line  1826 "cs.ATG" 
+#line  1827 "cs.ATG" 
 out embeddedStatement);
 
-#line  1826 "cs.ATG" 
+#line  1827 "cs.ATG" 
 			statement = new FixedStatement(type, pointerDeclarators, embeddedStatement); 
 		} else SynErr(170);
 	}
 
 	void SwitchSection(
-#line  1848 "cs.ATG" 
+#line  1849 "cs.ATG" 
 out SwitchSection stmt) {
 
-#line  1850 "cs.ATG" 
+#line  1851 "cs.ATG" 
 		SwitchSection switchSection = new SwitchSection();
 		CaseLabel label;
 		
 		SwitchLabel(
-#line  1854 "cs.ATG" 
+#line  1855 "cs.ATG" 
 out label);
 
-#line  1854 "cs.ATG" 
+#line  1855 "cs.ATG" 
 		switchSection.SwitchLabels.Add(label); 
 		while (la.kind == 54 || la.kind == 62) {
 			SwitchLabel(
-#line  1856 "cs.ATG" 
+#line  1857 "cs.ATG" 
 out label);
 
-#line  1856 "cs.ATG" 
+#line  1857 "cs.ATG" 
 			switchSection.SwitchLabels.Add(label); 
 		}
 
-#line  1858 "cs.ATG" 
+#line  1859 "cs.ATG" 
 		compilationUnit.BlockStart(switchSection); 
 		Statement();
 		while (StartOf(20)) {
 			Statement();
 		}
 
-#line  1861 "cs.ATG" 
+#line  1862 "cs.ATG" 
 		compilationUnit.BlockEnd();
 		stmt = switchSection;
 		
 	}
 
 	void ForInitializer(
-#line  1829 "cs.ATG" 
+#line  1830 "cs.ATG" 
 out ArrayList initializer) {
 
-#line  1831 "cs.ATG" 
+#line  1832 "cs.ATG" 
 		Statement stmt; 
 		initializer = new ArrayList();
 		
 		if (
-#line  1835 "cs.ATG" 
+#line  1836 "cs.ATG" 
 IsLocalVarDecl()) {
 			LocalVariableDecl(
-#line  1835 "cs.ATG" 
+#line  1836 "cs.ATG" 
 out stmt);
 
-#line  1835 "cs.ATG" 
+#line  1836 "cs.ATG" 
 			initializer.Add(stmt);
 		} else if (StartOf(5)) {
 			StatementExpr(
-#line  1836 "cs.ATG" 
+#line  1837 "cs.ATG" 
 out stmt);
 
-#line  1836 "cs.ATG" 
+#line  1837 "cs.ATG" 
 			initializer.Add(stmt);
 			while (la.kind == 14) {
 				lexer.NextToken();
 				StatementExpr(
-#line  1836 "cs.ATG" 
+#line  1837 "cs.ATG" 
 out stmt);
 
-#line  1836 "cs.ATG" 
+#line  1837 "cs.ATG" 
 				initializer.Add(stmt);
 			}
 		} else SynErr(171);
 	}
 
 	void ForIterator(
-#line  1839 "cs.ATG" 
+#line  1840 "cs.ATG" 
 out ArrayList iterator) {
 
-#line  1841 "cs.ATG" 
+#line  1842 "cs.ATG" 
 		Statement stmt; 
 		iterator = new ArrayList();
 		
 		StatementExpr(
-#line  1845 "cs.ATG" 
+#line  1846 "cs.ATG" 
 out stmt);
 
-#line  1845 "cs.ATG" 
+#line  1846 "cs.ATG" 
 		iterator.Add(stmt);
 		while (la.kind == 14) {
 			lexer.NextToken();
 			StatementExpr(
-#line  1845 "cs.ATG" 
+#line  1846 "cs.ATG" 
 out stmt);
 
-#line  1845 "cs.ATG" 
+#line  1846 "cs.ATG" 
 			iterator.Add(stmt); 
 		}
 	}
 
 	void GotoStatement(
-#line  1916 "cs.ATG" 
+#line  1917 "cs.ATG" 
 out Statement stmt) {
 
-#line  1917 "cs.ATG" 
+#line  1918 "cs.ATG" 
 		Expression expr; stmt = null; 
 		Expect(77);
 		if (la.kind == 1) {
 			lexer.NextToken();
 
-#line  1921 "cs.ATG" 
+#line  1922 "cs.ATG" 
 			stmt = new GotoStatement(t.val); 
 			Expect(11);
 		} else if (la.kind == 54) {
 			lexer.NextToken();
 			Expr(
-#line  1922 "cs.ATG" 
+#line  1923 "cs.ATG" 
 out expr);
 			Expect(11);
 
-#line  1922 "cs.ATG" 
+#line  1923 "cs.ATG" 
 			stmt = new GotoCaseStatement(expr); 
 		} else if (la.kind == 62) {
 			lexer.NextToken();
 			Expect(11);
 
-#line  1923 "cs.ATG" 
+#line  1924 "cs.ATG" 
 			stmt = new GotoCaseStatement(null); 
 		} else SynErr(172);
 	}
 
 	void StatementExpr(
-#line  1943 "cs.ATG" 
+#line  1944 "cs.ATG" 
 out Statement stmt) {
 
-#line  1948 "cs.ATG" 
-		bool mustBeAssignment = la.kind == Tokens.Plus  || la.kind == Tokens.Minus ||
-		                       la.kind == Tokens.Not   || la.kind == Tokens.BitwiseComplement ||
-		                       la.kind == Tokens.Times || la.kind == Tokens.BitwiseAnd   || IsTypeCast();
-		Expression expr = null;
-		
-		UnaryExpr(
-#line  1954 "cs.ATG" 
+#line  1945 "cs.ATG" 
+		Expression expr; 
+		Expr(
+#line  1947 "cs.ATG" 
 out expr);
-		if (StartOf(7)) {
 
-#line  1957 "cs.ATG" 
-			AssignmentOperatorType op; Expression val; 
-			AssignmentOperator(
-#line  1957 "cs.ATG" 
-out op);
-			Expr(
-#line  1957 "cs.ATG" 
-out val);
-
-#line  1957 "cs.ATG" 
-			expr = new AssignmentExpression(expr, op, val); 
-		} else if (la.kind == 11 || la.kind == 14 || la.kind == 21) {
-
-#line  1958 "cs.ATG" 
-			if (mustBeAssignment) Error("error in assignment."); 
-		} else SynErr(173);
-
-#line  1959 "cs.ATG" 
+#line  1950 "cs.ATG" 
 		stmt = new StatementExpression(expr); 
 	}
 
 	void TryStatement(
-#line  1873 "cs.ATG" 
+#line  1874 "cs.ATG" 
 out Statement tryStatement) {
 
-#line  1875 "cs.ATG" 
+#line  1876 "cs.ATG" 
 		Statement blockStmt = null, finallyStmt = null;
 		ArrayList catchClauses = null;
 		
 		Expect(113);
 		Block(
-#line  1879 "cs.ATG" 
+#line  1880 "cs.ATG" 
 out blockStmt);
 		if (la.kind == 55) {
 			CatchClauses(
-#line  1881 "cs.ATG" 
+#line  1882 "cs.ATG" 
 out catchClauses);
 			if (la.kind == 72) {
 				lexer.NextToken();
 				Block(
-#line  1881 "cs.ATG" 
+#line  1882 "cs.ATG" 
 out finallyStmt);
 			}
 		} else if (la.kind == 72) {
 			lexer.NextToken();
 			Block(
-#line  1882 "cs.ATG" 
+#line  1883 "cs.ATG" 
 out finallyStmt);
-		} else SynErr(174);
+		} else SynErr(173);
 
-#line  1885 "cs.ATG" 
+#line  1886 "cs.ATG" 
 		tryStatement = new TryCatchStatement(blockStmt, catchClauses, finallyStmt);
 			
 	}
 
 	void ResourceAcquisition(
-#line  1927 "cs.ATG" 
+#line  1928 "cs.ATG" 
 out Statement stmt) {
 
-#line  1929 "cs.ATG" 
+#line  1930 "cs.ATG" 
 		stmt = null;
 		Expression expr;
 		
 		if (
-#line  1934 "cs.ATG" 
+#line  1935 "cs.ATG" 
 IsLocalVarDecl()) {
 			LocalVariableDecl(
-#line  1934 "cs.ATG" 
+#line  1935 "cs.ATG" 
 out stmt);
 		} else if (StartOf(5)) {
 			Expr(
-#line  1935 "cs.ATG" 
+#line  1936 "cs.ATG" 
 out expr);
 
-#line  1939 "cs.ATG" 
+#line  1940 "cs.ATG" 
 			stmt = new StatementExpression(expr); 
-		} else SynErr(175);
+		} else SynErr(174);
 	}
 
 	void SwitchLabel(
-#line  1866 "cs.ATG" 
+#line  1867 "cs.ATG" 
 out CaseLabel label) {
 
-#line  1867 "cs.ATG" 
+#line  1868 "cs.ATG" 
 		Expression expr = null; label = null; 
 		if (la.kind == 54) {
 			lexer.NextToken();
 			Expr(
-#line  1869 "cs.ATG" 
+#line  1870 "cs.ATG" 
 out expr);
 			Expect(9);
 
-#line  1869 "cs.ATG" 
+#line  1870 "cs.ATG" 
 			label =  new CaseLabel(expr); 
 		} else if (la.kind == 62) {
 			lexer.NextToken();
 			Expect(9);
 
-#line  1870 "cs.ATG" 
+#line  1871 "cs.ATG" 
 			label =  new CaseLabel(); 
-		} else SynErr(176);
+		} else SynErr(175);
 	}
 
 	void CatchClauses(
-#line  1890 "cs.ATG" 
+#line  1891 "cs.ATG" 
 out ArrayList catchClauses) {
 
-#line  1892 "cs.ATG" 
+#line  1893 "cs.ATG" 
 		catchClauses = new ArrayList();
 		
 		Expect(55);
 
-#line  1895 "cs.ATG" 
+#line  1896 "cs.ATG" 
 		string identifier;
 		Statement stmt;
 		TypeReference typeRef;
 		
 		if (la.kind == 16) {
 			Block(
-#line  1901 "cs.ATG" 
+#line  1902 "cs.ATG" 
 out stmt);
 
-#line  1901 "cs.ATG" 
+#line  1902 "cs.ATG" 
 			catchClauses.Add(new CatchClause(stmt)); 
 		} else if (la.kind == 20) {
 			lexer.NextToken();
 			ClassType(
-#line  1903 "cs.ATG" 
+#line  1904 "cs.ATG" 
 out typeRef);
 
-#line  1903 "cs.ATG" 
+#line  1904 "cs.ATG" 
 			identifier = null; 
 			if (la.kind == 1) {
 				lexer.NextToken();
 
-#line  1904 "cs.ATG" 
+#line  1905 "cs.ATG" 
 				identifier = t.val; 
 			}
 			Expect(21);
 			Block(
-#line  1905 "cs.ATG" 
+#line  1906 "cs.ATG" 
 out stmt);
 
-#line  1906 "cs.ATG" 
+#line  1907 "cs.ATG" 
 			catchClauses.Add(new CatchClause(typeRef, identifier, stmt)); 
 			while (
-#line  1907 "cs.ATG" 
+#line  1908 "cs.ATG" 
 IsTypedCatch()) {
 				Expect(55);
 				Expect(20);
 				ClassType(
-#line  1907 "cs.ATG" 
+#line  1908 "cs.ATG" 
 out typeRef);
 
-#line  1907 "cs.ATG" 
+#line  1908 "cs.ATG" 
 				identifier = null; 
 				if (la.kind == 1) {
 					lexer.NextToken();
 
-#line  1908 "cs.ATG" 
+#line  1909 "cs.ATG" 
 					identifier = t.val; 
 				}
 				Expect(21);
 				Block(
-#line  1909 "cs.ATG" 
+#line  1910 "cs.ATG" 
 out stmt);
 
-#line  1910 "cs.ATG" 
+#line  1911 "cs.ATG" 
 				catchClauses.Add(new CatchClause(typeRef, identifier, stmt)); 
 			}
 			if (la.kind == 55) {
 				lexer.NextToken();
 				Block(
-#line  1912 "cs.ATG" 
+#line  1913 "cs.ATG" 
 out stmt);
 
-#line  1912 "cs.ATG" 
+#line  1913 "cs.ATG" 
 				catchClauses.Add(new CatchClause(stmt)); 
 			}
-		} else SynErr(177);
+		} else SynErr(176);
 	}
 
 	void UnaryExpr(
-#line  1977 "cs.ATG" 
+#line  1971 "cs.ATG" 
 out Expression uExpr) {
 
-#line  1979 "cs.ATG" 
+#line  1973 "cs.ATG" 
 		TypeReference type = null;
 		Expression expr;
 		ArrayList  expressions = new ArrayList();
 		uExpr = null;
 		
 		while (StartOf(25) || 
-#line  2003 "cs.ATG" 
+#line  1997 "cs.ATG" 
 IsTypeCast()) {
 			if (la.kind == 4) {
 				lexer.NextToken();
 
-#line  1988 "cs.ATG" 
+#line  1982 "cs.ATG" 
 				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Plus)); 
 			} else if (la.kind == 5) {
 				lexer.NextToken();
 
-#line  1989 "cs.ATG" 
+#line  1983 "cs.ATG" 
 				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Minus)); 
 			} else if (la.kind == 24) {
 				lexer.NextToken();
 
-#line  1990 "cs.ATG" 
+#line  1984 "cs.ATG" 
 				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Not)); 
 			} else if (la.kind == 27) {
 				lexer.NextToken();
 
-#line  1991 "cs.ATG" 
+#line  1985 "cs.ATG" 
 				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.BitNot)); 
 			} else if (la.kind == 6) {
 				lexer.NextToken();
 
-#line  1992 "cs.ATG" 
+#line  1986 "cs.ATG" 
 				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Star)); 
 			} else if (la.kind == 31) {
 				lexer.NextToken();
 
-#line  1993 "cs.ATG" 
+#line  1987 "cs.ATG" 
 				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Increment)); 
 			} else if (la.kind == 32) {
 				lexer.NextToken();
 
-#line  1994 "cs.ATG" 
+#line  1988 "cs.ATG" 
 				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.Decrement)); 
 			} else if (la.kind == 28) {
 				lexer.NextToken();
 
-#line  1995 "cs.ATG" 
+#line  1989 "cs.ATG" 
 				expressions.Add(new UnaryOperatorExpression(UnaryOperatorType.BitWiseAnd)); 
 			} else {
 				Expect(20);
 				Type(
-#line  2003 "cs.ATG" 
+#line  1997 "cs.ATG" 
 out type);
 				Expect(21);
 
-#line  2003 "cs.ATG" 
+#line  1997 "cs.ATG" 
 				expressions.Add(new CastExpression(type)); 
 			}
 		}
 		PrimaryExpr(
-#line  2007 "cs.ATG" 
+#line  2001 "cs.ATG" 
 out expr);
 
-#line  2007 "cs.ATG" 
+#line  2001 "cs.ATG" 
 		for (int i = 0; i < expressions.Count; ++i) {
 		Expression nextExpression = i + 1 < expressions.Count ? (Expression)expressions[i + 1] : expr;
 		if (expressions[i] is CastExpression) {
@@ -4449,33 +4414,33 @@ out expr);
 	}
 
 	void ConditionalOrExpr(
-#line  2186 "cs.ATG" 
+#line  2180 "cs.ATG" 
 ref Expression outExpr) {
 
-#line  2187 "cs.ATG" 
+#line  2181 "cs.ATG" 
 		Expression expr;   
 		ConditionalAndExpr(
-#line  2189 "cs.ATG" 
+#line  2183 "cs.ATG" 
 ref outExpr);
 		while (la.kind == 26) {
 			lexer.NextToken();
 			UnaryExpr(
-#line  2189 "cs.ATG" 
+#line  2183 "cs.ATG" 
 out expr);
 			ConditionalAndExpr(
-#line  2189 "cs.ATG" 
+#line  2183 "cs.ATG" 
 ref expr);
 
-#line  2189 "cs.ATG" 
+#line  2183 "cs.ATG" 
 			outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.LogicalOr, expr);  
 		}
 	}
 
 	void PrimaryExpr(
-#line  2024 "cs.ATG" 
+#line  2018 "cs.ATG" 
 out Expression pexpr) {
 
-#line  2026 "cs.ATG" 
+#line  2020 "cs.ATG" 
 		TypeReference type = null;
 		List<TypeReference> typeList = null;
 		bool isArrayCreation = false;
@@ -4485,545 +4450,545 @@ out Expression pexpr) {
 		if (la.kind == 112) {
 			lexer.NextToken();
 
-#line  2034 "cs.ATG" 
+#line  2028 "cs.ATG" 
 			pexpr = new PrimitiveExpression(true, "true");  
 		} else if (la.kind == 71) {
 			lexer.NextToken();
 
-#line  2035 "cs.ATG" 
+#line  2029 "cs.ATG" 
 			pexpr = new PrimitiveExpression(false, "false"); 
 		} else if (la.kind == 89) {
 			lexer.NextToken();
 
-#line  2036 "cs.ATG" 
+#line  2030 "cs.ATG" 
 			pexpr = new PrimitiveExpression(null, "null");  
 		} else if (la.kind == 2) {
 			lexer.NextToken();
 
-#line  2037 "cs.ATG" 
+#line  2031 "cs.ATG" 
 			pexpr = new PrimitiveExpression(t.literalValue, t.val);  
 		} else if (
-#line  2038 "cs.ATG" 
+#line  2032 "cs.ATG" 
 la.kind == Tokens.Identifier && Peek(1).kind == Tokens.DoubleColon) {
 			TypeName(
-#line  2039 "cs.ATG" 
+#line  2033 "cs.ATG" 
 out type);
 
-#line  2039 "cs.ATG" 
+#line  2033 "cs.ATG" 
 			pexpr = new TypeReferenceExpression(type); 
 		} else if (la.kind == 1) {
 			lexer.NextToken();
 
-#line  2041 "cs.ATG" 
+#line  2035 "cs.ATG" 
 			pexpr = new IdentifierExpression(t.val); 
 		} else if (la.kind == 20) {
 			lexer.NextToken();
 			Expr(
-#line  2043 "cs.ATG" 
+#line  2037 "cs.ATG" 
 out expr);
 			Expect(21);
 
-#line  2043 "cs.ATG" 
+#line  2037 "cs.ATG" 
 			pexpr = new ParenthesizedExpression(expr); 
 		} else if (StartOf(26)) {
 
-#line  2045 "cs.ATG" 
+#line  2039 "cs.ATG" 
 			string val = null; 
 			switch (la.kind) {
 			case 51: {
 				lexer.NextToken();
 
-#line  2047 "cs.ATG" 
+#line  2041 "cs.ATG" 
 				val = "bool"; 
 				break;
 			}
 			case 53: {
 				lexer.NextToken();
 
-#line  2048 "cs.ATG" 
+#line  2042 "cs.ATG" 
 				val = "byte"; 
 				break;
 			}
 			case 56: {
 				lexer.NextToken();
 
-#line  2049 "cs.ATG" 
+#line  2043 "cs.ATG" 
 				val = "char"; 
 				break;
 			}
 			case 61: {
 				lexer.NextToken();
 
-#line  2050 "cs.ATG" 
+#line  2044 "cs.ATG" 
 				val = "decimal"; 
 				break;
 			}
 			case 65: {
 				lexer.NextToken();
 
-#line  2051 "cs.ATG" 
+#line  2045 "cs.ATG" 
 				val = "double"; 
 				break;
 			}
 			case 74: {
 				lexer.NextToken();
 
-#line  2052 "cs.ATG" 
+#line  2046 "cs.ATG" 
 				val = "float"; 
 				break;
 			}
 			case 81: {
 				lexer.NextToken();
 
-#line  2053 "cs.ATG" 
+#line  2047 "cs.ATG" 
 				val = "int"; 
 				break;
 			}
 			case 86: {
 				lexer.NextToken();
 
-#line  2054 "cs.ATG" 
+#line  2048 "cs.ATG" 
 				val = "long"; 
 				break;
 			}
 			case 90: {
 				lexer.NextToken();
 
-#line  2055 "cs.ATG" 
+#line  2049 "cs.ATG" 
 				val = "object"; 
 				break;
 			}
 			case 101: {
 				lexer.NextToken();
 
-#line  2056 "cs.ATG" 
+#line  2050 "cs.ATG" 
 				val = "sbyte"; 
 				break;
 			}
 			case 103: {
 				lexer.NextToken();
 
-#line  2057 "cs.ATG" 
+#line  2051 "cs.ATG" 
 				val = "short"; 
 				break;
 			}
 			case 107: {
 				lexer.NextToken();
 
-#line  2058 "cs.ATG" 
+#line  2052 "cs.ATG" 
 				val = "string"; 
 				break;
 			}
 			case 115: {
 				lexer.NextToken();
 
-#line  2059 "cs.ATG" 
+#line  2053 "cs.ATG" 
 				val = "uint"; 
 				break;
 			}
 			case 116: {
 				lexer.NextToken();
 
-#line  2060 "cs.ATG" 
+#line  2054 "cs.ATG" 
 				val = "ulong"; 
 				break;
 			}
 			case 119: {
 				lexer.NextToken();
 
-#line  2061 "cs.ATG" 
+#line  2055 "cs.ATG" 
 				val = "ushort"; 
 				break;
 			}
 			}
 
-#line  2062 "cs.ATG" 
+#line  2056 "cs.ATG" 
 			t.val = ""; 
 			Expect(15);
 			Expect(1);
 
-#line  2062 "cs.ATG" 
+#line  2056 "cs.ATG" 
 			pexpr = new FieldReferenceExpression(new TypeReferenceExpression(val), t.val); 
 		} else if (la.kind == 110) {
 			lexer.NextToken();
 
-#line  2064 "cs.ATG" 
+#line  2058 "cs.ATG" 
 			pexpr = new ThisReferenceExpression(); 
 		} else if (la.kind == 50) {
 			lexer.NextToken();
 
-#line  2066 "cs.ATG" 
+#line  2060 "cs.ATG" 
 			Expression retExpr = new BaseReferenceExpression(); 
 			if (la.kind == 15) {
 				lexer.NextToken();
 				Expect(1);
 
-#line  2068 "cs.ATG" 
+#line  2062 "cs.ATG" 
 				retExpr = new FieldReferenceExpression(retExpr, t.val); 
 			} else if (la.kind == 18) {
 				lexer.NextToken();
 				Expr(
-#line  2069 "cs.ATG" 
+#line  2063 "cs.ATG" 
 out expr);
 
-#line  2069 "cs.ATG" 
+#line  2063 "cs.ATG" 
 				ArrayList indices = new ArrayList(); if (expr != null) { indices.Add(expr); } 
 				while (la.kind == 14) {
 					lexer.NextToken();
 					Expr(
-#line  2070 "cs.ATG" 
+#line  2064 "cs.ATG" 
 out expr);
 
-#line  2070 "cs.ATG" 
+#line  2064 "cs.ATG" 
 					if (expr != null) { indices.Add(expr); } 
 				}
 				Expect(19);
 
-#line  2071 "cs.ATG" 
+#line  2065 "cs.ATG" 
 				retExpr = new IndexerExpression(retExpr, indices); 
-			} else SynErr(178);
+			} else SynErr(177);
 
-#line  2072 "cs.ATG" 
+#line  2066 "cs.ATG" 
 			pexpr = retExpr; 
 		} else if (la.kind == 88) {
 			lexer.NextToken();
 			NonArrayType(
-#line  2073 "cs.ATG" 
+#line  2067 "cs.ATG" 
 out type);
 
-#line  2073 "cs.ATG" 
+#line  2067 "cs.ATG" 
 			ArrayList parameters = new ArrayList(); 
 			if (la.kind == 20) {
 				lexer.NextToken();
 
-#line  2078 "cs.ATG" 
+#line  2072 "cs.ATG" 
 				ObjectCreateExpression oce = new ObjectCreateExpression(type, parameters); 
 				if (StartOf(21)) {
 					Argument(
-#line  2079 "cs.ATG" 
+#line  2073 "cs.ATG" 
 out expr);
 
-#line  2079 "cs.ATG" 
+#line  2073 "cs.ATG" 
 					if (expr != null) { parameters.Add(expr); } 
 					while (la.kind == 14) {
 						lexer.NextToken();
 						Argument(
-#line  2080 "cs.ATG" 
+#line  2074 "cs.ATG" 
 out expr);
 
-#line  2080 "cs.ATG" 
+#line  2074 "cs.ATG" 
 						if (expr != null) { parameters.Add(expr); } 
 					}
 				}
 				Expect(21);
 
-#line  2082 "cs.ATG" 
+#line  2076 "cs.ATG" 
 				pexpr = oce; 
 			} else if (la.kind == 18) {
 
-#line  2084 "cs.ATG" 
+#line  2078 "cs.ATG" 
 				isArrayCreation = true; ArrayCreateExpression ace = new ArrayCreateExpression(type); pexpr = ace; 
 				lexer.NextToken();
 
-#line  2085 "cs.ATG" 
+#line  2079 "cs.ATG" 
 				int dims = 0; 
 				ArrayList rank = new ArrayList(); 
 				ArrayList parameterExpression = new ArrayList(); 
 				if (StartOf(5)) {
 					Expr(
-#line  2089 "cs.ATG" 
+#line  2083 "cs.ATG" 
 out expr);
 
-#line  2089 "cs.ATG" 
+#line  2083 "cs.ATG" 
 					if (expr != null) { parameterExpression.Add(expr); } 
 					while (la.kind == 14) {
 						lexer.NextToken();
 						Expr(
-#line  2091 "cs.ATG" 
+#line  2085 "cs.ATG" 
 out expr);
 
-#line  2091 "cs.ATG" 
+#line  2085 "cs.ATG" 
 						if (expr != null) { parameterExpression.Add(expr); } 
 					}
 					Expect(19);
 
-#line  2093 "cs.ATG" 
+#line  2087 "cs.ATG" 
 					parameters.Add(new ArrayCreationParameter(parameterExpression)); 
 					ace.Parameters = parameters; 
 					while (
-#line  2096 "cs.ATG" 
+#line  2090 "cs.ATG" 
 IsDims()) {
 						Expect(18);
 
-#line  2096 "cs.ATG" 
+#line  2090 "cs.ATG" 
 						dims =0;
 						while (la.kind == 14) {
 							lexer.NextToken();
 
-#line  2097 "cs.ATG" 
+#line  2091 "cs.ATG" 
 							dims++;
 						}
 
-#line  2097 "cs.ATG" 
+#line  2091 "cs.ATG" 
 						rank.Add(dims); 
 						parameters.Add(new ArrayCreationParameter(dims)); 
 						
 						Expect(19);
 					}
 
-#line  2101 "cs.ATG" 
+#line  2095 "cs.ATG" 
 					if (rank.Count > 0) { 
 					ace.Rank = (int[])rank.ToArray(typeof (int)); 
 					} 
 					
 					if (la.kind == 16) {
 						ArrayInitializer(
-#line  2105 "cs.ATG" 
+#line  2099 "cs.ATG" 
 out expr);
 
-#line  2105 "cs.ATG" 
+#line  2099 "cs.ATG" 
 						ace.ArrayInitializer = (ArrayInitializerExpression)expr; 
 					}
 				} else if (la.kind == 14 || la.kind == 19) {
 					while (la.kind == 14) {
 						lexer.NextToken();
 
-#line  2107 "cs.ATG" 
+#line  2101 "cs.ATG" 
 						dims++;
 					}
 
-#line  2108 "cs.ATG" 
+#line  2102 "cs.ATG" 
 					parameters.Add(new ArrayCreationParameter(dims)); 
 					
 					Expect(19);
 					while (
-#line  2110 "cs.ATG" 
+#line  2104 "cs.ATG" 
 IsDims()) {
 						Expect(18);
 
-#line  2110 "cs.ATG" 
+#line  2104 "cs.ATG" 
 						dims =0;
 						while (la.kind == 14) {
 							lexer.NextToken();
 
-#line  2110 "cs.ATG" 
+#line  2104 "cs.ATG" 
 							dims++;
 						}
 
-#line  2110 "cs.ATG" 
+#line  2104 "cs.ATG" 
 						parameters.Add(new ArrayCreationParameter(dims)); 
 						Expect(19);
 					}
 					ArrayInitializer(
-#line  2110 "cs.ATG" 
+#line  2104 "cs.ATG" 
 out expr);
 
-#line  2110 "cs.ATG" 
+#line  2104 "cs.ATG" 
 					ace.ArrayInitializer = (ArrayInitializerExpression)expr; ace.Parameters = parameters; 
-				} else SynErr(179);
-			} else SynErr(180);
+				} else SynErr(178);
+			} else SynErr(179);
 		} else if (la.kind == 114) {
 			lexer.NextToken();
 			Expect(20);
 			if (
-#line  2116 "cs.ATG" 
+#line  2110 "cs.ATG" 
 NotVoidPointer()) {
 				Expect(122);
 
-#line  2116 "cs.ATG" 
+#line  2110 "cs.ATG" 
 				type = new TypeReference("void"); 
 			} else if (StartOf(9)) {
 				Type(
-#line  2117 "cs.ATG" 
+#line  2111 "cs.ATG" 
 out type);
-			} else SynErr(181);
+			} else SynErr(180);
 			Expect(21);
 
-#line  2118 "cs.ATG" 
+#line  2112 "cs.ATG" 
 			pexpr = new TypeOfExpression(type); 
 		} else if (
-#line  2120 "cs.ATG" 
+#line  2114 "cs.ATG" 
 la.kind == Tokens.Default && Peek(1).kind == Tokens.OpenParenthesis) {
 			Expect(62);
 			Expect(20);
 			Type(
-#line  2122 "cs.ATG" 
+#line  2116 "cs.ATG" 
 out type);
 			Expect(21);
 
-#line  2122 "cs.ATG" 
+#line  2116 "cs.ATG" 
 			pexpr = new DefaultValueExpression(type); 
 		} else if (la.kind == 104) {
 			lexer.NextToken();
 			Expect(20);
 			Type(
-#line  2123 "cs.ATG" 
+#line  2117 "cs.ATG" 
 out type);
 			Expect(21);
 
-#line  2123 "cs.ATG" 
+#line  2117 "cs.ATG" 
 			pexpr = new SizeOfExpression(type); 
 		} else if (la.kind == 57) {
 			lexer.NextToken();
 			Expect(20);
 			Expr(
-#line  2124 "cs.ATG" 
+#line  2118 "cs.ATG" 
 out expr);
 			Expect(21);
 
-#line  2124 "cs.ATG" 
+#line  2118 "cs.ATG" 
 			pexpr = new CheckedExpression(expr); 
 		} else if (la.kind == 117) {
 			lexer.NextToken();
 			Expect(20);
 			Expr(
-#line  2125 "cs.ATG" 
+#line  2119 "cs.ATG" 
 out expr);
 			Expect(21);
 
-#line  2125 "cs.ATG" 
+#line  2119 "cs.ATG" 
 			pexpr = new UncheckedExpression(expr); 
 		} else if (la.kind == 63) {
 			lexer.NextToken();
 			AnonymousMethodExpr(
-#line  2126 "cs.ATG" 
+#line  2120 "cs.ATG" 
 out expr);
 
-#line  2126 "cs.ATG" 
+#line  2120 "cs.ATG" 
 			pexpr = expr; 
-		} else SynErr(182);
+		} else SynErr(181);
 		while (StartOf(27) || 
-#line  2137 "cs.ATG" 
+#line  2131 "cs.ATG" 
 IsGenericFollowedBy(Tokens.Dot) && IsTypeReferenceExpression(pexpr) || 
-#line  2145 "cs.ATG" 
+#line  2139 "cs.ATG" 
 IsGenericFollowedBy(Tokens.OpenParenthesis)) {
 			if (la.kind == 31 || la.kind == 32) {
 				if (la.kind == 31) {
 					lexer.NextToken();
 
-#line  2130 "cs.ATG" 
+#line  2124 "cs.ATG" 
 					pexpr = new UnaryOperatorExpression(pexpr, UnaryOperatorType.PostIncrement); 
 				} else if (la.kind == 32) {
 					lexer.NextToken();
 
-#line  2131 "cs.ATG" 
+#line  2125 "cs.ATG" 
 					pexpr = new UnaryOperatorExpression(pexpr, UnaryOperatorType.PostDecrement); 
-				} else SynErr(183);
+				} else SynErr(182);
 			} else if (la.kind == 47) {
 				lexer.NextToken();
 				Expect(1);
 
-#line  2134 "cs.ATG" 
+#line  2128 "cs.ATG" 
 				pexpr = new PointerReferenceExpression(pexpr, t.val); 
 			} else if (la.kind == 15) {
 				lexer.NextToken();
 				Expect(1);
 
-#line  2135 "cs.ATG" 
+#line  2129 "cs.ATG" 
 				pexpr = new FieldReferenceExpression(pexpr, t.val);
 			} else if (
-#line  2137 "cs.ATG" 
+#line  2131 "cs.ATG" 
 IsGenericFollowedBy(Tokens.Dot) && IsTypeReferenceExpression(pexpr)) {
 				TypeArgumentList(
-#line  2138 "cs.ATG" 
+#line  2132 "cs.ATG" 
 out typeList);
 				Expect(15);
 				Expect(1);
 
-#line  2139 "cs.ATG" 
+#line  2133 "cs.ATG" 
 				pexpr = new FieldReferenceExpression(GetTypeReferenceExpression(pexpr, typeList), t.val);
 			} else if (la.kind == 20) {
 				lexer.NextToken();
 
-#line  2141 "cs.ATG" 
+#line  2135 "cs.ATG" 
 				ArrayList parameters = new ArrayList(); 
 				if (StartOf(21)) {
 					Argument(
-#line  2142 "cs.ATG" 
+#line  2136 "cs.ATG" 
 out expr);
 
-#line  2142 "cs.ATG" 
+#line  2136 "cs.ATG" 
 					if (expr != null) {parameters.Add(expr);} 
 					while (la.kind == 14) {
 						lexer.NextToken();
 						Argument(
-#line  2143 "cs.ATG" 
+#line  2137 "cs.ATG" 
 out expr);
 
-#line  2143 "cs.ATG" 
+#line  2137 "cs.ATG" 
 						if (expr != null) {parameters.Add(expr);} 
 					}
 				}
 				Expect(21);
 
-#line  2144 "cs.ATG" 
+#line  2138 "cs.ATG" 
 				pexpr = new InvocationExpression(pexpr, parameters); 
 			} else if (
-#line  2145 "cs.ATG" 
+#line  2139 "cs.ATG" 
 IsGenericFollowedBy(Tokens.OpenParenthesis)) {
 				TypeArgumentList(
-#line  2145 "cs.ATG" 
+#line  2139 "cs.ATG" 
 out typeList);
 				Expect(20);
 
-#line  2146 "cs.ATG" 
+#line  2140 "cs.ATG" 
 				ArrayList parameters = new ArrayList(); 
 				if (StartOf(21)) {
 					Argument(
-#line  2147 "cs.ATG" 
+#line  2141 "cs.ATG" 
 out expr);
 
-#line  2147 "cs.ATG" 
+#line  2141 "cs.ATG" 
 					if (expr != null) {parameters.Add(expr);} 
 					while (la.kind == 14) {
 						lexer.NextToken();
 						Argument(
-#line  2148 "cs.ATG" 
+#line  2142 "cs.ATG" 
 out expr);
 
-#line  2148 "cs.ATG" 
+#line  2142 "cs.ATG" 
 						if (expr != null) {parameters.Add(expr);} 
 					}
 				}
 				Expect(21);
 
-#line  2149 "cs.ATG" 
+#line  2143 "cs.ATG" 
 				pexpr = new InvocationExpression(pexpr, parameters, typeList); 
 			} else {
 
-#line  2151 "cs.ATG" 
+#line  2145 "cs.ATG" 
 				if (isArrayCreation) Error("element access not allow on array creation");
 				ArrayList indices = new ArrayList();
 				
 				lexer.NextToken();
 				Expr(
-#line  2154 "cs.ATG" 
+#line  2148 "cs.ATG" 
 out expr);
 
-#line  2154 "cs.ATG" 
+#line  2148 "cs.ATG" 
 				if (expr != null) { indices.Add(expr); } 
 				while (la.kind == 14) {
 					lexer.NextToken();
 					Expr(
-#line  2155 "cs.ATG" 
+#line  2149 "cs.ATG" 
 out expr);
 
-#line  2155 "cs.ATG" 
+#line  2149 "cs.ATG" 
 					if (expr != null) { indices.Add(expr); } 
 				}
 				Expect(19);
 
-#line  2156 "cs.ATG" 
+#line  2150 "cs.ATG" 
 				pexpr = new IndexerExpression(pexpr, indices); 
 			}
 		}
 	}
 
 	void AnonymousMethodExpr(
-#line  2160 "cs.ATG" 
+#line  2154 "cs.ATG" 
 out Expression outExpr) {
 
-#line  2162 "cs.ATG" 
+#line  2156 "cs.ATG" 
 		AnonymousMethodExpression expr = new AnonymousMethodExpression();
 		expr.StartLocation = t.Location;
 		Statement stmt;
@@ -5034,337 +4999,337 @@ out Expression outExpr) {
 			lexer.NextToken();
 			if (StartOf(10)) {
 				FormalParameterList(
-#line  2171 "cs.ATG" 
+#line  2165 "cs.ATG" 
 p);
 
-#line  2171 "cs.ATG" 
+#line  2165 "cs.ATG" 
 				expr.Parameters = p; 
 			}
 			Expect(21);
 		}
 
-#line  2176 "cs.ATG" 
+#line  2170 "cs.ATG" 
 		if (compilationUnit != null) { 
 		Block(
-#line  2177 "cs.ATG" 
+#line  2171 "cs.ATG" 
 out stmt);
 
-#line  2177 "cs.ATG" 
+#line  2171 "cs.ATG" 
 		expr.Body  = (BlockStatement)stmt; 
 
-#line  2178 "cs.ATG" 
+#line  2172 "cs.ATG" 
 		} else { 
 		Expect(16);
 
-#line  2180 "cs.ATG" 
+#line  2174 "cs.ATG" 
 		lexer.SkipCurrentBlock(); 
 		Expect(17);
 
-#line  2182 "cs.ATG" 
+#line  2176 "cs.ATG" 
 		} 
 
-#line  2183 "cs.ATG" 
+#line  2177 "cs.ATG" 
 		expr.EndLocation = t.Location; 
 	}
 
 	void TypeArgumentList(
-#line  2343 "cs.ATG" 
+#line  2337 "cs.ATG" 
 out List<TypeReference> types) {
 
-#line  2345 "cs.ATG" 
+#line  2339 "cs.ATG" 
 		types = new List<TypeReference>();
 		TypeReference type = null;
 		
 		Expect(23);
 		Type(
-#line  2349 "cs.ATG" 
+#line  2343 "cs.ATG" 
 out type);
 
-#line  2349 "cs.ATG" 
+#line  2343 "cs.ATG" 
 		types.Add(type); 
 		while (la.kind == 14) {
 			lexer.NextToken();
 			Type(
-#line  2350 "cs.ATG" 
+#line  2344 "cs.ATG" 
 out type);
 
-#line  2350 "cs.ATG" 
+#line  2344 "cs.ATG" 
 			types.Add(type); 
 		}
 		Expect(22);
 	}
 
 	void ConditionalAndExpr(
-#line  2192 "cs.ATG" 
+#line  2186 "cs.ATG" 
 ref Expression outExpr) {
 
-#line  2193 "cs.ATG" 
+#line  2187 "cs.ATG" 
 		Expression expr; 
 		InclusiveOrExpr(
-#line  2195 "cs.ATG" 
+#line  2189 "cs.ATG" 
 ref outExpr);
 		while (la.kind == 25) {
 			lexer.NextToken();
 			UnaryExpr(
-#line  2195 "cs.ATG" 
+#line  2189 "cs.ATG" 
 out expr);
 			InclusiveOrExpr(
-#line  2195 "cs.ATG" 
+#line  2189 "cs.ATG" 
 ref expr);
 
-#line  2195 "cs.ATG" 
+#line  2189 "cs.ATG" 
 			outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.LogicalAnd, expr);  
 		}
 	}
 
 	void InclusiveOrExpr(
-#line  2198 "cs.ATG" 
+#line  2192 "cs.ATG" 
 ref Expression outExpr) {
 
-#line  2199 "cs.ATG" 
+#line  2193 "cs.ATG" 
 		Expression expr; 
 		ExclusiveOrExpr(
-#line  2201 "cs.ATG" 
+#line  2195 "cs.ATG" 
 ref outExpr);
 		while (la.kind == 29) {
 			lexer.NextToken();
 			UnaryExpr(
-#line  2201 "cs.ATG" 
+#line  2195 "cs.ATG" 
 out expr);
 			ExclusiveOrExpr(
-#line  2201 "cs.ATG" 
+#line  2195 "cs.ATG" 
 ref expr);
 
-#line  2201 "cs.ATG" 
+#line  2195 "cs.ATG" 
 			outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.BitwiseOr, expr);  
 		}
 	}
 
 	void ExclusiveOrExpr(
-#line  2204 "cs.ATG" 
+#line  2198 "cs.ATG" 
 ref Expression outExpr) {
 
-#line  2205 "cs.ATG" 
+#line  2199 "cs.ATG" 
 		Expression expr; 
 		AndExpr(
-#line  2207 "cs.ATG" 
+#line  2201 "cs.ATG" 
 ref outExpr);
 		while (la.kind == 30) {
 			lexer.NextToken();
 			UnaryExpr(
-#line  2207 "cs.ATG" 
+#line  2201 "cs.ATG" 
 out expr);
 			AndExpr(
-#line  2207 "cs.ATG" 
+#line  2201 "cs.ATG" 
 ref expr);
 
-#line  2207 "cs.ATG" 
+#line  2201 "cs.ATG" 
 			outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.ExclusiveOr, expr);  
 		}
 	}
 
 	void AndExpr(
-#line  2210 "cs.ATG" 
+#line  2204 "cs.ATG" 
 ref Expression outExpr) {
 
-#line  2211 "cs.ATG" 
+#line  2205 "cs.ATG" 
 		Expression expr; 
 		EqualityExpr(
-#line  2213 "cs.ATG" 
+#line  2207 "cs.ATG" 
 ref outExpr);
 		while (la.kind == 28) {
 			lexer.NextToken();
 			UnaryExpr(
-#line  2213 "cs.ATG" 
+#line  2207 "cs.ATG" 
 out expr);
 			EqualityExpr(
-#line  2213 "cs.ATG" 
+#line  2207 "cs.ATG" 
 ref expr);
 
-#line  2213 "cs.ATG" 
+#line  2207 "cs.ATG" 
 			outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.BitwiseAnd, expr);  
 		}
 	}
 
 	void EqualityExpr(
-#line  2216 "cs.ATG" 
+#line  2210 "cs.ATG" 
 ref Expression outExpr) {
 
-#line  2218 "cs.ATG" 
+#line  2212 "cs.ATG" 
 		Expression expr;
 		BinaryOperatorType op = BinaryOperatorType.None;
 		
 		RelationalExpr(
-#line  2222 "cs.ATG" 
+#line  2216 "cs.ATG" 
 ref outExpr);
 		while (la.kind == 33 || la.kind == 34) {
 			if (la.kind == 34) {
 				lexer.NextToken();
 
-#line  2225 "cs.ATG" 
+#line  2219 "cs.ATG" 
 				op = BinaryOperatorType.InEquality; 
 			} else {
 				lexer.NextToken();
 
-#line  2226 "cs.ATG" 
+#line  2220 "cs.ATG" 
 				op = BinaryOperatorType.Equality; 
 			}
 			UnaryExpr(
-#line  2228 "cs.ATG" 
+#line  2222 "cs.ATG" 
 out expr);
 			RelationalExpr(
-#line  2228 "cs.ATG" 
+#line  2222 "cs.ATG" 
 ref expr);
 
-#line  2228 "cs.ATG" 
+#line  2222 "cs.ATG" 
 			outExpr = new BinaryOperatorExpression(outExpr, op, expr);  
 		}
 	}
 
 	void RelationalExpr(
-#line  2232 "cs.ATG" 
+#line  2226 "cs.ATG" 
 ref Expression outExpr) {
 
-#line  2234 "cs.ATG" 
+#line  2228 "cs.ATG" 
 		TypeReference type;
 		Expression expr;
 		BinaryOperatorType op = BinaryOperatorType.None;
 		
 		ShiftExpr(
-#line  2239 "cs.ATG" 
+#line  2233 "cs.ATG" 
 ref outExpr);
 		while (StartOf(28)) {
 			if (StartOf(29)) {
 				if (la.kind == 23) {
 					lexer.NextToken();
 
-#line  2242 "cs.ATG" 
+#line  2236 "cs.ATG" 
 					op = BinaryOperatorType.LessThan; 
 				} else if (la.kind == 22) {
 					lexer.NextToken();
 
-#line  2243 "cs.ATG" 
+#line  2237 "cs.ATG" 
 					op = BinaryOperatorType.GreaterThan; 
 				} else if (la.kind == 36) {
 					lexer.NextToken();
 
-#line  2244 "cs.ATG" 
+#line  2238 "cs.ATG" 
 					op = BinaryOperatorType.LessThanOrEqual; 
 				} else if (la.kind == 35) {
 					lexer.NextToken();
 
-#line  2245 "cs.ATG" 
+#line  2239 "cs.ATG" 
 					op = BinaryOperatorType.GreaterThanOrEqual; 
-				} else SynErr(184);
+				} else SynErr(183);
 				UnaryExpr(
-#line  2247 "cs.ATG" 
+#line  2241 "cs.ATG" 
 out expr);
 				ShiftExpr(
-#line  2247 "cs.ATG" 
+#line  2241 "cs.ATG" 
 ref expr);
 
-#line  2247 "cs.ATG" 
+#line  2241 "cs.ATG" 
 				outExpr = new BinaryOperatorExpression(outExpr, op, expr);  
 			} else {
 				if (la.kind == 84) {
 					lexer.NextToken();
 
-#line  2250 "cs.ATG" 
+#line  2244 "cs.ATG" 
 					op = BinaryOperatorType.TypeCheck; 
 				} else if (la.kind == 49) {
 					lexer.NextToken();
 
-#line  2251 "cs.ATG" 
+#line  2245 "cs.ATG" 
 					op = BinaryOperatorType.AsCast; 
-				} else SynErr(185);
+				} else SynErr(184);
 				Type(
-#line  2253 "cs.ATG" 
+#line  2247 "cs.ATG" 
 out type);
 
-#line  2253 "cs.ATG" 
+#line  2247 "cs.ATG" 
 				outExpr = new BinaryOperatorExpression(outExpr, op, new TypeReferenceExpression(type)); 
 			}
 		}
 	}
 
 	void ShiftExpr(
-#line  2257 "cs.ATG" 
+#line  2251 "cs.ATG" 
 ref Expression outExpr) {
 
-#line  2259 "cs.ATG" 
+#line  2253 "cs.ATG" 
 		Expression expr;
 		BinaryOperatorType op = BinaryOperatorType.None;
 		
 		AdditiveExpr(
-#line  2263 "cs.ATG" 
+#line  2257 "cs.ATG" 
 ref outExpr);
 		while (la.kind == 37 || 
-#line  2266 "cs.ATG" 
+#line  2260 "cs.ATG" 
 IsShiftRight()) {
 			if (la.kind == 37) {
 				lexer.NextToken();
 
-#line  2265 "cs.ATG" 
+#line  2259 "cs.ATG" 
 				op = BinaryOperatorType.ShiftLeft; 
 			} else {
 				Expect(22);
 				Expect(22);
 
-#line  2267 "cs.ATG" 
+#line  2261 "cs.ATG" 
 				op = BinaryOperatorType.ShiftRight; 
 			}
 			UnaryExpr(
-#line  2270 "cs.ATG" 
+#line  2264 "cs.ATG" 
 out expr);
 			AdditiveExpr(
-#line  2270 "cs.ATG" 
+#line  2264 "cs.ATG" 
 ref expr);
 
-#line  2270 "cs.ATG" 
+#line  2264 "cs.ATG" 
 			outExpr = new BinaryOperatorExpression(outExpr, op, expr);  
 		}
 	}
 
 	void AdditiveExpr(
-#line  2274 "cs.ATG" 
+#line  2268 "cs.ATG" 
 ref Expression outExpr) {
 
-#line  2276 "cs.ATG" 
+#line  2270 "cs.ATG" 
 		Expression expr;
 		BinaryOperatorType op = BinaryOperatorType.None;
 		
 		MultiplicativeExpr(
-#line  2280 "cs.ATG" 
+#line  2274 "cs.ATG" 
 ref outExpr);
 		while (la.kind == 4 || la.kind == 5) {
 			if (la.kind == 4) {
 				lexer.NextToken();
 
-#line  2283 "cs.ATG" 
+#line  2277 "cs.ATG" 
 				op = BinaryOperatorType.Add; 
 			} else {
 				lexer.NextToken();
 
-#line  2284 "cs.ATG" 
+#line  2278 "cs.ATG" 
 				op = BinaryOperatorType.Subtract; 
 			}
 			UnaryExpr(
-#line  2286 "cs.ATG" 
+#line  2280 "cs.ATG" 
 out expr);
 			MultiplicativeExpr(
-#line  2286 "cs.ATG" 
+#line  2280 "cs.ATG" 
 ref expr);
 
-#line  2286 "cs.ATG" 
+#line  2280 "cs.ATG" 
 			outExpr = new BinaryOperatorExpression(outExpr, op, expr);  
 		}
 	}
 
 	void MultiplicativeExpr(
-#line  2290 "cs.ATG" 
+#line  2284 "cs.ATG" 
 ref Expression outExpr) {
 
-#line  2292 "cs.ATG" 
+#line  2286 "cs.ATG" 
 		Expression expr;
 		BinaryOperatorType op = BinaryOperatorType.None;
 		
@@ -5372,59 +5337,59 @@ ref Expression outExpr) {
 			if (la.kind == 6) {
 				lexer.NextToken();
 
-#line  2298 "cs.ATG" 
+#line  2292 "cs.ATG" 
 				op = BinaryOperatorType.Multiply; 
 			} else if (la.kind == 7) {
 				lexer.NextToken();
 
-#line  2299 "cs.ATG" 
+#line  2293 "cs.ATG" 
 				op = BinaryOperatorType.Divide; 
 			} else {
 				lexer.NextToken();
 
-#line  2300 "cs.ATG" 
+#line  2294 "cs.ATG" 
 				op = BinaryOperatorType.Modulus; 
 			}
 			UnaryExpr(
-#line  2302 "cs.ATG" 
+#line  2296 "cs.ATG" 
 out expr);
 
-#line  2302 "cs.ATG" 
+#line  2296 "cs.ATG" 
 			outExpr = new BinaryOperatorExpression(outExpr, op, expr); 
 		}
 	}
 
 	void TypeParameterConstraintsClauseBase(
-#line  2395 "cs.ATG" 
+#line  2389 "cs.ATG" 
 out TypeReference type) {
 
-#line  2396 "cs.ATG" 
+#line  2390 "cs.ATG" 
 		TypeReference t; type = null; 
 		if (la.kind == 108) {
 			lexer.NextToken();
 
-#line  2398 "cs.ATG" 
+#line  2392 "cs.ATG" 
 			type = new TypeReference("struct"); 
 		} else if (la.kind == 58) {
 			lexer.NextToken();
 
-#line  2399 "cs.ATG" 
+#line  2393 "cs.ATG" 
 			type = new TypeReference("struct"); 
 		} else if (la.kind == 88) {
 			lexer.NextToken();
 			Expect(20);
 			Expect(21);
 
-#line  2400 "cs.ATG" 
+#line  2394 "cs.ATG" 
 			type = new TypeReference("struct"); 
 		} else if (StartOf(9)) {
 			Type(
-#line  2401 "cs.ATG" 
+#line  2395 "cs.ATG" 
 out t);
 
-#line  2401 "cs.ATG" 
+#line  2395 "cs.ATG" 
 			type = t; 
-		} else SynErr(186);
+		} else SynErr(185);
 	}
 
 
@@ -5649,20 +5614,19 @@ out t);
 			case 170: s = "invalid EmbeddedStatement"; break;
 			case 171: s = "invalid ForInitializer"; break;
 			case 172: s = "invalid GotoStatement"; break;
-			case 173: s = "invalid StatementExpr"; break;
-			case 174: s = "invalid TryStatement"; break;
-			case 175: s = "invalid ResourceAcquisition"; break;
-			case 176: s = "invalid SwitchLabel"; break;
-			case 177: s = "invalid CatchClauses"; break;
+			case 173: s = "invalid TryStatement"; break;
+			case 174: s = "invalid ResourceAcquisition"; break;
+			case 175: s = "invalid SwitchLabel"; break;
+			case 176: s = "invalid CatchClauses"; break;
+			case 177: s = "invalid PrimaryExpr"; break;
 			case 178: s = "invalid PrimaryExpr"; break;
 			case 179: s = "invalid PrimaryExpr"; break;
 			case 180: s = "invalid PrimaryExpr"; break;
 			case 181: s = "invalid PrimaryExpr"; break;
 			case 182: s = "invalid PrimaryExpr"; break;
-			case 183: s = "invalid PrimaryExpr"; break;
+			case 183: s = "invalid RelationalExpr"; break;
 			case 184: s = "invalid RelationalExpr"; break;
-			case 185: s = "invalid RelationalExpr"; break;
-			case 186: s = "invalid TypeParameterConstraintsClauseBase"; break;
+			case 185: s = "invalid TypeParameterConstraintsClauseBase"; break;
 
 			default: s = "error " + errorNumber; break;
 		}
@@ -5681,8 +5645,8 @@ out t);
 	{x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,x, T,x,x,x, x,x,x,T, T,T,x,x, x,x,T,x, x,x,T,x, x,x,x,x, x,x,x,x, x,x,T,x, x,x,x,x, x,x,x},
 	{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,T,x,x, T,x,x,x, x,T,x,x, x,T,x,x, x,x,x,x, x,x,T,x, x,x,x,x, x,T,x,x, x,x,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,T,x,T, x,x,x,x, x,x,x,x, x,x,x,T, T,x,x,T, x,x,x,x, x,x,x},
 	{x,T,T,x, T,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, T,x,x,T, T,x,x,T, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, x,T,x,x, T,T,x,x, x,T,x,T, x,T,x,x, x,x,x,T, x,x,T,x, x,x,x,x, x,T,x,x, x,x,T,x, T,T,T,x, x,x,x,x, x,x,x,x, x,T,x,T, T,x,x,T, x,x,T,x, T,x,T,T, T,T,x,T, x,x,x,x, x,x,x},
+	{x,x,x,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
 	{x,x,x,x, T,T,T,T, T,T,x,T, T,T,T,x, x,T,x,T, x,T,T,T, x,T,T,x, T,T,T,x, x,T,T,T, T,T,x,x, x,x,x,x, x,x,x,x, x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
-	{x,x,x,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,T, T,T,T,T, T,T,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
 	{x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,x,x,T, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, T,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x},
 	{x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,T,x,x, T,x,x,x, x,T,x,x, x,T,x,x, x,x,x,x, x,x,T,x, x,x,x,x, x,T,x,x, x,x,T,x, x,x,T,x, x,x,x,x, x,x,x,x, x,T,x,T, x,x,x,T, x,x,x,x, x,x,x,T, T,x,x,T, x,x,T,x, x,x,x},
 	{x,T,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,T,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,x, x,x,x,T, x,T,x,x, T,x,x,x, x,T,x,x, x,T,x,x, x,x,x,x, x,x,T,x, x,x,x,x, x,T,x,x, x,x,T,x, x,x,T,x, T,x,T,x, x,x,x,T, x,T,x,T, x,x,x,T, x,x,x,x, x,x,x,T, T,x,x,T, x,x,T,x, x,x,x},
