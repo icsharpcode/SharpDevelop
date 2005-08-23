@@ -90,9 +90,7 @@ namespace ICSharpCode.FormDesigner
 		void ComponentAdded(object sender, ComponentEventArgs e)
 		{
 			try {
-				if (initializeComponents == null) {
-					Reparse(viewContent.Document.TextContent);
-				}
+				Reparse(viewContent.Document.TextContent);
 				int endOffset = viewContent.Document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.EndLine));
 				viewContent.Document.Insert(endOffset, "\t\tprivate " + e.Component.GetType() + " " + e.Component.Site.Name + ";" + Environment.NewLine);
 			} catch (Exception ex) {
