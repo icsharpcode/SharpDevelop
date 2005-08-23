@@ -62,7 +62,7 @@ namespace ICSharpCode.Core
 				}
 				if (defaultAmbience == null) {
 					string language = PropertyService.Get(ambienceProperty, "C#");
-					IAmbience ambience = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem(language, null);
+					IAmbience ambience = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/" + language, null);
 					if (ambience == null) {
 						MessageService.ShowError("${res:ICSharpCode.SharpDevelop.Services.AmbienceService.AmbienceNotFoundError}");
 						return null;

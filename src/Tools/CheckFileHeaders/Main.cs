@@ -51,6 +51,8 @@ namespace CheckFileHeaders
 					continue;
 				if (subdir.EndsWith("Libraries\\log4net"))
 					continue;
+				if (subdir.EndsWith("Libraries\\NUnit.Framework"))
+					continue;
 				if (Path.GetFullPath(subdir).EndsWith("src\\Tools"))
 					continue;
 				// Disabled addins:

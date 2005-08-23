@@ -55,6 +55,13 @@ namespace ICSharpCode.Core
 			get;
 		}
 		
+		/// <summary>
+		/// Gets the project for this project content. Returns null for reflection project contents.
+		/// </summary>
+		IProject Project {
+			get;
+		}
+		
 		string GetXmlDocumentation(string memberTag);
 		
 		void AddClassToNamespaceList(IClass addClass);

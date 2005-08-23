@@ -47,6 +47,12 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public virtual IProject Project {
+			get {
+				return null;
+			}
+		}
+		
 		public List<Dictionary<string, IClass>> ClassLists {
 			get {
 				if (classLists.Count == 0) {

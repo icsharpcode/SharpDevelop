@@ -115,16 +115,21 @@ namespace ICSharpCode.Core
 					lookupDirectory = Path.GetDirectoryName(itemFileName);
 					AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += AssemblyResolve;
 					try {
-						assembly = Assembly.ReflectionOnlyLoadFrom(itemFileName);
-						if (assembly != null) {
-							contents[itemFileName] = new ReflectionProjectContent(assembly);
-							contents[assembly.FullName] = contents[itemFileName];
-							#if DEBUG
-							how = "ReflectionOnly";
-							#endif
-							return contents[itemFileName];
+						try {
+							if (File.Exists(itemFileName)) {
+								assembly = Assembly.ReflectionOnlyLoadFrom(itemFileName);
+								if (assembly != null) {
+									contents[itemFileName] = new ReflectionProjectContent(assembly);
+									contents[assembly.FullName] = contents[itemFileName];
+									#if DEBUG
+									how = "ReflectionOnly";
+									#endif
+									return contents[itemFileName];
+								}
+							}
+						} catch (FileNotFoundException) {
+							// ignore and try loading with LoadGACAssembly
 						}
-					} catch (FileNotFoundException) {
 						try {
 							assembly = LoadGACAssembly(itemInclude, true);
 							if (assembly != null) {
@@ -136,7 +141,7 @@ namespace ICSharpCode.Core
 								return contents[itemInclude];
 							}
 						} catch (Exception e) {
-							LoggingService.Debug("Can't load assembly '" + itemInclude + "' : " + e.Message);
+							LoggingService.Warn("Can't load assembly '" + itemInclude + "' : " + e.Message);
 						}
 					} catch (BadImageFormatException) {
 						LoggingService.Warn("BadImageFormat: " + itemInclude);

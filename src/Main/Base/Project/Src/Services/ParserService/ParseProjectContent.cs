@@ -35,7 +35,7 @@ namespace ICSharpCode.Core
 		
 		IProject project;
 		
-		public IProject Project {
+		public override IProject Project {
 			get {
 				return project;
 			}

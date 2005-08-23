@@ -152,14 +152,14 @@ namespace ICSharpCode.Core
 			return items;
 		}
 		
-		public object BuildChildItem(string childItemID, object caller)
+		public object BuildChildItem(string childItemID, object caller, ArrayList subItems)
 		{
 			foreach (Codon codon in codons) {
 				if (codon.Id == childItemID) {
-					return codon.BuildItem(caller, null);
+					return codon.BuildItem(caller, subItems);
 				}
 			}
-			return null;
+			throw new TreePathNotFoundException(childItemID);
 		}
 	}
 }

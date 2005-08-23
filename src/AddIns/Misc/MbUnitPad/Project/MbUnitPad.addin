@@ -8,7 +8,9 @@
 	<Runtime>
 		<!-- MbUnit is not in the path, so we need to load it manually -->
 		<Import assembly = "../../../../bin/Tools/MbUnit/MbUnit.GUI.exe"/>
-		<Import assembly = "MbUnitPad.dll"/>
+		<Import assembly = "MbUnitPad.dll">
+			<ConditionEvaluator name = "MbUnitTestable" class = "ICSharpCode.MbUnitPad.MbUnitTestableCondition"/>
+		</Import>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
@@ -18,6 +20,44 @@
 		     icon     = "PadIcons.MbUnitTest"
 		     shortcut = "Control|Alt|T"
 		     class    = "ICSharpCode.MbUnitPad.MbUnitPadContent"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu">
+		<Include id = "MbUnitTests" insertbefore = "MenuBuilder" item="/SharpDevelop/Pads/ClassBrowser/MemberContextMenu/MbUnitTestMenu"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu">
+		<Include id = "MbUnitTests" insertbefore = "MenuBuilder" item="/SharpDevelop/Pads/ClassBrowser/ClassContextMenu/MbUnitTestMenu"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/MemberContextMenu">
+		<Condition name = "MbUnitTestable">
+			<MenuItem id="MbUnitTestMenu" type="Menu" label="Unit Testing" icon="PadIcons.MbUnitTest" insertbefore="MenuBuilder">
+				<MenuItem id    = "RunInPad"
+				          label = "Run in unit test pad"
+				          icon  = "PadIcons.MbUnitTest"
+				          class = "ICSharpCode.MbUnitPad.RunTestInPadCommand"/>
+				<MenuItem id    = "RunWithDebugger"
+				          label = "Run in console with debugger"
+				          icon  = "Icons.16x16.RunProgramIcon"
+				          class = "ICSharpCode.MbUnitPad.RunTestWithDebuggerCommand"/>
+			</MenuItem>
+		</Condition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ClassBrowser/ClassContextMenu">
+		<Condition name = "MbUnitTestable">
+			<MenuItem id="MbUnitTestMenu" type="Menu" label="Unit Testing" icon="PadIcons.MbUnitTest" insertbefore="MenuBuilder">
+				<MenuItem id    = "RunInPad"
+				          label = "Run in unit test pad"
+				          icon  = "PadIcons.MbUnitTest"
+				          class = "ICSharpCode.MbUnitPad.RunTestInPadCommand"/>
+				<MenuItem id    = "RunWithDebugger"
+				          label = "Run in console with debugger"
+				          icon  = "Icons.16x16.RunProgramIcon"
+				          class = "ICSharpCode.MbUnitPad.RunTestWithDebuggerCommand"/>
+			</MenuItem>
+		</Condition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/MbUnitPad/Toolbar">

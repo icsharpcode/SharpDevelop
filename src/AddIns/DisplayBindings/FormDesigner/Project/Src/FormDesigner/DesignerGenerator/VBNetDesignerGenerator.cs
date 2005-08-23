@@ -158,8 +158,10 @@ namespace ICSharpCode.FormDesigner
 			string param = "";
 			IAmbience csa = null;
 			try {
-				csa = (IAmbience)AddInTree.GetTreeNode("/SharpDevelop/Workbench/Ambiences").BuildChildItem("VBNet", typeof(IAmbience));
-			} catch {}
+				csa = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/VBNet", null);
+			} catch (TreePathNotFoundException) {
+				LoggingService.Warn("VB ambience not found");
+			}
 			
 			for (int i = 0; i < mInfo.GetParameters().Length; ++i)  {
 				ParameterInfo pInfo  = mInfo.GetParameters()[i];

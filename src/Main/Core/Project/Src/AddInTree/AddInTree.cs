@@ -113,7 +113,7 @@ namespace ICSharpCode.Core
 			string parent = path.Substring(0, pos);
 			string child = path.Substring(pos + 1);
 			AddInTreeNode node = GetTreeNode(parent);
-			return node.BuildChildItem(child, caller);
+			return node.BuildChildItem(child, caller, BuildItems(path, caller, false));
 		}
 		
 		/// <summary>
