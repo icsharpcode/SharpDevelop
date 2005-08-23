@@ -49,7 +49,10 @@ namespace DebuggerLibrary
 				message = runtimeVariableException.SubVariables["_message"].Value.ToString();
 			}
 
-			location = thread.LastFunctionWithLoadedSymbols.NextStatement;
+			if (thread.LastFunctionWithLoadedSymbols != null) {
+				location = thread.LastFunctionWithLoadedSymbols.NextStatement;
+			}
+			
 			callstack = "";
 			foreach(Function function in thread.Callstack) {
 				SourcecodeSegment loc = function.NextStatement;

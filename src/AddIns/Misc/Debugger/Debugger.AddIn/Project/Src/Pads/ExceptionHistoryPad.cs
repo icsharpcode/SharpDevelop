@@ -127,7 +127,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			exceptionHistoryList.Items.Clear();
 		
 			foreach(DebuggerLibrary.Exception exception in debugger.ExceptionHistory) {
-				ListViewItem item = new ListViewItem(new string[] {exception.CreationTime.ToLongTimeString() , exception.Type + " - " + exception.Message, exception.Location.SourceFilename + ":" + exception.Location.StartLine + " (type=" + exception.ExceptionType.ToString() + ")"});
+				string location;
+				if (exception.Location != null) {
+					location = exception.Location.SourceFilename + ":" + exception.Location.StartLine;
+				} else {
+					location = "n/a";
+				}
+				location += " (type=" + exception.ExceptionType.ToString() + ")";
+				ListViewItem item = new ListViewItem(new string[] {exception.CreationTime.ToLongTimeString() , exception.Type + " - " + exception.Message, location});
 				item.Tag = exception;
 				item.ForeColor = Color.Black;
 				if (exception.ExceptionType == ExceptionType.DEBUG_EXCEPTION_UNHANDLED) {
