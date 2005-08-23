@@ -81,7 +81,7 @@ namespace DebuggerLibrary
 			corDebug.Initialize();
 			corDebug.SetManagedHandler(managedCallbackProxy);
 		}
-
+		
 		internal void ResetEnvironment()
 		{
 			ClearModules();
@@ -91,15 +91,13 @@ namespace DebuggerLibrary
 			ClearThreads();
 			
 			currentProcess = null;
-
+			
 			evalQueue = new EvalQueue(this);
 			
-			GC.Collect(GC.MaxGeneration);
-			GC.WaitForPendingFinalizers();
 			TraceMessage("Reset done");
 		}
-
-
+		
+		
 		/// <summary>
 		/// Fired when System.Diagnostics.Trace.WriteLine() is called in debuged process
 		/// </summary>
