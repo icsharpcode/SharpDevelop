@@ -157,34 +157,40 @@ namespace DebuggerLibrary
 
 			SourcecodeSegment nextSt;
 				
-			nextSt = NextStatement;// Cache
+			nextSt = NextStatement;
 			if (nextSt == null) {
 				throw new DebuggerException("Unable to step. Next statement not aviable");
 			}
-
+			
 			ICorDebugStepper stepper;
-
+			
 			if (stepIn) {
 				corILFrame.CreateStepper(out stepper);
-
+				
+				stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
+				(stepper as ICorDebugStepper2).SetJMC(1 /* true */);
+				
 				fixed (int* ranges = nextSt.StepRanges) {
 					stepper.StepRange(1 /* true - step in*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
 				}
-
+				
 				debugger.CurrentThread.AddActiveStepper(stepper);
 			}
-
+			
 			// Mind that step in which ends in code without symblols is cotinued
 			// so the next step out ensures that we atleast do step over
-
+			
 			corILFrame.CreateStepper(out stepper);
-
+			
+			stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
+			(stepper as ICorDebugStepper2).SetJMC(1 /* true */);
+			
 			fixed (int* ranges = nextSt.StepRanges) {
 				stepper.StepRange(0 /* false - step over*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
 			}
-
+			
 			debugger.CurrentThread.AddActiveStepper(stepper);
-
+			
 			debugger.Continue();
 		}
 		

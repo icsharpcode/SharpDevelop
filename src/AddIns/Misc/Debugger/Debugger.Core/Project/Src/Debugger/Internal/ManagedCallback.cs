@@ -112,6 +112,7 @@ namespace DebuggerLibrary
 			EnterCallback("StepComplete (" + reason.ToString() + ")", pThread);
 
 			if (!callingThread.LastFunction.HasSymbols) {
+				// This should not happen with JMC enabled
 				debugger.TraceMessage(" - leaving code without symbols");
 
 				ExitCallback_Continue();
