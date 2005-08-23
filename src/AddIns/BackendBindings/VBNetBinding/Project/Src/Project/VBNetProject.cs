@@ -87,5 +87,10 @@ namespace VBNetBinding
 			LanguageProperties = ICSharpCode.SharpDevelop.Dom.LanguageProperties.VBNet;
 			BuildConstantSeparator = ',';
 		}
+		
+		public override bool CanCompile(string fileName)
+		{
+			return new VBNetLanguageBinding().CanCompile(fileName);
+		}
 	}
 }

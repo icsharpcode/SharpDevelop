@@ -121,7 +121,20 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				}
 			}
 			
-			ItemType type = fileNode.Project.CanCompile(fileNode.FileName) ? ItemType.Compile : ItemType.Content;
+			ItemType type;
+			if (fileNode.Project.CanCompile(fileNode.FileName)) {
+				type = ItemType.Compile;
+			} else {
+				switch (Path.GetExtension(fileNode.FileName).ToLower()) {
+					case ".resx":
+					case ".resources":
+						type = ItemType.EmbeddedResource;
+						break;
+					default:
+						type = ItemType.Content;
+						break;
+				}
+			}
 			
 			FileProjectItem newItem = new FileProjectItem(fileNode.Project, type);
 			newItem.Include = FileUtility.GetRelativePath(fileNode.Project.Directory, fileNode.FileName);

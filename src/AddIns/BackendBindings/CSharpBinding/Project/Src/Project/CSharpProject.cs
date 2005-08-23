@@ -48,7 +48,19 @@ namespace CSharpBinding
 		{
 			Language = "C#";
 			Create(info);
+		}
+		
+		protected override void Create(ProjectCreateInformation information)
+		{
+			base.Create(information);
 			imports.Add(@"$(MSBuildBinPath)\Microsoft.CSharp.Targets");
+			configurations["Debug|AnyCPU"]["CheckForOverflowUnderflow"] = "True";
+			configurations["Release|AnyCPU"]["CheckForOverflowUnderflow"] = "False";
+		}
+		
+		public override bool CanCompile(string fileName)
+		{
+			return new CSharpLanguageBinding().CanCompile(fileName);
 		}
 	}
 }

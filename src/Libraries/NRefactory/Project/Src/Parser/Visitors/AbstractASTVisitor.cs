@@ -755,7 +755,9 @@ namespace ICSharpCode.NRefactory.Parser
 		public virtual object Visit(LockStatement lockStatement, object data)
 		{
 			Debug.Assert(lockStatement != null);
+			Debug.Assert(lockStatement.LockExpression != null);
 			Debug.Assert(lockStatement.EmbeddedStatement != null);
+			lockStatement.LockExpression.AcceptVisitor(this, data);
 			return lockStatement.EmbeddedStatement.AcceptVisitor(this, data);
 		}
 		

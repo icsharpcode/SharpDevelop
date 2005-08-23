@@ -117,6 +117,11 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		public override void Save(string fileName)
 		{
 			foreach (IDialogPanelDescriptor pane in descriptors) {
+				ICanBeDirty dirtyable = pane.DialogPanel as ICanBeDirty;
+				if (dirtyable != null) {
+					if (!dirtyable.IsDirty)
+						continue; // skip unchanged panels
+				}
 				pane.DialogPanel.ReceiveDialogMessage(DialogMessage.OK);
 			}
 			project.Save();

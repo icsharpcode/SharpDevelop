@@ -27,5 +27,10 @@ namespace ICSharpCode.ILAsmBinding
 			Create(info);
 			imports.Add(@"$(SharpDevelopBuildBinPath)\SharpDevelop.Build.MSIL.Targets");
 		}
+		
+		public override bool CanCompile(string fileName)
+		{
+			return new ILAsmLanguageBinding().CanCompile(fileName);
+		}
 	}
 }

@@ -21,7 +21,7 @@
 		<MenuItem id="AddStringEntry"
 		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.AddStringEntry}"
 		          class="ResourceEditor.AddStringCommand"
-		          shortcut = "Ins" />
+		          shortcut = "Insert" />
 		
 		<MenuItem id="AddFile"
 		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.AddFiles}"
@@ -43,7 +43,7 @@
 			<MenuItem id="Delete"
 			          label="${res:ResourceEditor.ResourceEdit.ContextMenu.Delete}"
 			          class="ResourceEditor.DeleteEntryCommand"
-			          shortcut="Del" />
+			          shortcut="Delete" />
 			
 			<MenuItem id="Separator2"
 			          type = "Separator" />
@@ -67,6 +67,6 @@
 		<MenuItem id="SelectAll"
 		          label="${res:XML.MainMenu.EditMenu.SelectAll}"
 		          class="ICSharpCode.SharpDevelop.Commands.SelectAll"
-		          shortcut="Ctrl|A" />
+		          shortcut="Control|A" />
 	</Path>
 </AddIn>

@@ -194,7 +194,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			public override bool Save()
 			{
-				Set(control.Checked ? "true" : "false");
+				string oldValue = Get("True");
+				if (oldValue == "true" || oldValue == "false") {
+					// keep value in lower case
+					Set(control.Checked.ToString().ToLower());
+				} else {
+					Set(control.Checked.ToString());
+				}
 				return true;
 			}
 		}

@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		protected char BuildConstantSeparator = ';';
 		
-		protected void Create(ProjectCreateInformation information)
+		protected virtual void Create(ProjectCreateInformation information)
 		{
 			Name = information.ProjectName;
 			configurations[""] = new PropertyGroup();
@@ -44,13 +44,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			configurations["Debug|AnyCPU"] = new PropertyGroup();
 			configurations["Debug|AnyCPU"]["OutputPath"] = @"bin\Debug\";
-			configurations["Debug|AnyCPU"]["Optimize"] = "false";
+			configurations["Debug|AnyCPU"]["Optimize"] = "False";
 			configurations["Debug|AnyCPU"]["DefineConstants"] = "DEBUG" + BuildConstantSeparator + "TRACE";
+			configurations["Debug|AnyCPU"]["DebugSymbols"] = "True";
+			configurations["Debug|AnyCPU"]["DebugType"] = "Full";
 			
 			configurations["Release|AnyCPU"] = new PropertyGroup();
 			configurations["Release|AnyCPU"]["OutputPath"] = @"bin\Release\";
-			configurations["Release|AnyCPU"]["Optimize"] = "true";
+			configurations["Release|AnyCPU"]["Optimize"] = "True";
 			configurations["Release|AnyCPU"]["DefineConstants"] = "TRACE";
+			configurations["Release|AnyCPU"]["DebugSymbols"] = "False";
+			configurations["Release|AnyCPU"]["DebugType"] = "None";
 			
 			fileName = information.OutputProjectFileName;
 		}
