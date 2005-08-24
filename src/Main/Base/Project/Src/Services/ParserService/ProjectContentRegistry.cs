@@ -221,7 +221,26 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static Dictionary<string, Assembly> loadFromCache;
+		
 		static Assembly LoadReflectionOnlyAssemblyFrom(string fileName)
+		{
+			if (loadFromCache == null) {
+				loadFromCache = new Dictionary<string, Assembly>(StringComparer.InvariantCultureIgnoreCase);
+			}
+			if (loadFromCache.ContainsKey(fileName))
+				return loadFromCache[fileName];
+			Assembly asm = InternalLoadReflectionOnlyAssemblyFrom(fileName);
+			if (loadFromCache.ContainsKey(asm.FullName)) {
+				loadFromCache.Add(fileName, loadFromCache[asm.FullName]);
+				return loadFromCache[asm.FullName];
+			}
+			loadFromCache.Add(fileName, asm);
+			loadFromCache.Add(asm.FullName, asm);
+			return asm;
+		}
+		
+		static Assembly InternalLoadReflectionOnlyAssemblyFrom(string fileName)
 		{
 			byte[] data;
 			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {

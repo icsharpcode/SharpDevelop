@@ -107,7 +107,6 @@ namespace ICSharpCode.SharpDevelop
 		void continueButtonClick(object sender, System.EventArgs e)
 		{
 			DialogResult = System.Windows.Forms.DialogResult.Ignore;
-			CopyInfoToClipboard();
 			Close();
 		}
 		
