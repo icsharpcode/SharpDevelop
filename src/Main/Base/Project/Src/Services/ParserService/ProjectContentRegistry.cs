@@ -117,9 +117,9 @@ namespace ICSharpCode.Core
 					try {
 						try {
 							if (File.Exists(itemFileName)) {
-								assembly = Assembly.ReflectionOnlyLoadFrom(itemFileName);
+								assembly = LoadReflectionOnlyAssemblyFrom(itemFileName);
 								if (assembly != null) {
-									contents[itemFileName] = new ReflectionProjectContent(assembly);
+									contents[itemFileName] = new ReflectionProjectContent(assembly, itemFileName);
 									contents[assembly.FullName] = contents[itemFileName];
 									#if DEBUG
 									how = "ReflectionOnly";
@@ -198,15 +198,15 @@ namespace ICSharpCode.Core
 			string path = Path.Combine(lookupDirectory, name.Name);
 			if (File.Exists(path + ".dll")) {
 				LoggingService.Debug("AssemblyResolve ReflectionOnlyLoadFrom .dll file");
-				return Assembly.ReflectionOnlyLoadFrom(path + ".dll");
+				return LoadReflectionOnlyAssemblyFrom(path + ".dll");
 			}
 			if (File.Exists(path + ".exe")) {
 				LoggingService.Debug("AssemblyResolve ReflectionOnlyLoadFrom .exe file");
-				return Assembly.ReflectionOnlyLoadFrom(path + ".exe");
+				return LoadReflectionOnlyAssemblyFrom(path + ".exe");
 			}
 			if (File.Exists(path)) {
 				LoggingService.Debug("AssemblyResolve ReflectionOnlyLoadFrom file");
-				return Assembly.ReflectionOnlyLoadFrom(path);
+				return LoadReflectionOnlyAssemblyFrom(path);
 			}
 			try {
 				LoggingService.Debug("AssemblyResolve trying ReflectionOnlyLoad");
@@ -219,6 +219,26 @@ namespace ICSharpCode.Core
 				LoggingService.Info("AssemblyResolve: FixedName: " + fixedName);
 				return Assembly.ReflectionOnlyLoad(fixedName.FullName);
 			}
+		}
+		
+		static Assembly LoadReflectionOnlyAssemblyFrom(string fileName)
+		{
+			byte[] data;
+			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
+				if (fs.Length > 10 * 1024 * 1024) {
+					// more than 10 MB? Do not hold bytes in memory
+					return Assembly.ReflectionOnlyLoadFrom(fileName);
+				}
+				data = new byte[fs.Length];
+				for (int i = 0; i < data.Length;) {
+					int c = fs.Read(data, i, data.Length - i);
+					i += c;
+					if (c <= 0) {
+						throw new IOException("Read returned " + c);
+					}
+				}
+			}
+			return Assembly.ReflectionOnlyLoad(data);
 		}
 		
 		public static AssemblyName FindBestMatchingAssemblyName(string name)

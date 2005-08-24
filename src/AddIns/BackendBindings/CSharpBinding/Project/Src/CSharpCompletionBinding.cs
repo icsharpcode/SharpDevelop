@@ -99,15 +99,18 @@ namespace CSharpBinding
 				string documentText = editor.Text;
 				int position = editor.ActiveTextAreaControl.Caret.Offset - 2;
 				
-				if (position > 0 && (documentText[position + 1] == '+' || documentText[position + 1] == '-')) {
+				if (position > 0 && (documentText[position + 1] == '+')) {
 					ExpressionResult result = ef.FindFullExpression(documentText, position);
 					
 					if(result.Expression != null) {
 						ResolveResult resolveResult = ParserService.Resolve(result, editor.ActiveTextAreaControl.Caret.Line, editor.ActiveTextAreaControl.Caret.Column, editor.FileName, documentText);
-						if (resolveResult.ResolvedType.GetUnderlyingClass().IsTypeInInheritanceTree(ProjectContentRegistry.Mscorlib.GetClass("System.MulticastDelegate"))) {
-							EventHandlerCompletitionDataProvider eventHandlerProvider = new EventHandlerCompletitionDataProvider(result.Expression, resolveResult);
-							eventHandlerProvider.InsertSpace = true;
-							editor.ShowCompletionWindow(eventHandlerProvider, ch);
+						if (resolveResult != null && resolveResult.ResolvedType != null) {
+							IClass underlyingClass = resolveResult.ResolvedType.GetUnderlyingClass();
+							if (underlyingClass.IsTypeInInheritanceTree(ProjectContentRegistry.Mscorlib.GetClass("System.MulticastDelegate"))) {
+								EventHandlerCompletitionDataProvider eventHandlerProvider = new EventHandlerCompletitionDataProvider(result.Expression, resolveResult);
+								eventHandlerProvider.InsertSpace = true;
+								editor.ShowCompletionWindow(eventHandlerProvider, ch);
+							}
 						}
 					}
 				}

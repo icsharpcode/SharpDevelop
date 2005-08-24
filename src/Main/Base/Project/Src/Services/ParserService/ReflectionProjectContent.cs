@@ -23,6 +23,11 @@ namespace ICSharpCode.Core
 		Assembly assembly;
 		
 		public ReflectionProjectContent(Assembly assembly)
+			: this(assembly, assembly.Location)
+		{
+		}
+		
+		public ReflectionProjectContent(Assembly assembly, string assemblyLocation)
 		{
 			this.assembly = assembly;
 			
@@ -44,7 +49,7 @@ namespace ICSharpCode.Core
 				AddClassToNamespaceListInternal(new ReflectionClass.VoidClass(assemblyCompilationUnit));
 			}
 			
-			string fileName = LookupLocalizedXmlDoc(assembly.Location);
+			string fileName = LookupLocalizedXmlDoc(assemblyLocation);
 			// Not found -> look in runtime directory.
 			if (fileName == null) {
 				string runtimeDirectory = System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory();
