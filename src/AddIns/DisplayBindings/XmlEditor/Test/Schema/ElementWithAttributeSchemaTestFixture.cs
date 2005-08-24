@@ -17,22 +17,17 @@ namespace XmlEditor.Tests.Schema
 	/// Element that has a single attribute.
 	/// </summary>
 	[TestFixture]
-	public class ElementWithAttributeSchemaTestFixture
+	public class ElementWithAttributeSchemaTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] attributeCompletionData;
 		string attributeName;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-						
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			
-			attributeCompletionData = schemaCompletionData.GetAttributeCompletionData(path);
+			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
 			attributeName = attributeCompletionData[0].Text;
 		}
 
@@ -53,12 +48,12 @@ namespace XmlEditor.Tests.Schema
 		{
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foobar", "http://www.w3schools.com"));
-			ICompletionData[] attributes = schemaCompletionData.GetAttributeCompletionData(path);
+			ICompletionData[] attributes = SchemaCompletionData.GetAttributeCompletionData(path);
 			
 			Assert.AreEqual(0, attributes.Length, "Should not find attributes for unknown element.");
 		}
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"http://www.w3schools.com\" xmlns=\"http://www.w3schools.com\" elementFormDefault=\"qualified\">\r\n" +
 				"    <xs:element name=\"note\">\r\n" +

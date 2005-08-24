@@ -16,31 +16,26 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ReferencedElementsTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] shipOrderAttributes;
 		ICompletionData[] shipToAttributes;
 		XmlElementPath shipToPath;
 		XmlElementPath shipOrderPath;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-			
 			// Get shipto attributes.
 			shipToPath = new XmlElementPath();
 			QualifiedName shipOrderName = new QualifiedName("shiporder", "http://www.w3schools.com");
 			shipToPath.Elements.Add(shipOrderName);
 			shipToPath.Elements.Add(new QualifiedName("shipto", "http://www.w3schools.com"));
 
-			shipToAttributes = schemaCompletionData.GetAttributeCompletionData(shipToPath);
+			shipToAttributes = SchemaCompletionData.GetAttributeCompletionData(shipToPath);
 			
 			// Get shiporder attributes.
 			shipOrderPath = new XmlElementPath();
 			shipOrderPath.Elements.Add(shipOrderName);
 			
-			shipOrderAttributes = schemaCompletionData.GetAttributeCompletionData(shipOrderPath);
+			shipOrderAttributes = SchemaCompletionData.GetAttributeCompletionData(shipOrderPath);
 			
 		}
 		
@@ -53,7 +48,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void ShipOrderAttributeName()
 		{
-			Assert.IsTrue(base.Contains(shipOrderAttributes,"id"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(shipOrderAttributes,"id"),
 			                "Incorrect shiporder attribute name.");
 		}
 
@@ -66,49 +61,49 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void ShipToAttributeName()
 		{
-			Assert.IsTrue(base.Contains(shipToAttributes, "address"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(shipToAttributes, "address"),
 			                "Incorrect shipto attribute name.");
 		}					
 		
 		[Test]
 		public void ShipOrderChildElementsCount()
 		{
-			Assert.AreEqual(1, schemaCompletionData.GetChildElementCompletionData(shipOrderPath).Length, 
+			Assert.AreEqual(1, SchemaCompletionData.GetChildElementCompletionData(shipOrderPath).Length, 
 			                "Should be one child element.");
 		}
 		
 		[Test]
 		public void ShipOrderHasShipToChildElement()
 		{
-			ICompletionData[] data = schemaCompletionData.GetChildElementCompletionData(shipOrderPath);
-			Assert.IsTrue(base.Contains(data, "shipto"), 
+			ICompletionData[] data = SchemaCompletionData.GetChildElementCompletionData(shipOrderPath);
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "shipto"), 
 			                "Incorrect child element name.");
 		}
 		
 		[Test]
 		public void ShipToChildElementsCount()
 		{
-			Assert.AreEqual(2, schemaCompletionData.GetChildElementCompletionData(shipToPath).Length, 
+			Assert.AreEqual(2, SchemaCompletionData.GetChildElementCompletionData(shipToPath).Length, 
 			                "Should be 2 child elements.");
 		}		
 		
 		[Test]
 		public void ShipToHasNameChildElement()
 		{
-			ICompletionData[] data = schemaCompletionData.GetChildElementCompletionData(shipToPath);
-			Assert.IsTrue(base.Contains(data, "name"), 
+			ICompletionData[] data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "name"), 
 			                "Incorrect child element name.");
 		}		
 		
 		[Test]
 		public void ShipToHasAddressChildElement()
 		{
-			ICompletionData[] data = schemaCompletionData.GetChildElementCompletionData(shipToPath);
-			Assert.IsTrue(base.Contains(data, "address"), 
+			ICompletionData[] data = SchemaCompletionData.GetChildElementCompletionData(shipToPath);
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(data, "address"), 
 			                "Incorrect child element name.");
 		}		
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"http://www.w3schools.com\"  xmlns=\"http://www.w3schools.com\">\r\n" +
 				"\r\n" +

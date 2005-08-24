@@ -18,7 +18,7 @@ namespace XmlEditor.Tests.Schema
 	/// namespaces it holds.
 	/// </summary>
 	[TestFixture]
-	public class NamespaceCompletionTestFixture : SchemaTestFixtureBase
+	public class NamespaceCompletionTestFixture
 	{
 		ICompletionData[] namespaceCompletionData;
 		string firstNamespace = "http://foo.com/foo.xsd";
@@ -49,13 +49,13 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void ContainsFirstNamespace()
 		{
-			Assert.IsTrue(Contains(namespaceCompletionData, firstNamespace));
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(namespaceCompletionData, firstNamespace));
 		}
 		
 		[Test]
 		public void ContainsSecondNamespace()
 		{
-			Assert.IsTrue(Contains(namespaceCompletionData, secondNamespace));
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(namespaceCompletionData, secondNamespace));
 		}		
 		
 		string GetSchema(string namespaceURI)

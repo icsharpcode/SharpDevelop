@@ -19,20 +19,15 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ChildElementAttributesTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] attributes;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-						
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("project", "http://nant.sf.net//nant-0.84.xsd"));
 			path.Elements.Add(new QualifiedName("attrib", "http://nant.sf.net//nant-0.84.xsd"));
 			
-			attributes = schemaCompletionData.GetAttributeCompletionData(path);
+			attributes = SchemaCompletionData.GetAttributeCompletionData(path);
 		}
 
 		[Test]
@@ -44,11 +39,11 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void FileAttribute()
 		{
-			Assert.IsTrue(base.Contains(attributes, "file"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "file"),
 			              "Attribute file does not exist.");
 		}		
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:vs=\"urn:schemas-microsoft-com:HTML-Intellisense\" xmlns:nant=\"http://nant.sf.net//nant-0.84.xsd\" targetNamespace=\"http://nant.sf.net//nant-0.84.xsd\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\">\r\n" +
 					"  <xs:element name=\"project\">\r\n" +

@@ -19,17 +19,13 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class AttributeRefTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] attributes;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("html", "http://foo/xhtml"));
-			attributes = schemaCompletionData.GetAttributeCompletionData(path);
+			attributes = SchemaCompletionData.GetAttributeCompletionData(path);
 		}
 		
 		[Test]
@@ -42,28 +38,28 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void HtmlLangAttribute()
 		{
-			Assert.IsTrue(base.Contains(attributes, "lang"), "Attribute lang not found.");
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "lang"), "Attribute lang not found.");
 		}
 		
 		[Test]
 		public void HtmlIdAttribute()
 		{
-			Assert.IsTrue(base.Contains(attributes, "id"), "Attribute id not found.");
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "id"), "Attribute id not found.");
 		}		
 		
 		[Test]
 		public void HtmlDirAttribute()
 		{
-			Assert.IsTrue(base.Contains(attributes, "dir"), "Attribute dir not found.");
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "dir"), "Attribute dir not found.");
 		}			
 		
 		[Test]
 		public void HtmlXmlLangAttribute()
 		{
-			Assert.IsTrue(base.Contains(attributes, "xml:lang"), "Attribute xml:lang not found.");
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "xml:lang"), "Attribute xml:lang not found.");
 		}				
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema version=\"1.0\" xml:lang=\"en\"\r\n" +
 					"    xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\r\n" +

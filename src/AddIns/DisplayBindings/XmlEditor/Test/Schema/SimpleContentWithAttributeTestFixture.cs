@@ -19,29 +19,24 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class SimpleContentWithAttributeSchemaTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] attributeCompletionData;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-						
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
 			
-			attributeCompletionData = schemaCompletionData.GetAttributeCompletionData(path);
+			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
 		}
 		
 		[Test]
 		public void BarAttributeExists()
 		{
-			Assert.IsTrue(base.Contains(attributeCompletionData, "bar"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "bar"),
 			              "Attribute bar does not exist.");
 		}		
 	
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\r\n" +
 				"\ttargetNamespace=\"http://foo.com\"\r\n" +

@@ -20,16 +20,11 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class TwoElementSchemaTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		XmlElementPath noteElementPath;
 		XmlElementPath textElementPath;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-			
 			// Note element path.
 			noteElementPath = new XmlElementPath();
 			QualifiedName noteQualifiedName = new QualifiedName("note", "http://www.w3schools.com");
@@ -44,7 +39,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void TextElementHasOneAttribute()
 		{
-			ICompletionData[] attributesCompletionData = schemaCompletionData.GetAttributeCompletionData(textElementPath);
+			ICompletionData[] attributesCompletionData = SchemaCompletionData.GetAttributeCompletionData(textElementPath);
 			
 			Assert.AreEqual(1, attributesCompletionData.Length, 
 			                "Should have 1 text attribute.");
@@ -53,8 +48,8 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void TextElementAttributeName()
 		{
-			ICompletionData[] attributesCompletionData = schemaCompletionData.GetAttributeCompletionData(textElementPath);
-			Assert.IsTrue(base.Contains(attributesCompletionData, "foo"),
+			ICompletionData[] attributesCompletionData = SchemaCompletionData.GetAttributeCompletionData(textElementPath);
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributesCompletionData, "foo"),
 			              "Unexpected text attribute name.");
 		}
 
@@ -62,7 +57,7 @@ namespace XmlEditor.Tests.Schema
 		public void NoteElementHasChildElement()
 		{
 			ICompletionData[] childElementCompletionData
-				= schemaCompletionData.GetChildElementCompletionData(noteElementPath);
+				= SchemaCompletionData.GetChildElementCompletionData(noteElementPath);
 			
 			Assert.AreEqual(1, childElementCompletionData.Length,
 			                "Should be one child.");
@@ -72,7 +67,7 @@ namespace XmlEditor.Tests.Schema
 		public void NoteElementHasNoAttributes()
 		{	
 			ICompletionData[] attributeCompletionData
-				= schemaCompletionData.GetAttributeCompletionData(noteElementPath);
+				= SchemaCompletionData.GetAttributeCompletionData(noteElementPath);
 			
 			Assert.AreEqual(0, attributeCompletionData.Length,
 			                "Should no attributes.");
@@ -82,7 +77,7 @@ namespace XmlEditor.Tests.Schema
 		public void OneRootElement()
 		{
 			ICompletionData[] elementCompletionData
-				= schemaCompletionData.GetElementCompletionData();
+				= SchemaCompletionData.GetElementCompletionData();
 			
 			Assert.AreEqual(1, elementCompletionData.Length, "Should be 1 root element.");
 		}
@@ -91,13 +86,13 @@ namespace XmlEditor.Tests.Schema
 		public void RootElementIsNote()
 		{
 			ICompletionData[] elementCompletionData
-				= schemaCompletionData.GetElementCompletionData();
+				= SchemaCompletionData.GetElementCompletionData();
 			
 			Assert.IsTrue(Contains(elementCompletionData, "note"), 
 			              "Should be called note.");
-		}		
+		}
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"http://www.w3schools.com\" xmlns=\"http://www.w3schools.com\" elementFormDefault=\"qualified\">\r\n" +
 				"\t<xs:element name=\"note\">\r\n" +

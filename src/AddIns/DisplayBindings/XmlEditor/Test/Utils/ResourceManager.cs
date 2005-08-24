@@ -49,8 +49,8 @@ namespace XmlEditor.Tests.Utils
 			XmlTextReader reader = null;
 			
 			Assembly assembly = Assembly.GetAssembly(this.GetType());
-			
-			Stream resourceStream = assembly.GetManifestResourceStream(fileName);
+			string resourceName = String.Concat("XmlEditor.Tests.Resources.", fileName);
+			Stream resourceStream = assembly.GetManifestResourceStream(resourceName);
 			if (resourceStream != null) {
 				reader = new XmlTextReader(resourceStream);
 			}

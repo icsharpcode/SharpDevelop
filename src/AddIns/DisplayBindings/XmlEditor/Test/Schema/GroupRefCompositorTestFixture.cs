@@ -23,24 +23,19 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class GroupRefAsCompositorTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] rootChildElements;
 		ICompletionData[] fooAttributes;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("root", "http://foo"));
 			
-			rootChildElements = schemaCompletionData.GetChildElementCompletionData(path);
+			rootChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
 		
 			path.Elements.Add(new QualifiedName("foo", "http://foo"));
 			
-			fooAttributes = schemaCompletionData.GetAttributeCompletionData(path);
+			fooAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
 		}
 				
 		[Test]
@@ -53,25 +48,25 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void RootChildElementIsFoo()
 		{
-			Assert.IsTrue(base.Contains(rootChildElements, "foo"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(rootChildElements, "foo"), 
 			              "Should have a child element called foo.");
 		}
 		
 		[Test]
 		public void RootChildElementIsBar()
 		{
-			Assert.IsTrue(base.Contains(rootChildElements, "bar"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(rootChildElements, "bar"), 
 			              "Should have a child element called bar.");
 		}		
 		
 		[Test]
 		public void FooElementHasIdAttribute()
 		{
-			Assert.IsTrue(base.Contains(fooAttributes, "id"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(fooAttributes, "id"),
 			              "Should have an attribute called id.");
 		}
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"http://foo\" xmlns=\"http://foo\" elementFormDefault=\"qualified\">\r\n" +
 				"\t<xs:element name=\"root\">\r\n" +

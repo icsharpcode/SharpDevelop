@@ -21,29 +21,24 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ElementRefAnnotationTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] fooChildElementCompletionData;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
 			
-			fooChildElementCompletionData = schemaCompletionData.GetChildElementCompletionData(path);
+			fooChildElementCompletionData = SchemaCompletionData.GetChildElementCompletionData(path);
 		}
 				
 		[Test]
 		public void BarElementDocumentation()
 		{
-			Assert.IsTrue(base.ContainsDescription(fooChildElementCompletionData, "bar", "Documentation for bar element."),
+			Assert.IsTrue(SchemaTestFixtureBase.ContainsDescription(fooChildElementCompletionData, "bar", "Documentation for bar element."),
 			              "Missing documentation for bar element");
 		}
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"http://foo.com\" xmlns=\"http://foo.com\">\r\n" +
 				"\t<xs:element name=\"foo\">\r\n" +

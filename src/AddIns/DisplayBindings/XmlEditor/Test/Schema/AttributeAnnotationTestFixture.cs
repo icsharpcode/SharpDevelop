@@ -21,23 +21,18 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class AttributeAnnotationTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] fooAttributeCompletionData;
 		ICompletionData[] barAttributeCompletionData;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
-		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-			
+		public override void FixtureInit()
+		{			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
 			
-			fooAttributeCompletionData = schemaCompletionData.GetAttributeCompletionData(path);
+			fooAttributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
 
 			path.Elements.Add(new QualifiedName("bar", "http://foo.com"));
-			barAttributeCompletionData = schemaCompletionData.GetAttributeCompletionData(path);
+			barAttributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
 		}
 				
 		[Test]
@@ -52,7 +47,7 @@ namespace XmlEditor.Tests.Schema
 			Assert.AreEqual("Documentation for bar attribute.", barAttributeCompletionData[0].Description);
 		}
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"http://foo.com\" xmlns=\"http://foo.com\" elementFormDefault=\"qualified\">\r\n" +
 				"\t<xs:element name=\"foo\">\r\n" +

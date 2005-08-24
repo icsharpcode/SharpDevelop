@@ -80,6 +80,11 @@
     <Compile Include="Schema\SimpleContentWithAttributeTestFixture.cs" />
     <EmbeddedResource Include="Resources\xhtml1-strict-modified.xsd" />
     <EmbeddedResource Include="Resources\XMLSchema.xsd" />
+    <Compile Include="Schema.Includes\AttributeGroupRefSchemaIncludeTestFixture.cs" />
+    <Compile Include="Schema.Includes\TwoElementSchemaIncludeTestFixture.cs" />
+    <Compile Include="Schema.Uri\GetUriTestFixture.cs" />
+    <Compile Include="Schema\AbstractElementTestFixture.cs" />
+    <Compile Include="Utils\SchemaIncludeTestFixtureHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Schema\" />

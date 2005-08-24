@@ -20,31 +20,26 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class SingleElementSchemaTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] childElementCompletionData;
 		ICompletionData[] attributeCompletionData;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 
 			attributeCompletionData = 
-				schemaCompletionData.GetAttributeCompletionData(path);
+				SchemaCompletionData.GetAttributeCompletionData(path);
 
 			childElementCompletionData = 
-				schemaCompletionData.GetChildElementCompletionData(path);
+				SchemaCompletionData.GetChildElementCompletionData(path);
 		}
 		
 		[Test]
 		public void NamespaceUri()
 		{
 			Assert.AreEqual("http://www.w3schools.com", 
-			                schemaCompletionData.NamespaceUri,
+			                SchemaCompletionData.NamespaceUri,
 			                "Unexpected namespace.");
 		}
 		
@@ -62,7 +57,7 @@ namespace XmlEditor.Tests.Schema
 			                "Not expecting any child elements.");
 		}
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<?xml version=\"1.0\"?>\r\n" +
 				"<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\r\n" +

@@ -20,19 +20,14 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class SequencedChoiceTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] noteChildElements;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			
-			noteChildElements = schemaCompletionData.GetChildElementCompletionData(path);
+			noteChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
 		}
 		
 		[Test]
@@ -42,7 +37,7 @@ namespace XmlEditor.Tests.Schema
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			path.Elements.Add(new QualifiedName("title", "http://www.w3schools.com"));
 			
-			Assert.AreEqual(0, schemaCompletionData.GetChildElementCompletionData(path).Length, 
+			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Length, 
 			                "Should be no child elements.");
 		}
 		
@@ -53,7 +48,7 @@ namespace XmlEditor.Tests.Schema
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
 			path.Elements.Add(new QualifiedName("title", "http://www.w3schools.com"));
 
-			Assert.AreEqual(0, schemaCompletionData.GetChildElementCompletionData(path).Length,
+			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Length,
 			                "Should be no child elements.");
 		}		
 		
@@ -67,18 +62,18 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void NoteChildElementIsText()
 		{
-			Assert.IsTrue(base.Contains(noteChildElements, "text"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(noteChildElements, "text"), 
 			              "Should have a child element called text.");
 		}
 		
 		[Test]
 		public void NoteChildElementIsTitle()
 		{
-			Assert.IsTrue(base.Contains(noteChildElements, "title"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(noteChildElements, "title"), 
 			              "Should have a child element called title.");
 		}		
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"http://www.w3schools.com\" xmlns=\"http://www.w3schools.com\" elementFormDefault=\"qualified\">\r\n" +
 				"\t<xs:element name=\"note\">\r\n" +

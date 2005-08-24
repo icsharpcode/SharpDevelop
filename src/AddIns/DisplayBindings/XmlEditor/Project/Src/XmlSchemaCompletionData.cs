@@ -998,15 +998,14 @@ namespace ICSharpCode.XmlEditor
 				if (simpleTypeRestriction != null) {
 					data.AddRange(GetAttributeValueCompletionData(simpleTypeRestriction));
 				}	
-			} else if (attribute.AttributeType != null) {
-				XmlSchemaSimpleType simpleType = attribute.AttributeType as XmlSchemaSimpleType;
-				XmlSchemaDatatype dataType = attribute.AttributeType as XmlSchemaDatatype;
+			} else if (attribute.AttributeSchemaType != null) {
+				XmlSchemaSimpleType simpleType = attribute.AttributeSchemaType as XmlSchemaSimpleType;
 				
 				if (simpleType != null) {
-					data.AddRange(GetAttributeValueCompletionData(simpleType));
-				} else if (dataType != null) {
-					if (dataType.ValueType == typeof(bool)) {
+					if (simpleType.Name == "boolean") {
 						data.AddRange(GetBooleanAttributeValueCompletionData());
+					} else {
+						data.AddRange(GetAttributeValueCompletionData(simpleType));
 					}
 				}
 			}

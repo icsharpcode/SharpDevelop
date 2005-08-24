@@ -19,18 +19,13 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class AttributeGroupRefTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] attributeCompletionData;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
-		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-			
+		public override void FixtureInit()
+		{			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("note", "http://www.w3schools.com"));
-			attributeCompletionData = schemaCompletionData.GetAttributeCompletionData(path);
+			attributeCompletionData = SchemaCompletionData.GetAttributeCompletionData(path);
 		}
 		
 		[Test]
@@ -42,32 +37,32 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void NameAttribute()
 		{
-			Assert.IsTrue(base.Contains(attributeCompletionData, "name"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "name"), 
 			              "Attribute name does not exist.");
 		}		
 		
 		[Test]
 		public void IdAttribute()
 		{
-			Assert.IsTrue(base.Contains(attributeCompletionData, "id"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "id"), 
 			              "Attribute id does not exist.");
 		}		
 		
 		[Test]
 		public void StyleAttribute()
 		{
-			Assert.IsTrue(base.Contains(attributeCompletionData, "style"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "style"), 
 			              "Attribute style does not exist.");
 		}	
 		
 		[Test]
 		public void TitleAttribute()
 		{
-			Assert.IsTrue(base.Contains(attributeCompletionData, "title"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeCompletionData, "title"), 
 			              "Attribute title does not exist.");
 		}		
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"http://www.w3schools.com\" xmlns=\"http://www.w3schools.com\" elementFormDefault=\"qualified\">\r\n" +
 				"<xs:attributeGroup name=\"coreattrs\">" +

@@ -19,7 +19,7 @@ namespace XmlEditor.Tests.Schema
 	/// Tests the xsd schema.
 	/// </summary>
 	[TestFixture]
-	public class XsdSchemaTestFixture : SchemaTestFixtureBase
+	public class XsdSchemaTestFixture
 	{
 		XmlSchemaCompletionData schemaCompletionData;
 		XmlElementPath choicePath;
@@ -101,14 +101,14 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void ChoiceHasMinOccursAttribute()
 		{
-			Assert.IsTrue(base.Contains(choiceAttributes, "minOccurs"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(choiceAttributes, "minOccurs"),
 			              "Attribute minOccurs missing.");
 		}
 		
 		[Test]
 		public void ChoiceHasMaxOccursAttribute()
 		{
-			Assert.IsTrue(base.Contains(choiceAttributes, "maxOccurs"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(choiceAttributes, "maxOccurs"),
 			              "Attribute maxOccurs missing.");
 		}
 		
@@ -118,7 +118,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void ChoiceDoesNotHaveNameAttribute()
 		{
-			Assert.IsFalse(base.Contains(choiceAttributes, "name"),
+			Assert.IsFalse(SchemaTestFixtureBase.Contains(choiceAttributes, "name"),
 			               "Attribute name should not exist.");
 		}
 		
@@ -128,7 +128,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void ChoiceDoesNotHaveRefAttribute()
 		{
-			Assert.IsFalse(base.Contains(choiceAttributes, "ref"),
+			Assert.IsFalse(SchemaTestFixtureBase.Contains(choiceAttributes, "ref"),
 			               "Attribute ref should not exist.");
 		}	
 		
@@ -138,56 +138,56 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void ElementNameAttributeAppearsOnce()
 		{
-			int nameAttributeCount = base.GetItemCount(elementAttributes, "name");
+			int nameAttributeCount = SchemaTestFixtureBase.GetItemCount(elementAttributes, "name");
 			Assert.AreEqual(1, nameAttributeCount, "Should be only one name attribute.");
 		}
 		
 		[Test]
 		public void ElementHasIdAttribute()
 		{
-			Assert.IsTrue(base.Contains(elementAttributes, "id"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(elementAttributes, "id"), 
 			              "id attribute missing.");
 		}		
 		
 		[Test]
 		public void SimpleRestrictionTypeHasEnumChildElement()
 		{
-			Assert.IsTrue(base.Contains(simpleEnumElements, "xs:enumeration"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(simpleEnumElements, "xs:enumeration"),
 			              "enumeration element missing.");			
 		}
 		
 		[Test]
 		public void EnumHasValueAttribute()
 		{
-			Assert.IsTrue(base.Contains(enumAttributes, "value"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(enumAttributes, "value"),
 			              "Attribute value missing.");			
 		}
 		
 		[Test]
 		public void ElementFormDefaultAttributeHasValueQualified()
 		{
-			Assert.IsTrue(base.Contains(elementFormDefaultAttributeValues, "qualified"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(elementFormDefaultAttributeValues, "qualified"),
 			              "Attribute value 'qualified' missing.");
 		}
 		
 		[Test]
 		public void BlockDefaultAttributeHasValueAll()
 		{
-			Assert.IsTrue(base.Contains(blockDefaultAttributeValues, "#all"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(blockDefaultAttributeValues, "#all"),
 			              "Attribute value '#all' missing.");
 		}		
 		
 		[Test]
 		public void BlockDefaultAttributeHasValueExtension()
 		{
-			Assert.IsTrue(base.Contains(blockDefaultAttributeValues, "extension"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(blockDefaultAttributeValues, "extension"),
 			              "Attribute value 'extension' missing.");
 		}		
 		
 		[Test]
 		public void FinalDefaultAttributeHasValueList()
 		{
-			Assert.IsTrue(base.Contains(finalDefaultAttributeValues, "list"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(finalDefaultAttributeValues, "list"),
 			              "Attribute value 'list' missing.");
 		}
 		
@@ -197,14 +197,14 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void MixedAttributeHasValueTrue()
 		{
-			Assert.IsTrue(base.Contains(mixedAttributeValues, "true"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(mixedAttributeValues, "true"),
 			              "Attribute value 'true' missing.");
 		}
 		
 		[Test]
 		public void MaxOccursAttributeHasValueUnbounded()
 		{
-			Assert.IsTrue(base.Contains(maxOccursAttributeValues, "unbounded"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(maxOccursAttributeValues, "unbounded"),
 			              "Attribute value 'unbounded' missing.");
 		}				
 	}

@@ -3,7 +3,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <SchemaVersion>2.0</SchemaVersion>
-    <ProjectGuid>{6B717BD1-CD5E-498C-A42E-9E6A4584DC48}</ProjectGuid>
+    <ProjectGuid>{63B6CA43-58D0-4BF0-9D4F-1ABE4009E488}</ProjectGuid>
     <RootNamespace>ICSharpCode.XmlEditor</RootNamespace>
     <AssemblyName>XmlEditor</AssemblyName>
     <OutputType>Library</OutputType>

@@ -19,21 +19,16 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ComplexContentExtensionTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] bodyChildElements;
 		ICompletionData[] bodyAttributes;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("body", "http://www.w3schools.com")); 
 			
-			bodyChildElements = schemaCompletionData.GetChildElementCompletionData(path);
-			bodyAttributes = schemaCompletionData.GetAttributeCompletionData(path);
+			bodyChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
+			bodyAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
 		}	
 		
 		[Test]
@@ -43,7 +38,7 @@ namespace XmlEditor.Tests.Schema
 			path.Elements.Add(new QualifiedName("body", "http://www.w3schools.com")); 
 			path.Elements.Add(new QualifiedName("title", "http://www.w3schools.com")); 
 
-			Assert.AreEqual(0, schemaCompletionData.GetChildElementCompletionData(path).Length,
+			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Length,
 			                "Should be no child elements.");
 		}
 		
@@ -54,7 +49,7 @@ namespace XmlEditor.Tests.Schema
 			path.Elements.Add(new QualifiedName("body", "http://www.w3schools.com")); 
 			path.Elements.Add(new QualifiedName("text", "http://www.w3schools.com")); 
 
-			Assert.AreEqual(0, schemaCompletionData.GetChildElementCompletionData(path).Length,
+			Assert.AreEqual(0, SchemaCompletionData.GetChildElementCompletionData(path).Length,
 			                "Should be no child elements.");
 		}		
 		
@@ -68,14 +63,14 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void BodyChildElementIsText()
 		{
-			Assert.IsTrue(base.Contains(bodyChildElements, "text"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(bodyChildElements, "text"), 
 			              "Should have a child element called text.");
 		}
 		
 		[Test]
 		public void BodyChildElementIsTitle()
 		{
-			Assert.IsTrue(base.Contains(bodyChildElements, "title"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(bodyChildElements, "title"), 
 			              "Should have a child element called title.");
 		}		
 		
@@ -89,10 +84,10 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void BodyAttributeName()
 		{
-			Assert.IsTrue(base.Contains(bodyAttributes, "id"), "Attribute id not found.");
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(bodyAttributes, "id"), "Attribute id not found.");
 		}
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"http://www.w3schools.com\"  xmlns=\"http://www.w3schools.com\" elementFormDefault=\"qualified\">\r\n" +
 				"\t<xs:complexType name=\"Block\">\r\n" +

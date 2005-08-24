@@ -19,24 +19,20 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class GroupRefTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] childElements;
 		ICompletionData[] paraAttributes;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
 			XmlElementPath path = new XmlElementPath();
 			
 			path.Elements.Add(new QualifiedName("html", "http://foo/xhtml"));
 			path.Elements.Add(new QualifiedName("body", "http://foo/xhtml"));
 			
-			childElements = schemaCompletionData.GetChildElementCompletionData(path);
+			childElements = SchemaCompletionData.GetChildElementCompletionData(path);
 			
 			path.Elements.Add(new QualifiedName("p", "http://foo/xhtml"));
-			paraAttributes = schemaCompletionData.GetAttributeCompletionData(path);
+			paraAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
 		}
 		
 		[Test]
@@ -49,39 +45,39 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void BodyChildElementForm()
 		{
-			Assert.IsTrue(base.Contains(childElements, "form"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "form"), 
 			              "Should have a child element called form.");
 		}
 		
 		[Test]
 		public void BodyChildElementPara()
 		{
-			Assert.IsTrue(base.Contains(childElements, "p"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "p"), 
 			              "Should have a child element called p.");
 		}		
 		
 		[Test]
 		public void BodyChildElementTest()
 		{
-			Assert.IsTrue(base.Contains(childElements, "test"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "test"), 
 			              "Should have a child element called test.");
 		}		
 		
 		[Test]
 		public void BodyChildElementId()
 		{
-			Assert.IsTrue(base.Contains(childElements, "id"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "id"), 
 			              "Should have a child element called id.");
 		}		
 		
 		[Test]
 		public void ParaElementHasIdAttribute()
 		{
-			Assert.IsTrue(base.Contains(paraAttributes, "id"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(paraAttributes, "id"), 
 			              "Should have an attribute called id.");			
 		}
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema version=\"1.0\" xml:lang=\"en\"\r\n" +
 				"    xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\r\n" +

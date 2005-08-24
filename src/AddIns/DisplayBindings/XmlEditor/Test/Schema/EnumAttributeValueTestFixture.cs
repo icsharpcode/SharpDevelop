@@ -19,30 +19,26 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class EnumAttributeValueTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] attributeValues;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
-			attributeValues = schemaCompletionData.GetAttributeValueCompletionData(path, "id");
+			attributeValues = SchemaCompletionData.GetAttributeValueCompletionData(path, "id");
 		}
 		
 		[Test]
 		public void IdAttributeHasValueOne()
 		{
-			Assert.IsTrue(base.Contains(attributeValues, "one"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeValues, "one"),
 			              "Missing attribute value 'one'");
 		}
 		
 		[Test]
 		public void IdAttributeHasValueTwo()
 		{
-			Assert.IsTrue(base.Contains(attributeValues, "two"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributeValues, "two"),
 			              "Missing attribute value 'two'");
 		}		
 		
@@ -52,7 +48,7 @@ namespace XmlEditor.Tests.Schema
 			Assert.AreEqual(2, attributeValues.Length, "Expecting 2 attribute values.");
 		}
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xmlns=\"http://foo.com\" targetNamespace=\"http://foo.com\" elementFormDefault=\"qualified\">\r\n" +
 				"\t<xs:element name=\"foo\">\r\n" +

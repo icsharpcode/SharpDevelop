@@ -19,83 +19,78 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class RestrictionElementTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] childElements;
 		ICompletionData[] attributes;
 		ICompletionData[] annotationChildElements;
 		ICompletionData[] choiceChildElements;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
-		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-			
+		public override void FixtureInit()
+		{			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("group", "http://www.w3.org/2001/XMLSchema"));
-			childElements = schemaCompletionData.GetChildElementCompletionData(path);
-			attributes = schemaCompletionData.GetAttributeCompletionData(path);
+			childElements = SchemaCompletionData.GetChildElementCompletionData(path);
+			attributes = SchemaCompletionData.GetAttributeCompletionData(path);
 		
 			// Get annotation child elements.
 			path.Elements.Add(new QualifiedName("annotation", "http://www.w3.org/2001/XMLSchema"));
-			annotationChildElements = schemaCompletionData.GetChildElementCompletionData(path);
+			annotationChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
 			
 			// Get choice child elements.
 			path.Elements.RemoveLast();
 			path.Elements.Add(new QualifiedName("choice", "http://www.w3.org/2001/XMLSchema"));
-			choiceChildElements = schemaCompletionData.GetChildElementCompletionData(path);
+			choiceChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
 		}
 
 		[Test]
 		public void GroupChildElementIsAnnotation()
 		{
-			Assert.IsTrue(base.Contains(childElements, "annotation"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "annotation"), 
 			              "Should have a child element called annotation.");
 		}
 		
 		[Test]
 		public void GroupChildElementIsChoice()
 		{
-			Assert.IsTrue(base.Contains(childElements, "choice"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "choice"), 
 			              "Should have a child element called choice.");
 		}		
 		
 		[Test]
 		public void GroupChildElementIsSequence()
 		{
-			Assert.IsTrue(base.Contains(childElements, "sequence"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(childElements, "sequence"), 
 			              "Should have a child element called sequence.");
 		}		
 		
 		[Test]
 		public void GroupAttributeIsName()
 		{
-			Assert.IsTrue(base.Contains(attributes, "name"),
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(attributes, "name"),
 			              "Should have an attribute called name.");			
 		}
 		
 		[Test]
 		public void AnnotationChildElementIsAppInfo()
 		{
-			Assert.IsTrue(base.Contains(annotationChildElements, "appinfo"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(annotationChildElements, "appinfo"), 
 			              "Should have a child element called appinfo.");
 		}	
 		
 		[Test]
 		public void AnnotationChildElementIsDocumentation()
 		{
-			Assert.IsTrue(base.Contains(annotationChildElements, "documentation"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(annotationChildElements, "documentation"), 
 			              "Should have a child element called appinfo.");
 		}	
 		
 		[Test]
 		public void ChoiceChildElementIsSequence()
 		{
-			Assert.IsTrue(base.Contains(choiceChildElements, "element"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(choiceChildElements, "element"), 
 			              "Should have a child element called element.");
 		}	
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema targetNamespace=\"http://www.w3.org/2001/XMLSchema\" blockDefault=\"#all\" elementFormDefault=\"qualified\" version=\"1.0\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xml:lang=\"EN\" xmlns:hfp=\"http://www.w3.org/2001/XMLSchema-hasFacetAndProperty\">\r\n" +
 					"\r\n" +

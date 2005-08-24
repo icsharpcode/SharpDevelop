@@ -21,21 +21,17 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ElementAnnotationTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] fooChildElementCompletionData;
 		ICompletionData[] rootElementCompletionData;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-			rootElementCompletionData = schemaCompletionData.GetElementCompletionData();
+			rootElementCompletionData = SchemaCompletionData.GetElementCompletionData();
 			
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
 			
-			fooChildElementCompletionData = schemaCompletionData.GetChildElementCompletionData(path);
+			fooChildElementCompletionData = SchemaCompletionData.GetChildElementCompletionData(path);
 		}
 				
 		[Test]
@@ -50,7 +46,7 @@ namespace XmlEditor.Tests.Schema
 			Assert.AreEqual("Documentation for bar element.", fooChildElementCompletionData[0].Description);
 		}
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" targetNamespace=\"http://foo.com\" xmlns=\"http://foo.com\" elementFormDefault=\"qualified\">\r\n" +
 				"\t<xs:element name=\"foo\">\r\n" +

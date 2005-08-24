@@ -19,7 +19,6 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class ExtensionElementTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] schemaChildElements;
 		ICompletionData[] annotationChildElements;
 		ICompletionData[] annotationAttributes;
@@ -28,36 +27,33 @@ namespace XmlEditor.Tests.Schema
 		ICompletionData[] schemaAttributes;
 		ICompletionData[] fooAttributes;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("schema", "http://www.w3.org/2001/XMLSchema"));
 			
-			schemaChildElements = schemaCompletionData.GetChildElementCompletionData(path);
-			schemaAttributes = schemaCompletionData.GetAttributeCompletionData(path);
+			schemaChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
+			schemaAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
 			
 			// Get include elements attributes.
 			path.Elements.Add(new QualifiedName("include", "http://www.w3.org/2001/XMLSchema"));
-			includeAttributes = schemaCompletionData.GetAttributeCompletionData(path);
+			includeAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
 		
 			// Get annotation element info.
 			path.Elements.RemoveLast();
 			path.Elements.Add(new QualifiedName("annotation", "http://www.w3.org/2001/XMLSchema"));
 			
-			annotationChildElements = schemaCompletionData.GetChildElementCompletionData(path);
-			annotationAttributes = schemaCompletionData.GetAttributeCompletionData(path);
+			annotationChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
+			annotationAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
 		
 			// Get app info attributes.
 			path.Elements.Add(new QualifiedName("appinfo", "http://www.w3.org/2001/XMLSchema"));
-			appInfoAttributes = schemaCompletionData.GetAttributeCompletionData(path);
+			appInfoAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
 			
 			// Get foo attributes.
 			path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://www.w3.org/2001/XMLSchema"));
-			fooAttributes = schemaCompletionData.GetAttributeCompletionData(path);
+			fooAttributes = SchemaCompletionData.GetAttributeCompletionData(path);
 		}
 		
 		[Test]
@@ -70,21 +66,21 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void SchemaChildElementIsInclude()
 		{
-			Assert.IsTrue(base.Contains(schemaChildElements, "include"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(schemaChildElements, "include"), 
 			              "Should have a child element called include.");
 		}
 		
 		[Test]
 		public void SchemaChildElementIsImport()
 		{
-			Assert.IsTrue(base.Contains(schemaChildElements, "import"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(schemaChildElements, "import"), 
 			              "Should have a child element called import.");
 		}		
 		
 		[Test]
 		public void SchemaChildElementIsNotation()
 		{
-			Assert.IsTrue(base.Contains(schemaChildElements, "notation"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(schemaChildElements, "notation"), 
 			              "Should have a child element called notation.");
 		}		
 		
@@ -94,7 +90,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void FooHasClassAttribute()
 		{
-			Assert.IsTrue(base.Contains(fooAttributes, "class"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(fooAttributes, "class"), 
 			              "Should have an attribute called class.");						
 		}
 		
@@ -107,7 +103,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void AnnotationHasIdAttribute()
 		{
-			Assert.IsTrue(base.Contains(annotationAttributes, "id"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(annotationAttributes, "id"), 
 			              "Should have an attribute called id.");			
 		}
 		
@@ -121,14 +117,14 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void AnnotationChildElementIsAppInfo()
 		{
-			Assert.IsTrue(base.Contains(annotationChildElements, "appinfo"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(annotationChildElements, "appinfo"), 
 			              "Should have a child element called appinfo.");
 		}
 		
 		[Test]
 		public void AnnotationChildElementIsDocumentation()
 		{
-			Assert.IsTrue(base.Contains(annotationChildElements, "documentation"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(annotationChildElements, "documentation"), 
 			              "Should have a child element called documentation.");
 		}		
 		
@@ -141,7 +137,7 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void IncludeHasSchemaLocationAttribute()
 		{
-			Assert.IsTrue(base.Contains(includeAttributes, "schemaLocation"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(includeAttributes, "schemaLocation"), 
 			              "Should have an attribute called schemaLocation.");			
 		}	
 		
@@ -154,11 +150,11 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void AppInfoHasIdAttribute()
 		{
-			Assert.IsTrue(base.Contains(appInfoAttributes, "id"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(appInfoAttributes, "id"), 
 			              "Should have an attribute called id.");			
 		}		
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema targetNamespace=\"http://www.w3.org/2001/XMLSchema\" elementFormDefault=\"qualified\" version=\"1.0\" xmlns:xs=\"http://www.w3.org/2001/XMLSchema\" xml:lang=\"EN\">\r\n" +
 				"\r\n" +

@@ -21,28 +21,23 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class AttributeValueAnnotationTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] barAttributeValuesCompletionData;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
-		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-			
+		public override void FixtureInit()
+		{	
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("foo", "http://foo.com"));
-			barAttributeValuesCompletionData = schemaCompletionData.GetAttributeValueCompletionData(path, "bar");
+			barAttributeValuesCompletionData = SchemaCompletionData.GetAttributeValueCompletionData(path, "bar");
 		}
 				
 		[Test]
 		public void BarAttributeValueDefaultDocumentation()
 		{
-			Assert.IsTrue(base.ContainsDescription(barAttributeValuesCompletionData, "default", "Default attribute value info."),
+			Assert.IsTrue(SchemaTestFixtureBase.ContainsDescription(barAttributeValuesCompletionData, "default", "Default attribute value info."),
 			                "Description for attribute value 'default' is incorrect.");
 		}
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\r\n" +
 				"\ttargetNamespace=\"http://foo.com\"\r\n" +

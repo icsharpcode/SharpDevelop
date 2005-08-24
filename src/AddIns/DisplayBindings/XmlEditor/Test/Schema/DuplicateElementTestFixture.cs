@@ -19,19 +19,14 @@ namespace XmlEditor.Tests.Schema
 	[TestFixture]
 	public class DuplicateElementTestFixture : SchemaTestFixtureBase
 	{
-		XmlSchemaCompletionData schemaCompletionData;
 		ICompletionData[] htmlChildElements;
 		
-		[TestFixtureSetUp]
-		public void FixtureInit()
+		public override void FixtureInit()
 		{
-			StringReader reader = new StringReader(GetSchema());
-			schemaCompletionData = new XmlSchemaCompletionData(reader);
-
 			XmlElementPath path = new XmlElementPath();
 			path.Elements.Add(new QualifiedName("html", "http://foo/xhtml"));
 		
-			htmlChildElements = schemaCompletionData.GetChildElementCompletionData(path);
+			htmlChildElements = SchemaCompletionData.GetChildElementCompletionData(path);
 		}		
 		
 		[Test]
@@ -44,18 +39,18 @@ namespace XmlEditor.Tests.Schema
 		[Test]
 		public void HtmlChildElementHead()
 		{
-			Assert.IsTrue(base.Contains(htmlChildElements, "head"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(htmlChildElements, "head"), 
 			              "Should have a child element called head.");
 		}
 		
 		[Test]
 		public void HtmlChildElementBody()
 		{
-			Assert.IsTrue(base.Contains(htmlChildElements, "body"), 
+			Assert.IsTrue(SchemaTestFixtureBase.Contains(htmlChildElements, "body"), 
 			              "Should have a child element called body.");
 		}		
 		
-		string GetSchema()
+		protected override string GetSchema()
 		{
 			return "<xs:schema version=\"1.0\" xml:lang=\"en\"\r\n" +
 					"    xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"\r\n" +
