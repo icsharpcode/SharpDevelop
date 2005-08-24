@@ -865,6 +865,9 @@
 			<DialogPanel id    = "SelectStyle"
 			             label = "${res:Dialog.Options.IDEOptions.SelectVisualStyle.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel"/>
+			<DialogPanel id    = "Fullscreen"
+			             label = "Fullscreen"
+			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.FullscreenPanel"/>
 			<DialogPanel id    = "LoadSave"
 			             label = "${res:Dialog.Options.IDEOptions.LoadSaveOptions.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.LoadSavePanel"/>

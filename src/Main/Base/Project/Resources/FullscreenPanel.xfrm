@@ -1,0 +1,97 @@
+﻿<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="FullscreenPanel" />
+    <ClientSize value="{Width=368, Height=289}" />
+    <Controls>
+      <System.Windows.Forms.Label>
+        <Name value="labelDescription" />
+        <Location value="{X=3,Y=10}" />
+        <Text value="When SharpDevelop is in fullscreen mode:" />
+        <Size value="{Width=350, Height=28}" />
+        <TabIndex value="0" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.Label>
+      <System.Windows.Forms.CheckBox>
+        <Name value="HideMainMenuCheckBox" />
+        <Location value="{X=13,Y=41}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="Hide main menu" />
+        <TabIndex value="1" />
+        <Size value="{Width=340, Height=20}" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="ShowMainMenuOnMouseMoveCheckBox" />
+        <Location value="{X=34,Y=67}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="Show when cursor moves over it" />
+        <TabIndex value="2" />
+        <Size value="{Width=319, Height=20}" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="HideToolbarsCheckBox" />
+        <Location value="{X=13,Y=93}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="Hide toolbars" />
+        <TabIndex value="3" />
+        <Size value="{Width=340, Height=20}" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="HideTabsCheckBox" />
+        <Location value="{X=13,Y=119}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="Hide tabs" />
+        <TabIndex value="4" />
+        <Size value="{Width=340, Height=20}" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="HideVerticalScrollbarCheckBox" />
+        <Location value="{X=13,Y=145}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="Hide vertical scrollbar of text editor" />
+        <TabIndex value="5" />
+        <Size value="{Width=340, Height=20}" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="HideHorizontalScrollbarCheckBox" />
+        <Location value="{X=13,Y=171}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="Hide horizontal scrollbar of text editor" />
+        <TabIndex value="6" />
+        <Size value="{Width=340, Height=20}" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="HideStatusBarCheckBox" />
+        <Location value="{X=13,Y=197}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="Hide status bar" />
+        <TabIndex value="7" />
+        <Size value="{Width=340, Height=20}" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="ShowStatusBarOnMouseMoveCheckBox" />
+        <Location value="{X=34,Y=223}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="Show when cursor moves over it" />
+        <TabIndex value="8" />
+        <Size value="{Width=319, Height=20}" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.CheckBox>
+      <System.Windows.Forms.CheckBox>
+        <Name value="HideWindowsTaskbarCheckBox" />
+        <Location value="{X=13,Y=249}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="Hide Windows Taskbar" />
+        <TabIndex value="9" />
+        <Size value="{Width=340, Height=24}" />
+        <Anchor value="Top, Left, Right" />
+      </System.Windows.Forms.CheckBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>
