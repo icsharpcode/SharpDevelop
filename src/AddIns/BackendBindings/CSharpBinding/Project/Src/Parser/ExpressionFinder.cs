@@ -649,7 +649,7 @@ namespace CSharpBinding.Parser
 					}
 					break;
 				default:
-					if (IsDigit()) {
+					if (IsNumber(ch)) {
 						ReadDigit(ch);
 						curTokenType = Digit;
 					} else if (IsIdentifierPart(ch)) {
@@ -677,11 +677,13 @@ namespace CSharpBinding.Parser
 					break;
 			}
 		}
-		bool IsDigit()
+		bool IsNumber(char ch)
 		{
+			if (!Char.IsDigit(ch))
+				return false;
 			int n = 0;
 			while (true) {
-				char ch = Peek(n);
+				ch = Peek(n);
 				if (Char.IsDigit(ch)) {
 					n++;
 					continue;
