@@ -126,7 +126,7 @@ namespace ICSharpCode.SharpDevelop.Commands.TabStrip
 		{
 			IWorkbenchWindow window = Owner as IWorkbenchWindow;
 			if (window != null && window.ViewContent.FileName != null) {
-				Clipboard.SetDataObject(new DataObject(DataFormats.Text, window.ViewContent.FileName));
+				ClipboardWrapper.SetText(window.ViewContent.FileName);
 			}
 		}
 	}

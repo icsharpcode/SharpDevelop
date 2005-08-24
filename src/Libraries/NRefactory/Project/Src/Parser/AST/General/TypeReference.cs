@@ -119,6 +119,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
+		/// <summary>
+		/// The rank of the array type.
+		/// For "object[]", this is { 0 }; for "object[,]", it is {1}.
+		/// For "object[,][,,][]", it is {1, 2, 0}.
+		/// For non-array types, this property is null or {}.
+		/// </summary>
 		public int[] RankSpecifier {
 			get {
 				return rankSpecifier;

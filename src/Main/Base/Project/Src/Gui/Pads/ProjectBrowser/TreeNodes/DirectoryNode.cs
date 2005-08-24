@@ -405,7 +405,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override bool EnablePaste {
 			get {
-				IDataObject dataObject = Clipboard.GetDataObject();
+				IDataObject dataObject = ClipboardWrapper.GetDataObject();
 				if (dataObject == null) {
 					return false;
 				}
@@ -429,7 +429,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Paste()
 		{
-			IDataObject dataObject = Clipboard.GetDataObject();
+			IDataObject dataObject = ClipboardWrapper.GetDataObject();
 			
 			if (dataObject.GetDataPresent(DataFormats.FileDrop)) {
 				string[] files = (string[])dataObject.GetData(DataFormats.FileDrop);
@@ -472,7 +472,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		public override void Copy()
 		{
-			Clipboard.SetDataObject(new DataObject(typeof(DirectoryNode).ToString(), new FileOperationClipboardObject(Directory, false)), true);
+			ClipboardWrapper.SetDataObject(new DataObject(typeof(DirectoryNode).ToString(), new FileOperationClipboardObject(Directory, false)));
 		}
 		
 		public override bool EnableCut {
@@ -484,7 +484,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			Clipboard.SetDataObject(new DataObject(typeof(DirectoryNode).ToString(), new FileOperationClipboardObject(Directory, true)), true);
+			ClipboardWrapper.SetDataObject(new DataObject(typeof(DirectoryNode).ToString(), new FileOperationClipboardObject(Directory, true)));
 		}
 		#endregion
 		

@@ -146,12 +146,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			Clipboard.SetDataObject(new DataObject(typeof(ISolutionFolder).ToString(), folder.IdGuid), true);
+			ClipboardWrapper.SetDataObject(new DataObject(typeof(ISolutionFolder).ToString(), folder.IdGuid));
 		}
 		
 		public static bool DoEnablePaste(ISolutionFolderNode container)
 		{
-			IDataObject dataObject = Clipboard.GetDataObject();
+			IDataObject dataObject = ClipboardWrapper.GetDataObject();
 			if (dataObject == null) {
 				return false;
 			}
@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static void DoPaste(ISolutionFolderNode folderNode)
 		{
 			ExtTreeNode folderTreeNode = (ExtTreeNode)folderNode;
-			IDataObject dataObject = Clipboard.GetDataObject();
+			IDataObject dataObject = ClipboardWrapper.GetDataObject();
 			
 			if (dataObject.GetDataPresent(typeof(ISolutionFolder).ToString())) {
 				string guid = dataObject.GetData(typeof(ISolutionFolder).ToString()).ToString();

@@ -129,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 				get { return comboBox.SelectionLength > 0; }
 			}
 			public bool EnablePaste {
-				get { return Clipboard.ContainsText(); }
+				get { return ClipboardWrapper.ContainsText; }
 			}
 			public bool EnableDelete {
 				get { return true; }
@@ -137,9 +137,9 @@ namespace ICSharpCode.SharpDevelop.Commands
 			public bool EnableSelectAll {
 				get { return comboBox.Text.Length > 0; }
 			}
-			public void Cut()       { Clipboard.SetText(comboBox.SelectedText); comboBox.SelectedText = ""; }
-			public void Copy()      { Clipboard.SetText(comboBox.SelectedText); }
-			public void Paste()     { comboBox.SelectedText = Clipboard.GetText(); }
+			public void Cut()       { ClipboardWrapper.SetText(comboBox.SelectedText); comboBox.SelectedText = ""; }
+			public void Copy()      { ClipboardWrapper.SetText(comboBox.SelectedText); }
+			public void Paste()     { comboBox.SelectedText = ClipboardWrapper.GetText(); }
 			public void Delete()    { comboBox.SelectedText = ""; }
 			public void SelectAll() { comboBox.SelectAll(); }
 		}

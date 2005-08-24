@@ -44,7 +44,11 @@ namespace ICSharpCode.TextEditor
 		
 		public bool EnablePaste {
 			get {
-				return Clipboard.ContainsText();
+				try {
+					return Clipboard.ContainsText();
+				} catch (ExternalException) {
+					return false;
+				}
 			}
 		}
 		
@@ -76,24 +80,15 @@ namespace ICSharpCode.TextEditor
 			string str = textArea.SelectionManager.SelectedText;
 			
 			if (str.Length > 0) {
-				// paste to clipboard
-				// BIG HACK: STRANGE EXTERNAL EXCEPTION BUG WORKAROUND
-				for (int i = 0; i < 5; ++i) {
-					try {
-						DataObject dataObject = new DataObject();
-						dataObject.SetData(DataFormats.UnicodeText, true, str);
-						// Default has no highlighting, therefore we don't need RTF output
-						if (textArea.Document.HighlightingStrategy.Name != "Default") {
-							dataObject.SetData(DataFormats.Rtf, RtfWriter.GenerateRtf(textArea));
-						}
-						OnCopyText(new CopyTextEventArgs(str));
-						Clipboard.SetDataObject(dataObject, true);
-						return true;
-					} catch (ExternalException) {
-						
-					}
-					Thread.Sleep(100);
+				DataObject dataObject = new DataObject();
+				dataObject.SetData(DataFormats.UnicodeText, true, str);
+				// Default has no highlighting, therefore we don't need RTF output
+				if (textArea.Document.HighlightingStrategy.Name != "Default") {
+					dataObject.SetData(DataFormats.Rtf, RtfWriter.GenerateRtf(textArea));
 				}
+				OnCopyText(new CopyTextEventArgs(str));
+				Clipboard.SetDataObject(dataObject, true, 50, 50);
+				return true;
 			}
 			return false;
 		}
@@ -117,22 +112,28 @@ namespace ICSharpCode.TextEditor
 		public void Paste(object sender, EventArgs e)
 		{
 			// Clipboard.GetDataObject may throw an exception...
-			try {
-				IDataObject data = Clipboard.GetDataObject();
-				if (data.GetDataPresent(DataFormats.UnicodeText)) {
-					string text = (string)data.GetData(DataFormats.UnicodeText);
-					if (text.Length > 0) {
-						int redocounter = 0;
-						if (textArea.SelectionManager.HasSomethingSelected) {
-							Delete(sender, e);
-							redocounter++;
+			for (int i = 0;; i++) {
+				try {
+					IDataObject data = Clipboard.GetDataObject();
+					if (data.GetDataPresent(DataFormats.UnicodeText)) {
+						string text = (string)data.GetData(DataFormats.UnicodeText);
+						if (text.Length > 0) {
+							int redocounter = 0;
+							if (textArea.SelectionManager.HasSomethingSelected) {
+								Delete(sender, e);
+								redocounter++;
+							}
+							textArea.InsertString(text);
+							if (redocounter > 0) {
+								textArea.Document.UndoStack.UndoLast(redocounter + 1); // redo the whole operation
+							}
 						}
-						textArea.InsertString(text);
-						if (redocounter > 0) {
-							textArea.Document.UndoStack.UndoLast(redocounter + 1); // redo the whole operation
-						}					}
+					}
+					return;
+				} catch (ExternalException) {
+					// GetDataObject does not provide RetryTimes parameter
+					if (i > 5) throw;
 				}
-			} catch (ExternalException) {
 			}
 		}
 		

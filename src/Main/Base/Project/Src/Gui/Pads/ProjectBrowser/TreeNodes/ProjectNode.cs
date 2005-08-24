@@ -119,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			Clipboard.SetDataObject(new DataObject(typeof(ISolutionFolder).ToString(), project.IdGuid), true);
+			ClipboardWrapper.SetDataObject(new DataObject(typeof(ISolutionFolder).ToString(), project.IdGuid));
 		}
 		// Paste is inherited from DirectoryNode.
 		

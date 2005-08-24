@@ -22,7 +22,7 @@ namespace ResourceEditor
 			ResourceEditorControl editor = (ResourceEditorControl)window.ViewContent.Control;
 			
 			if(editor.ResourceList.SelectedItems.Count > 0) {
-				Clipboard.SetDataObject(editor.ResourceList.SelectedItems[0].Text, true);
+				ClipboardWrapper.SetText(editor.ResourceList.SelectedItems[0].Text);
 			}
 		}
 	}

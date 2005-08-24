@@ -140,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				versionInfo.Append(Environment.NewLine);
 			}
 			
-			Clipboard.SetDataObject(new DataObject(System.Windows.Forms.DataFormats.Text, versionInfo.ToString()), true);
+			ClipboardWrapper.SetText(versionInfo.ToString());
 		}
 		
 		// THIS METHOD IS MAINTAINED BY THE FORM DESIGNER

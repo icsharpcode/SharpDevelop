@@ -72,9 +72,7 @@ namespace ICSharpCode.SharpDevelop
 		void CopyInfoToClipboard()
 		{
 			if (copyErrorCheckBox.Checked) {
-				try {
-					Clipboard.SetDataObject(new DataObject(System.Windows.Forms.DataFormats.Text, getClipboardString()), true);
-				} catch (Exception) {}
+				ClipboardWrapper.SetText(getClipboardString());
 			}
 		}
 		

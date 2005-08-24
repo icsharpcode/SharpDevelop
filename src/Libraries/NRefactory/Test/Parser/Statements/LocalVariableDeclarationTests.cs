@@ -58,8 +58,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("int", type.GenericTypes[0].Type);
 			Assert.AreEqual(0, type.GenericTypes[0].GenericTypes.Count);
 			Assert.IsFalse(type.GenericTypes[0].IsArrayType);
-			Assert.AreEqual(1, type.RankSpecifier.Length);
-			Assert.AreEqual(0, type.RankSpecifier[0]);
+			Assert.AreEqual(new int[] {0}, type.RankSpecifier);
 		}
 		
 		[Test]
@@ -73,8 +72,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("int", type.GenericTypes[0].Type);
 			Assert.AreEqual(0, type.GenericTypes[0].GenericTypes.Count);
 			Assert.IsFalse(type.IsArrayType);
-			Assert.AreEqual(1, type.GenericTypes[0].RankSpecifier.Length);
-			Assert.AreEqual(0, type.GenericTypes[0].RankSpecifier[0]);
+			Assert.AreEqual(new int[] {0}, type.GenericTypes[0].RankSpecifier);
 		}
 		
 		[Test]
@@ -240,8 +238,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("Integer", type.GenericTypes[0].Type);
 			Assert.AreEqual(0, type.GenericTypes[0].GenericTypes.Count);
 			Assert.IsFalse(type.GenericTypes[0].IsArrayType);
-			Assert.AreEqual(1, type.RankSpecifier.Length);
-			Assert.AreEqual(0, type.RankSpecifier[0]);
+			Assert.AreEqual(new int[] { 0 }, type.RankSpecifier);
 		}
 		
 		[Test]

@@ -185,7 +185,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Copy()
 		{
-			Clipboard.SetDataObject(new DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(FileName, false)), true);
+			ClipboardWrapper.SetDataObject(new DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(FileName, false)));
 		}
 		
 		public override bool EnableCut {
@@ -197,7 +197,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			Clipboard.SetDataObject(new DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(FileName, true)), true);
+			ClipboardWrapper.SetDataObject(new DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(FileName, true)));
 		}
 		
 			

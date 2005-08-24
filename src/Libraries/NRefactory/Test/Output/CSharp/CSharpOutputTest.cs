@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.AST;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
@@ -16,24 +17,113 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 	[TestFixture]
 	public class CSharpOutputTest
 	{
-		[Test]
-		public void CSharpOutputTest1()
+		void TestProgram(string program)
 		{
-//	 TODO:		
-//			string program = "public class Test" + Environment.NewLine + 
-//			                 "{" + Environment.NewLine + 
-//			                 "\tvoid A()" + Environment.NewLine + 
-//			                 "\t{" + Environment.NewLine + 
-//			                 "\t\tstring test = 546.ToString();" + Environment.NewLine + 
-//			                 "\t}" + Environment.NewLine + 
-//			                 "}" + Environment.NewLine;
-//			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(program));
-//			parser.Parse();
-//			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
-//			outputVisitor.Visit(parser.CompilationUnit, null);
-//			
-//			Assert.AreEqual(program, outputVisitor.Text);
+			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(program));
+			parser.Parse();
+			Assert.AreEqual("", parser.Errors.ErrorOutput);
+			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
+			outputVisitor.Visit(parser.CompilationUnit, null);
+			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
+			Assert.AreEqual(StripWhitespace(program), StripWhitespace(outputVisitor.Text));
 		}
 		
+		string StripWhitespace(string text)
+		{
+			return text.Trim().Replace("\t", "").Replace("\r", "").Replace("\n", " ").Replace("  ", " ");
+		}
+		
+		void TestTypeMember(string program)
+		{
+			TestProgram("class A { " + program + " }");
+		}
+		
+		void TestStatement(string statement)
+		{
+			TestTypeMember("void Method() { " + statement + " }");
+		}
+		
+		void TestExpression(string expression)
+		{
+			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(expression + ";"));
+			Expression e = parser.ParseExpression();
+			Assert.AreEqual("", parser.Errors.ErrorOutput);
+			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
+			e.AcceptVisitor(outputVisitor, null);
+			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
+			Assert.AreEqual(StripWhitespace(expression), StripWhitespace(outputVisitor.Text));
+		}
+		
+		[Test]
+		public void Field()
+		{
+			TestTypeMember("int a;");
+		}
+		
+		[Test]
+		public void Method()
+		{
+			TestTypeMember("void Method() { }");
+		}
+		
+		[Test]
+		public void PartialModifier()
+		{
+			TestProgram("public partial class Foo { }");
+		}
+		
+		[Test]
+		public void GenericClassDefinition()
+		{
+			TestProgram("public class Foo<T> where T : IDisposable, ICloneable { }");
+		}
+		
+		[Test]
+		public void GenericClassDefinitionWithBaseType()
+		{
+			TestProgram("public class Foo<T> : BaseClass where T : IDisposable, ICloneable { }");
+		}
+		
+		[Test]
+		public void GenericMethodDefinition()
+		{
+			TestTypeMember("public void Foo<T>(T arg) where T : IDisposable, ICloneable { }");
+		}
+		
+		[Test]
+		public void ArrayRank()
+		{
+			TestStatement("object[,,] a = new object[1, 2, 3];");
+		}
+		
+		[Test]
+		public void ArrayInitializer()
+		{
+			TestStatement("object[] a = new object[] {1, 2, 3};");
+		}
+		
+		[Test]
+		public void Assignment()
+		{
+			TestExpression("a = b");
+		}
+		
+		[Test]
+		public void GenericMethodInvocation()
+		{
+			TestExpression("GenericMethod<T>(arg)");
+		}
+		
+		[Test]
+		public void NullCoalescing()
+		{
+			TestExpression("a ?? b");
+		}
+		
+		[Test]
+		public void SpecialIdentifierName()
+		{
+			TestExpression("@class");
+		}
 	}
 }

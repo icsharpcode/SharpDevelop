@@ -154,7 +154,7 @@ namespace ResourceEditor
 				resourceEditor.ResourceList.Items.Remove(item);
 			}
 			resourceEditor.ResourceList.OnChanged();
-			Clipboard.SetDataObject(tmphash);
+			ClipboardWrapper.SetDataObject(tmphash);
 		}
 		
 		public void Copy()
@@ -168,7 +168,7 @@ namespace ResourceEditor
 				object resourceValue = GetClonedResource(resourceEditor.ResourceList.Resources[item.Text].ResourceValue);
 				tmphash.Add(item.Text, resourceValue); // copy a clone to clipboard
 			}
-			Clipboard.SetDataObject(tmphash);
+			ClipboardWrapper.SetDataObject(tmphash);
 		}
 		
 		public void Paste()
@@ -177,7 +177,7 @@ namespace ResourceEditor
 				return;
 			}
 			
-			IDataObject dob = Clipboard.GetDataObject();
+			IDataObject dob = ClipboardWrapper.GetDataObject();
 			
 			if (dob.GetDataPresent(typeof(Hashtable).FullName)) {
 				Hashtable tmphash = (Hashtable)dob.GetData(typeof(Hashtable));

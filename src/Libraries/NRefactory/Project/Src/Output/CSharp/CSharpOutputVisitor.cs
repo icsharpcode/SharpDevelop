@@ -154,7 +154,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					if (this.prettyPrintOptions.SpacesWithinBrackets) {
 						outputFormatter.Space();
 					}
-					for (int j = 1; j < typeReference.RankSpecifier[i]; ++j) {
+					for (int j = 0; j < typeReference.RankSpecifier[i]; ++j) {
 						outputFormatter.PrintToken(Tokens.Comma);
 					}
 					if (this.prettyPrintOptions.SpacesWithinBrackets) {
@@ -1823,6 +1823,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.Space();
 					}
 					outputFormatter.PrintToken(Tokens.LessEqual);
+					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
+						outputFormatter.Space();
+					}
+					break;
+				case BinaryOperatorType.NullCoalescing:
+					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
+						outputFormatter.Space();
+					}
+					outputFormatter.PrintToken(Tokens.DoubleQuestion);
 					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
 						outputFormatter.Space();
 					}
