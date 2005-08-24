@@ -338,7 +338,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			SetProperty(this.Configuration, this.Platform, property, value, location);
 		}
 		
-		public void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocation location)
+		public virtual void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocation location)
 		{
 			string configurationKey = platform != null ? configurationName + "|" + platform : configurationName;
 			PropertyGroup pg;

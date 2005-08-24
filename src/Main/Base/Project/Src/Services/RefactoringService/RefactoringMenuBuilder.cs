@@ -64,9 +64,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			if (!lineHasDefinitions) {
 				ResolveResult rr = ResolveAtCaret(textEditorControl, textArea);
-				MemberResolveResult mrr = rr as MemberResolveResult;
-				if (mrr != null) {
-					resultItems.Add(MakeItem(mrr.ResolvedMember));
+				ToolStripMenuItem item = null;
+				if (rr is MemberResolveResult) {
+					item = MakeItem(((MemberResolveResult)rr).ResolvedMember);
+				} else if (rr is TypeResolveResult) {
+					item = MakeItem(((TypeResolveResult)rr).ResolvedClass);
+				}
+				if (item != null) {
+					resultItems.Add(item);
 				}
 			}
 			
@@ -82,12 +87,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		ToolStripMenuItem MakeItem(IMember member)
 		{
+			if (member == null) return null;
 			return MakeItem(MemberNode.Create(member), member.DeclaringType.CompilationUnit, member.Region);
 		}
 		
 		
 		ToolStripMenuItem MakeItem(IClass c)
 		{
+			if (c == null) return null;
 			return MakeItem(new ClassNode(c.ProjectContent.Project, c), c.CompilationUnit, c.Region);
 		}
 		

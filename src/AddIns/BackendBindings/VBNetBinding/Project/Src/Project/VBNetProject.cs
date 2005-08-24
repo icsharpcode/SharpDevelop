@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="none" email=""/>
@@ -35,18 +35,21 @@ namespace VBNetBinding
 	/// </summary>
 	public class VBNetProject : MSBuildProject
 	{
-		public void RefreshMyType()
+		public override void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocation location)
 		{
-			switch (this.OutputType) {
-				case OutputType.WinExe:
-					SetProperty("MyType", "WindowsForms");
-					break;
-				case OutputType.Exe:
-					SetProperty("MyType", "Console");
-					break;
-				default:
-					SetProperty("MyType", "Windows");
-					break;
+			base.SetProperty(configurationName, platform, property, value, location);
+			if (property == "OutputType") {
+				switch (this.OutputType) {
+					case OutputType.WinExe:
+						base.SetProperty(configurationName, platform, "MyType", "WindowsForms", location);
+						break;
+					case OutputType.Exe:
+						base.SetProperty(configurationName, platform, "MyType", "Console", location);
+						break;
+					default:
+						base.SetProperty(configurationName, platform, "MyType", "Windows", location);
+						break;
+				}
 			}
 		}
 		
