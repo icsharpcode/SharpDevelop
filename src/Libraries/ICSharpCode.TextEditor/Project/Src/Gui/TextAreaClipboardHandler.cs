@@ -87,10 +87,27 @@ namespace ICSharpCode.TextEditor
 					dataObject.SetData(DataFormats.Rtf, RtfWriter.GenerateRtf(textArea));
 				}
 				OnCopyText(new CopyTextEventArgs(str));
-				Clipboard.SetDataObject(dataObject, true, 50, 50);
-				return true;
+				
+				// Work around ExternalException bug. (SD2-426)
+				// Best reproducable inside Virtual PC.
+				// SetDataObject has "retry" parameters, but apparently a call to "DoEvents"
+				// is necessary for the workaround to work.
+				int i = 0;
+				while (true) {
+					try {
+						Clipboard.SetDataObject(dataObject, true, 5, 50);
+						return true;
+					} catch (ExternalException) {
+						if (i++ > 5)
+							throw;
+					}
+					System.Threading.Thread.Sleep(50);
+					Application.DoEvents();
+					System.Threading.Thread.Sleep(50);
+				}
+			} else {
+				return false;
 			}
-			return false;
 		}
 		
 		public void Cut(object sender, EventArgs e)

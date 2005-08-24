@@ -19,6 +19,7 @@ namespace ICSharpCode.Core
 		public static bool ContainsText {
 			get {
 				try {
+					LoggingService.Debug("ContainsText called");
 					return Clipboard.ContainsText();
 				} catch (ExternalException) {
 					return false;
@@ -55,7 +56,19 @@ namespace ICSharpCode.Core
 		
 		public static void SetDataObject(object data)
 		{
-			Clipboard.SetDataObject(data, true, 50, 50);
+			int i = 0;
+			while (true) {
+				try {
+					Clipboard.SetDataObject(data, true, 5, 50);
+					return;
+				} catch (ExternalException) {
+					if (i++ > 5)
+						throw;
+				}
+				System.Threading.Thread.Sleep(50);
+				Application.DoEvents();
+				System.Threading.Thread.Sleep(50);
+			}
 		}
 	}
 }
