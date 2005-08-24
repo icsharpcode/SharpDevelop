@@ -18,14 +18,19 @@ using System.Xml;
 
 namespace ICSharpCode.Core
 {
-	public static class MenuService 
+	public static class MenuService
 	{
-		static void ContextMenuPopupHandler(object sender, EventArgs e)
+		public static void AddItemsToMenu(ToolStripItemCollection collection, object owner, string addInTreePath)
 		{
-			ContextMenuStrip  contextMenu = (ContextMenuStrip )sender;
-			foreach (object o in contextMenu.Items) {
-				if (o is IStatusUpdate) {
-					((IStatusUpdate)o).UpdateStatus();
+			ArrayList buildItems = AddInTree.GetTreeNode(addInTreePath).BuildChildItems(owner);
+			foreach (object item in buildItems) {
+				if (item is ToolStripItem) {
+					collection.Add((ToolStripItem)item);
+					if (item is IStatusUpdate)
+						((IStatusUpdate)item).UpdateStatus();
+				} else {
+					ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
+					collection.AddRange(submenuBuilder.BuildSubmenu(null, owner));
 				}
 			}
 		}
@@ -38,21 +43,34 @@ namespace ICSharpCode.Core
 			try {
 				ArrayList buildItems = AddInTree.GetTreeNode(addInTreePath).BuildChildItems(owner);
 				ContextMenuStrip contextMenu = new ContextMenuStrip();
-				contextMenu.Opened += new EventHandler(ContextMenuPopupHandler);
-				foreach (object item in buildItems) {
-					if (item is ToolStripItem) {
-						contextMenu.Items.Add((ToolStripItem)item);
-					} else {
-						ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
-						contextMenu.Items.AddRange(submenuBuilder.BuildSubmenu(null, owner));
+				contextMenu.Items.Add(new ToolStripMenuItem("dummy"));
+				contextMenu.Opening += delegate {
+					contextMenu.Items.Clear();
+					foreach (object item in buildItems) {
+						if (item is ToolStripItem) {
+							contextMenu.Items.Add((ToolStripItem)item);
+						} else {
+							ISubmenuBuilder submenuBuilder = (ISubmenuBuilder)item;
+							contextMenu.Items.AddRange(submenuBuilder.BuildSubmenu(null, owner));
+						}
 					}
-				}
-				ContextMenuPopupHandler(contextMenu, EventArgs.Empty);
+				};
+				contextMenu.Opened += new EventHandler(ContextMenuPopupHandler);
 				return contextMenu;
 			} catch (TreePathNotFoundException) {
 				MessageService.ShowError("Warning tree path '" + addInTreePath +"' not found.");
 				return null;
-			} 
+			}
+		}
+		
+		static void ContextMenuPopupHandler(object sender, EventArgs e)
+		{
+			ContextMenuStrip contextMenu = (ContextMenuStrip)sender;
+			foreach (object o in contextMenu.Items) {
+				if (o is IStatusUpdate) {
+					((IStatusUpdate)o).UpdateStatus();
+				}
+			}
 		}
 		
 		public static void ShowContextMenu(object owner, string addInTreePath, Control parent, int x, int y)

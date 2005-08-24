@@ -307,6 +307,24 @@ namespace ICSharpCode.TextEditor
 							}
 						}
 					}
+				} else if (button == MouseButtons.Right) {
+					// Rightclick sets the cursor to the click position unless
+					// the previous selection was clicked
+					Point realmousepos = textArea.TextView.GetLogicalPosition(mousepos.X - textArea.TextView.DrawingPosition.X, mousepos.Y - textArea.TextView.DrawingPosition.Y);
+					int offset = textArea.Document.PositionToOffset(realmousepos);
+					if (!textArea.SelectionManager.HasSomethingSelected ||
+					    !textArea.SelectionManager.IsSelected(offset))
+					{
+						selbegin = selend = offset;
+						textArea.SelectionManager.ClearSelection();
+						if (mousepos.Y > 0 && mousepos.Y < textArea.TextView.DrawingPosition.Height) {
+							Point pos = new Point();
+							pos.Y = Math.Min(textArea.Document.TotalNumberOfLines - 1,  realmousepos.Y);
+							pos.X = realmousepos.X;
+							textArea.Caret.Position = pos;//Math.Max(0, Math.Min(textArea.Document.TextLength, line.Offset + Math.Min(line.Length, pos.X)));
+							textArea.SetDesiredColumn();
+						}
+					}
 				}
 			}
 			textArea.Focus();

@@ -689,6 +689,7 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\CreateKey.cs" />
     <EmbeddedResource Include="Resources\ProjectOptions\CreateKey.xfrm" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractBuildOptions.cs" />
+    <Compile Include="Src\Services\RefactoringService\RefactoringMenuBuilder.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

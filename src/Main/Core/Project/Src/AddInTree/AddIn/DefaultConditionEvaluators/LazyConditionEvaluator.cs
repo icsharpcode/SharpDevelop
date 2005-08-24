@@ -41,6 +41,9 @@ namespace ICSharpCode.Core
 		public bool IsValid(object caller, Condition condition)
 		{
 			IConditionEvaluator evaluator = (IConditionEvaluator)addIn.CreateObject(className);
+			if (evaluator == null) {
+				return false;
+			}
 			AddInTree.ConditionEvaluators[name] = evaluator;
 			return evaluator.IsValid(caller, condition);
 		}

@@ -13,7 +13,7 @@ using System.Collections.Generic;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Description of Codon.
+	/// Represents a node in the add in tree that can produce an item.
 	/// </summary>
 	public class Codon
 	{

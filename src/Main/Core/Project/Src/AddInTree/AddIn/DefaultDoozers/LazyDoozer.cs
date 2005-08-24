@@ -47,6 +47,9 @@ namespace ICSharpCode.Core
 		public bool HandleConditions {
 			get {
 				IDoozer doozer = (IDoozer)addIn.CreateObject(className);
+				if (doozer == null) {
+					return false;
+				}
 				AddInTree.Doozers[name] = doozer;
 				return doozer.HandleConditions;
 			}
@@ -55,6 +58,9 @@ namespace ICSharpCode.Core
 		public object BuildItem(object caller, Codon codon, ArrayList subItems)
 		{
 			IDoozer doozer = (IDoozer)addIn.CreateObject(className);
+			if (doozer == null) {
+				return null;
+			}
 			AddInTree.Doozers[name] = doozer;
 			return doozer.BuildItem(caller, codon, subItems);
 		}

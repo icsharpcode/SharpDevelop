@@ -1469,6 +1469,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+		<MenuItem id = "Refactoring" type = "Builder" class = "ICSharpCode.SharpDevelop.Refactoring.RefactoringMenuBuilder"/>
 		<MenuItem id = "Cut"
 		          label = "${res:XML.TextAreaContextMenu.Cut}"
 		          type = "Item"
@@ -1517,10 +1518,6 @@
 		          label = "${res:XML.TextAreaContextMenu.Indent}"
 		          shortcut = "Control|I"
 		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.IndentSelection" />
-		<MenuItem id = "GoToDefinition"
-		          label = "${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
-		          shortcut = "Control|Enter"
-		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GoToDefinition" />
 		
 		<MenuItem id = "FileMode" label = "${res:XML.TextAreaContextMenu.FileMode}"  type="Menu">
 			<MenuItem id = "HighlightBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.HighlightingTypeBuilder" />

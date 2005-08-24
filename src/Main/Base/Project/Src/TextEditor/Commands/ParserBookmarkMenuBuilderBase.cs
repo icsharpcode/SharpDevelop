@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -19,6 +19,7 @@ using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 using SearchAndReplace;
 using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {

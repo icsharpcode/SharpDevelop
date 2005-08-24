@@ -109,6 +109,18 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void Integer()
+		{
+			TestExpression("12");
+		}
+		
+		[Test]
+		public void Double()
+		{
+			TestExpression("12.0");
+		}
+		
+		[Test]
 		public void GenericMethodInvocation()
 		{
 			TestExpression("GenericMethod<T>(arg)");

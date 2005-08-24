@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	/// Does not derive from SDBookmark because it is not stored in the central BookmarkManager,
 	/// but only in the document's BookmarkManager.
 	/// </summary>
-	public class ClassMemberBookmark : Bookmark
+	public abstract class ClassMemberBookmark : Bookmark
 	{
 		IMember member;
 		
@@ -39,14 +39,20 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			this.member = member;
 		}
 		
+		public const string ContextMenuPath = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu";
+		
 		public override void Click(Control parent, MouseEventArgs e)
 		{
-			MenuService.ShowContextMenu(this, "/SharpDevelop/ViewContent/DefaultTextEditor/ClassMemberContextMenu", parent, e.X, e.Y);
+			MenuService.ShowContextMenu(this, ContextMenuPath, parent, e.X, e.Y);
 		}
 		
-		protected void DrawIcon(int iconIndex, Graphics g, Point p)
+		public abstract int IconIndex {
+			get;
+		}
+		
+		public override void Draw(IconBarMargin margin, Graphics g, Point p)
 		{
-			g.DrawImageUnscaled(ClassBrowserIconService.ImageList.Images[iconIndex], p);
+			g.DrawImageUnscaled(ClassBrowserIconService.ImageList.Images[IconIndex], p);
 		}
 	}
 	
@@ -69,9 +75,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			this.@class = @class;
 		}
 		
+		public const string ContextMenuPath = "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu";
+		
 		public override void Click(Control parent, MouseEventArgs e)
 		{
-			MenuService.ShowContextMenu(this, "/SharpDevelop/ViewContent/DefaultTextEditor/ClassBookmarkContextMenu", parent, e.X, e.Y);
+			MenuService.ShowContextMenu(this, ContextMenuPath, parent, e.X, e.Y);
 		}
 		
 		public override void Draw(IconBarMargin margin, Graphics g, Point p)
@@ -89,9 +97,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			this.property = property;
 		}
 		
-		public override void Draw(IconBarMargin margin, Graphics g, Point p)
-		{
-			DrawIcon(ClassBrowserIconService.GetIcon(property), g, p);
+		public override int IconIndex {
+			get { return ClassBrowserIconService.GetIcon(property); }
 		}
 	}
 	
@@ -104,9 +111,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			this.method = method;
 		}
 		
-		public override void Draw(IconBarMargin margin, Graphics g, Point p)
-		{
-			DrawIcon(ClassBrowserIconService.GetIcon(method), g, p);
+		public override int IconIndex {
+			get { return ClassBrowserIconService.GetIcon(method); }
 		}
 	}
 	
@@ -119,9 +125,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			this.field = field;
 		}
 		
-		public override void Draw(IconBarMargin margin, Graphics g, Point p)
-		{
-			DrawIcon(ClassBrowserIconService.GetIcon(field), g, p);
+		public override int IconIndex {
+			get { return ClassBrowserIconService.GetIcon(field); }
 		}
 	}
 	
@@ -134,9 +139,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			this.@event = @event;
 		}
 		
-		public override void Draw(IconBarMargin margin, Graphics g, Point p)
-		{
-			DrawIcon(ClassBrowserIconService.GetIcon(@event), g, p);
+		public override int IconIndex {
+			get { return ClassBrowserIconService.GetIcon(@event); }
 		}
 	}
 }
