@@ -91,7 +91,12 @@ namespace ICSharpCode.SharpDevelop
 			try {
 				Run(args);
 			} catch (Exception ex) {
-				HandleMainException(ex);
+				try {
+					HandleMainException(ex);
+				} catch (Exception loadError) {
+					// HandleMainException can throw error when log4net is not found
+					MessageBox.Show(loadError.ToString(), "Critical error (Logging service defect?)");
+				}
 			}
 		}
 		

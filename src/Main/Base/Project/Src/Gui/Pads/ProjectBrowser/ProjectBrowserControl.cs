@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ProjectBrowserControl()
 		{
 			InitializeComponent();
-			treeView.AfterSelect       += TreeViewAfterSelect;
+			treeView.BeforeSelect      += TreeViewBeforeSelect;
 			FileService.FileRenaming   += FileServiceFileRenaming;
 			FileService.FileRemoving   += FileServiceFileRemoving;
 			
@@ -173,10 +173,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void PadActivated()
 		{
-			TreeViewAfterSelect(null, new TreeViewEventArgs(treeView.SelectedNode));
+			TreeViewBeforeSelect(null, new TreeViewCancelEventArgs(treeView.SelectedNode, false, TreeViewAction.Unknown));
 		}
 		
-		void TreeViewAfterSelect(object sender, TreeViewEventArgs e)
+		void TreeViewBeforeSelect(object sender, TreeViewCancelEventArgs e)
 		{ // set current project & current combine
 			
 			AbstractProjectBrowserTreeNode node = e.Node as AbstractProjectBrowserTreeNode;

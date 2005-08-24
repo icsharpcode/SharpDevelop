@@ -251,9 +251,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		protected override void OnAfterSelect(TreeViewEventArgs e)
+		protected override void OnBeforeSelect(TreeViewCancelEventArgs e)
 		{
-			base.OnAfterSelect(e);
+			// setting the context menu must be done by BeforeSelect because
+			// AfterSelect is not called for the selection changes when a node is being deleted.
+			base.OnBeforeSelect(e);
 			ExtTreeNode node = e.Node as ExtTreeNode;
 			if (node != null) {
 				this.ContextMenuStrip = MenuService.CreateContextMenu(e.Node, node.ContextmenuAddinTreePath);

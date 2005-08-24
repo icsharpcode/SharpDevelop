@@ -48,10 +48,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			standardItems = new ToolStripItem[toolStrip.Items.Count];
 			toolStrip.Items.CopyTo(standardItems, 0);
 			Controls.Add(toolStrip);
-			projectBrowserControl.TreeView.AfterSelect += new TreeViewEventHandler(TreeViewAfterSelect);
+			projectBrowserControl.TreeView.BeforeSelect += TreeViewBeforeSelect;
 		}
 		
-		void TreeViewAfterSelect(object sender, TreeViewEventArgs e) 
+		void TreeViewBeforeSelect(object sender, TreeViewCancelEventArgs e) 
 		{
 			AbstractProjectBrowserTreeNode node = e.Node as AbstractProjectBrowserTreeNode;
 			if (node == null) {
