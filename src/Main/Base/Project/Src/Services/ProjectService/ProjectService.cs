@@ -148,10 +148,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void ActiveWindowChanged(object sender, EventArgs e)
 		{
-			if (OpenSolution == null || WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
+			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveContent as IViewContent;
+			if (OpenSolution == null || viewContent == null) {
 				return;
 			}
-			string fileName = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName;
+			string fileName = viewContent.FileName;
 			if (fileName == null) {
 				return;
 			}

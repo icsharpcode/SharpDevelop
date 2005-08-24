@@ -42,10 +42,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public object ActiveContent {
 			get {
 				if (dockPanel == null || dockPanel.ActiveContent == null)  {
-					if (this.ActiveWorkbenchwindow == null) {
-						return null;
-					}
-					return this.ActiveWorkbenchwindow.ActiveViewContent;
+					return null;
 				}
 				
 				if (dockPanel.ActiveContent.IsDisposed) {

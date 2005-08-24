@@ -171,6 +171,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		#endregion
 		
+		public void PadActivated()
+		{
+			TreeViewAfterSelect(null, new TreeViewEventArgs(treeView.SelectedNode));
+		}
 		
 		void TreeViewAfterSelect(object sender, TreeViewEventArgs e)
 		{ // set current project & current combine

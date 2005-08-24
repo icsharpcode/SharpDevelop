@@ -24,13 +24,16 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			if (ProjectService.CurrentProject == null) {
+			AbstractProjectBrowserTreeNode node = Owner as AbstractProjectBrowserTreeNode;
+			IProject project = (node != null) ? node.Project : ProjectService.CurrentProject;
+			if (project == null) {
 				return;
 			}
-			using (SelectReferenceDialog selDialog = new SelectReferenceDialog(ProjectService.CurrentProject)) {
+			LoggingService.Info("Show add reference dialog for " + project.FileName);
+			using (SelectReferenceDialog selDialog = new SelectReferenceDialog(project)) {
 				if (selDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					foreach (ReferenceProjectItem reference in selDialog.ReferenceInformations) {
-						ProjectService.AddProjectItem(ProjectService.CurrentProject, reference);
+						ProjectService.AddProjectItem(project, reference);
 					}
 					ProjectService.SaveSolution();
 				}

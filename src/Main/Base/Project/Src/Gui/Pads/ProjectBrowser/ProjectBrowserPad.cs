@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				projectBrowserPanel.ViewSolution(ProjectService.OpenSolution);
 			}
 		}
-			
+		
 		public void StartLabelEdit(ExtTreeNode node)
 		{
 			ProjectBrowserControl.TreeView.StartLabelEdit(node);
@@ -80,19 +80,23 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void ActiveWindowChanged(object sender, EventArgs e)
 		{
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
-				return;
+			if (WorkbenchSingleton.Workbench.ActiveContent == this) {
+				projectBrowserPanel.ProjectBrowserControl.PadActivated();
+			} else {
+				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
+					return;
+				}
+				string fileName = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName;
+				if (fileName == null || lastFileName == fileName) {
+					return;
+				}
+				
+				if (!FileUtility.IsValidFileName(fileName)) {
+					return;
+				}
+				lastFileName = fileName;
+				projectBrowserPanel.SelectFile(fileName);
 			}
-			string fileName = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName;
-			if (fileName == null || lastFileName == fileName) {
-				return;
-			}
-			
-			if (!FileUtility.IsValidFileName(fileName)) {
-				return;
-			}
-			lastFileName = fileName;
-			projectBrowserPanel.SelectFile(fileName);
 		}
 		
 		#region ICSharpCode.SharpDevelop.Gui.IClipboardHandler interface implementation
