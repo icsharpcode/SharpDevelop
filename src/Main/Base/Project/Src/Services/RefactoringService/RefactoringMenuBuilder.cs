@@ -13,6 +13,7 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
@@ -23,12 +24,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 	/// </summary>
 	public class RefactoringMenuBuilder : ISubmenuBuilder
 	{
-		/*
-		<MenuItem id = "GoToDefinition"
-		          label = "${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"
-		          shortcut = "Control|Enter"
-		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.GoToDefinition" />
-		 */
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
 			TextEditorControl textEditorControl = (TextEditorControl)owner;
@@ -38,6 +33,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			TextArea textArea = textEditorControl.ActiveTextAreaControl.TextArea;
 			IDocument doc = textArea.Document;
 			int caretLine = textArea.Caret.Line;
+			
+			bool lineHasDefinitions = false;
+			
 			// Include definitions (use the bookmarks which should already be present)
 			foreach (Bookmark mark in doc.BookmarkManager.Marks) {
 				if (mark != null && mark.LineNumber == caretLine) {
@@ -56,6 +54,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 						name = cb.Class.Name;
 					}
 					if (path != null) {
+						lineHasDefinitions = true;
 						ToolStripMenuItem item = new ToolStripMenuItem(name, ClassBrowserIconService.ImageList.Images[iconIndex]);
 						MenuService.AddItemsToMenu(item.DropDown.Items, mark, path);
 						resultItems.Add(item);
@@ -63,12 +62,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				}
 			}
 			
-			/*
-			ResolveResult rr = ResolveAtCaret(textEditorControl, textArea);
-			if (rr != null) {
-				//XML.TextAreaContextMenu.Refactoring
+			if (!lineHasDefinitions) {
+				ResolveResult rr = ResolveAtCaret(textEditorControl, textArea);
+				MemberResolveResult mrr = rr as MemberResolveResult;
+				if (mrr != null) {
+					resultItems.Add(MakeItem(mrr.ResolvedMember));
+				}
 			}
-			 */
+			
+			// TODO XML.TextAreaContextMenu.Refactoring
 			
 			if (resultItems.Count == 0) {
 				return new ToolStripItem[0];
@@ -76,6 +78,34 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				resultItems.Add(new MenuSeparator());
 				return resultItems.ToArray();
 			}
+		}
+		
+		ToolStripMenuItem MakeItem(IMember member)
+		{
+			return MakeItem(MemberNode.Create(member), member.DeclaringType.CompilationUnit, member.Region);
+		}
+		
+		
+		ToolStripMenuItem MakeItem(IClass c)
+		{
+			return MakeItem(new ClassNode(c.ProjectContent.Project, c), c.CompilationUnit, c.Region);
+		}
+		
+		ToolStripMenuItem MakeItem(ExtTreeNode classBrowserTreeNode, ICompilationUnit cu, IRegion region)
+		{
+			ToolStripMenuItem item = new ToolStripMenuItem(classBrowserTreeNode.Text, ClassBrowserIconService.ImageList.Images[classBrowserTreeNode.ImageIndex]);
+			if (cu.FileName != null && region != null) {
+				ToolStripMenuItem gotoDefinitionItem = new ToolStripMenuItem(StringParser.Parse("${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"),
+				                                                             ClassBrowserIconService.ImageList.Images[ClassBrowserIconService.GotoArrowIndex]);
+				gotoDefinitionItem.ShortcutKeys = Keys.Control | Keys.Enter;
+				gotoDefinitionItem.Click += delegate {
+					FileService.JumpToFilePosition(cu.FileName, region.BeginLine - 1, region.BeginColumn - 1);
+				};
+				item.DropDown.Items.Add(gotoDefinitionItem);
+				item.DropDown.Items.Add(new ToolStripSeparator());
+			}
+			MenuService.AddItemsToMenu(item.DropDown.Items, classBrowserTreeNode, classBrowserTreeNode.ContextmenuAddinTreePath);
+			return item;
 		}
 		
 		ResolveResult ResolveAtCaret(TextEditorControl textEditorControl, TextArea textArea)

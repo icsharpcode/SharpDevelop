@@ -63,6 +63,22 @@ namespace ICSharpCode.Core
 			return privateModifierOffset;
 		}
 		
+		public static int GetIcon(IMember member)
+		{
+			if (member is IMethod)
+				return GetIcon(member as IMethod);
+			else if (member is IIndexer)
+				return GetIcon(member as IIndexer);
+			else if (member is IProperty)
+				return GetIcon(member as IProperty);
+			else if (member is IField)
+				return GetIcon(member as IField);
+			else if (member is IEvent)
+				return GetIcon(member as IEvent);
+			else
+				throw new ArgumentException("unknown member type");
+		}
+		
 		public static int GetIcon(IMethod method)
 		{
 			return MethodIndex + GetModifierOffset(method.Modifiers);
@@ -117,9 +133,9 @@ namespace ICSharpCode.Core
 				return MethodIndex + internalModifierOffset;
 			}
 			if (methodinfo.IsPrivate) {
-				return MethodIndex + privateModifierOffset; 
+				return MethodIndex + privateModifierOffset;
 			}
-			if (!(methodinfo.IsPrivate || methodinfo.IsPublic)) { 
+			if (!(methodinfo.IsPrivate || methodinfo.IsPublic)) {
 				return MethodIndex + protectedModifierOffset;
 			}
 			
@@ -157,7 +173,7 @@ namespace ICSharpCode.Core
 			
 			return FieldIndex;
 		}
-				
+		
 		public static int GetIcon(EventInfo eventinfo)
 		{
 			if (eventinfo.GetAddMethod(true) != null) {
@@ -185,11 +201,11 @@ namespace ICSharpCode.Core
 			
 			if (type.IsNestedPrivate) {
 				return BASE + 3;
-			} 
+			}
 			
 			if (type.IsNotPublic || type.IsNestedAssembly) {
 				return BASE + 1;
-			} 
+			}
 			
 			if (type.IsNestedFamily) {
 				return BASE + 2;
@@ -228,17 +244,17 @@ namespace ICSharpCode.Core
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedClass"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateClass"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Struct")); 
+			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Struct"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalStruct"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedStruct"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateStruct"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Interface")); 
+			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Interface"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalInterface"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedInterface"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateInterface"));
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Enum"));   
+			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Enum"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalEnum"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedEnum"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateEnum"));

@@ -69,6 +69,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		public static MemberNode Create(IMember member)
+		{
+			if (member is IMethod)
+				return new MemberNode(member as IMethod);
+			else if (member is IProperty)
+				return new MemberNode(member as IProperty);
+			else if (member is IField)
+				return new MemberNode(member as IField);
+			else if (member is IEvent)
+				return new MemberNode(member as IEvent);
+			else
+				throw new ArgumentException("unknown member type");
+		}
+		
 		public MemberNode(IMethod method)
 		{
 			InitMemberNode(method);
