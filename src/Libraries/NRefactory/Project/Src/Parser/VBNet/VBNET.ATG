@@ -1725,33 +1725,33 @@ SimpleExpr<out Expression pexpr>
 		)
 		{
 			"." IdentifierOrKeyword<out name> (. pexpr = new FieldReferenceExpression(pexpr, name); .)
-			| "("	(.ArrayList parameters = new ArrayList(); .)
-				[
-					[ Argument<out expr> (. if (expr != null) { parameters.Add(expr); } .) ]	
-					{
-						"," 
-						[ Argument<out expr> (. if (expr != null) { parameters.Add(expr); } .) ] 
-					}
-				]
-			")"		(. pexpr = new InvocationExpression(pexpr, parameters); .)
+			| InvocationExpression<ref pexpr>
 		}
 	|
 	/* this form only occurs in with statements*/
 	"." IdentifierOrKeyword<out name> (. pexpr = new FieldReferenceExpression(pexpr, name);.)
 	{
 		"." IdentifierOrKeyword<out name> (. pexpr = new FieldReferenceExpression(pexpr, name); .)
-		| "("	(.ArrayList parameters = new ArrayList(); .)
-			[
-				(. expr = null; .) [ Argument<out expr>]	(. if (expr != null) { parameters.Add(expr); } .)
-				{
-					"," (. expr = null; .)
-					[ Argument<out expr>  ] (. if (expr != null) { parameters.Add(expr); } .)
-				}
-			]
-		")"		(. pexpr = new InvocationExpression(pexpr, parameters); .)
+		| InvocationExpression<ref pexpr>
 	}
 	)
-	.
+.
+
+InvocationExpression<ref Expression pexpr>
+(. List<TypeReference> typeParameters = new List<TypeReference>();
+   ArrayList parameters = null;
+   TypeReference type; .)
+=
+	"(" (. Point start = t.Location; .)
+		[ "Of"
+			TypeName<out type> (. if (type != null) typeParameters.Add(type); .)
+		  ")" "("
+		]
+		ArgumentList<out parameters>
+	")"
+	(. pexpr = new InvocationExpression(pexpr, parameters, typeParameters); .)
+	(. pexpr.StartLocation = start; pexpr.EndLocation = t.Location; .)
+.
 
 /* 11.11 */
 

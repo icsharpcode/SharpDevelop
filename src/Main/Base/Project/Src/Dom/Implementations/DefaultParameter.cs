@@ -145,7 +145,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if(0 != (cmp = ((int)Modifiers - (int)value.Modifiers)))
 				return cmp;
 			
-			if (ReturnType.Equals(value.ReturnType))
+			if (object.Equals(ReturnType, value.ReturnType))
 				return 0;
 			else
 				return -1;

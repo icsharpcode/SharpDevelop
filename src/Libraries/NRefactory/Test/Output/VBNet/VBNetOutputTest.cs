@@ -15,14 +15,14 @@ using ICSharpCode.NRefactory.PrettyPrinter;
 namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 {
 	[TestFixture]
-	public class CSharpOutputTest
+	public class VBNetOutputTest
 	{
 		void TestProgram(string program)
 		{
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguages.VBNet, new StringReader(program));
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
-			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
+			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
 			outputVisitor.Visit(parser.CompilationUnit, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(StripWhitespace(program), StripWhitespace(outputVisitor.Text));
@@ -35,20 +35,20 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		
 		void TestTypeMember(string program)
 		{
-			TestProgram("class A { " + program + " }");
+			TestProgram("Class A\n" + program + "\nEnd Class");
 		}
 		
 		void TestStatement(string statement)
 		{
-			TestTypeMember("void Method() { " + statement + " }");
+			TestTypeMember("Sub Method()\n" + statement + "\nEnd Sub");
 		}
 		
 		void TestExpression(string expression)
 		{
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(expression + ";"));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguages.VBNet, new StringReader(expression));
 			Expression e = parser.ParseExpression();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
-			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
+			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
 			e.AcceptVisitor(outputVisitor, null);
 			Assert.AreEqual("", outputVisitor.Errors.ErrorOutput);
 			Assert.AreEqual(StripWhitespace(expression), StripWhitespace(outputVisitor.Text));
@@ -57,49 +57,43 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		[Test]
 		public void Field()
 		{
-			TestTypeMember("int a;");
+			TestTypeMember("Private a As Integer");
 		}
 		
 		[Test]
 		public void Method()
 		{
-			TestTypeMember("void Method() { }");
+			TestTypeMember("Sub Method()\nEnd Sub");
 		}
 		
 		[Test]
 		public void PartialModifier()
 		{
-			TestProgram("public partial class Foo { }");
+			TestProgram("Public Partial Class Foo\nEnd Class");
 		}
 		
 		[Test]
 		public void GenericClassDefinition()
 		{
-			TestProgram("public class Foo<T> where T : IDisposable, ICloneable { }");
+			TestProgram("Public Class Foo(Of T As {IDisposable, ICloneable})\nEnd Class");
 		}
 		
 		[Test]
 		public void GenericClassDefinitionWithBaseType()
 		{
-			TestProgram("public class Foo<T> : BaseClass where T : IDisposable, ICloneable { }");
+			TestProgram("Public Class Foo(Of T As IDisposable)\nInherits BaseType\nEnd Class");
 		}
 		
 		[Test]
 		public void GenericMethodDefinition()
 		{
-			TestTypeMember("public void Foo<T>(T arg) where T : IDisposable, ICloneable { }");
+			TestTypeMember("Public Sub Foo(Of T As {IDisposable, ICloneable})(ByVal arg As T)\nEnd Sub");
 		}
 		
 		[Test]
 		public void ArrayRank()
 		{
-			TestStatement("object[,,] a = new object[1, 2, 3];");
-		}
-		
-		[Test]
-		public void ArrayInitializer()
-		{
-			TestStatement("object[] a = new object[] {1, 2, 3};");
+			TestStatement("Dim a As Object(,,)");
 		}
 		
 		[Test]
@@ -115,52 +109,21 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
-		public void LongInteger()
-		{
-			TestExpression("12l");
-		}
-		
-		[Test]
-		public void LongUnsignedInteger()
-		{
-			TestExpression("12ul");
-		}
-		
-		[Test]
-		public void UnsignedInteger()
-		{
-			TestExpression("12u");
-		}
-		
-		[Test]
-		public void Double()
-		{
-			TestExpression("12.5");
-			TestExpression("12.0");
-		}
-		
-		[Test]
 		public void GenericMethodInvocation()
 		{
-			TestExpression("GenericMethod<T>(arg)");
-		}
-		
-		[Test]
-		public void NullCoalescing()
-		{
-			TestExpression("a ?? b");
+			TestExpression("GenericMethod(Of T)(arg)");
 		}
 		
 		[Test]
 		public void SpecialIdentifierName()
 		{
-			TestExpression("@class");
+			TestExpression("[Class]");
 		}
 		
 		[Test]
 		public void GenericDelegate()
 		{
-			TestProgram("public delegate void Predicate<T>(T item) where T : IDisposable, ICloneable;");
+			TestProgram("Public Delegate Function Predicate(Of T)(ByVal item As T) As String");
 		}
 	}
 }

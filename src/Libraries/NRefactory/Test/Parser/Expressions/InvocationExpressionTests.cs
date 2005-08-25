@@ -23,6 +23,16 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("myMethod", ((IdentifierExpression)ie.TargetObject).Identifier);
 		}
 		
+		void CheckGenericInvoke(InvocationExpression expr)
+		{
+			Assert.AreEqual(1, expr.Parameters.Count);
+			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
+			Assert.AreEqual("myMethod", ((IdentifierExpression)expr.TargetObject).Identifier);
+			Assert.AreEqual(1, expr.TypeParameters.Count);
+			Assert.AreEqual("System.Char", expr.TypeParameters[0].SystemType);
+		}
+		
+		
 		#region C#
 		[Test]
 		public void CSharpSimpleInvocationExpressionTest()
@@ -33,12 +43,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGenericInvocationExpressionTest()
 		{
-			InvocationExpression expr = (InvocationExpression)ParseUtilCSharp.ParseExpression("myMethod<char>('a')", typeof(InvocationExpression));
-			Assert.AreEqual(1, expr.Parameters.Count);
-			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
-			Assert.AreEqual("myMethod", ((IdentifierExpression)expr.TargetObject).Identifier);
-			Assert.AreEqual(1, expr.TypeParameters.Count);
-			Assert.AreEqual("System.Char", expr.TypeParameters[0].SystemType);
+			CheckGenericInvoke((InvocationExpression)ParseUtilCSharp.ParseExpression("myMethod<char>('a')", typeof(InvocationExpression)));
 		}
 		
 		[Test]
@@ -63,6 +68,13 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			CheckSimpleInvoke((InvocationExpression)ParseUtilVBNet.ParseExpression("myMethod()", typeof(InvocationExpression)));
 		}
+		
+		[Test]
+		public void VBNetGenericInvocationExpressionTest()
+		{
+			CheckGenericInvoke((InvocationExpression)ParseUtilVBNet.ParseExpression("myMethod(Of Char)(\"a\"c)", typeof(InvocationExpression)));
+		}
+		
 		[Test]
 		public void PrimitiveExpression1Test()
 		{

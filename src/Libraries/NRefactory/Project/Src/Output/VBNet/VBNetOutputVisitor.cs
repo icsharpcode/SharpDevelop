@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="none" email=""/>
@@ -151,7 +151,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (typeReference.IsArrayType) {
 				for (int i = 0; i < typeReference.RankSpecifier.Length; ++i) {
 					outputFormatter.PrintToken(Tokens.OpenParenthesis);
-					for (int j = 1; j < typeReference.RankSpecifier[i]; ++j) {
+					for (int j = 0; j < typeReference.RankSpecifier[i]; ++j) {
 						outputFormatter.PrintToken(Tokens.Comma);
 					}
 					outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -1859,6 +1859,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(InvocationExpression invocationExpression, object data)
 		{
 			nodeTracker.TrackedVisit(invocationExpression.TargetObject, data);
+			if (invocationExpression.TypeParameters != null && invocationExpression.TypeParameters.Count > 0) {
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				outputFormatter.PrintToken(Tokens.Of);
+				outputFormatter.Space();
+				AppendCommaSeparatedList(invocationExpression.TypeParameters);
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			AppendCommaSeparatedList(invocationExpression.Parameters);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
@@ -2345,6 +2352,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			if ((modifier & Modifier.Const) == Modifier.Const) {
 				outputFormatter.PrintToken(Tokens.Const);
+				outputFormatter.Space();
+			}
+			if ((modifier & Modifier.Partial) == Modifier.Partial) {
+				outputFormatter.PrintToken(Tokens.Partial);
 				outputFormatter.Space();
 			}
 			

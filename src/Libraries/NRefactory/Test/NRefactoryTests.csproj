@@ -131,12 +131,14 @@
     <Compile Include="Lexer\VBNet\LexerPositionTests.cs" />
     <Compile Include="Lexer\CSharp\CustomLexerTests.cs" />
     <Compile Include="Parser\Expressions\DefaultValueExpressionTests.cs" />
+    <Compile Include="Output\VBNet\VBNetOutputTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\NRefactory.csproj">
       <Project>{3a9ae6aa-bc07-4a2f-972c-581e3ae2f195}</Project>
       <Name>ICSharpCode.NRefactory</Name>
     </ProjectReference>
+    <Folder Include="Output\VBNet" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

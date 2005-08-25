@@ -1,13 +1,14 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.Globalization;
 using System.Diagnostics;
 
@@ -119,6 +120,18 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					return "sbyte";
 			}
 			return typeString;
+		}
+		
+		
+		void PrintTemplates(List<TemplateDefinition> templates)
+		{
+			if (templates.Count == 0) return;
+			outputFormatter.PrintToken(Tokens.LessThan);
+			for (int i = 0; i < templates.Count; i++) {
+				if (i > 0) PrintFormattedComma();
+				outputFormatter.PrintIdentifier(templates[i].Name);
+			}
+			outputFormatter.PrintToken(Tokens.GreaterThan);
 		}
 		
 		public object Visit(TypeReference typeReference, object data)
@@ -332,16 +345,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(typeDeclaration.Name);
 			
-			if (typeDeclaration.Templates != null && typeDeclaration.Templates.Count > 0) {
-				outputFormatter.PrintToken(Tokens.LessThan);
-				for (int i = 0; i < typeDeclaration.Templates.Count; i++) {
-					if (i > 0) {
-						PrintFormattedComma();
-					}
-					outputFormatter.PrintIdentifier(typeDeclaration.Templates[i].Name);
-				}
-				outputFormatter.PrintToken(Tokens.GreaterThan);
-			}
+			PrintTemplates(typeDeclaration.Templates);
 			
 			if (typeDeclaration.BaseTypes != null && typeDeclaration.BaseTypes.Count > 0) {
 				outputFormatter.Space();
@@ -418,12 +422,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			nodeTracker.TrackedVisit(delegateDeclaration.ReturnType, data);
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(delegateDeclaration.Name);
+			PrintTemplates(delegateDeclaration.Templates);
 			if (prettyPrintOptions.BeforeDelegateDeclarationParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			AppendCommaSeparatedList(delegateDeclaration.Parameters);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			foreach (TemplateDefinition templateDefinition in delegateDeclaration.Templates) {
+				nodeTracker.TrackedVisit(templateDefinition, data);
+			}
 			outputFormatter.PrintToken(Tokens.Semicolon);
 			outputFormatter.NewLine();
 			return null;
@@ -573,12 +581,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			nodeTracker.TrackedVisit(methodDeclaration.TypeReference, data);
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(methodDeclaration.Name);
+			PrintTemplates(methodDeclaration.Templates);
 			if (prettyPrintOptions.BeforeMethodDeclarationParentheses) {
 				outputFormatter.Space();
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			AppendCommaSeparatedList(methodDeclaration.Parameters);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			foreach (TemplateDefinition templateDefinition in methodDeclaration.Templates) {
+				nodeTracker.TrackedVisit(templateDefinition, data);
+			}
 			OutputBlock(methodDeclaration.Body, this.prettyPrintOptions.MethodBraceStyle);
 			return null;
 		}
@@ -1568,8 +1580,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Null);
 				return null;
 			}
-			if (primitiveExpression.Value is bool) {
-				if ((bool)primitiveExpression.Value) {
+			
+			object val = primitiveExpression.Value;
+			
+			if (val is bool) {
+				if ((bool)val) {
 					outputFormatter.PrintToken(Tokens.True);
 				} else {
 					outputFormatter.PrintToken(Tokens.False);
@@ -1577,30 +1592,45 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				return null;
 			}
 			
-			if (primitiveExpression.Value is string) {
-				outputFormatter.PrintText('"' + ConvertString(primitiveExpression.Value.ToString()) + '"');
+			if (val is string) {
+				outputFormatter.PrintText('"' + ConvertString(val.ToString()) + '"');
 				return null;
 			}
 			
-			if (primitiveExpression.Value is char) {
-				outputFormatter.PrintText("'" + ConvertCharLiteral((char)primitiveExpression.Value) + "'");
+			if (val is char) {
+				outputFormatter.PrintText("'" + ConvertCharLiteral((char)val) + "'");
 				return null;
 			}
 			
-			if (primitiveExpression.Value is decimal) {
-				outputFormatter.PrintText(((decimal)primitiveExpression.Value).ToString(NumberFormatInfo.InvariantInfo) + "m");
+			if (val is decimal) {
+				outputFormatter.PrintText(((decimal)val).ToString(NumberFormatInfo.InvariantInfo) + "m");
 				return null;
 			}
 			
-			if (primitiveExpression.Value is float) {
-				outputFormatter.PrintText(((float)primitiveExpression.Value).ToString(NumberFormatInfo.InvariantInfo) + "f");
+			if (val is float) {
+				outputFormatter.PrintText(((float)val).ToString(NumberFormatInfo.InvariantInfo) + "f");
 				return null;
 			}
 			
-			if (primitiveExpression.Value is IFormattable) {
-				outputFormatter.PrintText(((IFormattable)primitiveExpression.Value).ToString(null, NumberFormatInfo.InvariantInfo));
+			if (val is double) {
+				string text = ((double)val).ToString(NumberFormatInfo.InvariantInfo);
+				if (text.IndexOf('.') < 0)
+					outputFormatter.PrintText(text + ".0");
+				else
+					outputFormatter.PrintText(text);
+				return null;
+			}
+			
+			if (val is IFormattable) {
+				outputFormatter.PrintText(((IFormattable)val).ToString(null, NumberFormatInfo.InvariantInfo));
+				if (val is uint || val is ulong) {
+					outputFormatter.PrintText("u");
+				}
+				if (val is long || val is ulong) {
+					outputFormatter.PrintText("l");
+				}
 			} else {
-				outputFormatter.PrintIdentifier(primitiveExpression.Value.ToString());
+				outputFormatter.PrintText(val.ToString());
 			}
 			
 			return null;
@@ -1855,6 +1885,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(InvocationExpression invocationExpression, object data)
 		{
 			nodeTracker.TrackedVisit(invocationExpression.TargetObject, data);
+			
+			if (invocationExpression.TypeParameters != null && invocationExpression.TypeParameters.Count > 0) {
+				OutputFormatter.PrintToken(Tokens.LessThan);
+				AppendCommaSeparatedList(invocationExpression.TypeParameters);
+				OutputFormatter.PrintToken(Tokens.GreaterThan);
+			}
 			
 			if (prettyPrintOptions.BeforeMethodCallParentheses) {
 				outputFormatter.Space();
@@ -2338,6 +2374,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				tokenList.Add(Tokens.Volatile);
 			}
 			outputFormatter.PrintTokenList(tokenList);
+			
+			if ((modifier & Modifier.Partial) != 0) {
+				outputFormatter.PrintText("partial ");
+			}
 		}
 		
 		void AppendCommaSeparatedList(IList list)
