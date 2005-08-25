@@ -90,7 +90,6 @@ namespace ICSharpCode.Core
 		public abstract string Convert(IField c);
 		public abstract string Convert(IProperty property);
 		public abstract string Convert(IEvent e);
-		public abstract string Convert(IIndexer indexer);
 		public abstract string Convert(IMethod m);
 		public abstract string ConvertEnd(IMethod m);
 		public abstract string Convert(IParameter param);

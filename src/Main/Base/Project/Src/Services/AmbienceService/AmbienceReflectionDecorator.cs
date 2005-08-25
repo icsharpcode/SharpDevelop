@@ -59,11 +59,6 @@ namespace ICSharpCode.Core
 			return conv.Convert(e);
 		}
 		
-		public string Convert(IIndexer indexer)
-		{
-			return conv.Convert(indexer);
-		}
-		
 		public string Convert(IMethod m)
 		{
 			return conv.Convert(m);

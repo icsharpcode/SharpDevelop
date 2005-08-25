@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -262,11 +262,6 @@ namespace CSharpBinding.FormattingStrategy
 			foreach (IProperty p in c.Properties) {
 				if (IsBeforeRegion(textArea, p.Region, lineNr)) {
 					return p;
-				}
-			}
-			foreach (IIndexer i in c.Indexer) {
-				if (IsBeforeRegion(textArea, i.Region, lineNr)) {
-					return i;
 				}
 			}
 			foreach (IEvent e in c.Events) {

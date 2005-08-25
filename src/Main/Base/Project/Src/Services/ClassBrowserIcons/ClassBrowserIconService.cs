@@ -67,8 +67,6 @@ namespace ICSharpCode.Core
 		{
 			if (member is IMethod)
 				return GetIcon(member as IMethod);
-			else if (member is IIndexer)
-				return GetIcon(member as IIndexer);
 			else if (member is IProperty)
 				return GetIcon(member as IProperty);
 			else if (member is IField)
@@ -84,14 +82,12 @@ namespace ICSharpCode.Core
 			return MethodIndex + GetModifierOffset(method.Modifiers);
 		}
 		
-		public static int GetIcon(IIndexer method)
+		public static int GetIcon(IProperty property)
 		{
-			return IndexerIndex + GetModifierOffset(method.Modifiers);
-		}
-		
-		public static int GetIcon(IProperty method)
-		{
-			return PropertyIndex + GetModifierOffset(method.Modifiers);
+			if (property.IsIndexer)
+				return IndexerIndex + GetModifierOffset(property.Modifiers);
+			else
+				return PropertyIndex + GetModifierOffset(property.Modifiers);
 		}
 		
 		public static int GetIcon(IField field)

@@ -21,7 +21,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public abstract List<IProperty> GetProperties();
 		public abstract List<IField>    GetFields();
 		public abstract List<IEvent>    GetEvents();
-		public abstract List<IIndexer>  GetIndexers();
 		
 		public override bool Equals(object o)
 		{

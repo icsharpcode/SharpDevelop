@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -86,11 +86,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public List<IEvent> GetEvents()
 		{
 			return Combine<IEvent>(delegate(IReturnType type) { return type.GetEvents(); });
-		}
-		
-		public List<IIndexer> GetIndexers()
-		{
-			return Combine<IIndexer>(delegate(IReturnType type) { return type.GetIndexers(); });
 		}
 		
 		public string FullyQualifiedName {

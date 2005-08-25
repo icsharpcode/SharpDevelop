@@ -11,7 +11,7 @@ using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IMethodOrIndexer : IMember
+	public interface IMethodOrProperty : IMember
 	{
 		IRegion BodyRegion {
 			get;
@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 	}
 	
-	public interface IMethod : IMethodOrIndexer
+	public interface IMethod : IMethodOrProperty
 	{
 		List<ITypeParameter> TypeParameters {
 			get;

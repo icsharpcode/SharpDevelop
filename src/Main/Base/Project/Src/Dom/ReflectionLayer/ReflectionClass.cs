@@ -56,39 +56,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get {
 				List<IProperty> properties = new List<IProperty>();
 				foreach (PropertyInfo propertyInfo in type.GetProperties(flags)) {
-					ParameterInfo[] p = null;
-					
-					// we may not get the permission to access the index parameters
-					try {
-						p = propertyInfo.GetIndexParameters();
-					} catch (Exception) {}
-					if (p == null || p.Length == 0) {
-						ReflectionProperty prop = new ReflectionProperty(propertyInfo, this);
-						if (prop.IsPublic || prop.IsProtected)
-							properties.Add(prop);
-					}
+					ReflectionProperty prop = new ReflectionProperty(propertyInfo, this);
+					if (prop.IsPublic || prop.IsProtected)
+						properties.Add(prop);
 				}
 				
 				return properties;
-			}
-		}
-		
-		public override List<IIndexer> Indexer {
-			get {
-				List<IIndexer> indexer = new List<IIndexer>();
-				foreach (PropertyInfo propertyInfo in type.GetProperties(flags)) {
-					ParameterInfo[] p = null;
-					
-					// we may not get the permission to access the index parameters
-					try {
-						p = propertyInfo.GetIndexParameters();
-					} catch (Exception) {}
-					if (p != null && p.Length != 0) {
-						indexer.Add(new ReflectionIndexer(propertyInfo, this));
-					}
-				}
-				
-				return indexer;
 			}
 		}
 		
@@ -153,9 +126,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			public override List<IEvent> GetEvents() {
 				return new List<IEvent>(1);
-			}
-			public override List<IIndexer> GetIndexers() {
-				return new List<IIndexer>(1);
 			}
 		}
 		#endregion

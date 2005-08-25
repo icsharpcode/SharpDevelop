@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Markus Palme" email="MarkusPalme@gmx.de"/>
@@ -21,6 +21,12 @@ namespace VBNetBinding
 {
 	public class VBNetCompletionBinding : DefaultCodeCompletionBinding
 	{
+		public VBNetCompletionBinding()
+		{
+			// Don't use indexer insight for '[', VB uses '(' for indexer access
+			this.EnableIndexerInsight = false;
+		}
+		
 		public override bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
 		{
 			VBNetBinding.Parser.ExpressionFinder ef = new VBNetBinding.Parser.ExpressionFinder();
@@ -122,7 +128,7 @@ namespace VBNetBinding
 		{
 			int paramCount = parameters.Count;
 			dp.SetupDataProvider(editor.FileName, editor.ActiveTextAreaControl.TextArea);
-			List<IMethodOrIndexer> methods = dp.Methods;
+			List<IMethodOrProperty> methods = dp.Methods;
 			if (methods.Count == 0) return;
 			bool overloadIsSure;
 			if (methods.Count == 1) {
@@ -140,7 +146,7 @@ namespace VBNetBinding
 			}
 			editor.ShowInsightWindow(dp);
 			if (overloadIsSure) {
-				IMethodOrIndexer method = methods[dp.DefaultIndex];
+				IMethodOrProperty method = methods[dp.DefaultIndex];
 				if (paramCount < method.Parameters.Count) {
 					IParameter param = method.Parameters[paramCount];
 					ProvideContextCompletion(editor, param.ReturnType, charTyped);

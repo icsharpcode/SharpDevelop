@@ -105,10 +105,8 @@
     <Compile Include="Src\Dom\IUsing.cs" />
     <Compile Include="Src\Dom\ModifierEnum.cs" />
     <Compile Include="Src\Dom\IDecoration.cs" />
-    <Compile Include="Src\Dom\IIndexer.cs" />
     <Compile Include="Src\Dom\ParameterModifiers.cs" />
     <Compile Include="Src\Dom\Implementations\AbstractDecoration.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultIndexer.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultUsing.cs" />
     <Compile Include="Src\Dom\IParser.cs" />
     <Compile Include="Src\Dom\ReflectionLayer\ReflectionClass.cs" />
@@ -118,7 +116,6 @@
     <Compile Include="Src\Dom\ReflectionLayer\ReflectionParameter.cs" />
     <Compile Include="Src\Dom\ReflectionLayer\ReflectionEvent.cs" />
     <Compile Include="Src\Dom\ReflectionLayer\ReflectionReturnType.cs" />
-    <Compile Include="Src\Dom\ReflectionLayer\ReflectionIndexer.cs" />
     <Compile Include="Src\Dom\Tag.cs" />
     <Compile Include="Src\Services\AmbienceService\IAmbience.cs" />
     <Compile Include="Src\Services\AmbienceService\NetAmbience.cs" />

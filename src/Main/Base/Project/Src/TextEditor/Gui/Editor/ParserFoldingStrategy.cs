@@ -40,13 +40,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 			
-			foreach (IIndexer indexer in c.Indexer) {
-				if (indexer.BodyRegion != null && indexer.Region.EndLine < indexer.BodyRegion.EndLine) {
-					foldMarkers.Add(new FoldMarker(document, indexer.Region.EndLine - 1,    indexer.Region.EndColumn - 1,
-					                               indexer.BodyRegion.EndLine- 1, indexer.BodyRegion.EndColumn - 1, FoldType.MemberBody));
-				}
-			}
-			
 			foreach (IProperty p in c.Properties) {
 				if (p.BodyRegion != null && p.Region.EndLine < p.BodyRegion.EndLine) {
 					foldMarkers.Add(new FoldMarker(document, p.Region.EndLine - 1, p.Region.EndColumn - 1,

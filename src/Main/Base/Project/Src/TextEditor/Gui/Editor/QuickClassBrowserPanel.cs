@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="none" email=""/>
@@ -119,16 +119,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 				bool isInside = member.Region.BeginLine - 1 <= lineNumber;
 				
-				if (member is IMethod) {
-					if (((IMethod)member).BodyRegion.EndLine >= 0) {
-						isInside &= lineNumber <= ((IMethod)member).BodyRegion.EndLine - 1;
+				if (member is IMethodOrProperty) {
+					if (((IMethodOrProperty)member).BodyRegion.EndLine >= 0) {
+						isInside &= lineNumber <= ((IMethodOrProperty)member).BodyRegion.EndLine - 1;
 					} else {
 						return member.Region.BeginLine - 1 == lineNumber;
 					}
-				} else if (member is IProperty) {
-					isInside &= lineNumber <= ((IProperty)member).BodyRegion.EndLine - 1;
-				} else if (member is IIndexer) {
-					isInside &= lineNumber <= ((IIndexer)member).BodyRegion.EndLine - 1;
 				} else {
 					isInside &= lineNumber <= member.Region.EndLine - 1;
 				}
@@ -170,9 +166,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 				if (item is IProperty) {
 					return ambience.Convert((IProperty)item);
-				}
-				if (item is IIndexer) {
-					return ambience.Convert((IIndexer)item);
 				}
 				if (item is IField) {
 					return ambience.Convert((IField)item);
@@ -363,12 +356,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					items.Add(new ComboBoxItem(p, p.Name, ClassBrowserIconService.GetIcon(p), partialMode ? currentPart.Properties.Contains(p) : true));
 				}
 				items.Sort(lastIndex, c.Properties.Count, comparer);
-				lastIndex = items.Count;
-				
-				foreach (IIndexer indexer in c.Indexer) {
-					items.Add(new ComboBoxItem(indexer, indexer.Name, ClassBrowserIconService.GetIcon(indexer), partialMode ? currentPart.Indexer.Contains(indexer) : true));
-				}
-				items.Sort(lastIndex, c.Indexer.Count, comparer);
 				lastIndex = items.Count;
 				
 				foreach (IField f in c.Fields) {

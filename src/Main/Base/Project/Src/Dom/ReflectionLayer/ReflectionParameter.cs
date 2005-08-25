@@ -15,21 +15,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class ReflectionParameter : DefaultParameter
 	{
-		ParameterInfo parameterInfo;
-		IMember member;
-		
-		public override IReturnType ReturnType {
-			get {
-				return ReflectionReturnType.Create(member, parameterInfo.ParameterType, false);
-			}
-			set {
-			}
-		}
-		
 		public ReflectionParameter(ParameterInfo parameterInfo, IMember member) : base(parameterInfo.Name)
 		{
-			this.parameterInfo = parameterInfo;
-			this.member = member;
+			this.ReturnType = ReflectionReturnType.Create(member, parameterInfo.ParameterType, false);
 			
 			Type type = parameterInfo.ParameterType;
 			

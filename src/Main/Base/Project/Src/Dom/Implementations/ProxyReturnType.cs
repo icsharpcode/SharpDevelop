@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -90,12 +90,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IReturnType baseType = BaseType;
 			return (baseType != null) ? baseType.GetEvents() : new List<IEvent>();
-		}
-		
-		public virtual List<IIndexer> GetIndexers()
-		{
-			IReturnType baseType = BaseType;
-			return (baseType != null) ? baseType.GetIndexers() : new List<IIndexer>();
 		}
 		
 		public abstract bool IsDefaultReturnType {

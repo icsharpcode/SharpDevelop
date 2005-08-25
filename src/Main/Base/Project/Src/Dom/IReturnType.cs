@@ -105,10 +105,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// Gets all events that can be called on this return type.
 		/// </summary>
 		List<IEvent>    GetEvents();
-		
-		/// <summary>
-		/// Gets all indexers that can be called on this return type.
-		/// </summary>
-		List<IIndexer>  GetIndexers();
 	}
 }

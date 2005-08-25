@@ -13,7 +13,7 @@ using System.Xml;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class ReflectionProperty : DefaultProperty 
+	public class ReflectionProperty : DefaultProperty
 	{
 		PropertyInfo propertyInfo;
 		
@@ -39,6 +39,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 				SetterRegion = new DefaultRegion(0, 0, 0, 0);
 			} else {
 				SetterRegion = null;
+			}
+			
+			ParameterInfo[] parameterInfo = propertyInfo.GetIndexParameters();
+			if (parameterInfo != null && parameterInfo.Length > 0) {
+				// check if this property is an indexer (=default member of parent class)
+				foreach (MemberInfo memberInfo in propertyInfo.DeclaringType.GetDefaultMembers()) {
+					if (memberInfo == propertyInfo) {
+						this.IsIndexer = true;
+						break;
+					}
+				}
+				// there are only few properties with parameters, so we can load them immediately
+				foreach (ParameterInfo info in parameterInfo) {
+					this.Parameters.Add(new ReflectionParameter(info, this));
+				}
 			}
 			
 			MethodInfo methodBase = null;

@@ -304,22 +304,24 @@ namespace ICSharpCode.Core
 				builder.Append(' ');
 			}
 			
-			if (IncludeHTMLMarkup) {
-				builder.Append("<b>");
-			}
-			
-			if (UseFullyQualifiedMemberNames) {
-				builder.Append(property.FullyQualifiedName);
+			if (property.IsIndexer) {
+				builder.Append("this");
 			} else {
-				builder.Append(property.Name);
-			}
-			
-			if (IncludeHTMLMarkup) {
-				builder.Append("</b>");
+				if (IncludeHTMLMarkup) {
+					builder.Append("<b>");
+				}
+				if (UseFullyQualifiedMemberNames) {
+					builder.Append(property.FullyQualifiedName);
+				} else {
+					builder.Append(property.Name);
+				}
+				if (IncludeHTMLMarkup) {
+					builder.Append("</b>");
+				}
 			}
 			
 			if (property.Parameters.Count > 0) {
-				builder.Append("(");
+				builder.Append(property.IsIndexer ? '[' : '(');
 				if (IncludeHTMLMarkup) builder.Append("<br>");
 				
 				for (int i = 0; i < property.Parameters.Count; ++i) {
@@ -331,7 +333,7 @@ namespace ICSharpCode.Core
 					if (IncludeHTMLMarkup) builder.Append("<br>");
 				}
 				
-				builder.Append(')');
+				builder.Append(property.IsIndexer ? ']' : ')');
 			}
 			
 			if (IncludeBodies) {
@@ -380,63 +382,6 @@ namespace ICSharpCode.Core
 			if (IncludeHTMLMarkup) {
 				builder.Append("</b>");
 			}
-			
-			if (IncludeBodies) builder.Append(";");
-			
-			return builder.ToString();
-		}
-		
-		public override string Convert(IIndexer m)
-		{
-			StringBuilder builder = new StringBuilder();
-			builder.Append(Convert(m.Modifiers));
-			
-			if (IncludeHTMLMarkup) {
-				builder.Append("<i>");
-			}
-			
-			if (ShowModifiers) {
-				if (m.IsStatic) {
-					builder.Append("static ");
-				}
-			}
-			
-			if (IncludeHTMLMarkup) {
-				builder.Append("</i>");
-			}
-			
-			if (m.ReturnType != null && ShowReturnType) {
-				builder.Append(Convert(m.ReturnType));
-				builder.Append(' ');
-			}
-			
-			if (IncludeHTMLMarkup) {
-				builder.Append("<b>");
-			}
-			
-			if (UseFullyQualifiedMemberNames) {
-				builder.Append(m.FullyQualifiedName);
-			} else {
-				builder.Append(m.Name);
-			}
-			
-			if (IncludeHTMLMarkup) {
-				builder.Append("</b>");
-			}
-			
-			builder.Append("this[");
-			if (IncludeHTMLMarkup) builder.Append("<br>");
-
-			for (int i = 0; i < m.Parameters.Count; ++i) {
-				if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
-				builder.Append(Convert(m.Parameters[i]));
-				if (i + 1 < m.Parameters.Count) {
-					builder.Append(", ");
-				}
-				if (IncludeHTMLMarkup) builder.Append("<br>");
-			}
-			
-			builder.Append(']');
 			
 			if (IncludeBodies) builder.Append(";");
 			

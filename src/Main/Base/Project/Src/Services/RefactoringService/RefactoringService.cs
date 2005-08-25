@@ -156,11 +156,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					// TODO: Optimize by re-using the same resolver if multiple expressions were
 					// found in this file (the resolver should parse all methods at once)
 					ResolveResult rr = ParserService.Resolve(expr, position.Y, position.X, fileName, fileContent);
+					MemberResolveResult mrr = rr as MemberResolveResult;
 					if (member != null) {
 						// find reference to member
 						if (IsReferenceToMember(member, rr)) {
 							list.Add(new Reference(fileName, pos, searchedText.Length, expr.Expression, rr));
-						} else if (rr is MemberResolveResult && (rr as MemberResolveResult).ResolvedMember is IIndexer) {
+						} else if (mrr != null && mrr.ResolvedMember is IProperty && ((IProperty)mrr.ResolvedMember).IsIndexer) {
 							// we got an indexer call as expression ("objectList[0].ToString()[2]")
 							// strip the index from the expression to resolve the underlying expression
 							string newExpr = expressionFinder.RemoveLastPart(expr.Expression);
@@ -171,7 +172,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 						}
 					} else {
 						// find reference to class
-						MemberResolveResult mrr = rr as MemberResolveResult;
 						if (mrr != null) {
 							if (mrr.ResolvedMember is IMethod && ((IMethod)mrr.ResolvedMember).IsConstructor) {
 								if (mrr.ResolvedMember.DeclaringType.FullyQualifiedName == parentClass.FullyQualifiedName) {

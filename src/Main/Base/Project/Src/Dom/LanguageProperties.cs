@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -61,6 +61,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public virtual bool ShowMember(IMember member, bool showStatic)
 		{
+			if (member is IProperty && ((IProperty)member).IsIndexer) {
+				return false;
+			}
 			return member.IsStatic == showStatic;
 		}
 		
@@ -78,6 +81,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			public override bool ShowMember(IMember member, bool showStatic)
 			{
+				if (member is ArrayReturnType.ArrayIndexer) {
+					return false;
+				}
 				return member.IsStatic || !showStatic;
 			}
 			

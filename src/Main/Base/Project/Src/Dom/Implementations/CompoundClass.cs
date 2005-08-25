@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -96,16 +96,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				List<IProperty> l = new List<IProperty>();
 				foreach (IClass part in parts) {
 					l.AddRange(part.Properties);
-				}
-				return l;
-			}
-		}
-		
-		public override List<IIndexer> Indexer {
-			get {
-				List<IIndexer> l = new List<IIndexer>();
-				foreach (IClass part in parts) {
-					l.AddRange(part.Indexer);
 				}
 				return l;
 			}

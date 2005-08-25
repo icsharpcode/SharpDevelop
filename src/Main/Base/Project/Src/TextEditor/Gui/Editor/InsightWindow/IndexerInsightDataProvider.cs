@@ -43,8 +43,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			IReturnType type = result.ResolvedType;
 			if (type == null)
 				return;
-			foreach (IIndexer i in type.GetIndexers()) {
-				methods.Add(i);
+			foreach (IProperty i in type.GetProperties()) {
+				if (i.IsIndexer) {
+					methods.Add(i);
+				}
 			}
 		}
 		

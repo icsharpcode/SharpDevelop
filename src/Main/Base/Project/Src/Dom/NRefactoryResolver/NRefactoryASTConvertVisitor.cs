@@ -543,17 +543,17 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DefaultRegion region     = GetRegion(indexerDeclaration.StartLocation, indexerDeclaration.EndLocation);
 			DefaultRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
-			List<IParameter> parameters = new List<IParameter>();
-			DefaultIndexer i = new DefaultIndexer(CreateReturnType(indexerDeclaration.TypeReference), parameters, ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			DefaultProperty i = new DefaultProperty("Indexer", CreateReturnType(indexerDeclaration.TypeReference), ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			i.IsIndexer = true;
 			i.Documentation = GetDocumentation(region.BeginLine);
 			i.Attributes.AddRange(VisitAttributes(indexerDeclaration.Attributes));
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
-					parameters.Add(CreateParameter(par));
+					i.Parameters.Add(CreateParameter(par));
 				}
 			}
 			DefaultClass c = GetCurrentClass();
-			c.Indexer.Add(i);
+			c.Properties.Add(i);
 			return null;
 		}
 		

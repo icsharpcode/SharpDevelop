@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -193,21 +193,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (CheckReturnType(l[i].ReturnType)) {
 					l[i] = (IEvent)l[i].Clone();
 					l[i].ReturnType = TranslateType(l[i].ReturnType);
-				}
-			}
-			return l;
-		}
-		
-		public override List<IIndexer> GetIndexers()
-		{
-			List<IIndexer> l = baseType.GetIndexers();
-			for (int i = 0; i < l.Count; ++i) {
-				if (CheckReturnType(l[i].ReturnType) || CheckParameters(l[i].Parameters)) {
-					l[i] = (IIndexer)l[i].Clone();
-					l[i].ReturnType = TranslateType(l[i].ReturnType);
-					for (int j = 0; j < l[i].Parameters.Count; ++j) {
-						l[i].Parameters[j].ReturnType = TranslateType(l[i].Parameters[j].ReturnType);
-					}
 				}
 			}
 			return l;

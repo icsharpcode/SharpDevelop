@@ -422,9 +422,7 @@ namespace ICSharpCode.Core
 		{
 			bool tryDisplayValue = false;
 			StringBuilder text = new StringBuilder();
-			if (member is IIndexer) {
-				text.Append(ambience.Convert(member as IIndexer));
-			} else if (member is IField) {
+			if (member is IField) {
 				text.Append(ambience.Convert(member as IField));
 				tryDisplayValue = true;
 			} else if (member is IProperty) {

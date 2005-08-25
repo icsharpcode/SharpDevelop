@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -63,14 +63,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override List<IIndexer> GetIndexers()
+		/// <summary>
+		/// Indexer used exclusively for array return types
+		/// </summary>
+		public class ArrayIndexer : DefaultProperty
 		{
-			List<IParameter> p = new List<IParameter>();
-			for (int i = 0; i < dimensions; ++i) {
-				p.Add(new DefaultParameter("index", ReflectionReturnType.Int, null));
+			public ArrayIndexer(IReturnType elementType)
+				: base("Indexer", elementType, ModifierEnum.Public, null, null, ReflectionReturnType.Array.GetUnderlyingClass())
+			{
+				IsIndexer = true;
 			}
-			List<IIndexer> l = new List<IIndexer>();
-			l.Add(new DefaultIndexer(elementType, p, ModifierEnum.Public, null, null, BaseType.GetUnderlyingClass()));
+		}
+		
+		public override List<IProperty> GetProperties()
+		{
+			List<IProperty> l = base.GetProperties();
+			ArrayIndexer property = new ArrayIndexer(elementType);
+			for (int i = 0; i < dimensions; ++i) {
+				property.Parameters.Add(new DefaultParameter("index", ReflectionReturnType.Int, null));
+			}
+			l.Add(property);
 			return l;
 		}
 		

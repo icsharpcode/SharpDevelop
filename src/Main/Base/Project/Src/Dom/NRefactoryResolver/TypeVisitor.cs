@@ -90,7 +90,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(IndexerExpression indexerExpression, object data)
 		{
-			IIndexer i = GetIndexer(indexerExpression, data);
+			IProperty i = GetIndexer(indexerExpression, data);
 			if (i != null)
 				return i.ReturnType;
 			else
@@ -110,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				types[i] = ((Expression)arguments[i]).AcceptVisitor(this, data) as IReturnType;
 			}
 			bool tmp;
-			List<IMethodOrIndexer> methodList = methods.ConvertAll<IMethodOrIndexer>(delegate (IMethod m) { return m; });
+			List<IMethodOrProperty> methodList = methods.ConvertAll<IMethodOrProperty>(delegate (IMethod m) { return m; });
 			return (IMethod)methods[FindOverload(methodList, types, true, out tmp)];
 		}
 		
@@ -125,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// <param name="singleBestOverload">Returns true when the overload returned is
 		/// the only overload that had the highest score or false when there were
 		/// multiple overloads with an equal score.</param>
-		public static int FindOverload(List<IMethodOrIndexer> methods, IReturnType[] types, bool forceParameterCount, out bool singleBestOverload)
+		public static int FindOverload(List<IMethodOrProperty> methods, IReturnType[] types, bool forceParameterCount, out bool singleBestOverload)
 		{
 			singleBestOverload = true;
 			if (methods.Count == 0)
@@ -133,12 +133,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (methods.Count == 1)
 				return 0;
 			
-			IMethodOrIndexer bestMethod = methods[0];
+			IMethodOrProperty bestMethod = methods[0];
 			int bestIndex = 0;
 			int bestScore = ScoreOverload(bestMethod, types, forceParameterCount);
 			
 			for (int i = 1; i < methods.Count; ++i) {
-				IMethodOrIndexer method = methods[i];
+				IMethodOrProperty method = methods[i];
 				int score = ScoreOverload(method, types, forceParameterCount);
 				if (score > bestScore) {
 					bestScore = score;
@@ -168,7 +168,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		/// between -1 for no matches and types.Length - 1 for all matches.
 		/// When the parameter count didn't match, score is -(Difference between parameter counts)
 		/// </returns>
-		public static int ScoreOverload(IMethodOrIndexer method, IReturnType[] types, bool forceParameterCount)
+		public static int ScoreOverload(IMethodOrProperty method, IReturnType[] types, bool forceParameterCount)
 		{
 			if (method == null) return -1;
 			if (forceParameterCount
@@ -212,13 +212,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		public IIndexer GetIndexer(IndexerExpression indexerExpression, object data)
+		public IProperty GetIndexer(IndexerExpression indexerExpression, object data)
 		{
 			IReturnType type = (IReturnType)indexerExpression.TargetObject.AcceptVisitor(this, data);
 			if (type == null) {
 				return null;
 			}
-			List<IIndexer> indexers = type.GetIndexers();
+			List<IProperty> indexers = type.GetProperties();
+			// remove non-indexers:
+			for (int i = 0; i < indexers.Count; i++) {
+				if (!indexers[i].IsIndexer)
+					indexers.RemoveAt(i--);
+			}
 			IReturnType[] parameters = new IReturnType[indexerExpression.Indices.Count];
 			for (int i = 0; i < parameters.Length; i++) {
 				Expression expr = indexerExpression.Indices[i] as Expression;
@@ -226,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					parameters[i] = (IReturnType)expr.AcceptVisitor(this, data);
 			}
 			bool tmp;
-			int num = FindOverload(new List<IMethodOrIndexer>(indexers.ToArray()), parameters, true, out tmp);
+			int num = FindOverload(new List<IMethodOrProperty>(indexers.ToArray()), parameters, true, out tmp);
 			if (num < 0)
 				return null;
 			else
@@ -585,10 +590,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			public override List<IEvent> GetEvents() {
 				return new List<IEvent>();
-			}
-			
-			public override List<IIndexer> GetIndexers() {
-				return new List<IIndexer>();
 			}
 		}
 		

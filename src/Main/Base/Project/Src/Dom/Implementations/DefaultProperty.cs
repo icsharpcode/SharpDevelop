@@ -22,6 +22,16 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		protected IMethod     getterMethod;
 		protected IMethod     setterMethod;
 		List<IParameter> parameters = null;
+		bool isIndexer;
+
+		public bool IsIndexer {
+			get {
+				return isIndexer;
+			}
+			set {
+				isIndexer = value;
+			}
+		}
 		
 		public override string DocumentationTag {
 			get {
@@ -39,6 +49,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		{
 			DefaultProperty p = new DefaultProperty(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
 			p.parameters = DefaultParameter.Clone(this.Parameters);
+			p.isIndexer = this.isIndexer;
 			return p;
 		}
 		

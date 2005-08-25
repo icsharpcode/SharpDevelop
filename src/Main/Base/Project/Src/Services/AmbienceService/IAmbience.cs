@@ -58,7 +58,6 @@ namespace ICSharpCode.Core
 		string Convert(IClass c);
 		string ConvertEnd(IClass c);
 		
-		string Convert(IIndexer c);
 		string Convert(IField field);
 		string Convert(IProperty property);
 		string Convert(IEvent e);

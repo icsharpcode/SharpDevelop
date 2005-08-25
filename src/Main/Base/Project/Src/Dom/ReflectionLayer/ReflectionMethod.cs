@@ -19,13 +19,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		MethodBase methodBase;
 		
-		
 		public override bool IsConstructor {
 			get {
 				return methodBase is ConstructorInfo;
 			}
 		}
-
+		
 		public override IReturnType ReturnType {
 			get {
 				if (methodBase is MethodInfo) {
@@ -36,18 +35,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return null;
 			}
 			set {
+				throw new NotSupportedException();
 			}
 		}
 		
+		List<IParameter> parameters;
+		
 		public override List<IParameter> Parameters {
 			get {
-				List<IParameter> parameters = new List<IParameter>();
-				foreach (ParameterInfo paramInfo in methodBase.GetParameters()) {
-					parameters.Add(new ReflectionParameter(paramInfo, this));
+				if (parameters == null) {
+					parameters = new List<IParameter>();
+					foreach (ParameterInfo paramInfo in methodBase.GetParameters()) {
+						parameters.Add(new ReflectionParameter(paramInfo, this));
+					}
 				}
 				return parameters;
 			}
 			set {
+				throw new NotSupportedException();
 			}
 		}
 		

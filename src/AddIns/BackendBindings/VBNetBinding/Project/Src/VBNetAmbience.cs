@@ -178,7 +178,7 @@ namespace VBNetBinding
 			}
 			
 			if (c.TypeParameters.Count > 0) {
-				builder.Append("(Of");
+				builder.Append("(Of ");
 				for (int i = 0; i < c.TypeParameters.Count; ++i) {
 					if (i > 0) builder.Append(", ");
 					builder.Append(c.TypeParameters[i].Name);
@@ -313,6 +313,10 @@ namespace VBNetBinding
 				builder.Append(GetModifier(property));
 			}
 			
+			if (property.IsIndexer) {
+				builder.Append("Default ");
+			}
+			
 			if (property.CanGet && !property.CanSet) {
 				builder.Append("ReadOnly ");
 			}
@@ -393,53 +397,6 @@ namespace VBNetBinding
 			return builder.ToString();
 		}
 		
-		public override string Convert(IIndexer m)
-		{
-			StringBuilder builder = new StringBuilder();
-			builder.Append(Convert(m.Modifiers));
-			
-			if (ShowModifiers) {
-				if (m.IsStatic) {
-					builder.Append("Shared ");
-				}
-			}
-			
-			if (IncludeHTMLMarkup) {
-				builder.Append("<b>");
-			}
-			
-			if (UseFullyQualifiedMemberNames) {
-				builder.Append(m.FullyQualifiedName);
-			} else {
-				builder.Append(m.Name);
-			}
-			
-			if (IncludeHTMLMarkup) {
-				builder.Append("</b>");
-			}
-			
-			builder.Append("Item(");
-			if (IncludeHTMLMarkup) builder.Append("<br>");
-
-			for (int i = 0; i < m.Parameters.Count; ++i) {
-				if (IncludeHTMLMarkup) builder.Append("&nbsp;&nbsp;&nbsp;");
-				builder.Append(Convert(m.Parameters[i]));
-				if (i + 1 < m.Parameters.Count) {
-					builder.Append(", ");
-				}
-				if (IncludeHTMLMarkup) builder.Append("<br>");
-			}
-			
-			builder.Append(")");
-			
-			if (m.ReturnType != null && ShowReturnType) {
-				builder.Append(" As ");
-				builder.Append(Convert(m.ReturnType));
-			}
-			
-			return builder.ToString();
-		}
-		
 		public override string Convert(IMethod m)
 		{
 			StringBuilder builder = new StringBuilder();
@@ -472,7 +429,7 @@ namespace VBNetBinding
 			}
 			
 			if (m.TypeParameters.Count > 0) {
-				builder.Append("(Of");
+				builder.Append("(Of ");
 				for (int i = 0; i < m.TypeParameters.Count; ++i) {
 					if (i > 0) builder.Append(", ");
 					builder.Append(m.TypeParameters[i].Name);
@@ -547,7 +504,7 @@ namespace VBNetBinding
 			} else if (returnType is SpecificReturnType) {
 				SpecificReturnType rt = (SpecificReturnType)returnType;
 				UnpackNestedType(builder, rt.BaseType);
-				builder.Append("(Of");
+				builder.Append("(Of ");
 				for (int i = 0; i < rt.TypeParameters.Count; ++i) {
 					if (i > 0) builder.Append(", ");
 					builder.Append(Convert(rt.TypeParameters[i]));

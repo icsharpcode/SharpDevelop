@@ -71,6 +71,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 					continue; // ignore explicit interface implementations
 				
 				foreach (IProperty p in bc.Properties) {
+					if (p.IsIndexer && bc != c) {
+						// do not add base class indexers
+						continue;
+					}
 					// do not add methods that were overridden
 					bool ok = true;
 					foreach (IProperty oldProperty in l) {
@@ -110,11 +114,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				l.AddRange(bc.Events);
 			}
 			return l;
-		}
-		
-		public override List<IIndexer> GetIndexers()
-		{
-			return c.Indexer;
 		}
 		
 		public override string FullyQualifiedName {

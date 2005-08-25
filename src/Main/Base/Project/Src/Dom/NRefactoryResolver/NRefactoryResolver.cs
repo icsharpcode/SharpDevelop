@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Andrea Paatz" email="andrea@icsharpcode.net"/>
@@ -404,12 +404,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			int startLine = member.Region.BeginLine;
 			if (startLine < 1) return null;
 			IRegion bodyRegion;
-			if (member is IMethod) {
-				bodyRegion = ((IMethod)member).BodyRegion;
-			} else if (member is IProperty) {
-				bodyRegion = ((IProperty)member).BodyRegion;
-			} else if (member is IIndexer) {
-				bodyRegion = ((IIndexer)member).BodyRegion;
+			if (member is IMethodOrProperty) {
+				bodyRegion = ((IMethodOrProperty)member).BodyRegion;
 			} else if (member is IEvent) {
 				bodyRegion = ((IEvent)member).BodyRegion;
 			} else {
@@ -663,11 +659,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return property;
 				}
 			}
-			foreach (IIndexer indexer in callingClass.Indexer) {
-				if (indexer.BodyRegion != null && indexer.BodyRegion.IsInside(caretLine, caretColumn)) {
-					return indexer;
-				}
-			}
 			return null;
 		}
 		
@@ -858,7 +849,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			c2.Methods.AddRange(c.Methods);
 			c2.Fields.AddRange(c.Fields);
 			c2.Properties.AddRange(c.Properties);
-			c2.Indexer.AddRange(c.Indexer);
 			c2.Events.AddRange(c.Events);
 			return c2;
 		}

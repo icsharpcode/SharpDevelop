@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -123,7 +123,7 @@ namespace CSharpBinding
 		{
 			int paramCount = parameters.Count;
 			dp.SetupDataProvider(editor.FileName, editor.ActiveTextAreaControl.TextArea);
-			List<IMethodOrIndexer> methods = dp.Methods;
+			List<IMethodOrProperty> methods = dp.Methods;
 			if (methods.Count == 0) return;
 			bool overloadIsSure;
 			if (methods.Count == 1) {
@@ -141,7 +141,7 @@ namespace CSharpBinding
 			}
 			editor.ShowInsightWindow(dp);
 			if (overloadIsSure) {
-				IMethodOrIndexer method = methods[dp.DefaultIndex];
+				IMethodOrProperty method = methods[dp.DefaultIndex];
 				if (paramCount < method.Parameters.Count) {
 					IParameter param = method.Parameters[paramCount];
 					ProvideContextCompletion(editor, param.ReturnType, charTyped);

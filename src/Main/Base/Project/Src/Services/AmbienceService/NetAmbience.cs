@@ -129,8 +129,10 @@ namespace ICSharpCode.Core
 		{
 			StringBuilder builder = new StringBuilder();
 			if (ShowModifiers) {
-				builder.Append("Property");
-				builder.Append(' ');
+				if (property.IsIndexer)
+					builder.Append("Indexer ");
+					else
+				builder.Append("Property ");
 			}
 			
 			if (UseFullyQualifiedNames) {
@@ -173,31 +175,6 @@ namespace ICSharpCode.Core
 			if (e.ReturnType != null && ShowReturnType) {
 				builder.Append(" : ");
 				builder.Append(Convert(e.ReturnType));
-			}
-			return builder.ToString();
-		}
-		
-		public override string Convert(IIndexer m)
-		{
-			StringBuilder builder = new StringBuilder();
-			if (ShowModifiers) {
-				builder.Append("Indexer ");
-			}
-			
-			builder.Append("Item");
-			
-			builder.Append('(');
-			for (int i = 0; i < m.Parameters.Count; ++i) {
-				builder.Append(Convert(m.Parameters[i]));
-				if (i + 1 < m.Parameters.Count) {
-					builder.Append(", ");
-				}
-			}
-			
-			builder.Append(")");
-			if (m.ReturnType != null && ShowReturnType) {
-				builder.Append(" : ");
-				builder.Append(Convert(m.ReturnType));
 			}
 			return builder.ToString();
 		}

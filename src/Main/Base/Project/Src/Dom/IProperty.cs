@@ -11,12 +11,8 @@ using System.Reflection;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	public interface IProperty : IMember
+	public interface IProperty : IMethodOrProperty
 	{
-		IRegion BodyRegion {
-			get;
-		}
-		
 		IRegion GetterRegion {
 			get;
 		}
@@ -33,15 +29,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		bool IsIndexer {
+			get;
+		}
+		
 		IMethod GetterMethod {
 			get;
 		}
 
 		IMethod SetterMethod {
-			get;
-		}
-		
-		List<IParameter> Parameters {
 			get;
 		}
 	}

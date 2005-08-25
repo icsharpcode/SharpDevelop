@@ -16,18 +16,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class ReflectionField : DefaultField
 	{
-		FieldInfo fieldInfo;
-		public override IReturnType ReturnType {
-			get {
-				return ReflectionReturnType.Create(this, fieldInfo.FieldType, false);
-			}
-			set {
-			}
-		}
-		
 		public ReflectionField(FieldInfo fieldInfo, IClass declaringType) : base(declaringType, fieldInfo.Name)
 		{
-			this.fieldInfo = fieldInfo;
+			this.ReturnType = ReflectionReturnType.Create(this, fieldInfo.FieldType, false);
 			
 			ModifierEnum modifiers  = ModifierEnum.None;
 			if (fieldInfo.IsInitOnly) {

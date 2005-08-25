@@ -30,7 +30,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		List<IProperty> properties   = null;
 		List<IMethod>   methods      = null;
 		List<IEvent>    events       = null;
-		List<IIndexer>  indexer      = null;
 		List<ITypeParameter> typeParameters = null;
 		
 		public DefaultClass(ICompilationUnit compilationUnit, string fullyQualifiedName) : base(null)
@@ -161,15 +160,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 					properties = new List<IProperty>();
 				}
 				return properties;
-			}
-		}
-		
-		public virtual List<IIndexer> Indexer {
-			get {
-				if (indexer == null) {
-					indexer = new List<IIndexer>();
-				}
-				return indexer;
 			}
 		}
 		
@@ -359,11 +349,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			foreach (IField f in Fields) {
 				if (cmp.Equals(f.Name, memberName)) {
 					return f;
-				}
-			}
-			foreach (IIndexer i in Indexer) {
-				if (cmp.Equals(i.Name, memberName)) {
-					return i;
 				}
 			}
 			foreach (IMethod m in Methods) {

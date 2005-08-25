@@ -25,9 +25,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		string    fileName = null;
 		IDocument document = null;
 		TextArea textArea  = null;
-		protected List<IMethodOrIndexer> methods  = new List<IMethodOrIndexer>();
+		protected List<IMethodOrProperty> methods  = new List<IMethodOrProperty>();
 		
-		public List<IMethodOrIndexer> Methods {
+		public List<IMethodOrProperty> Methods {
 			get {
 				return methods;
 			}
@@ -59,8 +59,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			string text;
 			if (method is IMethod) {
 				text = conv.Convert(method as IMethod);
-			} else if (method is IIndexer) {
-				text = conv.Convert(method as IIndexer);
+			} else if (method is IProperty) {
+				text = conv.Convert(method as IProperty);
 			} else {
 				text = method.ToString();
 			}

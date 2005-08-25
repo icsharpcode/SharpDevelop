@@ -78,10 +78,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 
-		List<IIndexer> Indexer {
-			get;
-		}
-
 		List<IMethod> Methods {
 			get;
 		}
