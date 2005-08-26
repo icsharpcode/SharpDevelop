@@ -208,21 +208,30 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 						if (showArgumentNames || showArgumentValues) {
 							name += "(";
 							for (int i = 0; i < f.ArgumentCount; i++) {
+								string parameterName = null;
+								string argValue = null;
 								if (showArgumentNames) {
-									name += f.GetParameterName(i);
+									try {
+										parameterName = f.GetParameterName(i);
+									} catch { }
+									if (parameterName == "") parameterName = null;
 								}
 								if (showArgumentValues) {
 									try {
-										string argValue = f.GetArgumentVariable(i).Value.ToString();
-										if (showArgumentNames) {
-											name += "=";
-										}
-										name += argValue;
-									} catch {
-										if (!showArgumentNames) {
-											name += "n/a";
-										}
-									}
+										argValue = f.GetArgumentVariable(i).Value.ToString();
+									} catch { }
+								}
+								if (parameterName != null && argValue != null) {
+									name += parameterName + "=" + argValue;
+								}
+								if (parameterName != null && argValue == null) {
+									name += parameterName;
+								}
+								if (parameterName == null && argValue != null) {
+									name += argValue;
+								}
+								if (parameterName == null && argValue == null) {
+									name += "n/a";
 								}
 								if (i < f.ArgumentCount - 1) {
 									name += ", ";

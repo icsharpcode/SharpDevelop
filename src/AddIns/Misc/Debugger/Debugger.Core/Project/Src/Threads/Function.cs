@@ -373,7 +373,11 @@ namespace DebuggerLibrary
 		public string GetParameterName(int index)
 		{
 			// index = 0 is return parameter
-			return module.MetaData.GetParamForMethodIndex(methodProps.Token, (uint)index + 1).Name;
+			try {
+				return module.MetaData.GetParamForMethodIndex(methodProps.Token, (uint)index + 1).Name;
+			} catch {
+				return String.Empty;
+			}
 		}
 
 		public int ArgumentCount {
