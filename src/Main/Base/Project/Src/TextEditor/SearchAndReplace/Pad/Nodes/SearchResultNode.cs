@@ -27,8 +27,6 @@ namespace SearchAndReplace
 		SizeF  spaceSize;
 		static StringFormat sf = (StringFormat)System.Drawing.StringFormat.GenericTypographic.Clone();
 		
-		LineSegment line;
-		
 		Point startPosition;
 		Point endPosition;
 		string positionText;
@@ -50,10 +48,14 @@ namespace SearchAndReplace
 		
 		string DisplayText {
 			get {
-				if (specialText != null)
+				if (specialText != null) {
 					return positionText + specialText;
-				else
+				} else if (document.TotalNumberOfLines > startPosition.Y) {
+					LineSegment line = document.GetLineSegment(startPosition.Y);
 					return positionText + document.GetText(line).Replace("\t", "   ");
+				} else {
+					return positionText;
+				}
 			}
 		}
 		string FileNameText {
@@ -70,7 +72,6 @@ namespace SearchAndReplace
 			endPosition   = result.GetEndPosition(document);
 			positionText =  "(" + (startPosition.Y + 1) + ", " + (startPosition.X + 1) + ") ";
 			
-			line = document.GetLineSegment(startPosition.Y);
 			specialText = result.DisplayText;
 			Text = DisplayText;
 		}
@@ -95,7 +96,7 @@ namespace SearchAndReplace
 			if (specialText != null) {
 				DrawText(g, specialText, Brushes.Black, Font, ref x, e.Bounds.Y);
 			} else {
-				x += DrawLine(g, line, e.Bounds.Y, x);
+				x += DrawLine(g, document.GetLineSegment(startPosition.Y), e.Bounds.Y, x);
 			}
 			if (ShowFileName) {
 				x += DrawDocumentWord(g,

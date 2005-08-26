@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -344,9 +344,13 @@ namespace ICSharpCode.Core
 		
 		void RemoveClass(IClass @class)
 		{
+			string fullClassName = @class.FullyQualifiedName;
+			if (!GetClasses(language).ContainsKey(fullClassName)) {
+				return;
+			}
 			if (@class.IsPartial) {
 				// remove a part of a partial class
-				CompoundClass compound = (CompoundClass)GetClasses(language)[@class.FullyQualifiedName];
+				CompoundClass compound = (CompoundClass)GetClasses(language)[fullClassName];
 				compound.Parts.Remove(@class);
 				if (compound.Parts.Count > 0) {
 					compound.UpdateInformationFromParts();
@@ -359,7 +363,7 @@ namespace ICSharpCode.Core
 			if (nSpace == null) {
 				nSpace = String.Empty;
 			}
-			RemoveClass(@class.FullyQualifiedName, nSpace);
+			RemoveClass(fullClassName, nSpace);
 		}
 		
 		void RemoveClass(string fullyQualifiedName, string nSpace)
