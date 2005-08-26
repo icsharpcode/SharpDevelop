@@ -14,36 +14,36 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	public class InterfaceImplementorCodeGenerator : CodeGenerator
+	public abstract class InterfaceOrAbstractClassCodeGenerator : CodeGenerator
 	{
-		
-		public override string CategoryName {
-			get {
-				return "Interface implementation";
-			}
-		}
-		
-		public override  string Hint {
-			get {
-				return "Choose interfaces to implement";
-			}
-		}
-		
 		public override int ImageIndex {
 			get {
-				
 				return ClassBrowserIconService.InterfaceIndex;
 			}
 		}
 		
-		public InterfaceImplementorCodeGenerator(IClass currentClass) : base(currentClass)
+		public InterfaceOrAbstractClassCodeGenerator(IClass currentClass) : base(currentClass)
 		{
-			for (int i = 0; i < currentClass.BaseTypes.Count; i++) {
-				IReturnType baseType = currentClass.GetBaseType(i);
-				IClass baseClass = (baseType != null) ? baseType.GetUnderlyingClass() : null;
-				if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
-					Content.Add(new ClassWrapper(baseType));
+		}
+		
+		protected class ClassWrapper
+		{
+			IReturnType c;
+			public IReturnType ClassType {
+				get {
+					return c;
 				}
+			}
+			public ClassWrapper(IReturnType c)
+			{
+				this.c = c;
+			}
+			
+			public override string ToString()
+			{
+				IAmbience ambience = AmbienceService.CurrentAmbience;
+				ambience.ConversionFlags = ConversionFlags.None;
+				return ambience.Convert(c);
 			}
 		}
 		
@@ -83,6 +83,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				}
 				
 				if (fileExtension == ".vb") {
+					editActionHandler.InsertString("Overrides Property " + property.Name + " As " + returnType + "\n");
+				} else {
 					editActionHandler.InsertString("override " + returnType + " " + property.Name);
 					if (StartCodeBlockInSameLine) {
 						editActionHandler.InsertString(" {");++numOps;
@@ -90,8 +92,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 						Return();
 						editActionHandler.InsertString("{");++numOps;
 					}
-				} else {
-					editActionHandler.InsertString("Overrides Property " + property.Name + " As " + returnType + "\n");
+					Return();
 				}
 				++numOps;
 				if (property.CanGet) {
@@ -192,16 +193,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					Return();
 				}
 				
-				switch (returnType) {
-					case "void":
-						break;
-					default:
-						if (fileExtension == ".vb") {
-							editActionHandler.InsertString("Return " + GetReturnValue(returnType));++numOps;
-						} else {
-							editActionHandler.InsertString("return " + GetReturnValue(returnType) + ";");++numOps;
-						}
-						break;
+				if (fileExtension == ".vb") {
+					editActionHandler.InsertString("Throw New NotImplementedException()");++numOps;
+				} else {
+					editActionHandler.InsertString("throw new NotImplementedException();");++numOps;
 				}
 				Return();
 				
@@ -244,25 +239,30 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					return "null";
 			}
 		}
+	}
+	
+	public class InterfaceImplementorCodeGenerator : InterfaceOrAbstractClassCodeGenerator
+	{
+		public override string CategoryName {
+			get {
+				return "Interface implementation";
+			}
+		}
 		
-		class ClassWrapper
+		public override  string Hint {
+			get {
+				return "Choose interfaces to implement";
+			}
+		}
+		
+		public InterfaceImplementorCodeGenerator(IClass currentClass) : base(currentClass)
 		{
-			IReturnType c;
-			public IReturnType ClassType {
-				get {
-					return c;
+			for (int i = 0; i < currentClass.BaseTypes.Count; i++) {
+				IReturnType baseType = currentClass.GetBaseType(i);
+				IClass baseClass = (baseType != null) ? baseType.GetUnderlyingClass() : null;
+				if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
+					Content.Add(new ClassWrapper(baseType));
 				}
-			}
-			public ClassWrapper(IReturnType c)
-			{
-				this.c = c;
-			}
-			
-			public override string ToString()
-			{
-				IAmbience ambience = AmbienceService.CurrentAmbience;
-				ambience.ConversionFlags = ConversionFlags.None;
-				return ambience.Convert(c);
 			}
 		}
 	}

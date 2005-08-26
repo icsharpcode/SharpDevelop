@@ -56,36 +56,16 @@ namespace ICSharpCode.Core
 //			StatusBarService.SetMessage(description);
 //		}
 		
-		public bool LastEnabledStatus = false;
-		public bool CurrentEnableStatus {
-			get {
-				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
-				
-				bool isEnabled = failedAction != ConditionFailedAction.Disable;
-				
-				if (menuCommand != null && menuCommand is IMenuCommand) {
-					isEnabled &= ((IMenuCommand)menuCommand).IsEnabled;
-				}
-				return isEnabled;
-			}
-		}
-		
-		public override bool Enabled {
-			get {
-				bool isEnabled = CurrentEnableStatus;
-				LastEnabledStatus  = isEnabled;
-				return isEnabled;
-			}
-		}
-		
 		public virtual void UpdateStatus()
 		{
 			if (codon != null) {
 				ConditionFailedAction failedAction = codon.GetFailedAction(caller);
-				bool isVisible = failedAction != ConditionFailedAction.Exclude;
-				if (base.Visible != isVisible) {
-					base.Visible = isVisible;
+				this.Visible = failedAction != ConditionFailedAction.Exclude;
+				bool isEnabled = failedAction != ConditionFailedAction.Disable;
+				if (isEnabled && menuCommand != null && menuCommand is IMenuCommand) {
+					isEnabled = ((IMenuCommand)menuCommand).IsEnabled;
 				}
+				this.Enabled = isEnabled;
 			}
 		}
 		

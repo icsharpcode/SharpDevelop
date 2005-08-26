@@ -70,7 +70,7 @@ namespace ICSharpCode.Core
 					((IStatusUpdate)item).UpdateStatus();
 				}
 			}
-			toolStrip.Refresh();
+			//toolStrip.Refresh();
 		}
 		
 		public static void UpdateToolbarText(ToolStrip toolStrip)
