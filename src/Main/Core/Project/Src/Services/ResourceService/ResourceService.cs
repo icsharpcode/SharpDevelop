@@ -27,7 +27,7 @@ namespace ICSharpCode.Core
 	public static class ResourceService
 	{
 		readonly static string uiLanguageProperty = "CoreProperties.UILanguage";
-
+		
 		readonly static string stringResources = "StringResources";
 		readonly static string imageResources = "BitmapResources";
 		
@@ -37,30 +37,132 @@ namespace ICSharpCode.Core
 		{
 			resourceDirectory = FileUtility.Combine(PropertyService.DataDirectory, "resources");
 			
-			Assembly assembly = Assembly.GetEntryAssembly();
-			if (assembly != null) {
-				RegisterAssembly(assembly);
-			}
-			
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChange);
 			LoadLanguageResources(PropertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name));
+			
+			Assembly exe = Assembly.GetEntryAssembly();
+			if (exe != null) {
+				strings.Add(new ResourceManager("Resources.StringResources", exe));
+				icons.Add(new ResourceManager("Resources.BitmapResources", exe));
+			}
 		}
 		
-		static Hashtable userStrings = null;
-		static Hashtable userIcons   = null;
-		static Hashtable localUserStrings = null;
-		static Hashtable localUserIcons   = null;
-		
+		/// <summary>English strings (list of resource managers)</summary>
 		static ArrayList strings = new ArrayList();
-		static ArrayList icon    = new ArrayList();
+		/// <summary>Neutral/English images (list of resource managers)</summary>
+		static ArrayList icons   = new ArrayList();
 		
+		/// <summary>Hashtable containing the local strings from the main application.</summary>
 		static Hashtable localStrings = null;
 		static Hashtable localIcons   = null;
-
+		
+		/// <summary>Strings resource managers for the current language</summary>
 		static ArrayList localStringsResMgrs = new ArrayList();
+		/// <summary>Image resource managers for the current language</summary>
 		static ArrayList localIconsResMgrs   = new ArrayList();
-
-		static ArrayList assemblies = new ArrayList();
+		
+		/// <summary>List of ResourceAssembly</summary>
+		static ArrayList resourceAssemblies = new ArrayList();
+		
+		class ResourceAssembly
+		{
+			Assembly assembly;
+			string baseResourceName;
+			bool isIcons;
+			
+			public ResourceAssembly(Assembly assembly, string baseResourceName, bool isIcons)
+			{
+				this.assembly = assembly;
+				this.baseResourceName = baseResourceName;
+				this.isIcons = isIcons;
+			}
+			
+			ResourceManager TrySatellite(string language)
+			{
+				// ResourceManager should automatically use satellite assemblies, but it doesn't work
+				// and we have to do it manually.
+				string fileName = Path.GetFileNameWithoutExtension(assembly.Location) + ".resources.dll";
+				fileName = Path.Combine(Path.Combine(Path.GetDirectoryName(assembly.Location), language), fileName);
+				if (File.Exists(fileName)) {
+					LoggingService.Info("Loging resources " + baseResourceName + " loading from satellite " + language);
+					return new ResourceManager(baseResourceName, Assembly.LoadFrom(fileName));
+				} else {
+					return null;
+				}
+			}
+			
+			public void Load()
+			{
+				string logMessage = "Loading resources " + baseResourceName + "." + currentLanguage + ": ";
+				ResourceManager manager = null;
+				if (assembly.GetManifestResourceInfo(baseResourceName + "." + currentLanguage + ".resources") != null) {
+					LoggingService.Info(logMessage + " loading from main assembly");
+					manager = new ResourceManager(baseResourceName + "." + currentLanguage, assembly);
+				} else if (currentLanguage.IndexOf('-') > 0
+				           && assembly.GetManifestResourceInfo(baseResourceName + "." + currentLanguage.Split('-')[0] + ".resources") != null)
+				{
+					LoggingService.Info(logMessage + " loading from main assembly (no country match)");
+					manager = new ResourceManager(baseResourceName + "." + currentLanguage.Split('-')[0], assembly);
+				} else {
+					// try satellite assembly
+					manager = TrySatellite(currentLanguage);
+					if (manager == null && currentLanguage.IndexOf('-') > 0) {
+						manager = TrySatellite(currentLanguage.Split('-')[0]);
+					}
+				}
+				if (manager == null) {
+					LoggingService.Warn(logMessage + "NOT FOUND");
+				} else {
+					if (isIcons)
+						localIconsResMgrs.Add(manager);
+					else
+						localStringsResMgrs.Add(manager);
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Registers string resources in the resource service.
+		/// </summary>
+		/// <param name="baseResourceName">The base name of the resource file embedded in the assembly.</param>
+		/// <param name="assembly">The assembly which contains the resource file.</param>
+		/// <example><c>ResourceService.RegisterStrings("TestAddin.Resources.StringResources", GetType().Assembly);</c></example>
+		public static void RegisterStrings(string baseResourceName, Assembly assembly)
+		{
+			strings.Add(new ResourceManager(baseResourceName, assembly));
+			ResourceAssembly ra = new ResourceAssembly(assembly, baseResourceName, false);
+			resourceAssemblies.Add(ra);
+			ra.Load();
+		}
+		
+		/// <summary>
+		/// Registers image resources in the resource service.
+		/// </summary>
+		/// <param name="baseResourceName">The base name of the resource file embedded in the assembly.</param>
+		/// <param name="assembly">The assembly which contains the resource file.</param>
+		/// <example><c>ResourceService.RegisterImages("TestAddin.Resources.BitmapResources", GetType().Assembly);</c></example>
+		public static void RegisterImages(string baseResourceName, Assembly assembly)
+		{
+			icons.Add(new ResourceManager(baseResourceName, assembly));
+			ResourceAssembly ra = new ResourceAssembly(assembly, baseResourceName, true);
+			resourceAssemblies.Add(ra);
+			ra.Load();
+		}
+		
+		/// <summary>
+		/// Take string/bitmap resources from an assembly and merge them in the resource service
+		/// </summary>
+		[Obsolete("Use should use RegisterStrings or RegisterImages instead.")]
+		public static void RegisterAssembly(Assembly assembly)
+		{
+			if (assembly.GetManifestResourceInfo(stringResources+".resources") != null) {
+				strings.Add(new ResourceManager(stringResources, assembly));
+			}
+			
+			if (assembly.GetManifestResourceInfo(imageResources+".resources") != null) {
+				icons.Add(new ResourceManager(imageResources, assembly));
+			}
+		}
 		
 		static void OnPropertyChange(object sender, PropertyChangedEventArgs e)
 		{
@@ -72,6 +174,7 @@ namespace ICSharpCode.Core
 		}
 		
 		public static event EventHandler LanguageChanged;
+		static string currentLanguage;
 		
 		static void LoadLanguageResources(string language)
 		{
@@ -82,18 +185,7 @@ namespace ICSharpCode.Core
 					Thread.CurrentThread.CurrentUICulture = new System.Globalization.CultureInfo(language.Split('-')[0]);
 				} catch (Exception) {}
 			}
-			// TODO: AppSettings is obsolete
-//			if (System.Configuration.ConfigurationSettings.AppSettings["UserStrings"] != null) {
-//				string resourceName = System.Configuration.ConfigurationSettings.AppSettings["UserStrings"];
-//				resourceName = resourceName.Insert(resourceName.LastIndexOf(".resources"), "." + language);
-//				localUserStrings = Load(resourceDirctory +  Path.DirectorySeparatorChar + resourceName);
-//			}
-//			if (System.Configuration.ConfigurationSettings.AppSettings["UserIcons"] != null) {
-//				string iconResourceName = System.Configuration.ConfigurationSettings.AppSettings["UserIcons"];
-//				iconResourceName = resourceName.Insert(resourceName.LastIndexOf(".resources"), "." + language);
-//				localUserIcons   = Load(resourceDirctory +  Path.DirectorySeparatorChar + iconResourceName);
-//			}
-
+			
 			localStrings = Load(stringResources, language);
 			if (localStrings == null && language.IndexOf('-') > 0) {
 				localStrings = Load(stringResources, language.Split('-')[0]);
@@ -103,25 +195,16 @@ namespace ICSharpCode.Core
 			if (localIcons == null && language.IndexOf('-') > 0) {
 				localIcons = Load(imageResources, language.Split('-')[0]);
 			}
-
+			
 			localStringsResMgrs.Clear();
 			localIconsResMgrs.Clear();
-			Assembly assembly = Assembly.GetEntryAssembly();
-			if (assembly != null) {
-				if (assembly.GetManifestResourceInfo("Resources." + stringResources + ".resources") != null) {
-					localStringsResMgrs.Add(new ResourceManager("Resources." + stringResources, assembly));
-				}
-				
-				if (assembly.GetManifestResourceInfo("Resources." + imageResources + ".resources") != null) {
-					localIconsResMgrs.Add(new ResourceManager("Resources." + imageResources, assembly));
-				}
+			currentLanguage = language;
+			foreach (ResourceAssembly ra in resourceAssemblies) {
+				ra.Load();
 			}
 		}
 		
-		static void InitializeService()
-		{
-		}
-		
+		#region Font loading
 		/// <summary>
 		/// The LoadFont routines provide a safe way to load fonts.
 		/// </summary>
@@ -185,6 +268,7 @@ namespace ICSharpCode.Core
 				return SystemInformation.MenuFont;
 			}
 		}
+		#endregion
 		
 		static Hashtable Load(string fileName)
 		{
@@ -203,7 +287,6 @@ namespace ICSharpCode.Core
 		static Hashtable Load(string name, string language)
 		{
 			return Load(resourceDirectory + Path.DirectorySeparatorChar + name + "." + language + ".resources");
-			
 		}
 		
 		/// <summary>
@@ -221,12 +304,6 @@ namespace ICSharpCode.Core
 		/// </exception>
 		public static string GetString(string name)
 		{
-			if (localUserStrings != null && localUserStrings[name] != null) {
-				return localUserStrings[name].ToString();
-			}
-			if (userStrings != null && userStrings[name] != null) {
-				return userStrings[name].ToString();
-			}
 			if (localStrings != null && localStrings[name] != null) {
 				return localStrings[name].ToString();
 			}
@@ -238,7 +315,7 @@ namespace ICSharpCode.Core
 					break;
 				}
 			}
-
+			
 			if (s == null) {
 				foreach (ResourceManager resourceManger in strings) {
 					s = resourceManger.GetString(name);
@@ -254,30 +331,10 @@ namespace ICSharpCode.Core
 			return s;
 		}
 		
-		/// <summary>
-		/// Take string/bitmap resources from an assembly and merge them in the resource service
-		/// </summary>
-		public static void RegisterAssembly(Assembly assembly)
-		{
-			assemblies.Add(assembly.FullName);
-
-			if (assembly.GetManifestResourceInfo(stringResources+".resources") != null) {
-				strings.Add(new ResourceManager(stringResources, assembly));
-			}
-			
-			if (assembly.GetManifestResourceInfo(imageResources+".resources") != null) {
-				icon.Add(new ResourceManager(imageResources, assembly));
-			}
-		}
-		
 		static object GetImageResource(string name)
 		{
 			object iconobj = null;
-			if (localUserIcons != null && localUserIcons[name] != null) {
-				iconobj = localUserIcons[name];
-			} else  if (userIcons != null && userIcons[name] != null) {
-				iconobj = userIcons[name];
-			} else  if (localIcons != null && localIcons[name] != null) {
+			if (localIcons != null && localIcons[name] != null) {
 				iconobj = localIcons[name];
 			} else {
 				foreach (ResourceManager resourceManger in localIconsResMgrs) {
@@ -286,9 +343,9 @@ namespace ICSharpCode.Core
 						break;
 					}
 				}
-
+				
 				if (iconobj == null) {
-					foreach (ResourceManager resourceManger in icon) {
+					foreach (ResourceManager resourceManger in icons) {
 						iconobj = resourceManger.GetObject(name);
 						if (iconobj != null) {
 							break;

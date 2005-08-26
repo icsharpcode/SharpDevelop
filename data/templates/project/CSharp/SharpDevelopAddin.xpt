@@ -49,7 +49,7 @@
 		<Pad id       = "${ProjectName}Pad"
 		     category = "Main"
 		     title    = "${ProjectName}Pad"
-		     icon     = "PadIcons.UnitTest"
+		     icon     = "PadIcons.Output"
 		     shortcut = "Control|Alt|T"
 		     class    = "${ProjectName}.TestPad"/>
 	</Path>
