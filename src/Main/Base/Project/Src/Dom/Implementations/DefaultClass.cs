@@ -284,7 +284,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				case ClassType.Enum:
 					return ProjectContentRegistry.Mscorlib.GetClass("System.Enum").DefaultReturnType;
 				case ClassType.Delegate:
-					return ProjectContentRegistry.Mscorlib.GetClass("System.Delegate").DefaultReturnType;
+					return ReflectionReturnType.Delegate;
 				case ClassType.Struct:
 					return ProjectContentRegistry.Mscorlib.GetClass("System.ValueType").DefaultReturnType;
 			}

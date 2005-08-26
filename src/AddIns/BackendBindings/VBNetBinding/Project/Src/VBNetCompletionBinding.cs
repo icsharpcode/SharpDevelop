@@ -142,7 +142,21 @@ namespace VBNetBinding
 						parameterTypes[i] = rr.ResolvedType;
 					}
 				}
-				dp.DefaultIndex = TypeVisitor.FindOverload(methods, parameterTypes, false, out overloadIsSure);
+				int[] ranking = MemberLookupHelper.RankOverloads(methods, parameterTypes, true, out overloadIsSure);
+				bool multipleBest = false;
+				int bestRanking = -1;
+				int best = 0;
+				for (int i = 0; i < ranking.Length; i++) {
+					if (ranking[i] > bestRanking) {
+						bestRanking = ranking[i];
+						best = i;
+						multipleBest = false;
+					} else if (ranking[i] == bestRanking) {
+						multipleBest = true;
+					}
+				}
+				if (multipleBest) overloadIsSure = false;
+				dp.DefaultIndex = best;
 			}
 			editor.ShowInsightWindow(dp);
 			if (overloadIsSure) {

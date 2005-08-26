@@ -231,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 							ctors.Add(m);
 					}
 					TypeVisitor typeVisitor = new TypeVisitor(this);
-					return CreateMemberResolveResult(typeVisitor.FindOverload(ctors, ie.Parameters, null));
+					return CreateMemberResolveResult(typeVisitor.FindOverload(ctors, null, ie.Parameters, null));
 				}
 			}
 			return null;
@@ -325,7 +325,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						return CreateMemberResolveResult(Constructor.CreateDefault(c));
 					}
 				}
-				return CreateMemberResolveResult(typeVisitor.FindOverload(constructors, ((ObjectCreateExpression)expr).Parameters, null));
+				return CreateMemberResolveResult(typeVisitor.FindOverload(constructors, null, ((ObjectCreateExpression)expr).Parameters, null));
 			}
 			return new ResolveResult(callingClass, callingMember, type);
 		}

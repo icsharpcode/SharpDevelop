@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public static class ReflectionReturnType
 	{
 		#region Primitive Types
-		static IReturnType @object, @int, @string, @bool, type, @void, array, disposable, exception;
+		static IReturnType @object, @int, @string, @bool, type, @void, array, disposable, exception, @delegate;
 		
 		/// <summary>Gets a ReturnType describing System.Object.</summary>
 		public static IReturnType Object {
@@ -95,6 +95,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 					exception = CreatePrimitive(typeof(Exception));
 				}
 				return exception;
+			}
+		}
+		
+		/// <summary>Gets a ReturnType describing System.Delegate.</summary>
+		public static IReturnType Delegate {
+			get {
+				if (@delegate == null) {
+					@delegate = CreatePrimitive(typeof(Delegate));
+				}
+				return @delegate;
 			}
 		}
 		

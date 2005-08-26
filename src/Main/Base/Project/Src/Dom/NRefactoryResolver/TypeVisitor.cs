@@ -1,7 +1,7 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -40,6 +40,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			switch (binaryOperatorExpression.Op) {
 				case BinaryOperatorType.AsCast:
+				case BinaryOperatorType.NullCoalescing:
 					return binaryOperatorExpression.Right.AcceptVisitor(this, data);
 				case BinaryOperatorType.DivideInteger:
 					return ReflectionReturnType.Int;
@@ -97,23 +98,24 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 		}
 		
-		public IMethod FindOverload(List<IMethod> methods, ArrayList arguments, object data)
+		public IMethod FindOverload(List<IMethod> methods, IReturnType[] typeParameters, ArrayList arguments, object data)
 		{
 			if (methods.Count <= 0) {
 				return null;
 			}
-			if (methods.Count == 1)
-				return (IMethod)methods[0];
+			// We can't use this shortcut because MemberLookupHelper does type inference and
+			// type substitution for us
+			//if (methods.Count == 1)
+			//	return methods[0];
 			
 			IReturnType[] types = new IReturnType[arguments.Count];
 			for (int i = 0; i < types.Length; ++i) {
 				types[i] = ((Expression)arguments[i]).AcceptVisitor(this, data) as IReturnType;
 			}
-			bool tmp;
-			List<IMethodOrProperty> methodList = methods.ConvertAll<IMethodOrProperty>(delegate (IMethod m) { return m; });
-			return (IMethod)methods[FindOverload(methodList, types, true, out tmp)];
+			return MemberLookupHelper.FindOverload(methods, typeParameters, types);
 		}
 		
+		/*
 		/// <summary>
 		/// Finds the index of the overload in <paramref name="methods"/> that is the best
 		/// match for a call with the specified return types.
@@ -153,6 +155,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return bestIndex;
 		}
 		
+		
 		/// <summary>
 		/// Calculates a score how good the specified <paramref name="method"/> matches
 		/// the <paramref name="types"/>.
@@ -191,23 +194,23 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return -Math.Abs(method.Parameters.Count - types.Length);
 			}
 		}
+		 */
 		
 		public IMethod GetMethod(InvocationExpression invocationExpression, object data)
 		{
+			IReturnType[] typeParameters = CreateReturnTypes(invocationExpression.TypeParameters);
 			if (invocationExpression.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
 				IReturnType type = field.TargetObject.AcceptVisitor(this, data) as IReturnType;
 				List<IMethod> methods = resolver.SearchMethod(type, field.FieldName);
-				InjectMethodTypeParameters(methods, invocationExpression);
-				return FindOverload(methods, invocationExpression.Parameters, data);
+				return FindOverload(methods, typeParameters, invocationExpression.Parameters, data);
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				string id = ((IdentifierExpression)invocationExpression.TargetObject).Identifier;
 				if (resolver.CallingClass == null) {
 					return null;
 				}
 				List<IMethod> methods = resolver.SearchMethod(id);
-				InjectMethodTypeParameters(methods, invocationExpression);
-				return FindOverload(methods, invocationExpression.Parameters, data);
+				return FindOverload(methods, typeParameters, invocationExpression.Parameters, data);
 			}
 			return null;
 		}
@@ -230,33 +233,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (expr != null)
 					parameters[i] = (IReturnType)expr.AcceptVisitor(this, data);
 			}
-			bool tmp;
-			int num = FindOverload(new List<IMethodOrProperty>(indexers.ToArray()), parameters, true, out tmp);
-			if (num < 0)
-				return null;
-			else
-				return indexers[num];
-		}
-		
-		void InjectMethodTypeParameters(List<IMethod> methods, InvocationExpression invocationExpression)
-		{
-			if (invocationExpression.TypeParameters == null) return;
-			if (invocationExpression.TypeParameters.Count == 0) return;
-			List<IReturnType> typeParameters = CreateReturnType(invocationExpression.TypeParameters);
-			for (int i = 0; i < methods.Count; ++i) {
-				IMethod m = methods[i] as IMethod;
-				if (m == null) continue; // ignore Events
-				if (m.TypeParameters.Count == 0) {
-					m = null; // this is not the correct overload, ignore this method
-				} else {
-					m = (IMethod)m.Clone();
-					m.ReturnType = SpecificReturnType.TranslateType(m.ReturnType, typeParameters, true);
-					for (int j = 0; j < m.Parameters.Count; ++j) {
-						m.Parameters[j].ReturnType = SpecificReturnType.TranslateType(m.Parameters[j].ReturnType, typeParameters, true);
-					}
-				}
-				methods[i] = m;
-			}
+			return MemberLookupHelper.FindOverload(indexers.ToArray(), parameters);
 		}
 		
 		public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
@@ -455,10 +432,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return type;
 		}
 		
-		public override object Visit(DirectionExpression directionExpression, object data)
+		public override object Visit(TypeOfIsExpression typeOfIsExpression, object data)
 		{
-			// no calls allowed !!!
-			return null;
+			return ReflectionReturnType.Bool;
+		}
+		
+		public override object Visit(DefaultValueExpression defaultValueExpression, object data)
+		{
+			return CreateReturnType(defaultValueExpression.TypeReference);
+		}
+		
+		public override object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
+		{
+			return ReflectionReturnType.Delegate;
 		}
 		
 		public override object Visit(ArrayInitializerExpression arrayInitializerExpression, object data)
@@ -467,14 +453,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		
-		List<IReturnType> CreateReturnType(List<TypeReference> references)
-		{
-			return references.ConvertAll<IReturnType>(CreateReturnType);
-		}
-		
 		IReturnType CreateReturnType(TypeReference reference)
 		{
 			return CreateReturnType(reference, resolver);
+		}
+		
+		IReturnType[] CreateReturnTypes(List<TypeReference> references)
+		{
+			if (references == null) return new IReturnType[0];
+			IReturnType[] types = new IReturnType[references.Count];
+			for (int i = 0; i < types.Length; i++) {
+				types[i] = CreateReturnType(references[i]);
+			}
+			return types;
 		}
 		
 		public static IReturnType CreateReturnType(TypeReference reference, NRefactoryResolver resolver)

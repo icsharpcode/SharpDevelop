@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -30,6 +30,15 @@ class Main<T> : BaseType
 	}
 }";
 		
+		const string program2 = @"using System;
+class Main {
+	void Method() {
+		foreach (TypeName varName in ((CastTo)castTarget).PropertyOnCastExpression) {
+			
+		}
+	}
+}";
+		
 		ExpressionFinder ef;
 		
 		[SetUp]
@@ -40,9 +49,14 @@ class Main<T> : BaseType
 		
 		void FindFull(string location, string expectedExpression, ExpressionContext expectedContext)
 		{
-			int pos = document.IndexOf(location);
-			if (pos < 0) Assert.Fail("location not found in document");
-			ExpressionResult er = ef.FindFullExpression(document, pos);
+			FindFull(document, location, expectedExpression, expectedContext);
+		}
+		
+		void FindFull(string program, string location, string expectedExpression, ExpressionContext expectedContext)
+		{
+			int pos = program.IndexOf(location);
+			if (pos < 0) Assert.Fail("location not found in program");
+			ExpressionResult er = ef.FindFullExpression(program, pos);
 			Assert.AreEqual(expectedExpression, er.Expression);
 			Assert.AreEqual(expectedContext.ToString(), er.Context.ToString());
 		}
@@ -84,15 +98,21 @@ class Main<T> : BaseType
 		}
 		
 		[Test]
-		public void Method()
+		public void MethodOnCast()
 		{
 			FindFull("thodOnCastExpression(para", "((CastTo)castTarget).MethodOnCastExpression(parameter)", ExpressionContext.Default);
 		}
 		
 		[Test]
-		public void Property()
+		public void PropertyOnCast()
 		{
 			FindFull("pertyOnCastExpression", "((CastTo)castTarget).PropertyOnCastExpression", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void PropertyOnCastInForeachLoop()
+		{
+			FindFull(program2, "pertyOnCastExpression", "((CastTo)castTarget).PropertyOnCastExpression", ExpressionContext.Default);
 		}
 	}
 }

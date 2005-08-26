@@ -114,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public static IReturnType TranslateType(IReturnType input, List<IReturnType> typeParameters, bool convertForMethod)
+		public static IReturnType TranslateType(IReturnType input, IList<IReturnType> typeParameters, bool convertForMethod)
 		{
 			if (input is GenericReturnType) {
 				GenericReturnType rt = (GenericReturnType)input;

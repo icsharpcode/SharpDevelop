@@ -689,6 +689,7 @@
     <Compile Include="Src\Services\RefactoringService\RefactoringMenuBuilder.cs" />
     <EmbeddedResource Include="Resources\FullscreenPanel.xfrm" />
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\FullscreenPanel.cs" />
+    <Compile Include="Src\Dom\MemberLookupHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

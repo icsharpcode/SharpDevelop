@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -110,6 +110,28 @@ class TestClass {
 		public void FieldReferenceOnGenericMethodTest()
 		{
 			ResolveResult result = Resolve(listProgram, "CloneIt<TestClass>(null).PublicField", 5);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is MemberResolveResult);
+			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName);
+			MemberResolveResult mrr = (MemberResolveResult) result;
+			Assert.AreEqual("TestClass.PublicField", mrr.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void TypeInferredGenericMethodCallTest()
+		{
+			ResolveResult result = Resolve(listProgram, "CloneIt(new TestClass())", 5);
+			Assert.IsNotNull(result);
+			Assert.IsTrue(result is MemberResolveResult);
+			Assert.AreEqual("TestClass", result.ResolvedType.FullyQualifiedName);
+			MemberResolveResult mrr = (MemberResolveResult) result;
+			Assert.AreEqual("TestClass.CloneIt", mrr.ResolvedMember.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void FieldReferenceOnTypeInferredGenericMethodCallTest()
+		{
+			ResolveResult result = Resolve(listProgram, "CloneIt(new TestClass()).PublicField", 5);
 			Assert.IsNotNull(result);
 			Assert.IsTrue(result is MemberResolveResult);
 			Assert.AreEqual("System.Int32", result.ResolvedType.FullyQualifiedName);
