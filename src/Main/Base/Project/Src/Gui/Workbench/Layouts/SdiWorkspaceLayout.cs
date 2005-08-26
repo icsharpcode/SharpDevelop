@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// </summary>
 	public class SdiWorkbenchLayout : IWorkbenchLayout
 	{
-		Form wbForm;
+		DefaultWorkbench wbForm;
 		
 		DockPanel dockPanel;
 		Dictionary<string, PadContentWrapper> contentHash = new Dictionary<string, PadContentWrapper>();
@@ -63,10 +63,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Attach(IWorkbench workbench)
 		{
-			wbForm = (Form)workbench;
+			wbForm = (DefaultWorkbench)workbench;
 			wbForm.SuspendLayout();
 			wbForm.Controls.Clear();
 			toolStripContainer = new ToolStripContainer();
+			toolStripContainer.SuspendLayout();
 			toolStripContainer.Dock = DockStyle.Fill;
 			
 //			RaftingContainer topRaftingContainer = new System.Windows.Forms.RaftingContainer();
@@ -120,6 +121,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 //			bottomRaftingContainer.ResumeLayout(false);
 //			bottomRaftingContainer.PerformLayout();
 			
+			toolStripContainer.ResumeLayout(false);
 			wbForm.ResumeLayout(false);
 		}
 		
@@ -163,24 +165,33 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ShowToolBars()
 		{
-			DefaultWorkbench wb = (DefaultWorkbench)wbForm;
-			if (wb.ToolBars != null) {
-				foreach (ToolStrip toolBar in wb.ToolBars) {
+			if (wbForm.ToolBars != null) {
+				ArrayList oldControls = new ArrayList();
+				foreach (Control ctl in toolStripContainer.ContentPanel.Controls) {
+					oldControls.Add(ctl);
+				}
+				toolStripContainer.ContentPanel.Controls.Clear();
+				toolStripContainer.ContentPanel.Controls.Add(oldControls[0] as Control);
+				foreach (ToolStrip toolBar in wbForm.ToolBars) {
 					if (!toolStripContainer.ContentPanel.Controls.Contains(toolBar)) {
 						toolStripContainer.ContentPanel.Controls.Add(toolBar);
 					}
+				}
+				for (int i = 1; i < oldControls.Count; i++) {
+					toolStripContainer.ContentPanel.Controls.Add(oldControls[i] as Control);
 				}
 			}
 		}
 		
 		void HideToolBars()
 		{
-			// TODO: Implement HIDE TOOLBARS.
-//			DefaultWorkbench wb = (DefaultWorkbench)wbForm;
-//			if (wb.ToolStripManager.ToolStrips.Count != 1) {
-//				wb.ToolStripManager.ToolStrips.Clear();
-//				wb.ToolStripManager.ToolStrips.Add(wb.TopMenu);
-//			}
+			if (wbForm.ToolBars != null) {
+				foreach (ToolStrip toolBar in wbForm.ToolBars) {
+					if (toolStripContainer.ContentPanel.Controls.Contains(toolBar)) {
+						toolStripContainer.ContentPanel.Controls.Remove(toolBar);
+					}
+				}
+			}
 		}
 		
 		DockContent GetContent(string padTypeName)

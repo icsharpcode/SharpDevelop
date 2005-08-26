@@ -36,6 +36,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			Get<CheckBox>("showStatusBar").Checked = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.StatusBarVisible", true);
 			Get<CheckBox>("showToolBar").Checked   = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.ToolBarVisible", true);
+			Get<CheckBox>("useProfessionalStyle").Checked = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.UseProfessionalRenderer", true);
 		}
 		
 		public override bool StorePanelContents()
@@ -44,6 +45,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			PropertyService.Set("SharpDevelop.UI.CurrentAmbience", ((ComboBox)ControlDictionary["selectAmbienceComboBox"]).Text);
 			PropertyService.Set("ICSharpCode.SharpDevelop.Gui.StatusBarVisible", ((CheckBox)ControlDictionary["showStatusBarCheckBox"]).Checked);
 			PropertyService.Set("ICSharpCode.SharpDevelop.Gui.ToolBarVisible", ((CheckBox)ControlDictionary["showToolBarCheckBox"]).Checked);
+			PropertyService.Set("ICSharpCode.SharpDevelop.Gui.UseProfessionalRenderer", Get<CheckBox>("useProfessionalStyle").Checked);
 			AmbienceService.UseProjectAmbienceIfPossible = Get<CheckBox>("preferProjectAmbience").Checked;
 			return true;
 		}

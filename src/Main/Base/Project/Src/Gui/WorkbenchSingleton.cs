@@ -70,6 +70,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 					case "ICSharpCode.SharpDevelop.Gui.ToolBarVisible":
 						workbench.RedrawAllComponents();
 						break;
+					case "ICSharpCode.SharpDevelop.Gui.UseProfessionalRenderer":
+						workbench.UpdateRenderer();
+						break;
 				}
 			}
 		}
