@@ -12,7 +12,6 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Collections;
 
-using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Core;
 
@@ -58,24 +57,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		Report GetReport(string filename)
 		{
+			if (!File.Exists(filename)) return null;
+			
+			using (StreamReader sr = new StreamReader(filename)) {
+				return GetReport(filename, sr);
+			}
+		}
+		
+		Report GetReport(string filename, TextReader reader)
+		{
 			long numLines = 0;
 			long numWords = 0;
 			long numChars = 0;
 			
-			if (!File.Exists(filename)) return null;
 			
-			FileStream istream = new FileStream(filename, FileMode.Open, FileAccess.Read, FileShare.Read);
-			StreamReader sr = new StreamReader(istream);
-			string line = sr.ReadLine();
+			string line = reader.ReadLine();
 			while (line != null) {
 				++numLines;
 				numChars += line.Length;
 				string[] words = line.Split(null);
 				numWords += words.Length;
-				line = sr.ReadLine();
+				line = reader.ReadLine();
 			}
 			
-			sr.Close();
 			return new Report(filename, numChars, numWords, numLines);
 		}
 		
@@ -85,61 +89,50 @@ namespace ICSharpCode.SharpDevelop.Gui
 			total = null;
 			
 			switch (((ComboBox)ControlDictionary["locationComboBox"]).SelectedIndex) {
-				case 0: {// current file
-					IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-					if (window != null) {
-						if (window.ViewContent.FileName == null) {
-							MessageService.ShowWarning("${res:Dialog.WordCountDialog.SaveTheFileWarning}");
-						} else {
-							Report r = GetReport(window.ViewContent.FileName);
-							if (r != null) items.Add(r);
-							// ((ListView)ControlDictionary["resultListView"]).Items.Add(r.ToListItem());
-						}
-					}
-					break;
-				}
-				case 1: {// all open files
-				if (WorkbenchSingleton.Workbench.ViewContentCollection.Count > 0) {
-					bool dirty = false;
-					
-					total = new Report(StringParser.Parse("${res:Dialog.WordCountDialog.TotalText}"), 0, 0, 0);
-					foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-						if (content.FileName == null) {
-							MessageService.ShowWarning("${res:Dialog.WordCountDialog.SaveAllFileWarning}");
-							continue;
-						} else {
-							Report r = GetReport(content.FileName);
-							if (r != null) {
-								if (content.IsDirty) dirty = true;
-								total += r;
-								items.Add(r);
-								// ((ListView)ControlDictionary["resultListView"]).Items.Add(r.ToListItem());
+					case 0: {// current file
+						IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+						if (window != null) {
+							IEditable editable = window.ViewContent as IEditable;
+							if (editable == null) {
+								MessageService.ShowWarning("${res:Dialog.WordCountDialog.IsNotTextFile}");
+							} else {
+								Report r = GetReport(window.ViewContent.IsUntitled ? window.ViewContent.UntitledName : window.ViewContent.FileName,
+								                     new StringReader(editable.Text));
+								if (r != null) items.Add(r);
 							}
 						}
-					}
-					
-					if (dirty) {
-						MessageService.ShowWarning("${res:Dialog.WordCountDialog.DirtyWarning}");
-					}
-					
-					// ((ListView)ControlDictionary["resultListView"]).Items.Add(new ListViewItem(""));
-					// ((ListView)ControlDictionary["resultListView"]).Items.Add(all.ToListItem());
-				}
-				break;
-				}
-				case 2: {// whole project
-					
-					
-					if (ProjectService.OpenSolution == null) {
-						MessageService.ShowError("${res:Dialog.WordCountDialog.MustBeInProtectedModeWarning}");
 						break;
 					}
-					total = new Report(StringParser.Parse("${res:Dialog.WordCountDialog.TotalText}"), 0, 0, 0);
-					CountCombine(ProjectService.OpenSolution, ref total);
-					// ((ListView)ControlDictionary["resultListView"]).Items.Add(new ListViewItem(""));
-					// ((ListView)ControlDictionary["resultListView"]).Items.Add(all.ToListItem());
-					break;
-				}
+					case 1: {// all open files
+						if (WorkbenchSingleton.Workbench.ViewContentCollection.Count > 0) {
+							total = new Report(StringParser.Parse("${res:Dialog.WordCountDialog.TotalText}"), 0, 0, 0);
+							foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
+								IEditable editable = content as IEditable;
+								if (editable != null) {
+									Report r = GetReport(content.IsUntitled ? content.UntitledName : content.FileName,
+									                     new StringReader(editable.Text));
+									if (r != null) {
+										total += r;
+										items.Add(r);
+									}
+								}
+							}
+						}
+						break;
+					}
+					case 2: {// whole project
+						
+						
+						if (ProjectService.OpenSolution == null) {
+							MessageService.ShowError("${res:Dialog.WordCountDialog.MustBeInProtectedModeWarning}");
+							break;
+						}
+						total = new Report(StringParser.Parse("${res:Dialog.WordCountDialog.TotalText}"), 0, 0, 0);
+						CountCombine(ProjectService.OpenSolution, ref total);
+						// ((ListView)ControlDictionary["resultListView"]).Items.Add(new ListViewItem(""));
+						// ((ListView)ControlDictionary["resultListView"]).Items.Add(all.ToListItem());
+						break;
+					}
 			}
 			UpdateList(0);
 		}
@@ -187,12 +180,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		endupdate:
 			((ListView)ControlDictionary["resultListView"]).EndUpdate();
 			
-		}		
+		}
 		
 		internal class ReportComparer : IComparer
 		{
 			int sortKey;
-		
+			
 			public ReportComparer(int SortKey)
 			{
 				sortKey = SortKey;

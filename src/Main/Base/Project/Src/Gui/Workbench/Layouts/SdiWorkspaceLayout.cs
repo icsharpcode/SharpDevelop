@@ -39,24 +39,32 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return dockPanel.ActiveDocument as IWorkbenchWindow;
 			}
 		}
+		
+		// prevent setting ActiveContent to null when application loses focus (e.g. because of context menu popup)
+		DockContent lastActiveContent;
+		
 		public object ActiveContent {
 			get {
-				if (dockPanel == null || dockPanel.ActiveContent == null)  {
+				DockContent activeContent;
+				if (dockPanel == null)  {
+					activeContent = lastActiveContent;
+				} else {
+					activeContent = dockPanel.ActiveContent ?? lastActiveContent;
+				}
+				lastActiveContent = activeContent;
+				
+				if (activeContent == null || activeContent.IsDisposed) {
 					return null;
 				}
-				
-				if (dockPanel.ActiveContent.IsDisposed) {
-					return null;
-				}
-				if (dockPanel.ActiveContent is IWorkbenchWindow) {
-					return ((IWorkbenchWindow)dockPanel.ActiveContent).ActiveViewContent;
+				if (activeContent is IWorkbenchWindow) {
+					return ((IWorkbenchWindow)activeContent).ActiveViewContent;
 				}
 				
-				if (dockPanel.ActiveContent is PadContentWrapper) {
-					return ((PadContentWrapper)dockPanel.ActiveContent).PadContent;
+				if (activeContent is PadContentWrapper) {
+					return ((PadContentWrapper)activeContent).PadContent;
 				}
 				
-				return dockPanel.ActiveContent;
+				return activeContent;
 			}
 		}
 		

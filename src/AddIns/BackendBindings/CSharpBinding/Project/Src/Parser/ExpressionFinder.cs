@@ -216,7 +216,7 @@ namespace CSharpBinding.Parser
 			bool wordFollowing = false;
 			for (int i = offset + 1; i < inText.Length; ++i) {
 				char c = inText[i];
-				if (Char.IsLetterOrDigit(c)) {
+				if (Char.IsLetterOrDigit(c) || c == '_') {
 					if (Char.IsWhiteSpace(inText, i - 1)) {
 						wordFollowing = true;
 						break;

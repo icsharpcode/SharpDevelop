@@ -1,4 +1,4 @@
-<AddIn name        = "Resource Editor"
+﻿<AddIn name        = "Resource Editor"
        author      = "Mike Krueger"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
@@ -40,33 +40,17 @@
 			<MenuItem id="CopyResourceName"
 			          label="${res:ResourceEditor.ResourceEdit.ContextMenu.CopyResourceName}"
 			          class="ResourceEditor.CopyResourceNameCommand" />
-			<MenuItem id="Delete"
-			          label="${res:ResourceEditor.ResourceEdit.ContextMenu.Delete}"
-			          class="ResourceEditor.DeleteEntryCommand"
-			          shortcut="Delete" />
-			
-			<MenuItem id="Separator2"
-			          type = "Separator" />
-			
-			<MenuItem id="Cut"
-			          label="${res:XML.MainMenu.EditMenu.Cut}"
-			          class="ICSharpCode.SharpDevelop.Commands.Cut" />
-			
-			<MenuItem id="Copy"
-			          label="${res:XML.MainMenu.EditMenu.Copy}"
-			          class="ICSharpCode.SharpDevelop.Commands.Copy" />
 		</Condition>
 		
-		<MenuItem id="Paste"
-		          label="${res:XML.MainMenu.EditMenu.Paste}"
-		          class="ICSharpCode.SharpDevelop.Commands.Paste" />
+		<Include id = "Delete" item = "/SharpDevelop/Workbench/MainMenu/Edit/Delete"/>
+		<MenuItem id = "Separator2" type = "Separator"/>
+		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>
+		<Include id = "Copy" item = "/SharpDevelop/Workbench/MainMenu/Edit/Copy"/>
+		<Include id = "Paste" item = "/SharpDevelop/Workbench/MainMenu/Edit/Paste"/>
 		
 		<MenuItem id="Separator3"
 		          type = "Separator" />
 		
-		<MenuItem id="SelectAll"
-		          label="${res:XML.MainMenu.EditMenu.SelectAll}"
-		          class="ICSharpCode.SharpDevelop.Commands.SelectAll"
-		          shortcut="Control|A" />
+		<Include id = "SelectAll" item = "/SharpDevelop/Workbench/MainMenu/Edit/SelectAll"/>
 	</Path>
 </AddIn>

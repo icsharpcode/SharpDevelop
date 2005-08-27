@@ -37,7 +37,6 @@
     <Compile Include="Src\Commands\AddStringEntryCommand.cs" />
     <Compile Include="Src\Commands\ClipboardCommands.cs" />
     <Compile Include="Src\Commands\CopyResourceNameCommand.cs" />
-    <Compile Include="Src\Commands\DeleteEntryCommand.cs" />
     <Compile Include="Src\Commands\RenameEntryCommand.cs" />
     <Compile Include="Src\Commands\SaveEntryAsCommand.cs" />
     <Compile Include="Src\DisplayDefinition.cs" />

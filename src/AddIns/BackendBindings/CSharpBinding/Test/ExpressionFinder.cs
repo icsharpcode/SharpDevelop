@@ -32,6 +32,7 @@ class Main<T> : BaseType
 		
 		const string program2 = @"using System;
 class Main {
+	string under_score_field;
 	void Method() {
 		foreach (TypeName varName in ((CastTo)castTarget).PropertyOnCastExpression) {
 			
@@ -113,6 +114,12 @@ class Main {
 		public void PropertyOnCastInForeachLoop()
 		{
 			FindFull(program2, "pertyOnCastExpression", "((CastTo)castTarget).PropertyOnCastExpression", ExpressionContext.Default);
+		}
+		
+		[Test]
+		public void Underscore()
+		{
+			FindFull(program2, "der_score_field", "under_score_field", ExpressionContext.Default);
 		}
 	}
 }

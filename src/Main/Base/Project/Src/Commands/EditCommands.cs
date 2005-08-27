@@ -158,13 +158,11 @@ namespace ICSharpCode.SharpDevelop.Commands
 		
 		public override void Run()
 		{
-			if (IsEnabled) {
-				IClipboardHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
-				if (editable == null)
-					editable = GetClipboardHandlerWrapper(WorkbenchSingleton.ActiveControl);
-				if (editable != null) {
-					Run(editable);
-				}
+			IClipboardHandler editable = WorkbenchSingleton.Workbench.ActiveContent as IClipboardHandler;
+			if (editable == null)
+				editable = GetClipboardHandlerWrapper(WorkbenchSingleton.ActiveControl);
+			if (editable != null) {
+				Run(editable);
 			}
 		}
 	}
