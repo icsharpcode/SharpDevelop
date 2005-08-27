@@ -641,7 +641,7 @@
     <Compile Include="Src\Dom\Implementations\GetClassReturnType.cs" />
     <Compile Include="Src\Dom\Implementations\GenericReturnType.cs" />
     <Compile Include="Src\Dom\Implementations\ArrayReturnType.cs" />
-    <Compile Include="Src\Dom\Implementations\SpecificReturnType.cs" />
+    <Compile Include="Src\Dom\Implementations\ConstructedReturnType.cs" />
     <Compile Include="Src\Dom\LanguageProperties.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\SchemeExtension.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\ExtendedWebBrowser.cs">

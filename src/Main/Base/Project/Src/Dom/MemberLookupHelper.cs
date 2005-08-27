@@ -6,7 +6,6 @@
 // </file>
 
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using ICSharpCode.Core;
 
@@ -43,10 +42,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			if (properties.Count == 0)
 				return null;
-			bool tmp;
+			bool tmp1; IReturnType[][] tmp2;
 			List<IMethodOrProperty> newList = new List<IMethodOrProperty>(properties.Count);
 			foreach (IProperty p in properties) newList.Add(p);
-			int[] ranking = RankOverloads(newList, arguments, false, out tmp);
+			int[] ranking = RankOverloads(newList, arguments, false, out tmp1, out tmp2);
 			int bestRanking = -1;
 			int best = 0;
 			for (int i = 0; i < ranking.Length; i++) {
@@ -85,6 +84,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (list.Count == 0) return new int[] {};
 			
 			List<IMethodOrProperty> l2 = new List<IMethodOrProperty>(list.Count);
+			IReturnType[][] inferredTypeParameters;
 			// See ECMA-334, § 14.3
 			
 			// If type parameters are specified, remove all methods from the list that do not
@@ -94,16 +94,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 					IMethod m = list[i];
 					if (m.TypeParameters.Count == typeParameters.Length) {
 						m = (IMethod)m.Clone();
-						m.ReturnType = SpecificReturnType.TranslateType(m.ReturnType, typeParameters, true);
+						m.ReturnType = ConstructedReturnType.TranslateType(m.ReturnType, typeParameters, true);
 						for (int j = 0; j < m.Parameters.Count; ++j) {
-							m.Parameters[j].ReturnType = SpecificReturnType.TranslateType(m.Parameters[j].ReturnType, typeParameters, true);
+							m.Parameters[j].ReturnType = ConstructedReturnType.TranslateType(m.Parameters[j].ReturnType, typeParameters, true);
 						}
 						list[i] = m;
 						l2.Add(m);
 					}
 				}
 				
-				int[] innerRanking = RankOverloads(l2, arguments, allowAdditionalArguments, out acceptableMatch);
+				int[] innerRanking = RankOverloads(l2, arguments, allowAdditionalArguments, out acceptableMatch, out inferredTypeParameters);
 				int[] ranking = new int[list.Count];
 				int innerIndex = 0;
 				for (int i = 0; i < ranking.Length; i++) {
@@ -120,7 +120,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 				// type arguments.
 				foreach (IMethod m in list) l2.Add(m);
 				
-				return RankOverloads(l2, arguments, allowAdditionalArguments, out acceptableMatch);
+				int[] ranking = RankOverloads(l2, arguments, allowAdditionalArguments, out acceptableMatch, out inferredTypeParameters);
+				ApplyInferredTypeParameters(list, inferredTypeParameters);
+				return ranking;
+			}
+		}
+		
+		static void ApplyInferredTypeParameters(IList<IMethod> list, IReturnType[][] inferredTypeParameters)
+		{
+			if (inferredTypeParameters == null)
+				return;
+			for (int i = 0; i < list.Count; i++) {
+				IReturnType[] inferred = inferredTypeParameters[i];
+				if (inferred != null && inferred.Length > 0) {
+					IMethod m = (IMethod)list[i].Clone();
+					m.ReturnType = ConstructedReturnType.TranslateType(m.ReturnType, inferred, true);
+					for (int j = 0; j < m.Parameters.Count; ++j) {
+						m.Parameters[j].ReturnType = ConstructedReturnType.TranslateType(m.Parameters[j].ReturnType, inferred, true);
+					}
+					list[i] = m;
+				}
 			}
 		}
 		#endregion
@@ -133,9 +152,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public static int[] RankOverloads(IList<IMethodOrProperty> list,
 		                                  IReturnType[] arguments,
 		                                  bool allowAdditionalArguments,
-		                                  out bool acceptableMatch)
+		                                  out bool acceptableMatch,
+		                                  out IReturnType[][] inferredTypeParameters)
 		{
 			acceptableMatch = false;
+			inferredTypeParameters = null;
 			if (list.Count == 0) return new int[] {};
 			
 			int[] ranking = new int[list.Count];
@@ -161,10 +182,123 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// a higher score than non-applicable members
 			
 			// The first step is to expand the methods and do type argument substitution
+			IReturnType[][] expandedParameters = ExpandParametersAndSubstitute(list, arguments, maxScore, ranking, needToExpand, out inferredTypeParameters);
+			// § 14.4.2.2 Better function member
 			
-			// TODO: Continue writing the member lookup stuff!
 			
 			return ranking;
+		}
+		
+		static IReturnType[][] ExpandParametersAndSubstitute(IList<IMethodOrProperty> list,
+		                                                     IReturnType[] arguments,
+		                                                     int maxScore, int[] ranking, bool[] needToExpand,
+		                                                     out IReturnType[][] inferredTypeParameters)
+		{
+			IReturnType[][] expandedParameters = new IReturnType[list.Count][];
+			inferredTypeParameters = new IReturnType[list.Count][];
+			for (int i = 0; i < ranking.Length; i++) {
+				if (ranking[i] == maxScore) {
+					List<IParameter> parameters = list[i].Parameters;
+					IReturnType[] typeParameters = (list[i] is IMethod) ? InferTypeArguments((IMethod)list[i], arguments) : null;
+					inferredTypeParameters[i] = typeParameters;
+					IReturnType paramsType = null;
+					expandedParameters[i] = new IReturnType[arguments.Length];
+					for (int j = 0; j < arguments.Length; j++) {
+						if (j < parameters.Count) {
+							IParameter parameter = parameters[j];
+							if (parameter.IsParams && needToExpand[i]) {
+								if (parameter.ReturnType is ArrayReturnType) {
+									paramsType = ((ArrayReturnType)parameter.ReturnType).ElementType;
+									paramsType = ConstructedReturnType.TranslateType(paramsType, typeParameters, true);
+								}
+								expandedParameters[i][j] = paramsType;
+							} else {
+								expandedParameters[i][j] = ConstructedReturnType.TranslateType(parameter.ReturnType, typeParameters, true);
+							}
+						} else {
+							expandedParameters[i][j] = paramsType;
+						}
+					}
+				}
+			}
+			return expandedParameters;
+		}
+		
+		static bool IsBetterFunctionMember()
+		{
+			return false;
+		}
+		#endregion
+		
+		#region Type Argument Inference
+		static IReturnType[] InferTypeArguments(IMethod method, IReturnType[] arguments)
+		{
+			// §25.6.4 Inference of type arguments
+			int count = method.TypeParameters.Count;
+			if (count == 0) return null;
+			IReturnType[] result = new IReturnType[count];
+			List<IParameter> parameters = method.Parameters;
+			for (int i = 0; i < arguments.Length; i++) {
+				if (i >= parameters.Count)
+					break;
+				if (!InferTypeArgument(parameters[i].ReturnType, arguments[i], result)) {
+					// inferring failed: maybe this is a params parameter that must be expanded?
+					if (parameters[i].IsParams) {
+						ArrayReturnType art = parameters[i].ReturnType as ArrayReturnType;
+						if (art != null) {
+							InferTypeArgument(art.ElementType, arguments[i], result);
+						}
+					}
+				}
+			}
+			// only return the result array when there something was inferred
+			for (int i = 0; i < result.Length; i++) {
+				if (result[i] != null) {
+					return result;
+				}
+			}
+			return null;
+		}
+		
+		static bool InferTypeArgument(IReturnType expectedArgument, IReturnType passedArgument, IReturnType[] outputArray)
+		{
+			if (passedArgument == null) return true; // TODO: NullTypeReference
+			ArrayReturnType ea = expectedArgument as ArrayReturnType;
+			if (ea != null) {
+				if (passedArgument is ArrayReturnType && ea.ArrayDimensions == passedArgument.ArrayDimensions) {
+					return InferTypeArgument(ea.ElementType, ((ArrayReturnType)passedArgument).ElementType, outputArray);
+				} else if (passedArgument is ConstructedReturnType) {
+					switch (passedArgument.FullyQualifiedName) {
+						case "System.Collections.Generic.IList":
+						case "System.Collections.Generic.ICollection":
+						case "System.Collections.Generic.IEnumerable":
+							return InferTypeArgument(ea.ElementType, ((ConstructedReturnType)passedArgument).TypeParameters[0], outputArray);
+					}
+				}
+				// If P is an array type, and A is not an array type of the same rank,
+				// or an instantiation of IList<>, ICollection<>, or IEnumerable<>, then
+				// type inference fails for the generic method.
+				return false;
+			}
+			GenericReturnType methodTP = expectedArgument as GenericReturnType;
+			if (methodTP != null && methodTP.TypeParameter.Method != null) {
+				if (methodTP.TypeParameter.Index < outputArray.Length) {
+					outputArray[methodTP.TypeParameter.Index] = passedArgument;
+				}
+				return true;
+			}
+			ConstructedReturnType constructed = expectedArgument as ConstructedReturnType;
+			if (constructed != null) {
+				// The spec for this case is quite complex.
+				// For our purposes, we can simplify enourmously:
+				ConstructedReturnType passed = passedArgument as ConstructedReturnType;
+				if (passed == null) return false;
+				int count = Math.Min(constructed.TypeParameters.Count, passed.TypeParameters.Count);
+				for (int i = 0; i < count; i++) {
+					InferTypeArgument(constructed.TypeParameters[i], passed.TypeParameters[i], outputArray);
+				}
+			}
+			return true;
 		}
 		#endregion
 		

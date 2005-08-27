@@ -165,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				for (int i = 0; i < args.Length; ++i) {
 					para.Add(Create(member, args[i], createLazyReturnType));
 				}
-				return new SpecificReturnType(Create(member, type.GetGenericTypeDefinition(), createLazyReturnType), para);
+				return new ConstructedReturnType(Create(member, type.GetGenericTypeDefinition(), createLazyReturnType), para);
 			} else if (type.IsGenericParameter) {
 				IClass c = member.DeclaringType;
 				if (type.GenericParameterPosition < c.TypeParameters.Count) {

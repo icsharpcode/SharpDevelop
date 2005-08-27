@@ -541,7 +541,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				for (int i = 0; i < reference.GenericTypes.Count; ++i) {
 					para.Add(CreateReturnType(reference.GenericTypes[i], callingClass, callingMember, caretLine, caretColumn, projectContent, useLazyReturnType));
 				}
-				t = new SpecificReturnType(t, para);
+				t = new ConstructedReturnType(t, para);
 			}
 			return WrapArray(t, reference);
 		}

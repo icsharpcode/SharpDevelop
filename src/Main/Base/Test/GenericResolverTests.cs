@@ -68,9 +68,9 @@ class TestClass {
 			Assert.IsTrue(result is MemberResolveResult);
 			IMethod m = (IMethod)((MemberResolveResult)result).ResolvedMember;
 			Assert.AreEqual(1, m.Parameters.Count);
-			Assert.IsTrue(m.Parameters[0].ReturnType is SpecificReturnType);
+			Assert.IsTrue(m.Parameters[0].ReturnType is ConstructedReturnType);
 			Assert.AreEqual("System.Collections.Generic.IEnumerable", m.Parameters[0].ReturnType.FullyQualifiedName);
-			Assert.AreEqual("TestClass", ((SpecificReturnType)m.Parameters[0].ReturnType).TypeParameters[0].FullyQualifiedName);
+			Assert.AreEqual("TestClass", ((ConstructedReturnType)m.Parameters[0].ReturnType).TypeParameters[0].FullyQualifiedName);
 		}
 		
 		[Test]
@@ -91,8 +91,8 @@ class TestClass {
 			Assert.IsNotNull(result);
 			Assert.IsTrue(result is TypeResolveResult);
 			Assert.AreEqual("System.Collections.Generic.List", ((TypeResolveResult)result).ResolvedClass.FullyQualifiedName);
-			Assert.IsTrue(result.ResolvedType is SpecificReturnType);
-			Assert.AreEqual("System.String", ((SpecificReturnType)result.ResolvedType).TypeParameters[0].FullyQualifiedName);
+			Assert.IsTrue(result.ResolvedType is ConstructedReturnType);
+			Assert.AreEqual("System.String", ((ConstructedReturnType)result.ResolvedType).TypeParameters[0].FullyQualifiedName);
 		}
 		
 		[Test]

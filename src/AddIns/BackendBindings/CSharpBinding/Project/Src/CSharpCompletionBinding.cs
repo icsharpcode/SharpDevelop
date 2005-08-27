@@ -137,7 +137,8 @@ namespace CSharpBinding
 						parameterTypes[i] = rr.ResolvedType;
 					}
 				}
-								int[] ranking = MemberLookupHelper.RankOverloads(methods, parameterTypes, true, out overloadIsSure);
+				IReturnType[][] tmp;
+				int[] ranking = MemberLookupHelper.RankOverloads(methods, parameterTypes, true, out overloadIsSure, out tmp);
 				bool multipleBest = false;
 				int bestRanking = -1;
 				int best = 0;

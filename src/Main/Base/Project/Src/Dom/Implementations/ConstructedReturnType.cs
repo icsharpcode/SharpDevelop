@@ -13,13 +13,13 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
-	/// SpecificReturnType is a reference to generic class that specifies the type parameters.
+	/// ConstructedReturnType is a reference to generic class that specifies the type parameters.
 	/// When getting the Members, this return type modifies the lists in such a way that the
 	/// <see cref="GenericReturnType"/>s are replaced with the return types in the type parameters
 	/// collection.
 	/// Example: List&lt;string&gt;
 	/// </summary>
-	public sealed class SpecificReturnType : ProxyReturnType
+	public sealed class ConstructedReturnType : ProxyReturnType
 	{
 		// Return types that should be substituted for the generic types
 		// If a substitution is unknown (type could not be resolved), the list
@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public SpecificReturnType(IReturnType baseType, List<IReturnType> typeParameters)
+		public ConstructedReturnType(IReturnType baseType, List<IReturnType> typeParameters)
 		{
 			if (baseType == null)
 				throw new ArgumentNullException("baseType");
@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override bool Equals(object o)
 		{
-			SpecificReturnType rt = o as SpecificReturnType;
+			ConstructedReturnType rt = o as ConstructedReturnType;
 			if (rt == null) return false;
 			if (!baseType.Equals(rt.baseType)) return false;
 			if (typeParameters.Count != rt.typeParameters.Count) return false;
@@ -77,8 +77,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return rt.TypeParameter.Method == null;
 			} else if (t is ArrayReturnType) {
 				return CheckReturnType(((ArrayReturnType)t).ElementType);
-			} else if (t is SpecificReturnType) {
-				foreach (IReturnType para in ((SpecificReturnType)t).TypeParameters) {
+			} else if (t is ConstructedReturnType) {
+				foreach (IReturnType para in ((ConstructedReturnType)t).TypeParameters) {
 					if (CheckReturnType(para)) return true;
 				}
 				return false;
@@ -116,11 +116,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static IReturnType TranslateType(IReturnType input, IList<IReturnType> typeParameters, bool convertForMethod)
 		{
+			if (typeParameters == null || typeParameters.Count == 0) {
+				return input; // nothing to do when there are no type parameters specified
+			}
 			if (input is GenericReturnType) {
 				GenericReturnType rt = (GenericReturnType)input;
 				if (convertForMethod ? (rt.TypeParameter.Method != null) : (rt.TypeParameter.Method == null)) {
 					if (rt.TypeParameter.Index < typeParameters.Count) {
-						return typeParameters[rt.TypeParameter.Index];
+						IReturnType newType = typeParameters[rt.TypeParameter.Index];
+						if (newType != null) {
+							return newType;
+						}
 					}
 				}
 			} else if (input is ArrayReturnType) {
@@ -128,13 +134,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				IReturnType t = TranslateType(e, typeParameters, convertForMethod);
 				if (e != t && t != null)
 					return new ArrayReturnType(t, input.ArrayDimensions);
-			} else if (input is SpecificReturnType) {
-				SpecificReturnType r = (SpecificReturnType)input;
+			} else if (input is ConstructedReturnType) {
+				ConstructedReturnType r = (ConstructedReturnType)input;
 				List<IReturnType> para = new List<IReturnType>(r.TypeParameters.Count);
 				for (int i = 0; i < r.TypeParameters.Count; ++i) {
 					para.Add(TranslateType(r.TypeParameters[i], typeParameters, convertForMethod));
 				}
-				return new SpecificReturnType(r.baseType, para);
+				return new ConstructedReturnType(r.baseType, para);
 			}
 			return input;
 		}

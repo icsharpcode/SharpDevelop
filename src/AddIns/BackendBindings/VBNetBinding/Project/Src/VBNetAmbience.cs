@@ -501,8 +501,8 @@ namespace VBNetBinding
 				}
 				builder.Append(')');
 				UnpackNestedType(builder, art.ElementType);
-			} else if (returnType is SpecificReturnType) {
-				SpecificReturnType rt = (SpecificReturnType)returnType;
+			} else if (returnType is ConstructedReturnType) {
+				ConstructedReturnType rt = (ConstructedReturnType)returnType;
 				UnpackNestedType(builder, rt.BaseType);
 				builder.Append("(Of ");
 				for (int i = 0; i < rt.TypeParameters.Count; ++i) {

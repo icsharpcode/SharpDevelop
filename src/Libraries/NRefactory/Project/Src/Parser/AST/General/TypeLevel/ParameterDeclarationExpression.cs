@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="none" email=""/>
@@ -33,8 +33,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				return typeReference;
 			}
 			set {
-				Debug.Assert(value != null);
-				typeReference = value;
+				typeReference = value ?? TypeReference.Null;
 			}
 		}
 		public string ParameterName {
@@ -68,10 +67,10 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		public ParameterDeclarationExpression(TypeReference typeReference, string parameterName)
 		{
-			this.typeReference  = typeReference;
+			this.TypeReference = typeReference;
 			if (parameterName == null || parameterName.Length == 0)
 				parameterName = "?";
-			this.parameterName  = parameterName;
+			this.parameterName = parameterName;
 			this.paramModifier = ParamModifier.In;
 		}
 		

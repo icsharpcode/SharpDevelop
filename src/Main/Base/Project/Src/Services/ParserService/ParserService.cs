@@ -265,6 +265,12 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// <para>This event is called every two seconds. It is called directly after the parser has updated the
+		/// project content and it is called after the parser noticed that there is nothing to update.</para>
+		/// <para><b>WARNING: This event is called on the parser thread - You need to use Invoke if you do
+		/// anything in your event handler that could touch the GUI.</b></para>
+		/// </summary>
 		public static event ParserUpdateStepEventHandler ParserUpdateStepFinished;
 		
 		static void OnParserUpdateStepFinished(ParserUpdateStepEventArgs e)
