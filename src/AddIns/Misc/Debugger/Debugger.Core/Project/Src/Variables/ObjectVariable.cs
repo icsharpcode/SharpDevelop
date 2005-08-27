@@ -71,14 +71,26 @@ namespace DebuggerLibrary
 		protected override unsafe VariableCollection GetSubVariables()
 		{
 			VariableCollection subVariables = new VariableCollection();
+			
+			// Current frame is necessary to resolve context specific static values (eg. ThreadStatic)
+			ICorDebugFrame curFrame;
+			if (debugger.CurrentThread == null || debugger.CurrentThread.LastFunction == null || debugger.CurrentThread.LastFunction.CorILFrame == null) {
+				curFrame = null;
+			} else {
+				curFrame = debugger.CurrentThread.LastFunction.CorILFrame;
+			}
 
 			foreach(FieldProps field in metaData.EnumFields(classProps.Token)) {
 
 				ICorDebugValue filedValue;
 				if (field.IsStatic) {
 					if (field.IsLiteral) continue; // Try next field
+					
+					// If current frame is not availiable, skip field
+					// TODO: This is not necessary if field is not context specific
+					if (curFrame == null) continue;
 
-					corClass.GetStaticFieldValue(field.Token, null, out filedValue);
+					corClass.GetStaticFieldValue(field.Token, curFrame, out filedValue);
 				} else {
 					if (corValue == null) continue; // Try next field
 
