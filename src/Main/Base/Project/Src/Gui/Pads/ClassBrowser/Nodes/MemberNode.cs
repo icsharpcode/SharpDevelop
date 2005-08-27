@@ -69,6 +69,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		public static string GetText(IMember member)
+		{
+			return Create(member).Text;
+		}
+		
 		public static MemberNode Create(IMember member)
 		{
 			if (member is IMethod)

@@ -20,12 +20,14 @@ using ICSharpCode.TextEditor.Document;
 namespace ICSharpCode.SharpDevelop.Refactoring
 {
 	/// <summary>
-	/// Description of RefactoringMenuBuilder
+	/// Build a menu with refactoring commands for the item that has been clicked on in the text editor.
 	/// </summary>
 	public class RefactoringMenuBuilder : ISubmenuBuilder
 	{
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
+			ToolStripMenuItem item;
+			
 			TextEditorControl textEditorControl = (TextEditorControl)owner;
 			if (textEditorControl.FileName == null)
 				return new ToolStripItem[0];
@@ -34,43 +36,66 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			IDocument doc = textArea.Document;
 			int caretLine = textArea.Caret.Line;
 			
-			bool lineHasDefinitions = false;
+			// list of dotnet names that have definition bookmarks in this line
+			List<string> definitions = new List<string>();
 			
 			// Include definitions (use the bookmarks which should already be present)
 			foreach (Bookmark mark in doc.BookmarkManager.Marks) {
 				if (mark != null && mark.LineNumber == caretLine) {
-					string path = null;
-					int iconIndex = 0;
-					string name = null;
 					ClassMemberBookmark cmb = mark as ClassMemberBookmark;
 					ClassBookmark cb = mark as ClassBookmark;
+					IClass type = null;
 					if (cmb != null) {
-						path = ClassMemberBookmark.ContextMenuPath;
-						iconIndex = cmb.IconIndex;
-						name = cmb.Member.Name;
+						definitions.Add(cmb.Member.DotNetName);
+						item = new ToolStripMenuItem(MemberNode.GetText(cmb.Member),
+						                             ClassBrowserIconService.ImageList.Images[cmb.IconIndex]);
+						MenuService.AddItemsToMenu(item.DropDown.Items, mark, ClassMemberBookmark.ContextMenuPath);
+						resultItems.Add(item);
+						type = cmb.Member.DeclaringType;
 					} else if (cb != null) {
-						path = ClassBookmark.ContextMenuPath;
-						iconIndex = ClassBrowserIconService.GetIcon(cb.Class);
-						name = cb.Class.Name;
+						type = cb.Class;
 					}
-					if (path != null) {
-						lineHasDefinitions = true;
-						ToolStripMenuItem item = new ToolStripMenuItem(name, ClassBrowserIconService.ImageList.Images[iconIndex]);
-						MenuService.AddItemsToMenu(item.DropDown.Items, mark, path);
+					if (type != null) {
+						definitions.Add(type.DotNetName);
+						item = new ToolStripMenuItem(type.Name, ClassBrowserIconService.ImageList.Images[ClassBrowserIconService.GetIcon(type)]);
+						MenuService.AddItemsToMenu(item.DropDown.Items,
+						                           cb ?? new ClassBookmark(textArea.Document, type),
+						                           ClassBookmark.ContextMenuPath);
 						resultItems.Add(item);
 					}
 				}
 			}
 			
-			if (!lineHasDefinitions) {
-				ResolveResult rr = ResolveAtCaret(textEditorControl, textArea);
-				ToolStripMenuItem item = null;
-				if (rr is MemberResolveResult) {
-					item = MakeItem(((MemberResolveResult)rr).ResolvedMember);
-				} else if (rr is TypeResolveResult) {
-					item = MakeItem(((TypeResolveResult)rr).ResolvedClass);
+			// Include menu for member that has been clicked on
+			ResolveResult rr = ResolveAtCaret(textEditorControl, textArea);
+			item = null;
+			if (rr is MemberResolveResult) {
+				item = MakeItem(definitions, ((MemberResolveResult)rr).ResolvedMember);
+			} else if (rr is TypeResolveResult) {
+				item = MakeItem(definitions, ((TypeResolveResult)rr).ResolvedClass);
+			}
+			if (item != null) {
+				resultItems.Add(item);
+			}
+			
+			// Include menu for current class and method
+			IMember callingMember = null;
+			if (rr != null) {
+				callingMember = rr.CallingMember;
+			} else {
+				ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
+				if (parseInfo != null) {
+					ICompilationUnit cu = parseInfo.MostRecentCompilationUnit;
+					if (cu != null) {
+						IClass callingClass = cu.GetInnermostClass(caretLine + 1, textArea.Caret.Column + 1);
+						callingMember = GetCallingMember(callingClass, caretLine + 1, textArea.Caret.Column + 1);
+					}
 				}
+			}
+			if (callingMember != null) {
+				item = MakeItem(definitions, callingMember);
 				if (item != null) {
+					item.Text = StringParser.Parse("${res:SharpDevelop.Refactoring.CurrentMethod}: ") + callingMember.Name;
 					resultItems.Add(item);
 				}
 			}
@@ -85,22 +110,59 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 		}
 		
-		ToolStripMenuItem MakeItem(IMember member)
+		IMember GetCallingMember(IClass callingClass, int caretLine, int caretColumn)
+		{
+			if (callingClass == null) {
+				return null;
+			}
+			foreach (IMethod method in callingClass.Methods) {
+				if (method.BodyRegion != null && method.BodyRegion.IsInside(caretLine, caretColumn)) {
+					return method;
+				}
+			}
+			foreach (IProperty property in callingClass.Properties) {
+				if (property.BodyRegion != null && property.BodyRegion.IsInside(caretLine, caretColumn)) {
+					return property;
+				}
+			}
+			return null;
+		}
+		
+		ToolStripMenuItem MakeItem(List<string> definitions, IMember member)
 		{
 			if (member == null) return null;
-			return MakeItem(MemberNode.Create(member), member.DeclaringType.CompilationUnit, member.Region);
+			if (definitions.Contains(member.DotNetName)) return null;
+			definitions.Add(member.DotNetName);
+			ToolStripMenuItem item = MakeItem(member.FullyQualifiedName, MemberNode.Create(member), member.DeclaringType.CompilationUnit, member.Region);
+			ToolStripMenuItem declaringType = MakeItem(null, member.DeclaringType);
+			if (declaringType != null) {
+				item.DropDown.Items.Add(new ToolStripSeparator());
+				declaringType.Text = StringParser.Parse("${res:SharpDevelop.Refactoring.DeclaringType}: ") + declaringType.Text;
+				item.DropDown.Items.Add(declaringType);
+			}
+			return item;
 		}
 		
 		
-		ToolStripMenuItem MakeItem(IClass c)
+		ToolStripMenuItem MakeItem(List<string> definitions, IClass c)
 		{
 			if (c == null) return null;
-			return MakeItem(new ClassNode(c.ProjectContent.Project, c), c.CompilationUnit, c.Region);
+			if (definitions != null) {
+				if (definitions.Contains(c.DotNetName)) return null;
+				definitions.Add(c.DotNetName);
+			}
+			return MakeItem(c.FullyQualifiedName, new ClassNode(c.ProjectContent.Project, c), c.CompilationUnit, c.Region);
 		}
 		
-		ToolStripMenuItem MakeItem(ExtTreeNode classBrowserTreeNode, ICompilationUnit cu, IRegion region)
+		ToolStripMenuItem MakeItem(string title, ExtTreeNode classBrowserTreeNode, ICompilationUnit cu, IRegion region)
 		{
 			ToolStripMenuItem item = new ToolStripMenuItem(classBrowserTreeNode.Text, ClassBrowserIconService.ImageList.Images[classBrowserTreeNode.ImageIndex]);
+			
+			//ToolStripMenuItem titleItem = new ToolStripMenuItem(title);
+			//titleItem.Enabled = false;
+			//item.DropDown.Items.Add(titleItem);
+			//item.DropDown.Items.Add(new ToolStripSeparator());
+			
 			if (cu.FileName != null && region != null) {
 				ToolStripMenuItem gotoDefinitionItem = new ToolStripMenuItem(StringParser.Parse("${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"),
 				                                                             ClassBrowserIconService.ImageList.Images[ClassBrowserIconService.GotoArrowIndex]);
@@ -111,6 +173,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				item.DropDown.Items.Add(gotoDefinitionItem);
 				item.DropDown.Items.Add(new ToolStripSeparator());
 			}
+			
 			MenuService.AddItemsToMenu(item.DropDown.Items, classBrowserTreeNode, classBrowserTreeNode.ContextmenuAddinTreePath);
 			return item;
 		}

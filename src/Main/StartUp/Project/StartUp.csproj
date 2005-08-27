@@ -11,7 +11,6 @@
     <NoConfig>False</NoConfig>
     <SignAssembly>true</SignAssembly>
     <AssemblyOriginatorKeyFile>Resources\StartUp.snk</AssemblyOriginatorKeyFile>
-    <OutputType>Exe</OutputType>
     <ApplicationIcon>.\Resources\SharpDevelop.ico</ApplicationIcon>
     <PreBuildEvent>..\src\Tools\UpdateAssemblyInfo\bin\Debug\UpdateAssemblyInfo.exe StartupOnly</PreBuildEvent>
   </PropertyGroup>
