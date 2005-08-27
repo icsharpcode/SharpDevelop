@@ -113,7 +113,12 @@ namespace DebuggerLibrary
 
 		internal void SetBreakpointsInModule(object sender, ModuleEventArgs e) 
 		{
-            foreach (Breakpoint b in breakpointCollection) {
+			// This is in case that the client modifies the collection as a response to set breakpoint
+			// NB: If client adds new breakpoint, it will be set directly as a result of his call, not here (because module is already loaded)
+			List<Breakpoint> collection = new List<Breakpoint>();
+			collection.AddRange(breakpointCollection);
+			
+			foreach (Breakpoint b in collection) {
 				b.SetBreakpoint();
 			}
 		}
