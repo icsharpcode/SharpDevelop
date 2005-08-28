@@ -31,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Dictionary<string, PadContentWrapper> contentHash = new Dictionary<string, PadContentWrapper>();
 		ToolStripContainer toolStripContainer;
 		AutoHideMenuStripContainer mainMenuContainer;
+		AutoHideStatusStripContainer statusStripContainer;
 		
 		public IWorkbenchWindow ActiveWorkbenchwindow {
 			get {
@@ -106,6 +107,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.dockPanel.ActiveAutoHideContent = null;
 			this.dockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			
+			statusStripContainer = new AutoHideStatusStripContainer((StatusStrip)StatusBarService.Control);
+			statusStripContainer.Dock = DockStyle.Bottom;
+			
 			LoadLayoutConfiguration();
 			ShowPads();
 			ShowViewContents();
@@ -119,8 +123,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 //			wbForm.Controls.Add(this.dockPanel);
 			
 			toolStripContainer.ContentPanel.Controls.Add(mainMenuContainer);
-			StatusBarService.Control.Dock = DockStyle.Bottom;
-			toolStripContainer.ContentPanel.Controls.Add(StatusBarService.Control);
+			toolStripContainer.ContentPanel.Controls.Add(statusStripContainer);
 			
 			wbForm.Controls.Add(toolStripContainer);
 			
@@ -146,6 +149,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				switch (e.Key) {
 					case "HideMainMenu":
 					case "HideToolbars":
+					case "HideStatusBar":
 						RedrawAllComponents();
 						break;
 				}
@@ -481,6 +485,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			RedrawMainMenu();
 			RedrawToolbars();
+			RedrawStatusBar();
 		}
 			
 		void RedrawMainMenu()
@@ -509,6 +514,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else {
 				HideToolBars();
 			}
+		}
+		
+		void RedrawStatusBar()
+		{
+			Properties fullscreenProperties = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.FullscreenOptions", new Properties());
+			bool hideInFullscreen = fullscreenProperties.Get("HideStatusBar", true);
+			bool showOnMouseMove = fullscreenProperties.Get("ShowStatusBarOnMouseMove", true);
+			bool statusBarVisible = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.StatusBarVisible", true);
+			
+			statusStripContainer.AutoHide = wbForm.FullScreen && hideInFullscreen;
+			statusStripContainer.ShowOnMouseDown = true;
+			statusStripContainer.ShowOnMouseMove = showOnMouseMove;
+			statusStripContainer.Visible = statusBarVisible;
 		}
 		
 		public void CloseWindowEvent(object sender, EventArgs e)

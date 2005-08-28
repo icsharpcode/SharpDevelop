@@ -691,6 +691,8 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\FullscreenPanel.cs" />
     <Compile Include="Src\Dom\MemberLookupHelper.cs" />
     <Compile Include="Src\Gui\Components\AutoHide\AutoHideMenuStripContainer.cs" />
+    <Compile Include="Src\Gui\Components\AutoHide\AutoHideStatusStripContainer.cs" />
+    <Compile Include="Src\Gui\Components\AutoHide\AutoHideContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
