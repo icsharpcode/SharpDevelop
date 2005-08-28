@@ -30,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		DockPanel dockPanel;
 		Dictionary<string, PadContentWrapper> contentHash = new Dictionary<string, PadContentWrapper>();
 		ToolStripContainer toolStripContainer;
+		AutoHideMenuStripContainer mainMenuContainer;
 		
 		public IWorkbenchWindow ActiveWorkbenchwindow {
 			get {
@@ -99,6 +100,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			dockPanel = new WeifenLuo.WinFormsUI.DockPanel();
 			toolStripContainer.ContentPanel.Controls.Add(this.dockPanel);
 			
+			mainMenuContainer = new AutoHideMenuStripContainer(((DefaultWorkbench)wbForm).TopMenu);
+			mainMenuContainer.Dock = DockStyle.Top;
+			
 			this.dockPanel.ActiveAutoHideContent = null;
 			this.dockPanel.Dock = System.Windows.Forms.DockStyle.Fill;
 			
@@ -114,7 +118,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 //			wbForm.Controls.Add(this.dockPanel);
 			
-			toolStripContainer.ContentPanel.Controls.Add(((DefaultWorkbench)workbench).TopMenu);
+			toolStripContainer.ContentPanel.Controls.Add(mainMenuContainer);
 			StatusBarService.Control.Dock = DockStyle.Bottom;
 			toolStripContainer.ContentPanel.Controls.Add(StatusBarService.Control);
 			
@@ -131,6 +135,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			toolStripContainer.ResumeLayout(false);
 			wbForm.ResumeLayout(false);
+			
+			Properties fullscreenProperties = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.FullscreenOptions", new Properties());
+			fullscreenProperties.PropertyChanged += TrackFullscreenPropertyChanges; 
+		}
+			
+		void TrackFullscreenPropertyChanges(object sender, PropertyChangedEventArgs e)
+		{
+			if (e.OldValue != e.NewValue && wbForm.FullScreen) {
+				switch (e.Key) {
+					case "HideMainMenu":
+					case "HideToolbars":
+						RedrawAllComponents();
+						break;
+				}
+			}
 		}
 		
 		void ShowPads()
@@ -460,8 +479,33 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			}
 			
-			if (PropertyService.Get("ICSharpCode.SharpDevelop.Gui.ToolBarVisible", true)) {
-				ShowToolBars();
+			RedrawMainMenu();
+			RedrawToolbars();
+		}
+			
+		void RedrawMainMenu()
+		{
+			Properties fullscreenProperties = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.FullscreenOptions", new Properties());
+			bool hideInFullscreen = fullscreenProperties.Get("HideMainMenu", false);
+			bool showOnMouseMove = fullscreenProperties.Get("ShowMainMenuOnMouseMove", true);
+			
+			mainMenuContainer.AutoHide = wbForm.FullScreen && hideInFullscreen;
+			mainMenuContainer.ShowOnMouseDown = true;
+			mainMenuContainer.ShowOnMouseMove = showOnMouseMove;
+		}
+		
+		void RedrawToolbars()
+		{
+			Properties fullscreenProperties = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.FullscreenOptions", new Properties());
+			bool hideInFullscreen = fullscreenProperties.Get("HideToolbars", true);
+			bool toolBarVisible = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.ToolBarVisible", true);
+			
+			if (toolBarVisible) {
+				if (wbForm.FullScreen && hideInFullscreen) {
+					HideToolBars();
+				} else {
+					ShowToolBars();
+				}
 			} else {
 				HideToolBars();
 			}

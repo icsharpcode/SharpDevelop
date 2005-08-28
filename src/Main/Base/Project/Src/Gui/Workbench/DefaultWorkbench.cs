@@ -61,6 +61,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					Bounds          = normalBounds;
 					WindowState     = defaultWindowState;
 				}
+				RedrawAllComponents();
 			}
 		}
 		
@@ -259,7 +260,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				content.RedrawContent();
 			}
 			
-			layout.RedrawAllComponents();
+			if (layout != null) {
+				layout.RedrawAllComponents();
+			}
 			
 			StatusBarService.RedrawStatusbar();
 		}
