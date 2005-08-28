@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -25,7 +25,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 			p.ParseMethodBodies = false;
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
-			pc.ReferencedContents.Add(corLib);
+			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
+			pc.ReferencedContents.Add(ProjectContentRegistry.WinForms);
 			ParserService.ForceProjectContent(pc);
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
@@ -48,7 +49,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
 			ParserService.ForceProjectContent(pc);
-			pc.ReferencedContents.Add(corLib);
+			pc.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
+			pc.ReferencedContents.Add(ProjectContentRegistry.WinForms);
 			pc.Language = LanguageProperties.VBNet;
 			lastPC = pc;
 			NRefactoryASTConvertVisitor visitor = new NRefactoryASTConvertVisitor(pc);
@@ -92,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		public T Resolve<T>(string program, string expression, int line) where T : ResolveResult
 		{
 			ResolveResult rr = Resolve(program, expression, line);
-			Assert.IsNotNull(rr);
+			Assert.IsNotNull(rr, "Resolve returned null");
 			Assert.IsTrue(rr is T, "result is " + typeof(T).Name);
 			return (T)rr;
 		}
@@ -100,12 +102,10 @@ namespace ICSharpCode.SharpDevelop.Tests
 		public T ResolveVB<T>(string program, string expression, int line) where T : ResolveResult
 		{
 			ResolveResult rr = ResolveVB(program, expression, line);
-			Assert.IsNotNull(rr);
+			Assert.IsNotNull(rr, "Resolve returned null");
 			Assert.IsTrue(rr is T, "result is " + typeof(T).Name);
 			return (T)rr;
 		}
-		
-		IProjectContent corLib = ProjectContentRegistry.Mscorlib;
 		#endregion
 		
 		#region Test for old issues (Fidalgo)

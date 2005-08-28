@@ -127,7 +127,7 @@ namespace CSharpBinding
 			if (methods.Count == 0) return;
 			bool overloadIsSure;
 			if (methods.Count == 1) {
-				overloadIsSure = true;
+		 		overloadIsSure = true;
 				dp.DefaultIndex = 0;
 			} else {
 				IReturnType[] parameterTypes = new IReturnType[paramCount + 1];
@@ -194,7 +194,7 @@ namespace CSharpBinding
 		bool IsInComment(SharpDevelopTextAreaControl editor)
 		{
 			Parser.ExpressionFinder ef = new Parser.ExpressionFinder(editor.FileName);
-			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
+			int cursor = editor.ActiveTextAreaControl.Caret.Offset - 1;
 			return ef.FilterComments(editor.Document.GetText(0, cursor + 1), ref cursor) == null;
 		}
 		

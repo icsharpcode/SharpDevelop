@@ -503,9 +503,9 @@ namespace ICSharpCode.Core
 				ConstructedReturnType rt = (ConstructedReturnType)returnType;
 				UnpackNestedType(builder, rt.BaseType);
 				builder.Append('<');
-				for (int i = 0; i < rt.TypeParameters.Count; ++i) {
+				for (int i = 0; i < rt.TypeArguments.Count; ++i) {
 					if (i > 0) builder.Append(", ");
-					builder.Append(Convert(rt.TypeParameters[i]));
+					builder.Append(Convert(rt.TypeArguments[i]));
 				}
 				builder.Append('>');
 			}

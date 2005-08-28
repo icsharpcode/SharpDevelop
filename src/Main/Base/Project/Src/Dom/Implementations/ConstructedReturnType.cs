@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		List<IReturnType> typeParameters;
 		IReturnType baseType;
 		
-		public List<IReturnType> TypeParameters {
+		public List<IReturnType> TypeArguments {
 			get {
 				return typeParameters;
 			}
@@ -78,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} else if (t is ArrayReturnType) {
 				return CheckReturnType(((ArrayReturnType)t).ElementType);
 			} else if (t is ConstructedReturnType) {
-				foreach (IReturnType para in ((ConstructedReturnType)t).TypeParameters) {
+				foreach (IReturnType para in ((ConstructedReturnType)t).TypeArguments) {
 					if (CheckReturnType(para)) return true;
 				}
 				return false;
@@ -136,9 +136,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return new ArrayReturnType(t, input.ArrayDimensions);
 			} else if (input is ConstructedReturnType) {
 				ConstructedReturnType r = (ConstructedReturnType)input;
-				List<IReturnType> para = new List<IReturnType>(r.TypeParameters.Count);
-				for (int i = 0; i < r.TypeParameters.Count; ++i) {
-					para.Add(TranslateType(r.TypeParameters[i], typeParameters, convertForMethod));
+				List<IReturnType> para = new List<IReturnType>(r.TypeArguments.Count);
+				for (int i = 0; i < r.TypeArguments.Count; ++i) {
+					para.Add(TranslateType(r.TypeArguments[i], typeParameters, convertForMethod));
 				}
 				return new ConstructedReturnType(r.baseType, para);
 			}

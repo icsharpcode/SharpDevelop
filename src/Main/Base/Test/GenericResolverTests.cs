@@ -70,7 +70,7 @@ class TestClass {
 			Assert.AreEqual(1, m.Parameters.Count);
 			Assert.IsTrue(m.Parameters[0].ReturnType is ConstructedReturnType);
 			Assert.AreEqual("System.Collections.Generic.IEnumerable", m.Parameters[0].ReturnType.FullyQualifiedName);
-			Assert.AreEqual("TestClass", ((ConstructedReturnType)m.Parameters[0].ReturnType).TypeParameters[0].FullyQualifiedName);
+			Assert.AreEqual("TestClass", ((ConstructedReturnType)m.Parameters[0].ReturnType).TypeArguments[0].FullyQualifiedName);
 		}
 		
 		[Test]
@@ -92,7 +92,7 @@ class TestClass {
 			Assert.IsTrue(result is TypeResolveResult);
 			Assert.AreEqual("System.Collections.Generic.List", ((TypeResolveResult)result).ResolvedClass.FullyQualifiedName);
 			Assert.IsTrue(result.ResolvedType is ConstructedReturnType);
-			Assert.AreEqual("System.String", ((ConstructedReturnType)result.ResolvedType).TypeParameters[0].FullyQualifiedName);
+			Assert.AreEqual("System.String", ((ConstructedReturnType)result.ResolvedType).TypeArguments[0].FullyQualifiedName);
 		}
 		
 		[Test]

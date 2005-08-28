@@ -155,6 +155,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		                                  out bool acceptableMatch,
 		                                  out IReturnType[][] inferredTypeParameters)
 		{
+			// § 14.4.2 Overload resolution
 			acceptableMatch = false;
 			inferredTypeParameters = null;
 			if (list.Count == 0) return new int[] {};
@@ -163,9 +164,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			bool[] needToExpand = new bool[list.Count];
 			int maxScore = 0;
 			int baseScore = 0;
+			int score;
+			bool expanded;
 			for (int i = 0; i < list.Count; i++) {
-				int score;
-				bool expanded;
 				if (IsApplicable(list[i].Parameters, arguments, allowAdditionalArguments, out score, out expanded)) {
 					acceptableMatch = true;
 					score = int.MaxValue;
@@ -183,8 +184,41 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			// The first step is to expand the methods and do type argument substitution
 			IReturnType[][] expandedParameters = ExpandParametersAndSubstitute(list, arguments, maxScore, ranking, needToExpand, out inferredTypeParameters);
-			// § 14.4.2.2 Better function member
 			
+			// find the best function member
+			
+			score = baseScore + 2;
+			int bestIndex = -1;
+			for (int i = 0; i < ranking.Length; i++) {
+				if (ranking[i] == maxScore) {
+					// the best function member is the one that is better than all other function members
+					if (bestIndex < 0) {
+						ranking[i] = score;
+						bestIndex = i;
+					} else {
+						switch (GetBetterFunctionMember(arguments,
+						                                list[i], expandedParameters[i], needToExpand[i],
+						                                list[bestIndex], expandedParameters[bestIndex], needToExpand[bestIndex]))
+						{
+							case 0:
+								// neither member is better
+								ranking[i] = score;
+								break;
+							case 1:
+								// the new member is better
+								ranking[i] = ++score;
+								bestIndex = i;
+								break;
+							case 2:
+								// the old member is better
+								ranking[i] = score - 1;
+								// this is not really correct, normally we would need to
+								// compare the member with other members
+								break;
+						}
+					}
+				}
+			}
 			
 			return ranking;
 		}
@@ -224,9 +258,104 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return expandedParameters;
 		}
 		
-		static bool IsBetterFunctionMember()
+		/// <summary>
+		/// Gets which function member is better. (§ 14.4.2.2)
+		/// </summary>
+		/// <param name="arguments">The arguments passed to the function</param>
+		/// <param name="m1">The first method</param>
+		/// <param name="parameters1">The expanded and substituted parameters of the first method</param>
+		/// <param name="m2">The second method</param>
+		/// <param name="parameters2">The expanded and substituted parameters of the second method</param>
+		/// <returns>0 if neither method is better. 1 if m1 is better. 2 if m2 is better.</returns>
+		static int GetBetterFunctionMember(IReturnType[] arguments,
+		                                   IMethodOrProperty m1, IReturnType[] parameters1, bool isExpanded1,
+		                                   IMethodOrProperty m2, IReturnType[] parameters2, bool isExpanded2)
 		{
-			return false;
+			int length = Math.Min(Math.Min(parameters1.Length, parameters2.Length), arguments.Length);
+			bool foundBetterParamIn1 = false;
+			bool foundBetterParamIn2 = false;
+			for (int i = 0; i < length; i++) {
+				if (arguments[i] == null)
+					continue;
+				int res = GetBetterConversion(arguments[i], parameters1[i], parameters2[i]);
+				if (res == 1) foundBetterParamIn1 = true;
+				if (res == 2) foundBetterParamIn2 = true;
+			}
+			if (foundBetterParamIn1 && !foundBetterParamIn2)
+				return 1;
+			if (foundBetterParamIn2 && !foundBetterParamIn1)
+				return 2;
+			if (foundBetterParamIn1 && foundBetterParamIn2)
+				return 0; // ambigous
+			// If none conversion is better than any other, it is possible that the
+			// expanded parameter lists are the same:
+			for (int i = 0; i < length; i++) {
+				if (!object.Equals(parameters1[i], parameters2[i])) {
+					// if expanded parameters are not the same, neither function member is better
+					return 0;
+				}
+			}
+			
+			// the expanded parameters are the same, apply the tie-breaking rules from the spec:
+			
+			// if one method is generic and the other non-generic, the non-generic is better
+			bool m1IsGeneric = (m1 is IMethod) ? ((IMethod)m1).TypeParameters.Count > 0 : false;
+			bool m2IsGeneric = (m2 is IMethod) ? ((IMethod)m2).TypeParameters.Count > 0 : false;
+			if (m1IsGeneric && !m2IsGeneric) return 2;
+			if (m2IsGeneric && !m1IsGeneric) return 1;
+			
+			// for params parameters: non-expanded calls are better
+			if (isExpanded1 && !isExpanded2) return 2;
+			if (isExpanded2 && !isExpanded1) return 1;
+			
+			// if the number of parameters is different, the one with more parameters is better
+			// this occurs when only when both methods are expanded
+			if (m1.Parameters.Count > m2.Parameters.Count) return 1;
+			if (m2.Parameters.Count > m1.Parameters.Count) return 2;
+			
+			IReturnType[] m1ParamTypes = new IReturnType[m1.Parameters.Count];
+			IReturnType[] m2ParamTypes = new IReturnType[m2.Parameters.Count];
+			for (int i = 0; i < m1ParamTypes.Length; i++) {
+				m1ParamTypes[i] = m1.Parameters[i].ReturnType;
+				m2ParamTypes[i] = m2.Parameters[i].ReturnType;
+			}
+			return GetMoreSpecific(m1ParamTypes, m2ParamTypes);
+		}
+		
+		/// <summary>
+		/// Gets which return type list is more specific.
+		/// § 14.4.2.2: types with generic arguments are less specific than types with fixed arguments
+		/// </summary>
+		/// <returns>0 if both are equally specific, 1 if <paramref name="r"/> is more specific,
+		/// 2 if <paramref name="s"/> is more specific.</returns>
+		static int GetMoreSpecific(IList<IReturnType> r, IList<IReturnType> s)
+		{
+			bool foundMoreSpecificParamIn1 = false;
+			bool foundMoreSpecificParamIn2 = false;
+			int length = Math.Min(r.Count, s.Count);
+			for (int i = 0; i < length; i++) {
+				int res = GetMoreSpecific(r[i], s[i]);
+				if (res == 1) foundMoreSpecificParamIn1 = true;
+				if (res == 2) foundMoreSpecificParamIn2 = true;
+			}
+			if (foundMoreSpecificParamIn1 && !foundMoreSpecificParamIn2)
+				return 1;
+			if (foundMoreSpecificParamIn2 && !foundMoreSpecificParamIn1)
+				return 2;
+			return 0;
+		}
+		
+		static int GetMoreSpecific(IReturnType r, IReturnType s)
+		{
+			if (r is GenericReturnType && !(s is GenericReturnType))
+				return 2;
+			if (s is GenericReturnType && !(r is GenericReturnType))
+				return 1;
+			if (r is ArrayReturnType && s is ArrayReturnType)
+				return GetMoreSpecific(((ArrayReturnType)r).ElementType, ((ArrayReturnType)s).ElementType);
+			if (r is ConstructedReturnType && s is ConstructedReturnType)
+				return GetMoreSpecific(((ConstructedReturnType)r).TypeArguments, ((ConstructedReturnType)s).TypeArguments);
+			return 0;
 		}
 		#endregion
 		
@@ -272,7 +401,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						case "System.Collections.Generic.IList":
 						case "System.Collections.Generic.ICollection":
 						case "System.Collections.Generic.IEnumerable":
-							return InferTypeArgument(ea.ElementType, ((ConstructedReturnType)passedArgument).TypeParameters[0], outputArray);
+							return InferTypeArgument(ea.ElementType, ((ConstructedReturnType)passedArgument).TypeArguments[0], outputArray);
 					}
 				}
 				// If P is an array type, and A is not an array type of the same rank,
@@ -293,9 +422,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				// For our purposes, we can simplify enourmously:
 				ConstructedReturnType passed = passedArgument as ConstructedReturnType;
 				if (passed == null) return false;
-				int count = Math.Min(constructed.TypeParameters.Count, passed.TypeParameters.Count);
+				int count = Math.Min(constructed.TypeArguments.Count, passed.TypeArguments.Count);
 				for (int i = 0; i < count; i++) {
-					InferTypeArgument(constructed.TypeParameters[i], passed.TypeParameters[i], outputArray);
+					InferTypeArgument(constructed.TypeArguments[i], passed.TypeArguments[i], outputArray);
 				}
 			}
 			return true;

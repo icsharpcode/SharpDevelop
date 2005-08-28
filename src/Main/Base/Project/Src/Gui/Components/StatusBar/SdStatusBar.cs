@@ -123,7 +123,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			taskName = name;
 			this.totalWork = totalWork;
-			this.BeginInvoke(new MethodInvoker(MakeVisible));
+			if (this.IsHandleCreated) {
+				this.BeginInvoke(new MethodInvoker(MakeVisible));
+			}
 		}
 		
 		void MakeVisible()
@@ -165,7 +167,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void Done()
 		{
 			taskName = null;
-			this.BeginInvoke(new MethodInvoker(MakeInvisible));
+			if (this.IsHandleCreated) {
+				this.BeginInvoke(new MethodInvoker(MakeInvisible));
+			}
 		}
 		
 		string taskName;
