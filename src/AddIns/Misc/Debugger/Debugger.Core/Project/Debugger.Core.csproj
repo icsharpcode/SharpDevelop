@@ -191,6 +191,7 @@
     <Compile Include="Src\DebuggerInterop\Core\_ULARGE_INTEGER.cs" />
     <Compile Include="Src\DebuggerInterop\MetaData\COR_FIELD_OFFSET.cs" />
     <Compile Include="Src\DebuggerInterop\MetaData\IMetaDataImport.cs" />
+    <Compile Include="Src\Variables\UnavailableVariable.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

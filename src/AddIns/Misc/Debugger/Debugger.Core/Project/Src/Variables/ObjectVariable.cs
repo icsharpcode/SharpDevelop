@@ -67,7 +67,7 @@ namespace DebuggerLibrary
 				return true;
 			}
 		}
-
+		
 		protected override unsafe VariableCollection GetSubVariables()
 		{
 			VariableCollection subVariables = new VariableCollection();
@@ -79,30 +79,30 @@ namespace DebuggerLibrary
 			} else {
 				curFrame = debugger.CurrentThread.LastFunction.CorILFrame;
 			}
-
+			
 			foreach(FieldProps field in metaData.EnumFields(classProps.Token)) {
-
-				ICorDebugValue filedValue;
-				if (field.IsStatic) {
-					if (field.IsLiteral) continue; // Try next field
-					
-					// If current frame is not availiable, skip field
-					// TODO: This is not necessary if field is not context specific
-					if (curFrame == null) continue;
-
-					corClass.GetStaticFieldValue(field.Token, curFrame, out filedValue);
-				} else {
-					if (corValue == null) continue; // Try next field
-
-					((ICorDebugObjectValue)corValue).GetFieldValue(corClass, field.Token, out filedValue);
-				}
 				
-				subVariables.Add(VariableFactory.CreateVariable(debugger, filedValue, field.Name));
+				try {
+					ICorDebugValue fieldValue;
+					if (field.IsStatic) {
+						if (field.IsLiteral) continue; // Try next field
+						
+						corClass.GetStaticFieldValue(field.Token, curFrame, out fieldValue);
+					} else {
+						if (corValue == null) continue; // Try next field
+						
+						((ICorDebugObjectValue)corValue).GetFieldValue(corClass, field.Token, out fieldValue);
+					}
+					
+					subVariables.Add(VariableFactory.CreateVariable(debugger, fieldValue, field.Name));
+				} catch {
+					subVariables.Add(new UnavailableVariable(debugger, null, field.Name));
+				}
 			}
 
 			return subVariables;
 		}
-
+		
 		public unsafe ObjectVariable BaseClass {
 			get	{
 				if (baseClass == null) baseClass = GetBaseClass();
