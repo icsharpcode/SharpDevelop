@@ -290,6 +290,7 @@ namespace HtmlHelp2
 			return ParserService.Resolve(expr, caret.Line, caret.Column, fileName, content);
 		}
 		#endregion
+
 	}
 
 	public class HtmlHelp2DynamicHelpBrowserControl : UserControl
@@ -350,6 +351,11 @@ namespace HtmlHelp2
 			dynamicHelpToolbar.ImageList.Images.Add(ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Toc.png"));
 			dynamicHelpToolbar.ImageList.Images.Add(ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Index.png"));
 			dynamicHelpToolbar.ImageList.Images.Add(ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Search.png"));
+
+			if(HtmlHelp2Environment.IsReady)
+			{
+				HtmlHelp2Environment.NamespaceReloaded   += new EventHandler(this.NamespaceReloaded);
+			}
 		}
 
 		private void LoadDynamicHelpPage()
@@ -384,5 +390,12 @@ namespace HtmlHelp2
 
 			if(pad != null) pad.BringPadToFront();
 		}
+
+		#region Help 2.0 Environment Events
+		private void NamespaceReloaded(object sender, EventArgs e)
+		{
+			this.LoadDynamicHelpPage();
+		}
+		#endregion
 	}
 }
