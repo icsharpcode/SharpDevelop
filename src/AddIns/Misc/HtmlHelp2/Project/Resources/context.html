@@ -1,0 +1,46 @@
+<html>
+<head>
+<title>Dynamic Help</title>
+<STYLE><!--
+
+.ctxbody {
+	overflow-y: auto;
+	margin: 5px 5px 5px 5px;
+	font-family: Tahoma;
+	font-size: 8pt;
+	white-space: nowrap;
+}
+
+.section {
+	margin-top: 5px;
+	margin-bottom: 35px;
+}
+
+.link {
+	color:blue;
+	text-decoration:underline;
+	cursor:pointer;
+}
+-->
+</STYLE>
+<script type="text/javascript"><!--
+
+	function ExpandCollapse(idx)
+	{
+		var contentSpan = document.getElementById("content_" + idx);
+		if(contentSpan != null)
+		{
+			contentSpan.style.display = (contentSpan.style.display == "none")?"":"none";
+		}
+
+		var sectionImage = document.getElementById("image_" + idx);
+		if(sectionImage != null)
+		{
+			sectionImage.src = (contentSpan.style.display == "none")?"ClosedBook.png":"OpenBook.png";
+		}
+	}
+
+--></script>
+</head>
+<body class="ctxbody"></body>
+</html>
