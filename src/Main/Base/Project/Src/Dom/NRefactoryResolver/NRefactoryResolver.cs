@@ -864,6 +864,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 				result.Add("Global");
+				result.Add("New");
 			} else {
 				foreach (KeyValuePair<string, string> pair in TypeReference.GetPrimitiveTypesCSharp()) {
 					result.Add(GetPrimitiveClass(pair.Value, pair.Key));

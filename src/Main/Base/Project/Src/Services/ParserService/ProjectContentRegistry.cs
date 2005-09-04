@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -197,15 +197,12 @@ namespace ICSharpCode.Core
 			LoggingService.Debug("ProjectContentRegistry.AssemblyResolve " + e.Name);
 			string path = Path.Combine(lookupDirectory, name.Name);
 			if (File.Exists(path + ".dll")) {
-				LoggingService.Debug("AssemblyResolve ReflectionOnlyLoadFrom .dll file");
 				return LoadReflectionOnlyAssemblyFrom(path + ".dll");
 			}
 			if (File.Exists(path + ".exe")) {
-				LoggingService.Debug("AssemblyResolve ReflectionOnlyLoadFrom .exe file");
 				return LoadReflectionOnlyAssemblyFrom(path + ".exe");
 			}
 			if (File.Exists(path)) {
-				LoggingService.Debug("AssemblyResolve ReflectionOnlyLoadFrom file");
 				return LoadReflectionOnlyAssemblyFrom(path);
 			}
 			try {
@@ -225,11 +222,15 @@ namespace ICSharpCode.Core
 		
 		static Assembly LoadReflectionOnlyAssemblyFrom(string fileName)
 		{
+			fileName = Path.GetFullPath(fileName);
 			if (loadFromCache == null) {
 				loadFromCache = new Dictionary<string, Assembly>(StringComparer.InvariantCultureIgnoreCase);
 			}
-			if (loadFromCache.ContainsKey(fileName))
+			if (loadFromCache.ContainsKey(fileName)) {
+				LoggingService.Debug("Use " + fileName + " from cache.");
 				return loadFromCache[fileName];
+			}
+			LoggingService.Debug("Load " + fileName);
 			Assembly asm = InternalLoadReflectionOnlyAssemblyFrom(fileName);
 			if (loadFromCache.ContainsKey(asm.FullName)) {
 				loadFromCache.Add(fileName, loadFromCache[asm.FullName]);

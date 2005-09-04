@@ -124,7 +124,7 @@ namespace ICSharpCode.TextEditor
 					if (realmousepos.Y < textArea.Document.TotalNumberOfLines) {
 						if (selectionStartPos.Y == realmousepos.Y) {
 							// this setselection defaults for a upward moving selection
-							textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, realmousepos, new Point(textArea.Document.GetLineSegment(realmousepos.Y).Length + 1, realmousepos.Y)));
+							textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, realmousepos, new Point(0, realmousepos.Y + 1)));
 							selectionGutterDirectionDown = false;
 						} else if (selectionStartPos.Y < realmousepos.Y && textArea.SelectionManager.HasSomethingSelected) {
 							// this fixes the selection for moving the selection down
@@ -132,17 +132,17 @@ namespace ICSharpCode.TextEditor
 								selectionGutterDirectionDown = true;
 								textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, selectionStartPos, new Point(0, selectionStartPos.Y)));
 								// this enforces the screen area update
-								textArea.SelectionManager.ExtendSelection(textArea.SelectionManager.SelectionCollection[0].EndPosition, new Point(textArea.Document.GetLineSegment(realmousepos.Y).Length + 1, realmousepos.Y));
+								textArea.SelectionManager.ExtendSelection(textArea.SelectionManager.SelectionCollection[0].EndPosition, new Point(0, realmousepos.Y + 1));
 							} else {
 								// selection is extended to the end of the current line
-								textArea.SelectionManager.ExtendSelection(textArea.SelectionManager.SelectionCollection[0].EndPosition, new Point(textArea.Document.GetLineSegment(realmousepos.Y).Length + 1, realmousepos.Y));
+								textArea.SelectionManager.ExtendSelection(textArea.SelectionManager.SelectionCollection[0].EndPosition, new Point(0, realmousepos.Y + 1));
 							}
 						} else {
 							if(textArea.SelectionManager.HasSomethingSelected) {
 								// this fixes the selection for moving the selection up
 								if (selectionGutterDirectionDown) { // selectionStartPos.Y - realmousepos.Y == 1) { // only fix for first line movement
 									selectionGutterDirectionDown = false;
-									textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, selectionStartPos, new Point(textArea.Document.GetLineSegment(selectionStartPos.Y).Length + 1, selectionStartPos.Y)));
+									textArea.SelectionManager.SetSelection(new DefaultSelection(textArea.Document, selectionStartPos, new Point(0, realmousepos.Y + 1)));
 									// move the extendselection to here to fix textarea update issues
 									textArea.SelectionManager.ExtendSelection(selectionStartPos, realmousepos);
 								} else {

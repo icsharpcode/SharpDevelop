@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -31,6 +31,7 @@ namespace ICSharpCode.MbUnitPad
 		}
 		
 		TestTreeView treeView;
+		ToolStrip toolStrip;
 		Control ctl;
 		
 		public TestTreeView TreeView {
@@ -49,10 +50,11 @@ namespace ICSharpCode.MbUnitPad
 			treeView.Dock = DockStyle.Fill;
 			
 			ctl.Controls.Add(treeView);
-			ToolStrip toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/MbUnitPad/Toolbar");
+			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/MbUnitPad/Toolbar");
 			toolStrip.GripStyle = ToolStripGripStyle.Hidden;
 			ctl.Controls.Add(toolStrip);
 			
+			ProjectService.SolutionLoaded += OnSolutionLoaded;
 			ProjectService.SolutionClosed += OnSolutionClosed;
 		}
 		
@@ -61,12 +63,19 @@ namespace ICSharpCode.MbUnitPad
 		/// </summary>
 		public override void Dispose()
 		{
+			ProjectService.SolutionLoaded -= OnSolutionLoaded;
 			ProjectService.SolutionClosed -= OnSolutionClosed;
 			ctl.Dispose();
 		}
 		
+		void OnSolutionLoaded(object sender, EventArgs e)
+		{
+			ToolbarService.UpdateToolbar(toolStrip);
+		}
+		
 		void OnSolutionClosed(object sender, EventArgs e)
 		{
+			ToolbarService.UpdateToolbar(toolStrip);
 			treeView.NewConfig();
 		}
 		

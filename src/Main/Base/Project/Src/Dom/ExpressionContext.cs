@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -148,7 +148,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return false;
 				if (isObjectCreation) {
 					if (c.IsAbstract || c.IsStatic)    return false;
-					if (c.ClassType == ClassType.Enum) return false;
+					if (c.ClassType == ClassType.Enum || c.ClassType == ClassType.Interface)
+						return false;
 				}
 				if (baseClass == null)
 					return true;

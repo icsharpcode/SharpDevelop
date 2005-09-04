@@ -176,7 +176,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\CommonAboutDialog.cs">
-      <SubType>UserControl</SubType>
+      <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\DirtyFilesDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\FolderDialog.cs" />
@@ -191,7 +191,7 @@
       <SubType>Form</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TipOfTheDay.cs">
-      <SubType>Form</SubType>
+      <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\Dialogs\TreeViewOptions.cs">
       <SubType>Form</SubType>
@@ -682,13 +682,21 @@
     <Compile Include="Src\Project\Solution\SolutionPreferences.cs" />
     <Compile Include="Src\Project\ConfigurationGuiHelper.cs" />
     <Compile Include="Src\Gui\ContentInterfaces\ICanBeDirty.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractProjectOptionPanel.cs" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\CreateKey.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractProjectOptionPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\CreateKey.cs">
+      <SubType>Form</SubType>
+    </Compile>
     <EmbeddedResource Include="Resources\ProjectOptions\CreateKey.xfrm" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractBuildOptions.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\ProjectOptions\AbstractBuildOptions.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Services\RefactoringService\RefactoringMenuBuilder.cs" />
     <EmbeddedResource Include="Resources\FullscreenPanel.xfrm" />
-    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\FullscreenPanel.cs" />
+    <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\FullscreenPanel.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <Compile Include="Src\Dom\MemberLookupHelper.cs" />
     <Compile Include="Src\Gui\Components\AutoHide\AutoHideMenuStripContainer.cs" />
     <Compile Include="Src\Gui\Components\AutoHide\AutoHideStatusStripContainer.cs" />
