@@ -153,34 +153,30 @@ namespace HtmlHelp2
 
 		private HtmlElement CreateNewSection(string sectionName, out HtmlElement linkNode)
 		{
-			HtmlElement span = null;
-			linkNode         = null;
+			HtmlElement span        = null;
+			linkNode                = null;
 
 			try
 			{
 				span                = dynamicHelpBrowser.CreateHtmlElement("span");
-//				span                = dynamicHelpBrowser.Document.CreateElement("span");
 				span.SetAttribute("className", "section");
 
 				HtmlElement img     = dynamicHelpBrowser.CreateHtmlElement("img");
-//				HtmlElement img     = dynamicHelpBrowser.Document.CreateElement("img");
 				img.Style           = "width:16px;height:16px;margin-right:5px";
 				img.Id              = String.Format("image_{0}", this.internalIndex.ToString());
 				img.SetAttribute("src", "OpenBook.png");
 				span.AppendChild(img);
 
 				HtmlElement b       = dynamicHelpBrowser.CreateHtmlElement("b");
-//				HtmlElement b       = dynamicHelpBrowser.Document.CreateElement("b");
 				b.InnerText         = sectionName;
 				b.Style             = "cursor:pointer";
-				b.SetAttribute("title", this.internalIndex.ToString());
+				b.Id                = this.internalIndex.ToString();
 				b.Click            += new HtmlElementEventHandler(this.OnSectionClick);
 				span.AppendChild(b);
 
 				span.AppendChild(this.CreateABreak());
 
 				HtmlElement content = dynamicHelpBrowser.CreateHtmlElement("span");
-//				HtmlElement content = dynamicHelpBrowser.Document.CreateElement("span");
 				content.Id          = String.Format("content_{0}", this.internalIndex.ToString());
 				content.SetAttribute("className", "content");
 				span.AppendChild(content);
@@ -194,18 +190,18 @@ namespace HtmlHelp2
 
 		private HtmlElement CreateNewLink(string topicUrl, string topicName)
 		{
-			HtmlElement span = null;
+			HtmlElement span     = null;
 
 			try
 			{
-				span             = dynamicHelpBrowser.CreateHtmlElement("span");
-//				span             = dynamicHelpBrowser.Document.CreateElement("span");
+				span             = dynamicHelpBrowser.CreateHtmlElement("a");
 				span.InnerText   = topicName;
+				span.SetAttribute("src", topicUrl);
 				span.SetAttribute("className", "link");
-				span.SetAttribute("title", topicUrl);
+				span.SetAttribute("title", topicName);
+				span.Click      += new HtmlElementEventHandler(OnLinkClick);
 				span.MouseOver  += new HtmlElementEventHandler(OnMouseOver);
 				span.MouseLeave += new HtmlElementEventHandler(OnMouseOut);
-				span.Click      += new HtmlElementEventHandler(OnLinkClick);
 			}
 			catch {}
 
@@ -218,8 +214,7 @@ namespace HtmlHelp2
 
 			try
 			{
-				br = dynamicHelpBrowser.CreateHtmlElement("br");
-//				br = dynamicHelpBrowser.Document.CreateElement("br");
+				br         = dynamicHelpBrowser.CreateHtmlElement("br");
 			}
 			catch {}
 
@@ -231,7 +226,7 @@ namespace HtmlHelp2
 		{
 			try
 			{
-				StatusBarService.SetMessage(((HtmlElement)sender).GetAttribute("title"));
+				StatusBarService.SetMessage(((HtmlElement)sender).GetAttribute("src"));
 			}
 			catch {}
 		}
@@ -245,7 +240,7 @@ namespace HtmlHelp2
 		{
 			try
 			{
-				string sectionId  = ((HtmlElement)sender).GetAttribute("title");
+				string sectionId  = ((HtmlElement)sender).Id;
 				object[] objArray = new object[1];
 				objArray[0]       = (object)sectionId;
 				dynamicHelpBrowser.Document.InvokeScript("ExpandCollapse", objArray);
@@ -257,7 +252,7 @@ namespace HtmlHelp2
 		{
 			try
 			{
-				string url = ((HtmlElement)sender).GetAttribute("title");
+				string url = ((HtmlElement)sender).GetAttribute("src");
 				if(url != null && url != String.Empty) ShowHelpBrowser.OpenHelpView(url);
 			}
 			catch {}
