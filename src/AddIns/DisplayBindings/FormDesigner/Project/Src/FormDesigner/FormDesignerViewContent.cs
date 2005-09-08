@@ -54,8 +54,6 @@ namespace ICSharpCode.FormDesigner
 		
 		protected ITextEditorControlProvider textAreaControlProvider;
 		
-		protected string compilationErrors;
-		
 		Panel p = new Panel();
 		DesignSurface designSurface;
 		
@@ -190,7 +188,21 @@ namespace ICSharpCode.FormDesigner
 					p.Controls.Add(designer);
 				}
 			} catch (Exception e) {
-				MessageService.ShowError(e);
+				failedDesignerInitialize = true;
+				TextBox errorText = new TextBox();
+				errorText.Multiline = true;
+				if (e.InnerException is FormDesignerLoadException)
+					errorText.Text = e.InnerException.Message;
+				else if (e is FormDesignerLoadException)
+					errorText.Text = e.Message;
+				else
+					errorText.Text = e.ToString();
+				errorText.Dock = DockStyle.Fill;
+				p.Controls.Add(errorText);
+				Control title = new Label();
+				title.Text = "Failed to load designer. Check the source code for syntax errors.";
+				title.Dock = DockStyle.Top;
+				p.Controls.Add(title);
 			}
 		}
 		

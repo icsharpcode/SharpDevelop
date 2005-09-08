@@ -107,6 +107,7 @@
     </None>
     <Compile Include="Src\FormDesigner\DesignerGenerator\VBNetDesignerGenerator.cs" />
     <Compile Include="Src\FormDesigner\DesignerLoader\DesignerLoaderProvider.cs" />
+    <Compile Include="Src\FormDesigner\DesignerLoader\FormDesignerLoadException.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

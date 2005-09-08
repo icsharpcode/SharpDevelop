@@ -113,6 +113,10 @@ namespace ICSharpCode.FormDesigner
 			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new StringReader(lastTextContent));
 			p.Parse();
 			
+			if (p.Errors.count > 0) {
+				throw new FormDesignerLoadException(p.Errors.ErrorOutput);
+			}
+			
 			// Try to fix the type names to fully qualified ones
 			ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
 			FixTypeNames(p.CompilationUnit, parseInfo.BestCompilationUnit);

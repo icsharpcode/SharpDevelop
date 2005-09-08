@@ -302,6 +302,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public static void CloseSolution()
 		{
 			if (openSolution != null) {
+				CurrentProject = null;
 				OnSolutionClosing(new SolutionEventArgs(openSolution));
 				
 				openSolution.Dispose();

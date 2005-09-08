@@ -158,7 +158,7 @@ namespace ICSharpCode.FormDesigner
 			return null;
 		}
 		
-		protected static string GenerateParams(EventDescriptor edesc, bool paramNames)
+		protected static string GenerateParams(EventDescriptor edesc)
 		{
 			System.Type type =  edesc.EventType;
 			MethodInfo mInfo = type.GetMethod("Invoke");
@@ -173,15 +173,14 @@ namespace ICSharpCode.FormDesigner
 			for (int i = 0; i < mInfo.GetParameters().Length; ++i)  {
 				ParameterInfo pInfo  = mInfo.GetParameters()[i];
 				
+				param += pInfo.Name;
+				param += " As ";
+				
 				string typeStr = pInfo.ParameterType.ToString();
 				if (csa != null) {
 					typeStr = csa.GetIntrinsicTypeName(typeStr);
 				}
 				param += typeStr;
-				if (paramNames == true) {
-					param += " ";
-					param += pInfo.Name;
-				}
 				if (i + 1 < mInfo.GetParameters().Length) {
 					param += ", ";
 				}
@@ -217,7 +216,7 @@ namespace ICSharpCode.FormDesigner
 			
 			int offset = viewContent.Document.GetLineSegment(c.Region.EndLine - 1).Offset;
 			
-			string param = GenerateParams(edesc, true);
+			string param = GenerateParams(edesc);
 			
 			string text = "Sub " + eventMethodName + "(" + param + ")\n" +
 				body +
