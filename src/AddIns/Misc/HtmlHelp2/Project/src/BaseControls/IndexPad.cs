@@ -16,7 +16,8 @@ namespace HtmlHelp2
 	using AxMSHelpControls;
 	using MSHelpControls;
 	using MSHelpServices;
-	using HtmlHelp2Service;
+	using HtmlHelp2.Environment;
+	using HtmlHelp2.ControlsValidation;
 
 
 	public class ShowIndexMenuCommand : AbstractMenuCommand
@@ -28,16 +29,13 @@ namespace HtmlHelp2
 		}
 	}
 
-
 	public class HtmlHelp2IndexPad : AbstractPadContent
 	{
 		protected MsHelp2IndexControl help2IndexControl;
 
 		public override Control Control
 		{
-			get {
-				return help2IndexControl;
-			}
+			get { return help2IndexControl;	}
 		}
 
 		public override void Dispose()
@@ -57,7 +55,6 @@ namespace HtmlHelp2
 		}
 	}
 
-
 	public class MsHelp2IndexControl : UserControl
 	{
 		AxHxIndexCtrl indexControl = null;
@@ -71,7 +68,8 @@ namespace HtmlHelp2
 		{
 			base.Dispose(disposing);
 
-			if(disposing && indexControl != null) {
+			if(disposing && indexControl != null)
+			{
 				indexControl.Dispose();
 			}
 		}
@@ -84,10 +82,13 @@ namespace HtmlHelp2
 
 		public MsHelp2IndexControl()
 		{
-			bool Help2EnvIsReady = (HtmlHelp2Environment.IsReady && Help2ControlsValidation.IsIndexControlRegistered);
+			bool Help2EnvIsReady = (HtmlHelp2Environment.IsReady &&
+			                        Help2ControlsValidation.IsIndexControlRegistered);
 
-			if(Help2EnvIsReady) {
-				try {
+			if(Help2EnvIsReady)
+			{
+				try
+				{
 					indexControl                  = new AxHxIndexCtrl();
 					indexControl.BeginInit();
 					indexControl.Dock             = DockStyle.Fill;
@@ -101,7 +102,8 @@ namespace HtmlHelp2
 					HtmlHelp2Environment.FilterQueryChanged += new EventHandler(FilterQueryChanged);
 					HtmlHelp2Environment.NamespaceReloaded  += new EventHandler(NamespaceReloaded);					
 				}
-				catch {
+				catch
+				{
 					this.FakeHelpControl();
 				}
 			}
@@ -161,7 +163,8 @@ namespace HtmlHelp2
 
 		public void LoadIndex()
 		{
-			try {
+			try
+			{
 				searchTerm.Text = "";
 				searchTerm.Items.Clear();
 
@@ -170,22 +173,22 @@ namespace HtmlHelp2
 				HtmlHelp2Environment.BuildFilterList(filterCombobox);
 				filterCombobox.SelectedIndexChanged  += new EventHandler(FilterChanged);
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		private void FilterChanged(object sender, EventArgs e)
 		{
 			string selectedString = filterCombobox.SelectedItem.ToString();
 
-			if(selectedString != "") {
-				try {
+			if(selectedString != "")
+			{
+				try
+				{
 					Cursor.Current          = Cursors.WaitCursor;
 					indexControl.IndexData  = HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.FindFilterQuery(selectedString));
 					Cursor.Current          = Cursors.Default;
 				}
-				catch {
-				}
+				catch {}
 			}
 		}
 
@@ -195,7 +198,8 @@ namespace HtmlHelp2
 			indexControl.Refresh();
 
 			string currentFilterName = filterCombobox.SelectedItem.ToString();
-			if(String.Compare(currentFilterName, HtmlHelp2Environment.CurrentFilterName) != 0) {
+			if(String.Compare(currentFilterName, HtmlHelp2Environment.CurrentFilterName) != 0)
+			{
 				filterCombobox.SelectedIndexChanged -= new EventHandler(FilterChanged);
 				filterCombobox.SelectedIndex         = filterCombobox.Items.IndexOf(HtmlHelp2Environment.CurrentFilterName);
 				indexControl.IndexData               = HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.CurrentFilterQuery);
@@ -211,14 +215,16 @@ namespace HtmlHelp2
 
 		private void SearchTextChanged(object sender, EventArgs e)
 		{
-			if(!itemClicked && searchTerm.Text != "") {
+			if(!itemClicked && searchTerm.Text != "")
+			{
 				indexControl.Selection = indexControl.IndexData.GetSlotFromString(searchTerm.Text);
 			}
 		}
 
 		private void KeyPressed(object sender, KeyPressEventArgs e)
 		{
-			if(e.KeyChar == (char)13) {
+			if(e.KeyChar == (char)13)
+			{
 				int indexSlot    = indexControl.IndexData.GetSlotFromString(searchTerm.Text);
 				string indexTerm = indexControl.IndexData.GetFullStringFromSlot(indexSlot, ",");
 
@@ -246,18 +252,19 @@ namespace HtmlHelp2
 		private void ShowSelectedItemEntry(string indexTerm, int indexSlot)
 		{
 			PadDescriptor indexResults = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2IndexResultsPad));
-			if(indexResults == null) {
+			if(indexResults == null)
 				return;
-			}
 
 			try {
 				IHxTopicList matchingTopics = indexControl.IndexData.GetTopicsFromSlot(indexSlot);
 
-				try {
+				try
+				{
 					((HtmlHelp2IndexResultsPad)indexResults.PadContent).CleanUp();
 					((HtmlHelp2IndexResultsPad)indexResults.PadContent).IndexResultsListView.BeginUpdate();
 
-					for(int i = 1; i <= matchingTopics.Count; i++) {
+					for(int i = 1; i <= matchingTopics.Count; i++)
+					{
 						IHxTopic topic = matchingTopics.ItemAt(i);
 
 						if(topic != null) {
@@ -270,13 +277,15 @@ namespace HtmlHelp2
 						}
 					}
 				}
-				finally {
+				finally
+				{
 					((HtmlHelp2IndexResultsPad)indexResults.PadContent).IndexResultsListView.EndUpdate();
 					((HtmlHelp2IndexResultsPad)indexResults.PadContent).SortLV(0);
 					((HtmlHelp2IndexResultsPad)indexResults.PadContent).SetStatusMessage(indexTerm);
 				}
 
-				switch(matchingTopics.Count) {
+				switch(matchingTopics.Count)
+				{
 					case 0:
 						break;
 					case 1:
@@ -288,8 +297,7 @@ namespace HtmlHelp2
 						break;
 				}
 			}
-			catch {
-			}
+			catch {}
 		}
 	}
 }

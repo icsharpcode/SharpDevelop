@@ -14,7 +14,7 @@ namespace HtmlHelp2
 	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Gui;
 	using MSHelpServices;
-	using HtmlHelp2Service;
+	using HtmlHelp2.Environment;
 
 
 	public class ShowIndexResultsMenuCommand : AbstractMenuCommand
@@ -26,7 +26,6 @@ namespace HtmlHelp2
 		}
 	}
 
-
 	public class HtmlHelp2IndexResultsPad : AbstractPadContent
 	{
 		ListView listView         = new ListView();
@@ -35,9 +34,7 @@ namespace HtmlHelp2
 
 		public override Control Control
 		{
-			get {
-				return listView;
-			}
+			get { return listView; }
 		}
 
 		public override void RedrawContent()
@@ -47,9 +44,7 @@ namespace HtmlHelp2
 
 		public ListView IndexResultsListView
 		{
-			get {
-				return listView;
-			}
+			get { return listView; }
 		}
 
 		public HtmlHelp2IndexResultsPad()
@@ -95,7 +90,8 @@ namespace HtmlHelp2
 		private void ListViewDoubleClick(object sender, EventArgs e)
 		{
 			ListViewItem lvi = listView.SelectedItems[0];
-			if(lvi != null && lvi.Tag != null && lvi.Tag is IHxTopic) {
+			if(lvi != null && lvi.Tag != null && lvi.Tag is IHxTopic)
+			{
 				ShowHelpBrowser.OpenHelpView((IHxTopic)lvi.Tag);
 			}
 		}
@@ -107,7 +103,8 @@ namespace HtmlHelp2
 
 		public void CleanUp()
 		{
-			foreach(ListViewItem lvi in listView.Items) {
+			foreach(ListViewItem lvi in listView.Items)
+			{
 				if(lvi.Tag != null) { lvi.Tag = null; }
 			}
 
@@ -122,7 +119,8 @@ namespace HtmlHelp2
 			 * better if I could write what was searched and how many topics are
 			 * matching.
 			 */
-			 if(listView.Items.Count > 1) {
+			 if(listView.Items.Count > 1)
+			 {
 				 string text = StringParser.Parse("${res:AddIns.HtmlHelp2.ResultsOfIndexResults}",
 			 	                                  new string[,]
 			 	                                  {{"0", indexTerm},
@@ -139,11 +137,13 @@ namespace HtmlHelp2
 		{
 			private int col;
 
-			public ListViewItemComparer(int column) {
+			public ListViewItemComparer(int column)
+			{
 				col = column;
 			}
 
-			public int Compare(object x, object y) {
+			public int Compare(object x, object y)
+			{
 				return String.Compare(((ListViewItem)x).SubItems[col].Text, ((ListViewItem)y).SubItems[col].Text);
 			}
 		}

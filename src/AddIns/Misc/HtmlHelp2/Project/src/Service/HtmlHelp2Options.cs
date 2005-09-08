@@ -5,7 +5,7 @@
  * Copyright (c) 2005, Mathias Simmack. All rights reserved.
  * 
  * ********************************************************* */
-namespace HtmlHelp2Service
+namespace HtmlHelp2.OptionsPanel
 {
 	using System;
 	using System.Drawing;
@@ -17,6 +17,8 @@ namespace HtmlHelp2Service
 	using System.Xml;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop.Gui;
+	using HtmlHelp2.Environment;
+	using HtmlHelp2.RegistryWalker;
 	using MSHelpServices;
 
 	public class HtmlHelp2OptionsPanel : AbstractOptionPanel
@@ -45,7 +47,8 @@ namespace HtmlHelp2Service
 		{
 			Help2EnvIsReady                  = HtmlHelp2Environment.IsReady;
 
-			try {
+			try
+			{
 				help2Collections             = (ComboBox)ControlDictionary["help2Collections"];
 				help2Collections.Enabled     = Help2EnvIsReady;
 				help2Collections.SelectedIndexChanged += new EventHandler(this.NamespaceNameChanged);
@@ -53,24 +56,25 @@ namespace HtmlHelp2Service
 
 				Help2RegistryWalker.BuildNamespacesList(help2Collections, selectedHelp2Collection);
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		private void NamespaceNameChanged(object sender, EventArgs e)
 		{
-			if(help2Collections.SelectedItem != null) {
-				try {
+			if(help2Collections.SelectedItem != null)
+			{
+				try
+				{
 					selectedHelp2Collection = Help2RegistryWalker.GetNamespaceName(help2Collections.SelectedItem.ToString());
 				}
-				catch {
-				}
+				catch {}
 			}
 		}
 
 		private void SaveHelp2Config()
 		{
-			try {
+			try
+			{
 				XmlDocument xmldoc    = new XmlDocument();
 				XmlNode node          = null;
 				XmlCDataSection cdata = null;
@@ -83,26 +87,30 @@ namespace HtmlHelp2Service
 
 				xmldoc.Save(PropertyService.ConfigDirectory + help2EnvironmentFile);
 			}
-			catch {
-			}
+			catch {}
 		}
-		
+
+		#region ReRegister
 		void ReregisterButtonClick(object sender, EventArgs e)
 		{
 			new MethodInvoker(DoReregister).BeginInvoke(null, null);
 		}
-		
+
 		void DoReregister()
 		{
-			try {
+			try
+			{
 				ProcessStartInfo info = new ProcessStartInfo("cmd", "/c call echo Unregistering... & unregister.bat & echo. & echo Registering... & call register.bat & pause");
 				info.WorkingDirectory = Path.Combine(FileUtility.SharpDevelopRootPath, "bin\\setup\\help");
 				Process p = Process.Start(info);
 				p.WaitForExit(45000);
 				WorkbenchSingleton.SafeThreadAsyncCall(typeof(HtmlHelp2Environment), "ReloadNamespace");
-			} catch (Exception ex) {
+			}
+			catch (Exception ex)
+			{
 				MessageService.ShowError(ex);
 			}
 		}
+		#endregion
 	}
 }

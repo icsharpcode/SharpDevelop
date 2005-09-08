@@ -12,15 +12,14 @@ namespace HtmlHelp2
 	using System.Windows.Forms;
 	using System.Reflection;
 	using System.IO;
-	using System.Xml;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Gui;
-	using ICSharpCode.SharpDevelop.BrowserDisplayBinding;
 	using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 	using ICSharpCode.SharpDevelop.Dom;
 	using ICSharpCode.TextEditor;
-	using HtmlHelp2Service;
+	using HtmlHelp2.Environment;
+	using HtmlHelp2.ResourcesHelperClass;
 	using MSHelpServices;
 
 
@@ -41,18 +40,16 @@ namespace HtmlHelp2
 
 		public override Control Control
 		{
-			get {
-				return dynamicHelpBrowser;
-			}
+			get { return dynamicHelpBrowser; }
 		}
 
 		public override void Dispose()
 		{
-			try {
+			try
+			{
 				dynamicHelpBrowser.Dispose();
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		public override void RedrawContent()
@@ -75,18 +72,22 @@ namespace HtmlHelp2
 
 			if(String.Compare(dynamicHelpString, this.lastDynamicHelpWord) == 0) return;
 
-			try {
+			try
+			{
 				this.RemoveAllChildren();
 
 				Cursor.Current = Cursors.WaitCursor;
 				IHxTopicList topics = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(dynamicHelpString);
 				Cursor.Current = Cursors.Default;
 
-				if(topics.Count > 0) {
-					for(int i = 1; i <= topics.Count; i++) {
+				if(topics.Count > 0)
+				{
+					for(int i = 1; i <= topics.Count; i++)
+					{
 						IHxTopic topic = topics.ItemAt(i);
 
-						if(expectedLanguage == null || expectedLanguage == "" || topic.HasAttribute("DevLang", expectedLanguage)) {
+						if(expectedLanguage == null || expectedLanguage == "" || topic.HasAttribute("DevLang", expectedLanguage))
+						{
 							this.BuildNewChild(topic.Location,
 							                   topic.get_Title(HxTopicGetTitleType.HxTopicGetRLTitle,HxTopicGetTitleDefVal.HxTopicGetTitleFileName),
 							                   topic.URL);
@@ -96,29 +97,29 @@ namespace HtmlHelp2
 
 				this.lastDynamicHelpWord = dynamicHelpString;
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		private void RemoveAllChildren()
 		{
-			try {
-				dynamicHelpBrowser.Document.Body.InnerHtml = "";
-				this.internalIndex = 0;
-			}
-			catch {
-			}
+			this.internalIndex = 0;
+			dynamicHelpBrowser.RemoveAllChildren();
 		}
 
 		private void BuildNewChild(string sectionName, string topicName, string topicUrl)
 		{
-			try {
+			try
+			{
 				HtmlElementCollection children = dynamicHelpBrowser.Document.Body.GetElementsByTagName("span");
 
-				if(children.Count > 0) {
-					foreach(HtmlElement elem in children) {
-						if(elem.GetAttribute("className") == "section") {
-							try {
+				if(children.Count > 0)
+				{
+					foreach(HtmlElement elem in children)
+					{
+						if(elem.GetAttribute("className") == "section")
+						{
+							try
+							{
 								HtmlElement sectionBlock = elem.FirstChild.NextSibling;
 								HtmlElement contentSpan  = sectionBlock.NextSibling.NextSibling;
 
@@ -131,8 +132,7 @@ namespace HtmlHelp2
 									return;
 								}
 							}
-							catch {
-							}
+							catch {}
 						}
 					}
 				
@@ -148,26 +148,29 @@ namespace HtmlHelp2
 
 				this.internalIndex++;
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		private HtmlElement CreateNewSection(string sectionName, out HtmlElement linkNode)
 		{
 			HtmlElement span = null;
-			linkNode = null;
+			linkNode         = null;
 
-			try {
-				span                = dynamicHelpBrowser.Document.CreateElement("span");
+			try
+			{
+				span                = dynamicHelpBrowser.CreateHtmlElement("span");
+//				span                = dynamicHelpBrowser.Document.CreateElement("span");
 				span.SetAttribute("className", "section");
 
-				HtmlElement img     = dynamicHelpBrowser.Document.CreateElement("img");
+				HtmlElement img     = dynamicHelpBrowser.CreateHtmlElement("img");
+//				HtmlElement img     = dynamicHelpBrowser.Document.CreateElement("img");
 				img.Style           = "width:16px;height:16px;margin-right:5px";
 				img.Id              = String.Format("image_{0}", this.internalIndex.ToString());
 				img.SetAttribute("src", "OpenBook.png");
 				span.AppendChild(img);
 
-				HtmlElement b       = dynamicHelpBrowser.Document.CreateElement("b");
+				HtmlElement b       = dynamicHelpBrowser.CreateHtmlElement("b");
+//				HtmlElement b       = dynamicHelpBrowser.Document.CreateElement("b");
 				b.InnerText         = sectionName;
 				b.Style             = "cursor:pointer";
 				b.SetAttribute("title", this.internalIndex.ToString());
@@ -176,15 +179,15 @@ namespace HtmlHelp2
 
 				span.AppendChild(this.CreateABreak());
 
-				HtmlElement content = dynamicHelpBrowser.Document.CreateElement("span");
+				HtmlElement content = dynamicHelpBrowser.CreateHtmlElement("span");
+//				HtmlElement content = dynamicHelpBrowser.Document.CreateElement("span");
 				content.Id          = String.Format("content_{0}", this.internalIndex.ToString());
 				content.SetAttribute("className", "content");
 				span.AppendChild(content);
 
-				linkNode = content;
+				linkNode            = content;
 			}
-			catch {
-			}
+			catch {}
 
 			return span;
 		}
@@ -193,8 +196,10 @@ namespace HtmlHelp2
 		{
 			HtmlElement span = null;
 
-			try {
-				span             = dynamicHelpBrowser.Document.CreateElement("span");
+			try
+			{
+				span             = dynamicHelpBrowser.CreateHtmlElement("span");
+//				span             = dynamicHelpBrowser.Document.CreateElement("span");
 				span.InnerText   = topicName;
 				span.SetAttribute("className", "link");
 				span.SetAttribute("title", topicUrl);
@@ -202,26 +207,33 @@ namespace HtmlHelp2
 				span.MouseLeave += new HtmlElementEventHandler(OnMouseOut);
 				span.Click      += new HtmlElementEventHandler(OnLinkClick);
 			}
-			catch {
-			}
+			catch {}
 
 			return span;
 		}
 
 		private HtmlElement CreateABreak()
 		{
-			HtmlElement br = dynamicHelpBrowser.Document.CreateElement("br");
+			HtmlElement br = null;
+
+			try
+			{
+				br = dynamicHelpBrowser.CreateHtmlElement("br");
+//				br = dynamicHelpBrowser.Document.CreateElement("br");
+			}
+			catch {}
+
 			return br;
 		}
 		#endregion
 
 		private void OnMouseOver(object sender, HtmlElementEventArgs e)
 		{
-			try {
+			try
+			{
 				StatusBarService.SetMessage(((HtmlElement)sender).GetAttribute("title"));
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		private void OnMouseOut(object sender, HtmlElementEventArgs e)
@@ -231,24 +243,24 @@ namespace HtmlHelp2
 
 		private void OnSectionClick(object sender, HtmlElementEventArgs e)
 		{
-			try {
+			try
+			{
 				string sectionId  = ((HtmlElement)sender).GetAttribute("title");
 				object[] objArray = new object[1];
 				objArray[0]       = (object)sectionId;
 				dynamicHelpBrowser.Document.InvokeScript("ExpandCollapse", objArray);
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		private void OnLinkClick(object sender, HtmlElementEventArgs e)
 		{
-			try {
+			try
+			{
 				string url = ((HtmlElement)sender).GetAttribute("title");
 				if(url != null && url != String.Empty) ShowHelpBrowser.OpenHelpView(url);
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		#region Taken from DefinitionView.cs
@@ -256,7 +268,8 @@ namespace HtmlHelp2
 		{
 //			if (!this.IsVisible) return;
 
-			try {
+			try
+			{
 				ResolveResult res = ResolveAtCaret(e);
 				if (res == null || res.ResolvedType == null) return;
 				WorkbenchSingleton.SafeThreadAsyncCall(this,
@@ -265,8 +278,7 @@ namespace HtmlHelp2
 				                                       "");
 				// thanks again to Daniel and Robert
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		private ResolveResult ResolveAtCaret(ParserUpdateStepEventArgs e)
@@ -290,14 +302,13 @@ namespace HtmlHelp2
 			return ParserService.Resolve(expr, caret.Line, caret.Column, fileName, content);
 		}
 		#endregion
-
 	}
 
 	public class HtmlHelp2DynamicHelpBrowserControl : UserControl
 	{
-		ExtendedWebBrowser axWebBrowser  = new ExtendedWebBrowser();
-		ToolStrip dynamicHelpToolbar     = new ToolStrip();
-		string[] toolbarButtons          = new string[] {
+		WebBrowser axWebBrowser      = new WebBrowser();
+		ToolStrip dynamicHelpToolbar = new ToolStrip();
+		string[] toolbarButtons      = new string[] {
 			"${res:AddIns.HtmlHelp2.Contents}",
 			"${res:AddIns.HtmlHelp2.Index}",
 			"${res:AddIns.HtmlHelp2.Search}"
@@ -305,14 +316,36 @@ namespace HtmlHelp2
 
 		public HtmlDocument Document
 		{
-			get {
-				return axWebBrowser.Document;
+			get { return axWebBrowser.Document;	}
+		}
+
+		public void RemoveAllChildren()
+		{
+			try
+			{
+				axWebBrowser.Document.Body.InnerHtml = "";
+			}
+			catch {}
+		}
+
+		public HtmlElement CreateHtmlElement(string elementName)
+		{
+			try
+			{
+				HtmlElement newElement = axWebBrowser.Document.CreateElement(elementName);
+				return newElement;
+			}
+			catch
+			{
+				return null;
 			}
 		}
 
+
 		public void RedrawContent()
 		{
-			for(int i = 0; i < toolbarButtons.Length; i++) {
+			for(int i = 0; i < toolbarButtons.Length; i++)
+			{
 				dynamicHelpToolbar.Items[i].ToolTipText = StringParser.Parse(toolbarButtons[i]);
 			}
 		}
@@ -337,7 +370,8 @@ namespace HtmlHelp2
 			Controls.Add(dynamicHelpToolbar);
 			dynamicHelpToolbar.Dock             = DockStyle.Top;
 			dynamicHelpToolbar.AllowItemReorder = false;
-			for(int i = 0; i < toolbarButtons.Length; i++) {
+			for(int i = 0; i < toolbarButtons.Length; i++)
+			{
 				ToolStripButton button = new ToolStripButton();
 				button.ToolTipText     = StringParser.Parse(toolbarButtons[i]);
 				button.ImageIndex      = i;
@@ -360,15 +394,15 @@ namespace HtmlHelp2
 
 		private void LoadDynamicHelpPage()
 		{
-			try {
+			try
+			{
 				string url = String.Format("{0}\\context.html",
 				                           Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
 
 				if(!File.Exists(url)) url = "about:blank";
 				axWebBrowser.Navigate(url);
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		private void ToolStripButtonClicked(object sender, EventArgs e)
@@ -376,7 +410,8 @@ namespace HtmlHelp2
 			ToolStripItem item = (ToolStripItem)sender;
 			PadDescriptor pad  = null;
 			
-			switch(item.ImageIndex) {
+			switch(item.ImageIndex)
+			{
 				case 0:
 					pad = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2TocPad));
 					break;

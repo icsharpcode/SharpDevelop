@@ -4,20 +4,16 @@
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
-
-using System;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop;
-using ICSharpCode.SharpDevelop.Gui;
-
-using ICSharpCode.SharpDevelop.Dom;
-
 namespace HtmlHelp2
 {
+	using System;
+	using ICSharpCode.Core;
+	using ICSharpCode.SharpDevelop;
+	using ICSharpCode.SharpDevelop.Gui;
+	using ICSharpCode.SharpDevelop.Dom;
+
 	public class MsHelpProvider : HelpProvider
 	{
-		// TODO: Implement MsHelpProvider
-		
 		public override bool TryShowHelp(string fullTypeName)
 		{
 			LoggingService.Info("MsHelpProvider.TryShowHelp");

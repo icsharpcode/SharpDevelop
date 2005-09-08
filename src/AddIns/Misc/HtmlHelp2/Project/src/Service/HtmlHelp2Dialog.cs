@@ -5,22 +5,22 @@
  * Copyright (c) 2005, Mathias Simmack. All rights reserved.
  * 
  * ********************************************************* */
-namespace HtmlHelp2HelperDialog
+namespace HtmlHelp2.HelperDialog
 {
 	using System;
 	using System.Drawing;
 	using System.Windows.Forms;
-	
+
 	public class IconPictureBox : PictureBox
 	{
 		private Icon icon = null;
 
 		public Icon Icon
 		{
-			get {
-				return this.icon;
-			}
-			set {
+			get { return this.icon; }
+
+			set
+			{
 				this.icon  = value;
 				base.Image = this.icon.ToBitmap();
 			}
@@ -39,22 +39,14 @@ namespace HtmlHelp2HelperDialog
 
 		public string ActionLabel
 		{
-			get {
-				return actionLabel.Text;
-			}
-			set {
-				actionLabel.Text = value;
-			}
+			get { return actionLabel.Text; }
+			set { actionLabel.Text = value; }
 		}
 
 		public Icon ActionIcon
 		{
-			get {
-				return pictureBox1.Icon;
-			}
-			set {
-				pictureBox1.Icon = value;
-			}
+			get { return pictureBox1.Icon; }
+			set { pictureBox1.Icon = value; }
 		}
 
 		public HtmlHelp2Dialog()

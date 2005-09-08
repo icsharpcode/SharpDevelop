@@ -19,14 +19,18 @@ namespace HtmlHelp2
 {
 	public abstract class HelpToolbarCommand : AbstractCommand
 	{
-		public HtmlHelp2TocPad TocPad {
-			get {
+		public HtmlHelp2TocPad TocPad
+		{
+			get
+			{
 				return (HtmlHelp2TocPad)WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2TocPad)).PadContent;
 			}
 		}
 		
-		public WebBrowser Browser {
-			get {
+		public WebBrowser Browser
+		{
+			get
+			{
 				return ((HtmlViewPane)Owner).WebBrowser;
 			}
 		}

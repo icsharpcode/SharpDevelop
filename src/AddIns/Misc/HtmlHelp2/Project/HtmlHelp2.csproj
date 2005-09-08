@@ -35,13 +35,18 @@
       <SpecificVersion>False</SpecificVersion>
     </Reference>
     <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="ICSharpCode.TextEditor">
+      <HintPath>..\..\..\..\..\bin\ICSharpCode.TextEditor.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="src\BaseControls\TocPad.cs">
       <SubType>UserControl</SubType>
     </Compile>
     <None Include="src\BaseControls\DynamicHelpPad.cs" />
-    <Compile Include="src\BaseControls\FavoritesPad.cs" />
+    <None Include="src\BaseControls\FavoritesPad.cs" />
     <Compile Include="src\BaseControls\IndexPad.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -79,6 +84,18 @@
     <Compile Include="src\BrowserScheme.cs" />
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Print.bmp" />
     <Compile Include="src\MsHelpProvider.cs" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Search.png" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Toc.png" />
+    <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Index.png" />
+    <None Include="Resources\OpenBook.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\ClosedBook.png">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
+    <None Include="Resources\context.html">
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

@@ -40,7 +40,8 @@ namespace HtmlHelp2
 			lastTopic = topic;
 			BrowserPane help2Browser = GetActiveHelp2BrowserView();
 
-			if(help2Browser != null) {
+			if(help2Browser != null)
+			{
 				help2Browser.Load(topicUrl);
 				help2Browser.WorkbenchWindow.SelectWindow();
 			}
@@ -49,13 +50,15 @@ namespace HtmlHelp2
 		public static BrowserPane GetActiveHelp2BrowserView()
 		{
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if(window != null) {
+			if(window != null)
+			{
 				BrowserPane browserPane = window.ActiveViewContent as BrowserPane;
 				if (browserPane != null && browserPane.Url.Scheme == "ms-help")
 					return browserPane;
 			}
 
-			foreach(IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection) {
+			foreach(IViewContent view in WorkbenchSingleton.Workbench.ViewContentCollection)
+			{
 				BrowserPane browserPane = view as BrowserPane;
 				if (browserPane != null && browserPane.Url.Scheme == "ms-help")
 					return browserPane;
@@ -72,7 +75,8 @@ namespace HtmlHelp2
 		
 		public static void HighlightDocument(HtmlViewPane htmlViewPane)
 		{
-			if (hiliteMatches && lastTopic != null) {
+			if (hiliteMatches && lastTopic != null)
+			{
 				lastTopic.HighlightDocument(htmlViewPane.WebBrowser.Document.DomDocument);
 			}
 		}

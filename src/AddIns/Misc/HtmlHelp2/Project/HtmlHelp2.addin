@@ -3,7 +3,7 @@
        copyright   = "Copyright (c) 2005"
        url         = "unknown"
        description = "integrates Microsoft's Help 2.0 Environment"
-       version     = "2.0.0.2">
+       version     = "2.0.0.3">
 	
 	<Runtime>
 		<Import assembly="HtmlHelp2.dll"/>
@@ -18,6 +18,11 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/Pads">
+		<!--<Pad id       = "DynamicHelpPad"
+		     category = "Help2"
+		     title    = "${res:AddIns.HtmlHelp2.DynamicHelp}"
+		     icon     = "HtmlHelp2.16x16.DynamicHelp"
+		     class    = "HtmlHelp2.HtmlHelp2DynamicHelpPad"/>-->
 		<Pad id       = "TocPad"
 		     category = "Help2"
 		     title    = "${res:AddIns.HtmlHelp2.Contents}"
@@ -48,16 +53,16 @@
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id    = "HtmlHelp2Options"
 		             label = "${res:AddIns.HtmlHelp2.Environment}"
-		             class = "HtmlHelp2Service.HtmlHelp2OptionsPanel"/>
+		             class = "HtmlHelp2.OptionsPanel.HtmlHelp2OptionsPanel"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Help">
-		<!-- <MenuItem id           = "DynamicHelpPadCommand"
-			          insertafter  = "DynamicHelp"
-			          label        = "${res:AddIns.HtmlHelp2.DynamicHelp}"
-			          icon         = "HtmlHelp2.16x16.DynamicHelp"
-			          shortcut     = "Control|F1"
-			          class        = "HtmlHelp2.ShowDynamicHelpMenuCommand"/> -->
+		<!--<MenuItem id           = "DynamicHelpPadCommand"
+			      insertafter  = "Separator1"
+			      label        = "${res:AddIns.HtmlHelp2.DynamicHelp}"
+			      icon         = "HtmlHelp2.16x16.DynamicHelp"
+			      shortcut     = "Control|F1"
+			      class        = "HtmlHelp2.ShowDynamicHelpMenuCommand"/> -->
 		<MenuItem id           = "TocPadCommand"
 		          insertafter  = "Separator1"
 		          label        = "${res:AddIns.HtmlHelp2.Contents}"

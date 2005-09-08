@@ -14,7 +14,8 @@ namespace HtmlHelp2
 	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Gui;
 	using MSHelpServices;
-	using HtmlHelp2Service;
+	using HtmlHelp2.Environment;
+
 
 	public class HtmlHelp2SearchResultsView : UserControl
 	{
@@ -25,8 +26,10 @@ namespace HtmlHelp2
 		
 		static HtmlHelp2SearchResultsView instance;
 
-		public static HtmlHelp2SearchResultsView Instance {
-			get {
+		public static HtmlHelp2SearchResultsView Instance
+		{
+			get
+			{
 				if (instance == null)
 					instance = new HtmlHelp2SearchResultsView();
 				return instance;
@@ -49,9 +52,7 @@ namespace HtmlHelp2
 
 		public ListView SearchResultsListView
 		{
-			get {
-				return listView;
-			}
+			get { return listView; }
 		}
 
 		public HtmlHelp2SearchResultsView()
@@ -96,7 +97,8 @@ namespace HtmlHelp2
 			bool hiliteMatches = (search != null && ((HtmlHelp2SearchPad)search.PadContent).HiliteEnabled);
 
 			ListViewItem lvi = listView.SelectedItems[0];
-			if(lvi != null && lvi.Tag != null && lvi.Tag is IHxTopic) {
+			if(lvi != null && lvi.Tag != null && lvi.Tag is IHxTopic)
+			{
 				ShowHelpBrowser.OpenHelpView((IHxTopic)lvi.Tag, hiliteMatches);
 			}
 		}
@@ -109,7 +111,8 @@ namespace HtmlHelp2
 
 		public void CleanUp()
 		{
-			foreach(ListViewItem lvi in listView.Items) {
+			foreach(ListViewItem lvi in listView.Items)
+			{
 				if(lvi.Tag != null) { lvi.Tag = null; }
 			}
 
@@ -139,12 +142,15 @@ namespace HtmlHelp2
 		{
 			private int col;
 
-			public ListViewItemComparer(int column) {
+			public ListViewItemComparer(int column)
+			{
 				col = column;
 			}
 
-			public int Compare(object x, object y) {
-				switch(col) {
+			public int Compare(object x, object y)
+			{
+				switch(col)
+				{
 					case 2:
 						int a = Int32.Parse(((ListViewItem)x).SubItems[col].Text);
 						int b = Int32.Parse(((ListViewItem)y).SubItems[col].Text);

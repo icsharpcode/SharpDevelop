@@ -5,7 +5,7 @@
  * Copyright (c) 2005, Mathias Simmack. All rights reserved.
  *
  * ********************************************************* */
-namespace HtmlHelp2Service
+namespace HtmlHelp2.ResourcesHelperClass
 {
 	using System;
 	using System.Drawing;

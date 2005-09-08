@@ -19,7 +19,9 @@ namespace HtmlHelp2
 	using AxMSHelpControls;
 	using MSHelpControls;
 	using MSHelpServices;
-	using HtmlHelp2Service;
+	using HtmlHelp2.Environment;
+	using HtmlHelp2.ControlsValidation;
+	using HtmlHelp2.ResourcesHelperClass;
 
 
 	public class ShowTocMenuCommand : AbstractMenuCommand
@@ -31,25 +33,22 @@ namespace HtmlHelp2
 		}
 	}
 
-
 	public class HtmlHelp2TocPad : AbstractPadContent
 	{
 		protected MsHelp2TocControl help2TocControl;
 
 		public override Control Control
 		{
-			get {
-				return help2TocControl;
-			}
+			get { return help2TocControl; }
 		}
 
 		public override void Dispose()
 		{
-			try {
+			try
+			{
 				help2TocControl.Dispose();
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		public override void RedrawContent()
@@ -65,46 +64,41 @@ namespace HtmlHelp2
 
 		public void SyncToc(string topicUrl)
 		{
-			try {
+			try
+			{
 				help2TocControl.SynToc(topicUrl);
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		public void GetPrevFromNode()
 		{
-			try {
+			try
+			{
 				help2TocControl.GetPrevFromNode();
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		public void GetNextFromNode()
 		{
-			try {
+			try
+			{
 				help2TocControl.GetNextFromNode();
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		public bool IsNotFirstNode
 		{
-			get {
-				return help2TocControl.IsNotFirstNode;
-			}
+			get { return help2TocControl.IsNotFirstNode; }
 		}
 
 		public bool IsNotLastNode
 		{
-			get {
-				return help2TocControl.IsNotLastNode;
-			}
+			get { return help2TocControl.IsNotLastNode; }
 		}
 	}
-
 
 	public class MsHelp2TocControl : UserControl
 	{
@@ -119,7 +113,8 @@ namespace HtmlHelp2
 		{
 			base.Dispose(disposing);
 
-			if(disposing && tocControl != null)	{
+			if(disposing && tocControl != null)
+			{
 				tocControl.Dispose();
 			}
 		}
@@ -133,8 +128,10 @@ namespace HtmlHelp2
 		{
 			bool Help2EnvIsReady = (HtmlHelp2Environment.IsReady && Help2ControlsValidation.IsTocControlRegistered);
 
-			if(Help2EnvIsReady) {
-				try {
+			if(Help2EnvIsReady)
+			{
+				try
+				{
 					tocControl                        = new AxHxTocCtrl();
 					tocControl.BeginInit();
 					tocControl.Dock                   = DockStyle.Fill;
@@ -158,11 +155,13 @@ namespace HtmlHelp2
 					printPopup.Items.Add(printChildTopics);
 					printChildTopics.Click           += new EventHandler(this.PrintTopicAndSubtopics);
 				}
-				catch {
+				catch
+				{
 					this.FakeHelpControl();
 				}
 			}
-			else {
+			else
+			{
 				this.FakeHelpControl();
 			}
 
@@ -185,7 +184,8 @@ namespace HtmlHelp2
 			label1.TextAlign                      = ContentAlignment.MiddleLeft;
 			label1.Enabled                        = Help2EnvIsReady;
 
-			if(Help2EnvIsReady) {
+			if(Help2EnvIsReady)
+			{
 				HtmlHelp2Environment.FilterQueryChanged  += new EventHandler(this.FilterQueryChanged);
 				HtmlHelp2Environment.NamespaceReloaded   += new EventHandler(this.NamespaceReloaded);
 			}
@@ -203,28 +203,29 @@ namespace HtmlHelp2
 
 		public void LoadToc()
 		{
-			try {
+			try
+			{
 				tocControl.Hierarchy                 = HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.CurrentFilterQuery);
 				filterCombobox.SelectedIndexChanged -= new EventHandler(this.FilterChanged);
 				HtmlHelp2Environment.BuildFilterList(filterCombobox);
 				filterCombobox.SelectedIndexChanged += new EventHandler(this.FilterChanged);
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		private void FilterChanged(object sender, EventArgs e)
 		{
 			string selectedString = filterCombobox.SelectedItem.ToString();
 
-			if(selectedString != null && selectedString != "") {
-				try {
+			if(selectedString != null && selectedString != "")
+			{
+				try
+				{
 					Cursor.Current       = Cursors.WaitCursor;
 					tocControl.Hierarchy = HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.FindFilterQuery(selectedString));
 					Cursor.Current       = Cursors.Default;
 				}
-				catch {
-				}
+				catch {}
 			}
 		}
 
@@ -234,7 +235,8 @@ namespace HtmlHelp2
 			tocControl.Refresh();
 
 			string currentFilterName = filterCombobox.SelectedItem.ToString();
-			if(String.Compare(currentFilterName, HtmlHelp2Environment.CurrentFilterName) != 0) {
+			if(String.Compare(currentFilterName, HtmlHelp2Environment.CurrentFilterName) != 0)
+			{
 				filterCombobox.SelectedIndexChanged -= new EventHandler(this.FilterChanged);
 				filterCombobox.SelectedIndex         = filterCombobox.Items.IndexOf(HtmlHelp2Environment.CurrentFilterName);
 				tocControl.Hierarchy                 = HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.CurrentFilterQuery);
@@ -250,7 +252,8 @@ namespace HtmlHelp2
 
 		private void CallHelp(string topicUrl, bool syncToc)
 		{
-			if(topicUrl != null && topicUrl != "") {
+			if(topicUrl != null && topicUrl != "")
+			{
 				if(syncToc) this.SynToc(topicUrl);
 				ShowHelpBrowser.OpenHelpView(topicUrl);
 			}
@@ -265,7 +268,8 @@ namespace HtmlHelp2
 		#region Printing
 		private void TocNodeRightClicked(object sender, IHxTreeViewEvents_NodeRightClickEvent e)
 		{
-			if(e.hNode != 0) {
+			if(e.hNode != 0)
+			{
 				printTopic.Enabled       = tocControl.Hierarchy.GetURL(e.hNode) != "";
 				printChildTopics.Enabled = tocControl.Hierarchy.GetFirstChild(e.hNode) != 0;
 				printChildTopics.Text    = StringParser.Parse((tocControl.Hierarchy.GetFirstChild(e.hNode) == 0 || tocControl.Hierarchy.GetURL(e.hNode) == "")?
@@ -280,7 +284,8 @@ namespace HtmlHelp2
 
 		private void PrintTopic(object sender, EventArgs e)
 		{
-			if(tocControl.Selection != 0) {
+			if(tocControl.Selection != 0)
+			{
 				tocControl.Hierarchy.PrintNode(0,
 				                               tocControl.Selection,
 				                               HxHierarchy_PrintNode_Options.HxHierarchy_PrintNode_Option_Node);
@@ -289,7 +294,8 @@ namespace HtmlHelp2
 
 		private void PrintTopicAndSubtopics(object sender, EventArgs e)
 		{
-			if(tocControl.Selection != 0) {
+			if(tocControl.Selection != 0)
+			{
 				tocControl.Hierarchy.PrintNode(0,
 				                               tocControl.Selection,
 				                               HxHierarchy_PrintNode_Options.HxHierarchy_PrintNode_Option_Children);
@@ -300,43 +306,46 @@ namespace HtmlHelp2
 		#region published Help2 TOC Commands
 		public void SynToc(string topicUrl)
 		{
-			try {
+			try
+			{
 				tocControl.Synchronize(topicUrl);
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		public void GetNextFromNode()
 		{
-			try {
+			try
+			{
 				int currentNode = tocControl.Hierarchy.GetNextFromNode(tocControl.Selection);
 				string TopicUrl = tocControl.Hierarchy.GetURL(currentNode);
 				this.CallHelp(TopicUrl,true);
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		public void GetPrevFromNode()
 		{
-			try {
+			try
+			{
 				int currentNode = tocControl.Hierarchy.GetPrevFromNode(tocControl.Selection);
 				string TopicUrl = tocControl.Hierarchy.GetURL(currentNode);
 				this.CallHelp(TopicUrl,true);
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		public bool IsNotFirstNode
 		{
-			get {
-				try {
+			get
+			{
+				try
+				{
 					int currentNode = tocControl.Hierarchy.GetPrevFromNode(tocControl.Selection);
 					return currentNode != 0;
 				}
-				catch {
+				catch
+				{
 					return true;
 				}
 			}
@@ -344,12 +353,15 @@ namespace HtmlHelp2
 
 		public bool IsNotLastNode
 		{
-			get {
-				try {
+			get
+			{
+				try
+				{
 					int currentNode = tocControl.Hierarchy.GetNextFromNode(tocControl.Selection);
 					return currentNode != 0;
 				}
-				catch {
+				catch
+				{
 					return true;
 				}
 			}

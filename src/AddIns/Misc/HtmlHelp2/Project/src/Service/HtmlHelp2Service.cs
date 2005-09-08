@@ -5,15 +5,15 @@
  * Copyright (c) 2005, Mathias Simmack. All rights reserved.
  *
  * ********************************************************* */
-namespace HtmlHelp2Service
+namespace HtmlHelp2.Environment
 {
 	using System;
 	using System.Windows.Forms;
 	using System.Xml;
 	using ICSharpCode.Core;
 	using MSHelpServices;
-	using HtmlHelp2HelperDialog;
-
+	using HtmlHelp2.RegistryWalker;
+	using HtmlHelp2.HelperDialog;
 
 	public sealed class HtmlHelp2Environment
 	{
@@ -43,73 +43,57 @@ namespace HtmlHelp2Service
 		#region Properties
 		public static bool IsReady
 		{
-			get {
-				return session != null;
-			}
+			get { return session != null; }
 		}
 
 		public static string CurrentSelectedNamespace
 		{
-			get {
-				return DefaultNamespaceName;
-			}
+			get { return DefaultNamespaceName; }
 		}
 
 		public static string CurrentFilterQuery
 		{
-			get {
-				return currentSelectedFilterQuery;
-			}
+			get { return currentSelectedFilterQuery; }
 		}
 
 		public static string CurrentFilterName
 		{
-			get {
-				return currentSelectedFilterName;
-			}
+			get { return currentSelectedFilterName; }
 		}
 
 		public static string DefaultPage
 		{
-			get {
-				return defaultPage;
-			}
+			get { return defaultPage; }
 		}
 
 		public static string SearchPage
 		{
-			get {
-				return searchPage;
-			}
+			get { return searchPage; }
 		}
 
 		public static IHxQuery FTS
 		{
-			get {
-				return fulltextSearch;
-			}
+			get { return fulltextSearch; }
 		}
 
 		public static bool DynamicHelpIsBusy
 		{
-			get {
-				return dynamicHelpIsBusy;
-			}
+			get { return dynamicHelpIsBusy; }
 		}
 		#endregion
 
 		#region Namespace Functions
 		private static void LoadHelp2Config()
 		{
-			try {
+			try
+			{
 				XmlDocument xmldoc = new XmlDocument();
 				xmldoc.Load(PropertyService.ConfigDirectory + help2EnvironmentFile);
 
 				XmlNode node = xmldoc.SelectSingleNode("/help2environment/collection");
 				if(node != null) DefaultNamespaceName = node.InnerText;
 			}
-			catch {
-			}
+			catch {}
 		}
 
 		public static void ReloadNamespace()
@@ -122,13 +106,13 @@ namespace HtmlHelp2Service
 
 		private static void InitializeNamespace(string namespaceName)
 		{
-			if(namespaceName == null || namespaceName == "") {
+			if(namespaceName == null || namespaceName == "")
 				return;
-			}
 
 			if(session != null) session = null;
 
-			try {
+			try
+			{
 				currentSelectedFilterQuery = "";
 				currentSelectedFilterName  = "";
 
@@ -148,27 +132,32 @@ namespace HtmlHelp2Service
 
 				initDialog.Dispose();
 			}
-			catch {
+			catch
+			{
 				session = null;
 			}
 		}
 
 		private static void ReloadFTSSystem()
 		{
-			try {
+			try
+			{
 				fulltextSearch = (IHxQuery)session.GetNavigationInterface("!DefaultFullTextSearch", currentSelectedFilterQuery, ref QueryGuid);
 			}
-			catch {
+			catch
+			{
 				fulltextSearch = null;
 			}
 		}
 
 		private static void ReloadDynamicHelpSystem()
 		{
-			try {
+			try
+			{
 				dynamicHelp = (IHxQuery)session.GetNavigationInterface("!DefaultContextWindowIndex", currentSelectedFilterQuery, ref QueryGuid);
 			}
-			catch {
+			catch
+			{
 				dynamicHelp = null;
 			}
 		}
@@ -183,46 +172,54 @@ namespace HtmlHelp2Service
 		{
 			string resultString = "";
 
-			try {
+			try
+			{
 				IHxIndex namedUrlIndex = (IHxIndex)session.GetNavigationInterface("!DefaultNamedUrlIndex", "", ref IndexGuid);
 				IHxTopicList topics = null;
 
 				topics = namedUrlIndex.GetTopicsFromString(pageName, 0);
 
-				if(topics.Count == 0 && (alternatePageName != null && alternatePageName != "")) {
+				if(topics.Count == 0 && (alternatePageName != null && alternatePageName != ""))
+				{
 					topics = namedUrlIndex.GetTopicsFromString(alternatePageName, 0);
 				}
 
 				if(topics.Count > 0)
 					resultString = topics.ItemAt(1).URL;
+
 				if (resultString == null || resultString.Length == 0)
 					resultString = defaultValue;
 
 				return resultString;
 			}
-			catch {
+			catch
+			{
 				return defaultValue;
 			}
 		}
 
 		public static IHxHierarchy GetTocHierarchy(string filterQuery)
 		{
-			try {
+			try
+			{
 				IHxHierarchy defaultToc = (IHxHierarchy)session.GetNavigationInterface("!DefaultTOC", filterQuery, ref TocGuid);
 				return defaultToc;
 			}
-			catch {
+			catch
+			{
 				return null;
 			}
 		}
 
 		public static IHxIndex GetIndex(string filterQuery)
 		{
-			try {
+			try
+			{
 				IHxIndex defaultIndex   = (IHxIndex)session.GetNavigationInterface("!DefaultKeywordIndex", filterQuery, ref IndexGuid);
 				return defaultIndex;
 			}
-			catch {
+			catch
+			{
 				return null;
 			}
 		}
@@ -232,36 +229,40 @@ namespace HtmlHelp2Service
 			filterCombobox.Items.Clear();
 			filterCombobox.BeginUpdate();
 
-			try {
-				for(int i = 1; i <= namespaceFilters.Count; i++) {
+			try
+			{
+				for(int i = 1; i <= namespaceFilters.Count; i++)
+				{
 					IHxRegFilter filter = namespaceFilters.ItemAt(i);
 					string filterName   = (string)filter.GetProperty(HxRegFilterPropId.HxRegFilterName);
 					filterCombobox.Items.Add(filterName);
 
-					if(currentSelectedFilterName == "" && i == 1) {
+					if(currentSelectedFilterName == "" && i == 1)
+					{
 						currentSelectedFilterName = filterName;
 					}
 				}
 
-				if(namespaceFilters.Count == 0) filterCombobox.Items.Add(StringParser.Parse("${res:AddIns.HtmlHelp2.DefaultEmptyFilter}"));
+				if(namespaceFilters.Count == 0)
+					filterCombobox.Items.Add(StringParser.Parse("${res:AddIns.HtmlHelp2.DefaultEmptyFilter}"));
 
-				if(currentSelectedFilterName == "") filterCombobox.SelectedIndex = 0;
-				else filterCombobox.SelectedIndex = filterCombobox.Items.IndexOf(currentSelectedFilterName);
+				if(currentSelectedFilterName == "")	filterCombobox.SelectedIndex = 0;
+					else filterCombobox.SelectedIndex = filterCombobox.Items.IndexOf(currentSelectedFilterName);
 			}
-			catch {
-			}
+			catch {}
+
 			filterCombobox.EndUpdate();
 		}
 
 		public static string FindFilterQuery(string filterName)
 		{
-			if(String.Compare(filterName, currentSelectedFilterName) == 0) {
+			if(String.Compare(filterName, currentSelectedFilterName) == 0)
 				return currentSelectedFilterQuery;
-			}
 
-			try {
+			try
+			{
 				IHxRegFilter filter        = namespaceFilters.FindFilter(filterName);
-				currentSelectedFilterQuery      = (string)filter.GetProperty(HxRegFilterPropId.HxRegFilterQuery);
+				currentSelectedFilterQuery = (string)filter.GetProperty(HxRegFilterPropId.HxRegFilterQuery);
 				currentSelectedFilterName  = filterName;
 
 				OnFilterQueryChanged(EventArgs.Empty);
@@ -271,23 +272,25 @@ namespace HtmlHelp2Service
 				ReloadDefaultPages();
 				return currentSelectedFilterQuery;
 			}
-			catch {
+			catch
+			{
 				return "";
 			}
 		}
 
 		public static IHxTopicList GetMatchingTopicsForDynamicHelp(string searchTerm)
 		{
-			if(dynamicHelpIsBusy) {
+			if(dynamicHelpIsBusy)
 				return null;
-			}
 
-			try {
+			try
+			{
 				dynamicHelpIsBusy = true;
 				IHxTopicList topics = ((IHxIndex)dynamicHelp).GetTopicsFromString(searchTerm, 0);
 				return topics;
 			}
-			finally {
+			finally
+			{
 				dynamicHelpIsBusy = false;
 			}
 		}
@@ -299,14 +302,16 @@ namespace HtmlHelp2Service
 
 		private static void OnFilterQueryChanged(EventArgs e)
 		{
-			if(FilterQueryChanged != null) {
+			if(FilterQueryChanged != null)
+			{
 				FilterQueryChanged(null, e);
 			}
 		}
 
 		private static void OnNamespaceReloaded(EventArgs e)
 		{
-			if(NamespaceReloaded != null) {
+			if(NamespaceReloaded != null)
+			{
 				NamespaceReloaded(null, e);
 			}
 		}
