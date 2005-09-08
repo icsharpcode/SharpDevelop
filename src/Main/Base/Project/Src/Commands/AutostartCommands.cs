@@ -94,6 +94,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					if (LayoutConfiguration.CurrentLayoutName == "Plain") {
 						LayoutConfiguration.CurrentLayoutName = oldLayout;
 					} else {
+						WorkbenchSingleton.Workbench.WorkbenchLayout.StoreConfiguration();
 						oldLayout = LayoutConfiguration.CurrentLayoutName;
 						LayoutConfiguration.CurrentLayoutName = "Plain";
 					}

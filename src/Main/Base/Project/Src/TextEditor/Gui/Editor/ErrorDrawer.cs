@@ -54,8 +54,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			TaskService.Removed += new TaskEventHandler(OnRemoved);
 			TaskService.Cleared += new EventHandler(OnCleared);
 			textEditor.FileNameChanged += new EventHandler(SetErrors);
-			DebuggerService.CurrentDebugger.DebugStarted += OnDebugStarted;
-			DebuggerService.CurrentDebugger.DebugStopped += OnDebugStopped;
+			DebuggerService.DebugStarted += OnDebugStarted;
+			DebuggerService.DebugStopped += OnDebugStopped;
 		}
 		
 		bool isDisposed;
@@ -73,8 +73,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			TaskService.Removed -= new TaskEventHandler(OnRemoved);
 			TaskService.Cleared -= new EventHandler(OnCleared);
 			textEditor.FileNameChanged -= new EventHandler(SetErrors);
-			DebuggerService.CurrentDebugger.DebugStarted -= OnDebugStarted;
-			DebuggerService.CurrentDebugger.DebugStopped -= OnDebugStopped;
+			DebuggerService.DebugStarted -= OnDebugStarted;
+			DebuggerService.DebugStopped -= OnDebugStopped;
 			ClearErrors();
 		}
 		

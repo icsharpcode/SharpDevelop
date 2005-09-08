@@ -119,7 +119,10 @@ namespace ICSharpCode.FormDesigner
 			
 			// Try to fix the type names to fully qualified ones
 			ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
-			FixTypeNames(p.CompilationUnit, parseInfo.BestCompilationUnit);
+			bool foundInitMethod = false;
+			FixTypeNames(p.CompilationUnit, parseInfo.BestCompilationUnit, ref foundInitMethod);
+			if (!foundInitMethod)
+				throw new FormDesignerLoadException("The InitializeComponent method was not found. Designer cannot be loaded.");
 			
 			CodeDOMVisitor visitor = new CodeDOMVisitor();
 			visitor.Visit(p.CompilationUnit, null);
@@ -133,21 +136,24 @@ namespace ICSharpCode.FormDesigner
 			return visitor.codeCompileUnit;
 		}
 		
-		void FixTypeNames(object o, ICSharpCode.SharpDevelop.Dom.ICompilationUnit domCu)
+		/// <summary>
+		/// Fix type names and remove unused methods.
+		/// </summary>
+		void FixTypeNames(object o, ICSharpCode.SharpDevelop.Dom.ICompilationUnit domCu, ref bool foundInitMethod)
 		{
 			if (domCu == null)
 				return;
 			CompilationUnit cu = o as CompilationUnit;
 			if (cu != null) {
 				foreach (object c in cu.Children) {
-					FixTypeNames(c, domCu);
+					FixTypeNames(c, domCu, ref foundInitMethod);
 				}
 				return;
 			}
 			NamespaceDeclaration namespaceDecl = o as NamespaceDeclaration;
 			if (namespaceDecl != null) {
 				foreach (object c in namespaceDecl.Children) {
-					FixTypeNames(c, domCu);
+					FixTypeNames(c, domCu, ref foundInitMethod);
 				}
 				return;
 			}
@@ -156,9 +162,25 @@ namespace ICSharpCode.FormDesigner
 				foreach (TypeReference tref in typeDecl.BaseTypes) {
 					FixTypeReference(tref, typeDecl.StartLocation, domCu);
 				}
-				foreach (object c in typeDecl.Children) {
-					FixTypeNames(c, domCu);
+				for (int i = 0; i < typeDecl.Children.Count; i++) {
+					object child = typeDecl.Children[i];
+					MethodDeclaration method = child as MethodDeclaration;
+					if (method != null) {
+						// remove all methods except InitializeComponents
+						if ((method.Name == "InitializeComponents" || method.Name == "InitializeComponent") && method.Parameters.Count == 0) {
+							method.Name = "InitializeComponent";
+							foundInitMethod = true;
+						} else {
+							typeDecl.Children.RemoveAt(i--);
+						}
+					} else if (child is TypeDeclaration || child is FieldDeclaration) {
+						FixTypeNames(child, domCu, ref foundInitMethod);
+					} else {
+						// child is property, event etc.
+						typeDecl.Children.RemoveAt(i--);
+					}
 				}
+				
 				return;
 			}
 			FieldDeclaration fieldDecl = o as FieldDeclaration;

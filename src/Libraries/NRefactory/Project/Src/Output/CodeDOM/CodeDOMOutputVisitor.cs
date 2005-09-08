@@ -582,9 +582,9 @@ namespace ICSharpCode.NRefactory.Parser
 				case BinaryOperatorType.Subtract:
 					op = CodeBinaryOperatorType.Subtract;
 					break;
-				//case BinaryOperatorType.ValueEquality:
-				//	op = CodeBinaryOperatorType.ValueEquality;
-				//	break;
+					//case BinaryOperatorType.ValueEquality:
+					//	op = CodeBinaryOperatorType.ValueEquality;
+					//	break;
 				case BinaryOperatorType.ShiftLeft:
 				case BinaryOperatorType.ShiftRight:
 					// CodeDOM suxx
@@ -737,23 +737,31 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		bool methodReference = false;
+		
+		void AddEventHandler(Expression eventExpr, Expression handler, object data)
+		{
+			methodReference = true;
+			CodeExpression methodInvoker = (CodeExpression)handler.AcceptVisitor(this, data);
+			methodReference = false;
+			if (!(methodInvoker is CodeObjectCreateExpression)) {
+				// we need to create an event handler here
+				methodInvoker = new CodeObjectCreateExpression(new CodeTypeReference("System.EventHandler"), methodInvoker);
+			}
+			
+			if (eventExpr is IdentifierExpression) {
+				AddStmt(new CodeAttachEventStatement(new CodeEventReferenceExpression(new CodeThisReferenceExpression(), ((IdentifierExpression)eventExpr).Identifier),
+				                                     methodInvoker));
+			} else {
+				FieldReferenceExpression fr = (FieldReferenceExpression)eventExpr;
+				AddStmt(new CodeAttachEventStatement(new CodeEventReferenceExpression((CodeExpression)fr.TargetObject.AcceptVisitor(this, data), fr.FieldName),
+				                                     methodInvoker));
+			}
+		}
+		
 		public override object Visit(AssignmentExpression assignmentExpression, object data)
 		{
 			if (assignmentExpression.Op == AssignmentOperatorType.Add) {
-				
-				methodReference = true;
-				CodeExpression methodInvoker = (CodeExpression)assignmentExpression.Right.AcceptVisitor(this, null);
-				methodReference = false;
-				
-				if (assignmentExpression.Left is IdentifierExpression) {
-					AddStmt(new CodeAttachEventStatement(new CodeEventReferenceExpression(new CodeThisReferenceExpression(), ((IdentifierExpression)assignmentExpression.Left).Identifier),
-					                                     methodInvoker));
-				} else {
-					FieldReferenceExpression fr = (FieldReferenceExpression)assignmentExpression.Left;
-					
-					AddStmt(new CodeAttachEventStatement(new CodeEventReferenceExpression((CodeExpression)fr.TargetObject.AcceptVisitor(this, data), fr.FieldName),
-					                                     methodInvoker));
-				}
+				AddEventHandler(assignmentExpression.Left, assignmentExpression.Right, data);
 			} else {
 				if (assignmentExpression.Left is IdentifierExpression) {
 					AddStmt(new CodeAssignStatement((CodeExpression)assignmentExpression.Left.AcceptVisitor(this, null), (CodeExpression)assignmentExpression.Right.AcceptVisitor(this, null)));
@@ -764,6 +772,16 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
+		public override object Visit(AddHandlerStatement addHandlerStatement, object data)
+		{
+			AddEventHandler(addHandlerStatement.EventExpression, addHandlerStatement.HandlerExpression, data);
+			return null;
+		}
+		
+		public override object Visit(AddressOfExpression addressOfExpression, object data)
+		{
+			return addressOfExpression.Expression.AcceptVisitor(this, data);
+		}
 		
 		public override object Visit(TypeOfExpression typeOfExpression, object data)
 		{

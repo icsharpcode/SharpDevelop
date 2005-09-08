@@ -101,6 +101,7 @@ namespace ICSharpCode.Core
 		
 		static void OnDebugStarted(object sender, EventArgs e)
 		{
+			WorkbenchSingleton.Workbench.WorkbenchLayout.StoreConfiguration();
 			oldLayoutConfiguration = LayoutConfiguration.CurrentLayoutName;
 			LayoutConfiguration.CurrentLayoutName = "Debug";
 
@@ -112,6 +113,7 @@ namespace ICSharpCode.Core
 		static void OnDebugStopped(object sender, EventArgs e)
 		{
 			CurrentLineBookmark.Remove();
+			WorkbenchSingleton.Workbench.WorkbenchLayout.StoreConfiguration();
 			LayoutConfiguration.CurrentLayoutName = oldLayoutConfiguration;
 			if (DebugStopped != null)
 				DebugStopped(null, e);
