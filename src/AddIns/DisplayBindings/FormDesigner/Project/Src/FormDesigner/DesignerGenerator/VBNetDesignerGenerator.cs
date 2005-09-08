@@ -53,6 +53,8 @@ namespace ICSharpCode.FormDesigner
 		FormDesignerViewContent viewContent;
 		bool failedDesignerInitialize = false;
 		
+		string NonVisualComponentContainerName = "components";	
+			
 		public void Attach(FormDesignerViewContent viewContent)
 		{
 			this.viewContent = viewContent;
@@ -93,6 +95,11 @@ namespace ICSharpCode.FormDesigner
 				Reparse(viewContent.Document.TextContent);
 				int endOffset = viewContent.Document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.EndLine));
 				viewContent.Document.Insert(endOffset, "\tPrivate " + e.Component.Site.Name + " As " + e.Component.GetType() + Environment.NewLine);
+				if (CodeDOMGenerator.IsNonVisualComponent(viewContent.Host, e.Component)) {
+					if (!IsNonVisualComponentContainerDefined) {
+					    viewContent.Document.Insert(endOffset, "\tPrivate " + NonVisualComponentContainerName + " As " + typeof(Container) + Environment.NewLine);
+					}
+				}
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
@@ -268,6 +275,23 @@ namespace ICSharpCode.FormDesigner
 				}
 			}
 			return compatibleMethods;
+		}
+		
+		bool IsNonVisualComponentContainerDefined
+		{
+			get {
+				return GetField(c, NonVisualComponentContainerName) != null;
+			}
+		}
+		
+		IField GetField(IClass c, string name)
+		{
+			foreach (IField field in c.Fields) {
+				if (field.Name == name) {
+					return field;
+				}
+			}
+			return null;
 		}
 	}
 }
