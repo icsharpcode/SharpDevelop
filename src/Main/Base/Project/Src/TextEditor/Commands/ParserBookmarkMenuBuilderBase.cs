@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			if (cu != null) {
 				string fileName = cu.FileName;
 				if (fileName != null) {
-					if (member.Region != null && member.Region.BeginLine > 0) {
+					if (!member.Region.IsEmpty) {
 						viewContent = FileService.JumpToFilePosition(fileName, member.Region.BeginLine - 1, member.Region.BeginColumn - 1);
 					} else {
 						FileService.OpenFile(fileName);
@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			if (cu != null) {
 				string fileName = cu.FileName;
 				if (fileName != null) {
-					if (member.Region != null && member.Region.EndLine > 0) {
+					if (!member.Region.IsEmpty) {
 						viewContent = FileService.JumpToFilePosition(fileName, member.Region.EndLine, 0);
 					} else {
 						FileService.OpenFile(fileName);

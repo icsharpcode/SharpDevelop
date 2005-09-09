@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -35,8 +35,9 @@ namespace ICSharpCode.Core
 			
 			try {
 				foreach (Type type in assembly.GetExportedTypes()) {
-					if (!type.IsNested) {
-						AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, null));
+					string name = type.FullName;
+					if (name.IndexOf('+') < 0) { // type.IsNested 
+						AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, name, null));
 					}
 				}
 			} catch (Exception ex) {

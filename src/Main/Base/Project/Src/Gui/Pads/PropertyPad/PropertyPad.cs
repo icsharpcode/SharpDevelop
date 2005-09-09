@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static Panel         panel   = null;
 		static ComboBox      comboBox = null;
-		static PropertyGrid  grid = null;
+		static PropertyGrid  grid = new PropertyGrid();
 		static IDesignerHost host = null;
 		
 		public static PropertyGrid Grid {
@@ -85,7 +85,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		public static event PropertyValueChangedEventHandler PropertyValueChanged;
-		public static event EventHandler                     SelectedObjectChanged;
+		
+		public static event EventHandler SelectedObjectChanged {
+			add    { grid.SelectedObjectsChanged += value; }
+			remove { grid.SelectedObjectsChanged -= value; }
+		}
 		
 		public override Control Control {
 			get {
@@ -95,7 +99,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static PropertyPad()
 		{
-			grid = new PropertyGrid();
 			grid.PropertySort = PropertyService.Get("FormsDesigner.DesignerOptions.PropertyGridSortAlphabetical", false) ? PropertySort.Alphabetical : PropertySort.CategorizedAlphabetical;
 			grid.Dock = DockStyle.Fill;
 
@@ -119,11 +122,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			instance = this;
 			panel = new Panel();
-						
+			
 			comboBox.DrawItem += new DrawItemEventHandler(ComboBoxDrawItem);
 			comboBox.MeasureItem += new MeasureItemEventHandler(ComboBoxMeasureItem);
 			comboBox.SelectedIndexChanged += new EventHandler(ComboBoxSelectedIndexChanged);
-		
+			
 			
 			panel.Controls.Add(grid);
 			panel.Controls.Add(comboBox);
@@ -153,7 +156,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (item is IComponent) {
 				ISite site = ((IComponent)item).Site;
-				if (site != null) {	
+				if (site != null) {
 					string name = site.Name;
 					Font f = new Font(comboBox.Font, FontStyle.Bold);
 					mea.ItemWidth += (int)mea.Graphics.MeasureString(name + "-", f).Width;
@@ -185,7 +188,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (item is IComponent) {
 				ISite site = ((IComponent)item).Site;
-				if (site != null) {	
+				if (site != null) {
 					string name = site.Name;
 					Font f = new Font(comboBox.Font, FontStyle.Bold);
 					g.DrawString(name, f, stringColor, xPos, dea.Bounds.Y);
@@ -205,13 +208,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 					ISelectionService selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
 					if (comboBox.SelectedIndex >= 0) {
 						selectionService.SetSelectedComponents(new object[] {comboBox.Items[comboBox.SelectedIndex] });
-          				} else {
+					} else {
 						SetDesignableObject(null);
 						selectionService.SetSelectedComponents(new object[] { });
 					}
-				}
-				if (SelectedObjectChanged != null) {
-					SelectedObjectChanged(this, EventArgs.Empty);
 				}
 			}
 		}
@@ -289,15 +289,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (host != null) {
 				grid.Site = (new IDEContainer(host)).CreateSite(grid);
 				grid.PropertyTabs.AddTabType(typeof(System.Windows.Forms.Design.EventsTab), PropertyTabScope.Document);
-			
+				
 				ISelectionService selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
 				if (selectionService != null) {
 					selectionService.SelectionChanging += new EventHandler(SelectionChangingHandler);
 					selectionService.SelectionChanged  += new EventHandler(SelectionChangedHandler);
 				}
-			
+				
 				host.TransactionClosed += new DesignerTransactionCloseEventHandler(TransactionClose);
-			
+				
 				IComponentChangeService componentChangeService = (IComponentChangeService)host.GetService(typeof(IComponentChangeService));
 				if (componentChangeService != null) {
 					componentChangeService.ComponentAdded   += new ComponentEventHandler(UpdateSelectedObjects);
@@ -338,8 +338,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 					ICSharpCode.SharpDevelop.Dom.IClass c = ProjectContentRegistry.WinForms.GetClass(component.FullName);
 					if (c != null) {
 						foreach (ICSharpCode.SharpDevelop.Dom.IProperty p in c.DefaultReturnType.GetProperties()) {
-							ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(p);
+							if (gridItem.PropertyDescriptor.Name == p.Name) {
+								ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(p);
+								return;
+							}
 						}
+						ICSharpCode.SharpDevelop.Dom.HelpProvider.ShowHelp(c);
 					}
 				}
 			}

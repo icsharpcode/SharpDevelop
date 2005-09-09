@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public interface IEvent : IMember
 	{
-		IRegion BodyRegion {
+		DomRegion BodyRegion {
 			get;
 		}
 		

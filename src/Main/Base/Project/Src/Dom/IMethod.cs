@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public interface IMethodOrProperty : IMember
 	{
-		IRegion BodyRegion {
+		DomRegion BodyRegion {
 			get;
 		}
 		

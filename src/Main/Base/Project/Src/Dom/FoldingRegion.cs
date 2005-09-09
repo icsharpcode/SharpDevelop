@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class FoldingRegion
 	{
 		string  name;
-		IRegion region;
+		DomRegion region;
 		
 		public string Name {
 			get {
@@ -23,13 +23,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public IRegion Region {
+		public DomRegion Region {
 			get {
 				return region;
 			}
 		}
 		
-		public FoldingRegion(string name, IRegion region)
+		public FoldingRegion(string name, DomRegion region)
 		{
 			this.name = name;
 			this.region = region;

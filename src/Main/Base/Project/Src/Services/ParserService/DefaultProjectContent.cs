@@ -634,7 +634,7 @@ namespace ICSharpCode.Core
 		{
 			IClass curClass = GetClass(fullMemberName, LanguageProperties.CSharp, false);
 			if (curClass != null) {
-				return new Position(curClass.CompilationUnit, curClass.Region != null ? curClass.Region.BeginLine : -1, curClass.Region != null ? curClass.Region.BeginColumn : -1);
+				return new Position(curClass.CompilationUnit, curClass.Region.BeginLine, curClass.Region.BeginColumn);
 			}
 			int pos = fullMemberName.LastIndexOf('.');
 			if (pos > 0) {
@@ -644,7 +644,7 @@ namespace ICSharpCode.Core
 				if (curClass != null) {
 					IMember member = curClass.SearchMember(memberName, LanguageProperties.CSharp);
 					if (member != null) {
-						return new Position(curClass.CompilationUnit, member.Region != null ? member.Region.BeginLine : -1, member.Region != null ? member.Region.BeginColumn : -1);
+						return new Position(curClass.CompilationUnit, member.Region.BeginLine, member.Region.BeginColumn);
 					}
 				}
 			}

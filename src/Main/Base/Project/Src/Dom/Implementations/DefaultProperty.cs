@@ -14,10 +14,10 @@ namespace ICSharpCode.SharpDevelop.Dom {
 	[Serializable]
 	public class DefaultProperty : AbstractMember, IProperty
 	{
-		protected IRegion bodyRegion;
+		protected DomRegion bodyRegion = DomRegion.Empty;
 		
-		IRegion getterRegion;
-		IRegion setterRegion;
+		DomRegion getterRegion = DomRegion.Empty;
+		DomRegion setterRegion = DomRegion.Empty;
 
 		protected IMethod     getterMethod;
 		protected IMethod     setterMethod;
@@ -39,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			}
 		}
 		
-		public virtual IRegion BodyRegion {
+		public virtual DomRegion BodyRegion {
 			get {
 				return bodyRegion;
 			}
@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			}
 		}
 
-		public IRegion GetterRegion {
+		public DomRegion GetterRegion {
 			get {
 				return getterRegion;
 			}
@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			}
 		}
 
-		public IRegion SetterRegion {
+		public DomRegion SetterRegion {
 			get {
 				return setterRegion;
 			}
@@ -97,13 +97,13 @@ namespace ICSharpCode.SharpDevelop.Dom {
 
 		public virtual bool CanGet {
 			get {
-				return getterRegion != null;
+				return !getterRegion.IsEmpty;
 			}
 		}
 
 		public virtual bool CanSet {
 			get {
-				return setterRegion != null;
+				return !setterRegion.IsEmpty;
 			}
 		}
 		
@@ -111,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		{
 		}
 		
-		public DefaultProperty(string name, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType, name)
+		public DefaultProperty(string name, IReturnType type, ModifierEnum m, DomRegion region, DomRegion bodyRegion, IClass declaringType) : base(declaringType, name)
 		{
 			this.ReturnType = type;
 			this.Region = region;

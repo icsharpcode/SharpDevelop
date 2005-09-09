@@ -13,11 +13,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public interface IProperty : IMethodOrProperty
 	{
-		IRegion GetterRegion {
+		DomRegion GetterRegion {
 			get;
 		}
 
-		IRegion SetterRegion {
+		DomRegion SetterRegion {
 			get;
 		}
 

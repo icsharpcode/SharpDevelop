@@ -233,9 +233,9 @@ namespace CSharpBinding.FormattingStrategy
 		
 		
 		
-		bool IsBeforeRegion(TextArea textArea, IRegion region, int lineNr)
+		bool IsBeforeRegion(TextArea textArea, DomRegion region, int lineNr)
 		{
-			if (region == null) {
+			if (region.IsEmpty) {
 				return false;
 			}
 			return region.BeginLine - 2 <= lineNr && lineNr <= region.BeginLine;

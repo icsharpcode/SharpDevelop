@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -49,21 +49,21 @@ namespace VBNetBinding
 			c.Properties.Add(new DefaultProperty("Application",
 			                                     new GetClassReturnType(pc, myApp.FullyQualifiedName),
 			                                     ModifierEnum.Public | ModifierEnum.Static,
-			                                     null, null, c));
+			                                     DomRegion.Empty, DomRegion.Empty, c));
 			c.Properties.Add(new DefaultProperty("Computer",
 			                                     new GetClassReturnType(pc, myComp.FullyQualifiedName),
 			                                     ModifierEnum.Public | ModifierEnum.Static,
-			                                     null, null, c));
+			                                     DomRegion.Empty, DomRegion.Empty, c));
 			if (myForms != null) {
 				c.Properties.Add(new DefaultProperty("Forms",
 				                                     new GetClassReturnType(pc, myForms.FullyQualifiedName),
 				                                     ModifierEnum.Public | ModifierEnum.Static,
-				                                     null, null, c));
+				                                     DomRegion.Empty, DomRegion.Empty, c));
 			}
 			c.Properties.Add(new DefaultProperty("User",
 			                                     new GetClassReturnType(pc, "Microsoft.VisualBasic.ApplicationServices.User"),
 			                                     ModifierEnum.Public | ModifierEnum.Static,
-			                                     null, null, c));
+			                                     DomRegion.Empty, DomRegion.Empty, c));
 			cu.Classes.Add(c);
 			pc.UpdateCompilationUnit(null, cu, cu.FileName, false);
 		}
@@ -130,7 +130,7 @@ namespace VBNetBinding
 							properties.Add(new DefaultProperty(c.Name,
 							                                   new GetClassReturnType(this.ProjectContent, c.FullyQualifiedName),
 							                                   ModifierEnum.Public | ModifierEnum.Static,
-							                                   null, null, c));
+							                                   DomRegion.Empty, DomRegion.Empty, c));
 						}
 					}
 					return properties;

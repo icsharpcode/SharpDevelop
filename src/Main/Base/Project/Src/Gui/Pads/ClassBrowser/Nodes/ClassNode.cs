@@ -54,9 +54,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public override void ActivateItem()
 		{
 			if (c.CompilationUnit != null) {
-				FileService.JumpToFilePosition(c.CompilationUnit.FileName,
-				                               c.Region != null ? c.Region.BeginLine - 1 : 0,
-				                               c.Region != null ? c.Region.BeginColumn - 1 : 0);
+				FileService.JumpToFilePosition(c.CompilationUnit.FileName, c.Region.BeginLine - 1, c.Region.BeginColumn - 1);
 			}
 		}
 		

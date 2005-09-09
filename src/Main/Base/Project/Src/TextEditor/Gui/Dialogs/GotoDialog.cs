@@ -341,9 +341,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Close();
 		}
 		
-		void GotoRegion(IRegion region, string fileName)
+		void GotoRegion(DomRegion region, string fileName)
 		{
-			if (fileName != null && region != null) {
+			if (fileName != null && !region.IsEmpty) {
 				FileService.JumpToFilePosition(fileName, region.BeginLine - 1, region.BeginColumn - 1);
 			}
 		}

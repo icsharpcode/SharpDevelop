@@ -113,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public IClass GetInnermostClass(int caretLine, int caretColumn)
 		{
 			foreach (IClass c in Classes) {
-				if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
+				if (c != null && c.Region.IsInside(caretLine, caretColumn)) {
 					return c.GetInnermostClass(caretLine, caretColumn);
 				}
 			}
@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			List<IClass> classes = new List<IClass>();
 			IClass innerMostClass = GetInnermostClass(caretLine, caretColumn);
 			foreach (IClass c in Classes) {
-				if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
+				if (c != null && c.Region.IsInside(caretLine, caretColumn)) {
 					if (c != innerMostClass) {
 						GetOuterClasses(classes, c, caretLine, caretColumn);
 						if (!classes.Contains(c)) {
@@ -151,7 +151,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (curClass != null && curClass.InnerClasses.Count > 0) {
 				IClass innerMostClass = GetInnermostClass(caretLine, caretColumn);
 				foreach (IClass c in curClass.InnerClasses) {
-					if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
+					if (c != null && c.Region.IsInside(caretLine, caretColumn)) {
 						if (c != innerMostClass) {
 							GetOuterClasses(classes, c, caretLine, caretColumn);
 							if (!classes.Contains(c)) {

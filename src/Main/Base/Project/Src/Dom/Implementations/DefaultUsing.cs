@@ -15,7 +15,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class DefaultUsing : MarshalByRefObject, IUsing
 	{
-		IRegion region;
+		DomRegion region;
 		IProjectContent projectContent;
 		
 		public DefaultUsing(IProjectContent projectContent)
@@ -23,15 +23,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.projectContent = projectContent;
 		}
 		
-		public DefaultUsing(IProjectContent projectContent, IRegion region) : this(projectContent)
+		public DefaultUsing(IProjectContent projectContent, DomRegion region) : this(projectContent)
 		{
 			this.region = region;
 		}
 		
 		List<string> usings  = new List<string>();
-		SortedList<string, IReturnType> aliases = new SortedList<string, IReturnType>();
+		SortedList<string, IReturnType> aliases = null;
 		
-		public IRegion Region {
+		public DomRegion Region {
 			get {
 				return region;
 			}
@@ -49,23 +49,37 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public bool HasAliases {
+			get {
+				return aliases != null && aliases.Count > 0;
+			}
+		}
+		
+		public void AddAlias(string alias, IReturnType type)
+		{
+			if (aliases == null) aliases = new SortedList<string, IReturnType>();
+			aliases.Add(alias, type);
+		}
+		
 		public string SearchNamespace(string partitialNamespaceName)
 		{
-			foreach (KeyValuePair<string, IReturnType> entry in aliases) {
-				if (!entry.Value.IsDefaultReturnType)
-					continue;
-				string aliasString = entry.Key;
-				string nsName;
-				if (projectContent.Language.NameComparer.Equals(partitialNamespaceName, aliasString)) {
-					nsName = entry.Value.FullyQualifiedName;
-					if (projectContent.NamespaceExists(nsName))
-						return nsName;
-				}
-				if (partitialNamespaceName.Length > aliasString.Length) {
-					if (projectContent.Language.NameComparer.Equals(partitialNamespaceName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
-						nsName = String.Concat(entry.Value.FullyQualifiedName, partitialNamespaceName.Remove(0, aliasString.Length));
-						if (projectContent.NamespaceExists(nsName)) {
+			if (HasAliases) {
+				foreach (KeyValuePair<string, IReturnType> entry in aliases) {
+					if (!entry.Value.IsDefaultReturnType)
+						continue;
+					string aliasString = entry.Key;
+					string nsName;
+					if (projectContent.Language.NameComparer.Equals(partitialNamespaceName, aliasString)) {
+						nsName = entry.Value.FullyQualifiedName;
+						if (projectContent.NamespaceExists(nsName))
 							return nsName;
+					}
+					if (partitialNamespaceName.Length > aliasString.Length) {
+						if (projectContent.Language.NameComparer.Equals(partitialNamespaceName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
+							nsName = String.Concat(entry.Value.FullyQualifiedName, partitialNamespaceName.Remove(0, aliasString.Length));
+							if (projectContent.NamespaceExists(nsName)) {
+								return nsName;
+							}
 						}
 					}
 				}
@@ -82,19 +96,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public IReturnType SearchType(string partitialTypeName)
 		{
-			foreach (KeyValuePair<string, IReturnType> entry in aliases) {
-				string aliasString = entry.Key;
-				if (projectContent.Language.NameComparer.Equals(partitialTypeName, aliasString)) {
-					if (entry.Value.IsDefaultReturnType && entry.Value.GetUnderlyingClass() == null)
-						continue; // type not found, maybe entry was a namespace
-					return entry.Value;
-				}
-				if (partitialTypeName.Length > aliasString.Length) {
-					if (projectContent.Language.NameComparer.Equals(partitialTypeName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
-						string className = entry.Value.FullyQualifiedName + partitialTypeName.Remove(0, aliasString.Length);
-						IClass c = projectContent.GetClass(className);
-						if (c != null) {
-							return c.DefaultReturnType;
+			if (HasAliases) {
+				foreach (KeyValuePair<string, IReturnType> entry in aliases) {
+					string aliasString = entry.Key;
+					if (projectContent.Language.NameComparer.Equals(partitialTypeName, aliasString)) {
+						if (entry.Value.IsDefaultReturnType && entry.Value.GetUnderlyingClass() == null)
+							continue; // type not found, maybe entry was a namespace
+						return entry.Value;
+					}
+					if (partitialTypeName.Length > aliasString.Length) {
+						if (projectContent.Language.NameComparer.Equals(partitialTypeName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
+							string className = entry.Value.FullyQualifiedName + partitialTypeName.Remove(0, aliasString.Length);
+							IClass c = projectContent.GetClass(className);
+							if (c != null) {
+								return c.DefaultReturnType;
+							}
 						}
 					}
 				}
@@ -136,11 +152,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				builder.Append(str);
 				builder.Append(", ");
 			}
-			foreach (KeyValuePair<string, IReturnType> p in aliases) {
-				builder.Append(p.Key);
-				builder.Append("=");
-				builder.Append(p.Value.ToString());
-				builder.Append(", ");
+			if (HasAliases) {
+				foreach (KeyValuePair<string, IReturnType> p in aliases) {
+					builder.Append(p.Key);
+					builder.Append("=");
+					builder.Append(p.Value.ToString());
+					builder.Append(", ");
+				}
 			}
 			builder.Length -= 2; // remove last ", "
 			builder.Append("]");

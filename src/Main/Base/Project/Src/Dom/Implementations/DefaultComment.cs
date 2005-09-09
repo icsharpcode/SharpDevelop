@@ -16,9 +16,9 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		bool    isBlockComment;
 		string  commentTag;
 		string  commentText;
-		IRegion region;
+		DomRegion region;
 		
-		public DefaultComment(bool isBlockComment, string commentTag, string commentText, IRegion region)
+		public DefaultComment(bool isBlockComment, string commentTag, string commentText, DomRegion region)
 		{
 			this.isBlockComment = isBlockComment;
 			this.commentTag = commentTag;
@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			}
 		}
 		
-		public IRegion Region {
+		public DomRegion Region {
 			get {
 				return region;
 			}

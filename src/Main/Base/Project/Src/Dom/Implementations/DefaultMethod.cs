@@ -15,14 +15,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class Constructor : DefaultMethod
 	{
-		public Constructor(ModifierEnum m, IRegion region, IRegion bodyRegion, IClass declaringType)
+		public Constructor(ModifierEnum m, DomRegion region, DomRegion bodyRegion, IClass declaringType)
 			: base("#ctor", declaringType.DefaultReturnType,
 			       m, region, bodyRegion, declaringType)
 		{
 		}
 		
 		public Constructor(ModifierEnum m, IReturnType returnType)
-			: base("#ctor", returnType, m, null, null, null)
+			: base("#ctor", returnType, m, DomRegion.Empty, DomRegion.Empty, null)
 		{
 		}
 		
@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class Destructor : DefaultMethod
 	{
-		public Destructor(IRegion region, IRegion bodyRegion, IClass declaringType)
+		public Destructor(DomRegion region, DomRegion bodyRegion, IClass declaringType)
 			: base("#dtor", null, ModifierEnum.None, region, bodyRegion, declaringType)
 		{
 		}
@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class DefaultMethod : AbstractMember, IMethod
 	{
-		protected IRegion bodyRegion;
+		protected DomRegion bodyRegion;
 		
 		List<IParameter> parameters = null;
 		List<ITypeParameter> typeParameters = null;
@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual IRegion BodyRegion {
+		public virtual DomRegion BodyRegion {
 			get {
 				return bodyRegion;
 			}
@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 		}
 		
-		public DefaultMethod(string name, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType, name)
+		public DefaultMethod(string name, IReturnType type, ModifierEnum m, DomRegion region, DomRegion bodyRegion, IClass declaringType) : base(declaringType, name)
 		{
 			this.ReturnType = type;
 			this.Region     = region;

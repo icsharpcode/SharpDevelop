@@ -63,10 +63,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.ContextmenuAddinTreePath = "/SharpDevelop/Pads/ClassBrowser/MemberContextMenu";
 			declaringType = member.DeclaringType;
 			modifiers = member.Modifiers;
-			if (member.Region != null) {
-				line   = member.Region.BeginLine;
-				column = member.Region.BeginColumn;
-			}
+			line   = member.Region.BeginLine;
+			column = member.Region.BeginColumn;
 		}
 		
 		public static string GetText(IMember member)

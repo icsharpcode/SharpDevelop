@@ -465,26 +465,26 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void AddClassMemberBookmarks(BookmarkManager bm, IClass c)
 		{
-			if (c.Region != null && c.Region.BeginLine > 0) {
+			if (!c.Region.IsEmpty) {
 				bm.AddMark(new Bookmarks.ClassBookmark(textAreaControl.Document, c));
 			}
 			foreach (IClass innerClass in c.InnerClasses) {
 				AddClassMemberBookmarks(bm, innerClass);
 			}
 			foreach (IMethod m in c.Methods) {
-				if (m.Region == null || m.Region.BeginLine <= 0) continue;
+				if (m.Region.IsEmpty) continue;
 				bm.AddMark(new Bookmarks.MethodBookmark(textAreaControl.Document, m));
 			}
 			foreach (IProperty m in c.Properties) {
-				if (m.Region == null || m.Region.BeginLine <= 0) continue;
+				if (m.Region.IsEmpty) continue;
 				bm.AddMark(new Bookmarks.PropertyBookmark(textAreaControl.Document, m));
 			}
 			foreach (IField f in c.Fields) {
-				if (f.Region == null || f.Region.BeginLine <= 0) continue;
+				if (f.Region.IsEmpty) continue;
 				bm.AddMark(new Bookmarks.FieldBookmark(textAreaControl.Document, f));
 			}
 			foreach (IEvent e in c.Events) {
-				if (e.Region == null || e.Region.BeginLine <= 0) continue;
+				if (e.Region.IsEmpty) continue;
 				bm.AddMark(new Bookmarks.EventBookmark(textAreaControl.Document, e));
 			}
 		}

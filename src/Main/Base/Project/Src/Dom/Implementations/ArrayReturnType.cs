@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public class ArrayIndexer : DefaultProperty
 		{
 			public ArrayIndexer(IReturnType elementType)
-				: base("Indexer", elementType, ModifierEnum.Public, null, null, ReflectionReturnType.Array.GetUnderlyingClass())
+				: base("Indexer", elementType, ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, ReflectionReturnType.Array.GetUnderlyingClass())
 			{
 				IsIndexer = true;
 			}
@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			List<IProperty> l = base.GetProperties();
 			ArrayIndexer property = new ArrayIndexer(elementType);
 			for (int i = 0; i < dimensions; ++i) {
-				property.Parameters.Add(new DefaultParameter("index", ReflectionReturnType.Int, null));
+				property.Parameters.Add(new DefaultParameter("index", ReflectionReturnType.Int, DomRegion.Empty));
 			}
 			l.Add(property);
 			return l;

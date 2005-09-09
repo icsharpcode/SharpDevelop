@@ -55,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		/// <remarks>
 		/// Returns true, if the given coordinates (row, column) are in the region.
 		/// </remarks>
-		bool IsBetween(int row, int column, IRegion region)
+		bool IsBetween(int row, int column, DomRegion region)
 		{
 			return row >= region.BeginLine && (row <= region.EndLine || region.EndLine == -1);
 		}

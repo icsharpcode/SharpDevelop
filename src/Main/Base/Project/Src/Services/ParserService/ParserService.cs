@@ -185,9 +185,15 @@ namespace ICSharpCode.Core
 			LoggingService.Info("ParserUpdateThread started");
 			// preload mscorlib, we're going to need it anyway
 			IProjectContent dummyVar = ProjectContentRegistry.Mscorlib;
+			int counter = 0;
 			
 			while (!abortParserUpdateThread) {
 				try {
+					if (++counter == 10) {
+						ReflectionClass.ClearMemberCache();
+						counter = 0;
+					}
+					
 					ParserUpdateStep();
 				} catch (Exception e) {
 					ICSharpCode.Core.MessageService.ShowError(e);

@@ -30,15 +30,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			// show the abstract layer that we have getter & setters
 			if (propertyInfo.CanRead) {
-				GetterRegion = new DefaultRegion(0, 0, 0, 0);
-			} else {
-				GetterRegion = null;
+				GetterRegion = new DomRegion(0, 0, 0, 0);
 			}
 			
 			if (propertyInfo.CanWrite) {
-				SetterRegion = new DefaultRegion(0, 0, 0, 0);
-			} else {
-				SetterRegion = null;
+				SetterRegion = new DomRegion(0, 0, 0, 0);
 			}
 			
 			ParameterInfo[] parameterInfo = propertyInfo.GetIndexParameters();

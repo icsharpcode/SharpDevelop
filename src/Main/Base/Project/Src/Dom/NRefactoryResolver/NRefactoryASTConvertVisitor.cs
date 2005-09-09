@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (u.IsAlias) {
 				IReturnType rt = CreateReturnType(u.Alias);
 				if (rt != null) {
-					us.Aliases[u.Name] = rt;
+					us.AddAlias(u.Name, rt);
 				}
 			} else {
 				us.Usings.Add(u.Name);
@@ -259,14 +259,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		DefaultRegion GetRegion(Point start, Point end)
+		DomRegion GetRegion(Point start, Point end)
 		{
-			return new DefaultRegion(start.Y, start.X, end.Y, end.X);
+			return new DomRegion(start, end);
 		}
 		
 		public override object Visit(AST.TypeDeclaration typeDeclaration, object data)
 		{
-			DefaultRegion region = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
+			DomRegion region = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
 			DefaultClass c = new DefaultClass(cu, TranslateClassType(typeDeclaration.Type), ConvertModifier(typeDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
 			c.Attributes.AddRange(VisitAttributes(typeDeclaration.Attributes));
 			c.Documentation = GetDocumentation(region.BeginLine);
@@ -340,7 +340,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(AST.DelegateDeclaration delegateDeclaration, object data)
 		{
-			DefaultRegion region = GetRegion(delegateDeclaration.StartLocation, delegateDeclaration.EndLocation);
+			DomRegion region = GetRegion(delegateDeclaration.StartLocation, delegateDeclaration.EndLocation);
 			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, ConvertModifier(delegateDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
 			c.Documentation = GetDocumentation(region.BeginLine);
 			c.Attributes.AddRange(VisitAttributes(delegateDeclaration.Attributes));
@@ -359,24 +359,24 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			currentClass.Push(c); // necessary for CreateReturnType
 			ConvertTemplates(delegateDeclaration.Templates, c);
-			DefaultMethod invokeMethod = new DefaultMethod("Invoke", CreateReturnType(delegateDeclaration.ReturnType), ModifierEnum.Public, null, null, c);
+			DefaultMethod invokeMethod = new DefaultMethod("Invoke", CreateReturnType(delegateDeclaration.ReturnType), ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, c);
 			if (delegateDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in delegateDeclaration.Parameters) {
 					invokeMethod.Parameters.Add(CreateParameter(par));
 				}
 			}
 			c.Methods.Add(invokeMethod);
-			invokeMethod = new DefaultMethod("BeginInvoke", CreateReturnType(typeof(IAsyncResult)), ModifierEnum.Public, null, null, c);
+			invokeMethod = new DefaultMethod("BeginInvoke", CreateReturnType(typeof(IAsyncResult)), ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, c);
 			if (delegateDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in delegateDeclaration.Parameters) {
 					invokeMethod.Parameters.Add(CreateParameter(par));
 				}
 			}
-			invokeMethod.Parameters.Add(new DefaultParameter("callback", CreateReturnType(typeof(AsyncCallback)), null));
-			invokeMethod.Parameters.Add(new DefaultParameter("object", ReflectionReturnType.Object, null));
+			invokeMethod.Parameters.Add(new DefaultParameter("callback", CreateReturnType(typeof(AsyncCallback)), DomRegion.Empty));
+			invokeMethod.Parameters.Add(new DefaultParameter("object", ReflectionReturnType.Object, DomRegion.Empty));
 			c.Methods.Add(invokeMethod);
-			invokeMethod = new DefaultMethod("EndInvoke", CreateReturnType(delegateDeclaration.ReturnType), ModifierEnum.Public, null, null, c);
-			invokeMethod.Parameters.Add(new DefaultParameter("result", CreateReturnType(typeof(IAsyncResult)), null));
+			invokeMethod = new DefaultMethod("EndInvoke", CreateReturnType(delegateDeclaration.ReturnType), ModifierEnum.Public, DomRegion.Empty, DomRegion.Empty, c);
+			invokeMethod.Parameters.Add(new DefaultParameter("result", CreateReturnType(typeof(IAsyncResult)), DomRegion.Empty));
 			c.Methods.Add(invokeMethod);
 			currentClass.Pop();
 			return c;
@@ -390,15 +390,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		IParameter CreateParameter(AST.ParameterDeclarationExpression par, IMethod method)
 		{
 			IReturnType parType = CreateReturnType(par.TypeReference, method);
-			DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DefaultRegion(par.StartLocation, par.EndLocation));
+			DefaultParameter p = new DefaultParameter(par.ParameterName, parType, new DomRegion(par.StartLocation, par.EndLocation));
 			p.Modifiers = (ParameterModifiers)par.ParamModifier;
 			return p;
 		}
 		
 		public override object Visit(AST.MethodDeclaration methodDeclaration, object data)
 		{
-			DefaultRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
-			DefaultRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new Point(-1, -1));
+			DomRegion region     = GetRegion(methodDeclaration.StartLocation, methodDeclaration.EndLocation);
+			DomRegion bodyRegion = GetRegion(methodDeclaration.EndLocation, methodDeclaration.Body != null ? methodDeclaration.Body.EndLocation : new Point(-1, -1));
 			DefaultClass c  = GetCurrentClass();
 			
 			DefaultMethod method = new DefaultMethod(methodDeclaration.Name, null, ConvertModifier(methodDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
@@ -418,8 +418,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(AST.OperatorDeclaration operatorDeclaration, object data)
 		{
 			DefaultClass c  = GetCurrentClass();
-			DefaultRegion region     = GetRegion(operatorDeclaration.StartLocation, operatorDeclaration.EndLocation);
-			DefaultRegion bodyRegion = GetRegion(operatorDeclaration.EndLocation, operatorDeclaration.Body != null ? operatorDeclaration.Body.EndLocation : new Point(-1, -1));
+			DomRegion region     = GetRegion(operatorDeclaration.StartLocation, operatorDeclaration.EndLocation);
+			DomRegion bodyRegion = GetRegion(operatorDeclaration.EndLocation, operatorDeclaration.Body != null ? operatorDeclaration.Body.EndLocation : new Point(-1, -1));
 			
 			DefaultMethod method = new DefaultMethod(operatorDeclaration.Name, CreateReturnType(operatorDeclaration.ConvertToType), ConvertModifier(operatorDeclaration.Modifier), region, bodyRegion, c);
 			if(operatorDeclaration.Parameters != null)
@@ -434,8 +434,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(AST.ConstructorDeclaration constructorDeclaration, object data)
 		{
-			DefaultRegion region     = GetRegion(constructorDeclaration.StartLocation, constructorDeclaration.EndLocation);
-			DefaultRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new Point(-1, -1));
+			DomRegion region     = GetRegion(constructorDeclaration.StartLocation, constructorDeclaration.EndLocation);
+			DomRegion bodyRegion = GetRegion(constructorDeclaration.EndLocation, constructorDeclaration.Body != null ? constructorDeclaration.Body.EndLocation : new Point(-1, -1));
 			DefaultClass c = GetCurrentClass();
 			
 			Constructor constructor = new Constructor(ConvertModifier(constructorDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
@@ -452,8 +452,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(AST.DestructorDeclaration destructorDeclaration, object data)
 		{
-			DefaultRegion region     = GetRegion(destructorDeclaration.StartLocation, destructorDeclaration.EndLocation);
-			DefaultRegion bodyRegion = GetRegion(destructorDeclaration.EndLocation, destructorDeclaration.Body != null ? destructorDeclaration.Body.EndLocation : new Point(-1, -1));
+			DomRegion region     = GetRegion(destructorDeclaration.StartLocation, destructorDeclaration.EndLocation);
+			DomRegion bodyRegion = GetRegion(destructorDeclaration.EndLocation, destructorDeclaration.Body != null ? destructorDeclaration.Body.EndLocation : new Point(-1, -1));
 			
 			DefaultClass c = GetCurrentClass();
 			
@@ -466,7 +466,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(AST.FieldDeclaration fieldDeclaration, object data)
 		{
-			DefaultRegion region = GetRegion(fieldDeclaration.StartLocation, fieldDeclaration.EndLocation);
+			DomRegion region = GetRegion(fieldDeclaration.StartLocation, fieldDeclaration.EndLocation);
 			DefaultClass c = GetCurrentClass();
 			string doku = GetDocumentation(region.BeginLine);
 			if (currentClass.Count > 0) {
@@ -493,8 +493,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(AST.PropertyDeclaration propertyDeclaration, object data)
 		{
-			DefaultRegion region     = GetRegion(propertyDeclaration.StartLocation, propertyDeclaration.EndLocation);
-			DefaultRegion bodyRegion = GetRegion(propertyDeclaration.BodyStart,     propertyDeclaration.BodyEnd);
+			DomRegion region     = GetRegion(propertyDeclaration.StartLocation, propertyDeclaration.EndLocation);
+			DomRegion bodyRegion = GetRegion(propertyDeclaration.BodyStart,     propertyDeclaration.BodyEnd);
 			
 			IReturnType type = CreateReturnType(propertyDeclaration.TypeReference);
 			DefaultClass c = GetCurrentClass();
@@ -514,8 +514,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(AST.EventDeclaration eventDeclaration, object data)
 		{
-			DefaultRegion region     = GetRegion(eventDeclaration.StartLocation, eventDeclaration.EndLocation);
-			DefaultRegion bodyRegion = GetRegion(eventDeclaration.BodyStart,     eventDeclaration.BodyEnd);
+			DomRegion region     = GetRegion(eventDeclaration.StartLocation, eventDeclaration.EndLocation);
+			DomRegion bodyRegion = GetRegion(eventDeclaration.BodyStart,     eventDeclaration.BodyEnd);
 			IReturnType type = CreateReturnType(eventDeclaration.TypeReference);
 			DefaultClass c = GetCurrentClass();
 			DefaultEvent e = null;
@@ -541,8 +541,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(AST.IndexerDeclaration indexerDeclaration, object data)
 		{
-			DefaultRegion region     = GetRegion(indexerDeclaration.StartLocation, indexerDeclaration.EndLocation);
-			DefaultRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
+			DomRegion region     = GetRegion(indexerDeclaration.StartLocation, indexerDeclaration.EndLocation);
+			DomRegion bodyRegion = GetRegion(indexerDeclaration.BodyStart,     indexerDeclaration.BodyEnd);
 			DefaultProperty i = new DefaultProperty("Indexer", CreateReturnType(indexerDeclaration.TypeReference), ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 			i.IsIndexer = true;
 			i.Documentation = GetDocumentation(region.BeginLine);

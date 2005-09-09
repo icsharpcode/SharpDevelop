@@ -105,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			RenameReferences(list, newName);
 		}
 		
-		void AddDeclarationAsReference(List<Reference> list, string fileName, IRegion region, string name)
+		void AddDeclarationAsReference(List<Reference> list, string fileName, DomRegion region, string name)
 		{
 			if (fileName == null)
 				return;

@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		IRegion Region {
+		DomRegion Region {
 			get;
 		}
 		

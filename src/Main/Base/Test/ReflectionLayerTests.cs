@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -44,8 +44,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 		[Test]
 		public void ParameterComparisonTest()
 		{
-			DefaultParameter p1 = new DefaultParameter("a", pc.GetClass("System.String").DefaultReturnType, null);
-			DefaultParameter p2 = new DefaultParameter("b", new GetClassReturnType(pc, "System.String"), null);
+			DefaultParameter p1 = new DefaultParameter("a", pc.GetClass("System.String").DefaultReturnType, DomRegion.Empty);
+			DefaultParameter p2 = new DefaultParameter("b", new GetClassReturnType(pc, "System.String"), DomRegion.Empty);
 			List<IParameter> a1 = new List<IParameter>();
 			List<IParameter> a2 = new List<IParameter>();
 			a1.Add(p1);

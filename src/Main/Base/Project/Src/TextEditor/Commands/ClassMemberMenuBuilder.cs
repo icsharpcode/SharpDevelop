@@ -161,7 +161,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				if (derivedClass.CompilationUnit == null) continue;
 				if (derivedClass.CompilationUnit.FileName == null) continue;
 				IMember m = RefactoringService.FindSimilarMember(derivedClass, member);
-				if (m != null && m.Region != null) {
+				if (!m.Region.IsEmpty) {
 					SearchResult res = new SimpleSearchResult(m.FullyQualifiedName, new Point(m.Region.BeginColumn - 1, m.Region.BeginLine - 1));
 					res.ProvidedDocumentInformation = GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 					results.Add(res);

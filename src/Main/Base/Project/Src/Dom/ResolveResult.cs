@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -207,11 +207,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (cu.FileName == null || cu.FileName.Length == 0) {
 				return null;
 			}
-			IRegion reg = field.Region;
-			if (reg != null) {
+			DomRegion reg = field.Region;
+			if (!reg.IsEmpty) {
 				return new FilePosition(cu.FileName, new Point(reg.BeginLine, reg.BeginColumn));
 			} else {
-				LoggingService.Warn("GetDefinitionPosition: field.Region is null");
+				LoggingService.Warn("GetDefinitionPosition: field.Region is empty");
 				return new FilePosition(cu.FileName, Point.Empty);
 			}
 		}
@@ -318,8 +318,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (cu == null || cu.FileName == null || cu.FileName.Length == 0) {
 				return null;
 			}
-			IRegion reg = resolvedClass.Region;
-			if (reg != null)
+			DomRegion reg = resolvedClass.Region;
+			if (!reg.IsEmpty)
 				return new FilePosition(cu.FileName, new Point(reg.BeginLine, reg.BeginColumn));
 			else
 				return new FilePosition(cu.FileName, Point.Empty);
@@ -383,8 +383,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (cu.FileName == null || cu.FileName.Length == 0) {
 				return null;
 			}
-			IRegion reg = resolvedMember.Region;
-			if (reg != null)
+			DomRegion reg = resolvedMember.Region;
+			if (!reg.IsEmpty)
 				return new FilePosition(cu.FileName, new Point(reg.BeginLine, reg.BeginColumn));
 			else
 				return new FilePosition(cu.FileName, Point.Empty);

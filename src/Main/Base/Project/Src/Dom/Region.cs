@@ -7,67 +7,68 @@
 
 using System;
 using System.Drawing;
-using System.Diagnostics;
 
-namespace ICSharpCode.SharpDevelop.Dom {
-	
+namespace ICSharpCode.SharpDevelop.Dom
+{
 	[Serializable]
-	public class DefaultRegion : System.MarshalByRefObject, IRegion
+	public struct DomRegion : IComparable, IComparable<DomRegion>
 	{
-		protected int beginLine = -1;
-		protected int endLine = -1;
-		protected int beginColumn = -1;
-		protected int endColumn = -1;
-
-		public virtual int BeginLine {
+		readonly int beginLine;
+		readonly int endLine;
+		readonly int beginColumn;
+		readonly int endColumn;
+		
+		public readonly static DomRegion Empty = new DomRegion(-1, -1);
+		
+		public bool IsEmpty {
+			get {
+				return BeginLine <= 0;
+			}
+		}
+		
+		public int BeginLine {
 			get {
 				return beginLine;
 			}
 		}
-
-		public virtual int BeginColumn {
-			get {
-				return beginColumn;
-			}
-		}
-
-		/// <value>
-		/// if the end column is == -1 the end line is -1 too
-		/// this stands for an unknwon end
-		/// </value>
-		public virtual int EndColumn {
-			get {
-				return endColumn;
-			}
-			set {
-				endColumn = value;
-			}
-		}
-
+		
 		/// <value>
 		/// if the end line is == -1 the end column is -1 too
 		/// this stands for an unknwon end
 		/// </value>
-		public virtual int EndLine {
+		public int EndLine {
 			get {
 				return endLine;
 			}
-			set {
-				endLine = value;
+		}
+		
+		public int BeginColumn {
+			get {
+				return beginColumn;
 			}
 		}
-
-		public DefaultRegion(Point start, Point end)
+		
+		/// <value>
+		/// if the end column is == -1 the end line is -1 too
+		/// this stands for an unknwon end
+		/// </value>
+		public int EndColumn {
+			get {
+				return endColumn;
+			}
+		}
+		
+		public DomRegion(Point start, Point end)
 			: this(start.Y, start.X, end.Y, end.X)
 		{
 		}
 		
-		public DefaultRegion(Point start)
+		public DomRegion(Point start)
 			: this(start.Y, start.X)
 		{
 		}
 		
-		public DefaultRegion(int beginLine, int beginColumn, int endLine, int endColumn)
+		public DomRegion(int beginLine, int beginColumn, int endLine, int endColumn)
 		{
 			this.beginLine   = beginLine;
 			this.beginColumn = beginColumn;
@@ -75,10 +76,12 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			this.endColumn   = endColumn;
 		}
 		
-		public DefaultRegion(int beginLine, int beginColumn)
+		public DomRegion(int beginLine, int beginColumn)
 		{
 			this.beginLine   = beginLine;
 			this.beginColumn = beginColumn;
+			this.endLine = -1;
+			this.endColumn = -1;
 		}
 		
 		/// <remarks>
@@ -88,9 +91,9 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		public bool IsInside(int row, int column)
 		{
 			return row >= BeginLine &&
-			      (row <= EndLine   || EndLine == -1) &&
-			      (row != BeginLine || column >= BeginColumn) &&
-			      (row != EndLine   || column <= EndColumn);
+				(row <= EndLine   || EndLine == -1) &&
+				(row != BeginLine || column >= BeginColumn) &&
+				(row != EndLine   || column <= EndColumn);
 		}
 
 		public override string ToString()
@@ -102,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			                     endColumn);
 		}
 		
-		public virtual int CompareTo(IRegion value)
+		public int CompareTo(DomRegion value)
 		{
 			int cmp;
 			if (0 != (cmp = (BeginLine - value.BeginLine))) {
@@ -121,7 +124,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		}
 		
 		int IComparable.CompareTo(object value) {
-			return CompareTo((IRegion)value);
+			return CompareTo((DomRegion)value);
 		}
 	}
 }

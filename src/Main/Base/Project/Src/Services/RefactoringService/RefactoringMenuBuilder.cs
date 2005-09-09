@@ -116,12 +116,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return null;
 			}
 			foreach (IMethod method in callingClass.Methods) {
-				if (method.BodyRegion != null && method.BodyRegion.IsInside(caretLine, caretColumn)) {
+				if (method.BodyRegion.IsInside(caretLine, caretColumn)) {
 					return method;
 				}
 			}
 			foreach (IProperty property in callingClass.Properties) {
-				if (property.BodyRegion != null && property.BodyRegion.IsInside(caretLine, caretColumn)) {
+				if (property.BodyRegion.IsInside(caretLine, caretColumn)) {
 					return property;
 				}
 			}
@@ -154,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return MakeItem(c.FullyQualifiedName, new ClassNode(c.ProjectContent.Project, c), c.CompilationUnit, c.Region);
 		}
 		
-		ToolStripMenuItem MakeItem(string title, ExtTreeNode classBrowserTreeNode, ICompilationUnit cu, IRegion region)
+		ToolStripMenuItem MakeItem(string title, ExtTreeNode classBrowserTreeNode, ICompilationUnit cu, DomRegion region)
 		{
 			ToolStripMenuItem item = new ToolStripMenuItem(classBrowserTreeNode.Text, ClassBrowserIconService.ImageList.Images[classBrowserTreeNode.ImageIndex]);
 			
@@ -163,7 +163,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			//item.DropDown.Items.Add(titleItem);
 			//item.DropDown.Items.Add(new ToolStripSeparator());
 			
-			if (cu.FileName != null && region != null) {
+			if (cu.FileName != null && !region.IsEmpty) {
 				ToolStripMenuItem gotoDefinitionItem = new ToolStripMenuItem(StringParser.Parse("${res:ICSharpCode.NAntAddIn.GotoDefinitionMenuLabel}"),
 				                                                             ClassBrowserIconService.ImageList.Images[ClassBrowserIconService.GotoArrowIndex]);
 				gotoDefinitionItem.ShortcutKeys = Keys.Control | Keys.Enter;

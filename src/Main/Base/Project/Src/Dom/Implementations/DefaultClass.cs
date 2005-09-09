@@ -19,7 +19,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	public class DefaultClass : AbstractNamedEntity, IClass, IComparable
 	{
 		ClassType classType;
-		IRegion region;
+		DomRegion region;
 		
 		ICompilationUnit compilationUnit;
 		
@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.compilationUnit = compilationUnit;
 		}
 		
-		public DefaultClass(ICompilationUnit compilationUnit, ClassType classType, ModifierEnum modifiers, IRegion region, IClass declaringType) : base(declaringType)
+		public DefaultClass(ICompilationUnit compilationUnit, ClassType classType, ModifierEnum modifiers, DomRegion region, IClass declaringType) : base(declaringType)
 		{
 			this.compilationUnit = compilationUnit;
 			this.region = region;
@@ -102,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public IRegion Region {
+		public DomRegion Region {
 			get {
 				return region;
 			}
@@ -362,7 +362,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public IClass GetInnermostClass(int caretLine, int caretColumn)
 		{
 			foreach (IClass c in InnerClasses) {
-				if (c != null && c.Region != null && c.Region.IsInside(caretLine, caretColumn)) {
+				if (c != null && c.Region.IsInside(caretLine, caretColumn)) {
 					return c.GetInnermostClass(caretLine, caretColumn);
 				}
 			}

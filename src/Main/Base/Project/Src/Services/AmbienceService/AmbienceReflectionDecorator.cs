@@ -89,7 +89,7 @@ namespace ICSharpCode.Core
 		
 		public string Convert(Type type)
 		{
-			return conv.Convert(new ReflectionClass(null, type, null));
+			return conv.Convert(new ReflectionClass(null, type, type.FullName.Replace('+', '.'), null));
 		}
 		
 		public string Convert(FieldInfo field)

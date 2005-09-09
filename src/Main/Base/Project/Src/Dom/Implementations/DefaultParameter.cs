@@ -22,7 +22,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		protected IReturnType         returnType;
 		protected ParameterModifiers  modifier;
-		protected IRegion region;
+		protected DomRegion region;
 		List<IAttribute> attributes;
 		
 		protected DefaultParameter(string name)
@@ -38,13 +38,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.returnType = p.ReturnType;
 		}
 		
-		public DefaultParameter(string name, IReturnType type, IRegion region) : this(name)
+		public DefaultParameter(string name, IReturnType type, DomRegion region) : this(name)
 		{
 			returnType = type;
 			this.region = region;
 		}
 		
-		public IRegion Region {
+		public DomRegion Region {
 			get {
 				return region;
 			}

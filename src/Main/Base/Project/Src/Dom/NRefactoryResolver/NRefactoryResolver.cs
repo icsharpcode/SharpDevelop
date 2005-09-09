@@ -400,10 +400,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			// mode that does not parse the method bodies for the normal run (in the ParserUpdateThread or
 			// SolutionLoadThread). That could improve the parser's speed dramatically.
 			
-			if (member.Region == null) return null;
+			if (member.Region.IsEmpty) return null;
 			int startLine = member.Region.BeginLine;
 			if (startLine < 1) return null;
-			IRegion bodyRegion;
+			DomRegion bodyRegion;
 			if (member is IMethodOrProperty) {
 				bodyRegion = ((IMethodOrProperty)member).BodyRegion;
 			} else if (member is IEvent) {
@@ -411,7 +411,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			} else {
 				return null;
 			}
-			if (bodyRegion == null) return null;
+			if (bodyRegion.IsEmpty) return null;
 			int endLine = bodyRegion.EndLine;
 			int offset = 0;
 			for (int i = 0; i < startLine - 1; ++i) { // -1 because the startLine must be included
@@ -482,7 +482,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				LocalLookupVariable var = SearchVariable(identifier);
 				if (var != null) {
 					IReturnType type = GetVariableType(var);
-					IField field = new DefaultField(type, identifier, ModifierEnum.None, new DefaultRegion(var.StartPos, var.EndPos), callingClass);
+					IField field = new DefaultField(type, identifier, ModifierEnum.None, new DomRegion(var.StartPos, var.EndPos), callingClass);
 					return new LocalResolveResult(callingMember, field, false);
 				}
 				IParameter para = SearchMethodParameter(identifier);
@@ -492,7 +492,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 				if (IsSameName(identifier, "value")) {
 					IProperty property = callingMember as IProperty;
-					if (property != null && property.SetterRegion != null && property.SetterRegion.IsInside(caretLine, caretColumn)) {
+					if (property != null && property.SetterRegion.IsInside(caretLine, caretColumn)) {
 						IField field = new DefaultField(property.ReturnType, "value", ModifierEnum.None, property.Region, callingClass);
 						return new LocalResolveResult(callingMember, field, true);
 					}
@@ -650,12 +650,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (callingClass == null)
 				return null;
 			foreach (IMethod method in callingClass.Methods) {
-				if (method.BodyRegion != null && method.BodyRegion.IsInside(caretLine, caretColumn)) {
+				if (method.BodyRegion.IsInside(caretLine, caretColumn)) {
 					return method;
 				}
 			}
 			foreach (IProperty property in callingClass.Properties) {
-				if (property.BodyRegion != null && property.BodyRegion.IsInside(caretLine, caretColumn)) {
+				if (property.BodyRegion.IsInside(caretLine, caretColumn)) {
 					return property;
 				}
 			}
@@ -939,7 +939,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					foreach (LocalLookupVariable v in pair.Value) {
 						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
 							// convert to a field for display
-							result.Add(new DefaultField(TypeVisitor.CreateReturnType(v.TypeRef, this), pair.Key, ModifierEnum.None, new DefaultRegion(v.StartPos, v.EndPos), callingClass));
+							result.Add(new DefaultField(TypeVisitor.CreateReturnType(v.TypeRef, this), pair.Key, ModifierEnum.None, new DomRegion(v.StartPos, v.EndPos), callingClass));
 							break;
 						}
 					}
@@ -978,8 +978,10 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 			}
-			foreach (string alias in u.Aliases.Keys) {
-				result.Add(alias);
+			if (u.HasAliases) {
+				foreach (string alias in u.Aliases.Keys) {
+					result.Add(alias);
+				}
 			}
 		}
 	}

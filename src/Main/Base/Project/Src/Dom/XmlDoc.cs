@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -19,8 +19,32 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public class XmlDoc : IDisposable
 	{
+		struct IndexEntry : IComparable<IndexEntry> {
+			public int HashCode;
+			public int FileLocation;
+			
+			public int CompareTo(IndexEntry other)
+			{
+				return HashCode.CompareTo(other.HashCode);
+			}
+			
+			public IndexEntry(int HashCode, int FileLocation)
+			{
+				this.HashCode = HashCode;
+				this.FileLocation = FileLocation;
+			}
+		}
+		
 		Dictionary<string, string> xmlDescription = new Dictionary<string, string>();
-		Dictionary<string, int>    indexDictionary;
+		IndexEntry[] index; // SORTED array of index entries
+		Queue<string> keyCacheQueue;
+		
+		const int cacheLength = 150; // number of strings to cache when working in file-mode
+		#if DEBUG
+		const string tempPathName = "SharpDevelop/DocumentationCacheDebug";
+		#else
+		const string tempPathName = "SharpDevelop/DocumentationCache";
+		#endif
 		
 		void ReadMembersSection(XmlTextReader reader)
 		{
@@ -45,13 +69,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public string GetDocumentation(string key)
 		{
 			lock (xmlDescription) {
-				if (indexDictionary != null) {
-					if (!indexDictionary.ContainsKey(key))
-						return null;
-				}
-				if (xmlDescription.ContainsKey(key))
-					return xmlDescription[key];
-				if (indexDictionary == null)
+				string result;
+				if (xmlDescription.TryGetValue(key, out result))
+					return result;
+				if (index == null)
 					return null;
 				return LoadDocumentation(key);
 			}
@@ -60,18 +81,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region Save binary files
 		// FILE FORMAT FOR BINARY DOCUMENTATION
 		// long  magic = 0x4244636f446c6d58 (identifies file type = 'XmlDocDB')
-		// short version = 1              (file version)
+		const long magic = 0x4244636f446c6d58;
+		// short version = 2              (file version)
+		const short version = 2;
 		// long  fileDate                 (last change date of xml file in DateTime ticks)
+		// int   testHashCode = magicTestString.GetHashCode() // (check if hash-code implementation is compatible)
+		// int   entryCount               (count of entries)
 		// int   indexPointer             (points to location where index starts in the file)
-		// { string docu }                (all documentation strings as length-prefixed strings)
+		// {
+		//   string key                   (documentation key as length-prefixed string)
+		//   string docu                  (xml documentation as length-prefixed string)
+		// }
 		// indexPointer points to the start of the following section:
 		// {
-		//   string key             (documentation key as length-prefixed string)
+		//   int hashcode
 		//   int    index           (index where the docu string starts in the file)
 		// }
-		
-		const long magic = 0x4244636f446c6d58;
-		const short version = 1;
 		
 		void Save(string fileName, DateTime fileDate)
 		{
@@ -81,21 +106,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 					w.Write(version);
 					w.Write(fileDate.Ticks);
 					
+					IndexEntry[] index = new IndexEntry[xmlDescription.Count];
+					w.Write(index.Length);
+					
 					int indexPointerPos = (int)fs.Position;
 					w.Write(0); // skip 4 bytes
-					int[] indices = new int[xmlDescription.Count];
 					
 					int i = 0;
 					foreach (KeyValuePair<string, string> p in xmlDescription) {
-						indices[i++] = (int)fs.Position;
+						index[i] = new IndexEntry(p.Key.GetHashCode(), (int)fs.Position);
+						w.Write(p.Key);
 						w.Write(p.Value.Trim());
+						i += 1;
 					}
 					
+					Array.Sort(index);
+					
 					int indexStart = (int)fs.Position;
-					i = 0;
-					foreach (KeyValuePair<string, string> p in xmlDescription) {
-						w.Write(p.Key);
-						w.Write(indices[i++]);
+					foreach (IndexEntry entry in index) {
+						w.Write(entry.HashCode);
+						w.Write(entry.FileLocation);
 					}
 					w.Seek(indexPointerPos, SeekOrigin.Begin);
 					w.Write(indexStart);
@@ -107,12 +137,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region Load binary files
 		BinaryReader loader;
 		FileStream fs;
-		Queue<string> keyCacheQueue;
-		const int cacheLength = 150; // number of strings to cache when working in file-mode
 		
 		bool LoadFromBinary(string fileName, DateTime fileDate)
 		{
-			indexDictionary = new Dictionary<string, int>();
 			keyCacheQueue   = new Queue<string>(cacheLength);
 			fs = new FileStream(fileName, FileMode.Open, FileAccess.Read, FileShare.Read);
 			int len = (int)fs.Length;
@@ -130,21 +157,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 					LoggingService.Info("Not loading XmlDoc: file changed since cache was created");
 					return false;
 				}
+				int count = loader.ReadInt32();
 				int indexStartPosition = loader.ReadInt32(); // go to start of index
 				if (indexStartPosition >= len) {
 					LoggingService.Error("XmlDoc: Cannot find index, cache invalid!");
 					return false;
 				}
 				fs.Position = indexStartPosition;
-				while (fs.Position < len) {
-					string key = loader.ReadString();
-					int pos = loader.ReadInt32();
-					indexDictionary.Add(key, pos);
+				IndexEntry[] index = new IndexEntry[count];
+				for (int i = 0; i < index.Length; i++) {
+					index[i] = new IndexEntry(loader.ReadInt32(), loader.ReadInt32());
 				}
-				if (fs.Position > len) {
-					LoggingService.Error("XmlDoc: Jumped over end of file, cache invalid!");
-					return false;
-				}
+				this.index = index;
 				return true;
 			} catch (Exception ex) {
 				LoggingService.Error("Cannot load from cache", ex);
@@ -157,12 +181,34 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (keyCacheQueue.Count > cacheLength - 1) {
 				xmlDescription.Remove(keyCacheQueue.Dequeue());
 			}
-			int pos = indexDictionary[key];
-			fs.Position = pos;
-			string docu = loader.ReadString();
-			xmlDescription.Add(key, docu);
-			keyCacheQueue.Enqueue(docu);
-			return docu;
+			
+			int hashcode = key.GetHashCode();
+			
+			// use interpolation search to find the item
+			string resultDocu = null;
+			
+			int m = Array.BinarySearch(index, new IndexEntry(hashcode, 0));
+			if (m >= 0) {
+				// correct hash code found.
+				// possibly there are multiple items with the same hash, so go to the first.
+				while (--m >= 0 && index[m].HashCode == hashcode);
+				// go through all items that have the correct hash
+				while (++m < index.Length && index[m].HashCode == hashcode) {
+					fs.Position = index[m].FileLocation;
+					string keyInFile = loader.ReadString();
+					if (keyInFile == key) {
+						resultDocu = loader.ReadString();
+						break;
+					} else {
+						LoggingService.Warn("Found " + keyInFile + " instead of " + key);
+					}
+				}
+			}
+			
+			keyCacheQueue.Enqueue(key);
+			xmlDescription.Add(key, resultDocu);
+			
+			return resultDocu;
 		}
 		
 		public void Dispose()
@@ -172,7 +218,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				fs.Close();
 			}
 			xmlDescription = null;
-			indexDictionary = null;
+			index = null;
 			keyCacheQueue = null;
 			loader = null;
 			fs = null;
@@ -198,7 +244,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		static string MakeTempPath()
 		{
-			string tempPath = Path.Combine(Path.GetTempPath(), "SharpDevelop/DocumentationCache");
+			string tempPath = Path.Combine(Path.GetTempPath(), tempPathName);
 			if (!Directory.Exists(tempPath))
 				Directory.CreateDirectory(tempPath);
 			return tempPath;

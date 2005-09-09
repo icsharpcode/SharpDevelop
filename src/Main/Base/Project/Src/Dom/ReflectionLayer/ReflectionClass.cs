@@ -7,7 +7,6 @@
 
 using System;
 using System.Collections;
-//using System.Xml;
 using System.Reflection;
 using System.Collections.Generic;
 using ICSharpCode.Core;
@@ -24,29 +23,47 @@ namespace ICSharpCode.SharpDevelop.Dom
 			BindingFlags.NonPublic |
 			BindingFlags.DeclaredOnly |
 			BindingFlags.Public;
-
+		
 		List<IClass> innerClasses;
-
+		
 		public override List<IClass> InnerClasses {
 			get {
 				if (innerClasses == null) {
 					innerClasses = new List<IClass>();
 					foreach (Type nestedType in type.GetNestedTypes(flags)) {
-						innerClasses.Add(new ReflectionClass(CompilationUnit, nestedType, this));
+						string name = nestedType.FullName.Replace('+', '.');
+						innerClasses.Add(new ReflectionClass(CompilationUnit, nestedType, name, this));
 					}
 				}
 				return innerClasses;
 			}
 		}
 		
+		static Dictionary<ReflectionClass, List<IField>>    fieldCache    = new Dictionary<ReflectionClass, List<IField>>();
+		static Dictionary<ReflectionClass, List<IProperty>> propertyCache = new Dictionary<ReflectionClass, List<IProperty>>();
+		static Dictionary<ReflectionClass, List<IMethod>>   methodCache   = new Dictionary<ReflectionClass, List<IMethod>>();
+		static Dictionary<ReflectionClass, List<IEvent>>    eventCache    = new Dictionary<ReflectionClass, List<IEvent>>();
+		
+		public static void ClearMemberCache()
+		{
+			fieldCache.Clear();
+			propertyCache.Clear();
+			methodCache.Clear();
+			eventCache.Clear();
+		}
+		
 		public override List<IField> Fields {
 			get {
-				List<IField> fields = new List<IField>();
-				foreach (FieldInfo field in type.GetFields(flags)) {
-					if (!field.IsPublic && !field.IsFamily) continue;
-					if (!field.IsSpecialName) {
-						fields.Add(new ReflectionField(field, this));
+				List<IField> fields;
+				if (!fieldCache.TryGetValue(this, out fields)) {
+					fields = new List<IField>();
+					foreach (FieldInfo field in type.GetFields(flags)) {
+						if (!field.IsPublic && !field.IsFamily) continue;
+						if (!field.IsSpecialName) {
+							fields.Add(new ReflectionField(field, this));
+						}
 					}
+					fieldCache.Add(this, fields);
 				}
 				return fields;
 			}
@@ -54,33 +71,40 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override List<IProperty> Properties {
 			get {
-				List<IProperty> properties = new List<IProperty>();
-				foreach (PropertyInfo propertyInfo in type.GetProperties(flags)) {
-					ReflectionProperty prop = new ReflectionProperty(propertyInfo, this);
-					if (prop.IsPublic || prop.IsProtected)
-						properties.Add(prop);
+				List<IProperty> properties;
+				if (!propertyCache.TryGetValue(this, out properties)) {
+					properties = new List<IProperty>();
+					foreach (PropertyInfo propertyInfo in type.GetProperties(flags)) {
+						ReflectionProperty prop = new ReflectionProperty(propertyInfo, this);
+						if (prop.IsPublic || prop.IsProtected)
+							properties.Add(prop);
+					}
+					propertyCache.Add(this, properties);
 				}
-				
 				return properties;
 			}
 		}
 		
 		public override List<IMethod> Methods {
 			get {
-				List<IMethod> methods = new List<IMethod>();
-				
-				foreach (ConstructorInfo constructorInfo in type.GetConstructors(flags)) {
-					if (!constructorInfo.IsPublic && !constructorInfo.IsFamily) continue;
-					IMethod newMethod = new ReflectionMethod(constructorInfo, this);
-					methods.Add(newMethod);
-				}
-				
-				foreach (MethodInfo methodInfo in type.GetMethods(flags)) {
-					if (!methodInfo.IsPublic && !methodInfo.IsFamily) continue;
-					if (!methodInfo.IsSpecialName) {
-						IMethod newMethod = new ReflectionMethod(methodInfo, this);
+				List<IMethod> methods;
+				if (!methodCache.TryGetValue(this, out methods)) {
+					methods = new List<IMethod>();
+					
+					foreach (ConstructorInfo constructorInfo in type.GetConstructors(flags)) {
+						if (!constructorInfo.IsPublic && !constructorInfo.IsFamily) continue;
+						IMethod newMethod = new ReflectionMethod(constructorInfo, this);
 						methods.Add(newMethod);
 					}
+					
+					foreach (MethodInfo methodInfo in type.GetMethods(flags)) {
+						if (!methodInfo.IsPublic && !methodInfo.IsFamily) continue;
+						if (!methodInfo.IsSpecialName) {
+							IMethod newMethod = new ReflectionMethod(methodInfo, this);
+							methods.Add(newMethod);
+						}
+					}
+					methodCache.Add(this, methods);
 				}
 				return methods;
 			}
@@ -88,10 +112,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override List<IEvent> Events {
 			get {
-				List<IEvent> events = new List<IEvent>();
-				
-				foreach (EventInfo eventInfo in type.GetEvents(flags)) {
-					events.Add(new ReflectionEvent(eventInfo, this));
+				List<IEvent> events;
+				if (!eventCache.TryGetValue(this, out events)) {
+					events = new List<IEvent>();
+					foreach (EventInfo eventInfo in type.GetEvents(flags)) {
+						events.Add(new ReflectionEvent(eventInfo, this));
+					}
+					eventCache.Add(this, events);
 				}
 				return events;
 			}
@@ -105,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#region VoidClass / VoidReturnType
 		public class VoidClass : ReflectionClass
 		{
-			public VoidClass(ICompilationUnit compilationUnit) : base(compilationUnit, typeof(void), null) {}
+			public VoidClass(ICompilationUnit compilationUnit) : base(compilationUnit, typeof(void), typeof(void).FullName, null) {}
 			
 			protected override IReturnType CreateDefaultReturnType() {
 				return new VoidReturnType(this);
@@ -146,14 +173,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public ReflectionClass(ICompilationUnit compilationUnit, Type type, IClass declaringType) : base(compilationUnit, declaringType)
+		public ReflectionClass(ICompilationUnit compilationUnit, Type type, string fullName, IClass declaringType) : base(compilationUnit, declaringType)
 		{
 			this.type = type;
-			string name = type.FullName.Replace('+', '.');
-			if (name.Length > 2 && name[name.Length - 2] == '`') {
-				FullyQualifiedName = name.Substring(0, name.Length - 2);
+			if (fullName.Length > 2 && fullName[fullName.Length - 2] == '`') {
+				FullyQualifiedName = fullName.Substring(0, fullName.Length - 2);
 			} else {
-				FullyQualifiedName = name;
+				FullyQualifiedName = fullName;
 			}
 			
 			this.UseInheritanceCache = true;

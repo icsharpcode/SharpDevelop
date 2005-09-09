@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 		}
 		
-		public DefaultField(IReturnType type, string name, ModifierEnum m, IRegion region, IClass declaringType) : base(declaringType, name)
+		public DefaultField(IReturnType type, string name, ModifierEnum m, DomRegion region, IClass declaringType) : base(declaringType, name)
 		{
 			this.ReturnType = type;
 			this.Region = region;

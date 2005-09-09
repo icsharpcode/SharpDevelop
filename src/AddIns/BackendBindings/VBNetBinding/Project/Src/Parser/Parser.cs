@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Andrea Paatz" email="andrea@icsharpcode.net"/>
@@ -74,7 +74,7 @@ namespace VBNetBinding.Parser
 										if (nextDirective.Arg.ToLower() == "region") {
 											--deep;
 											if (deep == 0) {
-												cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim('"'), new DefaultRegion(directive.StartPosition, nextDirective.EndPosition)));
+												cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim('"'), new DomRegion(directive.StartPosition, nextDirective.EndPosition)));
 												goto end;
 											}
 										}
@@ -134,7 +134,7 @@ namespace VBNetBinding.Parser
 		{
 			foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in tagComments)
 			{
-				DefaultRegion tagRegion = new DefaultRegion(tagComment.StartPosition.Y, tagComment.StartPosition.X);
+				DomRegion tagRegion = new DomRegion(tagComment.StartPosition.Y, tagComment.StartPosition.X);
 				ICSharpCode.SharpDevelop.Dom.Tag tag = new ICSharpCode.SharpDevelop.Dom.Tag(tagComment.Tag, tagRegion);
 				tag.CommentString = tagComment.CommentText;
 				cu.TagComments.Add(tag);

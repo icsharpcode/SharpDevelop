@@ -51,7 +51,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 			}
 			
-			public IRegion ItemRegion {
+			public DomRegion ItemRegion {
 				get {
 					IClass classItem = item as IClass;
 					if (item is IClass)
@@ -59,14 +59,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					else if (item is IMember)
 						return ((IMember)item).Region;
 					else
-						return null;
+						return DomRegion.Empty;
 				}
 			}
 			
 			public int Line {
 				get {
-					IRegion r = this.ItemRegion;
-					if (r == null)
+					DomRegion r = this.ItemRegion;
+					if (r.IsEmpty)
 						return 0;
 					else
 						return r.BeginLine - 1;
@@ -75,8 +75,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			public int Column {
 				get {
-					IRegion r = this.ItemRegion;
-					if (r == null)
+					DomRegion r = this.ItemRegion;
+					if (r.IsEmpty)
 						return 0;
 					else
 						return r.BeginColumn - 1;
@@ -85,8 +85,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			public int EndLine {
 				get {
-					IRegion r = this.ItemRegion;
-					if (r == null)
+					DomRegion r = this.ItemRegion;
+					if (r.IsEmpty)
 						return 0;
 					else
 						return r.EndLine - 1;
@@ -107,14 +107,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 					return false;
 				IClass classItem = item as IClass;
 				if (classItem != null) {
-					if (classItem.Region == null)
+					if (classItem.Region.IsEmpty)
 						return false;
 					return classItem.Region.BeginLine - 1 <= lineNumber &&
 						classItem.Region.EndLine - 1 >= lineNumber;
 				}
 				
 				IMember member = item as IMember;
-				if (member == null || member.Region == null) {
+				if (member == null || member.Region.IsEmpty) {
 					return false;
 				}
 				bool isInside = member.Region.BeginLine - 1 <= lineNumber;

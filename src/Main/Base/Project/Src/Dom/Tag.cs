@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Andrea Paatz" email="andrea@icsharpcode.net"/>
@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		string commentString;
-		IRegion region;
+		DomRegion region;
 		
 		public string CommentString {
 			get {
@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public IRegion Region {
+		public DomRegion Region {
 			get {
 				return region;
 			}
@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public Tag(string key, IRegion region)
+		public Tag(string key, DomRegion region)
 		{
 			this.key = key;
 			this.region = region;

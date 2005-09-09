@@ -74,7 +74,7 @@
     <Compile Include="Src\Services\LanguageBinding\LanguageBindingService.cs" />
     <Compile Include="Src\Dom\ICompilationUnit.cs" />
     <Compile Include="Src\Dom\IClass.cs" />
-    <Compile Include="Src\Dom\IRegion.cs" />
+    <Compile Include="Src\Dom\Region.cs" />
     <Compile Include="Src\Dom\IField.cs" />
     <Compile Include="Src\Dom\IReturnType.cs" />
     <Compile Include="Src\Dom\IProperty.cs" />
@@ -82,7 +82,6 @@
     <Compile Include="Src\Dom\IComment.cs" />
     <Compile Include="Src\Dom\IMethod.cs" />
     <Compile Include="Src\Dom\ClassType.cs" />
-    <Compile Include="Src\Dom\Implementations\DefaultRegion.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultClass.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultProperty.cs" />
     <Compile Include="Src\Dom\Implementations\DefaultField.cs" />

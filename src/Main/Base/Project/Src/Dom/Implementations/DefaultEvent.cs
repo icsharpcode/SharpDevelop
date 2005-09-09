@@ -13,7 +13,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class DefaultEvent : AbstractMember, IEvent
 	{
-		protected IRegion          bodyRegion;
+		protected DomRegion          bodyRegion;
 		protected EventAttributes  eventAttributes;
 		protected IMethod          addMethod;
 		protected IMethod          removeMethod;
@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual IRegion BodyRegion {
+		public virtual DomRegion BodyRegion {
 			get {
 				return bodyRegion;
 			}
@@ -46,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 		}
 		
-		public DefaultEvent(string name, IReturnType type, ModifierEnum m, IRegion region, IRegion bodyRegion, IClass declaringType) : base(declaringType, name)
+		public DefaultEvent(string name, IReturnType type, ModifierEnum m, DomRegion region, DomRegion bodyRegion, IClass declaringType) : base(declaringType, name)
 		{
 			this.ReturnType = type;
 			this.Region     = region;
