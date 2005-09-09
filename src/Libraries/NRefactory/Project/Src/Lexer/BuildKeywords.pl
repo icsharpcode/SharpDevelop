@@ -1,3 +1,4 @@
+
 #!/bin/perl
 
 # File names
@@ -58,7 +59,7 @@ sort (ascend @keywords);
 print "done.\n";
 
 #write output
-print "writing output files.\nIf your computer doesn’t respond, then press \"Ctrl-Alt-Delete\"\n";
+print "writing output files.\nIf your computer doesn?t respond, then press \"Ctrl-Alt-Delete\"\n";
 print "\n";
 &write_keywordfile;
 print "\n";
@@ -254,7 +255,7 @@ sub write_unittests {
 	open(DAT,">$unittests_outfile") || die("Cannot Open File");
 	print DAT "using System;\n";
 	print DAT "using System.IO;\n";
-	print DAT "using NUnit.Framework;\n";
+	print DAT "using MbUnit.Framework;\n";
 	print DAT "using ICSharpCode.NRefactory.Parser;\n";
 	print DAT "using ICSharpCode.NRefactory.PrettyPrinter;\n";
 	

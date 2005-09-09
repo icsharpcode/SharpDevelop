@@ -954,7 +954,7 @@ Type<out TypeReference type>
 =
 	( ClassType<out type>
 	| SimpleType<out name> (. type = new TypeReference(name); .)
-	  [ NullableQuestionMark<ref type> ]
+	[ NullableQuestionMark<ref type> ]
 	| "void" "*"                         (. pointer = 1; type = new TypeReference("void"); .)
 	)                                    (. List<int> r = new List<int>(); .)
 	

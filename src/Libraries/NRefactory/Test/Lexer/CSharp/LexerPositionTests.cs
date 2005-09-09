@@ -8,7 +8,7 @@
 using System;
 using System.Drawing;
 using System.IO;
-using NUnit.Framework;
+using MbUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.CSharp;
 using ICSharpCode.NRefactory.PrettyPrinter;

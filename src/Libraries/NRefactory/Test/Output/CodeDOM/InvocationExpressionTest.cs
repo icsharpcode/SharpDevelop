@@ -8,7 +8,7 @@
 using System;
 using System.Collections;
 using System.CodeDom;
-using NUnit.Framework;
+using MbUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
 
