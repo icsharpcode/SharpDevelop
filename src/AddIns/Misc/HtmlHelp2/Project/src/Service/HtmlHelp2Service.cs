@@ -280,18 +280,17 @@ namespace HtmlHelp2.Environment
 
 		public static IHxTopicList GetMatchingTopicsForDynamicHelp(string searchTerm)
 		{
-			if(dynamicHelpIsBusy)
-				return null;
+			if(dynamicHelpIsBusy) return null;
 
 			try
 			{
-				dynamicHelpIsBusy = true;
+				dynamicHelpIsBusy   = true;
 				IHxTopicList topics = ((IHxIndex)dynamicHelp).GetTopicsFromString(searchTerm, 0);
 				return topics;
 			}
 			finally
 			{
-				dynamicHelpIsBusy = false;
+				dynamicHelpIsBusy   = false;
 			}
 		}
 		#endregion

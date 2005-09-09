@@ -37,6 +37,7 @@ namespace HtmlHelp2
 		protected HtmlHelp2DynamicHelpBrowserControl dynamicHelpBrowser;
 		private int internalIndex = 0;
 		private string lastDynamicHelpWord = String.Empty;
+		private string lastSpecialHelpWord = String.Empty;
 
 		public override Control Control
 		{
@@ -59,43 +60,79 @@ namespace HtmlHelp2
 
 		public HtmlHelp2DynamicHelpPad()
 		{
-			dynamicHelpBrowser = new HtmlHelp2DynamicHelpBrowserControl();
+			dynamicHelpBrowser                      = new HtmlHelp2DynamicHelpBrowserControl();
 			ParserService.ParserUpdateStepFinished += UpdateTick;
 		}
 
 		#region WebBrowser Scripting
-		public void BuildDynamicHelpList(string dynamicHelpString, string expectedLanguage)
+		public void BuildDynamicHelpList(string dynamicHelpString,
+		                                 string specialDynamicHelpString,
+		                                 string expectedLanguage)
 		{
 			if(!HtmlHelp2Environment.IsReady || HtmlHelp2Environment.DynamicHelpIsBusy) {
 				return;
 			}
 
-			if(String.Compare(dynamicHelpString, this.lastDynamicHelpWord) == 0) return;
+			if(dynamicHelpString == "" && specialDynamicHelpString == "") return;
+
+			if(String.Compare(dynamicHelpString, this.lastDynamicHelpWord) == 0 &&
+			   String.Compare(specialDynamicHelpString, this.lastSpecialHelpWord) == 0) return;
 
 			try
 			{
 				this.RemoveAllChildren();
+				
+				IHxTopicList topics        = null;
+				IHxTopicList specialTopics = null;
+				Cursor.Current             = Cursors.WaitCursor;
 
-				Cursor.Current = Cursors.WaitCursor;
-				IHxTopicList topics = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(dynamicHelpString);
-				Cursor.Current = Cursors.Default;
+				if(dynamicHelpString != "") topics               = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(dynamicHelpString);
+				if(specialDynamicHelpString != "") specialTopics = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(specialDynamicHelpString);
 
-				if(topics.Count > 0)
+				Cursor.Current             = Cursors.Default;
+
+				try
 				{
-					for(int i = 1; i <= topics.Count; i++)
+					if(specialTopics.Count > 0)
 					{
-						IHxTopic topic = topics.ItemAt(i);
-
-						if(expectedLanguage == null || expectedLanguage == "" || topic.HasAttribute("DevLang", expectedLanguage))
+						foreach(IHxTopic topic in specialTopics)
 						{
-							this.BuildNewChild(topic.Location,
-							                   topic.get_Title(HxTopicGetTitleType.HxTopicGetRLTitle,HxTopicGetTitleDefVal.HxTopicGetTitleFileName),
-							                   topic.URL);
+							if(expectedLanguage == null ||
+							   expectedLanguage == "" ||
+							   topic.HasAttribute("DevLang", expectedLanguage))
+							{
+								this.BuildNewChild(topic.Location,
+								                   topic.get_Title(HxTopicGetTitleType.HxTopicGetRLTitle, HxTopicGetTitleDefVal.HxTopicGetTitleFileName),
+								                   topic.URL);
+							}
 						}
 					}
 				}
+				catch {}
+
+				try
+				{
+					if(topics.Count > 0)
+					{
+						foreach(IHxTopic topic in topics)
+						{
+							if(expectedLanguage == null ||
+							   expectedLanguage == "" ||
+							   topic.HasAttribute("DevLang", expectedLanguage))
+							{
+								this.BuildNewChild(topic.Location,
+								                   topic.get_Title(HxTopicGetTitleType.HxTopicGetRLTitle, HxTopicGetTitleDefVal.HxTopicGetTitleFileName),
+								                   topic.URL);
+							}
+						}
+					}
+				}
+				catch {}
+
+				this.CreateDebugPre(dynamicHelpString, specialDynamicHelpString);
 
 				this.lastDynamicHelpWord = dynamicHelpString;
+				this.lastSpecialHelpWord = specialDynamicHelpString;
 			}
 			catch {}
 		}
@@ -126,8 +163,11 @@ namespace HtmlHelp2
 								if(sectionBlock.TagName == "B" && sectionBlock.InnerText == sectionName &&
 								   contentSpan.TagName == "SPAN" && contentSpan.GetAttribute("className") == "content")
 								{
-									contentSpan.AppendChild(this.CreateNewLink(topicUrl, topicName));
-									contentSpan.AppendChild(this.CreateABreak());
+									if(!this.DoesLinkExist(contentSpan, topicName, topicUrl))
+									{
+										contentSpan.AppendChild(this.CreateNewLink(topicUrl, topicName));
+										contentSpan.AppendChild(this.CreateABreak());
+									}
 
 									return;
 								}
@@ -135,14 +175,14 @@ namespace HtmlHelp2
 							catch {}
 						}
 					}
-				
-					dynamicHelpBrowser.Document.Body.InsertAdjacentElement(HtmlElementInsertionOrientation.BeforeEnd,
-					                                                       this.CreateABreak());
+
+					dynamicHelpBrowser.InsertHtmlElement(HtmlElementInsertionOrientation.BeforeEnd,
+					                                     this.CreateABreak());
 				}
 
 				HtmlElement linkContent = null;
 				HtmlElement htmlSection = this.CreateNewSection(sectionName, out linkContent);
-				dynamicHelpBrowser.Document.Body.InsertAdjacentElement(HtmlElementInsertionOrientation.BeforeEnd, htmlSection);
+				dynamicHelpBrowser.InsertHtmlElement(HtmlElementInsertionOrientation.BeforeEnd, htmlSection);
 				linkContent.AppendChild(this.CreateNewLink(topicUrl, topicName));
 				linkContent.AppendChild(this.CreateABreak());
 
@@ -220,6 +260,45 @@ namespace HtmlHelp2
 
 			return br;
 		}
+
+		private bool DoesLinkExist(HtmlElement parentNode, string topicName, string topicUrl)
+		{
+			try
+			{
+				HtmlElementCollection allLinks = parentNode.GetElementsByTagName("a");
+				if(allLinks.Count > 0)
+				{
+					foreach(HtmlElement link in allLinks)
+					{
+						if(String.Compare(topicName, link.InnerText) == 0 &&
+						   String.Compare(topicUrl, link.GetAttribute("src")) == 0)
+						{
+							return true;
+						}
+					}
+				}
+			}
+			catch { }
+
+			return false;
+		}
+
+
+		private void CreateDebugPre(string dynamicHelpString, string specialDynamicHelpString)
+		{
+			try
+			{
+				HtmlElement br  = dynamicHelpBrowser.CreateHtmlElement("br");
+				dynamicHelpBrowser.Document.Body.InsertAdjacentElement(HtmlElementInsertionOrientation.BeforeEnd, br);
+
+				HtmlElement pre = dynamicHelpBrowser.CreateHtmlElement("pre");
+				pre.InnerHtml   = String.Format("--- Dynamic Help Debug ---<br>" +
+				                                "{0}<br>{1}", dynamicHelpString, specialDynamicHelpString);
+
+				dynamicHelpBrowser.InsertHtmlElement(HtmlElementInsertionOrientation.BeforeEnd, pre);
+			}
+			catch {}
+		}
 		#endregion
 
 		private void OnMouseOver(object sender, HtmlElementEventArgs e)
@@ -261,15 +340,52 @@ namespace HtmlHelp2
 		#region Taken from DefinitionView.cs
 		private void UpdateTick(object sender, ParserUpdateStepEventArgs e)
 		{
-//			if (!this.IsVisible) return;
-
 			try
 			{
-				ResolveResult res = ResolveAtCaret(e);
-				if (res == null || res.ResolvedType == null) return;
+				string regularHelpWord = String.Empty;
+				string specialHelpWord = String.Empty;
+
+				// TODO: I need the word under the cursor, "if" for example,
+				// to do a simple, ordinary keyword search :-)
+
+				ResolveResult res             = ResolveAtCaret(e);
+				if(res != null && res.ResolvedType != null)
+				{
+					regularHelpWord = res.ResolvedType.FullyQualifiedName;
+				}
+
+				if(res == null) return;
+
+				MemberResolveResult member    = res as MemberResolveResult;
+				NamespaceResolveResult nspace = res as NamespaceResolveResult;
+				MethodResolveResult method    = res as MethodResolveResult;
+				TypeResolveResult typeRes     = res as TypeResolveResult;
+
+				if(member != null && member.ResolvedMember != null)
+				{
+					specialHelpWord = member.ResolvedMember.FullyQualifiedName;
+				}
+				else if(nspace != null)
+				{
+					specialHelpWord = nspace.Name;
+				}
+				else if(method != null && method.ContainingType != null)
+				{
+					specialHelpWord = method.ContainingType.FullyQualifiedName;
+				}
+				else if(typeRes != null && typeRes.ResolvedClass != null)
+				{
+					specialHelpWord = typeRes.ResolvedClass.FullyQualifiedName;
+				}
+
+				if(String.Compare(regularHelpWord, specialHelpWord) == 0)
+					specialHelpWord = "";
+
+				// call dynamic help
 				WorkbenchSingleton.SafeThreadAsyncCall(this,
 				                                       "BuildDynamicHelpList",
-				                                       res.ResolvedType.FullyQualifiedName,
+				                                       regularHelpWord,
+				                                       specialHelpWord,
 				                                       "");
 				// thanks again to Daniel and Robert
 			}
@@ -334,6 +450,15 @@ namespace HtmlHelp2
 			{
 				return null;
 			}
+		}
+
+		public void InsertHtmlElement(HtmlElementInsertionOrientation insertWhere, HtmlElement insertWhat)
+		{
+			try
+			{
+				axWebBrowser.Document.Body.InsertAdjacentElement(insertWhere, insertWhat);
+			}
+			catch {}
 		}
 
 
