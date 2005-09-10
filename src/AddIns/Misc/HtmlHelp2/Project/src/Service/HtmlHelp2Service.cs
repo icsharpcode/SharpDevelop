@@ -293,6 +293,22 @@ namespace HtmlHelp2.Environment
 				dynamicHelpIsBusy   = false;
 			}
 		}
+
+		public static IHxTopicList GetMatchingTopicsForKeywordSearch(string searchTerm)
+		{
+			if(dynamicHelpIsBusy) return null;
+
+			try
+			{
+				dynamicHelpIsBusy   = true;
+				IHxTopicList topics = GetIndex(currentSelectedFilterQuery).GetTopicsFromString(searchTerm, 0);
+				return topics;
+			}
+			finally
+			{
+				dynamicHelpIsBusy   = false;
+			}
+		}
 		#endregion
 
 		#region Event Handling
