@@ -90,6 +90,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			add    { grid.SelectedObjectsChanged += value; }
 			remove { grid.SelectedObjectsChanged -= value; }
 		}
+
+		public static event SelectedGridItemChangedEventHandler SelectedGridItemChanged {
+			add    { grid.SelectedGridItemChanged += value; }
+			remove { grid.SelectedGridItemChanged -= value; }
+		}
 		
 		public override Control Control {
 			get {
