@@ -650,12 +650,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (callingClass == null)
 				return null;
 			foreach (IMethod method in callingClass.Methods) {
-				if (method.BodyRegion.IsInside(caretLine, caretColumn)) {
+				if (method.Region.IsInside(caretLine, caretColumn) || method.BodyRegion.IsInside(caretLine, caretColumn)) {
 					return method;
 				}
 			}
 			foreach (IProperty property in callingClass.Properties) {
-				if (property.BodyRegion.IsInside(caretLine, caretColumn)) {
+				if (property.Region.IsInside(caretLine, caretColumn) || property.BodyRegion.IsInside(caretLine, caretColumn)) {
 					return property;
 				}
 			}

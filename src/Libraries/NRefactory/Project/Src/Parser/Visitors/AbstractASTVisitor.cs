@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="none" email=""/>
@@ -480,9 +480,9 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 			Debug.Assert(raiseEventStatement != null);
 			Debug.Assert(raiseEventStatement.Parameters != null);
-			foreach (ParameterDeclarationExpression p in raiseEventStatement.Parameters) {
-				Debug.Assert(p != null);
-				p.AcceptVisitor(this, data);
+			foreach (Expression e in raiseEventStatement.Parameters) {
+				Debug.Assert(e != null);
+				e.AcceptVisitor(this, data);
 			}
 			return data;
 		}

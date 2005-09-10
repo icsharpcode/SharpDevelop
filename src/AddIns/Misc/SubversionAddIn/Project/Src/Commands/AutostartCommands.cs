@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="none" email=""/>
@@ -83,10 +83,23 @@ namespace ICSharpCode.Svn.Commands
 		void FileRemoving(object sender, FileCancelEventArgs e)
 		{
 			if (e.Cancel) return;
-			if (e.IsDirectory) return;
-			if (!AddInOptions.AutomaticallyDeleteFiles) return;
 			string fullName = Path.GetFullPath(e.FileName);
 			if (!CanBeVersionControlled(fullName)) return;
+			if (e.IsDirectory) {
+				Status status = SvnClient.Instance.Client.SingleStatus(fullName);
+				switch (status.TextStatus) {
+					case StatusKind.None:
+					case StatusKind.Unversioned:
+						break;
+					default:
+						MessageService.ShowMessage("SubversionAddIn cannot delete directories, it is only removed from the project.");
+						e.OperationAlreadyDone = true;
+						break;
+				}
+				return;
+			}
+			// show "cannot delete directories" message even if auto-delete files is off!
+			if (!AddInOptions.AutomaticallyDeleteFiles) return;
 			try {
 				Status status = SvnClient.Instance.Client.SingleStatus(fullName);
 				switch (status.TextStatus) {
