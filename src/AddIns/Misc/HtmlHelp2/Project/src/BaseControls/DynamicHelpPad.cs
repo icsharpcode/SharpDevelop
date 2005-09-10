@@ -8,6 +8,8 @@
 namespace HtmlHelp2
 {
 	using System;
+    using System.Collections;
+    using System.Collections.Specialized;
 	using System.Drawing;
 	using System.Windows.Forms;
 	using System.Reflection;
@@ -35,11 +37,10 @@ namespace HtmlHelp2
 	public class HtmlHelp2DynamicHelpPad : AbstractPadContent
 	{
 		protected HtmlHelp2DynamicHelpBrowserControl dynamicHelpBrowser;
-		private int internalIndex          = 0;
-		private string lastDynamicHelpWord = String.Empty;
-		private string lastSpecialHelpWord = String.Empty;
-		private string lastKeywordSearch   = String.Empty;
-		private string debugPreElement     = String.Empty;
+		private int internalIndex                 = 0;
+		private StringCollection dynamicHelpTerms = new StringCollection();
+		private ResolveResult lastResolveResult   = null;
+		private string debugPreElement            = String.Empty;
 
 		public override Control Control
 		{
@@ -69,31 +70,29 @@ namespace HtmlHelp2
 		}
 
 		#region WebBrowser Scripting
-		public void BuildDynamicHelpList(string dynamicHelpString,
-		                                 string specialDynamicHelpString,
-		                                 string expectedLanguage)
+		private void BuildDynamicHelpList(string expectedLanguage)
 		{
-			if(!HtmlHelp2Environment.IsReady || HtmlHelp2Environment.DynamicHelpIsBusy)
-			{
-				return;
-			}
-
-			if(dynamicHelpString == "" && specialDynamicHelpString == "") return;
-
-			if(String.Compare(dynamicHelpString, this.lastDynamicHelpWord) == 0 &&
-			   String.Compare(specialDynamicHelpString, this.lastSpecialHelpWord) == 0) return;
+			if(this.dynamicHelpTerms.Count == 0) return;
 
 			try
 			{
 				this.RemoveAllChildren();
-				this.debugPreElement     = "--- Dynamic Help Debug ---<br>";
+				this.debugPreElement     = String.Empty;
+				bool result              = false;
 
-				bool result1 = this.CallDynamicHelp(specialDynamicHelpString, expectedLanguage, false);
-				bool result2 = this.CallDynamicHelp(dynamicHelpString, expectedLanguage, false);
-				if(!result1 && !result2) this.CallDynamicHelp(this.lastKeywordSearch, expectedLanguage, true);
-
-				this.lastDynamicHelpWord = dynamicHelpString;
-				this.lastSpecialHelpWord = specialDynamicHelpString;
+				Cursor.Current           = Cursors.WaitCursor;
+				foreach(string currentHelpTerm in dynamicHelpTerms)
+				{
+					if(currentHelpTerm.StartsWith("!") && !result)
+					{
+						result = this.CallDynamicHelp(currentHelpTerm.Substring(1), expectedLanguage, false);
+					}
+					else
+					{
+						this.CallDynamicHelp(currentHelpTerm, expectedLanguage, false);
+					}
+				}
+				Cursor.Current           = Cursors.Default;
 
 				this.CreateDebugPre();
 			}
@@ -108,20 +107,18 @@ namespace HtmlHelp2
 			try
 			{
 				IHxTopicList topics      = null;
-				Cursor.Current           = Cursors.WaitCursor;
-
 				if(keywordSearch) topics = HtmlHelp2Environment.GetMatchingTopicsForKeywordSearch(searchTerm);
 				else topics              = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(searchTerm);
 
-				Cursor.Current           = Cursors.Default;
+				
+				this.debugPreElement += String.Format("{0} ({1}): {2} {3}<br>",
+				                                      (searchTerm.StartsWith("!"))?searchTerm.Substring(1):searchTerm,
+				                                      (keywordSearch)?"Kwd":"DH",
+				                                      topics.Count.ToString(),
+				                                      (topics.Count == 1)?"topic":"topics");
+
 				if(topics.Count > 0)
 				{
-					this.debugPreElement += String.Format("{0} ({1}): {2} {3}<br>",
-					                                      searchTerm,
-					                                      (keywordSearch)?"Kwd":"DH",
-					                                      topics.Count.ToString(),
-					                                      (topics.Count == 1)?"topic":"topics");
-
 					result = true;
 
 					foreach(IHxTopic topic in topics)
@@ -293,13 +290,15 @@ namespace HtmlHelp2
 
 		private void CreateDebugPre()
 		{
+			if(this.debugPreElement == String.Empty) return;
+
 			try
 			{
 				dynamicHelpBrowser.Document.Body.InsertAdjacentElement(HtmlElementInsertionOrientation.BeforeEnd, this.CreateABreak());
 				dynamicHelpBrowser.Document.Body.InsertAdjacentElement(HtmlElementInsertionOrientation.BeforeEnd, this.CreateABreak());
 
 				HtmlElement pre = dynamicHelpBrowser.CreateHtmlElement("pre");
-				pre.InnerHtml   = this.debugPreElement;
+				pre.InnerHtml   = "--- Dynamic Help Debug ---<br>" + this.debugPreElement;
 
 				dynamicHelpBrowser.InsertHtmlElement(HtmlElementInsertionOrientation.BeforeEnd, pre);
 			}
@@ -348,52 +347,42 @@ namespace HtmlHelp2
 		{
 			try
 			{
-				string regularHelpWord = String.Empty;
-				string specialHelpWord = String.Empty;
+				this.dynamicHelpTerms.Clear();
 
-				// TODO: I need the word under the cursor, "if" for example,
-				// to do a simple, ordinary keyword search :-)
+				ResolveResult res = ResolveAtCaret(e);
+				if(res == null || res == this.lastResolveResult) return;
 
-				ResolveResult res             = ResolveAtCaret(e);
 				if(res != null && res.ResolvedType != null)
 				{
-					regularHelpWord = res.ResolvedType.FullyQualifiedName;
+					this.dynamicHelpTerms.Add(res.ResolvedType.FullyQualifiedName);
 				}
-
-				if(res == null) return;
 
 				MemberResolveResult member    = res as MemberResolveResult;
 				NamespaceResolveResult nspace = res as NamespaceResolveResult;
 				MethodResolveResult method    = res as MethodResolveResult;
-				TypeResolveResult typeRes     = res as TypeResolveResult;
+				TypeResolveResult types       = res as TypeResolveResult;
 
 				if(member != null && member.ResolvedMember != null)
 				{
-					specialHelpWord = member.ResolvedMember.FullyQualifiedName;
+					this.dynamicHelpTerms.Insert(0, member.ResolvedMember.FullyQualifiedName);
 				}
-				else if(nspace != null)
+				if(nspace != null)
 				{
-					specialHelpWord = nspace.Name;
+					this.dynamicHelpTerms.Insert(0, nspace.Name);
 				}
-				else if(method != null && method.ContainingType != null)
+				if(method != null && method.ContainingType != null)
 				{
-					specialHelpWord = method.ContainingType.FullyQualifiedName;
+					this.dynamicHelpTerms.Insert(0, method.ContainingType.FullyQualifiedName);
 				}
-				else if(typeRes != null && typeRes.ResolvedClass != null)
+				if(types != null && types.ResolvedClass != null)
 				{
-					specialHelpWord = typeRes.ResolvedClass.FullyQualifiedName;
+					this.dynamicHelpTerms.Insert(0, types.ResolvedClass.FullyQualifiedName);
 				}
 
-				if(String.Compare(regularHelpWord, specialHelpWord) == 0)
-					specialHelpWord = "";
+				// set "lastResolveResult" to block an endless browser update
+				this.lastResolveResult = res;
 
-				// call dynamic help
-				WorkbenchSingleton.SafeThreadAsyncCall(this,
-				                                       "BuildDynamicHelpList",
-				                                       regularHelpWord,
-				                                       specialHelpWord,
-				                                       "");
-				// thanks again to Daniel and Robert
+				WorkbenchSingleton.SafeThreadAsyncCall(this, "BuildDynamicHelpList", "");
 			}
 			catch {}
 		}
@@ -416,8 +405,6 @@ namespace HtmlHelp2
 			ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
 			if (expr.Expression == null) return null;
 
-			this.lastKeywordSearch = expr.Expression;
-
 			return ParserService.Resolve(expr, caret.Line, caret.Column, fileName, content);
 		}
 		#endregion
@@ -438,23 +425,28 @@ namespace HtmlHelp2
 		private void CallDynamicHelpForFormsDesigner(object selectedObject, GridItem selectedItem)
 		{
 			if(selectedObject == null) return;
-			
+
 			try
 			{
-				string selectedObjectString = selectedObject.GetType().FullName;
-				string selectedItemString   = String.Empty;
+				this.dynamicHelpTerms.Clear();
 
+				Type myObject = selectedObject.GetType();
 				if(selectedItem != null)
 				{
-					selectedItemString      = String.Format("{0}.{1}",
-					                                        selectedObjectString,
-					                                        selectedItem.Label);
+					this.dynamicHelpTerms.Add(String.Format("!{0}.{1}", myObject.FullName, selectedItem.Label));
+
+					while(myObject.BaseType != null)
+					{
+						myObject = myObject.BaseType;
+						this.dynamicHelpTerms.Add(String.Format("!{0}.{1}", myObject.FullName, selectedItem.Label));
+					}
 				}
+
+				myObject = selectedObject.GetType();
+				this.dynamicHelpTerms.Add(myObject.FullName);
 
 				WorkbenchSingleton.SafeThreadAsyncCall(this,
 				                                       "BuildDynamicHelpList",
-				                                       selectedObjectString,
-				                                       selectedItemString,
 				                                       "");
 			}
 			catch {}
