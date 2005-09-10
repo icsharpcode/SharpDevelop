@@ -731,7 +731,7 @@ Modifiers m, List<AttributeSection> attributes) {
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
 			
-			newType.Type       = Types.Class;
+			newType.Type       = ClassType.Class;
 			
 			Identifier();
 
@@ -775,7 +775,7 @@ newType);
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
 			newType.StartLocation = m.GetDeclarationLocation(t.Location);
-			newType.Type = Types.Module;
+			newType.Type = ClassType.Module;
 			
 			Identifier();
 
@@ -800,7 +800,7 @@ newType);
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
 			newType.StartLocation = m.GetDeclarationLocation(t.Location);
-			newType.Type = Types.Struct;
+			newType.Type = ClassType.Struct;
 			
 			Identifier();
 
@@ -837,7 +837,7 @@ newType);
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
 			
-			newType.Type = Types.Enum;
+			newType.Type = ClassType.Enum;
 			
 			Identifier();
 
@@ -871,7 +871,7 @@ newType);
 			newType.StartLocation = m.GetDeclarationLocation(t.Location);
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
-			newType.Type = Types.Interface;
+			newType.Type = ClassType.Interface;
 			
 			Identifier();
 

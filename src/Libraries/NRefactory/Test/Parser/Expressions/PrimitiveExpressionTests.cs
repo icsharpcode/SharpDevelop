@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void CSharpHexIntegerTest1()
 		{
 			InvocationExpression invExpr = (InvocationExpression)ParseUtilCSharp.ParseExpression("0xAFFE.ToString()", typeof(InvocationExpression));
-			Assert.AreEqual(0, invExpr.Parameters.Count);
+			Assert.AreEqual(0, invExpr.Arguments.Count);
 			Assert.IsTrue(invExpr.TargetObject is FieldReferenceExpression);
 			FieldReferenceExpression fre = invExpr.TargetObject as FieldReferenceExpression;
 			Assert.AreEqual("ToString", fre.FieldName);

@@ -6,6 +6,7 @@ using System.Text;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
 using ASTAttribute = ICSharpCode.NRefactory.Parser.AST.Attribute;
+using Types = ICSharpCode.NRefactory.Parser.AST.ClassType;
 
 COMPILER CS    /* AW 2002-12-30 renamed from CompilationUnit to CS  */
 

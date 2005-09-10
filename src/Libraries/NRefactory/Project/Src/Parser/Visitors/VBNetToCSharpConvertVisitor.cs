@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.Parser
 							if (fre.TargetObject is BaseReferenceExpression || fre.TargetObject is ClassReferenceExpression) {
 								body.Children.RemoveAt(0);
 								ConstructorInitializer ci = new ConstructorInitializer();
-								ci.Arguments = ie.Parameters;
+								ci.Arguments = ie.Arguments;
 								if (fre.TargetObject is BaseReferenceExpression)
 									ci.ConstructorInitializerType = ConstructorInitializerType.Base;
 								else

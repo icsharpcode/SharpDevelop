@@ -198,19 +198,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public IMethod GetMethod(InvocationExpression invocationExpression, object data)
 		{
-			IReturnType[] typeParameters = CreateReturnTypes(invocationExpression.TypeParameters);
+			IReturnType[] typeParameters = CreateReturnTypes(invocationExpression.TypeArguments);
 			if (invocationExpression.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
 				IReturnType type = field.TargetObject.AcceptVisitor(this, data) as IReturnType;
 				List<IMethod> methods = resolver.SearchMethod(type, field.FieldName);
-				return FindOverload(methods, typeParameters, invocationExpression.Parameters, data);
+				return FindOverload(methods, typeParameters, invocationExpression.Arguments, data);
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				string id = ((IdentifierExpression)invocationExpression.TargetObject).Identifier;
 				if (resolver.CallingClass == null) {
 					return null;
 				}
 				List<IMethod> methods = resolver.SearchMethod(id);
-				return FindOverload(methods, typeParameters, invocationExpression.Parameters, data);
+				return FindOverload(methods, typeParameters, invocationExpression.Arguments, data);
 			}
 			return null;
 		}

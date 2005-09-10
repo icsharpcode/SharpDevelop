@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("class MyClass  : My.Base.Class  { }", typeof(TypeDeclaration));
 			
-			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
 			Assert.AreEqual("My.Base.Class", td.BaseTypes[0].Type);
 			Assert.AreEqual(Modifier.None, td.Modifier);
@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("partial class MyClass { }", typeof(TypeDeclaration));
 			Assert.IsNotNull(td);
-			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
 			Assert.AreEqual(Modifier.Partial, td.Modifier);
 		}
@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("static class MyClass { }", typeof(TypeDeclaration));
 			Assert.IsNotNull(td);
-			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
 			Assert.AreEqual(Modifier.Static, td.Modifier);
 		}
@@ -56,7 +56,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("public class G<T> {}", typeof(TypeDeclaration));
 			
-			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("G", td.Name);
 			Assert.AreEqual(Modifier.Public, td.Modifier);
 			Assert.AreEqual(0, td.BaseTypes.Count);
@@ -75,7 +75,7 @@ public class Test<T> where T : IMyInterface
 ";
 			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal(declr, typeof(TypeDeclaration));
 			
-			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Test", td.Name);
 			
 			Assert.AreEqual(1, td.Templates.Count);
@@ -93,7 +93,7 @@ public class Generic<T, S> : System.IComparable where S : G<T[]> where  T : MyNa
 ";
 			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal(declr, typeof(TypeDeclaration));
 			
-			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Generic", td.Name);
 			Assert.AreEqual(Modifier.Public, td.Modifier);
 			Assert.AreEqual(1, td.BaseTypes.Count);
@@ -122,7 +122,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 ";
 			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal(declr, typeof(TypeDeclaration));
 			
-			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
 			Assert.AreEqual(Modifier.Public | Modifier.Abstract, td.Modifier);
 			Assert.AreEqual(1, td.Attributes.Count);
@@ -137,7 +137,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		{
 			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("struct MyStruct {}", typeof(TypeDeclaration));
 			
-			Assert.AreEqual(Types.Struct, td.Type);
+			Assert.AreEqual(ClassType.Struct, td.Type);
 			Assert.AreEqual("MyStruct", td.Name);
 		}
 		
@@ -146,7 +146,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		{
 			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("interface MyInterface {}", typeof(TypeDeclaration));
 			
-			Assert.AreEqual(Types.Interface, td.Type);
+			Assert.AreEqual(ClassType.Interface, td.Type);
 			Assert.AreEqual("MyInterface", td.Name);
 		}
 		
@@ -155,7 +155,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		{
 			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("enum MyEnum {}", typeof(TypeDeclaration));
 			
-			Assert.AreEqual(Types.Enum, td.Type);
+			Assert.AreEqual(ClassType.Enum, td.Type);
 			Assert.AreEqual("MyEnum", td.Name);
 		}
 		#endregion
@@ -169,7 +169,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
 			
 			Assert.AreEqual("TestClass", td.Name);
-			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual(1, td.StartLocation.Y, "start line");
 			Assert.AreEqual(2, td.EndLocation.Y, "end line");
 		}
@@ -182,7 +182,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
 			
 			Assert.AreEqual("TestEnum", td.Name);
-			Assert.AreEqual(Types.Enum, td.Type);
+			Assert.AreEqual(ClassType.Enum, td.Type);
 			Assert.AreEqual("Byte", td.BaseTypes[0].Type);
 		}
 		
@@ -194,7 +194,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
 			
 			Assert.AreEqual("TestClass", td.Name);
-			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual(1, td.StartLocation.Y, "start line");
 			Assert.AreEqual(2, td.EndLocation.Y, "end line");
 		}
@@ -207,7 +207,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
 			
 			Assert.AreEqual("TestClass", td.Name);
-			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual(Modifier.Partial, td.Modifier);
 		}
 		
@@ -221,7 +221,7 @@ End Class
 ";
 			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(declr, typeof(TypeDeclaration));
 			
-			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Test", td.Name);
 			Assert.AreEqual(Modifier.Public, td.Modifier);
 			Assert.AreEqual(0, td.BaseTypes.Count);
@@ -239,7 +239,7 @@ End Class
 ";
 			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(declr, typeof(TypeDeclaration));
 			
-			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Test", td.Name);
 			
 			Assert.AreEqual(1, td.Templates.Count);
@@ -258,7 +258,7 @@ End Class
 ";
 			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(declr, typeof(TypeDeclaration));
 			
-			Assert.AreEqual(Types.Class, td.Type);
+			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Generic", td.Name);
 			Assert.AreEqual(Modifier.Public, td.Modifier);
 			Assert.AreEqual(1, td.BaseTypes.Count);

@@ -607,7 +607,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 						compilationUnit.AddChild(newType);
 						compilationUnit.BlockStart(newType);
 						
-						newType.Type       = Types.Class;
+						newType.Type       = ClassType.Class;
 					.)
 	Identifier			 (. newType.Name = t.val; .) 
 	TypeParameterList<newType.Templates>
@@ -625,7 +625,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
 			newType.StartLocation = m.GetDeclarationLocation(t.Location);
-			newType.Type = Types.Module;
+			newType.Type = ClassType.Module;
 		.)
 	Identifier			 (. newType.Name = t.val; .)
 	EOL
@@ -640,7 +640,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
 			newType.StartLocation = m.GetDeclarationLocation(t.Location);
-			newType.Type = Types.Struct;
+			newType.Type = ClassType.Struct;
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
 	TypeParameterList<newType.Templates>
@@ -658,7 +658,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
 			
-			newType.Type = Types.Enum;
+			newType.Type = ClassType.Enum;
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
 	[ "As" PrimitiveTypeName<out name> (. newType.BaseTypes.Add(new TypeReference(name)); .) ]
@@ -675,7 +675,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			newType.StartLocation = m.GetDeclarationLocation(t.Location);
 			compilationUnit.AddChild(newType);
 			compilationUnit.BlockStart(newType);
-			newType.Type = Types.Interface;
+			newType.Type = ClassType.Interface;
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
 	TypeParameterList<newType.Templates>

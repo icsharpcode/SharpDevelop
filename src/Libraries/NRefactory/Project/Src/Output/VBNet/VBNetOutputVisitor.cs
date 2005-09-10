@@ -269,16 +269,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		int GetTypeToken(TypeDeclaration typeDeclaration)
 		{
 			switch (typeDeclaration.Type) {
-				case Types.Class:
+				case ClassType.Class:
 					return Tokens.Class;
-				case Types.Enum:
+				case ClassType.Enum:
 					return Tokens.Enum;
-				case Types.Interface:
+				case ClassType.Interface:
 					return Tokens.Interface;
-				case Types.Struct:
+				case ClassType.Struct:
 					// FIXME: This should be better in VBNetRefactory class because it is an AST transformation, but currently I'm too lazy
 					if (TypeHasOnlyStaticMembers(typeDeclaration)) {
-						goto case Types.Class;
+						goto case ClassType.Class;
 					}
 					return Tokens.Structure;
 			}
@@ -319,7 +319,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					string baseType = baseTypeRef.Type;
 					bool baseTypeIsInterface = baseType.StartsWith("I") && (baseType.Length <= 1 || Char.IsUpper(baseType[1]));
 					
-					if (!baseTypeIsInterface || typeDeclaration.Type == Types.Interface) {
+					if (!baseTypeIsInterface || typeDeclaration.Type == ClassType.Interface) {
 						outputFormatter.PrintToken(Tokens.Inherits);
 					} else {
 						outputFormatter.PrintToken(Tokens.Implements);
@@ -1002,7 +1002,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintIdentifier(raiseEventStatement.EventName);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			AppendCommaSeparatedList(raiseEventStatement.Parameters);
+			AppendCommaSeparatedList(raiseEventStatement.Arguments);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}
@@ -1859,15 +1859,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(InvocationExpression invocationExpression, object data)
 		{
 			nodeTracker.TrackedVisit(invocationExpression.TargetObject, data);
-			if (invocationExpression.TypeParameters != null && invocationExpression.TypeParameters.Count > 0) {
+			if (invocationExpression.TypeArguments != null && invocationExpression.TypeArguments.Count > 0) {
 				outputFormatter.PrintToken(Tokens.OpenParenthesis);
 				outputFormatter.PrintToken(Tokens.Of);
 				outputFormatter.Space();
-				AppendCommaSeparatedList(invocationExpression.TypeParameters);
+				AppendCommaSeparatedList(invocationExpression.TypeArguments);
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			AppendCommaSeparatedList(invocationExpression.Parameters);
+			AppendCommaSeparatedList(invocationExpression.Arguments);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}

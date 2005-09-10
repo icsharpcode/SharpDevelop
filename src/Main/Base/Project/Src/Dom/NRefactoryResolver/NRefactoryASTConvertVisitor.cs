@@ -243,16 +243,16 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return ret;
 		}
 		
-		ClassType TranslateClassType(AST.Types type)
+		ClassType TranslateClassType(AST.ClassType type)
 		{
 			switch (type) {
-				case AST.Types.Enum:
+				case AST.ClassType.Enum:
 					return ClassType.Enum;
-				case AST.Types.Interface:
+				case AST.ClassType.Interface:
 					return ClassType.Interface;
-				case AST.Types.Struct:
+				case AST.ClassType.Struct:
 					return ClassType.Struct;
-				case AST.Types.Module:
+				case AST.ClassType.Module:
 					return ClassType.Module;
 				default:
 					return ClassType.Class;

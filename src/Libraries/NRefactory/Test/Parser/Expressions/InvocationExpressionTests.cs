@@ -18,18 +18,18 @@ namespace ICSharpCode.NRefactory.Tests.AST
 	{
 		void CheckSimpleInvoke(InvocationExpression ie)
 		{
-			Assert.AreEqual(0, ie.Parameters.Count);
+			Assert.AreEqual(0, ie.Arguments.Count);
 			Assert.IsTrue(ie.TargetObject is IdentifierExpression);
 			Assert.AreEqual("myMethod", ((IdentifierExpression)ie.TargetObject).Identifier);
 		}
 		
 		void CheckGenericInvoke(InvocationExpression expr)
 		{
-			Assert.AreEqual(1, expr.Parameters.Count);
+			Assert.AreEqual(1, expr.Arguments.Count);
 			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
 			Assert.AreEqual("myMethod", ((IdentifierExpression)expr.TargetObject).Identifier);
-			Assert.AreEqual(1, expr.TypeParameters.Count);
-			Assert.AreEqual("System.Char", expr.TypeParameters[0].SystemType);
+			Assert.AreEqual(1, expr.TypeArguments.Count);
+			Assert.AreEqual("System.Char", expr.TypeArguments[0].SystemType);
 		}
 		
 		
@@ -55,10 +55,10 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
 			Assert.AreEqual("WriteLine", ((IdentifierExpression)expr.TargetObject).Identifier);
 			
-			Assert.AreEqual(1, expr.Parameters.Count); // here a second null parameter was added incorrectly
+			Assert.AreEqual(1, expr.Arguments.Count); // here a second null parameter was added incorrectly
 			
-			Assert.IsTrue(expr.Parameters[0] is InvocationExpression);
-			CheckSimpleInvoke((InvocationExpression)expr.Parameters[0]);
+			Assert.IsTrue(expr.Arguments[0] is InvocationExpression);
+			CheckSimpleInvoke((InvocationExpression)expr.Arguments[0]);
 		}
 		#endregion
 		
@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void PrimitiveExpression1Test()
 		{
 			InvocationExpression ie = (InvocationExpression)ParseUtilVBNet.ParseExpression("546.ToString()", typeof(InvocationExpression));
-			Assert.AreEqual(0, ie.Parameters.Count);
+			Assert.AreEqual(0, ie.Arguments.Count);
 		}
 		
 		#endregion

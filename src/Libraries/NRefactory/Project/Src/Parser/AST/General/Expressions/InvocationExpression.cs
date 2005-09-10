@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="none" email=""/>
@@ -15,9 +15,9 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 	public class InvocationExpression : Expression
 	{
 		Expression       targetObject;
-//		List<Expression> parameters;
-		ArrayList parameters;
-		List<TypeReference> typeParameters;
+//		List<Expression> arguments;
+		ArrayList arguments;
+		List<TypeReference> typeArguments;
 		
 		public Expression TargetObject {
 			get {
@@ -28,41 +28,41 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public ArrayList Parameters {
+		public ArrayList Arguments {
 			get {
-				return parameters;
+				return arguments;
 			}
 			set {
-				parameters = value == null ? new ArrayList(1) : value;
+				arguments = value == null ? new ArrayList(1) : value;
 			}
 		}
 		
-		public List<TypeReference> TypeParameters {
+		public List<TypeReference> TypeArguments {
 			get {
-				return typeParameters;
+				return typeArguments;
 			}
 			set {
-				typeParameters = value == null ? new List<TypeReference>(1) : value;
+				typeArguments = value == null ? new List<TypeReference>(1) : value;
 			}
 		}
 		
 		public InvocationExpression(Expression targetObject, ArrayList parameters)
 		{
 			this.TargetObject = targetObject;
-			this.Parameters   = parameters;
+			this.Arguments   = parameters;
 		}
 		
 		public InvocationExpression(Expression targetObject, ArrayList parameters, List<TypeReference> typeParameters)
 		{
 			this.TargetObject = targetObject;
-			this.Parameters   = parameters;
-			this.TypeParameters = typeParameters;
+			this.Arguments   = parameters;
+			this.TypeArguments = typeParameters;
 		}
 		
 		public InvocationExpression(Expression targetObject)
 		{
 			this.TargetObject = targetObject;
-			this.parameters   = new ArrayList(1);
+			this.arguments   = new ArrayList(1);
 		}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)
@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 		{
 			return String.Format("[InvocationExpression: TargetObject={0}, parameters={1}]",
 			                     TargetObject,
-			                     GetCollectionString(Parameters));
+			                     GetCollectionString(Arguments));
 		}
 	}
 }

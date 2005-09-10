@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="none" email=""/>
@@ -15,7 +15,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	{
 		string eventName = "";
 //		List<Expression> parameters = new List<Expression>(1);
-		ArrayList parameters = new ArrayList(1);
+		ArrayList arguments = new ArrayList(1);
 		
 		public string EventName {
 			get {
@@ -26,13 +26,13 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				eventName = value;
 			}
 		}
-		public ArrayList Parameters {
+		public ArrayList Arguments {
 			get {
-				return parameters;
+				return arguments;
 			}
 			set {
 				Debug.Assert(value != null);
-				parameters = value;
+				arguments = value;
 			}
 		}
 		
@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			Debug.Assert(eventName != null);
 			this.eventName = eventName;
 			Debug.Assert(parameters != null);
-			this.parameters = parameters;
+			this.arguments = parameters;
 		}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		{
 			return  String.Format("[RaiseEventStatement: EventName={0}, Parameters={1}]", 
 			                     EventName,
-			                     GetCollectionString(parameters));
+			                     GetCollectionString(arguments));
 		}
 	}
 }

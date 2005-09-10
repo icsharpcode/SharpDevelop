@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="none" email=""/>
@@ -79,7 +79,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			Extern   | Volatile | Unsafe    | Overloads | WithEvents
 	}
 	
-	public enum Types // TODO: Rename to ClassType
+	public enum ClassType
 	{
 		Class,
 		Module,

@@ -231,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 							ctors.Add(m);
 					}
 					TypeVisitor typeVisitor = new TypeVisitor(this);
-					return CreateMemberResolveResult(typeVisitor.FindOverload(ctors, null, ie.Parameters, null));
+					return CreateMemberResolveResult(typeVisitor.FindOverload(ctors, null, ie.Arguments, null));
 				}
 			}
 			return null;

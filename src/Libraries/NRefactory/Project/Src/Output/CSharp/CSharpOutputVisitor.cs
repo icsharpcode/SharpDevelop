@@ -329,16 +329,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Indent();
 			OutputModifier(typeDeclaration.Modifier);
 			switch (typeDeclaration.Type) {
-				case Types.Class:
+				case ClassType.Class:
 					outputFormatter.PrintToken(Tokens.Class);
 					break;
-				case Types.Enum:
+				case ClassType.Enum:
 					outputFormatter.PrintToken(Tokens.Enum);
 					break;
-				case Types.Interface:
+				case ClassType.Interface:
 					outputFormatter.PrintToken(Tokens.Interface);
 					break;
-				case Types.Struct:
+				case ClassType.Struct:
 					outputFormatter.PrintToken(Tokens.Struct);
 					break;
 			}
@@ -364,23 +364,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			switch (typeDeclaration.Type) {
-				case Types.Class:
+				case ClassType.Class:
 					outputFormatter.BeginBrace(this.prettyPrintOptions.ClassBraceStyle);
 					break;
-				case Types.Enum:
+				case ClassType.Enum:
 					outputFormatter.BeginBrace(this.prettyPrintOptions.EnumBraceStyle);
 					break;
-				case Types.Interface:
+				case ClassType.Interface:
 					outputFormatter.BeginBrace(this.prettyPrintOptions.InterfaceBraceStyle);
 					break;
-				case Types.Struct:
+				case ClassType.Struct:
 					outputFormatter.BeginBrace(this.prettyPrintOptions.StructBraceStyle);
 					break;
 			}
 			
 			TypeDeclaration oldType = currentType;
 			currentType = typeDeclaration;
-			if (typeDeclaration.Type == Types.Enum) {
+			if (typeDeclaration.Type == ClassType.Enum) {
 				OutputEnumMembers(typeDeclaration, data);
 			} else {
 				nodeTracker.TrackedVisitChildren(typeDeclaration, data);
@@ -856,7 +856,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Indent();
 			outputFormatter.PrintIdentifier(raiseEventStatement.EventName);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			this.AppendCommaSeparatedList(raiseEventStatement.Parameters);
+			this.AppendCommaSeparatedList(raiseEventStatement.Arguments);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			outputFormatter.PrintToken(Tokens.Semicolon);
 			outputFormatter.NewLine();
@@ -1886,9 +1886,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			nodeTracker.TrackedVisit(invocationExpression.TargetObject, data);
 			
-			if (invocationExpression.TypeParameters != null && invocationExpression.TypeParameters.Count > 0) {
+			if (invocationExpression.TypeArguments != null && invocationExpression.TypeArguments.Count > 0) {
 				OutputFormatter.PrintToken(Tokens.LessThan);
-				AppendCommaSeparatedList(invocationExpression.TypeParameters);
+				AppendCommaSeparatedList(invocationExpression.TypeArguments);
 				OutputFormatter.PrintToken(Tokens.GreaterThan);
 			}
 			
@@ -1897,7 +1897,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			AppendCommaSeparatedList(invocationExpression.Parameters);
+			AppendCommaSeparatedList(invocationExpression.Arguments);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}

@@ -479,8 +479,8 @@ namespace ICSharpCode.NRefactory.Parser
 		public virtual object Visit(RaiseEventStatement raiseEventStatement, object data)
 		{
 			Debug.Assert(raiseEventStatement != null);
-			Debug.Assert(raiseEventStatement.Parameters != null);
-			foreach (Expression e in raiseEventStatement.Parameters) {
+			Debug.Assert(raiseEventStatement.Arguments != null);
+			foreach (Expression e in raiseEventStatement.Arguments) {
 				Debug.Assert(e != null);
 				e.AcceptVisitor(this, data);
 			}
@@ -937,10 +937,10 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 			Debug.Assert(invocationExpression != null);
 			Debug.Assert(invocationExpression.TargetObject != null);
-			Debug.Assert(invocationExpression.Parameters != null);
+			Debug.Assert(invocationExpression.Arguments != null);
 			
 			invocationExpression.TargetObject.AcceptVisitor(this, data);
-			foreach (Expression e in invocationExpression.Parameters) {
+			foreach (Expression e in invocationExpression.Arguments) {
 				Debug.Assert(e != null);
 				e.AcceptVisitor(this, data);
 			}

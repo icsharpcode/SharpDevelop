@@ -21,8 +21,8 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		// Children of Interface: MethodDeclaration, PropertyDeclaration, IndexerDeclaration, EventDeclaration, in VB: TypeDeclaration(Enum) too
 		// Children of Enum:      FieldDeclaration
 		string name            = "";
-		Types type             = Types.Class; // Class | Interface | Struct | Enum
-		List<TypeReference> bases = new List<TypeReference>();
+		ClassType type             = ClassType.Class; // Class | Interface | Struct | Enum
+		List<TypeReference> baseTypes = new List<TypeReference>();
 		List<TemplateDefinition> templates = new List<TemplateDefinition>();
 		
 		public string Name {
@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public Types Type {
+		public ClassType Type {
 			get {
 				return type;
 			}
@@ -45,11 +45,11 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		public List<TypeReference> BaseTypes {
 			get {
-				return bases;
+				return baseTypes;
 			}
 			set {
 				Debug.Assert(value != null);
-				bases = value;
+				baseTypes = value;
 			}
 		}
 		
@@ -103,7 +103,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			                     name,
 			                     modifier,
 			                     type,
-			                     GetCollectionString(bases),
+			                     GetCollectionString(baseTypes),
 			                     GetCollectionString(attributes),
 			                     GetCollectionString(Children));
 		}

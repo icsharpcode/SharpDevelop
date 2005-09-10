@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -42,10 +42,10 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
 			Assert.AreEqual("WriteLine", ((IdentifierExpression)expr.TargetObject).Identifier);
 			
-			Assert.AreEqual(1, expr.Parameters.Count); // here a second null parameter was added incorrectly
+			Assert.AreEqual(1, expr.Arguments.Count); // here a second null parameter was added incorrectly
 			
-			Assert.IsTrue(expr.Parameters[0] is ObjectCreateExpression);
-			CheckSimpleObjectCreateExpression((ObjectCreateExpression)expr.Parameters[0]);
+			Assert.IsTrue(expr.Arguments[0] is ObjectCreateExpression);
+			CheckSimpleObjectCreateExpression((ObjectCreateExpression)expr.Arguments[0]);
 		}
 		#endregion
 		

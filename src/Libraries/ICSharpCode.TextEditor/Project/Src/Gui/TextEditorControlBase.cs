@@ -728,14 +728,17 @@ namespace ICSharpCode.TextEditor
 			fs.Position = 0;
 			switch (state) {
 				case ASCII:
-					// when the file seems to be ASCII, we read it using the user-specified encoding
-					// so it is saved again using that encoding.
-					return new StreamReader(fs, this.TextEditorProperties.Encoding);
 				case Error:
+					// when the file seems to be ASCII or non-UTF8,
+					// we read it using the user-specified encoding so it is saved again
+					// using that encoding.
 					Encoding defaultEncoding = this.TextEditorProperties.Encoding;
 					if (IsUnicode(defaultEncoding)) {
 						// the file is not Unicode, so don't read it using Unicode even if the
 						// user has choosen Unicode as the default encoding.
+						
+						// If we don't do this, SD will end up always adding a Byte Order Mark
+						// to ASCII files.
 						defaultEncoding = Encoding.Default; // use system encoding instead
 					}
 					return new StreamReader(fs, defaultEncoding);

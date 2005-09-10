@@ -200,10 +200,10 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 			this.currentTypeDeclaration = typeDeclaration;
 			CodeTypeDeclaration codeTypeDeclaration = new CodeTypeDeclaration(typeDeclaration.Name);
-			codeTypeDeclaration.IsClass     = typeDeclaration.Type == Types.Class;
-			codeTypeDeclaration.IsEnum      = typeDeclaration.Type == Types.Enum;
-			codeTypeDeclaration.IsInterface = typeDeclaration.Type == Types.Interface;
-			codeTypeDeclaration.IsStruct    = typeDeclaration.Type == Types.Struct;
+			codeTypeDeclaration.IsClass     = typeDeclaration.Type == ClassType.Class;
+			codeTypeDeclaration.IsEnum      = typeDeclaration.Type == ClassType.Enum;
+			codeTypeDeclaration.IsInterface = typeDeclaration.Type == ClassType.Interface;
+			codeTypeDeclaration.IsStruct    = typeDeclaration.Type == ClassType.Struct;
 			
 			if (typeDeclaration.BaseTypes != null) {
 				foreach (TypeReference typeRef in typeDeclaration.BaseTypes) {
@@ -646,7 +646,7 @@ namespace ICSharpCode.NRefactory.Parser
 				methodName = fRef.FieldName;
 				// HACK for : Microsoft.VisualBasic.ChrW(NUMBER)
 				if (methodName == "ChrW") {
-					return new CodeCastExpression("System.Char", GetExpressionList(invocationExpression.Parameters)[0]);
+					return new CodeCastExpression("System.Char", GetExpressionList(invocationExpression.Arguments)[0]);
 				}
 			} else if (target is IdentifierExpression) {
 				targetExpr = new CodeThisReferenceExpression();
@@ -654,7 +654,7 @@ namespace ICSharpCode.NRefactory.Parser
 			} else {
 				targetExpr = (CodeExpression)target.AcceptVisitor(this, data);
 			}
-			return new CodeMethodInvokeExpression(targetExpr, methodName, GetExpressionList(invocationExpression.Parameters));
+			return new CodeMethodInvokeExpression(targetExpr, methodName, GetExpressionList(invocationExpression.Arguments));
 		}
 		
 		public override object Visit(IdentifierExpression expression, object data)
