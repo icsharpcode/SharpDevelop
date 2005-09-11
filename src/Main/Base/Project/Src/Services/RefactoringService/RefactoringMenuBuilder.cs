@@ -73,9 +73,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				item = MakeItem(definitions, ((MemberResolveResult)rr).ResolvedMember);
 			} else if (rr is TypeResolveResult) {
 				item = MakeItem(definitions, ((TypeResolveResult)rr).ResolvedClass);
+			} else if (rr is LocalResolveResult) {
+				item = MakeItem((LocalResolveResult)rr, caretLine + 1 == ((LocalResolveResult)rr).Field.Region.BeginLine);
 			}
 			if (item != null) {
-				resultItems.Add(item);
+				if (rr is LocalResolveResult)
+					resultItems.Insert(0, item);
+				else
+					resultItems.Add(item);
 			}
 			
 			// Include menu for current class and method
@@ -99,8 +104,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					resultItems.Add(item);
 				}
 			}
-			
-			// TODO XML.TextAreaContextMenu.Refactoring
 			
 			if (resultItems.Count == 0) {
 				return new ToolStripItem[0];
@@ -128,6 +131,19 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return null;
 		}
 		
+		ToolStripMenuItem MakeItem(LocalResolveResult local, bool isDefinition)
+		{
+			ToolStripMenuItem item = MakeItemInternal(MemberNode.GetText(local.Field),
+			                                          local.IsParameter ? ClassBrowserIconService.ParameterIndex : ClassBrowserIconService.LocalVariableIndex,
+			                                          local.CallingClass.CompilationUnit,
+			                                          isDefinition ? DomRegion.Empty : local.Field.Region);
+			string treePath = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/";
+			treePath += local.IsParameter ? "Parameter" : "LocalVariable";
+			if (isDefinition) treePath += "Definition";
+			MenuService.AddItemsToMenu(item.DropDown.Items, local, treePath);
+			return item;
+		}
+		
 		ToolStripMenuItem MakeItem(List<string> definitions, IMember member)
 		{
 			if (member == null) return null;
@@ -143,7 +159,6 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return item;
 		}
 		
-		
 		ToolStripMenuItem MakeItem(List<string> definitions, IClass c)
 		{
 			if (c == null) return null;
@@ -154,9 +169,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return MakeItem(c.FullyQualifiedName, new ClassNode(c.ProjectContent.Project, c), c.CompilationUnit, c.Region);
 		}
 		
-		ToolStripMenuItem MakeItem(string title, ExtTreeNode classBrowserTreeNode, ICompilationUnit cu, DomRegion region)
+		ToolStripMenuItem MakeItemInternal(string title, int imageIndex, ICompilationUnit cu, DomRegion region)
 		{
-			ToolStripMenuItem item = new ToolStripMenuItem(classBrowserTreeNode.Text, ClassBrowserIconService.ImageList.Images[classBrowserTreeNode.ImageIndex]);
+			ToolStripMenuItem item = new ToolStripMenuItem(title, ClassBrowserIconService.ImageList.Images[imageIndex]);
 			
 			//ToolStripMenuItem titleItem = new ToolStripMenuItem(title);
 			//titleItem.Enabled = false;
@@ -173,7 +188,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				item.DropDown.Items.Add(gotoDefinitionItem);
 				item.DropDown.Items.Add(new ToolStripSeparator());
 			}
-			
+			return item;
+		}
+		
+		ToolStripMenuItem MakeItem(string title, ExtTreeNode classBrowserTreeNode, ICompilationUnit cu, DomRegion region)
+		{
+			ToolStripMenuItem item = MakeItemInternal(classBrowserTreeNode.Text, classBrowserTreeNode.ImageIndex, cu, region);
 			MenuService.AddItemsToMenu(item.DropDown.Items, classBrowserTreeNode, classBrowserTreeNode.ContextmenuAddinTreePath);
 			return item;
 		}

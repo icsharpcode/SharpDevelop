@@ -19,13 +19,12 @@ using ICSharpCode.SharpDevelop.Bookmarks;
 using ICSharpCode.SharpDevelop.Gui;
 using SearchAndReplace;
 using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
-using ICSharpCode.SharpDevelop.Refactoring;
 
-namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
+namespace ICSharpCode.SharpDevelop.Refactoring
 {
-	public class ParserBookmarkMenuBuilderBase
+	public static class FindReferencesAndRenameHelper
 	{
-		protected ProvidedDocumentInformation GetDocumentInformation(string fileName)
+		public static ProvidedDocumentInformation GetDocumentInformation(string fileName)
 		{
 			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 				if (content is ITextEditorControlProvider &&
@@ -39,12 +38,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			return new ProvidedDocumentInformation(strategy, fileName, 0);
 		}
 		
-		protected bool IsReadOnly(IClass c)
+		public static bool IsReadOnly(IClass c)
 		{
 			return c.CompilationUnit.FileName == null;
 		}
 		
-		protected TextEditorControl JumpToDefinition(IMember member)
+		public static TextEditorControl JumpToDefinition(IMember member)
 		{
 			IViewContent viewContent = null;
 			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
@@ -62,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			return (tecp == null) ? null : tecp.TextEditorControl;
 		}
 		
-		protected TextEditorControl JumpBehindDefinition(IMember member)
+		public static TextEditorControl JumpBehindDefinition(IMember member)
 		{
 			IViewContent viewContent = null;
 			ICompilationUnit cu = member.DeclaringType.CompilationUnit;
@@ -80,7 +79,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			return (tecp == null) ? null : tecp.TextEditorControl;
 		}
 		
-		protected bool CheckName(string name)
+		public static bool CheckName(string name)
 		{
 			if (name == null || name.Length == 0)
 				return false;
@@ -97,7 +96,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			return true;
 		}
 		
-		protected struct Modification
+		public struct Modification
 		{
 			public IDocument Document;
 			public int Offset;
@@ -111,7 +110,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		protected void ModifyDocument(List<Modification> modifications, IDocument doc, int offset, int length, string newName)
+		public static void ModifyDocument(List<Modification> modifications, IDocument doc, int offset, int length, string newName)
 		{
 			foreach (Modification m in modifications) {
 				if (m.Document == doc) {
@@ -135,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		protected void ShowAsSearchResults(string pattern, List<Reference> list)
+		public static void ShowAsSearchResults(string pattern, List<Reference> list)
 		{
 			if (list == null) return;
 			List<SearchResult> results = new List<SearchResult>(list.Count);
@@ -147,7 +146,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			SearchReplaceInFilesManager.ShowSearchResults(pattern, results);
 		}
 		
-		protected void RenameReferences(List<Reference> list, string newName)
+		public static void RenameReferences(List<Reference> list, string newName)
 		{
 			List<IViewContent> modifiedContents = new List<IViewContent>();
 			List<Modification> modifications = new List<Modification>();

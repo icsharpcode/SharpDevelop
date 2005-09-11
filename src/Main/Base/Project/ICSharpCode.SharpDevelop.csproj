@@ -672,7 +672,6 @@
     <Compile Include="Src\Services\Debugger\CurrentLineBookmark.cs" />
     <Compile Include="Src\Dom\ClassFinder.cs" />
     <Compile Include="Src\TextEditor\Commands\ClassBookmarkMenuBuilder.cs" />
-    <Compile Include="Src\TextEditor\Commands\ParserBookmarkMenuBuilderBase.cs" />
     <Compile Include="Src\TextEditor\SearchAndReplace\Engine\SearchStrategy\BoyerMooreSearchStrategy.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserCommands.cs" />
     <Compile Include="Src\Gui\BrowserDisplayBinding\BrowserLocationConditionEvaluator.cs" />
@@ -700,6 +699,8 @@
     <Compile Include="Src\Gui\Components\AutoHide\AutoHideMenuStripContainer.cs" />
     <Compile Include="Src\Gui\Components\AutoHide\AutoHideStatusStripContainer.cs" />
     <Compile Include="Src\Gui\Components\AutoHide\AutoHideContainer.cs" />
+    <Compile Include="Src\Services\RefactoringService\LocalVariableRefactoring.cs" />
+    <Compile Include="Src\Services\RefactoringService\FindReferencesAndRenameHelper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

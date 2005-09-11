@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public static List<Reference> FindReferences(IMember member, IProgressMonitor progressMonitor)
 		{
-			return RunFindReferences(member.DeclaringType, member, progressMonitor);
+			return RunFindReferences(member.DeclaringType, member, false, progressMonitor);
 		}
 		
 		/// <summary>
@@ -79,16 +79,35 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		public static List<Reference> FindReferences(IClass @class, IProgressMonitor progressMonitor)
 		{
-			return RunFindReferences(@class, null, progressMonitor);
+			return RunFindReferences(@class, null, false, progressMonitor);
 		}
 		
-		static List<Reference> RunFindReferences(IClass ownerClass, IMember member, IProgressMonitor progressMonitor)
+		/// <summary>
+		/// Find all references to the specified local variable.
+		/// </summary>
+		public static List<Reference> FindReferences(LocalResolveResult local, IProgressMonitor progressMonitor)
+		{
+			return RunFindReferences(local.CallingClass, local.Field, true, progressMonitor);
+		}
+		
+		/// <summary>
+		/// This method can be used in three modes:
+		/// 1. Find references to classes (parentClass = targetClass, member = null, isLocal = false)
+		/// 2. Find references to members (parentClass = parent, member = member, isLocal = false)
+		/// 3. Find references to local variables (parentClass = parent, member = local var as field, isLocal = true)
+		/// </summary>
+		static List<Reference> RunFindReferences(IClass ownerClass, IMember member,
+		                                         bool isLocal,
+		                                         IProgressMonitor progressMonitor)
 		{
 			if (ParserService.LoadSolutionProjectsThreadRunning) {
 				MessageService.ShowMessage("${res:SharpDevelop.Refactoring.LoadSolutionProjectsThreadRunning}");
 				return null;
 			}
-			ownerClass = FixClass(ownerClass);
+			if (!isLocal) {
+				// for local va
+				ownerClass = FixClass(ownerClass);
+			}
 			List<ProjectItem> files = GetPossibleFiles(ownerClass, member);
 			ParseableFileContentEnumerator enumerator = new ParseableFileContentEnumerator(files.ToArray());
 			List<Reference> references = new List<Reference>();
@@ -106,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 						progressMonitor.WorkDone = enumerator.Index;
 					}
 					
-					AddReferences(references, ownerClass, member, enumerator.CurrentFileName, enumerator.CurrentFileContent);
+					AddReferences(references, ownerClass, member, isLocal, enumerator.CurrentFileName, enumerator.CurrentFileContent);
 				}
 			} finally {
 				if (progressMonitor != null) {
@@ -117,7 +136,13 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return references;
 		}
 		
-		static void AddReferences(List<Reference> list, IClass parentClass, IMember member, string fileName, string fileContent)
+		/// <summary>
+		/// This method can be used in three modes (like RunFindReferences)
+		/// </summary>
+		static void AddReferences(List<Reference> list,
+		                          IClass parentClass, IMember member,
+		                          bool isLocal,
+		                          string fileName, string fileContent)
 		{
 			string lowerFileContent = fileContent.ToLower();
 			string searchedText; // the text that is searched for
@@ -157,7 +182,12 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					// found in this file (the resolver should parse all methods at once)
 					ResolveResult rr = ParserService.Resolve(expr, position.Y, position.X, fileName, fileContent);
 					MemberResolveResult mrr = rr as MemberResolveResult;
-					if (member != null) {
+					if (isLocal) {
+						// find reference to local variable
+						if (IsReferenceToLocalVariable(rr, member)) {
+							list.Add(new Reference(fileName, pos, searchedText.Length, expr.Expression, rr));
+						}
+					} else if (member != null) {
 						// find reference to member
 						if (IsReferenceToMember(member, rr)) {
 							list.Add(new Reference(fileName, pos, searchedText.Length, expr.Expression, rr));
@@ -304,6 +334,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		}
 		#endregion
 		
+		public static bool IsReferenceToLocalVariable(ResolveResult rr, IMember variable)
+		{
+			LocalResolveResult local = rr as LocalResolveResult;
+			if (local == null) {
+				return false;
+			} else {
+				return local.Field.Region.BeginLine == variable.Region.BeginLine
+					&& local.Field.Region.BeginColumn == variable.Region.BeginColumn;
+			}
+		}
+		
+		/// <summary>
+		/// Gets if <paramref name="rr"/> is a reference to <paramref name="member"/>.
+		/// </summary>
 		public static bool IsReferenceToMember(IMember member, ResolveResult rr)
 		{
 			MemberResolveResult mrr = rr as MemberResolveResult;

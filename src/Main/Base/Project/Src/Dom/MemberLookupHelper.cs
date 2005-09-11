@@ -515,7 +515,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			// Identity conversion:
 			if (from == to) return true;
-			if (from == null) return false;
+			if (from == null || to == null) return false;
 			if (from.Equals(to)) {
 				return true;
 			}
@@ -554,7 +554,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (toIsDefault && (fromIsDefault || from.ArrayDimensions > 0)) {
 				IClass c1 = from.GetUnderlyingClass();
 				IClass c2 = to.GetUnderlyingClass();
-				if (c1.IsTypeInInheritanceTree(c2)) {
+				if (c1 != null && c1.IsTypeInInheritanceTree(c2)) {
 					return true;
 				}
 			}
@@ -578,6 +578,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// </returns>
 		public static int GetBetterConversion(IReturnType from, IReturnType to1, IReturnType to2)
 		{
+			if (from == null) return 0;
+			if (to1 == null) return 2;
+			if (to2 == null) return 1;
+			
 			// See ECMA-334, § 14.4.2.3
 			
 			// If T1 and T2 are the same type, neither conversion is better.

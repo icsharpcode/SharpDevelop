@@ -26,7 +26,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	/// <summary>
 	/// Build context menu for class members in the text editor.
 	/// </summary>
-	public class ClassBookmarkMenuBuilder : ParserBookmarkMenuBuilderBase, ISubmenuBuilder
+	public class ClassBookmarkMenuBuilder : ISubmenuBuilder
 	{
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 			List<ToolStripItem> list = new List<ToolStripItem>();
 			
-			if (!IsReadOnly(c)) {
+			if (!FindReferencesAndRenameHelper.IsReadOnly(c)) {
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
 				cmd.Tag = c;
 				list.Add(cmd);
@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IClass c = (IClass)item.Tag;
 			c = c.DefaultReturnType.GetUnderlyingClass(); // get compound class if class is partial
 			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameClassText}", c.Name);
-			if (!CheckName(newName)) return;
+			if (!FindReferencesAndRenameHelper.CheckName(newName)) return;
 			
 			List<Reference> list = RefactoringService.FindReferences(c, null);
 			if (list == null) return;
@@ -102,14 +102,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				}
 			}
 			
-			RenameReferences(list, newName);
+			FindReferencesAndRenameHelper.RenameReferences(list, newName);
 		}
 		
 		void AddDeclarationAsReference(List<Reference> list, string fileName, DomRegion region, string name)
 		{
 			if (fileName == null)
 				return;
-			ProvidedDocumentInformation documentInformation = GetDocumentInformation(fileName);
+			ProvidedDocumentInformation documentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(fileName);
 			int offset = documentInformation.Document.PositionToOffset(new Point(region.BeginColumn - 1, region.BeginLine - 1));
 			string text = documentInformation.TextBuffer.GetText(offset, Math.Min(name.Length + 30, documentInformation.TextBuffer.Length - offset - 1));
 			int offsetChange = text.IndexOf(name);
@@ -148,7 +148,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				if (derivedClass.CompilationUnit.FileName == null) continue;
 				
 				SearchResult res = new SimpleSearchResult(derivedClass.FullyQualifiedName, new Point(derivedClass.Region.BeginColumn - 1, derivedClass.Region.BeginLine - 1));
-				res.ProvidedDocumentInformation = GetDocumentInformation(derivedClass.CompilationUnit.FileName);
+				res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 				results.Add(res);
 			}
 			SearchReplaceInFilesManager.ShowSearchResults("Classes deriving from " + c.Name, results);
@@ -158,7 +158,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IClass c = (IClass)item.Tag;
-			ShowAsSearchResults("References to " + c.Name, RefactoringService.FindReferences(c, null));
+			FindReferencesAndRenameHelper.ShowAsSearchResults("References to " + c.Name, RefactoringService.FindReferences(c, null));
 		}
 	}
 }

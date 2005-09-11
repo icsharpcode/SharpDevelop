@@ -14,7 +14,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// <summary>
 	/// Combines multiple return types.
 	/// </summary>
-	public class CombinedReturnType : IReturnType
+	public sealed class CombinedReturnType : IReturnType
 	{
 		IList<IReturnType> baseTypes;
 		
@@ -22,6 +22,31 @@ namespace ICSharpCode.SharpDevelop.Dom
 		string name;
 		string @namespace;
 		string dotnetName;
+		
+		public override bool Equals(object obj)
+		{
+			CombinedReturnType combined = obj as CombinedReturnType;
+			if (combined == null) return false;
+			if (baseTypes.Count != combined.baseTypes.Count) return false;
+			for (int i = 0; i < baseTypes.Count; i++) {
+				if (!baseTypes[i].Equals(combined.baseTypes[i])) {
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		public override int GetHashCode()
+		{
+			unchecked {
+				int res = 0;
+				foreach (IReturnType rt in baseTypes) {
+					res *= 27;
+					res += rt.GetHashCode();
+				}
+				return res;
+			}
+		}
 		
 		public CombinedReturnType(IList<IReturnType> baseTypes, string fullName, string name, string @namespace, string dotnetName)
 		{

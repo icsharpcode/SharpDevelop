@@ -103,6 +103,27 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public override bool Equals(object obj)
+		{
+			DefaultTypeParameter tp = obj as DefaultTypeParameter;
+			if (tp == null) return false;
+			if (tp.index != index) return false;
+			if (tp.name != name) return false;
+			if (tp.hasConstructableContraint != hasConstructableContraint) return false;
+			if (tp.method != method) {
+				if (tp.method == null || method == null) return false;
+				if (tp.method.FullyQualifiedName == method.FullyQualifiedName) return false;
+			} else {
+				if (tp.targetClass.FullyQualifiedName == targetClass.FullyQualifiedName) return false;
+			}
+			return true;
+		}
+		
+		public override int GetHashCode()
+		{
+			return base.GetHashCode();
+		}
+		
 		public override string ToString()
 		{
 			return String.Format("[{0}: {1}]", GetType().Name, name);

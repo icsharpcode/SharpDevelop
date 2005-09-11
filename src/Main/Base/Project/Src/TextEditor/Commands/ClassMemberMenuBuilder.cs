@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	/// <summary>
 	/// Build context menu for class members in the text editor.
 	/// </summary>
-	public class ClassMemberMenuBuilder : ParserBookmarkMenuBuilderBase, ISubmenuBuilder
+	public class ClassMemberMenuBuilder : ISubmenuBuilder
 	{
 		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
 		{
@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			List<ToolStripItem> list = new List<ToolStripItem>();
 			
 			if (method == null || !method.IsConstructor) {
-				if (!IsReadOnly(member.DeclaringType)) {
+				if (!FindReferencesAndRenameHelper.IsReadOnly(member.DeclaringType)) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
 					cmd.Tag = member;
 					list.Add(cmd);
@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					cmd.Tag = foundProperty;
 					list.Add(cmd);
 				} else {
-					if (!IsReadOnly(member.DeclaringType)) {
+					if (!FindReferencesAndRenameHelper.IsReadOnly(member.DeclaringType)) {
 						cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateGetter}", CreateGetter);
 						cmd.Tag = member;
 						list.Add(cmd);
@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
-			TextEditorControl textEditor = JumpBehindDefinition(member);
+			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
 			
 			AbstractPropertyCodeGenerator generator;
 			if (includeSetter)
@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		void GotoTagMember(object sender, EventArgs e)
 		{
-			JumpToDefinition((IMember)(sender as MenuCommand).Tag);
+			FindReferencesAndRenameHelper.JumpToDefinition((IMember)(sender as MenuCommand).Tag);
 		}
 		
 		void GoToBase(object sender, EventArgs e)
@@ -141,7 +141,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IMember member = (IMember)item.Tag;
 			IMember baseMember = RefactoringService.FindBaseMember(member);
 			if (baseMember != null) {
-				JumpToDefinition(baseMember);
+				FindReferencesAndRenameHelper.JumpToDefinition(baseMember);
 			}
 		}
 		
@@ -150,11 +150,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
 			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameMemberText}", member.Name);
-			if (!CheckName(newName)) return;
+			if (!FindReferencesAndRenameHelper.CheckName(newName)) return;
 			
 			List<Reference> list = RefactoringService.FindReferences(member, null);
 			if (list == null) return;
-			RenameReferences(list, newName);
+			FindReferencesAndRenameHelper.RenameReferences(list, newName);
 			
 			if (member is IField) {
 				IProperty property = FindProperty((IField)member);
@@ -164,7 +164,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 						if (MessageService.AskQuestionFormatted("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameFieldAndProperty}", property.FullyQualifiedName, newPropertyName)) {
 							list = RefactoringService.FindReferences(property, null);
 							if (list != null) {
-								RenameReferences(list, newPropertyName);
+								FindReferencesAndRenameHelper.RenameReferences(list, newPropertyName);
 							}
 						}
 					}
@@ -184,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				IMember m = RefactoringService.FindSimilarMember(derivedClass, member);
 				if (m != null && !m.Region.IsEmpty) {
 					SearchResult res = new SimpleSearchResult(m.FullyQualifiedName, new Point(m.Region.BeginColumn - 1, m.Region.BeginLine - 1));
-					res.ProvidedDocumentInformation = GetDocumentInformation(derivedClass.CompilationUnit.FileName);
+					res.ProvidedDocumentInformation = FindReferencesAndRenameHelper.GetDocumentInformation(derivedClass.CompilationUnit.FileName);
 					results.Add(res);
 				}
 			}
@@ -195,7 +195,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
-			ShowAsSearchResults("References to " + member.Name, RefactoringService.FindReferences(member, null));
+			FindReferencesAndRenameHelper.ShowAsSearchResults("References to " + member.Name, RefactoringService.FindReferences(member, null));
 		}
 	}
 }

@@ -1462,6 +1462,31 @@
 		<MenuItem id = "MenuBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ClassBookmarkMenuBuilder" />
 	</Path>
 	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common">
+		<MenuItem id = "Rename"
+		          label = "${res:SharpDevelop.Refactoring.RenameCommand}"
+		          class = "ICSharpCode.SharpDevelop.Refactoring.RenameLocalVariableCommand"/>
+		<MenuItem id = "FindReferences"
+		          label = "${res:SharpDevelop.Refactoring.FindReferencesCommand}"
+		          class = "ICSharpCode.SharpDevelop.Refactoring.FindLocalVariableReferencesCommand"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariableDefinition">
+		<Include id = "Common" path = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/LocalVariable">
+		<Include id = "Common" path = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/ParameterDefinition">
+		<Include id = "Common" path = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Parameter">
+		<Include id = "Common" path = "/SharpDevelop/ViewContent/DefaultTextEditor/Refactoring/Common"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
 		<MenuItem id = "Refactoring" type = "Builder" class = "ICSharpCode.SharpDevelop.Refactoring.RefactoringMenuBuilder"/>
 		<Include id = "Cut" item = "/SharpDevelop/Workbench/MainMenu/Edit/Cut"/>

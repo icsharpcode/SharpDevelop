@@ -56,7 +56,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override int GetHashCode()
 		{
-			return declaringClass.GetHashCode() ^ name.GetHashCode();
+			unchecked {
+				return declaringClass.GetHashCode() ^ name.GetHashCode() ^ caretLine << 8 + caretColumn;
+			}
 		}
 		
 		// we need to use a static Dictionary as cache to provide a easy was to clear all cached

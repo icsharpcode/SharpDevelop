@@ -26,6 +26,9 @@ namespace ICSharpCode.Core
 		public const int LiteralIndex   = 15;
 		public const int GotoArrowIndex = 13;
 		
+		public const int LocalVariableIndex = FieldIndex + privateModifierOffset;
+		public const int ParameterIndex = FieldIndex + privateModifierOffset;
+		
 		public const int ClassIndex     = 16;
 		public const int StructIndex    = ClassIndex + 1 * 4;
 		public const int InterfaceIndex = ClassIndex + 2 * 4;
