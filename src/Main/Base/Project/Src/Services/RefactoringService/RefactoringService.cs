@@ -254,17 +254,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (member.IsPrivate) {
 				List<string> fileNames = GetFileNames(ownerClass);
 				foreach (string fileName in fileNames) {
-					foreach (IProject p in ProjectService.OpenSolution.Projects) {
-						foreach (ProjectItem item in p.Items) {
-							if (item.ItemType == ItemType.Compile) {
-								if (FileUtility.IsEqualFileName(fileName, item.FileName)) {
-									resultList.Add(item);
-									return resultList;
-								}
-							}
-						}
-					}
+					ProjectItem item = FindItem(fileName);
+					if (item != null) resultList.Add(item);
 				}
+				return resultList;
 			}
 			
 			if (member.IsProtected) {
@@ -273,6 +266,18 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			GetPossibleFilesInternal(resultList, ownerClass.ProjectContent, ownerClass.IsInternal || member.IsInternal && !member.IsProtected);
 			return resultList;
+		}
+		
+		static ProjectItem FindItem(string fileName)
+		{
+			foreach (IProject p in ProjectService.OpenSolution.Projects) {
+				foreach (ProjectItem item in p.Items) {
+					if (FileUtility.IsEqualFileName(fileName, item.FileName)) {
+						return item;
+					}
+				}
+			}
+			return null;
 		}
 		
 		static void GetPossibleFilesInternal(List<ProjectItem> resultList, IProjectContent ownerProjectContent, bool internalOnly)

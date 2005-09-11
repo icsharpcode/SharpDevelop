@@ -514,6 +514,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			// ECMA-334, § 13.1 Implicit conversions
 			
 			// Identity conversion:
+			if (from == to) return true;
+			if (from == null) return false;
 			if (from.Equals(to)) {
 				return true;
 			}
