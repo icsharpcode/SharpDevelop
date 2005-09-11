@@ -9,6 +9,7 @@ namespace HtmlHelp2
 {
 	using System;
     using System.Collections;
+    using System.Collections.Generic;
     using System.Collections.Specialized;
 	using System.Drawing;
 	using System.Drawing.Design;
@@ -43,7 +44,7 @@ namespace HtmlHelp2
 		private int internalIndex                 = 0;
 		private StringCollection dynamicHelpTerms = new StringCollection();
 		private string debugPreElement            = String.Empty;
-		private bool enableDebugInfo              = false;
+		private bool enableDebugInfo              = true;
 
 		public override Control Control
 		{
@@ -71,7 +72,6 @@ namespace HtmlHelp2
 			PropertyPad.SelectedObjectChanged      += new EventHandler(this.FormsDesignerSelectedObjectChanged);
 			PropertyPad.SelectedGridItemChanged    += new SelectedGridItemChangedEventHandler(this.FormsDesignerSelectedGridItemChanged);
 			ProjectService.SolutionClosed          += new EventHandler(this.SolutionClosed);
-			this.enableDebugInfo                    = this.EnableDebugInfo();
 		}
 
 		#region WebBrowser Scripting
@@ -123,7 +123,8 @@ namespace HtmlHelp2
 				{
 					result = true;
 
-					IHxTopic[] newTopics = this.SortTopics(topics);
+					List<IHxTopic> newTopics = this.SortTopics(topics);
+//					IHxTopic[] newTopics = this.SortTopics(topics);
 					foreach(IHxTopic topic in newTopics)
 					{
 						this.BuildNewChild(topic.Location,
@@ -410,20 +411,13 @@ namespace HtmlHelp2
 				Type myObject = selectedObject.GetType();
 				if(selectedItem != null)
 				{
-					this.AddToStringCollection(String.Format("!{0}.{1}",
-					                                         myObject.FullName,
-					                                         selectedItem.Label));
-
-					while(myObject.BaseType != null)
+					foreach(Type type in TypeHandling.FindDeclaringType(myObject, selectedItem.Label))
 					{
-						myObject = myObject.BaseType;
-						this.AddToStringCollection(String.Format("!{0}.{1}",
-						                                         myObject.FullName,
+						this.AddToStringCollection(String.Format("{0}.{1}",
+						                                         type.FullName,
 						                                         selectedItem.Label));
 					}
 				}
-
-				myObject = selectedObject.GetType();
 				this.AddToStringCollection(myObject.FullName);
 
 				WorkbenchSingleton.SafeThreadAsyncCall(this,
@@ -451,21 +445,6 @@ namespace HtmlHelp2
 			}
 			catch {}
 		}
-
-		private bool EnableDebugInfo()
-		{
-			try
-			{
-				XmlDocument xmldoc = new XmlDocument();
-				xmldoc.Load(PropertyService.ConfigDirectory + "help2environment.xml");
-				XmlNode node = xmldoc.SelectSingleNode("/help2environment/dynamic_help/@enabledebuginfo");
-				
-				return (node != null && node.InnerText == "yes");
-			}
-			catch {}
-
-			return false;
-		}
 		#endregion
 
 		private void SolutionClosed(object sender, EventArgs e)
@@ -488,61 +467,47 @@ namespace HtmlHelp2
 			}
 		}
 
-		private IHxTopic[] SortTopics(IHxTopicList topics)
+		private List<IHxTopic> SortTopics(IHxTopicList topics)
 		{
-			IHxTopic[] result = null;
+			List<IHxTopic> result = new List<IHxTopic>();
 
 			try
 			{
-				result        = new IHxTopic[topics.Count];
-				int counter   = 0;
-
-				foreach(IHxTopic topic in topics)
+				if(topics != null && topics.Count > 0)
 				{
-					result[counter] = topic;
-					counter++;
+					foreach(IHxTopic topic in topics)
+					{
+						if(!result.Contains(topic)) result.Add(topic);
+					}
+					
+					TopicComparer topicComparer = new TopicComparer();
+					result.Sort(topicComparer);
 				}
-
-				TopicComparer topicComparer = new TopicComparer();
-				Array.Sort(result, topicComparer);
 			}
 			catch {}
 
 			return result;
 		}
 
-		class TopicComparer : IComparer
+		class TopicComparer : IComparer<IHxTopic>
 		{
-			private IHxTopic topicA = null;
-			private IHxTopic topicB = null;
-
-			public int Compare(object x, object y)
+			public int Compare(IHxTopic x, IHxTopic y)
 			{
-				topicA     = (IHxTopic)x;
-				topicB     = (IHxTopic)y;
-				int result = 0;
-
-				result     = CompareType("kbSyntax");
-				if(result == 0) result = CompareType("kbHowTo");
-				if(result == 0) result = CompareType("kbArticle");
+				int result             = CompareType("kbSyntax", x, y);
+				if(result == 0) result = CompareType("kbHowTo", x, y);
+				if(result == 0) result = CompareType("kbArticle", x, y);
 
 				return result;
 			}
 
-			private int CompareType(string topicType)
+			private int CompareType(string topicType, IHxTopic x, IHxTopic y)
 			{
-				if(topicA.HasAttribute("TopicType", topicType) && !topicB.HasAttribute("TopicType", topicType))
-				{
+				if(x.HasAttribute("TopicType", topicType) && !y.HasAttribute("TopicType", topicType))
 					return -1;
-				}
-				else if(topicB.HasAttribute("TopicType", topicType) && !topicA.HasAttribute("TopicType", topicType))
-				{
+				else if(y.HasAttribute("TopicType", topicType) && !x.HasAttribute("TopicType", topicType))
 					return 1;
-				}
 				else
-				{
 					return 0;
-				}
 			}
 		}
 		#endregion
@@ -686,4 +651,30 @@ namespace HtmlHelp2
 		}
 		#endregion
 	}
+
+	#region TypeHandling by Robert_G
+	public static class TypeHandling
+	{
+		public static IEnumerable<Type> FindDeclaringType(Type type, string memberName)
+		{
+			MemberInfo[] memberInfos  = type.GetMember(memberName);
+			List<Type> declaringTypes = new List<Type>();
+
+			foreach(MemberInfo memberInfo in memberInfos)
+			{
+				if(!declaringTypes.Contains(memberInfo.DeclaringType))
+					declaringTypes.Add(memberInfo.DeclaringType);
+			}
+
+			foreach(Type declaringType in declaringTypes)
+			{
+				yield return declaringType;
+			}
+
+			// QUOTE:
+			// "Aber das ist wohl eher ein no-Brainer... ;-)"
+			// (Robert)
+		}
+	}
+	#endregion
 }
