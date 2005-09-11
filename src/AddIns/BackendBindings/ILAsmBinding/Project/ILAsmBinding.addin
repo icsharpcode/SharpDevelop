@@ -17,6 +17,10 @@
 		            extensions = "*.il"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/BackendBindings/Templates">
+		<Directory id = "ILAsm" path = "./Templates" />
+	</Path>
+	
 	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes">
 		<SyntaxMode id         = "IL Syntax Mode"
 		            name       = "ILAsm"

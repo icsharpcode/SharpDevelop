@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	/// <summary>
 	/// This class defines and holds the new project templates.
 	/// </summary>
-	public class ProjectTemplate
+	public class ProjectTemplate : IComparable
 	{
 		public static ArrayList ProjectTemplates = new ArrayList();
 		
@@ -55,10 +55,18 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string    icon         = null;
 		string    wizardpath   = null;
 		
+		int IComparable.CompareTo(object other)
+		{
+			ProjectTemplate pt = other as ProjectTemplate;
+			if (pt == null) return -1;
+			int res = category.CompareTo(pt.category);
+			if (res != 0) return res;
+			return name.CompareTo(pt.name);
+		}
+		
 		bool   newProjectDialogVisible = true;
 		
 		ArrayList actions      = new ArrayList();
-
 		
 		CombineDescriptor combineDescriptor = null;
 		ProjectDescriptor projectDescriptor = null;
@@ -242,19 +250,16 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				action.Run(projectCreateInformation);
 			}
 		}
-
-		static void LoadProjectTemplate(string fileName)
-		{
-			try {
-				
-			} catch (Exception e) {
-				throw new ApplicationException("error while loading " + fileName + " original exception was : " + e.ToString());
-			}
-		}
+		
+		public const string TemplatePath = "/SharpDevelop/BackendBindings/Templates";
 		
 		static ProjectTemplate()
 		{
-			List<string> files = FileUtility.SearchDirectory(FileUtility.Combine(PropertyService.DataDirectory, "templates", "project"), "*.xpt");
+			string dataTemplateDir = FileUtility.Combine(PropertyService.DataDirectory, "templates", "project");
+			List<string> files = FileUtility.SearchDirectory(dataTemplateDir, "*.xpt");
+			foreach (string templateDirectory in AddInTree.BuildItems(TemplatePath, null, false)) {
+				files.AddRange(FileUtility.SearchDirectory(templateDirectory, "*.xpt"));
+			}
 			foreach (string fileName in files) {
 				try {
 					ProjectTemplates.Add(new ProjectTemplate(fileName));
@@ -262,6 +267,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					MessageService.ShowError(e, ResourceService.GetString("Internal.Templates.ProjectTemplate.LoadingError") + "\n(" + fileName + ")\n");
 				}
 			}
+			ProjectTemplates.Sort();
 		}
 	}
 }

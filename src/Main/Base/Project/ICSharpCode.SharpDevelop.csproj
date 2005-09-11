@@ -701,6 +701,7 @@
     <Compile Include="Src\Gui\Components\AutoHide\AutoHideContainer.cs" />
     <Compile Include="Src\Services\RefactoringService\LocalVariableRefactoring.cs" />
     <Compile Include="Src\Services\RefactoringService\FindReferencesAndRenameHelper.cs" />
+    <Compile Include="Src\Internal\Doozers\DirectoryDoozer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

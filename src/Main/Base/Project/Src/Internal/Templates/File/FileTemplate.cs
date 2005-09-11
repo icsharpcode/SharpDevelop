@@ -134,7 +134,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	/// <summary>
 	/// This class defines and holds the new file templates.
 	/// </summary>
-	public class FileTemplate
+	public class FileTemplate : IComparable
 	{
 		public static ArrayList FileTemplates = new ArrayList();
 		
@@ -155,6 +155,15 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		ArrayList customTypes = new ArrayList();
 		
 		XmlElement fileoptions = null;
+		
+		int IComparable.CompareTo(object other)
+		{
+			FileTemplate pt = other as FileTemplate;
+			if (pt == null) return -1;
+			int res = category.CompareTo(pt.category);
+			if (res != 0) return res;
+			return name.CompareTo(pt.name);
+		}
 		
 		public string Author {
 			get {
@@ -302,25 +311,21 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			
 		}
 		
-		static void LoadFileTemplate(string filename)
-		{
-			FileTemplates.Add(new FileTemplate(filename));
-		}
-		
 		static FileTemplate()
 		{
-			List<string> files = FileUtility.SearchDirectory(PropertyService.DataDirectory +
-			                                                 Path.DirectorySeparatorChar + "templates" +
-			                                                 Path.DirectorySeparatorChar + "file", "*.xft");
+			string dataTemplateDir = FileUtility.Combine(PropertyService.DataDirectory, "templates", "file");
+			List<string> files = FileUtility.SearchDirectory(dataTemplateDir, "*.xft");
+			foreach (string templateDirectory in AddInTree.BuildItems(ProjectTemplate.TemplatePath, null, false)) {
+				files.AddRange(FileUtility.SearchDirectory(templateDirectory, "*.xft"));
+			}
 			foreach (string file in files) {
 				try {
-					if (Path.GetExtension(file) == ".xft") {
-						LoadFileTemplate(file);
-					}
+					FileTemplates.Add(new FileTemplate(file));
 				} catch(Exception e) {
 					MessageService.ShowError(e, "Error loading template file " + file + ".");
 				}
 			}
+			FileTemplates.Sort();
 		}
 	}
 }
