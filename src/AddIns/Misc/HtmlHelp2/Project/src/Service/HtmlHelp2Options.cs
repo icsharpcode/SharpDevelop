@@ -76,12 +76,10 @@ namespace HtmlHelp2.OptionsPanel
 			try
 			{
 				XmlDocument xmldoc    = new XmlDocument();
-				XmlNode node          = null;
-				XmlCDataSection cdata = null;
 				xmldoc.LoadXml("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><help2environment/>");
 
-				node                  = xmldoc.CreateElement("collection");
-				cdata                 = xmldoc.CreateCDataSection(selectedHelp2Collection);
+				XmlNode node          = xmldoc.CreateElement("collection");
+				XmlCDataSection cdata = xmldoc.CreateCDataSection(selectedHelp2Collection);
 				node.AppendChild(cdata);
 				xmldoc.DocumentElement.AppendChild(node);
 

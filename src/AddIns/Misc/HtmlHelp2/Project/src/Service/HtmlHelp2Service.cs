@@ -25,7 +25,7 @@ namespace HtmlHelp2.Environment
 		static HxSession session                         = null;
 		static IHxRegFilterList namespaceFilters         = null;
 		static IHxQuery fulltextSearch                   = null;
-		static IHxQuery dynamicHelp                      = null;
+		static IHxIndex dynamicHelp                      = null;
 		public static string DefaultNamespaceName        = "MS.NETFramework.v20*";
 		static string currentSelectedFilterQuery         = "";
 		static string currentSelectedFilterName          = "";
@@ -154,7 +154,7 @@ namespace HtmlHelp2.Environment
 		{
 			try
 			{
-				dynamicHelp = (IHxQuery)session.GetNavigationInterface("!DefaultContextWindowIndex", currentSelectedFilterQuery, ref QueryGuid);
+				dynamicHelp = (IHxIndex)session.GetNavigationInterface("!DefaultContextWindowIndex", currentSelectedFilterQuery, ref IndexGuid);
 			}
 			catch
 			{
