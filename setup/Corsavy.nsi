@@ -92,16 +92,16 @@ Section "MainSection" SEC01
 
 
   SetOutPath "$INSTDIR\AddIns"
-  File /r ..\AddIns\*.*
+  File /r /x .svn ..\AddIns\*.*
 
   SetOutPath "$INSTDIR\bin"
-  File /r ..\bin\*.*
+  File /r /x .svn ..\bin\*.*
 
   SetOutPath "$INSTDIR\data"
-  File /r ..\data\*.*
+  File /r /x .svn ..\data\*.*
 
   SetOutPath "$INSTDIR\doc"
-  File /r ..\doc\*.*
+  File /r /x .svn ..\doc\*.*
   
   CreateDirectory "$SMPROGRAMS\SharpDevelop 2.0"
   CreateShortCut "$SMPROGRAMS\SharpDevelop 2.0\SharpDevelop 2.0.lnk" "$INSTDIR\bin\SharpDevelop.exe"
