@@ -44,6 +44,12 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
+		public BookmarkNode CurrentNode {
+			get {
+				return bookmarkTreeView.SelectedNode as BookmarkNode;
+			}
+		}
+		
 		public BookmarkPad()
 		{
 			instance = this;
@@ -64,6 +70,49 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			
 			foreach (SDBookmark mark in BookmarkManager.Bookmarks) {
 				AddMark(mark);
+			}
+		}
+		
+		public class BookmarkNodeEnumerator {
+			public IEnumerator<TreeNode> GetEnumerator()
+			{
+				Stack<TreeNode> treeNodes = new Stack<TreeNode>();
+				foreach (TreeNode node in Instance.bookmarkTreeView.Nodes) {
+					treeNodes.Push(node);
+				}
+				
+				while (treeNodes.Count > 0) {
+					TreeNode node = treeNodes.Pop();
+					foreach (TreeNode childNode in node.Nodes) {
+						treeNodes.Push(childNode);
+					}
+					yield return node;
+				}
+			}
+		}
+		BookmarkNodeEnumerator bookmarkNodeEnumerator = new BookmarkNodeEnumerator();
+		
+		public BookmarkNodeEnumerator AllNodes {
+			get {
+				return bookmarkNodeEnumerator;
+			}
+		}
+		
+		public void EnableDisableAll()
+		{
+			bool isOneChecked = false;
+			foreach (TreeNode node in AllNodes) {
+				if (node is BookmarkNode) {
+					if (((BookmarkNode)node).Checked) {
+						isOneChecked = true;
+						break;
+					}
+				}
+			}
+			foreach (TreeNode node in AllNodes) {
+				if (node is BookmarkNode) {
+					((BookmarkNode)node).Checked = !isOneChecked;
+				}
 			}
 		}
 		

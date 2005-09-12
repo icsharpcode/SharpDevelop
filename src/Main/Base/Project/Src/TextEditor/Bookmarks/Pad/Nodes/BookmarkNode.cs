@@ -54,6 +54,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			}
 		}
 		
+		public override void CheckedChanged()
+		{
+			bookmark.IsEnabled = Checked;
+		}
+		
 		void BookmarkDocumentChanged(object sender, EventArgs e)
 		{
 			if (bookmark.Document != null) {

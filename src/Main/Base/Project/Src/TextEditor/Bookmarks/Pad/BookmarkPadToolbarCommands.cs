@@ -21,20 +21,26 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Commands;
 using ICSharpCode.SharpDevelop;
+using ICSharpCode.TextEditor;
+using ICSharpCode.TextEditor.Actions;
 
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
-	public class GotoNext : AbstractMenuCommand
+	public class GotoNext : AbstractEditActionMenuCommand
 	{
-		public override void Run()
-		{
+		public override IEditAction EditAction {
+			get {
+				return new ICSharpCode.TextEditor.Actions.GotoNextBookmark(PrevBookmark.AcceptOnlyStandardBookmarks);
+			}
 		}
 	}
 	
-	public class GotoPrev : AbstractMenuCommand
+	public class GotoPrev : AbstractEditActionMenuCommand
 	{
-		public override void Run()
-		{
+		public override IEditAction EditAction {
+			get {
+				return new ICSharpCode.TextEditor.Actions.GotoPrevBookmark(PrevBookmark.AcceptOnlyStandardBookmarks);
+			}
 		}
 	}
 	
@@ -42,6 +48,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	{
 		public override void Run()
 		{
+			BookmarkNode node = BookmarkPad.Instance.CurrentNode;
+			if (node != null) {
+				node.Bookmark.Document.BookmarkManager.RemoveMark(node.Bookmark);
+				WorkbenchSingleton.MainForm.Refresh();
+			}
 		}
 	}
 	
@@ -49,6 +60,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	{
 		public override void Run()
 		{
+			BookmarkPad.Instance.EnableDisableAll();
 		}
 	}
 	

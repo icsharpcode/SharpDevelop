@@ -38,11 +38,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 	
 	public class PrevBookmark : AbstractEditActionMenuCommand
 	{
-		
 		public static bool AcceptOnlyStandardBookmarks(Bookmark mark)
 		{
 			return (mark is SDBookmark);
 		}
+		
 		public override IEditAction EditAction {
 			get {
 				return new ICSharpCode.TextEditor.Actions.GotoPrevBookmark(PrevBookmark.AcceptOnlyStandardBookmarks);
