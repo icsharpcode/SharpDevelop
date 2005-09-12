@@ -63,11 +63,7 @@ namespace HtmlHelp2.OptionsPanel
 		{
 			if(help2Collections.SelectedItem != null)
 			{
-				try
-				{
-					selectedHelp2Collection = Help2RegistryWalker.GetNamespaceName(help2Collections.SelectedItem.ToString());
-				}
-				catch {}
+				selectedHelp2Collection = Help2RegistryWalker.GetNamespaceName(help2Collections.SelectedItem.ToString());
 			}
 		}
 
@@ -84,8 +80,13 @@ namespace HtmlHelp2.OptionsPanel
 				xmldoc.DocumentElement.AppendChild(node);
 
 				xmldoc.Save(PropertyService.ConfigDirectory + help2EnvironmentFile);
+
+				LoggingService.Info("Help 2.0: new configuration saved");
 			}
-			catch {}
+			catch
+			{
+				LoggingService.Error("Help 2.0: error while trying to save configuration");
+			}
 		}
 
 		#region ReRegister

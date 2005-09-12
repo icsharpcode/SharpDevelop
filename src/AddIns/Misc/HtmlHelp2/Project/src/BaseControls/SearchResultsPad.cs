@@ -30,8 +30,7 @@ namespace HtmlHelp2
 		{
 			get
 			{
-				if (instance == null)
-					instance = new HtmlHelp2SearchResultsView();
+				if (instance == null) instance = new HtmlHelp2SearchResultsView();
 				return instance;
 			}
 		}

@@ -67,11 +67,7 @@ namespace HtmlHelp2
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
-
-			if(disposing && indexControl != null)
-			{
-				indexControl.Dispose();
-			}
+			if(disposing && indexControl != null) { indexControl.Dispose(); }
 		}
 
 		public void RedrawContent()
@@ -102,8 +98,9 @@ namespace HtmlHelp2
 					HtmlHelp2Environment.FilterQueryChanged += new EventHandler(FilterQueryChanged);
 					HtmlHelp2Environment.NamespaceReloaded  += new EventHandler(NamespaceReloaded);					
 				}
-				catch
+				catch(Exception ex)
 				{
+					LoggingService.Error("Help 2.0: Index control failed; " + ex.ToString());
 					this.FakeHelpControl();
 				}
 			}
@@ -163,39 +160,30 @@ namespace HtmlHelp2
 
 		public void LoadIndex()
 		{
-			try
-			{
-				searchTerm.Text = "";
-				searchTerm.Items.Clear();
-
-				indexControl.IndexData                = HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.CurrentFilterQuery);
-				filterCombobox.SelectedIndexChanged  -= new EventHandler(FilterChanged);
-				HtmlHelp2Environment.BuildFilterList(filterCombobox);
-				filterCombobox.SelectedIndexChanged  += new EventHandler(FilterChanged);
-			}
-			catch {}
+			searchTerm.Text                       = "";
+			searchTerm.Items.Clear();
+			indexControl.IndexData                = HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.CurrentFilterQuery);
+			filterCombobox.SelectedIndexChanged  -= new EventHandler(FilterChanged);
+			HtmlHelp2Environment.BuildFilterList(filterCombobox);
+			filterCombobox.SelectedIndexChanged  += new EventHandler(FilterChanged);
 		}
 
 		private void FilterChanged(object sender, EventArgs e)
 		{
-			string selectedString = filterCombobox.SelectedItem.ToString();
+			string selectedString       = filterCombobox.SelectedItem.ToString();
 
 			if(selectedString != "")
 			{
-				try
-				{
-					Cursor.Current          = Cursors.WaitCursor;
-					indexControl.IndexData  = HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.FindFilterQuery(selectedString));
-					Cursor.Current          = Cursors.Default;
-				}
-				catch {}
+				Cursor.Current          = Cursors.WaitCursor;
+				indexControl.IndexData  = HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.FindFilterQuery(selectedString));
+				Cursor.Current          = Cursors.Default;
 			}
 		}
 
 		#region Help 2.0 Environment Events
 		private void FilterQueryChanged(object sender, EventArgs e)
 		{
-			indexControl.Refresh();
+			Application.DoEvents();
 
 			string currentFilterName = filterCombobox.SelectedItem.ToString();
 			if(String.Compare(currentFilterName, HtmlHelp2Environment.CurrentFilterName) != 0)
@@ -255,7 +243,8 @@ namespace HtmlHelp2
 			if(indexResults == null)
 				return;
 
-			try {
+			try
+			{
 				IHxTopicList matchingTopics = indexControl.IndexData.GetTopicsFromSlot(indexSlot);
 
 				try
@@ -263,18 +252,14 @@ namespace HtmlHelp2
 					((HtmlHelp2IndexResultsPad)indexResults.PadContent).CleanUp();
 					((HtmlHelp2IndexResultsPad)indexResults.PadContent).IndexResultsListView.BeginUpdate();
 
-					for(int i = 1; i <= matchingTopics.Count; i++)
+					foreach(IHxTopic topic in matchingTopics)
 					{
-						IHxTopic topic = matchingTopics.ItemAt(i);
-
-						if(topic != null) {
-							ListViewItem lvi = new ListViewItem();
-							lvi.Text         = topic.get_Title(HxTopicGetTitleType.HxTopicGetRLTitle,HxTopicGetTitleDefVal.HxTopicGetTitleFileName);
-							lvi.SubItems.Add(topic.Location);
-							lvi.Tag          = topic;
-
-							((HtmlHelp2IndexResultsPad)indexResults.PadContent).IndexResultsListView.Items.Add(lvi);
-						}
+						ListViewItem lvi = new ListViewItem();
+						lvi.Text         = topic.get_Title(HxTopicGetTitleType.HxTopicGetRLTitle,
+						                                   HxTopicGetTitleDefVal.HxTopicGetTitleFileName);
+						lvi.Tag          = topic;
+						lvi.SubItems.Add(topic.Location);
+						((HtmlHelp2IndexResultsPad)indexResults.PadContent).IndexResultsListView.Items.Add(lvi);
 					}
 				}
 				finally
@@ -297,7 +282,10 @@ namespace HtmlHelp2
 						break;
 				}
 			}
-			catch {}
+			catch(Exception ex)
+			{
+				LoggingService.Error("Help 2.0: cannot get matching index entries; " + ex.ToString());
+			}
 		}
 	}
 }

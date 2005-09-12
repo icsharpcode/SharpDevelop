@@ -10,39 +10,43 @@ namespace HtmlHelp2.RegistryWalker
 	using System;
 	using System.Runtime.InteropServices;
 	using System.Windows.Forms;
+	using ICSharpCode.Core;
 	using MSHelpServices;
 
 	public sealed class Help2RegistryWalker
 	{
 		public static void BuildNamespacesList(ComboBox help2Collections, string selectedHelp2Collection)
 		{
-			if(help2Collections == null)
-				return;
-
+			if(help2Collections == null) return;
 			help2Collections.Items.Clear();
 			help2Collections.BeginUpdate();
 
 			try
 			{
-				string currentDescription  = "";
-
-				HxRegistryWalker regWalker = new HxRegistryWalker();
+				string currentDescription      = "";
+				HxRegistryWalker regWalker     = new HxRegistryWalker();
 				IHxRegNamespaceList namespaces = regWalker.get_RegisteredNamespaceList("");
 
 				foreach(IHxRegNamespace currentNamespace in namespaces)
 				{
 					help2Collections.Items.Add((string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription));
 
-					if(selectedHelp2Collection != "" && String.Compare(selectedHelp2Collection, currentNamespace.Name) == 0)
+					if(selectedHelp2Collection != "" &&
+					   String.Compare(selectedHelp2Collection, currentNamespace.Name) == 0)
 					{
 						currentDescription = (string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription);
 					}
 				}
 
-				if(currentDescription != "") help2Collections.SelectedIndex = help2Collections.Items.IndexOf(currentDescription);
-					else help2Collections.SelectedIndex = 0;
+				if(currentDescription != "")
+					help2Collections.SelectedIndex = help2Collections.Items.IndexOf(currentDescription);
+				else
+					help2Collections.SelectedIndex = 0;
 			}
-			catch {}
+			catch
+			{
+				LoggingService.Error("Help 2.0: cannot build namespaces list for Options dialog");
+			}
 
 			help2Collections.EndUpdate();
 		}
@@ -51,23 +55,23 @@ namespace HtmlHelp2.RegistryWalker
 		{
 			try
 			{
-				HxRegistryWalker regWalker = new HxRegistryWalker();
+				HxRegistryWalker regWalker     = new HxRegistryWalker();
 				IHxRegNamespaceList namespaces = regWalker.get_RegisteredNamespaceList("");
 
 				foreach(IHxRegNamespace currentNamespace in namespaces)
 				{
-					if(String.Compare(namespaceDescription, (string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription)) == 0)
+					string currentNamespaceName = (string)currentNamespace.GetProperty(HxRegNamespacePropId.HxRegNamespaceDescription);
+					if(String.Compare(namespaceDescription, currentNamespaceName) == 0)
 					{
 						return currentNamespace.Name;
 					}
 				}
-
-				return "";
 			}
 			catch
 			{
-				return "";
+				LoggingService.Error("Help 2.0: cannot find selected namespace name");
 			}
+			return "";
 		}
 
 		public static string GetFirstNamespace(string namespaceName)

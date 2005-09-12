@@ -92,8 +92,14 @@ namespace HtmlHelp2.Environment
 
 				XmlNode node = xmldoc.SelectSingleNode("/help2environment/collection");
 				if(node != null) DefaultNamespaceName = node.InnerText;
+
+				LoggingService.Info(String.Format("Help 2.0: using \"{0}\" as default namespace",
+				                                  DefaultNamespaceName));
 			}
-			catch {}
+			catch
+			{
+				LoggingService.Info("Help 2.0: using default configuration");
+			}
 		}
 
 		public static void ReloadNamespace()
@@ -131,35 +137,24 @@ namespace HtmlHelp2.Environment
 				ReloadDynamicHelpSystem();
 
 				initDialog.Dispose();
+
+				LoggingService.Info("Help 2.0: service sucessfully loaded");
 			}
-			catch
+			catch(Exception ex)
 			{
+				LoggingService.Error("Help 2.0: not initialize service; " + ex.ToString());
 				session = null;
 			}
 		}
 
 		private static void ReloadFTSSystem()
 		{
-			try
-			{
-				fulltextSearch = (IHxQuery)session.GetNavigationInterface("!DefaultFullTextSearch", currentSelectedFilterQuery, ref QueryGuid);
-			}
-			catch
-			{
-				fulltextSearch = null;
-			}
+			fulltextSearch = (IHxQuery)session.GetNavigationInterface("!DefaultFullTextSearch", currentSelectedFilterQuery, ref QueryGuid);
 		}
 
 		private static void ReloadDynamicHelpSystem()
 		{
-			try
-			{
-				dynamicHelp = (IHxIndex)session.GetNavigationInterface("!DefaultContextWindowIndex", currentSelectedFilterQuery, ref IndexGuid);
-			}
-			catch
-			{
-				dynamicHelp = null;
-			}
+			dynamicHelp = (IHxIndex)session.GetNavigationInterface("!DefaultContextWindowIndex", currentSelectedFilterQuery, ref IndexGuid);
 		}
 
 		private static void ReloadDefaultPages()
@@ -174,7 +169,9 @@ namespace HtmlHelp2.Environment
 
 			try
 			{
-				IHxIndex namedUrlIndex = (IHxIndex)session.GetNavigationInterface("!DefaultNamedUrlIndex", "", ref IndexGuid);
+				IHxIndex namedUrlIndex = (IHxIndex)session.GetNavigationInterface("!DefaultNamedUrlIndex",
+				                                                                  "",
+				                                                                  ref IndexGuid);
 				IHxTopicList topics = null;
 
 				topics = namedUrlIndex.GetTopicsFromString(pageName, 0);
@@ -207,6 +204,7 @@ namespace HtmlHelp2.Environment
 			}
 			catch
 			{
+				LoggingService.Error("Help 2.0: cannot connect to IHxHierarchy interface (TOC)");
 				return null;
 			}
 		}
@@ -220,6 +218,7 @@ namespace HtmlHelp2.Environment
 			}
 			catch
 			{
+				LoggingService.Error("Help 2.0: cannot connect to IHxIndex interface (Index)");
 				return null;
 			}
 		}
@@ -231,25 +230,23 @@ namespace HtmlHelp2.Environment
 
 			try
 			{
-				for(int i = 1; i <= namespaceFilters.Count; i++)
+				foreach(IHxRegFilter filter in namespaceFilters)
 				{
-					IHxRegFilter filter = namespaceFilters.ItemAt(i);
-					string filterName   = (string)filter.GetProperty(HxRegFilterPropId.HxRegFilterName);
+					string filterName = (string)filter.GetProperty(HxRegFilterPropId.HxRegFilterName);
 					filterCombobox.Items.Add(filterName);
-
-					if(currentSelectedFilterName == "" && i == 1)
-					{
-						currentSelectedFilterName = filterName;
-					}
+					if(currentSelectedFilterName == "") currentSelectedFilterName = filterName;
 				}
 
 				if(namespaceFilters.Count == 0)
 					filterCombobox.Items.Add(StringParser.Parse("${res:AddIns.HtmlHelp2.DefaultEmptyFilter}"));
 
 				if(currentSelectedFilterName == "")	filterCombobox.SelectedIndex = 0;
-					else filterCombobox.SelectedIndex = filterCombobox.Items.IndexOf(currentSelectedFilterName);
+				else filterCombobox.SelectedIndex = filterCombobox.Items.IndexOf(currentSelectedFilterName);
 			}
-			catch {}
+			catch(Exception ex)
+			{
+				LoggingService.Error("Help 2.0: cannot build filters; " + ex.ToString());
+			}
 
 			filterCombobox.EndUpdate();
 		}
@@ -281,33 +278,37 @@ namespace HtmlHelp2.Environment
 		public static IHxTopicList GetMatchingTopicsForDynamicHelp(string searchTerm)
 		{
 			if(dynamicHelpIsBusy) return null;
+			IHxTopicList topics = null;
+			dynamicHelpIsBusy   = true;
 
 			try
 			{
-				dynamicHelpIsBusy   = true;
-				IHxTopicList topics = ((IHxIndex)dynamicHelp).GetTopicsFromString(searchTerm, 0);
-				return topics;
+				topics = ((IHxIndex)dynamicHelp).GetTopicsFromString(searchTerm, 0);
 			}
-			finally
+			catch
 			{
-				dynamicHelpIsBusy   = false;
+				LoggingService.Error("Help 2.0: Dynamic Help search failed");
 			}
+			dynamicHelpIsBusy   = false;
+			return topics;
 		}
 
 		public static IHxTopicList GetMatchingTopicsForKeywordSearch(string searchTerm)
 		{
 			if(dynamicHelpIsBusy) return null;
+			IHxTopicList topics = null;
+			dynamicHelpIsBusy   = true;
 
 			try
 			{
-				dynamicHelpIsBusy   = true;
-				IHxTopicList topics = GetIndex(currentSelectedFilterQuery).GetTopicsFromString(searchTerm, 0);
-				return topics;
+				topics = GetIndex(currentSelectedFilterQuery).GetTopicsFromString(searchTerm, 0);
 			}
-			finally
+			catch
 			{
-				dynamicHelpIsBusy   = false;
+				LoggingService.Error("Help 2.0: Keyword search failed");
 			}
+			dynamicHelpIsBusy   = false;
+			return topics;
 		}
 		#endregion
 

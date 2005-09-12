@@ -170,11 +170,7 @@ namespace HtmlHelp2
 			object selectedItem = filterCombobox.SelectedItem;
 			if(selectedItem != null)
 			{
-				try
-				{
-					selectedQuery = HtmlHelp2Environment.FindFilterQuery(selectedItem.ToString());
-				}
-				catch {}
+				selectedQuery = HtmlHelp2Environment.FindFilterQuery(selectedItem.ToString());
 			}
 		}
 
@@ -195,16 +191,11 @@ namespace HtmlHelp2
 
 		private void NamespaceReloaded(object sender, EventArgs e)
 		{
-			try
-			{
-				searchTerm.Text = "";
-				searchTerm.Items.Clear();
-
-				filterCombobox.SelectedIndexChanged -= new EventHandler(FilterChanged);
-				HtmlHelp2Environment.BuildFilterList(filterCombobox);
-				filterCombobox.SelectedIndexChanged += new EventHandler(FilterChanged);
-			}
-			catch {}
+			searchTerm.Text                      = "";
+			searchTerm.Items.Clear();
+			filterCombobox.SelectedIndexChanged -= new EventHandler(FilterChanged);
+			HtmlHelp2Environment.BuildFilterList(filterCombobox);
+			filterCombobox.SelectedIndexChanged += new EventHandler(FilterChanged);
 		}
 		#endregion
 
@@ -272,20 +263,13 @@ namespace HtmlHelp2
 				                                                  {{"0", searchWord}});
 				searchDialog.Show();
 				Application.DoEvents();
-
-				Cursor.Current               = Cursors.WaitCursor;
-				
+				Cursor.Current     = Cursors.WaitCursor;
 				if(useDynamicHelp)
-				{
 					matchingTopics = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(searchWord);
-				}
 				else
-				{
 					matchingTopics = HtmlHelp2Environment.FTS.Query(searchWord, searchFlags);
-				}
 				
-				Cursor.Current               = Cursors.Default;
-
+				Cursor.Current     = Cursors.Default;
 				searchDialog.Dispose();
 
 				try
@@ -293,22 +277,33 @@ namespace HtmlHelp2
 					searchResults.CleanUp();
 					searchResults.SearchResultsListView.BeginUpdate();
 
-					for(int i = 1; i <= matchingTopics.Count; i++)
+					foreach(IHxTopic topic in matchingTopics)
 					{
-						IHxTopic topic = matchingTopics.ItemAt(i);
-
-						if(topic != null)
-						{
-							ListViewItem lvi = new ListViewItem();
-							lvi.Text         = topic.get_Title(HxTopicGetTitleType.HxTopicGetRLTitle,
-							                                   HxTopicGetTitleDefVal.HxTopicGetTitleFileName);
-							lvi.SubItems.Add(topic.Location);
-							lvi.SubItems.Add(topic.Rank.ToString());
-							lvi.Tag          = topic;
-
-							searchResults.SearchResultsListView.Items.Add(lvi);
-						}
+						ListViewItem lvi = new ListViewItem();
+						lvi.Text         = topic.get_Title(HxTopicGetTitleType.HxTopicGetRLTitle,
+						                                   HxTopicGetTitleDefVal.HxTopicGetTitleFileName);
+						lvi.Tag          = topic;
+						lvi.SubItems.Add(topic.Location);
+						lvi.SubItems.Add(topic.Rank.ToString());
+						searchResults.SearchResultsListView.Items.Add(lvi);
 					}
+
+//					for(int i = 1; i <= matchingTopics.Count; i++)
+//					{
+//						IHxTopic topic = matchingTopics.ItemAt(i);
+//
+//						if(topic != null)
+//						{
+//							ListViewItem lvi = new ListViewItem();
+//							lvi.Text         = topic.get_Title(HxTopicGetTitleType.HxTopicGetRLTitle,
+//							                                   HxTopicGetTitleDefVal.HxTopicGetTitleFileName);
+//							lvi.SubItems.Add(topic.Location);
+//							lvi.SubItems.Add(topic.Rank.ToString());
+//							lvi.Tag          = topic;
+//
+//							searchResults.SearchResultsListView.Items.Add(lvi);
+//						}
+//					}
 
 					reuseMatches.Enabled = true;
 				}
@@ -320,7 +315,10 @@ namespace HtmlHelp2
 					searchIsBusy = false;
 				}
 			}
-			catch {}
+			catch(Exception ex)
+			{
+				LoggingService.Error("Help 2.0: cannot get matching search word; " + ex.ToString());
+			}
 		}
 
 		public bool PerformF1FTS(string keyword)

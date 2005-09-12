@@ -44,21 +44,17 @@ namespace HtmlHelp2
 		private int internalIndex                 = 0;
 		private StringCollection dynamicHelpTerms = new StringCollection();
 		private string debugPreElement            = String.Empty;
-		private bool enableDebugInfo              = true;
+		private bool enableDebugInfo              = false;
 
 		public override Control Control
 		{
 			get { return dynamicHelpBrowser; }
 		}
 
-		public override void Dispose()
-		{
-			try
-			{
-				dynamicHelpBrowser.Dispose();
-			}
-			catch {}
-		}
+//		public override void Dispose()
+//		{
+//			dynamicHelpBrowser.Dispose();
+//		}
 
 		public override void RedrawContent()
 		{
@@ -78,64 +74,47 @@ namespace HtmlHelp2
 		private void BuildDynamicHelpList(string expectedLanguage)
 		{
 			if(this.dynamicHelpTerms.Count == 0) return;
+			this.RemoveAllChildren();
+			this.debugPreElement     = String.Empty;
 
-			try
+			Cursor.Current           = Cursors.WaitCursor;
+			foreach(string currentHelpTerm in dynamicHelpTerms)
 			{
-				this.RemoveAllChildren();
-				this.debugPreElement     = String.Empty;
-				bool result              = false;
-
-				Cursor.Current           = Cursors.WaitCursor;
-				foreach(string currentHelpTerm in dynamicHelpTerms)
-				{
-					if(currentHelpTerm.StartsWith("!") && !result)
-					{
-						result = this.CallDynamicHelp(currentHelpTerm.Substring(1), expectedLanguage, false);
-					}
-					else if(!currentHelpTerm.StartsWith("!"))
-					{
-						this.CallDynamicHelp(currentHelpTerm, expectedLanguage, false);
-					}
-				}
-				Cursor.Current           = Cursors.Default;
-
-				if(this.enableDebugInfo) this.CreateDebugPre();
+				this.CallDynamicHelp(currentHelpTerm, expectedLanguage, false);
 			}
-			catch {}
+			Cursor.Current           = Cursors.Default;
+			if(this.enableDebugInfo) this.CreateDebugPre();
 		}
 
 		private bool CallDynamicHelp(string searchTerm, string expectedLanguage, bool keywordSearch)
 		{
 			if(!HtmlHelp2Environment.IsReady || HtmlHelp2Environment.DynamicHelpIsBusy) return false;
-			bool result = false;
+			bool result          = false;
+			IHxTopicList topics  = null;
 
 			try
 			{
-				IHxTopicList topics      = null;
 				if(keywordSearch) topics = HtmlHelp2Environment.GetMatchingTopicsForKeywordSearch(searchTerm);
 				else topics              = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(searchTerm);
+				result                   = (topics != null && topics.Count > 0);
 
 				this.debugPreElement    += String.Format("{0} ({1}): {2} {3}<br>",
 				                                         searchTerm, (keywordSearch)?"Kwd":"DH",
 				                                         topics.Count.ToString(), (topics.Count == 1)?"topic":"topics");
-
-				if(topics.Count > 0)
-				{
-					result = true;
-
-					List<IHxTopic> newTopics = this.SortTopics(topics);
-//					IHxTopic[] newTopics = this.SortTopics(topics);
-					foreach(IHxTopic topic in newTopics)
-					{
-						this.BuildNewChild(topic.Location,
-						                   topic.get_Title(HxTopicGetTitleType.HxTopicGetTOCTitle,
-						                                   HxTopicGetTitleDefVal.HxTopicGetTitleFileName),
-						                   topic.URL);
-					}
-				}
 			}
 			catch {}
 
+			if(result)
+			{
+				List<IHxTopic> newTopics = this.SortTopics(topics);
+				foreach(IHxTopic topic in newTopics)
+				{
+					this.BuildNewChild(topic.Location,
+					                   topic.get_Title(HxTopicGetTitleType.HxTopicGetTOCTitle,
+					                                   HxTopicGetTitleDefVal.HxTopicGetTitleFileName),
+					                   topic.URL);
+				}
+			}
 			return result;
 		}
 
@@ -158,24 +137,20 @@ namespace HtmlHelp2
 					{
 						if(elem.GetAttribute("className") == "section")
 						{
-							try
+							HtmlElement sectionBlock = elem.FirstChild.NextSibling;
+							HtmlElement contentSpan  = sectionBlock.NextSibling.NextSibling;
+
+							if(sectionBlock.TagName == "B" && sectionBlock.InnerText == sectionName &&
+							   contentSpan.TagName == "SPAN" && contentSpan.GetAttribute("className") == "content")
 							{
-								HtmlElement sectionBlock = elem.FirstChild.NextSibling;
-								HtmlElement contentSpan  = sectionBlock.NextSibling.NextSibling;
-
-								if(sectionBlock.TagName == "B" && sectionBlock.InnerText == sectionName &&
-								   contentSpan.TagName == "SPAN" && contentSpan.GetAttribute("className") == "content")
+								if(!this.DoesLinkExist(contentSpan, topicName, topicUrl))
 								{
-									if(!this.DoesLinkExist(contentSpan, topicName, topicUrl))
-									{
-										contentSpan.AppendChild(this.CreateNewLink(topicUrl, topicName));
-										contentSpan.AppendChild(this.CreateABreak());
-									}
-
-									return;
+									contentSpan.AppendChild(this.CreateNewLink(topicUrl, topicName));
+									contentSpan.AppendChild(this.CreateABreak());
 								}
+
+								return;
 							}
-							catch {}
 						}
 					}
 
@@ -191,7 +166,10 @@ namespace HtmlHelp2
 
 				this.internalIndex++;
 			}
-			catch {}
+			catch(Exception ex)
+			{
+				LoggingService.Error("Help 2.0: cannot build node for dynamic help; " + ex.ToString());
+			}
 		}
 
 		private HtmlElement CreateNewSection(string sectionName, out HtmlElement linkNode)
@@ -310,7 +288,10 @@ namespace HtmlHelp2
 				objArray[0]       = (object)sectionId;
 				dynamicHelpBrowser.Document.InvokeScript("ExpandCollapse", objArray);
 			}
-			catch {}
+			catch(Exception ex)
+			{
+				LoggingService.Error("Help 2.0: cannot run script; " + ex.ToString());
+			}
 		}
 
 		private void OnLinkClick(object sender, HtmlElementEventArgs e)
@@ -326,43 +307,39 @@ namespace HtmlHelp2
 		#region Taken from DefinitionView.cs
 		private void UpdateTick(object sender, ParserUpdateStepEventArgs e)
 		{
-			try
+			this.dynamicHelpTerms.Clear();
+
+			ResolveResult res = ResolveAtCaret(e);
+			if(res == null) return;
+
+			if(res != null && res.ResolvedType != null)
 			{
-				this.dynamicHelpTerms.Clear();
-
-				ResolveResult res = ResolveAtCaret(e);
-				if(res == null) return;
-
-				if(res != null && res.ResolvedType != null)
-				{
-					this.AddToStringCollection(res.ResolvedType.FullyQualifiedName);
-				}
-
-				MemberResolveResult member    = res as MemberResolveResult;
-				NamespaceResolveResult nspace = res as NamespaceResolveResult;
-				MethodResolveResult method    = res as MethodResolveResult;
-				TypeResolveResult types       = res as TypeResolveResult;
-
-				if(member != null && member.ResolvedMember != null)
-				{
-					this.AddToStringCollection(0, member.ResolvedMember.FullyQualifiedName);
-				}
-				if(nspace != null)
-				{
-					this.AddToStringCollection(0, nspace.Name);
-				}
-				if(method != null && method.ContainingType != null)
-				{
-					this.AddToStringCollection(0, method.ContainingType.FullyQualifiedName);
-				}
-				if(types != null && types.ResolvedClass != null)
-				{
-					this.AddToStringCollection(0, types.ResolvedClass.FullyQualifiedName);
-				}
-
-				WorkbenchSingleton.SafeThreadAsyncCall(this, "BuildDynamicHelpList", "");
+				this.AddToStringCollection(res.ResolvedType.FullyQualifiedName);
 			}
-			catch {}
+
+			MemberResolveResult member    = res as MemberResolveResult;
+			NamespaceResolveResult nspace = res as NamespaceResolveResult;
+			MethodResolveResult method    = res as MethodResolveResult;
+			TypeResolveResult types       = res as TypeResolveResult;
+
+			if(member != null && member.ResolvedMember != null)
+			{
+				this.AddToStringCollection(0, member.ResolvedMember.FullyQualifiedName);
+			}
+			if(nspace != null)
+			{
+				this.AddToStringCollection(0, nspace.Name);
+			}
+			if(method != null && method.ContainingType != null)
+			{
+				this.AddToStringCollection(0, method.ContainingType.FullyQualifiedName);
+			}
+			if(types != null && types.ResolvedClass != null)
+			{
+				this.AddToStringCollection(0, types.ResolvedClass.FullyQualifiedName);
+			}
+
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "BuildDynamicHelpList", "");
 		}
 
 		private ResolveResult ResolveAtCaret(ParserUpdateStepEventArgs e)
@@ -403,28 +380,19 @@ namespace HtmlHelp2
 		private void CallDynamicHelpForFormsDesigner(object selectedObject, GridItem selectedItem)
 		{
 			if(selectedObject == null) return;
+			this.dynamicHelpTerms.Clear();
 
-			try
+			Type myObject = selectedObject.GetType();
+			if(selectedItem != null)
 			{
-				this.dynamicHelpTerms.Clear();
-
-				Type myObject = selectedObject.GetType();
-				if(selectedItem != null)
+				foreach(Type type in TypeHandling.FindDeclaringType(myObject, selectedItem.Label))
 				{
-					foreach(Type type in TypeHandling.FindDeclaringType(myObject, selectedItem.Label))
-					{
-						this.AddToStringCollection(String.Format("{0}.{1}",
-						                                         type.FullName,
-						                                         selectedItem.Label));
-					}
+					this.AddToStringCollection(String.Format("{0}.{1}", type.FullName, selectedItem.Label));
 				}
-				this.AddToStringCollection(myObject.FullName);
-
-				WorkbenchSingleton.SafeThreadAsyncCall(this,
-				                                       "BuildDynamicHelpList",
-				                                       "");
 			}
-			catch {}
+			this.AddToStringCollection(myObject.FullName);
+
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "BuildDynamicHelpList", "");
 		}
 		#endregion
 
@@ -435,8 +403,10 @@ namespace HtmlHelp2
 
 			try
 			{
-				dynamicHelpBrowser.Document.Body.InsertAdjacentElement(HtmlElementInsertionOrientation.BeforeEnd, this.CreateABreak());
-				dynamicHelpBrowser.Document.Body.InsertAdjacentElement(HtmlElementInsertionOrientation.BeforeEnd, this.CreateABreak());
+				dynamicHelpBrowser.Document.Body.InsertAdjacentElement(HtmlElementInsertionOrientation.BeforeEnd,
+				                                                       this.CreateABreak());
+				dynamicHelpBrowser.Document.Body.InsertAdjacentElement(HtmlElementInsertionOrientation.BeforeEnd,
+				                                                       this.CreateABreak());
 
 				HtmlElement pre = dynamicHelpBrowser.CreateHtmlElement("pre");
 				pre.InnerHtml   = "--- Dynamic Help Debug ---<br>" + this.debugPreElement;
@@ -484,7 +454,10 @@ namespace HtmlHelp2
 					result.Sort(topicComparer);
 				}
 			}
-			catch {}
+			catch(Exception ex)
+			{
+				LoggingService.Error("Help 2.0: error while rebuild topics; " + ex.ToString());
+			}
 
 			return result;
 		}
@@ -530,33 +503,18 @@ namespace HtmlHelp2
 
 		public void RemoveAllChildren()
 		{
-			try
-			{
-				axWebBrowser.Document.Body.InnerHtml = "";
-			}
-			catch {}
+			axWebBrowser.Document.Body.InnerHtml = "";
 		}
 
 		public HtmlElement CreateHtmlElement(string elementName)
 		{
-			try
-			{
-				HtmlElement newElement = axWebBrowser.Document.CreateElement(elementName);
-				return newElement;
-			}
-			catch
-			{
-				return null;
-			}
+			HtmlElement newElement = axWebBrowser.Document.CreateElement(elementName);
+			return newElement;
 		}
 
 		public void InsertHtmlElement(HtmlElementInsertionOrientation insertWhere, HtmlElement insertWhat)
 		{
-			try
-			{
-				axWebBrowser.Document.Body.InsertAdjacentElement(insertWhere, insertWhat);
-			}
-			catch {}
+			axWebBrowser.Document.Body.InsertAdjacentElement(insertWhere, insertWhat);
 		}
 
 
@@ -580,14 +538,15 @@ namespace HtmlHelp2
 			Size = new Size(500, 500);
 
 			Controls.Add(axWebBrowser);
-			axWebBrowser.Dock = DockStyle.Fill;
-			axWebBrowser.WebBrowserShortcutsEnabled = false;
+			axWebBrowser.Dock                            = DockStyle.Fill;
+			axWebBrowser.WebBrowserShortcutsEnabled      = false;
 			axWebBrowser.IsWebBrowserContextMenuEnabled  = false;
-			axWebBrowser.AllowWebBrowserDrop = false;
+			axWebBrowser.AllowWebBrowserDrop             = false;
 
 			Controls.Add(dynamicHelpToolbar);
-			dynamicHelpToolbar.Dock             = DockStyle.Top;
-			dynamicHelpToolbar.AllowItemReorder = false;
+			dynamicHelpToolbar.Dock                      = DockStyle.Top;
+			dynamicHelpToolbar.AllowItemReorder          = false;
+			dynamicHelpToolbar.Enabled                   = HtmlHelp2Environment.IsReady;
 			for(int i = 0; i < toolbarButtons.Length; i++)
 			{
 				ToolStripButton button = new ToolStripButton();
@@ -612,15 +571,13 @@ namespace HtmlHelp2
 
 		private void LoadDynamicHelpPage()
 		{
-			try
-			{
-				string url = String.Format("{0}\\context.html",
-				                           Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+			if(!HtmlHelp2Environment.IsReady) return;
 
-				if(!File.Exists(url)) url = "about:blank";
-				axWebBrowser.Navigate(url);
-			}
-			catch {}
+			string url = String.Format("{0}\\context.html",
+			                           Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
+
+			if(!File.Exists(url)) url = "about:blank";
+			axWebBrowser.Navigate(url);
 		}
 
 		private void ToolStripButtonClicked(object sender, EventArgs e)
