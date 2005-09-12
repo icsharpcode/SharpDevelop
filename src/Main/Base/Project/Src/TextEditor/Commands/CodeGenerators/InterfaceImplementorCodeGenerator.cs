@@ -55,6 +55,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
+		protected bool useOverrideKeyword = false;
+		
 		void GenerateInterface(IReturnType intf, string fileExtension)
 		{
 			Return();
@@ -83,9 +85,20 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				}
 				
 				if (fileExtension == ".vb") {
-					editActionHandler.InsertString("Overrides Property " + property.Name + " As " + returnType + "\n");
+					if (useOverrideKeyword) {
+						editActionHandler.InsertString("Overrides ");++numOps;
+					}
+					if (!property.CanSet) {
+						editActionHandler.InsertString("ReadOnly ");++numOps;
+					} else if (!property.CanGet) {
+						editActionHandler.InsertString("WriteOnly ");++numOps;
+					}
+					editActionHandler.InsertString("Property " + property.Name + " As " + returnType + "\n");
 				} else {
-					editActionHandler.InsertString("override " + returnType + " " + property.Name);
+					if (useOverrideKeyword) {
+						editActionHandler.InsertString("override ");++numOps;
+					}
+					editActionHandler.InsertString(returnType + " " + property.Name);
 					if (StartCodeBlockInSameLine) {
 						editActionHandler.InsertString(" {");++numOps;
 					} else {
@@ -179,11 +192,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				}
 				bool isSub = returnType == "void";
 				if (fileExtension == ".vb") {
-					
-					editActionHandler.InsertString("Overrides " + (isSub ? "Sub " : "Function ") + method.Name + "(" + parameters + ") As " + returnType);++numOps;
+					if (useOverrideKeyword) {
+						editActionHandler.InsertString("Overrides ");++numOps;
+					}
+					editActionHandler.InsertString((isSub ? "Sub " : "Function ") + method.Name + "(" + parameters + ") As " + returnType);++numOps;
 					Return();
 				} else {
-					editActionHandler.InsertString("override " + returnType + " " + method.Name + "(" + parameters + ")");++numOps;
+					if (useOverrideKeyword) {
+						editActionHandler.InsertString("override ");++numOps;
+					}
+					editActionHandler.InsertString(returnType + " " + method.Name + "(" + parameters + ")");++numOps;
 					if (StartCodeBlockInSameLine) {
 						editActionHandler.InsertString(" {");++numOps;
 					} else {
