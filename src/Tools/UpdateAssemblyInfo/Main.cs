@@ -227,9 +227,11 @@ namespace UpdateAssemblyInfo
 				revisionNumber = revision.ToString();
 			} catch (Exception e) {
 				Console.WriteLine("Reading revision number with NSvn failed: " + e.Message);
-				revisionNumber = ReadRevisionFromFile();
 			} finally {
 				Environment.CurrentDirectory = oldWorkingDir;
+			}
+			if (revisionNumber == null || revisionNumber.Length == 0 || revisionNumber == "0") {
+				revisionNumber = ReadRevisionFromFile();
 			}
 			if (revisionNumber == null || revisionNumber.Length == 0 || revisionNumber == "0") {
 				throw new ApplicationException("Error reading revision number");

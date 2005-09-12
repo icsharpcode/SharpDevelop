@@ -1,4 +1,65 @@
 ﻿<ChangeLog project="SharpDevelop">
+  <Change author="Mike Krüger" date="09/12/2005">Fixed SD2-402:Toolbar in bookmark pad.</Change>
+  <Change author="Mathias Simmack" date="09/12/2005">some changes/fixes, LoggingService used</Change>
+  <Change author="Daniel Grunwald" date="09/11/2005">Allow addins to have their project/file templates stored in the addin directory.</Change>
+  <Change author="Mathias Simmack" date="09/11/2005">dynamic help: new method/type detection (by Robert_G, Delphi-PRAXiS) used for Forms designer support</Change>
+  <Change author="Daniel Grunwald" date="09/11/2005">Allow find references and rename for local variables and parameters.</Change>
+  <Change author="Daniel Grunwald" date="09/11/2005">Fixed find references on private members in partial classes.</Change>
+  <Change author="Mathias Simmack" date="09/11/2005">dynamic help: sorting implemented, some other fixed</Change>
+  <Change author="Daniel Grunwald" date="09/10/2005">Renamed InvocationExpression.Parameters to InvocationExpression.Arguments.
+Fixed bug that caused SharpDevelop to add byte order marks to plain ASCII files when UTF-8 was chosen as default encoding.</Change>
+  <Change author="Daniel Grunwald" date="09/10/2005">When renaming a field, ask the user if he also wants to the rename the property.</Change>
+  <Change author="Mathias Simmack" date="09/10/2005">dynamic help: some changes and fixes and (I hope) improvements</Change>
+  <Change author="Mathias Simmack" date="09/10/2005">dynamic help: Forms designer support added; some more improvements</Change>
+  <Change author="Mathias Simmack" date="09/10/2005">PropertyPad: SelectedGridItemChanged event for Dynamic Help added</Change>
+  <Change author="Daniel Grunwald" date="09/09/2005">Reduced number of allocations:
+- do not load xml documentation keys into memory but load only the hash code and keep everything else cached on disk.
+- made Dom's region a value-type.
+- do not create a SortedList&lt;string, IReturnType&gt; for every using statement but only when the using statements actually uses aliases.
+Overall SD should use ca. 10 MB RAM less when working on a big solution like SharpDevelop.sln.</Change>
+  <Change author="Mathias Simmack" date="09/09/2005">dynamic help: debug info enabled; using other ResolveResult types to get more info</Change>
+  <Change author="Mike Krüger" date="09/09/2005">Fixed SD2-419:C# Parser bug (methodBase is ConstructorInfo ? #ctor : methodBase.Name).</Change>
+  <Change author="Mike Krüger" date="09/09/2005">SharpRefactory tests are now running under MbUnit.</Change>
+  <Change author="Daniel Grunwald" date="09/08/2005">Fixed SD2-439: VB.Net event handlers are lost.
+Save layout configuration before switching layout by starting debugger or pressing Shift+Escape.</Change>
+  <Change author="Daniel Grunwald" date="09/08/2005">Show error message when going to designer mode in a file with syntax errors instead of displaying an empty form.</Change>
+  <Change author="mattward" date="09/08/2005">SD2-437.  Source code now generated in InitializeComponent method for non-visual components.</Change>
+  <Change author="Mathias Simmack" date="09/08/2005">dynamic help: some scripting improvements</Change>
+  <Change author="Mathias Simmack" date="09/08/2005">I changed some of the CSharp namespace names; there are no bug fixes in this upload</Change>
+  <Change author="Daniel Grunwald" date="09/04/2005">Fixed some bugs.</Change>
+  <Change author="Mathias Simmack" date="09/02/2005">dynamic help: I forgot the 3 images for the toolstrip (required to compile) and the HTML file and the 2 *Book.png images for the dynamic help (required to use DH)</Change>
+  <Change author="Mathias Simmack" date="09/01/2005">dynamic help: added support for Help 2.0 namespace reloading</Change>
+  <Change author="Mathias Simmack" date="09/01/2005">dynamic help changed and ready to use</Change>
+  <Change author="David Srbecký" date="08/28/2005">Implemented hiding of status strip in fullscreen.
+Hiding of main menu refactored.</Change>
+  <Change author="Daniel Grunwald" date="08/28/2005">Improved overload resolution by implementing 14.4.2.2 Better function member.</Change>
+  <Change author="David Srbecký" date="08/28/2005">Implemented hiding of main menu and toolbar in fullscreen</Change>
+  <Change author="David Srbecký" date="08/28/2005">Unavailable variables in debugger handled gracefully</Change>
+  <Change author="David Srbecký" date="08/27/2005">Fixed bug that was caused by breakpoints set on non-executable lines</Change>
+  <Change author="David Srbecký" date="08/27/2005">Fixed bug that was caused by static variables maked as ThreadStatic</Change>
+  <Change author="Daniel Grunwald" date="08/27/2005">Implement type argument inference for generic method calls.</Change>
+  <Change author="Daniel Grunwald" date="08/27/2005">Fixed "copy/cut/paste" in context menus.
+Fixed ExpressionFinder bug with identifiers containing underscores.</Change>
+  <Change author="Daniel Grunwald" date="08/27/2005">Improved RefactoringMenuBuilder.</Change>
+  <Change author="David Srbecký" date="08/26/2005">Fixed bug that prevented stepping through anonymous methods.</Change>
+  <Change author="Daniel Grunwald" date="08/26/2005">Fixed bug in search pad when document was changed after the search.
+Fixed crash when two classes with the same name were removed from a project content.</Change>
+  <Change author="Daniel Grunwald" date="08/26/2005">Improved overload lookup (but the rules from Â§ 14.4.2.2 are still missing).</Change>
+  <Change author="Daniel Grunwald" date="08/26/2005">Add option to choose between "professional" menu style and system menu style.</Change>
+  <Change author="Daniel Grunwald" date="08/26/2005">Allow AddIns to add their own string resources to the ResourceService.</Change>
+  <Change author="Daniel Grunwald" date="08/26/2005">Fixed bug in InterfaceImplementorCodeGenerator.</Change>
+  <Change author="Daniel Grunwald" date="08/25/2005">Removed IIndexer from ICSharpCode.Dom (replaced by IProperty.IsIndexer)</Change>
+  <Change author="Daniel Grunwald" date="08/25/2005">Fixed some NRefactory bugs (Generic method invocations in VB.NET and output visitor bugs)</Change>
+  <Change author="Daniel Grunwald" date="08/25/2005">Remove quotes from svn:keywords property.</Change>
+  <Change author="David Srbecký" date="08/24/2005">Added fullscreen options panel (no features implemented yet)</Change>
+  <Change author="mattward" date="08/24/2005">Fixed properties on newly added xml editor test files - removed quotes from the Revision keyword.</Change>
+  <Change author="mattward" date="08/24/2005">Added xml editor tests from Fidalgo branch.  The XmlSchemaCompletionData class is now using the XmlSchemaAttribute's AttributeSchemaType property instead of the obsolete AttributeType which was causing a few of the attribute value tests to fail.</Change>
+  <Change author="Daniel Grunwald" date="08/24/2005">Fixed bug that prevented VB.Net windows forms applications from compiling.</Change>
+  <Change author="Daniel Grunwald" date="08/24/2005">Right click on class and member names (and method invocations) in the text editor now shows the "go to definition" command and the class browser context menu of that item.</Change>
+  <Change author="Daniel Grunwald" date="08/24/2005">Core bugfixes:
+ - Fixed exceptions when doozer/condition evaluator is not found.
+ - Context menus can now use sub menu builders
+Context menu in text editor now shows items from the class member bookmarks.</Change>
   <Change author="Daniel Grunwald" date="08/24/2005">Fixed assembly loading bug introduced in rev. 429.</Change>
   <Change author="Daniel Grunwald" date="08/24/2005">Add a "DoEvents" call to the workaround for SD2-426.</Change>
   <Change author="Daniel Grunwald" date="08/24/2005">Fixed SD2-434: Reference locking issue</Change>

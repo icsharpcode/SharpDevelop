@@ -31,11 +31,24 @@ class MainClass
 			string appDir = Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location);
 			File.Copy(@"AddIns\Misc\SubversionAddIn\RequiredLibraries\msvcr70.dll", Path.Combine(appDir, "msvcr70.dll"), true);
 			File.Copy(@"AddIns\Misc\SubversionAddIn\RequiredLibraries\msvcp70.dll", Path.Combine(appDir, "msvcp70.dll"), true);
+			if (args.Length == 1 && args[0] == "--REVISION") {
+				CreateRevisionFile();
+			}
 			ConvertChangeLog();
 			return 0;
 		} catch (Exception ex) {
 			Console.WriteLine(ex);
 			return 1;
+		}
+	}
+	
+	static void CreateRevisionFile()
+	{
+		Console.Write("Writing revision to file: ");
+		int rev = new Client().SingleStatus(".").Entry.Revision;
+		Console.WriteLine(rev);
+		using (StreamWriter writer = new StreamWriter("../REVISION")) {
+			writer.WriteLine(rev);
 		}
 	}
 	

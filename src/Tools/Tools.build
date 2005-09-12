@@ -42,12 +42,14 @@
 	<Target Name="Rebuild" DependsOnTargets="Clean;Build"/>
 	
 	<ItemGroup>
-		<PublishHelperProject Include="SVNChangeLogToXml\SVNChangeLogToXml.csproj" />
+		<PrepareReleaseProject Include="SVNChangeLogToXml\SVNChangeLogToXml.csproj" />
 	</ItemGroup>
 	
-	<Target Name="Publish" DependsOnTargets="Build">
-		<MSBuild Projects="@(PublishHelperProject)" Targets="Build"/>
-		<Exec Command="SVNChangelogToXml.exe" WorkingDirectory = "SVNChangeLogToXml\bin\Release" Timeout = "60000" IgnoreExitCode = "false"/>
+	<Target Name="PrepareRelease">
+		<MSBuild Projects="@(PrepareReleaseProject)" Targets="Build"/>
+		<Exec Command="SVNChangelogToXml.exe --REVISION" WorkingDirectory = "SVNChangeLogToXml\bin\Release" Timeout = "60000" IgnoreExitCode = "false"/>
+		<RemoveDir Directories="SVNChangeLogToXml\bin" />
+        <RemoveDir Directories="SVNChangeLogToXml\obj" />
 	</Target>
 	
 	<Target Name="Clean">
