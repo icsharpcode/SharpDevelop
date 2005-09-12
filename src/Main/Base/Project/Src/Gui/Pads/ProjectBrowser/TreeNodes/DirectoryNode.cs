@@ -309,10 +309,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			// Insert 'code behind files'
 			foreach (KeyValuePair<FileNode, string> pair in dependendFileDictionary) {
-				if (!fileNodeDictionary.ContainsKey(pair.Value)) {
+				string fileName = Path.GetFileName(pair.Value);
+				if (!fileNodeDictionary.ContainsKey(fileName)) {
 					continue;
 				}
-				AbstractProjectBrowserTreeNode parentNode = fileNodeDictionary[pair.Value];
+				AbstractProjectBrowserTreeNode parentNode = fileNodeDictionary[fileName];
 				pair.Key.Parent.Nodes.Remove(pair.Key);
 				pair.Key.AddTo(parentNode);
 				if (pair.Key.FileNodeStatus != FileNodeStatus.Missing) {
