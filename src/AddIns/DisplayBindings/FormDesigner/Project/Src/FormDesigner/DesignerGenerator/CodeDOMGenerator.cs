@@ -94,19 +94,25 @@ namespace ICSharpCode.FormDesigner
 //			ICSharpCode.NRefactory.Parser.CodeDOMVerboseOutputGenerator outputGenerator = new ICSharpCode.NRefactory.Parser.CodeDOMVerboseOutputGenerator();
 
 			foreach (CodeStatement statement in statements) {
-				if ((statement is CodeVariableDeclarationStatement)) {
-					addedVariables.Add(((CodeVariableDeclarationStatement)statement).Name);
-				} else {
-					// indentation isn't generated when calling GenerateCodeFromStatement
-					writer.Write(options.IndentString);
-					try {						
-//						outputGenerator.PublicGenerateCodeFromStatement(statement, Console.Out, options);
-						codeProvider.GenerateCodeFromStatement(statement, writer, options);
-					} catch (Exception e) {
-						codeProvider.GenerateCodeFromStatement(new CodeCommentStatement("TODO: Error while generating statement : " + e.Message),
-						                                       writer,
-						                                       options);
+				CodeVariableDeclarationStatement variableDecl = statement as CodeVariableDeclarationStatement;
+				if (variableDecl != null) {
+					if (variableDecl.Name == "resources") {
+						FixResourcesVariableDeclarationStatement(variableDecl);
+					} else {
+						addedVariables.Add(((CodeVariableDeclarationStatement)statement).Name);
+						continue;
 					}
+				}
+				
+				// indentation isn't generated when calling GenerateCodeFromStatement
+				writer.Write(options.IndentString);
+				try {						
+//						outputGenerator.PublicGenerateCodeFromStatement(statement, Console.Out, options);
+					codeProvider.GenerateCodeFromStatement(statement, writer, options);
+				} catch (Exception e) {
+					codeProvider.GenerateCodeFromStatement(new CodeCommentStatement("TODO: Error while generating statement : " + e.Message),
+					                                       writer,
+					                                       options);
 				}
 			}
 		}
@@ -117,6 +123,22 @@ namespace ICSharpCode.FormDesigner
 				return addedVariables.Contains(component.Site.Name);
 			}
 			return false;
+		}
+		
+		/// <summary>
+		/// HACK - Fix the resources variable declaration.  The CodeDomSerializer
+		/// creates an incorrect code expression object. 
+		/// </summary>
+		void FixResourcesVariableDeclarationStatement(CodeVariableDeclarationStatement variableDecl)
+		{
+			CodeObjectCreateExpression exp = variableDecl.InitExpression as CodeObjectCreateExpression;
+			if (exp != null) {
+				CodeTypeReference typeRef = new CodeTypeReference(host.RootComponent.Site.Name);
+				CodeTypeOfExpression typeofExpression = new CodeTypeOfExpression(typeRef);
+
+				exp.Parameters.Clear();
+				exp.Parameters.Add(typeofExpression);
+			}
 		}
 	}
 }

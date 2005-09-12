@@ -17,6 +17,7 @@ using System.ComponentModel.Design;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
+using ICSharpCode.SharpDevelop.Project.Commands;
 
 namespace ICSharpCode.FormDesigner.Services
 {
@@ -30,7 +31,6 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		protected IProject project;
 		
-		protected Hashtable Readers = new Hashtable();
 		protected Hashtable Writers = new Hashtable();
 		
 		#region ResourceStorage
@@ -62,15 +62,6 @@ namespace ICSharpCode.FormDesigner.Services
 				using (BinaryWriter binWriter = new BinaryWriter(System.IO.File.OpenWrite(fileName))) {
 					binWriter.Write(this.storage);
 				}
-				
-				// Add this resource file to the project
-				if (project != null && !project.IsFileInProject(fileName)) {
-//					ProjectFile fileInformation = ProjectService.AddFileToProject(project, fileName, BuildAction.EmbedAsResource);
-//			TODO:	Project system...
-//					ICSharpCode.SharpDevelop.Gui.ProjectBrowser.ProjectBrowserView pbv = (ICSharpCode.SharpDevelop.Gui.ProjectBrowser.ProjectBrowserView)WorkbenchSingleton.Workbench.GetPad(typeof(ICSharpCode.SharpDevelop.Gui.ProjectBrowser.ProjectBrowserView));
-//					pbv.UpdateCombineTree();
-//					projectService.SaveCombine();
-				}				
 			}
 		}
 		#endregion
@@ -115,14 +106,12 @@ namespace ICSharpCode.FormDesigner.Services
 			try {
 				IResourceWriter resourceWriter = (IResourceWriter)Writers[info];
 				string fileName = CalcResourceFileName(info);
-				
 				if (resourceWriter == null) {
 					ResourceStorage resourceStorage = new ResourceStorage(new MemoryStream());
 					resources[fileName] = resourceStorage;
 					resourceWriter = new ResourceWriter(resourceStorage.stream);
 					Writers[info] = resourceWriter;
-					resourceStorage.project = project;
-					
+					resourceStorage.project = project;				
 				}
 				return resourceWriter;
 			} catch (Exception e) {
@@ -135,19 +124,14 @@ namespace ICSharpCode.FormDesigner.Services
 		{
 			try {
 				string fileName = CalcResourceFileName(info);
-				IResourceReader resourceReader = (IResourceReader)Readers[info];
-				if (resourceReader == null) {
-					if (resources != null && resources[fileName] != null) {
-						MemoryStream stream = (MemoryStream) ((ResourceStorage)resources[fileName]).stream;
-						stream.Seek( 0, System.IO.SeekOrigin.Begin );
-						resourceReader = new ResourceReader( stream );
-					} else if (File.Exists(fileName)) {
-						resourceReader = new ResourceReader(fileName);
-					}
-					if (resourceReader != null) {
-						Readers[info] = resourceReader;
-					}
+				IResourceReader resourceReader = null;
+				if (resources != null && resources[fileName] != null) {
+					MemoryStream stream = new MemoryStream(((ResourceStorage)resources[fileName]).storage);
+					resourceReader = new ResourceReader(stream);
+				} else if (File.Exists(fileName)) {
+					resourceReader = new ResourceReader(fileName);
 				}
+
 				return resourceReader;
 			} catch (Exception e) {
 				MessageService.ShowError(e);
@@ -160,8 +144,21 @@ namespace ICSharpCode.FormDesigner.Services
 		{
 			if (resources != null) {
 				foreach (DictionaryEntry entry in resources) {
+					string resourceFileName = (string)entry.Key;
+					FileUtility.ObservedSave(new NamedFileOperationDelegate(((ResourceStorage)entry.Value).Save), resourceFileName, FileErrorPolicy.Inform);
 					
-					FileUtility.ObservedSave(new NamedFileOperationDelegate(((ResourceStorage)entry.Value).Save), (string) entry.Key, FileErrorPolicy.Inform);
+					// Add this resource file to the project
+					if (project != null && !project.IsFileInProject(resourceFileName)) {
+						PadDescriptor pd = WorkbenchSingleton.Workbench.GetPad(typeof(ProjectBrowserPad));
+						FileNode formFileNode = ((ProjectBrowserPad)pd.PadContent).ProjectBrowserControl.FindFileNode(FileName);
+						if (formFileNode != null) {
+							FileNode fileNode = new FileNode(resourceFileName, FileNodeStatus.InProject);
+							fileNode.AddTo(formFileNode.Parent);
+							fileNode.EnsureVisible();
+							IncludeFileInProject.IncludeFileNode(fileNode);	
+							ProjectService.SaveSolution();
+						}				
+					}
 				}
 			}
 		}
@@ -178,13 +175,14 @@ namespace ICSharpCode.FormDesigner.Services
 				resourceFileName = new StringBuilder(Path.GetTempPath());
 			}
 			resourceFileName.Append(Path.DirectorySeparatorChar);
-			resourceFileName.Append(host.RootComponentClassName);
+			resourceFileName.Append(host.RootComponent.Site.Name);
 			
 			if (info != null && info.Name.Length > 0) {
 				resourceFileName.Append('.');
 				resourceFileName.Append(info.Name);
 			}
 			resourceFileName.Append(".resources");
+			
 			return resourceFileName.ToString();
 		}
 
@@ -210,12 +208,6 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public void SerializationEnded(bool serialize)
 		{
-			if (serialize == true && resources != null) {
-				foreach (ResourceStorage storage in Resources.Values) {
-					storage.storage = storage.stream.ToArray();
-				}
-			}
-			
 			foreach (IResourceWriter resourceWriter in Writers.Values) {
 				if (resourceWriter != null) {
 					resourceWriter.Close();
@@ -224,13 +216,11 @@ namespace ICSharpCode.FormDesigner.Services
 			}
 			Writers.Clear();
 			
-			foreach (IResourceReader resourceReader in Readers.Values) {
-				if (resourceReader != null) {
-					resourceReader.Close();
-					resourceReader.Dispose();
+			if (serialize == true && resources != null) {
+				foreach (ResourceStorage storage in Resources.Values) {
+					storage.storage = storage.stream.ToArray();
 				}
 			}
-			Readers.Clear();
 		}
 		
 		public void Dispose()

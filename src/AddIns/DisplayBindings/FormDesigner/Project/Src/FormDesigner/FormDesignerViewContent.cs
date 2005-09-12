@@ -59,6 +59,7 @@ namespace ICSharpCode.FormDesigner
 		
 		IDesignerLoaderProvider loader;
 		IDesignerGenerator generator;
+		DesignerResourceService designerResourceService;
 		
 		public override Control Control {
 			get {
@@ -117,7 +118,7 @@ namespace ICSharpCode.FormDesigner
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormDesigner.Services.MenuCommandService(p, serviceContainer));
 			serviceContainer.AddService(typeof(IHelpService), new HelpService());
 			serviceContainer.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
-			DesignerResourceService designerResourceService = new DesignerResourceService(this.resources);
+			designerResourceService = new DesignerResourceService(this.resources);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IResourceService), designerResourceService);
 			AmbientProperties ambientProperties = new AmbientProperties();
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
@@ -135,6 +136,7 @@ namespace ICSharpCode.FormDesigner
 			designSurface = new DesignSurface(serviceContainer);
 			eventBindingService.ServiceProvider = designSurface;
 			designerResourceService.Host = Host;
+			designerResourceService.FileName = viewContent.FileName;
 			serviceContainer.AddService(typeof(IDesignerHost), Host);
 			
 			DesignerLoader designerLoader = loader.CreateLoader();
@@ -293,6 +295,15 @@ namespace ICSharpCode.FormDesigner
 			base.NotifyBeforeSave();
 			if (IsFormDesignerVisible)
 				MergeFormChanges();
+		}
+		
+		public override void NotifyAfterSave(bool successful)
+		{
+			if (successful) {
+				if (designerResourceService != null) {
+					designerResourceService.Save();
+				}
+			}
 		}
 		
 		protected void UpdateSelectableObjects()
