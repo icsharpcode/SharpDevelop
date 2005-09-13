@@ -27,6 +27,11 @@ namespace HtmlHelp2
 	using HtmlHelp2.Environment;
 	using HtmlHelp2.ResourcesHelperClass;
 	using MSHelpServices;
+	
+	
+	// TODO: detect the active language (CSharp, VB#, ...) to limit the results
+	// TODO: if there are no DH results, implement Keyword search (index)
+	// TODO: insert some default entries (Homepage, Wiki, Community, ...)
 
 
 	public class ShowDynamicHelpMenuCommand : AbstractMenuCommand

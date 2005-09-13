@@ -184,7 +184,11 @@ namespace HtmlHelp2
 
 		public void LoadToc()
 		{
-			tocControl.Hierarchy                 = HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.CurrentFilterQuery);
+			try
+			{
+				tocControl.Hierarchy             = HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.CurrentFilterQuery);
+			}
+			catch {}
 			filterCombobox.SelectedIndexChanged -= new EventHandler(this.FilterChanged);
 			HtmlHelp2Environment.BuildFilterList(filterCombobox);
 			filterCombobox.SelectedIndexChanged += new EventHandler(this.FilterChanged);

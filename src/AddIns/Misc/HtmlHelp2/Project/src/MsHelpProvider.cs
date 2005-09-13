@@ -16,7 +16,7 @@ namespace HtmlHelp2
 	{
 		public override bool TryShowHelp(string fullTypeName)
 		{
-			LoggingService.Info("MsHelpProvider.TryShowHelp");
+			LoggingService.Info("Help 2.0: MsHelpProvider.TryShowHelp");
 
 			try {
 				PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchPad));
@@ -29,7 +29,7 @@ namespace HtmlHelp2
 
 		public override bool TryShowHelpByKeyword(string keyword)
 		{
-			LoggingService.Info("MsHelpProvider.TryShowHelpByKeyword");
+			LoggingService.Info("Help 2.0: MsHelpProvider.TryShowHelpByKeyword");
 
 			try {
 				PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchPad));

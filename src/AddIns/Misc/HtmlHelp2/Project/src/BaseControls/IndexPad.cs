@@ -162,7 +162,11 @@ namespace HtmlHelp2
 		{
 			searchTerm.Text                       = "";
 			searchTerm.Items.Clear();
-			indexControl.IndexData                = HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.CurrentFilterQuery);
+			try
+			{
+				indexControl.IndexData            = HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.CurrentFilterQuery);
+			}
+			catch {}
 			filterCombobox.SelectedIndexChanged  -= new EventHandler(FilterChanged);
 			HtmlHelp2Environment.BuildFilterList(filterCombobox);
 			filterCombobox.SelectedIndexChanged  += new EventHandler(FilterChanged);

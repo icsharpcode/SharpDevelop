@@ -26,9 +26,9 @@ namespace HtmlHelp2
 			pane.Navigate(HtmlHelp2Environment.SearchPage);
 		}
 
-		public override void DocumentCompleted(HtmlViewPane pane, WebBrowserDocumentCompletedEventArgs e)
-		{
-			ShowHelpBrowser.HighlightDocument(pane);
-		}
+//		public override void DocumentCompleted(HtmlViewPane pane, WebBrowserDocumentCompletedEventArgs e)
+//		{
+//			ShowHelpBrowser.HighlightDocument(pane);
+//		}
 	}
 }

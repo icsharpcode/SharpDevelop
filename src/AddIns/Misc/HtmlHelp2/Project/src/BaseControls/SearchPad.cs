@@ -118,6 +118,8 @@ namespace HtmlHelp2
 			hiliteTopics.TextAlign                = ContentAlignment.MiddleLeft;
 			hiliteTopics.Enabled                  = HtmlHelp2Environment.IsReady;
 			hiliteTopics.Checked                  = true;
+			// TODO: enable "hilite matches", if there is any way
+			hiliteTopics.Visible                  = false;
 
 			panel3.Dock                           = DockStyle.Fill;
 

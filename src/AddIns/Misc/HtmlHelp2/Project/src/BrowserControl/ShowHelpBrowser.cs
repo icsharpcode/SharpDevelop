@@ -73,12 +73,12 @@ namespace HtmlHelp2
 			return tempPane;
 		}
 		
-		public static void HighlightDocument(HtmlViewPane htmlViewPane)
-		{
-			if (hiliteMatches && lastTopic != null)
-			{
-				lastTopic.HighlightDocument(htmlViewPane.WebBrowser.Document.DomDocument);
-			}
-		}
+//		public static void HighlightDocument(HtmlViewPane htmlViewPane)
+//		{
+//			if (hiliteMatches && lastTopic != null)
+//			{
+//				lastTopic.HighlightDocument(htmlViewPane.WebBrowser.Document);
+//			}
+//		}
 	}
 }
