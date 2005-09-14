@@ -51,7 +51,7 @@ namespace HtmlHelp2
 		public HtmlHelp2IndexPad()
 		{
 			help2IndexControl = new MsHelp2IndexControl();
-			help2IndexControl.LoadIndex();
+			if(help2IndexControl.IsEnabled) help2IndexControl.LoadIndex();
 		}
 	}
 
@@ -63,11 +63,17 @@ namespace HtmlHelp2
 		Label label1               = new Label();
 		Label label2               = new Label();
 		bool itemClicked           = false;
+		bool controlIsEnabled      = false;
 
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
 			if(disposing && indexControl != null) { indexControl.Dispose(); }
+		}
+
+		public bool IsEnabled
+		{
+			get { return this.controlIsEnabled; }
 		}
 
 		public void RedrawContent()
@@ -78,10 +84,10 @@ namespace HtmlHelp2
 
 		public MsHelp2IndexControl()
 		{
-			bool Help2EnvIsReady = (HtmlHelp2Environment.IsReady &&
-			                        Help2ControlsValidation.IsIndexControlRegistered);
+			this.controlIsEnabled = (HtmlHelp2Environment.IsReady &&
+			                         Help2ControlsValidation.IsIndexControlRegistered);
 
-			if(Help2EnvIsReady)
+			if(this.controlIsEnabled)
 			{
 				try
 				{
@@ -117,7 +123,7 @@ namespace HtmlHelp2
 			filterCombobox.Dock                   = DockStyle.Top;
 			filterCombobox.DropDownStyle          = ComboBoxStyle.DropDownList;
 			filterCombobox.Sorted                 = true;
-			filterCombobox.Enabled                = Help2EnvIsReady;
+			filterCombobox.Enabled                = this.controlIsEnabled;
 			filterCombobox.SelectedIndexChanged  += new EventHandler(FilterChanged);
 
 			// Filter label
@@ -125,7 +131,7 @@ namespace HtmlHelp2
 			label1.Text      = StringParser.Parse("${res:AddIns.HtmlHelp2.FilteredBy}");
 			label1.Dock      = DockStyle.Top;
 			label1.TextAlign = ContentAlignment.MiddleLeft;
-			label1.Enabled   = Help2EnvIsReady;
+			label1.Enabled   = this.controlIsEnabled;
 
 			// SearchTerm Combobox
 			Panel panel2            = new Panel();
@@ -134,7 +140,7 @@ namespace HtmlHelp2
 			panel2.Height           = searchTerm.Height + 7;
 			panel2.Controls.Add(searchTerm);
 			searchTerm.Dock         = DockStyle.Top;
-			searchTerm.Enabled      = Help2EnvIsReady;
+			searchTerm.Enabled      = this.controlIsEnabled;
 			searchTerm.TextChanged += new EventHandler(SearchTextChanged);
 			searchTerm.KeyPress    += new KeyPressEventHandler(KeyPressed);
 
@@ -143,7 +149,7 @@ namespace HtmlHelp2
 			label2.Text             = StringParser.Parse("${res:AddIns.HtmlHelp2.LookFor}");
 			label2.Dock             = DockStyle.Top;
 			label2.TextAlign        = ContentAlignment.MiddleLeft;
-			label2.Enabled          = Help2EnvIsReady;
+			label2.Enabled          = this.controlIsEnabled;
 		}
 
 		private void FakeHelpControl()
@@ -160,13 +166,11 @@ namespace HtmlHelp2
 
 		public void LoadIndex()
 		{
+			if(!this.controlIsEnabled) return;
+			
 			searchTerm.Text                       = "";
 			searchTerm.Items.Clear();
-			try
-			{
-				indexControl.IndexData            = HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.CurrentFilterQuery);
-			}
-			catch {}
+			indexControl.IndexData                = HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.CurrentFilterQuery);
 			filterCombobox.SelectedIndexChanged  -= new EventHandler(FilterChanged);
 			HtmlHelp2Environment.BuildFilterList(filterCombobox);
 			filterCombobox.SelectedIndexChanged  += new EventHandler(FilterChanged);

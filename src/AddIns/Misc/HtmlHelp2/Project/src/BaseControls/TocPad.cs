@@ -55,22 +55,22 @@ namespace HtmlHelp2
 		public HtmlHelp2TocPad()
 		{
 			help2TocControl = new MsHelp2TocControl();
-			help2TocControl.LoadToc();
+			if(help2TocControl.IsEnabled) help2TocControl.LoadToc();
 		}
 
 		public void SyncToc(string topicUrl)
 		{
-			help2TocControl.SynToc(topicUrl);
+			if(help2TocControl.IsEnabled) help2TocControl.SynToc(topicUrl);
 		}
 
 		public void GetPrevFromNode()
 		{
-			help2TocControl.GetPrevFromNode();
+			if(help2TocControl.IsEnabled) help2TocControl.GetPrevFromNode();
 		}
 
 		public void GetNextFromNode()
 		{
-			help2TocControl.GetNextFromNode();
+			if(help2TocControl.IsEnabled) help2TocControl.GetNextFromNode();
 		}
 
 		public bool IsNotFirstNode
@@ -92,11 +92,17 @@ namespace HtmlHelp2
 		ContextMenuStrip printPopup        = new ContextMenuStrip();
 		ToolStripMenuItem printTopic       = new ToolStripMenuItem();
 		ToolStripMenuItem printChildTopics = new ToolStripMenuItem();
+		bool controlIsEnabled              = false;
 
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
 			if(disposing && tocControl != null) { tocControl.Dispose(); }
+		}
+
+		public bool IsEnabled
+		{
+			get { return this.controlIsEnabled; }
 		}
 
 		public void RedrawContent()
@@ -106,9 +112,10 @@ namespace HtmlHelp2
 
 		public MsHelp2TocControl()
 		{
-			bool Help2EnvIsReady = (HtmlHelp2Environment.IsReady && Help2ControlsValidation.IsTocControlRegistered);
+			this.controlIsEnabled = (HtmlHelp2Environment.IsReady &&
+			                         Help2ControlsValidation.IsTocControlRegistered);
 
-			if(Help2EnvIsReady)
+			if(this.controlIsEnabled)
 			{
 				try
 				{
@@ -155,7 +162,7 @@ namespace HtmlHelp2
 			filterCombobox.Dock                   = DockStyle.Top;
 			filterCombobox.DropDownStyle          = ComboBoxStyle.DropDownList;
 			filterCombobox.Sorted                 = true;
-			filterCombobox.Enabled                = Help2EnvIsReady;
+			filterCombobox.Enabled                = this.controlIsEnabled;
 			filterCombobox.SelectedIndexChanged  += new EventHandler(this.FilterChanged);
 
 			// Filter label
@@ -163,9 +170,9 @@ namespace HtmlHelp2
 			label1.Text                           = StringParser.Parse("${res:AddIns.HtmlHelp2.FilteredBy}");
 			label1.Dock                           = DockStyle.Top;
 			label1.TextAlign                      = ContentAlignment.MiddleLeft;
-			label1.Enabled                        = Help2EnvIsReady;
+			label1.Enabled                        = this.controlIsEnabled;
 
-			if(Help2EnvIsReady)
+			if(this.controlIsEnabled)
 			{
 				HtmlHelp2Environment.FilterQueryChanged  += new EventHandler(this.FilterQueryChanged);
 				HtmlHelp2Environment.NamespaceReloaded   += new EventHandler(this.NamespaceReloaded);
@@ -184,11 +191,9 @@ namespace HtmlHelp2
 
 		public void LoadToc()
 		{
-			try
-			{
-				tocControl.Hierarchy             = HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.CurrentFilterQuery);
-			}
-			catch {}
+			if(!this.controlIsEnabled) return;
+
+			tocControl.Hierarchy                 = HtmlHelp2Environment.GetTocHierarchy(HtmlHelp2Environment.CurrentFilterQuery);
 			filterCombobox.SelectedIndexChanged -= new EventHandler(this.FilterChanged);
 			HtmlHelp2Environment.BuildFilterList(filterCombobox);
 			filterCombobox.SelectedIndexChanged += new EventHandler(this.FilterChanged);
