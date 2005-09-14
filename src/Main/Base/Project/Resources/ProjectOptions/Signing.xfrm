@@ -6,7 +6,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="clickOnceGroupBox" />
         <Location value="{X=3,Y=156}" />
-        <Text value="ClickOnce signing" />
+        <Text value="${res:Dialog.ProjectOptions.Signing.ClickOnce}" />
         <Size value="{Width=368, Height=48}" />
         <TabIndex value="2" />
         <Anchor value="Top, Left, Right" />
@@ -23,7 +23,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="signingGroupBox" />
         <Location value="{X=3,Y=3}" />
-        <Text value="Strong name signing" />
+        <Text value="${res:Dialog.ProjectOptions.Signing.StrongName}" />
         <Size value="{Width=368, Height=147}" />
         <TabIndex value="1" />
         <Anchor value="Top, Left, Right" />
@@ -38,7 +38,7 @@
               <System.Windows.Forms.Label>
                 <Name value="label1" />
                 <Location value="{X=0,Y=77}" />
-                <Text value="When delay signed, the project will not run or be debuggable." />
+                <Text value="${res:Dialog.ProjectOptions.Signing.DelaySignWarning}" />
                 <Size value="{Width=354, Height=23}" />
                 <TabIndex value="10" />
                 <Anchor value="Top, Left, Right" />
@@ -46,8 +46,7 @@
               <System.Windows.Forms.CheckBox>
                 <Name value="delaySignOnlyCheckBox" />
                 <Location value="{X=0,Y=50}" />
-                <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-                <Text value="Dela&amp;y Sign only" />
+                <Text value="${res:Dialog.ProjectOptions.Signing.DelaySignOnly}" />
                 <TabIndex value="8" />
                 <Size value="{Width=354, Height=24}" />
                 <Anchor value="Top, Left, Right" />
@@ -63,7 +62,7 @@
               <System.Windows.Forms.Label>
                 <Name value="label3" />
                 <Location value="{X=0,Y=1}" />
-                <Text value="Choose a strong name key file:" />
+                <Text value="${res:Dialog.ProjectOptions.Signing.ChooseKeyFile}" />
                 <Size value="{Width=354, Height=19}" />
                 <TabIndex value="9" />
                 <Anchor value="Top, Left, Right" />
@@ -71,10 +70,9 @@
               <System.Windows.Forms.Button>
                 <Name value="changePasswordButton" />
                 <Location value="{X=204,Y=22}" />
-                <Text value="Change Pass&amp;word..." />
+                <Text value="${res:Dialog.ProjectOptions.Signing.ChangePassword}" />
                 <Size value="{Width=150, Height=22}" />
                 <Anchor value="Top, Right" />
-                <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
                 <TabIndex value="2" />
               </System.Windows.Forms.Button>
             </Controls>
@@ -82,8 +80,7 @@
           <System.Windows.Forms.CheckBox>
             <Name value="signAssemblyCheckBox" />
             <Location value="{X=8,Y=20}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <Text value="Sign the &amp;assembly" />
+            <Text value="${res:Dialog.ProjectOptions.Signing.SignAssembly}" />
             <TabIndex value="0" />
             <Size value="{Width=352, Height=24}" />
             <Anchor value="Top, Left, Right" />

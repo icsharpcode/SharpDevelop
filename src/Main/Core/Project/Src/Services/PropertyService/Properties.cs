@@ -268,7 +268,12 @@ namespace ICSharpCode.Core
 				o = arr;
 				properties[property] = o; // store for future look up
 			}
-			return (T)o;
+			try {
+				return (T)o;
+			} catch (NullReferenceException) {
+				// can happen when configuration is invalid -> o is null and a value type is expected
+				return defaultValue;
+			}
 		}
 		
 		protected virtual void OnPropertyChanged(PropertyChangedEventArgs e)

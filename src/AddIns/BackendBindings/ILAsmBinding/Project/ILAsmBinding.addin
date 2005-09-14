@@ -30,26 +30,14 @@
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/ILAsm">
 		<DialogPanel id    = "Application"
-		             label = "Application"
+		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettings"/>
-		<!--<DialogPanel id    = "ReferencePaths"
-		             label = "Reference Paths"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>-->
-		<!--<DialogPanel id    = "Signing"
-		             label = "Signing"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>-->
 		<DialogPanel id    = "BuildEvents"
-		             label = "Build Events"
+		             label = "${res:Dialog.ProjectOptions.BuildEvents}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
-		<!--<DialogPanel id    = "BuildOptions"
-		             label = "Build"
-		             class = "ICSharpCode.ILAsmBinding.BuildOptions"/>-->
 		<DialogPanel id    = "DebugOptions"
-		             label = "Debug"
+		             label = "${res:Dialog.ProjectOptions.DebugOptions}"
 		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
-		<!--<DialogPanel id    = "Publish"
-		             label = "Publish"
-		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>-->
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/LanguageBindings">

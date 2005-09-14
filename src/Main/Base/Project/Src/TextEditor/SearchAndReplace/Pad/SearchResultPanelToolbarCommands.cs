@@ -76,20 +76,22 @@ namespace SearchAndReplace
 			dropDownButton.DropDownItems.Clear();
 			foreach (SearchAllFinishedEventArgs args in SearchReplaceInFilesManager.LastSearches) {
 				ToolStripItem newItem = new ToolStripMenuItem();
-				newItem.Text = "Occurrences of '" +  args.Pattern + "' (" + args.Results.Count + " occurences)";
+				newItem.Text = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesOf}",
+				                                  new string[,] {{ "Pattern", args.Pattern }})
+					+ " (" + SearchRootNode.GetOccurencesString(args.Results.Count) + ")";
 				newItem.Tag  = args;
 				newItem.Click += new EventHandler(SwitchSearchResults);
 				dropDownButton.DropDownItems.Add(newItem);
 			}
 			dropDownButton.DropDownItems.Add(new ToolStripSeparator());
 			ToolStripItem clearHistoryItem = new ToolStripMenuItem();
-			clearHistoryItem.Text = "<Clear History>";
+			clearHistoryItem.Text = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.ClearHistory}");
 			clearHistoryItem.Click += new EventHandler(ClearHistory);
 			dropDownButton.DropDownItems.Add(clearHistoryItem);
 			dropDownButton.Enabled = IsEnabled;
 		}
 		
-		protected override void OnOwnerChanged(EventArgs e) 
+		protected override void OnOwnerChanged(EventArgs e)
 		{
 			base.OnOwnerChanged(e);
 			dropDownButton = (ToolBarDropDownButton)Owner;
@@ -121,19 +123,19 @@ namespace SearchAndReplace
 		void GenerateDropDownItems()
 		{
 			ToolStripItem newItem = new ToolStripMenuItem();
-			newItem.Text = "Per file";
+			newItem.Text = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.PerFile}");
 			newItem.Tag  = SearchResultPanelViewMode.PerFile;
 			newItem.Click += new EventHandler(SetViewMode);
 			dropDownButton.DropDownItems.Add(newItem);
 			
 			newItem = new ToolStripMenuItem();
-			newItem.Text = "Flat";
+			newItem.Text = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.Flat}");
 			newItem.Tag  = SearchResultPanelViewMode.Flat;
 			newItem.Click += new EventHandler(SetViewMode);
 			dropDownButton.DropDownItems.Add(newItem);
 		}
 		
-		protected override void OnOwnerChanged(EventArgs e) 
+		protected override void OnOwnerChanged(EventArgs e)
 		{
 			base.OnOwnerChanged(e);
 			dropDownButton = (ToolBarDropDownButton)Owner;

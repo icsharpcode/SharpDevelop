@@ -1,184 +1,185 @@
 <Components version="1.0">
   <System.Windows.Forms.UserControl>
     <Name value="XmlUserControl1" />
-    <DockPadding value="" />
     <ClientSize value="{Width=456, Height=364}" />
     <Controls>
       <System.Windows.Forms.Button>
         <Name value="win32ResourceFileBrowseButton" />
         <Location value="{X=408,Y=208}" />
-        <Size value="{Width=40, Height=21}" />
         <Text value="..." />
+        <Size value="{Width=40, Height=21}" />
         <Anchor value="Top, Right" />
         <TabIndex value="14" />
       </System.Windows.Forms.Button>
       <System.Windows.Forms.ComboBox>
         <Name value="win32ResourceFileComboBox" />
-        <Anchor value="Top, Left, Right" />
         <TabIndex value="13" />
-        <Location value="{X=8,Y=208}" />
+        <Anchor value="Top, Left, Right" />
         <Size value="{Width=392, Height=21}" />
+        <FormattingEnabled value="True" />
+        <Location value="{X=8,Y=208}" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
         <Name value="label9" />
-        <Text value="Win32 R&amp;esource File:" />
-        <TextAlign value="BottomLeft" />
-        <Anchor value="Top, Left, Right" />
-        <TabIndex value="12" />
-        <Size value="{Width=436, Height=16}" />
         <Location value="{X=8,Y=192}" />
+        <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.Win32Resource}" />
+        <TextAlign value="BottomLeft" />
+        <Size value="{Width=436, Height=16}" />
+        <TabIndex value="12" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.Button>
         <Name value="applicationIconBrowseButton" />
         <Location value="{X=408,Y=160}" />
-        <Size value="{Width=40, Height=21}" />
         <Text value="..." />
+        <Size value="{Width=40, Height=21}" />
         <Anchor value="Top, Right" />
         <TabIndex value="11" />
       </System.Windows.Forms.Button>
       <System.Windows.Forms.GroupBox>
         <Name value="groupBox1" />
-        <TabIndex value="15" />
         <Location value="{X=8,Y=236}" />
-        <Anchor value="Top, Left, Right" />
+        <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.ProjectInformation}" />
         <Size value="{Width=440, Height=112}" />
-        <Text value="Project Information" />
+        <TabIndex value="15" />
+        <Anchor value="Top, Left, Right" />
         <Controls>
           <System.Windows.Forms.TextBox>
             <Name value="outputNameTextBox" />
-            <ReadOnly value="True" />
-            <Anchor value="Top, Left, Right" />
             <TabIndex value="5" />
-            <Location value="{X=112,Y=80}" />
+            <Anchor value="Top, Left, Right" />
+            <ReadOnly value="True" />
             <Size value="{Width=320, Height=21}" />
-            <Text value="" />
+            <Location value="{X=112,Y=80}" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Label>
             <Name value="label8" />
-            <Text value="Output Name:" />
-            <TextAlign value="MiddleRight" />
-            <TabIndex value="4" />
             <Location value="{X=8,Y=80}" />
+            <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.OutputName}" />
+            <TextAlign value="MiddleRight" />
+            <Size value="{Width=100, Height=23}" />
+            <TabIndex value="4" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.TextBox>
             <Name value="projectFileTextBox" />
-            <Anchor value="Top, Left, Right" />
             <TabIndex value="3" />
-            <Location value="{X=112,Y=56}" />
+            <Anchor value="Top, Left, Right" />
             <Size value="{Width=320, Height=21}" />
-            <Text value="" />
+            <Location value="{X=112,Y=56}" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Label>
             <Name value="label7" />
-            <Text value="Project &amp;File:" />
-            <TextAlign value="MiddleRight" />
-            <TabIndex value="2" />
             <Location value="{X=8,Y=52}" />
+            <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.ProjectFile}" />
+            <TextAlign value="MiddleRight" />
+            <Size value="{Width=100, Height=23}" />
+            <TabIndex value="2" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.TextBox>
             <Name value="projectFolderTextBox" />
-            <ReadOnly value="True" />
-            <Anchor value="Top, Left, Right" />
             <TabIndex value="1" />
-            <Location value="{X=112,Y=28}" />
+            <Anchor value="Top, Left, Right" />
+            <ReadOnly value="True" />
             <Size value="{Width=320, Height=21}" />
-            <Text value="" />
+            <Location value="{X=112,Y=28}" />
           </System.Windows.Forms.TextBox>
           <System.Windows.Forms.Label>
             <Name value="label6" />
-            <Text value="Project Folder:" />
-            <TextAlign value="MiddleRight" />
-            <TabIndex value="0" />
             <Location value="{X=8,Y=24}" />
+            <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.ProjectFolder}" />
+            <TextAlign value="MiddleRight" />
+            <Size value="{Width=100, Height=23}" />
+            <TabIndex value="0" />
           </System.Windows.Forms.Label>
         </Controls>
       </System.Windows.Forms.GroupBox>
       <System.Windows.Forms.PictureBox>
         <Name value="applicationIconPictureBox" />
-        <Size value="{Width=48, Height=48}" />
         <Location value="{X=8,Y=140}" />
+        <Size value="{Width=48, Height=48}" />
         <SizeMode value="StretchImage" />
       </System.Windows.Forms.PictureBox>
       <System.Windows.Forms.ComboBox>
         <Name value="applicationIconComboBox" />
-        <Anchor value="Top, Left, Right" />
         <TabIndex value="10" />
-        <Location value="{X=64,Y=160}" />
+        <Anchor value="Top, Left, Right" />
         <Size value="{Width=336, Height=21}" />
+        <FormattingEnabled value="True" />
+        <Location value="{X=64,Y=160}" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
         <Name value="label5" />
-        <Text value="Application i&amp;con:" />
-        <TextAlign value="BottomLeft" />
-        <Anchor value="Top, Left, Right" />
-        <TabIndex value="9" />
-        <Size value="{Width=384, Height=16}" />
         <Location value="{X=64,Y=144}" />
+        <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.ApplicationIcon}" />
+        <TextAlign value="BottomLeft" />
+        <Size value="{Width=384, Height=16}" />
+        <TabIndex value="9" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.ComboBox>
         <Name value="startupObjectComboBox" />
-        <Anchor value="Top, Left, Right" />
         <TabIndex value="7" />
-        <Location value="{X=160,Y=112}" />
+        <Anchor value="Top, Left, Right" />
         <Size value="{Width=288, Height=21}" />
+        <FormattingEnabled value="True" />
+        <Location value="{X=160,Y=112}" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
         <Name value="label4" />
-        <Text value="&amp;Startup object:" />
-        <TextAlign value="BottomLeft" />
-        <Anchor value="Top, Left, Right" />
-        <TabIndex value="6" />
-        <Size value="{Width=288, Height=16}" />
         <Location value="{X=160,Y=96}" />
+        <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.StartupObject}" />
+        <TextAlign value="BottomLeft" />
+        <Size value="{Width=288, Height=16}" />
+        <TabIndex value="6" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.ComboBox>
         <Name value="outputTypeComboBox" />
         <TabIndex value="5" />
-        <Location value="{X=8,Y=112}" />
         <Size value="{Width=136, Height=21}" />
+        <FormattingEnabled value="True" />
         <DropDownStyle value="DropDownList" />
+        <Location value="{X=8,Y=112}" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
         <Name value="label3" />
-        <Text value="&amp;Output type:" />
-        <TextAlign value="BottomLeft" />
-        <TabIndex value="4" />
-        <Size value="{Width=136, Height=16}" />
         <Location value="{X=8,Y=96}" />
+        <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.OutputType}" />
+        <TextAlign value="BottomLeft" />
+        <Size value="{Width=136, Height=16}" />
+        <TabIndex value="4" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.TextBox>
         <Name value="rootNamespaceTextBox" />
-        <Anchor value="Top, Left, Right" />
         <TabIndex value="3" />
-        <Location value="{X=8,Y=68}" />
+        <Anchor value="Top, Left, Right" />
         <Size value="{Width=440, Height=21}" />
-        <Text value="" />
+        <Location value="{X=8,Y=68}" />
       </System.Windows.Forms.TextBox>
       <System.Windows.Forms.Label>
         <Name value="label2" />
-        <Text value="&amp;Root namespace:" />
-        <TextAlign value="BottomLeft" />
-        <Anchor value="Top, Left, Right" />
-        <TabIndex value="2" />
-        <Size value="{Width=440, Height=16}" />
         <Location value="{X=8,Y=52}" />
+        <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.RootNamespace}" />
+        <TextAlign value="BottomLeft" />
+        <Size value="{Width=440, Height=16}" />
+        <TabIndex value="2" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.TextBox>
         <Name value="assemblyNameTextBox" />
-        <Anchor value="Top, Left, Right" />
         <TabIndex value="1" />
-        <Location value="{X=8,Y=24}" />
+        <Anchor value="Top, Left, Right" />
         <Size value="{Width=440, Height=21}" />
-        <Text value="" />
+        <Location value="{X=8,Y=24}" />
       </System.Windows.Forms.TextBox>
       <System.Windows.Forms.Label>
         <Name value="label1" />
-        <Text value="Assembly &amp;name:" />
-        <TextAlign value="BottomLeft" />
-        <Anchor value="Top, Left, Right" />
-        <TabIndex value="0" />
-        <Size value="{Width=440, Height=16}" />
         <Location value="{X=8,Y=8}" />
+        <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.AssemblyName}" />
+        <TextAlign value="BottomLeft" />
+        <Size value="{Width=440, Height=16}" />
+        <TabIndex value="0" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.Label>
     </Controls>
   </System.Windows.Forms.UserControl>

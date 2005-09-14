@@ -9,6 +9,7 @@ using System;
 using System.Drawing;
 using System.Collections.Generic;
 using System.Windows.Forms;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.TextEditor.Document;
 
@@ -23,7 +24,7 @@ namespace SearchAndReplace
 		string             pattern;
 		int fileCount;
 		
-		public List<SearchResult> Results { 
+		public List<SearchResult> Results {
 			get {
 				return results;
 			}
@@ -37,21 +38,30 @@ namespace SearchAndReplace
 			this.fileCount = fileCount;
 			Text = GetText();
 		}
+		
+		public static string GetOccurencesString(int count)
+		{
+			if (count == 1) {
+				return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OneOccurrence}");
+			} else {
+				return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesCount}", new string[,] {{"Count", count.ToString()}});
+			}
+		}
+		
+		public static string GetFileCountString(int count)
+		{
+			if (count == 1) {
+				return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OneFile}");
+			} else {
+				return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.FileCount}", new string[,] {{"Count", count.ToString()}});
+			}
+		}
+		
 		string GetText()
 		{
-			if (results.Count == 1) {
-				if (fileCount == 1) {
-					return "Occurrences of '" + pattern + "' (1 occurence in 1 file)";
-				} else {
-					return "Occurrences of '" + pattern + "' (1 occurence in " + fileCount + " files)";
-				}
-			} else {
-				if (fileCount == 1) {
-					return "Occurrences of '" + pattern + "' (" + results.Count + " occurences in 1 file)";
-				} else {
-					return "Occurrences of '" + pattern + "' (" + results.Count + " occurences in " + fileCount + " files)";
-				}
-			}
+			return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesOf}",
+			                          new string[,] {{ "Pattern", pattern }})
+				+ " (" + GetOccurencesString(results.Count) + " in " + GetFileCountString(fileCount) + ")";
 		}
 		
 		protected override int MeasureItemWidth(DrawTreeNodeEventArgs e)
