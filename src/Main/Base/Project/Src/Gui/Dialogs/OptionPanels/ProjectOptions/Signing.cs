@@ -32,8 +32,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			keyFile = Get<ComboBox>("keyFile");
 			helper.BindString(keyFile, "AssemblyOriginatorKeyFile");
+			FindKeys(baseDirectory);
 			if (keyFile.Text.Length > 0) {
-				FindKeys(baseDirectory);
 				if (!keyFile.Items.Contains(keyFile.Text)) {
 					keyFile.Items.Add(keyFile.Text);
 				}

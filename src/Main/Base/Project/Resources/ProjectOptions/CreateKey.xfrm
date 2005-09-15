@@ -1,13 +1,13 @@
 <Components version="1.0">
   <System.Windows.Forms.Form>
     <Name value="CreateKey" />
-    <AcceptButton value="okButton [System.Windows.Forms.Button], Text: ${Global.OK}" />
     <MinimizeBox value="False" />
     <FormBorderStyle value="FixedDialog" />
-    <Text value="Create Strong Name Key" />
+    <AcceptButton value="okButton [System.Windows.Forms.Button], Text: ${Global.OK}" />
+    <CancelButton value="cancelButton [System.Windows.Forms.Button], Text: ${Global.Cancel}" />
+    <Text value="${res:Dialog.ProjectOptions.Signing.CreateKey.Title}" />
     <MaximizeBox value="False" />
     <ClientSize value="{Width=416, Height=206}" />
-    <CancelButton value="cancelButton [System.Windows.Forms.Button], Text: ${Global.Cancel}" />
     <Controls>
       <System.Windows.Forms.Button>
         <Name value="cancelButton" />
@@ -29,9 +29,9 @@
       <System.Windows.Forms.Panel>
         <Name value="passwordPanel" />
         <Location value="{X=12,Y=87}" />
+        <Enabled value="False" />
         <Size value="{Width=392, Height=84}" />
         <Anchor value="Top, Left, Right" />
-      	<Enabled value="False"/>
         <TabIndex value="3" />
         <Controls>
           <System.Windows.Forms.TextBox>
@@ -45,7 +45,7 @@
           <System.Windows.Forms.Label>
             <Name value="label3" />
             <Location value="{X=8,Y=41}" />
-            <Text value="Con&amp;firm password:" />
+            <Text value="${res:Dialog.ProjectOptions.Signing.CreateKey.ConfirmPassword}" />
             <Size value="{Width=381, Height=19}" />
             <TabIndex value="2" />
             <Anchor value="Top, Left, Right" />
@@ -61,7 +61,7 @@
           <System.Windows.Forms.Label>
             <Name value="label2" />
             <Location value="{X=8,Y=0}" />
-            <Text value="&amp;Enter password:" />
+            <Text value="${res:Dialog.ProjectOptions.Signing.CreateKey.EnterPassword}" />
             <Size value="{Width=381, Height=23}" />
             <TabIndex value="0" />
             <Anchor value="Top, Left, Right" />
@@ -71,7 +71,8 @@
       <System.Windows.Forms.CheckBox>
         <Name value="usePasswordCheckBox" />
         <Location value="{X=12,Y=57}" />
-        <Text value="&amp;Protect my key file with a password" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="${res:Dialog.ProjectOptions.Signing.CreateKey.UsePassword}" />
         <TabIndex value="2" />
         <Size value="{Width=392, Height=24}" />
         <Anchor value="Top, Left, Right" />
@@ -85,7 +86,7 @@
       <System.Windows.Forms.Label>
         <Name value="label1" />
         <Location value="{X=12,Y=9}" />
-        <Text value="Key file &amp;name:" />
+        <Text value="${res:Dialog.ProjectOptions.Signing.CreateKey.KeyName}" />
         <Size value="{Width=392, Height=23}" />
         <TabIndex value="0" />
         <Anchor value="Top, Left, Right" />

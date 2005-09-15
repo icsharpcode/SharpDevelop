@@ -7,7 +7,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="generalGroupBox" />
         <Location value="{X=3,Y=3}" />
-        <Text value="General" />
+        <Text value="${res:Dialog.ProjectOptions.BuildOptions.General}" />
         <Size value="{Width=521, Height=152}" />
         <TabIndex value="0" />
         <Anchor value="Top, Left, Right" />
@@ -39,7 +39,7 @@
           <System.Windows.Forms.Label>
             <Name value="label10" />
             <Location value="{X=6,Y=111}" />
-            <Text value="Default values for VB Options:" />
+            <Text value="${res:Dialog.ProjectOptions.BuildOptions.VBOptionsDefaultValues}" />
             <Size value="{Width=218, Height=23}" />
             <TabIndex value="5" />
           </System.Windows.Forms.Label>
@@ -47,14 +47,14 @@
             <Name value="removeOverflowCheckBox" />
             <Location value="{X=12,Y=84}" />
             <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <Text value="Remove integer overflow &amp;checks" />
+            <Text value="${res:Dialog.ProjectOptions.BuildOptions.RemoveOverflowChecks}" />
             <TabIndex value="4" />
             <Size value="{Width=502, Height=24}" />
           </System.Windows.Forms.CheckBox>
           <System.Windows.Forms.Label>
             <Name value="label1" />
             <Location value="{X=6,Y=17}" />
-            <Text value="Con&amp;ditional Compilation Symbols:" />
+            <Text value="${res:Dialog.ProjectOptions.BuildOptions.ConditionalSymbols}" />
             <TextAlign value="BottomLeft" />
             <Size value="{Width=470, Height=16}" />
             <TabIndex value="0" />
@@ -72,7 +72,7 @@
             <AccessibleRole value="None" />
             <Location value="{X=13,Y=64}" />
             <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <Text value="O&amp;ptimize code" />
+            <Text value="${res:Dialog.ProjectOptions.BuildOptions.OptimizeCode}" />
             <TabIndex value="2" />
             <Size value="{Width=502, Height=24}" />
             <Anchor value="Top, Left, Right" />
@@ -82,7 +82,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="groupBox3" />
         <Location value="{X=3,Y=161}" />
-        <Text value="Output" />
+        <Text value="${res:Dialog.ProjectOptions.Build.Output}" />
         <Size value="{Width=521, Height=248}" />
         <TabIndex value="1" />
         <Anchor value="Top, Left, Right" />
@@ -90,7 +90,7 @@
           <System.Windows.Forms.GroupBox>
             <Name value="advancedOutputGroupBox" />
             <Location value="{X=6,Y=115}" />
-            <Text value="Advanced" />
+            <Text value="${res:Dialog.ProjectOptions.Build.Advanced}" />
             <Size value="{Width=505, Height=127}" />
             <TabIndex value="7" />
             <Anchor value="Top, Bottom, Left, Right" />
@@ -106,7 +106,7 @@
               <System.Windows.Forms.Label>
                 <Name value="label9" />
                 <Location value="{X=6,Y=69}" />
-                <Text value="&amp;Target CPU:" />
+                <Text value="${res:Dialog.ProjectOptions.Build.TargetCPU}" />
                 <TextAlign value="MiddleRight" />
                 <Size value="{Width=181, Height=23}" />
                 <TabIndex value="3" />
@@ -120,7 +120,7 @@
               <System.Windows.Forms.Label>
                 <Name value="label8" />
                 <Location value="{X=7,Y=96}" />
-                <Text value="DLL Base Address:" />
+                <Text value="${res:Dialog.ProjectOptions.Build.DLLBaseAddress}" />
                 <TextAlign value="MiddleRight" />
                 <Size value="{Width=180, Height=23}" />
                 <TabIndex value="7" />
@@ -129,15 +129,15 @@
                 <Name value="registerCOMInteropCheckBox" />
                 <Location value="{X=175,Y=18}" />
                 <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-                <Text value="&amp;Register for COM Interop" />
+                <Text value="${res:Dialog.ProjectOptions.Build.RegisterForCOM}" />
                 <TabIndex value="0" />
-                <Size value="{Width=189, Height=20}" />
+                <Size value="{Width=209, Height=20}" />
                 <Anchor value="Top, Left, Right" />
               </System.Windows.Forms.CheckBox>
               <System.Windows.Forms.Label>
                 <Name value="label2" />
                 <Location value="{X=6,Y=43}" />
-                <Text value="&amp;Generate serialization assembly:" />
+                <Text value="${res:Dialog.ProjectOptions.Build.GenerateSerializationAssembly}" />
                 <TextAlign value="MiddleRight" />
                 <Size value="{Width=181, Height=20}" />
                 <TabIndex value="1" />
@@ -163,7 +163,7 @@
           <System.Windows.Forms.Label>
             <Name value="label6" />
             <Location value="{X=6,Y=86}" />
-            <Text value="Debug &amp;Info:" />
+            <Text value="${res:Dialog.ProjectOptions.Build.DebugInfo}" />
             <TextAlign value="MiddleRight" />
             <Size value="{Width=152, Height=23}" />
             <TabIndex value="5" />
@@ -172,7 +172,7 @@
             <Name value="xmlDocumentationCheckBox" />
             <Location value="{X=13,Y=63}" />
             <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
-            <Text value="&amp;XML documentation file:" />
+            <Text value="${res:Dialog.ProjectOptions.Build.XmlDocumentationFile}" />
             <TabIndex value="3" />
             <Size value="{Width=151, Height=20}" />
           </System.Windows.Forms.CheckBox>
@@ -186,7 +186,7 @@
           <System.Windows.Forms.Label>
             <Name value="label5" />
             <Location value="{X=6,Y=17}" />
-            <Text value="&amp;Output Path:" />
+            <Text value="${res:Dialog.ProjectOptions.Build.OutputPath}" />
             <TextAlign value="BottomLeft" />
             <Size value="{Width=505, Height=16}" />
             <TabIndex value="0" />
