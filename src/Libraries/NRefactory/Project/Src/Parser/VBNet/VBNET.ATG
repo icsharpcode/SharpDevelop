@@ -118,7 +118,7 @@ bool IsObjectCreation() {
 */
 bool IsGlobalAttrTarget () {
 	Token pt = Peek(1);
-	return la.kind == Tokens.LessThan && ( pt.val.ToLower() == "assembly" || pt.val.ToLower() == "module");
+	return la.kind == Tokens.LessThan && ( string.Equals(pt.val, "assembly", StringComparison.InvariantCultureIgnoreCase) || string.Equals(pt.val, "module", StringComparison.InvariantCultureIgnoreCase));
 }
 
 /*
@@ -1345,17 +1345,12 @@ OverloadableOperator<out OverloadableOperatorType operatorType>
 	Identifier
 	(.
 		string opName = t.val; 
-		switch(opName.ToLower())
-		{
-			case "istrue":
-				operatorType = OverloadableOperatorType.IsTrue;
-				break;
-			case "isfalse":
-				operatorType = OverloadableOperatorType.IsFalse;
-				break;
-			default:
-				Error("Invalid operator. Possible operators are '+', '-', 'Not', 'IsTrue', 'IsFalse'.");
-				break;
+		if (string.Equals(opName, "istrue", StringComparison.InvariantCultureIgnoreCase)) {
+			operatorType = OverloadableOperatorType.IsTrue;
+		} else if (string.Equals(opName, "isfalse", StringComparison.InvariantCultureIgnoreCase)) {
+			operatorType = OverloadableOperatorType.IsFalse;
+		} else {
+			Error("Invalid operator. Possible operators are '+', '-', 'Not', 'IsTrue', 'IsFalse'.");
 		}
 	.)
 	.
@@ -2032,7 +2027,7 @@ TypeArgumentList<List<TypeReference> typeArguments>
 GlobalAttributeSection =
 	(. Point startPos = t.Location; .)
 	"<" ("Assembly" | "Module")
-		(.  string attributeTarget = t.val.ToLower();
+		(.  string attributeTarget = t.val.ToLower(System.Globalization.CultureInfo.InvariantCulture);
 			List<ASTAttribute> attributes = new List<ASTAttribute>();
 			ASTAttribute attribute;
 		.)
@@ -2112,7 +2107,7 @@ AttributeSection<out AttributeSection section>
 		| "Return"		(. attributeTarget = "return";.)
 		| Identifier
 			(.
-				string val = t.val.ToLower();
+				string val = t.val.ToLower(System.Globalization.CultureInfo.InvariantCulture);
 				if (val != "field"	|| val != "method" ||
 					val != "module" || val != "param"  ||
 					val != "property" || val != "type")

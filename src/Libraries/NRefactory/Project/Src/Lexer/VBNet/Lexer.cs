@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (curToken == null) { // first call of NextToken()
 				curToken = Next();
 				specialTracker.InformToken(curToken.kind);
-//				Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
+				Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
 				return curToken;
 			}
 			
@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				curToken.next = new Token(Tokens.EOF, curToken.col, curToken.line, "\n");
 				specialTracker.InformToken(curToken.next.kind);
 			}
-//			Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
+			Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
 			return curToken;
 		}
 		
@@ -152,7 +152,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					}
 					
 					// handle 'REM' comments
-					if (s.ToUpper() == "REM") {
+					if (s.Equals("REM", StringComparison.InvariantCultureIgnoreCase)) {
 						ReadComment();
 						if (!lineEnd) {
 							lineEnd = true;
@@ -175,7 +175,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						return ReadOperator('&');
 					}
 					ch = (char)ReaderPeek();
-					if (Char.ToUpper(ch) == 'H' || Char.ToUpper(ch) == 'O') {
+					if (Char.ToUpper(ch, CultureInfo.InvariantCulture) == 'H' || Char.ToUpper(ch, CultureInfo.InvariantCulture) == 'O') {
 						return ReadDigit('&', Col - 1);
 					}
 					return ReadOperator('&');
@@ -234,6 +234,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			return sb.ToString();
 		}
 		
+		char PeekUpperChar()
+		{
+			return Char.ToUpper((char)ReaderPeek(), CultureInfo.InvariantCulture);
+		}
+		
 		Token ReadDigit(char ch, int x)
 		{
 			sb.Length = 0;
@@ -267,22 +272,22 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						digit += (char)ReaderRead();
 					}
 				}
-			} else if (ch == '&' && Char.ToUpper((char)ReaderPeek()) == 'H') {
+			} else if (ch == '&' && PeekUpperChar() == 'H') {
 				const string hex = "0123456789ABCDEF";
 				sb.Append((char)ReaderRead()); // skip 'H'
-				while (ReaderPeek() != -1 && hex.IndexOf(Char.ToUpper((char)ReaderPeek())) != -1) {
+				while (ReaderPeek() != -1 && hex.IndexOf(PeekUpperChar()) != -1) {
 					ch = (char)ReaderRead();
 					sb.Append(ch);
-					digit += Char.ToUpper(ch);
+					digit += Char.ToUpper(ch, CultureInfo.InvariantCulture);
 				}
 				ishex = true;
-			} else if (ReaderPeek() != -1 && ch == '&' && Char.ToUpper((char)ReaderPeek()) == 'O') {
+			} else if (ReaderPeek() != -1 && ch == '&' && PeekUpperChar() == 'O') {
 				const string okt = "01234567";
 				sb.Append((char)ReaderRead()); // skip 'O'
-				while (ReaderPeek() != -1 && okt.IndexOf(Char.ToUpper((char)ReaderPeek())) != -1) {
+				while (ReaderPeek() != -1 && okt.IndexOf(PeekUpperChar()) != -1) {
 					ch = (char)ReaderRead();
 					sb.Append(ch);
-					digit += Char.ToUpper(ch);
+					digit += Char.ToUpper(ch, CultureInfo.InvariantCulture);
 				}
 				isokt = true;
 			} else {
@@ -293,15 +298,15 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			
-			if (ReaderPeek() != -1 && ("%&SILU".IndexOf(Char.ToUpper((char)ReaderPeek())) != -1 || ishex || isokt)) {
+			if (ReaderPeek() != -1 && ("%&SILU".IndexOf(PeekUpperChar()) != -1 || ishex || isokt)) {
 				ch = (char)ReaderPeek();
 				sb.Append(ch);
-				ch = Char.ToUpper(ch);
+				ch = Char.ToUpper(ch, CultureInfo.InvariantCulture);
 				bool unsigned = ch == 'U';
 				if (unsigned) {
 					ch = (char)ReaderPeek();
 					sb.Append(ch);
-					ch = Char.ToUpper(ch);
+					ch = Char.ToUpper(ch, CultureInfo.InvariantCulture);
 					if (ch != 'I' && ch != 'L' && ch != 'S') {
 						errors.Error(Line, Col, "Invalid type character: U" + ch);
 					}
@@ -379,7 +384,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			
-			if (ReaderPeek() != -1 && Char.ToUpper((char)ReaderPeek()) == 'E') { // read exponent
+			if (ReaderPeek() != -1 && PeekUpperChar() == 'E') { // read exponent
 				isdouble = true;
 				digit +=  (char)ReaderRead();
 				if (ReaderPeek() != -1 && (ReaderPeek() == '-' || ReaderPeek() == '+')) {
@@ -391,7 +396,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			}
 			
 			if (ReaderPeek() != -1) {
-				switch (char.ToUpper((char)ReaderPeek())) {
+				switch (PeekUpperChar()) {
 					case 'R':
 					case '#':
 						ReaderRead();

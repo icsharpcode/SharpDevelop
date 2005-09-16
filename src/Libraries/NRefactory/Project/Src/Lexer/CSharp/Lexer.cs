@@ -160,7 +160,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					ReaderRead(); // skip 'x'
 					sb.Length = 0; // Remove '0' from 0x prefix from the stringvalue
 					while (IsHex((char)ReaderPeek())) {
-						sb.Append(Char.ToUpper((char)ReaderRead()));
+						sb.Append(Char.ToUpper((char)ReaderRead(), CultureInfo.InvariantCulture));
 					}
 					ishex = true;
 					prefix = "0x";

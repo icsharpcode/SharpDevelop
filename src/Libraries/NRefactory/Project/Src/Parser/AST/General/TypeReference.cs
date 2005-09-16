@@ -10,6 +10,7 @@ using System.Diagnostics;
 using System.Collections;
 using System.Collections.Generic;
 using System.Text;
+using System.Globalization;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -180,7 +181,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			if (types.ContainsKey(type)) {
 				return types[type];
 			}
-			string lowerType = type.ToLower();
+			string lowerType = type.ToLower(CultureInfo.InvariantCulture);
 			if (vbtypes.ContainsKey(lowerType)) {
 				return vbtypes[lowerType];
 			}

@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Drawing;
+using System.Globalization;
 
 namespace ICSharpCode.NRefactory.Parser
 {
@@ -38,7 +39,7 @@ namespace ICSharpCode.NRefactory.Parser
 				Node next = root;
 				
 				if (!casesensitive) {
-					keyword = keyword.ToUpper();
+					keyword = keyword.ToUpper(CultureInfo.InvariantCulture);
 				}
 				
 				for (int i = 0; i < keyword.Length; ++i) {
@@ -60,7 +61,7 @@ namespace ICSharpCode.NRefactory.Parser
 				Node next = root;
 				
 				if (!casesensitive) {
-					keyword = keyword.ToUpper();
+					keyword = keyword.ToUpper(CultureInfo.InvariantCulture);
 				}
 				
 				++length;

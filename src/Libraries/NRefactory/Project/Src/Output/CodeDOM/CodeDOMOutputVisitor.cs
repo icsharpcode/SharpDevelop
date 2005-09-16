@@ -66,7 +66,7 @@ namespace ICSharpCode.NRefactory.Parser
 		};
 		
 		static Hashtable typeConversionTable   = new Hashtable();
-		static Hashtable typeConversionTableVB = new Hashtable();
+		static Hashtable typeConversionTableVB = new Hashtable(StringComparer.InvariantCultureIgnoreCase);
 		
 		static CodeDOMVisitor()
 		{
@@ -88,8 +88,8 @@ namespace ICSharpCode.NRefactory.Parser
 			if (typeConversionTable[type] != null) {
 				return typeConversionTable[type].ToString();
 			}
-			if (typeConversionTableVB[type.ToUpper()] != null) {
-				return typeConversionTableVB[type.ToUpper()].ToString();
+			if (typeConversionTableVB[type] != null) {
+				return typeConversionTableVB[type].ToString();
 			}
 			return type;
 		}

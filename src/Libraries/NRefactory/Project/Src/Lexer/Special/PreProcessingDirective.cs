@@ -8,6 +8,7 @@
 using System;
 using System.Drawing;
 using System.Collections.Generic;
+using System.Globalization;
 
 namespace ICSharpCode.NRefactory.Parser
 {
@@ -23,11 +24,11 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public static PreProcessingDirective VBToCSharp(PreProcessingDirective dir)
 		{
-			string cmd = dir.Cmd.ToLower();
+			string cmd = dir.Cmd.ToLower(CultureInfo.InvariantCulture);
 			string arg = dir.Arg;
 			switch (cmd) {
 				case "#end":
-					if (arg.ToLower().StartsWith("region")) {
+					if (arg.ToLower(CultureInfo.InvariantCulture).StartsWith("region")) {
 						cmd = "#endregion";
 						arg = "";
 					}
