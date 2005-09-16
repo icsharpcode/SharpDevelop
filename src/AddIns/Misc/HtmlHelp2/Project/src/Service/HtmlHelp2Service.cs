@@ -284,6 +284,7 @@ namespace HtmlHelp2.Environment
 			try
 			{
 				topics = ((IHxIndex)dynamicHelp).GetTopicsFromString(searchTerm, 0);
+				LoggingService.Info("Help 2.0: Dynamic Help successfully called");
 			}
 			catch
 			{
@@ -302,6 +303,7 @@ namespace HtmlHelp2.Environment
 			try
 			{
 				topics = GetIndex(currentSelectedFilterQuery).GetTopicsFromString(searchTerm, 0);
+				LoggingService.Info("Help 2.0: Keyword search successfully called");
 			}
 			catch
 			{
