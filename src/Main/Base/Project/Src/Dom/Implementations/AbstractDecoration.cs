@@ -197,9 +197,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		// TODO: check inner classes for protected members too.
-		// TODO: look for FullyQualifiedName == FullyQualifiedName. Must be replaced by a function wich pays attention to the case.
-		//       Look at NRefactoryResolver.IsSameName. Also pay attention if you can put this Function in IClass, and if you have to
-		//       compare the names instead of the FullyQualifiedNames
 		public bool IsAccessible(IClass callingClass, bool isClassInInheritanceTree)
 		{
 			if (IsInternal) {

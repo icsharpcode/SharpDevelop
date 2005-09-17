@@ -213,7 +213,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="groupBox2" />
         <Location value="{X=3,Y=501}" />
-        <Text value="Treat Warnings as Errors" />
+        <Text value="${res:Dialog.ProjectOptions.Build.TreatWarningsAsErrors}" />
         <Size value="{Width=521, Height=100}" />
         <TabIndex value="3" />
         <Anchor value="Top, Left, Right" />
@@ -228,7 +228,7 @@
           <System.Windows.Forms.RadioButton>
             <Name value="allRadioButton" />
             <Location value="{X=8,Y=68}" />
-            <Text value="A&amp;ll" />
+            <Text value="${res:Dialog.ProjectOptions.Build.TreatWarningsAsErrors.All}" />
             <Size value="{Width=128, Height=24}" />
             <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <TabIndex value="3" />
@@ -236,7 +236,7 @@
           <System.Windows.Forms.RadioButton>
             <Name value="specificWarningsRadioButton" />
             <Location value="{X=8,Y=44}" />
-            <Text value="Sp&amp;ecific Warnings:" />
+            <Text value="${res:Dialog.ProjectOptions.Build.TreatWarningsAsErrors.Specific}" />
             <Size value="{Width=128, Height=24}" />
             <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <TabIndex value="1" />
@@ -244,7 +244,7 @@
           <System.Windows.Forms.RadioButton>
             <Name value="noneRadioButton" />
             <Location value="{X=8,Y=20}" />
-            <Text value="&amp;None" />
+            <Text value="${res:Dialog.ProjectOptions.Build.TreatWarningsAsErrors.None}" />
             <Size value="{Width=128, Height=24}" />
             <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <TabIndex value="0" />
@@ -254,7 +254,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="groupBox1" />
         <Location value="{X=3,Y=415}" />
-        <Text value="Errors and Warnings" />
+        <Text value="${res:Dialog.ProjectOptions.Build.ErrorsAndWarnings}" />
         <Size value="{Width=521, Height=80}" />
         <TabIndex value="2" />
         <Anchor value="Top, Left, Right" />
@@ -269,7 +269,7 @@
           <System.Windows.Forms.Label>
             <Name value="label4" />
             <Location value="{X=4,Y=44}" />
-            <Text value="&amp;Suppress Warnings:" />
+            <Text value="${res:Dialog.ProjectOptions.Build.SuppressWarnings}" />
             <TextAlign value="MiddleRight" />
             <Size value="{Width=154, Height=23}" />
             <TabIndex value="2" />
@@ -285,7 +285,7 @@
           <System.Windows.Forms.Label>
             <Name value="label3" />
             <Location value="{X=4,Y=20}" />
-            <Text value="&amp;Warning Level:" />
+            <Text value="${res:Dialog.ProjectOptions.Build.WarningLevel}" />
             <TextAlign value="MiddleRight" />
             <Size value="{Width=154, Height=23}" />
             <TabIndex value="0" />

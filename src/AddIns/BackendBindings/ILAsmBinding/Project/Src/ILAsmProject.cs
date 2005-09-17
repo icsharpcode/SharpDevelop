@@ -25,7 +25,7 @@ namespace ICSharpCode.ILAsmBinding
 		{
 			Language = "ILAsm";
 			Create(info);
-			imports.Add(@"$(SharpDevelopBuildBinPath)\SharpDevelop.Build.MSIL.Targets");
+			imports.Add(@"$(SharpDevelopBinPath)\SharpDevelop.Build.MSIL.Targets");
 		}
 		
 		public override bool CanCompile(string fileName)

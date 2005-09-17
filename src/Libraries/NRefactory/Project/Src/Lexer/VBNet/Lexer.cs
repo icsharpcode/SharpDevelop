@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			if (curToken == null) { // first call of NextToken()
 				curToken = Next();
 				specialTracker.InformToken(curToken.kind);
-				Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
+				//Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
 				return curToken;
 			}
 			
@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				curToken.next = new Token(Tokens.EOF, curToken.col, curToken.line, "\n");
 				specialTracker.InformToken(curToken.next.kind);
 			}
-			Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
+			//Console.WriteLine("Tok:" + Tokens.GetTokenString(curToken.kind) + " --- " + curToken.val);
 			return curToken;
 		}
 		

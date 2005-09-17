@@ -614,7 +614,6 @@
     <Compile Include="Src\Gui\Pads\PropertyPad\IDEContainer.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyContainer.cs" />
     <EmbeddedResource Include="Resources\ProjectOptions\Publish.xfrm" />
-    <EmbeddedResource Include="Resources\ProjectOptions\ReferencePaths.xfrm" />
     <EmbeddedResource Include="Resources\ProjectOptions\Signing.xfrm" />
     <EmbeddedResource Include="Resources\ProjectOptions\BuildEvents.xfrm" />
     <EmbeddedResource Include="Resources\ProjectOptions\DebugOptions.xfrm" />
@@ -702,6 +701,7 @@
     <Compile Include="Src\Services\RefactoringService\LocalVariableRefactoring.cs" />
     <Compile Include="Src\Services\RefactoringService\FindReferencesAndRenameHelper.cs" />
     <Compile Include="Src\Internal\Doozers\DirectoryDoozer.cs" />
+    <Compile Include="Src\Gui\Components\StringListEditor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

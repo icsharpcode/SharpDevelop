@@ -27,9 +27,15 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		/// <summary>
 		/// Gets a list of the task names that cause a "Compiling ..." log message.
+		/// The contents of the list can be changed by addins.
 		/// All names must be in lower case!
 		/// </summary>
 		public static readonly List<string> CompileTaskNames = new List<string>(new string[] {"csc", "vbc", "ilasm"});
+		
+		/// <summary>
+		/// Gets a list where addins can add additional properties for use in MsBuild.
+		/// </summary>
+		public static readonly List<KeyValuePair<string, string>> MsBuildProperties = new List<KeyValuePair<string, string>>();
 		
 		MessageViewCategory messageView;
 		
@@ -64,7 +70,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			CompilerResults results = new CompilerResults(null);
 			BuildPropertyGroup properties = new BuildPropertyGroup();
 			string location = Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location);
-			properties.SetProperty("SharpDevelopBuildBinPath", location);
+			properties.SetProperty("SharpDevelopBinPath", location);
+			foreach (KeyValuePair<string, string> entry in MsBuildProperties) {
+				properties.SetProperty(entry.Key, entry.Value);
+			}
 			
 			Engine engine = new Engine(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
 			SharpDevelopLogger logger = new SharpDevelopLogger(this, results);

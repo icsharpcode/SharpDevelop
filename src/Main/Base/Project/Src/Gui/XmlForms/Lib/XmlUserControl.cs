@@ -29,7 +29,10 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 		/// </summary>
 		public Dictionary<string, Control> ControlDictionary {
 			get {
-				return xmlLoader.ControlDictionary;
+				if (xmlLoader == null)
+					return null;
+				else
+					return xmlLoader.ControlDictionary;
 			}
 		}
 		

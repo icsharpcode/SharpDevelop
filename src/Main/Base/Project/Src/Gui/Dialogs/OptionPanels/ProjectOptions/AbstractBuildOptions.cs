@@ -118,11 +118,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			                      new StringPair("Off", "Off"),
 			                      new StringPair("On", "On"),
 			                      new StringPair("Auto", "Auto"));
-			helper.BindStringEnum("generateSerializationAssemblyComboBox", "GenerateSerializationAssemblies",
-			                      "Auto",
-			                      new StringPair("Off", "Off"),
-			                      new StringPair("On", "On"),
-			                      new StringPair("Auto", "Auto"));
 			helper.BindHexadecimal(Get<TextBox>("dllBaseAddress"), "BaseAddress", 0x400000);
 			helper.BindStringEnum("targetCpuComboBox", "PlatformTarget",
 			                      "AnyCPU",
