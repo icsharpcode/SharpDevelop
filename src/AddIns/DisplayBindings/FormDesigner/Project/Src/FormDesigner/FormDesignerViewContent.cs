@@ -156,7 +156,12 @@ namespace ICSharpCode.FormDesigner
 		{
 			generator.Detach();
 			p.Controls.Clear();
-			designSurface.Dispose();
+			// We cannot dispose the design surface now because of SD2-451:
+			// When the switch to the source view was triggered by a double-click on an event
+			// in the PropertyPad, "InvalidOperationException: The container cannot be disposed
+			// at design time" is thrown.
+			// This is solved by calling dispose after the double-click event has been processed.
+			p.BeginInvoke(new MethodInvoker(designSurface.Dispose));
 			designSurface = null;
 		}
 		
