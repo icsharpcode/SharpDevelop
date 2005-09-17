@@ -18,11 +18,13 @@ namespace HtmlHelp2
 		{
 			LoggingService.Info("Help 2.0: MsHelpProvider.TryShowHelp");
 
-			try {
+			try
+			{
 				PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchPad));
 				return ((HtmlHelp2SearchPad)search.PadContent).PerformF1FTS(fullTypeName, true);
 			}
-			catch {
+			catch
+			{
 				return false;
 			}
 		}
@@ -31,11 +33,13 @@ namespace HtmlHelp2
 		{
 			LoggingService.Info("Help 2.0: MsHelpProvider.TryShowHelpByKeyword");
 
-			try {
+			try
+			{
 				PadDescriptor search = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2SearchPad));
 				return ((HtmlHelp2SearchPad)search.PadContent).PerformF1FTS(keyword);
 			}
-			catch {
+			catch
+			{
 				return false;
 			}
 		}

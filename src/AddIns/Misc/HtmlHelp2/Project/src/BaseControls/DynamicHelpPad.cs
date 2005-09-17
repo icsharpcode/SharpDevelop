@@ -30,6 +30,8 @@ namespace HtmlHelp2
 
 
 	// TODO: if there are no DH results, implement Keyword search (index)
+	// I'm a little stupid at this point, I guess, :o(
+	// How to get the word UNDER the cursor for an ordinary simple keyword search?
 
 
 	public class ShowDynamicHelpMenuCommand : AbstractMenuCommand
@@ -85,26 +87,29 @@ namespace HtmlHelp2
 			this.RemoveAllChildren();
 			this.debugPreElement = String.Empty;
 
+			bool helpResults     = false;
 			string tempLanguage  = String.Empty;
-			if(languages.ContainsKey(expectedLanguage))
+			if(!languages.ContainsKey(expectedLanguage) ||
+			   !languages.TryGetValue(expectedLanguage, out tempLanguage))
 			{
-				if(!languages.TryGetValue(expectedLanguage, out tempLanguage))
-				{
-					tempLanguage = String.Empty;
-				}
+				tempLanguage     = expectedLanguage;
 			}
 
 			Cursor.Current           = Cursors.WaitCursor;
 			foreach(string currentHelpTerm in dynamicHelpTerms)
 			{
-				this.CallDynamicHelp(currentHelpTerm, tempLanguage, false);
+				if(!currentHelpTerm.StartsWith("!"))
+				{
+					helpResults = (helpResults || this.CallDynamicHelp(currentHelpTerm, tempLanguage, false));
+				}
 			}
+
+			// TODO: implement keyword search, if "helpResults" is FALSE
+
 			dynamicHelpBrowser.BuildDefaultHelpEntries();
 			Cursor.Current           = Cursors.Default;
 
-			this.debugPreElement    += String.Format("<br>Current project language: {0}",
-			                                         (tempLanguage==String.Empty)?expectedLanguage:tempLanguage);
-
+			this.debugPreElement    += String.Format("<br>Current project language: {0}", tempLanguage);
 			if(this.enableDebugInfo) dynamicHelpBrowser.CreateDebugPre(this.debugPreElement);
 		}
 
@@ -379,6 +384,10 @@ namespace HtmlHelp2
 			{
 				HtmlHelp2Environment.NamespaceReloaded   += new EventHandler(this.NamespaceReloaded);
 			}
+		}
+
+		private void DynamicHelpBrowserCreated(object sender, EventArgs e)
+		{
 		}
 
 		private void LoadDynamicHelpPage()
