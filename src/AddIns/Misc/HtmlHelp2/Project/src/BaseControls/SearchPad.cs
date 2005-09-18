@@ -13,6 +13,7 @@ namespace HtmlHelp2
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Gui;
+	using ICSharpCode.SharpDevelop.Project;
 	using HtmlHelp2.Environment;
 	using HtmlHelp2.HelperDialog;
 	using MSHelpServices;
@@ -268,7 +269,7 @@ namespace HtmlHelp2
 					matchingTopics = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(searchWord);
 				else
 					matchingTopics = HtmlHelp2Environment.FTS.Query(searchWord, searchFlags);
-				
+
 				Cursor.Current     = Cursors.Default;
 				searchDialog.Dispose();
 
@@ -285,25 +286,9 @@ namespace HtmlHelp2
 						lvi.Tag          = topic;
 						lvi.SubItems.Add(topic.Location);
 						lvi.SubItems.Add(topic.Rank.ToString());
+
 						searchResults.SearchResultsListView.Items.Add(lvi);
 					}
-
-//					for(int i = 1; i <= matchingTopics.Count; i++)
-//					{
-//						IHxTopic topic = matchingTopics.ItemAt(i);
-//
-//						if(topic != null)
-//						{
-//							ListViewItem lvi = new ListViewItem();
-//							lvi.Text         = topic.get_Title(HxTopicGetTitleType.HxTopicGetRLTitle,
-//							                                   HxTopicGetTitleDefVal.HxTopicGetTitleFileName);
-//							lvi.SubItems.Add(topic.Location);
-//							lvi.SubItems.Add(topic.Rank.ToString());
-//							lvi.Tag          = topic;
-//
-//							searchResults.SearchResultsListView.Items.Add(lvi);
-//						}
-//					}
 
 					reuseMatches.Enabled = true;
 				}

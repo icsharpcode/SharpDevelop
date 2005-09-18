@@ -26,6 +26,7 @@ namespace HtmlHelp2
 	using ICSharpCode.TextEditor;
 	using HtmlHelp2.Environment;
 	using HtmlHelp2.ResourcesHelperClass;
+	using HtmlHelp2.SharpDevLanguageClass;
 	using MSHelpServices;
 
 
@@ -49,17 +50,11 @@ namespace HtmlHelp2
 		private StringCollection dynamicHelpTerms   = new StringCollection();
 		private string debugPreElement              = String.Empty;
 		private bool enableDebugInfo                = true;
-		private Dictionary<string, string>languages = new Dictionary<string, string>();
 
 		public override Control Control
 		{
 			get { return dynamicHelpBrowser; }
 		}
-
-//		public override void Dispose()
-//		{
-//			dynamicHelpBrowser.Dispose();
-//		}
 
 		public override void RedrawContent()
 		{
@@ -73,47 +68,38 @@ namespace HtmlHelp2
 			PropertyPad.SelectedObjectChanged      += new EventHandler(this.FormsDesignerSelectedObjectChanged);
 			PropertyPad.SelectedGridItemChanged    += new SelectedGridItemChangedEventHandler(this.FormsDesignerSelectedGridItemChanged);
 			ProjectService.SolutionClosed          += new EventHandler(this.SolutionClosed);
-
-			// I needed to patch SharpDevelop's current project language because
-			// the .NET Framework SDK documents use other names
-			languages.Add("C#", "CSharp");
-			languages.Add("VBNet", "VB");
 		}
 
 		#region WebBrowser Scripting
-		private void BuildDynamicHelpList(string expectedLanguage)
+		private void BuildDynamicHelpList()
 		{
 			if(this.dynamicHelpTerms.Count == 0) return;
 			this.RemoveAllChildren();
-			this.debugPreElement = String.Empty;
+			this.debugPreElement  = String.Empty;
+			bool helpResults      = false;
 
-			bool helpResults     = false;
-			string tempLanguage  = String.Empty;
-			if(!languages.ContainsKey(expectedLanguage) ||
-			   !languages.TryGetValue(expectedLanguage, out tempLanguage))
+			Cursor.Current        = Cursors.WaitCursor;
+			foreach(string currentHelpTerm in this.dynamicHelpTerms)
 			{
-				tempLanguage     = expectedLanguage;
+				helpResults       = (this.CallDynamicHelp(currentHelpTerm, false) || helpResults);
 			}
 
-			Cursor.Current           = Cursors.WaitCursor;
-			foreach(string currentHelpTerm in dynamicHelpTerms)
+			if(!helpResults)
 			{
-				if(!currentHelpTerm.StartsWith("!"))
+				foreach(string currentHelpTerm in this.dynamicHelpTerms)
 				{
-					helpResults = (helpResults || this.CallDynamicHelp(currentHelpTerm, tempLanguage, false));
+					this.CallDynamicHelp(currentHelpTerm, true);
 				}
 			}
-
-			// TODO: implement keyword search, if "helpResults" is FALSE
-
 			dynamicHelpBrowser.BuildDefaultHelpEntries();
-			Cursor.Current           = Cursors.Default;
+			Cursor.Current        = Cursors.Default;
 
-			this.debugPreElement    += String.Format("<br>Current project language: {0}", tempLanguage);
+			this.debugPreElement += String.Format("<br>Current project language: {0}",
+			                                      SharpDevLanguage.GetPatchedLanguage());
 			if(this.enableDebugInfo) dynamicHelpBrowser.CreateDebugPre(this.debugPreElement);
 		}
 
-		private bool CallDynamicHelp(string searchTerm, string expectedLanguage, bool keywordSearch)
+		private bool CallDynamicHelp(string searchTerm, bool keywordSearch)
 		{
 			if(!HtmlHelp2Environment.IsReady || HtmlHelp2Environment.DynamicHelpIsBusy) return false;
 			bool result          = false;
@@ -136,7 +122,7 @@ namespace HtmlHelp2
 				List<IHxTopic> newTopics = this.SortTopics(topics);
 				foreach(IHxTopic topic in newTopics)
 				{
-					if(expectedLanguage == String.Empty || topic.HasAttribute("DevLang", expectedLanguage))
+					if(SharpDevLanguage.CheckTopicLanguage(topic))
 					{
 						this.BuildNewChild(topic.Location,
 						                   topic.get_Title(HxTopicGetTitleType.HxTopicGetTOCTitle,
@@ -194,9 +180,7 @@ namespace HtmlHelp2
 				this.AddToStringCollection(0, types.ResolvedClass.FullyQualifiedName);
 			}
 
-			WorkbenchSingleton.SafeThreadAsyncCall(this,
-			                                       "BuildDynamicHelpList",
-			                                       ProjectService.CurrentProject.Language);
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "BuildDynamicHelpList");
 		}
 
 		private ResolveResult ResolveAtCaret(ParserUpdateStepEventArgs e)
@@ -236,22 +220,24 @@ namespace HtmlHelp2
 
 		private void CallDynamicHelpForFormsDesigner(object selectedObject, GridItem selectedItem)
 		{
-			if(selectedObject == null) return;
-			this.dynamicHelpTerms.Clear();
-
-			Type myObject = selectedObject.GetType();
-			if(selectedItem != null)
+			try
 			{
-				foreach(Type type in TypeHandling.FindDeclaringType(myObject, selectedItem.Label))
-				{
-					this.AddToStringCollection(String.Format("{0}.{1}", type.FullName, selectedItem.Label));
-				}
-			}
-			this.AddToStringCollection(myObject.FullName);
+				if(selectedObject == null) return;
+				this.dynamicHelpTerms.Clear();
 
-			WorkbenchSingleton.SafeThreadAsyncCall(this,
-			                                       "BuildDynamicHelpList",
-			                                       ProjectService.CurrentProject.Language);
+				Type myObject = selectedObject.GetType();
+				if(selectedItem != null)
+				{
+					foreach(Type type in TypeHandling.FindDeclaringType(myObject, selectedItem.Label))
+					{
+						this.AddToStringCollection(String.Format("{0}.{1}", type.FullName, selectedItem.Label));
+					}
+				}
+				this.AddToStringCollection(myObject.FullName);
+
+				WorkbenchSingleton.SafeThreadAsyncCall(this, "BuildDynamicHelpList");
+			}
+			catch {}
 		}
 		#endregion
 
@@ -635,7 +621,7 @@ namespace HtmlHelp2
 						string sectionName = sectionNode.Attributes.GetNamedItem("name").InnerText;
 						string url         = urlNode.InnerText;
 						string id          = urlNode.Attributes.GetNamedItem("name").InnerText;
-						this.BuildNewChild(sectionName, id, url);
+						this.BuildNewChild(StringParser.Parse(sectionName), id, url);
 					}
 				}
 			}
