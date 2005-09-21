@@ -18,6 +18,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	public class Signing : AbstractProjectOptionPanel
 	{
 		ComboBox keyFile;
+		ConfigurationGuiBinding signAssemblyBinding;
 		
 		const string KeyFileExtensions = "*.snk;*.pfx;*.key";
 		
@@ -26,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			SetupFromXmlResource("ProjectOptions.Signing.xfrm");
 			InitializeHelper();
 			
-			helper.BindBoolean("signAssemblyCheckBox", "SignAssembly", false);
+			signAssemblyBinding = helper.BindBoolean("signAssemblyCheckBox", "SignAssembly", false);
 			Get<CheckBox>("signAssembly").CheckedChanged += new EventHandler(UpdateEnabledStates);
 			
 			
@@ -103,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		public override bool StorePanelContents()
 		{
 			if (IsDirty && Get<CheckBox>("signAssembly").Checked) {
-				helper.SetProperty("AssemblyOriginatorKeyMode", "File");
+				helper.SetProperty("AssemblyOriginatorKeyMode", "File", signAssemblyBinding.Location);
 			}
 			return base.StorePanelContents();
 		}

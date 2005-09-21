@@ -126,7 +126,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			SetWordWrap();
 			myPanel.ResumeLayout(false);
-			SetText(messageCategories[selectedCategory]);
+			SetText(messageCategories[selectedCategory], messageCategories[selectedCategory].Text);
 		}
 		
 		void SetWordWrap()
@@ -165,14 +165,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		void ClearText(MessageViewCategory category)
 		{
-			textEditorControl.Text = "";
-			textEditorControl.Refresh();
-			SelectCategory(category.Category);
+			if (messageCategories[SelectedCategoryIndex] == category) {
+				textEditorControl.Text = "";
+				textEditorControl.Refresh();
+			}
 		}
 		
 		void CategoryTextSet(object sender, TextEventArgs e)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(this, "SetText", (MessageViewCategory)sender);
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "SetText", (MessageViewCategory)sender, e.Text);
 		}
 		
 		void CategoryTextAppended(object sender, TextEventArgs e)
@@ -183,7 +184,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void AppendText(MessageViewCategory category, string text)
 		{
 			if (messageCategories[SelectedCategoryIndex] != category) {
-				SetText(category);
+				SelectCategory(category.Category);
 				return;
 			}
 			if (text != null) {
@@ -196,19 +197,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		void SetText(MessageViewCategory category)
+		void SetText(MessageViewCategory category, string text)
 		{
-			string text = StringParser.Parse(category.Text);
+			if (messageCategories[SelectedCategoryIndex] != category) {
+				SelectCategory(category.Category);
+				return;
+			}
 			if (text == null) {
 				text = String.Empty;
+			} else {
+				text = StringParser.Parse(text);
 			}
 			textEditorControl.Text = text;
 			textEditorControl.Refresh();
-//			textEditorControl.Select(text.Length , 0);
-//			textEditorControl.Select();
-//			textEditorControl.ScrollToCaret();
 		}
-		
 		
 		public void SelectCategory(string categoryName)
 		{

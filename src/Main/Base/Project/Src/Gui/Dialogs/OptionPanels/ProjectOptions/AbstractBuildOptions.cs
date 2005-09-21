@@ -87,7 +87,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				if (bool.Parse(Get("false"))) {
 					all.Checked = true;
 				} else {
-					if (this.Helper.GetProperty("WarningsAsErrors", "").Length > 0) {
+					PropertyStorageLocation tmp;
+					if (this.Helper.GetProperty("WarningsAsErrors", "", out tmp).Length > 0) {
 						specific.Checked = true;
 					} else {
 						none.Checked = true;
@@ -109,9 +110,11 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			}
 		}
 		
+		ConfigurationGuiBinding debugInfoBinding;
+		
 		protected void InitAdvanced()
 		{
-			helper.BindEnum<DebugSymbolType>("debugInfoComboBox", "DebugType");
+			debugInfoBinding = helper.BindEnum<DebugSymbolType>("debugInfoComboBox", "DebugType");
 			helper.BindBoolean("registerCOMInteropCheckBox", "RegisterForComInterop", false);
 			helper.BindStringEnum("generateSerializationAssemblyComboBox", "GenerateSerializationAssemblies",
 			                      "Auto",
@@ -131,9 +134,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			if (base.StorePanelContents()) {
 				if ((DebugSymbolType)Get<ComboBox>("debugInfo").SelectedIndex == DebugSymbolType.Full) {
-					helper.SetProperty("DebugSymbols", "true");
+					helper.SetProperty("DebugSymbols", "true", debugInfoBinding.Location);
 				} else {
-					helper.SetProperty("DebugSymbols", "false");
+					helper.SetProperty("DebugSymbols", "false", debugInfoBinding.Location);
 				}
 				return true;
 			} else {

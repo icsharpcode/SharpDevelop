@@ -305,26 +305,31 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public T GetProperty<T>(string property, T defaultValue)
 		{
-			return GetProperty(this.Configuration, this.Platform, property, defaultValue);
+			PropertyStorageLocation tmp;
+			return GetProperty(this.Configuration, this.Platform, property, defaultValue, out tmp);
 		}
 		
-		public T GetProperty<T>(string configurationName, string platform, string property, T defaultValue)
+		public T GetProperty<T>(string configurationName, string platform, string property, T defaultValue, out PropertyStorageLocation location)
 		{
 			string configurationKey = platform != null ? configurationName + "|" + platform : configurationName;
 			PropertyGroup pg;
 			if (userConfigurations.TryGetValue(configurationKey, out pg)) {
 				if (pg.IsSet(property)) {
+					location = PropertyStorageLocation.UserSpecificConfiguration;
 					return pg.Get(property, defaultValue);
 				}
 			}
 			if (configurations.TryGetValue(configurationKey, out pg)) {
 				if (pg.IsSet(property)) {
+					location = PropertyStorageLocation.SpecificConfiguration;
 					return pg.Get(property, defaultValue);
 				}
 			}
 			if (BaseConfiguration.IsSet(property)) {
+				location = PropertyStorageLocation.BaseConfiguration;
 				return BaseConfiguration.Get(property, defaultValue);
 			}
+			location = PropertyStorageLocation.Unchanged;
 			return defaultValue;
 		}
 		

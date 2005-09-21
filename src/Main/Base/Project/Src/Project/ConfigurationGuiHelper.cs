@@ -44,14 +44,40 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		PropertyStorageLocation defaultLocation = PropertyStorageLocation.BaseConfiguration;
+
+		public PropertyStorageLocation DefaultLocation {
+			get {
+				return defaultLocation;
+			}
+			set {
+				defaultLocation = value;
+			}
+		}
+		
+		PropertyStorageLocation location;
+		
+		public PropertyStorageLocation Location {
+			get {
+				return location;
+			}
+			set {
+				location = value;
+			}
+		}
+		
 		public T Get<T>(T defaultValue)
 		{
-			return helper.GetProperty(property, defaultValue);
+			T result = helper.GetProperty(property, defaultValue, out location);
+			if (location == PropertyStorageLocation.Unchanged) {
+				location = defaultLocation;
+			}
+			return result;
 		}
 		
 		public void Set<T>(T value)
 		{
-			helper.SetProperty(property, value);
+			helper.SetProperty(property, value, location);
 		}
 		
 		public abstract void Load();
@@ -81,14 +107,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public T GetProperty<T>(string property, T defaultValue)
+		public T GetProperty<T>(string property, T defaultValue, out PropertyStorageLocation location)
 		{
-			return project.GetProperty(configuration, platform, property, defaultValue);
+			return project.GetProperty(configuration, platform, property, defaultValue, out location);
 		}
 		
-		public void SetProperty<T>(string property, T value)
+		public void SetProperty<T>(string property, T value, PropertyStorageLocation location)
 		{
-			project.SetProperty(configuration, platform, property, value, PropertyStorageLocation.Unchanged);
+			project.SetProperty(configuration, platform, property, value, location);
 		}
 		
 		/// <summary>
@@ -160,17 +186,19 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		#region Bind bool to CheckBox
-		public void BindBoolean(string control, string property, bool defaultValue)
+		public ConfigurationGuiBinding BindBoolean(string control, string property, bool defaultValue)
 		{
-			BindBoolean(controlDictionary[control], property, defaultValue);
+			return BindBoolean(controlDictionary[control], property, defaultValue);
 		}
 		
-		public void BindBoolean(Control control, string property, bool defaultValue)
+		public ConfigurationGuiBinding BindBoolean(Control control, string property, bool defaultValue)
 		{
 			CheckBox checkBox = control as CheckBox;
 			if (checkBox != null) {
-				AddBinding(property, new CheckBoxBinding(checkBox, defaultValue));
+				CheckBoxBinding binding = new CheckBoxBinding(checkBox, defaultValue);
+				AddBinding(property, binding);
 				checkBox.CheckedChanged += ControlValueChanged;
+				return binding;
 			} else {
 				throw new ApplicationException("Cannot bind " + control.GetType().Name + " to bool property.");
 			}
@@ -207,19 +235,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Bind string to TextBox or ComboBox
-		public void BindString(string control, string property)
+		public ConfigurationGuiBinding BindString(string control, string property)
 		{
-			BindString(controlDictionary[control], property);
+			return BindString(controlDictionary[control], property);
 		}
 		
-		public void BindString(Control control, string property)
+		public ConfigurationGuiBinding BindString(Control control, string property)
 		{
 			if (control is TextBoxBase || control is ComboBox) {
-				AddBinding(property, new SimpleTextBinding(control));
+				SimpleTextBinding binding = new SimpleTextBinding(control);
+				AddBinding(property, binding);
 				control.TextChanged += ControlValueChanged;
 				if (control is ComboBox) {
 					control.KeyDown += ComboBoxKeyDown;
 				}
+				return binding;
 			} else {
 				throw new ApplicationException("Cannot bind " + control.GetType().Name + " to string property.");
 			}
@@ -256,10 +286,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		#region Bind hex number to TextBox
-		public void BindHexadecimal(TextBoxBase textBox, string property, int defaultValue)
+		public ConfigurationGuiBinding BindHexadecimal(TextBoxBase textBox, string property, int defaultValue)
 		{
-			AddBinding(property, new HexadecimalBinding(textBox, defaultValue));
+			HexadecimalBinding binding = new HexadecimalBinding(textBox, defaultValue);
+			AddBinding(property, binding);
 			textBox.TextChanged += ControlValueChanged;
+			return binding;
 		}
 		
 		class HexadecimalBinding : ConfigurationGuiBinding
@@ -307,15 +339,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Bind enum to ComboBox
 		/// </summary>
-		public void BindEnum<T>(string control, string property, params T[] values) where T : struct
+		public ConfigurationGuiBinding BindEnum<T>(string control, string property, params T[] values) where T : struct
 		{
-			BindEnum(controlDictionary[control], property, values);
+			return BindEnum(controlDictionary[control], property, values);
 		}
 		
 		/// <summary>
 		/// Bind enum to ComboBox
 		/// </summary>
-		public void BindEnum<T>(Control control, string property, params T[] values) where T : struct
+		public ConfigurationGuiBinding BindEnum<T>(Control control, string property, params T[] values) where T : struct
 		{
 			Type type = typeof(T);
 			if (values == null || values.Length == 0) {
@@ -336,9 +368,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				string[] valueNames = new string[values.Length];
 				for (int i = 0; i < values.Length; i++)
 					valueNames[i] = values[i].ToString();
-				AddBinding(property, new ComboBoxBinding(comboBox, valueNames, valueNames[0]));
+				ComboBoxBinding binding = new ComboBoxBinding(comboBox, valueNames, valueNames[0]);
+				AddBinding(property, binding);
 				comboBox.SelectedIndexChanged += ControlValueChanged;
 				comboBox.KeyDown += ComboBoxKeyDown;
+				return binding;
 			} else {
 				throw new ApplicationException("Cannot bind " + control.GetType().Name + " to enum property.");
 			}
@@ -411,12 +445,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Bind enum to RadioButtons
 		/// </summary>
-		public void BindRadioEnum<T>(string property, params KeyValuePair<T, RadioButton>[] values) where T : struct
+		public ConfigurationGuiBinding BindRadioEnum<T>(string property, params KeyValuePair<T, RadioButton>[] values) where T : struct
 		{
-			AddBinding(property, new RadioEnumBinding<T>(values));
+			RadioEnumBinding<T> binding = new RadioEnumBinding<T>(values);
+			AddBinding(property, binding);
 			foreach (KeyValuePair<T, RadioButton> pair in values) {
 				pair.Value.CheckedChanged += ControlValueChanged;
 			}
+			return binding;
 		}
 		
 		class RadioEnumBinding<T> : ConfigurationGuiBinding where T : struct

@@ -50,7 +50,11 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			BookmarkNode node = BookmarkPad.Instance.CurrentNode;
 			if (node != null) {
-				node.Bookmark.Document.BookmarkManager.RemoveMark(node.Bookmark);
+				if (node.Bookmark.Document != null) {
+					node.Bookmark.Document.BookmarkManager.RemoveMark(node.Bookmark);
+				} else {
+					ICSharpCode.SharpDevelop.Bookmarks.BookmarkManager.RemoveMark(node.Bookmark);
+				}
 				WorkbenchSingleton.MainForm.Refresh();
 			}
 		}

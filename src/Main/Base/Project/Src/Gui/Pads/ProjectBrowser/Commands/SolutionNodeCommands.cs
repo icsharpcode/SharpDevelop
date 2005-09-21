@@ -31,6 +31,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (node != null) {
 				using (NewProjectDialog npdlg = new NewProjectDialog(false)) {
 					if (npdlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
+						if (npdlg.NewProjectLocation.Length == 0) {
+							MessageService.ShowError("No project has been created, there is nothing to add.");
+							return;
+						}
 						AddExitingProjectToSolution.AddProject(solutionFolderNode, npdlg.NewProjectLocation);
 						ProjectService.SaveSolution();
 					}
