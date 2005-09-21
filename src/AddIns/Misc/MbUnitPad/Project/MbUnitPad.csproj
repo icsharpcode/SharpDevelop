@@ -46,6 +46,7 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\MbUnitTestableCondition.cs" />
+    <Compile Include="Src\MbUnitRunningTestsCondition.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

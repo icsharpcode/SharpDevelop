@@ -41,6 +41,14 @@ namespace ICSharpCode.MbUnitPad
 		}
 	}
 	
+	public class StopTestsCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			MbUnitPadContent.Instance.StopTests();
+		}
+	}
+	
 	public class AddNUnitReferenceCommand : AbstractMenuCommand
 	{
 		public override void Run()
@@ -104,4 +112,84 @@ namespace ICSharpCode.MbUnitPad
 			DebuggerService.CurrentDebugger.Start(startInfo);
 		}
 	}
+	
+	public class GotoDefinitionCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			MbUnitPadContent.Instance.TreeView.GotoDefinition();
+		}
+	}
+	
+	public class ExpandAllCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			MbUnitPadContent.Instance.TreeView.ExpandAll();
+		}
+	}
+	
+	public class CollapseAllCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			MbUnitPadContent.Instance.TreeView.CollapseAll();
+		}
+	}
+	
+	public class ExpandCurrentCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			MbUnitPadContent.Instance.TreeView.ExpandChildNode(MbUnitPadContent.Instance.TreeView.SelectedNode);
+		}
+	}
+	
+	public class CollapseCurrentCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			MbUnitPadContent.Instance.TreeView.CollapseChildNode(MbUnitPadContent.Instance.TreeView.SelectedNode);
+		}
+	}
+	
+	public class ExpandAllFailuresCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			MbUnitPadContent.Instance.TreeView.ExpandAllFailures();
+		}
+	}	
+	
+	public class ExpandCurrentFailuresCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			MbUnitPadContent.Instance.TreeView.ExpandCurrentFailures();
+		}
+	}	
+	
+	public class ExpandAllIgnoredCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			MbUnitPadContent.Instance.TreeView.ExpandAllIgnored();
+		}
+	}	
+	
+	public class ExpandCurrentIgnoredCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			MbUnitPadContent.Instance.TreeView.ExpandCurrentIgnored();
+		}
+	}		
+	
+	public class ClearResultsCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			MbUnitPadContent.Instance.TreeView.ClearAllResults();
+		}
+	}	
 }

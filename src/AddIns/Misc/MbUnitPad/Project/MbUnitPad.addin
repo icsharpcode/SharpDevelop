@@ -10,6 +10,7 @@
 		<Import assembly = "../../../../bin/Tools/MbUnit/MbUnit.GUI.exe"/>
 		<Import assembly = "MbUnitPad.dll">
 			<ConditionEvaluator name = "MbUnitTestable" class = "ICSharpCode.MbUnitPad.MbUnitTestableCondition"/>
+			<ConditionEvaluator name = "MbUnitRunningTests" class = "ICSharpCode.MbUnitPad.MbUnitRunningTestsCondition"/>
 		</Import>
 	</Runtime>
 	
@@ -80,13 +81,94 @@
 			             tooltip = "${res:NUnitPad.NUnitPadContent.ReferenceItem}"
 			             class   = "ICSharpCode.MbUnitPad.AddNUnitReferenceCommand"/>
 			<ToolbarItem id      = "Separator2" type = "Separator"/>
-			<ToolbarItem id      = "Run"
-			             icon    = "Icons.16x16.RunProgramIcon"
-			             tooltip = "${res:NUnitPad.NUnitPadContent.RunItem}"
-			             class   = "ICSharpCode.MbUnitPad.RunTestsCommand"/>
 		</Condition>
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="CombineOpen" iscombineopen="True"/>
+				<Not>
+					<Condition name="MbUnitRunningTests"/>
+				</Not>
+			</And>
+					<ToolbarItem id      = "Run"
+			                     icon    = "Icons.16x16.RunProgramIcon"
+			                     tooltip = "${res:NUnitPad.NUnitPadContent.RunItem}"
+			                     class   = "ICSharpCode.MbUnitPad.RunTestsCommand"/>
+		</ComplexCondition>
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="CombineOpen" iscombineopen="True"/>
+				<Condition name="MbUnitRunningTests"/>
+			</And>
+					<ToolbarItem id      = "Stop"
+			                     icon    = "Icons.16x16.Debug.StopProcess"
+			                     tooltip = "Stop tests"
+			                     class   = "ICSharpCode.MbUnitPad.StopTestsCommand"/>
+		</ComplexCondition>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/MbUnitPad/ContextMenu">
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="Ownerstate" ownerstate="TestItemSelected"/>
+				<Not>
+					<Condition name="MbUnitRunningTests"/>
+				</Not>
+			</And>
+			<MenuItem id    = "Run"
+			          icon  = "Icons.16x16.RunProgramIcon"
+			          label = "${res:NUnitPad.NUnitPadContent.RunTestsContextMenuLabel}"
+			          class = "ICSharpCode.MbUnitPad.RunTestsCommand"/>
+		</ComplexCondition>
+		<ComplexCondition action="Disable">
+			<And>
+				<Condition name="Ownerstate" ownerstate="TestItemSelected"/>
+				<Condition name="MbUnitRunningTests"/>
+			</And>
+			<MenuItem id    = "Stop"
+			          icon  = "Icons.16x16.Debug.StopProcess"
+			          label = "Stop tests"
+			          class = "ICSharpCode.MbUnitPad.StopTestsCommand"/>
+		</ComplexCondition>
+		<Condition name="Ownerstate" ownerstate="SourceCodeItemSelected" action="Disable">
+
+			<MenuItem id = "GotoDefinition"
+			          label = "${res:NUnitPad.NUnitPadContent.GotoDefinitionContextMenuLabel}"
+			          class = "ICSharpCode.MbUnitPad.GotoDefinitionCommand"/>
+		</Condition>
+		<MenuItem id="Tree"
+		          label="Tree"
+		          type="Menu">
+			<MenuItem id = "ExpandAll"
+			          label = "Expand all"
+			          class = "ICSharpCode.MbUnitPad.ExpandAllCommand"/>
+			<MenuItem id = "CollapseAll"
+			          label = "Collapse all"
+			          class = "ICSharpCode.MbUnitPad.CollapseAllCommand"/>
+			<MenuItem id="Separator1" type = "Separator"/>
+			<MenuItem id = "ExpandCurrent"
+			          label = "Expand current"
+			          class = "ICSharpCode.MbUnitPad.ExpandCurrentCommand"/>
+			<MenuItem id = "CollapseCurrent"
+			          label = "Collapse current"
+			          class = "ICSharpCode.MbUnitPad.CollapseCurrentCommand"/>
+			<MenuItem id="Separator2" type = "Separator"/>
+			<MenuItem id = "ExpandAllFailures"
+			          label = "Expand all failures"
+			          class = "ICSharpCode.MbUnitPad.ExpandAllFailuresCommand"/>
+			<MenuItem id = "ExpandCurrentFailures"
+			          label = "Expand current failures"
+			          class = "ICSharpCode.MbUnitPad.ExpandCurrentFailuresCommand"/>
+			<MenuItem id="Separator3" type = "Separator"/>
+			<MenuItem id = "ExpandAllIgnored"
+			          label = "Expand all ignored"
+			          class = "ICSharpCode.MbUnitPad.ExpandAllIgnoredCommand"/>
+			<MenuItem id = "ExpandCurrentIgnored"
+			          label = "Expand current ignored"
+			          class = "ICSharpCode.MbUnitPad.ExpandCurrentIgnoredCommand"/>
+			<MenuItem id="Separator4" type = "Separator"/>
+			<MenuItem id = "ClearResults"
+			          label = "Clear results"
+			          class = "ICSharpCode.MbUnitPad.ClearResultsCommand"/>
+		</MenuItem>
 	</Path>
 </AddIn>

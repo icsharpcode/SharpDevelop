@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Drawing;
 using System.Reflection;
 using System.Windows.Forms;
 using ICSharpCode.Core;
@@ -33,6 +34,7 @@ namespace ICSharpCode.MbUnitPad
 		TestTreeView treeView;
 		ToolStrip toolStrip;
 		Control ctl;
+		bool runningTests;
 		
 		public TestTreeView TreeView {
 			get {
@@ -68,14 +70,20 @@ namespace ICSharpCode.MbUnitPad
 			ctl.Dispose();
 		}
 		
+		public bool IsRunningTests {
+			get {
+				return runningTests;
+			}
+		}
+		
 		void OnSolutionLoaded(object sender, EventArgs e)
 		{
-			ToolbarService.UpdateToolbar(toolStrip);
+			UpdateToolbar();
 		}
 		
 		void OnSolutionClosed(object sender, EventArgs e)
 		{
-			ToolbarService.UpdateToolbar(toolStrip);
+			UpdateToolbar();
 			treeView.NewConfig();
 		}
 		
@@ -83,10 +91,28 @@ namespace ICSharpCode.MbUnitPad
 		{
 			if (treeView.TypeTree.Nodes.Count == 0) {
 				treeView.TreePopulated += StartTestsAfterTreePopulation;
+				treeView.FinishTests += FinishTests;
 				ReloadAssemblyList();
 			} else {
+				treeView.FinishTests += FinishTests;
 				treeView.ThreadedRunTests();
+				runningTests = true;
+				UpdateToolbar();
 			}
+		}
+		
+		public void StopTests()
+		{
+			treeView.AbortWorkerThread();
+			runningTests = false;
+			UpdateToolbar();
+		}
+		
+		void FinishTests(object sender, EventArgs e)
+		{
+			treeView.FinishTests -= FinishTests;
+			runningTests = false;
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "UpdateToolbar");
 		}
 		
 		void StartTestsAfterTreePopulation(object sender, EventArgs e)
@@ -94,6 +120,8 @@ namespace ICSharpCode.MbUnitPad
 			treeView.TreePopulated -= StartTestsAfterTreePopulation;
 			// we cannot run the tests on this thread because we have to wait for the worker thread to exit
 			WorkbenchSingleton.SafeThreadAsyncCall(treeView, "ThreadedRunTests");
+			runningTests = true;
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "UpdateToolbar");
 		}
 		
 		public void ReloadAssemblyList()
@@ -147,7 +175,11 @@ namespace ICSharpCode.MbUnitPad
 		/// </summary>
 		public override void RedrawContent()
 		{
-			
+		}
+		
+		void UpdateToolbar()
+		{
+			ToolbarService.UpdateToolbar(toolStrip);
 		}
 	}
 }

@@ -14,24 +14,118 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using MbUnit.Forms;
 using MbUnit.Core;
+using MbUnit.Core.Graph;
 using MbUnit.Core.Remoting;
 using MbUnit.Core.Reports.Serialization;
 
 namespace ICSharpCode.MbUnitPad
 {
-	public class TestTreeView : ReflectorTreeView
+	public class TestTreeView : ReflectorTreeView, IOwnerState
 	{
 		Hashtable pipeNodes;
 		
+		[Flags]
+		public enum TestTreeViewState {
+			Nothing                = 0,
+			SourceCodeItemSelected = 1,
+			TestItemSelected       = 2
+		}
+		
+		protected TestTreeViewState internalState = TestTreeViewState.Nothing;
+
+		public System.Enum InternalState {
+			get {
+				return internalState;
+			}
+		}
+		
 		public TestTreeView()
 		{
+			TypeTree.HideSelection = false;
 			TypeTree.ContextMenu = null;
 			TypeTree.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/MbUnitPad/ContextMenu");
+			TypeTree.MouseDown += TreeViewMouseDown;
 			this.StartTests  += OnTestsStarted;
 			this.FinishTests += delegate { BeginInvoke(new MethodInvoker(ExpandAllFailures)); };
 			this.Facade.Updated += OnFacadeUpdated;
 			// I don't see another good way to get a pipe node by GUID but stealing the facade's hashtable
 			pipeNodes = (Hashtable)typeof(TestTreeNodeFacade).InvokeMember("pipeNodes", BindingFlags.GetField | BindingFlags.Instance | BindingFlags.NonPublic, null, Facade, null);
+		}
+		
+		public TreeNode SelectedNode {
+			get {
+				return TypeTree.SelectedNode;
+			}
+		}
+		
+		public void ExpandChildNode(TreeNode node)
+		{
+			TypeTree.BeginUpdate();
+			if (node != null) {
+           		node.Expand();
+           		foreach(TreeNode child in node.Nodes) {
+					ExpandChildNode(child);
+           		}
+			}
+			TypeTree.EndUpdate();
+		}
+		
+		public void CollapseChildNode(TreeNode node)
+		{
+			TypeTree.BeginUpdate();
+			if (node != null) {
+				node.Collapse();
+				foreach(TreeNode child in node.Nodes) {
+					CollapseChildNode(child);
+				}
+			}
+			TypeTree.EndUpdate();
+		}
+		
+		public void ExpandAll()
+		{
+			TypeTree.ExpandAll();
+		}
+		
+		public void CollapseAll()
+		{
+			TypeTree.CollapseAll();
+		}
+		
+		public void GotoDefinition()
+		{
+			MessageBox.Show("Not implemented.");
+//			UnitTreeNode node = SelectedNode as UnitTreeNode;
+//			if (node != null) {
+//				string fullMemberName = null;
+//				Fixture fixture = null;
+//				switch (node.TestNodeType) {
+//					case TestNodeType.Test:
+//						fixture = FindFixture(node.DomainIdentifier, node.Parent.Text);
+//						if (fixture != null)
+//							fullMemberName = String.Concat(fixture.Type.FullName, ".", node.Text);						
+//						break;
+//						
+//					case TestNodeType.Fixture:
+//						fixture = FindFixture(node.DomainIdentifier, node.Text);
+//						if (fixture != null) 
+//							fullMemberName = fixture.Type.FullName;
+//						break;
+//				}
+//				
+//				LoggingService.Debug("MemberName=" + fullMemberName);
+//				if (fullMemberName != null) {
+//					foreach (IProjectContent projectContent in ParserService.AllProjectContents) {
+//						LoggingService.Debug("Checking project content...");
+//						Position pos = projectContent.GetPosition(fullMemberName);
+//						if (pos != null && pos.Cu != null) {
+//							LoggingService.Debug("Pos=" + pos.Line + ", " + pos.Column);
+//							FileService.JumpToFilePosition(pos.Cu.FileName, Math.Max(0, pos.Line - 1), Math.Max(0, pos.Column - 1));
+//							break;
+//						}
+//					}
+//				}
+//			}
 		}
 		
 		static MessageViewCategory testRunnerCategory;
@@ -123,5 +217,62 @@ namespace ICSharpCode.MbUnitPad
 				StatusBarService.SetMessage("MbUnit: " + msg);
 			}
 		}
+		
+		void TreeViewMouseDown(object sender, MouseEventArgs e)
+		{
+			TreeNode node = TypeTree.GetNodeAt(e.X, e.Y);
+
+			TypeTree.SelectedNode = node;
+			
+			internalState = TestTreeViewState.Nothing;
+			if (IsSourceCodeItemSelected) {
+				internalState |= TestTreeViewState.SourceCodeItemSelected;
+			} 
+			
+			if (IsTestItemSelected) {
+				internalState |= TestTreeViewState.TestItemSelected;
+			}
+		}
+		
+		bool IsSourceCodeItemSelected {
+			get {
+				UnitTreeNode node = TypeTree.SelectedNode as UnitTreeNode;
+				if (node != null) {
+					return (node.TestNodeType == TestNodeType.Test) || (node.TestNodeType == TestNodeType.Fixture);
+				}
+				return false;
+			}
+		}
+		
+		bool IsTestItemSelected {
+			get {
+				UnitTreeNode node = TypeTree.SelectedNode as UnitTreeNode;
+				return node != null;
+			}
+		}
+		
+//		TreeTestDomain FindTestDomain(Guid id)
+//		{
+//			foreach (TreeTestDomain d in TestDomains) {
+//				if (d.Identifier == id) {
+//					return d;
+//				}
+//			}
+//			return null;
+//		}
+//		
+//		Fixture FindFixture(Guid testDomainId, string name)
+//		{
+//			TestDomain testDomain = FindTestDomain(testDomainId);
+//			if (testDomain != null) {
+//				FixtureDependencyGraph graph = testDomain.TestEngine.Explorer.FixtureGraph;
+//				foreach (Fixture fixture in graph.Fixtures) {
+//					if (fixture.Name == name) {
+//						return fixture;
+//					}
+//				}
+//			}
+//			return null;
+//		}
 	}
 }
