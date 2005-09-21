@@ -57,8 +57,8 @@ namespace ICSharpCode.Core
 		{
 			attachedProcess.Exited -= new EventHandler(AttachedProcessExited);
 			attachedProcess.Dispose();
-			attachedProcess = null;	
-			OnDebugStopped(EventArgs.Empty);
+			attachedProcess = null;
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "OnDebugStopped", EventArgs.Empty);
 		}
 
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)

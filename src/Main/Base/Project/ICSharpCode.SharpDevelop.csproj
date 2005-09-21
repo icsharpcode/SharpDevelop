@@ -702,6 +702,8 @@
     <Compile Include="Src\Services\RefactoringService\FindReferencesAndRenameHelper.cs" />
     <Compile Include="Src\Internal\Doozers\DirectoryDoozer.cs" />
     <Compile Include="Src\Gui\Components\StringListEditor.cs" />
+    <Compile Include="Src\Dom\Implementations\NullReturnType.cs" />
+    <Compile Include="Src\Dom\Implementations\AnonymousMethodReturnType.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

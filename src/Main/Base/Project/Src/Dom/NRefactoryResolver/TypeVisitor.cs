@@ -30,10 +30,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(PrimitiveExpression primitiveExpression, object data)
 		{
-			if (primitiveExpression.Value != null) {
+			if (primitiveExpression.Value == null) {
+				return NullReturnType.Instance;
+			} else {
 				return ReflectionReturnType.CreatePrimitive(primitiveExpression.Value.GetType());
 			}
-			return null;
 		}
 		
 		public override object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
@@ -444,7 +445,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
-			return ReflectionReturnType.Delegate;
+			return new AnonymousMethodReturnType();
 		}
 		
 		public override object Visit(ArrayInitializerExpression arrayInitializerExpression, object data)
