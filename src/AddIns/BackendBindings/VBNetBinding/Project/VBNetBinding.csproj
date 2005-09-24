@@ -52,6 +52,10 @@
     </None>
     <Compile Include="Src\VBNetCompletionBinding.cs" />
     <Compile Include="Src\MyNamespaceBuilder.cs" />
+    <Compile Include="Src\OptionPanels\ProjectImports.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <EmbeddedResource Include="Resources\ProjectImports.xfrm" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
