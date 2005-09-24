@@ -98,7 +98,7 @@ namespace VBNetBinding.Parser
 
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
-			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet, new StringReader(fileContent))) {
+			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguage.VBNet, new StringReader(fileContent))) {
 				return Parse(p, fileName, projectContent);
 			}
 		}
@@ -143,7 +143,7 @@ namespace VBNetBinding.Parser
 
 		public IResolver CreateResolver()
 		{
-			return new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet);
+			return new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguage.VBNet);
 		}
 		///////// IParser Interface END
 	}

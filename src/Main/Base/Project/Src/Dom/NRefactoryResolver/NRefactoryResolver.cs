@@ -25,12 +25,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		ICSharpCode.NRefactory.Parser.LookupTableVisitor lookupTableVisitor;
 		IProjectContent projectContent = null;
 		
-		SupportedLanguages language;
+		SupportedLanguage language;
 		
 		int caretLine;
 		int caretColumn;
 		
-		public SupportedLanguages Language {
+		public SupportedLanguage Language {
 			get {
 				return language;
 			}
@@ -83,15 +83,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		public NRefactoryResolver(SupportedLanguages language)
+		public NRefactoryResolver(SupportedLanguage language)
 		{
 			this.language = language;
 			this.projectContent = ParserService.CurrentProjectContent;
 			switch (language) {
-				case SupportedLanguages.CSharp:
+				case SupportedLanguage.CSharp:
 					languageProperties = LanguageProperties.CSharp;
 					break;
-				case SupportedLanguages.VBNet:
+				case SupportedLanguage.VBNet:
 					languageProperties = LanguageProperties.VBNet;
 					break;
 				default:
@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			
 			Expression expr = null;
-			if (language == SupportedLanguages.VBNet) {
+			if (language == SupportedLanguage.VBNet) {
 				if (expression == "") {
 					if ((expr = WithResolve()) == null) {
 						return null;
@@ -426,7 +426,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			int length = offset - startOffset;
 			string classDecl, endClassDecl;
-			if (language == SupportedLanguages.VBNet) {
+			if (language == SupportedLanguage.VBNet) {
 				classDecl = "Class A";
 				endClassDecl = "End Class\n";
 			} else {
@@ -583,7 +583,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		Expression WithResolve()
 		{
-			if (language != SupportedLanguages.VBNet) {
+			if (language != SupportedLanguage.VBNet) {
 				return null;
 			}
 			Expression expr = null;
@@ -600,14 +600,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		Expression SpecialConstructs(string expression)
 		{
-			if (language == SupportedLanguages.VBNet) {
+			if (language == SupportedLanguage.VBNet) {
 				// MyBase and MyClass are no expressions, only MyBase.Identifier and MyClass.Identifier
 				if ("mybase".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
 					return new BaseReferenceExpression();
 				} else if ("myclass".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
 					return new ClassReferenceExpression();
 				} // Global is handled in Resolve() because we don't need an expression for that
-			} else if (language == SupportedLanguages.CSharp) {
+			} else if (language == SupportedLanguage.CSharp) {
 				// generic type names are no expressions, only property access on them is an expression
 				if (expression.EndsWith(">")) {
 					FieldReferenceExpression expr = ParseExpression(expression + ".Prop") as FieldReferenceExpression;
@@ -856,7 +856,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent)
 		{
 			ArrayList result = new ArrayList();
-			if (language == SupportedLanguages.VBNet) {
+			if (language == SupportedLanguage.VBNet) {
 				foreach (KeyValuePair<string, string> pair in TypeReference.GetPrimitiveTypesVB()) {
 					string primitive = Char.ToUpper(pair.Key[0]) + pair.Key.Substring(1);
 					if ("System." + primitive != pair.Value) {

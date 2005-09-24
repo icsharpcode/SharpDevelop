@@ -19,10 +19,10 @@ namespace ICSharpCode.FormDesigner
 	
 	public class NRefactoryDesignerLoaderProvider : IDesignerLoaderProvider
 	{
-		SupportedLanguages language;
+		SupportedLanguage language;
 		TextEditorControl textEditorControl;
 		
-		public NRefactoryDesignerLoaderProvider(SupportedLanguages language, TextEditorControl textEditorControl)
+		public NRefactoryDesignerLoaderProvider(SupportedLanguage language, TextEditorControl textEditorControl)
 		{
 			this.language = language;
 			this.textEditorControl = textEditorControl;

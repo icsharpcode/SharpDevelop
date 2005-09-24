@@ -131,9 +131,9 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				return CanocializeFileName(fileName) + Path.DirectorySeparatorChar;
 			}
 			
-			public string Negate(string boolString)
+			public string Negate(string booleanString)
 			{
-				return (!bool.Parse(boolString)).ToString();
+				return (!bool.Parse(booleanString)).ToString();
 			}
 			
 			public string GetFileName(string fileName)

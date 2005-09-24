@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 			
 			if (window != null && window.ViewContent is IEditable) {
 				
-				ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(((IEditable)window.ViewContent).Text));
+				ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(((IEditable)window.ViewContent).Text));
 				p.Parse();
 				if (p.Errors.count > 0) {
 					

@@ -27,11 +27,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 	class FileIcon
 	{
 		[DllImport("shell32.dll")]
-		static extern int SHGetFileInfo(string pszPath,
-												  uint dwFileAttributes,
-												  out SHFILEINFO psfi,
-												  uint cbfileInfo,
-												  SHGFI uFlags);
+		static extern IntPtr SHGetFileInfo(string pszPath,
+		                                   uint dwFileAttributes,
+		                                   out SHFILEINFO psfi,
+		                                   uint cbfileInfo,
+		                                   SHGFI uFlags);
 		
 		[StructLayout(LayoutKind.Sequential)]
 		struct SHFILEINFO
@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		Ramdisk     = 6
 	}
 	
-	public class DriveObject 
+	public class DriveObject
 	{
 		string text  = null;
 		string drive = null;
@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return IconService.GetBitmap(IconService.GetImageForFile(fileName));
 		}
 		
-		public DriveObject(string drive) 
+		public DriveObject(string drive)
 		{
 			this.drive = drive;
 			
@@ -147,16 +147,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 			switch(GetDriveType(drive)) {
 				case DriveType.Removeable:
 					text += " (Removeable)";
-				break;
+					break;
 				case DriveType.Fixed:
 					text += " (Fixed)";
-				break;
+					break;
 				case DriveType.Cdrom:
 					text += " (CD)";
-				break;
+					break;
 				case DriveType.Remote:
 					text += " (Remote)";
-				break;
+					break;
 			}
 		}
 		
@@ -188,7 +188,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			string key;
 			
 			// icon files and exe files can have their custom icons
-			if(Path.GetExtension(file).ToLower() == ".ico" || 
+			if(Path.GetExtension(file).ToLower() == ".ico" ||
 			   Path.GetExtension(file).ToLower() == ".exe") {
 				key = file;
 			} else {
@@ -362,7 +362,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			string[] files;
 			Items.Clear();
-		
+			
 			try {
 				if (Directory.Exists(path)) {
 					files = Directory.GetFiles(path);

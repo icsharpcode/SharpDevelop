@@ -44,7 +44,7 @@ namespace ICSharpCode.FormDesigner
 		bool                  loading               = true;
 		IDesignerLoaderHost   designerLoaderHost    = null;
 		ITypeResolutionService typeResolutionService = null;
-		SupportedLanguages    language;
+		SupportedLanguage    language;
 		CodeDomProvider       provider = new Microsoft.CSharp.CSharpCodeProvider();
 		
 		TextEditorControl textEditorControl;
@@ -84,7 +84,7 @@ namespace ICSharpCode.FormDesigner
 			return base.IsReloadNeeded() || TextContent != lastTextContent;
 		}
 		
-		public NRefactoryDesignerLoader(SupportedLanguages language, TextEditorControl textEditorControl)
+		public NRefactoryDesignerLoader(SupportedLanguage language, TextEditorControl textEditorControl)
 		{
 			this.language = language;
 			this.textEditorControl = textEditorControl;

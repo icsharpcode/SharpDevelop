@@ -46,7 +46,7 @@ namespace ICSharpCode.Core
 			return !condition.IsValid(owner);
 		}
 		
-		public static ICondition Read(XmlTextReader reader)
+		public static ICondition Read(XmlReader reader)
 		{
 			return new NegatedCondition(Condition.ReadConditionList(reader, "Not")[0]);
 		}
@@ -98,7 +98,7 @@ namespace ICSharpCode.Core
 			return true;
 		}
 		
-		public static ICondition Read(XmlTextReader reader)
+		public static ICondition Read(XmlReader reader)
 		{
 			return new AndCondition(Condition.ReadConditionList(reader, "And"));
 		}
@@ -151,7 +151,7 @@ namespace ICSharpCode.Core
 			return false;
 		}
 		
-		public static ICondition Read(XmlTextReader reader)
+		public static ICondition Read(XmlReader reader)
 		{
 			return new OrCondition(Condition.ReadConditionList(reader, "Or"));
 		}

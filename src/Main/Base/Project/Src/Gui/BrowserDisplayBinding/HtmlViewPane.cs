@@ -67,8 +67,8 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		
 		public override void Dispose()
 		{
-			htmlViewPane.Dispose();
 			base.Dispose();
+			htmlViewPane.Dispose();
 		}
 		
 		public override void Load(string url)

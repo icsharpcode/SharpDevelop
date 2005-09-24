@@ -470,6 +470,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Creates a new project content for this project.
 		/// This method should only be called by ParserService.LoadSolutionProjectsInternal()!
+		/// When overriding this method, you should call the base implementation first
+		/// to get an uninitialized ParseProjectContent.
 		/// </summary>
 		public virtual ParseProjectContent CreateProjectContent()
 		{

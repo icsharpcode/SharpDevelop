@@ -13,7 +13,7 @@ using System.Reflection;
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	[AttributeUsage(AttributeTargets.Property, AllowMultiple=false, Inherited=true)]
-	public class LocalizedPropertyAttribute : Attribute
+	public sealed class LocalizedPropertyAttribute : Attribute
 	{
 		string name        = String.Empty;
 		string description = String.Empty;

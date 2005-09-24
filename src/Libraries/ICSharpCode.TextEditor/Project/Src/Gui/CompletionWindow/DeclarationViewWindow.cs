@@ -61,7 +61,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		public void ShowDeclarationViewWindow()
 		{
-			AbstractCompletionWindow.ShowWindow(base.Handle, AbstractCompletionWindow.SW_SHOWNA);
+			AbstractCompletionWindow.ShowWindowWithoutFocus(this);
 		}
 		
 		public void CloseDeclarationViewWindow()

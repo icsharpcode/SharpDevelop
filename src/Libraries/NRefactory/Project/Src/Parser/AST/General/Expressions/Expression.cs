@@ -72,7 +72,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)
 		{
-			return this;
+			return null;
 		}
 		
 		public override string ToString()

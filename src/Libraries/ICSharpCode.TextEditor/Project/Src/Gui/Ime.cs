@@ -41,9 +41,9 @@ namespace ICSharpCode.TextEditor
 		private static extern IntPtr ImmGetDefaultIMEWnd(IntPtr hWnd);
 		
 		[ DllImport("user32.dll") ]
-		private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, COMPOSITIONFORM lParam);
+		private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, COMPOSITIONFORM lParam);
 		[ DllImport("user32.dll") ]
-		private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, LOGFONT lParam);
+		private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, LOGFONT lParam);
 		
 		[ StructLayout(LayoutKind.Sequential) ]
 		private class COMPOSITIONFORM
@@ -71,6 +71,7 @@ namespace ICSharpCode.TextEditor
 		
 		private const int WM_IME_CONTROL = 0x0283;
 		
+		private const int IMC_SETCOMPOSITIONFONT = 0x000a;
 		private const int IMC_SETCOMPOSITIONWINDOW = 0x000c;
 		private IntPtr hIMEWnd;
 		private const int CFS_POINT = 0x0002;
@@ -93,7 +94,6 @@ namespace ICSharpCode.TextEditor
 			public byte lfPitchAndFamily = 0;
 			[ MarshalAs(UnmanagedType.ByValTStr, SizeConst=32) ] public string lfFaceName = null;
 		}
-		private const int IMC_SETCOMPOSITIONFONT = 0x000a;
 		
 		const byte FF_MODERN = 48;
 		const byte FIXED_PITCH = 1;
@@ -107,7 +107,7 @@ namespace ICSharpCode.TextEditor
 			SendMessage(
 			            hIMEWnd,
 			            WM_IME_CONTROL,
-			            IMC_SETCOMPOSITIONFONT,
+			            new IntPtr(IMC_SETCOMPOSITIONFONT),
 			            lf
 			            );
 		}
@@ -128,7 +128,7 @@ namespace ICSharpCode.TextEditor
 			SendMessage(
 			            hIMEWnd,
 			            WM_IME_CONTROL,
-			            IMC_SETCOMPOSITIONWINDOW,
+			            new IntPtr(IMC_SETCOMPOSITIONWINDOW),
 			            lParam
 			            );
 		}

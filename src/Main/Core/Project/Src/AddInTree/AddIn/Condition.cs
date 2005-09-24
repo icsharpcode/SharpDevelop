@@ -65,14 +65,14 @@ namespace ICSharpCode.Core
 
 		}
 		
-		public static ICondition Read(XmlTextReader reader)
+		public static ICondition Read(XmlReader reader)
 		{
 			Properties properties = Properties.ReadFromAttributes(reader);
 			string conditionName = properties["name"];
 			return new Condition(conditionName, properties);
 		}
 		
-		public static ICondition ReadComplexCondition(XmlTextReader reader)
+		public static ICondition ReadComplexCondition(XmlReader reader)
 		{
 			Properties properties = Properties.ReadFromAttributes(reader);
 			reader.Read();
@@ -105,7 +105,7 @@ namespace ICSharpCode.Core
 			return condition;
 		}
 		
-		public static ICondition[] ReadConditionList(XmlTextReader reader, string endElement)
+		public static ICondition[] ReadConditionList(XmlReader reader, string endElement)
 		{
 			List<ICondition> conditions = new List<ICondition>();
 			while (reader.Read()) {

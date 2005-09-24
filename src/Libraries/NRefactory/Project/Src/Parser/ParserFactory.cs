@@ -12,7 +12,7 @@ using ICSharpCode.NRefactory.Parser.AST;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	public enum SupportedLanguages {
+	public enum SupportedLanguage {
 		CSharp,
 		VBNet
 	}
@@ -22,24 +22,24 @@ namespace ICSharpCode.NRefactory.Parser
 	/// </summary>
 	public class ParserFactory
 	{
-		public static ILexer CreateLexer(SupportedLanguages language, TextReader textReader)
+		public static ILexer CreateLexer(SupportedLanguage language, TextReader textReader)
 		{
 			switch (language) {
-				case SupportedLanguages.CSharp:
+				case SupportedLanguage.CSharp:
 					return new ICSharpCode.NRefactory.Parser.CSharp.Lexer(textReader);
-				case SupportedLanguages.VBNet:
+				case SupportedLanguage.VBNet:
 					return new ICSharpCode.NRefactory.Parser.VB.Lexer(textReader);
 			}
 			throw new System.NotSupportedException(language + " not supported.");
 		}
 		
-		public static IParser CreateParser(SupportedLanguages language, TextReader textReader)
+		public static IParser CreateParser(SupportedLanguage language, TextReader textReader)
 		{
 			ILexer lexer = CreateLexer(language, textReader);
 			switch (language) {
-				case SupportedLanguages.CSharp:
+				case SupportedLanguage.CSharp:
 					return new ICSharpCode.NRefactory.Parser.CSharp.Parser(lexer);
-				case SupportedLanguages.VBNet:
+				case SupportedLanguage.VBNet:
 					return new ICSharpCode.NRefactory.Parser.VB.Parser(lexer);
 			}
 			throw new System.NotSupportedException(language + " not supported.");
@@ -49,17 +49,15 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 			return CreateParser(fileName, Encoding.UTF8);
 		}
+		
 		public static IParser CreateParser(string fileName, Encoding encoding)
 		{
-			switch (Path.GetExtension(fileName).ToUpper()) {
-				case ".CS":
-					return CreateParser(SupportedLanguages.CSharp, new StreamReader(fileName, encoding));
-				case ".VB":
-					return CreateParser(SupportedLanguages.VBNet, new StreamReader(fileName, encoding));
-			}
+			string ext = Path.GetExtension(fileName);
+			if (ext.Equals(".cs", StringComparison.InvariantCultureIgnoreCase))
+				return CreateParser(SupportedLanguage.CSharp, new StreamReader(fileName, encoding));
+			if (ext.Equals(".vb", StringComparison.InvariantCultureIgnoreCase))
+				return CreateParser(SupportedLanguage.VBNet, new StreamReader(fileName, encoding));
 			return null;
 		}
-		
-		
 	}
 }

@@ -71,8 +71,10 @@ namespace ICSharpCode.Core
 			public void Invoke(string fileName)
 			{
 				IViewContent newContent = binding.CreateContentForFile(fileName);
-				DisplayBindingService.AttachSubWindows(newContent);
-				WorkbenchSingleton.Workbench.ShowView(newContent);
+				if (newContent != null) {
+					DisplayBindingService.AttachSubWindows(newContent);
+					WorkbenchSingleton.Workbench.ShowView(newContent);
+				}
 			}
 		}
 		
@@ -130,7 +132,8 @@ namespace ICSharpCode.Core
 			if (binding != null) {
 				IViewContent newContent = binding.CreateContentForLanguage(language, content);
 				if (newContent == null) {
-					throw new ApplicationException(String.Format("Created view content was null{3}DefaultName:{0}{3}Language:{1}{3}Content:{2}", defaultName, language, content, Environment.NewLine));
+					LoggingService.Warn(String.Format("Created view content was null{3}DefaultName:{0}{3}Language:{1}{3}Content:{2}", defaultName, language, content, Environment.NewLine));
+					return null;
 				}
 				newContent.UntitledName = defaultName;
 				newContent.IsDirty      = false;

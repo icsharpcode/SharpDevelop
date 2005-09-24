@@ -79,16 +79,21 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			Bounds = bounds;
 		}
 		
-		public readonly static int SW_SHOWNA = 8;
+		const int SW_SHOWNA = 8;
 		
 		[DllImport("user32")]
-		public static extern int ShowWindow(IntPtr hWnd, int nCmdShow);
+		static extern int ShowWindow(IntPtr hWnd, int nCmdShow);
+		
+		public static void ShowWindowWithoutFocus(Control control)
+		{
+			ShowWindow(control.Handle, SW_SHOWNA);
+		}
 		
 		protected void ShowCompletionWindow()
 		{
 			Owner = parentForm;
 			Enabled = true;
-			AbstractCompletionWindow.ShowWindow(base.Handle, AbstractCompletionWindow.SW_SHOWNA);
+			ShowWindowWithoutFocus(this);
 			
 			control.Focus();
 			

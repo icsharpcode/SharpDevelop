@@ -5,9 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
-public interface INullable
+namespace ICSharpCode.NRefactory.Parser.AST
 {
-	bool IsNull {
-		get;
+	public interface INullable
+	{
+		bool IsNull {
+			get;
+		}
 	}
 }

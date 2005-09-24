@@ -340,13 +340,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void SaveFile(string filename, string content, string languageName, bool showFile)
 		{
 			string parsedFileName = StringParser.Parse(filename);
-			createdFiles.Add(parsedFileName);
 			IWorkbenchWindow window = FileService.NewFile(Path.GetFileName(parsedFileName), StringParser.Parse(languageName), StringParser.Parse(content));
-			if (Path.IsPathRooted(parsedFileName)) {
-				window.ViewContent.Save(parsedFileName);
+			if (window != null) {
+				createdFiles.Add(parsedFileName);
+				if (Path.IsPathRooted(parsedFileName)) {
+					window.ViewContent.Save(parsedFileName);
+				}
 			}
-			
-			DialogResult = DialogResult.OK;
 		}
 		
 		string GenerateValidClassName(string className)

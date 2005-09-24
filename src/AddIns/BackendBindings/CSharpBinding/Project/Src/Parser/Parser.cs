@@ -87,7 +87,7 @@ namespace CSharpBinding.Parser
 		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
-			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp, new StringReader(fileContent))) {
+			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguage.CSharp, new StringReader(fileContent))) {
 				return Parse(p, fileName, projectContent);
 			}
 		}
@@ -120,7 +120,7 @@ namespace CSharpBinding.Parser
 		
 		public IResolver CreateResolver()
 		{
-			return new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp);
+			return new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguage.CSharp);
 		}
 		///////// IParser Interface END
 	}
