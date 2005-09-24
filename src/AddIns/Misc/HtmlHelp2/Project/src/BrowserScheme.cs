@@ -4,6 +4,7 @@
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
+
 namespace HtmlHelp2
 {
 	using System;

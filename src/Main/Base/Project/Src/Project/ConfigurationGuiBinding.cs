@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using ICSharpCode.Core;
@@ -45,7 +46,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		PropertyStorageLocations defaultLocation = PropertyStorageLocations.Base;
-
+		
 		public PropertyStorageLocations DefaultLocation {
 			get {
 				return defaultLocation;
@@ -55,28 +56,72 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		PropertyStorageLocations location;
+		PropertyStorageLocations location = PropertyStorageLocations.Unknown;
+		ChooseStorageLocationButton storageLocationButton;
 		
 		public PropertyStorageLocations Location {
 			get {
 				return location;
 			}
 			set {
-				location = value;
+				if (location != value) {
+					location = value;
+					if (storageLocationButton != null) {
+						storageLocationButton.StorageLocation = value;
+					}
+					helper.IsDirty = true;
+				}
 			}
+		}
+		
+		public ChooseStorageLocationButton CreateLocationButton()
+		{
+			ChooseStorageLocationButton btn = new ChooseStorageLocationButton();
+			this.storageLocationButton = btn;
+			if (location == PropertyStorageLocations.Unknown) {
+				btn.StorageLocation = defaultLocation;
+			} else {
+				btn.StorageLocation = location;
+			}
+			btn.StorageLocationChanged += delegate(object sender, EventArgs e) {
+				this.Location = ((ChooseStorageLocationButton)sender).StorageLocation;
+			};
+			return btn;
+		}
+		
+		/// <summary>
+		/// Moves the control '<paramref name="controlName"/>' a bit to the right and inserts a
+		/// <see cref="ChooseStorageLocationButton"/>.
+		/// </summary>
+		public void CreateLocationButton(string controlName)
+		{
+			CreateLocationButton(Helper.ControlDictionary[controlName]);
+		}
+		
+		/// <summary>
+		/// Moves the <paramref name="replacedControl"/> a bit to the right and inserts a
+		/// <see cref="ChooseStorageLocationButton"/>.
+		/// </summary>
+		public void CreateLocationButton(Control replacedControl)
+		{
+			ChooseStorageLocationButton btn = CreateLocationButton();
+			btn.Location = new Point(replacedControl.Left, replacedControl.Top + (replacedControl.Height - btn.Height) / 2);
+			replacedControl.Left  += btn.Width + 4;
+			replacedControl.Width -= btn.Width + 4;
+			replacedControl.Parent.Controls.Add(btn);
+			replacedControl.Parent.Controls.SetChildIndex(btn, replacedControl.Parent.Controls.IndexOf(replacedControl));
 		}
 		
 		public T Get<T>(T defaultValue)
 		{
-			T result = helper.GetProperty(property, defaultValue, out location);
-			if (location == PropertyStorageLocations.Unknown) {
-				location = defaultLocation;
-			}
-			return result;
+			return helper.GetProperty(property, defaultValue, out location);
 		}
 		
 		public void Set<T>(T value)
 		{
+			if ((location & PropertyStorageLocations.UserFile) != 0) {
+				System.Diagnostics.Debugger.Break();
+			}
 			helper.SetProperty(property, value, location);
 		}
 		

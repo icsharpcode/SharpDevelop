@@ -68,6 +68,8 @@ namespace CheckFileHeaders
 					continue;
 				if (subdir.EndsWith("AddIns\\Misc\\ProjectImporterExporter\\Project"))
 					continue;
+				if (subdir.EndsWith(@"AddIns\Misc\Debugger\Debugger.Core\Project\Src\DebuggerInterop\Core"))
+					continue;
 				count += Run(subdir);
 			}
 			return count;

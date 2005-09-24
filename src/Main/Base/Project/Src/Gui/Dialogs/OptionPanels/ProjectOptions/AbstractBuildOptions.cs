@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 	{
 		protected void InitOutputPath()
 		{
-			helper.BindString("outputPathTextBox", "OutputPath");
+			helper.BindString("outputPathTextBox", "OutputPath").CreateLocationButton("outputPathTextBox");
 			ConnectBrowseFolder("outputPathBrowseButton", "outputPathTextBox", "${res:Dialog.Options.PrjOptions.Configuration.FolderBrowserDescription}");
 		}
 		

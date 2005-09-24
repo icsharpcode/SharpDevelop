@@ -33,6 +33,10 @@ namespace ICSharpCode.Core
 	{
 		List<IProjectContent> referencedContents = new List<IProjectContent>();
 		
+		// we use a list of Dictionaries because we need multiple dictionaries:
+		// each uses another StringComparer
+		// (C#: StringComparer.InvariantCulture, VB: StringComparer.InvariantCultureCaseInsensitive)
+		// new dictionaries are added to the list when required
 		List<Dictionary<string, IClass>> classLists = new List<Dictionary<string, IClass>>();
 		List<Dictionary<string, NamespaceStruct>> namespaces = new List<Dictionary<string, NamespaceStruct>>();
 		protected XmlDoc xmlDoc = new XmlDoc();

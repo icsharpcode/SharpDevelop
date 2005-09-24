@@ -39,6 +39,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		internal Dictionary<string, Control> ControlDictionary {
+			get {
+				return controlDictionary;
+			}
+		}
+		
 		#region Manage bindings
 		public T GetProperty<T>(string property, T defaultValue, out PropertyStorageLocations location)
 		{
@@ -431,6 +437,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		#endregion
 		
+		#region ConfigurationSelector
 		/// <summary>
 		/// Gets the height of the configuration selector in pixel.
 		/// </summary>
@@ -528,5 +535,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				helper.Load();
 			}
 		}
+		#endregion
 	}
 }

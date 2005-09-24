@@ -253,11 +253,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void SaveProperties(XmlWriter writer, PropertyGroup baseConfiguration, Dictionary<string, PropertyGroup> configurations)
 		{
-			writer.WriteStartElement("PropertyGroup");
-			baseConfiguration.WriteProperties(writer);
-			writer.WriteEndElement();
-			
+			if (baseConfiguration.PropertyCount > 0) {
+				writer.WriteStartElement("PropertyGroup");
+				baseConfiguration.WriteProperties(writer);
+				writer.WriteEndElement();
+			}
 			foreach (KeyValuePair<string, PropertyGroup> entry in configurations) {
+				// Skip empty groups
+				if (entry.Value.PropertyCount == 0) {
+					continue;
+				}
 				writer.WriteStartElement("PropertyGroup");
 				if (entry.Key.StartsWith("*|")) {
 					writer.WriteAttributeString("Condition", " '$(Platform)' == '" + entry.Key.Substring(2) + "' ");
@@ -273,7 +278,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void SaveUnknownXmlSections(XmlWriter writer, List<string> unknownElements)
 		{
-			
+			foreach (string element in unknownElements) {
+				// round-trip xml text again for better formatting
+				XmlReader reader = new XmlTextReader(new StringReader(element));
+				writer.WriteNode(reader, false);
+				reader.Close();
+			}
 		}
 		#endregion
 		
