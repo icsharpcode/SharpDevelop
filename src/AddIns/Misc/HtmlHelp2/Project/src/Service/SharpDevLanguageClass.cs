@@ -1,7 +1,7 @@
 /* ***********************************************************
  *
  * Help 2.0 Environment for SharpDevelop
- * ProjectLanguage Class
+ * SharpDevLanguage Class
  * Copyright (c) 2005, Mathias Simmack. All rights reserved.
  *
  * ********************************************************* */

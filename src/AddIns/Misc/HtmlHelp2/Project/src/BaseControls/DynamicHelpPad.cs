@@ -49,7 +49,7 @@ namespace HtmlHelp2
 		protected HtmlHelp2DynamicHelpBrowserControl dynamicHelpBrowser;
 		private StringCollection dynamicHelpTerms   = new StringCollection();
 		private string debugPreElement              = String.Empty;
-		private bool enableDebugInfo                = true;
+		private bool enableDebugInfo                = false;
 
 		public override Control Control
 		{
@@ -600,8 +600,12 @@ namespace HtmlHelp2
 
 		public void RemoveAllChildren()
 		{
-			axWebBrowser.Document.Body.InnerHtml = "";
-			this.internalIndex                   = 0;
+			try
+			{
+				this.internalIndex                   = 0;
+				axWebBrowser.Document.Body.InnerHtml = "";
+			}
+			catch {}
 		}
 
 		public void BuildDefaultHelpEntries()
