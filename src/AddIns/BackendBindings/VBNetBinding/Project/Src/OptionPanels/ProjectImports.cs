@@ -1,8 +1,8 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
-//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
-//     <version>$Revision: 434 $</version>
+//     <owner name="Markus Palme" email="MarkusPalme@gmx.de"/>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
@@ -33,32 +33,33 @@ namespace VBNetBinding.OptionPanels
 			Get<ListBox>("imports").SelectedIndexChanged += new EventHandler(importsListBox_SelectedIndexChanged);
 			
 			Get<ComboBox>("namespaces").Items.Clear();
+			Get<ComboBox>("namespaces").AutoCompleteSource = AutoCompleteSource.ListItems;
+			Get<ComboBox>("namespaces").AutoCompleteMode = AutoCompleteMode.Suggest;
 			foreach(ProjectItem item in project.Items)
 			{
 				if(item.ItemType == ItemType.Import) {
 					Get<ListBox>("imports").Items.Add(item.Include);
 				}
 			}
-		
-			DefaultProjectContent projectContent = (DefaultProjectContent)ParserService.GetProjectContent(project);
-			foreach(DefaultProjectContent refProjectContent in projectContent.ReferencedContents)
-			{
-				addNamespaces(refProjectContent);
+			
+			IProjectContent projectContent = ParserService.GetProjectContent(project);
+			foreach(IProjectContent refProjectContent in projectContent.ReferencedContents) {
+				AddNamespaces(refProjectContent);
 				
 			}
-			addNamespaces(projectContent);
+			AddNamespaces(projectContent);
 			
 			namespacesComboBox_TextCanged(null, EventArgs.Empty);
 			importsListBox_SelectedIndexChanged(null, EventArgs.Empty);
 		}
 		
-		private void addNamespaces(DefaultProjectContent projectContent)
+		private void AddNamespaces(IProjectContent projectContent)
 		{
-			Dictionary<string, DefaultProjectContent.NamespaceStruct>.KeyCollection namespaces = projectContent.NamespaceNames;
-			foreach(string projectNamespace in namespaces)
-			{
-				if(projectNamespace != "") {
-					Get<ComboBox>("namespaces").Items.Add(projectNamespace);
+			foreach(string projectNamespace in projectContent.NamespaceNames) {
+				if (projectNamespace != "") {
+					if (!Get<ComboBox>("namespaces").Items.Contains(projectNamespace)) {
+						Get<ComboBox>("namespaces").Items.Add(projectNamespace);
+					}
 				}
 			}
 		}

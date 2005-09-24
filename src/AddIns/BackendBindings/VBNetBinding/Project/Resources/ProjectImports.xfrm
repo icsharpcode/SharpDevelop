@@ -7,7 +7,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="generalGroupBox" />
         <Location value="{X=3,Y=3}" />
-        <Text value="${res:Dialog.ProjectOptions.BuildOptions.ProjectImports}" />
+        <Text value="${res:Dialog.ProjectOptions.ProjectImports.Title}" />
         <Size value="{Width=491, Height=374}" />
         <TabIndex value="0" />
         <Anchor value="Top, Bottom, Left, Right" />
@@ -15,7 +15,7 @@
           <System.Windows.Forms.Label>
             <Name value="label1" />
             <Location value="{X=230,Y=21}" />
-            <Text value="${res:Dialog.ProjectOptions.BuildOptions.Namespace}" />
+            <Text value="${res:Dialog.ProjectOptions.ProjectImports.Namespace}" />
             <Size value="{Width=255, Height=15}" />
             <TabIndex value="4" />
             <Anchor value="Top, Right" />
@@ -32,7 +32,7 @@
           <System.Windows.Forms.Button>
             <Name value="addImportButton" />
             <Location value="{X=230,Y=73}" />
-            <Text value="${res:Dialog.ProjectOptions.BuildOptions.AddImport}" />
+            <Text value="${res:Dialog.ProjectOptions.ProjectImports.AddImport}" />
             <Size value="{Width=153, Height=23}" />
             <Anchor value="Top, Right" />
             <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
@@ -41,7 +41,7 @@
           <System.Windows.Forms.Button>
             <Name value="removeImportButton" />
             <Location value="{X=230,Y=102}" />
-            <Text value="${res:Dialog.ProjectOptions.BuildOptions.RemoveImport}" />
+            <Text value="${res:Dialog.ProjectOptions.ProjectImports.RemoveImport}" />
             <Size value="{Width=153, Height=23}" />
             <Anchor value="Top, Right" />
             <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />

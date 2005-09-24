@@ -66,8 +66,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public Dictionary<string, NamespaceStruct>.KeyCollection NamespaceNames
-		{
+		public ICollection<string> NamespaceNames {
 			get {
 				return Namespaces[0].Keys;
 			}
@@ -82,7 +81,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public struct NamespaceStruct
+		protected struct NamespaceStruct
 		{
 			public readonly List<IClass> Classes;
 			public readonly List<string> SubNamespaces;
@@ -94,6 +93,9 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// Gets the class dictionary that uses the name comparison rules of <paramref name="language"/>.
+		/// </summary>
 		protected Dictionary<string, IClass> GetClasses(LanguageProperties language)
 		{
 			for (int i = 0; i < classLists.Count; ++i) {
@@ -114,6 +116,9 @@ namespace ICSharpCode.Core
 			return d;
 		}
 		
+		/// <summary>
+		/// Gets the namespace dictionary that uses the name comparison rules of <paramref name="language"/>.
+		/// </summary>
 		protected Dictionary<string, NamespaceStruct> GetNamespaces(LanguageProperties language)
 		{
 			for (int i = 0; i < namespaces.Count; ++i) {
@@ -146,15 +151,10 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public List<IProjectContent> ReferencedContents {
+		public ICollection<IProjectContent> ReferencedContents {
 			get {
 				return referencedContents;
 			}
-		}
-		
-		public bool HasReferenceTo(IProjectContent content)
-		{
-			return referencedContents.Contains(content);
 		}
 		
 		LanguageProperties language = LanguageProperties.CSharp;

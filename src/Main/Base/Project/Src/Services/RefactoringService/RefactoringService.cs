@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			string baseClassFullName = baseClass.FullyQualifiedName;
 			List<IClass> list = new List<IClass>();
 			foreach (IProjectContent pc in projectContents) {
-				if (pc != baseClass.ProjectContent && !pc.HasReferenceTo(baseClass.ProjectContent)) {
+				if (pc != baseClass.ProjectContent && !pc.ReferencedContents.Contains(baseClass.ProjectContent)) {
 					// only project contents referencing the content of the base class
 					// can derive from the class
 					continue;
@@ -320,7 +320,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 						// internal = can be only referenced from same project content
 						continue;
 					}
-					if (!pc.HasReferenceTo(ownerProjectContent)) {
+					if (!pc.ReferencedContents.Contains(ownerProjectContent)) {
 						// project contents that do not reference the owner's content cannot reference the member
 						continue;
 					}

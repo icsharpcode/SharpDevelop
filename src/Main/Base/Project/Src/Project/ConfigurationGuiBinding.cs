@@ -119,9 +119,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void Set<T>(T value)
 		{
-			if ((location & PropertyStorageLocations.UserFile) != 0) {
-				System.Diagnostics.Debugger.Break();
-			}
 			helper.SetProperty(property, value, location);
 		}
 		

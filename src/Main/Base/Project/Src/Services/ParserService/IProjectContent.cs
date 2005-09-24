@@ -39,7 +39,13 @@ namespace ICSharpCode.Core
 			get;
 		}
 		
-		bool HasReferenceTo(IProjectContent content);
+		ICollection<string> NamespaceNames {
+			get;
+		}
+		
+		ICollection<IProjectContent> ReferencedContents {
+			get;
+		}
 		
 		/// <summary>
 		/// Gets the properties of the language this project content was written in.
