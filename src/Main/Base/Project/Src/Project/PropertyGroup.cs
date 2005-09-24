@@ -22,6 +22,15 @@ namespace ICSharpCode.SharpDevelop.Project
 		Dictionary<string, bool>   isGuardedProperty   = new Dictionary<string, bool>();
 		Dictionary<string, string> properties          = new Dictionary<string, string>();
 		
+		/// <summary>
+		/// Gets the number of properties in this group.
+		/// </summary>
+		public int PropertyCount {
+			get {
+				return properties.Count;
+			}
+		}
+		
 		public string this[string property] {
 			get {
 				return Get(property, String.Empty);
@@ -89,6 +98,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (KeyValuePair<string, string> entry in group.properties) {
 				properties[entry.Key] = entry.Value;
 			}
+			foreach (KeyValuePair<string, bool> entry in group.isGuardedProperty) {
+				isGuardedProperty[entry.Key] = entry.Value;
+			}
 		}
 		
 		public override string ToString()
@@ -105,7 +117,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			return sb.ToString();
 		}
 		
-		internal static void ReadProperties(XmlTextReader reader, PropertyGroup properties, string endElement)
+		internal static void ReadProperties(XmlReader reader, PropertyGroup properties, string endElement)
 		{
 			if (reader.IsEmptyElement) {
 				return;
@@ -138,7 +150,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		internal void WriteProperties(XmlTextWriter writer)
+		internal void WriteProperties(XmlWriter writer)
 		{
 			foreach (KeyValuePair<string, string> entry in properties) {
 				writer.WriteStartElement(entry.Key);

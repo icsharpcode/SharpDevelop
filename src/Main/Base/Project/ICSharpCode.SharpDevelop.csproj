@@ -704,6 +704,7 @@
     <Compile Include="Src\Gui\Components\StringListEditor.cs" />
     <Compile Include="Src\Dom\Implementations\NullReturnType.cs" />
     <Compile Include="Src\Dom\Implementations\AnonymousMethodReturnType.cs" />
+    <Compile Include="Src\Project\ConfigurationGuiBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

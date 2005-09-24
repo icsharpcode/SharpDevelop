@@ -33,6 +33,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			helper.BindString("preBuildEventTextBox", "PreBuildEvent");
 			helper.BindString("postBuildEventTextBox", "PostBuildEvent");
 			helper.BindEnum<RunPostBuildEvent>("runPostBuildEventComboBox", "RunPostBuildEvent");
+			
+			helper.AddConfigurationSelector(this);
 		}
 	}
 }

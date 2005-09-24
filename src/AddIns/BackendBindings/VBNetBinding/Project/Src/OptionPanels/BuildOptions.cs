@@ -45,6 +45,8 @@ namespace VBNetBinding.OptionPanels
 			InitXmlDoc();
 			InitAdvanced();
 			InitWarnings();
+			
+			helper.AddConfigurationSelector(this);
 		}
 		
 		public override bool StorePanelContents()

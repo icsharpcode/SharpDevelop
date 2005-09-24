@@ -24,18 +24,9 @@ using ICSharpCode.Core;
 
 namespace VBNetBinding
 {
-	public enum WarningsAsErrors {
-		None,
-		Specific,
-		All
-	}
-	
-	/// <summary>
-	/// Description of CSharpProject.
-	/// </summary>
 	public class VBNetProject : MSBuildProject
 	{
-		public override void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocation location)
+		public override void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocations location)
 		{
 			base.SetProperty(configurationName, platform, property, value, location);
 			if (property == "OutputType") {

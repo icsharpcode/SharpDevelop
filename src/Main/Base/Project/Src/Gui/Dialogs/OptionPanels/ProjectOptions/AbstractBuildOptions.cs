@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				if (bool.Parse(Get("false"))) {
 					all.Checked = true;
 				} else {
-					PropertyStorageLocation tmp;
+					PropertyStorageLocations tmp;
 					if (this.Helper.GetProperty("WarningsAsErrors", "", out tmp).Length > 0) {
 						specific.Checked = true;
 					} else {

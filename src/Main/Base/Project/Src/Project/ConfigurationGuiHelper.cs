@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Drawing;
 using System.Globalization;
 using System.Windows.Forms;
 using ICSharpCode.Core;
@@ -15,75 +16,6 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public abstract class ConfigurationGuiBinding
-	{
-		ConfigurationGuiHelper helper;
-		string property;
-		
-		public MSBuildProject Project {
-			get {
-				return helper.Project;
-			}
-		}
-		
-		public ConfigurationGuiHelper Helper {
-			get {
-				return helper;
-			}
-			internal set {
-				helper = value;
-			}
-		}
-		
-		public string Property {
-			get {
-				return property;
-			}
-			internal set {
-				property = value;
-			}
-		}
-		
-		PropertyStorageLocation defaultLocation = PropertyStorageLocation.BaseConfiguration;
-
-		public PropertyStorageLocation DefaultLocation {
-			get {
-				return defaultLocation;
-			}
-			set {
-				defaultLocation = value;
-			}
-		}
-		
-		PropertyStorageLocation location;
-		
-		public PropertyStorageLocation Location {
-			get {
-				return location;
-			}
-			set {
-				location = value;
-			}
-		}
-		
-		public T Get<T>(T defaultValue)
-		{
-			T result = helper.GetProperty(property, defaultValue, out location);
-			if (location == PropertyStorageLocation.Unchanged) {
-				location = defaultLocation;
-			}
-			return result;
-		}
-		
-		public void Set<T>(T value)
-		{
-			helper.SetProperty(property, value, location);
-		}
-		
-		public abstract void Load();
-		public abstract bool Save();
-	}
-	
 	/// <summary>
 	/// Class that helps connecting configuration GUI controls to MsBuild properties.
 	/// </summary>
@@ -97,8 +29,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.project = project;
 			this.controlDictionary = controlDictionary;
-			configuration = project.Configuration;
-			platform = project.Platform;
+			this.configuration = project.Configuration;
+			this.platform = project.Platform;
 		}
 		
 		public MSBuildProject Project {
@@ -107,12 +39,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public T GetProperty<T>(string property, T defaultValue, out PropertyStorageLocation location)
+		#region Manage bindings
+		public T GetProperty<T>(string property, T defaultValue, out PropertyStorageLocations location)
 		{
 			return project.GetProperty(configuration, platform, property, defaultValue, out location);
 		}
 		
-		public void SetProperty<T>(string property, T value, PropertyStorageLocation location)
+		public void SetProperty<T>(string property, T value, PropertyStorageLocations location)
 		{
 			project.SetProperty(configuration, platform, property, value, location);
 		}
@@ -127,6 +60,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			binding.Helper = this;
 			binding.Load();
 			bindings.Add(binding);
+		}
+		
+		public void Load()
+		{
+			foreach (ConfigurationGuiBinding binding in bindings) {
+				binding.Load();
+			}
+			IsDirty = false;
 		}
 		
 		public bool Save()
@@ -488,5 +429,104 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		#endregion
+		#endregion
+		
+		/// <summary>
+		/// Gets the height of the configuration selector in pixel.
+		/// </summary>
+		public const int ConfigurationSelectorHeight = 30;
+		
+		public Control CreateConfigurationSelector()
+		{
+			return new ConfigurationSelector(this);
+		}
+		
+		public void AddConfigurationSelector(Control parent)
+		{
+			foreach (Control ctl in parent.Controls) {
+				ctl.Top += ConfigurationSelectorHeight;
+			}
+			Control sel = CreateConfigurationSelector();
+			sel.Width = parent.ClientSize.Width;
+			parent.Controls.Add(sel);
+			parent.Controls.SetChildIndex(sel, 0);
+			sel.Anchor |= AnchorStyles.Right;
+		}
+		
+		sealed class ConfigurationSelector : Panel
+		{
+			ConfigurationGuiHelper helper;
+			Label    configurationLabel = new Label();
+			ComboBox configurationComboBox = new ComboBox();
+			Label    platformLabel = new Label();
+			ComboBox platformComboBox = new ComboBox();
+			Control  line = new Control();
+			
+			public ConfigurationSelector(ConfigurationGuiHelper helper)
+			{
+				const int marginTop  = 4;
+				const int marginLeft = 4;
+				this.helper = helper;
+				this.Height = ConfigurationSelectorHeight;
+				configurationLabel.Text      = StringParser.Parse("${res:Dialog.ProjectOptions.Configuration}:");
+				configurationLabel.TextAlign = ContentAlignment.MiddleRight;
+				configurationLabel.Location  = new Point(marginLeft, marginTop);
+				configurationLabel.Width     = 80;
+				configurationComboBox.Location      = new Point(4 + configurationLabel.Right, marginTop);
+				configurationComboBox.Width         = 120;
+				configurationComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+				platformLabel.Text      = StringParser.Parse("${res:Dialog.ProjectOptions.Platform}:");
+				platformLabel.TextAlign = ContentAlignment.MiddleRight;
+				platformLabel.Location  = new Point(4 + configurationComboBox.Right, marginTop);
+				platformLabel.Width     = 68;
+				platformComboBox.Location      = new Point(4 + platformLabel.Right, marginTop);
+				platformComboBox.Width         = 120;
+				platformComboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+				line.Bounds    = new Rectangle(marginLeft, ConfigurationSelectorHeight - 2, Width - marginLeft * 2, ConfigurationSelectorHeight - 2);
+				line.BackColor = SystemColors.ControlDark;
+				this.Controls.AddRange(new Control[] { configurationLabel, configurationComboBox, platformLabel, platformComboBox, line });
+				line.Anchor |= AnchorStyles.Right;
+				FillBoxes();
+				configurationComboBox.SelectedIndexChanged += ConfigurationChanged;
+				platformComboBox.SelectedIndexChanged      += ConfigurationChanged;
+			}
+			
+			void FillBoxes()
+			{
+				configurationComboBox.Items.Clear();
+				configurationComboBox.Items.AddRange(helper.Project.GetConfigurationNames());
+				platformComboBox.Items.Clear();
+				platformComboBox.Items.AddRange(helper.Project.GetPlatformNames());
+				ResetIndex();
+			}
+			
+			bool resettingIndex;
+			
+			void ResetIndex()
+			{
+				resettingIndex = true;
+				configurationComboBox.SelectedIndex = configurationComboBox.Items.IndexOf(helper.Configuration);
+				platformComboBox.SelectedIndex      = platformComboBox.Items.IndexOf(helper.Platform);
+				resettingIndex = false;
+			}
+			
+			void ConfigurationChanged(object sender, EventArgs e)
+			{
+				if (resettingIndex) return;
+				if (helper.IsDirty) {
+					if (!MessageService.AskQuestion("${res:Dialog.ProjectOptions.ContinueSwitchConfiguration}")) {
+						ResetIndex();
+						return;
+					}
+					if (!helper.Save()) {
+						ResetIndex();
+						return;
+					}
+				}
+				helper.Configuration = (string)configurationComboBox.SelectedItem;
+				helper.Platform      = (string)platformComboBox.SelectedItem;
+				helper.Load();
+			}
+		}
 	}
 }

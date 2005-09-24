@@ -53,6 +53,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			Get<TextBox>("projectFile").ReadOnly = true;
 			
 			RefreshOutputNameTextBox(null, EventArgs.Empty);
+			
+			helper.AddConfigurationSelector(this);
 		}
 		
 		void RefreshOutputNameTextBox(object sender, EventArgs e)

@@ -37,24 +37,38 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// Specifies the possible locations where a property can be stored.
 	/// </summary>
-	public enum PropertyStorageLocation
+	[Flags]
+	public enum PropertyStorageLocations
 	{
-		Unchanged,
+		/// <summary>
+		/// Store the property where the property was previously stored.
+		/// This is the same value as <see cref="Unknown"/>.
+		/// </summary>
+		Unchanged = 0,
+		/// <summary>
+		/// Returned from GetProperty/FindProperty when the property does not exist.
+		/// This is the same value as <see cref="Unchanged"/>.
+		/// </summary>
+		Unknown = 0,
 		/// <summary>
 		/// Store the property globally for all configurations in the project file.
 		/// </summary>
-		BaseConfiguration,
+		Base = 1,
 		/// <summary>
-		/// Store the property in the configuration-specific section(s) in the project file.
+		/// Store the property in the configuration-specific section.
 		/// </summary>
-		SpecificConfiguration,
-		///// <summary>
-		///// Store the property globally for all configurations in the user file.
-		///// </summary>
-		//UserBaseConfiguration,
+		ConfigurationSpecific = 2,
 		/// <summary>
-		/// Store the property in the configuration-specific section(s) in the user file.
+		/// Store the property in the platform-specific section.
 		/// </summary>
-		UserSpecificConfiguration,
+		PlatformSpecific = 4,
+		/// <summary>
+		/// The combination of the ConfigurationSpecific and PlatformSpecific flags.
+		/// </summary>
+		ConfigurationAndPlatformSpecific = ConfigurationSpecific | PlatformSpecific,
+		/// <summary>
+		/// Store the property in the user file.
+		/// </summary>
+		UserFile = 8
 	}
 }

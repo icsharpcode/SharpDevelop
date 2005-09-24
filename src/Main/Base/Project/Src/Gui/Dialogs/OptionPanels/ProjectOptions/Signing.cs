@@ -53,6 +53,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			helper.BindBoolean("delaySignOnlyCheckBox", "DelaySign", false);
 			
 			UpdateEnabledStates(this, EventArgs.Empty);
+			
+			helper.AddConfigurationSelector(this);
 		}
 		
 		void FindKeys(string directory)

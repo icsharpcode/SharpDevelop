@@ -29,6 +29,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			editor.ListChanged += delegate { IsDirty = true; };
 			helper.AddBinding("ReferencePath", new SemicolonSeparatedStringListBinding(editor));
 			this.Controls.Add(editor);
+			
+			helper.AddConfigurationSelector(this);
 		}
 		
 		public class SemicolonSeparatedStringListBinding : ConfigurationGuiBinding

@@ -45,6 +45,8 @@ namespace CSharpBinding.OptionPanels
 			                      new StringPair("4096", "4096"),
 			                      new StringPair("8192", "8192"));
 			InitWarnings();
+			
+			helper.AddConfigurationSelector(this);
 		}
 	}
 }

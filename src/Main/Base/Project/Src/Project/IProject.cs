@@ -22,14 +22,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		Library,
 		[Description("${res:Dialog.Options.PrjOptions.Configuration.CompileTarget.Module}")]
 		Module
-	};
+	}
 	
 	public interface IProject : ISolutionFolder, IDisposable, IMementoCapable
 	{
-		PropertyGroup BaseConfiguration {
-			get;
-		}
-		
 		List<ProjectItem> Items {
 			get;
 		}

@@ -27,11 +27,59 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected Dictionary<string, PropertyGroup> configurations     = new Dictionary<string, PropertyGroup>();
 		protected Dictionary<string, PropertyGroup> userConfigurations = new Dictionary<string, PropertyGroup>();
 		
-		protected List<ProjectItem>                 items          = new List<ProjectItem>();
-		protected List<string>                      imports        = new List<string>();
+		protected List<ProjectItem> items   = new List<ProjectItem>();
+		protected List<string>      imports = new List<string>();
 		
 		protected string fileName;
 		protected string language;
+		
+		public string[] GetConfigurationNames()
+		{
+			List<string> configurationNames = new List<string>();
+			foreach (string key in configurations.Keys) {
+				int pos = key.IndexOf('|');
+				string configuration = key.Substring(0, pos);
+				if (configuration != "*" && !configurationNames.Contains(configuration)) {
+					configurationNames.Add(configuration);
+				}
+			}
+			foreach (string key in userConfigurations.Keys) {
+				int pos = key.IndexOf('|');
+				string configuration = key.Substring(0, pos);
+				if (configuration != "*" && !configurationNames.Contains(configuration)) {
+					configurationNames.Add(configuration);
+				}
+			}
+			if (!configurationNames.Contains(this.Configuration)) {
+				configurationNames.Add(this.Configuration);
+			}
+			configurationNames.Sort();
+			return configurationNames.ToArray();
+		}
+		
+		public string[] GetPlatformNames()
+		{
+			List<string> platformNames = new List<string>();
+			foreach (string key in configurations.Keys) {
+				int pos = key.LastIndexOf('|');
+				string platform = key.Substring(pos + 1);
+				if (platform != "*" && !platformNames.Contains(platform)) {
+					platformNames.Add(platform);
+				}
+			}
+			foreach (string key in userConfigurations.Keys) {
+				int pos = key.LastIndexOf('|');
+				string platform = key.Substring(pos + 1);
+				if (platform != "*" && !platformNames.Contains(platform)) {
+					platformNames.Add(platform);
+				}
+			}
+			if (!platformNames.Contains(this.Platform)) {
+				platformNames.Add(this.Platform);
+			}
+			platformNames.Sort();
+			return platformNames.ToArray();
+		}
 		
 		/// <summary>
 		/// Import options from an attribute collection. This is used to read the template options.
@@ -62,23 +110,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		PropertyGroup baseConfiguration = new PropertyGroup();
+		
 		[Browsable(false)]
 		public PropertyGroup BaseConfiguration {
 			get {
-				if (!configurations.ContainsKey("")) {
-					configurations[""] = new PropertyGroup();
-				}
-				return configurations[""];
+				return baseConfiguration;
 			}
 		}
 		
+		PropertyGroup userBaseConfiguration = new PropertyGroup();
+		
 		[Browsable(false)]
-		public PropertyGroup ActiveConfiguration {
+		public PropertyGroup UserBaseConfiguration {
 			get {
-				if (Platform != null && Platform.Length > 0) {
-					return configurations[Configuration + "|" + Platform];
-				}
-				return configurations[Configuration];
+				return userBaseConfiguration;
 			}
 		}
 		
@@ -286,18 +332,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		/*
-		public string GetOutputPath(string configurationName, string platform)
-		{
-			return GetConfiguration(configurationName, platform)["OutputPath"];
-		}
-		
-		public void SetOutputPath(string configurationName, string platform, string val)
-		{
-			GetConfiguration(configurationName, platform)["OutputPath"] = val;
-		}
-		 */
-		
 		public string GetProperty(string property)
 		{
 			return GetProperty(property, "");
@@ -305,102 +339,177 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public T GetProperty<T>(string property, T defaultValue)
 		{
-			PropertyStorageLocation tmp;
+			PropertyStorageLocations tmp;
 			return GetProperty(this.Configuration, this.Platform, property, defaultValue, out tmp);
 		}
 		
-		public T GetProperty<T>(string configurationName, string platform, string property, T defaultValue, out PropertyStorageLocation location)
+		public T GetProperty<T>(string configurationName, string platform, string property, T defaultValue, out PropertyStorageLocations location)
 		{
-			string configurationKey = platform != null ? configurationName + "|" + platform : configurationName;
+			location = PropertyStorageLocations.UserFile;
+			PropertyGroup pg = FindProperty(configurationName, platform, property,
+			                                UserBaseConfiguration, userConfigurations, ref location);
+			if (pg != null) {
+				return pg.Get(property, defaultValue);
+			}
+			location = PropertyStorageLocations.Base;
+			pg = FindProperty(configurationName, platform, property,
+			                  BaseConfiguration, configurations, ref location);
+			if (pg != null) {
+				return pg.Get(property, defaultValue);
+			} else {
+				location = PropertyStorageLocations.Unknown;
+				return defaultValue;
+			}
+		}
+		
+		public PropertyStorageLocations FindProperty(string configurationName, string platform, string property)
+		{
+			PropertyStorageLocations location = PropertyStorageLocations.Unknown;
+			FindProperty(configurationName, platform, property,
+			             UserBaseConfiguration, userConfigurations, ref location);
+			if (location != PropertyStorageLocations.Unknown) {
+				return location | PropertyStorageLocations.UserFile;
+			}
+			FindProperty(configurationName, platform, property,
+			             BaseConfiguration, configurations, ref location);
+			return location;
+		}
+		
+		/// <summary>
+		/// Searches a property in a set of configurations (either project file OR user file).
+		/// Returns the property group that contains the property, or null, if it is not found.
+		/// The value of <paramref name="location"/> is OR'ed with PropertyStorageLocations.Base,
+		/// ConfigurationSpecific, PlatformSpecific, or not changed depending on if/where the property
+		/// was found.
+		/// </summary>
+		static PropertyGroup FindProperty(string configurationName, string platform,
+		                                  string property,
+		                                  PropertyGroup baseConfig, Dictionary<string, PropertyGroup> configurations,
+		                                  ref PropertyStorageLocations location)
+		{
 			PropertyGroup pg;
-			if (userConfigurations.TryGetValue(configurationKey, out pg)) {
-				if (pg.IsSet(property)) {
-					location = PropertyStorageLocation.UserSpecificConfiguration;
-					return pg.Get(property, defaultValue);
+			if (configurationName != null && platform != null) {
+				if (configurations.TryGetValue(configurationName + "|" + platform, out pg)) {
+					if (pg.IsSet(property)) {
+						location |= PropertyStorageLocations.ConfigurationAndPlatformSpecific;
+						return pg;
+					}
 				}
 			}
-			if (configurations.TryGetValue(configurationKey, out pg)) {
-				if (pg.IsSet(property)) {
-					location = PropertyStorageLocation.SpecificConfiguration;
-					return pg.Get(property, defaultValue);
+			if (configurationName != null) {
+				if (configurations.TryGetValue(configurationName + "|*", out pg)) {
+					if (pg.IsSet(property)) {
+						location |= PropertyStorageLocations.ConfigurationSpecific;
+						return pg;
+					}
 				}
 			}
-			if (BaseConfiguration.IsSet(property)) {
-				location = PropertyStorageLocation.BaseConfiguration;
-				return BaseConfiguration.Get(property, defaultValue);
+			if (platform != null) {
+				if (configurations.TryGetValue("*|" + platform, out pg)) {
+					if (pg.IsSet(property)) {
+						location |= PropertyStorageLocations.PlatformSpecific;
+						return pg;
+					}
+				}
 			}
-			location = PropertyStorageLocation.Unchanged;
-			return defaultValue;
+			if (baseConfig.IsSet(property)) {
+				location |= PropertyStorageLocations.Base;
+				return baseConfig;
+			}
+			return null;
 		}
 		
 		public void SetProperty<T>(string property, T value)
 		{
-			SetProperty(this.Configuration, this.Platform, property, value, PropertyStorageLocation.Unchanged);
+			SetProperty(this.Configuration, this.Platform, property, value, PropertyStorageLocations.Unchanged);
 		}
 		
-		public void SetProperty<T>(string property, T value, PropertyStorageLocation location)
+		public void SetProperty<T>(string property, T value, PropertyStorageLocations location)
 		{
 			SetProperty(this.Configuration, this.Platform, property, value, location);
 		}
 		
-		public virtual void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocation location)
+		public virtual void SetProperty<T>(string configurationName, string platform, string property, T value, PropertyStorageLocations location)
 		{
-			string configurationKey = platform != null ? configurationName + "|" + platform : configurationName;
-			PropertyGroup pg;
+			// default value is default(T) except for strings, where it is string.Empty
 			T defaultValue = (typeof(T) == typeof(string)) ? (T)(object)string.Empty : default(T);
-			switch (location) {
-				case PropertyStorageLocation.Unchanged:
-					if (userConfigurations.TryGetValue(configurationKey, out pg)) {
-						if (pg.IsSet(property)) {
-							pg.Set(property, defaultValue, value);
-							return;
-						}
-					}
-					if (configurations.TryGetValue(configurationKey, out pg)) {
-						if (pg.IsSet(property)) {
-							pg.Set(property, defaultValue, value);
-							return;
-						}
-					}
-					BaseConfiguration.Set(property, defaultValue, value);
-					return;
-				case PropertyStorageLocation.BaseConfiguration:
-					if (!BaseConfiguration.IsSet(property)) {
-						RemoveProperty(configurations, property);
-						RemoveProperty(userConfigurations, property);
-					}
-					BaseConfiguration.Set(property, defaultValue, value);
-					return;
-				case PropertyStorageLocation.SpecificConfiguration:
-					if (BaseConfiguration.IsSet(property)) {
-						BaseConfiguration.Remove(property);
-					}
-					RemoveProperty(userConfigurations, property);
-					if (!configurations.TryGetValue(configurationKey, out pg)) {
-						configurations[configurationKey] = pg = new PropertyGroup();
-					}
-					pg.Set(property, defaultValue, value);
-					return;
-				case PropertyStorageLocation.UserSpecificConfiguration:
-					if (BaseConfiguration.IsSet(property)) {
-						BaseConfiguration.Remove(property);
-					}
-					RemoveProperty(configurations, property);
-					if (!userConfigurations.TryGetValue(configurationKey, out pg)) {
-						userConfigurations[configurationKey] = pg = new PropertyGroup();
-					}
-					pg.Set(property, defaultValue, value);
-					return;
-				default:
-					throw new InvalidEnumArgumentException("location", (int)location, typeof(PropertyStorageLocation));
+			if (location == PropertyStorageLocations.Unchanged) {
+				location = FindProperty(configurationName, platform, property);
+				if (location == PropertyStorageLocations.Unknown) {
+					location = PropertyStorageLocations.Base;
+				}
 			}
+			PropertyGroup baseConfiguration = this.BaseConfiguration;
+			Dictionary<string, PropertyGroup> configs = this.configurations;
+			if ((location & PropertyStorageLocations.UserFile) == PropertyStorageLocations.UserFile) {
+				baseConfiguration = this.UserBaseConfiguration;
+				configurations = this.userConfigurations;
+			}
+			PropertyGroup targetGroup;
+			switch (location & PropertyStorageLocations.ConfigurationAndPlatformSpecific) {
+				case PropertyStorageLocations.ConfigurationAndPlatformSpecific:
+					targetGroup = GetOrCreateGroup(configs, configurationName + "|" + platform);
+					break;
+				case PropertyStorageLocations.ConfigurationSpecific:
+					targetGroup = GetOrCreateGroup(configs, configurationName + "|*");
+					break;
+				case PropertyStorageLocations.PlatformSpecific:
+					targetGroup = GetOrCreateGroup(configs, "*|" + platform);
+					break;
+				default:
+					targetGroup = baseConfiguration;
+					break;
+			}
+			if (!targetGroup.IsSet(property)) {
+				RemoveProperty(property, location); // clear property from other groups
+			}
+			targetGroup.Set(property, defaultValue, value);
 		}
 		
-		static void RemoveProperty(Dictionary<string, PropertyGroup> dict, string property)
+		static PropertyGroup GetOrCreateGroup(Dictionary<string, PropertyGroup> configs, string groupName)
 		{
-			foreach (PropertyGroup pg in dict.Values) {
-				if (pg.IsSet(property)) {
-					pg.Remove(property);
+			PropertyGroup pg;
+			if (!configs.TryGetValue(groupName, out pg)) {
+				pg = new PropertyGroup();
+				configs.Add(groupName, pg);
+			}
+			return pg;
+		}
+		
+		void RemoveProperty(string property, PropertyStorageLocations except)
+		{
+			if (except != PropertyStorageLocations.Base) {
+				if (BaseConfiguration.IsSet(property))
+					BaseConfiguration.Remove(property);
+			}
+			if (except != (PropertyStorageLocations.Base | PropertyStorageLocations.UserFile)) {
+				if (UserBaseConfiguration.IsSet(property))
+					UserBaseConfiguration.Remove(property);
+			}
+			RemoveProperty(property, except, configurations);
+			RemoveProperty(property, except, userConfigurations);
+		}
+		
+		static void RemoveProperty(string property, PropertyStorageLocations except, Dictionary<string, PropertyGroup> configs)
+		{
+			except &= PropertyStorageLocations.ConfigurationAndPlatformSpecific;
+			foreach (KeyValuePair<string, PropertyGroup> pair in configs) {
+				if (pair.Value.IsSet(property)) {
+					// skip if this property group is in "except"
+					if (pair.Key.StartsWith("*|")) {
+						if (except == PropertyStorageLocations.PlatformSpecific) {
+							continue;
+						}
+					} else if (pair.Key.EndsWith("|*")) {
+						if (except == PropertyStorageLocations.ConfigurationSpecific) {
+							continue;
+						}
+					} else {
+						if (except == PropertyStorageLocations.ConfigurationAndPlatformSpecific) {
+							continue;
+						}
+					}
+					pair.Value.Remove(property);
 				}
 			}
 		}

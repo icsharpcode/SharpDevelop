@@ -10,7 +10,7 @@ using System;
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
-	/// Description of ICanBeDirty.
+	/// Interface for classes that implement the IsDirty property and the DirtyChanged event.
 	/// </summary>
 	public interface ICanBeDirty
 	{

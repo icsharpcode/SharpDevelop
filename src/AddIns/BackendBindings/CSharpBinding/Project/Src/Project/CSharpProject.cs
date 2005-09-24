@@ -54,8 +54,8 @@ namespace CSharpBinding
 		{
 			base.Create(information);
 			imports.Add(@"$(MSBuildBinPath)\Microsoft.CSharp.Targets");
-			configurations["Debug|AnyCPU"]["CheckForOverflowUnderflow"] = "True";
-			configurations["Release|AnyCPU"]["CheckForOverflowUnderflow"] = "False";
+			SetProperty("Debug", null, "CheckForOverflowUnderflow", "True", PropertyStorageLocations.ConfigurationSpecific);
+			SetProperty("Release", null, "CheckForOverflowUnderflow", "False", PropertyStorageLocations.ConfigurationSpecific);
 		}
 		
 		public override bool CanCompile(string fileName)

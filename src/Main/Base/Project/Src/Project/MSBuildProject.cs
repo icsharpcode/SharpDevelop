@@ -23,16 +23,17 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public class MSBuildProject : AbstractProject
 	{
+		List<string> unknownXmlSections     = new List<string>();
+		List<string> userUnknownXmlSections = new List<string>();
+		protected char BuildConstantSeparator = ';';
+		
 		public MSBuildProject()
 		{
 		}
 		
-		protected char BuildConstantSeparator = ';';
-		
 		protected virtual void Create(ProjectCreateInformation information)
 		{
 			Name = information.ProjectName;
-			configurations[""] = new PropertyGroup();
 			IdGuid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
 			BaseConfiguration["OutputType"]    = "Exe";
 			BaseConfiguration["RootNamespace"] = information.ProjectName;
@@ -42,19 +43,19 @@ namespace ICSharpCode.SharpDevelop.Project
 			BaseConfiguration["Platform"]      = "AnyCPU";
 			BaseConfiguration.SetIsGuarded("Platform", true);
 			
-			configurations["Debug|AnyCPU"] = new PropertyGroup();
-			configurations["Debug|AnyCPU"]["OutputPath"] = @"bin\Debug\";
-			configurations["Debug|AnyCPU"]["Optimize"] = "False";
-			configurations["Debug|AnyCPU"]["DefineConstants"] = "DEBUG" + BuildConstantSeparator + "TRACE";
-			configurations["Debug|AnyCPU"]["DebugSymbols"] = "True";
-			configurations["Debug|AnyCPU"]["DebugType"] = "Full";
+			configurations["Debug|*"] = new PropertyGroup();
+			configurations["Debug|*"]["OutputPath"] = @"bin\Debug\";
+			configurations["Debug|*"]["Optimize"] = "False";
+			configurations["Debug|*"]["DefineConstants"] = "DEBUG" + BuildConstantSeparator + "TRACE";
+			configurations["Debug|*"]["DebugSymbols"] = "True";
+			configurations["Debug|*"]["DebugType"] = "Full";
 			
-			configurations["Release|AnyCPU"] = new PropertyGroup();
-			configurations["Release|AnyCPU"]["OutputPath"] = @"bin\Release\";
-			configurations["Release|AnyCPU"]["Optimize"] = "True";
-			configurations["Release|AnyCPU"]["DefineConstants"] = "TRACE";
-			configurations["Release|AnyCPU"]["DebugSymbols"] = "False";
-			configurations["Release|AnyCPU"]["DebugType"] = "None";
+			configurations["Release|*"] = new PropertyGroup();
+			configurations["Release|*"]["OutputPath"] = @"bin\Release\";
+			configurations["Release|*"]["Optimize"] = "True";
+			configurations["Release|*"]["DefineConstants"] = "TRACE";
+			configurations["Release|*"]["DebugSymbols"] = "False";
+			configurations["Release|*"]["DebugType"] = "None";
 			
 			fileName = information.OutputProjectFileName;
 		}
@@ -65,14 +66,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		#region Xml reading routines
-		static PropertyGroup ReadPropertyGroup(XmlTextReader reader)
+		static PropertyGroup ReadPropertyGroup(XmlReader reader)
 		{
 			PropertyGroup properties = new PropertyGroup();
 			PropertyGroup.ReadProperties(reader, properties, "PropertyGroup");
 			return properties;
 		}
 		
-		readonly static Regex configurationRegEx = new Regex(@"\s*'.*'\s*==\s*'(?<configuration>.*)'", RegexOptions.Compiled);
+		readonly static Regex configurationRegEx = new Regex(@"\s*'(?<property>[^']*)'\s*==\s*'(?<value>[^']*)'", RegexOptions.Compiled);
 		
 		protected void SetupProject(string projectFileName)
 		{
@@ -85,29 +86,11 @@ namespace ICSharpCode.SharpDevelop.Project
 					SetupProject(projectFileName);
 					return;
 				}
-				do {
+				while (reader.Read()) {
 					if (reader.IsStartElement()) {
 						switch (reader.LocalName) {
 							case "PropertyGroup":
-								string condition = reader.GetAttribute("Condition");
-
-								PropertyGroup propertyGroup = ReadPropertyGroup(reader);
-								if (condition == null) {
-									condition = String.Empty;
-								}
-
-								string configuration;
-								Match match = configurationRegEx.Match(condition);
-								if (match.Success) {
-									configuration = match.Result("${configuration}");
-								} else {
-									configuration = condition;
-								}
-								if (!configurations.ContainsKey(configuration)) {
-									configurations[configuration] = propertyGroup;
-								} else {
-									configurations[configuration].Merge(propertyGroup);
-								}
+								LoadPropertyGroup(reader, false);
 								break;
 							case "ItemGroup":
 								ProjectItem.ReadItemGroup(reader, this, Items);
@@ -116,42 +99,73 @@ namespace ICSharpCode.SharpDevelop.Project
 								string import = reader.GetAttribute("Project");
 								Imports.Add(import);
 								break;
+							default:
+								unknownXmlSections.Add(reader.ReadOuterXml());
+								break;
 						}
 					}
-				} while (reader.Read());
+				}
 			}
 			
 			string userSettingsFileName = projectFileName + ".user";
 			if (File.Exists(userSettingsFileName)) {
 				using (XmlTextReader reader = new XmlTextReader(userSettingsFileName)) {
+					reader.Read();
 					while (reader.Read()){
 						if (reader.IsStartElement()) {
 							switch (reader.LocalName) {
 								case "PropertyGroup":
-									string condition = reader.GetAttribute("Condition");
-									PropertyGroup propertyGroup = ReadPropertyGroup(reader);
-									if (condition == null) {
-										condition = String.Empty;
-									}
-									
-									string configuration;
-									Match match = configurationRegEx.Match(condition);
-									if (match.Success) {
-										configuration = match.Result("${configuration}");
-									} else {
-										configuration = condition;
-									}
-									if (!userConfigurations.ContainsKey(configuration)) {
-										userConfigurations[configuration] = propertyGroup;
-									} else {
-										userConfigurations[configuration].Merge(propertyGroup);
-									}
+									LoadPropertyGroup(reader, true);
+									break;
+								default:
+									userUnknownXmlSections.Add(reader.ReadOuterXml());
 									break;
 							}
 						}
 					}
 				}
 			}
+		}
+		
+		void LoadPropertyGroup(XmlReader reader, bool isUserFile)
+		{
+			string condition = reader.GetAttribute("Condition");
+			if (condition == null) {
+				if (isUserFile)
+					UserBaseConfiguration.Merge(ReadPropertyGroup(reader));
+				else
+					BaseConfiguration.Merge(ReadPropertyGroup(reader));
+				return;
+			}
+			Match match = configurationRegEx.Match(condition);
+			if (match.Success) {
+				Dictionary<string, PropertyGroup> configurations = isUserFile ? this.userConfigurations : this.configurations;
+				
+				string conditionProperty = match.Result("${property}");
+				string configuration = match.Result("${value}");
+				if (conditionProperty == "$(Configuration)|$(Platform)") {
+					// configuration is ok
+				} else if (conditionProperty == "$(Configuration)") {
+					configuration += "|*";
+				} else if (conditionProperty == "$(Platform)") {
+					configuration = "*|" + configuration;
+				} else {
+					configuration = null;
+				}
+				if (configuration != null) {
+					PropertyGroup propertyGroup = ReadPropertyGroup(reader);
+					if (!configurations.ContainsKey(configuration)) {
+						configurations[configuration] = propertyGroup;
+					} else {
+						configurations[configuration].Merge(propertyGroup);
+					}
+					return;
+				}
+			}
+			if (isUserFile)
+				userUnknownXmlSections.Add(reader.ReadOuterXml());
+			else
+				unknownXmlSections.Add(reader.ReadOuterXml());
 		}
 		
 		public override void Save(string fileName)
@@ -169,18 +183,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				writer.WriteAttributeString("xmlns", "http://schemas.microsoft.com/developer/msbuild/2003");
 				BaseConfiguration["ProjectGuid"] = IdGuid;
 				
-				foreach (KeyValuePair<string, PropertyGroup> entry in configurations) {
-					writer.WriteStartElement("PropertyGroup");
-					if (entry.Key != null && entry.Key.Length > 0) {
-						if (entry.Key.Contains("|")) {
-							writer.WriteAttributeString("Condition", " '$(Configuration)|$(Platform)' == '" + entry.Key + "' ");
-						} else {
-							writer.WriteAttributeString("Condition", " '$(Configuration)' == '" + entry.Key + "' ");
-						}
-					}
-					entry.Value.WriteProperties(writer);
-					writer.WriteEndElement();
-				}
+				SaveProperties(writer, BaseConfiguration, configurations);
 				
 				List<ProjectItem> references   = new List<ProjectItem>();
 				List<ProjectItem> imports      = new List<ProjectItem>();
@@ -222,6 +225,8 @@ namespace ICSharpCode.SharpDevelop.Project
 					ProjectItem.WriteItemGroup(writer, other);
 				}
 				
+				SaveUnknownXmlSections(writer, unknownXmlSections);
+				
 				foreach (string import in Imports) {
 					writer.WriteStartElement("Import");
 					writer.WriteAttributeString("Project", import);
@@ -231,29 +236,44 @@ namespace ICSharpCode.SharpDevelop.Project
 				writer.WriteEndElement();
 			}
 			
-			if (userConfigurations.Count > 0) {
-				string userSettingsFileName = fileName + ".user";
+			string userSettingsFileName = fileName + ".user";
+			if (userConfigurations.Count > 0 || UserBaseConfiguration.PropertyCount > 0 || File.Exists(userSettingsFileName)) {
 				using (XmlTextWriter writer = new XmlTextWriter(userSettingsFileName, Encoding.UTF8)) {
 					writer.Formatting = Formatting.Indented;
 					writer.WriteStartElement("Project");
 					writer.WriteAttributeString("xmlns", "http://schemas.microsoft.com/developer/msbuild/2003");
 					
-					foreach (KeyValuePair<string, PropertyGroup> entry in userConfigurations) {
-						writer.WriteStartElement("PropertyGroup");
-						if (entry.Key != null && entry.Key.Length > 0) {
-							if (entry.Key.Contains("|")) {
-								writer.WriteAttributeString("Condition", " '$(Configuration)|$(Platform)' == '" + entry.Key + "' ");
-							} else {
-								writer.WriteAttributeString("Condition", " '$(Configuration)' == '" + entry.Key + "' ");
-							}
-						}
-						entry.Value.WriteProperties(writer);
-						writer.WriteEndElement();
-					}
+					SaveProperties(writer, UserBaseConfiguration, userConfigurations);
+					SaveUnknownXmlSections(writer, userUnknownXmlSections);
 					
 					writer.WriteEndElement();
 				}
 			}
+		}
+		
+		static void SaveProperties(XmlWriter writer, PropertyGroup baseConfiguration, Dictionary<string, PropertyGroup> configurations)
+		{
+			writer.WriteStartElement("PropertyGroup");
+			baseConfiguration.WriteProperties(writer);
+			writer.WriteEndElement();
+			
+			foreach (KeyValuePair<string, PropertyGroup> entry in configurations) {
+				writer.WriteStartElement("PropertyGroup");
+				if (entry.Key.StartsWith("*|")) {
+					writer.WriteAttributeString("Condition", " '$(Platform)' == '" + entry.Key.Substring(2) + "' ");
+				} else if (entry.Key.EndsWith("|*")) {
+					writer.WriteAttributeString("Condition", " '$(Configuration)' == '" + entry.Key.Substring(0, entry.Key.Length - 2) + "' ");
+				} else {
+					writer.WriteAttributeString("Condition", " '$(Configuration)|$(Platform)' == '" + entry.Key + "' ");
+				}
+				entry.Value.WriteProperties(writer);
+				writer.WriteEndElement();
+			}
+		}
+		
+		static void SaveUnknownXmlSections(XmlWriter writer, List<string> unknownElements)
+		{
+			
 		}
 		#endregion
 		

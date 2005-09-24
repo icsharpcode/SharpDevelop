@@ -41,6 +41,8 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			helper.BindString("workingDirectoryTextBox", "StartWorkingDirectory");
 			
 			UpdateEnabledStates(this, EventArgs.Empty);
+			
+			helper.AddConfigurationSelector(this);
 		}
 		
 		void UpdateEnabledStates(object sender, EventArgs e)
