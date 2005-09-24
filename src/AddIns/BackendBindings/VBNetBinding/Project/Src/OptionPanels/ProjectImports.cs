@@ -39,9 +39,28 @@ namespace VBNetBinding.OptionPanels
 					Get<ListBox>("imports").Items.Add(item.Include);
 				}
 			}
+		
+			DefaultProjectContent projectContent = (DefaultProjectContent)ParserService.GetProjectContent(project);
+			foreach(DefaultProjectContent refProjectContent in projectContent.ReferencedContents)
+			{
+				addNamespaces(refProjectContent);
+				
+			}
+			addNamespaces(projectContent);
 			
 			namespacesComboBox_TextCanged(null, EventArgs.Empty);
 			importsListBox_SelectedIndexChanged(null, EventArgs.Empty);
+		}
+		
+		private void addNamespaces(DefaultProjectContent projectContent)
+		{
+			Dictionary<string, DefaultProjectContent.NamespaceStruct>.KeyCollection namespaces = projectContent.NamespaceNames;
+			foreach(string projectNamespace in namespaces)
+			{
+				if(projectNamespace != "") {
+					Get<ComboBox>("namespaces").Items.Add(projectNamespace);
+				}
+			}
 		}
 		
 		private void namespacesComboBox_TextCanged(object sender, EventArgs e)

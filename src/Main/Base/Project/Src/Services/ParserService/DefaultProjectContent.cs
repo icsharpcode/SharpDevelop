@@ -62,6 +62,13 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public Dictionary<string, NamespaceStruct>.KeyCollection NamespaceNames
+		{
+			get {
+				return Namespaces[0].Keys;
+			}
+		}
+		
 		protected List<Dictionary<string, NamespaceStruct>> Namespaces {
 			get {
 				if (namespaces.Count == 0) {
@@ -71,7 +78,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		protected struct NamespaceStruct
+		public struct NamespaceStruct
 		{
 			public readonly List<IClass> Classes;
 			public readonly List<string> SubNamespaces;
