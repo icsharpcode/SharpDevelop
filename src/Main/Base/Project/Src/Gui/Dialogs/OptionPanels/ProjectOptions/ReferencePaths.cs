@@ -27,8 +27,10 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			editor.TitleText = StringParser.Parse("&${res:Dialog.ExportProjectToHtml.FolderLabel}");
 			editor.AddButtonText = StringParser.Parse("${res:Dialog.ProjectOptions.ReferencePaths.AddPath}");
 			editor.ListChanged += delegate { IsDirty = true; };
-			helper.AddBinding("ReferencePath", new SemicolonSeparatedStringListBinding(editor));
+			SemicolonSeparatedStringListBinding b = new SemicolonSeparatedStringListBinding(editor);
+			helper.AddBinding("ReferencePath", b);
 			this.Controls.Add(editor);
+			b.CreateLocationButton(editor);
 			
 			helper.AddConfigurationSelector(this);
 		}

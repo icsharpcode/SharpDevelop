@@ -363,7 +363,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (pg != null) {
 				return pg.Get(property, defaultValue);
 			} else {
-				location = PropertyStorageLocations.Unknown;
+				// we need to look for the property in other configurations.
+				// For example, "XML doc" might only exist in the release build, so we have
+				// to set the correct location even though the property is not found in debug conf.
+				location = FindProperty(configurationName, platform, property);
 				return defaultValue;
 			}
 		}
@@ -378,6 +381,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			FindProperty(configurationName, platform, property,
 			             BaseConfiguration, configurations, ref location);
+			if (location == PropertyStorageLocations.Unknown) {
+				// we need to look for the property in other configurations.
+				// For example, "XML doc" might only exist in the release build, so we have
+				// to set the correct location even though the property is not found in debug conf.
+				foreach (KeyValuePair<string, PropertyGroup> pair in userConfigurations) {
+					if (pair.Value.IsSet(property)) {
+						return GetLocationFromConfigKey(pair.Key) | PropertyStorageLocations.UserFile;
+					}
+				}
+				foreach (KeyValuePair<string, PropertyGroup> pair in configurations) {
+					if (pair.Value.IsSet(property)) {
+						return GetLocationFromConfigKey(pair.Key);
+					}
+				}
+			}
 			return location;
 		}
 		

@@ -31,20 +31,28 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			// TODO: Suitable file filter.
 			ConnectBrowseButton("win32ResourceFileBrowseButton", "win32ResourceFileComboBox");
 			
-			helper.BindString("assemblyNameTextBox", "AssemblyName");
+			ConfigurationGuiBinding b;
+			ChooseStorageLocationButton locationButton;
+			b = helper.BindString("assemblyNameTextBox", "AssemblyName");
+			b.CreateLocationButton("assemblyNameTextBox");
 			Get<TextBox>("assemblyName").TextChanged += new EventHandler(RefreshOutputNameTextBox);
 			
-			helper.BindString("rootNamespaceTextBox", "RootNamespace");
+			b = helper.BindString("rootNamespaceTextBox", "RootNamespace");
+			b.CreateLocationButton("rootNamespaceTextBox");
 			
-			helper.BindEnum<OutputType>("outputTypeComboBox", "OutputType");
+			b = helper.BindEnum<OutputType>("outputTypeComboBox", "OutputType");
+			locationButton = b.CreateLocationButton("outputTypeComboBox");
 			Get<ComboBox>("outputType").SelectedIndexChanged += new EventHandler(RefreshOutputNameTextBox);
 			
-			helper.BindString("startupObjectComboBox", "StartupObject");
+			b = helper.BindString("startupObjectComboBox", "StartupObject");
+			b.RegisterLocationButton(locationButton);
 			
-			helper.BindString("applicationIconComboBox", "ApplicationIcon");
+			b = helper.BindString("applicationIconComboBox", "ApplicationIcon");
 			Get<ComboBox>("applicationIcon").TextChanged += new EventHandler(ApplicationIconComboBoxTextChanged);
+			b.CreateLocationButton("applicationIconComboBox");
 			
-			helper.BindString("win32ResourceFileComboBox", "Win32Resource");
+			b = helper.BindString("win32ResourceFileComboBox", "Win32Resource");
+			b.CreateLocationButton("win32ResourceFileComboBox");
 			
 			Get<TextBox>("projectFolder").Text = project.Directory;
 			Get<TextBox>("projectFile").Text = Path.GetFileName(project.FileName);

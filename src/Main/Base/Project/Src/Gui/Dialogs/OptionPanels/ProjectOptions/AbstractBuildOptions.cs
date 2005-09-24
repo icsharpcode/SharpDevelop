@@ -29,17 +29,28 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		protected void InitXmlDoc()
 		{
-			helper.BindString("xmlDocumentationTextBox", "DocumentationFile");
+			ConfigurationGuiBinding b;
+			b = helper.BindString("xmlDocumentationTextBox", "DocumentationFile");
+			b.CreateLocationButton("xmlDocumentationCheckBox");
+			helper.Loaded += XmlDocHelperLoaded;
+			XmlDocHelperLoaded(null, null);
+		}
+		
+		void XmlDocHelperLoaded(object sender, EventArgs e)
+		{
+			Get<CheckBox>("xmlDocumentation").CheckedChanged -= UpdateXmlEnabled;
 			Get<CheckBox>("xmlDocumentation").Checked = Get<TextBox>("xmlDocumentation").Text.Length > 0;
-			Get<CheckBox>("xmlDocumentation").CheckedChanged  += new EventHandler(UpdateXmlEnabled);
+			Get<CheckBox>("xmlDocumentation").CheckedChanged += UpdateXmlEnabled;
 			Get<TextBox>("xmlDocumentation").Enabled = Get<CheckBox>("xmlDocumentation").Checked;
 		}
 		
 		void UpdateXmlEnabled(object sender, EventArgs e)
 		{
 			Get<TextBox>("xmlDocumentation").Enabled = Get<CheckBox>("xmlDocumentation").Checked;
-			if (Get<CheckBox>("xmlDocumentation").Checked && Get<TextBox>("xmlDocumentation").Text.Length == 0) {
-				Get<TextBox>("xmlDocumentation").Text = FileUtility.GetRelativePath(baseDirectory, project.OutputAssemblyFullPath) + ".xml";
+			if (Get<CheckBox>("xmlDocumentation").Checked) {
+				if (Get<TextBox>("xmlDocumentation").Text.Length == 0) {
+					Get<TextBox>("xmlDocumentation").Text = FileUtility.GetRelativePath(baseDirectory, project.OutputAssemblyFullPath) + ".xml";
+				}
 			} else {
 				Get<TextBox>("xmlDocumentation").Text = "";
 			}
@@ -47,17 +58,23 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		
 		protected void InitWarnings()
 		{
-			helper.BindStringEnum("warningLevelComboBox", "WarningLevel",
-			                      "4",
-			                      new StringPair("0", "0"),
-			                      new StringPair("1", "1"),
-			                      new StringPair("2", "2"),
-			                      new StringPair("3", "3"),
-			                      new StringPair("4", "4"));
-			helper.BindString("suppressWarningsTextBox", "NoWarn");
+			ConfigurationGuiBinding b;
+			b = helper.BindStringEnum("warningLevelComboBox", "WarningLevel",
+			                          "4",
+			                          new StringPair("0", "0"),
+			                          new StringPair("1", "1"),
+			                          new StringPair("2", "2"),
+			                          new StringPair("3", "3"),
+			                          new StringPair("4", "4"));
+			ChooseStorageLocationButton locationButton = b.CreateLocationButtonInPanel("warningsGroupBox");
+			b = helper.BindString("suppressWarningsTextBox", "NoWarn");
+			b.RegisterLocationButton(locationButton);
 			
-			helper.AddBinding("TreatWarningsAsErrors", new WarningsAsErrorsBinding(this));
-			helper.BindString("specificWarningsTextBox", "WarningsAsErrors"); // must be saved AFTER TreatWarningsAsErrors
+			b = new WarningsAsErrorsBinding(this);
+			helper.AddBinding("TreatWarningsAsErrors", b);
+			locationButton = b.CreateLocationButtonInPanel("treatWarningsAsErrorsGroupBox");
+			b = helper.BindString("specificWarningsTextBox", "WarningsAsErrors"); // must be saved AFTER TreatWarningsAsErrors
+			b.RegisterLocationButton(locationButton);
 			
 			Get<RadioButton>("specificWarnings").CheckedChanged  += new EventHandler(UpdateWarningChecked);
 			
@@ -111,37 +128,46 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		}
 		
 		ConfigurationGuiBinding debugInfoBinding;
+		protected ChooseStorageLocationButton advancedLocationButton;
 		
 		protected void InitAdvanced()
 		{
 			debugInfoBinding = helper.BindEnum<DebugSymbolType>("debugInfoComboBox", "DebugType");
-			helper.BindBoolean("registerCOMInteropCheckBox", "RegisterForComInterop", false);
-			helper.BindStringEnum("generateSerializationAssemblyComboBox", "GenerateSerializationAssemblies",
-			                      "Auto",
-			                      new StringPair("Off", "Off"),
-			                      new StringPair("On", "On"),
-			                      new StringPair("Auto", "Auto"));
-			helper.BindHexadecimal(Get<TextBox>("dllBaseAddress"), "BaseAddress", 0x400000);
-			helper.BindStringEnum("targetCpuComboBox", "PlatformTarget",
-			                      "AnyCPU",
-			                      new StringPair("AnyCPU", "${res:Dialog.ProjectOptions.Build.TargetCPU.Any}"),
-			                      new StringPair("x86", "${res:Dialog.ProjectOptions.Build.TargetCPU.x86}"),
-			                      new StringPair("x64", "${res:Dialog.ProjectOptions.Build.TargetCPU.x64}"),
-			                      new StringPair("Itanium", "${res:Dialog.ProjectOptions.Build.TargetCPU.Itanium}"));
-		}
-		
-		public override bool StorePanelContents()
-		{
-			if (base.StorePanelContents()) {
+			debugInfoBinding.CreateLocationButton("debugInfoLabel");
+			
+			ConfigurationGuiBinding b;
+			b = helper.BindBoolean("registerCOMInteropCheckBox", "RegisterForComInterop", false);
+			b.DefaultLocation = PropertyStorageLocations.PlatformSpecific;
+			advancedLocationButton = b.CreateLocationButtonInPanel("advancedOutputGroupBox");
+			
+			b = helper.BindStringEnum("generateSerializationAssemblyComboBox", "GenerateSerializationAssemblies",
+			                          "Auto",
+			                          new StringPair("Off", "Off"),
+			                          new StringPair("On", "On"),
+			                          new StringPair("Auto", "Auto"));
+			b.DefaultLocation = PropertyStorageLocations.PlatformSpecific;
+			b.RegisterLocationButton(advancedLocationButton);
+			
+			b = helper.BindHexadecimal(Get<TextBox>("dllBaseAddress"), "BaseAddress", 0x400000);
+			b.DefaultLocation = PropertyStorageLocations.PlatformSpecific;
+			b.RegisterLocationButton(advancedLocationButton);
+			
+			b = helper.BindStringEnum("targetCpuComboBox", "PlatformTarget",
+			                          "AnyCPU",
+			                          new StringPair("AnyCPU", "${res:Dialog.ProjectOptions.Build.TargetCPU.Any}"),
+			                          new StringPair("x86", "${res:Dialog.ProjectOptions.Build.TargetCPU.x86}"),
+			                          new StringPair("x64", "${res:Dialog.ProjectOptions.Build.TargetCPU.x64}"),
+			                          new StringPair("Itanium", "${res:Dialog.ProjectOptions.Build.TargetCPU.Itanium}"));
+			b.DefaultLocation = PropertyStorageLocations.PlatformSpecific;
+			b.RegisterLocationButton(advancedLocationButton);
+			
+			helper.Saved += delegate {
 				if ((DebugSymbolType)Get<ComboBox>("debugInfo").SelectedIndex == DebugSymbolType.Full) {
 					helper.SetProperty("DebugSymbols", "true", debugInfoBinding.Location);
 				} else {
 					helper.SetProperty("DebugSymbols", "false", debugInfoBinding.Location);
 				}
-				return true;
-			} else {
-				return false;
-			}
+			};
 		}
 	}
 }

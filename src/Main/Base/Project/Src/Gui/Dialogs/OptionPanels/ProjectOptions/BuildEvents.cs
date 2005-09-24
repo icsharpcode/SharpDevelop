@@ -30,9 +30,16 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			                    "postBuildEventTextBox",
 			                    "${res:SharpDevelop.FileFilter.AllFiles}|*.*");
 			
-			helper.BindString("preBuildEventTextBox", "PreBuildEvent");
-			helper.BindString("postBuildEventTextBox", "PostBuildEvent");
-			helper.BindEnum<RunPostBuildEvent>("runPostBuildEventComboBox", "RunPostBuildEvent");
+			ConfigurationGuiBinding b;
+			
+			b = helper.BindString("preBuildEventTextBox", "PreBuildEvent");
+			b.CreateLocationButton("preBuildEventTextBox");
+			
+			b = helper.BindString("postBuildEventTextBox", "PostBuildEvent");
+			b.CreateLocationButton("postBuildEventTextBox");
+			
+			b = helper.BindEnum<RunPostBuildEvent>("runPostBuildEventComboBox", "RunPostBuildEvent");
+			b.CreateLocationButton("runPostBuildEventComboBox");
 			
 			helper.AddConfigurationSelector(this);
 		}

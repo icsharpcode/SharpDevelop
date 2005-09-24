@@ -29,6 +29,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				CreateMenuItem("${res:Dialog.ProjectOptions.StoreInUserFile}", PropertyStorageLocations.UserFile)
 			};
 			ContextMenuStrip.Items.AddRange(menuItems);
+			
+			ContextMenuStrip.Items.Add(new ToolStripSeparator());
+			// TODO: Link to the SharpDevelop documentation and explain not only the location-thing, but also what the property clicked actually is.
+			ContextMenuStrip.Items.Add(StringParser.Parse("${res:Global.HelpButtonText}"), null, delegate {
+			                           	MessageService.ShowMessage("${res:Dialog.ProjectOptions.StorageLocationHelp}");
+			                           });
 		}
 		
 		ToolStripMenuItem CreateMenuItem(string text, PropertyStorageLocations location)
@@ -61,9 +67,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			set {
 				if ((value & PropertyStorageLocations.ConfigurationAndPlatformSpecific) != 0) {
 					// remove 'Base' flag if any of the specific flags is set
-					if ((value & PropertyStorageLocations.Base) == PropertyStorageLocations.Base) {
-						value &= ~PropertyStorageLocations.Base;
-					}
+					value &= ~PropertyStorageLocations.Base;
 				} else {
 					// otherwise, add 'Base' flag
 					value |= PropertyStorageLocations.Base;

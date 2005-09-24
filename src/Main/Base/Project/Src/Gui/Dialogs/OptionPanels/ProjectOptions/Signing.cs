@@ -27,12 +27,17 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			SetupFromXmlResource("ProjectOptions.Signing.xfrm");
 			InitializeHelper();
 			
+			ConfigurationGuiBinding b;
+			ChooseStorageLocationButton locationButton;
+			
 			signAssemblyBinding = helper.BindBoolean("signAssemblyCheckBox", "SignAssembly", false);
+			locationButton = signAssemblyBinding.CreateLocationButtonInPanel("signingGroupBox");
 			Get<CheckBox>("signAssembly").CheckedChanged += new EventHandler(UpdateEnabledStates);
 			
 			
 			keyFile = Get<ComboBox>("keyFile");
-			helper.BindString(keyFile, "AssemblyOriginatorKeyFile");
+			b = helper.BindString(keyFile, "AssemblyOriginatorKeyFile");
+			b.RegisterLocationButton(locationButton);
 			FindKeys(baseDirectory);
 			if (keyFile.Text.Length > 0) {
 				if (!keyFile.Items.Contains(keyFile.Text)) {
@@ -50,11 +55,18 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				}
 			};
 			
-			helper.BindBoolean("delaySignOnlyCheckBox", "DelaySign", false);
+			b = helper.BindBoolean("delaySignOnlyCheckBox", "DelaySign", false);
+			b.RegisterLocationButton(locationButton);
 			
 			UpdateEnabledStates(this, EventArgs.Empty);
 			
 			helper.AddConfigurationSelector(this);
+			
+			helper.Saved += delegate {
+				if (Get<CheckBox>("signAssembly").Checked) {
+					helper.SetProperty("AssemblyOriginatorKeyMode", "File", signAssemblyBinding.Location);
+				}
+			};
 		}
 		
 		void FindKeys(string directory)
@@ -101,14 +113,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			ControlDictionary["strongNameSignPanel"].Enabled = Get<CheckBox>("signAssembly").Checked;
 			
 			Get<Button>("changePassword").Enabled = false;
-		}
-		
-		public override bool StorePanelContents()
-		{
-			if (IsDirty && Get<CheckBox>("signAssembly").Checked) {
-				helper.SetProperty("AssemblyOriginatorKeyMode", "File", signAssemblyBinding.Location);
-			}
-			return base.StorePanelContents();
 		}
 	}
 }

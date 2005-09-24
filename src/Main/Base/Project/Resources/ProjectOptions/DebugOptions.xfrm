@@ -4,7 +4,7 @@
     <ClientSize value="{Width=480, Height=312}" />
     <Controls>
       <System.Windows.Forms.GroupBox>
-        <Name value="groupBox1" />
+        <Name value="startActionGroupBox" />
         <Location value="{X=8,Y=8}" />
         <Text value="${res:Dialog.ProjectOptions.DebugOptions.StartAction}" />
         <Size value="{Width=464, Height=100}" />
@@ -57,7 +57,7 @@
         </Controls>
       </System.Windows.Forms.GroupBox>
       <System.Windows.Forms.GroupBox>
-        <Name value="groupBox2" />
+        <Name value="startOptionsGroupBox" />
         <Location value="{X=8,Y=120}" />
         <Text value="${res:Dialog.ProjectOptions.DebugOptions.StartOptions}" />
         <Size value="{Width=464, Height=80}" />

@@ -120,23 +120,23 @@
         <Name value="startupObjectComboBox" />
         <TabIndex value="7" />
         <Anchor value="Top, Left, Right" />
-        <Size value="{Width=288, Height=21}" />
+        <Size value="{Width=275, Height=21}" />
         <FormattingEnabled value="True" />
-        <Location value="{X=160,Y=112}" />
+        <Location value="{X=173,Y=112}" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
         <Name value="label4" />
-        <Location value="{X=160,Y=96}" />
+        <Location value="{X=173,Y=96}" />
         <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.StartupObject}" />
         <TextAlign value="BottomLeft" />
-        <Size value="{Width=288, Height=16}" />
+        <Size value="{Width=275, Height=16}" />
         <TabIndex value="6" />
         <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.ComboBox>
         <Name value="outputTypeComboBox" />
         <TabIndex value="5" />
-        <Size value="{Width=136, Height=21}" />
+        <Size value="{Width=159, Height=21}" />
         <FormattingEnabled value="True" />
         <DropDownStyle value="DropDownList" />
         <Location value="{X=8,Y=112}" />
@@ -146,7 +146,7 @@
         <Location value="{X=8,Y=96}" />
         <Text value="${res:Dialog.ProjectOptions.ApplicationSettings.OutputType}" />
         <TextAlign value="BottomLeft" />
-        <Size value="{Width=136, Height=16}" />
+        <Size value="{Width=159, Height=16}" />
         <TabIndex value="4" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.TextBox>

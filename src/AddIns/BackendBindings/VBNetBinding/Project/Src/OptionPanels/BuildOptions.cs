@@ -27,19 +27,32 @@ namespace VBNetBinding.OptionPanels
 			SetupFromXmlResource("BuildOptions.xfrm");
 			InitializeHelper();
 			
-			helper.BindString("conditionalSymbolsTextBox", "DefineConstants");
-			helper.BindBoolean("optimizeCodeCheckBox", "Optimize", false);
-			helper.BindBoolean("removeOverflowCheckBox", "RemoveIntegerChecks", false);
+			ConfigurationGuiBinding b;
 			
-			helper.BindStringEnum("optionStrictComboBox", "OptionStrict", "Off",
-			                      new StringPair("Off", "Strict Off"),
-			                      new StringPair("On", "Strict On"));
-			helper.BindStringEnum("optionExplicitComboBox", "OptionExplicit", "On",
-			                      new StringPair("Off", "Explicit Off"),
-			                      new StringPair("On", "Explicit On"));
-			helper.BindStringEnum("optionCompareComboBox", "OptionCompare", "Binary",
-			                      new StringPair("Binary", "Compare Binary"),
-			                      new StringPair("Text", "Compare Text"));
+			b = helper.BindString("conditionalSymbolsTextBox", "DefineConstants");
+			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
+			b.CreateLocationButton("conditionalSymbolsTextBox");
+			
+			b = helper.BindBoolean("optimizeCodeCheckBox", "Optimize", false);
+			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
+			b.CreateLocationButton("optimizeCodeCheckBox");
+			
+			b = helper.BindBoolean("removeOverflowCheckBox", "RemoveIntegerChecks", false);
+			b.CreateLocationButton("removeOverflowCheckBox");
+			
+			ChooseStorageLocationButton locationButton;
+			b = helper.BindStringEnum("optionExplicitComboBox", "OptionExplicit", "On",
+			                          new StringPair("Off", "Explicit Off"),
+			                          new StringPair("On", "Explicit On"));
+			locationButton = b.CreateLocationButton("optionExplicitComboBox");
+			b = helper.BindStringEnum("optionStrictComboBox", "OptionStrict", "Off",
+			                          new StringPair("Off", "Strict Off"),
+			                          new StringPair("On", "Strict On"));
+			b.RegisterLocationButton(locationButton);
+			b = helper.BindStringEnum("optionCompareComboBox", "OptionCompare", "Binary",
+			                          new StringPair("Binary", "Compare Binary"),
+			                          new StringPair("Text", "Compare Text"));
+			b.RegisterLocationButton(locationButton);
 			
 			InitOutputPath();
 			InitXmlDoc();
@@ -47,11 +60,6 @@ namespace VBNetBinding.OptionPanels
 			InitWarnings();
 			
 			helper.AddConfigurationSelector(this);
-		}
-		
-		public override bool StorePanelContents()
-		{
-			return base.StorePanelContents();
 		}
 	}
 }

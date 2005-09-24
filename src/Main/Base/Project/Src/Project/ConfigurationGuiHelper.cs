@@ -73,6 +73,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			foreach (ConfigurationGuiBinding binding in bindings) {
 				binding.Load();
 			}
+			if (Loaded != null) {
+				Loaded(this, EventArgs.Empty);
+			}
 			IsDirty = false;
 		}
 		
@@ -83,9 +86,22 @@ namespace ICSharpCode.SharpDevelop.Project
 					return false;
 				}
 			}
+			if (Saved != null) {
+				Saved(this, EventArgs.Empty);
+			}
 			IsDirty = false;
 			return true;
 		}
+		
+		/// <summary>
+		/// This event is raised when another configuration has been loaded.
+		/// </summary>
+		public event EventHandler Loaded;
+		
+		/// <summary>
+		/// This event is raised after the configuration has been saved.
+		/// </summary>
+		public event EventHandler Saved;
 		
 		void ControlValueChanged(object sender, EventArgs e)
 		{
@@ -329,16 +345,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// Bind list of strings to ComboBox.
 		/// entries: value -> Description
 		/// </summary>
-		public void BindStringEnum(string control, string property, string defaultValue, params KeyValuePair<string, string>[] entries)
+		public ConfigurationGuiBinding BindStringEnum(string control, string property, string defaultValue, params KeyValuePair<string, string>[] entries)
 		{
-			BindStringEnum(controlDictionary[control], property, defaultValue, entries);
+			return BindStringEnum(controlDictionary[control], property, defaultValue, entries);
 		}
 		
 		/// <summary>
 		/// Bind list of strings to ComboBox.
 		/// entries: value -> Description
 		/// </summary>
-		public void BindStringEnum(Control control, string property, string defaultValue, params KeyValuePair<string, string>[] entries)
+		public ConfigurationGuiBinding BindStringEnum(Control control, string property, string defaultValue, params KeyValuePair<string, string>[] entries)
 		{
 			ComboBox comboBox = control as ComboBox;
 			if (comboBox != null) {
@@ -347,9 +363,11 @@ namespace ICSharpCode.SharpDevelop.Project
 					valueNames[i] = entries[i].Key;
 					comboBox.Items.Add(StringParser.Parse(entries[i].Value));
 				}
-				AddBinding(property, new ComboBoxBinding(comboBox, valueNames, defaultValue));
+				ComboBoxBinding binding = new ComboBoxBinding(comboBox, valueNames, defaultValue);
+				AddBinding(property, binding);
 				comboBox.SelectedIndexChanged += ControlValueChanged;
 				comboBox.KeyDown += ComboBoxKeyDown;
+				return binding;
 			} else {
 				throw new ApplicationException("Cannot bind " + control.GetType().Name + " to enum property.");
 			}

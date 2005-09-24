@@ -104,11 +104,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				MessageService.ShowMessage("${res:SharpDevelop.Refactoring.LoadSolutionProjectsThreadRunning}");
 				return null;
 			}
-			if (!isLocal) {
-				// for local va
+			List<ProjectItem> files;
+			if (isLocal) {
+				files = new List<ProjectItem>();
+				files.Add(FindItem(ownerClass.CompilationUnit.FileName));
+			} else {
 				ownerClass = FixClass(ownerClass);
+				files = GetPossibleFiles(ownerClass, member);
 			}
-			List<ProjectItem> files = GetPossibleFiles(ownerClass, member);
 			ParseableFileContentEnumerator enumerator = new ParseableFileContentEnumerator(files.ToArray());
 			List<Reference> references = new List<Reference>();
 			try {

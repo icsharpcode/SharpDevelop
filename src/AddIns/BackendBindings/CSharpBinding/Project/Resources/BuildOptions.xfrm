@@ -65,7 +65,7 @@
         </Controls>
       </System.Windows.Forms.GroupBox>
       <System.Windows.Forms.GroupBox>
-        <Name value="groupBox3" />
+        <Name value="outputGroupBox" />
         <Location value="{X=3,Y=161}" />
         <Text value="${res:Dialog.ProjectOptions.Build.Output}" />
         <Size value="{Width=521, Height=270}" />
@@ -162,11 +162,11 @@
             <Location value="{X=164,Y=88}" />
           </System.Windows.Forms.ComboBox>
           <System.Windows.Forms.Label>
-            <Name value="label6" />
-            <Location value="{X=6,Y=86}" />
+            <Name value="debugInfoLabel" />
+            <Location value="{X=13,Y=86}" />
             <Text value="${res:Dialog.ProjectOptions.Build.DebugInfo}" />
             <TextAlign value="MiddleRight" />
-            <Size value="{Width=152, Height=23}" />
+            <Size value="{Width=145, Height=23}" />
             <TabIndex value="5" />
           </System.Windows.Forms.Label>
           <System.Windows.Forms.CheckBox>
@@ -212,7 +212,7 @@
         </Controls>
       </System.Windows.Forms.GroupBox>
       <System.Windows.Forms.GroupBox>
-        <Name value="groupBox2" />
+        <Name value="treatWarningsAsErrorsGroupBox" />
         <Location value="{X=3,Y=523}" />
         <UseCompatibleTextRendering value="True" />
         <Text value="${res:Dialog.ProjectOptions.Build.TreatWarningsAsErrors}" />
@@ -254,7 +254,7 @@
         </Controls>
       </System.Windows.Forms.GroupBox>
       <System.Windows.Forms.GroupBox>
-        <Name value="groupBox1" />
+        <Name value="warningsGroupBox" />
         <Location value="{X=3,Y=437}" />
         <Text value="${res:Dialog.ProjectOptions.Build.ErrorsAndWarnings}" />
         <Size value="{Width=521, Height=80}" />

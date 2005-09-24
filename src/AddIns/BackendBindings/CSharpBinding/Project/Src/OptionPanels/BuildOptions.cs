@@ -30,20 +30,37 @@ namespace CSharpBinding.OptionPanels
 			InitOutputPath();
 			InitXmlDoc();
 			
-			helper.BindString("conditionalSymbolsTextBox", "DefineConstants");
-			helper.BindBoolean("optimizeCodeCheckBox", "Optimize", false);
-			helper.BindBoolean("allowUnsafeCodeCheckBox", "AllowUnsafeBlocks", false);
-			helper.BindBoolean("checkForOverflowCheckBox", "CheckForOverflowUnderflow", false);
-			helper.BindBoolean("noCorlibCheckBox", "NoStdLib", false);
+			ConfigurationGuiBinding b;
+			
+			b = helper.BindString("conditionalSymbolsTextBox", "DefineConstants");
+			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
+			b.CreateLocationButton("conditionalSymbolsTextBox");
+			
+			b = helper.BindBoolean("optimizeCodeCheckBox", "Optimize", false);
+			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
+			b.CreateLocationButton("optimizeCodeCheckBox");
+			
+			b = helper.BindBoolean("allowUnsafeCodeCheckBox", "AllowUnsafeBlocks", false);
+			b.CreateLocationButton("allowUnsafeCodeCheckBox");
+			
+			b = helper.BindBoolean("checkForOverflowCheckBox", "CheckForOverflowUnderflow", false);
+			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
+			b.CreateLocationButton("checkForOverflowCheckBox");
+			
+			b = helper.BindBoolean("noCorlibCheckBox", "NoStdLib", false);
+			b.CreateLocationButton("noCorlibCheckBox");
 			
 			InitAdvanced();
-			helper.BindStringEnum("fileAlignmentComboBox", "FileAlignment",
-			                      "4096",
-			                      new StringPair("512", "512"),
-			                      new StringPair("1024", "1024"),
-			                      new StringPair("2048", "2048"),
-			                      new StringPair("4096", "4096"),
-			                      new StringPair("8192", "8192"));
+			b = helper.BindStringEnum("fileAlignmentComboBox", "FileAlignment",
+			                          "4096",
+			                          new StringPair("512", "512"),
+			                          new StringPair("1024", "1024"),
+			                          new StringPair("2048", "2048"),
+			                          new StringPair("4096", "4096"),
+			                          new StringPair("8192", "8192"));
+			b.DefaultLocation = PropertyStorageLocations.PlatformSpecific;
+			b.RegisterLocationButton(advancedLocationButton);
+			
 			InitWarnings();
 			
 			helper.AddConfigurationSelector(this);

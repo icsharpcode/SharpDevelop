@@ -27,18 +27,31 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			InitializeHelper();
 			
-			helper.BindRadioEnum("StartAction",
-			                     new RadioBinding(StartAction.Project, Get<RadioButton>("startProject")),
-			                     new RadioBinding(StartAction.Program, Get<RadioButton>("startExternalProgram")),
-			                     new RadioBinding(StartAction.StartURL, Get<RadioButton>("startBrowserInURL")));
+			ConfigurationGuiBinding b;
+			ChooseStorageLocationButton locationButton;
+			
+			b = helper.BindRadioEnum("StartAction",
+			                         new RadioBinding(StartAction.Project, Get<RadioButton>("startProject")),
+			                         new RadioBinding(StartAction.Program, Get<RadioButton>("startExternalProgram")),
+			                         new RadioBinding(StartAction.StartURL, Get<RadioButton>("startBrowserInURL")));
+			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
+			locationButton = b.CreateLocationButtonInPanel("startActionGroupBox");
+			
+			b = helper.BindString("startExternalProgramTextBox", "StartProgram");
+			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
+			b.RegisterLocationButton(locationButton);
+			
+			b = helper.BindString("startBrowserInURLTextBox", "StartURL");
+			b.DefaultLocation = PropertyStorageLocations.ConfigurationSpecific;
+			b.RegisterLocationButton(locationButton);
 			
 			Get<RadioButton>("startExternalProgram").CheckedChanged += UpdateEnabledStates;
 			Get<RadioButton>("startBrowserInURL").CheckedChanged += UpdateEnabledStates;
 			
-			helper.BindString("startExternalProgramTextBox", "StartProgram");
-			helper.BindString("startBrowserInURLTextBox", "StartURL");
-			helper.BindString("commandLineArgumentsTextBox", "StartArguments");
-			helper.BindString("workingDirectoryTextBox", "StartWorkingDirectory");
+			b = helper.BindString("commandLineArgumentsTextBox", "StartArguments");
+			locationButton = b.CreateLocationButtonInPanel("startOptionsGroupBox");
+			b = helper.BindString("workingDirectoryTextBox", "StartWorkingDirectory");
+			b.RegisterLocationButton(locationButton);
 			
 			UpdateEnabledStates(this, EventArgs.Empty);
 			
