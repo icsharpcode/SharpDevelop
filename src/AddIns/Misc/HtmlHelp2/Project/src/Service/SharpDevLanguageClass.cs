@@ -9,6 +9,7 @@ namespace HtmlHelp2.SharpDevLanguageClass
 {
 	using System;
 	using System.Collections.Generic;
+	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop.Project;
 	using MSHelpServices;
 
@@ -24,6 +25,27 @@ namespace HtmlHelp2.SharpDevLanguageClass
 
 		SharpDevLanguage()
 		{
+		}
+
+		private static int DevLangCounter(IHxTopic topic)
+		{
+			try
+			{
+				int counter                      = 0;
+				IHxAttributeList topicAttributes = topic.Attributes;
+				foreach(IHxAttribute attr in topicAttributes)
+				{
+					if(String.Compare(attr.DisplayName, "DevLang") == 0)
+					{
+						counter++;
+					}
+				}
+				return counter;
+			}
+			catch
+			{
+				return 0;
+			}
 		}
 
 		public static bool CheckTopicLanguage(IHxTopic topic)
@@ -44,6 +66,16 @@ namespace HtmlHelp2.SharpDevLanguageClass
 			}
 
 			return (tempLanguage == String.Empty || topic.HasAttribute("DevLang", tempLanguage));
+		}
+
+		public static bool CheckUniqueTopicLanguage(IHxTopic topic)
+		{
+			return CheckUniqueTopicLanguage(topic, ProjectService.CurrentProject.Language);
+		}
+
+		public static bool CheckUniqueTopicLanguage(IHxTopic topic, string expectedLanguage)
+		{
+			return (CheckTopicLanguage(topic, expectedLanguage) && DevLangCounter(topic) == 1);
 		}
 
 		public static string GetPatchedLanguage()

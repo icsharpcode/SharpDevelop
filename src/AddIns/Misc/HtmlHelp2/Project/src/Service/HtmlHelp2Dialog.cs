@@ -93,6 +93,7 @@ namespace HtmlHelp2.HelperDialog
 			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.FixedDialog;
 			this.MaximizeBox = false;
 			this.MinimizeBox = false;
+			this.ControlBox = false;
 			this.Name = "HtmlHelp2Dialog";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
 			this.Text = "HtmlHelp2Dialog";

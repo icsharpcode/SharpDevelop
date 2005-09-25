@@ -93,8 +93,7 @@ namespace HtmlHelp2.Environment
 				XmlNode node = xmldoc.SelectSingleNode("/help2environment/collection");
 				if(node != null) DefaultNamespaceName = node.InnerText;
 
-				LoggingService.Info(String.Format("Help 2.0: using \"{0}\" as default namespace",
-				                                  DefaultNamespaceName));
+				LoggingService.Info("Help 2.0: using saved configuration");
 			}
 			catch
 			{
@@ -283,31 +282,12 @@ namespace HtmlHelp2.Environment
 
 			try
 			{
-				topics = ((IHxIndex)dynamicHelp).GetTopicsFromString(searchTerm, 0);
-				LoggingService.Info("Help 2.0: Dynamic Help successfully called");
+				topics = dynamicHelp.GetTopicsFromString(searchTerm, 0);
+				LoggingService.Info("Help 2.0: Dynamic Help called");
 			}
 			catch
 			{
 				LoggingService.Error("Help 2.0: Dynamic Help search failed");
-			}
-			dynamicHelpIsBusy   = false;
-			return topics;
-		}
-
-		public static IHxTopicList GetMatchingTopicsForKeywordSearch(string searchTerm)
-		{
-			if(dynamicHelpIsBusy) return null;
-			IHxTopicList topics = null;
-			dynamicHelpIsBusy   = true;
-
-			try
-			{
-				topics = GetIndex(currentSelectedFilterQuery).GetTopicsFromString(searchTerm, 0);
-				LoggingService.Info("Help 2.0: Keyword search successfully called");
-			}
-			catch
-			{
-				LoggingService.Error("Help 2.0: Keyword search failed");
 			}
 			dynamicHelpIsBusy   = false;
 			return topics;

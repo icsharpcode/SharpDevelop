@@ -30,11 +30,6 @@ namespace HtmlHelp2
 	using MSHelpServices;
 
 
-	// TODO: if there are no DH results, implement Keyword search (index)
-	// I'm a little stupid at this point, I guess, :o(
-	// How to get the word UNDER the cursor for an ordinary simple keyword search?
-
-
 	public class ShowDynamicHelpMenuCommand : AbstractMenuCommand
 	{
 		public override void Run()
@@ -48,6 +43,7 @@ namespace HtmlHelp2
 	{
 		protected HtmlHelp2DynamicHelpBrowserControl dynamicHelpBrowser;
 		private StringCollection dynamicHelpTerms   = new StringCollection();
+		private Point lastPoint                     = Point.Empty;
 		private string debugPreElement              = String.Empty;
 		private bool enableDebugInfo                = false;
 
@@ -64,34 +60,45 @@ namespace HtmlHelp2
 		public HtmlHelp2DynamicHelpPad()
 		{
 			dynamicHelpBrowser                      = new HtmlHelp2DynamicHelpBrowserControl();
+			dynamicHelpBrowser.BuildANothing();
 			ParserService.ParserUpdateStepFinished += UpdateTick;
 			PropertyPad.SelectedObjectChanged      += new EventHandler(this.FormsDesignerSelectedObjectChanged);
 			PropertyPad.SelectedGridItemChanged    += new SelectedGridItemChangedEventHandler(this.FormsDesignerSelectedGridItemChanged);
 			ProjectService.SolutionClosed          += new EventHandler(this.SolutionClosed);
 		}
 
-		#region WebBrowser Scripting
+		#region Dynamic Help Calls
 		private void BuildDynamicHelpList()
 		{
 			if(this.dynamicHelpTerms.Count == 0) return;
-			this.RemoveAllChildren();
+			dynamicHelpBrowser.RemoveAllChildren();
+
 			this.debugPreElement  = String.Empty;
 			bool helpResults      = false;
 
 			Cursor.Current        = Cursors.WaitCursor;
 			foreach(string currentHelpTerm in this.dynamicHelpTerms)
 			{
-				helpResults       = (this.CallDynamicHelp(currentHelpTerm, false) || helpResults);
-			}
-
-			if(!helpResults)
-			{
-				foreach(string currentHelpTerm in this.dynamicHelpTerms)
+				if(!currentHelpTerm.StartsWith("!"))
 				{
-					this.CallDynamicHelp(currentHelpTerm, true);
+					helpResults   = (this.CallDynamicHelp(currentHelpTerm, false) || helpResults);
 				}
 			}
-			dynamicHelpBrowser.BuildDefaultHelpEntries();
+//			if(!helpResults)
+//			{
+				foreach(string currentHelpTerm in this.dynamicHelpTerms)
+				{
+					if(currentHelpTerm.StartsWith("!"))
+					{
+						helpResults   = (this.CallDynamicHelp(currentHelpTerm.Substring(1), true) || helpResults);
+					}
+				}
+//			}
+			if(!helpResults)
+			{
+				dynamicHelpBrowser.BuildANothing();
+			}
+//			dynamicHelpBrowser.BuildDefaultHelpEntries();
 			Cursor.Current        = Cursors.Default;
 
 			this.debugPreElement += String.Format("<br>Current project language: {0}",
@@ -107,8 +114,7 @@ namespace HtmlHelp2
 
 			try
 			{
-				if(keywordSearch) topics = HtmlHelp2Environment.GetMatchingTopicsForKeywordSearch(searchTerm);
-				else topics              = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(searchTerm);
+				topics                   = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(searchTerm);
 				result                   = (topics != null && topics.Count > 0);
 
 				this.debugPreElement    += String.Format("{0} ({1}): {2} {3}<br>",
@@ -122,10 +128,10 @@ namespace HtmlHelp2
 				List<IHxTopic> newTopics = this.SortTopics(topics);
 				foreach(IHxTopic topic in newTopics)
 				{
-					if(SharpDevLanguage.CheckTopicLanguage(topic))
+					if((keywordSearch)?SharpDevLanguage.CheckUniqueTopicLanguage(topic):SharpDevLanguage.CheckTopicLanguage(topic))
 					{
 						this.BuildNewChild(topic.Location,
-						                   topic.get_Title(HxTopicGetTitleType.HxTopicGetTOCTitle,
+						                   topic.get_Title(HxTopicGetTitleType.HxTopicGetRLTitle,
 						                                   HxTopicGetTitleDefVal.HxTopicGetTitleFileName),
 						                   topic.URL);
 					}
@@ -137,11 +143,6 @@ namespace HtmlHelp2
 		private void BuildNewChild(string sectionName, string topicName, string topicUrl)
 		{
 			dynamicHelpBrowser.BuildNewChild(sectionName, topicName, topicUrl);
-		}
-
-		private void RemoveAllChildren()
-		{
-			dynamicHelpBrowser.RemoveAllChildren();
 		}
 		#endregion
 
@@ -201,6 +202,11 @@ namespace HtmlHelp2
 			ExpressionResult expr = expressionFinder.FindFullExpression(content, caret.Offset);
 			if (expr.Expression == null) return null;
 
+			// save the current position
+			if(this.lastPoint != null && this.lastPoint == caret.Position) return null;
+			this.lastPoint = caret.Position;
+			this.AddToStringCollection(String.Format("!{0}", expr.Expression));
+
 			return ParserService.Resolve(expr, caret.Line, caret.Column, fileName, content);
 		}
 		#endregion
@@ -243,7 +249,8 @@ namespace HtmlHelp2
 
 		private void SolutionClosed(object sender, EventArgs e)
 		{
-			this.RemoveAllChildren();
+			dynamicHelpBrowser.RemoveAllChildren();
+			dynamicHelpBrowser.BuildANothing();
 		}
 
 		#region StringCollection & Sorting
@@ -292,6 +299,7 @@ namespace HtmlHelp2
 			{
 				int result             = CompareType("kbSyntax", x, y);
 				if(result == 0) result = CompareType("kbHowTo", x, y);
+				if(result == 0) result = CompareType("kbOrient", x, y);
 				if(result == 0) result = CompareType("kbArticle", x, y);
 
 				return result;
@@ -312,8 +320,8 @@ namespace HtmlHelp2
 
 	public class HtmlHelp2DynamicHelpBrowserControl : UserControl
 	{
-		WebBrowser axWebBrowser      = new WebBrowser();
-		ToolStrip dynamicHelpToolbar = new ToolStrip();
+		WebBrowser axWebBrowser      = null;
+		ToolStrip dynamicHelpToolbar = null;
 		int internalIndex            = 0;
 		string[] toolbarButtons      = new string[] {
 			"${res:AddIns.HtmlHelp2.Contents}",
@@ -332,7 +340,6 @@ namespace HtmlHelp2
 		public HtmlHelp2DynamicHelpBrowserControl()
 		{
 			this.InitializeComponents();
-			this.LoadDynamicHelpPage();
 		}
 
 		private void InitializeComponents()
@@ -340,20 +347,24 @@ namespace HtmlHelp2
 			Dock = DockStyle.Fill;
 			Size = new Size(500, 500);
 
+			axWebBrowser                                 = new WebBrowser();
 			Controls.Add(axWebBrowser);
 			axWebBrowser.Dock                            = DockStyle.Fill;
 			axWebBrowser.WebBrowserShortcutsEnabled      = false;
 			axWebBrowser.IsWebBrowserContextMenuEnabled  = false;
 			axWebBrowser.AllowWebBrowserDrop             = false;
+			this.LoadDynamicHelpPage();
 
+			dynamicHelpToolbar                           = new ToolStrip();
 			Controls.Add(dynamicHelpToolbar);
 			dynamicHelpToolbar.Dock                      = DockStyle.Top;
 			dynamicHelpToolbar.AllowItemReorder          = false;
+			dynamicHelpToolbar.ShowItemToolTips          = false;
 			dynamicHelpToolbar.Enabled                   = HtmlHelp2Environment.IsReady;
 			for(int i = 0; i < toolbarButtons.Length; i++)
 			{
 				ToolStripButton button = new ToolStripButton();
-				button.ToolTipText     = StringParser.Parse(toolbarButtons[i]);
+				button.Text            = StringParser.Parse(toolbarButtons[i]);
 				button.ImageIndex      = i;
 				button.Click          += new EventHandler(this.ToolStripButtonClicked);
 
@@ -370,10 +381,6 @@ namespace HtmlHelp2
 			{
 				HtmlHelp2Environment.NamespaceReloaded   += new EventHandler(this.NamespaceReloaded);
 			}
-		}
-
-		private void DynamicHelpBrowserCreated(object sender, EventArgs e)
-		{
 		}
 
 		private void LoadDynamicHelpPage()
@@ -484,7 +491,7 @@ namespace HtmlHelp2
 
 				HtmlElement b       = axWebBrowser.Document.CreateElement("b");
 				b.InnerText         = sectionName;
-				b.Style             = "cursor:pointer";
+				b.Style             = "cursor:auto";
 				b.Id                = this.internalIndex.ToString();
 				b.Click            += new HtmlElementEventHandler(this.OnSectionClick);
 				span.AppendChild(b);
@@ -534,6 +541,20 @@ namespace HtmlHelp2
 			catch {}
 
 			return br;
+		}
+
+		public void BuildANothing()
+		{
+			try
+			{
+				HtmlElement nothing = axWebBrowser.Document.CreateElement("b");
+				nothing.InnerText   = "No data is available for the current selection.";
+				nothing.SetAttribute("title", nothing.InnerText);
+
+				axWebBrowser.Document.Body.InsertAdjacentElement(HtmlElementInsertionOrientation.AfterBegin,
+				                                                 nothing);
+			}
+			catch {}
 		}
 
 		private bool DoesLinkExist(HtmlElement parentNode, string topicName, string topicUrl)
