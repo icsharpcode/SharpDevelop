@@ -84,21 +84,17 @@ namespace HtmlHelp2
 					helpResults   = (this.CallDynamicHelp(currentHelpTerm, false) || helpResults);
 				}
 			}
-//			if(!helpResults)
-//			{
-				foreach(string currentHelpTerm in this.dynamicHelpTerms)
+			foreach(string currentHelpTerm in this.dynamicHelpTerms)
+			{
+				if(currentHelpTerm.StartsWith("!"))
 				{
-					if(currentHelpTerm.StartsWith("!"))
-					{
-						helpResults   = (this.CallDynamicHelp(currentHelpTerm.Substring(1), true) || helpResults);
-					}
+					helpResults   = (this.CallDynamicHelp(currentHelpTerm.Substring(1), true) || helpResults);
 				}
-//			}
+			}
 			if(!helpResults)
 			{
 				dynamicHelpBrowser.BuildANothing();
 			}
-//			dynamicHelpBrowser.BuildDefaultHelpEntries();
 			Cursor.Current        = Cursors.Default;
 
 			this.debugPreElement += String.Format("<br>Current project language: {0}",
@@ -420,7 +416,6 @@ namespace HtmlHelp2
 		{
 			this.LoadDynamicHelpPage();
 			this.RemoveAllChildren();
-			this.BuildDefaultHelpEntries();
 		}
 		#endregion
 
@@ -618,7 +613,6 @@ namespace HtmlHelp2
 			catch {}
 		}
 
-
 		public void RemoveAllChildren()
 		{
 			try
@@ -627,30 +621,6 @@ namespace HtmlHelp2
 				axWebBrowser.Document.Body.InnerHtml = "";
 			}
 			catch {}
-		}
-
-		public void BuildDefaultHelpEntries()
-		{
-			try
-			{
-				XmlDocument xmldoc   = new XmlDocument();
-				xmldoc.Load(String.Format("{0}\\DynamicHelpDefaultEntries.xml",
-				                          Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location)));
-
-				XmlNodeList sectionNodes = xmldoc.SelectNodes("/defaultentries/section[@name]");
-				foreach(XmlNode sectionNode in sectionNodes)
-				{
-					XmlNodeList urlNodes = sectionNode.SelectNodes("url[@name and text()!=\"\"]");
-					foreach(XmlNode urlNode in urlNodes)
-					{
-						string sectionName = sectionNode.Attributes.GetNamedItem("name").InnerText;
-						string url         = urlNode.InnerText;
-						string id          = urlNode.Attributes.GetNamedItem("name").InnerText;
-						this.BuildNewChild(StringParser.Parse(sectionName), id, url);
-					}
-				}
-			}
-			catch { /* I don't care about the results */ }			
 		}
 		#endregion
 

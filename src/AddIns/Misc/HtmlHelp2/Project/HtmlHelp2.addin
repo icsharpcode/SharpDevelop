@@ -12,17 +12,12 @@
 	<Path name = "/SharpDevelop/Views/Browser/SchemeExtensions">
 		<BrowserSchemeExtension id    = "ms-help" class = "HtmlHelp2.BrowserScheme"/>
 	</Path>
-	
+
 	<Path name = "/SharpDevelop/Services/HelpProvider">
 		<Class id = "HtmlHelp2" class = "HtmlHelp2.MsHelpProvider"/>
 	</Path>
-	
+
 	<Path name = "/SharpDevelop/Workbench/Pads">
-		<!--<Pad id       = "DynamicHelpPad"
-		     category = "Help2"
-		     title    = "${res:AddIns.HtmlHelp2.DynamicHelp}"
-		     icon     = "HtmlHelp2.16x16.DynamicHelp"
-		     class    = "HtmlHelp2.HtmlHelp2DynamicHelpPad"/>-->
 		<Pad id       = "TocPad"
 		     category = "Help2"
 		     title    = "${res:AddIns.HtmlHelp2.Contents}"
@@ -38,11 +33,6 @@
 		     title    = "${res:AddIns.HtmlHelp2.Search}"
 		     icon     = "HtmlHelp2.16x16.Search"
 		     class    = "HtmlHelp2.HtmlHelp2SearchPad"/>
-		<!--<Pad id       = "FavoritesPad"
-		     category = "Help2"
-		     title    = "${res:AddIns.HtmlHelp2.Favorites}"
-		     icon     = "HtmlHelp2.16x16.Favorites"
-		     class    = "HtmlHelp2.HtmlHelp2FavoritesPad"/>-->
 		<Pad id       = "IndexResultsPad"
 		     category = "Help2"
 		     title    = "${res:AddIns.HtmlHelp2.IndexResults}"
@@ -57,12 +47,6 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Help">
-		<!--<MenuItem id           = "DynamicHelpPadCommand"
-			      insertafter  = "Separator1"
-			      label        = "${res:AddIns.HtmlHelp2.DynamicHelp}"
-			      icon         = "HtmlHelp2.16x16.DynamicHelp"
-			      shortcut     = "Control|F1"
-			      class        = "HtmlHelp2.ShowDynamicHelpMenuCommand"/> -->
 		<MenuItem id           = "TocPadCommand"
 		          insertafter  = "Separator1"
 		          label        = "${res:AddIns.HtmlHelp2.Contents}"
@@ -81,15 +65,6 @@
 		          shortcut     = "Control|Alt|F3"
 		          class        = "HtmlHelp2.ShowSearchMenuCommand"
 		          insertafter  = "IndexPadCommand"/>
-		<!--<MenuItem id           = "FavoritesPadCommand"
-		          label        = "${res:AddIns.HtmlHelp2.Favorites}"
-		          icon         = "HtmlHelp2.16x16.Favorites"
-		          shortcut     = "Control|Alt|F"
-		          class        = "HtmlHelp2.ShowFavoritesMenuCommand"
-		          insertafter  = "SearchPadCommand"/>
-		<MenuItem id           = "HtmlHelp2Separator1"
-		          type         = "Separator"
-		          insertafter  = "FavoritesPadCommand"/>-->
 		<MenuItem id           = "IndexResultsPadCommand"
 		          label        = "${res:AddIns.HtmlHelp2.IndexResults}"
 		          icon         = "HtmlHelp2.16x16.IndexResults"

@@ -6,7 +6,7 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{918487B7-2153-4618-BBB3-344DBDDF2A2A}</ProjectGuid>
-    <ProductVersion>8.0.50630</ProductVersion>
+    <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
@@ -45,7 +45,9 @@
     <Compile Include="src\BaseControls\TocPad.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <None Include="src\BaseControls\DynamicHelpPad.cs" />
+    <Compile Include="src\BaseControls\DynamicHelpPad.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
     <None Include="src\BaseControls\FavoritesPad.cs" />
     <Compile Include="src\BaseControls\IndexPad.cs">
       <SubType>UserControl</SubType>
@@ -69,14 +71,12 @@
     <Compile Include="src\Service\AxMSHelpControls.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="src\Service\HtmlHelp2Options.cs">
-      <SubType>UserControl</SubType>
-    </Compile>
+    <Compile Include="src\Service\HtmlHelp2Options.cs" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Resources\Favorites.16x16.Delete.bmp" />
-    <EmbeddedResource Include="Resources\Favorites.16x16.MoveDown.bmp" />
-    <EmbeddedResource Include="Resources\Favorites.16x16.MoveUp.bmp" />
-    <EmbeddedResource Include="Resources\Favorites.16x16.Rename.bmp" />
+    <None Include="Resources\Favorites.16x16.Delete.bmp" />
+    <None Include="Resources\Favorites.16x16.MoveDown.bmp" />
+    <None Include="Resources\Favorites.16x16.MoveUp.bmp" />
+    <None Include="Resources\Favorites.16x16.Rename.bmp" />
     <EmbeddedResource Include="Resources\HtmlHelp2Options.xfrm" />
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.TextZoom.png" />
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.AddToFavorites.png" />
@@ -87,15 +87,8 @@
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Search.png" />
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Toc.png" />
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Index.png" />
-    <None Include="Resources\OpenBook.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\ClosedBook.png">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
-    <None Include="Resources\context.html">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </None>
+    <Compile Include="src\Service\SharpDevLanguageClass.cs" />
+    <None Include="HtmlHelp2.DynamicHelp.addin" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -108,6 +101,15 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Content Include="ClosedBook.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="context.html">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="OpenBook.png">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
