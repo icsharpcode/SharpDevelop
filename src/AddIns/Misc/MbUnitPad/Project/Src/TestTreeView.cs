@@ -7,11 +7,14 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 using MbUnit.Forms;
 using MbUnit.Core;
 using MbUnit.Core.Graph;
@@ -58,6 +61,12 @@ namespace ICSharpCode.MbUnitPad
 			}
 		}
 		
+		public bool IsPopulated {
+			get {
+				return TypeTree.Nodes.Count > 0;
+			}
+		}
+		
 		public void ExpandChildNode(TreeNode node)
 		{
 			TypeTree.BeginUpdate();
@@ -94,38 +103,42 @@ namespace ICSharpCode.MbUnitPad
 		
 		public void GotoDefinition()
 		{
-			MessageBox.Show("Not implemented.");
-//			UnitTreeNode node = SelectedNode as UnitTreeNode;
-//			if (node != null) {
-//				string fullMemberName = null;
-//				Fixture fixture = null;
-//				switch (node.TestNodeType) {
-//					case TestNodeType.Test:
-//						fixture = FindFixture(node.DomainIdentifier, node.Parent.Text);
-//						if (fixture != null)
-//							fullMemberName = String.Concat(fixture.Type.FullName, ".", node.Text);						
-//						break;
-//						
-//					case TestNodeType.Fixture:
-//						fixture = FindFixture(node.DomainIdentifier, node.Text);
-//						if (fixture != null) 
-//							fullMemberName = fixture.Type.FullName;
-//						break;
-//				}
-//				
-//				LoggingService.Debug("MemberName=" + fullMemberName);
-//				if (fullMemberName != null) {
-//					foreach (IProjectContent projectContent in ParserService.AllProjectContents) {
-//						LoggingService.Debug("Checking project content...");
-//						Position pos = projectContent.GetPosition(fullMemberName);
-//						if (pos != null && pos.Cu != null) {
-//							LoggingService.Debug("Pos=" + pos.Line + ", " + pos.Column);
-//							FileService.JumpToFilePosition(pos.Cu.FileName, Math.Max(0, pos.Line - 1), Math.Max(0, pos.Column - 1));
-//							break;
-//						}
-//					}
-//				}
-//			}
+			UnitTreeNode node = SelectedNode as UnitTreeNode;
+			if (node != null) {
+				string methodName = null;
+				string fixtureName = null;
+				switch (node.TestNodeType) {
+					case TestNodeType.Test:
+						methodName = node.Text;
+						fixtureName = node.Parent.Text;
+						break;
+						
+					case TestNodeType.Fixture:
+						fixtureName = node.Text;
+						break;
+				}
+				
+				if (fixtureName != null) {
+					List<IClass> fixtures = FindTestFixtures(fixtureName);
+					if (fixtures.Count > 0) {
+						if (methodName == null) {
+							// Go to fixture definition.
+							IClass c = fixtures[0];
+							if (c.CompilationUnit != null) {
+								FileService.JumpToFilePosition(c.CompilationUnit.FileName, c.Region.BeginLine - 1, c.Region.BeginColumn - 1);
+							}
+						} else {
+							foreach (IClass c in fixtures) {
+								IMethod method = FindTestMethod(c, methodName);
+								if (method != null) {
+									FileService.JumpToFilePosition(c.CompilationUnit.FileName, method.Region.BeginLine - 1, method.Region.BeginColumn - 1);
+									break;
+								}
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		static MessageViewCategory testRunnerCategory;
@@ -251,28 +264,46 @@ namespace ICSharpCode.MbUnitPad
 			}
 		}
 		
-//		TreeTestDomain FindTestDomain(Guid id)
-//		{
-//			foreach (TreeTestDomain d in TestDomains) {
-//				if (d.Identifier == id) {
-//					return d;
-//				}
-//			}
-//			return null;
-//		}
-//		
-//		Fixture FindFixture(Guid testDomainId, string name)
-//		{
-//			TestDomain testDomain = FindTestDomain(testDomainId);
-//			if (testDomain != null) {
-//				FixtureDependencyGraph graph = testDomain.TestEngine.Explorer.FixtureGraph;
-//				foreach (Fixture fixture in graph.Fixtures) {
-//					if (fixture.Name == name) {
-//						return fixture;
-//					}
-//				}
-//			}
-//			return null;
-//		}
+		List<IClass> FindTestFixtures(string name)
+		{
+			List<IClass> fixtures = new List<IClass>();
+			if (ProjectService.OpenSolution != null) {
+				foreach (IProject project in ProjectService.OpenSolution.Projects) {
+					IProjectContent projectContent = ParserService.GetProjectContent(project);
+					if (projectContent != null) {
+						foreach (IClass c in projectContent.Classes) {
+							if (c.Name == name) {
+								if (HasAttribute(c.Attributes, "TestFixture")) {
+									fixtures.Add(c);
+								}
+							}
+						}
+					}
+				}
+			}
+			return fixtures;
+		}
+		
+		IMethod FindTestMethod(IClass c, string name)
+		{
+			foreach (IMethod method in c.Methods) {
+				if (method.Name == name) {
+					if (HasAttribute(method.Attributes, "Test")) {
+					    return method;
+					}
+				}
+			}
+			return null;
+		}
+		
+		bool HasAttribute(IList<IAttribute> attributes, string name)
+		{
+			foreach (IAttribute attr in attributes) {
+				if (attr.Name == name) {
+					return true;
+				}
+			}
+			return false;
+		}
 	}
 }

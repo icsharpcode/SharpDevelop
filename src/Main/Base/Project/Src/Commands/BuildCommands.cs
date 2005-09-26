@@ -50,7 +50,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (ProjectService.OpenSolution != null) {
 				Build.BeforeBuild();
 				Build.ShowResults(ProjectService.OpenSolution.Build());
+				Build.AfterBuild();
 			}
+		}
+		
+		public static void AfterBuild()
+		{
+			ProjectService.OnEndBuild();
 		}
 	}
 	
@@ -61,6 +67,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (ProjectService.OpenSolution != null) {
 				Build.BeforeBuild();
 				Build.ShowResults(ProjectService.OpenSolution.Rebuild());
+				Build.AfterBuild();
 			}
 		}
 	}
@@ -107,6 +114,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (ProjectService.CurrentProject != null) {
 				Build.BeforeBuild();
 				BuildProject.ShowResults(ProjectService.CurrentProject.Build());
+				Build.AfterBuild();
 			}
 		}
 	}
@@ -118,6 +126,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (ProjectService.CurrentProject != null) {
 				Build.BeforeBuild();
 				BuildProject.ShowResults(ProjectService.CurrentProject.Rebuild());
+				Build.AfterBuild();
 			}
 		}
 	}

@@ -385,6 +385,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public static void OnEndBuild()
+		{
+			OnEndBuild(new EventArgs());
+		}
+		
 		static void OnEndBuild(EventArgs e)
 		{
 			if (EndBuild != null) {

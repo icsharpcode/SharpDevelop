@@ -50,6 +50,7 @@ namespace ICSharpCode.MbUnitPad
 			ctl = new Panel();
 			treeView = new TestTreeView();
 			treeView.Dock = DockStyle.Fill;
+			treeView.TypeTree.KeyPress += TreeViewKeyPress;
 			
 			ctl.Controls.Add(treeView);
 			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/MbUnitPad/Toolbar");
@@ -58,6 +59,7 @@ namespace ICSharpCode.MbUnitPad
 			
 			ProjectService.SolutionLoaded += OnSolutionLoaded;
 			ProjectService.SolutionClosed += OnSolutionClosed;
+			ProjectService.EndBuild += OnEndBuild;
 		}
 		
 		/// <summary>
@@ -67,6 +69,7 @@ namespace ICSharpCode.MbUnitPad
 		{
 			ProjectService.SolutionLoaded -= OnSolutionLoaded;
 			ProjectService.SolutionClosed -= OnSolutionClosed;
+			ProjectService.EndBuild -= OnEndBuild;
 			ctl.Dispose();
 		}
 		
@@ -89,6 +92,7 @@ namespace ICSharpCode.MbUnitPad
 		
 		public void RunTests()
 		{
+			TaskService.Clear();
 			if (treeView.TypeTree.Nodes.Count == 0) {
 				treeView.TreePopulated += StartTestsAfterTreePopulation;
 				treeView.FinishTests += FinishTests;
@@ -106,6 +110,7 @@ namespace ICSharpCode.MbUnitPad
 			treeView.AbortWorkerThread();
 			runningTests = false;
 			UpdateToolbar();
+			ShowErrorList();
 		}
 		
 		void FinishTests(object sender, EventArgs e)
@@ -113,6 +118,7 @@ namespace ICSharpCode.MbUnitPad
 			treeView.FinishTests -= FinishTests;
 			runningTests = false;
 			WorkbenchSingleton.SafeThreadAsyncCall(this, "UpdateToolbar");
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "ShowErrorList");
 		}
 		
 		void StartTestsAfterTreePopulation(object sender, EventArgs e)
@@ -126,6 +132,7 @@ namespace ICSharpCode.MbUnitPad
 		
 		public void ReloadAssemblyList()
 		{
+			LoggingService.Debug("ReloadAssemblyList");
 			treeView.TestDomains.Clear();
 			foreach (IProject project in ProjectService.OpenSolution.Projects) {
 				bool referenceFound = false;
@@ -180,6 +187,31 @@ namespace ICSharpCode.MbUnitPad
 		void UpdateToolbar()
 		{
 			ToolbarService.UpdateToolbar(toolStrip);
+		}
+		
+		void TreeViewKeyPress(object sender, KeyPressEventArgs e)
+		{
+			if (e.KeyChar == '\r') {
+				treeView.GotoDefinition();
+			} else if (e.KeyChar == ' ') {
+				RunTests();
+			}
+		}
+		
+		void ShowErrorList()
+		{
+			if (TaskService.TaskCount > 0) {
+				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
+			}
+		}
+		
+		void OnEndBuild(object sender, EventArgs e)
+		{
+			LoggingService.Info("OnEndBuild");
+			if (treeView.IsPopulated) {
+				LoggingService.Debug("treeView.IsPopulated == true");
+				WorkbenchSingleton.SafeThreadAsyncCall(this, "ReloadAssemblyList");
+			}
 		}
 	}
 }
