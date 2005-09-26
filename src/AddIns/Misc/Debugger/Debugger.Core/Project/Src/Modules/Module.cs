@@ -24,15 +24,14 @@ namespace DebuggerLibrary
 		int orderOfLoading = 0;
 		readonly ICorDebugModule corModule;
 		ISymbolReader symReader;
-		object pMetaDataInterface;
 		IMetaDataImport metaDataInterface;
-
+		
 		internal MetaData MetaData {
 			get {
 				return new MetaData(metaDataInterface);
 			}
 		}
-
+		
 		public ISymbolReader SymReader {
 			get {
 				return symReader;
@@ -97,7 +96,7 @@ namespace DebuggerLibrary
 				orderOfLoading = value;
 			}
 		}
-
+		
 		public bool JMCStatus {
 			set {
 				uint unused = 0;
@@ -114,12 +113,13 @@ namespace DebuggerLibrary
 			pModule.IsDynamic(out isDynamic);
 			
 			pModule.IsInMemory(out isInMemory);
-
+			
 			Guid metaDataInterfaceGuid = new Guid("{ 0x7dac8207, 0xd3ae, 0x4c75, { 0x9b, 0x67, 0x92, 0x80, 0x1a, 0x49, 0x7d, 0x44 } }");
+			object pMetaDataInterface;
 			pModule.GetMetaDataInterface(ref metaDataInterfaceGuid, out pMetaDataInterface);
 			
 			metaDataInterface = (IMetaDataImport) pMetaDataInterface;
-
+			
 			uint pStringLenght = 0; // Terminating character included in pStringLenght
 			IntPtr pString = IntPtr.Zero;
 			pModule.GetName(pStringLenght,
@@ -132,23 +132,29 @@ namespace DebuggerLibrary
 			                pString);
 			fullPath = Marshal.PtrToStringUni(pString);
 			Marshal.FreeHGlobal(pString);
-            
+			
 			
 			SymBinder symBinder = new SymBinder();
-            try {
-			    symReader = symBinder.GetReader(Marshal.GetIUnknownForObject(metaDataInterface), fullPath, string.Empty);
-            } catch (System.Exception) {
-                symReader = null;
-            }
-
+			IntPtr ptr = IntPtr.Zero;
+			try {
+				ptr = Marshal.GetIUnknownForObject(metaDataInterface);
+				symReader = symBinder.GetReader(ptr, fullPath, string.Empty);
+			} catch (System.Exception) {
+				symReader = null;
+			} finally {
+				if (ptr != IntPtr.Zero) {
+					Marshal.Release(ptr);
+				}
+			}
+			
 			JMCStatus = SymbolsLoaded;
 		}
-
+		
 		public void ApplyChanges(byte[] metadata, byte[] il)
 		{
 			(corModule as ICorDebugModule2).ApplyChanges((uint)metadata.Length, metadata, (uint)il.Length, il);
 		}
-
+		
 		public void Dispose()
 		{
 			if (symReader != null) {
@@ -156,7 +162,18 @@ namespace DebuggerLibrary
 					System.Reflection.MethodInfo m = symReader.GetType().GetMethod("{dtor}");
 					m.Invoke(symReader, null);
 				} catch {
+					Console.WriteLine("symReader release failed. ({dtor})");
+				} finally {
+					symReader = null;
 				}
+			}
+			
+			try {
+				Marshal.FinalReleaseComObject(metaDataInterface);
+			} catch {
+				Console.WriteLine("metaDataInterface release failed. (FinalReleaseComObject)");
+			} finally {
+				metaDataInterface = null;
 			}
 		}
 	}

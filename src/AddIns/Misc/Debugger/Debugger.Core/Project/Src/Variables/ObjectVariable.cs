@@ -55,10 +55,10 @@ namespace DebuggerLibrary
 			uint classToken;
 			corClass.GetToken(out classToken);
 			corClass.GetModule(out corModule);
-			metaData = new Module(corModule).MetaData;
-
+			metaData = debugger.GetModule(corModule).MetaData;
+			
 			classProps = metaData.GetTypeDefProps(classToken);
-
+			
 			corModuleSuperclass = corModule;
 		}
 
