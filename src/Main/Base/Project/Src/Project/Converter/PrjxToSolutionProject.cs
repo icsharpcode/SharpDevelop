@@ -228,14 +228,18 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			string oldUserFile = fileName + ".user.old";
 			File.Copy(fileName, old, true);
 			File.Delete(fileName);
-			File.Copy(userFile, oldUserFile, true);
-			File.Delete(userFile);
+			if (File.Exists(userFile)) {
+				File.Copy(userFile, oldUserFile, true);
+				File.Delete(userFile);
+			}
 			Conversion conversion = new Conversion();
 			if (Path.GetExtension(fileName).ToLower() == ".vbproj")
 				conversion.IsVisualBasic = true;
 			Solution.ReadSolutionInformation(Solution.SolutionBeingLoaded.FileName, conversion);
 			RunConverter(old, fileName, "vsnet2msbuild.xsl", conversion);
-			RunConverter(oldUserFile, userFile, "vsnet2msbuild_user.xsl", conversion);
+			if (File.Exists(oldUserFile)) {
+				RunConverter(oldUserFile, userFile, "vsnet2msbuild_user.xsl", conversion);
+			}
 		}
 	}
 }
