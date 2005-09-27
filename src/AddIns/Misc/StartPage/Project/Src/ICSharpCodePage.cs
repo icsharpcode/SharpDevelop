@@ -555,10 +555,10 @@ namespace ICSharpCode.StartPage
 					}
 				} catch {}
 				projectSection.Append("</TABLE></DIV><BR/><BR/>");
-				projectSection.Append(String.Format("<input type=button value='{0}' onClick=\"location.href = 'startpage://opencombine/';\">\n",
+				projectSection.Append(String.Format("<button id=\"opencombine\">{0}</button>\n",
 				                                    StringParser.Parse("${res:StartPage.StartMenu.OpenCombineButton}")
 				                                   ));
-				projectSection.Append(String.Format("<input type=button value='{0}'  onClick=\"location.href('startpage://newcombine/');\">\n",
+				projectSection.Append(String.Format("<button id=\"newcombine\">{0}</button>\n",
 				                                    StringParser.Parse("${res:StartPage.StartMenu.NewCombineButton}")
 				                                   ));
 				projectSection.Append("<BR/><BR/><BR/>");

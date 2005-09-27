@@ -28,12 +28,22 @@ namespace ICSharpCode.StartPage
 			if (host == "project") {
 				string projectFile = page.projectFiles[int.Parse(e.Url.LocalPath.Trim('/'))];
 				FileUtility.ObservedLoad(new NamedFileOperationDelegate(ProjectService.LoadSolution), projectFile);
-			} else if (host == "opencombine") {
-				new ICSharpCode.SharpDevelop.Project.Commands.LoadSolution().Run();
-			} else if (host == "newcombine") {
-				new ICSharpCode.SharpDevelop.Project.Commands.CreateNewSolution().Run();
 			} else {
 				pane.WebBrowser.DocumentText = page.Render(host);
+			}
+		}
+		
+		public override void DocumentCompleted(HtmlViewPane pane, WebBrowserDocumentCompletedEventArgs e)
+		{
+			HtmlElement btn;
+			btn = pane.WebBrowser.Document.GetElementById("opencombine");
+			if (btn != null) {
+				LoggingService.Debug("Attached event handler to opencombine button");
+				btn.Click += delegate {new ICSharpCode.SharpDevelop.Project.Commands.LoadSolution().Run();};
+			}
+			btn = pane.WebBrowser.Document.GetElementById("newcombine");
+			if (btn != null) {
+				btn.Click += delegate {new ICSharpCode.SharpDevelop.Project.Commands.CreateNewSolution().Run();};
 			}
 		}
 		

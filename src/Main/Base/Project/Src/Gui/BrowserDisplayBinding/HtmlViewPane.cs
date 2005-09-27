@@ -213,6 +213,9 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		void WebBrowserDocumentCompleted(object sender, WebBrowserDocumentCompletedEventArgs e)
 		{
 			try {
+				if (dummyUrl != null && e.Url.ToString() == "about:blank") {
+					e = new WebBrowserDocumentCompletedEventArgs(new Uri(dummyUrl));
+				}
 				ISchemeExtension extension = GetScheme(e.Url.Scheme);
 				if (extension != null) {
 					extension.DocumentCompleted(this, e);
