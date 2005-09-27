@@ -162,6 +162,10 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					while (IsHex((char)ReaderPeek())) {
 						sb.Append(Char.ToUpper((char)ReaderRead(), CultureInfo.InvariantCulture));
 					}
+					if (sb.Length == 0) {
+						sb.Append('0'); // dummy value to prevent exception
+						errors.Error(y, x, "Invalid hexadecimal integer literal");
+					}
 					ishex = true;
 					prefix = "0x";
 					peek = (char)ReaderPeek();

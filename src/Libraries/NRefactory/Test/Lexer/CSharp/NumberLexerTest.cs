@@ -71,6 +71,16 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		}
 		
 		[Test]
+		public void InvalidHexadecimalInteger()
+		{
+			// don't check result, just make sure there is no exception
+			GenerateLexer(new StringReader("0x2GF")).NextToken();
+			GenerateLexer(new StringReader("0xG2F")).NextToken();
+			// SD2-457
+			GenerateLexer(new StringReader("0x")).NextToken();
+		}
+		
+		[Test]
 		public void TestLongHexadecimalInteger()
 		{
 			CheckToken("0x4244636f446c6d58", 0x4244636f446c6d58);
