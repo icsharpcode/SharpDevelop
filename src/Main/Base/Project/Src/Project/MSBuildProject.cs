@@ -79,6 +79,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.fileName = projectFileName;
 			using (XmlTextReader reader = new XmlTextReader(projectFileName)) {
+				reader.WhitespaceHandling = WhitespaceHandling.Significant;
 				reader.Read();
 				if (reader.Name == "VisualStudioProject") {
 					reader.Close();
@@ -110,6 +111,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			string userSettingsFileName = projectFileName + ".user";
 			if (File.Exists(userSettingsFileName)) {
 				using (XmlTextReader reader = new XmlTextReader(userSettingsFileName)) {
+					reader.WhitespaceHandling = WhitespaceHandling.Significant;
 					reader.Read();
 					while (reader.Read()){
 						if (reader.IsStartElement()) {

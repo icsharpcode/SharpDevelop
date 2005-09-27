@@ -191,16 +191,24 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 				xsltDict[script] = xslt;
 			}
 			
+			StringWriter stringWriter = new StringWriter();
 			using (XmlTextReader reader = new XmlTextReader(inFile)) {
-				//Create an XmlTextWriter which outputs to the console.
-				using (XmlTextWriter writer = new XmlTextWriter(outFile, Encoding.UTF8)) {
-					writer.Formatting = Formatting.Indented;
-					
+				//Create an XmlTextWriter which outputs to memory.
+				using (XmlTextWriter writer = new XmlTextWriter(stringWriter)) {
 					XsltArgumentList argList = new XsltArgumentList();
 					argList.AddExtensionObject("urn:Conversion", conversion);
 					
 					//Transform the data and send the output to the console.
 					xslt.Transform(reader, argList, writer, null);
+				}
+			}
+			// We have to use the stringWriter for writing because xslt.Transform doesn't use
+			// writer.Formatting. Also, we need to remove some unwanted whitespace from the beginning.
+			using (XmlTextWriter writer = new XmlTextWriter(outFile, Encoding.UTF8)) {
+				writer.Formatting = Formatting.Indented;
+				using (XmlTextReader reader = new XmlTextReader(new StringReader(stringWriter.ToString()))) {
+					reader.WhitespaceHandling = WhitespaceHandling.Significant;
+					writer.WriteNode(reader, false);
 				}
 			}
 		}
