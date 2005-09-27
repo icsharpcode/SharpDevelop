@@ -7,7 +7,7 @@
 
 using System;
 using System.IO;
-using MbUnit.Framework;
+using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
 
@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void CSharpStackAllocExpressionTest()
 		{
 			string program = "class A { unsafe void A() { int* fib = stackalloc int[100]; } }";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(program));
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			

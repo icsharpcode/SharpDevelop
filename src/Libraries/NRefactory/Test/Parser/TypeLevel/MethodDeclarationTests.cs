@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using System.IO;
 
-using MbUnit.Framework;
+using NUnit.Framework;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;

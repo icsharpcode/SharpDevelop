@@ -7,7 +7,7 @@
 
 using System;
 using System.IO;
-using MbUnit.Framework;
+using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
 using ICSharpCode.NRefactory.PrettyPrinter;
@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 	{
 		void TestProgram(string program)
 		{
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();
@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		
 		void TestExpression(string expression)
 		{
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.VBNet, new StringReader(expression));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(expression));
 			Expression e = parser.ParseExpression();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			VBNetOutputVisitor outputVisitor = new VBNetOutputVisitor();

@@ -7,7 +7,7 @@
 
 using System;
 using System.Reflection;
-using MbUnit.Framework;
+using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser.AST;
 using ICSharpCode.NRefactory.Parser;
 

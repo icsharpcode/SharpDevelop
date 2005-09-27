@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
@@ -7,7 +7,7 @@
 
 using System;
 using System.IO;
-using MbUnit.Framework;
+using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
 using ICSharpCode.NRefactory.PrettyPrinter;
@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 	{
 		void TestProgram(string program)
 		{
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(program));
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();
@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		
 		void TestExpression(string expression)
 		{
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(expression + ";"));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(expression + ";"));
 			Expression e = parser.ParseExpression();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			CSharpOutputVisitor outputVisitor = new CSharpOutputVisitor();

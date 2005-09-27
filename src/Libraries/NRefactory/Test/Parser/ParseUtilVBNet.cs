@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using System.IO;
 
-using MbUnit.Framework;
+using NUnit.Framework;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 	{
 		public static object ParseGlobal(string program, Type type)
 		{
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
 			parser.Parse();
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
 			Assert.IsTrue(parser.CompilationUnit.Children.Count > 0);
@@ -52,7 +52,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		
 		public static object ParseExpression(string expr, Type type, bool expectErrors)
 		{
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.VBNet, new StringReader(expr));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(expr));
 			object parsedExpression = parser.ParseExpression();
 			if (expectErrors)
 				Assert.IsFalse(parser.Errors.ErrorOutput.Length == 0, "Expected errors, but operation completed successfully");

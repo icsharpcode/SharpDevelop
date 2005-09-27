@@ -7,7 +7,7 @@
 
 using System;
 using System.IO;
-using MbUnit.Framework;
+using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.CSharp;
 using ICSharpCode.NRefactory.PrettyPrinter;
@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 	{
 		ILexer GenerateLexer(StringReader sr)
 		{
-			return ParserFactory.CreateLexer(SupportedLanguages.CSharp, sr);
+			return ParserFactory.CreateLexer(SupportedLanguage.CSharp, sr);
 		}
 		
 		[Test]

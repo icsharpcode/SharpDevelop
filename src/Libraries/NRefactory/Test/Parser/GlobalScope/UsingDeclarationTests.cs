@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using System.IO;
 
-using MbUnit.Framework;
+using NUnit.Framework;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
@@ -68,7 +68,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void CSharpWrongUsingTest()
 		{
 			string program = "using\n";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(program));
 			parser.Parse();
 			Assert.IsTrue(parser.Errors.count > 0);
 		}
@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			string program = "using System;\n" +
 				"using My.Name.Space;\n";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(program));
 			parser.Parse();
 			
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
@@ -91,7 +91,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			string program = "using TESTME=System;\n" +
 				"using myAlias=My.Name.Space;\n" +
 				"using StringCollection = System.Collections.Generic.List<string>;\n";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(program));
 			parser.Parse();
 			
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
@@ -104,7 +104,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void VBNetWrongUsingTest()
 		{
 			string program = "Imports\n";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
 			parser.Parse();
 			Assert.IsTrue(parser.Errors.count > 0);
 		}
@@ -113,7 +113,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			string program = "Imports System\n" +
 				"Imports My.Name.Space\n";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
 			parser.Parse();
 			
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
@@ -126,7 +126,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			string program = "Imports TESTME=System\n" +
 				"Imports myAlias=My.Name.Space\n" +
 				"Imports StringCollection = System.Collections.Generic.List(Of string)\n";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
 			parser.Parse();
 			
 			Assert.AreEqual("", parser.Errors.ErrorOutput);
@@ -137,7 +137,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void VBNetComplexUsingAliasDeclarationTest()
 		{
 			string program = "Imports NS1, AL=NS2, NS3, AL2=NS4, NS5\n";
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.VBNet, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
 			parser.Parse();
 			
 			Assert.AreEqual("", parser.Errors.ErrorOutput);

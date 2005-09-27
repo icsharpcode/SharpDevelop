@@ -9,7 +9,7 @@ using System;
 using System.Drawing;
 using System.IO;
 
-using MbUnit.Framework;
+using NUnit.Framework;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		
 		public static object ParseGlobal(string program, Type type, bool expectError, bool skipMethodBodies)
 		{
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(program));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(program));
 			parser.ParseMethodBodies = !skipMethodBodies;
 			parser.Parse();
 			Assert.IsNotNull(parser.Errors);
@@ -74,7 +74,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		
 		public static object ParseExpression(string expr, Type type, bool expectErrors)
 		{
-			IParser parser = ParserFactory.CreateParser(SupportedLanguages.CSharp, new StringReader(expr + ";"));
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(expr + ";"));
 			object parsedExpression = parser.ParseExpression();
 			if (expectErrors)
 				Assert.IsTrue(parser.Errors.ErrorOutput.Length > 0, "There were errors expected, but parser finished without errors.");

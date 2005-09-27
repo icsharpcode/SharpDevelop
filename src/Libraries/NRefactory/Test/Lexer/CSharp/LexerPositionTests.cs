@@ -8,7 +8,7 @@
 using System;
 using System.Drawing;
 using System.IO;
-using MbUnit.Framework;
+using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.CSharp;
 using ICSharpCode.NRefactory.PrettyPrinter;
@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 	{
 		ILexer GenerateLexer(string s)
 		{
-			return ParserFactory.CreateLexer(SupportedLanguages.CSharp, new StringReader(s));
+			return ParserFactory.CreateLexer(SupportedLanguage.CSharp, new StringReader(s));
 		}
 		
 		[Test]
