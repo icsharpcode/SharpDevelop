@@ -55,7 +55,6 @@ CRCCheck on
 Name "${PRODUCT_NAME} ${PRODUCT_VERSION}"
 OutFile "Setup.exe"
 InstallDir "$PROGRAMFILES\SharpDevelop\2.0\"
-InstallDirRegKey HKLM "${PRODUCT_DIR_REGKEY}" ""
 ShowInstDetails show
 ShowUnInstDetails show
 
