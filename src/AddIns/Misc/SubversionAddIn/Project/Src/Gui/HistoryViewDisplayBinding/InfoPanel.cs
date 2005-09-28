@@ -42,6 +42,25 @@ namespace ICSharpCode.Svn
 			ControlDictionary["splitter1"].Height = 3;
 		}
 		
+		public void ShowError(Exception ex)
+		{
+			TextBox txt = new TextBox();
+			txt.Multiline = true;
+			txt.ReadOnly = true;
+			txt.BackColor = SystemColors.Window;
+			SvnClientException svn;
+			txt.Text = "";
+			while ((svn = ex as SvnClientException) != null) {
+				txt.Text += svn.SvnError + Environment.NewLine;
+				ex = svn.InnerException;
+			}
+			if (ex != null) {
+				txt.Text += ex.ToString();
+			}
+			txt.Dock = DockStyle.Fill;
+			revisionList.Controls.Add(txt);
+		}
+		
 		int lastRevision = -1;
 		
 		public void AddLogMessage(LogMessage logMessage)

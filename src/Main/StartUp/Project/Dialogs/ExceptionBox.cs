@@ -91,16 +91,31 @@ namespace ICSharpCode.SharpDevelop
 			int result = MessageService.ShowCustomDialog("SharpDevelop", text,
 			                                             "Join the list", "Write mail", "Cancel");
 			if (result == 0) {
-				try {
-					Process.Start("http://www.glengamoi.com/mailman/listinfo/icsharpcode.svn-sharpdevelop-users");
-				} catch {}
+				StartUrl("http://www.glengamoi.com/mailman/listinfo/icsharpcode.svn-sharpdevelop-users");
 			} else if (result == 1) {
 				// clipboard text is too long to be inserted into the mail-url
-				string url = "mailto:icsharpcode.svn-sharpdevelop-users@glengamoi.com?subject=Bug Report&body="
+				string exceptionTitle = "";
+				Exception ex = exceptionThrown;
+				if (ex != null) {
+					try {
+						while (ex.InnerException != null) ex = ex.InnerException;
+						exceptionTitle = " (" + ex.GetType().Name + ")";
+					} catch {}
+				}
+				string url = "mailto:icsharpcode.svn-sharpdevelop-users@glengamoi.com?subject=Bug Report"
+					+ Uri.EscapeDataString(exceptionTitle)
+					+ "&body="
 					+ Uri.EscapeDataString("Write an English description on how to reproduce the error and paste the exception text.");
-				try {
-					Process.Start(url);
-				} catch {}
+				StartUrl(url);
+			}
+		}
+		
+		static void StartUrl(string url)
+		{
+			try {
+				Process.Start(url);
+			} catch (Exception e) {
+				LoggingService.Warn("Cannot start " + url, e);
 			}
 		}
 		

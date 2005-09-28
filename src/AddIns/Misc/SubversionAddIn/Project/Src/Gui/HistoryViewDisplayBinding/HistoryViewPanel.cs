@@ -17,7 +17,7 @@ using NSvn.Core;
 namespace ICSharpCode.Svn
 {
 	/// <summary>
-	/// Description of HistoryViewPanel.
+	/// The panel in the "history" secondary viewcontent. Contains a tabcontol.
 	/// </summary>
 	public class HistoryViewPanel : Panel
 	{
@@ -88,14 +88,19 @@ namespace ICSharpCode.Svn
 				}
 			} catch (Exception ex) {
 				// if exceptions aren't caught here, they force SD to exit
-				MessageService.ShowError(ex);
+				if (ex is SvnClientException || ex is System.Runtime.InteropServices.SEHException) {
+					LoggingService.Warn(ex);
+					WorkbenchSingleton.SafeThreadAsyncCall(infoPanel, "ShowError", ex);
+				} else {
+					MessageService.ShowError(ex);
+				}
 			}
 		}
 		
 		void ReceiveLogMessage(LogMessage logMessage)
 		{
-			WorkbenchSingleton.SafeThreadCall(infoPanel, "AddLogMessage", logMessage);
-			WorkbenchSingleton.SafeThreadCall(diffPanel, "AddLogMessage", logMessage);
+			WorkbenchSingleton.SafeThreadAsyncCall(infoPanel, "AddLogMessage", logMessage);
+			WorkbenchSingleton.SafeThreadAsyncCall(diffPanel, "AddLogMessage", logMessage);
 		}
 	}
 }
