@@ -1,0 +1,3 @@
+context		RT_HTML		"context.html"
+open		RT_HTML		"OpenBook.png"
+close		RT_HTML		"ClosedBook.png"

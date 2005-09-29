@@ -382,11 +382,8 @@ namespace HtmlHelp2
 		private void LoadDynamicHelpPage()
 		{
 			if(!HtmlHelp2Environment.IsReady) return;
-
-			string url = String.Format("{0}\\context.html",
-			                           Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location));
-
-			if(!File.Exists(url)) url = "about:blank";
+			string url = String.Format("res://{0}//context", Assembly.GetExecutingAssembly().Location);
+			//if(!File.Exists(url)) url = "about:blank";
 			axWebBrowser.Navigate(url);
 		}
 
@@ -481,7 +478,8 @@ namespace HtmlHelp2
 				HtmlElement img     = axWebBrowser.Document.CreateElement("img");
 				img.Style           = "width:16px;height:16px;margin-right:5px";
 				img.Id              = String.Format("image_{0}", this.internalIndex.ToString());
-				img.SetAttribute("src", "OpenBook.png");
+//				img.SetAttribute("src", "OpenBook.png");
+				img.SetAttribute("src", "open");
 				span.AppendChild(img);
 
 				HtmlElement b       = axWebBrowser.Document.CreateElement("b");
