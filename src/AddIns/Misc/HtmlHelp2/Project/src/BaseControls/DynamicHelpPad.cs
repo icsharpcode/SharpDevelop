@@ -59,7 +59,7 @@ namespace HtmlHelp2
 
 		public HtmlHelp2DynamicHelpPad()
 		{
-			dynamicHelpBrowser                      = new HtmlHelp2DynamicHelpBrowserControl();
+			dynamicHelpBrowser                      = new HtmlHelp2DynamicHelpBrowserControl(this.enableDebugInfo);
 			dynamicHelpBrowser.BuildANothing();
 			ParserService.ParserUpdateStepFinished += UpdateTick;
 			PropertyPad.SelectedObjectChanged      += new EventHandler(this.FormsDesignerSelectedObjectChanged);
@@ -335,10 +335,15 @@ namespace HtmlHelp2
 
 		public HtmlHelp2DynamicHelpBrowserControl()
 		{
-			this.InitializeComponents();
+			this.InitializeComponents(false);
 		}
 
-		private void InitializeComponents()
+		public HtmlHelp2DynamicHelpBrowserControl(bool enableDebugging)
+		{
+			this.InitializeComponents(enableDebugging);
+		}
+
+		private void InitializeComponents(bool enableDebugging)
 		{
 			Dock = DockStyle.Fill;
 			Size = new Size(500, 500);
@@ -346,9 +351,9 @@ namespace HtmlHelp2
 			axWebBrowser                                 = new WebBrowser();
 			Controls.Add(axWebBrowser);
 			axWebBrowser.Dock                            = DockStyle.Fill;
-			axWebBrowser.WebBrowserShortcutsEnabled      = false;
-			axWebBrowser.IsWebBrowserContextMenuEnabled  = false;
-			axWebBrowser.AllowWebBrowserDrop             = false;
+			axWebBrowser.WebBrowserShortcutsEnabled      = enableDebugging;
+			axWebBrowser.IsWebBrowserContextMenuEnabled  = enableDebugging;
+			axWebBrowser.AllowWebBrowserDrop             = enableDebugging;
 			this.LoadDynamicHelpPage();
 
 			dynamicHelpToolbar                           = new ToolStrip();
@@ -382,7 +387,7 @@ namespace HtmlHelp2
 		private void LoadDynamicHelpPage()
 		{
 			if(!HtmlHelp2Environment.IsReady) return;
-			string url = String.Format("res://{0}//context", Assembly.GetExecutingAssembly().Location);
+			string url = String.Format("res://{0}/context", Assembly.GetExecutingAssembly().Location);
 			//if(!File.Exists(url)) url = "about:blank";
 			axWebBrowser.Navigate(url);
 		}
