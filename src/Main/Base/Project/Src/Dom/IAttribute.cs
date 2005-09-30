@@ -20,6 +20,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		/*
+		 * These properties are not stored in DomPersistence and cannot not be used!
 		List<AttributeArgument> PositionalArguments {
 			get;
 		}
@@ -27,6 +29,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		SortedList<string, AttributeArgument> NamedArguments {
 			get;
 		}
+		*/
 	}
 	
 	public enum AttributeTarget

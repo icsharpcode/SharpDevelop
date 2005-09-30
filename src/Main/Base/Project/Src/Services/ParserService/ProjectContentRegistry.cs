@@ -26,20 +26,32 @@ namespace ICSharpCode.Core
 	public static class ProjectContentRegistry
 	{
 		static Dictionary<string, IProjectContent> contents = new Dictionary<string, IProjectContent>(StringComparer.InvariantCultureIgnoreCase);
-		static IProjectContent mscorlibContent;
+		static ReflectionProjectContent mscorlibContent;
 		
 		public static IProjectContent Mscorlib {
 			get {
 				if (mscorlibContent != null) return mscorlibContent;
 				lock (contents) {
 					if (contents.ContainsKey("mscorlib")) {
-						mscorlibContent = contents["mscorlib"];
+						mscorlibContent = (ReflectionProjectContent)contents["mscorlib"];
 						return contents["mscorlib"];
 					}
+					int time = LoggingService.IsDebugEnabled ? Environment.TickCount : 0;
 					LoggingService.Debug("Loading PC for mscorlib...");
-					mscorlibContent = new ReflectionProjectContent(typeof(object).Assembly);
+					mscorlibContent = DomPersistence.LoadProjectContentByAssemblyName(typeof(object).Assembly.FullName);
+					if (mscorlibContent == null) {
+						mscorlibContent = new ReflectionProjectContent(typeof(object).Assembly);
+						if (time != 0) {
+							LoggingService.Debug("Loaded mscorlib with reflection in " + (Environment.TickCount - time) + " ms");
+						}
+						DomPersistence.SaveProjectContent(mscorlibContent);
+						LoggingService.Debug("Saved mscorlib to cache");
+					} else {
+						if (time != 0) {
+							LoggingService.Debug("Loaded mscorlib from cache in " + (Environment.TickCount - time) + " ms");
+						}
+					}
 					contents["mscorlib"] = mscorlibContent;
-					LoggingService.Debug("Finished loading mscorlib");
 					return mscorlibContent;
 				}
 			}
@@ -68,8 +80,6 @@ namespace ICSharpCode.Core
 				return null;
 			}
 		}
-		
-		static string lookupDirectory;
 		
 		public static IProjectContent GetProjectContentForReference(ReferenceProjectItem item)
 		{
@@ -101,69 +111,64 @@ namespace ICSharpCode.Core
 				StatusBarService.ProgressMonitor.BeginTask("Loading " + shortName + "...", 100);
 				#if DEBUG
 				int time = Environment.TickCount;
-				string how = "??";
 				#endif
 				try {
 					Assembly assembly = GetDefaultAssembly(shortName);
+					ReflectionProjectContent pc;
 					if (assembly != null) {
-						contents[item.Include] = new ReflectionProjectContent(assembly);
-						#if DEBUG
-						how = "typeof";
-						#endif
-						return contents[itemInclude];
-					}
-					lookupDirectory = Path.GetDirectoryName(itemFileName);
-					AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve += AssemblyResolve;
-					try {
-						try {
-							if (File.Exists(itemFileName)) {
-								assembly = LoadReflectionOnlyAssemblyFrom(itemFileName);
-								if (assembly != null) {
-									contents[itemFileName] = new ReflectionProjectContent(assembly, itemFileName);
-									contents[assembly.FullName] = contents[itemFileName];
-									#if DEBUG
-									how = "ReflectionOnly";
-									#endif
-									return contents[itemFileName];
-								}
-							}
-						} catch (FileNotFoundException) {
-							// ignore and try loading with LoadGACAssembly
+						pc = DomPersistence.LoadProjectContentByAssemblyName(assembly.FullName);
+						if (pc == null) {
+							pc = new ReflectionProjectContent(assembly);
+							DomPersistence.SaveProjectContent(pc);
 						}
-						try {
-							assembly = LoadGACAssembly(itemInclude, true);
-							if (assembly != null) {
-								contents[itemInclude] = new ReflectionProjectContent(assembly);
-								contents[assembly.FullName] = contents[itemInclude];
-								#if DEBUG
-								how = "PartialName";
-								#endif
-								return contents[itemInclude];
-							}
-						} catch (Exception e) {
-							LoggingService.Warn("Can't load assembly '" + itemInclude + "' : " + e.Message);
-						}
-					} catch (BadImageFormatException) {
-						LoggingService.Warn("BadImageFormat: " + itemInclude);
-					} finally {
-						AppDomain.CurrentDomain.ReflectionOnlyAssemblyResolve -= AssemblyResolve;
-						lookupDirectory = null;
+					} else {
+						pc = LoadProjectContent(itemFileName, itemInclude);
 					}
+					if (pc != null) {
+						contents[item.Include] = pc;
+						contents[shortName] = pc;
+						contents[pc.AssemblyFullName] = pc;
+					}
+					return pc;
 				} finally {
 					#if DEBUG
-					LoggingService.DebugFormatted("Loaded {0} with {2} in {1}ms", itemInclude, Environment.TickCount - time, how);
+					LoggingService.DebugFormatted("Loaded {0} in {1}ms", itemInclude, Environment.TickCount - time);
 					#endif
 					StatusBarService.ProgressMonitor.Done();
 				}
-				return null;
 			}
+		}
+		
+		static ReflectionProjectContent LoadProjectContent(string filename, string include)
+		{
+			ReflectionProjectContent pc = DomPersistence.LoadProjectContentByAssemblyName(filename);
+			if (pc != null) {
+				return pc;
+			}
+			pc = DomPersistence.LoadProjectContentByAssemblyName(include);
+			if (pc != null) {
+				return pc;
+			}
+			AppDomainSetup setup = new AppDomainSetup();
+			setup.DisallowCodeDownload = true;
+			setup.ApplicationBase = AppDomain.CurrentDomain.BaseDirectory;
+			AppDomain domain = AppDomain.CreateDomain("AssemblyLoadingDomain", AppDomain.CurrentDomain.Evidence, setup);
+			string database;
+			try {
+				object o = domain.CreateInstanceAndUnwrap(typeof(ReflectionLoader).Assembly.FullName, typeof(ReflectionLoader).FullName);
+				ReflectionLoader loader = (ReflectionLoader)o;
+				database = loader.LoadAndCreateDatabase(filename, include);
+			} finally {
+				AppDomain.Unload(domain);
+			}
+			LoggingService.Debug("AppDomain finished, loading cache...");
+			return DomPersistence.LoadProjectContent(database);
 		}
 		
 		static Assembly GetDefaultAssembly(string shortName)
 		{
-			// GAC Assemblies take some time because first the non-GAC try
-			// has to fail.
-			// Therefore, assemblies already in use by SharpDevelop are used directly.
+			// These assemblies are already loaded by SharpDevelop, so we don't need to load
+			// them in a separate AppDomain.
 			switch (shortName) {
 				case "System": // System != mscorlib !!!
 					return typeof(Uri).Assembly;
@@ -191,74 +196,19 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		static Assembly AssemblyResolve(object sender, ResolveEventArgs e)
-		{
-			AssemblyName name = new AssemblyName(e.Name);
-			LoggingService.Debug("ProjectContentRegistry.AssemblyResolve " + e.Name);
-			string path = Path.Combine(lookupDirectory, name.Name);
-			if (File.Exists(path + ".dll")) {
-				return LoadReflectionOnlyAssemblyFrom(path + ".dll");
-			}
-			if (File.Exists(path + ".exe")) {
-				return LoadReflectionOnlyAssemblyFrom(path + ".exe");
-			}
-			if (File.Exists(path)) {
-				return LoadReflectionOnlyAssemblyFrom(path);
-			}
-			try {
-				LoggingService.Debug("AssemblyResolve trying ReflectionOnlyLoad");
-				return Assembly.ReflectionOnlyLoad(e.Name);
-			} catch (FileNotFoundException) {
-				LoggingService.Warn("AssemblyResolve: ReflectionOnlyLoad failed for " + e.Name);
-				// We can't get the assembly we want.
-				// But propably we can get a similar version of it.
-				AssemblyName fixedName = FindBestMatchingAssemblyName(e.Name);
-				LoggingService.Info("AssemblyResolve: FixedName: " + fixedName);
-				return Assembly.ReflectionOnlyLoad(fixedName.FullName);
-			}
-		}
 		
-		static Dictionary<string, Assembly> loadFromCache;
-		
-		static Assembly LoadReflectionOnlyAssemblyFrom(string fileName)
+		public static Assembly LoadGACAssembly(string partialName, bool reflectionOnly)
 		{
-			fileName = Path.GetFullPath(fileName);
-			if (loadFromCache == null) {
-				loadFromCache = new Dictionary<string, Assembly>(StringComparer.InvariantCultureIgnoreCase);
+			if (reflectionOnly) {
+				AssemblyName name = FindBestMatchingAssemblyName(partialName);
+				if (name == null)
+					return null;
+				return Assembly.ReflectionOnlyLoad(name.FullName);
+			} else {
+				#pragma warning disable 618
+				return Assembly.LoadWithPartialName(partialName);
+				#pragma warning restore 618
 			}
-			if (loadFromCache.ContainsKey(fileName)) {
-				LoggingService.Debug("Use " + fileName + " from cache.");
-				return loadFromCache[fileName];
-			}
-			LoggingService.Debug("Load " + fileName);
-			Assembly asm = InternalLoadReflectionOnlyAssemblyFrom(fileName);
-			if (loadFromCache.ContainsKey(asm.FullName)) {
-				loadFromCache.Add(fileName, loadFromCache[asm.FullName]);
-				return loadFromCache[asm.FullName];
-			}
-			loadFromCache.Add(fileName, asm);
-			loadFromCache.Add(asm.FullName, asm);
-			return asm;
-		}
-		
-		static Assembly InternalLoadReflectionOnlyAssemblyFrom(string fileName)
-		{
-			byte[] data;
-			using (FileStream fs = new FileStream(fileName, FileMode.Open, FileAccess.Read)) {
-				if (fs.Length > 10 * 1024 * 1024) {
-					// more than 10 MB? Do not hold bytes in memory
-					return Assembly.ReflectionOnlyLoadFrom(fileName);
-				}
-				data = new byte[fs.Length];
-				for (int i = 0; i < data.Length;) {
-					int c = fs.Read(data, i, data.Length - i);
-					i += c;
-					if (c <= 0) {
-						throw new IOException("Read returned " + c);
-					}
-				}
-			}
-			return Assembly.ReflectionOnlyLoad(data);
 		}
 		
 		public static AssemblyName FindBestMatchingAssemblyName(string name)
@@ -325,20 +275,6 @@ namespace ICSharpCode.Core
 				}
 			}
 			return new AssemblyName(best);
-		}
-		
-		public static Assembly LoadGACAssembly(string partialName, bool reflectionOnly)
-		{
-			if (reflectionOnly) {
-				AssemblyName name = FindBestMatchingAssemblyName(partialName);
-				if (name == null)
-					return null;
-				return Assembly.ReflectionOnlyLoad(name.FullName);
-			} else {
-				#pragma warning disable 618
-				return Assembly.LoadWithPartialName(partialName);
-				#pragma warning restore 618
-			}
 		}
 	}
 }

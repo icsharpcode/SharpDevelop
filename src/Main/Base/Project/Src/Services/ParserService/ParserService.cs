@@ -42,7 +42,7 @@ namespace ICSharpCode.Core
 				if (forcedContent != null) return forcedContent;
 				
 				if (ProjectService.CurrentProject == null || !projectContents.ContainsKey(ProjectService.CurrentProject)) {
-					return defaultProjectContent;
+					return DefaultProjectContent;
 				}
 				return projectContents[ProjectService.CurrentProject];
 			}
@@ -185,15 +185,9 @@ namespace ICSharpCode.Core
 			LoggingService.Info("ParserUpdateThread started");
 			// preload mscorlib, we're going to need it anyway
 			IProjectContent dummyVar = ProjectContentRegistry.Mscorlib;
-			int counter = 0;
 			
 			while (!abortParserUpdateThread) {
 				try {
-					if (++counter == 10) {
-						ReflectionClass.ClearMemberCache();
-						counter = 0;
-					}
-					
 					ParserUpdateStep();
 				} catch (Exception e) {
 					ICSharpCode.Core.MessageService.ShowError(e);
@@ -308,7 +302,22 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		static IProjectContent defaultProjectContent = new DefaultProjectContent();
+		static IProjectContent defaultProjectContent;
+		
+		public static IProjectContent DefaultProjectContent {
+			get {
+				if (defaultProjectContent == null) {
+					lock (projectContents) {
+						if (defaultProjectContent == null) {
+							defaultProjectContent = new DefaultProjectContent();
+							defaultProjectContent.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
+							defaultProjectContent.ReferencedContents.Add(ProjectContentRegistry.WinForms);
+						}
+					}
+				}
+				return defaultProjectContent;
+			}
+		}
 		
 		public static ParseInformation ParseFile(string fileName, string fileContent, bool updateCommentTags, bool fireUpdate)
 		{
@@ -340,7 +349,7 @@ namespace ICSharpCode.Core
 					// we accept the project content as optional parameter.
 					fileProjectContent = GetProjectContent(fileName);
 					if (fileProjectContent == null) {
-						fileProjectContent = defaultProjectContent;
+						fileProjectContent = DefaultProjectContent;
 					}
 				}
 				

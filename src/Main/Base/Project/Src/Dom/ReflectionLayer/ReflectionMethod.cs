@@ -17,49 +17,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class ReflectionMethod : DefaultMethod
 	{
-		MethodBase methodBase;
-		
-		public override bool IsConstructor {
-			get {
-				return methodBase is ConstructorInfo;
-			}
-		}
-		
-		public override IReturnType ReturnType {
-			get {
-				if (methodBase is MethodInfo) {
-					return ReflectionReturnType.Create(this, ((MethodInfo)methodBase).ReturnType, false);
-				} else if (methodBase is ConstructorInfo) {
-					return DeclaringType.DefaultReturnType;
-				}
-				return null;
-			}
-			set {
-				throw new NotSupportedException();
-			}
-		}
-		
-		List<IParameter> parameters;
-		
-		public override List<IParameter> Parameters {
-			get {
-				if (parameters == null) {
-					parameters = new List<IParameter>();
-					foreach (ParameterInfo paramInfo in methodBase.GetParameters()) {
-						parameters.Add(new ReflectionParameter(paramInfo, this));
-					}
-				}
-				return parameters;
-			}
-			set {
-				throw new NotSupportedException();
-			}
-		}
-		
 		public ReflectionMethod(MethodBase methodBase, IClass declaringType)
 			: base(declaringType, methodBase is ConstructorInfo ? "#ctor" : methodBase.Name)
 		{
-			this.methodBase = methodBase;
+			if (methodBase is MethodInfo) {
+				this.ReturnType = ReflectionReturnType.Create(this, ((MethodInfo)methodBase).ReturnType, false);
+			} else if (methodBase is ConstructorInfo) {
+				this.ReturnType = DeclaringType.DefaultReturnType;
+			}
+			
+			foreach (ParameterInfo paramInfo in methodBase.GetParameters()) {
+				this.Parameters.Add(new ReflectionParameter(paramInfo, this));
+			}
 			
 			if (methodBase.IsGenericMethodDefinition) {
 				foreach (Type g in methodBase.GetGenericArguments()) {

@@ -14,23 +14,29 @@ namespace ICSharpCode.SharpDevelop.Dom {
 	[Serializable]
 	public class DefaultProperty : AbstractMember, IProperty
 	{
-		protected DomRegion bodyRegion = DomRegion.Empty;
-		
+		DomRegion bodyRegion = DomRegion.Empty;
 		DomRegion getterRegion = DomRegion.Empty;
 		DomRegion setterRegion = DomRegion.Empty;
-
-		protected IMethod     getterMethod;
-		protected IMethod     setterMethod;
+		
 		List<IParameter> parameters = null;
-		bool isIndexer;
-
+		internal byte accessFlags;
+		const byte indexerFlag = 1;
+		const byte getterFlag  = 2;
+		const byte setterFlag  = 4;
+		
 		public bool IsIndexer {
-			get {
-				return isIndexer;
-			}
-			set {
-				isIndexer = value;
-			}
+			get { return (accessFlags & indexerFlag) == indexerFlag; }
+			set { if (value) accessFlags |= indexerFlag; else accessFlags &= 255-indexerFlag; }
+		}
+		
+		public bool CanGet {
+			get { return (accessFlags & getterFlag) == getterFlag; }
+			set { if (value) accessFlags |= getterFlag; else accessFlags &= 255-getterFlag; }
+		}
+
+		public bool CanSet {
+			get { return (accessFlags & setterFlag) == setterFlag; }
+			set { if (value) accessFlags |= setterFlag; else accessFlags &= 255-setterFlag; }
 		}
 		
 		public override string DocumentationTag {
@@ -49,7 +55,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		{
 			DefaultProperty p = new DefaultProperty(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
 			p.parameters = DefaultParameter.Clone(this.Parameters);
-			p.isIndexer = this.isIndexer;
+			p.accessFlags = this.accessFlags;
 			return p;
 		}
 		
@@ -80,30 +86,6 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			}
 			set {
 				setterRegion = value;
-			}
-		}
-
-		public IMethod GetterMethod {
-			get {
-				return getterMethod;
-			}
-		}
-
-		public IMethod SetterMethod {
-			get {
-				return setterMethod;
-			}
-		}
-
-		public virtual bool CanGet {
-			get {
-				return !getterRegion.IsEmpty;
-			}
-		}
-
-		public virtual bool CanSet {
-			get {
-				return !setterRegion.IsEmpty;
 			}
 		}
 		

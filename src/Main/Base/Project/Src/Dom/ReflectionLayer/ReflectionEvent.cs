@@ -15,19 +15,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class ReflectionEvent : DefaultEvent
 	{
-		EventInfo eventInfo;
-		
-		public override IReturnType ReturnType {
-			get {
-				return ReflectionReturnType.Create(this, eventInfo.EventHandlerType, false);
-			}
-			set {
-			}
-		}
-		
 		public ReflectionEvent(EventInfo eventInfo, IClass declaringType) : base(declaringType, eventInfo.Name)
 		{
-			this.eventInfo = eventInfo;
+			this.ReturnType = ReflectionReturnType.Create(this, eventInfo.EventHandlerType, false);
 			
 			// get modifiers
 			MethodInfo methodBase = null;

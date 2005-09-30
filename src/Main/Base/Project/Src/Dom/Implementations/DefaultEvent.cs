@@ -13,11 +13,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class DefaultEvent : AbstractMember, IEvent
 	{
-		protected DomRegion          bodyRegion;
-		protected EventAttributes  eventAttributes;
-		protected IMethod          addMethod;
-		protected IMethod          removeMethod;
-		protected IMethod          raiseMethod;
+		protected DomRegion bodyRegion;
+		protected IMethod   addMethod;
+		protected IMethod   removeMethod;
+		protected IMethod   raiseMethod;
 		
 		public override string DocumentationTag {
 			get {
@@ -30,19 +29,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return bodyRegion;
 			}
 		}
-
-		public virtual EventAttributes EventAttributes {
-			get {
-				return eventAttributes;
-			}
-		}
 		
 		public override IMember Clone()
 		{
 			return new DefaultEvent(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
 		}
 		
-		protected DefaultEvent(IClass declaringType, string name) : base(declaringType, name)
+		public DefaultEvent(IClass declaringType, string name) : base(declaringType, name)
 		{
 		}
 		
@@ -93,6 +86,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return raiseMethod;
 			}
 		}
-		
 	}
 }

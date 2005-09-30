@@ -67,14 +67,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		public virtual int CompareTo(IAttribute value) {
-			int cmp;
-			
-			cmp = Name.CompareTo(value.Name);
-			if (cmp != 0) {
-				return cmp;
-			}
-			
-			return DiffUtility.Compare(PositionalArguments, value.PositionalArguments);
+			return Name.CompareTo(value.Name);
 		}
 		
 		int IComparable.CompareTo(object value) {

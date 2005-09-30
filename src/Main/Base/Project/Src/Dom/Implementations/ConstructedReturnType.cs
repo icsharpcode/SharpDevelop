@@ -24,16 +24,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 		// Return types that should be substituted for the generic types
 		// If a substitution is unknown (type could not be resolved), the list
 		// contains a null entry.
-		List<IReturnType> typeParameters;
+		IList<IReturnType> typeParameters;
 		IReturnType baseType;
 		
-		public List<IReturnType> TypeArguments {
+		public IList<IReturnType> TypeArguments {
 			get {
 				return typeParameters;
 			}
 		}
 		
-		public ConstructedReturnType(IReturnType baseType, List<IReturnType> typeParameters)
+		public ConstructedReturnType(IReturnType baseType, IList<IReturnType> typeParameters)
 		{
 			if (baseType == null)
 				throw new ArgumentNullException("baseType");

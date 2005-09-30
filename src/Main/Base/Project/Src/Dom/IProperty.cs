@@ -32,13 +32,5 @@ namespace ICSharpCode.SharpDevelop.Dom
 		bool IsIndexer {
 			get;
 		}
-		
-		IMethod GetterMethod {
-			get;
-		}
-
-		IMethod SetterMethod {
-			get;
-		}
 	}
 }

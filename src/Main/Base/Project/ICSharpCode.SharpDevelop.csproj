@@ -706,6 +706,8 @@
     <Compile Include="Src\Dom\Implementations\AnonymousMethodReturnType.cs" />
     <Compile Include="Src\Project\ConfigurationGuiBinding.cs" />
     <Compile Include="Src\Project\ChooseStorageLocationButton.cs" />
+    <Compile Include="Src\Dom\ReflectionLayer\ReflectionLoader.cs" />
+    <Compile Include="Src\Dom\ReflectionLayer\DomPersistence.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

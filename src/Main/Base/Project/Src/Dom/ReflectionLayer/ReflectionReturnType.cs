@@ -61,15 +61,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return type;
 			}
 		}
-		/// <summary>Gets a ReturnType describing System.Void.</summary>
-		public static IReturnType Void {
-			get {
-				if (@void == null) {
-					@void = CreatePrimitive(typeof(void));
-				}
-				return @void;
-			}
-		}
 		/// <summary>Gets a ReturnType describing System.Array.</summary>
 		public static IReturnType Array {
 			get {
@@ -105,6 +96,36 @@ namespace ICSharpCode.SharpDevelop.Dom
 					@delegate = CreatePrimitive(typeof(Delegate));
 				}
 				return @delegate;
+			}
+		}
+		/// <summary>Gets a ReturnType describing System.Void.</summary>
+		public static IReturnType Void {
+			get {
+				if (@void == null) {
+					@void = new VoidReturnType();
+				}
+				return @void;
+			}
+		}
+		private class VoidReturnType : AbstractReturnType
+		{
+			public VoidReturnType() {
+				FullyQualifiedName = typeof(void).FullName;
+			}
+			public override IClass GetUnderlyingClass() {
+				return ProjectContentRegistry.Mscorlib.GetClass(FullyQualifiedName);
+			}
+			public override List<IMethod> GetMethods() {
+				return new List<IMethod>(1);
+			}
+			public override List<IProperty> GetProperties() {
+				return new List<IProperty>(1);
+			}
+			public override List<IField> GetFields() {
+				return new List<IField>(1);
+			}
+			public override List<IEvent> GetEvents() {
+				return new List<IEvent>(1);
 			}
 		}
 		

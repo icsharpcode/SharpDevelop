@@ -15,27 +15,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 	[Serializable]
 	public class ReflectionProperty : DefaultProperty
 	{
-		PropertyInfo propertyInfo;
-		
-		public override IReturnType ReturnType {
-			get {
-				return ReflectionReturnType.Create(this, propertyInfo.PropertyType, false);
-			}
-			set {
-			}
-		}
 		public ReflectionProperty(PropertyInfo propertyInfo, IClass declaringType) : base(declaringType, propertyInfo.Name)
 		{
-			this.propertyInfo = propertyInfo;
+			this.ReturnType = ReflectionReturnType.Create(this, propertyInfo.PropertyType, false);
 			
-			// show the abstract layer that we have getter & setters
-			if (propertyInfo.CanRead) {
-				GetterRegion = new DomRegion(0, 0, 0, 0);
-			}
-			
-			if (propertyInfo.CanWrite) {
-				SetterRegion = new DomRegion(0, 0, 0, 0);
-			}
+			CanGet = propertyInfo.CanRead;
+			CanSet = propertyInfo.CanWrite;
 			
 			ParameterInfo[] parameterInfo = propertyInfo.GetIndexParameters();
 			if (parameterInfo != null && parameterInfo.Length > 0) {
