@@ -80,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			this.fileName = projectFileName;
 			using (XmlTextReader reader = new XmlTextReader(projectFileName)) {
 				reader.WhitespaceHandling = WhitespaceHandling.Significant;
-				reader.Read();
+				reader.MoveToContent(); // we have to skip over the XmlDeclaration (if it exists)
 				if (reader.Name == "VisualStudioProject") {
 					reader.Close();
 					Converter.PrjxToSolutionProject.ConvertVSNetProject(projectFileName);
@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (File.Exists(userSettingsFileName)) {
 				using (XmlTextReader reader = new XmlTextReader(userSettingsFileName)) {
 					reader.WhitespaceHandling = WhitespaceHandling.Significant;
-					reader.Read();
+					reader.MoveToContent(); // we have to skip over the XmlDeclaration (if it exists)
 					while (reader.Read()){
 						if (reader.IsStartElement()) {
 							switch (reader.LocalName) {
