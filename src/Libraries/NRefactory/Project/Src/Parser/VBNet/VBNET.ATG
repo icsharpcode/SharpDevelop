@@ -600,7 +600,6 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			.) =
 	(. m.Check(Modifier.Classes); .)
 	/* Spec, 7.5 */
-	["Partial" (. m.Add(Modifier.Partial, t.Location); .)]
 	"Class"
 					(. TypeDeclaration newType = new TypeDeclaration(m.Modifier, attributes);
 						newType.StartLocation = t.Location;
@@ -2046,16 +2045,15 @@ GlobalAttributeSection =
 
 /* Spec, 5. */
 Attribute<out ICSharpCode.NRefactory.Parser.AST.Attribute attribute>
-	(. string name; .) =
+(. string name;
+   List<Expression> positional = new List<Expression>();
+   List<NamedArgumentExpression> named = new List<NamedArgumentExpression>();
+.) =
+	[ "Global" "." ]
 	Qualident<out name>
-		(.  List<Expression> positional = new List<Expression>();
-			List<NamedArgumentExpression> named = new List<NamedArgumentExpression>();
-		.)
 	[ AttributeArguments<positional, named> ]
-	(.
-		attribute  = new ICSharpCode.NRefactory.Parser.AST.Attribute(name, positional, named);
-	.)
-	.
+	(. attribute  = new ICSharpCode.NRefactory.Parser.AST.Attribute(name, positional, named); .)
+.
 
 /* Spec, 5.2.2 */
 AttributeArguments<List<Expression> positional, List<NamedArgumentExpression> named>
@@ -2805,7 +2803,7 @@ ParameterModifier<ParamModifiers m>
 	.
 
 TypeModifier<Modifiers m>
-	= "Public"			(. m.Add(Modifier.Public, t.Location); .)
+=	  "Public"			(. m.Add(Modifier.Public, t.Location); .)
 	| "Protected"		(. m.Add(Modifier.Protected, t.Location); .)
 	| "Friend"			(. m.Add(Modifier.Internal, t.Location); .)
 	| "Private"			(. m.Add(Modifier.Private, t.Location); .)
@@ -2813,7 +2811,8 @@ TypeModifier<Modifiers m>
 	| "Shadows"			(. m.Add(Modifier.New, t.Location); .)
 	| "MustInherit"		(. m.Add(Modifier.Abstract, t.Location); .)
 	| "NotInheritable"	(. m.Add(Modifier.Sealed, t.Location); .)
-	.
+	| "Partial"			(. m.Add(Modifier.Partial, t.Location); .)
+.
 
 MemberModifier<Modifiers m> =
 	"MustInherit"		(.m.Add(Modifier.Abstract, t.Location);.)

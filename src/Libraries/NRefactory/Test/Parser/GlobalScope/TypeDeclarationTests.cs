@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -209,6 +209,17 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual(Modifier.Partial, td.Modifier);
+		}
+		
+		[Test]
+		public void VBNetPartialPublicClass()
+		{
+			string program = "Partial Public Class TestClass\nEnd Class\n";
+			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			
+			Assert.AreEqual("TestClass", td.Name);
+			Assert.AreEqual(ClassType.Class, td.Type);
+			Assert.AreEqual(Modifier.Partial | Modifier.Public, td.Modifier);
 		}
 		
 		[Test]

@@ -652,12 +652,19 @@ GlobalAttributeSection
 .
 
 Attribute<out ASTAttribute attribute>
-(. string qualident; .)
+(. string qualident;
+   string alias = null;
+.)
 =
-	Qualident<out qualident>           (. List<Expression> positional = new List<Expression>();
-	                                      List<NamedArgumentExpression> named = new List<NamedArgumentExpression>();
-	                                      string name = qualident;
-	                                   .)
+	[ IF (la.kind == Tokens.Identifier && Peek(1).kind == Tokens.DoubleColon)
+		ident (. alias = t.val; .)
+		"::"
+	]
+	Qualident<out qualident> 
+	(. List<Expression> positional = new List<Expression>();
+	   List<NamedArgumentExpression> named = new List<NamedArgumentExpression>();
+	   string name = (alias != null && alias != "global") ? alias + "." + qualident : qualident;
+	.)
 	[ AttributeArguments<positional, named> ] (. attribute  = new ICSharpCode.NRefactory.Parser.AST.Attribute(name, positional, named);.)
 .
 
