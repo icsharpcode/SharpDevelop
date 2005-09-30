@@ -273,7 +273,7 @@ namespace VBNetBinding
 			}
 			
 			if (ShowModifiers) {
-				if (field.IsStatic && field.IsLiteral) {
+				if (field.IsConst) {
 					builder.Append("Const ");
 				} else if (field.IsStatic) {
 					builder.Append("Shared ");

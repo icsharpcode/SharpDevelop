@@ -83,10 +83,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 
-		bool IsLiteral {
-			get;
-		}
-
 		bool IsOverride {
 			get;
 		}

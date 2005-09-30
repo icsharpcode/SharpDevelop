@@ -23,13 +23,13 @@ namespace ICSharpCode.Core
 	{
 		public const int NamespaceIndex = 3;
 		public const int CombineIndex   = 14;
-		public const int LiteralIndex   = 15;
+		public const int ConstIndex   = 15;
 		public const int GotoArrowIndex = 13;
 		
-		public const int LocalVariableIndex = FieldIndex + privateModifierOffset;
-		public const int ParameterIndex = FieldIndex + privateModifierOffset;
+		public const int LocalVariableIndex = 16;
+		public const int ParameterIndex = 17;
 		
-		public const int ClassIndex     = 16;
+		public const int ClassIndex     = 18;
 		public const int StructIndex    = ClassIndex + 1 * 4;
 		public const int InterfaceIndex = ClassIndex + 2 * 4;
 		public const int EnumIndex      = ClassIndex + 3 * 4;
@@ -95,10 +95,15 @@ namespace ICSharpCode.Core
 		
 		public static int GetIcon(IField field)
 		{
-			if (field.IsLiteral) {
-				return LiteralIndex;
+			if (field.IsConst) {
+				return ConstIndex;
+			} else if (field.IsParameter) {
+				return ParameterIndex;
+			} else if (field.IsLocalVariable) {
+				return LocalVariableIndex;
+			} else {
+				return FieldIndex + GetModifierOffset(field.Modifiers);
 			}
-			return FieldIndex + GetModifierOffset(field.Modifiers);
 		}
 		
 		public static int GetIcon(IEvent evt)
@@ -155,7 +160,7 @@ namespace ICSharpCode.Core
 		public static int GetIcon(FieldInfo fieldinfo)
 		{
 			if (fieldinfo.IsLiteral) {
-				return LiteralIndex;
+				return ConstIndex;
 			}
 			
 			if (fieldinfo.IsAssembly) {
@@ -236,9 +241,12 @@ namespace ICSharpCode.Core
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.SelectionArrow"));
 			
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.CombineIcon"));
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Literal"));
+			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Literal")); // const
 			
-			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Class")); //16
+			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Local"));
+			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Parameter"));
+			
+			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Class")); //18
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.InternalClass"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.ProtectedClass"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.PrivateClass"));

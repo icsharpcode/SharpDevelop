@@ -169,7 +169,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IField field;
 		bool isParameter;
 		
-		public LocalResolveResult(IMember callingMember, IField field, bool isParameter)
+		public LocalResolveResult(IMember callingMember, IField field)
 			: base(callingMember.DeclaringType, callingMember, field.ReturnType)
 		{
 			if (callingMember == null)
@@ -177,7 +177,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (field == null)
 				throw new ArgumentNullException("field");
 			this.field = field;
-			this.isParameter = isParameter;
+			this.isParameter = field.IsParameter;
+			if (!isParameter && !field.IsLocalVariable) {
+				throw new ArgumentException("the field must either be a local variable-field or a parameter-field");
+			}
 		}
 		
 		/// <summary>

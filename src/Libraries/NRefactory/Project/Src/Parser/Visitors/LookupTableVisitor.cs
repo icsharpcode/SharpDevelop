@@ -16,8 +16,9 @@ namespace ICSharpCode.NRefactory.Parser
 	public class LocalLookupVariable
 	{
 		TypeReference typeRef;
-		Point         startPos;
-		Point         endPos;
+		Point startPos;
+		Point endPos;
+		bool  isConst;
 		
 		public TypeReference TypeRef {
 			get {
@@ -35,11 +36,18 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		public LocalLookupVariable(TypeReference typeRef, Point startPos, Point endPos)
+		public bool IsConst {
+			get {
+				return isConst;
+			}
+		}
+		
+		public LocalLookupVariable(TypeReference typeRef, Point startPos, Point endPos, bool isConst)
 		{
 			this.typeRef = typeRef;
 			this.startPos = startPos;
 			this.endPos = endPos;
+			this.isConst = isConst;
 		}
 	}
 	
@@ -58,7 +66,7 @@ namespace ICSharpCode.NRefactory.Parser
 			variables = new Dictionary<string, List<LocalLookupVariable>>(nameComparer);
 		}
 		
-		public void AddVariable(TypeReference typeRef, string name, Point startPos, Point endPos)
+		public void AddVariable(TypeReference typeRef, string name, Point startPos, Point endPos, bool isConst)
 		{
 			if (name == null || name.Length == 0) {
 				return;
@@ -69,7 +77,7 @@ namespace ICSharpCode.NRefactory.Parser
 			} else {
 				list = (List<LocalLookupVariable>)variables[name];
 			}
-			list.Add(new LocalLookupVariable(typeRef, startPos, endPos));
+			list.Add(new LocalLookupVariable(typeRef, startPos, endPos, isConst));
 		}
 		
 		// todo: move this method to a better place.
@@ -105,7 +113,8 @@ namespace ICSharpCode.NRefactory.Parser
 				AddVariable(localVariableDeclaration.GetTypeForVariable(i),
 				            varDecl.Name,
 				            localVariableDeclaration.StartLocation,
-				            CurrentBlock == null ? new Point(-1, -1) : CurrentBlock.EndLocation);
+				            CurrentBlock == null ? new Point(-1, -1) : CurrentBlock.EndLocation,
+				            (localVariableDeclaration.Modifier & Modifier.Const) == Modifier.Const);
 			}
 			return data;
 		}
@@ -113,7 +122,7 @@ namespace ICSharpCode.NRefactory.Parser
 		public override object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
 		{
 			foreach (ParameterDeclarationExpression p in anonymousMethodExpression.Parameters) {
-				AddVariable(p.TypeReference, p.ParameterName, anonymousMethodExpression.StartLocation, anonymousMethodExpression.EndLocation);
+				AddVariable(p.TypeReference, p.ParameterName, anonymousMethodExpression.StartLocation, anonymousMethodExpression.EndLocation, false);
 			}
 			return base.Visit(anonymousMethodExpression, data);
 		}
@@ -126,7 +135,8 @@ namespace ICSharpCode.NRefactory.Parser
 			AddVariable(foreachStatement.TypeReference,
 			            foreachStatement.VariableName,
 			            foreachStatement.StartLocation,
-			            foreachStatement.EndLocation);
+			            foreachStatement.EndLocation,
+			            false);
 			
 			if (foreachStatement.Expression != null) {
 				foreachStatement.Expression.AcceptVisitor(this, data);
@@ -154,7 +164,8 @@ namespace ICSharpCode.NRefactory.Parser
 							AddVariable(catchClause.TypeReference,
 							            catchClause.VariableName,
 							            catchClause.StatementBlock.StartLocation,
-							            catchClause.StatementBlock.EndLocation);
+							            catchClause.StatementBlock.EndLocation,
+							            false);
 						}
 						catchClause.StatementBlock.AcceptVisitor(this, data);
 					}

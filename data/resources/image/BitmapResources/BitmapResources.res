@@ -258,6 +258,9 @@ Icons.16x16.Indexer                               = ClassBrowserIcons\Icons.16x1
 Icons.16x16.Field                                 = ClassBrowserIcons\Icons.16x16.Field.png
 Icons.16x16.Event                                 = ClassBrowserIcons\Icons.16x16.Event.png
 
+Icons.16x16.Local                                 = ClassBrowserIcons\Icons.16x16.Local.png
+Icons.16x16.Parameter                             = ClassBrowserIcons\Icons.16x16.Parameter.png
+
 Icons.16x16.PrivateClass                          = ClassBrowserIcons\Icons.16x16.PrivateClass.png
 Icons.16x16.PrivateStruct                         = ClassBrowserIcons\Icons.16x16.PrivateStruct.png
 Icons.16x16.PrivateEnum                           = ClassBrowserIcons\Icons.16x16.PrivateEnum.png

@@ -250,7 +250,7 @@ namespace ICSharpCode.Core
 			}
 			
 			if (ShowModifiers) {
-				if (field.IsStatic && field.IsLiteral) {
+				if (field.IsConst) {
 					builder.Append("const ");
 				} else if (field.IsStatic) {
 					builder.Append("static ");

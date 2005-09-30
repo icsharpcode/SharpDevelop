@@ -150,12 +150,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public bool IsLiteral {
-			get {
-				return (modifiers & ModifierEnum.Const) == ModifierEnum.Const;
-			}
-		}
-		
 		public bool IsReadonly {
 			get {
 				return (modifiers & ModifierEnum.Readonly) == ModifierEnum.Readonly;

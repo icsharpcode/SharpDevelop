@@ -54,5 +54,39 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			return CompareTo((IField)value);
 		}
+		
+		/// <summary>Gets if this field is a local variable that has been converted into a field.</summary>
+		public virtual bool IsLocalVariable {
+			get { return false; }
+		}
+		
+		/// <summary>Gets if this field is a parameter that has been converted into a field.</summary>
+		public virtual bool IsParameter {
+			get { return false; }
+		}
+		
+		public class LocalVariableField : DefaultField
+		{
+			public override bool IsLocalVariable {
+				get { return true; }
+			}
+			
+			public LocalVariableField(IReturnType type, string name, DomRegion region, IClass callingClass)
+				: base(type, name, ModifierEnum.None, region, callingClass)
+			{
+			}
+		}
+		
+		public class ParameterField : DefaultField
+		{
+			public override bool IsParameter {
+				get { return true; }
+			}
+			
+			public ParameterField(IReturnType type, string name, DomRegion region, IClass callingClass)
+				: base(type, name, ModifierEnum.None, region, callingClass)
+			{
+			}
+		}
 	}
 }

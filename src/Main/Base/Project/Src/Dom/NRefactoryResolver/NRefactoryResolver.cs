@@ -476,25 +476,33 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return new MixedResolveResult(result, result2);
 		}
 		
+		IField CreateLocalVariableField(LocalLookupVariable var, string identifier)
+		{
+			IReturnType type = GetVariableType(var);
+			IField f = new DefaultField.LocalVariableField(type, identifier, new DomRegion(var.StartPos, var.EndPos), callingClass);
+			if (var.IsConst) {
+				f.Modifiers |= ModifierEnum.Const;
+			}
+			return f;
+		}
+		
 		ResolveResult ResolveIdentifierInternal(string identifier)
 		{
 			if (callingMember != null) { // LocalResolveResult requires callingMember to be set
 				LocalLookupVariable var = SearchVariable(identifier);
 				if (var != null) {
-					IReturnType type = GetVariableType(var);
-					IField field = new DefaultField(type, identifier, ModifierEnum.None, new DomRegion(var.StartPos, var.EndPos), callingClass);
-					return new LocalResolveResult(callingMember, field, false);
+					return new LocalResolveResult(callingMember, CreateLocalVariableField(var, identifier));
 				}
 				IParameter para = SearchMethodParameter(identifier);
 				if (para != null) {
-					IField field = new DefaultField(para.ReturnType, para.Name, ModifierEnum.None, para.Region, callingClass);
-					return new LocalResolveResult(callingMember, field, true);
+					IField field = new DefaultField.ParameterField(para.ReturnType, para.Name, para.Region, callingClass);
+					return new LocalResolveResult(callingMember, field);
 				}
 				if (IsSameName(identifier, "value")) {
 					IProperty property = callingMember as IProperty;
 					if (property != null && property.SetterRegion.IsInside(caretLine, caretColumn)) {
-						IField field = new DefaultField(property.ReturnType, "value", ModifierEnum.None, property.Region, callingClass);
-						return new LocalResolveResult(callingMember, field, true);
+						IField field = new DefaultField.ParameterField(property.ReturnType, "value", property.Region, callingClass);
+						return new LocalResolveResult(callingMember, field);
 					}
 				}
 			}
@@ -899,7 +907,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			IMethod method = callingMember as IMethod;
 			if (method != null) {
 				foreach (IParameter p in method.Parameters) {
-					result.Add(new DefaultField(p.ReturnType, p.Name, ModifierEnum.None, method.Region, callingClass));
+					result.Add(new DefaultField.ParameterField(p.ReturnType, p.Name, method.Region, callingClass));
 				}
 			}
 			
@@ -939,7 +947,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					foreach (LocalLookupVariable v in pair.Value) {
 						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
 							// convert to a field for display
-							result.Add(new DefaultField(TypeVisitor.CreateReturnType(v.TypeRef, this), pair.Key, ModifierEnum.None, new DomRegion(v.StartPos, v.EndPos), callingClass));
+							result.Add(CreateLocalVariableField(v, pair.Key));
 							break;
 						}
 					}
