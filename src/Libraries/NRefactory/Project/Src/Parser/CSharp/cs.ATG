@@ -21,12 +21,14 @@ public string ContainingAssembly {
 }
 
 Token t {
+	[System.Diagnostics.DebuggerStepThrough]
 	get {
 		return lexer.Token;
 	}
 }
 
 Token la {
+	[System.Diagnostics.DebuggerStepThrough]
 	get {
 		return lexer.LookAhead;
 	}
@@ -890,8 +892,8 @@ ClassBase<out List<TypeReference> names>
 	names = new List<TypeReference>();
 .)
 =
-	":" ClassType<out typeRef>  (. if (typeRef != null) { names.Add(typeRef); } .)
-	{ "," TypeName<out typeRef> (. if (typeRef != null) { names.Add(typeRef); } .) }
+	":" ClassType<out typeRef, false>  (. if (typeRef != null) { names.Add(typeRef); } .)
+	{ "," TypeName<out typeRef, false> (. if (typeRef != null) { names.Add(typeRef); } .) }
 .
 
 ClassBody
@@ -914,8 +916,8 @@ StructInterfaces<out List<TypeReference> names>
 	names = new List<TypeReference>();
 .)
 =
-	":" TypeName<out typeRef>   (. if (typeRef != null) { names.Add(typeRef); } .)
-	{ "," TypeName<out typeRef> (. if (typeRef != null) { names.Add(typeRef); } .) }
+	":" TypeName<out typeRef, false>   (. if (typeRef != null) { names.Add(typeRef); } .)
+	{ "," TypeName<out typeRef, false> (. if (typeRef != null) { names.Add(typeRef); } .) }
 .
 
 StructBody
@@ -938,8 +940,8 @@ InterfaceBase<out List<TypeReference> names>
 	names = new List<TypeReference>();
 .)
 =
-	":" TypeName<out typeRef>   (. if (typeRef != null) { names.Add(typeRef); } .)
-	{ "," TypeName<out typeRef> (. if (typeRef != null) { names.Add(typeRef); } .) }
+	":" TypeName<out typeRef, false>   (. if (typeRef != null) { names.Add(typeRef); } .)
+	{ "," TypeName<out typeRef, false> (. if (typeRef != null) { names.Add(typeRef); } .) }
 .
 
 InterfaceBody
@@ -954,44 +956,23 @@ EnumBody                                 (. FieldDeclaration f; .)
 .
 
 Type<out TypeReference type>
-(.
-	string name;
-	int pointer = 0;
-	type = null;
-.)
 =
-	( ClassType<out type>
-	| SimpleType<out name> (. type = new TypeReference(name); .)
-	
-	[ NullableQuestionMark<ref type> ]
-	
-	| "void" "*"                         (. pointer = 1; type = new TypeReference("void"); .)
-	)                                    (. List<int> r = new List<int>(); .)
-	
-	{ IF (IsPointerOrDims())             (. int i = 0; .)
-		( "*"                            (. ++pointer; .)
-		| "[" { "," (. ++i; .) } "]"     (. r.Add(i); .)
-		)
-	}
-	(. if (type != null) {
-		type.RankSpecifier = r.ToArray();
-		type.PointerNestingLevel = pointer;
-	   }
-	.)
+	TypeWithRestriction<out type, true, false>
 .
 
-TypeWONullableQuestionMark<out TypeReference type>
+TypeWithRestriction<out TypeReference type, bool allowNullable, bool canBeUnbound>
 (.
 	string name;
 	int pointer = 0;
 	type = null;
 .)
 =
-	( ClassTypeWONullableQuestionMark<out type>
+	( ClassType<out type, canBeUnbound>
 	| SimpleType<out name> (. type = new TypeReference(name); .)
-	
 	| "void" "*"                         (. pointer = 1; type = new TypeReference("void"); .)
 	)                                    (. List<int> r = new List<int>(); .)
+	
+	[ IF (allowNullable && la.kind == Tokens.Question) NullableQuestionMark<ref type> ]
 	
 	{ IF (IsPointerOrDims())             (. int i = 0; .)
 		( "*"                            (. ++pointer; .)
@@ -1013,11 +994,12 @@ NonArrayType<out TypeReference type>
 	type = null;
 .)
 =
-	( ClassType<out type>
+	( ClassType<out type, false>
 	| SimpleType<out name> (. type = new TypeReference(name); .)
-	[ NullableQuestionMark<ref type> ]
 	| "void" "*"           (. pointer = 1; type = new TypeReference("void"); .)
 	)
+	
+	[ NullableQuestionMark<ref type> ]
 	
 	{ IF (IsPointer())
 		"*" (. ++pointer; .)
@@ -1106,20 +1088,12 @@ TypeModifier<Modifiers m>
 	| ident                            (. if (t.val == "partial") { m.Add(Modifier.Partial, t.Location); } .)
 .
 
-ClassType<out TypeReference typeRef>
+ClassType<out TypeReference typeRef, bool canBeUnbound>
 (. TypeReference r; typeRef = null; .)
 =
-	TypeName<out r>  (. typeRef = r; .)
-	| "object"       (. typeRef = new TypeReference("object"); .)
-	| "string"       (. typeRef = new TypeReference("string"); .)
-.
-
-ClassTypeWONullableQuestionMark<out TypeReference typeRef>
-(. TypeReference r; typeRef = null; .)
-=
-	TypeNameWONullableQuestionMark<out r>  (. typeRef = r; .)
-	| "object"       (. typeRef = new TypeReference("object"); .)
-	| "string"       (. typeRef = new TypeReference("string"); .)
+	TypeName<out r, canBeUnbound> (. typeRef = r; .)
+	| "object"                    (. typeRef = new TypeReference("object"); .)
+	| "string"                    (. typeRef = new TypeReference("string"); .)
 .
 
 IntegralType<out string name>          (. name = ""; .)
@@ -1945,11 +1919,11 @@ CatchClauses<out ArrayList catchClauses>
 	(
 		Block<out stmt> (. catchClauses.Add(new CatchClause(stmt)); .)
 		/*--- specific catch clause */
-		| "(" ClassType<out typeRef> (. identifier = null; .)
+		| "(" ClassType<out typeRef, false> (. identifier = null; .)
 			[ ident (. identifier = t.val; .) ]
 		   ")" Block<out stmt> 
 		   (. catchClauses.Add(new CatchClause(typeRef, identifier, stmt)); .)
-		{ IF (IsTypedCatch()) "catch" "(" ClassType<out typeRef> (. identifier = null; .)
+		{ IF (IsTypedCatch()) "catch" "(" ClassType<out typeRef, false> (. identifier = null; .)
 			[ ident (. identifier = t.val; .) ]
 		   ")" Block<out stmt>
 		   (. catchClauses.Add(new CatchClause(typeRef, identifier, stmt)); .) }
@@ -2074,7 +2048,7 @@ PrimaryExpr<out Expression pexpr>
 		| "null"                            (.pexpr = new PrimitiveExpression(null, "null");  .)          /* from literal token */
 		| Literal                           (.pexpr = new PrimitiveExpression(t.literalValue, t.val);  .)
 		| IF (la.kind == Tokens.Identifier && Peek(1).kind == Tokens.DoubleColon)
-			TypeName<out type> (. pexpr = new TypeReferenceExpression(type); .)
+			TypeName<out type, false> (. pexpr = new TypeReferenceExpression(type); .)
 		/*--- simple name: */
 		| ident (. pexpr = new IdentifierExpression(t.val); .)
 		/*--- parenthesized expression: */
@@ -2152,7 +2126,7 @@ PrimaryExpr<out Expression pexpr>
 		| "typeof" "("
 		(
 			IF (NotVoidPointer()) "void" (. type = new TypeReference("void"); .)
-			| Type<out type>
+			| TypeWithRestriction<out type, true, true>
 		) ")"                            (. pexpr = new TypeOfExpression(type); .)
 		
 		| IF (la.kind == Tokens.Default && Peek(1).kind == Tokens.OpenParenthesis)
@@ -2288,7 +2262,8 @@ RelationalExpr<ref Expression outExpr>
 			"is" (. op = BinaryOperatorType.TypeCheck; .)
 			| "as" (. op = BinaryOperatorType.AsCast; .)
 		)
-		TypeWONullableQuestionMark<out type> (.  outExpr = new BinaryOperatorExpression(outExpr, op, new TypeReferenceExpression(type)); .)
+		TypeWithRestriction<out type, false, false>
+		(.  outExpr = new BinaryOperatorExpression(outExpr, op, new TypeReferenceExpression(type)); .)
 	}
 .
 
@@ -2343,7 +2318,7 @@ MultiplicativeExpr<ref Expression outExpr>
 
 /* .NET 2.0 rules */	
 
-TypeName<out TypeReference typeRef>
+TypeName<out TypeReference typeRef, bool canBeUnbound>
 (.	List<TypeReference> typeArguments = null;
 	string alias = null;
 	string qualident;
@@ -2354,32 +2329,14 @@ TypeName<out TypeReference typeRef>
 		"::"
 	]
 	Qualident<out qualident>
-	[ TypeArgumentList<out typeArguments> ]
-	(.
-		if (alias == null) {
-			typeRef = new TypeReference(qualident, typeArguments);
-		} else if (alias == "global") {
-			typeRef = new TypeReference(qualident, typeArguments);
-			typeRef.IsGlobal = true;
-		} else {
-			typeRef = new TypeReference(alias + "." + qualident, typeArguments);
-		}
-	.)
-	[ NullableQuestionMark<ref typeRef> ]
-.
-
-TypeNameWONullableQuestionMark<out TypeReference typeRef>
-(.	List<TypeReference> typeArguments = null;
-	string alias = null;
-	string qualident;
-.)
-=
-	[ IF (la.kind == Tokens.Identifier && Peek(1).kind == Tokens.DoubleColon)
-		ident (. alias = t.val; .)
-		"::"
-	]
-	Qualident<out qualident>
-	[ TypeArgumentList<out typeArguments> ]
+	( IF (canBeUnbound && la.kind == Tokens.LessThan && (Peek(1).kind == Tokens.GreaterThan || Peek(1).kind == Tokens.Comma))
+		(. typeArguments = new List<TypeReference>(); .)
+		"<"
+		(. typeArguments.Add(NullTypeReference.Instance); .)
+		{ "," (. typeArguments.Add(NullTypeReference.Instance); .) }
+		">"
+	| [TypeArgumentList<out typeArguments>]
+	)
 	(.
 		if (alias == null) {
 			typeRef = new TypeReference(qualident, typeArguments);

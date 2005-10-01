@@ -1714,7 +1714,7 @@ SimpleExpr<out Expression pexpr>
 			| /* 11.11 */ "TryCast" "(" Expr<out expr> "," TypeName<out type> ")"	(. pexpr = new BinaryOperatorExpression(expr, BinaryOperatorType.AsCast, new TypeReferenceExpression(type)); .)
 			| /* 11.11 */ CastTarget<out type> "(" Expr<out expr> ")"	(. pexpr = new CastExpression(type, expr, true); .)
 			| /* 11.4.5 */ "AddressOf" Expr<out expr>			(. pexpr = new AddressOfExpression(expr); .)
-			| /* 11.5.1 */ "GetType" "(" TypeName<out type> ")"	(. pexpr = new TypeOfExpression(type); .)
+			| /* 11.5.1 */ "GetType" "(" GetTypeTypeName<out type> ")"	(. pexpr = new TypeOfExpression(type); .)
 			| /* 11.5.2 */ "TypeOf" SimpleExpr<out expr> "Is" TypeName<out type> (. pexpr = new TypeOfIsExpression(expr, type); .)
 		)
 		{
@@ -1899,7 +1899,7 @@ ObjectCreateExpression<out Expression oce>
 	ArrayList arguments = null;
 	oce = null;
 .) =
-	"New" NonArrayTypeName<out type>
+	"New" NonArrayTypeName<out type, false>
 	["(" [ ArgumentList<out arguments> ] ")" ]
 	[ ArrayInitializer<out initializer> ]
 	(.
@@ -1945,35 +1945,52 @@ Argument<out Expression argumentexpr>
 
 /* 7.1. */
 TypeName<out TypeReference typeref>
-(. ArrayList rank = null; typeref = null; .)
+(. ArrayList rank = null; .)
 =
-	NonArrayTypeName<out typeref>
+	NonArrayTypeName<out typeref, false>
 	ArrayTypeModifiers<out rank>
-	(.
-		if (rank != null && typeref != null) {
+	(.	if (rank != null && typeref != null) {
+			typeref.RankSpecifier = (int[])rank.ToArray(typeof(int));
+		}
+	.)
+.
+
+GetTypeTypeName<out TypeReference typeref>
+(. ArrayList rank = null; .)
+=
+	NonArrayTypeName<out typeref, true>
+	ArrayTypeModifiers<out rank>
+	(.	if (rank != null && typeref != null) {
 			typeref.RankSpecifier = (int[])rank.ToArray(typeof(int));
 		}
 	.)
 .
 
 /* 7.1 */
-NonArrayTypeName<out TypeReference typeref>
+NonArrayTypeName<out TypeReference typeref, bool canBeUnbound>
 (.
 	string name;
 	typeref = null;
+	bool isGlobal = false;
 .) =
-	Qualident<out name> (. typeref = new TypeReference(name); .)
+	(
+		[ "Global" "." (. isGlobal = true; .) ]
+		Qualident<out name>
+		(. typeref = new TypeReference(name); typeref.IsGlobal = isGlobal; .)
 		[IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
-			"(" "Of" TypeArgumentList<typeref.GenericTypes> ")"
+			"(" "Of"
+			( IF (canBeUnbound && (la.kind == Tokens.CloseParenthesis || la.kind == Tokens.Comma))
+				(. typeref.GenericTypes.Add(NullTypeReference.Instance); .)
+				{ "," (. typeref.GenericTypes.Add(NullTypeReference.Instance); .) }
+			  | TypeArgumentList<typeref.GenericTypes>
+			)
+			")"
 		]
+	)
 	| "Object" (. typeref = new TypeReference("System.Object"); .)
-	| "Global" "."	Qualident<out name>
-		(. typeref = new TypeReference(name); typeref.IsGlobal = true; .)
-		[IF (la.kind == Tokens.OpenParenthesis && Peek(1).kind == Tokens.Of)
-			"(" "Of" TypeArgumentList<typeref.GenericTypes> ")"
-		]
 	| PrimitiveTypeName<out name> (. typeref = new TypeReference(name); .)
 .
+
 
 /* 7.9 */
 ArrayNameModifier<out ArrayList arrayModifiers>

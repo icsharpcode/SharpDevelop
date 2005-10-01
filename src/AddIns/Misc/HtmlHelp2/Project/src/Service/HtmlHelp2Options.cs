@@ -92,10 +92,10 @@ namespace HtmlHelp2.OptionsPanel
 		#region ReRegister
 		void ReregisterButtonClick(object sender, EventArgs e)
 		{
-			new MethodInvoker(DoReregister).BeginInvoke(null, null);
+			System.Threading.ThreadPool.QueueUserWorkItem(DoReregister);
 		}
-
-		void DoReregister()
+		
+		void DoReregister(object state)
 		{
 			try
 			{

@@ -264,7 +264,6 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 					control.Document.Remove(startOffset, endOffset - startOffset);
 				}
 				if (dataProvider.InsertSpace) {
-					Console.WriteLine("Inserting space..");
 					control.Document.Insert(startOffset++, " ");
 				}
 				control.ActiveTextAreaControl.Caret.Position = control.Document.OffsetToPosition(startOffset);

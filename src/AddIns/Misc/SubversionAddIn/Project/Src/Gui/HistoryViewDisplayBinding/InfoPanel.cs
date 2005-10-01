@@ -9,6 +9,7 @@ using System;
 using System.Collections;
 using System.Drawing;
 using System.Reflection;
+using System.Threading;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui;
 using NSvn.Common;
@@ -95,7 +96,7 @@ namespace ICSharpCode.Svn
 				if (!isLoadingChangedPaths) {
 					isLoadingChangedPaths = true;
 					loadChangedPathsItem = item;
-					new MethodInvoker(LoadChangedPaths).BeginInvoke(null, null);
+					ThreadPool.QueueUserWorkItem(LoadChangedPaths);
 				}
 			} else {
 				int pathWidth = 70;
@@ -133,7 +134,7 @@ namespace ICSharpCode.Svn
 		ListViewItem loadChangedPathsItem;
 		volatile bool isLoadingChangedPaths;
 		
-		void LoadChangedPaths()
+		void LoadChangedPaths(object state)
 		{
 			try {
 				LogMessage logMessage = (LogMessage)loadChangedPathsItem.Tag;

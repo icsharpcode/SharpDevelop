@@ -91,7 +91,7 @@ namespace ICSharpCode.Svn
 			lock (queue) {
 				queue.Enqueue(node);
 				if (queue.Count == 1) {
-					new ThreadStart(Run).BeginInvoke(null, null);
+					ThreadPool.QueueUserWorkItem(Run);
 				}
 			}
 		}
@@ -117,14 +117,14 @@ namespace ICSharpCode.Svn
 				}
 				
 				if (wasEmpty) {
-					new ThreadStart(Run).BeginInvoke(null, null);
+					ThreadPool.QueueUserWorkItem(Run);
 				}
 			}
 		}
 		
 		static Client client;
 		
-		static void Run()
+		static void Run(object state)
 		{
 			LoggingService.Debug("SVN: OverlayIconManager Thread started");
 			Thread.Sleep(2); // sleep 1 ms to give main thread time to add more jobs to the queue
@@ -164,9 +164,9 @@ namespace ICSharpCode.Svn
 				}
 			}
 			if (node.TreeView != null) {
-				node.TreeView.BeginInvoke(new ThreadStart(delegate {
-				                                          	node.Overlay = GetImage(status);
-				                                          }));
+				node.TreeView.BeginInvoke(new MethodInvoker(delegate {
+				                                            	node.Overlay = GetImage(status);
+				                                            }));
 			}
 		}
 	}
