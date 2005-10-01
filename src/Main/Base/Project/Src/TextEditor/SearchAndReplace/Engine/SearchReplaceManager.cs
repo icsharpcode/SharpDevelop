@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 
 using ICSharpCode.SharpDevelop.Gui;
@@ -21,7 +22,7 @@ namespace SearchAndReplace
 	public class SearchReplaceManager
 	{
 		public static SearchAndReplaceDialog SearchAndReplaceDialog = null;
-				
+		
 		static Search find                  = new Search();
 		
 		static SearchReplaceManager()
@@ -74,7 +75,7 @@ namespace SearchAndReplace
 					find.Reset();
 					return;
 				} else {
-					textArea = OpenTextArea(result.FileName); 
+					textArea = OpenTextArea(result.FileName);
 					
 					textArea.ActiveTextAreaControl.Caret.Position = textArea.Document.OffsetToPosition(result.Offset);
 					int lineNr = textArea.Document.GetLineNumberForOffset(result.Offset);
@@ -89,34 +90,38 @@ namespace SearchAndReplace
 		public static void ReplaceAll()
 		{
 			SetSearchOptions();
-			TextEditorControl textArea = null;
 			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				textArea = ((ITextEditorControlProvider)WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent).TextEditorControl;
+				TextEditorControl textArea = ((ITextEditorControlProvider)WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent).TextEditorControl;
 				textArea.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
 			}
 			find.Reset();
 			find.SearchStrategy.CompilePattern();
 			
+			List<TextEditorControl> textAreas = new List<TextEditorControl>();
 			while (true) {
 				SearchResult result = SearchReplaceManager.find.FindNext();
 				
 				if (result == null) {
-					
+					foreach (TextEditorControl textArea in textAreas) {
+						textArea.EndUpdate();
+						textArea.Refresh();
+					}
 					MessageService.ShowMessage("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone}", "${res:Global.FinishedCaptionText}");
 					find.Reset();
 					return;
 				} else {
-					textArea = OpenTextArea(result.FileName); 
+					TextEditorControl textArea = OpenTextArea(result.FileName);
 					
-					textArea.BeginUpdate();
-					textArea.ActiveTextAreaControl.TextArea.SelectionManager.SelectionCollection.Clear();
+					if (!textAreas.Contains(textArea)) {
+						textArea.BeginUpdate();
+						textArea.ActiveTextAreaControl.TextArea.SelectionManager.SelectionCollection.Clear();
+						textAreas.Add(textArea);
+					}
 					
 					string transformedPattern = result.TransformReplacePattern(SearchOptions.ReplacePattern);
 					find.Replace(result.Offset,
-					             result.Length, 
+					             result.Length,
 					             transformedPattern);
-					textArea.EndUpdate();
-					textArea.Refresh();
 				}
 			}
 		}
@@ -125,27 +130,27 @@ namespace SearchAndReplace
 		public static void FindNext()
 		{
 			SetSearchOptions();
-			if (find == null || 
-			    SearchOptions.FindPattern == null || 
+			if (find == null ||
+			    SearchOptions.FindPattern == null ||
 			    SearchOptions.FindPattern.Length == 0) {
 				return;
 			}
 			
 			find.SearchStrategy.CompilePattern();
 			SearchResult result = find.FindNext();
-				
+			
 			if (result == null) {
 				MessageBox.Show((Form)WorkbenchSingleton.Workbench,
 				                ResourceService.GetString("Dialog.NewProject.SearchReplace.SearchStringNotFound"),
-				                "Not Found", 
-				                MessageBoxButtons.OK, 
+				                "Not Found",
+				                MessageBoxButtons.OK,
 				                MessageBoxIcon.Information);
 				find.Reset();
 			} else {
 				TextEditorControl textArea = OpenTextArea(result.FileName);
 				
-				if (lastResult != null  && lastResult.FileName == result.FileName && 
-					textArea.ActiveTextAreaControl.Caret.Offset != lastResult.Offset + lastResult.Length) {
+				if (lastResult != null  && lastResult.FileName == result.FileName &&
+				    textArea.ActiveTextAreaControl.Caret.Offset != lastResult.Offset + lastResult.Length) {
 					find.Reset();
 				}
 				int startPos = Math.Min(textArea.Document.TextLength, Math.Max(0, result.Offset));
@@ -161,7 +166,7 @@ namespace SearchAndReplace
 			lastResult = result;
 		}
 		
-		static TextEditorControl OpenTextArea(string fileName) 
+		static TextEditorControl OpenTextArea(string fileName)
 		{
 			if (fileName != null) {
 				return ((ITextEditorControlProvider)FileService.OpenFile(fileName).ViewContent).TextEditorControl;
