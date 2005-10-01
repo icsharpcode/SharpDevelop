@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 1;
+		public const short FileVersion = 2;
 		
 		#region Cache management
 		#if DEBUG
@@ -60,10 +60,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			string cacheFileName;
 			if (CacheIndex.TryGetValue(assemblyName, out cacheFileName)) {
-				return LoadProjectContent(Path.Combine(MakeTempPath(), cacheFileName));
-			} else {
-				return null;
+				cacheFileName = Path.Combine(MakeTempPath(), cacheFileName);
+				if (File.Exists(cacheFileName)) {
+					return LoadProjectContent(cacheFileName);
+				}
 			}
+			return null;
 		}
 		
 		public static ReflectionProjectContent LoadProjectContent(string cacheFileName)
@@ -179,6 +181,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				writer.Write(FileVersion);
 				writer.Write(pc.AssemblyFullName);
 				writer.Write(pc.AssemblyLocation);
+				long time = 0;
+				try {
+					time = File.GetLastWriteTimeUtc(pc.AssemblyLocation).ToFileTime();
+				} catch {}
+				writer.Write(time);
 				writer.Write(pc.ReferencedAssemblies.Length);
 				foreach (AssemblyName name in pc.ReferencedAssemblies) {
 					writer.Write(name.FullName);
@@ -203,6 +210,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				string assemblyName = reader.ReadString();
 				string assemblyLocation = reader.ReadString();
+				long time = 0;
+				try {
+					time = File.GetLastWriteTimeUtc(assemblyLocation).ToFileTime();
+				} catch {}
+				if (reader.ReadInt64() != time) {
+					LoggingService.Warn("Read dom: assembly changed since cache was created");
+					return null;
+				}
 				AssemblyName[] referencedAssemblies = new AssemblyName[reader.ReadInt32()];
 				for (int i = 0; i < referencedAssemblies.Length; i++) {
 					referencedAssemblies[i] = new AssemblyName(reader.ReadString());
@@ -272,6 +287,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					WriteType(type);
 				}
 				writer.Write((int)c.Modifiers);
+				writer.Write((byte)c.ClassType);
 				WriteAttributes(c.Attributes);
 				writer.Write(c.InnerClasses.Count);
 				foreach (IClass innerClass in c.InnerClasses) {
@@ -332,6 +348,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					c.BaseTypes.Add(ReadType());
 				}
 				c.Modifiers = (ModifierEnum)reader.ReadInt32();
+				c.ClassType = (ClassType)reader.ReadByte();
 				ReadAttributes(c.Attributes);
 				count = reader.ReadInt32();
 				for (int i = 0; i < count; i++) {

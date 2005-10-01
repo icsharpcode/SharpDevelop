@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		#region Test helper methods
 		ICompilationUnit Parse(string fileName, string fileContent)
 		{
-			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp, new StringReader(fileContent));
+			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguage.CSharp, new StringReader(fileContent));
 			p.ParseMethodBodies = false;
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
@@ -44,7 +44,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		
 		ICompilationUnit ParseVB(string fileName, string fileContent)
 		{
-			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet, new StringReader(fileContent));
+			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguage.VBNet, new StringReader(fileContent));
 			p.ParseMethodBodies = false;
 			p.Parse();
 			DefaultProjectContent pc = new DefaultProjectContent();
@@ -73,7 +73,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			AddCompilationUnit(Parse("a.cs", program), "a.cs");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.CSharp);
+			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguage.CSharp);
 			return resolver.Resolve(new ExpressionResult(expression),
 			                        line, 0,
 			                        "a.cs",
@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			AddCompilationUnit(ParseVB("a.vb", program), "a.vb");
 			
-			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguages.VBNet);
+			NRefactoryResolver resolver = new NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguage.VBNet);
 			return resolver.Resolve(new ExpressionResult(expression),
 			                        line, 0,
 			                        "a.vb",

@@ -1,4 +1,68 @@
 ﻿<ChangeLog project="SharpDevelop">
+  <Change author="Mathias Simmack" date="10/01/2005">Pad layout: included some references for the dynamic help pad to solve issue #2 (http://community.sharpdevelop.net/forums/820/ShowPost.aspx)</Change>
+  <Change author="Daniel Grunwald" date="10/01/2005">Allow references to unbound types in typeof/GetType expressions.</Change>
+  <Change author="Daniel Grunwald" date="10/01/2005">Improved performance of "Replace all".</Change>
+  <Change author="Daniel Grunwald" date="09/30/2005">Fixed NRefactory bugs: VB partial class declarations and attributes with "Global." or "global::" caused parser errors.</Change>
+  <Change author="Daniel Grunwald" date="09/30/2005">Fixed loading of project files created by Visual Studio 2005.</Change>
+  <Change author="Daniel Grunwald" date="09/30/2005">Fixed SD2-440: Icon for local variables and parameters</Change>
+  <Change author="Daniel Grunwald" date="09/30/2005">Introduced DomCache (a kind of code completion database that is generated on-the-fly for each assembly).
+Advantages:
+- faster than reflection
+- referenced libraries do not need to be looked up during code completion (only when generating the cache)
+-&gt; fixes SD2-444 ReflectionOnlyAssemblyResolve is not used when an assembly is only needed inside inner classes
+--&gt; Code completion for VB's My-namespace works again
+- Assemblies do not need to be hold in RAM (they are now loaded in a separate AppDomain)
+-&gt; no more locking problems
+-&gt; less memory consumption
+Disadvantages:
+- higher memory-consumption because currently the file is loaded at once (previously the data was lazy-loaded using Reflection)
+-&gt; but there are some optimizations possible (reusing string and DefaultParameter instances) and lazy-loading could be reimplemented similar to what Fidalgo does with its CCDB.
+</Change>
+  <Change author="Mathias Simmack" date="09/29/2005">dynamic help: needed to fix the Win32 resource... Hm...</Change>
+  <Change author="Mathias Simmack" date="09/29/2005">dynamic help: HTML and PNG images included as Win32 resource</Change>
+  <Change author="Daniel Grunwald" date="09/28/2005">Fixed problem in setup script: wrong install directory was suggested when SharpDevelop 1.x was installed.</Change>
+  <Change author="Daniel Grunwald" date="09/28/2005">Handle exceptions in ICSharpCode.Svn.HistoryViewPanel.GetLogMessages</Change>
+  <Change author="Daniel Grunwald" date="09/27/2005">Fixed reading project files that start with whitespace.</Change>
+  <Change author="Daniel Grunwald" date="09/27/2005">Fixed SD2-457: C# lexer crash on "0x"</Change>
+  <Change author="Daniel Grunwald" date="09/27/2005">Switched to NUnit for the NRefactory tests because Mike failed to tell me why he switched to MbUnit and broke ~20 Tests.</Change>
+  <Change author="Daniel Grunwald" date="09/27/2005">Fixed SD2-461: Cannot build projects with umlauts</Change>
+  <Change author="Daniel Grunwald" date="09/27/2005">The "Load solution" and "New solution" buttons on the start page now work even when JavaScript is disabled in Internet Explorer.</Change>
+  <Change author="Daniel Grunwald" date="09/27/2005">Fixed exception when importing VS.NET project without ".user" file.</Change>
+  <Change author="David Srbecký" date="09/26/2005">Fixed bug that prevented recompiling due to files locked by the debugger</Change>
+  <Change author="mattward" date="09/26/2005">MbUnit Pad additions - Goto definition implemented, error list displayed after a test run with errors, and after a build the test tree auto-refreshes.</Change>
+  <Change author="Mathias Simmack" date="09/25/2005">Help 2.0: solution structure changed (you can enable the Dynamic Help by copying the new Addin file)</Change>
+  <Change author="Mathias Simmack" date="09/25/2005">dynamic help: some improvements, works with expressions now (ignores documents with more than 1 DevLang attribute)</Change>
+  <Change author="Mathias Simmack" date="09/25/2005">Help 2.0: context.html updated</Change>
+  <Change author="Daniel Grunwald" date="09/24/2005">Fixed SD2-425: Improve project options</Change>
+  <Change author="Daniel Grunwald" date="09/24/2005">Put ProjectImports into the translation database.
+Enabled AutoComplete for the ProjectImports combo box.</Change>
+  <Change author="Daniel Grunwald" date="09/24/2005">Worked on SD2-425 (Improve project options): you can now choose in which section the OutputPath property is stored.</Change>
+  <Change author="Markus Palme" date="09/24/2005">added list of project namespaces</Change>
+  <Change author="Markus Palme" date="09/24/2005">added vb.net projectlevel-imports option panel</Change>
+  <Change author="Daniel Grunwald" date="09/24/2005">Allow user to choose configuration and platform in the project options. (part of SD2-425)</Change>
+  <Change author="Mathias Simmack" date="09/24/2005">Help 2.0: some little fixes</Change>
+  <Change author="Daniel Grunwald" date="09/24/2005">Fixed some P/Invoke declarations where FxCop complained they weren't portable to 64bit and some other complaints from FxCop.</Change>
+  <Change author="Daniel Grunwald" date="09/23/2005">Applied Fidalgo rev. 2075</Change>
+  <Change author="mattward" date="09/21/2005">Added 'Stop tests' toolbar button and context menus to the MbUnit pad.  Go to definition context menu command is not currently working.</Change>
+  <Change author="Daniel Grunwald" date="09/21/2005">Fixed crash when using the "DefaultDebugger" instead of the debugger addin.</Change>
+  <Change author="Daniel Grunwald" date="09/21/2005">Fixed SD-371: Adding empty combine to a combine causes exception
+and worked on SD2-425.</Change>
+  <Change author="Mathias Simmack" date="09/18/2005">dynamic help: fixed a little problem with the 'helpResults' bool</Change>
+  <Change author="Daniel Grunwald" date="09/17/2005">Fixed SD2-451: Exception thrown when adding new event handler.</Change>
+  <Change author="Daniel Grunwald" date="09/17/2005">Improved project options (more strings translatable, reference paths tab works now)</Change>
+  <Change author="Mathias Simmack" date="09/17/2005">dynamic help: fixed a problem with the Project language</Change>
+  <Change author="Daniel Grunwald" date="09/16/2005">Use InvariantCulture for string comparisons - fixes problems with Turkish locale settings.</Change>
+  <Change author="Mathias Simmack" date="09/16/2005">dynamic help: uses default entries (s. revision 489), uses the Project language to limit the help results</Change>
+  <Change author="Mathias Simmack" date="09/16/2005">dynamic help: created new XML file with default entries (if you want to use it, copy it into the Addin folder)</Change>
+  <Change author="Daniel Grunwald" date="09/15/2005">Put more strings into the translation database.</Change>
+  <Change author="Daniel Grunwald" date="09/14/2005">Application and Signing project options panels now use the translation database.</Change>
+  <Change author="Mathias Simmack" date="09/14/2005">tried to fix a Virtual PC (no SDK) crash; HiliteMatches restored for testing (it doesn't work here :o( )</Change>
+  <Change author="Mathias Simmack" date="09/13/2005">disable 'highlight matching topics' because it doesn't work with the WebBrowser control</Change>
+  <Change author="mattward" date="09/12/2005">File was not being identified as a 'code behind file' if it existed in a subfolder.</Change>
+  <Change author="Daniel Grunwald" date="09/12/2005">Ignore .svn folders when creating setup.</Change>
+  <Change author="Daniel Grunwald" date="09/12/2005">Add prepareRelease.bat (creates ChangeLog.xml and REVISION file)</Change>
+  <Change author="Daniel Grunwald" date="09/12/2005">Fixed InterfaceImplementorCodeGenerator bug (override keyword).</Change>
+  <Change author="mattward" date="09/12/2005">SD2-438.  Form designer now creating, loading and saving resources.</Change>
   <Change author="Mike Krüger" date="09/12/2005">Fixed SD2-402:Toolbar in bookmark pad.</Change>
   <Change author="Mathias Simmack" date="09/12/2005">some changes/fixes, LoggingService used</Change>
   <Change author="Daniel Grunwald" date="09/11/2005">Allow addins to have their project/file templates stored in the addin directory.</Change>

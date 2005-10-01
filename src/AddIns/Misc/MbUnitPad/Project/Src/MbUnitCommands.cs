@@ -85,7 +85,7 @@ namespace ICSharpCode.MbUnitPad
 	{
 		public override void Run()
 		{
-			if (!DebuggerService.IsDebuggerLoaded || DebuggerService.CurrentDebugger.IsDebugging) {
+			if (DebuggerService.IsDebuggerLoaded && DebuggerService.CurrentDebugger.IsDebugging) {
 				MessageService.ShowMessage("The debugger is currently busy.");
 				return;
 			}
