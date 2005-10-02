@@ -1,9 +1,9 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Daniel Grunwald
- * Date: 28.09.2005
- * Time: 19:52
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.Collections.Generic;
@@ -76,7 +76,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					pc = new ReadWriteHelper(reader).ReadProjectContent();
 				}
 			}
-			pc.InitializeSpecialClasses();
+			if (pc != null) {
+				pc.InitializeSpecialClasses();
+			}
 			return pc;
 		}
 		#endregion

@@ -47,6 +47,12 @@ namespace ICSharpCode.NRefactory.Parser
 			return data;
 		}
 		
+		public virtual object Visit(InnerClassTypeReference innerClassTypeReference, object data)
+		{
+			Debug.Assert(innerClassTypeReference != null);
+			return data;
+		}
+		
 		public virtual object Visit(AttributeSection attributeSection, object data)
 		{
 			Debug.Assert(attributeSection != null);

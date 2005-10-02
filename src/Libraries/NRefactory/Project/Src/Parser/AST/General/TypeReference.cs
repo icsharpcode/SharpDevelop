@@ -80,18 +80,30 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			return this.Clone();
 		}
 		
-		public TypeReference Clone()
+		public virtual TypeReference Clone()
 		{
 			TypeReference c = new TypeReference(type, systemType);
-			c.pointerNestingLevel = pointerNestingLevel;
-			if (rankSpecifier != null) {
-				c.rankSpecifier = (int[])rankSpecifier.Clone();
-			}
-			foreach (TypeReference r in genericTypes) {
-				c.genericTypes.Add(r.Clone());
-			}
-			c.isGlobal = isGlobal;
+			CopyFields(this, c);
 			return c;
+		}
+		
+		/// <summary>
+		/// Copies the pointerNestingLevel, RankSpecifier, GenericTypes and IsGlobal flag
+		/// from <paramref name="from"/> to <paramref name="to"/>.
+		/// </summary>
+		/// <remarks>
+		/// If <paramref name="to"/> already contains generics, the new generics are appended to the list.
+		/// </remarks>
+		protected static void CopyFields(TypeReference from, TypeReference to)
+		{
+			to.pointerNestingLevel = from.pointerNestingLevel;
+			if (from.rankSpecifier != null) {
+				to.rankSpecifier = (int[])from.rankSpecifier.Clone();
+			}
+			foreach (TypeReference r in from.genericTypes) {
+				to.genericTypes.Add(r.Clone());
+			}
+			to.isGlobal = from.isGlobal;
 		}
 		
 		public string Type {
@@ -147,6 +159,11 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
+		public static TypeReference CheckNull(TypeReference typeReference)
+		{
+			return typeReference ?? NullTypeReference.Instance;
+		}
+		
 		public static NullTypeReference Null {
 			get {
 				return NullTypeReference.Instance;
@@ -169,11 +186,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			set {
 				isGlobal = value;
 			}
-		}
-		
-		public static TypeReference CheckNull(TypeReference typeReference)
-		{
-			return typeReference == null ? NullTypeReference.Instance : typeReference;
 		}
 		
 		string GetSystemType(string type)
@@ -236,7 +248,26 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		public override string ToString()
 		{
-			return String.Format("[TypeReference: Type={0}, PointerNestingLevel={1}, RankSpecifier={2}]", type, pointerNestingLevel, rankSpecifier);
+			StringBuilder b = new StringBuilder(type);
+			if (genericTypes != null && genericTypes.Count > 0) {
+				b.Append('<');
+				for (int i = 0; i < genericTypes.Count; i++) {
+					if (i > 0) b.Append(',');
+					b.Append(genericTypes[i].ToString());
+				}
+				b.Append('>');
+			}
+			if (pointerNestingLevel > 0) {
+				b.Append('*', pointerNestingLevel);
+			}
+			if (IsArrayType) {
+				foreach (int rank in rankSpecifier) {
+					b.Append('[');
+					b.Append(',', rank);
+					b.Append(']');
+				}
+			}
+			return b.ToString();
 		}
 	}
 	
@@ -261,6 +292,61 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		public override string ToString()
 		{
 			return String.Format("[NullTypeReference]");
+		}
+	}
+	
+	/// <summary>
+	/// We need this special type reference for cases like
+	/// OuterClass(Of T1).InnerClass(Of T2) (in expression or type context)
+	/// or Dictionary(Of String, NamespaceStruct).KeyCollection (in type context, otherwise it's a
+	/// MemberReferenceExpression)
+	/// </summary>
+	public class InnerClassTypeReference: TypeReference
+	{
+		TypeReference baseType;
+		
+		public TypeReference BaseType {
+			get {
+				return baseType;
+			}
+		}
+		
+		public override TypeReference Clone()
+		{
+			InnerClassTypeReference c = new InnerClassTypeReference(baseType.Clone(), Type, GenericTypes);
+			CopyFields(this, c);
+			return c;
+		}
+		
+		public InnerClassTypeReference(TypeReference outerClass, string innerType, List<TypeReference> innerGenericTypes)
+			: base(innerType, innerGenericTypes)
+		{
+			this.baseType = outerClass;
+		}
+		
+		public override object AcceptVisitor(IASTVisitor visitor, object data)
+		{
+			return visitor.Visit(this, data);
+		}
+		
+		/// <summary>
+		/// Creates a type reference where all type parameters are specified for the innermost class.
+		/// Namespace.OuterClass(of string).InnerClass(of integer).InnerInnerClass
+		/// becomes Namespace.OuterClass.InnerClass.InnerInnerClass(of string, integer)
+		/// </summary>
+		public TypeReference CombineToNormalTypeReference()
+		{
+			TypeReference tr = (baseType is InnerClassTypeReference)
+				? ((InnerClassTypeReference)baseType).CombineToNormalTypeReference()
+				: baseType.Clone();
+			CopyFields(this, tr);
+			tr.Type += "." + Type;
+			return tr;
+		}
+		
+		public override string ToString()
+		{
+			return "[InnerClassTypeReference: (" + baseType.ToString() + ")." + base.ToString() + "]";
 		}
 	}
 }

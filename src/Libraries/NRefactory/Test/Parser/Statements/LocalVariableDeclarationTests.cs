@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -45,6 +45,23 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("Printable", type.GenericTypes[1].GenericTypes[0].Type);
 			
 			// TODO: Check initializer
+		}
+		
+		[Test]
+		public void CSharpNestedGenericLocalVariableDeclarationTest()
+		{
+			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("MyType<string>.InnerClass<int>.InnerInnerClass a;", typeof(LocalVariableDeclaration));
+			Assert.AreEqual(1, lvd.Variables.Count);
+			InnerClassTypeReference ic = (InnerClassTypeReference)lvd.GetTypeForVariable(0);
+			Assert.AreEqual("InnerInnerClass", ic.Type);
+			Assert.AreEqual(0, ic.GenericTypes.Count);
+			ic = (InnerClassTypeReference)ic.BaseType;
+			Assert.AreEqual("InnerClass", ic.Type);
+			Assert.AreEqual(1, ic.GenericTypes.Count);
+			Assert.AreEqual("System.Int32", ic.GenericTypes[0].SystemType);
+			Assert.AreEqual("MyType", ic.BaseType.Type);
+			Assert.AreEqual(1, ic.BaseType.GenericTypes.Count);
+			Assert.AreEqual("System.String", ic.BaseType.GenericTypes[0].SystemType);
 		}
 		
 		[Test]
@@ -290,6 +307,23 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual(1, type.GenericTypes.Count);
 			Assert.AreEqual("Integer", type.GenericTypes[0].Type);
 			// TODO: Check initializer
+		}
+		
+		[Test]
+		public void VBNetNestedGenericLocalVariableDeclarationTest()
+		{
+			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim a as MyType(of string).InnerClass(of integer).InnerInnerClass", typeof(LocalVariableDeclaration));
+			Assert.AreEqual(1, lvd.Variables.Count);
+			InnerClassTypeReference ic = (InnerClassTypeReference)lvd.GetTypeForVariable(0);
+			Assert.AreEqual("InnerInnerClass", ic.Type);
+			Assert.AreEqual(0, ic.GenericTypes.Count);
+			ic = (InnerClassTypeReference)ic.BaseType;
+			Assert.AreEqual("InnerClass", ic.Type);
+			Assert.AreEqual(1, ic.GenericTypes.Count);
+			Assert.AreEqual("System.Int32", ic.GenericTypes[0].SystemType);
+			Assert.AreEqual("MyType", ic.BaseType.Type);
+			Assert.AreEqual(1, ic.BaseType.GenericTypes.Count);
+			Assert.AreEqual("System.String", ic.BaseType.GenericTypes[0].SystemType);
 		}
 		#endregion
 	}

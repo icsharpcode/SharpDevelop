@@ -160,6 +160,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		public object Visit(InnerClassTypeReference typeReference, object data)
+		{
+			nodeTracker.TrackedVisit(typeReference.BaseType, data);
+			outputFormatter.PrintToken(Tokens.Dot);
+			return Visit((TypeReference)typeReference, data); // call Visit(TypeReference, object)
+		}
+		
 		#region Global scope
 		public object Visit(AttributeSection attributeSection, object data)
 		{

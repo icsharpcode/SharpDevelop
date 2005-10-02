@@ -17,6 +17,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		object Visit(CompilationUnit compilationUnit, object data);
 		object Visit(TypeReference typeReference, object data);
+		object Visit(InnerClassTypeReference innerClassTypeReference, object data);
 		object Visit(AttributeSection attributeSection, object data);
 		object Visit(ICSharpCode.NRefactory.Parser.AST.Attribute attribute, object data);
 		object Visit(NamedArgumentExpression namedArgumentExpression, object data);

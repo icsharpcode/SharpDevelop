@@ -62,6 +62,22 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		}
 		
 		[Test]
+		public void CSharpNestedGenericTypeOfExpressionTest()
+		{
+			TypeOfExpression toe = (TypeOfExpression)ParseUtilCSharp.ParseExpression("typeof(MyType<string>.InnerClass<int>.InnerInnerClass)", typeof(TypeOfExpression));
+			InnerClassTypeReference ic = (InnerClassTypeReference)toe.TypeReference;
+			Assert.AreEqual("InnerInnerClass", ic.Type);
+			Assert.AreEqual(0, ic.GenericTypes.Count);
+			ic = (InnerClassTypeReference)ic.BaseType;
+			Assert.AreEqual("InnerClass", ic.Type);
+			Assert.AreEqual(1, ic.GenericTypes.Count);
+			Assert.AreEqual("System.Int32", ic.GenericTypes[0].SystemType);
+			Assert.AreEqual("MyType", ic.BaseType.Type);
+			Assert.AreEqual(1, ic.BaseType.GenericTypes.Count);
+			Assert.AreEqual("System.String", ic.BaseType.GenericTypes[0].SystemType);
+		}
+		
+		[Test]
 		public void CSharpNullableTypeOfExpressionTest()
 		{
 			TypeOfExpression toe = (TypeOfExpression)ParseUtilCSharp.ParseExpression("typeof(MyStruct?)", typeof(TypeOfExpression));
@@ -132,6 +148,22 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("MyType", toe.TypeReference.Type);
 			Assert.IsTrue(toe.TypeReference.GenericTypes[0].IsNull);
 			Assert.IsTrue(toe.TypeReference.GenericTypes[1].IsNull);
+		}
+		
+		[Test]
+		public void VBNestedGenericTypeOfExpressionTest()
+		{
+			TypeOfExpression toe = (TypeOfExpression)ParseUtilVBNet.ParseExpression("GetType(MyType(Of string).InnerClass(of integer).InnerInnerClass)", typeof(TypeOfExpression));
+			InnerClassTypeReference ic = (InnerClassTypeReference)toe.TypeReference;
+			Assert.AreEqual("InnerInnerClass", ic.Type);
+			Assert.AreEqual(0, ic.GenericTypes.Count);
+			ic = (InnerClassTypeReference)ic.BaseType;
+			Assert.AreEqual("InnerClass", ic.Type);
+			Assert.AreEqual(1, ic.GenericTypes.Count);
+			Assert.AreEqual("System.Int32", ic.GenericTypes[0].SystemType);
+			Assert.AreEqual("MyType", ic.BaseType.Type);
+			Assert.AreEqual(1, ic.BaseType.GenericTypes.Count);
+			Assert.AreEqual("System.String", ic.BaseType.GenericTypes[0].SystemType);
 		}
 		#endregion
 	}

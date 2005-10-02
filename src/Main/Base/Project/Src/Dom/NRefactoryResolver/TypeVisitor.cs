@@ -484,6 +484,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			if (reference == null) return null;
 			if (reference.IsNull) return null;
+			if (reference is InnerClassTypeReference) {
+				reference = ((InnerClassTypeReference)reference).CombineToNormalTypeReference();
+			}
 			LanguageProperties languageProperties = projectContent.Language;
 			IReturnType t = null;
 			if (callingClass != null && !reference.IsGlobal) {
