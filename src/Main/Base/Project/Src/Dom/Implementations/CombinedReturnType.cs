@@ -149,6 +149,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public int TypeParameterCount {
+			get {
+				return 0;
+			}
+		}
+		
 		public IClass GetUnderlyingClass()
 		{
 			return null;

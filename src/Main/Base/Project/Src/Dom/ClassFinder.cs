@@ -60,14 +60,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public IClass GetClass(string fullName)
+		public IClass GetClass(string fullName, int typeParameterCount)
 		{
-			return projectContent.GetClass(fullName);
+			return projectContent.GetClass(fullName, typeParameterCount);
 		}
 		
-		public IReturnType SearchType(string name)
+		public IReturnType SearchType(string name, int typeParameterCount)
 		{
-			return projectContent.SearchType(name, callingClass, cu, caretLine, caretColumn);
+			return projectContent.SearchType(name, typeParameterCount, callingClass, cu, caretLine, caretColumn);
 		}
 		
 		public string SearchNamespace(string name)

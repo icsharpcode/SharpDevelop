@@ -94,7 +94,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return null;
 		}
 		
-		public IReturnType SearchType(string partitialTypeName)
+		public IReturnType SearchType(string partitialTypeName, int typeParameterCount)
 		{
 			if (HasAliases) {
 				foreach (KeyValuePair<string, IReturnType> entry in aliases) {
@@ -107,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if (partitialTypeName.Length > aliasString.Length) {
 						if (projectContent.Language.NameComparer.Equals(partitialTypeName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
 							string className = entry.Value.FullyQualifiedName + partitialTypeName.Remove(0, aliasString.Length);
-							IClass c = projectContent.GetClass(className);
+							IClass c = projectContent.GetClass(className, typeParameterCount);
 							if (c != null) {
 								return c.DefaultReturnType;
 							}
@@ -117,7 +117,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (projectContent.Language.ImportNamespaces) {
 				foreach (string str in usings) {
-					IClass c = projectContent.GetClass(str + "." + partitialTypeName);
+					IClass c = projectContent.GetClass(str + "." + partitialTypeName, typeParameterCount);
 					if (c != null) {
 						return c.DefaultReturnType;
 					}
@@ -133,9 +133,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					subClassName = partitialTypeName.Substring(pos + 1);
 				}
 				foreach (string str in usings) {
-					IClass c = projectContent.GetClass(str + "." + className);
+					IClass c = projectContent.GetClass(str + "." + className, typeParameterCount);
 					if (c != null) {
-						c = projectContent.GetClass(str + "." + partitialTypeName);
+						c = projectContent.GetClass(str + "." + partitialTypeName, typeParameterCount);
 						if (c != null) {
 							return c.DefaultReturnType;
 						}

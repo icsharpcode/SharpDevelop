@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			foreach (IField field in currentClass.Fields) {
 				Indent();
-				IClass cName = ParserService.CurrentProjectContent.GetClass(field.ReturnType.FullyQualifiedName);
+				IClass cName = field.ReturnType.GetUnderlyingClass();
 				if (cName == null || cName.ClassType == ClassType.Struct || cName.ClassType == ClassType.Enum) {
 					editActionHandler.InsertString("if (" + field.Name + " != " + className + "." + field.Name + ") return false;");++numOps;
 				} else {
@@ -97,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			editActionHandler.InsertString("return ");++numOps;
 			for (int i = 0; i < currentClass.Fields.Count; ++i) {
 				IField field = currentClass.Fields[i];
-				IClass cName = ParserService.CurrentProjectContent.GetClass(field.ReturnType.FullyQualifiedName);
+				IClass cName = field.ReturnType.GetUnderlyingClass();
 				if (cName == null || cName.ClassType == ClassType.Struct || cName.ClassType == ClassType.Enum) {
 					editActionHandler.InsertString(field.Name + ".GetHashCode()");++numOps;
 				} else {

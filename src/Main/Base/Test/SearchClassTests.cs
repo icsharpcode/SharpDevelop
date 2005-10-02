@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		IReturnType SearchType(string type)
 		{
 			ICompilationUnit cu = Prepare(LanguageProperties.CSharp);
-			IReturnType c = cu.ProjectContent.SearchType(type, null, cu, 1, 1);
+			IReturnType c = cu.ProjectContent.SearchType(type, 0, null, cu, 1, 1);
 			Assert.IsNotNull(c, type + "not found");
 			return c;
 		}
@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		IReturnType SearchTypeVB(string type)
 		{
 			ICompilationUnit cu = Prepare(LanguageProperties.VBNet);
-			IReturnType c = cu.ProjectContent.SearchType(type, null, cu, 1, 1);
+			IReturnType c = cu.ProjectContent.SearchType(type, 0, null, cu, 1, 1);
 			Assert.IsNotNull(c, type + "not found");
 			return c;
 		}
@@ -116,7 +116,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		public void SearchArrayList()
 		{
 			ICompilationUnit cu = Prepare(LanguageProperties.CSharp);
-			IReturnType c = cu.ProjectContent.SearchType("Collections.ArrayList", null, cu, 1, 1);
+			IReturnType c = cu.ProjectContent.SearchType("Collections.ArrayList", 0, null, cu, 1, 1);
 			Assert.IsNull(c, "Namespaces should not be imported in C#");
 		}
 

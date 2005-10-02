@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 2;
+		public const short FileVersion = 3;
 		
 		#region Cache management
 		#if DEBUG
@@ -160,12 +160,39 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		#endregion
 		
+		private struct ClassNameTypeCountPair {
+			public readonly string ClassName;
+			public readonly byte TypeParameterCount;
+			
+			public ClassNameTypeCountPair(IClass c) {
+				this.ClassName = c.FullyQualifiedName;
+				this.TypeParameterCount = (byte)c.TypeParameters.Count;
+			}
+			
+			public ClassNameTypeCountPair(IReturnType rt) {
+				this.ClassName = rt.FullyQualifiedName;
+				this.TypeParameterCount = (byte)rt.TypeParameterCount;
+			}
+			
+			public override bool Equals(object obj) {
+				if (!(obj is ClassNameTypeCountPair)) return false;
+				ClassNameTypeCountPair myClassNameTypeCountPair = (ClassNameTypeCountPair)obj;
+				if (!ClassName.Equals(myClassNameTypeCountPair.ClassName, StringComparison.InvariantCultureIgnoreCase)) return false;
+				if (TypeParameterCount != myClassNameTypeCountPair.TypeParameterCount) return false;
+				return true;
+			}
+			
+			public override int GetHashCode() {
+				return StringComparer.InvariantCultureIgnoreCase.GetHashCode(ClassName) ^ ((int)TypeParameterCount * 5);
+			}
+		}
+		
 		private sealed class ReadWriteHelper
 		{
 			ReflectionProjectContent pc;
 			
 			readonly BinaryWriter writer;
-			readonly Dictionary<string, int> classIndices = new Dictionary<string, int>(StringComparer.InvariantCultureIgnoreCase);
+			readonly Dictionary<ClassNameTypeCountPair, int> classIndices = new Dictionary<ClassNameTypeCountPair, int>();
 			
 			readonly BinaryReader reader;
 			IReturnType[] types;
@@ -236,11 +263,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				classIndices.Clear();
 				int i = 0;
 				foreach (IClass c in classes) {
-					classIndices[c.FullyQualifiedName] = i;
+					classIndices[new ClassNameTypeCountPair(c)] = i;
 					i += 1;
 				}
 				
-				List<string> externalTypes = new List<string>();
+				List<ClassNameTypeCountPair> externalTypes = new List<ClassNameTypeCountPair>();
 				CreateExternalTypeList(externalTypes, classes.Count, classes);
 				
 				writer.Write(classes.Count);
@@ -248,8 +275,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (IClass c in classes) {
 					writer.Write(c.FullyQualifiedName);
 				}
-				foreach (string type in externalTypes) {
-					writer.Write(type);
+				foreach (ClassNameTypeCountPair type in externalTypes) {
+					writer.Write(type.ClassName);
+					writer.Write(type.TypeParameterCount);
 				}
 				foreach (IClass c in classes) {
 					WriteClass(c);
@@ -268,7 +296,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 					types[i] = c.DefaultReturnType;
 				}
 				for (int i = classCount; i < types.Length; i++) {
-					types[i] = new GetClassReturnType(pc, reader.ReadString());
+					string name = reader.ReadString();
+					types[i] = new GetClassReturnType(pc, name, reader.ReadByte());
 				}
 				for (int i = 0; i < classes.Length; i++) {
 					ReadClass(classes[i]);
@@ -385,7 +414,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			/// Finds all return types used in the class collection and adds the unknown ones
 			/// to the externalTypeIndices and externalTypes collections.
 			/// </summary>
-			void CreateExternalTypeList(List<string> externalTypes,
+			void CreateExternalTypeList(List<ClassNameTypeCountPair> externalTypes,
 			                            int classCount, ICollection<IClass> classes)
 			{
 				foreach (IClass c in classes) {
@@ -424,13 +453,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			void AddExternalType(IReturnType rt, List<string> externalTypes, int classCount)
+			void AddExternalType(IReturnType rt, List<ClassNameTypeCountPair> externalTypes, int classCount)
 			{
 				if (rt.IsDefaultReturnType) {
-					string name = rt.FullyQualifiedName;
-					if (!classIndices.ContainsKey(name)) {
-						classIndices.Add(name, externalTypes.Count + classCount);
-						externalTypes.Add(name);
+					ClassNameTypeCountPair pair = new ClassNameTypeCountPair(rt);
+					if (!classIndices.ContainsKey(pair)) {
+						classIndices.Add(pair, externalTypes.Count + classCount);
+						externalTypes.Add(pair);
 					}
 				} else if (rt is ArrayReturnType) {
 					AddExternalType(((ArrayReturnType)rt).ElementType, externalTypes, classCount);
@@ -465,7 +494,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					if (name == "System.Void") {
 						writer.Write(VoidRTCode);
 					} else {
-						writer.Write(classIndices[rt.FullyQualifiedName]);
+						writer.Write(classIndices[new ClassNameTypeCountPair(rt)]);
 					}
 				} else if (rt is ArrayReturnType) {
 					ArrayReturnType art = (ArrayReturnType)rt;

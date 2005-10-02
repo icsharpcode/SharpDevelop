@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (!baseType.Equals(rt.baseType)) return false;
 			if (typeParameters.Count != rt.typeParameters.Count) return false;
 			for (int i = 0; i < typeParameters.Count; ++i) {
-				if (!typeParameters[i].Equals(rt.typeParameters[i])) return false;
+				if (!object.Equals(typeParameters[i], rt.typeParameters[i])) return false;
 			}
 			return true;
 		}

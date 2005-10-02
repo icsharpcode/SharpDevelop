@@ -147,7 +147,18 @@ namespace ICSharpCode.Core
 		
 		public ICollection<IClass> Classes {
 			get {
-				return ClassLists[0].Values;
+				lock (namespaces) {
+					List<IClass> list = new List<IClass>(ClassLists[0].Count + 10);
+					foreach (IClass c in ClassLists[0].Values) {
+						if (c is GenericClassContainer) {
+							GenericClassContainer gcc = (GenericClassContainer)c;
+							list.AddRange(gcc.RealClasses);
+						} else {
+							list.Add(c);
+						}
+					}
+					return list;
+				}
 			}
 		}
 		
@@ -212,14 +223,80 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// Container class that is used when multiple classes with different type parameter
+		/// count have the same class name.
+		/// </summary>
+		private class GenericClassContainer : DefaultClass
+		{
+			public GenericClassContainer(string fullyQualifiedName) : base(null, fullyQualifiedName) {}
+			
+			IClass[] realClasses = new IClass[4];
+			
+			public IEnumerable<IClass> RealClasses {
+				get {
+					foreach (IClass c in realClasses) {
+						if (c != null) yield return c;
+					}
+				}
+			}
+			
+			public int RealClassCount {
+				get {
+					int count = 0;
+					foreach (IClass c in realClasses) {
+						if (c != null) count += 1;
+					}
+					return count;
+				}
+			}
+			
+			public IClass Get(int typeParameterCount)
+			{
+				if (realClasses.Length > typeParameterCount)
+					return realClasses[typeParameterCount];
+				else
+					return null;
+			}
+			
+			public IClass GetBest(int typeParameterCount)
+			{
+				IClass c;
+				for (int i = typeParameterCount; i < realClasses.Length; i++) {
+					c = Get(i);
+					if (c != null) return c;
+				}
+				for (int i = typeParameterCount - 1; i >= 0; i--) {
+					c = Get(i);
+					if (c != null) return c;
+				}
+				return null;
+			}
+			
+			public void Set(IClass c)
+			{
+				int typeParameterCount = c.TypeParameters.Count;
+				if (realClasses.Length <= typeParameterCount) {
+					IClass[] newArray = new IClass[typeParameterCount + 2];
+					realClasses.CopyTo(newArray, 0);
+					realClasses = newArray;
+				}
+				realClasses[typeParameterCount] = c;
+			}
+			
+			public void Remove(int typeParameterCount)
+			{
+				if (realClasses.Length > typeParameterCount)
+					realClasses[typeParameterCount] = null;
+			}
+		}
+		
 		protected void AddClassToNamespaceListInternal(IClass addClass)
 		{
+			string fullyQualifiedName = addClass.FullyQualifiedName;
 			if (addClass.IsPartial) {
 				LoggingService.Debug("Adding partial class " + addClass.Name + " from " + Path.GetFileName(addClass.CompilationUnit.FileName));
-				Dictionary<string, IClass> classes = GetClasses(language);
-				CompoundClass compound = null;
-				if (classes.ContainsKey(addClass.FullyQualifiedName))
-					compound = classes[addClass.FullyQualifiedName] as CompoundClass;
+				CompoundClass compound = GetClassInternal(fullyQualifiedName, addClass.TypeParameters.Count, language) as CompoundClass;
 				if (compound != null) {
 					// possibly replace existing class (look for CU with same filename)
 					for (int i = 0; i < compound.Parts.Count; i++) {
@@ -237,6 +314,20 @@ namespace ICSharpCode.Core
 				} else {
 					addClass = new CompoundClass(addClass);
 					LoggingService.Debug("Compound created!");
+				}
+			}
+			
+			IClass oldDictionaryClass;
+			if (GetClasses(language).TryGetValue(fullyQualifiedName, out oldDictionaryClass)) {
+				GenericClassContainer gcc = oldDictionaryClass as GenericClassContainer;
+				if (gcc != null) {
+					gcc.Set(addClass);
+					return;
+				} else if (oldDictionaryClass.TypeParameters.Count != addClass.TypeParameters.Count) {
+					gcc = new GenericClassContainer(fullyQualifiedName);
+					gcc.Set(addClass);
+					gcc.Set(oldDictionaryClass);
+					addClass = gcc;
 				}
 			}
 			
@@ -355,13 +446,11 @@ namespace ICSharpCode.Core
 		
 		void RemoveClass(IClass @class)
 		{
-			string fullClassName = @class.FullyQualifiedName;
-			if (!GetClasses(language).ContainsKey(fullClassName)) {
-				return;
-			}
+			string fullyQualifiedName = @class.FullyQualifiedName;
 			if (@class.IsPartial) {
 				// remove a part of a partial class
-				CompoundClass compound = (CompoundClass)GetClasses(language)[fullClassName];
+				CompoundClass compound = (CompoundClass)GetClassInternal(fullyQualifiedName, @class.TypeParameters.Count, language);
+				if (compound == null) return;
 				compound.Parts.Remove(@class);
 				if (compound.Parts.Count > 0) {
 					compound.UpdateInformationFromParts();
@@ -370,23 +459,33 @@ namespace ICSharpCode.Core
 					@class = compound; // all parts removed, remove compound class
 				}
 			}
+			
+			IClass classInDictionary;
+			if (!GetClasses(language).TryGetValue(fullyQualifiedName, out classInDictionary)) {
+				return;
+			}
+			
+			GenericClassContainer gcc = classInDictionary as GenericClassContainer;
+			if (gcc != null) {
+				gcc.Remove(@class.TypeParameters.Count);
+				if (gcc.RealClassCount > 0) {
+					return;
+				}
+			}
+			
+			foreach (Dictionary<string, IClass> classes in ClassLists) {
+				classes.Remove(fullyQualifiedName);
+			}
+			
 			string nSpace = @class.Namespace;
 			if (nSpace == null) {
 				nSpace = String.Empty;
-			}
-			RemoveClass(fullClassName, nSpace);
-		}
-		
-		void RemoveClass(string fullyQualifiedName, string nSpace)
-		{
-			foreach (Dictionary<string, IClass> classes in ClassLists) {
-				classes.Remove(fullyQualifiedName);
 			}
 			
 			// Remove class from namespace lists
 			List<IClass> classList = GetNamespaces(this.language)[nSpace].Classes;
 			for (int i = 0; i < classList.Count; i++) {
-				if (classList[i].FullyQualifiedName == fullyQualifiedName) {
+				if (language.NameComparer.Equals(classList[i].FullyQualifiedName, fullyQualifiedName)) {
 					classList.RemoveAt(i);
 					break;
 				}
@@ -399,38 +498,64 @@ namespace ICSharpCode.Core
 		#region Default Parser Layer dependent functions
 		public IClass GetClass(string typeName)
 		{
-			return GetClass(typeName, language, true);
+			return GetClass(typeName, 0);
 		}
 		
-		public IClass GetClass(string typeName, LanguageProperties language, bool lookInReferences)
+		public IClass GetClass(string typeName, int typeParameterCount)
 		{
-			Dictionary<string, IClass> classes = GetClasses(language);
-			if (classes.ContainsKey(typeName)) {
-				return classes[typeName];
+			return GetClass(typeName, typeParameterCount, language, true);
+		}
+		
+		protected IClass GetClassInternal(string typeName, int typeParameterCount, LanguageProperties language)
+		{
+			IClass c;
+			if (GetClasses(language).TryGetValue(typeName, out c)) {
+				GenericClassContainer gcc = c as GenericClassContainer;
+				if (gcc != null) {
+					return gcc.GetBest(typeParameterCount);
+				}
+				return c;
+			}
+			return null;
+		}
+		
+		public IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, bool lookInReferences)
+		{
+			IClass c = GetClassInternal(typeName, typeParameterCount, language);
+			if (c != null && c.TypeParameters.Count == typeParameterCount) {
+				return c;
 			}
 			
 			// Search in references:
 			if (lookInReferences) {
 				foreach (IProjectContent content in referencedContents) {
-					IClass classFromContent = content.GetClass(typeName, language, false);
-					if (classFromContent != null) {
-						return classFromContent;
+					IClass contentClass = content.GetClass(typeName, typeParameterCount, language, false);
+					if (contentClass != null) {
+						if (contentClass.TypeParameters.Count == typeParameterCount) {
+							return contentClass;
+						} else {
+							c = contentClass;
+						}
 					}
 				}
+			}
+			
+			if (c != null) {
+				return c;
 			}
 			
 			// not found -> maybe nested type -> trying to find class that contains this one.
 			int lastIndex = typeName.LastIndexOf('.');
 			if (lastIndex > 0) {
 				string outerName = typeName.Substring(0, lastIndex);
-				if (classes.ContainsKey(outerName)) {
-					IClass upperClass = classes[outerName];
+				IClass upperClass = GetClassInternal(outerName, typeParameterCount, language);
+				if (upperClass != null) {
 					List<IClass> innerClasses = upperClass.InnerClasses;
 					if (innerClasses != null) {
 						string innerName = typeName.Substring(lastIndex + 1);
-						foreach (IClass c in innerClasses) {
-							if (language.NameComparer.Equals(c.Name, innerName)) {
-								return c;
+						foreach (IClass innerClass in innerClasses) {
+							if (language.NameComparer.Equals(innerClass.Name, innerName)) {
+								return innerClass;
 							}
 						}
 					}
@@ -468,34 +593,45 @@ namespace ICSharpCode.Core
 				if (list.Capacity < newCapacity)
 					list.Capacity = newCapacity;
 				foreach (IClass c in ns.Classes) {
-					if (c.IsInternal && !lookInReferences) {
-						// internal class and we are looking at it from another project content
-						continue;
-					}
-					if (language.ShowInNamespaceCompletion(c))
-						list.Add(c);
-					if (language.ImportModules && c.ClassType == ClassType.Module) {
-						foreach (IMember m in c.Methods) {
-							if (m.IsAccessible(null, false))
-								list.Add(m);
+					if (c is GenericClassContainer) {
+						foreach (IClass realClass in ((GenericClassContainer)c).RealClasses) {
+							AddNamespaceContentsClass(list, realClass, language, lookInReferences);
 						}
-						foreach (IMember m in c.Events) {
-							if (m.IsAccessible(null, false))
-								list.Add(m);
-						}
-						foreach (IMember m in c.Fields) {
-							if (m.IsAccessible(null, false))
-								list.Add(m);
-						}
-						foreach (IMember m in c.Properties) {
-							if (m.IsAccessible(null, false))
-								list.Add(m);
-						}
+					} else {
+						AddNamespaceContentsClass(list, c, language, lookInReferences);
 					}
 				}
 				foreach (string subns in ns.SubNamespaces) {
 					if (!list.Contains(subns))
 						list.Add(subns);
+				}
+			}
+		}
+		
+		void AddNamespaceContentsClass(ArrayList list, IClass c, LanguageProperties language, bool lookInReferences)
+		{
+			if (c.IsInternal && !lookInReferences) {
+				// internal class and we are looking at it from another project content
+				return;
+			}
+			if (language.ShowInNamespaceCompletion(c))
+				list.Add(c);
+			if (language.ImportModules && c.ClassType == ClassType.Module) {
+				foreach (IMember m in c.Methods) {
+					if (m.IsAccessible(null, false))
+						list.Add(m);
+				}
+				foreach (IMember m in c.Events) {
+					if (m.IsAccessible(null, false))
+						list.Add(m);
+				}
+				foreach (IMember m in c.Fields) {
+					if (m.IsAccessible(null, false))
+						list.Add(m);
+				}
+				foreach (IMember m in c.Properties) {
+					if (m.IsAccessible(null, false))
+						list.Add(m);
 				}
 			}
 		}
@@ -570,25 +706,27 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		public IReturnType SearchType(string name, IClass curType, int caretLine, int caretColumn)
+		public IReturnType SearchType(string name, int typeParameterCount, IClass curType, int caretLine, int caretColumn)
 		{
 			if (curType == null) {
-				return SearchType(name, null, null, caretLine, caretColumn);
+				return SearchType(name, typeParameterCount, null, null, caretLine, caretColumn);
 			}
-			return SearchType(name, curType, curType.CompilationUnit, caretLine, caretColumn);
+			return SearchType(name, typeParameterCount, curType, curType.CompilationUnit, caretLine, caretColumn);
 		}
 		
-		public IReturnType SearchType(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn)
+		public IReturnType SearchType(string name, int typeParameterCount, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn)
 		{
 			if (name == null || name.Length == 0) {
 				return null;
 			}
 			
 			// Try if name is already the full type name
-			IClass c = GetClass(name);
+			IClass c = GetClass(name, typeParameterCount);
 			if (c != null) {
 				return c.DefaultReturnType;
 			}
+			// fallback-class if the one with the right type parameter count is not found.
+			IReturnType fallbackClass = null;
 			if (curType != null) {
 				// Try parent namespaces of the current class
 				string fullname = curType.FullyQualifiedName;
@@ -599,9 +737,12 @@ namespace ICSharpCode.Core
 					curnamespace.Append('.');
 					
 					curnamespace.Append(name);
-					c = GetClass(curnamespace.ToString());
+					c = GetClass(curnamespace.ToString(), typeParameterCount);
 					if (c != null) {
-						return c.DefaultReturnType;
+						if (c.TypeParameters.Count == typeParameterCount)
+							return c.DefaultReturnType;
+						else
+							fallbackClass = c.DefaultReturnType;
 					}
 					// remove class name again to try next namespace
 					curnamespace.Length -= name.Length;
@@ -621,20 +762,28 @@ namespace ICSharpCode.Core
 				// Combine name with usings
 				foreach (IUsing u in unit.Usings) {
 					if (u != null) {
-						IReturnType r = u.SearchType(name);
+						IReturnType r = u.SearchType(name, typeParameterCount);
 						if (r != null) {
-							return r;
+							if (r.TypeParameterCount == typeParameterCount) {
+								return r;
+							} else {
+								fallbackClass = r;
+							}
 						}
 					}
 				}
 			}
 			if (defaultImports != null) {
-				IReturnType r = defaultImports.SearchType(name);
+				IReturnType r = defaultImports.SearchType(name, typeParameterCount);
 				if (r != null) {
-					return r;
+					if (r.TypeParameterCount == typeParameterCount) {
+						return r;
+					} else {
+						fallbackClass = r;
+					}
 				}
 			}
-			return null;
+			return fallbackClass;
 		}
 		
 		/// <summary>
@@ -643,7 +792,7 @@ namespace ICSharpCode.Core
 		/// <param name="fullMemberName">Fully qualified member name (always case sensitive).</param>
 		public Position GetPosition(string fullMemberName)
 		{
-			IClass curClass = GetClass(fullMemberName, LanguageProperties.CSharp, false);
+			IClass curClass = GetClass(fullMemberName, 0, LanguageProperties.CSharp, false);
 			if (curClass != null) {
 				return new Position(curClass.CompilationUnit, curClass.Region.BeginLine, curClass.Region.BeginColumn);
 			}
@@ -651,7 +800,7 @@ namespace ICSharpCode.Core
 			if (pos > 0) {
 				string className = fullMemberName.Substring(0, pos);
 				string memberName = fullMemberName.Substring(pos + 1);
-				curClass = GetClass(className, LanguageProperties.CSharp, false);
+				curClass = GetClass(className, 0, LanguageProperties.CSharp, false);
 				if (curClass != null) {
 					IMember member = curClass.SearchMember(memberName, LanguageProperties.CSharp);
 					if (member != null) {

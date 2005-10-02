@@ -260,7 +260,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					if (resolver.ProjectContent.NamespaceExists(combinedName)) {
 						return new NamespaceReturnType(combinedName);
 					}
-					IClass c = resolver.ProjectContent.GetClass(combinedName);
+					IClass c = resolver.GetClass(combinedName);
 					if (c != null) {
 						return c.DefaultReturnType;
 					}
@@ -510,18 +510,19 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					// keyword-type like void, int, string etc.
 					t = ProjectContentRegistry.Mscorlib.GetClass(reference.SystemType).DefaultReturnType;
 				} else {
+					int typeParameterCount = reference.GenericTypes.Count;
 					if (useLazyReturnType) {
 						if (reference.IsGlobal)
-							t = new GetClassReturnType(projectContent, reference.SystemType);
+							t = new GetClassReturnType(projectContent, reference.SystemType, typeParameterCount);
 						else
-							t = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn, reference.SystemType);
+							t = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn, reference.SystemType, typeParameterCount);
 					} else {
 						IClass c;
 						if (reference.IsGlobal) {
-							c = projectContent.GetClass(reference.SystemType);
+							c = projectContent.GetClass(reference.SystemType, typeParameterCount);
 							t = (c != null) ? c.DefaultReturnType : null;
 						} else {
-							t = projectContent.SearchType(reference.SystemType, callingClass, caretLine, caretColumn);
+							t = projectContent.SearchType(reference.SystemType, typeParameterCount, callingClass, caretLine, caretColumn);
 						}
 						if (t == null) {
 							if (reference.GenericTypes.Count == 0 && !reference.IsArrayType) {

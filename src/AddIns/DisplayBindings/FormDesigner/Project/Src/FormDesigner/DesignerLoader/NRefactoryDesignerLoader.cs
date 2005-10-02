@@ -204,7 +204,7 @@ namespace ICSharpCode.FormDesigner
 				FixTypeReference(tref, location, domCu);
 			}
 			ICSharpCode.SharpDevelop.Dom.IClass curType = domCu.GetInnermostClass(location.Y, location.X);
-			ICSharpCode.SharpDevelop.Dom.IReturnType rt = domCu.ProjectContent.SearchType(type.Type, curType, domCu, location.Y, location.X);
+			ICSharpCode.SharpDevelop.Dom.IReturnType rt = domCu.ProjectContent.SearchType(type.Type, type.GenericTypes.Count, curType, domCu, location.Y, location.X);
 			if (rt != null) {
 				type.Type = rt.FullyQualifiedName;
 			}

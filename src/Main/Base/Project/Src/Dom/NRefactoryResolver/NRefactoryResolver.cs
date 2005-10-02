@@ -343,7 +343,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (projectContent.NamespaceExists(combinedName)) {
 					return new NamespaceResolveResult(callingClass, callingMember, combinedName);
 				}
-				c = projectContent.GetClass(combinedName);
+				c = GetClass(combinedName);
 				if (c != null) {
 					return new TypeResolveResult(callingClass, callingMember, c);
 				}
@@ -533,7 +533,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (languageProperties.CanImportClasses) {
 				foreach (IUsing @using in cu.Usings) {
 					foreach (string import in @using.Usings) {
-						IClass c = projectContent.GetClass(import);
+						IClass c = GetClass(import);
 						if (c != null) {
 							IMember member = GetMember(c.DefaultReturnType, identifier);
 							if (member != null) {
@@ -694,7 +694,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public IReturnType SearchType(string name)
 		{
-			return projectContent.SearchType(name, callingClass, cu, caretLine, caretColumn);
+			return projectContent.SearchType(name, 0, callingClass, cu, caretLine, caretColumn);
 		}
 		
 		#region Helper for TypeVisitor
@@ -709,7 +709,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (languageProperties.CanImportClasses) {
 				foreach (IUsing @using in cu.Usings) {
 					foreach (string import in @using.Usings) {
-						IClass c = projectContent.GetClass(import);
+						IClass c = projectContent.GetClass(import, 0);
 						if (c != null) {
 							methods = SearchMethod(c.DefaultReturnType, memberName);
 							if (methods.Count > 0)

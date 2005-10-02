@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected virtual IReturnType CreateDefaultReturnType()
 		{
 			if (IsPartial) {
-				return new GetClassReturnType(ProjectContent, FullyQualifiedName);
+				return new GetClassReturnType(ProjectContent, FullyQualifiedName, TypeParameters.Count);
 			} else {
 				return new DefaultReturnType(this);
 			}

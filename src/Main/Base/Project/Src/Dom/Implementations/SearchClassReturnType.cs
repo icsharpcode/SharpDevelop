@@ -23,8 +23,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		int caretColumn;
 		string name;
 		string shortName;
+		int typeParameterCount;
 		
-		public SearchClassReturnType(IProjectContent projectContent, IClass declaringClass, int caretLine, int caretColumn, string name)
+		public SearchClassReturnType(IProjectContent projectContent, IClass declaringClass, int caretLine, int caretColumn, string name, int typeParameterCount)
 		{
 			if (declaringClass == null)
 				throw new ArgumentNullException("declaringClass");
@@ -32,6 +33,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.pc = projectContent;
 			this.caretLine = caretLine;
 			this.caretColumn = caretColumn;
+			this.typeParameterCount = typeParameterCount;
 			this.name = name;
 			int pos = name.LastIndexOf('.');
 			if (pos < 0)
@@ -40,24 +42,35 @@ namespace ICSharpCode.SharpDevelop.Dom
 				shortName = name.Substring(pos + 1);
 		}
 		
+		public override int TypeParameterCount {
+			get {
+				return typeParameterCount;
+			}
+		}
+		
 		public override bool Equals(object o)
 		{
 			SearchClassReturnType rt = o as SearchClassReturnType;
 			if (rt == null) {
 				IReturnType rt2 = o as IReturnType;
 				if (rt2 != null && rt2.IsDefaultReturnType)
-					return rt2.FullyQualifiedName == this.FullyQualifiedName;
+					return rt2.FullyQualifiedName == this.FullyQualifiedName && rt2.TypeParameterCount == this.TypeParameterCount;
 				else
 					return false;
 			}
 			if (declaringClass.FullyQualifiedName != rt.declaringClass.FullyQualifiedName) return false;
+			if (typeParameterCount != rt.typeParameterCount) return false;
+			if (caretLine != rt.caretLine) return false;
+			if (caretColumn != rt.caretColumn) return false;
+			if (typeParameterCount != rt.typeParameterCount) return false;
 			return name == rt.name;
 		}
 		
 		public override int GetHashCode()
 		{
 			unchecked {
-				return declaringClass.GetHashCode() ^ name.GetHashCode() ^ caretLine << 8 + caretColumn;
+				return declaringClass.GetHashCode() ^ name.GetHashCode()
+					^ (typeParameterCount << 16 + caretLine << 8 + caretColumn);
 			}
 		}
 		
@@ -101,7 +114,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 						return type;
 					try {
 						isSearching = true;
-						type = pc.SearchType(name, declaringClass, caretLine, caretColumn);
+						type = pc.SearchType(name, typeParameterCount, declaringClass, caretLine, caretColumn);
 						cache[this] = type;
 						return type;
 					} finally {

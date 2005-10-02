@@ -27,6 +27,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.c = c;
 		}
 		
+		public override int TypeParameterCount {
+			get {
+				return c.TypeParameters.Count;
+			}
+		}
+		
 		public override IClass GetUnderlyingClass()
 		{
 			return c;

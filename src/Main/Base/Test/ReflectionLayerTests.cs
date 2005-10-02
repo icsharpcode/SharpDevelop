@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 		public void ParameterComparisonTest()
 		{
 			DefaultParameter p1 = new DefaultParameter("a", pc.GetClass("System.String").DefaultReturnType, DomRegion.Empty);
-			DefaultParameter p2 = new DefaultParameter("b", new GetClassReturnType(pc, "System.String"), DomRegion.Empty);
+			DefaultParameter p2 = new DefaultParameter("b", new GetClassReturnType(pc, "System.String", 0), DomRegion.Empty);
 			List<IParameter> a1 = new List<IParameter>();
 			List<IParameter> a2 = new List<IParameter>();
 			a1.Add(p1);

@@ -48,6 +48,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public virtual int TypeParameterCount {
+			get {
+				IReturnType baseType = BaseType;
+				return (baseType != null) ? baseType.TypeParameterCount : 0;
+			}
+		}
+		
 		/// <summary>
 		/// Gets the array ranks of the return type.
 		/// When the return type is not an array, this property returns null.

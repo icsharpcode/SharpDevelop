@@ -152,8 +152,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 						name = name.Substring(0, name.Length - 1);
 					}
 				}
+				int typeParameterCount = 0;
 				if (name.Length > 2) {
 					if (name[name.Length - 2] == '`') {
+						typeParameterCount = int.Parse(name[name.Length - 1].ToString());
 						name = name.Substring(0, name.Length - 2);
 					}
 				}
@@ -161,13 +163,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 					name = name.Replace('+', '.');
 				}
 				if (!createLazyReturnType) {
-					IClass c = content.GetClass(name);
+					IClass c = content.GetClass(name, typeParameterCount);
 					if (c != null)
 						return c.DefaultReturnType;
 					// example where name is not found: pointers like System.Char*
 					// or when the class is in a assembly that is not referenced
 				}
-				return new GetClassReturnType(content, name);
+				return new GetClassReturnType(content, name, typeParameterCount);
 			}
 		}
 		

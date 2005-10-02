@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public void InitializeSpecialClasses()
 		{
-			if (ClassLists[0].ContainsKey(VoidClass.VoidName)) {
+			if (GetClassInternal(VoidClass.VoidName, 0, Language) != null) {
 				AddClassToNamespaceList(new VoidClass(assemblyCompilationUnit));
 			}
 		}

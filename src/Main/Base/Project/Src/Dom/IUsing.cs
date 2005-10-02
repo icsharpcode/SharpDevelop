@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		IReturnType SearchType(string partitialTypeName);
+		IReturnType SearchType(string partitialTypeName, int typeParameterCount);
 		string SearchNamespace(string partitialNamespaceName);
 	}
 }

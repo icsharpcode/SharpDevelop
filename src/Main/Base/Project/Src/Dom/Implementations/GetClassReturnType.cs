@@ -20,10 +20,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IProjectContent content;
 		string fullName;
 		string shortName;
+		int typeParameterCount;
 		
-		public GetClassReturnType(IProjectContent content, string fullName)
+		public GetClassReturnType(IProjectContent content, string fullName, int typeParameterCount)
 		{
 			this.content = content;
+			this.typeParameterCount = typeParameterCount;
 			SetFullyQualifiedName(fullName);
 		}
 		
@@ -33,28 +35,34 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public override int TypeParameterCount {
+			get {
+				return typeParameterCount;
+			}
+		}
+		
 		public override bool Equals(object o)
 		{
 			GetClassReturnType rt = o as GetClassReturnType;
 			if (rt == null) {
 				IReturnType rt2 = o as IReturnType;
 				if (rt2 != null && rt2.IsDefaultReturnType)
-					return rt2.FullyQualifiedName == fullName;
+					return rt2.FullyQualifiedName == fullName && rt2.TypeParameterCount == this.TypeParameterCount;
 				else
 					return false;
 			}
-			return fullName == rt.fullName;
+			return fullName == rt.fullName && typeParameterCount == rt.typeParameterCount && content == rt.content;
 		}
 		
 		public override int GetHashCode()
 		{
-			return content.GetHashCode() ^ fullName.GetHashCode();
+			return content.GetHashCode() ^ fullName.GetHashCode() ^ (typeParameterCount * 5);
 		}
 		
 		// TODO: Cache BaseType until a new CompilationUnit is generated (static counter in ParserService)
 		public override IReturnType BaseType {
 			get {
-				IClass c = content.GetClass(fullName);
+				IClass c = content.GetClass(fullName, typeParameterCount);
 				return (c != null) ? c.DefaultReturnType : null;
 			}
 		}

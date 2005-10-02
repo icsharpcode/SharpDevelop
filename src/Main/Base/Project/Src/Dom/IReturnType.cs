@@ -71,6 +71,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
+		/// Gets the count of type parameters the target class should have.
+		/// </summary>
+		int TypeParameterCount {
+			get;
+		}
+		
+		/// <summary>
 		/// Gets if the return type is a default type, i.e. no array, generic etc.
 		/// </summary>
 		/// <returns>

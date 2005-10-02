@@ -22,11 +22,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public abstract List<IField>    GetFields();
 		public abstract List<IEvent>    GetEvents();
 		
+		public virtual int TypeParameterCount {
+			get {
+				return 0;
+			}
+		}
+		
 		public override bool Equals(object o)
 		{
 			IReturnType rt = o as IReturnType;
 			if (rt == null) return false;
-			return rt.IsDefaultReturnType && this.FullyQualifiedName == rt.FullyQualifiedName;
+			return rt.IsDefaultReturnType && this.FullyQualifiedName == rt.FullyQualifiedName && this.TypeParameterCount == rt.TypeParameterCount;
 		}
 		
 		public override int GetHashCode()

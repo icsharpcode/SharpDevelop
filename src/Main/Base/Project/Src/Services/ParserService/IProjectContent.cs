@@ -74,10 +74,11 @@ namespace ICSharpCode.Core
 		void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags);
 		
 		IClass GetClass(string typeName);
+		IClass GetClass(string typeName, int typeParameterCount);
 		bool NamespaceExists(string name);
 		ArrayList GetNamespaceContents(string nameSpace);
 		
-		IClass GetClass(string typeName, LanguageProperties language, bool lookInReferences);
+		IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, bool lookInReferences);
 		bool NamespaceExists(string name, LanguageProperties language, bool lookInReferences);
 		/// <summary>
 		/// Adds the contents of the specified <paramref name="subNameSpace"/> to the <paramref name="list"/>.
@@ -85,8 +86,8 @@ namespace ICSharpCode.Core
 		void AddNamespaceContents(ArrayList list, string subNameSpace, LanguageProperties language, bool lookInReferences);
 		
 		string SearchNamespace(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
-		IReturnType SearchType(string name, IClass curType, int caretLine, int caretColumn);
-		IReturnType SearchType(string name, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
+		IReturnType SearchType(string name, int typeParameterCount, IClass curType, int caretLine, int caretColumn);
+		IReturnType SearchType(string name, int typeParameterCount, IClass curType, ICompilationUnit unit, int caretLine, int caretColumn);
 		
 		Position GetPosition(string fullMemberName);
 	}

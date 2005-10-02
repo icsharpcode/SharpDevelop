@@ -47,21 +47,21 @@ namespace VBNetBinding
 			// we need to use GetClassReturnType instead of DefaultReturnType because we need
 			// a reference to the compound class.
 			c.Properties.Add(new DefaultProperty("Application",
-			                                     new GetClassReturnType(pc, myApp.FullyQualifiedName),
+			                                     new GetClassReturnType(pc, myApp.FullyQualifiedName, 0),
 			                                     ModifierEnum.Public | ModifierEnum.Static,
 			                                     DomRegion.Empty, DomRegion.Empty, c));
 			c.Properties.Add(new DefaultProperty("Computer",
-			                                     new GetClassReturnType(pc, myComp.FullyQualifiedName),
+			                                     new GetClassReturnType(pc, myComp.FullyQualifiedName, 0),
 			                                     ModifierEnum.Public | ModifierEnum.Static,
 			                                     DomRegion.Empty, DomRegion.Empty, c));
 			if (myForms != null) {
 				c.Properties.Add(new DefaultProperty("Forms",
-				                                     new GetClassReturnType(pc, myForms.FullyQualifiedName),
+				                                     new GetClassReturnType(pc, myForms.FullyQualifiedName, 0),
 				                                     ModifierEnum.Public | ModifierEnum.Static,
 				                                     DomRegion.Empty, DomRegion.Empty, c));
 			}
 			c.Properties.Add(new DefaultProperty("User",
-			                                     new GetClassReturnType(pc, "Microsoft.VisualBasic.ApplicationServices.User"),
+			                                     new GetClassReturnType(pc, "Microsoft.VisualBasic.ApplicationServices.User", 0),
 			                                     ModifierEnum.Public | ModifierEnum.Static,
 			                                     DomRegion.Empty, DomRegion.Empty, c));
 			cu.Classes.Add(c);
@@ -90,7 +90,7 @@ namespace VBNetBinding
 		
 		static IReturnType CreateBaseType(ICompilationUnit cu, string fullName)
 		{
-			return new GetClassReturnType(cu.ProjectContent, fullName);
+			return new GetClassReturnType(cu.ProjectContent, fullName, 0);
 		}
 		
 		static IClass CreateMyComputer(ICompilationUnit cu, IProject project, string ns)
@@ -128,7 +128,7 @@ namespace VBNetBinding
 					foreach (IClass c in this.ProjectContent.Classes) {
 						if (c.BaseClass == formClass) {
 							properties.Add(new DefaultProperty(c.Name,
-							                                   new GetClassReturnType(this.ProjectContent, c.FullyQualifiedName),
+							                                   new GetClassReturnType(this.ProjectContent, c.FullyQualifiedName, 0),
 							                                   ModifierEnum.Public | ModifierEnum.Static,
 							                                   DomRegion.Empty, DomRegion.Empty, c));
 						}
