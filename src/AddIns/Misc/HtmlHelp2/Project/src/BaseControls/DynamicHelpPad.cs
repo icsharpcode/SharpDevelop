@@ -8,15 +8,11 @@
 namespace HtmlHelp2
 {
 	using System;
-    using System.Collections;
     using System.Collections.Generic;
     using System.Collections.Specialized;
 	using System.Drawing;
-	using System.Drawing.Design;
 	using System.Windows.Forms;
 	using System.Reflection;
-	using System.IO;
-	using System.Xml;
 	using ICSharpCode.Core;
 	using ICSharpCode.SharpDevelop;
 	using ICSharpCode.SharpDevelop.Gui;
@@ -59,8 +55,10 @@ namespace HtmlHelp2
 
 		public HtmlHelp2DynamicHelpPad()
 		{
-			dynamicHelpBrowser                      = new HtmlHelp2DynamicHelpBrowserControl(this.enableDebugInfo);
+			dynamicHelpBrowser                      = new HtmlHelp2DynamicHelpBrowserControl();
+			dynamicHelpBrowser.LoadDynamicHelpPage();
 			dynamicHelpBrowser.BuildANothing();
+			
 			ParserService.ParserUpdateStepFinished += UpdateTick;
 			PropertyPad.SelectedObjectChanged      += new EventHandler(this.FormsDesignerSelectedObjectChanged);
 			PropertyPad.SelectedGridItemChanged    += new SelectedGridItemChangedEventHandler(this.FormsDesignerSelectedGridItemChanged);
@@ -316,8 +314,8 @@ namespace HtmlHelp2
 
 	public class HtmlHelp2DynamicHelpBrowserControl : UserControl
 	{
-		WebBrowser axWebBrowser      = null;
-		ToolStrip dynamicHelpToolbar = null;
+		WebBrowser axWebBrowser      = new WebBrowser();
+		ToolStrip dynamicHelpToolbar = new ToolStrip();
 		int internalIndex            = 0;
 		string[] toolbarButtons      = new string[] {
 			"${res:AddIns.HtmlHelp2.Contents}",
@@ -335,28 +333,20 @@ namespace HtmlHelp2
 
 		public HtmlHelp2DynamicHelpBrowserControl()
 		{
-			this.InitializeComponents(false);
+			this.InitializeComponents();
 		}
 
-		public HtmlHelp2DynamicHelpBrowserControl(bool enableDebugging)
-		{
-			this.InitializeComponents(enableDebugging);
-		}
-
-		private void InitializeComponents(bool enableDebugging)
+		private void InitializeComponents()
 		{
 			Dock = DockStyle.Fill;
 			Size = new Size(500, 500);
 
-			axWebBrowser                                 = new WebBrowser();
 			Controls.Add(axWebBrowser);
 			axWebBrowser.Dock                            = DockStyle.Fill;
-			axWebBrowser.WebBrowserShortcutsEnabled      = enableDebugging;
-			axWebBrowser.IsWebBrowserContextMenuEnabled  = enableDebugging;
-			axWebBrowser.AllowWebBrowserDrop             = enableDebugging;
-			this.LoadDynamicHelpPage();
+			axWebBrowser.WebBrowserShortcutsEnabled      = false;
+			axWebBrowser.IsWebBrowserContextMenuEnabled  = false;
+			axWebBrowser.AllowWebBrowserDrop             = false;
 
-			dynamicHelpToolbar                           = new ToolStrip();
 			Controls.Add(dynamicHelpToolbar);
 			dynamicHelpToolbar.Dock                      = DockStyle.Top;
 			dynamicHelpToolbar.AllowItemReorder          = false;
@@ -384,11 +374,10 @@ namespace HtmlHelp2
 			}
 		}
 
-		private void LoadDynamicHelpPage()
+		public void LoadDynamicHelpPage()
 		{
 			if(!HtmlHelp2Environment.IsReady) return;
 			string url = String.Format("res://{0}/context", Assembly.GetExecutingAssembly().Location);
-			//if(!File.Exists(url)) url = "about:blank";
 			axWebBrowser.Navigate(url);
 		}
 
@@ -483,7 +472,6 @@ namespace HtmlHelp2
 				HtmlElement img     = axWebBrowser.Document.CreateElement("img");
 				img.Style           = "width:16px;height:16px;margin-right:5px";
 				img.Id              = String.Format("image_{0}", this.internalIndex.ToString());
-//				img.SetAttribute("src", "OpenBook.png");
 				img.SetAttribute("src", "open");
 				span.AppendChild(img);
 

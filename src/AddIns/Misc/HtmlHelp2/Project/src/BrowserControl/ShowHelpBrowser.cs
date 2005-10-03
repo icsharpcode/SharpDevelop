@@ -34,6 +34,11 @@ namespace HtmlHelp2
 			OpenHelpView(topicUrl, null, false);
 		}
 
+		public static void OpenHelpView(string topicUrl, bool hiliteMatchingWords)
+		{
+			OpenHelpView(topicUrl, null, hiliteMatchingWords);
+		}
+
 		public static void OpenHelpView(string topicUrl, IHxTopic topic, bool hiliteMatchingWords)
 		{
 			hiliteMatches = hiliteMatchingWords;

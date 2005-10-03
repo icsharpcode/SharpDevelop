@@ -54,7 +54,14 @@ namespace HtmlHelp2
 	{
 		public override void Run()
 		{
-			TocPad.GetPrevFromNode();
+			try
+			{
+				TocPad.GetPrevFromNode();
+			}
+			catch
+			{
+				TocPad.GetPrevFromUrl(Browser.Url.ToString());
+			}
 			BringTocPadToFront();
 		}
 	}
@@ -63,7 +70,14 @@ namespace HtmlHelp2
 	{
 		public override void Run()
 		{
-			TocPad.GetNextFromNode();
+			try
+			{
+				TocPad.GetNextFromNode();
+			}
+			catch
+			{
+				TocPad.GetNextFromUrl(Browser.Url.ToString());
+			}
 			BringTocPadToFront();
 		}
 	}

@@ -23,7 +23,6 @@ namespace HtmlHelp2
 		
 		public override void GoSearch(HtmlViewPane pane)
 		{
-//			new ShowSearchMenuCommand().Run();
 			pane.Navigate(HtmlHelp2Environment.SearchPage);
 		}
 

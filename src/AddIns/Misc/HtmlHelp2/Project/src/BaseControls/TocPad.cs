@@ -68,9 +68,19 @@ namespace HtmlHelp2
 			if(help2TocControl.IsEnabled) help2TocControl.GetPrevFromNode();
 		}
 
+		public void GetPrevFromUrl(string topicUrl)
+		{
+			if(help2TocControl.IsEnabled) help2TocControl.GetPrevFromUrl(topicUrl);
+		}
+
 		public void GetNextFromNode()
 		{
 			if(help2TocControl.IsEnabled) help2TocControl.GetNextFromNode();
+		}
+
+		public void GetNextFromUrl(string topicUrl)
+		{
+			if(help2TocControl.IsEnabled) help2TocControl.GetNextFromUrl(topicUrl);
 		}
 
 		public bool IsNotFirstNode
@@ -294,15 +304,29 @@ namespace HtmlHelp2
 		public void GetNextFromNode()
 		{
 			int currentNode = tocControl.Hierarchy.GetNextFromNode(tocControl.Selection);
-			string TopicUrl = tocControl.Hierarchy.GetURL(currentNode);
-			this.CallHelp(TopicUrl,true);
+			string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
+			this.CallHelp(topicUrl, true);
+		}
+
+		public void GetNextFromUrl(string url)
+		{
+			int currentNode = tocControl.Hierarchy.GetNextFromUrl(url);
+			string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
+			this.CallHelp(topicUrl, true);
 		}
 
 		public void GetPrevFromNode()
 		{
 			int currentNode = tocControl.Hierarchy.GetPrevFromNode(tocControl.Selection);
-			string TopicUrl = tocControl.Hierarchy.GetURL(currentNode);
-			this.CallHelp(TopicUrl,true);
+			string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
+			this.CallHelp(topicUrl, true);
+		}
+
+		public void GetPrevFromUrl(string url)
+		{
+			int currentNode = tocControl.Hierarchy.GetPrevFromUrl(url);
+			string topicUrl = tocControl.Hierarchy.GetURL(currentNode);
+			this.CallHelp(topicUrl, true);
 		}
 
 		public bool IsNotFirstNode
