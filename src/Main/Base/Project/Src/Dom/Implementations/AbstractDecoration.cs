@@ -14,10 +14,10 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public abstract class AbstractDecoration : MarshalByRefObject, IDecoration
+	public abstract class AbstractDecoration : IDecoration
 	{
 		ModifierEnum            modifiers  = ModifierEnum.None;
-		List<IAttribute> attributes = null;
+		IList<IAttribute> attributes = null;
 		
 		IClass declaringType;
 		object userData = null;
@@ -46,12 +46,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public List<IAttribute> Attributes {
+		public IList<IAttribute> Attributes {
 			get {
 				if (attributes == null) {
 					attributes = new List<IAttribute>();
 				}
 				return attributes;
+			}
+			set {
+				attributes = value;
 			}
 		}
 		

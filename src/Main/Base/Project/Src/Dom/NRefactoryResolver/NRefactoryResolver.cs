@@ -966,15 +966,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			AddUsing(result, projectContent.DefaultImports);
 			
 			if (callingClass != null) {
+				foreach (object member in projectContent.GetNamespaceContents(callingClass.Namespace)) {
+					if (!result.Contains(member))
+						result.Add(member);
+				}
 				IClass currentClass = callingClass;
 				do {
 					foreach (IClass innerClass in currentClass.GetAccessibleTypes(currentClass)) {
 						if (!result.Contains(innerClass))
 							result.Add(innerClass);
-					}
-					foreach (object member in projectContent.GetNamespaceContents(currentClass.Namespace)) {
-						if (!result.Contains(member))
-							result.Add(member);
 					}
 					currentClass = currentClass.DeclaringType;
 				} while (currentClass != null);

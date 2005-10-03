@@ -13,6 +13,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public class DefaultAttribute : IAttribute
 	{
+		public static readonly IList<IAttribute> EmptyAttributeList = new List<IAttribute>().AsReadOnly();
+		
 		string name;
 		List<AttributeArgument> positionalArguments;
 		SortedList<string, AttributeArgument> namedArguments;

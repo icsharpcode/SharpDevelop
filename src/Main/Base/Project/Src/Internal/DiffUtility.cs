@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop
 {
@@ -62,6 +63,31 @@ namespace ICSharpCode.SharpDevelop
 		static public int Compare(IList a, IList b)
 		{
 			return Compare(a, b, Comparer.Default);
+		}
+		
+		static public int Compare<T>(IList<T> a, IList<T> b)
+		{
+			return Compare(a, b, Comparer.Default);
+		}
+		
+		static public int Compare<T>(IList<T> a, IList<T> b, IComparer comparer)
+		{
+			if (a == null || b == null) {
+				return 1;
+			}
+			if (a.Count != b.Count) {
+				return Math.Sign(a.Count - b.Count);
+			}
+			int limit = (a.Count < b.Count) ? a.Count : b.Count;
+			for(int i=0; i < limit; i++) {
+				if (a[i] is IComparable && b[i] is IComparable) {
+					int cmp = comparer.Compare(a[i], b[i]);
+					if (cmp != 0) {
+						return cmp;
+					}
+				}
+			}
+			return a.Count - b.Count;
 		}
 		
 		static public int Compare(IList a, IList b, IComparer comparer)

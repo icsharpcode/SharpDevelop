@@ -179,6 +179,7 @@
     <EmbeddedResource Include="Resources\VBNET-Mode.xshd" />
     <EmbeddedResource Include="Resources\XML-Mode.xshd" />
     <Compile Include="Src\Document\TextBufferStrategy\PieceTableTextBufferStrategy.cs" />
+    <Compile Include="Src\Util\FileReader.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

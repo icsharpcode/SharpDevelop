@@ -95,7 +95,7 @@ namespace ICSharpCode.Core
 				loadSolutionProjectsThread.Join();
 			}
 			loadSolutionProjectsThread = new Thread(new ThreadStart(LoadSolutionProjects));
-			loadSolutionProjectsThread.Priority = ThreadPriority.Lowest;
+			loadSolutionProjectsThread.Priority = ThreadPriority.BelowNormal;
 			loadSolutionProjectsThread.IsBackground = true;
 			loadSolutionProjectsThread.Start();
 		}
@@ -166,7 +166,7 @@ namespace ICSharpCode.Core
 		{
 			abortParserUpdateThread = false;
 			Thread parserThread = new Thread(new ThreadStart(ParserUpdateThread));
-			parserThread.Priority = ThreadPriority.Lowest;
+			parserThread.Priority = ThreadPriority.BelowNormal;
 			parserThread.IsBackground  = true;
 			parserThread.Start();
 		}

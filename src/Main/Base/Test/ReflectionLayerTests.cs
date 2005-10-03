@@ -46,8 +46,8 @@ namespace ICSharpCode.SharpDevelop.Tests
 		{
 			DefaultParameter p1 = new DefaultParameter("a", pc.GetClass("System.String").DefaultReturnType, DomRegion.Empty);
 			DefaultParameter p2 = new DefaultParameter("b", new GetClassReturnType(pc, "System.String", 0), DomRegion.Empty);
-			List<IParameter> a1 = new List<IParameter>();
-			List<IParameter> a2 = new List<IParameter>();
+			IList<IParameter> a1 = new List<IParameter>();
+			IList<IParameter> a2 = new List<IParameter>();
 			a1.Add(p1);
 			a2.Add(p2);
 			Assert.AreEqual(0, DiffUtility.Compare(a1, a2));

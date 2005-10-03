@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			set;
 		}
 
-		List<IAttribute> Attributes {
+		IList<IAttribute> Attributes {
 			get;
 		}
 

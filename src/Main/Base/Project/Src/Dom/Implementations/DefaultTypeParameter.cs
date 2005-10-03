@@ -16,6 +16,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	/// </summary>
 	public class DefaultTypeParameter : ITypeParameter
 	{
+		public static readonly IList<ITypeParameter> EmptyTypeParameterList = new List<ITypeParameter>().AsReadOnly();
+		
 		string name;
 		IMethod method;
 		IClass targetClass;

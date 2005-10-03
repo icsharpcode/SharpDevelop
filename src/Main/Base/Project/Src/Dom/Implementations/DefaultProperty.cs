@@ -18,7 +18,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		DomRegion getterRegion = DomRegion.Empty;
 		DomRegion setterRegion = DomRegion.Empty;
 		
-		List<IParameter> parameters = null;
+		IList<IParameter> parameters = null;
 		internal byte accessFlags;
 		const byte indexerFlag = 1;
 		const byte getterFlag  = 2;
@@ -59,7 +59,7 @@ namespace ICSharpCode.SharpDevelop.Dom {
 			return p;
 		}
 		
-		public virtual List<IParameter> Parameters {
+		public virtual IList<IParameter> Parameters {
 			get {
 				if (parameters == null) {
 					parameters = new List<IParameter>();

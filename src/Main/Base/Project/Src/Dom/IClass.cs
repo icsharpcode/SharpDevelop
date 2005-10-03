@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		List<ITypeParameter> TypeParameters {
+		IList<ITypeParameter> TypeParameters {
 			get;
 		}
 

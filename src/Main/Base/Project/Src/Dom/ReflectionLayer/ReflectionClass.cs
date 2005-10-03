@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return type.IsSubclassOf(typeof(Delegate)) && type != typeof(MulticastDelegate);
 		}
 		
-		static void AddAttributes(IProjectContent pc, List<IAttribute> list, IList<CustomAttributeData> attributes)
+		static void AddAttributes(IProjectContent pc, IList<IAttribute> list, IList<CustomAttributeData> attributes)
 		{
 			foreach (CustomAttributeData att in attributes) {
 				DefaultAttribute a = new DefaultAttribute(att.Constructor.DeclaringType.FullName);

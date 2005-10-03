@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 3;
+		public const short FileVersion = 4;
 		
 		#region Cache management
 		#if DEBUG
@@ -73,7 +73,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			ReflectionProjectContent pc;
 			using (FileStream fs = new FileStream(cacheFileName, FileMode.Open, FileAccess.Read)) {
 				using (BinaryReader reader = new BinaryReader(fs)) {
-					pc = new ReadWriteHelper(reader).ReadProjectContent();
+					try {
+						pc = new ReadWriteHelper(reader).ReadProjectContent();
+					} catch (EndOfStreamException) {
+						LoggingService.Warn("Read dom: EndOfStreamException");
+						return null;
+					}
 				}
 			}
 			if (pc != null) {
@@ -193,9 +198,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			readonly BinaryWriter writer;
 			readonly Dictionary<ClassNameTypeCountPair, int> classIndices = new Dictionary<ClassNameTypeCountPair, int>();
+			readonly Dictionary<string, int> stringDict = new Dictionary<string, int>();
 			
 			readonly BinaryReader reader;
 			IReturnType[] types;
+			string[] stringArray;
 			
 			#region Write/Read ProjectContent
 			public ReadWriteHelper(BinaryWriter writer)
@@ -252,8 +259,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 					referencedAssemblies[i] = new AssemblyName(reader.ReadString());
 				}
 				this.pc = new ReflectionProjectContent(assemblyName, assemblyLocation, referencedAssemblies);
-				ReadClasses();
-				return pc;
+				if (ReadClasses()) {
+					return pc;
+				} else {
+					LoggingService.Warn("Read dom: error in file (invalid control mark)");
+					return null;
+				}
 			}
 			
 			void WriteClasses()
@@ -261,6 +272,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				ICollection<IClass> classes = pc.Classes;
 				
 				classIndices.Clear();
+				stringDict.Clear();
 				int i = 0;
 				foreach (IClass c in classes) {
 					classIndices[new ClassNameTypeCountPair(c)] = i;
@@ -268,7 +280,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				
 				List<ClassNameTypeCountPair> externalTypes = new List<ClassNameTypeCountPair>();
-				CreateExternalTypeList(externalTypes, classes.Count, classes);
+				List<string> stringList = new List<string>();
+				CreateExternalTypeList(externalTypes, stringList, classes.Count, classes);
 				
 				writer.Write(classes.Count);
 				writer.Write(externalTypes.Count);
@@ -279,12 +292,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 					writer.Write(type.ClassName);
 					writer.Write(type.TypeParameterCount);
 				}
+				writer.Write(stringList.Count);
+				foreach (string text in stringList) {
+					writer.Write(text);
+				}
 				foreach (IClass c in classes) {
 					WriteClass(c);
+					// BinaryReader easily reads junk data when the file does not have the
+					// expected format, so we put a checking byte after each class.
+					writer.Write((byte)64);
 				}
 			}
 			
-			void ReadClasses()
+			bool ReadClasses()
 			{
 				int classCount = reader.ReadInt32();
 				int externalTypeCount = reader.ReadInt32();
@@ -299,10 +319,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 					string name = reader.ReadString();
 					types[i] = new GetClassReturnType(pc, name, reader.ReadByte());
 				}
+				stringArray = new string[reader.ReadInt32()];
+				for (int i = 0; i < stringArray.Length; i++) {
+					stringArray[i] = reader.ReadString();
+				}
 				for (int i = 0; i < classes.Length; i++) {
 					ReadClass(classes[i]);
 					pc.AddClassToNamespaceList(classes[i]);
+					if (reader.ReadByte() != 64) {
+						return false;
+					}
 				}
+				return true;
 			}
 			#endregion
 			
@@ -322,7 +350,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				WriteAttributes(c.Attributes);
 				writer.Write(c.InnerClasses.Count);
 				foreach (IClass innerClass in c.InnerClasses) {
-					WriteString(innerClass.FullyQualifiedName);
+					writer.Write(innerClass.FullyQualifiedName);
 					WriteClass(innerClass);
 				}
 				this.currentClass = c;
@@ -345,7 +373,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				this.currentClass = null;
 			}
 			
-			void WriteTemplates(List<ITypeParameter> list)
+			void WriteTemplates(IList<ITypeParameter> list)
 			{
 				// read code exists twice: in ReadClass and ReadMethod
 				writer.Write((byte)list.Count);
@@ -368,11 +396,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 				for (int i = 0; i < count; i++) {
 					c.TypeParameters.Add(new DefaultTypeParameter(c, ReadString(), i));
 				}
-				foreach (ITypeParameter typeParameter in c.TypeParameters) {
-					count = reader.ReadInt32();
-					for (int i = 0; i < count; i++) {
-						typeParameter.Constraints.Add(ReadType());
+				if (count > 0) {
+					foreach (ITypeParameter typeParameter in c.TypeParameters) {
+						count = reader.ReadInt32();
+						for (int i = 0; i < count; i++) {
+							typeParameter.Constraints.Add(ReadType());
+						}
 					}
+				} else {
+					c.TypeParameters = DefaultTypeParameter.EmptyTypeParameterList;
 				}
 				count = reader.ReadInt32();
 				for (int i = 0; i < count; i++) {
@@ -380,11 +412,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				c.Modifiers = (ModifierEnum)reader.ReadInt32();
 				c.ClassType = (ClassType)reader.ReadByte();
-				ReadAttributes(c.Attributes);
+				ReadAttributes(c);
 				count = reader.ReadInt32();
 				for (int i = 0; i < count; i++) {
 					DefaultClass innerClass = new DefaultClass(c.CompilationUnit, c);
-					innerClass.FullyQualifiedName = ReadString();
+					innerClass.FullyQualifiedName = reader.ReadString();
 					c.InnerClasses.Add(innerClass);
 					ReadClass(innerClass);
 				}
@@ -409,47 +441,74 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			#endregion
 			
-			#region Write/Read return types
+			#region Write/Read return types / Collect strings
 			/// <summary>
 			/// Finds all return types used in the class collection and adds the unknown ones
 			/// to the externalTypeIndices and externalTypes collections.
 			/// </summary>
 			void CreateExternalTypeList(List<ClassNameTypeCountPair> externalTypes,
+			                            List<string> stringList,
 			                            int classCount, ICollection<IClass> classes)
 			{
 				foreach (IClass c in classes) {
-					CreateExternalTypeList(externalTypes, classCount, c.InnerClasses);
+					CreateExternalTypeList(externalTypes, stringList, classCount, c.InnerClasses);
+					AddStrings(stringList, c.Attributes);
 					foreach (IReturnType returnType in c.BaseTypes) {
 						AddExternalType(returnType, externalTypes, classCount);
 					}
 					foreach (ITypeParameter tp in c.TypeParameters) {
+						AddString(stringList, tp.Name);
 						foreach (IReturnType returnType in tp.Constraints) {
 							AddExternalType(returnType, externalTypes, classCount);
 						}
 					}
 					foreach (IField f in c.Fields) {
+						AddStrings(stringList, f);
 						AddExternalType(f.ReturnType, externalTypes, classCount);
 					}
 					foreach (IEvent f in c.Events) {
+						AddStrings(stringList, f);
 						AddExternalType(f.ReturnType, externalTypes, classCount);
 					}
 					foreach (IProperty p in c.Properties) {
+						AddStrings(stringList, p);
 						AddExternalType(p.ReturnType, externalTypes, classCount);
 						foreach (IParameter parameter in p.Parameters) {
+							AddString(stringList, parameter.Name);
+							AddStrings(stringList, parameter.Attributes);
 							AddExternalType(parameter.ReturnType, externalTypes, classCount);
 						}
 					}
 					foreach (IMethod m in c.Methods) {
+						AddStrings(stringList, m);
 						AddExternalType(m.ReturnType, externalTypes, classCount);
 						foreach (IParameter parameter in m.Parameters) {
+							AddString(stringList, parameter.Name);
+							AddStrings(stringList, parameter.Attributes);
 							AddExternalType(parameter.ReturnType, externalTypes, classCount);
 						}
 						foreach (ITypeParameter tp in m.TypeParameters) {
+							AddString(stringList, tp.Name);
 							foreach (IReturnType returnType in tp.Constraints) {
 								AddExternalType(returnType, externalTypes, classCount);
 							}
 						}
 					}
+				}
+			}
+			
+			void AddStrings(List<string> stringList, IMember member)
+			{
+				AddString(stringList, member.Name);
+				AddStrings(stringList, member.Attributes);
+			}
+			
+			void AddString(List<string> stringList, string text)
+			{
+				text = text ?? string.Empty;
+				if (!stringDict.ContainsKey(text)) {
+					stringDict.Add(text, stringList.Count);
+					stringList.Add(text);
 				}
 			}
 			
@@ -555,12 +614,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			#region Write/Read class member
 			void WriteString(string text)
 			{
-				writer.Write(text ?? string.Empty);
+				text = text ?? string.Empty;
+				writer.Write(stringDict[text]);
 			}
 			
 			string ReadString()
 			{
-				return reader.ReadString();
+				return stringArray[reader.ReadInt32()];
 			}
 			
 			void WriteMember(IMember m)
@@ -574,11 +634,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			void ReadMember(IMember m)
+			void ReadMember(AbstractMember m)
 			{
 				// name is already read by the method that calls the member constructor
 				m.Modifiers = (ModifierEnum)reader.ReadInt32();
-				ReadAttributes(m.Attributes);
+				ReadAttributes(m);
 				if (!(m is IMethod)) {
 					m.ReturnType = ReadType();
 				}
@@ -595,9 +655,35 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			void ReadAttributes(IList<IAttribute> attributes)
+			void AddStrings(List<string> stringList, IList<IAttribute> attributes)
+			{
+				foreach (IAttribute a in attributes) {
+					AddString(stringList, a.Name);
+				}
+			}
+			
+			void ReadAttributes(DefaultParameter parameter)
 			{
 				int count = reader.ReadUInt16();
+				if (count > 0) {
+					ReadAttributes(parameter.Attributes, count);
+				} else {
+					parameter.Attributes = DefaultAttribute.EmptyAttributeList;
+				}
+			}
+			
+			void ReadAttributes(AbstractDecoration decoration)
+			{
+				int count = reader.ReadUInt16();
+				if (count > 0) {
+					ReadAttributes(decoration.Attributes, count);
+				} else {
+					decoration.Attributes = DefaultAttribute.EmptyAttributeList;
+				}
+			}
+			
+			void ReadAttributes(IList<IAttribute> attributes, int count)
+			{
 				for (int i = 0; i < count; i++) {
 					string name = ReadString();
 					attributes.Add(new DefaultAttribute(name, (AttributeTarget)reader.ReadByte()));
@@ -617,14 +703,33 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
-			void ReadParameters(IList<IParameter> parameters)
+			void ReadParameters(DefaultMethod m)
 			{
 				int count = reader.ReadUInt16();
+				if (count > 0) {
+					ReadParameters(m.Parameters, count);
+				} else {
+					m.Parameters = DefaultParameter.EmptyParameterList;
+				}
+			}
+			
+			void ReadParameters(DefaultProperty m)
+			{
+				int count = reader.ReadUInt16();
+				if (count > 0) {
+					ReadParameters(m.Parameters, count);
+				} else {
+					m.Parameters = DefaultParameter.EmptyParameterList;
+				}
+			}
+			
+			void ReadParameters(IList<IParameter> parameters, int count)
+			{
 				for (int i = 0; i < count; i++) {
 					string name = ReadString();
 					DefaultParameter p = new DefaultParameter(name, ReadType(), DomRegion.Empty);
 					p.Modifiers = (ParameterModifiers)reader.ReadByte();
-					ReadAttributes(p.Attributes);
+					ReadAttributes(p);
 					parameters.Add(p);
 				}
 			}
@@ -652,14 +757,18 @@ namespace ICSharpCode.SharpDevelop.Dom
 				for (int i = 0; i < count; i++) {
 					m.TypeParameters.Add(new DefaultTypeParameter(m, ReadString(), i));
 				}
-				foreach (ITypeParameter typeParameter in m.TypeParameters) {
-					count = reader.ReadInt32();
-					for (int i = 0; i < count; i++) {
-						typeParameter.Constraints.Add(ReadType());
+				if (count > 0) {
+					foreach (ITypeParameter typeParameter in m.TypeParameters) {
+						count = reader.ReadInt32();
+						for (int i = 0; i < count; i++) {
+							typeParameter.Constraints.Add(ReadType());
+						}
 					}
+				} else {
+					m.TypeParameters = DefaultTypeParameter.EmptyTypeParameterList;
 				}
 				m.ReturnType = ReadType();
-				ReadParameters(m.Parameters);
+				ReadParameters(m);
 				currentMethod = null;
 				return m;
 			}
@@ -678,7 +787,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				DefaultProperty p = new DefaultProperty(currentClass, ReadString());
 				ReadMember(p);
 				p.accessFlags = reader.ReadByte();
-				ReadParameters(p.Parameters);
+				ReadParameters(p);
 				return p;
 			}
 			#endregion

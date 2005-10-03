@@ -174,6 +174,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return data;
 		}
 		
+		void ConvertAttributes(AST.AttributedNode from, AbstractDecoration to)
+		{
+			if (from.Attributes.Count == 0) {
+				to.Attributes = DefaultAttribute.EmptyAttributeList;
+			} else {
+				to.Attributes = VisitAttributes(from.Attributes);
+			}
+		}
+		
 		List<IAttribute> VisitAttributes(List<AST.AttributeSection> attributes)
 		{
 			// TODO Expressions???
@@ -268,7 +277,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		{
 			DomRegion region = GetRegion(typeDeclaration.StartLocation, typeDeclaration.EndLocation);
 			DefaultClass c = new DefaultClass(cu, TranslateClassType(typeDeclaration.Type), ConvertModifier(typeDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
-			c.Attributes.AddRange(VisitAttributes(typeDeclaration.Attributes));
+			ConvertAttributes(typeDeclaration, c);
 			c.Documentation = GetDocumentation(region.BeginLine);
 			
 			if (currentClass.Count > 0) {
@@ -314,19 +323,27 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return ret;
 		}
 		
-		void ConvertTemplates(List<AST.TemplateDefinition> templateList, IClass c)
+		void ConvertTemplates(List<AST.TemplateDefinition> templateList, DefaultClass c)
 		{
 			int index = 0;
-			foreach (AST.TemplateDefinition template in templateList) {
-				c.TypeParameters.Add(ConvertConstraints(template, new DefaultTypeParameter(c, template.Name, index++)));
+			if (templateList.Count == 0) {
+				c.TypeParameters = DefaultTypeParameter.EmptyTypeParameterList;
+			} else {
+				foreach (AST.TemplateDefinition template in templateList) {
+					c.TypeParameters.Add(ConvertConstraints(template, new DefaultTypeParameter(c, template.Name, index++)));
+				}
 			}
 		}
 		
-		void ConvertTemplates(List<AST.TemplateDefinition> templateList, IMethod m)
+		void ConvertTemplates(List<AST.TemplateDefinition> templateList, DefaultMethod m)
 		{
 			int index = 0;
-			foreach (AST.TemplateDefinition template in templateList) {
-				m.TypeParameters.Add(ConvertConstraints(template, new DefaultTypeParameter(m, template.Name, index++)));
+			if (templateList.Count == 0) {
+				m.TypeParameters = DefaultTypeParameter.EmptyTypeParameterList;
+			} else {
+				foreach (AST.TemplateDefinition template in templateList) {
+					m.TypeParameters.Add(ConvertConstraints(template, new DefaultTypeParameter(m, template.Name, index++)));
+				}
 			}
 		}
 		
@@ -343,7 +360,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DomRegion region = GetRegion(delegateDeclaration.StartLocation, delegateDeclaration.EndLocation);
 			DefaultClass c = new DefaultClass(cu, ClassType.Delegate, ConvertModifier(delegateDeclaration.Modifier, ModifierEnum.Internal), region, GetCurrentClass());
 			c.Documentation = GetDocumentation(region.BeginLine);
-			c.Attributes.AddRange(VisitAttributes(delegateDeclaration.Attributes));
+			ConvertAttributes(delegateDeclaration, c);
 			c.BaseTypes.Add(ReflectionReturnType.CreatePrimitive(typeof(Delegate)));
 			if (currentClass.Count > 0) {
 				DefaultClass cur = GetCurrentClass();
@@ -405,11 +422,13 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			method.Documentation = GetDocumentation(region.BeginLine);
 			ConvertTemplates(methodDeclaration.Templates, method);
 			method.ReturnType = CreateReturnType(methodDeclaration.TypeReference, method);
-			method.Attributes.AddRange(VisitAttributes(methodDeclaration.Attributes));
-			if (methodDeclaration.Parameters != null) {
+			ConvertAttributes(methodDeclaration, method);
+			if (methodDeclaration.Parameters != null && methodDeclaration.Parameters.Count > 0) {
 				foreach (AST.ParameterDeclarationExpression par in methodDeclaration.Parameters) {
 					method.Parameters.Add(CreateParameter(par, method));
 				}
+			} else {
+				method.Parameters = DefaultParameter.EmptyParameterList;
 			}
 			c.Methods.Add(method);
 			return null;
@@ -422,6 +441,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DomRegion bodyRegion = GetRegion(operatorDeclaration.EndLocation, operatorDeclaration.Body != null ? operatorDeclaration.Body.EndLocation : new Point(-1, -1));
 			
 			DefaultMethod method = new DefaultMethod(operatorDeclaration.Name, CreateReturnType(operatorDeclaration.ConvertToType), ConvertModifier(operatorDeclaration.Modifier), region, bodyRegion, c);
+			ConvertAttributes(operatorDeclaration, method);
 			if(operatorDeclaration.Parameters != null)
 			{
 				foreach (AST.ParameterDeclarationExpression par in operatorDeclaration.Parameters) {
@@ -440,7 +460,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			Constructor constructor = new Constructor(ConvertModifier(constructorDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 			constructor.Documentation = GetDocumentation(region.BeginLine);
-			constructor.Attributes.AddRange(VisitAttributes(constructorDeclaration.Attributes));
+			ConvertAttributes(constructorDeclaration, constructor);
 			if (constructorDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in constructorDeclaration.Parameters) {
 					constructor.Parameters.Add(CreateParameter(par));
@@ -458,7 +478,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass c = GetCurrentClass();
 			
 			Destructor destructor = new Destructor(region, bodyRegion, c);
-			destructor.Attributes.AddRange(VisitAttributes(destructorDeclaration.Attributes));
+			ConvertAttributes(destructorDeclaration, destructor);
 			c.Methods.Add(destructor);
 			return null;
 		}
@@ -479,7 +499,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					else
 						retType = CreateReturnType(fieldDeclaration.GetTypeForField(i));
 					DefaultField f = new DefaultField(retType, field.Name, ConvertModifier(fieldDeclaration.Modifier), region, c);
-					f.Attributes.AddRange(VisitAttributes(fieldDeclaration.Attributes));
+					ConvertAttributes(fieldDeclaration, f);
 					f.Documentation = doku;
 					if (c.ClassType == ClassType.Enum) {
 						f.Modifiers = ModifierEnum.Const | ModifierEnum.Public;
@@ -509,7 +529,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				property.CanSet = true;
 			}
 			property.Documentation = GetDocumentation(region.BeginLine);
-			property.Attributes.AddRange(VisitAttributes(propertyDeclaration.Attributes));
+			ConvertAttributes(propertyDeclaration, property);
 			c.Properties.Add(property);
 			return null;
 		}
@@ -525,12 +545,12 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			if (eventDeclaration.VariableDeclarators != null && eventDeclaration.VariableDeclarators.Count > 0) {
 				foreach (ICSharpCode.NRefactory.Parser.AST.VariableDeclaration varDecl in eventDeclaration.VariableDeclarators) {
 					e = new DefaultEvent(varDecl.Name, type, ConvertModifier(eventDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
-					e.Attributes.AddRange(VisitAttributes(eventDeclaration.Attributes));
+					ConvertAttributes(eventDeclaration, e);
 					c.Events.Add(e);
 				}
 			} else {
 				e = new DefaultEvent(eventDeclaration.Name, type, ConvertModifier(eventDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
-				e.Attributes.AddRange(VisitAttributes(eventDeclaration.Attributes));
+				ConvertAttributes(eventDeclaration, e);
 				c.Events.Add(e);
 			}
 			if (e != null) {
@@ -548,7 +568,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultProperty i = new DefaultProperty("Indexer", CreateReturnType(indexerDeclaration.TypeReference), ConvertModifier(indexerDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
 			i.IsIndexer = true;
 			i.Documentation = GetDocumentation(region.BeginLine);
-			i.Attributes.AddRange(VisitAttributes(indexerDeclaration.Attributes));
+			ConvertAttributes(indexerDeclaration, i);
 			if (indexerDeclaration.Parameters != null) {
 				foreach (AST.ParameterDeclarationExpression par in indexerDeclaration.Parameters) {
 					i.Parameters.Add(CreateParameter(par));

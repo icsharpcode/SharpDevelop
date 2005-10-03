@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		List<IProperty> properties   = null;
 		List<IMethod>   methods      = null;
 		List<IEvent>    events       = null;
-		List<ITypeParameter> typeParameters = null;
+		IList<ITypeParameter> typeParameters = null;
 		
 		public DefaultClass(ICompilationUnit compilationUnit, string fullyQualifiedName) : base(null)
 		{
@@ -181,12 +181,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual List<ITypeParameter> TypeParameters {
+		public virtual IList<ITypeParameter> TypeParameters {
 			get {
 				if (typeParameters == null) {
 					typeParameters = new List<ITypeParameter>();
 				}
 				return typeParameters;
+			}
+			set {
+				typeParameters = value;
 			}
 		}
 		

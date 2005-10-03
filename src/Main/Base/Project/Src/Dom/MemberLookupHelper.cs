@@ -232,7 +232,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			inferredTypeParameters = new IReturnType[list.Count][];
 			for (int i = 0; i < ranking.Length; i++) {
 				if (ranking[i] == maxScore) {
-					List<IParameter> parameters = list[i].Parameters;
+					IList<IParameter> parameters = list[i].Parameters;
 					IReturnType[] typeParameters = (list[i] is IMethod) ? InferTypeArguments((IMethod)list[i], arguments) : null;
 					inferredTypeParameters[i] = typeParameters;
 					IReturnType paramsType = null;
@@ -366,7 +366,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			int count = method.TypeParameters.Count;
 			if (count == 0) return null;
 			IReturnType[] result = new IReturnType[count];
-			List<IParameter> parameters = method.Parameters;
+			IList<IParameter> parameters = method.Parameters;
 			for (int i = 0; i < arguments.Length; i++) {
 				if (i >= parameters.Count)
 					break;
@@ -432,7 +432,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#endregion
 		
 		#region IsApplicable
-		static bool IsApplicable(List<IParameter> parameters,
+		static bool IsApplicable(IList<IParameter> parameters,
 		                         IReturnType[] arguments,
 		                         bool allowAdditionalArguments,
 		                         out int score,

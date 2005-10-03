@@ -21,9 +21,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public string FullyQualifiedName {
 			get {
 				if (fullyQualifiedName == null) {
-					return String.Empty;
+					if (name != null && nspace != null) {
+						fullyQualifiedName = nspace + '.' + name;
+					} else {
+						return String.Empty;
+					}
 				}
-				
 				return fullyQualifiedName;
 			}
 			set {
@@ -101,12 +104,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			System.Diagnostics.Debug.Assert(declaringType != null);
 			this.name = name;
 			nspace = declaringType.FullyQualifiedName;
-			fullyQualifiedName = nspace + '.' + name;
+			
+			// lazy-computing the fully qualified name for class members saves ~7 MB RAM (when loading the SharpDevelop solution).
+			//fullyQualifiedName = nspace + '.' + name;
 		}
 		
 		public override string ToString()
 		{
-			return String.Format("[{0}: {1}]", GetType().Name, fullyQualifiedName);
+			return String.Format("[{0}: {1}]", GetType().Name, FullyQualifiedName);
 		}
 	}
 }

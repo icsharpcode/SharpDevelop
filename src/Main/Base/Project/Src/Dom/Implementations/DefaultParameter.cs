@@ -12,8 +12,10 @@ using System.Collections.Generic;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class DefaultParameter : System.MarshalByRefObject, IParameter
+	public class DefaultParameter : IParameter
 	{
+		public static readonly IList<IParameter> EmptyParameterList = new List<IParameter>().AsReadOnly();
+		
 		string              name;
 		string              documentation;
 		
@@ -23,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		protected IReturnType         returnType;
 		protected ParameterModifiers  modifier;
 		protected DomRegion region;
-		List<IAttribute> attributes;
+		IList<IAttribute> attributes;
 		
 		protected DefaultParameter(string name)
 		{
@@ -93,12 +95,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 
-		public virtual List<IAttribute> Attributes {
+		public virtual IList<IAttribute> Attributes {
 			get {
 				if (attributes == null) {
 					attributes = new List<IAttribute>();
 				}
 				return attributes;
+			}
+			set {
+				attributes = value;
 			}
 		}
 
@@ -128,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public static List<IParameter> Clone(List<IParameter> l)
+		public static List<IParameter> Clone(IList<IParameter> l)
 		{
 			List<IParameter> r = new List<IParameter>(l.Count);
 			for (int i = 0; i < l.Count; ++i) {

@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		bool CheckParameters(List<IParameter> l)
+		bool CheckParameters(IList<IParameter> l)
 		{
 			foreach (IParameter p in l) {
 				if (CheckReturnType(p.ReturnType)) return true;

@@ -17,14 +17,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
-		List<IParameter> Parameters {
+		IList<IParameter> Parameters {
 			get;
 		}
 	}
 	
 	public interface IMethod : IMethodOrProperty
 	{
-		List<ITypeParameter> TypeParameters {
+		IList<ITypeParameter> TypeParameters {
 			get;
 		}
 		

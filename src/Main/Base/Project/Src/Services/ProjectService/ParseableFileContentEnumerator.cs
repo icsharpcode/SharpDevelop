@@ -63,6 +63,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		ProjectItem[] projectItems;
 		bool isOnMainThread;
+		Encoding defaultEncoding;
 		
 		public ParseableFileContentEnumerator(IProject project) : this(project.Items.ToArray()) { }
 		
@@ -70,19 +71,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			isOnMainThread = !WorkbenchSingleton.InvokeRequired;
 			this.projectItems = projectItems;
-			Properties textEditorProperties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-			getParseableContentEncoding = Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252));
-			pcd = new GetParseableContentDelegate(GetParseableFileContent);
 			if (projectItems.Length > 0) {
 				nextItem = projectItems[0];
 			}
+			Properties textEditorProperties = PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties());
+			defaultEncoding = Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252));
 		}
-		
-		delegate string GetParseableContentDelegate(IProject project, string fileName);
-		
-		GetParseableContentDelegate pcd;
-		
-		Encoding getParseableContentEncoding;
 		
 		string GetParseableFileContent(IProject project, string fileName)
 		{
@@ -93,13 +87,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				return res;
 			
 			// load file
-			using (StreamReader r = new StreamReader(fileName, getParseableContentEncoding)) {
-				return r.ReadToEnd();
-			}
+			Encoding tmp = defaultEncoding;
+			return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(fileName, ref tmp, defaultEncoding);
 		}
 		
 		ProjectItem nextItem;
-		IAsyncResult res;
 		int index = 0;
 		
 		public int ItemCount {
@@ -123,24 +115,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				return MoveNext();
 			string fileContent;
 			try {
-				if (res != null) {
-					fileContent = pcd.EndInvoke(res);
-				} else {
-					fileContent = GetFileContent(item);
-				}
+				fileContent = GetFileContent(item);
 			} catch (FileNotFoundException ex) {
-				res = null;
 				LoggingService.Warn("ParseableFileContentEnumerator: " + ex.Message);
 				return MoveNext(); // skip files that were not found
 			} catch (IOException ex) {
-				res = null;
 				LoggingService.Warn("ParseableFileContentEnumerator: " + ex.Message);
 				return MoveNext(); // skip invalid files
 			}
-			if (nextItem != null && nextItem.ItemType == ItemType.Compile && CanReadAsync(nextItem))
-				res = pcd.BeginInvoke(nextItem.Project, nextItem.FileName, null, null);
-			else
-				res = null;
 			current = new KeyValuePair<string, string>(item.FileName, fileContent);
 			return true;
 		}
@@ -148,14 +130,38 @@ namespace ICSharpCode.SharpDevelop.Project
 		string GetFileContent(ProjectItem item)
 		{
 			string fileName = item.FileName;
-			string content;
-			if (isOnMainThread)
-				content = GetFileContentFromOpenFile(fileName);
-			else
-				content = (string)WorkbenchSingleton.SafeThreadCall(this, "GetFileContentFromOpenFile", fileName);
-			if (content != null)
-				return content;
+			if (IsFileOpen(fileName)) {
+				string content;
+				if (isOnMainThread)
+					content = GetFileContentFromOpenFile(fileName);
+				else
+					content = (string)WorkbenchSingleton.SafeThreadCall(this, "GetFileContentFromOpenFile", fileName);
+				if (content != null)
+					return content;
+			}
 			return GetParseableFileContent(item.Project, fileName);
+		}
+		
+		IViewContent[] viewContentCollection;
+		
+		IViewContent[] GetViewContentCollection()
+		{
+			return WorkbenchSingleton.Workbench.ViewContentCollection.ToArray();
+		}
+		
+		bool IsFileOpen(string fileName)
+		{
+			if (viewContentCollection == null) {
+				viewContentCollection = (IViewContent[])WorkbenchSingleton.SafeThreadCall(this, "GetViewContentCollection");
+			}
+			foreach (IViewContent content in viewContentCollection) {
+				string contentName = content.IsUntitled ? content.UntitledName : content.FileName;
+				if (contentName != null) {
+					if (FileUtility.IsEqualFileName(fileName, contentName))
+						return true;
+				}
+			}
+			return false;
 		}
 		
 		string GetFileContentFromOpenFile(string fileName)
@@ -169,14 +175,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			return null;
-		}
-		
-		bool CanReadAsync(ProjectItem item)
-		{
-			if (isOnMainThread)
-				return !FileService.IsOpen(item.FileName);
-			else
-				return !(bool)WorkbenchSingleton.SafeThreadCall(typeof(FileService), "IsOpen", item.FileName);
 		}
 	}
 }

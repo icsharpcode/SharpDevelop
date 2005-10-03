@@ -53,8 +53,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		protected DomRegion bodyRegion;
 		
-		List<IParameter> parameters = null;
-		List<ITypeParameter> typeParameters = null;
+		IList<IParameter> parameters = null;
+		IList<ITypeParameter> typeParameters = null;
 		
 		public override IMember Clone()
 		{
@@ -82,7 +82,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					string dotnetName = this.DotNetName;
 					StringBuilder b = new StringBuilder("M:", dotnetName.Length + 2);
 					b.Append(dotnetName);
-					List<IParameter> paras = this.Parameters;
+					IList<IParameter> paras = this.Parameters;
 					if (paras.Count > 0) {
 						b.Append('(');
 						for (int i = 0; i < paras.Count; ++i) {
@@ -106,16 +106,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public virtual List<ITypeParameter> TypeParameters {
+		public virtual IList<ITypeParameter> TypeParameters {
 			get {
 				if (typeParameters == null) {
 					typeParameters = new List<ITypeParameter>();
 				}
 				return typeParameters;
 			}
+			set {
+				typeParameters = value;
+			}
 		}
 		
-		public virtual List<IParameter> Parameters {
+		public virtual IList<IParameter> Parameters {
 			get {
 				if (parameters == null) {
 					parameters = new List<IParameter>();

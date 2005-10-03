@@ -57,8 +57,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			foreach (IClass part in parts) {
 				modifier |= part.Modifiers;
 				this.BaseTypes.AddRange(part.BaseTypes);
-				this.TypeParameters.AddRange(part.TypeParameters);
-				this.Attributes.AddRange(part.Attributes);
+				foreach (ITypeParameter typeParam in part.TypeParameters) {
+					this.TypeParameters.Add(typeParam);
+				}
+				foreach (IAttribute attribute in part.Attributes) {
+					this.Attributes.Add(attribute);
+				}
 			}
 			this.Modifiers = modifier;
 		}
