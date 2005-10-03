@@ -959,15 +959,26 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		void AddImportedNamespaceContents(ArrayList result)
 		{
-			if (callingClass != null) {
-				result.AddRange(callingClass.GetAccessibleTypes(callingClass));
-				result.AddRange(projectContent.GetNamespaceContents(callingClass.Namespace));
-			}
 			projectContent.AddNamespaceContents(result, "", languageProperties, true);
 			foreach (IUsing u in cu.Usings) {
 				AddUsing(result, u);
 			}
 			AddUsing(result, projectContent.DefaultImports);
+			
+			if (callingClass != null) {
+				IClass currentClass = callingClass;
+				do {
+					foreach (IClass innerClass in currentClass.GetAccessibleTypes(currentClass)) {
+						if (!result.Contains(innerClass))
+							result.Add(innerClass);
+					}
+					foreach (object member in projectContent.GetNamespaceContents(currentClass.Namespace)) {
+						if (!result.Contains(member))
+							result.Add(member);
+					}
+					currentClass = currentClass.DeclaringType;
+				} while (currentClass != null);
+			}
 		}
 		
 		void AddUsing(ArrayList result, IUsing u)
