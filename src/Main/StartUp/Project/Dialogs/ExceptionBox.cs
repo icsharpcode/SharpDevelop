@@ -55,7 +55,14 @@ namespace ICSharpCode.SharpDevelop
 			string str = "";
 			str += ".NET Version         : " + Environment.Version.ToString() + Environment.NewLine;
 			str += "OS Version           : " + Environment.OSVersion.ToString() + Environment.NewLine;
-			str += "Boot Mode            : " + SystemInformation.BootMode + Environment.NewLine;
+			try {
+				if (SystemInformation.TerminalServerSession) {
+					str += "Terminal Server Session" + Environment.NewLine;
+				}
+				if (SystemInformation.BootMode != BootMode.Normal) {
+					str += "Boot Mode            : " + SystemInformation.BootMode + Environment.NewLine;
+				}
+			} catch {}
 			str += "Working Set Memory   : " + (Environment.WorkingSet / 1024) + "kb" + Environment.NewLine;
 			Version v = Assembly.GetEntryAssembly().GetName().Version;
 			str += "SharpDevelop Version : " + v.Major + "." + v.Minor + "." + v.Build + "." + v.Revision + Environment.NewLine;

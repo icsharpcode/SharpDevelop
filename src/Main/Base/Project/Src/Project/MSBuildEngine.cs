@@ -56,66 +56,87 @@ namespace ICSharpCode.SharpDevelop.Project
 			return Run(buildFile, null);
 		}
 		
+		static bool IsRunning = false;
+		
 		public CompilerResults Run(string buildFile, string[] targets)
 		{
-			LoggingService.Debug("Run MSBuild on " + buildFile);
-			
-			// HACK: Workaround for MSBuild bug:
-			// "unknown" MSBuild projects (projects with unknown type id, e.g. IL-projects)
-			// are looked up by MSBuild if the project files are MSBuild-compatible.
-			// That lookup method has a bug: it uses the working directory instead of the
-			// solution directory as base path for the lookup.
-			Environment.CurrentDirectory = Path.GetDirectoryName(buildFile);
-			
 			CompilerResults results = new CompilerResults(null);
-			BuildPropertyGroup properties = new BuildPropertyGroup();
-			string location = Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location);
-			properties.SetProperty("SharpDevelopBinPath", location);
-			foreach (KeyValuePair<string, string> entry in MsBuildProperties) {
-				properties.SetProperty(entry.Key, entry.Value);
+			if (IsRunning) {
+				results.Errors.Add(new CompilerError(null, 0, 0, null, "MsBuild is already running!"));
+				return results;
+			}
+			IsRunning = true;
+			try {
+				Thread thread = new Thread(new ThreadStarter(results, buildFile, targets, this).Run);
+				thread.SetApartmentState(ApartmentState.STA);
+				thread.Start();
+				while (!thread.Join(10)) {
+					Application.DoEvents();
+					Application.DoEvents();
+				}
+				return results;
+			} finally {
+				IsRunning = false;
+			}
+		}
+		
+		class ThreadStarter
+		{
+			CompilerResults results;
+			string buildFile;
+			string[] targets;
+			MSBuildEngine engine;
+			
+			public ThreadStarter(CompilerResults results, string buildFile, string[] targets, MSBuildEngine engine)
+			{
+				this.results = results;
+				this.buildFile = buildFile;
+				this.targets = targets;
+				this.engine = engine;
 			}
 			
-			Engine engine = new Engine(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
-			SharpDevelopLogger logger = new SharpDevelopLogger(this, results);
-			engine.RegisterLogger(logger);
-			engine.BuildProjectFile(buildFile, targets, properties, null);
-			logger.FlushText();
-			
-			LoggingService.Debug("MSBuild finished");
-			return results;
+			[STAThread]
+			public void Run()
+			{
+				LoggingService.Debug("Run MSBuild on " + buildFile);
+				
+				// HACK: Workaround for MSBuild bug:
+				// "unknown" MSBuild projects (projects with unknown type id, e.g. IL-projects)
+				// are looked up by MSBuild if the project files are MSBuild-compatible.
+				// That lookup method has a bug: it uses the working directory instead of the
+				// solution directory as base path for the lookup.
+				Environment.CurrentDirectory = Path.GetDirectoryName(buildFile);
+				
+				BuildPropertyGroup properties = new BuildPropertyGroup();
+				string location = Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location);
+				properties.SetProperty("SharpDevelopBinPath", location);
+				foreach (KeyValuePair<string, string> entry in MsBuildProperties) {
+					properties.SetProperty(entry.Key, entry.Value);
+				}
+				
+				Engine engine = new Engine(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
+				SharpDevelopLogger logger = new SharpDevelopLogger(this.engine, results);
+				engine.RegisterLogger(logger);
+				engine.BuildProjectFile(buildFile, targets, properties, null);
+				
+				LoggingService.Debug("MSBuild finished");
+			}
 		}
 		
 		class SharpDevelopLogger : ILogger
 		{
 			MSBuildEngine engine;
 			CompilerResults results;
-			Thread mainThread;
 			
 			public SharpDevelopLogger(MSBuildEngine engine, CompilerResults results)
 			{
-				mainThread = Thread.CurrentThread;
 				this.engine = engine;
 				this.results = results;
 			}
 			
-			StringBuilder textToWrite = new StringBuilder();
-			
 			void AppendText(string text)
 			{
-				lock (textToWrite) {
-					textToWrite.AppendLine(text);
-					if (Thread.CurrentThread == mainThread) {
-						FlushText();
-					}
-				}
-			}
-			
-			public void FlushText()
-			{
-				if (engine.MessageView != null) {
-					engine.MessageView.AppendText(textToWrite.ToString());
-				}
-				textToWrite.Length = 0;
+				engine.MessageView.AppendText(text + "\r\n");
 			}
 			
 			void OnBuildStarted(object sender, BuildStartedEventArgs e)
@@ -140,7 +161,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				projectFiles.Push(e.ProjectFile);
 				StatusBarService.SetMessage("Building " + Path.GetFileNameWithoutExtension(e.ProjectFile) + "...");
-				Application.DoEvents();
 			}
 			
 			void OnProjectFinished(object sender, ProjectFinishedEventArgs e)
@@ -148,7 +168,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				projectFiles.Pop();
 				if (projectFiles.Count > 0) {
 					StatusBarService.SetMessage("Building " + Path.GetFileNameWithoutExtension(projectFiles.Peek()) + "...");
-					Application.DoEvents();
 				}
 			}
 			
