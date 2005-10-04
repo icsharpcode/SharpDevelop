@@ -43,7 +43,8 @@ namespace ICSharpCode.TextEditor
 		
 		public override Size Size {
 			get {
-				return new Size((int)(textArea.TextView.GetWidth('8') * Math.Max(3, (int)Math.Log10(textArea.Document.TotalNumberOfLines) + 1)),
+				return new Size((int)(textArea.TextView.WideSpaceWidth
+				                      * Math.Max(3, (int)Math.Log10(textArea.Document.TotalNumberOfLines) + 1)),
 				                -1);
 			}
 		}

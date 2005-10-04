@@ -152,7 +152,7 @@ namespace ICSharpCode.TextEditor
 			int max = 0;
 			foreach (ISegment lineSegment in Document.LineSegmentCollection) {
 				if(Document.FoldingManager.IsLineVisible(Document.GetLineNumberForOffset(lineSegment.Offset))) {
-					max = Math.Max(lineSegment.Length, max);
+					max = Math.Max(max, textArea.TextView.GetVisualColumn(Document.GetLineNumberForOffset(lineSegment.Offset),lineSegment.Length));
 				}
 			}
 			hScrollBar.Minimum = 0;
@@ -162,7 +162,7 @@ namespace ICSharpCode.TextEditor
 			vScrollBar.SmallChange = Math.Max(0, textArea.TextView.FontHeight);
 			
 			hScrollBar.LargeChange = Math.Max(0, textArea.TextView.VisibleColumnCount - 1);
-			hScrollBar.SmallChange = Math.Max(0, (int)textArea.TextView.GetWidth(' '));
+			hScrollBar.SmallChange = Math.Max(0, (int)textArea.TextView.SpaceWidth);
 		}
 		
 		public void OptionsChanged()

@@ -253,12 +253,12 @@ namespace ICSharpCode.TextEditor
 		
 		public void SetDesiredColumn()
 		{
-			Caret.DesiredColumn = TextView.GetDrawingXPos(Caret.Line, Caret.Column) + (int)(VirtualTop.X * textView.GetWidth(' '));
+			Caret.DesiredColumn = TextView.GetDrawingXPos(Caret.Line, Caret.Column) + (int)(VirtualTop.X * textView.SpaceWidth);
 		}
 		
 		public void SetCaretToDesiredColumn(int caretLine)
 		{
-			Caret.Position = textView.GetLogicalColumn(Caret.Line, Caret.DesiredColumn + (int)(VirtualTop.X * textView.GetWidth(' ')));
+			Caret.Position = textView.GetLogicalColumn(Caret.Line, Caret.DesiredColumn + (int)(VirtualTop.X * textView.SpaceWidth));
 		}
 		
 		public void OptionsChanged()
@@ -735,7 +735,7 @@ namespace ICSharpCode.TextEditor
 //				return;
 //			}
 			
-			InvalidateLines((int)(xPos * this.TextView.GetWidth(' ')), lineBegin, lineEnd);
+			InvalidateLines((int)(xPos * this.TextView.SpaceWidth), lineBegin, lineEnd);
 		}
 		
 		void InvalidateLines(int xPos, int lineBegin, int lineEnd)

@@ -167,7 +167,7 @@ namespace ICSharpCode.TextEditor
 						caretCreated = CreateCaret(textArea.Handle, 0, 2, textArea.TextView.FontHeight);
 						break;
 					case CaretMode.OverwriteMode:
-						caretCreated = CreateCaret(textArea.Handle, 0, (int)textArea.TextView.GetWidth(' '), textArea.TextView.FontHeight);
+						caretCreated = CreateCaret(textArea.Handle, 0, (int)textArea.TextView.SpaceWidth, textArea.TextView.FontHeight);
 						break;
 				}
 			}

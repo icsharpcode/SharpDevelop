@@ -237,7 +237,7 @@ namespace ICSharpCode.TextEditor
 			// 100 should be enough for everyone ...err ?
 			float[] tabStops = new float[100];
 			for (int i = 0; i < tabStops.Length; ++i) {
-				tabStops[i] = TabIndent * primaryTextArea.TextArea.TextView.GetWidth(' '); 
+				tabStops[i] = TabIndent * primaryTextArea.TextArea.TextView.SpaceWidth; 
 			}
 			
 			printingStringFormat.SetTabStops(0, tabStops);
@@ -264,13 +264,13 @@ namespace ICSharpCode.TextEditor
 			foreach (TextWord word in line.Words) {
 				switch (word.Type) {
 					case TextWordType.Space:
-						Advance(ref xPos, ref yPos, maxWidth, primaryTextArea.TextArea.TextView.GetWidth(' '), fontHeight);
+						Advance(ref xPos, ref yPos, maxWidth, primaryTextArea.TextArea.TextView.SpaceWidth, fontHeight);
 //						if (!gotNonWhitespace) {
 //							curTabIndent = xPos;
 //						}
 						break;
 					case TextWordType.Tab:
-						Advance(ref xPos, ref yPos, maxWidth, TabIndent * primaryTextArea.TextArea.TextView.GetWidth(' '), fontHeight);
+						Advance(ref xPos, ref yPos, maxWidth, TabIndent * primaryTextArea.TextArea.TextView.SpaceWidth, fontHeight);
 //						if (!gotNonWhitespace) {
 //							curTabIndent = xPos;
 //						}
@@ -298,13 +298,13 @@ namespace ICSharpCode.TextEditor
 			foreach (TextWord word in line.Words) {
 				switch (word.Type) {
 					case TextWordType.Space:
-						Advance(ref xPos, ref yPos, margin.Width, primaryTextArea.TextArea.TextView.GetWidth(' '), fontHeight);
+						Advance(ref xPos, ref yPos, margin.Width, primaryTextArea.TextArea.TextView.SpaceWidth, fontHeight);
 //						if (!gotNonWhitespace) {
 //							curTabIndent = xPos;
 //						}
 						break;
 					case TextWordType.Tab:
-						Advance(ref xPos, ref yPos, margin.Width, TabIndent * primaryTextArea.TextArea.TextView.GetWidth(' '), fontHeight);
+						Advance(ref xPos, ref yPos, margin.Width, TabIndent * primaryTextArea.TextArea.TextView.SpaceWidth, fontHeight);
 //						if (!gotNonWhitespace) {
 //							curTabIndent = xPos;
 //						}
