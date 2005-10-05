@@ -237,7 +237,7 @@ namespace ICSharpCode.TextEditor
 			// 100 should be enough for everyone ...err ?
 			float[] tabStops = new float[100];
 			for (int i = 0; i < tabStops.Length; ++i) {
-				tabStops[i] = TabIndent * primaryTextArea.TextArea.TextView.SpaceWidth; 
+				tabStops[i] = TabIndent * primaryTextArea.TextArea.TextView.WideSpaceWidth;
 			}
 			
 			printingStringFormat.SetTabStops(0, tabStops);
@@ -270,7 +270,7 @@ namespace ICSharpCode.TextEditor
 //						}
 						break;
 					case TextWordType.Tab:
-						Advance(ref xPos, ref yPos, maxWidth, TabIndent * primaryTextArea.TextArea.TextView.SpaceWidth, fontHeight);
+						Advance(ref xPos, ref yPos, maxWidth, TabIndent * primaryTextArea.TextArea.TextView.WideSpaceWidth, fontHeight);
 //						if (!gotNonWhitespace) {
 //							curTabIndent = xPos;
 //						}
@@ -304,7 +304,7 @@ namespace ICSharpCode.TextEditor
 //						}
 						break;
 					case TextWordType.Tab:
-						Advance(ref xPos, ref yPos, margin.Width, TabIndent * primaryTextArea.TextArea.TextView.SpaceWidth, fontHeight);
+						Advance(ref xPos, ref yPos, margin.Width, TabIndent * primaryTextArea.TextArea.TextView.WideSpaceWidth, fontHeight);
 //						if (!gotNonWhitespace) {
 //							curTabIndent = xPos;
 //						}

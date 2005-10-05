@@ -27,7 +27,7 @@ namespace ICSharpCode.TextEditor
 		{
 			Graphics g = e.Graphics;
 			int num = 0;
-			for (float x = textArea.TextView.DrawingPosition.Left; x < textArea.TextView.DrawingPosition.Right; x += textArea.TextView.SpaceWidth) {
+			for (float x = textArea.TextView.DrawingPosition.Left; x < textArea.TextView.DrawingPosition.Right; x += textArea.TextView.WideSpaceWidth) {
 				int offset = (Height * 2) / 3;
 				if (num % 5 == 0) {
 					offset = (Height * 4) / 5;

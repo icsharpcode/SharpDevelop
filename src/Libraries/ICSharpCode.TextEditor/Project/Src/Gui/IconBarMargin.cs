@@ -23,8 +23,7 @@ namespace ICSharpCode.TextEditor
 	{
 		public override Size Size {
 			get {
-				return new Size((int)(textArea.TextView.FontHeight * 1.2f),
-				                -1);
+				return new Size(20, -1);
 			}
 		}
 		
