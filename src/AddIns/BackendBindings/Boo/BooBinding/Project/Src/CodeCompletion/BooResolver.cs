@@ -117,6 +117,30 @@ namespace Grunwald.BooBinding.CodeCompletion
 		}
 		#endregion
 		
+		#region GetTypeOfExpression
+		public IReturnType GetTypeOfExpression(AST.Expression expr)
+		{
+			if (!Initialize(expr.LexicalInfo.FileName, expr.LexicalInfo.Line, expr.LexicalInfo.Column))
+				return null;
+			ResolveVisitor visitor = new ResolveVisitor(this);
+			visitor.Visit(expr);
+			if (visitor.ResolveResult == null)
+				return null;
+			else
+				return visitor.ResolveResult.ResolvedType;
+		}
+		#endregion
+		
+		#region GetCurrentBooMethod
+		AST.Node GetCurrentBooMethod()
+		{
+			if (callingMember == null)
+				return null;
+			// TODO: don't save boo's AST in userdata, but parse fileContent here
+			return callingMember.UserData as AST.Node;
+		}
+		#endregion
+		
 		#region Resolve
 		public ResolveResult Resolve(ExpressionResult expressionResult,
 		                             int caretLineNumber, int caretColumn,
@@ -130,6 +154,19 @@ namespace Grunwald.BooBinding.CodeCompletion
 			ResolveVisitor visitor = new ResolveVisitor(this);
 			visitor.Visit(expr);
 			return visitor.ResolveResult;
+		}
+		
+		public IReturnType ConvertType(AST.TypeReference typeRef)
+		{
+			return ConvertVisitor.CreateReturnType(typeRef, callingClass, callingMember,
+			                                       caretLine, caretColumn, pc, false);
+		}
+		
+		public IField FindLocalVariable(string name, bool acceptImplicit)
+		{
+			VariableLookupVisitor vlv = new VariableLookupVisitor(this, name, acceptImplicit);
+			vlv.Visit(GetCurrentBooMethod());
+			return vlv.Result;
 		}
 		#endregion
 		
@@ -161,6 +198,23 @@ namespace Grunwald.BooBinding.CodeCompletion
 			ArrayList result = GetImportedNamespaceContents();
 			
 			NRResolver.AddContentsFromCalling(result, callingClass, callingMember);
+			
+			ArrayList knownVariableNames = new ArrayList();
+			foreach (object o in result) {
+				IMember m = o as IMember;
+				if (m != null) {
+					knownVariableNames.Add(m.Name);
+				}
+			}
+			VariableListLookupVisitor vllv = new VariableListLookupVisitor(knownVariableNames);
+			vllv.Visit(GetCurrentBooMethod());
+			foreach (DictionaryEntry entry in vllv.Results) {
+				IReturnType type;
+				if (entry.Value is AST.TypeReference) {
+					type = ConvertType((AST.TypeReference)entry.Value);
+					result.Add(new DefaultField.LocalVariableField(type, (string)entry.Key, DomRegion.Empty, callingClass));
+				}
+			}
 			
 			return result;
 		}

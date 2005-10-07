@@ -137,9 +137,14 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		bool ResolveIdentifier(string identifier)
 		{
+			IField local;
 			resolveResult = null;
 			if (resolver.CallingMember != null) {
-				// TODO: Search local variables
+				local = resolver.FindLocalVariable(identifier, false);
+				if (local != null) {
+					MakeResult(local);
+					return true;
+				}
 				
 				IMethodOrProperty method = resolver.CallingMember as IMethodOrProperty;
 				if (method != null) {
@@ -185,6 +190,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 					return true;
 				}
 			}
+			
+			local = resolver.FindLocalVariable(identifier, true);
+			if (local != null) {
+				MakeResult(local);
+				return true;
+			}
+			
 			return false;
 		}
 		#endregion
@@ -466,9 +478,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		IReturnType ConvertType(TypeReference typeRef)
 		{
-			return ConvertVisitor.CreateReturnType(typeRef, callingClass, resolver.CallingMember,
-			                                       resolver.CaretLine, resolver.CaretColumn,
-			                                       projectContent, false);
+			return resolver.ConvertType(typeRef);
 		}
 	}
 }

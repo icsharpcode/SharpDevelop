@@ -220,11 +220,18 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			return ReflectionReturnType.CreatePrimitive(type);
 		}
-		// TODO: Type inference
 		IReturnType CreateReturnType(AST.Field field)
 		{
-			return CreateReturnType(field.Type);
+			if (field.Type == null) {
+				if (field.Initializer != null)
+					return new InferredReturnType(field.Initializer);
+				else
+					return ReflectionReturnType.Object;
+			} else {
+				return CreateReturnType(field.Type);
+			}
 		}
+		// TODO: Type inference
 		IReturnType CreateReturnType(AST.Method node, IMethod method)
 		{
 			return CreateReturnType(node.ReturnType, method);
@@ -349,6 +356,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			method.ReturnType = CreateReturnType(node, method);
 			ConvertParameters(node.Parameters, method);
 			_currentClass.Peek().Methods.Add(method);
+			method.UserData = node;
 		}
 		
 		public override void OnConstructor(AST.Constructor node)
@@ -358,6 +366,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			ConvertAttributes(node, ctor);
 			ConvertParameters(node.Parameters, ctor);
 			_currentClass.Peek().Methods.Add(ctor);
+			ctor.UserData = node;
 		}
 		
 		public override void OnEnumMember(AST.EnumMember node)
@@ -388,6 +397,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			ConvertAttributes(node, property);
 			ConvertParameters(node.Parameters, property);
 			OuterClass.Properties.Add(property);
+			property.UserData = node;
 		}
 	}
 }

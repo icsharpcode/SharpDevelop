@@ -34,6 +34,8 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
     <Reference Include="Boo.Lang.Compiler">
       <HintPath>..\..\RequiredLibraries\Boo.Lang.Compiler.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -46,7 +48,6 @@
       <HintPath>..\..\RequiredLibraries\Boo.Lang.Parser.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
-    <Reference Include="System.Windows.Forms" />
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Boo.xshd">
@@ -63,6 +64,8 @@
     <Compile Include="Src\CodeCompletion\ResolveVisitor.cs" />
     <Compile Include="Src\CodeCompletion\CompletionBinding.cs" />
     <Compile Include="Src\BooLanguageProperties.cs" />
+    <Compile Include="Src\CodeCompletion\VariableLookupVisitor.cs" />
+    <Compile Include="Src\CodeCompletion\InferredReturnType.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BooBinding.addin">
