@@ -669,7 +669,36 @@ namespace ICSharpCode.TextEditor
 		
 		public int GetVisualColumn(int logicalLine, int logicalColumn)
 		{
-			return (int)((GetDrawingXPos(logicalLine, logicalColumn) + MinTabWidth) / WideSpaceWidth);
+			int column = 0;
+			using (Graphics g = textArea.CreateGraphics()) {
+				CountColumns(ref column, 0, logicalColumn, logicalLine, g);
+			}
+			return column;
+		}
+		
+		public int GetVisualColumnFast(LineSegment line, int logicalColumn)
+		{
+			int lineOffset = line.Offset;
+			int tabIndent = Document.TextEditorProperties.TabIndent;
+			int guessedColumn = 0;
+			for (int i = 0; i < logicalColumn; ++i) {
+				char ch;
+				if (i >= line.Length) {
+					ch = ' ';
+				} else {
+					ch = Document.GetCharAt(lineOffset + i);
+				}
+				switch (ch) {
+					case '\t':
+						guessedColumn += tabIndent;
+						guessedColumn = (guessedColumn / tabIndent) * tabIndent;
+						break;
+					default:
+						++guessedColumn;
+						break;
+				}
+			}
+			return guessedColumn;
 		}
 		
 		/// <summary>
@@ -910,9 +939,13 @@ namespace ICSharpCode.TextEditor
 			FoldMarker f = null;
 			// search the last folding that's interresting
 			for (i = foldings.Count - 1; i >= 0; --i) {
-				f = (FoldMarker)foldings[i];
+				f = foldings[i];
 				if (f.StartLine < logicalLine || f.StartLine == logicalLine && f.StartColumn < logicalColumn) {
 					break;
+				}
+				FoldMarker f2 = foldings[i / 2];
+				if (f2.StartLine > logicalLine || f2.StartLine == logicalLine && f2.StartColumn >= logicalColumn) {
+					i /= 2;
 				}
 			}
 			int lastFolding  = 0;
@@ -952,7 +985,7 @@ namespace ICSharpCode.TextEditor
 			int foldEnd      = 0;
 			drawingPos = 0;
 			for (i = firstFolding; i <= lastFolding; ++i) {
-				f = (FoldMarker)foldings[i];
+				f = foldings[i];
 				drawingPos += CountColumns(ref column, foldEnd, f.StartColumn, f.StartLine, g);
 				foldEnd = f.EndColumn;
 				column += f.FoldText.Length;

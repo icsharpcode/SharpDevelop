@@ -33,5 +33,11 @@ namespace Grunwald.BooBinding
 				return true;
 			}
 		}
+		
+		public override bool AllowObjectConstructionOutsideContext {
+			get {
+				return true;
+			}
+		}
 	}
 }

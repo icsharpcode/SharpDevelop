@@ -220,7 +220,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		const int _elseIndex = 10;
 		
 		static readonly
-			int[][] _stateTable =     { // "    '    \    \n   $    {    }    #    /    *   else
+			int[][] _stateTable =         { // "    '    \    \n   $    {    }    #    /    *   else
 			/* 0: in Code       */ new int[] { 1  , 7  , 0  , 0  , 0  , 0  , 0  , 13 , 12 , 0  , 0  },
 			/* 1: after "       */ new int[] { 2  , 6  , 10 , 0  , 8  , 6  , 6  , 6  , 6  , 6  , 6  },
 			/* 2: after ""      */ new int[] { 3  , 7  , 0  , 0  , 0  , 0  , 0  , 13 , 12 , 0  , 0  },

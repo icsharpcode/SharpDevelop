@@ -133,19 +133,23 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				expressionResult.Context = ExpressionContext.Type;
 			}
 			ResolveResult results = ParserService.Resolve(expressionResult, caretLineNumber, caretColumn, fileName, document.TextContent);
+			TypeResolveResult trr = results as TypeResolveResult;
+			if (trr != null && !constructorInsight) {
+				if (ParserService.CurrentProjectContent.Language.AllowObjectConstructionOutsideContext)
+					constructorInsight = true;
+			}
 			if (constructorInsight) {
-				TypeResolveResult result = results as TypeResolveResult;
-				if (result == null)
+				if (trr == null)
 					return;
-				foreach (IMethod method in result.ResolvedType.GetMethods()) {
+				foreach (IMethod method in trr.ResolvedType.GetMethods()) {
 					if (method.IsConstructor && !method.IsStatic) {
 						methods.Add(method);
 					}
 				}
 				
-				if (methods.Count == 0 && result.ResolvedClass != null && !result.ResolvedClass.IsAbstract && !result.ResolvedClass.IsStatic) {
+				if (methods.Count == 0 && trr.ResolvedClass != null && !trr.ResolvedClass.IsAbstract && !trr.ResolvedClass.IsStatic) {
 					// add default constructor
-					methods.Add(Constructor.CreateDefault(result.ResolvedClass));
+					methods.Add(Constructor.CreateDefault(trr.ResolvedClass));
 				}
 			} else {
 				MethodResolveResult result = results as MethodResolveResult;

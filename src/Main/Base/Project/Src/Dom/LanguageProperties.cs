@@ -54,6 +54,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		/// <summary>
+		/// Allow invoking an object constructor outside of ExpressionContext.ObjectCreation.
+		/// Used for Boo, which creates instances like this: 'self.Size = Size(10, 20)'
+		/// </summary>
+		public virtual bool AllowObjectConstructionOutsideContext {
+			get {
+				return false;
+			}
+		}
+		
 		public virtual bool ShowInNamespaceCompletion(IClass c)
 		{
 			return true;

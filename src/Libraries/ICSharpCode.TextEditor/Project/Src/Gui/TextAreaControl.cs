@@ -150,9 +150,10 @@ namespace ICSharpCode.TextEditor
 			// number of visible lines in document (folding!)
 			vScrollBar.Maximum = textArea.MaxVScrollValue;
 			int max = 0;
-			foreach (ISegment lineSegment in Document.LineSegmentCollection) {
-				if(Document.FoldingManager.IsLineVisible(Document.GetLineNumberForOffset(lineSegment.Offset))) {
-					max = Math.Max(max, textArea.TextView.GetVisualColumn(Document.GetLineNumberForOffset(lineSegment.Offset),lineSegment.Length));
+			foreach (LineSegment lineSegment in this.Document.LineSegmentCollection) {
+				int lineNumber = Document.GetLineNumberForOffset(lineSegment.Offset);
+				if(Document.FoldingManager.IsLineVisible(lineNumber)) {
+					max = Math.Max(max, textArea.TextView.GetVisualColumnFast(lineSegment, lineSegment.Length));
 				}
 			}
 			hScrollBar.Minimum = 0;
@@ -239,7 +240,8 @@ namespace ICSharpCode.TextEditor
 			int curCharMin  = (int)(this.hScrollBar.Value - this.hScrollBar.Minimum);
 			int curCharMax  = curCharMin + textArea.TextView.VisibleColumnCount;
 			
-			int pos         = textArea.TextView.GetVisualColumn(textArea.Caret.Line, textArea.Caret.Column);
+			int pos = textArea.TextView.GetVisualColumn(textArea.Caret.Line,
+			                                            textArea.Caret.Column);
 			
 			if (textArea.TextView.VisibleColumnCount < 0) {
 				hScrollBar.Value = 0;
