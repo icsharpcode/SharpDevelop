@@ -29,6 +29,10 @@
       <HintPath>..\..\RequiredLibraries\Boo.Lang.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\..\..\..\..\bin\ICSharpCode.NRefactory.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="GlobalTests.cs" />
@@ -43,11 +47,6 @@
     <ProjectReference Include="..\Project\NRefactoryToBooConverter.csproj">
       <Project>{DBCF20A1-BA13-4582-BFA9-74DE4D987B73}</Project>
       <Name>NRefactoryToBooConverter</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

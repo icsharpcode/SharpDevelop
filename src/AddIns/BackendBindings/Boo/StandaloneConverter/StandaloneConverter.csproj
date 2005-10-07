@@ -31,20 +31,19 @@
       <HintPath>..\RequiredLibraries\Boo.Lang.Compiler.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="ICSharpCode.NRefactory">
+      <HintPath>..\..\..\..\..\bin\ICSharpCode.NRefactory.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Main.cs" />
     <Compile Include="AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\NET\BooNRefactory\NRefactoryToBooConverter\Project\NRefactoryToBooConverter.csproj">
+    <ProjectReference Include="..\NRefactoryToBooConverter\Project\NRefactoryToBooConverter.csproj">
       <Project>{DBCF20A1-BA13-4582-BFA9-74DE4D987B73}</Project>
       <Name>NRefactoryToBooConverter</Name>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
-      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
-      <Name>NRefactory</Name>
-      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
