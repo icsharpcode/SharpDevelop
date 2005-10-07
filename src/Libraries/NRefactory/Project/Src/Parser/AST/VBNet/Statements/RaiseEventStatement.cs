@@ -40,8 +40,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		{
 			Debug.Assert(eventName != null);
 			this.eventName = eventName;
-			Debug.Assert(parameters != null);
-			this.arguments = parameters;
+			this.arguments = parameters ?? new ArrayList();
 		}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)
