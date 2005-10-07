@@ -287,7 +287,7 @@ namespace ICSharpCode.TextEditor.Actions
 			}
 			
 			string comment = null;
-			if (textArea.Document.HighlightingStrategy.Properties["LineComment"] != null) {
+			if (textArea.Document.HighlightingStrategy.Properties.ContainsKey("LineComment")) {
 				comment = textArea.Document.HighlightingStrategy.Properties["LineComment"].ToString();
 			}
 			
