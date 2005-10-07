@@ -1,0 +1,38 @@
+<?xml version="1.0"?>
+<Template originator   = "Daniel Grunwald">
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.ConsoleProject.Name}</Name>
+		<Category>Boo</Category>
+		<Icon>C#.Project.DOSProject</Icon>
+		<LanguageName>Boo</LanguageName>
+		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "Program.boo"/>
+	</Actions>
+	
+	<!-- Template Content -->
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options/>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options/>
+			
+			<ProjectItems>
+				<Reference Include="System" />
+				<Reference Include="System.Data" />
+				<Reference Include="System.Xml" />
+			</ProjectItems>
+		
+			<Files>
+				<File name="Program.boo"><![CDATA[import System
+import System.Collections
+
+print "Hello, World!"
+]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

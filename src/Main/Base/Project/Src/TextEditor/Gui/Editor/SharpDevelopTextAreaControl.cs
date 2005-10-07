@@ -247,20 +247,22 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 							return false;
 					}
 				}
-				string word = GetWordBeforeCaret();
-				if (word != null) {
-					CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(FileName);
-					if (templateGroup != null) {
-						foreach (CodeTemplate template in templateGroup.Templates) {
-							if (template.Shortcut == word) {
-								if (word.Length > 0) {
-									int newCaretOffset = DeleteWordBeforeCaret();
-									//// set new position in text area
-									ActiveTextAreaControl.TextArea.Caret.Position = Document.OffsetToPosition(newCaretOffset);
+				if (ch == ' ') {
+					string word = GetWordBeforeCaret();
+					if (word != null) {
+						CodeTemplateGroup templateGroup = CodeTemplateLoader.GetTemplateGroupPerFilename(FileName);
+						if (templateGroup != null) {
+							foreach (CodeTemplate template in templateGroup.Templates) {
+								if (template.Shortcut == word) {
+									if (word.Length > 0) {
+										int newCaretOffset = DeleteWordBeforeCaret();
+										//// set new position in text area
+										ActiveTextAreaControl.TextArea.Caret.Position = Document.OffsetToPosition(newCaretOffset);
+									}
+									
+									InsertTemplate(template);
+									return true;
 								}
-								
-								InsertTemplate(template);
-								return true;
 							}
 						}
 					}

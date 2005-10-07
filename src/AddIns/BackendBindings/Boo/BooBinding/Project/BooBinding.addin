@@ -1,0 +1,78 @@
+<AddIn name        = "BooBinding"
+       author      = "Daniel Grunwald"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "Binding for the Boo language"
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly = "BooBinding.dll"/>
+		<Import assembly = ":ICSharpCode.SharpDevelop"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "Boo"
+		            insertbefore="AllFiles"
+		            name = "Boo Files (*.boo)"
+		            extensions = "*.boo"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/BackendBindings/Templates">
+		<Directory id = "Boo" path = "./Templates" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/Ambiences">
+		<Class id    = "Boo"
+		       class = "Grunwald.BooBinding.BooAmbience"/>
+	</Path>
+	
+	<Path name = "/Workspace/Parser">
+		<Parser id    = "Boo"
+		        supportedextensions  = ".boo"
+		        projectfileextension = ".booproj"
+		        class = "Grunwald.BooBinding.CodeCompletion.BooParser"/>
+	</Path>
+	
+	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
+		<CodeCompletionBinding id = "Boo" extensions = ".boo" class = "Grunwald.BooBinding.CodeCompletion.CompletionBinding"/>
+	</Path>
+	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes">
+		<SyntaxMode id         = "Boo Syntax Mode"
+		            name       = "Boo"
+		            extensions = ".boo"
+		            resource   = "Grunwald.BooBinding.Resources.Boo.xshd" />
+	</Path>
+	
+	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/Boo">
+		<DialogPanel id    = "Application"
+		             label = "Application"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ApplicationSettings"/>
+		<!--<DialogPanel id    = "ReferencePaths"
+		             label = "Reference Paths"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.ReferencePaths"/>-->
+		<!--<DialogPanel id    = "Signing"
+		             label = "Signing"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Signing"/>-->
+		<DialogPanel id    = "BuildEvents"
+		             label = "Build Events"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.BuildEvents"/>
+		<!--<DialogPanel id    = "BuildOptions"
+		             label = "Build"
+		             class = "ICSharpCode.ILAsmBinding.BuildOptions"/>-->
+		<DialogPanel id    = "DebugOptions"
+		             label = "Debug"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.DebugOptions"/>
+		<!--<DialogPanel id    = "Publish"
+		             label = "Publish"
+		             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.Publish"/>-->
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/LanguageBindings">
+		<LanguageBinding id                   = "Boo"
+		                 guid                 = "{A33008B1-5DAC-44D5-9060-242E3B6E38F2}"
+		                 supportedextensions  = ".boo"
+		                 projectfileextension = ".booproj"
+		                 class                = "Grunwald.BooBinding.BooLanguageBinding" />
+	</Path>
+</AddIn>

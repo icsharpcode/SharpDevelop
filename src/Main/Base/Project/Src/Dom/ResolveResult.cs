@@ -128,6 +128,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public TypeResolveResult TypeResult {
+			get {
+				if (primaryResult is TypeResolveResult)
+					return (TypeResolveResult)primaryResult;
+				if (secondaryResult is TypeResolveResult)
+					return (TypeResolveResult)secondaryResult;
+				return null;
+			}
+		}
+		
 		public MixedResolveResult(ResolveResult primaryResult, ResolveResult secondaryResult)
 			: base(primaryResult.CallingClass, primaryResult.CallingMember, primaryResult.ResolvedType)
 		{

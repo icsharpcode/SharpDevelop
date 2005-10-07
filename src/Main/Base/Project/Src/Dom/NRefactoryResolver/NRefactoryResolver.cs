@@ -549,7 +549,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			if (languageProperties.ImportModules) {
 				ArrayList list = new ArrayList();
-				AddImportedNamespaceContents(list);
+				AddImportedNamespaceContents(list, cu, callingClass);
 				foreach (object o in list) {
 					IClass c = o as IClass;
 					if (c != null && IsSameName(identifier, c.Name)) {
@@ -721,7 +721,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			if (languageProperties.ImportModules) {
 				ArrayList list = new ArrayList();
-				AddImportedNamespaceContents(list);
+				AddImportedNamespaceContents(list, cu, callingClass);
 				foreach (object o in list) {
 					IMethod m = o as IMethod;
 					if (m != null && IsSameName(m.Name, memberName)) {
@@ -807,7 +807,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IParameter SearchMethodParameter(string parameter)
 		{
-			IMethod method = callingMember as IMethod;
+			IMethodOrProperty method = callingMember as IMethodOrProperty;
 			if (method == null) {
 				return null;
 			}
@@ -904,10 +904,29 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				}
 			}
 			
-			IMethod method = callingMember as IMethod;
-			if (method != null) {
-				foreach (IParameter p in method.Parameters) {
-					result.Add(new DefaultField.ParameterField(p.ReturnType, p.Name, method.Region, callingClass));
+			AddContentsFromCalling(result, callingClass, callingMember);
+			
+			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
+				if (pair.Value != null && pair.Value.Count > 0) {
+					foreach (LocalLookupVariable v in pair.Value) {
+						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
+							// convert to a field for display
+							result.Add(CreateLocalVariableField(v, pair.Key));
+							break;
+						}
+					}
+				}
+			}
+			AddImportedNamespaceContents(result, cu, callingClass);
+			return result;
+		}
+		
+		public static void AddContentsFromCalling(ArrayList result, IClass callingClass, IMember callingMember)
+		{
+			IMethodOrProperty methodOrProperty = callingMember as IMethodOrProperty;
+			if (methodOrProperty != null) {
+				foreach (IParameter p in methodOrProperty.Parameters) {
+					result.Add(new DefaultField.ParameterField(p.ReturnType, p.Name, methodOrProperty.Region, callingClass));
 				}
 			}
 			
@@ -927,43 +946,33 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						result.Add(m);
 					}
 				}
-				if (callingClass.DeclaringType != null) {
-					result.Add(callingClass.DeclaringType);
-					members.Clear();
-					t = callingClass.DeclaringType.DefaultReturnType;
+				members.Clear();
+				IClass c = callingClass.DeclaringType;
+				while (c != null) {
+					result.Add(c);
+					t = c.DefaultReturnType;
 					members.AddRange(t.GetMethods());
 					members.AddRange(t.GetFields());
 					members.AddRange(t.GetEvents());
 					members.AddRange(t.GetProperties());
-					foreach (IMember m in members) {
-						if (m.IsStatic) {
-							result.Add(m);
-						}
+					c = c.DeclaringType;
+				}
+				foreach (IMember m in members) {
+					if (m.IsStatic) {
+						result.Add(m);
 					}
 				}
 			}
-			foreach (KeyValuePair<string, List<LocalLookupVariable>> pair in lookupTableVisitor.Variables) {
-				if (pair.Value != null && pair.Value.Count > 0) {
-					foreach (LocalLookupVariable v in pair.Value) {
-						if (IsInside(new Point(caretColumn, caretLine), v.StartPos, v.EndPos)) {
-							// convert to a field for display
-							result.Add(CreateLocalVariableField(v, pair.Key));
-							break;
-						}
-					}
-				}
-			}
-			AddImportedNamespaceContents(result);
-			return result;
 		}
 		
-		void AddImportedNamespaceContents(ArrayList result)
+		public static void AddImportedNamespaceContents(ArrayList result, ICompilationUnit cu, IClass callingClass)
 		{
-			projectContent.AddNamespaceContents(result, "", languageProperties, true);
+			IProjectContent projectContent = cu.ProjectContent;
+			projectContent.AddNamespaceContents(result, "", projectContent.Language, true);
 			foreach (IUsing u in cu.Usings) {
-				AddUsing(result, u);
+				AddUsing(result, u, projectContent);
 			}
-			AddUsing(result, projectContent.DefaultImports);
+			AddUsing(result, projectContent.DefaultImports, projectContent);
 			
 			if (callingClass != null) {
 				foreach (object member in projectContent.GetNamespaceContents(callingClass.Namespace)) {
@@ -981,15 +990,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		void AddUsing(ArrayList result, IUsing u)
+		static void AddUsing(ArrayList result, IUsing u, IProjectContent projectContent)
 		{
 			if (u == null) {
 				return;
 			}
-			bool importNamespaces = languageProperties.ImportNamespaces;
+			bool importNamespaces = projectContent.Language.ImportNamespaces;
 			foreach (string name in u.Usings) {
 				if (importNamespaces) {
-					projectContent.AddNamespaceContents(result, name, languageProperties, true);
+					projectContent.AddNamespaceContents(result, name, projectContent.Language, true);
 				} else {
 					foreach (object o in projectContent.GetNamespaceContents(name)) {
 						if (!(o is string))

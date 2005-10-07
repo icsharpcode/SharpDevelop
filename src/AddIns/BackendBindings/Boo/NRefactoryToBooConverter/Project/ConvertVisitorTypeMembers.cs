@@ -1,0 +1,324 @@
+﻿#region license
+// Copyright (c) 2005, Daniel Grunwald (daniel@danielgrunwald.de)
+// All rights reserved.
+//
+// NRefactoryToBoo is free software; you can redistribute it and/or modify
+// it under the terms of the GNU General Public License as published by
+// the Free Software Foundation; either version 2 of the License, or
+// (at your option) any later version.
+// 
+// NRefactoryToBoo is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+// 
+// You should have received a copy of the GNU General Public License
+// along with NRefactoryToBoo; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+#endregion
+
+using System;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.NRefactory.Parser.AST;
+using Boo.Lang.Compiler;
+using B = Boo.Lang.Compiler.Ast;
+
+namespace NRefactoryToBooConverter
+{
+	partial class ConvertVisitor
+	{
+		public object Visit(FieldDeclaration fieldDeclaration, object data)
+		{
+			for (int i = 0; i < fieldDeclaration.Fields.Count; i++) {
+				ConvertField(fieldDeclaration.GetTypeForField(i), fieldDeclaration.Fields[i], fieldDeclaration);
+			}
+			return null;
+		}
+		
+		public object Visit(VariableDeclaration variableDeclaration, object data)
+		{
+			throw new ApplicationException("Visited VariableDeclaration.");
+		}
+		
+		void ConvertField(TypeReference typeRef, VariableDeclaration variable, FieldDeclaration fieldDeclaration)
+		{
+			B.TypeMember m;
+			if (currentType is B.EnumDefinition) {
+				if (variable.Initializer.IsNull) {
+					m = new B.EnumMember(GetLexicalInfo(fieldDeclaration));
+				} else {
+					PrimitiveExpression p = variable.Initializer as PrimitiveExpression;
+					if (p == null || !(p.Value is int)) {
+						AddError(fieldDeclaration, "enum member initializer must be integer value");
+						return;
+					}
+					m = new B.EnumMember(GetLexicalInfo(fieldDeclaration), new B.IntegerLiteralExpression((int)p.Value));
+				}
+			} else {
+				m = new B.Field(GetLexicalInfo(fieldDeclaration), ConvertTypeReference(typeRef), ConvertExpression(variable.Initializer));
+				m.Modifiers = ConvertModifier(fieldDeclaration, B.TypeMemberModifiers.Private);
+			}
+			m.Name = variable.Name;
+			ConvertAttributes(fieldDeclaration.Attributes, m.Attributes);
+			currentType.Members.Add(m);
+		}
+		
+		B.Block ConvertMethodBlock(BlockStatement block)
+		{
+			B.Block b = ConvertBlock(block);
+			RenameLocalsVisitor.RenameLocals(b, nameComparer);
+			return b;
+		}
+		
+		B.Method entryPointMethod;
+		
+		public object Visit(MethodDeclaration methodDeclaration, object data)
+		{
+			B.Method m = new B.Method(GetLexicalInfo(methodDeclaration));
+			m.Name = methodDeclaration.Name;
+			m.Modifiers = ConvertModifier(methodDeclaration, B.TypeMemberModifiers.Private);
+			ConvertAttributes(methodDeclaration.Attributes, m.Attributes);
+			currentType.Members.Add(m);
+			if (methodDeclaration.HandlesClause.Count > 0) {
+				// TODO: Convert handles clauses to [Handles] attribute
+				AddError(methodDeclaration, "Handles-clause is not supported.");
+			}
+			if (methodDeclaration.ImplementsClause.Count > 0) {
+				AddError(methodDeclaration, "Explicit interface implementation is not supported.");
+			}
+			if (methodDeclaration.Templates.Count > 0) {
+				AddError(methodDeclaration, "Declaring generic methods is not supported.");
+			}
+			ConvertParameters(methodDeclaration.Parameters, m.Parameters);
+			m.EndSourceLocation = GetEndLocation((INode)methodDeclaration.Body ?? methodDeclaration);
+			m.ReturnType = ConvertTypeReference(methodDeclaration.TypeReference);
+			m.Body = ConvertMethodBlock(methodDeclaration.Body);
+			if (m.Name == "Main" && m.IsStatic && m.Parameters.Count <= 1 &&
+			    (methodDeclaration.TypeReference.SystemType == "System.Void" || methodDeclaration.TypeReference.SystemType == "System.Int32"))
+			{
+				entryPointMethod = m;
+			}
+			return m;
+		}
+		
+		
+		public object Visit(ConstructorDeclaration constructorDeclaration, object data)
+		{
+			B.Constructor m = new B.Constructor(GetLexicalInfo(constructorDeclaration));
+			m.Modifiers = ConvertModifier(constructorDeclaration, B.TypeMemberModifiers.Private);
+			ConvertAttributes(constructorDeclaration.Attributes, m.Attributes);
+			currentType.Members.Add(m);
+			ConvertParameters(constructorDeclaration.Parameters, m.Parameters);
+			m.EndSourceLocation = GetEndLocation((INode)constructorDeclaration.Body ?? constructorDeclaration);
+			m.Body = ConvertMethodBlock(constructorDeclaration.Body);
+			ConstructorInitializer ci = constructorDeclaration.ConstructorInitializer;
+			if (ci != null && !ci.IsNull) {
+				B.Expression initializerBase;
+				if (ci.ConstructorInitializerType == ConstructorInitializerType.Base)
+					initializerBase = new B.SuperLiteralExpression();
+				else
+					initializerBase = new B.SelfLiteralExpression();
+				B.MethodInvocationExpression initializer = new B.MethodInvocationExpression(initializerBase);
+				ConvertExpressions(ci.Arguments, initializer.Arguments);
+				m.Body.Insert(0, new B.ExpressionStatement(initializer));
+			}
+			return m;
+		}
+		
+		public object Visit(DestructorDeclaration destructorDeclaration, object data)
+		{
+			B.Destructor m = new B.Destructor(GetLexicalInfo(destructorDeclaration));
+			ConvertAttributes(destructorDeclaration.Attributes, m.Attributes);
+			currentType.Members.Add(m);
+			m.EndSourceLocation = GetLocation(destructorDeclaration.EndLocation);
+			m.Body = ConvertMethodBlock(destructorDeclaration.Body);
+			return m;
+		}
+		
+		void ConvertParameters(List<ParameterDeclarationExpression> input, B.ParameterDeclarationCollection output)
+		{
+			bool isParams = false;
+			foreach (ParameterDeclarationExpression pde in input) {
+				B.ParameterDeclaration para = ConvertParameter(pde, out isParams);
+				if (para != null)
+					output.Add(para);
+			}
+			output.VariableNumber = isParams;
+		}
+		
+		B.ParameterDeclaration ConvertParameter(ParameterDeclarationExpression pde, out bool isParams)
+		{
+			B.ParameterDeclaration para = new B.ParameterDeclaration(pde.ParameterName, ConvertTypeReference(pde.TypeReference));
+			if ((pde.ParamModifier & ParamModifier.Optional) != 0) {
+				AddError(pde, "Optional parameters are not supported.");
+			}
+			if ((pde.ParamModifier & ParamModifier.Out) != 0) {
+				para.Modifiers |= B.ParameterModifiers.Ref;
+			}
+			if ((pde.ParamModifier & ParamModifier.Ref) != 0) {
+				para.Modifiers |= B.ParameterModifiers.Ref;
+			}
+			isParams = (pde.ParamModifier & ParamModifier.Params) != 0;
+			ConvertAttributes(pde.Attributes, para.Attributes);
+			return para;
+		}
+		
+		public object Visit(ParameterDeclarationExpression parameterDeclarationExpression, object data)
+		{
+			bool tmp;
+			return ConvertParameter(parameterDeclarationExpression, out tmp);
+		}
+		
+		public object Visit(PropertyDeclaration propertyDeclaration, object data)
+		{
+			B.Property m = new B.Property(GetLexicalInfo(propertyDeclaration));
+			m.Name = propertyDeclaration.Name;
+			m.Modifiers = ConvertModifier(propertyDeclaration, B.TypeMemberModifiers.Private);
+			ConvertAttributes(propertyDeclaration.Attributes, m.Attributes);
+			currentType.Members.Add(m);
+			ConvertParameters(propertyDeclaration.Parameters, m.Parameters);
+			m.EndSourceLocation = GetLocation(propertyDeclaration.EndLocation);
+			m.Type = ConvertTypeReference(propertyDeclaration.TypeReference);
+			if (propertyDeclaration.ImplementsClause.Count > 0) {
+				AddError(propertyDeclaration, "Explicit interface implementation is not supported.");
+			}
+			if (!propertyDeclaration.IsWriteOnly) {
+				m.Getter = new B.Method(GetLexicalInfo(propertyDeclaration.GetRegion));
+				if (propertyDeclaration.GetRegion != null) {
+					ConvertAttributes(propertyDeclaration.GetRegion.Attributes, m.Getter.Attributes);
+					m.Modifiers = ConvertModifier(propertyDeclaration.GetRegion, m.Visibility);
+					m.Getter.Body = ConvertMethodBlock(propertyDeclaration.GetRegion.Block);
+					m.Getter.ReturnType = m.Type;
+				}
+			}
+			if (!propertyDeclaration.IsReadOnly) {
+				m.Setter = new B.Method(GetLexicalInfo(propertyDeclaration.SetRegion));
+				if (propertyDeclaration.SetRegion != null) {
+					ConvertAttributes(propertyDeclaration.SetRegion.Attributes, m.Setter.Attributes);
+					m.Modifiers = ConvertModifier(propertyDeclaration.SetRegion, m.Visibility);
+					m.Setter.Body = ConvertMethodBlock(propertyDeclaration.SetRegion.Block);
+				}
+			}
+			return m;
+		}
+		
+		public const string DefaultIndexerName = "Indexer";
+		
+		public object Visit(IndexerDeclaration indexerDeclaration, object data)
+		{
+			indexerDeclaration.Modifier |= Modifier.Default;
+			
+			B.Property m = new B.Property(GetLexicalInfo(indexerDeclaration));
+			m.Name = DefaultIndexerName;
+			m.Modifiers = ConvertModifier(indexerDeclaration, B.TypeMemberModifiers.Private);
+			ConvertAttributes(indexerDeclaration.Attributes, m.Attributes);
+			currentType.Members.Add(m);
+			ConvertParameters(indexerDeclaration.Parameters, m.Parameters);
+			m.EndSourceLocation = GetLocation(indexerDeclaration.EndLocation);
+			m.Type = ConvertTypeReference(indexerDeclaration.TypeReference);
+			if (!indexerDeclaration.IsWriteOnly) {
+				m.Getter = new B.Method(GetLexicalInfo(indexerDeclaration.GetRegion));
+				if (indexerDeclaration.GetRegion != null) {
+					ConvertAttributes(indexerDeclaration.GetRegion.Attributes, m.Getter.Attributes);
+					m.Modifiers = ConvertModifier(indexerDeclaration.GetRegion, m.Visibility);
+					m.Getter.Body = ConvertMethodBlock(indexerDeclaration.GetRegion.Block);
+					m.Getter.ReturnType = m.Type;
+				}
+			}
+			if (!indexerDeclaration.IsReadOnly) {
+				m.Setter = new B.Method(GetLexicalInfo(indexerDeclaration.SetRegion));
+				if (indexerDeclaration.SetRegion != null) {
+					ConvertAttributes(indexerDeclaration.SetRegion.Attributes, m.Setter.Attributes);
+					m.Modifiers = ConvertModifier(indexerDeclaration.SetRegion, m.Visibility);
+					m.Setter.Body = ConvertMethodBlock(indexerDeclaration.SetRegion.Block);
+				}
+			}
+			return m;
+		}
+		
+		public object Visit(PropertyGetRegion propertyGetRegion, object data)
+		{
+			throw new ApplicationException("PropertyGetRegion visited.");
+		}
+		
+		public object Visit(PropertySetRegion propertySetRegion, object data)
+		{
+			throw new ApplicationException("PropertySetRegion visited.");
+		}
+		
+		public object Visit(EventDeclaration eventDeclaration, object data)
+		{
+			B.Event m = new B.Event(GetLexicalInfo(eventDeclaration));
+			if (eventDeclaration.Name == null || eventDeclaration.Name.Length == 0) {
+				m.Name = eventDeclaration.VariableDeclarators[0].Name;
+			} else {
+				m.Name = eventDeclaration.Name;
+			}
+			m.Modifiers = ConvertModifier(eventDeclaration, B.TypeMemberModifiers.Private);
+			ConvertAttributes(eventDeclaration.Attributes, m.Attributes);
+			currentType.Members.Add(m);
+			m.EndSourceLocation = GetLocation(eventDeclaration.EndLocation);
+			m.Type = ConvertTypeReference(eventDeclaration.TypeReference);
+			if (eventDeclaration.ImplementsClause.Count > 0) {
+				AddError(eventDeclaration, "Explicit interface implementation is not supported.");
+			}
+			if (eventDeclaration.Parameters.Count > 0) {
+				AddError(eventDeclaration, "Events with parameters are not supported.");
+			}
+			if (eventDeclaration.VariableDeclarators.Count > 1) {
+				AddError(eventDeclaration, "You can only define one event per line.");
+			}
+			if (eventDeclaration.HasAddRegion) {
+				m.Add = new B.Method(GetLexicalInfo(eventDeclaration.AddRegion));
+				ConvertAttributes(eventDeclaration.AddRegion.Attributes, m.Add.Attributes);
+				m.Modifiers = ConvertModifier(eventDeclaration.AddRegion, m.Visibility);
+				m.Add.Body = ConvertMethodBlock(eventDeclaration.AddRegion.Block);
+			}
+			if (eventDeclaration.HasRemoveRegion) {
+				m.Remove = new B.Method(GetLexicalInfo(eventDeclaration.RemoveRegion));
+				ConvertAttributes(eventDeclaration.RemoveRegion.Attributes, m.Remove.Attributes);
+				m.Modifiers = ConvertModifier(eventDeclaration.RemoveRegion, m.Visibility);
+				m.Remove.Body = ConvertMethodBlock(eventDeclaration.RemoveRegion.Block);
+			}
+			if (eventDeclaration.HasRaiseRegion) {
+				m.Raise = new B.Method(GetLexicalInfo(eventDeclaration.RaiseRegion));
+				ConvertAttributes(eventDeclaration.RaiseRegion.Attributes, m.Raise.Attributes);
+				m.Modifiers = ConvertModifier(eventDeclaration.RaiseRegion, m.Visibility);
+				m.Raise.Body = ConvertMethodBlock(eventDeclaration.RaiseRegion.Block);
+			}
+			return m;
+		}
+		
+		public object Visit(EventAddRegion eventAddRegion, object data)
+		{
+			throw new ApplicationException("EventAddRegion visited.");
+		}
+		
+		public object Visit(EventRemoveRegion eventRemoveRegion, object data)
+		{
+			throw new ApplicationException("EventRemoveRegion visited.");
+		}
+		
+		public object Visit(EventRaiseRegion eventRaiseRegion, object data)
+		{
+			throw new ApplicationException("EventRaiseRegion visited.");
+		}
+		
+		public object Visit(ConstructorInitializer constructorInitializer, object data)
+		{
+			throw new ApplicationException("ConstructorInitializer visited.");
+		}
+		
+		public object Visit(OperatorDeclaration operatorDeclaration, object data)
+		{
+			AddError(operatorDeclaration, "Declaring operators is not supported (BOO-223).");
+			return null;
+		}
+		
+		public object Visit(DeclareDeclaration declareDeclaration, object data)
+		{
+			throw new NotImplementedException();
+		}
+	}
+}

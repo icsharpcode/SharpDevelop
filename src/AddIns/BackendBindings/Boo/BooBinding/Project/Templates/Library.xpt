@@ -1,0 +1,73 @@
+<?xml version="1.0"?>
+<Template originator = "Daniel Grunwald">
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.ClassLibrary.Name}</Name>
+		<Category>Boo</Category>
+		<Icon>C#.Project.Library</Icon>
+		<LanguageName>Boo</LanguageName>
+		<Description>${res:Templates.Project.ClassLibrary.Description}</Description>
+	</TemplateConfiguration>
+	
+	<Actions>
+		<Open filename = "MyClass.boo"/>
+	</Actions>
+	
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options OutputType = "Library" />
+
+			<ProjectItems>
+				<Reference Include="System" />
+				<Reference Include="System.Xml" />
+			</ProjectItems>
+
+			<Files>
+				<File name="MyClass.boo"><![CDATA[namespace ${StandardNamespace}
+
+import System
+import System.Collections
+
+class MyClass:
+"""Description of MyClass."""
+	
+	def constructor():
+		pass
+
+}]]></File>
+		<File name="AssemblyInfo.cs">
+			<![CDATA[import System.Reflection
+import System.Runtime.CompilerServices
+
+// Information about this assembly is defined by the following
+// attributes.
+//
+// change them to the information which is associated with the assembly
+// you compile.
+
+[assembly: AssemblyTitle('')]
+[assembly: AssemblyDescription('')]
+[assembly: AssemblyConfiguration('')]
+[assembly: AssemblyCompany('')]
+[assembly: AssemblyProduct('')]
+[assembly: AssemblyCopyright('')]
+[assembly: AssemblyTrademark('')]
+[assembly: AssemblyCulture('')]
+
+// The assembly version has following format :
+//
+// Major.Minor.Build.Revision
+//
+// You can specify all values by your own or you can build default build and revision
+// numbers with the '*' character (the default):
+
+[assembly: AssemblyVersion("1.0.*")]
+
+]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>
