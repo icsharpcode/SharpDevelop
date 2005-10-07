@@ -21,7 +21,6 @@
 			<Options OutputType = "WinExe" />
 			
 			<ProjectItems>
-				<Reference Include="System" />
 				<Reference Include="System.Data" />
 				<Reference Include="System.Drawing" />
 				<Reference Include="System.Windows.Forms" />

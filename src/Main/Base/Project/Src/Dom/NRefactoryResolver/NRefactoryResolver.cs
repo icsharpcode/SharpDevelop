@@ -996,7 +996,25 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return;
 			}
 			bool importNamespaces = projectContent.Language.ImportNamespaces;
+			bool importClasses = projectContent.Language.CanImportClasses;
 			foreach (string name in u.Usings) {
+				if (importClasses) {
+					IClass c = projectContent.GetClass(name, 0);
+					if (c != null) {
+						ArrayList members = new ArrayList();
+						IReturnType t = c.DefaultReturnType;
+						members.AddRange(t.GetMethods());
+						members.AddRange(t.GetFields());
+						members.AddRange(t.GetEvents());
+						members.AddRange(t.GetProperties());
+						foreach (IMember m in members) {
+							if (m.IsStatic && m.IsPublic) {
+								result.Add(m);
+							}
+						}
+						continue;
+					}
+				}
 				if (importNamespaces) {
 					projectContent.AddNamespaceContents(result, name, projectContent.Language, true);
 				} else {

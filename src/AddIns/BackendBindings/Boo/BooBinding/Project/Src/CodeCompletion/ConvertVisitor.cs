@@ -203,7 +203,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			} else if (reference is AST.SimpleTypeReference) {
 				string name = ((AST.SimpleTypeReference)reference).Name;
 				if (BooAmbience.ReverseTypeConversionTable.ContainsKey(name))
-					return new GetClassReturnType(ProjectContentRegistry.Mscorlib, BooAmbience.ReverseTypeConversionTable[name], 0);
+					return new GetClassReturnType(projectContent, BooAmbience.ReverseTypeConversionTable[name], 0);
 				return new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn,
 				                                 name, 0);
 			} else if (reference is AST.CallableTypeReference) {

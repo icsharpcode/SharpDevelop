@@ -112,9 +112,20 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		int languageDefaultImportCount = -1;
+		
 		void UpdateDefaultImports(ProjectItem[] items)
 		{
-			DefaultImports = null;
+			if (languageDefaultImportCount < 0) {
+				languageDefaultImportCount = (DefaultImports != null) ? DefaultImports.Usings.Count : 0;
+			}
+			if (languageDefaultImportCount == 0) {
+				DefaultImports = null;
+			} else {
+				while (DefaultImports.Usings.Count > languageDefaultImportCount) {
+					DefaultImports.Usings.RemoveAt(languageDefaultImportCount);
+				}
+			}
 			foreach (ProjectItem item in items) {
 				if (item.ItemType == ItemType.Import) {
 					if (DefaultImports == null) {

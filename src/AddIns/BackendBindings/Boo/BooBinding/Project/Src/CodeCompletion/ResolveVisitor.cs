@@ -168,17 +168,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return true;
 			}
 			
-			// Boo can import classes:
-			foreach (IUsing @using in cu.Usings) {
-				foreach (string import in @using.Usings) {
-					IClass c = projectContent.GetClass(import);
-					if (c != null) {
-						if (ResolveMember(c.DefaultReturnType, identifier))
-							return true;
-					}
-				}
-			}
-			// Boo can import modules:
+			// Boo can import classes+modules:
 			foreach (object o in resolver.GetImportedNamespaceContents()) {
 				IClass c = o as IClass;
 				if (c != null && IsSameName(identifier, c.Name)) {

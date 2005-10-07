@@ -62,6 +62,7 @@
     <Compile Include="Src\CodeCompletion\BooResolver.cs" />
     <Compile Include="Src\CodeCompletion\ResolveVisitor.cs" />
     <Compile Include="Src\CodeCompletion\CompletionBinding.cs" />
+    <Compile Include="Src\BooLanguageProperties.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BooBinding.addin">

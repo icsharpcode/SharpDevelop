@@ -157,6 +157,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			if (!Initialize(fileName, caretLine, caretColumn))
 				return null;
+			
 			ArrayList result = GetImportedNamespaceContents();
 			
 			NRResolver.AddContentsFromCalling(result, callingClass, callingMember);
