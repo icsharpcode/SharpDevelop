@@ -109,7 +109,7 @@ namespace ICSharpCode.MbUnitPad
 				string fixtureName = null;
 				switch (node.TestNodeType) {
 					case TestNodeType.Test:
-						methodName = node.Text;
+						methodName = GetTestMethodName(node.Text);
 						fixtureName = node.Parent.Text;
 						break;
 						
@@ -142,6 +142,16 @@ namespace ICSharpCode.MbUnitPad
 		}
 		
 		static MessageViewCategory testRunnerCategory;
+
+		string GetTestMethodName(string methodName)
+		{
+			int index = methodName.IndexOf(".");
+			if (index >= 0) {
+				return methodName.Substring(index + 1);
+			}
+
+			return methodName;
+		}
 		
 		void OnTestsStarted(object sender, EventArgs e)
 		{
