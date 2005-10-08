@@ -51,6 +51,7 @@ namespace ICSharpCode.MbUnitPad
 			treeView = new TestTreeView();
 			treeView.Dock = DockStyle.Fill;
 			treeView.TypeTree.KeyPress += TreeViewKeyPress;
+			treeView.TypeTree.DoubleClick += TreeViewDoubleClick;
 			
 			ctl.Controls.Add(treeView);
 			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/MbUnitPad/Toolbar");
@@ -196,6 +197,11 @@ namespace ICSharpCode.MbUnitPad
 			} else if (e.KeyChar == ' ') {
 				RunTests();
 			}
+		}
+		
+		void TreeViewDoubleClick(object sender, EventArgs e)
+		{
+			treeView.GotoDefinition();
 		}
 		
 		void ShowErrorList()
