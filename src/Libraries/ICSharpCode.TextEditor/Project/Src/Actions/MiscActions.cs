@@ -209,6 +209,27 @@ namespace ICSharpCode.TextEditor.Actions
 	
 	public class ToggleComment : AbstractEditAction
 	{
+		/// <remarks>
+		/// Executes this edit action
+		/// </remarks>
+		/// <param name="textArea">The <see cref="ItextArea"/> which is used for callback purposes</param>
+		public override void Execute(TextArea textArea)
+		{
+			if (textArea.Document.ReadOnly) {
+				return;
+			}			
+			
+			if (textArea.Document.HighlightingStrategy.Properties.ContainsKey("LineComment")) {
+				new ToggleLineComment().Execute(textArea);
+			} else if (textArea.Document.HighlightingStrategy.Properties.ContainsKey("BlockCommentBegin") &&
+			          textArea.Document.HighlightingStrategy.Properties.ContainsKey("BlockCommentBegin")) {
+				new ToggleBlockComment().Execute(textArea);
+			}		
+		}
+	}
+	
+	public class ToggleLineComment : AbstractEditAction
+	{
 		int firstLine;
 		int lastLine;
 		
@@ -329,6 +350,194 @@ namespace ICSharpCode.TextEditor.Actions
 				textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, caretLine));
 				textArea.EndUpdate();
 			}
+		}
+	}
+	
+	public class ToggleBlockComment : AbstractEditAction
+	{		
+		/// <remarks>
+		/// Executes this edit action
+		/// </remarks>
+		/// <param name="textArea">The <see cref="ItextArea"/> which is used for callback purposes</param>
+		public override void Execute(TextArea textArea)
+		{
+			if (textArea.Document.ReadOnly) {
+				return;
+			}
+			
+			string commentStart = null;
+			if (textArea.Document.HighlightingStrategy.Properties.ContainsKey("BlockCommentBegin")) {
+				commentStart = textArea.Document.HighlightingStrategy.Properties["BlockCommentBegin"].ToString();
+			}
+			
+			string commentEnd = null;
+			if (textArea.Document.HighlightingStrategy.Properties.ContainsKey("BlockCommentEnd")) {
+				commentEnd = textArea.Document.HighlightingStrategy.Properties["BlockCommentEnd"].ToString();
+			}
+			
+			if (commentStart == null || commentStart.Length == 0 || commentEnd == null || commentEnd.Length == 0) {
+				return;
+			}
+			
+			int selectionStartOffset;
+			int selectionEndOffset;
+			
+			if (textArea.SelectionManager.HasSomethingSelected) {
+				selectionStartOffset = textArea.SelectionManager.SelectionCollection[0].Offset;
+				selectionEndOffset = textArea.SelectionManager.SelectionCollection[textArea.SelectionManager.SelectionCollection.Count - 1].EndOffset;
+			} else {
+				selectionStartOffset = textArea.Caret.Offset;
+				selectionEndOffset = selectionStartOffset;
+			}
+			
+			BlockCommentRegion commentRegion = FindSelectedCommentRegion(textArea.Document, commentStart, commentEnd, selectionStartOffset, selectionEndOffset);
+			
+			if (commentRegion != null) {
+				RemoveComment(textArea.Document, commentRegion);
+			} else if (textArea.SelectionManager.HasSomethingSelected) {
+				SetCommentAt(textArea.Document, selectionStartOffset, selectionEndOffset, commentStart, commentEnd);
+			}
+			
+			textArea.Document.CommitUpdate();
+			textArea.AutoClearSelection = false;
+		}
+		
+		public static BlockCommentRegion FindSelectedCommentRegion(IDocument document, string commentStart, string commentEnd, int selectionStartOffset, int selectionEndOffset)
+		{
+			if (document.TextLength == 0) {
+				return null;
+			}
+			
+			// Find start of comment in selected text.
+			
+			int commentEndOffset = -1;
+			string selectedText = document.GetText(selectionStartOffset, selectionEndOffset - selectionStartOffset);
+			
+			int commentStartOffset = selectedText.IndexOf(commentStart);
+			if (commentStartOffset >= 0) {
+				commentStartOffset += selectionStartOffset;
+			}
+
+			// Find end of comment in selected text.
+			
+			if (commentStartOffset >= 0) {
+				commentEndOffset = selectedText.IndexOf(commentEnd, commentStartOffset + commentStart.Length - selectionStartOffset);
+			} else {
+				commentEndOffset = selectedText.IndexOf(commentEnd);
+			}
+			
+			if (commentEndOffset >= 0) {
+				commentEndOffset += selectionStartOffset;
+			}
+			
+			// Find start of comment before selected text.
+			
+			if (commentStartOffset == -1) {
+				int offset = selectionEndOffset + commentStart.Length - 1;
+				if (offset > document.TextLength) {
+					offset = document.TextLength;
+				}
+				string text = document.GetText(0, offset);
+				commentStartOffset = text.LastIndexOf(commentStart);				
+			}
+			
+			// Find end of comment after selected text.
+			
+			if (commentEndOffset == -1) {
+				int offset = selectionStartOffset + 1 - commentEnd.Length;
+				if (offset < 0) {
+					offset = selectionStartOffset;
+				}
+				string text = document.GetText(offset, document.TextLength - offset);
+				commentEndOffset = text.IndexOf(commentEnd);
+				if (commentEndOffset >= 0) {
+					commentEndOffset += offset;
+				}	
+			}
+			
+			if (commentStartOffset != -1 && commentEndOffset != -1) {
+				return new BlockCommentRegion(commentStart, commentEnd, commentStartOffset, commentEndOffset);
+			}
+			
+			return null;
+		}
+		
+
+		void SetCommentAt(IDocument document, int offsetStart, int offsetEnd, string commentStart, string commentEnd)
+		{
+			document.Insert(offsetEnd, commentEnd);
+			document.Insert(offsetStart, commentStart);
+			document.UndoStack.UndoLast(2);
+		}
+		
+		void RemoveComment(IDocument document, BlockCommentRegion commentRegion)
+		{
+			document.Remove(commentRegion.EndOffset, commentRegion.CommentEnd.Length);
+			document.Remove(commentRegion.StartOffset, commentRegion.CommentStart.Length);
+			document.UndoStack.UndoLast(2);
+		}
+	}
+	
+	public class BlockCommentRegion
+	{
+		string commentStart = String.Empty;
+		string commentEnd = String.Empty;
+		int startOffset = -1;
+		int endOffset = -1;
+		
+		/// <summary>
+		/// The end offset is the offset where the comment end string starts from.
+		/// </summary>
+		public BlockCommentRegion(string commentStart, string commentEnd, int startOffset, int endOffset)
+		{
+			this.commentStart = commentStart;
+			this.commentEnd = commentEnd;
+			this.startOffset = startOffset;
+			this.endOffset = endOffset;
+		}
+		
+		public string CommentStart {
+			get {
+				return commentStart;
+			}
+		}
+		
+		public string CommentEnd {
+			get {
+				return commentEnd;
+			}
+		}
+		
+		public int StartOffset {
+			get {
+				return startOffset;
+			}
+		}
+		
+		public int EndOffset {
+			get {
+				return endOffset;
+			}
+		}
+		
+		public override bool Equals(object obj)
+		{			
+			BlockCommentRegion commentRegion = obj as BlockCommentRegion;
+			if (commentRegion != null) {
+				if (commentRegion.commentStart == commentStart &&
+				    commentRegion.commentEnd == commentEnd &&
+				    commentRegion.startOffset == startOffset &&
+				    commentRegion.endOffset == endOffset) {
+					return true;
+				}
+			}
+			
+			return false;
+		}
+		
+		public override int GetHashCode()
+		{
+			return commentStart.GetHashCode() & commentEnd.GetHashCode() & startOffset.GetHashCode() & endOffset.GetHashCode();
 		}
 	}
 	
