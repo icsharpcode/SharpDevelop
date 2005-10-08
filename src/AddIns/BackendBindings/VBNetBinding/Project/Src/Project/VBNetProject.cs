@@ -59,11 +59,13 @@ namespace VBNetBinding
 			IdGuid = BaseConfiguration["ProjectGuid"];
 		}
 		
+		public const string DefaultTargetsFile = @"$(MSBuildBinPath)\Microsoft.VisualBasic.Targets";
+		
 		public VBNetProject(ProjectCreateInformation info)
 		{
 			InitVB();
 			Create(info);
-			imports.Add(@"$(MSBuildBinPath)\Microsoft.VisualBasic.Targets");
+			imports.Add(DefaultTargetsFile);
 		}
 		
 		public override ParseProjectContent CreateProjectContent()

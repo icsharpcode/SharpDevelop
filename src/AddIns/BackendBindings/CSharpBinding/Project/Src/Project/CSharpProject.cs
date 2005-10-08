@@ -50,10 +50,12 @@ namespace CSharpBinding
 			Create(info);
 		}
 		
+		public const string DefaultTargetsFile = @"$(MSBuildBinPath)\Microsoft.CSharp.Targets";
+		
 		protected override void Create(ProjectCreateInformation information)
 		{
 			base.Create(information);
-			imports.Add(@"$(MSBuildBinPath)\Microsoft.CSharp.Targets");
+			imports.Add(DefaultTargetsFile);
 			SetProperty("Debug", null, "CheckForOverflowUnderflow", "True", PropertyStorageLocations.ConfigurationSpecific);
 			SetProperty("Release", null, "CheckForOverflowUnderflow", "False", PropertyStorageLocations.ConfigurationSpecific);
 		}

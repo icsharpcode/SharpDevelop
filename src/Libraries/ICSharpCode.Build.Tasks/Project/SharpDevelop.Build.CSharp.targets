@@ -1,0 +1,61 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+	<!-- This file can be used to compile C# applications against other .NET Framework versions -->
+	
+	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v1.0' ">
+		<CscToolPath>$(SystemRoot)\Microsoft.NET\Framework\v1.0.3705</CscToolPath>
+		<SharpDevelopUse1xCompiler>true</SharpDevelopUse1xCompiler>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v1.1' ">
+		<CscToolPath>$(SystemRoot)\Microsoft.NET\Framework\v1.1.4322</CscToolPath>
+		<SharpDevelopUse1xCompiler>true</SharpDevelopUse1xCompiler>
+	
+		<!-- Work around MsBuild problem: Microsoft.CSharp.targets adds NoWarn entries that -->
+		<!-- don't exist in v1.1 when version is set to anything else than v1.0 -->
+		<TargetFrameworkVersion>v1.0</TargetFrameworkVersion>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(SharpDevelopUse1xCompiler)' == 'true' ">
+		<UseHostCompilerIfAvailable>false</UseHostCompilerIfAvailable>
+		<PlatformTarget/>
+	</PropertyGroup>
+	
+	<!-- Use Microsoft's C# standard targets -->
+	<Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+	
+	<!-- Override properties created by Microsoft.CSharp.targets -->
+	<PropertyGroup Condition=" '$(SharpDevelopUse1xCompiler)' == 'true' ">
+		<AssemblySearchPaths>
+		{CandidateAssemblyFiles};
+		$(ReferencePath);
+		{HintPathFromItem};
+		{TargetFrameworkDirectory};
+		{AssemblyFolders};
+		$(OutputPath);
+		{GAC}
+		</AssemblySearchPaths>
+		
+		<TargetFrameworkDirectory>$(CscToolPath)</TargetFrameworkDirectory>
+	</PropertyGroup>
+	
+	<ItemGroup Condition=" '$(SharpDevelopUse1xCompiler)' == 'true' ">
+		<TargetFrameworkDirectoryItem Include="$(CscToolPath)">
+			<InProject>false</InProject>
+		</TargetFrameworkDirectoryItem>
+	</ItemGroup>
+	
+	<!-- GetFrameworkPaths overwrites TargetFrameworkDirectory, so modify it -->
+	<!-- to be inactive if SharpDevelopUse1xCompiler is set. -->
+	<Target Name="GetFrameworkPaths" DependsOnTargets="$(GetFrameworkPathsDependsOn)">
+		<Error Condition=" ('$(SharpDevelopUse1xCompiler)' == 'true') And !Exists('$(CscToolPath)\Csc.exe') "
+		       Text="Could not find the C# compiler in $(CscToolPath)."/>
+		
+		<GetFrameworkPath Condition=" '$(SharpDevelopUse1xCompiler)' != 'true' ">
+			<Output TaskParameter="Path" PropertyName="TargetFrameworkDirectory"/>
+			<Output TaskParameter="Path" ItemName="TargetFrameworkDirectoryItem"/>
+		</GetFrameworkPath>
+		
+		<GetFrameworkSDKPath Condition=" '$(SharpDevelopUse1xCompiler)' != 'true' ">
+			<Output TaskParameter="Path" PropertyName="TargetFrameworkSDKDirectory"/>
+			<Output TaskParameter="Path" ItemName="TargetFrameworkSDKDirectoryItem"/>
+		</GetFrameworkSDKPath>
+	</Target>
+</Project>

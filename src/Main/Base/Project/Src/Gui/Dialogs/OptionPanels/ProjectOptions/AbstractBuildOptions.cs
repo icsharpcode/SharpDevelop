@@ -169,5 +169,40 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				}
 			};
 		}
+		
+		protected void InitTargetFramework(string defaultTargets, string extendedTargets)
+		{
+			const string TargetFrameworkProperty = "TargetFrameworkVersion";
+			debugInfoBinding = helper.BindStringEnum("targetFrameworkComboBox", TargetFrameworkProperty,
+			                                         "",
+			                                         new StringPair("", "Default (.NET 2.0)"),
+			                                         new StringPair("v1.0", ".NET 1.0"),
+			                                         new StringPair("v1.1", ".NET 1.1"),
+			                                         new StringPair("v2.0", ".NET 2.0"));
+			debugInfoBinding.CreateLocationButton("targetFrameworkLabel");
+			helper.Saved += delegate {
+				// Test if SharpDevelop-Build extensions are needed
+				MSBuildProject project = helper.Project;
+				bool needExtensions = false;
+				PropertyStorageLocations location;
+				foreach (string configuration in project.GetConfigurationNames()) {
+					foreach (string platform in project.GetPlatformNames()) {
+						string value = project.GetProperty(configuration, platform, TargetFrameworkProperty, "", out location);
+						if (value.Length > 0) {
+							needExtensions = true;
+						}
+					}
+				}
+				for (int i = 0; i < project.Imports.Count; i++) {
+					if (needExtensions) {
+						if (defaultTargets.Equals(project.Imports[i], StringComparison.InvariantCultureIgnoreCase))
+							project.Imports[i] = extendedTargets;
+					} else {
+						if (extendedTargets.Equals(project.Imports[i], StringComparison.InvariantCultureIgnoreCase))
+							project.Imports[i] = defaultTargets;
+					}
+				}
+			};
+		}
 	}
 }

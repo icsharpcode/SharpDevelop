@@ -35,5 +35,10 @@
     <Compile Include="Constants.cs" />
     <Compile Include="MyToolTask.cs" />
   </ItemGroup>
+  <ItemGroup>
+    <Content Include="SharpDevelop.Build.CSharp.targets">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

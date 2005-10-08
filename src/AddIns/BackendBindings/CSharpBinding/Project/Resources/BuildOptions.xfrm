@@ -1,7 +1,7 @@
 <Components version="1.0">
   <System.Windows.Forms.UserControl>
     <Name value="XmlUserControl1" />
-    <ClientSize value="{Width=527, Height=633}" />
+    <ClientSize value="{Width=527, Height=657}" />
     <AutoScroll value="True" />
     <Controls>
       <System.Windows.Forms.GroupBox>
@@ -68,16 +68,31 @@
         <Name value="outputGroupBox" />
         <Location value="{X=3,Y=161}" />
         <Text value="${res:Dialog.ProjectOptions.Build.Output}" />
-        <Size value="{Width=521, Height=270}" />
+        <Size value="{Width=521, Height=299}" />
         <TabIndex value="1" />
         <Anchor value="Top, Left, Right" />
         <Controls>
+          <System.Windows.Forms.ComboBox>
+            <Name value="targetFrameworkComboBox" />
+            <TabIndex value="8" />
+            <Size value="{Width=121, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+            <Location value="{X=164,Y=112}" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="targetFrameworkLabel" />
+            <Location value="{X=13,Y=112}" />
+            <Text value="${res:Dialog.ProjectOptions.Build.TargetFramework}" />
+            <TextAlign value="MiddleRight" />
+            <Size value="{Width=150, Height=23}" />
+            <TabIndex value="7" />
+          </System.Windows.Forms.Label>
           <System.Windows.Forms.GroupBox>
             <Name value="advancedOutputGroupBox" />
-            <Location value="{X=6,Y=115}" />
+            <Location value="{X=6,Y=138}" />
             <Text value="${res:Dialog.ProjectOptions.Build.Advanced}" />
-            <Size value="{Width=505, Height=149}" />
-            <TabIndex value="7" />
+            <Size value="{Width=505, Height=155}" />
+            <TabIndex value="9" />
             <Anchor value="Top, Bottom, Left, Right" />
             <Controls>
               <System.Windows.Forms.ComboBox>
@@ -157,7 +172,6 @@
             <Name value="debugInfoComboBox" />
             <TabIndex value="6" />
             <Size value="{Width=121, Height=21}" />
-            <FormattingEnabled value="True" />
             <DropDownStyle value="DropDownList" />
             <Location value="{X=164,Y=88}" />
           </System.Windows.Forms.ComboBox>
@@ -213,7 +227,7 @@
       </System.Windows.Forms.GroupBox>
       <System.Windows.Forms.GroupBox>
         <Name value="treatWarningsAsErrorsGroupBox" />
-        <Location value="{X=3,Y=523}" />
+        <Location value="{X=3,Y=552}" />
         <UseCompatibleTextRendering value="True" />
         <Text value="${res:Dialog.ProjectOptions.Build.TreatWarningsAsErrors}" />
         <Size value="{Width=521, Height=100}" />
@@ -255,7 +269,7 @@
       </System.Windows.Forms.GroupBox>
       <System.Windows.Forms.GroupBox>
         <Name value="warningsGroupBox" />
-        <Location value="{X=3,Y=437}" />
+        <Location value="{X=3,Y=466}" />
         <Text value="${res:Dialog.ProjectOptions.Build.ErrorsAndWarnings}" />
         <Size value="{Width=521, Height=80}" />
         <TabIndex value="2" />
