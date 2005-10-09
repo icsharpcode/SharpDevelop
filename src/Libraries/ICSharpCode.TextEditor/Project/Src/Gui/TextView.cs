@@ -900,7 +900,9 @@ namespace ICSharpCode.TextEditor
 			for (int j = currentLine.Length; j < end; j++) {
 				drawingPos += WideSpaceWidth;
 			}
-			column += (int)(drawingPos / WideSpaceWidth);
+			// add one pixel in column calculation to account for floating point calculation errors
+			column += (int)((drawingPos + 1) / WideSpaceWidth);
+			
 			/* OLD Code (does not work for fonts like Verdana)
 			for (int j = start; j < end; ++j) {
 				char ch;

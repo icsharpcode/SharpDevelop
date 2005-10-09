@@ -18,10 +18,21 @@ namespace ICSharpCode.TextEditor.Actions
 	{
 		public static string GetIndentationString(IDocument document)
 		{
+			return GetIndentationString(document, null);
+		}
+		
+		public static string GetIndentationString(IDocument document, TextArea textArea)
+		{
 			StringBuilder indent = new StringBuilder();
 			
 			if (document.TextEditorProperties.ConvertTabsToSpaces) {
-				indent.Append(new String(' ', document.TextEditorProperties.TabIndent));
+				int tabIndent = document.TextEditorProperties.TabIndent;
+				if (textArea != null) {
+					int column = textArea.TextView.GetVisualColumn(textArea.Caret.Line, textArea.Caret.Column);
+					indent.Append(new String(' ', tabIndent - column % tabIndent));
+				} else {
+					indent.Append(new String(' ', tabIndent));
+				}
 			} else {
 				indent.Append('\t');
 			}
@@ -57,10 +68,10 @@ namespace ICSharpCode.TextEditor.Actions
 		{
 			switch (textArea.Caret.CaretMode) {
 				case CaretMode.InsertMode:
-					textArea.InsertString(GetIndentationString(textArea.Document));
+					textArea.InsertString(GetIndentationString(textArea.Document, textArea));
 					break;
 				case CaretMode.OverwriteMode:
-					string indentStr = GetIndentationString(textArea.Document);
+					string indentStr = GetIndentationString(textArea.Document, textArea);
 					textArea.ReplaceChar(indentStr[0]);
 					if (indentStr.Length > 1) {
 						textArea.InsertString(indentStr.Substring(1));
@@ -103,7 +114,7 @@ namespace ICSharpCode.TextEditor.Actions
 	
 	public class ShiftTab : AbstractEditAction
 	{
-		void RemoveTabs(IDocument document, ISelection selection, int y1, int y2) 
+		void RemoveTabs(IDocument document, ISelection selection, int y1, int y2)
 		{
 			int  redocounter = 0;
 			for (int i = y2; i >= y1; --i) {
@@ -119,7 +130,7 @@ namespace ICSharpCode.TextEditor.Actions
 						document.Replace(line.Offset,line.Length,newLine.Substring(1));
 						++redocounter;
 					}
-					else if(newLine.Length > 0 && newLine[0] == ' ') { 
+					else if(newLine.Length > 0 && newLine[0] == ' ') {
 						/// there were just some leading spaces but less than TabIndent of them
 						int leadingSpaces = 1;
 						for(leadingSpaces = 1; leadingSpaces < newLine.Length && newLine[leadingSpaces] == ' '; leadingSpaces++) {
@@ -131,7 +142,7 @@ namespace ICSharpCode.TextEditor.Actions
 					/// else
 					/// there were no leading tabs or spaces on this line so do nothing
 					/// MS Visual Studio 6 strategy:
-					****/
+					 ****/
 //					string temp = document.GetText(line.Offset,line.Length);
 					if (line.Length > 0) {
 						int charactersToRemove = 0;
@@ -185,11 +196,11 @@ namespace ICSharpCode.TextEditor.Actions
 					textArea.Document.UpdateQueue.Clear();
 					textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.LinesBetween, startLine, endLine));
 					textArea.EndUpdate();
-				
+					
 				}
 				textArea.AutoClearSelection = false;
 			} else {
-				// Pressing Shift-Tab with nothing selected the cursor will move back to the 
+				// Pressing Shift-Tab with nothing selected the cursor will move back to the
 				// previous tab stop. It will stop at the beginning of the line. Also, the desired
 				// column is updated to that column.
 				LineSegment line = textArea.Document.GetLineSegmentForOffset(textArea.Caret.Offset);
@@ -204,7 +215,7 @@ namespace ICSharpCode.TextEditor.Actions
 				}
 				textArea.SetCaretToDesiredColumn(textArea.Caret.Line);
 			}
-		}		
+		}
 	}
 	
 	public class ToggleComment : AbstractEditAction
@@ -217,14 +228,14 @@ namespace ICSharpCode.TextEditor.Actions
 		{
 			if (textArea.Document.ReadOnly) {
 				return;
-			}			
+			}
 			
 			if (textArea.Document.HighlightingStrategy.Properties.ContainsKey("LineComment")) {
 				new ToggleLineComment().Execute(textArea);
 			} else if (textArea.Document.HighlightingStrategy.Properties.ContainsKey("BlockCommentBegin") &&
-			          textArea.Document.HighlightingStrategy.Properties.ContainsKey("BlockCommentBegin")) {
+			           textArea.Document.HighlightingStrategy.Properties.ContainsKey("BlockCommentBegin")) {
 				new ToggleBlockComment().Execute(textArea);
-			}		
+			}
 		}
 	}
 	
@@ -250,7 +261,7 @@ namespace ICSharpCode.TextEditor.Actions
 				if (lineText.Trim().StartsWith(comment)) {
 					document.Remove(line.Offset + lineText.IndexOf(comment), comment.Length);
 					++redocounter;
-				} 
+				}
 			}
 			
 			if (redocounter > 0) {
@@ -354,7 +365,7 @@ namespace ICSharpCode.TextEditor.Actions
 	}
 	
 	public class ToggleBlockComment : AbstractEditAction
-	{		
+	{
 		/// <remarks>
 		/// Executes this edit action
 		/// </remarks>
@@ -438,7 +449,7 @@ namespace ICSharpCode.TextEditor.Actions
 					offset = document.TextLength;
 				}
 				string text = document.GetText(0, offset);
-				commentStartOffset = text.LastIndexOf(commentStart);				
+				commentStartOffset = text.LastIndexOf(commentStart);
 			}
 			
 			// Find end of comment after selected text.
@@ -452,7 +463,7 @@ namespace ICSharpCode.TextEditor.Actions
 				commentEndOffset = text.IndexOf(commentEnd);
 				if (commentEndOffset >= 0) {
 					commentEndOffset += offset;
-				}	
+				}
 			}
 			
 			if (commentStartOffset != -1 && commentEndOffset != -1) {
@@ -521,7 +532,7 @@ namespace ICSharpCode.TextEditor.Actions
 		}
 		
 		public override bool Equals(object obj)
-		{			
+		{
 			BlockCommentRegion commentRegion = obj as BlockCommentRegion;
 			if (commentRegion != null) {
 				if (commentRegion.commentStart == commentStart &&
@@ -587,7 +598,7 @@ namespace ICSharpCode.TextEditor.Actions
 					textArea.BeginUpdate();
 					int curLineNr     = textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset);
 					int curLineOffset = textArea.Document.GetLineSegment(curLineNr).Offset;
-						
+					
 					if (curLineOffset == textArea.Caret.Offset) {
 						LineSegment line = textArea.Document.GetLineSegment(curLineNr - 1);
 						bool lastLine = curLineNr == textArea.Document.TotalNumberOfLines;
@@ -628,7 +639,7 @@ namespace ICSharpCode.TextEditor.Actions
 				textArea.ScrollToCaret();
 				textArea.EndUpdate();
 			} else {
-			
+				
 				if (textArea.Caret.Offset < textArea.Document.TextLength) {
 					textArea.BeginUpdate();
 					int curLineNr   = textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset);
@@ -666,7 +677,7 @@ namespace ICSharpCode.TextEditor.Actions
 			if (curLineNr != requestedLineNumber) {
 				textArea.Caret.Position = new Point(textArea.Caret.DesiredColumn, requestedLineNumber);
 			}
-		} 
+		}
 	}
 	
 	public class MovePageUp : AbstractEditAction
@@ -698,7 +709,7 @@ namespace ICSharpCode.TextEditor.Actions
 			}
 			textArea.BeginUpdate();
 			
-			textArea.InsertString(Environment.NewLine); 
+			textArea.InsertString(Environment.NewLine);
 			
 			int curLineNr = textArea.Caret.Line;
 			textArea.Caret.Column = textArea.Document.FormattingStrategy.FormatLine(textArea, curLineNr, textArea.Caret.Offset, '\n');
@@ -762,7 +773,7 @@ namespace ICSharpCode.TextEditor.Actions
 	/// I will implement this as deleting back to the point that ctrl-leftarrow would
 	/// take you to
 	/// </summary>
-	public class WordBackspace : AbstractEditAction 
+	public class WordBackspace : AbstractEditAction
 	{
 		/// <remarks>
 		/// Executes this edit action
@@ -778,7 +789,7 @@ namespace ICSharpCode.TextEditor.Actions
 			}
 			// now delete from the caret to the beginning of the word
 			LineSegment line =
-			textArea.Document.GetLineSegmentForOffset(textArea.Caret.Offset);
+				textArea.Document.GetLineSegmentForOffset(textArea.Caret.Offset);
 			// if we are not at the beginning of a line
 			if(textArea.Caret.Offset > line.Offset) {
 				int prevWordStart = TextUtilities.FindPrevWordStart(textArea.Document,
@@ -793,7 +804,7 @@ namespace ICSharpCode.TextEditor.Actions
 			if(textArea.Caret.Offset == line.Offset) {
 				// if we are not on the first line
 				int curLineNr =
-				textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset);
+					textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset);
 				if(curLineNr > 0) {
 					// move to the end of the line above
 					LineSegment lineAbove = textArea.Document.GetLineSegment(curLineNr -
@@ -815,10 +826,10 @@ namespace ICSharpCode.TextEditor.Actions
 	/// <summary>
 	/// handles the ctrl-delete key
 	/// functionality attempts to mimic MS Developer studio
-	/// I will implement this as deleting forwardto the point that 
+	/// I will implement this as deleting forwardto the point that
 	/// ctrl-leftarrow would take you to
 	/// </summary>
-	public class DeleteWord : Delete 
+	public class DeleteWord : Delete
 	{
 		/// <remarks>
 		/// Executes this edit action
@@ -834,7 +845,7 @@ namespace ICSharpCode.TextEditor.Actions
 			}
 			// now delete from the caret to the beginning of the word
 			LineSegment line =
-			textArea.Document.GetLineSegmentForOffset(textArea.Caret.Offset);
+				textArea.Document.GetLineSegmentForOffset(textArea.Caret.Offset);
 			if(textArea.Caret.Offset == line.Offset + line.Length) {
 				// if we are at the end of a line
 				base.Execute(textArea);
