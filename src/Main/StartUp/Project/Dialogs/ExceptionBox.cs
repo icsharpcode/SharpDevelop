@@ -12,6 +12,7 @@ using System.Diagnostics;
 using System.Resources;
 using System.Reflection;
 using System.Drawing;
+using System.Globalization;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop
@@ -55,6 +56,9 @@ namespace ICSharpCode.SharpDevelop
 			string str = "";
 			str += ".NET Version         : " + Environment.Version.ToString() + Environment.NewLine;
 			str += "OS Version           : " + Environment.OSVersion.ToString() + Environment.NewLine;
+			try {
+				str += "Current culture      : " + CultureInfo.CurrentCulture.EnglishName + Environment.NewLine;
+			} catch {}
 			try {
 				if (SystemInformation.TerminalServerSession) {
 					str += "Terminal Server Session" + Environment.NewLine;

@@ -1,4 +1,26 @@
 ﻿<ChangeLog project="SharpDevelop">
+  <Change author="Daniel Grunwald" date="10/09/2005">Fixed SD2-458: Tab is always replaced with 4 spaces</Change>
+  <Change author="Matt Ward" date="10/08/2005">Added support for commenting/uncommenting a selection of xml.</Change>
+  <Change author="Daniel Grunwald" date="10/08/2005">Fixed SD2-474: Allow targeting other .NET Framework versions.</Change>
+  <Change author="Matt Ward" date="10/08/2005">Fixed SD2-476.  Goto definition now works for unit tests in a test fixture containing a SetUp method.</Change>
+  <Change author="Matt Ward" date="10/08/2005">GotoDefinition executed when double clicking an MbUnitPad test tree node.</Change>
+  <Change author="Daniel Grunwald" date="10/07/2005">Fixed SD2-472 (Cursor disappears off screen whilst pressing right arrow key) and a newly introduce performance problems with large files (&gt;5000 lines).
+Added constructor insight support to BooBinding.</Change>
+  <Change author="Daniel Grunwald" date="10/07/2005">Added support for local variables and simple type inference to BooBinding.</Change>
+  <Change author="Daniel Grunwald" date="10/07/2005">Fixed assertion when typing a "RaiseEvent" statement (http://community.sharpdevelop.net/forums/1156/ShowPost.aspx)</Change>
+  <Change author="Daniel Grunwald" date="10/07/2005">Boo implicitly references System.dll and Boo.Lang.dll.</Change>
+  <Change author="Daniel Grunwald" date="10/07/2005">Fixed paths in BooBinding project files.</Change>
+  <Change author="Daniel Grunwald" date="10/07/2005">Add BooBinding.</Change>
+  <Change author="Matt Ward" date="10/07/2005">Fixed SD2-473.  A KeyNotFound exception is no longer thrown if the highlighting strategy does not contain a LineComment property.</Change>
+  <Change author="Daniel Grunwald" date="10/05/2005">Improved handling of proportional fonts.</Change>
+  <Change author="Daniel Grunwald" date="10/04/2005">Run MsBuild in a separate thread =&gt; you can continue coding while your code is compiling.</Change>
+  <Change author="Daniel Grunwald" date="10/04/2005">Caret is now displayed at the correct position when using non-monospaced fonts. (but selecting with the mouse still doesn't work)</Change>
+  <Change author="Daniel Grunwald" date="10/03/2005">Use use static readonly collection instance for empty attribute, type parameter and parameter collections.</Change>
+  <Change author="Daniel Grunwald" date="10/03/2005">Fixed SD2-470: When there is a using statement for the current namespace, classes are shown twice in Ctrl+Space</Change>
+  <Change author="Mathias Simmack" date="10/03/2005">Help 2.0: fixed a bug when selecting the previous or next topic button (browser) with a hidden TOC control; there was an exception because, of course, there was no selection in the TOC control. Now I use the Get*FromUrl method with the current browser URL. btw: some other things changed</Change>
+  <Change author="Daniel Grunwald" date="10/02/2005">Fixed SD2-420: Non-generic classes and generic classes with the same name collide in the DOM.</Change>
+  <Change author="Daniel Grunwald" date="10/02/2005">Fixed SD2-460: Parse error (inner classes in generic types)</Change>
+  <Change author="Daniel Grunwald" date="10/01/2005">Fixed code completion bug regarding events. Fixed "run unit test in debugger".</Change>
   <Change author="Mathias Simmack" date="10/01/2005">Pad layout: included some references for the dynamic help pad to solve issue #2 (http://community.sharpdevelop.net/forums/820/ShowPost.aspx)</Change>
   <Change author="Daniel Grunwald" date="10/01/2005">Allow references to unbound types in typeof/GetType expressions.</Change>
   <Change author="Daniel Grunwald" date="10/01/2005">Improved performance of "Replace all".</Change>
@@ -29,7 +51,7 @@ Disadvantages:
   <Change author="Daniel Grunwald" date="09/27/2005">The "Load solution" and "New solution" buttons on the start page now work even when JavaScript is disabled in Internet Explorer.</Change>
   <Change author="Daniel Grunwald" date="09/27/2005">Fixed exception when importing VS.NET project without ".user" file.</Change>
   <Change author="David Srbecký" date="09/26/2005">Fixed bug that prevented recompiling due to files locked by the debugger</Change>
-  <Change author="mattward" date="09/26/2005">MbUnit Pad additions - Goto definition implemented, error list displayed after a test run with errors, and after a build the test tree auto-refreshes.</Change>
+  <Change author="Matt Ward" date="09/26/2005">MbUnit Pad additions - Goto definition implemented, error list displayed after a test run with errors, and after a build the test tree auto-refreshes.</Change>
   <Change author="Mathias Simmack" date="09/25/2005">Help 2.0: solution structure changed (you can enable the Dynamic Help by copying the new Addin file)</Change>
   <Change author="Mathias Simmack" date="09/25/2005">dynamic help: some improvements, works with expressions now (ignores documents with more than 1 DevLang attribute)</Change>
   <Change author="Mathias Simmack" date="09/25/2005">Help 2.0: context.html updated</Change>
@@ -43,7 +65,7 @@ Enabled AutoComplete for the ProjectImports combo box.</Change>
   <Change author="Mathias Simmack" date="09/24/2005">Help 2.0: some little fixes</Change>
   <Change author="Daniel Grunwald" date="09/24/2005">Fixed some P/Invoke declarations where FxCop complained they weren't portable to 64bit and some other complaints from FxCop.</Change>
   <Change author="Daniel Grunwald" date="09/23/2005">Applied Fidalgo rev. 2075</Change>
-  <Change author="mattward" date="09/21/2005">Added 'Stop tests' toolbar button and context menus to the MbUnit pad.  Go to definition context menu command is not currently working.</Change>
+  <Change author="Matt Ward" date="09/21/2005">Added 'Stop tests' toolbar button and context menus to the MbUnit pad.  Go to definition context menu command is not currently working.</Change>
   <Change author="Daniel Grunwald" date="09/21/2005">Fixed crash when using the "DefaultDebugger" instead of the debugger addin.</Change>
   <Change author="Daniel Grunwald" date="09/21/2005">Fixed SD-371: Adding empty combine to a combine causes exception
 and worked on SD2-425.</Change>
@@ -58,11 +80,11 @@ and worked on SD2-425.</Change>
   <Change author="Daniel Grunwald" date="09/14/2005">Application and Signing project options panels now use the translation database.</Change>
   <Change author="Mathias Simmack" date="09/14/2005">tried to fix a Virtual PC (no SDK) crash; HiliteMatches restored for testing (it doesn't work here :o( )</Change>
   <Change author="Mathias Simmack" date="09/13/2005">disable 'highlight matching topics' because it doesn't work with the WebBrowser control</Change>
-  <Change author="mattward" date="09/12/2005">File was not being identified as a 'code behind file' if it existed in a subfolder.</Change>
+  <Change author="Matt Ward" date="09/12/2005">File was not being identified as a 'code behind file' if it existed in a subfolder.</Change>
   <Change author="Daniel Grunwald" date="09/12/2005">Ignore .svn folders when creating setup.</Change>
   <Change author="Daniel Grunwald" date="09/12/2005">Add prepareRelease.bat (creates ChangeLog.xml and REVISION file)</Change>
   <Change author="Daniel Grunwald" date="09/12/2005">Fixed InterfaceImplementorCodeGenerator bug (override keyword).</Change>
-  <Change author="mattward" date="09/12/2005">SD2-438.  Form designer now creating, loading and saving resources.</Change>
+  <Change author="Matt Ward" date="09/12/2005">SD2-438.  Form designer now creating, loading and saving resources.</Change>
   <Change author="Mike Krüger" date="09/12/2005">Fixed SD2-402:Toolbar in bookmark pad.</Change>
   <Change author="Mathias Simmack" date="09/12/2005">some changes/fixes, LoggingService used</Change>
   <Change author="Daniel Grunwald" date="09/11/2005">Allow addins to have their project/file templates stored in the addin directory.</Change>
@@ -87,7 +109,7 @@ Overall SD should use ca. 10 MB RAM less when working on a big solution like Sha
   <Change author="Daniel Grunwald" date="09/08/2005">Fixed SD2-439: VB.Net event handlers are lost.
 Save layout configuration before switching layout by starting debugger or pressing Shift+Escape.</Change>
   <Change author="Daniel Grunwald" date="09/08/2005">Show error message when going to designer mode in a file with syntax errors instead of displaying an empty form.</Change>
-  <Change author="mattward" date="09/08/2005">SD2-437.  Source code now generated in InitializeComponent method for non-visual components.</Change>
+  <Change author="Matt Ward" date="09/08/2005">SD2-437.  Source code now generated in InitializeComponent method for non-visual components.</Change>
   <Change author="Mathias Simmack" date="09/08/2005">dynamic help: some scripting improvements</Change>
   <Change author="Mathias Simmack" date="09/08/2005">I changed some of the CSharp namespace names; there are no bug fixes in this upload</Change>
   <Change author="Daniel Grunwald" date="09/04/2005">Fixed some bugs.</Change>
@@ -116,8 +138,8 @@ Fixed crash when two classes with the same name were removed from a project cont
   <Change author="Daniel Grunwald" date="08/25/2005">Fixed some NRefactory bugs (Generic method invocations in VB.NET and output visitor bugs)</Change>
   <Change author="Daniel Grunwald" date="08/25/2005">Remove quotes from svn:keywords property.</Change>
   <Change author="David Srbecký" date="08/24/2005">Added fullscreen options panel (no features implemented yet)</Change>
-  <Change author="mattward" date="08/24/2005">Fixed properties on newly added xml editor test files - removed quotes from the Revision keyword.</Change>
-  <Change author="mattward" date="08/24/2005">Added xml editor tests from Fidalgo branch.  The XmlSchemaCompletionData class is now using the XmlSchemaAttribute's AttributeSchemaType property instead of the obsolete AttributeType which was causing a few of the attribute value tests to fail.</Change>
+  <Change author="Matt Ward" date="08/24/2005">Fixed properties on newly added xml editor test files - removed quotes from the Revision keyword.</Change>
+  <Change author="Matt Ward" date="08/24/2005">Added xml editor tests from Fidalgo branch.  The XmlSchemaCompletionData class is now using the XmlSchemaAttribute's AttributeSchemaType property instead of the obsolete AttributeType which was causing a few of the attribute value tests to fail.</Change>
   <Change author="Daniel Grunwald" date="08/24/2005">Fixed bug that prevented VB.Net windows forms applications from compiling.</Change>
   <Change author="Daniel Grunwald" date="08/24/2005">Right click on class and member names (and method invocations) in the text editor now shows the "go to definition" command and the class browser context menu of that item.</Change>
   <Change author="Daniel Grunwald" date="08/24/2005">Core bugfixes:
@@ -136,7 +158,7 @@ Tried to fix ExternalException when accessing the clipboard.</Change>
 (implemented JMC - just my code)</Change>
   <Change author="Daniel Grunwald" date="08/23/2005">Added CSharpBinding.Tests project.
 Add "run in debugger" command to member bookmarks.</Change>
-  <Change author="mattward" date="08/23/2005">Designer generator now parses the form's code every time a component is added. This ensures that the InitializeComponent's position is correct when adding a new component.</Change>
+  <Change author="Matt Ward" date="08/23/2005">Designer generator now parses the form's code every time a component is added. This ensures that the InitializeComponent's position is correct when adding a new component.</Change>
   <Change author="Daniel Grunwald" date="08/23/2005">Applied CSharpOutputVisitor patch from Rodrigo B. de Oliveira.
 Make go to work with partial classes.
 Show expression in tooltips while pressing Ctrl.
@@ -161,7 +183,7 @@ Project templates can now specify the BuildAction and CopyToOutputDirectory prop
   <Change author="David Srbecký" date="08/21/2005">External methods can be show/hidden using callstack context menu</Change>
   <Change author="David Srbecký" date="08/21/2005">Local Variables pad cleared when debugger stops</Change>
   <Change author="David Srbecký" date="08/21/2005">Fixed Base classes in Local Variables pad</Change>
-  <Change author="mattward" date="08/21/2005">Added support for included schemas, substitution groups and abstract elements.  Tests not ported over from Fidalgo yet.</Change>
+  <Change author="Matt Ward" date="08/21/2005">Added support for included schemas, substitution groups and abstract elements.  Tests not ported over from Fidalgo yet.</Change>
   <Change author="Daniel Grunwald" date="08/20/2005">Improve project options panels and prepare editing different configurations.
 Fixed bug when closing form designer while the property pad was active.</Change>
   <Change author="David Srbecký" date="08/20/2005">Added first debugger test</Change>
@@ -184,15 +206,15 @@ Removed SharpZipLib.
 Fixed SD2-415 and SD2-418.</Change>
   <Change author="Daniel Grunwald" date="08/18/2005">Allow writing a space after "+=" completion without closing the completion window.</Change>
   <Change author="Daniel Grunwald" date="08/17/2005">Add NUnit.Framework again.</Change>
-  <Change author="mattward" date="08/17/2005">Removed NUnit project reference from main SharpDevelop solution.</Change>
-  <Change author="mattward" date="08/17/2005">Main menu and toolbar initialised after all the pads so that keyboard shortcuts work for the various View-Pad menu items without needing the menu to be displayed at least once.</Change>
+  <Change author="Matt Ward" date="08/17/2005">Removed NUnit project reference from main SharpDevelop solution.</Change>
+  <Change author="Matt Ward" date="08/17/2005">Main menu and toolbar initialised after all the pads so that keyboard shortcuts work for the various View-Pad menu items without needing the menu to be displayed at least once.</Change>
   <Change author="Mike Krüger" date="08/17/2005">Removed nunit and nprof</Change>
   <Change author="Mike Krüger" date="08/17/2005">Changed some little translation issues. Re-Arranged tools menu.</Change>
   <Change author="Daniel Grunwald" date="08/17/2005">Update English and German StringResources (combine -&gt; solution).</Change>
   <Change author="Daniel Grunwald" date="08/17/2005">Fixed SD2-410: Goto definition doesn't work for array types</Change>
   <Change author="Daniel Grunwald" date="08/17/2005">Fixed SD2-411: Code completition doesn't show parent class (nested classes)</Change>
   <Change author="Daniel Grunwald" date="08/16/2005">Fixed forms designer to reparse the file when switching to the designer tab.</Change>
-  <Change author="mattward" date="08/16/2005">Show properties (F4) now works in form design mode.</Change>
+  <Change author="Matt Ward" date="08/16/2005">Show properties (F4) now works in form design mode.</Change>
   <Change author="Daniel Grunwald" date="08/16/2005">Ported changes from Fidalgo rev 2038, ivokovacka.
 Fixed more NRefactory bugs.</Change>
   <Change author="Markus Palme" date="08/16/2005">added very basic event handler code completition (appears after typing '+='); still many things to do here</Change>
@@ -208,10 +230,10 @@ Included bug fixes from docking suite's bug tracker on SF.</Change>
   <Change author="Daniel Grunwald" date="08/13/2005">Improved C# -&gt; VB converter (For-Statement is converted to ForNextStatement).
 Fixed VB parser (CSByte, CUShort, CUInt, CULng cast operators were missing).</Change>
   <Change author="Mathias Simmack" date="08/13/2005">enabled an early version of F1 help</Change>
-  <Change author="mattward" date="08/13/2005">When displaying xml namespaces the autocompletion list now resizes to fit the longest string.</Change>
+  <Change author="Matt Ward" date="08/13/2005">When displaying xml namespaces the autocompletion list now resizes to fit the longest string.</Change>
   <Change author="Daniel Grunwald" date="08/13/2005">SearchAndReplaceDialog remembers it's location and can be closed with Escape.
 Fixed ExpressionFinder when cursor was at the end of the document.</Change>
-  <Change author="mattward" date="08/13/2005">Changed the namespace for the form designer context menu commands.  Added ICSharpCode.SharpDevelop runtime to FormDesigner.addin.  Form designer context menus now working.</Change>
+  <Change author="Matt Ward" date="08/13/2005">Changed the namespace for the form designer context menu commands.  Added ICSharpCode.SharpDevelop runtime to FormDesigner.addin.  Form designer context menus now working.</Change>
   <Change author="Daniel Grunwald" date="08/13/2005">Added F1 help to text editor and forms designer.</Change>
   <Change author="Daniel Grunwald" date="08/13/2005">Fixed SD2-385: After project run Source/Abstract Content tabs are missing</Change>
   <Change author="Daniel Grunwald" date="08/12/2005">Fixed some bugs.

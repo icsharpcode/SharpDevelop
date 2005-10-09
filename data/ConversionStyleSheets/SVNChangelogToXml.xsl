@@ -43,6 +43,9 @@
 	  							<xsl:when test="$orig_author = 'nikola'">
 									<xsl:text>Nikola Kavaldjiev</xsl:text>
 	  							</xsl:when>
+	  							<xsl:when test="$orig_author = 'mattward'">
+									<xsl:text>Matt Ward</xsl:text>
+	  							</xsl:when>
 	  							<xsl:when test="$orig_author = 'mathiassimmack'">
 									<xsl:text>Mathias Simmack</xsl:text>
 	  							</xsl:when>

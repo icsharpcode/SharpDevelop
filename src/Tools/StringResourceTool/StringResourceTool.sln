@@ -1,0 +1,6 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.550
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "StringResourceTool", "StringResourceTool.csproj", "{197537EA-78F4-4434-904C-C81B19459FE7}"
+EndProject
+Global
+EndGlobal

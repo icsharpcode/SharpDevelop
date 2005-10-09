@@ -11,6 +11,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Drawing;
 using System.Diagnostics;
+using System.Globalization;
 using System.CodeDom.Compiler;
 using System.Windows.Forms;
 using System.ComponentModel;
@@ -309,7 +310,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public Properties CreateMemento()
 		{
 			Properties properties = new Properties();
-			properties["bounds"] = normalBounds.X + "," + normalBounds.Y + "," + normalBounds.Width + "," + normalBounds.Height;
+			properties["bounds"] = normalBounds.X.ToString(NumberFormatInfo.InvariantInfo)
+				+ "," + normalBounds.Y.ToString(NumberFormatInfo.InvariantInfo)
+				+ "," + normalBounds.Width.ToString(NumberFormatInfo.InvariantInfo)
+				+ "," + normalBounds.Height.ToString(NumberFormatInfo.InvariantInfo);
 			
 			if (FullScreen || WindowState == FormWindowState.Minimized)
 				properties["windowstate"] = defaultWindowState.ToString();
@@ -325,7 +329,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (properties != null && properties.Contains("bounds")) {
 				string[] bounds = properties["bounds"].Split(',');
 				if (bounds.Length == 4) {
-					Bounds = normalBounds = new Rectangle(Int32.Parse(bounds[0]), Int32.Parse(bounds[1]), Int32.Parse(bounds[2]), Int32.Parse(bounds[3]));
+					Bounds = normalBounds = new Rectangle(int.Parse(bounds[0], NumberFormatInfo.InvariantInfo),
+					                                      int.Parse(bounds[1], NumberFormatInfo.InvariantInfo),
+					                                      int.Parse(bounds[2], NumberFormatInfo.InvariantInfo),
+					                                      int.Parse(bounds[3], NumberFormatInfo.InvariantInfo));
 				}
 				
 				defaultWindowState = (FormWindowState)Enum.Parse(typeof(FormWindowState), properties["defaultstate"]);
