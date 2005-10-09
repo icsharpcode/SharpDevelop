@@ -42,8 +42,13 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				return new PrimitiveExpression(newVal, newVal.ToString(System.Globalization.NumberFormatInfo.InvariantInfo));
 			}
 			BinaryOperatorExpression boe = expr as BinaryOperatorExpression;
-			if (boe != null) {
+			if (boe != null && boe.Op == BinaryOperatorType.Add) {
 				boe.Right = AddInteger(boe.Right, value);
+				if (boe.Right is PrimitiveExpression && ((PrimitiveExpression)boe.Right).Value is int) {
+					if ((int)((PrimitiveExpression)boe.Right).Value == 0) {
+						return boe.Left;
+					}
+				}
 				return boe;
 			}
 			return new BinaryOperatorExpression(expr, BinaryOperatorType.Add, new PrimitiveExpression(value, value.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)));

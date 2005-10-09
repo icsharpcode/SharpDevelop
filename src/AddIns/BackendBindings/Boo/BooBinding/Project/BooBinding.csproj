@@ -66,6 +66,7 @@
     <Compile Include="Src\BooLanguageProperties.cs" />
     <Compile Include="Src\CodeCompletion\VariableLookupVisitor.cs" />
     <Compile Include="Src\CodeCompletion\InferredReturnType.cs" />
+    <Compile Include="Src\ConvertBuffer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BooBinding.addin">
@@ -84,14 +85,27 @@
     <ProjectReference Include="..\..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
       <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
       <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
       <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
       <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">
+      <Project>{3A9AE6AA-BC07-4A2F-972C-581E3AE2F195}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
     </ProjectReference>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
       <Project>{2D18BE89-D210-49EB-A9DD-2246FBB3DF6D}</Project>
       <Name>ICSharpCode.TextEditor</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NRefactoryToBooConverter\Project\NRefactoryToBooConverter.csproj">
+      <Project>{DBCF20A1-BA13-4582-BFA9-74DE4D987B73}</Project>
+      <Name>NRefactoryToBooConverter</Name>
+      <Private>True</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
