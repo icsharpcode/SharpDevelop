@@ -249,10 +249,10 @@ namespace ICSharpCode.TextEditor
 				if (ime == null) {
 					ime = new Ime(textArea.Handle, textArea.Document.TextEditorProperties.Font);
 				} else {
+					ime.HWnd = textArea.Handle;
 					ime.Font = textArea.Document.TextEditorProperties.Font;
 				}
-				ime.SetIMEWindowLocation(pos.X + 2,
-				                         pos.Y);
+				ime.SetIMEWindowLocation(pos.X, pos.Y);
 				
 				currentPos = pos;
 			}

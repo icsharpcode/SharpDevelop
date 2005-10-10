@@ -18,7 +18,8 @@ namespace ICSharpCode.TextEditor
 	{
 		public Ime(IntPtr hWnd, Font font)
 		{
-			hIMEWnd = ImmGetDefaultIMEWnd(hWnd);
+			this.hWnd = hWnd;
+			this.hIMEWnd = ImmGetDefaultIMEWnd(hWnd);
 			this.font = font;
 			SetIMEWindowFont(font);
 		}
@@ -27,24 +28,35 @@ namespace ICSharpCode.TextEditor
 		public Font Font
 		{
 			get {
-				return font;				
+				return font;
 			}
 			set {
 				if (font.Equals(value) == false) {
 					SetIMEWindowFont(value);
-					font = value;			
+					font = value;
 				}
 			}
 		}
-		
+
+		public IntPtr HWnd
+		{
+			set {
+				if (this.hWnd != value) {
+					this.hWnd = value;
+					this.hIMEWnd = ImmGetDefaultIMEWnd(value);
+					SetIMEWindowFont(font);
+				}
+			}
+		}
+
 		[ DllImport("imm32.dll") ]
 		private static extern IntPtr ImmGetDefaultIMEWnd(IntPtr hWnd);
-		
+
 		[ DllImport("user32.dll") ]
-		private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, COMPOSITIONFORM lParam);
+		private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, COMPOSITIONFORM lParam);
 		[ DllImport("user32.dll") ]
-		private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, LOGFONT lParam);
-		
+		private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, [In, MarshalAs(UnmanagedType.LPStruct)] LOGFONT lParam);
+
 		[ StructLayout(LayoutKind.Sequential) ]
 		private class COMPOSITIONFORM
 		{
@@ -52,14 +64,14 @@ namespace ICSharpCode.TextEditor
 			public POINT ptCurrentPos = null;
 			public RECT rcArea = null;
 		}
-		
+
 		[ StructLayout(LayoutKind.Sequential) ]
 		private class POINT
 		{
 			public int x = 0;
 			public int y = 0;
 		}
-		
+
 		[ StructLayout(LayoutKind.Sequential) ]
 		private class RECT
 		{
@@ -68,15 +80,15 @@ namespace ICSharpCode.TextEditor
 			public int right = 0;
 			public int bottom = 0;
 		}
-		
+
 		private const int WM_IME_CONTROL = 0x0283;
-		
-		private const int IMC_SETCOMPOSITIONFONT = 0x000a;
+
 		private const int IMC_SETCOMPOSITIONWINDOW = 0x000c;
 		private IntPtr hIMEWnd;
+		private IntPtr hWnd;
 		private const int CFS_POINT = 0x0002;
-		
-		[ StructLayout(LayoutKind.Sequential, CharSet=CharSet.Auto) ]
+
+		[ StructLayout(LayoutKind.Sequential) ]
 		private class LOGFONT
 		{
 			public int lfHeight = 0;
@@ -94,43 +106,40 @@ namespace ICSharpCode.TextEditor
 			public byte lfPitchAndFamily = 0;
 			[ MarshalAs(UnmanagedType.ByValTStr, SizeConst=32) ] public string lfFaceName = null;
 		}
-		
-		const byte FF_MODERN = 48;
-		const byte FIXED_PITCH = 1;
-		
+		private const int IMC_SETCOMPOSITIONFONT = 0x000a;
+
 		private void SetIMEWindowFont(Font f)
 		{
 			LOGFONT lf = new LOGFONT();
 			f.ToLogFont(lf);
-			lf.lfPitchAndFamily = FIXED_PITCH | FF_MODERN;
-			
+			lf.lfFaceName = f.Name;  // This is very important! "Font.ToLogFont" Method sets invalid value to LOGFONT.lfFaceName
+
 			SendMessage(
-			            hIMEWnd,
-			            WM_IME_CONTROL,
-			            new IntPtr(IMC_SETCOMPOSITIONFONT),
-			            lf
-			            );
+						hIMEWnd,
+						WM_IME_CONTROL,
+						IMC_SETCOMPOSITIONFONT,
+						lf
+						);
 		}
-		
-		
+
 		public void SetIMEWindowLocation(int x, int y)
 		{
-			
+
 			POINT p = new POINT();
 			p.x = x;
 			p.y = y;
-			
+
 			COMPOSITIONFORM lParam = new COMPOSITIONFORM();
 			lParam.dwStyle = CFS_POINT;
 			lParam.ptCurrentPos = p;
 			lParam.rcArea = new RECT();
-			
+
 			SendMessage(
-			            hIMEWnd,
-			            WM_IME_CONTROL,
-			            new IntPtr(IMC_SETCOMPOSITIONWINDOW),
-			            lParam
-			            );
+						hIMEWnd,
+						WM_IME_CONTROL,
+						IMC_SETCOMPOSITIONWINDOW,
+						lParam
+						);
 		}
 	}
 }
