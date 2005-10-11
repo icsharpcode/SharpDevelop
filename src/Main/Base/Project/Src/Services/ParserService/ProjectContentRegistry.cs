@@ -158,11 +158,19 @@ namespace ICSharpCode.Core
 				object o = domain.CreateInstanceAndUnwrap(typeof(ReflectionLoader).Assembly.FullName, typeof(ReflectionLoader).FullName);
 				ReflectionLoader loader = (ReflectionLoader)o;
 				database = loader.LoadAndCreateDatabase(filename, include);
+			} catch (Exception e) {
+				database = null;
+				MessageService.ShowError(e);
 			} finally {
 				AppDomain.Unload(domain);
 			}
-			LoggingService.Debug("AppDomain finished, loading cache...");
-			return DomPersistence.LoadProjectContent(database);
+			if (database == null) {
+				LoggingService.Debug("AppDomain finished but returned null...");
+				return null;
+			} else {
+				LoggingService.Debug("AppDomain finished, loading cache...");
+				return DomPersistence.LoadProjectContent(database);
+			}
 		}
 		
 		static Assembly GetDefaultAssembly(string shortName)

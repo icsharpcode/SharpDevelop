@@ -23,10 +23,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			try {
 				ReflectionProjectContent content = LoadProjectContent(fileName, include);
+				if (content == null)
+					return null;
 				return DomPersistence.SaveProjectContent(content);
 			} catch (Exception ex) {
 				LoggingService.Error(ex);
-				return null;
+				throw;
 			}
 		}
 		
