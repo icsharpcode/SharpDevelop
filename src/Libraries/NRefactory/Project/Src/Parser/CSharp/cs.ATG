@@ -1663,6 +1663,8 @@ VariableInitializer<out Expression initializerExpression>
 	Expr<out initializerExpression>
 	| ArrayInitializer<out initializerExpression>
 	| "stackalloc" Type<out type> "[" Expr<out expr> "]" (. initializerExpression = new StackAllocExpression(type, expr); .)
+	| /* workaround for coco bug? doesn't work in Expr production in this case. */
+	  "default" "(" Type<out type> ")" (. initializerExpression = new DefaultValueExpression(type); .)
 .
 
 OverloadableOperator<out OverloadableOperatorType op>
