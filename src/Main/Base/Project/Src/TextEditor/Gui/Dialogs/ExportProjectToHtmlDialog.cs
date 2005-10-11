@@ -178,7 +178,14 @@
 //		
 //		string ExportFile(string fileName, string targetPath)
 //		{
-//			string targetFile = FileUtility.AbsoluteToRelativePath(project.BaseDirectory, fileName).Substring(2).Replace(Path.DirectorySeparatorChar.ToString(), "") + ".html";
+//			string targetFile;
+//			if (fileName.EndsWith(".txt"))
+//			{
+//				targetFile = fileUtilityService.AbsoluteToRelativePath(project.BaseDirectory, fileName).Substring(2);
+//				File.Copy(fileName, targetPath + Path.DirectorySeparatorChar + targetFile);
+//				return targetFile;
+//			}
+//			targetFile = FileUtility.AbsoluteToRelativePath(project.BaseDirectory, fileName).Substring(2).Replace(Path.DirectorySeparatorChar.ToString(), "") + ".html";
 //			
 //			IDocument document = new DocumentFactory().CreateDocument();
 //			document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategyForFile(fileName);
