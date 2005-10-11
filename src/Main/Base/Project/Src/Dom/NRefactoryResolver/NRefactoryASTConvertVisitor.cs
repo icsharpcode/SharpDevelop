@@ -520,11 +520,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DefaultClass c = GetCurrentClass();
 			
 			DefaultProperty property = new DefaultProperty(propertyDeclaration.Name, type, ConvertModifier(propertyDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
-			if (propertyDeclaration.GetRegion != null) {
+			if (propertyDeclaration.HasGetRegion) {
 				property.GetterRegion = GetRegion(propertyDeclaration.GetRegion.StartLocation, propertyDeclaration.GetRegion.EndLocation);
 				property.CanGet = true;
 			}
-			if (propertyDeclaration.SetRegion != null) {
+			if (propertyDeclaration.HasSetRegion) {
 				property.SetterRegion = GetRegion(propertyDeclaration.SetRegion.StartLocation, propertyDeclaration.SetRegion.EndLocation);
 				property.CanSet = true;
 			}

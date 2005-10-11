@@ -160,7 +160,7 @@ namespace ICSharpCode.Core
 				database = loader.LoadAndCreateDatabase(filename, include);
 			} catch (Exception e) {
 				database = null;
-				MessageService.ShowError(e);
+				MessageService.ShowError(e, "Error loading " + include + " from " + filename);
 			} finally {
 				AppDomain.Unload(domain);
 			}

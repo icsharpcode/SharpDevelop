@@ -56,6 +56,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		}
 		
 		protected bool useOverrideKeyword = false;
+		protected bool implementOnlyAbstractMembers = false;
 		
 		void GenerateInterface(IReturnType intf, string fileExtension)
 		{
@@ -64,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			editActionHandler.InsertString("#region " + intf.FullyQualifiedName + " interface implementation\n\t\t");++numOps;
 			
 			foreach (IProperty property in intf.GetProperties()) {
-				if (!property.IsAbstract) {
+				if (implementOnlyAbstractMembers && !property.IsAbstract) {
 					continue;
 				}
 				string returnType = (fileExtension == ".vb" ? vba : csa).Convert(property.ReturnType);
@@ -137,6 +138,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					if (fileExtension == ".vb") {
 						editActionHandler.InsertString("\tSet");++numOps;
 						Return();
+						editActionHandler.InsertString("Throw New NotImplementedException()");++numOps;
+						Return();
 						editActionHandler.InsertString("\tEnd Set");++numOps;
 						Return();
 					} else {
@@ -147,7 +150,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 							Return();
 							editActionHandler.InsertString("{");++numOps;
 						}
-						
+						Return();
+						editActionHandler.InsertString("throw new NotImplementedException();");++numOps;
 						Return();
 						editActionHandler.InsertString("\t}");++numOps;
 						Return();
@@ -168,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			foreach (IMethod method in intf.GetMethods()) {
 				string parameters = String.Empty;
 				string returnType = (fileExtension == ".vb" ? vba : csa).Convert(method.ReturnType);
-				if (!method.IsAbstract) {
+				if (implementOnlyAbstractMembers && !method.IsAbstract) {
 					continue;
 				}
 				for (int j = 0; j < method.Parameters.Count; ++j) {

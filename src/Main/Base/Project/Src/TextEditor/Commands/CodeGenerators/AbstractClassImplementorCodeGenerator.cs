@@ -31,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		public AbstractClassImplementorCodeGenerator(IClass currentClass) : base(currentClass)
 		{
 			base.useOverrideKeyword = true;
+			base.implementOnlyAbstractMembers = true;
 			for (int i = 0; i < currentClass.BaseTypes.Count; i++) {
 				IReturnType baseType = currentClass.GetBaseType(i);
 				IClass baseClass = (baseType != null) ? baseType.GetUnderlyingClass() : null;
