@@ -4,10 +4,12 @@
 	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v1.0' ">
 		<CscToolPath>$(SystemRoot)\Microsoft.NET\Framework\v1.0.3705</CscToolPath>
 		<SharpDevelopUse1xCompiler>true</SharpDevelopUse1xCompiler>
+		<SharpDevelopUseMicrosoftFramework>true</SharpDevelopUseMicrosoftFramework>
 	</PropertyGroup>
 	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v1.1' ">
 		<CscToolPath>$(SystemRoot)\Microsoft.NET\Framework\v1.1.4322</CscToolPath>
 		<SharpDevelopUse1xCompiler>true</SharpDevelopUse1xCompiler>
+		<SharpDevelopUseMicrosoftFramework>true</SharpDevelopUseMicrosoftFramework>
 	
 		<!-- Work around MsBuild problem: Microsoft.CSharp.targets adds NoWarn entries that -->
 		<!-- don't exist in v1.1 when version is set to anything else than v1.0 -->
@@ -18,8 +20,12 @@
 		<PlatformTarget/>
 	</PropertyGroup>
 	
+	<PropertyGroup Condition=" '$(TargetFrameworkVersion)' == 'v2.0' ">
+		<SharpDevelopUseMicrosoftFramework>true</SharpDevelopUseMicrosoftFramework>		
+	</PropertyGroup>
+	
 	<!-- Use Microsoft's C# standard targets -->
-	<Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+	<Import Condition=" '$(SharpDevelopUseMicrosoftFramework)' == 'true' " Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 	
 	<!-- Override properties created by Microsoft.CSharp.targets -->
 	<PropertyGroup Condition=" '$(SharpDevelopUse1xCompiler)' == 'true' ">
@@ -44,7 +50,7 @@
 	
 	<!-- GetFrameworkPaths overwrites TargetFrameworkDirectory, so modify it -->
 	<!-- to be inactive if SharpDevelopUse1xCompiler is set. -->
-	<Target Name="GetFrameworkPaths" DependsOnTargets="$(GetFrameworkPathsDependsOn)">
+	<Target Name="GetFrameworkPaths" DependsOnTargets="$(GetFrameworkPathsDependsOn)" Condition=" '$(SharpDevelopUseMicrosoftFramework)' == 'true' ">
 		<Error Condition=" ('$(SharpDevelopUse1xCompiler)' == 'true') And !Exists('$(CscToolPath)\Csc.exe') "
 		       Text="Could not find the C# compiler in $(CscToolPath)."/>
 		
@@ -58,4 +64,8 @@
 			<Output TaskParameter="Path" ItemName="TargetFrameworkSDKDirectoryItem"/>
 		</GetFrameworkSDKPath>
 	</Target>
+
+	<!-- Mono imports -->
+	<Import Condition=" '$(TargetFrameworkVersion)' == 'Mono v1.1' " Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.Mcs.targets"/>
+	<Import Condition=" '$(TargetFrameworkVersion)' == 'Mono v2.0' " Project="$(SharpDevelopBinPath)\SharpDevelop.Build.Mono.Gmcs.targets"/>
 </Project>

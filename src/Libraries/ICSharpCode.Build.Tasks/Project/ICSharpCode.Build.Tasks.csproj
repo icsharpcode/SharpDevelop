@@ -34,6 +34,19 @@
     </None>
     <Compile Include="Constants.cs" />
     <Compile Include="MyToolTask.cs" />
+    <None Include="SharpDevelop.Build.Mono.Mcs.targets">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <Compile Include="Mcs.cs" />
+    <Compile Include="MonoCompilerTask.cs" />
+    <Compile Include="CompilerCommandLineArguments.cs" />
+    <Compile Include="MonoCompiler.cs" />
+    <Compile Include="ICompilerResultsParser.cs" />
+    <Compile Include="CompilerResultsParser.cs" />
+    <Compile Include="Gmcs.cs" />
+    <None Include="SharpDevelop.Build.Mono.Gmcs.targets">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <Content Include="SharpDevelop.Build.CSharp.targets">
