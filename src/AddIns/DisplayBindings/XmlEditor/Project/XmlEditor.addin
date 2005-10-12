@@ -21,7 +21,7 @@
 	<!-- Xml parser used to initiate the folding update -->
 	<Path name = "/Workspace/Parser">
 		<Parser id = "XmlFoldingParser"
-		        supportedextensions  = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.proj;.build;.xfrm"
+		        supportedextensions  = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets"
 		        class = "ICSharpCode.XmlEditor.Parser"/>
 	</Path>
 	
