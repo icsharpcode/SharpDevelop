@@ -24,146 +24,165 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 
-		protected override void OutputType(CodeTypeReference typeRef) 
+		protected override void OutputType(CodeTypeReference typeRef)
 		{
-			Output.Write("[CodeTypeReference: {0}]", typeRef.ToString());
+			Output.Write("[CodeTypeReference: {0}", typeRef.BaseType);
+			if (typeRef.ArrayRank > 0) {
+				Output.Write(" Rank:" + typeRef.ArrayRank);
+			}
+			Output.Write("]");
 		}
 		
-		protected override void GenerateArrayCreateExpression(CodeArrayCreateExpression e) 
+		protected override void GenerateArrayCreateExpression(CodeArrayCreateExpression e)
 		{
 			Output.Write("[CodeArrayCreateExpression: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateBaseReferenceExpression(CodeBaseReferenceExpression e) 
+		protected override void GenerateBaseReferenceExpression(CodeBaseReferenceExpression e)
 		{
 			Output.Write("[CodeBaseReferenceExpression: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateCastExpression(CodeCastExpression e) 
+		protected override void GenerateCastExpression(CodeCastExpression e)
 		{
 			Output.Write("[CodeCastExpression: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateDelegateCreateExpression(CodeDelegateCreateExpression e) 
+		protected override void GenerateDelegateCreateExpression(CodeDelegateCreateExpression e)
 		{
 			Output.Write("[CodeDelegateCreateExpression: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateFieldReferenceExpression(CodeFieldReferenceExpression e) 
+		protected override void GenerateFieldReferenceExpression(CodeFieldReferenceExpression e)
 		{
 			Output.Write("[CodeFieldReferenceExpression: Name={0}, Target=", e.FieldName);
 			this.GenerateExpression(e.TargetObject);
 			Output.Write("]");
 		}
 		
-		protected override void GenerateArgumentReferenceExpression(CodeArgumentReferenceExpression e) 
+		protected override void GenerateMethodReferenceExpression(CodeMethodReferenceExpression e)
+		{
+			Output.Write("[CodeMethodReferenceExpression: Name={0}, Target=", e.MethodName);
+			this.GenerateExpression(e.TargetObject);
+			Output.Write("]");
+		}
+		
+		protected override void GenerateEventReferenceExpression(CodeEventReferenceExpression e)
+		{
+			Output.Write("[CodeEventReferenceExpression: Name={0}, Target=", e.EventName);
+			this.GenerateExpression(e.TargetObject);
+			Output.Write("]");
+		}
+		
+		protected override void GenerateArgumentReferenceExpression(CodeArgumentReferenceExpression e)
 		{
 			Output.Write("[CodeArgumentReferenceExpression: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateVariableReferenceExpression(CodeVariableReferenceExpression e) 
+		protected override void GenerateVariableReferenceExpression(CodeVariableReferenceExpression e)
 		{
 			Output.Write("[CodeVariableReferenceExpression: Name={0}]", e.VariableName);
 		}
 		
-		protected override void GenerateIndexerExpression(CodeIndexerExpression e) 
+		protected override void GenerateIndexerExpression(CodeIndexerExpression e)
 		{
 			Output.Write("[CodeIndexerExpression: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateArrayIndexerExpression(CodeArrayIndexerExpression e) 
+		protected override void GenerateArrayIndexerExpression(CodeArrayIndexerExpression e)
 		{
 			Output.Write("[CodeArrayIndexerExpression: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateSnippetExpression(CodeSnippetExpression e) 
+		protected override void GenerateSnippetExpression(CodeSnippetExpression e)
 		{
 			Output.Write("[CodeSnippetExpression: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateMethodInvokeExpression(CodeMethodInvokeExpression e) 
+		protected override void GenerateMethodInvokeExpression(CodeMethodInvokeExpression e)
 		{
-			Output.Write("[CodeMethodInvokeExpression: {0}]", e.ToString());
-		}
-		
-		protected override void GenerateMethodReferenceExpression(CodeMethodReferenceExpression e) 
-		{
-			Output.Write("[CodeMethodReferenceExpression: {0}]", e.ToString());
-		}
-		
-		protected override void GenerateEventReferenceExpression(CodeEventReferenceExpression e) 
-		{
-			Output.Write("[CodeEventReferenceExpression: {0}]", e.ToString());
-		}
-		
-		protected override void GenerateDelegateInvokeExpression(CodeDelegateInvokeExpression e) 
-		{
-			Output.Write("[CodeDelegateInvokeExpression: {0}]", e.ToString());
-		}
-		
-		protected override void GenerateObjectCreateExpression(CodeObjectCreateExpression e) 
-		{
-			Output.Write("[CodeObjectCreateExpression: Type={0}, Parameters=", e.CreateType.BaseType);
+			Output.Write("[CodeMethodInvokeExpression: Method=");
+			GenerateMethodReferenceExpression(e.Method);
+			Output.Write(", Parameters=");
+			bool first = true;
 			foreach (CodeExpression expr in e.Parameters) {
+				if (first) first = false; else Output.Write(", ");
 				this.GenerateExpression(expr);
 			}
 			Output.Write("]");
 		}
 		
-		protected override void GeneratePropertyReferenceExpression(CodePropertyReferenceExpression e) 
+		protected override void GenerateDelegateInvokeExpression(CodeDelegateInvokeExpression e)
+		{
+			Output.Write("[CodeDelegateInvokeExpression: {0}]", e.ToString());
+		}
+		
+		protected override void GenerateObjectCreateExpression(CodeObjectCreateExpression e)
+		{
+			Output.Write("[CodeObjectCreateExpression: Type={0}, Parameters=", e.CreateType.BaseType);
+			bool first = true;
+			foreach (CodeExpression expr in e.Parameters) {
+				if (first) first = false; else Output.Write(", ");
+				this.GenerateExpression(expr);
+			}
+			Output.Write("]");
+		}
+		
+		protected override void GeneratePropertyReferenceExpression(CodePropertyReferenceExpression e)
 		{
 			Output.Write("[CodePropertyReferenceExpression: Name={0}, Target=", e.PropertyName);
 			this.GenerateExpression(e.TargetObject);
 			Output.Write("]");
 		}
 		
-		protected override void GeneratePropertySetValueReferenceExpression(CodePropertySetValueReferenceExpression e) 
+		protected override void GeneratePropertySetValueReferenceExpression(CodePropertySetValueReferenceExpression e)
 		{
 			Output.Write("[CodePropertySetValueReferenceExpression: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateThisReferenceExpression(CodeThisReferenceExpression e) 
+		protected override void GenerateThisReferenceExpression(CodeThisReferenceExpression e)
 		{
 			Output.Write("[CodeThisReferenceExpression]");
 		}
 		
-		protected override void GenerateExpressionStatement(CodeExpressionStatement e) 
+		protected override void GenerateExpressionStatement(CodeExpressionStatement e)
 		{
-			Output.WriteLine("[CodeExpressionStatement: {0}]", e.ToString());
-			
+			Output.Write("[CodeExpressionStatement:");
+			base.GenerateExpression(e.Expression);
+			Output.WriteLine("]");
 		}
 		
-		protected override void GenerateIterationStatement(CodeIterationStatement e) 
+		protected override void GenerateIterationStatement(CodeIterationStatement e)
 		{
 			Output.WriteLine("[CodeIterationStatement: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateThrowExceptionStatement(CodeThrowExceptionStatement e) 
+		protected override void GenerateThrowExceptionStatement(CodeThrowExceptionStatement e)
 		{
 			Output.WriteLine("[CodeThrowExceptionStatement: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateComment(CodeComment e) 
+		protected override void GenerateComment(CodeComment e)
 		{
 			Output.WriteLine("[CodeComment: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateMethodReturnStatement(CodeMethodReturnStatement e) 
+		protected override void GenerateMethodReturnStatement(CodeMethodReturnStatement e)
 		{
 			Output.WriteLine("[CodeMethodReturnStatement: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateConditionStatement(CodeConditionStatement e) 
+		protected override void GenerateConditionStatement(CodeConditionStatement e)
 		{
 			Output.WriteLine("[GenerateConditionStatement: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateTryCatchFinallyStatement(CodeTryCatchFinallyStatement e) 
+		protected override void GenerateTryCatchFinallyStatement(CodeTryCatchFinallyStatement e)
 		{
 			Output.WriteLine("[CodeTryCatchFinallyStatement: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateAssignStatement(CodeAssignStatement e) 
+		protected override void GenerateAssignStatement(CodeAssignStatement e)
 		{
 			Output.Write("[CodeAssignStatement: Left=");
 			base.GenerateExpression(e.Left);
@@ -172,59 +191,59 @@ namespace ICSharpCode.NRefactory.Parser
 			Output.WriteLine("]");
 		}
 		
-		protected override void GenerateAttachEventStatement(CodeAttachEventStatement e) 
+		protected override void GenerateAttachEventStatement(CodeAttachEventStatement e)
 		{
 			Output.WriteLine("[CodeAttachEventStatement: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateRemoveEventStatement(CodeRemoveEventStatement e) 
+		protected override void GenerateRemoveEventStatement(CodeRemoveEventStatement e)
 		{
 			Output.WriteLine("[CodeRemoveEventStatement: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateGotoStatement(CodeGotoStatement e) 
+		protected override void GenerateGotoStatement(CodeGotoStatement e)
 		{
 			Output.WriteLine("[CodeGotoStatement: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateLabeledStatement(CodeLabeledStatement e) 
+		protected override void GenerateLabeledStatement(CodeLabeledStatement e)
 		{
 			Output.WriteLine("[CodeLabeledStatement: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateVariableDeclarationStatement(CodeVariableDeclarationStatement e) 
+		protected override void GenerateVariableDeclarationStatement(CodeVariableDeclarationStatement e)
 		{
 			Output.WriteLine("[CodeVariableDeclarationStatement: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateLinePragmaStart(CodeLinePragma e) 
+		protected override void GenerateLinePragmaStart(CodeLinePragma e)
 		{
 			Output.WriteLine("[CodeLinePragma: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateLinePragmaEnd(CodeLinePragma e) 
+		protected override void GenerateLinePragmaEnd(CodeLinePragma e)
 		{
 			Output.WriteLine("[CodeLinePragma: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateEvent(CodeMemberEvent e, CodeTypeDeclaration c) 
+		protected override void GenerateEvent(CodeMemberEvent e, CodeTypeDeclaration c)
 		{
 			Output.WriteLine("[CodeMemberEvent: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateField(CodeMemberField e) 
+		protected override void GenerateField(CodeMemberField e)
 		{
 			Output.Write("[CodeMemberField: Name={0}, Type=", e.Name);
 			Output.Write(e.Type.BaseType);
 			Output.WriteLine("]");
 		}
 		
-		protected override void GenerateSnippetMember(CodeSnippetTypeMember e) 
+		protected override void GenerateSnippetMember(CodeSnippetTypeMember e)
 		{
 			Output.WriteLine("[CodeSnippetTypeMember: {0}]", e.ToString());
 		}
 		
-		protected override void GenerateEntryPointMethod(CodeEntryPointMethod e, CodeTypeDeclaration c) 
+		protected override void GenerateEntryPointMethod(CodeEntryPointMethod e, CodeTypeDeclaration c)
 		{
 			Output.WriteLine("[CodeEntryPointMethod: {0}]", e.ToString());
 		}
@@ -242,12 +261,12 @@ namespace ICSharpCode.NRefactory.Parser
 			--Indent;
 		}
 		
-		protected override void GenerateProperty(CodeMemberProperty e, CodeTypeDeclaration c) 
+		protected override void GenerateProperty(CodeMemberProperty e, CodeTypeDeclaration c)
 		{
 			Output.WriteLine("[CodeMemberProperty : {0}]", e.ToString());
 		}
 		
-		protected override void GenerateConstructor(CodeConstructor e, CodeTypeDeclaration c) 
+		protected override void GenerateConstructor(CodeConstructor e, CodeTypeDeclaration c)
 		{
 			Output.WriteLine("[CodeConstructor : {0}]", e.ToString());
 		}
@@ -257,12 +276,12 @@ namespace ICSharpCode.NRefactory.Parser
 			Output.WriteLine("[CodeTypeConstructor : {0}]", e.ToString());
 		}
 		
-		protected override void GenerateTypeStart(CodeTypeDeclaration e) 
+		protected override void GenerateTypeStart(CodeTypeDeclaration e)
 		{
 			Output.WriteLine("[CodeTypeDeclaration : {0}]", e.ToString());
 		}
 		
-		protected override void GenerateTypeEnd(CodeTypeDeclaration e) 
+		protected override void GenerateTypeEnd(CodeTypeDeclaration e)
 		{
 			Output.WriteLine("[CodeTypeDeclaration: {0}]", e.ToString());
 		}

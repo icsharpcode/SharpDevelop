@@ -21,9 +21,13 @@ namespace ICSharpCode.TextEditor
 	/// </summary>
 	public class IconBarMargin : AbstractMargin
 	{
+		const int iconBarWidth = 18;
+		
+		static readonly Size iconBarSize = new Size(iconBarWidth, -1);
+		
 		public override Size Size {
 			get {
-				return new Size(20, -1);
+				return iconBarSize;
 			}
 		}
 		
@@ -84,12 +88,11 @@ namespace ICSharpCode.TextEditor
 		#region Drawing functions
 		public void DrawBreakpoint(Graphics g, int y, bool isEnabled)
 		{
-			int delta = 1;
-			int radius = Math.Min(Size.Width, textArea.TextView.FontHeight);
-			Rectangle rect = new Rectangle(delta,
-			                               y,
-			                               radius,
-			                               radius);
+			int diameter = Math.Min(iconBarWidth - 2, textArea.TextView.FontHeight);
+			Rectangle rect = new Rectangle(1,
+			                               y + (textArea.TextView.FontHeight - diameter) / 2,
+			                               diameter,
+			                               diameter);
 			
 			
 			using (GraphicsPath path = new GraphicsPath()) {
