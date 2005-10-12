@@ -240,6 +240,7 @@ PadIcons.FileBrowser                              = PadIcons\FileBrowser.png
 PadIcons.ClassBrowser                             = PadIcons\ClassBrowser.png
 PadIcons.ProjectBrowser                           = PadIcons\ProjectBrowser.png
 PadIcons.Bookmarks                                = PadIcons\Bookmarks.png
+PadIcons.DefinitionView							  = PadIcons\DefinitionView.png
 
 #classbrowser icons
 Icons.16x16.NameSpace                             = ClassBrowserIcons\Icons.16x16.NameSpace.png
