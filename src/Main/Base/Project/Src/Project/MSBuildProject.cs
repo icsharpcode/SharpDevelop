@@ -308,13 +308,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			ProcessStartInfo psi = new ProcessStartInfo();
 			psi.FileName = Path.Combine(Directory, program);
-			string workingDir = this.StartWorkingDirectory;
+			string workingDir = StringParser.Parse(this.StartWorkingDirectory);
 			if (workingDir.Length == 0) {
 				psi.WorkingDirectory = Path.GetDirectoryName(psi.FileName);
 			} else {
 				psi.WorkingDirectory = Path.Combine(Directory, workingDir);
 			}
-			psi.Arguments = this.StartArguments;
+			psi.Arguments = StringParser.Parse(this.StartArguments);
 			
 			if (withDebugging) {
 				DebuggerService.CurrentDebugger.Start(psi);
