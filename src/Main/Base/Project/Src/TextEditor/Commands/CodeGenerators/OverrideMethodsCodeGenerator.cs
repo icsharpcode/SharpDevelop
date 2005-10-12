@@ -58,37 +58,67 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				
 				string parameters = String.Empty;
 				string paramList  = String.Empty;
-				string returnType = csa.Convert(mw.Method.ReturnType);
+				string returnType = (fileExtension == ".vb" ? vba : csa).Convert(mw.Method.ReturnType);
 				
 				for (int j = 0; j < mw.Method.Parameters.Count; ++j) {
 					paramList  += mw.Method.Parameters[j].Name;
-					parameters += csa.Convert(mw.Method.Parameters[j]);
+					parameters += (fileExtension == ".vb" ? vba : csa).Convert(mw.Method.Parameters[j]);
 					if (j + 1 < mw.Method.Parameters.Count) {
 						parameters += ", ";
 						paramList  += ", ";
 					}
 				}
-				
-				editActionHandler.InsertString(csa.Convert(mw.Method.Modifiers) + "override " + returnType + " " + mw.Method.Name + "(" + parameters + ")");++numOps;
-				if (StartCodeBlockInSameLine) {
-					editActionHandler.InsertString(" {");
+				if (fileExtension == ".vb"){
+					editActionHandler.InsertString(vba.Convert(mw.Method.Modifiers) + "Overrides ");++numOps;
+					if (mw.Method.ReturnType.FullyQualifiedName != "System.Void") {
+						editActionHandler.InsertString("Function ");++numOps;
+					} else {
+						editActionHandler.InsertString("Sub ");++numOps;
+					}
+					editActionHandler.InsertString(mw.Method.Name + "(" + parameters + ")");++numOps;
+					if (mw.Method.ReturnType.FullyQualifiedName != "System.Void") {
+						editActionHandler.InsertString(" As " + returnType);++numOps;
+					}
 				} else {
+					editActionHandler.InsertString(csa.Convert(mw.Method.Modifiers) + "override " + returnType + " " + mw.Method.Name + "(" + parameters + ")");++numOps;
+					if (StartCodeBlockInSameLine) {
+						editActionHandler.InsertString(" {");
+					} else {
+						Return();
+						editActionHandler.InsertString("{");
+					}
+					++numOps;
+				}
+				
+				
+				Return();
+				
+				if(fileExtension == ".vb") {
+					if (mw.Method.ReturnType.FullyQualifiedName != "System.Void") {
+						editActionHandler.InsertString("Return MyBase." + mw.Method.Name + "(" + paramList + ")");++numOps;
+						Return();
+						editActionHandler.InsertString("End Function");
+					} else {
+						editActionHandler.InsertString("MyBase." + mw.Method.Name + "(" + paramList + ")");++numOps;
+						Return();
+						editActionHandler.InsertString("End Sub");
+					}
+				} else {
+					if (mw.Method.ReturnType.FullyQualifiedName != "System.Void") {
+						string str = "return base." + mw.Method.Name + "(" + paramList + ");";
+						editActionHandler.InsertString(str);++numOps;
+					} else {
+						string str = "base." + mw.Method.Name + "(" + paramList + ");";
+						editActionHandler.InsertString(str);++numOps;
+					}
 					Return();
-					editActionHandler.InsertString("{");
+					editActionHandler.InsertChar('}');
 				}
 				++numOps;
-				Return();
 				
-				if (returnType != "void") {
-					Indent();
-					string str = "return base." + mw.Method.Name + "(" + paramList + ");";
-					editActionHandler.InsertString(str);++numOps;
-				}
-				
-				Return();
 //				caretPos = editActionHandler.Document.Caret.Offset;
 
-				editActionHandler.InsertChar('}');++numOps;
+				
 				Return();
 				IndentLine();
 			}

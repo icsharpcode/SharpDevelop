@@ -203,8 +203,17 @@ namespace VBNetBinding.FormattingStrategy
 			
 			int indentLength = b.Length;
 			b.Append(curLineText);
-			if (b.ToString() != oldLineText)
-				textArea.Document.Replace(curLine.Offset, curLine.Length, b.ToString());
+			string newLineText = b.ToString();
+			if (newLineText != oldLineText) {
+				textArea.Document.Replace(curLine.Offset, curLine.Length, newLineText);
+				int newIndentLength = newLineText.Length - newLineText.TrimStart().Length;
+				int oldIndentLength = oldLineText.Length - oldLineText.TrimStart().Length;
+				if (oldIndentLength != newIndentLength && lineNr == textArea.Caret.Position.Y) {
+					// fix cursor position if indentation was changed
+					int newX = textArea.Caret.Position.X - oldIndentLength + newIndentLength;
+					textArea.Caret.Position = new Point(Math.Max(newX, 0), lineNr);
+				}
+			}
 			return indentLength;
 		}
 		
