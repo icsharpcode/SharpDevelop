@@ -454,6 +454,14 @@ namespace ICSharpCode.TextEditor
 				return;
 			}
 			
+			if (TextEditorProperties.UseCustomLine == true) {
+				if (SelectionManager.HasSomethingSelected) {
+					if (Document.CustomLineManager.IsReadOnly(SelectionManager.SelectionCollection[0], false))
+						return;
+				} else if (Document.CustomLineManager.IsReadOnly(Caret.Line, false) == true)
+					return;
+			}
+			
 			if (ch < ' ') {
 				return;
 			}
@@ -507,6 +515,29 @@ namespace ICSharpCode.TextEditor
 				return true;
 			}
 			
+			if (keyData == Keys.Back || keyData == Keys.Delete || keyData == Keys.Enter) {
+				if (TextEditorProperties.UseCustomLine == true) {
+					if (SelectionManager.HasSomethingSelected) {
+						if (Document.CustomLineManager.IsReadOnly(SelectionManager.SelectionCollection[0], false))
+							return true;
+					} else {
+						int curLineNr   = Document.GetLineNumberForOffset(Caret.Offset);
+						if (Document.CustomLineManager.IsReadOnly(curLineNr, false) == true)
+							return true;
+						if ((Caret.Column == 0) && (curLineNr - 1 >= 0) && keyData == Keys.Back &&
+							Document.CustomLineManager.IsReadOnly(curLineNr - 1, false) == true)
+							return true;
+						if (keyData == Keys.Delete) {
+							LineSegment curLine = Document.GetLineSegment(curLineNr);
+							if (curLine.Offset + curLine.Length == Caret.Offset && 
+								Document.CustomLineManager.IsReadOnly(curLineNr + 1, false) == true) {
+								return true;
+							}
+						}
+					}
+				}
+			}
+			
 			// if not (or the process was 'silent', use the standard edit actions
 			IEditAction action =  motherTextEditorControl.GetEditAction(keyData);
 			AutoClearSelection = true;
@@ -554,6 +585,22 @@ namespace ICSharpCode.TextEditor
 		public void EndUpdate()
 		{
 			motherTextEditorControl.EndUpdate();
+		}
+		
+		public bool EnableCutOrPaste
+		{
+			get {
+				if (TextEditorProperties.UseCustomLine == true) {
+					if (SelectionManager.HasSomethingSelected == true) {
+						if (Document.CustomLineManager.IsReadOnly(SelectionManager.SelectionCollection[0], false))
+							return false;
+					}
+					if (Document.CustomLineManager.IsReadOnly(Caret.Line, false) == true)
+						return false;
+				}
+				return true;
+				
+			}
 		}
 		
 		string GenerateWhitespaceString(int length)

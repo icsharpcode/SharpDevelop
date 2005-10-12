@@ -51,7 +51,7 @@ namespace ICSharpCode.TextEditor.Document
 			digitColor      = new HighlightBackground("WindowText", "Window", false, false);
 			
 			// set small 'default color environment'
-			environmentColors["Default"]          = new HighlightBackground("WindowText", "Window", false, false);
+			environmentColors["DefaultBackground"]= new HighlightBackground("WindowText", "Window", false, false);
 			environmentColors["Selection"]        = new HighlightColor("HighlightText", "Highlight", false, false);
 			environmentColors["VRuler"]           = new HighlightColor("ControlLight", "Window", false, false);
 			environmentColors["InvalidLines"]     = new HighlightColor(Color.Red, false, false);
@@ -182,7 +182,7 @@ namespace ICSharpCode.TextEditor.Document
 
 		public HighlightColor GetColorFor(string name)
 		{
-			if (environmentColors[name] == null) {
+			if (! environmentColors.ContainsKey(name)) {
 				throw new Exception("Color : " + name + " not found!");
 			}
 			return (HighlightColor)environmentColors[name];
@@ -660,7 +660,7 @@ namespace ICSharpCode.TextEditor.Document
 					if (c == null) {
 						c = activeSpan.Color;
 						if (c.Color == Color.Transparent) {
-							c = GetColorFor("Default");
+							c = GetColorFor("DefaultBackground");
 						}
 						hasDefaultColor = true;
 					}
@@ -668,7 +668,7 @@ namespace ICSharpCode.TextEditor.Document
 				} else {
 					HighlightColor c = markNext != null ? markNext : GetColor(activeRuleSet, document, currentLine, currentOffset, currentLength);
 					if (c == null) {
-						words.Add(new TextWord(document, currentLine, currentOffset, currentLength, GetColorFor("Default"), true));
+						words.Add(new TextWord(document, currentLine, currentOffset, currentLength, GetColorFor("DefaultBackground"), true));
 					} else {
 						words.Add(new TextWord(document, currentLine, currentOffset, currentLength, c, false));
 					}

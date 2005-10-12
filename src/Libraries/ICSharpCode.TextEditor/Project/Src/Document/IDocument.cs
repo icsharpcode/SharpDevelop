@@ -72,6 +72,13 @@ namespace ICSharpCode.TextEditor.Document
 			get;
 		}
 		
+		/// <summary>
+		/// The <see cref="ICustomColorLineManager"/> attached to the <see cref="IDocument"/> instance
+		/// </summary>
+		ICustomLineManager CustomLineManager {
+			get;
+		}
+		
 		MarkerStrategy MarkerStrategy {
 			get;
 		}

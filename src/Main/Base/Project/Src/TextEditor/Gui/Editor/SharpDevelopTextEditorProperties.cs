@@ -282,6 +282,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				properties.Set("BracketMatchingStyle", value);
 			}
 		}
+		
+		bool useCustomLine = false;
+		public bool UseCustomLine {
+			get {
+				return useCustomLine;
+			}
+			set {
+				useCustomLine = value;
+			}
+		}
 
 		/*
 		<Property key="DoubleBuffer" value="True" />
