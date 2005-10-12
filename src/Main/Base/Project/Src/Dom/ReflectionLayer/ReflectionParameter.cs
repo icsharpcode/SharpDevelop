@@ -17,14 +17,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public ReflectionParameter(ParameterInfo parameterInfo, IMember member) : base(parameterInfo.Name)
 		{
-			this.ReturnType = ReflectionReturnType.Create(member, parameterInfo.ParameterType, false);
-			
 			Type type = parameterInfo.ParameterType;
+			
+			this.ReturnType = ReflectionReturnType.Create(member, type, false);
 			
 			if (parameterInfo.IsOut) {
 				modifier = ParameterModifiers.Out;
-			} else if (type.Name.EndsWith("&")) {
-				// seems there is no other way to determine a ref parameter
+			} else if (type.IsByRef) {
 				modifier = ParameterModifiers.Ref;
 			}
 			

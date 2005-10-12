@@ -84,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.name = type.Name;
 			this.index = type.GenericParameterPosition;
 			foreach (Type constraint in type.GetGenericParameterConstraints()) {
-				constraints.Add(ReflectionReturnType.Create(targetClass.ProjectContent, constraint, false));
+				constraints.Add(ReflectionReturnType.Create(targetClass, constraint, false));
 			}
 		}
 		
@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.name = type.Name;
 			this.index = type.GenericParameterPosition;
 			foreach (Type constraint in type.GetGenericParameterConstraints()) {
-				constraints.Add(ReflectionReturnType.Create(targetClass.ProjectContent, constraint, false));
+				constraints.Add(ReflectionReturnType.Create(targetClass, constraint, false));
 			}
 		}
 		

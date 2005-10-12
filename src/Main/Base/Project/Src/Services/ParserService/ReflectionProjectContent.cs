@@ -57,17 +57,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public ReflectionProjectContent(Assembly assembly, string assemblyLocation)
 			: this(assembly.FullName, assemblyLocation, assembly.GetReferencedAssemblies())
 		{
-			try {
-				foreach (Type type in assembly.GetExportedTypes()) {
-					string name = type.FullName;
-					if (name.IndexOf('+') < 0) { // type.IsNested
-						AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, name, null));
-					}
+			foreach (Type type in assembly.GetExportedTypes()) {
+				string name = type.FullName;
+				if (name.IndexOf('+') < 0) { // type.IsNested
+					AddClassToNamespaceListInternal(new ReflectionClass(assemblyCompilationUnit, type, name, null));
 				}
-				InitializeSpecialClasses();
-			} catch (Exception ex) {
-				MessageService.ShowError(ex);
 			}
+			InitializeSpecialClasses();
 		}
 		
 		public ReflectionProjectContent(string assemblyFullName, string assemblyLocation, AssemblyName[] referencedAssemblies)

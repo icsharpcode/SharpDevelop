@@ -596,7 +596,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		IReturnType CreateReturnType(Type type)
 		{
-			return ReflectionReturnType.Create(ProjectContentRegistry.Mscorlib, type, false);
+			return ReflectionReturnType.Create(ProjectContentRegistry.Mscorlib, null, type, false);
 		}
 	}
 }

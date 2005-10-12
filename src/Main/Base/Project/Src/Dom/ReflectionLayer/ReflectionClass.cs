@@ -70,11 +70,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			foreach (CustomAttributeData att in attributes) {
 				DefaultAttribute a = new DefaultAttribute(att.Constructor.DeclaringType.FullName);
 				foreach (CustomAttributeTypedArgument arg in att.ConstructorArguments) {
-					IReturnType type = ReflectionReturnType.Create(pc, arg.ArgumentType, false);
+					IReturnType type = ReflectionReturnType.Create(pc, null, arg.ArgumentType, false);
 					a.PositionalArguments.Add(new AttributeArgument(type, arg.Value));
 				}
 				foreach (CustomAttributeNamedArgument arg in att.NamedArguments) {
-					IReturnType type = ReflectionReturnType.Create(pc, arg.TypedValue.ArgumentType, false);
+					IReturnType type = ReflectionReturnType.Create(pc, null, arg.TypedValue.ArgumentType, false);
 					a.NamedArguments.Add(arg.MemberInfo.Name, new AttributeArgument(type, arg.TypedValue.Value));
 				}
 				list.Add(a);
@@ -151,11 +151,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			// set base classes
 			if (type.BaseType != null) { // it's null for System.Object ONLY !!!
-				BaseTypes.Add(ReflectionReturnType.Create(compilationUnit.ProjectContent, type.BaseType, false));
+				BaseTypes.Add(ReflectionReturnType.Create(this, type.BaseType, false));
 			}
 			
 			foreach (Type iface in type.GetInterfaces()) {
-				BaseTypes.Add(ReflectionReturnType.Create(compilationUnit.ProjectContent, iface, false));
+				BaseTypes.Add(ReflectionReturnType.Create(this, iface, false));
 			}
 			
 			InitMembers(type);
