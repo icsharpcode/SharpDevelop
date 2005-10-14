@@ -1,8 +1,8 @@
-The setup program is maintained by Christoph Wille, christophw@alphasierrapapa.com
+The setup program is maintained by Christoph Wille, christophw@icsharpcode.net
 
 Information
 
-Setup uses NSIS 2.06 Release - http://nsis.sourceforge.net
+Setup uses NSIS 2.08 Release - http://nsis.sourceforge.net
 
 
 CHANGELOG
