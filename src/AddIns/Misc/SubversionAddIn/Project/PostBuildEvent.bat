@@ -1,1 +1,1 @@
-copy ..\..\..\..\src\AddIns\Misc\SubversionAddIn\RequiredLibraries\ms* .
+copy "%1\..\RequiredLibraries\ms*" .

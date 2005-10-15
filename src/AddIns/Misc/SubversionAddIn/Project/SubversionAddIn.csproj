@@ -6,9 +6,10 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{17F4D7E0-6933-4C2E-8714-FD7E98D625D5}</ProjectGuid>
-    <PostBuildEvent>..\..\..\..\src\AddIns\Misc\SubversionAddIn\Project\PostBuildEvent.bat</PostBuildEvent>
+    <PostBuildEvent>$(MSBuildProjectDirectory)\PostBuildEvent.bat "$(MSBuildProjectDirectory)"</PostBuildEvent>
     <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
+    <RunPostBuildEvent>OnOutputUpdated</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>

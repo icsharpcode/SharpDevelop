@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using System.IO;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.SharpDevelop.Project;
@@ -16,21 +17,32 @@ namespace Grunwald.BooBinding
 {
 	public class BooProject : MSBuildProject
 	{
+		static bool initialized = false;
+		
+		void Init()
+		{
+			Language = "Boo";
+			LanguageProperties = BooLanguageProperties.Instance;
+			if (!initialized) {
+				initialized = true;
+				MSBuildEngine.CompileTaskNames.Add("booc");
+				MSBuildEngine.MsBuildProperties.Add("BooBinPath", Path.GetDirectoryName(typeof(BooProject).Assembly.Location));
+			}
+		}
+		
 		public BooProject(string fileName, string projectName)
 		{
 			this.Name = projectName;
-			Language = "Boo";
-			LanguageProperties = BooLanguageProperties.Instance;
+			Init();
 			SetupProject(fileName);
 			IdGuid = BaseConfiguration["ProjectGuid"];
 		}
 		
 		public BooProject(ProjectCreateInformation info)
 		{
-			Language = "Boo";
-			LanguageProperties = BooLanguageProperties.Instance;
+			Init();
 			Create(info);
-			imports.Add("$(BooBinPath)\\MsBuild.Boo.Targets");
+			imports.Add("$(BooBinPath)\\Boo.Microsoft.Build.targets");
 		}
 		
 		public override bool CanCompile(string fileName)

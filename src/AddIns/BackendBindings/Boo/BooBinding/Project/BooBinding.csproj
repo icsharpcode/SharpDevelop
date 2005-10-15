@@ -16,6 +16,8 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\BooBinding\</OutputPath>
+    <PostBuildEvent>$(MSBuildProjectDirectory)\PostBuildEvent.bat "$(MSBuildProjectDirectory)"</PostBuildEvent>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>
@@ -107,6 +109,7 @@
       <Name>NRefactoryToBooConverter</Name>
       <Private>True</Private>
     </ProjectReference>
+    <Content Include="PostBuildEvent.bat" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

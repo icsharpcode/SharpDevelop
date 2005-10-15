@@ -30,12 +30,19 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// The contents of the list can be changed by addins.
 		/// All names must be in lower case!
 		/// </summary>
-		public static readonly List<string> CompileTaskNames = new List<string>(new string[] {"csc", "vbc", "ilasm"});
+		public static readonly List<string> CompileTaskNames;
 		
 		/// <summary>
 		/// Gets a list where addins can add additional properties for use in MsBuild.
 		/// </summary>
-		public static readonly List<KeyValuePair<string, string>> MsBuildProperties = new List<KeyValuePair<string, string>>();
+		public static readonly SortedList<string, string> MsBuildProperties;
+		
+		static MSBuildEngine()
+		{
+			CompileTaskNames = new List<string>(new string[] {"csc", "vbc", "ilasm"});
+			MsBuildProperties = new SortedList<string, string>();
+			MsBuildProperties.Add("SharpDevelopBinPath", Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location));
+		}
 		
 		MessageViewCategory messageView;
 		
@@ -108,8 +115,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				Environment.CurrentDirectory = Path.GetDirectoryName(buildFile);
 				
 				BuildPropertyGroup properties = new BuildPropertyGroup();
-				string location = Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location);
-				properties.SetProperty("SharpDevelopBinPath", location);
 				foreach (KeyValuePair<string, string> entry in MsBuildProperties) {
 					properties.SetProperty(entry.Key, entry.Value);
 				}
