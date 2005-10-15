@@ -870,6 +870,7 @@ namespace ICSharpCode.TextEditor
 		float CountColumns(ref int column, int start, int end, int logicalLine, Graphics g)
 		{
 			if (start > end) throw new ArgumentException("start > end");
+			if (start == end) return 0;
 			float spaceWidth = SpaceWidth;
 			float drawingPos = 0;
 			int tabIndent  = Document.TextEditorProperties.TabIndent;

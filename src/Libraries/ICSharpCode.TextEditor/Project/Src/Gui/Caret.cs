@@ -172,6 +172,7 @@ namespace ICSharpCode.TextEditor
 				}
 			}
 			if (currentPos.X  < 0) {
+				ValidateCaretPos();
 				currentPos = ScreenPosition;
 			}
 			SetCaretPos(currentPos.X, currentPos.Y);
