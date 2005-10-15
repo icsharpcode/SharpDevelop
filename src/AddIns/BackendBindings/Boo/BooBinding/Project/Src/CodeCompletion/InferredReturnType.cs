@@ -18,29 +18,76 @@ namespace Grunwald.BooBinding.CodeCompletion
 	public class InferredReturnType : ProxyReturnType
 	{
 		Expression expression;
+		Block block;
+		IReturnType cachedType;
 		
 		public InferredReturnType(Expression expression)
 		{
+			if (expression == null) throw new ArgumentNullException("expression");
 			this.expression = expression;
 		}
 		
-		bool needInfer = true;
-		IReturnType cachedType;
-		
-		public override IReturnType BaseType {
-			get {
-				if (needInfer) {
-					needInfer = false;
-					cachedType = new BooResolver().GetTypeOfExpression(expression);
-				}
-				return cachedType;
-			}
+		public InferredReturnType(Block block)
+		{
+			if (block == null) throw new ArgumentNullException("block");
+			this.block = block;
 		}
 		
 		public override bool IsDefaultReturnType {
 			get {
 				IReturnType baseType = BaseType;
 				return (baseType != null) ? baseType.IsDefaultReturnType : false;
+			}
+		}
+		
+		public override IReturnType BaseType {
+			get {
+				// clear up references to method/expression after the type has been resolved
+				if (block != null) {
+					GetReturnTypeVisitor v = new GetReturnTypeVisitor();
+					v.Visit(block);
+					block = null;
+					if (v.noReturnStatement)
+						cachedType = ReflectionReturnType.Void;
+					else if (v.result is NullReturnType)
+						cachedType = ReflectionReturnType.Object;
+					else
+						cachedType = v.result;
+				} else if (expression != null) {
+					cachedType = new BooResolver().GetTypeOfExpression(expression);
+					expression = null;
+				}
+				return cachedType;
+			}
+		}
+		
+		class GetReturnTypeVisitor : DepthFirstVisitor
+		{
+			public IReturnType result;
+			public bool noReturnStatement = true;
+			
+			public override void OnReturnStatement(ReturnStatement node)
+			{
+				noReturnStatement = false;
+				if (node.Expression == null) {
+					result = ReflectionReturnType.Void;
+				} else {
+					result = new BooResolver().GetTypeOfExpression(node.Expression);
+				}
+			}
+			
+			public override void OnYieldStatement(YieldStatement node)
+			{
+				noReturnStatement = false;
+				result = ReflectionReturnType.CreatePrimitive(typeof(System.Collections.IEnumerable));
+			}
+			
+			public override bool Visit(Node node)
+			{
+				if (result != null && !(result is NullReturnType))
+					return false;
+				else
+					return base.Visit(node);
 			}
 		}
 	}

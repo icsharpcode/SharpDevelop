@@ -369,6 +369,46 @@ namespace Grunwald.BooBinding.CodeCompletion
 		}
 		#endregion
 		
+		public override void OnBinaryExpression(BinaryExpression node)
+		{
+			switch (node.Operator) {
+				case BinaryOperatorType.GreaterThan:
+				case BinaryOperatorType.GreaterThanOrEqual:
+				case BinaryOperatorType.Inequality:
+				case BinaryOperatorType.LessThan:
+				case BinaryOperatorType.LessThanOrEqual:
+				case BinaryOperatorType.Match:
+				case BinaryOperatorType.Member:
+				case BinaryOperatorType.NotMatch:
+				case BinaryOperatorType.NotMember:
+				case BinaryOperatorType.Or:
+				case BinaryOperatorType.And:
+				case BinaryOperatorType.ReferenceEquality:
+				case BinaryOperatorType.ReferenceInequality:
+				case BinaryOperatorType.TypeTest:
+					MakeResult(ReflectionReturnType.Bool);
+					break;
+				default:
+					if (node.Left == null) {
+						if (node.Right == null) {
+							resolveResult = null;
+						} else {
+							node.Right.Accept(this);
+						}
+						return;
+					} else if (node.Right == null) {
+						node.Left.Accept(this);
+						return;
+					}
+					node.Left.Accept(this);
+					IReturnType left = (resolveResult != null) ? resolveResult.ResolvedType : null;
+					node.Right.Accept(this);
+					IReturnType right = (resolveResult != null) ? resolveResult.ResolvedType : null;
+					MakeResult(MemberLookupHelper.GetCommonType(left, right));
+					break;
+			}
+		}
+		
 		protected override void OnError(Node node, Exception error)
 		{
 			MessageService.ShowError(error, "ResolveVisitor: error processing " + node);

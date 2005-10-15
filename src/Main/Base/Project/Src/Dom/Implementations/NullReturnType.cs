@@ -11,8 +11,8 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
-	/// <summary>The type of the 'null'/'nothing' literal.</summary>
 	[Serializable]
+	/// <summary>The type of the 'null'/'nothing' literal.</summary>
 	public sealed class NullReturnType : AbstractReturnType
 	{
 		public static readonly NullReturnType Instance = new NullReturnType();

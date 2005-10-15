@@ -671,5 +671,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		#endregion
+		
+		/// <summary>
+		/// Gets the common base type of a and b.
+		/// </summary>
+		public static IReturnType GetCommonType(IReturnType a, IReturnType b)
+		{
+			if (a == null) return b;
+			if (b == null) return a;
+			if (ConversionExists(a, b))
+				return b;
+			if (ConversionExists(b, a))
+				return a;
+			return ReflectionReturnType.Object;
+		}
 	}
 }

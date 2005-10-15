@@ -60,7 +60,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				case BinaryOperatorType.GreaterThanOrEqual:
 					return ReflectionReturnType.Bool;
 				default:
-					return binaryOperatorExpression.Left.AcceptVisitor(this, data);
+					return MemberLookupHelper.GetCommonType(binaryOperatorExpression.Left.AcceptVisitor(this, data) as IReturnType,
+					                                        binaryOperatorExpression.Right.AcceptVisitor(this, data) as IReturnType);
 			}
 		}
 		
