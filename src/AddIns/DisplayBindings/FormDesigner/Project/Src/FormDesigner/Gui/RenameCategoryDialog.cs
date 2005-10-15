@@ -33,11 +33,11 @@ namespace ICSharpCode.FormDesigner.Gui
 				
 			if (categoryName == null) {
 				ControlDictionary["categoryNameTextBox"].Text = "New Category";
-				Text = StringParser.Parse("${res:ICSharpCode.FormDesigner.Gui.RenameCategoryDialog.NewCategoryDialogName}");
+				Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.RenameCategoryDialog.NewCategoryDialogName}");
 			} else {
 				this.categoryName = categoryName;
 				ControlDictionary["categoryNameTextBox"].Text = categoryName;
-				Text = StringParser.Parse("${res:ICSharpCode.FormDesigner.Gui.RenameCategoryDialog.RenameCategoryDialogName}");
+				Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.RenameCategoryDialog.RenameCategoryDialogName}");
 			}
 			ControlDictionary["okButton"].Click += new EventHandler(okButtonClick);
 		}
@@ -52,7 +52,7 @@ namespace ICSharpCode.FormDesigner.Gui
 		void ShowDuplicateErrorMessage()
 		{
 			
-			MessageService.ShowError("${res:ICSharpCode.FormDesigner.Gui.RenameCategoryDialog.DuplicateNameError}");
+			MessageService.ShowError("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.RenameCategoryDialog.DuplicateNameError}");
 		}
 		
 		// THIS METHOD IS MAINTAINED BY THE FORM DESIGNER

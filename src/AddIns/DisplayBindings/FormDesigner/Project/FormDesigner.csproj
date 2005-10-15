@@ -55,9 +55,6 @@
     <Compile Include="Src\FormDesigner\Gui\AddComponentsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\FormDesigner\Gui\AssemblyList.cs">
-      <SubType>Form</SubType>
-    </Compile>
     <Compile Include="Src\FormDesigner\Gui\ComponentLibraryLoader.cs" />
     <Compile Include="Src\FormDesigner\Gui\ConfigureSideBarDialog.cs">
       <SubType>Form</SubType>

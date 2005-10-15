@@ -179,9 +179,9 @@ namespace StringResourceTool
 			// 
 			// outputTextBox
 			// 
-			outputTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-									| System.Windows.Forms.AnchorStyles.Left) 
-									| System.Windows.Forms.AnchorStyles.Right)));
+			outputTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			                                                              | System.Windows.Forms.AnchorStyles.Left)
+			                                                             | System.Windows.Forms.AnchorStyles.Right)));
 			outputTextBox.Location = new System.Drawing.Point(12, 120);
 			outputTextBox.Multiline = true;
 			outputTextBox.Name = "outputTextBox";
@@ -235,14 +235,23 @@ namespace StringResourceTool
 			outputTextBox.Text = b.ToString();
 		}
 		
+		string[] specialStarts = {"Dialog.HighlightingEditor.EnvColors.",
+			"ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand."};
+		
 		/// <summary>Gets entries in t1 that are missing from t2.</summary>
 		List<string> FindMissing(Hashtable t1, Hashtable t2)
 		{
 			List<string> result = new List<string>();
 			foreach (DictionaryEntry e in t1) {
 				if (!t2.ContainsKey(e.Key)) {
-					result.Add(e.Key.ToString());
+					string v = (string)e.Key;
+					foreach (string txt in specialStarts) {
+						if (v.StartsWith(txt))
+							goto next;
+					}
+					result.Add(v);
 				}
+				next:;
 			}
 			result.Sort();
 			return result;

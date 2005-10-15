@@ -99,7 +99,7 @@ namespace ICSharpCode.FormDesigner
 			if (!componentLibraryLoader.LoadToolComponentLibrary(UserConfigFile)) {
 				if (!componentLibraryLoader.LoadToolComponentLibrary(GlobalConfigFile)) {
 					
-					MessageService.ShowWarning("${res:ICSharpCode.FormDesigner.ToolboxProvider.CantLoadSidbarComponentLibraryWarning}");
+					MessageService.ShowWarning("${res:ICSharpCode.SharpDevelop.FormDesigner.ToolboxProvider.CantLoadSidbarComponentLibraryWarning}");
 				}
 			}
 		}

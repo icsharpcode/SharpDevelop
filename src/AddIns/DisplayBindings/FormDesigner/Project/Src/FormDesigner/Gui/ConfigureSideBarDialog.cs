@@ -131,7 +131,7 @@ namespace ICSharpCode.FormDesigner.Gui
 		void removeCategoryButtonClick(object sender, System.EventArgs e)
 		{
 			
-			if (MessageService.AskQuestion("${res:ICSharpCode.FormDesigner.Gui.ConfigureSideBarDialog.RemoveCategoryQuestion}")) {
+			if (MessageService.AskQuestion("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSideBarDialog.RemoveCategoryQuestion}")) {
 				categoryListViewSelectedIndexChanged(this, EventArgs.Empty);
 				ToolboxProvider.ComponentLibraryLoader.Categories.Remove(CurrentCategory);
 				FillCategories();
@@ -149,7 +149,7 @@ namespace ICSharpCode.FormDesigner.Gui
 		void removeComponentsButtonClick(object sender, System.EventArgs e)
 		{
 			
-			if (MessageService.AskQuestion("${res:ICSharpCode.FormDesigner.Gui.ConfigureSideBarDialog.RemoveComponentsQuestion}")) {
+			if (MessageService.AskQuestion("${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.ConfigureSideBarDialog.RemoveComponentsQuestion}")) {
 				foreach (ListViewItem item in ((ListView)ControlDictionary["componentListView"]).SelectedItems) {
 					CurrentCategory.ToolComponents.Remove((ToolComponent)item.Tag);
 				}

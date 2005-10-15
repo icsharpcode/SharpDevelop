@@ -119,7 +119,7 @@ namespace ResourceEditor
 		public void LoadFile(string filename)
 		{
 			Stream s = File.OpenRead(filename);
-			switch (Path.GetExtension(filename).ToLower()) {
+			switch (Path.GetExtension(filename).ToLowerInvariant()) {
 				case ".resx":
 					ResXResourceReader rx = new ResXResourceReader(s);
 					IDictionaryEnumerator n = rx.GetEnumerator();
@@ -154,10 +154,10 @@ namespace ResourceEditor
 		public void SaveFile(string filename)
 		{
 			Debug.Assert(!writeProtected, "ICSharpCode.SharpDevelop.Gui.Edit.Resource.ResourceEdit.SaveFile(string filename) : trying to save a write protected file");
-			switch (Path.GetExtension(filename).ToUpper()) {
+			switch (Path.GetExtension(filename).ToLowerInvariant()) {
 				
 				// write XML resource
-				case ".RESX":
+				case ".resx":
 					ResXResourceWriter rxw    = new ResXResourceWriter(filename);
 					foreach (KeyValuePair<string, ResourceItem> entry in resources) {
 						if (entry.Value != null) {
