@@ -45,12 +45,14 @@ namespace ICSharpCode.XmlEditor
 		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName)
 		{
-			return new DefaultCompilationUnit(projectContent);
+			return Parse(projectContent, fileName, null);
 		}
 		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
-			return new DefaultCompilationUnit(projectContent);
+			DefaultCompilationUnit compilationUnit = new DefaultCompilationUnit(projectContent);
+			compilationUnit.FileName = fileName;
+			return compilationUnit;
 		}
 		
 		public bool CanParse(IProject project)
