@@ -1,0 +1,79 @@
+// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
+// </file>
+
+using ICSharpCode.NAntAddIn;
+using NUnit.Framework;
+using System;
+using System.Diagnostics;
+using System.IO;
+using System.Threading;
+
+namespace ICSharpCode.NAntAddIn.Tests
+{
+	[TestFixture]
+	//[Ignore("Ignoring since need to run ConsoleApp.exe")]
+	public class ProcessExitedTestFixture
+	{		
+		/// <summary>
+		/// Stores standard output received by the ProcessExit event.
+		/// </summary>
+		string standardOutput;
+		
+		/// <summary>
+		/// Stores standard error received by the ProcessExit event.
+		/// </summary>
+		string standardError;
+		
+		/// <summary>
+		/// Stores exit code received by the ProcessExit event.
+		/// </summary>		
+		int exitCode = -1;
+		
+		/// <summary>
+		/// Event that will be fired when the ProcessExit event occurs.
+		/// </summary>
+		AutoResetEvent exitEvent;
+
+		/// <summary>
+		/// Tests the Runner.ProcessExit event works.
+		/// </summary>
+		[Test]
+		public void ProcessExitEvent()
+		{			
+			exitEvent = new AutoResetEvent(false);
+			ProcessRunner runner = new ProcessRunner();
+			runner.WorkingDirectory = Path.GetDirectoryName(Config.ConsoleAppFilename);
+			
+			string echoText = "Test";
+			string expectedOutput = String.Concat(echoText, "\r\n");
+			
+			runner.ProcessExited += new EventHandler(OnProcessExited);
+			
+			runner.Start(Config.ConsoleAppFilename, String.Concat("-echo:", echoText));
+			bool exited = exitEvent.WaitOne(500, true);
+			
+			Assert.IsTrue(exited, "Timed out waiting for exit event.");
+			Assert.AreEqual(0, exitCode, "Exit code should be zero.");
+			Assert.AreEqual(expectedOutput, standardOutput, "Should have some output.");
+			Assert.AreEqual(String.Empty, standardError, "Should not be any error output.");			
+		}
+		
+		/// <summary>
+		/// Handles the ProcessExited event.
+		/// </summary>
+		void OnProcessExited(object sender, EventArgs e)
+		{
+			ProcessRunner runner = (ProcessRunner)sender;
+			
+			exitCode = runner.ExitCode;
+			standardOutput = runner.StandardOutput;
+			standardError = runner.StandardError;
+			
+			exitEvent.Set();
+		}
+	}
+}

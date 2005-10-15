@@ -1,0 +1,8 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.558
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAntAddIn", "Project\NAntAddIn.csproj", "{1DB3CAD2-38E8-4C5E-8E1B-0E37B1A5C006}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NAntAddIn.Tests", "Test\NAntAddIn.Tests.csproj", "{13AB8351-39E5-4F9D-A59C-B30D60CF6B8C}"
+EndProject
+Global
+EndGlobal

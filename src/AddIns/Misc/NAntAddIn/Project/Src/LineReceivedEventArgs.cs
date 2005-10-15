@@ -1,0 +1,32 @@
+// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
+// </file>
+
+using System;
+
+namespace ICSharpCode.NAntAddIn
+{
+	public delegate void LineReceivedEventHandler(object sender, LineReceivedEventArgs e);
+	
+	/// <summary>
+	/// The arguments for the <see cref="LineReceivedEventHandler"/> event.
+	/// </summary>
+	public class LineReceivedEventArgs : EventArgs
+	{
+		string line = String.Empty;
+		
+		public LineReceivedEventArgs(string line)
+		{
+			this.line = line;
+		}
+		
+		public string Line {
+			get {
+				return line;
+			}
+		}
+	}
+}

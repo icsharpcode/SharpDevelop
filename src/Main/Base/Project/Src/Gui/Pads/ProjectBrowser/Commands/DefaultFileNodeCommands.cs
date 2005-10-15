@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		void ExcludeFileNode(FileNode fileNode)
 		{
-			fileNode.Project.Items.Remove(fileNode.ProjectItem);
+			ProjectService.RemoveProjectItem(fileNode.Project, fileNode.ProjectItem);
 			fileNode.ProjectItem = null;
 			fileNode.FileNodeStatus = FileNodeStatus.None;
 			if (fileNode.Parent is ExtTreeNode) {
@@ -63,7 +63,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		void ExcludeDirectoryNode(DirectoryNode directoryNode)
 		{
 			if (directoryNode.ProjectItem != null) {
-				directoryNode.Project.Items.Remove(directoryNode.ProjectItem);
+				ProjectService.RemoveProjectItem(directoryNode.Project, directoryNode.ProjectItem);
 				directoryNode.ProjectItem = null;
 			}
 			directoryNode.FileNodeStatus = FileNodeStatus.None;
@@ -138,7 +138,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			
 			FileProjectItem newItem = new FileProjectItem(fileNode.Project, type);
 			newItem.Include = FileUtility.GetRelativePath(fileNode.Project.Directory, fileNode.FileName);
-			fileNode.Project.Items.Add(newItem);
+			ProjectService.AddProjectItem(fileNode.Project, newItem);
 			
 			fileNode.ProjectItem    = newItem;
 			fileNode.FileNodeStatus = FileNodeStatus.InProject;
@@ -158,7 +158,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (directoryNode.Nodes.Count == 0) {
 				FileProjectItem newItem = new FileProjectItem(directoryNode.Project, ItemType.Folder);
 				newItem.Include = FileUtility.GetRelativePath(directoryNode.Project.Directory, directoryNode.Directory);
-				directoryNode.Project.Items.Add(newItem);
+				ProjectService.AddProjectItem(directoryNode.Project, newItem);
 				directoryNode.ProjectItem = newItem;
 			}
 			directoryNode.FileNodeStatus = FileNodeStatus.InProject;
