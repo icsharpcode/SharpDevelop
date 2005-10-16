@@ -112,6 +112,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			LoadLayoutConfiguration();
 			ShowPads();
+			
+			foreach (PadContentWrapper content in contentHash.Values) {
+				content.AllowInitialize();
+			}
+
 			ShowViewContents();
 			
 			RedrawAllComponents();
@@ -181,9 +186,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			} catch {
 				// ignore errors loading configuration
-			}
-			foreach (PadContentWrapper content in contentHash.Values) {
-				content.AllowInitialize();
 			}
 		}
 		
