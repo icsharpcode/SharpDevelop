@@ -40,6 +40,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ctl.TextEditorProperties = new SharpDevelopTextEditorProperties();
 			ctl.ActiveTextAreaControl.TextArea.DoubleClick += OnDoubleClick;
 			ParserService.ParserUpdateStepFinished += UpdateTick;
+			ctl.VisibleChanged += delegate { UpdateTick(null, null); };
 		}
 		
 		void OnDoubleClick(object sender, EventArgs e)

@@ -28,7 +28,6 @@ using Microsoft.VisualBasic;
 using ICSharpCode.Core;
 using ICSharpCode.FormDesigner.Services;
 
-
 namespace ICSharpCode.FormDesigner
 {
 	/// <summary>
@@ -37,7 +36,7 @@ namespace ICSharpCode.FormDesigner
 	public class CodeDOMGenerator
 	{
 		IDesignerHost   host;
-		CodeDomProvider      codeProvider;
+		CodeDomProvider codeProvider;
 		
 		CodeDOMGeneratorUtility codeDOMGeneratorUtility = new CodeDOMGeneratorUtility();
 		List<string> addedVariables = new List<string>();
@@ -55,7 +54,7 @@ namespace ICSharpCode.FormDesigner
 			IDisposable session = serializationManager.CreateSession();
 			DesignerResourceService designerResourceService = (DesignerResourceService)host.GetService(typeof(System.ComponentModel.Design.IResourceService));
 			designerResourceService.SerializationStarted(true);
-						
+			
 			addedVariables.Clear();
 			
 			foreach (IComponent component in host.Container.Components) {
@@ -77,6 +76,7 @@ namespace ICSharpCode.FormDesigner
 		
 		void GenerateComponentCode(IComponent component, TextWriter writer, DesignerSerializationManager serializationManager)
 		{
+			LoggingService.Debug("Generate code for: " + component.Site.Name);
 			Type componentType = component.GetType();
 			ExpressionContext exprContext = new ExpressionContext(new CodeThisReferenceExpression(), componentType, component, component);
 			((IDesignerSerializationManager)serializationManager).Context.Append(exprContext);
@@ -96,23 +96,37 @@ namespace ICSharpCode.FormDesigner
 			foreach (CodeStatement statement in statements) {
 				CodeVariableDeclarationStatement variableDecl = statement as CodeVariableDeclarationStatement;
 				if (variableDecl != null) {
+					LoggingService.Debug("variable declaration: " + variableDecl.Name);
 					if (variableDecl.Name == "resources") {
 						FixResourcesVariableDeclarationStatement(variableDecl);
 					} else {
-						addedVariables.Add(((CodeVariableDeclarationStatement)statement).Name);
-						continue;
+						// skip generating the variable declaration if the component is a main
+						// component that gets its own field
+						// TreeNode is an example that does NOT get its own root component!
+						bool foundComponent = false;
+						foreach (IComponent c in host.Container.Components) {
+							if (variableDecl.Name == c.Site.Name) {
+								foundComponent = true;
+								break;
+							}
+						}
+						if (foundComponent) {
+							addedVariables.Add(((CodeVariableDeclarationStatement)statement).Name);
+							continue;
+						}
 					}
 				}
 				
 				// indentation isn't generated when calling GenerateCodeFromStatement
 				writer.Write(options.IndentString);
-				try {						
+				try {
 //						outputGenerator.PublicGenerateCodeFromStatement(statement, Console.Out, options);
 					codeProvider.GenerateCodeFromStatement(statement, writer, options);
 				} catch (Exception e) {
 					codeProvider.GenerateCodeFromStatement(new CodeCommentStatement("TODO: Error while generating statement : " + e.Message),
 					                                       writer,
 					                                       options);
+					LoggingService.Error(e);
 				}
 			}
 		}
@@ -127,7 +141,7 @@ namespace ICSharpCode.FormDesigner
 		
 		/// <summary>
 		/// HACK - Fix the resources variable declaration.  The CodeDomSerializer
-		/// creates an incorrect code expression object. 
+		/// creates an incorrect code expression object.
 		/// </summary>
 		void FixResourcesVariableDeclarationStatement(CodeVariableDeclarationStatement variableDecl)
 		{
