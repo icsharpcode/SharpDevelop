@@ -73,23 +73,41 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return false;
 			}
 			this.cu = parseInfo.MostRecentCompilationUnit;
+			if (cu == null) {
+				return false;
+			}
 			this.pc = cu.ProjectContent;
 			this.caretLine = caretLine;
 			this.caretColumn = caretColumn;
-			this.callingClass = cu.GetInnermostClass(caretLine, caretColumn);
-			if (callingClass == null) {
-				if (cu.Classes.Count == 0) return false;
-				callingClass = cu.Classes[cu.Classes.Count - 1];
-				if (!callingClass.Region.IsEmpty) {
-					if (callingClass.Region.BeginLine > caretLine)
-						return false;
+			this.callingClass = GetCallingClass(pc);
+			callingMember = ResolveCurrentMember(callingClass);
+			if (callingMember == null) {
+				if (cu != parseInfo.BestCompilationUnit) {
+					IClass olderClass = GetCallingClass(parseInfo.BestCompilationUnit.ProjectContent);
+					if (olderClass != null && callingClass == null) {
+						this.callingClass = olderClass;
+					}
+					callingMember = ResolveCurrentMember(olderClass);
 				}
 			}
-			callingMember = ResolveCurrentMember();
 			return true;
 		}
 		
-		IMember ResolveCurrentMember()
+		IClass GetCallingClass(IProjectContent pc)
+		{
+			IClass callingClass = cu.GetInnermostClass(caretLine, caretColumn);
+			if (callingClass == null) {
+				if (cu.Classes.Count == 0) return null;
+				callingClass = cu.Classes[cu.Classes.Count - 1];
+				if (!callingClass.Region.IsEmpty) {
+					if (callingClass.Region.BeginLine > caretLine)
+						callingClass = null;
+				}
+			}
+			return callingClass;
+		}
+		
+		IMember ResolveCurrentMember(IClass callingClass)
 		{
 			LoggingService.DebugFormatted("Getting current method... caretLine = {0}, caretColumn = {1}", caretLine, caretColumn);
 			if (callingClass == null) return null;
@@ -120,7 +138,14 @@ namespace Grunwald.BooBinding.CodeCompletion
 		#region GetTypeOfExpression
 		public IReturnType GetTypeOfExpression(AST.Expression expr)
 		{
-			if (!Initialize(expr.LexicalInfo.FileName, expr.LexicalInfo.Line, expr.LexicalInfo.Column))
+			AST.Node node = expr;
+			AST.LexicalInfo lexInfo;
+			do {
+				if (node == null) return null;
+				lexInfo = node.LexicalInfo;
+				node = node.ParentNode;
+			} while (lexInfo == null || lexInfo.FileName == null);
+			if (!Initialize(lexInfo.FileName, lexInfo.Line, lexInfo.Column))
 				return null;
 			ResolveVisitor visitor = new ResolveVisitor(this);
 			visitor.Visit(expr);

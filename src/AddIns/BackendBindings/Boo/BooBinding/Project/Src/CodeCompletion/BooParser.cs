@@ -109,6 +109,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			
 			compilePipe.BreakOnErrors = false;
 			compiler.Parameters.Pipeline = compilePipe;
+			compiler.Parameters.References.Add(typeof(Boo.Lang.Useful.Attributes.SingletonAttribute).Assembly);
 			
 			int errorCount = 0;
 			compilePipe.AfterStep += delegate(object sender, CompilerStepEventArgs args) {

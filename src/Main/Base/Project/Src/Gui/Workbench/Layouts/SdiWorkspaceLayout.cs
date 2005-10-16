@@ -113,10 +113,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			LoadLayoutConfiguration();
 			ShowPads();
 			
+			// ShowPads could create new pads if new addins have been installed, so we
+			// need to call AllowInitialize again
 			foreach (PadContentWrapper content in contentHash.Values) {
 				content.AllowInitialize();
 			}
-
+			
 			ShowViewContents();
 			
 			RedrawAllComponents();
@@ -145,9 +147,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			wbForm.ResumeLayout(false);
 			
 			Properties fullscreenProperties = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.FullscreenOptions", new Properties());
-			fullscreenProperties.PropertyChanged += TrackFullscreenPropertyChanges; 
+			fullscreenProperties.PropertyChanged += TrackFullscreenPropertyChanges;
 		}
-			
+		
 		void TrackFullscreenPropertyChanges(object sender, PropertyChangedEventArgs e)
 		{
 			if (e.OldValue != e.NewValue && wbForm.FullScreen) {
@@ -186,6 +188,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			} catch {
 				// ignore errors loading configuration
+			}
+			foreach (PadContentWrapper content in contentHash.Values) {
+				content.AllowInitialize();
 			}
 		}
 		
@@ -378,6 +383,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 					ActivateContent();
 			}
 			
+			/// <summary>
+			/// Enables initializing the content. This is used to prevent initializing all view
+			/// contents when the layout configuration is changed.
+			/// </summary>
 			public void AllowInitialize()
 			{
 				allowInitialize = true;
@@ -489,7 +498,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			RedrawToolbars();
 			RedrawStatusBar();
 		}
-			
+		
 		void RedrawMainMenu()
 		{
 			Properties fullscreenProperties = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.FullscreenOptions", new Properties());

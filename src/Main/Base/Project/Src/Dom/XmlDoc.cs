@@ -68,6 +68,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public string GetDocumentation(string key)
 		{
+			if (xmlDescription == null)
+				throw new ObjectDisposedException("XmlDoc");
 			lock (xmlDescription) {
 				string result;
 				if (xmlDescription.TryGetValue(key, out result))

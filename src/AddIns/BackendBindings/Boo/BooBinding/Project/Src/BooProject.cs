@@ -57,8 +57,7 @@ namespace Grunwald.BooBinding
 			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(systemItem));
 			ReferenceProjectItem booLangItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Builtins).Assembly.Location);
 			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(booLangItem));
-			string booDir = Path.GetDirectoryName(typeof(Boo.Lang.Builtins).Assembly.Location);
-			ReferenceProjectItem booUsefulItem = new ReferenceProjectItem(this, Path.Combine(booDir, "Boo.Lang.Useful.dll"));
+			ReferenceProjectItem booUsefulItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Useful.Attributes.SingletonAttribute).Assembly.Location);
 			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(booUsefulItem));
 			pc.DefaultImports = new DefaultUsing(pc);
 			pc.DefaultImports.Usings.Add("Boo.Lang.Builtins");

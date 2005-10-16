@@ -55,6 +55,10 @@
       <HintPath>..\..\RequiredLibraries\Boo.Lang.CodeDom.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Boo.Lang.Useful">
+      <HintPath>..\..\RequiredLibraries\Boo.Lang.Useful.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Resources\Boo.xshd">

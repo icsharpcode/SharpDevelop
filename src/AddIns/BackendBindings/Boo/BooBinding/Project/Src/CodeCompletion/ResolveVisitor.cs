@@ -162,10 +162,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 					}
 				}
 			}
-			if (callingClass == null)
-				return false;
-			if (ResolveMember(callingClass.DefaultReturnType, identifier))
-				return true;
+			if (callingClass != null) {
+				if (ResolveMember(callingClass.DefaultReturnType, identifier))
+					return true;
+			}
 			
 			string namespaceName = projectContent.SearchNamespace(identifier, callingClass, cu, resolver.CaretLine, resolver.CaretColumn);
 			if (namespaceName != null && namespaceName.Length > 0) {
@@ -488,12 +488,18 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override void OnSelfLiteralExpression(SelfLiteralExpression node)
 		{
-			MakeResult(callingClass.DefaultReturnType);
+			if (callingClass == null)
+				resolveResult = null;
+			else
+				MakeResult(callingClass.DefaultReturnType);
 		}
 		
 		public override void OnSuperLiteralExpression(SuperLiteralExpression node)
 		{
-			MakeResult(callingClass.BaseType);
+			if (callingClass == null)
+				resolveResult = null;
+			else
+				MakeResult(callingClass.BaseType);
 		}
 		
 		public override void OnSimpleTypeReference(SimpleTypeReference node)
