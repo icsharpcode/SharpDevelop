@@ -3,7 +3,7 @@
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.WindowsApplication.Name}</Name>
 		<Category>Boo</Category>
-		<Icon>C#.Project.Form</Icon>
+		<Icon>Boo.Project.Form</Icon>
 		<LanguageName>Boo</LanguageName>
 		<Description>${res:Templates.Project.WindowsApplication.Description}</Description>
 	</TemplateConfiguration>
@@ -60,7 +60,7 @@ Application.EnableVisualStyles()
 Application.Run(MainForm())
 
 ]]></File>
-		<File name="AssemblyInfo.cs">
+		<File name="AssemblyInfo.boo">
 			<![CDATA[import System.Reflection
 import System.Runtime.CompilerServices
 

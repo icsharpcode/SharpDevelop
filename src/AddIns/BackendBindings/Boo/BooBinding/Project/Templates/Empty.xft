@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+<Template author="Daniel Grunwald" version="1.0">
+	<Config
+		  name        = "${res:Templates.File.EmptyFile.Name}"
+		  icon        = "Boo.File.EmptyFile"
+		  category    = "Boo"
+		  defaultname = "Empty${Number}.boo"
+		  language    = "Boo"/>
+	 
+	<Description>${res:Templates.File.EmptyFile.Description}</Description>
+	
+	<Files>
+		<File name="${FullName}" language="Boo">
+</File>
+	</Files>
+	<AdditionalOptions/>
+</Template>
+
+

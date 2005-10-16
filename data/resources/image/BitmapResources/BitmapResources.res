@@ -400,6 +400,13 @@ C++.Project.WebProject                            = backendicons\cpp\project\Web
 C++.Project.Library                               = backendicons\cpp\project\Library.png
 C++.Project.ControlLibrary                        = backendicons\cpp\project\ControlLibrary.png
 
+Boo.FileIcon                                      = backendicons\boo\Boo.FileIcon.png
+Boo.File.EmptyFile                                = backendicons\boo\Boo.File.EmptyFile.png
+Boo.File.Form                                     = backendicons\boo\Boo.File.Form.png
+Boo.Project.EmptyProject                          = backendicons\boo\Boo.Project.EmptyProject.png
+Boo.Project.Form                                  = backendicons\boo\Boo.Project.Form.png
+Boo.ProjectIcon                                   = backendicons\boo\Boo.ProjectIcon.png
+
 # misc backend icons
 FileIcons.XmlIcon                                 = backendicons\miscFiles\Icons.16x16.XMLFileIcon.png
 Icons.16x16.ResourceFileIcon                      = backendicons\miscFiles\Icons.16x16.ResourceFileIcon.png

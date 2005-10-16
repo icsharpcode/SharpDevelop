@@ -125,6 +125,15 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="Src\Designer" />
+    <Content Include="Templates\Empty.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\EmptyClass.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\Form.xft">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

@@ -3,7 +3,7 @@
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.ConsoleProject.Name}</Name>
 		<Category>Boo</Category>
-		<Icon>C#.Project.DOSProject</Icon>
+		<Icon>Boo.Project.EmptyProject</Icon>
 		<LanguageName>Boo</LanguageName>
 		<Description>${res:Templates.Project.ConsoleProject.Description}</Description>
 	</TemplateConfiguration>

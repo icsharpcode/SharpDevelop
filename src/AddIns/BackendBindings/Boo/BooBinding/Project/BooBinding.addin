@@ -18,6 +18,16 @@
 		            extensions = "*.boo"/>
 	</Path>
 	
+	<Path name = "/Workspace/Icons">
+		<Icon id         = "BooPrj"
+		      language   = "Boo"
+		      resource   = "Boo.ProjectIcon"/>
+		
+		<Icon id         = "BooFile"
+		      extensions = ".boo"
+		      resource   = "Boo.FileIcon"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/BackendBindings/Templates">
 		<Directory id = "Boo" path = "./Templates" />
 	</Path>
