@@ -193,6 +193,8 @@ namespace CheckFileHeaders
 					return "d_erchoff@hotmail.com";
 				case "Georg Brandl":
 					return "g.brandl@gmx.net";
+				case "Ivo Kovacka":
+					return "ivok@internet.sk";
 				case "none":
 					return "";
 				default:
