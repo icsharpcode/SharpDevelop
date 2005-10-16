@@ -6,47 +6,19 @@
 // </file>
 
 using System;
-using System.Text;
-using System.Text.RegularExpressions;
 using System.IO;
-using System.Collections;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Design;
-using System.Reflection;
-using System.Windows.Forms;
-using System.Drawing.Printing;
-using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.ComponentModel.Design.Serialization;
-using System.Xml;
-
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Internal.Undo;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.FormDesigner.Services;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
-
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
-using ICSharpCode.NRefactory.PrettyPrinter;
-
-using System.CodeDom;
-using System.CodeDom.Compiler;
-
-using Microsoft.CSharp;
-using Microsoft.VisualBasic;
 
 namespace ICSharpCode.FormDesigner
 {
 	public class FormDesignerSecondaryDisplayBinding : ISecondaryDisplayBinding
 	{
-		IMethod GetInitializeComponents(IClass c)
+		public static IMethod GetInitializeComponents(IClass c)
 		{
 			foreach (IMethod method in c.Methods) {
 				if ((method.Name == "InitializeComponents" || method.Name == "InitializeComponent") && method.Parameters.Count == 0) {
@@ -69,6 +41,23 @@ namespace ICSharpCode.FormDesigner
 			return c.IsTypeInInheritanceTree(pc.GetClass("System.Windows.Forms.Form")) || c.IsTypeInInheritanceTree(pc.GetClass("System.Windows.Forms.UserControl"));
 		}
 		
+		public static bool IsDesignable(ParseInformation info)
+		{
+			if (info != null) {
+				ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
+				foreach (IClass c in cu.Classes) {
+					if (BaseClassIsFormOrControl(c)) {
+						IMethod method = GetInitializeComponents(c);
+						if (method == null) {
+							return false;
+						}
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		
 		public bool CanAttachTo(IViewContent viewContent)
 		{
 			if (viewContent is ITextEditorControlProvider) {
@@ -78,40 +67,14 @@ namespace ICSharpCode.FormDesigner
 				if (fileName == null)
 					return false;
 				
-				fileExtension = Path.GetExtension(fileName).ToLower();
+				fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
 				
 				switch (fileExtension) {
 					case ".cs":
-						ParseInformation info = ParserService.ParseFile(fileName, textAreaControlProvider.TextEditorControl.Document.TextContent, false, true);
-						if (info != null) {
-							ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
-							foreach (IClass c in cu.Classes) {
-								if (BaseClassIsFormOrControl(c)) {
-									IMethod method = GetInitializeComponents(c);
-									if (method == null) {
-										continue;
-									}
-									Console.WriteLine("TRUE "+ info);
-									
-									return true;
-								}
-							}
-						}
-						break;
 					case ".vb":
-						info = ParserService.ParseFile(fileName, textAreaControlProvider.TextEditorControl.Document.TextContent, false, true);
-						if (info != null) {
-							ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
-							foreach (IClass c in cu.Classes) {
-								if (BaseClassIsFormOrControl(c)) {
-									IMethod method = GetInitializeComponents(c);
-									if (method == null) {
-										continue;
-									}
-									return true;
-								}
-							}
-						}
+						ParseInformation info = ParserService.ParseFile(fileName, textAreaControlProvider.TextEditorControl.Document.TextContent, false, true);
+						if (IsDesignable(info))
+							return true;
 						break;
 					case ".xfrm":
 						return true;
@@ -125,11 +88,8 @@ namespace ICSharpCode.FormDesigner
 			string fileExtension = String.Empty;
 			string fileName      = viewContent.IsUntitled ? viewContent.UntitledName : viewContent.FileName;
 			
-			fileExtension = Path.GetExtension(fileName).ToLower();
+			fileExtension = Path.GetExtension(fileName).ToLowerInvariant();
 			
-			if (!FormKeyHandler.inserted) {
-				FormKeyHandler.Insert();
-			}
 			IDesignerLoaderProvider loader;
 			IDesignerGenerator generator;
 			

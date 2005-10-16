@@ -269,6 +269,9 @@ namespace ICSharpCode.NRefactory.Parser
 		protected override void GenerateConstructor(CodeConstructor e, CodeTypeDeclaration c)
 		{
 			Output.WriteLine("[CodeConstructor : {0}]", e.ToString());
+			++Indent;
+			GenerateStatements(e.Statements);
+			--Indent;
 		}
 		
 		protected override void GenerateTypeConstructor(CodeTypeConstructor e)
@@ -338,7 +341,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected override string QuoteSnippetString(string value)
 		{
-			return value;
+			return "\"" + value + "\"";
 		}
 		
 		#endregion

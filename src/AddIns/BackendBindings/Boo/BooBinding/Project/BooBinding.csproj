@@ -36,6 +36,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Design" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="Boo.Lang.Compiler">
@@ -48,6 +49,10 @@
     </Reference>
     <Reference Include="Boo.Lang.Parser">
       <HintPath>..\..\RequiredLibraries\Boo.Lang.Parser.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
+    <Reference Include="Boo.Lang.CodeDom">
+      <HintPath>..\..\RequiredLibraries\Boo.Lang.CodeDom.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
   </ItemGroup>
@@ -69,6 +74,10 @@
     <Compile Include="Src\CodeCompletion\VariableLookupVisitor.cs" />
     <Compile Include="Src\CodeCompletion\InferredReturnType.cs" />
     <Compile Include="Src\ConvertBuffer.cs" />
+    <Compile Include="Src\Designer\BooDesignerGenerator.cs" />
+    <Compile Include="Src\Designer\BooDesignerLoader.cs" />
+    <Compile Include="Src\Designer\FormDesignerBinding.cs" />
+    <Compile Include="Src\Designer\CodeDomVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BooBinding.addin">
@@ -110,6 +119,12 @@
       <Private>True</Private>
     </ProjectReference>
     <Content Include="PostBuildEvent.bat" />
+    <ProjectReference Include="..\..\..\..\DisplayBindings\FormDesigner\Project\FormDesigner.csproj">
+      <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
+      <Name>FormDesigner</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <Folder Include="Src\Designer" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
 </Project>

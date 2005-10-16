@@ -295,7 +295,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override bool EnterModule(AST.Module node)
 		{
-			if (_firstModule) EnterTypeDefinition(node, ClassType.Class);
+			if (!_firstModule && node.Members.Count > 0) {
+				EnterTypeDefinition(node, ClassType.Module);
+			}
 			_firstModule = false;
 			return base.EnterModule(node);
 		}

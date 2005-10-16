@@ -6,42 +6,11 @@
 // </file>
 
 using System;
-using System.Text;
-using System.Text.RegularExpressions;
-using System.IO;
 using System.Collections;
-using System.Collections.Generic;
-using System.Diagnostics;
-using System.Drawing;
-using System.Drawing.Design;
-using System.Reflection;
-using System.Windows.Forms;
-using System.Drawing.Printing;
 using System.ComponentModel;
-using System.ComponentModel.Design;
-using System.ComponentModel.Design.Serialization;
-using System.Xml;
+using System.Reflection;
 
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.SharpDevelop.Project;
-using ICSharpCode.SharpDevelop.Internal.Undo;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-
-using ICSharpCode.Core;
-using ICSharpCode.FormDesigner.Services;
-using ICSharpCode.TextEditor;
-using ICSharpCode.TextEditor.Document;
-
-using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.NRefactory.Parser.AST;
-using ICSharpCode.NRefactory.PrettyPrinter;
-
-using System.CodeDom;
-using System.CodeDom.Compiler;
-
-using Microsoft.CSharp;
-using Microsoft.VisualBasic;
 
 namespace ICSharpCode.FormDesigner
 {

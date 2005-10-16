@@ -99,6 +99,10 @@ namespace ICSharpCode.FormDesigner
 		}
 		public FormDesignerViewContent(IViewContent viewContent, IDesignerLoaderProvider loader, IDesignerGenerator generator)
 		{
+			if (!FormKeyHandler.inserted) {
+				FormKeyHandler.Insert();
+			}
+			
 			this.loader    = loader;
 			this.generator = generator;
 			p.BackColor    = Color.White;

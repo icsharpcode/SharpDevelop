@@ -9,52 +9,45 @@ using System;
 using System.ComponentModel;
 using System.Reflection;
 using ICSharpCode.Core;
+using ICSharpCode.FormDesigner;
 
-namespace ICSharpCode.FormDesigner
+namespace Grunwald.BooBinding.Designer
 {
-	public class VBNetDesignerGenerator : AbstractDesignerGenerator
+	public class BooDesignerGenerator : AbstractDesignerGenerator
 	{
 		protected override string GenerateFieldDeclaration(Type fieldType, string name)
 		{
-			return "Private " + name + " As " + fieldType;
+			return "private " + name + " as " + fieldType;
 		}
 		
 		protected override System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider()
 		{
-			return new Microsoft.VisualBasic.VBCodeProvider();
+			return new Boo.Lang.CodeDom.BooCodeProvider();
 		}
 		
 		protected override string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body)
 		{
+			if (string.IsNullOrEmpty(body)) body = "\tpass";
 			string param = GenerateParams(edesc);
-			
-			return "Sub " + eventMethodName + "(" + param + ")\n" +
+			return "private def " + eventMethodName + "(" + param + "):\n" +
 				body +
-				"\nEnd Sub\n\n";
+				"\n";
 		}
 		
 		protected static string GenerateParams(EventDescriptor edesc)
 		{
-			System.Type type =  edesc.EventType;
+			Type type =  edesc.EventType;
 			MethodInfo mInfo = type.GetMethod("Invoke");
 			string param = "";
-			IAmbience csa = null;
-			try {
-				csa = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/VBNet", null);
-			} catch (TreePathNotFoundException) {
-				LoggingService.Warn("VB ambience not found");
-			}
 			
 			for (int i = 0; i < mInfo.GetParameters().Length; ++i)  {
 				ParameterInfo pInfo  = mInfo.GetParameters()[i];
 				
 				param += pInfo.Name;
-				param += " As ";
+				param += " as ";
 				
 				string typeStr = pInfo.ParameterType.ToString();
-				if (csa != null) {
-					typeStr = csa.GetIntrinsicTypeName(typeStr);
-				}
+				typeStr = BooAmbience.Instance.GetIntrinsicTypeName(typeStr);
 				param += typeStr;
 				if (i + 1 < mInfo.GetParameters().Length) {
 					param += ", ";

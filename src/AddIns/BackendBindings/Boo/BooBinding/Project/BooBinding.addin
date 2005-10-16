@@ -6,6 +6,7 @@
        version     = "1.0.0">
 	
 	<Runtime>
+		<Import assembly = "../../DisplayBindings/FormDesigner/FormDesigner.dll"/>
 		<Import assembly = "BooBinding.dll"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
@@ -42,6 +43,13 @@
 		            name       = "Boo"
 		            extensions = ".boo"
 		            resource   = "Grunwald.BooBinding.Resources.Boo.xshd" />
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id               = "BooFormDesigner"
+		                type             = "Secondary"
+		                supportedformats = "Forms/UserControls"
+		                class            = "Grunwald.BooBinding.Designer.FormDesignerDisplayBinding" />
 	</Path>
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/Boo">
