@@ -66,10 +66,23 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			if (parseInformation == null || parseInformation.MostRecentCompilationUnit == null) {
 				return null;
 			}
-			
+			List<FoldMarker> foldMarkers = GetFoldMarkers(document, parseInformation.MostRecentCompilationUnit);
+			if (parseInformation.BestCompilationUnit != parseInformation.MostRecentCompilationUnit) {
+				List<FoldMarker> oldFoldMarkers = GetFoldMarkers(document, parseInformation.BestCompilationUnit);
+				int lastLine = (foldMarkers.Count == 0) ? 0 : foldMarkers[foldMarkers.Count - 1].EndLine;
+				int totalNumberOfLines = document.TotalNumberOfLines;
+				foreach (FoldMarker marker in oldFoldMarkers) {
+					if (marker.StartLine > lastLine && marker.EndLine < totalNumberOfLines)
+						foldMarkers.Add(marker);
+				}
+			}
+			return foldMarkers;
+		}
+		
+		List<FoldMarker> GetFoldMarkers(IDocument document, ICompilationUnit cu)
+		{
 			List<FoldMarker> foldMarkers = new List<FoldMarker>();
-			ICompilationUnit cu = (ICompilationUnit)parseInformation.MostRecentCompilationUnit;
-
+			
 			bool firstTime = document.FoldingManager.FoldMarker.Count == 0;
 			foreach (FoldingRegion foldingRegion in cu.FoldingRegions) {
 				foldMarkers.Add(new FoldMarker(document, foldingRegion.Region.BeginLine - 1, foldingRegion.Region.BeginColumn - 1,

@@ -54,5 +54,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.Context = context;
 			this.Tag = tag;
 		}
+		
+		public override string ToString()
+		{
+			if (Context == ExpressionContext.Default)
+				return "<" + Expression + ">";
+			else
+				return "<" + Expression + "> (" + Context.ToString() + ")";
+		}
 	}
 }

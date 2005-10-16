@@ -39,12 +39,16 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override void Run()
 		{
-			LoggingService.Debug("RUN");
 			try {
 				Visit(CompileUnit);
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
+		}
+		
+		protected override void OnError(AST.Node node, Exception error)
+		{
+			MessageService.ShowError(error, "error processing " + node.ToCodeString());
 		}
 		
 		private ModifierEnum GetModifier(AST.TypeMember m)
@@ -119,7 +123,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (p.Alias == null)
 				u.Usings.Add(p.Namespace);
 			else
-				u.Aliases[p.Alias.Name] = new GetClassReturnType(_cu.ProjectContent, p.Namespace, 0);
+				u.AddAlias(p.Alias.Name, new GetClassReturnType(_cu.ProjectContent, p.Namespace, 0));
 			_cu.Usings.Add(u);
 		}
 		

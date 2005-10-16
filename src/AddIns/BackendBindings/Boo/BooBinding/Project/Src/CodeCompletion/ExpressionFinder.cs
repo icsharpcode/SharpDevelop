@@ -90,7 +90,6 @@ namespace Grunwald.BooBinding.CodeCompletion
 			
 			inText = SimplifyCode(inText, offset);
 			if (inText == null) {
-				LoggingService.Debug("SimplifyCode returned null (cursor is in comment/string???)");
 				return new ExpressionResult(null);
 			}
 			// inText now has no comments or string literals, but the same meaning in
@@ -162,34 +161,35 @@ namespace Grunwald.BooBinding.CodeCompletion
 			// state = -1 : accepting current identifier
 			// state >= 0 : accepting brackets/parenthesis
 			Stack<int> bracketStack = new Stack<int>();
-			for (int i = offset + 1; i < inText.Length; i++) {
+			int i;
+			for (i = offset + 1; i < inText.Length; i++) {
 				char c = inText[i];
-				if (state == -1) {
-					if (char.IsLetterOrDigit(c) || c == '_') {
-						// continue reading identifier
-					} else {
-						state = 0;
+				if (char.IsLetterOrDigit(c) || c == '_') {
+					// continue reading identifier
+				} else {
+					state = 0;
+					break;
+				}
+			}
+			i -= 1;
+			while (state >= 0) {
+				state = FindNextCodeCharacter(state, inText, ref i);
+				if (state < 0) break;
+				char c = inText[i];
+				int bracket = _openingBrackets.IndexOf(c);
+				if (bracket >= 0) {
+					bracketStack.Push(bracket);
+				} else {
+					if (bracketStack.Count == 0) {
+						b.Append(inText, offset + 1, i - offset - 1);
+						result.Expression = b.ToString();
+						return result;
 					}
 				}
-				if (state >= 0) {
-					state = FeedStateMachine(state, c);
-					if (IsInNormalCode(state)) {
-						int bracket = _openingBrackets.IndexOf(c);
-						if (bracket >= 0) {
-							bracketStack.Push(bracket);
-						} else {
-							if (bracketStack.Count == 0) {
-								result.Expression = b.ToString();
-								return result;
-							}
-						}
-						bracket = _closingBrackets.IndexOf(c);
-						if (bracket >= 0) {
-							while (bracketStack.Count > 0 && bracketStack.Pop() > bracket);
-						}
-					}
+				bracket = _closingBrackets.IndexOf(c);
+				if (bracket >= 0) {
+					while (bracketStack.Count > 0 && bracketStack.Pop() > bracket);
 				}
-				b.Append(c);
 			}
 			return new ExpressionResult(null);
 		}
@@ -276,6 +276,34 @@ namespace Grunwald.BooBinding.CodeCompletion
 			return action;
 		}
 		
+		/// <summary>
+		/// Goes to the next position in "text" that is code (not comment, string etc.).
+		/// Returns a state that has be passed in as <paramref name="state"/> on the
+		/// next call.
+		/// </summary>
+		public int FindNextCodeCharacter(int state, string text, ref int pos)
+		{
+			ResetStateMachine();
+			do {
+				pos += 1;
+				if (pos >= text.Length)
+					return -1;
+				char c = text[pos];
+				state = FeedStateMachine(state, c);
+				if (state == 12) {
+					// after / could be a regular expression, do a special check for that
+					int regexEnd = SkipRegularExpression(text, pos, text.Length - 1);
+					if (regexEnd > 0) {
+						pos = regexEnd;
+					} else if (regexEnd == -1) {
+						// cursor is in regex
+						return -1;
+					} // else: regexEnd is 0 if its not a regex
+				}
+			} while (!IsInNormalCode(state));
+			return state;
+		}
+		
 		/// <summary>This method makes boo source code "simpler" by removing all comments
 		/// and replacing all string litarals through string.Empty.
 		/// Regular expressions literals are replaced with the simple regex /a/</summary>
@@ -311,7 +339,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 						}
 					}
 					if (state == 2 || (state >= 6 && state <= 11))
-						result.Append("string.Empty");
+						result.Append("''");
 					if (IsInNormalCode(state))
 						result.Append(c);
 					state = action;

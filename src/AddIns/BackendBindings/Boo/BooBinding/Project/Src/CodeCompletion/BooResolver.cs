@@ -148,6 +148,11 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			if (!Initialize(fileName, caretLineNumber, caretColumn))
 				return null;
+			LoggingService.Debug("Resolve " + expressionResult.ToString());
+			if (expressionResult.Expression == "__GlobalNamespace") { // used for "import" completion
+				return new NamespaceResolveResult(callingClass, callingMember, "");
+			}
+			
 			AST.Expression expr = Boo.Lang.Parser.BooParser.ParseExpression("expression", expressionResult.Expression);
 			if (expr is AST.IntegerLiteralExpression)
 				return null; // no CC for "5."

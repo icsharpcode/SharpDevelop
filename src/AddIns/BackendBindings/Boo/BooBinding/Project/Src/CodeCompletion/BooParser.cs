@@ -103,16 +103,21 @@ namespace Grunwald.BooBinding.CodeCompletion
 			num = compilePipe.Find(typeof(TransformCallableDefinitions));
 			compilePipe.RemoveAt(num);
 			
-			for (int i = 0; i < compilePipe.Count; i++) {
-				Console.WriteLine(compilePipe[i]);
-			}
+			//for (int i = 0; i < compilePipe.Count; i++) {
+			//	Console.WriteLine(compilePipe[i]);
+			//}
 			
 			compilePipe.BreakOnErrors = false;
 			compiler.Parameters.Pipeline = compilePipe;
 			
+			int errorCount = 0;
+			compilePipe.AfterStep += delegate(object sender, CompilerStepEventArgs args) {
+				if (args.Step == parsingStep)
+					errorCount = args.Context.Errors.Count;
+			};
 			try {
 				compiler.Run();
-				//visitor.Cu.ErrorsDuringCompile = compiler.Errors.Count > 0
+				visitor.Cu.ErrorsDuringCompile = errorCount > 0;
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}

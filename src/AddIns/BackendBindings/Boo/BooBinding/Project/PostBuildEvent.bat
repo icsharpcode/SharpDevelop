@@ -9,5 +9,6 @@ popd
 :copyFiles
 copy "%1\..\..\RequiredLibraries\booc.*" .
 copy "%1\..\..\RequiredLibraries\*.targets" .
+copy "%1\..\..\RequiredLibraries\Boo.Lang.Useful.dll" .
 copy "%1\..\..\RequiredLibraries\Boo.Microsoft.Build.Tasks.dll" .
 :BooPostBuildEventEnd
