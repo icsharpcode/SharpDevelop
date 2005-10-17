@@ -186,14 +186,13 @@ namespace ICSharpCode.SharpDevelop
 			AddInTree.ConditionEvaluators.Add("ActiveContentExtension", new ActiveContentExtensionConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("ActiveViewContentUntitled", new ActiveViewContentUntitledConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("ActiveWindowState", new ActiveWindowStateConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("CombineOpen", new CombineOpenConditionEvaluator());
+			AddInTree.ConditionEvaluators.Add("SolutionOpen", new SolutionOpenConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("DebuggerSupports", new DebuggerSupportsConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("IsProcessRunning", new IsProcessRunningConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("OpenWindowState", new OpenWindowStateConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("WindowActive", new WindowActiveConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("WindowOpen", new WindowOpenConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("ProjectActive", new ProjectActiveConditionEvaluator());
-			AddInTree.ConditionEvaluators.Add("ProjectOpen", new ProjectOpenConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("TextContent", new ICSharpCode.SharpDevelop.DefaultEditor.Conditions.TextContentConditionEvaluator());
 			AddInTree.ConditionEvaluators.Add("BrowserLocation", new ICSharpCode.SharpDevelop.BrowserDisplayBinding.BrowserLocationConditionEvaluator());
 			

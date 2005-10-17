@@ -14,6 +14,18 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Core
 {
+	/// <summary>
+	/// Tests if the active view content is untitled.
+	/// </summary>
+	/// <attributes name="activewindowuntitled">Boolean value to test against.</attributes>
+	/// <example title="Test if the active view content is untitled">
+	/// &lt;Condition name = "ActiveViewContentUntitled" activewindowuntitled="True"&gt;
+	/// - or -
+	/// &lt;Condition name = "ActiveViewContentUntitled"&gt;
+	/// </example>
+	/// <example title="Test if the active view content has a title">
+	/// &lt;Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"&gt;
+	/// </example>
 	public class ActiveViewContentUntitledConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
@@ -22,9 +34,10 @@ namespace ICSharpCode.Core
 				return false;
 			}
 			
+			if (!condition.Properties.Contains("activewindowuntitled"))
+				return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.IsUntitled;
 			bool activewindowuntitled = Boolean.Parse(condition.Properties["activewindowuntitled"]);
-			return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.IsUntitled && activewindowuntitled ||
-			       !WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.IsUntitled && !activewindowuntitled ;
+			return WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.IsUntitled == activewindowuntitled;
 		}
 	}
 }

@@ -19,6 +19,9 @@ namespace ICSharpCode.Core
 		ViewOnly = 4
 	}
 	
+	/// <summary>
+	/// Tests the window state of the active workbench window.
+	/// </summary>
 	public class ActiveWindowStateConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)

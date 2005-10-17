@@ -12,6 +12,20 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Core
 {
+	/// <summary>
+	/// Tests if the debugger supports a certain feature.
+	/// </summary>
+	/// <attribute name="debuggersupports">
+	/// The name of the feature the debugger must support.
+	/// Possible feature names: "Start", "StartWithoutDebugging", "Stop",
+	/// "ExecutionControl", "Stepping".
+	/// </attribute>
+	/// <example title="Test if the debugger supports stepping">
+	/// &lt;Condition name = "DebuggerSupports" debuggersupports="Stepping"&gt;
+	/// </example>
+	/// <example title="Test if the debugger supports killing the running application">
+	/// &lt;Condition name = "DebuggerSupports" debuggersupports="Stop"&gt;
+	/// </example>
 	public class DebuggerSupportsConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)

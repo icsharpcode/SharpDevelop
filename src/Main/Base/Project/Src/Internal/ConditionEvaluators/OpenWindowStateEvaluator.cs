@@ -13,7 +13,7 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Description of WindowStateCondition.
+	/// Tests if any open window has a specified window state.
 	/// </summary>
 	public class OpenWindowStateConditionEvaluator : IConditionEvaluator
 	{

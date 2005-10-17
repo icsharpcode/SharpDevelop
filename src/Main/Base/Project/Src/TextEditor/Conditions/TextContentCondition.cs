@@ -16,6 +16,15 @@ using ICSharpCode.TextEditor;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Conditions
 {
+	/// <summary>
+	/// Tests the name of the highlighting strategy of the text editor.
+	/// </summary>
+	/// <attribute name="textcontent">
+	/// The name of the highlighting strategy that should be active.
+	/// </attribute>
+	/// <example title="Test if any XML file is being edited">
+	/// &lt;Condition name = "TextContent" textcontent="XML"&gt;
+	/// </example>
 	public class TextContentConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
@@ -24,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Conditions
 			if (caller is TextEditorControl) {
 				TextEditorControl ctrl = (TextEditorControl)caller;
 				if (ctrl.Document != null && ctrl.Document.HighlightingStrategy != null) {
-					return textcontent == ctrl.Document.HighlightingStrategy.Name;
+					return string.Equals(textcontent, ctrl.Document.HighlightingStrategy.Name, StringComparison.OrdinalIgnoreCase);
 				}
 			}
 			return false;

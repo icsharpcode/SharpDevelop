@@ -62,7 +62,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/MbUnitPad/Toolbar">
-		<Condition name = "CombineOpen" iscombineopen="True" action="Disable">
+		<Condition name = "SolutionOpen" action="Disable">
 			<ToolbarItem id      = "Reload"
 			             icon    = "Icons.16x16.BrowserRefresh"
 			             tooltip = "${res:NUnitPad.NUnitPadContent.RefreshItem}"
@@ -84,7 +84,7 @@
 		</Condition>
 		<ComplexCondition action="Disable">
 			<And>
-				<Condition name="CombineOpen" iscombineopen="True"/>
+				<Condition name="SolutionOpen"/>
 				<Not>
 					<Condition name="MbUnitRunningTests"/>
 				</Not>
@@ -96,7 +96,7 @@
 		</ComplexCondition>
 		<ComplexCondition action="Disable">
 			<And>
-				<Condition name="CombineOpen" iscombineopen="True"/>
+				<Condition name="SolutionOpen"/>
 				<Condition name="MbUnitRunningTests"/>
 			</And>
 					<ToolbarItem id      = "Stop"

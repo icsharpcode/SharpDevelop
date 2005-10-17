@@ -122,7 +122,7 @@
 	
 	<!-- Project browser Paths -->
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ToolBar/Standard">
-		<Condition name = "CombineOpen" iscombineopen="True" action="Disable">
+		<Condition name = "SolutionOpen" action="Disable">
 			<ToolbarItem id      = "Properties"
 			             icon    = "Icons.16x16.PropertiesIcon"
 			             tooltip = "${res:MainWindow.Windows.PropertiesScoutLabel}"
@@ -699,7 +699,7 @@
 					</Or>
 					<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
 				</And>
-				<Condition name = "CombineOpen" iscombineopen="True"/>
+				<Condition name = "SolutionOpen"/>
 			</Or>
 			<ToolbarItem id      = "Compile"
 			             icon    = "Icons.16x16.BuildCombine"
@@ -980,7 +980,7 @@
 					          shortcut = "Control|F4"
 					          class ="ICSharpCode.SharpDevelop.Commands.CloseFile"/>
 				</Condition>
-				<Condition name = "CombineOpen" iscombineopen="True" action="Disable">
+				<Condition name = "SolutionOpen" action="Disable">
 					<MenuItem id = "CloseCombine"
 					          label = "${res:XML.MainMenu.FileMenu.Close.Project}"
 					          shortcut = "Control|Shift|F4"
@@ -1110,7 +1110,7 @@
 			<ComplexCondition action="Disable">
 				<Or>
 					<Condition name = "WindowActive" activewindow="*"/>
-					<Condition name = "CombineOpen" iscombineopen="True"/>
+					<Condition name = "SolutionOpen"/>
 				</Or>
 				<MenuItem id = "WordCount"
 				          label = "${res:XML.MainMenu.EditMenu.WordCount}"
@@ -1164,7 +1164,7 @@
 						</Or>
 						<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
 					</And>
-					<Condition name = "CombineOpen" iscombineopen="True"/>
+					<Condition name = "SolutionOpen"/>
 				</Or>
 				<MenuItem id       = "Build"
 				          label    = "${res:XML.MainMenu.BuildMenu.BuildSolution}"
@@ -1209,7 +1209,7 @@
 						</Or>
 						<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
 					</And>
-					<Condition name = "CombineOpen" iscombineopen="True"/>
+					<Condition name = "SolutionOpen"/>
 				</Or>
 				
 				<Condition name="DebuggerSupports" debuggersupports = "Start">

@@ -100,21 +100,25 @@ namespace BuildAddinDocumentation
 					html.WriteLine("       <th>Condition name:</td>");
 				html.WriteLine("       <td>" + fullname + "</td>");
 				html.WriteLine("    </tr>");
-				html.WriteLine("    <tr><td colspan=2><hr><h3>Attributes:</h3></td></tr>");
-				bool firstNonAttribute = true;
+				bool lastWasAttribute = false;
 				foreach (XmlElement sub in e) {
 					switch (sub.Name) {
 						case "summary":
+						case "example":
 							break;
 						case "attribute":
+							if (!lastWasAttribute) {
+								lastWasAttribute = true;
+								html.WriteLine("    <tr><td colspan=2><hr><h3>Attributes:</h3></td></tr>");
+							}
 							html.WriteLine("    <tr>");
 							html.WriteLine("       <th>" + sub.GetAttribute("name") + ":</td>");
 							html.WriteLine("       <td>" + sub.InnerXml + "</td>");
 							html.WriteLine("    </tr>");
 							break;
 						default:
-							if (firstNonAttribute) {
-								firstNonAttribute = false;
+							if (lastWasAttribute) {
+								lastWasAttribute = false;
 								html.WriteLine("    <tr><td colspan=2><hr></td></tr>");
 							}
 							html.WriteLine("    <tr>");
@@ -125,6 +129,12 @@ namespace BuildAddinDocumentation
 					}
 				}
 				html.WriteLine("  </table>");
+				foreach (XmlElement sub in e) {
+					if (sub.Name == "example") {
+						html.WriteLine("  <p><span class=\"exampleTitle\">Example: " + sub.GetAttribute("title") + "</span>");
+						html.WriteLine("  <br><pre>" + sub.InnerXml.TrimEnd() + "</pre></p>");
+					}
+				}
 				html.WriteLine("</div>");
 			}
 		}

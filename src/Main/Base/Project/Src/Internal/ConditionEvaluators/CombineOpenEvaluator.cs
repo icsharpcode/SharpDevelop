@@ -14,13 +14,17 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Core
 {
-	public class CombineOpenConditionEvaluator : IConditionEvaluator
+	/// <summary>
+	/// Tests if a solution is open.
+	/// </summary>
+	/// <example title="Test if a solution is opened">
+	/// &lt;Condition name = "SolutionOpen"&gt;
+	/// </example>
+	public class SolutionOpenConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
 		{
-			
-			bool isCombineOpen = Boolean.Parse(condition.Properties["iscombineopen"]);
-			return ProjectService.OpenSolution != null || !isCombineOpen;
+			return (ProjectService.OpenSolution != null);
 		}
 	}
 }

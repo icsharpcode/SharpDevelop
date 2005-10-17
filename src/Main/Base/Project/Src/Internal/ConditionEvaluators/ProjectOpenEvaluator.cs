@@ -15,6 +15,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Core
 {
+/*
 	public class ProjectOpenConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
@@ -29,5 +30,5 @@ namespace ICSharpCode.Core
 			return project != null && project.Language == openproject;
 		}
 	}
-
+*/
 }

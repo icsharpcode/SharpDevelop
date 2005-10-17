@@ -14,6 +14,15 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 	/// <summary>
 	/// Conditions that tries to match the URL of a <see cref="HtmlViewPane"/> with a regex.
 	/// </summary>
+	/// <attribute name="urlRegex">
+	/// The regular expression that must match the URL.
+	/// </attribute>
+	/// <attribute name="options">
+	/// Optional; options that are passed as <see cref="RegexOptions"/>.
+	/// </attribute>
+	/// <example title="Test if the browser is showing a HtmlHelp page">
+	/// &lt;Condition name = "BrowserLocation" urlRegex = "^ms-help:\/\/"&gt;
+	/// </example>
 	public class BrowserLocationConditionEvaluator : IConditionEvaluator
 	{
 		public bool IsValid(object caller, Condition condition)
