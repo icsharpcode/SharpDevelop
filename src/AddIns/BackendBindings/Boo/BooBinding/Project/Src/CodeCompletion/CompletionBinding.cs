@@ -25,6 +25,24 @@ namespace Grunwald.BooBinding.CodeCompletion
 			this.EnableXmlCommentCompletion = false;
 		}
 		
+		public override bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch)
+		{
+			if (ch == '[') {
+				int cursor = editor.ActiveTextAreaControl.Caret.Offset;
+				for (int i = cursor - 1; i > 0; i--) {
+					char c = editor.Document.GetCharAt(i);
+					if (c == '\n' || c == '(' || c == ',') {
+						// -> Attribute completion
+						editor.ShowCompletionWindow(new AttributesDataProvider(ExpressionFinder.BooAttributeContext.Instance), ch);
+						return true;
+					}
+					if (!char.IsWhiteSpace(c))
+						break;
+				}
+			}
+			return base.HandleKeyPress(editor, ch);
+		}
+		
 		bool IsInComment(SharpDevelopTextAreaControl editor)
 		{
 			ExpressionFinder ef = new ExpressionFinder(editor.FileName);

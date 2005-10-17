@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				}
 				ExpressionContext context = overrideContext;
 				if (context == null) context = ExpressionContext.Default;
-				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent), context);
+				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent, context), context);
 				return;
 			}
 			
@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				if (charTyped != '\0') {
 					preSelection = null;
 				}
-				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent), expressionResult.Context);
+				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent, expressionResult.Context), expressionResult.Context);
 				return;
 			}
 			
@@ -81,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				if (charTyped != '\0') {
 					preSelection = null;
 				}
-				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent), expressionResult.Context);
+				AddResolveResults(ParserService.CtrlSpace(caretLineNumber, caretColumn, fileName, textArea.Document.TextContent, expressionResult.Context), expressionResult.Context);
 			}
 		}
 	}

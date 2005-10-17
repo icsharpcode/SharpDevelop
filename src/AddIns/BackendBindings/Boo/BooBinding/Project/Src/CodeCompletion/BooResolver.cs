@@ -179,8 +179,40 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 			
 			AST.Expression expr = Boo.Lang.Parser.BooParser.ParseExpression("expression", expressionResult.Expression);
+			if (expr == null)
+				return null;
 			if (expr is AST.IntegerLiteralExpression)
 				return null; // no CC for "5."
+			
+			if (expressionResult.Context == ExpressionFinder.BooAttributeContext.Instance) {
+				AST.MethodInvocationExpression mie = expr as AST.MethodInvocationExpression;
+				if (mie != null)
+					expr = mie.Target;
+				string name = expr.ToCodeString();
+				IReturnType rt = pc.SearchType(name, 0, callingClass, cu, caretLine, caretColumn);
+				if (rt != null && rt.GetUnderlyingClass() != null)
+					return new TypeResolveResult(callingClass, callingMember, rt);
+				rt = pc.SearchType(name + "Attribute", 0, callingClass, cu, caretLine, caretColumn);
+				if (rt != null && rt.GetUnderlyingClass() != null)
+					return new TypeResolveResult(callingClass, callingMember, rt);
+				if (BooProject.BooCompilerPC != null) {
+					IClass c = BooProject.BooCompilerPC.GetClass("Boo.Lang." + char.ToUpper(name[0]) + name.Substring(1) + "Attribute");
+					if (c != null)
+						return new TypeResolveResult(callingClass, callingMember, c);
+				}
+				return null;
+			} else {
+				if (expr.NodeType == AST.NodeType.ReferenceExpression) {
+					// this could be a macro
+					if (BooProject.BooCompilerPC != null) {
+						string name = ((AST.ReferenceExpression)expr).Name;
+						IClass c = BooProject.BooCompilerPC.GetClass("Boo.Lang." + char.ToUpper(name[0]) + name.Substring(1) + "Macro");
+						if (c != null)
+							return new TypeResolveResult(callingClass, callingMember, c);
+					}
+				}
+			}
+			
 			ResolveVisitor visitor = new ResolveVisitor(this);
 			visitor.Visit(expr);
 			return visitor.ResolveResult;
@@ -201,7 +233,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		#endregion
 		
 		#region CtrlSpace
-		IClass GetPrimitiveClass(string systemType, string newName)
+		static IClass GetPrimitiveClass(IProjectContent pc, string systemType, string newName)
 		{
 			IClass c = pc.GetClass(systemType);
 			if (c == null) {
@@ -220,12 +252,30 @@ namespace Grunwald.BooBinding.CodeCompletion
 			return c2;
 		}
 		
-		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent)
+		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent, ExpressionContext context)
 		{
 			if (!Initialize(fileName, caretLine, caretColumn))
 				return null;
 			
 			ArrayList result = GetImportedNamespaceContents();
+			
+			if (BooProject.BooCompilerPC != null) {
+				if (context == ExpressionFinder.BooAttributeContext.Instance) {
+					foreach (object o in BooProject.BooCompilerPC.GetNamespaceContents("Boo.Lang")) {
+						IClass c = o as IClass;
+						if (c != null && c.Name.EndsWith("Attribute") && !c.IsAbstract) {
+							result.Add(GetPrimitiveClass(BooProject.BooCompilerPC, c.FullyQualifiedName, c.Name.Substring(0, c.Name.Length - 9).ToLowerInvariant()));
+						}
+					}
+				} else {
+					foreach (object o in BooProject.BooCompilerPC.GetNamespaceContents("Boo.Lang")) {
+						IClass c = o as IClass;
+						if (c != null && c.Name.EndsWith("Macro") && !c.IsAbstract) {
+							result.Add(GetPrimitiveClass(BooProject.BooCompilerPC, c.FullyQualifiedName, c.Name.Substring(0, c.Name.Length - 5).ToLowerInvariant()));
+						}
+					}
+				}
+			}
 			
 			NRResolver.AddContentsFromCalling(result, callingClass, callingMember);
 			
@@ -255,7 +305,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			ArrayList list = new ArrayList();
 			IClass c;
 			foreach (KeyValuePair<string, string> pair in BooAmbience.TypeConversionTable) {
-				c = GetPrimitiveClass(pair.Key, pair.Value);
+				c = GetPrimitiveClass(pc, pair.Key, pair.Value);
 				if (c != null) list.Add(c);
 			}
 			NRResolver.AddImportedNamespaceContents(list, cu, callingClass);

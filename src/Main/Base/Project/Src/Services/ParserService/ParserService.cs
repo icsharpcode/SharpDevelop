@@ -443,11 +443,11 @@ namespace ICSharpCode.Core
 		
 		////////////////////////////////////
 		
-		public static ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent)
+		public static ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent, ExpressionContext context)
 		{
 			IParser parser = GetParser(fileName);
 			if (parser != null) {
-				return parser.CreateResolver().CtrlSpace(caretLine, caretColumn, fileName, fileContent);
+				return parser.CreateResolver().CtrlSpace(caretLine, caretColumn, fileName, fileContent, context);
 			}
 			return null;
 		}

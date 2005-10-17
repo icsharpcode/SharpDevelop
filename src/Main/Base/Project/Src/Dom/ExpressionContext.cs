@@ -74,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// even when the keyword "new" is not part of the expression.</remarks>
 		public static ExpressionContext ObjectCreation = new TypeExpressionContext(null, true, true);
 		
-		/// <summary>Context expects a non-abstract type deriving from System.Attribute.</summary>
+		/// <summary>Context expects a type deriving from System.Attribute.</summary>
 		/// <example>[*expr*()]</example>
 		/// <remarks>When using this context, a resolver should try resolving typenames with an
 		/// appended "Attribute" suffix and treat "invocations" of the attribute type as

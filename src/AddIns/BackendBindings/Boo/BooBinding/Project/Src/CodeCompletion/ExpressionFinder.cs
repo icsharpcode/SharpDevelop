@@ -13,6 +13,7 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace Grunwald.BooBinding.CodeCompletion
 {
+	// TODO: We could need some unit tests for this.
 	public class ExpressionFinder : IExpressionFinder
 	{
 		string fileName;
@@ -33,7 +34,28 @@ namespace Grunwald.BooBinding.CodeCompletion
 		/// </example>
 		public string RemoveLastPart(string expression)
 		{
-			throw new NotImplementedException();
+			int state = 0;
+			int pos = 0;
+			int lastFinishPos = 0;
+			int brackets = 0;
+			while (state >= 0) {
+				state = FindNextCodeCharacter(state, expression, ref pos);
+				if (pos >= expression.Length)
+					break;
+				char c = expression[pos];
+				if (c == '[' || c == '(' || c == '{') {
+					if (brackets == 0)
+						lastFinishPos = pos;
+					brackets += 1;
+				}
+				if (brackets == 0 && c == '.') {
+					lastFinishPos = pos;
+				}
+				if (brackets > 0 && (c == ']' || c == ')' || c == '}')) {
+					brackets -= 1;
+				}
+			}
+			return expression.Substring(0, lastFinishPos);
 		}
 		#endregion
 		
@@ -71,7 +93,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					break;
 				}
 				if (forbidden.IndexOf(c) >= 0) {
-					LoggingService.Debug("Quickfind failed: got " + c);
+					//LoggingService.Debug("Quickfind failed: got " + c);
 					break;
 				}
 				if (char.IsWhiteSpace(c)) {
@@ -101,6 +123,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				i -= 1;
 				char c = inText[i];
 				if (bracketStack.Count == 0 && (finish.IndexOf(c) >= 0 || Char.IsWhiteSpace(c))) {
+					// SUCCESS!
 					return GetExpression(inText, i + 1, inText.Length);
 				}
 				int bracket = _closingBrackets.IndexOf(c);
@@ -144,9 +167,63 @@ namespace Grunwald.BooBinding.CodeCompletion
 				}
 				i += 1;
 			}
-			return new ExpressionResult(b.ToString());
+			ExpressionResult result = new ExpressionResult(b.ToString());
+			// Now try to find the context of the expression
+			while (--start > 0 && char.IsWhiteSpace(inText, start));
+			if (start > 2 && char.IsWhiteSpace(inText, start - 2)
+			    && inText[start - 1] == 'a' && inText[start] == 's') {
+				result.Context = ExpressionContext.Type;
+			} else {
+				bool wasSquareBracket = false;
+				int brackets = 0;
+				while (start > 0) {
+					char c = inText[start];
+					if (c == '\n') break;
+					if (brackets == 0) {
+						if (c == '(' || c == ',')
+							break;
+						if (!char.IsWhiteSpace(inText, start))
+							wasSquareBracket = inText[start] == '[';
+					} else {
+						if (c == '[' || c == '(')
+							brackets -= 1;
+					}
+					if (c == ')' || c == ']')
+						brackets += 1;
+					start -= 1;
+				}
+				if (wasSquareBracket) {
+					result.Context = BooAttributeContext.Instance;
+				}
+			}
+			
+			return result;
 		}
-		// TODO: We could need some unit tests for this.
+		
+		internal class BooAttributeContext : ExpressionContext
+		{
+			public static BooAttributeContext Instance = new BooAttributeContext();
+			
+			public override bool ShowEntry(object o)
+			{
+				IClass c = o as IClass;
+				if (c != null && c.IsAbstract)
+					return false;
+				if (ExpressionContext.Attribute.ShowEntry(o))
+					return true;
+				if (c == null)
+					return false;
+				if (BooProject.BooCompilerPC != null) {
+					return c.IsTypeInInheritanceTree(BooProject.BooCompilerPC.GetClass("Boo.Lang.Compiler.AbstractAstAttribute"));
+				} else {
+					foreach (IReturnType baseType in c.BaseTypes) {
+						if (baseType.FullyQualifiedName == "Boo.Lang.Compiler.AbstractAstAttribute")
+							return true;
+					}
+					return false;
+				}
+			}
+		}
 		#endregion
 		
 		#region Find Full Expression

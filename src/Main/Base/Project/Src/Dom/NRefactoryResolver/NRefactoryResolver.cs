@@ -861,7 +861,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return c2;
 		}
 		
-		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent)
+		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent, ExpressionContext context)
 		{
 			ArrayList result = new ArrayList();
 			if (language == SupportedLanguage.VBNet) {

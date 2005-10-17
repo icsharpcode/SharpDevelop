@@ -346,7 +346,7 @@ namespace ICSharpCode.Core
 								string value = GetText(result, expression);
 								if (value != null) {
 									if (Control.ModifierKeys == Keys.Control) {
-										value = "expr: >" + expression + "<\n" + value;
+										value = "expr: " + expressionResult.ToString() + "\n" + value;
 									}
 									textArea.SetToolTip(value);
 								}

@@ -109,7 +109,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 			} else {
 				this.ClassType = ClassType.Class;
 				foreach (IAttribute att in this.Attributes) {
-					if (att.Name == "Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute") {
+					if (att.Name == "Microsoft.VisualBasic.CompilerServices.StandardModuleAttribute"
+					    || att.Name == "Boo.Lang.ModuleAttribute")
+					{
 						this.ClassType = ClassType.Module;
 						break;
 					}

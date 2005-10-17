@@ -39,10 +39,15 @@ namespace Grunwald.BooBinding.CodeCompletion
 		#endregion
 		
 		#region Make Result
+		void ClearResult()
+		{
+			resolveResult = null;
+		}
+		
 		void MakeResult(IReturnType type)
 		{
 			if (type == null)
-				resolveResult = null;
+				ClearResult();
 			else
 				resolveResult = new ResolveResult(callingClass, resolver.CallingMember, type);
 		}
@@ -61,7 +66,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			} else if (member != null) {
 				resolveResult = new MemberResolveResult(callingClass, resolver.CallingMember, member);
 			} else {
-				resolveResult = null;
+				ClearResult();
 			}
 		}
 		
@@ -102,7 +107,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 			// was not resolved or was resolved as local, member etc.
 			ResolveResult oldResult = resolveResult;
-			resolveResult = null;
+			ClearResult();
 			// Try to resolve as type:
 			IReturnType t = projectContent.SearchType(identifier, 0, callingClass, cu, resolver.CaretLine, resolver.CaretColumn);
 			if (t != null) {
@@ -138,7 +143,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		bool ResolveIdentifier(string identifier)
 		{
 			IField local;
-			resolveResult = null;
+			ClearResult();
 			if (resolver.CallingMember != null) {
 				local = resolver.FindLocalVariable(identifier, false);
 				if (local != null) {
@@ -204,7 +209,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		#region Resolve Member
 		public override void OnMemberReferenceExpression(MemberReferenceExpression node)
 		{
-			resolveResult = null;
+			ClearResult();
 			node.Target.Accept(this);
 			if (resolveResult is NamespaceResolveResult) {
 				string namespaceName = (resolveResult as NamespaceResolveResult).Name;
@@ -279,7 +284,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		#region Resolve Method Invocation
 		public override void OnMethodInvocationExpression(MethodInvocationExpression node)
 		{
-			resolveResult = null;
+			ClearResult();
 			node.Target.Accept(this);
 			if (resolveResult == null)
 				return;
@@ -320,7 +325,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					}
 					ResolveInvocation(methods, node.Arguments);
 				} else {
-					resolveResult = null;
+					ClearResult();
 				}
 			} else if (resolveResult.ResolvedType != null) {
 				// maybe event or callable call or call on System.Type -> constructor by reflection
@@ -335,19 +340,19 @@ namespace Grunwald.BooBinding.CodeCompletion
 					} else if (c.FullyQualifiedName == "System.Type") {
 						resolveResult.ResolvedType = ReflectionReturnType.Object;
 					} else {
-						resolveResult = null;
+						ClearResult();
 					}
 				} else {
-					resolveResult = null;
+					ClearResult();
 				}
 			} else {
-				resolveResult = null;
+				ClearResult();
 			}
 		}
 		
 		void ResolveInvocation(List<IMethod> methods, ExpressionCollection arguments)
 		{
-			resolveResult = null;
+			ClearResult();
 			if (methods.Count == 0) {
 				return;
 			}
@@ -356,7 +361,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			for (int i = 0; i < types.Length; ++i) {
 				arguments[i].Accept(this);
 				types[i] = (resolveResult != null) ? resolveResult.ResolvedType : null;
-				resolveResult = null;
+				ClearResult();
 			}
 			MakeResult(MemberLookupHelper.FindOverload(methods, new IReturnType[0], types));
 		}
@@ -365,7 +370,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		#region Resolve Slice Expression
 		public override void OnSlicingExpression(SlicingExpression node)
 		{
-			resolveResult = null;
+			ClearResult();
 		}
 		#endregion
 		
@@ -391,7 +396,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				default:
 					if (node.Left == null) {
 						if (node.Right == null) {
-							resolveResult = null;
+							ClearResult();
 						} else {
 							node.Right.Accept(this);
 						}
@@ -489,7 +494,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		public override void OnSelfLiteralExpression(SelfLiteralExpression node)
 		{
 			if (callingClass == null)
-				resolveResult = null;
+				ClearResult();
 			else
 				MakeResult(callingClass.DefaultReturnType);
 		}
@@ -497,7 +502,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		public override void OnSuperLiteralExpression(SuperLiteralExpression node)
 		{
 			if (callingClass == null)
-				resolveResult = null;
+				ClearResult();
 			else
 				MakeResult(callingClass.BaseType);
 		}

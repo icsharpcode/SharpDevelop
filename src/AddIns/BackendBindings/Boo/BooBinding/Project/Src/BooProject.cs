@@ -50,6 +50,8 @@ namespace Grunwald.BooBinding
 			return new BooLanguageBinding().CanCompile(fileName);
 		}
 		
+		internal static IProjectContent BooCompilerPC;
+		
 		public override ParseProjectContent CreateProjectContent()
 		{
 			ParseProjectContent pc = base.CreateProjectContent();
@@ -57,6 +59,8 @@ namespace Grunwald.BooBinding
 			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(systemItem));
 			ReferenceProjectItem booLangItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Builtins).Assembly.Location);
 			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(booLangItem));
+			ReferenceProjectItem booCompilerItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Compiler.AbstractAstAttribute).Assembly.Location);
+			BooCompilerPC = ProjectContentRegistry.GetProjectContentForReference(booCompilerItem);
 			ReferenceProjectItem booUsefulItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Useful.Attributes.SingletonAttribute).Assembly.Location);
 			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(booUsefulItem));
 			pc.DefaultImports = new DefaultUsing(pc);
