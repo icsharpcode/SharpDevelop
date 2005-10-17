@@ -33,8 +33,6 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		Button  deleteButton;
 		Button  modifyButton;
 				
-		ResourceSyntaxModeProvider modeProvider;
-		
 		public override bool StorePanelContents()
 		{
 			ICSharpCode.TextEditor.Document.HighlightingManager.Manager.ReloadSyntaxModes();
@@ -128,9 +126,18 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 				userList.Items.Add(new HighlightItem(null, str, node));
 			}
 			
+			ISyntaxModeFileProvider modeProvider;
 			modeProvider = new ResourceSyntaxModeProvider();
 			
-			foreach(SyntaxMode mode in modeProvider.SyntaxModes){
+			foreach(SyntaxMode mode in modeProvider.SyntaxModes) {
+				SchemeNode node = LoadFile(modeProvider.GetSyntaxModeFile(mode), false);
+				if (node == null) continue;
+				builtinList.Items.Add(new HighlightItem(mode, null, node));
+			}
+			
+			modeProvider = new ICSharpCode.SharpDevelop.DefaultEditor.Codons.AddInTreeSyntaxModeProvider();
+			
+			foreach(SyntaxMode mode in modeProvider.SyntaxModes) {
 				SchemeNode node = LoadFile(modeProvider.GetSyntaxModeFile(mode), false);
 				if (node == null) continue;
 				builtinList.Items.Add(new HighlightItem(mode, null, node));
