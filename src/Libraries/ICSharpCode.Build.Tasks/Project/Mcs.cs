@@ -23,7 +23,7 @@ namespace ICSharpCode.Build.Tasks
 		
 		protected override string GenerateFullPathToTool()
 		{
-			return String.Concat(Environment.GetEnvironmentVariable("ComSpec"), " /c mcs");
+			return MonoToolLocationHelper.GetPathToTool(ToolName);
 		}
 	}
 }
