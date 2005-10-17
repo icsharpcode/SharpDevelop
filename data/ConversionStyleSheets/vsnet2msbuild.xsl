@@ -88,7 +88,7 @@
 			<xsl:element name = "ItemGroup">
 				<xsl:for-each select="Build/References/Reference[@Project]">
 					<xsl:element name = "ProjectReference" >
-						<xsl:attribute name = "Include"><xsl:value-of select = "Conversion:GetRelativeProjectPath(@Name)" /></xsl:attribute>
+						<xsl:attribute name = "Include"><xsl:value-of select = "Conversion:GetRelativeProjectPathByGuid(@Name, @Project)" /></xsl:attribute>
 						
 						<xsl:element name = "Project"><xsl:value-of select = "@Project" /></xsl:element>
 						<xsl:element name = "Name"><xsl:value-of select = "@Name" /></xsl:element>

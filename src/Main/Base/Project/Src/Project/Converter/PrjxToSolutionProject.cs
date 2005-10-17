@@ -13,6 +13,7 @@ using System.IO;
 using System.Xml;
 using System.Xml.XPath;
 using System.Xml.Xsl;
+using System.Windows.Forms;
 
 using ICSharpCode.Core;
 
@@ -27,6 +28,8 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		{
 			public Dictionary<string, Guid>   NameToGuid = new Dictionary<string, Guid>();
 			public Dictionary<string, string> NameToPath = new Dictionary<string, string>();
+			/// <summary>only in VS03 -&gt; MSBuild conversion</summary>
+			public Dictionary<Guid,   string> GuidToPath = new Dictionary<Guid,   string>();
 			
 			public bool IsVisualBasic;
 			public List<string> Resources;
@@ -40,12 +43,41 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			
 			public string GetGuid(string name)
 			{
-				return "{" + NameToGuid[name].ToString().ToUpper() + "}";
+				return "{" + NameToGuid[name].ToString().ToUpperInvariant() + "}";
 			}
 			
 			public string GetRelativeProjectPath(string name)
 			{
+				if (!NameToPath.ContainsKey(name)) {
+					if (MessageService.AskQuestion("Project reference to " + name + " could not be resolved.\n" +
+					                               "Do you want to specify it manually?")) {
+						using (OpenFileDialog dlg = new OpenFileDialog()) {
+							dlg.Title = "Find " + name;
+							dlg.InitialDirectory = basePath;
+							dlg.Filter = "SharpDevelop 1.x project|*.prjx";
+							if (dlg.ShowDialog() == DialogResult.OK) {
+								NameToPath[name] = dlg.FileName;
+								NameToGuid[name] = Guid.NewGuid();
+								return FileUtility.GetRelativePath(basePath, NameToPath[name]);
+							}
+						}
+					}
+					return "NotFound." + name + ".proj";
+				}
 				return FileUtility.GetRelativePath(basePath, NameToPath[name]);
+			}
+			
+			public string GetRelativeProjectPathByGuid(string name, string guidText)
+			{
+				if (!NameToPath.ContainsKey(name)) {
+					Guid guid = new Guid(guidText);
+					if (!GuidToPath.ContainsKey(guid)) {
+						MessageService.ShowWarning("Project reference to " + name + " could not be resolved.");
+						return "NotFound." + name + ".proj";
+					}
+					return GuidToPath[guid];
+				}
+				return NameToPath[name];
 			}
 			
 			public bool IsNotGacReference(string hintPath)

@@ -400,6 +400,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						string guid         = match.Result("${Guid}");
 						conversion.NameToGuid.Add(title, new Guid(guid));
 						conversion.NameToPath.Add(title, location);
+						conversion.GuidToPath.Add(new Guid(guid), location);
 					}
 				}
 				return version;
