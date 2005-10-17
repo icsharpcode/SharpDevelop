@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
 	///  This class is for creating a new "empty" file
-	/// </summar
+	/// </summary>
 	public class NewFileDialog : BaseSharpDevelopForm, INewFileCreator
 	{
 		ArrayList alltemplates = new ArrayList();

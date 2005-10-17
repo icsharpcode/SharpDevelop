@@ -208,9 +208,9 @@ namespace ICSharpCode.TextEditor.Actions
 			for (int i = y2; i >= y1; --i) {
 				LineSegment line = document.GetLineSegment(i);
 				if(line.Length > 0) {
-					/// note: some users may prefer a more radical ConvertLeadingSpacesToTabs that
-					/// means there can be no spaces before the first character even if the spaces
-					/// didn't add up to a whole number of tabs
+					// note: some users may prefer a more radical ConvertLeadingSpacesToTabs that
+					// means there can be no spaces before the first character even if the spaces
+					// didn't add up to a whole number of tabs
 					string newLine = TextUtilities.LeadingWhiteSpaceToTabs(document.GetText(line.Offset,line.Length), document.TextEditorProperties.TabIndent);
 					document.Replace(line.Offset,line.Length,newLine);
 					++redocounter;

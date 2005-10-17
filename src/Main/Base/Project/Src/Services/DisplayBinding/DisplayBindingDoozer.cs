@@ -13,6 +13,28 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.Core
 {
+	/// <summary>
+	/// Creates DisplayBindingDescriptor objects.
+	/// </summary>
+	/// <attribute name="class">
+	/// Name of the IDisplayBinding or ISecondaryDisplayBinding class.
+	/// </attribute>
+	/// <attribute name="type">
+	/// Type of the display binding (either "Primary" or "Secondary"). Default: "Primary".
+	/// </attribute>
+	/// <attribute name="fileNamePattern">
+	/// Optional. Regular expression that specifies the file names for which the display binding
+	/// will be used. Example: "\.res(x|ources)$"
+	/// </attribute>
+	/// <attribute name="languagePattern">
+	/// Optional. Regular expression that specifies the language for which the display binding
+	/// will be used. Example: "\Resource Files$"
+	/// </attribute>
+	/// <usage>Only in /SharpDevelop/Workbench/DisplayBindings</usage>
+	/// <returns>
+	/// An DisplayBindingDescriptor object that wraps either a IDisplayBinding
+	/// or a ISecondaryDisplayBinding object.
+	/// </returns>
 	public class DisplayBindingDoozer : IDoozer
 	{
 		/// <summary>

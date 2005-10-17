@@ -28,6 +28,7 @@ namespace ICSharpCode.Core
 	/// This attribute is specified when a file icon association should be created.
 	/// It specifies the semicolon-separated list of file types that use the icon.
 	/// </attribute>
+	/// <usage>Only in /Workspace/Icons</usage>
 	/// <returns>
 	/// An IconDescriptor object that exposes the attributes.
 	/// </returns>

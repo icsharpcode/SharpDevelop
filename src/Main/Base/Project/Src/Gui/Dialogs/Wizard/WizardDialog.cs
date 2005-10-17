@@ -87,7 +87,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return nextID;
 		}
 		
-		/// <value> returns true, if all dialog panels could be finished</value?>
+		/// <value> returns true, if all dialog panels could be finished</value>
 		bool CanFinish {
 			get {
 				int currentNr = 0;

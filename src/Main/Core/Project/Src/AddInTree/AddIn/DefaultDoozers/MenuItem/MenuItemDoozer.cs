@@ -33,6 +33,10 @@ namespace ICSharpCode.Core
 	/// <attribute name="class">
 	/// Command class that is run when item is clicked.
 	/// </attribute>
+	/// <children>
+	/// If "type" is "Menu", the item can have sub-menuitems.
+	/// </children>
+	/// <usage>Any menu strip paths or context menu paths, e.g. /SharpDevelop/Workbench/MainMenu</usage>
 	/// <returns>
 	/// A ToolStrip* object, depending on the type attribute.
 	/// </returns>

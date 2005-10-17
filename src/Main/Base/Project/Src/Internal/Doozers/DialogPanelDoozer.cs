@@ -11,6 +11,23 @@ using System.Reflection;
 
 namespace ICSharpCode.Core
 {
+	/// <summary>
+	/// Creates DefaultDialogPanelDescriptor objects that are used in option dialogs.
+	/// </summary>
+	/// <attribute name="class">
+	/// Name of the IDialogPanel class. Optional if the page has subpages.
+	/// </attribute>
+	/// <attribute name="label">
+	/// Caption of the dialog panel.
+	/// </attribute>
+	/// <children>
+	/// In the SharpDevelop options, option pages can have subpages by specifying them
+	/// as children in the AddInTree.
+	/// </children>
+	/// <usage>In /SharpDevelop/BackendBindings/ProjectOptions/ and /SharpDevelop/Dialogs/OptionsDialog</usage>
+	/// <returns>
+	/// A DefaultDialogPanelDescriptor object.
+	/// </returns>
 	public class DialogPanelDoozer : IDoozer
 	{
 		/// <summary>
@@ -33,7 +50,7 @@ namespace ICSharpCode.Core
 			
 			if (subItems == null || subItems.Count == 0) {
 				if (codon.Properties.Contains("class")) {
-					return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label), (IDialogPanel)codon.AddIn.CreateObject(codon.Properties["class"]));
+					return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label), codon.AddIn, codon.Properties["class"]);
 				} else {
 					return new DefaultDialogPanelDescriptor(codon.Id, StringParser.Parse(label));
 				}

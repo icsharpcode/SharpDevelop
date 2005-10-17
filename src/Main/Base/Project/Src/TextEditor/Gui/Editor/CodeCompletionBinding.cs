@@ -22,6 +22,22 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		bool HandleKeyPress(SharpDevelopTextAreaControl editor, char ch);
 	}
 	
+	/// <summary>
+	/// Creates code completion bindings that manage code completion for one language.
+	/// </summary>
+	/// <attribute name="extensions">
+	/// Optional, list of semicolon-separated entries of the file extensions handled by the binding.
+	/// If no extensions attribute is specified, the binding is activated in all files.
+	/// </attribute>
+	/// <attribute name="class">
+	/// Name of the ICodeCompletionBinding class (normally deriving from DefaultCodeCompletionBinding).
+	/// </attribute>
+	/// <usage>Only in /AddIns/DefaultTextEditor/CodeCompletion</usage>
+	/// <returns>
+	/// The ICodeCompletionBinding class specified with the 'class' attribute, or a
+	/// wrapper that lazy-loads the actual class when it is used in a file with the specified
+	/// extension.
+	/// </returns>
 	public class CodeCompletionBindingDoozer : IDoozer
 	{
 		public bool HandleConditions {

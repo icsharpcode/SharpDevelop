@@ -322,7 +322,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		#region Drag and Drop
 		/// <summary>
-		/// Generates a Drag & Drop data object. If this property returns null
+		/// Generates a Drag &amp; Drop data object. If this property returns null
 		/// the node indicates that it can't be dragged.
 		/// </summary>
 		public virtual DataObject DragDropDataObject {
@@ -332,14 +332,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// Gets the drag & drop effect, when a DataObject is dragged over this node.
+		/// Gets the drag &amp; drop effect, when a DataObject is dragged over this node.
 		/// </summary>
 		/// <param name="proposedEffect">
 		/// The default effect DragDropEffects.Copy and DragDropEffects.Move, depending on the
-		/// key the user presses while performing d&d.
+		/// key the user presses while performing d&amp;d.
 		/// </param>
 		/// <returns>
-		/// DragDropEffects.None when no drag&drop can occur.
+		/// DragDropEffects.None when no drag&amp;drop can occur.
 		/// </returns>
 		public virtual DragDropEffects GetDragDropEffect(IDataObject dataObject, DragDropEffects proposedEffect)
 		{

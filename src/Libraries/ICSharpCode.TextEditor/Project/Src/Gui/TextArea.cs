@@ -435,7 +435,7 @@ namespace ICSharpCode.TextEditor
 		
 		/// <summary>
 		/// This method is called on each Keypress
-		/// </rsummary>
+		/// </summary>
 		/// <returns>
 		/// True, if the key is handled by this method and should NOT be
 		/// inserted in the textarea.

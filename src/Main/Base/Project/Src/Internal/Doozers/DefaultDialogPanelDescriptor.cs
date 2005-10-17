@@ -42,8 +42,18 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		AddIn addin;
+		string dialogPanelPath;
+		
 		public IDialogPanel DialogPanel {
 			get {
+				if (dialogPanelPath != null) {
+					if (dialogPanel == null) {
+						dialogPanel = (IDialogPanel)addin.CreateObject(dialogPanelPath);
+					}
+					dialogPanelPath = null;
+					addin = null;
+				}
 				return dialogPanel;
 			}
 			set {
@@ -62,9 +72,10 @@ namespace ICSharpCode.Core
 			this.dialogPanelDescriptors = dialogPanelDescriptors;
 		}
 		
-		public DefaultDialogPanelDescriptor(string id, string label, IDialogPanel dialogPanel) : this(id, label)
+		public DefaultDialogPanelDescriptor(string id, string label, AddIn addin, string dialogPanelPath) : this(id, label)
 		{
-			this.dialogPanel = dialogPanel;
+			this.addin = addin;
+			this.dialogPanelPath = dialogPanelPath;
 		}
 	}
 }

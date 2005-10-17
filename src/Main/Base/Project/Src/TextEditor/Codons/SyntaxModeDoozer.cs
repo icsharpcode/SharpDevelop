@@ -42,6 +42,24 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 		}
 	}
 	
+	/// <summary>
+	/// Creates AddInTreeSyntaxMode objects that wrap a .xshd syntax mode stored as resource in the
+	/// addin assembly.
+	/// </summary>
+	/// <attribute name="name">
+	/// Name of the language for which the syntax mode is used.
+	/// </attribute>
+	/// <attribute name="extensions">
+	/// Semicolon-separated list of file extensions for which the syntax mode is used.
+	/// </attribute>
+	/// <attribute name="resource">
+	/// Fully qualified name of the resource file.
+	/// </attribute>
+	/// <usage>Only in /SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes</usage>
+	/// <returns>
+	/// An AddInTreeSyntaxMode object that loads the resource from the addin assembly when
+	/// its CreateTextReader method is called.
+	/// </returns>
 	public class SyntaxModeDoozer : IDoozer
 	{
 		/// <summary>

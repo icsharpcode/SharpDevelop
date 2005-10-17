@@ -40,9 +40,11 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		bool isSecondary;
+		
 		public bool IsSecondary {
 			get {
-				return codon.Properties["type"] == "Secondary";
+				return isSecondary;
 			}
 		}
 		
@@ -51,9 +53,12 @@ namespace ICSharpCode.Core
 				return codon;
 			}
 		}
-
+		
 		public DisplayBindingDescriptor(Codon codon)
 		{
+			isSecondary = codon.Properties["type"] == "Secondary";
+			if (!isSecondary && codon.Properties["type"] != "" && codon.Properties["type"] != "Primary")
+				MessageService.ShowWarning("Unknown display binding type: " + codon.Properties["type"]);
 			this.codon = codon;
 		}
 		

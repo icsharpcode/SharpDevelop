@@ -17,6 +17,7 @@ namespace ICSharpCode.Core
 	/// <attribute name="class">
 	/// The fully qualified type name of the attribute to create.
 	/// </attribute>
+	/// <usage>Everywhere where objects are expected.</usage>
 	/// <returns>
 	/// Any kind of object.
 	/// </returns>

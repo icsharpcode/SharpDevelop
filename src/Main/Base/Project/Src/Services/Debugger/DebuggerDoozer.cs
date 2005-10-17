@@ -10,6 +10,31 @@ using System.Collections;
 
 namespace ICSharpCode.Core
 {
+	/// <summary>
+	/// Creates debuggers.
+	/// </summary>
+	/// <attribute name="supportsStart">
+	/// Specifies if the debugger supports the 'Start' command. Default: true
+	/// </attribute>
+	/// <attribute name="supportsStartWithoutDebugger">
+	/// Specifies if the debugger supports the 'StartWithoutDebugger' command. Default: true
+	/// </attribute>
+	/// <attribute name="supportsStop">
+	/// Specifies if the debugger supports the 'Stop' (kill running process) command. Default: true
+	/// </attribute>
+	/// <attribute name="supportsStepping">
+	/// Specifies if the debugger supports stepping. Default: false
+	/// </attribute>
+	/// <attribute name="supportsExecutionControl">
+	/// Specifies if the debugger supports execution control (break, resume). Default: false
+	/// </attribute>
+	/// <attribute name="class">
+	/// Name of the IDebugger class.
+	/// </attribute>
+	/// <usage>Only in /SharpDevelop/Services/DebuggerService/Debugger</usage>
+	/// <returns>
+	/// An DebuggerDescriptor object that exposes the attributes and the IDebugger object (lazy-loading).
+	/// </returns>
 	public class DebuggerDoozer : IDoozer
 	{
 		/// <summary>

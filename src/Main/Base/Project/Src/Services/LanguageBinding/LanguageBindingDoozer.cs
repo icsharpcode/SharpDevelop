@@ -14,6 +14,25 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Core
 {
+	/// <summary>
+	/// Creates LanguageBindingDescriptor objects for the project service.
+	/// </summary>
+	/// <attribute name="guid">
+	/// Project type GUID of the project used by MsBuild.
+	/// </attribute>
+	/// <attribute name="supportedextensions">
+	/// Semicolon-separated list of file extensions that are compilable files in the project. (e.g. ".boo")
+	/// </attribute>
+	/// <attribute name="projectfileextension">
+	/// File extension of project files. (e.g. ".booproj")
+	/// </attribute>
+	/// <attribute name="class">
+	/// Name of the ILanguageBinding class.
+	/// </attribute>
+	/// <usage>Only in /SharpDevelop/Workbench/LanguageBindings</usage>
+	/// <returns>
+	/// An LanguageBindingDescriptor object that wraps the ILanguageBinding object.
+	/// </returns>
 	public class LanguageBindingDoozer : IDoozer
 	{
 		/// <summary>

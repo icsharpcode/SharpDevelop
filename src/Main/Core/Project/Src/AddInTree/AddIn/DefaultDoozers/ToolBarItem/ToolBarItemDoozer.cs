@@ -32,6 +32,7 @@ namespace ICSharpCode.Core
 	/// Command class that is run when item is clicked; or class that manages
 	/// the ComboBox/DropDownButton.
 	/// </attribute>
+	/// <usage>Any toolbar strip paths, e.g. /SharpDevelop/Workbench/ToolBar</usage>
 	/// <returns>
 	/// A ToolStrip* object, depending on the type attribute.
 	/// </returns>

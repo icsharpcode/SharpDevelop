@@ -23,6 +23,7 @@ namespace ICSharpCode.Core
 	/// path addin tree location specified by this attribute and returns an
 	/// <see cref="IBuildItemsModifier"/> which includes all items in the output list.
 	/// </attribute>
+	/// <usage>Everywhere</usage>
 	/// <returns>
 	/// Any object, depending on the included codon(s).
 	/// </returns>

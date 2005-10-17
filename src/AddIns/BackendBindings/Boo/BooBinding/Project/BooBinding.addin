@@ -56,10 +56,11 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id               = "BooFormDesigner"
-		                type             = "Secondary"
-		                supportedformats = "Forms/UserControls"
-		                class            = "Grunwald.BooBinding.Designer.FormDesignerDisplayBinding" />
+		<DisplayBinding id              = "BooFormDesigner"
+		                type            = "Secondary"
+		                fileNamePattern = "\.boo$"
+		                languagePattern = "^Boo$"
+		                class           = "Grunwald.BooBinding.Designer.FormDesignerDisplayBinding" />
 	</Path>
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/Boo">

@@ -17,6 +17,20 @@ using ICSharpCode.TextEditor.Actions;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 {
+	/// <summary>
+	/// Creates IEditAction objects for the text editor.
+	/// </summary>
+	/// <attribute name="keys">
+	/// Comma-separated list of keyboard shortcuts that activate the edit action.
+	/// E.g. "Control|C,Control|Insert"
+	/// </attribute>
+	/// <attribute name="class">
+	/// Name of the IEditAction class.
+	/// </attribute>
+	/// <usage>Only in /AddIns/DefaultTextEditor/EditActions</usage>
+	/// <returns>
+	/// An IEditAction object.
+	/// </returns>
 	public class EditActionDoozer : IDoozer
 	{
 		/// <summary>

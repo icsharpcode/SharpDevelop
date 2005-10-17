@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		DivideInteger,
 		/// <summary>VB-only: ^</summary>
 		Power,
-		/// <summary>VB-only: &</summary>
+		/// <summary>VB-only: &amp;</summary>
 		Concat,
 		
 		/// <summary>C#: &lt;&lt;</summary>

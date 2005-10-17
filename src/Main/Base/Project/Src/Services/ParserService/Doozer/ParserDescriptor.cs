@@ -52,7 +52,7 @@ namespace ICSharpCode.Core
 		public string[] Supportedextensions {
 			get {
 				if (supportedExtensions == null) {
-					supportedExtensions = codon.Properties["supportedextensions"].ToUpper().Split(';');
+					supportedExtensions = codon.Properties["supportedextensions"].ToUpperInvariant().Split(';');
 				}
 				return supportedExtensions;
 			}
@@ -60,7 +60,7 @@ namespace ICSharpCode.Core
 		
 		public bool CanParse(string fileName)
 		{
-			string fileExtension = Path.GetExtension(fileName).ToUpper();
+			string fileExtension = Path.GetExtension(fileName).ToUpperInvariant();
 			foreach (string ext in Supportedextensions) {
 				if (fileExtension == ext) {
 					return true;

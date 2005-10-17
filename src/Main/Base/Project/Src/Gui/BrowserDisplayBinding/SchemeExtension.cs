@@ -70,6 +70,19 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 		}
 	}
 	
+	/// <summary>
+	/// Creates browser scheme extensions that can intercept calls on one protocol.
+	/// </summary>
+	/// <attribute name="scheme">
+	/// Specifies the name of the protocol the extension handles. (e.g. 'ms-help' or 'startpage')
+	/// </attribute>
+	/// <attribute name="class">
+	/// Name of the ISchemeExtension class (normally deriving from DefaultSchemeExtension).
+	/// </attribute>
+	/// <usage>Only in /SharpDevelop/Views/Browser/SchemeExtensions</usage>
+	/// <returns>
+	/// An SchemeExtensionDescriptor object that exposes the protocol name and ISchemeExtension object (lazy-loading).
+	/// </returns>
 	public class SchemeExtensionDoozer : IDoozer
 	{
 		/// <summary>

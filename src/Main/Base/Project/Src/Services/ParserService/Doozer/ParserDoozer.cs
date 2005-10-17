@@ -14,6 +14,22 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.Core
 {
+	/// <summary>
+	/// Creates ParserDescriptor objects for the parsing service.
+	/// </summary>
+	/// <attribute name="supportedextensions">
+	/// Semicolon-separated list of file extensions for which the parser is used. (e.g. ".boo")
+	/// </attribute>
+	/// <attribute name="projectfileextension">
+	/// File extension of project files. (e.g. ".booproj")
+	/// </attribute>
+	/// <attribute name="class">
+	/// Name of the IParser class.
+	/// </attribute>
+	/// <usage>Only in /Workspace/Parser</usage>
+	/// <returns>
+	/// An ParserDescriptor object that wraps the IParser object.
+	/// </returns>
 	public class ParserDoozer : IDoozer
 	{
 		/// <summary>

@@ -133,7 +133,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// Sets the file name to <param name="fileName"/> and the title to the file name without path. Sets dirty == false too.
+		/// Sets the file name to <paramref name="fileName"/> and the title to the file name without path. Sets dirty == false too.
 		/// </summary>
 		/// <param name="fileName">The name of the file currently inside the content.</param>
 		protected void SetTitleAndFileName(string fileName)
