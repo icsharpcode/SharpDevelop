@@ -47,9 +47,9 @@
 			</xsl:for-each>
 			
 			<xsl:element name = "ItemGroup">
-				<xsl:for-each select="Build/References/Reference[@HintPath]">
+				<xsl:for-each select="Build/References/Reference[@AssemblyName]">
 					<xsl:element name = "Reference" >
-						<xsl:attribute name = "Include"><xsl:value-of select = "@Name" /></xsl:attribute>
+						<xsl:attribute name = "Include"><xsl:value-of select = "@AssemblyName" /></xsl:attribute>
 						<xsl:if test="Conversion:IsNotGacReference(@HintPath)">
 							<xsl:element name = "HintPath" ><xsl:value-of select = "@HintPath" /></xsl:element>
 							<xsl:element name = "Private" ><xsl:value-of select = "@Private" /></xsl:element>
@@ -78,7 +78,11 @@
 			</xsl:element>
 			
 			<xsl:element name = "ItemGroup">
-				<!-- Directories -->
+				<xsl:for-each select="Build/Imports/Import">
+					<xsl:element name = "Import" >
+						<xsl:attribute name = "Include"><xsl:value-of select = "@Namespace" /></xsl:attribute>
+					</xsl:element>
+				</xsl:for-each>
 			</xsl:element>
 			
 			<xsl:element name = "ItemGroup">

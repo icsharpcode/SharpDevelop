@@ -187,14 +187,17 @@ namespace ICSharpCode.Core
 		public static bool IsBaseDirectory(string baseDirectory, string testDirectory)
 		{
 			try {
-				baseDirectory = Path.GetFullPath(baseDirectory.ToUpper());
-				testDirectory = Path.GetFullPath(testDirectory.ToUpper());
+				baseDirectory = Path.GetFullPath(baseDirectory).ToUpperInvariant();
+				testDirectory = Path.GetFullPath(testDirectory).ToUpperInvariant();
+				baseDirectory = baseDirectory.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
+				testDirectory = testDirectory.Replace(Path.AltDirectorySeparatorChar, Path.DirectorySeparatorChar);
 				
-				return baseDirectory.Length <= testDirectory.Length &&
-					testDirectory.StartsWith(baseDirectory) &&
-					(testDirectory.Length == baseDirectory.Length ||
-					 testDirectory[baseDirectory.Length] == Path.DirectorySeparatorChar ||
-					 testDirectory[baseDirectory.Length] == Path.AltDirectorySeparatorChar);
+				if (baseDirectory[baseDirectory.Length - 1] != Path.DirectorySeparatorChar)
+					baseDirectory += Path.DirectorySeparatorChar;
+				if (testDirectory[testDirectory.Length - 1] != Path.DirectorySeparatorChar)
+					testDirectory += Path.DirectorySeparatorChar;
+				
+				return testDirectory.StartsWith(baseDirectory);
 			} catch (Exception) {
 				return false;
 			}

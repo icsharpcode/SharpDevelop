@@ -275,6 +275,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		ArrayList SearchClasses(string text)
 		{
+			string lowerText = text.ToLowerInvariant();
 			ArrayList list = new ArrayList();
 			if (ProjectService.OpenSolution != null) {
 				foreach (IProject project in ProjectService.OpenSolution.Projects) {
@@ -283,7 +284,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						foreach (IClass c in projectContent.Classes) {
 							string className = c.Name;
 							if (className.Length >= text.Length) {
-								if (text.Equals(className.Substring(0, text.Length), StringComparison.OrdinalIgnoreCase)) {
+								if (className.ToLowerInvariant().IndexOf(lowerText) >= 0) {
 									list.Add(c);
 								}
 							}

@@ -50,7 +50,9 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			
 			public bool IsNotGacReference(string hintPath)
 			{
-				return FileUtility.IsBaseDirectory(FileUtility.NETFrameworkInstallRoot, hintPath);
+				if (hintPath == null || hintPath.Length == 0)
+					return false;
+				return !FileUtility.IsBaseDirectory(FileUtility.NETFrameworkInstallRoot, hintPath);
 			}
 			
 			string rootNamespace;

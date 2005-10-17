@@ -45,7 +45,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return new ReflectionProjectContent(assembly, fileName);
 				}
 				assembly = ProjectContentRegistry.LoadGACAssembly(include, true);
-				return new ReflectionProjectContent(assembly);
+				if (assembly != null)
+					return new ReflectionProjectContent(assembly);
+				else
+					return null;
 			} catch (BadImageFormatException) {
 				LoggingService.Warn("BadImageFormat: " + include);
 				return null;
