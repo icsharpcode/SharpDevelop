@@ -8,6 +8,7 @@ using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
+using System.Text.RegularExpressions;
 using System.Xml;
 
 namespace BuildAddinDocumentation
@@ -91,7 +92,7 @@ namespace BuildAddinDocumentation
 				
 				html.WriteLine("<div>");
 				html.WriteLine("  <h2><a name=\"" + shortName + "\">" + shortName + "</a></h2>");
-				html.WriteLine("  <p>" + e["summary"].InnerXml + "</p>");
+				html.WriteLine("  <p>" + XmlToHtml(e["summary"].InnerXml) + "</p>");
 				html.WriteLine("  <table>");
 				html.WriteLine("    <tr>");
 				if (isDoozer)
@@ -113,7 +114,7 @@ namespace BuildAddinDocumentation
 							}
 							html.WriteLine("    <tr>");
 							html.WriteLine("       <th>" + sub.GetAttribute("name") + ":</td>");
-							html.WriteLine("       <td>" + sub.InnerXml + "</td>");
+							html.WriteLine("       <td>" + XmlToHtml(sub.InnerXml) + "</td>");
 							html.WriteLine("    </tr>");
 							break;
 						default:
@@ -123,7 +124,7 @@ namespace BuildAddinDocumentation
 							}
 							html.WriteLine("    <tr>");
 							html.WriteLine("       <th>" + char.ToUpper(sub.Name[0]) + sub.Name.Substring(1) + ":</td>");
-							html.WriteLine("       <td>" + sub.InnerXml + "</td>");
+							html.WriteLine("       <td>" + XmlToHtml(sub.InnerXml) + "</td>");
 							html.WriteLine("    </tr>");
 							break;
 					}
@@ -131,12 +132,17 @@ namespace BuildAddinDocumentation
 				html.WriteLine("  </table>");
 				foreach (XmlElement sub in e) {
 					if (sub.Name == "example") {
-						html.WriteLine("  <p><span class=\"exampleTitle\">Example: " + sub.GetAttribute("title") + "</span>");
+						html.WriteLine("  <p><span class=\"exampleTitle\">Example: " + XmlToHtml(sub.GetAttribute("title")) + "</span>");
 						html.WriteLine("  <br><pre>" + sub.InnerXml.TrimEnd() + "</pre></p>");
 					}
 				}
 				html.WriteLine("</div>");
 			}
+		}
+		
+		static string XmlToHtml(string xml)
+		{
+			return Regex.Replace(xml, @"\<see cref=""\w\:(?:\w+\.)*(\w+)""\s*\/\s*\>", "$1");
 		}
 		
 		static void WriteHeader(StreamWriter html, string title)

@@ -490,7 +490,8 @@ namespace CSharpBinding.Parser
 				if (ch == '"') {
 					return true;
 				} else if (ch == '\\') {
-					outText.Append(text[curOffset++]);
+					if (curOffset <= initialOffset)
+						outText.Append(text[curOffset++]);
 				}
 			}
 			return false;
