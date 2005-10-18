@@ -19,7 +19,7 @@
 			      type="Menu">
 			<ComplexCondition action="Disable">
 				<And>
-					<Condition name="CombineOpen" iscombineopen="True"/>
+					<Condition name="SolutionOpen"/>
 					<Not>
 						<Condition name="IsNAntRunning"/>
 					</Not>
@@ -40,7 +40,7 @@
 			</ComplexCondition>
 			<ComplexCondition action="Disable">
 				<And>
-					<Condition name="CombineOpen" iscombineopen="True"/>
+					<Condition name="SolutionOpen"/>
 					<Condition name="IsNAntRunning"/>
 				</And>
 				<MenuItem id = "StopNAnt"
@@ -62,7 +62,7 @@
 		          type="Menu">
 			<ComplexCondition action="Disable">
 				<And>
-					<Condition name="CombineOpen" iscombineopen="True"/>
+					<Condition name="SolutionOpen"/>
 					<Not>
 						<Condition name="IsNAntRunning"/>
 					</Not>
@@ -83,7 +83,7 @@
 			</ComplexCondition>
 			<ComplexCondition action="Disable">
 				<And>
-					<Condition name="CombineOpen" iscombineopen="True"/>
+					<Condition name="SolutionOpen"/>
 					<Condition name="IsNAntRunning"/>
 				</And>
 					<MenuItem id = "StopNAnt"
@@ -127,7 +127,7 @@
 	<Path name = "/SharpDevelop/Pads/NAntPad/Toolbar">
 		<ComplexCondition action="Disable">
 			<And>
-				<Condition name="CombineOpen" iscombineopen="True"/>
+				<Condition name="SolutionOpen"/>
 				<Not>
 					<Condition name="IsNAntRunning"/>
 				</Not>
@@ -137,7 +137,7 @@
 			             tooltip = "${res:ICSharpCode.NAntAddIn.NAntPadContent.RunCommandBarButtonText}"
 			             class   = "ICSharpCode.NAntAddIn.Commands.RunSelectedNAntTargetCommand"/>
 		</ComplexCondition>
-		<Condition name = "CombineOpen" iscombineopen="True" action="Disable">
+		<Condition name = "SolutionOpen" action="Disable">
 			<ToolbarItem id      = "Refresh"
 			             icon    = "Icons.16x16.BrowserRefresh"
 			             tooltip = "${res:ICSharpCode.NAntAddIn.NAntPadContent.RefreshCommandBarButtonText}"
@@ -145,7 +145,7 @@
 		</Condition>
 		<ComplexCondition action="Disable">
 			<And>
-				<Condition name="CombineOpen" iscombineopen="True"/>
+				<Condition name="SolutionOpen"/>
 				<Condition name="IsNAntRunning"/>
 			</And>
 			<ToolbarItem id      = "Stop"
