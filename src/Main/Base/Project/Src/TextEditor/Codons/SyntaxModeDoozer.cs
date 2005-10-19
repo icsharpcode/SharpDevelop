@@ -23,19 +23,22 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 {
 	public class AddInTreeSyntaxMode : SyntaxMode
 	{
-		Assembly[] assemblies;
+		Runtime[] runtimes;
 		
-		public AddInTreeSyntaxMode(Assembly[] assemblies, string fileName, string name, string[] extensions) : base(fileName, name, extensions)
+		public AddInTreeSyntaxMode(Runtime[] runtimes, string fileName, string name, string[] extensions) : base(fileName, name, extensions)
 		{
-			this.assemblies = assemblies;
+			this.runtimes = runtimes;
 		}
 		
 		public XmlTextReader CreateTextReader()
 		{
-			foreach (Assembly assembly in assemblies) {
-				Stream stream = assembly.GetManifestResourceStream(FileName);
-				if (stream != null) {
-					return new XmlTextReader(stream);
+			foreach (Runtime runtime in runtimes) {
+				Assembly assembly = runtime.LoadedAssembly;
+				if (assembly != null) {
+					Stream stream = assembly.GetManifestResourceStream(FileName);
+					if (stream != null) {
+						return new XmlTextReader(stream);
+					}
 				}
 			}
 			return null;
@@ -78,10 +81,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 			string[] extensions       = codon.Properties["extensions"].Split(';');
 			string   resource         = codon.Properties["resource"];
 			
-			Assembly[] assemblies = new Assembly[codon.AddIn.Runtimes.Count];
+			Runtime[] assemblies = new Runtime[codon.AddIn.Runtimes.Count];
 			int i = 0;
 			foreach (Runtime library in codon.AddIn.Runtimes) {
-				assemblies[i++] = library.LoadedAssembly;
+				assemblies[i++] = library;
 			}
 			return new AddInTreeSyntaxMode(assemblies, resource, highlightingName, extensions);
 		}

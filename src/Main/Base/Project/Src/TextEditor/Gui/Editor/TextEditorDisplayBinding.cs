@@ -424,8 +424,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				if (fileName == null || fileName.Length == 0) {
 					if (language == "C#") {
 						parseInfo = ParserService.ParseFile("a.cs", textAreaControl.Document.TextContent, false, false);
-					} else {
+					} else if (language == "VBNet") {
 						parseInfo = ParserService.ParseFile("a.vb", textAreaControl.Document.TextContent, false, false);
+					} else {
+						return;
 					}
 				} else {
 					parseInfo = ParserService.GetParseInformation(fileName);

@@ -43,8 +43,10 @@ namespace ICSharpCode.Core
 		static DisplayBindingDescriptor GetCodonPerFileName(string filename)
 		{
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (!binding.IsSecondary && binding.CanAttachToFile(filename) && binding.Binding.CanCreateContentForFile(filename)) {
-					return binding;
+				if (!binding.IsSecondary && binding.CanAttachToFile(filename)) {
+					if (binding.Binding != null && binding.Binding.CanCreateContentForFile(filename)) {
+						return binding;
+					}
 				}
 			}
 			return null;
@@ -53,8 +55,10 @@ namespace ICSharpCode.Core
 		static DisplayBindingDescriptor GetCodonPerLanguageName(string languagename)
 		{
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (binding.Binding != null && binding.CanAttachToLanguage(languagename) && binding.Binding.CanCreateContentForLanguage(languagename)) {
-					return binding;
+				if (!binding.IsSecondary && binding.CanAttachToLanguage(languagename)) {
+					if (binding.Binding != null && binding.Binding.CanCreateContentForLanguage(languagename)) {
+						return binding;
+					}
 				}
 			}
 			return null;
@@ -63,12 +67,15 @@ namespace ICSharpCode.Core
 		public static void AttachSubWindows(IViewContent viewContent)
 		{
 			foreach (DisplayBindingDescriptor binding in bindings) {
-				if (binding.IsSecondary && binding.SecondaryBinding.CanAttachTo(viewContent)) {
-					ISecondaryViewContent[] subViewContents = binding.SecondaryBinding.CreateSecondaryViewContent(viewContent);
-					if (subViewContents != null) {
-						viewContent.SecondaryViewContents.AddRange(subViewContents);
-					} else {
-						MessageService.ShowError("Can't attach secondary view content. " + binding.SecondaryBinding + " returned null for " + viewContent + ".\n(should never happen)");
+				if (binding.IsSecondary && binding.CanAttachToFile(viewContent.FileName ?? viewContent.UntitledName)) {
+					ISecondaryDisplayBinding displayBinding = binding.SecondaryBinding;
+					if (displayBinding != null && displayBinding.CanAttachTo(viewContent)) {
+						ISecondaryViewContent[] subViewContents = binding.SecondaryBinding.CreateSecondaryViewContent(viewContent);
+						if (subViewContents != null) {
+							viewContent.SecondaryViewContents.AddRange(subViewContents);
+						} else {
+							MessageService.ShowError("Can't attach secondary view content. " + binding.SecondaryBinding + " returned null for " + viewContent + ".\n(should never happen)");
+						}
 					}
 				}
 			}

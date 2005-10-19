@@ -31,7 +31,7 @@ namespace ICSharpCode.Core
 	/// </attribute>
 	/// <attribute name="languagePattern" use="optional">
 	/// Regular expression that specifies the language for which the display binding
-	/// will be used. Example: "\Resource Files$"
+	/// will be used. Only used for primary display bindings. Example: "\Resource Files$"
 	/// </attribute>
 	/// <usage>Only in /SharpDevelop/Workbench/DisplayBindings</usage>
 	/// <returns>
@@ -52,8 +52,7 @@ namespace ICSharpCode.Core
 	///   &lt;DisplayBinding id  = "FormDesigner"
 	///                   type  = "Secondary"
 	///                   class = "ICSharpCode.FormDesigner.FormDesignerSecondaryDisplayBinding"
-	///                   fileNamePattern = "\.(cs|vb)$"
-	///                   languagePattern = "^(C#|VBNet)$" /&gt;
+	///                   fileNamePattern = "\.(cs|vb)$" /&gt;
 	/// &lt;/Path&gt;
 	/// </example>
 	public class DisplayBindingDoozer : IDoozer
