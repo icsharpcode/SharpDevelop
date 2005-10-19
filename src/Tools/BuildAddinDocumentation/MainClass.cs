@@ -44,6 +44,7 @@ namespace BuildAddinDocumentation
 			
 			sdVersion = FileVersionInfo.GetVersionInfo(Path.GetFullPath(Path.Combine(srcDir, "..\\bin\\SharpDevelop.exe")));
 			
+			//sdVersion = FileVersionInfo.GetVersionInfo(Path.GetFullPath(Path.Combine(srcDir, "..\\bin\\ICSharpCode.Core.dll")));
 			Comparison<XmlElement> comparison = delegate(XmlElement a, XmlElement b) {
 				string shortNameA = a.GetAttribute("name").Substring(a.GetAttribute("name").LastIndexOf('.') + 1);
 				string shortNameB = b.GetAttribute("name").Substring(b.GetAttribute("name").LastIndexOf('.') + 1);
@@ -52,43 +53,152 @@ namespace BuildAddinDocumentation
 			doozers.Sort(comparison);
 			conditions.Sort(comparison);
 			
+			Debug.WriteLine("Writing doozer list");
 			using (StreamWriter html = new StreamWriter(Path.Combine(srcDir, "..\\doc\\technotes\\DoozerList.html"))) {
 				WriteHeader(html, "Doozer List");
 				WriteList(html, doozers, true);
 				WriteFooter(html);
 			}
+			Debug.WriteLine("Writing condition list");
 			using (StreamWriter html = new StreamWriter(Path.Combine(srcDir, "..\\doc\\technotes\\ConditionList.html"))) {
 				WriteHeader(html, "Condition List");
 				WriteList(html, conditions, false);
 				WriteFooter(html);
 			}
+			Debug.WriteLine("Building Addin schema");
+			XmlDocument doc = new XmlDocument();
+			doc.Load(Path.Combine(srcDir, "..\\data\\schemas\\Addin.xsd"));
+			UpdateSchema(doc, doozers);
+			doc.Save(Path.Combine(srcDir, "..\\data\\schemas\\Addin.xsd"));
+		}
+		
+		static void RecursiveInsertDoozerList(XmlElement e, List<XmlElement> doozers)
+		{
+			List<XmlNode> oldChilds = new List<XmlNode>();
+			bool foundMark = false;
+			foreach (XmlNode node in e) {
+				if (foundMark) {
+					oldChilds.Add(node);
+				} else {
+					if (node.Value != null && node.Value.Trim() == "!!! INSERT DOOZER LIST !!!") {
+						foundMark = true;
+					}
+				}
+			}
+			if (foundMark) {
+				foreach (XmlNode node in oldChilds) {
+					e.RemoveChild(node);
+				}
+				foreach (XmlElement doozer in doozers) {
+					CreateChild(e, "element").SetAttribute("ref", doozer.GetAttribute("shortname"));
+				}
+			} else {
+				foreach (XmlNode node in e) {
+					if (node is XmlElement)
+						RecursiveInsertDoozerList((XmlElement)node, doozers);
+				}
+			}
+		}
+		
+		static void UpdateSchema(XmlDocument doc, List<XmlElement> doozers)
+		{
+			List<XmlNode> oldChilds = new List<XmlNode>();
+			bool foundMark = false;
+			foreach (XmlNode node in doc.DocumentElement) {
+				if (foundMark) {
+					oldChilds.Add(node);
+				} else {
+					if (node.Value != null && node.Value.Trim() == "!!! DOOZER START !!!") {
+						foundMark = true;
+					}
+				}
+			}
+			foreach (XmlNode node in oldChilds) {
+				doc.DocumentElement.RemoveChild(node);
+			}
+			RecursiveInsertDoozerList(doc.DocumentElement, doozers);
+			foreach (XmlElement doozer in doozers) {
+				XmlElement e = CreateChild(doc.DocumentElement, "complexType");
+				e.SetAttribute("name", doozer.GetAttribute("shortname"));
+				XmlElement e2 = CreateChild(e, "complexContent");
+				XmlElement e3 = CreateChild(e2, "extension");
+				e3.SetAttribute("base", "AbstractCodon");
+				if (doozer["children"] != null) {
+					XmlElement choice = CreateChild(e3, "choice");
+					choice.SetAttribute("minOccurs", "0");
+					choice.SetAttribute("maxOccurs", "unbounded");
+					CreateChild(choice, "element").SetAttribute("ref", "ComplexCondition");
+					CreateChild(choice, "element").SetAttribute("ref", "Condition");
+					foreach (string child in doozer["children"].GetAttribute("childTypes").Split(';')) {
+						CreateChild(choice, "element").SetAttribute("ref", child);
+					}
+				}
+				foreach (XmlElement doozerChild in doozer) {
+					if (doozerChild.Name != "attribute")
+						continue;
+					XmlElement e4 = CreateChild(e3, "attribute");
+					e4.SetAttribute("name", doozerChild.GetAttribute("name"));
+					if (doozerChild.GetAttribute("use") == "required")
+						e4.SetAttribute("use", "required");
+					else
+						e4.SetAttribute("use", "optional");
+					XmlElement e5, e6;
+					if (!doozerChild.HasAttribute("enum")) {
+						e4.SetAttribute("type", "xs:string");
+					} else {
+						e5 = CreateChild(e4, "simpleType");
+						e6 = CreateChild(e5, "restriction");
+						e6.SetAttribute("base", "xs:string");
+						foreach (string val in doozerChild.GetAttribute("enum").Split(';')) {
+							CreateChild(e6, "enumeration").SetAttribute("value", val);
+						}
+					}
+					e5 = CreateChild(e4, "annotation");
+					e6 = CreateChild(e5, "documentation");
+					e6.InnerXml = XmlToHtml(doozerChild.InnerXml);
+				}
+				e = CreateChild(doc.DocumentElement, "element");
+				e.SetAttribute("name", doozer.GetAttribute("shortname"));
+				e.SetAttribute("type", doozer.GetAttribute("shortname"));
+				e2 = CreateChild(e, "annotation");
+				e3 = CreateChild(e2, "documentation");
+				e3.InnerXml = XmlToHtml(doozer["summary"].InnerXml);
+			}
+		}
+		
+		static XmlElement CreateChild(XmlElement parent, string name)
+		{
+			XmlElement e = parent.OwnerDocument.CreateElement("xs:" + name, "http://www.w3.org/2001/XMLSchema");
+			parent.AppendChild(e);
+			return e;
 		}
 		
 		static void WriteList(StreamWriter html, List<XmlElement> elementList, bool isDoozer)
 		{
 			html.WriteLine("<ul>");
-			foreach (XmlElement e in elementList) {
+			for (int i = 0; i < elementList.Count; i++) {
+				XmlElement e = elementList[i];
 				string fullname = e.GetAttribute("name").Substring(2);
 				string shortName = fullname.Substring(fullname.LastIndexOf('.') + 1);
-				if (shortName == "LazyLoadDoozer" || shortName == "LazyConditionEvaluator") continue;
+				if (shortName == "LazyLoadDoozer" || shortName == "LazyConditionEvaluator") {
+					elementList.RemoveAt(i--);
+					continue;
+				}
 				if (isDoozer)
 					shortName = shortName.Substring(0, shortName.Length - "doozer".Length);
 				else
 					shortName = shortName.Substring(0, shortName.Length - "conditionEvaluator".Length);
-				if (shortName == "I") continue; // skip the interface
-				
+				if (shortName == "I") { // skip the interface
+					elementList.RemoveAt(i--);
+					continue;
+				}
+				e.SetAttribute("shortname", shortName);
 				html.WriteLine("  <li><a href=\"#" + shortName + "\">" + shortName + "</a>");
 			}
 			html.WriteLine("</ul>");
 			foreach (XmlElement e in elementList) {
 				string fullname = e.GetAttribute("name").Substring(2);
-				string shortName = fullname.Substring(fullname.LastIndexOf('.') + 1);
-				if (shortName == "LazyLoadDoozer" || shortName == "LazyConditionEvaluator") continue;
-				if (isDoozer)
-					shortName = shortName.Substring(0, shortName.Length - "doozer".Length);
-				else
-					shortName = shortName.Substring(0, shortName.Length - "conditionEvaluator".Length);
-				if (shortName == "I") continue; // skip the interface
+				string shortName = e.GetAttribute("shortname");
 				
 				html.WriteLine("<div>");
 				html.WriteLine("  <h2><a name=\"" + shortName + "\">" + shortName + "</a></h2>");
@@ -96,9 +206,9 @@ namespace BuildAddinDocumentation
 				html.WriteLine("  <table>");
 				html.WriteLine("    <tr>");
 				if (isDoozer)
-					html.WriteLine("       <th>Doozer name:</td>");
+					html.WriteLine("       <th colspan=2>Doozer name:</td>");
 				else
-					html.WriteLine("       <th>Condition name:</td>");
+					html.WriteLine("       <th colspan=2>Condition name:</td>");
 				html.WriteLine("       <td>" + fullname + "</td>");
 				html.WriteLine("    </tr>");
 				bool lastWasAttribute = false;
@@ -110,20 +220,25 @@ namespace BuildAddinDocumentation
 						case "attribute":
 							if (!lastWasAttribute) {
 								lastWasAttribute = true;
-								html.WriteLine("    <tr><td colspan=2><hr><h3>Attributes:</h3></td></tr>");
+								html.WriteLine("    <tr><td colspan=3><hr><h3>Attributes:</h3></td></tr>");
 							}
 							html.WriteLine("    <tr>");
-							html.WriteLine("       <th>" + sub.GetAttribute("name") + ":</td>");
+							if (sub.HasAttribute("use")) {
+								html.WriteLine("       <th>" + sub.GetAttribute("name") + ":</td>");
+								html.WriteLine("       <td class=\"userequired\">" + sub.GetAttribute("use") + "</td>");
+							} else {
+								html.WriteLine("       <th colspan=2>" + sub.GetAttribute("name") + ":</td>");
+							}
 							html.WriteLine("       <td>" + XmlToHtml(sub.InnerXml) + "</td>");
 							html.WriteLine("    </tr>");
 							break;
 						default:
 							if (lastWasAttribute) {
 								lastWasAttribute = false;
-								html.WriteLine("    <tr><td colspan=2><hr></td></tr>");
+								html.WriteLine("    <tr><td colspan=3><hr></td></tr>");
 							}
 							html.WriteLine("    <tr>");
-							html.WriteLine("       <th>" + char.ToUpper(sub.Name[0]) + sub.Name.Substring(1) + ":</td>");
+							html.WriteLine("       <th colspan=2>" + char.ToUpper(sub.Name[0]) + sub.Name.Substring(1) + ":</td>");
 							html.WriteLine("       <td>" + XmlToHtml(sub.InnerXml) + "</td>");
 							html.WriteLine("    </tr>");
 							break;
@@ -167,7 +282,12 @@ namespace BuildAddinDocumentation
 		{
 			XmlDocument doc = GetXmlDocu(projectFolder);
 			if (doc == null) return false;
-			foreach (XmlElement member in doc.DocumentElement["members"]) {
+			foreach (XmlNode node in doc.DocumentElement["members"]) {
+				XmlElement member = node as XmlElement;
+				if (member == null) {
+					Debug.WriteLine(node.Value);
+					continue;
+				}
 				if (member.GetAttribute("name").EndsWith("Doozer"))
 					doozers.Add(member);
 				if (member.GetAttribute("name").EndsWith("ConditionEvaluator"))

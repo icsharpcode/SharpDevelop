@@ -25,12 +25,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 	/// <summary>
 	/// Creates code completion bindings that manage code completion for one language.
 	/// </summary>
-	/// <attribute name="extensions">
-	/// Optional, list of semicolon-separated entries of the file extensions handled by the binding.
-	/// If no extensions attribute is specified, the binding is activated in all files.
-	/// </attribute>
-	/// <attribute name="class">
+	/// <attribute name="class" use="required">
 	/// Name of the ICodeCompletionBinding class (normally deriving from DefaultCodeCompletionBinding).
+	/// </attribute>
+	/// <attribute name="extensions" use="optional">
+	/// List of semicolon-separated entries of the file extensions handled by the binding.
+	/// If no extensions attribute is specified, the binding is activated in all files.
 	/// </attribute>
 	/// <usage>Only in /AddIns/DefaultTextEditor/CodeCompletion</usage>
 	/// <returns>

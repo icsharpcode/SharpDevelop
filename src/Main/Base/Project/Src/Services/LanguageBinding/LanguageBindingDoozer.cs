@@ -17,16 +17,16 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Creates LanguageBindingDescriptor objects for the project service.
 	/// </summary>
-	/// <attribute name="guid">
+	/// <attribute name="guid" use="required">
 	/// Project type GUID of the project used by MsBuild.
 	/// </attribute>
-	/// <attribute name="supportedextensions">
+	/// <attribute name="supportedextensions" use="required">
 	/// Semicolon-separated list of file extensions that are compilable files in the project. (e.g. ".boo")
 	/// </attribute>
-	/// <attribute name="projectfileextension">
+	/// <attribute name="projectfileextension" use="required">
 	/// File extension of project files. (e.g. ".booproj")
 	/// </attribute>
-	/// <attribute name="class">
+	/// <attribute name="class" use="required">
 	/// Name of the ILanguageBinding class.
 	/// </attribute>
 	/// <usage>Only in /SharpDevelop/Workbench/LanguageBindings</usage>

@@ -16,9 +16,8 @@ namespace ICSharpCode.Core
 	/// Creates associations between file types or node types in the project browser and
 	/// icons in the resource service.
 	/// </summary>
-	/// <attribute name="resource">
-	/// This attribute must be specified. It is the name of a bitmap resource
-	/// in the resource service.
+	/// <attribute name="resource" use="required">
+	/// The name of a bitmap resource in the resource service.
 	/// </attribute>
 	/// <attribute name="language">
 	/// This attribute is specified when a project icon association should be created.

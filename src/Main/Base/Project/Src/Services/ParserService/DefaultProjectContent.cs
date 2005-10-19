@@ -31,7 +31,7 @@ namespace ICSharpCode.Core
 {
 	public class DefaultProjectContent : IProjectContent
 	{
-		List<IProjectContent> referencedContents = new List<IProjectContent>();
+		protected readonly List<IProjectContent> referencedContents = new List<IProjectContent>();
 		
 		// we use a list of Dictionaries because we need multiple dictionaries:
 		// each uses another StringComparer

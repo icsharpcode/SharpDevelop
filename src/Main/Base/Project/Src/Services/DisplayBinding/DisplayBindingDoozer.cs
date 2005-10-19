@@ -15,19 +15,22 @@ namespace ICSharpCode.Core
 {
 	/// <summary>
 	/// Creates DisplayBindingDescriptor objects.
+	/// Primary display bindings can provide editors for additional file types
+	/// (like the ResourceEditor), secondary display bindings can add tabs to
+	/// existing display bindings (like the form designer).
 	/// </summary>
-	/// <attribute name="class">
+	/// <attribute name="class" use="required">
 	/// Name of the IDisplayBinding or ISecondaryDisplayBinding class.
 	/// </attribute>
-	/// <attribute name="type">
+	/// <attribute name="type" use="optional" enum="Primary;Secondary">
 	/// Type of the display binding (either "Primary" or "Secondary"). Default: "Primary".
 	/// </attribute>
-	/// <attribute name="fileNamePattern">
-	/// Optional. Regular expression that specifies the file names for which the display binding
+	/// <attribute name="fileNamePattern" use="optional">
+	/// Regular expression that specifies the file names for which the display binding
 	/// will be used. Example: "\.res(x|ources)$"
 	/// </attribute>
-	/// <attribute name="languagePattern">
-	/// Optional. Regular expression that specifies the language for which the display binding
+	/// <attribute name="languagePattern" use="optional">
+	/// Regular expression that specifies the language for which the display binding
 	/// will be used. Example: "\Resource Files$"
 	/// </attribute>
 	/// <usage>Only in /SharpDevelop/Workbench/DisplayBindings</usage>
@@ -35,6 +38,24 @@ namespace ICSharpCode.Core
 	/// An DisplayBindingDescriptor object that wraps either a IDisplayBinding
 	/// or a ISecondaryDisplayBinding object.
 	/// </returns>
+	/// <example title="Primary display binding: Resource editor">
+	/// &lt;Path name = "/SharpDevelop/Workbench/DisplayBindings"&gt;
+	///   &lt;DisplayBinding id    = "ResourceEditor"
+	///                   class = "ResourceEditor.ResourceEditorDisplayBinding"
+	///                   insertbefore    = "Text"
+	///                   fileNamePattern = "\.res(x|ources)$"
+	///                   languagePattern = "^ResourceFiles$"/&gt;
+	/// &lt;/Path&gt;
+	/// </example>
+	/// <example title="Secondary display binding: Form designer">
+	/// &lt;Path name = "/SharpDevelop/Workbench/DisplayBindings"&gt;
+	///   &lt;DisplayBinding id  = "FormDesigner"
+	///                   type  = "Secondary"
+	///                   class = "ICSharpCode.FormDesigner.FormDesignerSecondaryDisplayBinding"
+	///                   fileNamePattern = "\.(cs|vb)$"
+	///                   languagePattern = "^(C#|VBNet)$" /&gt;
+	/// &lt;/Path&gt;
+	/// </example>
 	public class DisplayBindingDoozer : IDoozer
 	{
 		/// <summary>

@@ -13,10 +13,10 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Creates file filter entries for OpenFileDialogs or SaveFileDialogs.
 	/// </summary>
-	/// <attribute name="name">
+	/// <attribute name="name" use="required">
 	/// The name of the file filter entry.
 	/// </attribute>
-	/// <attribute name="extensions">
+	/// <attribute name="extensions" use="required">
 	/// The extensions associated with this file filter entry.
 	/// </attribute>
 	/// <usage>Only in /SharpDevelop/Workbench/FileFilter</usage>

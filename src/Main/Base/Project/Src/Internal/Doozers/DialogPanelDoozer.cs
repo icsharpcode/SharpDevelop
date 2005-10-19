@@ -17,10 +17,10 @@ namespace ICSharpCode.Core
 	/// <attribute name="class">
 	/// Name of the IDialogPanel class. Optional if the page has subpages.
 	/// </attribute>
-	/// <attribute name="label">
+	/// <attribute name="label" use="required">
 	/// Caption of the dialog panel.
 	/// </attribute>
-	/// <children>
+	/// <children childTypes="DialogPanel">
 	/// In the SharpDevelop options, option pages can have subpages by specifying them
 	/// as children in the AddInTree.
 	/// </children>

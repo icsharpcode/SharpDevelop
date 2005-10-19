@@ -14,8 +14,8 @@ namespace ICSharpCode.Core
 	/// Creates object instances by invocing a type's parameterless constructor
 	/// via System.Reflection.
 	/// </summary>
-	/// <attribute name="class">
-	/// The fully qualified type name of the attribute to create.
+	/// <attribute name="class" use="required">
+	/// The fully qualified type name of the class to create an instace of.
 	/// </attribute>
 	/// <usage>Everywhere where objects are expected.</usage>
 	/// <returns>

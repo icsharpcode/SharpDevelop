@@ -2,7 +2,8 @@ AddIn.xsd
 ---------
 
 SharpDevelop schema for .addin files.  
-Created by Ivo Kovacka.  
+Created by Ivo Kovacka.
+Doozers automatically updated by "BuildAddinDocumentation".
 GNU General Public License.
 
 

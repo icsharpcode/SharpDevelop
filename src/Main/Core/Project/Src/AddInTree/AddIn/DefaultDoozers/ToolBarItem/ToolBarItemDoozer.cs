@@ -14,29 +14,30 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Creates tool bar items from a location in the addin tree.
 	/// </summary>
-	/// <attribute name="type">
-	/// This attribute must be specified and one of these values:
+	/// <attribute name="icon" use="optional">
+	/// Icon of the tool bar item.
+	/// </attribute>
+	/// <attribute name="type" use="optional" enum="Separator;CheckBox;Item;ComboBox;DropDownButton">
+	/// This attribute must be one of these values:
 	/// Separator, CheckBox, Item, ComboBox, DropDownButton
 	/// </attribute>
-	/// <attribute name="loadclasslazy">
+	/// <attribute name="loadclasslazy" use="optional">
 	/// Only for the type "Item". When set to false, the command class is loaded
 	/// immediately instead of the usual lazy-loading.
 	/// </attribute>
-	/// <attribute name="icon">
-	/// Icon of the tool bar item.
-	/// </attribute>
-	/// <attribute name="tooltip">
+	/// <attribute name="tooltip" use="optional">
 	/// Tooltip of the tool bar item.
 	/// </attribute>
 	/// <attribute name="class">
 	/// Command class that is run when item is clicked; or class that manages
-	/// the ComboBox/DropDownButton.
+	/// the ComboBox/DropDownButton. Required for everything except "Separator".
 	/// </attribute>
 	/// <usage>Any toolbar strip paths, e.g. /SharpDevelop/Workbench/ToolBar</usage>
+	/// <children childTypes="MenuItem">A drop down button has menu items as sub elements.</children>
 	/// <returns>
 	/// A ToolStrip* object, depending on the type attribute.
 	/// </returns>
-	/// <conditions>MenuMode</conditions>
+	/// <conditions>Conditions are handled by the item, "Exclude" maps to "Visible = false", "Disable" to "Enabled = false"</conditions>
 	public class ToolbarItemDoozer : IDoozer
 	{
 		/// <summary>

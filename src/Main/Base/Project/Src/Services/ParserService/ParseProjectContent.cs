@@ -68,7 +68,8 @@ namespace ICSharpCode.Core
 		
 		void UpdateReferenceInterDependencies()
 		{
-			foreach (IProjectContent referencedContent in this.ReferencedContents) {
+			// Use ToArray because the collection could be modified inside the loop
+			foreach (IProjectContent referencedContent in this.referencedContents.ToArray()) {
 				if (referencedContent is ReflectionProjectContent) {
 					((ReflectionProjectContent)referencedContent).InitializeReferences();
 				}

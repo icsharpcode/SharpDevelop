@@ -73,10 +73,10 @@ namespace ICSharpCode.SharpDevelop.BrowserDisplayBinding
 	/// <summary>
 	/// Creates browser scheme extensions that can intercept calls on one protocol.
 	/// </summary>
-	/// <attribute name="scheme">
+	/// <attribute name="scheme" use="required">
 	/// Specifies the name of the protocol the extension handles. (e.g. 'ms-help' or 'startpage')
 	/// </attribute>
-	/// <attribute name="class">
+	/// <attribute name="class" use="required">
 	/// Name of the ISchemeExtension class (normally deriving from DefaultSchemeExtension).
 	/// </attribute>
 	/// <usage>Only in /SharpDevelop/Views/Browser/SchemeExtensions</usage>

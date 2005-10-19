@@ -53,6 +53,10 @@ hr {
 .exampleTitle {
 	font-weight: bold;
 }
+.userequired {
+	font-style: italic;
+	width: 9ex;
+}
 pre {
 	margin-top: -10px !important;
 	margin-top: 4px;

@@ -46,13 +46,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 	/// Creates AddInTreeSyntaxMode objects that wrap a .xshd syntax mode stored as resource in the
 	/// addin assembly.
 	/// </summary>
-	/// <attribute name="name">
+	/// <attribute name="name" use="required">
 	/// Name of the language for which the syntax mode is used.
 	/// </attribute>
-	/// <attribute name="extensions">
+	/// <attribute name="extensions" use="required">
 	/// Semicolon-separated list of file extensions for which the syntax mode is used.
 	/// </attribute>
-	/// <attribute name="resource">
+	/// <attribute name="resource" use="required">
 	/// Fully qualified name of the resource file.
 	/// </attribute>
 	/// <usage>Only in /SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes</usage>

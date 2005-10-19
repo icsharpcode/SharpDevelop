@@ -13,23 +13,23 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Creates debuggers.
 	/// </summary>
-	/// <attribute name="supportsStart">
+	/// <attribute name="class" use="required">
+	/// Name of the IDebugger class.
+	/// </attribute>
+	/// <attribute name="supportsStart" use="optional">
 	/// Specifies if the debugger supports the 'Start' command. Default: true
 	/// </attribute>
-	/// <attribute name="supportsStartWithoutDebugger">
+	/// <attribute name="supportsStartWithoutDebugger" use="optional">
 	/// Specifies if the debugger supports the 'StartWithoutDebugger' command. Default: true
 	/// </attribute>
-	/// <attribute name="supportsStop">
+	/// <attribute name="supportsStop" use="optional">
 	/// Specifies if the debugger supports the 'Stop' (kill running process) command. Default: true
 	/// </attribute>
-	/// <attribute name="supportsStepping">
+	/// <attribute name="supportsStepping" use="optional">
 	/// Specifies if the debugger supports stepping. Default: false
 	/// </attribute>
-	/// <attribute name="supportsExecutionControl">
+	/// <attribute name="supportsExecutionControl" use="optional">
 	/// Specifies if the debugger supports execution control (break, resume). Default: false
-	/// </attribute>
-	/// <attribute name="class">
-	/// Name of the IDebugger class.
 	/// </attribute>
 	/// <usage>Only in /SharpDevelop/Services/DebuggerService/Debugger</usage>
 	/// <returns>

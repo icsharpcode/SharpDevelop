@@ -14,7 +14,7 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Creates path names using a relative to the folder containing the addin file.
 	/// </summary>
-	/// <attribute name="path">
+	/// <attribute name="path" use="required">
 	/// Path relative to the directory which contains the .addin file defining the codon.
 	/// </attribute>
 	/// <usage>Where directory paths to a folder inside the addin directory are expected, e.g.
