@@ -68,39 +68,65 @@ namespace BuildAddinDocumentation
 			Debug.WriteLine("Building Addin schema");
 			XmlDocument doc = new XmlDocument();
 			doc.Load(Path.Combine(srcDir, "..\\data\\schemas\\Addin.xsd"));
-			UpdateSchema(doc, doozers);
+			UpdateSchema(doc, doozers, conditions);
 			doc.Save(Path.Combine(srcDir, "..\\data\\schemas\\Addin.xsd"));
 		}
 		
-		static void RecursiveInsertDoozerList(XmlElement e, List<XmlElement> doozers)
+		static void RecursiveInsertDoozerList(XmlElement e, List<XmlElement> doozers, List<XmlElement> conditionList)
 		{
 			List<XmlNode> oldChilds = new List<XmlNode>();
-			bool foundMark = false;
+			int foundMark = 0;
 			foreach (XmlNode node in e) {
-				if (foundMark) {
+				if (foundMark > 0) {
 					oldChilds.Add(node);
 				} else {
-					if (node.Value != null && node.Value.Trim() == "!!! INSERT DOOZER LIST !!!") {
-						foundMark = true;
+					if (node.Value != null) {
+						if (node.Value.Trim() == "!!! INSERT DOOZER LIST !!!") {
+							foundMark = 1;
+						} else if (node.Value.Trim() == "!!! INSERT CONDITION ATTRIBUTES !!!") {
+							foundMark = 2;
+						}
 					}
 				}
 			}
-			if (foundMark) {
+			if (foundMark == 1) {
 				foreach (XmlNode node in oldChilds) {
 					e.RemoveChild(node);
 				}
 				foreach (XmlElement doozer in doozers) {
 					CreateChild(e, "element").SetAttribute("ref", doozer.GetAttribute("shortname"));
 				}
+			} else if (foundMark == 2) {
+				foreach (XmlNode node in oldChilds) {
+					e.RemoveChild(node);
+				}
+				// create list of attributes
+				List<string> attributes = new List<string>();
+				foreach (XmlElement condition in conditionList) {
+					foreach (XmlElement attribute in condition) {
+						if (attribute.Name == "attribute") {
+							if (!attributes.Contains(attribute.GetAttribute("name"))) {
+								attributes.Add(attribute.GetAttribute("name"));
+							}
+						}
+					}
+				}
+				attributes.Sort();
+				foreach (string attribute in attributes) {
+					XmlElement ae = CreateChild(e, "attribute");
+					ae.SetAttribute("name", attribute);
+					ae.SetAttribute("type", "xs:string");
+					ae.SetAttribute("use", "optional");
+				}
 			} else {
 				foreach (XmlNode node in e) {
 					if (node is XmlElement)
-						RecursiveInsertDoozerList((XmlElement)node, doozers);
+						RecursiveInsertDoozerList((XmlElement)node, doozers, conditionList);
 				}
 			}
 		}
 		
-		static void UpdateSchema(XmlDocument doc, List<XmlElement> doozers)
+		static void UpdateSchema(XmlDocument doc, List<XmlElement> doozers, List<XmlElement> conditionList)
 		{
 			List<XmlNode> oldChilds = new List<XmlNode>();
 			bool foundMark = false;
@@ -116,7 +142,7 @@ namespace BuildAddinDocumentation
 			foreach (XmlNode node in oldChilds) {
 				doc.DocumentElement.RemoveChild(node);
 			}
-			RecursiveInsertDoozerList(doc.DocumentElement, doozers);
+			RecursiveInsertDoozerList(doc.DocumentElement, doozers, conditionList);
 			foreach (XmlElement doozer in doozers) {
 				XmlElement e = CreateChild(doc.DocumentElement, "complexType");
 				e.SetAttribute("name", doozer.GetAttribute("shortname"));

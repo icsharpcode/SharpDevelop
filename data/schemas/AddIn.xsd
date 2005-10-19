@@ -52,15 +52,6 @@
   <xs:element name="Path" type="Path" />
   <xs:complexType name="Condition">
     <xs:extension base="Path">
-      <xs:attribute name="activewindow" type="xs:string" use="optional" />
-      <xs:attribute name="openwindow" type="xs:string" use="optional" />
-      <xs:attribute name="iscombineopen" type="xs:string" use="optional" />
-      <xs:attribute name="activeproject" type="xs:string" use="optional" />
-      <xs:attribute name="openproject" type="xs:string" use="optional" />
-      <xs:attribute name="textcontent" type="xs:string" use="optional" />
-      <xs:attribute name="ownerstate" type="xs:string" use="optional" />
-      <xs:attribute name="string" type="xs:string" use="optional" />
-      <xs:attribute name="equals" type="xs:string" use="optional" />
       <xs:attribute name="action" use="optional">
         <xs:simpleType>
           <xs:restriction base="xs:string">
@@ -70,6 +61,17 @@
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
+      <!-- !!! INSERT CONDITION ATTRIBUTES !!! -->
+      <xs:attribute name="activeextension" type="xs:string" use="optional" />
+      <xs:attribute name="activeproject" type="xs:string" use="optional" />
+      <xs:attribute name="activewindow" type="xs:string" use="optional" />
+      <xs:attribute name="debuggersupports" type="xs:string" use="optional" />
+      <xs:attribute name="equals" type="xs:string" use="optional" />
+      <xs:attribute name="openwindow" type="xs:string" use="optional" />
+      <xs:attribute name="options" type="xs:string" use="optional" />
+      <xs:attribute name="string" type="xs:string" use="optional" />
+      <xs:attribute name="textcontent" type="xs:string" use="optional" />
+      <xs:attribute name="urlRegex" type="xs:string" use="optional" />
     </xs:extension>
   </xs:complexType>
   <xs:element name="Condition" type="Condition">
@@ -347,7 +349,7 @@
           <xs:annotation>
             <xs:documentation>
             Regular expression that specifies the language for which the display binding
-            will be used. Example: "\Resource Files$"
+            will be used. Only used for primary display bindings. Example: "\Resource Files$"
             </xs:documentation>
           </xs:annotation>
         </xs:attribute>
