@@ -11,10 +11,10 @@
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id               = "FormDesigner"
-		                type             = "Secondary"
-		                supportedformats = "Forms/UserControls"
-		                class            = "ICSharpCode.FormDesigner.FormDesignerSecondaryDisplayBinding" />
+		<DisplayBinding id    = "FormDesigner"
+		                type  = "Secondary"
+		                class = "ICSharpCode.FormDesigner.FormDesignerSecondaryDisplayBinding"
+		                fileNamePattern = "\.(cs|vb|xfrm)$"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/FormsDesigner/ContextMenus/SelectionMenu">

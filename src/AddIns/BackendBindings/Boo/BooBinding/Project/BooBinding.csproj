@@ -16,7 +16,7 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\BooBinding\</OutputPath>
-    <PostBuildEvent>$(MSBuildProjectDirectory)\PostBuildEvent.bat "$(MSBuildProjectDirectory)"</PostBuildEvent>
+    <PostBuildEvent>"$(MSBuildProjectDirectory)\PostBuildEvent.bat" "$(MSBuildProjectDirectory)"</PostBuildEvent>
     <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
