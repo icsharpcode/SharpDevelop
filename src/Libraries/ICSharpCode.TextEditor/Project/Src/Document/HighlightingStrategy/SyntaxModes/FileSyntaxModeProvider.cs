@@ -28,6 +28,11 @@ namespace ICSharpCode.TextEditor.Document
 		public FileSyntaxModeProvider(string directory)
 		{
 			this.directory = directory;
+			UpdateSyntaxModeList();
+		}
+		
+		public void UpdateSyntaxModeList()
+		{
 			string syntaxModeFile = Path.Combine(directory, "SyntaxModes.xml");
 			if (File.Exists(syntaxModeFile)) {
 				Stream s = File.OpenRead(syntaxModeFile);
@@ -62,8 +67,8 @@ namespace ICSharpCode.TextEditor.Document
 									string name       = reader.GetAttribute("name");
 									string extensions = reader.GetAttribute("extensions");
 									modes.Add(new SyntaxMode(Path.GetFileName(file),
-									                               name,
-									                               extensions));
+									                         name,
+									                         extensions));
 									goto bailout;
 								default:
 									MessageBox.Show("Unknown root node in syntax highlighting file :" + reader.Name, "Error", MessageBoxButtons.OK, MessageBoxIcon.Hand, MessageBoxDefaultButton.Button1);
@@ -71,9 +76,9 @@ namespace ICSharpCode.TextEditor.Document
 							}
 						}
 					}
-					bailout:
+				bailout:
 					reader.Close();
-			
+					
 				}
 			}
 			return modes;

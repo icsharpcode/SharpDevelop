@@ -18,5 +18,6 @@ namespace ICSharpCode.TextEditor.Document
 		}
 		
 		XmlTextReader GetSyntaxModeFile(SyntaxMode syntaxMode);
+		void UpdateSyntaxModeList();
 	}
 }

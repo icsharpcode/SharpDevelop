@@ -39,5 +39,10 @@ namespace ICSharpCode.TextEditor.Document
 			Assembly assembly = typeof(SyntaxMode).Assembly;
 			return new XmlTextReader(assembly.GetManifestResourceStream("ICSharpCode.TextEditor.Resources." + syntaxMode.FileName));
 		}
+		
+		public void UpdateSyntaxModeList()
+		{
+			// resources don't change during runtime
+		}
 	}
 }

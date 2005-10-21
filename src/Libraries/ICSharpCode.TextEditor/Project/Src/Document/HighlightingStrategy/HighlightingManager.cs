@@ -50,7 +50,7 @@ namespace ICSharpCode.TextEditor.Document
 			foreach (SyntaxMode syntaxMode in syntaxModeFileProvider.SyntaxModes) {
 				highlightingDefs[syntaxMode.Name] = new DictionaryEntry(syntaxMode, syntaxModeFileProvider);
 				foreach (string extension in syntaxMode.Extensions) {
-					extensionsToName[extension.ToUpper()] = syntaxMode.Name;
+					extensionsToName[extension.ToUpperInvariant()] = syntaxMode.Name;
 				}
 			}
 			if (!syntaxModeFileProviders.Contains(syntaxModeFileProvider)) {
@@ -64,6 +64,7 @@ namespace ICSharpCode.TextEditor.Document
 			extensionsToName.Clear();
 			CreateDefaultHighlightingStrategy();
 			foreach (ISyntaxModeFileProvider provider in syntaxModeFileProviders) {
+				provider.UpdateSyntaxModeList();
 				AddSyntaxModeFileProvider(provider);
 			}
 			OnReloadSyntaxHighlighting(EventArgs.Empty);
@@ -100,7 +101,7 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public IHighlightingStrategy FindHighlighterForFile(string fileName)
 		{
-			string highlighterName = (string)extensionsToName[Path.GetExtension(fileName).ToUpper()];
+			string highlighterName = (string)extensionsToName[Path.GetExtension(fileName).ToUpperInvariant()];
 			if (highlighterName != null) {
 				object def = highlightingDefs[highlighterName];
 				if (def is DictionaryEntry) {

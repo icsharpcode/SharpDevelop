@@ -44,24 +44,29 @@
 				<End >*/</End>
 			</Span>
 
-			<Span name="String" rule="str formatting" stopateol="true" bold="false" italic="false" color="Fuchsia" >
+			<Span name="String" rule="str formatting" stopateol="true" bold="false" italic="false" color="Blue" >
 				<Begin >"</Begin>
 				<End >"</End>
 			</Span>
 
-			<Span name="MultiLineString" noescapesequences="true" rule="str formatting" stopateol="false" bold="false" italic="false" color="Fuchsia" >
+			<Span name="MultiLineString" noescapesequences="true" rule="str formatting" stopateol="false" bold="false" italic="false" color="Blue" >
 				<Begin >"""</Begin>
 				<End >"""</End>
 			</Span>
 
-			<Span name="Char" stopateol="true" bold="false" italic="false" color="Fuchsia" >
+			<Span name="Char" stopateol="true" bold="false" italic="false" color="Blue" >
 				<Begin >'</Begin>
 				<End >'</End>
 			</Span>
 
-			<Span name="RegEx" stopateol="true" bold="false" italic="false" color="#FF6600" >
-				<Begin >/@!/@</Begin>
-				<End >/</End>
+			<Span name="MultiLineRegEx" stopateol="false" bold="false" italic="false" color="#FF6600">
+				<Begin>@@/</Begin>
+				<End>/</End>
+			</Span>
+			
+			<Span name="RegEx" stopateol="true" bold="false" italic="false" color="#FF6600">
+				<Begin>/@! @@!/@</Begin>
+				<End>/</End>
 			</Span>
 
 			<MarkPrevious bold="false" italic="false" color="MidnightBlue" >(</MarkPrevious>

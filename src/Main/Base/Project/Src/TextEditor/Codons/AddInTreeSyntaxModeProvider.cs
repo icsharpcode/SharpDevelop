@@ -42,5 +42,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Codons
 			Debug.Assert(syntaxMode is AddInTreeSyntaxMode);
 			return ((AddInTreeSyntaxMode)syntaxMode).CreateTextReader();
 		}
+		
+		public void UpdateSyntaxModeList()
+		{
+			// addintree doesn't change during runtime
+		}
 	}
 }
