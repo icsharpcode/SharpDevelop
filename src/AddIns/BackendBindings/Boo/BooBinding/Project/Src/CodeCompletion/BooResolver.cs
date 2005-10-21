@@ -109,7 +109,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		IMember ResolveCurrentMember(IClass callingClass)
 		{
-			LoggingService.DebugFormatted("Getting current method... caretLine = {0}, caretColumn = {1}", caretLine, caretColumn);
+			//LoggingService.DebugFormatted("Getting current method... caretLine = {0}, caretColumn = {1}", caretLine, caretColumn);
 			if (callingClass == null) return null;
 			IMember best = null;
 			int line = 0;
@@ -178,7 +178,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return new NamespaceResolveResult(callingClass, callingMember, "");
 			}
 			
-			AST.Expression expr = Boo.Lang.Parser.BooParser.ParseExpression("expression", expressionResult.Expression);
+			AST.Expression expr;
+			try {
+				expr = Boo.Lang.Parser.BooParser.ParseExpression("expression", expressionResult.Expression);
+			} catch (Exception ex) {
+				LoggingService.Debug("Boo expression parser: " + ex.Message);
+				return null;
+			}
 			if (expr == null)
 				return null;
 			if (expr is AST.IntegerLiteralExpression)

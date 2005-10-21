@@ -308,7 +308,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		private void EnterTypeDefinition(AST.TypeDefinition node, ClassType classType)
 		{
-			LoggingService.Debug("Enter " + node.GetType().Name + " (" + node.FullName + ")");
+			//LoggingService.Debug("Enter " + node.GetType().Name + " (" + node.FullName + ")");
 			DomRegion region = GetClientRegion(node);
 			DefaultClass c = new DefaultClass(_cu, classType, GetModifier(node), region, OuterClass);
 			c.FullyQualifiedName = node.FullName;
@@ -353,12 +353,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 		private void LeaveTypeDefinition(AST.TypeDefinition node)
 		{
 			DefaultClass c = _currentClass.Pop();
-			LoggingService.Debug("Leave "+node.GetType().Name+" "+node.FullName+" (Class = "+c.FullyQualifiedName+")");
+			//LoggingService.Debug("Leave "+node.GetType().Name+" "+node.FullName+" (Class = "+c.FullyQualifiedName+")");
 		}
 		
 		public override void OnMethod(AST.Method node)
 		{
-			LoggingService.Debug("Method: " + node.FullName);
+			//LoggingService.Debug("Method: " + node.FullName);
 			DefaultMethod method = new DefaultMethod(node.Name, null, GetModifier(node), GetRegion(node), GetClientRegion(node), OuterClass);
 			ConvertAttributes(node, method);
 			ConvertTemplates(node, method);
@@ -371,7 +371,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override void OnConstructor(AST.Constructor node)
 		{
-			if (node.Body.Statements.Count == 0) return;
+			if (node.IsSynthetic && node.Parameters.Count == 0) return;
 			Constructor ctor = new Constructor(GetModifier(node), GetRegion(node), GetClientRegion(node), OuterClass);
 			ConvertAttributes(node, ctor);
 			ConvertParameters(node.Parameters, ctor);

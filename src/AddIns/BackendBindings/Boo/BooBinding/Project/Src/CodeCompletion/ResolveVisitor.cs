@@ -323,6 +323,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 							methods.Add(m);
 						}
 					}
+					if (methods.Count == 0) {
+						methods.Add(ICSharpCode.SharpDevelop.Dom.Constructor.CreateDefault(trr.ResolvedClass));
+					}
 					ResolveInvocation(methods, node.Arguments);
 				} else {
 					ClearResult();
