@@ -20,7 +20,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public static void BeforeBuild()
 		{
 			TaskService.BuildMessageViewCategory.ClearText();
-			TaskService.Clear();
+			TaskService.ClearExceptCommentTasks();
 			ICSharpCode.SharpDevelop.Commands.SaveAllFiles.SaveAll();
 		}
 		

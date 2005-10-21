@@ -17,7 +17,10 @@ namespace ICSharpCode.Core
 {
 	public class TaskService
 	{
-		static List<Task>          tasks                    = new List<Task>();
+		static List<Task> tasks = new List<Task>();
+		
+		static Dictionary<TaskType, int> taskCount = new Dictionary<TaskType, int>();
+		
 		static MessageViewCategory buildMessageViewCategory = new MessageViewCategory("Build", "${res:MainWindow.Windows.OutputWindow.BuildCategory}");
 		
 		public static MessageViewCategory BuildMessageViewCategory {
@@ -26,9 +29,14 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public class TaskEnumerator {
-			public IEnumerator<Task> GetEnumerator()
-			{
+		public static int TaskCount {
+			get {
+				return tasks.Count - GetCount(TaskType.Comment);
+			}
+		}
+		
+		public static IEnumerable<Task> Tasks {
+			get {
 				foreach (Task task in tasks) {
 					if (task.TaskType != TaskType.Comment) {
 						yield return task;
@@ -37,20 +45,8 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static int TaskCount {
+		public static IEnumerable<Task> CommentTasks {
 			get {
-				return tasks.Count - GetCount(TaskType.Comment);
-			}
-		}
-		public static TaskEnumerator Tasks {
-			get {
-				return new TaskEnumerator();
-			}
-		}
-		
-		public class CommentTaskEnumerator {
-			public IEnumerator<Task> GetEnumerator()
-			{
 				foreach (Task task in tasks) {
 					if (task.TaskType == TaskType.Comment) {
 						yield return task;
@@ -58,13 +54,6 @@ namespace ICSharpCode.Core
 				}
 			}
 		}
-		public static CommentTaskEnumerator CommentTasks {
-			get {
-				return new CommentTaskEnumerator();
-			}
-		}
-		
-		static Dictionary<TaskType, int> taskCount = new Dictionary<TaskType, int>();
 		
 		public static int GetCount(TaskType type)
 		{
@@ -133,6 +122,15 @@ namespace ICSharpCode.Core
 			OnCleared(EventArgs.Empty);
 		}
 		
+		public static void ClearExceptCommentTasks()
+		{
+			List<Task> commentTasks = new List<Task>(CommentTasks);
+			Clear();
+			foreach (Task t in commentTasks) {
+				Add(t);
+			}
+		}
+		
 		public static void Add(Task task)
 		{
 			tasks.Add(task);
@@ -167,8 +165,8 @@ namespace ICSharpCode.Core
 			foreach (Tag tag in tagComments) {
 				newTasks.Add(new Task(fileName,
 				                      tag.Key + tag.CommentString,
-				                      tag.Region.BeginColumn,
-				                      tag.Region.BeginLine,
+				                      tag.Region.BeginColumn - 1,
+				                      tag.Region.BeginLine - 1,
 				                      TaskType.Comment));
 			}
 			List<Task> oldTasks = new List<Task>();

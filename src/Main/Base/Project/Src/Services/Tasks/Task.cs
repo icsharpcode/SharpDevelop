@@ -22,7 +22,7 @@ namespace ICSharpCode.Core
 		Comment,
 	}
 	
-	public class Task 
+	public class Task
 	{
 		string   description;
 		string   fileName;
@@ -48,12 +48,18 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// The line number of the task. Zero-based (text editor coordinate)
+		/// </summary>
 		public int Line {
 			get {
 				return line;
 			}
 		}
 		
+		/// <summary>
+		/// The column number of the task. Zero-based (text editor coordinate)
+		/// </summary>
 		public int Column {
 			get {
 				return column;

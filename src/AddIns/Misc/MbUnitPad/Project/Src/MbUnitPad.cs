@@ -93,7 +93,7 @@ namespace ICSharpCode.MbUnitPad
 		
 		public void RunTests()
 		{
-			TaskService.Clear();
+			TaskService.ClearExceptCommentTasks();
 			if (treeView.TypeTree.Nodes.Count == 0) {
 				treeView.TreePopulated += StartTestsAfterTreePopulation;
 				treeView.FinishTests += FinishTests;

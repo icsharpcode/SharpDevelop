@@ -572,7 +572,7 @@ namespace ICSharpCode.XmlEditor
 		void ClearTasks()
 		{
 			if (HasTasks) {
-				TaskService.Clear();
+				TaskService.ClearExceptCommentTasks();
 			}
 		}
 		
