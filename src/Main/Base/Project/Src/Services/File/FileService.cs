@@ -17,7 +17,6 @@ namespace ICSharpCode.Core
 {
 	public class FileService
 	{
-		static string currentFile;
 		static RecentOpen       recentOpen = null;
 		
 		public static RecentOpen RecentOpen {
@@ -31,14 +30,6 @@ namespace ICSharpCode.Core
 		public static void Unload()
 		{
 			PropertyService.Set("RecentOpen", RecentOpen.ToProperties());
-		}
-		public static string CurrentFile {
-			get {
-				return currentFile;
-			}
-			set {
-				currentFile = value;
-			}
 		}
 		
 		static FileService()
@@ -86,31 +77,11 @@ namespace ICSharpCode.Core
 		public static IWorkbenchWindow OpenFile(string fileName)
 		{
 			LoggingService.Info("Open file " + fileName);
-			// test, if file fileName exists
-			bool isURL = fileName.IndexOf("://") > 0;
-			if (!isURL) {
-				System.Diagnostics.Debug.Assert(FileUtility.IsValidFileName(fileName));
-				
-				// test, if an untitled file should be opened
-				if (!Path.IsPathRooted(fileName)) {
-					foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-						if (content.IsUntitled && content.UntitledName == fileName) {
-							content.WorkbenchWindow.SelectWindow();
-							return content.WorkbenchWindow;
-						}
-					}
-				} else if (!FileUtility.TestFileExists(fileName)) {
-					return null;
-				}
-			}
 			
-			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-				if (content.FileName != null) {
-					if (isURL ? content.FileName == fileName : FileUtility.IsEqualFileName(content.FileName, fileName)) {
-						content.WorkbenchWindow.SelectWindow();
-						return content.WorkbenchWindow;
-					}
-				}
+			IWorkbenchWindow window = GetOpenFile(fileName);
+			if (window != null) {
+				window.SelectWindow();
+				return window;
 			}
 			
 			IDisplayBinding binding = DisplayBindingService.GetBindingPerFileName(fileName);
@@ -226,8 +197,7 @@ namespace ICSharpCode.Core
 			if (fileName == null || fileName.Length == 0) {
 				return null;
 			}
-			OpenFile(fileName);
-			IWorkbenchWindow window = GetOpenFile(fileName);
+			IWorkbenchWindow window = OpenFile(fileName);
 			if (window == null) {
 				return null;
 			}

@@ -32,6 +32,56 @@ namespace ICSharpCode.SharpDevelop.Dom
 		List<IEvent>    events       = null;
 		IList<ITypeParameter> typeParameters = null;
 		
+		byte flags;
+		const byte hasPublicOrInternalStaticMembersFlag = 0x02;
+		const byte hasExtensionMethodsFlag              = 0x04;
+		internal byte Flags {
+			get {
+				if (flags == 0) {
+					flags = 1;
+					foreach (IMember m in this.Fields) {
+						if (m.IsStatic && (m.IsPublic || m.IsInternal)) {
+							flags |= hasPublicOrInternalStaticMembersFlag;
+						}
+					}
+					foreach (IMember m in this.Properties) {
+						if (m.IsStatic && (m.IsPublic || m.IsInternal)) {
+							flags |= hasPublicOrInternalStaticMembersFlag;
+						}
+					}
+					foreach (IMember m in this.Methods) {
+						if (m.IsStatic && (m.IsPublic || m.IsInternal)) {
+							flags |= hasPublicOrInternalStaticMembersFlag;
+						}
+					}
+					foreach (IMember m in this.Events) {
+						if (m.IsStatic && (m.IsPublic || m.IsInternal)) {
+							flags |= hasPublicOrInternalStaticMembersFlag;
+						}
+					}
+					foreach (IClass c in this.InnerClasses) {
+						if (c.IsPublic || c.IsInternal) {
+							flags |= hasPublicOrInternalStaticMembersFlag;
+						}
+					}
+				}
+				return flags;
+			}
+			set {
+				flags = value;
+			}
+		}
+		public bool HasPublicOrInternalStaticMembers {
+			get {
+				return (Flags & hasPublicOrInternalStaticMembersFlag) == hasPublicOrInternalStaticMembersFlag;
+			}
+		}
+		public bool HasExtensionMethods {
+			get {
+				return (Flags & hasExtensionMethodsFlag) == hasExtensionMethodsFlag;
+			}
+		}
+		
 		public DefaultClass(ICompilationUnit compilationUnit, string fullyQualifiedName) : base(null)
 		{
 			this.compilationUnit = compilationUnit;

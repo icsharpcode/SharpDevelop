@@ -62,7 +62,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		/// <summary>Context expects a namespace name</summary>
 		/// <example>using *expr*;</example>
-		public static ExpressionContext Namespace = new NamespaceExpressionContext();
+		public static ExpressionContext Namespace = new ImportableExpressionContext(false);
+		
+		/// <summary>Context expects an importable type (namespace or class with public static members)</summary>
+		/// <example>Imports *expr*;</example>
+		public static ExpressionContext Importable = new ImportableExpressionContext(true);
 		
 		/// <summary>Context expects a type name</summary>
 		/// <example>typeof(*expr*), is *expr*, using(*expr* ...)</example>
@@ -112,16 +116,32 @@ namespace ICSharpCode.SharpDevelop.Dom
 		#endregion
 		
 		#region NamespaceExpressionContext
-		class NamespaceExpressionContext : ExpressionContext
+		sealed class ImportableExpressionContext : ExpressionContext
 		{
+			bool allowImportClasses;
+			
+			public ImportableExpressionContext(bool allowImportClasses)
+			{
+				this.allowImportClasses = allowImportClasses;
+			}
+			
 			public override bool ShowEntry(object o)
 			{
-				return o is string;
+				if (o is string)
+					return true;
+				IClass c = o as IClass;
+				if (allowImportClasses && c != null) {
+					return c.HasPublicOrInternalStaticMembers;
+				}
+				return false;
 			}
 			
 			public override string ToString()
 			{
-				return "[" + GetType().Name + "]";
+				if (allowImportClasses)
+					return "[ImportableExpressionContext]";
+				else
+					return "[NamespaceExpressionContext]";
 			}
 		}
 		#endregion

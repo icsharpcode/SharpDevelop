@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 4;
+		public const short FileVersion = 5;
 		
 		#region Cache management
 		#if DEBUG
@@ -346,6 +346,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 					WriteType(type);
 				}
 				writer.Write((int)c.Modifiers);
+				if (c is DefaultClass) {
+					writer.Write(((DefaultClass)c).Flags);
+				} else {
+					writer.Write((byte)0);
+				}
 				writer.Write((byte)c.ClassType);
 				WriteAttributes(c.Attributes);
 				writer.Write(c.InnerClasses.Count);
@@ -411,6 +416,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					c.BaseTypes.Add(ReadType());
 				}
 				c.Modifiers = (ModifierEnum)reader.ReadInt32();
+				c.Flags = reader.ReadByte();
 				c.ClassType = (ClassType)reader.ReadByte();
 				ReadAttributes(c);
 				count = reader.ReadInt32();

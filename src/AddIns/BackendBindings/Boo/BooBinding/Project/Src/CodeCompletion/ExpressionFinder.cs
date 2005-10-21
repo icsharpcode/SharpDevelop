@@ -171,8 +171,15 @@ namespace Grunwald.BooBinding.CodeCompletion
 			// Now try to find the context of the expression
 			while (--start > 0 && char.IsWhiteSpace(inText, start));
 			if (start > 2 && char.IsWhiteSpace(inText, start - 2)
-			    && inText[start - 1] == 'a' && inText[start] == 's') {
+			    && inText[start - 1] == 'a' && inText[start] == 's')
+			{
 				result.Context = ExpressionContext.Type;
+			} else if (start > 6 && char.IsWhiteSpace(inText, start - 6)
+			           && inText[start - 5] == 'i' && inText[start - 4] == 'm'
+			           && inText[start - 3] == 'p' && inText[start - 2] == 'o'
+			           && inText[start - 1] == 'r' && inText[start] == 't')
+			{
+				result.Context = ExpressionContext.Importable;
 			} else {
 				bool wasSquareBracket = false;
 				int brackets = 0;

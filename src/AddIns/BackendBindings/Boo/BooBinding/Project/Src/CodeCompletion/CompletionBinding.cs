@@ -54,7 +54,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			switch (word.ToLower(CultureInfo.InvariantCulture)) {
 				case "import":
-					editor.ShowCompletionWindow(new CodeCompletionDataProvider(new ExpressionResult("__GlobalNamespace", ExpressionContext.Type)), ' ');
+					editor.ShowCompletionWindow(new CodeCompletionDataProvider(new ExpressionResult("__GlobalNamespace", ExpressionContext.Importable)), ' ');
 					return true;
 				case "as":
 				case "isa":

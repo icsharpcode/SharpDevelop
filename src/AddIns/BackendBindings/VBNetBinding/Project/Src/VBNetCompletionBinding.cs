@@ -176,7 +176,7 @@ namespace VBNetBinding
 			// and possible return types.
 			switch (word.ToLower()) {
 				case "imports":
-					editor.ShowCompletionWindow(new CodeCompletionDataProvider(new ExpressionResult("Global", ExpressionContext.Type)), ' ');
+					editor.ShowCompletionWindow(new CodeCompletionDataProvider(new ExpressionResult("Global", ExpressionContext.Importable)), ' ');
 					return true;
 				case "as":
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Type), ' ');

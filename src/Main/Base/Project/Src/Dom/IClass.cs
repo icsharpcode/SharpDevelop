@@ -114,5 +114,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// <summary>Return true if the specified class is a base class of this class; otherwise return false.</summary>
 		/// <remarks>Returns false when possibleBaseClass is null.</remarks>
 		bool IsTypeInInheritanceTree(IClass possibleBaseClass);
+		
+		bool HasPublicOrInternalStaticMembers {
+			get;
+		}
+		bool HasExtensionMethods {
+			get;
+		}
 	}
 }

@@ -110,12 +110,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listView.EnsureVisible(index);
 		}
 		
+		ICompletionData[] ctrlSpaceCompletionData;
+		
 		ICompletionData[] GetCompletionData()
 		{
+			if (ctrlSpaceCompletionData != null)
+				return ctrlSpaceCompletionData;
 			TextEditorControl editor = GetEditor();
 			if (editor != null) {
 				CtrlSpaceCompletionDataProvider cdp = new CtrlSpaceCompletionDataProvider(ExpressionContext.Default);
-				return cdp.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, '\0');
+				ctrlSpaceCompletionData = cdp.GenerateCompletionData(editor.FileName, editor.ActiveTextAreaControl.TextArea, '\0');
+				return ctrlSpaceCompletionData;
 			}
 			return new ICompletionData[0];
 		}
@@ -146,8 +151,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listView.Items.Clear();
 			visibleEntries.Clear();
 			bestItem = null;
-			if (text.Length == 0)
+			if (text.Length < 2)
 				return;
+			listView.BeginUpdate();
 			int dotPos = text.IndexOf('.');
 			int commaPos = text.IndexOf(',');
 			if (commaPos < 0) {
@@ -198,6 +204,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				bestItem.Selected = true;
 				listView.EnsureVisible(bestItem.Index);
 			}
+			listView.EndUpdate();
 		}
 		
 		void AddSourceFiles(string text, int lineNumber)
@@ -220,10 +227,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void AddSourceFile(string text, int lineNumber, ProjectItem item)
 		{
+			string lowerText = text.ToLowerInvariant();
 			string fileName = item.FileName;
 			string display = Path.GetFileName(fileName);
 			if (display.Length >= text.Length) {
-				if (text.Equals(display.Substring(0, text.Length), StringComparison.OrdinalIgnoreCase)) {
+				if (display.ToLowerInvariant().IndexOf(lowerText) >= 0) {
 					if (lineNumber > 0) {
 						display += ", line " + lineNumber;
 					}
@@ -249,13 +257,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void ShowCompletionData(ICompletionData[] dataList, string text)
 		{
+			string lowerText = text.ToLowerInvariant();
 			foreach (ICompletionData data in dataList) {
 				CodeCompletionData ccd = data as CodeCompletionData;
 				if (ccd == null)
 					return;
 				string dataText = ccd.Text;
 				if (dataText.Length >= text.Length) {
-					if (text.Equals(dataText.Substring(0, text.Length), StringComparison.OrdinalIgnoreCase)) {
+					if (dataText.ToLowerInvariant().IndexOf(lowerText) >= 0) {
 						if (ccd.Class != null)
 							AddItem(ccd.Class, data.ImageIndex, data.Priority);
 						else if (ccd.Member != null)

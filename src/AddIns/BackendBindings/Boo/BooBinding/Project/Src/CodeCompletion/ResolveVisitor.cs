@@ -371,6 +371,33 @@ namespace Grunwald.BooBinding.CodeCompletion
 		public override void OnSlicingExpression(SlicingExpression node)
 		{
 			ClearResult();
+			Visit(node.Target);
+			Slice slice = node.Indices[0];
+			if (slice.End != null) {
+				// Boo slice, returns a part of the source -> same type as source
+				return;
+			}
+			IReturnType rt = (resolveResult != null) ? resolveResult.ResolvedType : null;
+			if (rt == null) {
+				ClearResult();
+				return;
+			}
+			List<IProperty> indexers = rt.GetProperties();
+			// remove non-indexers:
+			for (int i = 0; i < indexers.Count; i++) {
+				if (!indexers[i].IsIndexer)
+					indexers.RemoveAt(i--);
+			}
+			IReturnType[] parameters = new IReturnType[node.Indices.Count];
+			for (int i = 0; i < parameters.Length; i++) {
+				Expression expr = node.Indices[i].Begin as Expression;
+				if (expr != null) {
+					ClearResult();
+					Visit(expr);
+					parameters[i] = (resolveResult != null) ? resolveResult.ResolvedType : null;
+				}
+			}
+			MakeResult(MemberLookupHelper.FindOverload(indexers.ToArray(), parameters));
 		}
 		#endregion
 		
