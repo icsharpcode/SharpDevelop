@@ -15,6 +15,8 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.NRefactory.Parser;
+using CSTokens = ICSharpCode.NRefactory.Parser.CSharp.Tokens;
 
 namespace CSharpBinding
 {
@@ -114,9 +116,41 @@ namespace CSharpBinding
 						}
 					}
 				}
+			} else if (ch == ';') {
+				LineSegment curLine = editor.Document.GetLineSegmentForOffset(cursor);
+				// don't return true when inference succeeds, otherwise the ';' won't be added to the document.
+				TryDeclarationTypeInference(editor, curLine);
 			}
 			
 			return base.HandleKeyPress(editor, ch);
+		}
+		
+		bool TryDeclarationTypeInference(SharpDevelopTextAreaControl editor, LineSegment curLine)
+		{
+			string lineText = editor.Document.GetText(curLine.Offset, curLine.Length);
+			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.CSharp, new System.IO.StringReader(lineText));
+			Token typeToken = lexer.NextToken();
+			if (typeToken.kind == CSTokens.Question) {
+				if (lexer.NextToken().kind == CSTokens.Identifier) {
+					Token t = lexer.NextToken();
+					if (t.kind == CSTokens.Assign) {
+						string expr = lineText.Substring(t.col);
+						LoggingService.Debug("DeclarationTypeInference: >" + expr + "<");
+						ResolveResult rr = ParserService.Resolve(new ExpressionResult(expr),
+						                                         editor.ActiveTextAreaControl.Caret.Line,
+						                                         t.col, editor.FileName,
+						                                         editor.Document.TextContent);
+						if (rr != null && rr.ResolvedType != null) {
+							CSharpAmbience.Instance.ConversionFlags = ConversionFlags.ShowReturnType;
+							string typeName = CSharpAmbience.Instance.Convert(rr.ResolvedType);
+							editor.Document.Replace(curLine.Offset + typeToken.col - 1, 1, typeName);
+							editor.ActiveTextAreaControl.Caret.Column += typeName.Length - 1;
+							return true;
+						}
+					}
+				}
+			}
+			return false;
 		}
 		
 		void ShowInsight(SharpDevelopTextAreaControl editor, MethodInsightDataProvider dp, Stack<ResolveResult> parameters, char charTyped)
@@ -127,7 +161,7 @@ namespace CSharpBinding
 			if (methods.Count == 0) return;
 			bool overloadIsSure;
 			if (methods.Count == 1) {
-		 		overloadIsSure = true;
+				overloadIsSure = true;
 				dp.DefaultIndex = 0;
 			} else {
 				IReturnType[] parameterTypes = new IReturnType[paramCount + 1];

@@ -100,6 +100,13 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 
 		[Test]
+		public void TestQuestionMark()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("?"));
+			Assert.AreEqual(Tokens.QuestionMark, lexer.NextToken().kind);
+		}
+
+		[Test]
 		public void TestOpenCurlyBrace()
 		{
 			ILexer lexer = GenerateLexer(new StringReader("{"));

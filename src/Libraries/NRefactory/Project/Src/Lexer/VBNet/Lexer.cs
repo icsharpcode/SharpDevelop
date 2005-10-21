@@ -690,10 +690,8 @@ namespace ICSharpCode.NRefactory.Parser.VB
 					return new Token(Tokens.OpenCurlyBrace, x, y);
 				case '}':
 					return new Token(Tokens.CloseCurlyBrace, x, y);
-//				case '[':
-//					return new Token(Tokens.OpenSquareBracket, x, y);
-//				case ']':
-//					return new Token(Tokens.CloseSquareBracket, x, y);
+				case '?':
+					return new Token(Tokens.QuestionMark, x, y);
 			}
 			return null;
 		}

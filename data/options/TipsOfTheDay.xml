@@ -2,4 +2,5 @@
 <TIPS>
         <TIP>${res:XML.StartupTips.Tip1}</TIP>
         <TIP>${res:XML.StartupTips.Tip2}</TIP>
+        <TIP>${res:XML.StartupTips.Tip3}</TIP>
 </TIPS>

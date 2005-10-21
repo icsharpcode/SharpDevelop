@@ -270,6 +270,26 @@ namespace ICSharpCode.SharpDevelop.Dom
 	}
 	#endregion
 	
+	#region IntegerLiteralResolveResult
+	/// <summary>
+	/// The IntegerLiteralResolveResult is used when an expression was an integer literal.
+	/// It is a normal ResolveResult with a type of "int", but does not provide
+	/// any code completion data.
+	/// </summary>
+	public class IntegerLiteralResolveResult : ResolveResult
+	{
+		public IntegerLiteralResolveResult(IClass callingClass, IMember callingMember)
+			: base(callingClass, callingMember, ReflectionReturnType.Int)
+		{
+		}
+		
+		public override ArrayList GetCompletionData(IProjectContent projectContent)
+		{
+			return null;
+		}
+	}
+	#endregion
+	
 	#region TypeResolveResult
 	/// <summary>
 	/// The TypeResolveResult is used when an expression was the name of a type.

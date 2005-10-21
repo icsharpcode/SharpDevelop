@@ -440,7 +440,7 @@ namespace ICSharpCode.TextEditor
 		/// True, if the key is handled by this method and should NOT be
 		/// inserted in the textarea.
 		/// </returns>
-		protected virtual bool HandleKeyPress(char ch)
+		protected internal virtual bool HandleKeyPress(char ch)
 		{
 			if (KeyEventHandler != null) {
 				return KeyEventHandler(ch);
@@ -802,5 +802,7 @@ namespace ICSharpCode.TextEditor
 		#endregion
 		public event KeyEventHandler    KeyEventHandler;
 		public event DialogKeyProcessor DoProcessDialogKey;
+		
+		//internal void 
 	}
 }

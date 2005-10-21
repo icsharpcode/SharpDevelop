@@ -16,6 +16,8 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
+using ICSharpCode.NRefactory.Parser;
+using VBTokens = ICSharpCode.NRefactory.Parser.VB.Tokens;
 
 namespace VBNetBinding
 {
@@ -94,6 +96,8 @@ namespace VBNetBinding
 						cursor = ef.LastExpressionStartPosition;
 					}
 				}
+			} else if (ch == '\n') {
+				TryDeclarationTypeInference(editor, editor.Document.GetLineSegmentForOffset(cursor));
 			}
 			return base.HandleKeyPress(editor, ch);
 		}
@@ -193,6 +197,38 @@ namespace VBNetBinding
 				default:
 					return base.HandleKeyword(editor, word);
 			}
+		}
+		
+		bool TryDeclarationTypeInference(SharpDevelopTextAreaControl editor, LineSegment curLine)
+		{
+			string lineText = editor.Document.GetText(curLine.Offset, curLine.Length);
+			ILexer lexer = ParserFactory.CreateLexer(SupportedLanguage.VBNet, new System.IO.StringReader(lineText));
+			if (lexer.NextToken().kind != VBTokens.Dim)
+				return false;
+			if (lexer.NextToken().kind != VBTokens.Identifier)
+				return false;
+			if (lexer.NextToken().kind != VBTokens.As)
+				return false;
+			Token t1 = lexer.NextToken();
+			if (t1.kind != VBTokens.QuestionMark)
+				return false;
+			Token t2 = lexer.NextToken();
+			if (t2.kind != VBTokens.Assign)
+				return false;
+			string expr = lineText.Substring(t2.col);
+			LoggingService.Debug("DeclarationTypeInference: >" + expr + "<");
+			ResolveResult rr = ParserService.Resolve(new ExpressionResult(expr),
+			                                         editor.ActiveTextAreaControl.Caret.Line,
+			                                         t2.col, editor.FileName,
+			                                         editor.Document.TextContent);
+			if (rr != null && rr.ResolvedType != null) {
+				VBNetAmbience.Instance.ConversionFlags = ConversionFlags.ShowReturnType;
+				string typeName = VBNetAmbience.Instance.Convert(rr.ResolvedType);
+				editor.Document.Replace(curLine.Offset + t1.col - 1, 1, typeName);
+				editor.ActiveTextAreaControl.Caret.Column += typeName.Length - 1;
+				return true;
+			}
+			return false;
 		}
 	}
 }

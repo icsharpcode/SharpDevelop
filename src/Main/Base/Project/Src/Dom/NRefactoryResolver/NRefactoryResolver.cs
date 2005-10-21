@@ -244,7 +244,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			if (expr is PrimitiveExpression) {
 				if (((PrimitiveExpression)expr).Value is int)
-					return null;
+					return new IntegerLiteralResolveResult(callingClass, callingMember);
 			} else if (expr is InvocationExpression) {
 				IMethod method = typeVisitor.GetMethod(expr as InvocationExpression, null);
 				if (method != null) {
@@ -325,7 +325,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						return CreateMemberResolveResult(Constructor.CreateDefault(c));
 					}
 				}
-				return CreateMemberResolveResult(typeVisitor.FindOverload(constructors, null, ((ObjectCreateExpression)expr).Parameters, null));
+				IReturnType[] typeParameters = null; // TODO: get constructor type parameters
+				return CreateMemberResolveResult(typeVisitor.FindOverload(constructors, typeParameters, ((ObjectCreateExpression)expr).Parameters, null));
 			}
 			return new ResolveResult(callingClass, callingMember, type);
 		}

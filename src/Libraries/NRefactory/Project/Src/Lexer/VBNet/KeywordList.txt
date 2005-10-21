@@ -32,7 +32,9 @@ Div ="/"
 DivInteger = "\\"
 ConcatString = "&"
 Power = "^"
-	
+# Question mark is not needed by VB8, but we use it inside the IDE
+QuestionMark = "?"
+
 OpenCurlyBrace = "{"
 CloseCurlyBrace = "}"
 	

@@ -708,16 +708,20 @@ namespace ICSharpCode.TextEditor.Actions
 				return;
 			}
 			textArea.BeginUpdate();
-			
-			textArea.InsertString(Environment.NewLine);
-			
-			int curLineNr = textArea.Caret.Line;
-			textArea.Caret.Column = textArea.Document.FormattingStrategy.FormatLine(textArea, curLineNr, textArea.Caret.Offset, '\n');
-			textArea.SetDesiredColumn();
-			
-			textArea.Document.UpdateQueue.Clear();
-			textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new Point(0, curLineNr - 1)));
-			textArea.EndUpdate();
+			try {
+				if (textArea.HandleKeyPress('\n'))
+					return;
+				textArea.InsertString(Environment.NewLine);
+				
+				int curLineNr = textArea.Caret.Line;
+				textArea.Caret.Column = textArea.Document.FormattingStrategy.FormatLine(textArea, curLineNr, textArea.Caret.Offset, '\n');
+				textArea.SetDesiredColumn();
+				
+				textArea.Document.UpdateQueue.Clear();
+				textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new Point(0, curLineNr - 1)));
+			} finally {
+				textArea.EndUpdate();
+			}
 		}
 	}
 	
