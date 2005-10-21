@@ -92,16 +92,17 @@ namespace Plugins.RegExpTk {
 			((Button)ControlDictionary["CreateAssemblyFileCompileButton"]).Click += new EventHandler(CreateAssemblyFile);
 			((Button)ControlDictionary["quickInsertButton"]).MouseDown += new MouseEventHandler(showQuickInsertMenu);
 			((Button)ControlDictionary["quickInsertButton"]).Image = ResourceService.GetBitmap("Icons.16x16.PasteIcon");
-	
+			ControlDictionary["RegularExpressionTextBox"].KeyPress += delegate(object sender, KeyPressEventArgs e) {
+				if (e.KeyChar == '\r') { OkButton_Click(null, null); e.Handled = true; }
+			};
+			((RichTextBox)ControlDictionary["InputTextBox"]).DetectUrls = false;
+			
 			ReplaceCheckBox_CheckedChanged((CheckBox)ControlDictionary["ReplaceCheckBox"], null);
 
-			this.AcceptButton=(Button)ControlDictionary["OkButton"];
-		
 			this.StartPosition=FormStartPosition.CenterScreen;
 			this.Width=Screen.PrimaryScreen.WorkingArea.Width / 2;
 			
 			((TextBox)ControlDictionary["RegularExpressionTextBox"]).TextChanged+=new EventHandler(SetRegEx);
-			
 		}
 		
 		
@@ -148,7 +149,7 @@ namespace Plugins.RegExpTk {
 		
 		private void quickInsert(object sender, EventArgs e)
 		{
-//// Alex: changed to text box
+			//// Alex: changed to text box
 			((TextBox)ControlDictionary["RegularExpressionTextBox"]).SelectedText += (string)((MenuCommand)sender).Tag;
 		}
 		
@@ -229,10 +230,10 @@ namespace Plugins.RegExpTk {
 			}
 			
 			RegexCompilationInfo  rci = new RegexCompilationInfo(((TextBox)ControlDictionary["RegularExpressionCompileTextBox"]).Text,
-				options, 
-				((TextBox)ControlDictionary["ClassNameCompileTextBox"]).Text, 
-				((TextBox)ControlDictionary["NamespaceCompileTextBox"]).Text,
-				((CheckBox)ControlDictionary["PublibVisibleCompileCheckBox"]).Checked);
+			                                                     options,
+			                                                     ((TextBox)ControlDictionary["ClassNameCompileTextBox"]).Text,
+			                                                     ((TextBox)ControlDictionary["NamespaceCompileTextBox"]).Text,
+			                                                     ((CheckBox)ControlDictionary["PublibVisibleCompileCheckBox"]).Checked);
 			
 			AssemblyName asmName = new AssemblyName();
 			asmName.Name = Path.GetFileNameWithoutExtension(((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text);
@@ -308,26 +309,33 @@ namespace Plugins.RegExpTk {
 			inputBox.SelectionColor = Color.Black;
 			inputBox.SelectionFont = dummy.Font;
 			
+			int colorIndex = 0;
+			Color[] colors = new Color[] {Color.Blue, Color.Red, Color.DarkGreen,
+				Color.DarkRed, Color.Navy, Color.DarkGray};
+			
 			foreach (Match match in matches) {
-				inputBox.Select(match.Index, match.Length);
-				inputBox.SelectionColor = Color.Blue;
-				
 				ListViewItem lvwitem = ((ListView)ControlDictionary["GroupListView"]).Items.Add(match.ToString());
 				lvwitem.Tag = match;
 				lvwitem.SubItems.Add(match.Index.ToString());
 				lvwitem.SubItems.Add((match.Index + match.Length).ToString());
 				lvwitem.SubItems.Add(match.Length.ToString());
 				lvwitem.SubItems.Add(match.Groups.Count.ToString());
+				
+				// the whole match is group #0
+				foreach (Group g in match.Groups) {
+					inputBox.Select(g.Index, g.Length);
+					inputBox.SelectionColor = colors[colorIndex++ % colors.Length];
+				}
 			}
 			inputBox.Select(0, 0);
 		}
 		
 		private void GroupListView_SelectedIndexChanged(object sender, System.EventArgs e)
 		{
-			try 
+			try
 			{
 				((RichTextBox)ControlDictionary["InputTextBox"]).Select(System.Convert.ToInt32(((ListView)ControlDictionary["GroupListView"]).SelectedItems[0].SubItems[1].Text),
-				                                                         System.Convert.ToInt32(((ListView)ControlDictionary["GroupListView"]).SelectedItems[0].SubItems[3].Text));
+				                                                        System.Convert.ToInt32(((ListView)ControlDictionary["GroupListView"]).SelectedItems[0].SubItems[3].Text));
 			} catch {
 			}
 		}
