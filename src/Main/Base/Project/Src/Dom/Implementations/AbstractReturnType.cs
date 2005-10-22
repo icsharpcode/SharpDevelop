@@ -91,5 +91,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return true;
 			}
 		}
+		
+		public IReturnType ArrayElementType {
+			get {
+				throw new NotSupportedException();
+			}
+		}
+		
+		public IReturnType UnboundType {
+			get {
+				throw new NotSupportedException();
+			}
+		}
+		
+		public IList<IReturnType> TypeArguments {
+			get {
+				return null;
+			}
+		}
 	}
 }

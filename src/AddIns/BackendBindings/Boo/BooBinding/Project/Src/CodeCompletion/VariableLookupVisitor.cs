@@ -6,7 +6,8 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using Boo.Lang.Compiler.Ast;
 
@@ -36,13 +37,16 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 		}
 		
-		private void InferResult(Expression expr, string name, LexicalInfo lexicalInfo)
+		private void InferResult(Expression expr, string name, LexicalInfo lexicalInfo, bool useElementType)
 		{
 			if (expr == null)
 				return;
 			if (result != null)
 				return;
-			result = new DefaultField.LocalVariableField(new InferredReturnType(expr), name,
+			IReturnType returnType = new InferredReturnType(expr);
+			if (useElementType)
+				returnType = new ElementReturnType(returnType);
+			result = new DefaultField.LocalVariableField(returnType, name,
 			                                             new DomRegion(lexicalInfo.Line, lexicalInfo.Column),
 			                                             resolver.CallingClass);
 		}
@@ -65,8 +69,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			if (node.Declaration.Name == lookFor) {
 				Visit(node.Declaration);
-				InferResult(node.Initializer, node.Declaration.Name, node.LexicalInfo);
+				InferResult(node.Initializer, node.Declaration.Name, node.LexicalInfo, false);
 			}
+		}
+		
+		protected override void OnError(Node node, Exception error)
+		{
+			MessageService.ShowError(error, "VariableLookupVisitor: error processing " + node);
 		}
 		
 		public override void OnBinaryExpression(BinaryExpression node)
@@ -76,12 +85,28 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (node.Operator == BinaryOperatorType.Assign && reference != null) {
 					if (!(reference is MemberReferenceExpression)) {
 						if (reference.Name == lookFor) {
-							InferResult(node.Right, reference.Name, reference.LexicalInfo);
+							InferResult(node.Right, reference.Name, reference.LexicalInfo, false);
 						}
 					}
 				}
 			}
 			base.OnBinaryExpression(node);
+		}
+		
+		public override void OnForStatement(ForStatement node)
+		{
+			if (node.LexicalInfo.Line > resolver.CaretLine || node.Block.EndSourceLocation.Line < resolver.CaretLine)
+				return;
+			
+			if (node.Declarations.Count != 1) {
+				// TODO: support unpacking
+				base.OnForStatement(node);
+				return;
+			}
+			if (node.Declarations[0].Name == lookFor) {
+				Visit(node.Declarations[0]);
+				InferResult(node.Iterator, node.Declarations[0].Name, node.LexicalInfo, true);
+			}
 		}
 	}
 	
@@ -91,28 +116,33 @@ namespace Grunwald.BooBinding.CodeCompletion
 	/// </summary>
 	public class VariableListLookupVisitor : DepthFirstVisitor
 	{
-		ArrayList knownVariableNames;
+		List<string> knownVariableNames;
+		BooResolver resolver;
 		
-		public VariableListLookupVisitor(ArrayList knownVariableNames)
+		public VariableListLookupVisitor(List<string> knownVariableNames, BooResolver resolver)
 		{
 			this.knownVariableNames = knownVariableNames;
+			this.resolver = resolver;
 		}
 		
-		Hashtable results = new Hashtable();
+		Dictionary<string, IReturnType> results = new Dictionary<string, IReturnType>();
 		
-		public Hashtable Results {
+		public Dictionary<string, IReturnType> Results {
 			get {
 				return results;
 			}
 		}
 		
-		private void Add(string name, Expression expr)
+		private void Add(string name, Expression expr, bool elementReturnType)
 		{
 			if (name == null || expr == null)
 				return;
 			if (results.ContainsKey(name))
 				return;
-			results.Add(name, expr);
+			if (elementReturnType)
+				results.Add(name, new ElementReturnType(new InferredReturnType(expr)));
+			else
+				results.Add(name, new InferredReturnType(expr));
 		}
 		
 		private void Add(string name, TypeReference reference)
@@ -121,7 +151,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return;
 			if (results.ContainsKey(name))
 				return;
-			results.Add(name, reference);
+			results.Add(name, resolver.ConvertType(reference));
 		}
 		
 		public override void OnDeclaration(Declaration node)
@@ -132,7 +162,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 		public override void OnDeclarationStatement(DeclarationStatement node)
 		{
 			Visit(node.Declaration);
-			Add(node.Declaration.Name, node.Initializer);
+			Add(node.Declaration.Name, node.Initializer, false);
+		}
+		
+		protected override void OnError(Node node, Exception error)
+		{
+			MessageService.ShowError(error, "VariableListLookupVisitor: error processing " + node);
 		}
 		
 		public override void OnBinaryExpression(BinaryExpression node)
@@ -142,12 +177,25 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (node.Operator == BinaryOperatorType.Assign && reference != null) {
 					if (!(reference is MemberReferenceExpression)) {
 						if (!knownVariableNames.Contains(reference.Name)) {
-							Add(reference.Name, node.Right);
+							Add(reference.Name, node.Right, false);
 						}
 					}
 				}
 			}
 			base.OnBinaryExpression(node);
+		}
+		
+		public override void OnForStatement(ForStatement node)
+		{
+			if (node.LexicalInfo.Line > resolver.CaretLine || node.Block.EndSourceLocation.Line < resolver.CaretLine)
+				return;
+			
+			if (node.Declarations.Count != 1) {
+				// TODO: support unpacking
+				base.OnForStatement(node);
+				return;
+			}
+			Add(node.Declarations[0].Name, node.Iterator, true);
 		}
 	}
 }

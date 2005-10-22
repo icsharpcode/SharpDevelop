@@ -12,9 +12,9 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	/// <summary>
-	/// Combines multiple return types.
+	/// Combines multiple return types for use in contraints.
 	/// </summary>
-	public sealed class CombinedReturnType : IReturnType
+	public sealed class CombinedReturnType : AbstractReturnType
 	{
 		IList<IReturnType> baseTypes;
 		
@@ -93,69 +93,63 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return list;
 		}
 		
-		public List<IMethod> GetMethods()
+		public override List<IMethod> GetMethods()
 		{
 			return Combine<IMethod>(delegate(IReturnType type) { return type.GetMethods(); });
 		}
 		
-		public List<IProperty> GetProperties()
+		public override List<IProperty> GetProperties()
 		{
 			return Combine<IProperty>(delegate(IReturnType type) { return type.GetProperties(); });
 		}
 		
-		public List<IField> GetFields()
+		public override List<IField> GetFields()
 		{
 			return Combine<IField>(delegate(IReturnType type) { return type.GetFields(); });
 		}
 		
-		public List<IEvent> GetEvents()
+		public override List<IEvent> GetEvents()
 		{
 			return Combine<IEvent>(delegate(IReturnType type) { return type.GetEvents(); });
 		}
 		
-		public string FullyQualifiedName {
+		public override string FullyQualifiedName {
 			get {
 				return fullName;
 			}
 		}
 		
-		public string Name {
+		public override string Name {
 			get {
 				return name;
 			}
 		}
 		
-		public string Namespace {
+		public override string Namespace {
 			get {
 				return @namespace;
 			}
 		}
 		
-		public string DotNetName {
+		public override string DotNetName {
 			get {
 				return dotnetName;
 			}
 		}
 		
-		public int ArrayDimensions {
-			get {
-				return 0;
-			}
-		}
-		
-		public bool IsDefaultReturnType {
+		public override bool IsDefaultReturnType {
 			get {
 				return false;
 			}
 		}
 		
-		public int TypeParameterCount {
+		public override int TypeParameterCount {
 			get {
 				return 0;
 			}
 		}
 		
-		public IClass GetUnderlyingClass()
+		public override IClass GetUnderlyingClass()
 		{
 			return null;
 		}

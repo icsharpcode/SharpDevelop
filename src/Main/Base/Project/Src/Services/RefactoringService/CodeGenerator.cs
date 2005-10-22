@@ -24,17 +24,15 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			if (returnType is NullReturnType) return TypeReference.Null;
 			
 			TypeReference typeRef = new TypeReference(returnType.FullyQualifiedName);
-			while (returnType is ArrayReturnType) {
-				ArrayReturnType art = (ArrayReturnType)returnType;
+			while (returnType.ArrayDimensions > 0) {
 				int[] rank = typeRef.RankSpecifier ?? new int[0];
 				Array.Resize(ref rank, rank.Length + 1);
-				rank[rank.Length - 1] = art.ArrayDimensions;
+				rank[rank.Length - 1] = returnType.ArrayDimensions;
 				typeRef.RankSpecifier = rank;
-				returnType = art.ElementType;
+				returnType = returnType.ArrayElementType;
 			}
-			if (returnType is ConstructedReturnType) {
-				ConstructedReturnType rt = (ConstructedReturnType)returnType;
-				foreach (IReturnType typeArgument in rt.TypeArguments) {
+			if (returnType.TypeArguments != null) {
+				foreach (IReturnType typeArgument in returnType.TypeArguments) {
 					typeRef.GenericTypes.Add(ConvertType(typeArgument));
 				}
 			}

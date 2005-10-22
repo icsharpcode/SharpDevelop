@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IList<IReturnType> typeParameters;
 		IReturnType baseType;
 		
-		public IList<IReturnType> TypeArguments {
+		public override IList<IReturnType> TypeArguments {
 			get {
 				return typeParameters;
 			}
@@ -45,14 +45,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override bool Equals(object o)
 		{
-			ConstructedReturnType rt = o as ConstructedReturnType;
+			IReturnType rt = o as IReturnType;
 			if (rt == null) return false;
-			if (!baseType.Equals(rt.baseType)) return false;
-			if (typeParameters.Count != rt.typeParameters.Count) return false;
-			for (int i = 0; i < typeParameters.Count; ++i) {
-				if (!object.Equals(typeParameters[i], rt.typeParameters[i])) return false;
-			}
-			return true;
+			return this.DotNetName == rt.DotNetName;
 		}
 		
 		public override int GetHashCode()
@@ -70,15 +65,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public override IReturnType UnboundType {
+			get {
+				return baseType;
+			}
+		}
+		
 		bool CheckReturnType(IReturnType t)
 		{
 			if (t is GenericReturnType) {
 				GenericReturnType rt = (GenericReturnType)t;
 				return rt.TypeParameter.Method == null;
-			} else if (t is ArrayReturnType) {
-				return CheckReturnType(((ArrayReturnType)t).ElementType);
-			} else if (t is ConstructedReturnType) {
-				foreach (IReturnType para in ((ConstructedReturnType)t).TypeArguments) {
+			} else if (t.ArrayDimensions > 0) {
+				return CheckReturnType(t.ArrayElementType);
+			} else if (t.TypeArguments != null) {
+				foreach (IReturnType para in t.TypeArguments) {
 					if (CheckReturnType(para)) return true;
 				}
 				return false;
@@ -129,18 +130,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 						}
 					}
 				}
-			} else if (input is ArrayReturnType) {
-				IReturnType e = ((ArrayReturnType)input).ElementType;
+			} else if (input.ArrayDimensions > 0) {
+				IReturnType e = input.ArrayElementType;
 				IReturnType t = TranslateType(e, typeParameters, convertForMethod);
 				if (e != t && t != null)
 					return new ArrayReturnType(t, input.ArrayDimensions);
-			} else if (input is ConstructedReturnType) {
-				ConstructedReturnType r = (ConstructedReturnType)input;
-				List<IReturnType> para = new List<IReturnType>(r.TypeArguments.Count);
-				for (int i = 0; i < r.TypeArguments.Count; ++i) {
-					para.Add(TranslateType(r.TypeArguments[i], typeParameters, convertForMethod));
+			} else if (input.TypeArguments != null) {
+				List<IReturnType> para = new List<IReturnType>(input.TypeArguments.Count);
+				foreach (IReturnType argument in input.TypeArguments) {
+					para.Add(TranslateType(argument, typeParameters, convertForMethod));
 				}
-				return new ConstructedReturnType(r.baseType, para);
+				return new ConstructedReturnType(input.UnboundType, para);
 			}
 			return input;
 		}
@@ -212,7 +212,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string ToString()
 		{
-			string r = "[SpecificReturnType: ";
+			string r = "[ConstructedReturnType: ";
 			r += baseType;
 			r += "<";
 			for (int i = 0; i < typeParameters.Count; i++) {

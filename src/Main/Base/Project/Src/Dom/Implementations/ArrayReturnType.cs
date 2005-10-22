@@ -33,7 +33,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.dimensions = dimensions;
 		}
 		
-		public IReturnType ElementType {
+		public override bool Equals(object o)
+		{
+			IReturnType rt = o as IReturnType;
+			if (rt == null) return false;
+			if (rt.ArrayDimensions != dimensions) return false;
+			return elementType.Equals(rt.ArrayElementType);
+		}
+		
+		public override int GetHashCode()
+		{
+			unchecked {
+				return 2 * elementType.GetHashCode() + 27 * dimensions;
+			}
+		}
+		
+		public override IReturnType ArrayElementType {
 			get {
 				return elementType;
 			}

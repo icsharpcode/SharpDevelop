@@ -66,6 +66,27 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public virtual IReturnType ArrayElementType {
+			get {
+				IReturnType baseType = BaseType;
+				return (baseType != null) ? baseType.ArrayElementType : null;
+			}
+		}
+		
+		public virtual IReturnType UnboundType {
+			get {
+				IReturnType baseType = BaseType;
+				return (baseType != null) ? baseType.UnboundType : null;
+			}
+		}
+		
+		public virtual IList<IReturnType> TypeArguments {
+			get {
+				IReturnType baseType = BaseType;
+				return (baseType != null) ? baseType.TypeArguments : null;
+			}
+		}
+		
 		/// <summary>
 		/// Gets the underlying class of this return type.
 		/// </summary>

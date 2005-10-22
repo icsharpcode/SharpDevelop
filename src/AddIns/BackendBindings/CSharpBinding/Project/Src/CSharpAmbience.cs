@@ -491,21 +491,19 @@ namespace ICSharpCode.Core
 		
 		void UnpackNestedType(StringBuilder builder, IReturnType returnType)
 		{
-			ArrayReturnType art = returnType as ArrayReturnType;
-			if (art != null) {
+			if (returnType.ArrayDimensions > 0) {
 				builder.Append('[');
-				for (int i = 1; i < art.ArrayDimensions; ++i) {
+				for (int i = 1; i < returnType.ArrayDimensions; ++i) {
 					builder.Append(',');
 				}
 				builder.Append(']');
-				UnpackNestedType(builder, art.ElementType);
-			} else if (returnType is ConstructedReturnType) {
-				ConstructedReturnType rt = (ConstructedReturnType)returnType;
-				UnpackNestedType(builder, rt.BaseType);
+				UnpackNestedType(builder, returnType.ArrayElementType);
+			} else if (returnType.TypeArguments != null) {
+				UnpackNestedType(builder, returnType.UnboundType);
 				builder.Append('<');
-				for (int i = 0; i < rt.TypeArguments.Count; ++i) {
+				for (int i = 0; i < returnType.TypeArguments.Count; ++i) {
 					if (i > 0) builder.Append(", ");
-					builder.Append(Convert(rt.TypeArguments[i]));
+					builder.Append(Convert(returnType.TypeArguments[i]));
 				}
 				builder.Append('>');
 			}

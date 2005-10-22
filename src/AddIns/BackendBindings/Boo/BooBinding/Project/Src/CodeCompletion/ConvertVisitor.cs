@@ -203,7 +203,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				AST.ArrayTypeReference arr = (AST.ArrayTypeReference)reference;
 				return new ArrayReturnType(CreateReturnType(arr.ElementType, callingClass, callingMember,
 				                                            caretLine, caretColumn, projectContent, useLazyReturnType),
-				                           (int)arr.Rank.Value);
+				                           (arr.Rank != null) ? (int)arr.Rank.Value : 1);
 			} else if (reference is AST.SimpleTypeReference) {
 				string name = ((AST.SimpleTypeReference)reference).Name;
 				if (BooAmbience.ReverseTypeConversionTable.ContainsKey(name))

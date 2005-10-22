@@ -51,6 +51,7 @@
     <Compile Include="SearchClassTests.cs" />
     <Compile Include="OverloadFinding.cs" />
     <Compile Include="SearchGenericClassTests.cs" />
+    <Compile Include="MemberLookupHelperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\ICSharpCode.SharpDevelop.csproj">

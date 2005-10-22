@@ -71,6 +71,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
+		/// Gets the element type of the array.
+		/// When the return type is not an array, a NotSupportedException is thrown.
+		/// </summary>
+		IReturnType ArrayElementType {
+			get;
+		}
+		
+		/// <summary>
 		/// Gets the count of type parameters the target class should have.
 		/// </summary>
 		int TypeParameterCount {
@@ -85,6 +93,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 		/// False for ArrayReturnType, SpecificReturnType etc.
 		/// </returns>
 		bool IsDefaultReturnType {
+			get;
+		}
+		
+		/// <summary>
+		/// Gets the type arguments used if this is a ConstructedReturnType.
+		/// Otherwise, null is returned.
+		/// </summary>
+		IList<IReturnType> TypeArguments {
+			get;
+		}
+		
+		/// <summary>
+		/// Gets the unbound type if this is a ConstructedReturnType.
+		/// Otherwise, a NotSupportedException is thrown.
+		/// </summary>
+		IReturnType UnboundType {
 			get;
 		}
 		

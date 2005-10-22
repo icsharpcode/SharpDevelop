@@ -486,21 +486,20 @@ namespace Grunwald.BooBinding
 		
 		void UnpackNestedType(StringBuilder builder, IReturnType returnType)
 		{
-			ArrayReturnType art = returnType as ArrayReturnType;
-			if (art != null) {
+			if (returnType.ArrayDimensions > 0) {
 				builder.Append('(');
-				UnpackNestedType(builder, art.ElementType);
-				for (int i = 1; i < art.ArrayDimensions; ++i) {
+				UnpackNestedType(builder, returnType.ArrayElementType);
+				if (returnType.ArrayDimensions > 1) {
 					builder.Append(',');
+					builder.Append(returnType.ArrayDimensions);
 				}
 				builder.Append(')');
-			} else if (returnType is ConstructedReturnType) {
-				ConstructedReturnType rt = (ConstructedReturnType)returnType;
-				UnpackNestedType(builder, rt.BaseType);
+			} else if (returnType.TypeArguments != null) {
+				UnpackNestedType(builder, returnType.UnboundType);
 				builder.Append("[of ");
-				for (int i = 0; i < rt.TypeArguments.Count; ++i) {
+				for (int i = 0; i < returnType.TypeArguments.Count; ++i) {
 					if (i > 0) builder.Append(", ");
-					builder.Append(Convert(rt.TypeArguments[i]));
+					builder.Append(Convert(returnType.TypeArguments[i]));
 				}
 				builder.Append(']');
 			} else {

@@ -206,6 +206,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 					if (c != null)
 						return new TypeResolveResult(callingClass, callingMember, c);
 				}
+				string namespaceName = pc.SearchNamespace(name, callingClass, cu, caretLine, caretColumn);
+				if (namespaceName != null) {
+					return new NamespaceResolveResult(callingClass, callingMember, namespaceName);
+				}
 				return null;
 			} else {
 				if (expr.NodeType == AST.NodeType.ReferenceExpression) {
@@ -285,21 +289,17 @@ namespace Grunwald.BooBinding.CodeCompletion
 			
 			NRResolver.AddContentsFromCalling(result, callingClass, callingMember);
 			
-			ArrayList knownVariableNames = new ArrayList();
+			List<string> knownVariableNames = new List<string>();
 			foreach (object o in result) {
 				IMember m = o as IMember;
 				if (m != null) {
 					knownVariableNames.Add(m.Name);
 				}
 			}
-			VariableListLookupVisitor vllv = new VariableListLookupVisitor(knownVariableNames);
+			VariableListLookupVisitor vllv = new VariableListLookupVisitor(knownVariableNames, this);
 			vllv.Visit(GetCurrentBooMethod());
-			foreach (DictionaryEntry entry in vllv.Results) {
-				IReturnType type;
-				if (entry.Value is AST.TypeReference) {
-					type = ConvertType((AST.TypeReference)entry.Value);
-					result.Add(new DefaultField.LocalVariableField(type, (string)entry.Key, DomRegion.Empty, callingClass));
-				}
+			foreach (KeyValuePair<string, IReturnType> entry in vllv.Results) {
+				result.Add(new DefaultField.LocalVariableField(entry.Value, entry.Key, DomRegion.Empty, callingClass));
 			}
 			
 			return result;

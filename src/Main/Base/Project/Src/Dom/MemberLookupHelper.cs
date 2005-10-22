@@ -241,8 +241,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 						if (j < parameters.Count) {
 							IParameter parameter = parameters[j];
 							if (parameter.IsParams && needToExpand[i]) {
-								if (parameter.ReturnType is ArrayReturnType) {
-									paramsType = ((ArrayReturnType)parameter.ReturnType).ElementType;
+								if (parameter.ReturnType.ArrayDimensions > 0) {
+									paramsType = parameter.ReturnType.ArrayElementType;
 									paramsType = ConstructedReturnType.TranslateType(paramsType, typeParameters, true);
 								}
 								expandedParameters[i][j] = paramsType;
@@ -347,14 +347,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		static int GetMoreSpecific(IReturnType r, IReturnType s)
 		{
+			if (r == null && s == null) return 0;
+			if (r == null) return 2;
+			if (s == null) return 1;
 			if (r is GenericReturnType && !(s is GenericReturnType))
 				return 2;
 			if (s is GenericReturnType && !(r is GenericReturnType))
 				return 1;
-			if (r is ArrayReturnType && s is ArrayReturnType)
-				return GetMoreSpecific(((ArrayReturnType)r).ElementType, ((ArrayReturnType)s).ElementType);
-			if (r is ConstructedReturnType && s is ConstructedReturnType)
-				return GetMoreSpecific(((ConstructedReturnType)r).TypeArguments, ((ConstructedReturnType)s).TypeArguments);
+			if (r.ArrayDimensions > 0 && s.ArrayDimensions > 0)
+				return GetMoreSpecific(r.ArrayElementType, s.ArrayElementType);
+			if (r.TypeArguments != null && s.TypeArguments != null)
+				return GetMoreSpecific(r.TypeArguments, s.TypeArguments);
 			return 0;
 		}
 		#endregion
@@ -372,11 +375,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 					break;
 				if (!InferTypeArgument(parameters[i].ReturnType, arguments[i], result)) {
 					// inferring failed: maybe this is a params parameter that must be expanded?
-					if (parameters[i].IsParams) {
-						ArrayReturnType art = parameters[i].ReturnType as ArrayReturnType;
-						if (art != null) {
-							InferTypeArgument(art.ElementType, arguments[i], result);
-						}
+					if (parameters[i].IsParams && parameters[i].ReturnType.ArrayDimensions == 1) {
+						InferTypeArgument(parameters[i].ReturnType.ArrayElementType, arguments[i], result);
 					}
 				}
 			}
@@ -392,16 +392,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 		static bool InferTypeArgument(IReturnType expectedArgument, IReturnType passedArgument, IReturnType[] outputArray)
 		{
 			if (passedArgument == null) return true; // TODO: NullTypeReference
-			ArrayReturnType ea = expectedArgument as ArrayReturnType;
-			if (ea != null) {
-				if (passedArgument is ArrayReturnType && ea.ArrayDimensions == passedArgument.ArrayDimensions) {
-					return InferTypeArgument(ea.ElementType, ((ArrayReturnType)passedArgument).ElementType, outputArray);
-				} else if (passedArgument is ConstructedReturnType) {
+			if (expectedArgument != null && expectedArgument.ArrayDimensions > 0) {
+				if (expectedArgument.ArrayDimensions == passedArgument.ArrayDimensions) {
+					return InferTypeArgument(expectedArgument.ArrayElementType, passedArgument.ArrayElementType, outputArray);
+				} else if (passedArgument.TypeArguments != null) {
 					switch (passedArgument.FullyQualifiedName) {
 						case "System.Collections.Generic.IList":
 						case "System.Collections.Generic.ICollection":
 						case "System.Collections.Generic.IEnumerable":
-							return InferTypeArgument(ea.ElementType, ((ConstructedReturnType)passedArgument).TypeArguments[0], outputArray);
+							return InferTypeArgument(expectedArgument.ArrayElementType, passedArgument.TypeArguments[0], outputArray);
 					}
 				}
 				// If P is an array type, and A is not an array type of the same rank,
@@ -416,15 +415,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 				return true;
 			}
-			ConstructedReturnType constructed = expectedArgument as ConstructedReturnType;
-			if (constructed != null) {
+			if (expectedArgument.TypeArguments != null) {
 				// The spec for this case is quite complex.
 				// For our purposes, we can simplify enourmously:
-				ConstructedReturnType passed = passedArgument as ConstructedReturnType;
-				if (passed == null) return false;
-				int count = Math.Min(constructed.TypeArguments.Count, passed.TypeArguments.Count);
+				if (passedArgument.TypeArguments == null) return false;
+				int count = Math.Min(expectedArgument.TypeArguments.Count, passedArgument.TypeArguments.Count);
 				for (int i = 0; i < count; i++) {
-					InferTypeArgument(constructed.TypeArguments[i], passed.TypeArguments[i], outputArray);
+					InferTypeArgument(expectedArgument.TypeArguments[i], passedArgument.TypeArguments[i], outputArray);
 				}
 			}
 			return true;
@@ -476,12 +473,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			score++;
 			
 			// - all additional parameters must be applicable to the unpacked array
-			ArrayReturnType rt = parameters[lastParameter].ReturnType as ArrayReturnType;
-			if (rt == null) {
+			IReturnType rt = parameters[lastParameter].ReturnType;
+			if (rt == null || rt.ArrayDimensions == 0) {
 				return false;
 			}
 			for (int i = lastParameter; i < arguments.Length; i++) {
-				if (IsApplicable(arguments[i], rt.ElementType)) {
+				if (IsApplicable(arguments[i], rt.ArrayElementType)) {
 					score++;
 				} else {
 					ok = false;
@@ -558,9 +555,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 					return true;
 				}
 			}
-			if (from is ArrayReturnType && to is ArrayReturnType && from.ArrayDimensions == to.ArrayDimensions) {
+			if (from.ArrayDimensions > 0 && from.ArrayDimensions == to.ArrayDimensions) {
 				// from array to other array type
-				return ConversionExists((from as ArrayReturnType).ElementType, (to as ArrayReturnType).ElementType);
+				return ConversionExists(from.ArrayElementType, to.ArrayElementType);
 			}
 			return false;
 		}
@@ -684,6 +681,29 @@ namespace ICSharpCode.SharpDevelop.Dom
 			if (ConversionExists(b, a))
 				return a;
 			return ReflectionReturnType.Object;
+		}
+		
+		/// <summary>
+		/// Gets the type parameter that was passed to a certain base class.
+		/// For example, when <paramref name="returnType"/> is Dictionary(of string, int)
+		/// this method will return KeyValuePair(of string, int)
+		/// </summary>
+		public static IReturnType GetTypeParameterPassedToBaseClass(IReturnType returnType, IClass baseClass, int baseClassTypeParameterIndex)
+		{
+			IClass c = returnType.GetUnderlyingClass();
+			if (c == null) return null;
+			foreach (IReturnType baseType in c.BaseTypes) {
+				if (baseClass.CompareTo(baseType.GetUnderlyingClass()) == 0) {
+					if (baseType.TypeArguments == null || baseClassTypeParameterIndex >= baseType.TypeArguments.Count)
+						return null;
+					IReturnType result = baseType.TypeArguments[baseClassTypeParameterIndex];
+					if (returnType.TypeArguments != null) {
+						result = ConstructedReturnType.TranslateType(result, returnType.TypeArguments, false);
+					}
+					return result;
+				}
+			}
+			return null;
 		}
 	}
 }

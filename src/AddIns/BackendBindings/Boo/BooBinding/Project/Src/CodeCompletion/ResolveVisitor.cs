@@ -293,24 +293,17 @@ namespace Grunwald.BooBinding.CodeCompletion
 				string methodName = ((MethodResolveResult)resolveResult).Name;
 				IReturnType containingType = ((MethodResolveResult)resolveResult).ContainingType;
 				
-				List<IMethod> methods = new List<IMethod>();
-				bool isClassInInheritanceTree = false;
-				if (callingClass != null)
-					isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(containingType.GetUnderlyingClass());
-				
-				foreach (IMethod m in containingType.GetMethods()) {
-					if (IsSameName(m.Name, methodName)
-					    && m.IsAccessible(callingClass, isClassInInheritanceTree)
-					   ) {
-						methods.Add(m);
-					}
-				}
-				ResolveInvocation(methods, node.Arguments);
+				ResolveMethodInType(containingType, methodName, node.Arguments);
 			} else if (resolveResult is TypeResolveResult || resolveResult is MixedResolveResult) {
 				TypeResolveResult trr = resolveResult as TypeResolveResult;
 				if (trr == null)
 					trr = (resolveResult as MixedResolveResult).TypeResult;
 				if (trr != null && trr.ResolvedClass != null) {
+					if (trr.ResolvedClass.FullyQualifiedName == "array") {
+						ResolveArrayCreation(node.Arguments);
+						return;
+					}
+					
 					List<IMethod> methods = new List<IMethod>();
 					bool isClassInInheritanceTree = false;
 					if (callingClass != null)
@@ -351,6 +344,38 @@ namespace Grunwald.BooBinding.CodeCompletion
 			} else {
 				ClearResult();
 			}
+		}
+		
+		void ResolveArrayCreation(ExpressionCollection arguments)
+		{
+			if (arguments.Count == 2) {
+				ClearResult();
+				arguments[0].Accept(this);
+				TypeResolveResult trr = resolveResult as TypeResolveResult;
+				if (trr != null) {
+					MakeResult(new ArrayReturnType(trr.ResolvedType, 1));
+				}
+			} else {
+				ResolveMethodInType(new GetClassReturnType(projectContent, "Boo.Lang.Builtins", 0),
+				                    "array", arguments);
+			}
+		}
+		
+		void ResolveMethodInType(IReturnType containingType, string methodName, ExpressionCollection arguments)
+		{
+			List<IMethod> methods = new List<IMethod>();
+			bool isClassInInheritanceTree = false;
+			if (callingClass != null)
+				isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(containingType.GetUnderlyingClass());
+			
+			foreach (IMethod m in containingType.GetMethods()) {
+				if (IsSameName(m.Name, methodName)
+				    && m.IsAccessible(callingClass, isClassInInheritanceTree)
+				   ) {
+					methods.Add(m);
+				}
+			}
+			ResolveInvocation(methods, arguments);
 		}
 		
 		void ResolveInvocation(List<IMethod> methods, ExpressionCollection arguments)
@@ -471,8 +496,19 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override void OnArrayLiteralExpression(ArrayLiteralExpression node)
 		{
-			// TODO: get real array type
-			MakeLiteralResult("System.Array");
+			IReturnType elementType = null;
+			foreach (Expression expr in node.Items) {
+				ClearResult();
+				node.Items[0].Accept(this);
+				IReturnType thisType = (resolveResult != null) ? resolveResult.ResolvedType : null;
+				if (elementType == null)
+					elementType = thisType;
+				else if (thisType != null)
+					elementType = MemberLookupHelper.GetCommonType(elementType, thisType);
+			}
+			if (elementType == null)
+				elementType = ReflectionReturnType.Object;
+			MakeResult(new ArrayReturnType(elementType, 1));
 		}
 		
 		public override void OnAsExpression(AsExpression node)
