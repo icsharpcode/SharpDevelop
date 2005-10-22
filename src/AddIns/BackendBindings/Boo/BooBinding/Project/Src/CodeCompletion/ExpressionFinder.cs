@@ -265,6 +265,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 						b.Append(inText, offset + 1, i - offset - 1);
 						result.Expression = b.ToString();
 						return result;
+					} else if (c == '\0') {
+						// end of document
+						break;
 					}
 				}
 				bracket = _closingBrackets.IndexOf(c);
