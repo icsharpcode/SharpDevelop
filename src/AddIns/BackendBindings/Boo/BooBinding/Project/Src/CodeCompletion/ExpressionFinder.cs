@@ -240,26 +240,23 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (result.Expression == null)
 				return result;
 			StringBuilder b = new StringBuilder(result.Expression);
-			ResetStateMachine();
-			int state = -1;
-			// state = -1 : accepting current identifier
-			// state >= 0 : accepting brackets/parenthesis
-			Stack<int> bracketStack = new Stack<int>();
+			//  accepting current identifier
 			int i;
 			for (i = offset + 1; i < inText.Length; i++) {
 				char c = inText[i];
-				if (char.IsLetterOrDigit(c) || c == '_') {
-					// continue reading identifier
-				} else {
-					state = 0;
+				if (!char.IsLetterOrDigit(c) && c != '_') {
 					break;
 				}
 			}
 			i -= 1;
+			// accepting brackets/parenthesis
+			int state = 0;
+			ResetStateMachine();
+			Stack<int> bracketStack = new Stack<int>();
 			while (state >= 0) {
 				state = FindNextCodeCharacter(state, inText, ref i);
 				if (state < 0) break;
-				char c = inText[i];
+				char c = (i < inText.Length) ? inText[i] : '\0';
 				int bracket = _openingBrackets.IndexOf(c);
 				if (bracket >= 0) {
 					bracketStack.Push(bracket);
@@ -371,7 +368,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			do {
 				pos += 1;
 				if (pos >= text.Length)
-					return -1;
+					break;
 				char c = text[pos];
 				state = FeedStateMachine(state, c);
 				if (state == 12) {
