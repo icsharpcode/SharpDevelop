@@ -6,7 +6,9 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Dom;
@@ -20,7 +22,6 @@ namespace Grunwald.BooBinding.CodeCompletion
 {
 	public class BooParser : IParser
 	{
-		///<summary>IParser Interface</summary>
 		string[] lexerTags;
 		
 		public string[] LexerTags {
@@ -80,7 +81,82 @@ namespace Grunwald.BooBinding.CodeCompletion
 			lineLength[i] = length;
 			BooCompiler compiler = new BooCompiler();
 			compiler.Parameters.Input.Add(new StringInput(fileName, fileContent));
-			return Parse(projectContent, fileName, lineLength, compiler);
+			ICompilationUnit cu = Parse(projectContent, fileName, lineLength, compiler);
+			AddCommentsAndRegions(cu, fileContent, fileName);
+			return cu;
+		}
+		
+		void AddCommentsAndRegions(ICompilationUnit cu, string fileContent, string fileName)
+		{
+			ExpressionFinder ef = new ExpressionFinder(fileName);
+			ef.ResetStateMachine();
+			int state = 0;
+			StringBuilder commentBuilder = null;
+			char commentStartChar = '\0';
+			int commentStartColumn = 0;
+			
+			Stack<string> regionTitleStack  = new Stack<string>();
+			Stack<int>    regionLineStack   = new Stack<int>();
+			Stack<int>    regionColumnStack = new Stack<int>();
+			
+			int line = 1;
+			int column = 0;
+			for (int i = 0; i < fileContent.Length; i++) {
+				column += 1;
+				char c = fileContent[i];
+				if (c == '\n') {
+					column = 0;
+					line += 1;
+				}
+				state = ef.FeedStateMachine(state, c);
+				if (state == ExpressionFinder.PossibleRegexStart) {
+					// after / could be a regular expression, do a special check for that
+					int regexEnd = ef.SkipRegularExpression(fileContent, i, fileContent.Length - 1);
+					if (regexEnd > 0) {
+						i = regexEnd;
+					} else if (regexEnd == -1) {
+						// end of file is in regex
+						return;
+					} // else: regexEnd is 0 if its not a regex
+				}
+				if (state == ExpressionFinder.LineCommentState) {
+					if (commentBuilder == null) {
+						commentStartChar = c;
+						commentStartColumn = column;
+						commentBuilder = new StringBuilder();
+					} else {
+						if (commentBuilder.Length > 0) {
+							commentBuilder.Append(c);
+						} else if (!char.IsWhiteSpace(c)) {
+							commentStartColumn = column;
+							commentBuilder.Append(c);
+						}
+					}
+				} else if (commentBuilder != null) {
+					string text = commentBuilder.ToString();
+					commentBuilder = null;
+					if (commentStartChar == '#' && text.StartsWith("region ")) {
+						regionTitleStack.Push(text.Substring(7));
+						regionLineStack.Push(line);
+						regionColumnStack.Push(commentStartColumn - 1);
+					} else if (commentStartChar == '#' && text.StartsWith("endregion") && regionTitleStack.Count > 0) {
+						// Add folding region
+						cu.FoldingRegions.Add(new FoldingRegion(regionTitleStack.Pop(),
+						                                        new DomRegion(regionLineStack.Pop(),
+						                                                      regionColumnStack.Pop(),
+						                                                      line, column)));
+					} else {
+						foreach (string tag in lexerTags) {
+							if (text.StartsWith(tag)) {
+								Tag tagComment = new Tag(tag, new DomRegion(line, commentStartColumn));
+								tagComment.CommentString = text.Substring(tag.Length);
+								cu.TagComments.Add(tagComment);
+								break;
+							}
+						}
+					}
+				}
+			}
 		}
 		
 		private ICompilationUnit Parse(IProjectContent projectContent, string fileName, int[] lineLength, BooCompiler compiler)

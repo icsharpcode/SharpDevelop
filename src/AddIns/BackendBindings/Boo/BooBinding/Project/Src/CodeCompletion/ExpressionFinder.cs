@@ -299,6 +299,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 		}
 		
 		const int _elseIndex = 10;
+		public const int PossibleRegexStart = 12;
+		public const int LineCommentState = 13;
 		
 		static readonly
 			int[][] _stateTable =         { // "    '    \    \n   $    {    }    #    /    *   else
@@ -327,12 +329,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		int commentblocks;
 		
-		void ResetStateMachine()
+		public void ResetStateMachine()
 		{
 			commentblocks = 0;
 		}
 		
-		int FeedStateMachine(int oldState, char c)
+		public int FeedStateMachine(int oldState, char c)
 		{
 			int charNum = (int)c;
 			int input;
@@ -371,7 +373,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					break;
 				char c = text[pos];
 				state = FeedStateMachine(state, c);
-				if (state == 12) {
+				if (state == PossibleRegexStart) {
 					// after / could be a regular expression, do a special check for that
 					int regexEnd = SkipRegularExpression(text, pos, text.Length - 1);
 					if (regexEnd > 0) {
@@ -406,9 +408,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 					else
 						inStringResult.Length = 1;
 					state = action;
-				} else if (action == 0 || action == 12) {
+				} else if (action == 0 || action == PossibleRegexStart) {
 					// go to normal code
-					if (action == 12) {
+					if (action == PossibleRegexStart) {
 						// after / could be a regular expression, do a special check for that
 						int regexEnd = SkipRegularExpression(inText, i, offset);
 						if (regexEnd > 0) {
@@ -443,7 +445,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		/// <summary>Skips the regular expression in inText at position pos. Returns end position of the ending / if
 		/// successful or 0 is no regular expression was found at the location.
 		/// Return -1 if maxOffset is inside the regular expression.</summary>
-		int SkipRegularExpression(string inText, int pos, int maxOffset)
+		public int SkipRegularExpression(string inText, int pos, int maxOffset)
 		{
 			bool containsWhitespace;
 			if (pos > 0) {
