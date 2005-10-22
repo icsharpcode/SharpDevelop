@@ -108,6 +108,23 @@ namespace Grunwald.BooBinding.CodeCompletion
 				InferResult(node.Iterator, node.Declarations[0].Name, node.LexicalInfo, true);
 			}
 		}
+		
+		public override void OnGeneratorExpression(GeneratorExpression node)
+		{
+			if (node.LexicalInfo.Line != resolver.CaretLine)
+				return;
+			LoggingService.Warn("GeneratorExpression: " + node.EndSourceLocation.Line);
+			if (node.Declarations.Count != 1) {
+				// TODO: support unpacking
+				base.OnGeneratorExpression(node);
+				return;
+			}
+			if (node.Declarations[0].Name == lookFor) {
+				Visit(node.Declarations[0]);
+				InferResult(node.Iterator, node.Declarations[0].Name, node.LexicalInfo, true);
+			}
+			base.OnGeneratorExpression(node);
+		}
 	}
 	
 	/// <summary>

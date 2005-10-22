@@ -692,6 +692,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			IClass c = returnType.GetUnderlyingClass();
 			if (c == null) return null;
+			if (baseClass.CompareTo(c) == 0) {
+				if (returnType.TypeArguments == null || baseClassTypeParameterIndex >= returnType.TypeArguments.Count)
+					return null;
+				return returnType.TypeArguments[baseClassTypeParameterIndex];
+			}
 			foreach (IReturnType baseType in c.BaseTypes) {
 				if (baseClass.CompareTo(baseType.GetUnderlyingClass()) == 0) {
 					if (baseType.TypeArguments == null || baseClassTypeParameterIndex >= baseType.TypeArguments.Count)

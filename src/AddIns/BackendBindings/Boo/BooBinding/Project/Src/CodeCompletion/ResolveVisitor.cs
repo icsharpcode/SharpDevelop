@@ -429,6 +429,19 @@ namespace Grunwald.BooBinding.CodeCompletion
 		}
 		#endregion
 		
+		public override void OnGeneratorExpression(GeneratorExpression node)
+		{
+			ClearResult();
+			node.Expression.Accept(this);
+			
+			if (resolveResult != null) {
+				IClass enumerable = ProjectContentRegistry.Mscorlib.GetClass("System.Collections.Generic.IEnumerable", 1);
+				MakeResult(new ConstructedReturnType(enumerable.DefaultReturnType, new IReturnType[] { resolveResult.ResolvedType }));
+			} else {
+				MakeResult(new GetClassReturnType(projectContent, "System.Collections.IEnumerable", 0));
+			}
+		}
+		
 		public override void OnBinaryExpression(BinaryExpression node)
 		{
 			switch (node.Operator) {

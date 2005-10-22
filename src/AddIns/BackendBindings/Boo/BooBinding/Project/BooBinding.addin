@@ -44,6 +44,10 @@
 		        class = "Grunwald.BooBinding.CodeCompletion.BooParser"/>
 	</Path>
 	
+	<Path name = "/AddIns/DefaultTextEditor/Formatter/Boo">
+		<Class id = "BooFormatter" class = "Grunwald.BooBinding.BooFormattingStrategy"/>
+	</Path>
+	
 	<Path name = "/AddIns/DefaultTextEditor/CodeCompletion">
 		<CodeCompletionBinding id = "Boo" extensions = ".boo" class = "Grunwald.BooBinding.CodeCompletion.CompletionBinding"/>
 	</Path>

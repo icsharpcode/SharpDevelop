@@ -40,5 +40,14 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.AreEqual("System.String", res.TypeArguments[0].FullyQualifiedName);
 			Assert.AreEqual("System.Int32", res.TypeArguments[1].FullyQualifiedName);
 		}
+		
+		[Test]
+		public void TypeParameterPassedToBaseClassSameClass()
+		{
+			IReturnType[] stringArr = { ReflectionReturnType.String };
+			IReturnType rrt = new ConstructedReturnType(EnumerableClass.DefaultReturnType, stringArr);
+			IReturnType res = MemberLookupHelper.GetTypeParameterPassedToBaseClass(rrt, EnumerableClass, 0);
+			Assert.AreEqual("System.String", res.FullyQualifiedName);
+		}
 	}
 }
