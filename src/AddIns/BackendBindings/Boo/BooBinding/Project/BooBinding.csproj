@@ -82,6 +82,7 @@
     <Compile Include="Src\Designer\BooDesignerLoader.cs" />
     <Compile Include="Src\Designer\FormDesignerBinding.cs" />
     <Compile Include="Src\Designer\CodeDomVisitor.cs" />
+    <Compile Include="Src\BooCodeGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BooBinding.addin">

@@ -14,7 +14,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	public abstract class InterfaceOrAbstractClassCodeGenerator : CodeGenerator
+	public abstract class InterfaceOrAbstractClassCodeGenerator : OldCodeGeneratorBase
 	{
 		public override int ImageIndex {
 			get {

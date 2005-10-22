@@ -158,7 +158,7 @@ namespace NRefactoryToBooConverter
 				} else {
 					AddError(node, "Default modifier is not supported on this member.");
 				}
-				if (name != null) {
+				if (name != null && currentType != null) {
 					currentType.Attributes.Add(MakeAttribute("System.Reflection.DefaultMember", new B.StringLiteralExpression(name)));
 				}
 			}

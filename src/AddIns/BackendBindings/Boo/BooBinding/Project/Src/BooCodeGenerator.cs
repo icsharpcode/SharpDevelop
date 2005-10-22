@@ -1,0 +1,68 @@
+﻿/*
+ * Created by SharpDevelop.
+ * User: Daniel Grunwald
+ * Date: 22.10.2005
+ * Time: 15:07
+ */
+
+using System;
+using System.IO;
+using System.Text;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Refactoring;
+using ICSharpCode.NRefactory.Parser.AST;
+using NRefactoryToBooConverter;
+using Boo.Lang.Compiler;
+using Boo.Lang.Compiler.Ast;
+using Boo.Lang.Compiler.Ast.Visitors;
+
+namespace Grunwald.BooBinding
+{
+	/// <summary>
+	/// Description of BooCodeGenerator.
+	/// </summary>
+	public class BooCodeGenerator : CodeGenerator
+	{
+		public override string GenerateCode(AbstractNode node, string indentation)
+		{
+			StringBuilder errorBuilder = new StringBuilder();
+			ConverterSettings settings = new ConverterSettings("codegeneration.cs");
+			string output = null;
+			
+			Node booNode = (Node)node.AcceptVisitor(new ConvertVisitor(settings), null);
+			
+			if (settings.Errors.Count > 0) {
+				foreach (CompilerError error in settings.Errors) {
+					errorBuilder.AppendLine(error.ToString());
+				}
+			} else {
+				if (settings.Warnings.Count > 0) {
+					foreach (CompilerWarning warning in settings.Warnings) {
+						errorBuilder.AppendLine(warning.ToString());
+					}
+				}
+				using (StringWriter w = new StringWriter()) {
+					BooPrinterVisitor printer = new BooPrinterVisitor(w);
+					int indentCount = 0;
+					foreach (char c in indentation) {
+						if (c == '\t')
+							indentCount += 4;
+						else
+							indentCount += 1;
+					}
+					indentCount /= 4;
+					while (indentCount-- > 0)
+						printer.Indent();
+					booNode.Accept(printer);
+					output = w.ToString();
+				}
+			}
+			if (errorBuilder.Length > 0) {
+				MessageService.ShowMessage(errorBuilder.ToString());
+			}
+			return output;
+		}
+		
+		public static readonly BooCodeGenerator Instance = new BooCodeGenerator();
+	}
+}

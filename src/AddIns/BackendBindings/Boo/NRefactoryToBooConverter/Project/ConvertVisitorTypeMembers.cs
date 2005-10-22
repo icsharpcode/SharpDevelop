@@ -49,7 +49,7 @@ namespace NRefactoryToBooConverter
 			}
 			m.Name = variable.Name;
 			ConvertAttributes(fieldDeclaration.Attributes, m.Attributes);
-			currentType.Members.Add(m);
+			if (currentType != null) currentType.Members.Add(m);
 		}
 		
 		B.Block ConvertMethodBlock(BlockStatement block)
@@ -67,7 +67,7 @@ namespace NRefactoryToBooConverter
 			m.Name = methodDeclaration.Name;
 			m.Modifiers = ConvertModifier(methodDeclaration, B.TypeMemberModifiers.Private);
 			ConvertAttributes(methodDeclaration.Attributes, m.Attributes);
-			currentType.Members.Add(m);
+			if (currentType != null) currentType.Members.Add(m);
 			if (methodDeclaration.HandlesClause.Count > 0) {
 				// TODO: Convert handles clauses to [Handles] attribute
 				AddError(methodDeclaration, "Handles-clause is not supported.");
@@ -96,7 +96,7 @@ namespace NRefactoryToBooConverter
 			B.Constructor m = new B.Constructor(GetLexicalInfo(constructorDeclaration));
 			m.Modifiers = ConvertModifier(constructorDeclaration, B.TypeMemberModifiers.Private);
 			ConvertAttributes(constructorDeclaration.Attributes, m.Attributes);
-			currentType.Members.Add(m);
+			if (currentType != null) currentType.Members.Add(m);
 			ConvertParameters(constructorDeclaration.Parameters, m.Parameters);
 			m.EndSourceLocation = GetEndLocation((INode)constructorDeclaration.Body ?? constructorDeclaration);
 			m.Body = ConvertMethodBlock(constructorDeclaration.Body);
@@ -118,7 +118,7 @@ namespace NRefactoryToBooConverter
 		{
 			B.Destructor m = new B.Destructor(GetLexicalInfo(destructorDeclaration));
 			ConvertAttributes(destructorDeclaration.Attributes, m.Attributes);
-			currentType.Members.Add(m);
+			if (currentType != null) currentType.Members.Add(m);
 			m.EndSourceLocation = GetLocation(destructorDeclaration.EndLocation);
 			m.Body = ConvertMethodBlock(destructorDeclaration.Body);
 			return m;
@@ -164,7 +164,7 @@ namespace NRefactoryToBooConverter
 			m.Name = propertyDeclaration.Name;
 			m.Modifiers = ConvertModifier(propertyDeclaration, B.TypeMemberModifiers.Private);
 			ConvertAttributes(propertyDeclaration.Attributes, m.Attributes);
-			currentType.Members.Add(m);
+			if (currentType != null) currentType.Members.Add(m);
 			ConvertParameters(propertyDeclaration.Parameters, m.Parameters);
 			m.EndSourceLocation = GetLocation(propertyDeclaration.EndLocation);
 			m.Type = ConvertTypeReference(propertyDeclaration.TypeReference);
@@ -201,7 +201,7 @@ namespace NRefactoryToBooConverter
 			m.Name = DefaultIndexerName;
 			m.Modifiers = ConvertModifier(indexerDeclaration, B.TypeMemberModifiers.Private);
 			ConvertAttributes(indexerDeclaration.Attributes, m.Attributes);
-			currentType.Members.Add(m);
+			if (currentType != null) currentType.Members.Add(m);
 			ConvertParameters(indexerDeclaration.Parameters, m.Parameters);
 			m.EndSourceLocation = GetLocation(indexerDeclaration.EndLocation);
 			m.Type = ConvertTypeReference(indexerDeclaration.TypeReference);
@@ -245,7 +245,7 @@ namespace NRefactoryToBooConverter
 			}
 			m.Modifiers = ConvertModifier(eventDeclaration, B.TypeMemberModifiers.Private);
 			ConvertAttributes(eventDeclaration.Attributes, m.Attributes);
-			currentType.Members.Add(m);
+			if (currentType != null) currentType.Members.Add(m);
 			m.EndSourceLocation = GetLocation(eventDeclaration.EndLocation);
 			m.Type = ConvertTypeReference(eventDeclaration.TypeReference);
 			if (eventDeclaration.ImplementsClause.Count > 0) {

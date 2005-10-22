@@ -6,24 +6,34 @@
 // </file>
 
 using System;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	public class LanguageProperties
 	{
-		public readonly static LanguageProperties CSharp = new LanguageProperties(StringComparer.InvariantCulture);
+		public readonly static LanguageProperties CSharp = new LanguageProperties(StringComparer.InvariantCulture, CSharpCodeGenerator.Instance);
 		public readonly static LanguageProperties VBNet = new VBNetProperties();
 		
 		StringComparer nameComparer;
 		
-		public LanguageProperties(StringComparer nameComparer)
+		public LanguageProperties(StringComparer nameComparer, CodeGenerator codeGenerator)
 		{
 			this.nameComparer = nameComparer;
+			this.codeGenerator = codeGenerator;
 		}
 		
 		public StringComparer NameComparer {
 			get {
 				return nameComparer;
+			}
+		}
+		
+		CodeGenerator codeGenerator;
+		
+		public CodeGenerator CodeGenerator {
+			get {
+				return codeGenerator;
 			}
 		}
 		
@@ -87,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		private class VBNetProperties : LanguageProperties
 		{
-			public VBNetProperties() : base(StringComparer.InvariantCultureIgnoreCase) {}
+			public VBNetProperties() : base(StringComparer.InvariantCultureIgnoreCase, VBNetCodeGenerator.Instance) {}
 			
 			public override bool ShowMember(IMember member, bool showStatic)
 			{

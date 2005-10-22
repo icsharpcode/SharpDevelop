@@ -11,7 +11,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	public abstract class AbstractFieldCodeGenerator : CodeGenerator
+	public abstract class AbstractFieldCodeGenerator : OldCodeGeneratorBase
 	{
 		public AbstractFieldCodeGenerator(IClass currentClass) : base(currentClass)
 		{

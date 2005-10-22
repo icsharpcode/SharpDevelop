@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	/// <summary>
 	/// Description of EqualsCodeGenerator.	
 	/// </summary>
-	public class EqualsCodeGenerator : CodeGenerator
+	public class EqualsCodeGenerator : OldCodeGeneratorBase
 	{
 		public override string CategoryName {
 			get {

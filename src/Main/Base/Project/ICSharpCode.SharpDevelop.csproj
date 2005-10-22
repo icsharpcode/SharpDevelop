@@ -708,6 +708,8 @@
     <Compile Include="Src\Project\ChooseStorageLocationButton.cs" />
     <Compile Include="Src\Dom\ReflectionLayer\ReflectionLoader.cs" />
     <Compile Include="Src\Dom\ReflectionLayer\DomPersistence.cs" />
+    <Compile Include="Src\Services\RefactoringService\CodeGenerator.cs" />
+    <Compile Include="Src\Services\RefactoringService\NRefactoryCodeGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

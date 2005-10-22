@@ -19,7 +19,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	public abstract class CodeGenerator
+	public abstract class OldCodeGeneratorBase
 	{
 		ArrayList content = new ArrayList();
 		protected int       numOps  = 0;
@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		protected IClass    currentClass = null;
 		protected TextArea editActionHandler;
 		
-		public CodeGenerator(IClass currentClass)
+		public OldCodeGeneratorBase(IClass currentClass)
 		{
 			this.currentClass = currentClass;
 			try {

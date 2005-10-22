@@ -14,7 +14,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	public class OnXXXMethodsCodeGenerator : CodeGenerator
+	public class OnXXXMethodsCodeGenerator : OldCodeGeneratorBase
 	{
 		public override string CategoryName {
 			get {

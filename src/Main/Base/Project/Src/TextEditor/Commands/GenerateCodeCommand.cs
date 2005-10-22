@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			if (currentClass != null) {
 				ArrayList categories = new ArrayList();
-				using (FormVersion1 form = new FormVersion1(textEditorControl, new CodeGenerator[] {
+				using (FormVersion1 form = new FormVersion1(textEditorControl, new OldCodeGeneratorBase[] {
 					new ConstructorCodeGenerator(currentClass),
 					new GetterCodeGenerator(currentClass),
 					new SetterCodeGenerator(currentClass),
@@ -122,16 +122,16 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		TextEditorControl textEditorControl;
 		
-		CodeGenerator SelectedCodeGenerator {
+		OldCodeGeneratorBase SelectedCodeGenerator {
 			get {
 				if (categoryListView.SelectedItems.Count <= 0) {
 					return null;
 				}
-				return (CodeGenerator)categoryListView.SelectedItems[0].Tag;
+				return (OldCodeGeneratorBase)categoryListView.SelectedItems[0].Tag;
 			}
 		}
 		
-		public FormVersion1(TextEditorControl textEditorControl, CodeGenerator[] codeGenerators)
+		public FormVersion1(TextEditorControl textEditorControl, OldCodeGeneratorBase[] codeGenerators)
 		{
 			this.textEditorControl = textEditorControl;
 			
@@ -160,7 +160,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			categoryListView.SmallImageList = categoryListView.LargeImageList = ClassBrowserIconService.ImageList;
 			
-			foreach (CodeGenerator codeGenerator in codeGenerators) {
+			foreach (OldCodeGeneratorBase codeGenerator in codeGenerators) {
 				if (codeGenerator.IsActive) {
 					ListViewItem newItem = new ListViewItem(codeGenerator.CategoryName);
 					newItem.ImageIndex = codeGenerator.ImageIndex;
@@ -210,7 +210,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		void CategoryListViewItemChanged(object sender, EventArgs e)
 		{
-			CodeGenerator codeGenerator = SelectedCodeGenerator;
+			OldCodeGeneratorBase codeGenerator = SelectedCodeGenerator;
 			if (codeGenerator == null) {
 				return;
 			}

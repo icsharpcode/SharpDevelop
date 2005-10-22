@@ -86,8 +86,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		IProperty FindProperty(IField field)
 		{
-			string propertyName = AbstractPropertyCodeGenerator.GetPropertyName(field.Name);
 			LanguageProperties language = field.DeclaringType.ProjectContent.Language;
+			if (language.CodeGenerator == null) return null;
+			string propertyName = language.CodeGenerator.GetPropertyName(field.Name);
 			IProperty foundProperty = null;
 			foreach (IProperty prop in field.DeclaringType.Properties) {
 				if (language.NameComparer.Equals(propertyName, prop.Name)) {
@@ -111,23 +112,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		void CreateProperty(object sender, EventArgs e, bool includeSetter)
 		{
 			MenuCommand item = (MenuCommand)sender;
-			IMember member = (IMember)item.Tag;
+			IField member = (IField)item.Tag;
 			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
 			
-			AbstractPropertyCodeGenerator generator;
-			if (includeSetter)
-				generator = new GetterAndSetterCodeGenerator(member.DeclaringType);
-			else
-				generator = new GetterCodeGenerator(member.DeclaringType);
-			List<AbstractFieldCodeGenerator.FieldWrapper> list = new List<AbstractFieldCodeGenerator.FieldWrapper>();
-			foreach (AbstractFieldCodeGenerator.FieldWrapper fw in generator.Content) {
-				if (fw.Field == member) {
-					list.Add(fw);
-				}
-			}
-			
-			generator.BeginWithNewLine = true;
-			generator.GenerateCode(textEditor.ActiveTextAreaControl.TextArea, list);
+			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateProperty(member, textEditor.Document, true, includeSetter);
+			textEditor.Refresh();
 		}
 		
 		void GotoTagMember(object sender, EventArgs e)
