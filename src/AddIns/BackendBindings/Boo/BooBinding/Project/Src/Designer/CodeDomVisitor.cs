@@ -209,6 +209,29 @@ namespace Grunwald.BooBinding.Designer
 				if (left != null && _expression != null)
 					_statements.Add(new CodeAssignStatement(left, _expression));
 				_expression = null;
+			} else if (op == BinaryOperatorType.InPlaceAddition) {
+				_expression = null;
+				node.Left.Accept(this);
+				CodeEventReferenceExpression left = _expression as CodeEventReferenceExpression;
+				_expression = null;
+				node.Right.Accept(this);
+				if (left != null && _expression != null)
+					_statements.Add(new CodeAttachEventStatement(left, _expression));
+				_expression = null;
+			} else {
+				LoggingService.Warn("CodeDomVisitor: ignoring unknown Binary Operator" + op);
+			}
+		}
+		public override void OnCastExpression(CastExpression node)
+		{
+			_expression = null;
+			node.Target.Accept(this);
+			if (_expression == null)
+				return;
+			if (_expression is CodeMethodReferenceExpression) {
+				_expression = new CodeObjectCreateExpression(ConvTypeRef(node.Type), _expression);
+			} else {
+				_expression = new CodeCastExpression(ConvTypeRef(node.Type), _expression);
 			}
 		}
 		public override void OnBlock(Block node)

@@ -24,9 +24,9 @@
 
 	<RuleSets>
 		<RuleSet ignorecase="false" >
-			<Delimiters>&amp;&lt;&gt;~!@%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
+			<Delimiters>&amp;&lt;&gt;~!@$%^*()-+=|\#/{}[]:;"' ,	.?</Delimiters>
 
-			<Span name="DocLineComment" stopateol="false" bold="false" italic="false" color="Green" >
+			<Span name="DocLineComment" noescapesequences="true" stopateol="false" bold="false" italic="false" color="Green">
 				<Begin >"""</Begin>
 				<End >"""</End>
 			</Span>
