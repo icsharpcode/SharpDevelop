@@ -23,6 +23,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		int Index { get; }
 		
+		IList<IAttribute> Attributes { get; }
+		
 		/// <summary>
 		/// The method this type parameter is defined for.
 		/// This property is null when the type parameter is for a class.

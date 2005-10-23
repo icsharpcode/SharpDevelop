@@ -48,8 +48,9 @@ namespace ICSharpCode.Core
 		static ShowErrorDelegate customErrorReporter;
 		
 		/// <summary>
-		/// Gets/Sets the custom error reporter. If this property is null, a default
-		/// messagebox is used.
+		/// Gets/Sets the custom error reporter. If this property is null, the default
+		/// messagebox is used (except for debug builds of ICSharpCode.Core, where the
+		/// message is only logged to the LoggingService).
 		/// </summary>
 		public static ShowErrorDelegate CustomErrorReporter {
 			get {

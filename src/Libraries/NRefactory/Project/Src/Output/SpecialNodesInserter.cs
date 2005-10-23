@@ -15,9 +15,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 {
 	public class SpecialOutputVisitor : ISpecialVisitor
 	{
-		AbstractOutputFormatter formatter;
+		IOutputFormatter formatter;
 		
-		public SpecialOutputVisitor(AbstractOutputFormatter formatter)
+		public SpecialOutputVisitor(IOutputFormatter formatter)
 		{
 			this.formatter = formatter;
 		}

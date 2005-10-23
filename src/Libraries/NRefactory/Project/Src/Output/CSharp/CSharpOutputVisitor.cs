@@ -48,7 +48,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public CSharpOutputFormatter OutputFormatter {
+		public IOutputFormatter OutputFormatter {
 			get {
 				return outputFormatter;
 			}
@@ -1894,9 +1894,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			nodeTracker.TrackedVisit(invocationExpression.TargetObject, data);
 			
 			if (invocationExpression.TypeArguments != null && invocationExpression.TypeArguments.Count > 0) {
-				OutputFormatter.PrintToken(Tokens.LessThan);
+				outputFormatter.PrintToken(Tokens.LessThan);
 				AppendCommaSeparatedList(invocationExpression.TypeArguments);
-				OutputFormatter.PrintToken(Tokens.GreaterThan);
+				outputFormatter.PrintToken(Tokens.GreaterThan);
 			}
 			
 			if (prettyPrintOptions.BeforeMethodCallParentheses) {

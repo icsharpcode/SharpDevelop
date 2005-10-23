@@ -33,5 +33,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			get;
 			set;
 		}
+		IOutputFormatter OutputFormatter {
+			get;
+		}
+	}
+	public interface IOutputFormatter
+	{
+		int IndentationLevel {
+			get;
+			set;
+		}
+		string Text {
+			get;
+		}
+		void NewLine();
+		void PrintComment(Comment comment);
+		void PrintPreProcessingDirective(PreProcessingDirective directive);
 	}
 }

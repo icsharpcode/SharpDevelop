@@ -51,6 +51,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.GoToBaseCommand}", GoToBase);
 				cmd.Tag = c;
 				list.Add(cmd);
+				if (c.ClassType != ClassType.Interface && !FindReferencesAndRenameHelper.IsReadOnly(c)) {
+					AddImplementInterfaceCommands(c, list);
+				}
 			}
 			if (!c.IsSealed && !c.IsStatic) {
 				cmd = new MenuCommand("${res:SharpDevelop.Refactoring.FindDerivedClassesCommand}", FindDerivedClasses);
@@ -63,6 +66,47 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			list.Add(cmd);
 			
 			return list.ToArray();
+		}
+		
+		void AddImplementInterfaceCommands(IClass c, List<ToolStripItem> list)
+		{
+			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
+			if (codeGen == null) return;
+			List<ToolStripItem> subItems = new List<ToolStripItem>();
+			foreach (IReturnType rt in c.BaseTypes) {
+				IClass interf = rt.GetUnderlyingClass();
+				if (interf != null && interf.ClassType == ClassType.Interface) {
+					EventHandler eh = delegate {
+						IDocument d = GetDocument(c);
+						if (d != null)
+							codeGen.ImplementInterface(rt, d, false, c);
+					};
+					subItems.Add(new MenuCommand(interf.Name, eh));
+				}
+			}
+			list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceImplicit}", subItems.ToArray()));
+			subItems = new List<ToolStripItem>();
+			foreach (IReturnType rt in c.BaseTypes) {
+				IClass interf = rt.GetUnderlyingClass();
+				if (interf != null && interf.ClassType == ClassType.Interface) {
+					EventHandler eh = delegate {
+						IDocument d = GetDocument(c);
+						if (d != null)
+							codeGen.ImplementInterface(rt, d, true, c);
+					};
+					subItems.Add(new MenuCommand(interf.Name, eh));
+				}
+			}
+			list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}", subItems.ToArray()));
+		}
+		
+		static IDocument GetDocument(IClass c)
+		{
+			IWorkbenchWindow win = FileService.OpenFile(c.CompilationUnit.FileName);
+			if (win == null) return null;
+			ITextEditorControlProvider tecp = win.ViewContent as ITextEditorControlProvider;
+			if (tecp == null) return null;
+			return tecp.TextEditorControl.Document;
 		}
 		
 		void GoToBase(object sender, EventArgs e)

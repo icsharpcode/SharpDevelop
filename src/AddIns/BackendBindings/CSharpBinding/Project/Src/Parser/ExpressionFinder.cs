@@ -672,6 +672,7 @@ namespace CSharpBinding.Parser
 								case "return":
 								case "throw":
 								case "in":
+								case "else":
 									// treat as error / end of expression
 									break;
 								default:

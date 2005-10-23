@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	/// <summary>
 	/// Base class of output formatters.
 	/// </summary>
-	public abstract class AbstractOutputFormatter
+	public abstract class AbstractOutputFormatter : IOutputFormatter
 	{
 		int           indentationLevel = 0;
 		StringBuilder text = new StringBuilder();

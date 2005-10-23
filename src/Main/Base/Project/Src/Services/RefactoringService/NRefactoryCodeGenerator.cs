@@ -20,7 +20,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public override string GenerateCode(AbstractNode node, string indentation)
 		{
 			IOutputASTVisitor visitor = CreateOutputVisitor();
-			
+			int indentCount = 0;
+			foreach (char c in indentation) {
+				if (c == '\t')
+					indentCount += 4;
+				else
+					indentCount += 1;
+			}
+			visitor.OutputFormatter.IndentationLevel = indentCount / 4;
 			node.AcceptVisitor(visitor, null);
 			return visitor.Text;
 		}

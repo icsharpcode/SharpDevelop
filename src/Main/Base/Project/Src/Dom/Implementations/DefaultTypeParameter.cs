@@ -54,6 +54,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		public IList<IAttribute> Attributes {
+			get {
+				return DefaultAttribute.EmptyAttributeList;
+			}
+		}
+		
 		bool hasConstructableContraint = false;
 		
 		/// <summary>

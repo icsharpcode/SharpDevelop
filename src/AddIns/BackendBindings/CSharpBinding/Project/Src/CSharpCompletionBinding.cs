@@ -141,7 +141,11 @@ namespace CSharpBinding
 						                                         t.col, editor.FileName,
 						                                         editor.Document.TextContent);
 						if (rr != null && rr.ResolvedType != null) {
-							CSharpAmbience.Instance.ConversionFlags = ConversionFlags.ShowReturnType;
+							ClassFinder context = new ClassFinder(editor.FileName, editor.ActiveTextAreaControl.Caret.Line, t.col);
+							if (ICSharpCode.SharpDevelop.Refactoring.CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
+								CSharpAmbience.Instance.ConversionFlags = ConversionFlags.None;
+							else
+								CSharpAmbience.Instance.ConversionFlags = ConversionFlags.UseFullyQualifiedNames;
 							string typeName = CSharpAmbience.Instance.Convert(rr.ResolvedType);
 							editor.Document.Replace(curLine.Offset + typeToken.col - 1, 1, typeName);
 							editor.ActiveTextAreaControl.Caret.Column += typeName.Length - 1;

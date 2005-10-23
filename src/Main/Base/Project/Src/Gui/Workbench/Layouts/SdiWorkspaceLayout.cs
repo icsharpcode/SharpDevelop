@@ -113,12 +113,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			LoadLayoutConfiguration();
 			ShowPads();
 			
-			// ShowPads could create new pads if new addins have been installed, so we
-			// need to call AllowInitialize again
-			foreach (PadContentWrapper content in contentHash.Values) {
-				content.AllowInitialize();
-			}
-			
 			ShowViewContents();
 			
 			RedrawAllComponents();
@@ -170,6 +164,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 					ShowPad(content);
 				}
 			}
+			// ShowPads could create new pads if new addins have been installed, so we
+			// need to call AllowInitialize here instead of in LoadLayoutConfiguration
+			foreach (PadContentWrapper content in contentHash.Values) {
+				content.AllowInitialize();
+			}
 		}
 		void ShowViewContents()
 		{
@@ -188,9 +187,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			} catch {
 				// ignore errors loading configuration
-			}
-			foreach (PadContentWrapper content in contentHash.Values) {
-				content.AllowInitialize();
 			}
 		}
 		

@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 		}
 		
-		public VBNetOutputFormatter OutputFormatter {
+		public IOutputFormatter OutputFormatter {
 			get {
 				return outputFormatter;
 			}

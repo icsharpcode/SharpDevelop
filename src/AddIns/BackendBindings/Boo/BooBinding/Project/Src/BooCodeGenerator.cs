@@ -9,6 +9,8 @@ using System;
 using System.IO;
 using System.Text;
 using ICSharpCode.Core;
+using ICSharpCode.TextEditor.Document;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.NRefactory.Parser.AST;
 using NRefactoryToBooConverter;
@@ -23,6 +25,11 @@ namespace Grunwald.BooBinding
 	/// </summary>
 	public class BooCodeGenerator : CodeGenerator
 	{
+		public override void InsertCodeInClass(IClass c, IDocument document, params AbstractNode[] nodes)
+		{
+			InsertCodeAfter(c.Region.BeginLine, document, true, nodes);
+		}
+		
 		public override string GenerateCode(AbstractNode node, string indentation)
 		{
 			StringBuilder errorBuilder = new StringBuilder();

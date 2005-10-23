@@ -35,6 +35,12 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public Menu(string text, params ToolStripItem[] subItems)
+		{
+			this.Text = StringParser.Parse(text);
+			this.DropDownItems.AddRange(subItems);
+		}
+		
 		void CreateDropDownItems()
 		{
 			DropDownItems.Clear();
@@ -53,7 +59,7 @@ namespace ICSharpCode.Core
 		}
 		protected override void OnDropDownShow(EventArgs e)
 		{
-			if (!this.DropDown.Visible) {
+			if (codon != null && !this.DropDown.Visible) {
 				CreateDropDownItems();
 			}
 			base.OnDropDownShow(e);

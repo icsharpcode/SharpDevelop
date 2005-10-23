@@ -222,7 +222,11 @@ namespace VBNetBinding
 			                                         t2.col, editor.FileName,
 			                                         editor.Document.TextContent);
 			if (rr != null && rr.ResolvedType != null) {
-				VBNetAmbience.Instance.ConversionFlags = ConversionFlags.ShowReturnType;
+				ClassFinder context = new ClassFinder(editor.FileName, editor.ActiveTextAreaControl.Caret.Line, t1.col);
+				if (ICSharpCode.SharpDevelop.Refactoring.CodeGenerator.CanUseShortTypeName(rr.ResolvedType, context))
+					VBNetAmbience.Instance.ConversionFlags = ConversionFlags.None;
+				else
+					VBNetAmbience.Instance.ConversionFlags = ConversionFlags.UseFullyQualifiedNames;
 				string typeName = VBNetAmbience.Instance.Convert(rr.ResolvedType);
 				editor.Document.Replace(curLine.Offset + t1.col - 1, 1, typeName);
 				editor.ActiveTextAreaControl.Caret.Column += typeName.Length - 1;

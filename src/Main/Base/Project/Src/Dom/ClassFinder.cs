@@ -43,6 +43,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 			Init(fileName);
 		}
 		
+		public ClassFinder(IMember classMember)
+			: this(classMember.DeclaringType, classMember.Region.BeginLine, classMember.Region.BeginColumn)
+		{
+		}
+		
+		public ClassFinder(IClass callingClass, int caretLine, int caretColumn)
+		{
+			this.caretLine = caretLine;
+			this.caretColumn = caretColumn;
+			this.callingClass = callingClass;
+			this.cu = callingClass.CompilationUnit;
+			this.projectContent = cu.ProjectContent;
+		}
+		
 		void Init(string fileName)
 		{
 			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);
