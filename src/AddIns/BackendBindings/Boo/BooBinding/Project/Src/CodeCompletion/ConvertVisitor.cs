@@ -406,6 +406,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 			DefaultProperty property = new DefaultProperty(node.Name, CreateReturnType(node), GetModifier(node), GetRegion(node), GetClientRegion(node), OuterClass);
 			ConvertAttributes(node, property);
 			ConvertParameters(node.Parameters, property);
+			if (node.Getter != null && node.Getter.Body != null) {
+				property.GetterRegion = GetClientRegion(node.Getter);
+			}
+			if (node.Setter != null && node.Setter.Body != null) {
+				property.SetterRegion = GetClientRegion(node.Setter);
+			}
 			OuterClass.Properties.Add(property);
 			property.UserData = node;
 		}

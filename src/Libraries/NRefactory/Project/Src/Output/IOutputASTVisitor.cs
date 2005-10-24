@@ -47,6 +47,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			get;
 		}
 		void NewLine();
+		void Indent();
 		void PrintComment(Comment comment);
 		void PrintPreProcessingDirective(PreProcessingDirective directive);
 	}

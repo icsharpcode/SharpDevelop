@@ -59,7 +59,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return content.GetHashCode() ^ fullName.GetHashCode() ^ (typeParameterCount * 5);
 		}
 		
-		// TODO: Cache BaseType until a new CompilationUnit is generated (static counter in ParserService)
 		public override IReturnType BaseType {
 			get {
 				IClass c = content.GetClass(fullName, typeParameterCount);
@@ -93,15 +92,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string Namespace {
 			get {
-				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.Namespace : fullName.Substring(0, fullName.LastIndexOf('.'));
+				string tmp = base.Namespace;
+				if (tmp == "?") {
+					return fullName.Substring(0, fullName.LastIndexOf('.'));
+				}
+				return tmp;
 			}
 		}
 		
 		public override string DotNetName {
 			get {
-				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.DotNetName : fullName;
+				string tmp = base.DotNetName;
+				if (tmp == "?") {
+					return fullName;
+				}
+				return tmp;
 			}
 		}
 		

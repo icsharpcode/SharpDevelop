@@ -126,8 +126,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string FullyQualifiedName {
 			get {
-				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.FullyQualifiedName : name;
+				string tmp = base.FullyQualifiedName;
+				if (tmp == "?") {
+					return name;
+				}
+				return tmp;
 			}
 		}
 		
@@ -137,17 +140,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
-		public override string Namespace {
-			get {
-				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.Namespace : "?";
-			}
-		}
-		
 		public override string DotNetName {
 			get {
-				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.DotNetName : name;
+				string tmp = base.DotNetName;
+				if (tmp == "?") {
+					return name;
+				}
+				return tmp;
 			}
 		}
 		

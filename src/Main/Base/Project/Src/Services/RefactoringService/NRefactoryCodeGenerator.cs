@@ -28,6 +28,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					indentCount += 1;
 			}
 			visitor.OutputFormatter.IndentationLevel = indentCount / 4;
+			if (node is Statement)
+				visitor.OutputFormatter.Indent();
 			node.AcceptVisitor(visitor, null);
 			return visitor.Text;
 		}

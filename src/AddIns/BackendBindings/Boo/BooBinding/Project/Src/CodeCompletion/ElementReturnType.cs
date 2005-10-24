@@ -53,12 +53,5 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return null;
 			}
 		}
-		
-		public override bool IsDefaultReturnType {
-			get {
-				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.IsDefaultReturnType : false;
-			}
-		}
 	}
 }

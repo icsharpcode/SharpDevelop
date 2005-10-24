@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections.Generic;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom
 {
@@ -20,108 +21,154 @@ namespace ICSharpCode.SharpDevelop.Dom
 			get;
 		}
 		
+		// Required to prevent stack overflow on inferrence cycles
+		bool busy = false;
+		
+		// keep this method as small as possible, it should be inlined!
+		bool TryEnter()
+		{
+			if (busy) {
+				PrintTryEnterWarning();
+				return false;
+			} else {
+				busy = true;
+				return true;
+			}
+		}
+		
+		void PrintTryEnterWarning()
+		{
+			LoggingService.Info("TryEnter failed on " + ToString());
+		}
+		
 		public virtual string FullyQualifiedName {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.FullyQualifiedName : "?";
+				string tmp = (baseType != null && TryEnter()) ? baseType.FullyQualifiedName : "?";
+				busy = false;
+				return tmp;
 			}
 		}
 		
 		public virtual string Name {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.Name : "?";
+				string tmp = (baseType != null && TryEnter()) ? baseType.Name : "?";
+				busy = false;
+				return tmp;
 			}
 		}
 		
 		public virtual string Namespace {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.Namespace : "?";
+				string tmp = (baseType != null && TryEnter()) ? baseType.Namespace : "?";
+				busy = false;
+				return tmp;
 			}
 		}
 		
 		public virtual string DotNetName {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.DotNetName : "?";
+				string tmp = (baseType != null && TryEnter()) ? baseType.DotNetName : "?";
+				busy = false;
+				return tmp;
 			}
 		}
 		
 		public virtual int TypeParameterCount {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.TypeParameterCount : 0;
+				int tmp = (baseType != null && TryEnter()) ? baseType.TypeParameterCount : 0;
+				busy = false;
+				return tmp;
 			}
 		}
 		
-		/// <summary>
-		/// Gets the array ranks of the return type.
-		/// When the return type is not an array, this property returns null.
-		/// </summary>
 		public virtual int ArrayDimensions {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.ArrayDimensions : 0;
+				int tmp = (baseType != null && TryEnter()) ? baseType.ArrayDimensions : 0;
+				busy = false;
+				return tmp;
 			}
 		}
 		
 		public virtual IReturnType ArrayElementType {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.ArrayElementType : null;
+				IReturnType tmp = (baseType != null && TryEnter()) ? baseType.ArrayElementType : null;
+				busy = false;
+				return tmp;
 			}
 		}
 		
 		public virtual IReturnType UnboundType {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.UnboundType : null;
+				IReturnType tmp = (baseType != null && TryEnter()) ? baseType.UnboundType : null;
+				busy = false;
+				return tmp;
 			}
 		}
 		
 		public virtual IList<IReturnType> TypeArguments {
 			get {
 				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.TypeArguments : null;
+				IList<IReturnType> tmp = (baseType != null && TryEnter()) ? baseType.TypeArguments : null;
+				busy = false;
+				return tmp;
 			}
 		}
 		
-		/// <summary>
-		/// Gets the underlying class of this return type.
-		/// </summary>
 		public virtual IClass GetUnderlyingClass()
 		{
 			IReturnType baseType = BaseType;
-			return (baseType != null) ? baseType.GetUnderlyingClass() : null;
+			IClass tmp = (baseType != null && TryEnter()) ? baseType.GetUnderlyingClass() : null;
+			busy = false;
+			return tmp;
 		}
 		
 		public virtual List<IMethod> GetMethods()
 		{
 			IReturnType baseType = BaseType;
-			return (baseType != null) ? baseType.GetMethods() : new List<IMethod>();
+			List<IMethod> tmp = (baseType != null && TryEnter()) ? baseType.GetMethods() : new List<IMethod>();
+			busy = false;
+			return tmp;
 		}
 		
 		public virtual List<IProperty> GetProperties()
 		{
 			IReturnType baseType = BaseType;
-			return (baseType != null) ? baseType.GetProperties() : new List<IProperty>();
+			List<IProperty> tmp = (baseType != null && TryEnter()) ? baseType.GetProperties() : new List<IProperty>();
+			busy = false;
+			return tmp;
 		}
 		
 		public virtual List<IField> GetFields()
 		{
 			IReturnType baseType = BaseType;
-			return (baseType != null) ? baseType.GetFields() : new List<IField>();
+			List<IField> tmp = (baseType != null && TryEnter()) ? baseType.GetFields() : new List<IField>();
+			busy = false;
+			return tmp;
 		}
 		
 		public virtual List<IEvent> GetEvents()
 		{
 			IReturnType baseType = BaseType;
-			return (baseType != null) ? baseType.GetEvents() : new List<IEvent>();
+			List<IEvent> tmp = (baseType != null && TryEnter()) ? baseType.GetEvents() : new List<IEvent>();
+			busy = false;
+			return tmp;
 		}
 		
-		public abstract bool IsDefaultReturnType {
-			get;
+		public virtual bool IsDefaultReturnType {
+			get {
+				IReturnType baseType = BaseType;
+				bool tmp = (baseType != null && TryEnter()) ? baseType.IsDefaultReturnType : false;
+				busy = false;
+				return tmp;
+			}
 		}
 	}
 }

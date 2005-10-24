@@ -93,6 +93,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		int lastLineStart = 0;
 		
+		public bool LastCharacterIsNewLine {
+			get {
+				return text.Length == lastLineStart;
+			}
+		}
+		
 		public virtual void NewLine()
 		{
 			if (DoNewLine) {
@@ -107,7 +113,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		protected void WriteInPreviousLine(string txt)
 		{
-			if (text.Length == lastLineStart) {
+			if (LastCharacterIsNewLine) {
 				Indent();
 				text.AppendLine(txt);
 				lastLineStart = text.Length;

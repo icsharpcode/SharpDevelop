@@ -41,6 +41,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IMethod method = member as IMethod;
 			List<ToolStripItem> list = new List<ToolStripItem>();
 			
+			bool canGenerateCode =
+				member.DeclaringType.ProjectContent.Language.CodeGenerator != null
+				&& !FindReferencesAndRenameHelper.IsReadOnly(member.DeclaringType);
+			
 			if (method == null || !method.IsConstructor) {
 				if (!FindReferencesAndRenameHelper.IsReadOnly(member.DeclaringType)) {
 					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.RenameCommand}", Rename);
@@ -70,7 +74,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					cmd.Tag = foundProperty;
 					list.Add(cmd);
 				} else {
-					if (!FindReferencesAndRenameHelper.IsReadOnly(member.DeclaringType)) {
+					if (canGenerateCode) {
 						cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateGetter}", CreateGetter);
 						cmd.Tag = member;
 						list.Add(cmd);
@@ -78,6 +82,20 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 						cmd.Tag = member;
 						list.Add(cmd);
 					}
+				}
+			}
+			if (member is IProperty) {
+				if (((IProperty)member).CanSet && canGenerateCode) {
+					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateChangedEvent}", CreateChangedEvent);
+					cmd.Tag = member;
+					list.Add(cmd);
+				}
+			}
+			if (member is IEvent) {
+				if (canGenerateCode) {
+					cmd = new MenuCommand("${res:SharpDevelop.Refactoring.CreateOnEventMethod}", CreateOnEventMethod);
+					cmd.Tag = member;
+					list.Add(cmd);
 				}
 			}
 			
@@ -116,7 +134,22 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
 			
 			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateProperty(member, textEditor.Document, true, includeSetter);
-			textEditor.Refresh();
+		}
+		
+		void CreateChangedEvent(object sender, EventArgs e)
+		{
+			MenuCommand item = (MenuCommand)sender;
+			IProperty member = (IProperty)item.Tag;
+			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
+			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateChangedEvent(member, textEditor.Document);
+		}
+		
+		void CreateOnEventMethod(object sender, EventArgs e)
+		{
+			MenuCommand item = (MenuCommand)sender;
+			IEvent member = (IEvent)item.Tag;
+			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
+			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateOnEventMethod(member, textEditor.Document);
 		}
 		
 		void GotoTagMember(object sender, EventArgs e)

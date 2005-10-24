@@ -42,5 +42,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		ProtectedAndInternal = Internal | Protected,
 		ProtectedOrInternal = 0x80000,
+		VisibilityMask = Private | Internal | Protected | Public,
 	}
 }

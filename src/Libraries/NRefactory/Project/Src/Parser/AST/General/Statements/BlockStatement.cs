@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		public override string ToString()
 		{
-			return String.Format("[BlockStatement: Children={0}]", 
+			return String.Format("[BlockStatement: Children={0}]",
 			                     GetCollectionString(base.Children));
 		}
 	}
@@ -65,6 +65,10 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		public override object AcceptChildren(IASTVisitor visitor, object data)
 		{
 			return data;
+		}
+		public override void AddChild(INode childNode)
+		{
+			throw new InvalidOperationException();
 		}
 		
 		public override string ToString()

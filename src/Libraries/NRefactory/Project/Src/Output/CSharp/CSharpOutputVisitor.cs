@@ -808,7 +808,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				foreach (Statement stmt in blockStatement.Children) {
 					outputFormatter.Indent();
 					nodeTracker.TrackedVisit(stmt, null);
-					outputFormatter.NewLine();
+					if (!outputFormatter.LastCharacterIsNewLine)
+						outputFormatter.NewLine();
 				}
 				nodeTracker.EndNode(blockStatement);
 				outputFormatter.EndBrace();
@@ -845,7 +846,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(RaiseEventStatement raiseEventStatement, object data)
 		{
-			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.If);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
@@ -855,23 +855,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Null);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			outputFormatter.NewLine();
 			
-			++outputFormatter.IndentationLevel;
+			outputFormatter.BeginBrace(BraceStyle.EndOfLine);
+			
 			outputFormatter.Indent();
 			outputFormatter.PrintIdentifier(raiseEventStatement.EventName);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			this.AppendCommaSeparatedList(raiseEventStatement.Arguments);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			outputFormatter.PrintToken(Tokens.Semicolon);
-			outputFormatter.NewLine();
-			--outputFormatter.IndentationLevel;
 			
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
 			outputFormatter.NewLine();
+			outputFormatter.EndBrace();
+			
 			return null;
 		}
 		

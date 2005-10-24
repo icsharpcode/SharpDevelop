@@ -33,13 +33,6 @@ namespace Grunwald.BooBinding.CodeCompletion
 			this.block = block;
 		}
 		
-		public override bool IsDefaultReturnType {
-			get {
-				IReturnType baseType = BaseType;
-				return (baseType != null) ? baseType.IsDefaultReturnType : false;
-			}
-		}
-		
 		public override IReturnType BaseType {
 			get {
 				// clear up references to method/expression after the type has been resolved

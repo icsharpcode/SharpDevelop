@@ -6,10 +6,12 @@
  */
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.NRefactory.Parser.AST;
 
@@ -209,33 +211,49 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		#region Code generation / insertion
 		public virtual void InsertCodeAfter(IMember member, IDocument document, params AbstractNode[] nodes)
 		{
-			InsertCodeAfter(member.Region.EndLine, document, false, nodes);
+			if (member is IMethodOrProperty) {
+				InsertCodeAfter(((IMethodOrProperty)member).BodyRegion.EndLine, document,
+				                GetIndentation(document, member.Region.BeginLine), nodes);
+			} else {
+				InsertCodeAfter(member.Region.EndLine, document,
+				                GetIndentation(document, member.Region.BeginLine), nodes);
+			}
+		}
+		
+		public virtual void InsertCodeAtEnd(DomRegion region, IDocument document, params AbstractNode[] nodes)
+		{
+			InsertCodeAfter(region.EndLine - 1, document,
+			                GetIndentation(document, region.BeginLine) + '\t', nodes);
 		}
 		
 		public virtual void InsertCodeInClass(IClass c, IDocument document, params AbstractNode[] nodes)
 		{
-			InsertCodeAfter(c.Region.EndLine - 1, document, false, nodes);
+			InsertCodeAtEnd(c.Region, document, nodes);
+		}
+		
+		protected string GetIndentation(IDocument document, int line)
+		{
+			LineSegment lineSegment = document.GetLineSegment(line - 1);
+			string lineText = document.GetText(lineSegment.Offset, lineSegment.Length);
+			return lineText.Substring(0, lineText.Length - lineText.TrimStart().Length);
 		}
 		
 		/// <summary>
 		/// Generates code for <paramref name="nodes"/> and inserts it into <paramref name="document"/>
 		/// after the line <paramref name="insertLine"/>.
 		/// </summary>
-		public virtual void InsertCodeAfter(int insertLine, IDocument document, bool addIndentation, params AbstractNode[] nodes)
+		protected void InsertCodeAfter(int insertLine, IDocument document, string indentation, params AbstractNode[] nodes)
 		{
-			LineSegment lineSegment = document.GetLineSegment(insertLine - 1);
-			string lineText = document.GetText(lineSegment.Offset, lineSegment.Length);
-			string indentation = lineText.Substring(0, lineText.Length - lineText.TrimStart().Length);
-			if (addIndentation)
-				indentation += '\t';
 			// insert one line below field (text editor uses different coordinates)
-			lineSegment = document.GetLineSegment(insertLine);
+			LineSegment lineSegment = document.GetLineSegment(insertLine);
 			StringBuilder b = new StringBuilder();
 			foreach (AbstractNode node in nodes) {
 				b.AppendLine(indentation);
 				b.Append(GenerateCode(node, indentation));
 			}
 			document.Insert(lineSegment.Offset, b.ToString());
+			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
+			document.CommitUpdate();
 		}
 		
 		/// <summary>
@@ -273,8 +291,53 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				block.AddChild(new StatementExpression(new AssignmentExpression(left, AssignmentOperatorType.Assign, right)));
 				property.SetRegion = new PropertySetRegion(block, null);
 			}
+			property.Modifier = Modifier.Public;
 			
 			InsertCodeAfter(field, document, property);
+		}
+		#endregion
+		
+		#region Generate Changed Event
+		public virtual void CreateChangedEvent(IProperty property, IDocument document)
+		{
+			string name = property.Name + "Changed";
+			EventDeclaration ed = new EventDeclaration(new TypeReference("EventHandler"), name,
+			                                           ConvertModifier(property.Modifiers & (ModifierEnum.VisibilityMask | ModifierEnum.Static))
+			                                           , null);
+			InsertCodeAfter(property, document, ed);
+			
+			ArrayList parameters = new ArrayList(2);
+			if (property.IsStatic)
+				parameters.Add(new PrimitiveExpression(null, "null"));
+			else
+				parameters.Add(new ThisReferenceExpression());
+			parameters.Add(new FieldReferenceExpression(new IdentifierExpression("EventArgs"), "Empty"));
+			InsertCodeAtEnd(property.SetterRegion, document,
+			                new RaiseEventStatement(name, parameters));
+		}
+		#endregion
+		
+		#region Generate OnEventMethod
+		public virtual void CreateOnEventMethod(IEvent e, IDocument document)
+		{
+			TypeReference type = ConvertType(e.ReturnType, new ClassFinder(e));
+			if (type.Type.EndsWith("Handler"))
+				type.Type = type.Type.Substring(0, type.Type.Length - 7) + "Args";
+			
+			List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>(1);
+			parameters.Add(new ParameterDeclarationExpression(type, "e"));
+			MethodDeclaration method = new MethodDeclaration("On" + e.Name,
+			                                                 ConvertModifier(e.Modifiers | ModifierEnum.Virtual),
+			                                                 new TypeReference("System.Void"),
+			                                                 parameters, null);
+			
+			ArrayList arguments = new ArrayList(2);
+			arguments.Add(new ThisReferenceExpression());
+			arguments.Add(new IdentifierExpression("e"));
+			method.Body = new BlockStatement();
+			method.Body.AddChild(new RaiseEventStatement(e.Name, arguments));
+			
+			InsertCodeAfter(e, document, method);
 		}
 		#endregion
 		
@@ -337,7 +400,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					nodes.Add(md);
 				}
 			}
-			InsertCodeAfter(targetClass.Region.BeginLine, document, true, nodes.ToArray());
+			InsertCodeInClass(targetClass, document, nodes.ToArray());
 		}
 		#endregion
 	}

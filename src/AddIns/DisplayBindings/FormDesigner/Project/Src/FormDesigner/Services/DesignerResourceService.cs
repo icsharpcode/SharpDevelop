@@ -154,10 +154,9 @@ namespace ICSharpCode.FormDesigner.Services
 						if (formFileNode != null) {
 							FileNode fileNode = new FileNode(resourceFileName, FileNodeStatus.InProject);
 							fileNode.AddTo(formFileNode.Parent);
-							fileNode.EnsureVisible();
 							IncludeFileInProject.IncludeFileNode(fileNode);	
 							ProjectService.SaveSolution();
-						}				
+						}
 					}
 				}
 			}
