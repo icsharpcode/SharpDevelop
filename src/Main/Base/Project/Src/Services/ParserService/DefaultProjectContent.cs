@@ -174,6 +174,7 @@ namespace ICSharpCode.Core
 		/// Gets/Sets the properties of the language this project content was written in.
 		/// </summary>
 		public LanguageProperties Language {
+			[DebuggerStepThrough]
 			get {
 				return language;
 			}

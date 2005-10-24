@@ -330,6 +330,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		{
 			switch (ClassType) {
 				case ClassType.Class:
+				case ClassType.Interface:
 					if (FullyQualifiedName != "System.Object") {
 						return ReflectionReturnType.Object;
 					}

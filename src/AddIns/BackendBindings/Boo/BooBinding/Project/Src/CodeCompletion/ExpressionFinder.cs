@@ -79,7 +79,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public ExpressionResult FindExpression(string inText, int offset)
 		{
-			if (inText == null) return new ExpressionResult(null);
+			if (inText == null || offset >= inText.Length)
+				return new ExpressionResult(null);
 			// OK, first try a kind of "quick find"
 			int i = offset + 1;
 			const string forbidden = "\"\'/#)]}";
@@ -97,10 +98,6 @@ namespace Grunwald.BooBinding.CodeCompletion
 					break;
 				}
 				if (char.IsWhiteSpace(c)) {
-					if (i > 6 && inText.Substring(i - 6, 6) == "import") {
-						i -= 7; // include 'import' in the expression
-					}
-					start = i + 1;
 					break;
 				}
 				if (start >= 0) {

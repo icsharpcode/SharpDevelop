@@ -259,6 +259,7 @@ interface IInterface2 {
 			bool m1 = false;
 			bool m2 = false;
 			bool disp = false;
+			bool getType = false;
 			foreach (IMethod m in arr) {
 				if (m.Name == "Method1")
 					m1 = true;
@@ -266,10 +267,13 @@ interface IInterface2 {
 					m2 = true;
 				if (m.Name == "Dispose")
 					disp = true;
+				if (m.Name == "GetType")
+					getType = true;
 			}
 			Assert.IsTrue(m1, "Method1 not found");
 			Assert.IsTrue(m2, "Method2 not found");
 			Assert.IsTrue(disp, "Dispose not found");
+			Assert.IsTrue(getType, "GetType not found");
 		}
 		
 		[Test]
