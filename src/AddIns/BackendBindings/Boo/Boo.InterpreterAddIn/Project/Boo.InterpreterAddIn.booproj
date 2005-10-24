@@ -28,6 +28,11 @@
       <HintPath>..\..\RequiredLibraries\Boo.Lang.Interpreter.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
     </Reference>
+    <Reference Include="Boo.Lang.Compiler">
+      <HintPath>..\..\RequiredLibraries\Boo.Lang.Compiler.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>True</Private>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeCompletionData.boo" />

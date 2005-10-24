@@ -305,7 +305,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public bool EnableCopy {
 			get {
-				return true;
+				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCopy;
 			}
 		}
 		
@@ -323,7 +323,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public bool EnableSelectAll {
 			get {
-				return true;
+				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableSelectAll;
 			}
 		}
 		
@@ -333,7 +333,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Copy()
 		{
-			new ICSharpCode.TextEditor.Actions.Copy().Execute(textEditorControl.ActiveTextAreaControl.TextArea);
+			textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.Copy(null, null);
 		}
 		
 		public void Paste()
@@ -346,8 +346,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SelectAll()
 		{
-			new ICSharpCode.TextEditor.Actions.SelectWholeDocument().Execute(textEditorControl.ActiveTextAreaControl.TextArea);
-//			textEditorControl.SelectAll();
+			textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.SelectAll(null, null);
 		}
 		#endregion
 		

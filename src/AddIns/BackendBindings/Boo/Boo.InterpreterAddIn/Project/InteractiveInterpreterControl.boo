@@ -20,79 +20,12 @@ import ICSharpCode.TextEditor.Actions
 import ICSharpCode.TextEditor.Gui.CompletionWindow
 import Boo.Lang.Compiler.TypeSystem
 
-interface ICompletionWindowImageProvider:
-	ImageList as ImageList:
-		get
-	NamespaceIndex as int:
-		get
-	ClassIndex as int:
-		get
-	InterfaceIndex as int:
-		get
-	EnumIndex as int:
-		get
-	StructIndex as int:
-		get
-	CallableIndex as int:
-		get
-	MethodIndex as int:
-		get
-	FieldIndex as int:
-		get
-	LiteralIndex as int:
-		get
-	PropertyIndex as int:
-		get
-	EventIndex as int:
-		get
-
 class InteractiveInterpreterControl(TextEditorControl):
 	
 	enum InputState:
 		SingleLine = 0
 		Block = 1
 		
-	class NullCompletionWindowImageProvider(ICompletionWindowImageProvider):
-		
-		public static final Instance = NullCompletionWindowImageProvider()
-		
-		[getter(ImageList)]
-		_imageList = System.Windows.Forms.ImageList()
-		
-		NamespaceIndex as int:
-			get:
-				return 0
-		ClassIndex as int:
-			get:
-				return 0
-		InterfaceIndex as int:
-			get:
-				return 0
-		EnumIndex as int:
-			get:
-				return 0
-		StructIndex as int:
-			get:
-				return 0
-		CallableIndex as int:
-			get:
-				return 0
-		MethodIndex as int:
-			get:
-				return 0
-		FieldIndex as int:
-			get:
-				return 0
-		LiteralIndex as int:
-			get:
-				return 0
-		PropertyIndex as int:
-			get:
-				return 0
-		EventIndex as int:
-			get:
-				return 0
-			
 	class LineHistory:
 	
 		_lines = []
@@ -115,7 +48,7 @@ class InteractiveInterpreterControl(TextEditorControl):
 				return null if 0 == len(_lines)
 				return _lines[_current]
 	
-		def Up():		
+		def Up():
 			MoveTo(_current - 1)
 			
 		def Down():
@@ -136,9 +69,6 @@ class InteractiveInterpreterControl(TextEditorControl):
 	_interpreter = InterpreterWrapper()
 	
 	_codeCompletionWindow as CodeCompletionWindow
-	
-	[property(CompletionWindowImageProvider, value is not null)]
-	_imageProvider as ICompletionWindowImageProvider = NullCompletionWindowImageProvider()
 	
 	_lineHistory as LineHistory
 	
@@ -168,7 +98,7 @@ class InteractiveInterpreterControl(TextEditorControl):
 	CurrentLineText:
 		get:
 			segment = GetLastLineSegment()
-			return self.Document.GetText(segment)[4:]	
+			return self.Document.GetText(segment)[4:]
 		
 	override def OnLoad(args as EventArgs):
 		super(args)
@@ -176,7 +106,7 @@ class InteractiveInterpreterControl(TextEditorControl):
 		
 	def Eval(code as string):
 		try:
-			_interpreter.RunCommand(code)			
+			_interpreter.RunCommand(code)
 		ensure:
 			_state = InputState.SingleLine
 	
@@ -204,7 +134,7 @@ class InteractiveInterpreterControl(TextEditorControl):
 			Eval(_block.ToString())
 		else:
 			_block.WriteLine(code)
-
+	
 	def print(msg):
 		AppendText("${msg}\r\n")
 	
@@ -240,10 +170,10 @@ class InteractiveInterpreterControl(TextEditorControl):
 			return _codeCompletionWindow is not null and not _codeCompletionWindow.IsDisposed
 
 	private def DotComplete(ch as System.Char):
-		ShowCompletionWindow(
-			CodeCompletionDataProvider(_imageProvider, GetSuggestions()),
-			ch)
-			
+		suggestions = GetSuggestions()
+		if suggestions is not null:
+			ShowCompletionWindow(CodeCompletionDataProvider(suggestions), ch)
+	
 	private def ShowCompletionWindow(completionDataProvider, ch as System.Char):
 		_codeCompletionWindow = CodeCompletionWindow.ShowCompletionWindow(
 					self.ParentForm, 
@@ -254,18 +184,16 @@ class InteractiveInterpreterControl(TextEditorControl):
 		if _codeCompletionWindow is not null:
 			_codeCompletionWindow.Closed += def():
 				_blockKeys = false
-					
+	
 	private def CtrlSpaceComplete():
 		_blockKeys = true
-		ShowCompletionWindow(
-			GlobalsCompletionDataProvider(_imageProvider, self._interpreter),
-			Char.MinValue)
-					
-	private def GetSuggestions():		
+		ShowCompletionWindow(GlobalsCompletionDataProvider(self._interpreter), char('\0'))
+	
+	private def GetSuggestions():
 		code = CurrentLineText.Insert(self.CaretColumn-4, ".__codecomplete__")
 		code = code.Insert(0, _block.ToString()) if InputState.Block == _state
 		return _interpreter.SuggestCodeCompletion(code)
-		
+	
 	private def HandleDialogKey(key as Keys):
 		return false if InCodeCompletion
 		
@@ -290,7 +218,7 @@ class InteractiveInterpreterControl(TextEditorControl):
 			CtrlSpaceComplete()
 			return true
 			
-		if key in Keys.Home, Keys.Shift|Keys.Home, Keys.Control|Keys.Home:			
+		if key in Keys.Home, Keys.Shift|Keys.Home, Keys.Control|Keys.Home:
 			MoveCaretToOffset(GetLastLineSegment().Offset + 4)
 			return true
 			

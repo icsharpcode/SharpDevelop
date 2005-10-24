@@ -47,12 +47,17 @@ namespace ICSharpCode.Core
 			}
 			
 			Type currentType = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent.GetType();
-			Type activeType = Type.GetType(activewindow);
-			if (activeType == null) {
-				return false;
+			if (currentType.FullName == activewindow)
+				return true;
+			foreach (Type interf in currentType.GetInterfaces()) {
+				if (interf.FullName == activewindow)
+					return true;
 			}
-				
-			return activeType.IsAssignableFrom(currentType);
+			while ((currentType = currentType.BaseType) != null) {
+				if (currentType.FullName == activewindow)
+					return true;
+			}
+			return false;
 		}
 	}
 }

@@ -8,6 +8,7 @@
 namespace Boo.InterpreterAddIn
 
 import System
+import ICSharpCode.Core
 import ICSharpCode.TextEditor
 import ICSharpCode.TextEditor.Document
 import ICSharpCode.TextEditor.Actions
@@ -52,12 +53,10 @@ internal class AbstractCompletionData(ICompletionData, IComparable):
 
 internal class CodeCompletionData(AbstractCompletionData):
 	
-	_imageProvider as ICompletionWindowImageProvider
 	_entities as List = []
 	
-	def constructor(imageProvider, name):
+	def constructor(name):
 		super(name)
-		_imageProvider = imageProvider
 	
 	Description:
 		get:
@@ -72,40 +71,35 @@ internal class CodeCompletionData(AbstractCompletionData):
 			if EntityType.Type == entityType:
 				type as IType = entity
 				if type.IsInterface:
-					return _imageProvider.InterfaceIndex
+					return ClassBrowserIconService.InterfaceIndex
 				elif type.IsEnum:
-					return _imageProvider.EnumIndex
+					return ClassBrowserIconService.EnumIndex
 				elif type.IsValueType:
-					return _imageProvider.StructIndex
+					return ClassBrowserIconService.StructIndex
 				elif type isa ICallableType:
-					return _imageProvider.CallableIndex
+					return ClassBrowserIconService.DelegateIndex
 				else:
-					return _imageProvider.ClassIndex
+					return ClassBrowserIconService.ClassIndex
 			elif EntityType.Method == entityType:
-				return _imageProvider.MethodIndex
+				return ClassBrowserIconService.MethodIndex
 			elif EntityType.Field == entityType:
 				if (entity as IField).IsLiteral:
-					return _imageProvider.LiteralIndex
+					return ClassBrowserIconService.ConstIndex
 				else:
-					return _imageProvider.FieldIndex
+					return ClassBrowserIconService.FieldIndex
 			elif EntityType.Property == entityType:
-				return _imageProvider.PropertyIndex
+				return ClassBrowserIconService.PropertyIndex
 			elif EntityType.Event == entityType:
-				return _imageProvider.EventIndex
-			return _imageProvider.NamespaceIndex
+				return ClassBrowserIconService.EventIndex
+			return ClassBrowserIconService.NamespaceIndex
 		
 	def AddEntity(entity as IEntity):
 		_entities.Add(entity)
 
 abstract internal class AbstractCompletionDataProvider(ICompletionDataProvider):
-	_imageProvider as ICompletionWindowImageProvider
-	
-	def constructor([required] imageProvider):
-		_imageProvider = imageProvider
-
 	ImageList as System.Windows.Forms.ImageList:
 		get:
-			return _imageProvider.ImageList
+			return ClassBrowserIconService.ImageList
 			
 	PreSelection as string:
 		get:
@@ -142,8 +136,7 @@ internal class GlobalsCompletionDataProvider(AbstractCompletionDataProvider):
 			_imageIndex = imageIndex
 			_description = description
 	
-	def constructor(imageProvider, interpreter):
-		super(imageProvider)
+	def constructor(interpreter):
 		_interpreter = interpreter
 		
 	override def GenerateCompletionData(fileName as string, textArea as TextArea, charTyped as System.Char) as (ICompletionData):
@@ -157,9 +150,9 @@ internal class GlobalsCompletionDataProvider(AbstractCompletionDataProvider):
 					description = "${key} as ${InteractiveInterpreter.GetBooTypeName(value.GetType())}"
 				else:
 					description = "null"				
-				item = GlobalCompletionData(key, _imageProvider.FieldIndex, description)
+				item = GlobalCompletionData(key, ClassBrowserIconService.FieldIndex, description)
 			else:
-				item = GlobalCompletionData(key, _imageProvider.MethodIndex, InteractiveInterpreter.DescribeMethod(delegate.Method))
+				item = GlobalCompletionData(key, ClassBrowserIconService.MethodIndex, InteractiveInterpreter.DescribeMethod(delegate.Method))
 			data[index] = item
 		return data
 			
@@ -168,8 +161,7 @@ internal class CodeCompletionDataProvider(AbstractCompletionDataProvider):
 
 	_codeCompletion as (IEntity)
 	
-	def constructor(imageProvider, [required] codeCompletion):
-		super(imageProvider)
+	def constructor([required] codeCompletion):
 		_codeCompletion = codeCompletion
 
 	override def GenerateCompletionData(fileName as string, textArea as TextArea, charTyped as System.Char) as (ICompletionData):		
@@ -181,7 +173,7 @@ internal class CodeCompletionDataProvider(AbstractCompletionDataProvider):
 				name = item.Name
 				if "." in name:
 					name = /\./.Split(name)[-1]			
-				data = CodeCompletionData(_imageProvider, name)
+				data = CodeCompletionData(name)
 				values[item.Name] = data
 			data.AddEntity(item)
 		return array(ICompletionData, values.Values)
