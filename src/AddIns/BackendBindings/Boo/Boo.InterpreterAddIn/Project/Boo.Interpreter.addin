@@ -1,0 +1,20 @@
+﻿<AddIn name        = "BooBinding"
+       author      = "Daniel Grunwald"
+       copyright   = "GPL"
+       url         = "http://www.icsharpcode.net"
+       description = "Interactive interpreter for boo"
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly = "Boo.InterpreterAddIn.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/Pads">
+		<Pad id       = "BooIshPad"
+		     category = "Main"
+		     title    = "Boo Interpreter"
+		     icon     = "Boo.ProjectIcon"
+		     shortcut = "Control|Shift|B"
+		     class    = "Boo.InterpreterAddIn.InterpreterPad"/>
+	</Path>
+</AddIn>
