@@ -33,6 +33,7 @@
     <Compile Include="CodeCompletionData.boo" />
     <Compile Include="InteractiveInterpreterControl.boo" />
     <Compile Include="InterpreterPad.boo" />
+    <Compile Include="InterpreterWrapper.boo" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

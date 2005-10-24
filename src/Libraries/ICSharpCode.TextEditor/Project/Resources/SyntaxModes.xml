@@ -7,6 +7,10 @@
 	      name       = "BAT"
 	      extensions = ".bat"/>
 	
+	<Mode file       = "Boo.xshd"
+	      name       = "Boo"
+	      extensions = ".boo"/>
+	
 	<Mode file       = "Coco-Mode.xshd"
 	      name       = "Coco"
 	      extensions = ".atg"/>
@@ -45,5 +49,5 @@
 	
 	<Mode file       = "XML-Mode.xshd"
 	      name       = "XML"
-	      extensions = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.proj;.csproj;.vbproj;.ilproj;.build;.xfrm;.targets"/>
+	      extensions = ".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.proj;.csproj;.vbproj;.ilproj;.booproj;.build;.xfrm;.targets"/>
 </SyntaxModes>

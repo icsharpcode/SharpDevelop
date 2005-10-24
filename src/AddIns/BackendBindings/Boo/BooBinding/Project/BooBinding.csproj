@@ -61,9 +61,6 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <EmbeddedResource Include="Resources\Boo.xshd">
-      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
-    </EmbeddedResource>
     <Compile Include="Src\AssemblyInfo.cs" />
     <Compile Include="Src\BooProject.cs" />
     <Compile Include="Src\BooLanguageBinding.cs" />

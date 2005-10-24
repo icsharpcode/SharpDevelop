@@ -52,13 +52,6 @@
 		<CodeCompletionBinding id = "Boo" extensions = ".boo" class = "Grunwald.BooBinding.CodeCompletion.CompletionBinding"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/SyntaxModes">
-		<SyntaxMode id         = "Boo Syntax Mode"
-		            name       = "Boo"
-		            extensions = ".boo"
-		            resource   = "Grunwald.BooBinding.Resources.Boo.xshd" />
-	</Path>
-	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
 		<DisplayBinding id              = "BooFormDesigner"
 		                type            = "Secondary"

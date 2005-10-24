@@ -133,8 +133,8 @@ class InteractiveInterpreterControl(TextEditorControl):
 	_block = System.IO.StringWriter()
 	
 	[getter(Interpreter)]
-	_interpreter as Boo.Lang.Interpreter.InteractiveInterpreter
-
+	_interpreter = InterpreterWrapper()
+	
 	_codeCompletionWindow as CodeCompletionWindow
 	
 	[property(CompletionWindowImageProvider, value is not null)]
@@ -148,10 +148,8 @@ class InteractiveInterpreterControl(TextEditorControl):
 	_blockKeys = false
 	
 	def constructor():
-		self._interpreter = Boo.Lang.Interpreter.InteractiveInterpreter(
-								RememberLastValue: true,
-								Print: self.print)
-		self._interpreter.SetValue("cls", cls)
+		self._interpreter.LinePrinted += self.print
+		self._interpreter.Cleared += self.cls
 		self._lineHistory = LineHistory(CurrentLineChanged: _lineHistory_CurrentLineChanged)
 		self.Document.HighlightingStrategy = GetBooHighlighting()
 		self.EnableFolding =  false
@@ -178,19 +176,19 @@ class InteractiveInterpreterControl(TextEditorControl):
 		
 	def Eval(code as string):
 		try:
-			_interpreter.LoopEval(code)			
+			_interpreter.RunCommand(code)			
 		ensure:
 			_state = InputState.SingleLine
-		
+	
 	private def ConsumeCurrentLine():		
 		text as string = CurrentLineText # was accessing Control.text member
 		_lineHistory.Add(text)
 		print("")
 		return text
-		
+	
 	private def GetLastLineSegment():
 		return self.Document.GetLineSegment(self.Document.LineSegmentCollection.Count)
-		
+	
 	private def SingleLineInputState():
 		code = ConsumeCurrentLine()
 		if code[-1:] in ":", "\\":
@@ -199,39 +197,39 @@ class InteractiveInterpreterControl(TextEditorControl):
 			_block.WriteLine(code)
 		else:
 			Eval(code)
-			
+	
 	private def BlockInputState():
 		code = ConsumeCurrentLine()
 		if 0 == len(code):
-			Eval(_block.ToString())			
+			Eval(_block.ToString())
 		else:
 			_block.WriteLine(code)
 
 	def print(msg):
-		AppendText("${msg}\r\n")		
-				
+		AppendText("${msg}\r\n")
+	
 	def prompt():
 		AppendText((">>> ", "... ")[_state])
-
+	
 	def ClearLine():
 		segment = GetLastLineSegment()
 		self.Document.Replace(segment.Offset + 4,
 			self.CurrentLineText.Length,
 			"")
-
+	
 	def AppendText(text as string):
 		segment = GetLastLineSegment()
 		self.Document.Insert(segment.Offset + segment.TotalLength, text)
 		MoveCaretToEnd()
-		
+	
 	def MoveCaretToEnd():
 		segment = GetLastLineSegment()
 		newOffset = segment.Offset + segment.TotalLength
 		MoveCaretToOffset(newOffset)
-		
+	
 	def MoveCaretToOffset(offset as int):
 		self.ActiveTextAreaControl.Caret.Position = self.Document.OffsetToPosition(offset)
-
+	
 	override def InitializeTextAreaControl(newControl as TextAreaControl):
 		super(newControl)
 		newControl.TextArea.DoProcessDialogKey += HandleDialogKey
@@ -332,8 +330,3 @@ class InteractiveInterpreterControl(TextEditorControl):
 		
 	def GetBooHighlighting():
 		return HighlightingManager.Manager.FindHighlighter("Boo")
-		
-	static def InstallDefaultSyntaxModeProvider():
-		HighlightingManager.Manager.AddSyntaxModeFileProvider(
-			FileSyntaxModeProvider(Path.GetDirectoryName(Application.ExecutablePath)))
-
