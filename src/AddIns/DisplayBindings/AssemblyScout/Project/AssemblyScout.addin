@@ -9,11 +9,56 @@
 		<Import assembly="AssemblyScout.dll"/>
 	</Runtime>
 	
+	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id           = "AssemblyScout"
+		                insertbefore = "Text"
+		                fileNamePattern = "\.(dll|exe)$"
+		                languagePattern = "^AssemblyBinaryFile$"
+		                class        = "ICSharpCode.SharpDevelop.AddIns.AssemblyScout.AssemblyScoutBinding" />
+	</Path>
+	
+	<Path name="/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "Assemblies"
+	            insertbefore="AllFiles"
+	            name = "${res:SharpDevelop.FileFilter.AssemblyFiles}"
+	            extensions = "*.exe;*.dll"/>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/View">
 		<MenuItem id = "ShowAssemblyScout"
 		          insertafter  = "ViewItemsSeparator"
 		          insertbefore = "FullScreen"
 		          label = "Assembly Scout"
 		          class = "ICSharpCode.SharpDevelop.AddIns.AssemblyScout.AssemblyScoutCommand"/>
-	</Extension>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
+		<DialogPanel id    = "AssemblyScoutOptions"
+		             label = "${res:Dialog.Options.IDEOptions.AssemblyScout.PanelName}"
+		             class = "ICSharpCode.SharpDevelop.AddIns.AssemblyScout.AssemblyScoutOptionPanel"/>
+
+	</Path>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.AddIns.AssemblyScout.AssemblyScoutViewContent">
+	        <MenuItem id = "AssemblyScout" insertafter="View" insertbefore="Tools" label="${res:Dialog.Options.IDEOptions.AssemblyScout.PanelName}">
+                <MenuItem id = "LoadAssembly"
+                          label = "${res:ObjectBrowser.Menu.LoadAssembly}" 
+                          icon = "Icons.16x16.OpenAssembly" 
+                          class = "ICSharpCode.SharpDevelop.AddIns.AssemblyScout.Commands.LoadAssemblyCommand"/>
+                <MenuItem id = "LoadStdAssemblies"
+                          label = "${res:ObjectBrowser.Menu.LoadStd}" 
+                          class = "ICSharpCode.SharpDevelop.AddIns.AssemblyScout.Commands.LoadStdAssembliesCommand"/>
+                <MenuItem id = "LoadRefAssemblies"
+                          label = "${res:ObjectBrowser.Menu.LoadRef}" 
+                          class = "ICSharpCode.SharpDevelop.AddIns.AssemblyScout.Commands.LoadRefAssembliesCommand"/>
+                <MenuItem id = "AssemblySeparator"
+                		  label = "-"/>
+                <MenuItem id = "AssemblyScoutGoBack"
+                		  label = "${res:ObjectBrowser.Menu.GoBack}" 
+                		  icon = "Icons.16x16.BrowserBefore"
+                          class = "ICSharpCode.SharpDevelop.AddIns.AssemblyScout.Commands.BackCommand"/>                		  
+			</MenuItem>
+		</Condition>
+	</Path>
 </AddIn>

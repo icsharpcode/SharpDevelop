@@ -7,10 +7,10 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Windows.Forms;
 using System.Drawing;
 
-using ICSharpCode.Core;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 
@@ -59,13 +59,14 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		
 		void CreateSpecialNodes(IProperty prop)
 		{
-			IMethod getm = prop.GetterMethod;
-			IMethod setm = prop.SetterMethod;
-			
-			if (getm != null)
-				Nodes.Add(new MethodNode(getm));
-			if (setm != null)
-				Nodes.Add(new MethodNode(setm));			
+//			TODO - No IProperty.Getter/Setter Method.
+//			IMethod getm = prop.GetterMethod;
+//			IMethod setm = prop.SetterMethod;
+//			
+//			if (getm != null)
+//				Nodes.Add(new MethodNode(getm));
+//			if (setm != null)
+//				Nodes.Add(new MethodNode(setm));			
 		}
 		
 		void CreateSpecialNodes(IEvent evt)
@@ -84,8 +85,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		
 		protected override void SetIcon()
 		{
-			
-			
 			if (attribute == null)
 				return;
 			switch (type) {
@@ -111,8 +110,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 				
 			}
 		}
-		
-		static 
 		
 		public static string GetShortMemberName(IMember mi, bool IsEnum) {
 			string ret = "";
@@ -157,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			return ret;
 		}
 
-		public static string GetParams(ParameterCollection piarr, bool IncludeBrackets) {
+		public static string GetParams(IList<IParameter> piarr, bool IncludeBrackets) {
 			string param = "";
 			foreach(IParameter pi in piarr) {
 				param += GetNestedName(AssemblyTree.CurrentAmbience.GetIntrinsicTypeName(pi.ReturnType.FullyQualifiedName)) + ", ";

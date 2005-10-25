@@ -12,8 +12,7 @@ using System.Resources;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core;
-
+using SA = ICSharpCode.SharpAssembly.Assembly;
 using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
@@ -30,9 +29,9 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		
 		public override void Populate(ShowOptions Private, ShowOptions Internal)
 		{
-			if (name.ToLower().EndsWith(".resources")) {
+			if (Name.ToLower().EndsWith(".resources")) {
 				SA.SharpAssembly assembly = (SA.SharpAssembly)attribute;
-				byte[] res = assembly.GetManifestResource(name);
+				byte[] res = assembly.GetManifestResource(Name);
 				ResourceReader resreader = new ResourceReader(new MemoryStream(res));
 				
 				IDictionaryEnumerator en = resreader.GetEnumerator();
@@ -53,7 +52,5 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			}
 			populated = true;
 		}
-		
-		
 	}
 }

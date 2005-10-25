@@ -11,7 +11,6 @@ using System.Windows.Forms;
 using System.Drawing;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core;
 
 using ICSharpCode.SharpDevelop.Dom;
 
@@ -27,7 +26,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		
 		protected override void SetIcon()
 		{
-			
 			ImageIndex = SelectedImageIndex = ClassBrowserIconService.GetIcon((IClass)attribute);
 		}
 		
@@ -37,31 +35,26 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 
 			Nodes.Clear();
 			
-			
-			
-			AssemblyTreeNode supertype = new AssemblyTreeNode(ress.GetString("ObjectBrowser.Nodes.SuperTypes"), type, NodeType.SuperTypes);
+			AssemblyTreeNode supertype = new AssemblyTreeNode(StringParser.Parse("${res:ObjectBrowser.Nodes.SuperTypes}"), type, NodeType.SuperTypes);
 			Nodes.Add(supertype);
 			
 			SharpAssemblyClass sharptype = type as SharpAssemblyClass;
 			if (sharptype == null) goto nobase;
 			
-			AddBaseTypes(sharptype, supertype, ClassBrowserIconService);
-			
-			// TODO: SubTypes is not implemented
-			// Nodes.Add(new ReflectionNode("SubTypes", type, ReflectionNodeType.SubTypes));
-			
+			AddBaseTypes(sharptype, supertype);
+						
 		nobase:
 			
 			populated = true;
 		}
 		
-		private void AddBaseTypes(SharpAssemblyClass type, AssemblyTreeNode node, ClassBrowserIconsService ClassBrowserIconService)
+		private void AddBaseTypes(SharpAssemblyClass type, AssemblyTreeNode node)
 		{
 			foreach (SharpAssemblyClass rettype in type.BaseTypeCollection) {
 				AssemblyTreeNode basetype = new AssemblyTreeNode(rettype.Name, rettype, NodeType.Link);
 				basetype.ImageIndex = basetype.SelectedImageIndex = ClassBrowserIconService.GetIcon(rettype);
 				node.Nodes.Add(basetype);
-				AddBaseTypes(rettype, basetype, ClassBrowserIconService);
+				AddBaseTypes(rettype, basetype);
 			}
 		}
 
@@ -75,7 +68,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			foreach (IMethod info in type.Methods) {
 				if (Private == ShowOptions.Hide && info.IsPrivate) continue;
 				if (Internal == ShowOptions.Hide && info.IsInternal) continue;
-				if (!info.IsConstructor && info.IsSpecialName) continue;
+				if (!info.IsConstructor && SharpAssemblyMethod.IsSpecial(info)) continue;
 				
 				MemberNode node = new MemberNode(info);
 				if ((info.IsInternal && Internal == ShowOptions.GreyOut) || 
@@ -111,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			foreach (IField info in type.Fields) {
 				if (Private == ShowOptions.Hide && info.IsPrivate) continue;
 				if (Internal == ShowOptions.Hide && info.IsInternal) continue;
-				if (info.IsSpecialName) continue;
+				if (SharpAssemblyField.IsSpecial(info)) continue;
 				
 				MemberNode node = new MemberNode(info, type.ClassType == ClassType.Enum);
 				if ((info.IsInternal && Internal == ShowOptions.GreyOut) || 

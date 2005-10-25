@@ -3,6 +3,7 @@ using System;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Reflection;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout {
 	
@@ -109,13 +110,13 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout {
 		{	
 			cap.Location  = new Point(0, 0);
 			cap.Size      = new Size(Width, 32);
-			cap.Text      = tree.ress.GetString("ObjectBrowser.Welcome");
+			cap.Text      = StringParser.Parse("${res:ObjectBrowser.Welcome}");
 			cap.Font      = new Font("Tahoma", 14);
 			cap.BackColor = SystemColors.ControlLight;
 			cap.TextAlign = ContentAlignment.MiddleLeft;
 			cap.Anchor    = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
 						
-			string backt  = tree.ress.GetString("ObjectBrowser.Back");
+			string backt  = StringParser.Parse("${res:ObjectBrowser.Back}");
 			back.Size     = new Size(40, 16);
 			back.Location = new Point(Width - back.Width, 44);
 			back.Text     = backt;
@@ -127,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout {
 			typ.Location  = new Point(0, 44);
 			typ.Size      = new Size(Width - back.Width, 16);
 			typ.Font      = new Font(Font, FontStyle.Bold);
-			typ.Text      = tree.ress.GetString("ObjectBrowser.WelcomeText");
+			typ.Text      = StringParser.Parse("${res:ObjectBrowser.WelcomeText}");
 			typ.TextAlign = ContentAlignment.TopLeft;
 			typ.Anchor    = cap.Anchor;
 						
@@ -139,11 +140,11 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout {
 			list.View       = View.Details;
 			
 			namecol = new ColumnHeader();
-			namecol.Text = tree.ress.GetString("ObjectBrowser.Props.Property");
+			namecol.Text = StringParser.Parse("${res:ObjectBrowser.Props.Property}");
 			namecol.Width = 120;
 			
 			valuecol = new ColumnHeader();
-			valuecol.Text = tree.ress.GetString("ObjectBrowser.Props.Value");
+			valuecol.Text = StringParser.Parse("${res:ObjectBrowser.Props.Value}");
 			valuecol.Width = 300;
 			
 			list.Columns.Add(namecol);

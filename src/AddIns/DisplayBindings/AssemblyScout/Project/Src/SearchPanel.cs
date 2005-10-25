@@ -15,7 +15,6 @@ using System.Threading;
 using System.Resources;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core;
 
 using ICSharpCode.SharpDevelop.Dom;
 using SA = ICSharpCode.SharpAssembly.Assembly;
@@ -40,13 +39,13 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			
 			this.tree = tree;
 			
-			searchfor.Text     = tree.ress.GetString("ObjectBrowser.Search.SearchFor");
+			searchfor.Text     = StringParser.Parse("${res:ObjectBrowser.Search.SearchFor}");
 			searchfor.Location = new Point(0, 0);
 			searchfor.Size     = new Size(70, 12);
 			searchfor.Anchor   = AnchorStyles.Top | AnchorStyles.Left;
 			searchfor.FlatStyle = FlatStyle.System;
 			
-			foundcount.Text      = "0 " + tree.ress.GetString("ObjectBrowser.Search.ItemsFound");
+			foundcount.Text      = "0 " + StringParser.Parse("${res:ObjectBrowser.Search.ItemsFound}");
 			foundcount.Location  = new Point(searchfor.Width + 5, 0);
 			foundcount.Size      = new Size(Width - searchfor.Width - 5, searchfor.Height);
 			foundcount.TextAlign = ContentAlignment.TopRight;
@@ -61,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			
 			button.Location = new Point(Width - 52, 44);
 			button.Size     = new Size(52, 21);
-			button.Text     = tree.ress.GetString("ObjectBrowser.Search.Search");
+			button.Text     = StringParser.Parse("${res:ObjectBrowser.Search.Search}");
 			button.Anchor   = AnchorStyles.Top | AnchorStyles.Right;
 			button.Click    += new EventHandler(DoSearch);
 			button.FlatStyle = FlatStyle.System;
@@ -71,8 +70,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			searchtypes.Height        = 30;
 			searchtypes.Anchor        = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			searchtypes.DropDownStyle = ComboBoxStyle.DropDownList;
-			searchtypes.Items.Add(tree.ress.GetString("ObjectBrowser.Search.TypesAndMembers"));
-			searchtypes.Items.Add(tree.ress.GetString("ObjectBrowser.Search.TypesOnly"));
+			searchtypes.Items.Add(StringParser.Parse("${res:ObjectBrowser.Search.TypesAndMembers}"));
+			searchtypes.Items.Add(StringParser.Parse("${res:ObjectBrowser.Search.TypesOnly}"));
 			searchtypes.SelectedIndex = 0;
 			
 			itemsfound.Location       = new Point(0, 71);
@@ -84,8 +83,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			itemsfound.View           = View.Details;
 			itemsfound.SmallImageList = tree.ImageList;
 			
-			itemsfound.Columns.Add(tree.ress.GetString("ObjectBrowser.Search.Name"), 160, HorizontalAlignment.Left);
-			itemsfound.Columns.Add(tree.ress.GetString("ObjectBrowser.Search.Type"),  70, HorizontalAlignment.Left);
+			itemsfound.Columns.Add(StringParser.Parse("${res:ObjectBrowser.Search.Name}"), 160, HorizontalAlignment.Left);
+			itemsfound.Columns.Add(StringParser.Parse("${res:ObjectBrowser.Search.Type}"),  70, HorizontalAlignment.Left);
 			itemsfound.Columns.Add("Namespace", 125, HorizontalAlignment.Left);
 			itemsfound.Columns.Add("Assembly",  75, HorizontalAlignment.Left);
 			itemsfound.DoubleClick += new EventHandler(SelectItem);
@@ -128,10 +127,10 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		class TypeItem : ListViewItem {
 			public IClass type;
 			public TypeItem(string Namespace, IClass type, Color forecolor) : 
-				base (new string[] {type.Name, GetType(type), Namespace, ((SA.SharpAssembly)type.DeclaredIn).Name})
+				base (new string[] {type.Name, GetType(type), Namespace, ((SA.SharpAssembly)((SharpAssemblyClass)type).DeclaredIn).Name})
 			{
 				this.type = type;
-				this.ImageIndex = ((ClassBrowserIconsService)ServiceManager.Services.GetService(typeof(ClassBrowserIconsService))).GetIcon(type);
+				this.ImageIndex = ClassBrowserIconService.GetIcon(type);
 				this.ForeColor = forecolor;
 			}
 
@@ -153,18 +152,18 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			public IMember member;
 			
 			public MemberItem(string Namespace, IMember member, Color forecolor) : 
-				base (new string[] {member.DeclaringType.Name + "." + member.Name, GetType(member), Namespace, ((SA.SharpAssembly)member.DeclaringType.DeclaredIn).Name})
+				base (new string[] {member.DeclaringType.Name + "." + member.Name, GetType(member), Namespace, ((SA.SharpAssembly)((SharpAssemblyClass)member.DeclaringType).DeclaredIn).Name})
 			{
 				this.ForeColor = forecolor;
 				this.member = member;
 				if(member is IMethod) {
-					this.ImageIndex = ((ClassBrowserIconsService)ServiceManager.Services.GetService(typeof(ClassBrowserIconsService))).GetIcon(member as IMethod);
+					this.ImageIndex = ClassBrowserIconService.GetIcon(member as IMethod);
 				} else if(member is IField) {
-					this.ImageIndex = ((ClassBrowserIconsService)ServiceManager.Services.GetService(typeof(ClassBrowserIconsService))).GetIcon(member as IField);
+					this.ImageIndex = ClassBrowserIconService.GetIcon(member as IField);
 				} else if(member is IProperty) {
-					this.ImageIndex = ((ClassBrowserIconsService)ServiceManager.Services.GetService(typeof(ClassBrowserIconsService))).GetIcon(member as IProperty);
+					this.ImageIndex = ClassBrowserIconService.GetIcon(member as IProperty);
 				} else if(member is IEvent) {
-					this.ImageIndex = ((ClassBrowserIconsService)ServiceManager.Services.GetService(typeof(ClassBrowserIconsService))).GetIcon(member as IEvent);
+					this.ImageIndex = ClassBrowserIconService.GetIcon(member as IEvent);
 				}
 			}
 			
@@ -217,7 +216,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			}
 			
 			itemsfound.EndUpdate();
-			foundcount.Text = itemsfound.Items.Count.ToString() + " " + tree.ress.GetString("ObjectBrowser.Search.ItemsFound");
+			foundcount.Text = itemsfound.Items.Count.ToString() + " " + StringParser.Parse("${res:ObjectBrowser.Search.ItemsFound}");
 		}
 		
 		void ProcessType(string Namespace, string searchfor, bool searchMembers, IClass type, Color nodecolor)
@@ -243,7 +242,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		private void ProcessMember(string Namespace, IMember member, string searchfor)
 		{
 			if(member is IMethod) {
-				if (member.IsSpecialName) return;
+				if (SharpAssemblyMethod.IsSpecial(member as IMethod)) return;
 			}
 			
 			if(member.IsPrivate && (tree.showPrivateMembers == ShowOptions.Hide)) return;

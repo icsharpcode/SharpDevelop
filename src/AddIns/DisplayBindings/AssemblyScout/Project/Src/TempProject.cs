@@ -8,19 +8,17 @@
 using System;
 using System.Drawing;
 using System.Collections;
+using System.Collections.Generic;
 using System.ComponentModel;
 using System.Windows.Forms;
 using System.Data;
 using System.Reflection;
 using System.Diagnostics;
+using System.CodeDom.Compiler;
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Project;
+using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.Core;
-using ICSharpCode.Core;
-using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Internal.Project.Collections;
 using UI = WeifenLuo.WinFormsUI;
 
 namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
@@ -33,11 +31,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		
 		public string BaseDirectory {
 			get { return System.IO.Path.GetTempPath(); }
-		}
-		
-		public bool IsDirty {
-			get { return false; }
-			set {}
 		}
 		
 		public string Name {
@@ -55,39 +48,180 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			set {}
 		}
 		
-		public IConfiguration ActiveConfiguration {
-			get { return null; }
-			set {}
-		}
-
-		public IConfiguration GetConfiguration(int index) {
-			return null;
+		public List<ProjectItem> Items {
+			get {
+				return null;
+			}
 		}
 		
-		public void AddConfiguration(IConfiguration c)
-		{
+		public bool IsDirty {
+			get {
+				return false;
+			}
+			set {
+				throw new NotImplementedException();
+			}
 		}
 		
-		public void RemoveConfiguration(IConfiguration c)
-		{
+		public string Language {
+			get {
+				return String.Empty;
+			}
 		}
 		
-		public ConfigurationCollection Configurations
-		{
-			get { return null; }
+		public LanguageProperties LanguageProperties {
+			get {
+				return null;
+			}
 		}
 		
-		public ProjectFileCollection ProjectFiles {
-			get { return null; }
+		public IAmbience Ambience {
+			get {
+				return null;
+			}
 		}
 		
-		public ProjectReferenceCollection ProjectReferences {
-			get { return new ProjectReferenceCollection(); }
+		public string FileName {
+			get {
+				return String.Empty;
+			}
 		}
 		
-		public NewFileSearch NewFileSearch {
-			get { return 0; }
-			set {}
+		public string Directory {
+			get {
+				return String.Empty;
+			}
+		}
+		
+		public string Configuration {
+			get {
+				return String.Empty;
+			}
+		}
+		
+		public string Platform {
+			get {
+				return String.Empty;
+			}
+		}
+		
+		public string OutputAssemblyFullPath {
+			get {
+				return String.Empty;
+			}
+		}
+		
+		public OutputType OutputType {
+			get {
+				return OutputType.Library;
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string RootNamespace {
+			get {
+				return String.Empty;
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string AppDesignerFolder {
+			get {
+				return String.Empty;
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool IsStartable {
+			get {
+				return false;
+			}
+		}
+		
+		public ISolutionFolderContainer Parent {
+			get {
+				return null;
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string TypeGuid {
+			get {
+				return String.Empty;
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string IdGuid {
+			get {
+				return String.Empty;
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public string Location {
+			get {
+				return String.Empty;
+			}
+			set {
+				throw new NotImplementedException();
+			}
+		}
+		
+		public bool CanCompile(string fileName) {
+			throw new NotImplementedException();
+		}
+		
+		public void Save() {
+			throw new NotImplementedException();
+		}
+		
+		public void Save(string fileName) {
+			throw new NotImplementedException();
+		}
+		
+		public void Start(bool withDebugging) {
+			throw new NotImplementedException();
+		}
+		
+		public ParseProjectContent CreateProjectContent() {
+			throw new NotImplementedException();
+		}
+		
+		public CompilerResults Build() {
+			throw new NotImplementedException();
+		}
+		
+		public CompilerResults Rebuild() {
+			throw new NotImplementedException();
+		}
+		
+		public CompilerResults Clean() {
+			throw new NotImplementedException();
+		}
+		
+		public CompilerResults Publish() {
+			throw new NotImplementedException();
+		}
+		
+		public Properties CreateMemento() {
+			throw new NotImplementedException();
+		}
+		
+		public void SetMemento(Properties memento) {
+			throw new NotImplementedException();
 		}
 		
 		public bool EnableViewState {
@@ -98,9 +232,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		public string GetParseableFileContent(string fileContent)
 		{ 
 			return String.Empty;
-		}
-		public DeployInformation DeployInformation {
-			get { return null; }
 		}
 		
 		public bool IsCompileable(string fileName) { return false; }
@@ -113,11 +244,11 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		public void CopyReferencesToPath(string destination, bool force, ArrayList alreadyCopiedReferences) {}
 		public bool IsFileInProject(string fileName) { return false; }
 		
-		public IConfiguration CreateConfiguration(string name) { return null; }
-		
-		public IConfiguration CreateConfiguration() { return null; }
-		public IConfiguration CloneConfiguration(IConfiguration configuration) { return null; }
-		
+//		public IConfiguration CreateConfiguration(string name) { return null; }
+//		
+//		public IConfiguration CreateConfiguration() { return null; }
+//		public IConfiguration CloneConfiguration(IConfiguration configuration) { return null; }
+//		
 		protected virtual void OnNameChanged(EventArgs e)
 		{
 			if (NameChanged != null) {

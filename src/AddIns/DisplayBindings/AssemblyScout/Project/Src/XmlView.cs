@@ -14,6 +14,7 @@ using System.Windows.Forms;
 
 using SA = ICSharpCode.SharpAssembly.Assembly;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 {
@@ -36,35 +37,35 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			tree = _tree;
 			
 			captionLabel.Location = new Point(5, 0);
-			captionLabel.Text = tree.ress.GetString("ObjectBrowser.XML.Desc");
+			captionLabel.Text = StringParser.Parse("${res:ObjectBrowser.XML.Desc}");
 			captionLabel.Size = new Size(300, 25);
 			captionLabel.FlatStyle = FlatStyle.System;
 			
 			exportEvents.Location = new Point(15, 40);
-			exportEvents.Text = tree.ress.GetString("ObjectBrowser.XML.ExpEvt");
+			exportEvents.Text = StringParser.Parse("${res:ObjectBrowser.XML.ExpEvt}");
 			exportEvents.Checked = true;
 			exportEvents.Width = 300;
 			exportEvents.FlatStyle = FlatStyle.System;
 			
 			exportFields.Location = new Point(15, 65);
-			exportFields.Text = tree.ress.GetString("ObjectBrowser.XML.ExpFld");
+			exportFields.Text = StringParser.Parse("${res:ObjectBrowser.XML.ExpFld}");
 			exportFields.Checked = true;
 			exportFields.Width = 300;
 			exportFields.FlatStyle = FlatStyle.System;
 			
 			exportMethods.Location = new Point(15, 90);
-			exportMethods.Text = tree.ress.GetString("ObjectBrowser.XML.ExpMeth");
+			exportMethods.Text = StringParser.Parse("${res:ObjectBrowser.XML.ExpMeth}");
 			exportMethods.Checked = true;
 			exportMethods.Width = 300;
 			exportMethods.FlatStyle = FlatStyle.System;
 			
 			exportProperties.Location = new Point(15, 115);
 			exportProperties.Width = 300;
-			exportProperties.Text = tree.ress.GetString("ObjectBrowser.XML.ExpProp");
+			exportProperties.Text = StringParser.Parse("${res:ObjectBrowser.XML.ExpProp}");
 			exportProperties.Checked = true;
 			exportProperties.FlatStyle = FlatStyle.System;
 			
-			saveButton.Text = tree.ress.GetString("ObjectBrowser.XML.Save");
+			saveButton.Text = StringParser.Parse("${res:ObjectBrowser.XML.Save}");
 			saveButton.Location = new Point(5, 160);
 			saveButton.Enabled = false;
 			saveButton.Click += new EventHandler(saveButton_Clicked);
@@ -85,13 +86,13 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		void saveButton_Clicked(object sender, System.EventArgs e) {
 			
 			SaveFileDialog fdialog = new SaveFileDialog();
-			fdialog.Filter = tree.ress.GetString("ObjectBrowser.Filters.XML") + "|*.xml";
+			fdialog.Filter = StringParser.Parse("${res:ObjectBrowser.Filters.XML}") + "|*.xml";
 			DialogResult result = fdialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
 			
 			if(result != DialogResult.Cancel) {
 				
 				if (SelectedNode.Attribute is IClass) {
-					writeStart(fdialog.FileName, ((SelectedNode.Attribute as IClass).DeclaredIn as SA.SharpAssembly).FullName);
+					writeStart(fdialog.FileName, ((SelectedNode.Attribute as IClass).DeclaringType as SA.SharpAssembly).FullName);
 					exportClass((IClass)SelectedNode.Attribute);
 				} else if (SelectedNode.Attribute is SA.SharpAssembly) {
 					writeStart(fdialog.FileName, ((SA.SharpAssembly)SelectedNode.Attribute).FullName);
@@ -187,7 +188,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			if(exportMethods.Checked) {
 				writer.WriteStartElement("methods");
 				foreach(IMethod method in type.Methods) {
-					if(! method.IsSpecialName) {
+					if(!SharpAssemblyMethod.IsSpecial(method)) {
 						if(method.DeclaringType == type) {
 							
 							writer.WriteStartElement("method");
@@ -233,7 +234,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			SelectedNode = (AssemblyTreeNode)e.Node;
 			saveButton.Enabled = (SelectedNode.Attribute is IClass || SelectedNode.Attribute is SA.SharpAssembly);
 		}
-		
 	}
 	
 }

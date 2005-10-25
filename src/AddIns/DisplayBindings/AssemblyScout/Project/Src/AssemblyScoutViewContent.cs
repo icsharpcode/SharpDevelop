@@ -12,12 +12,10 @@ using System.Resources;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Project;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.Core;
-using ICSharpCode.Core;
-using ICSharpCode.Core;
 using UI = WeifenLuo.WinFormsUI;
+using SA = ICSharpCode.SharpAssembly.Assembly;
 
 namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 {
@@ -25,9 +23,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 	// AssemblyScoutViewContent Class
 	///////////////////////////////////////////
 	public class AssemblyScoutViewContent : AbstractViewContent
-	{
-		public ResourceService ress = (ResourceService)ServiceManager.Services.GetService(typeof(ResourceService));
-		
+	{		
 		public UI.DockPanel leftTabs, rightTabs;
 		Control control = null;
 		AssemblyTree tree = null;
@@ -70,14 +66,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			}
 		}
 		
-		public override bool IsDirty {
-			get {
-				return false;
-			}
-			set {
-			}
-		}
-		
 		public override bool IsViewOnly {
 			get {
 				return true;
@@ -92,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			set {
 				workbenchWindow = value;
 				if (FileName == "") {
-					workbenchWindow.Title = ress.GetString("ObjectBrowser.AssemblyScout");
+					workbenchWindow.Title = StringParser.Parse("${res:ObjectBrowser.AssemblyScout}");
 				} else {
 					workbenchWindow.Title = FileName;
 				}
@@ -128,7 +116,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			return false;
 		}
 		
-		
 		public IViewContent CreateContentForFile(string fileName)
 		{
 			Load(fileName);
@@ -163,8 +150,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			this.TitleName = Path.GetFileName(filename);
 		}
 		
-		
-		
 		public AssemblyScoutViewContent()
 		{
 			Panel panel = new Panel();
@@ -180,7 +165,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			this.tree = assemblyTree;
 			
 			UI.DockContent treeviewpage = new UI.DockContent();
-			treeviewpage.Text = ress.GetString("ObjectBrowser.Tree");
+			treeviewpage.Text = StringParser.Parse("${res:ObjectBrowser.Tree}");
 			treeviewpage.Icon                  = ResourceService.GetIcon("Icons.16x16.Class");
 			treeviewpage.DockPadding.All       = 8;
 			treeviewpage.Controls.Add(assemblyTree);
@@ -189,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			treeviewpage.Show(leftTabs);
 			
 			UI.DockContent indexviewpage = new UI.DockContent();
-			indexviewpage.Text = ress.GetString("ObjectBrowser.Search");
+			indexviewpage.Text = StringParser.Parse("${res:ObjectBrowser.Search}");
 			indexviewpage.Icon                  = ResourceService.GetIcon("Icons.16x16.FindIcon");
 			SearchPanel SearchPanel   = new SearchPanel(assemblyTree);
 			SearchPanel.ParentDisplayInfo       = this;
@@ -215,7 +200,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			rightTabs.AllowRedocking = false;
 						
 			UI.DockContent memberpage = new UI.DockContent();
-			memberpage.Text = ress.GetString("ObjectBrowser.Info");
+			memberpage.Text = StringParser.Parse("${res:ObjectBrowser.Info}");
 			memberpage.Icon                  = ResourceService.GetIcon("Icons.16x16.Information");
 			memberpage.DockPadding.All       = 8;
 			memberpage.Controls.Add(new InfoView(assemblyTree));
@@ -224,7 +209,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			memberpage.Show(rightTabs);
 			
 			UI.DockContent ildasmviewpage = new UI.DockContent();
-			ildasmviewpage.Text = ress.GetString("ObjectBrowser.Disasm");
+			ildasmviewpage.Text = StringParser.Parse("${res:ObjectBrowser.Disasm}");
 			ildasmviewpage.Icon                  = ResourceService.GetIcon("Icons.16x16.ILDasm");
 			ildasmviewpage.DockPadding.All       = 8;
 			ildasmviewpage.Controls.Add(new ILDasmView(assemblyTree));
@@ -233,7 +218,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			ildasmviewpage.Show(rightTabs);
 			
 			UI.DockContent sourceviewpage = new UI.DockContent();
-			sourceviewpage.Text = ress.GetString("ObjectBrowser.Source");
+			sourceviewpage.Text = StringParser.Parse("${res:ObjectBrowser.Source}");
 			sourceviewpage.Icon                  = ResourceService.GetIcon("Icons.16x16.TextFileIcon");
 			sourceviewpage.DockPadding.All       = 8;
 			sourceviewpage.Controls.Add(new SourceView(assemblyTree));
@@ -242,7 +227,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			sourceviewpage.Show(rightTabs);
 			
 			UI.DockContent xmlviewpage = new UI.DockContent();
-			xmlviewpage.Text = ress.GetString("ObjectBrowser.XML");
+			xmlviewpage.Text = StringParser.Parse("${res:ObjectBrowser.XML}");
 			xmlviewpage.Icon                  = ResourceService.GetIcon("Icons.16x16.XMLFileIcon");
 			xmlviewpage.DockPadding.All       = 8;
 			xmlviewpage.Controls.Add(new XmlView(assemblyTree));
@@ -251,7 +236,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			xmlviewpage.Show(rightTabs);
 			
 			UI.DockContent extproppage = new UI.DockContent();
-			extproppage.Text = ress.GetString("ObjectBrowser.Extended");
+			extproppage.Text = StringParser.Parse("${res:ObjectBrowser.Extended}");
 			extproppage.Icon                  = ResourceService.GetIcon("Icons.16x16.Property");
 			extproppage.DockPadding.All       = 8;
 			extproppage.Controls.Add(new ExtendedPropsPanel(assemblyTree));
@@ -267,7 +252,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			memberpage.Activate();
 			
 			this.control = panel;
-			this.TitleName = ress.GetString("ObjectBrowser.AssemblyScout");
+			this.TitleName = StringParser.Parse("${res:ObjectBrowser.AssemblyScout}");
 		}
 		
 		public void LoadStdAssemblies() {
@@ -284,23 +269,20 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		}
 		
 		public void LoadRefAssemblies() {
-			IProjectService projectService = (IProjectService)ServiceManager.Services.GetService(typeof(IProjectService));
 			try {
-				if (projectService.CurrentSelectedProject == null) return;
-				foreach(ProjectReference pr in projectService.CurrentSelectedProject.ProjectReferences) {
-					if (pr.ReferenceType == ReferenceType.Project || pr.ReferenceType == ReferenceType.Typelib) continue;
-					if (!tree.IsAssemblyLoaded(pr.GetReferencedFileName(null))) {
-						try {
-							tree.LoadFile(pr.GetReferencedFileName(null));
-						} catch (Exception) {
-							//MessageBox.Show("Object Browser error:\nError loading assembly " + pr.GetReferencedFileName(null) + ".", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+				if (ProjectService.CurrentProject == null) return;
+				foreach(ProjectItem item in ProjectService.CurrentProject.Items) {
+					if (item.ItemType == ItemType.Reference) {
+						if (!tree.IsAssemblyLoaded(item.FileName)) {
+							try {
+								tree.LoadFile(item.FileName);
+							} catch (Exception) {
+								//MessageBox.Show("Object Browser error:\nError loading assembly " + pr.GetReferencedFileName(null) + ".", "Error", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+							}
 						}
 					}
 				}
 			} catch (Exception) {}
-		
 		}
-		
-		
 	}
 }

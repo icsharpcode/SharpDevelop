@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Diagnostics;
 using System.Drawing.Printing;
@@ -20,7 +21,7 @@ using System.Text.RegularExpressions;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.Core;
+using SA = ICSharpCode.SharpAssembly.Assembly;
 
 namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 {
@@ -34,9 +35,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		Panel pan = new Panel();
 		
 		AssemblyTree tree;
-		IParserService ParserService;
 		IAmbience ambience;
-		PropertyService PropertyService;
 		
 		ArrayList references = new ArrayList();
 		string cssPath;
@@ -45,10 +44,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		
 		public InfoView(AssemblyTree tree)
 		{
-			
-			
-			PropertyService = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));			
-			
 			ambience = AmbienceService.CurrentAmbience;
 			
 			this.tree = tree;
@@ -80,13 +75,13 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			
 			cap.Location  = new Point(0, 0);
 			cap.Size      = new Size(Width, 32);
-			cap.Text      = tree.ress.GetString("ObjectBrowser.Welcome");
+			cap.Text      = StringParser.Parse("${res:ObjectBrowser.Welcome}");
 			cap.Font      = new Font("Tahoma", 14);
 			cap.BackColor = SystemColors.ControlLight;
 			cap.TextAlign = ContentAlignment.MiddleLeft;
 			cap.Anchor    = AnchorStyles.Left | AnchorStyles.Top | AnchorStyles.Right;
 						
-			string backt  = tree.ress.GetString("ObjectBrowser.Back");
+			string backt  = StringParser.Parse("${res:ObjectBrowser.Back}");
 			back.Size     = new Size(40, 16);
 			back.Location = new Point(Width - back.Width, 44);
 			back.Text     = backt;
@@ -98,18 +93,19 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			typ.Location  = new Point(0, 44);
 			typ.Size      = new Size(Width - back.Width, 16);
 			typ.Font      = new Font(Font, FontStyle.Bold);
-			typ.Text      = tree.ress.GetString("ObjectBrowser.WelcomeText");
+			typ.Text      = StringParser.Parse("${res:ObjectBrowser.WelcomeText}");
 			typ.TextAlign = ContentAlignment.TopLeft;
 			typ.Anchor    = cap.Anchor;
 			
 			ht = new WebBrowser();
 			//ht.Size = new Size(20, 20);
 			//ht.Location = new Point(20, 20);
-			ht.Navigating += new WebBrowserNavigatingEventHandler (HtmlControlBeforeNavigate);
+			//ht.Navigating += new WebBrowserNavigatingEventHandler (HtmlControlBeforeNavigate);
 			CreateImage(ResourceService.GetIcon("Icons.16x16.Class").ToBitmap());
-//	TODO: StyleSheet		
+//	TODO: StyleSheet	
 //			ht.CascadingStyleSheet = cssPath;
-			string html = RenderHead() + tree.ress.GetString("ObjectBrowser.Info.SelectNode") + RenderFoot();
+			string html = RenderHead() + StringParser.Parse("${res:ObjectBrowser.Info.SelectNode}") + RenderFoot();
+			LoggingService.Debug("Html=" + html);
 			ht.DocumentText = html;
 			
 			pan.Location   = new Point(0, 72);
@@ -127,8 +123,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			
 			Dock = DockStyle.Fill;
 			tree.AfterSelect += new TreeViewEventHandler(SelectNode);
-			
-			ParserService = (IParserService)ServiceManager.Services.GetService(typeof(IParserService));
 		}
 		
 		~InfoView() {
@@ -141,41 +135,43 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			e.Cancel = true;
 			
 			try {
-				string url = e.Url;
-				int refnr  = Int32.Parse(url.Substring(5, url.Length - 6));
-				object obj = references[refnr];
+				string url = e.Url.ToString();
+				url = e.Url.OriginalString;
+				Console.WriteLine("url=" + url);
+//				int refnr  = Int32.Parse(url.Substring(5, url.Length - 6));
+//				object obj = references[refnr];
+//				
+//				if (obj is IClass) {
+//					// Go To Type
+//					tree.GoToType((IClass)obj);
+//					// try {
+//					// 	tree.SelectedNode.Expand();
+//					// } catch {}
+//				} else if (obj is AssemblyTree.RefNodeAttribute) {
+//					// Open Assembly Reference
+//					tree.OpenAssemblyByName((AssemblyTree.RefNodeAttribute)obj);
+//				} else if (obj is SaveResLink) {
+//					SaveResLink link = (SaveResLink)obj;
+//					tree.SaveResource(link.Asm, link.Name);
+//				} else if (obj is NamespaceLink) {
+//					NamespaceLink ns = (NamespaceLink)obj;
+//					tree.GoToNamespace(ns.Asm, ns.Name);
+//				}
 				
-				if (obj is IClass) {
-					// Go To Type
-					tree.GoToType((IClass)obj);
-					// try {
-					// 	tree.SelectedNode.Expand();
-					// } catch {}
-				} else if (obj is AssemblyTree.RefNodeAttribute) {
-					// Open Assembly Reference
-					tree.OpenAssemblyByName((AssemblyTree.RefNodeAttribute)obj);
-				} else if (obj is SaveResLink) {
-					SaveResLink link = (SaveResLink)obj;
-					tree.SaveResource(link.Asm, link.Name);
-				} else if (obj is NamespaceLink) {
-					NamespaceLink ns = (NamespaceLink)obj;
-					tree.GoToNamespace(ns.Asm, ns.Name);
-				}
-				
-			} catch { 
-				
+			} catch (Exception ex){
+				LoggingService.Debug("Something failed following this link.\r\n" + ex.ToString());
 				MessageService.ShowError("Something failed following this link.");
 			}
 		}
 		
 		string RenderHead()
 		{
-			return "<div><p>";
+			return String.Concat("<html><head><link rel='stylesheet' type='text/css' href='", cssPath, "'/></head><body><div><p>");
 		}
 		
 		string RenderFoot()
 		{
-			return "</div>";
+			return "</div></body></html>";
 		}
 				
 		void SelectNode(object sender, TreeViewEventArgs e)
@@ -190,7 +186,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			ambience.ConversionFlags = ConversionFlags.AssemblyScoutDefaults;
 						
 			CreateImage(tree.ImageList.Images[node.ImageIndex]);
-			ht.Cursor = Cursors.Default;
+			//ht.Cursor = Cursors.Default;
 			StringBuilder htmlSB = new StringBuilder(RenderHead());
 			
 			try {
@@ -246,12 +242,13 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 						break;
 				}
 			} catch(Exception ex) {
-				htmlSB.Append("<p class='bottomline'>" + tree.ress.GetString("ObjectBrowser.Info.CollectError") + "<p>" + ex.ToString().Replace("\n", "<br>"));
+				htmlSB.Append("<p class='bottomline'>" + StringParser.Parse("${res:ObjectBrowser.Info.CollectError}") + "<p>" + ex.ToString().Replace("\n", "<br>"));
 			}
 			
 			htmlSB.Append(RenderFoot());
 			
 			ht.DocumentText = htmlSB.ToString();
+			LoggingService.Debug("Html=" + htmlSB.ToString());
 		}
 		
 		string GetLinkInfo(IClass type)
@@ -260,7 +257,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			text.Append("<p>");
 			text.Append(RT("LinkedType"));
 			text.Append(" ");
-			text.Append(GetInAsm((SA.SharpAssembly)type.DeclaredIn));
+			SharpAssemblyClass sharpAssemblyType = type as SharpAssemblyClass;
+			text.Append(GetInAsm((SA.SharpAssembly)sharpAssemblyType.DeclaredIn));
 			return text.ToString();			
 		}
 		
@@ -281,11 +279,11 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		
 		string GetFolderInfo(string folder)
 		{
-			if (folder == tree.ress.GetString("ObjectBrowser.Nodes.Resources")) 
+			if (folder == StringParser.Parse("${res:ObjectBrowser.Nodes.Resources}")) 
 				return RT("ResFInfo");
-			else if (folder == tree.ress.GetString("ObjectBrowser.Nodes.References"))
+			else if (folder == StringParser.Parse("${res:ObjectBrowser.Nodes.References}"))
 				return RT("RefFInfo");
-			else if (folder == tree.ress.GetString("ObjectBrowser.Nodes.Modules"))
+			else if (folder == StringParser.Parse("${res:ObjectBrowser.Nodes.Modules}"))
 				return RT("ModFInfo");
 			else
 				return RT("NoInfo");
@@ -428,7 +426,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			ret.Append("<br>");
 			ret.Append(GetCustomAttribs(info));
 			
-			IClass c = ParserService.GetClass(info.DeclaringType.FullyQualifiedName.Replace("+", "."));
+			//IClass c = ParserService.GetClass(info.DeclaringType.FullyQualifiedName.Replace("+", "."));
+			IClass c = info.DeclaringType;
 			if(c == null) goto noDoc;
 			foreach(IEvent e in c.Events) {
 				if(e.Name == info.Name) {
@@ -447,7 +446,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			ret.Append("<br>");
 			ret.Append(GetInType(info.DeclaringType));
 			ret.Append("<p>");
-			ret.Append(GetInAsm((SA.SharpAssembly)info.DeclaringType.DeclaredIn));
+			SharpAssemblyClass declaringType = info.DeclaringType as SharpAssemblyClass;
+			ret.Append(GetInAsm((SA.SharpAssembly)declaringType.DeclaredIn));
 			
 			return ret.ToString();
 		}
@@ -469,7 +469,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			ret.Append("<br>");
 			ret.Append(GetCustomAttribs(info));
 			
-			IClass c = ParserService.GetClass(info.DeclaringType.FullyQualifiedName.Replace("+", "."));
+			//IClass c = ParserService.GetClass(info.DeclaringType.FullyQualifiedName.Replace("+", "."));
+			IClass c = info.DeclaringType;
 			if(c == null) goto noDoc;
 			foreach(IField f in c.Fields) {
 				if(f.Name == info.Name) {
@@ -488,7 +489,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			ret.Append("<br>");
 			ret.Append(GetInType(info.DeclaringType));
 			ret.Append("<p>");
-			ret.Append(GetInAsm((SA.SharpAssembly)info.DeclaringType.DeclaredIn));
+			SharpAssemblyClass declaringType = info.DeclaringType as SharpAssemblyClass;
+			ret.Append(GetInAsm((SA.SharpAssembly)declaringType.DeclaredIn));
 			
 			return ret.ToString();
 		}
@@ -502,7 +504,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			ret.Append("<br>");
 			ret.Append(GetCustomAttribs(info));
 			
-			IClass c = ParserService.GetClass(info.DeclaringType.FullyQualifiedName.Replace("+", "."));
+			//IClass c = ParserService.GetClass(info.DeclaringType.FullyQualifiedName.Replace("+", "."));
+			IClass c = info.DeclaringType;
 			if(c == null) goto noDoc;
 			foreach(IMethod cc in c.Methods) {
 				if (cc.Name == info.Name) {
@@ -521,7 +524,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			ret.Append("<br>");
 			ret.Append(GetInType(info.DeclaringType));
 			ret.Append("<p>");
-			ret.Append(GetInAsm((SA.SharpAssembly)info.DeclaringType.DeclaredIn));
+			SharpAssemblyClass declaringType = info.DeclaringType as SharpAssemblyClass;
+			ret.Append(GetInAsm((SA.SharpAssembly)declaringType.DeclaredIn));
 			
 			return ret.ToString();
 		}
@@ -535,7 +539,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			ret.Append("<br>");
 			ret.Append(GetCustomAttribs(info));
 			
-			IClass c = ParserService.GetClass(info.DeclaringType.FullyQualifiedName.Replace("+", "."));
+			//IClass c = ParserService.GetClass(info.DeclaringType.FullyQualifiedName.Replace("+", "."));
+			IClass c = info.DeclaringType;
 			if(c == null) goto noDoc;
 			foreach(IProperty p in c.Properties) {
 				if(p.Name == info.Name) {
@@ -554,7 +559,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			ret.Append("<br>");
 			ret.Append(GetInType(info.DeclaringType));
 			ret.Append("<p>");
-			ret.Append(GetInAsm((SA.SharpAssembly)info.DeclaringType.DeclaredIn));
+			SharpAssemblyClass declaringType = info.DeclaringType as SharpAssemblyClass;
+			ret.Append(GetInAsm((SA.SharpAssembly)declaringType.DeclaredIn));
 			
 			return ret.ToString();
 		}
@@ -573,7 +579,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			t.Append("<br>");
 			t.Append(GetCustomAttribs(type));
 			
-			IClass c = ParserService.GetClass(type.FullyQualifiedName.Replace("+", "."));
+			//IClass c = ParserService.GetClass(type.FullyQualifiedName.Replace("+", "."));
+			IClass c = type;
 			if (c == null) goto noDoc;
 			if (c.Documentation == null || c.Documentation == "") goto noDoc;
 			t.Append("<p class='bottomline'>");
@@ -586,11 +593,11 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			
 			if (type.Namespace == null || type.Namespace == "") goto inAsm;
 			t.Append("<br>");
-			t.Append(GetInNS((SA.SharpAssembly)type.DeclaredIn, type.Namespace));
+			t.Append(GetInNS((SA.SharpAssembly)((SharpAssemblyClass)type).DeclaredIn, type.Namespace));
 			
 			inAsm:
 			t.Append("<p>");
-			t.Append(GetInAsm((SA.SharpAssembly)type.DeclaredIn));
+			t.Append(GetInAsm((SA.SharpAssembly)((SharpAssemblyClass)type).DeclaredIn));
 			
 			return t.ToString();
 		}
@@ -603,16 +610,17 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		string GetCustomAttribs(IClass type)
 		{
 			if (type.Attributes.Count == 0) return "";
-			return GetCustomAttribs(type.Attributes[0].Attributes);
+			return GetCustomAttribs(type.Attributes);
 		}
 		
 		string GetCustomAttribs(IMember member)
 		{
 			if (member.Attributes.Count == 0) return "";
-			return GetCustomAttribs(member.Attributes[0].Attributes);
+			return GetCustomAttribs(member.Attributes);
+			//return GetCustomAttribs(member.Attributes[0].Attributes);
 		}
 		
-		string GetCustomAttribs(AttributeCollection ca)
+		string GetCustomAttribs(IList<IAttribute> ca)
 		{
 			StringBuilder text = new StringBuilder();
 			try {
@@ -762,12 +770,12 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 
 		string RT(string ResName)
 		{
-			return tree.ress.GetString(String.Concat("ObjectBrowser.Info.", ResName));
+			return StringParser.Parse(String.Concat("${res:", "ObjectBrowser.Info.", ResName, "}"));
 		}
 		
 		string RTD(string ResName)
 		{
-			return tree.ress.GetString(String.Concat("ObjectBrowser.Info.Doc.", ResName));
+			return StringParser.Parse(String.Concat("${res:", "ObjectBrowser.Info.Doc.", ResName, "}"));
 		}
 		
 		string ln(int rnr, string text)
@@ -794,7 +802,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 				return true;
 			} catch { return false; }
 		}
-		
 	}
 	
 	public class GradientLabel : Label

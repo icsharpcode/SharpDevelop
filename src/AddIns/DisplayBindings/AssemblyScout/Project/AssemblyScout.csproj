@@ -34,24 +34,65 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.XML" />
+    <Reference Include="ICSharpCode.SharpAssembly">
+      <HintPath>..\..\..\..\..\bin\ICSharpCode.SharpAssembly.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.Core">
+      <HintPath>..\..\..\..\..\bin\ICSharpCode.Core.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="ICSharpCode.SharpDevelop">
+      <HintPath>..\..\..\..\..\bin\ICSharpCode.SharpDevelop.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <Private>False</Private>
+    </Reference>
+    <Reference Include="WeifenLuo.WinFormsUI.Docking">
+      <HintPath>..\..\..\..\..\bin\WeifenLuo.WinFormsUI.Docking.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="AssemblyScout.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\XmlView.cs" />
+    <Compile Include="Src\AssemblyScoutBinding.cs" />
+    <Compile Include="Src\AssemblyScoutCommand.cs" />
+    <Compile Include="Src\AssemblyScoutCommands.cs" />
+    <Compile Include="Src\AssemblyScoutOptionPanel.cs" />
+    <Compile Include="Src\AssemblyScoutViewContent.cs" />
+    <Compile Include="Src\AssemblyTree.cs" />
+    <Compile Include="Src\ExtendedPropPanel.cs" />
+    <Compile Include="Src\ILDasmView.cs" />
+    <Compile Include="Src\InfoView.cs" />
+    <Compile Include="Src\SearchPanel.cs" />
+    <Compile Include="Src\SourceView.cs" />
+    <Compile Include="Src\TempProject.cs" />
+    <Compile Include="Src\Nodes\TypeNode.cs" />
+    <Compile Include="Src\Nodes\AssemblyTreeNode.cs" />
+    <Compile Include="Src\Nodes\FolderNode.cs" />
+    <Compile Include="Src\Nodes\MemberNode.cs" />
+    <Compile Include="Src\Nodes\MethodNode.cs" />
+    <Compile Include="Src\Nodes\ResourceNode.cs" />
+    <Compile Include="Src\SharpAssemblyLayer\SharpAssemblyClass.cs" />
+    <Compile Include="Src\SharpAssemblyLayer\SharpAssemblyEvent.cs" />
+    <Compile Include="Src\SharpAssemblyLayer\SharpAssemblyField.cs" />
+    <Compile Include="Src\SharpAssemblyLayer\SharpAssemblyMethod.cs" />
+    <Compile Include="Src\SharpAssemblyLayer\SharpAssemblyParameter.cs" />
+    <Compile Include="Src\SharpAssemblyLayer\SharpAssemblyProperty.cs" />
+    <Compile Include="Src\SharpAssemblyLayer\SharpAssemblyReturnType.cs" />
+    <Compile Include="Src\SharpAssemblyLayer\SharpAssemblyAttribute.cs" />
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
-      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
-      <Name>ICSharpCode.SharpDevelop</Name>
-      <Private>False</Private>
-    </ProjectReference>
-    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
-      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
-      <Name>ICSharpCode.Core</Name>
-      <Private>False</Private>
-    </ProjectReference>
     <Folder Include="Configuration" />
+    <Folder Include="Src" />
+    <Folder Include="Src\Nodes" />
+    <Folder Include="Resources" />
+    <Folder Include="Src\SharpAssemblyLayer" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

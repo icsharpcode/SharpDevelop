@@ -16,6 +16,7 @@ using ICSharpCode.Core;
 using Microsoft.Win32;
 
 using ICSharpCode.SharpDevelop.Dom;
+using SA = ICSharpCode.SharpAssembly.Assembly;
 
 namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 {
@@ -42,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			
 			chk.Location = new Point(0, 0);
 			chk.Size = new Size(250, 16);
-			chk.Text = tree.ress.GetString("ObjectBrowser.ILDasm.Enable");
+			chk.Text = StringParser.Parse("${res:ObjectBrowser.ILDasm.Enable}");
 			chk.FlatStyle = FlatStyle.System;
 			
 			chk.CheckedChanged += new EventHandler(Check);
@@ -75,16 +76,25 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			
 			if (node.Attribute is SA.SharpAssembly) {
 				assembly = (SA.SharpAssembly)node.Attribute;
-			} else if (node.Attribute is IClass) {
-				IClass type = (IClass)node.Attribute;
+			} else if (node.Attribute is SharpAssemblyClass) {
+				// TODO Check this works - was node.Attribute is IClass if statement.
+				SharpAssemblyClass type = (SharpAssemblyClass)node.Attribute;
 				item += type.FullyQualifiedName;
 				assembly = (SA.SharpAssembly)type.DeclaredIn;
-			} else if (node.Attribute is IMethod) {
-				IMethod method = (IMethod)node.Attribute;
+			} else if (node.Attribute is SharpAssemblyMethod) {
+				// TODO Check this works - was node.Attribute is IMethod if statement.
+				SharpAssemblyMethod method = (SharpAssemblyMethod)node.Attribute;
 				item += method.DeclaringType.FullyQualifiedName + "::" + method.Name;
-				assembly = (SA.SharpAssembly)method.DeclaringType.DeclaredIn;
+				SharpAssemblyClass type = method.DeclaringType as SharpAssemblyClass;
+				if (type != null) {
+					assembly = (SA.SharpAssembly)type.DeclaredIn;
+				} else {
+					LoggingService.Error("ILDasmView.SelectedNode - Should not be getting here.");
+					tb.Text = StringParser.Parse("${res:ObjectBrowser.ILDasm.NoView}");
+					return;
+				}
 			} else {
-				tb.Text = tree.ress.GetString("ObjectBrowser.ILDasm.NoView");
+				tb.Text = StringParser.Parse("${res:ObjectBrowser.ILDasm.NoView}");
 				return;
 			}
 			tb.Text = GetILDASMOutput(assembly, item).Replace("\n", "\r\n");
@@ -96,11 +106,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		{
 			try {
 				string args = '"' + assembly.Location + '"' + item + " /NOBAR /TEXT";
-                RegistryKey regKey = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\.NETFramework");
-                string cmd = (string)regKey.GetValue("sdkInstallRoot");
-				if (cmd == null) cmd = (string)regKey.GetValue("sdkInstallRootv1.1");
-                ProcessStartInfo psi = new ProcessStartInfo(FileUtility.GetDirectoryNameWithSeparator(cmd) +
-                                                            "bin\\ildasm.exe", args);
+                ProcessStartInfo psi = new ProcessStartInfo(Path.Combine(FileUtility.NetSdkInstallRoot, "bin\\ildasm.exe"), args);
 				
 				psi.RedirectStandardError  = true;
 				psi.RedirectStandardOutput = true;
@@ -130,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 				
 				return output;
 			} catch (Exception) {
-				return tree.ress.GetString("ObjectBrowser.ILDasm.NotInstalled");
+				return StringParser.Parse("${res:ObjectBrowser.ILDasm.NotInstalled}");
 			}
 		}
 		

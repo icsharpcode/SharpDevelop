@@ -11,7 +11,6 @@ using System.Windows.Forms;
 using System.Drawing;
 
 using ICSharpCode.Core;
-using ICSharpCode.Core;
 
 using ICSharpCode.SharpDevelop.Dom;
 using SA = ICSharpCode.SharpAssembly.Assembly;
@@ -50,13 +49,10 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		protected const int DELEGATEINDEX  = CLASSINDEX + 7 * 4;
 		
 		protected NodeType type;
-		protected string   name;
 		protected object   attribute;
 		
 		protected bool  populated = false;
 		
-		public static ResourceService ress = (ResourceService)ServiceManager.Services.GetService(typeof(ResourceService));
-
 		public NodeType Type {
 			get {
 				return type;
@@ -78,20 +74,11 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			}
 		}
 		
-		public string Name {
-			get {
-				return name;
-			}
-			set {
-				name = value;
-			}
-		}
-		
 		public AssemblyTreeNode(string name, object attribute, NodeType type) : base(name)
 		{
 			this.attribute = attribute;
 			this.type = type;
-			this.name = name;
+			Name = name;
 		
 			SetIcon();
 		}
@@ -99,8 +86,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 	
 		protected virtual void SetIcon()
 		{
-			
-			
 			switch (type) {
 				case NodeType.Link:
 					break;
@@ -172,7 +157,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			try {
 				types = SharpAssemblyClass.GetAssemblyTypes(assembly);
 			} catch {
-				MessageBox.Show(ress.GetString("ObjectBrowser.ErrorLoadingTypes"), ress.GetString("Global.WarningText"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);					
+				MessageBox.Show(StringParser.Parse("${res:ObjectBrowser.ErrorLoadingTypes}"), StringParser.Parse("${res:Global.WarningText}"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);					
 			}
 			
 			ArrayList nodes = new ArrayList();
@@ -235,14 +220,14 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			TreeNode node = new FolderNode(System.IO.Path.GetFileName(assembly.Location), assembly, NodeType.Library, 2, 2);
 			parentnode.Nodes.Add(node);
 			
-			FolderNode resourcefolder = new FolderNode(ress.GetString("ObjectBrowser.Nodes.Resources"), assembly, NodeType.Folder, 6, 7);
+			FolderNode resourcefolder = new FolderNode(StringParser.Parse("${res:ObjectBrowser.Nodes.Resources}"), assembly, NodeType.Folder, 6, 7);
 			string[] resources = assembly.GetManifestResourceNames();
 			foreach (string resource in resources) {
 				resourcefolder.Nodes.Add(new ResourceNode(resource, assembly, true));
 			}
 			parentnode.Nodes.Add(resourcefolder);
 			
-			FolderNode referencefolder = new FolderNode(ress.GetString("ObjectBrowser.Nodes.References"), assembly, NodeType.Folder, 9, 10);
+			FolderNode referencefolder = new FolderNode(StringParser.Parse("${res:ObjectBrowser.Nodes.References}"), assembly, NodeType.Folder, 9, 10);
 			SA.SharpAssemblyName[] references = assembly.GetReferencedAssemblies();
 			foreach (SA.SharpAssemblyName name in references) {
 				referencefolder.Nodes.Add(new AssemblyTreeNode(name.Name, new AssemblyTree.RefNodeAttribute(assembly, name), NodeType.Reference));

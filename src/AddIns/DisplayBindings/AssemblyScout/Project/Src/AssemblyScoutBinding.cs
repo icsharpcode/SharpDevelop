@@ -12,9 +12,9 @@ using System.Resources;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-using ICSharpCode.SharpDevelop.Internal.Project;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
-using UI = WeifenLuo.WinFormsUI;
+//using UI = WeifenLuo.WinFormsUI;
 
 namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 {

@@ -20,23 +20,20 @@ using Microsoft.Win32;
 using System.Diagnostics;
 
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Internal.Project.Collections;
-using ICSharpCode.SharpDevelop.Internal.Project;
+using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Internal.ExternalTool;
+using SA = ICSharpCode.SharpAssembly.Assembly;
 
 namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 {
 	public class AssemblyTree : TreeView
 	{
-		static AmbienceService  AmbienceService = (AmbienceService)ServiceManager.Services.GetService(typeof(AmbienceService));
 		public static IAmbience CurrentAmbience = AmbienceService.CurrentAmbience;
-		
-		public ResourceService ress = (ResourceService)ServiceManager.Services.GetService(typeof(ResourceService));
-		
+				
 		ArrayList assemblies = new ArrayList();
 		AssemblyScoutViewContent _parent;
-		PropertyService propSvc;
 		
 		public ShowOptions showInternalTypes, showInternalMembers;
 		public ShowOptions showPrivateTypes, showPrivateMembers;
@@ -45,8 +42,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		
 		MenuItem mnuBack;
 		MenuItem mnuLoadAsm, mnuLoadStd, mnuLoadRef;
-		//MenuItem mnuShowPrivTypes, mnuShowIntTypes;
-		//MenuItem mnuShowPrivMem, mnuShowIntMem, mnuShowSpecial;
 		MenuItem mnuRemAsm, mnuCopyTree, mnuSaveRes, mnuJump, mnuOpenRef, mnuDisAsm;
 		
 		Stack history = new Stack();
@@ -63,33 +58,25 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			Dock = DockStyle.Fill;
 			
 			string resPrefix = "ObjectBrowser.Menu.";
-			
-			
-			propSvc = (PropertyService)ServiceManager.Services.GetService(typeof(PropertyService));
-			
+						
 			this.ImageList = ClassBrowserIconService.ImageList;
 			
 			LabelEdit     = false;
 			HotTracking   = false;
 			AllowDrop     = true;
 			HideSelection = false;
-			//Sorted        = true;
 			
-			mnuBack    = new MenuItem(ress.GetString(resPrefix + "GoBack"), new EventHandler(Back));
-			mnuLoadAsm = new MenuItem(ress.GetString(resPrefix + "LoadAssembly"), new EventHandler(LoadAssembly));
-			mnuLoadStd = new MenuItem(ress.GetString(resPrefix + "LoadStd"), new EventHandler(LoadStdAssemblies));
-			mnuLoadRef = new MenuItem(ress.GetString(resPrefix + "LoadRef"), new EventHandler(LoadRefAssemblies));
-			//mnuShowPrivTypes = new MenuItem(ress.GetString(resPrefix + "ShowPrivTypes"), new EventHandler(ShowPrivTypesEvt));
-			//mnuShowIntTypes  = new MenuItem(ress.GetString(resPrefix + "ShowIntTypes"), new EventHandler(ShowIntTypesEvt));
-			//mnuShowPrivMem   = new MenuItem(ress.GetString(resPrefix + "ShowPrivMem"), new EventHandler(ShowPrivMemEvt));
-			//mnuShowIntMem    = new MenuItem(ress.GetString(resPrefix + "ShowIntMem"), new EventHandler(ShowIntMemEvt));
-			//mnuShowSpecial   = new MenuItem(ress.GetString(resPrefix + "ShowSpecial"), new EventHandler(ShowSpecialEvt));
-			mnuRemAsm   = new MenuItem(ress.GetString(resPrefix + "RemoveAsm"), new EventHandler(RemoveAssembly));
-			mnuCopyTree = new MenuItem(ress.GetString(resPrefix + "CopyTree"), new EventHandler(CopyAssemblyTree));
-			mnuSaveRes  = new MenuItem(ress.GetString(resPrefix + "SaveRes"), new EventHandler(SaveCurrentResource));
-			mnuJump     = new MenuItem(ress.GetString(resPrefix + "JumpType"), new EventHandler(JumpLink));
-			mnuOpenRef  = new MenuItem(ress.GetString(resPrefix + "OpenRef"), new EventHandler(OpenReference));
-			mnuDisAsm   = new MenuItem(ress.GetString(resPrefix + "DisasmToFile"), new EventHandler(DisAssembly));
+			mnuBack    = new MenuItem(StringParser.Parse("${res:" + resPrefix + "GoBack}"), new EventHandler(Back));
+			mnuLoadAsm = new MenuItem(StringParser.Parse("${res:" + resPrefix + "LoadAssembly}"), new EventHandler(LoadAssembly));
+			mnuLoadStd = new MenuItem(StringParser.Parse("${res:" + resPrefix + "LoadStd}"), new EventHandler(LoadStdAssemblies));
+			mnuLoadRef = new MenuItem(StringParser.Parse("${res:" + resPrefix + "LoadRef}"), new EventHandler(LoadRefAssemblies));
+			
+			mnuRemAsm   = new MenuItem(StringParser.Parse("${res:" + resPrefix + "RemoveAsm}"), new EventHandler(RemoveAssembly));
+			mnuCopyTree = new MenuItem(StringParser.Parse("${res:" + resPrefix + "CopyTree}"), new EventHandler(CopyAssemblyTree));
+			mnuSaveRes  = new MenuItem(StringParser.Parse("${res:" + resPrefix + "SaveRes}"), new EventHandler(SaveCurrentResource));
+			mnuJump     = new MenuItem(StringParser.Parse("${res:" + resPrefix + "JumpType}"), new EventHandler(JumpLink));
+			mnuOpenRef  = new MenuItem(StringParser.Parse("${res:" + resPrefix + "OpenRef}"), new EventHandler(OpenReference));
+			mnuDisAsm   = new MenuItem(StringParser.Parse("${res:" + resPrefix + "DisasmToFile}"), new EventHandler(DisAssembly));
 			
 			ContextMenu = new ContextMenu(new MenuItem[] {
 				mnuBack,
@@ -98,13 +85,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 				mnuLoadStd,
 				mnuLoadRef,
 				new MenuItem("-"),
-			//	mnuShowPrivTypes,
-			//	mnuShowIntTypes,
-			//	new MenuItem("-"),
-			//	mnuShowPrivMem,
-			//	mnuShowIntMem,
-			//	mnuShowSpecial,
-			//	new MenuItem("-"),
 				mnuRemAsm,
 				mnuCopyTree,
 				mnuSaveRes,
@@ -113,11 +93,11 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 				mnuDisAsm
 			});
 			
-			showPrivateTypes    = (ShowOptions)propSvc.Get("AddIns.AssemblyScout.privateTypesBox", 1);
-			showInternalTypes   = (ShowOptions)propSvc.Get("AddIns.AssemblyScout.internalTypesBox", 1);
-			showPrivateMembers  = (ShowOptions)propSvc.Get("AddIns.AssemblyScout.privateMembersBox", 1);
-			showInternalMembers = (ShowOptions)propSvc.Get("AddIns.AssemblyScout.internalMembersBox", 1);
-			showSpecial = propSvc.Get("AddIns.AssemblyScout.ShowSpecialMethods", false);
+			showPrivateTypes    = (ShowOptions)PropertyService.Get("AddIns.AssemblyScout.privateTypesBox", 1);
+			showInternalTypes   = (ShowOptions)PropertyService.Get("AddIns.AssemblyScout.internalTypesBox", 1);
+			showPrivateMembers  = (ShowOptions)PropertyService.Get("AddIns.AssemblyScout.privateMembersBox", 1);
+			showInternalMembers = (ShowOptions)PropertyService.Get("AddIns.AssemblyScout.internalMembersBox", 1);
+			showSpecial = PropertyService.Get("AddIns.AssemblyScout.ShowSpecialMethods", false);
 			
 			_parent = parent;
 		}
@@ -201,8 +181,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		public void GoToMember(IMember member) 
 		{
 			string paramtext = "";
-				
-			TypeNode typenode = GetTypeNode((SA.SharpAssembly)member.DeclaringType.DeclaredIn, member.DeclaringType.Namespace, member.DeclaringType.FullyQualifiedName);
+			SharpAssemblyClass declaringType = member.DeclaringType as SharpAssemblyClass;
+			TypeNode typenode = GetTypeNode((SA.SharpAssembly)declaringType.DeclaredIn, declaringType.Namespace, declaringType.FullyQualifiedName);
 			if (typenode == null) return;
 			
 			bool isEnum = false;
@@ -280,7 +260,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		
 		public void GoToType(IClass type)
 		{
-			AssemblyTreeNode node = GetTypeNode((SA.SharpAssembly)type.DeclaredIn, type.Namespace, type.FullyQualifiedName);
+			AssemblyTreeNode node = GetTypeNode((SA.SharpAssembly)((SharpAssemblyClass)type).DeclaredIn, type.Namespace, type.FullyQualifiedName);
 			if (node == null) {
 				Console.WriteLine("No node for type found");
 				return;
@@ -292,7 +272,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		
 		public void GoToType(IReturnType type)
 		{
-			AssemblyTreeNode node = GetTypeNode((SA.SharpAssembly)type.DeclaredIn, type.Namespace, type.FullyQualifiedName);
+			AssemblyTreeNode node = GetTypeNode((SA.SharpAssembly)((SharpAssemblyClass)type).DeclaredIn, type.Namespace, type.FullyQualifiedName);
 			if (node == null) return;
 			
 			node.EnsureVisible();
@@ -335,7 +315,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 				AddAssembly(SA.SharpAssembly.Load(attr.RefName.FullName, System.IO.Path.GetDirectoryName(attr.Assembly.Location)));	
 				OpenAssemblyByName(attr);
 			} catch(Exception ex) {
-				MessageBox.Show(String.Format(ress.GetString("ObjectBrowser.LoadError"), attr.RefName.Name, ex.Message), ress.GetString("Global.ErrorText"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
+				MessageBox.Show(String.Format(StringParser.Parse("${res:ObjectBrowser.LoadError}"), attr.RefName.Name, ex.Message), StringParser.Parse("${res:Global.ErrorText}"), MessageBoxButtons.OK, MessageBoxIcon.Exclamation);
 			}
 		}
 		
@@ -396,13 +376,12 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			using (SelectReferenceDialog selDialog = new SelectReferenceDialog(new TempProject())) {
 				if (selDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					
-					foreach (ProjectReference refInfo in selDialog.ReferenceInformations) {
-						if (refInfo.ReferenceType == ReferenceType.Typelib) continue;
-						if (refInfo.ReferenceType == ReferenceType.Project) continue;
-						
-						if (!IsAssemblyLoaded(refInfo.GetReferencedFileName(null))) {
+					foreach (ProjectItem item in selDialog.ReferenceInformations) {
+						if (item.ItemType != ItemType.Reference) continue;
+							
+						if (!IsAssemblyLoaded(item.FileName)) {
 							try {
-								LoadFile(refInfo.GetReferencedFileName(null));
+								LoadFile(item.FileName);
 							} catch (Exception) {}
 						}
 					}
@@ -423,7 +402,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		void ShowPrivTypesEvt(object sender, EventArgs e)
 		{
 			showPrivateTypes = !showPrivateTypes;
-			propSvc.Set("ObjectBrowser.ShowPrivTypes", showPrivateTypes);
+			PropertyService.Set("ObjectBrowser.ShowPrivTypes", showPrivateTypes);
 			mnuShowPrivTypes.Checked = showPrivateTypes;
 			RePopulateTreeView();
 		}
@@ -431,7 +410,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		void ShowIntTypesEvt(object sender, EventArgs e)
 		{
 			showInternalTypes = !showInternalTypes;
-			propSvc.Set("ObjectBrowser.ShowIntTypes", showInternalTypes);
+			PropertyService.Set("ObjectBrowser.ShowIntTypes", showInternalTypes);
 			mnuShowIntTypes.Checked = showInternalTypes;			
 			RePopulateTreeView();
 		}
@@ -439,7 +418,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		void ShowPrivMemEvt(object sender, EventArgs e)
 		{
 			showPrivateMembers = !showPrivateMembers;
-			propSvc.Set("ObjectBrowser.ShowPrivMembers", showPrivateMembers);
+			PropertyService.Set("ObjectBrowser.ShowPrivMembers", showPrivateMembers);
 			mnuShowPrivMem.Checked = showPrivateMembers;			
 			RePopulateTreeView();
 		}
@@ -447,7 +426,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		void ShowIntMemEvt(object sender, EventArgs e)
 		{
 			showInternalMembers = !showInternalMembers;
-			propSvc.Set("ObjectBrowser.ShowIntMembers", showInternalMembers);
+			PropertyService.Set("ObjectBrowser.ShowIntMembers", showInternalMembers);
 			mnuShowIntMem.Checked = showInternalMembers;			
 			RePopulateTreeView();
 		}
@@ -455,7 +434,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		void ShowSpecialEvt(object sender, EventArgs e)
 		{
 			showSpecial = !showSpecial;
-			propSvc.Set("ObjectBrowser.ShowSpecialMethods", showSpecial);
+			PropertyService.Set("ObjectBrowser.ShowSpecialMethods", showSpecial);
 			mnuShowSpecial.Checked = showSpecial;			
 			RePopulateTreeView();
 		}
@@ -514,11 +493,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			
 			try {
 				string args = '"' + asm.Location + "\" /NOBAR /OUT=\"" + sdialog.FileName + "\" /ALL ";
-                RegistryKey regKey = Registry.LocalMachine.CreateSubKey("SOFTWARE\\Microsoft\\.NETFramework");
-                string cmd = (string)regKey.GetValue("sdkInstallRoot");
-                if (cmd == null) cmd = (string)regKey.GetValue("sdkInstallRootv1.1");
-                ProcessStartInfo psi = new ProcessStartInfo(FileUtility.GetDirectoryNameWithSeparator(cmd) +
-                                                            "bin\\ildasm.exe", args);
+				ProcessStartInfo psi = new ProcessStartInfo(Path.Combine(FileUtility.NetSdkInstallRoot, "bin\\ildasm.exe"), args);
 				
 				psi.RedirectStandardError  = true;
 				psi.RedirectStandardOutput = true;
@@ -530,9 +505,9 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 				string output   = process.StandardOutput.ReadToEnd();
 				process.WaitForExit();
 								
-				MessageBox.Show(String.Format(ress.GetString("ObjectBrowser.ILDasmOutput"), output));
+				MessageBox.Show(String.Format(StringParser.Parse("${res:ObjectBrowser.ILDasmOutput}"), output));
 			} catch(Exception ex) {
-				MessageBox.Show(String.Format(ress.GetString("ObjectBrowser.ILDasmError"),  ex.ToString()));
+				MessageBox.Show(String.Format(StringParser.Parse("${res:ObjectBrowser.ILDasmError}"),  ex.ToString()));
 			}
 		}
 		
@@ -551,7 +526,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			SaveFileDialog sdialog 	= new SaveFileDialog();
 			sdialog.AddExtension 	= true;			
 			sdialog.FileName 		= name;
-			sdialog.Filter          = ress.GetString("ObjectBrowser.Filters.Binary") + "|*.*";
+			sdialog.Filter          = StringParser.Parse("${res:ObjectBrowser.Filters.Binary}") + "|*.*";
 			sdialog.DefaultExt      = ".bin";
 
 			DialogResult dr = sdialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);

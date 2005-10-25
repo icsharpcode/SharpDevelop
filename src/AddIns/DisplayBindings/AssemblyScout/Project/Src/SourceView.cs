@@ -8,11 +8,14 @@
 using System;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.Windows.Forms;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
+using SA = ICSharpCode.SharpAssembly.Assembly;
 
 namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 {
@@ -33,9 +36,6 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		{
 			rtb = new RichTextBox();
 			rtb.ReadOnly = true;
-			
-			
-			
 			
 			ambience = AmbienceService.CurrentAmbience;
 
@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			chk = new CheckBox();
 			chk.Location = new Point(0, 0);
 			chk.Size = new Size(250, 16);
-			chk.Text = tree.ress.GetString("ObjectBrowser.SourceView.Enable");
+			chk.Text = StringParser.Parse("${res:ObjectBrowser.SourceView.Enable}");
 			chk.FlatStyle = FlatStyle.System;
 			chk.CheckedChanged += new EventHandler(Check);
 			Check(null, null);
@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			if (member.Attributes.Count == 0) {
 				return String.Empty;
 			}
-			return GetAttributes(indent, member.Attributes[0].Attributes);
+			return GetAttributes(indent, member.Attributes);
 		}
 		
 		string GetAttributes(int indent, IClass type)
@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			if (type.Attributes.Count == 0) {
 				return String.Empty;
 			}
-			return GetAttributes(indent, type.Attributes[0].Attributes);
+			return GetAttributes(indent, type.Attributes);
 		}
 		
 		string GetAttributes(int indent, SA.SharpAssembly assembly)
@@ -99,7 +99,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 			return GetAttributes(indent, SharpAssemblyAttribute.GetAssemblyAttributes(assembly));
 		}
 		
-		string GetAttributes(int indent, AttributeCollection ca)
+		string GetAttributes(int indent, IList<IAttribute> ca)
 		{
 			StringBuilder text = new StringBuilder();
 			try {
@@ -117,7 +117,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 		{
 			StringBuilder rt = new StringBuilder();
 			{
-				string attr2 = GetAttributes(0, (SA.SharpAssembly)type.DeclaredIn);
+				string attr2 = GetAttributes(0, (SA.SharpAssembly)((SharpAssemblyClass)type).DeclaredIn);
 				rt.Append(ambience.WrapComment("assembly attributes\n") + attr2 + "\n" + ambience.WrapComment("declaration\n"));
 			}
 			string attr = GetAttributes(0, type);
@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 				rt.Append("\t" + ambience.WrapComment("methods\n"));
 				
 				foreach (IMethod methodinfo in type.Methods) {
-					if (methodinfo.IsSpecialName) {
+					if (SharpAssemblyMethod.IsSpecial(methodinfo)) {
 						continue;
 					}
 					ambience.ConversionFlags |= ConversionFlags.ShowReturnType;
@@ -164,8 +164,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 					rt.Append("\t" + ambience.Convert(eventinfo) + "\n");
 				}
 			} else { // Enum
-				foreach (IField fieldinfo in type.Fields) {					
-					if (fieldinfo.IsLiteral) {
+				foreach (IField fieldinfo in type.Fields) {	
+					if (fieldinfo.IsConst) {
 						attr = GetAttributes(1, fieldinfo);
 						rt.Append(attr);
 						rt.Append("\t" + fieldinfo.Name);
@@ -209,7 +209,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.AssemblyScout
 						nsContents.Append("\n}");
 						return nsContents.ToString();
 					default:
-						return tree.ress.GetString("ObjectBrowser.SourceView.NoView");
+						return StringParser.Parse("${res:ObjectBrowser.SourceView.NoView}");
 				}
 			}
 //			return String.Empty;
