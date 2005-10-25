@@ -22,6 +22,7 @@ using System.Text;
 using System.Xml;
 using ICSharpCode.TextEditor.Actions;
 using ICSharpCode.TextEditor.Document;
+using ICSharpCode.TextEditor.Gui.CompletionWindow;
 
 namespace ICSharpCode.TextEditor
 {
@@ -296,7 +297,7 @@ namespace ICSharpCode.TextEditor
 		
 		// static because the mouse can only be in one text area and we don't want to have
 		// tooltips of text areas from inactive tabs floating around.
-		static ToolTip toolTip;
+		static DeclarationViewWindow toolTip;
 		static string oldToolTip;
 		bool toolTipSet;
 		
@@ -308,16 +309,18 @@ namespace ICSharpCode.TextEditor
 		
 		public void SetToolTip(string text)
 		{
-			if (toolTip == null) toolTip = new ToolTip();
+			if (toolTip == null) toolTip = new DeclarationViewWindow(this.FindForm());
 			toolTipSet = (text != null);
 			if (oldToolTip == text)
 				return;
 			if (text == null) {
-				toolTip.Hide(this);
+				toolTip.Hide();
 			} else {
-				Point p = PointToClient(Control.MousePosition);
+				Point p = Control.MousePosition;
 				p.Offset(3, 3);
-				toolTip.Show(text, this, p);
+				toolTip.Location = p;
+				toolTip.Description = text;
+				toolTip.Show();
 			}
 			oldToolTip = text;
 		}
@@ -472,22 +475,19 @@ namespace ICSharpCode.TextEditor
 			}
 			
 			motherTextEditorControl.BeginUpdate();
-			switch (ch) {
-				default: // INSERT char
-					if (!HandleKeyPress(ch)) {
-						switch (Caret.CaretMode) {
-							case CaretMode.InsertMode:
-								InsertChar(ch);
-								break;
-							case CaretMode.OverwriteMode:
-								ReplaceChar(ch);
-								break;
-							default:
-								Debug.Assert(false, "Unknown caret mode " + Caret.CaretMode);
-								break;
-						}
-					}
-					break;
+			// INSERT char
+			if (!HandleKeyPress(ch)) {
+				switch (Caret.CaretMode) {
+					case CaretMode.InsertMode:
+						InsertChar(ch);
+						break;
+					case CaretMode.OverwriteMode:
+						ReplaceChar(ch);
+						break;
+					default:
+						Debug.Assert(false, "Unknown caret mode " + Caret.CaretMode);
+						break;
+				}
 			}
 			
 			int currentLineNr = Caret.Line;
