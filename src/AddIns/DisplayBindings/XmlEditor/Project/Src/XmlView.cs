@@ -15,9 +15,12 @@ using System;
 using System.Drawing;
 using System.Drawing.Printing;
 using System.IO;
+using System.Text;
 using System.Windows.Forms;
 using System.Xml;
 using System.Xml.Schema;
+using System.Xml.XPath;
+using System.Xml.Xsl;
 
 namespace ICSharpCode.XmlEditor
 {
@@ -37,6 +40,7 @@ namespace ICSharpCode.XmlEditor
 		FileSystemWatcher watcher;
 		bool wasChangedExternally;
 		MessageViewCategory category;
+		string stylesheetFileName;
 		
 		public XmlView()
 		{
@@ -99,7 +103,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		public void ValidateXml()
 		{
-			ClearTasks();
+			TaskService.ClearExceptCommentTasks();
 			Category.ClearText();
 			OutputWindowWriteLine(StringParser.Parse("${res:MainWindow.XmlValidationMessages.ValidationStarted}"));
 
@@ -107,12 +111,16 @@ namespace ICSharpCode.XmlEditor
 				StringReader stringReader = new StringReader(xmlEditor.Document.TextContent);
 				XmlTextReader xmlReader = new XmlTextReader(stringReader);
 				xmlReader.XmlResolver = null;
-				XmlValidatingReader reader = new XmlValidatingReader(xmlReader);
-				reader.XmlResolver = null;
+				XmlReaderSettings settings = new XmlReaderSettings();
+				settings.ValidationType = ValidationType.Schema;
+				settings.ValidationFlags = XmlSchemaValidationFlags.None;
+				settings.XmlResolver = null;
 				
 				foreach (XmlSchemaCompletionData schemaData in XmlSchemaManager.SchemaCompletionDataItems) {
-					reader.Schemas.Add(schemaData.Schema);
+					settings.Schemas.Add(schemaData.Schema);
 				}
+				
+				XmlReader reader = XmlReader.Create(xmlReader, settings);
 				
 				XmlDocument doc = new XmlDocument();
 				doc.Load(reader);
@@ -126,9 +134,9 @@ namespace ICSharpCode.XmlEditor
 				DisplayValidationError(xmlEditor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
 			}
 			
-			// Show tasks.
-			if (HasTasks && ShowTaskListAfterBuild) {
-				ShowTasks();
+			// Show errors.
+			if (ShowErrorListAfterBuild) {
+				ShowErrorList();
 			}
 		}
 		
@@ -147,7 +155,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public override void Dispose()
-		{
+		{			
 			base.Dispose();
 			((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Activated -= new EventHandler(GotFocusEvent);
 			
@@ -172,7 +180,44 @@ namespace ICSharpCode.XmlEditor
 				base.FileName  = value;
 				base.TitleName = Path.GetFileName(value);
 				
-				SetDefaultSchema(Path.GetExtension(xmlEditor.FileName));
+				SetDefaultSchema(Path.GetExtension(value));
+			}
+		}
+		
+		/// <summary>
+		/// Gets or sets the stylesheet associated with this xml file.
+		/// </summary>
+		public string StylesheetFileName {
+			get {
+				return stylesheetFileName;
+			}
+			
+			set {
+				stylesheetFileName = value;
+			}
+		}
+		
+		/// <summary>
+		/// Applys the stylesheet to the xml and displays the resulting output.
+		/// </summary>
+		public void RunXslTransform(string xsl)
+		{
+			try {
+				TaskService.ClearExceptCommentTasks();
+				
+				if (IsWellFormed) {
+					if (IsValidXsl(xsl)) {
+						string transformedXml = Transform(Text, xsl);
+						ShowTransformOutput(transformedXml);
+					}
+				}
+				
+				if (ShowErrorListAfterBuild) {
+					ShowErrorList();
+				}
+				
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
 			}
 		}
 		
@@ -569,34 +614,16 @@ namespace ICSharpCode.XmlEditor
 			Category.AppendText(String.Concat(message, Environment.NewLine));
 		}
 		
-		void ClearTasks()
-		{
-			if (HasTasks) {
-				TaskService.ClearExceptCommentTasks();
-			}
-		}
-		
-		bool ShowTaskListAfterBuild {
+		bool ShowErrorListAfterBuild {
 			get {
-				return PropertyService.Get("SharpDevelop.ShowTaskListAfterBuild", true);
+				return PropertyService.Get("SharpDevelop.ShowErrorListAfterBuild", true);
 			}
 		}
 		
-		bool HasTasks {
-			get {
-				bool hasTasks = false;
-				if (TaskService.TaskCount > 0) {
-					hasTasks = true;
-				}
-				return hasTasks;
-			}
-		}
-		
-		void ShowTasks()
+		void ShowErrorList()
 		{
-			PadDescriptor pad = WorkbenchSingleton.Workbench.GetPad(typeof(OpenTaskView));
-			if (pad != null) {
-				WorkbenchSingleton.Workbench.ShowPad(pad);
+			if (TaskService.TaskCount > 0) {
+				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
 			}
 		}
 		
@@ -655,6 +682,162 @@ namespace ICSharpCode.XmlEditor
 		void UserSchemaRemoved(object source, EventArgs e)
 		{
 			SetDefaultSchema(Path.GetExtension(xmlEditor.FileName).ToLower());
+		}
+		
+		/// <summary>
+		/// Displays the transformed output.
+		/// </summary>
+		void ShowTransformOutput(string xml)
+		{
+			// Pretty print the xml.
+			xml = SimpleFormat(IndentedFormat(xml));
+			
+			// Display the output xml.
+			XslOutputView view = XslOutputView.Instance;
+			if (view == null) {
+				view = new XslOutputView();
+				view.LoadContent(xml);
+				WorkbenchSingleton.Workbench.ShowView(view);
+			} else {
+				// Transform output window already opened.
+				view.LoadContent(xml);
+				view.WorkbenchWindow.SelectWindow();
+			}
+			
+		}
+		
+		/// <summary>
+		/// Returns a formatted xml string using a simple formatting algorithm.
+		/// </summary>
+		static string SimpleFormat(string xml)
+		{
+			return xml.Replace("><", ">\r\n<");
+		}
+		
+		/// <summary>
+		/// Runs an XSL transform on the input xml.
+		/// </summary>
+		/// <param name="input">The input xml to transform.</param>
+		/// <param name="transform">The transform xml.</param>
+		/// <returns>The output of the transform.</returns>
+		static string Transform(string input, string transform)
+		{
+			StringReader inputString = new StringReader(input);
+			XPathDocument sourceDocument = new XPathDocument(inputString);
+
+			StringReader transformString = new StringReader(transform);
+			XPathDocument transformDocument = new XPathDocument(transformString);
+
+			XslCompiledTransform xslTransform = new XslCompiledTransform();
+			xslTransform.Load(transformDocument, XsltSettings.Default, new XmlUrlResolver());
+					
+			MemoryStream outputStream = new MemoryStream();
+			XmlTextWriter writer = new XmlTextWriter(outputStream, Encoding.UTF8);
+			
+			xslTransform.Transform(sourceDocument, null, writer);
+
+			int preambleLength = Encoding.UTF8.GetPreamble().Length;
+			byte[] outputBytes = outputStream.ToArray();
+			return UTF8Encoding.UTF8.GetString(outputBytes, preambleLength, outputBytes.Length - preambleLength);
+		}
+		
+		/// <summary>
+		/// Returns a pretty print version of the given xml.
+		/// </summary>
+		/// <param name="xml">Xml string to pretty print.</param>
+		/// <returns>A pretty print version of the specified xml.  If the
+		/// string is not well formed xml the original string is returned.
+		/// </returns>
+		static string IndentedFormat(string xml)
+		{
+			string indentedText = String.Empty;
+
+			try
+			{
+				XmlTextReader reader = new XmlTextReader(new StringReader(xml));
+				reader.WhitespaceHandling = WhitespaceHandling.None;
+
+				StringWriter indentedXmlWriter = new StringWriter();
+				XmlTextWriter writer = new XmlTextWriter(indentedXmlWriter);
+				writer.Indentation = 1;
+				writer.IndentChar = '\t';
+				writer.Formatting = Formatting.Indented;
+				writer.WriteNode(reader, false);
+				writer.Flush();
+
+				indentedText = indentedXmlWriter.ToString();
+			}
+			catch(Exception)
+			{
+				indentedText = xml;
+			}
+
+			return indentedText;
+		}
+		
+		/// <summary>
+		/// Checks that the xml in this view is well-formed.
+		/// </summary>
+		bool IsWellFormed {
+			get {
+				try
+				{
+					XmlDocument Document = new XmlDocument( );
+					Document.LoadXml(Text);
+					return true;
+				}
+				catch(XmlException ex)
+				{
+					string fileName = FileName;
+					if (fileName == null || fileName.Length == 0) {
+						fileName = TitleName;
+					}
+					AddTask(fileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
+				}
+				return false;
+			}
+		}
+		
+		/// <summary>
+		/// Validates the given xsl string,.
+		/// </summary>
+		bool IsValidXsl(string xml)
+		{
+			try
+			{
+				StringReader reader = new StringReader(xml);
+				XPathDocument doc = new XPathDocument(reader);
+
+				XslCompiledTransform xslTransform = new XslCompiledTransform();
+				xslTransform.Load(doc, XsltSettings.Default, new XmlUrlResolver());
+
+				return true;
+			}
+			catch(XsltCompileException ex)
+			{
+				string message = String.Empty;
+				
+				if(ex.InnerException != null)
+				{
+					message = ex.InnerException.Message;
+				}
+				else
+				{
+					message = ex.ToString();
+				}
+
+				AddTask(StylesheetFileName, message, ex.LineNumber - 1, ex.LinePosition - 1, TaskType.Error);
+			}
+			catch(XsltException ex)
+			{
+				AddTask(StylesheetFileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
+			}
+			catch(XmlException ex)
+			{
+				AddTask(StylesheetFileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1, TaskType.Error);
+			}
+
+			return false;
 		}
 	}
 }

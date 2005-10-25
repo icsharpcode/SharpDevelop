@@ -6,7 +6,9 @@
        version     = "1.0.0">
 	
 	<Runtime>
-		<Import assembly = "XmlEditor.dll"/>
+		<Import assembly = "XmlEditor.dll">
+			<ConditionEvaluator name = "StylesheetAssigned" class = "ICSharpCode.XmlEditor.StylesheetAssignedCondition"/>
+		</Import>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	
@@ -25,6 +27,51 @@
 		        class = "ICSharpCode.XmlEditor.Parser"/>
 	</Path>
 	
+	<!-- Xml file filter -->
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "Xml"
+	                insertbefore="AllFiles"
+	                name = "${res:SharpDevelop.FileFilter.XmlFiles}"
+	                extensions = "*.xml"/>
+		<FileFilter id = "Xsl"
+		            insertbefore="AllFiles"
+		            name = "XSL files (*.xsl;*.xslt)"
+		            extensions = "*.xsl;*.xslt"/>
+	</Path>
+
+	<!-- XML menu -->
+	<Path name = "/SharpDevelop/Workbench/MainMenu">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.XmlEditor.XmlView">
+	        <MenuItem id = "Xml" insertafter="View" insertbefore="Tools" label="&amp;XML" type = "Menu">
+				<MenuItem id = "CreateSchema"
+				          label = "${res:ICSharpCode.XmlEditor.CreateSchemaMenuLabel}"
+				          class = "ICSharpCode.XmlEditor.CreateSchemaCommand" />
+				<MenuItem id = "ValidateXml"
+				          label = "${res:ICSharpCode.XmlEditor.ValidateXmlMenuLabel}"
+				          class = "ICSharpCode.XmlEditor.ValidateXmlCommand"
+				          shortcut = "Control|Shift|V" />
+				<MenuItem id = "Separator1" type = "Separator"/>
+	        	<ComplexCondition action="Disable">
+					<Not>
+						<Condition name = "WindowActive" activewindow = "ICSharpCode.XmlEditor.XslOutputView"/>
+					</Not>
+					<MenuItem id="AssignStylesheet"
+						      label="&amp;Assign XSLT..."
+						      class="ICSharpCode.XmlEditor.AssignStylesheetCommand"/>
+			        	<Condition name = "StylesheetAssigned" action="Disable">
+							<MenuItem id="OpenStylesheet"
+								      label="&amp;Open XSLT"
+								      class="ICSharpCode.XmlEditor.OpenStylesheetCommand"/>
+			        	</Condition>
+					<MenuItem id="RunTransform"
+						      label="Run XSL&amp;T"
+						      class="ICSharpCode.XmlEditor.RunXslTransformCommand"
+						      shortcut="Control|Shift|T"/>
+				</ComplexCondition>
+			</MenuItem>
+		</Condition>
+	</Path>
+
 	<!-- Right click menu -->
 	<Path name = "/SharpDevelop/ViewContent/XmlEditor/ContextMenu">
 		<MenuItem id = "Cut"
@@ -59,13 +106,6 @@
 		          label = "${res:XML.MainMenu.FileMenu.Close}"
 		          class = "ICSharpCode.SharpDevelop.Commands.CloseFile"/>
 		<MenuItem id = "Separator2" type = "Separator"/>
-		<MenuItem id = "CreateSchema"
-		          label = "${res:ICSharpCode.XmlEditor.CreateSchemaMenuLabel}"
-		          class = "ICSharpCode.XmlEditor.CreateSchemaCommand" />
-		<MenuItem id = "ValidateXml"
-		          label = "${res:ICSharpCode.XmlEditor.ValidateXmlMenuLabel}"
-		          class = "ICSharpCode.XmlEditor.ValidateXmlCommand"
-		          shortcut = "Control|Shift|V" />
 		<MenuItem id = "Indent"
 		          label = "${res:XML.TextAreaContextMenu.Indent}"
 		          shortcut = "Control|I"
@@ -80,27 +120,14 @@
 		          class ="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ShowBufferOptions"/>
 	</Path>
 	
-	<!-- Tools menu option -->
-	<Path path = "/SharpDevelop/Workbench/MainMenu/Tools">
-		<Condition name = "WindowActive" activewindow="ICSharpCode.XmlEditor.XmlView">
-			<MenuItem id = "ValidateXml"
-			          insertbefore = "Separator4"
-			          label = "${res:ICSharpCode.XmlEditor.ValidateXmlMenuLabel}"
-			          description = "Validates the xml against the known schemas."
-			          class = "ICSharpCode.XmlEditor.ValidateXmlCommand"
-			          shortcut = "Control|Shift|V"
-			/>
-		</Condition>
-	</Path>
-	
 	<!-- Options panel -->
 	<Path path = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
 		<DialogPanel id = "XmlSchemasPanel"
-		             insertafter = "VBSpecificOptions"
+		             insertafter = "Markers"
 		             label = "${res:ICSharpCode.XmlEditor.XmlSchemasPanel.Title}"
 		             class = "ICSharpCode.XmlEditor.XmlSchemasPanel" />
 		<DialogPanel id = "XmlEditorOptionsPanel"
-		             insertafter = "VBSpecificOptions"
+		             insertafter = "Markers"
 		             insertbefore = "XmlSchemasPanel"
 		             label = "${res:ICSharpCode.XmlEditor.XmlEditorOptionsPanel.Title}"
 		             class = "ICSharpCode.XmlEditor.XmlEditorOptionsPanel" />
