@@ -309,7 +309,7 @@ namespace ICSharpCode.TextEditor
 		
 		public void SetToolTip(string text)
 		{
-			if (toolTip == null) toolTip = new DeclarationViewWindow(this.FindForm());
+			if (toolTip == null || toolTip.IsDisposed) toolTip = new DeclarationViewWindow(this.FindForm());
 			toolTipSet = (text != null);
 			if (oldToolTip == text)
 				return;
