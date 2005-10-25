@@ -557,8 +557,9 @@ namespace NRefactoryToBooConverter
 			                                                 new B.ReferenceExpression(currentSwitchTempName),
 			                                                 ConvertExpression(switchStatement.SwitchExpression));
 			l.Add(new B.ExpressionStatement(init));
+			B.IfStatement dummyStatement = new B.IfStatement(GetLexicalInfo(switchStatement));
 			B.IfStatement first = null;
-			B.IfStatement current = null;
+			B.IfStatement current = dummyStatement;
 			B.BreakStatement bs;
 			for (int i = 0; i < switchStatement.SwitchSections.Count; i++) {
 				current = (B.IfStatement)((INode)switchStatement.SwitchSections[i]).AcceptVisitor(this, current);
@@ -573,20 +574,25 @@ namespace NRefactoryToBooConverter
 			if (bs != null)
 				bs.ReplaceBy(null);
 			
-			l.Add(first);
-			
 			string endSwitchName = currentSwitchTempName + "_end";
 			first.Accept(new ReplaceBreakStatementsVisitor(endSwitchName));
 			
 			FindUnneededLabelsVisitor fulv = new FindUnneededLabelsVisitor(currentSwitchTempName + "_", nameComparer);
 			first.Accept(fulv);
 			
-			if (fulv.NeededLabels.Contains(endSwitchName)) {
-				l.Add(MakeLabel(endSwitchName));
-			}
+			bool needsEndLabel = fulv.NeededLabels.Contains(endSwitchName);
 			
 			fulv.RemoveLabels(); // remove "goto case" labels that aren't needed
 			currentSwitchTempName = oldSwitchTempName;
+			
+			if (first == dummyStatement) {
+				l.AddRange(dummyStatement.FalseBlock.Statements);
+			} else {
+				l.Add(first);
+			}
+			if (needsEndLabel)
+				l.Add(MakeLabel(endSwitchName));
+			
 			return l;
 		}
 		

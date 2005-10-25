@@ -160,6 +160,57 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
+		public void SwitchWithDefaultAtStart()
+		{
+			TestStatement("switch (var) { default: A3(); break; case 1: A1(); break;  case 2: case 3: A2(); break; }",
+			              "??1 = var\n" +
+			              "if (??1 == 1):\n" +
+			              "\tA1()\n" +
+			              "else:\n" +
+			              "\tif ((??1 == 2) or (??1 == 3)):\n" +
+			              "\t\tA2()\n" +
+			              "\telse:\n" +
+			              "\t\tA3()");
+		}
+		
+		[Test]
+		public void SwitchWithOneCase()
+		{
+			TestStatement("switch (var) { case 1: A1(); break; }",
+			              "??1 = var\n" +
+			              "if (??1 == 1):\n" +
+			              "\tA1()");
+		}
+		
+		[Test]
+		public void SwitchWithOneCaseWithMultipleLabels()
+		{
+			TestStatement("switch (var) { case 1: case 2: A1(); break; }",
+			              "??1 = var\n" +
+			              "if ((??1 == 1) or (??1 == 2)):\n" +
+			              "\tA1()");
+		}
+		
+		[Test]
+		public void SwitchWithOnlyDefaultSection()
+		{
+			TestStatement("switch (var) { default: A1(); break; }",
+			              "??1 = var\n" +
+			              "A1()");
+		}
+		
+		[Test]
+		public void SwitchWithOnlyDefaultSectionAndEarlyBreak()
+		{
+			TestStatement("switch (var) { default: if (a) break; A1(); break; }",
+			              "??1 = var\n" +
+			              "if a:\n" +
+			              "\tgoto ??1_end\n" +
+			              "A1()\n" +
+			              ":??1_end");
+		}
+		
+		[Test]
 		public void SwitchWithEarlyBreak()
 		{
 			TestStatement("switch (var) { case 1: if (a) break; B(); break; }",

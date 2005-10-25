@@ -151,7 +151,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listView.Items.Clear();
 			visibleEntries.Clear();
 			bestItem = null;
-			if (text.Length < 2)
+			if (text.Length == 0)
+				return;
+			if (text.Length == 1 && !char.IsDigit(text, 0))
 				return;
 			listView.BeginUpdate();
 			int dotPos = text.IndexOf('.');
@@ -250,7 +252,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				TextEditorControl editor = GetEditor();
 				if (editor != null) {
 					num = Math.Min(editor.Document.TotalNumberOfLines, Math.Max(1, num));
-					AddItem("Go to line " + num, ClassBrowserIconService.GotoArrowIndex, num, 0);
+					AddItem(StringParser.Parse("${res:Dialog.Goto.GotoLine} ") + num, ClassBrowserIconService.GotoArrowIndex, num, 0);
 				}
 			}
 		}
