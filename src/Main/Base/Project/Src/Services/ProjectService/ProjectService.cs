@@ -166,6 +166,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Adds a project item to the project, raising the ProjectItemAdded event.
+		/// Make sure you call project.Save() after adding new items!
 		/// </summary>
 		public static void AddProjectItem(IProject project, ProjectItem item)
 		{
@@ -177,6 +178,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		/// <summary>
 		/// Removes a project item from the project, raising the ProjectItemRemoved event.
+		/// Make sure you call project.Save() after removing items!
 		/// </summary>
 		public static void RemoveProjectItem(IProject project, ProjectItem item)
 		{

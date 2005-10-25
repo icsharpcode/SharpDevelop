@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 			return 0;
 		}
-			
+		
 		public static void CopyDirectory(string directoryName, DirectoryNode node)
 		{
 			string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(directoryName));
@@ -108,14 +108,40 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				fdiag.Filter          = String.Join("|", fileFilters);
 				fdiag.Multiselect     = true;
 				fdiag.CheckFileExists = true;
+				fdiag.Title = StringParser.Parse("${res:ProjectComponent.ContextMenu.AddExistingFiles}");
 				
 				if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-					foreach (string fileName in fdiag.FileNames) {
-						 CopyFile(fileName, node, true);
+					string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(fdiag.FileNames[0]));
+					if (!FileUtility.IsEqualFileName(fdiag.FileNames[0], copiedFileName)) {
+						int res = MessageService.ShowCustomDialog(fdiag.Title, "${res:ProjectComponent.ContextMenu.AddExistingFiles.Question}",
+						                                          0, 2,
+						                                          "${res:ProjectComponent.ContextMenu.AddExistingFiles.Copy}",
+						                                          "${res:ProjectComponent.ContextMenu.AddExistingFiles.Link}",
+						                                          "${res:Global.CancelButtonText}");
+						if (res == 1) {
+							foreach (string fileName in fdiag.FileNames) {
+								string relFileName = FileUtility.GetRelativePath(node.Project.Directory, fileName);
+								FileNode fileNode = new FileNode(relFileName, FileNodeStatus.InProject);
+								FileProjectItem fileProjectItem = new FileProjectItem(node.Project, IncludeFileInProject.GetDefaultItemType(node.Project, fileName));
+								fileProjectItem.Include = relFileName;
+								fileProjectItem.Properties.Set("Link", Path.GetFileName(fileName));
+								fileNode.ProjectItem = fileProjectItem;
+								fileNode.AddTo(node);
+								ProjectService.AddProjectItem(node.Project, fileProjectItem);
+							}
+							node.Project.Save();
+							return;
+						}
+						if (res == 2) {
+							return;
+						}
 					}
+					foreach (string fileName in fdiag.FileNames) {
+						CopyFile(fileName, node, true);
+					}
+					node.Project.Save();
 				}
 			}
-			ProjectService.SaveSolution();
 		}
 	}
 	
@@ -153,8 +179,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					}
 				}
 			}
-			
-			ProjectService.SaveSolution();
 		}
 	}
 	
@@ -200,7 +224,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			string newDirectoryName = GenerateValidDirectoryName(node.Directory);
 			DirectoryNode newDirectoryNode = CreateNewDirectory(node, newDirectoryName);
 			ProjectBrowserPad.Instance.StartLabelEdit(newDirectoryNode);
-			ProjectService.SaveSolution();
 		}
 	}
 }

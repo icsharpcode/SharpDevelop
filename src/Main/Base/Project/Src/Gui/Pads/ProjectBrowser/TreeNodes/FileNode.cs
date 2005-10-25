@@ -41,8 +41,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				return projectItem;
 			}
 			set {
-				projectItem = value;
-				Tag = projectItem;
+				if (projectItem != value) {
+					projectItem = value;
+					Tag = projectItem;
+					SetIcon();
+				}
 			}
 		}
 		
@@ -70,7 +73,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					SetIcon("ProjectBrowser.GhostFile");
 					break;
 				case FileNodeStatus.InProject:
-					SetIcon(IconService.GetImageForFile(FileName));
+					if (projectItem is FileProjectItem && (projectItem as FileProjectItem).IsLink)
+						SetIcon("ProjectBrowser.CodeBehind");
+					else
+						SetIcon(IconService.GetImageForFile(FileName));
 					break;
 				case FileNodeStatus.Missing:
 					SetIcon("ProjectBrowser.MissingFile");
@@ -98,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			ToolbarAddinTreePath     = "/SharpDevelop/Pads/ProjectBrowser/ToolBar/File";
 			this.fileNodeStatus = fileNodeStatus;
 			this.FileName = fileName;
-		
+			
 			autoClearNodes = false;
 			SetIcon();
 		}
@@ -138,7 +144,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			return visitor.Visit(this, data);
 		}
-			
+		
 		#region Drag & Drop
 		public override DataObject DragDropDataObject {
 			get {
@@ -163,7 +169,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				return true;
 			}
 		}
-	
+		
 		public override void Delete()
 		{
 			if (FileNodeStatus == FileNodeStatus.Missing) {
@@ -200,7 +206,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			ClipboardWrapper.SetDataObject(new DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(FileName, true)));
 		}
 		
-			
+		
 		public override bool EnablePaste {
 			get {
 				return ((ExtTreeNode)Parent).EnablePaste;

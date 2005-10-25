@@ -121,20 +121,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				}
 			}
 			
-			ItemType type;
-			if (fileNode.Project.CanCompile(fileNode.FileName)) {
-				type = ItemType.Compile;
-			} else {
-				switch (Path.GetExtension(fileNode.FileName).ToLower()) {
-					case ".resx":
-					case ".resources":
-						type = ItemType.EmbeddedResource;
-						break;
-					default:
-						type = ItemType.Content;
-						break;
-				}
-			}
+			ItemType type = GetDefaultItemType(fileNode.Project, fileNode.FileName);
 			
 			FileProjectItem newItem = new FileProjectItem(fileNode.Project, type);
 			newItem.Include = FileUtility.GetRelativePath(fileNode.Project.Directory, fileNode.FileName);
@@ -145,6 +132,22 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			
 			if (fileNode.Parent is ExtTreeNode) {
 				((ExtTreeNode)fileNode.Parent).UpdateVisibility();
+			}
+			fileNode.Project.Save();
+		}
+		
+		public static ItemType GetDefaultItemType(IProject project, string fileName)
+		{
+			if (project.CanCompile(fileName)) {
+				return ItemType.Compile;
+			} else {
+				switch (Path.GetExtension(fileName).ToLowerInvariant()) {
+					case ".resx":
+					case ".resources":
+						return ItemType.EmbeddedResource;
+					default:
+						return ItemType.Content;
+				}
 			}
 		}
 		
@@ -175,6 +178,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					}
 				}
 			}
+			directoryNode.Project.Save();
 		}
 		
 		public override void Run()

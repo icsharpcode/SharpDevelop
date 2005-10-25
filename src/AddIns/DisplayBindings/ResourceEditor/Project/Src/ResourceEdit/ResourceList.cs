@@ -113,7 +113,7 @@ namespace ResourceEditor
 			AfterLabelEdit += new LabelEditEventHandler(afterLabelEdit);
 			
 			
-			ContextMenuStrip = MenuService.CreateContextMenu(editor, "/SharpDevelop/ResourceEdtior/ResourceList/ContextMenu");
+			ContextMenuStrip = MenuService.CreateContextMenu(editor, "/SharpDevelop/ResourceEditor/ResourceList/ContextMenu");
 		}
 		
 		public void LoadFile(string filename)

@@ -84,8 +84,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					subItems.Add(new MenuCommand(interf.Name, eh));
 				}
 			}
-			list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceImplicit}", subItems.ToArray()));
-			subItems = new List<ToolStripItem>();
+			if (subItems.Count > 0) {
+				list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceImplicit}", subItems.ToArray()));
+				subItems = new List<ToolStripItem>();
+			}
 			foreach (IReturnType rt in c.BaseTypes) {
 				IClass interf = rt.GetUnderlyingClass();
 				if (interf != null && interf.ClassType == ClassType.Interface) {
@@ -97,7 +99,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					subItems.Add(new MenuCommand(interf.Name, eh));
 				}
 			}
-			list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}", subItems.ToArray()));
+			if (subItems.Count > 0) {
+				list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}", subItems.ToArray()));
+			}
 		}
 		
 		static IDocument GetDocument(IClass c)

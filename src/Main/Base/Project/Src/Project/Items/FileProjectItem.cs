@@ -91,6 +91,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
+		public bool IsLink {
+			get {
+				return base.Properties.IsSet("Link");
+			}
+		}
+		
 		public FileProjectItem(IProject project, ItemType type) : base(project)
 		{
 			this.type = type;

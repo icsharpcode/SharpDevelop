@@ -8,6 +8,6 @@ booc Boo.Microsoft.Build.Tasks.boo -t:library -o:Boo.Microsoft.Build.Tasks.dll -
 popd
 :copyFiles
 copy "%1\..\..\RequiredLibraries\booc.*" .
-copy "%1\..\..\RequiredLibraries\*.targets" .
+copy "%1\..\..\Boo.Microsoft.Build.Tasks\*.targets" .
 copy "%1\..\..\RequiredLibraries\Boo.Microsoft.Build.Tasks.dll" .
 :BooPostBuildEventEnd

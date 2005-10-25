@@ -17,7 +17,7 @@
 		                languagePattern = "^ResourceFiles$"/>
 	</Path>
 	
-	<Path name="/SharpDevelop/ResourceEdtior/ResourceList/ContextMenu">
+	<Path name="/SharpDevelop/ResourceEditor/ResourceList/ContextMenu">
 		<MenuItem id="AddStringEntry"
 		          label="${res:ResourceEditor.ResourceEdit.ContextMenu.AddStringEntry}"
 		          class="ResourceEditor.AddStringCommand"

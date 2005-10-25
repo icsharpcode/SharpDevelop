@@ -294,9 +294,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (cur.Value.ItemType == ItemType.Folder || cur.Value.ItemType == ItemType.WebReferences) {
 						new DirectoryNode(cur.Value.FileName.Trim('\\', '/'), FileNodeStatus.Missing).AddTo(this);
 					} else if (cur.Value is FileProjectItem) {
-						FileNode missingFile = new FileNode(cur.Value.FileName, FileNodeStatus.Missing);
-						
 						FileProjectItem fileProjectItem = cur.Value as FileProjectItem;
+						FileNode missingFile = new FileNode(cur.Value.FileName, fileProjectItem.IsLink ? FileNodeStatus.InProject : FileNodeStatus.Missing);
+						missingFile.ProjectItem = cur.Value;
+						
 						if (fileProjectItem != null && fileProjectItem.DependentUpon != null && fileProjectItem.DependentUpon.Length > 0) {
 							dependendFileDictionary[missingFile] = fileProjectItem.DependentUpon;
 						}

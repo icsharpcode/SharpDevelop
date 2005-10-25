@@ -35,7 +35,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					foreach (ReferenceProjectItem reference in selDialog.ReferenceInformations) {
 						ProjectService.AddProjectItem(project, reference);
 					}
-					ProjectService.SaveSolution();
+					project.Save();
 				}
 			}
 		}
