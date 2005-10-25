@@ -39,7 +39,7 @@ namespace ICSharpCode.XmlEditor
 		XmlEditorControl xmlEditor = new XmlEditorControl();
 		FileSystemWatcher watcher;
 		bool wasChangedExternally;
-		MessageViewCategory category;
+		static MessageViewCategory category;
 		string stylesheetFileName;
 		
 		public XmlView()
@@ -116,8 +116,14 @@ namespace ICSharpCode.XmlEditor
 				settings.ValidationFlags = XmlSchemaValidationFlags.None;
 				settings.XmlResolver = null;
 				
-				foreach (XmlSchemaCompletionData schemaData in XmlSchemaManager.SchemaCompletionDataItems) {
-					settings.Schemas.Add(schemaData.Schema);
+				XmlSchemaCompletionData schemaData = null;
+				try {
+					for (int i = 0; i < XmlSchemaManager.SchemaCompletionDataItems.Count; ++i) {
+						schemaData = XmlSchemaManager.SchemaCompletionDataItems[i];
+						settings.Schemas.Add(schemaData.Schema);
+					}
+				} catch (XmlSchemaException ex) {
+					DisplayValidationError(schemaData.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
 				}
 				
 				XmlReader reader = XmlReader.Create(xmlReader, settings);
@@ -622,7 +628,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void ShowErrorList()
 		{
-			if (TaskService.TaskCount > 0) {
+			if (TaskService.SomethingWentWrong) {
 				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
 			}
 		}
