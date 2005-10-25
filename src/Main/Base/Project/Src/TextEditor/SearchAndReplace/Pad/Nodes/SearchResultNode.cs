@@ -22,16 +22,15 @@ namespace SearchAndReplace
 	/// </summary>
 	public class SearchResultNode : ExtTreeNode
 	{
-		IDocument    document;
 		SearchResult result;
-		SizeF  spaceSize;
-		static StringFormat sf = (StringFormat)System.Drawing.StringFormat.GenericTypographic.Clone();
 		
 		Point startPosition;
-		Point endPosition;
 		string positionText;
+		string displayText;
 		string specialText;
 		bool showFileName = false;
+		DrawableLine drawableLine;
+		
 		public bool ShowFileName {
 			get {
 				return showFileName;
@@ -39,146 +38,78 @@ namespace SearchAndReplace
 			set {
 				showFileName = value;
 				if (showFileName) {
-					Text = DisplayText + FileNameText;
+					Text = displayText + FileNameText;
 				} else {
-					Text = DisplayText;
+					Text = displayText;
 				}
 			}
 		}
 		
-		string DisplayText {
-			get {
-				if (specialText != null) {
-					return positionText + specialText;
-				} else if (document.TotalNumberOfLines > startPosition.Y) {
-					LineSegment line = document.GetLineSegment(startPosition.Y);
-					return positionText + document.GetText(line).Replace("\t", "   ");
-				} else {
-					return positionText;
-				}
-			}
-		}
 		string FileNameText {
 			get {
 				return " in " + Path.GetFileName(result.FileName) + "(" + Path.GetDirectoryName(result.FileName) +")";
 			}
 		}
+		
 		public SearchResultNode(IDocument document, SearchResult result)
 		{
 			drawDefault = false;
-			this.document = document;
 			this.result = result;
 			startPosition = result.GetStartPosition(document);
-			endPosition   = result.GetEndPosition(document);
+			Point endPosition = result.GetEndPosition(document);
 			positionText =  "(" + (startPosition.Y + 1) + ", " + (startPosition.X + 1) + ") ";
 			
+			LineSegment line = document.GetLineSegment(startPosition.Y);
+			drawableLine = new DrawableLine(document, line, MonospacedFont, BoldMonospacedFont);
+			drawableLine.SetBold(0, drawableLine.LineLength, false);
+			drawableLine.SetBold(startPosition.X, endPosition.X, true);
+			
 			specialText = result.DisplayText;
-			Text = DisplayText;
+			if (specialText != null) {
+				displayText = positionText + specialText;
+			} else {
+				displayText = positionText + document.GetText(line).Replace("\t", "    ");
+			}
+			Text = displayText;
 		}
 		
 		protected override int MeasureItemWidth(DrawTreeNodeEventArgs e)
 		{
 			Graphics g = e.Graphics;
-			int x = MeasureTextWidth(g, DisplayText, BoldMonospacedFont);
+			int x = MeasureTextWidth(g, displayText, BoldMonospacedFont);
 			if (ShowFileName) {
+				float tabWidth = drawableLine.GetSpaceSize(g).Width * 6;
+				x = (int)((int)((x + 2 + tabWidth) / tabWidth) * tabWidth);
 				x += MeasureTextWidth(g, FileNameText, ItalicFont);
 			}
 			return x;
 		}
+		
 		protected override void DrawForeground(DrawTreeNodeEventArgs e)
 		{
 			Graphics g = e.Graphics;
 			float x = e.Bounds.X;
 			DrawText(g, positionText, Brushes.Black, Font, ref x, e.Bounds.Y);
 			
-			spaceSize = g.MeasureString("-", Font,  new PointF(0, 0), StringFormat.GenericTypographic);
-			
 			if (specialText != null) {
 				DrawText(g, specialText, Brushes.Black, Font, ref x, e.Bounds.Y);
 			} else {
-				x += DrawLine(g, document.GetLineSegment(startPosition.Y), e.Bounds.Y, x);
+				drawableLine.DrawLine(g, ref x, e.Bounds.Y);
 			}
 			if (ShowFileName) {
-				x += DrawDocumentWord(g,
-				                      FileNameText,
-				                      new PointF(x, e.Bounds.Y),
-				                      ItalicMonospacedFont,
-				                      Color.Gray
-				                     );
+				float tabWidth = drawableLine.GetSpaceSize(g).Width * 6;
+				x = (int)((int)((x + 2 + tabWidth) / tabWidth) * tabWidth);
+				DrawText(g,
+				         FileNameText,
+				         Brushes.Gray,
+				         ItalicFont,
+				         ref x, e.Bounds.Y);
 			}
 		}
 		
 		public override void ActivateItem()
 		{
 			FileService.JumpToFilePosition(result.FileName, startPosition.Y, startPosition.X);
-		}
-		
-		float DrawDocumentWord(Graphics g, string word, PointF position, Font font, Color foreColor)
-		{
-			if (word == null || word.Length == 0) {
-				return 0f;
-			}
-			SizeF wordSize = g.MeasureString(word, font, 32768, sf);
-			
-			g.DrawString(word,
-			             font,
-			             BrushRegistry.GetBrush(foreColor),
-			             position,
-			             sf);
-			return wordSize.Width;
-		}
-		float DrawLine(Graphics g, LineSegment line, float yPos, float xPos)
-		{
-			int logicalX = 0;
-			if (line.Words != null) {
-				foreach (TextWord word in line.Words) {
-					switch (word.Type) {
-						case TextWordType.Space:
-							xPos += spaceSize.Width;
-							logicalX++;
-							break;
-						case TextWordType.Tab:
-							xPos += spaceSize.Width * 4;
-							logicalX++;
-							break;
-						case TextWordType.Word:
-							int offset1 = Math.Min(word.Length, Math.Max(0, startPosition.X - logicalX));
-							int offset2 = Math.Max(offset1, Math.Min(word.Length, endPosition.X - logicalX));
-							
-							xPos += DrawDocumentWord(g,
-							                         word.Word.Substring(0, offset1),
-							                         new PointF(xPos, yPos),
-							                         MonospacedFont,
-							                         word.Color
-							                        );
-							
-							xPos += DrawDocumentWord(g,
-							                         word.Word.Substring(offset1, offset2 - offset1),
-							                         new PointF(xPos, yPos),
-							                         BoldMonospacedFont,
-							                         word.Color
-							                        );
-							
-							xPos += DrawDocumentWord(g,
-							                         word.Word.Substring(offset2),
-							                         new PointF(xPos, yPos),
-							                         MonospacedFont,
-							                         word.Color
-							                        );
-							
-							logicalX += word.Word.Length;
-							break;
-					}
-				}
-			} else {
-				xPos += DrawDocumentWord(g,
-				                         document.GetText(line),
-				                         new PointF(xPos, yPos),
-				                         MonospacedFont,
-				                         Color.Black
-				                        );
-			}
-			return xPos;
 		}
 	}
 }

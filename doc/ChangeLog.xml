@@ -1,4 +1,45 @@
 ﻿<ChangeLog project="SharpDevelop">
+  <Change author="Daniel Grunwald" date="10/25/2005">Update default layouts.</Change>
+  <Change author="Daniel Grunwald" date="10/25/2005">Fixed SD2-465: Linked files are not imported</Change>
+  <Change author="Daniel Grunwald" date="10/25/2005">Fixed SD2-497: Allow adding existing files as links.
+Boo.Microsoft.Build.Tasks now can embed .resource files.</Change>
+  <Change author="Daniel Grunwald" date="10/24/2005">Fixed SD2-503: WindowActive condition fails</Change>
+  <Change author="Daniel Grunwald" date="10/24/2005">Add InterpreterWrapper.boo.</Change>
+  <Change author="Daniel Grunwald" date="10/24/2005">Fixed BOO-542: CodeCompletion on interfaces doesn't list inherited Object members.
+Fixed crash when cursor was at end of document and the DefinitionViewPad was opened.</Change>
+  <Change author="Daniel Grunwald" date="10/24/2005">Add Boo.InterpreterAddIn.</Change>
+  <Change author="Daniel Grunwald" date="10/24/2005">Fixed possible StackOverflowException in BooBinding. CodeGenerator can now created "Changed"-events and OnEvent-methods.</Change>
+  <Change author="Daniel Grunwald" date="10/23/2005">Allow generating interface implementations using the new CodeGenerator.</Change>
+  <Change author="Daniel Grunwald" date="10/23/2005">Fixed BOO-539: Forms designer does not hook up events to event handlers.
+and BOO-538: Syntax colorization of doc-strings with slashes goes awry</Change>
+  <Change author="Daniel Grunwald" date="10/22/2005">Fixed possible endless loop in Boo ExpressionFinder.</Change>
+  <Change author="Daniel Grunwald" date="10/22/2005">Added FormattingStrategy for Boo and fixed BOO-535: Code completion for generator syntax.</Change>
+  <Change author="Daniel Grunwald" date="10/22/2005">Improved BooBinding:
+Allow for code completion on ArrayReturnType and ConstructedReturnType even if they are encapsulated by an InferredReturnType.
+Fixed code completion on arrays created through array literals or the "array" builtin.
+Recognize variables created by "for" statements if their type is inferred from the element type of the enumerable object.</Change>
+  <Change author="Daniel Grunwald" date="10/22/2005">Fixed BOO-300: #region folding</Change>
+  <Change author="Daniel Grunwald" date="10/22/2005">Fixed BOO-516: Tooltips don't work in last line of the document</Change>
+  <Change author="Daniel Grunwald" date="10/22/2005">The commands "Create getter" and "Create property" now generate code using NRefactory. (part of SD2-436)</Change>
+  <Change author="Daniel Grunwald" date="10/21/2005">Fixed bugs in boo code completion.</Change>
+  <Change author="Daniel Grunwald" date="10/21/2005">Fixed problems with RegexpTk.</Change>
+  <Change author="Daniel Grunwald" date="10/21/2005">Fixed SD2-502: Find/Replace dialog toolbar doesn't respect visual style option</Change>
+  <Change author="Daniel Grunwald" date="10/21/2005">- allow code completion bindings to handle ReturnEditAction by handling '\n'.
+- add dummy token "?" to VB lexer.
+- use IntegerLiteralResolveResult that doesn't do code completion instead of returning no ResolveResult at all when resolving an integer literal.
+- Implemented SD2-501: type inference when typing for both C# and VB.NET.
+You can now type "? name = expr;" or "Dim name as ? = expr" and SharpDevelop will fill in the type for you.</Change>
+  <Change author="Daniel Grunwald" date="10/21/2005">Fixed SD2-496: TODO task entries removed after building solution.</Change>
+  <Change author="Daniel Grunwald" date="10/21/2005">Changes in the highlighting are shown when closing the options box, no need to restart SharpDevelop anymore.</Change>
+  <Change author="Daniel Grunwald" date="10/21/2005">Fixed BOO-524 (Autocompletion on import doesn't list only namespaces) in Boo and VB: now only classes that contain public static members are shown in the "import" completion.</Change>
+  <Change author="Daniel Grunwald" date="10/20/2005">Add quotation marks around the post-build event batch file to fix compiling in paths containing a space.</Change>
+  <Change author="Daniel Grunwald" date="10/19/2005">Update conditions in the AddIn schema.</Change>
+  <Change author="Daniel Grunwald" date="10/19/2005">Improved lazy-loading: fixed loading of BackendBindings when text editor was opened.</Change>
+  <Change author="Daniel Grunwald" date="10/19/2005">BuildAddinDocumentation now updates the AddIn schema.</Change>
+  <Change author="Matt Ward" date="10/18/2005">NAnt addin now included in main SharpDevelop solution.</Change>
+  <Change author="Matt Ward" date="10/18/2005">NAnt addin now using SolutionOpen condition.</Change>
+  <Change author="Matt Ward" date="10/17/2005">The Mono build task attempts to locate the Mono install path by reading the registry before falling back to its original method of assuming that the Mcs/Gmcs compilers have been added to the Path.</Change>
+  <Change author="Daniel Grunwald" date="10/17/2005">Fixed C# ExpressionFinder bug when typing "\." inside a string literal.</Change>
   <Change author="Daniel Grunwald" date="10/17/2005">Add documentation for conditions, rename CombineOpen to SolutionOpen.</Change>
   <Change author="Daniel Grunwald" date="10/17/2005">Add list with documentation about the doozers.</Change>
   <Change author="Daniel Grunwald" date="10/17/2005">Fixed SD2-477: Solution import error.</Change>

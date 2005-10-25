@@ -12,7 +12,7 @@ using System.Text;
 
 namespace ICSharpCode.TextEditor.Document
 {
-	public class LineSegment : AbstractSegment
+	public sealed class LineSegment : AbstractSegment
 	{
 		int delimiterLength;
 		

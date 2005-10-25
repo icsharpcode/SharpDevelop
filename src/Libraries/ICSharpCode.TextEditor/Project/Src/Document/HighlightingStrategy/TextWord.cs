@@ -30,7 +30,7 @@ namespace ICSharpCode.TextEditor.Document
 		int          offset;
 		int          length;
 		
-		public class SpaceTextWord : TextWord
+		public sealed class SpaceTextWord : TextWord
 		{
 			public SpaceTextWord()
 			{
@@ -61,7 +61,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		public class TabTextWord : TextWord
+		public sealed class TabTextWord : TextWord
 		{
 			public TabTextWord()
 			{
