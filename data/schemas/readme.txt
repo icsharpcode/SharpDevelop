@@ -22,13 +22,6 @@ Created by Matt Ward
 GNU General Public License.
 
 
-NAnt-0.84.xsd
--------------
-
-http://nant.sourceforge.net/
-GNU General Public License.
-
-
 NAnt.xsd
 --------
 
