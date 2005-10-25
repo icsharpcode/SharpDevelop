@@ -1,0 +1,115 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{C70406A5-25B5-4A2B-898A-B1338652F7F0}</ProjectGuid>
+    <RootNamespace>NewProject</RootNamespace>
+    <AssemblyName>ICSharpCode.SharpAssembly</AssemblyName>
+    <OutputType>Library</OutputType>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <DebugType>None</DebugType>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <SignAssembly>True</SignAssembly>
+    <AssemblyOriginatorKeyFile>ICSharpCode.SharpAssembly.key</AssemblyOriginatorKeyFile>
+    <DelaySign>False</DelaySign>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>false</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\..\bin\</OutputPath>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugSymbols>False</DebugSymbols>
+    <Optimize>True</Optimize>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <OutputPath>..\..\..\..\..\bin\</OutputPath>
+    <TreatWarningsAsErrors>True</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Metadata\MethodBody.cs" />
+    <Compile Include="Src\Metadata\AssemblyMetaData.cs" />
+    <Compile Include="Src\Metadata\MetadataTable.cs" />
+    <Compile Include="Src\PE\StreamHeader.cs" />
+    <Compile Include="Src\PE\CLIHeader.cs" />
+    <Compile Include="Src\PE\DataDirectories.cs" />
+    <Compile Include="Src\PE\IAT.cs" />
+    <Compile Include="Src\PE\ImportTable.cs" />
+    <Compile Include="Src\PE\NameTable.cs" />
+    <Compile Include="Src\PE\NTSpecificFields.cs" />
+    <Compile Include="Src\PE\PEFileHeader.cs" />
+    <Compile Include="Src\PE\SectionTable.cs" />
+    <Compile Include="Src\PE\StandardFields.cs" />
+    <Compile Include="Src\Metadata\Rows\TypeSpec.cs" />
+    <Compile Include="Src\Metadata\Rows\AbstractRow.cs" />
+    <Compile Include="Src\Metadata\Rows\Assembly.cs" />
+    <Compile Include="Src\Metadata\Rows\AssemblyOS.cs" />
+    <Compile Include="Src\Metadata\Rows\AssemblyProcessor.cs" />
+    <Compile Include="Src\Metadata\Rows\AssemblyRef.cs" />
+    <Compile Include="Src\Metadata\Rows\AssemblyRefOS.cs" />
+    <Compile Include="Src\Metadata\Rows\AssemblyRefProcessor.cs" />
+    <Compile Include="Src\Metadata\Rows\ClassLayout.cs" />
+    <Compile Include="Src\Metadata\Rows\CodedIndex.cs" />
+    <Compile Include="Src\Metadata\Rows\Constant.cs" />
+    <Compile Include="Src\Metadata\Rows\CustomAttribute.cs" />
+    <Compile Include="Src\Metadata\Rows\DeclSecurity.cs" />
+    <Compile Include="Src\Metadata\Rows\ENCLog.cs" />
+    <Compile Include="Src\Metadata\Rows\ENCMap.cs" />
+    <Compile Include="Src\Metadata\Rows\Event.cs" />
+    <Compile Include="Src\Metadata\Rows\EventMap.cs" />
+    <Compile Include="Src\Metadata\Rows\EventPtr.cs" />
+    <Compile Include="Src\Metadata\Rows\ExportedType.cs" />
+    <Compile Include="Src\Metadata\Rows\Field.cs" />
+    <Compile Include="Src\Metadata\Rows\FieldLayout.cs" />
+    <Compile Include="Src\Metadata\Rows\FieldMarshal.cs" />
+    <Compile Include="Src\Metadata\Rows\FieldPtr.cs" />
+    <Compile Include="Src\Metadata\Rows\FieldRVA.cs" />
+    <Compile Include="Src\Metadata\Rows\File.cs" />
+    <Compile Include="Src\Metadata\Rows\ImplMap.cs" />
+    <Compile Include="Src\Metadata\Rows\InterfaceImpl.cs" />
+    <Compile Include="Src\Metadata\Rows\ManifestResource.cs" />
+    <Compile Include="Src\Metadata\Rows\MemberRef.cs" />
+    <Compile Include="Src\Metadata\Rows\Method.cs" />
+    <Compile Include="Src\Metadata\Rows\MethodImpl.cs" />
+    <Compile Include="Src\Metadata\Rows\MethodPtr.cs" />
+    <Compile Include="Src\Metadata\Rows\MethodSemantics.cs" />
+    <Compile Include="Src\Metadata\Rows\Module.cs" />
+    <Compile Include="Src\Metadata\Rows\ModuleRef.cs" />
+    <Compile Include="Src\Metadata\Rows\NestedClass.cs" />
+    <Compile Include="Src\Metadata\Rows\Param.cs" />
+    <Compile Include="Src\Metadata\Rows\ParamPtr.cs" />
+    <Compile Include="Src\Metadata\Rows\Property.cs" />
+    <Compile Include="Src\Metadata\Rows\PropertyMap.cs" />
+    <Compile Include="Src\Metadata\Rows\PropertyPtr.cs" />
+    <Compile Include="Src\Metadata\Rows\StandAloneSig.cs" />
+    <Compile Include="Src\Metadata\Rows\TypeDef.cs" />
+    <Compile Include="Src\Metadata\Rows\TypeRef.cs" />
+    <Compile Include="Src\AssemblyMetadataTables.cs" />
+    <Compile Include="Src\AssemblyNameNotFoundException.cs" />
+    <Compile Include="Src\AssemblyReader.cs" />
+    <Compile Include="Src\FusionNative.cs" />
+    <Compile Include="Src\SharpAssembly.cs" />
+    <Compile Include="Src\SharpAssemblyName.cs" />
+    <Compile Include="Src\Metadata\Signatures\CallingConventions.cs" />
+    <Compile Include="Src\Metadata\Signatures\DataTypes.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>
