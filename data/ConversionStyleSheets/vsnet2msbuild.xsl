@@ -59,20 +59,20 @@
 			</xsl:element>
 			
 			<xsl:element name = "ItemGroup">
-				<xsl:for-each select="Files/Include/File[@BuildAction='Compile']">
-					<xsl:element name = "Compile" >
-						<xsl:attribute name = "Include"><xsl:value-of select = "@RelPath" /></xsl:attribute>
-					</xsl:element>
-				</xsl:for-each>
-				<xsl:for-each select="Files/Include/File[@BuildAction='EmbeddedResource']">
-					<xsl:element name = "EmbeddedResource" >
-						<xsl:attribute name = "Include"><xsl:value-of select = "@RelPath" /></xsl:attribute>
-					</xsl:element>
-				</xsl:for-each>
-				
-				<xsl:for-each select="/Project/Contents/File[@BuildAction!='Compile' and @BuildAction!='EmbeddedResource']">
-					<xsl:element name = "None" >
-						<xsl:attribute name = "Include"><xsl:value-of select = "@RelPath" /></xsl:attribute>
+				<xsl:for-each select="Files/Include/File">
+					<xsl:element name = "{@BuildAction}">
+						<xsl:choose>
+							<xsl:when test="@Link">
+								<xsl:attribute name = "Include"><xsl:value-of select = "@Link" /></xsl:attribute>
+								<xsl:element name = "Link"><xsl:value-of select = "@RelPath" /></xsl:element>
+							</xsl:when>
+							<xsl:otherwise>
+								<xsl:attribute name = "Include"><xsl:value-of select = "@RelPath" /></xsl:attribute>
+							</xsl:otherwise>
+						</xsl:choose>
+						<xsl:if test="@DependentUpon">
+							<xsl:element name = "DependentUpon"><xsl:value-of select = "@DependentUpon" /></xsl:element>
+						</xsl:if>
 					</xsl:element>
 				</xsl:for-each>
 			</xsl:element>
