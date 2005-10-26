@@ -33,6 +33,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				case "WebReferences":
 				case "Folder":
 				case "BootstrapperFile":
+				case "ApplicationDefinition":
+				case "Page":
 					return new FileProjectItem(project, (ItemType)Enum.Parse(typeof(ItemType), itemType));
 				
 				case "WebReferenceUrl":

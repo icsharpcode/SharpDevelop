@@ -90,6 +90,16 @@ namespace ICSharpCode.SharpDevelop.Project
 				base.Properties["DependentUpon"] = value;
 			}
 		}
+
+		[Browsable(false)]
+		public string SubType {
+			get {
+				return base.Properties["SubType"];
+			}
+			set {
+				base.Properties["SubType"] = value;
+			}
+		}
 		
 		[Browsable(false)]
 		public bool IsLink {

@@ -30,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		
 		List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate>(); // contains FileTemplate classes
 		List<ProjectItem> projectItems = new List<ProjectItem>();
+		List<string> projectImports = new List<string>();
 		
 		XmlElement projectOptions = null;
 		
@@ -55,6 +56,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public XmlElement ProjectOptions {
 			get {
 				return projectOptions;
+			}
+		}
+
+		public List<string> ProjectImports {
+			get {
+				return projectImports;
 			}
 		}
 		#endregion
@@ -125,6 +132,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					project.Items.Add(projectItem);
 				}
 				
+				// Add Imports
+				foreach(string projectImport in projectImports) {
+					((AbstractProject)project).Imports.Add(projectImport);
+				}
+
 				// Add Files
 				foreach (FileDescriptionTemplate file in files) {
 					string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} }));
@@ -222,6 +234,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			if (element["ProjectItems"] != null) {
 				ReadProjectItems(projectDescriptor, element["ProjectItems"]);
 			}
+			if (element["Imports"] != null) {
+				ReadProjectImports(projectDescriptor, element["Imports"]);
+			}
 			return projectDescriptor;
 		}
 		
@@ -236,6 +251,14 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					projectDescriptor.projectItems.Add(ProjectItem.ReadItem(reader, null, el.Name));
 					reader.Close();
 				}
+			}
+		}
+
+		static void ReadProjectImports(ProjectDescriptor projectDescriptor, XmlElement xml)
+		{
+			XmlNodeList nodes = xml.SelectNodes("Import/@Project");
+			foreach(XmlNode node in nodes) {
+				projectDescriptor.projectImports.Add(node.InnerText);
 			}
 		}
 	}

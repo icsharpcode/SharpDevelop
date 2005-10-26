@@ -35,6 +35,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		Folder,
 		WebReferences,
 		
+		ApplicationDefinition,
+		Page,
+		
 		BootstrapperFile
 	}
 	
