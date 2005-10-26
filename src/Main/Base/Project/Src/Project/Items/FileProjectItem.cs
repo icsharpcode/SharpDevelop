@@ -31,10 +31,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		public enum FileBuildAction {
-			None             = ItemType.None,
-			Compile          = ItemType.Compile,
-			EmbeddedResource = ItemType.EmbeddedResource,
-			Content          = ItemType.Content,
+			None                  = ItemType.None,
+			Compile               = ItemType.Compile,
+			EmbeddedResource      = ItemType.EmbeddedResource,
+			Resource              = ItemType.Resource,
+			Content               = ItemType.Content,
+			ApplicationDefinition = ItemType.ApplicationDefinition,
+			Page                  = ItemType.Page
 		}
 		
 		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.BuildAction}",

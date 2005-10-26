@@ -1,0 +1,102 @@
+<?xml version="1.0"?>
+<Template originator   = "Mathias Simmack"
+          created      = "26/10/2005"
+          lastModified = "26/10/2005">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>Avalon Page Application Beta</Name>
+		<Category>C#</Category>
+		<Icon>C#.Project.Form</Icon>
+		<LanguageName>C#</LanguageName>
+		<Description>Creates a simple Avalon application with one navigation page</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "AvalonApplication.txt"/>
+	</Actions>
+	
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options OutputType = "WinExe" />
+
+			<ProjectItems>
+				<Reference Include="System" />
+				<Reference Include="System.Data" />
+				<Reference Include="System.Xml" />
+				<Reference Include="WindowsBase" />
+				<Reference Include="PresentationCore" />
+				<Reference Include="PresentationFramework" />
+				<Reference Include="UIAutomationProvider" />
+				<Reference Include="UIAutomationTypes" />
+			</ProjectItems>
+
+			<Imports>
+				<Import Project="$(MSBuildBinPath)\Microsoft.WinFX.targets" />
+			</Imports>
+			
+			<Files>
+				<File name="MyApp.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
+                       xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
+                       x:Class="${StandardNamespace}.MyApp"
+                       StartupUri="Page1.xaml">
+    <Application.Resources>
+
+    </Application.Resources>
+</Application>]]></File>
+				<File name="MyApp.xaml.cs"><![CDATA[using System;
+using System.Windows;
+using System.Windows.Navigation;
+using System.Data;
+using System.Xml;
+using System.Configuration;
+
+
+namespace ${StandardNamespace}
+{
+    /// <summary>
+    /// Interaction logic for MyApp.xaml
+    /// </summary>
+
+    public partial class MyApp : Application
+    {
+
+    }
+}]]></File>
+				<File name="Page1.xaml" buildAction="Page"><![CDATA[<StackPanel xmlns="http://schemas.microsoft.com/winfx/avalon/2005">
+    
+</StackPanel>]]></File>
+				<File name="Page1.xaml.cs"><![CDATA[using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Navigation;
+using System.ComponentModel;
+
+namespace ${StandardNamespace}
+{
+	public partial class Page1 : Page
+	{
+	}
+}]]></File>
+				<File name="AvalonApplication.txt" buildAction="None" language="Default"><![CDATA[First of all let me say that this is just a simple Avalon application with one empty page.
+I hope I can fix and improve this template in the near future.
+If you want to build this Avalon application you need the following things:
+
+	1. The latest version of Microsoft's WinFX Runtime Components
+	2. The latest version of the WinFX SDK for the latest version of the Runtime Components
+
+The SDK is an optional choice, but it will definitely not work without the Runtime Components.
+I personally use the September Community Technology Preview (CTP) and it works fine.
+So, don't say I did not warn you. :-)
+
+Mathias
+(2005-10-26)]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

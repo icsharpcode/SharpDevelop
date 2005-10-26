@@ -30,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		// FileProjectItem
 		Compile,
 		EmbeddedResource,
+		Resource,
 		None,
 		Content,
 		Folder,

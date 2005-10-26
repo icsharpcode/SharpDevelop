@@ -29,6 +29,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				case "None":
 				case "Compile":
 				case "EmbeddedResource":
+				case "Resource":
 				case "Content":
 				case "WebReferences":
 				case "Folder":
