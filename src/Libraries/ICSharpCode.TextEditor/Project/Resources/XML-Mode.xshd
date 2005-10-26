@@ -1,6 +1,6 @@
 <?xml version="1.0" ?>
 <!-- syntaxdefinition for XML 2000 by Mike Krueger -->
-<SyntaxDefinition name="XML" extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.proj;.csproj;.vbproj;.ilproj;.booproj;.build;.xfrm;.targets">
+<SyntaxDefinition name="XML" extensions=".xml;.xsl;.xslt;.xsd;.manifest;.config;.addin;.xshd;.wxs;.proj;.csproj;.vbproj;.ilproj;.booproj;.build;.xfrm;.targets;.xaml;.xpt;.xft">
 	
 	<Properties>
 		<Property name="BlockCommentBegin" value="&lt;!--"/>

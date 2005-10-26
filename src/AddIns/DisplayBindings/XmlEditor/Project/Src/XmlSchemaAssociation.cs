@@ -107,6 +107,9 @@ namespace ICSharpCode.XmlEditor
 				case ".manifest":
 					association = new XmlSchemaAssociation(extension, @"urn:schemas-microsoft-com:asm.v1");
 					break;					
+				case ".xaml":
+					association = new XmlSchemaAssociation(extension, @"http://schemas.microsoft.com/winfx/avalon/2005");
+					break;
 				default:
 					association = new XmlSchemaAssociation(extension);
 					break;
