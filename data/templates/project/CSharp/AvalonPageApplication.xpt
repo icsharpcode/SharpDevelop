@@ -68,9 +68,13 @@ namespace ${StandardNamespace}
 
     }
 }]]></File>
-				<File name="Page1.xaml" buildAction="Page"><![CDATA[<StackPanel xmlns="http://schemas.microsoft.com/winfx/avalon/2005">
-    
-</StackPanel>]]></File>
+				<File name="Page1.xaml" buildAction="Page"><![CDATA[<Page xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
+      xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
+      x:Class="${StandardNamespace}.Page1">
+  <StackPanel>
+
+  </StackPanel>
+</Page>]]></File>
 				<File name="Page1.xaml.cs"><![CDATA[using System;
 using System.Windows;
 using System.Windows.Controls;
