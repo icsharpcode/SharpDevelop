@@ -718,6 +718,7 @@
     <Compile Include="Src\Gui\TreeGrid\DynamicTreeRow.cs" />
     <Compile Include="Src\Gui\TreeGrid\ScrollButton.cs" />
     <Compile Include="Src\Gui\TreeGrid\VerticalScrollContainer.cs" />
+    <Compile Include="Src\Services\Debugger\DebuggerGridControl.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

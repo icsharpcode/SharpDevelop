@@ -72,14 +72,14 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		protected override void OnPaint(PaintEventArgs pe)
 		{
-			TipPainterTools.DrawHelpTipFromCombinedDescription(this, pe.Graphics, Font, null, description);
+			if (description != null && description.Length > 0) {
+				TipPainterTools.DrawHelpTipFromCombinedDescription(this, pe.Graphics, Font, null, description);
+			}
 		}
 		
 		protected override void OnPaintBackground(PaintEventArgs pe)
 		{
-			if (description != null && description.Length > 0) {
-				pe.Graphics.FillRectangle(SystemBrushes.Info, pe.ClipRectangle);
-			}
+			pe.Graphics.FillRectangle(SystemBrushes.Info, pe.ClipRectangle);
 		}
 	}
 }

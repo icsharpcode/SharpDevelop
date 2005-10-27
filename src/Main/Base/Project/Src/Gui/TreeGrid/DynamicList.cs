@@ -203,6 +203,25 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			}
 		}
 		
+		public int GetRequiredWidth(Graphics graphics)
+		{
+			int width = 0;
+			for (int i = 0; i < columns.Count; i++) {
+				if (columns[i].AutoSize) {
+					int minimumWidth = DynamicListColumn.DefaultWidth;
+					foreach (DynamicListRow row in Rows) {
+						DynamicListItem item = row[i];
+						item.MeasureMinimumWidth(graphics, ref minimumWidth);
+					}
+					width += minimumWidth;
+				} else {
+					width += columns[i].Width;
+				}
+				width += 1;
+			}
+			return width;
+		}
+		
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			//Debug.WriteLine("OnPaint");

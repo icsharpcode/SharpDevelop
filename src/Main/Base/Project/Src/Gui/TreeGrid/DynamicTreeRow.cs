@@ -38,7 +38,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			e.Graphics.DrawRectangle(SystemPens.ControlDarkDark, r);
 		}
 		
-		class ChildForm : Form
+		public class ChildForm : Form
 		{
 			bool isActive = true;
 			
@@ -71,15 +71,12 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			}
 		}
 		
-		ChildForm frm;
 		static bool isOpeningChild;
 		
 		protected virtual void OnPlusClick(object sender, DynamicListEventArgs e)
 		{
-			if (frm != null) {
-				frm.Close();
-			}
-			frm = new ChildForm();
+			OnExpanding(e);
+			ChildForm frm = new ChildForm();
 			frm.Closed += delegate {
 				frm = null;
 				OnCollapsed(EventArgs.Empty);
@@ -92,7 +89,6 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			frm.ShowInTaskbar = false;
 			frm.Text = childWindowCaption;
 			frm.Owner = e.List.FindForm();
-			OnExpanding(e);
 			
 			VerticalScrollContainer scrollContainer = new VerticalScrollContainer();
 			scrollContainer.Dock = DockStyle.Fill;
@@ -113,12 +109,14 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			
 			int screenHeight = Screen.FromPoint(p).WorkingArea.Bottom - p.Y;
 			screenHeight -= frm.Size.Height - frm.ClientSize.Height;
-			int formHeight = Math.Min(childList.TotalRowHeight + 4, screenHeight);
-			if (formHeight < 100) {
-				formHeight += 100;
-				frm.Top -= 100;
+			int requiredHeight = childList.TotalRowHeight + 4;
+			int formHeight = Math.Min(requiredHeight, screenHeight);
+			if (formHeight < requiredHeight) {
+				int missingHeight = Math.Min(100, requiredHeight - formHeight);
+				formHeight += missingHeight;
+				frm.Top -= missingHeight;
 			}
-			frm.ClientSize = new Size(e.List.Width, formHeight);
+			frm.ClientSize = new Size(e.List.Width + 4, formHeight);
 			isOpeningChild = true;
 			frm.Show();
 			isOpeningChild = false;
@@ -159,7 +157,6 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 				if (value == null)
 					throw new ArgumentNullException();
 				childWindowCaption = value;
-				if (frm != null) frm.Text = value;
 			}
 		}
 		

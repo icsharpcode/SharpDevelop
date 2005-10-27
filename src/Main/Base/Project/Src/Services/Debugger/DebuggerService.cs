@@ -278,6 +278,7 @@ namespace ICSharpCode.Core
 		
 		#region Tool tips
 		static string oldExpression, oldToolTip;
+		static DebuggerGridControl oldToolTipControl;
 		static int oldLine;
 		
 		public class SetIPArgs: EventArgs
@@ -297,6 +298,7 @@ namespace ICSharpCode.Core
 			try {
 				TextArea textArea = (TextArea)sender;
 				if (textArea.ToolTipVisible) return;
+				if (oldToolTipControl != null && !oldToolTipControl.AllowClose) return;
 				if (!CodeCompletionOptions.TooltipsEnabled) return;
 				
 				if (CodeCompletionOptions.TooltipsOnlyWhenDebugging) {
@@ -311,7 +313,7 @@ namespace ICSharpCode.Core
 					                                                      mousepos.Y - viewRect.Top);
 					if (logicPos.Y >= 0 && logicPos.Y < textArea.Document.TotalNumberOfLines) {
 						// This is for testing olny - it must be reworked properly
-						if (Control.ModifierKeys == Keys.Control && currentDebugger != null && currentDebugger.IsDebugging) {
+						if (Control.ModifierKeys == (Keys.Control | Keys.Shift) && currentDebugger != null && currentDebugger.IsDebugging) {
 							SetIPArgs a = new SetIPArgs();
 							a.filename = textArea.MotherTextEditorControl.FileName;
 							a.line = logicPos.Y;
@@ -343,14 +345,29 @@ namespace ICSharpCode.Core
 							} else {
 								// Look if it is variable
 								ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, logicPos.X + 1, textArea.MotherTextEditorControl.FileName, textContent);
-								string value = GetText(result, expression);
-								if (value != null) {
+								bool debuggerCanShowValue;
+								string toolTipText = GetText(result, expression, out debuggerCanShowValue);
+								DebuggerGridControl toolTipControl = null;
+								if (toolTipText != null) {
 									if (Control.ModifierKeys == Keys.Control) {
-										value = "expr: " + expressionResult.ToString() + "\n" + value;
+										toolTipText = "expr: " + expressionResult.ToString() + "\n" + toolTipText;
+									} else if (debuggerCanShowValue) {
+										toolTipControl = new DebuggerGridControl("hello", "world");
+										toolTipText = null;
 									}
-									textArea.SetToolTip(value);
 								}
-								oldToolTip = value;
+								if (toolTipText != null) {
+									textArea.SetToolTip(toolTipText);
+								}
+								if (oldToolTipControl != null) {
+									Form frm = oldToolTipControl.FindForm();
+									if (frm != null) frm.Close();
+								}
+								if (toolTipControl != null) {
+									toolTipControl.ShowForm(textArea, logicPos);
+								}
+								oldToolTip = toolTipText;
+								oldToolTipControl = toolTipControl;
 							}
 						}
 						oldLine = logicPos.Y;
@@ -362,18 +379,19 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		static string GetText(ResolveResult result, string expression)
+		static string GetText(ResolveResult result, string expression, out bool debuggerCanShowValue)
 		{
+			debuggerCanShowValue = false;
 			if (result == null) {
 				// when pressing control, show the expression even when it could not be resolved
 				return (Control.ModifierKeys == Keys.Control) ? "" : null;
 			}
 			if (result is MixedResolveResult)
-				return GetText(((MixedResolveResult)result).PrimaryResult, expression);
+				return GetText(((MixedResolveResult)result).PrimaryResult, expression, out debuggerCanShowValue);
 			IAmbience ambience = AmbienceService.CurrentAmbience;
 			ambience.ConversionFlags = ConversionFlags.StandardConversionFlags | ConversionFlags.ShowAccessibility;
 			if (result is MemberResolveResult) {
-				return GetMemberText(ambience, ((MemberResolveResult)result).ResolvedMember, expression);
+				return GetMemberText(ambience, ((MemberResolveResult)result).ResolvedMember, expression, out debuggerCanShowValue);
 			} else if (result is LocalResolveResult) {
 				LocalResolveResult rr = (LocalResolveResult)result;
 				ambience.ConversionFlags = ConversionFlags.UseFullyQualifiedNames
@@ -388,6 +406,7 @@ namespace ICSharpCode.Core
 				if (currentDebugger != null) {
 					string currentValue = currentDebugger.GetValueAsString(rr.Field.Name);
 					if (currentValue != null) {
+						debuggerCanShowValue = true;
 						b.Append(" = ");
 						b.Append(currentValue);
 					}
@@ -398,14 +417,14 @@ namespace ICSharpCode.Core
 			} else if (result is TypeResolveResult) {
 				IClass c = ((TypeResolveResult)result).ResolvedClass;
 				if (c != null)
-					return GetMemberText(ambience, c, expression);
+					return GetMemberText(ambience, c, expression, out debuggerCanShowValue);
 				else
 					return ambience.Convert(result.ResolvedType);
 			} else if (result is MethodResolveResult) {
 				MethodResolveResult mrr = result as MethodResolveResult;
 				IMethod m = mrr.GetMethodIfSingleOverload();
 				if (m != null)
-					return GetMemberText(ambience, m, expression);
+					return GetMemberText(ambience, m, expression, out debuggerCanShowValue);
 				else
 					return "Overload of " + ambience.Convert(mrr.ContainingType) + "." + mrr.Name;
 			} else {
@@ -420,9 +439,10 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		static string GetMemberText(IAmbience ambience, IDecoration member, string expression)
+		static string GetMemberText(IAmbience ambience, IDecoration member, string expression, out bool debuggerCanShowValue)
 		{
 			bool tryDisplayValue = false;
+			debuggerCanShowValue = false;
 			StringBuilder text = new StringBuilder();
 			if (member is IField) {
 				text.Append(ambience.Convert(member as IField));
@@ -443,6 +463,7 @@ namespace ICSharpCode.Core
 			if (tryDisplayValue && currentDebugger != null) {
 				string currentValue = currentDebugger.GetValueAsString(expression);
 				if (currentValue != null) {
+					debuggerCanShowValue = true;
 					text.Append(" = ");
 					text.Append(currentValue);
 				}
