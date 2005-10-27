@@ -145,6 +145,12 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					case ".resx":
 					case ".resources":
 						return ItemType.EmbeddedResource;
+						
+					// HACK: This isn't really a solution. :-( Maybe in the near
+					// future we can use the known attributes in the XFT files, too.
+					case ".xaml":
+						return ItemType.Page;
+
 					default:
 						return ItemType.Content;
 				}

@@ -1,0 +1,78 @@
+<?xml version="1.0"?>
+<Template author="Mathias Simmack" version="1.0">
+	
+	<Config
+		  name        = "Avalon PageFunction"
+		  icon        = "Icons.32x32.XMLFileIcon"
+		  category    = "C#"
+		  defaultname = "PageFunction${Number}.xaml"
+		  language    = "XML"/>
+	 
+	<Description>An Avalon PageFunction.</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<PageFunction x:Class="${StandardNamespace}.${FileNameWithoutExtension}" x:TypeArguments="String"
+    xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
+    xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
+    Title="${FileNameWithoutExtension}"
+    >
+    <Grid>
+        
+    </Grid>
+</PageFunction>]]></File>
+		<File name="${FullName}.cs" language="C#" dependentUpon="${FileName}" subType="Code">
+		<![CDATA[using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Media;
+using System.Windows.Navigation;
+using System.Windows.Shapes;
+
+namespace ${StandardNamespace}
+{
+    /// <summary>
+    /// Interaction logic for ${FileName}
+    /// </summary>
+
+    public partial class ${FileNameWithoutExtension} : PageFunction<String>
+    {
+        // The OnLoaded handler can be run automatically when the class is loaded. To use it, add Loaded="OnLoaded" to the attributes of the root element of the .xaml file and uncomment the following line.
+        // private void OnLoaded(object sender, RoutedEventArgs e) {}
+        //
+        // Sample Finish Handler
+        // private void OnClickDone(object sender, RoutedEventArgs e)
+        // {
+        //     OnFinish(new ReturnEventArgs<String>("The return value"));
+        // }
+
+        // To launch this page function, put this code in the launching page.
+        // ${FileNameWithoutExtension} pageFunction = new ${FileNameWithoutExtension}();
+        // pageFunction.Return += new ReturnEventHandler<String>(On${FileNameWithoutExtension}Returned);
+        // _NavWin.Navigate(pageFunction);
+        //
+        // This handler goes in the launching page.
+        // public void On${FileNameWithoutExtension}Returned(object sender, ReturnEventArgs<String> e)
+        // {
+        //     Console.WriteLine("${FileNameWithoutExtension} returned: " + e.Result);
+        // }
+
+
+    }
+}]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+

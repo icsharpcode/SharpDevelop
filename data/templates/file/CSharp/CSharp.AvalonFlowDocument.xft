@@ -1,0 +1,35 @@
+<?xml version="1.0"?>
+<Template author="Mathias Simmack" version="1.0">
+	
+	<Config
+		  name        = "Avalon FlowDocument"
+		  icon        = "Icons.32x32.XMLFileIcon"
+		  category    = "C#"
+		  defaultname = "FlowDocument${Number}.xaml"
+		  language    = "XML"/>
+	 
+	<Description>An Avalon FlowDocument.</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<FlowDocument xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
+    ColumnWidth="400" FontSize="14" FontFamily="Georgia"
+    >
+    <Paragraph>
+        
+    </Paragraph>
+</FlowDocument>]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+

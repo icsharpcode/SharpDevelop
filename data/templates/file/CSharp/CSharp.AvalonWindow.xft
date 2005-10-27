@@ -1,0 +1,66 @@
+<?xml version="1.0"?>
+<Template author="Mathias Simmack" version="1.0">
+	
+	<Config
+		  name        = "Avalon Window"
+		  icon        = "Icons.32x32.XMLFileIcon"
+		  category    = "C#"
+		  defaultname = "Window${Number}.xaml"
+		  language    = "C#"/>
+	 
+	<Description>An Avalon window.</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".cs"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<Window x:Class="${StandardNamespace}.${FileNameWithoutExtension}"
+    xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
+    xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
+    Title="${StandardNamespace}"
+    >
+    <Grid>
+        
+    </Grid>
+</Window>]]></File>
+		<File name="${FullName}.cs" language="C#" dependentUpon="${FileName}" subType="Code"><![CDATA[using System;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Media;
+using System.Windows.Shapes;
+
+namespace ${StandardNamespace}
+{
+    /// <summary>
+    /// Interaction logic for ${FileName}
+    /// </summary>
+
+    public partial class ${FileNameWithoutExtension} : Window
+    {
+        public ${FileNameWithoutExtension}()
+        {
+            InitializeComponent();
+        }
+
+        // To use Loaded event put Loaded="WindowLoaded" attribute in root element of .xaml file.
+        // private void WindowLoaded(object sender, RoutedEventArgs e) {}
+
+        // Sample event handler:  
+        // private void ButtonClick(object sender, RoutedEventArgs e) {}
+
+    }
+}]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+
