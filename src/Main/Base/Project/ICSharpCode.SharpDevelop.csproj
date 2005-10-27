@@ -710,6 +710,14 @@
     <Compile Include="Src\Dom\ReflectionLayer\DomPersistence.cs" />
     <Compile Include="Src\Services\RefactoringService\CodeGenerator.cs" />
     <Compile Include="Src\Services\RefactoringService\NRefactoryCodeGenerator.cs" />
+    <Compile Include="Src\Gui\TreeGrid\CollectionWithEvents.cs" />
+    <Compile Include="Src\Gui\TreeGrid\DynamicList.cs" />
+    <Compile Include="Src\Gui\TreeGrid\DynamicListColumn.cs" />
+    <Compile Include="Src\Gui\TreeGrid\DynamicListItem.cs" />
+    <Compile Include="Src\Gui\TreeGrid\DynamicListRow.cs" />
+    <Compile Include="Src\Gui\TreeGrid\DynamicTreeRow.cs" />
+    <Compile Include="Src\Gui\TreeGrid\ScrollButton.cs" />
+    <Compile Include="Src\Gui\TreeGrid\VerticalScrollContainer.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
@@ -729,6 +737,7 @@
       <Name>ICSharpCode.Core</Name>
     </ProjectReference>
     <Folder Include="Src\Gui\Components\AutoHide" />
+    <Folder Include="Src\Gui\TreeGrid" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
