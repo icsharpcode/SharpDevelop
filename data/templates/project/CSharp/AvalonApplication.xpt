@@ -9,7 +9,7 @@
 		<Category>C#</Category>
 		<Icon>C#.Project.Form</Icon>
 		<LanguageName>C#</LanguageName>
-		<Description>Creates a simple Avalon application</Description>
+		<Description>Creates a simple Avalon application.</Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -76,7 +76,7 @@ namespace ${StandardNamespace}
 				<File name="Window1.xaml" buildAction="Page" language="XML"><![CDATA[<Window x:Class="${StandardNamespace}.Window1"
     xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
     xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
-    Title="${StandardNamespace}"
+    Title="Window1"
     >
     <Grid>
         

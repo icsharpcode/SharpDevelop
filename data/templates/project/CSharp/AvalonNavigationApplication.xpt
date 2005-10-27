@@ -5,11 +5,11 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>Avalon Page Application Beta</Name>
+		<Name>Avalon Navigation Application Beta</Name>
 		<Category>C#</Category>
 		<Icon>C#.Project.Form</Icon>
 		<LanguageName>C#</LanguageName>
-		<Description>Creates a simple Avalon application with one navigation page</Description>
+		<Description>Creates a simple Avalon application with one navigation page.</Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
