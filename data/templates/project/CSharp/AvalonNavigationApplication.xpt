@@ -49,7 +49,7 @@
 
     </Application.Resources>
 </Application>]]></File>
-				<File name="MyApp.xaml.cs"><![CDATA[using System;
+				<File name="MyApp.xaml.cs" subType="Code" dependentUpon="MyApp.xaml"><![CDATA[using System;
 using System.Windows;
 using System.Windows.Navigation;
 using System.Data;
@@ -75,7 +75,7 @@ namespace ${StandardNamespace}
 
   </StackPanel>
 </Page>]]></File>
-				<File name="Page1.xaml.cs"><![CDATA[using System;
+				<File name="Page1.xaml.cs" subType="Code" dependentUpon="Page1.xaml"><![CDATA[using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Navigation;

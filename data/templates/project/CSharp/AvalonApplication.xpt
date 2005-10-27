@@ -50,7 +50,7 @@
          
     </Application.Resources>
 </Application>]]></File>
-				<File name="MyApp.xaml.cs"><![CDATA[using System;
+				<File name="MyApp.xaml.cs" subType="Code" dependentUpon="MyApp.xaml"><![CDATA[using System;
 using System.Windows;
 using System.Data;
 using System.Xml;
@@ -82,7 +82,7 @@ namespace ${StandardNamespace}
         
     </Grid>
 </Window>]]></File>
-				<File name="Window1.xaml.cs"><![CDATA[using System;
+				<File name="Window1.xaml.cs" subType="Code" dependentUpon="Window1.xaml"><![CDATA[using System;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;

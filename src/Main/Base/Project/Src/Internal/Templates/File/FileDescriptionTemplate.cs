@@ -20,6 +20,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string content;
 		string buildAction;
 		string copyToOutputDirectory;
+		string dependentUpon;
+		string subType;
 
 		public FileDescriptionTemplate(XmlElement xml)
 		{
@@ -27,6 +29,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			language = xml.GetAttribute("language");
 			buildAction = xml.GetAttribute("buildAction");
 			copyToOutputDirectory = xml.GetAttribute("copyToOutputDirectory");
+			dependentUpon = xml.GetAttribute("dependentUpon");
+			subType = xml.GetAttribute("subType");
 			content = xml.InnerText;
 		}
 		
@@ -70,6 +74,24 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 			set {
 				copyToOutputDirectory = value;
+			}
+		}
+
+		public string DependentUpon {
+			get {
+				return dependentUpon ?? "";
+			}
+			set {
+				dependentUpon = value;
+			}
+		}
+
+		public string SubType {
+			get {
+				return subType ?? "";
+			}
+			set {
+				subType = value;
 			}
 		}
 	}

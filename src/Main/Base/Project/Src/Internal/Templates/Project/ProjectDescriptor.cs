@@ -152,6 +152,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					if (file.CopyToOutputDirectory.Length > 0) {
 						projectFile.CopyToOutputDirectory = (CopyToOutputDirectory)Enum.Parse(typeof(CopyToOutputDirectory), file.CopyToOutputDirectory);
 					}
+					if (file.DependentUpon.Length > 0) {
+						projectFile.DependentUpon = file.DependentUpon;
+					}
+					if (file.SubType.Length > 0) {
+						projectFile.SubType = file.SubType;
+					}
 					
 					projectFile.Include = FileUtility.GetRelativePath(project.Directory, fileName);
 					
