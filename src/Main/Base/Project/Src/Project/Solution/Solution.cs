@@ -501,11 +501,63 @@ namespace ICSharpCode.SharpDevelop.Project
 					folder.AddFolder(newSolution.guidDictionary[from]);
 				}
 			}
-			if (needsConversion) {
+			
+			if (newSolution.FixSolutionConfiguration() || needsConversion) {
 				// save in new format
 				newSolution.Save();
 			}
 			return true;
+		}
+		
+		bool FixSolutionConfiguration()
+		{
+			ProjectSection solSec = null;
+			ProjectSection prjSec = null;
+			bool changed = false;
+			foreach (ProjectSection sec in Sections) {
+				if (sec.Name == "SolutionConfigurationPlatforms")
+					solSec = sec;
+				else if (sec.Name == "ProjectConfigurationPlatforms")
+					prjSec = sec;
+			}
+			if (solSec == null) {
+				solSec = new ProjectSection("SolutionConfigurationPlatforms", "preSolution");
+				Sections.Insert(0, solSec);
+				solSec.Items.Add(new SolutionItem("Debug|Any CPU", "Debug|Any CPU"));
+				solSec.Items.Add(new SolutionItem("Release|Any CPU", "Release|Any CPU"));
+				LoggingService.Warn("!! Inserted SolutionConfigurationPlatforms !!");
+				changed = true;
+			}
+			if (prjSec == null) {
+				prjSec = new ProjectSection("ProjectConfigurationPlatforms", "postSolution");
+				Sections.Add(prjSec);
+				LoggingService.Warn("!! Inserted ProjectConfigurationPlatforms !!");
+				changed = true;
+			}
+			foreach (IProject project in Projects) {
+				string guid = project.IdGuid.ToUpperInvariant();
+				foreach (SolutionItem configuration in solSec.Items) {
+					string searchKey = guid + "." + configuration.Name + ".Build.0";
+					if (!prjSec.Items.Exists(delegate (SolutionItem item) {
+					                         	return item.Name == searchKey;
+					                         }))
+					{
+						LoggingService.Warn("Inserting solution item");
+						prjSec.Items.Add(new SolutionItem(searchKey, configuration.Location));
+						changed = true;
+					}
+					searchKey = guid + "." + configuration.Name + ".ActiveCfg";
+					if (!prjSec.Items.Exists(delegate (SolutionItem item) {
+					                         	return item.Name == searchKey;
+					                         }))
+					{
+						LoggingService.Warn("Inserting solution item");
+						prjSec.Items.Add(new SolutionItem(searchKey, configuration.Location));
+						changed = true;
+					}
+				}
+			}
+			return changed;
 		}
 		
 		static Solution solutionBeingLoaded;

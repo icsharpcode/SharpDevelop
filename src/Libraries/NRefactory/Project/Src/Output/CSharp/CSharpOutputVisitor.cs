@@ -1617,7 +1617,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			if (val is double) {
 				string text = ((double)val).ToString(NumberFormatInfo.InvariantInfo);
-				if (text.IndexOf('.') < 0)
+				if (text.IndexOf('.') < 0 && text.IndexOf('E') < 0)
 					outputFormatter.PrintText(text + ".0");
 				else
 					outputFormatter.PrintText(text);

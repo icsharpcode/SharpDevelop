@@ -1715,11 +1715,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(PrimitiveExpression primitiveExpression, object data)
 		{
-			if (primitiveExpression.Value == null) {
+			object val = primitiveExpression.Value;
+			if (val == null) {
 				outputFormatter.PrintToken(Tokens.Nothing);
 				return null;
 			}
-			if (primitiveExpression.Value is bool) {
+			if (val is bool) {
 				if ((bool)primitiveExpression.Value) {
 					outputFormatter.PrintToken(Tokens.True);
 				} else {
@@ -1728,27 +1729,32 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				return null;
 			}
 			
-			if (primitiveExpression.Value is string) {
-				outputFormatter.PrintText('"' + ConvertString(primitiveExpression.Value.ToString()) + '"');
+			if (val is string) {
+				outputFormatter.PrintText('"' + ConvertString((string)val) + '"');
 				return null;
 			}
 			
-			if (primitiveExpression.Value is char) {
+			if (val is char) {
 				outputFormatter.PrintText(ConvertCharLiteral((char)primitiveExpression.Value));
 				return null;
 			}
 
-			if (primitiveExpression.Value is decimal) {
+			if (val is decimal) {
 				outputFormatter.PrintText(((decimal)primitiveExpression.Value).ToString(NumberFormatInfo.InvariantInfo) + "D");
 				return null;
 			}
 			
-			if (primitiveExpression.Value is float) {
+			if (val is float) {
 				outputFormatter.PrintText(((float)primitiveExpression.Value).ToString(NumberFormatInfo.InvariantInfo) + "F");
 				return null;
 			}
 			
-			outputFormatter.PrintIdentifier(primitiveExpression.Value.ToString());
+			if (val is IFormattable) {
+				outputFormatter.PrintText(((IFormattable)val).ToString(null, NumberFormatInfo.InvariantInfo));
+			} else {
+				outputFormatter.PrintText(val.ToString());
+			}
+			
 			return null;
 		}
 		
