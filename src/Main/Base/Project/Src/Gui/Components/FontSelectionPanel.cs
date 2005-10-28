@@ -104,8 +104,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			try {
 				string[] descr = font.Split(new char[]{',', '='});
 				return new Font(descr[1], Single.Parse(descr[3]));
-			} catch (Exception) {
-				return new Font("Courier New", 10);
+			} catch (Exception ex) {
+				LoggingService.Warn(ex);
+				return ResourceService.CourierNew10;
 			}
 		}
 		

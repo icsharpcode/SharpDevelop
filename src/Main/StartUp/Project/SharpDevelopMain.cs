@@ -162,6 +162,10 @@ namespace ICSharpCode.SharpDevelop
 				MessageService.CustomErrorReporter = ShowErrorBox;
 				#endif
 				
+				Assembly exe = typeof(SharpDevelopMain).Assembly;
+				ResourceService.RegisterNeutralStrings(new ResourceManager("Resources.StringResources", exe));
+				ResourceService.RegisterNeutralImages(new ResourceManager("Resources.BitmapResources", exe));
+				
 				RegisterDoozers();
 				
 				InitializeCore();

@@ -158,7 +158,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			}
 			
 			Properties properties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-			sampleLabel.Font = ParseFont(properties.Get("DefaultFont", new Font("Courier New", 10).ToString()));
+			sampleLabel.Font = ParseFont(properties.Get("DefaultFont", ResourceService.CourierNew10.ToString()));
 
 			color = node.Color;
 			nameBox.Text = node.Name;

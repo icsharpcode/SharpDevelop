@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public GradientHeaderPanel(int fontSize) : this()
 		{
-			Font = new Font("Tahoma", fontSize);
+			Font = ResourceService.LoadFont("Tahoma", fontSize);
 		}
 		
 		public GradientHeaderPanel() : base()
@@ -232,7 +232,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.TreeViewOptionsDialog.xfrm"));
 			
 			this.optionsPanelLabel             = new GradientHeaderPanel();
-			this.optionsPanelLabel.Font        = new System.Drawing.Font("Tahoma", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
+			this.optionsPanelLabel.Font        = new Font("Tahoma", 14F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((System.Byte)(0)));
 			this.optionsPanelLabel.TextAlign   = System.Drawing.ContentAlignment.MiddleLeft;
 			this.optionsPanelLabel.BorderStyle = BorderStyle.Fixed3D;
 			this.optionsPanelLabel.Dock        = DockStyle.Fill;

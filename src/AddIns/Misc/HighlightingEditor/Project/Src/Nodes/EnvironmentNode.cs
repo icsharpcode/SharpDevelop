@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 				this.UseItemStyleForSubItems = false;
 				
 				Properties properties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-				basefont = ParseFont(properties.Get("DefaultFont", new Font("Courier New", 10).ToString()));
+				basefont = ParseFont(properties.Get("DefaultFont", ResourceService.CourierNew10.ToString()));
 				listfont = listFont;
 				
 				ColorUpdate();

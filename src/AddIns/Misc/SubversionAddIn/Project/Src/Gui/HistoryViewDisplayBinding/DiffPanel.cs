@@ -15,6 +15,7 @@ using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui;
 using NSvn.Common;
 using NSvn.Core;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
 namespace ICSharpCode.Svn
@@ -34,7 +35,7 @@ namespace ICSharpCode.Svn
 			Get<ListView>("toRevision").SelectedIndexChanged += new EventHandler(ShowDiff);
 			
 			ControlDictionary["diffRichTextBox"].Enabled = false;
-			ControlDictionary["diffRichTextBox"].Font = new Font("Courier New", 10);
+			ControlDictionary["diffRichTextBox"].Font = ResourceService.CourierNew10;
 			ControlDictionary["splitter1"].Height = 3;
 			
 			ListViewItem newItem;

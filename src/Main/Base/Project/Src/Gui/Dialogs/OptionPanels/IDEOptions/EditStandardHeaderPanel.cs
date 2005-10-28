@@ -23,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		{
 			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("Resources.EditStandardHeaderPanel.xfrm"));
 			
-			ControlDictionary["headerTextBox"].Font = new Font("Courier New", 10);
+			ControlDictionary["headerTextBox"].Font = ResourceService.CourierNew10;
 			foreach (StandardHeader header in StandardHeader.StandardHeaders) {
 				((ComboBox)ControlDictionary["headerChooser"]).Items.Add(header);
 			}

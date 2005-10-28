@@ -310,13 +310,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		static ExtTreeNode()
 		{
-			font                = new Font("Tahoma", 9);
-			boldFont            = new Font("Tahoma", 9, FontStyle.Bold);
-			italicFont          = new Font("Tahoma", 9, FontStyle.Italic);
+			font                = ResourceService.LoadFont("Tahoma", 9);
+			boldFont            = ResourceService.LoadFont("Tahoma", 9, FontStyle.Bold);
+			italicFont          = ResourceService.LoadFont("Tahoma", 9, FontStyle.Italic);
 			
-			monospacedFont       = new Font("Courier New", 10);
-			boldMonospacedFont   = new Font("Courier New", 10, FontStyle.Bold);
-			italicMonospacedFont = new Font("Courier New", 10, FontStyle.Italic);
+			monospacedFont       = ResourceService.LoadFont("Courier New", 10);
+			boldMonospacedFont   = ResourceService.LoadFont("Courier New", 10, FontStyle.Bold);
+			italicMonospacedFont = ResourceService.LoadFont("Courier New", 10, FontStyle.Italic);
 		}
 		#endregion
 		

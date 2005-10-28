@@ -48,7 +48,7 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			ControlDictionary["removeGroupButton"].Click += new System.EventHandler(RemoveGroupEvent);
 			
 			
-			((TextBox)ControlDictionary["templateTextBox"]).Font = new System.Drawing.Font("Courier New", 10f);
+			((TextBox)ControlDictionary["templateTextBox"]).Font = ResourceService.CourierNew10;
 			((TextBox)ControlDictionary["templateTextBox"]).TextChanged += new EventHandler(TextChange);
 			
 			((ListView)ControlDictionary["templateListView"]).Activation = ItemActivation.Standard;

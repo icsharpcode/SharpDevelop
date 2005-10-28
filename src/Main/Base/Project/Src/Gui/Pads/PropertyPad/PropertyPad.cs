@@ -163,8 +163,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ISite site = ((IComponent)item).Site;
 				if (site != null) {
 					string name = site.Name;
-					Font f = new Font(comboBox.Font, FontStyle.Bold);
-					mea.ItemWidth += (int)mea.Graphics.MeasureString(name + "-", f).Width;
+					using (Font f = new Font(comboBox.Font, FontStyle.Bold)) {
+						mea.ItemWidth += (int)mea.Graphics.MeasureString(name + "-", f).Width;
+					}
 				}
 			}
 		}
@@ -195,9 +196,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ISite site = ((IComponent)item).Site;
 				if (site != null) {
 					string name = site.Name;
-					Font f = new Font(comboBox.Font, FontStyle.Bold);
-					g.DrawString(name, f, stringColor, xPos, dea.Bounds.Y);
-					xPos += (int)g.MeasureString(name + "-", f).Width;
+					using (Font f = new Font(comboBox.Font, FontStyle.Bold)) {
+						g.DrawString(name, f, stringColor, xPos, dea.Bounds.Y);
+						xPos += (int)g.MeasureString(name + "-", f).Width;
+					}
 				}
 			}
 			

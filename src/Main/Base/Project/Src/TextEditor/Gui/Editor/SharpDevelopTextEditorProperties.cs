@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		static SharpDevelopTextEditorProperties()
 		{
 			Properties properties2 = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-	 		FontContainer.DefaultFont = FontContainer.ParseFont(properties2.Get("DefaultFont", new Font("Courier New", 10).ToString()));
+	 		FontContainer.DefaultFont = FontContainer.ParseFont(properties2.Get("DefaultFont", ResourceService.CourierNew10.ToString()));
 			properties2.PropertyChanged += new PropertyChangedEventHandler(CheckFontChange);
 		}
 		

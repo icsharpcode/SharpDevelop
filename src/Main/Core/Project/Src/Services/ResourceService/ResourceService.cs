@@ -39,12 +39,6 @@ namespace ICSharpCode.Core
 			
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChange);
 			LoadLanguageResources(PropertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name));
-			
-			Assembly exe = Assembly.GetEntryAssembly();
-			if (exe != null) {
-				strings.Add(new ResourceManager("Resources.StringResources", exe));
-				icons.Add(new ResourceManager("Resources.BitmapResources", exe));
-			}
 		}
 		
 		/// <summary>English strings (list of resource managers)</summary>
@@ -129,10 +123,15 @@ namespace ICSharpCode.Core
 		/// <example><c>ResourceService.RegisterStrings("TestAddin.Resources.StringResources", GetType().Assembly);</c></example>
 		public static void RegisterStrings(string baseResourceName, Assembly assembly)
 		{
-			strings.Add(new ResourceManager(baseResourceName, assembly));
+			RegisterNeutralStrings(new ResourceManager(baseResourceName, assembly));
 			ResourceAssembly ra = new ResourceAssembly(assembly, baseResourceName, false);
 			resourceAssemblies.Add(ra);
 			ra.Load();
+		}
+		
+		public static void RegisterNeutralStrings(ResourceManager stringManager)
+		{
+			strings.Add(stringManager);
 		}
 		
 		/// <summary>
@@ -143,10 +142,15 @@ namespace ICSharpCode.Core
 		/// <example><c>ResourceService.RegisterImages("TestAddin.Resources.BitmapResources", GetType().Assembly);</c></example>
 		public static void RegisterImages(string baseResourceName, Assembly assembly)
 		{
-			icons.Add(new ResourceManager(baseResourceName, assembly));
+			RegisterNeutralImages(new ResourceManager(baseResourceName, assembly));
 			ResourceAssembly ra = new ResourceAssembly(assembly, baseResourceName, true);
 			resourceAssemblies.Add(ra);
 			ra.Load();
+		}
+		
+		public static void RegisterNeutralImages(ResourceManager imageManager)
+		{
+			icons.Add(imageManager);
 		}
 		
 		/// <summary>
@@ -205,6 +209,16 @@ namespace ICSharpCode.Core
 		}
 		
 		#region Font loading
+		static Font courierNew10;
+		
+		public static Font CourierNew10 {
+			get {
+				if (courierNew10 == null)
+					courierNew10 = LoadFont("Courier New", 10);
+				return courierNew10;
+			}
+		}
+		
 		/// <summary>
 		/// The LoadFont routines provide a safe way to load fonts.
 		/// </summary>
@@ -231,7 +245,8 @@ namespace ICSharpCode.Core
 		{
 			try {
 				return new Font(fontName, size, style);
-			} catch (Exception) {
+			} catch (Exception ex) {
+				LoggingService.Warn(ex);
 				return SystemInformation.MenuFont;
 			}
 		}
@@ -264,7 +279,8 @@ namespace ICSharpCode.Core
 		{
 			try {
 				return new Font(fontName, size, style, unit);
-			} catch (Exception) {
+			} catch (Exception ex) {
+				LoggingService.Warn(ex);
 				return SystemInformation.MenuFont;
 			}
 		}
