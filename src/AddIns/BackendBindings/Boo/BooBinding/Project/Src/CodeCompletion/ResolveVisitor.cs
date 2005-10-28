@@ -320,6 +320,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 						methods.Add(ICSharpCode.SharpDevelop.Dom.Constructor.CreateDefault(trr.ResolvedClass));
 					}
 					ResolveInvocation(methods, node.Arguments);
+					if (resolveResult != null)
+						resolveResult.ResolvedType = trr.ResolvedType;
 				} else {
 					ClearResult();
 				}

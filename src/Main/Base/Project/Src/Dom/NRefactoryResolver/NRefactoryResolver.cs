@@ -325,8 +325,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 						return CreateMemberResolveResult(Constructor.CreateDefault(c));
 					}
 				}
-				IReturnType[] typeParameters = null; // TODO: get constructor type parameters
-				return CreateMemberResolveResult(typeVisitor.FindOverload(constructors, typeParameters, ((ObjectCreateExpression)expr).Parameters, null));
+				IReturnType[] typeParameters = null;
+				if (type.TypeArguments != null) {
+					typeParameters = new IReturnType[type.TypeArguments.Count];
+					type.TypeArguments.CopyTo(typeParameters, 0);
+				}
+				ResolveResult rr = CreateMemberResolveResult(typeVisitor.FindOverload(constructors, typeParameters, ((ObjectCreateExpression)expr).Parameters, null));
+				rr.ResolvedType = type;
+				return rr;
 			}
 			return new ResolveResult(callingClass, callingMember, type);
 		}
