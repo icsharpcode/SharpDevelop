@@ -60,11 +60,11 @@ ShowUnInstDetails show
 
 ; .NET Framework check
 ; http://msdn.microsoft.com/netframework/default.aspx?pull=/library/en-us/dnnetdep/html/redistdeploy1_1.asp
-; Section "Detecting that the .NET Framework 2.0 Beta 2 is installed"
+; Section "Detecting that the .NET Framework 2.0 is installed"
 Function .onInit
-	ReadRegDWORD $R0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50215" Install
+	ReadRegDWORD $R0 HKLM "SOFTWARE\Microsoft\NET Framework Setup\NDP\v2.0.50727" Install
 	StrCmp $R0 "" 0 CheckPreviousVersion
-	MessageBox MB_OK "Microsoft .NET Framework 2.0 Beta 2 was not found on this system.$\r$\n$\r$\nUnable to continue this installation."
+	MessageBox MB_OK "Microsoft .NET Framework 2.0 was not found on this system.$\r$\n$\r$\nUnable to continue this installation."
 	Abort
 
   CheckPreviousVersion:
