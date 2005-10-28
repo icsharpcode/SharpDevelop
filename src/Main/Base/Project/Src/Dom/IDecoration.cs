@@ -90,6 +90,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 		bool IsNew {
 			get;
 		}
+		bool IsSynthetic {
+			get;
+		}
 		
 		object UserData {
 			get;

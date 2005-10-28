@@ -143,9 +143,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				modifiers |= ModifierEnum.Public;
 			} else if (type.IsNotPublic) {
 				modifiers |= ModifierEnum.Internal;
-			} else if (type.IsNestedFamORAssem) {
-				modifiers |= ModifierEnum.ProtectedOrInternal;
-			} else if (type.IsNestedFamANDAssem) {
+			} else if (type.IsNestedFamORAssem || type.IsNestedFamANDAssem) {
 				modifiers |= ModifierEnum.Protected;
 				modifiers |= ModifierEnum.Internal;
 			}

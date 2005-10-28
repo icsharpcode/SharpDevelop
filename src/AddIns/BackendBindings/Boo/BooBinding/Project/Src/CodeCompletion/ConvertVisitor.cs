@@ -67,6 +67,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 			if (m.IsAbstract) r |= ModifierEnum.Abstract;
 			if (m.IsOverride) r |= ModifierEnum.Override;
+			if (m.IsSynthetic) r |= ModifierEnum.Synthetic;
+			if (m.LexicalInfo.IsValid && m.DeclaringType != null
+			    && m.LexicalInfo.Line < m.DeclaringType.LexicalInfo.Line)
+			{ // member added through attribute
+				r |= ModifierEnum.Synthetic;
+			}
 			return r;
 		}
 		
@@ -228,7 +234,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			if (field.Type == null) {
 				if (field.Initializer != null)
-					return new InferredReturnType(field.Initializer);
+					return new InferredReturnType(field.Initializer, OuterClass);
 				else
 					return ReflectionReturnType.Object;
 			} else {
@@ -239,13 +245,13 @@ namespace Grunwald.BooBinding.CodeCompletion
 		IReturnType CreateReturnType(AST.Method node, IMethod method)
 		{
 			if (node.ReturnType == null)
-				return new InferredReturnType(node.Body);
+				return new InferredReturnType(node.Body, OuterClass);
 			return CreateReturnType(node.ReturnType, method);
 		}
 		IReturnType CreateReturnType(AST.Property property)
 		{
 			if (property.Type == null && property.Getter != null && property.Getter.Body != null)
-				return new InferredReturnType(property.Getter.Body);
+				return new InferredReturnType(property.Getter.Body, OuterClass);
 			return CreateReturnType(property.Type);
 		}
 		

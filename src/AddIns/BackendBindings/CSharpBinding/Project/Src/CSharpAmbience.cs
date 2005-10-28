@@ -74,8 +74,6 @@ namespace ICSharpCode.Core
 					return "private ";
 				} else if (ModifierIsSet(modifier, ModifierEnum.ProtectedAndInternal)) {
 					return "protected internal ";
-				} else if (ModifierIsSet(modifier, ModifierEnum.ProtectedOrInternal)) {
-					return "internal protected ";
 				} else if (ModifierIsSet(modifier, ModifierEnum.Internal)) {
 					return "internal ";
 				} else if (ModifierIsSet(modifier, ModifierEnum.Protected)) {

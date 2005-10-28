@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public void Check(Modifier allowed)
 		{
-			Modifier wrong = cur & (allowed ^ Modifier.All);
+			Modifier wrong = cur & ~allowed;
 			if (wrong != Modifier.None) {
 //				parser.Error("modifier(s) " + wrong + " not allowed here");
 			}

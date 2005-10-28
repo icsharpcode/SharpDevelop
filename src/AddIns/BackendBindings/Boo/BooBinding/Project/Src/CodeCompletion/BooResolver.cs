@@ -136,7 +136,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		#endregion
 		
 		#region GetTypeOfExpression
-		public IReturnType GetTypeOfExpression(AST.Expression expr)
+		public IReturnType GetTypeOfExpression(AST.Expression expr, IClass callingClass)
 		{
 			AST.Node node = expr;
 			AST.LexicalInfo lexInfo;
@@ -147,6 +147,8 @@ namespace Grunwald.BooBinding.CodeCompletion
 			} while (lexInfo == null || lexInfo.FileName == null);
 			if (!Initialize(lexInfo.FileName, lexInfo.Line, lexInfo.Column))
 				return null;
+			if (callingClass != null)
+				this.callingClass = callingClass;
 			ResolveVisitor visitor = new ResolveVisitor(this);
 			visitor.Visit(expr);
 			if (visitor.ResolveResult == null)

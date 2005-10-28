@@ -467,6 +467,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		void AddClassMemberBookmarks(BookmarkManager bm, IClass c)
 		{
+			if (c.IsSynthetic) return;
 			if (!c.Region.IsEmpty) {
 				bm.AddMark(new Bookmarks.ClassBookmark(textAreaControl.Document, c));
 			}
@@ -474,19 +475,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				AddClassMemberBookmarks(bm, innerClass);
 			}
 			foreach (IMethod m in c.Methods) {
-				if (m.Region.IsEmpty) continue;
+				if (m.Region.IsEmpty || m.IsSynthetic) continue;
 				bm.AddMark(new Bookmarks.MethodBookmark(textAreaControl.Document, m));
 			}
 			foreach (IProperty m in c.Properties) {
-				if (m.Region.IsEmpty) continue;
+				if (m.Region.IsEmpty || m.IsSynthetic) continue;
 				bm.AddMark(new Bookmarks.PropertyBookmark(textAreaControl.Document, m));
 			}
 			foreach (IField f in c.Fields) {
-				if (f.Region.IsEmpty) continue;
+				if (f.Region.IsEmpty || f.IsSynthetic) continue;
 				bm.AddMark(new Bookmarks.FieldBookmark(textAreaControl.Document, f));
 			}
 			foreach (IEvent e in c.Events) {
-				if (e.Region.IsEmpty) continue;
+				if (e.Region.IsEmpty || e.IsSynthetic) continue;
 				bm.AddMark(new Bookmarks.EventBookmark(textAreaControl.Document, e));
 			}
 		}

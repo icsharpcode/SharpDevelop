@@ -149,7 +149,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public bool IsProtectedOrInternal {
 			get {
-				return (modifiers & ModifierEnum.ProtectedOrInternal) == ModifierEnum.ProtectedOrInternal;
+				return IsProtected || IsInternal;
 			}
 		}
 		
@@ -172,6 +172,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public bool IsPartial {
 			get {
 				return (modifiers & ModifierEnum.Partial) == ModifierEnum.Partial;
+			}
+		}
+		public bool IsSynthetic {
+			get {
+				return (modifiers & ModifierEnum.Synthetic) == ModifierEnum.Synthetic;
 			}
 		}
 		

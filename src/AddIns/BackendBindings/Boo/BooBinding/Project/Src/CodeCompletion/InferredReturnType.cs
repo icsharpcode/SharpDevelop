@@ -20,24 +20,27 @@ namespace Grunwald.BooBinding.CodeCompletion
 		Expression expression;
 		Block block;
 		IReturnType cachedType;
+		IClass context;
 		
-		public InferredReturnType(Expression expression)
+		public InferredReturnType(Expression expression, IClass context)
 		{
 			if (expression == null) throw new ArgumentNullException("expression");
+			this.context = context;
 			this.expression = expression;
 		}
 		
-		public InferredReturnType(Block block)
+		public InferredReturnType(Block block, IClass context)
 		{
 			if (block == null) throw new ArgumentNullException("block");
 			this.block = block;
+			this.context = context;
 		}
 		
 		public override IReturnType BaseType {
 			get {
 				// clear up references to method/expression after the type has been resolved
 				if (block != null) {
-					GetReturnTypeVisitor v = new GetReturnTypeVisitor();
+					GetReturnTypeVisitor v = new GetReturnTypeVisitor(context);
 					v.Visit(block);
 					block = null;
 					if (v.noReturnStatement)
@@ -47,7 +50,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					else
 						cachedType = v.result;
 				} else if (expression != null) {
-					cachedType = new BooResolver().GetTypeOfExpression(expression);
+					cachedType = new BooResolver().GetTypeOfExpression(expression, context);
 					expression = null;
 				}
 				return cachedType;
@@ -56,6 +59,11 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		class GetReturnTypeVisitor : DepthFirstVisitor
 		{
+			IClass context;
+			public GetReturnTypeVisitor(IClass context)
+			{
+				this.context = context;
+			}
 			public IReturnType result;
 			public bool noReturnStatement = true;
 			
@@ -65,7 +73,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				if (node.Expression == null) {
 					result = ReflectionReturnType.Void;
 				} else {
-					result = new BooResolver().GetTypeOfExpression(node.Expression);
+					result = new BooResolver().GetTypeOfExpression(node.Expression, context);
 				}
 			}
 			

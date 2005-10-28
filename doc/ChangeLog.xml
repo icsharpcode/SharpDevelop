@@ -1,4 +1,27 @@
 ﻿<ChangeLog project="SharpDevelop">
+  <Change author="Daniel Grunwald" date="10/28/2005">Some changes to resources / font loading.</Change>
+  <Change author="Daniel Grunwald" date="10/28/2005">SharpDevelop now passes properties so that MSBuild accepts them for both the scanning and building steps -&gt; compiling Boo and ILAsm applications and specifying the target Framework version in C# works again.</Change>
+  <Change author="Daniel Grunwald" date="10/28/2005">Replace PostBuildEvent with MsBuild targets.</Change>
+  <Change author="Daniel Grunwald" date="10/27/2005">SharpDevelop should now work on .NET 2.0 final. Implemented a workaround for SD2-485 (Compile solution not working with .NET 2.0 RC1).</Change>
+  <Change author="Daniel Grunwald" date="10/27/2005">Display TreeGrid in debug mode (currently without content).</Change>
+  <Change author="Daniel Grunwald" date="10/27/2005">Add TreeGrid control.</Change>
+  <Change author="Mathias Simmack" date="10/27/2005">changed DefaultFileNodeCommands.cs to accept XAML files; added some XAML file templates (Window, Page, FlowDocument, PageFunction, ResourceDictionary, UserControl)</Change>
+  <Change author="Mathias Simmack" date="10/27/2005">support for DependentUpon and SubType attributes in XPT project templates added (see the Avalon* templates for a working demo)</Change>
+  <Change author="Mathias Simmack" date="10/27/2005">Avalon Navigation App template renamed</Change>
+  <Change author="Mathias Simmack" date="10/26/2005">Avalon page template updated</Change>
+  <Change author="Mathias Simmack" date="10/26/2005">simple Avalon application template uploaded (for testing only!)</Change>
+  <Change author="Mathias Simmack" date="10/26/2005">new ApplicationDefinition/Page compiler option; support for external Import commands in XPT project files</Change>
+  <Change author="Mathias Simmack" date="10/26/2005">updated XML editor for XAML style and schema (does NOT include the Avalon/XAML schema itself)</Change>
+  <Change author="Matt Ward" date="10/25/2005">Schema errors in task list now use the schema filename.  Fixed problem where each XmlView was creating its own output window category.</Change>
+  <Change author="Matt Ward" date="10/25/2005">Fixed schema errors caught by .NET 2.0 and removed old NAnt 0.84 schema.</Change>
+  <Change author="Matt Ward" date="10/25/2005">Removing SharpAssembly.  The AssemblyScout should be using code completion data from the ProjectContentRegistry and not SharpAssembly.</Change>
+  <Change author="Matt Ward" date="10/25/2005">Most of assembly scout working.  Needs resources from Fidalgo, info view browsing via hyperlinks is disabled, and speed improvements required.</Change>
+  <Change author="Matt Ward" date="10/25/2005">Ported SharpAssembly from Fidalgo.</Change>
+  <Change author="Matt Ward" date="10/25/2005">Can now assign an XSLT stylesheet to an XML file and run transforms.  New XML menu to make it easier to locate xml editor menu items.</Change>
+  <Change author="Daniel Grunwald" date="10/25/2005">Fixed bug in NRefactoryToBooConverter: NullReferenceException when first section in switch-statement was the default section.</Change>
+  <Change author="Markus Palme" date="10/25/2005">fixed problem with disposed window</Change>
+  <Change author="Markus Palme" date="10/25/2005">Texteditor now uses DeclarationViewWindow instead of ToolTip (part of SD2-498)</Change>
+  <Change author="Daniel Grunwald" date="10/25/2005">Use a copy of the text/color in the SearchResultPad instead of accessing the real document in the OnPaint method. This fixes some bugs when switching to the SearchResultPad after modifying the document.</Change>
   <Change author="Daniel Grunwald" date="10/25/2005">Update default layouts.</Change>
   <Change author="Daniel Grunwald" date="10/25/2005">Fixed SD2-465: Linked files are not imported</Change>
   <Change author="Daniel Grunwald" date="10/25/2005">Fixed SD2-497: Allow adding existing files as links.

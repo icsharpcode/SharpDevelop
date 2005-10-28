@@ -35,14 +35,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			
 			if (fieldInfo.IsPrivate) { // I assume that private is used most and public last (at least should be)
 				modifiers |= ModifierEnum.Private;
-			} else if (fieldInfo.IsFamily) {
+			} else if (fieldInfo.IsFamily || fieldInfo.IsFamilyOrAssembly) {
 				modifiers |= ModifierEnum.Protected;
 			} else if (fieldInfo.IsPublic) {
 				modifiers |= ModifierEnum.Public;
-			} else if (fieldInfo.IsFamilyOrAssembly) {
-				modifiers |= ModifierEnum.ProtectedOrInternal;
-			} else if (fieldInfo.IsFamilyAndAssembly) {
-				modifiers |= ModifierEnum.Protected;
+			} else {
 				modifiers |= ModifierEnum.Internal;
 			}
 			

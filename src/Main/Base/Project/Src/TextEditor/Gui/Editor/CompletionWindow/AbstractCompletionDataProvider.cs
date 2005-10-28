@@ -128,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				CodeCompletionData ccd = CreateItem(o, context);
 				if (object.Equals(o, context.SuggestedItem))
 					suggestedData = ccd;
-				if (ccd != null)
+				if (ccd != null && !ccd.Text.StartsWith("___"))
 					completionData.Add(ccd);
 			}
 			if (context.SuggestedItem != null) {

@@ -43,7 +43,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return;
 			if (result != null)
 				return;
-			IReturnType returnType = new InferredReturnType(expr);
+			IReturnType returnType = new InferredReturnType(expr, resolver.CallingClass);
 			if (useElementType)
 				returnType = new ElementReturnType(returnType);
 			result = new DefaultField.LocalVariableField(returnType, name,
@@ -157,9 +157,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (results.ContainsKey(name))
 				return;
 			if (elementReturnType)
-				results.Add(name, new ElementReturnType(new InferredReturnType(expr)));
+				results.Add(name, new ElementReturnType(new InferredReturnType(expr, resolver.CallingClass)));
 			else
-				results.Add(name, new InferredReturnType(expr));
+				results.Add(name, new InferredReturnType(expr, resolver.CallingClass));
 		}
 		
 		private void Add(string name, TypeReference reference)

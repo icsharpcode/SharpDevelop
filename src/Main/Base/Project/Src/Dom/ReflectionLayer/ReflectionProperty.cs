@@ -60,14 +60,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				
 				if (methodBase.IsPrivate) { // I assume that private is used most and public last (at least should be)
 					modifiers |= ModifierEnum.Private;
-				} else if (methodBase.IsFamily) {
+				} else if (methodBase.IsFamily || methodBase.IsFamilyOrAssembly) {
 					modifiers |= ModifierEnum.Protected;
 				} else if (methodBase.IsPublic) {
 					modifiers |= ModifierEnum.Public;
-				} else if (methodBase.IsFamilyOrAssembly) {
-					modifiers |= ModifierEnum.ProtectedOrInternal;
-				} else if (methodBase.IsFamilyAndAssembly) {
-					modifiers |= ModifierEnum.Protected;
+				} else {
 					modifiers |= ModifierEnum.Internal;
 				}
 				

@@ -90,8 +90,6 @@ namespace VBNetBinding
 					builder.Append("Private");
 				} else if ((modifier & (ModifierEnum.Protected | ModifierEnum.Internal)) == (ModifierEnum.Protected | ModifierEnum.Internal)) {
 					builder.Append("Protected Friend");
-				} else if ((modifier & ModifierEnum.ProtectedOrInternal) == ModifierEnum.ProtectedOrInternal) {
-					builder.Append("Protected Friend");
 				} else if ((modifier & ModifierEnum.Internal) == ModifierEnum.Internal) {
 					builder.Append("Friend");
 				} else if ((modifier & ModifierEnum.Protected) == ModifierEnum.Protected) {

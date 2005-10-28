@@ -16,6 +16,8 @@ namespace Grunwald.BooBinding
 		
 		public BooLanguageProperties() : base(StringComparer.InvariantCulture, BooCodeGenerator.Instance) {}
 		
+		
+		
 		public override bool ImportNamespaces {
 			get {
 				return true;
