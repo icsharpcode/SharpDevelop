@@ -973,12 +973,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#region Statements
 		public object Visit(BlockStatement blockStatement, object data)
 		{
-			foreach (Statement stmt in blockStatement.Children) {
-				outputFormatter.Indent();
-				nodeTracker.TrackedVisit(stmt, data);
-				outputFormatter.NewLine();
-			}
+			OnBlock(blockStatement.Children);
 			return null;
+		}
+		
+		void OnBlock(ArrayList statements)
+		{
+			foreach (Statement stmt in statements) {
+				if (stmt is BlockStatement) {
+					nodeTracker.TrackedVisit(stmt, null);
+				} else {
+					outputFormatter.Indent();
+					nodeTracker.TrackedVisit(stmt, null);
+					outputFormatter.NewLine();
+				}
+			}
 		}
 		
 		public object Visit(AddHandlerStatement addHandlerStatement, object data)
@@ -1060,7 +1069,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (localVariableDeclaration.Modifier != Modifier.None) {
 				OutputModifier(localVariableDeclaration.Modifier);
 			}
-			outputFormatter.PrintToken(Tokens.Dim);
+			if ((localVariableDeclaration.Modifier & Modifier.Const) == 0) {
+				outputFormatter.PrintToken(Tokens.Dim);
+			}
 			outputFormatter.Space();
 			currentVariableType = localVariableDeclaration.TypeReference;
 			
@@ -1103,9 +1114,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Then);
 			outputFormatter.NewLine();
 			++outputFormatter.IndentationLevel;
-			foreach (Statement stmt in ifElseStatement.TrueStatement) {
-				nodeTracker.TrackedVisit(stmt, data);
-			}
+			OnBlock(ifElseStatement.TrueStatement);
 			--outputFormatter.IndentationLevel;
 			
 			foreach (ElseIfSection elseIfSection in ifElseStatement.ElseIfSections) {
@@ -1117,11 +1126,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.PrintToken(Tokens.Else);
 				outputFormatter.NewLine();
 				++outputFormatter.IndentationLevel;
-				foreach (Statement stmt in ifElseStatement.FalseStatement) {
-					outputFormatter.Indent();
-					nodeTracker.TrackedVisit(stmt, data);
-					outputFormatter.NewLine();
-				}
+				OnBlock(ifElseStatement.FalseStatement);
 				--outputFormatter.IndentationLevel;
 			}
 			
@@ -1376,7 +1381,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			--outputFormatter.IndentationLevel;
 			
-			outputFormatter.PrintToken(Tokens.Loop);
+			outputFormatter.Indent();
+			if (doLoopStatement.ConditionType == ConditionType.While) {
+				outputFormatter.PrintToken(Tokens.End);
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.While);
+			} else {
+				outputFormatter.PrintToken(Tokens.Loop);
+			}
 			
 			if (doLoopStatement.ConditionPosition == ConditionPosition.End) {
 				outputFormatter.Space();
@@ -1562,25 +1574,25 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(FixedStatement fixedStatement, object data)
 		{
 			errors.Error(-1, -1, String.Format("FixedStatement is unsupported"));
-			return null;
+			return nodeTracker.TrackedVisit(fixedStatement.EmbeddedStatement, data);
 		}
 		
 		public object Visit(UnsafeStatement unsafeStatement, object data)
 		{
 			errors.Error(-1, -1, String.Format("UnsafeStatement is unsupported"));
-			return null;
+			return nodeTracker.TrackedVisit(unsafeStatement.Block, data);
 		}
 		
 		public object Visit(CheckedStatement checkedStatement, object data)
 		{
 			errors.Error(-1, -1, String.Format("CheckedStatement is unsupported"));
-			return null;
+			return nodeTracker.TrackedVisit(checkedStatement.Block, data);
 		}
 		
 		public object Visit(UncheckedStatement uncheckedStatement, object data)
 		{
 			errors.Error(-1, -1, String.Format("UncheckedStatement is unsupported"));
-			return null;
+			return nodeTracker.TrackedVisit(uncheckedStatement.Block, data);
 		}
 		
 		public object Visit(ExitStatement exitStatement, object data)
@@ -2091,13 +2103,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(CheckedExpression checkedExpression, object data)
 		{
 			errors.Error(-1, -1, String.Format("CheckedExpression is unsupported"));
-			return null;
+			return nodeTracker.TrackedVisit(checkedExpression.Expression, data);
 		}
 		
 		public object Visit(UncheckedExpression uncheckedExpression, object data)
 		{
 			errors.Error(-1, -1, String.Format("UncheckedExpression is unsupported"));
-			return null;
+			return nodeTracker.TrackedVisit(uncheckedExpression.Expression, data);
 		}
 		
 		public object Visit(PointerReferenceExpression pointerReferenceExpression, object data)
@@ -2396,12 +2408,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					if (i + 1 < list.Count) {
 						outputFormatter.PrintToken(Tokens.Comma);
 						outputFormatter.Space();
-					}
-					if ((i + 1) % 6 == 0) {
-						outputFormatter.PrintText("_ ");
-						outputFormatter.NewLine();
-						outputFormatter.Indent();
-						outputFormatter.PrintText("\t");
+						if ((i + 1) % 6 == 0) {
+							outputFormatter.PrintText("_ ");
+							outputFormatter.NewLine();
+							outputFormatter.Indent();
+							outputFormatter.PrintText("\t");
+						}
 					}
 				}
 			}

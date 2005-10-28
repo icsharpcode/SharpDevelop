@@ -23,7 +23,9 @@ namespace NRefactoryToBooConverter
 		
 		static StringComparer GetComparer(string fileName)
 		{
-			if (System.IO.Path.GetExtension(fileName).ToLower() == ".vb")
+			if (fileName == null)
+				throw new ArgumentNullException("fileName");
+			if (System.IO.Path.GetExtension(fileName).ToLowerInvariant() == ".vb")
 				return StringComparer.InvariantCultureIgnoreCase;
 			else
 				return StringComparer.InvariantCulture;
@@ -31,7 +33,7 @@ namespace NRefactoryToBooConverter
 		
 		public bool IsVisualBasic {
 			get {
-				return System.IO.Path.GetExtension(fileName).ToLower() == ".vb";
+				return System.IO.Path.GetExtension(fileName).ToLowerInvariant() == ".vb";
 			}
 		}
 		

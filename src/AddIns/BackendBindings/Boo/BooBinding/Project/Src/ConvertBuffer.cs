@@ -45,7 +45,8 @@ namespace Grunwald.BooBinding
 				IList<ICSharpCode.NRefactory.Parser.ISpecial> specials;
 				CompileUnit compileUnit = new CompileUnit();
 				using (StringReader r = new StringReader(((IEditable)window.ViewContent).Text)) {
-					module = Parser.ParseModule(compileUnit, r, ApplySettings(window.ViewContent.FileName, errors, warnings), out specials);
+					string fileName = window.ViewContent.FileName ?? window.ViewContent.UntitledName;
+					module = Parser.ParseModule(compileUnit, r, ApplySettings(fileName, errors, warnings), out specials);
 				}
 				if (errors.Count > 0) {
 					foreach (CompilerError error in errors) {

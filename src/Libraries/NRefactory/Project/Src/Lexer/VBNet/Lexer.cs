@@ -90,6 +90,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						}
 						if (ReaderPeek() != -1) {
 							ch = (char)ReaderRead();
+						} else {
+							errors.Error(Line, Col, String.Format("No EOF expected after _"));
+							return new Token(Tokens.EOF);
 						}
 					}
 					if (!lineEnd) {

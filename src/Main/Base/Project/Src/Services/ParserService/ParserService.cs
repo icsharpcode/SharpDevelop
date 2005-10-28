@@ -445,9 +445,9 @@ namespace ICSharpCode.Core
 		
 		public static ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent, ExpressionContext context)
 		{
-			IParser parser = GetParser(fileName);
-			if (parser != null) {
-				return parser.CreateResolver().CtrlSpace(caretLine, caretColumn, fileName, fileContent, context);
+			IResolver resolver = CreateResolver(fileName);
+			if (resolver != null) {
+				return resolver.CtrlSpace(caretLine, caretColumn, fileName, fileContent, context);
 			}
 			return null;
 		}

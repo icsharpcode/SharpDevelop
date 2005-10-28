@@ -11,7 +11,7 @@ using System.Collections;
 
 namespace ICSharpCode.NRefactory.Parser.AST 
 {
-	public class SwitchStatement : BlockStatement
+	public class SwitchStatement : Statement
 	{
 		Expression          switchExpression;
 //		List<SwitchSection> switchSections;
