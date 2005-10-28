@@ -69,6 +69,7 @@ namespace Grunwald.BooBinding
 				BooUsefulPC = ProjectContentRegistry.GetProjectContentForReference(booUsefulItem);
 			}
 			pc.DefaultImports = new DefaultUsing(pc);
+			pc.DefaultImports.Usings.Add("Boo.Lang");
 			pc.DefaultImports.Usings.Add("Boo.Lang.Builtins");
 			return pc;
 		}

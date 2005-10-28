@@ -199,19 +199,19 @@
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionFolderNode">
 		<MenuItem id = "CombineAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu">
 			<MenuItem id    = "AddNewProjectToSolution"
-			          label = "&amp;New Project..."
+			          label = "${res:ProjectComponent.ContextMenu.NewProject}"
 			          icon  = "Icons.16x16.NewProjectIcon"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewProjectToSolution"/>
 			<MenuItem id    = "AddExitingProjectToSolution"
-			          label = "&amp;Existing Project..."
+			          label = "${res:ProjectComponent.ContextMenu.ExistingProject}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExitingProjectToSolution"/>
 			<MenuItem id    = "Separator1" type = "Separator" />
 			<MenuItem id    = "AddItem"
-			          label = "Add &amp;Item..."
+			          label = "${res:ProjectComponent.ContextMenu.AddItem}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemToSolution"/>
 			<MenuItem id    = "AddNewSolutionFolderToSolution"
 			          icon  = "ProjectBrowser.SolutionFolder.CreateNew"
-			          label = "New Solution &amp;Folder"
+			          label = "${res:ProjectComponent.ContextMenu.NewSolutionFolder}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewSolutionFolderToSolution"/>
 		</MenuItem>
 		
@@ -266,27 +266,27 @@
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
 		<MenuItem id = "Build project"
-		          label = "B&amp;uild"
+		          label = "${res:ProjectComponent.ContextMenu.Build}"
 		          icon  = "Icons.16x16.BuildCurrentSelectedProject"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.BuildProject"/>
 		<MenuItem id = "Rebuild project"
-		          label = "R&amp;ebuild"
+		          label = "${res:ProjectComponent.ContextMenu.Rebuild}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.RebuildProject"/>
 		<MenuItem id = "Clean project"
-		          label = "Clea&amp;n"
+		          label = "${res:ProjectComponent.ContextMenu.Clean}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.CleanProject"/>
 		<MenuItem id = "Publish project"
-		          label = "Publish ${CurrentProjectName}"
+		          label = "${res:XML.MainMenu.BuildMenu.PublishProject}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>
 		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
 		
 		<MenuItem id = "ProjectAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu" >
 			<MenuItem id    = "New Item"
-			          label = "New Item..."
+			          label = "${res:ProjectComponent.ContextMenu.NewItem}"
 			          icon  = "Icons.16x16.NewDocumentIcon"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewItemsToProject"/>
 			<MenuItem id    = "Existing Item"
-			          label = "Existing Item..."
+			          label = "${res:ProjectComponent.ContextMenu.ExistingItem}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject"/>
 			<MenuItem id    = "NewFolder"
 			          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
@@ -302,7 +302,7 @@
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.SetAsStartupProject"/>
 		<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False" action="Disable">
 			<MenuItem id          = "Run"
-			          label       = "Sta&amp;rt Project"
+			          label       = "${res:ProjectComponent.ContextMenu.RunProject}"
 			          icon        = "Icons.16x16.RunProgramIcon"
 			          class       = "ICSharpCode.SharpDevelop.Project.Commands.RunProject"/>
 		</Condition>
@@ -360,11 +360,11 @@
 			<Condition name = "Ownerstate" ownerstate = "InProject">
 				<MenuItem id = "Add" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type="Menu">
 					<MenuItem id    = "New Item"
-					          label = "New Item..."
+					          label = "${res:ProjectComponent.ContextMenu.NewItem}"
 					          icon  = "Icons.16x16.NewDocumentIcon"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewItemsToProject"/>
 					<MenuItem id    = "Existing Item"
-					          label = "Existing Item..."
+					          label = "${res:ProjectComponent.ContextMenu.ExistingItem}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject"/>
 					<MenuItem id    = "NewFolder"
 					          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
@@ -427,11 +427,11 @@
 			</Not>
 			<MenuItem id = "Add" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type="Menu">
 				<MenuItem id    = "New Item"
-				          label = "New Item..."
+				          label = "${res:ProjectComponent.ContextMenu.NewItem}"
 				          icon  = "Icons.16x16.NewDocumentIcon"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewItemsToProject"/>
 				<MenuItem id    = "Existing Item"
-				          label = "Existing Item..."
+				          label = "${res:ProjectComponent.ContextMenu.ExistingItem}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject"/>
 				<MenuItem id    = "NewFolder"
 				          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
@@ -447,13 +447,13 @@
 				</Or>
 				<Condition name = "Ownerstate" ownerstate = "InProject">
 					<MenuItem id    = "ExcludeFile"
-					          label = "Exclude From Project"
+					          label = "${res:ProjectComponent.ContextMenu.ExcludeFileFromProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.ExcludeFileFromProject"/>
 				</Condition>
 				
 				<Condition name = "Ownerstate" ownerstate = "None">
 					<MenuItem id    = "IncludeFile"
-					          label = "Include In Project"
+					          label = "${res:ProjectComponent.ContextMenu.IncludeFileInProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.IncludeFileInProject"/>
 				</Condition>
 				

@@ -266,10 +266,18 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public ArrayList CtrlSpace(int caretLine, int caretColumn, string fileName, string fileContent, ExpressionContext context)
 		{
+			ArrayList result;
+			
 			if (!Initialize(fileName, caretLine, caretColumn))
 				return null;
+			if (context == ExpressionContext.Importable) {
+				result = new ArrayList();
+				pc.AddNamespaceContents(result, "", pc.Language, true);
+				NRResolver.AddUsing(result, pc.DefaultImports, pc);
+				return result;
+			}
 			
-			ArrayList result = GetImportedNamespaceContents();
+			result = GetImportedNamespaceContents();
 			
 			if (BooProject.BooCompilerPC != null) {
 				if (context == ExpressionFinder.BooAttributeContext.Instance) {

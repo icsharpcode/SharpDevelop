@@ -997,7 +997,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 		}
 		
-		static void AddUsing(ArrayList result, IUsing u, IProjectContent projectContent)
+		public static void AddUsing(ArrayList result, IUsing u, IProjectContent projectContent)
 		{
 			if (u == null) {
 				return;
@@ -1023,7 +1023,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					}
 				}
 				if (importNamespaces) {
-					projectContent.AddNamespaceContents(result, name, projectContent.Language, true);
+					string newName = null;
+					if (projectContent.DefaultImports != null) {
+						newName = projectContent.DefaultImports.SearchNamespace(name);
+					}
+					projectContent.AddNamespaceContents(result, newName ?? name, projectContent.Language, true);
 				} else {
 					foreach (object o in projectContent.GetNamespaceContents(name)) {
 						if (!(o is string))
