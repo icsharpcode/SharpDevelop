@@ -28,7 +28,7 @@ namespace ICSharpCode.Core
 		}
 		
 		public string Assembly {
-			get { 
+			get {
 				return assembly;
 			}
 		}
@@ -49,7 +49,10 @@ namespace ICSharpCode.Core
 							loadedAssembly = System.Reflection.Assembly.LoadFrom(Path.Combine(hintPath, assembly));
 						}
 
-						loadedAssembly.GetExportedTypes(); // preload assembly to provoke FileLoadException if dependencies are missing
+						#if DEBUG
+						// preload assembly to provoke FileLoadException if dependencies are missing
+						loadedAssembly.GetExportedTypes();
+						#endif
 					} catch (FileNotFoundException ex) {
 						MessageService.ShowError("The addin '" + assembly + "' could not be loaded:\n" + ex.ToString());
 					} catch (FileLoadException ex) {
@@ -61,13 +64,13 @@ namespace ICSharpCode.Core
 		}
 		
 		public List<Properties> DefinedDoozers {
-			get { 
+			get {
 				return definedDoozers;
 			}
 		}
 		
 		public List<Properties> DefinedConditionEvaluators {
-			get { 
+			get {
 				return definedConditionEvaluators;
 			}
 		}

@@ -162,6 +162,10 @@ namespace ICSharpCode.SharpDevelop
 				MessageService.CustomErrorReporter = ShowErrorBox;
 				#endif
 				
+				LoggingService.Info("Loading properties...");
+				PropertyService.Load();
+				ResourceService.InitializeService();
+				
 				Assembly exe = typeof(SharpDevelopMain).Assembly;
 				ResourceService.RegisterNeutralStrings(new ResourceManager("Resources.StringResources", exe));
 				ResourceService.RegisterNeutralImages(new ResourceManager("Resources.BitmapResources", exe));
@@ -217,9 +221,6 @@ namespace ICSharpCode.SharpDevelop
 		
 		static void InitializeCore()
 		{
-			LoggingService.Info("Loading properties...");
-			PropertyService.Load();
-			
 			StringParser.RegisterStringTagProvider(new SharpDevelopStringTagProvider());
 			
 			LoggingService.Info("Loading AddInTree...");
@@ -228,7 +229,7 @@ namespace ICSharpCode.SharpDevelop
 			LoggingService.Info("Initializing workbench...");
 			// .NET base autostarts
 			// taken out of the add-in tree for performance reasons (every tick in startup counts)
-			new InitializeWorkbenchCommand().Run();
+			WorkbenchSingleton.InitializeWorkbench();
 			
 			// run workspace autostart commands
 			try {

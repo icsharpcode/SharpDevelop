@@ -33,8 +33,10 @@ namespace ICSharpCode.Core
 		
 		static string resourceDirectory;
 		
-		static ResourceService()
+		public static void InitializeService()
 		{
+			if (resourceDirectory != null)
+				throw new InvalidOperationException("Service is already initialized.");
 			resourceDirectory = FileUtility.Combine(PropertyService.DataDirectory, "resources");
 			
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChange);

@@ -23,14 +23,6 @@ using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.SharpDevelop.Commands
 {
-	public class InitializeWorkbenchCommand : AbstractCommand
-	{
-		public override void Run()
-		{
-			WorkbenchSingleton.InitializeWorkbench();
-		}
-	}
-	
 	public class StartWorkbenchCommand // : AbstractCommand
 	{
 		const string workbenchMemento = "WorkbenchMemento";
