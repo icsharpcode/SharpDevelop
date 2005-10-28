@@ -6,10 +6,9 @@
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
     <ProjectGuid>{17F4D7E0-6933-4C2E-8714-FD7E98D625D5}</ProjectGuid>
-    <PostBuildEvent>"$(MSBuildProjectDirectory)\PostBuildEvent.bat" "$(MSBuildProjectDirectory)"</PostBuildEvent>
     <ProductVersion>8.0.50215</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
-    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <RunPostBuildEvent>Always</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>True</DebugSymbols>
@@ -102,7 +101,6 @@
       <SubType>UserControl</SubType>
     </Compile>
     <Compile Include="Src\Gui\ProjectBrowserVisitor\OverlayIconManager.cs" />
-    <None Include="PostBuildEvent.bat" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
@@ -115,6 +113,14 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Content Include="..\RequiredLibraries\msvcp70.dll">
+      <Link>msvcp70.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="..\RequiredLibraries\msvcr70.dll">
+      <Link>msvcr70.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

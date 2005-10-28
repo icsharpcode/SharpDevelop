@@ -16,8 +16,6 @@
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
     <OutputPath>..\..\..\..\..\..\AddIns\AddIns\BackendBindings\BooBinding\</OutputPath>
-    <PostBuildEvent>"$(MSBuildProjectDirectory)\PostBuildEvent.bat" "$(MSBuildProjectDirectory)"</PostBuildEvent>
-    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
     <Optimize>False</Optimize>
@@ -138,6 +136,8 @@
     <Content Include="Templates\Form.xft">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Content Include="PostBuildEvent.proj" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="PostBuildEvent.proj" />
 </Project>

@@ -1,0 +1,25 @@
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<!-- REM binary is in repository, no need to always run booc
+goto copyFiles
+pushd "%1\..\..\RequiredLibraries"
+booc Boo.Microsoft.Build.Tasks.boo -t:library -o:Boo.Microsoft.Build.Tasks.dll -r:Microsoft.Build.Framework -r:Microsoft.Build.Tasks -r:Microsoft.Build.Utilities
+@IF %ERRORLEVEL% NEQ 0 GOTO BooPostBuildEventEnd
+popd
+:copyFiles
+copy "%1\..\..\RequiredLibraries\booc.*" .
+copy "%1\..\..\Boo.Microsoft.Build.Tasks\*.targets" .
+copy "%1\..\..\RequiredLibraries\Boo.Microsoft.Build.Tasks.dll" .
+:BooPostBuildEventEnd-->
+  <PropertyGroup>
+	<PrepareForRunDependsOn>$(PrepareForRunDependsOn);MyPostBuildTarget</PrepareForRunDependsOn>
+  </PropertyGroup>
+  <ItemGroup>
+	<MyCopyItem Include="$(MSBuildProjectDirectory)\..\..\RequiredLibraries\booc.*" />
+	<MyCopyItem Include="$(MSBuildProjectDirectory)\..\..\Boo.Microsoft.Build.Tasks\*.targets" />
+	<MyCopyItem Include="$(MSBuildProjectDirectory)\..\..\RequiredLibraries\Boo.Microsoft.Build.Tasks.dll" />
+  </ItemGroup>
+  <Target Name="MyPostBuildTarget">
+    <Copy SourceFiles="@(MyCopyItem)" DestinationFolder="$(OutputPath)" />
+	<Delete Files="$(OutputPath)\FormDesigner.addin" ContinueOnError="True"/>
+  </Target>
+</Project>

@@ -116,9 +116,10 @@ namespace ICSharpCode.Svn.Commands
 						break;
 					case StatusKind.Added:
 						if (status.Copied) {
-							MessageService.ShowError("The file has just been moved to this location, do you really want to remove it?");
-							e.Cancel = true;
-							return;
+							if (!MessageService.AskQuestion("The file has just been moved to this location, do you really want to remove it?")) {
+								e.Cancel = true;
+								return;
+							}
 						}
 						SvnClient.Instance.Client.Revert(new string[] { fullName }, e.IsDirectory);
 						return;
