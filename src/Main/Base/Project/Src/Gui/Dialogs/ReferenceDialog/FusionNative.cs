@@ -8,6 +8,7 @@
 using System;
 using System.Text;
 using System.Runtime.InteropServices;
+using System.Runtime.InteropServices.ComTypes;
 
 namespace MSjogren.GacTool.FusionNative
 {
@@ -47,7 +48,7 @@ namespace MSjogren.GacTool.FusionNative
 		                  uint dwFormat,
 		                  uint dwFlags,
 		                  uint dwMaxSize,
-		                  out UCOMIStream ppStream);
+		                  out IStream ppStream);
 		
 		void IsNameEqual(IAssemblyName pName);
 		

@@ -107,22 +107,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			{
 				LoggingService.Debug("Run MSBuild on " + buildFile);
 				
-				// HACK: Workaround for MSBuild bug:
-				// "unknown" MSBuild projects (projects with unknown type id, e.g. IL-projects)
-				// are looked up by MSBuild if the project files are MSBuild-compatible.
-				// That lookup method has a bug: it uses the working directory instead of the
-				// solution directory as base path for the lookup.
-				Environment.CurrentDirectory = Path.GetDirectoryName(buildFile);
-				
-				BuildPropertyGroup properties = new BuildPropertyGroup();
+				Engine engine = new Engine(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
 				foreach (KeyValuePair<string, string> entry in MsBuildProperties) {
-					properties.SetProperty(entry.Key, entry.Value);
+					engine.GlobalProperties.SetProperty(entry.Key, entry.Value);
 				}
 				
-				Engine engine = new Engine(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
 				SharpDevelopLogger logger = new SharpDevelopLogger(this.engine, results);
 				engine.RegisterLogger(logger);
-				engine.BuildProjectFile(buildFile, targets, properties, null);
+				// IMPORTANT: engine.GlobalProperties must be passed here.
+				// The properties must be available for both the scanning and building steps
+				engine.BuildProjectFile(buildFile, targets, engine.GlobalProperties);
 				
 				LoggingService.Debug("MSBuild finished");
 			}

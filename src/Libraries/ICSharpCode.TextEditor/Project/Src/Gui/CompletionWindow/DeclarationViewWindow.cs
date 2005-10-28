@@ -48,6 +48,8 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			}
 		}
 		
+		public bool HideOnClick;
+		
 		public DeclarationViewWindow(Form parent)
 		{
 			SetStyle(ControlStyles.Selectable, false);
@@ -57,6 +59,12 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			ShowInTaskbar   = false;
 			Size            = new Size(0, 0);
 			base.CreateHandle();
+		}
+		
+		protected override void OnClick(EventArgs e)
+		{
+			base.OnClick(e);
+			if (HideOnClick) Hide();
 		}
 		
 		public void ShowDeclarationViewWindow()

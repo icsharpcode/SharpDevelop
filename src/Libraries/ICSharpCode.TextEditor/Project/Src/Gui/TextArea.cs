@@ -320,6 +320,7 @@ namespace ICSharpCode.TextEditor
 				p.Offset(3, 3);
 				toolTip.Location = p;
 				toolTip.Description = text;
+				toolTip.HideOnClick = true;
 				toolTip.Show();
 			}
 			oldToolTip = text;

@@ -120,7 +120,6 @@
       <Name>NRefactoryToBooConverter</Name>
       <Private>True</Private>
     </ProjectReference>
-    <Content Include="PostBuildEvent.bat" />
     <ProjectReference Include="..\..\..\..\DisplayBindings\FormDesigner\Project\FormDesigner.csproj">
       <Project>{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}</Project>
       <Name>FormDesigner</Name>
