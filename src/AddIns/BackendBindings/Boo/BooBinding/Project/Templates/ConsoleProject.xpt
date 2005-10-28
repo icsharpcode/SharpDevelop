@@ -23,8 +23,9 @@
 			<ProjectItems>
 				<Reference Include="System.Data" />
 				<Reference Include="System.Xml" />
+				<Reference Include="Boo.Lang.Useful" />
 			</ProjectItems>
-		
+			
 			<Files>
 				<File name="Program.boo"><![CDATA[import System
 import System.Collections

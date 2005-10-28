@@ -1,25 +1,25 @@
 <Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-
-    <UsingTask
+	
+	<UsingTask
 		TaskName="Microsoft.Build.Tasks.CreateBooManifestResourceName"
 		AssemblyFile="Boo.Microsoft.Build.Tasks.dll" />
-				
+	
 	<UsingTask
-		TaskName="Boo.Microsoft.Build.Tasks.Booc" 
+		TaskName="Boo.Microsoft.Build.Tasks.Booc"
 		AssemblyFile="Boo.Microsoft.Build.Tasks.dll"/>
-		
-    <PropertyGroup>
+	
+	<PropertyGroup>
 		<MSBuildAllProjects Condition="'$(BoocToolPath)' != ''">
-			$(MSBuildAllProjects);$(BoocToolPath)\Boo.Microsoft.Build.targets
+		$(MSBuildAllProjects);$(BoocToolPath)\Boo.Microsoft.Build.targets
 		</MSBuildAllProjects>
 		<MSBuildAllProjects Condition="'$(BoocToolPath)' == ''">
-			$(MSBuildAllProjects);$(MSBuildBinPath)\Boo.Microsoft.Build.targets
+		$(MSBuildAllProjects);$(MSBuildBinPath)\Boo.Microsoft.Build.targets
 		</MSBuildAllProjects>
-        <DefaultLanguageSourceExtension>.boo</DefaultLanguageSourceExtension>
-        <Language>Boo</Language>
-    </PropertyGroup>
-
-    <!--
+		<DefaultLanguageSourceExtension>.boo</DefaultLanguageSourceExtension>
+		<Language>Boo</Language>
+	</PropertyGroup>
+	
+	<!--
     The CreateManifestResourceNames target create the manifest resource names
 	from the .RESX files.
 
@@ -64,24 +64,24 @@
     For other project systems, this transformation may be different.
     -->
 	
-    <PropertyGroup>
-        <CreateManifestResourceNamesDependsOn>
+	<PropertyGroup>
+		<CreateManifestResourceNamesDependsOn>
 		</CreateManifestResourceNamesDependsOn>
-    </PropertyGroup>
-    
-    <Target
-        Name="CreateManifestResourceNames"
-        Condition="'
-			@(ResxWithNoCulture)
-			@(ResxWithCulture)
-			@(NonResxWithNoCulture)
-			@(NonResxWithCulture)'!=''"
-			
-        DependsOnTargets="$(CreateManifestResourceNamesDependsOn)"
-		>
-
-        <!-- Create the target resource names for non-culture resx files -->
-        <CreateBooManifestResourceName
+	</PropertyGroup>
+	
+	<Target
+		Name="CreateManifestResourceNames"
+		Condition="'
+		@(ResxWithNoCulture)
+		@(ResxWithCulture)
+		@(NonResxWithNoCulture)
+		@(NonResxWithCulture)'!=''"
+		
+		DependsOnTargets="$(CreateManifestResourceNamesDependsOn)"
+	>
+		
+		<!-- Create the target resource names for non-culture resx files -->
+		<CreateBooManifestResourceName
 			Condition="'@(ResxWithNoCulture)'!=''"
 			ResourceFiles="@(ResxWithNoCulture)"
 			RootNamespace="$(RootNamespace)">
@@ -89,124 +89,130 @@
 			<Output
 				TaskParameter="ManifestResourceNames"
 				ItemName="ManifestResourceWithNoCultureName"/>
-
-        </CreateBooManifestResourceName> 
-
-        <!-- Create the target resource names for culture resx files. -->
-        <CreateBooManifestResourceName
+		
+		</CreateBooManifestResourceName>
+		
+		<!-- Create the target resource names for culture resx files. -->
+		<CreateBooManifestResourceName
 			Condition="'@(ResxWithCulture)'!=''"
 			ResourceFiles="@(ResxWithCulture)"
 			RootNamespace="$(RootNamespace)">
-
-            <Output
+			
+			<Output
 				TaskParameter="ManifestResourceNames"
 				ItemName="ManifestResourceWithCultureName"/>
-
-        </CreateBooManifestResourceName>
-
-        <!-- Create the target resource names for non-culture non-resx files. -->
-        <CreateBooManifestResourceName
+		
+		</CreateBooManifestResourceName>
+		
+		<!-- Create the target resource names for non-culture non-resx files. -->
+		<CreateBooManifestResourceName
 			Condition="'@(NonResxWithNoCulture)'!=''"
 			ResourceFiles="@(NonResxWithNoCulture)"
 			RootNamespace="$(RootNamespace)">
-
-            <Output
+			
+			<Output
 				TaskParameter="ManifestResourceNames"
 				ItemName="ManifestNonResxWithNoCulture"/>
-
-        </CreateBooManifestResourceName>
-
-        <!-- Create the target resource names for culture non-resx files. -->
-        <CreateBooManifestResourceName
+		
+		</CreateBooManifestResourceName>
+		
+		<!-- Create the target resource names for culture non-resx files. -->
+		<CreateBooManifestResourceName
 			Condition="'@(NonResxWithCulture)'!=''"
 			ResourceFiles="@(NonResxWithCulture)"
 			RootNamespace="$(RootNamespace)">
-
-            <Output
+			
+			<Output
 				TaskParameter="ManifestResourceNames"
 				ItemName="ManifestNonResxWithCulture"/>
-
-        </CreateBooManifestResourceName>
-    </Target>
-
-    <PropertyGroup>
-
-        <!-- 
+		
+		</CreateBooManifestResourceName>
+	</Target>
+	
+	<PropertyGroup>
+		
+		<!--
 		"None" is not technically a valid DebugType, so we can't pass it
 		in as such to the compiler.  So here, we modify the properties so
 	    they make sense.
 		-->
-        <DebugSymbols Condition="'$(DebugType)' == 'none'">false</DebugSymbols>
-        <DebugType    Condition="'$(DebugType)' == 'none'"></DebugType>    
-        
-        <!-- Provide a facility to override UseHostCompilerIfAvailable-->
-        <UseHostCompilerIfAvailable
-			Condition="'$(UseHostCompilerIfAvailable)' == ''">
-				true
-		</UseHostCompilerIfAvailable>
+		<DebugSymbols Condition="'$(DebugType)' == 'none'">false</DebugSymbols>
+		<DebugType    Condition="'$(DebugType)' == 'none'"></DebugType>
 		
-    </PropertyGroup>
-
-    <!-- 
-	These two compiler warnings are raised when a reference is bound to
-	a different version than specified in the assembly reference version
-    number.  MSBuild raises the same warning in this case, so the compiler
-    warning would be redundant.
-    -->
-    <PropertyGroup Condition="'$(TargetFrameworkVersion)' != 'v1.0'">
-        <NoWarn Condition="'$(NoWarn)' != ''">$(NoWarn);</NoWarn>
-        <NoWarn>$(NoWarn)1701;1702</NoWarn>
-    </PropertyGroup>    
-
-    <ItemGroup>
-        <DocFileItem
+		<!-- Provide a facility to override UseHostCompilerIfAvailable-->
+		<UseHostCompilerIfAvailable
+			Condition="'$(UseHostCompilerIfAvailable)' == ''">
+		true
+		</UseHostCompilerIfAvailable>
+	
+	</PropertyGroup>
+	
+	<ItemGroup>
+		<DocFileItem
 			Include="$(DocumentationFile)"
 			Condition="'$(DocumentationFile)'!=''">
 			
-            <InProject>false</InProject>
-        </DocFileItem>
-    </ItemGroup>
-
-    <PropertyGroup>
-        <CoreCompileDependsOn>
-			_ComputeNonExistentFileProperty
+			<InProject>false</InProject>
+		</DocFileItem>
+	</ItemGroup>
+	
+	<PropertyGroup>
+		<CoreCompileDependsOn>
+		_ComputeNonExistentFileProperty
 		</CoreCompileDependsOn>
-    </PropertyGroup>
-    
+	</PropertyGroup>
+	
+	<PropertyGroup Condition=" '$(BoocToolPath)' != '' ">
+		<ReferencePath>$(ReferencePath);$(BoocToolPath)</ReferencePath>
+	</PropertyGroup>
+	<PropertyGroup Condition=" '$(BoocToolPath)' == '' ">
+		<ReferencePath>$(ReferencePath);$(BooBinPath)</ReferencePath>
+	</PropertyGroup>
+	
 	<Target
-        Name="CoreCompile"
-        Inputs="$(MSBuildAllProjects);
-                @(Compile);
-                @(ManifestResourceWithNoCulture);
-                $(ApplicationIcon);
-                $(AssemblyOriginatorKeyFile);
-                @(ManifestNonResxWithNoCultureOnDisk);
-                @(ReferencePath);
-                @(CompiledLicenseFile)"
-        Outputs="@(DocFileItem);
-                 @(IntermediateAssembly);
-                 $(NonExistentFile)"
-        DependsOnTargets="$(CoreCompileDependsOn)"
-    >
-       
-        <Booc
-              OutputAssembly="@(IntermediateAssembly)"
-              References="@(ReferencePath)"
-              Resources= "
-				@(ManifestResourceWithNoCulture);
-				@(ManifestNonResxWithNoCultureOnDisk);
-				@(CompiledLicenseFile)"
-              ResponseFiles="$(CompilerResponseFile)"
-              Sources="@(Compile)"
-              TargetType="$(OutputType)"
-              ToolPath="$(BoocToolPath)"
-              Pipelines="@(Pipeline)"
-              Verbosity="$(BoocVerbosity)"
-              Culture="$(AssemblyCulture)"
-              SourceDirectory="$(SourceDirectory)"
-              />
-
-    </Target>
-
+		Name="CoreCompile"
+		Inputs="$(MSBuildAllProjects);
+		        @(Compile);
+		        @(ManifestResourceWithNoCulture);
+		        $(ApplicationIcon);
+		        $(AssemblyOriginatorKeyFile);
+		        @(ManifestNonResxWithNoCultureOnDisk);
+		        @(ReferencePath);
+		        @(CompiledLicenseFile)"
+		Outputs="@(DocFileItem);
+		         @(IntermediateAssembly);
+		         $(NonExistentFile)"
+		DependsOnTargets="$(CoreCompileDependsOn)"
+	>
+		
+		<Booc
+			OutputAssembly="@(IntermediateAssembly)"
+			References="@(ReferencePath)"
+			Resources= "@(ManifestResourceWithNoCulture);
+			            @(ManifestNonResxWithNoCultureOnDisk);
+			            @(CompiledLicenseFile)"
+			ResponseFiles="$(CompilerResponseFile)"
+			Sources="@(Compile)"
+			TargetType="$(OutputType)"
+			ToolPath="$(BoocToolPath)"
+			Pipelines="@(Pipeline)"
+			Verbosity="$(BoocVerbosity)"
+			Culture="$(AssemblyCulture)"
+			SourceDirectory="$(SourceDirectory)"
+		/>
+		
+		<Copy
+			Condition=" '$(BoocToolPath)' == '' "
+			SkipUnchangedFiles="true"
+			SourceFiles="$(BooBinPath)\Boo.Lang.dll"
+			DestinationFolder="$(OutputPath)"/>
+		
+		<Copy
+			Condition=" '$(BoocToolPath)' != '' "
+			SkipUnchangedFiles="true"
+			SourceFiles="$(BoocToolPath)\Boo.Lang.dll"
+			DestinationFolder="$(OutputPath)"/>
+	</Target>
+	
 	<Import Project="$(MSBuildBinPath)\Microsoft.Common.targets" />
 </Project>

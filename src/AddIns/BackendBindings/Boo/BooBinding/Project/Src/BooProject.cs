@@ -51,6 +51,7 @@ namespace Grunwald.BooBinding
 		}
 		
 		internal static IProjectContent BooCompilerPC;
+		internal static IProjectContent BooUsefulPC;
 		
 		public override ParseProjectContent CreateProjectContent()
 		{
@@ -59,10 +60,14 @@ namespace Grunwald.BooBinding
 			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(systemItem));
 			ReferenceProjectItem booLangItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Builtins).Assembly.Location);
 			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(booLangItem));
-			ReferenceProjectItem booCompilerItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Compiler.AbstractAstAttribute).Assembly.Location);
-			BooCompilerPC = ProjectContentRegistry.GetProjectContentForReference(booCompilerItem);
-			ReferenceProjectItem booUsefulItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Useful.Attributes.SingletonAttribute).Assembly.Location);
-			pc.ReferencedContents.Add(ProjectContentRegistry.GetProjectContentForReference(booUsefulItem));
+			if (BooCompilerPC == null) {
+				ReferenceProjectItem booCompilerItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Compiler.AbstractAstAttribute).Assembly.Location);
+				BooCompilerPC = ProjectContentRegistry.GetProjectContentForReference(booCompilerItem);
+			}
+			if (BooUsefulPC == null) {
+				ReferenceProjectItem booUsefulItem = new ReferenceProjectItem(this, typeof(Boo.Lang.Useful.Attributes.SingletonAttribute).Assembly.Location);
+				BooUsefulPC = ProjectContentRegistry.GetProjectContentForReference(booUsefulItem);
+			}
 			pc.DefaultImports = new DefaultUsing(pc);
 			pc.DefaultImports.Usings.Add("Boo.Lang.Builtins");
 			return pc;

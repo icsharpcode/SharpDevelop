@@ -22,6 +22,7 @@
 
 			<ProjectItems>
 				<Reference Include="System.Xml" />
+				<Reference Include="Boo.Lang.Useful" />
 			</ProjectItems>
 
 			<Files>
