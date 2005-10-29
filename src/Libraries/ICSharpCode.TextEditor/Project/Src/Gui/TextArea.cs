@@ -56,6 +56,8 @@ namespace ICSharpCode.TextEditor
 		SelectionManager selectionManager;
 		Caret            caret;
 		
+		bool disposed;
+		
 		public TextEditorControl MotherTextEditorControl {
 			get {
 				return motherTextEditorControl;
@@ -727,12 +729,17 @@ namespace ICSharpCode.TextEditor
 //			++Caret.DesiredColumn;
 		}
 		
-		
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
 			if (disposing) {
-				Caret.Dispose();
+				if (!disposed) {
+					disposed = true;
+					caret.PositionChanged -= new EventHandler(SearchMatchingBracket);
+					Document.TextContentChanged -= new EventHandler(TextContentChanged);
+					Document.FoldingManager.FoldingsChanged -= new EventHandler(DocumentFoldingsChanged);
+					caret.Dispose();
+				}
 			}
 		}
 		

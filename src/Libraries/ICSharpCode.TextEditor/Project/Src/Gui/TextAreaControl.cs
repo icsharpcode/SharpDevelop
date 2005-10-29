@@ -39,6 +39,7 @@ namespace ICSharpCode.TextEditor
 		HScrollBar hScrollBar = new HScrollBar();
 		TextArea   textArea;
 		bool       doHandleMousewheel = true;
+		bool       disposed;
 		
 		public TextArea TextArea {
 			get {
@@ -108,6 +109,17 @@ namespace ICSharpCode.TextEditor
 			
 			Document.DocumentChanged += new DocumentEventHandler(AdjustScrollBars);
 			SetStyle(ControlStyles.Selectable, true);
+		}
+		
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing) {
+				if (!disposed) {
+					disposed = true;
+					Document.DocumentChanged -= new DocumentEventHandler(AdjustScrollBars);
+				}
+			}
+			base.Dispose(disposing);
 		}
 		
 		protected override void OnResize(System.EventArgs e)
