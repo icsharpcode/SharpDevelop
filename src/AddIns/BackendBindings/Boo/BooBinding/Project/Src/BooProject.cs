@@ -18,6 +18,7 @@ namespace Grunwald.BooBinding
 	public class BooProject : MSBuildProject
 	{
 		static bool initialized = false;
+		public static readonly string BooBinPath = Path.GetDirectoryName(typeof(BooProject).Assembly.Location);
 		
 		void Init()
 		{
@@ -26,7 +27,7 @@ namespace Grunwald.BooBinding
 			if (!initialized) {
 				initialized = true;
 				MSBuildEngine.CompileTaskNames.Add("booc");
-				MSBuildEngine.MsBuildProperties.Add("BooBinPath", Path.GetDirectoryName(typeof(BooProject).Assembly.Location));
+				MSBuildEngine.MSBuildProperties.Add("BooBinPath", BooBinPath);
 			}
 		}
 		
@@ -42,7 +43,28 @@ namespace Grunwald.BooBinding
 		{
 			Init();
 			Create(info);
+			string rspFile = Path.Combine(BooBinPath, "booc.rsp");
+			if (File.Exists(rspFile)) {
+				using (StreamReader r = new StreamReader(rspFile)) {
+					string line;
+					while ((line = r.ReadLine()) != null) {
+						line = line.Trim();
+						if (line.StartsWith("-r:")) {
+							AddReference(line.Substring(3));
+						}
+					}
+				}
+			}
 			imports.Add("$(BooBinPath)\\Boo.Microsoft.Build.targets");
+		}
+		
+		void AddReference(string assembly)
+		{
+			foreach (ProjectItem item in this.Items) {
+				if (item.ItemType == ItemType.Reference && item.Include == assembly)
+					return;
+			}
+			Items.Add(new ReferenceProjectItem(this, assembly));
 		}
 		
 		public override bool CanCompile(string fileName)

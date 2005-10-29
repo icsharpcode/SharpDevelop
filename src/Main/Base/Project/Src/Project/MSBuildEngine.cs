@@ -35,13 +35,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Gets a list where addins can add additional properties for use in MsBuild.
 		/// </summary>
-		public static readonly SortedList<string, string> MsBuildProperties;
+		public static readonly SortedList<string, string> MSBuildProperties;
 		
 		static MSBuildEngine()
 		{
 			CompileTaskNames = new List<string>(new string[] {"csc", "vbc", "ilasm"});
-			MsBuildProperties = new SortedList<string, string>();
-			MsBuildProperties.Add("SharpDevelopBinPath", Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location));
+			MSBuildProperties = new SortedList<string, string>();
+			MSBuildProperties.Add("SharpDevelopBinPath", Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location));
 		}
 		
 		MessageViewCategory messageView;
@@ -108,7 +108,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				LoggingService.Debug("Run MSBuild on " + buildFile);
 				
 				Engine engine = new Engine(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
-				foreach (KeyValuePair<string, string> entry in MsBuildProperties) {
+				foreach (KeyValuePair<string, string> entry in MSBuildProperties) {
 					engine.GlobalProperties.SetProperty(entry.Key, entry.Value);
 				}
 				
