@@ -24,7 +24,7 @@ namespace SearchAndReplace
 		/// update their pattern information. This method will be called 
 		/// before the FindNext function.
 		/// </remarks>
-		void CompilePattern();
+		bool CompilePattern();
 		
 		/// <remarks>
 		/// The find next method should search the next occurrence of the 

@@ -91,9 +91,12 @@ namespace ICSharpCode.SharpDevelop
 		{
 			CopyInfoToClipboard();
 			
-			// open IE via process.start to our bug reporting forum
-			//Process.Start("http://www.icsharpcode.net/OpenSource/SD/Forum/forum.asp?FORUM_ID=5");
+			StartUrl("http://community.sharpdevelop.net/forums/23/ShowForum.aspx");
 			
+			//Version v = Assembly.GetEntryAssembly().GetName().Version;
+			//StartUrl("http://www.icsharpcode.net/OpenSource/SD/BugReporting.aspx?version=" + v.Major + "." + v.Minor + "." + v.Revision + "." + v.Build);
+			
+			/*
 			string text = "This version of SharpDevelop is an internal build, " +
 				"not a released version.\n" +
 				"Please report problems in the internal builds to the " +
@@ -119,6 +122,7 @@ namespace ICSharpCode.SharpDevelop
 					+ Uri.EscapeDataString("Write an English description on how to reproduce the error and paste the exception text.");
 				StartUrl(url);
 			}
+			*/
 		}
 		
 		static void StartUrl(string url)

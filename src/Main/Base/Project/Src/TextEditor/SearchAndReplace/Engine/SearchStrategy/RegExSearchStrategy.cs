@@ -17,13 +17,19 @@ namespace SearchAndReplace
 	{
 		Regex regex = null;
 		
-		public void CompilePattern()
+		public bool CompilePattern()
 		{
 			RegexOptions regexOptions = RegexOptions.Compiled;
 			if (!SearchOptions.MatchCase) {
 				regexOptions |= RegexOptions.IgnoreCase;
 			}
-			regex = new Regex(SearchOptions.FindPattern, regexOptions);
+			try {
+				regex = new Regex(SearchOptions.FindPattern, regexOptions);
+				return true;
+			} catch (ArgumentException ex) {
+				MessageService.ShowError("Error parsing regular expression:\n" + ex.Message);
+				return false;
+			}
 		}
 		
 		public SearchResult FindNext(ITextIterator textIterator)
@@ -37,7 +43,7 @@ namespace SearchAndReplace
 				} else {
 					int delta = m.Index - textIterator.Position;
 					if (delta <= 0 || textIterator.MoveAhead(delta)) {
-						return new SearchResult(m.Index, m.Length);
+						return new RegexSearchResult(m);
 					} else {
 						return null;
 					}
@@ -45,6 +51,21 @@ namespace SearchAndReplace
 			}
 			
 			return null;
+		}
+		
+		private class RegexSearchResult : SearchResult
+		{
+			Match m;
+			
+			internal RegexSearchResult(Match m) : base(m.Index, m.Length)
+			{
+				this.m = m;
+			}
+			
+			public override string TransformReplacePattern(string pattern)
+			{
+				return m.Result(pattern);
+			}
 		}
 	}
 }

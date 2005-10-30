@@ -49,7 +49,8 @@ namespace SearchAndReplace
 			SetSearchOptions();
 			
 			find.Reset();
-			find.SearchStrategy.CompilePattern();
+			if (!find.SearchStrategy.CompilePattern())
+				return false;
 			
 			currentFileName = String.Empty;
 			return true;

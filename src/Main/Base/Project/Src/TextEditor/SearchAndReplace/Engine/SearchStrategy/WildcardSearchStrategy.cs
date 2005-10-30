@@ -144,9 +144,10 @@ namespace SearchAndReplace
 			return -1;
 		}
 		
-		public void CompilePattern()
+		public bool CompilePattern()
 		{
 			CompilePattern(SearchOptions.FindPattern, !SearchOptions.MatchCase);
+			return true;
 		}
 		
 		public SearchResult FindNext(ITextIterator textIterator)

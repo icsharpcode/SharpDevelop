@@ -36,21 +36,28 @@ namespace SearchAndReplace
 			find.DocumentIterator = SearchReplaceUtilities.CreateDocumentIterator(SearchOptions.DocumentIteratorType);
 		}
 		
-		// TODO: Transform Replace Pattern
 		public static void Replace()
 		{
 			SetSearchOptions();
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				TextEditorControl textarea = ((ITextEditorControlProvider)WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent).TextEditorControl;
-				string text = textarea.ActiveTextAreaControl.TextArea.SelectionManager.SelectedText;
-				if (text == SearchOptions.FindPattern) {
-					int offset = textarea.ActiveTextAreaControl.TextArea.SelectionManager.SelectionCollection[0].Offset;
+			if (lastResult != null && WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
+				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
+				if (provider != null) {
+					TextEditorControl textarea = provider.TextEditorControl;
+					SelectionManager selectionManager = textarea.ActiveTextAreaControl.TextArea.SelectionManager;
 					
-					textarea.BeginUpdate();
-					textarea.ActiveTextAreaControl.TextArea.SelectionManager.RemoveSelectedText();
-					textarea.Document.Insert(offset, SearchOptions.ReplacePattern);
-					textarea.ActiveTextAreaControl.Caret.Position = textarea.Document.OffsetToPosition(offset +  SearchOptions.ReplacePattern.Length);
-					textarea.EndUpdate();
+					if (selectionManager.SelectionCollection.Count == 1
+					    && selectionManager.SelectionCollection[0].Offset == lastResult.Offset
+					    && selectionManager.SelectionCollection[0].Length == lastResult.Length
+					    && lastResult.FileName == textarea.FileName)
+					{
+						string replacePattern = lastResult.TransformReplacePattern(SearchOptions.ReplacePattern);
+						
+						textarea.BeginUpdate();
+						selectionManager.ClearSelection();
+						textarea.Document.Replace(lastResult.Offset, lastResult.Length, replacePattern);
+						textarea.ActiveTextAreaControl.Caret.Position = textarea.Document.OffsetToPosition(lastResult.Offset + replacePattern.Length);
+						textarea.EndUpdate();
+					}
 				}
 			}
 			FindNext();
@@ -65,7 +72,8 @@ namespace SearchAndReplace
 				textArea.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
 			}
 			find.Reset();
-			find.SearchStrategy.CompilePattern();
+			if (!find.SearchStrategy.CompilePattern())
+				return;
 			while (true) {
 				SearchResult result = SearchReplaceManager.find.FindNext();
 				
@@ -91,11 +99,14 @@ namespace SearchAndReplace
 		{
 			SetSearchOptions();
 			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
-				TextEditorControl textArea = ((ITextEditorControlProvider)WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent).TextEditorControl;
-				textArea.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
+				ITextEditorControlProvider provider = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent as ITextEditorControlProvider;
+				if (provider != null) {
+					provider.TextEditorControl.ActiveTextAreaControl.TextArea.SelectionManager.ClearSelection();
+				}
 			}
 			find.Reset();
-			find.SearchStrategy.CompilePattern();
+			if (!find.SearchStrategy.CompilePattern())
+				return;
 			
 			List<TextEditorControl> textAreas = new List<TextEditorControl>();
 			while (true) {
@@ -136,7 +147,11 @@ namespace SearchAndReplace
 				return;
 			}
 			
-			find.SearchStrategy.CompilePattern();
+			if (!find.SearchStrategy.CompilePattern()) {
+				find.Reset();
+				lastResult = null;
+				return;
+			}
 			SearchResult result = find.FindNext();
 			
 			if (result == null) {

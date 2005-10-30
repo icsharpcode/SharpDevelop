@@ -58,9 +58,10 @@ namespace SearchAndReplace
 			return -1;
 		}
 		
-		public void CompilePattern()
+		public bool CompilePattern()
 		{
 			searchPattern = SearchOptions.MatchCase ? SearchOptions.FindPattern : SearchOptions.FindPattern.ToUpper();
+			return true;
 		}
 		
 		public SearchResult FindNext(ITextIterator textIterator)
