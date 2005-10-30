@@ -2,13 +2,13 @@
 <Template author="Mathias Simmack" version="1.0">
 	
 	<Config
-		  name        = "Avalon PageFunction"
+		  name        = "WPF PageFunction"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
 		  defaultname = "PageFunction${Number}.xaml"
 		  language    = "XML"/>
 	 
-	<Description>An Avalon PageFunction.</Description>
+	<Description>A Windows Presentation Foundation PageFunction.</Description>
 	
 	<!-- 
 	Special new file templates:

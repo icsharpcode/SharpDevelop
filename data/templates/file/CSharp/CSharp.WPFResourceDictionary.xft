@@ -2,13 +2,13 @@
 <Template author="Mathias Simmack" version="1.0">
 	
 	<Config
-		  name        = "Avalon FlowDocument"
+		  name        = "WPF ResourceDictionary"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
-		  defaultname = "FlowDocument${Number}.xaml"
+		  defaultname = "Dictionary${Number}.xaml"
 		  language    = "XML"/>
 	 
-	<Description>An Avalon FlowDocument.</Description>
+	<Description>A Windows Presentation Foundation ResourceDictionary.</Description>
 	
 	<!-- 
 	Special new file templates:
@@ -20,13 +20,11 @@
 		${Path}                     -> Full path of the file
 	 -->
 	<Files>
-		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<FlowDocument xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
-    ColumnWidth="400" FontSize="14" FontFamily="Georgia"
+		<File name="${FullName}" language="XML" buildAction="Page"><![CDATA[<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
+    xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
     >
-    <Paragraph>
-        
-    </Paragraph>
-</FlowDocument>]]></File>
+    
+</ResourceDictionary>]]></File>
 	</Files>
 	
 	<AdditionalOptions/>

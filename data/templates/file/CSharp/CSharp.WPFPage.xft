@@ -2,13 +2,13 @@
 <Template author="Mathias Simmack" version="1.0">
 	
 	<Config
-		  name        = "Avalon Page"
+		  name        = "WPF Page"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
 		  defaultname = "Page${Number}.xaml"
 		  language    = "C#"/>
 	 
-	<Description>An Avalon page.</Description>
+	<Description>A Windows Presentation Foundation page.</Description>
 	
 	<!-- 
 	Special new file templates:

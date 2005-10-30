@@ -5,16 +5,16 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>Avalon Navigation Application Beta</Name>
+		<Name>WPF Application Template Beta</Name>
 		<Category>C#</Category>
 		<Icon>C#.Project.Form</Icon>
 		<LanguageName>C#</LanguageName>
-		<Description>Creates a simple Avalon application with one navigation page.</Description>
+		<Description>Creates a simple Windows Presentation Foundation application.</Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
 	<Actions>
-		<Open filename = "AvalonApplication.txt"/>
+		<Open filename = "WPF.txt"/>
 	</Actions>
 	
 	<Combine name = "${ProjectName}" directory = ".">
@@ -41,21 +41,20 @@
 			</Imports>
 			
 			<Files>
-				<File name="MyApp.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
-                       xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
-                       x:Class="${StandardNamespace}.MyApp"
-                       StartupUri="Page1.xaml">
+				<File name="MyApp.xaml" buildAction="ApplicationDefinition" language="XML"><![CDATA[<Application x:Class="${StandardNamespace}.MyApp"
+    xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
+    xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
+    Startup="AppStartup"
+    >
     <Application.Resources>
-
+         
     </Application.Resources>
 </Application>]]></File>
 				<File name="MyApp.xaml.cs" subType="Code" dependentUpon="MyApp.xaml"><![CDATA[using System;
 using System.Windows;
-using System.Windows.Navigation;
 using System.Data;
 using System.Xml;
 using System.Configuration;
-
 
 namespace ${StandardNamespace}
 {
@@ -66,29 +65,55 @@ namespace ${StandardNamespace}
     public partial class MyApp : Application
     {
 
+        void AppStartup(object sender, StartupEventArgs args)
+        {
+            Window1 mainWindow = new Window1();
+            mainWindow.Show();
+        }
+
     }
 }]]></File>
-				<File name="Page1.xaml" buildAction="Page"><![CDATA[<Page xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
-      xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
-      x:Class="${StandardNamespace}.Page1">
-  <StackPanel>
-
-  </StackPanel>
-</Page>]]></File>
-				<File name="Page1.xaml.cs" subType="Code" dependentUpon="Page1.xaml"><![CDATA[using System;
+				<File name="Window1.xaml" buildAction="Page" language="XML"><![CDATA[<Window x:Class="${StandardNamespace}.Window1"
+    xmlns="http://schemas.microsoft.com/winfx/avalon/2005"
+    xmlns:x="http://schemas.microsoft.com/winfx/xaml/2005"
+    Title="Window1"
+    >
+    <Grid>
+        
+    </Grid>
+</Window>]]></File>
+				<File name="Window1.xaml.cs" subType="Code" dependentUpon="Window1.xaml"><![CDATA[using System;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Navigation;
-using System.ComponentModel;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Media;
+using System.Windows.Shapes;
+
 
 namespace ${StandardNamespace}
 {
-	public partial class Page1 : Page
-	{
-	}
+    /// <summary>
+    /// Interaction logic for Window1.xaml
+    /// </summary>
+
+    public partial class Window1 : Window
+    {
+        public Window1()
+        {
+            InitializeComponent();
+        }
+
+        // To use Loaded event put Loaded="WindowLoaded" attribute in root element of .xaml file.
+        // private void WindowLoaded(object sender, RoutedEventArgs e) {}
+
+        // Sample event handler:  
+        // private void ButtonClick(object sender, RoutedEventArgs e) {}
+
+    }
 }]]></File>
-				<File name="AvalonApplication.txt" buildAction="None" language="Default"><![CDATA[First of all let me say that this is just a simple Avalon application with one empty page.
-I hope I can fix and improve this template in the near future.
+				<File name="WPF.txt" buildAction="None" language="Default"><![CDATA[This template is just a simple WPF (formerly known as "Avalon") application with an empty
+window. I hope I can fix and improve this template in the near future.
 If you want to build this Avalon application you need the following things:
 
 	1. The latest version of Microsoft's WinFX Runtime Components
@@ -99,7 +124,7 @@ I personally use the September Community Technology Preview (CTP) and it works f
 So, don't say I did not warn you. :-)
 
 Mathias
-(2005-10-26)]]></File>
+(2005-10-30)]]></File>
 				<File name="AssemblyInfo.cs"><![CDATA[#region Using directives
 
 using System.Reflection;
