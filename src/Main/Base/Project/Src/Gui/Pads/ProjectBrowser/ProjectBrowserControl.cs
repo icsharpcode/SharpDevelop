@@ -61,8 +61,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			InitializeComponent();
 			treeView.BeforeSelect      += TreeViewBeforeSelect;
-			FileService.FileRenaming   += FileServiceFileRenaming;
-			FileService.FileRemoving   += FileServiceFileRemoving;
+			FileService.FileRenamed   += FileServiceFileRenamed;
+			FileService.FileRemoved   += FileServiceFileRemoved;
 			
 			ProjectService.ProjectItemAdded += ProjectServiceProjectItemAdded;
 			ProjectService.SolutionFolderRemoved += ProjectServiceSolutionFolderRemoved;
@@ -100,12 +100,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		void FileServiceFileRemoving(object sender, FileEventArgs e)
+		void FileServiceFileRemoved(object sender, FileEventArgs e)
 		{
 			CallVisitor(new FileRemoveTreeNodeVisitor(e.FileName));
 		}
 		
-		void FileServiceFileRenaming(object sender, FileRenameEventArgs e)
+		void FileServiceFileRenamed(object sender, FileRenameEventArgs e)
 		{
 			CallVisitor(new FileRenameTreeNodeVisitor(e.SourceFile, e.TargetFile));
 		}

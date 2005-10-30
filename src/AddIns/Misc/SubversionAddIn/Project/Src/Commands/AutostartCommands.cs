@@ -111,8 +111,13 @@ namespace ICSharpCode.Svn.Commands
 						break;
 					case StatusKind.Modified:
 					case StatusKind.Replaced:
-						MessageService.ShowError("The file has local modifications. Do you really want to remove it?");
-						e.Cancel = true;
+						if (MessageService.AskQuestion("The file has local modifications. Do you really want to remove it?")) {
+							// modified files cannot be deleted, so we need to revert the changes first
+							SvnClient.Instance.Client.Revert(new string[] { fullName }, e.IsDirectory);
+						} else {
+							e.Cancel = true;
+							return;
+						}
 						break;
 					case StatusKind.Added:
 						if (status.Copied) {
