@@ -362,8 +362,11 @@ namespace HtmlHelp2
 				dynamicHelpToolbar.Items.Add(button);
 			}
 
+			ProfessionalColorTable colorTable       = new ProfessionalColorTable();
+			colorTable.UseSystemColors              = true;
 			dynamicHelpToolbar.ImageList            = new ImageList();
 			dynamicHelpToolbar.ImageList.ColorDepth = ColorDepth.Depth32Bit;
+			dynamicHelpToolbar.Renderer             = new ToolStripProfessionalRenderer(colorTable);
 			dynamicHelpToolbar.ImageList.Images.Add(ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Toc.png"));
 			dynamicHelpToolbar.ImageList.Images.Add(ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Index.png"));
 			dynamicHelpToolbar.ImageList.Images.Add(ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Search.png"));
