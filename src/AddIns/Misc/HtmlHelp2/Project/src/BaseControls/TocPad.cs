@@ -151,6 +151,10 @@ namespace HtmlHelp2
 					printTopic.Click                 += new EventHandler(this.PrintTopic);
 					printPopup.Items.Add(printChildTopics);
 					printChildTopics.Click           += new EventHandler(this.PrintTopicAndSubtopics);
+
+					RenderModeChanged(null, null);
+
+					ToolbarService.RendererChanged   += new EventHandler(this.RenderModeChanged);
 				}
 				catch(Exception ex)
 				{
@@ -197,6 +201,20 @@ namespace HtmlHelp2
 			nohelpLabel.Text      = StringParser.Parse("${res:AddIns.HtmlHelp2.HelpSystemNotAvailable}");
 			nohelpLabel.TextAlign = ContentAlignment.MiddleCenter;
 			Controls.Add(nohelpLabel);
+		}
+
+		private void RenderModeChanged(object sender, EventArgs e)
+		{
+			if(ToolbarService.Renderer is ToolStripProfessionalRenderer)
+			{
+				ProfessionalColorTable colorTable = new ProfessionalColorTable();
+				colorTable.UseSystemColors        = true;
+				printPopup.Renderer               = new ToolStripProfessionalRenderer(colorTable);
+			}
+			else
+			{
+				printPopup.Renderer               = ToolbarService.Renderer;
+			}
 		}
 
 		public void LoadToc()

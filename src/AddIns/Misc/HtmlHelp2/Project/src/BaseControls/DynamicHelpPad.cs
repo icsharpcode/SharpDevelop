@@ -393,11 +393,10 @@ namespace HtmlHelp2
 			}
 			else
 			{
-				dynamicHelpToolbar.Renderer = ToolbarService.Renderer;
+				dynamicHelpToolbar.Renderer       = ToolbarService.Renderer;
 			}
 		}
-		
-		
+
 		private void ToolStripButtonClicked(object sender, EventArgs e)
 		{
 			ToolStripItem item = (ToolStripItem)sender;
