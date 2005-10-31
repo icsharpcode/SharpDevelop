@@ -110,7 +110,8 @@ namespace HtmlHelp2
 					this.FakeHelpControl();
 				}
 			}
-			else {
+			else
+			{
 				this.FakeHelpControl();
 			}
 

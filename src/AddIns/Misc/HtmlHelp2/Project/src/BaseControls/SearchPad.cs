@@ -16,6 +16,7 @@ namespace HtmlHelp2
 	using ICSharpCode.SharpDevelop.Project;
 	using HtmlHelp2.Environment;
 	using HtmlHelp2.HelperDialog;
+	using HtmlHelp2.SharpDevLanguageClass;
 	using MSHelpServices;
 
 
@@ -42,6 +43,7 @@ namespace HtmlHelp2
 		CheckBox enableStemming    = new CheckBox();
 		CheckBox reuseMatches      = new CheckBox();
 		CheckBox hiliteTopics      = new CheckBox();
+		CheckBox useCurrentLang    = new CheckBox();
 		Label label1               = new Label();
 		Label label2               = new Label();
 		string selectedQuery       = "";
@@ -94,6 +96,7 @@ namespace HtmlHelp2
 			panel3.Controls.Add(enableStemming);
 			panel3.Controls.Add(reuseMatches);
 			panel3.Controls.Add(hiliteTopics);
+			panel3.Controls.Add(useCurrentLang);
 
 			titlesOnly.Width                      = pw;
 			titlesOnly.Text                       = StringParser.Parse("${res:AddIns.HtmlHelp2.SearchInTitlesOnly}");
@@ -119,6 +122,18 @@ namespace HtmlHelp2
 			hiliteTopics.TextAlign                = ContentAlignment.MiddleLeft;
 			hiliteTopics.Enabled                  = HtmlHelp2Environment.IsReady;
 			hiliteTopics.Checked                  = true;
+
+			useCurrentLang.Width                  = pw;
+			useCurrentLang.Top                    = hiliteTopics.Top + hiliteTopics.Height;
+			
+			// TODO: just a little hack, I was too lazy to build a new database ;-)
+			string useCurrentLangString           = StringParser.Parse("${res:AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch}");
+			if(useCurrentLangString.StartsWith("${res"))
+				useCurrentLangString              = "Use current Project language";
+			useCurrentLang.Text                   = useCurrentLangString;
+			useCurrentLang.TextAlign              = ContentAlignment.MiddleLeft;
+			useCurrentLang.Enabled                = HtmlHelp2Environment.IsReady;
+			useCurrentLang.Visible                = ProjectService.CurrentProject != null;
 
 			panel3.Dock                           = DockStyle.Fill;
 
@@ -164,6 +179,9 @@ namespace HtmlHelp2
 			label2.Dock                           = DockStyle.Top;
 			label2.TextAlign                      = ContentAlignment.MiddleLeft;
 			label2.Enabled                        = HtmlHelp2Environment.IsReady;
+			
+			ProjectService.SolutionLoaded        += this.SolutionLoaded;
+			ProjectService.SolutionClosed        += this.SolutionUnloaded;
 		}
 
 		private void FilterChanged(object sender, EventArgs e)
@@ -280,6 +298,9 @@ namespace HtmlHelp2
 
 					foreach(IHxTopic topic in matchingTopics)
 					{
+						if(useCurrentLang.Checked && !useDynamicHelp && !SharpDevLanguage.CheckTopicLanguage(topic))
+							continue;
+
 						ListViewItem lvi = new ListViewItem();
 						lvi.Text         = topic.get_Title(HxTopicGetTitleType.HxTopicGetRLTitle,
 						                                   HxTopicGetTitleDefVal.HxTopicGetTitleFileName);
@@ -320,6 +341,19 @@ namespace HtmlHelp2
 
 			HtmlHelp2SearchResultsView searchResults = HtmlHelp2SearchResultsView.Instance;
 			return searchResults.SearchResultsListView.Items.Count > 0;
+		}
+		#endregion
+	
+		#region Project Events to hide/show the new "Use language" checkbox
+		private void SolutionLoaded(object sender, SolutionEventArgs e)
+		{
+			useCurrentLang.Visible = true;
+		}
+
+		private void SolutionUnloaded(object sender, EventArgs e)
+		{
+			useCurrentLang.Visible = false;
+			useCurrentLang.Checked = false;
 		}
 		#endregion
 	}
