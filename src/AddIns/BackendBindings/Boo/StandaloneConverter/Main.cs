@@ -302,7 +302,7 @@ namespace StandaloneConverter
 						state = Error;
 						break;
 					}
-				} else if (b > 0xc2 && b < 0xf5) {
+				} else if (b >= 0xc2 && b < 0xf5) {
 					// beginning of byte sequence
 					if (state == UTF8 || state == ASCII) {
 						state = UTF8Sequence;
