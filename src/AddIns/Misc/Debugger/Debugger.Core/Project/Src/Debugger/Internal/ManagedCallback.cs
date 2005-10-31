@@ -61,19 +61,17 @@ namespace DebuggerLibrary
 			callingProcess = debugger.GetProcess(pProcess);
 			callingProcess.IsRunning = false;
 		}
-
-		// Sets CurrentProcess, CurrentThread and CurrentFunction
-		// (CurrentFunction will be set to null if there are no symbols)
+		
 		void EnterCallback(string name, ICorDebugThread pThread)
 		{
 			EnterCallback(name);
-
+			
 			callingThread = debugger.GetThread(pThread);
 			
 			callingProcess = callingThread.Process;
 			callingProcess.IsRunning = false;
 		}
-
+		
 		void EnterCallback(string name)
 		{
 			handlingCallback = true;

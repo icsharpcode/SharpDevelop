@@ -19,8 +19,11 @@ namespace DebuggerLibrary
 {
 	public partial class NDebugger
 	{
-		bool isPaused;
+		PausedReason? pausedReason = null;
 		bool pauseOnHandledException = false;
+		EventWaitHandle waitForPauseHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+		
+		Process currentProcess;
 		
 		public event EventHandler<DebuggingPausedEventArgs> DebuggingPaused;
 		public event EventHandler<DebuggerEventArgs> DebuggingResumed;
@@ -101,13 +104,24 @@ namespace DebuggerLibrary
 		
 		public bool IsPaused {
 			get {
-				return isPaused;
+				return (pausedReason != null);
 			}
 		}
 		
 		public bool IsRunning {
 			get {
-				return !isPaused;
+				return (pausedReason == null);
+			}
+		}
+		
+		/// <summary>
+		/// The reason why the debugger is paused.
+		/// Thows an DebuggerException if debugger is not paused.
+		/// </summary>
+		public PausedReason PausedReason {
+			get {
+				AssertPaused();
+				return (PausedReason)pausedReason;
 			}
 		}
 		
@@ -116,9 +130,23 @@ namespace DebuggerLibrary
 			if (IsPaused) {
 				throw new DebuggerException("Already paused");
 			}
-			isPaused = true;
-			SetUpEnvironment(process, thread, function);
+			if (process == null) {
+				throw new DebuggerException("Process can not be null");
+			}
+			if (thread == null && function != null) {
+				throw new DebuggerException("Function can not be set without thread");
+			}
+			
+			currentProcess = process;
+			currentProcess.CurrentThread = thread;
+			if (currentProcess.CurrentThread != null) {
+				currentProcess.CurrentThread.CurrentFunction = function;
+			}
+			
+			pausedReason = reason;
+			
 			OnDebuggingPaused(reason);
+			waitForPauseHandle.Set();
 		}
 		
 		internal void FakePause(PausedReason reason, bool keepCurrentFunction)
@@ -132,61 +160,42 @@ namespace DebuggerLibrary
 		
 		internal void Resume()
 		{
-			if (!IsPaused) {
+			if (IsRunning) {
 				throw new DebuggerException("Already resumed");
 			}
+			
 			OnDebuggingResumed();
-			isPaused = false;
-		}
-		
-		void SetUpEnvironment(Process process, Thread thread, Function function)
-		{
-			CleanEnvironment();
-				
-			// Set the CurrentProcess
-			if (process == null) {
-				if (thread != null) {
-					process = thread.Process;
-				}
-			}
-			currentProcess = process;
+			waitForPauseHandle.Reset();
 			
-			// Set the CurrentThread
-			if (process != null) {
-				if (thread != null) {
-					process.CurrentThread = thread;
-				} else {
-					IList<Thread> threads = process.Threads;
-					if (threads.Count > 0) {
-						process.CurrentThread = threads[0];
-					} else {
-						process.CurrentThread = null;
-					}
-				}
-			}
+			pausedReason = null;
 			
-			// Set the CurrentFunction
-			// Other CurrentFunctions in threads are fetched on request
-			if (thread != null && function != null) {
-				thread.CurrentFunction = function;
-			}
-		}
-		
-		void CleanEnvironment()
-		{
-			// Remove all stored functions,
-			// they are disponsed between callbacks and
-			// they need to be regenerated
+			// Remove all stored functions, they are disponsed between callbacks and they need to be regenerated
 			foreach(Thread t in Threads) {
 				t.CurrentFunction = null;
 			}
 			
-			// Clear current thread
-			if (currentProcess != null) {
-				currentProcess.CurrentThread = null;
-			}
 			// Clear current process
 			currentProcess = null;
+		}
+		
+		/// <summary>
+		/// Waits until the debugger pauses unless it is already paused.
+		/// Use PausedReason to find out why it paused.
+		/// </summary>
+		public void WaitForPause()
+		{
+			if (IsRunning) {
+				WaitForPauseHandle.WaitOne();
+			}
+		}
+		
+		/// <summary>
+		/// Wait handle, which will be set as long as the debugger is paused
+		/// </summary>
+		public WaitHandle WaitForPauseHandle {
+			get {
+				return waitForPauseHandle;
+			}
 		}
 		
 		public void Break()

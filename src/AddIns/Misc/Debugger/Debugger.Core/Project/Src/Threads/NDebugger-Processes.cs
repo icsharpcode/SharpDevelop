@@ -16,8 +16,6 @@ namespace DebuggerLibrary
 	{
 		List<Process> processCollection = new List<Process>();
 
-		Process currentProcess;
-
 		public event EventHandler<ProcessEventArgs> ProcessStarted;
 		public event EventHandler<ProcessEventArgs> ProcessExited;
 		

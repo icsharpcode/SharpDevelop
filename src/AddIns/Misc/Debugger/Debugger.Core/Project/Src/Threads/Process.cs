@@ -38,6 +38,12 @@ namespace DebuggerLibrary
 
 		public Thread CurrentThread {
 			get {
+				if (currentThread == null) {
+					IList<Thread> threads = Threads;
+					if (threads.Count > 0) {
+						currentThread = threads[0];
+					}
+				}
 				return currentThread;
 			}
 			internal set {
