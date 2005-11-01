@@ -277,6 +277,19 @@ namespace Grunwald.BooBinding.CodeCompletion
 					return true;
 				}
 			}
+			if (callingClass != null) {
+				ArrayList list = new ArrayList();
+				ResolveResult.AddExtensions(callingClass.ProjectContent.Language, list, callingClass, type);
+				foreach (IMethodOrProperty mp in list) {
+					if (IsSameName(mp.Name, memberName)) {
+						if (mp is IMethod)
+							MakeMethodResult(type, memberName);
+						else
+							MakeResult(mp);
+						return true;
+					}
+				}
+			}
 			return false;
 		}
 		#endregion
@@ -375,6 +388,17 @@ namespace Grunwald.BooBinding.CodeCompletion
 				    && m.IsAccessible(callingClass, isClassInInheritanceTree)
 				   ) {
 					methods.Add(m);
+				}
+			}
+			if (methods.Count == 0) {
+				ArrayList list = new ArrayList();
+				ResolveResult.AddExtensions(callingClass.ProjectContent.Language, list, callingClass, containingType);
+				foreach (IMethodOrProperty mp in list) {
+					if (IsSameName(mp.Name, methodName) && mp is IMethod) {
+						IMethod m = (IMethod)mp.Clone();
+						m.Parameters.RemoveAt(0);
+						methods.Add(m);
+					}
 				}
 			}
 			ResolveInvocation(methods, arguments);

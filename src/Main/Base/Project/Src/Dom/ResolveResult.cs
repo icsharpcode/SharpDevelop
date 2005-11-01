@@ -102,7 +102,77 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (language.ShowMember(p, showStatic) && p.IsAccessible(callingClass, isClassInInheritanceTree))
 					res.Add(p);
 			}
+			
+			if (!showStatic && callingClass != null) {
+				AddExtensions(language, res, callingClass, resolvedType);
+			}
+			
 			return res;
+		}
+		
+		/// <summary>
+		/// Adds extension methods to <paramref name="res"/>.
+		/// </summary>
+		public static void AddExtensions(LanguageProperties language, ArrayList res, IClass callingClass, IReturnType resolvedType)
+		{
+			if (language == null)
+				throw new ArgumentNullException("language");
+			if (res == null)
+				throw new ArgumentNullException("res");
+			if (callingClass == null)
+				throw new ArgumentNullException("callingClass");
+			if (resolvedType == null)
+				throw new ArgumentNullException("resolvedType");
+			
+			bool supportsExtensionMethods = language.SupportsExtensionMethods;
+			bool supportsExtensionProperties = language.SupportsExtensionProperties;
+			if (supportsExtensionMethods || supportsExtensionProperties) {
+				ArrayList list = new ArrayList();
+				IMethod dummyMethod = new DefaultMethod("dummy", ReflectionReturnType.Void, ModifierEnum.Static, DomRegion.Empty, DomRegion.Empty, callingClass);
+				NRefactoryResolver.NRefactoryResolver.AddContentsFromCalling(list, callingClass, dummyMethod);
+				
+				bool searchExtensionsInClasses = language.SearchExtensionsInClasses;
+				foreach (object o in list) {
+					if (supportsExtensionMethods && o is IMethod || supportsExtensionProperties && o is IProperty) {
+						TryAddExtension(language, res, o as IMethodOrProperty, resolvedType);
+					} else if (searchExtensionsInClasses && o is IClass) {
+						IClass c = o as IClass;
+						if (c.HasExtensionMethods) {
+							if (supportsExtensionMethods) {
+								foreach (IProperty p in c.Properties) {
+									TryAddExtension(language, res, p, resolvedType);
+								}
+							}
+							if (supportsExtensionProperties) {
+								foreach (IMethod m in c.Methods) {
+									TryAddExtension(language, res, m, resolvedType);
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+		
+		static void TryAddExtension(LanguageProperties language, ArrayList res, IMethodOrProperty ext, IReturnType resolvedType)
+		{
+			// accept only extension methods
+			if (!ext.IsExtensionMethod)
+				return;
+			// don't add extension if method with that name already exists
+			// but allow overloading extension methods
+			foreach (IMember member in res) {
+				IMethodOrProperty p = member as IMethodOrProperty;
+				if (p != null && p.IsExtensionMethod)
+					continue;
+				if (language.NameComparer.Equals(member.Name, ext.Name)) {
+					return;
+				}
+			}
+			// now add the extension method if it fits the type
+			if (MemberLookupHelper.ConversionExists(resolvedType, ext.Parameters[0].ReturnType)) {
+				res.Add(ext);
+			}
 		}
 		
 		public virtual FilePosition GetDefinitionPosition()

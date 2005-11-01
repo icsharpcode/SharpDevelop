@@ -12,7 +12,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 {
 	public class LanguageProperties
 	{
-		public readonly static LanguageProperties CSharp = new LanguageProperties(StringComparer.InvariantCulture, CSharpCodeGenerator.Instance);
+		public readonly static LanguageProperties CSharp = new CSharpProperties();
 		public readonly static LanguageProperties VBNet = new VBNetProperties();
 		
 		StringComparer nameComparer;
@@ -34,6 +34,37 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public CodeGenerator CodeGenerator {
 			get {
 				return codeGenerator;
+			}
+		}
+		
+		/// <summary>
+		/// Gets if the language supports calling C# 3-style extension methods
+		/// (first parameter = instance parameter)
+		/// </summary>
+		public virtual bool SupportsExtensionMethods {
+			get {
+				return false;
+			}
+		}
+		
+		/// <summary>
+		/// Gets if the language supports calling extension properties
+		/// (first parameter = instance parameter)
+		/// </summary>
+		public virtual bool SupportsExtensionProperties {
+			get {
+				return false;
+			}
+		}
+		
+		/// <summary>
+		/// Gets if extension methods/properties are searched in imported classes (returns true) or if
+		/// only the extensions from the current class, imported classes and imported modules are used
+		/// (returns false). This property has no effect if the language doesn't support
+		/// </summary>
+		public virtual bool SearchExtensionsInClasses {
+			get {
+				return false;
 			}
 		}
 		
@@ -89,10 +120,17 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public override string ToString()
 		{
-			if (GetType() == typeof(LanguageProperties) && nameComparer == StringComparer.InvariantCulture)
+			return "[" + base.ToString() + "]";
+		}
+		
+		private class CSharpProperties : LanguageProperties
+		{
+			public CSharpProperties() : base(StringComparer.InvariantCulture, CSharpCodeGenerator.Instance) {}
+			
+			public override string ToString()
+			{
 				return "[LanguageProperties: C#]";
-			else
-				return "[" + base.ToString() + "]";
+			}
 		}
 		
 		private class VBNetProperties : LanguageProperties

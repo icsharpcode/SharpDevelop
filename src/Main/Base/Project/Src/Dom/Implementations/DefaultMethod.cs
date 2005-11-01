@@ -56,12 +56,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IList<IParameter> parameters = null;
 		IList<ITypeParameter> typeParameters = null;
 		
+		bool isExtensionMethod;
+		
+		public bool IsExtensionMethod {
+			get {
+				return isExtensionMethod;
+			}
+			set {
+				isExtensionMethod = value;
+			}
+		}
+		
 		public override IMember Clone()
 		{
 			DefaultMethod p = new DefaultMethod(Name, ReturnType, Modifiers, Region, BodyRegion, DeclaringType);
 			p.parameters = DefaultParameter.Clone(this.Parameters);
 			p.typeParameters = this.typeParameters;
 			p.documentationTag = DocumentationTag;
+			p.isExtensionMethod = this.isExtensionMethod;
 			return p;
 		}
 		

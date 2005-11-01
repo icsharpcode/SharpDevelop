@@ -366,6 +366,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			//LoggingService.Debug("Method: " + node.FullName);
 			DefaultMethod method = new DefaultMethod(node.Name, null, GetModifier(node), GetRegion(node), GetClientRegion(node), OuterClass);
+			if ((node.ImplementationFlags & AST.MethodImplementationFlags.Extension) == AST.MethodImplementationFlags.Extension) {
+				method.IsExtensionMethod = true;
+			}
 			ConvertAttributes(node, method);
 			ConvertTemplates(node, method);
 			// return type must be assign AFTER ConvertTemplates

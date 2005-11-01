@@ -44,14 +44,20 @@ namespace ICSharpCode.SharpDevelop.Dom
 							flags |= hasPublicOrInternalStaticMembersFlag;
 						}
 					}
-					foreach (IMember m in this.Properties) {
+					foreach (IProperty m in this.Properties) {
 						if (m.IsStatic && (m.IsPublic || m.IsInternal)) {
 							flags |= hasPublicOrInternalStaticMembersFlag;
 						}
+						if (m.IsExtensionMethod) {
+							flags |= hasExtensionMethodsFlag;
+						}
 					}
-					foreach (IMember m in this.Methods) {
+					foreach (IMethod m in this.Methods) {
 						if (m.IsStatic && (m.IsPublic || m.IsInternal)) {
 							flags |= hasPublicOrInternalStaticMembersFlag;
+						}
+						if (m.IsExtensionMethod) {
+							flags |= hasExtensionMethodsFlag;
 						}
 					}
 					foreach (IMember m in this.Events) {

@@ -20,9 +20,10 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		
 		IList<IParameter> parameters = null;
 		internal byte accessFlags;
-		const byte indexerFlag = 1;
-		const byte getterFlag  = 2;
-		const byte setterFlag  = 4;
+		const byte indexerFlag   = 0x01;
+		const byte getterFlag    = 0x02;
+		const byte setterFlag    = 0x04;
+		const byte extensionFlag = 0x08;
 		
 		public bool IsIndexer {
 			get { return (accessFlags & indexerFlag) == indexerFlag; }
@@ -37,6 +38,11 @@ namespace ICSharpCode.SharpDevelop.Dom {
 		public bool CanSet {
 			get { return (accessFlags & setterFlag) == setterFlag; }
 			set { if (value) accessFlags |= setterFlag; else accessFlags &= 255-setterFlag; }
+		}
+		
+		public bool IsExtensionMethod {
+			get { return (accessFlags & extensionFlag) == extensionFlag; }
+			set { if (value) accessFlags |= extensionFlag; else accessFlags &= 255-extensionFlag; }
 		}
 		
 		public override string DocumentationTag {

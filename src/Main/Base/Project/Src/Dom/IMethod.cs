@@ -20,6 +20,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		IList<IParameter> Parameters {
 			get;
 		}
+		
+		bool IsExtensionMethod {
+			get;
+		}
 	}
 	
 	public interface IMethod : IMethodOrProperty

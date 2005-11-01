@@ -21,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 	{
 		public const long FileMagic = 0x11635233ED2F428C;
 		public const long IndexFileMagic = 0x11635233ED2F427D;
-		public const short FileVersion = 5;
+		public const short FileVersion = 6;
 		
 		#region Cache management
 		#if DEBUG
@@ -747,6 +747,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				WriteMember(m);
 				WriteTemplates(m.TypeParameters);
 				WriteType(m.ReturnType);
+				writer.Write(m.IsExtensionMethod);
 				WriteParameters(m.Parameters);
 				currentMethod = null;
 			}
@@ -771,6 +772,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 					m.TypeParameters = DefaultTypeParameter.EmptyTypeParameterList;
 				}
 				m.ReturnType = ReadType();
+				m.IsExtensionMethod = reader.ReadBoolean();
 				ReadParameters(m);
 				currentMethod = null;
 				return m;
@@ -781,7 +783,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			void WriteProperty(IProperty p)
 			{
 				WriteMember(p);
-				writer.Write(((DefaultProperty)p).accessFlags);
+				DefaultProperty dp = p as DefaultProperty;
+				if (dp != null) {
+					writer.Write(dp.accessFlags);
+				} else {
+					writer.Write((byte)0);
+				}
 				WriteParameters(p.Parameters);
 			}
 			

@@ -134,8 +134,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 			ResolveResult results = ParserService.Resolve(expressionResult, caretLineNumber, caretColumn, fileName, document.TextContent);
 			TypeResolveResult trr = results as TypeResolveResult;
+			LanguageProperties language = ParserService.CurrentProjectContent.Language;
 			if (trr != null && !constructorInsight) {
-				if (ParserService.CurrentProjectContent.Language.AllowObjectConstructionOutsideContext)
+				if (language.AllowObjectConstructionOutsideContext)
 					constructorInsight = true;
 			}
 			if (constructorInsight) {
@@ -155,14 +156,24 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				MethodResolveResult result = results as MethodResolveResult;
 				if (result == null)
 					return;
-				IProjectContent p = ParserService.CurrentProjectContent;
 				bool classIsInInheritanceTree = false;
 				if (result.CallingClass != null)
 					classIsInInheritanceTree = result.CallingClass.IsTypeInInheritanceTree(result.ContainingType.GetUnderlyingClass());
 				foreach (IMethod method in result.ContainingType.GetMethods()) {
-					if (p.Language.NameComparer.Equals(method.Name, result.Name)) {
+					if (language.NameComparer.Equals(method.Name, result.Name)) {
 						if (method.IsAccessible(result.CallingClass, classIsInInheritanceTree)) {
 							methods.Add(method);
+						}
+					}
+				}
+				if (methods.Count == 0 && result.CallingClass != null && language.SupportsExtensionMethods) {
+					ArrayList list = new ArrayList();
+					ResolveResult.AddExtensions(language, list, result.CallingClass, result.ContainingType);
+					foreach (IMethodOrProperty mp in list) {
+						if (language.NameComparer.Equals(mp.Name, result.Name) && mp is IMethod) {
+							IMethod m = (IMethod)mp.Clone();
+							m.Parameters.RemoveAt(0);
+							methods.Add(m);
 						}
 					}
 				}
