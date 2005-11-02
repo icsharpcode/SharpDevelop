@@ -57,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.ShowPlusMinus = true;
 			localVarList.FullRowSelect = true;
 			localVarList.Dock = DockStyle.Fill;
+			localVarList.Sorting = SortOrder.Ascending;
 			//localVarList.GridLines  = false;
 			//localVarList.Activation = ItemActivation.OneClick;
 			localVarList.Columns.AddRange(new ColumnHeader[] {name, val, type} );

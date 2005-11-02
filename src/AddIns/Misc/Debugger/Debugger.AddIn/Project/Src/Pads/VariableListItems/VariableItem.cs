@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Windows.Forms;
 using DebuggerLibrary;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
@@ -85,6 +86,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				}
 				baseClassItemAdded = true;
 			}
+			
+			// Do not sort names of array items
+			if (Variable is ArrayVariable) {
+				this.Items.SortOrder = SortOrder.None;
+			} else {
+				this.Items.SortOrder = SortOrder.Ascending;
+			}
+			
 			LocalVarPad.UpdateVariables(this.Items, Variable.SubVariables);
 		}
 	}
