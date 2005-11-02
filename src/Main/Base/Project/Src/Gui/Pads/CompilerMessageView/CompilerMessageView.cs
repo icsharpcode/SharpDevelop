@@ -50,9 +50,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			set {
 				if (selectedCategory != value) {
 					selectedCategory = value;
-					LoggingService.Debug("SelectedCategoryIndex. text before=" + textEditorControl.Text);
 					textEditorControl.Text = (value < 0) ? "" : messageCategories[value].Text;
-					LoggingService.Debug("SelectedCategoryIndex. text after=" + textEditorControl.Text);
 					textEditorControl.Refresh();
 					OnSelectedCategoryIndexChanged(EventArgs.Empty);
 				}
@@ -175,32 +173,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void CategoryTextSet(object sender, TextEventArgs e)
 		{
-			LoggingService.Warn("CategoryTextSet event");
 			WorkbenchSingleton.SafeThreadAsyncCall(this, "SetText", (MessageViewCategory)sender, e.Text);
 		}
 		
 		void CategoryTextAppended(object sender, TextEventArgs e)
 		{
-			LoggingService.Warn("CategoryTextAppended event");
 			WorkbenchSingleton.SafeThreadAsyncCall(this, "AppendText", (MessageViewCategory)sender, ((MessageViewCategory)sender).Text, e.Text);
 		}
 		
 		void AppendText(MessageViewCategory category, string fullText, string text)
 		{
-			LoggingService.Debug("AppendText");
 			if (messageCategories[SelectedCategoryIndex] != category) {
-				LoggingService.Debug("AppendText Selecting category.  fulltext=" + fullText);
 				SelectCategory(category.Category, fullText);
 				return;
 			}
 			
 			if (text != null) {
 				text = StringParser.Parse(text);
-				LoggingService.Debug("cmv.AppendText.text=" + text);
 				textEditorControl.Document.ReadOnly = false;
-				LoggingService.Debug("cmv.AppendText Doc before insert=" + textEditorControl.Document.TextContent);
 				textEditorControl.Document.Insert(textEditorControl.Document.TextLength, text);
-				LoggingService.Debug("cmv.AppendText Doc after insert=" + textEditorControl.Document.TextContent);
 				textEditorControl.Document.ReadOnly = true;
 				textEditorControl.ActiveTextAreaControl.Caret.Position = new Point(0, textEditorControl.Document.TotalNumberOfLines);
 				textEditorControl.ActiveTextAreaControl.ScrollTo(textEditorControl.Document.TotalNumberOfLines);
@@ -218,10 +209,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			} else {
 				text = StringParser.Parse(text);
 			}
-			LoggingService.Debug("cmv.SetText text=" + text);
-			LoggingService.Debug("cmv.SetText editor.text before insert=" + textEditorControl.Text);
 			textEditorControl.Text = text;
-			LoggingService.Debug("cmv.SetText editor.text after insert=" + textEditorControl.Text);
 			textEditorControl.Refresh();
 		}
 		
@@ -245,9 +233,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				MessageViewCategory category = (MessageViewCategory)messageCategories[i];
 				if (category.Category == categoryName) {
 					selectedCategory = i;
-					LoggingService.Debug("SelectedCategory. text before=" + textEditorControl.Text);
 					textEditorControl.Text = text;
-					LoggingService.Debug("SelectedCategory. text after=" + textEditorControl.Text);
 					textEditorControl.Refresh();
 					OnSelectedCategoryIndexChanged(EventArgs.Empty);
 					break;
@@ -273,7 +259,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		void ActivateThisPad()
 		{
-			LoggingService.Debug("ActivateThisPad");
 			WorkbenchSingleton.Workbench.WorkbenchLayout.ActivatePad(this.GetType().FullName);
 		}
 		
