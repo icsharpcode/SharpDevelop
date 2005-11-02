@@ -167,8 +167,10 @@ namespace DebuggerLibrary
 			if (stepIn) {
 				corILFrame.CreateStepper(out stepper);
 				
-				stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-				(stepper as ICorDebugStepper2).SetJMC(1 /* true */);
+				if (stepper is ICorDebugStepper2) { // Is the debuggee .NET 2.0?
+					stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
+					(stepper as ICorDebugStepper2).SetJMC(1 /* true */);
+				}
 				
 				fixed (int* ranges = nextSt.StepRanges) {
 					stepper.StepRange(1 /* true - step in*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);
@@ -178,12 +180,14 @@ namespace DebuggerLibrary
 			}
 			
 			// Mind that step in which ends in code without symblols is cotinued
-			// so the next step out ensures that we atleast do step over
+			// so the next step over ensures that we atleast do step over
 			
 			corILFrame.CreateStepper(out stepper);
 			
-			stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-			(stepper as ICorDebugStepper2).SetJMC(1 /* true */);
+			if (stepper is ICorDebugStepper2) { // Is the debuggee .NET 2.0?
+				stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
+				(stepper as ICorDebugStepper2).SetJMC(1 /* true */);
+			}
 			
 			fixed (int* ranges = nextSt.StepRanges) {
 				stepper.StepRange(0 /* false - step over*/ , (IntPtr)ranges, (uint)nextSt.StepRanges.Length / 2);

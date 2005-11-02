@@ -134,7 +134,9 @@ namespace DebuggerLibrary
 		
 		public void InterceptCurrentException()
 		{
-			((ICorDebugThread2)corThread).InterceptCurrentException(LastFunction.CorILFrame);
+			if (corThread is ICorDebugThread2) { // Is the debuggee .NET 2.0?
+				((ICorDebugThread2)corThread).InterceptCurrentException(LastFunction.CorILFrame);
+			}
 			process.Continue();
 		}
 

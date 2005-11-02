@@ -212,7 +212,8 @@ namespace DebuggerLibrary
 		{
 			EnterCallback("DebuggerError", pProcess);
 
-			System.Windows.Forms.MessageBox.Show("Debugger error: \nHR = " + errorHR.ToString() + "\nCode = " + errorCode.ToString());
+			string errorText = String.Format("Debugger error: \nHR = 0x{0:X} \nCode = 0x{1:X}", errorHR, errorCode);
+			System.Windows.Forms.MessageBox.Show(errorText);
 
 			ExitCallback_Paused(PausedReason.DebuggerError);
 		}
@@ -359,7 +360,7 @@ namespace DebuggerLibrary
 			debugger.RemoveProcess(process);
 
 			if (debugger.Processes.Count == 0) {
-				debugger.ResetEnvironment();
+				debugger.TerminateDebugger();
 			}
 		}
 

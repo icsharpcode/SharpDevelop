@@ -54,35 +54,58 @@ namespace DebuggerLibrary
 		public NDebugger()
 		{
 			requiredApartmentState = System.Threading.Thread.CurrentThread.GetApartmentState();
-
-			InitDebugger();
-			ResetEnvironment();
-
+			
 			this.ModuleLoaded += new EventHandler<ModuleEventArgs>(SetBreakpointsInModule);
 		}
 		
-		~NDebugger() //TODO
+		/// <summary>
+		/// Get the .NET version of the process that called this function
+		/// </summary>
+		public string GetDebuggerVersion()
 		{
-			//corDebug.Terminate();
+			int size;
+			NativeMethods.GetCORVersion(null, 0, out size);
+			StringBuilder sb = new StringBuilder(size);
+			int hr = NativeMethods.GetCORVersion(sb, sb.Capacity, out size);
+			return sb.ToString();
 		}
-
-		internal void InitDebugger()
+		
+		/// <summary>
+		/// Get the .NET version of a given program - eg. "v1.1.4322"
+		/// </summary>
+		public string GetProgramVersion(string exeFilename)
 		{
-            int size;
-            NativeMethods.GetCORVersion(null, 0, out size);
-            StringBuilder sb = new StringBuilder(size);
-            int hr = NativeMethods.GetCORVersion(sb, sb.Capacity, out size);
-
-            NativeMethods.CreateDebuggingInterfaceFromVersion(3, sb.ToString(), out corDebug);
-
-			managedCallback       = new ManagedCallback(this);
-			managedCallbackProxy  = new ManagedCallbackProxy(this, managedCallback);
-
+			int size;
+			NativeMethods.GetRequestedRuntimeVersion(exeFilename, null, 0, out size);
+			StringBuilder sb = new StringBuilder(size);
+			int hr = NativeMethods.GetRequestedRuntimeVersion(exeFilename, sb, sb.Capacity, out size);
+			return sb.ToString();
+		}
+		
+		/// <summary>
+		/// Prepares the debugger
+		/// </summary>
+		/// <param name="debuggeeVersion">Version of the program to debug - eg. "v1.1.4322"
+		/// If null, the version of the executing process will be used</param>
+		internal void InitDebugger(string debuggeeVersion)
+		{
+			string version;
+			if (debuggeeVersion != null) {
+				version = debuggeeVersion;
+			} else {
+				version = GetDebuggerVersion();
+			}
+			
+			NativeMethods.CreateDebuggingInterfaceFromVersion(3, version, out corDebug);
+			
+			managedCallback = new ManagedCallback(this);
+			managedCallbackProxy = new ManagedCallbackProxy(this, managedCallback);
+			
 			corDebug.Initialize();
 			corDebug.SetManagedHandler(managedCallbackProxy);
 		}
 		
-		internal void ResetEnvironment()
+		internal void TerminateDebugger()
 		{
 			ClearModules();
 			
@@ -95,6 +118,10 @@ namespace DebuggerLibrary
 			evalQueue = new EvalQueue(this);
 			
 			TraceMessage("Reset done");
+			
+			corDebug.Terminate();
+			
+			TraceMessage("ICorDebug terminated");
 		}
 		
 		
@@ -140,6 +167,7 @@ namespace DebuggerLibrary
 		
 		public void Start(string filename, string workingDirectory, string arguments)		
 		{
+			InitDebugger(GetProgramVersion(filename));
 			Process process = Process.CreateProcess(this, filename, workingDirectory, arguments);
 			AddProcess(process);
 		}

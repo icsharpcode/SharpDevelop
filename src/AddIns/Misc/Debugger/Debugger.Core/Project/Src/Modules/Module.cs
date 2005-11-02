@@ -100,7 +100,9 @@ namespace DebuggerLibrary
 		public bool JMCStatus {
 			set {
 				uint unused = 0;
-				((ICorDebugModule2)corModule).SetJMCStatus(value?1:0, 0, ref unused);
+				if (corModule is ICorDebugModule2) { // Is the debuggee .NET 2.0?
+					((ICorDebugModule2)corModule).SetJMCStatus(value?1:0, 0, ref unused);
+				}
 			}
 		}
 		
@@ -152,7 +154,9 @@ namespace DebuggerLibrary
 		
 		public void ApplyChanges(byte[] metadata, byte[] il)
 		{
-			(corModule as ICorDebugModule2).ApplyChanges((uint)metadata.Length, metadata, (uint)il.Length, il);
+			if (corModule is ICorDebugModule2) { // Is the debuggee .NET 2.0?
+				(corModule as ICorDebugModule2).ApplyChanges((uint)metadata.Length, metadata, (uint)il.Length, il);
+			}
 		}
 		
 		public void Dispose()
