@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
 			
-			RemotingConfiguration.Configure(Path.Combine(path, "Client.config"));
+			RemotingConfiguration.Configure(Path.Combine(path, "Client.config"), false);
 
 			string baseDir = Directory.GetDirectoryRoot(AppDomain.CurrentDomain.BaseDirectory);
 			string relDirs = AppDomain.CurrentDomain.BaseDirectory + ";" + path;
@@ -60,7 +60,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		private void ConfigureServer()
 		{
 			AppDomain.CurrentDomain.AssemblyResolve += AssemblyResolve;
-			RemotingConfiguration.Configure(Path.Combine(path, "Server.config"));
+			RemotingConfiguration.Configure(Path.Combine(path, "Server.config"), false);
 		}
 
 		Assembly AssemblyResolve(object sender, ResolveEventArgs args)

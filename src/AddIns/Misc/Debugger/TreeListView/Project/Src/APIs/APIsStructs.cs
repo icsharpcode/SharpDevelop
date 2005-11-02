@@ -30,9 +30,9 @@ namespace System.Runtime.InteropServices.APIs
 			public struct WIN32_FIND_DATA
 		{
 			public uint fileAttributes;
-			public FILETIME creationTime;
-			public FILETIME lastAccessTime;
-			public FILETIME lastWriteTime;
+			public System.Runtime.InteropServices.ComTypes.FILETIME creationTime;
+			public System.Runtime.InteropServices.ComTypes.FILETIME lastAccessTime;
+			public System.Runtime.InteropServices.ComTypes.FILETIME lastWriteTime;
 			public uint fileSizeHigh;
 			public uint fileSizeLow;
 			public uint reserved0;
