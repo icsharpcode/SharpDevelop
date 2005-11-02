@@ -11,10 +11,18 @@
 		</Import>
 	</Runtime>
 
+	<!-- NAnt file filter -->
+	<Path name = "/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id = "NAnt"
+	                insertbefore="AllFiles"
+	                name = "NAnt Build Files (*.build;*.include)"
+	                extensions = "*.build;*.include"/>
+	</Path>
+	
 	<!-- Menu options -->
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Project">
 		<MenuItem id = "NAnt"
-		          label = "NAnt"
+		          label = "&amp;NAnt"
 			      insertbefore = "Separator2"
 			      type="Menu">
 			<ComplexCondition action="Disable">
@@ -57,7 +65,7 @@
 	<!-- Context menu options -->
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
 		<MenuItem id = "NAnt"
-	              label = "NAnt"
+	              label = "&amp;NAnt"
 		          insertafter = "Properties"
 		          type="Menu">
 			<ComplexCondition action="Disable">
@@ -110,7 +118,7 @@
 	<!-- Options panel -->
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id    = "NAntAddInOptionPanel"
-		       	     label = "NAnt"
+		       	     label = "&amp;NAnt"
 		       	     class = "ICSharpCode.NAntAddIn.Gui.NAntAddInOptionPanel"/>
 	</Path>
 

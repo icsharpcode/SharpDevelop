@@ -119,7 +119,7 @@ namespace ICSharpCode.NAntAddIn.Commands
         protected void RunPreBuildSteps()
         {
         	//ProjectService.DoBeforeCompileAction();
-        	TaskService.Clear();
+        	TaskService.ClearExceptCommentTasks();
         }
  
         /// <summary>
@@ -153,6 +153,7 @@ namespace ICSharpCode.NAntAddIn.Commands
         	}
         	
         	Category.ClearText();
+        	ShowOutputPad();
       		
 			runner.BuildFileName = buildFileName;
 			runner.NAntFileName = AddInOptions.NAntFileName;
@@ -217,7 +218,7 @@ namespace ICSharpCode.NAntAddIn.Commands
         MessageViewCategory Category {
         	get {
 	        	if (category == null) {
-					category = new MessageViewCategory("NAnt", "NAnt");
+					category = new MessageViewCategory("NAnt");
 					CompilerMessageView cmv = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).PadContent;
 					cmv.AddCategory(category);        		
 	        	}
@@ -234,6 +235,14 @@ namespace ICSharpCode.NAntAddIn.Commands
         {
         	Category.AppendText(String.Concat(message, Environment.NewLine));
         }
+        
+        /// <summary>
+		/// Brings output pad to the front.
+		/// </summary>
+		void ShowOutputPad()
+		{
+			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();	
+		}
         
         /// <summary>
 		/// Looks for the first file that matches the specified

@@ -33,6 +33,11 @@ namespace ICSharpCode.XmlEditor
 		/// The language handled by this view.
 		/// </summary>
 		public static readonly string Language = "XML";
+		
+		/// <summary>
+		/// Output window category name.
+		/// </summary>
+		public static readonly string CategoryName = "XML";
 
 		delegate void RefreshDelegate(AbstractMargin margin);
 
@@ -57,6 +62,12 @@ namespace ICSharpCode.XmlEditor
 			XmlEditorAddInOptions.PropertyChanged += PropertyChanged;
 			XmlSchemaManager.UserSchemaAdded += new EventHandler(UserSchemaAdded);
 			XmlSchemaManager.UserSchemaRemoved += new EventHandler(UserSchemaRemoved);
+		}
+
+		public override string TabPageText {
+			get {
+				return "XML";
+			}
 		}
 		
 		/// <summary>
@@ -105,6 +116,8 @@ namespace ICSharpCode.XmlEditor
 		{
 			TaskService.ClearExceptCommentTasks();
 			Category.ClearText();
+			ShowOutputWindow();
+			
 			OutputWindowWriteLine(StringParser.Parse("${res:MainWindow.XmlValidationMessages.ValidationStarted}"));
 
 			try {
@@ -124,6 +137,8 @@ namespace ICSharpCode.XmlEditor
 					}
 				} catch (XmlSchemaException ex) {
 					DisplayValidationError(schemaData.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
+					ShowErrorList();
+					return;
 				}
 				
 				XmlReader reader = XmlReader.Create(xmlReader, settings);
@@ -140,10 +155,7 @@ namespace ICSharpCode.XmlEditor
 				DisplayValidationError(xmlEditor.FileName, ex.Message, ex.LinePosition - 1, ex.LineNumber - 1);
 			}
 			
-			// Show errors.
-			if (ShowErrorListAfterBuild) {
-				ShowErrorList();
-			}
+			ShowErrorList();
 		}
 		
 		/// <summary>
@@ -209,6 +221,8 @@ namespace ICSharpCode.XmlEditor
 		public void RunXslTransform(string xsl)
 		{
 			try {
+				WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+	
 				TaskService.ClearExceptCommentTasks();
 				
 				if (IsWellFormed) {
@@ -218,9 +232,7 @@ namespace ICSharpCode.XmlEditor
 					}
 				}
 				
-				if (ShowErrorListAfterBuild) {
-					ShowErrorList();
-				}
+				ShowErrorList();
 				
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
@@ -601,7 +613,7 @@ namespace ICSharpCode.XmlEditor
 		MessageViewCategory Category {
 			get {
 				if (category == null) {
-					category = new MessageViewCategory("Xml", "Xml");
+					category = new MessageViewCategory(CategoryName);
 					CompilerMessageView cmv = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).PadContent;
 					cmv.AddCategory(category);
 				}
@@ -611,12 +623,21 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		/// <summary>
+		/// Brings output window pad to the front.
+		/// </summary>
+		void ShowOutputWindow()
+		{
+			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();	
+		}
+		
+		/// <summary>
 		/// Writes a line of text to the output window.
 		/// </summary>
 		/// <param name="message">The message to send to the output
 		/// window.</param>
 		void OutputWindowWriteLine(string message)
 		{
+			LoggingService.Info("WriteLine message=" + message);
 			Category.AppendText(String.Concat(message, Environment.NewLine));
 		}
 		
@@ -628,7 +649,7 @@ namespace ICSharpCode.XmlEditor
 		
 		void ShowErrorList()
 		{
-			if (TaskService.SomethingWentWrong) {
+			if (ShowErrorListAfterBuild && TaskService.SomethingWentWrong) {
 				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
 			}
 		}
@@ -811,6 +832,8 @@ namespace ICSharpCode.XmlEditor
 		{
 			try
 			{
+				WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
+
 				StringReader reader = new StringReader(xml);
 				XPathDocument doc = new XPathDocument(reader);
 

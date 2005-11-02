@@ -160,13 +160,16 @@ namespace ICSharpCode.MbUnitPad
 		
 		void OnTestsStartedInvoked(object sender, EventArgs e)
 		{
+			PadDescriptor outputPad = WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView));
+			
 			if (testRunnerCategory == null) {
 				testRunnerCategory = new MessageViewCategory("MbUnit");
-				CompilerMessageView cmv = (CompilerMessageView)WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).PadContent;
-				cmv.AddCategory(testRunnerCategory);
+				((CompilerMessageView)outputPad.PadContent).AddCategory(testRunnerCategory);
 			} else {
 				testRunnerCategory.ClearText();
 			}
+			
+			outputPad.BringPadToFront();
 		}
 		
 		void OnFacadeUpdated(ResultEventArgs e)
