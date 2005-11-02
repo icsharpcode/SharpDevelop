@@ -219,7 +219,10 @@ namespace DebuggerLibrary
 						} catch (COMException) {
 							// TODO
 						};
-						yield return function;
+						
+						if (function != null) {
+							yield return function;
+						}
 					}
 				}
 			} // get
