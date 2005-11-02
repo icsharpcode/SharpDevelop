@@ -20,10 +20,12 @@ namespace ICSharpCode.Core
 		// 2 = text
 		// 3 = value
 		
-		DynamicTreeRow row = new DynamicTreeRow();
+		DynamicTreeRow row;
 		
-		public DebuggerGridControl(string text, string value)
+		public DebuggerGridControl(DynamicTreeRow row)
 		{
+			this.row = row;
+			
 			BeginUpdate();
 			Columns.Add(new DynamicListColumn());
 			Columns.Add(new DynamicListColumn());
@@ -37,14 +39,10 @@ namespace ICSharpCode.Core
 			Columns[2].AutoSize = true;
 			Columns[3].AutoSize = true;
 			Rows.Add(row);
-			row.ChildWindowCaption = text;
-			row[2].Text = text;
-			row[3].Text = value;
 			
 			foreach (DynamicListColumn col in Columns) {
 				row.ChildColumns.Add(col.Clone());
 			}
-			row.Expanding += RowExpanding;
 			row.Expanded  += delegate { isExpanded = true; };
 			row.Collapsed += delegate { isExpanded = false; };
 			
@@ -92,12 +90,6 @@ namespace ICSharpCode.Core
 			get {
 				return !isExpanded;
 			}
-		}
-		
-		void RowExpanding(object sender, EventArgs e)
-		{
-			row.ChildRows.Clear();
-			row.ChildRows.Add(row);
 		}
 	}
 }

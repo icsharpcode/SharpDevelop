@@ -40,7 +40,7 @@ namespace ICSharpCode.Core
 			if (attachedProcess != null) {
 				return;
 			}
-
+			
 			try {
 				attachedProcess = new Process();
 				attachedProcess.StartInfo = processStartInfo;
@@ -52,7 +52,7 @@ namespace ICSharpCode.Core
 				throw new ApplicationException("Can't execute " + "\"" + processStartInfo.FileName + "\"\n");
 			}
 		}
-
+		
 		void AttachedProcessExited(object sender, EventArgs e)
 		{
 			attachedProcess.Exited -= new EventHandler(AttachedProcessExited);
@@ -60,12 +60,12 @@ namespace ICSharpCode.Core
 			attachedProcess = null;
 			WorkbenchSingleton.SafeThreadAsyncCall(this, "OnDebugStopped", EventArgs.Empty);
 		}
-
+		
 		public void StartWithoutDebugging(ProcessStartInfo processStartInfo)
 		{
 			Process.Start(processStartInfo);
 		}
-
+		
 		public void Stop()
 		{
 			if (attachedProcess != null) {
@@ -89,24 +89,41 @@ namespace ICSharpCode.Core
 			throw new NotSupportedException();
 		}
 		// Stepping:
-
+		
 		public void StepInto()
 		{
 			throw new NotSupportedException();
 		}
-
+		
 		public void StepOver()
 		{
 			throw new NotSupportedException();
 		}
-
+		
 		public void StepOut()
 		{
 			throw new NotSupportedException();
 		}
-
+		
+		/// <summary>
+		/// Gets the current value of the variable as string that can be displayed in tooltips.
+		/// </summary>
+		public string GetValueAsString(string variable)
+		{
+			return null;
+		}
+		
+		/// <summary>
+		/// Gets the tooltip control that shows the value of given variable.
+		/// Return null if no tooltip is available.
+		/// </summary>
+		public DebuggerGridControl GetTooltipControl(string variable)
+		{
+			return null;
+		}
+		
 		public event EventHandler DebugStarted;
-
+		
 		protected virtual void OnDebugStarted(EventArgs e) 
 		{
 			if (DebugStarted != null) {
@@ -134,14 +151,6 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		/// <summary>
-		/// Gets the current value of the variable as string that can be displayed in tooltips.
-		/// </summary>
-		public string GetValueAsString(string variable)
-		{
-			return null;
-		}
-
 		public void Dispose() 
 		{
 			Stop();

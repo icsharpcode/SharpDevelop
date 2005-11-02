@@ -20,6 +20,7 @@ using System.CodeDom.Compiler;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Gui.TreeGrid;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Services;
 using System.Runtime.Remoting;
@@ -191,36 +192,77 @@ namespace ICSharpCode.SharpDevelop.Services
 		}
 		
 		/// <summary>
-		/// Gets the current value of the variable as string that can be displayed in tooltips.
+		/// Gets variable of given name.
+		/// Returns null if unsuccessful.
 		/// </summary>
-		public string GetValueAsString(string variableName)
+		public Variable GetVariableFromName(string variableName)
 		{
 			if (debugger == null || debugger.IsRunning) return null;
-			VariableCollection collection = debugger.LocalVariables;
-			if (collection == null) {
-				return null;
-			}
 			
-			object val;
+			VariableCollection collection = debugger.LocalVariables;
+			
+			if (collection == null) return null;
+			
 			try {
-				val = collection[variableName].Value;
+				return collection[variableName];
 			} catch (DebuggerException) {
 				return null;
 			}
-			if (val == null) {
-				return "<null>";
-			} else if (val is string) {
-				return "\"" + val.ToString() + "\"";
+		}
+		
+		
+		/// <summary>
+		/// Gets the current value of the variable as string that can be displayed in tooltips.
+		/// Returns null if unsuccessful.
+		/// </summary>
+		public string GetValueAsString(string variableName)
+		{
+			Variable variable = GetVariableFromName(variableName);
+			
+			if (variable == null) {
+				return null;
 			} else {
-				return val.ToString();
+				return variable.ToString();
 			}
 		}
-
+		
+		/// <summary>
+		/// Gets the tooltip control that shows the value of given variable.
+		/// Return null if no tooltip is available.
+		/// </summary>
+		public DebuggerGridControl GetTooltipControl(string variableName)
+		{
+			Variable variable = GetVariableFromName(variableName);
+			
+			if (variable == null) {
+				return null;
+			} else {
+				DynamicTreeDebuggerRow newRow = new DynamicTreeDebuggerRow(variable);
+				newRow.Expanding += TooltipControlRowExpanding;
+				return new DebuggerGridControl(newRow);
+			}
+		}
+		
+		/// <summary>
+		/// Called when plus is pressed in debugger tooltip.
+		/// Sets the data to be show in the next level.
+		/// </summary>
+		void TooltipControlRowExpanding(object sender, EventArgs args)
+		{
+			DynamicTreeDebuggerRow row = (DynamicTreeDebuggerRow) sender;
+			row.ChildRows.Clear();
+			foreach(Variable variable in row.Variable.SubVariables) {
+				DynamicTreeDebuggerRow newRow = new DynamicTreeDebuggerRow(variable);
+				newRow.Expanding += TooltipControlRowExpanding;
+				row.ChildRows.Add(newRow);
+			}
+		}
+		
 		public void Dispose() 
 		{
 			Stop();
 		}
-
+		
 		#endregion
 		
 		public event System.EventHandler Initialize;

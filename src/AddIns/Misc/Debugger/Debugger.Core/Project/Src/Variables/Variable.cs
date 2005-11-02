@@ -80,7 +80,15 @@ namespace DebuggerLibrary
 
 		public override string ToString()
 		{
-			return String.Format("Name = {0,-25} Value = {1,-30} Type = {2,-30}", Name, Value, Type);
+			//return String.Format("Name = {0,-25} Value = {1,-30} Type = {2,-30}", Name, Value, Type);
+			
+			if (Value == null) {
+				return "<null>";
+			} else if (Value is string) {
+				return "\"" + Value.ToString() + "\"";
+			} else {
+				return Value.ToString();
+			}
 		}
 		
 		

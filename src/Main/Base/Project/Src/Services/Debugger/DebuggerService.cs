@@ -351,8 +351,8 @@ namespace ICSharpCode.Core
 								if (toolTipText != null) {
 									if (Control.ModifierKeys == Keys.Control) {
 										toolTipText = "expr: " + expressionResult.ToString() + "\n" + toolTipText;
-									} else if (debuggerCanShowValue) {
-										toolTipControl = new DebuggerGridControl("hello", "world");
+									} else if (debuggerCanShowValue && currentDebugger != null) {
+										toolTipControl = currentDebugger.GetTooltipControl(expressionResult.ToString().Replace("<","").Replace(">",""));
 										toolTipText = null;
 									}
 								}

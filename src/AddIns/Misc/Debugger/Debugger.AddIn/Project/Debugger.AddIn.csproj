@@ -59,6 +59,7 @@
     <Compile Include="Src\Pads\VariableListItems\PlaceHolderItem.cs" />
     <Compile Include="Src\Pads\VariableListItems\VariableItem.cs" />
     <Compile Include="Src\Pads\VariableListItems\VariableListItem.cs" />
+    <Compile Include="Src\Service\DynamicTreeDebuggerRow.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

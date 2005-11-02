@@ -62,6 +62,12 @@ namespace ICSharpCode.Core
 		string GetValueAsString(string variable);
 		
 		/// <summary>
+		/// Gets the tooltip control that shows the value of given variable.
+		/// Return null if no tooltip is available.
+		/// </summary>
+		DebuggerGridControl GetTooltipControl(string variable);
+		
+		/// <summary>
 		/// Ocurrs after the debugger has started.
 		/// </summary>
 		event EventHandler DebugStarted;
