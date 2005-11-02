@@ -103,6 +103,8 @@ namespace DebuggerLibrary
 			
 			corDebug.Initialize();
 			corDebug.SetManagedHandler(managedCallbackProxy);
+			
+			TraceMessage("ICorDebug initialized, debugee version " + debuggeeVersion);
 		}
 		
 		internal void TerminateDebugger()

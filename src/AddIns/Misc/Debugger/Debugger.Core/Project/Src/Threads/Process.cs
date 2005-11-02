@@ -81,46 +81,47 @@ namespace DebuggerLibrary
 			}
 			return createdProcess;
 		}
-
+		
 		static public unsafe Process StartInternal(NDebugger debugger, string filename, string workingDirectory, string arguments)
 		{
 			debugger.TraceMessage("Executing " + filename);
-
+			
 			_SECURITY_ATTRIBUTES secAttr = new _SECURITY_ATTRIBUTES();
 			secAttr.bInheritHandle = 0;
 			secAttr.lpSecurityDescriptor = IntPtr.Zero;
 			secAttr.nLength = (uint)sizeof(_SECURITY_ATTRIBUTES); //=12?
-
+			
 			uint[] processStartupInfo = new uint[17];
 			processStartupInfo[0] = sizeof(uint) * 17;
 			uint[] processInfo = new uint[4];
-
+			
 			ICorDebugProcess outProcess;
-
+			
 			if (workingDirectory == null || workingDirectory == "") {
 				workingDirectory = System.IO.Path.GetDirectoryName(filename);
 			}
-
+			
 			fixed (uint* pprocessStartupInfo = processStartupInfo)
 				fixed (uint* pprocessInfo = processInfo)
 					debugger.CorDebug.CreateProcess(
 						filename,   // lpApplicationName
-						arguments,                       // lpCommandLine
+						  // If we do not prepend " ", the first argument migh just get lost
+						" " + arguments,                       // lpCommandLine
 						ref secAttr,                       // lpProcessAttributes
 						ref secAttr,                      // lpThreadAttributes
 						1,//TRUE                    // bInheritHandles
 						0,                          // dwCreationFlags
 						IntPtr.Zero,                       // lpEnvironment
-                        workingDirectory,                       // lpCurrentDirectory
+						workingDirectory,                       // lpCurrentDirectory
 						(uint)pprocessStartupInfo,        // lpStartupInfo
 						(uint)pprocessInfo,               // lpProcessInformation,
 						CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS,   // debuggingFlags
 						out outProcess      // ppProcess
 						);
-
+			
 			return new Process(debugger, outProcess);
 		}
-
+		
 		internal void Break()
 		{
 			if (!isProcessRunning) {
