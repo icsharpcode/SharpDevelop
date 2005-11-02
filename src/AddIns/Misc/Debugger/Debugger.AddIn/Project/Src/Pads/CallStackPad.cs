@@ -196,6 +196,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			bool showArgumentValues = ShowArgumentValues;
 			bool showExternalMethods = ShowExternalMethods;
 			bool lastItemIsExternalMethod = false;
+			int callstackItems = 0;
 			
 			callStackList.BeginUpdate();
 			callStackList.Items.Clear();
@@ -253,6 +254,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					item.Tag = f;
 					item.ForeColor = f.HasSymbols ? Color.Black : Color.Gray;
 					callStackList.Items.Add(item);
+					callstackItems++;
+					if (callstackItems >= 100) break;
 				}
 			}
 			callStackList.EndUpdate();

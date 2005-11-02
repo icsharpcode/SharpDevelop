@@ -185,15 +185,13 @@ namespace DebuggerLibrary
 			}
 		}
 
-		public unsafe List<Function> Callstack {
+		public IEnumerable<Function> Callstack {
 			get {
-				List<Function> callstack = new List<Function>();
-
-				if (process.IsRunning) return callstack;
-
+				if (process.IsRunning) yield break;
+				
 				ICorDebugChainEnum corChainEnum;
 				corThread.EnumerateChains(out corChainEnum);
-
+				
 				while (true) {
 					uint chainsFetched;
 					ICorDebugChain[] corChains = new ICorDebugChain[1]; // One at time
@@ -203,27 +201,27 @@ namespace DebuggerLibrary
 					int isManaged;
 					corChains[0].IsManaged(out isManaged);
 					if (isManaged == 0) continue; // Only managed ones
-
+					
 					ICorDebugFrameEnum corFrameEnum;
 					corChains[0].EnumerateFrames(out corFrameEnum);
-
-					for(;;)
-					{
+					
+					while (true) {
 						uint framesFetched;
 						ICorDebugFrame[] corFrames = new ICorDebugFrame[1]; // Only one at time
 						corFrameEnum.Next(1, corFrames, out framesFetched);
 						if (framesFetched == 0) break; // We are done
-
-                        try {
+						
+						Function function = null;
+						try {
 							if (corFrames[0] is ICorDebugILFrame) {
-								callstack.Add(new Function(debugger, (ICorDebugILFrame)corFrames[0]));
+								function = new Function(debugger, (ICorDebugILFrame)corFrames[0]);
 							}
-                        } catch (COMException) {
+						} catch (COMException) {
 							// TODO
 						};
+						yield return function;
 					}
-				} // for(;;)
-				return callstack;
+				}
 			} // get
 		} // End of public FunctionCollection Callstack
 		
@@ -267,15 +265,17 @@ namespace DebuggerLibrary
 				return null;
 			}
 		}
-
+		
+		/// <summary>
+		/// Returns the most recent function on callstack.
+		/// Returns null if callstack is empty.
+		/// </summary>
 		public Function LastFunction {
 			get {
-				List<Function> callstack = Callstack;
-				if (callstack.Count > 0) {
-					return Callstack[0];
-				} else {
-					return null;
+				foreach(Function function in Callstack) {
+					return function;
 				}
+				return null;
 			}
 		}
 	}

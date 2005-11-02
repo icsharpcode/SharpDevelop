@@ -54,13 +54,20 @@ namespace DebuggerLibrary
 			}
 			
 			callstack = "";
+			int callstackItems = 0;
 			foreach(Function function in thread.Callstack) {
+				if (callstackItems >= 100) {
+					callstack += "...\n";
+					break;
+				}
+				
 				SourcecodeSegment loc = function.NextStatement;
 				callstack += function.Name + "()";
 				if (loc != null) {
 					callstack += " - " + loc.SourceFullFilename + ":" + loc.StartLine + "," + loc.StartColumn;
 				}
 				callstack += "\n";
+				callstackItems++;
 			}
 			
 			type = runtimeVariable.Type;
