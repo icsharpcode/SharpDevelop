@@ -119,6 +119,13 @@ namespace ICSharpCode.FormDesigner
 			
 			// Try to fix the type names to fully qualified ones
 			ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
+			
+			#if DEBUG
+			if ((Control.ModifierKeys & (Keys.Alt | Keys.Control)) == (Keys.Alt | Keys.Control)) {
+				System.Diagnostics.Debugger.Break();
+			}
+			#endif
+			
 			bool foundInitMethod = false;
 			FixTypeNames(p.CompilationUnit, parseInfo.BestCompilationUnit, ref foundInitMethod);
 			if (!foundInitMethod)
@@ -128,9 +135,13 @@ namespace ICSharpCode.FormDesigner
 			visitor.Visit(p.CompilationUnit, null);
 			
 			// output generated CodeDOM to the console :
-//			CodeDOMVerboseOutputGenerator outputGenerator = new CodeDOMVerboseOutputGenerator();
-//			outputGenerator.GenerateCodeFromMember(visitor.codeCompileUnit.Namespaces[0].Types[0], Console.Out, null);
-//			provider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
+			#if DEBUG
+			if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
+				CodeDOMVerboseOutputGenerator outputGenerator = new CodeDOMVerboseOutputGenerator();
+				outputGenerator.GenerateCodeFromMember(visitor.codeCompileUnit.Namespaces[0].Types[0], Console.Out, null);
+				provider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
+			}
+			#endif
 			
 			LoggingService.Debug("NRefactoryDesignerLoader.Parse() finished");
 			return visitor.codeCompileUnit;

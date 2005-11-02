@@ -42,5 +42,21 @@ namespace ICSharpCode.NRefactory.Tests.Output.CodeDom.Tests
 			Assert.AreEqual("InitializeComponents", mie.Method.MethodName);
 			Assert.IsTrue(mie.Method.TargetObject is CodeThisReferenceExpression);
 		}
+		
+		[Test]
+		public void InvocationOfStaticMethod()
+		{
+			// System.Drawing.Color.FromArgb();
+			FieldReferenceExpression field = new FieldReferenceExpression(new IdentifierExpression("System"), "Drawing");
+			field = new FieldReferenceExpression(field, "Color");
+			field = new FieldReferenceExpression(field, "FromArgb");
+			InvocationExpression invocation = new InvocationExpression(field, new ArrayList());
+			object output = invocation.AcceptVisitor(new CodeDOMVisitor(), null);
+			Assert.IsTrue(output is CodeMethodInvokeExpression);
+			CodeMethodInvokeExpression mie = (CodeMethodInvokeExpression)output;
+			Assert.AreEqual("FromArgb", mie.Method.MethodName);
+			Assert.IsTrue(mie.Method.TargetObject is CodeTypeReferenceExpression);
+			Assert.AreEqual("System.Drawing.Color", (mie.Method.TargetObject as CodeTypeReferenceExpression).Type.BaseType);
+		}
 	}
 }
