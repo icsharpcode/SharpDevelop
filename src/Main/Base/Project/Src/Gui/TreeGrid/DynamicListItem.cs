@@ -92,7 +92,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 				minimumWidth = Math.Max(minimumWidth, e.ItemWidth);
 			}
 			if (text.Length > 0) {
-				int width = (int)graphics.MeasureString(text, font, new PointF(0, 0), textFormat).Width;
+				int width = 2 + (int)graphics.MeasureString(text, font, new PointF(0, 0), textFormat).Width;
 				minimumWidth = Math.Max(minimumWidth, width);
 			}
 		}
@@ -163,7 +163,19 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			}
 		}
 		
-		StringFormat textFormat = StringFormat.GenericDefault;
+		static StringFormat defaultTextFormat;
+		
+		public static StringFormat DefaultTextFormat {
+			get {
+				if (defaultTextFormat == null) {
+					defaultTextFormat = (StringFormat)StringFormat.GenericDefault.Clone();
+					defaultTextFormat.FormatFlags |= StringFormatFlags.NoWrap;
+				}
+				return defaultTextFormat;
+			}
+		}
+		
+		StringFormat textFormat = DefaultTextFormat;
 		
 		public StringFormat TextFormat {
 			get {

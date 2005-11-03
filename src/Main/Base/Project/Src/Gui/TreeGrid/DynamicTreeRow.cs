@@ -116,7 +116,18 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 				formHeight += missingHeight;
 				frm.Top -= missingHeight;
 			}
-			frm.ClientSize = new Size(e.List.Width + 4, formHeight);
+			// Autosize child window
+			int formWidth;
+			using (Graphics g = childList.CreateGraphics()) {
+				formWidth = 8 + childList.GetRequiredWidth(g);
+			}
+			int screenWidth = Screen.FromPoint(p).WorkingArea.Right - p.X;
+			if (formWidth > screenWidth) {
+				int missingWidth = Math.Min(100, formWidth - screenWidth);
+				formWidth = screenWidth + missingWidth;
+				frm.Left -= missingWidth;
+			}
+			frm.ClientSize = new Size(formWidth, formHeight);
 			isOpeningChild = true;
 			frm.Show();
 			isOpeningChild = false;
