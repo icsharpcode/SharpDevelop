@@ -69,7 +69,7 @@ namespace NRefactoryToBooConverter
 		
 		void AddWarning(B.LexicalInfo lex, string warningMessage)
 		{
-			warnings.Add(new CompilerWarning(warningMessage));
+			warnings.Add(new CompilerWarning(lex, warningMessage));
 		}
 		
 		void AddWarning(INode node, string warningMessage)
@@ -122,11 +122,11 @@ namespace NRefactoryToBooConverter
 			if ((m & Modifier.Override) != 0)
 				r |= B.TypeMemberModifiers.Override;
 			if ((m & Modifier.Readonly) != 0 && !(node is PropertyDeclaration)) {
-				// allow readonly on VB properties only
-				AddWarning(node, "readonly modifier is ignored");
-			}
-			if ((m & Modifier.Const) != 0)
 				r |= B.TypeMemberModifiers.Final;
+			}
+			if ((m & Modifier.Const) != 0) {
+				r |= B.TypeMemberModifiers.Final;
+			}
 			if ((m & Modifier.New) != 0) {
 				AddError(node, "shadowing is not supported");
 			}
