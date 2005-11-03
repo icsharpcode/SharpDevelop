@@ -125,12 +125,7 @@ namespace HtmlHelp2
 
 			useCurrentLang.Width                  = pw;
 			useCurrentLang.Top                    = hiliteTopics.Top + hiliteTopics.Height;
-			
-			// TODO: just a little hack, I was too lazy to build a new database ;-)
-			string useCurrentLangString           = StringParser.Parse("${res:AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch}");
-			if(useCurrentLangString.StartsWith("${res"))
-				useCurrentLangString              = "Use current Project language";
-			useCurrentLang.Text                   = useCurrentLangString;
+			useCurrentLang.Text                   = StringParser.Parse("${res:AddIns.HtmlHelp2.UseCurrentProjectLanguageForSearch}");
 			useCurrentLang.TextAlign              = ContentAlignment.MiddleLeft;
 			useCurrentLang.Enabled                = HtmlHelp2Environment.IsReady;
 			useCurrentLang.Visible                = ProjectService.CurrentProject != null;
