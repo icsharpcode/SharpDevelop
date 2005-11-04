@@ -199,6 +199,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 		{
 			if (Click != null)
 				Click(this, new DynamicListEventArgs(list));
+			HandleLabelEditClick(list);
 		}
 		
 		public event EventHandler<DynamicListEventArgs> DoubleClick;
@@ -266,6 +267,53 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 		}
 		#endregion
 		
+		#region Label editing
+		bool allowLabelEdit;
+		
+		public bool AllowLabelEdit {
+			get {
+				return allowLabelEdit;
+			}
+			set {
+				allowLabelEdit = value;
+			}
+		}
+		
+		public event EventHandler<DynamicListEventArgs> BeginLabelEdit;
+		public event EventHandler<DynamicListEventArgs> FinishLabelEdit;
+		public event EventHandler<DynamicListEventArgs> CancelledLabelEdit;
+		
+		void HandleLabelEditClick(DynamicList list)
+		{
+			if (!allowLabelEdit)
+				return;
+			if (BeginLabelEdit != null)
+				BeginLabelEdit(this, new DynamicListEventArgs(list));
+			TextBox txt = new TextBox();
+			txt.Text = this.Text;
+			AssignControlUntilFocusChange(txt);
+			bool escape = false;
+			txt.KeyDown += delegate(object sender2, KeyEventArgs e2) {
+				if (e2.KeyData == Keys.Enter || e2.KeyData == Keys.Escape) {
+					e2.Handled = true;
+					if (e2.KeyData == Keys.Escape) {
+						if (CancelledLabelEdit != null)
+							CancelledLabelEdit(this, new DynamicListEventArgs(list));
+						escape = true;
+					}
+					this.Control = null;
+					txt.Dispose();
+				}
+			};
+			txt.LostFocus += delegate {
+				if (!escape) {
+					this.Text = txt.Text;
+					if (FinishLabelEdit != null)
+						FinishLabelEdit(this, new DynamicListEventArgs(list));
+				}
+			};
+		}
+		
 		/// <summary>
 		/// Display the control for this item. Automatically assign focus to the control
 		/// and removes+disposes the control when it looses focus.
@@ -287,6 +335,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			};
 			this.Control = control;
 		}
+		#endregion
 	}
 	
 	public class DynamicListEventArgs : EventArgs

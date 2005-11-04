@@ -19,6 +19,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			this.BackColor = DynamicListColumn.DefaultBackColor;
 			this.TabStop = false;
 			this.SetStyle(ControlStyles.Selectable, false);
+			this.SetStyle(ControlStyles.ResizeRedraw, true);
 		}
 		
 		protected override Size DefaultSize {

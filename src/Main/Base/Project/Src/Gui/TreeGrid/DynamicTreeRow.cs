@@ -7,6 +7,7 @@
 
 using System;
 using System.Drawing;
+using System.Drawing.Drawing2D;
 using System.Windows.Forms;
 
 namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
@@ -21,9 +22,6 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 		public DynamicTreeRow()
 		{
 			plus = this[0];
-			plus.TextFormat = new StringFormat(plus.TextFormat);
-			plus.TextFormat.Alignment = StringAlignment.Center;
-			plus.TextFormat.LineAlignment = StringAlignment.Center;
 			ShowPlus = true;
 		}
 		
@@ -34,26 +32,52 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 				return showPlus;
 			}
 			set {
+				if (showPlus == value)
+					return;
 				showPlus = value;
 				plus.HighlightBrush = showPlus ? Brushes.AliceBlue : null;
 				plus.Cursor = showPlus ? Cursors.Hand : null;
 				if (showPlus) {
 					plus.Click += OnPlusClick;
 					plus.Paint += OnPlusPaint;
-					plus.Text = "+";
 				} else {
 					plus.Click -= OnPlusClick;
 					plus.Paint -= OnPlusPaint;
-					plus.Text = "";
 				}
+				OnShowPlusChanged(EventArgs.Empty);
 			}
 		}
+		
+		public event EventHandler ShowPlusChanged;
+		
+		public virtual void OnShowPlusChanged(EventArgs e)
+		{
+			if (ShowPlusChanged != null) {
+				ShowPlusChanged(this, e);
+			}
+		}
+		
+		static readonly Color PlusBorder = Color.FromArgb(120, 152, 181);
+		static readonly Color LightPlusBorder = Color.FromArgb(176, 194, 221);
 		
 		protected virtual void OnPlusPaint(object sender, PaintEventArgs e)
 		{
 			Rectangle r = e.ClipRectangle;
 			r.Inflate(-4, -4);
-			e.Graphics.DrawRectangle(SystemPens.ControlDarkDark, r);
+			using (Brush b = new LinearGradientBrush(r, Color.White, Color.FromArgb(221, 218, 203), 66f)) {
+				e.Graphics.FillRectangle(b, r);
+			}
+			using (Pen p = new Pen(PlusBorder)) {
+				e.Graphics.DrawRectangle(p, r);
+			}
+			using (Brush b = new SolidBrush(LightPlusBorder)) {
+				e.Graphics.FillRectangle(b, new Rectangle(r.X, r.Y, 1, 1));
+				e.Graphics.FillRectangle(b, new Rectangle(r.Right, r.Y, 1, 1));
+				e.Graphics.FillRectangle(b, new Rectangle(r.X, r.Bottom, 1, 1));
+				e.Graphics.FillRectangle(b, new Rectangle(r.Right, r.Bottom, 1, 1));
+			}
+			e.Graphics.DrawLine(Pens.Black, r.Left + 2, r.Top + r.Height / 2, r.Right - 2, r.Top + r.Height / 2);
+			e.Graphics.DrawLine(Pens.Black, r.Left + r.Width / 2, r.Top + 2, r.Left + r.Width / 2, r.Bottom - 2);
 		}
 		
 		public class ChildForm : Form
