@@ -222,6 +222,20 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			return width;
 		}
 		
+		int lineMarginY = 0;
+		
+		public int LineMarginY {
+			get {
+				return lineMarginY;
+			}
+			set {
+				if (lineMarginY == value)
+					return;
+				lineMarginY = value;
+				Redraw();
+			}
+		}
+		
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			//Debug.WriteLine("OnPaint");
@@ -268,7 +282,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 						columnIndex += 1;
 					}
 				}
-				yPos += row.Height + 1;
+				yPos += row.Height + lineMarginY;
 			}
 			removedControls.Clear();
 			foreach (Control ctl in Controls) {
@@ -299,7 +313,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 					break;
 				if (yPos <= y + row.Height)
 					return row;
-				y += row.Height + 1;
+				y += row.Height + lineMarginY;
 			}
 			return null;
 		}
@@ -313,7 +327,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			foreach (DynamicListRow r in Rows) {
 				if (r == row)
 					return new Point(0, y);
-				y += r.Height + 1;
+				y += r.Height + lineMarginY;
 			}
 			throw new ArgumentException("The row in not in this list!");
 		}
@@ -325,7 +339,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			get {
 				int y = 0;
 				foreach (DynamicListRow r in Rows) {
-					y += r.Height + 1;
+					y += r.Height + lineMarginY;
 				}
 				return y;
 			}

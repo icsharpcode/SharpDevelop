@@ -84,6 +84,103 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 		{
 			bool isActive = true;
 			
+			bool allowResizing = true;
+			
+			public bool AllowResizing {
+				get {
+					return allowResizing;
+				}
+				set {
+					if (allowResizing == value)
+						return;
+					allowResizing = value;
+					this.DockPadding.All = value ? 2 : 1;
+				}
+			}
+			
+			public ChildForm()
+			{
+				this.FormBorderStyle = FormBorderStyle.None;
+				this.DockPadding.All = 2;
+				this.BackColor = Color.FromArgb(195, 192, 175);
+			}
+			
+			#region Resizing the form
+			private enum MousePositionCodes
+			{
+				HTERROR             = (-2),
+				HTTRANSPARENT       = (-1),
+				HTNOWHERE           = 0,
+				HTCLIENT            = 1,
+				HTCAPTION           = 2,
+				HTSYSMENU           = 3,
+				HTGROWBOX           = 4,
+				HTSIZE              = HTGROWBOX,
+				HTMENU              = 5,
+				HTHSCROLL           = 6,
+				HTVSCROLL           = 7,
+				HTMINBUTTON         = 8,
+				HTMAXBUTTON         = 9,
+				HTLEFT              = 10,
+				HTRIGHT             = 11,
+				HTTOP               = 12,
+				HTTOPLEFT           = 13,
+				HTTOPRIGHT          = 14,
+				HTBOTTOM            = 15,
+				HTBOTTOMLEFT        = 16,
+				HTBOTTOMRIGHT       = 17,
+				HTBORDER            = 18,
+				HTREDUCE            = HTMINBUTTON,
+				HTZOOM              = HTMAXBUTTON,
+				HTSIZEFIRST         = HTLEFT,
+				HTSIZELAST          = HTBOTTOMRIGHT,
+				HTOBJECT            = 19,
+				HTCLOSE             = 20,
+				HTHELP              = 21
+			}
+			
+			protected override void WndProc(ref Message m)
+			{
+				base.WndProc(ref m);
+				if (m.Msg == 0x0084) // WM_NCHITTEST
+					HitTest(ref m);
+			}
+			
+			void HitTest(ref Message m)
+			{
+				if (!allowResizing)
+					return;
+				int mousePos = m.LParam.ToInt32();
+				int mouseX = mousePos & 0xffff;
+				int mouseY = mousePos >> 16;
+				//System.Diagnostics.Debug.WriteLine(mouseX + " / " + mouseY);
+				Rectangle bounds = Bounds;
+				bool isLeft = mouseX == bounds.Left || mouseX + 1 == bounds.Left;
+				bool isTop = mouseY == bounds.Top || mouseY + 1 == bounds.Top;
+				bool isRight = mouseX == bounds.Right - 1 || mouseX == bounds.Right - 2;
+				bool isBottom = mouseY == bounds.Bottom - 1 || mouseY == bounds.Bottom - 2;
+				if (isLeft) {
+					if (isTop)
+						m.Result = new IntPtr((int)MousePositionCodes.HTTOPLEFT);
+					else if (isBottom)
+						m.Result = new IntPtr((int)MousePositionCodes.HTBOTTOMLEFT);
+					else
+						m.Result = new IntPtr((int)MousePositionCodes.HTLEFT);
+				} else if (isRight) {
+					if (isTop)
+						m.Result = new IntPtr((int)MousePositionCodes.HTTOPRIGHT);
+					else if (isBottom)
+						m.Result = new IntPtr((int)MousePositionCodes.HTBOTTOMRIGHT);
+					else
+						m.Result = new IntPtr((int)MousePositionCodes.HTRIGHT);
+				} else if (isTop) {
+					m.Result = new IntPtr((int)MousePositionCodes.HTTOP);
+				} else if (isBottom) {
+					m.Result = new IntPtr((int)MousePositionCodes.HTBOTTOM);
+				}
+			}
+			#endregion
+			
 			protected override void OnActivated(EventArgs e)
 			{
 				base.OnActivated(e);
@@ -123,7 +220,6 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 				frm = null;
 				OnCollapsed(EventArgs.Empty);
 			};
-			frm.FormBorderStyle = FormBorderStyle.SizableToolWindow;
 			Point p = e.List.PointToScreen(e.List.GetPositionFromRow(this));
 			p.Offset(e.List.Columns[0].Width, Height);
 			frm.StartPosition = FormStartPosition.Manual;
@@ -146,7 +242,6 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			};
 			scrollContainer.Controls.Add(childList);
 			
-			frm.DockPadding.All = 2;
 			frm.Controls.Add(scrollContainer);
 			
 			int screenHeight = Screen.FromPoint(p).WorkingArea.Bottom - p.Y;
@@ -170,6 +265,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 				frm.Left -= missingWidth;
 			}
 			frm.ClientSize = new Size(formWidth, formHeight);
+			frm.MinimumSize = new Size(100, Math.Min(50, formHeight));
 			isOpeningChild = true;
 			frm.Show();
 			isOpeningChild = false;

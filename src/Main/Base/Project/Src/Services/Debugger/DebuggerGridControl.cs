@@ -63,27 +63,28 @@ namespace ICSharpCode.Core
 			EndUpdate();
 		}
 		
-		Form frm;
+		DynamicTreeRow.ChildForm frm;
 		
 		public void ShowForm(ICSharpCode.TextEditor.TextArea textArea, Point logicTextPos)
 		{
 			frm = new DynamicTreeRow.ChildForm();
-			frm.FormBorderStyle = FormBorderStyle.None;
+			frm.AllowResizing = false;
 			frm.Owner = textArea.FindForm();
 			int ypos = (textArea.Document.GetVisibleLine(logicTextPos.Y) + 1) * textArea.TextView.FontHeight - textArea.VirtualTop.Y;
 			Point p = new Point(0, ypos);
 			p = textArea.PointToScreen(p);
 			p.X = Control.MousePosition.X - 16;
+			p.Y -= 1;
 			frm.StartPosition = FormStartPosition.Manual;
 			frm.ShowInTaskbar = false;
 			frm.Location = p;
-			frm.Size = new Size(Width, row.Height);
+			frm.ClientSize = new Size(Width + 2, row.Height + 2);
 			Dock = DockStyle.Fill;
 			frm.Controls.Add(this);
 			ICSharpCode.TextEditor.Gui.CompletionWindow.AbstractCompletionWindow.ShowWindowWithoutFocus(frm);
 			textArea.Click   += OnTextAreaClick;
 			textArea.KeyDown += OnTextAreaClick;
-			frm.Height = row.Height;
+			frm.ClientSize = new Size(frm.ClientSize.Width, row.Height + 2);
 		}
 		
 		void OnTextAreaClick(object sender, EventArgs e)
