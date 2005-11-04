@@ -156,11 +156,11 @@ namespace DebuggerLibrary
 
 		public unsafe void Exception(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int unhandled)
 		{
-			EnterCallback("Exception", pThread);
-
 			// Exception2 is used in .NET Framework 2.0
 			
-			ExitCallback_Continue();
+			// Forward the call to Exception2, which handles EnterCallback and ExitCallback
+			ExceptionType exceptionType = (unhandled != 0)?ExceptionType.DEBUG_EXCEPTION_UNHANDLED:ExceptionType.DEBUG_EXCEPTION_FIRST_CHANCE;
+			Exception2(pAppDomain, pThread, null, 0, (CorDebugExceptionCallbackType)exceptionType, 0);
 		}
 
 		#endregion
@@ -389,13 +389,17 @@ namespace DebuggerLibrary
 			ExitCallback_Continue();
 		}
 
-		public void Exception2(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFrame pFrame, uint nOffset, CorDebugExceptionCallbackType dwEventType, uint dwFlags)
+		public void Exception2(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugFrame pFrame, uint nOffset, CorDebugExceptionCallbackType exceptionType, uint dwFlags)
 		{
 			EnterCallback("Exception2", pThread);
-
-			callingThread.CurrentExceptionType = (ExceptionType)dwEventType;
 			
-			if (ExceptionType.DEBUG_EXCEPTION_UNHANDLED != (ExceptionType)dwEventType) {
+			// This callback is also called from Exception(...)!!!! (the .NET 1.1 version)
+			// Whatch out for the zeros and null!
+			// Exception -> Exception2(pAppDomain, pThread, null, 0, exceptionType, 0);
+			
+			callingThread.CurrentExceptionType = (ExceptionType)exceptionType;
+			
+			if (ExceptionType.DEBUG_EXCEPTION_UNHANDLED != (ExceptionType)exceptionType) {
 				// Handled exception
 				if (debugger.PauseOnHandledException) {
 					ExitCallback_Paused(PausedReason.Exception);
