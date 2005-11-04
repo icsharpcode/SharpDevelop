@@ -76,6 +76,13 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			b = helper.BindString("specificWarningsTextBox", "WarningsAsErrors"); // must be saved AFTER TreatWarningsAsErrors
 			b.RegisterLocationButton(locationButton);
 			
+			EventHandler setDirty = delegate {
+				helper.IsDirty = true;
+			};
+			Get<RadioButton>("none").CheckedChanged += setDirty;
+			Get<RadioButton>("specificWarnings").CheckedChanged += setDirty;
+			Get<RadioButton>("all").CheckedChanged += setDirty;
+			
 			Get<RadioButton>("specificWarnings").CheckedChanged  += new EventHandler(UpdateWarningChecked);
 			
 			UpdateWarningChecked(this, EventArgs.Empty);

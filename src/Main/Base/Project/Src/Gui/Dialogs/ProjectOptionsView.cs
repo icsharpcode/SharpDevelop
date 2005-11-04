@@ -98,6 +98,8 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					AddOptionPanels(descriptor.ChildDialogPanelDescriptors);
 				}
 			}
+			// re-evaluate dirty because option pages can be dirty when they are newly loaded
+			PanelDirtyChanged(null, null);
 		}
 		
 		void PanelDirtyChanged(object sender, EventArgs e)
