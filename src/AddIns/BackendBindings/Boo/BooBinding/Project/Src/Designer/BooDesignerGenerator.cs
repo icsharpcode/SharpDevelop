@@ -9,6 +9,7 @@ using System;
 using System.ComponentModel;
 using System.Reflection;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.FormDesigner;
 
 namespace Grunwald.BooBinding.Designer
@@ -32,6 +33,12 @@ namespace Grunwald.BooBinding.Designer
 			return "private def " + eventMethodName + "(" + param + "):\n" +
 				body +
 				"\n";
+		}
+		
+		protected override DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method)
+		{
+			DomRegion r = method.BodyRegion;
+			return new DomRegion(r.BeginLine + 1, 1, r.EndLine + 1, 1);
 		}
 		
 		protected static string GenerateParams(EventDescriptor edesc)

@@ -104,6 +104,8 @@ namespace ICSharpCode.FormDesigner
 		
 		protected abstract System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider();
 		
+		protected abstract DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method);
+		
 		public void MergeFormChanges()
 		{
 			if (tabs == null) Reparse(viewContent.Document.TextContent);
@@ -115,8 +117,12 @@ namespace ICSharpCode.FormDesigner
 			
 			Reparse(viewContent.Document.TextContent);
 			
-			int startOffset = viewContent.Document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.BeginLine + 1));
-			int endOffset   = viewContent.Document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.EndLine - 1));
+			// initializeComponents.BodyRegion.BeginLine + 1
+			DomRegion bodyRegion = GetReplaceRegion(viewContent.Document, initializeComponents);
+			if (bodyRegion.BeginColumn <= 0 || bodyRegion.EndColumn <= 0)
+				throw new InvalidOperationException("Column must be > 0");
+			int startOffset = viewContent.Document.PositionToOffset(new Point(bodyRegion.BeginColumn - 1, bodyRegion.BeginLine - 1));
+			int endOffset   = viewContent.Document.PositionToOffset(new Point(bodyRegion.EndColumn - 1, bodyRegion.EndLine - 1));
 			
 			viewContent.Document.Replace(startOffset, endOffset - startOffset, statements);
 		}

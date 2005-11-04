@@ -7,8 +7,10 @@
 
 using System;
 using System.ComponentModel;
+using System.Drawing;
 using System.Reflection;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Dom;
 
 namespace ICSharpCode.FormDesigner
 {
@@ -17,6 +19,23 @@ namespace ICSharpCode.FormDesigner
 		protected override string GenerateFieldDeclaration(Type fieldType, string name)
 		{
 			return "private " + fieldType + " " + name + ";";
+		}
+		
+		protected override DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method)
+		{
+			DomRegion r = method.BodyRegion;
+			int offset = document.PositionToOffset(new Point(r.BeginColumn - 1, r.BeginLine - 1));
+			string tmp = document.GetText(offset, 10);
+			while (offset < document.TextLength) {
+				char c = document.GetCharAt(offset++);
+				if (c == '{') {
+					return new DomRegion(r.BeginLine + 1, 1, r.EndLine, 1);
+				}
+				if (c != ' ') {
+					break;
+				}
+			}
+			return new DomRegion(r.BeginLine + 2, 1, r.EndLine, 1);
 		}
 		
 		protected override System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider()

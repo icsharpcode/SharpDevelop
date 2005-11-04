@@ -48,7 +48,7 @@ class MainClass
 		int rev = new Client().SingleStatus(".").Entry.Revision;
 		Console.WriteLine(rev);
 		using (StreamWriter writer = new StreamWriter("../REVISION")) {
-			writer.WriteLine(rev);
+			writer.Write(rev.ToString());
 		}
 	}
 	

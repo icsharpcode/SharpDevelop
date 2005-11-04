@@ -7,6 +7,6 @@ pushd Tools
 @echo.
 @echo.
 @echo PrepareRelease.bat completed successfully.
-@echo The change log has been updated and a VERSION file containing the current revision number has been created.
+@echo The change log has been updated and a REVISION file containing the current revision number has been created.
 @echo.
 @pause

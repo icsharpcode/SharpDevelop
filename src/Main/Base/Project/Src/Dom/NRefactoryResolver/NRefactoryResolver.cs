@@ -331,7 +331,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					type.TypeArguments.CopyTo(typeParameters, 0);
 				}
 				ResolveResult rr = CreateMemberResolveResult(typeVisitor.FindOverload(constructors, typeParameters, ((ObjectCreateExpression)expr).Parameters, null));
-				rr.ResolvedType = type;
+				if (rr != null) {
+					rr.ResolvedType = type;
+				}
 				return rr;
 			}
 			return new ResolveResult(callingClass, callingMember, type);
