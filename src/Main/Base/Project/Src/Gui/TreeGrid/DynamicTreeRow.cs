@@ -21,14 +21,32 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 		public DynamicTreeRow()
 		{
 			plus = this[0];
-			plus.HighlightBrush = Brushes.AliceBlue;
-			plus.Cursor = Cursors.Hand;
-			plus.Click += OnPlusClick;
-			plus.Paint += OnPlusPaint;
-			plus.Text = "+";
 			plus.TextFormat = new StringFormat(plus.TextFormat);
 			plus.TextFormat.Alignment = StringAlignment.Center;
 			plus.TextFormat.LineAlignment = StringAlignment.Center;
+			ShowPlus = true;
+		}
+		
+		bool showPlus;
+		
+		public bool ShowPlus {
+			get {
+				return showPlus;
+			}
+			set {
+				showPlus = value;
+				plus.HighlightBrush = showPlus ? Brushes.AliceBlue : null;
+				plus.Cursor = showPlus ? Cursors.Hand : null;
+				if (showPlus) {
+					plus.Click += OnPlusClick;
+					plus.Paint += OnPlusPaint;
+					plus.Text = "+";
+				} else {
+					plus.Click -= OnPlusClick;
+					plus.Paint -= OnPlusPaint;
+					plus.Text = "";
+				}
+			}
 		}
 		
 		protected virtual void OnPlusPaint(object sender, PaintEventArgs e)

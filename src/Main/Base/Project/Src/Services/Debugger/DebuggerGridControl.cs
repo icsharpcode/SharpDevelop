@@ -6,6 +6,7 @@
  */
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Gui.TreeGrid;
@@ -22,27 +23,35 @@ namespace ICSharpCode.Core
 		
 		DynamicTreeRow row;
 		
+		public static void AddColumns(IList<DynamicListColumn> columns)
+		{
+			columns.Add(new DynamicListColumn());
+			columns.Add(new DynamicListColumn());
+			columns.Add(new DynamicListColumn());
+			columns.Add(new DynamicListColumn());
+			columns[0].BackgroundBrush = SystemBrushes.ControlLightLight;
+			// default is allowgrow = true and autosize = false
+			columns[0].AllowGrow = false;
+			columns[1].AllowGrow = false;
+			columns[1].Width = 18;
+			columns[2].AutoSize = true;
+			columns[2].MinimumWidth = 75;
+			columns[3].AutoSize = true;
+			columns[3].MinimumWidth = 75;
+		}
+		
 		public DebuggerGridControl(DynamicTreeRow row)
 		{
 			this.row = row;
 			
 			BeginUpdate();
-			Columns.Add(new DynamicListColumn());
-			Columns.Add(new DynamicListColumn());
-			Columns.Add(new DynamicListColumn());
-			Columns.Add(new DynamicListColumn());
-			Columns[0].BackgroundBrush = SystemBrushes.ControlLightLight;
-			// default is allowgrow = true and autosize = false
-			Columns[0].AllowGrow = false;
-			Columns[1].AllowGrow = false;
-			Columns[1].Width = 18;
-			Columns[2].AutoSize = true;
-			Columns[3].AutoSize = true;
+			
+			AddColumns(Columns);
+			
 			Rows.Add(row);
 			
-			foreach (DynamicListColumn col in Columns) {
-				row.ChildColumns.Add(col.Clone());
-			}
+			AddColumns(row.ChildColumns);
+			
 			row.Expanded  += delegate { isExpanded = true; };
 			row.Collapsed += delegate { isExpanded = false; };
 			
@@ -64,7 +73,7 @@ namespace ICSharpCode.Core
 			int ypos = (textArea.Document.GetVisibleLine(logicTextPos.Y) + 1) * textArea.TextView.FontHeight - textArea.VirtualTop.Y;
 			Point p = new Point(0, ypos);
 			p = textArea.PointToScreen(p);
-			p.X = Control.MousePosition.X;
+			p.X = Control.MousePosition.X - 16;
 			frm.StartPosition = FormStartPosition.Manual;
 			frm.ShowInTaskbar = false;
 			frm.Location = p;
