@@ -49,12 +49,22 @@
 		<MSBuild Projects="@(PrepareReleaseProject)" Targets="Build"/>
 		<Exec Command="SVNChangelogToXml.exe --REVISION" WorkingDirectory = "SVNChangeLogToXml\bin\Release" Timeout = "60000" IgnoreExitCode = "false"/>
 		<RemoveDir Directories="SVNChangeLogToXml\bin" />
-        <RemoveDir Directories="SVNChangeLogToXml\obj" />
+		<RemoveDir Directories="SVNChangeLogToXml\obj" />
 	</Target>
+	
+	<ItemGroup>
+		<CleanupFiles Include="..\..\bin\*"/>
+		<CleanupDirectories Include="..\..\bin\Tools"/>
+		<CleanupDirectories Include="..\..\bin\setup\help"/>
+		<CleanupDirectories Include="..\..\AddIns\Addins"/>
+		
+		<!--<SpecialObjCleanupDirectories Include="..\**\obj\*.FileList.txt"/>-->
+	</ItemGroup>
 	
 	<Target Name="Clean">
 		<Exec Command="unregister.bat" WorkingDirectory="..\..\bin\setup\help" IgnoreExitCode = "true" Condition = "Exists('..\..\bin\setup\help\unregister.bat')"/>
-		<RemoveDir Directories="..\..\bin\Tools" />
-		<RemoveDir Directories="..\..\bin\setup\help" />
+		<RemoveDir Directories="@(SpecialObjCleanupDirectories->'%(RelativeDir)')" />
+		<RemoveDir Directories="@(CleanupDirectories)" />
+		<Delete Files="@(CleanupFiles)" />
 	</Target>
 </Project>
