@@ -19,6 +19,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 using ICSharpCode.Core;
+using ICSharpCode.TextEditor.Document;
 
 namespace ICSharpCode.FormDesigner
 {
@@ -53,14 +54,15 @@ namespace ICSharpCode.FormDesigner
 		void ComponentRemoved(object sender, ComponentEventArgs e)
 		{
 			try {
-				Reparse(viewContent.Document.TextContent);
+				Reparse();
 				foreach (IField field in c.Fields) {
 					if (field.Name == e.Component.Site.Name) {
-						int startOffset = viewContent.Document.PositionToOffset(new Point(0, field.Region.BeginLine - 1));
-						int endOffset   = viewContent.Document.PositionToOffset(new Point(0, field.Region.EndLine));
-						viewContent.Document.Remove(startOffset, endOffset - startOffset);
+						int startOffset = document.PositionToOffset(new Point(0, field.Region.BeginLine - 1));
+						int endOffset   = document.PositionToOffset(new Point(0, field.Region.EndLine));
+						document.Remove(startOffset, endOffset - startOffset);
 					}
 				}
+				SaveDocument();
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
@@ -77,14 +79,15 @@ namespace ICSharpCode.FormDesigner
 		void ComponentAdded(object sender, ComponentEventArgs e)
 		{
 			try {
-				Reparse(viewContent.Document.TextContent);
-				int endOffset = viewContent.Document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.EndLine));
-				viewContent.Document.Insert(endOffset, tabs + GenerateFieldDeclaration(e.Component.GetType(), e.Component.Site.Name) + Environment.NewLine);
+				Reparse();
+				int endOffset = document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.EndLine));
+				document.Insert(endOffset, tabs + GenerateFieldDeclaration(e.Component.GetType(), e.Component.Site.Name) + Environment.NewLine);
 				if (CodeDOMGenerator.IsNonVisualComponent(viewContent.Host, e.Component)) {
 					if (!IsNonVisualComponentContainerDefined) {
-						viewContent.Document.Insert(endOffset, tabs + GenerateFieldDeclaration(typeof(Container), NonVisualComponentContainerName) + Environment.NewLine);
+						document.Insert(endOffset, tabs + GenerateFieldDeclaration(typeof(Container), NonVisualComponentContainerName) + Environment.NewLine);
 					}
 				}
+				SaveDocument();
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
@@ -92,13 +95,18 @@ namespace ICSharpCode.FormDesigner
 		
 		void ComponentRenamed(object sender, ComponentRenameEventArgs e)
 		{
-			Reparse(viewContent.Document.TextContent);
-			foreach (IField field in c.Fields) {
-				if (field.Name == e.OldName) {
-					int startOffset = viewContent.Document.PositionToOffset(new Point(0, field.Region.BeginLine - 1));
-					int endOffset   = viewContent.Document.PositionToOffset(new Point(0, field.Region.EndLine));
-					viewContent.Document.Replace(startOffset, endOffset - startOffset, tabs + GenerateFieldDeclaration(e.Component.GetType(), e.NewName) + Environment.NewLine);
+			try {
+				Reparse();
+				foreach (IField field in c.Fields) {
+					if (field.Name == e.OldName) {
+						int startOffset = document.PositionToOffset(new Point(0, field.Region.BeginLine - 1));
+						int endOffset   = document.PositionToOffset(new Point(0, field.Region.EndLine));
+						document.Replace(startOffset, endOffset - startOffset, tabs + GenerateFieldDeclaration(e.Component.GetType(), e.NewName) + Environment.NewLine);
+					}
 				}
+				SaveDocument();
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
 			}
 		}
 		
@@ -108,35 +116,73 @@ namespace ICSharpCode.FormDesigner
 		
 		public void MergeFormChanges()
 		{
-			if (tabs == null) Reparse(viewContent.Document.TextContent);
+			if (tabs == null) Reparse();
 			
 			// generate file and get initialize components string
 			StringWriter writer = new StringWriter();
 			new CodeDOMGenerator(viewContent.Host, CreateCodeProvider(), tabs + '\t').ConvertContentDefinition(writer);
 			string statements = writer.ToString();
 			
-			Reparse(viewContent.Document.TextContent);
-			
 			// initializeComponents.BodyRegion.BeginLine + 1
-			DomRegion bodyRegion = GetReplaceRegion(viewContent.Document, initializeComponents);
+			DomRegion bodyRegion = GetReplaceRegion(document, initializeComponents);
 			if (bodyRegion.BeginColumn <= 0 || bodyRegion.EndColumn <= 0)
 				throw new InvalidOperationException("Column must be > 0");
-			int startOffset = viewContent.Document.PositionToOffset(new Point(bodyRegion.BeginColumn - 1, bodyRegion.BeginLine - 1));
-			int endOffset   = viewContent.Document.PositionToOffset(new Point(bodyRegion.EndColumn - 1, bodyRegion.EndLine - 1));
+			int startOffset = document.PositionToOffset(new Point(bodyRegion.BeginColumn - 1, bodyRegion.BeginLine - 1));
+			int endOffset   = document.PositionToOffset(new Point(bodyRegion.EndColumn - 1, bodyRegion.EndLine - 1));
 			
-			viewContent.Document.Replace(startOffset, endOffset - startOffset, statements);
+			document.Replace(startOffset, endOffset - startOffset, statements);
+			SaveDocument();
 		}
 		
-		protected void Reparse(string content)
+		IDocument document;
+		string saveDocumentToFile; // only set when InitializeComponent was loaded from code-behind file that was not opened
+		
+		void SaveDocument()
 		{
+			if (saveDocumentToFile != null) {
+				NamedFileOperationDelegate method = delegate(string fileName) {
+					using (StreamWriter writer = new StreamWriter(fileName, false, System.Text.Encoding.UTF8)) {
+						writer.Write(document.TextContent);
+					}
+				};
+				FileUtility.ObservedSave(method, saveDocumentToFile, FileErrorPolicy.Inform);
+			}
+		}
+		
+		protected void Reparse()
+		{
+			saveDocumentToFile = null;
+			
 			// get new initialize components
+			string content = viewContent.Document.TextContent;
 			ParseInformation info = ParserService.ParseFile(viewContent.TextEditorControl.FileName, content, false, true);
 			ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
 			foreach (IClass c in cu.Classes) {
 				if (FormDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
 					initializeComponents = FormDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
 					if (initializeComponents != null) {
-						using (StringReader r = new StringReader(content)) {
+						string designerFile = initializeComponents.DeclaringType.CompilationUnit.FileName;
+						string designerContent;
+						if (FileUtility.IsEqualFileName(viewContent.TextEditorControl.FileName, designerFile)) {
+							designerContent = content;
+							document = viewContent.Document;
+						} else {
+							IWorkbenchWindow window = FileService.GetOpenFile(designerFile);
+							if (window == null) {
+								document = new DocumentFactory().CreateDocument();
+								designerContent = ParserService.GetParseableFileContent(designerFile);
+								document.TextContent = designerContent;
+								saveDocumentToFile = designerFile;
+							} else {
+								ITextEditorControlProvider tecp = window.ViewContent as ITextEditorControlProvider;
+								if (tecp == null)
+									throw new ApplicationException("designer file viewcontent must implement ITextEditorControlProvider");
+								document = tecp.TextEditorControl.Document;
+								designerContent = document.TextContent;
+							}
+							ParserService.ParseFile(designerFile, designerContent, false, true);
+						}
+						using (StringReader r = new StringReader(designerContent)) {
 							int count = initializeComponents.Region.BeginLine;
 							for (int i = 1; i < count; i++)
 								r.ReadLine();
@@ -165,7 +211,7 @@ namespace ICSharpCode.FormDesigner
 				return false;
 			}
 
-			Reparse(viewContent.Document.TextContent);
+			Reparse();
 			
 			foreach (IMethod method in c.Methods) {
 				if (method.Name == eventMethodName) {
@@ -174,7 +220,7 @@ namespace ICSharpCode.FormDesigner
 				}
 			}
 			MergeFormChanges();
-			Reparse(viewContent.Document.TextContent);
+			Reparse();
 			
 			position = c.Region.EndLine + 1;
 			
@@ -188,9 +234,10 @@ namespace ICSharpCode.FormDesigner
 		
 		public ICollection GetCompatibleMethods(EventDescriptor edesc)
 		{
-			Reparse(viewContent.Document.TextContent);
+			Reparse();
 			ArrayList compatibleMethods = new ArrayList();
 			MethodInfo methodInfo = edesc.EventType.GetMethod("Invoke");
+			c = c.DefaultReturnType.GetUnderlyingClass();
 			foreach (IMethod method in c.Methods) {
 				if (method.Parameters.Count == methodInfo.GetParameters().Length) {
 					bool found = true;
@@ -213,12 +260,13 @@ namespace ICSharpCode.FormDesigner
 		
 		public ICollection GetCompatibleMethods(EventInfo edesc)
 		{
-			Reparse(viewContent.Document.TextContent);
+			Reparse();
 			ArrayList compatibleMethods = new ArrayList();
 			MethodInfo methodInfo = edesc.GetAddMethod();
 			ParameterInfo pInfo = methodInfo.GetParameters()[0];
 			string eventName = pInfo.ParameterType.ToString().Replace("EventHandler", "EventArgs");
 			
+			c = c.DefaultReturnType.GetUnderlyingClass();
 			foreach (IMethod method in c.Methods) {
 				if (method.Parameters.Count == 2) {
 					bool found = true;

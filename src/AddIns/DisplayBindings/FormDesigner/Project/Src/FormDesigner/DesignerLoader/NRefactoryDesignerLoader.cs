@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.ComponentModel.Design;
@@ -20,6 +21,7 @@ using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
+using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.FormDesigner.Services;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
@@ -109,30 +111,95 @@ namespace ICSharpCode.FormDesigner
 		{
 			LoggingService.Debug("NRefactoryDesignerLoader.Parse()");
 			
-			lastTextContent = TextContent;
-			ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new StringReader(lastTextContent));
-			p.Parse();
-			
-			if (p.Errors.count > 0) {
-				throw new FormDesignerLoadException(p.Errors.ErrorOutput);
-			}
-			
-			// Try to fix the type names to fully qualified ones
-			ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
-			
 			#if DEBUG
 			if ((Control.ModifierKeys & (Keys.Alt | Keys.Control)) == (Keys.Alt | Keys.Control)) {
 				System.Diagnostics.Debugger.Break();
 			}
 			#endif
 			
+			lastTextContent = TextContent;
+			
+			ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
+			
+			IClass formClass = null;
+			
+			foreach (IClass c in parseInfo.BestCompilationUnit.Classes) {
+				if (FormDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
+					formClass = c;
+					break;
+				}
+			}
+			if (formClass == null)
+				throw new FormDesignerLoadException("No class derived from Form or Control was found.");
+			
+			// Initialize designer for formClass
+			formClass = formClass.DefaultReturnType.GetUnderlyingClass();
+			List<IClass> parts;
+			if (formClass is CompoundClass) {
+				parts = (formClass as CompoundClass).Parts;
+			} else {
+				parts = new List<IClass>();
+				parts.Add(formClass);
+			}
+			List<KeyValuePair<string, CompilationUnit>> compilationUnits = new List<KeyValuePair<string, CompilationUnit>>();
 			bool foundInitMethod = false;
-			FixTypeNames(p.CompilationUnit, parseInfo.BestCompilationUnit, ref foundInitMethod);
+			foreach (IClass part in parts) {
+				string fileName = part.CompilationUnit.FileName;
+				if (fileName == null) continue;
+				bool found = false;
+				foreach (KeyValuePair<string, CompilationUnit> entry in compilationUnits) {
+					if (FileUtility.IsEqualFileName(fileName, entry.Key)) {
+						found = true;
+						break;
+					}
+				}
+				if (found) continue;
+				
+				string fileContent = ParserService.GetParseableFileContent(fileName);
+				
+				ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new StringReader(fileContent));
+				p.Parse();
+				if (p.Errors.count > 0) {
+					throw new FormDesignerLoadException("Syntax errors in " + fileName + ":\r\n" + p.Errors.ErrorOutput);
+				}
+				
+				// Try to fix the type names to fully qualified ones
+				FixTypeNames(p.CompilationUnit, parseInfo.BestCompilationUnit, ref foundInitMethod);
+				compilationUnits.Add(new KeyValuePair<string, CompilationUnit>(fileName, p.CompilationUnit));
+			}
+			
 			if (!foundInitMethod)
 				throw new FormDesignerLoadException("The InitializeComponent method was not found. Designer cannot be loaded.");
 			
+			CompilationUnit combinedCu = new CompilationUnit();
+			NamespaceDeclaration nsDecl = new NamespaceDeclaration(formClass.Namespace);
+			combinedCu.AddChild(nsDecl);
+			TypeDeclaration formDecl = new TypeDeclaration(Modifier.Public, null);
+			nsDecl.AddChild(formDecl);
+			formDecl.Name = formClass.Name;
+			foreach (KeyValuePair<string, CompilationUnit> entry in compilationUnits) {
+				foreach (object o in entry.Value.Children) {
+					TypeDeclaration td = o as TypeDeclaration;
+					if (td != null && td.Name == formDecl.Name) {
+						foreach (INode node in td.Children)
+									formDecl.AddChild(node);
+						formDecl.BaseTypes.AddRange(td.BaseTypes);
+					}
+					if (o is NamespaceDeclaration) {
+						foreach (object o2 in ((NamespaceDeclaration)o).Children) {
+							td = o2 as TypeDeclaration;
+							if (td != null && td.Name == formDecl.Name) {
+								foreach (INode node in td.Children)
+									formDecl.AddChild(node);
+								formDecl.BaseTypes.AddRange(td.BaseTypes);
+							}
+						}
+					}
+				}
+			}
+			
 			CodeDOMVisitor visitor = new CodeDOMVisitor();
-			visitor.Visit(p.CompilationUnit, null);
+			visitor.Visit(combinedCu, null);
 			
 			// output generated CodeDOM to the console :
 			#if DEBUG

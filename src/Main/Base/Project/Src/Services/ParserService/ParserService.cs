@@ -401,6 +401,25 @@ namespace ICSharpCode.Core
 			return parseInformation;
 		}
 		
+		public static string GetParseableFileContent(string fileName)
+		{
+			IWorkbenchWindow window = FileService.GetOpenFile(fileName);
+			if (window != null) {
+				IViewContent viewContent = window.ViewContent;
+				IEditable editable = viewContent as IEditable;
+				if (editable != null) {
+					return editable.Text;
+				}
+			}
+			//string res = project.GetParseableFileContent(fileName);
+			//if (res != null)
+			//	return res;
+			
+			// load file
+			Properties textEditorProperties = PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties());
+			Encoding tmp = Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252));
+			return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(fileName, ref tmp, tmp);
+		}
 		
 		public static ParseInformation GetParseInformation(string fileName)
 		{

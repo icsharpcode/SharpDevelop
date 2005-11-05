@@ -25,7 +25,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		/// <summary>
-		/// The current view content which is shown inside this window.
+		/// The primary view content in this window.
 		/// </summary>
 		IViewContent ViewContent {
 			get;
@@ -40,6 +40,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		*/
 		
+				/// <summary>
+		/// The current view content which is shown inside this window.
+		/// </summary>
 		IBaseViewContent ActiveViewContent {
 			get;
 		}

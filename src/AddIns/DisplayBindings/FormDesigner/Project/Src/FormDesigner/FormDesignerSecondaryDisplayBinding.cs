@@ -20,6 +20,9 @@ namespace ICSharpCode.FormDesigner
 	{
 		public static IMethod GetInitializeComponents(IClass c)
 		{
+			c = c.DefaultReturnType.GetUnderlyingClass();
+			if (c == null)
+				return null;
 			foreach (IMethod method in c.Methods) {
 				if ((method.Name == "InitializeComponents" || method.Name == "InitializeComponent") && method.Parameters.Count == 0) {
 					return method;
@@ -32,13 +35,16 @@ namespace ICSharpCode.FormDesigner
 		{
 			// Simple test for fully qualified name
 			foreach (IReturnType baseType in c.BaseTypes) {
-				if (baseType.FullyQualifiedName == "System.Windows.Forms.Form" || baseType.FullyQualifiedName == "System.Windows.Forms.UserControl") {
+				if (baseType.FullyQualifiedName == "System.Windows.Forms.Form"
+				    || baseType.FullyQualifiedName == "System.Windows.Forms.UserControl"
+				    // also accept Form and UserControl when they could not be resolved
+				    || baseType.FullyQualifiedName == "Form"
+				    || baseType.FullyQualifiedName == "UserControl")
+				{
 					return true;
 				}
 			}
-			// Test for real base type (does not work while solution load thread is still running)
-			IProjectContent pc = ProjectContentRegistry.WinForms;
-			return c.IsTypeInInheritanceTree(pc.GetClass("System.Windows.Forms.Form")) || c.IsTypeInInheritanceTree(pc.GetClass("System.Windows.Forms.UserControl"));
+			return false;
 		}
 		
 		public static bool IsDesignable(ParseInformation info)
