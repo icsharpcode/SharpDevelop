@@ -383,6 +383,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <returns>The version number of the solution.</returns>
 		public static string ReadSolutionInformation(string solutionFileName, Converter.PrjxToSolutionProject.Conversion conversion)
 		{
+			LoggingService.Debug("ReadSolutionInformation: " + solutionFileName);
 			string solutionDirectory = Path.GetDirectoryName(solutionFileName);
 			using (StreamReader sr = File.OpenText(solutionFileName)) {
 				string line = GetFirstNonCommentLine(sr);
@@ -398,9 +399,10 @@ namespace ICSharpCode.SharpDevelop.Project
 						string title        = match.Result("${Title}");
 						string location     = Path.Combine(solutionDirectory, match.Result("${Location}"));
 						string guid         = match.Result("${Guid}");
-						conversion.NameToGuid.Add(title, new Guid(guid));
-						conversion.NameToPath.Add(title, location);
-						conversion.GuidToPath.Add(new Guid(guid), location);
+						LoggingService.Debug(guid + ": " + title);
+						conversion.NameToGuid[title] = new Guid(guid);
+						conversion.NameToPath[title] = location;
+						conversion.GuidToPath[new Guid(guid)] = location;
 					}
 				}
 				return version;

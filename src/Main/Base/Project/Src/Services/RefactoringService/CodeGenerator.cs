@@ -372,10 +372,11 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (targetClassProperties.Find(delegate(IProperty tp) { return p.Name == tp.Name; }) == null) {
 					AttributedNode pd = ConvertMember(p, context);
 					if (explicitImpl) {
+						InterfaceImplementation impl = new InterfaceImplementation(ConvertType(interf, context), p.Name);
 						if (pd is IndexerDeclaration) {
-							((IndexerDeclaration)pd).NamespaceName = GetInterfaceName(interf, p, context);
+							((IndexerDeclaration)pd).InterfaceImplementations.Add(impl);
 						} else {
-							((PropertyDeclaration)pd).Name = GetInterfaceName(interf, p, context) + "." + ((PropertyDeclaration)pd).Name;
+							((PropertyDeclaration)pd).InterfaceImplementations.Add(impl);
 						}
 						pd.Modifier = Modifier.None;
 					} else {

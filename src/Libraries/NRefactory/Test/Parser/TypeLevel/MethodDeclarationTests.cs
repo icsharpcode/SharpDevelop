@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -150,6 +150,44 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("T", md.Templates[0].Name);
 			Assert.AreEqual(1, md.Templates[0].Bases.Count);
 			Assert.AreEqual("ISomeInterface", md.Templates[0].Bases[0].Type);
+		}
+		
+		[Test]
+		public void CSharpMethodImplementingInterfaceTest()
+		{
+			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("int MyInterface.MyMethod() {} ", typeof(MethodDeclaration));
+			Assert.AreEqual("int", md.TypeReference.Type);
+			
+			Assert.AreEqual("MyInterface", md.InterfaceImplementations[0].InterfaceType.Type);
+		}
+		
+		[Test]
+		public void CSharpMethodImplementingGenericInterfaceTest()
+		{
+			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("int MyInterface<string>.MyMethod() {} ", typeof(MethodDeclaration));
+			Assert.AreEqual("int", md.TypeReference.Type);
+			
+			Assert.AreEqual("MyInterface", md.InterfaceImplementations[0].InterfaceType.Type);
+			Assert.AreEqual("System.String", md.InterfaceImplementations[0].InterfaceType.GenericTypes[0].SystemType);
+		}
+		
+		[Test]
+		public void CSharpVoidMethodImplementingInterfaceTest()
+		{
+			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("void MyInterface.MyMethod() {} ", typeof(MethodDeclaration));
+			Assert.AreEqual("void", md.TypeReference.Type);
+			
+			Assert.AreEqual("MyInterface", md.InterfaceImplementations[0].InterfaceType.Type);
+		}
+		
+		[Test]
+		public void CSharpVoidMethodImplementingGenericInterfaceTest()
+		{
+			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("void MyInterface<string>.MyMethod() {} ", typeof(MethodDeclaration));
+			Assert.AreEqual("void", md.TypeReference.Type);
+			
+			Assert.AreEqual("MyInterface", md.InterfaceImplementations[0].InterfaceType.Type);
+			Assert.AreEqual("System.String", md.InterfaceImplementations[0].InterfaceType.GenericTypes[0].SystemType);
 		}
 		#endregion
 		

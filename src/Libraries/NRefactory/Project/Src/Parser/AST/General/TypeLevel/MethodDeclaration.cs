@@ -18,9 +18,9 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		TypeReference    typeReference    = TypeReference.Null;
 		BlockStatement   body             = BlockStatement.Null;
 		ArrayList     handlesClause    = new ArrayList();    // VB only
-		ArrayList     implementsClause = new ArrayList(); // VB only
+		List<InterfaceImplementation> interfaceImplementations = new List<InterfaceImplementation>(1);
 		AttributeSection returnTypeAttributeSection = AttributeSection.Null;
-		List<TemplateDefinition> templates = new List<TemplateDefinition>();
+		List<TemplateDefinition> templates = new List<TemplateDefinition>(1);
 		
 		public List<TemplateDefinition> Templates {
 			get {
@@ -67,12 +67,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList ImplementsClause {
+		public List<InterfaceImplementation> InterfaceImplementations {
 			get {
-				return implementsClause;
+				return interfaceImplementations;
 			}
 			set {
-				implementsClause = value == null ? new ArrayList() : value;
+				interfaceImplementations = value ?? new List<InterfaceImplementation>();
 			}
 		}
 		

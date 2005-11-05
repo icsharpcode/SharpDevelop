@@ -16,7 +16,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	public class IndexerDeclaration : AttributedNode
 	{
 		TypeReference type = TypeReference.Null;
-		string        namespaceName = String.Empty;
+		List<InterfaceImplementation> interfaceImplementations = new List<InterfaceImplementation>(1);
 		Point         bodyStart = new Point(-1, -1);
 		Point         bodyEnd   = new Point(-1, -1);
 		
@@ -84,15 +84,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public string NamespaceName {
-			get {
-				return namespaceName;
-			}
-			set {
-				namespaceName = value == null ? String.Empty : value;
-			}
-		}
-		
 		public Point BodyStart {
 			get {
 				return bodyStart;
@@ -108,6 +99,15 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 			set {
 				bodyEnd = value;
+			}
+		}
+		
+		public List<InterfaceImplementation> InterfaceImplementations {
+			get {
+				return interfaceImplementations;
+			}
+			set {
+				interfaceImplementations = value ?? new List<InterfaceImplementation>();
 			}
 		}
 		
@@ -134,7 +134,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			                     Modifier,
 			                     GetCollectionString(Parameters),
 			                     GetCollectionString(Attributes),
-			                     NamespaceName,
+			                     GetCollectionString(InterfaceImplementations),
 			                     BodyStart,
 			                     BodyEnd);
 		}

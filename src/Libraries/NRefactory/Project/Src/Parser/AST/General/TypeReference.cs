@@ -117,6 +117,28 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
+		/// <summary>
+		/// Removes the last identifier from the type.
+		/// e.g. "System.String.Length" becomes "System.String" or
+		/// "System.Collections.IEnumerable(of string).Current" becomes "System.Collections.IEnumerable(of string)"
+		/// This is used for explicit interface implementation in VB.
+		/// </summary>
+		public static string StripLastIdentifierFromType(ref TypeReference tr)
+		{
+			if (tr is InnerClassTypeReference && ((InnerClassTypeReference)tr).Type.IndexOf('.') < 0) {
+				string ident = ((InnerClassTypeReference)tr).Type;
+				tr = ((InnerClassTypeReference)tr).BaseType;
+				return ident;
+			} else {
+				int pos = tr.Type.LastIndexOf('.');
+				if (pos < 0)
+					return tr.Type;
+				string ident = tr.Type.Substring(pos + 1);
+				tr.Type = tr.Type.Substring(0, pos);
+				return ident;
+			}
+		}
+		
 		public string SystemType {
 			get {
 				return systemType;

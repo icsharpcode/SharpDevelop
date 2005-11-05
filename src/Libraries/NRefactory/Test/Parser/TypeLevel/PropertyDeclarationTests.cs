@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -54,6 +54,29 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(!pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
+		}
+		
+		[Test]
+		public void CSharpPropertyImplementingInterfaceTest()
+		{
+			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilCSharp.ParseTypeMember("int MyInterface.MyProperty { get {} } ", typeof(PropertyDeclaration));
+			Assert.AreEqual("MyProperty", pd.Name);
+			Assert.IsTrue(pd.HasGetRegion);
+			Assert.IsTrue(!pd.HasSetRegion);
+			
+			Assert.AreEqual("MyInterface", pd.InterfaceImplementations[0].InterfaceType.Type);
+		}
+		
+		[Test]
+		public void CSharpPropertyImplementingGenericInterfaceTest()
+		{
+			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilCSharp.ParseTypeMember("int MyInterface<string>.MyProperty { get {} } ", typeof(PropertyDeclaration));
+			Assert.AreEqual("MyProperty", pd.Name);
+			Assert.IsTrue(pd.HasGetRegion);
+			Assert.IsTrue(!pd.HasSetRegion);
+			
+			Assert.AreEqual("MyInterface", pd.InterfaceImplementations[0].InterfaceType.Type);
+			Assert.AreEqual("System.String", pd.InterfaceImplementations[0].InterfaceType.GenericTypes[0].SystemType);
 		}
 		#endregion
 		

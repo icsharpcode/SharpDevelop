@@ -17,9 +17,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	public class EventDeclaration : ParametrizedNode
 	{
 		TypeReference   typeReference = TypeReference.Null;
-		List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>(1);
-//		ArrayList     implementsClause = new ArrayList(); // VB only
-		ArrayList     implementsClause = new ArrayList(); // VB only
+		List<InterfaceImplementation> interfaceImplementations = new List<InterfaceImplementation>(1);
 		EventAddRegion addRegion       = EventAddRegion.Null;
 		EventRemoveRegion removeRegion = EventRemoveRegion.Null;
 		EventRaiseRegion raiseRegion   = EventRaiseRegion.Null;
@@ -32,14 +30,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 			set {
 				typeReference = TypeReference.CheckNull(value);
-			}
-		}
-		public List<VariableDeclaration> VariableDeclarators {
-			get {
-				return variableDeclarators;
-			}
-			set {
-				variableDeclarators = value == null ? new List<VariableDeclaration>(1) : value;
 			}
 		}
 		
@@ -101,23 +91,17 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList ImplementsClause {
+		public List<InterfaceImplementation> InterfaceImplementations {
 			get {
-				return implementsClause;
+				return interfaceImplementations;
 			}
 			set {
-				implementsClause = value == null ? new ArrayList() : value;
+				interfaceImplementations = value ?? new List<InterfaceImplementation>();
 			}
 		}
 		
 		public EventDeclaration(Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes)
 		{
-		}
-		
-		public EventDeclaration(TypeReference typeReference, List<VariableDeclaration> variableDeclarators, Modifier modifier, List<AttributeSection> attributes) : base(modifier, attributes)
-		{
-			this.TypeReference = typeReference;
-			this.VariableDeclarators = variableDeclarators;
 		}
 		
 		public EventDeclaration(TypeReference typeReference, string name, Modifier modifier, List<AttributeSection> attributes)  : base(modifier, attributes, name)
@@ -126,10 +110,10 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		}
 		
 		// for VB:
-		public EventDeclaration(TypeReference typeReference, Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string name, ArrayList implementsClause)  : base(modifier, attributes, name, parameters)
+		public EventDeclaration(TypeReference typeReference, Modifier modifier, List<ParameterDeclarationExpression> parameters, List<AttributeSection> attributes, string name, List<InterfaceImplementation> interfaceImplementations)  : base(modifier, attributes, name, parameters)
 		{
-			this.TypeReference    = typeReference;
-			this.ImplementsClause = implementsClause;
+			this.TypeReference = typeReference;
+			this.InterfaceImplementations = interfaceImplementations;
 		}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)
@@ -138,9 +122,8 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		}
 		public override string ToString()
 		{
-			return String.Format("[EventDeclaration: TypeReference={0}, VariableDeclarators={1}, Modifier={2}, Attributes={3}, Name={4}, BodyStart={5}, BodyEnd={6}]",
+			return String.Format("[EventDeclaration: TypeReference={0}, Modifier={1}, Attributes={2}, Name={3}, BodyStart={4}, BodyEnd={5}]",
 			                     TypeReference,
-			                     GetCollectionString(VariableDeclarators),
 			                     Modifier,
 			                     GetCollectionString(Attributes),
 			                     Name,

@@ -377,6 +377,20 @@ bool IsGenericFollowedBy(int token)
 	return SkipGeneric(ref t) && t.kind == token;
 }
 
+bool IsExplicitInterfaceImplementation()
+{
+	StartPeek();
+	Token pt = la;
+	pt = Peek();
+	if (pt.kind == Tokens.Dot || pt.kind == Tokens.DoubleColon)
+		return true;
+	if (pt.kind == Tokens.LessThan) {
+		if (SkipGeneric(ref pt))
+			return pt.kind == Tokens.Dot;
+	}
+	return false;
+}
+
 /* True, if lookahead ident is "where" */
 bool IdentIsWhere () {
 	return la.kind == Tokens.Identifier && la.val == "where";
@@ -1166,6 +1180,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	Statement stmt = null;
 	List<VariableDeclaration> variableDeclarators = new List<VariableDeclaration>();
 	List<TemplateDefinition> templates = new List<TemplateDefinition>();
+	TypeReference explicitInterface = null;
 .)
 =
 	/*--- constant declaration: */         (. m.Check(Modifier.Constants); .)
@@ -1185,22 +1200,31 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	/*--- void method (procedure) declaration: */
 	| IF (NotVoidPointer())                (. m.Check(Modifier.PropertysEventsMethods); .)
 	"void"                                 (. Point startPos = t.Location; .)
-	Qualident<out qualident> 
+	( IF (IsExplicitInterfaceImplementation())
+		TypeName<out explicitInterface, false>
+		(.if (la.kind != Tokens.Dot || Peek(1).kind != Tokens.This) {
+			qualident = TypeReference.StripLastIdentifierFromType(ref explicitInterface);
+		  } .)
+	|	ident (. qualident = t.val; .)
+	)
 	/* .NET 2.0 */
 	[ TypeParameterList<templates> ]
 	
 	"("
-	[ FormalParameterList<p> ] ")" (. MethodDeclaration methodDeclaration = new MethodDeclaration(qualident,
-	                                                                                              m.Modifier,
-	                                                                                              new TypeReference("void"),
-	                                                                                              p,
-	                                                                                              attributes);
-	                                  methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
-	                                  methodDeclaration.EndLocation   = t.EndLocation;
-	                                  methodDeclaration.Templates = templates;
-	                                  compilationUnit.AddChild(methodDeclaration);
-	                                  compilationUnit.BlockStart(methodDeclaration);
-	                               .)
+	[ FormalParameterList<p> ] ")"
+	(.	MethodDeclaration methodDeclaration = new MethodDeclaration(qualident,
+		                                                            m.Modifier,
+		                                                            new TypeReference("void"),
+		                                                            p,
+		                                                            attributes);
+		methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
+		methodDeclaration.EndLocation   = t.EndLocation;
+		methodDeclaration.Templates = templates;
+		if (explicitInterface != null)
+		methodDeclaration.InterfaceImplementations.Add(new InterfaceImplementation(explicitInterface, qualident));
+		compilationUnit.AddChild(methodDeclaration);
+		compilationUnit.BlockStart(methodDeclaration);
+	.)
 		
 	/* .NET 2.0 */
 	{ IF (IdentIsWhere()) TypeParameterConstraintsClause<templates> }
@@ -1209,27 +1233,32 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	                                          methodDeclaration.Body  = (BlockStatement)stmt;
 	                                       .)
 	
-	| /*--- event declaration: */          (. m.Check(Modifier.PropertysEventsMethods); .)
-	"event"                                (. EventDeclaration eventDecl = new EventDeclaration(m.Modifier, attributes);
-	                                          eventDecl.StartLocation = t.Location;
-	                                          compilationUnit.AddChild(eventDecl);
-	                                          compilationUnit.BlockStart(eventDecl);
-	                                          EventAddRegion addBlock = null;
-	                                          EventRemoveRegion removeBlock = null;
-	                                       .)
-	Type<out type>                         (. eventDecl.TypeReference = type; .)
-	(
-		IF (IsVarDecl()) VariableDeclarator<variableDeclarators>
-		{ "," VariableDeclarator<variableDeclarators> } ";"      (. eventDecl.VariableDeclarators = variableDeclarators; eventDecl.EndLocation = t.EndLocation;  .)
-		| Qualident<out qualident>         (. eventDecl.Name = qualident; eventDecl.EndLocation = t.EndLocation;  .)
-		"{" (. eventDecl.BodyStart = t.Location; .)
-		EventAccessorDecls<out addBlock, out removeBlock> 
-		"}" (. eventDecl.BodyEnd   = t.EndLocation; .)
-	)                                       (. compilationUnit.BlockEnd();
-	                                           
-	                                           eventDecl.AddRegion = addBlock;
-	                                           eventDecl.RemoveRegion = removeBlock;
-	                                       .)
+	| /*--- event declaration: */   (. m.Check(Modifier.PropertysEventsMethods); .)
+		"event"                     (. EventDeclaration eventDecl = new EventDeclaration(m.Modifier, attributes);
+		                               eventDecl.StartLocation = t.Location;
+		                               compilationUnit.AddChild(eventDecl);
+		                               compilationUnit.BlockStart(eventDecl);
+		                               EventAddRegion addBlock = null;
+		                               EventRemoveRegion removeBlock = null;
+		                            .)
+		Type<out type>        (. eventDecl.TypeReference = type; .)
+		( IF (IsExplicitInterfaceImplementation())
+			TypeName<out explicitInterface, false>
+			(. qualident = TypeReference.StripLastIdentifierFromType(ref explicitInterface); .)
+			(. eventDecl.InterfaceImplementations.Add(new InterfaceImplementation(explicitInterface, qualident)); .)
+			
+		|	ident (. qualident = t.val; .)
+		)
+		(. eventDecl.Name = qualident; eventDecl.EndLocation = t.EndLocation; .)
+		[	"{" (. eventDecl.BodyStart = t.Location; .)
+			EventAccessorDecls<out addBlock, out removeBlock> 
+			"}" (. eventDecl.BodyEnd   = t.EndLocation; .)
+		]
+		[ ";" ]
+		(. compilationUnit.BlockEnd();
+		   eventDecl.AddRegion = addBlock;
+		   eventDecl.RemoveRegion = removeBlock;
+		.)
 	
 	/*--- constructor or static contructor declaration: */
 	| IF (IdentAndLPar())                  (. m.Check(Modifier.Constructors | Modifier.StaticConstructors); .)
@@ -1312,10 +1341,10 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		.)
 		
 		/*--- field declaration: */
-		| IF (IsVarDecl())                 (. m.Check(Modifier.Fields); 
-		                                      FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
-		                                      fd.StartLocation = m.GetDeclarationLocation(startPos); 
-		                                   .)
+	| IF (IsVarDecl())         (. m.Check(Modifier.Fields); 
+		                          FieldDeclaration fd = new FieldDeclaration(attributes, type, m.Modifier);
+		                          fd.StartLocation = m.GetDeclarationLocation(startPos); 
+		                       .)
 		VariableDeclarator<variableDeclarators>
 		{ "," VariableDeclarator<variableDeclarators> }
 		";"                                (. fd.EndLocation = t.EndLocation; fd.Fields = variableDeclarators; compilationUnit.AddChild(fd); .)
@@ -1336,7 +1365,16 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			          indexer.SetRegion = setRegion;
 			          compilationUnit.AddChild(indexer);
 			       .)
-		| Qualident<out qualident> (. Point qualIdentEndLocation = t.EndLocation; .)
+	|  IF (la.kind == Tokens.Identifier)
+		( IF (IsExplicitInterfaceImplementation())
+			TypeName<out explicitInterface, false>
+			(.if (la.kind != Tokens.Dot || Peek(1).kind != Tokens.This) {
+				qualident = TypeReference.StripLastIdentifierFromType(ref explicitInterface);
+			  } .)
+		|	ident (. qualident = t.val; .)
+		)
+		(. Point qualIdentEndLocation = t.EndLocation; .)
+		
 		(
 			/*--- "not void" method (function) declaration: */
 			(                              (. m.Check(Modifier.PropertysEventsMethods); .)
@@ -1348,6 +1386,8 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 					                                                            type, 
 					                                                            p, 
 					                                                            attributes);
+					if (explicitInterface != null)
+						methodDeclaration.InterfaceImplementations.Add(new InterfaceImplementation(explicitInterface, qualident));
 					methodDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
 					methodDeclaration.EndLocation   = t.EndLocation;
 					methodDeclaration.Templates = templates;
@@ -1358,6 +1398,8 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			
 			/*--- property declaration: */  
 			| "{" (. PropertyDeclaration pDecl = new PropertyDeclaration(qualident, type, m.Modifier, attributes); 
+					 if (explicitInterface != null)
+						pDecl.InterfaceImplementations.Add(new InterfaceImplementation(explicitInterface, qualident));
 			         pDecl.StartLocation = m.GetDeclarationLocation(startPos);
 			         pDecl.EndLocation   = qualIdentEndLocation;
 			         pDecl.BodyStart   = t.Location;
@@ -1379,7 +1421,8 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			         IndexerDeclaration indexer = new IndexerDeclaration(type, p, m.Modifier, attributes);
 			         indexer.StartLocation = m.GetDeclarationLocation(startPos);
 			         indexer.EndLocation   = t.EndLocation;
-			         indexer.NamespaceName = qualident;
+			         if (explicitInterface != null)
+						indexer.InterfaceImplementations.Add(new InterfaceImplementation(explicitInterface, "this"));
 			         PropertyGetRegion getRegion;
 			         PropertySetRegion setRegion;
 			       .) 
@@ -2375,7 +2418,8 @@ TypeName<out TypeReference typeRef, bool canBeUnbound>
 			typeRef = new TypeReference(alias + "." + qualident, typeArguments);
 		}
 	.)
-	{ "." (. typeArguments = null; .)
+	{ IF (DotAndIdent())
+		"." (. typeArguments = null; .)
 		Qualident<out qualident>
 		[TypeArgumentList<out typeArguments, canBeUnbound>]
 		(. typeRef = new InnerClassTypeReference(typeRef, qualident, typeArguments); .)

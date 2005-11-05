@@ -18,7 +18,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		TypeReference   typeReference = TypeReference.Null;
 		Point           bodyStart = new Point(-1, -1);
 		Point           bodyEnd = new Point(-1, -1);
-		ArrayList     implementsClause = new ArrayList(); // VB only
+		List<InterfaceImplementation> interfaceImplementations = new List<InterfaceImplementation>();
 		
 		PropertyGetRegion  propertyGetRegion = PropertyGetRegion.Null;
 		PropertySetRegion  propertySetRegion = PropertySetRegion.Null;
@@ -100,12 +100,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList ImplementsClause {
+		public List<InterfaceImplementation> InterfaceImplementations {
 			get {
-				return implementsClause;
+				return interfaceImplementations;
 			}
 			set {
-				implementsClause = value == null ? new ArrayList() : value;
+				interfaceImplementations = value ?? new List<InterfaceImplementation>();
 			}
 		}
 		

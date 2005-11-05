@@ -485,6 +485,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			OutputModifier(propertyDeclaration.Modifier);
 			nodeTracker.TrackedVisit(propertyDeclaration.TypeReference, data);
 			outputFormatter.Space();
+			if (propertyDeclaration.InterfaceImplementations.Count > 0) {
+				nodeTracker.TrackedVisit(propertyDeclaration.InterfaceImplementations[0].InterfaceType, data);
+				outputFormatter.PrintToken(Tokens.Dot);
+			}
 			outputFormatter.PrintIdentifier(propertyDeclaration.Name);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
@@ -527,21 +531,20 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			nodeTracker.TrackedVisit(eventDeclaration.TypeReference, data);
 			outputFormatter.Space();
 			
-			if (eventDeclaration.VariableDeclarators != null && eventDeclaration.VariableDeclarators.Count > 0) {
-				AppendCommaSeparatedList(eventDeclaration.VariableDeclarators);
+			if (eventDeclaration.InterfaceImplementations.Count > 0) {
+				nodeTracker.TrackedVisit(eventDeclaration.InterfaceImplementations[0].InterfaceType, data);
+				outputFormatter.PrintToken(Tokens.Dot);
+			}
+			
+			outputFormatter.PrintIdentifier(eventDeclaration.Name);
+			if (eventDeclaration.AddRegion.IsNull && eventDeclaration.RemoveRegion.IsNull) {
 				outputFormatter.PrintToken(Tokens.Semicolon);
 				outputFormatter.NewLine();
 			} else {
-				outputFormatter.PrintIdentifier(eventDeclaration.Name);
-				if (eventDeclaration.AddRegion.IsNull && eventDeclaration.RemoveRegion.IsNull) {
-					outputFormatter.PrintToken(Tokens.Semicolon);
-					outputFormatter.NewLine();
-				} else {
-					outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle);
-					nodeTracker.TrackedVisit(eventDeclaration.AddRegion, data);
-					nodeTracker.TrackedVisit(eventDeclaration.RemoveRegion, data);
-					outputFormatter.EndBrace();
-				}
+				outputFormatter.BeginBrace(this.prettyPrintOptions.PropertyBraceStyle);
+				nodeTracker.TrackedVisit(eventDeclaration.AddRegion, data);
+				nodeTracker.TrackedVisit(eventDeclaration.RemoveRegion, data);
+				outputFormatter.EndBrace();
 			}
 			return null;
 		}
@@ -587,6 +590,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			OutputModifier(methodDeclaration.Modifier);
 			nodeTracker.TrackedVisit(methodDeclaration.TypeReference, data);
 			outputFormatter.Space();
+			if (methodDeclaration.InterfaceImplementations.Count > 0) {
+				nodeTracker.TrackedVisit(methodDeclaration.InterfaceImplementations[0].InterfaceType, data);
+				outputFormatter.PrintToken(Tokens.Dot);
+			}
 			outputFormatter.PrintIdentifier(methodDeclaration.Name);
 			PrintTemplates(methodDeclaration.Templates);
 			if (prettyPrintOptions.BeforeMethodDeclarationParentheses) {
@@ -649,8 +656,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			OutputModifier(indexerDeclaration.Modifier);
 			nodeTracker.TrackedVisit(indexerDeclaration.TypeReference, data);
 			outputFormatter.Space();
-			if (indexerDeclaration.NamespaceName != null && indexerDeclaration.NamespaceName.Length > 0) {
-				outputFormatter.PrintIdentifier(indexerDeclaration.NamespaceName);
+			if (indexerDeclaration.InterfaceImplementations.Count > 0) {
+				nodeTracker.TrackedVisit(indexerDeclaration.InterfaceImplementations[0].InterfaceType, data);
 				outputFormatter.PrintToken(Tokens.Dot);
 			}
 			outputFormatter.PrintToken(Tokens.This);

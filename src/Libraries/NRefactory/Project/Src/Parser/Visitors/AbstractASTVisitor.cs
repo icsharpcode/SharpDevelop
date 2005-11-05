@@ -240,7 +240,6 @@ namespace ICSharpCode.NRefactory.Parser
 			Debug.Assert(eventDeclaration.Attributes != null);
 			Debug.Assert(eventDeclaration.TypeReference != null);
 			Debug.Assert(eventDeclaration.Parameters != null);
-			Debug.Assert(eventDeclaration.VariableDeclarators != null);
 			Debug.Assert(eventDeclaration.AddRegion != null);
 			Debug.Assert(eventDeclaration.RemoveRegion != null);
 			
@@ -252,10 +251,6 @@ namespace ICSharpCode.NRefactory.Parser
 			foreach (ParameterDeclarationExpression p in eventDeclaration.Parameters) {
 				Debug.Assert(p != null);
 				p.AcceptVisitor(this, data);
-			}
-			foreach (VariableDeclaration v in eventDeclaration.VariableDeclarators) {
-				Debug.Assert(v != null);
-				v.AcceptVisitor(this, data);
 			}
 			eventDeclaration.AddRegion.AcceptVisitor(this, data);
 			eventDeclaration.RemoveRegion.AcceptVisitor(this, data);

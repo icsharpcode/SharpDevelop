@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -24,12 +24,42 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void CSharpSimpleEventDeclarationTest()
 		{
 			EventDeclaration ed = (EventDeclaration)ParseUtilCSharp.ParseTypeMember("event System.EventHandler MyEvent;", typeof(EventDeclaration));
-			Assert.AreEqual(1, ed.VariableDeclarators.Count);
-			Assert.AreEqual("MyEvent", ((VariableDeclaration)ed.VariableDeclarators[0]).Name);
+			Assert.AreEqual("MyEvent", ed.Name);
 			Assert.AreEqual("System.EventHandler", ed.TypeReference.Type);
 			
 			Assert.IsFalse(ed.HasAddRegion);
 			Assert.IsFalse(ed.HasRemoveRegion);
+		}
+		
+		[Test]
+		public void CSharpEventImplementingInterfaceDeclarationTest()
+		{
+			EventDeclaration ed = (EventDeclaration)ParseUtilCSharp.ParseTypeMember("event EventHandler MyInterface.MyEvent;", typeof(EventDeclaration));
+			
+			Assert.AreEqual("MyEvent", ed.Name);
+			Assert.AreEqual("EventHandler", ed.TypeReference.Type);
+			
+			Assert.IsFalse(ed.HasAddRegion);
+			Assert.IsFalse(ed.HasRemoveRegion);
+			
+			Assert.AreEqual("MyInterface", ed.InterfaceImplementations[0].InterfaceType.Type);
+			Assert.AreEqual("MyEvent", ed.InterfaceImplementations[0].MemberName);
+		}
+		
+		[Test]
+		public void CSharpEventImplementingGenericInterfaceDeclarationTest()
+		{
+			EventDeclaration ed = (EventDeclaration)ParseUtilCSharp.ParseTypeMember("event EventHandler MyInterface<string>.MyEvent;", typeof(EventDeclaration));
+			
+			Assert.AreEqual("MyEvent", ed.Name);
+			Assert.AreEqual("EventHandler", ed.TypeReference.Type);
+			
+			Assert.IsFalse(ed.HasAddRegion);
+			Assert.IsFalse(ed.HasRemoveRegion);
+			
+			Assert.AreEqual("MyInterface", ed.InterfaceImplementations[0].InterfaceType.Type);
+			Assert.AreEqual("System.String", ed.InterfaceImplementations[0].InterfaceType.GenericTypes[0].SystemType);
+			Assert.AreEqual("MyEvent", ed.InterfaceImplementations[0].MemberName);
 		}
 		
 		[Test]
@@ -54,6 +84,6 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.IsFalse(ed.HasAddRegion);
 			Assert.IsFalse(ed.HasRemoveRegion);
 		}
-		#endregion 
+		#endregion
 	}
 }

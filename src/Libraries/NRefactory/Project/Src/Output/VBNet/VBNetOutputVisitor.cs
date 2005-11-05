@@ -566,70 +566,46 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		TypeReference currentEventType = null;
 		public object Visit(EventDeclaration eventDeclaration, object data)
 		{
-			if (eventDeclaration.VariableDeclarators.Count > 0) {
-				foreach (VariableDeclaration var in eventDeclaration.VariableDeclarators) {
-					VisitAttributes(eventDeclaration.Attributes, data);
-					outputFormatter.Indent();
-					OutputModifier(eventDeclaration.Modifier);
-					outputFormatter.PrintToken(Tokens.Event);
-					outputFormatter.Space();
-					outputFormatter.PrintIdentifier(var.Name);
-					
-					if (eventDeclaration.Parameters.Count > 0) {
-						outputFormatter.PrintToken(Tokens.OpenParenthesis);
-						this.AppendCommaSeparatedList(eventDeclaration.Parameters);
-						outputFormatter.PrintToken(Tokens.CloseParenthesis);
-					}
-					outputFormatter.Space();
-					outputFormatter.PrintToken(Tokens.As);
-					outputFormatter.Space();
-					nodeTracker.TrackedVisit(eventDeclaration.TypeReference, data);
-					outputFormatter.NewLine();
-				}
-				
-			} else {
-				bool customEvent = eventDeclaration.HasAddRegion  || eventDeclaration.HasRemoveRegion;
-				
-				VisitAttributes(eventDeclaration.Attributes, data);
-				outputFormatter.Indent();
-				OutputModifier(eventDeclaration.Modifier);
-				if (customEvent) {
-					outputFormatter.PrintText("Custom");
-					outputFormatter.Space();
-				}
-				
-				outputFormatter.PrintToken(Tokens.Event);
+			bool customEvent = eventDeclaration.HasAddRegion  || eventDeclaration.HasRemoveRegion;
+			
+			VisitAttributes(eventDeclaration.Attributes, data);
+			outputFormatter.Indent();
+			OutputModifier(eventDeclaration.Modifier);
+			if (customEvent) {
+				outputFormatter.PrintText("Custom");
 				outputFormatter.Space();
-				outputFormatter.PrintIdentifier(eventDeclaration.Name);
-				
-				if (eventDeclaration.Parameters.Count > 0) {
-					outputFormatter.PrintToken(Tokens.OpenParenthesis);
-					this.AppendCommaSeparatedList(eventDeclaration.Parameters);
-					outputFormatter.PrintToken(Tokens.CloseParenthesis);
-				}
-				outputFormatter.Space();
-				outputFormatter.PrintToken(Tokens.As);
-				outputFormatter.Space();
-				nodeTracker.TrackedVisit(eventDeclaration.TypeReference, data);
-				outputFormatter.NewLine();
-				
-				if (customEvent) {
-					++outputFormatter.IndentationLevel;
-					currentEventType = eventDeclaration.TypeReference;
-					exitTokenStack.Push(Tokens.Sub);
-					nodeTracker.TrackedVisit(eventDeclaration.AddRegion, data);
-					nodeTracker.TrackedVisit(eventDeclaration.RemoveRegion, data);
-					exitTokenStack.Pop();
-					--outputFormatter.IndentationLevel;
-					
-					outputFormatter.Indent();
-					outputFormatter.PrintToken(Tokens.End);
-					outputFormatter.Space();
-					outputFormatter.PrintToken(Tokens.Event);
-					outputFormatter.NewLine();
-				}
 			}
 			
+			outputFormatter.PrintToken(Tokens.Event);
+			outputFormatter.Space();
+			outputFormatter.PrintIdentifier(eventDeclaration.Name);
+			
+			if (eventDeclaration.Parameters.Count > 0) {
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				this.AppendCommaSeparatedList(eventDeclaration.Parameters);
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			}
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.As);
+			outputFormatter.Space();
+			nodeTracker.TrackedVisit(eventDeclaration.TypeReference, data);
+			outputFormatter.NewLine();
+			
+			if (customEvent) {
+				++outputFormatter.IndentationLevel;
+				currentEventType = eventDeclaration.TypeReference;
+				exitTokenStack.Push(Tokens.Sub);
+				nodeTracker.TrackedVisit(eventDeclaration.AddRegion, data);
+				nodeTracker.TrackedVisit(eventDeclaration.RemoveRegion, data);
+				exitTokenStack.Pop();
+				--outputFormatter.IndentationLevel;
+				
+				outputFormatter.Indent();
+				outputFormatter.PrintToken(Tokens.End);
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Event);
+				outputFormatter.NewLine();
+			}
 			return null;
 		}
 		

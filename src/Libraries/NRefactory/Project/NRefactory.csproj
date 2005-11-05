@@ -193,6 +193,7 @@
     <Compile Include="Src\Parser\AST\General\TypeLevel\OperatorDeclaration.cs" />
     <Compile Include="Src\Output\CodeDOM\CodeDOMVerboseOutputGenerator.cs" />
     <Compile Include="Src\Parser\AST\CSharp\Expressions\DefaultValueExpression.cs" />
+    <Compile Include="Src\Parser\AST\General\TypeLevel\InterfaceImplementation.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />

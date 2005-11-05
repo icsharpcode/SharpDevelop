@@ -72,7 +72,7 @@ namespace NRefactoryToBooConverter
 				// TODO: Convert handles clauses to [Handles] attribute
 				AddError(methodDeclaration, "Handles-clause is not supported.");
 			}
-			if (methodDeclaration.ImplementsClause.Count > 0) {
+			if (methodDeclaration.InterfaceImplementations.Count > 0) {
 				AddError(methodDeclaration, "Explicit interface implementation is not supported.");
 			}
 			if (methodDeclaration.Templates.Count > 0) {
@@ -168,7 +168,7 @@ namespace NRefactoryToBooConverter
 			ConvertParameters(propertyDeclaration.Parameters, m.Parameters);
 			m.EndSourceLocation = GetLocation(propertyDeclaration.EndLocation);
 			m.Type = ConvertTypeReference(propertyDeclaration.TypeReference);
-			if (propertyDeclaration.ImplementsClause.Count > 0) {
+			if (propertyDeclaration.InterfaceImplementations.Count > 0) {
 				AddError(propertyDeclaration, "Explicit interface implementation is not supported.");
 			}
 			if (!propertyDeclaration.IsWriteOnly) {
@@ -238,24 +238,17 @@ namespace NRefactoryToBooConverter
 		public object Visit(EventDeclaration eventDeclaration, object data)
 		{
 			B.Event m = new B.Event(GetLexicalInfo(eventDeclaration));
-			if (eventDeclaration.Name == null || eventDeclaration.Name.Length == 0) {
-				m.Name = eventDeclaration.VariableDeclarators[0].Name;
-			} else {
-				m.Name = eventDeclaration.Name;
-			}
+			m.Name = eventDeclaration.Name;
 			m.Modifiers = ConvertModifier(eventDeclaration, B.TypeMemberModifiers.Private);
 			ConvertAttributes(eventDeclaration.Attributes, m.Attributes);
 			if (currentType != null) currentType.Members.Add(m);
 			m.EndSourceLocation = GetLocation(eventDeclaration.EndLocation);
 			m.Type = ConvertTypeReference(eventDeclaration.TypeReference);
-			if (eventDeclaration.ImplementsClause.Count > 0) {
+			if (eventDeclaration.InterfaceImplementations.Count > 0) {
 				AddError(eventDeclaration, "Explicit interface implementation is not supported.");
 			}
 			if (eventDeclaration.Parameters.Count > 0) {
 				AddError(eventDeclaration, "Events with parameters are not supported.");
-			}
-			if (eventDeclaration.VariableDeclarators.Count > 1) {
-				AddError(eventDeclaration, "You can only define one event per line.");
 			}
 			if (eventDeclaration.HasAddRegion) {
 				m.Add = new B.Method(GetLexicalInfo(eventDeclaration.AddRegion));

@@ -957,7 +957,8 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	(
 		(.
 			string name = String.Empty;
-			MethodDeclaration methodDeclaration; ArrayList handlesClause = null; ArrayList implementsClause = null;
+			MethodDeclaration methodDeclaration; ArrayList handlesClause = null;
+			List<InterfaceImplementation> implementsClause = null;
 		.)
 		Identifier
 		(.
@@ -986,7 +987,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				
 				methodDeclaration.Templates = templates;
 				methodDeclaration.HandlesClause = handlesClause;
-				methodDeclaration.ImplementsClause = implementsClause;
+				methodDeclaration.InterfaceImplementations = implementsClause;
 				
 				compilationUnit.AddChild(methodDeclaration);
 			.)
@@ -999,7 +1000,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				
 				methodDeclaration.Templates = templates;
 				methodDeclaration.HandlesClause = handlesClause;
-				methodDeclaration.ImplementsClause = implementsClause;
+				methodDeclaration.InterfaceImplementations = implementsClause;
 				
 				compilationUnit.AddChild(methodDeclaration);
 				compilationUnit.BlockStart(methodDeclaration);
@@ -1034,7 +1035,8 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		m.Check(Modifier.VBMethods);
 		string name = String.Empty;
 		Point startPos = t.Location;
-		MethodDeclaration methodDeclaration;ArrayList handlesClause = null;ArrayList implementsClause = null;
+		MethodDeclaration methodDeclaration;ArrayList handlesClause = null;
+		List<InterfaceImplementation> implementsClause = null;
 		AttributeSection returnTypeAttributeSection = null;
 	.)
 	Identifier			(. name = t.val; .)
@@ -1064,7 +1066,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				
 				methodDeclaration.HandlesClause = handlesClause;
 				methodDeclaration.Templates     = templates;
-				methodDeclaration.ImplementsClause = implementsClause;
+				methodDeclaration.InterfaceImplementations = implementsClause;
 				methodDeclaration.ReturnTypeAttributeSection = returnTypeAttributeSection;
 				compilationUnit.AddChild(methodDeclaration);
 			.)
@@ -1076,7 +1078,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				
 				methodDeclaration.Templates     = templates;
 				methodDeclaration.HandlesClause = handlesClause;
-				methodDeclaration.ImplementsClause = implementsClause;
+				methodDeclaration.InterfaceImplementations = implementsClause;
 				methodDeclaration.ReturnTypeAttributeSection = returnTypeAttributeSection;
 				
 				compilationUnit.AddChild(methodDeclaration);
@@ -1141,7 +1143,8 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		m.Check(Modifier.VBEvents);
 		Point startPos = t.Location;
 		EventDeclaration eventDeclaration;
-		string name = String.Empty;ArrayList implementsClause = null;
+		string name = String.Empty;
+		List<InterfaceImplementation> implementsClause = null;
 	.)
 	Identifier (. name= t.val; .)
 	(
@@ -1196,7 +1199,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	(.
 		m.Check(Modifier.VBProperties);
 		Point startPos = t.Location;
-		ArrayList implementsClause = null;
+		List<InterfaceImplementation> implementsClause = null;
 	.)
 	Identifier (. string propertyName = t.val; .)
 	[ "("	[ FormalParameterList<p> ] ")" ]
@@ -1216,7 +1219,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			pDecl.StartLocation = m.GetDeclarationLocation(startPos);
 			pDecl.EndLocation   = t.Location;
 			pDecl.TypeReference = type;
-			pDecl.ImplementsClause = implementsClause;
+			pDecl.InterfaceImplementations = implementsClause;
 			pDecl.Parameters = p;
 			compilationUnit.AddChild(pDecl);
 		.)
@@ -1227,7 +1230,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			pDecl.EndLocation   = t.Location;
 			pDecl.BodyStart   = t.Location;
 			pDecl.TypeReference = type;
-			pDecl.ImplementsClause = implementsClause;
+			pDecl.InterfaceImplementations = implementsClause;
 			pDecl.Parameters = p;
 			PropertyGetRegion getRegion;
 			PropertySetRegion setRegion;
@@ -1250,7 +1253,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		EventAddRegion addHandlerAccessorDeclaration = null;
 		EventRemoveRegion removeHandlerAccessorDeclaration = null;
 		EventRaiseRegion raiseEventAccessorDeclaration = null;
-		ArrayList implementsClause = null;
+		List<InterfaceImplementation> implementsClause = null;
 	.)
 	Identifier (. string customEventName = t.val; .)
 	"As" TypeName<out type>
@@ -1658,15 +1661,22 @@ TypeImplementsClause<out List<TypeReference> baseInterfaces>
 	.
 
 /* 9.1 */
-ImplementsClause<out ArrayList baseInterfaces>
+ImplementsClause<out List<InterfaceImplementation> baseInterfaces>
 	(.
-		baseInterfaces = new ArrayList();
-		string typename = String.Empty;
-		string first;
+		baseInterfaces = new List<InterfaceImplementation>();
+		TypeReference type = null;
+		string memberName = null;
 	.) =
-	"Implements" Identifier (. first = t.val; .) "." Qualident<out typename> (. baseInterfaces.Add(first + "." + typename); .)
-	{ "," Identifier (. first = t.val; .) "." Qualident<out typename> (. baseInterfaces.Add(first + "." + typename); .) }
-		.
+	"Implements"
+	NonArrayTypeName<out type, false>
+	(. if (type != null) memberName = TypeReference.StripLastIdentifierFromType(ref type); .)
+	(. baseInterfaces.Add(new InterfaceImplementation(type, memberName)); .)
+	{ ","
+		NonArrayTypeName<out type, false>
+		(. if (type != null) memberName = TypeReference.StripLastIdentifierFromType(ref type); .)
+		(. baseInterfaces.Add(new InterfaceImplementation(type, memberName)); .)
+	}
+.
 
 EventMemberSpecifier<out string name>
 	(. string type; name = String.Empty; .) =

@@ -540,19 +540,9 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DomRegion bodyRegion = GetRegion(eventDeclaration.BodyStart,     eventDeclaration.BodyEnd);
 			IReturnType type = CreateReturnType(eventDeclaration.TypeReference);
 			DefaultClass c = GetCurrentClass();
-			DefaultEvent e = null;
-
-			if (eventDeclaration.VariableDeclarators != null && eventDeclaration.VariableDeclarators.Count > 0) {
-				foreach (ICSharpCode.NRefactory.Parser.AST.VariableDeclaration varDecl in eventDeclaration.VariableDeclarators) {
-					e = new DefaultEvent(varDecl.Name, type, ConvertModifier(eventDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
-					ConvertAttributes(eventDeclaration, e);
-					c.Events.Add(e);
-				}
-			} else {
-				e = new DefaultEvent(eventDeclaration.Name, type, ConvertModifier(eventDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
-				ConvertAttributes(eventDeclaration, e);
-				c.Events.Add(e);
-			}
+			DefaultEvent e = new DefaultEvent(eventDeclaration.Name, type, ConvertModifier(eventDeclaration.Modifier), region, bodyRegion, GetCurrentClass());
+			ConvertAttributes(eventDeclaration, e);
+			c.Events.Add(e);
 			if (e != null) {
 				e.Documentation = GetDocumentation(region.BeginLine);
 			} else {
