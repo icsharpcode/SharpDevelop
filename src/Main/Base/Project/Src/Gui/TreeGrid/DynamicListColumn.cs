@@ -19,26 +19,20 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 		bool allowGrow = true;
 		bool autoSize = false;
 		
-		Brush backgroundBrush = SystemBrushes.ControlLight;
-		public static readonly Color DefaultBackColor = SystemColors.ControlLight;
+		public static readonly Color DefaultBackColor = Color.FromArgb(247, 245, 233);
+		public static readonly Brush DefaultBackBrush = new SolidBrush(DefaultBackColor);
+		public static readonly Color DefaultRowHighlightBackColor = Color.FromArgb(221, 218, 203);
+		public static readonly Brush DefaultRowHighlightBrush = new SolidBrush(DefaultRowHighlightBackColor);
+		public static readonly Color DefaultInactiveBackColor = Color.FromArgb(242, 240, 228);
+		public static readonly Brush DefaultInactiveBackBrush = new SolidBrush(DefaultInactiveBackColor);
 		
-		public DynamicListColumn()
-		{
-		}
-		
-		/// <summary>Copy constructor</summary>
-		protected DynamicListColumn(DynamicListColumn col)
-		{
-			width = col.width;
-			minimumWidth = col.minimumWidth;
-			allowGrow = col.allowGrow;
-			autoSize = col.autoSize;
-			backgroundBrush = col.backgroundBrush;
-		}
+		Brush backgroundBrush = DefaultBackBrush;
+		Brush backgroundBrushInactive = DefaultInactiveBackBrush;
+		Brush rowHighlightBrush = DefaultRowHighlightBrush;
 		
 		public virtual DynamicListColumn Clone()
 		{
-			return new DynamicListColumn(this);
+			return (DynamicListColumn)base.MemberwiseClone();
 		}
 		
 		object ICloneable.Clone()
@@ -109,6 +103,54 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 				if (value == null)
 					throw new ArgumentNullException("value");
 				backgroundBrush = value;
+			}
+		}
+		
+		public Brush BackgroundBrushInactive {
+			get {
+				return backgroundBrushInactive;
+			}
+			set {
+				if (value == null)
+					throw new ArgumentNullException("value");
+				backgroundBrushInactive = value;
+			}
+		}
+		
+		public Brush RowHighlightBrush {
+			get {
+				return rowHighlightBrush;
+			}
+			set {
+				rowHighlightBrush = value;
+			}
+		}
+		
+		Color columnSeperatorColor = Color.Empty;
+		
+		/// <summary>
+		/// Sets the color that is used to the right of this column as separator color.
+		/// </summary>
+		public Color ColumnSeperatorColor {
+			get {
+				return columnSeperatorColor;
+			}
+			set {
+				columnSeperatorColor = value;
+			}
+		}
+		
+		Color columnSeperatorColorInactive = Color.Empty;
+		
+		/// <summary>
+		/// Sets the color that is used to the right of this column as separator color.
+		/// </summary>
+		public Color ColumnSeperatorColorInactive {
+			get {
+				return columnSeperatorColorInactive;
+			}
+			set {
+				columnSeperatorColorInactive = value;
 			}
 		}
 		#endregion

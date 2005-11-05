@@ -40,9 +40,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			this.variable = variable;
 			
-			this.ChildWindowCaption = variable.Name;
 			this[2].Text = variable.Name;
 			this[3].Text = variable.ToString();
+			
+			this.ShowMinusWhileExpanded = true;
 		}
 	}
 }

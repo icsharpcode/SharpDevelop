@@ -29,13 +29,20 @@ namespace ICSharpCode.Core
 			columns.Add(new DynamicListColumn());
 			columns.Add(new DynamicListColumn());
 			columns.Add(new DynamicListColumn());
-			columns[0].BackgroundBrush = SystemBrushes.ControlLightLight;
+			columns[0].BackgroundBrush = Brushes.White;
+			columns[0].BackgroundBrushInactive = Brushes.White;
+			columns[0].RowHighlightBrush = null;
+			
 			// default is allowgrow = true and autosize = false
 			columns[0].AllowGrow = false;
 			columns[1].AllowGrow = false;
 			columns[1].Width = 18;
+			columns[1].ColumnSeperatorColor = Color.Transparent;
+			columns[1].ColumnSeperatorColorInactive = Color.Transparent;
 			columns[2].AutoSize = true;
 			columns[2].MinimumWidth = 75;
+			columns[2].ColumnSeperatorColor = Color.White;
+			columns[2].ColumnSeperatorColorInactive = Color.FromArgb(172, 168, 153);
 			columns[3].AutoSize = true;
 			columns[3].MinimumWidth = 75;
 		}
@@ -81,7 +88,8 @@ namespace ICSharpCode.Core
 			frm.ClientSize = new Size(Width + 2, row.Height + 2);
 			Dock = DockStyle.Fill;
 			frm.Controls.Add(this);
-			ICSharpCode.TextEditor.Gui.CompletionWindow.AbstractCompletionWindow.ShowWindowWithoutFocus(frm);
+			frm.ShowWindowWithoutActivation = true;
+			frm.Show();
 			textArea.Click   += OnTextAreaClick;
 			textArea.KeyDown += OnTextAreaClick;
 			frm.ClientSize = new Size(frm.ClientSize.Width, row.Height + 2);

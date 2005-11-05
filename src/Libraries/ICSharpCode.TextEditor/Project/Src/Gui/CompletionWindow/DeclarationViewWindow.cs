@@ -61,6 +61,20 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			base.CreateHandle();
 		}
 		
+		protected override CreateParams CreateParams {
+			get {
+				CreateParams p = base.CreateParams;
+				AbstractCompletionWindow.AddShadowToWindow(p);
+				return p;
+			}
+		}
+		
+		protected override bool ShowWithoutActivation {
+			get {
+				return true;
+			}
+		}
+		
 		protected override void OnClick(EventArgs e)
 		{
 			base.OnClick(e);
@@ -69,7 +83,7 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 		
 		public void ShowDeclarationViewWindow()
 		{
-			AbstractCompletionWindow.ShowWindowWithoutFocus(this);
+			Show();
 		}
 		
 		public void CloseDeclarationViewWindow()

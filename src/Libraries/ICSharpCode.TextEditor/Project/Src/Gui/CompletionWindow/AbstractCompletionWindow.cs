@@ -19,7 +19,7 @@ using ICSharpCode.TextEditor;
 namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 {
 	/// <summary>
-	/// Description of AbstractCompletionWindow.	
+	/// Description of AbstractCompletionWindow.
 	/// </summary>
 	public abstract class AbstractCompletionWindow : System.Windows.Forms.Form
 	{
@@ -79,21 +79,47 @@ namespace ICSharpCode.TextEditor.Gui.CompletionWindow
 			Bounds = bounds;
 		}
 		
-		const int SW_SHOWNA = 8;
+		protected override CreateParams CreateParams {
+			get {
+				CreateParams p = base.CreateParams;
+				AddShadowToWindow(p);
+				return p;
+			}
+		}
 		
-		[DllImport("user32")]
-		static extern int ShowWindow(IntPtr hWnd, int nCmdShow);
+		static int shadowStatus;
 		
-		public static void ShowWindowWithoutFocus(Control control)
+		/// <summary>
+		/// Adds a shadow to the create params if it is supported by the operating system.
+		/// </summary>
+		public static void AddShadowToWindow(CreateParams createParams)
 		{
-			ShowWindow(control.Handle, SW_SHOWNA);
+			if (shadowStatus == 0) {
+				// Test OS version
+				shadowStatus = -1; // shadow not supported
+				if (Environment.OSVersion.Platform == PlatformID.Win32NT) {
+					Version ver = Environment.OSVersion.Version;
+					if (ver.Major > 5 || ver.Major == 5 && ver.Minor >= 1) {
+						shadowStatus = 1;
+					}
+				}
+			}
+			if (shadowStatus == 1) {
+				createParams.ClassStyle |= 0x00020000; // set CS_DROPSHADOW
+			}
+		}
+		
+		protected override bool ShowWithoutActivation {
+			get {
+				return true;
+			}
 		}
 		
 		protected void ShowCompletionWindow()
 		{
 			Owner = parentForm;
 			Enabled = true;
-			ShowWindowWithoutFocus(this);
+			this.Show();
 			
 			control.Focus();
 			

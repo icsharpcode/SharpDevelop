@@ -52,7 +52,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			RecalculateColumnWidths();
 		}
 		
-		public new static readonly Color DefaultBackColor = SystemColors.ControlLightLight;
+		public new static readonly Color DefaultBackColor = Color.White;
 		
 		protected override void Dispose(bool disposing)
 		{
@@ -256,14 +256,17 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			}
 			
 			int controlIndex = 0;
+			int xPos;
 			int yPos = -scrollOffset;
-			int clientHeight = ClientSize.Height;
+			Size clientSize = ClientSize;
 			foreach (DynamicListRow row in Rows) {
-				if (yPos + row.Height > 0 && yPos < clientHeight) {
-					columnIndex = 0;
-					int xPos = 0;
-					foreach (DynamicListColumn col in Columns) {
+				if (yPos + row.Height > 0 && yPos < clientSize.Height) {
+					xPos = 0;
+					for (columnIndex = 0; columnIndex < columns.Count; columnIndex++) {
+						DynamicListColumn col = columns[columnIndex];
 						Rectangle rect = new Rectangle(xPos, yPos, col.Width, row.Height);
+						if (columnIndex == columns.Count - 1)
+							rect.Width = clientSize.Width - 1 - rect.Left;
 						DynamicListItem item = row[columnIndex];
 						Control ctl = item.Control;
 						if (ctl != null) {
@@ -276,13 +279,39 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 							}
 							controlIndex += 1;
 						} else {
-							item.PaintTo(e.Graphics, rect, col, item == itemAtMousePosition);
+							item.PaintTo(e.Graphics, rect, this, col, item == itemAtMousePosition);
 						}
 						xPos += col.Width + 1;
-						columnIndex += 1;
 					}
 				}
 				yPos += row.Height + lineMarginY;
+			}
+			xPos = 0;
+			Form containerForm = FindForm();
+			bool isFocused;
+			if (containerForm is IActivatable)
+				isFocused = (containerForm as IActivatable).IsActivated;
+			else
+				isFocused = this.Focused;
+			for (columnIndex = 0; columnIndex < columns.Count - 1; columnIndex++) {
+				DynamicListColumn col = columns[columnIndex];
+				
+				xPos += col.Width + 1;
+				
+				Color separatorColor;
+				if (isFocused) {
+					separatorColor = col.ColumnSeperatorColor;
+					if (separatorColor.IsEmpty)
+						separatorColor = col.ColumnSeperatorColorInactive;
+				} else {
+					separatorColor = col.ColumnSeperatorColorInactive;
+					if (separatorColor.IsEmpty)
+						separatorColor = col.ColumnSeperatorColor;
+				}
+				if (separatorColor.IsEmpty) separatorColor = BackColor;
+				using (Pen separatorPen = new Pen(separatorColor)) {
+					e.Graphics.DrawLine(separatorPen, xPos - 1, 1, xPos - 1, Math.Min(clientSize.Height, yPos) - 2);
+				}
 			}
 			removedControls.Clear();
 			foreach (Control ctl in Controls) {
@@ -297,6 +326,19 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			allowedControls.Clear();
 			removedControls.Clear();
 			base.OnPaint(e);
+		}
+		
+		/// <summary>
+		/// Gets if the parent form of this list is the active window.
+		/// </summary>
+		public bool IsActivated {
+			get {
+				Form containerForm = FindForm();
+				if (containerForm is IActivatable)
+					return (containerForm as IActivatable).IsActivated;
+				else
+					return this.Focused;
+			}
 		}
 		
 		protected override void OnSizeChanged(EventArgs e)
@@ -393,11 +435,34 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 		}
 		
 		DynamicListItem itemAtMousePosition;
+		DynamicListRow rowAtMousePosition;
+		
+		public DynamicListItem ItemAtMousePosition {
+			get {
+				return itemAtMousePosition;
+			}
+		}
+		
+		public DynamicListRow RowAtMousePosition {
+			get {
+				return rowAtMousePosition;
+			}
+		}
 		
 		protected override void OnMouseMove(MouseEventArgs e)
 		{
 			base.OnMouseMove(e);
-			DynamicListItem item = GetItemFromPoint(e.Location);
+			DynamicListRow row = GetRowFromPoint(e.Y);
+			if (rowAtMousePosition != row) {
+				rowAtMousePosition = row;
+				Invalidate();
+			}
+			if (row == null)
+				return;
+			int columnIndex = GetColumnIndexFromPoint(e.X);
+			if (columnIndex < 0)
+				return;
+			DynamicListItem item = row[columnIndex];
 			if (itemAtMousePosition != item) {
 				if (itemAtMousePosition != null) {
 					OnLeaveItem(itemAtMousePosition);
@@ -431,6 +496,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 		
 		protected override void OnMouseLeave(EventArgs e)
 		{
+			rowAtMousePosition = null;
 			if (itemAtMousePosition != null) {
 				OnLeaveItem(itemAtMousePosition);
 				itemAtMousePosition = null;
@@ -461,5 +527,12 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 				return rows;
 			}
 		}
+	}
+	
+	public interface IActivatable
+	{
+		bool IsActivated { get; }
+		event EventHandler Activated;
+		event EventHandler Deactivate;
 	}
 }

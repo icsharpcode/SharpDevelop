@@ -21,12 +21,18 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			this.row = row;
 		}
 		
-		void OnItemChanged()
+		public void RaiseItemChanged()
 		{
 			row.RaiseItemChanged(this);
 		}
 		
 		Cursor cursor;
+		
+		public DynamicListRow Row {
+			get {
+				return row;
+			}
+		}
 		
 		public Cursor Cursor {
 			get {
@@ -47,7 +53,21 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			set {
 				if (backgroundBrush != value) {
 					backgroundBrush = value;
-					OnItemChanged();
+					RaiseItemChanged();
+				}
+			}
+		}
+		
+		Brush backgroundBrushInactive;
+		
+		public Brush BackgroundBrushInactive {
+			get {
+				return backgroundBrushInactive;
+			}
+			set {
+				if (backgroundBrushInactive != value) {
+					backgroundBrushInactive = value;
+					RaiseItemChanged();
 				}
 			}
 		}
@@ -61,7 +81,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			set {
 				if (highlightBrush != value) {
 					highlightBrush = value;
-					OnItemChanged();
+					RaiseItemChanged();
 				}
 			}
 		}
@@ -75,7 +95,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			set {
 				if (control != value) {
 					control = value;
-					OnItemChanged();
+					RaiseItemChanged();
 				}
 			}
 		}
@@ -97,20 +117,35 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			}
 		}
 		
-		public event PaintEventHandler Paint;
+		public event EventHandler<ItemPaintEventArgs> Paint;
 		
-		internal void PaintTo(Graphics g, Rectangle rectangle, DynamicListColumn column, bool isMouseEntered)
+		internal void PaintTo(Graphics g, Rectangle rectangle, DynamicList list, DynamicListColumn column, bool isMouseEntered)
 		{
-			if (highlightBrush != null && isMouseEntered)
-				g.FillRectangle(highlightBrush, rectangle);
-			else
-				g.FillRectangle(backgroundBrush ?? column.BackgroundBrush, rectangle);
+			Rectangle fillRectangle = rectangle;
+			fillRectangle.Width += 1;
+			if (highlightBrush != null && isMouseEntered) {
+				g.FillRectangle(highlightBrush, fillRectangle);
+			} else {
+				bool isActivated = list.IsActivated;
+				Brush bgBrush = GetBrush(isActivated, backgroundBrush, backgroundBrushInactive);
+				if (bgBrush == null) {
+					bgBrush = GetBrush(isActivated, column.BackgroundBrush, column.BackgroundBrushInactive);
+					if (isActivated && list.RowAtMousePosition == row && column.RowHighlightBrush != null)
+						bgBrush = column.RowHighlightBrush;
+				}
+				g.FillRectangle(bgBrush, fillRectangle);
+			}
 			if (Paint != null) {
-				Paint(this, new PaintEventArgs(g, rectangle));
+				Paint(this, new ItemPaintEventArgs(g, rectangle, fillRectangle, list, column, this, isMouseEntered));
 			}
 			if (text.Length > 0) {
 				g.DrawString(text, font, textBrush, rectangle, textFormat);
 			}
+		}
+		
+		Brush GetBrush(bool isActive, Brush activeBrush, Brush inactiveBrush)
+		{
+			return isActive ? (activeBrush ?? inactiveBrush) : (inactiveBrush ?? activeBrush);
 		}
 		#endregion
 		
@@ -126,7 +161,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 					throw new ArgumentNullException("value", "Use string.Empty instead of null!");
 				if (text != value) {
 					text = value;
-					OnItemChanged();
+					RaiseItemChanged();
 				}
 			}
 		}
@@ -142,7 +177,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 					throw new ArgumentNullException("value");
 				if (font != value) {
 					font = value;
-					OnItemChanged();
+					RaiseItemChanged();
 				}
 			}
 		}
@@ -158,7 +193,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 					throw new ArgumentNullException("value");
 				if (textBrush != value) {
 					textBrush = value;
-					OnItemChanged();
+					RaiseItemChanged();
 				}
 			}
 		}
@@ -186,7 +221,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 					throw new ArgumentNullException("value");
 				if (textFormat != value) {
 					textFormat = value;
-					OnItemChanged();
+					RaiseItemChanged();
 				}
 			}
 		}
@@ -226,7 +261,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			if (MouseLeave != null) {
 				MouseLeave(this, new DynamicListEventArgs(list));
 			}
-			if (highlightBrush != null) OnItemChanged();
+			if (highlightBrush != null) RaiseItemChanged();
 		}
 		
 		public event EventHandler<DynamicListEventArgs> MouseEnter;
@@ -236,7 +271,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			if (MouseEnter != null) {
 				MouseEnter(this, new DynamicListEventArgs(list));
 			}
-			if (highlightBrush != null) OnItemChanged();
+			if (highlightBrush != null) RaiseItemChanged();
 		}
 		
 		public event EventHandler<DynamicListMouseEventArgs> MouseMove;
@@ -287,11 +322,11 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 		{
 			if (!allowLabelEdit)
 				return;
-			if (BeginLabelEdit != null)
-				BeginLabelEdit(this, new DynamicListEventArgs(list));
 			TextBox txt = new TextBox();
 			txt.Text = this.Text;
 			AssignControlUntilFocusChange(txt);
+			if (BeginLabelEdit != null)
+				BeginLabelEdit(this, new DynamicListEventArgs(list));
 			bool escape = false;
 			txt.KeyDown += delegate(object sender2, KeyEventArgs e2) {
 				if (e2.KeyData == Keys.Enter || e2.KeyData == Keys.Escape) {
@@ -401,6 +436,63 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			if (graphics == null)
 				throw new ArgumentNullException("graphics");
 			this.graphics = graphics;
+		}
+	}
+	
+	public class ItemPaintEventArgs : PaintEventArgs
+	{
+		DynamicList list;
+		DynamicListColumn column;
+		DynamicListItem item;
+		bool isMouseEntered;
+		Rectangle fillRectangle;
+		
+		public Rectangle FillRectangle {
+			get {
+				return fillRectangle;
+			}
+		}
+		
+		public DynamicList List {
+			get {
+				return list;
+			}
+		}
+		
+		public DynamicListColumn Column {
+			get {
+				return column;
+			}
+		}
+		
+		public DynamicListRow Row {
+			get {
+				return item.Row;
+			}
+		}
+		
+		public DynamicListItem Item {
+			get {
+				return item;
+			}
+		}
+		
+		public bool IsMouseEntered {
+			get {
+				return isMouseEntered;
+			}
+		}
+		
+		public ItemPaintEventArgs(Graphics graphics, Rectangle rectangle, Rectangle fillRectangle,
+		                          DynamicList list, DynamicListColumn column,
+		                          DynamicListItem item, bool isMouseEntered)
+			: base(graphics, rectangle)
+		{
+			this.fillRectangle = fillRectangle;
+			this.list = list;
+			this.column = column;
+			this.item = item;
+			this.isMouseEntered = isMouseEntered;
 		}
 	}
 }

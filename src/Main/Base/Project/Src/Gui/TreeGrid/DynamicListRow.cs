@@ -69,10 +69,15 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 				}
 				DynamicListItem item = items[columnIndex];
 				if (item == null) {
-					items[columnIndex] = item = new DynamicListItem(this);
+					items[columnIndex] = item = CreateItem();
 				}
 				return item;
 			}
+		}
+		
+		protected virtual DynamicListItem CreateItem()
+		{
+			return new DynamicListItem(this);
 		}
 	}
 }
