@@ -41,8 +41,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 				// clear up references to method/expression after the type has been resolved
 				if (block != null) {
 					GetReturnTypeVisitor v = new GetReturnTypeVisitor(context);
-					v.Visit(block);
-					block = null;
+					Block b = block;
+					block = null; // reset block before calling Visit to prevent StackOverflow
+					v.Visit(b);
 					if (v.noReturnStatement)
 						cachedType = ReflectionReturnType.Void;
 					else if (v.result is NullReturnType)
@@ -50,8 +51,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 					else
 						cachedType = v.result;
 				} else if (expression != null) {
-					cachedType = new BooResolver().GetTypeOfExpression(expression, context);
+					Expression expr = expression;
 					expression = null;
+					cachedType = new BooResolver().GetTypeOfExpression(expr, context);
 				}
 				return cachedType;
 			}
