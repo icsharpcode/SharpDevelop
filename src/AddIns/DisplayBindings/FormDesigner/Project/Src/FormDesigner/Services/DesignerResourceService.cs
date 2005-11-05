@@ -66,6 +66,11 @@ namespace ICSharpCode.FormDesigner.Services
 		}
 		#endregion
 		
+		enum ResourceType {
+			Resx = 0,
+			Resources = 1
+		};
+		
 		// In ResourceMemoryStreams are stored:
 		// Key: "true" file names from the project
 		// Value: ResourceStorage, where the resources are stored
@@ -109,7 +114,7 @@ namespace ICSharpCode.FormDesigner.Services
 				if (resourceWriter == null) {
 					ResourceStorage resourceStorage = new ResourceStorage(new MemoryStream());
 					resources[fileName] = resourceStorage;
-					resourceWriter = new ResourceWriter(resourceStorage.stream);
+					resourceWriter = CreateResourceWriter(resourceStorage.stream, GetResourceType(fileName));
 					Writers[info] = resourceWriter;
 					resourceStorage.project = project;				
 				}
@@ -127,9 +132,9 @@ namespace ICSharpCode.FormDesigner.Services
 				IResourceReader resourceReader = null;
 				if (resources != null && resources[fileName] != null) {
 					MemoryStream stream = new MemoryStream(((ResourceStorage)resources[fileName]).storage);
-					resourceReader = new ResourceReader(stream);
+					resourceReader = CreateResourceReader(stream, GetResourceType(fileName));
 				} else if (File.Exists(fileName)) {
-					resourceReader = new ResourceReader(fileName);
+					resourceReader = CreateResourceReader(fileName, GetResourceType(fileName));
 				}
 
 				return resourceReader;
@@ -152,10 +157,14 @@ namespace ICSharpCode.FormDesigner.Services
 						PadDescriptor pd = WorkbenchSingleton.Workbench.GetPad(typeof(ProjectBrowserPad));
 						FileNode formFileNode = ((ProjectBrowserPad)pd.PadContent).ProjectBrowserControl.FindFileNode(FileName);
 						if (formFileNode != null) {
-							FileNode fileNode = new FileNode(resourceFileName, FileNodeStatus.InProject);
-							fileNode.AddTo(formFileNode.Parent);
-							IncludeFileInProject.IncludeFileNode(fileNode);	
-							ProjectService.SaveSolution();
+							FileNode fileNode = new FileNode(resourceFileName, FileNodeStatus.BehindFile);
+							fileNode.AddTo(formFileNode);
+							FileProjectItem newFileProjectItem = new FileProjectItem(fileNode.Project, ItemType.EmbeddedResource);
+							newFileProjectItem.DependentUpon = Path.GetFileName(formFileNode.FileName);
+							newFileProjectItem.Include = FileUtility.GetRelativePath(fileNode.Project.Directory, fileNode.FileName);
+							fileNode.ProjectItem = newFileProjectItem;
+							ProjectService.AddProjectItem(fileNode.Project, newFileProjectItem);
+							fileNode.Project.Save();
 						}
 					}
 				}
@@ -180,7 +189,13 @@ namespace ICSharpCode.FormDesigner.Services
 				resourceFileName.Append('.');
 				resourceFileName.Append(info.Name);
 			}
-			resourceFileName.Append(".resources");
+			
+			// Use .resources filename if file exists.
+			if (File.Exists(String.Concat(resourceFileName.ToString(), ".resources"))) {
+				resourceFileName.Append(".resources");
+			} else {
+				resourceFileName.Append(".resx");
+			}
 			
 			return resourceFileName.ToString();
 		}
@@ -231,6 +246,38 @@ namespace ICSharpCode.FormDesigner.Services
 				resources.Clear();
 			}
 			SerializationEnded(false);
+		}
+		
+		static ResourceType GetResourceType(string fileName)
+		{
+			if (Path.GetExtension(fileName).ToLowerInvariant() == ".resx") {
+				return ResourceType.Resx;
+			}
+			return ResourceType.Resources;
+		}
+		
+		static IResourceReader CreateResourceReader(string fileName, ResourceType type)
+		{
+			if (type == ResourceType.Resources) {
+				return new ResourceReader(fileName);
+			}		
+			return new ResXResourceReader(fileName);
+		}
+		
+		static IResourceReader CreateResourceReader(Stream stream, ResourceType type)
+		{
+			if (type == ResourceType.Resources) {
+				return new ResourceReader(stream);
+			} 
+			return new ResXResourceReader(stream);
+		}
+		
+		static IResourceWriter CreateResourceWriter(Stream stream, ResourceType type)
+		{
+			if (type == ResourceType.Resources) {
+				return new ResourceWriter(stream);
+			}
+			return new ResXResourceWriter(stream);
 		}
 	}
 }

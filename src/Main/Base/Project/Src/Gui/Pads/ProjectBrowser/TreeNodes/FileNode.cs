@@ -176,7 +176,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				FileService.RemoveFile(FileName, false);
 				ProjectService.SaveSolution();
 			} else {
-				if (MessageService.AskQuestion("Delete '" + Text + "' permanently ?")) {
+				if (Nodes.Count > 0) {
+					if (MessageService.AskQuestion("Delete '" + Text + "' and its dependent files permanently?")) {
+						DeleteChildNodes();
+						FileService.RemoveFile(FileName, false);
+						ProjectService.SaveSolution();
+					}
+				}
+				else if (MessageService.AskQuestion("Delete '" + Text + "' permanently ?")) {
 					FileService.RemoveFile(FileName, false);
 					ProjectService.SaveSolution();
 				}
@@ -217,5 +224,23 @@ namespace ICSharpCode.SharpDevelop.Project
 			((ExtTreeNode)Parent).Paste();
 		}
 		#endregion
+
+		/// <summary>
+		/// Deletes all dependent child nodes and their associated files.
+		/// Does not delete recursively - not required as yet.
+		/// </summary>
+		void DeleteChildNodes()
+		{
+			if (Nodes.Count == 0) return;
+			
+			foreach (TreeNode node in Nodes) {
+				FileNode fileNode = node as FileNode;
+				if (fileNode != null) {
+					FileService.RemoveFile(fileNode.FileName, false);
+				} else {
+					LoggingService.Warn("FileNode.DeleteChildren. Child is not a FileNode.");
+				}
+			}
+		}
 	}
 }

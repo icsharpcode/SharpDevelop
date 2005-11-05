@@ -118,7 +118,7 @@
 	<!-- Options panel -->
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/ToolsOptions">
 		<DialogPanel id    = "NAntAddInOptionPanel"
-		       	     label = "&amp;NAnt"
+		       	     label = "NAnt"
 		       	     class = "ICSharpCode.NAntAddIn.Gui.NAntAddInOptionPanel"/>
 	</Path>
 
