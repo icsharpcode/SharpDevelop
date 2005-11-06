@@ -15,7 +15,7 @@ using DebuggerInterop.Core;
 using DebuggerInterop.MetaData;
 using System.Collections.Generic;
 
-namespace DebuggerLibrary
+namespace Debugger
 {
 	public partial class NDebugger: RemotingObjectBase
 	{

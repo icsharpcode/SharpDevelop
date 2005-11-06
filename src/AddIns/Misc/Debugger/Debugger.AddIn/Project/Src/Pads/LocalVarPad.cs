@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -15,7 +15,7 @@ using System.Diagnostics;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
 
-using DebuggerLibrary;
+using Debugger;
 using System.Collections.Generic;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads

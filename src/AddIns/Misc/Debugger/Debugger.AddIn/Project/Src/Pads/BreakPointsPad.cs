@@ -15,7 +15,7 @@ using System.Diagnostics;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
 
-using DebuggerLibrary;
+using Debugger;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void BreakpointsListItemCheck(object sender, ItemCheckEventArgs e)
 		{
-			DebuggerLibrary.Breakpoint breakpoint = breakpointsList.Items[e.Index].Tag as DebuggerLibrary.Breakpoint;
+			Debugger.Breakpoint breakpoint = breakpointsList.Items[e.Index].Tag as Debugger.Breakpoint;
 			if (breakpoint != null) {
 				breakpoint.Enabled = (e.NewValue == CheckState.Checked);
 			}
@@ -105,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			breakpointsList.ItemCheck -= new ItemCheckEventHandler(BreakpointsListItemCheck);
 			breakpointsList.BeginUpdate();
 			breakpointsList.Items.Clear();
-			foreach(DebuggerLibrary.Breakpoint b in debuggerCore.Breakpoints) {
+			foreach(Debugger.Breakpoint b in debuggerCore.Breakpoints) {
 				AddBreakpoint(new BreakpointEventArgs(debuggerCore, b));
 			}
 			breakpointsList.EndUpdate();
@@ -170,7 +170,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		void debuggerService_OnDebuggingResumed(object sender, DebuggerEventArgs e)
 		{
 			breakpointsList.BeginUpdate();
-			foreach(DebuggerLibrary.Breakpoint b in debuggerCore.Breakpoints)
+			foreach(Debugger.Breakpoint b in debuggerCore.Breakpoints)
 				RefreshBreakpoint(this, new BreakpointEventArgs(debuggerCore, b));
 			breakpointsList.EndUpdate();
 		}

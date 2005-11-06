@@ -15,7 +15,7 @@ using System.Diagnostics;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Services;
 
-using DebuggerLibrary;
+using Debugger;
 
 namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		void ExceptionHistoryListItemActivate(object sender, EventArgs e)
 		{
-			SourcecodeSegment nextStatement = ((DebuggerLibrary.Exception)(exceptionHistoryList.SelectedItems[0].Tag)).Location;
+			SourcecodeSegment nextStatement = ((Debugger.Exception)(exceptionHistoryList.SelectedItems[0].Tag)).Location;
 
 			if (nextStatement == null) {
 				return;
@@ -126,7 +126,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			exceptionHistoryList.BeginUpdate();
 			exceptionHistoryList.Items.Clear();
 		
-			foreach(DebuggerLibrary.Exception exception in debugger.ExceptionHistory) {
+			foreach(Debugger.Exception exception in debugger.ExceptionHistory) {
 				string location;
 				if (exception.Location != null) {
 					location = exception.Location.SourceFilename + ":" + exception.Location.StartLine;

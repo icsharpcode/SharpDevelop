@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -20,7 +20,7 @@ using DebuggerInterop.Core;
 // Replace with:
 // \1\2\n\1{\n\1\tCallbackReceived("\3", new object[] {\4, \5, \6, \7, \8, \9});\n\1}
 
-namespace DebuggerLibrary
+namespace Debugger
 {
 	class ManagedCallbackProxy :ICorDebugManagedCallback, ICorDebugManagedCallback2
 	{

@@ -12,7 +12,7 @@ using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
 
-using DebuggerLibrary;
+using Debugger;
 
 using ICSharpCode.Core;
 using System.CodeDom.Compiler;
@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		bool isProcessRunningCache = false;
 		bool serviceInitialized = false;
 
-		List<DebuggerLibrary.Exception> exceptionHistory = new List<DebuggerLibrary.Exception>();
+		List<Debugger.Exception> exceptionHistory = new List<Debugger.Exception>();
 
 		public event EventHandler ExceptionHistoryModified;
 
@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 
-		public IList<DebuggerLibrary.Exception> ExceptionHistory {
+		public IList<Debugger.Exception> ExceptionHistory {
 			get {
 				return exceptionHistory.AsReadOnly();
 			}

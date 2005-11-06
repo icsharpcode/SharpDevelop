@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -13,7 +13,7 @@ using System.Text;
 using DebuggerInterop.Core;
 using DebuggerInterop.MetaData;
 
-namespace DebuggerLibrary
+namespace Debugger
 {        
     internal static class NativeMethods
     {

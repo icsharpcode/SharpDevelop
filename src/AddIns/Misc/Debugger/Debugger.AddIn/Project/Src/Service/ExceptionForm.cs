@@ -8,7 +8,7 @@
 using System;
 using System.Windows.Forms;
 using ICSharpCode.Core;
-using DebuggerLibrary;
+using Debugger;
 
 namespace ICSharpCode.SharpDevelop.Services
 {
@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			InitializeComponent();
 		}
 		
-		public static Result Show(DebuggerLibrary.Exception exception)
+		public static Result Show(Debugger.Exception exception)
 		{
 			ExceptionForm form = new ExceptionForm();
 			form.textBox.Text = "Exception " + 
