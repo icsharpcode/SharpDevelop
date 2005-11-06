@@ -133,9 +133,9 @@ namespace SearchAndReplace
 			Get<CheckBox>("includeSubFolder").Checked = SearchOptions.IncludeSubdirectories;
 			
 			Get<ComboBox>("use").Items.Clear();
-			Get<ComboBox>("use").Items.Add("Standard search");
-			Get<ComboBox>("use").Items.Add("Regular expressions");
-			Get<ComboBox>("use").Items.Add("Wildcards");
+			Get<ComboBox>("use").Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.SearchStrategy.Standard}"));
+			Get<ComboBox>("use").Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.SearchStrategy.RegexSearch}"));
+			Get<ComboBox>("use").Items.Add(StringParser.Parse("${res:Dialog.NewProject.SearchReplace.SearchStrategy.WildcardSearch}"));
 			switch (SearchOptions.SearchStrategyType) {
 				case SearchStrategyType.RegEx:
 					Get<ComboBox>("use").SelectedIndex = 1;

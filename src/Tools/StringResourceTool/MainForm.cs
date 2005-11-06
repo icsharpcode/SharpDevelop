@@ -277,6 +277,7 @@ namespace StringResourceTool
 			foreach (string fileName in Directory.GetFiles(path, "*.*")) {
 				switch (Path.GetExtension(fileName).ToLowerInvariant()) {
 					case ".cs":
+					case ".boo":
 						FindUsedStrings(fileName, t, true);
 						break;
 					case ".resx":

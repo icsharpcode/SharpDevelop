@@ -31,7 +31,7 @@ namespace ICSharpCode.FiletypeRegisterer {
 		const int SHCNE_ASSOCCHANGED = 0x08000000;
 		const int SHCNF_IDLIST		 = 0x0;
 		
-		public static string DefaultExtensions = "sln|csproj|vbproj";
+		public static string DefaultExtensions = "sln|csproj|vbproj|booproj";
 		
 		public static string[,] GetFileTypes()
 		{
@@ -45,7 +45,9 @@ namespace ICSharpCode.FiletypeRegisterer {
 				string[,] ret = new string[doc.DocumentElement.ChildNodes.Count, 3];
 				
 				for(int i = 0; i < nodes.Count; ++i) {
-					XmlElement el = (XmlElement)nodes.Item(i);
+					if (nodes[i].NodeType == XmlNodeType.Comment)
+						continue;
+					XmlElement el = (XmlElement)nodes[i];
 					ret[i, 0] = el.InnerText;
 					ret[i, 1] = el.Attributes["ext"].InnerText;
 					ret[i, 2] = el.Attributes["icon"].InnerText;
@@ -87,6 +89,7 @@ namespace ICSharpCode.FiletypeRegisterer {
 			string[,] FileTypes = GetFileTypes();
 			string resPath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), "filetypes") + Path.DirectorySeparatorChar;
 			for(int i = 0; i < FileTypes.GetLength(0); ++i) {
+				if (FileTypes[i, 0] == null) continue;
 				if (!IsRegisteredFileType(FileTypes[i, 1])) {
 					RegisterFiletype(FileTypes[i, 1], FileTypes[i, 0], '"' + Path.GetFullPath(mainExe) + '"' + " \"%1\"", Path.GetFullPath(resPath + FileTypes[i, 2]));
 				}
@@ -105,39 +108,59 @@ namespace ICSharpCode.FiletypeRegisterer {
 		public static void RegisterFiletype(string extension, string description, string command, string icon)
 		{
 			try {
-				RegistryKey extKey, clsKey, openKey;
-				extKey = Registry.ClassesRoot.CreateSubKey("." + extension);
-				
-				// save previous association
-				string prev = (string)extKey.GetValue("", "");
-				if (prev != "" && prev != ("SD." + extension + "file")) {
-					extKey.SetValue("PreSD", extKey.GetValue(""));
-				}
-				extKey.SetValue("", "SD." + extension + "file");
-				extKey.Close();
-				
-				clsKey = Registry.ClassesRoot.CreateSubKey("SD." + extension + "file");
-				
-				
-				clsKey.SetValue("", StringParser.Parse(description));
-				clsKey.CreateSubKey("DefaultIcon").SetValue("", '"' + icon + '"');
-				openKey = clsKey.CreateSubKey("shell\\open\\command");
-				openKey.SetValue("", command);
-				openKey.Close();
-				clsKey.Close();
-				
+				RegisterFiletype(Registry.ClassesRoot, extension, description, command, icon);
+			} catch (UnauthorizedAccessException) {
+				try {
+					RegisterFiletype(Registry.CurrentUser.CreateSubKey("Software\\Classes"), extension, description, command, icon);
+				} catch {}
+			}
+			try {
 				SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
 			} catch {}
+		}
+		
+		static void RegisterFiletype(RegistryKey rootKey, string extension, string description, string command, string icon)
+		{
+			RegistryKey extKey, clsKey, openKey;
+			extKey = rootKey.CreateSubKey("." + extension);
+			// save previous association
+			string prev = (string)extKey.GetValue("", "");
+			if (prev != "" && prev != ("SD." + extension + "file")) {
+				extKey.SetValue("PreSD", extKey.GetValue(""));
+			}
+			extKey.SetValue("", "SD." + extension + "file");
+			extKey.Close();
 			
+			clsKey = rootKey.CreateSubKey("SD." + extension + "file");
+			
+			
+			clsKey.SetValue("", StringParser.Parse(description));
+			clsKey.CreateSubKey("DefaultIcon").SetValue("", '"' + icon + '"');
+			openKey = clsKey.CreateSubKey("shell\\open\\command");
+			openKey.SetValue("", command);
+			openKey.Close();
+			clsKey.Close();
 		}
 		
 		public static void UnRegisterFiletype(string extension)
 		{
+			UnRegisterFiletype(extension, Registry.ClassesRoot);
 			try {
-				Registry.ClassesRoot.DeleteSubKeyTree("SD." + extension + "file");
-				
+				UnRegisterFiletype(extension, Registry.CurrentUser.CreateSubKey("Software\\Classes"));
+			} catch {}
+			try {
+				SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
+			} catch {}
+		}
+		
+		static void UnRegisterFiletype(string extension, RegistryKey root)
+		{
+			try {
+				root.DeleteSubKeyTree("SD." + extension + "file");
+			} catch {}
+			try {
 				RegistryKey extKey;
-				extKey = Registry.ClassesRoot.OpenSubKey("." + extension, true);
+				extKey = root.OpenSubKey("." + extension, true);
 				
 				// if no association return
 				if (extKey == null) return;
@@ -150,9 +173,9 @@ namespace ICSharpCode.FiletypeRegisterer {
 					extKey.SetValue("", prev);
 				}
 				extKey.Close();
-				
-				
-				SHChangeNotify(SHCNE_ASSOCCHANGED, SHCNF_IDLIST, IntPtr.Zero, IntPtr.Zero);
+				if (prev != null) {
+					root.DeleteSubKeyTree("." + extension);
+				}
 			} catch {}
 		}
 		

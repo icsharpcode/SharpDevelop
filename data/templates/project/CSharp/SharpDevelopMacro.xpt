@@ -1,0 +1,145 @@
+<?xml version="1.0"?>
+<Template originator   = "Daniel Grunwald"
+          created      = "01/11/2005"
+          lastModified = "01/11/2005">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>${res:Templates.Project.SharpDevelopMacro.Name}</Name>
+		<Category>SharpDevelop</Category>
+		<Icon>C#.Project.ControlLibrary</Icon>
+		<LanguageName>C#</LanguageName>
+		<Description>${res:Templates.Project.SharpDevelopMacro.Description}</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "${ProjectName}.addin"/>
+	</Actions>
+	
+	<Combine name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options OutputType = "Library" />
+
+			<ProjectItems>
+				<Reference Include="System" />
+				<Reference Include="System.Data" />
+				<Reference Include="System.Drawing" />
+				<Reference Include="System.Windows.Forms" />
+				<Reference Include="System.Xml" />
+			</ProjectItems>
+			
+			<Files>
+				<File name="${ProjectName}.addin" copyToOutputDirectory="Always"><![CDATA[<AddIn name        = "${ProjectName}"
+       author      = "${USER}"
+       copyright   = "GNU General Public License"
+       url         = ""
+       description = "TODO: Put description here"
+       version     = "1.0.0">
+	
+	<Runtime>
+		<Import assembly = "${ProjectName}.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
+		<MenuItem id = "${ProjectName}Command1"
+		          insertafter = "Separator1"
+		          insertbefore = "Separator2"
+		          label = "${ProjectName}"
+		          class = "${ProjectName}.ToolCommand1"/>
+	</Path>
+</AddIn>
+]]></File>
+		<File name="Src/Command.cs">
+			<![CDATA[// Copyright (C) yyyy  name of author
+//
+// This program is free software; you can redistribute it and/or
+// modify it under the terms of the GNU General Public License
+// as published by the Free Software Foundation; either version 2
+// of the License, or (at your option) any later version.
+//
+// This program is distributed in the hope that it will be useful,
+// but WITHOUT ANY WARRANTY; without even the implied warranty of
+// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+// GNU General Public License for more details.
+//
+// You should have received a copy of the GNU General Public License
+// along with this program; if not, write to the Free Software
+// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+
+using System;
+using System.Text;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop;
+using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
+using ICSharpCode.TextEditor;
+
+namespace Macro1
+{
+	public class ToolCommand1 : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			// Here an example that shows how to access the current text document:
+			
+			ITextEditorControlProvider tecp = WorkbenchSingleton.Workbench.ActiveContent as ITextEditorControlProvider;
+			if (tecp == null) {
+				// active content is not a text editor control
+				return;
+			}
+			// Get the active text area from the control:
+			TextArea textArea = tecp.TextEditorControl.ActiveTextAreaControl.TextArea;
+			// get the selected text:
+			string text = textArea.SelectionManager.SelectedText;
+			// reverse the text:
+			StringBuilder b = new StringBuilder(text.Length);
+			for (int i = text.Length - 1; i >= 0; i--)
+				b.Append(text[i]);
+			string newText = b.ToString();
+			// replace the selected text with the new text:
+			// Replace() takes the arguments: start offset to replace, length of the text to remove, new text
+			textArea.Document.Replace(textArea.Caret.Offset, text.Length, newText);
+			// Redraw:
+			textArea.Refresh();
+		}
+	}
+}
+]]></File>
+		<File name="Configuration/AssemblyInfo.cs">
+			<![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+// Information about this assembly is defined by the following
+// attributes.
+//
+// change them to the information which is associated with the assembly
+// you compile.
+
+[assembly: AssemblyTitle("${ProjectName}")]
+[assembly: AssemblyDescription("Macro AddIn for SharpDevelop 2.0")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("SharpDevelop")]
+[assembly: AssemblyCopyright("GNU General Public Licence")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+
+// The assembly version has following format :
+//
+// Major.Minor.Build.Revision
+//
+// You can specify all values by your own or you can build default build and revision
+// numbers with the '*' character (the default):
+
+[assembly: AssemblyVersion("1.0.*")]
+
+]]></File>
+			</Files>
+		</Project>
+	</Combine>
+</Template>

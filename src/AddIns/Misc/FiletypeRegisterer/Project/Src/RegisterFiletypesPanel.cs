@@ -117,6 +117,7 @@ namespace ICSharpCode.FiletypeRegisterer
 			string[,] Items = RegisterFiletypesCommand.GetFileTypes();
 			
 			for(int i = 0; i < Items.GetLength(0); ++i) {
+				if (Items[i, 0] == null) continue;
 				ListViewItem lv;
 				lv = new ListViewItem(StringParser.Parse(Items[i, 0]) + " (." + Items[i, 1] + ")");
 				lv.Tag = Items[i, 1];

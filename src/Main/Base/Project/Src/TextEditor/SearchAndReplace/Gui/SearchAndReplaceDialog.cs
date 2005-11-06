@@ -52,7 +52,7 @@ namespace SearchAndReplace
 			this.FormBorderStyle = FormBorderStyle.FixedToolWindow;
 			this.ShowInTaskbar   = false;
 			this.TopMost         = false;
-			this.Text            = "Search and Replace";
+			this.Text            = StringParser.Parse("${res:Dialog.NewProject.SearchReplace.Title}");
 			this.StartPosition   = FormStartPosition.CenterParent;
 			this.KeyPreview = true;
 			
@@ -66,13 +66,13 @@ namespace SearchAndReplace
 			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			toolStrip.Renderer = MenuService.Renderer;
 			
-			searchButton.Text = "&Search";
+			searchButton.Text = StringParser.Parse("${res:Dialog.NewProject.SearchReplace.FindDialogName}");
 			searchButton.Image = IconService.GetBitmap("Icons.16x16.FindIcon");
 			searchButton.Checked = searchAndReplaceMode == SearchAndReplaceMode.Search;
 			searchButton.Click += new EventHandler(SearchButtonClick);
 			toolStrip.Items.Add(searchButton);
 			
-			replaceButton.Text = "&Replace";
+			replaceButton.Text = StringParser.Parse("${res:Dialog.NewProject.SearchReplace.ReplaceDialogName}");
 			replaceButton.Image = IconService.GetBitmap("Icons.16x16.ReplaceIcon");
 			replaceButton.Checked = searchAndReplaceMode == SearchAndReplaceMode.Replace;
 			replaceButton.Click += new EventHandler(ReplaceButtonClick);

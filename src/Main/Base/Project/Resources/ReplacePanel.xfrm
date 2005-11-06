@@ -1,146 +1,164 @@
 <Components version="1.0">
   <System.Windows.Forms.UserControl>
     <Name value="XmlUserControl1" />
-    <DockPadding value="" />
     <ClientSize value="{Width=432, Height=360}" />
     <Controls>
       <System.Windows.Forms.ComboBox>
         <Name value="useComboBox" />
-        <Anchor value="Top, Left, Right" />
-        <TabIndex value="13" />
-        <Location value="{X=8,Y=296}" />
         <Size value="{Width=416, Height=21}" />
+        <TabIndex value="13" />
         <DropDownStyle value="DropDownList" />
+        <Location value="{X=8,Y=296}" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
         <Name value="label5" />
-        <Text value="Us&amp;e:" />
-        <TextAlign value="BottomLeft" />
-        <Anchor value="Top, Left, Right" />
-        <TabIndex value="12" />
-        <Size value="{Width=416, Height=23}" />
         <Location value="{X=8,Y=272}" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="${res:Dialog.NewProject.SearchReplace.UseMethodLabel}" />
+        <Anchor value="Top, Left, Right" />
+        <TextAlign value="BottomLeft" />
+        <Size value="{Width=416, Height=23}" />
+        <TabIndex value="12" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.Button>
         <Name value="replaceAllButton" />
         <Location value="{X=328,Y=328}" />
-        <Size value="{Width=96, Height=23}" />
-        <Text value="&amp;Replace all" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="${res:Dialog.NewProject.SearchReplace.ReplaceAllButton}" />
         <Anchor value="Top, Right" />
+        <Size value="{Width=96, Height=23}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
         <TabIndex value="16" />
       </System.Windows.Forms.Button>
       <System.Windows.Forms.ComboBox>
         <Name value="replaceComboBox" />
-        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=416, Height=21}" />
         <TabIndex value="3" />
         <Location value="{X=8,Y=80}" />
-        <Size value="{Width=416, Height=21}" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
         <Name value="label4" />
-        <Text value="Re&amp;place with:" />
-        <TextAlign value="BottomLeft" />
-        <Anchor value="Top, Left, Right" />
-        <TabIndex value="2" />
-        <Size value="{Width=416, Height=23}" />
         <Location value="{X=8,Y=56}" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="${res:Dialog.NewProject.SearchReplace.ReplaceWith}" />
+        <Anchor value="Top, Left, Right" />
+        <TextAlign value="BottomLeft" />
+        <Size value="{Width=416, Height=23}" />
+        <TabIndex value="2" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.Button>
         <Name value="findNextButton" />
         <Location value="{X=120,Y=328}" />
-        <Size value="{Width=96, Height=23}" />
-        <Text value="&amp;Find next" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="${res:Dialog.NewProject.SearchReplace.FindNextButton}" />
         <Anchor value="Top, Right" />
+        <Size value="{Width=96, Height=23}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
         <TabIndex value="14" />
       </System.Windows.Forms.Button>
       <System.Windows.Forms.Button>
         <Name value="replaceButton" />
         <Location value="{X=224,Y=328}" />
-        <Size value="{Width=96, Height=23}" />
-        <Text value="&amp;Replace" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="${res:Dialog.NewProject.SearchReplace.ReplaceButton}" />
         <Anchor value="Top, Right" />
+        <Size value="{Width=96, Height=23}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
         <TabIndex value="15" />
       </System.Windows.Forms.Button>
       <System.Windows.Forms.CheckBox>
         <Name value="matchWholeWordCheckBox" />
-        <Location value="{X=8,Y=248}" />
-        <Size value="{Width=416, Height=24}" />
-        <Text value="Match &amp;whole word" />
-        <Anchor value="Top, Left, Right" />
         <RightToLeft value="No" />
+        <Location value="{X=8,Y=248}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="${res:Dialog.NewProject.SearchReplace.MatchWholeWord}" />
         <TabIndex value="11" />
+        <Size value="{Width=416, Height=24}" />
+        <UseCompatibleTextRendering value="True" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.CheckBox>
       <System.Windows.Forms.CheckBox>
         <Name value="matchCaseCheckBox" />
         <Location value="{X=8,Y=224}" />
-        <Size value="{Width=416, Height=24}" />
-        <Text value="Match &amp;case" />
-        <Anchor value="Top, Left, Right" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="${res:Dialog.NewProject.SearchReplace.MatchCase}" />
         <TabIndex value="10" />
+        <Size value="{Width=416, Height=24}" />
+        <UseCompatibleTextRendering value="True" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.CheckBox>
       <System.Windows.Forms.ComboBox>
         <Name value="fileTypesComboBox" />
-        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=416, Height=21}" />
         <TabIndex value="9" />
         <Location value="{X=8,Y=200}" />
-        <Size value="{Width=416, Height=21}" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
         <Name value="lookAtTypesLabel" />
-        <Text value="Look at these file &amp;types:" />
-        <TextAlign value="BottomLeft" />
-        <Anchor value="Top, Left, Right" />
-        <TabIndex value="8" />
-        <Size value="{Width=416, Height=23}" />
         <Location value="{X=8,Y=176}" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="${res:Dialog.NewProject.SearchReplace.LookAtFileTypes}" />
+        <Anchor value="Top, Left, Right" />
+        <TextAlign value="BottomLeft" />
+        <Size value="{Width=416, Height=23}" />
+        <TabIndex value="8" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.CheckBox>
         <Name value="includeSubFolderCheckBox" />
         <Location value="{X=24,Y=152}" />
-        <Size value="{Width=400, Height=24}" />
-        <Text value="Include su&amp;b-folders" />
-        <Anchor value="Top, Left, Right" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
+        <Text value="${res:Dialog.NewProject.SearchReplace.IncludeSubFolders}" />
         <TabIndex value="7" />
+        <Size value="{Width=400, Height=24}" />
+        <UseCompatibleTextRendering value="True" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.CheckBox>
       <System.Windows.Forms.Button>
         <Name value="lookInBrowseButton" />
         <Location value="{X=400,Y=128}" />
-        <Size value="{Width=24, Height=21}" />
+        <UseCompatibleTextRendering value="True" />
         <Text value="..." />
         <Anchor value="Top, Right" />
+        <Size value="{Width=24, Height=21}" />
+        <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
         <TabIndex value="6" />
       </System.Windows.Forms.Button>
       <System.Windows.Forms.ComboBox>
         <Name value="lookInComboBox" />
-        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=384, Height=21}" />
         <TabIndex value="5" />
         <Location value="{X=8,Y=128}" />
-        <Size value="{Width=384, Height=21}" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
         <Name value="label2" />
-        <Text value="&amp;Look in:" />
-        <TextAlign value="BottomLeft" />
-        <Anchor value="Top, Left, Right" />
-        <TabIndex value="4" />
-        <Size value="{Width=416, Height=23}" />
         <Location value="{X=8,Y=104}" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="${res:Dialog.NewProject.SearchReplace.SearchIn}" />
+        <Anchor value="Top, Left, Right" />
+        <TextAlign value="BottomLeft" />
+        <Size value="{Width=416, Height=23}" />
+        <TabIndex value="4" />
       </System.Windows.Forms.Label>
       <System.Windows.Forms.ComboBox>
         <Name value="findComboBox" />
-        <Anchor value="Top, Left, Right" />
+        <Size value="{Width=416, Height=21}" />
         <TabIndex value="1" />
         <Location value="{X=8,Y=32}" />
-        <Size value="{Width=416, Height=21}" />
+        <Anchor value="Top, Left, Right" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
         <Name value="label1" />
-        <Text value="Fi&amp;nd what:" />
-        <TextAlign value="BottomLeft" />
-        <Anchor value="Top, Left, Right" />
-        <TabIndex value="0" />
-        <Size value="{Width=416, Height=23}" />
         <Location value="{X=8,Y=8}" />
+        <UseCompatibleTextRendering value="True" />
+        <Text value="${res:Dialog.NewProject.SearchReplace.FindWhat}" />
+        <Anchor value="Top, Left, Right" />
+        <TextAlign value="BottomLeft" />
+        <Size value="{Width=416, Height=23}" />
+        <TabIndex value="0" />
       </System.Windows.Forms.Label>
     </Controls>
   </System.Windows.Forms.UserControl>
