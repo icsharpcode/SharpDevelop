@@ -46,8 +46,8 @@ namespace ICSharpCode.FormDesigner
 		bool                  loading               = true;
 		IDesignerLoaderHost   designerLoaderHost    = null;
 		ITypeResolutionService typeResolutionService = null;
+		IDesignerGenerator    generator;
 		SupportedLanguage    language;
-		CodeDomProvider       provider = new Microsoft.CSharp.CSharpCodeProvider();
 		
 		TextEditorControl textEditorControl;
 		
@@ -71,7 +71,7 @@ namespace ICSharpCode.FormDesigner
 		
 		protected override CodeDomProvider CodeDomProvider {
 			get {
-				return provider;
+				return generator.CodeDomProvider;
 			}
 		}
 		
@@ -86,10 +86,11 @@ namespace ICSharpCode.FormDesigner
 			return base.IsReloadNeeded() || TextContent != lastTextContent;
 		}
 		
-		public NRefactoryDesignerLoader(SupportedLanguage language, TextEditorControl textEditorControl)
+		public NRefactoryDesignerLoader(SupportedLanguage language, TextEditorControl textEditorControl, IDesignerGenerator generator)
 		{
 			this.language = language;
 			this.textEditorControl = textEditorControl;
+			this.generator = generator;
 		}
 		
 		public override void BeginLoad(IDesignerLoaderHost host)
@@ -206,7 +207,7 @@ namespace ICSharpCode.FormDesigner
 			if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
 				CodeDOMVerboseOutputGenerator outputGenerator = new CodeDOMVerboseOutputGenerator();
 				outputGenerator.GenerateCodeFromMember(visitor.codeCompileUnit.Namespaces[0].Types[0], Console.Out, null);
-				provider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
+				this.CodeDomProvider.GenerateCodeFromCompileUnit(visitor.codeCompileUnit, Console.Out, null);
 			}
 			#endif
 			
@@ -291,7 +292,7 @@ namespace ICSharpCode.FormDesigner
 		protected override void Write(CodeCompileUnit unit)
 		{
 			LoggingService.Info("DesignerLoader.Write called");
-			provider.GenerateCodeFromCompileUnit(unit, Console.Out, null);
+			generator.MergeFormChanges(unit);
 		}
 		
 //		public void Reload()

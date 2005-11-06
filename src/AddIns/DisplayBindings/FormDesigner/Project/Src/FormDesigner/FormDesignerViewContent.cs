@@ -57,7 +57,7 @@ namespace ICSharpCode.FormDesigner
 		Panel p = new Panel();
 		DesignSurface designSurface;
 		
-		IDesignerLoaderProvider loader;
+		IDesignerLoaderProvider loaderProvider;
 		IDesignerGenerator generator;
 		DesignerResourceService designerResourceService;
 		
@@ -97,13 +97,13 @@ namespace ICSharpCode.FormDesigner
 				return (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
 			}
 		}
-		public FormDesignerViewContent(IViewContent viewContent, IDesignerLoaderProvider loader, IDesignerGenerator generator)
+		public FormDesignerViewContent(IViewContent viewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator)
 		{
 			if (!FormKeyHandler.inserted) {
 				FormKeyHandler.Insert();
 			}
 			
-			this.loader    = loader;
+			this.loaderProvider    = loaderProvider;
 			this.generator = generator;
 			p.BackColor    = Color.White;
 			
@@ -134,19 +134,17 @@ namespace ICSharpCode.FormDesigner
 			
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
 			
-			ICSharpCode.FormDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormDesigner.Services.EventBindingService();
+			designSurface = new DesignSurface(serviceContainer);
+						
+			ICSharpCode.FormDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormDesigner.Services.EventBindingService(designSurface);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
-			designSurface = new DesignSurface(serviceContainer);
-			eventBindingService.ServiceProvider = designSurface;
 			designerResourceService.Host = Host;
 			designerResourceService.FileName = viewContent.FileName;
 			serviceContainer.AddService(typeof(IDesignerHost), Host);
 			
-			DesignerLoader designerLoader = loader.CreateLoader();
+			DesignerLoader designerLoader = loaderProvider.CreateLoader(generator);
 			designSurface.BeginLoad(designerLoader);
-			designerLoader.Flush();
-			designSurface.Flush();
 			
 			generator.Attach(this);
 			
@@ -217,14 +215,16 @@ namespace ICSharpCode.FormDesigner
 			}
 		}
 		
-		protected virtual void MergeFormChanges()
+		public virtual void MergeFormChanges()
 		{
 			if (this.failedDesignerInitialize) {
 				return;
 			}
 			bool isDirty = viewContent.IsDirty;
 			LoggingService.Info("Merging form changes...");
-			generator.MergeFormChanges();
+			designerResourceService.SerializationStarted(true);
+			designSurface.Flush();
+			designerResourceService.SerializationEnded(true);
 			LoggingService.Info("Finished merging form changes");
 			viewContent.IsDirty = isDirty;
 		}

@@ -13,6 +13,8 @@ using System.Drawing;
 using System.Reflection;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Dom;
@@ -31,7 +33,18 @@ namespace ICSharpCode.FormDesigner
 		FormDesignerViewContent viewContent;
 		bool failedDesignerInitialize = false;
 		
+		CodeDomProvider provider;
+		
 		public const string NonVisualComponentContainerName = "components";
+		
+		public CodeDomProvider CodeDomProvider {
+			get {
+				if (this.provider == null) {
+					this.provider = this.CreateCodeProvider();
+				}
+				return this.provider;
+			}
+		}
 		
 		public void Attach(FormDesignerViewContent viewContent)
 		{
@@ -114,13 +127,34 @@ namespace ICSharpCode.FormDesigner
 		
 		protected abstract DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method);
 		
-		public void MergeFormChanges()
+		public void MergeFormChanges(CodeCompileUnit unit)
 		{
 			if (tabs == null) Reparse();
 			
+			// find InitializeComponent method and the class it is declared in
+			CodeTypeDeclaration formClass = null;
+			CodeMemberMethod initializeComponent = null;
+			foreach (CodeNamespace n in unit.Namespaces) {
+				foreach (CodeTypeDeclaration typeDecl in n.Types) {
+					foreach (CodeTypeMember m in typeDecl.Members) {
+						if (m is CodeMemberMethod && m.Name == "InitializeComponent") {
+							formClass = typeDecl;
+							initializeComponent = (CodeMemberMethod)m;
+							break;
+						}
+					}
+				}
+			}
+			
+			if (formClass == null || initializeComponent == null) {
+				throw new InvalidOperationException("InitializeComponent method not found in framework-generated CodeDom.");
+			}
+			
 			// generate file and get initialize components string
 			StringWriter writer = new StringWriter();
-			new CodeDOMGenerator(viewContent.Host, CreateCodeProvider(), tabs + '\t').ConvertContentDefinition(writer);
+			CodeDOMGenerator domGenerator = new CodeDOMGenerator(this.CodeDomProvider, tabs + '\t');
+			domGenerator.ConvertContentDefinition(initializeComponent, writer);
+			
 			string statements = writer.ToString();
 			
 			// initializeComponents.BodyRegion.BeginLine + 1
@@ -219,7 +253,7 @@ namespace ICSharpCode.FormDesigner
 					return true;
 				}
 			}
-			MergeFormChanges();
+			viewContent.MergeFormChanges();
 			Reparse();
 			
 			position = c.Region.EndLine + 1;

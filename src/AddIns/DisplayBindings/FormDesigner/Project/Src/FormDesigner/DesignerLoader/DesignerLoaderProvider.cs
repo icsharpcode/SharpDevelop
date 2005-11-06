@@ -14,7 +14,7 @@ namespace ICSharpCode.FormDesigner
 {
 	public interface IDesignerLoaderProvider
 	{
-		DesignerLoader CreateLoader();
+		DesignerLoader CreateLoader(IDesignerGenerator generator);
 	}
 	
 	public class NRefactoryDesignerLoaderProvider : IDesignerLoaderProvider
@@ -28,9 +28,9 @@ namespace ICSharpCode.FormDesigner
 			this.textEditorControl = textEditorControl;
 		}
 		
-		public DesignerLoader CreateLoader()
+		public DesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
-			return new NRefactoryDesignerLoader(language, textEditorControl);
+			return new NRefactoryDesignerLoader(language, textEditorControl, generator);
 		}
 	}
 	
@@ -43,9 +43,9 @@ namespace ICSharpCode.FormDesigner
 			this.textEditorControl = textEditorControl;
 		}
 		
-		public DesignerLoader CreateLoader()
+		public DesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
-			return new XmlDesignerLoader(textEditorControl);
+			return new XmlDesignerLoader(textEditorControl, generator);
 		}
 	}
 }

@@ -39,6 +39,7 @@ namespace ICSharpCode.FormDesigner
 	public class XmlDesignerLoader : BasicDesignerLoader, IObjectCreator
 	{
 		TextEditorControl textEditorControl;
+		IDesignerGenerator generator;
 		
 		public string TextContent {
 			get {
@@ -46,9 +47,10 @@ namespace ICSharpCode.FormDesigner
 			}
 		}
 		
-		public XmlDesignerLoader(TextEditorControl textEditorControl)
+		public XmlDesignerLoader(TextEditorControl textEditorControl, IDesignerGenerator generator)
 		{
 			this.textEditorControl = textEditorControl;
+			this.generator = generator;
 		}
 		
 		IDesignerLoaderHost host;
@@ -70,6 +72,8 @@ namespace ICSharpCode.FormDesigner
 		
 		protected override void PerformFlush(IDesignerSerializationManager serializationManager)
 		{
+			// the XML designer is not based on CodeDom, so we pass null for the CodeCompileUnit
+			generator.MergeFormChanges(null);
 		}
 		
 		Type IObjectCreator.GetType(string name)

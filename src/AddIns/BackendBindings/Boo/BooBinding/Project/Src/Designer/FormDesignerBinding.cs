@@ -53,9 +53,9 @@ namespace Grunwald.BooBinding.Designer
 			this.textEditorControl = textEditorControl;
 		}
 		
-		public System.ComponentModel.Design.Serialization.DesignerLoader CreateLoader()
+		public System.ComponentModel.Design.Serialization.DesignerLoader CreateLoader(IDesignerGenerator generator)
 		{
-			return new BooDesignerLoader(textEditorControl);
+			return new BooDesignerLoader(textEditorControl, generator);
 		}
 	}
 }

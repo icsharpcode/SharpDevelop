@@ -32,6 +32,7 @@ namespace Grunwald.BooBinding.Designer
 	{
 		bool                  loading               = true;
 		IDesignerLoaderHost   designerLoaderHost    = null;
+		IDesignerGenerator    generator;
 		ITypeResolutionService typeResolutionService = null;
 		CodeDomProvider       provider = new Microsoft.CSharp.CSharpCodeProvider();
 		
@@ -72,9 +73,10 @@ namespace Grunwald.BooBinding.Designer
 			return base.IsReloadNeeded() || TextContent != lastTextContent;
 		}
 		
-		public BooDesignerLoader(TextEditorControl textEditorControl)
+		public BooDesignerLoader(TextEditorControl textEditorControl, IDesignerGenerator generator)
 		{
 			this.textEditorControl = textEditorControl;
+			this.generator = generator;
 		}
 		
 		public override void BeginLoad(IDesignerLoaderHost host)
@@ -135,7 +137,7 @@ namespace Grunwald.BooBinding.Designer
 		protected override void Write(CodeCompileUnit unit)
 		{
 			LoggingService.Info("BooDesignerLoader.Write called");
-			provider.GenerateCodeFromCompileUnit(unit, Console.Out, null);
+			generator.MergeFormChanges(unit);
 		}
 	}
 }

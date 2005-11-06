@@ -14,6 +14,8 @@ using System.Reflection;
 using System.Windows.Forms;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using System.CodeDom;
+using System.CodeDom.Compiler;
 using System.Text;
 using System.Text.RegularExpressions;
 
@@ -22,6 +24,12 @@ namespace ICSharpCode.FormDesigner
 	public class XmlDesignerGenerator : IDesignerGenerator
 	{
 		FormDesignerViewContent viewContent;
+		
+		public CodeDomProvider CodeDomProvider {
+			get {
+				return new Microsoft.CSharp.CSharpCodeProvider();
+			}
+		}
 		
 		public void Attach(FormDesignerViewContent viewContent)
 		{
@@ -33,7 +41,7 @@ namespace ICSharpCode.FormDesigner
 			this.viewContent = null;
 		}
 		
-		public void MergeFormChanges()
+		public void MergeFormChanges(CodeCompileUnit unit)
 		{
 			StringWriter writer = new StringWriter();
 			XmlTextWriter xml = new XmlTextWriter(writer);
