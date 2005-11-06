@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
-using DebuggerInterop.Core;
+using Debugger.Interop.CorDebug;
 
 // Regular expresion:
 // ^{\t*}{(:Ll| )*{:i} *\(((.# {:i}, |\))|())^6\)*}\n\t*\{(.|\n)@\}
@@ -46,7 +46,7 @@ namespace Debugger
 		
 		
 
-		public void StepComplete(System.IntPtr pAppDomain, System.IntPtr pThread, System.IntPtr pStepper, DebuggerInterop.Core.CorDebugStepReason reason)
+		public void StepComplete(System.IntPtr pAppDomain, System.IntPtr pThread, System.IntPtr pStepper, Debugger.Interop.CorDebug.CorDebugStepReason reason)
 		{
 			CallbackReceived("StepComplete", new object[] {pAppDomain, pThread, pStepper, reason});
 		}

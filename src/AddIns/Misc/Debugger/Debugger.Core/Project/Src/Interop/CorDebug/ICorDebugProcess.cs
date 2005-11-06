@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace DebuggerInterop.Core
+namespace Debugger.Interop.CorDebug
 {
     using System;
     using System.Runtime.CompilerServices;
@@ -37,7 +37,7 @@ namespace DebuggerInterop.Core
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetID(out uint pdwProcessId);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetHandle([ComAliasName("DebuggerInterop.Core.long")] out uint phProcessHandle);
+        void GetHandle([ComAliasName("Debugger.Interop.CorDebug.long")] out uint phProcessHandle);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetThread([In] uint dwThreadId, [MarshalAs(UnmanagedType.Interface)] out ICorDebugThread ppThread);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
@@ -51,9 +51,9 @@ namespace DebuggerInterop.Core
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void SetThreadContext([In] uint threadID, [In] uint contextSize, [In] IntPtr context);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void ReadMemory([In] ulong address, [In] uint size, [Out] IntPtr buffer, [ComAliasName("DebuggerInterop.Core.ULONG_PTR")] out uint read);
+        void ReadMemory([In] ulong address, [In] uint size, [Out] IntPtr buffer, [ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] out uint read);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void WriteMemory([In] ulong address, [In] uint size, [In] ref byte buffer, [ComAliasName("DebuggerInterop.Core.ULONG_PTR")] out uint written);
+        void WriteMemory([In] ulong address, [In] uint size, [In] ref byte buffer, [ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] out uint written);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void ClearCurrentException([In] uint threadID);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]

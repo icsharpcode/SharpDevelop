@@ -11,8 +11,8 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
-using DebuggerInterop.Core;
-using DebuggerInterop.MetaData;
+using Debugger.Interop.CorDebug;
+using Debugger.Interop.MetaData;
 using System.Collections.Generic;
 
 namespace Debugger

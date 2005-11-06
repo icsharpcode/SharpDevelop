@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -15,7 +15,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-using DebuggerInterop.Core;
+using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {
@@ -218,7 +218,7 @@ namespace Debugger
 			ExitCallback_Paused(PausedReason.DebuggerError);
 		}
 
-		public void UpdateModuleSymbols(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule, DebuggerInterop.Core.IStream pSymbolStream)
+		public void UpdateModuleSymbols(ICorDebugAppDomain pAppDomain, ICorDebugModule pModule, Debugger.Interop.CorDebug.IStream pSymbolStream)
 		{
 			EnterCallback("UpdateModuleSymbols", pAppDomain);
 

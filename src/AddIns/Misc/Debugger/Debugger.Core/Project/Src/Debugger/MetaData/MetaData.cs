@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DebuggerInterop.MetaData;
+using Debugger.Interop.MetaData;
 using System.Runtime.InteropServices;
 
 namespace Debugger

@@ -10,8 +10,8 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-using DebuggerInterop.Core;
-using DebuggerInterop.MetaData;
+using Debugger.Interop.CorDebug;
+using Debugger.Interop.MetaData;
 
 namespace Debugger
 {

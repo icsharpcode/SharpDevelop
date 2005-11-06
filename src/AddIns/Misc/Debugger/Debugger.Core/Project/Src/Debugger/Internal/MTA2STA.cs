@@ -11,9 +11,9 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
-using DebuggerInterop.Core;
+using Debugger.Interop.CorDebug;
 
-namespace DebuggerInterop.Core
+namespace Debugger.Interop.CorDebug
 {
 	class MTA2STA
 	{		
@@ -24,7 +24,7 @@ namespace DebuggerInterop.Core
 		string   functionName        = null;
 		Object[] functionParameters  = null;
 		
-		Thread MTAThread;
+		System.Threading.Thread MTAThread;
 		
 		static object OnlyOneAtTimeLock = new Object();
 		static object DataLock = new Object();
@@ -52,7 +52,7 @@ namespace DebuggerInterop.Core
 					this.functionParameters  = functionParameters;
 				}
 				
-				MTAThread = Thread.CurrentThread;
+				MTAThread = System.Threading.Thread.CurrentThread;
 				if (hiddenForm.InvokeRequired == true) {
 					IAsyncResult async = hiddenForm.BeginInvoke(new EventHandler(PerformCall));
 					//while (async.AsyncWaitHandle.WaitOne(1000,true) == false) {

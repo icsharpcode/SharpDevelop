@@ -8,7 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
-using DebuggerInterop.Core;
+using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {

@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace DebuggerInterop.Core
+namespace Debugger.Interop.CorDebug
 {
     using System;
     using System.Runtime.CompilerServices;
@@ -37,15 +37,15 @@ namespace DebuggerInterop.Core
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void GetRegisterSet([MarshalAs(UnmanagedType.Interface)] out ICorDebugRegisterSet ppRegisters);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetLocalRegisterValue([In] CorDebugRegister reg, [In] uint cbSigBlob, [In, ComAliasName("DebuggerInterop.Core.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void GetLocalRegisterValue([In] CorDebugRegister reg, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetLocalDoubleRegisterValue([In] CorDebugRegister highWordReg, [In] CorDebugRegister lowWordReg, [In] uint cbSigBlob, [In, ComAliasName("DebuggerInterop.Core.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void GetLocalDoubleRegisterValue([In] CorDebugRegister highWordReg, [In] CorDebugRegister lowWordReg, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetLocalMemoryValue([In] ulong address, [In] uint cbSigBlob, [In, ComAliasName("DebuggerInterop.Core.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void GetLocalMemoryValue([In] ulong address, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetLocalRegisterMemoryValue([In] CorDebugRegister highWordReg, [In] ulong lowWordAddress, [In] uint cbSigBlob, [In, ComAliasName("DebuggerInterop.Core.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void GetLocalRegisterMemoryValue([In] CorDebugRegister highWordReg, [In] ulong lowWordAddress, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
-        void GetLocalMemoryRegisterValue([In] ulong highWordAddress, [In] CorDebugRegister lowWordRegister, [In] uint cbSigBlob, [In, ComAliasName("DebuggerInterop.Core.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
+        void GetLocalMemoryRegisterValue([In] ulong highWordAddress, [In] CorDebugRegister lowWordRegister, [In] uint cbSigBlob, [In, ComAliasName("Debugger.Interop.CorDebug.ULONG_PTR")] uint pvSigBlob, [MarshalAs(UnmanagedType.Interface)] out ICorDebugValue ppValue);
         [MethodImpl(MethodImplOptions.InternalCall, MethodCodeType=MethodCodeType.Runtime)]
         void CanSetIP([In] uint nOffset);
     }

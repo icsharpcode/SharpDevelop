@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using DebuggerInterop.Core;
+using Debugger.Interop.CorDebug;
 
 namespace Debugger 
 {	

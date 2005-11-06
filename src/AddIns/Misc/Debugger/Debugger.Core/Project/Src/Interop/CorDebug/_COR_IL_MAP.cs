@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace DebuggerInterop.Core
+namespace Debugger.Interop.CorDebug
 {
     using System;
     using System.Runtime.InteropServices;

@@ -9,7 +9,7 @@ using System;
 using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 
-using DebuggerInterop.Core;
+using Debugger.Interop.CorDebug;
 
 //TODO: Support for lower bound
 

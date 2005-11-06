@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-namespace DebuggerInterop.MetaData
+namespace Debugger.Interop.MetaData
 {
     using System;
     using System.Runtime.CompilerServices;

@@ -8,7 +8,7 @@
 using System;
 using System.Diagnostics.SymbolStore;
 
-using DebuggerInterop.Core;
+using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {

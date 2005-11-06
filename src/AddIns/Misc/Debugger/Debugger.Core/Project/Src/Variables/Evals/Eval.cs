@@ -9,8 +9,8 @@ using System;
 using System.Collections;
 using System.Runtime.InteropServices;
 
-using DebuggerInterop.Core;
-using DebuggerInterop.MetaData;
+using Debugger.Interop.CorDebug;
+using Debugger.Interop.MetaData;
 
 namespace Debugger
 {
