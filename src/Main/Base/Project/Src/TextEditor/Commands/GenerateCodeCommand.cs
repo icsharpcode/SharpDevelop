@@ -64,6 +64,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					new GetterAndSetterCodeGenerator(currentClass),
 					new OnXXXMethodsCodeGenerator(currentClass),
 					new OverrideMethodsCodeGenerator(currentClass),
+					new OverridePropertiesCodeGenerator(currentClass),
 					new InterfaceImplementorCodeGenerator(currentClass),
 					new AbstractClassImplementorCodeGenerator(currentClass),
 					new ToStringCodeGenerator(currentClass),

@@ -507,6 +507,7 @@
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\InterfaceImplementorCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\OnXXXMethodsCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\OverrideMethodsCodeGenerator.cs" />
+    <Compile Include="Src\TextEditor\Commands\CodeGenerators\OverridePropertiesCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\SetterCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\ToStringCodeGenerator.cs" />
     <Compile Include="Src\TextEditor\Commands\CommentRegionCommand.cs" />
