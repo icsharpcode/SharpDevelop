@@ -42,7 +42,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.OptionPanels
 			Get<CheckBox>("useTooltips").CheckedChanged += delegate(object sender, EventArgs e) {
 				ControlDictionary["useDebugTooltipsOnlyCheckBox"].Enabled = Get<CheckBox>("useTooltips").Checked;
 			};
-			Get<CheckBox>("useTooltips").Checked = CodeCompletionOptions.EnableCodeCompletion;
+			Get<CheckBox>("useTooltips").Checked = CodeCompletionOptions.TooltipsEnabled;
 			
 			Get<CheckBox>("useDebugTooltipsOnly").Checked = CodeCompletionOptions.TooltipsOnlyWhenDebugging;
 			
