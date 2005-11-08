@@ -196,18 +196,27 @@ namespace StandaloneConverter
 				foreach (CompilerError error in errors) {
 					FailFile(ref isFailed, input, error.ToString());
 				}
-				if (isFailed) {
-					return false;
-				}
-				if (warnings.Count > 0) {
+				if (!isFailed && warnings.Count > 0) {
 					Console.WriteLine(input + ":");
 					foreach (CompilerWarning warning in warnings) {
 						Console.WriteLine("  " + warning.ToString());
 					}
 				}
 				using (StreamWriter w = new StreamWriter(output, false, Encoding.UTF8)) {
+					foreach (CompilerError error in errors) {
+						w.WriteLine("ERROR: " + error.ToString());
+					}
+					if (errors.Count > 0)
+						w.WriteLine();
+					foreach (CompilerWarning warning in warnings) {
+						w.WriteLine("# WARNING: " + warning.ToString());
+					}
+					if (warnings.Count > 0)
+						w.WriteLine();
 					BooPrinterVisitorWithComments printer = new BooPrinterVisitorWithComments(specials, w);
-					printer.OnModule(module);
+					if (module != null) {
+						printer.OnModule(module);
+					}
 					printer.Finish();
 				}
 			} catch (Exception ex) {

@@ -62,6 +62,12 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
+		public void ConstantField()
+		{
+			TestInClass("public const int num = 3;", "public static final num as System.Int32 = 3");
+		}
+		
+		[Test]
 		public void FullyQualifiedField()
 		{
 			TestInClass("System.IDisposable d;", "private d as System.IDisposable");

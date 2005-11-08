@@ -125,7 +125,7 @@ namespace NRefactoryToBooConverter
 				r |= B.TypeMemberModifiers.Final;
 			}
 			if ((m & Modifier.Const) != 0) {
-				r |= B.TypeMemberModifiers.Final;
+				r |= B.TypeMemberModifiers.Final | B.TypeMemberModifiers.Static;
 			}
 			if ((m & Modifier.New) != 0) {
 				AddError(node, "shadowing is not supported");
@@ -207,10 +207,11 @@ namespace NRefactoryToBooConverter
 				if (intrinsicTypeDictionary == null) {
 					intrinsicTypeDictionary = new Dictionary<string, string>();
 					foreach (System.Collections.DictionaryEntry entry in new BooTypeSystemServices().Primitives) {
-						try {
-							intrinsicTypeDictionary.Add(((Boo.Lang.Compiler.TypeSystem.IEntity)entry.Value).FullName, (string)entry.Key);
-						} catch (ArgumentException) {}
+						string fullName = ((Boo.Lang.Compiler.TypeSystem.IEntity)entry.Value).FullName;
+						string primitiveName = (string)entry.Key;
+						intrinsicTypeDictionary[fullName] = primitiveName;
 					}
+					intrinsicTypeDictionary["System.Object"] = "object"; // and not 'duck'
 				}
 				string result;
 				if (intrinsicTypeDictionary.TryGetValue(typeName, out result))

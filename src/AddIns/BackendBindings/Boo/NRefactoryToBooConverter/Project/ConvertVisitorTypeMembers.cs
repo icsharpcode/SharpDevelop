@@ -59,6 +59,26 @@ namespace NRefactoryToBooConverter
 			return b;
 		}
 		
+		B.ExplicitMemberInfo ConvertInterfaceImplementations(List<InterfaceImplementation> implementations, AttributedNode node, string name)
+		{
+			if (implementations.Count == 0)
+				return null;
+			if (implementations.Count > 1) {
+				AddError(node, "Multiple explicit interface implementations are not supported");
+			}
+			if (implementations[0].MemberName != name) {
+				AddError(node, "Explicit interface implementation: Implementing member with different name is not supported");
+			}
+			B.TypeReference tr = ConvertTypeReference(implementations[0].InterfaceType);
+			if (tr is B.SimpleTypeReference) {
+				B.ExplicitMemberInfo explicitInfo = new B.ExplicitMemberInfo(GetLexicalInfo(node));
+				explicitInfo.InterfaceType = (B.SimpleTypeReference)tr;
+				return explicitInfo;
+			}
+			AddError(node, "Explicit interface implementation: invalid base type, expecting SimpleTypeReference");
+			return null;
+		}
+		
 		B.Method entryPointMethod;
 		
 		public object Visit(MethodDeclaration methodDeclaration, object data)
@@ -72,9 +92,7 @@ namespace NRefactoryToBooConverter
 				// TODO: Convert handles clauses to [Handles] attribute
 				AddError(methodDeclaration, "Handles-clause is not supported.");
 			}
-			if (methodDeclaration.InterfaceImplementations.Count > 0) {
-				AddError(methodDeclaration, "Explicit interface implementation is not supported.");
-			}
+			m.ExplicitInfo = ConvertInterfaceImplementations(methodDeclaration.InterfaceImplementations, methodDeclaration, methodDeclaration.Name);
 			if (methodDeclaration.Templates.Count > 0) {
 				AddError(methodDeclaration, "Declaring generic methods is not supported.");
 			}
@@ -168,9 +186,7 @@ namespace NRefactoryToBooConverter
 			ConvertParameters(propertyDeclaration.Parameters, m.Parameters);
 			m.EndSourceLocation = GetLocation(propertyDeclaration.EndLocation);
 			m.Type = ConvertTypeReference(propertyDeclaration.TypeReference);
-			if (propertyDeclaration.InterfaceImplementations.Count > 0) {
-				AddError(propertyDeclaration, "Explicit interface implementation is not supported.");
-			}
+			m.ExplicitInfo = ConvertInterfaceImplementations(propertyDeclaration.InterfaceImplementations, propertyDeclaration, propertyDeclaration.Name);
 			if (!propertyDeclaration.IsWriteOnly) {
 				m.Getter = new B.Method(GetLexicalInfo(propertyDeclaration.GetRegion));
 				if (propertyDeclaration.GetRegion != null) {
@@ -205,6 +221,7 @@ namespace NRefactoryToBooConverter
 			ConvertParameters(indexerDeclaration.Parameters, m.Parameters);
 			m.EndSourceLocation = GetLocation(indexerDeclaration.EndLocation);
 			m.Type = ConvertTypeReference(indexerDeclaration.TypeReference);
+			m.ExplicitInfo = ConvertInterfaceImplementations(indexerDeclaration.InterfaceImplementations, indexerDeclaration, "this");
 			if (!indexerDeclaration.IsWriteOnly) {
 				m.Getter = new B.Method(GetLexicalInfo(indexerDeclaration.GetRegion));
 				if (indexerDeclaration.GetRegion != null) {
@@ -245,7 +262,7 @@ namespace NRefactoryToBooConverter
 			m.EndSourceLocation = GetLocation(eventDeclaration.EndLocation);
 			m.Type = ConvertTypeReference(eventDeclaration.TypeReference);
 			if (eventDeclaration.InterfaceImplementations.Count > 0) {
-				AddError(eventDeclaration, "Explicit interface implementation is not supported.");
+				AddError(eventDeclaration, "Explicit interface implementation is not supported for events.");
 			}
 			if (eventDeclaration.Parameters.Count > 0) {
 				AddError(eventDeclaration, "Events with parameters are not supported.");
