@@ -338,7 +338,7 @@ namespace ICSharpCode.Core
 							if (expression == oldExpression && oldLine == logicPos.Y) {
 								// same expression in same line -> reuse old tooltip
 								if (oldToolTip != null) {
-									textArea.SetToolTip(oldToolTip);
+									textArea.SetToolTip(oldToolTip, oldLine + 1);
 								}
 								// SetToolTip must be called in every mousemove event,
 								// otherwise textArea will close the tooltip.
@@ -357,7 +357,7 @@ namespace ICSharpCode.Core
 									}
 								}
 								if (toolTipText != null) {
-									textArea.SetToolTip(toolTipText);
+									textArea.SetToolTip(toolTipText, logicPos.Y + 1);
 								}
 								if (oldToolTipControl != null) {
 									Form frm = oldToolTipControl.FindForm();
