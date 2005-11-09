@@ -109,6 +109,7 @@
     <Compile Include="Src\FormDesigner\DesignerLoader\DesignerLoaderProvider.cs" />
     <Compile Include="Src\FormDesigner\DesignerLoader\FormDesignerLoadException.cs" />
     <Compile Include="Src\FormDesigner\DesignerGenerator\AbstractDesignerGenerator.cs" />
+    <Compile Include="Src\FormDesigner\Services\TypeDiscoveryService.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
