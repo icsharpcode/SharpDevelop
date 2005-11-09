@@ -326,6 +326,7 @@ namespace ICSharpCode.TextEditor
 				Point p = Control.MousePosition;
 				Point cp = PointToClient(p);
 				if (lineNumber >= 0) {
+					lineNumber = this.Document.GetVisibleLine(lineNumber);
 					p.Y = (p.Y - cp.Y) + (lineNumber * this.TextView.FontHeight) - this.virtualTop.Y;
 				}
 				p.Offset(3, 3);
@@ -537,12 +538,12 @@ namespace ICSharpCode.TextEditor
 						if (Document.CustomLineManager.IsReadOnly(curLineNr, false) == true)
 							return true;
 						if ((Caret.Column == 0) && (curLineNr - 1 >= 0) && keyData == Keys.Back &&
-							Document.CustomLineManager.IsReadOnly(curLineNr - 1, false) == true)
+						    Document.CustomLineManager.IsReadOnly(curLineNr - 1, false) == true)
 							return true;
 						if (keyData == Keys.Delete) {
 							LineSegment curLine = Document.GetLineSegment(curLineNr);
-							if (curLine.Offset + curLine.Length == Caret.Offset && 
-								Document.CustomLineManager.IsReadOnly(curLineNr + 1, false) == true) {
+							if (curLine.Offset + curLine.Length == Caret.Offset &&
+							    Document.CustomLineManager.IsReadOnly(curLineNr + 1, false) == true) {
 								return true;
 							}
 						}
@@ -820,6 +821,6 @@ namespace ICSharpCode.TextEditor
 		public event KeyEventHandler    KeyEventHandler;
 		public event DialogKeyProcessor DoProcessDialogKey;
 		
-		//internal void 
+		//internal void
 	}
 }

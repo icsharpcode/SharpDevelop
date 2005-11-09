@@ -281,6 +281,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void DetachPadContents(bool dispose)
 		{
+			foreach (PadContentWrapper padContentWrapper in contentHash.Values) {
+				padContentWrapper.allowInitialize = false;
+			}
 			foreach (PadDescriptor content in ((DefaultWorkbench)wbForm).PadContentCollection) {
 				try {
 					PadContentWrapper padContentWrapper = contentHash[content.Class];
@@ -339,7 +342,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			PadDescriptor padDescriptor;
 			bool isInitialized = false;
-			bool allowInitialize = false;
+			internal bool allowInitialize = false;
 			
 			public IPadContent PadContent {
 				get {

@@ -24,22 +24,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 		// Return types that should be substituted for the generic types
 		// If a substitution is unknown (type could not be resolved), the list
 		// contains a null entry.
-		IList<IReturnType> typeParameters;
+		IList<IReturnType> typeArguments;
 		IReturnType baseType;
 		
 		public override IList<IReturnType> TypeArguments {
 			get {
-				return typeParameters;
+				return typeArguments;
 			}
 		}
 		
-		public ConstructedReturnType(IReturnType baseType, IList<IReturnType> typeParameters)
+		public ConstructedReturnType(IReturnType baseType, IList<IReturnType> typeArguments)
 		{
 			if (baseType == null)
 				throw new ArgumentNullException("baseType");
-			if (typeParameters == null)
-				throw new ArgumentNullException("typeParameters");
-			this.typeParameters = typeParameters;
+			if (typeArguments == null)
+				throw new ArgumentNullException("typeArguments");
+			this.typeArguments = typeArguments;
 			this.baseType = baseType;
 		}
 		
@@ -53,8 +53,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override int GetHashCode()
 		{
 			int code = baseType.GetHashCode();
-			foreach (IReturnType t in typeParameters) {
-				code ^= t.GetHashCode();
+			foreach (IReturnType t in typeArguments) {
+				if (t != null) {
+					code ^= t.GetHashCode();
+				}
 			}
 			return code;
 		}
@@ -80,7 +82,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return CheckReturnType(t.ArrayElementType);
 			} else if (t.TypeArguments != null) {
 				foreach (IReturnType para in t.TypeArguments) {
-					if (CheckReturnType(para)) return true;
+					if (para != null) {
+						if (CheckReturnType(para)) return true;
+					}
 				}
 				return false;
 			} else {
@@ -106,9 +110,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 				else
 					b = new StringBuilder(baseName, 0, pos, pos + 20);
 				b.Append('{');
-				for (int i = 0; i < typeParameters.Count; ++i) {
+				for (int i = 0; i < typeArguments.Count; ++i) {
 					if (i > 0) b.Append(',');
-					b.Append(typeParameters[i].DotNetName);
+					if (typeArguments[i] != null) {
+						b.Append(typeArguments[i].DotNetName);
+					}
 				}
 				b.Append('}');
 				return b.ToString();
@@ -147,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		IReturnType TranslateType(IReturnType input)
 		{
-			return TranslateType(input, typeParameters, false);
+			return TranslateType(input, typeArguments, false);
 		}
 		
 		public override List<IMethod> GetMethods()
@@ -215,9 +221,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			string r = "[ConstructedReturnType: ";
 			r += baseType;
 			r += "<";
-			for (int i = 0; i < typeParameters.Count; i++) {
+			for (int i = 0; i < typeArguments.Count; i++) {
 				if (i > 0) r += ",";
-				r += typeParameters[i];
+				if (typeArguments[i] != null) {
+					r += typeArguments[i];
+				}
 			}
 			return r + ">]";
 		}

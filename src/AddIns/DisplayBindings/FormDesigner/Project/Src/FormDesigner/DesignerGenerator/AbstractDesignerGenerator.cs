@@ -129,7 +129,7 @@ namespace ICSharpCode.FormDesigner
 		
 		public void MergeFormChanges(CodeCompileUnit unit)
 		{
-			if (tabs == null) Reparse();
+			Reparse();
 			
 			// find InitializeComponent method and the class it is declared in
 			CodeTypeDeclaration formClass = null;
