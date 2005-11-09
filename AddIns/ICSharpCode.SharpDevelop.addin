@@ -1913,4 +1913,9 @@
 			          class = "ICSharpCode.SharpDevelop.Commands.DebugViewMenuBuilder"/>
 		</MenuItem>
 	</Path>
+	
+	<Path name = "/SharpDevelop/Views/ProjectBrowser/NodeBuilders">
+		<Class id = "DefaultBuilder"
+			class = "ICSharpCode.SharpDevelop.Project.DefaultDotNetNodeBuilder"/>
+	</Path>
 </AddIn>

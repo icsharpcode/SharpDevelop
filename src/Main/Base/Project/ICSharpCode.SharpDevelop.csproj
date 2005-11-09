@@ -720,6 +720,7 @@
     <Compile Include="Src\Gui\TreeGrid\ScrollButton.cs" />
     <Compile Include="Src\Gui\TreeGrid\VerticalScrollContainer.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerGridControl.cs" />
+    <Compile Include="Src\Gui\Pads\ProjectBrowser\NodeBuilder\NodeBuilders.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

@@ -57,7 +57,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 			newProject.Location = FileUtility.GetRelativePath(solutionFolderNode.Solution.Directory, fileName);
 			solutionFolderNode.Container.AddFolder(newProject);
-			new DefaultDotNetNodeBuilder().AddProjectNode((TreeNode)solutionFolderNode, newProject).EnsureVisible();
+			NodeBuilders.AddProjectNode((TreeNode)solutionFolderNode, newProject).EnsureVisible();
 		}
 		
 		public override void Run()

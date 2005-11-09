@@ -94,11 +94,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected override void Initialize()
 		{
 			Nodes.Clear();
-			DefaultDotNetNodeBuilder       nodeBuilder = new DefaultDotNetNodeBuilder();
 			
 			foreach (object treeObject in folder.Folders) {
 				if (treeObject is IProject) {
-					nodeBuilder.AddProjectNode(this, (IProject)treeObject);
+					NodeBuilders.AddProjectNode(this, (IProject)treeObject);
 				} else if (treeObject is SolutionFolder) {
 					SolutionFolderNode folderNode = new SolutionFolderNode(solution, (SolutionFolder)treeObject);
 					folderNode.AddTo(this);
