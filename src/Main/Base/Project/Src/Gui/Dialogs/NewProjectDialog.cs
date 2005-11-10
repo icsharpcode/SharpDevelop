@@ -224,8 +224,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 						solutionPath = solutionPath.Substring(0, maxLength + 3) + "...";
 					}
 				}
-			} catch (Exception ex) {
-				MessageService.ShowError(ex);
+			} catch (ArgumentException) {
+				ControlDictionary["createInLabel"].Text = ResourceService.GetString("ICSharpCode.SharpDevelop.Gui.Dialogs.NewProjectDialog.IllegalProjectNameError").Replace("\n", " ").Replace("\r", "");
+				return;
 			}
 			ControlDictionary["createInLabel"].Text = ResourceService.GetString("Dialog.NewProject.ProjectAtDescription")+ " " + solutionPath;
 		}

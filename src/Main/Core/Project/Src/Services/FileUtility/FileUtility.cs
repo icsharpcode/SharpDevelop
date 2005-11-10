@@ -46,7 +46,7 @@ namespace ICSharpCode.Core
 		
 		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar, Path.VolumeSeparatorChar };
 		static string sharpDevelopRootPath;
-		const string fileNameRegEx = @"^(([a-zA-Z]:)|.)[^:]*$";
+		const string fileNameRegEx = @"^([a-zA-Z]:)?[^:]+$";
 		
 		public static string SharpDevelopRootPath {
 			get {
@@ -307,7 +307,7 @@ namespace ICSharpCode.Core
 			
 			string nameWithoutExtension = Path.GetFileNameWithoutExtension(fileName);
 			if (nameWithoutExtension != null) {
-				nameWithoutExtension = nameWithoutExtension.ToUpper();
+				nameWithoutExtension = nameWithoutExtension.ToUpperInvariant();
 			}
 			
 			if (nameWithoutExtension == "CON" ||

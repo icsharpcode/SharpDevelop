@@ -32,13 +32,13 @@ namespace ICSharpCode.TextEditor
 		
 		public bool EnableCut {
 			get {
-				return textArea.SelectionManager.HasSomethingSelected;
+				return true; //textArea.SelectionManager.HasSomethingSelected;
 			}
 		}
 		
 		public bool EnableCopy {
 			get {
-				return textArea.SelectionManager.HasSomethingSelected;
+				return true; //textArea.SelectionManager.HasSomethingSelected;
 			}
 		}
 		
@@ -75,18 +75,16 @@ namespace ICSharpCode.TextEditor
 //			((DefaultWorkbench)WorkbenchSingleton.Workbench).UpdateToolbars();
 		}
 		
-		bool CopyTextToClipboard()
+		bool CopyTextToClipboard(string stringToCopy)
 		{
-			string str = textArea.SelectionManager.SelectedText;
-			
-			if (str.Length > 0) {
+			if (stringToCopy.Length > 0) {
 				DataObject dataObject = new DataObject();
-				dataObject.SetData(DataFormats.UnicodeText, true, str);
+				dataObject.SetData(DataFormats.UnicodeText, true, stringToCopy);
 				// Default has no highlighting, therefore we don't need RTF output
 				if (textArea.Document.HighlightingStrategy.Name != "Default") {
 					dataObject.SetData(DataFormats.Rtf, RtfWriter.GenerateRtf(textArea));
 				}
-				OnCopyText(new CopyTextEventArgs(str));
+				OnCopyText(new CopyTextEventArgs(stringToCopy));
 				
 				// Work around ExternalException bug. (SD2-426)
 				// Best reproducable inside Virtual PC.
@@ -112,18 +110,40 @@ namespace ICSharpCode.TextEditor
 		
 		public void Cut(object sender, EventArgs e)
 		{
-			if (CopyTextToClipboard()) {
-				// remove text
+			if (CopyTextToClipboard(textArea.SelectionManager.SelectedText)) {
+				// Remove text
 				textArea.BeginUpdate();
 				textArea.Caret.Position = textArea.SelectionManager.SelectionCollection[0].StartPosition;
 				textArea.SelectionManager.RemoveSelectedText();
 				textArea.EndUpdate();
+			} else {
+				// No text was selected, select and cut the entire line
+				int curLineNr = textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset);
+				LineSegment lineWhereCaretIs = textArea.Document.GetLineSegment(curLineNr);
+				string caretLineText = textArea.Document.GetText(lineWhereCaretIs.Offset, lineWhereCaretIs.TotalLength);
+				textArea.SelectionManager.SetSelection(textArea.Document.OffsetToPosition(lineWhereCaretIs.Offset), textArea.Document.OffsetToPosition(lineWhereCaretIs.Offset + lineWhereCaretIs.TotalLength));
+				if (CopyTextToClipboard(caretLineText)) {
+					// remove line
+					textArea.BeginUpdate();
+					textArea.Caret.Position = textArea.Document.OffsetToPosition(lineWhereCaretIs.Offset);
+					textArea.SelectionManager.RemoveSelectedText();
+					textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.PositionToEnd, new Point(0, curLineNr)));
+					textArea.EndUpdate();
+				}
 			}
 		}
 		
 		public void Copy(object sender, EventArgs e)
 		{
-			CopyTextToClipboard();
+			if (!CopyTextToClipboard(textArea.SelectionManager.SelectedText)) {
+				// No text was selected, select the entire line, copy it, and then deselect
+				int curLineNr = textArea.Document.GetLineNumberForOffset(textArea.Caret.Offset);
+				LineSegment lineWhereCaretIs = textArea.Document.GetLineSegment(curLineNr);
+				string caretLineText = textArea.Document.GetText(lineWhereCaretIs.Offset, lineWhereCaretIs.TotalLength);
+				textArea.SelectionManager.SetSelection(textArea.Document.OffsetToPosition(lineWhereCaretIs.Offset), textArea.Document.OffsetToPosition(lineWhereCaretIs.Offset + lineWhereCaretIs.TotalLength));
+				CopyTextToClipboard(caretLineText);
+				textArea.SelectionManager.ClearSelection();
+			}
 		}
 		
 		public void Paste(object sender, EventArgs e)
