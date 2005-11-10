@@ -17,6 +17,7 @@ using System.Diagnostics;
 using System.Text;
 using System.Xml;
 using System.Xml.Xsl;
+using System.Xml.XPath;
 
 using ICSharpCode.Core;
 
@@ -74,67 +75,77 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override void Run()
 		{
-//	TODO: New Projectfile system.
+			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 
-//			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-//
-//			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
-//				return;
-//			}
-//			TextEditorControl textAreaControl = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
-//
-//			int startLine = textAreaControl.Document.GetLineNumberForOffset(textAreaControl.ActiveTextAreaControl.Caret.Offset);
-//			int endLine   = startLine;
-//
-//			LineSegment line = textAreaControl.Document.GetLineSegment(startLine);
-//			string curLine   = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
-//			if (!curLine.StartsWith("///")) {
-//				return;
-//			}
-//
-//			while (startLine > 0) {
-//				line    = textAreaControl.Document.GetLineSegment(startLine);
-//				curLine = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
-//				if (curLine.StartsWith("///")) {
-//					--startLine;
-//				} else {
-//					break;
-//				}
-//			}
-//
-//			while (endLine < textAreaControl.Document.TotalNumberOfLines - 1) {
-//				line    = textAreaControl.Document.GetLineSegment(endLine);
-//				curLine = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
-//				if (curLine.StartsWith("///")) {
-//					++endLine;
-//				} else {
-//					break;
-//				}
-//			}
-//
-//			StringBuilder documentation = new StringBuilder();
-//			for (int lineNr = startLine + 1; lineNr < endLine; ++lineNr) {
-//				line    = textAreaControl.Document.GetLineSegment(lineNr);
-//				curLine = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
-//				documentation.Append(curLine.Substring(3));
-//				documentation.Append('\n');
-//			}
-//			string xml  = "<member>" + documentation.ToString() + "</member>";
-//
-//			string html = String.Empty;
-//
-//			try {
-//
-//
-//				html = ICSharpCode.SharpDevelop.Internal.Project.ConvertXml.ConvertData(xml,
-//				                   PropertyService.DataDirectory +
-//				                   Path.DirectorySeparatorChar + "ConversionStyleSheets" +
-//				                   Path.DirectorySeparatorChar + "ShowXmlDocumentation.xsl",
-//				                   null);
-//			} catch (Exception e) {
-//				MessageBox.Show(e.ToString());
-//			}
-//			new ToolWindowForm(textAreaControl, html).Show();
+			if (window == null || !(window.ViewContent is ITextEditorControlProvider)) {
+				return;
+			}
+			TextEditorControl textAreaControl = ((ITextEditorControlProvider)window.ViewContent).TextEditorControl;
+
+			int startLine = textAreaControl.Document.GetLineNumberForOffset(textAreaControl.ActiveTextAreaControl.Caret.Offset);
+			int endLine   = startLine;
+
+			LineSegment line = textAreaControl.Document.GetLineSegment(startLine);
+			string curLine   = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
+			if (!curLine.StartsWith("///") && ! curLine.StartsWith("'@")) {
+				return;
+			}
+
+			while (startLine > 0) {
+				line    = textAreaControl.Document.GetLineSegment(startLine);
+				curLine = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
+				if (curLine.StartsWith("///") || curLine.StartsWith("'@")) {
+					--startLine;
+				} else {
+					break;
+				}
+			}
+
+			while (endLine < textAreaControl.Document.TotalNumberOfLines - 1) {
+				line    = textAreaControl.Document.GetLineSegment(endLine);
+				curLine = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
+				if (curLine.StartsWith("///") || curLine.StartsWith("'@")) {
+					++endLine;
+				} else {
+					break;
+				}
+			}
+
+			StringBuilder documentation = new StringBuilder();
+			for (int lineNr = startLine + 1; lineNr < endLine; ++lineNr) {
+				line    = textAreaControl.Document.GetLineSegment(lineNr);
+				curLine = textAreaControl.Document.GetText(line.Offset, line.Length).Trim();
+				if(curLine.StartsWith("///")) {
+				   	documentation.Append(curLine.Substring(3));
+				}
+				else
+				{
+					documentation.Append(curLine.Substring(2));
+				}
+				documentation.Append('\n');
+			}
+			string xml  = "<member>" + documentation.ToString() + "</member>";
+			string html = String.Empty;
+
+			try
+			{
+				XslCompiledTransform t = new XslCompiledTransform();
+				t.Load(Path.Combine(Path.Combine(PropertyService.DataDirectory, "ConversionStyleSheets"), "ShowXmlDocumentation.xsl"));
+				XmlDocument doc = new XmlDocument();
+				doc.LoadXml(xml);
+				StringBuilder sb = new StringBuilder();
+				TextWriter textWriter = new StringWriter(sb);
+				XmlWriter writer = new XmlTextWriter(textWriter);
+				t.Transform(doc, writer);
+				html = sb.ToString();
+				textWriter.Close();
+				writer.Close();
+			}
+			catch (Exception e)
+			{
+				MessageBox.Show(e.ToString());
+			}
+			new ToolWindowForm(textAreaControl, html).Show();
 		}
 		
 		class ToolWindowForm : Form
