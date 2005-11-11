@@ -723,8 +723,8 @@ namespace ICSharpCode.TextEditor
 		/// </summary>
 		public int GetLogicalLine(Point mousepos)
 		{
-			int physicalLine = FirstPhysicalLine + (int)(mousepos.Y / FontHeight);
-			return Document.GetFirstLogicalLine(physicalLine);
+			int clickedVisualLine = Math.Max(0, (mousepos.Y + this.textArea.VirtualTop.Y) / fontHeight);
+			return Document.GetFirstLogicalLine(clickedVisualLine);
 		}
 		
 		public Point GetLogicalColumn(int firstLogicalLine, int xPos)
