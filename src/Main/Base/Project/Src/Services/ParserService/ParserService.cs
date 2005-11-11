@@ -86,7 +86,7 @@ namespace ICSharpCode.Core
 		static Thread loadSolutionProjectsThread;
 		static bool   abortLoadSolutionProjectsThread;
 		
-		// do not use an event for this because a solution might be loaded fore ParserService
+		// do not use an event for this because a solution might be loaded before ParserService
 		// is initialized
 		internal static void OnSolutionLoaded()
 		{
@@ -153,6 +153,23 @@ namespace ICSharpCode.Core
 				}
 			}
 			StatusBarService.ProgressMonitor.Done();
+		}
+		
+		static void InitAddedProject(object state)
+		{
+			ParseProjectContent newContent = (ParseProjectContent)state;
+			newContent.Initialize1();
+			newContent.Initialize2();
+		}
+		
+		public static IProjectContent CreateProjectContentForAddedProject(IProject project)
+		{
+			lock (projectContents) {
+				ParseProjectContent newContent = project.CreateProjectContent();
+				projectContents[project] = newContent;
+				ThreadPool.QueueUserWorkItem(InitAddedProject, newContent);
+				return newContent;
+			}
 		}
 		
 		public static IProjectContent GetProjectContent(IProject project)
