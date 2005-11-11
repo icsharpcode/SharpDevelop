@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSizeOfExpressionTest()
 		{
-			SizeOfExpression soe = (SizeOfExpression)ParseUtilCSharp.ParseExpression("sizeof(MyType)", typeof(SizeOfExpression));
+			SizeOfExpression soe = ParseUtilCSharp.ParseExpression<SizeOfExpression>("sizeof(MyType)");
 			Assert.AreEqual("MyType", soe.TypeReference.Type);
 		}
 		#endregion

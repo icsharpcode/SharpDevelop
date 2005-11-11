@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("int a = 5;", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("int a = 5;");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("a", ((VariableDeclaration)lvd.Variables[0]).Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpComplexGenericLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("Generic<Printable, G<Printable[]> > where = new Generic<Printable, G<Printable[]>>();", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("Generic<Printable, G<Printable[]> > where = new Generic<Printable, G<Printable[]>>();");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("where", ((VariableDeclaration)lvd.Variables[0]).Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpNestedGenericLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("MyType<string>.InnerClass<int>.InnerInnerClass a;", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("MyType<string>.InnerClass<int>.InnerInnerClass a;");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			InnerClassTypeReference ic = (InnerClassTypeReference)lvd.GetTypeForVariable(0);
 			Assert.AreEqual("InnerInnerClass", ic.Type);
@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGenericWithArrayLocalVariableDeclarationTest1()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("G<int>[] a;", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("G<int>[] a;");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -81,7 +81,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGenericWithArrayLocalVariableDeclarationTest2()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("G<int[]> a;", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("G<int[]> a;");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGenericLocalVariableDeclarationTest2()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("G<G<int> > a;", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("G<G<int> > a;");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -108,7 +108,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGenericLocalVariableDeclarationTest2WithoutSpace()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("G<G<int>> a;", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("G<G<int>> a;");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -121,7 +121,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGenericLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("G<int> a;", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("G<int> a;");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -132,7 +132,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("MyVar var = new MyVar();", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("MyVar var = new MyVar();");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("var", ((VariableDeclaration)lvd.Variables[0]).Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -143,7 +143,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleLocalVariableDeclarationTest1()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("yield yield = new yield();", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("yield yield = new yield();");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("yield", ((VariableDeclaration)lvd.Variables[0]).Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -154,7 +154,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpNullableLocalVariableDeclarationTest1()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("int? a;", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("int? a;");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("a", ((VariableDeclaration)lvd.Variables[0]).Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -165,7 +165,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpNullableLocalVariableDeclarationTest2()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("DateTime? a;", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("DateTime? a;");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("a", ((VariableDeclaration)lvd.Variables[0]).Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -176,7 +176,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpNullableLocalVariableDeclarationTest3()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("DateTime?[] a;", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("DateTime?[] a;");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("a", ((VariableDeclaration)lvd.Variables[0]).Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -188,7 +188,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpNullableLocalVariableDeclarationTest4()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("SomeStruct<int?>? a;", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("SomeStruct<int?>? a;");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("a", ((VariableDeclaration)lvd.Variables[0]).Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -203,7 +203,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim a As Integer = 5", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As Integer = 5");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("a", lvd.Variables[0].Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -214,7 +214,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetLocalArrayDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim a(10) As Integer", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a(10) As Integer");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("a", lvd.Variables[0].Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -231,7 +231,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetComplexGenericLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim where As Generic(Of Printable, G(Of Printable()))", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim where As Generic(Of Printable, G(Of Printable()))");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			Assert.AreEqual("where", lvd.Variables[0].Name);
 			TypeReference type = lvd.GetTypeForVariable(0);
@@ -247,7 +247,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetGenericWithArrayLocalVariableDeclarationTest1()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim a As G(Of Integer)()", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As G(Of Integer)()");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -261,7 +261,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetGenericWithArrayLocalVariableDeclarationTest2()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim a As G(Of Integer())", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As G(Of Integer())");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -276,7 +276,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetGenericLocalVariableDeclarationTest2()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim a As G(Of G(Of Integer))", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As G(Of G(Of Integer))");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -289,7 +289,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetGenericLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim a As G(Of Integer)", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As G(Of Integer)");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -300,7 +300,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetGenericLocalVariableInitializationTest()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim a As New G(Of Integer)", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As New G(Of Integer)");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			TypeReference type = lvd.GetTypeForVariable(0);
 			Assert.AreEqual("G", type.Type);
@@ -312,7 +312,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetNestedGenericLocalVariableDeclarationTest()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim a as MyType(of string).InnerClass(of integer).InnerInnerClass", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a as MyType(of string).InnerClass(of integer).InnerInnerClass");
 			Assert.AreEqual(1, lvd.Variables.Count);
 			InnerClassTypeReference ic = (InnerClassTypeReference)lvd.GetTypeForVariable(0);
 			Assert.AreEqual("InnerInnerClass", ic.Type);

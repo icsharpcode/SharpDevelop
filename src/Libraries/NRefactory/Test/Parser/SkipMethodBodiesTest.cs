@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 				{
 				}
 			}";
-			Check((TypeDeclaration)ParseUtilCSharp.ParseGlobal(txt, typeof(TypeDeclaration), false, true));
+			Check(ParseUtilCSharp.ParseGlobal<TypeDeclaration>(txt, false, true));
 		}
 		
 		[Test]
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 					}
 				}
 			}";
-			Check((TypeDeclaration)ParseUtilCSharp.ParseGlobal(txt, typeof(TypeDeclaration), false, true));
+			Check(ParseUtilCSharp.ParseGlobal<TypeDeclaration>(txt, false, true));
 		}
 		
 		void Check(TypeDeclaration td)

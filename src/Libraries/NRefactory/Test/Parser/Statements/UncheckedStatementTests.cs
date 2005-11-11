@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpUncheckedStatementTest()
 		{
-			UncheckedStatement uncheckedStatement = (UncheckedStatement)ParseUtilCSharp.ParseStatment("unchecked { }", typeof(UncheckedStatement));
+			UncheckedStatement uncheckedStatement = ParseUtilCSharp.ParseStatement<UncheckedStatement>("unchecked { }");
 			Assert.IsFalse(uncheckedStatement.Block.IsNull);
 		}
 		#endregion

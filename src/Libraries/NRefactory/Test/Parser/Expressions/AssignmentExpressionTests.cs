@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		#region C#
 		void CSharpTestAssignmentExpression(string program, AssignmentOperatorType op)
 		{
-			AssignmentExpression ae = (AssignmentExpression)ParseUtilCSharp.ParseExpression(program, typeof(AssignmentExpression));
+			AssignmentExpression ae = ParseUtilCSharp.ParseExpression<AssignmentExpression>(program);
 			
 			Assert.AreEqual(op, ae.Op);
 			
@@ -97,7 +97,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		#region VB.NET
 		void VBNetTestAssignmentExpression(string program, AssignmentOperatorType op)
 		{
-			StatementExpression se = (StatementExpression)ParseUtilVBNet.ParseStatment(program, typeof(StatementExpression));
+			StatementExpression se = ParseUtilVBNet.ParseStatement<StatementExpression>(program);
 			AssignmentExpression ae = se.Expression as AssignmentExpression;
 			Assert.AreEqual(op, ae.Op);
 			

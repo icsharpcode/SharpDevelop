@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetOnErrorStatementTest()
 		{
-			OnErrorStatement onErrorStatement = (OnErrorStatement)ParseUtilVBNet.ParseStatment("On Error Goto err", typeof(OnErrorStatement));
+			OnErrorStatement onErrorStatement = ParseUtilVBNet.ParseStatement<OnErrorStatement>("On Error Goto err");
 		}
 		#endregion
 	}

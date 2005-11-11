@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpEmptyForStatementTest()
 		{
-			ForStatement forStmt = (ForStatement)ParseUtilCSharp.ParseStatment("for (;;) ;", typeof(ForStatement));
+			ForStatement forStmt = ParseUtilCSharp.ParseStatement<ForStatement>("for (;;) ;");
 			Assert.AreEqual(0, forStmt.Initializers.Count);
 			Assert.AreEqual(0, forStmt.Iterator.Count);
 			Assert.IsTrue(forStmt.Condition.IsNull);
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpForStatementTest()
 		{
-			ForStatement forStmt = (ForStatement)ParseUtilCSharp.ParseStatment("for (int i = 5; i < 6; ++i) {} ", typeof(ForStatement));
+			ForStatement forStmt = ParseUtilCSharp.ParseStatement<ForStatement>("for (int i = 5; i < 6; ++i) {} ");
 			// TODO : Extend test.
 		}
 		#endregion

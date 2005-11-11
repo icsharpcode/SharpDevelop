@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpBaseReferenceExpressionTest1()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilCSharp.ParseExpression("base.myField", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilCSharp.ParseExpression<FieldReferenceExpression>("base.myField");
 			Assert.IsTrue(fre.TargetObject is BaseReferenceExpression);
 		}
 		#endregion
@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetBaseReferenceExpressionTest1()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilVBNet.ParseExpression("MyBase.myField", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>("MyBase.myField");
 			Assert.IsTrue(fre.TargetObject is BaseReferenceExpression);
 		}
 		#endregion

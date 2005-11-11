@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetForNextStatementTest()
 		{
-			ForNextStatement forNextStatement = (ForNextStatement)ParseUtilVBNet.ParseStatment("For i=0 To 10 Step 2 : Next i", typeof(ForNextStatement));
+			ForNextStatement forNextStatement = ParseUtilVBNet.ParseStatement<ForNextStatement>("For i=0 To 10 Step 2 : Next i");
 		}
 		#endregion
 	}

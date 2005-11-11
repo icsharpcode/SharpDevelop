@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleIfStatementTest()
 		{
-			IfElseStatement ifElseStatement = (IfElseStatement)ParseUtilCSharp.ParseStatment("if (true) { }", typeof(IfElseStatement));
+			IfElseStatement ifElseStatement = ParseUtilCSharp.ParseStatement<IfElseStatement>("if (true) { }");
 			Assert.IsFalse(ifElseStatement.Condition.IsNull);
 			Assert.IsTrue(ifElseStatement.TrueStatement.Count == 1, "true count != 1:" + ifElseStatement.TrueStatement.Count);
 			Assert.IsTrue(ifElseStatement.FalseStatement.Count == 0, "false count != 0:" + ifElseStatement.FalseStatement.Count);
@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleIfElseStatementTest()
 		{
-			IfElseStatement ifElseStatement = (IfElseStatement)ParseUtilCSharp.ParseStatment("if (true) { } else { }", typeof(IfElseStatement));
+			IfElseStatement ifElseStatement = ParseUtilCSharp.ParseStatement<IfElseStatement>("if (true) { } else { }");
 			Assert.IsFalse(ifElseStatement.Condition.IsNull);
 			Assert.IsTrue(ifElseStatement.TrueStatement.Count == 1, "true count != 1:" + ifElseStatement.TrueStatement.Count);
 			Assert.IsTrue(ifElseStatement.FalseStatement.Count == 1, "false count != 1:" + ifElseStatement.FalseStatement.Count);
@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetSimpleIfStatementTest()
 		{
-			IfElseStatement ifElseStatement = (IfElseStatement)ParseUtilVBNet.ParseStatment("If True THEN END", typeof(IfElseStatement));
+			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN END");
 			Assert.IsFalse(ifElseStatement.Condition.IsNull);
 			Assert.IsTrue(ifElseStatement.TrueStatement.Count == 1, "true count != 1:" + ifElseStatement.TrueStatement.Count);
 			Assert.IsTrue(ifElseStatement.FalseStatement.Count == 0, "false count != 0:" + ifElseStatement.FalseStatement.Count);
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetSimpleIfStatementTest2()
 		{
-			IfElseStatement ifElseStatement = (IfElseStatement)ParseUtilVBNet.ParseStatment("If True THEN\n END\n END IF", typeof(IfElseStatement));
+			IfElseStatement ifElseStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("If True THEN\n END\n END IF");
 			Assert.IsFalse(ifElseStatement.Condition.IsNull);
 			Assert.IsTrue(ifElseStatement.TrueStatement.Count == 1, "true count != 1:" + ifElseStatement.TrueStatement.Count);
 			Assert.IsTrue(ifElseStatement.FalseStatement.Count == 0, "false count != 0:" + ifElseStatement.FalseStatement.Count);

@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpThisReferenceExpressionTest1()
 		{
-			ThisReferenceExpression tre = (ThisReferenceExpression)ParseUtilCSharp.ParseExpression("this", typeof(ThisReferenceExpression));
+			ThisReferenceExpression tre = ParseUtilCSharp.ParseExpression<ThisReferenceExpression>("this");
 		}
 		#endregion
 		
@@ -28,7 +28,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetThisReferenceExpressionTest1()
 		{
-			ThisReferenceExpression ie = (ThisReferenceExpression)ParseUtilVBNet.ParseExpression("Me", typeof(ThisReferenceExpression));
+			ThisReferenceExpression ie = ParseUtilVBNet.ParseExpression<ThisReferenceExpression>("Me");
 		}
 		#endregion
 	}

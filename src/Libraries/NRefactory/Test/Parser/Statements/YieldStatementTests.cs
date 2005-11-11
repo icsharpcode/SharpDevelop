@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void YieldReturnStatementTest()
 		{
-			YieldStatement yieldStmt = (YieldStatement)ParseUtilCSharp.ParseStatment("yield return \"Foo\";", typeof(YieldStatement));
+			YieldStatement yieldStmt = ParseUtilCSharp.ParseStatement<YieldStatement>("yield return \"Foo\";");
 			Assert.IsTrue(yieldStmt.IsYieldReturn());
 			ReturnStatement retStmt = (ReturnStatement)yieldStmt.Statement;
 			PrimitiveExpression expr =  (PrimitiveExpression)retStmt.Expression;
@@ -29,14 +29,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void YieldBreakStatementTest()
 		{
-			YieldStatement yieldStmt = (YieldStatement)ParseUtilCSharp.ParseStatment("yield break;", typeof(YieldStatement));
+			YieldStatement yieldStmt = ParseUtilCSharp.ParseStatement<YieldStatement>("yield break;");
 			Assert.IsTrue(yieldStmt.IsYieldBreak());
 		}
 		
 		[Test]
 		public void YieldAsVariableTest()
 		{
-			StatementExpression se = (StatementExpression)ParseUtilCSharp.ParseStatment("yield = 3;", typeof(StatementExpression));
+			StatementExpression se = ParseUtilCSharp.ParseStatement<StatementExpression>("yield = 3;");
 			AssignmentExpression ae = se.Expression as AssignmentExpression;
 			
 			Assert.AreEqual(AssignmentOperatorType.Assign, ae.Op);

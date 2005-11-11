@@ -20,13 +20,13 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpLabelStatementTest()
 		{
-			LabelStatement labelStmt = (LabelStatement)ParseUtilCSharp.ParseStatment("myLabel: ; ", typeof(LabelStatement));
+			LabelStatement labelStmt = ParseUtilCSharp.ParseStatement<LabelStatement>("myLabel: ; ");
 			Assert.AreEqual("myLabel", labelStmt.Label);
 		}
 		[Test]
 		public void CSharpLabel2StatementTest()
 		{
-			LabelStatement labelStmt = (LabelStatement)ParseUtilCSharp.ParseStatment("yield: ; ", typeof(LabelStatement));
+			LabelStatement labelStmt = ParseUtilCSharp.ParseStatement<LabelStatement>("yield: ; ");
 			Assert.AreEqual("yield", labelStmt.Label);
 		}
 		#endregion
@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetLabelStatementTest()
 		{
-			LabelStatement labelStmt = (LabelStatement)ParseUtilVBNet.ParseStatment("myLabel: Console.WriteLine()", typeof(LabelStatement));
+			LabelStatement labelStmt = ParseUtilVBNet.ParseStatement<LabelStatement>("myLabel: Console.WriteLine()");
 			Assert.AreEqual("myLabel", labelStmt.Label);
 		}
 		#endregion 

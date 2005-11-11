@@ -23,14 +23,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpConstructorDeclarationTest1()
 		{
-			ConstructorDeclaration cd = (ConstructorDeclaration)ParseUtilCSharp.ParseTypeMember("MyClass() {}", typeof(ConstructorDeclaration));
+			ConstructorDeclaration cd = ParseUtilCSharp.ParseTypeMember<ConstructorDeclaration>("MyClass() {}");
 			Assert.IsTrue(cd.ConstructorInitializer.IsNull);
 		}
 		
 		[Test]
 		public void CSharpConstructorDeclarationTest2()
 		{
-			ConstructorDeclaration cd = (ConstructorDeclaration)ParseUtilCSharp.ParseTypeMember("MyClass() : this(5) {}", typeof(ConstructorDeclaration));
+			ConstructorDeclaration cd = ParseUtilCSharp.ParseTypeMember<ConstructorDeclaration>("MyClass() : this(5) {}");
 			Assert.AreEqual(ConstructorInitializerType.This, cd.ConstructorInitializer.ConstructorInitializerType);
 			Assert.AreEqual(1, cd.ConstructorInitializer.Arguments.Count);
 		}
@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpConstructorDeclarationTest3()
 		{
-			ConstructorDeclaration cd = (ConstructorDeclaration)ParseUtilCSharp.ParseTypeMember("MyClass() : base(1, 2, 3) {}", typeof(ConstructorDeclaration));
+			ConstructorDeclaration cd = ParseUtilCSharp.ParseTypeMember<ConstructorDeclaration>("MyClass() : base(1, 2, 3) {}");
 			Assert.AreEqual(ConstructorInitializerType.Base, cd.ConstructorInitializer.ConstructorInitializerType);
 			Assert.AreEqual(3, cd.ConstructorInitializer.Arguments.Count);
 		}
@@ -50,14 +50,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			string program = @"Sub New()
 								End Sub";
-			ConstructorDeclaration cd = (ConstructorDeclaration)ParseUtilVBNet.ParseTypeMember(program, typeof(ConstructorDeclaration));
+			ConstructorDeclaration cd = ParseUtilVBNet.ParseTypeMember<ConstructorDeclaration>(program);
 			Assert.IsTrue(cd.ConstructorInitializer.IsNull);
 		}
 		
 		[Test]
 		public void VBNetConstructorDeclarationTest2()
 		{
-			ConstructorDeclaration cd = (ConstructorDeclaration)ParseUtilVBNet.ParseTypeMember("Sub New(x As Integer, Optional y As String) \nEnd Sub", typeof(ConstructorDeclaration));
+			ConstructorDeclaration cd = ParseUtilVBNet.ParseTypeMember<ConstructorDeclaration>("Sub New(x As Integer, Optional y As String) \nEnd Sub");
 			Assert.AreEqual(2, cd.Parameters.Count);
 			Assert.AreEqual("Integer", cd.Parameters[0].TypeReference.Type);
 			Assert.AreEqual("String", cd.Parameters[1].TypeReference.Type);

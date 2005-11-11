@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGotoStatementTest()
 		{
-			GotoStatement gotoStmt = (GotoStatement)ParseUtilCSharp.ParseStatment("goto myLabel;", typeof(GotoStatement));
+			GotoStatement gotoStmt = ParseUtilCSharp.ParseStatement<GotoStatement>("goto myLabel;");
 			Assert.AreEqual("myLabel", gotoStmt.Label);
 		}
 		#endregion
@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetGotoStatementTest()
 		{
-			GotoStatement gotoStmt = (GotoStatement)ParseUtilVBNet.ParseStatment("GoTo myLabel", typeof(GotoStatement));
+			GotoStatement gotoStmt = ParseUtilVBNet.ParseStatement<GotoStatement>("GoTo myLabel");
 			Assert.AreEqual("myLabel", gotoStmt.Label);
 		}
 		#endregion

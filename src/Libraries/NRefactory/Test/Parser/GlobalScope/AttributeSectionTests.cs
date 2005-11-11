@@ -29,7 +29,7 @@ Public Structure MyUnion
 	
 End Structure 'MyUnion
 ";
-			TypeDeclaration decl = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration decl = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
 			Assert.AreEqual("StructLayout", decl.Attributes[0].Attributes[0].Name);
 		}
 		
@@ -45,7 +45,7 @@ Public Module MyExtra
 	
 End Module
 ";
-			TypeDeclaration decl = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration decl = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
 			Assert.AreEqual("HideModule", decl.Attributes[0].Attributes[0].Name);
 		}
 		
@@ -56,7 +56,7 @@ End Module
 Public Class Form1
 	
 End Class";
-			TypeDeclaration decl = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration decl = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
 			Assert.AreEqual("Microsoft.VisualBasic.CompilerServices.DesignerGenerated", decl.Attributes[0].Attributes[0].Name);
 		}
 		
@@ -67,7 +67,7 @@ End Class";
 [someprefix::DesignerGenerated()]
 public class Form1 {
 }";
-			TypeDeclaration decl = (TypeDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration decl = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
 			Assert.AreEqual("Microsoft.VisualBasic.CompilerServices.DesignerGenerated", decl.Attributes[0].Attributes[0].Name);
 			Assert.AreEqual("someprefix.DesignerGenerated", decl.Attributes[1].Attributes[0].Name);
 		}

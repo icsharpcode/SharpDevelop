@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpConditionalExpressionTest()
 		{
-			ConditionalExpression ce = (ConditionalExpression)ParseUtilCSharp.ParseExpression("a == b ? a() : a.B", typeof(ConditionalExpression));
+			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a == b ? a() : a.B");
 			
 			Assert.IsTrue(ce.Condition is BinaryOperatorExpression);
 			Assert.IsTrue(ce.TrueExpression is InvocationExpression);
@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void CSharpConditionalIsExpressionTest()
 		{
 			// (as is b?) ERROR (conflict with nullables, SD2-419)
-			ConditionalExpression ce = (ConditionalExpression)ParseUtilCSharp.ParseExpression("a is b ? a() : a.B", typeof(ConditionalExpression));
+			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a is b ? a() : a.B");
 			
 			Assert.IsTrue(ce.Condition is BinaryOperatorExpression);
 			Assert.IsTrue(ce.TrueExpression is InvocationExpression);

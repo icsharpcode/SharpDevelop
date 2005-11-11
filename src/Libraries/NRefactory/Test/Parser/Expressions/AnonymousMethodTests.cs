@@ -18,7 +18,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 	{
 		AnonymousMethodExpression Parse(string program)
 		{
-			return (AnonymousMethodExpression)ParseUtilCSharp.ParseExpression(program, typeof(AnonymousMethodExpression));
+			return ParseUtilCSharp.ParseExpression<AnonymousMethodExpression>(program);
 		}
 		
 		[Test]

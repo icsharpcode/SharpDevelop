@@ -20,21 +20,21 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpEmptyReturnStatementTest()
 		{
-			ReturnStatement returnStatement = (ReturnStatement)ParseUtilCSharp.ParseStatment("return;", typeof(ReturnStatement));
+			ReturnStatement returnStatement = ParseUtilCSharp.ParseStatement<ReturnStatement>("return;");
 			Assert.IsTrue(returnStatement.Expression.IsNull);
 		}
 		
 		[Test]
 		public void CSharpReturnStatementTest()
 		{
-			ReturnStatement returnStatement = (ReturnStatement)ParseUtilCSharp.ParseStatment("return 5;", typeof(ReturnStatement));
+			ReturnStatement returnStatement = ParseUtilCSharp.ParseStatement<ReturnStatement>("return 5;");
 			Assert.IsFalse(returnStatement.Expression.IsNull);
 			Assert.IsTrue(returnStatement.Expression is PrimitiveExpression);
 		}
 		[Test]
 		public void CSharpReturnStatementTest1()
 		{
-			ReturnStatement returnStatement = (ReturnStatement)ParseUtilCSharp.ParseStatment("return yield;", typeof(ReturnStatement));
+			ReturnStatement returnStatement = ParseUtilCSharp.ParseStatement<ReturnStatement>("return yield;");
 			Assert.IsFalse(returnStatement.Expression.IsNull);
 			Assert.IsTrue(returnStatement.Expression is IdentifierExpression);
 		}
@@ -44,14 +44,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetEmptyReturnStatementTest()
 		{
-			ReturnStatement returnStatement = (ReturnStatement)ParseUtilVBNet.ParseStatment("Return", typeof(ReturnStatement));
+			ReturnStatement returnStatement = ParseUtilVBNet.ParseStatement<ReturnStatement>("Return");
 			Assert.IsTrue(returnStatement.Expression.IsNull);
 		}
 		
 		[Test]
 		public void VBNetReturnStatementTest()
 		{
-			ReturnStatement returnStatement = (ReturnStatement)ParseUtilVBNet.ParseStatment("Return 5", typeof(ReturnStatement));
+			ReturnStatement returnStatement = ParseUtilVBNet.ParseStatement<ReturnStatement>("Return 5");
 			Assert.IsFalse(returnStatement.Expression.IsNull);
 			Assert.IsTrue(returnStatement.Expression is PrimitiveExpression);
 		}

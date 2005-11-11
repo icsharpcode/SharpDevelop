@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpUsingStatementTest()
 		{
-			UsingStatement usingStmt = (UsingStatement)ParseUtilCSharp.ParseStatment("using (MyVar var = new MyVar()) { } ", typeof(UsingStatement));
+			UsingStatement usingStmt = ParseUtilCSharp.ParseStatement<UsingStatement>("using (MyVar var = new MyVar()) { } ");
 			// TODO : Extend test.
 		}
 		#endregion
@@ -34,7 +34,7 @@ Using nf As New System.Drawing.Font(""Arial"", 12.0F, FontStyle.Bold)
         c.Font = nf
         c.Text = ""This is 12-point Arial bold""
 End Using";
-			UsingStatement usingStmt = (UsingStatement)ParseUtilVBNet.ParseStatment(usingText, typeof(UsingStatement));
+			UsingStatement usingStmt = ParseUtilVBNet.ParseStatement<UsingStatement>(usingText);
 			// TODO : Extend test.
 		}
 		[Test]
@@ -44,7 +44,7 @@ End Using";
 Using nf As Font = New Font()
 	Bla(nf)
 End Using";
-			UsingStatement usingStmt = (UsingStatement)ParseUtilVBNet.ParseStatment(usingText, typeof(UsingStatement));
+			UsingStatement usingStmt = ParseUtilVBNet.ParseStatement<UsingStatement>(usingText);
 			// TODO : Extend test.
 		}
 		#endregion

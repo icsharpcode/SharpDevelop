@@ -20,14 +20,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpIdentifierExpressionTest1()
 		{
-			IdentifierExpression ident = (IdentifierExpression)ParseUtilCSharp.ParseExpression("MyIdentifier", typeof(IdentifierExpression));
+			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("MyIdentifier");
 			Assert.AreEqual("MyIdentifier", ident.Identifier);
 		}
 		
 		[Test]
 		public void CSharpIdentifierExpressionTest2()
 		{
-			IdentifierExpression ident = (IdentifierExpression)ParseUtilCSharp.ParseExpression("@public", typeof(IdentifierExpression));
+			IdentifierExpression ident = ParseUtilCSharp.ParseExpression<IdentifierExpression>("@public");
 			Assert.AreEqual("public", ident.Identifier);
 		}
 		#endregion
@@ -36,14 +36,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetIdentifierExpressionTest1()
 		{
-			IdentifierExpression ie = (IdentifierExpression)ParseUtilVBNet.ParseExpression("MyIdentifier", typeof(IdentifierExpression));
+			IdentifierExpression ie = ParseUtilVBNet.ParseExpression<IdentifierExpression>("MyIdentifier");
 			Assert.AreEqual("MyIdentifier", ie.Identifier);
 		}
 		
 		[Test]
 		public void VBNetIdentifierExpressionTest2()
 		{
-			IdentifierExpression ie = (IdentifierExpression)ParseUtilVBNet.ParseExpression("[Public]", typeof(IdentifierExpression));
+			IdentifierExpression ie = ParseUtilVBNet.ParseExpression<IdentifierExpression>("[Public]");
 			Assert.AreEqual("Public", ie.Identifier);
 		}
 		#endregion

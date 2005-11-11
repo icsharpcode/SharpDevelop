@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetRaiseEventStatementTest()
 		{
-			RaiseEventStatement raiseEventStatement = (RaiseEventStatement)ParseUtilVBNet.ParseStatment("RaiseEvent MyEvent(a, 5, (6))", typeof(RaiseEventStatement));
+			RaiseEventStatement raiseEventStatement = ParseUtilVBNet.ParseStatement<RaiseEventStatement>("RaiseEvent MyEvent(a, 5, (6))");
 		}
 		#endregion
 	}

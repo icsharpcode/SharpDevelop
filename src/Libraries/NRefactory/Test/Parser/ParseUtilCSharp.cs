@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -18,17 +18,17 @@ namespace ICSharpCode.NRefactory.Tests.AST
 {
 	public class ParseUtilCSharp
 	{
-		public static object ParseGlobal(string program, Type type)
+		public static T ParseGlobal<T>(string program)
 		{
-			return ParseGlobal(program, type, false);
+			return ParseGlobal<T>(program, false);
 		}
 		
-		public static object ParseGlobal(string program, Type type, bool expectError)
+		public static T ParseGlobal<T>(string program, bool expectError)
 		{
-			return ParseGlobal(program, type, expectError, false);
+			return ParseGlobal<T>(program, expectError, false);
 		}
 		
-		public static object ParseGlobal(string program, Type type, bool expectError, bool skipMethodBodies)
+		public static T ParseGlobal<T>(string program, bool expectError, bool skipMethodBodies)
 		{
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(program));
 			parser.ParseMethodBodies = !skipMethodBodies;
@@ -42,37 +42,40 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.IsNotNull(parser.CompilationUnit.Children);
 			Assert.IsNotNull(parser.CompilationUnit.Children[0]);
 			Assert.IsTrue(parser.CompilationUnit.Children.Count > 0);
+			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(parser.CompilationUnit.Children[0].GetType()), String.Format("Parsed expression was {0} instead of {1} ({2})", parser.CompilationUnit.Children[0].GetType(), type, parser.CompilationUnit.Children[0]));
-			return parser.CompilationUnit.Children[0];
+			return (T)parser.CompilationUnit.Children[0];
 		}
 		
-		public static object ParseTypeMember(string typeMember, Type type)
+		public static T ParseTypeMember<T>(string typeMember)
 		{
-			return ParseTypeMember(typeMember, type, false);
+			return ParseTypeMember<T>(typeMember, false);
 		}
 		
-		public static object ParseTypeMember(string typeMember, Type type, bool expectError)
+		public static T ParseTypeMember<T>(string typeMember, bool expectError)
 		{
-			TypeDeclaration td = (TypeDeclaration)ParseGlobal("class MyClass {" + typeMember + "}", typeof(TypeDeclaration), expectError);
+			TypeDeclaration td = ParseGlobal<TypeDeclaration>("class MyClass {" + typeMember + "}", expectError);
 			Assert.IsTrue(td.Children.Count > 0);
+			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(td.Children[0].GetType()), String.Format("Parsed expression was {0} instead of {1} ({2})", td.GetType(), type, td));
-			return td.Children[0];
+			return (T)td.Children[0];
 		}
 		
-		public static object ParseStatment(string statement, Type type)
+		public static T ParseStatement<T>(string statement)
 		{
-			MethodDeclaration md = (MethodDeclaration)ParseTypeMember("void A() { " + statement + " }", typeof(MethodDeclaration));
+			MethodDeclaration md = ParseTypeMember<MethodDeclaration>("void A() { " + statement + " }");
 			Assert.IsTrue(md.Body.Children.Count > 0);
+			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(md.Body.Children[0].GetType()), String.Format("Parsed expression was {0} instead of {1} ({2})", md.GetType(), type, md));
-			return md.Body.Children[0];
+			return (T)md.Body.Children[0];
 		}
 		
-		public static object ParseExpression(string expr, Type type)
+		public static T ParseExpression<T>(string expr)
 		{
-			return ParseExpression(expr, type, false);
+			return ParseExpression<T>(expr, false);
 		}
 		
-		public static object ParseExpression(string expr, Type type, bool expectErrors)
+		public static T ParseExpression<T>(string expr, bool expectErrors)
 		{
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(expr + ";"));
 			object parsedExpression = parser.ParseExpression();
@@ -80,8 +83,9 @@ namespace ICSharpCode.NRefactory.Tests.AST
 				Assert.IsTrue(parser.Errors.ErrorOutput.Length > 0, "There were errors expected, but parser finished without errors.");
 			else
 				Assert.AreEqual("", parser.Errors.ErrorOutput);
+			Type type = typeof(T);
 			Assert.IsTrue(type.IsAssignableFrom(parsedExpression.GetType()), String.Format("Parsed expression was {0} instead of {1} ({2})", parsedExpression.GetType(), type, parsedExpression));
-			return parsedExpression;
+			return (T)parsedExpression;
 		}
 	}
 }

@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpLockStatementTest()
 		{
-			LockStatement lockStmt = (LockStatement)ParseUtilCSharp.ParseStatment("lock (myObj) {}", typeof(LockStatement));
+			LockStatement lockStmt = ParseUtilCSharp.ParseStatement<LockStatement>("lock (myObj) {}");
 			// TODO : Extend test.
 		}
 		#endregion

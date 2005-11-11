@@ -20,14 +20,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGotoCaseDefaltStatementTest()
 		{
-			GotoCaseStatement gotoCaseStmt = (GotoCaseStatement)ParseUtilCSharp.ParseStatment("goto default;", typeof(GotoCaseStatement));
+			GotoCaseStatement gotoCaseStmt = ParseUtilCSharp.ParseStatement<GotoCaseStatement>("goto default;");
 			Assert.IsTrue(gotoCaseStmt.IsDefaultCase);
 		}
 		
 		[Test]
 		public void CSharpGotoCaseStatementTest()
 		{
-			GotoCaseStatement gotoCaseStmt = (GotoCaseStatement)ParseUtilCSharp.ParseStatment("goto case 6;", typeof(GotoCaseStatement));
+			GotoCaseStatement gotoCaseStmt = ParseUtilCSharp.ParseStatement<GotoCaseStatement>("goto case 6;");
 			Assert.IsFalse(gotoCaseStmt.IsDefaultCase);
 			Assert.IsTrue(gotoCaseStmt.Expression is PrimitiveExpression);
 		}

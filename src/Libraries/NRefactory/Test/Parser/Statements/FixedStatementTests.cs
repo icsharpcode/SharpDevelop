@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpFixedStatementTest()
 		{
-			FixedStatement fixedStmt = (FixedStatement)ParseUtilCSharp.ParseStatment("fixed (int* ptr = &myIntArr) { }", typeof(FixedStatement));
+			FixedStatement fixedStmt = ParseUtilCSharp.ParseStatement<FixedStatement>("fixed (int* ptr = &myIntArr) { }");
 			// TODO : Extend test.
 		}
 		#endregion

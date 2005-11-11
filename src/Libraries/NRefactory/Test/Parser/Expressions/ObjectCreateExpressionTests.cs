@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleObjectCreateExpressionTest()
 		{
-			CheckSimpleObjectCreateExpression((ObjectCreateExpression)ParseUtilCSharp.ParseExpression("new MyObject(1, 2, 3)", typeof(ObjectCreateExpression)));
+			CheckSimpleObjectCreateExpression(ParseUtilCSharp.ParseExpression<ObjectCreateExpression>("new MyObject(1, 2, 3)"));
 		}
 		
 		[Test]
@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			// this test was written because this bug caused the AbstractASTVisitor to crash
 			
-			InvocationExpression expr = (InvocationExpression)ParseUtilCSharp.ParseExpression("WriteLine(new MyObject(1, 2, 3,))", typeof(InvocationExpression), true);
+			InvocationExpression expr = ParseUtilCSharp.ParseExpression<InvocationExpression>("WriteLine(new MyObject(1, 2, 3,))", true);
 			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
 			Assert.AreEqual("WriteLine", ((IdentifierExpression)expr.TargetObject).Identifier);
 			
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetSimpleObjectCreateExpressionTest()
 		{
-			CheckSimpleObjectCreateExpression((ObjectCreateExpression)ParseUtilVBNet.ParseExpression("New MyObject(1, 2, 3)", typeof(ObjectCreateExpression)));
+			CheckSimpleObjectCreateExpression(ParseUtilVBNet.ParseExpression<ObjectCreateExpression>("New MyObject(1, 2, 3)"));
 		}
 
 		#endregion

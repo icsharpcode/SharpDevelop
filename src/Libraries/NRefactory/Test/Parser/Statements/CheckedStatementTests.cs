@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpCheckedStatementTest()
 		{
-			CheckedStatement checkedStatement = (CheckedStatement)ParseUtilCSharp.ParseStatment("checked { }", typeof(CheckedStatement));
+			CheckedStatement checkedStatement = ParseUtilCSharp.ParseStatement<CheckedStatement>("checked { }");
 			Assert.IsFalse(checkedStatement.Block.IsNull);
 		}
 		#endregion

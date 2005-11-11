@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetResumeStatementTest()
 		{
-			ResumeStatement resumeStatement = (ResumeStatement)ParseUtilVBNet.ParseStatment("Resume", typeof(ResumeStatement));
+			ResumeStatement resumeStatement = ParseUtilVBNet.ParseStatement<ResumeStatement>("Resume");
 		}
 		#endregion
 	}

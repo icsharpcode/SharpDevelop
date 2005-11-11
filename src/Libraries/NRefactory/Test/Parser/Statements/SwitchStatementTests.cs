@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSwitchStatementTest()
 		{
-			SwitchStatement switchStmt = (SwitchStatement)ParseUtilCSharp.ParseStatment("switch (a) { case 5: break; case 6: break; default: break; }", typeof(SwitchStatement));
+			SwitchStatement switchStmt = ParseUtilCSharp.ParseStatement<SwitchStatement>("switch (a) { case 5: break; case 6: break; default: break; }");
 			// TODO : Extend test.
 		}
 		#endregion

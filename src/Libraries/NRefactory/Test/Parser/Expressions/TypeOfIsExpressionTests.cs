@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetTypeOfIsExpressionTest()
 		{
-			TypeOfExpression toe = (TypeOfExpression)ParseUtilVBNet.ParseExpression("TypeOf time is System.DateTime", typeof(TypeOfExpression));
+			TypeOfExpression toe = ParseUtilVBNet.ParseExpression<TypeOfExpression>("TypeOf time is System.DateTime");
 			// TODO : Extend test.
 		}
 		#endregion

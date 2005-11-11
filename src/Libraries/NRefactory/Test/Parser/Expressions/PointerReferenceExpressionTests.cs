@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpPointerReferenceExpressionTest()
 		{
-			PointerReferenceExpression pre = (PointerReferenceExpression)ParseUtilCSharp.ParseExpression("myObj.field->b", typeof(PointerReferenceExpression));
+			PointerReferenceExpression pre = ParseUtilCSharp.ParseExpression<PointerReferenceExpression>("myObj.field->b");
 			Assert.IsTrue(pre.TargetObject is FieldReferenceExpression);
 			Assert.AreEqual("b", pre.Identifier);
 		}

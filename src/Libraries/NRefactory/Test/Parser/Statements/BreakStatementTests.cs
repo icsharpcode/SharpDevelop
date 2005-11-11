@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpBreakStatementTest()
 		{
-			BreakStatement breakStmt = (BreakStatement)ParseUtilCSharp.ParseStatment("break;", typeof(BreakStatement));
+			BreakStatement breakStmt = ParseUtilCSharp.ParseStatement<BreakStatement>("break;");
 		}
 		#endregion
 		

@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		#region C#
 		void CSharpTestUnaryOperatorExpressionTest(string program, UnaryOperatorType op)
 		{
-			UnaryOperatorExpression uoe = (UnaryOperatorExpression)ParseUtilCSharp.ParseExpression(program, typeof(UnaryOperatorExpression));
+			UnaryOperatorExpression uoe = ParseUtilCSharp.ParseExpression<UnaryOperatorExpression>(program);
 			Assert.AreEqual(op, uoe.Op);
 			
 			Assert.IsTrue(uoe.Expression is IdentifierExpression);
@@ -89,7 +89,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		#region VB.NET
 		void VBNetTestUnaryOperatorExpressionTest(string program, UnaryOperatorType op)
 		{
-			UnaryOperatorExpression uoe = (UnaryOperatorExpression)ParseUtilVBNet.ParseExpression(program, typeof(UnaryOperatorExpression));
+			UnaryOperatorExpression uoe = ParseUtilVBNet.ParseExpression<UnaryOperatorExpression>(program);
 			Assert.AreEqual(op, uoe.Op);
 			
 			Assert.IsTrue(uoe.Expression is IdentifierExpression);

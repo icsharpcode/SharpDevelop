@@ -24,13 +24,13 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetEndStatementTest()
 		{
-			EndStatement endStatement = (EndStatement)ParseUtilVBNet.ParseStatment("End", typeof(EndStatement));
+			EndStatement endStatement = ParseUtilVBNet.ParseStatement<EndStatement>("End");
 		}
 		
 		[Test]
 		public void VBNetEndStatementInIfThenTest2()
 		{
-			IfElseStatement endStatement = (IfElseStatement)ParseUtilVBNet.ParseStatment("IF a THEN End", typeof(IfElseStatement));
+			IfElseStatement endStatement = ParseUtilVBNet.ParseStatement<IfElseStatement>("IF a THEN End");
 		}
 		#endregion
 	}

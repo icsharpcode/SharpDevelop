@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		#region C#
 		void CSharpTestBinaryOperatorExpressionTest(string program, BinaryOperatorType op)
 		{
-			BinaryOperatorExpression boe = (BinaryOperatorExpression)ParseUtilCSharp.ParseExpression(program, typeof(BinaryOperatorExpression));
+			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(op, boe.Op);
 			
 			Assert.IsTrue(boe.Left is IdentifierExpression);
@@ -145,7 +145,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpISTest()
 		{
-			BinaryOperatorExpression boe = (BinaryOperatorExpression)ParseUtilCSharp.ParseExpression("a is b", typeof(BinaryOperatorExpression));
+			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("a is b");
 			Assert.AreEqual(BinaryOperatorType.TypeCheck, boe.Op);
 			
 			Assert.IsTrue(boe.Left is IdentifierExpression);
@@ -155,7 +155,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpASTest()
 		{
-			BinaryOperatorExpression boe = (BinaryOperatorExpression)ParseUtilCSharp.ParseExpression("a as b", typeof(BinaryOperatorExpression));
+			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("a as b");
 			Assert.AreEqual(BinaryOperatorType.AsCast, boe.Op);
 			
 			Assert.IsTrue(boe.Left is IdentifierExpression);
@@ -166,7 +166,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		#region VB.NET
 		void VBNetTestBinaryOperatorExpressionTest(string program, BinaryOperatorType op)
 		{
-			BinaryOperatorExpression boe = (BinaryOperatorExpression)ParseUtilVBNet.ParseExpression(program, typeof(BinaryOperatorExpression));
+			BinaryOperatorExpression boe = ParseUtilVBNet.ParseExpression<BinaryOperatorExpression>(program);
 			Assert.AreEqual(op, boe.Op);
 			
 			Assert.IsTrue(boe.Left is IdentifierExpression);

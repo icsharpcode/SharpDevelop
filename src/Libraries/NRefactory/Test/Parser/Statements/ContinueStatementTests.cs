@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpContinueStatementTest()
 		{
-			ContinueStatement continueStmt = (ContinueStatement)ParseUtilCSharp.ParseStatment("continue;", typeof(ContinueStatement));
+			ContinueStatement continueStmt = ParseUtilCSharp.ParseStatement<ContinueStatement>("continue;");
 		}
 		#endregion
 		

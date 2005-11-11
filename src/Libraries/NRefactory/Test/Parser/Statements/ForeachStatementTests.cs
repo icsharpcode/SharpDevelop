@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpForeachStatementTest()
 		{
-			ForeachStatement foreachStmt = (ForeachStatement)ParseUtilCSharp.ParseStatment("foreach (int i in myColl) {} ", typeof(ForeachStatement));
+			ForeachStatement foreachStmt = ParseUtilCSharp.ParseStatement<ForeachStatement>("foreach (int i in myColl) {} ");
 			// TODO : Extend test.
 		}
 		#endregion
@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetForeachStatementTest()
 		{
-			ForeachStatement foreachStmt = (ForeachStatement)ParseUtilVBNet.ParseStatment("For Each i As Integer In myColl : Next", typeof(ForeachStatement));
+			ForeachStatement foreachStmt = ParseUtilVBNet.ParseStatement<ForeachStatement>("For Each i As Integer In myColl : Next");
 			// TODO : Extend test.
 		}
 		#endregion

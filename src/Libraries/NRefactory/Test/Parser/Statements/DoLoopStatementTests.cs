@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpWhileStatementTest()
 		{
-			DoLoopStatement doLoopStmt = (DoLoopStatement)ParseUtilCSharp.ParseStatment("while (true) { }", typeof(DoLoopStatement));
+			DoLoopStatement doLoopStmt = ParseUtilCSharp.ParseStatement<DoLoopStatement>("while (true) { }");
 			Assert.AreEqual(ConditionPosition.Start, doLoopStmt.ConditionPosition);
 			Assert.AreEqual(ConditionType.While, doLoopStmt.ConditionType);
 			Assert.IsTrue(doLoopStmt.Condition is PrimitiveExpression);
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpDoWhileStatementTest()
 		{
-			DoLoopStatement doLoopStmt = (DoLoopStatement)ParseUtilCSharp.ParseStatment("do { } while (true);", typeof(DoLoopStatement));
+			DoLoopStatement doLoopStmt = ParseUtilCSharp.ParseStatement<DoLoopStatement>("do { } while (true);");
 			Assert.AreEqual(ConditionPosition.End, doLoopStmt.ConditionPosition);
 			Assert.AreEqual(ConditionType.While, doLoopStmt.ConditionType);
 			Assert.IsTrue(doLoopStmt.Condition is PrimitiveExpression);

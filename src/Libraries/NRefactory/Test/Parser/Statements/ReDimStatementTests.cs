@@ -24,13 +24,13 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetReDimStatementTest()
 		{
-			ReDimStatement reDimStatement = (ReDimStatement)ParseUtilVBNet.ParseStatment("ReDim Preserve MyArray(15)", typeof(ReDimStatement));
+			ReDimStatement reDimStatement = ParseUtilVBNet.ParseStatement<ReDimStatement>("ReDim Preserve MyArray(15)");
 		}
 		
 		[Test]
 		public void VBNetReDimStatementTest2()
 		{
-			ReDimStatement reDimStatement = (ReDimStatement)ParseUtilVBNet.ParseStatment("ReDim calCheckData(channelNum, lambdaNum).ShiftFromLastFullCalPixels(CalCheckPeak.HighWavelength)", typeof(ReDimStatement));
+			ReDimStatement reDimStatement = ParseUtilVBNet.ParseStatement<ReDimStatement>("ReDim calCheckData(channelNum, lambdaNum).ShiftFromLastFullCalPixels(CalCheckPeak.HighWavelength)");
 		}
 		
 		[Test]
@@ -86,7 +86,7 @@ Class X
 		ReDim X(10, 10)
 	End Sub
 End Class";
-			TypeDeclaration typeDeclaration = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration typeDeclaration = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
 		}
 
 		#endregion

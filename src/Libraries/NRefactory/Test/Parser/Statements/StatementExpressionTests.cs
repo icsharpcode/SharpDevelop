@@ -20,13 +20,13 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpStatementExpressionTest()
 		{
-			StatementExpression stmtExprStmt = (StatementExpression)ParseUtilCSharp.ParseStatment("my.Obj.PropCall;", typeof(StatementExpression));
+			StatementExpression stmtExprStmt = ParseUtilCSharp.ParseStatement<StatementExpression>("my.Obj.PropCall;");
 			Assert.IsTrue(stmtExprStmt.Expression is FieldReferenceExpression);
 		}
 		[Test]
 		public void CSharpStatementExpressionTest1()
 		{
-			StatementExpression stmtExprStmt = (StatementExpression)ParseUtilCSharp.ParseStatment("yield.yield;", typeof(StatementExpression));
+			StatementExpression stmtExprStmt = ParseUtilCSharp.ParseStatement<StatementExpression>("yield.yield;");
 			Assert.IsTrue(stmtExprStmt.Expression is FieldReferenceExpression);
 		}
 		#endregion

@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleGetSetPropertyDeclarationTest()
 		{
-			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilCSharp.ParseTypeMember("int MyProperty { get {} set {} } ", typeof(PropertyDeclaration));
+			PropertyDeclaration pd = ParseUtilCSharp.ParseTypeMember<PropertyDeclaration>("int MyProperty { get {} set {} } ");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGetSetPropertyDeclarationWithAccessorModifiers()
 		{
-			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilCSharp.ParseTypeMember("int MyProperty { private get {} protected internal set {} } ", typeof(PropertyDeclaration));
+			PropertyDeclaration pd = ParseUtilCSharp.ParseTypeMember<PropertyDeclaration>("int MyProperty { private get {} protected internal set {} } ");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleGetPropertyDeclarationTest()
 		{
-			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilCSharp.ParseTypeMember("int MyProperty { get {} } ", typeof(PropertyDeclaration));
+			PropertyDeclaration pd = ParseUtilCSharp.ParseTypeMember<PropertyDeclaration>("int MyProperty { get {} } ");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsTrue(!pd.HasSetRegion);
@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleSetPropertyDeclarationTest()
 		{
-			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilCSharp.ParseTypeMember("int MyProperty { set {} } ", typeof(PropertyDeclaration));
+			PropertyDeclaration pd = ParseUtilCSharp.ParseTypeMember<PropertyDeclaration>("int MyProperty { set {} } ");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(!pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
@@ -59,7 +59,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpPropertyImplementingInterfaceTest()
 		{
-			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilCSharp.ParseTypeMember("int MyInterface.MyProperty { get {} } ", typeof(PropertyDeclaration));
+			PropertyDeclaration pd = ParseUtilCSharp.ParseTypeMember<PropertyDeclaration>("int MyInterface.MyProperty { get {} } ");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsTrue(!pd.HasSetRegion);
@@ -70,7 +70,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpPropertyImplementingGenericInterfaceTest()
 		{
-			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilCSharp.ParseTypeMember("int MyInterface<string>.MyProperty { get {} } ", typeof(PropertyDeclaration));
+			PropertyDeclaration pd = ParseUtilCSharp.ParseTypeMember<PropertyDeclaration>("int MyInterface<string>.MyProperty { get {} } ");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsTrue(!pd.HasSetRegion);
@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetSimpleGetSetPropertyDeclarationTest()
 		{
-			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilVBNet.ParseTypeMember("Property MyProperty As Integer \n Get \n End Get \n Set \n End Set\nEnd Property", typeof(PropertyDeclaration));
+			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("Property MyProperty As Integer \n Get \n End Get \n Set \n End Set\nEnd Property");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);
@@ -93,7 +93,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetSimpleGetPropertyDeclarationTest()
 		{
-			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilVBNet.ParseTypeMember("Property MyProperty \nGet\nEnd Get\nEnd Property", typeof(PropertyDeclaration));
+			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("Property MyProperty \nGet\nEnd Get\nEnd Property");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsTrue(pd.HasGetRegion);
 			Assert.IsFalse(pd.HasSetRegion);
@@ -102,7 +102,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetSimpleSetPropertyDeclarationTest()
 		{
-			PropertyDeclaration pd = (PropertyDeclaration)ParseUtilVBNet.ParseTypeMember("Property MyProperty \n Set\nEnd Set\nEnd Property ", typeof(PropertyDeclaration));
+			PropertyDeclaration pd = ParseUtilVBNet.ParseTypeMember<PropertyDeclaration>("Property MyProperty \n Set\nEnd Set\nEnd Property ");
 			Assert.AreEqual("MyProperty", pd.Name);
 			Assert.IsFalse(pd.HasGetRegion);
 			Assert.IsTrue(pd.HasSetRegion);

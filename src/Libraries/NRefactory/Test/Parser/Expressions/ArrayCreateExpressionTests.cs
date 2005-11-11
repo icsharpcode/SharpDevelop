@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpArrayCreateExpressionTest1()
 		{
-			ArrayCreateExpression ace = (ArrayCreateExpression)ParseUtilCSharp.ParseExpression("new int[5]", typeof(ArrayCreateExpression));
+			ArrayCreateExpression ace = ParseUtilCSharp.ParseExpression<ArrayCreateExpression>("new int[5]");
 			Assert.AreEqual("int", ace.CreateType.Type);
 			Assert.AreEqual(1, ace.Parameters.Count);
 			// TODO: overwork ArrayCreateExpression.
@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetArrayCreateExpressionTest1()
 		{
-			ArrayCreateExpression ace = (ArrayCreateExpression)ParseUtilVBNet.ParseExpression("new Integer() {1, 2, 3, 4}", typeof(ArrayCreateExpression));
+			ArrayCreateExpression ace = ParseUtilVBNet.ParseExpression<ArrayCreateExpression>("new Integer() {1, 2, 3, 4}");
 			
 			Assert.AreEqual("Integer", ace.CreateType.Type);
 			Assert.AreEqual(0, ace.Parameters.Count);

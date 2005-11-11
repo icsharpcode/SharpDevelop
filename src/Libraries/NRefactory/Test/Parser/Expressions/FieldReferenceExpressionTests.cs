@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleFieldReferenceExpressionTest()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilCSharp.ParseExpression("myTargetObject.myField", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilCSharp.ParseExpression<FieldReferenceExpression>("myTargetObject.myField");
 			Assert.AreEqual("myField", fre.FieldName);
 			Assert.IsTrue(fre.TargetObject is IdentifierExpression);
 			Assert.AreEqual("myTargetObject", ((IdentifierExpression)fre.TargetObject).Identifier);
@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGenericFieldReferenceExpressionTest()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilCSharp.ParseExpression("SomeClass<string>.myField", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilCSharp.ParseExpression<FieldReferenceExpression>("SomeClass<string>.myField");
 			Assert.AreEqual("myField", fre.FieldName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
@@ -41,7 +41,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpFullNamespaceGenericFieldReferenceExpressionTest()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilCSharp.ParseExpression("Namespace.Subnamespace.SomeClass<string>.myField", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilCSharp.ParseExpression<FieldReferenceExpression>("Namespace.Subnamespace.SomeClass<string>.myField");
 			Assert.AreEqual("myField", fre.FieldName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGlobalFullNamespaceGenericFieldReferenceExpressionTest()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilCSharp.ParseExpression("global::Namespace.Subnamespace.SomeClass<string>.myField", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilCSharp.ParseExpression<FieldReferenceExpression>("global::Namespace.Subnamespace.SomeClass<string>.myField");
 			Assert.AreEqual("myField", fre.FieldName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpNestedGenericFieldReferenceExpressionTest()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilCSharp.ParseExpression("MyType<string>.InnerClass<int>.myField", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilCSharp.ParseExpression<FieldReferenceExpression>("MyType<string>.InnerClass<int>.myField");
 			Assert.AreEqual("myField", fre.FieldName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			InnerClassTypeReference ic = (InnerClassTypeReference)((TypeReferenceExpression)fre.TargetObject).TypeReference;
@@ -84,7 +84,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetSimpleFieldReferenceExpressionTest()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilVBNet.ParseExpression("myTargetObject.myField", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>("myTargetObject.myField");
 			Assert.AreEqual("myField", fre.FieldName);
 			Assert.IsTrue(fre.TargetObject is IdentifierExpression);
 			Assert.AreEqual("myTargetObject", ((IdentifierExpression)fre.TargetObject).Identifier);
@@ -94,7 +94,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetGenericFieldReferenceExpressionTest()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilVBNet.ParseExpression("SomeClass(of string).myField", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>("SomeClass(of string).myField");
 			Assert.AreEqual("myField", fre.FieldName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
@@ -106,7 +106,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetFullNamespaceGenericFieldReferenceExpressionTest()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilVBNet.ParseExpression("System.Subnamespace.SomeClass(of string).myField", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>("System.Subnamespace.SomeClass(of string).myField");
 			Assert.AreEqual("myField", fre.FieldName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
@@ -118,7 +118,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetGlobalFullNamespaceGenericFieldReferenceExpressionTest()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilVBNet.ParseExpression("Global.System.Subnamespace.SomeClass(of string).myField", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>("Global.System.Subnamespace.SomeClass(of string).myField");
 			Assert.AreEqual("myField", fre.FieldName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			TypeReference tr = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
@@ -132,7 +132,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetNestedGenericFieldReferenceExpressionTest()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilVBNet.ParseExpression("MyType(of string).InnerClass(of integer).myField", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>("MyType(of string).InnerClass(of integer).myField");
 			Assert.AreEqual("myField", fre.FieldName);
 			Assert.IsTrue(fre.TargetObject is TypeReferenceExpression);
 			InnerClassTypeReference ic = (InnerClassTypeReference)((TypeReferenceExpression)fre.TargetObject).TypeReference;

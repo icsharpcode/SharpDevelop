@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -37,13 +37,13 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleInvocationExpressionTest()
 		{
-			CheckSimpleInvoke((InvocationExpression)ParseUtilCSharp.ParseExpression("myMethod()", typeof(InvocationExpression)));
+			CheckSimpleInvoke(ParseUtilCSharp.ParseExpression<InvocationExpression>("myMethod()"));
 		}
 		
 		[Test]
 		public void CSharpGenericInvocationExpressionTest()
 		{
-			CheckGenericInvoke((InvocationExpression)ParseUtilCSharp.ParseExpression("myMethod<char>('a')", typeof(InvocationExpression)));
+			CheckGenericInvoke(ParseUtilCSharp.ParseExpression<InvocationExpression>("myMethod<char>('a')"));
 		}
 		
 		[Test]
@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			// this test was written because this bug caused the AbstractASTVisitor to crash
 			
-			InvocationExpression expr = (InvocationExpression)ParseUtilCSharp.ParseExpression("WriteLine(myMethod(,))", typeof(InvocationExpression), true);
+			InvocationExpression expr = ParseUtilCSharp.ParseExpression<InvocationExpression>("WriteLine(myMethod(,))", true);
 			Assert.IsTrue(expr.TargetObject is IdentifierExpression);
 			Assert.AreEqual("WriteLine", ((IdentifierExpression)expr.TargetObject).Identifier);
 			
@@ -66,19 +66,19 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetSimpleInvocationExpressionTest()
 		{
-			CheckSimpleInvoke((InvocationExpression)ParseUtilVBNet.ParseExpression("myMethod()", typeof(InvocationExpression)));
+			CheckSimpleInvoke(ParseUtilVBNet.ParseExpression<InvocationExpression>("myMethod()"));
 		}
 		
 		[Test]
 		public void VBNetGenericInvocationExpressionTest()
 		{
-			CheckGenericInvoke((InvocationExpression)ParseUtilVBNet.ParseExpression("myMethod(Of Char)(\"a\"c)", typeof(InvocationExpression)));
+			CheckGenericInvoke(ParseUtilVBNet.ParseExpression<InvocationExpression>("myMethod(Of Char)(\"a\"c)"));
 		}
 		
 		[Test]
 		public void PrimitiveExpression1Test()
 		{
-			InvocationExpression ie = (InvocationExpression)ParseUtilVBNet.ParseExpression("546.ToString()", typeof(InvocationExpression));
+			InvocationExpression ie = ParseUtilVBNet.ParseExpression<InvocationExpression>("546.ToString()");
 			Assert.AreEqual(0, ie.Arguments.Count);
 		}
 		

@@ -19,21 +19,21 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleDefaultValue()
 		{
-			DefaultValueExpression toe = (DefaultValueExpression)ParseUtilCSharp.ParseExpression("default(T)", typeof(DefaultValueExpression));
+			DefaultValueExpression toe = ParseUtilCSharp.ParseExpression<DefaultValueExpression>("default(T)");
 			Assert.AreEqual("T", toe.TypeReference.Type);
 		}
 		
 		[Test]
 		public void CSharpFullQualifiedDefaultValue()
 		{
-			DefaultValueExpression toe = (DefaultValueExpression)ParseUtilCSharp.ParseExpression("default(MyNamespace.N1.MyType)", typeof(DefaultValueExpression));
+			DefaultValueExpression toe = ParseUtilCSharp.ParseExpression<DefaultValueExpression>("default(MyNamespace.N1.MyType)");
 			Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
 		}
 		
 		[Test]
 		public void CSharpGenericDefaultValue()
 		{
-			DefaultValueExpression toe = (DefaultValueExpression)ParseUtilCSharp.ParseExpression("default(MyNamespace.N1.MyType<string>)", typeof(DefaultValueExpression));
+			DefaultValueExpression toe = ParseUtilCSharp.ParseExpression<DefaultValueExpression>("default(MyNamespace.N1.MyType<string>)");
 			Assert.AreEqual("MyNamespace.N1.MyType", toe.TypeReference.Type);
 			Assert.AreEqual("string", toe.TypeReference.GenericTypes[0].Type);
 		}
@@ -42,7 +42,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void CSharpDefaultValueAsIntializer()
 		{
 			// This test is failing because we need a resolver for the "default:" / "default(" conflict.
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("T a = default(T);", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("T a = default(T);");
 			DefaultValueExpression dve = (DefaultValueExpression)lvd.Variables[0].Initializer;
 			Assert.AreEqual("T", dve.TypeReference.Type);
 		}

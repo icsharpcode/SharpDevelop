@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpUnsafeStatementTest()
 		{
-			UnsafeStatement unsafeStatement = (UnsafeStatement)ParseUtilCSharp.ParseStatment("unsafe { }", typeof(UnsafeStatement));
+			UnsafeStatement unsafeStatement = ParseUtilCSharp.ParseStatement<UnsafeStatement>("unsafe { }");
 			Assert.IsFalse(unsafeStatement.Block.IsNull);
 		}
 		#endregion

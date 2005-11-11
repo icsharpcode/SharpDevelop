@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleMethodDeclarationTest()
 		{
-			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("void MyMethod() {} ", typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>("void MyMethod() {} ");
 			Assert.AreEqual("void", md.TypeReference.Type);
 			Assert.AreEqual(0, md.Parameters.Count);
 		}
@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			OtherMethod();
 		}
 ";
-			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember(program, typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>(program);
 			Assert.AreEqual(2, md.StartLocation.Y, "StartLocation.Y");
 			Assert.AreEqual(2, md.EndLocation.Y, "EndLocation.Y");
 			Assert.AreEqual(3, md.StartLocation.X, "StartLocation.X");
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			OtherMethod();
 		}
 ";
-			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember(program, typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>(program);
 			Assert.AreEqual(2, md.StartLocation.Y, "StartLocation.Y");
 			Assert.AreEqual(2, md.EndLocation.Y, "EndLocation.Y");
 			Assert.AreEqual(3, md.StartLocation.X, "StartLocation.X");
@@ -64,7 +64,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpMethodWithUnnamedParameterDeclarationTest()
 		{
-			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("void MyMethod(int) {} ", typeof(MethodDeclaration), true);
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>("void MyMethod(int) {} ", true);
 			Assert.AreEqual("void", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
 			Assert.AreEqual("?", ((ParameterDeclarationExpression)md.Parameters[0]).ParameterName);
@@ -73,7 +73,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGenericVoidMethodDeclarationTest()
 		{
-			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("void MyMethod<T>(T a) {} ", typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>("void MyMethod<T>(T a) {} ");
 			Assert.AreEqual("void", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
 			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
@@ -86,7 +86,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGenericMethodDeclarationTest()
 		{
-			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("T MyMethod<T>(T a) {} ", typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>("T MyMethod<T>(T a) {} ");
 			Assert.AreEqual("T", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
 			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
@@ -100,7 +100,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void CSharpGenericMethodDeclarationWithConstraintTest()
 		{
 			string program = "T MyMethod<T>(T a) where T : ISomeInterface {} ";
-			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember(program, typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>(program);
 			Assert.AreEqual("T", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
 			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
@@ -119,7 +119,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 	T MyMethod<T>(T a) where T : ISomeInterface;
 }
 ";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
 			MethodDeclaration md = (MethodDeclaration)td.Children[0];
 			Assert.AreEqual("T", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
@@ -139,7 +139,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 	void MyMethod<T>(T a) where T : ISomeInterface;
 }
 ";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(program);
 			MethodDeclaration md = (MethodDeclaration)td.Children[0];
 			Assert.AreEqual("void", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
@@ -155,7 +155,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpMethodImplementingInterfaceTest()
 		{
-			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("int MyInterface.MyMethod() {} ", typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>("int MyInterface.MyMethod() {} ");
 			Assert.AreEqual("int", md.TypeReference.Type);
 			
 			Assert.AreEqual("MyInterface", md.InterfaceImplementations[0].InterfaceType.Type);
@@ -164,7 +164,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpMethodImplementingGenericInterfaceTest()
 		{
-			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("int MyInterface<string>.MyMethod() {} ", typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>("int MyInterface<string>.MyMethod() {} ");
 			Assert.AreEqual("int", md.TypeReference.Type);
 			
 			Assert.AreEqual("MyInterface", md.InterfaceImplementations[0].InterfaceType.Type);
@@ -174,7 +174,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpVoidMethodImplementingInterfaceTest()
 		{
-			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("void MyInterface.MyMethod() {} ", typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>("void MyInterface.MyMethod() {} ");
 			Assert.AreEqual("void", md.TypeReference.Type);
 			
 			Assert.AreEqual("MyInterface", md.InterfaceImplementations[0].InterfaceType.Type);
@@ -183,7 +183,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpVoidMethodImplementingGenericInterfaceTest()
 		{
-			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("void MyInterface<string>.MyMethod() {} ", typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>("void MyInterface<string>.MyMethod() {} ");
 			Assert.AreEqual("void", md.TypeReference.Type);
 			
 			Assert.AreEqual("MyInterface", md.InterfaceImplementations[0].InterfaceType.Type);
@@ -196,7 +196,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetSimpleMethodDeclarationTest()
 		{
-			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember("void MyMethod() {} ", typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>("void MyMethod() {} ");
 			Assert.AreEqual("void", md.TypeReference.Type);
 			Assert.AreEqual(0, md.Parameters.Count);
 		}
@@ -210,7 +210,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			OtherMethod();
 		}
 ";
-			MethodDeclaration md = (MethodDeclaration)ParseUtilCSharp.ParseTypeMember(program, typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilCSharp.ParseTypeMember<MethodDeclaration>(program);
 			Assert.AreEqual(2, md.StartLocation.Y, "StartLocation.Y");
 			Assert.AreEqual(2, md.EndLocation.Y, "EndLocation.Y");
 			Assert.AreEqual(3, md.StartLocation.X, "StartLocation.X");
@@ -226,7 +226,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 				OtherMethod()
 			end sub";
 			
-			MethodDeclaration md = (MethodDeclaration)ParseUtilVBNet.ParseTypeMember(program, typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(program);
 			Assert.AreEqual(2, md.StartLocation.Y, "StartLocation.Y");
 			Assert.AreEqual(2, md.EndLocation.Y, "EndLocation.Y");
 			Assert.AreEqual(2, md.StartLocation.X, "StartLocation.X");
@@ -235,7 +235,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetGenericFunctionMethodDeclarationTest()
 		{
-			MethodDeclaration md = (MethodDeclaration)ParseUtilVBNet.ParseTypeMember("function MyMethod(Of T)(a As T) As Double\nEnd Function", typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>("function MyMethod(Of T)(a As T) As Double\nEnd Function");
 			Assert.AreEqual("Double", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
 			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
@@ -248,7 +248,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetGenericMethodDeclarationTest()
 		{
-			MethodDeclaration md = (MethodDeclaration)ParseUtilVBNet.ParseTypeMember("Function MyMethod(Of T)(a As T) As T\nEnd Function ", typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>("Function MyMethod(Of T)(a As T) As T\nEnd Function ");
 			Assert.AreEqual("T", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
 			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
@@ -262,7 +262,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void VBNetGenericMethodDeclarationWithConstraintTest()
 		{
 			string program = "Function MyMethod(Of T As { ISomeInterface })(a As T) As T\n End Function";
-			MethodDeclaration md = (MethodDeclaration)ParseUtilVBNet.ParseTypeMember(program, typeof(MethodDeclaration));
+			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(program);
 			Assert.AreEqual("T", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
 			Assert.AreEqual("T", ((ParameterDeclarationExpression)md.Parameters[0]).TypeReference.Type);
@@ -280,7 +280,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			const string program = @"Interface MyInterface
 	Function MyMethod(Of T As {ISomeInterface})(a As T) As T
 	End Interface";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
 			MethodDeclaration md = (MethodDeclaration)td.Children[0];
 			Assert.AreEqual("T", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);
@@ -300,7 +300,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 	Sub MyMethod(Of T As {ISomeInterface})(a as T)
 End Interface
 ";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
 			MethodDeclaration md = (MethodDeclaration)td.Children[0];
 			Assert.AreEqual("", md.TypeReference.Type);
 			Assert.AreEqual(1, md.Parameters.Count);

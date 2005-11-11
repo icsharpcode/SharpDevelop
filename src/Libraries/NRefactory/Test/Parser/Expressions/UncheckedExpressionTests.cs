@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpUncheckedExpressionTest()
 		{
-			UncheckedExpression ce = (UncheckedExpression)ParseUtilCSharp.ParseExpression("unchecked(a)", typeof(UncheckedExpression));
+			UncheckedExpression ce = ParseUtilCSharp.ParseExpression<UncheckedExpression>("unchecked(a)");
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 		}
 		#endregion

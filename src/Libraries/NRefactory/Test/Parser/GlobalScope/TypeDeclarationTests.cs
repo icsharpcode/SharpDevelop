@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleClassTypeDeclarationTest()
 		{
-			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("class MyClass  : My.Base.Class  { }", typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("class MyClass  : My.Base.Class  { }");
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimplePartitialClassTypeDeclarationTest()
 		{
-			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("partial class MyClass { }", typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("partial class MyClass { }");
 			Assert.IsNotNull(td);
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleStaticClassTypeDeclarationTest()
 		{
-			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("static class MyClass { }", typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("static class MyClass { }");
 			Assert.IsNotNull(td);
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGenericClassTypeDeclarationTest()
 		{
-			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("public class G<T> {}", typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("public class G<T> {}");
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("G", td.Name);
@@ -73,7 +73,7 @@ public class Test<T> where T : IMyInterface
 {
 }
 ";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal(declr, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(declr);
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Test", td.Name);
@@ -91,7 +91,7 @@ public class Generic<T, S> : System.IComparable where S : G<T[]> where  T : MyNa
 {
 }
 ";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal(declr, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(declr);
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Generic", td.Name);
@@ -120,7 +120,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 {
 }
 ";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal(declr, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>(declr);
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("MyClass", td.Name);
@@ -135,7 +135,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		[Test]
 		public void CSharpSimpleStructTypeDeclarationTest()
 		{
-			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("struct MyStruct {}", typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("struct MyStruct {}");
 			
 			Assert.AreEqual(ClassType.Struct, td.Type);
 			Assert.AreEqual("MyStruct", td.Name);
@@ -144,7 +144,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		[Test]
 		public void CSharpSimpleInterfaceTypeDeclarationTest()
 		{
-			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("interface MyInterface {}", typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("interface MyInterface {}");
 			
 			Assert.AreEqual(ClassType.Interface, td.Type);
 			Assert.AreEqual("MyInterface", td.Name);
@@ -153,7 +153,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		[Test]
 		public void CSharpSimpleEnumTypeDeclarationTest()
 		{
-			TypeDeclaration td = (TypeDeclaration)ParseUtilCSharp.ParseGlobal("enum MyEnum {}", typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilCSharp.ParseGlobal<TypeDeclaration>("enum MyEnum {}");
 			
 			Assert.AreEqual(ClassType.Enum, td.Type);
 			Assert.AreEqual("MyEnum", td.Name);
@@ -166,7 +166,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		{
 			string program = "Class TestClass\n" +
 				"End Class\n";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
@@ -179,7 +179,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		{
 			string program = "Enum TestEnum As Byte\n" +
 				"End Enum\n";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestEnum", td.Name);
 			Assert.AreEqual(ClassType.Enum, td.Type);
@@ -191,7 +191,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		{
 			string program = "Class TestClass\n" +
 				"End Class";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
@@ -204,7 +204,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		{
 			string program = "Partial Class TestClass\n" +
 				"End Class\n";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
@@ -215,7 +215,7 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 		public void VBNetPartialPublicClass()
 		{
 			string program = "Partial Public Class TestClass\nEnd Class\n";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
 			
 			Assert.AreEqual("TestClass", td.Name);
 			Assert.AreEqual(ClassType.Class, td.Type);
@@ -230,7 +230,7 @@ Public Class Test(Of T)
 
 End Class
 ";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(declr, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(declr);
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Test", td.Name);
@@ -248,7 +248,7 @@ Public Class Test(Of T As IMyInterface)
 
 End Class
 ";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(declr, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(declr);
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Test", td.Name);
@@ -267,7 +267,7 @@ Public Class Generic(Of T As MyNamespace.IMyInterface, S As {G(Of T()), IAnother
 
 End Class
 ";
-			TypeDeclaration td = (TypeDeclaration)ParseUtilVBNet.ParseGlobal(declr, typeof(TypeDeclaration));
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(declr);
 			
 			Assert.AreEqual(ClassType.Class, td.Type);
 			Assert.AreEqual("Generic", td.Name);

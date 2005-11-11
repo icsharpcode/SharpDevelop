@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetEraseStatementTest()
 		{
-			EraseStatement eraseStatement = (EraseStatement)ParseUtilVBNet.ParseStatment("Erase a, b, c", typeof(EraseStatement));
+			EraseStatement eraseStatement = ParseUtilVBNet.ParseStatement<EraseStatement>("Erase a, b, c");
 		}
 		#endregion
 	}

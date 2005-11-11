@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -44,14 +44,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void SimpleCSharpDelegateDeclarationTest()
 		{
 			string program = "public delegate void MyDelegate(int a, int secondParam, MyObj lastParam);\n";
-			TestDelegateDeclaration((DelegateDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(DelegateDeclaration)));
+			TestDelegateDeclaration(ParseUtilCSharp.ParseGlobal<DelegateDeclaration>(program));
 		}
 		
 		[Test]
 		public void CSharpDelegateWithoutNameDeclarationTest()
 		{
 			string program = "public delegate void(int a, int secondParam, MyObj lastParam);\n";
-			DelegateDeclaration dd = (DelegateDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(DelegateDeclaration), true);
+			DelegateDeclaration dd = ParseUtilCSharp.ParseGlobal<DelegateDeclaration>(program, true);
 			Assert.AreEqual("System.Void", dd.ReturnType.SystemType);
 			Assert.AreEqual("?", dd.Name);
 			TestParameters(dd);
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void CSharpGenericDelegateDeclarationTest()
 		{
 			string program = "public delegate T CreateObject<T>(int a, int secondParam, MyObj lastParam) where T : ICloneable;\n";
-			DelegateDeclaration dd = (DelegateDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(DelegateDeclaration));
+			DelegateDeclaration dd = ParseUtilCSharp.ParseGlobal<DelegateDeclaration>(program);
 			Assert.AreEqual("CreateObject", dd.Name);
 			Assert.AreEqual("T", dd.ReturnType.Type);
 			TestParameters(dd);
@@ -77,7 +77,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void SimpleVBNetDelegateDeclarationTest()
 		{
 			string program = "Public Delegate Sub MyDelegate(ByVal a As Integer, ByVal secondParam As Integer, ByVal lastParam As MyObj)\n";
-			TestDelegateDeclaration((DelegateDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(DelegateDeclaration)));
+			TestDelegateDeclaration(ParseUtilVBNet.ParseGlobal<DelegateDeclaration>(program));
 		}
 		#endregion
 	}

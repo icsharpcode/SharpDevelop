@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetWithStatementTest()
 		{
-			WithStatement withStatement = (WithStatement)ParseUtilVBNet.ParseStatment("With MyObj : End With", typeof(WithStatement));
+			WithStatement withStatement = ParseUtilVBNet.ParseStatement<WithStatement>("With MyObj : End With");
 		}
 		#endregion
 	}

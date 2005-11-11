@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void IntReferenceExpression()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilCSharp.ParseExpression("int.MaxValue", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilCSharp.ParseExpression<FieldReferenceExpression>("int.MaxValue");
 			Assert.AreEqual("MaxValue", fre.FieldName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
@@ -40,7 +40,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			// this is propably not what really should be returned for a standalone int
 			// reference, but it has to stay consistent because NRefactoryResolver depends
 			// on this trick.
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilCSharp.ParseExpression("int", typeof(FieldReferenceExpression), true);
+			FieldReferenceExpression fre = ParseUtilCSharp.ParseExpression<FieldReferenceExpression>("int", true);
 			Assert.AreEqual("", fre.FieldName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBIntReferenceExpression()
 		{
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilVBNet.ParseExpression("inTeGer.MaxValue", typeof(FieldReferenceExpression));
+			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>("inTeGer.MaxValue");
 			Assert.AreEqual("MaxValue", fre.FieldName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			// this is propably not what really should be returned for a standalone int
 			// reference, but it has to stay consistent because NRefactoryResolver depends
 			// on this trick.
-			FieldReferenceExpression fre = (FieldReferenceExpression)ParseUtilVBNet.ParseExpression("inTeGer", typeof(FieldReferenceExpression), true);
+			FieldReferenceExpression fre = ParseUtilVBNet.ParseExpression<FieldReferenceExpression>("inTeGer", true);
 			Assert.AreEqual("", fre.FieldName);
 			Assert.AreEqual("System.Int32", ((TypeReferenceExpression)fre.TargetObject).TypeReference.SystemType);
 		}

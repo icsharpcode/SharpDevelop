@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpIndexerDeclarationTest()
 		{
-			IndexerDeclaration id = (IndexerDeclaration)ParseUtilCSharp.ParseTypeMember("int this[int a, string b] { get { } set { } }", typeof(IndexerDeclaration));
+			IndexerDeclaration id = ParseUtilCSharp.ParseTypeMember<IndexerDeclaration>("int this[int a, string b] { get { } set { } }");
 			Assert.AreEqual(2, id.Parameters.Count);
 			Assert.IsTrue(id.HasGetRegion, "No get region found!");
 			Assert.IsTrue(id.HasSetRegion, "No set region found!");
@@ -32,7 +32,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpIndexerImplementingInterfaceTest()
 		{
-			IndexerDeclaration id = (IndexerDeclaration)ParseUtilCSharp.ParseTypeMember("int MyInterface.this[int a, string b] { get { } set { } }", typeof(IndexerDeclaration));
+			IndexerDeclaration id = ParseUtilCSharp.ParseTypeMember<IndexerDeclaration>("int MyInterface.this[int a, string b] { get { } set { } }");
 			Assert.AreEqual(2, id.Parameters.Count);
 			Assert.IsTrue(id.HasGetRegion, "No get region found!");
 			Assert.IsTrue(id.HasSetRegion, "No set region found!");
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpIndexerImplementingGenericInterfaceTest()
 		{
-			IndexerDeclaration id = (IndexerDeclaration)ParseUtilCSharp.ParseTypeMember("int MyInterface<string>.this[int a, string b] { get { } set { } }", typeof(IndexerDeclaration));
+			IndexerDeclaration id = ParseUtilCSharp.ParseTypeMember<IndexerDeclaration>("int MyInterface<string>.this[int a, string b] { get { } set { } }");
 			Assert.AreEqual(2, id.Parameters.Count);
 			Assert.IsTrue(id.HasGetRegion, "No get region found!");
 			Assert.IsTrue(id.HasSetRegion, "No set region found!");

@@ -1,4 +1,4 @@
-﻿// <file>
+// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleEventDeclarationTest()
 		{
-			EventDeclaration ed = (EventDeclaration)ParseUtilCSharp.ParseTypeMember("event System.EventHandler MyEvent;", typeof(EventDeclaration));
+			EventDeclaration ed = ParseUtilCSharp.ParseTypeMember<EventDeclaration>("event System.EventHandler MyEvent;");
 			Assert.AreEqual("MyEvent", ed.Name);
 			Assert.AreEqual("System.EventHandler", ed.TypeReference.Type);
 			
@@ -34,7 +34,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpEventImplementingInterfaceDeclarationTest()
 		{
-			EventDeclaration ed = (EventDeclaration)ParseUtilCSharp.ParseTypeMember("event EventHandler MyInterface.MyEvent;", typeof(EventDeclaration));
+			EventDeclaration ed = ParseUtilCSharp.ParseTypeMember<EventDeclaration>("event EventHandler MyInterface.MyEvent;");
 			
 			Assert.AreEqual("MyEvent", ed.Name);
 			Assert.AreEqual("EventHandler", ed.TypeReference.Type);
@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpEventImplementingGenericInterfaceDeclarationTest()
 		{
-			EventDeclaration ed = (EventDeclaration)ParseUtilCSharp.ParseTypeMember("event EventHandler MyInterface<string>.MyEvent;", typeof(EventDeclaration));
+			EventDeclaration ed = ParseUtilCSharp.ParseTypeMember<EventDeclaration>("event EventHandler MyInterface<string>.MyEvent;");
 			
 			Assert.AreEqual("MyEvent", ed.Name);
 			Assert.AreEqual("EventHandler", ed.TypeReference.Type);
@@ -65,7 +65,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpAddRemoveEventDeclarationTest()
 		{
-			EventDeclaration ed = (EventDeclaration)ParseUtilCSharp.ParseTypeMember("event System.EventHandler MyEvent { add { } remove { } }", typeof(EventDeclaration));
+			EventDeclaration ed = ParseUtilCSharp.ParseTypeMember<EventDeclaration>("event System.EventHandler MyEvent { add { } remove { } }");
 			Assert.AreEqual("MyEvent", ed.Name);
 			Assert.AreEqual("System.EventHandler", ed.TypeReference.Type);
 			
@@ -78,7 +78,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetSimpleEventDeclarationTest()
 		{
-			EventDeclaration ed = (EventDeclaration)ParseUtilVBNet.ParseTypeMember("event MyEvent(x as Integer)", typeof(EventDeclaration));
+			EventDeclaration ed = ParseUtilVBNet.ParseTypeMember<EventDeclaration>("event MyEvent(x as Integer)");
 			Assert.AreEqual(1, ed.Parameters.Count);
 			Assert.AreEqual("MyEvent", ed.Name);
 			Assert.IsFalse(ed.HasAddRegion);

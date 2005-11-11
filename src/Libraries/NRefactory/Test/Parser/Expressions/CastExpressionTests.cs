@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleCastExpression()
 		{
-			CastExpression ce = (CastExpression)ParseUtilCSharp.ParseExpression("(MyObject)o", typeof(CastExpression));
+			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(MyObject)o");
 			Assert.AreEqual("MyObject", ce.CastTo.Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.IsFalse(ce.IsSpecializedCast);
@@ -29,7 +29,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpArrayCastExpression()
 		{
-			CastExpression ce = (CastExpression)ParseUtilCSharp.ParseExpression("(MyType[])o", typeof(CastExpression));
+			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(MyType[])o");
 			Assert.AreEqual("MyType", ce.CastTo.Type);
 			Assert.AreEqual(new int[] { 0 }, ce.CastTo.RankSpecifier);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
@@ -39,7 +39,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void GenericCastExpression()
 		{
-			CastExpression ce = (CastExpression)ParseUtilCSharp.ParseExpression("(List<string>)o", typeof(CastExpression));
+			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(List<string>)o");
 			Assert.AreEqual("List", ce.CastTo.Type);
 			Assert.AreEqual("string", ce.CastTo.GenericTypes[0].Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void GenericArrayCastExpression()
 		{
-			CastExpression ce = (CastExpression)ParseUtilCSharp.ParseExpression("(List<string>[])o", typeof(CastExpression));
+			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(List<string>[])o");
 			Assert.AreEqual("List", ce.CastTo.Type);
 			Assert.AreEqual("string", ce.CastTo.GenericTypes[0].Type);
 			Assert.AreEqual(new int[] { 0 }, ce.CastTo.RankSpecifier);
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void CSharpCastMemberReferenceOnParenthesizedExpression()
 		{
 			// yes, we really wanted to evaluate .Member on expr and THEN cast the result to MyType
-			CastExpression ce = (CastExpression)ParseUtilCSharp.ParseExpression("(MyType)(expr).Member", typeof(CastExpression));
+			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(MyType)(expr).Member");
 			Assert.AreEqual("MyType", ce.CastTo.Type);
 			Assert.IsTrue(ce.Expression is FieldReferenceExpression);
 			Assert.IsFalse(ce.IsSpecializedCast);
@@ -71,7 +71,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		#region VB.NET
 		void TestSpecializedCast(string castExpression, Type castType)
 		{
-			CastExpression ce = (CastExpression)ParseUtilVBNet.ParseExpression(castExpression, typeof(CastExpression));
+			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>(castExpression);
 			Assert.AreEqual(castType.FullName, ce.CastTo.Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.IsTrue(ce.IsSpecializedCast);
@@ -81,7 +81,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetSimpleCastExpression()
 		{
-			CastExpression ce = (CastExpression)ParseUtilVBNet.ParseExpression("CType(o, MyObject)", typeof(CastExpression));
+			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>("CType(o, MyObject)");
 			Assert.AreEqual("MyObject", ce.CastTo.Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 			Assert.IsFalse(ce.IsSpecializedCast);

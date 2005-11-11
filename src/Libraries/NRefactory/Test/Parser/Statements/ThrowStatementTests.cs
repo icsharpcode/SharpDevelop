@@ -20,14 +20,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpEmptyThrowStatementTest()
 		{
-			ThrowStatement throwStmt = (ThrowStatement)ParseUtilCSharp.ParseStatment("throw;", typeof(ThrowStatement));
+			ThrowStatement throwStmt = ParseUtilCSharp.ParseStatement<ThrowStatement>("throw;");
 			Assert.IsTrue(throwStmt.Expression.IsNull);
 		}
 		
 		[Test]
 		public void CSharpThrowStatementTest()
 		{
-			ThrowStatement throwStmt = (ThrowStatement)ParseUtilCSharp.ParseStatment("throw new Exception();", typeof(ThrowStatement));
+			ThrowStatement throwStmt = ParseUtilCSharp.ParseStatement<ThrowStatement>("throw new Exception();");
 			Assert.IsTrue(throwStmt.Expression is ObjectCreateExpression);
 		}
 		#endregion

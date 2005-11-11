@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGlobalReferenceExpressionTest()
 		{
-			TypeReferenceExpression tre = (TypeReferenceExpression)ParseUtilCSharp.ParseExpression("global::System", typeof(TypeReferenceExpression));
+			TypeReferenceExpression tre = ParseUtilCSharp.ParseExpression<TypeReferenceExpression>("global::System");
 			Assert.IsTrue(tre.TypeReference.IsGlobal);
 			Assert.AreEqual("System", tre.TypeReference.Type);
 		}
@@ -27,7 +27,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetGlobalReferenceExpressionTest()
 		{
-			TypeReferenceExpression tre = (TypeReferenceExpression)ParseUtilVBNet.ParseExpression("Global.System", typeof(TypeReferenceExpression));
+			TypeReferenceExpression tre = ParseUtilVBNet.ParseExpression<TypeReferenceExpression>("Global.System");
 			Assert.IsTrue(tre.TypeReference.IsGlobal);
 			Assert.AreEqual("System", tre.TypeReference.Type);
 		}
@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpGlobalTypeDeclaration()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilCSharp.ParseStatment("global::System.String a;", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilCSharp.ParseStatement<LocalVariableDeclaration>("global::System.String a;");
 			TypeReference typeRef = lvd.GetTypeForVariable(0);
 			Assert.IsTrue(typeRef.IsGlobal);
 			Assert.AreEqual("System.String", typeRef.Type);
@@ -44,7 +44,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetGlobalTypeDeclaration()
 		{
-			LocalVariableDeclaration lvd = (LocalVariableDeclaration)ParseUtilVBNet.ParseStatment("Dim a As Global.System.String", typeof(LocalVariableDeclaration));
+			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a As Global.System.String");
 			TypeReference typeRef = lvd.GetTypeForVariable(0);
 			Assert.IsTrue(typeRef.IsGlobal);
 			Assert.AreEqual("System.String", typeRef.Type);

@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpHexIntegerTest1()
 		{
-			InvocationExpression invExpr = (InvocationExpression)ParseUtilCSharp.ParseExpression("0xAFFE.ToString()", typeof(InvocationExpression));
+			InvocationExpression invExpr = ParseUtilCSharp.ParseExpression<InvocationExpression>("0xAFFE.ToString()");
 			Assert.AreEqual(0, invExpr.Arguments.Count);
 			Assert.IsTrue(invExpr.TargetObject is FieldReferenceExpression);
 			FieldReferenceExpression fre = invExpr.TargetObject as FieldReferenceExpression;
@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpDoubleTest1()
 		{
-			PrimitiveExpression pe = (PrimitiveExpression)ParseUtilCSharp.ParseExpression(".5e-06;", typeof(PrimitiveExpression));
+			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>(".5e-06;");
 			Assert.AreEqual(".5e-06", pe.StringValue);
 			Assert.AreEqual(.5e-06, (double)pe.Value);
 		}
@@ -45,7 +45,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpCharTest1()
 		{
-			PrimitiveExpression pe = (PrimitiveExpression)ParseUtilCSharp.ParseExpression("'\\u0356';", typeof(PrimitiveExpression));
+			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("'\\u0356';");
 			Assert.AreEqual("'\\u0356'", pe.StringValue);
 			Assert.AreEqual('\u0356', (char)pe.Value);
 		}
@@ -53,7 +53,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpStringTest1()
 		{
-			PrimitiveExpression pe = (PrimitiveExpression)ParseUtilCSharp.ParseExpression("\"\\n\\t\\u0005 Hello World !!!\";", typeof(PrimitiveExpression));
+			PrimitiveExpression pe = ParseUtilCSharp.ParseExpression<PrimitiveExpression>("\"\\n\\t\\u0005 Hello World !!!\";");
 			Assert.AreEqual("\"\\n\\t\\u0005 Hello World !!!\"", pe.StringValue);
 			Assert.AreEqual("\n\t\u0005 Hello World !!!", (string)pe.Value);
 		}
@@ -63,7 +63,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void PrimitiveExpression1Test()
 		{
-			InvocationExpression ie = (InvocationExpression)ParseUtilVBNet.ParseExpression("546.ToString()", typeof(InvocationExpression));
+			InvocationExpression ie = ParseUtilVBNet.ParseExpression<InvocationExpression>("546.ToString()");
 		}
 		#endregion
 	}

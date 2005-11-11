@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpDestructorDeclarationTest()
 		{
-			DestructorDeclaration dd = (DestructorDeclaration)ParseUtilCSharp.ParseTypeMember("~MyClass() {}", typeof(DestructorDeclaration));
+			DestructorDeclaration dd = ParseUtilCSharp.ParseTypeMember<DestructorDeclaration>("~MyClass() {}");
 		}
 		#endregion
 		

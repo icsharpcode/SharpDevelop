@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetAddHandlerTest()
 		{
-			AddHandlerStatement addHandlerStatement = (AddHandlerStatement)ParseUtilVBNet.ParseStatment("AddHandler Obj.Ev_Event, AddressOf EventHandler", typeof(AddHandlerStatement));
+			AddHandlerStatement addHandlerStatement = ParseUtilVBNet.ParseStatement<AddHandlerStatement>("AddHandler Obj.Ev_Event, AddressOf EventHandler");
 		}
 		#endregion
 	}

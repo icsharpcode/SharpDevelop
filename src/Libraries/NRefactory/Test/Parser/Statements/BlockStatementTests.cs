@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpBlockStatementTest()
 		{
-			BlockStatement blockStmt = (BlockStatement)ParseUtilCSharp.ParseStatment("{}", typeof(BlockStatement));
+			BlockStatement blockStmt = ParseUtilCSharp.ParseStatement<BlockStatement>("{}");
 		}
 		#endregion
 		

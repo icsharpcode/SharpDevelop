@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetStopStatementTest()
 		{
-			StopStatement stopStatement = (StopStatement)ParseUtilVBNet.ParseStatment("Stop", typeof(StopStatement));
+			StopStatement stopStatement = ParseUtilVBNet.ParseStatement<StopStatement>("Stop");
 		}
 		#endregion
 	}

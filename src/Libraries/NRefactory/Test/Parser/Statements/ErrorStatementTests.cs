@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetErrorStatementTest()
 		{
-			ErrorStatement errorStatement = (ErrorStatement)ParseUtilVBNet.ParseStatment("Error a", typeof(ErrorStatement));
+			ErrorStatement errorStatement = ParseUtilVBNet.ParseStatement<ErrorStatement>("Error a");
 		}
 		#endregion
 	}

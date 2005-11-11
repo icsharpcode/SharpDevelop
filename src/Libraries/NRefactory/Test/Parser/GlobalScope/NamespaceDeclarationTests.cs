@@ -25,7 +25,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			string program = "namespace TestNamespace {\n" +
 			                 "}\n";
-			NamespaceDeclaration ns = (NamespaceDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(NamespaceDeclaration));
+			NamespaceDeclaration ns = ParseUtilCSharp.ParseGlobal<NamespaceDeclaration>(program);
 			Assert.AreEqual("TestNamespace", ns.Name);
 		}
 
@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			                 "    namespace N2 {// Declares a namespace named N2 within N1.\n" +
 			                 "    }\n" +
 			                 "}\n";
-			NamespaceDeclaration ns = (NamespaceDeclaration)ParseUtilCSharp.ParseGlobal(program, typeof(NamespaceDeclaration));
+			NamespaceDeclaration ns = ParseUtilCSharp.ParseGlobal<NamespaceDeclaration>(program);
 			
 			Assert.AreEqual("N1", ns.Name);
 			
@@ -55,7 +55,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			string program = "Namespace TestNamespace" + Environment.NewLine +
 			                 "End Namespace" +Environment.NewLine;
-			NamespaceDeclaration ns = (NamespaceDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(NamespaceDeclaration));
+			NamespaceDeclaration ns = ParseUtilVBNet.ParseGlobal<NamespaceDeclaration>(program);
 			Assert.AreEqual("TestNamespace", ns.Name);
 		}
 		
@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			                 "    End Namespace\n" +
 			                 "End Namespace\n";
 			
-			NamespaceDeclaration ns = (NamespaceDeclaration)ParseUtilVBNet.ParseGlobal(program, typeof(NamespaceDeclaration));
+			NamespaceDeclaration ns = ParseUtilVBNet.ParseGlobal<NamespaceDeclaration>(program);
 			
 			Assert.AreEqual("N1", ns.Name);
 			

@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleFieldDeclarationTest()
 		{
-			FieldDeclaration fd = (FieldDeclaration)ParseUtilCSharp.ParseTypeMember("int[,,,] myField;", typeof(FieldDeclaration));
+			FieldDeclaration fd = ParseUtilCSharp.ParseTypeMember<FieldDeclaration>("int[,,,] myField;");
 			Assert.AreEqual("int", fd.TypeReference.Type);
 			Assert.AreEqual(new int[] { 3 } , fd.TypeReference.RankSpecifier);
 			Assert.AreEqual(1, fd.Fields.Count);
@@ -36,7 +36,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetSimpleFieldDeclarationTest()
 		{
-			FieldDeclaration fd = (FieldDeclaration)ParseUtilVBNet.ParseTypeMember("myField As Integer(,,,)", typeof(FieldDeclaration));
+			FieldDeclaration fd = ParseUtilVBNet.ParseTypeMember<FieldDeclaration>("myField As Integer(,,,)");
 			Assert.AreEqual(1, fd.Fields.Count);
 			
 			Assert.AreEqual("Integer", ((VariableDeclaration)fd.Fields[0]).TypeReference.Type);

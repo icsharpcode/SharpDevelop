@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpCheckedExpressionTest()
 		{
-			CheckedExpression ce = (CheckedExpression)ParseUtilCSharp.ParseExpression("checked(a)", typeof(CheckedExpression));
+			CheckedExpression ce = ParseUtilCSharp.ParseExpression<CheckedExpression>("checked(a)");
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
 		}
 		#endregion

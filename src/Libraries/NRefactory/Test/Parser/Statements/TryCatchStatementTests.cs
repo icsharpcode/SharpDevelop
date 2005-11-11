@@ -20,21 +20,21 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpSimpleTryCatchStatementTest()
 		{
-			TryCatchStatement tryCatchStatement = (TryCatchStatement)ParseUtilCSharp.ParseStatment("try { } catch { } ", typeof(TryCatchStatement));
+			TryCatchStatement tryCatchStatement = ParseUtilCSharp.ParseStatement<TryCatchStatement>("try { } catch { } ");
 			// TODO : Extend test.
 		}
 		
 		[Test]
 		public void CSharpSimpleTryCatchStatementTest2()
 		{
-			TryCatchStatement tryCatchStatement = (TryCatchStatement)ParseUtilCSharp.ParseStatment("try { } catch (Exception e) { } ", typeof(TryCatchStatement));
+			TryCatchStatement tryCatchStatement = ParseUtilCSharp.ParseStatement<TryCatchStatement>("try { } catch (Exception e) { } ");
 			// TODO : Extend test.
 		}
 		
 		[Test]
 		public void CSharpSimpleTryCatchFinallyStatementTest()
 		{
-			TryCatchStatement tryCatchStatement = (TryCatchStatement)ParseUtilCSharp.ParseStatment("try { } catch (Exception) { } finally { } ", typeof(TryCatchStatement));
+			TryCatchStatement tryCatchStatement = ParseUtilCSharp.ParseStatement<TryCatchStatement>("try { } catch (Exception) { } finally { } ");
 			// TODO : Extend test.
 		}
 		#endregion

@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpPrimitiveParenthesizedExpression()
 		{
-			ParenthesizedExpression p = (ParenthesizedExpression)ParseUtilCSharp.ParseExpression("((1))", typeof(ParenthesizedExpression));
+			ParenthesizedExpression p = ParseUtilCSharp.ParseExpression<ParenthesizedExpression>("((1))");
 			Assert.IsTrue(p.Expression is ParenthesizedExpression);
 			p = p.Expression as ParenthesizedExpression;;
 			Assert.IsTrue(p.Expression is PrimitiveExpression);
@@ -31,7 +31,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void VBNetPrimitiveParenthesizedExpression()
 		{
-			ParenthesizedExpression p = (ParenthesizedExpression)ParseUtilVBNet.ParseExpression("((1))", typeof(ParenthesizedExpression));
+			ParenthesizedExpression p = ParseUtilVBNet.ParseExpression<ParenthesizedExpression>("((1))");
 			Assert.IsTrue(p.Expression is ParenthesizedExpression);
 			p = p.Expression as ParenthesizedExpression;;
 			Assert.IsTrue(p.Expression is PrimitiveExpression);

@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		[Test]
 		public void CSharpIndexerExpressionTest()
 		{
-			IndexerExpression ie = (IndexerExpression)ParseUtilCSharp.ParseExpression("field[1, \"Hello\", 'a']", typeof(IndexerExpression));
+			IndexerExpression ie = ParseUtilCSharp.ParseExpression<IndexerExpression>("field[1, \"Hello\", 'a']");
 			Assert.IsTrue(ie.TargetObject is IdentifierExpression);
 			
 			Assert.AreEqual(3, ie.Indices.Count);
