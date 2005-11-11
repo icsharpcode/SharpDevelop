@@ -341,7 +341,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			TypeDeclaration oldType = currentType;
 			currentType = typeDeclaration;
 			
-			nodeTracker.TrackedVisitChildren(typeDeclaration, data);
+			if (typeDeclaration.Type == ClassType.Enum) {
+				OutputEnumMembers(typeDeclaration, data);
+			} else {
+				nodeTracker.TrackedVisitChildren(typeDeclaration, data);
+			}
 			currentType = oldType;
 			
 			--outputFormatter.IndentationLevel;
@@ -353,6 +357,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(typeToken);
 			outputFormatter.NewLine();
 			return null;
+		}
+		
+		void OutputEnumMembers(TypeDeclaration typeDeclaration, object data)
+		{
+			foreach (FieldDeclaration fieldDeclaration in typeDeclaration.Children) {
+				VariableDeclaration f = (VariableDeclaration)fieldDeclaration.Fields[0];
+				VisitAttributes(fieldDeclaration.Attributes, data);
+				outputFormatter.Indent();
+				outputFormatter.PrintIdentifier(f.Name);
+				if (f.Initializer != null && !f.Initializer.IsNull) {
+					outputFormatter.Space();
+					outputFormatter.PrintToken(Tokens.Assign);
+					outputFormatter.Space();
+					nodeTracker.TrackedVisit(f.Initializer, data);
+				}
+				outputFormatter.NewLine();
+			}
 		}
 		
 		public object Visit(TemplateDefinition templateDefinition, object data)

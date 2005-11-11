@@ -125,5 +125,17 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestProgram("Public Delegate Function Predicate(Of T)(ByVal item As T) As String");
 		}
+		
+		[Test]
+		public void Enum()
+		{
+			TestProgram("Enum MyTest\nRed\n Green\n Blue\nYellow\n End Enum");
+		}
+		
+		[Test]
+		public void EnumWithInitializers()
+		{
+			TestProgram("Enum MyTest\nRed = 1\n Green = 2\n Blue = 4\n Yellow = 8\n End Enum");
+		}
 	}
 }

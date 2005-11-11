@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-using DebuggerLibrary;
+using Debugger;
 using Microsoft.CSharp;
 using NUnit.Framework;
 using System;

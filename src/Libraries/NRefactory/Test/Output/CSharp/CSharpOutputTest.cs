@@ -162,5 +162,17 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestProgram("public delegate void Predicate<T>(T item) where T : IDisposable, ICloneable;");
 		}
+		
+		[Test]
+		public void Enum()
+		{
+			TestProgram("enum MyTest { Red, Green, Blue, Yellow }");
+		}
+		
+		[Test]
+		public void EnumWithInitializers()
+		{
+			TestProgram("enum MyTest { Red = 1, Green = 2, Blue = 4, Yellow = 8 }");
+		}
 	}
 }
