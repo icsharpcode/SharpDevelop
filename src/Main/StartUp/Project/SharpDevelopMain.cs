@@ -237,26 +237,16 @@ namespace ICSharpCode.SharpDevelop
 			LoggingService.Info("Loading AddInTree...");
 			AddInTree.Load();
 			
+			// run workspace autostart commands
+			LoggingService.Info("Running autostart commands...");
+			foreach (ICommand command in AddInTree.BuildItems("/Workspace/Autostart", null, false)) {
+				command.Run();
+			}
+			
 			LoggingService.Info("Initializing workbench...");
 			// .NET base autostarts
 			// taken out of the add-in tree for performance reasons (every tick in startup counts)
 			WorkbenchSingleton.InitializeWorkbench();
-			
-			// run workspace autostart commands
-			try {
-				LoggingService.Info("Running autostart commands...");
-				foreach (ICommand command in AddInTree.BuildItems("/Workspace/Autostart", null, false)) {
-					command.Run();
-				}
-			} catch (XmlException e) {
-				LoggingService.Error("Could not load XML", e);
-				MessageBox.Show("Could not load XML :" + Environment.NewLine + e.Message);
-				return;
-			} finally {
-				if (SplashScreenForm.SplashScreen != null) {
-					SplashScreenForm.SplashScreen.Dispose();
-				}
-			}
 		}
 	}
 }
