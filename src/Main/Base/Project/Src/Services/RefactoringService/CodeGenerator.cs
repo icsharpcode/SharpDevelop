@@ -326,13 +326,23 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			
 			List<ParameterDeclarationExpression> parameters = new List<ParameterDeclarationExpression>(1);
 			parameters.Add(new ParameterDeclarationExpression(type, "e"));
+			ModifierEnum modifier;
+			if (e.IsStatic)
+				modifier = ModifierEnum.Private | ModifierEnum.Static;
+			else if (e.DeclaringType.IsSealed)
+				modifier = ModifierEnum.Protected;
+			else
+				modifier = ModifierEnum.Protected | ModifierEnum.Virtual;
 			MethodDeclaration method = new MethodDeclaration("On" + e.Name,
-			                                                 ConvertModifier(e.Modifiers | ModifierEnum.Virtual),
+			                                                 ConvertModifier(modifier),
 			                                                 new TypeReference("System.Void"),
 			                                                 parameters, null);
 			
 			ArrayList arguments = new ArrayList(2);
-			arguments.Add(new ThisReferenceExpression());
+			if (e.IsStatic)
+				arguments.Add(new PrimitiveExpression(null, "null"));
+			else
+				arguments.Add(new ThisReferenceExpression());
 			arguments.Add(new IdentifierExpression("e"));
 			method.Body = new BlockStatement();
 			method.Body.AddChild(new RaiseEventStatement(e.Name, arguments));

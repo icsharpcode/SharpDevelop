@@ -56,18 +56,18 @@ namespace ICSharpCode.FormDesigner
 			keyTable[Keys.Right] = new CommandWrapper(MenuCommands.KeyMoveRight);
 			keyTable[Keys.Up]    = new CommandWrapper(MenuCommands.KeyMoveUp);
 			keyTable[Keys.Down]  = new CommandWrapper(MenuCommands.KeyMoveDown);
-			keyTable[Keys.Tab]   = new CommandWrapper(MenuCommands.KeySelectNext, false);
-			keyTable[Keys.Delete]   = new CommandWrapper(MenuCommands.Delete, false);
-			keyTable[Keys.Back]   = new CommandWrapper(MenuCommands.Delete, false);
+			keyTable[Keys.Tab]   = new CommandWrapper(MenuCommands.KeySelectNext);
+			keyTable[Keys.Delete]   = new CommandWrapper(MenuCommands.Delete);
+			keyTable[Keys.Back]   = new CommandWrapper(MenuCommands.Delete);
 			
 			// shift modified keys
 			keyTable[Keys.Left | Keys.Shift]  = new CommandWrapper(MenuCommands.KeySizeWidthDecrease);
 			keyTable[Keys.Right | Keys.Shift] = new CommandWrapper(MenuCommands.KeySizeWidthIncrease);
 			keyTable[Keys.Up | Keys.Shift]    = new CommandWrapper(MenuCommands.KeySizeHeightDecrease);
 			keyTable[Keys.Down | Keys.Shift]  = new CommandWrapper(MenuCommands.KeySizeHeightIncrease);
-			keyTable[Keys.Tab | Keys.Shift]   = new CommandWrapper(MenuCommands.KeySelectPrevious, false);
-			keyTable[Keys.Delete| Keys.Shift]   = new CommandWrapper(MenuCommands.Delete, false);
-			keyTable[Keys.Back| Keys.Shift]   = new CommandWrapper(MenuCommands.Delete, false);
+			keyTable[Keys.Tab | Keys.Shift]   = new CommandWrapper(MenuCommands.KeySelectPrevious);
+			keyTable[Keys.Delete| Keys.Shift]   = new CommandWrapper(MenuCommands.Delete);
+			keyTable[Keys.Back| Keys.Shift]   = new CommandWrapper(MenuCommands.Delete);
 			
 			// ctrl modified keys
 			keyTable[Keys.Left | Keys.Control]  = new CommandWrapper(MenuCommands.KeyNudgeLeft);
@@ -80,7 +80,7 @@ namespace ICSharpCode.FormDesigner
 			keyTable[Keys.Right | Keys.Control | Keys.Shift] = new CommandWrapper(MenuCommands.KeyNudgeWidthIncrease);
 			keyTable[Keys.Up | Keys.Control | Keys.Shift]    = new CommandWrapper(MenuCommands.KeyNudgeHeightDecrease);
 			keyTable[Keys.Down | Keys.Control | Keys.Shift]  = new CommandWrapper(MenuCommands.KeyNudgeHeightIncrease);
-		} 
+		}
 		
 		public bool PreFilterMessage(ref Message m)
 		{
@@ -120,21 +120,17 @@ namespace ICSharpCode.FormDesigner
 //					} catch (Exception e) {
 //						MessageService.ShowError(e);
 //					}
-//				}	
+//				}
 //				return false;
 //			}
 			
 			Keys keyPressed = (Keys)m.WParam.ToInt32() | Control.ModifierKeys;
-			if (keyPressed == Keys.F1 | keyPressed == Keys.F4) {
-				return false;
-			}
 			
 			if (keyPressed == Keys.Escape) {
-				if (formDesigner.IsTabOrderMode)
+				if (formDesigner.IsTabOrderMode) {
 					formDesigner.HideTabOrder();
-				else
-					formDesigner.WorkbenchWindow.SwitchView(0);
-				return true;
+					return true;
+				}
 			}
 			
 			CommandWrapper commandWrapper = (CommandWrapper)keyTable[keyPressed];
@@ -151,8 +147,7 @@ namespace ICSharpCode.FormDesigner
 				return true;
 			}
 			
-			return (System.Windows.Forms.Control.ModifierKeys & Keys.Alt)     != Keys.Alt &&
-			       (System.Windows.Forms.Control.ModifierKeys & Keys.Control) != Keys.Control;
+			return false;
 		}
 		
 		class CommandWrapper
@@ -172,7 +167,7 @@ namespace ICSharpCode.FormDesigner
 				}
 			}
 			
-			public CommandWrapper(CommandID commandID) : this(commandID, true)
+			public CommandWrapper(CommandID commandID) : this(commandID, false)
 			{
 			}
 			public CommandWrapper(CommandID commandID, bool restoreSelection)
