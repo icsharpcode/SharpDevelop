@@ -486,6 +486,7 @@ namespace ICSharpCode.TextEditor
 				HiddenMouseCursor = true;
 				Cursor.Hide();
 			}
+			SetToolTip(null);
 			
 			motherTextEditorControl.BeginUpdate();
 			// INSERT char
