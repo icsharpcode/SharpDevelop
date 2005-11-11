@@ -28,9 +28,8 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		public UIService()
 		{
-			
-			styles["DialogFont"]     = ResourceService.LoadFont("Tahoma", 10);
-			styles["HighlightColor"] = Color.LightYellow;
+			//styles["DialogFont"]     = Control.DefaultFont;
+			//styles["HighlightColor"] = Color.LightYellow;
 		}
 		
 		public void SetUIDirty()
