@@ -10,6 +10,16 @@
 		          class="ICSharpCode.SharpDevelop.Services.WindowsDebugger"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/ViewContent/DefaultTextEditor/ContextMenu">
+		<Condition name = "IsProcessRunning" isdebugging="True" isprocessrunning="False">
+			<MenuItem id = "DebuggerSetCurrentStatement"
+			          insertbefore = "Refactoring"
+			          label = "Set current statement"
+			          icon = "Icons.16x16.Debug.StepInto"
+			          class = "ICSharpCode.SharpDevelop.Services.SetCurrentStatementCommand"/>
+		</Condition>
+	</Path>
+		
 	<!--<Path name = "/SharpDevelop/Workbench/MainMenu/Debug">
 		<MenuItem id = "CatchHandledExceptionsSeparator"
 		          type = "Separator"

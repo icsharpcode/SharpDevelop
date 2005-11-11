@@ -281,15 +281,6 @@ namespace ICSharpCode.Core
 		static DebuggerGridControl oldToolTipControl;
 		static int oldLine;
 		
-		public class SetIPArgs: EventArgs
-		{
-			public string filename;
-			public int line;
-			public int column;
-		}
-		
-		public static event EventHandler<SetIPArgs> SetIPRequest;
-		
 		/// <summary>
 		/// This function shows variable values as tooltips
 		/// </summary>
@@ -312,18 +303,6 @@ namespace ICSharpCode.Core
 					Point logicPos = textArea.TextView.GetLogicalPosition(mousepos.X - viewRect.Left,
 					                                                      mousepos.Y - viewRect.Top);
 					if (logicPos.Y >= 0 && logicPos.Y < textArea.Document.TotalNumberOfLines) {
-						// This is for testing olny - it must be reworked properly
-						if (Control.ModifierKeys == (Keys.Control | Keys.Shift) && currentDebugger != null && currentDebugger.IsDebugging) {
-							SetIPArgs a = new SetIPArgs();
-							a.filename = textArea.MotherTextEditorControl.FileName;
-							a.line = logicPos.Y;
-							a.column = logicPos.X;
-							if (SetIPRequest != null) {
-								SetIPRequest(null, a);
-							}
-							return;
-						}
-						
 						IDocument doc = textArea.Document;
 						IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textArea.MotherTextEditorControl.FileName);
 						if (expressionFinder == null)
