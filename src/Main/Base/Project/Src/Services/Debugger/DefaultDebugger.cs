@@ -122,6 +122,17 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
+		public bool CanSetInstructionPointer(string filename, int line, int column)
+		{
+			return false;
+		}
+		
+		public bool SetInstructionPointer(string filename, int line, int column)
+		{
+			return false;
+		}
+		
+		
 		public event EventHandler DebugStarted;
 		
 		protected virtual void OnDebugStarted(EventArgs e) 

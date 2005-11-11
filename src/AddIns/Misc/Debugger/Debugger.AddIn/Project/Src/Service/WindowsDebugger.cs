@@ -259,6 +259,26 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 		}
 		
+		public bool CanSetInstructionPointer(string filename, int line, int column)
+		{
+			if (debugger != null && debugger.IsPaused && debugger.CurrentFunction != null) {
+				SourcecodeSegment seg = debugger.CurrentFunction.CanSetIP(filename, line, column);
+				return seg != null;
+			} else {
+				return false;
+			}
+		}
+		
+		public bool SetInstructionPointer(string filename, int line, int column)
+		{
+			if (CanSetInstructionPointer(filename, line, column)) {
+				SourcecodeSegment seg = debugger.CurrentFunction.SetIP(filename, line, column);
+				return seg != null;
+			} else {
+				return false;
+			}
+		}
+		
 		public void Dispose() 
 		{
 			Stop();

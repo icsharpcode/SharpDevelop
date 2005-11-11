@@ -18,14 +18,9 @@ namespace ICSharpCode.SharpDevelop.Services
 		public override void Run()
 		{
 			SharpDevelopTextAreaControl textEditor = this.Owner as SharpDevelopTextAreaControl;
-			if (textEditor == null) return;
+			if (textEditor == null || DebuggerService.CurrentDebugger == null) return;
 			
-			WindowsDebugger debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
-			string fileName = textEditor.FileName;
-			int line = textEditor.ActiveTextAreaControl.Caret.Line + 1;
-			int column = textEditor.ActiveTextAreaControl.Caret.Column;
-			
-			debugger.DebuggerCore.CurrentThread.CurrentFunction.SetIP(fileName, line, column);
+			DebuggerService.CurrentDebugger.SetInstructionPointer(textEditor.FileName, textEditor.ActiveTextAreaControl.Caret.Line + 1, textEditor.ActiveTextAreaControl.Caret.Column);
 		}
 	}
 }

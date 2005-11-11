@@ -68,6 +68,18 @@ namespace ICSharpCode.Core
 		DebuggerGridControl GetTooltipControl(string variable);
 		
 		/// <summary>
+		/// Queries the debugger whether it is possible to set the instruction pointer to a given position.
+		/// </summary>
+		/// <returns>True if possible. False otherwise</returns>
+		bool CanSetInstructionPointer(string filename, int line, int column);
+		
+		/// <summary>
+		/// Set the instruction pointer to a given position.
+		/// </summary>
+		/// <returns>True if successful. False otherwise</returns>
+		bool SetInstructionPointer(string filename, int line, int column);
+		
+		/// <summary>
 		/// Ocurrs after the debugger has started.
 		/// </summary>
 		event EventHandler DebugStarted;
