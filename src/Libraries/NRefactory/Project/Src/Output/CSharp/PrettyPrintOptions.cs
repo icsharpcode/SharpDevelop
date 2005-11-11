@@ -44,6 +44,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		BraceStyle eventAddBraceStyle     = BraceStyle.EndOfLine;
 		BraceStyle eventRemoveBraceStyle  = BraceStyle.EndOfLine;
 		
+		BraceStyle statementBraceStyle = BraceStyle.EndOfLine;
+		
+		public BraceStyle StatementBraceStyle {
+			get {
+				return statementBraceStyle;
+			}
+			set {
+				statementBraceStyle = value;
+			}
+		}
+		
 		public BraceStyle NameSpaceBraceStyle {
 			get {
 				return nameSpaceBraceStyle;

@@ -137,5 +137,17 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestProgram("Enum MyTest\nRed = 1\n Green = 2\n Blue = 4\n Yellow = 8\n End Enum");
 		}
+		
+		[Test]
+		public void SyncLock()
+		{
+			TestStatement("SyncLock a\nWork()\nEnd SyncLock");
+		}
+		
+		[Test]
+		public void Using()
+		{
+			TestStatement("Using a As A = New A()\na.Work()\nEnd Using");
+		}
 	}
 }

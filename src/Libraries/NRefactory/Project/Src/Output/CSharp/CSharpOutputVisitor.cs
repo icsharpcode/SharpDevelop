@@ -461,14 +461,27 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(FieldDeclaration fieldDeclaration, object data)
 		{
 			// TODO: use FieldDeclaration.GetTypeForField and VB.NET fields aren't that easy....
-			VisitAttributes(fieldDeclaration.Attributes, data);
-			outputFormatter.Indent();
-			OutputModifier(fieldDeclaration.Modifier);
-			nodeTracker.TrackedVisit(fieldDeclaration.TypeReference, data);
-			outputFormatter.Space();
-			AppendCommaSeparatedList(fieldDeclaration.Fields);
-			outputFormatter.PrintToken(Tokens.Semicolon);
-			outputFormatter.NewLine();
+			if (!fieldDeclaration.TypeReference.IsNull) {
+				VisitAttributes(fieldDeclaration.Attributes, data);
+				outputFormatter.Indent();
+				OutputModifier(fieldDeclaration.Modifier);
+				nodeTracker.TrackedVisit(fieldDeclaration.TypeReference, data);
+				outputFormatter.Space();
+				AppendCommaSeparatedList(fieldDeclaration.Fields);
+				outputFormatter.PrintToken(Tokens.Semicolon);
+				outputFormatter.NewLine();
+			} else {
+				foreach (VariableDeclaration varDecl in fieldDeclaration.Fields) {
+					VisitAttributes(fieldDeclaration.Attributes, data);
+					outputFormatter.Indent();
+					OutputModifier(fieldDeclaration.Modifier);
+					nodeTracker.TrackedVisit(varDecl.TypeReference, data);
+					outputFormatter.Space();
+					nodeTracker.TrackedVisit(varDecl, data);
+					outputFormatter.PrintToken(Tokens.Semicolon);
+					outputFormatter.NewLine();
+				}
+			}
 			return null;
 		}
 		
@@ -831,7 +844,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(BlockStatement blockStatement, object data)
 		{
-			OutputBlock(blockStatement, BraceStyle.NextLine);
+			if (data is BraceStyle)
+				OutputBlock(blockStatement, (BraceStyle)data);
+			else
+				OutputBlock(blockStatement, BraceStyle.NextLine);
 			return null;
 		}
 		
@@ -1020,11 +1036,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			nodeTracker.TrackedVisit(elseIfSection.Condition, data);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(elseIfSection.EmbeddedStatement, data);
-			outputFormatter.NewLine();
-			--outputFormatter.IndentationLevel;
+			
+			WriteEmbeddedStatement(elseIfSection.EmbeddedStatement);
+			
 			return null;
 		}
 		
@@ -1074,16 +1088,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.EmitSemicolon = true;
 			outputFormatter.DoNewLine     = true;
 			outputFormatter.DoIndent      = true;
-			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
-			if (forStatement.EmbeddedStatement is BlockStatement) {
-				nodeTracker.TrackedVisit(forStatement.EmbeddedStatement, false);
-			} else {
-				nodeTracker.TrackedVisit(forStatement.EmbeddedStatement, data);
-			}
-			outputFormatter.NewLine();
-			--outputFormatter.IndentationLevel;
+			
+			WriteEmbeddedStatement(forStatement.EmbeddedStatement);
+			
 			return null;
+		}
+		
+		void WriteEmbeddedStatement(Statement statement)
+		{
+			if (statement is BlockStatement) {
+				nodeTracker.TrackedVisit(statement, prettyPrintOptions.StatementBraceStyle);
+			} else {
+				++outputFormatter.IndentationLevel;
+				outputFormatter.NewLine();
+				nodeTracker.TrackedVisit(statement, null);
+				outputFormatter.NewLine();
+				--outputFormatter.IndentationLevel;
+			}
 		}
 		
 		public object Visit(LabelStatement labelStatement, object data)
@@ -1248,11 +1269,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			++outputFormatter.IndentationLevel;
-			if (doLoopStatement.EmbeddedStatement is BlockStatement) {
-				nodeTracker.TrackedVisit(doLoopStatement.EmbeddedStatement, false);
-			} else {
-				nodeTracker.TrackedVisit(doLoopStatement.EmbeddedStatement, data);
-			}
+			WriteEmbeddedStatement(doLoopStatement.EmbeddedStatement);
 			--outputFormatter.IndentationLevel;
 			
 			if (doLoopStatement.ConditionPosition == ConditionPosition.End) {
@@ -1279,14 +1296,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			nodeTracker.TrackedVisit(foreachStatement.Expression, data);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
-			if (foreachStatement.EmbeddedStatement is BlockStatement) {
-				nodeTracker.TrackedVisit(foreachStatement.EmbeddedStatement, false);
-			} else {
-				nodeTracker.TrackedVisit(foreachStatement.EmbeddedStatement, data);
-			}
-			--outputFormatter.IndentationLevel;
+			
+			WriteEmbeddedStatement(foreachStatement.EmbeddedStatement);
+			
 			return null;
 		}
 		
@@ -1299,15 +1311,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			nodeTracker.TrackedVisit(lockStatement.LockExpression, data);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			outputFormatter.NewLine();
 			
-			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(lockStatement.EmbeddedStatement, data);
-			--outputFormatter.IndentationLevel;
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+			WriteEmbeddedStatement(lockStatement.EmbeddedStatement);
+			
 			return null;
 		}
 		
@@ -1328,15 +1334,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.EmitSemicolon = true;
 			
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			outputFormatter.NewLine();
 			
-			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(usingStatement.EmbeddedStatement, data);
-			--outputFormatter.IndentationLevel;
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+			WriteEmbeddedStatement(usingStatement.EmbeddedStatement);
+			
 			return null;
 		}
 		

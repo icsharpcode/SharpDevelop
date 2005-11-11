@@ -1066,10 +1066,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (localVariableDeclaration.Modifier != Modifier.None) {
 				OutputModifier(localVariableDeclaration.Modifier);
 			}
-			if ((localVariableDeclaration.Modifier & Modifier.Const) == 0) {
-				outputFormatter.PrintToken(Tokens.Dim);
+			if (!isUsingResourceAcquisition) {
+				if ((localVariableDeclaration.Modifier & Modifier.Const) == 0) {
+					outputFormatter.PrintToken(Tokens.Dim);
+				}
+				outputFormatter.Space();
 			}
-			outputFormatter.Space();
 			currentVariableType = localVariableDeclaration.TypeReference;
 			
 			AppendCommaSeparatedList(localVariableDeclaration.Variables);
@@ -1450,16 +1452,34 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(LockStatement lockStatement, object data)
 		{
-			errors.Error(-1, -1, String.Format("LockStatement is unsupported"));
+			outputFormatter.PrintToken(Tokens.SyncLock);
+			outputFormatter.Space();
+			nodeTracker.TrackedVisit(lockStatement.LockExpression, data);
+			outputFormatter.NewLine();
+			
+			++outputFormatter.IndentationLevel;
+			nodeTracker.TrackedVisit(lockStatement.EmbeddedStatement, data);
+			--outputFormatter.IndentationLevel;
+			outputFormatter.NewLine();
+			
+			outputFormatter.Indent();
+			outputFormatter.PrintToken(Tokens.End);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.SyncLock);
+			outputFormatter.NewLine();
 			return null;
 		}
+		
+		bool isUsingResourceAcquisition;
 		
 		public object Visit(UsingStatement usingStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Using);
 			outputFormatter.Space();
 			
+			isUsingResourceAcquisition = true;
 			nodeTracker.TrackedVisit(usingStatement.ResourceAcquisition, data);
+			isUsingResourceAcquisition = false;
 			outputFormatter.NewLine();
 			
 			++outputFormatter.IndentationLevel;
@@ -1471,7 +1491,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.End);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Using);
-			outputFormatter.Space();
 			outputFormatter.NewLine();
 			
 			return null;
@@ -1489,7 +1508,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.End);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.With);
-			outputFormatter.Space();
 			outputFormatter.NewLine();
 			return null;
 		}
