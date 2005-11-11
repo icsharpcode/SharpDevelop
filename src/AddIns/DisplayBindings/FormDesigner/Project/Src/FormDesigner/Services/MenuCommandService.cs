@@ -29,6 +29,7 @@ namespace ICSharpCode.FormDesigner.Services
 		ArrayList     verbs    = new ArrayList();
 		
 		Control panel;
+		DesignSurface designSurface;
 		
 		public DesignerVerbCollection Verbs {
 			get {
@@ -38,10 +39,11 @@ namespace ICSharpCode.FormDesigner.Services
 			}
 		}
 		
-		public MenuCommandService(Control panel, IServiceContainer serviceContainer)
+		public MenuCommandService(Control panel, DesignSurface designSurface, IServiceContainer serviceContainer)
 		{
 			this.panel            = panel;
-			this.serviceContainer = serviceContainer;
+			this.designSurface = designSurface;
+			this.serviceContainer = serviceContainer;			
 		}
 		
 		public void AddCommand(System.ComponentModel.Design.MenuCommand command)
@@ -130,7 +132,7 @@ namespace ICSharpCode.FormDesigner.Services
 		{
 			DesignerVerbCollection designerVerbCollection = new DesignerVerbCollection();
 			
-			ISelectionService selectionService = (ISelectionService)serviceContainer.GetService(typeof(ISelectionService));
+			ISelectionService selectionService = (ISelectionService)designSurface.GetService(typeof(ISelectionService));
 			IDesignerHost host = (IDesignerHost)serviceContainer.GetService(typeof(IDesignerHost));
 			if (host != null && selectionService != null && selectionService.SelectionCount == 1) {
 				IComponent selectedComponent = selectionService.PrimarySelection as Component;

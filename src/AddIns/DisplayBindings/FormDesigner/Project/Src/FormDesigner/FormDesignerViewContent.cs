@@ -119,7 +119,6 @@ namespace ICSharpCode.FormDesigner
 			serviceContainer.AddService(typeof(System.Windows.Forms.Design.IUIService), new UIService());
 			serviceContainer.AddService(typeof(System.Drawing.Design.IToolboxService), ToolboxProvider.ToolboxService);
 			
-			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormDesigner.Services.MenuCommandService(p, serviceContainer));
 			serviceContainer.AddService(typeof(IHelpService), new HelpService());
 			serviceContainer.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
 			designerResourceService = new DesignerResourceService(this.resources);
@@ -130,11 +129,11 @@ namespace ICSharpCode.FormDesigner
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerEventService), new DesignerEventService());
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.DesignerOptionService), new ICSharpCode.FormDesigner.Services.DesignerOptionService());
 			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService());
-			
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
 			
 			designSurface = new DesignSurface(serviceContainer);
 						
+			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormDesigner.Services.MenuCommandService(p, designSurface, serviceContainer));
 			ICSharpCode.FormDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormDesigner.Services.EventBindingService(designSurface);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
