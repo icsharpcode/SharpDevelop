@@ -174,6 +174,10 @@ namespace ICSharpCode.SharpDevelop
 				
 				InitializeCore();
 				
+				if (SplashScreenForm.SplashScreen != null) {
+					SplashScreenForm.SplashScreen.Dispose();
+				}
+				
 				bool exception = false;
 				// finally start the workbench.
 				try {
