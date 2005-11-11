@@ -1864,7 +1864,7 @@ EmbeddedStatement<out Statement statement>
 	EmbeddedStatement<out embeddedStatement>
 	[ "else" EmbeddedStatement<out elseStatement> ]
 	                            (. statement = elseStatement != null ? (Statement)new IfElseStatement(expr, embeddedStatement, elseStatement) :  (Statement)new IfElseStatement(expr, embeddedStatement); .)
-	| "switch" (. ArrayList switchSections = new ArrayList(); SwitchSection switchSection; .)
+	| "switch" (. List<SwitchSection> switchSections = new List<SwitchSection>(); SwitchSection switchSection; .)
 	  "(" Expr<out expr> ")"
 	  "{" { SwitchSection<out switchSection> (. switchSections.Add(switchSection); .) } 
 	  "}"  (. statement = new SwitchStatement(expr, switchSections); .)
@@ -1967,7 +1967,7 @@ SwitchLabel<out CaseLabel label>
 TryStatement<out Statement tryStatement>
 (.
 	Statement blockStmt = null, finallyStmt = null;
-	ArrayList catchClauses = null;
+	List<CatchClause> catchClauses = null;
 .)
 =
 	"try"  Block<out blockStmt>
@@ -1981,9 +1981,9 @@ TryStatement<out Statement tryStatement>
 	.)
 .
 
-CatchClauses<out ArrayList catchClauses>
+CatchClauses<out List<CatchClause> catchClauses>
 (.
-	catchClauses = new ArrayList();
+	catchClauses = new List<CatchClause>();
 .)
 =
 	"catch" (. string identifier;

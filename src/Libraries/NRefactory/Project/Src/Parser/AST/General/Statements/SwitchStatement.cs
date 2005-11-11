@@ -7,15 +7,14 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST 
 {
 	public class SwitchStatement : Statement
 	{
 		Expression          switchExpression;
-//		List<SwitchSection> switchSections;
-		ArrayList switchSections;
+		List<SwitchSection> switchSections;
 		
 		public Expression SwitchExpression {
 			get {
@@ -26,16 +25,16 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList SwitchSections {
+		public List<SwitchSection> SwitchSections {
 			get {
 				return switchSections;
 			}
 			set {
-				switchSections =  value == null ? new ArrayList(1) : value;
+				switchSections =  value ?? new List<SwitchSection>(1);
 			}
 		}
 		
-		public SwitchStatement(Expression switchExpression, ArrayList switchSections)
+		public SwitchStatement(Expression switchExpression, List<SwitchSection> switchSections)
 		{
 			this.SwitchExpression = switchExpression;
 			this.SwitchSections   = switchSections;
@@ -44,7 +43,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		public SwitchStatement(Expression switchExpression)
 		{
 			this.SwitchExpression = switchExpression;
-			this.switchSections   = new ArrayList(1);
+			this.switchSections   = new List<SwitchSection>(1);
 		}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)
@@ -62,24 +61,23 @@ namespace ICSharpCode.NRefactory.Parser.AST
 	
 	public class SwitchSection : BlockStatement
 	{
-//		List<CaseLabel> switchLabels;
-		ArrayList switchLabels;
+		List<CaseLabel> switchLabels;
 		
-		public ArrayList SwitchLabels {
+		public List<CaseLabel> SwitchLabels {
 			get {
 				return switchLabels;
 			}
 			set {
-				switchLabels = value == null ? new ArrayList(1) : value;
+				switchLabels = value ?? new List<CaseLabel>(1);
 			}
 		}
 		
 		public SwitchSection()
 		{
-			switchLabels = new ArrayList(1);
+			switchLabels = new List<CaseLabel>(1);
 		}
 		
-		public SwitchSection(ArrayList switchLabels)
+		public SwitchSection(List<CaseLabel> switchLabels)
 		{
 			SwitchLabels = switchLabels;
 		}

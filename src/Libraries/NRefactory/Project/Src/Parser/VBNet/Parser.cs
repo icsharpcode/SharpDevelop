@@ -5391,13 +5391,13 @@ out expr);
 			EndOfStmt();
 
 #line  2560 "VBNET.ATG" 
-			ArrayList selectSections = new ArrayList();
+			List<SwitchSection> selectSections = new List<SwitchSection>();
 			Statement block = null;
 			
 			while (la.kind == 57) {
 
 #line  2564 "VBNET.ATG" 
-				ArrayList caseClauses = null; 
+				List<CaseLabel> caseClauses = null; 
 				lexer.NextToken();
 				CaseClauses(
 #line  2565 "VBNET.ATG" 
@@ -5630,7 +5630,7 @@ localVariableDeclaration.Variables);
 out Statement tryStatement) {
 
 #line  2817 "VBNET.ATG" 
-		Statement blockStmt = null, finallyStmt = null;ArrayList catchClauses = null;
+		Statement blockStmt = null, finallyStmt = null;List<CatchClause> catchClauses = null;
 		
 		Expect(175);
 		EndOfStmt();
@@ -5760,10 +5760,10 @@ out type);
 
 	void CaseClauses(
 #line  2746 "VBNET.ATG" 
-out ArrayList caseClauses) {
+out List<CaseLabel> caseClauses) {
 
 #line  2748 "VBNET.ATG" 
-		caseClauses = new ArrayList();
+		caseClauses = new List<CaseLabel>();
 		CaseLabel caseClause = null;
 		
 		CaseClause(
@@ -5971,10 +5971,10 @@ out sexpr);
 
 	void CatchClauses(
 #line  2830 "VBNET.ATG" 
-out ArrayList catchClauses) {
+out List<CatchClause> catchClauses) {
 
 #line  2832 "VBNET.ATG" 
-		catchClauses = new ArrayList();
+		catchClauses = new List<CatchClause>();
 		TypeReference type = null;
 		Statement blockStmt = null;
 		Expression expr = null;

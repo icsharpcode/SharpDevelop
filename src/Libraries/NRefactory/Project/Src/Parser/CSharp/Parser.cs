@@ -3907,7 +3907,7 @@ out elseStatement);
 			lexer.NextToken();
 
 #line  1867 "cs.ATG" 
-			ArrayList switchSections = new ArrayList(); SwitchSection switchSection; 
+			List<SwitchSection> switchSections = new List<SwitchSection>(); SwitchSection switchSection; 
 			Expect(20);
 			Expr(
 #line  1868 "cs.ATG" 
@@ -4304,7 +4304,7 @@ out Statement tryStatement) {
 
 #line  1969 "cs.ATG" 
 		Statement blockStmt = null, finallyStmt = null;
-		ArrayList catchClauses = null;
+		List<CatchClause> catchClauses = null;
 		
 		Expect(113);
 		Block(
@@ -4382,10 +4382,10 @@ out expr);
 
 	void CatchClauses(
 #line  1984 "cs.ATG" 
-out ArrayList catchClauses) {
+out List<CatchClause> catchClauses) {
 
 #line  1986 "cs.ATG" 
-		catchClauses = new ArrayList();
+		catchClauses = new List<CatchClause>();
 		
 		Expect(55);
 

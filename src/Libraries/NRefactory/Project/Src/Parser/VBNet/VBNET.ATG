@@ -2557,11 +2557,11 @@ EmbeddedStatement<out Statement statement>
 	)
 	| /* 10.8.2 */
 	"Select" [ "Case" ] Expr<out expr> EndOfStmt
-	(.ArrayList selectSections = new ArrayList();
+	(.List<SwitchSection> selectSections = new List<SwitchSection>();
 		Statement block = null;
 	.)
 	{
-		(.ArrayList caseClauses = null; .)
+		(.List<CaseLabel> caseClauses = null; .)
 		"Case" CaseClauses<out caseClauses> [ IF(IsNotStatementSeparator()) ":" ] EndOfStmt
 		(.
 			SwitchSection selectSection = new SwitchSection(caseClauses);
@@ -2743,9 +2743,9 @@ ResumeStatement<out ResumeStatement resumeStatement>
 	.
 
 /* 18.8.2 */
-CaseClauses<out ArrayList caseClauses>
+CaseClauses<out List<CaseLabel> caseClauses>
 	(.
-		caseClauses = new ArrayList();
+		caseClauses = new List<CaseLabel>();
 		CaseLabel caseClause = null;
 	.) =
 	CaseClause<out caseClause> (. caseClauses.Add(caseClause); .)
@@ -2814,7 +2814,7 @@ WithStatement<out Statement withStatement>
 /* 10.10.1 */
 TryStatement<out Statement tryStatement>
 	(.
-		Statement blockStmt = null, finallyStmt = null;ArrayList catchClauses = null;
+		Statement blockStmt = null, finallyStmt = null;List<CatchClause> catchClauses = null;
 	.) =
 	"Try" EndOfStmt
 	Block<out blockStmt>
@@ -2827,9 +2827,9 @@ TryStatement<out Statement tryStatement>
 	.
 
 /* 10.10.1.2 */
-CatchClauses<out ArrayList catchClauses>
+CatchClauses<out List<CatchClause> catchClauses>
 	(.
-		catchClauses = new ArrayList();
+		catchClauses = new List<CatchClause>();
 		TypeReference type = null;
 		Statement blockStmt = null;
 		Expression expr = null;

@@ -7,15 +7,14 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST 
 {
 	public class TryCatchStatement : Statement
 	{
 		Statement         statementBlock;
-//		List<CatchClause> catchClauses;
-		ArrayList catchClauses;
+		List<CatchClause> catchClauses;
 		Statement         finallyBlock;
 		
 		public Statement StatementBlock {
@@ -27,12 +26,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList CatchClauses {
+		public List<CatchClause> CatchClauses {
 			get {
 				return catchClauses;
 			}
 			set {
-				catchClauses = value == null ? new ArrayList(1) : value;
+				catchClauses = value ?? new List<CatchClause>(1);
 			}
 		}
 		
@@ -45,14 +44,14 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public TryCatchStatement(Statement statementBlock, ArrayList catchClauses, Statement finallyBlock)
+		public TryCatchStatement(Statement statementBlock, List<CatchClause> catchClauses, Statement finallyBlock)
 		{
 			this.StatementBlock = statementBlock;
 			this.CatchClauses = catchClauses;
 			this.FinallyBlock = finallyBlock;
 		}
 		
-		public TryCatchStatement(Statement statementBlock, ArrayList catchClauses) : this(statementBlock, catchClauses, null)
+		public TryCatchStatement(Statement statementBlock, List<CatchClause> catchClauses) : this(statementBlock, catchClauses, null)
 		{
 		}
 		
