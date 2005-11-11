@@ -46,7 +46,7 @@
 		          icon        = "Icons.16x16.FormsDesigner.LockControls"
 		          class = "ICSharpCode.FormDesigner.Commands.LockControls"/>
 		<MenuItem id = "LockSeparator" type = "Separator"/>
-		<MenuItem id = "DesignerVerbsBuilder" label = "" class = "ICSharpCode.FormDesigner.Commands.DesignerVerbSubmenuBuilder" />
+		<MenuItem id = "DesignerVerbsBuilder" type="Builder" class = "ICSharpCode.FormDesigner.Commands.DesignerVerbSubmenuBuilder" />
 		<MenuItem id = "Cut"
 		          label = "${res:XML.MainMenu.EditMenu.Cut}"
 		          icon = "Icons.16x16.CutIcon"
@@ -101,7 +101,7 @@
 		          icon        = "Icons.16x16.FormsDesigner.ViewCode"
 		          class       = "ICSharpCode.FormDesigner.Commands.ViewCode"/>
 		<MenuItem id = "ViewCodeSeparator" type = "Separator"/>
-		<MenuItem id = "DesignerVerbsBuilder" label = "" class = "ICSharpCode.FormDesigner.Commands.DesignerVerbSubmenuBuilder" />
+		<MenuItem id = "DesignerVerbsBuilder" type = "Builder" class = "ICSharpCode.FormDesigner.Commands.DesignerVerbSubmenuBuilder" />
 		<MenuItem id = "Cut"
 		          label = "${res:XML.MainMenu.EditMenu.Cut}"
 		          icon = "Icons.16x16.CutIcon"
