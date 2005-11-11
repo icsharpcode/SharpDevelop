@@ -138,6 +138,7 @@ namespace ICSharpCode.SharpDevelop.Project
 						ProjectItem item =project.Items[i];
 						if (FileUtility.IsBaseDirectory(fileName, item.FileName)) {
 							project.Items.RemoveAt(i);
+							OnProjectItemRemoved(new ProjectItemEventArgs(project, item));
 						} else {
 							++i;
 						}

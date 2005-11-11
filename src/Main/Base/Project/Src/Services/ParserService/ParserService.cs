@@ -34,7 +34,7 @@ namespace ICSharpCode.Core
 		static ParserDescriptor[] parser;
 		
 		static Dictionary<IProject, IProjectContent> projectContents = new Dictionary<IProject, IProjectContent>();
-		static Dictionary<string, ParseInformation> parsings        = new Dictionary<string, ParseInformation>();
+		static Dictionary<string, ParseInformation> parsings = new Dictionary<string, ParseInformation>();
 		
 		public static IProjectContent CurrentProjectContent {
 			[DebuggerStepThrough]
@@ -79,6 +79,7 @@ namespace ICSharpCode.Core
 					content.Dispose();
 				}
 				projectContents.Clear();
+				parsings.Clear();
 			}
 		}
 		
@@ -162,6 +163,33 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
+		static Queue<KeyValuePair<string, string>> parseQueue = new Queue<KeyValuePair<string, string>>();
+		
+		static void ParseQueue()
+		{
+			while (true) {
+				KeyValuePair<string, string> entry;
+				lock (parseQueue) {
+					if (parseQueue.Count == 0)
+						return;
+					entry = parseQueue.Dequeue();
+				}
+				ParseFile(entry.Key, entry.Value);
+			}
+		}
+		
+		public static void EnqueueForParsing(string fileName)
+		{
+			EnqueueForParsing(fileName, GetParseableFileContent(fileName));
+		}
+		
+		public static void EnqueueForParsing(string fileName, string fileContent)
+		{
+			lock (parseQueue) {
+				parseQueue.Enqueue(new KeyValuePair<string, string>(fileName, fileContent));
+			}
+		}
+		
 		public static void StartParserThread()
 		{
 			abortParserUpdateThread = false;
@@ -178,7 +206,7 @@ namespace ICSharpCode.Core
 		
 		static bool abortParserUpdateThread = false;
 		
-		static Dictionary<string, int> lastUpdateSize = new Dictionary<string, int>();
+		static Dictionary<string, int> lastUpdateHash = new Dictionary<string, int>();
 		
 		static void ParserUpdateThread()
 		{
@@ -188,6 +216,7 @@ namespace ICSharpCode.Core
 			
 			while (!abortParserUpdateThread) {
 				try {
+					ParseQueue();
 					ParserUpdateStep();
 				} catch (Exception e) {
 					ICSharpCode.Core.MessageService.ShowError(e);
@@ -239,10 +268,10 @@ namespace ICSharpCode.Core
 							text = editable.Text;
 							if (text == null) return;
 						}
-						int hash = text.Length;
-						if (!lastUpdateSize.ContainsKey(fileName) || (int)lastUpdateSize[fileName] != hash) {
+						int hash = text.GetHashCode();
+						if (!lastUpdateHash.ContainsKey(fileName) || lastUpdateHash[fileName] != hash) {
 							parseInformation = ParseFile(fileName, text, !viewContent.IsUntitled, true);
-							lastUpdateSize[fileName] = hash;
+							lastUpdateHash[fileName] = hash;
 							updated = true;
 						}
 						if (updated) {
@@ -309,9 +338,21 @@ namespace ICSharpCode.Core
 				if (defaultProjectContent == null) {
 					lock (projectContents) {
 						if (defaultProjectContent == null) {
+							LoggingService.Info("Creating default project content");
 							defaultProjectContent = new DefaultProjectContent();
 							defaultProjectContent.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
-							defaultProjectContent.ReferencedContents.Add(ProjectContentRegistry.WinForms);
+							string[] defaultReferences = new string[] {
+								"System",
+								"System.Data",
+								"System.Drawing",
+								"System.Windows.Forms",
+								"System.XML",
+							};
+							foreach (string defaultReference in defaultReferences) {
+								ReferenceProjectItem item = new ReferenceProjectItem(null, defaultReference);
+								IProjectContent pc = ProjectContentRegistry.GetProjectContentForReference(item);
+								defaultProjectContent.ReferencedContents.Add(pc);
+							}
 						}
 					}
 				}
@@ -432,6 +473,18 @@ namespace ICSharpCode.Core
 			return parsings[fileName];
 		}
 		
+		public static void ClearParseInformation(string fileName)
+		{
+			if (fileName == null || fileName.Length == 0) {
+				return;
+			}
+			if (parsings.ContainsKey(fileName)) {
+				ParseInformation parseInfo = parsings[fileName];
+				parsings.Remove(fileName);
+				OnParseInformationUpdated(new ParseInformationEventArgs(fileName, parseInfo, null));
+			}
+		}
+		
 		public static IExpressionFinder GetExpressionFinder(string fileName)
 		{
 			IParser parser = GetParser(fileName);
@@ -499,7 +552,7 @@ namespace ICSharpCode.Core
 				ParseInformationUpdated(null, e);
 			}
 		}
-
+		
 		public static event ParseInformationEventHandler ParseInformationUpdated;
 	}
 }

@@ -13,6 +13,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
 
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.Core;
 
@@ -108,11 +109,13 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public void InitializeReferences()
 		{
+			bool changed = false;
 			if (initialized) {
 				if (missingNames != null) {
 					for (int i = 0; i < missingNames.Count; i++) {
 						IProjectContent content = ProjectContentRegistry.GetExistingProjectContent((AssemblyName)missingNames[i]);
 						if (content != null) {
+							changed = true;
 							ReferencedContents.Add(content);
 							missingNames.RemoveAt(i--);
 						}
@@ -121,12 +124,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 						missingNames = null;
 					}
 				}
+				if (changed)
+					WorkbenchSingleton.SafeThreadAsyncCall(this, "OnReferencedContentsChanged", EventArgs.Empty);
 				return;
 			}
 			initialized = true;
 			foreach (AssemblyName name in referencedAssemblies) {
 				IProjectContent content = ProjectContentRegistry.GetExistingProjectContent(name);
 				if (content != null) {
+					changed = true;
 					ReferencedContents.Add(content);
 				} else {
 					if (missingNames == null)
@@ -134,6 +140,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 					missingNames.Add(name);
 				}
 			}
+			if (changed)
+				WorkbenchSingleton.SafeThreadAsyncCall(this, "OnReferencedContentsChanged", EventArgs.Empty);
 		}
 		
 		public override string ToString()

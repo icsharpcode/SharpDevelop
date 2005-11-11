@@ -245,7 +245,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		{
 			FileProjectItem newItem = new FileProjectItem(project, ItemType.Compile);
 			newItem.Include = filename;
-			project.Items.Add(newItem);
+			ProjectService.AddProjectItem(project, newItem);
 			
 			StreamWriter sr = File.CreateText(filename);
 			sr.Write(StringParser.Parse(content, new string[,] { {"PROJECT", ((TextBox)ControlDictionary["nameTextBox"]).Text}, {"FILE", Path.GetFileName(filename)}}));

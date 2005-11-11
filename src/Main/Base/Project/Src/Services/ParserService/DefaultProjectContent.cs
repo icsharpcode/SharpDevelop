@@ -410,6 +410,13 @@ namespace ICSharpCode.Core
 			RemoveEmptyNamespace(parent); // remove parent if also empty
 		}
 		
+		public void RemoveCompilationUnit(ICompilationUnit unit)
+		{
+			foreach (IClass c in unit.Classes) {
+				RemoveClass(c);
+			}
+		}
+		
 		public void UpdateCompilationUnit(ICompilationUnit oldUnit, ICompilationUnit parserOutput, string fileName, bool updateCommentTags)
 		{
 			if (updateCommentTags) {
@@ -417,13 +424,11 @@ namespace ICSharpCode.Core
 			}
 			
 			lock (namespaces) {
-				ICompilationUnit cu = (ICompilationUnit)parserOutput;
-				
 				if (oldUnit != null) {
-					RemoveClasses(oldUnit, cu);
+					RemoveClasses(oldUnit, parserOutput);
 				}
 				
-				foreach (IClass c in cu.Classes) {
+				foreach (IClass c in parserOutput.Classes) {
 					AddClassToNamespaceListInternal(c);
 				}
 			}
@@ -812,5 +817,14 @@ namespace ICSharpCode.Core
 			return new Position(null, -1, -1);
 		}
 		#endregion
+		
+		public event EventHandler ReferencedContentsChanged;
+		
+		protected virtual void OnReferencedContentsChanged(EventArgs e)
+		{
+			if (ReferencedContentsChanged != null) {
+				ReferencedContentsChanged(this, e);
+			}
+		}
 	}
 }

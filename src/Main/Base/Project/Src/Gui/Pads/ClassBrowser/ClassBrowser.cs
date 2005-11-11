@@ -118,7 +118,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				foreach (ICompilationUnit[] units in pending) {
 					foreach (TreeNode node in classBrowserTreeView.Nodes) {
 						ProjectNode prjNode = node as ProjectNode;
-						if (prjNode != null && prjNode.Project.IsFileInProject(units[1].FileName)) {
+						ICompilationUnit nonNullUnit = units[1] ?? units[0];
+						IProject project = nonNullUnit.ProjectContent.Project;
+						if (prjNode != null && prjNode.Project.IsFileInProject(nonNullUnit.FileName)) {
 							prjNode.UpdateParseInformation(units[0], units[1]);
 						}
 					}

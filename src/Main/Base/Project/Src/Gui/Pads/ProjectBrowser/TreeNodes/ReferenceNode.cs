@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Delete()
 		{
 			IProject project = Project;
-			referenceProjectItem.Project.Items.Remove(referenceProjectItem);
+			ProjectService.RemoveProjectItem(referenceProjectItem.Project, referenceProjectItem);
 			Debug.Assert(Parent != null);
 			Debug.Assert(Parent is ReferenceFolder);
 			((ReferenceFolder)Parent).ShowReferences();

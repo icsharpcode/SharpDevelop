@@ -10,6 +10,7 @@ using System;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.Core
 {
@@ -64,6 +65,7 @@ namespace ICSharpCode.Core
 				}
 			}
 			UpdateReferenceInterDependencies();
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "OnReferencedContentsChanged", EventArgs.Empty);
 		}
 		
 		void UpdateReferenceInterDependencies()
@@ -76,8 +78,6 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		delegate void AddReferenceDelegate(ReferenceProjectItem reference, bool updateInterDependencies);
-		
 		void AddReference(ReferenceProjectItem reference, bool updateInterDependencies)
 		{
 			try {
@@ -88,28 +88,62 @@ namespace ICSharpCode.Core
 				if (updateInterDependencies) {
 					UpdateReferenceInterDependencies();
 				}
+				WorkbenchSingleton.SafeThreadAsyncCall(this, "OnReferencedContentsChanged", EventArgs.Empty);
 			} catch (Exception e) {
 				MessageService.ShowError(e);
 			}
 		}
 		
+		// waitcallback for AddReference
+		void AddReference(object state)
+		{
+			AddReference((ReferenceProjectItem)state, true);
+		}
+		
 		void OnProjectItemAdded(object sender, ProjectItemEventArgs e)
 		{
 			if (e.Project != project) return;
+			
 			ReferenceProjectItem reference = e.ProjectItem as ReferenceProjectItem;
 			if (reference != null) {
-				new AddReferenceDelegate(AddReference).BeginInvoke(reference, true, null, null);
+				System.Threading.ThreadPool.QueueUserWorkItem(AddReference, reference);
 			}
-			if (e.ProjectItem.ItemType == ItemType.Import) {
-				UpdateDefaultImports(project.Items.ToArray());
+			switch (e.ProjectItem.ItemType) {
+				case ItemType.Import:
+					UpdateDefaultImports(project.Items.ToArray());
+					break;
+				case ItemType.Compile:
+					ParserService.EnqueueForParsing(e.ProjectItem.FileName);
+					break;
 			}
 		}
 		
 		void OnProjectItemRemoved(object sender, ProjectItemEventArgs e)
 		{
 			if (e.Project != project) return;
-			if (e.ProjectItem.ItemType == ItemType.Import) {
-				UpdateDefaultImports(project.Items.ToArray());
+			
+			ReferenceProjectItem reference = e.ProjectItem as ReferenceProjectItem;
+			if (reference != null) {
+				try {
+					IProjectContent referencedContent = ProjectContentRegistry.GetProjectContentForReference(reference);
+					if (referencedContent != null) {
+						ReferencedContents.Remove(referencedContent);
+						OnReferencedContentsChanged(EventArgs.Empty);
+					}
+				} catch (Exception ex) {
+					MessageService.ShowError(ex);
+				}
+			}
+			
+			switch (e.ProjectItem.ItemType) {
+				case ItemType.Import:
+					UpdateDefaultImports(project.Items.ToArray());
+					break;
+				case ItemType.Compile:
+					ParseInformation info = ParserService.GetParseInformation(e.ProjectItem.FileName);
+					RemoveCompilationUnit(info.MostRecentCompilationUnit);
+					ParserService.ClearParseInformation(e.ProjectItem.FileName);
+					break;
 			}
 		}
 		

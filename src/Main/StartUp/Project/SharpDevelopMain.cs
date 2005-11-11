@@ -174,15 +174,26 @@ namespace ICSharpCode.SharpDevelop
 				
 				InitializeCore();
 				
+				bool exception = false;
 				// finally start the workbench.
 				try {
 					LoggingService.Info("Starting workbench...");
 					new StartWorkbenchCommand().Run(SplashScreenForm.GetRequestedFileList());
+				} catch {
+					exception = true;
+					throw;
 				} finally {
 					LoggingService.Info("Unloading services...");
-					ProjectService.CloseSolution();
-					FileService.Unload();
-					PropertyService.Save();
+					try {
+						ProjectService.CloseSolution();
+						FileService.Unload();
+						PropertyService.Save();
+					} catch (Exception ex) {
+						if (exception)
+							LoggingService.Warn("Exception during unloading after exception", ex);
+						else
+							MessageService.ShowError(ex);
+					}
 				}
 			} finally {
 				LoggingService.Info("Leaving RunApplication()");

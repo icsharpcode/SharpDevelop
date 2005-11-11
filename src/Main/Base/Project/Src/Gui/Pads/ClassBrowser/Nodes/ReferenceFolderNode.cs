@@ -56,6 +56,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected override void Initialize()
 		{
 			base.Initialize();
+			UpdateReferenceNodes();
+		}
+		
+		public void UpdateReferenceNodes()
+		{
 			Nodes.Clear();
 			foreach (ProjectItem item in project.Items) {
 				if (item.ItemType == ItemType.Reference) {

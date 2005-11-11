@@ -57,17 +57,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 					wasUpdatedDictionary[c.FullyQualifiedName] = false;
 				}
 			}
-			foreach (IClass c in unit.Classes) {
-				TreeNode  path = GetNodeByPath(c.Namespace, true);
-				ClassNode node = GetNodeByName(path.Nodes, c.Name) as ClassNode;
-				if (node != null) {
-					node.Class = c;
-				} else {
-					new ClassNode(project, c).AddTo(path);
+			if (unit != null) {
+				foreach (IClass c in unit.Classes) {
+					TreeNode  path = GetNodeByPath(c.Namespace, true);
+					ClassNode node = GetNodeByName(path.Nodes, c.Name) as ClassNode;
+					if (node != null) {
+						node.Class = c;
+					} else {
+						new ClassNode(project, c).AddTo(path);
+					}
+					wasUpdatedDictionary[c.FullyQualifiedName] = true;
 				}
-				wasUpdatedDictionary[c.FullyQualifiedName] = true;
 			}
-			
 			foreach (KeyValuePair<string, bool> entry in wasUpdatedDictionary) {
 				if (!entry.Value) {
 					IClass c = classDictionary[entry.Key];
@@ -98,7 +99,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			if (projectContent != null) {
 				Nodes.Clear();
-				new ReferenceFolderNode(project).AddTo(this);
+				ReferenceFolderNode referencesNode = new ReferenceFolderNode(project);
+				referencesNode.AddTo(this);
+				projectContent.ReferencedContentsChanged += delegate { referencesNode.UpdateReferenceNodes(); };
 				foreach (ProjectItem item in project.Items) {
 					switch (item.ItemType) {
 						case ItemType.Reference:
