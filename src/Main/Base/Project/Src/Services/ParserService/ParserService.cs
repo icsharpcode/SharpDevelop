@@ -221,7 +221,7 @@ namespace ICSharpCode.Core
 			abortParserUpdateThread = true;
 		}
 		
-		static bool abortParserUpdateThread = false;
+		static volatile bool abortParserUpdateThread = false;
 		
 		static Dictionary<string, int> lastUpdateHash = new Dictionary<string, int>();
 		

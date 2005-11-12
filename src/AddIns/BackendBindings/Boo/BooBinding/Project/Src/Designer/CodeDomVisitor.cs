@@ -15,6 +15,7 @@ using Boo.Lang.Compiler.Ast.Visitors;
 using Boo.Lang.Parser;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
+using Grunwald.BooBinding.CodeCompletion;
 
 namespace Grunwald.BooBinding.Designer
 {
@@ -297,14 +298,41 @@ namespace Grunwald.BooBinding.Designer
 			}
 		}
 		
+		public override void OnDeclarationStatement(DeclarationStatement node)
+		{
+			CodeVariableDeclarationStatement var = new CodeVariableDeclarationStatement(ConvTypeRef(node.Declaration.Type),
+			                                                                            node.Declaration.Name);
+			if (node.Initializer != null) {
+				_expression = null;
+				node.Initializer.Accept(this);
+				var.InitExpression = _expression;
+			}
+			_statements.Add(var);
+		}
+		
+		
+		CodeVariableDeclarationStatement GetLocalVariable(string name)
+		{
+			foreach (CodeStatement stmt in _statements) {
+				CodeVariableDeclarationStatement var = stmt as CodeVariableDeclarationStatement;
+				if (var != null && var.Name == name) {
+					return var;
+				}
+			}
+			return null;
+		}
+		
 		public override void OnReferenceExpression(ReferenceExpression node)
 		{
-			if (pc.GetClass(node.Name) != null)
+			if (pc.GetClass(node.Name) != null) {
 				_expression = new CodeTypeReferenceExpression(node.Name);
-			else if (pc.NamespaceExists(node.Name))
+			} else if (pc.NamespaceExists(node.Name)) {
 				_expression = new CodeTypeReferenceExpression(node.Name);
-			else
+			} else if (GetLocalVariable(node.Name) != null) {
+				_expression = new CodeVariableReferenceExpression(node.Name);
+			} else {
 				_expression = CreateMemberExpression(new CodeThisReferenceExpression(), node.Name);
+			}
 		}
 		
 		CodeExpression CreateMemberExpression(CodeExpression expr, string name)
@@ -319,6 +347,10 @@ namespace Grunwald.BooBinding.Designer
 				if (_fieldReferenceType == null)
 					return new CodePropertyReferenceExpression(expr, name);
 				return CreateMemberExpression(expr, _fieldReferenceType.FullyQualifiedName, name, false);
+			} else if (expr is CodeVariableReferenceExpression) {
+				string varName = ((CodeVariableReferenceExpression)expr).VariableName;
+				CodeVariableDeclarationStatement varDecl = GetLocalVariable(varName);
+				return CreateMemberExpression(expr, varDecl.Type.BaseType, name, false);
 			} else {
 				_fieldReferenceType = null;
 				return new CodePropertyReferenceExpression(expr, name);
@@ -428,6 +460,26 @@ namespace Grunwald.BooBinding.Designer
 		public override void OnSuperLiteralExpression(SuperLiteralExpression node)
 		{
 			_expression = new CodeBaseReferenceExpression();
+		}
+		
+		public override void OnTypeofExpression(TypeofExpression node)
+		{
+			_expression = new CodeTypeOfExpression(ConvTypeRef(node.Type));
+		}
+		
+		public override void OnArrayLiteralExpression(ArrayLiteralExpression node)
+		{
+			BooResolver resolver = new BooResolver();
+			IReturnType createType = resolver.GetTypeOfExpression(node, null);
+			if (createType == null)
+				createType = ReflectionReturnType.Object;
+			CodeExpression[] initializers = new CodeExpression[node.Items.Count];
+			for (int i = 0; i < initializers.Length; i++) {
+				_expression = null;
+				node.Items[i].Accept(this);
+				initializers[i] = _expression;
+			}
+			_expression = new CodeArrayCreateExpression(createType.FullyQualifiedName, initializers);
 		}
 	}
 }

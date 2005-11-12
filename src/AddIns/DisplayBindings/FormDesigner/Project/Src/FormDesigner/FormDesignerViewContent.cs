@@ -187,6 +187,7 @@ namespace ICSharpCode.FormDesigner
 		public void Reload()
 		{
 			try {
+				failedDesignerInitialize = false;
 				LoadDesigner();
 				
 				if (designSurface != null && p.Controls.Count == 0) {

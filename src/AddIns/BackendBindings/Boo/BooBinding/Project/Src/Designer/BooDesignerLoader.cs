@@ -97,12 +97,22 @@ namespace Grunwald.BooBinding.Designer
 		protected override CodeCompileUnit Parse()
 		{
 			LoggingService.Debug("BooDesignerLoader.Parse()");
-			
+			try {
+				CodeCompileUnit ccu = ParseForm();
+				LoggingService.Debug("BooDesignerLoader.Parse() finished");
+				return ccu;
+			} catch (Boo.Lang.Compiler.CompilerError ex) {
+				throw new FormDesignerLoadException(ex.ToString(true));
+			}
+		}
+		
+		CodeCompileUnit ParseForm()
+		{
 			lastTextContent = TextContent;
 			BooParsingStep step = new BooParsingStep();
 			
 			StringBuilder errors = new StringBuilder();
-			Module module = BooParser.ParseModule(4, new CompileUnit(), "BooDesignerLoaderModule",
+			Module module = BooParser.ParseModule(4, new CompileUnit(), textEditorControl.FileName,
 			                                      new StringReader(lastTextContent),
 			                                      delegate(antlr.RecognitionException e) {
 			                                      	errors.AppendLine(e.ToString());
@@ -130,7 +140,6 @@ namespace Grunwald.BooBinding.Designer
 			outputGenerator.GenerateCodeFromMember(visitor.OutputCompileUnit.Namespaces[0].Types[0], Console.Out, null);
 			provider.GenerateCodeFromCompileUnit(visitor.OutputCompileUnit, Console.Out, null);
 			
-			LoggingService.Debug("BooDesignerLoader.Parse() finished");
 			return visitor.OutputCompileUnit;
 		}
 		

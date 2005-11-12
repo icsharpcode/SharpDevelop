@@ -20,7 +20,16 @@ namespace ICSharpCode.Core
 {
 	public static class MenuService
 	{
-		public static ToolStripRenderer Renderer;
+		static ToolStripRenderer renderer;
+		
+		public static ToolStripRenderer Renderer {
+			get {
+				return renderer;
+			}
+			set {
+				renderer = value;
+			}
+		}
 		
 		public static void AddItemsToMenu(ToolStripItemCollection collection, object owner, string addInTreePath)
 		{

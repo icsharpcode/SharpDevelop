@@ -195,6 +195,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (openSolution != null) {
 				SaveSolutionPreferences();
+				WorkbenchSingleton.Workbench.CloseAllViews();
 				CloseSolution();
 			}
 		}
