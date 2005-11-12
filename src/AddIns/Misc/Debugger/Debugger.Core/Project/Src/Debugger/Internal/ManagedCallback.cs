@@ -28,8 +28,6 @@ namespace Debugger
 		Process callingProcess;
 		Thread callingThread;
 
-		public event EventHandler<CorDebugEvalEventArgs> CorDebugEvalCompleted;
-
 		public ManagedCallback(NDebugger debugger)
 		{
 			this.debugger = debugger;
@@ -196,18 +194,26 @@ namespace Debugger
 
 			ExitCallback_Continue();
 		}
-
-		public void EvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval eval)
+		
+		public void EvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval)
 		{
 			EnterCallback("EvalComplete", pThread);
 			
-			if (CorDebugEvalCompleted != null) {
-				CorDebugEvalCompleted(this, new CorDebugEvalEventArgs(debugger, eval));
+			// Let the eval know it that the CorEval has finished
+			// this will also remove the eval form PendingEvals collection
+			Eval eval = debugger.GetEval(corEval);
+			if (eval != null) {
+				eval.OnEvalComplete(new EvalEventArgs(debugger, eval));
 			}
 			
-			ExitCallback_Paused(PausedReason.EvalComplete);
+			if (debugger.PendingEvals.Count > 0) {
+				debugger.SetupNextEvaluation();
+				ExitCallback_Continue();
+			} else {
+				ExitCallback_Paused(PausedReason.AllEvalsComplete);
+			}
 		}
-
+		
 		public void DebuggerError(ICorDebugProcess pProcess, int errorHR, uint errorCode)
 		{
 			EnterCallback("DebuggerError", pProcess);

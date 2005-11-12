@@ -88,9 +88,7 @@
     <Compile Include="Src\Threads\ThreadEventArgs.cs" />
     <Compile Include="Src\Variables\ArrayVariable.cs" />
     <Compile Include="Src\Variables\BuiltInVariable.cs" />
-    <Compile Include="Src\Variables\Evals\CorDebugEvalEventArgs.cs" />
     <Compile Include="Src\Variables\Evals\Eval.cs" />
-    <Compile Include="Src\Variables\Evals\EvalQueue.cs" />
     <Compile Include="Src\Variables\NullRefVariable.cs" />
     <Compile Include="Src\Variables\ObjectVariable.cs" />
     <Compile Include="Src\Variables\PropertyVariable.cs" />
@@ -203,6 +201,8 @@
     <Compile Include="Src\Interop\CorDebug\tagSTATSTG.cs" />
     <Compile Include="Src\Interop\MetaData\IMetaDataImport.cs" />
     <Compile Include="Src\Interop\MetaData\COR_FIELD_OFFSET.cs" />
+    <Compile Include="Src\Variables\Evals\EvalEventArgs.cs" />
+    <Compile Include="Src\Variables\Evals\NDebugger-Evals.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

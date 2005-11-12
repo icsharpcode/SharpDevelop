@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -20,7 +20,7 @@ namespace Debugger
 		internal PropertyVariable(NDebugger debugger, Eval eval, string name):base(debugger, null, name)
 		{
 			this.eval = eval;
-			eval.EvalComplete += new EventHandler<DebuggerEventArgs>(EvalComplete);
+			eval.EvalComplete += new EventHandler<EvalEventArgs>(EvalComplete);
 		}
 		
 		public bool IsEvaluated {
@@ -71,7 +71,7 @@ namespace Debugger
 		/// </summary>
 		public void Evaluate()
 		{
-			eval.PerformEval();
+			//eval.PerformEval();
 		}
 		
 		/// <summary>
@@ -79,12 +79,12 @@ namespace Debugger
 		/// </summary>
 		public void AsyncEvaluate()
 		{
-			eval.AsyncPerformEval();
+			//eval.AsyncPerformEval();
 		}
 		
-		void EvalComplete(object sender, DebuggerEventArgs args)
+		void EvalComplete(object sender, EvalEventArgs args)
 		{
-			currentValue = VariableFactory.CreateVariable(debugger, eval.GetResult(), Name);
+			currentValue = VariableFactory.CreateVariable(debugger, eval.Result.CorValue, Name);
 			OnValueEvaluated();
 		}
 		

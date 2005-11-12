@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -448,7 +448,7 @@ namespace Debugger
 						evalArgs = new ICorDebugValue[] {ThisVariable.CorValue};
 					}
 					Eval eval = new Eval(debugger, evalCorFunction, evalArgs);
-					debugger.EvalQueue.AddEval(eval);
+					debugger.AddEval(eval);
 					properties.Add(new PropertyVariable(debugger, eval, method.Name.Remove(0, 4)));
 				}
 			}

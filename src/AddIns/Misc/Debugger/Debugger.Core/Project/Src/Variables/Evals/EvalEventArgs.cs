@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -6,24 +6,29 @@
 // </file>
 
 using System;
-using Debugger.Interop.CorDebug;
 
 namespace Debugger 
 {	
 	[Serializable]
-	class CorDebugEvalEventArgs : DebuggerEventArgs
+	public class EvalEventArgs : DebuggerEventArgs
 	{
-		ICorDebugEval corDebugEval;
+		Eval eval;
 		
-		public ICorDebugEval CorDebugEval {
+		public Eval Eval {
 			get {
-				return corDebugEval;
+				return eval;
 			}
 		}
 		
-		public CorDebugEvalEventArgs(NDebugger debugger, ICorDebugEval corDebugEval): base(debugger)
+		public Variable Result {
+			get {
+				return eval.Result;
+			}
+		}
+		
+		public EvalEventArgs(NDebugger debugger, Eval eval): base(debugger)
 		{
-			this.corDebugEval = corDebugEval;
+			this.eval = eval;
 		}
 	}
 }

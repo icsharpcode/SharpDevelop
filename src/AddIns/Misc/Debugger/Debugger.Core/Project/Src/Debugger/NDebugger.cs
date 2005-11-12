@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -22,17 +22,9 @@ namespace Debugger
 		ICorDebug                  corDebug;
 		ManagedCallback            managedCallback;
 		ManagedCallbackProxy       managedCallbackProxy;
-
+		
 		ApartmentState requiredApartmentState;
-
-		EvalQueue evalQueue;
-
-		internal EvalQueue EvalQueue {
-			get { 
-				return evalQueue;
-			}
-		}
-
+		
 		public ApartmentState RequiredApartmentState {
 			get  {
 				 return requiredApartmentState;
@@ -116,8 +108,6 @@ namespace Debugger
 			ClearThreads();
 			
 			currentProcess = null;
-			
-			evalQueue = new EvalQueue(this);
 			
 			TraceMessage("Reset done");
 			
