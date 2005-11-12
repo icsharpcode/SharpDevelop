@@ -136,6 +136,28 @@ namespace Debugger
 		{
 			VariableCollection mergedCollection = VariableCollection.Merge(collections);
 			
+			mergedCollection.Update();
+			
+			// Update existing variables
+			foreach(Variable variable in mergedCollection) {
+				if (this.Contains(variable.Name)) {
+					//this[variable.Name].CorValue = variable.CorValue;
+				}
+			}
+			
+			// Add new variables
+			foreach(Variable variable in mergedCollection) {
+				if (!this.Contains(variable.Name)) {
+					this.Add(variable);
+				}
+			}
+			
+			// Remove variables that are not in merged collection
+			foreach(Variable variable in this) {
+				if (!mergedCollection.Contains(variable.Name)) {
+					this.Remove(variable);
+				}
+			}
 		}
 		
 		protected virtual void OnVariableAdded(VariableEventArgs e)

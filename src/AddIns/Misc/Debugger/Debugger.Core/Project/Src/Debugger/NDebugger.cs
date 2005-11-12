@@ -25,6 +25,8 @@ namespace Debugger
 		
 		ApartmentState requiredApartmentState;
 		
+		VariableCollection localVariables = new VariableCollection();
+		
 		public ApartmentState RequiredApartmentState {
 			get  {
 				 return requiredApartmentState;
@@ -177,10 +179,11 @@ namespace Debugger
 		public VariableCollection LocalVariables { 
 			get {
 				if (CurrentFunction == null) {
-					return VariableCollection.Empty;
+					localVariables.UpdateTo(VariableCollection.Empty);
 				} else {
-					return CurrentFunction.GetVariables();
+					localVariables.UpdateTo(CurrentFunction.GetVariables());
 				}
+				return localVariables;
 			}
 		}
 	}
