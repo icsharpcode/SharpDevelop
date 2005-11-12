@@ -54,14 +54,12 @@ namespace ICSharpCode.FormDesigner.Services
 			public void Dispose()
 			{
 				this.storage = null;
-				this.stream.Close();	
+				this.stream.Close();
 			}
 
 			public void Save(string fileName)
 			{
-				using (BinaryWriter binWriter = new BinaryWriter(System.IO.File.OpenWrite(fileName))) {
-					binWriter.Write(this.storage);
-				}
+				File.WriteAllBytes(fileName, storage);
 			}
 		}
 		#endregion
@@ -116,7 +114,7 @@ namespace ICSharpCode.FormDesigner.Services
 					resources[fileName] = resourceStorage;
 					resourceWriter = CreateResourceWriter(resourceStorage.stream, GetResourceType(fileName));
 					Writers[info] = resourceWriter;
-					resourceStorage.project = project;				
+					resourceStorage.project = project;
 				}
 				return resourceWriter;
 			} catch (Exception e) {
@@ -208,7 +206,7 @@ namespace ICSharpCode.FormDesigner.Services
 				}
 				foreach (ResourceStorage storage in resources.Values) {
 					storage.storage = null;
-					storage.stream.Close();	
+					storage.stream.Close();
 				}
 				resources.Clear();
 			} else {
@@ -260,7 +258,7 @@ namespace ICSharpCode.FormDesigner.Services
 		{
 			if (type == ResourceType.Resources) {
 				return new ResourceReader(fileName);
-			}		
+			}
 			return new ResXResourceReader(fileName);
 		}
 		
@@ -268,7 +266,7 @@ namespace ICSharpCode.FormDesigner.Services
 		{
 			if (type == ResourceType.Resources) {
 				return new ResourceReader(stream);
-			} 
+			}
 			return new ResXResourceReader(stream);
 		}
 		
