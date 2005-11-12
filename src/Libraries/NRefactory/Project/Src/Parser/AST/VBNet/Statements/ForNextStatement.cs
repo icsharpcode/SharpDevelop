@@ -10,12 +10,11 @@ using System.Collections;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
-	public class ForNextStatement : Statement
+	public class ForNextStatement : StatementWithEmbeddedStatement
 	{
 		Expression start;
 		Expression end;
 		Expression step;
-		Statement embeddedStatement;
 		
 //		List<Expression> nextExpressions;
 		ArrayList nextExpressions;
@@ -76,15 +75,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public Statement EmbeddedStatement {
-			get {
-				return embeddedStatement;
-			}
-			set {
-				embeddedStatement = Statement.CheckNull(value);
-			}
-		}
-		
 		public ForNextStatement(TypeReference typeReference, string variableName, Expression start, Expression end, Expression step, Statement embeddedStatement, ArrayList nextExpressions)
 		{
 			this.TypeReference     = typeReference;
@@ -107,7 +97,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			                     start,
 			                     end,
 			                     step,
-			                     embeddedStatement,
+			                     EmbeddedStatement,
 			                     GetCollectionString(nextExpressions),
 			                     VariableName,
 			                     TypeReference

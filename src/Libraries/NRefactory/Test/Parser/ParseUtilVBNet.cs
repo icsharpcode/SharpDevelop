@@ -37,7 +37,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			return (T)parser.CompilationUnit.Children[0];
 		}
 		
-		public static T ParseTypeMember<T>(string typeMember)
+		public static T ParseTypeMember<T>(string typeMember) where T : INode
 		{
 			System.Console.WriteLine("Class TestClass\n " + typeMember + "\n End Class\n");
 			TypeDeclaration td = ParseGlobal<TypeDeclaration>("Class TestClass\n " + typeMember + "\n End Class\n");
@@ -47,7 +47,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			return (T)td.Children[0];
 		}
 		
-		public static T ParseStatement<T>(string statement)
+		public static T ParseStatement<T>(string statement) where T : INode
 		{
 			MethodDeclaration md = ParseTypeMember<MethodDeclaration>("Sub A()\n " + statement + "\nEnd Sub\n");
 			Assert.IsTrue(md.Body.Children.Count > 0);
@@ -56,12 +56,12 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			return (T)md.Body.Children[0];
 		}
 		
-		public static T ParseExpression<T>(string expr)
+		public static T ParseExpression<T>(string expr) where T : INode
 		{
 			return ParseExpression<T>(expr, false);
 		}
 		
-		public static T ParseExpression<T>(string expr, bool expectErrors)
+		public static T ParseExpression<T>(string expr, bool expectErrors) where T : INode
 		{
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(expr));
 			object parsedExpression = parser.ParseExpression();

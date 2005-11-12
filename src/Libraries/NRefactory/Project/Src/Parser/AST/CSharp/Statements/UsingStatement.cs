@@ -11,10 +11,9 @@ using System.Collections;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
-	public class UsingStatement : Statement
+	public class UsingStatement : StatementWithEmbeddedStatement
 	{
 		Statement  resourceAcquisition;
-		Statement  embeddedStatement;
 		
 		public Statement ResourceAcquisition {
 			get {
@@ -22,15 +21,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 			set {
 				resourceAcquisition = Statement.CheckNull(value);
-			}
-		}
-		
-		public Statement EmbeddedStatement {
-			get {
-				return embeddedStatement;
-			}
-			set {
-				embeddedStatement = Statement.CheckNull(value);
 			}
 		}
 		
@@ -49,7 +39,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		{
 			return String.Format("[UsingStatement: ResourceAcquisition={0}, EmbeddedStatement={1}]", 
 			                     resourceAcquisition,
-			                     embeddedStatement);
+			                     EmbeddedStatement);
 		}
 	}
 }

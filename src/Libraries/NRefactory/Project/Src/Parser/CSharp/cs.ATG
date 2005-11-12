@@ -1909,7 +1909,7 @@ EmbeddedStatement<out Statement statement>
 	/*--- fixed statement: */
 	| "fixed"
 	"(" Type<out type>     (. if (type.PointerNestingLevel == 0) Error("can only fix pointer types");
-	                          ArrayList pointerDeclarators = new ArrayList(1);
+	                          List<VariableDeclaration> pointerDeclarators = new List<VariableDeclaration>(1);
 	                       .)
 	ident                  (. string identifier = t.val; .)
 	"=" Expr<out expr>     (. pointerDeclarators.Add(new VariableDeclaration(identifier, expr)); .)

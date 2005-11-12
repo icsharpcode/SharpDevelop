@@ -230,7 +230,8 @@ namespace ICSharpCode.NRefactory.Parser
 			                                                         start, end,
 			                                                         (step == 1) ? null : new PrimitiveExpression(step, step.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)),
 			                                                         forStatement.EmbeddedStatement, null);
-			forStatement.Parent.Children[forStatement.Parent.Children.IndexOf(forStatement)] = forNextStatement;
+			
+			Statement.Replace(forStatement, forNextStatement);
 		}
 	}
 }

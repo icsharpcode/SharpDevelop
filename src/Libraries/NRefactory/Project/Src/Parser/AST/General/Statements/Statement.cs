@@ -8,7 +8,7 @@
 using System;
 using System.Collections;
 
-namespace ICSharpCode.NRefactory.Parser.AST 
+namespace ICSharpCode.NRefactory.Parser.AST
 {
 	public abstract class Statement : AbstractNode, INullable
 	{
@@ -27,6 +27,35 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		public static Statement CheckNull(Statement statement)
 		{
 			return statement == null ? NullStatement.Instance : statement;
+		}
+		
+		public static void Replace(Statement oldStatement, Statement newStatement)
+		{
+			INode parent = oldStatement.Parent;
+			StatementWithEmbeddedStatement parentStmt = parent as StatementWithEmbeddedStatement;
+			if (parentStmt != null && parentStmt.EmbeddedStatement == oldStatement)
+				parentStmt.EmbeddedStatement = newStatement;
+			int index = parent.Children.IndexOf(oldStatement);
+			if (index >= 0) {
+				parent.Children[index] = newStatement;
+				newStatement.Parent = parent;
+			}
+		}
+	}
+	
+	public abstract class StatementWithEmbeddedStatement : Statement
+	{
+		Statement embeddedStatement;
+		
+		public Statement EmbeddedStatement {
+			get {
+				return embeddedStatement;
+			}
+			set {
+				embeddedStatement = Statement.CheckNull(value);
+				if (value != null)
+					value.Parent = this;
+			}
 		}
 	}
 	

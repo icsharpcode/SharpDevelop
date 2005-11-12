@@ -11,13 +11,12 @@ using System.Collections;
 
 namespace ICSharpCode.NRefactory.Parser.AST 
 {
-	public class ForeachStatement : Statement
+	public class ForeachStatement : StatementWithEmbeddedStatement
 	{
 		TypeReference typeReference;
 		string        variableName;
 		Expression    expression;
 		Expression    nextExpression;
-		Statement     embeddedStatement;
 		
 		public TypeReference TypeReference {
 			get {
@@ -55,17 +54,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		
-		
-		public Statement EmbeddedStatement {
-			get {
-				return embeddedStatement;
-			}
-			set {
-				embeddedStatement = Statement.CheckNull(value);
-			}
-		}
-		
 		public ForeachStatement(TypeReference typeReference, string variableName, Expression expression, Statement embeddedStatement)
 		{
 			this.TypeReference     = typeReference;
@@ -81,7 +69,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			this.variableName = variableName;
 			this.expression = expression;
 			this.nextExpression = nextExpression;
-			this.embeddedStatement = embeddedStatement;
+			this.EmbeddedStatement = embeddedStatement;
 		}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)
@@ -91,7 +79,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		public override string ToString() {
 			return String.Format("[ForeachStatement: embeddedStatement = {0}, expression = {1}, nextExpression = {2}, typeReference = {3}, variableName = {4}]",
-			                     embeddedStatement,
+			                     EmbeddedStatement,
 			                     expression,
 			                     nextExpression,
 			                     typeReference,

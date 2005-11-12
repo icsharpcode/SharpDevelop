@@ -7,16 +7,14 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
-	public class FixedStatement : Statement
+	public class FixedStatement : StatementWithEmbeddedStatement
 	{
 		TypeReference             typeReference;
-//		List<VariableDeclaration> pointerDeclarators;
-		ArrayList pointerDeclarators;
-		Statement                 embeddedStatement;
+		List<VariableDeclaration> pointerDeclarators;
 		
 		public TypeReference TypeReference {
 			get {
@@ -27,25 +25,16 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList PointerDeclarators {
+		public List<VariableDeclaration> PointerDeclarators {
 			get {
 				return pointerDeclarators;
 			}
 			set {
-				pointerDeclarators = value == null ? new ArrayList(1) : value;
+				pointerDeclarators = value ?? new List<VariableDeclaration>(1);
 			}
 		}
 		
-		public Statement EmbeddedStatement {
-			get {
-				return embeddedStatement;
-			}
-			set {
-				embeddedStatement = Statement.CheckNull(value);
-			}
-		}
-		
-		public FixedStatement(TypeReference typeReference, ArrayList pointerDeclarators, Statement embeddedStatement)
+		public FixedStatement(TypeReference typeReference, List<VariableDeclaration> pointerDeclarators, Statement embeddedStatement)
 		{
 			this.TypeReference      = typeReference;
 			this.PointerDeclarators = pointerDeclarators;
@@ -62,7 +51,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			return String.Format("[FixedStatement: TypeReference={0}, PointerDeclarators={1}, EmbeddedStatement={2}]", 
 			                     typeReference,
 			                     GetCollectionString(pointerDeclarators),
-			                     embeddedStatement);
+			                     EmbeddedStatement);
 		}
 	}
 }

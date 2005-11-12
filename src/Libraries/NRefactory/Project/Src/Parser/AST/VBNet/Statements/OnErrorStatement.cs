@@ -11,19 +11,8 @@ using System.Collections;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
-	public class OnErrorStatement : Statement
+	public class OnErrorStatement : StatementWithEmbeddedStatement
 	{
-		Statement embeddedStatement;
-		
-		public Statement EmbeddedStatement {
-			get {
-				return embeddedStatement;
-			}
-			set {
-				embeddedStatement = Statement.CheckNull(value);
-			}
-		}
-		
 		public OnErrorStatement(Statement embeddedStatement)
 		{
 			this.EmbeddedStatement = embeddedStatement;

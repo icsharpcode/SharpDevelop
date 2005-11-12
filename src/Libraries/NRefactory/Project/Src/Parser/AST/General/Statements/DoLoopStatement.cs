@@ -26,10 +26,9 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		End
 	}
 	
-	public class DoLoopStatement : Statement
+	public class DoLoopStatement : StatementWithEmbeddedStatement
 	{
 		Expression        condition;
-		Statement         embeddedStatement;
 		ConditionType     conditionType;
 		ConditionPosition conditionPosition;
 		
@@ -57,15 +56,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 			set {
 				condition = Expression.CheckNull(value);
-			}
-		}
-		
-		public Statement EmbeddedStatement {
-			get {
-				return embeddedStatement;
-			}
-			set {
-				embeddedStatement = Statement.CheckNull(value);
 			}
 		}
 		

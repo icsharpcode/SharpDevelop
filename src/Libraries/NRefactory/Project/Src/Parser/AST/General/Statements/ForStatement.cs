@@ -11,12 +11,11 @@ using System.Collections;
 
 namespace ICSharpCode.NRefactory.Parser.AST 
 {
-	public class ForStatement : Statement
+	public class ForStatement : StatementWithEmbeddedStatement
 	{
 		ArrayList       initializers; // EmbeddedStatement OR list of StatmentExpressions
 		Expression      condition;
 		ArrayList iterator; // [Statement]
-		Statement       embeddedStatement;
 		
 		public ArrayList Initializers {
 			get {
@@ -36,15 +35,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 			set {
 				condition = Expression.CheckNull(value);
-			}
-		}
-		
-		public Statement EmbeddedStatement {
-			get {
-				return embeddedStatement;
-			}
-			set {
-				embeddedStatement = Statement.CheckNull(value);
 			}
 		}
 		
@@ -68,7 +58,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			                     GetCollectionString(initializers),
 			                     condition,
 			                     GetCollectionString(iterator),
-			                     embeddedStatement);
+			                     EmbeddedStatement);
 		}
 	}
 }

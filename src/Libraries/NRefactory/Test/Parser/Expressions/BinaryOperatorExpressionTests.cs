@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -10,6 +10,7 @@ using System.IO;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.NRefactory.Tests.AST
 {
@@ -315,6 +316,49 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void VBNetLikeTest()
 		{
 			VBNetTestBinaryOperatorExpressionTest("a Like b", BinaryOperatorType.Like);
+		}
+		#endregion
+		
+		
+		#region AddIntegerTests
+		string AddIntegerToBoe(string input, int number)
+		{
+			return AddInteger<BinaryOperatorExpression>(input, number);
+		}
+		
+		string AddInteger<T>(string input, int number) where T : Expression
+		{
+			Expression e = ParseUtilCSharp.ParseExpression<T>(input);
+			e = Expression.AddInteger(e, number);
+			CSharpOutputVisitor v = new CSharpOutputVisitor();
+			e.AcceptVisitor(v, null);
+			return v.Text;
+		}
+		
+		[Test]
+		public void AddInteger()
+		{
+			Assert.AreEqual("a + 2", AddIntegerToBoe("a + 1", 1));
+			Assert.AreEqual("a + 2", AddIntegerToBoe("a + 3", -1));
+			Assert.AreEqual("a + b + c + 2", AddIntegerToBoe("a + b + c + 1", 1));
+			Assert.AreEqual("a", AddIntegerToBoe("a + 1", -1));
+			Assert.AreEqual("2", AddInteger<PrimitiveExpression>("1", 1));
+			Assert.AreEqual("-1", AddInteger<PrimitiveExpression>("1", -2));
+			Assert.AreEqual("0", AddInteger<PrimitiveExpression>("1", -1));
+			Assert.AreEqual("a + 1", AddInteger<IdentifierExpression>("a", 1));
+		}
+		
+		[Test]
+		public void AddIntegerWithNegativeResult()
+		{
+			Assert.AreEqual("a - 1", AddIntegerToBoe("a + 1", -2));
+			Assert.AreEqual("a - 2", AddIntegerToBoe("a - 1", -1));
+			Assert.AreEqual("a + b + c - 2", AddIntegerToBoe("a + b + c + 2", -4));
+			Assert.AreEqual("a + b + c - 6", AddIntegerToBoe("a + b + c - 2", -4));
+			Assert.AreEqual("a + b + c", AddIntegerToBoe("a + b + c + 2", -2));
+			Assert.AreEqual("a", AddIntegerToBoe("a - 1", 1));
+			Assert.AreEqual("a + 1", AddIntegerToBoe("a - 2", 3));
+			Assert.AreEqual("a - 1", AddInteger<IdentifierExpression>("a", -1));
 		}
 		#endregion
 	}

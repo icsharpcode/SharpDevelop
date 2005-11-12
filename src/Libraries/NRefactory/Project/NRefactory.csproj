@@ -68,7 +68,6 @@
     <Compile Include="Src\Lexer\VBNet\Keywords.cs" />
     <Compile Include="Src\Lexer\VBNet\Lexer.cs" />
     <Compile Include="Src\Lexer\VBNet\Tokens.cs" />
-    <Compile Include="Src\Main.cs" />
     <Compile Include="Src\Output\AbstractOutputFormatter.cs" />
     <Compile Include="Src\Output\AbstractPrettyPrintOptions.cs" />
     <Compile Include="Src\Output\CodeDOM\CodeDOMOutputVisitor.cs" />

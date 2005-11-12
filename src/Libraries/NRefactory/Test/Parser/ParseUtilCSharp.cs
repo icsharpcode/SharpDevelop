@@ -18,17 +18,17 @@ namespace ICSharpCode.NRefactory.Tests.AST
 {
 	public class ParseUtilCSharp
 	{
-		public static T ParseGlobal<T>(string program)
+		public static T ParseGlobal<T>(string program) where T : INode
 		{
 			return ParseGlobal<T>(program, false);
 		}
 		
-		public static T ParseGlobal<T>(string program, bool expectError)
+		public static T ParseGlobal<T>(string program, bool expectError) where T : INode
 		{
 			return ParseGlobal<T>(program, expectError, false);
 		}
 		
-		public static T ParseGlobal<T>(string program, bool expectError, bool skipMethodBodies)
+		public static T ParseGlobal<T>(string program, bool expectError, bool skipMethodBodies) where T : INode
 		{
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(program));
 			parser.ParseMethodBodies = !skipMethodBodies;
@@ -47,12 +47,12 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			return (T)parser.CompilationUnit.Children[0];
 		}
 		
-		public static T ParseTypeMember<T>(string typeMember)
+		public static T ParseTypeMember<T>(string typeMember) where T : INode
 		{
 			return ParseTypeMember<T>(typeMember, false);
 		}
 		
-		public static T ParseTypeMember<T>(string typeMember, bool expectError)
+		public static T ParseTypeMember<T>(string typeMember, bool expectError) where T : INode
 		{
 			TypeDeclaration td = ParseGlobal<TypeDeclaration>("class MyClass {" + typeMember + "}", expectError);
 			Assert.IsTrue(td.Children.Count > 0);
@@ -61,7 +61,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			return (T)td.Children[0];
 		}
 		
-		public static T ParseStatement<T>(string statement)
+		public static T ParseStatement<T>(string statement) where T : INode
 		{
 			MethodDeclaration md = ParseTypeMember<MethodDeclaration>("void A() { " + statement + " }");
 			Assert.IsTrue(md.Body.Children.Count > 0);
@@ -70,12 +70,12 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			return (T)md.Body.Children[0];
 		}
 		
-		public static T ParseExpression<T>(string expr)
+		public static T ParseExpression<T>(string expr) where T : INode
 		{
 			return ParseExpression<T>(expr, false);
 		}
 		
-		public static T ParseExpression<T>(string expr, bool expectErrors)
+		public static T ParseExpression<T>(string expr, bool expectErrors) where T : INode
 		{
 			IParser parser = ParserFactory.CreateParser(SupportedLanguage.CSharp, new StringReader(expr + ";"));
 			object parsedExpression = parser.ParseExpression();

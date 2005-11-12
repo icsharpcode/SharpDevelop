@@ -99,10 +99,9 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		}
 	}
 	
-	public class ElseIfSection : Statement
+	public class ElseIfSection : StatementWithEmbeddedStatement
 	{
 		Expression condition;
-		Statement  embeddedStatement;
 		
 		public Expression Condition {
 			get {
@@ -110,15 +109,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 			set {
 				condition = Expression.CheckNull(value);
-			}
-		}
-		
-		public Statement EmbeddedStatement {
-			get {
-				return embeddedStatement;
-			}
-			set {
-				embeddedStatement = Statement.CheckNull(value);
 			}
 		}
 		
@@ -136,7 +126,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		{
 			return String.Format("[ElseIfStatement: Condition={0}, EmbeddedStatement={1}]",
 			                     condition,
-			                     embeddedStatement
+			                     EmbeddedStatement
 			                     );
 		}
 	}

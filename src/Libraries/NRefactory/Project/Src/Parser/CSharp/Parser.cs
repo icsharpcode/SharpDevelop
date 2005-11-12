@@ -4119,7 +4119,7 @@ out type);
 
 #line  1911 "cs.ATG" 
 			if (type.PointerNestingLevel == 0) Error("can only fix pointer types");
-			ArrayList pointerDeclarators = new ArrayList(1);
+			List<VariableDeclaration> pointerDeclarators = new List<VariableDeclaration>(1);
 			
 			Expect(1);
 
