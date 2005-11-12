@@ -30,6 +30,12 @@ namespace Debugger
 			}
 		}
 		
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
+		
 		public string Name { 
 			get{ 
 				return name; 

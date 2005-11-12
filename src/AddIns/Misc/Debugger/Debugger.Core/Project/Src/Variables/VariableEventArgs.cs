@@ -23,7 +23,7 @@ namespace Debugger
 			}
 		}
 		
-		public VariableEventArgs(NDebugger debugger, Variable variable): base(debugger)
+		public VariableEventArgs(Variable variable): base(variable.Debugger)
 		{
 			this.variable = variable;
 		}

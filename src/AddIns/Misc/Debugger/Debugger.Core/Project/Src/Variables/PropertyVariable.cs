@@ -91,7 +91,7 @@ namespace Debugger
 		
 		void EvalStarted(object sender, EvalEventArgs args)
 		{
-			OnValueChanged(new VariableEventArgs(debugger, this));
+			OnValueChanged(new VariableEventArgs(this));
 		}
 		
 		void EvalComplete(object sender, EvalEventArgs args)
@@ -100,7 +100,7 @@ namespace Debugger
 				eval.Result.Name = this.Name;
 			}
 			OnValueEvaluated();
-			OnValueChanged(new VariableEventArgs(debugger, this));
+			OnValueChanged(new VariableEventArgs(this));
 		}
 		
 		protected void OnValueEvaluated()

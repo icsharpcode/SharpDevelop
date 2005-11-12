@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -16,14 +16,35 @@ namespace Debugger
 	public class VariableCollection: ReadOnlyCollectionBase
 	{
 		public static VariableCollection Empty;
-
+		
 		bool readOnly = false;
-
+		
+		public event EventHandler<VariableEventArgs> VariableAdded;
+		public event EventHandler<VariableEventArgs> VariableRemoved;
+		internal event EventHandler Updating;
+		
 		internal VariableCollection()
 		{
-
+		
 		}
-
+		
+		/// <summary>
+		/// Creates new collection and fills it by calling 'updating' delegate
+		/// </summary>
+		/// <param name="updating"></param>
+		/// <returns></returns>
+		internal VariableCollection(EventHandler updating)
+		{
+			this.Updating += updating;
+			this.Update();
+		}
+		
+		static VariableCollection()
+		{
+			Empty = new VariableCollection();
+			Empty.readOnly = true;
+		}
+		
 		public bool Contains(Variable variable)
 		{
 			foreach (Variable v in InnerList) {
@@ -33,7 +54,7 @@ namespace Debugger
 			}
 			return false;
 		}
-
+		
 		public bool Contains(string variableName)
 		{
 			foreach (Variable v in InnerList) {
@@ -43,23 +64,40 @@ namespace Debugger
 			}
 			return false;
 		}
-
-		static VariableCollection()
-		{
-			Empty = new VariableCollection();
-			Empty.readOnly = true;
-		}
-
+		
 		internal void Add(Variable variable)
 		{
 			if (readOnly) {
-				throw new DebuggerException("VariableCollection is marked as readOnly"); 
+				throw new DebuggerException("VariableCollection is marked as read only"); 
 			}
 			if (variable != null) {
 				InnerList.Add(variable);
+				OnVariableAdded(new VariableEventArgs(variable));
 			}
 		}
-
+		
+		internal void Remove(Variable variable)
+		{
+			if (readOnly) {
+				throw new DebuggerException("VariableCollection is marked as read only"); 
+			}
+			if (variable != null) {
+				InnerList.Remove(variable);
+				OnVariableRemoved(new VariableEventArgs(variable));
+			}
+		}
+		
+		/// <summary>
+		/// Removes all variables from collection and resets the updating function
+		/// </summary>
+		internal void Clear()
+		{
+			foreach(Variable variable in InnerList) {
+				Remove(variable);
+			}
+			Updating = null;
+		}
+		
 		public Variable this[int index] {
 			get {
 				return (Variable) InnerList[index];
@@ -84,24 +122,80 @@ namespace Debugger
 				throw new DebuggerException("Variable \"" + variableName + "\" is not in collection");
 			}
 		}
-
+		
+		public void Update()
+		{
+			OnUpdating(EventArgs.Empty);
+		}
+		
+		/// <summary>
+		/// Updates the given collections and changes the state of this collection so that it matches the given collections.
+		/// </summary>
+		/// <param name="collections"></param>
+		public void UpdateTo(params VariableCollection[] collections)
+		{
+			VariableCollection mergedCollection = VariableCollection.Merge(collections);
+			
+		}
+		
+		protected virtual void OnVariableAdded(VariableEventArgs e)
+		{
+			if (VariableAdded != null) {
+				VariableAdded(this, e);
+			}
+		}
+		
+		protected virtual void OnVariableRemoved(VariableEventArgs e)
+		{
+			if (VariableRemoved != null) {
+				VariableRemoved(this, e);
+			}
+		}
+		
+		protected virtual void OnUpdating(EventArgs e)
+		{
+			if (Updating != null) {
+				Updating(this, e);
+			}
+		}
+		
 		public override string ToString() {
 			string txt = "";
 			foreach(Variable v in this) {
 				txt += v.ToString() + "\n";
 			}
+			
 			return txt;
 		}
-
+		
 		public static VariableCollection Merge(params VariableCollection[] collections)
 		{
-			VariableCollection mergedCollection = new VariableCollection();
+			VariableCollection newCollection = new VariableCollection();
+			newCollection.MergeWith(collections);
+			return newCollection;
+		}
+		
+		public void MergeWith(params VariableCollection[] collections)
+		{
+			// Add items of subcollections and ensure the stay in sync
 			foreach(VariableCollection collection in collections) {
 				foreach(Variable variable in collection) {
-					mergedCollection.Add(variable);
+					this.Add(variable);
 				}
+				collection.VariableAdded += delegate(object sender, VariableEventArgs e) {
+					this.Add(e.Variable);
+				};
+				collection.VariableRemoved += delegate(object sender, VariableEventArgs e) {
+					this.Remove(e.Variable);
+				};
 			}
-			return mergedCollection;
+			
+			// Update subcollections at update
+			this.Updating += delegate {
+				foreach(VariableCollection collection in collections) {
+					collection.Update();
+				};
+			};
 		}
 	}
 }
