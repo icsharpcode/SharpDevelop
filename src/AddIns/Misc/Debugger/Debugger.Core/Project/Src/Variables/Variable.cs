@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -15,19 +15,30 @@ namespace Debugger
 	public abstract class Variable: RemotingObjectBase
 	{
 		protected NDebugger debugger;
-
-		readonly string name;
+		
+		string name;
 		protected ICorDebugValue corValue;
 		VariableCollection subVariables;
 		CorElementType? corType;
-
-
+		
+		public event EventHandler<VariableEventArgs> ValueChanged;
+		
+		protected virtual void OnValueChanged(VariableEventArgs e)
+		{
+			if (ValueChanged != null) {
+				ValueChanged(this, e);
+			}
+		}
+		
 		public string Name { 
 			get{ 
 				return name; 
-			} 
+			}
+			set {
+				name = value;
+			}
 		}
-
+		
 		internal ICorDebugValue CorValue {
 			get {
 				return corValue;

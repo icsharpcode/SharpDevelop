@@ -14,43 +14,62 @@ namespace Debugger
 	public class PropertyVariable: Variable 
 	{
 		Eval           eval;
-		Variable       currentValue;
+		
 		public event EventHandler<DebuggerEventArgs> ValueEvaluated;
 		
 		internal PropertyVariable(NDebugger debugger, Eval eval, string name):base(debugger, null, name)
 		{
 			this.eval = eval;
-			eval.EvalComplete += new EventHandler<EvalEventArgs>(EvalComplete);
+			eval.EvalStarted += EvalStarted;
+			eval.EvalComplete += EvalComplete;
 		}
 		
 		public bool IsEvaluated {
 			get {
-				return currentValue != null;
+				return eval.Completed;
 			}
 		}
 		
-		public override object Value { 
+		public override object Value {
 			get {
-				if (!IsEvaluated) {
-					Evaluate();
+				if (IsEvaluated) {
+					if (eval.Result != null) {
+						return eval.Result.Value;
+					} else {
+						return null;
+					}
+				} else {
+					if (eval.Evaluating) {
+						return new VariableMagicValue("Evaluating...");
+					} else {
+						return new VariableMagicValue("Evaluation pending");
+					}
 				}
-				return currentValue.Value;
 			}
 		}
 		
 		public override string Type { 
 			get {
-				if (!IsEvaluated) {
-					Evaluate();
+				if (IsEvaluated) {
+					if (eval.Result != null) {
+						return eval.Result.Type;
+					} else {
+						return String.Empty;
+					}
+				} else {
+					return String.Empty;
 				}
-				return currentValue.Type;
 			}
 		}
 
 		public override bool MayHaveSubVariables {
 			get {
 				if (IsEvaluated) {
-					return currentValue.MayHaveSubVariables;
+					if (eval.Result != null) {
+						return eval.Result.MayHaveSubVariables;
+					} else {
+						return true;
+					}
 				} else {
 					return true;
 				}
@@ -59,33 +78,29 @@ namespace Debugger
 
 		protected override VariableCollection GetSubVariables()
 		{
-			if (!IsEvaluated) {
-					Evaluate();
+			if (IsEvaluated) {
+				if (eval.Result != null) {
+					return eval.Result.SubVariables;
+				} else {
+					return VariableCollection.Empty;
 				}
-			return currentValue.SubVariables;
+			} else {
+				return VariableCollection.Empty;
+			}
 		}
 		
-		/// <summary>
-		/// Executes evaluation of variable and doesn't return
-		/// until value is evaluated.
-		/// </summary>
-		public void Evaluate()
+		void EvalStarted(object sender, EvalEventArgs args)
 		{
-			//eval.PerformEval();
-		}
-		
-		/// <summary>
-		/// Executes evaluation of variable and returns imideatly
-		/// </summary>
-		public void AsyncEvaluate()
-		{
-			//eval.AsyncPerformEval();
+			OnValueChanged(new VariableEventArgs(debugger, this));
 		}
 		
 		void EvalComplete(object sender, EvalEventArgs args)
 		{
-			currentValue = VariableFactory.CreateVariable(debugger, eval.Result.CorValue, Name);
+			if (eval.Result != null) {
+				eval.Result.Name = this.Name;
+			}
 			OnValueEvaluated();
+			OnValueChanged(new VariableEventArgs(debugger, this));
 		}
 		
 		protected void OnValueEvaluated()

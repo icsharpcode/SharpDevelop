@@ -26,9 +26,11 @@ namespace Debugger
 		ICorDebugFunction corFunction;
 		ICorDebugValue[]  args;
 		
+		bool              evaluating = false;
 		bool              completed = false;
 		Variable          result;
 		
+		public event EventHandler<EvalEventArgs> EvalStarted;
 		public event EventHandler<EvalEventArgs> EvalComplete;
 		
 		/// <summary>
@@ -37,6 +39,18 @@ namespace Debugger
 		public bool Completed {
 			get {
 				return completed;
+			}
+		}
+		
+		/// <summary>
+		/// True if the eval is being evaluated at the moment.
+		/// </summary>
+		public bool Evaluating {
+			get {
+				return evaluating;
+			}
+			set {
+				evaluating = value;
 			}
 		}
 		
@@ -76,11 +90,23 @@ namespace Debugger
 			
 			corEval.CallFunction(corFunction, (uint)args.Length, args);
 			
+			evaluating = true;
+			
+			OnEvalStarted(new EvalEventArgs(debugger, this));
+			
 			return true;
+		}
+		
+		protected virtual void OnEvalStarted(EvalEventArgs e)
+		{
+			if (EvalStarted != null) {
+				EvalStarted(this, e);
+			}
 		}
 		
 		protected internal virtual void OnEvalComplete(EvalEventArgs e) 
 		{
+			evaluating = false;
 			completed = true;
 			
 			ICorDebugValue corValue;

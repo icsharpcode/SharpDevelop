@@ -203,6 +203,8 @@
     <Compile Include="Src\Interop\MetaData\COR_FIELD_OFFSET.cs" />
     <Compile Include="Src\Variables\Evals\EvalEventArgs.cs" />
     <Compile Include="Src\Variables\Evals\NDebugger-Evals.cs" />
+    <Compile Include="Src\Variables\VariableEventArgs.cs" />
+    <Compile Include="Src\Variables\VariableMagicValue.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />
