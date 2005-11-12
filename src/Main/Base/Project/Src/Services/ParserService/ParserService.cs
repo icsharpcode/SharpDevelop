@@ -258,6 +258,11 @@ namespace ICSharpCode.Core
 			return new object[] { activeViewContent, activeWorkbenchWindow.ViewContent };
 		}
 		
+		public static void ParseCurrentViewContent()
+		{
+			ParserUpdateStep();
+		}
+		
 		static void ParserUpdateStep()
 		{
 			object[] workbench = (object[])WorkbenchSingleton.SafeThreadCall(typeof(ParserService), "GetWorkbench");

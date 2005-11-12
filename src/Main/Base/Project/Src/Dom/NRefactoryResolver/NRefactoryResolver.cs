@@ -594,6 +594,15 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (IsSameName(identifier, method.Name))
 					return new MethodResolveResult(callingClass, callingMember, type, identifier);
 			}
+			if (languageProperties.SupportsExtensionMethods && callingClass != null) {
+				ArrayList list = new ArrayList();
+				ResolveResult.AddExtensions(languageProperties, list, callingClass, type);
+				foreach (IMethodOrProperty mp in list) {
+					if (mp is IMethod && IsSameName(mp.Name, identifier)) {
+						return new MethodResolveResult(callingClass, callingMember, type, identifier);
+					}
+				}
+			}
 			return null;
 		}
 		#endregion
@@ -761,6 +770,18 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					methods.Add(m);
 				}
 			}
+			if (methods.Count == 0) {
+				if (languageProperties.SupportsExtensionMethods && callingClass != null) {
+					ArrayList list = new ArrayList();
+					ResolveResult.AddExtensions(languageProperties, list, callingClass, type);
+					foreach (IMethodOrProperty mp in list) {
+						if (mp is IMethod && IsSameName(mp.Name, memberName)) {
+							methods.Add((IMethod)mp);
+						}
+					}
+				}
+			}
+			
 			return methods;
 		}
 		#endregion

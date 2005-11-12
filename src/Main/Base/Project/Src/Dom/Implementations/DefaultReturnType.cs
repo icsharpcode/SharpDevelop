@@ -27,6 +27,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.c = c;
 		}
 		
+		public override string ToString()
+		{
+			return c.FullyQualifiedName;
+		}
+		
 		public override int TypeParameterCount {
 			get {
 				return c.TypeParameters.Count;

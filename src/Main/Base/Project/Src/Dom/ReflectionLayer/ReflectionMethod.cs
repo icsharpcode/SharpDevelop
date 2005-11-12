@@ -36,6 +36,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 				}
 			}
 			
+			if (methodBase.IsStatic) {
+				foreach (CustomAttributeData data in CustomAttributeData.GetCustomAttributes(methodBase)) {
+					string attributeName = data.Constructor.DeclaringType.FullName;
+					if (attributeName == "System.Runtime.CompilerServices.ExtensionAttribute"
+					    || attributeName == "Boo.Lang.ExtensionAttribute")
+					{
+						this.IsExtensionMethod = true;
+					}
+				}
+			}
 			ModifierEnum modifiers  = ModifierEnum.None;
 			if (methodBase.IsStatic) {
 				modifiers |= ModifierEnum.Static;

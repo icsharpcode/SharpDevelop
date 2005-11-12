@@ -134,6 +134,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
 			
 			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateProperty(member, textEditor.Document, true, includeSetter);
+			ParserService.ParseCurrentViewContent();
 		}
 		
 		void CreateChangedEvent(object sender, EventArgs e)
@@ -142,6 +143,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IProperty member = (IProperty)item.Tag;
 			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
 			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateChangedEvent(member, textEditor.Document);
+			ParserService.ParseCurrentViewContent();
 		}
 		
 		void CreateOnEventMethod(object sender, EventArgs e)
@@ -150,6 +152,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IEvent member = (IEvent)item.Tag;
 			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
 			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateOnEventMethod(member, textEditor.Document);
+			ParserService.ParseCurrentViewContent();
 		}
 		
 		void GotoTagMember(object sender, EventArgs e)

@@ -389,7 +389,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return null;
 		}
 		
-		static bool InferTypeArgument(IReturnType expectedArgument, IReturnType passedArgument, IReturnType[] outputArray)
+		public static bool InferTypeArgument(IReturnType expectedArgument, IReturnType passedArgument, IReturnType[] outputArray)
 		{
 			if (passedArgument == null) return true; // TODO: NullTypeReference
 			if (expectedArgument != null && expectedArgument.ArrayDimensions > 0) {
@@ -559,6 +559,24 @@ namespace ICSharpCode.SharpDevelop.Dom
 				// from array to other array type
 				return ConversionExists(from.ArrayElementType, to.ArrayElementType);
 			}
+			IList<IReturnType> fromTypeArguments = from.TypeArguments;
+			IList<IReturnType> toTypeArguments = to.TypeArguments;
+			if (fromTypeArguments != null && toTypeArguments != null) {
+				if (from.FullyQualifiedName == to.FullyQualifiedName) {
+					if (fromTypeArguments.Count == toTypeArguments.Count) {
+						for (int i = 0; i < fromTypeArguments.Count; i++) {
+							if (fromTypeArguments[i] == toTypeArguments[i])
+								continue;
+							if (object.Equals(fromTypeArguments[i], toTypeArguments[i]))
+								continue;
+							if (!(toTypeArguments[i] is GenericReturnType))
+								return false;
+						}
+						return true;
+					}
+				}
+			}
+			
 			return false;
 		}
 		#endregion

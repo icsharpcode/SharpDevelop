@@ -130,6 +130,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 				ArrayList list = new ArrayList();
 				IMethod dummyMethod = new DefaultMethod("dummy", ReflectionReturnType.Void, ModifierEnum.Static, DomRegion.Empty, DomRegion.Empty, callingClass);
 				NRefactoryResolver.NRefactoryResolver.AddContentsFromCalling(list, callingClass, dummyMethod);
+				NRefactoryResolver.NRefactoryResolver.AddImportedNamespaceContents(list, callingClass.CompilationUnit, callingClass);
 				
 				bool searchExtensionsInClasses = language.SearchExtensionsInClasses;
 				foreach (object o in list) {
@@ -138,12 +139,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 					} else if (searchExtensionsInClasses && o is IClass) {
 						IClass c = o as IClass;
 						if (c.HasExtensionMethods) {
-							if (supportsExtensionMethods) {
+							if (supportsExtensionProperties) {
 								foreach (IProperty p in c.Properties) {
 									TryAddExtension(language, res, p, resolvedType);
 								}
 							}
-							if (supportsExtensionProperties) {
+							if (supportsExtensionMethods) {
 								foreach (IMethod m in c.Methods) {
 									TryAddExtension(language, res, m, resolvedType);
 								}
@@ -171,6 +172,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			// now add the extension method if it fits the type
 			if (MemberLookupHelper.ConversionExists(resolvedType, ext.Parameters[0].ReturnType)) {
+				IMethod method = ext as IMethod;
+				if (method != null && method.TypeParameters.Count > 0) {
+					IReturnType[] typeArguments = new IReturnType[method.TypeParameters.Count];
+					MemberLookupHelper.InferTypeArgument(method.Parameters[0].ReturnType, resolvedType, typeArguments);
+					for (int i = 0; i < typeArguments.Length; i++) {
+						if (typeArguments[i] != null) {
+							ext = (IMethod)ext.Clone();
+							ext.ReturnType = ConstructedReturnType.TranslateType(ext.ReturnType, typeArguments, true);
+							for (int j = 0; j < ext.Parameters.Count; ++j) {
+								ext.Parameters[j].ReturnType = ConstructedReturnType.TranslateType(ext.Parameters[j].ReturnType, typeArguments, true);
+							}
+							break;
+						}
+					}
+				}
 				res.Add(ext);
 			}
 		}

@@ -39,6 +39,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				ClassBookmark bookmark = (ClassBookmark)owner;
 				c = bookmark.Class;
 			}
+			
 			List<ToolStripItem> list = new List<ToolStripItem>();
 			
 			if (!FindReferencesAndRenameHelper.IsReadOnly(c)) {
@@ -68,37 +69,34 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			return list.ToArray();
 		}
 		
+		void AddImplementInterfaceCommandItems(List<ToolStripItem> subItems, IClass c, bool explicitImpl)
+		{
+			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
+			foreach (IReturnType rt in c.BaseTypes) {
+				IClass interf = rt.GetUnderlyingClass();
+				if (interf != null && interf.ClassType == ClassType.Interface) {
+					EventHandler eh = delegate {
+						IDocument d = GetDocument(c);
+						if (d != null)
+							codeGen.ImplementInterface(rt, d, explicitImpl, c);
+						ParserService.ParseCurrentViewContent();
+					};
+					subItems.Add(new MenuCommand(interf.Name, eh));
+				}
+			}
+		}
+		
 		void AddImplementInterfaceCommands(IClass c, List<ToolStripItem> list)
 		{
 			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
 			if (codeGen == null) return;
 			List<ToolStripItem> subItems = new List<ToolStripItem>();
-			foreach (IReturnType rt in c.BaseTypes) {
-				IClass interf = rt.GetUnderlyingClass();
-				if (interf != null && interf.ClassType == ClassType.Interface) {
-					EventHandler eh = delegate {
-						IDocument d = GetDocument(c);
-						if (d != null)
-							codeGen.ImplementInterface(rt, d, false, c);
-					};
-					subItems.Add(new MenuCommand(interf.Name, eh));
-				}
-			}
+			AddImplementInterfaceCommandItems(subItems, c, false);
 			if (subItems.Count > 0) {
 				list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceImplicit}", subItems.ToArray()));
 				subItems = new List<ToolStripItem>();
 			}
-			foreach (IReturnType rt in c.BaseTypes) {
-				IClass interf = rt.GetUnderlyingClass();
-				if (interf != null && interf.ClassType == ClassType.Interface) {
-					EventHandler eh = delegate {
-						IDocument d = GetDocument(c);
-						if (d != null)
-							codeGen.ImplementInterface(rt, d, true, c);
-					};
-					subItems.Add(new MenuCommand(interf.Name, eh));
-				}
-			}
+			AddImplementInterfaceCommandItems(subItems, c, true);
 			if (subItems.Count > 0) {
 				list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}", subItems.ToArray()));
 			}
