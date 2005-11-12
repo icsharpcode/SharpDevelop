@@ -97,7 +97,16 @@ namespace ICSharpCode.FormDesigner
 		{
 			this.loading = true;
 			typeResolutionService = (ITypeResolutionService)host.GetService(typeof(ITypeResolutionService));
+			this.designerLoaderHost = host;
 			base.BeginLoad(host);
+		}
+		
+		protected override void Initialize()
+		{
+			CodeDomLocalizationProvider localizationProvider = new CodeDomLocalizationProvider(designerLoaderHost, CodeDomLocalizationModel.PropertyAssignment);
+			IDesignerSerializationManager manager = (IDesignerSerializationManager)designerLoaderHost.GetService(typeof(IDesignerSerializationManager));
+			manager.AddSerializationProvider(localizationProvider);
+			base.Initialize();
 		}
 		
 		protected override void OnEndLoad(bool successful, ICollection errors)
