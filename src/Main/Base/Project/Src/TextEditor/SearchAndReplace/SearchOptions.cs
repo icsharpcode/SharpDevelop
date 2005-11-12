@@ -155,6 +155,8 @@ namespace SearchAndReplace
 				return properties.Get("DocumentIteratorType", DocumentIteratorType.CurrentDocument);
 			}
 			set {
+				if (!Enum.IsDefined(typeof(DocumentIteratorType), value))
+					throw new ArgumentException("invalid enum value");
 				properties.Set("DocumentIteratorType", value);
 			}
 		}

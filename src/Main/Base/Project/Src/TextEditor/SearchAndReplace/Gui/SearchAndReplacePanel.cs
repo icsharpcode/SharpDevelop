@@ -87,14 +87,20 @@ namespace SearchAndReplace
 				SearchOptions.ReplacePattern = Get<ComboBox>("replace").Text;
 			}
 			
-			SearchOptions.LookIn = Get<ComboBox>("lookIn").Text;
+			if (Get<ComboBox>("lookIn").DropDownStyle == ComboBoxStyle.DropDown) {
+				SearchOptions.LookIn = Get<ComboBox>("lookIn").Text;
+			}
 			SearchOptions.LookInFiletypes = Get<ComboBox>("fileTypes").Text;
 			SearchOptions.MatchCase = Get<CheckBox>("matchCase").Checked;
 			SearchOptions.MatchWholeWord = Get<CheckBox>("matchWholeWord").Checked;
 			SearchOptions.IncludeSubdirectories = Get<CheckBox>("includeSubFolder").Checked;
 			
 			SearchOptions.SearchStrategyType = (SearchStrategyType)Get<ComboBox>("use").SelectedIndex;
-			SearchOptions.DocumentIteratorType = (DocumentIteratorType)Get<ComboBox>("lookIn").SelectedIndex;
+			if (Get<ComboBox>("lookIn").DropDownStyle == ComboBoxStyle.DropDown) {
+				SearchOptions.DocumentIteratorType = DocumentIteratorType.Directory;
+			} else {
+				SearchOptions.DocumentIteratorType = (DocumentIteratorType)Get<ComboBox>("lookIn").SelectedIndex;
+			}
 		}
 		
 		void SetOptions()
@@ -107,7 +113,7 @@ namespace SearchAndReplace
 			foreach (string findPattern in SearchOptions.FindPatterns) {
 				Get<ComboBox>("find").Items.Add(findPattern);
 			}
-				
+			
 			if (searchAndReplaceMode == SearchAndReplaceMode.Replace) {
 				Get<ComboBox>("replace").Text = SearchOptions.ReplacePattern;
 				Get<ComboBox>("replace").Items.Clear();
@@ -117,13 +123,18 @@ namespace SearchAndReplace
 			}
 			
 			Get<ComboBox>("lookIn").Text = SearchOptions.LookIn;
-			Get<ComboBox>("lookIn").Items.Add("current document");
-			Get<ComboBox>("lookIn").Items.Add("current selection");
-			Get<ComboBox>("lookIn").Items.Add("all open documents");
-			Get<ComboBox>("lookIn").Items.Add("whole project");
-			Get<ComboBox>("lookIn").Items.Add("whole solution");
+			string[] lookInTexts = {
+				// must be in the same order as the DocumentIteratorType enum
+				"${res:Dialog.NewProject.SearchReplace.LookIn.CurrentDocument}",
+				"${res:Dialog.NewProject.SearchReplace.LookIn.CurrentSelection}",
+				"${res:Dialog.NewProject.SearchReplace.LookIn.AllOpenDocuments}",
+				"${res:Dialog.NewProject.SearchReplace.LookIn.WholeProject}",
+				"${res:Dialog.NewProject.SearchReplace.LookIn.WholeSolution}"
+			};
+			foreach (string lookInText in lookInTexts) {
+				Get<ComboBox>("lookIn").Items.Add(StringParser.Parse(lookInText));
+			}
 			Get<ComboBox>("lookIn").Items.Add(SearchOptions.LookIn);
-			Get<ComboBox>("lookIn").DropDownStyle = ComboBoxStyle.DropDownList;
 			Get<ComboBox>("lookIn").SelectedIndexChanged += new EventHandler(LookInSelectedIndexChanged);
 			Get<ComboBox>("lookIn").SelectedIndex = (int)SearchOptions.DocumentIteratorType;
 			
