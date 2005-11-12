@@ -180,9 +180,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				// do not display
 			}
 			
+			string activeTaskName;
+			
 			void OnTaskStarted(object sender, TaskStartedEventArgs e)
 			{
-				if (CompileTaskNames.Contains(e.TaskName.ToLower())) {
+				activeTaskName = e.TaskName;
+				if (CompileTaskNames.Contains(e.TaskName.ToLowerInvariant())) {
 					AppendText("Compiling " + Path.GetFileNameWithoutExtension(e.ProjectFile));
 				}
 			}
@@ -204,8 +207,12 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			void AppendError(string file, int lineNumber, int columnNumber, string code, string message, bool isWarning)
 			{
-				if (projectFiles.Count > 0) {
-					file = Path.Combine(Path.GetDirectoryName(projectFiles.Peek()), file);
+				if (string.Equals(file, activeTaskName, StringComparison.InvariantCultureIgnoreCase)) {
+					file = "";
+				} else {
+					if (projectFiles.Count > 0) {
+						file = Path.Combine(Path.GetDirectoryName(projectFiles.Peek()), file);
+					}
 				}
 				CompilerError error = new CompilerError(file, lineNumber, columnNumber, code, message);
 				error.IsWarning = isWarning;
@@ -215,7 +222,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			void OnMessage(object sender, BuildMessageEventArgs e)
 			{
-				//AppendText(e.Message);
+				//if (e.Importance == MessageImportance.High)
+				//	AppendText(e.Message);
 			}
 			
 			void OnCustomEvent(object sender, CustomBuildEventArgs e)
