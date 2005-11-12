@@ -43,12 +43,14 @@
 					<Controls>
 						<ICSharpCode.SharpDevelop.Gui.AboutSharpDevelopTabPage/>
 					</Controls>
+					<UseVisualStyleBackColor value = "True"/>
 				</System.Windows.Forms.TabPage>
 				<System.Windows.Forms.TabPage>
 					<Text value="${res:Dialog.About.VersionInfoTabName}"/>
 					<Controls>
 						<ICSharpCode.SharpDevelop.Gui.VersionInformationTabPage/>
 					</Controls>
+					<UseVisualStyleBackColor value = "True"/>
 				</System.Windows.Forms.TabPage>
 			</TabPages>
 		</System.Windows.Forms.TabControl>

@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -19,12 +19,6 @@ namespace ICSharpCode.NRefactory.Tests.AST
 	[TestFixture]
 	public class OptionDeclarationTests
 	{
-		
-		#region C#
-		// No C# representation
-		#endregion
-		
-		#region VB.NET
 		[Test]
 		public void VBNetStrictOptionDeclarationTest()
 		{
@@ -60,7 +54,14 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual(OptionType.CompareText, opDec.OptionType);
 			Assert.IsTrue(opDec.OptionValue);
 		}
-		#endregion
 		
+		[Test]
+		public void VBNetInvalidOptionDeclarationTest()
+		{
+			string program = "Option\n";
+			IParser parser = ParserFactory.CreateParser(SupportedLanguage.VBNet, new StringReader(program));
+			parser.Parse();
+			Assert.IsFalse(parser.Errors.ErrorOutput.Length == 0, "Expected errors, but operation completed successfully");
+		}
 	}
 }

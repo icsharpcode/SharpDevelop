@@ -502,9 +502,11 @@ OptionStmt (. INode node = null; bool val = true; .) =
 	)
 	EndOfStmt
 	(.
-		node.StartLocation = startPos;
-		node.EndLocation   = t.Location;
-		compilationUnit.AddChild(node);
+		if (node != null) {
+			node.StartLocation = startPos;
+			node.EndLocation   = t.Location;
+			compilationUnit.AddChild(node);
+		}
 	.)
 	.
 

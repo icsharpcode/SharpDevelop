@@ -90,6 +90,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					}
 					
 					TabPage page = new TabPage(descriptor.Label);
+					page.UseVisualStyleBackColor = true;
 					page.Controls.Add(descriptor.DialogPanel.Control);
 					tabControl.TabPages.Add(page);
 				}

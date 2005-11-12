@@ -48,6 +48,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					OptionPanels.Add(descriptor.DialogPanel);
 					
 					TabPage page = new TabPage(descriptor.Label);
+					page.UseVisualStyleBackColor = true;
 					page.Controls.Add(descriptor.DialogPanel.Control);
 					((TabControl)ControlDictionary["optionPanelTabControl"]).TabPages.Add(page);
 				}
