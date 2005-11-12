@@ -721,6 +721,8 @@
     <Compile Include="Src\Gui\TreeGrid\VerticalScrollContainer.cs" />
     <Compile Include="Src\Services\Debugger\DebuggerGridControl.cs" />
     <Compile Include="Src\Gui\Pads\ProjectBrowser\NodeBuilder\NodeBuilders.cs" />
+    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\TextCompletionDataProvider.cs" />
+    <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\OverrideCompletionDataProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

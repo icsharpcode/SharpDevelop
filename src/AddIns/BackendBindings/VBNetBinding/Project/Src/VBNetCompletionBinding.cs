@@ -33,28 +33,8 @@ namespace VBNetBinding
 		{
 			VBNetBinding.Parser.ExpressionFinder ef = new VBNetBinding.Parser.ExpressionFinder();
 			int cursor = editor.ActiveTextAreaControl.Caret.Offset;
-			ExpressionContext context = null;
 			
-			if (ch == ' ') {
-				if(CodeCompletionOptions.KeywordCompletionEnabled) {
-					switch (editor.GetWordBeforeCaret().Trim().ToLower()) {
-						case "synclock":
-							context = ExpressionContext.Default;
-							break;
-						case "using":
-							context = ExpressionContext.TypeDerivingFrom(ReflectionReturnType.Disposable.GetUnderlyingClass(), false);
-							break;
-						case "catch":
-							context = ExpressionContext.TypeDerivingFrom(ReflectionReturnType.Exception.GetUnderlyingClass(), false);
-							break;
-					}
-				}
-				if(context != null) {
-					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(context), ch);
-					return true;
-				}
-			}
-			else if(ch == '(' && EnableMethodInsight && CodeCompletionOptions.InsightEnabled)
+			if(ch == '(' && EnableMethodInsight && CodeCompletionOptions.InsightEnabled)
 			{
 				editor.ShowInsightWindow(new MethodInsightDataProvider());
 				return true;
@@ -178,7 +158,7 @@ namespace VBNetBinding
 			// TODO: Assistance writing Methods/Fields/Properties/Events:
 			// use public/static/etc. as keywords to display a list with other modifiers
 			// and possible return types.
-			switch (word.ToLower()) {
+			switch (word.ToLowerInvariant()) {
 				case "imports":
 					editor.ShowCompletionWindow(new CodeCompletionDataProvider(new ExpressionResult("Global", ExpressionContext.Importable)), ' ');
 					return true;
@@ -193,6 +173,17 @@ namespace VBNetBinding
 					return true;
 				case "implements":
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Interface), ' ');
+					return true;
+				case "overrides":
+					editor.ShowCompletionWindow(new OverrideCompletionDataProvider(), ' ');
+					return true;
+				case "option":
+					editor.ShowCompletionWindow(new TextCompletionDataProvider("Explicit On",
+					                                                           "Explicit Off",
+					                                                           "Strict On",
+					                                                           "Strict Off",
+					                                                           "Compare Binary",
+					                                                           "Compare Text"), ' ');
 					return true;
 				default:
 					return base.HandleKeyword(editor, word);

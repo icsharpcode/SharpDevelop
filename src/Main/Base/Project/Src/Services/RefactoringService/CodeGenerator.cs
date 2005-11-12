@@ -291,7 +291,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				block.AddChild(new StatementExpression(new AssignmentExpression(left, AssignmentOperatorType.Assign, right)));
 				property.SetRegion = new PropertySetRegion(block, null);
 			}
-			property.Modifier = Modifier.Public;
+			
+			property.Modifier = Modifier.Public | (property.Modifier & Modifier.Static);
 			
 			InsertCodeAfter(field, document, property);
 		}

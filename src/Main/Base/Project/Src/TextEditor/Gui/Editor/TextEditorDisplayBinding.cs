@@ -450,6 +450,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				textAreaControl.Document.FoldingManager.UpdateFoldings(TitleName, parseInfo);
 				UpdateClassMemberBookmarks(parseInfo);
 				textAreaControl.ActiveTextAreaControl.TextArea.Refresh(textAreaControl.ActiveTextAreaControl.TextArea.FoldMargin);
+				textAreaControl.ActiveTextAreaControl.TextArea.Refresh(textAreaControl.ActiveTextAreaControl.TextArea.IconBarMargin);
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}

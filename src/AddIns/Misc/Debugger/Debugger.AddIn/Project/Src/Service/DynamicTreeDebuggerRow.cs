@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -43,6 +43,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			this[2].Text = variable.Name;
 			this[3].Text = variable.ToString();
 			
+			if (!variable.MayHaveSubVariables)
+				this.ShowPlus = false;
 			this.ShowMinusWhileExpanded = true;
 		}
 	}

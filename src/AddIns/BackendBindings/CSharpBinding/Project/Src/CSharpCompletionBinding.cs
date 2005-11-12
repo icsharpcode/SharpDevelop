@@ -253,8 +253,9 @@ namespace CSharpBinding
 					editor.ShowCompletionWindow(new CtrlSpaceCompletionDataProvider(ExpressionContext.Type), ' ');
 					return true;
 				case "override":
-					// TODO: Suggest list of virtual methods to override
-					return false;
+					if (IsInComment(editor)) return false;
+					editor.ShowCompletionWindow(new OverrideCompletionDataProvider(), ' ');
+					return true;
 				case "new":
 					return ShowNewCompletion(editor);
 				default:
