@@ -56,6 +56,8 @@
       <SubType>Form</SubType>
     </Compile>
     <EmbeddedResource Include="Resources\ProjectImports.xfrm" />
+    <Compile Include="Src\OptionPanels\TextEditorOptions.cs" />
+    <EmbeddedResource Include="Resources\VBNetTextEditorOptions.xfrm" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

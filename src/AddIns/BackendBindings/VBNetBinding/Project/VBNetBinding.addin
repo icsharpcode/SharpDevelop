@@ -28,7 +28,13 @@
 			projectfileextension = ".vbproj"
 			class = "VBNetBinding.Parser.TParser"/>
 	</Path>
-
+	
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditor">
+		<DialogPanel id = "VBSpecificOptions"
+			             label = "${res:Dialog.Options.IDEOptions.TextEditor.VB.PanelName}"
+			             class = "VBNetBinding.OptionPanels.VBNetTextEditorPanel"/>
+	</Path>
+	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/VBNet">
 		<DialogPanel id    = "Application"
 		             label = "${res:Dialog.ProjectOptions.ApplicationSettings}"

@@ -1,0 +1,35 @@
+<Components version="1.0">
+  <System.Windows.Forms.UserControl>
+    <Name value="CreatedObject0" />
+    <DockPadding value="" />
+    <ClientSize value="{Width=416, Height=248}" />
+    <Controls>
+      <System.Windows.Forms.GroupBox>
+        <Name value="CreatedObject2" />
+        <TabIndex value="0" />
+        <Location value="{X=8,Y=8}" />
+        <Anchor value="Top, Left, Right" />
+        <ClientSize value="{Width=400, Height=96}" />
+        <Text value="${res:Dialog.Options.IDEOptions.TextEditor.VB.FormattingGroupBox}" />
+        <Controls>
+          <System.Windows.Forms.CheckBox>
+            <Name value="enableEndConstructsCheckBox" />
+            <Location value="{X=8,Y=24}" />
+            <ClientSize value="{Width=384, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.VB.EnableEndConstructsCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.CheckBox>
+          <System.Windows.Forms.CheckBox>
+            <Name value="enableCasingCheckBox" />
+            <Location value="{X=8,Y=56}" />
+            <ClientSize value="{Width=384, Height=24}" />
+            <Text value="${res:Dialog.Options.IDEOptions.TextEditor.VB.EnableCasingCheckBox}" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="1" />
+          </System.Windows.Forms.CheckBox>
+        </Controls>
+      </System.Windows.Forms.GroupBox>
+    </Controls>
+  </System.Windows.Forms.UserControl>
+</Components>
