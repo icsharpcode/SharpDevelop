@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Text;
 using System.Reflection;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -31,13 +32,16 @@ namespace ICSharpCode.FormDesigner
 			return new DomRegion(r.BeginLine + 1, 1, r.EndLine, 1);
 		}
 		
-		protected override string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body)
+		protected override string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body, string indentation)
 		{
 			string param = GenerateParams(edesc);
 			
-			return "Sub " + eventMethodName + "(" + param + ")\n" +
-				body +
-				"\nEnd Sub\n\n";
+			StringBuilder b = new StringBuilder();
+			b.AppendLine(indentation);
+			b.AppendLine(indentation + "Sub " + eventMethodName + "(" + param + ")");
+			b.AppendLine(indentation + "\t" + body);
+			b.AppendLine(indentation + "End Sub");
+			return b.ToString();
 		}
 		
 		protected static string GenerateParams(EventDescriptor edesc)

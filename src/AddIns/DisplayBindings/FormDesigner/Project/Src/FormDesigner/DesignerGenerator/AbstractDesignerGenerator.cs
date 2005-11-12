@@ -230,7 +230,7 @@ namespace ICSharpCode.FormDesigner
 			}
 		}
 		
-		protected abstract string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body);
+		protected abstract string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body, string indentation);
 		
 		/// <summary>
 		/// If found return true and int as position
@@ -258,12 +258,16 @@ namespace ICSharpCode.FormDesigner
 			
 			position = c.Region.EndLine + 1;
 			
-			int offset = viewContent.Document.GetLineSegment(c.Region.EndLine - 1).Offset;
+			int offset = viewContent.Document.GetLineSegment(GetEventHandlerInsertionLine(c) - 1).Offset;
 			
-			viewContent.Document.Insert(offset, CreateEventHandler(edesc, eventMethodName, body));
-			viewContent.Document.FormattingStrategy.IndentLines(viewContent.TextEditorControl.ActiveTextAreaControl.TextArea, c.Region.EndLine - 1, c.Region.EndLine + 3);
+			viewContent.Document.Insert(offset, CreateEventHandler(edesc, eventMethodName, body, tabs));
 			
 			return false;
+		}
+		
+		protected virtual int GetEventHandlerInsertionLine(IClass c)
+		{
+			return c.Region.EndLine;
 		}
 		
 		public ICollection GetCompatibleMethods(EventDescriptor edesc)

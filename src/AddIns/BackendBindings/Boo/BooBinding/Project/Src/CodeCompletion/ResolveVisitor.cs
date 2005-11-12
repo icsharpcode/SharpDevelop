@@ -538,7 +538,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			IReturnType elementType = null;
 			foreach (Expression expr in node.Items) {
 				ClearResult();
-				node.Items[0].Accept(this);
+				expr.Accept(this);
 				IReturnType thisType = (resolveResult != null) ? resolveResult.ResolvedType : null;
 				if (elementType == null)
 					elementType = thisType;

@@ -680,6 +680,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 				return b;
 			if (ConversionExists(b, a))
 				return a;
+			IClass c = a.GetUnderlyingClass();
+			if (c != null) {
+				foreach (IClass baseClass in c.ClassInheritanceTree) {
+					IReturnType baseType = baseClass.DefaultReturnType;
+					if (baseClass.TypeParameters.Count > 0) {
+						IReturnType[] typeArguments = new IReturnType[baseClass.TypeParameters.Count];
+						for (int i = 0; i < typeArguments.Length; i++) {
+							typeArguments[i] = GetTypeParameterPassedToBaseClass(a, baseClass, i);
+						}
+						baseType = new ConstructedReturnType(baseType, typeArguments);
+					}
+					if (ConversionExists(b, baseType))
+						return baseType;
+				}
+			}
 			return ReflectionReturnType.Object;
 		}
 		

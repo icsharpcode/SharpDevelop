@@ -9,6 +9,7 @@ using System;
 using System.ComponentModel;
 using System.Drawing;
 using System.Reflection;
+using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 
@@ -43,13 +44,17 @@ namespace ICSharpCode.FormDesigner
 			return new Microsoft.CSharp.CSharpCodeProvider();
 		}
 		
-		protected override string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body)
+		protected override string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body, string indentation)
 		{
 			string param = GenerateParams(edesc, true);
 			
-			return "void " + eventMethodName + "(" + param + ")\n" +
-				"{\n" + body +
-				"\n}\n\n";
+			StringBuilder b = new StringBuilder();
+			b.AppendLine(indentation);
+			b.AppendLine(indentation + "void " + eventMethodName + "(" + param + ")");
+			b.AppendLine(indentation + "{");
+			b.AppendLine(indentation + "\t" + body);
+			b.AppendLine(indentation + "}");
+			return b.ToString();
 		}
 		
 		protected static string GenerateParams(EventDescriptor edesc, bool paramNames)

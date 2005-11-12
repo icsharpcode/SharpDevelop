@@ -7,6 +7,7 @@
 
 using System;
 using System.ComponentModel;
+using System.Text;
 using System.Reflection;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
@@ -26,19 +27,27 @@ namespace Grunwald.BooBinding.Designer
 			return new Boo.Lang.CodeDom.BooCodeProvider();
 		}
 		
-		protected override string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body)
+		protected override string CreateEventHandler(EventDescriptor edesc, string eventMethodName, string body, string indentation)
 		{
-			if (string.IsNullOrEmpty(body)) body = "\tpass";
+			if (string.IsNullOrEmpty(body)) body = "pass";
 			string param = GenerateParams(edesc);
-			return "private def " + eventMethodName + "(" + param + "):\n" +
-				body +
-				"\n";
+			
+			StringBuilder b = new StringBuilder();
+			b.AppendLine(indentation);
+			b.AppendLine(indentation + "private def " + eventMethodName + "(" + param + "):");
+			b.AppendLine(indentation + "\t" + body);
+			return b.ToString();
 		}
 		
 		protected override DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method)
 		{
 			DomRegion r = method.BodyRegion;
 			return new DomRegion(r.BeginLine + 1, 1, r.EndLine + 1, 1);
+		}
+		
+		protected override int GetEventHandlerInsertionLine(IClass c)
+		{
+			return c.Region.EndLine + 1;
 		}
 		
 		protected static string GenerateParams(EventDescriptor edesc)

@@ -17,6 +17,7 @@ namespace ICSharpCode.SharpDevelop.Tests
 	public class MemberLookupHelperTests
 	{
 		IProjectContent msc = ProjectContentRegistry.Mscorlib;
+		IProjectContent swf = ProjectContentRegistry.WinForms;
 		
 		public IReturnType DictionaryRT {
 			get {
@@ -48,6 +49,14 @@ namespace ICSharpCode.SharpDevelop.Tests
 			IReturnType rrt = new ConstructedReturnType(EnumerableClass.DefaultReturnType, stringArr);
 			IReturnType res = MemberLookupHelper.GetTypeParameterPassedToBaseClass(rrt, EnumerableClass, 0);
 			Assert.AreEqual("System.String", res.FullyQualifiedName);
+		}
+		
+		[Test]
+		public void GetCommonType()
+		{
+			IReturnType res = MemberLookupHelper.GetCommonType(swf.GetClass("System.Windows.Forms.ToolStripButton").DefaultReturnType,
+			                                                   swf.GetClass("System.Windows.Forms.ToolStripSeparator").DefaultReturnType);
+			Assert.AreEqual("System.Windows.Forms.ToolStripItem", res.FullyQualifiedName);
 		}
 	}
 }
