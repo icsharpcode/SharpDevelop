@@ -33,6 +33,12 @@ namespace Debugger
 		bool hasBeenLoaded = false;
 
 		Function currentFunction;
+		
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
 
 		internal bool HasBeenLoaded {
 			get {
@@ -169,7 +175,7 @@ namespace Debugger
 		protected void OnThreadStateChanged()
 		{
 			if (ThreadStateChanged != null)
-				ThreadStateChanged(this, new ThreadEventArgs(debugger, this));
+				ThreadStateChanged(this, new ThreadEventArgs(this));
 		}
 
 
@@ -181,7 +187,7 @@ namespace Debugger
 
 		public Exception CurrentException {
 			get {
-				return new Exception(debugger, this);
+				return new Exception(this);
 			}
 		}
 

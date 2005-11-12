@@ -27,6 +27,12 @@ namespace Debugger
 		
 		Process callingProcess;
 		Thread callingThread;
+		
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
 
 		public ManagedCallback(NDebugger debugger)
 		{
@@ -203,7 +209,7 @@ namespace Debugger
 			// this will also remove the eval form PendingEvals collection
 			Eval eval = debugger.GetEval(corEval);
 			if (eval != null) {
-				eval.OnEvalComplete(new EvalEventArgs(debugger, eval));
+				eval.OnEvalComplete(new EvalEventArgs(eval));
 			}
 			
 			if (debugger.PendingEvals.Count > 0) {

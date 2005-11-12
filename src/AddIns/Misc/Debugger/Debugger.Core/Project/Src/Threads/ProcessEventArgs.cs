@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -20,7 +20,7 @@ namespace Debugger
 			}
 		}
 
-		public ProcessEventArgs(NDebugger debugger, Process process): base(debugger)
+		public ProcessEventArgs(Process process): base(process.Debugger)
 		{
 			this.process = process;
 		}

@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -26,28 +26,28 @@ namespace Debugger
 		protected virtual void OnBreakpointAdded(Breakpoint breakpoint)
 		{
 			if (BreakpointAdded != null) {
-				BreakpointAdded(this, new BreakpointEventArgs(this, breakpoint));
+				BreakpointAdded(this, new BreakpointEventArgs(breakpoint));
 			}
 		}
 
 		protected virtual void OnBreakpointRemoved(Breakpoint breakpoint)
 		{
 			if (BreakpointRemoved != null) {
-				BreakpointRemoved(this, new BreakpointEventArgs(this, breakpoint));
+				BreakpointRemoved(this, new BreakpointEventArgs(breakpoint));
 			}
 		}
 
 		protected virtual void OnBreakpointStateChanged(object sender, BreakpointEventArgs e)
 		{
 			if (BreakpointStateChanged != null) {
-				BreakpointStateChanged(this, new BreakpointEventArgs(this, e.Breakpoint));
+				BreakpointStateChanged(this, new BreakpointEventArgs(e.Breakpoint));
 			}
 		}
 
 		protected virtual void OnBreakpointHit(object sender, BreakpointEventArgs e)
 		{
 			if (BreakpointHit != null) {
-				BreakpointHit(this, new BreakpointEventArgs(this, e.Breakpoint));
+				BreakpointHit(this, new BreakpointEventArgs(e.Breakpoint));
 			}
 		}
 

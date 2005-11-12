@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -28,11 +28,17 @@ namespace Debugger
 		string            callstack;
 		string            type;
 		string            message;
-	
-		internal Exception(NDebugger debugger, Thread thread)
+		
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
+		
+		internal Exception(Thread thread)
 		{
 			creationTime = DateTime.Now;
-			this.debugger = debugger;
+			this.debugger = thread.Debugger;
 			this.thread = thread;
 			thread.CorThread.GetCurrentException(out corValue);
 			exceptionType = thread.CurrentExceptionType;

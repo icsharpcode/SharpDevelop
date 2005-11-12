@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -16,6 +16,8 @@ namespace Debugger
 {
 	public class Module: RemotingObjectBase, IDisposable
 	{
+		NDebugger debugger;
+		
 		string fullPath;
 		ulong  baseAdress;
 		int    isDynamic;
@@ -25,6 +27,12 @@ namespace Debugger
 		readonly ICorDebugModule corModule;
 		ISymbolReader symReader;
 		IMetaDataImport metaDataInterface;
+		
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
 		
 		internal MetaData MetaData {
 			get {
@@ -106,8 +114,10 @@ namespace Debugger
 			}
 		}
 		
-		internal Module(ICorDebugModule pModule)
+		internal Module(NDebugger debugger, ICorDebugModule pModule)
 		{
+			this.debugger = debugger;
+			
 			corModule = pModule;
 			
 			pModule.GetBaseAddress(out baseAdress);

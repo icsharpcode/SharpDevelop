@@ -25,6 +25,12 @@ namespace Debugger
 		ICorDebugFunctionBreakpoint corBreakpoint;
 		IntPtr pBreakpoint;
 		
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
+		
 		public SourcecodeSegment SourcecodeSegment {
 			get {
 				return sourcecodeSegment;
@@ -64,7 +70,7 @@ namespace Debugger
 		internal void OnBreakpointStateChanged()
 		{
 			if (BreakpointStateChanged != null)
-				BreakpointStateChanged(this, new BreakpointEventArgs(debugger, this));
+				BreakpointStateChanged(this, new BreakpointEventArgs(this));
 		}
 
 		public event EventHandler<BreakpointEventArgs> BreakpointHit;
@@ -72,7 +78,7 @@ namespace Debugger
 		internal void OnBreakpointHit()
 		{
 			if (BreakpointHit != null)
-				BreakpointHit(this, new BreakpointEventArgs(debugger, this));
+				BreakpointHit(this, new BreakpointEventArgs(this));
 		}
 
 		internal Breakpoint(NDebugger debugger, SourcecodeSegment sourcecodeSegment, bool enabled)

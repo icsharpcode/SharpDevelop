@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -24,14 +24,14 @@ namespace Debugger
 		protected void OnModuleLoaded(Module module)
 		{
 			if (ModuleLoaded != null) {
-				ModuleLoaded(this, new ModuleEventArgs(this, module));
+				ModuleLoaded(this, new ModuleEventArgs(module));
 			}
 		}
 
 		protected void OnModuleUnloaded(Module module)
 		{
 			if (ModuleUnloaded != null) {
-				ModuleUnloaded(this, new ModuleEventArgs(this, module));
+				ModuleUnloaded(this, new ModuleEventArgs(module));
 			}
 		}
 
@@ -73,7 +73,7 @@ namespace Debugger
 
 		internal void AddModule(ICorDebugModule corModule)
 		{
-			AddModule(new Module(corModule));
+			AddModule(new Module(this, corModule));
 		}
 
 		internal void RemoveModule(Module module)

@@ -33,6 +33,12 @@ namespace Debugger
 		public event EventHandler<EvalEventArgs> EvalStarted;
 		public event EventHandler<EvalEventArgs> EvalComplete;
 		
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
+		
 		/// <summary>
 		/// True if the evaluation has been completed.
 		/// </summary>
@@ -92,7 +98,7 @@ namespace Debugger
 			
 			evaluating = true;
 			
-			OnEvalStarted(new EvalEventArgs(debugger, this));
+			OnEvalStarted(new EvalEventArgs(this));
 			
 			return true;
 		}

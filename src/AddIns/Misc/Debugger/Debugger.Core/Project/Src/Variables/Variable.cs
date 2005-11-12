@@ -23,16 +23,16 @@ namespace Debugger
 		
 		public event EventHandler<VariableEventArgs> ValueChanged;
 		
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
+		
 		protected virtual void OnValueChanged(VariableEventArgs e)
 		{
 			if (ValueChanged != null) {
 				ValueChanged(this, e);
-			}
-		}
-		
-		public NDebugger Debugger {
-			get {
-				return debugger;
 			}
 		}
 		

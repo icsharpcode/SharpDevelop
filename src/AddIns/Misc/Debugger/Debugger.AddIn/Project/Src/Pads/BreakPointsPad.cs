@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			breakpointsList.BeginUpdate();
 			breakpointsList.Items.Clear();
 			foreach(Debugger.Breakpoint b in debuggerCore.Breakpoints) {
-				AddBreakpoint(new BreakpointEventArgs(debuggerCore, b));
+				AddBreakpoint(new BreakpointEventArgs(b));
 			}
 			breakpointsList.EndUpdate();
 			breakpointsList.ItemCheck += new ItemCheckEventHandler(BreakpointsListItemCheck);
@@ -171,7 +171,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			breakpointsList.BeginUpdate();
 			foreach(Debugger.Breakpoint b in debuggerCore.Breakpoints)
-				RefreshBreakpoint(this, new BreakpointEventArgs(debuggerCore, b));
+				RefreshBreakpoint(this, new BreakpointEventArgs(b));
 			breakpointsList.EndUpdate();
 		}
 	}

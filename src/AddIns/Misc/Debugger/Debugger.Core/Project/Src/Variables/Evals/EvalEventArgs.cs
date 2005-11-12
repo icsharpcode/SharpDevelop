@@ -26,7 +26,7 @@ namespace Debugger
 			}
 		}
 		
-		public EvalEventArgs(NDebugger debugger, Eval eval): base(debugger)
+		public EvalEventArgs(Eval eval): base(eval.Debugger)
 		{
 			this.eval = eval;
 		}

@@ -62,7 +62,7 @@ namespace Debugger
 			
 			eval.EvalComplete += EvalComplete;
 			
-			OnEvalAdded(new EvalEventArgs(this, eval));
+			OnEvalAdded(new EvalEventArgs(eval));
 			
 			return eval;
 		}

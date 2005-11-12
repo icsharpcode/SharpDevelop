@@ -26,6 +26,12 @@ namespace Debugger
 		ICorDebugFunction corFunction;
 
 		MethodProps methodProps;
+		
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
 
 		public string Name { 
 			get { 
@@ -449,7 +455,7 @@ namespace Debugger
 					}
 					Eval eval = new Eval(debugger, evalCorFunction, evalArgs);
 					debugger.AddEval(eval);
-					properties.Add(new PropertyVariable(debugger, eval, method.Name.Remove(0, 4)));
+					properties.Add(new PropertyVariable(eval, method.Name.Remove(0, 4)));
 				}
 			}
 

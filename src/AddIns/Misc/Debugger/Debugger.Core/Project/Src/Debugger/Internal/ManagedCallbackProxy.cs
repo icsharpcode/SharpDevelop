@@ -28,9 +28,15 @@ namespace Debugger
 		ManagedCallback realCallback;
 		MTA2STA mta2sta;
 		
-		public ManagedCallbackProxy(NDebugger debugger, ManagedCallback realCallback)
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
+		
+		public ManagedCallbackProxy(ManagedCallback realCallback)
 		{
-			this.debugger = debugger;
+			this.debugger = realCallback.Debugger;
 			this.realCallback = realCallback;
 			mta2sta = new MTA2STA();
 		}

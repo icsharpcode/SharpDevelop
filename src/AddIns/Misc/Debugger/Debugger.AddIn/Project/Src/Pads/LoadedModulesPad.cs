@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -106,7 +106,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
             loadedModulesList.Items.Clear();
             foreach(Module m in debuggerCore.Modules) {
-                AddModule(this, new ModuleEventArgs(debuggerCore, m));
+                AddModule(this, new ModuleEventArgs(m));
             }
 		}
 

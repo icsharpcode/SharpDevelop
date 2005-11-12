@@ -17,7 +17,7 @@ namespace Debugger
 		
 		public event EventHandler<DebuggerEventArgs> ValueEvaluated;
 		
-		internal PropertyVariable(NDebugger debugger, Eval eval, string name):base(debugger, null, name)
+		internal PropertyVariable(Eval eval, string name):base(eval.Debugger, null, name)
 		{
 			this.eval = eval;
 			eval.EvalStarted += EvalStarted;

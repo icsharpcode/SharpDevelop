@@ -91,7 +91,7 @@ namespace Debugger
 			NativeMethods.CreateDebuggingInterfaceFromVersion(3, version, out corDebug);
 			
 			managedCallback = new ManagedCallback(this);
-			managedCallbackProxy = new ManagedCallbackProxy(this, managedCallback);
+			managedCallbackProxy = new ManagedCallbackProxy(managedCallback);
 			
 			corDebug.Initialize();
 			corDebug.SetManagedHandler(managedCallbackProxy);
