@@ -264,19 +264,19 @@ namespace VBNetBinding.FormattingStrategy
 				string curLineText = textArea.Document.GetText(curLine.Offset, curLine.Length);
 				string lineAboveText = lineAbove == null ? "" : textArea.Document.GetText(lineAbove);
 				
-				if (ch == '@') {
+				if (ch == '\'') {
 					curLineText   = textArea.Document.GetText(curLine);
 					
-					if (curLineText != null && curLineText.EndsWith("'@") && (lineAboveText == null || !lineAboveText.Trim().StartsWith("'@"))) {
+					if (curLineText != null && curLineText.EndsWith("'''") && (lineAboveText == null || !lineAboveText.Trim().StartsWith("'''"))) {
 						string indentation = base.GetIndentation(textArea, lineNr);
 						object member = GetMember(textArea, lineNr);
 						if (member != null) {
 							StringBuilder sb = new StringBuilder();
 							sb.Append(" <summary>\n");
 							sb.Append(indentation);
-							sb.Append("'@ \n");
+							sb.Append("''' \n");
 							sb.Append(indentation);
-							sb.Append("'@ </summary>");
+							sb.Append("''' </summary>");
 							
 							if (member is IMethod) {
 								IMethod method = (IMethod)member;
@@ -284,7 +284,7 @@ namespace VBNetBinding.FormattingStrategy
 									for (int i = 0; i < method.Parameters.Count; ++i) {
 										sb.Append("\n");
 										sb.Append(indentation);
-										sb.Append("'@ <param name=\"");
+										sb.Append("''' <param name=\"");
 										sb.Append(method.Parameters[i].Name);
 										sb.Append("\"></param>");
 									}
@@ -292,7 +292,7 @@ namespace VBNetBinding.FormattingStrategy
 								if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void") {
 									sb.Append("\n");
 									sb.Append(indentation);
-									sb.Append("'@ <returns></returns>");
+									sb.Append("''' <returns></returns>");
 								}
 							}
 							textArea.Document.Insert(cursorOffset, sb.ToString());
@@ -431,7 +431,7 @@ namespace VBNetBinding.FormattingStrategy
 				if (ch == '"') {
 					return false;
 				}
-				if (ch == '\'' && i + 2 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '@')
+				if (ch == '\'' && i + 2 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '\'' && textArea.Document.GetCharAt(i + 2) == '\'')
 				{
 					return true;
 				}
