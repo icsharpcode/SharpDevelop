@@ -17,6 +17,7 @@ using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom.NRefactoryResolver;
 using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.TextEditor;
 using VBTokens = ICSharpCode.NRefactory.Parser.VB.Tokens;
 
 namespace VBNetBinding

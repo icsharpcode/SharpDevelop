@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.IO;
 using System.Collections;
 using System.Collections.Specialized;
 using System.Text.RegularExpressions;
@@ -16,6 +17,7 @@ using System.Text;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Actions;
 using ICSharpCode.TextEditor;
+using ICSharpCode.SharpDevelop.Dom;
 
 using ICSharpCode.Core;
 
@@ -254,25 +256,70 @@ namespace VBNetBinding.FormattingStrategy
 			doCasing = PropertyService.Get("VBBinding.TextEditor.EnableCasing", true);
 			doInsertion = PropertyService.Get("VBBinding.TextEditor.EnableEndConstructs", true);
 			
-			if (lineNr > 0) {
+			if (lineNr > 0)
+			{
 				LineSegment curLine = textArea.Document.GetLineSegment(lineNr);
 				LineSegment lineAbove = lineNr > 0 ? textArea.Document.GetLineSegment(lineNr - 1) : null;
 				
 				string curLineText = textArea.Document.GetText(curLine.Offset, curLine.Length);
-				string lineAboveText = textArea.Document.GetText(lineAbove.Offset, lineAbove.Length);
+				string lineAboveText = lineAbove == null ? "" : textArea.Document.GetText(lineAbove);
 				
-				if (ch == '\n' && lineAboveText != null) {
+				if (ch == '@') {
+					curLineText   = textArea.Document.GetText(curLine);
+					
+					if (curLineText != null && curLineText.EndsWith("'@") && (lineAboveText == null || !lineAboveText.Trim().StartsWith("'@"))) {
+						string indentation = base.GetIndentation(textArea, lineNr);
+						object member = GetMember(textArea, lineNr);
+						if (member != null) {
+							StringBuilder sb = new StringBuilder();
+							sb.Append(" <summary>\n");
+							sb.Append(indentation);
+							sb.Append("'@ \n");
+							sb.Append(indentation);
+							sb.Append("'@ </summary>");
+							
+							if (member is IMethod) {
+								IMethod method = (IMethod)member;
+								if (method.Parameters != null && method.Parameters.Count > 0) {
+									for (int i = 0; i < method.Parameters.Count; ++i) {
+										sb.Append("\n");
+										sb.Append(indentation);
+										sb.Append("'@ <param name=\"");
+										sb.Append(method.Parameters[i].Name);
+										sb.Append("\"></param>");
+									}
+								}
+								if (method.ReturnType != null && method.ReturnType.FullyQualifiedName != "System.Void") {
+									sb.Append("\n");
+									sb.Append(indentation);
+									sb.Append("'@ <returns></returns>");
+								}
+							}
+							textArea.Document.Insert(cursorOffset, sb.ToString());
+							
+							textArea.Refresh();
+							textArea.Caret.Position = textArea.Document.OffsetToPosition(cursorOffset + indentation.Length + "/// ".Length + " <summary>\n".Length);
+							return 0;
+						}
+					}
+					return 0;
+				}
+				
+				if (ch == '\n' && lineAboveText != null)
+				{
 					int undoCount = 1;
 					
 					// remove comments
 					string texttoreplace = Regex.Replace(lineAboveText, "'.*$", "", RegexOptions.Singleline);
 					// remove string content
 					MatchCollection strmatches = Regex.Matches(texttoreplace, "\"[^\"]*?\"", RegexOptions.Singleline);
-					foreach (Match match in strmatches) {
+					foreach (Match match in strmatches)
+					{
 						texttoreplace = texttoreplace.Remove(match.Index, match.Length).Insert(match.Index, new String('-', match.Length));
 					}
 					
-					if (doCasing) {
+					if (doCasing)
+					{
 						foreach (string keyword in keywords) {
 							string regex = "(?:\\W|^)(" + keyword + ")(?:\\W|$)";
 							MatchCollection matches = Regex.Matches(texttoreplace, regex, RegexOptions.IgnoreCase | RegexOptions.Singleline);
@@ -286,7 +333,8 @@ namespace VBNetBinding.FormattingStrategy
 						}
 					}
 					
-					if (doInsertion) {
+					if (doInsertion)
+					{
 						foreach (VBStatement statement in statements) {
 							if (Regex.IsMatch(texttoreplace.Trim(), statement.StartRegex, RegexOptions.IgnoreCase)) {
 								string indentation = GetIndentation(textArea, lineNr - 1);
@@ -305,8 +353,8 @@ namespace VBNetBinding.FormattingStrategy
 						}
 					}
 					
-					
-					if (IsInString(lineAboveText)) {
+					if (IsInString(lineAboveText))
+					{
 						if (IsFinishedString(curLineText)) {
 							textArea.Document.Insert(lineAbove.Offset + lineAbove.Length,
 							                         "\" & _");
@@ -327,7 +375,9 @@ namespace VBNetBinding.FormattingStrategy
 							textArea.Document.UndoStack.UndoLast(undoCount + 2);
 							return result;
 						}
-					} else {
+					}
+					else
+					{
 						string indent = GetIndentation(textArea, lineNr - 1);
 						if (indent.Length > 0) {
 							string newLineText = indent + TextUtilities.GetLineAsString(textArea.Document, lineNr).Trim();
@@ -341,8 +391,117 @@ namespace VBNetBinding.FormattingStrategy
 						return indent.Length;
 					}
 				}
+				else if(ch == '>')
+				{
+					if (IsInsideDocumentationComment(textArea, curLine, cursorOffset))
+					{
+						curLineText  = textArea.Document.GetText(curLine);
+						int column = textArea.Caret.Offset - curLine.Offset;
+						int index = Math.Min(column - 1, curLineText.Length - 1);
+						
+						while (index >= 0 && curLineText[index] != '<') {
+							--index;
+							if(curLineText[index] == '/')
+								return 0; // the tag was an end tag or already
+						}
+						
+						if (index > 0) {
+							StringBuilder commentBuilder = new StringBuilder("");
+							for (int i = index; i < curLineText.Length && i < column && !Char.IsWhiteSpace(curLineText[i]); ++i) {
+								commentBuilder.Append(curLineText[ i]);
+							}
+							string tag = commentBuilder.ToString().Trim();
+							if (!tag.EndsWith(">")) {
+								tag += ">";
+							}
+							if (!tag.StartsWith("/")) {
+								textArea.Document.Insert(textArea.Caret.Offset, "</" + tag.Substring(1));
+							}
+						}
+					}
+				}
 			}
 			return 0;
+		}
+		
+		bool IsInsideDocumentationComment(TextArea textArea, LineSegment curLine, int cursorOffset)
+		{
+			for (int i = curLine.Offset; i < cursorOffset; ++i) {
+				char ch = textArea.Document.GetCharAt(i);
+				if (ch == '"') {
+					return false;
+				}
+				if (ch == '\'' && i + 2 < cursorOffset && textArea.Document.GetCharAt(i + 1) == '@')
+				{
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		object GetMember(TextArea textArea, int lineNr)
+		{
+			string fileName = textArea.MotherTextEditorControl.FileName;
+			if (fileName != null && fileName.Length > 0 ) {
+				string fullPath = Path.GetFullPath(fileName);
+				ParseInformation parseInfo = ParserService.GetParseInformation(fullPath);
+				if (parseInfo != null) {
+					ICompilationUnit currentCompilationUnit = (ICompilationUnit)parseInfo.BestCompilationUnit;
+					if (currentCompilationUnit != null) {
+						foreach (IClass c in currentCompilationUnit.Classes) {
+							object o = GetClassMember(textArea, lineNr, c);
+							if (o != null) {
+								return o;
+							}
+						}
+					}
+				}
+			}
+			return null;
+		}
+		
+		object GetClassMember(TextArea textArea, int lineNr, IClass c)
+		{
+			if (IsBeforeRegion(textArea, c.Region, lineNr)) {
+				return c;
+			}
+			
+			foreach (IClass inner in c.InnerClasses) {
+				object o = GetClassMember(textArea, lineNr, inner);
+				if (o != null) {
+					return o;
+				}
+			}
+			
+			foreach (IField f in c.Fields) {
+				if (IsBeforeRegion(textArea, f.Region, lineNr)) {
+					return f;
+				}
+			}
+			foreach (IProperty p in c.Properties) {
+				if (IsBeforeRegion(textArea, p.Region, lineNr)) {
+					return p;
+				}
+			}
+			foreach (IEvent e in c.Events) {
+				if (IsBeforeRegion(textArea, e.Region, lineNr)) {
+					return e;
+				}
+			}
+			foreach (IMethod m in c.Methods) {
+				if (IsBeforeRegion(textArea, m.Region, lineNr)) {
+					return m;
+				}
+			}
+			return null;
+		}
+		
+		bool IsBeforeRegion(TextArea textArea, DomRegion region, int lineNr)
+		{
+			if (region.IsEmpty) {
+				return false;
+			}
+			return region.BeginLine - 2 <= lineNr && lineNr <= region.BeginLine;
 		}
 		
 		bool IsInString(string start)
