@@ -27,6 +27,8 @@ namespace Debugger
 		
 		VariableCollection localVariables = new VariableCollection();
 		
+		string debuggeeVersion;
+		
 		public ApartmentState RequiredApartmentState {
 			get  {
 				 return requiredApartmentState;
@@ -36,6 +38,12 @@ namespace Debugger
 		internal ICorDebug CorDebug {
 			get {
 				return corDebug;
+			}
+		}
+		
+		public string DebuggeeVersion {
+			get {
+				return debuggeeVersion;
 			}
 		}
 		
@@ -89,6 +97,7 @@ namespace Debugger
 			} else {
 				version = GetDebuggerVersion();
 			}
+			this.debuggeeVersion = version;
 			
 			NativeMethods.CreateDebuggingInterfaceFromVersion(3, version, out corDebug);
 			

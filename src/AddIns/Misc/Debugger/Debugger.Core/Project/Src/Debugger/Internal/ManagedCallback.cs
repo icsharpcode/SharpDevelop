@@ -162,9 +162,16 @@ namespace Debugger
 		{
 			// Exception2 is used in .NET Framework 2.0
 			
-			// Forward the call to Exception2, which handles EnterCallback and ExitCallback
-			ExceptionType exceptionType = (unhandled != 0)?ExceptionType.DEBUG_EXCEPTION_UNHANDLED:ExceptionType.DEBUG_EXCEPTION_FIRST_CHANCE;
-			Exception2(pAppDomain, pThread, null, 0, (CorDebugExceptionCallbackType)exceptionType, 0);
+			if (debugger.DebuggeeVersion.StartsWith("v1.")) {
+				// Forward the call to Exception2, which handles EnterCallback and ExitCallback
+				ExceptionType exceptionType = (unhandled != 0)?ExceptionType.DEBUG_EXCEPTION_UNHANDLED:ExceptionType.DEBUG_EXCEPTION_FIRST_CHANCE;
+				Exception2(pAppDomain, pThread, null, 0, (CorDebugExceptionCallbackType)exceptionType, 0);
+			} else {
+				// This callback should be ignored in v2 applications
+				EnterCallback("Exception", pThread);
+	
+				ExitCallback_Continue();	
+			}
 		}
 
 		#endregion

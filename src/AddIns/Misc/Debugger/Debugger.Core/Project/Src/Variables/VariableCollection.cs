@@ -141,7 +141,8 @@ namespace Debugger
 			// Update existing variables
 			foreach(Variable variable in mergedCollection) {
 				if (this.Contains(variable.Name)) {
-					//this[variable.Name].CorValue = variable.CorValue;
+					this.Remove(this[variable.Name]);
+					this.Add(variable);
 				}
 			}
 			
