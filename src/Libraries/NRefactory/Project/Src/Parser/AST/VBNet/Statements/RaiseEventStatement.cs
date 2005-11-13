@@ -7,15 +7,14 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
 	public class RaiseEventStatement : Statement
 	{
 		string eventName = "";
-//		List<Expression> parameters = new List<Expression>(1);
-		ArrayList arguments = new ArrayList(1);
+		List<Expression> arguments = new List<Expression>(1);
 		
 		public string EventName {
 			get {
@@ -26,7 +25,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				eventName = value;
 			}
 		}
-		public ArrayList Arguments {
+		public List<Expression> Arguments {
 			get {
 				return arguments;
 			}
@@ -36,11 +35,11 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public RaiseEventStatement(string eventName, ArrayList parameters)
+		public RaiseEventStatement(string eventName, List<Expression> arguments)
 		{
 			Debug.Assert(eventName != null);
 			this.eventName = eventName;
-			this.arguments = parameters ?? new ArrayList();
+			this.arguments = arguments ?? new List<Expression>();
 		}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)
@@ -50,9 +49,9 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		public override string ToString()
 		{
-			return  String.Format("[RaiseEventStatement: EventName={0}, Parameters={1}]", 
-			                     EventName,
-			                     GetCollectionString(arguments));
+			return  String.Format("[RaiseEventStatement: EventName={0}, Parameters={1}]",
+			                      EventName,
+			                      GetCollectionString(arguments));
 		}
 	}
 }

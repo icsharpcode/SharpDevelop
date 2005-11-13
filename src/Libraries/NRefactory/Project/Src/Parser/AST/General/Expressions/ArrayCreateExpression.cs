@@ -7,19 +7,14 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
-	// TODO: Overwork array create expression.
-	// what is rank ?
-	// is ArrayCreationParameter really needed ?
 	public class ArrayCreateExpression : Expression
 	{
 		TypeReference              createType;
-//		List<Expression>           parameters;
-		ArrayList parameters;
-		int[]                      rank             = new int[0];
+		List<Expression>           arguments;
 		ArrayInitializerExpression arrayInitializer = null; // Array Initializer OR NULL
 		
 		public TypeReference CreateType {
@@ -31,21 +26,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList Parameters {
+		public List<Expression> Arguments {
 			get {
-				return parameters;
+				return arguments;
 			}
 			set {
-				parameters = value == null ? new ArrayList(1) : value;
-			}
-		}
-		
-		public int[] Rank {
-			get {
-				return rank;
-			}
-			set {
-				rank = value == null ? new int[0] : value;
+				arguments = value ?? new List<Expression>(1);
 			}
 		}
 		
@@ -62,7 +48,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		{
 		}
 		
-		public ArrayCreateExpression(TypeReference createType, ArrayList parameters) : this (createType, parameters, null)
+		public ArrayCreateExpression(TypeReference createType, List<Expression> parameters) : this (createType, parameters, null)
 		{
 		}
 		
@@ -70,10 +56,10 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		{
 		}
 		
-		public ArrayCreateExpression(TypeReference createType, ArrayList parameters, ArrayInitializerExpression arrayInitializer)
+		public ArrayCreateExpression(TypeReference createType, List<Expression> parameters, ArrayInitializerExpression arrayInitializer)
 		{
 			this.CreateType       = createType;
-			this.Parameters       = parameters;
+			this.Arguments       = parameters;
 			this.ArrayInitializer = arrayInitializer;
 		}
 		
@@ -86,7 +72,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		{
 			return String.Format("[ArrayCreateExpression: CreateType={0}, Parameters={1}, ArrayInitializer={2}]",
 			                     createType,
-			                     GetCollectionString(parameters),
+			                     GetCollectionString(arguments),
 			                     arrayInitializer);
 		}
 	}

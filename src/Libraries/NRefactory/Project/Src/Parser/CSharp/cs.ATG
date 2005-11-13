@@ -1779,7 +1779,14 @@ ArrayInitializer<out Expression outExpr>
 .)
 =
 	"{"
-	[ VariableInitializer<out expr> (. if (expr != null) { initializer.CreateExpressions.Add(expr); } .) { IF (NotFinalComma()) "," VariableInitializer<out expr> (. if (expr != null) { initializer.CreateExpressions.Add(expr); } .) } [ "," ] ]
+	[	VariableInitializer<out expr>
+		(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
+		{ IF (NotFinalComma())
+			"," VariableInitializer<out expr>
+			(. if (expr != null) { initializer.CreateExpressions.Add(expr); } .)
+		}
+		[ "," ]
+	]
 	"}" (. outExpr = initializer; .)
 .
 
@@ -2159,47 +2166,36 @@ PrimaryExpr<out Expression pexpr>
 			{ "," Expr<out expr>              (. if (expr != null) { indices.Add(expr); } .) }
 			"]"                               (. retExpr = new IndexerExpression(retExpr, indices); .)
 		)                                     (. pexpr = retExpr; .)
-		| "new" NonArrayType<out type>                (. ArrayList parameters = new ArrayList(); .)
-		/*--- delegate / object creation expression: */
-		/* Note: a delegate creation expression allow only a single Expr  *
-		 *       not an argument list, but this is not distinguished here */
-		(
-			"(" (. ObjectCreateExpression oce = new ObjectCreateExpression(type, parameters); .)
-			    [ Argument<out expr>          (. if (expr != null) { parameters.Add(expr); } .)
-			      { "," Argument<out expr>          (. if (expr != null) { parameters.Add(expr); } .) }
-			    ]
-			")" (. pexpr = oce; .)
-			/*--- array creation expression: */
-			| (. isArrayCreation = true; ArrayCreateExpression ace = new ArrayCreateExpression(type); pexpr = ace; .)
-			"[" (. int dims = 0; 
-			       ArrayList rank = new ArrayList(); 
-			       ArrayList parameterExpression = new ArrayList(); .)
+		|	"new" NonArrayType<out type>
+			(. List<Expression> parameters = new List<Expression>(); .)
+			/*--- delegate / object creation expression: */
+			/* Note: a delegate creation expression allow only a single Expr  */
+			/*       not an argument list, but this is not distinguished here */
 			(
-				Expr<out expr> (. if (expr != null) { parameterExpression.Add(expr); } .) 
-				{ 
-					"," Expr<out expr> (. if (expr != null) { parameterExpression.Add(expr); } .) 
-				} 
-				"]" (. parameters.Add(new ArrayCreationParameter(parameterExpression)); 
-				       ace.Parameters = parameters; .)
-				{
-					IF (IsDims()) "[" (.dims =0;.) 
-					{ "," (.dims++;.) } (.rank.Add(dims); 
-					                      parameters.Add(new ArrayCreationParameter(dims)); 
-					                    .)
-					"]" 
-				} (. if (rank.Count > 0) { 
-				     	ace.Rank = (int[])rank.ToArray(typeof (int)); 
-				     } 
-				   .)
-				[ ArrayInitializer<out expr> (. ace.ArrayInitializer = (ArrayInitializerExpression)expr; .) ]
-				
-				| { "," (.dims++;.) } (. 
-				                          parameters.Add(new ArrayCreationParameter(dims)); 
-				                      .)  
-				    "]" { IF (IsDims()) "[" (.dims =0;.) { "," (.dims++;.) } (.parameters.Add(new ArrayCreationParameter(dims)); .) "]" } ArrayInitializer<out expr> (. ace.ArrayInitializer = (ArrayInitializerExpression)expr; ace.Parameters = parameters; .)
+				"(" (. ObjectCreateExpression oce = new ObjectCreateExpression(type, parameters); .)
+				    [ Argument<out expr>          (. if (expr != null) { parameters.Add(expr); } .)
+				      { "," Argument<out expr>    (. if (expr != null) { parameters.Add(expr); } .) }
+				    ]
+				")" (. pexpr = oce; .)
+			|	"["  /*--- array creation expression: */
+				(. isArrayCreation = true; ArrayCreateExpression ace = new ArrayCreateExpression(type); pexpr = ace; .)
+				(. int dims = 0; List<int> ranks = new List<int>(); .)
+				(
+					{ "," (. dims += 1; .) }
+					"]" (. ranks.Add(dims); dims = 0; .)
+					{ "[" { "," (. ++dims; .) } "]" (. ranks.Add(dims); dims = 0; .) }
+					(. ace.CreateType.RankSpecifier = ranks.ToArray(); .)
+					ArrayInitializer<out expr> (. ace.ArrayInitializer = (ArrayInitializerExpression)expr; .)
+				|	Expr<out expr> (. if (expr != null) parameters.Add(expr); .)
+					{	"," (. dims += 1; .)
+						Expr<out expr> (. if (expr != null) parameters.Add(expr); .)
+					}
+					"]" (. ranks.Add(dims); ace.Arguments = parameters; dims = 0; .)
+					{ "[" { "," (. ++dims; .) } "]" (. ranks.Add(dims); dims = 0; .) }
+					(. ace.CreateType.RankSpecifier = ranks.ToArray(); .)
+					[ ArrayInitializer<out expr> (. ace.ArrayInitializer = (ArrayInitializerExpression)expr; .) ]
+				)
 			)
-/*			| ArrayInitializer<out expr> (. if (!type.IsArrayType) { Error("() or [] expected"); }  pexpr =  new ArrayCreateExpression(type, (ArrayInitializerExpression)expr); .)*/
-		)
 		| "typeof" "("
 		(
 			IF (NotVoidPointer()) "void" (. type = new TypeReference("void"); .)
@@ -2228,12 +2224,12 @@ PrimaryExpr<out Expression pexpr>
 				"." ident
 				(. pexpr = new FieldReferenceExpression(GetTypeReferenceExpression(pexpr, typeList), t.val);.)
 		/*--- invocation expression: */
-		| "("                        (. ArrayList parameters = new ArrayList(); .)
+		| "("                        (. List<Expression> parameters = new List<Expression>(); .)
 			[ Argument<out expr>     (. if (expr != null) {parameters.Add(expr);} .)
 			{ "," Argument<out expr> (. if (expr != null) {parameters.Add(expr);} .)
 			} ] ")"                  (. pexpr = new InvocationExpression(pexpr, parameters); .)
 		|   ( IF (IsGenericFollowedBy(Tokens.OpenParenthesis)) TypeArgumentList<out typeList, false> )
-			"("                      (. ArrayList parameters = new ArrayList(); .)
+			"("                      (. List<Expression> parameters = new List<Expression>(); .)
 			[ Argument<out expr>     (. if (expr != null) {parameters.Add(expr);} .)
 			{ "," Argument<out expr> (. if (expr != null) {parameters.Add(expr);} .)
 			} ] ")"                  (. pexpr = new InvocationExpression(pexpr, parameters, typeList); .)

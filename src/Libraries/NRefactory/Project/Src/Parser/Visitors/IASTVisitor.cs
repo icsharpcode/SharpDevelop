@@ -127,8 +127,5 @@ namespace ICSharpCode.NRefactory.Parser
 		object Visit(DirectionExpression directionExpression, object data);
 		object Visit(ArrayInitializerExpression arrayInitializerExpression, object data);
 		object Visit(ConditionalExpression conditionalExpression, object data);
-		
-		object Visit(ArrayCreationParameter arrayCreationParameter, object data);
-		
 	}
 }

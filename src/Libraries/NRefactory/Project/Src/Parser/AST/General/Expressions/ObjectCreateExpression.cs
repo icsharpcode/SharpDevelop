@@ -7,15 +7,14 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST 
 {
 	public class ObjectCreateExpression : Expression
 	{
 		TypeReference    createType;
-//		List<Expression> parameters;
-		ArrayList parameters;
+		List<Expression> parameters;
 		
 		public TypeReference CreateType {
 			get {
@@ -26,16 +25,16 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList Parameters {
+		public List<Expression> Parameters {
 			get {
 				return parameters;
 			}
 			set {
-				parameters = value == null ? new ArrayList(1) : value;
+				parameters = value ?? new List<Expression>(1);
 			}
 		}
 		
-		public ObjectCreateExpression(TypeReference createType, ArrayList parameters)
+		public ObjectCreateExpression(TypeReference createType, List<Expression> parameters)
 		{
 			this.CreateType = createType;
 			this.Parameters = parameters;

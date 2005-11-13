@@ -320,6 +320,8 @@ namespace NRefactoryToBooConverter
 			//    ??1 = array(Type, newBounds)
 			//    Array.Copy(a, ??1, System.Math.Min(a.Length, ??1.Length))
 			//    a = ??1
+			if (reDimStatement.IsPreserve)
+				AddError(reDimStatement, "Redim Preserve is not supported.");
 			ArrayList list = new ArrayList();
 			foreach (InvocationExpression o in reDimStatement.ReDimClauses) {
 				if (o.TypeArguments != null && o.TypeArguments.Count > 0) {
@@ -337,18 +339,10 @@ namespace NRefactoryToBooConverter
 					} else if (!r.IsArrayType) {
 						AddError(o, identifier.Identifier + " is not an array.");
 					} else {
-						r = r.Clone();
-						ArrayList bounds = new ArrayList(o.Arguments);
-						for (int i = 0; i < bounds.Count; i++) {
-							bounds[i] = Expression.AddInteger((Expression)bounds[i], 1);
+						ArrayCreateExpression ace = new ArrayCreateExpression(r);
+						foreach (Expression boundExpr in o.Arguments) {
+							ace.Arguments.Add(Expression.AddInteger((Expression)boundExpr, 1));
 						}
-						ArrayList acps = new ArrayList();
-						acps.Add(new ArrayCreationParameter(bounds));
-						for (int i = 1; i < r.RankSpecifier.Length; i++) {
-							acps.Add(new ArrayCreationParameter(r.RankSpecifier[i]));
-						}
-						r.RankSpecifier = null;
-						ArrayCreateExpression ace = new ArrayCreateExpression(r, acps);
 						ace.StartLocation = o.StartLocation;
 						B.Expression expr = new B.ReferenceExpression(GetLexicalInfo(identifier), identifier.Identifier);
 						expr = new B.BinaryExpression(GetLexicalInfo(reDimStatement), B.BinaryOperatorType.Assign, expr, ConvertExpression(ace));

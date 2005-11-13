@@ -285,7 +285,10 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			if (IsArrayType) {
 				foreach (int rank in rankSpecifier) {
 					b.Append('[');
-					b.Append(',', rank);
+					if (rank < 0)
+						b.Append('`', -rank);
+					else
+						b.Append(',', rank);
 					b.Append(']');
 				}
 			}

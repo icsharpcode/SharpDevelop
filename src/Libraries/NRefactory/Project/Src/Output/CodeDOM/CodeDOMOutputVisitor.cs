@@ -805,12 +805,8 @@ namespace ICSharpCode.NRefactory.Parser
 		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			if (arrayCreateExpression.ArrayInitializer == null) {
-				if (arrayCreateExpression.Rank != null && arrayCreateExpression.Rank.Length > 0) {
-					return new CodeArrayCreateExpression(ConvType(arrayCreateExpression.CreateType.Type),
-					                                     arrayCreateExpression.Rank[0]);
-				}
 				return new CodeArrayCreateExpression(ConvType(arrayCreateExpression.CreateType.Type),
-				                                     0);
+				                                     arrayCreateExpression.Arguments[0].AcceptVisitor(this, data) as CodeExpression);
 			}
 			return new CodeArrayCreateExpression(ConvType(arrayCreateExpression.CreateType.Type),
 			                                     GetExpressionList(arrayCreateExpression.ArrayInitializer.CreateExpressions));
@@ -955,7 +951,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
-		CodeExpression[] GetExpressionList(ArrayList expressionList)
+		CodeExpression[] GetExpressionList(IList expressionList)
 		{
 			if (expressionList == null) {
 				return new CodeExpression[0];

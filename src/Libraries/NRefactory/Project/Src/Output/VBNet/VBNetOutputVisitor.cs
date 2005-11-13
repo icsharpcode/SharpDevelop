@@ -2244,9 +2244,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			nodeTracker.TrackedVisit(arrayCreateExpression.CreateType, data);
 			
-			for (int i = 0; i < arrayCreateExpression.Parameters.Count; ++i) {
+			for (int i = 0; i < arrayCreateExpression.Arguments.Count; ++i) {
 				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				nodeTracker.TrackedVisit((INode)arrayCreateExpression.Parameters[i], data);
+				nodeTracker.TrackedVisit((INode)arrayCreateExpression.Arguments[i], data);
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			}
 			
@@ -2295,17 +2295,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
-		public object Visit(ArrayCreationParameter arrayCreationParameter, object data)
-		{
-			if (arrayCreationParameter.IsExpressionList) {
-				AppendCommaSeparatedList(arrayCreationParameter.Expressions);
-			} else {
-				for (int j = 0; j < arrayCreationParameter.Dimensions; ++j) {
-					outputFormatter.PrintToken(Tokens.Comma);
-				}
-			}
-			return null;
-		}
 		#endregion
 		#endregion
 		

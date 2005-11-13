@@ -97,6 +97,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void JaggedArrayRank()
+		{
+			TestStatement("object[,][,,] a = new object[1, 2][,,];");
+		}
+		
+		[Test]
 		public void ArrayInitializer()
 		{
 			TestStatement("object[] a = new object[] {1, 2, 3};");

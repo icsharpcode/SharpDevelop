@@ -6,11 +6,11 @@
 // </file>
 
 using System;
- using System.Collections;
- using System.Diagnostics;
- 
- namespace ICSharpCode.NRefactory.Parser.AST
- {
+using System.Collections.Generic;
+using System.Diagnostics;
+
+namespace ICSharpCode.NRefactory.Parser.AST
+{
 	public enum ConstructorInitializerType {
 		None,
 		Base,
@@ -20,8 +20,7 @@ using System;
 	public class ConstructorInitializer : AbstractNode, INullable
 	{
 		ConstructorInitializerType constructorInitializerType = ConstructorInitializerType.None;
-//		List<Expression>           arguments                  = new List<Expression>(1);
-		ArrayList           arguments                  = new ArrayList(1);
+		List<Expression>           arguments                  = new List<Expression>(1);
 		
 		public ConstructorInitializerType ConstructorInitializerType {
 			get {
@@ -32,12 +31,12 @@ using System;
 			}
 		}
 		
-		public ArrayList Arguments {
+		public List<Expression> Arguments {
 			get {
 				return arguments;
 			}
 			set {
-				arguments = value == null ? new ArrayList(1) : value;
+				arguments = value ?? new List<Expression>(1);
 			}
 		}
 		

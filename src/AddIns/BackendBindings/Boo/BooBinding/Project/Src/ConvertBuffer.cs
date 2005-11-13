@@ -48,25 +48,29 @@ namespace Grunwald.BooBinding
 					string fileName = window.ViewContent.FileName ?? window.ViewContent.UntitledName;
 					module = Parser.ParseModule(compileUnit, r, ApplySettings(fileName, errors, warnings), out specials);
 				}
-				if (errors.Count > 0) {
-					foreach (CompilerError error in errors) {
-						errorBuilder.AppendLine(error.ToString());
-					}
-				} else {
-					if (warnings.Count > 0) {
-						foreach (CompilerWarning warning in warnings) {
-							errorBuilder.AppendLine(warning.ToString());
-						}
-					}
-					using (StringWriter w = new StringWriter()) {
-						BooPrinterVisitorWithComments printer = new BooPrinterVisitorWithComments(specials, w);
-						printer.OnModule(module);
-						printer.Finish();
-						FileService.NewFile("Generated.boo", "Boo", w.ToString());
+				foreach (CompilerError error in errors) {
+					errorBuilder.AppendLine(error.ToString());
+				}
+				if (warnings.Count > 0) {
+					foreach (CompilerWarning warning in warnings) {
+						errorBuilder.AppendLine(warning.ToString());
 					}
 				}
-				if (errorBuilder.Length > 0) {
-					MessageService.ShowMessage(errorBuilder.ToString());
+				using (StringWriter w = new StringWriter()) {
+					foreach (CompilerError error in errors) {
+						w.WriteLine("ERROR: " + error.ToString());
+					}
+					if (errors.Count > 0)
+						w.WriteLine();
+					foreach (CompilerWarning warning in warnings) {
+						w.WriteLine("# WARNING: " + warning.ToString());
+					}
+					if (warnings.Count > 0)
+						w.WriteLine();
+					BooPrinterVisitorWithComments printer = new BooPrinterVisitorWithComments(specials, w);
+					printer.OnModule(module);
+					printer.Finish();
+					FileService.NewFile("Generated.boo", "Boo", w.ToString());
 				}
 			}
 		}

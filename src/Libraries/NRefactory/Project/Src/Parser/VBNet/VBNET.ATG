@@ -1522,7 +1522,7 @@ ConstantDeclarator<List<VariableDeclaration> constantDeclaration>
 VariableDeclarator<List<VariableDeclaration> fieldDeclaration>
 	(.
 		Expression expr = null;
-		TypeReference type = null;ArrayList rank = null;ArrayList dimension = null;
+		TypeReference type = null;ArrayList rank = null;List<Expression> dimension = null;
 	.) =
 	Identifier (. string name = t.val; .)
 	[ IF(IsSize()) ArrayInitializationModifier<out dimension> ]
@@ -1544,20 +1544,14 @@ VariableDeclarator<List<VariableDeclaration> fieldDeclaration>
 						Error("array rank only allowed one time");
 					} else {
 						for (int i = 0; i < dimension.Count; i++)
-							dimension[i] = Expression.AddInteger((Expression)dimension[i], 1);
-						ArrayList creationParameters = new ArrayList();
-						creationParameters.Add(new ArrayCreationParameter(dimension));
-						if (rank != null) {
-							type.RankSpecifier = (int[])rank.ToArray(typeof(int));
-						}
-						expr = new ArrayCreateExpression(type, creationParameters);
-						type = type.Clone();
+							dimension[i] = Expression.AddInteger(dimension[i], 1);
 						if (rank == null) {
 							type.RankSpecifier = new int[] { dimension.Count - 1 };
 						} else {
 							rank.Insert(0, dimension.Count - 1);
 							type.RankSpecifier = (int[])rank.ToArray(typeof(int));
 						}
+						expr = new ArrayCreateExpression(type, dimension);
 					}
 				} else if (type != null && rank != null) {
 					if(type.RankSpecifier != null) {
@@ -1573,7 +1567,7 @@ VariableDeclarator<List<VariableDeclaration> fieldDeclaration>
 	.
 
 /* 6.8 */
-ArrayInitializationModifier<out ArrayList arrayModifiers>
+ArrayInitializationModifier<out List<Expression> arrayModifiers>
 	(.
 		arrayModifiers = null;
 	.) =
@@ -1581,12 +1575,12 @@ ArrayInitializationModifier<out ArrayList arrayModifiers>
 	.
 
 /* 7.5.4.3 */
-InitializationRankList<out ArrayList rank>
+InitializationRankList<out List<Expression> rank>
 	(.
 		rank = null;
 		Expression expr = null;
 	.) =
-	Expr<out expr>	(. rank = new ArrayList(); if (expr != null) { rank.Add(expr); } .)
+	Expr<out expr>	(. rank = new List<Expression>(); if (expr != null) { rank.Add(expr); } .)
 	{
 		"," Expr<out expr>		(. if (expr != null) { rank.Add(expr); } .)
 	}
@@ -1807,7 +1801,7 @@ InvocationOrMemberReferenceExpression<ref Expression pexpr>
 
 InvocationExpression<ref Expression pexpr>
 (. List<TypeReference> typeParameters = new List<TypeReference>();
-   ArrayList parameters = null;
+   List<Expression> parameters = null;
    TypeReference type; .)
 =
 	"(" (. Point start = t.Location; .)
@@ -1978,27 +1972,34 @@ ObjectCreateExpression<out Expression oce>
 (.
 	TypeReference type = null;
 	Expression initializer = null;
-	ArrayList arguments = null;
+	List<Expression> arguments = null;
+	ArrayList dimensions = null;
 	oce = null;
 .) =
 	"New" NonArrayTypeName<out type, false>
 	["(" [ ArgumentList<out arguments> ] ")" ]
-	[ ArrayInitializer<out initializer> ]
+	[ IF (la.kind == Tokens.OpenParenthesis)
+	  ArrayTypeModifiers<out dimensions>
+	  ArrayInitializer<out initializer>
+	| ArrayInitializer<out initializer> ]
 	(.
 		if (initializer == null) {
 			oce = new ObjectCreateExpression(type, arguments);
 		} else {
+			if (dimensions == null) dimensions = new ArrayList();
+			dimensions.Insert(0, (arguments == null) ? 0 : Math.Max(arguments.Count - 1, 0));
+			type.RankSpecifier = (int[])dimensions.ToArray(typeof(int));
 			ArrayCreateExpression ace = new ArrayCreateExpression(type, initializer as ArrayInitializerExpression);
-			ace.Parameters = arguments;
+			ace.Arguments = arguments;
 			oce = ace;
 		}
 	.)
 .
 
 /* 9.3.2 */
-ArgumentList<out ArrayList arguments>
+ArgumentList<out List<Expression> arguments>
 	(.
-		arguments = new ArrayList();
+		arguments = new List<Expression>();
 		Expression expr = null;
 	.) =
 	[
@@ -2373,7 +2374,8 @@ EmbeddedStatement<out Statement statement>
 		Statement embeddedStatement = null;
 		statement = null;
 		Expression expr = null;
-		string name = String.Empty;ArrayList p = null;
+		string name = String.Empty;
+		List<Expression> p = null;
 	.) =
 		"Exit"				(. ExitType exitType = ExitType.None; .)
 		(
@@ -2616,8 +2618,9 @@ EmbeddedStatement<out Statement statement>
 		string resourcename = t.val, typeName; 
 		Statement resourceAquisition = null, block = null;
 	.) "As" (
-		
-		"New" Qualident<out typeName> (. ArrayList initializer = null; .) ["(" [ ArgumentList<out initializer> ] ")" ] 
+		"New" Qualident<out typeName>
+		(. List<Expression> initializer = null; .)
+		["(" [ ArgumentList<out initializer> ] ")" ]
 		(.  
 			resourceAquisition =  new LocalVariableDeclaration(new VariableDeclaration(resourcename, new ArrayInitializerExpression(initializer), new TypeReference(typeName)));
 			

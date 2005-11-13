@@ -15,8 +15,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 	public class InvocationExpression : Expression
 	{
 		Expression       targetObject;
-//		List<Expression> arguments;
-		ArrayList arguments;
+		List<Expression> arguments;
 		List<TypeReference> typeArguments;
 		
 		public Expression TargetObject {
@@ -28,12 +27,12 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public ArrayList Arguments {
+		public List<Expression> Arguments {
 			get {
 				return arguments;
 			}
 			set {
-				arguments = value == null ? new ArrayList(1) : value;
+				arguments = value ?? new List<Expression>(1);
 			}
 		}
 		
@@ -46,13 +45,13 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 			}
 		}
 		
-		public InvocationExpression(Expression targetObject, ArrayList parameters)
+		public InvocationExpression(Expression targetObject, List<Expression> parameters)
 		{
 			this.TargetObject = targetObject;
 			this.Arguments   = parameters;
 		}
 		
-		public InvocationExpression(Expression targetObject, ArrayList parameters, List<TypeReference> typeParameters)
+		public InvocationExpression(Expression targetObject, List<Expression> parameters, List<TypeReference> typeParameters)
 		{
 			this.TargetObject = targetObject;
 			this.Arguments   = parameters;
@@ -62,7 +61,7 @@ namespace ICSharpCode.NRefactory.Parser.AST {
 		public InvocationExpression(Expression targetObject)
 		{
 			this.TargetObject = targetObject;
-			this.arguments   = new ArrayList(1);
+			this.arguments   = new List<Expression>(1);
 		}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)

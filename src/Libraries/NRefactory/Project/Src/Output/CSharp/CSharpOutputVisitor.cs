@@ -136,6 +136,32 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(TypeReference typeReference, object data)
 		{
+			PrintTypeReferenceWithoutArray(typeReference);
+			if (typeReference.IsArrayType) {
+				PrintArrayRank(typeReference.RankSpecifier, 0);
+			}
+			return null;
+		}
+		
+		void PrintArrayRank(int[] rankSpecifier, int startRankIndex)
+		{
+			for (int i = startRankIndex; i < rankSpecifier.Length; ++i) {
+				outputFormatter.PrintToken(Tokens.OpenSquareBracket);
+				if (this.prettyPrintOptions.SpacesWithinBrackets) {
+					outputFormatter.Space();
+				}
+				for (int j = 0; j < rankSpecifier[i]; ++j) {
+					outputFormatter.PrintToken(Tokens.Comma);
+				}
+				if (this.prettyPrintOptions.SpacesWithinBrackets) {
+					outputFormatter.Space();
+				}
+				outputFormatter.PrintToken(Tokens.CloseSquareBracket);
+			}
+		}
+		
+		void PrintTypeReferenceWithoutArray(TypeReference typeReference)
+		{
 			if (typeReference.IsGlobal) {
 				outputFormatter.PrintText("global::");
 			}
@@ -144,7 +170,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			} else if (typeReference.SystemType == "System.Nullable" && typeReference.GenericTypes != null
 			           && typeReference.GenericTypes.Count == 1)
 			{
-				nodeTracker.TrackedVisit(typeReference.GenericTypes[0], data);
+				nodeTracker.TrackedVisit(typeReference.GenericTypes[0], null);
 				outputFormatter.PrintText("?");
 			} else {
 				if (typeReference.SystemType.Length > 0) {
@@ -161,22 +187,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			for (int i = 0; i < typeReference.PointerNestingLevel; ++i) {
 				outputFormatter.PrintToken(Tokens.Times);
 			}
-			if (typeReference.IsArrayType) {
-				for (int i = 0; i < typeReference.RankSpecifier.Length; ++i) {
-					outputFormatter.PrintToken(Tokens.OpenSquareBracket);
-					if (this.prettyPrintOptions.SpacesWithinBrackets) {
-						outputFormatter.Space();
-					}
-					for (int j = 0; j < typeReference.RankSpecifier[i]; ++j) {
-						outputFormatter.PrintToken(Tokens.Comma);
-					}
-					if (this.prettyPrintOptions.SpacesWithinBrackets) {
-						outputFormatter.Space();
-					}
-					outputFormatter.PrintToken(Tokens.CloseSquareBracket);
-				}
-			}
-			return null;
 		}
 		
 		public object Visit(InnerClassTypeReference typeReference, object data)
@@ -2219,19 +2229,25 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintToken(Tokens.New);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(arrayCreateExpression.CreateType, data);
-			for (int i = 0; i < arrayCreateExpression.Parameters.Count; ++i) {
+			PrintTypeReferenceWithoutArray(arrayCreateExpression.CreateType);
+			
+			if (arrayCreateExpression.Arguments.Count > 0) {
 				outputFormatter.PrintToken(Tokens.OpenSquareBracket);
 				if (this.prettyPrintOptions.SpacesWithinBrackets) {
 					outputFormatter.Space();
 				}
-				nodeTracker.TrackedVisit((INode)arrayCreateExpression.Parameters[i], data);
+				for (int i = 0; i < arrayCreateExpression.Arguments.Count; ++i) {
+					if (i > 0) PrintFormattedComma();
+					nodeTracker.TrackedVisit(arrayCreateExpression.Arguments[i], data);
+				}
 				if (this.prettyPrintOptions.SpacesWithinBrackets) {
 					outputFormatter.Space();
 				}
 				outputFormatter.PrintToken(Tokens.CloseSquareBracket);
+				PrintArrayRank(arrayCreateExpression.CreateType.RankSpecifier, 1);
+			} else {
+				PrintArrayRank(arrayCreateExpression.CreateType.RankSpecifier, 0);
 			}
-			
 			
 			if (!arrayCreateExpression.ArrayInitializer.IsNull) {
 				outputFormatter.Space();
@@ -2296,18 +2312,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			nodeTracker.TrackedVisit(conditionalExpression.FalseExpression, data);
-			return null;
-		}
-		
-		public object Visit(ArrayCreationParameter arrayCreationParameter, object data)
-		{
-			if (arrayCreationParameter.IsExpressionList) {
-				AppendCommaSeparatedList(arrayCreationParameter.Expressions);
-			} else {
-				for (int j = 0; j < arrayCreationParameter.Dimensions; ++j) {
-					outputFormatter.PrintToken(Tokens.Comma);
-				}
-			}
 			return null;
 		}
 		

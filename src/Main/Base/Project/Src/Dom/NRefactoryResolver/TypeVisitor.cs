@@ -100,7 +100,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 		}
 		
-		public IMethod FindOverload(List<IMethod> methods, IReturnType[] typeParameters, ArrayList arguments, object data)
+		public IMethod FindOverload(List<IMethod> methods, IReturnType[] typeParameters, IList<Expression> arguments, object data)
 		{
 			if (methods.Count <= 0) {
 				return null;
@@ -112,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			IReturnType[] types = new IReturnType[arguments.Count];
 			for (int i = 0; i < types.Length; ++i) {
-				types[i] = ((Expression)arguments[i]).AcceptVisitor(this, data) as IReturnType;
+				types[i] = arguments[i].AcceptVisitor(this, data) as IReturnType;
 			}
 			return MemberLookupHelper.FindOverload(methods, typeParameters, types);
 		}
@@ -422,16 +422,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(ArrayCreateExpression arrayCreateExpression, object data)
 		{
-			IReturnType type = CreateReturnType(arrayCreateExpression.CreateType);
-			/*
-			if (arrayCreateExpression.Parameters != null && arrayCreateExpression.Parameters.Count > 0) {
-				int[] newRank = new int[arrayCreateExpression.Rank.Length + 1];
-				newRank[0] = arrayCreateExpression.Parameters.Count - 1;
-				Array.Copy(type.ArrayDimensions, 0, newRank, 1, type.ArrayDimensions.Length);
-				type.ArrayDimensions = newRank;
-			}
-			 */
-			return type;
+			return CreateReturnType(arrayCreateExpression.CreateType);
 		}
 		
 		public override object Visit(TypeOfIsExpression typeOfIsExpression, object data)

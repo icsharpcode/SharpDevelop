@@ -1010,11 +1010,11 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 			Debug.Assert(arrayCreateExpression != null);
 			Debug.Assert(arrayCreateExpression.CreateType != null);
-			Debug.Assert(arrayCreateExpression.Parameters != null);
+			Debug.Assert(arrayCreateExpression.Arguments != null);
 			Debug.Assert(arrayCreateExpression.ArrayInitializer != null);
 			
 			arrayCreateExpression.CreateType.AcceptVisitor(this, data);
-			foreach (Expression p in arrayCreateExpression.Parameters) {
+			foreach (Expression p in arrayCreateExpression.Arguments) {
 				Debug.Assert(p != null);
 				p.AcceptVisitor(this, data);
 			}
@@ -1137,17 +1137,6 @@ namespace ICSharpCode.NRefactory.Parser
 			Debug.Assert(stackAllocExpression.Expression != null);
 			stackAllocExpression.TypeReference.AcceptVisitor(this, data);
 			stackAllocExpression.Expression.AcceptVisitor(this, data);
-			return data;
-		}
-		
-		public virtual object Visit(ArrayCreationParameter arrayCreationParameter, object data)
-		{
-			Debug.Assert(arrayCreationParameter != null);
-			Debug.Assert(arrayCreationParameter.Expressions != null);
-			foreach (Expression expr in arrayCreationParameter.Expressions) {
-				Debug.Assert(expr != null);
-				expr.AcceptVisitor(this, data);
-			}
 			return data;
 		}
 		#endregion

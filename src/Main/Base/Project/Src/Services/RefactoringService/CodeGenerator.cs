@@ -307,14 +307,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			                                           , null);
 			InsertCodeAfter(property, document, ed);
 			
-			ArrayList parameters = new ArrayList(2);
+			List<Expression> arguments = new List<Expression>(2);
 			if (property.IsStatic)
-				parameters.Add(new PrimitiveExpression(null, "null"));
+				arguments.Add(new PrimitiveExpression(null, "null"));
 			else
-				parameters.Add(new ThisReferenceExpression());
-			parameters.Add(new FieldReferenceExpression(new IdentifierExpression("EventArgs"), "Empty"));
+				arguments.Add(new ThisReferenceExpression());
+			arguments.Add(new FieldReferenceExpression(new IdentifierExpression("EventArgs"), "Empty"));
 			InsertCodeAtEnd(property.SetterRegion, document,
-			                new RaiseEventStatement(name, parameters));
+			                new RaiseEventStatement(name, arguments));
 		}
 		#endregion
 		
@@ -339,7 +339,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			                                                 new TypeReference("System.Void"),
 			                                                 parameters, null);
 			
-			ArrayList arguments = new ArrayList(2);
+			List<Expression> arguments = new List<Expression>(2);
 			if (e.IsStatic)
 				arguments.Add(new PrimitiveExpression(null, "null"));
 			else

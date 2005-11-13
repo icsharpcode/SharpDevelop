@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 using System.CodeDom;
 using NUnit.Framework;
 using ICSharpCode.NRefactory.Parser;
@@ -22,7 +22,7 @@ namespace ICSharpCode.NRefactory.Tests.Output.CodeDom.Tests
 		{
 			// InitializeComponents();
 			IdentifierExpression identifier = new IdentifierExpression("InitializeComponents");
-			InvocationExpression invocation = new InvocationExpression(identifier, new ArrayList());
+			InvocationExpression invocation = new InvocationExpression(identifier, new List<Expression>());
 			object output = invocation.AcceptVisitor(new CodeDOMVisitor(), null);
 			Assert.IsTrue(output is CodeMethodInvokeExpression);
 			CodeMethodInvokeExpression mie = (CodeMethodInvokeExpression)output;
@@ -35,7 +35,7 @@ namespace ICSharpCode.NRefactory.Tests.Output.CodeDom.Tests
 		{
 			// InitializeComponents();
 			FieldReferenceExpression field = new FieldReferenceExpression(new ThisReferenceExpression(), "InitializeComponents");
-			InvocationExpression invocation = new InvocationExpression(field, new ArrayList());
+			InvocationExpression invocation = new InvocationExpression(field, new List<Expression>());
 			object output = invocation.AcceptVisitor(new CodeDOMVisitor(), null);
 			Assert.IsTrue(output is CodeMethodInvokeExpression);
 			CodeMethodInvokeExpression mie = (CodeMethodInvokeExpression)output;
@@ -50,7 +50,7 @@ namespace ICSharpCode.NRefactory.Tests.Output.CodeDom.Tests
 			FieldReferenceExpression field = new FieldReferenceExpression(new IdentifierExpression("System"), "Drawing");
 			field = new FieldReferenceExpression(field, "Color");
 			field = new FieldReferenceExpression(field, "FromArgb");
-			InvocationExpression invocation = new InvocationExpression(field, new ArrayList());
+			InvocationExpression invocation = new InvocationExpression(field, new List<Expression>());
 			object output = invocation.AcceptVisitor(new CodeDOMVisitor(), null);
 			Assert.IsTrue(output is CodeMethodInvokeExpression);
 			CodeMethodInvokeExpression mie = (CodeMethodInvokeExpression)output;

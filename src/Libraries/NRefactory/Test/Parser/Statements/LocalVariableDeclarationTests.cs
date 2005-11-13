@@ -231,11 +231,9 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("Integer", type.Type);
 			Assert.AreEqual(new int[] { 0 } , type.RankSpecifier);
 			ArrayCreateExpression ace = (ArrayCreateExpression)lvd.Variables[0].Initializer;
-			Assert.IsFalse(ace.CreateType.IsArrayType);
-			Assert.AreEqual(1, ace.Parameters.Count);
-			ArrayCreationParameter acp = (ArrayCreationParameter)ace.Parameters[0];
-			Assert.AreEqual(1, acp.Expressions.Count);
-			Assert.AreEqual(11, ((PrimitiveExpression)acp.Expressions[0]).Value);
+			Assert.AreEqual(new int[] { 0 } , ace.CreateType.RankSpecifier);
+			Assert.AreEqual(1, ace.Arguments.Count);
+			Assert.AreEqual(11, ((PrimitiveExpression)ace.Arguments[0]).Value);
 		}
 		
 		[Test]
@@ -248,11 +246,9 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("Integer", type.Type);
 			Assert.AreEqual(new int[] { 0, 0 } , type.RankSpecifier);
 			ArrayCreateExpression ace = (ArrayCreateExpression)lvd.Variables[0].Initializer;
-			Assert.AreEqual(new int[] {0}, ace.CreateType.RankSpecifier);
-			Assert.AreEqual(1, ace.Parameters.Count);
-			ArrayCreationParameter acp = (ArrayCreationParameter)ace.Parameters[0];
-			Assert.AreEqual(1, acp.Expressions.Count);
-			Assert.AreEqual(11, ((PrimitiveExpression)acp.Expressions[0]).Value);
+			Assert.AreEqual(new int[] {0, 0}, ace.CreateType.RankSpecifier);
+			Assert.AreEqual(1, ace.Arguments.Count);
+			Assert.AreEqual(11, ((PrimitiveExpression)ace.Arguments[0]).Value);
 		}
 		
 		[Test]

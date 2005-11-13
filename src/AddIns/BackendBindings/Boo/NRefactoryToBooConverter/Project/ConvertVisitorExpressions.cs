@@ -430,29 +430,27 @@ namespace NRefactoryToBooConverter
 			if (!arrayCreateExpression.ArrayInitializer.IsNull) {
 				return arrayCreateExpression.ArrayInitializer.AcceptVisitor(this, data);
 			}
-			ArrayCreationParameter acp = (ArrayCreationParameter)arrayCreateExpression.Parameters[0];
-			string builtInName = (acp.Expressions.Count == 1) ? "array" : "matrix";
+			string builtInName = (arrayCreateExpression.Arguments.Count > 1) ? "matrix" : "array";
 			B.MethodInvocationExpression mie = new B.MethodInvocationExpression(GetLexicalInfo(arrayCreateExpression),
 			                                                                    MakeReferenceExpression(builtInName));
-			if (arrayCreateExpression.Parameters.Count > 1) {
-				arrayCreateExpression.CreateType.RankSpecifier = new int[arrayCreateExpression.Parameters.Count - 1];
-				mie.Arguments.Add(WrapTypeReference(arrayCreateExpression.CreateType));
+			TypeReference elementType = arrayCreateExpression.CreateType.Clone();
+			int[] newRank = new int[elementType.RankSpecifier.Length - 1];
+			for (int i = 0; i < newRank.Length; i++)
+				newRank[i] = elementType.RankSpecifier[i + 1];
+			elementType.RankSpecifier = newRank;
+			if (newRank.Length == 0) {
+				mie.Arguments.Add(MakeReferenceExpression(elementType.SystemType));
 			} else {
-				mie.Arguments.Add(MakeReferenceExpression(arrayCreateExpression.CreateType.SystemType));
+				mie.Arguments.Add(WrapTypeReference(elementType));
 			}
-			if (acp.Expressions.Count == 1) {
-				mie.Arguments.Add(ConvertExpression((Expression)acp.Expressions[0]));
+			if (arrayCreateExpression.Arguments.Count == 1) {
+				mie.Arguments.Add(ConvertExpression(arrayCreateExpression.Arguments[0]));
 			} else {
-				B.ArrayLiteralExpression dims = new B.ArrayLiteralExpression(GetLexicalInfo(acp));
-				ConvertExpressions(acp.Expressions, dims.Items);
+				B.ArrayLiteralExpression dims = new B.ArrayLiteralExpression(GetLexicalInfo(arrayCreateExpression));
+				ConvertExpressions(arrayCreateExpression.Arguments, dims.Items);
 				mie.Arguments.Add(dims);
 			}
 			return mie;
-		}
-		
-		public object Visit(ArrayCreationParameter arrayCreationParameter, object data)
-		{
-			throw new ApplicationException("Visited ArrayCreationParameter.");
 		}
 		
 		public object Visit(ArrayInitializerExpression aie, object data)
