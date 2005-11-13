@@ -19,9 +19,9 @@ namespace ICSharpCode.SharpDevelop.Services
 		// 2 = text
 		// 3 = value
 		
-		Variable variable;
+		Value variable;
 		
-		public Variable Variable {
+		public Value Variable {
 			get {
 				return variable;
 			}
@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 		}
 		
-		public DynamicTreeDebuggerRow(Variable variable)
+		public DynamicTreeDebuggerRow(Value variable)
 		{
 			if (variable == null) throw new ArgumentNullException("variable");
 			

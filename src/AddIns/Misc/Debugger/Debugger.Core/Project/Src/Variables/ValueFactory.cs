@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -11,15 +11,15 @@ using Debugger.Interop.CorDebug;
 
 namespace Debugger 
 {
-	static class VariableFactory
+	static class ValueFactory
 	{
-		public static Variable CreateVariable(NDebugger debugger, ICorDebugValue corValue, string name)
+		public static Value CreateValue(NDebugger debugger, ICorDebugValue corValue, string name)
 		{
-			CorElementType type = Variable.GetCorType(corValue);
+			CorElementType type = Value.GetCorType(corValue);
 
-			if (Variable.DereferenceUnbox(corValue) == null)
+			if (Value.DereferenceUnbox(corValue) == null)
 			{
-				return new NullRefVariable(debugger, corValue, name);
+				return new NullValue(debugger, corValue, name);
 			}
 
 			switch(type)
@@ -39,19 +39,19 @@ namespace Debugger
 				case CorElementType.I:
 				case CorElementType.U:
 				case CorElementType.STRING:
-					return new BuiltInVariable(debugger, corValue, name);
+					return new PrimitiveValue(debugger, corValue, name);
 
 				case CorElementType.ARRAY:
 				case CorElementType.SZARRAY: // Short-cut for single dimension zero lower bound array
-					return new ArrayVariable(debugger, corValue, name);
+					return new ArrayValue(debugger, corValue, name);
 
 				case CorElementType.VALUETYPE:
 				case CorElementType.CLASS:
 				case CorElementType.OBJECT: // Short-cut for Class "System.Object"
-					return new ObjectVariable(debugger, corValue, name);
+					return new ObjectValue(debugger, corValue, name);
 						
 				default: // Unknown type
-					return new UnknownVariable(debugger, corValue, name);
+					return new UnknownValue(debugger, corValue, name);
 			}
 		}		
 	}

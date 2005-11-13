@@ -28,7 +28,7 @@ namespace Debugger
 		
 		bool              evaluating = false;
 		bool              completed = false;
-		Variable          result;
+		Value          result;
 		
 		public event EventHandler<EvalEventArgs> EvalStarted;
 		public event EventHandler<EvalEventArgs> EvalComplete;
@@ -63,7 +63,7 @@ namespace Debugger
 		/// <summary>
 		/// The result of the evaluation if the evaluation is complete and has returned a value. Null otherwise.
 		/// </summary>
-		public Variable Result {
+		public Value Result {
 			get {
 				if (completed) {
 					return result;
@@ -117,7 +117,7 @@ namespace Debugger
 			
 			ICorDebugValue corValue;
 			corEval.GetResult(out corValue);
-			result = VariableFactory.CreateVariable(debugger, corValue, "eval result");
+			result = ValueFactory.CreateValue(debugger, corValue, "eval result");
 				
 			if (EvalComplete != null) {
 				EvalComplete(this, e);

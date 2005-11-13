@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -14,9 +14,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	class BaseClassItem: VariableItem
 	{
-		public BaseClassItem(Variable uncastedVariable)
+		public BaseClassItem(Value uncastedVariable)
 		{
-			ObjectVariable variable = uncastedVariable as ObjectVariable;
+			ObjectValue variable = uncastedVariable as ObjectValue;
 			if (variable != null && variable.HasBaseClass && variable.BaseClass.Type != "System.Object") {
 				this.Variable = variable.BaseClass;
 			} else {
@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			
 			SetTexts("<Base class>",
-			         Variable.Value.ToString(),
+			         Variable.AsString.ToString(),
 			         Variable.Type);
 			
 			ImageIndex = 0; // Class

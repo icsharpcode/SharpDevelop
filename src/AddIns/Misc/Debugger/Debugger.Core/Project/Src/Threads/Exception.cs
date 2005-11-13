@@ -20,8 +20,8 @@ namespace Debugger
 		NDebugger         debugger;
 		Thread            thread;
 		ICorDebugValue    corValue;
-		Variable          runtimeVariable;
-		ObjectVariable    runtimeVariableException;
+		Value          runtimeVariable;
+		ObjectValue    runtimeVariableException;
 		ExceptionType     exceptionType;
 		SourcecodeSegment location;
 		DateTime          creationTime;
@@ -42,8 +42,8 @@ namespace Debugger
 			this.thread = thread;
 			thread.CorThread.GetCurrentException(out corValue);
 			exceptionType = thread.CurrentExceptionType;
-			runtimeVariable    = VariableFactory.CreateVariable(debugger, corValue, "$exception");
-			runtimeVariableException = runtimeVariable as ObjectVariable;
+			runtimeVariable    = ValueFactory.CreateValue(debugger, corValue, "$exception");
+			runtimeVariableException = runtimeVariable as ObjectValue;
 			if (runtimeVariableException != null) {
 				while (runtimeVariableException.Type != "System.Exception") {
 					if (runtimeVariableException.HasBaseClass == false) {
@@ -52,7 +52,7 @@ namespace Debugger
 					}
 					runtimeVariableException = runtimeVariableException.BaseClass;
 				}
-				message = runtimeVariableException.SubVariables["_message"].Value.ToString();
+				message = runtimeVariableException.SubVariables["_message"].AsString.ToString();
 			}
 
 			if (thread.LastFunctionWithLoadedSymbols != null) {

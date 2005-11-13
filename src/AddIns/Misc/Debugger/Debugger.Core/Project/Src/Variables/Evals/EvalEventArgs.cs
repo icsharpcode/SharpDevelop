@@ -20,7 +20,7 @@ namespace Debugger
 			}
 		}
 		
-		public Variable Result {
+		public Value Result {
 			get {
 				return eval.Result;
 			}

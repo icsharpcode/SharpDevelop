@@ -12,7 +12,7 @@ using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {
-	public abstract class Variable: RemotingObjectBase
+	public abstract class Value: RemotingObjectBase
 	{
 		protected NDebugger debugger;
 		
@@ -21,7 +21,7 @@ namespace Debugger
 		VariableCollection subVariables;
 		CorElementType? corType;
 		
-		public event EventHandler<VariableEventArgs> ValueChanged;
+		public event EventHandler<ValueEventArgs> ValueChanged;
 		
 		public NDebugger Debugger {
 			get {
@@ -29,7 +29,7 @@ namespace Debugger
 			}
 		}
 		
-		protected virtual void OnValueChanged(VariableEventArgs e)
+		protected virtual void OnValueChanged(ValueEventArgs e)
 		{
 			if (ValueChanged != null) {
 				ValueChanged(this, e);
@@ -51,7 +51,7 @@ namespace Debugger
 			}
 		}
 		
-		public abstract object Value { 
+		public abstract string AsString { 
 			get; 
 		}
 		
@@ -81,7 +81,7 @@ namespace Debugger
 			} 
 		}
 
-		internal Variable(NDebugger debugger, ICorDebugValue corValue, string name)
+		internal Value(NDebugger debugger, ICorDebugValue corValue, string name)
 		{
 			this.debugger = debugger;
 			if (corValue != null) {
@@ -99,12 +99,12 @@ namespace Debugger
 		{
 			//return String.Format("Name = {0,-25} Value = {1,-30} Type = {2,-30}", Name, Value, Type);
 			
-			if (Value == null) {
+			if (AsString == null) {
 				return "<null>";
-			} else if (Value is string) {
-				return "\"" + Value.ToString() + "\"";
+			} else if (AsString is string) {
+				return "\"" + AsString.ToString() + "\"";
 			} else {
-				return Value.ToString();
+				return AsString.ToString();
 			}
 		}
 		

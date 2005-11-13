@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -12,9 +12,9 @@ using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {
-	public class NullRefVariable: Variable
+	public class NullValue: Value
 	{
-		public override object Value { 
+		public override string AsString { 
 			get {
 				return "<null reference>"; 
 			} 
@@ -36,7 +36,7 @@ namespace Debugger
 			}
 		}
 
-		internal unsafe NullRefVariable(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
+		internal unsafe NullValue(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
 		{
 			
 		}

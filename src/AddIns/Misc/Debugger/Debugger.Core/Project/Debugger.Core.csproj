@@ -86,17 +86,6 @@
     <Compile Include="Src\Threads\SourcecodeSegment.cs" />
     <Compile Include="Src\Threads\Thread.cs" />
     <Compile Include="Src\Threads\ThreadEventArgs.cs" />
-    <Compile Include="Src\Variables\ArrayVariable.cs" />
-    <Compile Include="Src\Variables\BuiltInVariable.cs" />
-    <Compile Include="Src\Variables\Evals\Eval.cs" />
-    <Compile Include="Src\Variables\NullRefVariable.cs" />
-    <Compile Include="Src\Variables\ObjectVariable.cs" />
-    <Compile Include="Src\Variables\PropertyVariable.cs" />
-    <Compile Include="Src\Variables\SignatureStream.cs" />
-    <Compile Include="Src\Variables\UnknownVariable.cs" />
-    <Compile Include="Src\Variables\Variable.cs" />
-    <Compile Include="Src\Variables\VariableCollection.cs" />
-    <Compile Include="Src\Variables\VariableFactory.cs" />
     <Compile Include="Src\RemotingSinks\InvokeOnSTASink\InvokeOnSTAServerChannelSinkProvider.cs" />
     <Compile Include="Src\RemotingSinks\InvokeOnSTASink\InvokeOnSTAClientChannelSink.cs" />
     <Compile Include="Src\RemotingSinks\InvokeOnSTASink\InvokeOnSTAClientChannelSinkProvider.cs" />
@@ -105,7 +94,6 @@
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\EventForwarder.cs" />
     <Compile Include="Src\RemotingSinks\PrivateEventHandlersSink\PrivateEventHandlersClientChannelSink.cs" />
     <Compile Include="Src\Debugger\NDebugger-StateControl.cs" />
-    <Compile Include="Src\Variables\UnavailableVariable.cs" />
     <Compile Include="Src\Interop\CorDebug\_COR_IL_MAP.cs" />
     <Compile Include="Src\Interop\CorDebug\_COR_VERSION.cs" />
     <Compile Include="Src\Interop\CorDebug\_FILETIME.cs" />
@@ -201,10 +189,22 @@
     <Compile Include="Src\Interop\CorDebug\tagSTATSTG.cs" />
     <Compile Include="Src\Interop\MetaData\IMetaDataImport.cs" />
     <Compile Include="Src\Interop\MetaData\COR_FIELD_OFFSET.cs" />
+    <Compile Include="Src\Variables\Evals\Eval.cs" />
     <Compile Include="Src\Variables\Evals\EvalEventArgs.cs" />
     <Compile Include="Src\Variables\Evals\NDebugger-Evals.cs" />
-    <Compile Include="Src\Variables\VariableEventArgs.cs" />
-    <Compile Include="Src\Variables\VariableMagicValue.cs" />
+    <Compile Include="Src\Variables\ArrayValue.cs" />
+    <Compile Include="Src\Variables\MagicValue.cs" />
+    <Compile Include="Src\Variables\NullValue.cs" />
+    <Compile Include="Src\Variables\ObjectValue.cs" />
+    <Compile Include="Src\Variables\PrimitiveValue.cs" />
+    <Compile Include="Src\Variables\PropertyVariable.cs" />
+    <Compile Include="Src\Variables\SignatureStream.cs" />
+    <Compile Include="Src\Variables\UnavailableValue.cs" />
+    <Compile Include="Src\Variables\UnknownValue.cs" />
+    <Compile Include="Src\Variables\Value.cs" />
+    <Compile Include="Src\Variables\ValueEventArgs.cs" />
+    <Compile Include="Src\Variables\ValueFactory.cs" />
+    <Compile Include="Src\Variables\VariableCollection.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

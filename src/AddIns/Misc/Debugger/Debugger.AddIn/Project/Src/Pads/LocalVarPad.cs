@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -128,7 +128,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 
-		static VariableItem FindVariableItem(TreeListViewItemCollection items, Variable variable)
+		static VariableItem FindVariableItem(TreeListViewItemCollection items, Value variable)
 		{
 			foreach (VariableListItem item in items) {
 				VariableItem variableItem = item as VariableItem;
@@ -142,7 +142,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public static void UpdateVariables(TreeListViewItemCollection items, VariableCollection variables)
 		{
 			// Add new variables and refresh existing ones
-			foreach (Variable variable in variables) {
+			foreach (Value variable in variables) {
 				VariableItem item = FindVariableItem(items, variable);
 				if (item != null) {
 					item.Variable = variable;

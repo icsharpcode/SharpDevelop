@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -12,11 +12,11 @@ using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {
-	public class UnavailableVariable: Variable
+	public class UnknownValue: Value
 	{
-		public override object Value {
+		public override string AsString {
 			get {
-				return "<unavailable>"; 
+				return "<unknown>"; 
 			} 
 		}
 		
@@ -26,7 +26,7 @@ namespace Debugger
 			} 
 		}
 
-		internal unsafe UnavailableVariable(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
+		internal unsafe UnknownValue(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
 		{
 			
 		}

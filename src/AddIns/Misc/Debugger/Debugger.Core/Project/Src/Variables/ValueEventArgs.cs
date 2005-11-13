@@ -10,22 +10,22 @@ using System;
 namespace Debugger 
 {	
 	[Serializable]
-	public class VariableEventArgs : DebuggerEventArgs
+	public class ValueEventArgs : DebuggerEventArgs
 	{
-		Variable variable;
+		Value val;
 		
-		public Variable Variable {
+		public Value Value {
 			get {
-				return variable;
+				return val;
 			}
 			set {
-				variable = value;
+				val = value;
 			}
 		}
 		
-		public VariableEventArgs(Variable variable): base(variable.Debugger)
+		public ValueEventArgs(Value val): base(val.Debugger)
 		{
-			this.variable = variable;
+			this.val = val;
 		}
 	}
 }

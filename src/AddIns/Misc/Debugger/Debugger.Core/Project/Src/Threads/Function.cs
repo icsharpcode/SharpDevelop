@@ -65,14 +65,14 @@ namespace Debugger
 			}
 		}
 
-		public ObjectVariable ThisVariable {
+		public ObjectValue ThisValue {
 			get {
 				if (IsStatic) {
-					throw new DebuggerException("Static method does not have 'this' variable.");
+					throw new DebuggerException("Static method does not have 'this'.");
 				} else {
 					ICorDebugValue argThis = null;
 					corILFrame.GetArgument(0, out argThis);
-					return new ObjectVariable(debugger, argThis, "this", ContaingClass);
+					return new ObjectValue(debugger, argThis, "this", ContaingClass);
 				}
 			}
 		}
@@ -376,7 +376,7 @@ namespace Debugger
 			if (IsStatic) {
 				return VariableCollection.Empty;
 			} else {
-				return ThisVariable.SubVariables;
+				return ThisValue.SubVariables;
 			}
 		}
 
@@ -411,9 +411,9 @@ namespace Debugger
 			return arg;
 		}
 		
-		public Variable GetArgumentVariable(int index)
+		public Value GetArgumentVariable(int index)
 		{
-			return VariableFactory.CreateVariable(debugger, GetArgumentValue(index), GetParameterName(index));
+			return ValueFactory.CreateValue(debugger, GetArgumentValue(index), GetParameterName(index));
 		}
 		
 		public VariableCollection GetArgumentVariables()
@@ -451,7 +451,7 @@ namespace Debugger
 					if (IsStatic) {
 						evalArgs = new ICorDebugValue[0];
 					} else {
-						evalArgs = new ICorDebugValue[] {ThisVariable.CorValue};
+						evalArgs = new ICorDebugValue[] {ThisValue.CorValue};
 					}
 					Eval eval = new Eval(debugger, evalCorFunction, evalArgs);
 					debugger.AddEval(eval);
@@ -476,7 +476,7 @@ namespace Debugger
 		{
 			ICorDebugValue runtimeVar;
 			corILFrame.GetLocalVariable((uint)symVar.AddressField1, out runtimeVar);
-			collection.Add(VariableFactory.CreateVariable(debugger, runtimeVar, symVar.Name));
+			collection.Add(ValueFactory.CreateValue(debugger, runtimeVar, symVar.Name));
 		}
 	}
 }

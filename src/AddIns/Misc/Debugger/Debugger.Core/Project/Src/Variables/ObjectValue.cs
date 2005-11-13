@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -15,17 +15,17 @@ using Debugger.Interop.MetaData;
 
 namespace Debugger
 {
-	public class ObjectVariable: Variable
+	public class ObjectValue: Value
 	{
 		ICorDebugClass corClass;
 		ICorDebugModule corModule;
 		MetaData metaData;
 		ICorDebugModule corModuleSuperclass;
-		ObjectVariable baseClass;
+		ObjectValue baseClass;
 
 		TypeDefProps classProps;
 		
-		public override object Value { 
+		public override string AsString { 
 			get{ 
 				return "{" + Type + "}"; 
 			} 
@@ -38,13 +38,13 @@ namespace Debugger
 		}
 
 
-		internal unsafe ObjectVariable(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
+		internal unsafe ObjectValue(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
 		{
 			((ICorDebugObjectValue)this.corValue).GetClass(out corClass);
 			InitObjectVariable();
 		}
 
-		internal unsafe ObjectVariable(NDebugger debugger, ICorDebugValue corValue, string name, ICorDebugClass corClass):base(debugger, corValue, name)
+		internal unsafe ObjectValue(NDebugger debugger, ICorDebugValue corValue, string name, ICorDebugClass corClass):base(debugger, corValue, name)
 		{
 			this.corClass = corClass;
 			InitObjectVariable();
@@ -94,16 +94,16 @@ namespace Debugger
 						((ICorDebugObjectValue)corValue).GetFieldValue(corClass, field.Token, out fieldValue);
 					}
 					
-					subVariables.Add(VariableFactory.CreateVariable(debugger, fieldValue, field.Name));
+					subVariables.Add(ValueFactory.CreateValue(debugger, fieldValue, field.Name));
 				} catch {
-					subVariables.Add(new UnavailableVariable(debugger, null, field.Name));
+					subVariables.Add(new UnavailableValue(debugger, null, field.Name));
 				}
 			}
 
 			return subVariables;
 		}
 		
-		public unsafe ObjectVariable BaseClass {
+		public unsafe ObjectValue BaseClass {
 			get	{
 				if (baseClass == null) baseClass = GetBaseClass();
 				if (baseClass == null) throw new DebuggerException("Object doesn't have a base class. You may use HasBaseClass to check this.");
@@ -124,7 +124,7 @@ namespace Debugger
 			}
 		}
 
-		protected ObjectVariable GetBaseClass()
+		protected ObjectValue GetBaseClass()
 		{
 			string fullTypeName = "<>";
 
@@ -155,7 +155,7 @@ namespace Debugger
 			} else {
 				ICorDebugClass superClass;
 				corModuleSuperclass.GetClassFromToken(classProps.SuperClassToken, out superClass);
-				return new ObjectVariable(debugger, corValue, Name, superClass);
+				return new ObjectValue(debugger, corValue, Name, superClass);
 			}
 		}
 	}

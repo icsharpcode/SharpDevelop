@@ -12,27 +12,27 @@ namespace Debugger
 	/// <summary>
 	/// This value may be returned by Variable.Value instead of null to provide some additional information.
 	/// </summary>
-	public class VariableMagicValue
+	public class MagicValue
 	{
-		object @value;
+		object val;
 		
 		public object Value {
 			get {
-				return @value;
+				return val;
 			}
 			set {
-				this.@value = value;
+				this.val = value;
 			}
 		}
 		
-		public VariableMagicValue(object @value)
+		public MagicValue(object val)
 		{
-			this.@value = @value;
+			this.val = val;
 		}
 		
 		public override string ToString()
 		{
-			return @value.ToString();
+			return val.ToString();
 		}
 	}
 }

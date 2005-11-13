@@ -11,7 +11,7 @@ using Debugger.Interop.CorDebug;
 	
 namespace Debugger 
 {
-	public class PropertyVariable: Variable 
+	public class PropertyVariable: Value 
 	{
 		Eval           eval;
 		
@@ -30,19 +30,19 @@ namespace Debugger
 			}
 		}
 		
-		public override object Value {
+		public override string AsString {
 			get {
 				if (IsEvaluated) {
 					if (eval.Result != null) {
-						return eval.Result.Value;
+						return eval.Result.AsString;
 					} else {
-						return null;
+						return String.Empty;
 					}
 				} else {
 					if (eval.Evaluating) {
-						return new VariableMagicValue("Evaluating...");
+						return "Evaluating...";
 					} else {
-						return new VariableMagicValue("Evaluation pending");
+						return "Evaluation pending";
 					}
 				}
 			}
@@ -91,7 +91,7 @@ namespace Debugger
 		
 		void EvalStarted(object sender, EvalEventArgs args)
 		{
-			OnValueChanged(new VariableEventArgs(this));
+			OnValueChanged(new ValueEventArgs(this));
 		}
 		
 		void EvalComplete(object sender, EvalEventArgs args)
@@ -100,7 +100,7 @@ namespace Debugger
 				eval.Result.Name = this.Name;
 			}
 			OnValueEvaluated();
-			OnValueChanged(new VariableEventArgs(this));
+			OnValueChanged(new ValueEventArgs(this));
 		}
 		
 		protected void OnValueEvaluated()

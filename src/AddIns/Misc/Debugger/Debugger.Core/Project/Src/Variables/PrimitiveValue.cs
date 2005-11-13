@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -12,9 +12,19 @@ using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {
-	public class BuiltInVariable: Variable
+	public class PrimitiveValue: Value
 	{
-		public override unsafe object Value 
+		public override string AsString {
+			get {
+				if (Primitive != null) {
+					return Primitive.ToString();
+				} else {
+					return String.Empty;
+				}
+			}
+		}
+		
+		public unsafe object Primitive 
 		{ 
 			get
 			{
@@ -69,7 +79,7 @@ namespace Debugger
 			} 
 		}
 
-		internal BuiltInVariable(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
+		internal PrimitiveValue(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
 		{
 		}
 

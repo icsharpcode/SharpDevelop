@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -15,11 +15,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	class VariableItem: VariableListItem
 	{
-		Variable variable;
+		Value variable;
 
 		bool baseClassItemAdded = false;
 
-		public Variable Variable {
+		public Value Variable {
 			get {
 				return variable;
 			}
@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 		}
 		
-		public VariableItem(Variable variable): base()
+		public VariableItem(Value variable): base()
 		{
 			this.variable = variable;
 			Refresh();
@@ -58,10 +58,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 
 			SetTexts(variable.Name,
-			         variable.Value.ToString(),
+			         variable.AsString.ToString(),
 			         variable.Type);
 
-			if (variable is ObjectVariable) {
+			if (variable is ObjectValue) {
 				ImageIndex = 0; // Class
 			} else if (variable is PropertyVariable){
 				ImageIndex = 2; // Property
@@ -88,7 +88,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			
 			// Do not sort names of array items
-			if (Variable is ArrayVariable) {
+			if (Variable is ArrayValue) {
 				this.Items.SortOrder = SortOrder.None;
 			} else {
 				this.Items.SortOrder = SortOrder.Ascending;

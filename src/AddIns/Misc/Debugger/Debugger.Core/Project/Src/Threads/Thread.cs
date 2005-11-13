@@ -107,21 +107,21 @@ namespace Debugger
 				if (!HasBeenLoaded) return lastPriority;
 				if (process.IsRunning) return lastPriority;
 
-				Variable runTimeVar = RuntimeVariable;
-				if (runTimeVar is NullRefVariable) return ThreadPriority.Normal;
-				lastPriority = (ThreadPriority)(int)(runTimeVar.SubVariables["m_Priority"] as BuiltInVariable).Value;
+				Value runTimeVar = RuntimeVariable;
+				if (runTimeVar is NullValue) return ThreadPriority.Normal;
+				lastPriority = (ThreadPriority)(int)(runTimeVar.SubVariables["m_Priority"] as PrimitiveValue).Primitive;
 				return lastPriority;
 			}
 		}
 
-		public Variable RuntimeVariable {
+		public Value RuntimeVariable {
 			get {
 				if (!HasBeenLoaded) throw new DebuggerException("Thread has not started jet");
 				process.AssertPaused();
 
 				ICorDebugValue corValue;
 				corThread.GetObject(out corValue);
-				return VariableFactory.CreateVariable(debugger, corValue, "Thread" + ID);
+				return ValueFactory.CreateValue(debugger, corValue, "Thread" + ID);
 			}
 		}
 
@@ -129,11 +129,11 @@ namespace Debugger
 			get	{
 				if (!HasBeenLoaded) return lastName;
 				if (process.IsRunning) return lastName;
-				Variable runtimeVar  = RuntimeVariable;
-				if (runtimeVar is NullRefVariable) return lastName;
-				Variable runtimeName = runtimeVar.SubVariables["m_Name"];
-				if (runtimeName is NullRefVariable) return string.Empty;
-				lastName = runtimeName.Value.ToString();
+				Value runtimeVar  = RuntimeVariable;
+				if (runtimeVar is NullValue) return lastName;
+				Value runtimeName = runtimeVar.SubVariables["m_Name"];
+				if (runtimeName is NullValue) return string.Empty;
+				lastName = runtimeName.AsString.ToString();
 				return lastName;
 			}
 		}
