@@ -244,6 +244,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.gacTabPage.Size = new System.Drawing.Size(464, 198);
 			this.gacTabPage.TabIndex = 0;
 			this.gacTabPage.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.GacTabPage");
+			this.gacTabPage.UseVisualStyleBackColor = true;
 			// 
 			// projectTabPage
 			// 
@@ -251,6 +252,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.projectTabPage.Size = new System.Drawing.Size(464, 198);
 			this.projectTabPage.TabIndex = 1;
 			this.projectTabPage.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.ProjectTabPage");
+			this.projectTabPage.UseVisualStyleBackColor = true;
 			// 
 			// browserTabPage
 			// 
@@ -258,11 +260,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.browserTabPage.Size = new System.Drawing.Size(464, 198);
 			this.browserTabPage.TabIndex = 2;
 			this.browserTabPage.Text = ResourceService.GetString("Dialog.SelectReferenceDialog.BrowserTabPage");
+			this.browserTabPage.UseVisualStyleBackColor = true;
 			
 			this.comTabPage.Location = new System.Drawing.Point(4, 22);
 			this.comTabPage.Size = new System.Drawing.Size(464, 198);
 			this.comTabPage.TabIndex = 2;
 			this.comTabPage.Text = "COM";
+			this.comTabPage.UseVisualStyleBackColor = true;
 			
 			//
 			// referencesLabel

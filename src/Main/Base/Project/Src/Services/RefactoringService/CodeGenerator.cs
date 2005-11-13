@@ -36,7 +36,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			while (returnType.ArrayDimensions > 0) {
 				int[] rank = typeRef.RankSpecifier ?? new int[0];
 				Array.Resize(ref rank, rank.Length + 1);
-				rank[rank.Length - 1] = returnType.ArrayDimensions;
+				rank[rank.Length - 1] = returnType.ArrayDimensions - 1;
 				typeRef.RankSpecifier = rank;
 				returnType = returnType.ArrayElementType;
 			}
