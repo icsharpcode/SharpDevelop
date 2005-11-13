@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -211,6 +211,16 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual(5, ((PrimitiveExpression)lvd.Variables[0].Initializer).Value);
 		}
 		
+		public void VBNetLocalVariableNamedOverrideDeclarationTest()
+		{
+			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim override As Integer = 5");
+			Assert.AreEqual(1, lvd.Variables.Count);
+			Assert.AreEqual("override", lvd.Variables[0].Name);
+			TypeReference type = lvd.GetTypeForVariable(0);
+			Assert.AreEqual("Integer", type.Type);
+			Assert.AreEqual(5, ((PrimitiveExpression)lvd.Variables[0].Initializer).Value);
+		}
+		
 		[Test]
 		public void VBNetLocalArrayDeclarationTest()
 		{
@@ -221,12 +231,29 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("Integer", type.Type);
 			Assert.AreEqual(new int[] { 0 } , type.RankSpecifier);
 			ArrayCreateExpression ace = (ArrayCreateExpression)lvd.Variables[0].Initializer;
+			Assert.IsFalse(ace.CreateType.IsArrayType);
 			Assert.AreEqual(1, ace.Parameters.Count);
 			ArrayCreationParameter acp = (ArrayCreationParameter)ace.Parameters[0];
 			Assert.AreEqual(1, acp.Expressions.Count);
 			Assert.AreEqual(11, ((PrimitiveExpression)acp.Expressions[0]).Value);
 		}
 		
+		[Test]
+		public void VBNetLocalJaggedArrayDeclarationTest()
+		{
+			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a(10)() As Integer");
+			Assert.AreEqual(1, lvd.Variables.Count);
+			Assert.AreEqual("a", lvd.Variables[0].Name);
+			TypeReference type = lvd.GetTypeForVariable(0);
+			Assert.AreEqual("Integer", type.Type);
+			Assert.AreEqual(new int[] { 0, 0 } , type.RankSpecifier);
+			ArrayCreateExpression ace = (ArrayCreateExpression)lvd.Variables[0].Initializer;
+			Assert.AreEqual(new int[] {0}, ace.CreateType.RankSpecifier);
+			Assert.AreEqual(1, ace.Parameters.Count);
+			ArrayCreationParameter acp = (ArrayCreationParameter)ace.Parameters[0];
+			Assert.AreEqual(1, acp.Expressions.Count);
+			Assert.AreEqual(11, ((PrimitiveExpression)acp.Expressions[0]).Value);
+		}
 		
 		[Test]
 		public void VBNetComplexGenericLocalVariableDeclarationTest()

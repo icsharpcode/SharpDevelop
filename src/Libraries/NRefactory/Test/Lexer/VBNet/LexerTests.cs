@@ -1,7 +1,7 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
-//     <owner name="none" email=""/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
@@ -838,12 +838,6 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		{
 			ILexer lexer = GenerateLexer(new StringReader("Overridable"));
 			Assert.AreEqual(Tokens.Overridable, lexer.NextToken().kind);
-		}
-		[Test()]
-		public void TestOverride()
-		{
-			ILexer lexer = GenerateLexer(new StringReader("Override"));
-			Assert.AreEqual(Tokens.Override, lexer.NextToken().kind);
 		}
 		[Test()]
 		public void TestOverrides()

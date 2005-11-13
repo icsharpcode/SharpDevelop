@@ -106,7 +106,6 @@ namespace ICSharpCode.NRefactory.Parser.VB
 			"ORELSE",
 			"OVERLOADS",
 			"OVERRIDABLE",
-			"OVERRIDE",
 			"OVERRIDES",
 			"PARAMARRAY",
 			"PRESERVE",
