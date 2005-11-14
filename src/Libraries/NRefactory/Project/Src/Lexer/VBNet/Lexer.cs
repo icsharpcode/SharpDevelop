@@ -203,6 +203,9 @@ namespace ICSharpCode.NRefactory.Parser.VB
 						if (s.Length != 1) {
 							errors.Error(Line, Col, String.Format("Chars can only have Length 1 "));
 						}
+						if (s.Length == 0) {
+							s = "\0";
+						}
 						return new Token(Tokens.LiteralCharacter, x, y, '"' + s  + "\"C", s[0]);
 					}
 					return new Token(Tokens.LiteralString, x, y, '"' + s + '"', s);
