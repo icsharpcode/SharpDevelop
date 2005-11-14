@@ -16,32 +16,12 @@ namespace Debugger
 	{
 		protected NDebugger debugger;
 		
-		string name;
 		protected ICorDebugValue corValue;
 		VariableCollection subVariables;
-		CorElementType? corType;
-		
-		public event EventHandler<ValueEventArgs> ValueChanged;
 		
 		public NDebugger Debugger {
 			get {
 				return debugger;
-			}
-		}
-		
-		protected virtual void OnValueChanged(ValueEventArgs e)
-		{
-			if (ValueChanged != null) {
-				ValueChanged(this, e);
-			}
-		}
-		
-		public string Name { 
-			get{ 
-				return name; 
-			}
-			set {
-				name = value;
 			}
 		}
 		
@@ -57,10 +37,7 @@ namespace Debugger
 		
 		internal CorElementType CorType {
 			get {
-				if (!corType.HasValue) {
-					corType = GetCorType(corValue);
-				}
-				return corType.Value;
+				return GetCorType(corValue);
 			}
 		}
 		
@@ -75,19 +52,12 @@ namespace Debugger
 		}
 
 		public VariableCollection SubVariables {
-			get{
-				if (subVariables == null) subVariables = GetSubVariables();
+			get {
+				if (subVariables == null) {
+					subVariables = GetSubVariables();
+				}
 				return subVariables;
-			} 
-		}
-
-		internal Value(NDebugger debugger, ICorDebugValue corValue, string name)
-		{
-			this.debugger = debugger;
-			if (corValue != null) {
-				this.corValue = DereferenceUnbox(corValue);
 			}
-			this.name = name;
 		}
 		
 		protected virtual VariableCollection GetSubVariables()
@@ -95,20 +65,18 @@ namespace Debugger
 			return new VariableCollection();
 		}
 
-		public override string ToString()
+		internal Value(NDebugger debugger, ICorDebugValue corValue)
 		{
-			//return String.Format("Name = {0,-25} Value = {1,-30} Type = {2,-30}", Name, Value, Type);
-			
-			if (AsString == null) {
-				return "<null>";
-			} else if (AsString is string) {
-				return "\"" + AsString.ToString() + "\"";
-			} else {
-				return AsString.ToString();
+			this.debugger = debugger;
+			if (corValue != null) {
+				this.corValue = DereferenceUnbox(corValue);
 			}
 		}
 		
-		
+		public override string ToString()
+		{
+			return AsString;
+		}
 		
 		internal static CorElementType GetCorType(ICorDebugValue corValue)
 		{

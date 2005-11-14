@@ -10,19 +10,19 @@ using System;
 namespace Debugger 
 {	
 	[Serializable]
-	public class ValueEventArgs : DebuggerEventArgs
+	public class VariableEventArgs : DebuggerEventArgs
 	{
-		Value val;
+		Variable variable;
 		
-		public Value Value {
+		public Variable Variable {
 			get {
-				return val;
+				return variable;
 			}
 		}
 		
-		public ValueEventArgs(Value val): base(val.Debugger)
+		public VariableEventArgs(Variable variable): base(variable.Debugger)
 		{
-			this.val = val;
+			this.variable = variable;
 		}
 	}
 }

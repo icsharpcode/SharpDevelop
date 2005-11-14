@@ -19,9 +19,9 @@ namespace ICSharpCode.SharpDevelop.Services
 		// 2 = text
 		// 3 = value
 		
-		Value variable;
+		Variable variable;
 		
-		public Value Variable {
+		public Variable Variable {
 			get {
 				return variable;
 			}
@@ -34,16 +34,16 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 		}
 		
-		public DynamicTreeDebuggerRow(Value variable)
+		public DynamicTreeDebuggerRow(Variable variable)
 		{
 			if (variable == null) throw new ArgumentNullException("variable");
 			
 			this.variable = variable;
 			
 			this[2].Text = variable.Name;
-			this[3].Text = variable.ToString();
+			this[3].Text = variable.Value.AsString;
 			
-			if (!variable.MayHaveSubVariables)
+			if (!variable.Value.MayHaveSubVariables)
 				this.ShowPlus = false;
 			this.ShowMinusWhileExpanded = true;
 		}

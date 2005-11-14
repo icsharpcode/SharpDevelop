@@ -13,13 +13,13 @@ namespace Debugger
 {
 	static class ValueFactory
 	{
-		public static Value CreateValue(NDebugger debugger, ICorDebugValue corValue, string name)
+		public static Value CreateValue(NDebugger debugger, ICorDebugValue corValue)
 		{
 			CorElementType type = Value.GetCorType(corValue);
 
 			if (Value.DereferenceUnbox(corValue) == null)
 			{
-				return new NullValue(debugger, corValue, name);
+				return new NullValue(debugger, corValue);
 			}
 
 			switch(type)
@@ -39,19 +39,19 @@ namespace Debugger
 				case CorElementType.I:
 				case CorElementType.U:
 				case CorElementType.STRING:
-					return new PrimitiveValue(debugger, corValue, name);
+					return new PrimitiveValue(debugger, corValue);
 
 				case CorElementType.ARRAY:
 				case CorElementType.SZARRAY: // Short-cut for single dimension zero lower bound array
-					return new ArrayValue(debugger, corValue, name);
+					return new ArrayValue(debugger, corValue);
 
 				case CorElementType.VALUETYPE:
 				case CorElementType.CLASS:
 				case CorElementType.OBJECT: // Short-cut for Class "System.Object"
-					return new ObjectValue(debugger, corValue, name);
+					return new ObjectValue(debugger, corValue);
 						
 				default: // Unknown type
-					return new UnknownValue(debugger, corValue, name);
+					return new UnknownValue(debugger, corValue);
 			}
 		}		
 	}

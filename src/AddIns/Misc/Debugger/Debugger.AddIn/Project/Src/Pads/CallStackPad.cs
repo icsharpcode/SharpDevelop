@@ -219,7 +219,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 								}
 								if (showArgumentValues) {
 									try {
-										argValue = f.GetArgumentVariable(i).AsString.ToString();
+										argValue = f.GetArgumentVariable(i).Value.AsString;
 									} catch { }
 								}
 								if (parameterName != null && argValue != null) {

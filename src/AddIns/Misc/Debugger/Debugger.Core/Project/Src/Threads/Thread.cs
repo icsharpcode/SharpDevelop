@@ -107,21 +107,21 @@ namespace Debugger
 				if (!HasBeenLoaded) return lastPriority;
 				if (process.IsRunning) return lastPriority;
 
-				Value runTimeVar = RuntimeVariable;
-				if (runTimeVar is NullValue) return ThreadPriority.Normal;
-				lastPriority = (ThreadPriority)(int)(runTimeVar.SubVariables["m_Priority"] as PrimitiveValue).Primitive;
+				Value runTimeValue = RuntimeValue;
+				if (runTimeValue is NullValue) return ThreadPriority.Normal;
+				lastPriority = (ThreadPriority)(int)(runTimeValue.SubVariables["m_Priority"].Value as PrimitiveValue).Primitive;
 				return lastPriority;
 			}
 		}
 
-		public Value RuntimeVariable {
+		public Value RuntimeValue {
 			get {
 				if (!HasBeenLoaded) throw new DebuggerException("Thread has not started jet");
 				process.AssertPaused();
 
 				ICorDebugValue corValue;
 				corThread.GetObject(out corValue);
-				return ValueFactory.CreateValue(debugger, corValue, "Thread" + ID);
+				return ValueFactory.CreateValue(debugger, corValue);
 			}
 		}
 
@@ -129,9 +129,9 @@ namespace Debugger
 			get	{
 				if (!HasBeenLoaded) return lastName;
 				if (process.IsRunning) return lastName;
-				Value runtimeVar  = RuntimeVariable;
+				Value runtimeVar  = RuntimeValue;
 				if (runtimeVar is NullValue) return lastName;
-				Value runtimeName = runtimeVar.SubVariables["m_Name"];
+				Value runtimeName = runtimeVar.SubVariables["m_Name"].Value;
 				if (runtimeName is NullValue) return string.Empty;
 				lastName = runtimeName.AsString.ToString();
 				return lastName;

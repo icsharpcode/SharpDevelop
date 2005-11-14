@@ -79,7 +79,7 @@ namespace Debugger
 			} 
 		}
 
-		internal PrimitiveValue(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
+		internal PrimitiveValue(NDebugger debugger, ICorDebugValue corValue):base(debugger, corValue)
 		{
 		}
 

@@ -195,7 +195,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// Gets variable of given name.
 		/// Returns null if unsuccessful.
 		/// </summary>
-		public Value GetVariableFromName(string variableName)
+		public Variable GetVariableFromName(string variableName)
 		{
 			if (debugger == null || debugger.IsRunning) return null;
 			
@@ -217,12 +217,12 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public string GetValueAsString(string variableName)
 		{
-			Value variable = GetVariableFromName(variableName);
+			Variable variable = GetVariableFromName(variableName);
 			
 			if (variable == null) {
 				return null;
 			} else {
-				return variable.ToString();
+				return variable.Value.AsString;
 			}
 		}
 		
@@ -232,7 +232,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		public DebuggerGridControl GetTooltipControl(string variableName)
 		{
-			Value variable = GetVariableFromName(variableName);
+			Variable variable = GetVariableFromName(variableName);
 			
 			if (variable == null) {
 				return null;
@@ -251,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			DynamicTreeDebuggerRow row = (DynamicTreeDebuggerRow) sender;
 			row.ChildRows.Clear();
-			foreach(Value variable in row.Variable.SubVariables) {
+			foreach(Variable variable in row.Variable.Value.SubVariables) {
 				DynamicTreeDebuggerRow newRow = new DynamicTreeDebuggerRow(variable);
 				DebuggerGridControl.AddColumns(newRow.ChildColumns);
 				newRow.Expanding += TooltipControlRowExpanding;

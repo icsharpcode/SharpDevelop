@@ -20,8 +20,8 @@ namespace Debugger
 		NDebugger         debugger;
 		Thread            thread;
 		ICorDebugValue    corValue;
-		Value          runtimeVariable;
-		ObjectValue    runtimeVariableException;
+		Value             runtimeValue;
+		ObjectValue       runtimeValueException;
 		ExceptionType     exceptionType;
 		SourcecodeSegment location;
 		DateTime          creationTime;
@@ -42,17 +42,17 @@ namespace Debugger
 			this.thread = thread;
 			thread.CorThread.GetCurrentException(out corValue);
 			exceptionType = thread.CurrentExceptionType;
-			runtimeVariable    = ValueFactory.CreateValue(debugger, corValue, "$exception");
-			runtimeVariableException = runtimeVariable as ObjectValue;
-			if (runtimeVariableException != null) {
-				while (runtimeVariableException.Type != "System.Exception") {
-					if (runtimeVariableException.HasBaseClass == false) {
-						runtimeVariableException = null;
+			runtimeValue = ValueFactory.CreateValue(debugger, corValue);
+			runtimeValueException = runtimeValue as ObjectValue;
+			if (runtimeValueException != null) {
+				while (runtimeValueException.Type != "System.Exception") {
+					if (runtimeValueException.HasBaseClass == false) {
+						runtimeValueException = null;
 						break;
 					}
-					runtimeVariableException = runtimeVariableException.BaseClass;
+					runtimeValueException = runtimeValueException.BaseClass;
 				}
-				message = runtimeVariableException.SubVariables["_message"].AsString.ToString();
+				message = runtimeValueException.SubVariables["_message"].Value.AsString;
 			}
 
 			if (thread.LastFunctionWithLoadedSymbols != null) {
@@ -76,13 +76,13 @@ namespace Debugger
 				callstackItems++;
 			}
 			
-			type = runtimeVariable.Type;
+			type = runtimeValue.Type;
 		}
 	
 		public override string ToString() {
-			return "Exception data:\n" + runtimeVariable.ToString() + "\n" +
+			return "Exception data:\n" + runtimeValue.ToString() + "\n" +
 			       "---------------\n" +
-			       runtimeVariableException.SubVariables.ToString();
+			       runtimeValueException.SubVariables.ToString();
 		}
 	
 	    public string Type {

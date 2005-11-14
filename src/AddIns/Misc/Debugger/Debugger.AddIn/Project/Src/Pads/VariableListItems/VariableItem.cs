@@ -15,11 +15,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	class VariableItem: VariableListItem
 	{
-		Value variable;
+		Variable variable;
 
 		bool baseClassItemAdded = false;
 
-		public Value Variable {
+		public Variable Variable {
 			get {
 				return variable;
 			}
@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 		}
 		
-		public VariableItem(Value variable): base()
+		public VariableItem(Variable variable): base()
 		{
 			this.variable = variable;
 			Refresh();
@@ -58,10 +58,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 
 			SetTexts(variable.Name,
-			         variable.AsString.ToString(),
-			         variable.Type);
+			         variable.Value.AsString,
+			         variable.Value.Type);
 
-			if (variable is ObjectValue) {
+			if (variable.Value is ObjectValue) {
 				ImageIndex = 0; // Class
 			} else if (variable is PropertyVariable){
 				ImageIndex = 2; // Property
@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (IsExpanded) {
 				UpdateSubVariables();
 			} else {
-				if (variable.MayHaveSubVariables) {
+				if (variable.Value.MayHaveSubVariables) {
 					Items.Add(new PlaceHolderItem()); // Show plus icon
 				}
 			}
@@ -88,13 +88,13 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			
 			// Do not sort names of array items
-			if (Variable is ArrayValue) {
+			if (Variable.Value is ArrayValue) {
 				this.Items.SortOrder = SortOrder.None;
 			} else {
 				this.Items.SortOrder = SortOrder.Ascending;
 			}
 			
-			LocalVarPad.UpdateVariables(this.Items, Variable.SubVariables);
+			LocalVarPad.UpdateVariables(this.Items, Variable.Value.SubVariables);
 		}
 	}
 }

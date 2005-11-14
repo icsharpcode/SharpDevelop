@@ -117,7 +117,7 @@ namespace Debugger
 			
 			ICorDebugValue corValue;
 			corEval.GetResult(out corValue);
-			result = ValueFactory.CreateValue(debugger, corValue, "eval result");
+			result = ValueFactory.CreateValue(debugger, corValue);
 				
 			if (EvalComplete != null) {
 				EvalComplete(this, e);

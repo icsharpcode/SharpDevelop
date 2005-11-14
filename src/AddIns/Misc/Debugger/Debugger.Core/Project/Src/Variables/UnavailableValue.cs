@@ -14,21 +14,28 @@ namespace Debugger
 {
 	public class UnavailableValue: Value
 	{
+		string message;
+		
 		public override string AsString {
 			get {
-				return "<unavailable>"; 
+				return message; 
 			} 
 		}
 		
 		public override string Type { 
 			get {
-				return "<unknown>"; 
+				return String.Empty;
 			} 
 		}
-
-		internal unsafe UnavailableValue(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
+		
+		internal UnavailableValue(NDebugger debugger): this(debugger, "Value is not available")
 		{
 			
+		}
+		
+		internal UnavailableValue(NDebugger debugger, string message):base(debugger, null)
+		{
+			this.message = message;
 		}
 
 		public override bool MayHaveSubVariables {

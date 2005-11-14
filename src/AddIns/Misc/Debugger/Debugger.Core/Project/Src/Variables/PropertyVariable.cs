@@ -11,7 +11,7 @@ using Debugger.Interop.CorDebug;
 	
 namespace Debugger 
 {
-	public class PropertyVariable: Value 
+	public class PropertyVariable: Variable 
 	{
 		Eval           eval;
 		
@@ -30,77 +30,33 @@ namespace Debugger
 			}
 		}
 		
-		public override string AsString {
+		public override Value Value {
 			get {
 				if (IsEvaluated) {
 					if (eval.Result != null) {
-						return eval.Result.AsString;
+						return eval.Result;
 					} else {
-						return String.Empty;
+						return new UnavailableValue(debugger, "No return value");
 					}
 				} else {
 					if (eval.Evaluating) {
-						return "Evaluating...";
+						return new UnavailableValue(debugger, "Evaluating...");
 					} else {
-						return "Evaluation pending";
+						return new UnavailableValue(debugger, "Evaluation pending");
 					}
 				}
-			}
-		}
-		
-		public override string Type { 
-			get {
-				if (IsEvaluated) {
-					if (eval.Result != null) {
-						return eval.Result.Type;
-					} else {
-						return String.Empty;
-					}
-				} else {
-					return String.Empty;
-				}
-			}
-		}
-
-		public override bool MayHaveSubVariables {
-			get {
-				if (IsEvaluated) {
-					if (eval.Result != null) {
-						return eval.Result.MayHaveSubVariables;
-					} else {
-						return true;
-					}
-				} else {
-					return true;
-				}
-			}
-		}
-
-		protected override VariableCollection GetSubVariables()
-		{
-			if (IsEvaluated) {
-				if (eval.Result != null) {
-					return eval.Result.SubVariables;
-				} else {
-					return VariableCollection.Empty;
-				}
-			} else {
-				return VariableCollection.Empty;
 			}
 		}
 		
 		void EvalStarted(object sender, EvalEventArgs args)
 		{
-			OnValueChanged(new ValueEventArgs(this));
+			OnValueChanged();
 		}
 		
 		void EvalComplete(object sender, EvalEventArgs args)
 		{
-			if (eval.Result != null) {
-				eval.Result.Name = this.Name;
-			}
 			OnValueEvaluated();
-			OnValueChanged(new ValueEventArgs(this));
+			OnValueChanged();
 		}
 		
 		protected void OnValueEvaluated()

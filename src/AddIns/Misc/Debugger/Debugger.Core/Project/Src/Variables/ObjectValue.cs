@@ -38,13 +38,13 @@ namespace Debugger
 		}
 
 
-		internal unsafe ObjectValue(NDebugger debugger, ICorDebugValue corValue, string name):base(debugger, corValue, name)
+		internal unsafe ObjectValue(NDebugger debugger, ICorDebugValue corValue):base(debugger, corValue)
 		{
 			((ICorDebugObjectValue)this.corValue).GetClass(out corClass);
 			InitObjectVariable();
 		}
 
-		internal unsafe ObjectValue(NDebugger debugger, ICorDebugValue corValue, string name, ICorDebugClass corClass):base(debugger, corValue, name)
+		internal unsafe ObjectValue(NDebugger debugger, ICorDebugValue corValue, ICorDebugClass corClass):base(debugger, corValue)
 		{
 			this.corClass = corClass;
 			InitObjectVariable();
@@ -94,9 +94,9 @@ namespace Debugger
 						((ICorDebugObjectValue)corValue).GetFieldValue(corClass, field.Token, out fieldValue);
 					}
 					
-					subVariables.Add(ValueFactory.CreateValue(debugger, fieldValue, field.Name));
+					subVariables.Add(VariableFactory.CreateVariable(debugger, fieldValue, field.Name));
 				} catch {
-					subVariables.Add(new UnavailableValue(debugger, null, field.Name));
+					subVariables.Add(VariableFactory.CreateVariable(new UnavailableValue(debugger), field.Name));
 				}
 			}
 
@@ -155,7 +155,7 @@ namespace Debugger
 			} else {
 				ICorDebugClass superClass;
 				corModuleSuperclass.GetClassFromToken(classProps.SuperClassToken, out superClass);
-				return new ObjectValue(debugger, corValue, Name, superClass);
+				return new ObjectValue(debugger, corValue, superClass);
 			}
 		}
 	}

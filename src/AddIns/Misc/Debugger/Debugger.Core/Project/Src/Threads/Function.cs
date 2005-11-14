@@ -72,7 +72,7 @@ namespace Debugger
 				} else {
 					ICorDebugValue argThis = null;
 					corILFrame.GetArgument(0, out argThis);
-					return new ObjectValue(debugger, argThis, "this", ContaingClass);
+					return new ObjectValue(debugger, argThis, ContaingClass);
 				}
 			}
 		}
@@ -411,9 +411,9 @@ namespace Debugger
 			return arg;
 		}
 		
-		public Value GetArgumentVariable(int index)
+		public Variable GetArgumentVariable(int index)
 		{
-			return ValueFactory.CreateValue(debugger, GetArgumentValue(index), GetParameterName(index));
+			return VariableFactory.CreateVariable(debugger, GetArgumentValue(index), GetParameterName(index));
 		}
 		
 		public VariableCollection GetArgumentVariables()
@@ -476,7 +476,7 @@ namespace Debugger
 		{
 			ICorDebugValue runtimeVar;
 			corILFrame.GetLocalVariable((uint)symVar.AddressField1, out runtimeVar);
-			collection.Add(ValueFactory.CreateValue(debugger, runtimeVar, symVar.Name));
+			collection.Add(VariableFactory.CreateVariable(debugger, runtimeVar, symVar.Name));
 		}
 	}
 }

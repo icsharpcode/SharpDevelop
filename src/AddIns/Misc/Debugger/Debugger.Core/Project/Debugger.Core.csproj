@@ -205,6 +205,9 @@
     <Compile Include="Src\Variables\ValueEventArgs.cs" />
     <Compile Include="Src\Variables\ValueFactory.cs" />
     <Compile Include="Src\Variables\VariableCollection.cs" />
+    <Compile Include="Src\Variables\Variable.cs" />
+    <Compile Include="Src\Variables\VariableEventArgs.cs" />
+    <Compile Include="Src\Variables\VariableFactory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

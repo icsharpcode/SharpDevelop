@@ -14,11 +14,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 {
 	class BaseClassItem: VariableItem
 	{
-		public BaseClassItem(Value uncastedVariable)
+		public BaseClassItem(Variable uncastedVariable)
 		{
-			ObjectValue variable = uncastedVariable as ObjectValue;
-			if (variable != null && variable.HasBaseClass && variable.BaseClass.Type != "System.Object") {
-				this.Variable = variable.BaseClass;
+			ObjectValue objectValue = uncastedVariable.Value as ObjectValue;
+			if (objectValue != null && objectValue.HasBaseClass && objectValue.BaseClass.Type != "System.Object") {
+				this.Variable = VariableFactory.CreateVariable(objectValue.BaseClass, uncastedVariable.Name);
 			} else {
 				this.Variable = null;
 			}
@@ -32,15 +32,15 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 			
 			SetTexts("<Base class>",
-			         Variable.AsString.ToString(),
-			         Variable.Type);
+			         Variable.Value.AsString.ToString(),
+			         Variable.Value.Type);
 			
 			ImageIndex = 0; // Class
 			
 			if (IsExpanded) {
 				UpdateSubVariables();
 			} else {
-				if (Variable.MayHaveSubVariables) { // Always true
+				if (Variable.Value.MayHaveSubVariables) { // Always true
 					Items.Add(new PlaceHolderItem()); // Show plus icon
 				}
 			}
