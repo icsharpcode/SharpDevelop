@@ -80,8 +80,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			listView.ItemActivate += new EventHandler(ListViewItemActivate);
 			listView.MouseMove    += new MouseEventHandler(ListViewMouseMove);
 			listView.Resize       += new EventHandler(ListViewResize);
+	
+			listView.ColumnClick  += new ColumnClickEventHandler(ListViewColumnClick);
 			
 			ShowResults2(null, null);
+		}
+		
+		public void ListViewColumnClick(object sender, ColumnClickEventArgs e)
+		{
+			listView.ListViewItemSorter = new OpenTaskViewSorter(e.Column);
 		}
 		
 		public override void RedrawContent()
@@ -260,6 +267,40 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			listView.Invoke(new EventHandler(ShowResults2));
 //			SelectTaskView(null, null);
+		}
+		
+		private class OpenTaskViewSorter : IComparer
+		{
+			static int lastSortColumn = -1;
+			static SortOrder lastSortOrder = SortOrder.Ascending;
+			
+			public OpenTaskViewSorter(int col)
+			{
+				if (col==lastSortColumn) {
+					if (lastSortOrder == SortOrder.Ascending) {
+						lastSortOrder = SortOrder.Descending;
+					} else {
+						lastSortOrder = SortOrder.Ascending;
+					}
+				} else {
+					lastSortColumn = col;
+					lastSortOrder = SortOrder.Ascending;
+				}
+			}
+			
+			#region System.Collections.IComparer interface implementation
+			public int Compare(object x, object y) {
+				ListViewItem a = (ListViewItem)x;
+				ListViewItem b = (ListViewItem)y;
+			
+				if (lastSortOrder == SortOrder.Ascending) {
+					return a.SubItems[lastSortColumn].Text.CompareTo(b.SubItems[lastSortColumn].Text);
+				} else {
+					return b.SubItems[lastSortColumn].Text.CompareTo(a.SubItems[lastSortColumn].Text);
+				}
+			}
+			#endregion
+			
 		}
 	}
 }
