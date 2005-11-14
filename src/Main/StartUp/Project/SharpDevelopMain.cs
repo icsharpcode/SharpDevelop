@@ -153,12 +153,12 @@ namespace ICSharpCode.SharpDevelop
 			try {
 				#if DEBUG
 				if (!Debugger.IsAttached) {
-					#endif
 					Application.ThreadException += ShowErrorBox;
 					AppDomain.CurrentDomain.UnhandledException += ShowErrorBox;
-					#if DEBUG
 				}
 				#else
+				Application.ThreadException += ShowErrorBox;
+				AppDomain.CurrentDomain.UnhandledException += ShowErrorBox;
 				MessageService.CustomErrorReporter = ShowErrorBox;
 				#endif
 				
@@ -178,14 +178,12 @@ namespace ICSharpCode.SharpDevelop
 					SplashScreenForm.SplashScreen.Dispose();
 				}
 				
-				bool exception = false;
+				bool exception = true;
 				// finally start the workbench.
 				try {
 					LoggingService.Info("Starting workbench...");
 					new StartWorkbenchCommand().Run(SplashScreenForm.GetRequestedFileList());
-				} catch {
-					exception = true;
-					throw;
+					exception = false;
 				} finally {
 					LoggingService.Info("Unloading services...");
 					try {
