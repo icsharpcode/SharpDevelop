@@ -46,14 +46,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
 			
-			ImageList imageList = new ImageList();
-			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.Class"));
-			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.Field"));
-			imageList.Images.Add(IconService.GetBitmap("Icons.16x16.Property"));
-
 			//iconsService = (ClassBrowserIconsService)ServiceManager.Services.GetService(typeof(ClassBrowserIconsService));
 			localVarList = new TreeListView();
-			localVarList.SmallImageList = imageList;
+			localVarList.SmallImageList = DebuggerIcons.ImageList;
 			localVarList.ShowPlusMinus = true;
 			localVarList.FullRowSelect = true;
 			localVarList.Dock = DockStyle.Fill;

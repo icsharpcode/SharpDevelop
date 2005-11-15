@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Drawing;
 using Debugger;
 using ICSharpCode.SharpDevelop.Gui.TreeGrid;
 
@@ -42,6 +43,10 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			this[2].Text = variable.Name;
 			this[3].Text = variable.Value.AsString;
+			
+			this[1].Paint += delegate(object sender, ItemPaintEventArgs e) {
+				e.Graphics.DrawImage(DebuggerIcons.GetImage(variable), e.ClipRectangle);
+			};
 			
 			if (!variable.Value.MayHaveSubVariables)
 				this.ShowPlus = false;

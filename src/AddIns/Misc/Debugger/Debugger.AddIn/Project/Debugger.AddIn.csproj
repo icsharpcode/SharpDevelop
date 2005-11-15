@@ -58,6 +58,7 @@
     <Compile Include="Src\Service\DynamicTreeDebuggerRow.cs" />
     <Compile Include="Src\Service\SetCurrentStatementCommand.cs" />
     <Compile Include="Src\Pads\TreeListViewDebuggerItem.cs" />
+    <Compile Include="Src\Service\DebuggerIcons.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
