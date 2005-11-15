@@ -18,6 +18,7 @@ namespace Debugger
 		VariableCollection subVariables;
 		
 		public event EventHandler<VariableEventArgs> ValueChanged;
+		public event EventHandler<VariableCollectionEventArgs> ValueRemovedFromCollection;
 		
 		public NDebugger Debugger {
 			get {
@@ -52,6 +53,12 @@ namespace Debugger
 			}
 		}
 		
+		public bool MayHaveSubVariables {
+			get {
+				return val.MayHaveSubVariables;
+			}
+		}
+		
 		protected virtual void OnValueChanged()
 		{
 			if (ValueChanged != null) {
@@ -66,6 +73,12 @@ namespace Debugger
 				newVariables.Add(v);
 			}
 			subVariables.UpdateTo(newVariables);
+		}
+		
+		protected internal virtual void OnValueRemovedFromCollection(VariableCollectionEventArgs e) {
+			if (ValueRemovedFromCollection != null) {
+				ValueRemovedFromCollection(this, e);
+			}
 		}
 		
 		public Variable(NDebugger debugger, Value val, string name)

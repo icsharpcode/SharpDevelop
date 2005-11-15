@@ -90,28 +90,29 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debuggerCore = debugger.DebuggerCore;
 			
-			debuggerCore.LocalVariables.VariableAdded += delegate(object sender, VariableEventArgs e) {
-				AddVariable(e.Variable);
-			};
-			
 			localVarList.BeginUpdate();
-			foreach(Variable v in debuggerCore.LocalVariables) {
-				AddVariable(v);
-			}
+			AddVariableCollectionToTree(debuggerCore.LocalVariables, localVarList.Items);
 			localVarList.EndUpdate();
 		}
 		
-		void AddVariable(Variable variableToAdd)
+		public static void AddVariableCollectionToTree(VariableCollection varCollection, TreeListViewItemCollection tree)
+		{
+			varCollection.VariableAdded += delegate(object sender, VariableEventArgs e) {
+				AddVariableToTree(e.Variable, tree);
+			};
+			
+			foreach(Variable variable in varCollection) {
+				AddVariableToTree(variable, tree);
+			}
+		}
+		
+		public static void AddVariableToTree(Variable variableToAdd, TreeListViewItemCollection tree)
 		{
 			if (variableToAdd.Name.StartsWith("CS$")) return;
 			
 			TreeListViewDebuggerItem newItem = new TreeListViewDebuggerItem(variableToAdd);
 			
-			debuggerCore.LocalVariables.VariableRemoved += delegate(object sender, VariableEventArgs removedArgs) {
-				if (variableToAdd == removedArgs.Variable) newItem.Remove();
-			};
-			
-			localVarList.Items.Add(newItem);
+			tree.Add(newItem);
 		}
 		
 		public override void RedrawContent()

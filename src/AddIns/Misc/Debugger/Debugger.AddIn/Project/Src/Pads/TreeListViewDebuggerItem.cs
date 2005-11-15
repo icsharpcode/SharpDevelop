@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public class TreeListViewDebuggerItem: TreeListViewItem
 	{
 		Variable variable;
-		bool baseClassItemAdded;
+		bool populated = false;
 		
 		public Variable Variable {
 			get {
@@ -49,6 +49,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				Update();
 			};
 			
+			variable.ValueRemovedFromCollection += delegate { this.Remove(); };
+			
 			SubItems.Add("");
 			SubItems.Add("");
 			
@@ -57,9 +59,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public void Update()
 		{
-			this.SubItems[0].Text = Variable.Name;
-			this.SubItems[1].Text = Variable.Value.AsString;
-			this.SubItems[2].Text = Variable.Value.Type;
+			if (this.SubItems[0].Text != Variable.Name)
+				this.SubItems[0].Text = Variable.Name;
+			if (this.SubItems[1].Text != Variable.Value.AsString)
+				this.SubItems[1].Text = Variable.Value.AsString;
+			if (this.SubItems[2].Text != Variable.Value.Type)
+				this.SubItems[2].Text = Variable.Value.Type;
 			
 			if (variable.Value is ObjectValue) {
 				this.ImageIndex = 0; // Class
@@ -69,37 +74,40 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				this.ImageIndex = 1; // Field
 			}
 			
-			if (!baseClassItemAdded) {
-				TryToAddBaseClassItem();
-				baseClassItemAdded = true;
+			if (IsExpanded) {
+				variable.SubVariables.Update();
+			} else {
+				// Show plus sign
+				if (variable.Value.MayHaveSubVariables && Items.Count == 0) {
+					TreeListViewItem dummy = new TreeListViewItem();
+					this.AfterExpand += delegate { dummy.Remove(); };
+					Items.Add(dummy);
+				}
 			}
-			
-//			if (IsExpanded) {
-//				UpdateSubVariables();
-//			} else {
-//				if (variable.Value.MayHaveSubVariables) {
-//					Items.Add(new PlaceHolderItem()); // Show plus icon
-//				}
-//			}
 		}
 		
 		public void BeforeExpand()
 		{
+			if (populated) {
+				variable.SubVariables.Update();
+			} else {
+				Populate();
+				populated = true;
+			}
+		}
+		
+		public void Populate()
+		{
+			Items.Clear();
+			
 			// Do not sort names of array items
 			if (variable.Value is ArrayValue) {
 				this.Items.SortOrder = SortOrder.None;
 			} else {
 				this.Items.SortOrder = SortOrder.Ascending;
 			}
-		}
-		
-		void TryToAddBaseClassItem()
-		{
-			ObjectValue objectValue = variable.Value as ObjectValue;
-			if (objectValue != null && objectValue.HasBaseClass && objectValue.BaseClass.Type != "System.Object") {
-				Variable baseClassVar = VariableFactory.CreateVariable(objectValue.BaseClass, "<Base class>");
-				Items.Add(new TreeListViewDebuggerItem(baseClassVar));
-			}
+			
+			LocalVarPad.AddVariableCollectionToTree(variable.SubVariables, this.Items);
 		}
 		
 	}

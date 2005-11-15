@@ -93,6 +93,7 @@ namespace Debugger
 			if (variable != null) {
 				InnerList.Remove(variable);
 				OnVariableRemoved(new VariableEventArgs(variable));
+				variable.OnValueRemovedFromCollection(new VariableCollectionEventArgs(this));
 			}
 		}
 		

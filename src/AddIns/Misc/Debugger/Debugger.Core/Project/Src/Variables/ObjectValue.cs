@@ -71,6 +71,10 @@ namespace Debugger
 		
 		public override IEnumerable<Variable> SubVariables {
 			get {
+				if (HasBaseClass) {
+					yield return BaseClassVariable;
+				}
+				
 				// Current frame is necessary to resolve context specific static values (eg. ThreadStatic)
 				ICorDebugFrame curFrame;
 				if (debugger.CurrentThread == null || debugger.CurrentThread.LastFunction == null || debugger.CurrentThread.LastFunction.CorILFrame == null) {
@@ -98,6 +102,16 @@ namespace Debugger
 						var = VariableFactory.CreateVariable(new UnavailableValue(debugger), field.Name);
 					}
 					yield return var;
+				}
+			}
+		}
+		
+		public Variable BaseClassVariable {
+			get {
+				if (HasBaseClass) {
+					return VariableFactory.CreateVariable(this.BaseClass, "<Base class>");
+				} else {
+					return null;
 				}
 			}
 		}
