@@ -145,8 +145,13 @@ namespace Debugger
 			
 			pausedReason = reason;
 			
+			
 			OnDebuggingPaused(reason);
-			waitForPauseHandle.Set();
+			
+			if (IsPaused) { // OnDebuggingPaused can resume the debugger
+				localVariables.Update();
+				waitForPauseHandle.Set();
+			}
 		}
 		
 		internal void FakePause(PausedReason reason, bool keepCurrentFunction)

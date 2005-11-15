@@ -55,12 +55,9 @@
     <EmbeddedResource Include="Src\Service\ExceptionForm.resx">
       <DependentUpon>ExceptionForm.cs</DependentUpon>
     </EmbeddedResource>
-    <Compile Include="Src\Pads\VariableListItems\BaseClassItem.cs" />
-    <Compile Include="Src\Pads\VariableListItems\PlaceHolderItem.cs" />
-    <Compile Include="Src\Pads\VariableListItems\VariableItem.cs" />
-    <Compile Include="Src\Pads\VariableListItems\VariableListItem.cs" />
     <Compile Include="Src\Service\DynamicTreeDebuggerRow.cs" />
     <Compile Include="Src\Service\SetCurrentStatementCommand.cs" />
+    <Compile Include="Src\Pads\TreeListViewDebuggerItem.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

@@ -70,7 +70,7 @@ namespace Debugger
 		
 		protected override unsafe VariableCollection GetSubVariables()
 		{
-			VariableCollection subVariables = new VariableCollection();
+			VariableCollection subVariables = new VariableCollection(debugger);
 			
 			// Current frame is necessary to resolve context specific static values (eg. ThreadStatic)
 			ICorDebugFrame curFrame;

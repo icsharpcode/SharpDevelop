@@ -34,6 +34,10 @@ namespace Debugger
 			get {
 				return val;
 			}
+			internal set {
+				val = value;
+				OnValueChanged();
+			}
 		}
 		
 		protected virtual void OnValueChanged()

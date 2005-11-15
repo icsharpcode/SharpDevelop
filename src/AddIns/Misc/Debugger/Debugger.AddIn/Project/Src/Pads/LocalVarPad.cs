@@ -68,10 +68,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.SizeChanged += new EventHandler(localVarList_SizeChanged);
 			localVarList.BeforeExpand += new TreeListViewCancelEventHandler(localVarList_BeforeExpand);
 			
-			debugger.DebugStopped += OnDebugStopped;
 			
 			RedrawContent();
-
+			
 			if (debugger.ServiceInitialized) {
 				InitializeDebugger();
 			} else {
@@ -80,20 +79,42 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				};
 			}
 		}
-
-		public void InitializeDebugger()
-		{
-			debuggerCore = debugger.DebuggerCore;
-
-			debuggerCore.DebuggingPaused += new EventHandler<DebuggingPausedEventArgs>(debuggerService_OnDebuggingPaused);
-
-			RefreshList();
-		}
-
+		
 		// This is a walkarond for a visual issue
 		void localVarList_SizeChanged(object sender, EventArgs e)
 		{
 			localVarList.Visible = true;
+		}
+		
+		public void InitializeDebugger()
+		{
+			debuggerCore = debugger.DebuggerCore;
+			
+			debuggerCore.LocalVariables.VariableAdded += OnLocalVariableAdded;
+			
+			localVarList.BeginUpdate();
+			foreach(Variable v in debuggerCore.LocalVariables) {
+				AddVariable(v);
+			}
+			localVarList.EndUpdate();
+		}
+		
+		void OnLocalVariableAdded(object sender, VariableEventArgs e)
+		{
+			if (e.Variable.Name.StartsWith("CS$")) return;
+			
+			AddVariable(e.Variable);
+		}
+		
+		void AddVariable(Variable variableToAdd)
+		{
+			TreeListViewDebuggerItem newItem = new TreeListViewDebuggerItem(variableToAdd);
+			
+			debuggerCore.LocalVariables.VariableRemoved += delegate(object sender, VariableEventArgs removedArgs) {
+				if (variableToAdd == removedArgs.Variable) newItem.Remove();
+			};
+			
+			localVarList.Items.Add(newItem);
 		}
 		
 		public override void RedrawContent()
@@ -102,74 +123,14 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			val.Text  = "Value";
 			type.Text = "Type";
 		}
-		
-		void OnDebugStopped(object sender, EventArgs e)
-		{
-			localVarList.Items.Clear();
-		}
-
-		private void debuggerService_OnDebuggingPaused(object sender, DebuggingPausedEventArgs e)
-		{
-			RefreshList();
-		}
-
-		void RefreshList()
-		{
-			UpdateVariables(localVarList.Items, debuggerCore.LocalVariables);
-		}
 
 		private void localVarList_BeforeExpand(object sender, TreeListViewCancelEventArgs e)
 		{
 			if (debuggerCore.IsPaused) {
-				((VariableListItem)e.Item).PrepareForExpansion();
+				((TreeListViewDebuggerItem)e.Item).BeforeExpand();
 			} else {
 				MessageBox.Show("You can not explore variables while the debuggee is running.");
 				e.Cancel = true;
-			}
-		}
-
-		static VariableItem FindVariableItem(TreeListViewItemCollection items, Variable variable)
-		{
-			foreach (VariableListItem item in items) {
-				VariableItem variableItem = item as VariableItem;
-				if (variableItem != null && variableItem.Variable.Name == variable.Name) {
-					return variableItem;
-				}
-			}
-			return null;
-		}
-
-		public static void UpdateVariables(TreeListViewItemCollection items, VariableCollection variables)
-		{
-			// Add new variables and refresh existing ones
-			foreach (Variable variable in variables) {
-				VariableItem item = FindVariableItem(items, variable);
-				if (item != null) {
-					item.Variable = variable;
-					item.Refresh();
-				} else {
-					item = new VariableItem(variable);
-					if (item.IsValid) {
-						items.Add(item);
-					}
-				}
-			}
-
-			// Delete invalid or removed variables
-			List<VariableListItem> toBeRemoved = new List<VariableListItem>();
-			foreach (VariableListItem item in items) {
-				if (!item.IsValid) {
-					toBeRemoved.Add(item);
-					continue;
-				}
-
-				VariableItem variableItem = item as VariableItem;
-				if (variableItem != null && !(item is BaseClassItem) && !variables.Contains(variableItem.Variable.Name)) {
-					toBeRemoved.Add(item);
-				}
-			}
-			foreach (VariableListItem item in toBeRemoved) {
-				item.Remove();
 			}
 		}
 	}

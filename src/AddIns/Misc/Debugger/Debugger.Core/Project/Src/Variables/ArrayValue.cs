@@ -113,7 +113,7 @@ namespace Debugger
 
 		protected override VariableCollection GetSubVariables()
 		{
-			VariableCollection subVariables = new VariableCollection();
+			VariableCollection subVariables = new VariableCollection(debugger);
 
 			uint[] indices = new uint[rank];
 

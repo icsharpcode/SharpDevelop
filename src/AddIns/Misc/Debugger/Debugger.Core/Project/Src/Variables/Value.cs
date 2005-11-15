@@ -62,7 +62,7 @@ namespace Debugger
 		
 		protected virtual VariableCollection GetSubVariables()
 		{
-			return new VariableCollection();
+			return new VariableCollection(debugger);
 		}
 
 		internal Value(NDebugger debugger, ICorDebugValue corValue)

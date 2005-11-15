@@ -418,7 +418,7 @@ namespace Debugger
 		
 		public VariableCollection GetArgumentVariables()
 		{
-			VariableCollection arguments = new VariableCollection();
+			VariableCollection arguments = new VariableCollection(debugger);
 			
 			int argCount = ArgumentCount;
 			
@@ -431,7 +431,7 @@ namespace Debugger
 
 		public VariableCollection GetLocalVariables()
 		{
-			VariableCollection localVariables = new VariableCollection();
+			VariableCollection localVariables = new VariableCollection(debugger);
 			if (symMethod != null) {
 				ISymbolScope symRootScope = symMethod.RootScope;
 				AddScopeToVariableCollection(symRootScope, ref localVariables);
@@ -441,7 +441,7 @@ namespace Debugger
 
 		VariableCollection GetPropertyVariables()	
 		{
-			VariableCollection properties = new VariableCollection();
+			VariableCollection properties = new VariableCollection(debugger);
 
 			foreach(MethodProps method in module.MetaData.EnumMethods(methodProps.ClassToken)) {
 				if (method.Name.StartsWith("get_") && method.HasSpecialName) {					

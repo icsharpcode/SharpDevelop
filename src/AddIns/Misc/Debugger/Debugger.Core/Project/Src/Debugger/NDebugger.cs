@@ -25,7 +25,7 @@ namespace Debugger
 		
 		ApartmentState requiredApartmentState;
 		
-		VariableCollection localVariables = new VariableCollection();
+		VariableCollection localVariables;
 		
 		string debuggeeVersion;
 		
@@ -57,7 +57,9 @@ namespace Debugger
 		{
 			requiredApartmentState = System.Threading.Thread.CurrentThread.GetApartmentState();
 			
-			this.ModuleLoaded += new EventHandler<ModuleEventArgs>(SetBreakpointsInModule);
+			this.ModuleLoaded += SetBreakpointsInModule;
+			
+			localVariables = new VariableCollection(this);
 		}
 		
 		/// <summary>
@@ -107,11 +109,15 @@ namespace Debugger
 			corDebug.Initialize();
 			corDebug.SetManagedHandler(managedCallbackProxy);
 			
+			localVariables.Updating += OnUpdatingLocalVariables;
+			
 			TraceMessage("ICorDebug initialized, debugee version " + debuggeeVersion);
 		}
 		
 		internal void TerminateDebugger()
 		{
+			localVariables.Clear();
+			
 			ClearModules();
 			
 			ResetBreakpoints();
@@ -187,12 +193,16 @@ namespace Debugger
 
 		public VariableCollection LocalVariables { 
 			get {
-				if (CurrentFunction == null) {
-					localVariables.UpdateTo(VariableCollection.Empty);
-				} else {
-					localVariables.UpdateTo(CurrentFunction.GetVariables());
-				}
 				return localVariables;
+			}
+		}
+		
+		void OnUpdatingLocalVariables(object sender, VariableCollectionEventArgs e)
+		{
+			if (CurrentFunction == null) {
+				e.VariableCollection.UpdateTo(VariableCollection.Empty);
+			} else {
+				e.VariableCollection.UpdateTo(CurrentFunction.GetVariables());
 			}
 		}
 	}

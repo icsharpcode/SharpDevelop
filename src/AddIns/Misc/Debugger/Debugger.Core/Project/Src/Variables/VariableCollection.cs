@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 
 using Debugger.Interop.CorDebug;
 
@@ -15,17 +16,25 @@ namespace Debugger
 	[Serializable]
 	public class VariableCollection: ReadOnlyCollectionBase
 	{
+		NDebugger debugger;
+		
 		public static VariableCollection Empty;
 		
 		bool readOnly = false;
 		
 		public event EventHandler<VariableEventArgs> VariableAdded;
 		public event EventHandler<VariableEventArgs> VariableRemoved;
-		internal event EventHandler Updating;
+		internal event EventHandler<VariableCollectionEventArgs> Updating;
 		
-		internal VariableCollection()
+		public NDebugger Debugger {
+			get {
+				return debugger;
+			}
+		}
+		
+		internal VariableCollection(NDebugger debugger)
 		{
-		
+			this.debugger = debugger;
 		}
 		
 		/// <summary>
@@ -33,7 +42,7 @@ namespace Debugger
 		/// </summary>
 		/// <param name="updating"></param>
 		/// <returns></returns>
-		internal VariableCollection(EventHandler updating)
+		internal VariableCollection(NDebugger debugger, EventHandler<VariableCollectionEventArgs> updating): this(debugger)
 		{
 			this.Updating += updating;
 			this.Update();
@@ -41,7 +50,7 @@ namespace Debugger
 		
 		static VariableCollection()
 		{
-			Empty = new VariableCollection();
+			Empty = new VariableCollection(null);
 			Empty.readOnly = true;
 		}
 		
@@ -92,9 +101,7 @@ namespace Debugger
 		/// </summary>
 		internal void Clear()
 		{
-			foreach(Variable variable in InnerList) {
-				Remove(variable);
-			}
+			InnerList.Clear();
 			Updating = null;
 		}
 		
@@ -125,7 +132,7 @@ namespace Debugger
 		
 		public void Update()
 		{
-			OnUpdating(EventArgs.Empty);
+			OnUpdating();
 		}
 		
 		/// <summary>
@@ -141,8 +148,7 @@ namespace Debugger
 			// Update existing variables
 			foreach(Variable variable in mergedCollection) {
 				if (this.Contains(variable.Name)) {
-					this.Remove(this[variable.Name]);
-					this.Add(variable);
+					this[variable.Name].Value = variable.Value;
 				}
 			}
 			
@@ -154,10 +160,14 @@ namespace Debugger
 			}
 			
 			// Remove variables that are not in merged collection
+			List<Variable> toBeRemoved = new List<Variable>(); // We can NOT modify collection which are using!!!
 			foreach(Variable variable in this) {
 				if (!mergedCollection.Contains(variable.Name)) {
-					this.Remove(variable);
+					toBeRemoved.Add(variable);
 				}
+			}
+			foreach(Variable variable in toBeRemoved) {
+				this.Remove(variable);
 			}
 		}
 		
@@ -175,10 +185,10 @@ namespace Debugger
 			}
 		}
 		
-		protected virtual void OnUpdating(EventArgs e)
+		protected virtual void OnUpdating()
 		{
 			if (Updating != null) {
-				Updating(this, e);
+				Updating(this, new VariableCollectionEventArgs(this));
 			}
 		}
 		
@@ -193,7 +203,8 @@ namespace Debugger
 		
 		public static VariableCollection Merge(params VariableCollection[] collections)
 		{
-			VariableCollection newCollection = new VariableCollection();
+			if (collections.Length == 0) throw new ArgumentException("Can not have lenght of 0", "collections");
+			VariableCollection newCollection = new VariableCollection(collections[0].Debugger);
 			newCollection.MergeWith(collections);
 			return newCollection;
 		}
