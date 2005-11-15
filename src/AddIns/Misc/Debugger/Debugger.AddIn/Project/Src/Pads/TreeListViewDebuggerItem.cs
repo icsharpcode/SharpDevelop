@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 	public class TreeListViewDebuggerItem: TreeListViewItem
 	{
 		Variable variable;
-		bool created;
+		bool baseClassItemAdded;
 		
 		public Variable Variable {
 			get {
@@ -43,20 +43,20 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		public TreeListViewDebuggerItem(Variable variable)
 		{
 			this.variable = variable;
-			variable.ValueChanged += delegate { Update(); };
+			
+			variable.ValueChanged += delegate {
+				Highlight = (Variable.Value.AsString != SubItems[1].Text);
+				Update();
+			};
 			
 			SubItems.Add("");
 			SubItems.Add("");
 			
 			Update();
-			
-			created = true; // Used to prevent highlighting of new variables
 		}
 		
 		public void Update()
 		{
-			Highlight = (Variable.Value.AsString != SubItems[1].Text && created);
-			
 			this.SubItems[0].Text = Variable.Name;
 			this.SubItems[1].Text = Variable.Value.AsString;
 			this.SubItems[2].Text = Variable.Value.Type;
@@ -67,6 +67,11 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 				this.ImageIndex = 2; // Property
 			} else {
 				this.ImageIndex = 1; // Field
+			}
+			
+			if (!baseClassItemAdded) {
+				TryToAddBaseClassItem();
+				baseClassItemAdded = true;
 			}
 			
 //			if (IsExpanded) {
@@ -80,35 +85,22 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public void BeforeExpand()
 		{
-			
+			// Do not sort names of array items
+			if (variable.Value is ArrayValue) {
+				this.Items.SortOrder = SortOrder.None;
+			} else {
+				this.Items.SortOrder = SortOrder.Ascending;
+			}
 		}
 		
-//		public GetBaseClass()
-//		{
-//			ObjectValue objectValue = uncastedVariable.Value as ObjectValue;
-//			if (objectValue != null && objectValue.HasBaseClass && objectValue.BaseClass.Type != "System.Object") {
-//				this.Variable = VariableFactory.CreateVariable(objectValue.BaseClass, uncastedVariable.Name);
-//			}
-//		}
-//		
-//		protected void UpdateSubVariables() {
-//			if (!baseClassItemAdded) {
-//				VariableListItem baseClassItem = new BaseClassItem(variable);
-//				if (baseClassItem.IsValid) {
-//					this.Items.Add(baseClassItem);
-//				}
-//				baseClassItemAdded = true;
-//			}
-//			
-//			// Do not sort names of array items
-//			if (Variable.Value is ArrayValue) {
-//				this.Items.SortOrder = SortOrder.None;
-//			} else {
-//				this.Items.SortOrder = SortOrder.Ascending;
-//			}
-//			
-//			LocalVarPad.UpdateVariables(this.Items, Variable.Value.SubVariables);
-//		}
+		void TryToAddBaseClassItem()
+		{
+			ObjectValue objectValue = variable.Value as ObjectValue;
+			if (objectValue != null && objectValue.HasBaseClass && objectValue.BaseClass.Type != "System.Object") {
+				Variable baseClassVar = VariableFactory.CreateVariable(objectValue.BaseClass, "<Base class>");
+				Items.Add(new TreeListViewDebuggerItem(baseClassVar));
+			}
+		}
 		
 	}
 }

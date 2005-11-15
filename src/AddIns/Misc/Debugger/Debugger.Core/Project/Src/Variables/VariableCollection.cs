@@ -101,7 +101,9 @@ namespace Debugger
 		/// </summary>
 		internal void Clear()
 		{
-			InnerList.Clear();
+			while(this.Count > 0) {
+				this.Remove(this[0]);
+			}
 			Updating = null;
 		}
 		
@@ -117,7 +119,7 @@ namespace Debugger
 				if (index != -1) {
 					string rootVariable = variableName.Substring(0, index);
 					string subVariable = variableName.Substring(index + 1);
-					return this[rootVariable].Value.SubVariables[subVariable];
+					return this[rootVariable].Value[subVariable];
 				} else {
 					foreach (Variable v in InnerList) {
 						if (v.Name == variableName) {
@@ -145,27 +147,25 @@ namespace Debugger
 			
 			mergedCollection.Update();
 			
-			// Update existing variables
-			foreach(Variable variable in mergedCollection) {
-				if (this.Contains(variable.Name)) {
-					this[variable.Name].Value = variable.Value;
+			UpdateTo((IEnumerable<Variable>)mergedCollection.InnerList.ToArray(typeof(Variable)));
+		}
+		
+		public void UpdateTo(IEnumerable<Variable> newVariables)
+		{
+			ArrayList toBeRemoved = (ArrayList)this.InnerList.Clone();
+			
+			foreach(Variable newVariable in newVariables) {
+				if (this.Contains(newVariable.Name)) {
+					// Update existing variable
+					this[newVariable.Name].Value = newVariable.Value;
+					// Keep the variable in the list
+					toBeRemoved.Remove(this[newVariable.Name]);
+				} else {
+					// Add new variable
+					this.Add(newVariable);
 				}
 			}
 			
-			// Add new variables
-			foreach(Variable variable in mergedCollection) {
-				if (!this.Contains(variable.Name)) {
-					this.Add(variable);
-				}
-			}
-			
-			// Remove variables that are not in merged collection
-			List<Variable> toBeRemoved = new List<Variable>(); // We can NOT modify collection which are using!!!
-			foreach(Variable variable in this) {
-				if (!mergedCollection.Contains(variable.Name)) {
-					toBeRemoved.Add(variable);
-				}
-			}
 			foreach(Variable variable in toBeRemoved) {
 				this.Remove(variable);
 			}

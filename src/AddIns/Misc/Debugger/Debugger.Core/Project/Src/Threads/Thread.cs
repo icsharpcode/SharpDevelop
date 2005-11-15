@@ -109,7 +109,7 @@ namespace Debugger
 
 				Value runTimeValue = RuntimeValue;
 				if (runTimeValue is NullValue) return ThreadPriority.Normal;
-				lastPriority = (ThreadPriority)(int)(runTimeValue.SubVariables["m_Priority"].Value as PrimitiveValue).Primitive;
+				lastPriority = (ThreadPriority)(int)(runTimeValue["m_Priority"].Value as PrimitiveValue).Primitive;
 				return lastPriority;
 			}
 		}
@@ -131,7 +131,7 @@ namespace Debugger
 				if (process.IsRunning) return lastName;
 				Value runtimeVar  = RuntimeValue;
 				if (runtimeVar is NullValue) return lastName;
-				Value runtimeName = runtimeVar.SubVariables["m_Name"].Value;
+				Value runtimeName = runtimeVar["m_Name"].Value;
 				if (runtimeName is NullValue) return string.Empty;
 				lastName = runtimeName.AsString.ToString();
 				return lastName;

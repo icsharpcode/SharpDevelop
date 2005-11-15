@@ -364,7 +364,7 @@ namespace Debugger
 		public VariableCollection GetVariables()
 		{
 			return VariableCollection.Merge(
-			                                GetContaingClassVariables(),
+											GetContaingClassVariables(),
 											GetArgumentVariables(),
 											GetLocalVariables()
 											//GetPropertyVariables()
@@ -376,7 +376,9 @@ namespace Debugger
 			if (IsStatic) {
 				return VariableCollection.Empty;
 			} else {
-				return ThisValue.SubVariables;
+				VariableCollection collection = new VariableCollection(debugger);
+				collection.UpdateTo(ThisValue.SubVariables);
+				return collection;
 			}
 		}
 

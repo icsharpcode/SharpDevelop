@@ -90,7 +90,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debuggerCore = debugger.DebuggerCore;
 			
-			debuggerCore.LocalVariables.VariableAdded += OnLocalVariableAdded;
+			debuggerCore.LocalVariables.VariableAdded += delegate(object sender, VariableEventArgs e) {
+				AddVariable(e.Variable);
+			};
 			
 			localVarList.BeginUpdate();
 			foreach(Variable v in debuggerCore.LocalVariables) {
@@ -99,15 +101,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			localVarList.EndUpdate();
 		}
 		
-		void OnLocalVariableAdded(object sender, VariableEventArgs e)
-		{
-			if (e.Variable.Name.StartsWith("CS$")) return;
-			
-			AddVariable(e.Variable);
-		}
-		
 		void AddVariable(Variable variableToAdd)
 		{
+			if (variableToAdd.Name.StartsWith("CS$")) return;
+			
 			TreeListViewDebuggerItem newItem = new TreeListViewDebuggerItem(variableToAdd);
 			
 			debuggerCore.LocalVariables.VariableRemoved += delegate(object sender, VariableEventArgs removedArgs) {

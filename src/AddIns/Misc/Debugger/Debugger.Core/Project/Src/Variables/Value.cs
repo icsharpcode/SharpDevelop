@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
 using Debugger.Interop.CorDebug;
@@ -17,7 +18,6 @@ namespace Debugger
 		protected NDebugger debugger;
 		
 		protected ICorDebugValue corValue;
-		VariableCollection subVariables;
 		
 		public NDebugger Debugger {
 			get {
@@ -31,14 +31,14 @@ namespace Debugger
 			}
 		}
 		
-		public abstract string AsString { 
-			get; 
-		}
-		
 		internal CorElementType CorType {
 			get {
 				return GetCorType(corValue);
 			}
+		}
+		
+		public abstract string AsString { 
+			get; 
 		}
 		
 		public virtual string Type { 
@@ -46,25 +46,26 @@ namespace Debugger
 				return CorTypeToString(CorType); 
 			}	
 		}
-
+		
 		public abstract bool MayHaveSubVariables {
 			get;
 		}
-
-		public VariableCollection SubVariables {
+		
+		public virtual IEnumerable<Variable> SubVariables {
 			get {
-				if (subVariables == null) {
-					subVariables = GetSubVariables();
-				}
-				return subVariables;
+				yield break;
 			}
 		}
 		
-		protected virtual VariableCollection GetSubVariables()
-		{
-			return new VariableCollection(debugger);
+		public Variable this[string variableName] {
+			get {
+				foreach(Variable v in SubVariables) {
+					if (v.Name == variableName) return v;
+				}
+				throw new DebuggerException("Subvariable " + variableName + " does not exist");
+			}
 		}
-
+		
 		internal Value(NDebugger debugger, ICorDebugValue corValue)
 		{
 			this.debugger = debugger;

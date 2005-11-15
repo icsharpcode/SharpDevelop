@@ -52,7 +52,7 @@ namespace Debugger
 					}
 					runtimeValueException = runtimeValueException.BaseClass;
 				}
-				message = runtimeValueException.SubVariables["_message"].Value.AsString;
+				message = runtimeValueException["_message"].Value.AsString;
 			}
 
 			if (thread.LastFunctionWithLoadedSymbols != null) {

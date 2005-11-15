@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 
@@ -110,29 +111,26 @@ namespace Debugger
 				return true;
 			}
 		}
-
-		protected override VariableCollection GetSubVariables()
-		{
-			VariableCollection subVariables = new VariableCollection(debugger);
-
-			uint[] indices = new uint[rank];
-
-			for(;;) // Go thought all combinations
-			{
-				for (uint i = rank - 1; i >= 1; i--)
-					if (indices[i] >= dimensions[i])
-					{
-						indices[i] = 0;
-						indices[i-1]++;
-					}
-				if (indices[0] >= dimensions[0]) break; // We are done
-
-				subVariables.Add(this[indices]);
-
-				indices[rank - 1]++;
+		
+		public override IEnumerable<Variable> SubVariables {
+			get {
+				uint[] indices = new uint[rank];
+				
+				for(;;) // Go thought all combinations
+				{
+					for (uint i = rank - 1; i >= 1; i--)
+						if (indices[i] >= dimensions[i])
+						{
+							indices[i] = 0;
+							indices[i-1]++;
+						}
+					if (indices[0] >= dimensions[0]) break; // We are done
+					
+					yield return this[indices];
+					
+					indices[rank - 1]++;
+				}
 			}
-
-			return subVariables;
 		}
 	}
 }

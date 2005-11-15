@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 
@@ -68,39 +69,37 @@ namespace Debugger
 			}
 		}
 		
-		protected override unsafe VariableCollection GetSubVariables()
-		{
-			VariableCollection subVariables = new VariableCollection(debugger);
-			
-			// Current frame is necessary to resolve context specific static values (eg. ThreadStatic)
-			ICorDebugFrame curFrame;
-			if (debugger.CurrentThread == null || debugger.CurrentThread.LastFunction == null || debugger.CurrentThread.LastFunction.CorILFrame == null) {
-				curFrame = null;
-			} else {
-				curFrame = debugger.CurrentThread.LastFunction.CorILFrame;
-			}
-			
-			foreach(FieldProps field in metaData.EnumFields(classProps.Token)) {
+		public override IEnumerable<Variable> SubVariables {
+			get {
+				// Current frame is necessary to resolve context specific static values (eg. ThreadStatic)
+				ICorDebugFrame curFrame;
+				if (debugger.CurrentThread == null || debugger.CurrentThread.LastFunction == null || debugger.CurrentThread.LastFunction.CorILFrame == null) {
+					curFrame = null;
+				} else {
+					curFrame = debugger.CurrentThread.LastFunction.CorILFrame;
+				}
 				
-				try {
-					ICorDebugValue fieldValue;
-					if (field.IsStatic) {
-						if (field.IsLiteral) continue; // Try next field
+				foreach(FieldProps field in metaData.EnumFields(classProps.Token)) {
+					Variable var;
+					try {
+						ICorDebugValue fieldValue;
+						if (field.IsStatic) {
+							if (field.IsLiteral) continue; // Try next field
+							
+							corClass.GetStaticFieldValue(field.Token, curFrame, out fieldValue);
+						} else {
+							if (corValue == null) continue; // Try next field
+							
+							((ICorDebugObjectValue)corValue).GetFieldValue(corClass, field.Token, out fieldValue);
+						}
 						
-						corClass.GetStaticFieldValue(field.Token, curFrame, out fieldValue);
-					} else {
-						if (corValue == null) continue; // Try next field
-						
-						((ICorDebugObjectValue)corValue).GetFieldValue(corClass, field.Token, out fieldValue);
+						var = VariableFactory.CreateVariable(debugger, fieldValue, field.Name);
+					} catch {
+						var = VariableFactory.CreateVariable(new UnavailableValue(debugger), field.Name);
 					}
-					
-					subVariables.Add(VariableFactory.CreateVariable(debugger, fieldValue, field.Name));
-				} catch {
-					subVariables.Add(VariableFactory.CreateVariable(new UnavailableValue(debugger), field.Name));
+					yield return var;
 				}
 			}
-
-			return subVariables;
 		}
 		
 		public unsafe ObjectValue BaseClass {

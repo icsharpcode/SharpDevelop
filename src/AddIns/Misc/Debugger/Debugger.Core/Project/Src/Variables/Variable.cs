@@ -15,6 +15,7 @@ namespace Debugger
 		
 		string name;
 		Value val;
+		VariableCollection subVariables;
 		
 		public event EventHandler<VariableEventArgs> ValueChanged;
 		
@@ -40,6 +41,17 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary>
+		/// Return up-to-date collection of subvariables.
+		/// This collection is lazy - you need to call its method Update if you want to use it later
+		/// </summary>
+		public VariableCollection SubVariables {
+			get {
+				subVariables.Update();
+				return subVariables;
+			}
+		}
+		
 		protected virtual void OnValueChanged()
 		{
 			if (ValueChanged != null) {
@@ -47,11 +59,22 @@ namespace Debugger
 			}
 		}
 		
+		void OnSubVariablesUpdating(object sender, VariableCollectionEventArgs e)
+		{
+			VariableCollection newVariables = new VariableCollection(debugger);
+			foreach(Variable v in Value.SubVariables) {
+				newVariables.Add(v);
+			}
+			subVariables.UpdateTo(newVariables);
+		}
+		
 		public Variable(NDebugger debugger, Value val, string name)
 		{
 			this.debugger = debugger;
 			this.val = val;
 			this.name = name;
+			this.subVariables = new VariableCollection(debugger);
+			this.subVariables.Updating += OnSubVariablesUpdating;
 		}
 	}
 }
