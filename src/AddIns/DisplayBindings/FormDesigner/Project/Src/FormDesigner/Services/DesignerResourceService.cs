@@ -9,6 +9,8 @@ using System;
 using System.Drawing;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
+using System.Globalization;
 using System.Resources;
 using System.Text;
 using System.Collections.Specialized;
@@ -26,40 +28,101 @@ namespace ICSharpCode.FormDesigner.Services
 		IDesignerHost host;
 		
 		public string FileName  = String.Empty;
-		public string NameSpace = String.Empty;
-		public string RootType  = String.Empty;
 		
 		protected IProject project;
-		
-		protected Hashtable Writers = new Hashtable();
 		
 		#region ResourceStorage
 		public class ResourceStorage
 		{
-			public MemoryStream stream  = null;
-			public byte[]       storage = null;
-			public IProject     project = null;
-			
-			public ResourceStorage(MemoryStream stream)
-			{
-				this.stream = stream;
-			}
+			MemoryStream stream;
+			IResourceWriter writer;
 
-			public ResourceStorage(ResourceStorage rs)
+			public IProject     project = null;
+			string fileName;
+			byte[] buffer;		
+			
+			/// <summary>
+			/// true, if the currently stored resource is not empty.
+			/// Note that this property is only valid after at least one
+			/// of GetReader, GetWriter or Save has been called.
+			/// </summary>
+			public bool ContainsData {
+				get {
+					return this.buffer != null;
+				}
+			}
+			
+			public ResourceStorage(string fileName, IProject project)
 			{
-				this.storage = (byte []) rs.storage.Clone();
-				this.stream = new MemoryStream(this.storage);
+				this.project = project;
+				this.fileName = fileName;
 			}
 
 			public void Dispose()
 			{
-				this.storage = null;
-				this.stream.Close();
+				if (this.stream != null) {
+					this.writer.Dispose();
+					this.stream.Dispose();
+				}
+				this.buffer = null;
+			}
+			
+			/// <summary>
+			/// Writes the byte array containing the most recent version of the resource
+			/// represented by this instance into the private field "buffer" and returns it.
+			/// Returns null, if this resource has not been written to yet.
+			/// </summary>
+			byte[] GetBuffer()
+			{
+				if (this.stream != null) {
+					byte[] buffer = this.stream.ToArray();
+					if (buffer.Length > 0) {
+						this.writer.Close();
+						this.writer.Dispose();
+						this.buffer = this.stream.ToArray();
+						this.writer = null;
+						this.stream.Dispose();
+						this.stream = null;
+					}
+				}
+				return this.buffer;
+			}
+			
+			/// <summary>
+			/// Returns a new resource reader for this resource based on the most recent
+			/// version available (either in memory or on disk).
+			/// </summary>
+			public IResourceReader GetReader()
+			{
+				if (this.GetBuffer() == null) {
+					if (File.Exists(this.fileName)) {
+						return CreateResourceReader(this.fileName, GetResourceType(this.fileName));
+					} else {
+						return null;
+					}
+				} else {
+					return CreateResourceReader(new MemoryStream(this.buffer, false), GetResourceType(this.fileName));
+				}
+			}
+			
+			/// <summary>
+			/// Returns a new resource writer for this resource.
+			/// According to the SDK documentation of IResourceService.GetResourceWriter,
+			/// a new writer needs to be returned every time one is requested, discarding any
+			/// data written by previously returned writers.
+			/// </summary>
+			public IResourceWriter GetWriter()
+			{
+				this.stream = new MemoryStream();
+				this.writer = CreateResourceWriter(this.stream, GetResourceType(this.fileName));
+				return this.writer;
 			}
 
 			public void Save(string fileName)
 			{
-				File.WriteAllBytes(fileName, storage);
+				if (this.GetBuffer() != null) {
+					File.WriteAllBytes(fileName, this.buffer);
+				}
 			}
 		}
 		#endregion
@@ -78,8 +141,8 @@ namespace ICSharpCode.FormDesigner.Services
 		// Memory streams are cleared, when WriteSerialization will start
 		// or File in the editor will be reloaded from the disc and of
 		// course in Dispose of the service
-		protected Hashtable resources      = null;
-		public Hashtable Resources
+		protected Dictionary<string, ResourceStorage> resources = null;
+		public Dictionary<string, ResourceStorage> Resources
 		{
 			get {
 				return resources;
@@ -97,7 +160,7 @@ namespace ICSharpCode.FormDesigner.Services
 			}
 		}
 		
-		public DesignerResourceService(Hashtable resources)
+		public DesignerResourceService(Dictionary<string, ResourceStorage> resources)
 		{
 			project = ProjectService.CurrentProject;
 			this.resources = resources;
@@ -107,16 +170,15 @@ namespace ICSharpCode.FormDesigner.Services
 		public System.Resources.IResourceWriter GetResourceWriter(System.Globalization.CultureInfo info)
 		{
 			try {
-				IResourceWriter resourceWriter = (IResourceWriter)Writers[info];
+				LoggingService.Debug("ResourceWriter requested for culture: "+info.ToString());
 				string fileName = CalcResourceFileName(info);
-				if (resourceWriter == null) {
-					ResourceStorage resourceStorage = new ResourceStorage(new MemoryStream());
-					resources[fileName] = resourceStorage;
-					resourceWriter = CreateResourceWriter(resourceStorage.stream, GetResourceType(fileName));
-					Writers[info] = resourceWriter;
-					resourceStorage.project = project;
+				ResourceStorage resourceStorage;
+				if (resources.ContainsKey(fileName)) {
+					resourceStorage = resources[fileName];
+				} else {
+					resourceStorage = new ResourceStorage(fileName, project);					resources[fileName] = resourceStorage;
 				}
-				return resourceWriter;
+				return resourceStorage.GetWriter();
 			} catch (Exception e) {
 				MessageService.ShowError(e);
 				return null;
@@ -126,16 +188,16 @@ namespace ICSharpCode.FormDesigner.Services
 		public System.Resources.IResourceReader GetResourceReader(System.Globalization.CultureInfo info)
 		{
 			try {
+				LoggingService.Debug("ResourceReader requested for culture: "+info.ToString());
 				string fileName = CalcResourceFileName(info);
-				IResourceReader resourceReader = null;
-				if (resources != null && resources[fileName] != null) {
-					MemoryStream stream = new MemoryStream(((ResourceStorage)resources[fileName]).storage);
-					resourceReader = CreateResourceReader(stream, GetResourceType(fileName));
-				} else if (File.Exists(fileName)) {
-					resourceReader = CreateResourceReader(fileName, GetResourceType(fileName));
+				ResourceStorage resourceStorage;
+				if (resources != null && resources.ContainsKey(fileName)) {
+					resourceStorage = resources[fileName];
+				} else {
+					resourceStorage = new ResourceStorage(fileName, project);
+					resources[fileName] = resourceStorage;
 				}
-
-				return resourceReader;
+				return resourceStorage.GetReader();
 			} catch (Exception e) {
 				MessageService.ShowError(e);
 				return null;
@@ -146,12 +208,12 @@ namespace ICSharpCode.FormDesigner.Services
 		public void Save()
 		{
 			if (resources != null) {
-				foreach (DictionaryEntry entry in resources) {
-					string resourceFileName = (string)entry.Key;
-					FileUtility.ObservedSave(new NamedFileOperationDelegate(((ResourceStorage)entry.Value).Save), resourceFileName, FileErrorPolicy.Inform);
+				foreach (KeyValuePair<string, ResourceStorage> entry in resources) {
+					string resourceFileName = entry.Key;
+					FileUtility.ObservedSave(new NamedFileOperationDelegate(entry.Value.Save), resourceFileName, FileErrorPolicy.Inform);
 					
 					// Add this resource file to the project
-					if (project != null && !project.IsFileInProject(resourceFileName)) {
+					if (entry.Value.ContainsData && project != null && !project.IsFileInProject(resourceFileName)) {
 						PadDescriptor pd = WorkbenchSingleton.Workbench.GetPad(typeof(ProjectBrowserPad));
 						FileNode formFileNode = ((ProjectBrowserPad)pd.PadContent).ProjectBrowserControl.FindFileNode(FileName);
 						if (formFileNode != null) {
@@ -197,43 +259,6 @@ namespace ICSharpCode.FormDesigner.Services
 			
 			return resourceFileName.ToString();
 		}
-
-		public void SerializationStarted(bool serialize)
-		{
-			if (serialize == true) {
-				if (resources == null) {
-					resources = new Hashtable();
-				}
-				foreach (ResourceStorage storage in resources.Values) {
-					storage.storage = null;
-					storage.stream.Close();
-				}
-				resources.Clear();
-			} else {
-				if (resources != null) {
-					foreach (ResourceStorage storage in resources.Values) {
-						storage.stream = new MemoryStream(storage.storage);
-					}
-				}
-			}
-		}
-		
-		public void SerializationEnded(bool serialize)
-		{
-			foreach (IResourceWriter resourceWriter in Writers.Values) {
-				if (resourceWriter != null) {
-					resourceWriter.Close();
-					resourceWriter.Dispose();
-				}
-			}
-			Writers.Clear();
-			
-			if (serialize == true && resources != null) {
-				foreach (ResourceStorage storage in Resources.Values) {
-					storage.storage = storage.stream.ToArray();
-				}
-			}
-		}
 		
 		public void Dispose()
 		{
@@ -243,7 +268,6 @@ namespace ICSharpCode.FormDesigner.Services
 				}
 				resources.Clear();
 			}
-			SerializationEnded(false);
 		}
 		
 		static ResourceType GetResourceType(string fileName)

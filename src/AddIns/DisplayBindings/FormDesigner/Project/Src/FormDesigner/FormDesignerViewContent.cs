@@ -50,8 +50,7 @@ namespace ICSharpCode.FormDesigner
 		protected bool failedDesignerInitialize;
 		
 		protected IViewContent viewContent;
-		protected Hashtable resources = new Hashtable();
-		
+		protected Dictionary<string, DesignerResourceService.ResourceStorage> resources = new Dictionary<string, DesignerResourceService.ResourceStorage>();
 		protected ITextEditorControlProvider textAreaControlProvider;
 		
 		Panel p = new Panel();
@@ -60,7 +59,7 @@ namespace ICSharpCode.FormDesigner
 		IDesignerLoaderProvider loaderProvider;
 		IDesignerGenerator generator;
 		DesignerResourceService designerResourceService;
-		
+				
 		public override Control Control {
 			get {
 				return p;
@@ -221,9 +220,7 @@ namespace ICSharpCode.FormDesigner
 			}
 			bool isDirty = viewContent.IsDirty;
 			LoggingService.Info("Merging form changes...");
-			designerResourceService.SerializationStarted(true);
 			designSurface.Flush();
-			designerResourceService.SerializationEnded(true);
 			LoggingService.Info("Finished merging form changes");
 			viewContent.IsDirty = isDirty;
 		}
