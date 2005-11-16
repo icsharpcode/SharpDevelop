@@ -254,6 +254,7 @@ namespace ICSharpCode.FormDesigner
 		
 		public override void Selected()
 		{
+			PropertyPad.PropertyValueChanged += PropertyValueChanged;
 			Reload();
 			IsFormDesignerVisible = true;
 			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
@@ -277,6 +278,7 @@ namespace ICSharpCode.FormDesigner
 		public override void Deselected()
 		{
 			LoggingService.Info("Deselected form designer, unloading...");
+			PropertyPad.PropertyValueChanged -= PropertyValueChanged;
 			propertyContainer.Clear();
 			IsFormDesignerVisible = false;
 			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
@@ -462,5 +464,27 @@ namespace ICSharpCode.FormDesigner
 			}
 		}
 		#endregion
+
+		/// <summary>
+		/// Reloads the form designer if the language property has changed.
+		/// </summary>
+		void PropertyValueChanged(object source, PropertyValueChangedEventArgs e)
+		{
+			if (e.ChangedItem.GridItemType == GridItemType.Property) {
+				if (e.ChangedItem.PropertyDescriptor.Name == "Language") {
+					if (!e.OldValue.Equals(e.ChangedItem.Value)) {
+						LoggingService.Debug("Reloading designer due to language change.");	
+						propertyContainer.Clear();
+						if (!failedDesignerInitialize) {
+							MergeFormChanges();
+						}
+						UnloadDesigner();
+						Reload();
+						propertyContainer.Host = Host;
+						UpdateSelectableObjects();
+					}
+				}
+			}
+		}
 	}
 }
