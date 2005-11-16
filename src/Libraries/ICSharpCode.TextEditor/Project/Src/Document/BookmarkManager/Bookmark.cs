@@ -59,6 +59,8 @@ namespace ICSharpCode.TextEditor.Document
 				return lineNumber;
 			}
 			set {
+				if (value < 0)
+					throw new ArgumentOutOfRangeException("value", value, "line number must be >= 0");
 				if (lineNumber != value) {
 					lineNumber = value;
 					OnLineNumberChanged(EventArgs.Empty);
@@ -90,6 +92,8 @@ namespace ICSharpCode.TextEditor.Document
 		
 		public Bookmark(IDocument document, int lineNumber, bool isEnabled)
 		{
+			if (lineNumber < 0)
+				throw new ArgumentOutOfRangeException("lineNumber", lineNumber, "line number must be >= 0");
 			this.document   = document;
 			this.lineNumber = lineNumber;
 			this.isEnabled  = isEnabled;

@@ -174,6 +174,9 @@ namespace ICSharpCode.SharpDevelop
 				
 				InitializeCore();
 				
+				// initialize workbench-dependent services:
+				ProjectService.InitializeService();
+				
 				if (SplashScreenForm.SplashScreen != null) {
 					SplashScreenForm.SplashScreen.Dispose();
 				}

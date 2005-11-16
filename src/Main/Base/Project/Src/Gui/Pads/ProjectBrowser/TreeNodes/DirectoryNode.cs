@@ -217,7 +217,15 @@ namespace ICSharpCode.SharpDevelop.Project
 				Nodes.Remove(removeMe);
 				removeMe = null;
 			}
-			Dictionary<string, AbstractProjectBrowserTreeNode> fileNodeDictionary = new Dictionary<string, AbstractProjectBrowserTreeNode>();
+			
+			LoggingService.Info("Initialize DirectoryNode " + Directory);
+			
+			Dictionary<string, FileNode> fileNodeDictionary
+				= new Dictionary<string, FileNode>(StringComparer.InvariantCultureIgnoreCase);
+			Dictionary<FileNode, string> dependendFileDictionary = new Dictionary<FileNode, string>();
+			Dictionary<string, DirectoryNode> directoryNodeList = new Dictionary<string, DirectoryNode>(StringComparer.InvariantCultureIgnoreCase);
+			
+			// Add files found in file system
 			
 			if (System.IO.Directory.Exists(Directory)) {
 				foreach (string subDirectory in System.IO.Directory.GetDirectories(Directory)) {
@@ -227,6 +235,7 @@ namespace ICSharpCode.SharpDevelop.Project
 							newDirectoryNode.SpecialFolder = SpecialFolder.AppDesigner;
 						}
 						newDirectoryNode.AddTo(this);
+						directoryNodeList[Path.GetFileName(subDirectory)] = newDirectoryNode;
 					}
 				}
 				
@@ -240,71 +249,50 @@ namespace ICSharpCode.SharpDevelop.Project
 				SetClosedImage();
 			}
 			
-			Dictionary<FileNode, string> dependendFileDictionary = new Dictionary<FileNode, string>();
+			string relativeDirectoryPath = this.RelativePath;
+			if (relativeDirectoryPath.Length > 0)
+				relativeDirectoryPath = relativeDirectoryPath.Replace('\\', '/') + '/';
 			
-			foreach (AbstractProjectBrowserTreeNode node in Nodes) {
-				LinkedListNode<ProjectItem> cur = subItems.First;
-				while (cur != null) {
-					if (node is DirectoryNode) {
-						DirectoryNode dirNode = (DirectoryNode)node;
-						bool isBelow = FileUtility.IsBaseDirectory(dirNode.Directory, cur.Value.FileName);
-						if (isBelow) {
-							// check if there is a 'folder' item.
-							if (FileUtility.IsEqualFileName(dirNode.RelativePath, cur.Value.Include)) {
-								dirNode.ProjectItem = cur.Value;
-								if (cur.Value.ItemType == ItemType.WebReferences) {
-									dirNode.SpecialFolder = SpecialFolder.WebReferenceFolder;
-								}
-								dirNode.FileNodeStatus = FileNodeStatus.InProject;
-								cur = Remove(subItems, cur);
-							} else {
-								dirNode.ProjectItem = cur.Value;
-								dirNode.FileNodeStatus = FileNodeStatus.InProject;
-								node.SubItems.AddLast(cur.Value);
-								cur = Remove(subItems, cur);
-							}
-						} else {
-							cur = cur.Next;
-						}
-					} else if (node is FileNode) {
-						FileNode fileNode = (FileNode)node;
-						if (cur.Value is FileProjectItem && FileUtility.IsEqualFileName(fileNode.FileName, cur.Value.FileName)) {
-							FileProjectItem fileProjectItem = cur.Value as FileProjectItem;
-							if (fileProjectItem != null && fileProjectItem.DependentUpon != null && fileProjectItem.DependentUpon.Length > 0) {
-								dependendFileDictionary[fileNode] = fileProjectItem.DependentUpon;
-							}
-							
-							fileNode.FileNodeStatus = FileNodeStatus.InProject;
-							fileNode.ProjectItem = cur.Value;
-							node.SubItems.AddLast(cur.Value);
-							cur = Remove(subItems, cur);
-						} else {
-							cur = cur.Next;
-						}
-					} else {
-						cur = cur.Next;
-					}
+			// Add project items
+			
+			foreach (ProjectItem item in Project.Items) {
+				FileProjectItem fileItem = item as FileProjectItem;
+				if (fileItem == null)
+					continue;
+				string virtualName = fileItem.VirtualName.Replace('\\', '/');
+				string fileName = Path.GetFileName(virtualName);
+				if (!string.Equals(virtualName, relativeDirectoryPath + fileName, StringComparison.InvariantCultureIgnoreCase)) {
+					AddParentFolder(virtualName, relativeDirectoryPath, directoryNodeList);
+					continue;
 				}
-			}
-			
-			// Create nodes for missing items.
-			{
-				LinkedListNode<ProjectItem> cur = subItems.First;
-				while (cur != null) {
-					if (cur.Value.ItemType == ItemType.Folder || cur.Value.ItemType == ItemType.WebReferences) {
-						new DirectoryNode(cur.Value.FileName.Trim('\\', '/'), FileNodeStatus.Missing).AddTo(this);
-					} else if (cur.Value is FileProjectItem) {
-						FileProjectItem fileProjectItem = cur.Value as FileProjectItem;
-						FileNode missingFile = new FileNode(cur.Value.FileName, fileProjectItem.IsLink ? FileNodeStatus.InProject : FileNodeStatus.Missing);
-						missingFile.ProjectItem = cur.Value;
-						
-						if (fileProjectItem != null && fileProjectItem.DependentUpon != null && fileProjectItem.DependentUpon.Length > 0) {
-							dependendFileDictionary[missingFile] = fileProjectItem.DependentUpon;
-						}
-						missingFile.AddTo(this);
-						fileNodeDictionary[Path.GetFileName(cur.Value.FileName)] = missingFile;
+				
+				if (item.ItemType == ItemType.Folder || item.ItemType == ItemType.WebReferences) {
+					DirectoryNode node;
+					if (directoryNodeList.TryGetValue(fileName, out node)) {
+						node.FileNodeStatus = FileNodeStatus.InProject;
+					} else {
+						new DirectoryNode(item.FileName.Trim('\\', '/'), FileNodeStatus.Missing).AddTo(this);
 					}
-					cur = cur.Next;
+				} else {
+					FileNode node;
+					if (fileItem.IsLink) {
+						node = new FileNode(fileItem.FileName, FileNodeStatus.InProject);
+						node.AddTo(this);
+						fileNodeDictionary[fileName] = node;
+					} else {
+						if (fileNodeDictionary.TryGetValue(fileName, out node)) {
+							node.FileNodeStatus = FileNodeStatus.InProject;
+						} else {
+							node = new FileNode(fileItem.FileName, FileNodeStatus.Missing);
+							node.AddTo(this);
+							fileNodeDictionary[fileName] = node;
+						}
+					}
+					
+					node.ProjectItem = fileItem;
+					if (fileItem != null && fileItem.DependentUpon != null && fileItem.DependentUpon.Length > 0) {
+						dependendFileDictionary[node] = fileItem.DependentUpon;
+					}
 				}
 			}
 			
@@ -322,6 +310,26 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			base.Initialize();
+		}
+		
+		void AddParentFolder(string virtualName, string relativeDirectoryPath, Dictionary<string, DirectoryNode> directoryNodeList)
+		{
+			if (relativeDirectoryPath.Length == 0
+			    || string.Compare(virtualName, 0, relativeDirectoryPath, 0, relativeDirectoryPath.Length, StringComparison.InvariantCultureIgnoreCase) == 0)
+			{
+				// virtualName is a file in this folder, so we have to add its containing folder
+				// to the project
+				int pos = virtualName.IndexOf('/', relativeDirectoryPath.Length + 1);
+				if (pos < 0)
+					return;
+				string subFolderName = virtualName.Substring(relativeDirectoryPath.Length, pos - relativeDirectoryPath.Length);
+				DirectoryNode node;
+				if (directoryNodeList.TryGetValue(subFolderName, out node)) {
+					node.FileNodeStatus = FileNodeStatus.InProject;
+				} else {
+					new DirectoryNode(Path.Combine(Directory, subFolderName), FileNodeStatus.Missing).AddTo(this);
+				}
+			}
 		}
 		
 		void SetOpenedImage()

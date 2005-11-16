@@ -31,6 +31,8 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 				string[] v = ((string)value).Split('|');
 				string fileName = v[1];
 				int lineNumber = int.Parse(v[2], culture);
+				if (lineNumber < 0)
+					return null;
 				SDBookmark bookmark;
 				switch (v[0]) {
 					case "Breakpoint":

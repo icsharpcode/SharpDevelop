@@ -62,9 +62,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				OpenedImage = ClosedImage = IconService.GetImageForProjectType(project.Language);
 			}
 			Tag = project;
-			foreach (ProjectItem item in project.Items) {
-				subItems.AddLast(item);
-			}
 		}
 		
 		public override void ShowProperties()

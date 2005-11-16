@@ -29,7 +29,6 @@ namespace ICSharpCode.SharpDevelop.Project
 	{
 		string                  toolbarAddinTreePath     = null;
 		ProjectItem             item;
-		protected LinkedList<ProjectItem> subItems = new LinkedList<ProjectItem>();
 		
 		protected bool autoClearNodes = true;
 		protected bool canLabelEdited = true;
@@ -37,12 +36,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ProjectItem Item {
 			get {
 				return item;
-			}
-		}
-		
-		public LinkedList<ProjectItem> SubItems {
-			get {
-				return subItems;
 			}
 		}
 		

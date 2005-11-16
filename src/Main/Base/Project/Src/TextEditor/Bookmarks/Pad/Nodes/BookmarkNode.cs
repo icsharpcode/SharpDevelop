@@ -17,7 +17,7 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.SharpDevelop.Bookmarks
 {
 	/// <summary>
-	/// Description of SearchFolderNode.
+	/// ExtTreeNode representing a bookmark.
 	/// </summary>
 	public class BookmarkNode : ExtTreeNode
 	{
@@ -47,8 +47,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 			bookmark.DocumentChanged += BookmarkDocumentChanged;
 			bookmark.LineNumberChanged += BookmarkLineNumberChanged;
 			if (bookmark.Document != null) {
-				line = bookmark.Document.GetLineSegment(bookmark.LineNumber);
-				Text = positionText + bookmark.Document.GetText(line);
+				BookmarkDocumentChanged(null, null);
 			} else {
 				Text = positionText;
 			}
@@ -62,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		void BookmarkDocumentChanged(object sender, EventArgs e)
 		{
 			if (bookmark.Document != null) {
-				line = bookmark.Document.GetLineSegment(bookmark.LineNumber);
+				line = bookmark.Document.GetLineSegment(Math.Min(bookmark.LineNumber, bookmark.Document.TotalNumberOfLines));
 				Text = positionText + bookmark.Document.GetText(line);
 			}
 		}

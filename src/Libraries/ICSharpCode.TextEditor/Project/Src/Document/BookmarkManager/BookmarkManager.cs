@@ -138,7 +138,14 @@ namespace ICSharpCode.TextEditor.Document
 					changed = true;
 				} else if (mark.LineNumber > e.LineStart + 1 || (e.LinesMoved < 0 && mark.LineNumber > e.LineStart))  {
 					changed = true;
-					bookmark[i].LineNumber = mark.LineNumber + e.LinesMoved;
+					int newLine = mark.LineNumber + e.LinesMoved;
+					if (newLine >= 0) {
+						bookmark[i].LineNumber = newLine;
+					} else {
+						bookmark.RemoveAt(i);
+						OnRemoved(new BookmarkEventArgs(mark));
+						--i;
+					}
 				}
 			}
 			
@@ -162,7 +169,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// <value>
 		/// The lowest mark, if no marks exists it returns -1
 		/// </value>
-		public Bookmark GetFirstMark(Predicate<Bookmark> predicate) 
+		public Bookmark GetFirstMark(Predicate<Bookmark> predicate)
 		{
 			if (bookmark.Count < 1) {
 				return null;

@@ -111,6 +111,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
+		/// <summary>
+		/// Gets the name of the file in the virtual project file system.
+		/// This is normally the same as Include, except for linked files, where it is
+		/// the value of Properties["Link"].
+		/// </summary>
+		public string VirtualName {
+			get {
+				if (IsLink)
+					return base.Properties["Link"];
+				else
+					return this.Include;
+			}
+		}
+		
 		public FileProjectItem(IProject project, ItemType type) : base(project)
 		{
 			this.type = type;

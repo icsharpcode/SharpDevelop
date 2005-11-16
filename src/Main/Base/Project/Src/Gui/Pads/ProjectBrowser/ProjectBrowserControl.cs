@@ -131,6 +131,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			return null;
 		}
 		
+		/// <summary>
+		/// Finds the node of a file in the project browser.
+		/// WARNING: this method only finds the node if it already is created. Since the tree
+		/// is lazy-loaded, not every file has a node!
+		/// </summary>
 		public FileNode FindFileNode(string fileName)
 		{
 			return FindFileNode(treeView.Nodes, fileName);

@@ -120,7 +120,7 @@ namespace ICSharpCode.FormDesigner
 			
 			serviceContainer.AddService(typeof(IHelpService), new HelpService());
 			serviceContainer.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
-			designerResourceService = new DesignerResourceService(this.resources);
+			designerResourceService = new DesignerResourceService(viewContent.FileName, this.resources);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IResourceService), designerResourceService);
 			AmbientProperties ambientProperties = new AmbientProperties();
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
@@ -137,7 +137,6 @@ namespace ICSharpCode.FormDesigner
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
 			designerResourceService.Host = Host;
-			designerResourceService.FileName = viewContent.FileName;
 			serviceContainer.AddService(typeof(IDesignerHost), Host);
 			
 			DesignerLoader designerLoader = loaderProvider.CreateLoader(generator);

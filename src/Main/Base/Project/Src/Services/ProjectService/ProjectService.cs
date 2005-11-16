@@ -14,8 +14,8 @@ namespace ICSharpCode.SharpDevelop.Project
 {
 	public static class ProjectService
 	{
-		static Solution openSolution   = null;
-		static IProject currentProject = null;
+		static Solution openSolution;
+		static IProject currentProject;
 		
 		public static Solution OpenSolution {
 			get {
@@ -30,6 +30,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				if (currentProject != value) {
+					LoggingService.Info("CurrentProject changed to " + (value == null ? "null" : value.Name));
 					currentProject = value;
 					OnCurrentProjectChanged(new ProjectEventArgs(currentProject));
 				}
@@ -40,18 +41,21 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			filename = Path.GetFullPath(filename).ToLower();
 			foreach (IProject project in OpenSolution.Projects) {
-				if (project.FileName.ToLower() == filename) {
+				if (FileUtility.IsEqualFileName(project.FileName, filename)) {
 					return project;
 				}
 			}
 			return null;
 		}
 		
-		static ProjectService()
+		static bool initialized;
+		
+		public static void InitializeService()
 		{
-			if (WorkbenchSingleton.Workbench != null) {
-				WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += new EventHandler(ActiveWindowChanged);
-			}
+			if (initialized)
+				throw new InvalidOperationException("ProjectService already is initialized");
+			initialized = true;
+			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += ActiveWindowChanged;
 			FileService.FileRenamed += FileServiceFileRenamed;
 			FileService.FileRemoved += FileServiceFileRemoved;
 		}
@@ -68,6 +72,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			return ext.Equals(".CSPROJ", StringComparison.OrdinalIgnoreCase)
 				|| ext.Equals(".VBPROJ", StringComparison.OrdinalIgnoreCase)
+				|| ext.Equals(".BOOPROJ", StringComparison.OrdinalIgnoreCase)
 				|| ext.Equals(".ILPROJ", StringComparison.OrdinalIgnoreCase);
 		}
 		
@@ -149,7 +154,13 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		static void ActiveWindowChanged(object sender, EventArgs e)
 		{
-			IViewContent viewContent = WorkbenchSingleton.Workbench.ActiveContent as IViewContent;
+			object activeContent = WorkbenchSingleton.Workbench.ActiveContent;
+			IViewContent viewContent = activeContent as IViewContent;
+			if (viewContent == null && activeContent is ISecondaryViewContent) {
+				// required if one creates a new winforms app and then immediately switches to design mode
+				// without focussing the text editor
+				viewContent = ((ISecondaryViewContent)activeContent).WorkbenchWindow.ViewContent;
+			}
 			if (OpenSolution == null || viewContent == null) {
 				return;
 			}

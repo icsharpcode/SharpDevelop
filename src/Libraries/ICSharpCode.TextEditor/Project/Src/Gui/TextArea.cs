@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.ComponentModel;
 using System.Drawing;
@@ -41,12 +42,11 @@ namespace ICSharpCode.TextEditor
 		TextAreaControl         motherTextAreaControl;
 		TextEditorControl       motherTextEditorControl;
 		
-		ArrayList                 bracketshemes  = new ArrayList();
+		List<BracketHighlightingSheme> bracketshemes  = new List<BracketHighlightingSheme>();
 		TextAreaClipboardHandler  textAreaClipboardHandler;
 		bool autoClearSelection = false;
 		
-		ArrayList  leftMargins = new ArrayList();
-		ArrayList  topMargins  = new ArrayList();
+		List<AbstractMargin> leftMargins = new List<AbstractMargin>();
 		
 		TextView      textView;
 		GutterMargin  gutterMargin;
@@ -57,6 +57,19 @@ namespace ICSharpCode.TextEditor
 		Caret            caret;
 		
 		bool disposed;
+		
+		[Browsable(false)]
+		public IList<AbstractMargin> LeftMargins {
+			get {
+				return leftMargins.AsReadOnly();
+			}
+		}
+		
+		public void InsertLeftMargin(int index, AbstractMargin margin)
+		{
+			leftMargins.Insert(index, margin);
+			Refresh();
+		}
 		
 		public TextEditorControl MotherTextEditorControl {
 			get {

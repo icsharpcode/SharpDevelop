@@ -27,9 +27,7 @@ namespace ICSharpCode.FormDesigner.Services
 	{
 		IDesignerHost host;
 		
-		public string FileName  = String.Empty;
-		
-		protected IProject project;
+		string FileName  = String.Empty;
 		
 		#region ResourceStorage
 		public class ResourceStorage
@@ -160,10 +158,29 @@ namespace ICSharpCode.FormDesigner.Services
 			}
 		}
 		
-		public DesignerResourceService(Dictionary<string, ResourceStorage> resources)
+		public DesignerResourceService(string fileName, Dictionary<string, ResourceStorage> resources)
 		{
-			project = ProjectService.CurrentProject;
+			this.FileName = fileName;
 			this.resources = resources;
+		}
+		
+		IProject _project;
+		
+		IProject GetProject()
+		{
+			if (_project != null)
+				return _project;
+			if (ProjectService.OpenSolution != null) {
+				LoggingService.Warn(FileName);
+				foreach (IProject project in ProjectService.OpenSolution.Projects) {
+					if (project.IsFileInProject(FileName)) {
+						LoggingService.Warn("use project " + project.Name);
+						_project = project;
+						return project;
+					}
+				}
+			}
+			return null;
 		}
 		
 		#region System.ComponentModel.Design.IResourceService interface implementation
@@ -176,7 +193,8 @@ namespace ICSharpCode.FormDesigner.Services
 				if (resources.ContainsKey(fileName)) {
 					resourceStorage = resources[fileName];
 				} else {
-					resourceStorage = new ResourceStorage(fileName, project);					resources[fileName] = resourceStorage;
+					resourceStorage = new ResourceStorage(fileName, GetProject());
+					resources[fileName] = resourceStorage;
 				}
 				return resourceStorage.GetWriter();
 			} catch (Exception e) {
@@ -194,7 +212,7 @@ namespace ICSharpCode.FormDesigner.Services
 				if (resources != null && resources.ContainsKey(fileName)) {
 					resourceStorage = resources[fileName];
 				} else {
-					resourceStorage = new ResourceStorage(fileName, project);
+					resourceStorage = new ResourceStorage(fileName, GetProject());
 					resources[fileName] = resourceStorage;
 				}
 				return resourceStorage.GetReader();
@@ -212,20 +230,24 @@ namespace ICSharpCode.FormDesigner.Services
 					string resourceFileName = entry.Key;
 					FileUtility.ObservedSave(new NamedFileOperationDelegate(entry.Value.Save), resourceFileName, FileErrorPolicy.Inform);
 					
+					IProject project = GetProject();
+					
 					// Add this resource file to the project
 					if (entry.Value.ContainsData && project != null && !project.IsFileInProject(resourceFileName)) {
+						FileProjectItem newFileProjectItem = new FileProjectItem(project, ItemType.EmbeddedResource);
+						newFileProjectItem.DependentUpon = Path.GetFileName(FileName);
+						newFileProjectItem.Include = FileUtility.GetRelativePath(project.Directory, resourceFileName);
+						ProjectService.AddProjectItem(project, newFileProjectItem);
+						
 						PadDescriptor pd = WorkbenchSingleton.Workbench.GetPad(typeof(ProjectBrowserPad));
 						FileNode formFileNode = ((ProjectBrowserPad)pd.PadContent).ProjectBrowserControl.FindFileNode(FileName);
 						if (formFileNode != null) {
+							LoggingService.Info("FormFileNode found, adding subitem");
 							FileNode fileNode = new FileNode(resourceFileName, FileNodeStatus.BehindFile);
 							fileNode.AddTo(formFileNode);
-							FileProjectItem newFileProjectItem = new FileProjectItem(fileNode.Project, ItemType.EmbeddedResource);
-							newFileProjectItem.DependentUpon = Path.GetFileName(formFileNode.FileName);
-							newFileProjectItem.Include = FileUtility.GetRelativePath(fileNode.Project.Directory, fileNode.FileName);
 							fileNode.ProjectItem = newFileProjectItem;
-							ProjectService.AddProjectItem(fileNode.Project, newFileProjectItem);
-							fileNode.Project.Save();
 						}
+						project.Save();
 					}
 				}
 			}
@@ -234,6 +256,8 @@ namespace ICSharpCode.FormDesigner.Services
 		protected string CalcResourceFileName(System.Globalization.CultureInfo info)
 		{
 			StringBuilder resourceFileName = null;
+			IProject project = GetProject();
+			
 			if (FileName != null && FileName != String.Empty) {
 				resourceFileName = new StringBuilder(Path.GetDirectoryName(FileName));
 			} else if (project != null) {
