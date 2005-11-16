@@ -21,6 +21,7 @@ using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
@@ -34,14 +35,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public override void Run()
 		{
-//			IProjectService projectService = (IProjectService)ICSharpCode.Core.ServiceManager.Services.GetService(typeof(IProjectService));
-//			if (projectService.CurrentSelectedProject != null) {
-//				ExportProjectToHtmlDialog ephd = new ExportProjectToHtmlDialog(projectService.CurrentSelectedProject);
-//				ephd.Owner = (Form)WorkbenchSingleton.Workbench;
-//				ephd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
-//				ephd.Dispose();
-//			}
+			if (ProjectService.CurrentProject != null)
+			{
+				ExportProjectToHtmlDialog ephd = new ExportProjectToHtmlDialog(ProjectService.CurrentProject);
+				ephd.Owner = (Form)WorkbenchSingleton.Workbench;
+				ephd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
+				ephd.Dispose();
+			}
 		}
 	}
-
 }
