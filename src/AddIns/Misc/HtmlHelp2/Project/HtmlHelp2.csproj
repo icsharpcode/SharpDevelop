@@ -89,7 +89,9 @@
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Toc.png" />
     <EmbeddedResource Include="Resources\HtmlHelp2.16x16.Index.png" />
     <Compile Include="src\Service\SharpDevLanguageClass.cs" />
-    <None Include="HtmlHelp2.DynamicHelp.addin" />
+    <None Include="HtmlHelp2.DynamicHelp.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">

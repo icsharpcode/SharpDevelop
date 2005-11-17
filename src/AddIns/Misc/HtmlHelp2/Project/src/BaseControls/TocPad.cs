@@ -96,6 +96,10 @@ namespace HtmlHelp2
 
 	public class MsHelp2TocControl : UserControl
 	{
+		HxTocCtrlClass tocv2 = new HxTocCtrlClass();
+		
+		
+		
 		AxHxTocCtrl tocControl             = null;
 		ComboBox filterCombobox            = new ComboBox();
 		Label label1                       = new Label();

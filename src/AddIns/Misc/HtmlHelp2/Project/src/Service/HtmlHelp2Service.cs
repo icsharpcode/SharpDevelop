@@ -116,17 +116,17 @@ namespace HtmlHelp2.Environment
 
 			if(session != null) session = null;
 
+			HtmlHelp2Dialog initDialog = new HtmlHelp2Dialog();
 			try
 			{
-				currentSelectedFilterQuery = "";
-				currentSelectedFilterName  = "";
-
-				HtmlHelp2Dialog initDialog = new HtmlHelp2Dialog();
 				initDialog.Text            = StringParser.Parse("${res:AddIns.HtmlHelp2.HelpUpdateCaption}");
 				initDialog.ActionLabel     = StringParser.Parse("${res:AddIns.HtmlHelp2.HelpUpdateInProgress}");
 				initDialog.Show();
 				Application.DoEvents();
-				
+
+				currentSelectedFilterQuery = "";
+				currentSelectedFilterName  = "";
+
 				session                    = new HxSession();
 				session.Initialize(String.Format("ms-help://{0}", namespaceName), 0);
 				namespaceFilters           = session.GetFilterList();
@@ -135,14 +135,16 @@ namespace HtmlHelp2.Environment
 				ReloadFTSSystem();
 				ReloadDynamicHelpSystem();
 
-				initDialog.Dispose();
-
 				LoggingService.Info("Help 2.0: service sucessfully loaded");
 			}
 			catch(Exception ex)
 			{
 				LoggingService.Error("Help 2.0: not initialize service; " + ex.ToString());
 				session = null;
+			}
+			finally
+			{
+				initDialog.Dispose();
 			}
 		}
 

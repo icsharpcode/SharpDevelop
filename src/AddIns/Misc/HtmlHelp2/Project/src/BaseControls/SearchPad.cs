@@ -260,6 +260,7 @@ namespace HtmlHelp2
 
 			HtmlHelp2SearchResultsView searchResults = HtmlHelp2SearchResultsView.Instance;
 
+			HtmlHelp2Dialog searchDialog     = new HtmlHelp2Dialog();
 			try
 			{
 				searchIsBusy                 = true;
@@ -270,7 +271,6 @@ namespace HtmlHelp2
 				searchFlags                 |= (enableStemming.Checked)?HxQuery_Options.HxQuery_FullTextSearch_Enable_Stemming:HxQuery_Options.HxQuery_No_Option;
 				searchFlags                 |= (reuseMatches.Checked)?HxQuery_Options.HxQuery_FullTextSearch_SearchPrevious:HxQuery_Options.HxQuery_No_Option;
 
-				HtmlHelp2Dialog searchDialog = new HtmlHelp2Dialog();
 				searchDialog.Text            = StringParser.Parse("${res:AddIns.HtmlHelp2.HelpSearchCaption}");
 				searchDialog.ActionLabel     = StringParser.Parse("${res:AddIns.HtmlHelp2.HelpSearchInProgress}",
 				                                                  new string[,]
@@ -284,7 +284,6 @@ namespace HtmlHelp2
 					matchingTopics = HtmlHelp2Environment.FTS.Query(searchWord, searchFlags);
 
 				Cursor.Current     = Cursors.Default;
-				searchDialog.Dispose();
 
 				try
 				{
@@ -319,6 +318,10 @@ namespace HtmlHelp2
 			catch(Exception ex)
 			{
 				LoggingService.Error("Help 2.0: cannot get matching search word; " + ex.ToString());
+			}
+			finally
+			{
+				searchDialog.Dispose();
 			}
 		}
 
