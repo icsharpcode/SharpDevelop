@@ -1,8 +1,8 @@
 // <file>
-//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
-//     <license see="prj:///doc/license.txt">GNU General Public License</license>
-//     <owner name="Shinsaku Nakagawa" email="shinsaku@users.sourceforge.jp"/>
-//     <version>$Revision$</version>
+//   <copyright see="prj:///doc/copyright.txt"/>
+//   <license see="prj:///doc/license.txt"/>
+//   <owner name="Shinsaku Nakagawa" email="shinsaku@users.sourceforge.jp"/>
+//   <version value="$version"/>
 // </file>
 
 using System;
@@ -31,10 +31,15 @@ namespace ICSharpCode.TextEditor
 				return font;
 			}
 			set {
-				if (font.Equals(value) == false) {
-					SetIMEWindowFont(value);
+				if (font == null) {
 					font = value;
+					lf = null;
 				}
+				else if (font.Equals(value) == false) {
+					font = value;
+					lf = null;
+				}
+				SetIMEWindowFont(value);
 			}
 		}
 
@@ -107,12 +112,15 @@ namespace ICSharpCode.TextEditor
 			[ MarshalAs(UnmanagedType.ByValTStr, SizeConst=32) ] public string lfFaceName = null;
 		}
 		private const int IMC_SETCOMPOSITIONFONT = 0x000a;
-
+		LOGFONT lf = null;
+		
 		private void SetIMEWindowFont(Font f)
 		{
-			LOGFONT lf = new LOGFONT();
-			f.ToLogFont(lf);
-			lf.lfFaceName = f.Name;  // This is very important! "Font.ToLogFont" Method sets invalid value to LOGFONT.lfFaceName
+			if (lf == null) {
+				lf = new LOGFONT();
+				f.ToLogFont(lf);
+				lf.lfFaceName = f.Name;  // This is very important! "Font.ToLogFont" Method sets invalid value to LOGFONT.lfFaceName
+			}
 
 			SendMessage(
 						hIMEWnd,
