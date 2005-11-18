@@ -32,7 +32,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public override void PrintIdentifier(string identifier)
 		{
-			if (Keywords.GetToken(identifier) < 0) {
+			int token = Keywords.GetToken(identifier);
+			if (token < 0 || Tokens.Unreserved[token]) {
 				PrintText(identifier);
 			} else {
 				PrintText("[");

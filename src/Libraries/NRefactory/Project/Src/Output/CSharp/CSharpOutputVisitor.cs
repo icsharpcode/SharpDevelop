@@ -352,9 +352,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Indent();
 			OutputModifier(typeDeclaration.Modifier);
 			switch (typeDeclaration.Type) {
-				case ClassType.Class:
-					outputFormatter.PrintToken(Tokens.Class);
-					break;
 				case ClassType.Enum:
 					outputFormatter.PrintToken(Tokens.Enum);
 					break;
@@ -363,6 +360,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 				case ClassType.Struct:
 					outputFormatter.PrintToken(Tokens.Struct);
+					break;
+				default:
+					outputFormatter.PrintToken(Tokens.Class);
 					break;
 			}
 			outputFormatter.Space();
@@ -387,9 +387,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			switch (typeDeclaration.Type) {
-				case ClassType.Class:
-					outputFormatter.BeginBrace(this.prettyPrintOptions.ClassBraceStyle);
-					break;
 				case ClassType.Enum:
 					outputFormatter.BeginBrace(this.prettyPrintOptions.EnumBraceStyle);
 					break;
@@ -398,6 +395,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 				case ClassType.Struct:
 					outputFormatter.BeginBrace(this.prettyPrintOptions.StructBraceStyle);
+					break;
+				default:
+					outputFormatter.BeginBrace(this.prettyPrintOptions.ClassBraceStyle);
 					break;
 			}
 			
@@ -511,6 +511,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			VisitAttributes(propertyDeclaration.Attributes, data);
 			outputFormatter.Indent();
+			propertyDeclaration.Modifier &= ~Modifier.ReadOnly;
 			OutputModifier(propertyDeclaration.Modifier);
 			nodeTracker.TrackedVisit(propertyDeclaration.TypeReference, data);
 			outputFormatter.Space();
@@ -2383,7 +2384,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if ((modifier & Modifier.Const) != 0) {
 				tokenList.Add(Tokens.Const);
 			}
-			if ((modifier & Modifier.Readonly) != 0) {
+			if ((modifier & Modifier.ReadOnly) != 0) {
 				tokenList.Add(Tokens.Readonly);
 			}
 			if ((modifier & Modifier.Volatile) != 0) {

@@ -511,12 +511,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Indent();
 			OutputModifier(propertyDeclaration.Modifier);
 			
-			if (propertyDeclaration.IsReadOnly) {
-				outputFormatter.PrintToken(Tokens.ReadOnly);
-				outputFormatter.Space();
-			} else if (propertyDeclaration.IsWriteOnly) {
-				outputFormatter.PrintToken(Tokens.WriteOnly);
-				outputFormatter.Space();
+			if ((propertyDeclaration.Modifier & (Modifier.ReadOnly | Modifier.WriteOnly)) == Modifier.None) {
+				if (propertyDeclaration.IsReadOnly) {
+					outputFormatter.PrintToken(Tokens.ReadOnly);
+					outputFormatter.Space();
+				} else if (propertyDeclaration.IsWriteOnly) {
+					outputFormatter.PrintToken(Tokens.WriteOnly);
+					outputFormatter.Space();
+				}
 			}
 			
 			outputFormatter.PrintToken(Tokens.Property);
@@ -532,19 +534,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			nodeTracker.TrackedVisit(propertyDeclaration.TypeReference, data);
 			
 			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
-			exitTokenStack.Push(Tokens.Property);
-			nodeTracker.TrackedVisit(propertyDeclaration.GetRegion, data);
-			nodeTracker.TrackedVisit(propertyDeclaration.SetRegion, data);
-			exitTokenStack.Pop();
-			--outputFormatter.IndentationLevel;
 			
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.End);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.Property);
-			outputFormatter.Space();
-			outputFormatter.NewLine();
+			if (!IsAbstract(propertyDeclaration)) {
+				++outputFormatter.IndentationLevel;
+				exitTokenStack.Push(Tokens.Property);
+				nodeTracker.TrackedVisit(propertyDeclaration.GetRegion, data);
+				nodeTracker.TrackedVisit(propertyDeclaration.SetRegion, data);
+				exitTokenStack.Pop();
+				--outputFormatter.IndentationLevel;
+				
+				outputFormatter.Indent();
+				outputFormatter.PrintToken(Tokens.End);
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.Property);
+				outputFormatter.Space();
+				outputFormatter.NewLine();
+			}
+			
 			return null;
 		}
 		
@@ -768,23 +774,31 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.NewLine();
 			
-			++outputFormatter.IndentationLevel;
-			exitTokenStack.Push(isSub ? Tokens.Sub : Tokens.Function);
-			nodeTracker.TrackedVisit(methodDeclaration.Body, data);
-			exitTokenStack.Pop();
-			--outputFormatter.IndentationLevel;
-			
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.End);
-			outputFormatter.Space();
-			if (isSub) {
-				outputFormatter.PrintToken(Tokens.Sub);
-			} else {
-				outputFormatter.PrintToken(Tokens.Function);
+			if (!IsAbstract(methodDeclaration)) {
+				++outputFormatter.IndentationLevel;
+				exitTokenStack.Push(isSub ? Tokens.Sub : Tokens.Function);
+				nodeTracker.TrackedVisit(methodDeclaration.Body, data);
+				exitTokenStack.Pop();
+				--outputFormatter.IndentationLevel;
+				
+				outputFormatter.Indent();
+				outputFormatter.PrintToken(Tokens.End);
+				outputFormatter.Space();
+				if (isSub) {
+					outputFormatter.PrintToken(Tokens.Sub);
+				} else {
+					outputFormatter.PrintToken(Tokens.Function);
+				}
+				outputFormatter.NewLine();
 			}
-			outputFormatter.NewLine();
-			
 			return null;
+		}
+		
+		bool IsAbstract(AttributedNode node)
+		{
+			if ((node.Modifier & Modifier.Abstract) == Modifier.Abstract)
+				return true;
+			return currentType != null && currentType.Type == ClassType.Interface;
 		}
 		
 		public object Visit(ConstructorDeclaration constructorDeclaration, object data)
@@ -802,6 +816,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			++outputFormatter.IndentationLevel;
 			exitTokenStack.Push(Tokens.Sub);
+			
+			nodeTracker.TrackedVisit(constructorDeclaration.ConstructorInitializer, data);
+			
 			nodeTracker.TrackedVisit(constructorDeclaration.Body, data);
 			exitTokenStack.Pop();
 			--outputFormatter.IndentationLevel;
@@ -818,7 +835,19 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(ConstructorInitializer constructorInitializer, object data)
 		{
-			errors.Error(-1, -1, String.Format("ConstructorInitializer not supported."));
+			outputFormatter.Indent();
+			if (constructorInitializer.ConstructorInitializerType == ConstructorInitializerType.This) {
+				outputFormatter.PrintToken(Tokens.Me);
+			} else {
+				outputFormatter.PrintToken(Tokens.MyBase);
+			}
+			outputFormatter.PrintToken(Tokens.Dot);
+			outputFormatter.PrintToken(Tokens.New);
+			outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			AppendCommaSeparatedList(constructorInitializer.Arguments);
+			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			
+			outputFormatter.NewLine();
 			return null;
 		}
 		
@@ -1716,7 +1745,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		string ConvertCharLiteral(char ch)
 		{
 			if (Char.IsControl(ch)) {
-				return "Microsoft.VisualBasic.Chr(" + ((int)ch) + ")";
+				return "Chr(" + ((int)ch) + ")";
 			} else {
 				if (ch == '"') {
 					return "\"\"\"\"C";
@@ -1730,7 +1759,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			StringBuilder sb = new StringBuilder();
 			foreach (char ch in str) {
 				if (char.IsControl(ch)) {
-					sb.Append("\" & Microsoft.VisualBasic.Chr(" + ((int)ch) + ") & \"");
+					sb.Append("\" & Chr(" + ((int)ch) + ") & \"");
 				} else if (ch == '"') {
 					sb.Append("\"\"");
 				} else {
@@ -2272,7 +2301,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(DirectionExpression directionExpression, object data)
 		{
-			// TODO: is this correct for VB ? (ref/out parameters in method invocation)
+			// VB does not need to specify the direction in method calls
 			nodeTracker.TrackedVisit(directionExpression.Expression, data);
 			return null;
 		}
@@ -2281,7 +2310,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(ConditionalExpression conditionalExpression, object data)
 		{
 			// No representation in VB.NET, but VB conversion is possible.
-			outputFormatter.PrintText("Microsoft.VisualBasic.IIf");
+			outputFormatter.PrintText("IIf");
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			nodeTracker.TrackedVisit(conditionalExpression.Condition, data);
 			outputFormatter.PrintToken(Tokens.Comma);
@@ -2372,8 +2401,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			
-			if ((modifier & Modifier.Readonly) == Modifier.Readonly) {
+			if ((modifier & Modifier.ReadOnly) == Modifier.ReadOnly) {
 				outputFormatter.PrintToken(Tokens.ReadOnly);
+				outputFormatter.Space();
+			}
+			if ((modifier & Modifier.WriteOnly) == Modifier.WriteOnly) {
+				outputFormatter.PrintToken(Tokens.WriteOnly);
 				outputFormatter.Space();
 			}
 			if ((modifier & Modifier.Const) == Modifier.Const) {

@@ -103,6 +103,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void SpecialIdentifiers()
+		{
+			// Assembly, Ansi and Until are contextual keywords
+			TestExpression("Assembly = Ansi * [For] + Until");
+		}
+		
+		[Test]
 		public void Integer()
 		{
 			TestExpression("12");
@@ -172,6 +179,33 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void PrimitiveCast()
 		{
 			TestExpression("CStr(a)");
+		}
+		
+		[Test]
+		public void AbstractProperty()
+		{
+			TestTypeMember("Public MustOverride Property ExpectsValue() As Boolean");
+			TestTypeMember("Public MustOverride ReadOnly Property ExpectsValue() As Boolean");
+			TestTypeMember("Public MustOverride WriteOnly Property ExpectsValue() As Boolean");
+		}
+		
+		[Test]
+		public void AbstractMethod()
+		{
+			TestTypeMember("Public MustOverride Sub Run()");
+			TestTypeMember("Public MustOverride Function Run() As Boolean");
+		}
+		
+		[Test]
+		public void Interface()
+		{
+			TestProgram("Interface ITest\n" +
+			            "Property GetterAndSetter() As Boolean\n" +
+			            "ReadOnly Property GetterOnly() As Boolean\n" +
+			            "WriteOnly Property SetterOnly() As Boolean\n" +
+			            "Sub InterfaceMethod()\n" +
+			            "Function InterfaceMethod2() As String\n" +
+			            "End Interface");
 		}
 	}
 }

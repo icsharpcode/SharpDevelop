@@ -113,6 +113,11 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		{
 			Debug.Assert(typeReference != null);
 			this.typeReference = typeReference;
+			if ((modifier & Modifier.ReadOnly) == Modifier.ReadOnly) {
+				this.GetRegion = new PropertyGetRegion(null, null);
+			} else if ((modifier & Modifier.WriteOnly) == Modifier.WriteOnly) {
+				this.SetRegion = new PropertySetRegion(null, null);
+			}
 		}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)

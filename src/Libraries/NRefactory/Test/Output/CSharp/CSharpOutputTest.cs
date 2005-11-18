@@ -204,5 +204,32 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("using (A a = new A()) { a.Work(); }");
 		}
+		
+		[Test]
+		public void AbstractProperty()
+		{
+			TestTypeMember("public abstract bool ExpectsValue { get; set; }");
+			TestTypeMember("public abstract bool ExpectsValue { get; }");
+			TestTypeMember("public abstract bool ExpectsValue { set; }");
+		}
+		
+		[Test]
+		public void AbstractMethod()
+		{
+			TestTypeMember("public abstract void Run();");
+			TestTypeMember("public abstract bool Run();");
+		}
+		
+		[Test]
+		public void Interface()
+		{
+			TestProgram("interface ITest {" +
+			            " bool GetterAndSetter { get; set; }" +
+			            " bool GetterOnly { get; }" +
+			            " bool SetterOnly { set; }" +
+			            " void InterfaceMethod();" +
+			            " string InterfaceMethod2();\n" +
+			            "}");
+		}
 	}
 }

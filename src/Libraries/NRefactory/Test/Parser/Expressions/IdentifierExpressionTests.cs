@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -45,6 +45,13 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			IdentifierExpression ie = ParseUtilVBNet.ParseExpression<IdentifierExpression>("[Public]");
 			Assert.AreEqual("Public", ie.Identifier);
+		}
+		
+		[Test]
+		public void VBNetAssemblyIdentifierExpressionTest()
+		{
+			IdentifierExpression ie = ParseUtilVBNet.ParseExpression<IdentifierExpression>("Assembly");
+			Assert.AreEqual("Assembly", ie.Identifier);
 		}
 		#endregion
 		

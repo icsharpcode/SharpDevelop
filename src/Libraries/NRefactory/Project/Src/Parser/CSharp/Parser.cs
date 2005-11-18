@@ -1865,7 +1865,7 @@ Modifiers m) {
 			lexer.NextToken();
 
 #line  1166 "cs.ATG" 
-			m.Add(Modifier.Readonly, t.Location); 
+			m.Add(Modifier.ReadOnly, t.Location); 
 			break;
 		}
 		case 102: {

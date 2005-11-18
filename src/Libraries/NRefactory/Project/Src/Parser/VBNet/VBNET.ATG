@@ -823,10 +823,8 @@ InterfaceBody<TypeDeclaration newType> =
 	EOL
 	.
 
-/*
-	The information provided in the spec about
-	interface declarations is wrong
-*/
+/* The information provided in the spec about */
+/* interface declarations is wrong */
 InterfaceMemberDecl
 	(.
 		TypeReference type =null;
@@ -838,9 +836,8 @@ InterfaceMemberDecl
 		string name;
 	.) =
 	{ AttributeSection<out section>			(. attributes.Add(section); .) }
-	/* this is different to c#: not only the Shadows modifier is allowed,
-	   also member modifiers like overloads etc.
-	*/
+	/* this is different to c#: not only the Shadows modifier is allowed, */
+	/*  also member modifiers like overloads etc. */
 	{ MemberModifier<mod> }
 	(
 		"Event"
@@ -1697,10 +1694,6 @@ EventMemberSpecifier<out string name>
 Expr<out Expression expr>
 =
 	ConditionalOrExpr<out expr>
-/*	{
-		(. AssignmentOperatorType op; Expression val; .)
-		AssignmentOperator<out op> Expr<out val> (. expr = new AssignmentExpression(expr, op, val); .)
-	}*/
 .
 
 UnaryExpr<out Expression uExpr> 
@@ -2883,6 +2876,12 @@ Identifier	=
 	| "Text"
 	| "Binary"
 	| "Compare"
+	| "Assembly"
+	| "Ansi"
+	| "Auto"
+	| "Preserve"
+	| "Unicode"
+	| "Until"
 	.
 
 /* 2.2 */
@@ -2933,26 +2932,26 @@ TypeModifier<Modifiers m>
 .
 
 MemberModifier<Modifiers m> =
-	"MustInherit"		(.m.Add(Modifier.Abstract, t.Location);.)
-	|"Default"			(.m.Add(Modifier.Default, t.Location);.)
-	|"Friend"			(.m.Add(Modifier.Internal, t.Location);.)
-	|"Shadows"			(.m.Add(Modifier.New, t.Location);.)
-	|"Overrides"		(.m.Add(Modifier.Override, t.Location);.)
-	|"MustOverride"		(.m.Add(Modifier.Abstract, t.Location);.)
-	|"Private"			(.m.Add(Modifier.Private, t.Location);.)
-	|"Protected"		(.m.Add(Modifier.Protected, t.Location);.)
-	|"Public"			(.m.Add(Modifier.Public, t.Location);.)
-	|"NotInheritable"	(.m.Add(Modifier.Sealed, t.Location);.)
-	|"NotOverridable"	(.m.Add(Modifier.Sealed, t.Location);.)
-	|"Shared"			(.m.Add(Modifier.Static, t.Location);.)
-	|"Overridable"		(.m.Add(Modifier.Virtual, t.Location);.)
-	|"Overloads"		(.m.Add(Modifier.Overloads, t.Location);.)
-	| "ReadOnly"		(. /* m.Add(Modifier.ReadOnly); */ .)
-	| "WriteOnly"		(. /* m.Add(Modifier.WriteOnly); */ .)
+	  "MustInherit"		(.m.Add(Modifier.Abstract, t.Location);.)
+	| "Default"			(.m.Add(Modifier.Default, t.Location);.)
+	| "Friend"			(.m.Add(Modifier.Internal, t.Location);.)
+	| "Shadows"			(.m.Add(Modifier.New, t.Location);.)
+	| "Overrides"		(.m.Add(Modifier.Override, t.Location);.)
+	| "MustOverride"	(.m.Add(Modifier.Abstract, t.Location);.)
+	| "Private"			(.m.Add(Modifier.Private, t.Location);.)
+	| "Protected"		(.m.Add(Modifier.Protected, t.Location);.)
+	| "Public"			(.m.Add(Modifier.Public, t.Location);.)
+	| "NotInheritable"	(.m.Add(Modifier.Sealed, t.Location);.)
+	| "NotOverridable"	(.m.Add(Modifier.Sealed, t.Location);.)
+	| "Shared"			(.m.Add(Modifier.Static, t.Location);.)
+	| "Overridable"		(.m.Add(Modifier.Virtual, t.Location);.)
+	| "Overloads"		(.m.Add(Modifier.Overloads, t.Location);.)
+	| "ReadOnly"		(.m.Add(Modifier.ReadOnly, t.Location);.)
+	| "WriteOnly"		(.m.Add(Modifier.WriteOnly, t.Location);.)
 	| "WithEvents"		(.m.Add(Modifier.WithEvents, t.Location);.)
 	| "Dim"				(.m.Add(Modifier.Dim, t.Location);.)
 	| "Widening"		(.m.Add(Modifier.Widening, t.Location);.)
 	| "Narrowing"		(.m.Add(Modifier.Narrowing, t.Location);.)
-	.
+.
 
 END VBNET.

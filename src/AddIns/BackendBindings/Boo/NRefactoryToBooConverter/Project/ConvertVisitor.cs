@@ -121,7 +121,7 @@ namespace NRefactoryToBooConverter
 			}
 			if ((m & Modifier.Override) != 0)
 				r |= B.TypeMemberModifiers.Override;
-			if ((m & Modifier.Readonly) != 0 && !(node is PropertyDeclaration)) {
+			if ((m & Modifier.ReadOnly) != 0 && !(node is PropertyDeclaration)) {
 				r |= B.TypeMemberModifiers.Final;
 			}
 			if ((m & Modifier.Const) != 0) {

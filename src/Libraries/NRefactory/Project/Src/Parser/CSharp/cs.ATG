@@ -1163,7 +1163,7 @@ MemberModifier<Modifiers m>
 	| "private"                        (. m.Add(Modifier.Private, t.Location); .)
 	| "protected"                      (. m.Add(Modifier.Protected, t.Location); .)
 	| "public"                         (. m.Add(Modifier.Public, t.Location); .)
-	| "readonly"                       (. m.Add(Modifier.Readonly, t.Location); .)
+	| "readonly"                       (. m.Add(Modifier.ReadOnly, t.Location); .)
 	| "sealed"                         (. m.Add(Modifier.Sealed, t.Location); .)
 	| "static"                         (. m.Add(Modifier.Static, t.Location); .)
 	| "unsafe"                         (. m.Add(Modifier.Unsafe, t.Location); .)

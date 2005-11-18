@@ -16,7 +16,8 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		// Access
 		Private   = 0x0001,
-		Internal  = 0x0002, // == Friend
+		/// <summary>C# 'internal', VB 'Friend'</summary>
+		Internal  = 0x0002,
 		Protected = 0x0004,
 		Public    = 0x0008,
 		Dim	      = 0x0010,	// VB.NET SPECIFIC
@@ -25,11 +26,14 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		Abstract  = 0x0010,  // == 	MustOverride/MustInherit
 		Virtual   = 0x0020,
 		Sealed    = 0x0040,
+		/// <summary>C# 'static', VB 'Shared'</summary>
 		Static    = 0x0080,
 		Override  = 0x0100,
-		Readonly  = 0x0200,
+		/// <summary>For fields: readonly (c# and vb), for properties: get-only (vb)</summary>
+		ReadOnly  = 0x0200,
 		Const	  = 0x0400,
-		New       = 0x0800,  // == Shadows
+		/// <summary>C# 'new', VB 'Shadows'</summary>
+		New       = 0x0800,
 		Partial   = 0x1000,
 		
 		// Special
@@ -40,9 +44,10 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		WithEvents = 0x20000, // VB specific
 		Default    = 0x40000, // VB specific
 		Narrowing  = 0x80000, // VB specific
-		Widening  = 0x100000, // VB specific
-		Synthetic = 0x200000,
-		
+		Widening   = 0x100000, // VB specific
+		Synthetic  = 0x200000,
+		/// <summary>Only for VB properties.</summary>
+		WriteOnly  = 0x400000, // VB specific
 		
 		Classes                         = New | Public | Protected | Internal | Private | Abstract | Sealed | Partial | Static,
 		VBModules						= Private | Public | Protected | Internal,
@@ -53,7 +58,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		VBMethods						= Private | Public | Protected | Internal | New | Static | Virtual | Sealed | Abstract | Override | Overloads,
 		VBExternalMethods				= Private | Public | Protected | Internal | New | Overloads,
 		VBEvents						= Private | Public | Protected | Internal | New | Overloads,
-		VBProperties					= VBMethods | Default,
+		VBProperties					= VBMethods | Default | ReadOnly | WriteOnly,
 		VBCustomEvents					= Private | Public | Protected | Internal | New | Overloads,
 		VBOperators						= Public  | Static | Overloads | New | Widening | Narrowing,
 		
@@ -61,10 +66,10 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		// this is not documented in the spec
 		VBInterfaceEvents				= New,
 		VBInterfaceMethods				= New | Overloads,
-		VBInterfaceProperties			= New | Overloads | /* ReadOnly | WriteOnly | */ Default,
+		VBInterfaceProperties			= New | Overloads | ReadOnly | WriteOnly | Default,
 		VBInterfaceEnums				= New,
 		
-		Fields                          = New | Public | Protected | Internal | Private | Static   | Readonly | Volatile,
+		Fields                          = New | Public | Protected | Internal | Private | Static   | ReadOnly | Volatile,
 		PropertysEventsMethods          = New | Public | Protected | Internal | Private | Static   | Virtual  | Sealed   | Override | Abstract | Extern,
 		Indexers                        = New | Public | Protected | Internal | Private | Virtual  | Sealed   | Override | Abstract | Extern,
 		Operators                       = Public | Static | Extern,
@@ -98,21 +103,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		In,
 		Out,
 		Ref
-	}
-	
-	public enum Members // TODO: Rename to MemberType
-	{
-		Constant,
-		Field,
-		Method,
-		Property,
-		Event,
-		Indexer,
-		Operator,
-		Constructor,
-		StaticConstructor,
-		Destructor,
-		NestedType
 	}
 	
 	[Flags]

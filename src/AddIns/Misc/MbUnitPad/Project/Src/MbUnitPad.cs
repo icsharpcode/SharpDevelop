@@ -60,7 +60,6 @@ namespace ICSharpCode.MbUnitPad
 			
 			ProjectService.SolutionLoaded += OnSolutionLoaded;
 			ProjectService.SolutionClosed += OnSolutionClosed;
-			ProjectService.EndBuild += OnEndBuild;
 		}
 		
 		/// <summary>
@@ -70,7 +69,6 @@ namespace ICSharpCode.MbUnitPad
 		{
 			ProjectService.SolutionLoaded -= OnSolutionLoaded;
 			ProjectService.SolutionClosed -= OnSolutionClosed;
-			ProjectService.EndBuild -= OnEndBuild;
 			ctl.Dispose();
 		}
 		
@@ -208,15 +206,6 @@ namespace ICSharpCode.MbUnitPad
 		{
 			if (TaskService.SomethingWentWrong) {
 				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
-			}
-		}
-		
-		void OnEndBuild(object sender, EventArgs e)
-		{
-			LoggingService.Info("OnEndBuild");
-			if (treeView.IsPopulated) {
-				LoggingService.Debug("treeView.IsPopulated == true");
-				WorkbenchSingleton.SafeThreadAsyncCall(this, "ReloadAssemblyList");
 			}
 		}
 	}

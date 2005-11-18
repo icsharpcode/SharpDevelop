@@ -228,6 +228,7 @@ namespace ICSharpCode.NRefactory.Parser.VB
 		}
 		public static BitArray Null = NewSet(Nothing);
 		public static BitArray BlockSucc = NewSet(Case, Catch, Else, ElseIf, End, Finally, Loop, Next);
+		public static BitArray Unreserved = NewSet(Text, Binary, Compare, Assembly, Ansi, Auto, Preserve, Unicode, Until);
 
 		static string[] tokenList = new string[] {
 			// ----- terminal classes -----
