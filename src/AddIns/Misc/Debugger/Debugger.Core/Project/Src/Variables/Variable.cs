@@ -38,6 +38,9 @@ namespace Debugger
 			}
 			internal set {
 				val = value;
+				if (val is PrimitiveValue) {
+					((PrimitiveValue)val).ValueChanged += delegate { OnValueChanged(); };
+				}
 				OnValueChanged();
 			}
 		}
@@ -84,7 +87,7 @@ namespace Debugger
 		public Variable(NDebugger debugger, Value val, string name)
 		{
 			this.debugger = debugger;
-			this.val = val;
+			this.Value = val;
 			this.name = name;
 			this.subVariables = new VariableCollection(debugger);
 			this.subVariables.Updating += OnSubVariablesUpdating;

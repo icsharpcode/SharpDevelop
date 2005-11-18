@@ -47,6 +47,12 @@ namespace Debugger
 			}	
 		}
 		
+		public virtual Type ManagedType {
+			get {
+				return CorTypeToManagedType(CorType);
+			}
+		}
+		
 		public abstract bool MayHaveSubVariables {
 			get;
 		}

@@ -7,7 +7,9 @@
 
 using System;
 using System.Drawing;
+using System.Windows.Forms;
 using Debugger;
+using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Gui.TreeGrid;
 
 namespace ICSharpCode.SharpDevelop.Services
@@ -41,16 +43,33 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			this.variable = variable;
 			
+			this[1].Paint += OnIconPaint;
 			this[2].Text = variable.Name;
 			this[3].Text = variable.Value.AsString;
-			
-			this[1].Paint += delegate(object sender, ItemPaintEventArgs e) {
-				e.Graphics.DrawImageUnscaled(DebuggerIcons.GetImage(variable), e.ClipRectangle);
-			};
+			this[3].FinishLabelEdit += OnLabelEdited;
+			if (variable.Value is PrimitiveValue && variable.Value.ManagedType != typeof(string)) {
+				this[3].AllowLabelEdit = true;
+			}
 			
 			if (!variable.Value.MayHaveSubVariables)
 				this.ShowPlus = false;
 			this.ShowMinusWhileExpanded = true;
+		}
+		
+		void OnIconPaint(object sender, ItemPaintEventArgs e)
+		{
+			e.Graphics.DrawImage(DebuggerIcons.GetImage(variable), e.ClipRectangle);
+		}
+		
+		void OnLabelEdited(object sender, DynamicListEventArgs e)
+		{
+			PrimitiveValue val = (PrimitiveValue)variable.Value;
+			string newValue = ((DynamicListItem)sender).Text;
+			try {
+				val.Primitive = newValue;
+			} catch (NotSupportedException) {
+				MessageBox.Show(WorkbenchSingleton.MainForm, "Can not covert " + newValue + " to " + val.ManagedType.ToString(), "Can not set value");
+			}
 		}
 	}
 }
