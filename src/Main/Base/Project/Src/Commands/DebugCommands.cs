@@ -15,7 +15,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			Debug.Assert(ProjectService.OpenSolution != null);
 			new Build().Run();
 			if (Build.LastErrorCount == 0) {
 				IProject startupProject = ProjectService.OpenSolution.StartupProject;
@@ -31,7 +30,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			Debug.Assert(ProjectService.OpenSolution != null);
 			new Build().Run();
 			if (Build.LastErrorCount == 0) {
 				IProject startupProject = ProjectService.OpenSolution.StartupProject;

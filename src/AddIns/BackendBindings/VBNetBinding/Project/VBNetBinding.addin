@@ -29,7 +29,7 @@
 			class = "VBNetBinding.Parser.TParser"/>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditor">
+	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
 		<DialogPanel id = "VBSpecificOptions"
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.VB.PanelName}"
 			             class = "VBNetBinding.OptionPanels.VBNetTextEditorPanel"/>
