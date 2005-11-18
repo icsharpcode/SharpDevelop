@@ -181,6 +181,10 @@
 				<Key word="void"/>
 			</KeyWords>
 
+			<KeyWords name="Of" bold="true" italic="false" color="Blue" >
+				<Key word="of"/>
+			</KeyWords>
+
 			<KeyWords name="ConversionKeyWords" bold="true" italic="false" color="Blue" >
 				<Key word="cast"/>
 				<Key word="as"/>
@@ -193,6 +197,7 @@
 				<Key word="abstract"/>
 				<Key word="final"/>
 				<Key word="transient"/>
+				<Key word="partial"/>
 			</KeyWords>
 
 			<KeyWords name="AccessModifiers" bold="true" italic="false" color="Blue" >
@@ -230,6 +235,7 @@
 				<Key word="required"/>
 				<Key word="rawArrayIndexing"/>
 				<Key word="normalArrayIndexing"/>
+				<Key word="yieldAll" />
 			</KeyWords>
 
 			<KeyWords name="Builtins" bold="false" italic="false" color="Purple" >

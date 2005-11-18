@@ -57,6 +57,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.projectContent = cu.ProjectContent;
 		}
 		
+		// currently callingMember is not required
+		public ClassFinder(IClass callingClass, IMember callingMember, int caretLine, int caretColumn)
+			: this(callingClass, caretLine, caretColumn)
+		{
+		}
+		
 		void Init(string fileName)
 		{
 			ParseInformation parseInfo = ParserService.GetParseInformation(fileName);

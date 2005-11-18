@@ -45,7 +45,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			this[3].Text = variable.Value.AsString;
 			
 			this[1].Paint += delegate(object sender, ItemPaintEventArgs e) {
-				e.Graphics.DrawImage(DebuggerIcons.GetImage(variable), e.ClipRectangle);
+				e.Graphics.DrawImageUnscaled(DebuggerIcons.GetImage(variable), e.ClipRectangle);
 			};
 			
 			if (!variable.Value.MayHaveSubVariables)

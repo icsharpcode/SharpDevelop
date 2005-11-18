@@ -233,7 +233,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		public IReturnType ConvertType(AST.TypeReference typeRef)
 		{
 			return ConvertVisitor.CreateReturnType(typeRef, callingClass, callingMember,
-			                                       caretLine, caretColumn, pc, false);
+			                                       caretLine, caretColumn, pc);
 		}
 		
 		public IField FindLocalVariable(string name, bool acceptImplicit)

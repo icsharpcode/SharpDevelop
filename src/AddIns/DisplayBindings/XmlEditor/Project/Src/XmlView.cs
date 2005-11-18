@@ -173,7 +173,7 @@ namespace ICSharpCode.XmlEditor
 		}
 		
 		public override void Dispose()
-		{			
+		{
 			base.Dispose();
 			((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Activated -= new EventHandler(GotFocusEvent);
 			
@@ -222,7 +222,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			try {
 				WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
-	
+				
 				TaskService.ClearExceptCommentTasks();
 				
 				if (IsWellFormed) {
@@ -401,7 +401,7 @@ namespace ICSharpCode.XmlEditor
 		
 		public void ParseInformationUpdated(ParseInformation parseInfo)
 		{
-			xmlEditor.BeginInvoke(new MethodInvoker(UpdateFolding));
+			WorkbenchSingleton.SafeThreadAsyncCall(this, "UpdateFolding");
 		}
 		
 		#endregion
@@ -627,7 +627,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void ShowOutputWindow()
 		{
-			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();	
+			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 		}
 		
 		/// <summary>
@@ -757,7 +757,7 @@ namespace ICSharpCode.XmlEditor
 
 			XslCompiledTransform xslTransform = new XslCompiledTransform();
 			xslTransform.Load(transformDocument, XsltSettings.Default, new XmlUrlResolver());
-					
+			
 			MemoryStream outputStream = new MemoryStream();
 			XmlTextWriter writer = new XmlTextWriter(outputStream, Encoding.UTF8);
 			

@@ -142,26 +142,6 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		{
 			CSharpTestBinaryOperatorExpressionTest("a ?? b", BinaryOperatorType.NullCoalescing);
 		}
-		
-		[Test]
-		public void CSharpISTest()
-		{
-			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("a is b");
-			Assert.AreEqual(BinaryOperatorType.TypeCheck, boe.Op);
-			
-			Assert.IsTrue(boe.Left is IdentifierExpression);
-			Assert.IsTrue(boe.Right is TypeReferenceExpression);
-		}
-		
-		[Test]
-		public void CSharpASTest()
-		{
-			BinaryOperatorExpression boe = ParseUtilCSharp.ParseExpression<BinaryOperatorExpression>("a as b");
-			Assert.AreEqual(BinaryOperatorType.AsCast, boe.Op);
-			
-			Assert.IsTrue(boe.Left is IdentifierExpression);
-			Assert.IsTrue(boe.Right is TypeReferenceExpression);
-		}
 		#endregion
 		
 		#region VB.NET

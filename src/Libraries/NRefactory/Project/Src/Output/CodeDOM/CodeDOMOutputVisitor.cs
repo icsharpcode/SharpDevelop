@@ -596,11 +596,6 @@ namespace ICSharpCode.NRefactory.Parser
 				case BinaryOperatorType.ReferenceInequality:
 					op = CodeBinaryOperatorType.IdentityInequality;
 					break;
-				case BinaryOperatorType.AsCast:
-				case BinaryOperatorType.TypeCheck:
-					// CodeDOM suxx
-					op = CodeBinaryOperatorType.Add;
-					break;
 					
 				case BinaryOperatorType.ExclusiveOr:
 					// TODO ExclusiveOr

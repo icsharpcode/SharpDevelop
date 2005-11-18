@@ -32,6 +32,42 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
+		public void CastExpression()
+		{
+			TestExpr("(TargetType)var", "cast(TargetType, var)");
+		}
+		
+		[Test]
+		public void TryCastExpression()
+		{
+			TestExpr("var as TargetType", "(var as TargetType)");
+		}
+		
+		[Test]
+		public void TypeTestExpression()
+		{
+			TestExpr("var is TargetType", "(var isa TargetType)");
+		}
+		
+		[Test]
+		public void CastExpressionComplexType()
+		{
+			TestExpr("(List<T>[,])var", "cast((List[of T], 2), var)");
+		}
+		
+		[Test]
+		public void TryCastExpressionComplexType()
+		{
+			TestExpr("var as List<T>[,]", "(var as (List[of T], 2))");
+		}
+		
+		[Test, Ignore("Boo uses BinaryOperatorExpression for isa")]
+		public void TypeTestExpressionComplexType()
+		{
+			TestExpr("var is List<T>[,]", "(var isa (List[of T], 2))");
+		}
+		
+		[Test]
 		public void Reference()
 		{
 			TestExpr("c", "c");
@@ -62,9 +98,21 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
+		public void GenericObjectConstruction()
+		{
+			TestExpr("new List<Element>()", "List[of Element]()");
+		}
+		
+		[Test]
 		public void QualifiedConstruction()
 		{
 			TestExpr("new System.DefaultComparer()", "System.DefaultComparer()");
+		}
+		
+		[Test]
+		public void QualifiedGenericObjectConstruction()
+		{
+			TestExpr("new Namespace.List<System.Element>()", "Namespace.List[of System.Element]()");
 		}
 		
 		[Test]

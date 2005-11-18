@@ -11,8 +11,19 @@ using System.Collections;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
-	public class TypeOfIsExpression : TypeOfExpression
+	public class TypeOfIsExpression : Expression
 	{
+		TypeReference typeReference;
+		
+		public TypeReference TypeReference {
+			get {
+				return typeReference;
+			}
+			set {
+				typeReference = TypeReference.CheckNull(value);
+			}
+		}
+		
 		Expression expression;
 		
 		public Expression Expression {
@@ -24,9 +35,10 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public TypeOfIsExpression(Expression expression, TypeReference typeReference) : base(typeReference)
+		public TypeOfIsExpression(Expression expression, TypeReference typeReference)
 		{
 			this.Expression = expression;
+			this.TypeReference = typeReference;
 		}
 		
 		public override object AcceptVisitor(IASTVisitor visitor, object data)

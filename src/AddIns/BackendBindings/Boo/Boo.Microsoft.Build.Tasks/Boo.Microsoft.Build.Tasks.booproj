@@ -33,8 +33,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Project.booproj" />
-    <Content Include="Boo.Microsoft.Build.targets">
+    <Content Include="..\RequiredLibraries\Boo.Microsoft.Build.targets">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <Link>Boo.Microsoft.Build.targets</Link>
     </Content>
   </ItemGroup>
   <Import Project="$(BooBinPath)\Boo.Microsoft.Build.targets" />

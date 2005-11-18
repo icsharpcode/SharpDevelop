@@ -224,9 +224,14 @@ namespace NRefactoryToBooConverter
 		{
 			if (t == null || t.IsNull)
 				return null;
-			B.TypeReference r = new B.SimpleTypeReference(GetLexicalInfo(t), GetIntrinsicTypeName(t.SystemType));
+			B.TypeReference r;
 			if (t.GenericTypes.Count > 0) {
-				AddError(t, "Consuming generics is not supported by boo.");
+				r = new B.GenericTypeReference(GetLexicalInfo(t), GetIntrinsicTypeName(t.SystemType));
+				foreach (TypeReference ta in t.GenericTypes) {
+					((B.GenericTypeReference)r).GenericArguments.Add(ConvertTypeReference(ta));
+				}
+			} else {
+				r = new B.SimpleTypeReference(GetLexicalInfo(t), GetIntrinsicTypeName(t.SystemType));
 			}
 			if (t.IsArrayType) {
 				for (int i = t.RankSpecifier.Length - 1; i >= 0; --i) {
@@ -249,14 +254,6 @@ namespace NRefactoryToBooConverter
 			}
 			AddError(expr.LexicalInfo, "Expected type, but found expression.");
 			return null;
-		}
-		
-		/// <summary>
-		/// Convert TypeReference and wrap it into an TypeofExpression.
-		/// </summary>
-		B.TypeofExpression WrapTypeReference(TypeReference t)
-		{
-			return new B.TypeofExpression(GetLexicalInfo(t), ConvertTypeReference(t));
 		}
 		
 		public object Visit(TypeReference typeReference, object data)

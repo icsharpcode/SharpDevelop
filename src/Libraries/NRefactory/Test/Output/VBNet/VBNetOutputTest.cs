@@ -149,5 +149,29 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("Using a As A = New A()\na.Work()\nEnd Using");
 		}
+		
+		[Test]
+		public void Cast()
+		{
+			TestExpression("CType(a, T)");
+		}
+		
+		[Test]
+		public void DirectCast()
+		{
+			TestExpression("DirectCast(a, T)");
+		}
+		
+		[Test]
+		public void TryCast()
+		{
+			TestExpression("TryCast(a, T)");
+		}
+		
+		[Test]
+		public void PrimitiveCast()
+		{
+			TestExpression("CStr(a)");
+		}
 	}
 }

@@ -152,6 +152,18 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void Cast()
+		{
+			TestExpression("(T)a");
+		}
+		
+		[Test]
+		public void AsCast()
+		{
+			TestExpression("a as T");
+		}
+		
+		[Test]
 		public void NullCoalescing()
 		{
 			TestExpression("a ?? b");

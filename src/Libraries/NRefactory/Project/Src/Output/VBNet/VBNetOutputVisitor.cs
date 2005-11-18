@@ -1840,20 +1840,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					op = Tokens.IsNot;
 					break;
 					
-				case BinaryOperatorType.AsCast:
-					outputFormatter.PrintText("TryCast(");
-					nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
-					outputFormatter.PrintText(", ");
-					nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
-					outputFormatter.PrintText(")");
-					return null;
-				case BinaryOperatorType.TypeCheck:
-					outputFormatter.PrintText("TypeOf ");
-					nodeTracker.TrackedVisit(binaryOperatorExpression.Left, data);
-					outputFormatter.PrintText(" Is ");
-					nodeTracker.TrackedVisit(binaryOperatorExpression.Right, data);
-					return null;
-					
 				case BinaryOperatorType.Equality:
 					op = Tokens.Assign;
 					break;
@@ -2135,6 +2121,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(CastExpression castExpression, object data)
 		{
+			if (castExpression.CastType == CastType.Cast) {
+				return PrintCast(Tokens.DirectCast, castExpression);
+			}
+			if (castExpression.CastType == CastType.TryCast) {
+				return PrintCast(Tokens.TryCast, castExpression);
+			}
 			switch (castExpression.CastTo.SystemType) {
 				case "System.Boolean":
 					outputFormatter.PrintToken(Tokens.CBool);
@@ -2185,17 +2177,22 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					outputFormatter.PrintToken(Tokens.CStr);
 					break;
 				default:
-					outputFormatter.PrintToken(Tokens.CType);
-					outputFormatter.PrintToken(Tokens.OpenParenthesis);
-					nodeTracker.TrackedVisit(castExpression.Expression, data);
-					outputFormatter.PrintToken(Tokens.Comma);
-					outputFormatter.Space();
-					nodeTracker.TrackedVisit(castExpression.CastTo, data);
-					outputFormatter.PrintToken(Tokens.CloseParenthesis);
-					return null;
+					return PrintCast(Tokens.CType, castExpression);
 			}
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			nodeTracker.TrackedVisit(castExpression.Expression, data);
+			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			return null;
+		}
+		
+		object PrintCast(int castToken, CastExpression castExpression)
+		{
+			outputFormatter.PrintToken(castToken);
+			outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			nodeTracker.TrackedVisit(castExpression.Expression, null);
+			outputFormatter.PrintToken(Tokens.Comma);
+			outputFormatter.Space();
+			nodeTracker.TrackedVisit(castExpression.CastTo, null);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
 		}

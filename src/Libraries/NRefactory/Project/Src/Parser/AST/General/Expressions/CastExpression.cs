@@ -11,11 +11,31 @@ using System.Collections;
 
 namespace ICSharpCode.NRefactory.Parser.AST 
 {
+	public enum CastType
+	{
+		/// <summary>
+		/// direct cast (C#, VB "DirectCast")
+		/// </summary>
+		Cast,
+		/// <summary>
+		/// try cast (C# "as", VB "TryCast")
+		/// </summary>
+		TryCast,
+		/// <summary>
+		/// converting cast (VB "CType")
+		/// </summary>
+		Conversion,
+		/// <summary>
+		/// primitive converting cast (VB "CString" etc.)
+		/// </summary>
+		PrimitiveConversion
+	}
+	
 	public class CastExpression : Expression
 	{
 		TypeReference castTo;
 		Expression    expression;
-		bool          isSpecializedCast = false;
+		CastType      castType;
 		
 		public TypeReference CastTo {
 			get {
@@ -35,12 +55,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public bool IsSpecializedCast {
+		public CastType CastType {
 			get {
-				return isSpecializedCast;
+				return castType;
 			}
 			set {
-				isSpecializedCast = value;
+				castType = value;
 			}
 		}
 		
@@ -56,11 +76,11 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			this.Expression = expression;
 		}
 		
-		public CastExpression(TypeReference castTo, Expression expression, bool isSpecializedCast)
+		public CastExpression(TypeReference castTo, Expression expression, CastType castType)
 		{
 			this.CastTo     = castTo;
 			this.Expression = expression;
-			this.isSpecializedCast = isSpecializedCast;
+			this.castType = castType;
 		}
 		
 		
@@ -71,9 +91,10 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		public override string ToString()
 		{
-			return String.Format("[CastExpression: CastTo={0}, Expression={1}]",
+			return String.Format("[CastExpression: CastTo={0}, Expression={1} CastType={2}]",
 			                     castTo,
-			                     expression);
+			                     expression,
+			                     castType);
 		}
 	}
 }

@@ -74,6 +74,13 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
+		public void GenericField()
+		{
+			TestInClass("Dictionary<Dictionary<T, List<K>>, List<J>> d;",
+			            "private d as Dictionary[of Dictionary[of T, List[of K]], List[of J]]");
+		}
+		
+		[Test]
 		public void FieldWithInitializer()
 		{
 			TestInClass("MyType o = null;", "private o as MyType = null");

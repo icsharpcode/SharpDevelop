@@ -2324,20 +2324,22 @@ RelationalExpr<ref Expression outExpr>
 =
 	ShiftExpr<ref outExpr>
 	{
-		(
-			"<"    (. op = BinaryOperatorType.LessThan; .)
-			| ">"  (. op = BinaryOperatorType.GreaterThan; .)
-			| "<=" (. op = BinaryOperatorType.LessThanOrEqual; .)
-			| ">=" (. op = BinaryOperatorType.GreaterThanOrEqual; .)
+		(	"<"    (. op = BinaryOperatorType.LessThan; .)
+		|	">"  (. op = BinaryOperatorType.GreaterThan; .)
+		|	"<=" (. op = BinaryOperatorType.LessThanOrEqual; .)
+		|	">=" (. op = BinaryOperatorType.GreaterThanOrEqual; .)
 		)
-		UnaryExpr<out expr> ShiftExpr<ref expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
-		|
-		(
-			"is" (. op = BinaryOperatorType.TypeCheck; .)
-			| "as" (. op = BinaryOperatorType.AsCast; .)
+		UnaryExpr<out expr>
+		ShiftExpr<ref expr>
+		(. outExpr = new BinaryOperatorExpression(outExpr, op, expr); .)
+	|
+		(	"is"
+			TypeWithRestriction<out type, false, false>
+			(. outExpr = new TypeOfIsExpression(outExpr, type); .)
+		|	"as"
+			TypeWithRestriction<out type, false, false>
+			(. outExpr = new CastExpression(type, outExpr, CastType.TryCast); .)
 		)
-		TypeWithRestriction<out type, false, false>
-		(.  outExpr = new BinaryOperatorExpression(outExpr, op, new TypeReferenceExpression(type)); .)
 	}
 .
 

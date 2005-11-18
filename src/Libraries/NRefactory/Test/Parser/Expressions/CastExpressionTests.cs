@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -23,7 +23,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(MyObject)o");
 			Assert.AreEqual("MyObject", ce.CastTo.Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
-			Assert.IsFalse(ce.IsSpecializedCast);
+			Assert.AreEqual(CastType.Cast, ce.CastType);
 		}
 		
 		[Test]
@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("MyType", ce.CastTo.Type);
 			Assert.AreEqual(new int[] { 0 }, ce.CastTo.RankSpecifier);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
-			Assert.IsFalse(ce.IsSpecializedCast);
+			Assert.AreEqual(CastType.Cast, ce.CastType);
 		}
 		
 		[Test]
@@ -43,7 +43,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("List", ce.CastTo.Type);
 			Assert.AreEqual("string", ce.CastTo.GenericTypes[0].Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
-			Assert.IsFalse(ce.IsSpecializedCast);
+			Assert.AreEqual(CastType.Cast, ce.CastType);
 		}
 		
 		[Test]
@@ -54,7 +54,18 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual("string", ce.CastTo.GenericTypes[0].Type);
 			Assert.AreEqual(new int[] { 0 }, ce.CastTo.RankSpecifier);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
-			Assert.IsFalse(ce.IsSpecializedCast);
+			Assert.AreEqual(CastType.Cast, ce.CastType);
+		}
+		
+		[Test]
+		public void GenericArrayAsCastExpression()
+		{
+			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("o as List<string>[]");
+			Assert.AreEqual("List", ce.CastTo.Type);
+			Assert.AreEqual("string", ce.CastTo.GenericTypes[0].Type);
+			Assert.AreEqual(new int[] { 0 }, ce.CastTo.RankSpecifier);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
+			Assert.AreEqual(CastType.TryCast, ce.CastType);
 		}
 		
 		[Test]
@@ -64,7 +75,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			CastExpression ce = ParseUtilCSharp.ParseExpression<CastExpression>("(MyType)(expr).Member");
 			Assert.AreEqual("MyType", ce.CastTo.Type);
 			Assert.IsTrue(ce.Expression is FieldReferenceExpression);
-			Assert.IsFalse(ce.IsSpecializedCast);
+			Assert.AreEqual(CastType.Cast, ce.CastType);
 		}
 		#endregion
 		
@@ -74,7 +85,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>(castExpression);
 			Assert.AreEqual(castType.FullName, ce.CastTo.Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
-			Assert.IsTrue(ce.IsSpecializedCast);
+			Assert.AreEqual(CastType.PrimitiveConversion, ce.CastType);
 		}
 		
 		
@@ -84,7 +95,55 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>("CType(o, MyObject)");
 			Assert.AreEqual("MyObject", ce.CastTo.Type);
 			Assert.IsTrue(ce.Expression is IdentifierExpression);
-			Assert.IsFalse(ce.IsSpecializedCast);
+			Assert.AreEqual(CastType.Conversion, ce.CastType);
+		}
+		
+		[Test]
+		public void VBNetGenericCastExpression()
+		{
+			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>("CType(o, List(of T))");
+			Assert.AreEqual("List", ce.CastTo.Type);
+			Assert.AreEqual("T", ce.CastTo.GenericTypes[0].Type);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
+			Assert.AreEqual(CastType.Conversion, ce.CastType);
+		}
+		
+		[Test]
+		public void VBNetSimpleDirectCastExpression()
+		{
+			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>("DirectCast(o, MyObject)");
+			Assert.AreEqual("MyObject", ce.CastTo.Type);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
+			Assert.AreEqual(CastType.Cast, ce.CastType);
+		}
+		
+		[Test]
+		public void VBNetGenericDirectCastExpression()
+		{
+			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>("DirectCast(o, List(of T))");
+			Assert.AreEqual("List", ce.CastTo.Type);
+			Assert.AreEqual("T", ce.CastTo.GenericTypes[0].Type);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
+			Assert.AreEqual(CastType.Cast, ce.CastType);
+		}
+		
+		[Test]
+		public void VBNetSimpleTryCastExpression()
+		{
+			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>("TryCast(o, MyObject)");
+			Assert.AreEqual("MyObject", ce.CastTo.Type);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
+			Assert.AreEqual(CastType.TryCast, ce.CastType);
+		}
+		
+		[Test]
+		public void VBNetGenericTryCastExpression()
+		{
+			CastExpression ce = ParseUtilVBNet.ParseExpression<CastExpression>("TryCast(o, List(of T))");
+			Assert.AreEqual("List", ce.CastTo.Type);
+			Assert.AreEqual("T", ce.CastTo.GenericTypes[0].Type);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
+			Assert.AreEqual(CastType.TryCast, ce.CastType);
 		}
 		
 		[Test]

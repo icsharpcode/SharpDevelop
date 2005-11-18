@@ -34,6 +34,24 @@ namespace NRefactoryToBooConverter
 			return (B.Expression)expr.AcceptVisitor(this, null);
 		}
 		
+		B.Expression MakeReferenceExpression(TypeReference typeRef)
+		{
+			if (typeRef.IsArrayType)
+				return new B.TypeofExpression(GetLexicalInfo(typeRef), ConvertTypeReference(typeRef));
+			B.SimpleTypeReference t = (B.SimpleTypeReference)ConvertTypeReference(typeRef);
+			B.ReferenceExpression r = MakeReferenceExpression(t.Name);
+			if (t is B.GenericTypeReference) {
+				B.GenericReferenceExpression gr = new B.GenericReferenceExpression(GetLexicalInfo(typeRef));
+				gr.Target = r;
+				foreach (B.TypeReference tr in ((B.GenericTypeReference)t).GenericArguments) {
+					gr.GenericArguments.Add(tr);
+				}
+				return gr;
+			} else {
+				return r;
+			}
+		}
+		
 		B.ReferenceExpression MakeReferenceExpression(string fullName)
 		{
 			string[] parts = fullName.Split('.');
@@ -112,10 +130,10 @@ namespace NRefactoryToBooConverter
 		{
 			B.Expression target = null;
 			if (fre.TargetObject is TypeReferenceExpression) {
-				// not typeof, so this is something like int.Parse()
+				// not typeof, so this is something like int.Parse() or Class<string>.StaticMethod
 				TypeReference typeRef = ((TypeReferenceExpression)fre.TargetObject).TypeReference;
 				if (!typeRef.IsArrayType)
-					target = MakeReferenceExpression(typeRef.SystemType);
+					target = MakeReferenceExpression(typeRef);
 			}
 			if (target == null) {
 				target = (B.Expression)fre.TargetObject.AcceptVisitor(this, data);
@@ -195,7 +213,6 @@ namespace NRefactoryToBooConverter
 			switch (op) {
 				case BinaryOperatorType.Add:
 					return B.BinaryOperatorType.Addition;
-					//case BinaryOperatorType.AsCast: special case: converted to AsExpression
 				case BinaryOperatorType.BitwiseAnd:
 					return B.BinaryOperatorType.BitwiseAnd;
 				case BinaryOperatorType.BitwiseOr:
@@ -242,8 +259,6 @@ namespace NRefactoryToBooConverter
 					return B.BinaryOperatorType.ShiftRight;
 				case BinaryOperatorType.Subtract:
 					return B.BinaryOperatorType.Subtraction;
-				case BinaryOperatorType.TypeCheck:
-					return B.BinaryOperatorType.TypeTest;
 				default:
 					return B.BinaryOperatorType.None;
 			}
@@ -278,12 +293,8 @@ namespace NRefactoryToBooConverter
 			B.Expression right = ConvertExpression(binaryOperatorExpression.Right);
 			B.BinaryOperatorType op = ConvertOperator(binaryOperatorExpression.Op);
 			if (op == B.BinaryOperatorType.None) {
-				if (binaryOperatorExpression.Op == BinaryOperatorType.AsCast) {
-					return new B.AsExpression(GetLexicalInfo(binaryOperatorExpression), left, ConvertTypeReference(right));
-				} else {
-					AddError(binaryOperatorExpression, "Unknown operator.");
-					return null;
-				}
+				AddError(binaryOperatorExpression, "Unknown operator.");
+				return null;
 			}
 //			if (binaryOperatorExpression.Op == BinaryOperatorType.DivideInteger) {
 //				AddWarning(binaryOperatorExpression, "Integer division converted to normal division.");
@@ -350,14 +361,14 @@ namespace NRefactoryToBooConverter
 			if (t.SystemType.EndsWith("EventHandler") && objectCreateExpression.Parameters.Count == 1)
 				return ConvertExpression((Expression)objectCreateExpression.Parameters[0]);
 			
-			B.MethodInvocationExpression mie = new B.MethodInvocationExpression(GetLexicalInfo(objectCreateExpression), MakeReferenceExpression(t.SystemType));
+			B.MethodInvocationExpression mie = new B.MethodInvocationExpression(GetLexicalInfo(objectCreateExpression), MakeReferenceExpression(t));
 			ConvertExpressions(objectCreateExpression.Parameters, mie.Arguments);
 			return mie;
 		}
 		
 		public object Visit(TypeReferenceExpression typeReferenceExpression, object data)
 		{
-			return WrapTypeReference(typeReferenceExpression.TypeReference);
+			return MakeReferenceExpression(typeReferenceExpression.TypeReference);
 		}
 		
 		public object Visit(SizeOfExpression sizeOfExpression, object data)
@@ -381,7 +392,7 @@ namespace NRefactoryToBooConverter
 		{
 			return new B.BinaryExpression(GetLexicalInfo(typeOfIsExpression), B.BinaryOperatorType.TypeTest,
 			                              ConvertExpression(typeOfIsExpression.Expression),
-			                              WrapTypeReference(typeOfIsExpression.TypeReference));
+			                              MakeReferenceExpression(typeOfIsExpression.TypeReference));
 		}
 		
 		public object Visit(AddressOfExpression addressOfExpression, object data)
@@ -398,9 +409,21 @@ namespace NRefactoryToBooConverter
 		
 		public object Visit(CastExpression castExpression, object data)
 		{
-			return new B.CastExpression(GetLexicalInfo(castExpression),
-			                            ConvertTypeReference(castExpression.CastTo),
-			                            ConvertExpression(castExpression.Expression));
+			switch (castExpression.CastType) {
+				case CastType.Cast:
+				case CastType.Conversion:
+				case CastType.PrimitiveConversion:
+					return new B.CastExpression(GetLexicalInfo(castExpression),
+					                            ConvertExpression(castExpression.Expression),
+					                            ConvertTypeReference(castExpression.CastTo));
+				case CastType.TryCast:
+					return new B.TryCastExpression(GetLexicalInfo(castExpression),
+					                               ConvertExpression(castExpression.Expression),
+					                               ConvertTypeReference(castExpression.CastTo));
+				default:
+					AddError(castExpression, "Unknown cast: " + castExpression);
+					return null;
+			}
 		}
 		
 		public object Visit(StackAllocExpression stackAllocExpression, object data)
@@ -438,11 +461,7 @@ namespace NRefactoryToBooConverter
 			for (int i = 0; i < newRank.Length; i++)
 				newRank[i] = elementType.RankSpecifier[i + 1];
 			elementType.RankSpecifier = newRank;
-			if (newRank.Length == 0) {
-				mie.Arguments.Add(MakeReferenceExpression(elementType.SystemType));
-			} else {
-				mie.Arguments.Add(WrapTypeReference(elementType));
-			}
+			mie.Arguments.Add(MakeReferenceExpression(elementType));
 			if (arrayCreateExpression.Arguments.Count == 1) {
 				mie.Arguments.Add(ConvertExpression(arrayCreateExpression.Arguments[0]));
 			} else {

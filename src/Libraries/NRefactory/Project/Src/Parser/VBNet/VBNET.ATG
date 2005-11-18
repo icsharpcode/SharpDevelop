@@ -1777,9 +1777,15 @@ SimpleExpr<out Expression pexpr>
 			(. type.IsGlobal = true; .)
 			(. pexpr = new TypeReferenceExpression(type); .)
 		|	ObjectCreateExpression<out expr>					(. pexpr = expr; .)
-		|	/* 11.11 */ ( "DirectCast" | "CType" ) "(" Expr<out expr> "," TypeName<out type> ")"	(. pexpr = new CastExpression(type, expr); .)
-		|	/* 11.11 */ "TryCast" "(" Expr<out expr> "," TypeName<out type> ")"	(. pexpr = new BinaryOperatorExpression(expr, BinaryOperatorType.AsCast, new TypeReferenceExpression(type)); .)
-		|	/* 11.11 */ CastTarget<out type> "(" Expr<out expr> ")"	(. pexpr = new CastExpression(type, expr, true); .)
+		|	/* 11.11 : Casts */
+			(. CastType castType = CastType.Cast; .)
+			( "DirectCast"
+			| "CType"   (. castType = CastType.Conversion; .)
+			| "TryCast" (. castType = CastType.TryCast; .)
+			)
+			"(" Expr<out expr> "," TypeName<out type> ")"
+			(. pexpr = new CastExpression(type, expr, castType); .)
+		|	/* 11.11 */ CastTarget<out type> "(" Expr<out expr> ")"	(. pexpr = new CastExpression(type, expr, CastType.PrimitiveConversion); .)
 		|	/* 11.4.5 */ "AddressOf" Expr<out expr>			(. pexpr = new AddressOfExpression(expr); .)
 		|	/* 11.5.1 */ "GetType" "(" GetTypeTypeName<out type> ")"	(. pexpr = new TypeOfExpression(type); .)
 		|	/* 11.5.2 */ "TypeOf" SimpleExpr<out expr> "Is" TypeName<out type> (. pexpr = new TypeOfIsExpression(expr, type); .)

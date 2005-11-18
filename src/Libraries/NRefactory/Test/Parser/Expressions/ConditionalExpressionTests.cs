@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -33,7 +33,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			// (as is b?) ERROR (conflict with nullables, SD2-419)
 			ConditionalExpression ce = ParseUtilCSharp.ParseExpression<ConditionalExpression>("a is b ? a() : a.B");
 			
-			Assert.IsTrue(ce.Condition is BinaryOperatorExpression);
+			Assert.IsTrue(ce.Condition is TypeOfIsExpression);
 			Assert.IsTrue(ce.TrueExpression is InvocationExpression);
 			Assert.IsTrue(ce.FalseExpression is FieldReferenceExpression);
 		}

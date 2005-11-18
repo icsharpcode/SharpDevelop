@@ -64,10 +64,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		ReferenceEquality,
 		/// <summary>VB-only: IsNot</summary>
 		ReferenceInequality,
-		/// <summary>C#: Is</summary>
-		TypeCheck,
-		/// <summary>'as' in C#, 'TryCast(l, r)' in VB</summary>
-		AsCast,
+		
 		/// <summary>VB-only: Like</summary>
 		Like,
 		/// <summary>C#: ??</summary>

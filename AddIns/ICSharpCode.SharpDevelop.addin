@@ -1434,7 +1434,7 @@
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
 		<MenuItem id = "ExportToHtml"
 		          insertafter = "AddSeparator"
-		          insertbefore = "SetAsStartupProjectSeparator"
+		          insertbefore = "Separator2"
 		          label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
 		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ExportProjectToHtml"/>
 	</Path>

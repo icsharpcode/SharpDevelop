@@ -8,6 +8,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using Boo.Lang.Compiler.Ast;
@@ -203,6 +204,53 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 			
 			return false;
+		}
+		#endregion
+		
+		#region OnGenericReferenceExpression
+		public override void OnGenericReferenceExpression(GenericReferenceExpression node)
+		{
+			MakeTypeResult(ConstructTypeFromGenericReferenceExpression(node));
+		}
+		
+		public ConstructedReturnType ConstructTypeFromGenericReferenceExpression(GenericReferenceExpression node)
+		{
+			Stack<Expression> stack = new Stack<Expression>();
+			Expression expr = node;
+			while (expr != null) {
+				stack.Push(expr);
+				if (expr is MemberReferenceExpression) {
+					expr = ((MemberReferenceExpression)expr).Target;
+				} else if (expr is GenericReferenceExpression) {
+					expr = ((GenericReferenceExpression)expr).Target;
+				} else {
+					expr = null;
+				}
+			}
+			StringBuilder name = new StringBuilder();
+			List<IReturnType> typeArguments = new List<IReturnType>();
+			while (stack.Count > 0) {
+				expr = stack.Pop();
+				if (expr is MemberReferenceExpression) {
+					name.Append('.');
+					name.Append(((MemberReferenceExpression)expr).Name);
+				} else if (expr is GenericReferenceExpression) {
+					foreach (TypeReference tr in ((GenericReferenceExpression)expr).GenericArguments) {
+						typeArguments.Add(ConvertVisitor.CreateReturnType(tr, callingClass,
+						                                                  resolver.CallingMember,
+						                                                  resolver.CaretLine,
+						                                                  resolver.CaretColumn,
+						                                                  projectContent));
+					}
+				} else if (expr is ReferenceExpression) {
+					name.Append(((ReferenceExpression)expr).Name);
+				} else {
+					LoggingService.Warn("Unknown expression in GenericReferenceExpression: " + expr);
+				}
+			}
+			IReturnType rt = projectContent.SearchType(name.ToString(), typeArguments.Count, callingClass,
+			                                           cu, resolver.CaretLine, resolver.CaretColumn);
+			return new ConstructedReturnType(rt, typeArguments);
 		}
 		#endregion
 		
@@ -550,7 +598,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			MakeResult(new ArrayReturnType(elementType, 1));
 		}
 		
-		public override void OnAsExpression(AsExpression node)
+		public override void OnTryCastExpression(TryCastExpression node)
 		{
 			MakeResult(ConvertType(node.Type));
 		}

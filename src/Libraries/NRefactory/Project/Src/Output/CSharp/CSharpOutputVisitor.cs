@@ -1815,18 +1815,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					}
 					break;
 					
-				case BinaryOperatorType.AsCast:
-					outputFormatter.Space();
-					outputFormatter.PrintToken(Tokens.As);
-					outputFormatter.Space();
-					break;
-					
-				case BinaryOperatorType.TypeCheck:
-					outputFormatter.Space();
-					outputFormatter.PrintToken(Tokens.Is);
-					outputFormatter.Space();
-					break;
-					
 				case BinaryOperatorType.Equality:
 				case BinaryOperatorType.ReferenceEquality:
 					if (prettyPrintOptions.AroundRelationalOperatorParentheses) {
@@ -2158,13 +2146,21 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(CastExpression castExpression, object data)
 		{
-			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			nodeTracker.TrackedVisit(castExpression.CastTo, data);
-			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			if (this.prettyPrintOptions.SpacesAfterTypeCast) {
+			if (castExpression.CastType == CastType.TryCast) {
+				nodeTracker.TrackedVisit(castExpression.Expression, data);
 				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				nodeTracker.TrackedVisit(castExpression.CastTo, data);
+			} else {
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				nodeTracker.TrackedVisit(castExpression.CastTo, data);
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+				if (this.prettyPrintOptions.SpacesAfterTypeCast) {
+					outputFormatter.Space();
+				}
+				nodeTracker.TrackedVisit(castExpression.Expression, data);
 			}
-			nodeTracker.TrackedVisit(castExpression.Expression, data);
 			return null;
 		}
 		

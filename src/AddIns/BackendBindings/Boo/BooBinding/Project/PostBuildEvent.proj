@@ -15,7 +15,7 @@ copy "%1\..\..\RequiredLibraries\Boo.Microsoft.Build.Tasks.dll" .
   </PropertyGroup>
   <ItemGroup>
 	<MyCopyItem Include="$(MSBuildProjectDirectory)\..\..\RequiredLibraries\booc.*" />
-	<MyCopyItem Include="$(MSBuildProjectDirectory)\..\..\Boo.Microsoft.Build.Tasks\*.targets" />
+	<MyCopyItem Include="$(MSBuildProjectDirectory)\..\..\RequiredLibraries\*.targets" />
 	<MyCopyItem Include="$(MSBuildProjectDirectory)\..\..\RequiredLibraries\Boo.Microsoft.Build.Tasks.dll" />
   </ItemGroup>
   <Target Name="MyPostBuildTarget">

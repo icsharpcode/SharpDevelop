@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -17,15 +17,33 @@ namespace ICSharpCode.NRefactory.Tests.AST
 	public class TypeOfIsExpressionTests
 	{
 		#region C#
-			// No C# representation
+		[Test]
+		public void GenericArrayIsExpression()
+		{
+			TypeOfIsExpression ce = ParseUtilCSharp.ParseExpression<TypeOfIsExpression>("o is List<string>[]");
+			Assert.AreEqual("List", ce.TypeReference.Type);
+			Assert.AreEqual("string", ce.TypeReference.GenericTypes[0].Type);
+			Assert.AreEqual(new int[] { 0 }, ce.TypeReference.RankSpecifier);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
+		}
 		#endregion
 		
 		#region VB.NET
 		[Test]
-		public void VBNetTypeOfIsExpressionTest()
+		public void VBNetSimpleTypeOfIsExpression()
 		{
-			TypeOfExpression toe = ParseUtilVBNet.ParseExpression<TypeOfExpression>("TypeOf time is System.DateTime");
-			// TODO : Extend test.
+			TypeOfIsExpression ce = ParseUtilVBNet.ParseExpression<TypeOfIsExpression>("TypeOf o Is MyObject");
+			Assert.AreEqual("MyObject", ce.TypeReference.Type);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
+		}
+		
+		[Test]
+		public void VBNetGenericTypeOfIsExpression()
+		{
+			TypeOfIsExpression ce = ParseUtilVBNet.ParseExpression<TypeOfIsExpression>("TypeOf o Is List(of T)");
+			Assert.AreEqual("List", ce.TypeReference.Type);
+			Assert.AreEqual("T", ce.TypeReference.GenericTypes[0].Type);
+			Assert.IsTrue(ce.Expression is IdentifierExpression);
 		}
 		#endregion
 	}

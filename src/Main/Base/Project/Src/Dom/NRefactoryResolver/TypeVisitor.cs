@@ -40,7 +40,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		public override object Visit(BinaryOperatorExpression binaryOperatorExpression, object data)
 		{
 			switch (binaryOperatorExpression.Op) {
-				case BinaryOperatorType.AsCast:
 				case BinaryOperatorType.NullCoalescing:
 					return binaryOperatorExpression.Right.AcceptVisitor(this, data);
 				case BinaryOperatorType.DivideInteger:
@@ -51,7 +50,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				case BinaryOperatorType.InEquality:
 				case BinaryOperatorType.ReferenceEquality:
 				case BinaryOperatorType.ReferenceInequality:
-				case BinaryOperatorType.TypeCheck:
 				case BinaryOperatorType.LogicalAnd:
 				case BinaryOperatorType.LogicalOr:
 				case BinaryOperatorType.LessThan:
@@ -327,27 +325,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			// TODO: Little bug: unary operator MAY change the return type,
 			//                   but that is only a minor issue
 			switch (unaryOperatorExpression.Op) {
-				case UnaryOperatorType.Not:
-					break;
-				case UnaryOperatorType.BitNot:
-					break;
-				case UnaryOperatorType.Minus:
-					break;
-				case UnaryOperatorType.Plus:
-					break;
-				case UnaryOperatorType.Increment:
-				case UnaryOperatorType.PostIncrement:
-					break;
-				case UnaryOperatorType.Decrement:
-				case UnaryOperatorType.PostDecrement:
-					break;
 				case UnaryOperatorType.Star:       // dereference
 					//--expressionType.PointerNestingLevel;
 					break;
 				case UnaryOperatorType.BitWiseAnd: // get reference
 					//++expressionType.PointerNestingLevel;
-					break;
-				case UnaryOperatorType.None:
 					break;
 			}
 			return expressionType;

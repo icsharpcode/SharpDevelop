@@ -191,15 +191,14 @@ namespace Grunwald.BooBinding.CodeCompletion
 		{
 			IClass c = OuterClass;
 			if (c == null) {
-				return CreateReturnType(reference, new DefaultClass(_cu, "___DummyClass"), method, 1, 1, _cu.ProjectContent, true);
+				return CreateReturnType(reference, new DefaultClass(_cu, "___DummyClass"), method, 1, 1, _cu.ProjectContent);
 			} else {
-				return CreateReturnType(reference, c, method, c.Region.BeginLine + 1, 1, _cu.ProjectContent, true);
+				return CreateReturnType(reference, c, method, c.Region.BeginLine + 1, 1, _cu.ProjectContent);
 			}
 		}
 		public static IReturnType CreateReturnType(AST.TypeReference reference, IClass callingClass,
 		                                           IMember callingMember, int caretLine, int caretColumn,
-		                                           IProjectContent projectContent,
-		                                           bool useLazyReturnType)
+		                                           IProjectContent projectContent)
 		{
 			if (reference == null) {
 				LoggingService.Warn("inferred return type!");
@@ -208,14 +207,28 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (reference is AST.ArrayTypeReference) {
 				AST.ArrayTypeReference arr = (AST.ArrayTypeReference)reference;
 				return new ArrayReturnType(CreateReturnType(arr.ElementType, callingClass, callingMember,
-				                                            caretLine, caretColumn, projectContent, useLazyReturnType),
+				                                            caretLine, caretColumn, projectContent),
 				                           (arr.Rank != null) ? (int)arr.Rank.Value : 1);
 			} else if (reference is AST.SimpleTypeReference) {
 				string name = ((AST.SimpleTypeReference)reference).Name;
+				IReturnType rt;
+				int typeParameterCount = (reference is AST.GenericTypeReference) ? ((AST.GenericTypeReference)reference).GenericArguments.Count : 0;
 				if (BooAmbience.ReverseTypeConversionTable.ContainsKey(name))
-					return new GetClassReturnType(projectContent, BooAmbience.ReverseTypeConversionTable[name], 0);
-				return new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn,
-				                                 name, 0);
+					rt = new GetClassReturnType(projectContent, BooAmbience.ReverseTypeConversionTable[name], typeParameterCount);
+				else
+					rt = new SearchClassReturnType(projectContent, callingClass, caretLine, caretColumn,
+					                               name, typeParameterCount);
+				if (typeParameterCount > 0) {
+					AST.TypeReferenceCollection arguments = ((AST.GenericTypeReference)reference).GenericArguments;
+					// GenericTypeReference derives from SimpleTypeReference
+					IReturnType[] typeArguments = new IReturnType[arguments.Count];
+					for (int i = 0; i < typeArguments.Length; i++) {
+						typeArguments[i] = CreateReturnType(arguments[i], callingClass, callingMember, caretLine, caretColumn,
+						                                    projectContent);
+					}
+					rt = new ConstructedReturnType(rt, typeArguments);
+				}
+				return rt;
 			} else if (reference is AST.CallableTypeReference) {
 				return new AnonymousMethodReturnType();
 			} else {
