@@ -259,7 +259,6 @@
     <Compile Include="Src\Gui\Pads\FileScout.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Pads\OpenTaskView.cs" />
     <Compile Include="Src\Gui\Pads\PropertyPad\PropertyPad.cs" />
     <Compile Include="Src\Gui\Pads\SideBarView.cs" />
     <Compile Include="Src\Gui\Pads\TreeViewMemento.cs" />
@@ -723,6 +722,8 @@
     <Compile Include="Src\Gui\Pads\ProjectBrowser\NodeBuilder\NodeBuilders.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\TextCompletionDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\OverrideCompletionDataProvider.cs" />
+    <Compile Include="Src\Gui\Pads\TaskList\TaskView.cs" />
+    <Compile Include="Src\Gui\Pads\TaskList\TaskList.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">
@@ -743,6 +744,7 @@
     </ProjectReference>
     <Folder Include="Src\Gui\Components\AutoHide" />
     <Folder Include="Src\Gui\TreeGrid" />
+    <Folder Include="Src\Gui\Pads\TaskList" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
