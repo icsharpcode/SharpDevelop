@@ -1,7 +1,7 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <!-- DockPanel configuration file. Author: Weifen Luo, all rights reserved. -->
 <!-- !!! AUTOMATICALLY GENERATED FILE. DO NOT MODIFY !!! -->
-<DockPanel FormatVersion="0.9.3" DockLeftPortion="0.162210282258557" DockRightPortion="0.159760856281619" DockTopPortion="0.25" DockBottomPortion="0.271028728576449" ActiveDocumentPane="12" ActivePane="-1">
+<DockPanel FormatVersion="0.9.3" DockLeftPortion="0.162210282258557" DockRightPortion="0.159760856281619" DockTopPortion="0.25" DockBottomPortion="0.271028728576449" ActiveDocumentPane="-1" ActivePane="-1">
   <Contents Count="25">
     <Content ID="0" PersistString="ICSharpCode.MbUnitPad.MbUnitPadContent" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
     <Content ID="1" PersistString="ICSharpCode.SharpDevelop.Project.ProjectBrowserPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
@@ -27,16 +27,16 @@
     <Content ID="21" PersistString="HtmlHelp2.HtmlHelp2IndexResultsPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
     <Content ID="22" PersistString="Boo.InterpreterAddIn.InterpreterPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
     <Content ID="23" PersistString="ICSharpCode.NAntAddIn.Gui.NAntPadContent" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="24" PersistString="ICSharpCode.SharpDevelop.Gui.SdiWorkspaceWindow" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+    <Content ID="24" PersistString="HtmlHelp2.HtmlHelp2DynamicHelpPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
   </Contents>
-  <Panes Count="13">
+  <Panes Count="12">
     <Pane ID="0" DockState="Float" ActiveContent="-1">
       <Contents Count="1">
         <Content ID="0" RefID="0" />
       </Contents>
     </Pane>
     <Pane ID="1" DockState="DockRight" ActiveContent="13">
-      <Contents Count="12">
+      <Contents Count="13">
         <Content ID="0" RefID="0" />
         <Content ID="1" RefID="9" />
         <Content ID="2" RefID="13" />
@@ -49,6 +49,7 @@
         <Content ID="9" RefID="21" />
         <Content ID="10" RefID="22" />
         <Content ID="11" RefID="23" />
+        <Content ID="12" RefID="24" />
       </Contents>
     </Pane>
     <Pane ID="2" DockState="Float" ActiveContent="-1">
@@ -111,30 +112,20 @@
         <Content ID="0" RefID="4" />
       </Contents>
     </Pane>
-    <Pane ID="12" DockState="Document" ActiveContent="24">
-      <Contents Count="1">
-        <Content ID="0" RefID="24" />
-      </Contents>
-    </Pane>
   </Panes>
-  <DockWindows Count="4">
-    <DockWindow ID="0" DockState="Document" ZOrderIndex="1">
-      <DockList Count="1">
-        <Pane ID="0" RefID="12" PrevPane="-1" Alignment="Right" Proportion="0.5" />
-      </DockList>
-    </DockWindow>
-    <DockWindow ID="1" DockState="DockLeft" ZOrderIndex="5">
+  <DockWindows Count="3">
+    <DockWindow ID="0" DockState="DockLeft" ZOrderIndex="5">
       <DockList Count="1">
         <Pane ID="0" RefID="6" PrevPane="-1" Alignment="Bottom" Proportion="0.5" />
       </DockList>
     </DockWindow>
-    <DockWindow ID="2" DockState="DockRight" ZOrderIndex="7">
+    <DockWindow ID="1" DockState="DockRight" ZOrderIndex="7">
       <DockList Count="2">
         <Pane ID="0" RefID="1" PrevPane="-1" Alignment="Bottom" Proportion="0.5" />
         <Pane ID="1" RefID="3" PrevPane="1" Alignment="Bottom" Proportion="0.574444444444444" />
       </DockList>
     </DockWindow>
-    <DockWindow ID="3" DockState="DockBottom" ZOrderIndex="6">
+    <DockWindow ID="2" DockState="DockBottom" ZOrderIndex="6">
       <DockList Count="1">
         <Pane ID="0" RefID="4" PrevPane="-1" Alignment="Left" Proportion="0.5" />
       </DockList>

@@ -8,8 +8,8 @@
 namespace HtmlHelp2
 {
 	using System;
-    using System.Collections.Generic;
-    using System.Collections.Specialized;
+	using System.Collections.Generic;
+	using System.Collections.Specialized;
 	using System.Drawing;
 	using System.Windows.Forms;
 	using System.Reflection;
@@ -351,6 +351,7 @@ namespace HtmlHelp2
 			dynamicHelpToolbar.Dock                      = DockStyle.Top;
 			dynamicHelpToolbar.AllowItemReorder          = false;
 			dynamicHelpToolbar.ShowItemToolTips          = false;
+			dynamicHelpToolbar.GripStyle                 = ToolStripGripStyle.Hidden;
 			dynamicHelpToolbar.Enabled                   = HtmlHelp2Environment.IsReady;
 			for(int i = 0; i < toolbarButtons.Length; i++)
 			{
@@ -385,16 +386,7 @@ namespace HtmlHelp2
 
 		private void RenderModeChanged(object sender, EventArgs e)
 		{
-			if(ToolbarService.Renderer is ToolStripProfessionalRenderer)
-			{
-				ProfessionalColorTable colorTable = new ProfessionalColorTable();
-				colorTable.UseSystemColors        = true;
-				dynamicHelpToolbar.Renderer       = new ToolStripProfessionalRenderer(colorTable);
-			}
-			else
-			{
-				dynamicHelpToolbar.Renderer       = ToolbarService.Renderer;
-			}
+			dynamicHelpToolbar.Renderer = ToolbarService.Renderer;
 		}
 
 		private void ToolStripButtonClicked(object sender, EventArgs e)

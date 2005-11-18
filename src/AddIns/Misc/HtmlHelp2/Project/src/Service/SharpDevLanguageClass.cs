@@ -80,7 +80,10 @@ namespace HtmlHelp2.SharpDevLanguageClass
 
 		public static string GetPatchedLanguage()
 		{
-			return GetPatchedLanguage(ProjectService.CurrentProject.Language);
+			if (ProjectService.CurrentProject == null)
+				return GetPatchedLanguage(AmbienceService.DefaultAmbienceName);
+			else
+				return GetPatchedLanguage(ProjectService.CurrentProject.Language);
 		}
 
 		public static string GetPatchedLanguage(string expectedLanguage)
