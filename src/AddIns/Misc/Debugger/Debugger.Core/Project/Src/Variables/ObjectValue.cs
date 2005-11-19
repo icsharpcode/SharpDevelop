@@ -23,13 +23,53 @@ namespace Debugger
 		MetaData metaData;
 		ICorDebugModule corModuleSuperclass;
 		ObjectValue baseClass;
+		internal string toString;
+		Eval toStringEval;
 
 		TypeDefProps classProps;
 		
 		public override string AsString { 
-			get{ 
-				return "{" + Type + "}"; 
-			} 
+			get{
+				if (toString != null) {
+					return toString;
+				} else {
+					if (toStringEval == null) {
+						// Set up eval of ToString()
+						
+						ObjectValue baseClass = this;
+						while (baseClass.HasBaseClass) {
+							baseClass = baseClass.BaseClass;
+						}
+						foreach(MethodProps method in baseClass.Module.MetaData.EnumMethods(baseClass.ClassToken)) {
+							if (method.Name == "ToString") {
+								ICorDebugValue[] evalArgs;
+								ICorDebugFunction evalCorFunction;
+								baseClass.Module.CorModule.GetFunctionFromToken(method.Token, out evalCorFunction);
+								// We need to pass reference
+								ICorDebugHeapValue2 heapValue = this.CorValue as ICorDebugHeapValue2;
+								if (heapValue == null) {
+									toString = "{" + Type + "}";
+									return toString;
+								}
+								ICorDebugHandleValue corHandle;
+								heapValue.CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION, out corHandle);
+								evalArgs = new ICorDebugValue[] {corHandle};
+								toStringEval = new Eval(debugger, evalCorFunction, evalArgs);
+								// Do not add evals if we just evaluated them, otherwise we get infinite loop
+								if (debugger.IsPaused && debugger.PausedReason != PausedReason.AllEvalsComplete) {
+									debugger.AddEval(toStringEval);
+									//toStringEval.SetupEvaluation(debugger.CurrentThread);
+								}
+								toStringEval.EvalComplete += delegate {
+									toString = toStringEval.Result.AsString;
+									this.OnValueChanged();
+								};
+							}
+						}
+					}
+					return "{" + Type + "}";
+				}
+			}
 		}
 
 		public override string Type { 
@@ -37,8 +77,19 @@ namespace Debugger
 				return classProps.Name;
 			} 
 		}
-
-
+		
+		public Module Module {
+			get {
+				return debugger.GetModule(corModule);
+			}
+		}
+		
+		public uint ClassToken {
+			get {
+				return classProps.Token;
+			}
+		}
+		
 		internal unsafe ObjectValue(NDebugger debugger, ICorDebugValue corValue):base(debugger, corValue)
 		{
 			((ICorDebugObjectValue)this.corValue).GetClass(out corClass);
@@ -56,7 +107,7 @@ namespace Debugger
 			uint classToken;
 			corClass.GetToken(out classToken);
 			corClass.GetModule(out corModule);
-			metaData = debugger.GetModule(corModule).MetaData;
+			metaData = Module.MetaData;
 			
 			classProps = metaData.GetTypeDefProps(classToken);
 			

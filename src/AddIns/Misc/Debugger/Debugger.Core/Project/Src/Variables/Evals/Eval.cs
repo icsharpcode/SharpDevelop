@@ -79,7 +79,15 @@ namespace Debugger
 		public Value Result {
 			get {
 				if (completed) {
-					return result;
+					if (successful) {
+						return result;
+					} else {
+						ObjectValue exception = (ObjectValue)result;
+						while (exception.Type != "System.Exception") {
+							exception = exception.BaseClass;
+						}
+						return new UnavailableValue(debugger, result.Type + ": " + exception["_message"].Value.AsString);
+					}
 				} else {
 					return null;
 				}

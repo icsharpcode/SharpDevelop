@@ -19,6 +19,8 @@ namespace Debugger
 		
 		protected ICorDebugValue corValue;
 		
+		public event EventHandler<ValueEventArgs> ValueChanged;
+		
 		public NDebugger Debugger {
 			get {
 				return debugger;
@@ -45,6 +47,12 @@ namespace Debugger
 			get{ 
 				return CorTypeToString(CorType); 
 			}	
+		}
+		
+		protected virtual void OnValueChanged() {
+			if (ValueChanged != null) {
+				ValueChanged(this, new ValueEventArgs(this));
+			}
 		}
 		
 		public virtual Type ManagedType {

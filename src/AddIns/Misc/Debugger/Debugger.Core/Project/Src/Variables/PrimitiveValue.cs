@@ -15,14 +15,6 @@ namespace Debugger
 {
 	public class PrimitiveValue: Value
 	{
-		public event EventHandler<ValueEventArgs> ValueChanged;
-		
-		protected virtual void OnValueChanged() {
-			if (ValueChanged != null) {
-				ValueChanged(this, new ValueEventArgs(this));
-			}
-		}
-		
 		public override string AsString {
 			get {
 				if (Primitive != null) {

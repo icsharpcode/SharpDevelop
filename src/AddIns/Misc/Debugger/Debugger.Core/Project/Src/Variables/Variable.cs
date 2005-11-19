@@ -38,9 +38,7 @@ namespace Debugger
 			}
 			internal set {
 				val = value;
-				if (val is PrimitiveValue) {
-					((PrimitiveValue)val).ValueChanged += delegate { OnValueChanged(); };
-				}
+				val.ValueChanged += delegate { OnValueChanged(); };
 				OnValueChanged();
 			}
 		}
