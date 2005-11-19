@@ -19,9 +19,7 @@ namespace Debugger
 		
 		internal PropertyVariable(Eval eval, string name):base(eval.Debugger, null, name)
 		{
-			this.eval = eval;
-			eval.EvalStarted += EvalStarted;
-			eval.EvalComplete += EvalComplete;
+			this.Eval = eval;
 		}
 		
 		public bool IsEvaluated {
@@ -44,6 +42,20 @@ namespace Debugger
 					} else {
 						return new UnavailableValue(debugger, "Evaluation pending");
 					}
+				}
+			}
+		}
+		
+		public Eval Eval {
+			get {
+				return eval;
+			}
+			set {
+				if (debugger.PausedReason != PausedReason.AllEvalsComplete) {
+					eval = value;
+					eval.EvalStarted += EvalStarted;
+					eval.EvalComplete += EvalComplete;
+					OnValueChanged();
 				}
 			}
 		}

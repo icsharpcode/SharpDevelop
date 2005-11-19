@@ -366,8 +366,8 @@ namespace Debugger
 			return VariableCollection.Merge(
 											GetContaingClassVariables(),
 											GetArgumentVariables(),
-											GetLocalVariables()
-											//GetPropertyVariables()
+											GetLocalVariables(),
+											GetPropertyVariables()
 											);
 		}
 
@@ -456,7 +456,10 @@ namespace Debugger
 						evalArgs = new ICorDebugValue[] {ThisValue.CorValue};
 					}
 					Eval eval = new Eval(debugger, evalCorFunction, evalArgs);
-					debugger.AddEval(eval);
+					// Do not add evals if we just evaluated them, otherwise we get infinite loop
+					if (debugger.PausedReason != PausedReason.AllEvalsComplete) {
+						debugger.AddEval(eval);
+					}
 					properties.Add(new PropertyVariable(eval, method.Name.Remove(0, 4)));
 				}
 			}

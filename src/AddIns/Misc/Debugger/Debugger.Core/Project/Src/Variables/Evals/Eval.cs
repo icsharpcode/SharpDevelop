@@ -28,7 +28,7 @@ namespace Debugger
 		
 		bool              evaluating = false;
 		bool              completed = false;
-		Value          result;
+		Value             result;
 		
 		public event EventHandler<EvalEventArgs> EvalStarted;
 		public event EventHandler<EvalEventArgs> EvalComplete;
@@ -87,12 +87,12 @@ namespace Debugger
 		}
 		
 		/// <returns>True is setup was successful</returns>
-		internal bool SetupEvaluation()
+		internal bool SetupEvaluation(Thread targetThread)
 		{
-			debugger.AssertPaused();
+			if (!debugger.ManagedCallback.HandlingCallback) debugger.AssertPaused();
 			
 			// TODO: What if this thread is not suitable?
-			debugger.CurrentThread.CorThread.CreateEval(out corEval);
+			targetThread.CorThread.CreateEval(out corEval);
 			
 			corEval.CallFunction(corFunction, (uint)args.Length, args);
 			

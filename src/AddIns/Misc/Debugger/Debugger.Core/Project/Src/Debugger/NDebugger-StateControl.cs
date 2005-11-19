@@ -148,8 +148,16 @@ namespace Debugger
 			
 			OnDebuggingPaused(reason);
 			
-			if (IsPaused) { // OnDebuggingPaused can resume the debugger
+			// Debugger state is unknown after calling OnDebuggingPaused (it may be resumed)
+			// This is a good point to autmaticaly evaluate evals from update of variables (if there are any)
+			if (IsPaused) {
 				localVariables.Update();
+				this.StartEvaluation();
+				// Evaluation loop stoped by Function.GetPropertyVariables not adding evals
+				// And PropertyVariable not setting new value
+			}
+			
+			if (IsPaused) {
 				waitForPauseHandle.Set();
 			}
 		}

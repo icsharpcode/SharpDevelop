@@ -80,10 +80,10 @@ namespace Debugger
 		}
 		
 		// return true if there was eval to setup and it was setup
-		internal bool SetupNextEvaluation()
+		internal bool SetupNextEvaluation(Thread targetThread)
 		{
 			if (pendingEvalsCollection.Count > 0) {
-				return pendingEvalsCollection[0].SetupEvaluation();
+				return pendingEvalsCollection[0].SetupEvaluation(targetThread);
 			} else {
 				return false;
 			}
@@ -97,7 +97,7 @@ namespace Debugger
 			this.AssertPaused();
 			
 			// TODO: Investigate other threads, are they alowed to run?
-			if (SetupNextEvaluation()) {
+			if (SetupNextEvaluation(CurrentThread)) {
 				this.Continue();
 				return true;
 			} else {

@@ -39,7 +39,7 @@ namespace Debugger
 			this.debugger = debugger;
 		}
 		
-		bool HandlingCallback {
+		public bool HandlingCallback {
 			get {
 				return handlingCallback;
 			}
@@ -220,7 +220,7 @@ namespace Debugger
 			}
 			
 			if (debugger.PendingEvals.Count > 0) {
-				debugger.SetupNextEvaluation();
+				debugger.SetupNextEvaluation(debugger.GetThread(pThread));
 				ExitCallback_Continue();
 			} else {
 				ExitCallback_Paused(PausedReason.AllEvalsComplete);

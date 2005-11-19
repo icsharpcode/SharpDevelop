@@ -157,10 +157,16 @@ namespace Debugger
 			
 			foreach(Variable newVariable in newVariables) {
 				if (this.Contains(newVariable.Name)) {
+					Variable oldVariable = this[newVariable.Name];
 					// Update existing variable
-					this[newVariable.Name].Value = newVariable.Value;
+					if (oldVariable is PropertyVariable) {
+						Eval newEval = ((PropertyVariable)newVariable).Eval;
+						((PropertyVariable)oldVariable).Eval = newEval;
+					} else {
+						oldVariable.Value = newVariable.Value;
+					}
 					// Keep the variable in the list
-					toBeRemoved.Remove(this[newVariable.Name]);
+					toBeRemoved.Remove(oldVariable);
 				} else {
 					// Add new variable
 					this.Add(newVariable);
