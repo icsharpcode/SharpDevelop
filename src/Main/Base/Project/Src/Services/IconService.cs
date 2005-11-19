@@ -48,12 +48,12 @@ namespace ICSharpCode.Core
 		public static Bitmap GetGhostBitmap(string name)
 		{
 			ColorMatrix clrMatrix = new ColorMatrix(new float[][] {
-				new float[] {1, 0, 0, 0, 0},
-				new float[] {0, 1, 0, 0, 0},
-				new float[] {0, 0, 1, 0, 0},
-				new float[] {0, 0, 0, 0.5f, 0},
-				new float[] {0, 0, 0, 0, 1}
-			});
+			                                        	new float[] {1, 0, 0, 0, 0},
+			                                        	new float[] {0, 1, 0, 0, 0},
+			                                        	new float[] {0, 0, 1, 0, 0},
+			                                        	new float[] {0, 0, 0, 0.5f, 0},
+			                                        	new float[] {0, 0, 0, 0, 1}
+			                                        });
 			
 			ImageAttributes imgAttributes = new ImageAttributes();
 			imgAttributes.SetColorMatrix(clrMatrix,
@@ -63,9 +63,10 @@ namespace ICSharpCode.Core
 			Bitmap bitmap = GetBitmap(name);
 			Bitmap ghostBitmap = new Bitmap(bitmap.Width, bitmap.Height, PixelFormat.Format32bppArgb);
 			
-			Graphics g = Graphics.FromImage(ghostBitmap);
-			g.FillRectangle(SystemBrushes.Window, new Rectangle(0, 0, bitmap.Width, bitmap.Height));
-			g.DrawImage(bitmap, new Rectangle(0, 0, bitmap.Width, bitmap.Height), 0, 0,bitmap.Width, bitmap.Height, GraphicsUnit.Pixel, imgAttributes);
+			using (Graphics g = Graphics.FromImage(ghostBitmap)) {
+				g.FillRectangle(SystemBrushes.Window, new Rectangle(0, 0, bitmap.Width, bitmap.Height));
+				g.DrawImage(bitmap, new Rectangle(0, 0, bitmap.Width, bitmap.Height), 0, 0,bitmap.Width, bitmap.Height, GraphicsUnit.Pixel, imgAttributes);
+			}
 			
 			return ghostBitmap;
 		}
@@ -96,7 +97,8 @@ namespace ICSharpCode.Core
 		
 		public static string GetImageForFile(string fileName)
 		{
-			string extension = Path.GetExtension(fileName).ToUpper();
+			string extension = Path.GetExtension(fileName).ToUpperInvariant();
+			if (extension.Length == 0) extension = ".TXT";
 			if (extensionHashtable.ContainsKey(extension)) {
 				return extensionHashtable[extension];
 			}
@@ -109,7 +111,7 @@ namespace ICSharpCode.Core
 			
 			extensionHashtable[".CMBX"] = "Icons.16x16.CombineIcon";
 			extensionHashtable[".SLN"]  = "Icons.16x16.CombineIcon";
-		
+			
 			IconDescriptor[] icons = (IconDescriptor[])treeNode.BuildChildItems(null).ToArray(typeof(IconDescriptor));
 			for (int i = 0; i < icons.Length; ++i) {
 				IconDescriptor iconCodon = icons[i];
@@ -117,7 +119,7 @@ namespace ICSharpCode.Core
 				
 				if (iconCodon.Extensions != null) {
 					foreach (string ext in iconCodon.Extensions) {
-						extensionHashtable[ext.ToUpper()] = imageName;
+						extensionHashtable[ext.ToUpperInvariant()] = imageName;
 					}
 				}
 				

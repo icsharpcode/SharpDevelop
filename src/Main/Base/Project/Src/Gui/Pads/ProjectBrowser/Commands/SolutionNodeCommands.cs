@@ -81,55 +81,6 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 	}
-		
-//	public class AddNewSolutionToSolution : AbstractMenuCommand
-//	{
-//		public override void Run()
-//		{
-////			ProjectBrowserView browser = (ProjectBrowserView)Owner;
-////			CombineBrowserNode node    = browser.SelectedNode as CombineBrowserNode;
-////			
-////			if (node != null) {
-////				using (NewProjectDialog npdlg = new NewProjectDialog(false)) {
-////					if (npdlg.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-////						node.Nodes.Add(ProjectBrowserView.BuildCombineTreeNode((Combine)node.Combine.AddEntry(npdlg.NewCombineLocation)));
-////						ProjectService.SaveCombine();
-////					}
-////				}
-////			}
-//		}
-//	}
-//	
-//		
-//	public class AddSolutionToSolution : AbstractMenuCommand
-//	{
-//		public override void Run()
-//		{
-////			ProjectBrowserView browser = (ProjectBrowserView)Owner;
-////			CombineBrowserNode node    = browser.SelectedNode as CombineBrowserNode;
-////			
-////			if (node != null) {
-////				using (OpenFileDialog fdiag = new OpenFileDialog()) {
-////					fdiag.AddExtension    = true;
-////					
-////					fdiag.Filter = StringParser.Parse("${res:SharpDevelop.FileFilter.CombineFiles}|*.cmbx|${res:SharpDevelop.FileFilter.AllFiles}|*.*");
-////					fdiag.Multiselect     = false;
-////					fdiag.CheckFileExists = true;
-////					if (fdiag.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-////						object obj = node.Combine.AddEntry(fdiag.FileName);
-////						if(obj != null) {
-////							if (obj is IProject) {
-////								node.Nodes.Add(ProjectBrowserView.BuildProjectTreeNode((IProject)obj));
-////							} else {
-////								node.Nodes.Add(ProjectBrowserView.BuildCombineTreeNode((Combine)obj));
-////							}
-////							ProjectService.SaveCombine();
-////						}
-////					}
-////				}
-////			}
-//		}
-//	}
 	
 	public class AddExistingItemToSolution : AbstractMenuCommand
 	{
@@ -161,7 +112,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			AbstractProjectBrowserTreeNode node = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
 			ISolutionFolderNode solutionFolderNode = node as ISolutionFolderNode;
 			if (node != null) {
-				SolutionFolder newSolutionFolder = solutionFolderNode.Solution.CreateFolder("New Folder");
+				SolutionFolder newSolutionFolder = solutionFolderNode.Solution.CreateFolder(ResourceService.GetString("ProjectComponent.NewFolderString"));
 				solutionFolderNode.Container.AddFolder(newSolutionFolder);
 				solutionFolderNode.Solution.Save();
 				
@@ -171,30 +122,4 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 	}
-	
-	
-//	This will be part of the SolutionNode.ShowProperties() method:
-//	public class CombineOptions : AbstractMenuCommand
-//	{
-//		public override void Run()
-//		{
-//			
-//			ProjectBrowserView browser = (ProjectBrowserView)Owner;
-//			CombineBrowserNode node    = browser.SelectedNode as CombineBrowserNode;
-//			
-//			if (node != null) {
-//				Properties defaultProperties = new Properties();
-//				defaultProperties.Set("Combine", node.Combine);
-//				using (TreeViewOptions optionsDialog = new TreeViewOptions(defaultProperties,
-//				                                                           AddInTree.GetTreeNode("/SharpDevelop/Workbench/CombineOptions"))) {
-////					optionsDialog.Size = new Size(700, 450);
-//					optionsDialog.FormBorderStyle = FormBorderStyle.FixedDialog;
-//							
-//					optionsDialog.Owner = (Form)WorkbenchSingleton.Workbench;
-//					optionsDialog.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
-//					ProjectService.SaveCombine();
-//				}
-//			}
-//		}
-//	}
 }

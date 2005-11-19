@@ -149,34 +149,34 @@
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode">
 		<MenuItem id = "Build"
-		          label = "&amp;Build"
+		          label = "${res:XML.MainMenu.BuildMenu.BuildSolution}"
 		          shortcut = "F8"
 		          icon  = "Icons.16x16.BuildCombine"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Build"/>
 		<MenuItem id = "Rebuild"
-		          label = "&amp;Rebuild"
+		          label = "${res:XML.MainMenu.BuildMenu.RebuildSolution}"
 		          shortcut = "Alt|F8"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"/>
-		<MenuItem id = "&amp;Clean"
+		<MenuItem id = "${res:XML.MainMenu.BuildMenu.CleanSolution}"
 		          label = "Clean"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Clean"/>
 		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
 		
-		<MenuItem id = "CombineAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu" >
+		<MenuItem id = "CombineAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu">
 			<MenuItem id    = "AddNewProjectToSolution"
-			          label = "&amp;New Project..."
+			          label = "${res:ProjectComponent.ContextMenu.NewProject}"
 			          icon  = "Icons.16x16.NewProjectIcon"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewProjectToSolution"/>
 			<MenuItem id    = "AddExitingProjectToSolution"
-			          label = "&amp;Existing Project..."
+			          label = "${res:ProjectComponent.ContextMenu.ExistingProject}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExitingProjectToSolution"/>
 			<MenuItem id    = "Separator1" type = "Separator" />
 			<MenuItem id    = "AddItem"
-			          label = "Add &amp;Item..."
+			          label = "${res:ProjectComponent.ContextMenu.AddItem}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemToSolution"/>
 			<MenuItem id    = "AddNewSolutionFolderToSolution"
 			          icon  = "ProjectBrowser.SolutionFolder.CreateNew"
-			          label = "New Solution &amp;Folder"
+			          label = "${res:ProjectComponent.ContextMenu.NewSolutionFolder}"
 			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewSolutionFolderToSolution"/>
 		</MenuItem>
 		
@@ -197,23 +197,7 @@
 	</Path>
 	
 	<Path path = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionFolderNode">
-		<MenuItem id = "CombineAddMenu" label = "${res:ProjectComponent.ContextMenu.AddMenu}" type = "Menu">
-			<MenuItem id    = "AddNewProjectToSolution"
-			          label = "${res:ProjectComponent.ContextMenu.NewProject}"
-			          icon  = "Icons.16x16.NewProjectIcon"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewProjectToSolution"/>
-			<MenuItem id    = "AddExitingProjectToSolution"
-			          label = "${res:ProjectComponent.ContextMenu.ExistingProject}"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExitingProjectToSolution"/>
-			<MenuItem id    = "Separator1" type = "Separator" />
-			<MenuItem id    = "AddItem"
-			          label = "${res:ProjectComponent.ContextMenu.AddItem}"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemToSolution"/>
-			<MenuItem id    = "AddNewSolutionFolderToSolution"
-			          icon  = "ProjectBrowser.SolutionFolder.CreateNew"
-			          label = "${res:ProjectComponent.ContextMenu.NewSolutionFolder}"
-			          class = "ICSharpCode.SharpDevelop.Project.Commands.AddNewSolutionFolderToSolution"/>
-		</MenuItem>
+		<Include id = "CombineAddMenu" item="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SolutionNode/CombineAddMenu"/>
 		
 		<MenuItem id = "AddSeparator" type = "Separator"/>
 		<MenuItem id    = "Cut"

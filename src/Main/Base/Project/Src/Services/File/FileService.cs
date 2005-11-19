@@ -161,14 +161,14 @@ namespace ICSharpCode.Core
 			OnFileRemoved(new FileEventArgs(fileName, isDirectory));
 		}
 		
-		public static void RenameFile(string oldName, string newName, bool isDirectory)
+		public static bool RenameFile(string oldName, string newName, bool isDirectory)
 		{
 			if (FileUtility.IsEqualFileName(oldName, newName))
-				return;
+				return false;
 			FileRenamingEventArgs eargs = new FileRenamingEventArgs(oldName, newName, isDirectory);
 			OnFileRenaming(eargs);
 			if (eargs.Cancel)
-				return;
+				return false;
 			if (!eargs.OperationAlreadyDone) {
 				try {
 					if (isDirectory) {
@@ -186,10 +186,11 @@ namespace ICSharpCode.Core
 					} else {
 						MessageService.ShowError(e, "Can't rename file " + oldName);
 					}
-					return;
+					return false;
 				}
 			}
 			OnFileRenamed(new FileRenameEventArgs(oldName, newName, isDirectory));
+			return true;
 		}
 		
 		public static IViewContent JumpToFilePosition(string fileName, int line, int column)

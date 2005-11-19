@@ -102,7 +102,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					SolutionFolderNode folderNode = new SolutionFolderNode(solution, (SolutionFolder)treeObject);
 					folderNode.AddTo(this);
 				} else {
-					LoggingService.Warn("SolutionFolderNode.Initialize(): unknown tree object : " + treeObject);
+					MessageService.ShowWarning("SolutionFolderNode.Initialize(): unknown tree object : " + treeObject);
 				}
 			}
 			
@@ -157,7 +157,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (dataObject.GetDataPresent(typeof(ISolutionFolder).ToString())) {
 				string guid = dataObject.GetData(typeof(ISolutionFolder).ToString()).ToString();
 				ISolutionFolder solutionFolder = container.Solution.GetSolutionFolder(guid);
-				return solutionFolder.Parent != container;
+				if (solutionFolder == container)
+					return false;
+				if (solutionFolder is ISolutionFolderContainer) {
+					return solutionFolder.Parent != container
+						&& !((ISolutionFolderContainer)solutionFolder).IsAncestorOf(container.Folder);
+				} else {
+					return solutionFolder.Parent != container;
+				}
 			}
 			return false;
 		}

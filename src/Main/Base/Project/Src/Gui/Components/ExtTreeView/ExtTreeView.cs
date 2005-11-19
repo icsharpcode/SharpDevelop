@@ -170,7 +170,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			e.CancelEdit = true;
 			
 			ExtTreeNode node = e.Node as ExtTreeNode;
-			if (node != null) {
+			if (node != null && e.Label != null) {
 				node.AfterLabelEdit(e.Label);
 			}
 			SortParentNodes(e.Node);

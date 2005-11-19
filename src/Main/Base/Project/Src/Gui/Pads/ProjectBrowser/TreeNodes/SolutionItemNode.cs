@@ -28,7 +28,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public string FileName {
 			get {
-				return Path.Combine(Path.GetDirectoryName(solution.FileName), item.Location);
+				return Path.Combine(solution.Directory, item.Location);
 			}
 		}
 		
@@ -125,10 +125,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!FileService.CheckFileName(newName)) {
 				return;
 			}
-			Text = newName;
 			
-			string newFileName = Path.Combine(solution.Directory, newName);
-			FileService.RenameFile(FileUtility.GetAbsolutePath(solution.Directory, item.Name), newFileName, false);
+			string newFileName = Path.Combine(Path.GetDirectoryName(this.FileName), newName);
+			FileService.RenameFile(this.FileName, newFileName, false);
 			ProjectService.SaveSolution();
 		}
 		public override object AcceptVisitor(ProjectBrowserTreeNodeVisitor visitor, object data)
