@@ -28,6 +28,7 @@ namespace Debugger
 		
 		bool              evaluating = false;
 		bool              completed = false;
+		bool              successful = false;
 		Value             result;
 		
 		public event EventHandler<EvalEventArgs> EvalStarted;
@@ -57,6 +58,18 @@ namespace Debugger
 			}
 			set {
 				evaluating = value;
+			}
+		}
+		
+		/// <summary>
+		/// True if the evaluation was successful, false if it thown an exception (which is presented as the result)
+		/// </summary>
+		public bool Successful {
+			get {
+				return successful;
+			}
+			internal set {
+				successful = value;
 			}
 		}
 		

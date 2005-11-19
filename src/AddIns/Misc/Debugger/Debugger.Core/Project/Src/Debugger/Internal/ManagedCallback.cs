@@ -184,14 +184,7 @@ namespace Debugger
 
 			ExitCallback_Continue();
 		}
-
-		public void EvalException(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval pEval)
-		{
-			EnterCallback("EvalException", pThread);
-
-			ExitCallback_Continue();
-		}
-
+		
 		public void LogMessage(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, int lLevel, string pLogSwitchName, string pMessage)
 		{
 			EnterCallback("LogMessage", pThread);
@@ -208,14 +201,27 @@ namespace Debugger
 			ExitCallback_Continue();
 		}
 		
+		public void EvalException(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval)
+		{
+			EnterCallback("EvalException", pThread);
+			
+			HandleEvalComplete(pAppDomain, pThread, corEval, true);
+		}
+		
 		public void EvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval)
 		{
 			EnterCallback("EvalComplete", pThread);
 			
+			HandleEvalComplete(pAppDomain, pThread, corEval, false);			
+		}
+		
+		void HandleEvalComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugEval corEval, bool exception)
+		{
 			// Let the eval know it that the CorEval has finished
 			// this will also remove the eval form PendingEvals collection
 			Eval eval = debugger.GetEval(corEval);
 			if (eval != null) {
+				eval.Successful = !exception;
 				eval.OnEvalComplete(new EvalEventArgs(eval));
 			}
 			
