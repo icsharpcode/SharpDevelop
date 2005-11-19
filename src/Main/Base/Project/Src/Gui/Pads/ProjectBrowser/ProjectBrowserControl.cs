@@ -41,10 +41,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static ProjectBrowserControl()
-		{
-		}
-		
 		public AbstractProjectBrowserTreeNode SelectedNode {
 			get {
 				return treeView.SelectedNode as AbstractProjectBrowserTreeNode;
@@ -60,9 +56,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		public ProjectBrowserControl()
 		{
 			InitializeComponent();
-			treeView.BeforeSelect      += TreeViewBeforeSelect;
-			FileService.FileRenamed   += FileServiceFileRenamed;
-			FileService.FileRemoved   += FileServiceFileRemoved;
+			treeView.BeforeSelect   += TreeViewBeforeSelect;
+			FileService.FileRenamed += FileServiceFileRenamed;
+			FileService.FileRemoved += FileServiceFileRemoved;
 			
 			ProjectService.ProjectItemAdded += ProjectServiceProjectItemAdded;
 			ProjectService.SolutionFolderRemoved += ProjectServiceSolutionFolderRemoved;
@@ -184,10 +180,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			treeView.Clear();
 		}
-		
-		#region Label editing
-		
-		#endregion
 		
 		public void PadActivated()
 		{

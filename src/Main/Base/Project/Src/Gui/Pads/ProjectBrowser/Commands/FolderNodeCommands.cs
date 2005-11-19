@@ -226,4 +226,15 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			ProjectBrowserPad.Instance.StartLabelEdit(newDirectoryNode);
 		}
 	}
+	
+	public class CreateMissingCommand : AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			TreeNode selectedNode = ProjectBrowserPad.Instance.ProjectBrowserControl.SelectedNode;
+			DirectoryNode node = selectedNode as DirectoryNode;
+			Directory.CreateDirectory(node.Directory);
+			IncludeFileInProject.IncludeDirectoryNode(node, false);
+		}
+	}
 }

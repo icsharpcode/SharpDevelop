@@ -142,6 +142,10 @@ namespace ICSharpCode.SharpDevelop.Project
 					OpenedImage = "ProjectBrowser.GhostFolder.Open";
 					ClosedImage = "ProjectBrowser.GhostFolder.Closed";
 					break;
+				case FileNodeStatus.Missing:
+					OpenedImage = "ProjectBrowser.Folder.Missing";
+					ClosedImage = "ProjectBrowser.Folder.Missing";
+					break;
 				default:
 					switch (SpecialFolder) {
 						case SpecialFolder.None:
@@ -202,12 +206,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			ContextmenuAddinTreePath = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode";
 			this.Directory = directory;
 			this.fileNodeStatus = fileNodeStatus;
-			if (fileNodeStatus != FileNodeStatus.Missing) {
-				if (System.IO.Directory.GetDirectories(Directory).Length > 0 || System.IO.Directory.GetFiles(Directory).Length > 0) {
-					removeMe = new CustomNode();
-					removeMe.AddTo(this);
-				}
-			}
+			
+			removeMe = new CustomNode();
+			removeMe.AddTo(this);
+			
 			SetIcon();
 		}
 		
@@ -269,9 +271,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (item.ItemType == ItemType.Folder || item.ItemType == ItemType.WebReferences) {
 					DirectoryNode node;
 					if (directoryNodeList.TryGetValue(fileName, out node)) {
-						node.FileNodeStatus = FileNodeStatus.InProject;
+						if (node.FileNodeStatus == FileNodeStatus.None) {
+							node.FileNodeStatus = FileNodeStatus.InProject;
+						}
 					} else {
-						new DirectoryNode(item.FileName.Trim('\\', '/'), FileNodeStatus.Missing).AddTo(this);
+						node = new DirectoryNode(item.FileName.Trim('\\', '/'), FileNodeStatus.Missing);
+						node.AddTo(this);
+						directoryNodeList[fileName] = node;
 					}
 				} else {
 					FileNode node;
@@ -281,7 +287,9 @@ namespace ICSharpCode.SharpDevelop.Project
 						fileNodeDictionary[fileName] = node;
 					} else {
 						if (fileNodeDictionary.TryGetValue(fileName, out node)) {
-							node.FileNodeStatus = FileNodeStatus.InProject;
+							if (node.FileNodeStatus == FileNodeStatus.None) {
+								node.FileNodeStatus = FileNodeStatus.InProject;
+							}
 						} else {
 							node = new FileNode(fileItem.FileName, FileNodeStatus.Missing);
 							node.AddTo(this);
@@ -325,9 +333,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				string subFolderName = virtualName.Substring(relativeDirectoryPath.Length, pos - relativeDirectoryPath.Length);
 				DirectoryNode node;
 				if (directoryNodeList.TryGetValue(subFolderName, out node)) {
-					node.FileNodeStatus = FileNodeStatus.InProject;
+					if (node.FileNodeStatus == FileNodeStatus.None) {
+						node.FileNodeStatus = FileNodeStatus.InProject;
+					}
 				} else {
-					new DirectoryNode(Path.Combine(Directory, subFolderName), FileNodeStatus.Missing).AddTo(this);
+					node = new DirectoryNode(Path.Combine(Directory, subFolderName), FileNodeStatus.Missing);
+					node.AddTo(this);
+					directoryNodeList[subFolderName] = node;
 				}
 			}
 		}
@@ -404,11 +416,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (FileNodeStatus == FileNodeStatus.Missing) {
 				FileService.RemoveFile(Directory, true);
-				ProjectService.SaveSolution();
+				Project.Save();
 			} else {
 				if (MessageService.AskQuestion("Delete '" + Text + "' and all its contents permanently ?")) {
 					FileService.RemoveFile(Directory, true);
-					ProjectService.SaveSolution();
+					Project.Save();
 				}
 			}
 		}

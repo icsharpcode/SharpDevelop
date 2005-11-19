@@ -36,9 +36,6 @@ namespace ICSharpCode.Svn.Commands
 			FileService.FileRemoving += FileRemoving;
 			FileService.FileRenaming += FileRenaming;
 			
-			//projectService.FileRemovedFromProject += FileRemoved;
-			//projectService.FileAddedToProject   += FileAdded);
-			
 			FileUtility.FileSaved += new FileNameEventHandler(FileSaved);
 			AbstractProjectBrowserTreeNode.AfterNodeInitialize += TreeNodeInitialized;
 		}
@@ -86,19 +83,20 @@ namespace ICSharpCode.Svn.Commands
 			string fullName = Path.GetFullPath(e.FileName);
 			if (!CanBeVersionControlled(fullName)) return;
 			if (e.IsDirectory) {
+				// show "cannot delete directories" message even if
+				// AutomaticallyDeleteFiles (see below) is off!
 				Status status = SvnClient.Instance.Client.SingleStatus(fullName);
 				switch (status.TextStatus) {
 					case StatusKind.None:
 					case StatusKind.Unversioned:
 						break;
 					default:
-						MessageService.ShowMessage("SubversionAddIn cannot delete directories, it is only removed from the project.");
+						MessageService.ShowMessage("SubversionAddIn cannot delete directories, the directory is only removed from the project.");
 						e.OperationAlreadyDone = true;
 						break;
 				}
 				return;
 			}
-			// show "cannot delete directories" message even if auto-delete files is off!
 			if (!AddInOptions.AutomaticallyDeleteFiles) return;
 			try {
 				Status status = SvnClient.Instance.Client.SingleStatus(fullName);
@@ -142,6 +140,7 @@ namespace ICSharpCode.Svn.Commands
 		
 		void FileRenaming(object sender, FileRenamingEventArgs e)
 		{
+			if (e.Cancel) return;
 			string fullSource = Path.GetFullPath(e.SourceFile);
 			if (!CanBeVersionControlled(fullSource)) return;
 			try {

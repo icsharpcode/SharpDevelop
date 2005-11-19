@@ -23,6 +23,7 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/SubversionItem">
+		<!-- TODO: Implement menu commands, use conditions
 		<MenuItem id = "SvnUpdate"
 		          label = "Update"
 		          icon  = "Svn.Update"
@@ -39,6 +40,7 @@
 		          label = "Create patch"
 		          icon  = "Svn.CreatePatch"
 		          class = "ICSharpCode.Svn.Commands.CreatePatchCommand"/>
+		-->
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">

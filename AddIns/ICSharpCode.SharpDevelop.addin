@@ -340,10 +340,15 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FileNode">
-		<MenuItem id = "OpenFile"
-		          label = "${res:ProjectComponent.ContextMenu.Open}"
-		          icon  = "Icons.16x16.OpenFileIcon"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
+		<ComplexCondition>
+			<Not>
+				<Condition name = "Ownerstate" ownerstate = "Missing"/>
+			</Not>
+			<MenuItem id = "OpenFile"
+			          label = "${res:ProjectComponent.ContextMenu.Open}"
+			          icon  = "Icons.16x16.OpenFileIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.OpenFileEvent"/>
+		</ComplexCondition>
 		<Condition name = "Ownerstate" ownerstate = "Missing">
 			<MenuItem id = "Remove"
 			          label = "${res:Global.RemoveButtonText}"
@@ -421,6 +426,18 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FolderNode">
+		<Condition name = "Ownerstate" ownerstate = "Missing">
+			<MenuItem id = "CreateMissing"
+			          label = "${res:ProjectComponent.ContextMenu.NewFolder}"
+			          type  = "Item"
+			          icon  = "Icons.16x16.NewFolderIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.CreateMissingCommand"/>
+			<MenuItem id = "RemoveMissing"
+			          label = "${res:Global.RemoveButtonText}"
+			          type  = "Item"
+			          icon  = "Icons.16x16.DeleteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+		</Condition>
 		<ComplexCondition>
 			<Not>
 				<Condition name = "Ownerstate" ownerstate = "Missing"/>

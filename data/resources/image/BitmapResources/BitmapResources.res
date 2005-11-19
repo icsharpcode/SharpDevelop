@@ -13,6 +13,7 @@ Svn.Update             = SubversionIcons\Svn.Update.png
 # Nes project browser icons
 ProjectBrowser.Folder.Closed = ProjectBrowserIcons\Folder.Closed.png
 ProjectBrowser.Folder.Open   = ProjectBrowserIcons\Folder.Open.png
+ProjectBrowser.Folder.Missing = ProjectBrowserIcons\Folder.Missing.png
 ProjectBrowser.GhostFolder.Closed = ProjectBrowserIcons\GhostFolder.Closed.png
 ProjectBrowser.GhostFolder.Open   = ProjectBrowserIcons\GhostFolder.Open.png
 ProjectBrowser.PropertyFolder.Closed = ProjectBrowserIcons\PropertyFolder.Closed.png
