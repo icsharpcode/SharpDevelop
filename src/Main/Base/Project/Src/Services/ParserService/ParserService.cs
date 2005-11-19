@@ -353,33 +353,51 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		static IProjectContent defaultProjectContent;
+		static DefaultProjectContent defaultProjectContent;
 		
 		public static IProjectContent DefaultProjectContent {
 			get {
 				if (defaultProjectContent == null) {
 					lock (projectContents) {
 						if (defaultProjectContent == null) {
-							LoggingService.Info("Creating default project content");
-							defaultProjectContent = new DefaultProjectContent();
-							defaultProjectContent.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
-							string[] defaultReferences = new string[] {
-								"System",
-								"System.Data",
-								"System.Drawing",
-								"System.Windows.Forms",
-								"System.XML",
-							};
-							foreach (string defaultReference in defaultReferences) {
-								ReferenceProjectItem item = new ReferenceProjectItem(null, defaultReference);
-								IProjectContent pc = ProjectContentRegistry.GetProjectContentForReference(item);
-								defaultProjectContent.ReferencedContents.Add(pc);
-							}
+							CreateDefaultProjectContent();
 						}
 					}
 				}
 				return defaultProjectContent;
 			}
+		}
+		
+		static void CreateDefaultProjectContent()
+		{
+			LoggingService.Info("Creating default project content");
+			defaultProjectContent = new DefaultProjectContent();
+			defaultProjectContent.ReferencedContents.Add(ProjectContentRegistry.Mscorlib);
+			string[] defaultReferences = new string[] {
+				"System",
+				"System.Data",
+				"System.Drawing",
+				"System.Windows.Forms",
+				"System.XML",
+			};
+			foreach (string defaultReference in defaultReferences) {
+				ReferenceProjectItem item = new ReferenceProjectItem(null, defaultReference);
+				IProjectContent pc = ProjectContentRegistry.GetProjectContentForReference(item);
+				defaultProjectContent.ReferencedContents.Add(pc);
+			}
+			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += delegate {
+				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {
+					string file = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName
+						?? WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.UntitledName;
+					if (file != null) {
+						LanguageProperties language = GetParser(file).Language;
+						if (language != null) {
+							defaultProjectContent.Language = language;
+							defaultProjectContent.DefaultImports = language.CreateDefaultImports(defaultProjectContent);
+						}
+					}
+				}
+			};
 		}
 		
 		public static ParseInformation ParseFile(string fileName, string fileContent, bool updateCommentTags, bool fireUpdate)

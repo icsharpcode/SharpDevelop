@@ -1513,75 +1513,77 @@ ConstantDeclarator<List<VariableDeclaration> constantDeclaration>
 		f.TypeReference = type;
 		constantDeclaration.Add(f);
 	.)
-	.
+.
 
 /* 9.6 */
 VariableDeclarator<List<VariableDeclaration> fieldDeclaration>
 	(.
 		Expression expr = null;
-		TypeReference type = null;ArrayList rank = null;List<Expression> dimension = null;
+		TypeReference type = null;
+		ArrayList rank = null;
+		List<Expression> dimension = null;
 	.) =
 	Identifier (. string name = t.val; .)
-	[ IF(IsSize()) ArrayInitializationModifier<out dimension> ]
-	[ IF(IsDims()) ArrayNameModifier<out rank> ]
+	[ IF(IsSize() && !IsDims()) ArrayInitializationModifier<out dimension> ]
+	[ IF(IsDims())              ArrayNameModifier<out rank> ]
 	(
-			IF (IsObjectCreation()) "As" ObjectCreateExpression<out expr>
-			(.
-				if (expr is ObjectCreateExpression) {
-					type = ((ObjectCreateExpression)expr).CreateType;
+		IF (IsObjectCreation()) "As" ObjectCreateExpression<out expr>
+		(.
+			if (expr is ObjectCreateExpression) {
+				type = ((ObjectCreateExpression)expr).CreateType;
+			} else {
+				type = ((ArrayCreateExpression)expr).CreateType;
+			}
+		.)
+	|
+		[ "As" TypeName<out type> ]
+		(.
+			if (type != null && dimension != null) {
+				if(type.RankSpecifier != null) {
+					Error("array rank only allowed one time");
 				} else {
-					type = ((ArrayCreateExpression)expr).CreateType;
-				}
-			.)
-		|
-			[ "As" TypeName<out type> ]
-			(.
-				if (type != null && dimension != null) {
-					if(type.RankSpecifier != null) {
-						Error("array rank only allowed one time");
+					for (int i = 0; i < dimension.Count; i++)
+						dimension[i] = Expression.AddInteger(dimension[i], 1);
+					if (rank == null) {
+						type.RankSpecifier = new int[] { dimension.Count - 1 };
 					} else {
-						for (int i = 0; i < dimension.Count; i++)
-							dimension[i] = Expression.AddInteger(dimension[i], 1);
-						if (rank == null) {
-							type.RankSpecifier = new int[] { dimension.Count - 1 };
-						} else {
-							rank.Insert(0, dimension.Count - 1);
-							type.RankSpecifier = (int[])rank.ToArray(typeof(int));
-						}
-						expr = new ArrayCreateExpression(type, dimension);
-					}
-				} else if (type != null && rank != null) {
-					if(type.RankSpecifier != null) {
-						Error("array rank only allowed one time");
-					} else {
+						rank.Insert(0, dimension.Count - 1);
 						type.RankSpecifier = (int[])rank.ToArray(typeof(int));
 					}
+					expr = new ArrayCreateExpression(type, dimension);
 				}
-			.)
-			[ "=" VariableInitializer<out expr> ]
+			} else if (type != null && rank != null) {
+				if(type.RankSpecifier != null) {
+					Error("array rank only allowed one time");
+				} else {
+					type.RankSpecifier = (int[])rank.ToArray(typeof(int));
+				}
+			}
+		.)
+		[ "=" VariableInitializer<out expr> ]
 	)
 	(. fieldDeclaration.Add(new VariableDeclaration(name, expr, type)); .)
-	.
+.
 
 /* 6.8 */
 ArrayInitializationModifier<out List<Expression> arrayModifiers>
-	(.
-		arrayModifiers = null;
-	.) =
+(.
+	arrayModifiers = null;
+.) =
 	"(" InitializationRankList<out arrayModifiers> ")"
-	.
+.
 
 /* 7.5.4.3 */
 InitializationRankList<out List<Expression> rank>
-	(.
-		rank = null;
-		Expression expr = null;
-	.) =
+(.
+	rank = null;
+	Expression expr = null;
+.) =
 	Expr<out expr>	(. rank = new List<Expression>(); if (expr != null) { rank.Add(expr); } .)
 	{
 		"," Expr<out expr>		(. if (expr != null) { rank.Add(expr); } .)
 	}
-	.
+.
 
 /* 9.6.3 */
 VariableInitializer<out Expression initializerExpression>
@@ -2302,8 +2304,7 @@ Block<out Statement stmt>
 	{	
 			IF (IsEndStmtAhead()) "End" EndOfStmt (. compilationUnit.AddChild(new EndStatement()); .)
 			| Statement EndOfStmt
-/*	 	IF (!LeaveBlock()) {
-		}*/
+/*	 	IF (!LeaveBlock()) { }*/
 	}
 	(.
 		stmt = blockStmt;

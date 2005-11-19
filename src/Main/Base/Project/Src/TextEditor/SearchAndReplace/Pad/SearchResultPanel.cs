@@ -220,4 +220,11 @@ namespace SearchAndReplace
 			}
 		}
 	}
+	public class BackToNormalView : ICSharpCode.SharpDevelop.AbstractMenuCommand
+	{
+		public override void Run()
+		{
+			SearchResultPanel.Instance.RemoveSpecialPanel();
+		}
+	}
 }

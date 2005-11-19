@@ -21,6 +21,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 			set;
 		}
 		
+		LanguageProperties Language {
+			get;
+		}
+		
 		IExpressionFinder CreateExpressionFinder(string fileName);
 		
 		/// <summary>

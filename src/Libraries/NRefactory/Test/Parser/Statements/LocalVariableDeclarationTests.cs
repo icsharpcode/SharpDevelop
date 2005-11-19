@@ -222,7 +222,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		}
 		
 		[Test]
-		public void VBNetLocalArrayDeclarationTest()
+		public void VBNetLocalArrayDeclarationWithInitializationTest()
 		{
 			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a(10) As Integer");
 			Assert.AreEqual(1, lvd.Variables.Count);
@@ -234,6 +234,17 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			Assert.AreEqual(new int[] { 0 } , ace.CreateType.RankSpecifier);
 			Assert.AreEqual(1, ace.Arguments.Count);
 			Assert.AreEqual(11, ((PrimitiveExpression)ace.Arguments[0]).Value);
+		}
+		
+		[Test]
+		public void VBNetLocalArrayDeclarationTest()
+		{
+			LocalVariableDeclaration lvd = ParseUtilVBNet.ParseStatement<LocalVariableDeclaration>("Dim a() As Integer");
+			Assert.AreEqual(1, lvd.Variables.Count);
+			Assert.AreEqual("a", lvd.Variables[0].Name);
+			TypeReference type = lvd.GetTypeForVariable(0);
+			Assert.AreEqual("Integer", type.Type);
+			Assert.AreEqual(new int[] { 0 } , type.RankSpecifier);
 		}
 		
 		[Test]

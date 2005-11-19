@@ -33,6 +33,12 @@ namespace ICSharpCode.XmlEditor
 			}
 		}
 		
+		public LanguageProperties Language {
+			get {
+				return null;
+			}
+		}
+		
 		public IExpressionFinder CreateExpressionFinder(string fileName)
 		{
 			return null;

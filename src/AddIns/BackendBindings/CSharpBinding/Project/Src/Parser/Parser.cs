@@ -32,6 +32,12 @@ namespace CSharpBinding.Parser
 			}
 		}
 		
+		public LanguageProperties Language {
+			get {
+				return LanguageProperties.CSharp;
+			}
+		}
+		
 		public IExpressionFinder CreateExpressionFinder(string fileName)
 		{
 			return new ExpressionFinder(fileName);

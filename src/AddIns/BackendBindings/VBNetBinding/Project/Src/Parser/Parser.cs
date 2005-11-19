@@ -22,34 +22,37 @@ namespace VBNetBinding.Parser
 	{
 		///<summary>IParser Interface</summary>
 		string[] lexerTags;
-
-		public string[] LexerTags
-		{
-			get
-			{
+		
+		public string[] LexerTags {
+			get {
 				return lexerTags;
 			}
-			set
-			{
+			set {
 				lexerTags = value;
 			}
 		}
-
+		
+		public LanguageProperties Language {
+			get {
+				return LanguageProperties.VBNet;
+			}
+		}
+		
 		public IExpressionFinder CreateExpressionFinder(string fileName)
 		{
 			return new ExpressionFinder();
 		}
-
+		
 		public bool CanParse(string fileName)
 		{
 			return Path.GetExtension(fileName).ToUpper() == ".VB";
 		}
-
+		
 		public bool CanParse(IProject project)
 		{
 			return project.Language == "VBNet";
 		}
-
+		
 		void RetrieveRegions(ICompilationUnit cu, ICSharpCode.NRefactory.Parser.SpecialTracker tracker)
 		{
 			for (int i = 0; i < tracker.CurrentSpecials.Count; ++i)
@@ -87,7 +90,7 @@ namespace VBNetBinding.Parser
 				}
 			}
 		}
-
+		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName)
 		{
 			Properties textEditorProperties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
@@ -95,7 +98,7 @@ namespace VBNetBinding.Parser
 				return Parse(p, fileName, projectContent);
 			}
 		}
-
+		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName, string fileContent)
 		{
 			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(ICSharpCode.NRefactory.Parser.SupportedLanguage.VBNet, new StringReader(fileContent))) {
@@ -129,7 +132,7 @@ namespace VBNetBinding.Parser
 			
 			return visitor.Cu;
 		}
-
+		
 		void AddCommentTags(ICompilationUnit cu, System.Collections.Generic.List<ICSharpCode.NRefactory.Parser.TagComment> tagComments)
 		{
 			foreach (ICSharpCode.NRefactory.Parser.TagComment tagComment in tagComments)
@@ -140,7 +143,7 @@ namespace VBNetBinding.Parser
 				cu.TagComments.Add(tag);
 			}
 		}
-
+		
 		public IResolver CreateResolver()
 		{
 			return new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryResolver(ICSharpCode.NRefactory.Parser.SupportedLanguage.VBNet);

@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		void OnIconPaint(object sender, ItemPaintEventArgs e)
 		{
-			e.Graphics.DrawImage(DebuggerIcons.GetImage(variable), e.ClipRectangle);
+			e.Graphics.DrawImageUnscaled(DebuggerIcons.GetImage(variable), e.ClipRectangle);
 		}
 		
 		void OnLabelEdited(object sender, DynamicListEventArgs e)

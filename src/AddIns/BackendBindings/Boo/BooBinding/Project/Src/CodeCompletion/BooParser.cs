@@ -33,6 +33,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 		}
 		
+		public LanguageProperties Language {
+			get {
+				return BooLanguageProperties.Instance;
+			}
+		}
+		
 		public IExpressionFinder CreateExpressionFinder(string fileName)
 		{
 			return new ExpressionFinder(fileName);

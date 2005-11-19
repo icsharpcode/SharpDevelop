@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.Dom
@@ -118,6 +119,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return member.IsStatic == showStatic;
 		}
 		
+		/// <summary>
+		/// Generates the default imports statements a new application for this language should use.
+		/// </summary>
+		public virtual IUsing CreateDefaultImports(IProjectContent pc)
+		{
+			return null;
+		}
+		
 		public override string ToString()
 		{
 			return "[" + base.ToString() + "]";
@@ -176,6 +185,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 						return false;
 				}
 				return base.ShowInNamespaceCompletion(c);
+			}
+			
+			public override IUsing CreateDefaultImports(IProjectContent pc)
+			{
+				DefaultUsing u = new DefaultUsing(pc);
+				u.Usings.Add("Microsoft.VisualBasic");
+				u.Usings.Add("System");
+				u.Usings.Add("System.Collections");
+				u.Usings.Add("System.Collections.Generic");
+				u.Usings.Add("System.Drawing");
+				u.Usings.Add("System.Diagnostics");
+				u.Usings.Add("System.Windows.Forms");
+				return u;
 			}
 			
 			public override string ToString()
