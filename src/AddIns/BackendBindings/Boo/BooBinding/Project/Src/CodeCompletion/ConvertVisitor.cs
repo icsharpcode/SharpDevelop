@@ -254,7 +254,6 @@ namespace Grunwald.BooBinding.CodeCompletion
 				return CreateReturnType(field.Type);
 			}
 		}
-		// TODO: Type inference
 		IReturnType CreateReturnType(AST.Method node, IMethod method)
 		{
 			if (node.ReturnType == null)

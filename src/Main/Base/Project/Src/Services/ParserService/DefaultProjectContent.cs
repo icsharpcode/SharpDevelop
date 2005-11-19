@@ -514,15 +514,17 @@ namespace ICSharpCode.Core
 		
 		protected IClass GetClassInternal(string typeName, int typeParameterCount, LanguageProperties language)
 		{
-			IClass c;
-			if (GetClasses(language).TryGetValue(typeName, out c)) {
-				GenericClassContainer gcc = c as GenericClassContainer;
-				if (gcc != null) {
-					return gcc.GetBest(typeParameterCount);
+			lock (namespaces) {
+				IClass c;
+				if (GetClasses(language).TryGetValue(typeName, out c)) {
+					GenericClassContainer gcc = c as GenericClassContainer;
+					if (gcc != null) {
+						return gcc.GetBest(typeParameterCount);
+					}
+					return c;
 				}
-				return c;
+				return null;
 			}
-			return null;
 		}
 		
 		public IClass GetClass(string typeName, int typeParameterCount, LanguageProperties language, bool lookInReferences)

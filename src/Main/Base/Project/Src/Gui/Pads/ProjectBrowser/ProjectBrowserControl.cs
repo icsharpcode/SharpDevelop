@@ -141,11 +141,25 @@ namespace ICSharpCode.SharpDevelop.Project
 			return FindFileNode(treeView.Nodes, fileName);
 		}
 		
+		/// <summary>
+		/// Selects the node of a file if it is visible
+		/// </summary>
 		public void SelectFile(string fileName)
 		{
 			FileNode node = FindFileNode(fileName);
-			if (node != null)
-				treeView.SelectedNode = node;
+			if (node != null) {
+				// select first parent that is not collapsed
+				TreeNode nodeToSelect = node;
+				TreeNode p = node.Parent;
+				while (p != null) {
+					if (!p.IsExpanded)
+						nodeToSelect = p;
+					p = p.Parent;
+				}
+				if (nodeToSelect != null) {
+					treeView.SelectedNode = nodeToSelect;
+				}
+			}
 		}
 		
 		public void ViewSolution(Solution solution)

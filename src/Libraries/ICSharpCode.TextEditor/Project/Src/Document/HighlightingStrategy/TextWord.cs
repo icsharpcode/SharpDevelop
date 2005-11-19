@@ -37,10 +37,10 @@ namespace ICSharpCode.TextEditor.Document
 				length = 1;
 			}
 			
-			public SpaceTextWord(HighlightColor  color)
+			public SpaceTextWord(HighlightColor color)
 			{
 				length = 1;
-				base.color  = color;
+				base.SyntaxColor = color;
 			}
 			
 			public override Font Font {
@@ -67,10 +67,10 @@ namespace ICSharpCode.TextEditor.Document
 			{
 				length = 1;
 			}
-			public TabTextWord(HighlightColor  color)
+			public TabTextWord(HighlightColor color)
 			{
 				length = 1;
-				base.color  = color;
+				base.SyntaxColor = color;
 			}
 			
 			public override Font Font {
@@ -158,6 +158,7 @@ namespace ICSharpCode.TextEditor.Document
 				return color;
 			}
 			set {
+				Debug.Assert(color != null);
 				color = value;
 			}
 		}
