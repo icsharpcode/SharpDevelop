@@ -55,6 +55,7 @@ namespace ICSharpCode.FormDesigner
 		
 		Panel p = new Panel();
 		DesignSurface designSurface;
+		bool disposing;
 		
 		IDesignerLoaderProvider loaderProvider;
 		IDesignerGenerator generator;
@@ -159,7 +160,11 @@ namespace ICSharpCode.FormDesigner
 			// in the PropertyPad, "InvalidOperationException: The container cannot be disposed
 			// at design time" is thrown.
 			// This is solved by calling dispose after the double-click event has been processed.
-			p.BeginInvoke(new MethodInvoker(designSurface.Dispose));
+			if (disposing) {
+				designSurface.Dispose();
+			} else {
+				p.BeginInvoke(new MethodInvoker(designSurface.Dispose));
+			}
 			designSurface = null;
 		}
 		
@@ -269,6 +274,7 @@ namespace ICSharpCode.FormDesigner
 		
 		public override void Dispose()
 		{
+			disposing = true;
 			if (IsFormDesignerVisible) {
 				Deselected();
 			}
