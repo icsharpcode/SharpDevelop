@@ -141,7 +141,9 @@ namespace ICSharpCode.Core
 					break;
 				case ItemType.Compile:
 					ParseInformation info = ParserService.GetParseInformation(e.ProjectItem.FileName);
-					RemoveCompilationUnit(info.MostRecentCompilationUnit);
+					if (info != null) {
+						RemoveCompilationUnit(info.MostRecentCompilationUnit);
+					}
 					ParserService.ClearParseInformation(e.ProjectItem.FileName);
 					break;
 			}

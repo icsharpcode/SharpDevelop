@@ -458,7 +458,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (File.Exists(clipboardObject.FileName)) {
 					ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject.CopyFile(clipboardObject.FileName, this, true);
 					if (clipboardObject.PerformMove) {
-						FileService.RemoveFile(clipboardObject.FileName, false);
+						string copiedFileName = Path.Combine(Directory, Path.GetFileName(clipboardObject.FileName));
+						if (!FileUtility.IsEqualFileName(clipboardObject.FileName, copiedFileName)) {
+							FileService.RemoveFile(clipboardObject.FileName, false);
+						}
 					}
 				}
 			} else if (dataObject.GetDataPresent(typeof(DirectoryNode))) {
