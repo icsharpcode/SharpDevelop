@@ -205,7 +205,7 @@ namespace ICSharpCode.MbUnitPad
 		void ShowErrorList()
 		{
 			if (TaskService.SomethingWentWrong) {
-				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
+				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 		}
 	}

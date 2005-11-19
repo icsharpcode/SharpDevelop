@@ -21,10 +21,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public override bool IsChecked {
 			get {
-				return ErrorList.Instance.ShowErrors;
+				return ErrorListPad.Instance.ShowErrors;
 			}
 			set {
-				ErrorList.Instance.ShowErrors = value;
+				ErrorListPad.Instance.ShowErrors = value;
 			}
 		}
 	}
@@ -33,10 +33,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public override bool IsChecked {
 			get {
-				return ErrorList.Instance.ShowWarnings;
+				return ErrorListPad.Instance.ShowWarnings;
 			}
 			set {
-				ErrorList.Instance.ShowWarnings = value;
+				ErrorListPad.Instance.ShowWarnings = value;
 			}
 		}
 	}
@@ -45,12 +45,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		public override bool IsChecked {
 			get {
-				return ErrorList.Instance.ShowMessages;
+				return ErrorListPad.Instance.ShowMessages;
 			}
 			set {
-				ErrorList.Instance.ShowMessages = value;
+				ErrorListPad.Instance.ShowMessages = value;
 			}
 		}
 	}
-	
 }

@@ -414,7 +414,7 @@
     <Compile Include="Src\Internal\Doozers\PadDescriptor.cs" />
     <Compile Include="Src\Project\MissingProject.cs" />
     <Compile Include="Src\Project\UnknownProject.cs" />
-    <Compile Include="Src\Gui\Pads\ErrorList\ErrorList.cs" />
+    <Compile Include="Src\Gui\Pads\ErrorList\ErrorListPad.cs" />
     <Compile Include="Src\Gui\Pads\ErrorList\ErrorListToolbarCommands.cs" />
     <Compile Include="Src\Gui\Pads\CompilerMessageView\CompilerMessageViewToolbarCommands.cs" />
     <Compile Include="Src\Services\ParserService\DefaultProjectContent.cs" />
@@ -728,7 +728,7 @@
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\TextCompletionDataProvider.cs" />
     <Compile Include="Src\TextEditor\Gui\Editor\CompletionWindow\OverrideCompletionDataProvider.cs" />
     <Compile Include="Src\Gui\Pads\TaskList\TaskView.cs" />
-    <Compile Include="Src\Gui\Pads\TaskList\TaskList.cs" />
+    <Compile Include="Src\Gui\Pads\TaskList\TaskListPad.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

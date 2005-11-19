@@ -40,7 +40,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						LastErrorCount++;
 				}
 				if (results.Errors.Count > 0) {
-					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
+					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 				}
 			}
 		}
@@ -50,7 +50,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			LastErrorCount = 1;
 			LastWarningCount = 0;
 			TaskService.Add(new Task(null, StringParser.Parse("${res:BackendBindings.ExecutionManager.NoSingleFileCompilation}"), 0, 0, TaskType.Error));
-			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
+			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 		}
 		
 		public override void Run()
@@ -120,7 +120,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					TaskService.Add(new Task(error));
 				}
 				if (results.Errors.Count > 0) {
-					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
+					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 				}
 			}
 		}

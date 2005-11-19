@@ -17,7 +17,7 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Gui
 {
-	public class OpenTaskView : AbstractPadContent
+	public class TaskListPad : AbstractPadContent
 	{
 		TaskView taskView = new TaskView();
 		
@@ -27,8 +27,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public OpenTaskView()
-		{		
+		public TaskListPad()
+		{
 			RedrawContent();
 
 			TaskService.Cleared += new EventHandler(TaskServiceCleared);
@@ -37,8 +37,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			ProjectService.SolutionLoaded += OnCombineOpen;
 			ProjectService.SolutionClosed += OnCombineClosed;
-									
-			ShowResults2(null, null);
+			
+			InternalShowResults(null, null);
 		}
 		
 		public override void RedrawContent()
@@ -48,19 +48,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void OnCombineOpen(object sender, SolutionEventArgs e)
 		{
-			taskView.Items.Clear();
+			taskView.ClearTasks();
 		}
 		
 		void OnCombineClosed(object sender, EventArgs e)
 		{
-			taskView.Items.Clear();
+			taskView.ClearTasks();
 		}
 		
 		public CompilerResults CompilerResults = null;
 		
 		void TaskServiceCleared(object sender, EventArgs e)
 		{
-			taskView.Items.Clear();
+			taskView.ClearTasks();
 		}
 		
 		void TaskServiceAdded(object sender, TaskEventArgs e)
@@ -72,32 +72,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void TaskServiceRemoved(object sender, TaskEventArgs e)
 		{
-			Task task = e.Task;
-			if (task.TaskType == TaskType.Comment) {
-				for (int i = 0; i < taskView.Items.Count; ++i) {
-					if ((Task)taskView.Items[i].Tag == task) {
-						taskView.Items.RemoveAt(i);
-						break;
-					}
-				}
+			if (e.Task.TaskType == TaskType.Comment) {
+				taskView.RemoveTask(e.Task);
 			}
 		}
 		
-		void ShowResults2(object sender, EventArgs e)
+		void InternalShowResults(object sender, EventArgs e)
 		{
-			taskView.BeginUpdate();
-			taskView.Items.Clear();
-			
-			foreach (Task task in TaskService.CommentTasks) {
-				taskView.AddTask(task);
-			}
-			
-			taskView.EndUpdate();
+			taskView.UpdateResults(TaskService.CommentTasks);
 		}
 		
 		public void ShowResults(object sender, EventArgs e)
 		{
-			taskView.Invoke(new EventHandler(ShowResults2));
+			taskView.Invoke(new EventHandler(InternalShowResults));
 //			SelectTaskView(null, null);
 		}
 	}

@@ -292,7 +292,7 @@ namespace ICSharpCode.NAntAddIn.Commands
 			if (tasks.Count > 0) {				
 				//if ((bool)PropertyService.Get("SharpDevelop.ShowTaskListAfterBuild", true)) {
 					IWorkbench workbench = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench;
-					PadDescriptor padDescriptor = workbench.GetPad(typeof(ErrorList));		
+					PadDescriptor padDescriptor = workbench.GetPad(typeof(ErrorListPad));		
 					if (padDescriptor != null) {
 						WorkbenchSingleton.SafeThreadAsyncCall(padDescriptor, "BringPadToFront");
 					}

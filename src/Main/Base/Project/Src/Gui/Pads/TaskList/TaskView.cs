@@ -5,7 +5,8 @@
 //     <version>$Revision$</version>
 // </file>
 
-// much of TaskView's code has been refactored from OpenTaskView.cs & ErrorList.cs
+// much of TaskView's code has been refactored from 
+//  TaskList.cs (formerly OpenTaskView.cs) & ErrorList.cs
 
 using System;
 using System.Collections;
@@ -27,6 +28,28 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public class TaskView : ListView
 	{
+		ColumnHeader type        = new ColumnHeader();
+		ColumnHeader line        = new ColumnHeader();
+		ColumnHeader description = new ColumnHeader();
+		ColumnHeader file        = new ColumnHeader();
+		ColumnHeader path        = new ColumnHeader();
+		ToolTip taskToolTip = new ToolTip();
+
+		public Task SelectedTask {
+			get {
+				if (this.FocusedItem==null) {
+					return null;
+				}
+				return (Task)this.FocusedItem.Tag;
+			}
+		}
+		
+		public bool TaskIsSelected {
+			get {
+				return this.FocusedItem!=null;
+			}
+		}
+		
 		public TaskView() : base()
 		{
 			RefreshColumnNames();
@@ -50,10 +73,17 @@ namespace ICSharpCode.Core
 			
 			ImageList imglist = new ImageList();
 			imglist.ColorDepth = ColorDepth.Depth32Bit;
+			// HACK: these images must be in the same order as the TaskType enumeration.
+			//       because of how the ListViewItem's ImageIndex is set in TaskView.AddTask();
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Error"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Warning"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Information"));
 			imglist.Images.Add(ResourceService.GetBitmap("Icons.16x16.Question"));
+			// TODO: use reflection and a custom attribute on the TaskType enumeration to tie this ImageList to TaskType
+//			imglist.Images.Add(ResourceService.GetBitmap(Task.GetBitmapName(TaskType.Error)));
+//			imglist.Images.Add(ResourceService.GetBitmap(Task.GetBitmapName(TaskType.Warning)));
+//			imglist.Images.Add(ResourceService.GetBitmap(Task.GetBitmapName(TaskType.Message)));
+//			imglist.Images.Add(ResourceService.GetBitmap(Task.GetBitmapName(TaskType.Comment)));
 			this.SmallImageList = this.LargeImageList = imglist;
 
 			// Set up the delays for the ToolTip.
@@ -64,27 +94,20 @@ namespace ICSharpCode.Core
 //			// Force the ToolTip text to be displayed whether or not the form is active.
 //			taskToolTip.ShowAlways   = false;
 			
+			SortBy(TaskViewCols.Path);
 		}
-
-		ColumnHeader type        = new ColumnHeader();
-		ColumnHeader line        = new ColumnHeader();
-		ColumnHeader description = new ColumnHeader();
-		ColumnHeader file        = new ColumnHeader();
-		ColumnHeader path        = new ColumnHeader();
-		ToolTip taskToolTip = new ToolTip();
 		
 		public void RefreshColumnNames()
 		{
-			type.Text = "!";
+			type.Text        = "!";
 			line.Text        = ResourceService.GetString("CompilerResultView.LineText");
 			description.Text = ResourceService.GetString("CompilerResultView.DescriptionText");
 			file.Text        = ResourceService.GetString("CompilerResultView.FileText");
 			path.Text        = ResourceService.GetString("CompilerResultView.PathText");
 		}
 		
+		#region Event Overrides
 		protected override void OnResize(EventArgs e) {
-			base.OnResize(e);
-
 			// recalculate column widths
 			type.Width = 24;
 			line.Width = 50;
@@ -92,23 +115,22 @@ namespace ICSharpCode.Core
 			file.Width = w * 15 / 100;
 			path.Width = w * 15 / 100;
 			description.Width = w - file.Width - path.Width - 5;
+
+			base.OnResize(e);
 		}
 		
 		protected override void OnColumnClick(ColumnClickEventArgs e)
-		{
+		{	
+			SortBy(e.Column);
 			base.OnColumnClick(e);
-			
-			this.ListViewItemSorter = new TaskViewSorter(e.Column);
 		}
 		
 		protected override void OnItemActivate(EventArgs e) {
-			base.OnItemActivate(e);
-		
 			if (this.FocusedItem != null) {
-				Task task = (Task)this.FocusedItem.Tag;
-				System.Diagnostics.Debug.Assert(task != null);
-				task.JumpToPosition();
+				System.Diagnostics.Debug.Assert(SelectedTask != null);
+				SelectedTask.JumpToPosition();
 			}
+			base.OnItemActivate(e);		
 		}
 
 		ListViewItem currentListViewItem = null;
@@ -132,11 +154,17 @@ namespace ICSharpCode.Core
 				currentListViewItem = item;
 			}
 		}
+		#endregion
+		
+		#region Task Management
+		
+		public void ClearTasks()
+		{
+			this.Items.Clear();
+		}
 		
 		public void AddTask(Task task)
 		{
-			int imageIndex = 3;
-			
 			string tmpPath;
 			if (task.Project != null && task.FileName != null) {
 				tmpPath = FileUtility.GetRelativePath(task.Project.Directory, task.FileName);
@@ -162,14 +190,16 @@ namespace ICSharpCode.Core
 			                                     	fileName,
 			                                     	path
 			                                     });
-			item.ImageIndex = item.StateImageIndex = imageIndex;
+			item.ImageIndex = item.StateImageIndex = (int)task.TaskType;
 			item.Tag = task;
+			
 			// insert new item into sorted list (binary search)
+			// ... using the current ListViewItemSorter
 			int left = 0;
 			int right = this.Items.Count - 1;
 			while (left <= right) {
 				int m = left + (right - left) / 2;
-				if (CompareItems(item, this.Items[m])) {
+				if (this.ListViewItemSorter.Compare(item, this.Items[m]) > 0) {
 					left = m + 1;
 				} else {
 					right = m - 1;
@@ -177,28 +207,6 @@ namespace ICSharpCode.Core
 			}
 			this.Items.Insert(left, item);
 		}
-		
-		// TODO: DavidAlpert - convert CompareItems into an IComparer implementation and
-		//                     install it as the default ListViewItemSorter; then modify
-		//                     AddTask to use the current ListViewItemSorter when adding
-		//                     new items.
-
-		/// <summary>Returns true when a &gt; b</summary>
-		bool CompareItems(ListViewItem a, ListViewItem b)
-		{
-			// TODO: DavidAlpert - convert ListViewItem.SubItem index references into TaskViewCol enum.
-
-			// insert sorted by: Directory, FileName, Line
-			int res = string.Compare(a.SubItems[3].Text, b.SubItems[4].Text, StringComparison.InvariantCultureIgnoreCase);
-			if (res > 0) return true;
-			if (res < 0) return false;
-			res = string.Compare(a.SubItems[3].Text, b.SubItems[3].Text, StringComparison.InvariantCultureIgnoreCase);
-			if (res > 0) return true;
-			if (res < 0) return false;
-			Task x = (Task)a.Tag;
-			Task y = (Task)b.Tag;
-			return x.Line > y.Line;
-		}		
 		
 		/// <summary>
 		/// Removes new lines, carriage returns and tab characters from
@@ -213,81 +221,124 @@ namespace ICSharpCode.Core
 			return FormattedDescription.Replace("\n", " ");
 		}
 		
+		public void RemoveTask(Task task)
+		{
+			for (int i = 0; i < Items.Count; ++i) {
+				if ((Task)Items[i].Tag == task) {
+					Items.RemoveAt(i);
+					break;
+				}
+			}			
+		}
+		
+		public void UpdateResults(System.Collections.Generic.IEnumerable<ICSharpCode.Core.Task> taskSet)
+		{
+			this.BeginUpdate();
+			this.ClearTasks();
+			
+			foreach (Task task in taskSet) {
+				this.AddTask(task);
+			}
+			
+			this.EndUpdate();
+		}
+					
+		#endregion
+		
 		#region Custom IComparer for sorting TaskView.
 
+		int currentSortColumn = -1;
+		SortOrder currentSortOrder = SortOrder.Ascending;
+		
+		/// <summary>
+		/// Applies the specified sort request by creating, 
+		/// configuring, and installing a 
+		/// <see cref="TaskViewSorter"/>.
+		/// </summary>
+		private void SortBy(TaskViewCols col)
+		{
+			SortBy((int)col);
+		}
+		private void SortBy(int col)
+		{
+			if (col==currentSortColumn) {
+				// same as last sort; toggle the current sort order.
+				if (currentSortOrder == SortOrder.Ascending) {
+					currentSortOrder = SortOrder.Descending;
+				} else {
+					currentSortOrder = SortOrder.Ascending;
+				}
+			} else {
+				currentSortColumn = col;
+				currentSortOrder = SortOrder.Ascending;
+			}
+			
+			this.ListViewItemSorter = 
+				new TaskViewSorter(currentSortColumn, currentSortOrder);
+		}
+		
 		/// <summary>
 		/// Custom <see cref="IComparer"/> for TaskView.
 		/// </summary>
 		private class TaskViewSorter : IComparer
 		{
-			static int currentSortColumn = -1;
-			static SortOrder currentSortOrder = SortOrder.Ascending;
+			int sortCol = -1;
+			SortOrder sortOrder = SortOrder.Ascending;
 			
-			public TaskViewSorter(int col)
+			public TaskViewSorter(int col, SortOrder order)
 			{
-				if (col==currentSortColumn) {
-					if (currentSortOrder == SortOrder.Ascending) {
-						currentSortOrder = SortOrder.Descending;
-					} else {
-						currentSortOrder = SortOrder.Ascending;
-					}
-				} else {
-					currentSortColumn = col;
-					currentSortOrder = SortOrder.Ascending;
-				}
+				sortCol = col;
+				sortOrder = order;
 			}
-			
-			/// <summary>
-			/// Compares 2 Int32 objects using <see cref="Int32.CompareTo"/>.
-			/// </summary>
-			/// <returns>
-			/// A signed number indicating the relative values of two Int32
-			/// objects; less than zero if b is less than a.
-			/// </returns>
-			protected int CompareAsInt32(object a, object b)
+						
+			protected int CompareLineNumbers(ListViewItem a, ListViewItem b)
 			{
-				return Convert.ToInt32(a).CompareTo(Convert.ToInt32(b));
+				return ((Task)a.Tag).Line.CompareTo(((Task)b.Tag).Line);
 			}
-			
-			protected int CompareAsText(ListViewItem a, ListViewItem b, TaskViewCols c)
+
+			protected int CompareAsText(ListViewItem a, ListViewItem b, TaskViewCols col)
 			{
-				return CompareAsText(a, b, (int)c);
+				return CompareAsText(a, b, (int)col);
 			}
-			
-			protected int CompareAsText(ListViewItem a, ListViewItem b, int c)
+			protected int CompareAsText(ListViewItem a, ListViewItem b, int col)
 			{
-				return a.SubItems[(int)c].Text.CompareTo(b.SubItems[(int)c].Text);;
+				return a.SubItems[col].Text.CompareTo(b.SubItems[col].Text);;
 			}
 			
 			#region System.Collections.IComparer interface implementation
 
 			/// <summary>
 			/// The meat of this IComparer class; intelligently compares
-			/// two FileReportResults items.
+			/// two TaskView ListItems.
 			/// </summary>
 			/// <returns>
 			/// A signed integer indicating the relative sort ranking
 			/// of item <paramref name="x"/> relative to item
 			/// <paramref name="y"/>.
+			/// Return value greater than zero: x > y.  
+			/// Return value is zero: x == y.  
+			/// Return value is less than zero: x \< y.
 			/// </returns>
 			public int Compare(object x, object y) {
 				ListViewItem a = (ListViewItem)x;   // List item a
 				ListViewItem b = (ListViewItem)y;   // List item b
 				int r = 0;                          // the result
 				
-				if (currentSortColumn==(int)TaskViewCols.Line) {
-					r = CompareAsInt32(a.SubItems[currentSortColumn].Text,
-					                   b.SubItems[currentSortColumn].Text);
+				if (sortCol==(int)TaskViewCols.Line) {
+					
+					// Sorts as Line Number
+					r = CompareLineNumbers(a, b);
+					
 				} else { // all others
 					
-					r = CompareAsText(a, b, currentSortColumn);
+					r = CompareAsText(a, b, sortCol);
 					
 					// doing this test first is an optimization; we only
 					// need to check for secondary sort conditions if
 					// the primary test is a tie.
 					if (r == 0) {
 
-						if (currentSortColumn==(int)TaskViewCols.Path) {
+						if (sortCol==(int)TaskViewCols.Path) {
 							
 							// Sorts as Path -> File
 							r = CompareAsText(a, b, TaskViewCols.File);
@@ -295,19 +346,18 @@ namespace ICSharpCode.Core
 							if (r == 0) {
 
 								// Sorts as Path -> File -> Line
-								r = CompareAsText(a, b, TaskViewCols.Line);
+								r = CompareLineNumbers(a, b);
 							}
 							
-						} else if (currentSortColumn==(int)TaskViewCols.File) {
+						} else if (sortCol==(int)TaskViewCols.File) {
 
 							// Sorts as File -> Line
-							r = CompareAsInt32(a.SubItems[(int)TaskViewCols.Line].Text,
-							                   b.SubItems[(int)TaskViewCols.Line].Text);
+							r = CompareLineNumbers(a, b);
 						}
 					}
 				}
 				
-				if (currentSortOrder == SortOrder.Descending) {
+				if (sortOrder == SortOrder.Descending) {
 					// Return the opposite ranking
 					return -r;
 				}

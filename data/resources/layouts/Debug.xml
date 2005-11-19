@@ -6,11 +6,11 @@
     <Content ID="0" PersistString="ICSharpCode.MbUnitPad.MbUnitPadContent" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
     <Content ID="1" PersistString="ICSharpCode.SharpDevelop.Project.ProjectBrowserPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="2" PersistString="ICSharpCode.SharpDevelop.Gui.SideBarView" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
-    <Content ID="3" PersistString="ICSharpCode.SharpDevelop.Gui.OpenTaskView" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
+    <Content ID="3" PersistString="ICSharpCode.SharpDevelop.Gui.TaskListPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
     <Content ID="4" PersistString="ICSharpCode.SharpDevelop.Gui.CompilerMessageView" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="5" PersistString="ICSharpCode.SharpDevelop.Gui.PropertyPad" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
     <Content ID="6" PersistString="ICSharpCode.SharpDevelop.Gui.FileScout" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
-    <Content ID="7" PersistString="ICSharpCode.SharpDevelop.Gui.ErrorList" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
+    <Content ID="7" PersistString="ICSharpCode.SharpDevelop.Gui.ErrorListPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />
     <Content ID="8" PersistString="SearchAndReplace.SearchResultPanel" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
     <Content ID="9" PersistString="ICSharpCode.SharpDevelop.Gui.ClassBrowser" AutoHidePortion="0.25" IsHidden="True" IsFloat="False" />
     <Content ID="10" PersistString="ICSharpCode.SharpDevelop.Gui.Pads.BreakPointsPad" AutoHidePortion="0.25" IsHidden="False" IsFloat="False" />

@@ -650,7 +650,7 @@ namespace ICSharpCode.XmlEditor
 		void ShowErrorList()
 		{
 			if (ShowErrorListAfterBuild && TaskService.SomethingWentWrong) {
-				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorList)).BringPadToFront();
+				WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 			}
 		}
 		

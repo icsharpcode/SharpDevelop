@@ -54,13 +54,13 @@
 		     title    = "${res:MainWindow.Windows.ErrorList}"
 		     shortcut = "Control|Alt|K"
 		     icon     = "PadIcons.ErrorList"
-		     class    = "ICSharpCode.SharpDevelop.Gui.ErrorList"/>
+		     class    = "ICSharpCode.SharpDevelop.Gui.ErrorListPad"/>
 		
-		<Pad id       = "OpenTaskView"
+		<Pad id       = "TaskList"
 		     category = "Main"
 		     title    = "${res:MainWindow.Windows.TaskList}"
 		     icon     = "PadIcons.TaskList"
-		     class    = "ICSharpCode.SharpDevelop.Gui.OpenTaskView"/>
+		     class    = "ICSharpCode.SharpDevelop.Gui.TaskListPad"/>
 		
 		<Pad id       = "CompilerMessageView"
 		     category = "Main"
