@@ -30,6 +30,7 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 using ICSharpCode.Core;
 using ICSharpCode.FormDesigner.Services;
+using ICSharpCode.FormDesigner.FormDesigner.UndoRedo;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
@@ -60,6 +61,7 @@ namespace ICSharpCode.FormDesigner
 		IDesignerLoaderProvider loaderProvider;
 		IDesignerGenerator generator;
 		DesignerResourceService designerResourceService;
+		FormDesignerUndoEngine undoEngine;
 				
 		public override Control Control {
 			get {
@@ -144,6 +146,10 @@ namespace ICSharpCode.FormDesigner
 			designSurface.BeginLoad(designerLoader);
 			
 			generator.Attach(this);
+			
+			LoggingService.Debug("Creating UndoEngine.");
+			undoEngine = new FormDesignerUndoEngine(Host);
+			LoggingService.Debug("UndoEngine created.");
 			
 			IComponentChangeService componentChangeService = (IComponentChangeService)designSurface.GetService(typeof(IComponentChangeService));
 			componentChangeService.ComponentChanged += delegate { viewContent.IsDirty = true; };
@@ -329,27 +335,25 @@ namespace ICSharpCode.FormDesigner
 		
 		public bool IsFormDesignerVisible = false;
 		
-		#region IUndoHandler impelementation
+		#region IUndoHandler implementation
 		public bool EnableUndo {
 			get {
-				return true;
+				return undoEngine.EnableUndo;
 			}
 		}
 		public bool EnableRedo {
 			get {
-				return true;
+				return undoEngine.EnableRedo;
 			}
 		}
 		public virtual void Undo()
 		{
-			IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
-			menuCommandService.GlobalInvoke(StandardCommands.Undo);
+			undoEngine.Undo();
 		}
 		
 		public virtual void Redo()
 		{
-			IMenuCommandService menuCommandService = (IMenuCommandService)designSurface.GetService(typeof(IMenuCommandService));
-			menuCommandService.GlobalInvoke(StandardCommands.Redo);
+			undoEngine.Redo();
 		}
 		#endregion
 		

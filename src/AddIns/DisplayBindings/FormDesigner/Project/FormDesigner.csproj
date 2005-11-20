@@ -95,11 +95,6 @@
     <Compile Include="Src\FormDesigner\Services\TypeResolutionService.cs" />
     <Compile Include="Src\FormDesigner\Services\UIService.cs" />
     <Compile Include="Src\FormDesigner\ToolboxProvider.cs" />
-    <Compile Include="Src\FormDesigner\UndoRedo\ComponentAddedUndoAction.cs" />
-    <Compile Include="Src\FormDesigner\UndoRedo\ComponentChangedUndoAction.cs" />
-    <Compile Include="Src\FormDesigner\UndoRedo\ComponentRemovedUndoAction.cs" />
-    <Compile Include="Src\FormDesigner\UndoRedo\SelectComponentsUndoAction.cs" />
-    <Compile Include="Src\FormDesigner\UndoRedo\UndoHandler.cs" />
     <EmbeddedResource Include="Src\FormDesigner\Gui\ICSharpCode.SharpDevelop.FormDesigner.Gui.AssemblyList.resources" />
     <EmbeddedResource Include="Src\FormDesigner\Gui\ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.ControlLibrariesPanel.resources" />
     <None Include="FormDesigner.addin">
@@ -110,6 +105,7 @@
     <Compile Include="Src\FormDesigner\DesignerLoader\FormDesignerLoadException.cs" />
     <Compile Include="Src\FormDesigner\DesignerGenerator\AbstractDesignerGenerator.cs" />
     <Compile Include="Src\FormDesigner\Services\TypeDiscoveryService.cs" />
+    <Compile Include="Src\FormDesigner\UndoRedo\FormDesignerUndoEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
