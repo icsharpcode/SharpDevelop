@@ -379,6 +379,7 @@ namespace ICSharpCode.Core
 				"System.Drawing",
 				"System.Windows.Forms",
 				"System.XML",
+				"Microsoft.VisualBasic",
 			};
 			foreach (string defaultReference in defaultReferences) {
 				ReferenceProjectItem item = new ReferenceProjectItem(null, defaultReference);

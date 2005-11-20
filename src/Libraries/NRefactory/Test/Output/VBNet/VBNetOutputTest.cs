@@ -97,6 +97,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void ArrayInitialization()
+		{
+			TestStatement("Dim a As Object() = New Object(10) {}");
+		}
+		
+		[Test]
 		public void Assignment()
 		{
 			TestExpression("a = b");
@@ -179,6 +185,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void PrimitiveCast()
 		{
 			TestExpression("CStr(a)");
+		}
+		
+		[Test]
+		public void TypeOfIs()
+		{
+			TestExpression("TypeOf a Is String");
 		}
 		
 		[Test]

@@ -36,7 +36,11 @@ namespace ICSharpCode.Svn.Commands
 		
 		void DoExportCommand()
 		{
-			SvnClient.Instance.Client.Export(from, to, revision, false);
+			try {
+				SvnClient.Instance.Client.Export(from, to, revision, false);
+			} catch (SvnClientException ex) {
+				MessageService.ShowError(ex.Message);
+			}
 		}
 		
 		/// <summary>

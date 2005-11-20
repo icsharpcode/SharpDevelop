@@ -23,17 +23,13 @@ namespace ICSharpCode.Svn.Commands
 		bool recurse;
 		Revision revision = null;
 		
-		/// <summary>
-		/// Creates a new CheckoutCommand
-		/// </summary>
-		public CheckoutCommand()
-		{
-			
-		}
-		
 		void DoCheckoutCommand()
 		{
-			SvnClient.Instance.Client.Checkout(from, to, revision, recurse);
+			try {
+				SvnClient.Instance.Client.Checkout(from, to, revision, recurse);
+			} catch (SvnClientException ex) {
+				MessageService.ShowError(ex.Message);
+			}
 		}
 		
 		/// <summary>

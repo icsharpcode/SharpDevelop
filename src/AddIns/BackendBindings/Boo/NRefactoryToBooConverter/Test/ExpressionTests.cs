@@ -214,19 +214,19 @@ namespace NRefactoryToBooConverter.Tests
 		[Test]
 		public void CreateEmptyArray()
 		{
-			TestExpr("new int[] { }", "(,)");
+			TestExpr("new int[] { }", "(of System.Int32: ,)");
 		}
 		
 		[Test]
 		public void CreateArrayWithOneElement()
 		{
-			TestExpr("new int[] { 1 }", "(1,)");
+			TestExpr("new int[] { 1 }", "(of System.Int32: 1)");
 		}
 		
 		[Test]
 		public void CreateArrayWithTwoElements()
 		{
-			TestExpr("new int[] { 1 , 2 }", "(1, 2)");
+			TestExpr("new int[] { 1 , 2 }", "(of System.Int32: 1, 2)");
 		}
 		
 		[Test]
@@ -253,10 +253,10 @@ namespace NRefactoryToBooConverter.Tests
 			TestExpr("a ? b : c", "a ? b : c");
 		}
 		
-		[Test, Ignore("ConditionalExpression does not have a boo syntax")]
+		[Test]
 		public void NullCoalescing()
 		{
-			TestExpr("a ?? b", "(a != null) ? a : b");
+			TestExpr("a ?? b", "(a or b)");
 		}
 	}
 }

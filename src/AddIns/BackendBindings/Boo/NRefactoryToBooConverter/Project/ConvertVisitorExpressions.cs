@@ -247,6 +247,8 @@ namespace NRefactoryToBooConverter
 					return B.BinaryOperatorType.Modulus;
 				case BinaryOperatorType.Multiply:
 					return B.BinaryOperatorType.Multiply;
+				case BinaryOperatorType.NullCoalescing:
+					return B.BinaryOperatorType.Or;
 				case BinaryOperatorType.Power:
 					return B.BinaryOperatorType.Exponentiation;
 				case BinaryOperatorType.ReferenceEquality:

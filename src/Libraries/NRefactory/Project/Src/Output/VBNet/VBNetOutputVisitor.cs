@@ -125,6 +125,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 
 		public object Visit(TypeReference typeReference, object data)
 		{
+			PrintTypeReferenceWithoutArray(typeReference);
+			if (typeReference.IsArrayType) {
+				PrintArrayRank(typeReference.RankSpecifier, 0);
+			}
+			return null;
+		}
+		
+		void PrintTypeReferenceWithoutArray(TypeReference typeReference)
+		{
 			if (typeReference.IsGlobal) {
 				outputFormatter.PrintToken(Tokens.Global);
 				outputFormatter.PrintToken(Tokens.Dot);
@@ -148,16 +157,17 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			for (int i = 0; i < typeReference.PointerNestingLevel; ++i) {
 				outputFormatter.PrintToken(Tokens.Times);
 			}
-			if (typeReference.IsArrayType) {
-				for (int i = 0; i < typeReference.RankSpecifier.Length; ++i) {
-					outputFormatter.PrintToken(Tokens.OpenParenthesis);
-					for (int j = 0; j < typeReference.RankSpecifier[i]; ++j) {
-						outputFormatter.PrintToken(Tokens.Comma);
-					}
-					outputFormatter.PrintToken(Tokens.CloseParenthesis);
+		}
+		
+		void PrintArrayRank(int[] rankSpecifier, int startRank)
+		{
+			for (int i = startRank; i < rankSpecifier.Length; ++i) {
+				outputFormatter.PrintToken(Tokens.OpenParenthesis);
+				for (int j = 0; j < rankSpecifier[i]; ++j) {
+					outputFormatter.PrintToken(Tokens.Comma);
 				}
+				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			}
-			return null;
 		}
 		
 		public object Visit(InnerClassTypeReference typeReference, object data)
@@ -283,13 +293,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				case ClassType.Interface:
 					return Tokens.Interface;
 				case ClassType.Struct:
-					// FIXME: This should be better in VBNetRefactory class because it is an AST transformation, but currently I'm too lazy
-					if (TypeHasOnlyStaticMembers(typeDeclaration)) {
-						goto case ClassType.Class;
-					}
 					return Tokens.Structure;
+				default:
+					return Tokens.Class;
 			}
-			return Tokens.Class;
 		}
 		
 		void PrintTemplates(List<TemplateDefinition> templates)
@@ -2108,11 +2115,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintToken(Tokens.TypeOf);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(typeOfIsExpression.TypeReference, data);
+			nodeTracker.TrackedVisit(typeOfIsExpression.Expression, data);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Is);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(typeOfIsExpression.Expression, data);
+			nodeTracker.TrackedVisit(typeOfIsExpression.TypeReference, data);
 			return null;
 		}
 		
@@ -2268,16 +2275,23 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintToken(Tokens.New);
 			outputFormatter.Space();
-			nodeTracker.TrackedVisit(arrayCreateExpression.CreateType, data);
+			PrintTypeReferenceWithoutArray(arrayCreateExpression.CreateType);
 			
-			for (int i = 0; i < arrayCreateExpression.Arguments.Count; ++i) {
+			if (arrayCreateExpression.Arguments.Count > 0) {
 				outputFormatter.PrintToken(Tokens.OpenParenthesis);
-				nodeTracker.TrackedVisit((INode)arrayCreateExpression.Arguments[i], data);
+				AppendCommaSeparatedList(arrayCreateExpression.Arguments);
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
+				PrintArrayRank(arrayCreateExpression.CreateType.RankSpecifier, 1);
+			} else {
+				PrintArrayRank(arrayCreateExpression.CreateType.RankSpecifier, 0);
 			}
 			
-			if (!arrayCreateExpression.ArrayInitializer.IsNull) {
-				outputFormatter.Space();
+			outputFormatter.Space();
+			
+			if (arrayCreateExpression.ArrayInitializer.IsNull) {
+				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
+				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+			} else {
 				nodeTracker.TrackedVisit(arrayCreateExpression.ArrayInitializer, data);
 			}
 			return null;
@@ -2488,30 +2502,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			
 			return false;
-		}
-
-		bool TypeHasOnlyStaticMembers(TypeDeclaration typeDeclaration)
-		{
-			foreach (object o in typeDeclaration.Children) {
-				if (o is MethodDeclaration) {
-					if ((((MethodDeclaration)o).Modifier & Modifier.Static) != Modifier.Static) {
-						return false;
-					}
-				} else if (o is PropertyDeclaration) {
-					if ((((PropertyDeclaration)o).Modifier & Modifier.Static) != Modifier.Static) {
-						return false;
-					}
-				} else if (o is FieldDeclaration) {
-					if ((((FieldDeclaration)o).Modifier & Modifier.Static) != Modifier.Static) {
-						return false;
-					}
-				} else if (o is EventDeclaration) {
-					if ((((EventDeclaration)o).Modifier & Modifier.Static) != Modifier.Static) {
-						return false;
-					}
-				}
-			}
-			return true;
 		}
 	}
 }

@@ -181,10 +181,6 @@
 				<Key word="void"/>
 			</KeyWords>
 
-			<KeyWords name="Of" bold="true" italic="false" color="Blue" >
-				<Key word="of"/>
-			</KeyWords>
-
 			<KeyWords name="ConversionKeyWords" bold="true" italic="false" color="Blue" >
 				<Key word="cast"/>
 				<Key word="as"/>
@@ -275,6 +271,7 @@
 				<Key word="mixin"/>
 				<Key word="callable"/>
 				<Key word="do" />
+				<Key word="of" >
 			</KeyWords>
 
 		</RuleSet>

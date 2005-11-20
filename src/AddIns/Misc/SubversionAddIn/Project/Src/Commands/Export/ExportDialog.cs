@@ -48,6 +48,8 @@ namespace ICSharpCode.Svn.Commands
 		
 		string ConvertPathToURL(string path)
 		{
+			if (path.Length == 0)
+				return "";
 			return "file:///" + path.Replace('\\', '/');
 		}
 		
@@ -67,13 +69,13 @@ namespace ICSharpCode.Svn.Commands
 		{
 			SetupFromXmlStream(Assembly.GetExecutingAssembly().GetManifestResourceStream("ICSharpCode.Svn.Resources.ExportDialog.xfrm"));
 			((ComboBox)ControlDictionary["revisionComboBox"]).Items.AddRange(new string[] {
-				"Head",
-				"Committed",
-				"Base",
-				"Previous",
-				"Working",
-				"Date"
-			});
+			                                                                 	"Head",
+			                                                                 	"Committed",
+			                                                                 	"Base",
+			                                                                 	"Previous",
+			                                                                 	"Working",
+			                                                                 	"Date"
+			                                                                 });
 			((ComboBox)ControlDictionary["revisionComboBox"]).Text = "Head";
 			((ComboBox)ControlDictionary["revisionComboBox"]).TextChanged += new EventHandler(RevisionComboBoxTextChanged);
 			RevisionComboBoxTextChanged(this, EventArgs.Empty);
@@ -84,6 +86,16 @@ namespace ICSharpCode.Svn.Commands
 			
 			ControlDictionary["sourceDirectoryBrowseButton"].Click += new EventHandler(SourceDirectoryBrowseButtonClick);
 			ControlDictionary["localDirectoryBrowseButton"].Click  += new EventHandler(LocalDirectoryBrowseButtonClick);
+			
+			ControlDictionary["sourceDirectoryTextBox"].TextChanged += UrlChanged;
+			ControlDictionary["urlTextBox"].TextChanged += UrlChanged;
+			ControlDictionary["localDirectoryTextBox"].TextChanged += UrlChanged;
+			UrlChanged(null, null);
+		}
+		
+		void UrlChanged(object sender, EventArgs e)
+		{
+			Get<Button>("ok").Enabled = Source.Length > 0 && Destination.Length > 0;
 		}
 		
 		void RevisionComboBoxTextChanged(object sender, EventArgs e)
@@ -96,11 +108,12 @@ namespace ICSharpCode.Svn.Commands
 			ControlDictionary["urlTextBox"].Visible = !SourceIsLocalDirectory;
 			ControlDictionary["sourceDirectoryTextBox"].Visible = ControlDictionary["sourceDirectoryBrowseButton"].Visible = SourceIsLocalDirectory;
 			
-			if (ControlDictionary["urlTextBox"].Visible) {
-				ControlDictionary["urlLabel"].Text = "&URL:";
-			} else {
+			if (SourceIsLocalDirectory) {
 				ControlDictionary["urlLabel"].Text = "&Source directory:";
+			} else {
+				ControlDictionary["urlLabel"].Text = "&URL:";
 			}
+			UrlChanged(null, null);
 		}
 		
 		void SourceDirectoryBrowseButtonClick(object sender, EventArgs e)

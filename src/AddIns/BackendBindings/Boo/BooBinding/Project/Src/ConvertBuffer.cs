@@ -37,8 +37,6 @@ namespace Grunwald.BooBinding
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 			
 			if (window != null && window.ViewContent is IEditable) {
-				StringBuilder errorBuilder = new StringBuilder();
-				
 				CompilerErrorCollection errors = new CompilerErrorCollection();
 				CompilerWarningCollection warnings = new CompilerWarningCollection();
 				Module module;
@@ -48,13 +46,18 @@ namespace Grunwald.BooBinding
 					string fileName = window.ViewContent.FileName ?? window.ViewContent.UntitledName;
 					module = Parser.ParseModule(compileUnit, r, ApplySettings(fileName, errors, warnings), out specials);
 				}
-				foreach (CompilerError error in errors) {
-					errorBuilder.AppendLine(error.ToString());
-				}
-				if (warnings.Count > 0) {
-					foreach (CompilerWarning warning in warnings) {
-						errorBuilder.AppendLine(warning.ToString());
+				if (module == null) {
+					StringBuilder errorBuilder = new StringBuilder();
+					foreach (CompilerError error in errors) {
+						errorBuilder.AppendLine(error.ToString());
 					}
+					if (warnings.Count > 0) {
+						foreach (CompilerWarning warning in warnings) {
+							errorBuilder.AppendLine(warning.ToString());
+						}
+					}
+					MessageService.ShowError(errorBuilder.ToString());
+					return;
 				}
 				using (StringWriter w = new StringWriter()) {
 					foreach (CompilerError error in errors) {
