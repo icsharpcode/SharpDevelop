@@ -178,6 +178,9 @@ namespace ICSharpCode.SharpDevelop.Dom
 				if (type.DeclaringMethod != null) {
 					IMethod method = member as IMethod;
 					if (method != null) {
+						if (type.GenericParameterPosition < method.TypeParameters.Count) {
+							return new GenericReturnType(method.TypeParameters[type.GenericParameterPosition]);
+						}
 						return new GenericReturnType(new DefaultTypeParameter(method, type));
 					}
 				}

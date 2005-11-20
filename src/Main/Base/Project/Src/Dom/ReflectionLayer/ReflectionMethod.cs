@@ -34,6 +34,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (Type g in methodBase.GetGenericArguments()) {
 					this.TypeParameters.Add(new DefaultTypeParameter(this, g));
 				}
+				int i = 0;
+				foreach (Type g in methodBase.GetGenericArguments()) {
+					((DefaultTypeParameter)this.TypeParameters[i++]).AddConstraintsFromType(g);
+				}
 			}
 			
 			if (methodBase.IsStatic) {

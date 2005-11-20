@@ -121,6 +121,10 @@ namespace ICSharpCode.SharpDevelop.Dom
 				foreach (Type g in type.GetGenericArguments()) {
 					this.TypeParameters.Add(new DefaultTypeParameter(this, g));
 				}
+				int i = 0;
+				foreach (Type g in type.GetGenericArguments()) {
+					((DefaultTypeParameter)this.TypeParameters[i++]).AddConstraintsFromType(g);
+				}
 			}
 			
 			ModifierEnum modifiers  = ModifierEnum.None;

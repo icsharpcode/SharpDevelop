@@ -89,8 +89,16 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.targetClass = method.DeclaringType;
 			this.name = type.Name;
 			this.index = type.GenericParameterPosition;
+		}
+		
+		public void AddConstraintsFromType(Type type)
+		{
 			foreach (Type constraint in type.GetGenericParameterConstraints()) {
-				constraints.Add(ReflectionReturnType.Create(targetClass, constraint, false));
+				if (method != null) {
+					constraints.Add(ReflectionReturnType.Create(method, constraint, false));
+				} else {
+					constraints.Add(ReflectionReturnType.Create(targetClass, constraint, false));
+				}
 			}
 		}
 		
@@ -106,9 +114,6 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.targetClass = targetClass;
 			this.name = type.Name;
 			this.index = type.GenericParameterPosition;
-			foreach (Type constraint in type.GetGenericParameterConstraints()) {
-				constraints.Add(ReflectionReturnType.Create(targetClass, constraint, false));
-			}
 		}
 		
 		public override bool Equals(object obj)

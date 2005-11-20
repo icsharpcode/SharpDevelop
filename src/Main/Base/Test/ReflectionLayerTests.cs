@@ -101,5 +101,31 @@ namespace ICSharpCode.SharpDevelop.Tests
 			Assert.IsNotNull(c, "System.Void not found");
 			Assert.AreSame(c.DefaultReturnType, ReflectionReturnType.Void, "ReflectionReturnType.Void is c.DefaultReturnType");
 		}
+		
+		class TestClass<A, B> where A : B {
+			public void TestMethod<K, V>(string param) where V: K where K: IComparable {}
+		}
+		
+		[Test]
+		public void ReflectionParserTest()
+		{
+			DefaultCompilationUnit cu = new DefaultCompilationUnit(new DefaultProjectContent());
+			IClass c = new ReflectionClass(cu, typeof(TestClass<,>), typeof(TestClass<,>).FullName, null);
+			
+			Assert.AreSame(c, c.TypeParameters[0].Class);
+			Assert.AreSame(c, c.TypeParameters[1].Class);
+			Assert.AreSame(c.TypeParameters[1], ((GenericReturnType)c.TypeParameters[0].Constraints[0]).TypeParameter);
+			
+			IMethod m = c.Methods.Find(delegate(IMethod me) { return me.Name == "TestMethod"; });
+			Assert.IsNotNull(m);
+			Assert.AreEqual("K", m.TypeParameters[0].Name);
+			Assert.AreEqual("V", m.TypeParameters[1].Name);
+			Assert.AreSame(m, m.TypeParameters[0].Method);
+			Assert.AreSame(m, m.TypeParameters[1].Method);
+			
+			Assert.AreEqual("IComparable", m.TypeParameters[0].Constraints[0].Name);
+			GenericReturnType kConst = (GenericReturnType)m.TypeParameters[1].Constraints[0];
+			Assert.AreSame(m.TypeParameters[0], kConst.TypeParameter);
+		}
 	}
 }
