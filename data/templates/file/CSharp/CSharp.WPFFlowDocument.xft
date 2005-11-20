@@ -2,13 +2,13 @@
 <Template author="Mathias Simmack" version="1.0">
 	
 	<Config
-		  name        = "WPF FlowDocument"
+		  name        = "WinFX Flow Document"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
 		  defaultname = "FlowDocument${Number}.xaml"
 		  language    = "XML"/>
 	 
-	<Description>A Windows Presentation Foundation FlowDocument.</Description>
+	<Description>A WinFX Flow Document</Description>
 	
 	<!-- 
 	Special new file templates:

@@ -2,13 +2,13 @@
 <Template author="Mathias Simmack" version="1.0">
 	
 	<Config
-		  name        = "WPF User Control"
+		  name        = "WinFX User Control"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
 		  defaultname = "UserControl${Number}.xaml"
 		  language    = "XML"/>
 	 
-	<Description>A Windows Presentation Foundation User Control.</Description>
+	<Description>A WinFX User Control</Description>
 	
 	<!-- 
 	Special new file templates:

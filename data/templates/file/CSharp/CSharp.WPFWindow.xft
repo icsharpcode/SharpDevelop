@@ -2,13 +2,13 @@
 <Template author="Mathias Simmack" version="1.0">
 	
 	<Config
-		  name        = "WPF Window"
+		  name        = "WinFX Window"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
 		  defaultname = "Window${Number}.xaml"
 		  language    = "C#"/>
 	 
-	<Description>A Windows Presentation Foundation window.</Description>
+	<Description>A WinFX Window</Description>
 	
 	<!-- 
 	Special new file templates:

@@ -2,13 +2,13 @@
 <Template author="Mathias Simmack" version="1.0">
 	
 	<Config
-		  name        = "WPF Page"
+		  name        = "WinFX Page"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
 		  defaultname = "Page${Number}.xaml"
 		  language    = "C#"/>
 	 
-	<Description>A Windows Presentation Foundation page.</Description>
+	<Description>A WinFX Page</Description>
 	
 	<!-- 
 	Special new file templates:
@@ -46,10 +46,10 @@ namespace ${StandardNamespace}
 
     public partial class ${FileNameWithoutExtension} : Page
     {
-        // To use PageLoaded put Loaded="PageLoaded" in root element of .xaml file.
-        // private void PageLoaded(object sender, RoutedEventArgs e) {}
-        // Sample event handler:  
-        // private void ButtonClick(object sender, RoutedEventArgs e) {}
+        public ${FileNameWithoutExtension}()
+        {
+            InitializeComponent();
+        }
 
     }
 }]]></File>

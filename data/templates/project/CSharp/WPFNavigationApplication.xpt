@@ -1,20 +1,19 @@
 <?xml version="1.0"?>
 <Template originator   = "Mathias Simmack"
           created      = "26/10/2005"
-          lastModified = "26/10/2005">
+          lastModified = "20/11/2005">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>WPF Navigation Application Template Beta</Name>
+		<Name>WinFX Navigation Application</Name>
 		<Category>C#</Category>
 		<Icon>C#.Project.Form</Icon>
 		<LanguageName>C#</LanguageName>
-		<Description>Creates a simple Windows Presentation Foundation application with one navigation page.</Description>
+		<Description>Creates a simple WinFX application with one navigation page.</Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
 	<Actions>
-		<Open filename = "AvalonApplication.txt"/>
 	</Actions>
 	
 	<Combine name = "${ProjectName}" directory = ".">
@@ -28,10 +27,15 @@
 			<ProjectItems>
 				<Reference Include="System" />
 				<Reference Include="System.Data" />
+				<Reference Include="System.Printing"/>
+				<Reference Include="System.Runtime.Serialization"/>
+				<Reference Include="System.Security.Authorization"/>
+				<!-- Reference Include="System.ServiceModel"/ -->
 				<Reference Include="System.Xml" />
 				<Reference Include="WindowsBase" />
 				<Reference Include="PresentationCore" />
 				<Reference Include="PresentationFramework" />
+				<Reference Include="ReachFramework" />
 				<Reference Include="UIAutomationProvider" />
 				<Reference Include="UIAutomationTypes" />
 			</ProjectItems>
@@ -85,21 +89,12 @@ namespace ${StandardNamespace}
 {
 	public partial class Page1 : Page
 	{
+		public Page1()
+		{
+			InitializeComponent();
+		}
 	}
 }]]></File>
-				<File name="AvalonApplication.txt" buildAction="None" language="Default"><![CDATA[This template is just a simple WPF (formerly known as "Avalon") application with one empty page.
-I hope I can fix and improve this template in the near future.
-If you want to build this Avalon application you need the following things:
-
-	1. The latest version of Microsoft's WinFX Runtime Components
-	2. The latest version of the WinFX SDK for the latest version of the Runtime Components
-
-The SDK is an optional choice, but it will definitely not work without the Runtime Components.
-I personally use the September Community Technology Preview (CTP) and it works fine.
-So, don't say I did not warn you. :-)
-
-Mathias
-(2005-10-30)]]></File>
 				<File name="AssemblyInfo.cs"><![CDATA[#region Using directives
 
 using System.Reflection;
@@ -135,10 +130,10 @@ using System.Runtime.InteropServices;
 
 
 [assembly: ThemeInfo(
-    DictionaryLocation.None, //where theme specific resource dictionaries are located
+    ResourceDictionaryLocation.None, //where theme specific resource dictionaries are located
     //(used if a resource is not found in the page, 
     // or application resource dictionaries)
-    DictionaryLocation.SourceAssembly //where the generic resource dictionary is located
+    ResourceDictionaryLocation.SourceAssembly //where the generic resource dictionary is located
     //(used if a resource is not found in the page, 
     // app, or any theme specific resource dictionaries)
 )]

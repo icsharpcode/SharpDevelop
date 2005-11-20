@@ -2,13 +2,13 @@
 <Template author="Mathias Simmack" version="1.0">
 	
 	<Config
-		  name        = "WPF PageFunction"
+		  name        = "WinFX Page Function"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
 		  defaultname = "PageFunction${Number}.xaml"
 		  language    = "XML"/>
 	 
-	<Description>A Windows Presentation Foundation PageFunction.</Description>
+	<Description>A WinFX Page Function</Description>
 	
 	<!-- 
 	Special new file templates:
@@ -47,6 +47,12 @@ namespace ${StandardNamespace}
 
     public partial class ${FileNameWithoutExtension} : PageFunction<String>
     {
+
+        public ${FileNameWithoutExtension}()
+        {
+            InitializeComponent();
+        }
+
         // The OnLoaded handler can be run automatically when the class is loaded. To use it, add Loaded="OnLoaded" to the attributes of the root element of the .xaml file and uncomment the following line.
         // private void OnLoaded(object sender, RoutedEventArgs e) {}
         //

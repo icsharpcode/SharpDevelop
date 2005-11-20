@@ -2,13 +2,13 @@
 <Template author="Mathias Simmack" version="1.0">
 	
 	<Config
-		  name        = "WPF ResourceDictionary"
+		  name        = "WinFX Resource Dictionary"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
 		  defaultname = "Dictionary${Number}.xaml"
 		  language    = "XML"/>
 	 
-	<Description>A Windows Presentation Foundation ResourceDictionary.</Description>
+	<Description>A WinFX Resource Dictionary</Description>
 	
 	<!-- 
 	Special new file templates:
