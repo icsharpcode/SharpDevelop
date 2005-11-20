@@ -11,12 +11,12 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.IO;
 using System.Windows.Forms;
+using ICSharpCode.SharpDevelop.Project.Commands;
 
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	[Serializable]
 	public class FileOperationClipboardObject : System.MarshalByRefObject
 	{
 		string fileName;
@@ -35,6 +35,23 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			this.fileName = fileName;
 			this.performMove = performMove;
+		}
+		
+		public static IDataObject CreateDataObject(FileNode node, bool performMove)
+		{
+			return new DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(node.FileName, performMove));
+		}
+		
+		public static IDataObject CreateDataObject(SolutionItemNode node, bool performMove)
+		{
+			return new DataObject(typeof(SolutionItemNode).ToString(),
+			                      new FileOperationClipboardObject(node.FileName, performMove));
+		}
+		
+		public static IDataObject CreateDataObject(DirectoryNode node, bool performMove)
+		{
+			return new DataObject(typeof(DirectoryNode).ToString(),
+			                      new FileOperationClipboardObject(node.Directory, performMove));
 		}
 	}
 	
@@ -211,6 +228,23 @@ namespace ICSharpCode.SharpDevelop.Project
 			removeMe.AddTo(this);
 			
 			SetIcon();
+		}
+		
+		void RecreateSubNodes()
+		{
+			if (autoClearNodes) {
+				Nodes.Clear();
+			} else {
+				List<TreeNode> removedNodes = new List<TreeNode>();
+				foreach (TreeNode node in Nodes) {
+					if (node is FileNode || node is DirectoryNode)
+						removedNodes.Add(node);
+				}
+				foreach (TreeNode node in removedNodes) {
+					Nodes.Remove(node);
+				}
+			}
+			Initialize();
 		}
 		
 		protected override void Initialize()
@@ -458,36 +492,113 @@ namespace ICSharpCode.SharpDevelop.Project
 				foreach (string fileName in files) {
 					if (System.IO.Directory.Exists(fileName)) {
 						if (!FileUtility.IsBaseDirectory(fileName, Directory)) {
-							ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject.CopyDirectory(fileName, this);
+							CopyDirectoryHere(fileName, false);
 						}
 					} else {
-						ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject.CopyFile(fileName, this, true);
+						CopyFileHere(fileName, false);
 					}
 				}
 			} else if (dataObject.GetDataPresent(typeof(FileNode))) {
 				FileOperationClipboardObject clipboardObject = (FileOperationClipboardObject)dataObject.GetData(typeof(FileNode).ToString());
 				
 				if (File.Exists(clipboardObject.FileName)) {
-					ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject.CopyFile(clipboardObject.FileName, this, true);
+					CopyFileHere(clipboardObject.FileName, clipboardObject.PerformMove);
 					if (clipboardObject.PerformMove) {
-						string copiedFileName = Path.Combine(Directory, Path.GetFileName(clipboardObject.FileName));
-						if (!FileUtility.IsEqualFileName(clipboardObject.FileName, copiedFileName)) {
-							FileService.RemoveFile(clipboardObject.FileName, false);
-						}
+						dataObject.SetData(null);
 					}
 				}
 			} else if (dataObject.GetDataPresent(typeof(DirectoryNode))) {
 				FileOperationClipboardObject clipboardObject = (FileOperationClipboardObject)dataObject.GetData(typeof(DirectoryNode).ToString());
 				
 				if (System.IO.Directory.Exists(clipboardObject.FileName)) {
-					ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject.CopyDirectory(clipboardObject.FileName, this);
+					CopyDirectoryHere(clipboardObject.FileName, clipboardObject.PerformMove);
 					if (clipboardObject.PerformMove) {
-						FileService.RemoveFile(clipboardObject.FileName, true);
 						dataObject.SetData(null);
 					}
 				}
 			}
 			ProjectService.SaveSolution();
+		}
+		
+		public void CopyDirectoryHere(string fileName, bool performMove)
+		{
+			AddExistingItemsToProject.CopyDirectory(fileName, this, true);
+			if (performMove) {
+				FileService.RemoveFile(fileName, true);
+			}
+		}
+		
+		public void CopyDirectoryHere(DirectoryNode node, bool performMove)
+		{
+			if (node.FileNodeStatus == FileNodeStatus.None) {
+				AddExistingItemsToProject.CopyDirectory(node.Directory, this, true);
+				if (performMove) {
+					FileService.RemoveFile(node.Directory, true);
+				}
+			} else {
+				CopyDirectoryHere(node.Directory, performMove);
+			}
+		}
+		
+		public void CopyFileHere(string fileName, bool performMove)
+		{
+			string shortFileName = Path.GetFileName(fileName);
+			string copiedFileName = Path.Combine(Directory, shortFileName);
+			if (FileUtility.IsEqualFileName(fileName, copiedFileName))
+				return;
+			
+			FileProjectItem newItem = AddExistingItemsToProject.CopyFile(fileName, this, true);
+			IProject sourceProject = Solution.FindProjectContainingFile(fileName);
+			if (sourceProject != null) {
+				string sourceDirectory = Path.GetDirectoryName(fileName);
+				bool dependendElementsCopied = false;
+				foreach (ProjectItem item in sourceProject.Items.ToArray()) {
+					FileProjectItem fileItem = item as FileProjectItem;
+					if (fileItem == null)
+						continue;
+					if (newItem != null && FileUtility.IsEqualFileName(fileItem.FileName, fileName)) {
+						fileItem.CopyExtraPropertiesTo(newItem);
+					}
+					if (!string.Equals(fileItem.DependentUpon, shortFileName, StringComparison.OrdinalIgnoreCase))
+						continue;
+					string itemPath = Path.Combine(sourceProject.Directory, fileItem.VirtualName);
+					if (!FileUtility.IsEqualFileName(sourceDirectory, Path.GetDirectoryName(itemPath)))
+						continue;
+					// this file is dependend on the file being copied/moved: copy it, too
+					CopyFileHere(itemPath, performMove);
+					dependendElementsCopied = true;
+				}
+				if (dependendElementsCopied)
+					RecreateSubNodes();
+			}
+			if (performMove) {
+				FileService.RemoveFile(fileName, false);
+			}
+		}
+		
+		public void CopyFileHere(FileNode node, bool performMove)
+		{
+			if (node.FileNodeStatus == FileNodeStatus.None) {
+				AddExistingItemsToProject.CopyFile(node.FileName, this, false);
+				if (performMove) {
+					FileService.RemoveFile(node.FileName, false);
+				}
+			} else if (node.IsLink) {
+				string relFileName = FileUtility.GetRelativePath(Project.Directory, node.FileName);
+				FileNode fileNode = new FileNode(relFileName, FileNodeStatus.InProject);
+				FileProjectItem fileProjectItem = new FileProjectItem(Project, IncludeFileInProject.GetDefaultItemType(Project, node.FileName));
+				fileProjectItem.Include = relFileName;
+				fileProjectItem.Properties.Set("Link", Path.Combine(RelativePath, Path.GetFileName(node.FileName)));
+				fileNode.ProjectItem = fileProjectItem;
+				fileNode.AddTo(this);
+				ProjectService.AddProjectItem(Project, fileProjectItem);
+				if (performMove) {
+					ProjectService.RemoveProjectItem(node.Project, node.ProjectItem);
+					node.Remove();
+				}
+			} else {
+				CopyFileHere(node.FileName, performMove);
+			}
 		}
 		
 		public override bool EnableCopy {
@@ -497,7 +608,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		public override void Copy()
 		{
-			ClipboardWrapper.SetDataObject(new DataObject(typeof(DirectoryNode).ToString(), new FileOperationClipboardObject(Directory, false)));
+			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
 		}
 		
 		public override bool EnableCut {
@@ -509,7 +620,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(new DataObject(typeof(DirectoryNode).ToString(), new FileOperationClipboardObject(Directory, true)));
+			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
 		}
 		#endregion
 		
@@ -556,28 +667,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			PerformInitialization();
 			Expand();
 			try {
-				if (dataObject.GetDataPresent(DataFormats.FileDrop)) {
+				if (dataObject.GetDataPresent(typeof(FileNode))) {
+					FileNode fileNode = (FileNode)dataObject.GetData(typeof(FileNode));
+					CopyFileHere(fileNode, effect == DragDropEffects.Move);
+				} else if (dataObject.GetDataPresent(typeof(DirectoryNode))) {
+					DirectoryNode directoryNode = (DirectoryNode)dataObject.GetData(typeof(DirectoryNode));
+					CopyDirectoryHere(directoryNode, effect == DragDropEffects.Move);
+				} else if (dataObject.GetDataPresent(DataFormats.FileDrop)) {
 					string[] files = (string[])dataObject.GetData(DataFormats.FileDrop);
 					foreach (string fileName in files) {
 						if (System.IO.Directory.Exists(fileName)) {
 							if (!FileUtility.IsBaseDirectory(fileName, Directory)) {
-								ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject.CopyDirectory(fileName, this);
+								CopyDirectoryHere(fileName, false);
 							}
 						} else {
-							ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject.CopyFile(fileName, this, true);
+							CopyFileHere(fileName, false);
 						}
-					}
-				} else if (dataObject.GetDataPresent(typeof(FileNode))) {
-					FileNode fileNode = (FileNode)dataObject.GetData(typeof(FileNode));
-					ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject.CopyFile(fileNode.FileName, this, fileNode.FileNodeStatus != FileNodeStatus.None);
-					if (effect == DragDropEffects.Move) {
-						FileService.RemoveFile(fileNode.FileName, false);
-					}
-				} else if (dataObject.GetDataPresent(typeof(DirectoryNode))) {
-					DirectoryNode directoryNode = (DirectoryNode)dataObject.GetData(typeof(DirectoryNode));
-					ICSharpCode.SharpDevelop.Project.Commands.AddExistingItemsToProject.CopyDirectory(directoryNode.Directory, this);
-					if (effect == DragDropEffects.Move) {
-						FileService.RemoveFile(directoryNode.Directory, true);
 					}
 				}
 				

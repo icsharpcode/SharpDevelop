@@ -28,17 +28,27 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		string fileName = String.Empty;
 		
-		public class ProjectEnumerator {
-			Solution solution;
-			public ProjectEnumerator(Solution solution)
-			{
-				this.solution = solution;
+		public IProject FindProjectContainingFile(string fileName)
+		{
+			IProject currentProject = ProjectService.CurrentProject;
+			if (currentProject != null && currentProject.IsFileInProject(fileName))
+				return currentProject;
+			
+			// Try all project's in the solution.
+			foreach (IProject project in Projects) {
+				if (project.IsFileInProject(fileName)) {
+					return project;
+				}
 			}
-			public IEnumerator<IProject> GetEnumerator()
-			{
+			return null;
+		}
+		
+		[Browsable(false)]
+		public IEnumerable<IProject> Projects {
+			get {
 				Stack<ISolutionFolder> stack = new Stack<ISolutionFolder>();
 				
-				foreach (ISolutionFolder solutionFolder in solution.Folders) {
+				foreach (ISolutionFolder solutionFolder in Folders) {
 					stack.Push(solutionFolder);
 				}
 				
@@ -58,26 +68,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 		}
-		ProjectEnumerator projectEnumerator;
+		
 		[Browsable(false)]
-		public ProjectEnumerator Projects {
+		public IEnumerable<ISolutionFolderContainer> SolutionFolderContainers {
 			get {
-				return projectEnumerator;
-			}
-		}
-		
-		
-		public class SolutionFolderContainerEnumerator {
-			Solution solution;
-			public SolutionFolderContainerEnumerator(Solution solution)
-			{
-				this.solution = solution;
-			}
-			public IEnumerator<ISolutionFolderContainer> GetEnumerator()
-			{
 				Stack<ISolutionFolder> stack = new Stack<ISolutionFolder>();
 				
-				foreach (ISolutionFolder solutionFolder in solution.Folders) {
+				foreach (ISolutionFolder solutionFolder in Folders) {
 					stack.Push(solutionFolder);
 				}
 				
@@ -94,25 +91,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 		}
-		SolutionFolderContainerEnumerator solutionFolderContainerEnumerator;
+
 		[Browsable(false)]
-		public SolutionFolderContainerEnumerator SolutionFolderContainers {
+		public IEnumerable<ISolutionFolder> SolutionFolders {
 			get {
-				return solutionFolderContainerEnumerator;
-			}
-		}
-		
-		public class SolutionFolderEnumerator {
-			Solution solution;
-			public SolutionFolderEnumerator(Solution solution)
-			{
-				this.solution = solution;
-			}
-			public IEnumerator<ISolutionFolder> GetEnumerator()
-			{
 				Stack<ISolutionFolder> stack = new Stack<ISolutionFolder>();
 				
-				foreach (ISolutionFolder solutionFolder in solution.Folders) {
+				foreach (ISolutionFolder solutionFolder in Folders) {
 					stack.Push(solutionFolder);
 				}
 				
@@ -128,13 +113,6 @@ namespace ICSharpCode.SharpDevelop.Project
 						}
 					}
 				}
-			}
-		}
-		SolutionFolderEnumerator solutionFolderEnumerator;
-		[Browsable(false)]
-		public SolutionFolderEnumerator SolutionFolders {
-			get {
-				return solutionFolderEnumerator;
 			}
 		}
 		
@@ -220,9 +198,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		public Solution()
 		{
 			preferences = new SolutionPreferences(this);
-			solutionFolderEnumerator          = new SolutionFolderEnumerator(this);
-			solutionFolderContainerEnumerator = new SolutionFolderContainerEnumerator(this);
-			projectEnumerator                 = new ProjectEnumerator(this);
 		}
 		
 		public ISolutionFolder GetSolutionFolder(string guid)

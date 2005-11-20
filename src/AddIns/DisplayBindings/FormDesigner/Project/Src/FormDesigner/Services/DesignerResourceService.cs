@@ -168,19 +168,9 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		IProject GetProject()
 		{
-			if (_project != null)
-				return _project;
-			if (ProjectService.OpenSolution != null) {
-				LoggingService.Warn(FileName);
-				foreach (IProject project in ProjectService.OpenSolution.Projects) {
-					if (project.IsFileInProject(FileName)) {
-						LoggingService.Warn("use project " + project.Name);
-						_project = project;
-						return project;
-					}
-				}
-			}
-			return null;
+			if (_project == null)
+				_project = ProjectService.GetProject(FileName);
+			return _project;
 		}
 		
 		#region System.ComponentModel.Design.IResourceService interface implementation

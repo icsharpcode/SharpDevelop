@@ -391,10 +391,10 @@ namespace ICSharpCode.Core
 					string file = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName
 						?? WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.UntitledName;
 					if (file != null) {
-						LanguageProperties language = GetParser(file).Language;
-						if (language != null) {
-							defaultProjectContent.Language = language;
-							defaultProjectContent.DefaultImports = language.CreateDefaultImports(defaultProjectContent);
+						IParser parser = GetParser(file);
+						if (parser != null && parser.Language != null) {
+							defaultProjectContent.Language = parser.Language;
+							defaultProjectContent.DefaultImports = parser.Language.CreateDefaultImports(defaultProjectContent);
 						}
 					}
 				}
@@ -417,12 +417,9 @@ namespace ICSharpCode.Core
 			
 			if (fileContent == null) {
 				if (ProjectService.OpenSolution != null) {
-					foreach (IProject project in ProjectService.OpenSolution.Projects) {
-						if (project.IsFileInProject(fileName)) {
-							fileContent = project.GetParseableFileContent(fileName);
-							break;
-						}
-					}
+					IProject project = ProjectService.OpenSolution.FindProjectContainingFile(fileName);
+					if (project != null)
+						fileContent = project.GetParseableFileContent(fileName);
 				}
 			}
 			try {

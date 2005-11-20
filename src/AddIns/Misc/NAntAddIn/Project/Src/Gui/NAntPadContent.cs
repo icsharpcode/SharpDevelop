@@ -211,38 +211,12 @@ namespace ICSharpCode.NAntAddIn.Gui
 		
 		void AddBuildFile(string fileName)
 		{
-			IProject project = FindProjectContainingFile(fileName);
+			IProject project = ProjectService.GetProject(fileName);
 			if (project != null) {
 				treeView.AddBuildFile(project.Name, fileName);
 			}
 		}
 		
-		IProject FindProjectContainingFile(string fileName)
-		{
-			// Try selected project first.
-			IProject project = ProjectService.CurrentProject;
-			if (project != null) {
-				if (!project.IsFileInProject(fileName)) {
-					
-					// Try all project's in the solution.
-					project = FindProjectContainingFile(fileName, ProjectService.OpenSolution);
-				}
-			}
-			
-			return project;
-		}
-		
-		IProject FindProjectContainingFile(string fileName, Solution solution)
-		{
-			foreach (IProject project in solution.Projects) {
-				if (project.IsFileInProject(fileName)) {
-					return project;
-				}
-			}			
-			return null;
-		}
-
-
 		void ProjectItemAdded(object sender, ProjectItemEventArgs e)
 		{
 			LoggingService.Debug("ProjectItemAdded.");

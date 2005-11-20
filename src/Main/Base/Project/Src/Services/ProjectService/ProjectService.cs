@@ -39,13 +39,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static IProject GetProject(string filename)
 		{
-			filename = Path.GetFullPath(filename).ToLower();
-			foreach (IProject project in OpenSolution.Projects) {
-				if (FileUtility.IsEqualFileName(project.FileName, filename)) {
-					return project;
-				}
-			}
-			return null;
+			if (openSolution == null)
+				return null;
+			else
+				return openSolution.FindProjectContainingFile(filename);
 		}
 		
 		static bool initialized;
@@ -168,12 +165,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (fileName == null) {
 				return;
 			}
-			foreach (IProject project in OpenSolution.Projects) {
-				if (project.IsFileInProject(fileName)) {
-					CurrentProject = project;
-					break;
-				}
-			}
+			CurrentProject = GetProject(fileName) ?? CurrentProject;
 		}
 		
 		/// <summary>

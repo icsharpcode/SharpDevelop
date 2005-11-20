@@ -75,6 +75,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public virtual void CopyExtraPropertiesTo(ProjectItem item)
+		{
+			string newInclude = item.Include;
+			item.Properties.Merge(this.Properties);
+			item.Include = newInclude;
+		}
+		
 		[Browsable(false)]
 		public PropertyGroup Properties {
 			get {
@@ -148,7 +155,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			while (reader.Read()) {
 				switch (reader.NodeType) {
-					 case XmlNodeType.EndElement:
+					case XmlNodeType.EndElement:
 						if (reader.LocalName == "ItemGroup") {
 							return;
 						}

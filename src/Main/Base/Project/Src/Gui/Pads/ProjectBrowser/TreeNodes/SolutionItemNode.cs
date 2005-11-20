@@ -101,7 +101,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Copy()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(new DataObject(typeof(SolutionItemNode).ToString(), new FileOperationClipboardObject(Path.Combine(Solution.Directory, item.Name), false)));
+			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
 		}
 		
 		public override bool EnableCut {
@@ -113,7 +113,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(new DataObject(typeof(SolutionItemNode).ToString(), new FileOperationClipboardObject(Path.Combine(Solution.Directory, item.Name), true)));
+			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
 		}
 		#endregion
 		

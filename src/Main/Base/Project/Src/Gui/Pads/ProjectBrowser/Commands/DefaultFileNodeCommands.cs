@@ -107,7 +107,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public class IncludeFileInProject : AbstractMenuCommand
 	{
-		public static void IncludeFileNode(FileNode fileNode)
+		public static FileProjectItem IncludeFileNode(FileNode fileNode)
 		{
 			if (fileNode.Parent is FileNode) {
 				if (((FileNode)fileNode.Parent).FileNodeStatus != FileNodeStatus.InProject) {
@@ -134,6 +134,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				((ExtTreeNode)fileNode.Parent).UpdateVisibility();
 			}
 			fileNode.Project.Save();
+			return newItem;
 		}
 		
 		public static ItemType GetDefaultItemType(IProject project, string fileName)

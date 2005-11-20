@@ -38,16 +38,18 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			return 0;
 		}
 		
-		public static void CopyDirectory(string directoryName, DirectoryNode node)
+		public static void CopyDirectory(string directoryName, DirectoryNode node, bool includeInProject)
 		{
 			string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(directoryName));
 			if (!FileUtility.IsEqualFileName(directoryName, copiedFileName)) {
 				FileUtility.DeepCopy(directoryName, copiedFileName, true);
 				DirectoryNode newNode = new DirectoryNode(copiedFileName);
 				newNode.AddTo(node);
+				if (includeInProject) {
+					IncludeFileInProject.IncludeDirectoryNode(newNode, false);
+				}
 				newNode.Expanding();
-				IncludeFileInProject.IncludeDirectoryNode(newNode, true);
-			} else {
+			} else if (includeInProject) {
 				foreach (TreeNode childNode in node.Nodes) {
 					if (childNode is DirectoryNode) {
 						DirectoryNode directoryNode = (DirectoryNode)childNode;
@@ -59,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 		}
 		
-		public static void CopyFile(string fileName, DirectoryNode node, bool includeInProject)
+		public static FileProjectItem CopyFile(string fileName, DirectoryNode node, bool includeInProject)
 		{
 			string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(fileName));
 			if (!FileUtility.IsEqualFileName(fileName, copiedFileName)) {
@@ -67,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				FileNode newNode = new FileNode(copiedFileName);
 				newNode.AddTo(node);
 				if (includeInProject) {
-					IncludeFileInProject.IncludeFileNode(newNode);
+					return IncludeFileInProject.IncludeFileNode(newNode);
 				}
 			} else if (includeInProject) {
 				FileNode fileNode;
@@ -75,16 +77,15 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					if (childNode is FileNode) {
 						fileNode = (FileNode)childNode;
 						if (FileUtility.IsEqualFileName(fileNode.FileName, copiedFileName)) {
-							IncludeFileInProject.IncludeFileNode(fileNode);
-							return;
+							return IncludeFileInProject.IncludeFileNode(fileNode);
 						}
 					}
 				}
 				fileNode = new FileNode(fileName);
 				fileNode.AddTo(node);
-				IncludeFileInProject.IncludeFileNode(fileNode);
-				
+				return IncludeFileInProject.IncludeFileNode(fileNode);
 			}
+			return null;
 		}
 		
 		public override void Run()
@@ -124,7 +125,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 								FileNode fileNode = new FileNode(relFileName, FileNodeStatus.InProject);
 								FileProjectItem fileProjectItem = new FileProjectItem(node.Project, IncludeFileInProject.GetDefaultItemType(node.Project, fileName));
 								fileProjectItem.Include = relFileName;
-								fileProjectItem.Properties.Set("Link", Path.GetFileName(fileName));
+								fileProjectItem.Properties.Set("Link", Path.Combine(node.RelativePath, Path.GetFileName(fileName)));
 								fileNode.ProjectItem = fileProjectItem;
 								fileNode.AddTo(node);
 								ProjectService.AddProjectItem(node.Project, fileProjectItem);

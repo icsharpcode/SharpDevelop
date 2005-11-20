@@ -66,6 +66,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 		}
+		public bool IsLink {
+			get {
+				return projectItem is FileProjectItem && (projectItem as FileProjectItem).IsLink;
+			}
+		}
 		void SetIcon()
 		{
 			switch (fileNodeStatus) {
@@ -73,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Project
 					SetIcon("ProjectBrowser.GhostFile");
 					break;
 				case FileNodeStatus.InProject:
-					if (projectItem is FileProjectItem && (projectItem as FileProjectItem).IsLink)
+					if (IsLink)
 						SetIcon("ProjectBrowser.CodeBehind");
 					else
 						SetIcon(IconService.GetImageForFile(FileName));
@@ -198,7 +203,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void Copy()
 		{
-			ClipboardWrapper.SetDataObject(new DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(FileName, false)));
+			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, false));
 		}
 		
 		public override bool EnableCut {
@@ -210,7 +215,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		public override void Cut()
 		{
 			DoPerformCut = true;
-			ClipboardWrapper.SetDataObject(new DataObject(typeof(FileNode).ToString(), new FileOperationClipboardObject(FileName, true)));
+			ClipboardWrapper.SetDataObject(FileOperationClipboardObject.CreateDataObject(this, true));
 		}
 		
 		
