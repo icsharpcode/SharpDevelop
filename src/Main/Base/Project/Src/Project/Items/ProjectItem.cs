@@ -131,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static ProjectItem ReadItem(XmlTextReader reader, IProject project, string itemType)
 		{
-			ProjectItem newItem = ProjectItemFactory.CreateProjectItem(project, itemType);
+			ProjectItem newItem = project != null ? project.CreateProjectItem(itemType) : ProjectItemFactory.CreateProjectItem(project, itemType);
 			newItem.Include  = reader.GetAttribute("Include");
 			if (!reader.IsEmptyElement) {
 				PropertyGroup.ReadProperties(reader, newItem.Properties, itemType);

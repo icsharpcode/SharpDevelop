@@ -66,6 +66,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		#region Xml reading routines
+		public override ProjectItem CreateProjectItem(string itemType)
+		{
+			return ProjectItemFactory.CreateProjectItem(this, itemType);
+		}
+
 		static PropertyGroup ReadPropertyGroup(XmlReader reader)
 		{
 			PropertyGroup properties = new PropertyGroup();

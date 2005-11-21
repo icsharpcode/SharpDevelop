@@ -111,6 +111,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		ParseProjectContent CreateProjectContent();
 		
+		/// <summary>
+		/// Creates a new projectItem for the passed itemType
+		/// This method should only be called by ProjectItemFactory.CreateProjectItem()!
+		/// </summary>
+		ProjectItem CreateProjectItem(string itemType);
+
 		CompilerResults Build();
 		CompilerResults Rebuild();
 		CompilerResults Clean();

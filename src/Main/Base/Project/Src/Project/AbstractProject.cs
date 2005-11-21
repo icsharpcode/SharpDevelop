@@ -689,6 +689,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			return ParseProjectContent.CreateUninitalized(this);
 		}
+
+		public virtual ProjectItem CreateProjectItem(string itemType)
+		{
+			return new UnknownProjectItem(this, itemType);
+		}
 		
 		/// <summary>
 		/// Saves project preferences (currently opened files, bookmarks etc.) to the
