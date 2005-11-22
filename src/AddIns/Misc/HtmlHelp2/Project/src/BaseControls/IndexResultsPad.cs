@@ -22,7 +22,7 @@ namespace HtmlHelp2
 		public override void Run()
 		{
 			PadDescriptor indexResults = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2IndexResultsPad));
-			if(indexResults != null) indexResults.BringPadToFront();
+			if (indexResults != null) indexResults.BringPadToFront();
 		}
 	}
 
@@ -90,7 +90,7 @@ namespace HtmlHelp2
 		private void ListViewDoubleClick(object sender, EventArgs e)
 		{
 			ListViewItem lvi = listView.SelectedItems[0];
-			if(lvi != null && lvi.Tag != null && lvi.Tag is IHxTopic)
+			if (lvi != null && lvi.Tag != null && lvi.Tag is IHxTopic)
 			{
 				ShowHelpBrowser.OpenHelpView((IHxTopic)lvi.Tag);
 			}
@@ -103,7 +103,7 @@ namespace HtmlHelp2
 
 		public void CleanUp()
 		{
-			foreach(ListViewItem lvi in listView.Items)
+			foreach (ListViewItem lvi in listView.Items)
 			{
 				if(lvi.Tag != null) { lvi.Tag = null; }
 			}
@@ -113,13 +113,7 @@ namespace HtmlHelp2
 
 		public void SetStatusMessage(string indexTerm)
 		{
-			/*
-			 * @SharpDevelop developers: I would like to have the possibility to
-			 * change the Pad's title. It works without, but it would look
-			 * better if I could write what was searched and how many topics are
-			 * matching.
-			 */
-			 if(listView.Items.Count > 1)
+			 if (listView.Items.Count > 1)
 			 {
 				 string text = StringParser.Parse("${res:AddIns.HtmlHelp2.ResultsOfIndexResults}",
 			 	                                  new string[,]
@@ -144,7 +138,8 @@ namespace HtmlHelp2
 
 			public int Compare(object x, object y)
 			{
-				return String.Compare(((ListViewItem)x).SubItems[col].Text, ((ListViewItem)y).SubItems[col].Text);
+				return String.Compare(((ListViewItem)x).SubItems[col].Text,
+				                      ((ListViewItem)y).SubItems[col].Text);
 			}
 		}
 		#endregion

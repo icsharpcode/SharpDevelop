@@ -96,7 +96,7 @@ namespace HtmlHelp2
 			bool hiliteMatches = (search != null && ((HtmlHelp2SearchPad)search.PadContent).HiliteEnabled);
 
 			ListViewItem lvi = listView.SelectedItems[0];
-			if(lvi != null && lvi.Tag != null && lvi.Tag is IHxTopic)
+			if (lvi != null && lvi.Tag != null && lvi.Tag is IHxTopic)
 			{
 				ShowHelpBrowser.OpenHelpView((IHxTopic)lvi.Tag, hiliteMatches);
 			}
@@ -110,7 +110,7 @@ namespace HtmlHelp2
 
 		public void CleanUp()
 		{
-			foreach(ListViewItem lvi in listView.Items)
+			foreach (ListViewItem lvi in listView.Items)
 			{
 				if(lvi.Tag != null) { lvi.Tag = null; }
 			}
@@ -120,12 +120,6 @@ namespace HtmlHelp2
 
 		public void SetStatusMessage(string indexTerm)
 		{
-			/*
-			 * @SharpDevelop developers: I would like to have the possibility to
-			 * change the Pad's title. It works without, but it would look
-			 * better if I could write what was searched and how many topics are
-			 * matching.
-			 */
 			string text = StringParser.Parse("${res:AddIns.HtmlHelp2.ResultsOfSearchResults}",
 			                                 new string[,]
 			                                 {{"0", indexTerm},
@@ -148,7 +142,7 @@ namespace HtmlHelp2
 
 			public int Compare(object x, object y)
 			{
-				switch(col)
+				switch (col)
 				{
 					case 2:
 						int a = Int32.Parse(((ListViewItem)x).SubItems[col].Text);

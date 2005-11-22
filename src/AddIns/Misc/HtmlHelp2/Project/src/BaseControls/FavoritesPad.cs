@@ -25,7 +25,7 @@ namespace HtmlHelp2
 		public override void Run()
 		{
 			PadDescriptor favorites = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2FavoritesPad));
-			if(favorites != null) favorites.BringPadToFront();
+			if (favorites != null) favorites.BringPadToFront();
 		}
 	}
 
@@ -51,7 +51,7 @@ namespace HtmlHelp2
 
 		public override void RedrawContent()
 		{
-			for(int i = 0; i < toolbarButtons.Length; i++)
+			for (int i = 0; i < toolbarButtons.Length; i++)
 			{
 				toolStrip.Items[i].ToolTipText = StringParser.Parse(toolbarButtons[i]);
 			}
@@ -83,7 +83,7 @@ namespace HtmlHelp2
 			toolStrip.Dock             = DockStyle.Top;
 			toolStrip.Enabled          = Help2EnvIsReady;
 			toolStrip.AllowItemReorder = false;
-			for(int i = 0; i < toolbarButtons.Length; i++)
+			for (int i = 0; i < toolbarButtons.Length; i++)
 			{
 				ToolStripButton button = new ToolStripButton();
 				button.ToolTipText     = StringParser.Parse(toolbarButtons[i]);
@@ -102,7 +102,7 @@ namespace HtmlHelp2
 			toolStrip.ImageList.Images.Add(ResourcesHelper.GetBitmap("Favorites.16x16.Rename.bmp"));
 			toolStrip.ImageList.Images.Add(ResourcesHelper.GetBitmap("Favorites.16x16.Delete.bmp"));
 
-			if(Help2EnvIsReady) this.LoadFavorites();
+			if (Help2EnvIsReady) this.LoadFavorites();
 		}
 
 		#region TreeView
@@ -123,9 +123,9 @@ namespace HtmlHelp2
 		
 		private void AfterLabelEdit(object Sender, NodeLabelEditEventArgs e)
 		{
-			if(e.Label != null && e.Label.Length > 0)
+			if (e.Label != null && e.Label.Length > 0)
 			{
-				if(e.Node.Tag != null && e.Node.Tag is string && (string)e.Node.Tag != "")
+				if (e.Node.Tag != null && e.Node.Tag is string && (string)e.Node.Tag != "")
 				{
 					this.PatchFavoriteName(e.Label.ToString(), (string)e.Node.Tag);
 				}
@@ -134,9 +134,9 @@ namespace HtmlHelp2
 		
 		private void TreeViewKeyDown(object sender, KeyEventArgs e)
 		{
-			if(tv.SelectedNode != null)
+			if (tv.SelectedNode != null)
 			{
-				switch(e.KeyCode)
+				switch (e.KeyCode)
 				{
 					case Keys.F2:
 						tv.SelectedNode.BeginEdit();
@@ -153,7 +153,7 @@ namespace HtmlHelp2
 		{
 			TreeNode tn = tv.SelectedNode;
 			
-			if(tn != null && tn.Tag != null && tn.Tag is string && (string)tn.Tag != "")
+			if (tn != null && tn.Tag != null && tn.Tag is string && (string)tn.Tag != "")
 			{
 				ShowHelpBrowser.OpenHelpView((string)tn.Tag);
 			}
@@ -163,12 +163,12 @@ namespace HtmlHelp2
 		#region ToolStrip
 		private void ToolStripButtonClicked(object sender, EventArgs e)
 		{
-			if(tv.SelectedNode == null) return;
+			if (tv.SelectedNode == null) return;
 
 			ToolStripItem item = (ToolStripItem)sender;
 			TreeNode tempNode  = null;
 
-			switch(item.ImageIndex)
+			switch (item.ImageIndex)
 			{
 				case 0:
 					tempNode              = (TreeNode)tv.SelectedNode.Clone();
@@ -180,8 +180,10 @@ namespace HtmlHelp2
 				case 1:
 					tempNode              = (TreeNode)tv.SelectedNode.Clone();
 					TreeNode nextNextNode = tv.SelectedNode.NextNode.NextNode;
-					if(nextNextNode == null) tv.Nodes.Add(tempNode);
-					else tv.Nodes.Insert(nextNextNode.Index, tempNode);
+					if (nextNextNode == null)
+						tv.Nodes.Add(tempNode);
+					else
+						tv.Nodes.Insert(nextNextNode.Index, tempNode);
 					tv.Nodes.Remove(tv.SelectedNode);
 					tv.SelectedNode       = tempNode;
 					this.SaveFavorites();
@@ -196,7 +198,7 @@ namespace HtmlHelp2
 					                                      MessageBoxButtons.YesNo,
 					                                      MessageBoxIcon.Question,
 					                                      MessageBoxDefaultButton.Button2);
-					if(result == DialogResult.Yes)
+					if (result == DialogResult.Yes)
 					{
 						tv.Nodes.Remove(tv.SelectedNode);
 						this.SaveFavorites();
@@ -220,12 +222,12 @@ namespace HtmlHelp2
 				xmldoc.Load(PropertyService.ConfigDirectory + help2FavoritesFile);
 				
 				XmlNodeList nl = xmldoc.SelectNodes("favorites/favorite");
-				for(int i = 0; i < nl.Count; i++)
+				for (int i = 0; i < nl.Count; i++)
 				{
 					XmlNode title = nl.Item(i).SelectSingleNode("title");
 					XmlNode url   = nl.Item(i).SelectSingleNode("url");
 					
-					if(title != null && url != null && title.InnerText != "" && url.InnerText != "")
+					if (title != null && url != null && title.InnerText != "" && url.InnerText != "")
 					{
 						TreeNode node = new TreeNode();
 						node.Text     = title.InnerText;
@@ -246,9 +248,9 @@ namespace HtmlHelp2
 				XmlDocument xmldoc = new XmlDocument();
 				xmldoc.LoadXml("<?xml version=\"1.0\" encoding=\"ISO-8859-1\"?><favorites/>");
 				
-				foreach(TreeNode node in tv.Nodes)
+				foreach (TreeNode node in tv.Nodes)
 				{
-					if(node.Text != "" && node.Tag != null && node.Tag is string && (string)node.Tag != "")
+					if (node.Text != "" && node.Tag != null && node.Tag is string && (string)node.Tag != "")
 					{
 						XmlNode favorite = xmldoc.CreateElement("favorite");
 						
@@ -278,7 +280,7 @@ namespace HtmlHelp2
 				
 				XmlNode node = xmldoc.SelectSingleNode(String.Format("/favorites/favorite[url=\"{0}\"]/title", topicUrl));
 				
-				if(node != null)
+				if (node != null)
 				{
 					node.InnerText = newName;
 					xmldoc.Save(PropertyService.ConfigDirectory + help2FavoritesFile);
@@ -289,20 +291,22 @@ namespace HtmlHelp2
 		
 		public void AddToFavorites(string topicName, string topicUrl)
 		{
-			if(Help2EnvIsReady && topicName != "" && topicUrl != "")
+			if (Help2EnvIsReady && topicName != "" && topicUrl != "")
 			{
 				bool urlFound = false;
 				
-				foreach(TreeNode node in tv.Nodes)
+				foreach (TreeNode node in tv.Nodes)
 				{
-					if(node.Tag != null && node.Tag is string && String.Compare(topicUrl, (string)node.Tag) == 0)
+					if (node.Tag != null &&
+					    node.Tag is string &&
+					    String.Compare(topicUrl, (string)node.Tag) == 0)
 					{
 						urlFound = true;
 						break;
 					}
 				}
 				
-				if(!urlFound) 
+				if (!urlFound) 
 				{
 					TreeNode node = new TreeNode();
 					node.Text     = topicName;

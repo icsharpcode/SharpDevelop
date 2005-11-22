@@ -48,5 +48,9 @@ namespace HtmlHelp2.ControlsValidation
 		public Help2ControlsValidation()
 		{
 		}
+
+		static Help2ControlsValidation()
+		{
+		}
 	}
 }

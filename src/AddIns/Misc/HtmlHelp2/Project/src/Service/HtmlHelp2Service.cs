@@ -93,7 +93,7 @@ namespace HtmlHelp2.Environment
 				XmlNode node = xmldoc.SelectSingleNode("/help2environment/collection");
 				if(node != null) DefaultNamespaceName = node.InnerText;
 
-				LoggingService.Info("Help 2.0: using saved configuration");
+				LoggingService.Info("Help 2.0: using last configuration");
 			}
 			catch
 			{
@@ -200,12 +200,13 @@ namespace HtmlHelp2.Environment
 		{
 			try
 			{
-				IHxHierarchy defaultToc = (IHxHierarchy)session.GetNavigationInterface("!DefaultTOC", filterQuery, ref TocGuid);
+				IHxHierarchy defaultToc =
+					(IHxHierarchy)session.GetNavigationInterface("!DefaultTOC", filterQuery, ref TocGuid);
 				return defaultToc;
 			}
 			catch
 			{
-				LoggingService.Error("Help 2.0: cannot connect to IHxHierarchy interface (TOC)");
+				LoggingService.Error("Help 2.0: cannot connect to IHxHierarchy interface (Contents)");
 				return null;
 			}
 		}
@@ -214,7 +215,10 @@ namespace HtmlHelp2.Environment
 		{
 			try
 			{
-				IHxIndex defaultIndex   = (IHxIndex)session.GetNavigationInterface("!DefaultKeywordIndex", filterQuery, ref IndexGuid);
+				IHxIndex defaultIndex =
+					(IHxIndex)session.GetNavigationInterface("!DefaultKeywordIndex",
+					                                         filterQuery,
+					                                         ref IndexGuid);
 				return defaultIndex;
 			}
 			catch
@@ -246,7 +250,7 @@ namespace HtmlHelp2.Environment
 			}
 			catch(Exception ex)
 			{
-				LoggingService.Error("Help 2.0: cannot build filters; " + ex.ToString());
+				LoggingService.Error("Help 2.0: cannot build filters; " + ex.Message);
 			}
 
 			filterCombobox.EndUpdate();
@@ -280,10 +284,9 @@ namespace HtmlHelp2.Environment
 		{
 			if(dynamicHelpIsBusy) return null;
 			IHxTopicList topics = null;
-			dynamicHelpIsBusy   = true;
-
 			try
 			{
+				dynamicHelpIsBusy = true;
 				topics = dynamicHelp.GetTopicsFromString(searchTerm, 0);
 				LoggingService.Info("Help 2.0: Dynamic Help called");
 			}
@@ -291,7 +294,10 @@ namespace HtmlHelp2.Environment
 			{
 				LoggingService.Error("Help 2.0: Dynamic Help search failed");
 			}
-			dynamicHelpIsBusy   = false;
+			finally
+			{
+				dynamicHelpIsBusy   = false;
+			}
 			return topics;
 		}
 		#endregion

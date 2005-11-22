@@ -45,7 +45,7 @@ namespace HtmlHelp2
 			lastTopic = topic;
 			BrowserPane help2Browser = GetActiveHelp2BrowserView();
 
-			if(help2Browser != null)
+			if (help2Browser != null)
 			{
 				help2Browser.Load(topicUrl);
 				help2Browser.WorkbenchWindow.SelectWindow();
@@ -55,7 +55,7 @@ namespace HtmlHelp2
 		public static BrowserPane GetActiveHelp2BrowserView()
 		{
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
-			if(window != null)
+			if (window != null)
 			{
 				BrowserPane browserPane = window.ActiveViewContent as BrowserPane;
 				if (browserPane != null && browserPane.Url.Scheme == "ms-help")

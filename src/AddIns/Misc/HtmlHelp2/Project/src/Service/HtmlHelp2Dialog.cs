@@ -17,8 +17,10 @@ namespace HtmlHelp2.HelperDialog
 
 		public Icon Icon
 		{
-			get { return this.icon; }
-
+			get
+			{
+				return this.icon;
+			}
 			set
 			{
 				this.icon  = value;

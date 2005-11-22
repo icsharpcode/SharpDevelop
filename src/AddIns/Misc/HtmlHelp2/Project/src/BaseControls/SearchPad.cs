@@ -144,7 +144,7 @@ namespace HtmlHelp2
 			filterCombobox.Enabled                = HtmlHelp2Environment.IsReady;
 			filterCombobox.SelectedIndexChanged  += new EventHandler(FilterChanged);
 			
-			if(HtmlHelp2Environment.IsReady)
+			if (HtmlHelp2Environment.IsReady)
 			{
 				HtmlHelp2Environment.BuildFilterList(filterCombobox);
 				HtmlHelp2Environment.FilterQueryChanged += new EventHandler(FilterQueryChanged);
@@ -182,7 +182,7 @@ namespace HtmlHelp2
 		private void FilterChanged(object sender, EventArgs e)
 		{
 			object selectedItem = filterCombobox.SelectedItem;
-			if(selectedItem != null)
+			if (selectedItem != null)
 			{
 				selectedQuery = HtmlHelp2Environment.FindFilterQuery(selectedItem.ToString());
 			}
@@ -194,7 +194,7 @@ namespace HtmlHelp2
 			mainPanel.Refresh();
 
 			string currentFilterName = filterCombobox.SelectedItem.ToString();
-			if(String.Compare(currentFilterName, HtmlHelp2Environment.CurrentFilterName) != 0)
+			if (String.Compare(currentFilterName, HtmlHelp2Environment.CurrentFilterName) != 0)
 			{
 				filterCombobox.SelectedIndexChanged -= new EventHandler(FilterChanged);
 				filterCombobox.SelectedIndex         = filterCombobox.Items.IndexOf(HtmlHelp2Environment.CurrentFilterName);
@@ -215,7 +215,7 @@ namespace HtmlHelp2
 
 		private void SearchButtonClick(object sender, EventArgs e)
 		{
-			if(searchTerm.Text != "")
+			if (searchTerm.Text != "")
 			{
 				this.AddTermToList(searchTerm.Text);
 				this.PerformFTS(searchTerm.Text);
@@ -229,7 +229,7 @@ namespace HtmlHelp2
 
 		private void KeyPressed(object sender, KeyPressEventArgs e)
 		{
-			if(e.KeyChar == (char)13 && searchTerm.Text != null)
+			if (e.KeyChar == (char)13 && searchTerm.Text != null)
 			{
 				e.Handled = true;
 				this.AddTermToList(searchTerm.Text);
@@ -239,10 +239,10 @@ namespace HtmlHelp2
 
 		private void AddTermToList(string searchText)
 		{
-			if(searchTerm.Items.IndexOf(searchText) == -1)
+			if (searchTerm.Items.IndexOf(searchText) == -1)
 			{
 				searchTerm.Items.Insert(0, searchText);
-				if(searchTerm.Items.Count > 10) searchTerm.Items.RemoveAt(10);
+				if (searchTerm.Items.Count > 10) searchTerm.Items.RemoveAt(10);
 				searchTerm.SelectedIndex = 0;
 			}
 		}
@@ -255,8 +255,7 @@ namespace HtmlHelp2
 
 		private void PerformFTS(string searchWord, bool useDynamicHelp)
 		{
-			if(!HtmlHelp2Environment.IsReady || searchIsBusy)
-				return;
+			if (!HtmlHelp2Environment.IsReady || searchIsBusy) return;
 
 			HtmlHelp2SearchResultsView searchResults = HtmlHelp2SearchResultsView.Instance;
 
@@ -278,7 +277,7 @@ namespace HtmlHelp2
 				searchDialog.Show();
 				Application.DoEvents();
 				Cursor.Current     = Cursors.WaitCursor;
-				if(useDynamicHelp)
+				if (useDynamicHelp)
 					matchingTopics = HtmlHelp2Environment.GetMatchingTopicsForDynamicHelp(searchWord);
 				else
 					matchingTopics = HtmlHelp2Environment.FTS.Query(searchWord, searchFlags);
@@ -290,9 +289,9 @@ namespace HtmlHelp2
 					searchResults.CleanUp();
 					searchResults.SearchResultsListView.BeginUpdate();
 
-					foreach(IHxTopic topic in matchingTopics)
+					foreach (IHxTopic topic in matchingTopics)
 					{
-						if(useCurrentLang.Checked && !useDynamicHelp && !SharpDevLanguage.CheckTopicLanguage(topic))
+						if (useCurrentLang.Checked && !useDynamicHelp && !SharpDevLanguage.CheckTopicLanguage(topic))
 							continue;
 
 						ListViewItem lvi = new ListViewItem();
@@ -315,7 +314,7 @@ namespace HtmlHelp2
 					searchIsBusy = false;
 				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				LoggingService.Error("Help 2.0: cannot get matching search word; " + ex.ToString());
 			}
@@ -332,8 +331,7 @@ namespace HtmlHelp2
 
 		public bool PerformF1FTS(string keyword, bool useDynamicHelp)
 		{
-			if(!HtmlHelp2Environment.IsReady || searchIsBusy)
-				return false;
+			if (!HtmlHelp2Environment.IsReady || searchIsBusy) return false;
 
 			this.PerformFTS(keyword, useDynamicHelp);
 

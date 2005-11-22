@@ -56,14 +56,18 @@ namespace HtmlHelp2.OptionsPanel
 
 				Help2RegistryWalker.BuildNamespacesList(help2Collections, selectedHelp2Collection);
 			}
-			catch {}
+			catch(Exception ex)
+			{
+				LoggingService.Error("Help 2.0: Cannot initialize options panel; " + ex.Message);
+			}
 		}
 
 		private void NamespaceNameChanged(object sender, EventArgs e)
 		{
-			if(help2Collections.SelectedItem != null)
+			if (help2Collections.SelectedItem != null)
 			{
-				selectedHelp2Collection = Help2RegistryWalker.GetNamespaceName(help2Collections.SelectedItem.ToString());
+				selectedHelp2Collection =
+					Help2RegistryWalker.GetNamespaceName(help2Collections.SelectedItem.ToString());
 			}
 		}
 

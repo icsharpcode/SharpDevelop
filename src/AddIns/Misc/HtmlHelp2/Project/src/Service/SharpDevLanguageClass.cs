@@ -33,9 +33,9 @@ namespace HtmlHelp2.SharpDevLanguageClass
 			{
 				int counter                      = 0;
 				IHxAttributeList topicAttributes = topic.Attributes;
-				foreach(IHxAttribute attr in topicAttributes)
+				foreach (IHxAttribute attr in topicAttributes)
 				{
-					if(String.Compare(attr.DisplayName, "DevLang") == 0)
+					if (String.Compare(attr.DisplayName, "DevLang") == 0)
 					{
 						counter++;
 					}
@@ -55,12 +55,12 @@ namespace HtmlHelp2.SharpDevLanguageClass
 
 		public static bool CheckTopicLanguage(IHxTopic topic, string expectedLanguage)
 		{
-			if(expectedLanguage == String.Empty) { return true; }
-			if(topic == null) { return false; }
+			if (expectedLanguage == String.Empty) { return true; }
+			if (topic == null) { return false; }
 
 			string tempLanguage = String.Empty;
-			if(!languages.ContainsKey(expectedLanguage) ||
-			   !languages.TryGetValue(expectedLanguage, out tempLanguage))
+			if (!languages.ContainsKey(expectedLanguage) ||
+			    !languages.TryGetValue(expectedLanguage, out tempLanguage))
 			{
 				tempLanguage = expectedLanguage;
 			}
@@ -90,10 +90,10 @@ namespace HtmlHelp2.SharpDevLanguageClass
 		{
 			string tempLanguage = expectedLanguage;
 
-			if(tempLanguage != String.Empty)
+			if (tempLanguage != String.Empty)
 			{
-				if(!languages.ContainsKey(expectedLanguage) ||
-				   !languages.TryGetValue(expectedLanguage, out tempLanguage))
+				if (!languages.ContainsKey(expectedLanguage) ||
+				    !languages.TryGetValue(expectedLanguage, out tempLanguage))
 				{
 					tempLanguage = expectedLanguage;
 				}

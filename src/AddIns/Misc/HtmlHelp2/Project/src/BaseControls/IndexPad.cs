@@ -25,7 +25,7 @@ namespace HtmlHelp2
 		public override void Run()
 		{
 			PadDescriptor index = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2IndexPad));
-			if(index != null) index.BringPadToFront();
+			if (index != null) index.BringPadToFront();
 		}
 	}
 
@@ -51,7 +51,7 @@ namespace HtmlHelp2
 		public HtmlHelp2IndexPad()
 		{
 			help2IndexControl = new MsHelp2IndexControl();
-			if(help2IndexControl.IsEnabled) help2IndexControl.LoadIndex();
+			if (help2IndexControl.IsEnabled) help2IndexControl.LoadIndex();
 		}
 	}
 
@@ -68,7 +68,7 @@ namespace HtmlHelp2
 		protected override void Dispose(bool disposing)
 		{
 			base.Dispose(disposing);
-			if(disposing && indexControl != null) { indexControl.Dispose(); }
+			if (disposing && indexControl != null) { indexControl.Dispose(); }
 		}
 
 		public bool IsEnabled
@@ -87,7 +87,7 @@ namespace HtmlHelp2
 			this.controlIsEnabled = (HtmlHelp2Environment.IsReady &&
 			                         Help2ControlsValidation.IsIndexControlRegistered);
 
-			if(this.controlIsEnabled)
+			if (this.controlIsEnabled)
 			{
 				try
 				{
@@ -104,7 +104,7 @@ namespace HtmlHelp2
 					HtmlHelp2Environment.FilterQueryChanged += new EventHandler(FilterQueryChanged);
 					HtmlHelp2Environment.NamespaceReloaded  += new EventHandler(NamespaceReloaded);					
 				}
-				catch(Exception ex)
+				catch (Exception ex)
 				{
 					LoggingService.Error("Help 2.0: Index control failed; " + ex.ToString());
 					this.FakeHelpControl();
@@ -155,7 +155,7 @@ namespace HtmlHelp2
 
 		private void FakeHelpControl()
 		{
-			if(indexControl != null) indexControl.Dispose();
+			if (indexControl != null) indexControl.Dispose();
 			
 			indexControl            = null;
 			Controls.Clear();
@@ -167,7 +167,7 @@ namespace HtmlHelp2
 
 		public void LoadIndex()
 		{
-			if(!this.controlIsEnabled) return;
+			if (!this.controlIsEnabled) return;
 			
 			searchTerm.Text                       = "";
 			searchTerm.Items.Clear();
@@ -181,7 +181,7 @@ namespace HtmlHelp2
 		{
 			string selectedString       = filterCombobox.SelectedItem.ToString();
 
-			if(selectedString != "")
+			if (selectedString != "")
 			{
 				Cursor.Current          = Cursors.WaitCursor;
 				indexControl.IndexData  = HtmlHelp2Environment.GetIndex(HtmlHelp2Environment.FindFilterQuery(selectedString));
@@ -195,7 +195,7 @@ namespace HtmlHelp2
 			Application.DoEvents();
 
 			string currentFilterName = filterCombobox.SelectedItem.ToString();
-			if(String.Compare(currentFilterName, HtmlHelp2Environment.CurrentFilterName) != 0)
+			if (String.Compare(currentFilterName, HtmlHelp2Environment.CurrentFilterName) != 0)
 			{
 				filterCombobox.SelectedIndexChanged -= new EventHandler(FilterChanged);
 				filterCombobox.SelectedIndex         = filterCombobox.Items.IndexOf(HtmlHelp2Environment.CurrentFilterName);
@@ -212,7 +212,7 @@ namespace HtmlHelp2
 
 		private void SearchTextChanged(object sender, EventArgs e)
 		{
-			if(!itemClicked && searchTerm.Text != "")
+			if (!itemClicked && searchTerm.Text != "")
 			{
 				indexControl.Selection = indexControl.IndexData.GetSlotFromString(searchTerm.Text);
 			}
@@ -220,14 +220,14 @@ namespace HtmlHelp2
 
 		private void KeyPressed(object sender, KeyPressEventArgs e)
 		{
-			if(e.KeyChar == (char)13)
+			if (e.KeyChar == (char)13)
 			{
 				int indexSlot    = indexControl.IndexData.GetSlotFromString(searchTerm.Text);
 				string indexTerm = indexControl.IndexData.GetFullStringFromSlot(indexSlot, ",");
 
 				searchTerm.Items.Insert(0,indexTerm);
 				searchTerm.SelectedIndex = 0;
-				if(searchTerm.Items.Count > 10) searchTerm.Items.RemoveAt(10);
+				if (searchTerm.Items.Count > 10) searchTerm.Items.RemoveAt(10);
 
 				this.ShowSelectedItemEntry(indexTerm, indexSlot);
 			}
@@ -248,9 +248,9 @@ namespace HtmlHelp2
 
 		private void ShowSelectedItemEntry(string indexTerm, int indexSlot)
 		{
-			PadDescriptor indexResults = WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2IndexResultsPad));
-			if(indexResults == null)
-				return;
+			PadDescriptor indexResults =
+				WorkbenchSingleton.Workbench.GetPad(typeof(HtmlHelp2IndexResultsPad));
+			if (indexResults == null) return;
 
 			try
 			{
@@ -261,7 +261,7 @@ namespace HtmlHelp2
 					((HtmlHelp2IndexResultsPad)indexResults.PadContent).CleanUp();
 					((HtmlHelp2IndexResultsPad)indexResults.PadContent).IndexResultsListView.BeginUpdate();
 
-					foreach(IHxTopic topic in matchingTopics)
+					foreach (IHxTopic topic in matchingTopics)
 					{
 						ListViewItem lvi = new ListViewItem();
 						lvi.Text         = topic.get_Title(HxTopicGetTitleType.HxTopicGetRLTitle,
@@ -278,7 +278,7 @@ namespace HtmlHelp2
 					((HtmlHelp2IndexResultsPad)indexResults.PadContent).SetStatusMessage(indexTerm);
 				}
 
-				switch(matchingTopics.Count)
+				switch (matchingTopics.Count)
 				{
 					case 0:
 						break;
@@ -291,7 +291,7 @@ namespace HtmlHelp2
 						break;
 				}
 			}
-			catch(Exception ex)
+			catch (Exception ex)
 			{
 				LoggingService.Error("Help 2.0: cannot get matching index entries; " + ex.ToString());
 			}
