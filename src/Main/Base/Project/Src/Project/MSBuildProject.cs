@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected void SetupProject(string projectFileName)
 		{
 			this.fileName = projectFileName;
-			using (XmlTextReader reader = new XmlTextReader(projectFileName)) {
+			using (MSBuildFileReader reader = new MSBuildFileReader(projectFileName)) {
 				reader.WhitespaceHandling = WhitespaceHandling.Significant;
 				reader.MoveToContent(); // we have to skip over the XmlDeclaration (if it exists)
 				if (reader.Name == "VisualStudioProject") {
@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			string userSettingsFileName = projectFileName + ".user";
 			if (File.Exists(userSettingsFileName)) {
-				using (XmlTextReader reader = new XmlTextReader(userSettingsFileName)) {
+				using (MSBuildFileReader reader = new MSBuildFileReader(userSettingsFileName)) {
 					reader.WhitespaceHandling = WhitespaceHandling.Significant;
 					reader.MoveToContent(); // we have to skip over the XmlDeclaration (if it exists)
 					while (reader.Read()){
@@ -181,7 +181,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!System.IO.Directory.Exists(outputDirectory)) {
 				System.IO.Directory.CreateDirectory(outputDirectory);
 			}
-			using (XmlTextWriter writer = new XmlTextWriter(fileName, Encoding.UTF8)) {
+			using (MSBuildFileWriter writer = new MSBuildFileWriter(fileName, Encoding.UTF8)) {
 				writer.Formatting = Formatting.Indented;
 				
 				writer.WriteStartElement("Project");
@@ -245,7 +245,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			string userSettingsFileName = fileName + ".user";
 			if (userConfigurations.Count > 0 || UserBaseConfiguration.PropertyCount > 0 || File.Exists(userSettingsFileName)) {
-				using (XmlTextWriter writer = new XmlTextWriter(userSettingsFileName, Encoding.UTF8)) {
+				using (MSBuildFileWriter writer = new MSBuildFileWriter(userSettingsFileName, Encoding.UTF8)) {
 					writer.Formatting = Formatting.Indented;
 					writer.WriteStartElement("Project");
 					writer.WriteAttributeString("xmlns", "http://schemas.microsoft.com/developer/msbuild/2003");
@@ -258,7 +258,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static void SaveProperties(XmlWriter writer, PropertyGroup baseConfiguration, Dictionary<string, PropertyGroup> configurations)
+		static void SaveProperties(MSBuildFileWriter writer, PropertyGroup baseConfiguration, Dictionary<string, PropertyGroup> configurations)
 		{
 			if (baseConfiguration.PropertyCount > 0) {
 				writer.WriteStartElement("PropertyGroup");
@@ -283,11 +283,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		static void SaveUnknownXmlSections(XmlWriter writer, List<string> unknownElements)
+		static void SaveUnknownXmlSections(MSBuildFileWriter writer, List<string> unknownElements)
 		{
 			foreach (string element in unknownElements) {
 				// round-trip xml text again for better formatting
-				XmlReader reader = new XmlTextReader(new StringReader(element));
+				MSBuildFileReader reader = new MSBuildFileReader(new StringReader(element));
 				writer.WriteNode(reader, false);
 				reader.Close();
 			}

@@ -140,7 +140,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		
-		internal void WriteItem(XmlTextWriter writer)
+		internal void WriteItem(MSBuildFileWriter writer)
 		{
 			writer.WriteStartElement(Tag);
 			writer.WriteAttributeString("Include", Include);
@@ -167,7 +167,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		internal static void WriteItemGroup(XmlTextWriter writer, List<ProjectItem> items)
+		internal static void WriteItemGroup(MSBuildFileWriter writer, List<ProjectItem> items)
 		{
 			writer.WriteStartElement("ItemGroup");
 			foreach (ProjectItem item in items) {

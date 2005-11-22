@@ -238,7 +238,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			}
 			// We have to use the stringWriter for writing because xslt.Transform doesn't use
 			// writer.Formatting. Also, we need to remove some unwanted whitespace from the beginning.
-			using (XmlTextWriter writer = new XmlTextWriter(outFile, Encoding.UTF8)) {
+			using (MSBuildFileWriter writer = new MSBuildFileWriter(outFile, Encoding.UTF8)) {
 				writer.Formatting = Formatting.Indented;
 				using (XmlTextReader reader = new XmlTextReader(new StringReader(stringWriter.ToString()))) {
 					reader.WhitespaceHandling = WhitespaceHandling.Significant;
