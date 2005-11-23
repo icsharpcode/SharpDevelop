@@ -43,6 +43,7 @@ namespace ICSharpCode.TextEditor
 		/// </summary>
 		protected Dictionary<Keys, IEditAction> editactions = new Dictionary<Keys, IEditAction>();
 		
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public ITextEditorProperties TextEditorProperties {
 			get {
 				return document.TextEditorProperties;
@@ -101,6 +102,7 @@ namespace ICSharpCode.TextEditor
 		/// The current document
 		/// </value>
 		[Browsable(false)]
+		[DesignerSerializationVisibility(DesignerSerializationVisibility.Hidden)]
 		public IDocument Document {
 			get {
 				return document;
