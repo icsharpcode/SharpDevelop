@@ -234,6 +234,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (viewTabControl != null) {
 				foreach (TabPage page in viewTabControl.TabPages) {
 					page.Controls.Clear();
+					if (viewTabControl.SelectedTab == page && page.Tag is IBaseViewContent) {
+						((IBaseViewContent)page.Tag).Deselected();
+					}
 				}
 				viewTabControl.Dispose();
 				viewTabControl = null;
