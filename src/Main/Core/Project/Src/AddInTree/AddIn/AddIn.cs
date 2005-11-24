@@ -172,8 +172,6 @@ namespace ICSharpCode.Core
 						switch (reader.LocalName) {
 							case "AddIn":
 								addIn.properties = Properties.ReadFromAttributes(reader);
-								if (!addIn.properties.Contains("name"))
-									throw new ApplicationException("<AddIn>-node must specify the name attribute.");
 								SetupAddIn(reader, addIn, hintPath);
 								break;
 							default:

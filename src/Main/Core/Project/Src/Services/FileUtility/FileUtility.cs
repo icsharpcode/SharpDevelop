@@ -45,12 +45,12 @@ namespace ICSharpCode.Core
 		// Call it only when necessary. (see IsEqualFile)
 		
 		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar, Path.VolumeSeparatorChar };
-		static string sharpDevelopRootPath;
+		static string applicationRootPath;
 		const string fileNameRegEx = @"^([a-zA-Z]:)?[^:]+$";
 		
-		public static string SharpDevelopRootPath {
+		public static string ApplicationRootPath {
 			get {
-				return sharpDevelopRootPath;
+				return applicationRootPath;
 			}
 		}
 		
@@ -59,9 +59,9 @@ namespace ICSharpCode.Core
 			Assembly entryAssembly = Assembly.GetEntryAssembly();
 			// entryAssembly == null might happen in unit test mode
 			if (entryAssembly != null) {
-				sharpDevelopRootPath = Path.Combine(Path.GetDirectoryName(entryAssembly.Location), "..");
+				applicationRootPath = Path.Combine(Path.GetDirectoryName(entryAssembly.Location), "..");
 			} else {
-				sharpDevelopRootPath = Environment.CurrentDirectory;
+				applicationRootPath = Environment.CurrentDirectory;
 			}
 		}
 		

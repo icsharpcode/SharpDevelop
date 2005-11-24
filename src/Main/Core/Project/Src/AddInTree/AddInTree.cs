@@ -28,7 +28,7 @@ namespace ICSharpCode.Core
 		
 		static AddInTree()
 		{
-			defaultCoreDirectory = FileUtility.Combine(FileUtility.SharpDevelopRootPath, "AddIns");
+			defaultCoreDirectory = FileUtility.Combine(FileUtility.ApplicationRootPath, "AddIns");
 			
 			doozers.Add("Class", new ClassDoozer());
 			doozers.Add("FileFilter", new FileFilterDoozer());
@@ -162,8 +162,10 @@ namespace ICSharpCode.Core
 		
 		static void InsertAddIn(AddIn addIn)
 		{
-			foreach (ExtensionPath path in addIn.Paths.Values) {
-				AddExtensionPath(path);
+			if (addIn.Enabled) {
+				foreach (ExtensionPath path in addIn.Paths.Values) {
+					AddExtensionPath(path);
+				}
 			}
 			addIns.Add(addIn);
 		}
@@ -216,7 +218,11 @@ namespace ICSharpCode.Core
 		
 		public static void Load()
 		{
-			List<string> addInFiles = FileUtility.SearchDirectory(defaultCoreDirectory, "*.addin");
+			Load(FileUtility.SearchDirectory(defaultCoreDirectory, "*.addin"));
+		}
+		
+		public static void Load(List<string> addInFiles)
+		{
 			List<AddIn> list = new List<AddIn>();
 			Dictionary<string, Version> dict = new Dictionary<string, Version>();
 			Dictionary<string, AddIn> addInDict = new Dictionary<string, AddIn>();
@@ -265,9 +271,7 @@ namespace ICSharpCode.Core
 				}
 			}
 			foreach (AddIn addIn in list) {
-				if (addIn.Enabled) {
-					InsertAddIn(addIn);
-				}
+				InsertAddIn(addIn);
 			}
 		}
 	}

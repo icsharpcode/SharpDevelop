@@ -149,9 +149,20 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static string defaultMessageBoxTitle = "SharpDevelop";
+		
+		public static string DefaultMessageBoxTitle {
+			get {
+				return defaultMessageBoxTitle;
+			}
+			set {
+				defaultMessageBoxTitle = value;
+			}
+		}
+		
 		public static void ShowMessage(string message)
 		{
-			ShowMessage(message, "SharpDevelop");
+			ShowMessage(message, DefaultMessageBoxTitle);
 		}
 		
 		public static void ShowMessageFormatted(string formatstring, params string[] formatitems)

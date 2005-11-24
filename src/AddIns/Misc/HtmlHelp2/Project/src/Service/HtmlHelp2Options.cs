@@ -104,7 +104,7 @@ namespace HtmlHelp2.OptionsPanel
 			try
 			{
 				ProcessStartInfo info = new ProcessStartInfo("cmd", "/c call echo Unregistering... & unregister.bat & echo. & echo Registering... & call register.bat & pause");
-				info.WorkingDirectory = Path.Combine(FileUtility.SharpDevelopRootPath, "bin\\setup\\help");
+				info.WorkingDirectory = Path.Combine(FileUtility.ApplicationRootPath, "bin\\setup\\help");
 				Process p = Process.Start(info);
 				p.WaitForExit(45000);
 				WorkbenchSingleton.SafeThreadAsyncCall(typeof(HtmlHelp2Environment), "ReloadNamespace");

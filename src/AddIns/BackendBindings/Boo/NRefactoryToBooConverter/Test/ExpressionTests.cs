@@ -247,10 +247,10 @@ namespace NRefactoryToBooConverter.Tests
 			TestExpr("delegate (int a, string b) { }", "def (a as System.Int32, b as System.String):\n\tpass");
 		}
 		
-		[Test, Ignore("ConditionalExpression does not have a boo syntax")]
+		[Test]
 		public void Conditional()
 		{
-			TestExpr("a ? b : c", "a ? b : c");
+			TestExpr("a ? b : c", "(b if a else c)");
 		}
 		
 		[Test]

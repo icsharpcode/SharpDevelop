@@ -85,7 +85,7 @@ namespace AddInScout
 			
 			ExtLabel.Text = "Extension : " + path;
 			
-			AddInTreeNode node = AddInTree.GetTreeNode(path);
+			AddInTreeNode node = AddInTree.GetTreeNode(path, false);
 			foreach (Codon c in node.Codons) {
 				ListViewItem lvi = new ListViewItem(c.Name);
 				lvi.Tag = c;

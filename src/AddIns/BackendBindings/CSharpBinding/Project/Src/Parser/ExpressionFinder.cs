@@ -220,7 +220,8 @@ namespace CSharpBinding.Parser
 			StringBuilder b = new StringBuilder(expressionBeforeOffset);
 			// append characters after expression
 			bool wordFollowing = false;
-			for (int i = offset + 1; i < inText.Length; ++i) {
+			int i;
+			for (i = offset + 1; i < inText.Length; ++i) {
 				char c = inText[i];
 				if (Char.IsLetterOrDigit(c) || c == '_') {
 					if (Char.IsWhiteSpace(inText, i - 1)) {
@@ -261,8 +262,21 @@ namespace CSharpBinding.Parser
 				}
 			}
 			ExpressionResult res = CreateResult(b.ToString(), textWithoutComments, offsetWithoutComments);
-			if (res.Context == ExpressionContext.Default && wordFollowing)
-				res.Context = ExpressionContext.Type;
+			if (res.Context == ExpressionContext.Default && wordFollowing) {
+				b = new StringBuilder();
+				for (; i < inText.Length; ++i) {
+					char c = inText[i];
+					if (char.IsLetterOrDigit(c) || c == '_')
+						b.Append(c);
+					else
+						break;
+				}
+				if (b.Length > 0) {
+					if (ICSharpCode.NRefactory.Parser.CSharp.Keywords.GetToken(b.ToString()) < 0) {
+						res.Context = ExpressionContext.Type;
+					}
+				}
+			}
 			return res;
 		}
 		

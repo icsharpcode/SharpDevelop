@@ -598,7 +598,7 @@ namespace ICSharpCode.StartPage
 					StringWriter writer = new StringWriter();
 					XmlTextWriter xmlWriter = new XmlTextWriter(writer);
 					xmlWriter.Formatting = Formatting.None;
-					transform.Transform(Path.Combine(FileUtility.SharpDevelopRootPath, "doc/ChangeLog.xml"), xmlWriter);
+					transform.Transform(Path.Combine(FileUtility.ApplicationRootPath, "doc/ChangeLog.xml"), xmlWriter);
 					changeLogHtml = writer.ToString().Replace("\n", "\n<br>");
 				}
 				builder.Append(changeLogHtml);

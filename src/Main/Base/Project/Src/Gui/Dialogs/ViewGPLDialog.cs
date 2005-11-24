@@ -27,7 +27,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void LoadGPL()
 		{
-			string filename = FileUtility.SharpDevelopRootPath + 
+			string filename = FileUtility.ApplicationRootPath + 
 			                  Path.DirectorySeparatorChar + "doc" +
 			                  Path.DirectorySeparatorChar + "license.txt";
 			if (FileUtility.TestFileExists(filename)) {

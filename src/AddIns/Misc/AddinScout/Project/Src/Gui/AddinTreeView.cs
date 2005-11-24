@@ -58,6 +58,8 @@ namespace AddInScout
 		
 		void GetExtensions(AddIn ai, TreeNode treeNode)
 		{
+			if (!ai.Enabled)
+				return;
 			foreach (ExtensionPath ext in ai.Paths.Values) {
 				TreeNode newNode = new TreeNode(ext.Name);
 				newNode.ImageIndex = 3;
@@ -66,6 +68,5 @@ namespace AddInScout
 				treeNode.Nodes.Add(newNode);
 			}
 		}
-		
 	}
 }

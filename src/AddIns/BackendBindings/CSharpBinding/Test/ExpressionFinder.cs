@@ -121,5 +121,11 @@ class Main {
 		{
 			FindFull(program2, "der_score_field", "under_score_field", ExpressionContext.Default);
 		}
+		
+		[Test]
+		public void IdentifierBeforeKeyword()
+		{
+			FindFull(program2, "arName", "varName", ExpressionContext.Default);
+		}
 	}
 }
