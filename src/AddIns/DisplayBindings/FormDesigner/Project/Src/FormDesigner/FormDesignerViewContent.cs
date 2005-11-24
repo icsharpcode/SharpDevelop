@@ -147,9 +147,7 @@ namespace ICSharpCode.FormDesigner
 			
 			generator.Attach(this);
 			
-			LoggingService.Debug("Creating UndoEngine.");
 			undoEngine = new FormDesignerUndoEngine(Host);
-			LoggingService.Debug("UndoEngine created.");
 			
 			IComponentChangeService componentChangeService = (IComponentChangeService)designSurface.GetService(typeof(IComponentChangeService));
 			componentChangeService.ComponentChanged += delegate { viewContent.IsDirty = true; };
@@ -338,22 +336,32 @@ namespace ICSharpCode.FormDesigner
 		#region IUndoHandler implementation
 		public bool EnableUndo {
 			get {
-				return undoEngine.EnableUndo;
+				if (undoEngine != null) {
+					return undoEngine.EnableUndo;
+				}
+				return false;
 			}
 		}
 		public bool EnableRedo {
 			get {
-				return undoEngine.EnableRedo;
+				if (undoEngine != null) {
+					return undoEngine.EnableRedo;
+				}
+				return false;
 			}
 		}
 		public virtual void Undo()
 		{
-			undoEngine.Undo();
+			if (undoEngine != null) {
+				undoEngine.Undo();
+			}
 		}
 		
 		public virtual void Redo()
 		{
-			undoEngine.Redo();
+			if (undoEngine != null) {
+				undoEngine.Redo();
+			}
 		}
 		#endregion
 		
