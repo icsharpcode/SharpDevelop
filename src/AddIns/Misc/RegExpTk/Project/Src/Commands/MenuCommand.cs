@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.Core;
 
 namespace Plugins.RegExpTk {
 	

@@ -2,8 +2,11 @@
        author      = "Daniel Grunwald"
        copyright   = "GNU General Public License"
        url         = "http://www.icsharpcode.net"
-       description = "Integrated MbUnit test runner for #Develop"
-       version     = "1.0.0">
+       description = "Integrated MbUnit test runner for #Develop">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.MbUnitPad"/>
+	</Manifest>
 	
 	<Runtime>
 		<!-- MbUnit is not in the path, so we need to load it manually -->

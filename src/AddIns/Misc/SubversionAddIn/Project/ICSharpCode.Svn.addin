@@ -2,8 +2,11 @@
        author      = "Mike Krueger"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "Subversion plugin"
-       version     = "1.0.0">
+       description = "Subversion plugin">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.Svn"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly="SubversionAddIn.dll"/>

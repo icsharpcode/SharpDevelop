@@ -211,7 +211,8 @@ namespace ICSharpCode.NAntAddIn.Gui
 		
 		void AddBuildFile(string fileName)
 		{
-			IProject project = ProjectService.GetProject(fileName);
+			if (ProjectService.OpenSolution == null) return;
+			IProject project = ProjectService.OpenSolution.FindProjectContainingFile(fileName);
 			if (project != null) {
 				treeView.AddBuildFile(project.Name, fileName);
 			}

@@ -1,9 +1,12 @@
-﻿<AddIn name        = "SharpDevelop Core"
+﻿<AddIn name        = "SharpDevelop"
        author      = "Mike Krueger"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "SharpDevelop core module"
-       version     = "1.0.0">
+       description = "SharpDevelop main module">
+	
+	<Manifest>
+		<Identity name = "SharpDevelop" version = "@EntryAssemblyVersion"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly=":ICSharpCode.SharpDevelop"/>

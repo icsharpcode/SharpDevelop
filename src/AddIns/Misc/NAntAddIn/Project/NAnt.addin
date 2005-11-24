@@ -2,9 +2,12 @@
        author      = "Matt Ward"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net/"
-       description = "NAnt integration for SharpDevelop."
-       version     = "1.0">
+       description = "NAnt integration for SharpDevelop.">
 
+	<Manifest>
+		<Identity name = "ICSharpCode.NAntAddIn"/>
+	</Manifest>
+	
 	<Runtime>
 		<Import assembly = "NAntAddIn.dll">
 			<ConditionEvaluator name = "IsNAntRunning" class = "ICSharpCode.NAntAddIn.IsNAntRunningCondition"/>

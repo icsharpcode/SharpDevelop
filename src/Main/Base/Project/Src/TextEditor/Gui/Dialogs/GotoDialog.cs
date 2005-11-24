@@ -392,7 +392,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 					GotoRegion(m.Region, m.DeclaringType.CompilationUnit.FileName);
 				} else if (tag is FileLineReference) {
 					FileLineReference flref = (FileLineReference)tag;
-					FileService.JumpToFilePosition(flref.FileName, flref.Line - 1, flref.Column);
+					if (flref.Line <= 0) {
+						FileService.OpenFile(flref.FileName);
+					} else {
+						FileService.JumpToFilePosition(flref.FileName, flref.Line - 1, flref.Column);
+					}
 				} else {
 					throw new NotImplementedException("Unknown tag: " + tag);
 				}

@@ -37,12 +37,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public static IProject GetProject(string filename)
+		/// <summary>
+		/// Gets an open project by the name of the project file.
+		/// </summary>
+		public static IProject GetProject(string projectFilename)
 		{
-			if (openSolution == null)
-				return null;
-			else
-				return openSolution.FindProjectContainingFile(filename);
+			if (openSolution == null) return null;
+			foreach (IProject project in openSolution.Projects) {
+				if (FileUtility.IsEqualFileName(project.FileName, projectFilename)) {
+					return project;
+				}
+			}
+			return null;
 		}
 		
 		static bool initialized;
@@ -165,7 +171,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (fileName == null) {
 				return;
 			}
-			CurrentProject = GetProject(fileName) ?? CurrentProject;
+			CurrentProject = OpenSolution.FindProjectContainingFile(fileName) ?? CurrentProject;
 		}
 		
 		/// <summary>

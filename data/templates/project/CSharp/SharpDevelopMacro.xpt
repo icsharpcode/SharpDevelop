@@ -38,8 +38,7 @@
        author      = "${USER}"
        copyright   = "GNU General Public License"
        url         = ""
-       description = "TODO: Put description here"
-       version     = "1.0.0">
+       description = "TODO: Put description here">
 	
 	<Runtime>
 		<Import assembly = "${ProjectName}.dll"/>

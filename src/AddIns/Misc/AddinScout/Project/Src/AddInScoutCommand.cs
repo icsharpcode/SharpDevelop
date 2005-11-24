@@ -7,7 +7,7 @@
 
 using System;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop;
+using ICSharpCode.Core;
 
 namespace AddInScout
 {

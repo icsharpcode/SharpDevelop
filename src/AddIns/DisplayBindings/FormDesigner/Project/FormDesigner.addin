@@ -2,11 +2,14 @@
        author      = "Mike Krueger"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "SharpDevelop Form Designer"
-       version     = "1.0.0">
+       description = "SharpDevelop Form Designer">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.FormDesigner"/>
+	</Manifest>
 	
 	<Runtime>
-		<Import assembly="FormDesigner.dll"/>
+		<Import assembly = "FormDesigner.dll"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	

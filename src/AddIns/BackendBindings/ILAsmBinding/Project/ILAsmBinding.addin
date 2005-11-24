@@ -2,8 +2,11 @@
        author      = "Mike Krueger"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "Binding for IL ASM"
-       version     = "1.0.0">
+       description = "Binding for IL ASM">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.ILAsmBinding"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly = "ILAsmBinding.dll"/>

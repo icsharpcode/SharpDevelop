@@ -2,8 +2,11 @@
        author      = "Georg Brandl"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "VS like Start Page for #develop"
-       version     = "1.0.0">
+       description = "VS like Start Page for #develop">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.StartPage"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly="StartPage.dll"/>

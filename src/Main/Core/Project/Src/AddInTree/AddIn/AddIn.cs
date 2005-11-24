@@ -17,11 +17,13 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public class AddIn
 	{
-		Properties          properties = new Properties();
-		List<Runtime>       runtimes   = new List<Runtime>();
-		string              addInFileName = null;
+		Properties    properties = new Properties();
+		List<Runtime> runtimes   = new List<Runtime>();
+		string        addInFileName = null;
+		AddInManifest      manifest = new AddInManifest();
 		Dictionary<string, ExtensionPath> paths = new Dictionary<string, ExtensionPath>();
-
+		internal bool enabled = true;
+		
 		static bool hasShownErrorMessage = false;
 
 		public object CreateObject(string className)
@@ -47,9 +49,27 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public Version Version {
+			get {
+				return manifest.PrimaryVersion;
+			}
+		}
+		
 		public string FileName {
 			get {
 				return addInFileName;
+			}
+		}
+		
+		public string Name {
+			get {
+				return properties["name"];
+			}
+		}
+		
+		public AddInManifest Manifest {
+			get {
+				return manifest;
 			}
 		}
 		
@@ -65,12 +85,18 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public bool Enabled {
+			get {
+				return enabled;
+			}
+		}
+		
 		AddIn()
 		{
 		}
 		
 		static void SetupAddIn(XmlTextReader reader, AddIn addIn, string hintPath)
-		{	
+		{
 			while (reader.Read()) {
 				if (reader.NodeType == XmlNodeType.Element && reader.IsStartElement()) {
 					switch (reader.LocalName) {
@@ -114,6 +140,9 @@ namespace ICSharpCode.Core
 								ExtensionPath.SetUp(extensionPath, reader, "Path");
 							}
 							break;
+						case "Manifest":
+							addIn.Manifest.ReadManifestSection(reader, hintPath);
+							break;
 						default:
 							throw new AddInLoadException("Unknown root path node:" + reader.LocalName);
 					}
@@ -143,6 +172,8 @@ namespace ICSharpCode.Core
 						switch (reader.LocalName) {
 							case "AddIn":
 								addIn.properties = Properties.ReadFromAttributes(reader);
+								if (!addIn.properties.Contains("name"))
+									throw new ApplicationException("<AddIn>-node must specify the name attribute.");
 								SetupAddIn(reader, addIn, hintPath);
 								break;
 							default:

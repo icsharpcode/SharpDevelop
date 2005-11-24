@@ -2,28 +2,57 @@
 <!-- edited with XMLSPY v5 rel. 4 U (http://www.xmlspy.com) by Ivo Kovacka (Kovacka) -->
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema" elementFormDefault="qualified" targetNamespace="http://www.icsharpcode.net/2005/addin" xmlns="http://www.icsharpcode.net/2005/addin">
   <xs:complexType name="AddIn">
-    <xs:choice maxOccurs="unbounded">
-      <xs:element ref="Path" minOccurs="0" maxOccurs="unbounded" />
-      <xs:element ref="Runtime" minOccurs="0" maxOccurs="unbounded" />
-    </xs:choice>
     <xs:attribute name="name" type="xs:string" use="required" />
     <xs:attribute name="author" type="xs:string" use="required" />
-    <xs:attribute name="copyright" type="xs:string" use="required" />
-    <xs:attribute name="url" type="xs:anyURI" use="required" />
-    <xs:attribute name="description" type="xs:string" use="required" />
-    <xs:attribute name="version" type="xs:string" use="required" />
+    <xs:attribute name="copyright" type="xs:string" use="optional" />
+    <xs:attribute name="url" type="xs:anyURI" use="optional" />
+    <xs:attribute name="description" type="xs:string" use="optional" />
+    <xs:choice minOccurs="1" maxOccurs="unbounded">
+      <xs:element name="Manifest">
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="Identity">
+              <xs:complexType>
+                <xs:attribute name="name" type="xs:string" use="required" />
+                <xs:attribute name="version" type="xs:string" use="optional" />
+              </xs:complexType>
+            </xs:element>
+            <xs:element name="Dependency" type="AddInReference"/>
+            <xs:element name="Conflict" type="AddInReference"/>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+      <xs:element ref="Path"/>
+      <xs:element name="Runtime">
+        <xs:complexType>
+          <xs:choice minOccurs="0" maxOccurs="unbounded">
+            <xs:element name="Import" type="Import"/>
+          </xs:choice>
+        </xs:complexType>
+      </xs:element>
+        <xs:element name="Include">
+        <xs:complexType>
+          <xs:attribute name="file" type="xs:string" use="required" />
+        </xs:complexType>
+      </xs:element>
+    </xs:choice>
   </xs:complexType>
   <xs:element name="AddIn" type="AddIn" />
+  <xs:complexType name="AddInReference">
+	<xs:attribute name="addin" type="xs:string" use="required" />
+	<xs:attribute name="version" type="xs:string" use="optional" />
+  </xs:complexType>
   <xs:complexType name="Import">
     <xs:attribute name="assembly" type="xs:string" use="required" />
+    <xs:choice maxOccurs="unbounded">
+      <xs:element name="Doozer" type="CustomDoozerOrCondition" minOccurs="0" maxOccurs="unbounded" />
+      <xs:element name="ConditionEvaluator" type="CustomDoozerOrCondition" minOccurs="0" maxOccurs="unbounded" />
+    </xs:choice>
   </xs:complexType>
-  <xs:element name="Import" type="Import" />
-  <xs:complexType name="Runtime">
-    <xs:sequence>
-      <xs:element ref="Import" maxOccurs="unbounded" />
-    </xs:sequence>
+  <xs:complexType name="CustomDoozerOrCondition">
+      <xs:attribute name="name" type="xs:string" use="required" />
+      <xs:attribute name="class" type="xs:string" use="required" />
   </xs:complexType>
-  <xs:element name="Runtime" type="Runtime" />
   <xs:complexType name="Path">
     <xs:choice minOccurs="0" maxOccurs="unbounded">
       <xs:element ref="Condition" />
@@ -77,8 +106,8 @@
   <xs:element name="Condition" type="Condition">
     <xs:annotation>
       <xs:documentation>
-      A Condition can disable or exclude items in the AddInTree.
-      </xs:documentation>
+			A Condition can disable or exclude items in the AddInTree.
+			</xs:documentation>
     </xs:annotation>
   </xs:element>
   <xs:complexType name="ComplexCondition">
@@ -118,8 +147,8 @@
   <xs:element name="ComplexCondition" type="ComplexCondition">
     <xs:annotation>
       <xs:documentation>
-      A Condition that combines multiple conditions with the operators And, Or and Not.
-      </xs:documentation>
+			A Condition that combines multiple conditions with the operators And, Or and Not.
+			</xs:documentation>
     </xs:annotation>
   </xs:element>
   <xs:complexType name="ComplexConditionBody">
@@ -137,22 +166,22 @@
     <xs:attribute name="id" type="xs:string" use="required">
       <xs:annotation>
         <xs:documentation>
-        The name used to identify the codon in the AddInTree.
-        </xs:documentation>
+				The name used to identify the codon in the AddInTree.
+				</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="insertbefore" type="xs:string" use="optional">
       <xs:annotation>
         <xs:documentation>
-        The id of another codon in the same path. This codon will be placed before the other codon.
-        </xs:documentation>
+				The id of another codon in the same path. This codon will be placed before the other codon.
+				</xs:documentation>
       </xs:annotation>
     </xs:attribute>
     <xs:attribute name="insertafter" type="xs:string" use="optional">
       <xs:annotation>
         <xs:documentation>
-        The id of another codon in the same path. This codon will be placed after the other codon.
-        </xs:documentation>
+				The id of another codon in the same path. This codon will be placed after the other codon.
+				</xs:documentation>
       </xs:annotation>
     </xs:attribute>
   </xs:complexType>

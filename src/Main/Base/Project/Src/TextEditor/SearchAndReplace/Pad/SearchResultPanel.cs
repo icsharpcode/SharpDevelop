@@ -220,7 +220,7 @@ namespace SearchAndReplace
 			}
 		}
 	}
-	public class BackToNormalView : ICSharpCode.SharpDevelop.AbstractMenuCommand
+	public class BackToNormalView : AbstractMenuCommand
 	{
 		public override void Run()
 		{

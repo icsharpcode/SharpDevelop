@@ -67,14 +67,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void TreeViewDrawNode(object sender, DrawTreeNodeEventArgs e)
 		{
-			if (e.DrawDefault) {
-				AbstractProjectBrowserTreeNode node = e.Node as AbstractProjectBrowserTreeNode;
-				if (node != null) {
-					Image img = node.Overlay;
-					if (img != null) {
-						Graphics g = e.Graphics;
-						g.DrawImageUnscaled(img, e.Bounds.X - img.Width, e.Bounds.Bottom - img.Height);
-					}
+			AbstractProjectBrowserTreeNode node = e.Node as AbstractProjectBrowserTreeNode;
+			if (node != null) {
+				Image img = node.Overlay;
+				if (img != null) {
+					Graphics g = e.Graphics;
+					g.DrawImageUnscaled(img, e.Bounds.X - img.Width, e.Bounds.Bottom - img.Height);
 				}
 			}
 		}

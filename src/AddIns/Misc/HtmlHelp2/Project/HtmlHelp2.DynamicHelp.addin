@@ -1,10 +1,12 @@
-<AddIn name        = "Help 2.0 Environment for SharpDevelop"
+<AddIn name        = "Dynamic help pad for SharpDevelop"
        author      = "Mathias Simmack"
        copyright   = "Copyright (c) 2005"
-       url         = "unknown"
-       description = "integrates Microsoft's Help 2.0 Environment"
-       version     = "2.0.0.3">
+       description = "integrates Microsoft's Help 2.0 Environment">
 
+	<Manifest>
+		<Identity name = "ICSharpCode.HtmlHelp2"/>
+	</Manifest>
+	
 	<Runtime>
 		<Import assembly="HtmlHelp2.dll"/>
 	</Runtime>

@@ -1,0 +1,149 @@
+﻿/*
+ * Created by SharpDevelop.
+ * User: Daniel Grunwald
+ * Date: 21.11.2005
+ * Time: 18:01
+ */
+
+using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Diagnostics;
+
+namespace ICSharpCode.Core
+{
+	/// <summary>
+	/// Represents a versioned reference to an AddIn. Used by <see cref="AddInManifest"/>.
+	/// </summary>
+	public class AddInReference
+	{
+		string name;
+		Version minimumVersion;
+		Version maximumVersion;
+		
+		public Version MinimumVersion {
+			get {
+				return minimumVersion;
+			}
+		}
+		
+		public Version MaximumVersion {
+			get {
+				return maximumVersion;
+			}
+		}
+		
+		public string Name {
+			get {
+				return name;
+			}
+		}
+		
+		/// <returns>Returns true when the reference is valid.</returns>
+		public bool Check(Dictionary<string, Version> addIns, out Version versionFound)
+		{
+			if (addIns.TryGetValue(name, out versionFound)) {
+				return CompareVersion(versionFound, minimumVersion) >= 0
+					&& CompareVersion(versionFound, maximumVersion) <= 0;
+			} else {
+				return false;
+			}
+		}
+		
+		/// <summary>
+		/// Compares two versions and ignores unspecified fields (unlike Version.CompareTo)
+		/// </summary>
+		/// <returns>-1 if a &lt; b, 0 if a == b, 1 if a &gt; b</returns>
+		int CompareVersion(Version a, Version b)
+		{
+			if (a.Major != b.Major) {
+				return a.Major > b.Major ? 1 : -1;
+			}
+			if (a.Minor != b.Minor) {
+				return a.Minor > b.Minor ? 1 : -1;
+			}
+			if (a.Build < 0 || b.Build < 0)
+				return 0;
+			if (a.Build != b.Build) {
+				return a.Build > b.Build ? 1 : -1;
+			}
+			if (a.Revision < 0 || b.Revision < 0)
+				return 0;
+			if (a.Revision != b.Revision) {
+				return a.Revision > b.Revision ? 1 : -1;
+			}
+			return 0;
+		}
+		
+		public static AddInReference Create(Properties properties, string hintPath)
+		{
+			AddInReference reference = new AddInReference(properties["addin"]);
+			string version = properties["version"];
+			if (version != null && version.Length > 0) {
+				int pos = version.IndexOf('-');
+				if (pos > 0) {
+					reference.minimumVersion = ParseVersion(version.Substring(0, pos), hintPath);
+					reference.maximumVersion = ParseVersion(version.Substring(pos + 1), hintPath);
+				} else {
+					reference.maximumVersion = reference.minimumVersion = ParseVersion(version, hintPath);
+				}
+			}
+			return reference;
+		}
+		
+		static Version entryVersion;
+		
+		internal static Version ParseVersion(string version, string hintPath)
+		{
+			if (version == null || version.Length == 0)
+				return new Version(0,0,0,0);
+			if (version.StartsWith("@")) {
+				if (version == "@EntryAssemblyVersion") {
+					if (entryVersion == null)
+						entryVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
+					return entryVersion;
+				}
+				string fileName = Path.Combine(hintPath, version.Substring(1));
+				FileVersionInfo info = FileVersionInfo.GetVersionInfo(fileName);
+				return new Version(info.FileMajorPart, info.FileMinorPart, info.FileBuildPart, info.FilePrivatePart);
+			} else {
+				return new Version(version);
+			}
+		}
+		
+		public AddInReference(string name) : this(name, new Version(0,0,0,0), new Version(int.MaxValue, int.MaxValue)) { }
+		
+		public AddInReference(string name, Version specificVersion) : this(name, specificVersion, specificVersion) { }
+		
+		public AddInReference(string name, Version minimumVersion, Version maximumVersion)
+		{
+			if (name == null) throw new ArgumentNullException("name");
+			if (name.Length == 0) throw new ArgumentException("name cannot be an empty string", "name");
+			if (minimumVersion == null) throw new ArgumentNullException("minimumVersion");
+			if (maximumVersion == null) throw new ArgumentNullException("maximumVersion");
+			
+			this.minimumVersion = minimumVersion;
+			this.maximumVersion = maximumVersion;
+			this.name = name;
+		}
+		
+		public override string ToString()
+		{
+			if (minimumVersion.ToString() == "0.0.0.0") {
+				if (maximumVersion.Major == int.MaxValue) {
+					return name;
+				} else {
+					return name + ", version <" + maximumVersion.ToString();
+				}
+			} else {
+				if (maximumVersion.Major == int.MaxValue) {
+					return name + ", version >" + minimumVersion.ToString();
+				} else if (minimumVersion == maximumVersion) {
+					return name + ", version " + minimumVersion.ToString();
+				} else {
+					return name + ", version " + minimumVersion.ToString() + "-" + maximumVersion.ToString();
+				}
+			}
+		}
+	}
+}

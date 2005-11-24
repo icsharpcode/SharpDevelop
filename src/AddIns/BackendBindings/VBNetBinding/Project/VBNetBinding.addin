@@ -2,8 +2,11 @@
        author      = "Mike Krueger, Markus Palme"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "SharpDevelop VB.NET language binding"
-       version     = "1.0.0">
+       description = "SharpDevelop VB.NET language binding">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.VBNetBinding"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly = "VBNetBinding.dll"/>

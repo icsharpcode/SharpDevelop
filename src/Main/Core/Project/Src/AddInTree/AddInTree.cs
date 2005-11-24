@@ -203,11 +203,71 @@ namespace ICSharpCode.Core
 //				}
 //			}
 //		}
+		
+		// used by Load(): disables an addin and removes it from the dictionaries.
+		static void DisableAddin(AddIn addIn, Dictionary<string, Version> dict, Dictionary<string, AddIn> addInDict)
+		{
+			addIn.enabled = false;
+			foreach (string name in addIn.Manifest.Identities.Keys) {
+				dict.Remove(name);
+				addInDict.Remove(name);
+			}
+		}
+		
 		public static void Load()
 		{
 			List<string> addInFiles = FileUtility.SearchDirectory(defaultCoreDirectory, "*.addin");
+			List<AddIn> list = new List<AddIn>();
+			Dictionary<string, Version> dict = new Dictionary<string, Version>();
+			Dictionary<string, AddIn> addInDict = new Dictionary<string, AddIn>();
 			foreach (string fileName in addInFiles) {
-				InsertAddIn(AddIn.Load(fileName));
+				AddIn addIn = AddIn.Load(fileName);
+				foreach (KeyValuePair<string, Version> pair in addIn.Manifest.Identities) {
+					if (dict.ContainsKey(pair.Key)) {
+						MessageService.ShowError("Name '" + pair.Key + "' is used by " +
+						                         "'" + addInDict[pair.Key].FileName + "' and '" + fileName + "'");
+						addIn.enabled = false;
+					} else {
+						dict.Add(pair.Key, pair.Value);
+						addInDict.Add(pair.Key, addIn);
+					}
+				}
+				list.Add(addIn);
+			}
+		checkDependencies:
+			for (int i = 0; i < list.Count; i++) {
+				AddIn addIn = list[i];
+				if (!addIn.Enabled) continue;
+				
+				Version versionFound;
+				
+				foreach (AddInReference reference in addIn.Manifest.Conflicts) {
+					if (reference.Check(dict, out versionFound)) {
+						MessageService.ShowError(addIn.Name + " conflicts with " + reference.ToString()
+						                         + " and has been disabled.");
+						DisableAddin(addIn, dict, addInDict);
+						goto checkDependencies; // after removing one addin, others could break
+					}
+				}
+				foreach (AddInReference reference in addIn.Manifest.Dependencies) {
+					if (!reference.Check(dict, out versionFound)) {
+						if (versionFound != null) {
+							MessageService.ShowError(addIn.Name + " has not been loaded because it requires "
+							                         + reference.ToString() + ", but version "
+							                         + versionFound.ToString() + " is installed.");
+						} else {
+							MessageService.ShowError(addIn.Name + " has not been loaded because it requires "
+							                         + reference.ToString() + ".");
+						}
+						DisableAddin(addIn, dict, addInDict);
+						goto checkDependencies; // after removing one addin, others could break
+					}
+				}
+			}
+			foreach (AddIn addIn in list) {
+				if (addIn.Enabled) {
+					InsertAddIn(addIn);
+				}
 			}
 		}
 	}

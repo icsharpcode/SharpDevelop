@@ -111,7 +111,7 @@ namespace ICSharpCode.Core
 			return properties;
 		}
 		
-		public void ReadProperties(XmlTextReader reader, string endElement)
+		public void ReadProperties(XmlReader reader, string endElement)
 		{
 			if (reader.IsEmptyElement) {
 				return;
@@ -141,7 +141,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		ArrayList ReadArray(XmlTextReader reader)
+		ArrayList ReadArray(XmlReader reader)
 		{
 			if (reader.IsEmptyElement)
 				return new ArrayList(0);

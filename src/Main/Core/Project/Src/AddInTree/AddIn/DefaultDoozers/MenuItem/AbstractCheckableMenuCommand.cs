@@ -10,9 +10,7 @@ using System.Collections;
 using System.CodeDom.Compiler;
 using System.Windows.Forms;
 
-using ICSharpCode.Core;
-
-namespace ICSharpCode.SharpDevelop
+namespace ICSharpCode.Core
 {
 	public abstract class AbstractCheckableMenuCommand : AbstractMenuCommand, ICheckableMenuCommand
 	{

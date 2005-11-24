@@ -2,8 +2,11 @@
        author      = "Matt Ward"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "Xml Editor"
-       version     = "1.0.0">
+       description = "Xml Editor">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.XmlEditor"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly = "XmlEditor.dll">

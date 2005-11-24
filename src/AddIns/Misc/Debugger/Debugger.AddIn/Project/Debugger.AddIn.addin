@@ -1,4 +1,8 @@
-﻿<AddIn name="SharpDevelop Debugger" author="David Srbecký" copyright="GPL" url="" description="SharpDevelop Managed Debugger" version="0.1.0.0">
+﻿<AddIn name="SharpDevelop Debugger" author="David Srbecký" copyright="GPL" url="" description="SharpDevelop Managed Debugger">
+	<Manifest>
+		<Identity name = "ICSharpCode.Debugger"/>
+	</Manifest>
+	
 	<Runtime>
 		<Import assembly="Debugger.AddIn.dll"/>
 	</Runtime>

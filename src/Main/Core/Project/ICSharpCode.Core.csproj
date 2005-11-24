@@ -137,9 +137,14 @@
     <Compile Include="Src\AddInTree\AddIn\DefaultDoozers\IncludeDoozer.cs" />
     <Compile Include="Src\Services\LoggingService\LoggingService.cs" />
     <Compile Include="Src\Util\ClipboardWrapper.cs" />
+    <Compile Include="Src\AddInTree\AddIn\Manifest.cs" />
+    <Compile Include="Src\AddInTree\AddIn\AddInReference.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src\Services\LoggingService" />
+    <Content Include="..\..\..\..\data\schemas\AddIn.xsd">
+      <Link>Src\AddInTree\AddIn\AddIn.xsd</Link>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

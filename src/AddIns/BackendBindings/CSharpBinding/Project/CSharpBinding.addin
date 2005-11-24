@@ -2,8 +2,11 @@
        author      = "Mike Krueger"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "Backing binding for C#"
-       version     = "1.0.0">
+       description = "Backing binding for C#">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.CSharpBinding"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly = "CSharpBinding.dll"/>

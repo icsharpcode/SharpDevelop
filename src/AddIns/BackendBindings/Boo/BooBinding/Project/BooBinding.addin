@@ -2,8 +2,12 @@
        author      = "Daniel Grunwald"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "Binding for the Boo language"
-       version     = "1.0.0">
+       description = "Binding for the Boo language">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.BooBinding"/>
+		<Dependency addin = "ICSharpCode.FormDesigner"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly = "../../DisplayBindings/FormDesigner/FormDesigner.dll"/>

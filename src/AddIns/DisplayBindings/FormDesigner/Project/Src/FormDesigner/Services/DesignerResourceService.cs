@@ -168,8 +168,8 @@ namespace ICSharpCode.FormDesigner.Services
 		
 		IProject GetProject()
 		{
-			if (_project == null)
-				_project = ProjectService.GetProject(FileName);
+			if (_project == null && ProjectService.OpenSolution != null)
+				_project = ProjectService.OpenSolution.FindProjectContainingFile(FileName);
 			return _project;
 		}
 		
