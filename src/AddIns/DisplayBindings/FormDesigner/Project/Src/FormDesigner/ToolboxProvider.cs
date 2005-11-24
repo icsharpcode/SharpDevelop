@@ -137,57 +137,37 @@ namespace ICSharpCode.FormDesigner
 		
 		static void SelectedToolUsedHandler(object sender, EventArgs e)
 		{
+			LoggingService.Debug("SelectedToolUsedHandler");
 			AxSideTab tab = SharpDevelopSideBar.SideBar.ActiveTab;
-			
+						
 			// try to add project reference
-			if (sender != null && sender is ICSharpCode.FormDesigner.Services.ToolboxService && !(tab is CustomComponentsSideTab)) {
+			if (sender != null && sender is ICSharpCode.FormDesigner.Services.ToolboxService) {
 				ToolboxItem selectedItem = (sender as IToolboxService).GetSelectedToolboxItem();
-				if (selectedItem != null) {
-					if (selectedItem.AssemblyName != null) {
-//	TODO: Project system...		
-//						//We Put the assembly reference into the reference project folder
-//						IProject currentProject = ProjectService.CurrentProject;
-//						
-//						if (currentProject != null) {
-//							bool isAlreadyInRefFolder = false;
-//							
-//							if (currentProject.ProjectType == "C#" || currentProject.ProjectType == "VBNET") {
-//								foreach (string assembly in DefaultParserService.AssemblyList) {
-//									if (selectedItem.AssemblyName.FullName.StartsWith(assembly + ",")) {
-//										isAlreadyInRefFolder = true;
-//										break;
-//									}
-//								}
-//							}
-//							
-//							foreach (ProjectReference refproj in currentProject.ProjectReferences) {
-//								if (refproj.ReferenceType == ReferenceType.Assembly) {
-//									AssemblyName assemblyName = AssemblyName.GetAssemblyName(refproj.Reference);
-//									if (assemblyName != null && assemblyName.FullName == selectedItem.AssemblyName.FullName) {
-//										isAlreadyInRefFolder = true;
-//										break;
-//									}
-//								} else if (refproj.ReferenceType == ReferenceType.Gac) {
-//									if (refproj.Reference == selectedItem.AssemblyName.FullName) {
-//										isAlreadyInRefFolder = true;
-//										break;
-//									}
-//								}
-//							}
-//							
-//							if (!isAlreadyInRefFolder && !selectedItem.AssemblyName.FullName.StartsWith("System.")) {
-//								ToolComponent toolComponent = ToolboxProvider.ComponentLibraryLoader.GetToolComponent(selectedItem.AssemblyName.FullName);
-//								if (toolComponent == null || toolComponent.HintPath == null) {
-//									currentProject.ProjectReferences.Add(new ProjectReference(ReferenceType.Gac, selectedItem.AssemblyName.FullName));
-//								} else {
-//									currentProject.ProjectReferences.Add(new ProjectReference(ReferenceType.Assembly, toolComponent.FileName));
-//								}
-//								ICSharpCode.SharpDevelop.Gui.ProjectBrowser.ProjectBrowserView pbv = (ICSharpCode.SharpDevelop.Gui.ProjectBrowser.ProjectBrowserView)WorkbenchSingleton.Workbench.GetPad(typeof(ICSharpCode.SharpDevelop.Gui.ProjectBrowser.ProjectBrowserView));
-//								pbv.UpdateCombineTree();
-//								projectService.SaveCombine();
-//							}
-//						} 
+				if (tab is CustomComponentsSideTab) {
+					if (selectedItem != null && selectedItem.TypeName != null) {
+						LoggingService.Debug("Checking for reference to CustomComponent: " + selectedItem.TypeName);
+						// Check current project has the custom component first.
+						IProjectContent currentProjectContent = ParserService.CurrentProjectContent;
+						if (currentProjectContent != null) {
+							if (currentProjectContent.GetClass(selectedItem.TypeName) == null) {
+								// Check other projects in the solution.
+								LoggingService.Debug("Checking other projects in the solution.");
+								IProject projectContainingType = FindProjectContainingType(selectedItem.TypeName);
+								if (projectContainingType != null) {
+									AddProjectReferenceToProject(ProjectService.CurrentProject, projectContainingType);
+								}
+							}
+						}
 					}
+				} else {
+					if (selectedItem != null && selectedItem.AssemblyName != null) {
+						IProject currentProject = ProjectService.CurrentProject;					
+						if (currentProject != null) {
+							if (!ProjectContainsReference(currentProject, selectedItem.AssemblyName)) {
+								AddReferenceToProject(currentProject, selectedItem.AssemblyName);
+							}
+						} 
+					} 
 				}
 			}
 			
@@ -195,6 +175,86 @@ namespace ICSharpCode.FormDesigner
 				tab.ChoosedItem = tab.Items[0];
 			}
 			SharpDevelopSideBar.SideBar.Refresh();
+		}
+			
+		static bool ProjectContainsReference(IProject project, AssemblyName referenceName)
+		{
+			LoggingService.Debug("Checking project has reference: " + referenceName.FullName);
+			bool isAlreadyInRefFolder = false;
+		
+			foreach (ProjectItem projectItem in project.Items) {
+				ReferenceProjectItem referenceItem = projectItem as ReferenceProjectItem;
+				if (referenceItem != null) {
+					if (referenceItem.ItemType == ItemType.Reference) {
+						LoggingService.Debug("Checking project reference: " + referenceItem.Include);
+						if (referenceItem.HintPath.Length > 0) {
+							LoggingService.Debug("Checking assembly reference");
+							AssemblyName assemblyName = AssemblyName.GetAssemblyName(referenceItem.FileName);
+							if (assemblyName != null && assemblyName.FullName == referenceName.FullName) {
+								isAlreadyInRefFolder = true;
+								break;
+							}
+						} else { // GAC reference.
+							LoggingService.Debug("Checking GAC reference");
+							if (referenceItem.Include == referenceName.FullName || referenceItem.Include == referenceName.Name) {
+								LoggingService.Debug("Found existing GAC reference");
+								isAlreadyInRefFolder = true;
+								break;	
+							}
+						}
+					}
+				}
+			}
+			return isAlreadyInRefFolder;
+		}
+		
+		static void AddReferenceToProject(IProject project, AssemblyName referenceName)
+		{
+			LoggingService.Debug("Adding reference to project: " + referenceName.FullName);
+			ReferenceProjectItem reference = new ReferenceProjectItem(project, "Reference");
+			ToolComponent toolComponent = ToolboxProvider.ComponentLibraryLoader.GetToolComponent(referenceName.FullName);
+			if (toolComponent == null || toolComponent.HintPath == null) {
+				reference.Include = referenceName.FullName;
+				LoggingService.Debug("Added GAC reference to project: " + reference.Include);
+			} else {
+				reference.Include = referenceName.FullName;
+				reference.HintPath = FileUtility.GetRelativePath(project.Directory, toolComponent.FileName);
+				reference.SpecificVersion = false;
+				LoggingService.Debug("Added assembly reference to project: " + reference.Include);
+			}
+			ProjectService.AddProjectItem(project, reference);
+			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+			project.Save();
+		}
+		
+		/// <summary>
+		/// Looks for the specified type in all the projects in the open solution
+		/// excluding the current project.
+		/// </summary>
+		static IProject FindProjectContainingType(string type)
+		{
+			IProject currentProject = ProjectService.CurrentProject;
+			foreach (IProject project in ProjectService.OpenSolution.Projects) {
+				if (project != currentProject) {
+					IProjectContent projectContent = ParserService.GetProjectContent(project);
+					if (projectContent != null) {
+						if (projectContent.GetClass(type) != null) {
+							LoggingService.Debug("Found project containing type: " + project.FileName);
+							return project;
+						}
+					}
+				}
+			}
+			return null;
+		}
+
+		static void AddProjectReferenceToProject(IProject project, IProject referenceTo)
+		{
+			LoggingService.Debug("Adding project reference to project.");
+			ProjectReferenceProjectItem reference = new ProjectReferenceProjectItem(project, referenceTo);
+			ProjectService.AddProjectItem(project, reference);
+			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
+			project.Save();
 		}
 	}
 }

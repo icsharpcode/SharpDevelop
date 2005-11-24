@@ -108,7 +108,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void RefreshView()
 		{
-			// TODO implement refresh.
+			if (treeView.Nodes.Count > 0) {
+				ViewSolution(((AbstractProjectBrowserTreeNode)treeView.Nodes[0]).Solution);
+			}
 		}
 		
 		FileNode FindFileNode(TreeNodeCollection nodes, string fileName)
