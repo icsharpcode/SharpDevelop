@@ -51,7 +51,8 @@ namespace SearchAndReplace
 				string fileName = files[curIndex].ToString();
 				foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
 					if (content.FileName != null &&
-					    FileUtility.IsEqualFileName(content.FileName, fileName))
+					    FileUtility.IsEqualFileName(content.FileName, fileName) &&
+					    content is ITextEditorControlProvider )
 					{
 						document = (((ITextEditorControlProvider)content).TextEditorControl).Document;
 						return new ProvidedDocumentInformation(document,

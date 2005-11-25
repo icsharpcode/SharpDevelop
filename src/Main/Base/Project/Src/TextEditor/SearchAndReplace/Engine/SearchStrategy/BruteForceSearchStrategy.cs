@@ -42,8 +42,8 @@ namespace SearchAndReplace
 		
 		bool IsWholeWordAt(ITextBufferStrategy document, int offset, int length)
 		{
-			return (offset - 1 < 0 || Char.IsWhiteSpace(document.GetCharAt(offset - 1))) &&
-			       (offset + length + 1 >= document.Length || Char.IsWhiteSpace(document.GetCharAt(offset + length)));
+			return (offset - 1 < 0 || !Char.IsLetterOrDigit(document.GetCharAt(offset - 1))) &&
+			       (offset + length + 1 >= document.Length || !Char.IsLetterOrDigit(document.GetCharAt(offset + length)));
 		}
 		
 		int InternalFindNext(ITextIterator textIterator)
