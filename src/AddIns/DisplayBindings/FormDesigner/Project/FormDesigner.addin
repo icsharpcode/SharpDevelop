@@ -6,7 +6,6 @@
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.FormDesigner"/>
-	<Dependency addin="a"/>
 	</Manifest>
 	
 	<Runtime>
