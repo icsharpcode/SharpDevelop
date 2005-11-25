@@ -53,7 +53,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		protected void GenerateCompletionData(TextArea textArea, ExpressionResult expressionResult)
 		{
-			if (expressionResult.Expression == null || expressionResult.Expression.Length == 0) {
+			// allow empty string as expression (for VB 'With' statements)
+			if (expressionResult.Expression == null) {
 				return;
 			}
 			if (LoggingService.IsDebugEnabled) {

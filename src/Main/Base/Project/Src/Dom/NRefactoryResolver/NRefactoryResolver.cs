@@ -148,10 +148,8 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			
 			Expression expr = null;
 			if (language == SupportedLanguage.VBNet) {
-				if (expression == "") {
-					if ((expr = WithResolve()) == null) {
-						return null;
-					}
+				if (expression.Length == 0 || expression[0] == '.') {
+					return WithResolve(expression, fileContent);
 				} else if ("global".Equals(expression, StringComparison.InvariantCultureIgnoreCase)) {
 					return new NamespaceResolveResult(null, null, "");
 				}
@@ -170,6 +168,46 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			RunLookupTableVisitor(fileContent);
 			
 			return ResolveInternal(expr, expressionResult.Context);
+		}
+		
+		ResolveResult WithResolve(string expression, string fileContent)
+		{
+			RunLookupTableVisitor(fileContent);
+			
+			WithStatement innermost = null;
+			if (lookupTableVisitor.WithStatements != null) {
+				foreach (WithStatement with in lookupTableVisitor.WithStatements) {
+					if (IsInside(new Point(caretColumn, caretLine), with.StartLocation, with.EndLocation)) {
+						innermost = with;
+					}
+				}
+			}
+			if (innermost != null) {
+				if (expression.Length > 1) {
+					Expression expr = ParseExpression(DummyFindVisitor.dummyName + expression);
+					if (expr == null) return null;
+					DummyFindVisitor v = new DummyFindVisitor();
+					expr.AcceptVisitor(v, null);
+					if (v.result == null) return null;
+					v.result.TargetObject = innermost.Expression;
+					return ResolveInternal(v.result, ExpressionContext.Default);
+				} else {
+					return ResolveInternal(innermost.Expression, ExpressionContext.Default);
+				}
+			} else {
+				return null;
+			}
+		}
+		private class DummyFindVisitor : AbstractASTVisitor {
+			internal const string dummyName = "___withStatementExpressionDummy";
+			internal FieldReferenceExpression result;
+			public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
+			{
+				IdentifierExpression ie = fieldReferenceExpression.TargetObject as IdentifierExpression;
+				if (ie != null && ie.Identifier == dummyName)
+					result = fieldReferenceExpression;
+				return base.Visit(fieldReferenceExpression, data);
+			}
 		}
 		
 		void RunLookupTableVisitor(string fileContent)
@@ -606,23 +644,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			return null;
 		}
 		#endregion
-		
-		Expression WithResolve()
-		{
-			if (language != SupportedLanguage.VBNet) {
-				return null;
-			}
-			Expression expr = null;
-			// TODO :
-//			if (lookupTableVisitor.WithStatements != null) {
-//				foreach (WithStatement with in lookupTableVisitor.WithStatements) {
-//					if (IsInside(new Point(caretColumn, caretLine), with.StartLocation, with.EndLocation)) {
-//						expr = with.WithExpression;
-//					}
-//				}
-//			}
-			return expr;
-		}
 		
 		Expression SpecialConstructs(string expression)
 		{

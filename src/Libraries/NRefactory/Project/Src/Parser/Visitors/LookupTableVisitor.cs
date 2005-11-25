@@ -61,6 +61,14 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 		}
 		
+		List<WithStatement> withStatements = new List<WithStatement>();
+		
+		public List<WithStatement> WithStatements {
+			get {
+				return withStatements;
+			}
+		}
+		
 		public LookupTableVisitor(StringComparer nameComparer)
 		{
 			variables = new Dictionary<string, List<LocalLookupVariable>>(nameComparer);
@@ -80,29 +88,10 @@ namespace ICSharpCode.NRefactory.Parser
 			list.Add(new LocalLookupVariable(typeRef, startPos, endPos, isConst));
 		}
 		
-		// todo: move this method to a better place.
-		bool IsInside(Point between, Point start, Point end)
+		public override object Visit(WithStatement withStatement, object data)
 		{
-			if (between.Y < start.Y || between.Y > end.Y) {
-//				Console.WriteLine("Y = {0} not between {1} and {2}", between.Y, start.Y, end.Y);
-				return false;
-			}
-			if (between.Y > start.Y) {
-				if (between.Y < end.Y) {
-					return true;
-				}
-				// between.Y == end.Y
-//				Console.WriteLine("between.Y = {0} == end.Y = {1}", between.Y, end.Y);
-//				Console.WriteLine("returning {0}:, between.X = {1} <= end.X = {2}", between.X <= end.X, between.X, end.X);
-				return between.X <= end.X;
-			}
-			// between.Y == start.Y
-//			Console.WriteLine("between.Y = {0} == start.Y = {1}", between.Y, start.Y);
-			if (between.X < start.X) {
-				return false;
-			}
-			// start is OK and between.Y <= end.Y
-			return between.Y < end.Y || between.X <= end.X;
+			withStatements.Add(withStatement);
+			return base.Visit(withStatement, data);
 		}
 		
 		public override object Visit(LocalVariableDeclaration localVariableDeclaration, object data)

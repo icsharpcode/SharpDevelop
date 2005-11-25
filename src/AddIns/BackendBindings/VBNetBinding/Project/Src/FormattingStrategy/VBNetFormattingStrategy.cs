@@ -52,7 +52,7 @@ namespace VBNetBinding.FormattingStrategy
 			statements.Add(new VBStatement("\\bfor .*?$", "^next( \\w+)?$", "Next", 1));
 			statements.Add(new VBStatement("^synclock .*?$", "^end synclock$", "End SyncLock", 1));
 			statements.Add(new VBStatement("^get$", "^end get$", "End Get", 1));
-			statements.Add(new VBStatement("^with \\w+$", "^end with$", "End With", 1));
+			statements.Add(new VBStatement("^with .*?$", "^end with$", "End With", 1));
 			statements.Add(new VBStatement("^set(\\s*\\(.*?\\))?$", "^end set$", "End Set", 1));
 			statements.Add(new VBStatement("^try$", "^end try$", "End Try", 1));
 			statements.Add(new VBStatement("^do .+?$", "^loop$", "Loop", 1));

@@ -43,6 +43,7 @@ namespace VBNetBinding.Parser
 			{
 				return null;
 			}
+			//Console.WriteLine("---------------");
 			while (state != ERROR)
 			{
 				ReadNextToken();
@@ -368,7 +369,7 @@ namespace VBNetBinding.Parser
 						string ident = ReadIdentifier(ch);
 						if (ident != null)
 						{
-							switch (ident.ToLower())
+							switch (ident.ToLowerInvariant())
 							{
 								case "new":
 									curTokenType = New;
@@ -515,9 +516,9 @@ namespace VBNetBinding.Parser
 			/*CURLY*/        { ERROR,   ERROR,   ERROR,   ERROR,        ERROR, CURLY2,   ERROR,   ERROR,   ERROR},
 			/*CURLY2*/       { ERROR,   ERROR,   ERROR,  CURLY3,        ERROR,  ERROR,   ERROR,   ERROR,   ERROR},
 			/*CURLY3*/       { ERROR,   ERROR,   ERROR,   ERROR, ACCEPTNOMORE,  ERROR,   ERROR,   ERROR,   ERROR},
-			/*ACCEPT*/       { ERROR,    MORE,   ERROR,   ERROR,       ACCEPT,  ERROR,   ERROR,   ERROR,   ACCEPTNOMORE},
+			/*ACCEPT*/       { ERROR, ACCEPT2,   ERROR,   ERROR,       ACCEPT,  ERROR,   ERROR,   ERROR,   ACCEPTNOMORE},
 			/*ACCEPTNOMORE*/ { ERROR,   ERROR,   ERROR,   ERROR,        ERROR,  ERROR,   ERROR,   ERROR,   ERROR},
-			/*ACCEPT2*/      { ERROR,    MORE,   ERROR,  ACCEPT,       ACCEPT,  ERROR,   ERROR,   ERROR,   ERROR},
+			/*ACCEPT2*/      { ERROR, ACCEPT2,   ERROR,  ACCEPT,       ACCEPT,  ERROR,   ERROR,   ERROR,   ERROR},
 		};
 		#endregion
 	}
