@@ -65,9 +65,11 @@ namespace Grunwald.BooBinding.CodeCompletion
 			} else {
 				if (!m.IsFinal) r |= ModifierEnum.Virtual;
 			}
-			if (m.IsAbstract) r |= ModifierEnum.Abstract;
-			if (m.IsOverride) r |= ModifierEnum.Override;
+			if (m.IsAbstract)  r |= ModifierEnum.Abstract;
+			if (m.IsOverride)  r |= ModifierEnum.Override;
 			if (m.IsSynthetic) r |= ModifierEnum.Synthetic;
+			if (m.IsPartial)   r |= ModifierEnum.Partial;
+			
 			if (m.LexicalInfo.IsValid && m.DeclaringType != null
 			    && m.LexicalInfo.Line < m.DeclaringType.LexicalInfo.Line)
 			{ // member added through attribute

@@ -84,7 +84,7 @@ namespace NRefactoryToBooConverter.Tests
 		public void WhileLoop()
 		{
 			TestStatement("while ((next = Peek()) != -1) { Process(next); }",
-			              "while ((next = Peek()) != (-1)):\n\tProcess(next)");
+			              "while (next = Peek()) != (-1):\n\tProcess(next)");
 		}
 		
 		[Test]
@@ -105,7 +105,7 @@ namespace NRefactoryToBooConverter.Tests
 		public void Using()
 		{
 			TestStatement("using (StringReader r = file.Open()) { r.ReadLine(); }",
-			              "using (r = file.Open()):\n\tr.ReadLine()");
+			              "using r = file.Open():\n\tr.ReadLine()");
 		}
 		
 		[Test]
@@ -150,10 +150,10 @@ namespace NRefactoryToBooConverter.Tests
 		{
 			TestStatement("switch (var) { case 1: A1(); break; default: A3(); break;  case 2: case 3: A2(); break; }",
 			              "??1 = var\n" +
-			              "if (??1 == 1):\n" +
+			              "if ??1 == 1:\n" +
 			              "\tA1()\n" +
 			              "else:\n" +
-			              "\tif ((??1 == 2) or (??1 == 3)):\n" +
+			              "\tif (??1 == 2) or (??1 == 3):\n" +
 			              "\t\tA2()\n" +
 			              "\telse:\n" +
 			              "\t\tA3()");
@@ -164,10 +164,10 @@ namespace NRefactoryToBooConverter.Tests
 		{
 			TestStatement("switch (var) { default: A3(); break; case 1: A1(); break;  case 2: case 3: A2(); break; }",
 			              "??1 = var\n" +
-			              "if (??1 == 1):\n" +
+			              "if ??1 == 1:\n" +
 			              "\tA1()\n" +
 			              "else:\n" +
-			              "\tif ((??1 == 2) or (??1 == 3)):\n" +
+			              "\tif (??1 == 2) or (??1 == 3):\n" +
 			              "\t\tA2()\n" +
 			              "\telse:\n" +
 			              "\t\tA3()");
@@ -178,7 +178,7 @@ namespace NRefactoryToBooConverter.Tests
 		{
 			TestStatement("switch (var) { case 1: A1(); break; }",
 			              "??1 = var\n" +
-			              "if (??1 == 1):\n" +
+			              "if ??1 == 1:\n" +
 			              "\tA1()");
 		}
 		
@@ -187,7 +187,7 @@ namespace NRefactoryToBooConverter.Tests
 		{
 			TestStatement("switch (var) { case 1: case 2: A1(); break; }",
 			              "??1 = var\n" +
-			              "if ((??1 == 1) or (??1 == 2)):\n" +
+			              "if (??1 == 1) or (??1 == 2):\n" +
 			              "\tA1()");
 		}
 		
@@ -215,7 +215,7 @@ namespace NRefactoryToBooConverter.Tests
 		{
 			TestStatement("switch (var) { case 1: if (a) break; B(); break; }",
 			              "??1 = var\n" +
-			              "if (??1 == 1):\n" +
+			              "if ??1 == 1:\n" +
 			              "\tif a:\n" +
 			              "\t\tgoto ??1_end\n" +
 			              "\tB()\n" +
@@ -227,7 +227,7 @@ namespace NRefactoryToBooConverter.Tests
 		{
 			TestStatement("switch (var) { case 1: B(); goto default; default: A(); break; }",
 			              "??1 = var\n" +
-			              "if (??1 == 1):\n" +
+			              "if ??1 == 1:\n" +
 			              "\tB()\n" +
 			              "\tgoto ??1_default\n" +
 			              "else:\n" +

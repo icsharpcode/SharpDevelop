@@ -220,7 +220,7 @@ namespace NRefactoryToBooConverter.Tests
 		[Test]
 		public void CreateArrayWithOneElement()
 		{
-			TestExpr("new int[] { 1 }", "(of System.Int32: 1)");
+			TestExpr("new int[] { 1 }", "(of System.Int32: 1,)");
 		}
 		
 		[Test]

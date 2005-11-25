@@ -453,7 +453,9 @@ namespace NRefactoryToBooConverter
 		public object Visit(ArrayCreateExpression arrayCreateExpression, object data)
 		{
 			if (!arrayCreateExpression.ArrayInitializer.IsNull) {
-				return arrayCreateExpression.ArrayInitializer.AcceptVisitor(this, data);
+				B.ArrayLiteralExpression ale = ConvertArrayLiteralExpression(arrayCreateExpression.ArrayInitializer);
+				ale.Type = (B.ArrayTypeReference)ConvertTypeReference(arrayCreateExpression.CreateType);
+				return ale;
 			}
 			string builtInName = (arrayCreateExpression.Arguments.Count > 1) ? "matrix" : "array";
 			B.MethodInvocationExpression mie = new B.MethodInvocationExpression(GetLexicalInfo(arrayCreateExpression),
@@ -475,6 +477,11 @@ namespace NRefactoryToBooConverter
 		}
 		
 		public object Visit(ArrayInitializerExpression aie, object data)
+		{
+			return ConvertArrayLiteralExpression(aie);
+		}
+		
+		B.ArrayLiteralExpression ConvertArrayLiteralExpression(ArrayInitializerExpression aie)
 		{
 			B.ArrayLiteralExpression dims = new B.ArrayLiteralExpression(GetLexicalInfo(aie));
 			ConvertExpressions(aie.CreateExpressions, dims.Items);
@@ -502,7 +509,7 @@ namespace NRefactoryToBooConverter
 		
 		public object Visit(ConditionalExpression conditionalExpression, object data)
 		{
-			B.TernaryExpression te = new B.TernaryExpression(GetLexicalInfo(conditionalExpression));
+			B.ConditionalExpression te = new B.ConditionalExpression(GetLexicalInfo(conditionalExpression));
 			te.Condition = ConvertExpression(conditionalExpression.Condition);
 			te.TrueValue = ConvertExpression(conditionalExpression.TrueExpression);
 			te.FalseValue = ConvertExpression(conditionalExpression.FalseExpression);

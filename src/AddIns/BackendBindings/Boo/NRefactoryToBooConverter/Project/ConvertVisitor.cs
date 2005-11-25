@@ -131,7 +131,7 @@ namespace NRefactoryToBooConverter
 				AddError(node, "shadowing is not supported");
 			}
 			if ((m & Modifier.Partial) != 0) {
-				AddError(node, "Partial types are not supported");
+				r |= B.TypeMemberModifiers.Partial;
 			}
 			if ((m & Modifier.Extern) != 0) {
 				AddError(node, "Extern modifier is not supported");
