@@ -7,17 +7,16 @@
 
 using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.IO;
 using System.Reflection;
+using System.Text;
 
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	/// <summary>
-	/// Description of ReferenceProjectItem.
-	/// </summary>
 	public class ReferenceProjectItem : ProjectItem
 	{
 		public override ItemType ItemType {
@@ -60,6 +59,62 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[ReadOnly(true)]
+		[LocalizedProperty("(Name)", Description="The reference name")]
+		public string Name {
+			get {
+				AssemblyName assemblyName = GetAssemblyName(Include);
+				if (assemblyName != null) {
+					return assemblyName.Name;
+				}
+				return Include;
+			}
+		}
+		
+		[ReadOnly(true)]
+		[LocalizedProperty("Version", 
+		                   Description="The major, minor, revision and build numbers of the reference.")]
+		public Version Version { 
+			get {
+				AssemblyName assemblyName = GetAssemblyName(Include);
+				if (assemblyName != null) {
+					return assemblyName.Version;
+				}
+				return null;
+			}
+		}
+		
+		[ReadOnly(true)]
+		[LocalizedProperty("Culture", Description="The culture supported by the reference")]
+		public string Culture {
+			get {
+				AssemblyName assemblyName = GetAssemblyName(Include);
+				if (assemblyName != null && assemblyName.CultureInfo != null) {
+					return assemblyName.CultureInfo.Name;
+				}
+				return null;
+			}
+		}
+		
+		[ReadOnly(true)]
+		[LocalizedProperty("Public Key Token", Description="The public key token")]
+		public string PublicKeyToken {
+			get {
+				AssemblyName assemblyName = GetAssemblyName(Include);
+				if (assemblyName != null) {
+					byte[] bytes = assemblyName.GetPublicKeyToken();
+					if (bytes != null) {
+						StringBuilder token = new StringBuilder();
+						foreach (byte b in bytes) {
+							token.Append(b.ToString("x2"));
+						}
+						return token.ToString();
+					}
+				}
+				return null;
+			}
+		}		
+			
 		public override string FileName {
 			get {
 				try
@@ -101,6 +156,17 @@ namespace ICSharpCode.SharpDevelop.Project
 			return String.Format("[ReferenceProjectItem: Include={0}, Properties={1}]",
 			                     Include,
 			                     Properties);
+		}
+		
+		AssemblyName GetAssemblyName(string include)
+		{
+			try {
+				if (this.ItemType != ItemType.ProjectReference) {
+					return new AssemblyName(include);
+				}
+			} catch (ArgumentException) { }
+			
+			return null;
 		}
 	}
 }

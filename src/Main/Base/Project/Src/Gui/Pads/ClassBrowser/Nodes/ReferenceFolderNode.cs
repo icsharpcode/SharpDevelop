@@ -77,7 +77,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public ReferenceNode(ReferenceProjectItem item)
 		{
 			this.item = item;
-			Text = item.Include;
+			Text = item.Name;
 			
 			SetIcon("Icons.16x16.Reference");
 			

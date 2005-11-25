@@ -8,6 +8,7 @@
 using System;
 using System.Diagnostics;
 using System.IO;
+using System.Reflection;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
@@ -31,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (referenceProjectItem.ItemType == ItemType.ProjectReference) {
 				Text = Path.GetFileNameWithoutExtension(referenceProjectItem.Include);
 			} else {
-				Text = referenceProjectItem.Include;
+				Text = referenceProjectItem.Name;
 			}
 		}
 		
@@ -57,6 +58,5 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			return visitor.Visit(this, data);
 		}
-		
 	}
 }

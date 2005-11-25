@@ -409,6 +409,11 @@
 			          label    = "${res:ProjectComponent.ContextMenu.Rename}"
 			          shortcut = "F2"
 			          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+			<MenuItem id = "RenameSeparator" type = "Separator" />
+			<MenuItem id    = "Properties"
+		  	          icon  = "Icons.16x16.PropertiesIcon"
+		   	          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
+		   	          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
 		</ComplexCondition>
 	</Path>
 	
@@ -504,6 +509,11 @@
 		          label = "${res:Global.RemoveButtonText}"
 		          icon  = "Icons.16x16.DeleteIcon"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+		<MenuItem id = "RemoveSeparator" type = "Separator" />
+		<MenuItem id    = "Properties"
+		          icon  = "Icons.16x16.PropertiesIcon"
+		          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
 	</Path>
 	
 	<!-- END Project Browser Paths-->
