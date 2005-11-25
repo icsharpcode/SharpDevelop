@@ -64,7 +64,6 @@ namespace SearchAndReplace
 			toolStrip.Dock = DockStyle.Top;
 			toolStrip.Stretch   = true;
 			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
-			toolStrip.Renderer = MenuService.Renderer;
 			
 			searchButton.Text = StringParser.Parse("${res:Dialog.NewProject.SearchReplace.FindDialogName}");
 			searchButton.Image = IconService.GetBitmap("Icons.16x16.FindIcon");

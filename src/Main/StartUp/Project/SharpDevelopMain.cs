@@ -162,17 +162,30 @@ namespace ICSharpCode.SharpDevelop
 				MessageService.CustomErrorReporter = ShowErrorBox;
 				#endif
 				
-				LoggingService.Info("Loading properties...");
-				PropertyService.Load();
-				ResourceService.InitializeService();
-				
 				Assembly exe = typeof(SharpDevelopMain).Assembly;
+				
+				FileUtility.ApplicationRootPath = Path.Combine(Path.GetDirectoryName(exe.Location), "..");
+				
+				CoreStartup c = new CoreStartup("SharpDevelop");
+				c.ConfigDirectory = FileUtility.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".ICSharpCode", "SharpDevelop2") + Path.DirectorySeparatorChar;
+				LoggingService.Info("Starting core services...");
+				c.StartCoreServices();
+				
 				ResourceService.RegisterNeutralStrings(new ResourceManager("Resources.StringResources", exe));
 				ResourceService.RegisterNeutralImages(new ResourceManager("Resources.BitmapResources", exe));
 				
 				RegisterDoozers();
 				
-				InitializeCore();
+				StringParser.RegisterStringTagProvider(new SharpDevelopStringTagProvider());
+				
+				LoggingService.Info("Looking for AddIns...");
+				c.AddAddInsFromDirectory(FileUtility.Combine(FileUtility.ApplicationRootPath, "AddIns"));
+				c.RunInitialization();
+				
+				LoggingService.Info("Initializing workbench...");
+				// .NET base autostarts
+				// taken out of the add-in tree for performance reasons (every tick in startup counts)
+				WorkbenchSingleton.InitializeWorkbench();
 				
 				// initialize workbench-dependent services:
 				ProjectService.InitializeService();
@@ -233,25 +246,6 @@ namespace ICSharpCode.SharpDevelop
 			AddInTree.Doozers.Add("Directory", new DirectoryDoozer());
 			
 			MenuCommand.LinkCommandCreator = delegate(string link) { return new LinkCommand(link); };
-		}
-		
-		static void InitializeCore()
-		{
-			StringParser.RegisterStringTagProvider(new SharpDevelopStringTagProvider());
-			
-			LoggingService.Info("Loading AddInTree...");
-			AddInTree.Load();
-			
-			// run workspace autostart commands
-			LoggingService.Info("Running autostart commands...");
-			foreach (ICommand command in AddInTree.BuildItems("/Workspace/Autostart", null, false)) {
-				command.Run();
-			}
-			
-			LoggingService.Info("Initializing workbench...");
-			// .NET base autostarts
-			// taken out of the add-in tree for performance reasons (every tick in startup counts)
-			WorkbenchSingleton.InitializeWorkbench();
 		}
 	}
 }

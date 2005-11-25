@@ -13,18 +13,27 @@ using System.Xml;
 
 namespace ICSharpCode.Core
 {
-	public sealed class PropertyService
+	public static class PropertyService
 	{
-		const string propertyFileName        = "SharpDevelopProperties.xml";
-		const string propertyXmlRootNodeName = "SharpDevelopProperties";
+		static string propertyFileName;
+		static string propertyXmlRootNodeName;
 		
-		static string configDirectory = FileUtility.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), ".ICSharpCode", "SharpDevelop2") + Path.DirectorySeparatorChar;
-		static string dataDirectory   = FileUtility.Combine(FileUtility.ApplicationRootPath, "data");
+		static string configDirectory;
+		static string dataDirectory;
 		
-		static Properties properties  = new Properties();
+		static Properties properties;
 		
-		static PropertyService()
+		public static void InitializeService(string configDirectory, string dataDirectory, string propertiesName)
 		{
+			if (properties != null)
+				throw new InvalidOperationException("Service is already initialized.");
+			if (configDirectory == null || dataDirectory == null || propertiesName == null)
+				throw new ArgumentNullException();
+			properties = new Properties();
+			PropertyService.configDirectory = configDirectory;
+			PropertyService.dataDirectory = dataDirectory;
+			propertyXmlRootNodeName = propertiesName;
+			propertyFileName = propertiesName + ".xml";
 			properties.PropertyChanged += new PropertyChangedEventHandler(PropertiesPropertyChanged);
 		}
 		
@@ -40,12 +49,12 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static string Get(string property) 
+		public static string Get(string property)
 		{
 			return properties[property];
 		}
 		
-		public static T Get<T>(string property, T defaultValue) 
+		public static T Get<T>(string property, T defaultValue)
 		{
 			return properties.Get(property, defaultValue);
 		}
@@ -57,6 +66,8 @@ namespace ICSharpCode.Core
 		
 		public static void Load()
 		{
+			if (properties == null)
+				throw new InvalidOperationException("Service is not initialized.");
 			if (!Directory.Exists(configDirectory)) {
 				Directory.CreateDirectory(configDirectory);
 			}
@@ -76,10 +87,9 @@ namespace ICSharpCode.Core
 			using (XmlTextReader reader = new XmlTextReader(fileName)) {
 				while (reader.Read()){
 					if (reader.IsStartElement()) {
-						switch (reader.LocalName) {
-							case propertyXmlRootNodeName:
-								properties.ReadProperties(reader, propertyXmlRootNodeName);
-								return true;
+						if (reader.LocalName == propertyXmlRootNodeName) {
+							properties.ReadProperties(reader, propertyXmlRootNodeName);
+							return true;
 						}
 					}
 				}

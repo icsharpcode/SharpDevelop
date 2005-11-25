@@ -20,17 +20,6 @@ namespace ICSharpCode.Core
 {
 	public static class MenuService
 	{
-		static ToolStripRenderer renderer;
-		
-		public static ToolStripRenderer Renderer {
-			get {
-				return renderer;
-			}
-			set {
-				renderer = value;
-			}
-		}
-		
 		public static void AddItemsToMenu(ToolStripItemCollection collection, object owner, string addInTreePath)
 		{
 			ArrayList buildItems = AddInTree.GetTreeNode(addInTreePath).BuildChildItems(owner);
@@ -54,7 +43,6 @@ namespace ICSharpCode.Core
 			try {
 				ArrayList buildItems = AddInTree.GetTreeNode(addInTreePath).BuildChildItems(owner);
 				ContextMenuStrip contextMenu = new ContextMenuStrip();
-				if (Renderer != null) contextMenu.Renderer = Renderer;
 				contextMenu.Items.Add(new ToolStripMenuItem("dummy"));
 				contextMenu.Opening += delegate {
 					contextMenu.Items.Clear();
@@ -135,7 +123,6 @@ namespace ICSharpCode.Core
 		public static void CreateQuickInsertMenu(TextBoxBase targetControl, Control popupControl, string[,] quickInsertMenuItems)
 		{
 			ContextMenuStrip contextMenu = new ContextMenuStrip();
-			if (Renderer != null) contextMenu.Renderer = Renderer;
 			for (int i = 0; i < quickInsertMenuItems.GetLength(0); ++i) {
 				if (quickInsertMenuItems[i, 0] == "-") {
 					contextMenu.Items.Add(new MenuSeparator());

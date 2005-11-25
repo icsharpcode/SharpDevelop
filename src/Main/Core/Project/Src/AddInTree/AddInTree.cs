@@ -18,8 +18,6 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public sealed class AddInTree
 	{
-		readonly static string defaultCoreDirectory;
-		
 		static List<AddIn>   addIns   = new List<AddIn>();
 		static AddInTreeNode rootNode = new AddInTreeNode();
 		
@@ -28,8 +26,6 @@ namespace ICSharpCode.Core
 		
 		static AddInTree()
 		{
-			defaultCoreDirectory = FileUtility.Combine(FileUtility.ApplicationRootPath, "AddIns");
-			
 			doozers.Add("Class", new ClassDoozer());
 			doozers.Add("FileFilter", new FileFilterDoozer());
 			doozers.Add("Icon", new IconDoozer());
@@ -214,11 +210,6 @@ namespace ICSharpCode.Core
 				dict.Remove(name);
 				addInDict.Remove(name);
 			}
-		}
-		
-		public static void Load()
-		{
-			Load(FileUtility.SearchDirectory(defaultCoreDirectory, "*.addin"));
 		}
 		
 		public static void Load(List<string> addInFiles)

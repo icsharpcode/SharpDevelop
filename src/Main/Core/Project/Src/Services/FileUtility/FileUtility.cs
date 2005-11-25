@@ -39,32 +39,23 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// A utility class related to file utilities.
 	/// </summary>
-	public sealed class FileUtility
+	public static class FileUtility
 	{
 		// TODO: GetFullPath is a **very** expensive method (performance-wise)!
 		// Call it only when necessary. (see IsEqualFile)
 		
 		readonly static char[] separators = { Path.DirectorySeparatorChar, Path.AltDirectorySeparatorChar, Path.VolumeSeparatorChar };
-		static string applicationRootPath;
+		static string applicationRootPath = Environment.CurrentDirectory;
 		const string fileNameRegEx = @"^([a-zA-Z]:)?[^:]+$";
 		
 		public static string ApplicationRootPath {
 			get {
 				return applicationRootPath;
 			}
-		}
-		
-		static FileUtility()
-		{
-			Assembly entryAssembly = Assembly.GetEntryAssembly();
-			// entryAssembly == null might happen in unit test mode
-			if (entryAssembly != null) {
-				applicationRootPath = Path.Combine(Path.GetDirectoryName(entryAssembly.Location), "..");
-			} else {
-				applicationRootPath = Environment.CurrentDirectory;
+			set {
+				applicationRootPath = value;
 			}
 		}
-		
 		
 		public static string NETFrameworkInstallRoot {
 			get {

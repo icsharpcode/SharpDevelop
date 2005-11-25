@@ -13,23 +13,6 @@ namespace ICSharpCode.Core
 {
 	public static class ToolbarService
 	{
-		static ToolStripRenderer renderer;
-
-		public static ToolStripRenderer Renderer {
-			get {
-				return renderer;
-			}
-			set {
-				if (renderer != value) {
-					renderer = value;
-					if (RendererChanged != null)
-						RendererChanged(null, EventArgs.Empty);
-				}
-			}
-		}
-		
-		public static event EventHandler RendererChanged;
-		
 		public static ToolStripItem[] CreateToolStripItems(object owner, AddInTreeNode treeNode)
 		{
 			return (ToolStripItem[])(treeNode.BuildChildItems(owner)).ToArray(typeof(ToolStripItem));
@@ -38,7 +21,6 @@ namespace ICSharpCode.Core
 		public static ToolStrip CreateToolStrip(object owner, AddInTreeNode treeNode)
 		{
 			ToolStrip toolStrip = new ToolStrip();
-			if (Renderer != null) toolStrip.Renderer = Renderer;
 			toolStrip.Items.AddRange(CreateToolStripItems(owner, treeNode));
 			UpdateToolbar(toolStrip); // setting Visible is only possible after the items have been added
 			new LanguageChangeWatcher(toolStrip);
@@ -51,17 +33,12 @@ namespace ICSharpCode.Core
 				this.toolStrip = toolStrip;
 				toolStrip.Disposed += Disposed;
 				ResourceService.LanguageChanged += OnLanguageChanged;
-				RendererChanged += OnRendererChanged;
 			}
 			void OnLanguageChanged(object sender, EventArgs e) {
 				ToolbarService.UpdateToolbarText(toolStrip);
 			}
-			void OnRendererChanged(object sender, EventArgs e) {
-				toolStrip.Renderer = Renderer ?? new ToolStripProfessionalRenderer();
-			}
 			void Disposed(object sender, EventArgs e) {
 				ResourceService.LanguageChanged -= OnLanguageChanged;
-				RendererChanged -= OnRendererChanged;
 			}
 		}
 		

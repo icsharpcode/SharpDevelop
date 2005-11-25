@@ -368,7 +368,6 @@ namespace HtmlHelp2
 				dynamicHelpToolbar.Items.Add(button);
 			}
 
-			this.RenderModeChanged(null, null);
 			dynamicHelpToolbar.ImageList            = new ImageList();
 			dynamicHelpToolbar.ImageList.ColorDepth = ColorDepth.Depth32Bit;
 			dynamicHelpToolbar.ImageList.Images.Add(ResourcesHelper.GetBitmap("HtmlHelp2.16x16.Toc.png"));
@@ -379,7 +378,6 @@ namespace HtmlHelp2
 			{
 				HtmlHelp2Environment.NamespaceReloaded   += new EventHandler(this.NamespaceReloaded);
 			}
-			ToolbarService.RendererChanged += new EventHandler(this.RenderModeChanged);
 		}
 
 		public void LoadDynamicHelpPage()
@@ -394,11 +392,6 @@ namespace HtmlHelp2
 		{
 			this.RemoveAllChildren();
 			this.BuildANothing();
-		}
-
-		private void RenderModeChanged(object sender, EventArgs e)
-		{
-			dynamicHelpToolbar.Renderer = ToolbarService.Renderer;
 		}
 
 		private void ToolStripButtonClicked(object sender, EventArgs e)

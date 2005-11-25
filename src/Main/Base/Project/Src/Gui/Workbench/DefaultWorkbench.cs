@@ -233,11 +233,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void UpdateRenderer()
 		{
 			bool pro = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.UseProfessionalRenderer", true);
-			ToolStripRenderer renderer = pro ? (ToolStripRenderer)new ToolStripProfessionalRenderer() : new ToolStripSystemRenderer();
-			MenuService.Renderer = renderer;
-			ToolbarService.Renderer = renderer;
-			if (TopMenu != null) {
-				TopMenu.Renderer = renderer;
+			if (pro) {
+				ToolStripManager.Renderer = new ToolStripProfessionalRenderer();
+			} else {
+				ProfessionalColorTable colorTable = new ProfessionalColorTable();
+				colorTable.UseSystemColors        = true;
+				ToolStripManager.Renderer         = new ToolStripProfessionalRenderer(colorTable);
 			}
 		}
 		
@@ -471,7 +472,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void CreateMainMenu()
 		{
 			TopMenu = new MenuStrip();
-			TopMenu.Renderer = MenuService.Renderer;
 			TopMenu.Items.Clear();
 			try {
 				ToolStripItem[] items = (ToolStripItem[])(AddInTree.GetTreeNode(mainMenuPath).BuildChildItems(this)).ToArray(typeof(ToolStripItem));

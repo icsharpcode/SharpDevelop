@@ -33,11 +33,14 @@ namespace ICSharpCode.Core
 		
 		static string resourceDirectory;
 		
-		public static void InitializeService()
+		public static void InitializeService(string resourceDirectory)
 		{
-			if (resourceDirectory != null)
+			if (ResourceService.resourceDirectory != null)
 				throw new InvalidOperationException("Service is already initialized.");
-			resourceDirectory = FileUtility.Combine(PropertyService.DataDirectory, "resources");
+			if (resourceDirectory == null)
+				throw new ArgumentNullException("resourceDirectory");
+			
+			ResourceService.resourceDirectory = resourceDirectory;
 			
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChange);
 			LoadLanguageResources(PropertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name));

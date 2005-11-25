@@ -193,7 +193,7 @@ namespace ICSharpCode.Core
 			if (k <= 0)
 				return null;
 			string prefix = propertyName.Substring(0, k);
-			switch (prefix.ToUpper()) {
+			switch (prefix.ToUpperInvariant()) {
 				case "ENV":
 					return Environment.GetEnvironmentVariable(propertyName.Substring(k + 1));
 				case "RES":
