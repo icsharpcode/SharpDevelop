@@ -212,22 +212,32 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static void Load(List<string> addInFiles)
+		public static void Load(List<string> addInFiles, List<string> disabledAddIns)
 		{
 			List<AddIn> list = new List<AddIn>();
 			Dictionary<string, Version> dict = new Dictionary<string, Version>();
 			Dictionary<string, AddIn> addInDict = new Dictionary<string, AddIn>();
 			foreach (string fileName in addInFiles) {
 				AddIn addIn = AddIn.Load(fileName);
-				foreach (KeyValuePair<string, Version> pair in addIn.Manifest.Identities) {
-					if (dict.ContainsKey(pair.Key)) {
-						MessageService.ShowError("Name '" + pair.Key + "' is used by " +
-						                         "'" + addInDict[pair.Key].FileName + "' and '" + fileName + "'");
-						DisableAddin(addIn, dict, addInDict);
-						break;
-					} else {
-						dict.Add(pair.Key, pair.Value);
-						addInDict.Add(pair.Key, addIn);
+				if (disabledAddIns != null && disabledAddIns.Count > 0) {
+					foreach (string name in addIn.Manifest.Identities.Keys) {
+						if (disabledAddIns.Contains(name)) {
+							addIn.enabled = false;
+							break;
+						}
+					}
+				}
+				if (addIn.Enabled) {
+					foreach (KeyValuePair<string, Version> pair in addIn.Manifest.Identities) {
+						if (dict.ContainsKey(pair.Key)) {
+							MessageService.ShowError("Name '" + pair.Key + "' is used by " +
+							                         "'" + addInDict[pair.Key].FileName + "' and '" + fileName + "'");
+							DisableAddin(addIn, dict, addInDict);
+							break;
+						} else {
+							dict.Add(pair.Key, pair.Value);
+							addInDict.Add(pair.Key, addIn);
+						}
 					}
 				}
 				list.Add(addIn);

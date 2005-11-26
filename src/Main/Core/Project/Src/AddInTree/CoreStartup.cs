@@ -138,7 +138,7 @@ namespace ICSharpCode.Core
 		
 		public void RunInitialization()
 		{
-			AddInTree.Load(addInFiles);
+			AddInTree.Load(addInFiles, disabledAddIns);
 			
 			// run workspace autostart commands
 			LoggingService.Info("Running autostart commands...");
