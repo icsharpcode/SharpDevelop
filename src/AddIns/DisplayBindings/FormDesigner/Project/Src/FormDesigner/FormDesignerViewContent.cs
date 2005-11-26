@@ -111,6 +111,14 @@ namespace ICSharpCode.FormDesigner
 			
 			this.viewContent             = viewContent;
 			this.textAreaControlProvider = viewContent as ITextEditorControlProvider;
+			
+		}
+		
+		public override void SwitchedTo()
+		{
+			if (IsFormDesignerVisible) {
+				AddSideBars();
+			}
 		}
 		
 		void LoadDesigner()
@@ -266,12 +274,7 @@ namespace ICSharpCode.FormDesigner
 			PropertyPad.PropertyValueChanged += PropertyValueChanged;
 			Reload();
 			IsFormDesignerVisible = true;
-			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
-				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
-					SharpDevelopSideBar.SideBar.Tabs.Add(tab);
-				}
-			}
-			SharpDevelopSideBar.SideBar.Refresh();
+			AddSideBars();
 			propertyContainer.Host = Host;
 			UpdateSelectableObjects();
 		}
@@ -503,6 +506,16 @@ namespace ICSharpCode.FormDesigner
 					}
 				}
 			}
+		}
+		
+		void AddSideBars()
+		{
+			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
+				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
+					SharpDevelopSideBar.SideBar.Tabs.Add(tab);
+				}
+			}
+			SharpDevelopSideBar.SideBar.Refresh();
 		}
 	}
 }
