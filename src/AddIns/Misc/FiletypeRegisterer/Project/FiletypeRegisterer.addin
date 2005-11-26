@@ -1,9 +1,12 @@
-<AddIn name        = "#develop Filetypes"
+<AddIn name        = "Filetype Registerer"
        author      = "Georg Brandl"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "Registers filetypes for #develop"
-       version     = "1.0.0">
+       description = "Registers files in the Windows Explorer for #Develop">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.FiletypeRegisterer"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly = "ICSharpCode.FiletypeRegisterer.dll"/>

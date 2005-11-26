@@ -2,7 +2,7 @@
        author      = "Mike Krueger, Markus Palme"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "SharpDevelop VB.NET language binding">
+       description = "Backing binding for VB.NET">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.VBNetBinding"/>

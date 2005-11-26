@@ -12,10 +12,7 @@ using System.Xml;
 
 namespace ICSharpCode.Core
 {
-	/// <summary>
-	/// Description of AddIn.
-	/// </summary>
-	public class AddIn
+	public sealed class AddIn
 	{
 		Properties    properties = new Properties();
 		List<Runtime> runtimes   = new List<Runtime>();
@@ -42,6 +39,11 @@ namespace ICSharpCode.Core
 				MessageService.ShowError("Cannot create object: " + className + "\nFuture missing objects will not cause an error message.");
 			}
 			return null;
+		}
+		
+		public override string ToString()
+		{
+			return "[AddIn: " + Name + "]";
 		}
 		
 		/// <summary>

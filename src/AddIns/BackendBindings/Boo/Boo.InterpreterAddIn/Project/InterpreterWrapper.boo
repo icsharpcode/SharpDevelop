@@ -17,10 +17,13 @@ class InterpreterWrapper:
 		_interpreter = Boo.Lang.Interpreter.InteractiveInterpreter(
 								RememberLastValue: true,
 								Print: self.OnPrintLine)
-		_interpreter.SetValue("cls", { Cleared() })
+		_interpreter.SetValue("cls", RaiseClear)
 	
 	event LinePrinted as callable(string)
 	event Cleared as MethodInvoker
+	
+	private def RaiseClear():
+		Cleared()
 	
 	private def OnPrintLine(text as string):
 		LinePrinted(text)

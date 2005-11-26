@@ -56,6 +56,7 @@ Icons.16x16.ClosedResourceFolder                  = ProjectBrowserIcons\Property
 Icons.16x16.ArrowLeftRight = BitmapResources-data\Icons.16x16.ArrowLeftRight.png
 Icons.16x16.ArrowDown      = BitmapResources-data\Icons.16x16.ArrowDown.png
 Icons.16x16.ArrowUp        = BitmapResources-data\Icons.16x16.ArrowUp.png
+Icons.16x16.OK             = BitmapResources-data\Icons.16x16.OK.png
 
 Icons.16x16.Debug.Start                          = DebuggerIcons\Icons.16x16.Debug.Start.png
 Icons.16x16.Debug.StartWithoutDebugging          = DebuggerIcons\Icons.16x16.Debug.StartWithoutDebugging.png

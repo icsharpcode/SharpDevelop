@@ -15,7 +15,7 @@ namespace ICSharpCode.Core
 	/// <summary>
 	/// Represents a versioned reference to an AddIn. Used by <see cref="AddInManifest"/>.
 	/// </summary>
-	public class AddInReference
+	public class AddInReference : ICloneable
 	{
 		string name;
 		Version minimumVersion;
@@ -36,6 +36,11 @@ namespace ICSharpCode.Core
 		public string Name {
 			get {
 				return name;
+			}
+			set {
+				if (value == null) throw new ArgumentNullException("name");
+				if (value.Length == 0) throw new ArgumentException("name cannot be an empty string", "name");
+				name = value;
 			}
 		}
 		
@@ -117,14 +122,24 @@ namespace ICSharpCode.Core
 		
 		public AddInReference(string name, Version minimumVersion, Version maximumVersion)
 		{
-			if (name == null) throw new ArgumentNullException("name");
-			if (name.Length == 0) throw new ArgumentException("name cannot be an empty string", "name");
+			this.Name = name;
 			if (minimumVersion == null) throw new ArgumentNullException("minimumVersion");
 			if (maximumVersion == null) throw new ArgumentNullException("maximumVersion");
 			
 			this.minimumVersion = minimumVersion;
 			this.maximumVersion = maximumVersion;
-			this.name = name;
+		}
+		
+		public override bool Equals(object obj)
+		{
+			if (!(obj is AddInReference)) return false;
+			AddInReference b = (AddInReference)obj;
+			return name == b.name && minimumVersion == b.minimumVersion && maximumVersion == b.maximumVersion;
+		}
+		
+		public override int GetHashCode()
+		{
+			return name.GetHashCode() ^ minimumVersion.GetHashCode() ^ maximumVersion.GetHashCode();
 		}
 		
 		public override string ToString()
@@ -144,6 +159,16 @@ namespace ICSharpCode.Core
 					return name + ", version " + minimumVersion.ToString() + "-" + maximumVersion.ToString();
 				}
 			}
+		}
+		
+		public AddInReference Clone()
+		{
+			return new AddInReference(name, minimumVersion, maximumVersion);
+		}
+		
+		object ICloneable.Clone()
+		{
+			return Clone();
 		}
 	}
 }

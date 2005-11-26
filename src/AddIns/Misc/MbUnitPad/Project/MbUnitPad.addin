@@ -2,7 +2,7 @@
        author      = "Daniel Grunwald"
        copyright   = "GNU General Public License"
        url         = "http://www.icsharpcode.net"
-       description = "Integrated MbUnit test runner for #Develop">
+       description = "Runs MbUnit and NUnit tests inside #Develop">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.MbUnitPad"/>

@@ -2,8 +2,11 @@
        author      = "Satguru P Srivastava"
        copyright   = "GPL"
        url         = "http://home.mchsi.com/~ssatguru"
-       description = "Display AddIn Information"
-       version     = "0.1.0">
+       description = "Display AddIn Information">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.AddInScout"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly="AddInScout.dll"/>

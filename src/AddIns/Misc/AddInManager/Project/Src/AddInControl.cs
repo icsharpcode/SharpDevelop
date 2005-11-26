@@ -1,9 +1,9 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Daniel Grunwald
- * Date: 26.11.2005
- * Time: 15:54
- */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
 using System.ComponentModel;
@@ -14,9 +14,6 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.AddInManager
 {
-	/// <summary>
-	/// Description of AddInControl.
-	/// </summary>
 	public class AddInControl : Control
 	{
 		AddIn addIn;
@@ -34,6 +31,7 @@ namespace ICSharpCode.AddInManager
 			this.Size = new Size(100, 40);
 			this.SetStyle(ControlStyles.Selectable, true);
 			this.SetStyle(ControlStyles.UserPaint, true);
+			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 			this.SetStyle(ControlStyles.ResizeRedraw, true);
 			this.SetStyle(ControlStyles.AllPaintingInWmPaint, true);
 		}
@@ -65,8 +63,8 @@ namespace ICSharpCode.AddInManager
 			bounds.Offset(1, 1);
 			bounds.Inflate(-2, -2);
 			Brush gradient = new LinearGradientBrush(bounds,
-			                                         selected ? SystemColors.ControlLight : SystemColors.ControlLightLight,
-			                                         selected ? SystemColors.Highlight    : SystemColors.ControlDark,
+			                                         selected ? SystemColors.Control   : SystemColors.ControlLightLight,
+			                                         selected ? SystemColors.Highlight : SystemColors.ControlDark,
 			                                         LinearGradientMode.ForwardDiagonal);
 			
 			GraphicsPath path = new GraphicsPath();

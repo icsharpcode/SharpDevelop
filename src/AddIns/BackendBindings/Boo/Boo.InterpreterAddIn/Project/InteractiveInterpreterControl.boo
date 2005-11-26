@@ -121,7 +121,7 @@ class InteractiveInterpreterControl(TextEditorControl):
 	
 	private def SingleLineInputState():
 		code = ConsumeCurrentLine()
-		if code[-1:] in ":", "\\":
+		if code[-1:] in (":", "\\"):
 			_state = InputState.Block
 			_block.GetStringBuilder().Length = 0
 			_block.WriteLine(code)
@@ -218,7 +218,7 @@ class InteractiveInterpreterControl(TextEditorControl):
 			CtrlSpaceComplete()
 			return true
 			
-		if key in Keys.Home, Keys.Shift|Keys.Home, Keys.Control|Keys.Home:
+		if key in (Keys.Home, Keys.Shift|Keys.Home, Keys.Control|Keys.Home):
 			MoveCaretToOffset(GetLastLineSegment().Offset + 4)
 			return true
 			
@@ -226,7 +226,7 @@ class InteractiveInterpreterControl(TextEditorControl):
 			ClearLine()
 			return true
 			
-		if key in Keys.Back, Keys.Left:
+		if key in (Keys.Back, Keys.Left):
 			if self.CaretColumn < 5:
 				return true
 		else:

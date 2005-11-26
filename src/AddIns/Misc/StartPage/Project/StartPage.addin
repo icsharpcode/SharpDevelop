@@ -1,4 +1,4 @@
-<AddIn name        = "#develop Start Page"
+<AddIn name        = "Start Page"
        author      = "Georg Brandl"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"

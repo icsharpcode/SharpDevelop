@@ -1,9 +1,12 @@
-﻿<AddIn name        = "BooBinding"
+﻿<AddIn name        = "Boo Interpreter Console"
        author      = "Daniel Grunwald"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "Interactive interpreter for boo"
-       version     = "1.0.0">
+       description = "Interactive interpreter for boo">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.BooInterpreter"/>
+	</Manifest>
 	
 	<Runtime>
 		<Import assembly = "Boo.InterpreterAddIn.dll"/>

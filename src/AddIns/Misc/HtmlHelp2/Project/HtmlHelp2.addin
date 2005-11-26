@@ -2,8 +2,7 @@
        author      = "Mathias Simmack"
        copyright   = "Copyright (c) 2005"
        url         = "unknown"
-       description = "integrates Microsoft's Help 2.0 Environment"
-       version     = "2.0.0.3">
+       description = "integrates Microsoft's Help 2.0 Environment">
 	
 	<Runtime>
 		<Import assembly="HtmlHelp2.dll"/>

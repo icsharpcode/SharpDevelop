@@ -1,8 +1,8 @@
-<AddIn name        = "IL Assembler binding"
+<AddIn name        = "ILAsm binding"
        author      = "Mike Krueger"
        copyright   = "GPL"
        url         = "http://www.icsharpcode.net"
-       description = "Binding for IL ASM">
+       description = "Backing binding for IL Assembler">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.ILAsmBinding"/>
