@@ -128,11 +128,8 @@ namespace ICSharpCode.SharpDevelop
 			SplashScreenForm.SetCommandLineArgs(args);
 			
 			foreach (string parameter in SplashScreenForm.GetParameterList()) {
-				switch (parameter.ToUpper()) {
-					case "NOLOGO":
-						noLogo = true;
-						break;
-				}
+				if ("nologo".Equals(parameter, StringComparison.OrdinalIgnoreCase))
+					noLogo = true;
 			}
 			
 			if (!noLogo) {
@@ -179,7 +176,17 @@ namespace ICSharpCode.SharpDevelop
 				StringParser.RegisterStringTagProvider(new SharpDevelopStringTagProvider());
 				
 				LoggingService.Info("Looking for AddIns...");
-				c.AddAddInsFromDirectory(FileUtility.Combine(FileUtility.ApplicationRootPath, "AddIns"));
+				c.AddAddInsFromDirectory(Path.Combine(FileUtility.ApplicationRootPath, "AddIns"));
+				string fileName = Path.Combine(PropertyService.ConfigDirectory, "AddIns");
+				if (Directory.Exists(fileName)) {
+					c.AddAddInsFromDirectory(fileName);
+				}
+				fileName = Path.Combine(PropertyService.ConfigDirectory, "AddIns.xml");
+				if (File.Exists(fileName)) {
+					c.LoadAddInConfiguration(fileName);
+				}
+				
+				LoggingService.Info("Loading AddInTree...");
 				c.RunInitialization();
 				
 				LoggingService.Info("Initializing workbench...");

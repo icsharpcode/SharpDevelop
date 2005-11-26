@@ -69,7 +69,13 @@ namespace BuildAddinDocumentation
 			XmlDocument doc = new XmlDocument();
 			doc.Load(Path.Combine(srcDir, "..\\data\\schemas\\Addin.xsd"));
 			UpdateSchema(doc, doozers, conditions);
-			doc.Save(Path.Combine(srcDir, "..\\data\\schemas\\Addin.xsd"));
+			using (XmlTextWriter writer = new XmlTextWriter(Path.Combine(srcDir, "..\\data\\schemas\\Addin.xsd"), System.Text.Encoding.UTF8)) {
+				writer.Formatting = Formatting.Indented;
+				writer.IndentChar = '\t';
+				writer.Indentation = 1;
+				doc.Save(writer);
+			}
+			Debug.WriteLine("Finished");
 		}
 		
 		static void RecursiveInsertDoozerList(XmlElement e, List<XmlElement> doozers, List<XmlElement> conditionList)
@@ -181,14 +187,14 @@ namespace BuildAddinDocumentation
 					}
 					e5 = CreateChild(e4, "annotation");
 					e6 = CreateChild(e5, "documentation");
-					e6.InnerXml = XmlToHtml(doozerChild.InnerXml);
+					e6.InnerXml = XmlToHtml(doozerChild.InnerXml).Replace("    ", "\t");
 				}
 				e = CreateChild(doc.DocumentElement, "element");
 				e.SetAttribute("name", doozer.GetAttribute("shortname"));
 				e.SetAttribute("type", doozer.GetAttribute("shortname"));
 				e2 = CreateChild(e, "annotation");
 				e3 = CreateChild(e2, "documentation");
-				e3.InnerXml = XmlToHtml(doozer["summary"].InnerXml);
+				e3.InnerXml = XmlToHtml(doozer["summary"].InnerXml).Replace("    ", "\t");
 			}
 		}
 		

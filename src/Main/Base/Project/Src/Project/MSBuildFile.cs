@@ -1,8 +1,8 @@
-// <file>
+ï»¿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
-//     <version>$Revision: 562 $</version>
+//     <owner name="Scott Ferrett" email="surf@softvelocity.com"/>
+//     <version>$Revision$</version>
 // </file>
 
 using System;
@@ -99,71 +99,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			return instr;
 		}
 		public MSBuildFileWriter(string fileName, Encoding encoding) : base(fileName, encoding) { }
-		//
-		// Summary:
-		// When overridden in a derived class, writes out the attribute with the
-		// specified local name and value.
-		// 
-		// Parameters:
-		// localName: 
-		//    The local name of the attribute. 
-		// value: 
-		//    The value of the attribute. 
-		// 
-		// Exceptions:
-		//    System.InvalidOperationException
-		// 
-		//    System.ArgumentException
-		// 
-		public new void WriteAttributeString(string localName, string value)
+		
+		public override void WriteString(string text)
 		{
-			base.WriteAttributeString(localName, Convert(value));
-		}
-		//
-		// Summary:
-		// When overridden in a derived class, writes an attribute with the specified
-		// local name, namespace URI, and value.
-		// 
-		// Parameters:
-		// localName: 
-		//    The local name of the attribute. 
-		// value: 
-		//    The value of the attribute. 
-		// ns: 
-		//    The namespace URI to associate with the attribute. 
-		// 
-		// Exceptions:
-		//    System.InvalidOperationException
-		// 
-		//    System.ArgumentException
-		// 
-		public new void WriteAttributeString(string localName, string ns, string value)
-		{
-			base.WriteAttributeString(localName, ns, Convert(value));
-		}
-		//
-		// Summary:
-		// When overridden in a derived class, writes out the attribute with the
-		// specified prefix, local name, namespace URI, and value.
-		// 
-		// Parameters:
-		// localName: 
-		//    The local name of the attribute. 
-		// prefix: 
-		//    The namespace prefix of the attribute. 
-		// value: 
-		//    The value of the attribute. 
-		// ns: 
-		//    The namespace URI of the attribute. 
-		// 
-		// Exceptions:
-		//    System.InvalidOperationException
-		// 
-		//    System.ArgumentException
-		// 
-		public new void WriteAttributeString(string prefix, string localName, string ns, string value)
-		{
-			base.WriteAttributeString(prefix, localName, ns, Convert(value));
+			base.WriteString(Convert(text));
 		}
 	}
 }

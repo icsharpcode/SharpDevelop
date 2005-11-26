@@ -14,9 +14,9 @@ using System.Collections.Generic;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Description of AddInTree.
+	/// Static class containing the AddInTree. Contains methods for accessing tree nodes and building items.
 	/// </summary>
-	public sealed class AddInTree
+	public static class AddInTree
 	{
 		static List<AddIn>   addIns   = new List<AddIn>();
 		static AddInTreeNode rootNode = new AddInTreeNode();
@@ -223,7 +223,8 @@ namespace ICSharpCode.Core
 					if (dict.ContainsKey(pair.Key)) {
 						MessageService.ShowError("Name '" + pair.Key + "' is used by " +
 						                         "'" + addInDict[pair.Key].FileName + "' and '" + fileName + "'");
-						addIn.enabled = false;
+						DisableAddin(addIn, dict, addInDict);
+						break;
 					} else {
 						dict.Add(pair.Key, pair.Value);
 						addInDict.Add(pair.Key, addIn);
