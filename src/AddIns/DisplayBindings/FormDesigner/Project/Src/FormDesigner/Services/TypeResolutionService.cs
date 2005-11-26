@@ -12,6 +12,7 @@ using System.Collections.Specialized;
 using System.Drawing;
 using System.ComponentModel;
 using System.ComponentModel.Design;
+using ICSharpCode.Core;
 
 namespace ICSharpCode.FormDesigner.Services
 {
@@ -49,6 +50,9 @@ namespace ICSharpCode.FormDesigner.Services
 		public Type GetType(string name, bool throwOnError, bool ignoreCase)
 		{
 			if (name == null || name.Length == 0) {
+				return null;
+			}
+			if (IgnoreType(name)) {
 				return null;
 			}
 			try {
@@ -96,6 +100,24 @@ namespace ICSharpCode.FormDesigner.Services
 		public void ReferenceAssembly(AssemblyName name)
 		{
 			ICSharpCode.Core.LoggingService.Warn("TODO: Add Assembly reference : " + name);
+		}
+		
+		/// <summary>
+		/// HACK - Ignore any requests for types from the Microsoft.VSDesigner
+		/// assembly.  There are smart tag problems if data adapter 
+		/// designers are used from this assembly.
+		/// </summary>
+		bool IgnoreType(string name)
+		{
+			int idx = name.IndexOf(",");
+			if (idx > 0) {
+				string[] splitName = name.Split(',');
+				string assemblyName = splitName[1].Substring(1);
+				if (assemblyName == "Microsoft.VSDesigner") {
+					return true;
+				}
+			}
+			return false;
 		}
 	}
 }
