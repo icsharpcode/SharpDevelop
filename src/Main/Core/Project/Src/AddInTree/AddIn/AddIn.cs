@@ -22,7 +22,8 @@ namespace ICSharpCode.Core
 		string        addInFileName = null;
 		AddInManifest      manifest = new AddInManifest();
 		Dictionary<string, ExtensionPath> paths = new Dictionary<string, ExtensionPath>();
-		internal bool enabled = true;
+		AddInAction action = AddInAction.Enable;
+		bool enabled = true;
 		
 		static bool hasShownErrorMessage = false;
 
@@ -41,6 +42,18 @@ namespace ICSharpCode.Core
 				MessageService.ShowError("Cannot create object: " + className + "\nFuture missing objects will not cause an error message.");
 			}
 			return null;
+		}
+		
+		/// <summary>
+		/// Action to execute when the application is restarted.
+		/// </summary>
+		public AddInAction Action {
+			get {
+				return action;
+			}
+			set {
+				action = value;
+			}
 		}
 		
 		public List<Runtime> Runtimes {
@@ -88,6 +101,10 @@ namespace ICSharpCode.Core
 		public bool Enabled {
 			get {
 				return enabled;
+			}
+			set {
+				enabled = value;
+				this.Action = value ? AddInAction.Enable : AddInAction.Disable;
 			}
 		}
 		

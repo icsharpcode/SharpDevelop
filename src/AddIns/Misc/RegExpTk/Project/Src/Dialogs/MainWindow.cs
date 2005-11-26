@@ -99,10 +99,10 @@ namespace Plugins.RegExpTk {
 			
 			ReplaceCheckBox_CheckedChanged((CheckBox)ControlDictionary["ReplaceCheckBox"], null);
 
-			this.StartPosition=FormStartPosition.CenterScreen;
 			this.Width=Screen.PrimaryScreen.WorkingArea.Width / 2;
 			
 			((TextBox)ControlDictionary["RegularExpressionTextBox"]).TextChanged+=new EventHandler(SetRegEx);
+			FormLocationHelper.Apply(this, "RegExpTk.WindowBounds", true);
 		}
 		
 		

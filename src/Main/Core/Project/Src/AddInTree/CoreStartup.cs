@@ -8,8 +8,6 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
-using System.Xml;
-using System.Text;
 
 namespace ICSharpCode.Core
 {
@@ -24,6 +22,7 @@ namespace ICSharpCode.Core
 		string configDirectory;
 		string dataDirectory;
 		string applicationName;
+		string addInConfigurationFile;
 		
 		/// <summary>
 		/// Sets the name used for the properties (only name, without path or extension).
@@ -68,6 +67,18 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		/// <summary>
+		/// Gets/Sets the configuration file used to store the enabled/disabled state of the AddIns.
+		/// </summary>
+		public string AddInConfigurationFile {
+			get {
+				return addInConfigurationFile;
+			}
+			set {
+				addInConfigurationFile = value;
+			}
+		}
+		
 		public CoreStartup(string applicationName)
 		{
 			if (applicationName == null)
@@ -82,62 +93,12 @@ namespace ICSharpCode.Core
 			addInFiles.AddRange(FileUtility.SearchDirectory(addInDir, "*.addin"));
 		}
 		
-		
-		public void LoadAddInConfiguration(string configurationFile)
-		{
-			LoadAddInConfiguration(configurationFile, addInFiles, disabledAddIns);
-		}
-		
-		/// <summary>
-		/// Loads a configuration file.
-		/// The 'file' from XML elements in the form "&lt;AddIn file='full path to .addin file'&gt;" will
-		/// be added to <paramref name="addInFiles"/>, the 'addin' element from
-		/// "&lt;Disable addin='addin identity'&gt;" will be added to <paramref name="disabledAddIns"/>,
-		/// all other XML elements are ignored.
-		/// </summary>
-		public static void LoadAddInConfiguration(string configurationFile, List<string> addInFiles, List<string> disabledAddIns)
-		{
-			using (XmlTextReader reader = new XmlTextReader(configurationFile)) {
-				while (reader.Read()) {
-					if (reader.NodeType == XmlNodeType.Element) {
-						if (reader.Name == "AddIn") {
-							string fileName = reader.GetAttribute("file");
-							if (fileName != null && fileName.Length > 0) {
-								addInFiles.Add(fileName);
-							}
-						} else if (reader.Name == "Disable") {
-							string addIn = reader.GetAttribute("addin");
-							if (addIn != null && addIn.Length > 0) {
-								disabledAddIns.Add(addIn);
-							}
-						}
-					}
-				}
-			}
-		}
-		
-		public static void SaveAddInConfiguration(string configurationFile, List<string> addInFiles, List<string> disabledAddIns)
-		{
-			using (XmlTextWriter writer = new XmlTextWriter(configurationFile, Encoding.UTF8)) {
-				writer.Formatting = Formatting.Indented;
-				writer.WriteStartDocument();
-				writer.WriteStartElement("AddInConfiguration");
-				foreach (string file in addInFiles) {
-					writer.WriteStartElement("AddIn");
-					writer.WriteAttributeString("file", file);
-					writer.WriteEndElement();
-				}
-				foreach (string name in disabledAddIns) {
-					writer.WriteStartElement("Disable");
-					writer.WriteAttributeString("addin", name);
-					writer.WriteEndElement();
-				}
-				writer.WriteEndDocument();
-			}
-		}
-		
 		public void RunInitialization()
 		{
+			if (addInConfigurationFile != null) {
+				AddInManager.ConfigurationFileName = addInConfigurationFile;
+				AddInManager.LoadAddInConfiguration(addInFiles, disabledAddIns);
+			}
 			AddInTree.Load(addInFiles, disabledAddIns);
 			
 			// run workspace autostart commands

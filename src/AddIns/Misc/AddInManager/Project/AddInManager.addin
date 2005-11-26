@@ -1,0 +1,21 @@
+﻿<AddIn name        = "AddInManager"
+       author      = "Daniel Grunwald"
+       copyright   = "GNU General Public License"
+       url         = ""
+       description = "Can install, enable, disable and uninstall AddIns">
+	
+	<Manifest>
+		<Identity name = "ICSharpCode.AddInManager"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "ICSharpCode.AddInManager.dll"/>
+	</Runtime>
+	
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
+		<MenuItem id = "ShowAddInManager"
+		          insertafter = "Separator1" insertbefore = "Separator2"
+		          label = "AddIn Manager"
+		          class = "ICSharpCode.AddInManager.ShowCommand"/>
+	</Path>
+</AddIn>

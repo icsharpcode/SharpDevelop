@@ -59,23 +59,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ListViewSizeChanged(null, null);
 			Owner = WorkbenchSingleton.MainForm;
 			Icon = null;
-			this.StartPosition = FormStartPosition.Manual;
-			this.Bounds = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.GotoDialog.Bounds", GetDefaultBounds());
-		}
-		
-		Rectangle GetDefaultBounds()
-		{
-			Rectangle parent = WorkbenchSingleton.MainForm.Bounds;
-			Size size = this.Size;
-			return new Rectangle(parent.Left + (parent.Width - size.Width) / 2,
-			                     parent.Top + (parent.Height - size.Height) / 2,
-			                     size.Width, size.Height);
-		}
-		
-		protected override void OnClosing(CancelEventArgs e)
-		{
-			base.OnClosing(e);
-			PropertyService.Set("ICSharpCode.SharpDevelop.Gui.GotoDialog.Bounds", this.Bounds);
+			FormLocationHelper.Apply(this, "ICSharpCode.SharpDevelop.Gui.GotoDialog.Bounds", true);
 		}
 		
 		void ListViewSizeChanged(object sender, EventArgs e)

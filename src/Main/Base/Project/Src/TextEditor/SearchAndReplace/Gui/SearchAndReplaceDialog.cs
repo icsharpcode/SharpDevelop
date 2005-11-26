@@ -53,7 +53,6 @@ namespace SearchAndReplace
 			this.ShowInTaskbar   = false;
 			this.TopMost         = false;
 			this.Text            = StringParser.Parse("${res:Dialog.NewProject.SearchReplace.Title}");
-			this.StartPosition   = FormStartPosition.CenterParent;
 			this.KeyPreview = true;
 			
 			searchAndReplacePanel = new SearchAndReplacePanel();
@@ -79,22 +78,12 @@ namespace SearchAndReplace
 			
 			Controls.Add(toolStrip);
 			SetSearchAndReplaceMode();
-			this.StartPosition = FormStartPosition.Manual;
-			this.Location = PropertyService.Get("ICSharpCode.SharpDevelop.Gui.SearchAndReplaceDialog.Location", GetDefaultLocation());
-		}
-		
-		Point GetDefaultLocation()
-		{
-			Rectangle parent = WorkbenchSingleton.MainForm.Bounds;
-			Size size = this.Size;
-			return new Point(parent.Left + (parent.Width - size.Width) / 2,
-			                 parent.Top + (parent.Height - size.Height) / 2);
+			FormLocationHelper.Apply(this, "ICSharpCode.SharpDevelop.Gui.SearchAndReplaceDialog.Location", false);
 		}
 		
 		protected override void OnClosing(System.ComponentModel.CancelEventArgs e)
 		{
 			base.OnClosing(e);
-			PropertyService.Set("ICSharpCode.SharpDevelop.Gui.SearchAndReplaceDialog.Location", this.Location);
 			Instance = null;
 		}
 		

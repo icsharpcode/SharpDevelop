@@ -20,6 +20,13 @@ namespace ICSharpCode.Core
 		List<AddInReference> conflicts = new List<AddInReference>();
 		Dictionary<string, Version> identities = new Dictionary<string, Version>();
 		Version primaryVersion;
+		string primaryIdentity;
+		
+		public string PrimaryIdentity {
+			get {
+				return primaryIdentity;
+			}
+		}
 		
 		public Version PrimaryVersion {
 			get {
@@ -55,8 +62,12 @@ namespace ICSharpCode.Core
 				}
 			}
 			Version v = AddInReference.ParseVersion(version, hintPath);
-			if (primaryVersion == null)
+			if (primaryVersion == null) {
 				primaryVersion = v;
+			}
+			if (primaryIdentity == null) {
+				primaryIdentity = name;
+			}
 			identities.Add(name, v);
 		}
 		

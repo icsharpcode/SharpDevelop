@@ -181,10 +181,7 @@ namespace ICSharpCode.SharpDevelop
 				if (Directory.Exists(fileName)) {
 					c.AddAddInsFromDirectory(fileName);
 				}
-				fileName = Path.Combine(PropertyService.ConfigDirectory, "AddIns.xml");
-				if (File.Exists(fileName)) {
-					c.LoadAddInConfiguration(fileName);
-				}
+				c.AddInConfigurationFile = Path.Combine(PropertyService.ConfigDirectory, "AddIns.xml");
 				
 				LoggingService.Info("Loading AddInTree...");
 				c.RunInitialization();

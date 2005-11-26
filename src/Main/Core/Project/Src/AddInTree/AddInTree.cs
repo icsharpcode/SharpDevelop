@@ -205,7 +205,7 @@ namespace ICSharpCode.Core
 		// used by Load(): disables an addin and removes it from the dictionaries.
 		static void DisableAddin(AddIn addIn, Dictionary<string, Version> dict, Dictionary<string, AddIn> addInDict)
 		{
-			addIn.enabled = false;
+			addIn.Enabled = false;
 			foreach (string name in addIn.Manifest.Identities.Keys) {
 				dict.Remove(name);
 				addInDict.Remove(name);
@@ -222,7 +222,7 @@ namespace ICSharpCode.Core
 				if (disabledAddIns != null && disabledAddIns.Count > 0) {
 					foreach (string name in addIn.Manifest.Identities.Keys) {
 						if (disabledAddIns.Contains(name)) {
-							addIn.enabled = false;
+							addIn.Enabled = false;
 							break;
 						}
 					}
