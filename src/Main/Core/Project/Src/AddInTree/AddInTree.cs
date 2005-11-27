@@ -214,6 +214,7 @@ namespace ICSharpCode.Core
 		static void DisableAddin(AddIn addIn, Dictionary<string, Version> dict, Dictionary<string, AddIn> addInDict)
 		{
 			addIn.Enabled = false;
+			addIn.Action = AddInAction.DependencyError;
 			foreach (string name in addIn.Manifest.Identities.Keys) {
 				dict.Remove(name);
 				addInDict.Remove(name);
@@ -227,6 +228,7 @@ namespace ICSharpCode.Core
 			Dictionary<string, AddIn> addInDict = new Dictionary<string, AddIn>();
 			foreach (string fileName in addInFiles) {
 				AddIn addIn = AddIn.Load(fileName);
+				addIn.Enabled = true;
 				if (disabledAddIns != null && disabledAddIns.Count > 0) {
 					foreach (string name in addIn.Manifest.Identities.Keys) {
 						if (disabledAddIns.Contains(name)) {
@@ -240,7 +242,8 @@ namespace ICSharpCode.Core
 						if (dict.ContainsKey(pair.Key)) {
 							MessageService.ShowError("Name '" + pair.Key + "' is used by " +
 							                         "'" + addInDict[pair.Key].FileName + "' and '" + fileName + "'");
-							DisableAddin(addIn, dict, addInDict);
+							addIn.Enabled = false;
+							addIn.Action = AddInAction.InstalledTwice;
 							break;
 						} else {
 							dict.Add(pair.Key, pair.Value);

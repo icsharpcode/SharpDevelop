@@ -1,12 +1,15 @@
-﻿/*
- * Created by SharpDevelop.
- * User: Daniel Grunwald
- * Date: 27.11.2005
- * Time: 11:42
- */
+﻿// <file>
+//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
+//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System;
+using System.Collections.Generic;
+using System.IO;
 using ICSharpCode.Core;
+using ICSharpCode.SharpZipLib.Zip;
 
 namespace ICSharpCode.AddInManager
 {
@@ -27,7 +30,12 @@ namespace ICSharpCode.AddInManager
 			this.fileName = fileName;
 			this.isPackage = isPackage;
 			if (isPackage) {
-				throw new NotImplementedException();
+				ZipFile file = new ZipFile(fileName);
+				try {
+					LoadAddInFromZip(file);
+				} finally {
+					file.Close();
+				}
 			} else {
 				addIn = AddIn.Load(fileName);
 			}
@@ -35,12 +43,70 @@ namespace ICSharpCode.AddInManager
 				throw new AddInLoadException("The AddIn must have an <Identity> for use with the AddIn-Manager.");
 		}
 		
+		void LoadAddInFromZip(ZipFile file)
+		{
+			ZipEntry addInEntry = null;
+			foreach (ZipEntry entry in file) {
+				if (entry.Name.EndsWith(".addin")) {
+					if (addInEntry != null)
+						throw new AddInLoadException("The package may only contain one .addin file.");
+					addInEntry = entry;
+				}
+			}
+			if (addInEntry == null)
+				throw new AddInLoadException("The package must contain one .addin file.");
+			using (Stream s = file.GetInputStream(addInEntry)) {
+				using (StreamReader r = new StreamReader(s)) {
+					addIn = AddIn.Load(r);
+				}
+			}
+		}
+		
 		public void Install()
 		{
+			foreach (string identity in addIn.Manifest.Identities.Keys) {
+				ICSharpCode.Core.AddInManager.AbortRemoveUserAddInOnNextStart(identity);
+			}
 			if (isPackage) {
-				throw new NotImplementedException();
+				string targetDir = Path.Combine(ICSharpCode.Core.AddInManager.AddInInstallTemp,
+				                                addIn.Manifest.PrimaryIdentity);
+				if (Directory.Exists(targetDir))
+					Directory.Delete(targetDir, true);
+				Directory.CreateDirectory(targetDir);
+				FastZip fastZip = new FastZip();
+				fastZip.CreateEmptyDirectories = true;
+				fastZip.ExtractZip(fileName, targetDir, null);
+				
+				addIn.Action = AddInAction.Install;
+				AddInTree.InsertAddIn(addIn);
 			} else {
 				ICSharpCode.Core.AddInManager.AddExternalAddIns(new AddIn[] { addIn });
+			}
+		}
+		
+		public static void Uninstall(IList<AddIn> addIns)
+		{
+			foreach (AddIn addIn in addIns) {
+				foreach (string identity in addIn.Manifest.Identities.Keys) {
+					// delete from installation temp (if installation or update is pending)
+					string targetDir = Path.Combine(ICSharpCode.Core.AddInManager.AddInInstallTemp,
+					                                identity);
+					if (Directory.Exists(targetDir))
+						Directory.Delete(targetDir, true);
+					
+					// remove the user AddIn
+					targetDir = Path.Combine(ICSharpCode.Core.AddInManager.UserAddInPath, identity);
+					if (Directory.Exists(targetDir)) {
+						if (!addIn.Enabled) {
+							try {
+								Directory.Delete(targetDir, true);
+								continue;
+							} catch {
+							}
+						}
+						ICSharpCode.Core.AddInManager.RemoveUserAddInOnNextStart(identity);
+					}
+				}
 			}
 		}
 	}

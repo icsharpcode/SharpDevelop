@@ -17,6 +17,7 @@ namespace ICSharpCode.AddInManager
 	public class AddInControl : Control
 	{
 		AddIn addIn;
+		bool isExternal;
 		
 		public AddIn AddIn {
 			get {
@@ -28,7 +29,11 @@ namespace ICSharpCode.AddInManager
 		{
 			this.addIn = addIn;
 			this.BackColor = SystemColors.Window;
-			this.Size = new Size(100, 40);
+			
+			isExternal = !FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, addIn.FileName)
+				&& !FileUtility.IsBaseDirectory(PropertyService.ConfigDirectory, addIn.FileName);
+			
+			this.ClientSize = new Size(100, isExternal ? 35 + pathHeight : 35);
 			this.SetStyle(ControlStyles.Selectable, true);
 			this.SetStyle(ControlStyles.UserPaint, true);
 			this.SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
@@ -107,9 +112,29 @@ namespace ICSharpCode.AddInManager
 			}
 			RectangleF textBounds = bounds;
 			textBounds.Offset(innerMargin, innerMargin);
-			textBounds.Inflate(-innerMargin * 2, -innerMargin * 2);
-			g.DrawString(description, Font, textBrush, textBounds);
+			textBounds.Inflate(-innerMargin * 2, -innerMargin * 2 + 2);
+			if (isExternal)
+				textBounds.Height -= pathHeight;
+			using (StringFormat sf = new StringFormat(StringFormatFlags.LineLimit)) {
+				sf.Trimming = StringTrimming.EllipsisWord;
+				g.DrawString(description, Font, textBrush, textBounds, sf);
+			}
+			if (isExternal) {
+				textBounds.Y = textBounds.Bottom + 2;
+				textBounds.Height = pathHeight + 2;
+				using (Font font = new Font(Font.Name, 7, FontStyle.Italic)) {
+					using (StringFormat sf = new StringFormat(StringFormatFlags.NoWrap)) {
+						sf.Trimming = StringTrimming.EllipsisPath;
+						sf.Alignment = StringAlignment.Far;
+						g.DrawString(addIn.FileName, font,
+						             selected ? SystemBrushes.HighlightText : SystemBrushes.ControlText,
+						             textBounds, sf);
+					}
+				}
+			}
 		}
+		
+		const int pathHeight = 10;
 		
 		string GetText(out Brush textBrush)
 		{
@@ -137,6 +162,12 @@ namespace ICSharpCode.AddInManager
 				case AddInAction.Update:
 					textBrush = SystemBrushes.ActiveCaption;
 					return "AddIn will be updated after restarting SharpDevelop";
+				case AddInAction.InstalledTwice:
+					textBrush = Brushes.Red;
+					return "Duplicate installation";
+				case AddInAction.DependencyError:
+					textBrush = Brushes.Red;
+					return "Dependency failed";
 				default:
 					textBrush = Brushes.Yellow;
 					return addIn.Action.ToString();

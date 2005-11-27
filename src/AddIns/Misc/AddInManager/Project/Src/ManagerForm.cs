@@ -47,17 +47,19 @@ namespace ICSharpCode.AddInManager
 			ICSharpCode.SharpDevelop.Gui.FormLocationHelper.Apply(this, "AddInManager.WindowBounds", true);
 			
 			CreateAddInList();
-			splitContainer.Panel1.Paint += delegate(object sender, PaintEventArgs e) {
-				if (visibleAddInCount == 0) {
-					Rectangle rect = splitContainer.Panel1.ClientRectangle;
-					rect.Offset(16, 16);
-					rect.Inflate(-32, -32);
-					e.Graphics.DrawString("You don't have any AddIns installed.\n" +
-					                      "Download an AddIn from the Internet, then click 'Install AddIn' and " +
-					                      "choose the downloaded file to install it.",
-					                      Font, SystemBrushes.ControlText, rect);
-				}
-			};
+		}
+		
+		void OnSplitContainerPanel1Paint(object sender, PaintEventArgs e)
+		{
+			if (visibleAddInCount == 0) {
+				Rectangle rect = splitContainer.Panel1.ClientRectangle;
+				rect.Offset(16, 16);
+				rect.Inflate(-32, -32);
+				e.Graphics.DrawString("You don't have any AddIns installed.\n" +
+				                      "Download an AddIn from the Internet, then click 'Install AddIn' and " +
+				                      "choose the downloaded file to install it.",
+				                      Font, SystemBrushes.ControlText, rect);
+			}
 		}
 		
 		void CreateAddInList()
@@ -189,8 +191,6 @@ namespace ICSharpCode.AddInManager
 			splitContainer.Panel2Collapsed = selected.Count == 0;
 			if (selected.Count > 0) {
 				dependencyTable.Visible = false;
-				uninstallButton.Enabled = false;
-				runActionButton.Enabled = false;
 				runActionButton.Visible = true;
 				uninstallButton.Visible = true;
 				
@@ -199,9 +199,13 @@ namespace ICSharpCode.AddInManager
 				bool allInstalling   = true;
 				bool allUninstalling = true;
 				bool allUninstallable = true;
+				bool hasErrors = false;
 				foreach (AddIn addIn in selected) {
 					allEnabled      &= addIn.Action == AddInAction.Enable;
-					allDisabled     &= addIn.Action == AddInAction.Disable;
+					if (addIn.Action == AddInAction.DependencyError || addIn.Action == AddInAction.InstalledTwice)
+						hasErrors = true;
+					else
+						allDisabled     &= addIn.Action == AddInAction.Disable;
 					allInstalling   &= addIn.Action == AddInAction.Install;
 					allUninstalling &= addIn.Action == AddInAction.Uninstall;
 					if (allUninstallable) {
@@ -221,6 +225,8 @@ namespace ICSharpCode.AddInManager
 					actionGroupBox.Text = runActionButton.Text = "Enable";
 					actionDescription.Text = "Enables the selected AddIns.";
 					runActionButton.Enabled = ShowDependencies(selected, true);
+					if (hasErrors)
+						runActionButton.Enabled = false;
 					uninstallButton.Enabled = allUninstallable;
 				} else if (allInstalling) {
 					selectedAction = AddInAction.Uninstall;
@@ -443,7 +449,7 @@ namespace ICSharpCode.AddInManager
 		void UninstallButtonClick(object sender, EventArgs e)
 		{
 			ICSharpCode.Core.AddInManager.RemoveExternalAddIns(selected);
-			// TODO: delete user addins
+			InstallableAddIn.Uninstall(selected);
 			RefreshAddInList();
 		}
 		#endregion
@@ -461,21 +467,25 @@ namespace ICSharpCode.AddInManager
 		
 		void RunActionButtonClick(object sender, EventArgs e)
 		{
-			if (selectedAction == AddInAction.Disable) {
-				ICSharpCode.Core.AddInManager.Disable(selected);
-			} else if (selectedAction == AddInAction.Enable) {
-				ICSharpCode.Core.AddInManager.Enable(selected);
-			} else if (selectedAction == AddInAction.Install) {
-				// install new AddIns
-				foreach (InstallableAddIn addInPackage in shownAddInPackages) {
-					addInPackage.Install();
-				}
-				RefreshAddInList();
-			} else if (selectedAction == AddInAction.Uninstall) {
-				UninstallButtonClick(sender, e);
-				return;
-			} else {
-				throw new NotImplementedException();
+			switch (selectedAction) {
+				case AddInAction.Disable:
+					ICSharpCode.Core.AddInManager.Disable(selected);
+					break;
+				case AddInAction.Enable:
+					ICSharpCode.Core.AddInManager.Enable(selected);
+					break;
+				case AddInAction.Install:
+					// install new AddIns
+					foreach (InstallableAddIn addInPackage in shownAddInPackages) {
+						addInPackage.Install();
+					}
+					RefreshAddInList();
+					return;
+				case AddInAction.Uninstall:
+					UninstallButtonClick(sender, e);
+					return;
+				default:
+					throw new NotImplementedException();
 			}
 			foreach (AddInControl ctl in splitContainer.Panel1.Controls) {
 				ctl.Invalidate();
@@ -579,6 +589,7 @@ namespace ICSharpCode.AddInManager
 			// 
 			this.splitContainer.Panel1.AutoScroll = true;
 			this.splitContainer.Panel1.BackColor = System.Drawing.SystemColors.Window;
+			this.splitContainer.Panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.OnSplitContainerPanel1Paint);
 			this.splitContainer.Panel1MinSize = 100;
 			// 
 			// splitContainer.Panel2

@@ -177,11 +177,10 @@ namespace ICSharpCode.SharpDevelop
 				
 				LoggingService.Info("Looking for AddIns...");
 				c.AddAddInsFromDirectory(Path.Combine(FileUtility.ApplicationRootPath, "AddIns"));
-				string fileName = Path.Combine(PropertyService.ConfigDirectory, "AddIns");
-				if (Directory.Exists(fileName)) {
-					c.AddAddInsFromDirectory(fileName);
-				}
-				c.AddInConfigurationFile = Path.Combine(PropertyService.ConfigDirectory, "AddIns.xml");
+				
+				c.ConfigureExternalAddIns(Path.Combine(PropertyService.ConfigDirectory, "AddIns.xml"));
+				c.ConfigureUserAddIns(Path.Combine(PropertyService.ConfigDirectory, "AddInInstallTemp"),
+				                      Path.Combine(PropertyService.ConfigDirectory, "AddIns"));
 				
 				LoggingService.Info("Loading AddInTree...");
 				c.RunInitialization();

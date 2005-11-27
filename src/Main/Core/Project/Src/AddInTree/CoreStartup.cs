@@ -22,7 +22,6 @@ namespace ICSharpCode.Core
 		string configDirectory;
 		string dataDirectory;
 		string applicationName;
-		string addInConfigurationFile;
 		
 		/// <summary>
 		/// Sets the name used for the properties (only name, without path or extension).
@@ -67,18 +66,6 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		/// <summary>
-		/// Gets/Sets the configuration file used to store the enabled/disabled state of the AddIns.
-		/// </summary>
-		public string AddInConfigurationFile {
-			get {
-				return addInConfigurationFile;
-			}
-			set {
-				addInConfigurationFile = value;
-			}
-		}
-		
 		public CoreStartup(string applicationName)
 		{
 			if (applicationName == null)
@@ -93,12 +80,26 @@ namespace ICSharpCode.Core
 			addInFiles.AddRange(FileUtility.SearchDirectory(addInDir, "*.addin"));
 		}
 		
+		public void ConfigureExternalAddIns(string addInConfigurationFile)
+		{
+			AddInManager.ConfigurationFileName = addInConfigurationFile;
+			AddInManager.LoadAddInConfiguration(addInFiles, disabledAddIns);
+		}
+		
+		public void ConfigureUserAddIns(string addInInstallTemp, string userAddInPath)
+		{
+			AddInManager.AddInInstallTemp = addInInstallTemp;
+			AddInManager.UserAddInPath = userAddInPath;
+			if (Directory.Exists(addInInstallTemp)) {
+				AddInManager.InstallAddIns(disabledAddIns);
+			}
+			if (Directory.Exists(userAddInPath)) {
+				AddAddInsFromDirectory(userAddInPath);
+			}
+		}
+		
 		public void RunInitialization()
 		{
-			if (addInConfigurationFile != null) {
-				AddInManager.ConfigurationFileName = addInConfigurationFile;
-				AddInManager.LoadAddInConfiguration(addInFiles, disabledAddIns);
-			}
 			AddInTree.Load(addInFiles, disabledAddIns);
 			
 			// run workspace autostart commands

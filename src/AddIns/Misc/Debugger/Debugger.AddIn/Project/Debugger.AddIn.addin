@@ -1,4 +1,4 @@
-﻿<AddIn name="SharpDevelop Debugger" author="David Srbecký" copyright="GPL" url="" description="SharpDevelop Managed Debugger">
+﻿<AddIn name="Debugger" author="David Srbecký" copyright="GPL" url="" description="SharpDevelop Managed Debugger">
 	<Manifest>
 		<Identity name = "ICSharpCode.Debugger"/>
 	</Manifest>

@@ -19,12 +19,34 @@ namespace ICSharpCode.Core
 		Disable,
 		Install,
 		Uninstall,
-		Update
+		Update,
+		InstalledTwice,
+		DependencyError
 	}
 	
 	public static class AddInManager
 	{
 		static string configurationFileName;
+		static string addInInstallTemp;
+		static string userAddInPath;
+		
+		public static string UserAddInPath {
+			get {
+				return userAddInPath;
+			}
+			set {
+				userAddInPath = value;
+			}
+		}
+		
+		public static string AddInInstallTemp {
+			get {
+				return addInInstallTemp;
+			}
+			set {
+				addInInstallTemp = value;
+			}
+		}
 		
 		public static string ConfigurationFileName {
 			get {
@@ -32,6 +54,133 @@ namespace ICSharpCode.Core
 			}
 			set {
 				configurationFileName = value;
+			}
+		}
+		
+		/// <summary>
+		/// Installs the AddIns from AddInInstallTemp to the UserAddInPath.
+		/// In case of installation errors, a error message is displayed to the user
+		/// and the affected AddIn is added to the disabled list.
+		/// </summary>
+		public static void InstallAddIns(List<string> disabled)
+		{
+			if (!Directory.Exists(addInInstallTemp))
+				return;
+			LoggingService.Info("AddInManager.InstallAddIns started");
+			if (!Directory.Exists(userAddInPath))
+				Directory.CreateDirectory(userAddInPath);
+			string removeFile = Path.Combine(addInInstallTemp, "remove.txt");
+			bool allOK = true;
+			List<string> notRemoved = new List<string>();
+			if (File.Exists(removeFile)) {
+				using (StreamReader r = new StreamReader(removeFile)) {
+					string addInName;
+					while ((addInName = r.ReadLine()) != null) {
+						addInName = addInName.Trim();
+						if (addInName.Length == 0)
+							continue;
+						string targetDir = Path.Combine(userAddInPath, addInName);
+						if (!UninstallAddIn(disabled, addInName, targetDir)) {
+							notRemoved.Add(addInName);
+							allOK = false;
+						}
+					}
+				}
+				if (notRemoved.Count == 0) {
+					LoggingService.Info("Deleting remove.txt");
+					File.Delete(removeFile);
+				} else {
+					LoggingService.Info("Rewriting remove.txt");
+					using (StreamWriter w = new StreamWriter(removeFile)) {
+						notRemoved.ForEach(w.WriteLine);
+					}
+				}
+			}
+			foreach (string sourceDir in Directory.GetDirectories(addInInstallTemp)) {
+				string addInName = Path.GetFileName(sourceDir);
+				string targetDir = Path.Combine(userAddInPath, addInName);
+				if (notRemoved.Contains(addInName)) {
+					LoggingService.Info("Skipping installation of " + addInName + " because deinstallation failed.");
+					continue;
+				}
+				if (UninstallAddIn(disabled, addInName, targetDir)) {
+					LoggingService.Info("Installing " + addInName + "...");
+					Directory.Move(sourceDir, targetDir);
+				} else {
+					allOK = false;
+				}
+			}
+			if (allOK) {
+				try {
+					Directory.Delete(addInInstallTemp, false);
+				} catch (Exception ex) {
+					LoggingService.Warn("Error removing install temp", ex);
+				}
+			}
+			LoggingService.Info("AddInManager.InstallAddIns finished");
+		}
+		
+		static bool UninstallAddIn(List<string> disabled, string addInName, string targetDir)
+		{
+			if (Directory.Exists(targetDir)) {
+				LoggingService.Info("Removing " + addInName + "...");
+				try {
+					Directory.Delete(targetDir, true);
+				} catch (Exception ex) {
+					disabled.Add(addInName);
+					MessageService.ShowError("Error removing " + addInName + ":\n" +
+					                         ex.Message + "\nThe AddIn will be " +
+					                         "removed on the next start of SharpDevelop and is disabled " +
+					                         "for now.");
+					return false;
+				}
+			}
+			return true;
+		}
+		
+		public static void RemoveUserAddInOnNextStart(string identity)
+		{
+			List<string> removeEntries = new List<string>();
+			string removeFile = Path.Combine(addInInstallTemp, "remove.txt");
+			if (File.Exists(removeFile)) {
+				using (StreamReader r = new StreamReader(removeFile)) {
+					string addInName;
+					while ((addInName = r.ReadLine()) != null) {
+						addInName = addInName.Trim();
+						if (addInName.Length > 0)
+							removeEntries.Add(addInName);
+					}
+				}
+				if (removeEntries.Contains(identity))
+					return;
+			}
+			removeEntries.Add(identity);
+			if (!Directory.Exists(addInInstallTemp))
+				Directory.CreateDirectory(addInInstallTemp);
+			using (StreamWriter w = new StreamWriter(removeFile)) {
+				removeEntries.ForEach(w.WriteLine);
+			}
+		}
+		
+		public static void AbortRemoveUserAddInOnNextStart(string identity)
+		{
+			string removeFile = Path.Combine(addInInstallTemp, "remove.txt");
+			if (!File.Exists(removeFile)) {
+				return;
+			}
+			List<string> removeEntries = new List<string>();
+			using (StreamReader r = new StreamReader(removeFile)) {
+				string addInName;
+				while ((addInName = r.ReadLine()) != null) {
+					addInName = addInName.Trim();
+					if (addInName.Length > 0)
+						removeEntries.Add(addInName);
+				}
+			}
+			if (removeEntries.Remove(identity)) {
+				using (StreamWriter w = new StreamWriter(removeFile)) {
+					removeEntries.ForEach(w.WriteLine);
+				}
 			}
 		}
 		
@@ -83,8 +232,14 @@ namespace ICSharpCode.Core
 					disabled.Remove(identity);
 				}
 				if (addIn.Action == AddInAction.Uninstall) {
-					if (!addInFiles.Contains(addIn.FileName))
-						addInFiles.Add(addIn.FileName);
+					if (FileUtility.IsBaseDirectory(userAddInPath, addIn.FileName)) {
+						foreach (string identity in addIn.Manifest.Identities.Keys) {
+							AbortRemoveUserAddInOnNextStart(identity);
+						}
+					} else {
+						if (!addInFiles.Contains(addIn.FileName))
+							addInFiles.Add(addIn.FileName);
+					}
 				}
 				addIn.Action = AddInAction.Enable;
 			}

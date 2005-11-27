@@ -19,8 +19,8 @@ namespace ICSharpCode.Core
 		string        addInFileName = null;
 		AddInManifest      manifest = new AddInManifest();
 		Dictionary<string, ExtensionPath> paths = new Dictionary<string, ExtensionPath>();
-		AddInAction action = AddInAction.Enable;
-		bool enabled = true;
+		AddInAction action = AddInAction.Disable;
+		bool enabled;
 		
 		static bool hasShownErrorMessage = false;
 
