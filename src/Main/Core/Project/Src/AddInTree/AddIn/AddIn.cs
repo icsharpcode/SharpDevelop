@@ -104,7 +104,7 @@ namespace ICSharpCode.Core
 			get {
 				return enabled;
 			}
-			set {
+			internal set {
 				enabled = value;
 				this.Action = value ? AddInAction.Enable : AddInAction.Disable;
 			}

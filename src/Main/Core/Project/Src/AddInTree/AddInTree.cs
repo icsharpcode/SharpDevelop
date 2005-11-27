@@ -37,9 +37,9 @@ namespace ICSharpCode.Core
 			conditionEvaluators.Add("Ownerstate", new OwnerStateConditionEvaluator());
 		}
 		
-		public static List<AddIn> AddIns {
+		public static IList<AddIn> AddIns {
 			get {
-				return addIns;
+				return addIns.AsReadOnly();
 			}
 		}
 		
@@ -156,7 +156,7 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		static void InsertAddIn(AddIn addIn)
+		public static void InsertAddIn(AddIn addIn)
 		{
 			if (addIn.Enabled) {
 				foreach (ExtensionPath path in addIn.Paths.Values) {
@@ -164,6 +164,14 @@ namespace ICSharpCode.Core
 				}
 			}
 			addIns.Add(addIn);
+		}
+		
+		public static void RemoveAddIn(AddIn addIn)
+		{
+			if (addIn.Enabled) {
+				throw new ArgumentException("Cannot remove enabled AddIns at runtime.");
+			}
+			addIns.Remove(addIn);
 		}
 		
 		// As long as the show form takes 10 times of loading the xml representation I'm not implementing

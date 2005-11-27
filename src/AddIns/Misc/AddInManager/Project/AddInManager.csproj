@@ -38,6 +38,10 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="ICSharpCode.SharpZipLib">
+      <HintPath>..\RequiredLibraries\ICSharpCode.SharpZipLib.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <None Include="AddInManager.addin">
@@ -50,6 +54,7 @@
       <DependentUpon>ManagerForm.cs</DependentUpon>
     </EmbeddedResource>
     <Compile Include="Src\AddInControl.cs" />
+    <Compile Include="Src\InstallableAddIn.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">

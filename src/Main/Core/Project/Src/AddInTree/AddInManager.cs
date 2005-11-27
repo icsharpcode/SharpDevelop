@@ -35,25 +35,64 @@ namespace ICSharpCode.Core
 			}
 		}
 		
-		public static void Enable(List<AddIn> addIns)
+		public static void AddExternalAddIns(IList<AddIn> addIns)
 		{
 			List<string> addInFiles = new List<string>();
 			List<string> disabled = new List<string>();
 			LoadAddInConfiguration(addInFiles, disabled);
 			
 			foreach (AddIn addIn in addIns) {
-				string identity = addIn.Manifest.PrimaryIdentity;
-				if (identity == null)
-					throw new ArgumentException("The AddIn cannot be disabled because it has no identity.");
-				
-				disabled.Remove(identity);
+				if (!addInFiles.Contains(addIn.FileName))
+					addInFiles.Add(addIn.FileName);
+				addIn.Enabled = false;
+				addIn.Action = AddInAction.Install;
+				AddInTree.InsertAddIn(addIn);
+			}
+			
+			SaveAddInConfiguration(addInFiles, disabled);
+		}
+		
+		public static void RemoveExternalAddIns(IList<AddIn> addIns)
+		{
+			List<string> addInFiles = new List<string>();
+			List<string> disabled = new List<string>();
+			LoadAddInConfiguration(addInFiles, disabled);
+			
+			foreach (AddIn addIn in addIns) {
+				foreach (string identity in addIn.Manifest.Identities.Keys) {
+					disabled.Remove(identity);
+				}
+				addInFiles.Remove(addIn.FileName);
+				addIn.Action = AddInAction.Uninstall;
+				if (!addIn.Enabled) {
+					AddInTree.RemoveAddIn(addIn);
+				}
+			}
+			
+			SaveAddInConfiguration(addInFiles, disabled);
+		}
+		
+		public static void Enable(IList<AddIn> addIns)
+		{
+			List<string> addInFiles = new List<string>();
+			List<string> disabled = new List<string>();
+			LoadAddInConfiguration(addInFiles, disabled);
+			
+			foreach (AddIn addIn in addIns) {
+				foreach (string identity in addIn.Manifest.Identities.Keys) {
+					disabled.Remove(identity);
+				}
+				if (addIn.Action == AddInAction.Uninstall) {
+					if (!addInFiles.Contains(addIn.FileName))
+						addInFiles.Add(addIn.FileName);
+				}
 				addIn.Action = AddInAction.Enable;
 			}
 			
 			SaveAddInConfiguration(addInFiles, disabled);
 		}
 		
-		public static void Disable(List<AddIn> addIns)
+		public static void Disable(IList<AddIn> addIns)
 		{
 			List<string> addInFiles = new List<string>();
 			List<string> disabled = new List<string>();
