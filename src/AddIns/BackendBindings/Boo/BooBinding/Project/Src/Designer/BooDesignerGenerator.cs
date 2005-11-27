@@ -9,6 +9,7 @@ using System;
 using System.ComponentModel;
 using System.Text;
 using System.Reflection;
+using System.CodeDom;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.FormDesigner;
@@ -17,9 +18,11 @@ namespace Grunwald.BooBinding.Designer
 {
 	public class BooDesignerGenerator : AbstractDesignerGenerator
 	{
-		protected override string GenerateFieldDeclaration(Type fieldType, string name)
+		protected override string GenerateFieldDeclaration(CodeDOMGenerator domGenerator, CodeMemberField field)
 		{
-			return "private " + name + " as " + fieldType;
+			// TODO: add support for modifiers
+			// (or implement code generation for fields in the Boo CodeDomProvider)
+			return "private " + field.Name + " as " + field.Type.BaseType;
 		}
 		
 		protected override System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider()

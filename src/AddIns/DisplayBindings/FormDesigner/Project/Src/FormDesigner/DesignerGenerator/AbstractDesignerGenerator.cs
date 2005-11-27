@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Reflection;
@@ -35,8 +36,6 @@ namespace ICSharpCode.FormDesigner
 		
 		CodeDomProvider provider;
 		
-		public const string NonVisualComponentContainerName = "components";
-		
 		public CodeDomProvider CodeDomProvider {
 			get {
 				if (this.provider == null) {
@@ -49,31 +48,26 @@ namespace ICSharpCode.FormDesigner
 		public void Attach(FormDesignerViewContent viewContent)
 		{
 			this.viewContent = viewContent;
-			IComponentChangeService componentChangeService = (IComponentChangeService)viewContent.DesignSurface.GetService(typeof(IComponentChangeService));
-			componentChangeService.ComponentAdded    += new ComponentEventHandler(ComponentAdded);
-			componentChangeService.ComponentRename   += new ComponentRenameEventHandler(ComponentRenamed);
-			componentChangeService.ComponentRemoving += new ComponentEventHandler(ComponentRemoved);
 		}
 		
 		public void Detach()
 		{
-			IComponentChangeService componentChangeService = (IComponentChangeService)viewContent.DesignSurface.GetService(typeof(IComponentChangeService));
-			componentChangeService.ComponentAdded    -= new ComponentEventHandler(ComponentAdded);
-			componentChangeService.ComponentRename   -= new ComponentRenameEventHandler(ComponentRenamed);
-			componentChangeService.ComponentRemoving -= new ComponentEventHandler(ComponentRemoved);
 			this.viewContent = null;
 		}
 		
-		void ComponentRemoved(object sender, ComponentEventArgs e)
+		/// <summary>
+		/// Removes the field declaration with the specified name from the source file.
+		/// </summary>
+		void RemoveField(string fieldName)
 		{
 			try {
+				LoggingService.Info("Remove field declaration: "+fieldName);
 				Reparse();
-				foreach (IField field in c.Fields) {
-					if (field.Name == e.Component.Site.Name) {
-						int startOffset = document.PositionToOffset(new Point(0, field.Region.BeginLine - 1));
-						int endOffset   = document.PositionToOffset(new Point(0, field.Region.EndLine));
-						document.Remove(startOffset, endOffset - startOffset);
-					}
+				IField field = GetField(c, fieldName);
+				if (field != null) {
+					int startOffset = document.PositionToOffset(new Point(0, field.Region.BeginLine - 1));
+					int endOffset   = document.PositionToOffset(new Point(0, field.Region.EndLine));
+					document.Remove(startOffset, endOffset - startOffset);
 				}
 				SaveDocument();
 			} catch (Exception ex) {
@@ -81,7 +75,12 @@ namespace ICSharpCode.FormDesigner
 			}
 		}
 		
-		protected abstract string GenerateFieldDeclaration(Type fieldType, string name);
+		protected virtual string GenerateFieldDeclaration(CodeDOMGenerator domGenerator, CodeMemberField field)
+		{
+			StringWriter writer = new StringWriter();
+			domGenerator.ConvertContentDefinition(field, writer);
+			return writer.ToString().Trim();
+		}
 		
 		/// <summary>
 		/// Contains the tabs in front of the InitializeComponents declaration.
@@ -89,33 +88,24 @@ namespace ICSharpCode.FormDesigner
 		/// </summary>
 		protected string tabs;
 		
-		void ComponentAdded(object sender, ComponentEventArgs e)
+		/// <summary>
+		/// Adds the declaration for the specified field to the source file
+		/// or replaces the already present declaration for a field with the same name.
+		/// </summary>
+		/// <param name="domGenerator">The CodeDOMGenerator used to generate the field declaration.</param>
+		/// <param name="newField">The CodeDom field to be added or replaced.</param>
+		void AddOrReplaceField(CodeDOMGenerator domGenerator, CodeMemberField newField)
 		{
 			try {
 				Reparse();
-				int endOffset = document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.EndLine));
-				document.Insert(endOffset, tabs + GenerateFieldDeclaration(e.Component.GetType(), e.Component.Site.Name) + Environment.NewLine);
-				if (CodeDOMGenerator.IsNonVisualComponent(viewContent.Host, e.Component)) {
-					if (!IsNonVisualComponentContainerDefined) {
-						document.Insert(endOffset, tabs + GenerateFieldDeclaration(typeof(Container), NonVisualComponentContainerName) + Environment.NewLine);
-					}
-				}
-				SaveDocument();
-			} catch (Exception ex) {
-				MessageService.ShowError(ex);
-			}
-		}
-		
-		void ComponentRenamed(object sender, ComponentRenameEventArgs e)
-		{
-			try {
-				Reparse();
-				foreach (IField field in c.Fields) {
-					if (field.Name == e.OldName) {
-						int startOffset = document.PositionToOffset(new Point(0, field.Region.BeginLine - 1));
-						int endOffset   = document.PositionToOffset(new Point(0, field.Region.EndLine));
-						document.Replace(startOffset, endOffset - startOffset, tabs + GenerateFieldDeclaration(e.Component.GetType(), e.NewName) + Environment.NewLine);
-					}
+				IField oldField = GetField(c, newField.Name);
+				if (oldField != null) {
+					int startOffset = document.PositionToOffset(new Point(0, oldField.Region.BeginLine - 1));
+					int endOffset   = document.PositionToOffset(new Point(0, oldField.Region.EndLine));
+					document.Replace(startOffset, endOffset - startOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
+				} else {
+					int endOffset = document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.EndLine));
+					document.Insert(endOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
 				}
 				SaveDocument();
 			} catch (Exception ex) {
@@ -166,6 +156,64 @@ namespace ICSharpCode.FormDesigner
 			
 			document.Replace(startOffset, endOffset - startOffset, statements);
 			SaveDocument();
+			
+			// apply changes the designer made to field declarations
+			// first loop looks for added and changed fields
+			foreach (CodeTypeMember m in formClass.Members) {
+				if (m is CodeMemberField) {
+					CodeMemberField newField = (CodeMemberField)m;
+					IField oldField = GetField(c, newField.Name);
+					if (oldField == null || FieldChanged(oldField, newField)) {
+						AddOrReplaceField(domGenerator, newField);
+					}
+				}
+			}
+			
+			// second loop looks for removed fields
+			List<string> removedFields = new List<string>();
+			foreach (IField field in c.Fields) {
+				bool found = false;
+				foreach (CodeTypeMember m in formClass.Members) {
+					if (m is CodeMemberField && m.Name == field.Name) {
+						found = true;
+						break;
+					}
+				}
+				if (!found) {
+					removedFields.Add(field.Name);
+				}
+			}
+			// removing fields is done in two steps because 
+			// we must not modify the c.Fields collection while it is enumerated
+			removedFields.ForEach(RemoveField);
+			
+		}
+		
+		/// <summary>
+		/// Compares the SharpDevelop.Dom field declaration oldField to
+		/// the CodeDom field declaration newField.
+		/// </summary>
+		/// <returns>true, if the fields are different in type or modifiers, otherwise false.</returns>
+		bool FieldChanged(IField oldField, CodeMemberField newField)
+		{
+			// compare types
+			if (oldField.ReturnType.FullyQualifiedName != newField.Type.BaseType) {
+				return true;
+			}
+			
+			// compare modifiers
+			ModifierEnum[] sdModifiers = new ModifierEnum[] {ModifierEnum.Private, ModifierEnum.Protected, ModifierEnum.ProtectedAndInternal, ModifierEnum.Internal, ModifierEnum.Public};
+			MemberAttributes[] cdModifiers = new MemberAttributes[] {MemberAttributes.Private, MemberAttributes.Family, MemberAttributes.FamilyOrAssembly, MemberAttributes.Assembly, MemberAttributes.Public};
+			
+			ModifierEnum oldModifiers = oldField.Modifiers & ModifierEnum.VisibilityMask;
+			MemberAttributes newModifiers = newField.Attributes & MemberAttributes.AccessMask;
+			for (int i = 0; i < sdModifiers.Length; i++) {
+				if ((oldModifiers  == sdModifiers[i]) ^ (newModifiers  == cdModifiers[i])) {
+					return true;
+				}
+			}
+			
+			return false;
 		}
 		
 		IDocument document;
@@ -319,13 +367,6 @@ namespace ICSharpCode.FormDesigner
 				}
 			}
 			return compatibleMethods;
-		}
-		
-		bool IsNonVisualComponentContainerDefined
-		{
-			get {
-				return GetField(c, NonVisualComponentContainerName) != null;
-			}
 		}
 		
 		IField GetField(IClass c, string name)

@@ -66,10 +66,21 @@ namespace ICSharpCode.FormDesigner
 			
 		}
 		
-		public static bool IsNonVisualComponent(IDesignerHost host, IComponent component)
+		public void ConvertContentDefinition(CodeMemberField field, TextWriter writer)
 		{
-			IDesigner designer = host.GetDesigner(component);
-			return !(designer is ControlDesigner);
+			LoggingService.Info("Generate field declaration for: "+field.Name);
+			
+			CodeGeneratorOptions options = codeDOMGeneratorUtility.CreateCodeGeneratorOptions;
+			options.IndentString = indentation;
+			try {
+				codeProvider.GenerateCodeFromMember(field, writer, options);
+			} catch (Exception e) {
+				codeProvider.GenerateCodeFromStatement(new CodeCommentStatement("TODO: Error while generating statement : " + e.Message),
+				                                       writer,
+				                                       options);
+				LoggingService.Error(e);
+			}
+			
 		}
 		
 	}

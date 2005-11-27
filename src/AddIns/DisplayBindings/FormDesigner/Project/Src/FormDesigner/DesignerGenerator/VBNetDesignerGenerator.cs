@@ -16,11 +16,6 @@ namespace ICSharpCode.FormDesigner
 {
 	public class VBNetDesignerGenerator : AbstractDesignerGenerator
 	{
-		protected override string GenerateFieldDeclaration(Type fieldType, string name)
-		{
-			return "Private " + name + " As " + fieldType;
-		}
-		
 		protected override System.CodeDom.Compiler.CodeDomProvider CreateCodeProvider()
 		{
 			return new Microsoft.VisualBasic.VBCodeProvider();

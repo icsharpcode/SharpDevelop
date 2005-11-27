@@ -17,11 +17,6 @@ namespace ICSharpCode.FormDesigner
 {
 	public class CSharpDesignerGenerator : AbstractDesignerGenerator
 	{
-		protected override string GenerateFieldDeclaration(Type fieldType, string name)
-		{
-			return "private " + fieldType + " " + name + ";";
-		}
-		
 		protected override DomRegion GetReplaceRegion(ICSharpCode.TextEditor.Document.IDocument document, IMethod method)
 		{
 			DomRegion r = method.BodyRegion;

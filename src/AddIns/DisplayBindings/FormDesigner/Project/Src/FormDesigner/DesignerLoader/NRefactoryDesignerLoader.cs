@@ -301,6 +301,12 @@ namespace ICSharpCode.FormDesigner
 		protected override void Write(CodeCompileUnit unit)
 		{
 			LoggingService.Info("DesignerLoader.Write called");
+			// output generated CodeDOM to the console :
+			#if DEBUG
+			if ((Control.ModifierKeys & Keys.Control) == Keys.Control) {
+				this.CodeDomProvider.GenerateCodeFromCompileUnit(unit, Console.Out, null);
+			}
+			#endif
 			generator.MergeFormChanges(unit);
 		}
 		

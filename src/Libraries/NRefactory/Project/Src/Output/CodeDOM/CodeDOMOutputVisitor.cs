@@ -117,18 +117,8 @@ namespace ICSharpCode.NRefactory.Parser
 
 			if ((modifier & Modifier.Abstract) != 0)
 				attr |=  MemberAttributes.Abstract;
-//			if ((modifier & Modifier.None) != 0)
-//				attr |=  MemberAttributes.AccessMask;
-			if ((modifier & Modifier.Internal) != 0)
-				attr |=  MemberAttributes.Assembly;
 			if ((modifier & Modifier.Const) != 0)
 				attr |=  MemberAttributes.Const;
-			if ((modifier & Modifier.Protected) != 0)
-				attr |=  MemberAttributes.Family;
-			if ((modifier & Modifier.Protected) != 0 && (modifier & Modifier.Internal) != 0)
-				attr |=  MemberAttributes.FamilyAndAssembly;
-//			if ((modifier & Modifier.None) != 0)
-//				attr |=  MemberAttributes.FamilyOrAssembly;
 			if ((modifier & Modifier.Sealed) != 0)
 				attr |=  MemberAttributes.Final;
 			if ((modifier & Modifier.New) != 0)
@@ -137,17 +127,20 @@ namespace ICSharpCode.NRefactory.Parser
 				attr |=  MemberAttributes.Overloaded;
 			if ((modifier & Modifier.Override) != 0)
 				attr |=  MemberAttributes.Override;
-			if ((modifier & Modifier.Private) != 0)
-				attr |=  MemberAttributes.Private;
-			if ((modifier & Modifier.Public) != 0)
-				attr |=  MemberAttributes.Public;
-//			if ((modifier & Modifier.None) != 0)
-//				attr |=  MemberAttributes.ScopeMask;
 			if ((modifier & Modifier.Static) != 0)
 				attr |=  MemberAttributes.Static;
-//			if ((modifier & Modifier.None) != 0)
-//				attr |=  MemberAttributes.VTableMask;
-
+			
+			if ((modifier & Modifier.Private) != 0)
+				attr |=  MemberAttributes.Private;
+			else if ((modifier & Modifier.Public) != 0)
+				attr |=  MemberAttributes.Public;
+			else if ((modifier & Modifier.Internal) != 0 && (modifier & Modifier.Protected) != 0)
+				attr |=  MemberAttributes.FamilyOrAssembly;
+			else if ((modifier & Modifier.Internal) != 0)
+				attr |=  MemberAttributes.Assembly;
+			else if ((modifier & Modifier.Protected) != 0)
+				attr |=  MemberAttributes.Family;
+			
 			return attr;
 		}
 
