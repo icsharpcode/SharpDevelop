@@ -37,42 +37,42 @@
         <Pad id    = "BreakPointsPad3" 
 		     category = "Debugger"
 		     title    = "Breakpoints"
-		     icon     = "PadIcons.ProjectBrowser"
+		     icon     = "PadIcons.BreakPoints"
 		     shortcut = "Control|Alt|B"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.BreakPointsPad"/>
 
         <Pad id    = "CallStackPad3" 
 		     category = "Debugger"
 		     title    = "Callstack"
-		     icon     = "PadIcons.ProjectBrowser"
+		     icon     = "PadIcons.CallStack"
 		     shortcut = "Control|Alt|C"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.CallStackPad"/>
 
         <Pad id    = "LoadedModulesPad3" 
 		     category = "Debugger"
 		     title    = "Loaded modules"
-		     icon     = "PadIcons.ProjectBrowser"
+		     icon     = "PadIcons.LoadedModules"
 		     shortcut = "Control|Alt|U"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LoadedModulesPad"/>
 
         <Pad id    = "RunningThreadsPad3"
 		     category = "Debugger"
 		     title    = "Threads"
-		     icon     = "PadIcons.ProjectBrowser"
+		     icon     = "PadIcons.Threads"
 		     shortcut = "Control|Alt|H"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.RunningThreadsPad"/>
 
         <Pad id    = "LocalVarPad3" 
 		     category = "Debugger"
 		     title    = "Local variables"
-		     icon     = "PadIcons.ProjectBrowser"
+		     icon     = "PadIcons.LocalVariables"
 		     shortcut = "Control|Alt|V"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad"/>
 
         <Pad id    = "ExceptionHistoryPad" 
              category = "Debugger"
              title    = "Exception history"
-             icon     = "PadIcons.ProjectBrowser"
+             icon     = "PadIcons.Exceptions"
              shortcut = "Control|Alt|E"
              class = "ICSharpCode.SharpDevelop.Gui.Pads.ExceptionHistoryPad"/>
        </Path>
