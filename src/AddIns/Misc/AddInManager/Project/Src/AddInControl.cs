@@ -61,15 +61,30 @@ namespace ICSharpCode.AddInManager
 			Focus();
 		}
 		
+		Color Mix(Color c1, Color c2, double perc)
+		{
+			double p1 = 1 - perc;
+			double p2 = perc;
+			return Color.FromArgb((int)(c1.R * p1 + c2.R * p2),
+			                      (int)(c1.G * p1 + c2.G * p2),
+			                      (int)(c1.B * p1 + c2.B * p2));
+		}
+		
 		protected override void OnPaint(PaintEventArgs e)
 		{
 			Graphics g = e.Graphics;
 			Rectangle bounds = this.ClientRectangle;
 			bounds.Offset(1, 1);
 			bounds.Inflate(-2, -2);
+			Color startColor = SystemColors.ControlLightLight;
+			Color endColor = SystemColors.Control;
+			if (selected) {
+				startColor = Mix(SystemColors.ControlLightLight, SystemColors.Highlight, 0.1);
+				endColor   = Mix(SystemColors.ControlLightLight, SystemColors.Highlight, 0.65);
+			}
 			Brush gradient = new LinearGradientBrush(bounds,
-			                                         selected ? SystemColors.Control   : SystemColors.ControlLightLight,
-			                                         selected ? SystemColors.Highlight : SystemColors.ControlDark,
+			                                         startColor,
+			                                         endColor,
 			                                         LinearGradientMode.ForwardDiagonal);
 			
 			GraphicsPath path = new GraphicsPath();
@@ -100,8 +115,6 @@ namespace ICSharpCode.AddInManager
 			gradient.Dispose();
 			Brush textBrush;
 			string description = GetText(out textBrush);
-			if (selected && textBrush == SystemBrushes.GrayText)
-				textBrush = SystemBrushes.HighlightText;
 			int titleWidth;
 			using (Font boldFont = new Font("Arial", 8, FontStyle.Bold)) {
 				g.DrawString(addIn.Name, boldFont, textBrush, innerMargin, innerMargin);

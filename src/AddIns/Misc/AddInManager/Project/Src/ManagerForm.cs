@@ -30,7 +30,9 @@ namespace ICSharpCode.AddInManager
 		{
 			if (instance == null) {
 				instance = new ManagerForm();
+				#if !STANDALONE
 				instance.Owner = ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm;
+				#endif
 				instance.Show();
 			} else {
 				instance.Activate();
@@ -44,7 +46,9 @@ namespace ICSharpCode.AddInManager
 			//
 			InitializeComponent();
 			
+			#if !STANDALONE
 			ICSharpCode.SharpDevelop.Gui.FormLocationHelper.Apply(this, "AddInManager.WindowBounds", true);
+			#endif
 			
 			CreateAddInList();
 		}
@@ -198,6 +202,7 @@ namespace ICSharpCode.AddInManager
 				bool allDisabled     = true;
 				bool allInstalling   = true;
 				bool allUninstalling = true;
+				bool allUpdating     = true;
 				bool allUninstallable = true;
 				bool hasErrors = false;
 				foreach (AddIn addIn in selected) {
@@ -206,6 +211,7 @@ namespace ICSharpCode.AddInManager
 						hasErrors = true;
 					else
 						allDisabled     &= addIn.Action == AddInAction.Disable;
+					allUpdating     &= addIn.Action == AddInAction.Update;
 					allInstalling   &= addIn.Action == AddInAction.Install;
 					allUninstalling &= addIn.Action == AddInAction.Uninstall;
 					if (allUninstallable) {
@@ -218,27 +224,33 @@ namespace ICSharpCode.AddInManager
 					selectedAction = AddInAction.Disable;
 					actionGroupBox.Text = runActionButton.Text = "Disable";
 					actionDescription.Text = "Disables the selected AddIns.";
-					runActionButton.Enabled = ShowDependencies(selected, false);
+					runActionButton.Enabled = ShowDependencies(selected, ShowDependencyMode.Disable);
 					uninstallButton.Enabled = allUninstallable && runActionButton.Enabled;
 				} else if (allDisabled) {
 					selectedAction = AddInAction.Enable;
 					actionGroupBox.Text = runActionButton.Text = "Enable";
 					actionDescription.Text = "Enables the selected AddIns.";
-					runActionButton.Enabled = ShowDependencies(selected, true);
+					runActionButton.Enabled = ShowDependencies(selected, ShowDependencyMode.Enable);
 					if (hasErrors)
 						runActionButton.Enabled = false;
 					uninstallButton.Enabled = allUninstallable;
 				} else if (allInstalling) {
 					selectedAction = AddInAction.Uninstall;
 					actionGroupBox.Text = runActionButton.Text = "Cancel installation";
-					actionDescription.Text = "Cancels the installation of the selected AddIns.";
-					runActionButton.Enabled = ShowDependencies(selected, false);
+					actionDescription.Text = "Aborts the installation of the selected AddIns.";
+					runActionButton.Enabled = ShowDependencies(selected, ShowDependencyMode.Disable);
 					uninstallButton.Visible = false;
 				} else if (allUninstalling) {
 					selectedAction = AddInAction.Enable;
 					actionGroupBox.Text = runActionButton.Text = "Cancel deinstallation";
-					actionDescription.Text = "Cancels the deinstallation of the selected AddIns.";
-					runActionButton.Enabled = ShowDependencies(selected, true);
+					actionDescription.Text = "Aborts the deinstallation of the selected AddIns.";
+					runActionButton.Enabled = ShowDependencies(selected, ShowDependencyMode.Enable);
+					uninstallButton.Visible = false;
+				} else if (allUpdating) {
+					selectedAction = AddInAction.InstalledTwice;
+					actionGroupBox.Text = runActionButton.Text = "Cancel update";
+					actionDescription.Text = "Aborts the update of the selected AddIns.";
+					runActionButton.Enabled = ShowDependencies(selected, ShowDependencyMode.CancelUpdate);
 					uninstallButton.Visible = false;
 				} else {
 					actionGroupBox.Text = "";
@@ -250,7 +262,13 @@ namespace ICSharpCode.AddInManager
 			ignoreFocusChange = false;
 		}
 		
-		bool ShowDependencies(IList<AddIn> addIns, bool enable)
+		enum ShowDependencyMode {
+			Disable,
+			Enable,
+			CancelUpdate
+		}
+		
+		bool ShowDependencies(IList<AddIn> addIns, ShowDependencyMode mode)
 		{
 			List<AddInReference> dependencies = new List<AddInReference>(); // only used with enable=true
 			List<KeyValuePair<AddIn, AddInReference>> dependenciesToSel = new List<KeyValuePair<AddIn, AddInReference>>();
@@ -276,8 +294,11 @@ namespace ICSharpCode.AddInManager
 			}
 			
 			// add new addins
-			if (enable) {
+			if (mode != ShowDependencyMode.Disable) {
 				foreach (AddIn addIn in addIns) {
+					if (mode == ShowDependencyMode.CancelUpdate && !addIn.Enabled) {
+						continue;
+					}
 					foreach (KeyValuePair<string, Version> pair in addIn.Manifest.Identities) {
 						addInDict[pair.Key] = pair.Value;
 					}
@@ -398,8 +419,14 @@ namespace ICSharpCode.AddInManager
 			List<InstallableAddIn> list = new List<InstallableAddIn>();
 			foreach (string file in fileNames) {
 				try {
+					// Same file-extension check is in Panel1DragEnter
 					switch (Path.GetExtension(file).ToLowerInvariant()) {
 						case ".addin":
+							if (FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, file)) {
+								MessageService.ShowMessage("You cannot install AddIns inside the SharpDevelop directory, " +
+								                           "they will be picked up as pre-installed AddIns automatically.");
+								return false;
+							}
 							list.Add(new InstallableAddIn(file, false));
 							break;
 						case ".sdaddin":
@@ -431,17 +458,75 @@ namespace ICSharpCode.AddInManager
 			uninstallButton.Visible = false;
 			
 			selectedAction = AddInAction.Install;
-			actionGroupBox.Text = runActionButton.Text = "Install";
-			List<AddIn> addInList = new List<AddIn>();
-			StringBuilder b = new StringBuilder("Install the AddIns ");
-			for (int i = 0; i < addInPackages.Count; i++) {
-				if (i > 0) b.Append(", ");
-				addInList.Add(addInPackages[i].AddIn);
-				b.Append(addInPackages[i].AddIn.Name);
+			List<string> installAddIns = new List<string>();
+			List<string> updateAddIns = new List<string>();
+			foreach (InstallableAddIn addInPackage in addInPackages) {
+				string identity = addInPackage.AddIn.Manifest.PrimaryIdentity;
+				AddIn foundAddIn = null;
+				foreach (AddIn addIn in AddInTree.AddIns) {
+					if (addIn.Action != AddInAction.Install
+					    && addIn.Manifest.Identities.ContainsKey(identity))
+					{
+						foundAddIn = addIn;
+						break;
+					}
+				}
+				if (foundAddIn != null) {
+					updateAddIns.Add(addInPackage.AddIn.Name);
+				} else {
+					installAddIns.Add(addInPackage.AddIn.Name);
+				}
 			}
-			b.Append(".");
+			
+			if (updateAddIns.Count == 0)
+				actionGroupBox.Text = runActionButton.Text = "Install";
+			else if (installAddIns.Count == 0)
+				actionGroupBox.Text = runActionButton.Text = "Update";
+			else
+				actionGroupBox.Text = runActionButton.Text = "Install + Update";
+			List<AddIn> addInList = new List<AddIn>();
+			StringBuilder b = new StringBuilder();
+			if (installAddIns.Count == 1) {
+				b.Append("Installs the AddIn " + installAddIns[0]);
+			} else if (installAddIns.Count > 1) {
+				b.Append("Installs the AddIns " + string.Join(",", installAddIns.ToArray()));
+			}
+			if (updateAddIns.Count > 0 && installAddIns.Count > 0)
+				b.Append("; ");
+			if (updateAddIns.Count == 1) {
+				b.Append("Updates the AddIn " + updateAddIns[0]);
+			} else if (updateAddIns.Count > 1) {
+				b.Append("Updates the AddIns " + string.Join(",", updateAddIns.ToArray()));
+			}
 			actionDescription.Text = b.ToString();
-			runActionButton.Enabled = ShowDependencies(addInList, true);
+			runActionButton.Enabled = ShowDependencies(addInList, ShowDependencyMode.Enable);
+		}
+		
+		void RunInstallation()
+		{
+			// install new AddIns
+			foreach (InstallableAddIn addInPackage in shownAddInPackages) {
+				string identity = addInPackage.AddIn.Manifest.PrimaryIdentity;
+				AddIn foundAddIn = null;
+				foreach (AddIn addIn in AddInTree.AddIns) {
+					if (addIn.Manifest.Identities.ContainsKey(identity)) {
+						foundAddIn = addIn;
+						break;
+					}
+				}
+				if (foundAddIn != null) {
+					addInPackage.Install(true);
+					if (foundAddIn.Action != AddInAction.Enable) {
+						ICSharpCode.Core.AddInManager.Enable(new AddIn[] { foundAddIn });
+					}
+					if (foundAddIn.Action != AddInAction.Install) {
+						foundAddIn.Action = AddInAction.Update;
+					}
+				} else {
+					addInPackage.Install(false);
+				}
+			}
+			RefreshAddInList();
 		}
 		#endregion
 		
@@ -451,6 +536,47 @@ namespace ICSharpCode.AddInManager
 			ICSharpCode.Core.AddInManager.RemoveExternalAddIns(selected);
 			InstallableAddIn.Uninstall(selected);
 			RefreshAddInList();
+		}
+		#endregion
+		
+		#region Drag'N'Drop
+		void Panel1DragEnter(object sender, DragEventArgs e)
+		{
+			if (!e.Data.GetDataPresent(DataFormats.FileDrop)) {
+				e.Effect = DragDropEffects.None;
+				return;
+			}
+			string[] files = (string[])e.Data.GetData(DataFormats.FileDrop);
+			int addInCount = 0;
+			int packageCount = 0;
+			foreach (string file in files) {
+				switch (Path.GetExtension(file).ToLowerInvariant()) {
+					case ".addin":
+						addInCount += 1;
+						break;
+					case ".sdaddin":
+					case ".zip":
+						packageCount += 1;
+						break;
+					default:
+						e.Effect = DragDropEffects.None;
+						return;
+				}
+			}
+			if (addInCount == 0 && packageCount == 0) {
+				e.Effect = DragDropEffects.None;
+			} else if (addInCount == 0) {
+				e.Effect = DragDropEffects.Copy;
+			} else {
+				e.Effect = DragDropEffects.Link;
+			}
+		}
+		
+		void Panel1DragDrop(object sender, DragEventArgs e)
+		{
+			if (!e.Data.GetDataPresent(DataFormats.FileDrop))
+				return;
+			ShowInstallableAddIns((string[])e.Data.GetData(DataFormats.FileDrop));
 		}
 		#endregion
 		
@@ -475,15 +601,17 @@ namespace ICSharpCode.AddInManager
 					ICSharpCode.Core.AddInManager.Enable(selected);
 					break;
 				case AddInAction.Install:
-					// install new AddIns
-					foreach (InstallableAddIn addInPackage in shownAddInPackages) {
-						addInPackage.Install();
-					}
-					RefreshAddInList();
+					RunInstallation();
 					return;
 				case AddInAction.Uninstall:
 					UninstallButtonClick(sender, e);
 					return;
+				case AddInAction.InstalledTwice: // used to cancel installation of update
+					InstallableAddIn.CancelUpdate(selected);
+					foreach (AddIn addIn in selected) {
+						addIn.Action = addIn.Enabled ? AddInAction.Enable : AddInAction.Disable;
+					}
+					break;
 				default:
 					throw new NotImplementedException();
 			}
@@ -587,8 +715,11 @@ namespace ICSharpCode.AddInManager
 			// 
 			// splitContainer.Panel1
 			// 
+			this.splitContainer.Panel1.AllowDrop = true;
 			this.splitContainer.Panel1.AutoScroll = true;
 			this.splitContainer.Panel1.BackColor = System.Drawing.SystemColors.Window;
+			this.splitContainer.Panel1.DragDrop += new System.Windows.Forms.DragEventHandler(this.Panel1DragDrop);
+			this.splitContainer.Panel1.DragEnter += new System.Windows.Forms.DragEventHandler(this.Panel1DragEnter);
 			this.splitContainer.Panel1.Paint += new System.Windows.Forms.PaintEventHandler(this.OnSplitContainerPanel1Paint);
 			this.splitContainer.Panel1MinSize = 100;
 			// 
@@ -739,5 +870,7 @@ namespace ICSharpCode.AddInManager
 		private System.Windows.Forms.Panel bottomPanel;
 		private System.Windows.Forms.Panel topPanel;
 		#endregion
+		
+
 	}
 }

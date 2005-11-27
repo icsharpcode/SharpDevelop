@@ -202,11 +202,19 @@ namespace ICSharpCode.FormDesigner
 			}
 			
 			// compare modifiers
-			ModifierEnum[] sdModifiers = new ModifierEnum[] {ModifierEnum.Private, ModifierEnum.Protected, ModifierEnum.ProtectedAndInternal, ModifierEnum.Internal, ModifierEnum.Public};
-			MemberAttributes[] cdModifiers = new MemberAttributes[] {MemberAttributes.Private, MemberAttributes.Family, MemberAttributes.FamilyOrAssembly, MemberAttributes.Assembly, MemberAttributes.Public};
-			
 			ModifierEnum oldModifiers = oldField.Modifiers & ModifierEnum.VisibilityMask;
 			MemberAttributes newModifiers = newField.Attributes & MemberAttributes.AccessMask;
+			
+			// SharpDevelop.Dom always adds Private modifier, even if not specified
+			// CodeDom omits Private modifier if not present (although it is the default)
+			if (oldModifiers == ModifierEnum.Private) {
+				if (newModifiers != 0 && newModifiers != MemberAttributes.Private) {
+					return true;
+				}
+			}
+			
+			ModifierEnum[] sdModifiers = new ModifierEnum[] {ModifierEnum.Protected, ModifierEnum.ProtectedAndInternal, ModifierEnum.Internal, ModifierEnum.Public};
+			MemberAttributes[] cdModifiers = new MemberAttributes[] {MemberAttributes.Family, MemberAttributes.FamilyOrAssembly, MemberAttributes.Assembly, MemberAttributes.Public};
 			for (int i = 0; i < sdModifiers.Length; i++) {
 				if ((oldModifiers  == sdModifiers[i]) ^ (newModifiers  == cdModifiers[i])) {
 					return true;

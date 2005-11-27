@@ -10,7 +10,7 @@
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "../../DisplayBindings/FormDesigner/FormDesigner.dll"/>
+		<Import assembly = "$ICSharpCode.FormDesigner/FormDesigner.dll"/>
 		<Import assembly = "BooBinding.dll"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>

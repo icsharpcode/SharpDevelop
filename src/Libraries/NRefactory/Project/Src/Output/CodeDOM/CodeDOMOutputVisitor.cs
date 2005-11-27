@@ -191,6 +191,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public override object Visit(TypeDeclaration typeDeclaration, object data)
 		{
+			TypeDeclaration oldTypeDeclaration = currentTypeDeclaration;
 			this.currentTypeDeclaration = typeDeclaration;
 			CodeTypeDeclaration codeTypeDeclaration = new CodeTypeDeclaration(typeDeclaration.Name);
 			codeTypeDeclaration.IsClass     = typeDeclaration.Type == ClassType.Class;
@@ -210,7 +211,12 @@ namespace ICSharpCode.NRefactory.Parser
 			
 			typeDeclarations.Pop();
 			
-			((CodeNamespace)namespaceDeclarations.Peek()).Types.Add(codeTypeDeclaration);
+			if (typeDeclarations.Count > 0) {
+				((CodeTypeDeclaration)typeDeclarations.Peek()).Members.Add(codeTypeDeclaration);
+			} else {
+				((CodeNamespace)namespaceDeclarations.Peek()).Types.Add(codeTypeDeclaration);
+			}
+			currentTypeDeclaration = oldTypeDeclaration;
 			
 			return null;
 		}

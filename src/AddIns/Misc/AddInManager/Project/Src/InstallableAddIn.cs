@@ -62,7 +62,7 @@ namespace ICSharpCode.AddInManager
 			}
 		}
 		
-		public void Install()
+		public void Install(bool isUpdate)
 		{
 			foreach (string identity in addIn.Manifest.Identities.Keys) {
 				ICSharpCode.Core.AddInManager.AbortRemoveUserAddInOnNextStart(identity);
@@ -78,13 +78,15 @@ namespace ICSharpCode.AddInManager
 				fastZip.ExtractZip(fileName, targetDir, null);
 				
 				addIn.Action = AddInAction.Install;
-				AddInTree.InsertAddIn(addIn);
+				if (!isUpdate) {
+					AddInTree.InsertAddIn(addIn);
+				}
 			} else {
 				ICSharpCode.Core.AddInManager.AddExternalAddIns(new AddIn[] { addIn });
 			}
 		}
 		
-		public static void Uninstall(IList<AddIn> addIns)
+		public static void CancelUpdate(IList<AddIn> addIns)
 		{
 			foreach (AddIn addIn in addIns) {
 				foreach (string identity in addIn.Manifest.Identities.Keys) {
@@ -93,9 +95,17 @@ namespace ICSharpCode.AddInManager
 					                                identity);
 					if (Directory.Exists(targetDir))
 						Directory.Delete(targetDir, true);
-					
+				}
+			}
+		}
+		
+		public static void Uninstall(IList<AddIn> addIns)
+		{
+			CancelUpdate(addIns);
+			foreach (AddIn addIn in addIns) {
+				foreach (string identity in addIn.Manifest.Identities.Keys) {
 					// remove the user AddIn
-					targetDir = Path.Combine(ICSharpCode.Core.AddInManager.UserAddInPath, identity);
+					string targetDir = Path.Combine(ICSharpCode.Core.AddInManager.UserAddInPath, identity);
 					if (Directory.Exists(targetDir)) {
 						if (!addIn.Enabled) {
 							try {

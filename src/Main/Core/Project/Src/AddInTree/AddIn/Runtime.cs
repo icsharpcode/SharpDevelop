@@ -45,6 +45,22 @@ namespace ICSharpCode.Core
 					try {
 						if (assembly[0] == ':') {
 							loadedAssembly = System.Reflection.Assembly.Load(assembly.Substring(1));
+						} else if (assembly[0] == '$') {
+							int pos = assembly.IndexOf('/');
+							if (pos < 0)
+								throw new ApplicationException("Expected '/' in path beginning with '$'!");
+							string referencedAddIn = assembly.Substring(1, pos - 1);
+							foreach (AddIn addIn in AddInTree.AddIns) {
+								if (addIn.Enabled && addIn.Manifest.Identities.ContainsKey(referencedAddIn)) {
+									string assemblyFile = Path.Combine(Path.GetDirectoryName(addIn.FileName),
+									                                   assembly.Substring(pos + 1));
+									loadedAssembly = System.Reflection.Assembly.LoadFrom(assemblyFile);
+									break;
+								}
+							}
+							if (loadedAssembly == null) {
+								throw new FileNotFoundException("Could not find referenced AddIn " + referencedAddIn);
+							}
 						} else {
 							loadedAssembly = System.Reflection.Assembly.LoadFrom(Path.Combine(hintPath, assembly));
 						}
