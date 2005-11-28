@@ -10,6 +10,7 @@ using System.Reflection;
 using System.CodeDom;
 using System.Text;
 using System.Collections;
+using System.Collections.Generic;
 
 using ICSharpCode.NRefactory.Parser.AST;
 
@@ -17,18 +18,17 @@ namespace ICSharpCode.NRefactory.Parser
 {
 	public class CodeDOMVisitor : AbstractASTVisitor
 	{
-		Stack namespaceDeclarations = new Stack();
-		Stack typeDeclarations      = new Stack();
-		Stack codeStack             = new Stack();
+		Stack<CodeNamespace>  namespaceDeclarations = new Stack<CodeNamespace>();
+		Stack<CodeTypeDeclaration> typeDeclarations = new Stack<CodeTypeDeclaration>();
+		Stack<CodeStatementCollection> codeStack    = new Stack<CodeStatementCollection>();
+		List<CodeVariableDeclarationStatement> variables = new List<CodeVariableDeclarationStatement>();
 		
 		TypeDeclaration currentTypeDeclaration = null;
 
 		// dummy collection used to swallow statements
-		System.CodeDom.CodeStatementCollection NullStmtCollection = new CodeStatementCollection();
+		CodeStatementCollection NullStmtCollection = new CodeStatementCollection();
 		
 		public CodeCompileUnit codeCompileUnit   = new CodeCompileUnit();
-		public ArrayList       namespaces        = new ArrayList();
-		public ArrayList       withEventsFields  = new ArrayList();
 		
 		static string[,] typeConversionList = new string[,] {
 			{"System.Void",    "void"},
@@ -94,17 +94,21 @@ namespace ICSharpCode.NRefactory.Parser
 			return type;
 		}
 
-		void AddStmt(System.CodeDom.CodeStatement stmt)
+		void AddStmt(CodeStatement stmt)
 		{
-			System.CodeDom.CodeStatementCollection stmtCollection = codeStack.Peek() as System.CodeDom.CodeStatementCollection;
+			if (codeStack.Count == 0)
+				return;
+			CodeStatementCollection stmtCollection = codeStack.Peek();
 			if (stmtCollection != null) {
 				stmtCollection.Add(stmt);
 			}
 		}
 
-		void AddStmt(System.CodeDom.CodeExpression expr)
+		void AddStmt(CodeExpression expr)
 		{
-			System.CodeDom.CodeStatementCollection stmtCollection = codeStack.Peek() as System.CodeDom.CodeStatementCollection;
+			if (codeStack.Count == 0)
+				return;
+			CodeStatementCollection stmtCollection = codeStack.Peek();
 			if (stmtCollection != null) {
 				stmtCollection.Add(expr);
 			}
@@ -151,7 +155,7 @@ namespace ICSharpCode.NRefactory.Parser
 				throw new ArgumentNullException("compilationUnit");
 			}
 			CodeNamespace globalNamespace = new CodeNamespace("Global");
-			namespaces.Add(globalNamespace);
+			//namespaces.Add(globalNamespace);
 			namespaceDeclarations.Push(globalNamespace);
 			compilationUnit.AcceptChildren(this, data);
 			codeCompileUnit.Namespaces.Add(globalNamespace);
@@ -161,7 +165,7 @@ namespace ICSharpCode.NRefactory.Parser
 		public override object Visit(NamespaceDeclaration namespaceDeclaration, object data)
 		{
 			CodeNamespace currentNamespace = new CodeNamespace(namespaceDeclaration.Name);
-			namespaces.Add(currentNamespace);
+			//namespaces.Add(currentNamespace);
 			// add imports from mother namespace
 			foreach (CodeNamespaceImport import in ((CodeNamespace)namespaceDeclarations.Peek()).Imports) {
 				currentNamespace.Imports.Add(import);
@@ -178,7 +182,7 @@ namespace ICSharpCode.NRefactory.Parser
 		public override object Visit(UsingDeclaration usingDeclaration, object data)
 		{
 			foreach (Using u in usingDeclaration.Usings) {
-				((CodeNamespace)namespaceDeclarations.Peek()).Imports.Add(new CodeNamespaceImport(u.Name));
+				namespaceDeclarations.Peek().Imports.Add(new CodeNamespaceImport(u.Name));
 			}
 			return null;
 		}
@@ -206,15 +210,13 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 			
 			typeDeclarations.Push(codeTypeDeclaration);
-			typeDeclaration.AcceptChildren(this,data);
-//			((INode)typeDeclaration.Children[0]).(this, data);
-			
+			typeDeclaration.AcceptChildren(this, data);
 			typeDeclarations.Pop();
 			
 			if (typeDeclarations.Count > 0) {
-				((CodeTypeDeclaration)typeDeclarations.Peek()).Members.Add(codeTypeDeclaration);
+				typeDeclarations.Peek().Members.Add(codeTypeDeclaration);
 			} else {
-				((CodeNamespace)namespaceDeclarations.Peek()).Types.Add(codeTypeDeclaration);
+				namespaceDeclarations.Peek().Types.Add(codeTypeDeclaration);
 			}
 			currentTypeDeclaration = oldTypeDeclaration;
 			
@@ -241,7 +243,7 @@ namespace ICSharpCode.NRefactory.Parser
 				VariableDeclaration field = (VariableDeclaration)fieldDeclaration.Fields[i];
 				
 				if ((fieldDeclaration.Modifier & Modifier.WithEvents) != 0) {
-					this.withEventsFields.Add(field);
+					//this.withEventsFields.Add(field);
 				}
 				string typeString = fieldDeclaration.GetTypeForField(i).Type;
 				
@@ -251,7 +253,7 @@ namespace ICSharpCode.NRefactory.Parser
 					memberField.InitExpression = (CodeExpression)field.Initializer.AcceptVisitor(this, data);
 				}
 				
-				((CodeTypeDeclaration)typeDeclarations.Peek()).Members.Add(memberField);
+				typeDeclarations.Peek().Members.Add(memberField);
 			}
 			
 			return null;
@@ -265,14 +267,15 @@ namespace ICSharpCode.NRefactory.Parser
 			
 			codeStack.Push(memberMethod.Statements);
 
-			((CodeTypeDeclaration)typeDeclarations.Peek()).Members.Add(memberMethod);
+			typeDeclarations.Peek().Members.Add(memberMethod);
 
 			// Add Method Parameters
 			foreach (ParameterDeclarationExpression parameter in methodDeclaration.Parameters)
 			{
 				memberMethod.Parameters.Add((CodeParameterDeclarationExpression)Visit(parameter, data));
 			}
-
+			
+			variables.Clear();
 			methodDeclaration.Body.AcceptChildren(this, data);
 
 			codeStack.Pop();
@@ -285,7 +288,7 @@ namespace ICSharpCode.NRefactory.Parser
 			CodeMemberMethod memberMethod = new CodeConstructor();
 
 			codeStack.Push(memberMethod.Statements);
-			((CodeTypeDeclaration)typeDeclarations.Peek()).Members.Add(memberMethod);
+			typeDeclarations.Peek().Members.Add(memberMethod);
 			constructorDeclaration.Body.AcceptChildren(this, data);
 			codeStack.Pop();
 
@@ -344,9 +347,9 @@ namespace ICSharpCode.NRefactory.Parser
 					declStmt = new CodeVariableDeclarationStatement(type,
 					                                                var.Name);
 				}
+				variables.Add(declStmt);
+				AddStmt(declStmt);
 			}
-			
-			AddStmt(declStmt);
 
 			return declStmt;
 		}
@@ -622,8 +625,8 @@ namespace ICSharpCode.NRefactory.Parser
 				FieldReferenceExpression fRef = (FieldReferenceExpression)target;
 				targetExpr = null;
 				if (fRef.TargetObject is FieldReferenceExpression) {
-					if (IsQualIdent((FieldReferenceExpression)fRef.TargetObject)) {
-						targetExpr = ConvertToIdentifier((FieldReferenceExpression)fRef.TargetObject);
+					if (IsPossibleTypeReference((FieldReferenceExpression)fRef.TargetObject)) {
+						targetExpr = ConvertToTypeReference((FieldReferenceExpression)fRef.TargetObject);
 					}
 				}
 				if (targetExpr == null)
@@ -645,9 +648,8 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public override object Visit(IdentifierExpression expression, object data)
 		{
-			if (IsField(expression.Identifier)) {
+			if (!IsLocalVariable(expression.Identifier) && IsField(expression.Identifier)) {
 				return new CodeFieldReferenceExpression(new CodeThisReferenceExpression(), expression.Identifier);
-				//return new CodeVariableReferenceExpression(expression.Identifier);
 			}
 			return new CodeVariableReferenceExpression(expression.Identifier);
 		}
@@ -863,8 +865,8 @@ namespace ICSharpCode.NRefactory.Parser
 				                                        fieldReferenceExpression.FieldName);
 			} else {
 				if (fieldReferenceExpression.TargetObject is FieldReferenceExpression) {
-					if (IsQualIdent((FieldReferenceExpression)fieldReferenceExpression.TargetObject)) {
-						CodeTypeReferenceExpression typeRef = ConvertToIdentifier((FieldReferenceExpression)fieldReferenceExpression.TargetObject);
+					if (IsPossibleTypeReference((FieldReferenceExpression)fieldReferenceExpression.TargetObject)) {
+						CodeTypeReferenceExpression typeRef = ConvertToTypeReference((FieldReferenceExpression)fieldReferenceExpression.TargetObject);
 						if (IsField(typeRef.Type.BaseType, fieldReferenceExpression.FieldName)) {
 							return new CodeFieldReferenceExpression(typeRef,
 							                                        fieldReferenceExpression.FieldName);
@@ -883,14 +885,23 @@ namespace ICSharpCode.NRefactory.Parser
 		#endregion
 		
 		#endregion
-		bool IsQualIdent(FieldReferenceExpression fieldReferenceExpression)
+		bool IsPossibleTypeReference(FieldReferenceExpression fieldReferenceExpression)
 		{
 			while (fieldReferenceExpression.TargetObject is FieldReferenceExpression) {
 				fieldReferenceExpression = (FieldReferenceExpression)fieldReferenceExpression.TargetObject;
 			}
 			IdentifierExpression identifier = fieldReferenceExpression.TargetObject as IdentifierExpression;
 			if (identifier != null)
-				return !IsField(identifier.Identifier);
+				return !IsField(identifier.Identifier) && !IsLocalVariable(identifier.Identifier);
+			return false;
+		}
+		
+		bool IsLocalVariable(string identifier)
+		{
+			foreach (CodeVariableDeclarationStatement variable in variables) {
+				if (variable.Name == identifier)
+					return true;
+			}
 			return false;
 		}
 		
@@ -909,7 +920,7 @@ namespace ICSharpCode.NRefactory.Parser
 			return false;
 		}
 		
-		CodeTypeReferenceExpression ConvertToIdentifier(FieldReferenceExpression fieldReferenceExpression)
+		CodeTypeReferenceExpression ConvertToTypeReference(FieldReferenceExpression fieldReferenceExpression)
 		{
 			StringBuilder type = new StringBuilder("");
 			
