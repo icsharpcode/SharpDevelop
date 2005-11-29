@@ -1,7 +1,6 @@
 <AddIn name        = "Highlighting Editor"
        author      = "Georg Brandl"
        copyright   = "GPL"
-       url         = "http://www.icsharpcode.net"
        description = "Editor for syntax highlighting styles for the text editor">
 	
 	<Manifest>

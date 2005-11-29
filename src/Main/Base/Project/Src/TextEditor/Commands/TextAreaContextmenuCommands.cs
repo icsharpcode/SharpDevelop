@@ -21,6 +21,7 @@ using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Commands;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
@@ -28,16 +29,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 	{
 		public override void Run()
 		{
-			
-			
-			TabbedOptions o = new TabbedOptions(ResourceService.GetString("Dialog.Options.BufferOptions"),
-			                                    ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties())),
-			                                    AddInTree.GetTreeNode("/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog"));
-			o.Width  = 450;
-			o.Height = 425;
-			o.FormBorderStyle = FormBorderStyle.FixedDialog;
-			o.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
-			o.Dispose();
+			OptionsCommand.ShowTabbedOptions("ShowTabbedOptions",
+			                                 AddInTree.GetTreeNode("/SharpDevelop/ViewContent/DefaultTextEditor/OptionsDialog"));
 		}
 	}
 	
@@ -79,5 +72,5 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				control.Refresh();
 			}
 		}
-	}	
+	}
 }

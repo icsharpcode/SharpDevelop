@@ -1,9 +1,7 @@
 <AddIn name        = "Regular expressions toolkit"
        author      = "Markus Palme"
        copyright   = "GPL"
-       url         = "unknown"
-       description = "Testing toolkit for regular expressions"
-       version     = "1.0.0">
+       description = "Testing toolkit for regular expressions">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.RegExpTk"/>

@@ -1,7 +1,6 @@
 <AddIn name        = "ICSharpCode.Svn"
        author      = "Mike Krueger"
        copyright   = "GPL"
-       url         = "http://www.icsharpcode.net"
        description = "Subversion plugin">
 	
 	<Manifest>

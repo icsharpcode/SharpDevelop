@@ -1,7 +1,6 @@
 <AddIn name        = "Form Designer"
        author      = "Mike Krueger"
        copyright   = "GPL"
-       url         = "http://www.icsharpcode.net"
        description = "SharpDevelop Form Designer">
 	
 	<Manifest>

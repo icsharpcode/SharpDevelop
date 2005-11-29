@@ -1,7 +1,6 @@
 <AddIn name        = "MbUnit-Addin"
        author      = "Daniel Grunwald"
        copyright   = "GNU General Public License"
-       url         = "http://www.icsharpcode.net"
        description = "Runs MbUnit and NUnit tests inside #Develop">
 	
 	<Manifest>

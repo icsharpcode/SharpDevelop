@@ -29,6 +29,7 @@ namespace ICSharpCode.AddInManager
 		{
 			this.addIn = addIn;
 			this.BackColor = SystemColors.Window;
+			this.ContextMenuStrip = MenuService.CreateContextMenu(this, "/AddIns/AddInManager/ContextMenu");
 			
 			isExternal = !FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, addIn.FileName)
 				&& !FileUtility.IsBaseDirectory(PropertyService.ConfigDirectory, addIn.FileName);
@@ -158,29 +159,29 @@ namespace ICSharpCode.AddInManager
 						return addIn.Properties["description"];
 					} else {
 						textBrush = SystemBrushes.ActiveCaption;
-						return "AddIn will be enabled after restarting SharpDevelop";
+						return ResourceService.GetString("AddInManager.AddInEnabled");
 					}
 				case AddInAction.Disable:
 					textBrush = SystemBrushes.GrayText;
 					if (addIn.Enabled)
-						return "AddIn will be disabled after restarting SharpDevelop";
+						return ResourceService.GetString("AddInManager.AddInWillBeDisabled");
 					else
-						return "Disabled"; // TODO: Test if it was disabled because of conflict
+						return ResourceService.GetString("AddInManager.AddInDisabled");
 				case AddInAction.Install:
 					textBrush = SystemBrushes.ActiveCaption;
-					return "AddIn will be installed after restarting SharpDevelop";
+					return ResourceService.GetString("AddInManager.AddInInstalled");
 				case AddInAction.Uninstall:
 					textBrush = SystemBrushes.GrayText;
-					return "AddIn will be removed after restarting SharpDevelop";
+					return ResourceService.GetString("AddInManager.AddInRemoved");
 				case AddInAction.Update:
 					textBrush = SystemBrushes.ActiveCaption;
-					return "AddIn will be updated after restarting SharpDevelop";
+					return ResourceService.GetString("AddInManager.AddInUpdated");
 				case AddInAction.InstalledTwice:
 					textBrush = Brushes.Red;
-					return "Duplicate installation";
+					return ResourceService.GetString("AddInManager.AddInInstalledTwice");
 				case AddInAction.DependencyError:
 					textBrush = Brushes.Red;
-					return "Dependency failed";
+					return ResourceService.GetString("AddInManager.AddInDependencyFailed");
 				default:
 					textBrush = Brushes.Yellow;
 					return addIn.Action.ToString();

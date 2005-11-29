@@ -1,7 +1,6 @@
 <AddIn name        = "Xml Editor"
        author      = "Matt Ward"
        copyright   = "GPL"
-       url         = "http://www.icsharpcode.net"
        description = "Xml Editor">
 	
 	<Manifest>

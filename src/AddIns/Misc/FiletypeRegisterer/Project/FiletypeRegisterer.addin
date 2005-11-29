@@ -1,7 +1,6 @@
 <AddIn name        = "Filetype Registerer"
        author      = "Georg Brandl"
        copyright   = "GPL"
-       url         = "http://www.icsharpcode.net"
        description = "Registers files in the Windows Explorer for #Develop">
 	
 	<Manifest>

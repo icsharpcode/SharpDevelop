@@ -6,6 +6,7 @@
 	<Filetype ext="csproj" icon="prjx.ico">C# ${res:ICSharpCode.FiletypeRegisterer.Project}</Filetype>
 	<Filetype ext="vbproj" icon="prjx.ico">VB ${res:ICSharpCode.FiletypeRegisterer.Project}</Filetype>
 	<Filetype ext="booproj" icon="prjx.ico">Boo ${res:ICSharpCode.FiletypeRegisterer.Project}</Filetype>
+	<Filetype ext="sdaddin" icon="addin.ico">SharpDevelop ${res:AddInManager.FileAssociation}</Filetype>
 	<Filetype ext="cs" icon="cs.ico">${res:ICSharpCode.FiletypeRegisterer.CSharpSourceFileAssozisation}</Filetype>
 	<Filetype ext="vb" icon="vb.ico">${res:ICSharpCode.FiletypeRegisterer.VBNetSourceFileAssozisation}</Filetype>
 	<!--<Filetype ext="java" icon="java.ico">${res:ICSharpCode.FiletypeRegisterer.JavaSourceFileAssozisation}</Filetype>-->

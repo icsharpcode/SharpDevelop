@@ -21,12 +21,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public class StatusPanel : UserControl
 	{
 		WizardDialog wizard;
-		Bitmap backGround = null;
 		
 		Font smallFont;
 		Font normalFont;
 		Font boldFont;
-		
 		
 		public StatusPanel(WizardDialog wizard)
 		{
@@ -35,22 +33,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			boldFont   = ResourceService.LoadFont("Tahoma", 14, FontStyle.Bold, GraphicsUnit.World);
 			
 			this.wizard = wizard;
-			backGround = ResourceService.GetBitmap("GeneralWizardBackground");
+			this.BackgroundImage = ResourceService.GetBitmap("GeneralWizardBackground");
 			Size = new Size(198, 400);
 			ResizeRedraw  = false;
 			
-			//			SetStyle(ControlStyles.UserPaint, true);
+			SetStyle(ControlStyles.UserPaint, true);
 			SetStyle(ControlStyles.OptimizedDoubleBuffer, true);
 			SetStyle(ControlStyles.AllPaintingInWmPaint, true);
-		}
-		
-		protected override void OnPaintBackground(PaintEventArgs pe)
-		{
-			//    		base.OnPaintBackground(pe);
-			if (backGround != null) {
-				Graphics g = pe.Graphics;
-				g.DrawImage(backGround, 0, 0, Width, Height);
-			}
 		}
 		
 		protected override void OnPaint(PaintEventArgs pe)
@@ -60,17 +49,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			g.DrawString(ResourceService.GetString("SharpDevelop.Gui.Dialogs.WizardDialog.StepsLabel"),
 			             smallFont,
-			             Brushes.Black,
+			             SystemBrushes.WindowText,
 			             10,
 			             24 - smallFont.Height);
 			
-			g.DrawLine(Pens.Black, 10, 24, Width - 10, 24);
+			g.DrawLine(SystemPens.WindowText, 10, 24, Width - 10, 24);
 			
 			int curNumber = 0;
 			for (int i = 0; i < wizard.WizardPanels.Count; i = wizard.GetSuccessorNumber(i)) {
 				Font curFont = wizard.ActivePanelNumber == i ? boldFont : normalFont;
 				IDialogPanelDescriptor descriptor = ((IDialogPanelDescriptor)wizard.WizardPanels[i]);
-				g.DrawString((1 + curNumber) + ". " + descriptor.Label, curFont, Brushes.Black, 10, 40 + curNumber * curFont.Height);
+				g.DrawString((1 + curNumber) + ". " + descriptor.Label, curFont, SystemBrushes.WindowText, 10, 40 + curNumber * curFont.Height);
 				++curNumber;
 			}
 		}

@@ -21,7 +21,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 	public class CurrentPanelPanel : UserControl
 	{
 		WizardDialog wizard;
-		Bitmap backGround = null;
 		
 		Font normalFont;
 		
@@ -31,7 +30,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			normalFont = ResourceService.LoadFont("SansSerif", 18, GraphicsUnit.World);
 
 			this.wizard = wizard;
-			backGround = ResourceService.GetBitmap("GeneralWizardBackground");
 			Size = new Size(wizard.Width - 220, 30);
 			ResizeRedraw  = false;
 			

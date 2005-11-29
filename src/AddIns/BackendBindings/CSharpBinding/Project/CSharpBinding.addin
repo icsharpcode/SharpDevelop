@@ -1,7 +1,6 @@
 <AddIn name        = "C# Binding"
        author      = "Mike Krueger"
        copyright   = "GPL"
-       url         = "http://www.icsharpcode.net"
        description = "Backing binding for C#">
 	
 	<Manifest>

@@ -430,6 +430,9 @@ Icons.32x32.CombineIcon                           = backendicons\miscFiles\Icons
 Icons.32x32.ResourceFileIcon                      = backendicons\miscFiles\Icons.32x32.ResourceFileIcon.png
 Icons.32x32.NAntBuildFileIcon                     = backendicons\miscFiles\Icons.32x32.NAntBuildFileIcon.png
 
+Icons.16x16.AddInIcon = backendicons\miscFiles\AddIn16.png
+Icons.32x32.AddInIcon = backendicons\miscFiles\AddIn32.png
+
 Icons.16x16.CSSIcon = backendicons\miscFiles\CSS_16.png
 Icons.32x32.CSSIcon = backendicons\miscFiles\CSS_32.png
 Icons.16x16.DTDIcon = backendicons\miscFiles\DTD_16.png

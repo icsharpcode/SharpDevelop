@@ -1906,6 +1906,10 @@
 		      extensions = ".asp,.aspx"
 		      resource   = "Icons.16x16.ASPFileIcon"/>
 		
+		<Icon id         = "AddInFileIcon"
+		      extensions = ".addin"
+		      resource   = "Icons.16x16.AddInIcon" />
+		
 		<!-- TextFiles -->
 		<Icon id         = "TextFileIcon"
 		      extensions = ".txt,.doc"

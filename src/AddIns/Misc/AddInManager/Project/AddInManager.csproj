@@ -55,6 +55,11 @@
     </EmbeddedResource>
     <Compile Include="Src\AddInControl.cs" />
     <Compile Include="Src\InstallableAddIn.cs" />
+    <Compile Include="Src\AboutForm.cs" />
+    <EmbeddedResource Include="Src\AboutForm.resx">
+      <DependentUpon>AboutForm.cs</DependentUpon>
+    </EmbeddedResource>
+    <Compile Include="Src\AddInInstallBinding.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">

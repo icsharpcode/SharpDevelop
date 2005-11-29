@@ -1,9 +1,7 @@
 ﻿<AddIn name        = "Resource Editor"
        author      = "Mike Krueger"
        copyright   = "GPL"
-       url         = "http://www.icsharpcode.net"
-       description = "A Display binding for *.resources and *.resx files."
-       version     = "1.0.0">
+       description = "A Display binding for *.resources and *.resx files.">
 	
 	<Runtime>
 		<Import assembly="ResourceEditor.dll"/>

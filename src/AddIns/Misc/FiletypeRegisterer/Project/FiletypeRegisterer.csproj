@@ -80,6 +80,9 @@
       <Private>False</Private>
     </ProjectReference>
     <Folder Include="filetypes" />
+    <Content Include="filetypes\addin.ico">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
