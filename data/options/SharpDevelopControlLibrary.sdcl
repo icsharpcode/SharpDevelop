@@ -21,7 +21,7 @@
       <ToolComponent class="System.Windows.Forms.HScrollBar" assembly="0" enabled="True" />
       <ToolComponent class="System.Windows.Forms.LinkLabel" assembly="0" enabled="True" />
       <ToolComponent class="System.Windows.Forms.ListBox" assembly="0" enabled="True" />
-      <ToolComponent class="System.Windows.Forms.ListView" assembly="0" enabled="True" />      
+      <ToolComponent class="System.Windows.Forms.ListView" assembly="0" enabled="True" />
       <ToolComponent class="System.Windows.Forms.MaskedTextBox" assembly="0" enabled="True" />
       <ToolComponent class="System.Windows.Forms.MonthCalendar" assembly="0" enabled="True" />
       <ToolComponent class="System.Windows.Forms.NumericUpDown" assembly="0" enabled="True" />
@@ -63,18 +63,19 @@
       <ToolComponent class="System.Windows.Forms.BindingNavigator" assembly="0" enabled="True" />
       <ToolComponent class="System.Windows.Forms.BindingSource" assembly="0" enabled="True" />
       <ToolComponent class="System.Windows.Forms.DataNavigator" assembly="0" enabled="True" />
-      
+      <ToolComponent class="System.Windows.Forms.DataGrid" assembly="0" enabled="True" />
+      <ToolComponent class="System.Windows.Forms.DataGridView" assembly="0" enabled="True" />
       <ToolComponent class="System.Data.DataSet" assembly="1" enabled="True" />
-      <ToolComponent class="System.Data.Odbc.OdbcDataAdapter" assembly="1" enabled="True" />
-      <ToolComponent class="System.Data.Odbc.OdbcConnection" assembly="1" enabled="True" />
-      <ToolComponent class="System.Data.OleDb.OleDbCommand" assembly="1" enabled="True" />
-      <ToolComponent class="System.Data.SqlClient.SqlDataAdapter" assembly="1" enabled="True" />
-      <ToolComponent class="System.Data.SqlClient.SqlConnection" assembly="1" enabled="True" />
-      <ToolComponent class="System.Data.SqlClient.SqlCommand" assembly="1" enabled="True" />
-      <ToolComponent class="System.Data.OleDb.OleDbDataAdapter" assembly="1" enabled="True" />
-      <ToolComponent class="System.Data.OleDb.OleDbConnection" assembly="1" enabled="True" />
-      <ToolComponent class="System.Data.Odbc.OdbcCommand" assembly="1" enabled="True" />
       <ToolComponent class="System.Data.DataView" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.Odbc.OdbcDataAdapter" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.Odbc.OdbcCommand" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.Odbc.OdbcConnection" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.OleDb.OleDbDataAdapter" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.OleDb.OleDbCommand" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.OleDb.OleDbConnection" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.SqlClient.SqlDataAdapter" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.SqlClient.SqlCommand" assembly="1" enabled="True" />
+      <ToolComponent class="System.Data.SqlClient.SqlConnection" assembly="1" enabled="True" />
     </Category>
     <Category name="Components" enabled="True">
       <ToolComponent class="System.ComponentModel.BackgroundWorker" assembly="2" enabled="True" />
