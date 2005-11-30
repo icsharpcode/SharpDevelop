@@ -58,7 +58,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 		public override void Run()
 		{
 			if (site.StartsWith("home://")) {
-				string file = FileUtility.Combine(FileUtility.ApplicationRootPath, "bin", site.Substring(7).Replace('/', Path.DirectorySeparatorChar));
+				string file = Path.Combine(FileUtility.ApplicationRootPath, site.Substring(7).Replace('/', Path.DirectorySeparatorChar));
 				try {
 					Process.Start(file);
 				} catch (Exception) {

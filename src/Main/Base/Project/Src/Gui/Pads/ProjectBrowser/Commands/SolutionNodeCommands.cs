@@ -58,6 +58,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			newProject.Location = FileUtility.GetRelativePath(solutionFolderNode.Solution.Directory, fileName);
 			ParserService.CreateProjectContentForAddedProject(newProject);
 			solutionFolderNode.Container.AddFolder(newProject);
+			solutionFolderNode.Solution.FixSolutionConfiguration(new IProject[] { newProject });
 			NodeBuilders.AddProjectNode((TreeNode)solutionFolderNode, newProject).EnsureVisible();
 		}
 		

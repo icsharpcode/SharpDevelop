@@ -479,14 +479,14 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			
-			if (newSolution.FixSolutionConfiguration() || needsConversion) {
+			if (newSolution.FixSolutionConfiguration(newSolution.Projects) || needsConversion) {
 				// save in new format
 				newSolution.Save();
 			}
 			return true;
 		}
 		
-		bool FixSolutionConfiguration()
+		public bool FixSolutionConfiguration(IEnumerable<IProject> projects)
 		{
 			ProjectSection solSec = null;
 			ProjectSection prjSec = null;
@@ -511,7 +511,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				LoggingService.Warn("!! Inserted ProjectConfigurationPlatforms !!");
 				changed = true;
 			}
-			foreach (IProject project in Projects) {
+			foreach (IProject project in projects) {
 				string guid = project.IdGuid.ToUpperInvariant();
 				foreach (SolutionItem configuration in solSec.Items) {
 					string searchKey = guid + "." + configuration.Name + ".Build.0";
@@ -519,7 +519,6 @@ namespace ICSharpCode.SharpDevelop.Project
 					                         	return item.Name == searchKey;
 					                         }))
 					{
-						LoggingService.Warn("Inserting solution item");
 						prjSec.Items.Add(new SolutionItem(searchKey, configuration.Location));
 						changed = true;
 					}
@@ -528,7 +527,6 @@ namespace ICSharpCode.SharpDevelop.Project
 					                         	return item.Name == searchKey;
 					                         }))
 					{
-						LoggingService.Warn("Inserting solution item");
 						prjSec.Items.Add(new SolutionItem(searchKey, configuration.Location));
 						changed = true;
 					}
