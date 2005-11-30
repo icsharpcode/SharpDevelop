@@ -321,6 +321,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			psi.Arguments = StringParser.Parse(this.StartArguments);
 			
+			if (!File.Exists(psi.FileName)) {
+				MessageService.ShowError(psi.FileName + " does not exist and cannot be started.");
+				return;
+			}
+			
 			if (withDebugging) {
 				DebuggerService.CurrentDebugger.Start(psi);
 			} else {
