@@ -51,7 +51,7 @@ namespace Debugger
 					return new ObjectValue(debugger, corValue);
 						
 				default: // Unknown type
-					return new UnknownValue(debugger, corValue);
+					return new UnavailableValue(debugger, "Unknown value type");
 			}
 		}		
 	}

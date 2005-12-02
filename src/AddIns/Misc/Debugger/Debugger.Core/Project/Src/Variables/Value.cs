@@ -16,8 +16,8 @@ namespace Debugger
 	public abstract class Value: RemotingObjectBase
 	{
 		protected NDebugger debugger;
-		
 		protected ICorDebugValue corValue;
+		object debuggerSessionIDatCreation;
 		
 		public event EventHandler<ValueEventArgs> ValueChanged;
 		
@@ -30,6 +30,15 @@ namespace Debugger
 		internal ICorDebugValue CorValue {
 			get {
 				return corValue;
+			}
+		}
+		
+		/// <summary>
+		/// If true than the value is no longer valid and you should obtain updated copy
+		/// </summary>
+		public bool IsExpired {
+			get {
+				return debuggerSessionIDatCreation != debugger.SessionID;
 			}
 		}
 		
@@ -86,6 +95,7 @@ namespace Debugger
 			if (corValue != null) {
 				this.corValue = DereferenceUnbox(corValue);
 			}
+			this.debuggerSessionIDatCreation = debugger.SessionID;
 		}
 		
 		public override string ToString()

@@ -193,14 +193,12 @@
     <Compile Include="Src\Variables\Evals\EvalEventArgs.cs" />
     <Compile Include="Src\Variables\Evals\NDebugger-Evals.cs" />
     <Compile Include="Src\Variables\ArrayValue.cs" />
-    <Compile Include="Src\Variables\MagicValue.cs" />
     <Compile Include="Src\Variables\NullValue.cs" />
     <Compile Include="Src\Variables\ObjectValue.cs" />
     <Compile Include="Src\Variables\PrimitiveValue.cs" />
     <Compile Include="Src\Variables\PropertyVariable.cs" />
     <Compile Include="Src\Variables\SignatureStream.cs" />
     <Compile Include="Src\Variables\UnavailableValue.cs" />
-    <Compile Include="Src\Variables\UnknownValue.cs" />
     <Compile Include="Src\Variables\Value.cs" />
     <Compile Include="Src\Variables\ValueEventArgs.cs" />
     <Compile Include="Src\Variables\ValueFactory.cs" />

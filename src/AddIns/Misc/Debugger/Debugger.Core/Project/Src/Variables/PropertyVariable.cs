@@ -28,20 +28,19 @@ namespace Debugger
 			}
 		}
 		
-		public override Value Value {
-			get {
-				if (IsEvaluated) {
-					if (eval.Result != null) {
-						return eval.Result;
-					} else {
-						return new UnavailableValue(debugger, "No return value");
-					}
+		protected override Value GetValue()
+		{
+			if (IsEvaluated) {
+				if (eval.Result != null) {
+					return eval.Result;
 				} else {
-					if (eval.Evaluating) {
-						return new UnavailableValue(debugger, "Evaluating...");
-					} else {
-						return new UnavailableValue(debugger, "Evaluation pending");
-					}
+					return new UnavailableValue(debugger, "No return value");
+				}
+			} else {
+				if (eval.Evaluating) {
+					return new UnavailableValue(debugger, "Evaluating...");
+				} else {
+					return new UnavailableValue(debugger, "Evaluation pending");
 				}
 			}
 		}

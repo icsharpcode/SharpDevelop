@@ -23,6 +23,9 @@ namespace Debugger
 		bool pauseOnHandledException = false;
 		EventWaitHandle waitForPauseHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
 		
+		object sessionID = new object();
+		object debugeeStateID = new object();
+		
 		Process currentProcess;
 		
 		public event EventHandler<DebuggingPausedEventArgs> DebuggingPaused;
@@ -88,6 +91,24 @@ namespace Debugger
 			}
 		}
 		
+		/// <summary>
+		/// Indentification of the current debugger session. This value changes whenever debugger is continued
+		/// </summary>
+		public object SessionID {
+			get {
+				return sessionID;
+			}
+		}
+		
+		/// <summary>
+		/// Indentification of the state of the debugee. This value changes whenever the state of the debugee significatntly changes
+		/// </summary>
+		public object DebugeeStateID {
+			get {
+				return debugeeStateID;
+			}
+		}
+		
 		public void AssertPaused()
 		{
 			if (!IsPaused) {
@@ -145,6 +166,10 @@ namespace Debugger
 			
 			pausedReason = reason;
 			
+			sessionID = new object();
+			if (reason != PausedReason.AllEvalsComplete) {
+				debugeeStateID = new object();
+			}
 			
 			OnDebuggingPaused(reason);
 			

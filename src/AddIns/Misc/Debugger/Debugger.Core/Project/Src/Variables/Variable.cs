@@ -32,15 +32,28 @@ namespace Debugger
 			}
 		}
 		
-		public virtual Value Value {
+		/// <summary>
+		/// Gets value of variable, which is safe to use.
+		/// </summary>
+		public Value Value {
 			get {
-				return val;
+				Value v = GetValue();
+				if (v.IsExpired) {
+					return new UnavailableValue(debugger, "The value has expired");
+				} else {
+					return v;
+				}
 			}
 			internal set {
 				val = value;
 				val.ValueChanged += delegate { OnValueChanged(); };
 				OnValueChanged();
 			}
+		}
+		
+		protected virtual Value GetValue()
+		{
+			return val;
 		}
 		
 		/// <summary>
