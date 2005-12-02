@@ -93,7 +93,6 @@ namespace ICSharpCode.FiletypeRegisterer
 			capLbl.Size      = new Size(136, 16);
 			capLbl.Anchor    = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
 			capLbl.Text      = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel.CaptionLabel}");
-			capLbl.FlatStyle = FlatStyle.System;
 			
 			list.Location    = new Point(8, 30);
 			list.Size        = new Size(136, 250);
@@ -106,7 +105,6 @@ namespace ICSharpCode.FiletypeRegisterer
 			regChk.Location  = new Point(8, 300);
 			regChk.Size      = new Size(136, 20);
 			regChk.Anchor    = capLbl.Anchor;
-			regChk.FlatStyle = FlatStyle.System;
 			regChk.Text      = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.RegisterFiletypesPanel.RegisterCheckBox}");
 			
 			this.Controls.AddRange(new Control[] {capLbl, list, regChk});

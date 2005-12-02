@@ -1,4 +1,4 @@
-<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -49,18 +49,22 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="WixLanguageBinding.cs" />
-    <Compile Include="WixCompilerManager.cs" />
-    <Compile Include="WixExecutionManager.cs" />
-    <Compile Include="Project\WixCompilerParameters.cs" />
-    <Compile Include="Project\WixProject.cs" />
-    <Compile Include="Gui\CompilerParametersPanel.cs" />
-    <Compile Include="Gui\LinkerParametersPanel.cs" />
-    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="Src\WixLanguageBinding.cs" />
+    <Compile Include="Src\WixCompilerManager.cs" />
+    <Compile Include="Src\WixExecutionManager.cs" />
+    <Compile Include="Src\Project\WixCompilerParameters.cs" />
+    <Compile Include="Src\Project\WixProject.cs" />
+    <Compile Include="Src\Gui\CompilerParametersPanel.cs" />
+    <Compile Include="Src\Gui\LinkerParametersPanel.cs" />
+    <Compile Include="Src\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Project\" />
-    <Folder Include="Gui\" />
+    <Content Include="WixBinding.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Templates\WixProject.xpt">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

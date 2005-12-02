@@ -1,7 +1,6 @@
 <Components version="1.0">
   <System.Windows.Forms.UserControl>
     <Name value="highlightingOptionPanel" />
-    <DockPadding value="" />
     <ClientSize value="{Width=328, Height=288}" />
     <Controls>
       <System.Windows.Forms.Label>
