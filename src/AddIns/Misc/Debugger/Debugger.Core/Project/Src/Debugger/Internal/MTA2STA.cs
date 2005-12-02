@@ -45,7 +45,7 @@ namespace Debugger
 		
 		public object CallInSTA(MethodInvokerWithReturnValue callDelegate)
 		{
-			return CallInSTA(callDelegate, true); // TODO: Make it false once it is safe
+			return CallInSTA(callDelegate, false);
 		}
 			
 		object CallInSTA(MethodInvokerWithReturnValue callDelegate, bool mayAbandon)
@@ -77,6 +77,11 @@ namespace Debugger
 			} else {
 				return param;
 			}
+		}
+		
+		public static T MarshalIntPtrTo<T>(IntPtr param)
+		{
+			return (T)MarshalIntPtrTo(param, typeof(T));
 		}
 		
 		public static object MarshalIntPtrTo(IntPtr param, Type outputType)
