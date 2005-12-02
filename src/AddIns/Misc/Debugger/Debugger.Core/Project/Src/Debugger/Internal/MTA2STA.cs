@@ -40,33 +40,33 @@ namespace Debugger
 		
 		public void CallInSTA(MethodInvoker callDelegate)
 		{
-			CallInSTA(delegate { callDelegate(); return null; }, true);
+			CallInSTA(callDelegate, true);
 		}
 		
 		public object CallInSTA(MethodInvokerWithReturnValue callDelegate)
 		{
-			return CallInSTA(callDelegate, false);
+			object returnValue = null;
+			CallInSTA(delegate { returnValue = callDelegate(); }, false);
+			return returnValue;
 		}
 			
-		object CallInSTA(MethodInvokerWithReturnValue callDelegate, bool mayAbandon)
+		void CallInSTA(MethodInvoker callDelegate, bool mayAbandon)
 		{
 			if (hiddenForm.InvokeRequired == true) {
+				// Warrning: BeginInvoke will not pass exceptions if you do not use MethodInvoker delegate!
 				IAsyncResult async = hiddenForm.BeginInvoke(callDelegate);
-				// Firsy try... give it 1 second to run
-				if (async.AsyncWaitHandle.WaitOne(1000, true)) {
-					return hiddenForm.EndInvoke(async);
-				} else {
+				// Give it 1 second to run
+				if (!async.AsyncWaitHandle.WaitOne(1000, true)) {
 					// Abandon the call if possible
 					if (mayAbandon) {
 						System.Console.WriteLine("Callback time out! Unleashing thread.");
-						return null;
 					} else {
 						System.Console.WriteLine("Warring: Call in STA is taking too long");
-						return hiddenForm.EndInvoke(async); // Keep waiting
+						hiddenForm.EndInvoke(async); // Keep waiting
 					}
 				}
 			} else {
-				return callDelegate();
+				callDelegate();
 			}
 		}
 		
