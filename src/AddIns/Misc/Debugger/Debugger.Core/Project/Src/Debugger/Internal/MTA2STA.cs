@@ -11,122 +11,125 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
-using Debugger.Interop.CorDebug;
-
-namespace Debugger.Interop.CorDebug
+namespace Debugger
 {
+	delegate object MethodInvokerWithReturnValue();
+	
 	class MTA2STA
-	{		
+	{
 		Form hiddenForm;
 		IntPtr hiddenFormHandle;
-		
-		object   targetObject        = null;
-		string   functionName        = null;
-		Object[] functionParameters  = null;
-		
-		System.Threading.Thread MTAThread;
-		
-		static object OnlyOneAtTimeLock = new Object();
-		static object DataLock = new Object();
-		object returnValue;
 		
 		public MTA2STA()
 		{
 			hiddenForm = new Form();
+			// Force handle creation
 			hiddenFormHandle = hiddenForm.Handle;
 		}
 		
-		void TraceMsg(string msg)
+		static void TraceMsg(string msg)
 		{
 			//System.Console.WriteLine("MTA2STA: " + msg);
 		}
 		
-		public object CallInSTA (object targetObject, string functionName, object[] functionParameters)
+		// Try to avoid this since it will catch exceptions and it is slow
+		public object CallInSTA(object targetObject, string functionName, object[] functionParameters)
 		{
-			lock (OnlyOneAtTimeLock) {
-				TraceMsg("call to process: " + functionName + " {");
-							
-				lock (DataLock) {
-					this.targetObject        = targetObject;
-					this.functionName        = functionName;
-					this.functionParameters  = functionParameters;
-				}
-				
-				MTAThread = System.Threading.Thread.CurrentThread;
-				if (hiddenForm.InvokeRequired == true) {
-					IAsyncResult async = hiddenForm.BeginInvoke(new EventHandler(PerformCall));
-					//while (async.AsyncWaitHandle.WaitOne(1000,true) == false) {
-					//	System.Console.WriteLine("Waiting for callback...");
-					//}
-					if (async.AsyncWaitHandle.WaitOne(1000,true) == false) {
-						System.Console.WriteLine("Callback time out! Unleashing debugger thread.");
-					}
-				} else {
-					PerformCall(hiddenForm, EventArgs.Empty);
-				}
+			return CallInSTA(delegate { return InvokeMethod(targetObject, functionName, functionParameters); });
+		}
 		
-				TraceMsg("} // MTA2STA: call processed: " + functionName);
-			}
-			return returnValue;
-		}
-
-		void PerformCall(object sender, EventArgs e)
+		public void CallInSTA(MethodInvoker callDelegate)
 		{
-			returnValue = Call(targetObject, functionName, functionParameters);
+			CallInSTA(delegate { callDelegate(); return null; }, true);
 		}
-
-		public object Call (object targetObject, string functionName, object[] functionParameters)
+		
+		public object CallInSTA(MethodInvokerWithReturnValue callDelegate)
+		{
+			return CallInSTA(callDelegate, true); // TODO: Make it false once it is safe
+		}
+			
+		object CallInSTA(MethodInvokerWithReturnValue callDelegate, bool mayAbandon)
+		{
+			if (hiddenForm.InvokeRequired == true) {
+				IAsyncResult async = hiddenForm.BeginInvoke(callDelegate);
+				// Firsy try... give it 1 second to run
+				if (async.AsyncWaitHandle.WaitOne(1000, true)) {
+					return hiddenForm.EndInvoke(async);
+				} else {
+					// Abandon the call if possible
+					if (mayAbandon) {
+						System.Console.WriteLine("Callback time out! Unleashing thread.");
+						return null;
+					} else {
+						System.Console.WriteLine("Warring: Call in STA is taking too long");
+						return hiddenForm.EndInvoke(async); // Keep waiting
+					}
+				}
+			} else {
+				return callDelegate();
+			}
+		}
+		
+		public static object MarshalParamTo(object param, Type outputType)
+		{
+			if (param is IntPtr) {
+				return MarshalIntPtrTo((IntPtr)param, outputType);
+			} else {
+				return param;
+			}
+		}
+		
+		public static object MarshalIntPtrTo(IntPtr param, Type outputType)
+		{
+			// IntPtr requested as output (must be before the null check so that we pass IntPtr.Zero)
+			if (outputType == typeof(IntPtr)) {
+				return param;
+			}
+			// The parameter is null pointer
+			if ((IntPtr)param == IntPtr.Zero) {
+				return null;
+			}
+			// String requested as output
+			if (outputType == typeof(string)) {
+				return Marshal.PtrToStringAuto((IntPtr)param);
+			}
+			// Marshal a COM object
+			return Marshal.GetTypedObjectForIUnknown((IntPtr)param, outputType);
+		}
+		
+		/// <summary>
+		/// Uses reflection to call method. Automaticaly marshals parameters.
+		/// </summary>
+		/// <param name="targetObject">Targed object which contains the method. In case of static mehod pass the Type</param>
+		/// <param name="functionName">The name of the function to call</param>
+		/// <param name="functionParameters">Parameters which should be send to the function. Parameters will be marshaled to proper type.</param>
+		/// <returns>Return value of the called function</returns>
+		public static object InvokeMethod(object targetObject, string functionName, object[] functionParameters)
 		{
 			MethodInfo method;
-			object[] outputParams;
-			lock (DataLock) {
-				object[] inputParams = functionParameters;
-				if (targetObject is Type) {
-					method = ((Type)targetObject).GetMethod(functionName);
-				} else {
-					method = targetObject.GetType().GetMethod(functionName);
-				}
-				ParameterInfo[] outputParamsInfo = method.GetParameters();
-				outputParams = null;
-				if (outputParamsInfo != null) {
-					outputParams = new object[outputParamsInfo.Length];
-					for (int i = 0; i < outputParams.Length; i++) {
-						if (inputParams[i] == null) {
-							outputParams[i] = null;
-						} else if (inputParams[i] is IntPtr) {
-							if (outputParamsInfo[i].ParameterType == typeof(IntPtr)) {
-								outputParams[i] = inputParams[i];							
-							} else if ((IntPtr)inputParams[i] == IntPtr.Zero) {
-								outputParams[i] = null;
-							} else if (outputParamsInfo[i].ParameterType == typeof(string)) {
-								outputParams[i] = Marshal.PtrToStringAuto((IntPtr)inputParams[i]);
-							} else {
-								try{
-									outputParams[i] = null;
-									outputParams[i] = Marshal.GetTypedObjectForIUnknown((IntPtr)inputParams[i], outputParamsInfo[i].ParameterType);
-								} catch (System.Exception exception) {
-									throw new Debugger.DebuggerException("Marshaling of argument " + i.ToString() + " of " + functionName + " failed.", exception);
-								}
-							}
-						} else {
-							outputParams[i] = inputParams[i];
-						}
-					}
-				}
+			if (targetObject is Type) {
+				method = ((Type)targetObject).GetMethod(functionName);
+			} else {
+				method = targetObject.GetType().GetMethod(functionName);
 			}
-			TraceMsg ("Invoke " + functionName + "{");
-			object returnValue = null;
+			
+			ParameterInfo[] methodParamsInfo = method.GetParameters();
+			object[] convertedParams = new object[methodParamsInfo.Length];
+			
+			for (int i = 0; i < convertedParams.Length; i++) {
+				convertedParams[i] = MarshalParamTo(functionParameters[i], methodParamsInfo[i].ParameterType);
+			}
+			
+			TraceMsg ("Invoking " + functionName + "...");
 			try {
 				if (targetObject is Type) {
-					returnValue = method.Invoke(null, outputParams);
+					return method.Invoke(null, convertedParams);
 				} else {
-					returnValue = method.Invoke(targetObject, outputParams);
+					return method.Invoke(targetObject, convertedParams);
 				}
 			} catch (System.Exception exception) {
 				throw new Debugger.DebuggerException("Invoke of " + functionName + " failed.", exception);
 			}
-			TraceMsg ("} \\\\ Invoke");
-			return returnValue;
 		}
 	}
 }

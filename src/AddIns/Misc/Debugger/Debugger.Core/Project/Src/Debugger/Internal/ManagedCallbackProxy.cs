@@ -46,7 +46,7 @@ namespace Debugger
 			if (debugger.RequiredApartmentState == ApartmentState.STA) {
 				mta2sta.CallInSTA(realCallback, function, parameters);
 			} else {
-				mta2sta.Call(realCallback, function, parameters);
+				MTA2STA.InvokeMethod(realCallback, function, parameters);
 			}
 		}
 		
