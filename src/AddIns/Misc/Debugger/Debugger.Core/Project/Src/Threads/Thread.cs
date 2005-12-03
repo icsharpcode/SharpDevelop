@@ -121,7 +121,7 @@ namespace Debugger
 
 				ICorDebugValue corValue;
 				corThread.GetObject(out corValue);
-				return ValueFactory.CreateValue(debugger, corValue);
+				return Value.CreateValue(debugger, corValue);
 			}
 		}
 

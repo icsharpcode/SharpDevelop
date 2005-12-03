@@ -42,7 +42,7 @@ namespace Debugger
 			this.thread = thread;
 			thread.CorThread.GetCurrentException(out corValue);
 			exceptionType = thread.CurrentExceptionType;
-			runtimeValue = ValueFactory.CreateValue(debugger, corValue);
+			runtimeValue = Value.CreateValue(debugger, corValue);
 			runtimeValueException = runtimeValue as ObjectValue;
 			if (runtimeValueException != null) {
 				while (runtimeValueException.Type != "System.Exception") {

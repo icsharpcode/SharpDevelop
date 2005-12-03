@@ -201,11 +201,9 @@
     <Compile Include="Src\Variables\UnavailableValue.cs" />
     <Compile Include="Src\Variables\Value.cs" />
     <Compile Include="Src\Variables\ValueEventArgs.cs" />
-    <Compile Include="Src\Variables\ValueFactory.cs" />
     <Compile Include="Src\Variables\VariableCollection.cs" />
     <Compile Include="Src\Variables\Variable.cs" />
     <Compile Include="Src\Variables\VariableEventArgs.cs" />
-    <Compile Include="Src\Variables\VariableFactory.cs" />
     <Compile Include="Src\Variables\VariableCollectionEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>

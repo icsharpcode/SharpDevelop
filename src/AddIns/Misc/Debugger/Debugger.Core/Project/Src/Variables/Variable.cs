@@ -7,6 +7,8 @@
 
 using System;
 
+using Debugger.Interop.CorDebug;
+
 namespace Debugger
 {
 	public class Variable: RemotingObjectBase
@@ -102,6 +104,17 @@ namespace Debugger
 			this.name = name;
 			this.subVariables = new VariableCollection(debugger);
 			this.subVariables.Updating += OnSubVariablesUpdating;
+		}
+		
+		internal static Variable CreateVariable(NDebugger debugger, ICorDebugValue corValue, string name)
+		{
+			Value val = Value.CreateValue(debugger, corValue);
+			return CreateVariable(val, name);
+		}
+		
+		public static Variable CreateVariable(Value val, string name)
+		{
+			return new Variable(val.Debugger, val, name);
 		}
 	}
 }

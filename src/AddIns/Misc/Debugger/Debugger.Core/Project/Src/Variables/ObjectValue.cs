@@ -148,9 +148,9 @@ namespace Debugger
 							((ICorDebugObjectValue)corValue).GetFieldValue(corClass, field.Token, out fieldValue);
 						}
 						
-						var = VariableFactory.CreateVariable(debugger, fieldValue, field.Name);
+						var = Variable.CreateVariable(debugger, fieldValue, field.Name);
 					} catch {
-						var = VariableFactory.CreateVariable(new UnavailableValue(debugger), field.Name);
+						var = Variable.CreateVariable(new UnavailableValue(debugger), field.Name);
 					}
 					yield return var;
 				}
@@ -160,7 +160,7 @@ namespace Debugger
 		public Variable BaseClassVariable {
 			get {
 				if (HasBaseClass) {
-					return VariableFactory.CreateVariable(this.BaseClass, "<Base class>");
+					return Variable.CreateVariable(this.BaseClass, "<Base class>");
 				} else {
 					return null;
 				}

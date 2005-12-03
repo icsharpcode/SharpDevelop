@@ -102,7 +102,7 @@ namespace Debugger
 				fixed (void* pIndices = indices)
 					corArrayValue.GetElement(rank, new IntPtr(pIndices), out element);
 
-				return VariableFactory.CreateVariable(debugger, element, elementName);
+				return Variable.CreateVariable(debugger, element, elementName);
 			}
 		}
 
