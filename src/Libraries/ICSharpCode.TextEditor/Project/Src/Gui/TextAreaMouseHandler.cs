@@ -182,15 +182,22 @@ namespace ICSharpCode.TextEditor
 			}
 			textArea.Caret.Position = realmousepos;
 			if (minSelection != nilPoint && textArea.SelectionManager.SelectionCollection.Count > 0) {
+				// Extend selection when selection was started with double-click
 				ISelection selection = textArea.SelectionManager.SelectionCollection[0];
 				Point min = textArea.SelectionManager.GreaterEqPos(minSelection, maxSelection) ? maxSelection : minSelection;
 				Point max = textArea.SelectionManager.GreaterEqPos(minSelection, maxSelection) ? minSelection : maxSelection;
-				if (textArea.SelectionManager.GreaterEqPos(max, oldPos) && textArea.SelectionManager.GreaterEqPos(oldPos, min)) {
+				if (textArea.SelectionManager.GreaterEqPos(max, realmousepos) && textArea.SelectionManager.GreaterEqPos(realmousepos, min)) {
 					textArea.SelectionManager.SetSelection(min, max);
-				} else if (textArea.SelectionManager.GreaterEqPos(max, oldPos)) {
-					textArea.SelectionManager.SetSelection(oldPos, max);
+				} else if (textArea.SelectionManager.GreaterEqPos(max, realmousepos)) {
+					//textArea.SelectionManager.SetSelection(realmousepos, max);
+					int moff = textArea.Document.PositionToOffset(realmousepos);
+					min = textArea.Document.OffsetToPosition(FindWordStart(textArea.Document, moff));
+					textArea.SelectionManager.SetSelection(min, max);
 				} else {
-					textArea.SelectionManager.SetSelection(min, oldPos);
+					//textArea.SelectionManager.SetSelection(min, realmousepos);
+					int moff = textArea.Document.PositionToOffset(realmousepos);
+					max = textArea.Document.OffsetToPosition(FindWordEnd(textArea.Document, moff));
+					textArea.SelectionManager.SetSelection(min, max);
 				}
 			} else {
 				textArea.SelectionManager.ExtendSelection(oldPos, textArea.Caret.Position);
@@ -221,23 +228,23 @@ namespace ICSharpCode.TextEditor
 							minSelection = textArea.Document.OffsetToPosition(FindWordStart(textArea.Document, textArea.Caret.Offset));
 							maxSelection = textArea.Document.OffsetToPosition(FindWordEnd(textArea.Document, textArea.Caret.Offset));
 							break;
-					
+							
 					}
 					textArea.SelectionManager.ExtendSelection(minSelection, maxSelection);
 				}
-				// HACK WARNING !!! 
+				// HACK WARNING !!!
 				// must refresh here, because when a error tooltip is showed and the underlined
 				// code is double clicked the textArea don't update corrctly, updateline doesn't
 				// work ... but the refresh does.
 				// Mike
-				textArea.Refresh(); 
+				textArea.Refresh();
 			}
 		}
 
 		
 		DateTime lastTime = DateTime.Now;
 		void OnMouseDown(object sender, MouseEventArgs e)
-		{ 
+		{
 			if (dodragdrop) {
 				return;
 			}
@@ -274,7 +281,7 @@ namespace ICSharpCode.TextEditor
 					FoldMarker marker = textArea.TextView.GetFoldMarkerFromPosition(mousepos.X - textArea.TextView.DrawingPosition.X,
 					                                                                mousepos.Y - textArea.TextView.DrawingPosition.Y);
 					if (marker != null && marker.IsFolded) {
-						if (textArea.SelectionManager.HasSomethingSelected) {	
+						if (textArea.SelectionManager.HasSomethingSelected) {
 							clickedOnSelectedText = true;
 						}
 						
@@ -290,10 +297,10 @@ namespace ICSharpCode.TextEditor
 						clickedOnSelectedText = false;
 						
 						int offset = textArea.Document.PositionToOffset(realmousepos);
-								
 						
-						if (textArea.SelectionManager.HasSomethingSelected && 
-						    textArea.SelectionManager.IsSelected(offset)) {	
+						
+						if (textArea.SelectionManager.HasSomethingSelected &&
+						    textArea.SelectionManager.IsSelected(offset)) {
 							clickedOnSelectedText = true;
 						} else {
 							selbegin = selend = offset;
