@@ -97,24 +97,18 @@ namespace Debugger
 			}
 		}
 		
-		public Variable(NDebugger debugger, Value val, string name)
+		public Variable(NDebugger debugger, ICorDebugValue corValue, string name):this(Value.CreateValue(debugger, corValue), name)
 		{
-			this.debugger = debugger;
+			
+		}
+		
+		public Variable(Value val, string name)
+		{
+			this.debugger = val.Debugger;
 			this.Value = val;
 			this.name = name;
 			this.subVariables = new VariableCollection(debugger);
 			this.subVariables.Updating += OnSubVariablesUpdating;
-		}
-		
-		internal static Variable CreateVariable(NDebugger debugger, ICorDebugValue corValue, string name)
-		{
-			Value val = Value.CreateValue(debugger, corValue);
-			return CreateVariable(val, name);
-		}
-		
-		public static Variable CreateVariable(Value val, string name)
-		{
-			return new Variable(val.Debugger, val, name);
 		}
 	}
 }

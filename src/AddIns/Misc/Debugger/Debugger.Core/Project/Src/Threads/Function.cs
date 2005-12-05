@@ -456,7 +456,7 @@ namespace Debugger
 		
 		public Variable GetArgumentVariable(int index)
 		{
-			return Variable.CreateVariable(debugger, GetArgumentValue(index), GetParameterName(index));
+			return new Variable(debugger, GetArgumentValue(index), GetParameterName(index));
 		}
 		
 		public IEnumerable<Variable> ArgumentVariables {
@@ -517,7 +517,7 @@ namespace Debugger
 		{
 			ICorDebugValue runtimeVar;
 			CorILFrame.GetLocalVariable((uint)symVar.AddressField1, out runtimeVar);
-			return Variable.CreateVariable(debugger, runtimeVar, symVar.Name);
+			return new Variable(debugger, runtimeVar, symVar.Name);
 		}
 	}
 }
