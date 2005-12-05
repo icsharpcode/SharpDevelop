@@ -395,28 +395,34 @@ namespace Debugger
 				}
 			}
 		}
-
-		public VariableCollection GetVariables()
-		{
-			return VariableCollection.Merge(
-											GetContaingClassVariables(),
-											GetArgumentVariables(),
-											GetLocalVariables(),
-											GetPropertyVariables()
-											);
-		}
-
-		public VariableCollection GetContaingClassVariables()
-		{
-			if (IsStatic) {
-				return VariableCollection.Empty;
-			} else {
-				VariableCollection collection = new VariableCollection(debugger);
-				collection.UpdateTo(ThisValue.SubVariables);
-				return collection;
+		
+		public IEnumerable<Variable> Variables {
+			get {
+				foreach(Variable var in ContaingClassVariables) {
+					yield return var;
+				}
+				foreach(Variable var in ArgumentVariables) {
+					yield return var;
+				}
+				foreach(Variable var in LocalVariables) {
+					yield return var;
+				}
+				foreach(Variable var in PropertyVariables) {
+					yield return var;
+				}
 			}
 		}
-
+		
+		public IEnumerable<Variable> ContaingClassVariables {
+			get {
+				if (!IsStatic) {
+					foreach(Variable var in ThisValue.SubVariables) {
+						yield return var;
+					}
+				}
+			}
+		}
+		
 		public string GetParameterName(int index)
 		{
 			// index = 0 is return parameter
@@ -426,7 +432,7 @@ namespace Debugger
 				return String.Empty;
 			}
 		}
-
+		
 		public int ArgumentCount {
 			get {
 				ICorDebugValueEnum argumentEnum;
@@ -453,70 +459,65 @@ namespace Debugger
 			return Variable.CreateVariable(debugger, GetArgumentValue(index), GetParameterName(index));
 		}
 		
-		public VariableCollection GetArgumentVariables()
-		{
-			VariableCollection arguments = new VariableCollection(debugger);
-			
-			int argCount = ArgumentCount;
-			
-			for (int i = 0; i < argCount; i++) {
-				arguments.Add(GetArgumentVariable(i));
-			}
-			
-			return arguments;
-		}
-
-		public VariableCollection GetLocalVariables()
-		{
-			VariableCollection localVariables = new VariableCollection(debugger);
-			if (symMethod != null) {
-				ISymbolScope symRootScope = symMethod.RootScope;
-				AddScopeToVariableCollection(symRootScope, ref localVariables);
-			}
-			return localVariables;
-		}
-
-		VariableCollection GetPropertyVariables()	
-		{
-			VariableCollection properties = new VariableCollection(debugger);
-
-			foreach(MethodProps method in module.MetaData.EnumMethods(methodProps.ClassToken)) {
-				if (method.Name.StartsWith("get_") && method.HasSpecialName) {					
-					ICorDebugValue[] evalArgs;
-					ICorDebugFunction evalCorFunction;
-					Module.CorModule.GetFunctionFromToken(method.Token, out evalCorFunction);
-					if (IsStatic) {
-						evalArgs = new ICorDebugValue[0];
-					} else {
-						evalArgs = new ICorDebugValue[] {ThisValue.CorValue};
-					}
-					Eval eval = new Eval(debugger, evalCorFunction, evalArgs);
-					// Do not add evals if we just evaluated them, otherwise we get infinite loop
-					if (debugger.PausedReason != PausedReason.AllEvalsComplete) {
-						debugger.AddEval(eval);
-					}
-					properties.Add(new PropertyVariable(eval, method.Name.Remove(0, 4)));
+		public IEnumerable<Variable> ArgumentVariables {
+			get {
+				for (int i = 0; i < ArgumentCount; i++) {
+					yield return GetArgumentVariable(i);
 				}
 			}
-
-			return properties;
-		} 
-
-		void AddScopeToVariableCollection(ISymbolScope symScope, ref VariableCollection collection)
-		{
-			foreach(ISymbolScope childScope in symScope.GetChildren()) {
-				AddScopeToVariableCollection(childScope, ref collection);
-			}
-			foreach (ISymbolVariable symVar in symScope.GetLocals()) {
-				AddVariableToVariableCollection(symVar , ref collection);
+		}
+		
+		public IEnumerable<Variable> LocalVariables {
+			get {
+				if (symMethod != null) { // TODO: Is this needed?
+					ISymbolScope symRootScope = symMethod.RootScope;
+					foreach(Variable var in GetLocalVariablesInScope(symRootScope)) {
+						yield return var;
+					}
+				}
 			}
 		}
-
-		void AddVariableToVariableCollection(ISymbolVariable symVar, ref VariableCollection collection)
+		
+		public IEnumerable<Variable> PropertyVariables {
+			get {
+				foreach(MethodProps method in module.MetaData.EnumMethods(methodProps.ClassToken)) {
+					if (method.Name.StartsWith("get_") && method.HasSpecialName) {					
+						ICorDebugValue[] evalArgs;
+						ICorDebugFunction evalCorFunction;
+						Module.CorModule.GetFunctionFromToken(method.Token, out evalCorFunction);
+						if (IsStatic) {
+							evalArgs = new ICorDebugValue[0];
+						} else {
+							evalArgs = new ICorDebugValue[] {ThisValue.CorValue};
+						}
+						Eval eval = new Eval(debugger, evalCorFunction, evalArgs);
+						// Do not add evals if we just evaluated them, otherwise we get infinite loop
+						if (debugger.PausedReason != PausedReason.AllEvalsComplete) {
+							debugger.AddEval(eval);
+						}
+						yield return new PropertyVariable(eval, method.Name.Remove(0, 4));
+					}
+				}
+			}
+		} 
+		
+		IEnumerable<Variable> GetLocalVariablesInScope(ISymbolScope symScope)
+		{
+			foreach (ISymbolVariable symVar in symScope.GetLocals()) {
+				yield return GetLocalVariable(symVar);
+			}
+			foreach(ISymbolScope childScope in symScope.GetChildren()) {
+				foreach(Variable var in GetLocalVariablesInScope(childScope)) {
+					yield return var;
+				}
+			}
+		}
+		
+		Variable GetLocalVariable(ISymbolVariable symVar)
 		{
 			ICorDebugValue runtimeVar;
 			CorILFrame.GetLocalVariable((uint)symVar.AddressField1, out runtimeVar);
-			collection.Add(Variable.CreateVariable(debugger, runtimeVar, symVar.Name));
+			return Variable.CreateVariable(debugger, runtimeVar, symVar.Name);
 		}
 	}
 }

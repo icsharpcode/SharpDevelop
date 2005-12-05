@@ -190,7 +190,7 @@ namespace Debugger
 				}
 			}
 		}
-
+		
 		public VariableCollection LocalVariables { 
 			get {
 				return localVariables;
@@ -202,7 +202,7 @@ namespace Debugger
 			if (CurrentFunction == null) {
 				e.VariableCollection.UpdateTo(VariableCollection.Empty);
 			} else {
-				e.VariableCollection.UpdateTo(CurrentFunction.GetVariables());
+				e.VariableCollection.UpdateTo(CurrentFunction.Variables);
 			}
 		}
 	}
