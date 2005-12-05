@@ -67,6 +67,12 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void EnumWithBaseType()
+		{
+			TestProgram("Public Enum Foo As UShort\nEnd Enum");
+		}
+		
+		[Test]
 		public void PartialModifier()
 		{
 			TestProgram("Public Partial Class Foo\nEnd Class");

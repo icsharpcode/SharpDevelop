@@ -644,7 +644,6 @@ TypeParameterConstraints<TemplateDefinition template>
 /* 6.4.2 */
 NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			(.
-				string name = null;
 				TypeReference typeRef = null;
 				List<TypeReference> baseInterfaces = null;
 			.) =
@@ -710,7 +709,7 @@ NonModuleDeclaration<Modifiers m, List<AttributeSection> attributes>
 			newType.Type = ClassType.Enum;
 		.)
 	Identifier			 (. newType.Name = t.val; .) 
-	[ "As" PrimitiveTypeName<out name> (. newType.BaseTypes.Add(new TypeReference(name)); .) ]
+	[ "As" NonArrayTypeName<out typeRef, false> (. newType.BaseTypes.Add(typeRef); .) ]
 	EOL
 	EnumBody<newType>
 	(.

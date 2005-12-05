@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
@@ -184,6 +184,20 @@ public abstract class MyClass : MyBase, Interface1, My.Test.Interface2
 			Assert.AreEqual("TestEnum", td.Name);
 			Assert.AreEqual(ClassType.Enum, td.Type);
 			Assert.AreEqual("Byte", td.BaseTypes[0].Type);
+			Assert.AreEqual(0, td.Children.Count);
+		}
+		
+		[Test]
+		public void VBNetEnumWithSystemBaseClassDeclarationTest()
+		{
+			string program = "Enum TestEnum As System.UInt16\n" +
+				"End Enum\n";
+			TypeDeclaration td = ParseUtilVBNet.ParseGlobal<TypeDeclaration>(program);
+			
+			Assert.AreEqual("TestEnum", td.Name);
+			Assert.AreEqual(ClassType.Enum, td.Type);
+			Assert.AreEqual("System.UInt16", td.BaseTypes[0].Type);
+			Assert.AreEqual(0, td.Children.Count);
 		}
 		
 		[Test]

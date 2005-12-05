@@ -112,13 +112,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					return "Object";
 					
 				case "System.UInt64":
-					return "System.UInt64";
+					return "ULong";
 				case "System.UInt32":
-					return "System.UInt32";
+					return "UInt";
 				case "System.UInt16":
-					return "System.UInt16";
+					return "UShort";
 				case "System.SByte":
-					return "System.SByte";
+					return "SByte";
 			}
 			return typeString;
 		}
@@ -324,9 +324,20 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			PrintTemplates(typeDeclaration.Templates);
 			
+			if (typeDeclaration.Type == ClassType.Enum
+			    && typeDeclaration.BaseTypes != null && typeDeclaration.BaseTypes.Count > 0)
+			{
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				foreach (TypeReference baseTypeRef in typeDeclaration.BaseTypes) {
+					nodeTracker.TrackedVisit(baseTypeRef, data);
+				}
+			}
+			
 			outputFormatter.NewLine();
 			
-			if (typeDeclaration.BaseTypes != null) {
+			if (typeDeclaration.BaseTypes != null && typeDeclaration.Type != ClassType.Enum) {
 				foreach (TypeReference baseTypeRef in typeDeclaration.BaseTypes) {
 					outputFormatter.Indent();
 					
