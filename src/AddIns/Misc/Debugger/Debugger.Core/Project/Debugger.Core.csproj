@@ -205,6 +205,8 @@
     <Compile Include="Src\Variables\Variable.cs" />
     <Compile Include="Src\Variables\VariableEventArgs.cs" />
     <Compile Include="Src\Variables\VariableCollectionEventArgs.cs" />
+    <Compile Include="Src\Threads\Stepper.cs" />
+    <Compile Include="Src\Threads\StepperEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="README.TXT" />

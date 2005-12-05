@@ -20,11 +20,16 @@ namespace Debugger
 	public class Function: RemotingObjectBase
 	{	
 		NDebugger debugger;
-
+		
 		Module module;
-		ICorDebugILFrame  corILFrame;
 		ICorDebugFunction corFunction;
-
+		ICorDebugILFrame  corILFrame;
+		object            corILFrameDebuggerSessionID;
+		
+		Thread thread;
+		uint chainIndex;
+		uint frameIndex;
+		
 		MethodProps methodProps;
 		
 		public NDebugger Debugger {
@@ -64,6 +69,19 @@ namespace Debugger
 				return corClass;
 			}
 		}
+		
+		/// <summary>
+		/// True if function stepped out and is not longer valid.
+		/// </summary>
+		public bool HasExpired {
+			get {
+				if (corILFrameDebuggerSessionID == debugger.SessionID) {
+					return false; // valid
+				} else {
+					return thread == null;
+				}
+			}
+		}
 
 		public ObjectValue ThisValue {
 			get {
@@ -71,30 +89,47 @@ namespace Debugger
 					throw new DebuggerException("Static method does not have 'this'.");
 				} else {
 					ICorDebugValue argThis = null;
-					corILFrame.GetArgument(0, out argThis);
+					CorILFrame.GetArgument(0, out argThis);
 					return new ObjectValue(debugger, argThis, ContaingClass);
 				}
 			}
 		}
-	
-		internal unsafe Function(NDebugger debugger, ICorDebugILFrame corILFrame) 
+		
+		internal Function(Thread thread, uint chainIndex, uint frameIndex, ICorDebugILFrame corILFrame)
 		{
-			this.debugger = debugger;
+			this.debugger = thread.Debugger;
+			this.thread = thread;
+			this.chainIndex = chainIndex;
+			this.frameIndex = frameIndex;
 			this.corILFrame = corILFrame;
+			this.corILFrameDebuggerSessionID = debugger.SessionID;
 			corILFrame.GetFunction(out corFunction);
-            uint functionToken;
+			uint functionToken;
 			corFunction.GetToken(out functionToken);
 			ICorDebugModule corModule;
 			corFunction.GetModule(out corModule);
 			module = debugger.GetModule(corModule);
-
+			
 			methodProps = module.MetaData.GetMethodProps(functionToken);
+			
+			// Expiry the function when it is finished
+			Stepper tracingStepper = thread.CreateStepper();
+			tracingStepper.CorStepper.StepOut();
+			tracingStepper.PauseWhenComplete = false;
+			tracingStepper.StepComplete += delegate {
+				thread = null;
+			};
 		}
 
 		#region Helpping proprerties
 
 		internal ICorDebugILFrame CorILFrame {
 			get	{
+				if (HasExpired) throw new DebuggerException("Function has expired");
+				if (corILFrameDebuggerSessionID != debugger.SessionID) {
+					corILFrame = thread.GetFunctionAt(chainIndex, frameIndex).CorILFrame;
+					corILFrameDebuggerSessionID = debugger.SessionID;
+				}
 				return corILFrame;
 			}
 		}
@@ -103,7 +138,7 @@ namespace Debugger
 			get	{
 				uint corInstructionPtr;
 				CorDebugMappingResult MappingResult;
-				corILFrame.GetIP(out corInstructionPtr,out MappingResult);
+				CorILFrame.GetIP(out corInstructionPtr,out MappingResult);
 				return corInstructionPtr;
 			}
 		}
@@ -147,7 +182,7 @@ namespace Debugger
 		public void StepOut()
 		{
 			ICorDebugStepper stepper;
-			corILFrame.CreateStepper(out stepper);
+			CorILFrame.CreateStepper(out stepper);
 			stepper.StepOut();
 
 			debugger.CurrentThread.AddActiveStepper(stepper);
@@ -171,7 +206,7 @@ namespace Debugger
 			ICorDebugStepper stepper;
 			
 			if (stepIn) {
-				corILFrame.CreateStepper(out stepper);
+				CorILFrame.CreateStepper(out stepper);
 				
 				if (stepper is ICorDebugStepper2) { // Is the debuggee .NET 2.0?
 					stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
@@ -188,7 +223,7 @@ namespace Debugger
 			// Mind that step in which ends in code without symblols is cotinued
 			// so the next step over ensures that we atleast do step over
 			
-			corILFrame.CreateStepper(out stepper);
+			CorILFrame.CreateStepper(out stepper);
 			
 			if (stepper is ICorDebugStepper2) { // Is the debuggee .NET 2.0?
 				stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
@@ -348,9 +383,9 @@ namespace Debugger
 				} else {
 					try {
 						if (simulate) {
-							corILFrame.CanSetIP((uint)ilOffset);
+							CorILFrame.CanSetIP((uint)ilOffset);
 						} else {
-							corILFrame.SetIP((uint)ilOffset);
+							CorILFrame.SetIP((uint)ilOffset);
 							debugger.FakePause(PausedReason.SetIP, false);
 						}
 					} catch {
@@ -395,7 +430,7 @@ namespace Debugger
 		public int ArgumentCount {
 			get {
 				ICorDebugValueEnum argumentEnum;
-				corILFrame.EnumerateArguments(out argumentEnum);
+				CorILFrame.EnumerateArguments(out argumentEnum);
 				uint argCount;
 				argumentEnum.GetCount(out argCount);
 				if (!IsStatic) {
@@ -409,7 +444,7 @@ namespace Debugger
 		{
 			ICorDebugValue arg;
 			// Non-static functions include 'this' as first argument
-			corILFrame.GetArgument((uint)(IsStatic? index : (index + 1)), out arg);
+			CorILFrame.GetArgument((uint)(IsStatic? index : (index + 1)), out arg);
 			return arg;
 		}
 		
@@ -480,7 +515,7 @@ namespace Debugger
 		void AddVariableToVariableCollection(ISymbolVariable symVar, ref VariableCollection collection)
 		{
 			ICorDebugValue runtimeVar;
-			corILFrame.GetLocalVariable((uint)symVar.AddressField1, out runtimeVar);
+			CorILFrame.GetLocalVariable((uint)symVar.AddressField1, out runtimeVar);
 			collection.Add(Variable.CreateVariable(debugger, runtimeVar, symVar.Name));
 		}
 	}

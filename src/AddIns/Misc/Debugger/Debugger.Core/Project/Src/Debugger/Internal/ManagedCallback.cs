@@ -108,15 +108,24 @@ namespace Debugger
 		
 		
 		#region Program folow control
-
+		
 		public void StepComplete(ICorDebugAppDomain pAppDomain, ICorDebugThread pThread, ICorDebugStepper pStepper, CorDebugStepReason reason)
 		{
 			EnterCallback("StepComplete (" + reason.ToString() + ")", pThread);
-
+			
+			Stepper stepper = debugger.GetThread(pThread).GetStepper(pStepper);
+			if (stepper != null) {
+				stepper.OnStepComplete();
+				if (!stepper.PauseWhenComplete) {
+					ExitCallback_Continue();
+					return;
+				}
+			}
+			
 			if (!callingThread.LastFunction.HasSymbols) {
 				// This should not happen with JMC enabled
 				debugger.TraceMessage(" - leaving code without symbols");
-
+				
 				ExitCallback_Continue();
 			} else {
 				
