@@ -254,7 +254,7 @@ namespace Debugger
 				if (skipCount < 0) throw new ArgumentException("Chain index too big", "firstChainIndex");
 				corChainEnum.Skip((uint)skipCount);
 				chainIndex -= (uint)skipCount;
-				firstChainIndex = chainIndex;
+				firstChainIndex = chainIndex - 1;
 			}
 			
 			while (true) {
@@ -282,7 +282,6 @@ namespace Debugger
 					if (skipCount < 0) throw new ArgumentException("Frame index too big", "firstFrameIndex");
 					corFrameEnum.Skip((uint)skipCount);
 					frameIndex -= (uint)skipCount;
-					firstFrameIndex = frameIndex;
 				}
 				
 				while (true) {

@@ -456,7 +456,11 @@ namespace Debugger
 		
 		public Variable GetArgumentVariable(int index)
 		{
-			return new Variable(debugger, GetArgumentValue(index), GetParameterName(index));
+			return new Variable(debugger,
+			                    GetParameterName(index),
+			                    delegate {
+			                    	return Value.CreateValue(debugger, GetArgumentValue(index));
+			                    });
 		}
 		
 		public IEnumerable<Variable> ArgumentVariables {
@@ -515,9 +519,13 @@ namespace Debugger
 		
 		Variable GetLocalVariable(ISymbolVariable symVar)
 		{
-			ICorDebugValue runtimeVar;
-			CorILFrame.GetLocalVariable((uint)symVar.AddressField1, out runtimeVar);
-			return new Variable(debugger, runtimeVar, symVar.Name);
+			return new Variable(debugger,
+			                    symVar.Name,
+			                    delegate {
+			                    	ICorDebugValue corValue;
+			                    	CorILFrame.GetLocalVariable((uint)symVar.AddressField1, out corValue);
+			                    	return Value.CreateValue(debugger, corValue);
+			                    });
 		}
 	}
 }

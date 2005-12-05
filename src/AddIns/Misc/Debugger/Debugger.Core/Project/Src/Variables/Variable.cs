@@ -11,6 +11,8 @@ using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {
+	public delegate Value ValueUpdatingEventHandler();
+	
 	public class Variable: RemotingObjectBase
 	{
 		protected NDebugger debugger;
@@ -18,6 +20,8 @@ namespace Debugger
 		string name;
 		Value val;
 		VariableCollection subVariables;
+		
+		event ValueUpdatingEventHandler updating;
 		
 		public event EventHandler<VariableEventArgs> ValueChanged;
 		public event EventHandler<VariableCollectionEventArgs> ValueRemovedFromCollection;
@@ -40,6 +44,9 @@ namespace Debugger
 		public Value Value {
 			get {
 				Value v = GetValue();
+				if (v == null) {
+					return new UnavailableValue(debugger);
+				}
 				if (v.IsExpired) {
 					return new UnavailableValue(debugger, "The value has expired");
 				} else {
@@ -55,6 +62,9 @@ namespace Debugger
 		
 		protected virtual Value GetValue()
 		{
+			if ((val == null || val.IsExpired) && updating != null) {
+				val = updating();
+			}
 			return val;
 		}
 		
@@ -97,16 +107,29 @@ namespace Debugger
 			}
 		}
 		
-		public Variable(NDebugger debugger, ICorDebugValue corValue, string name):this(Value.CreateValue(debugger, corValue), name)
+		public Variable(NDebugger debugger, ICorDebugValue corValue, string name):this(debugger, Value.CreateValue(debugger, corValue), name, null)
 		{
 			
 		}
 		
-		public Variable(Value val, string name)
+		public Variable(NDebugger debugger, string name, ValueUpdatingEventHandler updating):this(debugger, null, name, updating)
 		{
-			this.debugger = val.Debugger;
-			this.Value = val;
+			
+		}
+		
+		public Variable(Value val, string name):this(val.Debugger, val, name, null)
+		{
+			
+		}
+		
+		Variable(NDebugger debugger, Value val, string name, ValueUpdatingEventHandler updating)
+		{
+			this.debugger = debugger;
+			if (val != null) {
+				this.Value = val;
+			}
 			this.name = name;
+			this.updating = updating;
 			this.subVariables = new VariableCollection(debugger);
 			this.subVariables.Updating += OnSubVariablesUpdating;
 		}
