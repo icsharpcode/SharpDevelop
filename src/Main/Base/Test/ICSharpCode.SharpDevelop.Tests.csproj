@@ -67,6 +67,10 @@
       <Name>nunit.framework.dll</Name>
       <Private>True</Private>
     </ProjectReference>
+    <Content Include="..\..\..\..\bin\ICSharpCode.SharpDevelop.dll">
+      <Link>ICSharpCode.SharpDevelop.dll</Link>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>
