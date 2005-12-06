@@ -24,7 +24,7 @@
 
 Public Module ${ClassName}
 	
-End Class
+End Module
 ]]></File>
 	</Files>
 	
