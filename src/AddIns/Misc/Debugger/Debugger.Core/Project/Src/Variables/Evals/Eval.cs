@@ -22,6 +22,8 @@ namespace Debugger
 	{
 		NDebugger debugger;
 		
+		object debugeeStateIDatCreation;
+		
 		ICorDebugEval     corEval;
 		ICorDebugFunction corFunction;
 		ICorDebugValue[]  args;
@@ -73,6 +75,12 @@ namespace Debugger
 			}
 		}
 		
+		public bool HasExpired {
+			get {
+				return debugeeStateIDatCreation != debugger.DebugeeStateID;
+			}
+		}
+		
 		/// <summary>
 		/// The result of the evaluation. Always non-null, but it may be UnavailableValue.
 		/// </summary>
@@ -113,6 +121,7 @@ namespace Debugger
 			this.debugger = debugger;
 			this.corFunction = corFunction;
 			this.args = args;
+			this.debugeeStateIDatCreation = debugger.DebugeeStateID;
 		}
 		
 		/// <returns>True is setup was successful</returns>

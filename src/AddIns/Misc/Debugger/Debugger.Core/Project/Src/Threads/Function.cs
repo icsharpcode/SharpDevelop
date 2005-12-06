@@ -486,26 +486,30 @@ namespace Debugger
 			get {
 				foreach(MethodProps method in module.MetaData.EnumMethods(methodProps.ClassToken)) {
 					if (method.Name.StartsWith("get_") && method.HasSpecialName) {					
-						ICorDebugValue[] evalArgs;
-						ICorDebugFunction evalCorFunction;
-						Module.CorModule.GetFunctionFromToken(method.Token, out evalCorFunction);
-						if (IsStatic) {
-							evalArgs = new ICorDebugValue[0];
-						} else {
-							evalArgs = new ICorDebugValue[] {ThisValue.CorValue};
-						}
-						Eval eval = new Eval(debugger, evalCorFunction, evalArgs);
-						// Do not add evals if we just evaluated them, otherwise we get infinite loop
-						if (debugger.PausedReason != PausedReason.AllEvalsComplete) {
-							debugger.AddEval(eval);
-						}
 						yield return new PropertyVariable(debugger,
 						                                  method.Name.Remove(0, 4),
-						                                  delegate {return eval;});
+						                                  delegate {
+						                                  	return CreatePropertyEval(method);
+						                                  });
 					}
 				}
 			}
-		} 
+		}
+		
+		Eval CreatePropertyEval(MethodProps method)
+		{
+			ICorDebugValue[] evalArgs;
+			ICorDebugFunction evalCorFunction;
+			Module.CorModule.GetFunctionFromToken(method.Token, out evalCorFunction);
+			if (IsStatic) {
+				evalArgs = new ICorDebugValue[0];
+			} else {
+				evalArgs = new ICorDebugValue[] {ThisValue.CorValue};
+			}
+			Eval eval = new Eval(debugger, evalCorFunction, evalArgs);
+			debugger.AddEval(eval);
+			return eval;
+		}
 		
 		IEnumerable<Variable> GetLocalVariablesInScope(ISymbolScope symScope)
 		{

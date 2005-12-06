@@ -178,8 +178,6 @@ namespace Debugger
 			if (IsPaused) {
 				localVariables.Update();
 				this.StartEvaluation();
-				// Evaluation loop stoped by Function.GetPropertyVariables not adding evals
-				// And PropertyVariable not setting new value
 			}
 			
 			if (IsPaused) {

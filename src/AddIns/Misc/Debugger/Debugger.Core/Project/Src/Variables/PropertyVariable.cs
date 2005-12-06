@@ -35,7 +35,7 @@ namespace Debugger
 		
 		public Eval Eval {
 			get {
-				if (cachedEval == null || cachedEval.Result.IsExpired) {
+				if (cachedEval == null || cachedEval.HasExpired) {
 					cachedEval = evalCreator();
 					if (cachedEval == null) throw new DebuggerException("EvalGetter returned null");
 					cachedEval.EvalStarted += delegate { OnValueChanged(); };

@@ -77,6 +77,7 @@ namespace Debugger
 		
 		protected virtual void OnValueChanged()
 		{
+			cachedValue = null;
 			if (ValueChanged != null) {
 				ValueChanged(this, new VariableEventArgs(this));
 			}
