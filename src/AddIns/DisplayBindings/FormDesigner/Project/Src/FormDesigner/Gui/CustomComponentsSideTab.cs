@@ -10,6 +10,7 @@ using System.IO;
 using System.Windows.Forms;
 using System.Reflection;
 using System.Collections;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Drawing.Design;
 using System.ComponentModel;
@@ -33,7 +34,9 @@ namespace ICSharpCode.FormDesigner.Gui
 	{
 		ArrayList projectAssemblies = new ArrayList();
 		ArrayList referencedAssemblies = new ArrayList();
-
+		Dictionary<string, Assembly> loadedFiles = new Dictionary<string, Assembly>();
+		List<string> loadedProjects = new List<string>();
+		
 		static bool loadReferencedAssemblies = true;
 		
 		///<summary>Load an assembly's controls</summary>
@@ -45,14 +48,14 @@ namespace ICSharpCode.FormDesigner.Gui
 		}
 		
 		public static bool LoadReferencedAssemblies {
-			get { 
-				return loadReferencedAssemblies; 
+			get {
+				return loadReferencedAssemblies;
 			}
-			set { 
-				loadReferencedAssemblies = value; 
+			set {
+				loadReferencedAssemblies = value;
 			}
 		}
-
+		
 		string loadingPath = String.Empty;
 		
 		byte[] GetBytes(string fileName)
@@ -73,69 +76,54 @@ namespace ICSharpCode.FormDesigner.Gui
 			if (idx >= 0) {
 				file = file.Substring(0, idx);
 			}
-			try {
-				if (File.Exists(loadingPath + file + ".exe")) {
-					LoggingService.Debug("Form Designer: MyResolve: Load bytes from exe");
-					return Assembly.Load(GetBytes(loadingPath + file + ".exe"));
-				} 
-				if (File.Exists(loadingPath + file + ".dll")) {
-					LoggingService.Debug("Form Designer: MyResolve: Load bytes from dll");
-					return Assembly.Load(GetBytes(loadingPath + file + ".dll"));
-				} 
-				LoggingService.Info("Form Designer: MyResolve: did not find " + args.Name);
-			} catch (Exception ex) {
-				LoggingService.Warn("Form Designer: MyResolve: Can't load assembly", ex);
+			//search in other assemblies, this also help to avoid doubling of loaded assms
+			if (ProjectService.OpenSolution != null) {
+				foreach (IProject project in ProjectService.OpenSolution.Projects) {
+					if (project.AssemblyName == file)
+						return LoadAssemblyFile(project.OutputAssemblyFullPath, true);
+				}
 			}
+			
+			//skip already loaded
+			Assembly lastAssembly = null;
+			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
+				//LoggingService.Info("Assembly..." + asm.FullName);
+				if (asm.FullName == args.Name) {
+					lastAssembly = asm;
+				}
+			}
+			if (lastAssembly != null) {
+				LoggingService.Info("ICSharpAssemblyResolver found..." + args.Name);
+				return lastAssembly;
+			}
+			
 			return null;
 		}
-		
-//		public void ReloadProjectAssemblies(object sender, EventArgs e)
-//		{
-//			ScanProjectAssemblies();
-//			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(MyResolveEventHandler);
-//			try {
-//				Items.Clear();
-//				AddDefaultItem();
-//				foreach (string assemblyName in projectAssemblies) {
-//					if ((assemblyName.EndsWith("exe") || assemblyName.EndsWith("dll")) && File.Exists(assemblyName)) {
-//						loadingPath = Path.GetDirectoryName(assemblyName) + Path.DirectorySeparatorChar;
-//						try {
-//							if (loadReferencedAssemblies == true) {
-//								Assembly asm = Assembly.Load(Path.GetFileNameWithoutExtension(assemblyName));
-//								BuildToolboxFromAssembly(asm);
-//							}
-//						} catch (Exception ex) {
-//							Console.WriteLine("Error loading Assembly " + assemblyName + " : " + ex.ToString());
-//						}
-//					}
-//				}
-//				foreach (Assembly refAsm in referencedAssemblies) {
-//					try {
-//						BuildToolboxFromAssembly(refAsm);
-//					} catch (Exception ex) {
-//						Console.WriteLine("Error loading referenced Assembly " + refAsm + " : " + ex.ToString());
-//					}
-//				}
-//			} catch (Exception ex) {
-//				Console.WriteLine("GOT EXCEPTION : " + ex.ToString());
-//			} finally {
-//				AppDomain.CurrentDomain.AssemblyResolve -= new ResolveEventHandler(MyResolveEventHandler);
-//			}
-//			
-//			foreach (IViewContent content in WorkbenchSingleton.Workbench.ViewContentCollection) {
-//				FormDesignerDisplayBindingBase formDesigner = content.WorkbenchWindow.ActiveViewContent as FormDesignerDisplayBindingBase;
-//				if (formDesigner != null) {
-//					formDesigner.Control.Invoke(new ThreadStart(formDesigner.ReloadAndSelect), null);
-//				}
-//			}
-//		}
 		
 		Assembly LoadAssemblyFile(string assemblyName, bool nonLocking)
 		{
 			assemblyName = assemblyName.ToLower();
+			//skip already loaded over MyResolveEventHandler
+			if(loadedFiles.ContainsKey(assemblyName))
+				return loadedFiles[assemblyName];
 			if ((assemblyName.EndsWith("exe") || assemblyName.EndsWith("dll")) && File.Exists(assemblyName)) {
-				Assembly asm = nonLocking ? Assembly.Load(GetBytes(assemblyName)) : Assembly.LoadFrom(assemblyName); //Assembly.LoadFrom(assemblyName);
+				string fileAsmName = AssemblyName.GetAssemblyName(assemblyName).ToString();
+				Assembly asm;
+				
+				//skip already loaded
+				Assembly lastAssembly = null;
+				foreach (Assembly asmLoaded in AppDomain.CurrentDomain.GetAssemblies()) {
+					if (asmLoaded.FullName == fileAsmName) {
+						lastAssembly = asmLoaded;
+					}
+				}
+				if (lastAssembly != null) {
+					asm = lastAssembly;
+				} else {
+					asm = nonLocking ? Assembly.Load(GetBytes(assemblyName)) : Assembly.LoadFrom(assemblyName); //Assembly.LoadFrom(assemblyName);
+				}
 				if (asm != null) {
+					loadedFiles[assemblyName] = asm;
 					BuildToolboxFromAssembly(asm);
 				}
 				return asm;
@@ -143,37 +131,41 @@ namespace ICSharpCode.FormDesigner.Gui
 			return null;
 		}
 		
+		void LoadProject(IProject project)
+		{
+			string assemblyName = project.OutputAssemblyFullPath;
+			if(loadedProjects.Contains(assemblyName))
+				return;
+			loadedProjects.Add(assemblyName);
+			
+			foreach (ProjectItem projectItem in project.Items) {
+				ProjectReferenceProjectItem projectReferenceProjectItem = projectItem as ProjectReferenceProjectItem;
+				if(projectReferenceProjectItem != null)
+					LoadProject(projectReferenceProjectItem.ReferencedProject);
+			}
+			
+			loadingPath = Path.GetDirectoryName(assemblyName) + Path.DirectorySeparatorChar;
+			LoadAssemblyFile(assemblyName, true);
+		}
+		
 		void ScanProjectAssemblies()
 		{
 			projectAssemblies.Clear();
 			referencedAssemblies.Clear();
-
+			
+			loadedFiles.Clear();
+			loadedProjects.Clear();
+			
 			AppDomain.CurrentDomain.AssemblyResolve += new ResolveEventHandler(MyResolveEventHandler);
 			try {
-			
+				
 				// custom user controls don't need custom images
 				loadImages                     = false;
 				ITypeResolutionService typeResolutionService = ToolboxProvider.TypeResolutionService;
 				if (ProjectService.OpenSolution != null) {
 					foreach (IProject project in ProjectService.OpenSolution.Projects) {
-						string assemblyName = project.OutputAssemblyFullPath;
-						projectAssemblies.Add(assemblyName);
-						loadingPath = Path.GetDirectoryName(assemblyName) + Path.DirectorySeparatorChar;
-									
-						LoadAssemblyFile(assemblyName, true);
-						if (loadReferencedAssemblies == true) {
-// TODO: project system...							
-//							foreach (ProjectReference reference in projectEntry.Project.ProjectReferences) {
-//								if (reference.ReferenceType != ReferenceType.Gac && reference.ReferenceType != ReferenceType.Project) {
-//									assemblyName = reference.GetReferencedFileName(projectEntry.Project);
-//									loadingPath = Path.GetDirectoryName(assemblyName) + Path.DirectorySeparatorChar;
-//									Assembly asm = LoadAssemblyFile(assemblyName, true);
-//									if (asm != null) {
-//										referencedAssemblies.Add(asm);
-//									}
-//								}
-//							}
-						}
+						LoadProject(project);
+						projectAssemblies.Add(project.OutputAssemblyFullPath);
 					}
 				}
 			} catch (Exception e) {

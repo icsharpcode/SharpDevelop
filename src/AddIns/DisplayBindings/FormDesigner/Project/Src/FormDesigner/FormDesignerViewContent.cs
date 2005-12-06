@@ -62,7 +62,7 @@ namespace ICSharpCode.FormDesigner
 		IDesignerGenerator generator;
 		DesignerResourceService designerResourceService;
 		FormDesignerUndoEngine undoEngine;
-				
+		
 		public override Control Control {
 			get {
 				return p;
@@ -131,6 +131,7 @@ namespace ICSharpCode.FormDesigner
 			
 			serviceContainer.AddService(typeof(IHelpService), new HelpService());
 			serviceContainer.AddService(typeof(System.Drawing.Design.IPropertyValueUIService), new PropertyValueUIService());
+			
 			designerResourceService = new DesignerResourceService(viewContent.FileName, this.resources);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IResourceService), designerResourceService);
 			AmbientProperties ambientProperties = new AmbientProperties();
@@ -142,7 +143,7 @@ namespace ICSharpCode.FormDesigner
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
 			
 			designSurface = new DesignSurface(serviceContainer);
-						
+			
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormDesigner.Services.MenuCommandService(p, designSurface, serviceContainer));
 			ICSharpCode.FormDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormDesigner.Services.EventBindingService(designSurface);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
@@ -220,6 +221,19 @@ namespace ICSharpCode.FormDesigner
 					errorText.Text = e.Message;
 				else
 					errorText.Text = e.ToString();
+				//output loaderrors too
+				if(!designSurface.IsLoaded) {
+					errorText.Text += "\r\nDesignSurface not loaded :";
+					if(designSurface.LoadErrors != null) {
+						foreach(Exception le in designSurface.LoadErrors) {
+							errorText.Text += "\r\n";
+							errorText.Text += le.ToString();
+							errorText.Text += "\r\n";
+							errorText.Text += le.StackTrace;
+						}
+					}
+				}
+				
 				errorText.Dock = DockStyle.Fill;
 				p.Controls.Add(errorText);
 				Control title = new Label();
@@ -494,7 +508,7 @@ namespace ICSharpCode.FormDesigner
 			if (e.ChangedItem.GridItemType == GridItemType.Property) {
 				if (e.ChangedItem.PropertyDescriptor.Name == "Language") {
 					if (!e.OldValue.Equals(e.ChangedItem.Value)) {
-						LoggingService.Debug("Reloading designer due to language change.");	
+						LoggingService.Debug("Reloading designer due to language change.");
 						propertyContainer.Clear();
 						if (!failedDesignerInitialize) {
 							MergeFormChanges();

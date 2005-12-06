@@ -112,7 +112,21 @@ namespace ICSharpCode.FormDesigner
 		protected override void OnEndLoad(bool successful, ICollection errors)
 		{
 			this.loading = false;
-			base.OnEndLoad(successful, errors);
+			//when control's Dispose() has a exception and on loading also raised exception
+			//then this is only place where this error can be logged, because after errors is
+			//catched internally in .net
+			try {
+				base.OnEndLoad(successful, errors);
+			} catch(ExceptionCollection e) {
+				LoggingService.Error("DesignerLoader.OnEndLoad error" + e.Message);
+				foreach(Exception ine in e.Exceptions) {
+					LoggingService.Error("DesignerLoader.OnEndLoad error" + ine.Message);
+				}
+				throw;
+			} catch(Exception e) {
+				LoggingService.Error("DesignerLoader.OnEndLoad error" + e.Message);
+				throw;
+			}
 		}
 		
 		string lastTextContent;
@@ -192,7 +206,7 @@ namespace ICSharpCode.FormDesigner
 					TypeDeclaration td = o as TypeDeclaration;
 					if (td != null && td.Name == formDecl.Name) {
 						foreach (INode node in td.Children)
-									formDecl.AddChild(node);
+							formDecl.AddChild(node);
 						formDecl.BaseTypes.AddRange(td.BaseTypes);
 					}
 					if (o is NamespaceDeclaration) {

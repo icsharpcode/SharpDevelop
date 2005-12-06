@@ -37,35 +37,31 @@ namespace ICSharpCode.FormDesigner.Services
 			if (baseType != null) {
 				LoggingService.Debug("TypeDiscoveryService.GetTypes baseType=" + baseType.FullName);
 				LoggingService.Debug("TypeDiscoveryService.GetTypes excludeGlobalTypes=" + excludeGlobalTypes.ToString());
+				//seek in all assemblies
+				//allow to work designers like columns editor in datagridview
+				foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
+					AddDerivedTypes(baseType, asm, types);
+				}
 				
-				// TODO - Look in more than just System.Windows.Forms.  
+				// TODO - Don't look in all assemblies.
 				// Should use the current project and its referenced assemblies
 				// as well as System.Windows.Forms.
-				types.AddRange(GetDerivedTypesFromWindowsForms(baseType));	
 			}
 			
 			return types;
 		}
 		
 		/// <summary>
-		/// Gets the derived types from the System.Windows.Forms assembly.
+		/// Gets the types derived from baseType from the assembly and adds them to the list.
 		/// </summary>
-		IList<Type> GetDerivedTypesFromWindowsForms(Type baseType)
+		void AddDerivedTypes(Type baseType, Assembly assembly, IList<Type> list)
 		{
-			List<Type> types = new List<Type>();
-			
-			Assembly asm = typeof(System.Windows.Forms.Control).Assembly;
-			
-			foreach (Module m in asm.GetModules()) {
-				foreach (Type t in m.GetTypes()) {
-					if (t.IsSubclassOf(baseType)) {
-						LoggingService.Debug("TypeDiscoveryService.  Adding type=" + t.FullName);
-						types.Add(t);
-					}
+			foreach (Type t in assembly.GetExportedTypes()) {
+				if (t.IsSubclassOf(baseType)) {
+					LoggingService.Debug("TypeDiscoveryService.  Adding type=" + t.FullName);
+					list.Add(t);
 				}
 			}
-		
-			return types;
 		}
 	}
 }

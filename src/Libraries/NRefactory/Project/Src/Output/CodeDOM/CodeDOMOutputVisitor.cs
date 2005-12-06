@@ -24,7 +24,7 @@ namespace ICSharpCode.NRefactory.Parser
 		List<CodeVariableDeclarationStatement> variables = new List<CodeVariableDeclarationStatement>();
 		
 		TypeDeclaration currentTypeDeclaration = null;
-
+		
 		// dummy collection used to swallow statements
 		CodeStatementCollection NullStmtCollection = new CodeStatementCollection();
 		
@@ -93,7 +93,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 			return type;
 		}
-
+		
 		void AddStmt(CodeStatement stmt)
 		{
 			if (codeStack.Count == 0)
@@ -103,7 +103,7 @@ namespace ICSharpCode.NRefactory.Parser
 				stmtCollection.Add(stmt);
 			}
 		}
-
+		
 		void AddStmt(CodeExpression expr)
 		{
 			if (codeStack.Count == 0)
@@ -113,12 +113,12 @@ namespace ICSharpCode.NRefactory.Parser
 				stmtCollection.Add(expr);
 			}
 		}
-
+		
 		// FIXME: map all modifiers correctly
 		MemberAttributes ConvMemberAttributes(Modifier modifier)
 		{
 			MemberAttributes attr = (MemberAttributes)0;
-
+			
 			if ((modifier & Modifier.Abstract) != 0)
 				attr |=  MemberAttributes.Abstract;
 			if ((modifier & Modifier.Const) != 0)
@@ -147,7 +147,7 @@ namespace ICSharpCode.NRefactory.Parser
 			
 			return attr;
 		}
-
+		
 		#region ICSharpCode.SharpRefactory.Parser.IASTVisitor interface implementation
 		public override object Visit(CompilationUnit compilationUnit, object data)
 		{
@@ -266,9 +266,9 @@ namespace ICSharpCode.NRefactory.Parser
 			memberMethod.Attributes = ConvMemberAttributes(methodDeclaration.Modifier);
 			
 			codeStack.Push(memberMethod.Statements);
-
+			
 			typeDeclarations.Peek().Members.Add(memberMethod);
-
+			
 			// Add Method Parameters
 			foreach (ParameterDeclarationExpression parameter in methodDeclaration.Parameters)
 			{
@@ -277,21 +277,21 @@ namespace ICSharpCode.NRefactory.Parser
 			
 			variables.Clear();
 			methodDeclaration.Body.AcceptChildren(this, data);
-
+			
 			codeStack.Pop();
-
+			
 			return null;
 		}
 		
 		public override object Visit(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			CodeMemberMethod memberMethod = new CodeConstructor();
-
+			
 			codeStack.Push(memberMethod.Statements);
 			typeDeclarations.Peek().Members.Add(memberMethod);
 			constructorDeclaration.Body.AcceptChildren(this, data);
 			codeStack.Pop();
-
+			
 			return null;
 		}
 		
@@ -335,7 +335,7 @@ namespace ICSharpCode.NRefactory.Parser
 		public override object Visit(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
 			CodeVariableDeclarationStatement declStmt = null;
-
+			
 			for (int i = 0; i < localVariableDeclaration.Variables.Count; ++i) {
 				CodeTypeReference type = new CodeTypeReference(Convert(localVariableDeclaration.GetTypeForVariable(i)));
 				VariableDeclaration var = (VariableDeclaration)localVariableDeclaration.Variables[i];
@@ -350,16 +350,16 @@ namespace ICSharpCode.NRefactory.Parser
 				variables.Add(declStmt);
 				AddStmt(declStmt);
 			}
-
+			
 			return declStmt;
 		}
 		
 		public override object Visit(EmptyStatement emptyStatement, object data)
 		{
 			CodeSnippetStatement emptyStmt = new CodeSnippetStatement();
-
+			
 			AddStmt(emptyStmt);
-
+			
 			return emptyStmt;
 		}
 		
@@ -370,18 +370,18 @@ namespace ICSharpCode.NRefactory.Parser
 				returnStmt = new CodeMethodReturnStatement();
 			else
 				returnStmt = new CodeMethodReturnStatement((CodeExpression)returnStatement.Expression.AcceptVisitor(this,data));
-
+			
 			AddStmt(returnStmt);
-
+			
 			return returnStmt;
 		}
 		
 		public override object Visit(IfElseStatement ifElseStatement, object data)
 		{
 			CodeConditionStatement ifStmt = new CodeConditionStatement();
-
+			
 			ifStmt.Condition = (CodeExpression)ifElseStatement.Condition.AcceptVisitor(this, data);
-
+			
 			codeStack.Push(ifStmt.TrueStatements);
 			foreach (Statement stmt in ifElseStatement.TrueStatement) {
 				if (stmt is BlockStatement) {
@@ -391,7 +391,7 @@ namespace ICSharpCode.NRefactory.Parser
 				}
 			}
 			codeStack.Pop();
-
+			
 			codeStack.Push(ifStmt.FalseStatements);
 			foreach (Statement stmt in ifElseStatement.FalseStatement) {
 				if (stmt is BlockStatement) {
@@ -401,9 +401,9 @@ namespace ICSharpCode.NRefactory.Parser
 				}
 			}
 			codeStack.Pop();
-
+			
 			AddStmt(ifStmt);
-
+			
 			return ifStmt;
 		}
 		
@@ -415,7 +415,7 @@ namespace ICSharpCode.NRefactory.Parser
 				if (forStatement.Initializers.Count > 1) {
 					throw new NotSupportedException("CodeDom does not support Multiple For-Loop Initializer Statements");
 				}
-
+				
 				foreach (object o in forStatement.Initializers) {
 					if (o is Expression) {
 						forLoop.InitStatement = new CodeExpressionStatement((CodeExpression)((Expression)o).AcceptVisitor(this,data));
@@ -433,43 +433,43 @@ namespace ICSharpCode.NRefactory.Parser
 			} else {
 				forLoop.TestExpression = (CodeExpression)forStatement.Condition.AcceptVisitor(this, data);
 			}
-
+			
 			codeStack.Push(forLoop.Statements);
 			forStatement.EmbeddedStatement.AcceptVisitor(this, data);
 			codeStack.Pop();
-
+			
 			if (forStatement.Iterator.Count > 0) {
 				if (forStatement.Initializers.Count > 1) {
 					throw new NotSupportedException("CodeDom does not support Multiple For-Loop Iterator Statements");
 				}
-
+				
 				foreach (Statement stmt in forStatement.Iterator) {
 					forLoop.IncrementStatement = (CodeStatement)stmt.AcceptVisitor(this, data);
 				}
 			}
-
+			
 			AddStmt(forLoop);
-
+			
 			return forLoop;
 		}
 		
 		public override object Visit(LabelStatement labelStatement, object data)
 		{
 			System.CodeDom.CodeLabeledStatement labelStmt = new CodeLabeledStatement(labelStatement.Label,(CodeStatement)labelStatement.AcceptVisitor(this, data));
-
+			
 			// Add Statement to Current Statement Collection
 			AddStmt(labelStmt);
-
+			
 			return labelStmt;
 		}
 		
 		public override object Visit(GotoStatement gotoStatement, object data)
 		{
 			System.CodeDom.CodeGotoStatement gotoStmt = new CodeGotoStatement(gotoStatement.Label);
-
+			
 			// Add Statement to Current Statement Collection
 			AddStmt(gotoStmt);
-
+			
 			return gotoStmt;
 		}
 		
@@ -482,44 +482,44 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 			// add a try-catch-finally
 			CodeTryCatchFinallyStatement tryStmt = new CodeTryCatchFinallyStatement();
-
+			
 			codeStack.Push(tryStmt.TryStatements);
 			
 			tryCatchStatement.StatementBlock.AcceptChildren(this, data);
 			codeStack.Pop();
-
+			
 			if (!tryCatchStatement.FinallyBlock.IsNull) {
 				codeStack.Push(tryStmt.FinallyStatements);
 				
 				tryCatchStatement.FinallyBlock.AcceptChildren(this,data);
 				codeStack.Pop();
 			}
-
+			
 			foreach (CatchClause clause in tryCatchStatement.CatchClauses)
 			{
 				CodeCatchClause catchClause = new CodeCatchClause(clause.VariableName);
 				catchClause.CatchExceptionType = new CodeTypeReference(clause.TypeReference.Type);
 				tryStmt.CatchClauses.Add(catchClause);
-
+				
 				codeStack.Push(catchClause.Statements);
 				
 				clause.StatementBlock.AcceptChildren(this, data);
 				codeStack.Pop();
 			}
-
+			
 			// Add Statement to Current Statement Collection
 			AddStmt(tryStmt);
-
+			
 			return tryStmt;
 		}
 		
 		public override object Visit(ThrowStatement throwStatement, object data)
 		{
 			CodeThrowExceptionStatement throwStmt = new CodeThrowExceptionStatement((CodeExpression)throwStatement.Expression.AcceptVisitor(this, data));
-
+			
 			// Add Statement to Current Statement Collection
 			AddStmt(throwStmt);
-
+			
 			return throwStmt;
 		}
 		
@@ -657,7 +657,7 @@ namespace ICSharpCode.NRefactory.Parser
 		public override object Visit(UnaryOperatorExpression unaryOperatorExpression, object data)
 		{
 			CodeExpression var;
-
+			
 			switch (unaryOperatorExpression.Op) {
 				case UnaryOperatorType.Minus:
 					if (unaryOperatorExpression.Expression is PrimitiveExpression) {
@@ -685,43 +685,43 @@ namespace ICSharpCode.NRefactory.Parser
 					                                         (CodeExpression)unaryOperatorExpression.Expression.AcceptVisitor(this, data));
 				case UnaryOperatorType.Plus:
 					return unaryOperatorExpression.Expression.AcceptVisitor(this, data);
-
+					
 				case UnaryOperatorType.PostIncrement:
 					// emulate i++, with i = i + 1
 					var = (CodeExpression)unaryOperatorExpression.Expression.AcceptVisitor(this, data);
-
+					
 					return new CodeAssignStatement(var,
 					                               new CodeBinaryOperatorExpression(var,
 					                                                                CodeBinaryOperatorType.Add,
 					                                                                new CodePrimitiveExpression(1)));
-
+					
 				case UnaryOperatorType.PostDecrement:
 					// emulate i--, with i = i - 1
 					var = (CodeExpression)unaryOperatorExpression.Expression.AcceptVisitor(this, data);
-
+					
 					return new CodeAssignStatement(var,
 					                               new CodeBinaryOperatorExpression(var,
 					                                                                CodeBinaryOperatorType.Subtract,
 					                                                                new CodePrimitiveExpression(1)));
-
+					
 				case UnaryOperatorType.Decrement:
 					// emulate --i, with i = i - 1
 					var = (CodeExpression)unaryOperatorExpression.Expression.AcceptVisitor(this, data);
-
+					
 					return new CodeAssignStatement(var,
 					                               new CodeBinaryOperatorExpression(var,
 					                                                                CodeBinaryOperatorType.Subtract,
 					                                                                new CodePrimitiveExpression(1)));
-
+					
 				case UnaryOperatorType.Increment:
 					// emulate ++i, with i = i + 1
 					var = (CodeExpression)unaryOperatorExpression.Expression.AcceptVisitor(this, data);
-
+					
 					return new CodeAssignStatement(var,
 					                               new CodeBinaryOperatorExpression(var,
 					                                                                CodeBinaryOperatorType.Add,
 					                                                                new CodePrimitiveExpression(1)));
-
+					
 			}
 			return null;
 		}
@@ -839,19 +839,13 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		bool IsFieldReferenceExpression(FieldReferenceExpression fieldReferenceExpression)
 		{
-			if (fieldReferenceExpression.TargetObject is ThisReferenceExpression) {
-				foreach (object o in this.currentTypeDeclaration.Children) {
-					if (o is FieldDeclaration) {
-						FieldDeclaration fd = (FieldDeclaration)o;
-						foreach (VariableDeclaration field in fd.Fields) {
-							if (fieldReferenceExpression.FieldName == field.Name) {
-								return true;
-							}
-						}
-					}
-				}
+			if (fieldReferenceExpression.TargetObject is ThisReferenceExpression
+			    || fieldReferenceExpression.TargetObject is BaseReferenceExpression)
+			{
+				//field detection for fields\props inherited from base classes
+				return IsField(fieldReferenceExpression.FieldName);
 			}
-			return false; //Char.IsLower(fieldReferenceExpression.FieldName[0]);
+			return false;
 		}
 		
 		public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)
@@ -917,11 +911,16 @@ namespace ICSharpCode.NRefactory.Parser
 					}
 				}
 			}
+			//field detection for fields\props inherited from base classes
+			if (currentTypeDeclaration.BaseTypes.Count > 0) {
+				return IsField(currentTypeDeclaration.BaseTypes[0].ToString(), identifier);
+			}
 			return false;
 		}
 		
 		CodeTypeReferenceExpression ConvertToTypeReference(FieldReferenceExpression fieldReferenceExpression)
 		{
+			FieldReferenceExpression primaryReferenceExpression = fieldReferenceExpression;
 			StringBuilder type = new StringBuilder("");
 			
 			while (fieldReferenceExpression.TargetObject is FieldReferenceExpression) {
@@ -971,17 +970,48 @@ namespace ICSharpCode.NRefactory.Parser
 			return list;
 		}
 		
-		Type GetType(string typeName)
+		//copy from TypeResolutionService.cs because from this point impossible to access TypeResolutionService
+		//TODO create universal way for getting types
+		public Type GetType(string name)
 		{
-			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies())
-			{
-				Type type = asm.GetType(typeName);
-				if (type != null)
-				{
-					return type;
+			bool throwOnError = false;
+			bool ignoreCase = false;
+			if (name == null || name.Length == 0) {
+				return null;
+			}
+			Assembly lastAssembly = null;
+			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
+				Type t = asm.GetType(name, throwOnError);
+				if (t != null) {
+					lastAssembly = asm;
 				}
 			}
-			return Type.GetType(typeName);
+			if (lastAssembly != null) {
+				return lastAssembly.GetType(name, throwOnError, ignoreCase);
+			}
+			
+			Type type = Type.GetType(name, throwOnError, ignoreCase);
+			
+			// type lookup for typename, assembly, xyz style lookups
+			if (type == null) {
+				int idx = name.IndexOf(",");
+				if (idx > 0) {
+					string[] splitName = name.Split(',');
+					string typeName     = splitName[0];
+					string assemblyName = splitName[1].Substring(1);
+					Assembly assembly = null;
+					try {
+						assembly = Assembly.Load(assemblyName);
+					} catch (Exception) {}
+					if (assembly != null) {
+						type = assembly.GetType(typeName, throwOnError, ignoreCase);
+					} else {
+						type = Type.GetType(typeName, throwOnError, ignoreCase);
+					}
+				}
+			}
+			
+			return type;
 		}
 	}
 }

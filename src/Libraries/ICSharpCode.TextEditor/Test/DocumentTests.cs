@@ -9,7 +9,7 @@ using System;
 using NUnit.Framework;
 using ICSharpCode.TextEditor.Document;
 
-namespace ICSharpCode.TextEditor.Test.Tests
+namespace ICSharpCode.TextEditor.Tests
 {
 	[TestFixture]
 	public class DocumentAggregatorTests

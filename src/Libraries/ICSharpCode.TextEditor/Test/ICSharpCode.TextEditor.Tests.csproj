@@ -5,8 +5,8 @@
     <ProductVersion>8.0.41115</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{6259D767-BA7C-484D-9472-68F350A20086}</ProjectGuid>
-    <RootNamespace>ICSharpCode.TextEditor.Test</RootNamespace>
-    <AssemblyName>ICSharpCode.TextEditor.Test</AssemblyName>
+    <RootNamespace>ICSharpCode.TextEditor.Tests</RootNamespace>
+    <AssemblyName>ICSharpCode.TextEditor.Tests</AssemblyName>
     <OutputTarget>Library</OutputTarget>
     <WarningLevel>4</WarningLevel>
     <NoStdLib>False</NoStdLib>

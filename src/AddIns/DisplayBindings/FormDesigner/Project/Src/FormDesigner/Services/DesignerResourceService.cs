@@ -28,7 +28,7 @@ namespace ICSharpCode.FormDesigner.Services
 		IDesignerHost host;
 		
 		string FileName  = String.Empty;
-		
+	
 		#region ResourceStorage
 		public class ResourceStorage
 		{
@@ -129,7 +129,7 @@ namespace ICSharpCode.FormDesigner.Services
 			Resx = 0,
 			Resources = 1
 		};
-		
+
 		// In ResourceMemoryStreams are stored:
 		// Key: "true" file names from the project
 		// Value: ResourceStorage, where the resources are stored
@@ -157,13 +157,13 @@ namespace ICSharpCode.FormDesigner.Services
 				host = value;
 			}
 		}
-		
+
 		public DesignerResourceService(string fileName, Dictionary<string, ResourceStorage> resources)
 		{
 			this.FileName = fileName;
 			this.resources = resources;
 		}
-		
+
 		IProject _project;
 		
 		IProject GetProject()
@@ -192,7 +192,7 @@ namespace ICSharpCode.FormDesigner.Services
 				return null;
 			}
 		}
-		
+
 		public System.Resources.IResourceReader GetResourceReader(System.Globalization.CultureInfo info)
 		{
 			try {

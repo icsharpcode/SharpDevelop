@@ -13,6 +13,8 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.NRefactory.Parser;
+using ICSharpCode.FormDesigner.Services;
+using System.ComponentModel.Design;
 
 namespace ICSharpCode.FormDesigner
 {
@@ -30,7 +32,7 @@ namespace ICSharpCode.FormDesigner
 			}
 			return null;
 		}
-		
+
 		public static bool BaseClassIsFormOrControl(IClass c)
 		{
 			// Simple test for fully qualified name
@@ -44,21 +46,26 @@ namespace ICSharpCode.FormDesigner
 					return true;
 				}
 			}
+			
+			IClass form = ProjectContentRegistry.WinForms.GetClass("System.Windows.Forms.Form");
+			IClass userControl = ProjectContentRegistry.WinForms.GetClass("System.Windows.Forms.UserControl");
+			if (form != null && c.IsTypeInInheritanceTree(form))
+				return true;
+			if (userControl != null && c.IsTypeInInheritanceTree(userControl))
+				return true;
 			return false;
 		}
-		
+
 		public static bool IsDesignable(ParseInformation info)
 		{
 			if (info != null) {
 				ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
 				foreach (IClass c in cu.Classes) {
-					if (BaseClassIsFormOrControl(c)) {
-						IMethod method = GetInitializeComponents(c);
-						if (method == null) {
-							return false;
-						}
-						return true;
+					IMethod method = GetInitializeComponents(c);
+					if (method == null) {
+						return false;
 					}
+					return BaseClassIsFormOrControl(c);
 				}
 			}
 			return false;
@@ -79,6 +86,7 @@ namespace ICSharpCode.FormDesigner
 					case ".cs":
 					case ".vb":
 						ParseInformation info = ParserService.ParseFile(fileName, textAreaControlProvider.TextEditorControl.Document.TextContent, false, true);
+						
 						if (IsDesignable(info))
 							return true;
 						break;

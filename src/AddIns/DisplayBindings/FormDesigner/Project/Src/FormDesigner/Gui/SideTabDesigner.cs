@@ -10,7 +10,7 @@
  * 
  * Project : FormDesigner Loading Library Control.
  * 
- * Source code altering : A1 
+ * Source code altering : A1
  * 
  * Description : Creation of the SideTabDesigner which load controls from an assembly
  * 				 Use for FromDesigner.
@@ -126,69 +126,69 @@ namespace ICSharpCode.FormDesigner.Gui
 			string[] imgNames = assembly.GetManifestResourceNames();
 			
 			foreach (string im in imgNames) {
-				try {
-					Stream stream = assembly.GetManifestResourceStream(im);
-					if (stream != null) {
-						Bitmap b = new Bitmap(Image.FromStream(stream));
-						b.MakeTransparent();
-						images[im] = il.Images.Count;
-						il.Images.Add(b);
-						stream.Close();
+				if (!im.EndsWith(".resources")) //load resources only to avoid exception on debugging
+				{
+					try {
+						Stream stream = assembly.GetManifestResourceStream(im);
+						if (stream != null) {
+							Bitmap b = new Bitmap(Image.FromStream(stream, true, false));
+							b.MakeTransparent();
+							images[im] = il.Images.Count;
+							il.Images.Add(b);
+							stream.Close();
+						}
+					} catch (Exception e) {
+						LoggingService.Warn("Form Designer: GetToolboxItemsFromAssembly", e);
 					}
-				} catch (Exception e) {
-					LoggingService.Warn("Form Designer: GetToolboxItemsFromAssembly", e);
 				}
 			}
-			Module[] ms = assembly.GetModules(false);
-			foreach (Module m in ms) {
-				
-				Type[] ts = m.GetTypes();
-				foreach (Type t in ts) {
-					if (t.IsPublic && !t.IsAbstract) {
-						if (t.IsDefined(typeof(ToolboxItemFilterAttribute), true) || t.IsDefined(typeof(ToolboxItemAttribute), true) || t.IsDefined(typeof(DesignTimeVisibleAttribute), true)  || typeof(System.ComponentModel.IComponent).IsAssignableFrom(t)) {
-							
-							object[] filterAttrs = t.GetCustomAttributes(typeof(DesignTimeVisibleAttribute), true);
-							foreach (DesignTimeVisibleAttribute visibleAttr in filterAttrs) {
-								if (!visibleAttr.Visible) {
-									goto skip;
-								}
+			Type[] ts = assembly.GetExportedTypes();
+			foreach (Type t in ts) {
+				if (t.IsPublic && !t.IsAbstract) {
+					if (t.IsDefined(typeof(ToolboxItemFilterAttribute), true) || t.IsDefined(typeof(ToolboxItemAttribute), true) || t.IsDefined(typeof(DesignTimeVisibleAttribute), true)  || typeof(System.ComponentModel.IComponent).IsAssignableFrom(t)) {
+						
+						object[] filterAttrs = t.GetCustomAttributes(typeof(DesignTimeVisibleAttribute), true);
+						foreach (DesignTimeVisibleAttribute visibleAttr in filterAttrs) {
+							if (!visibleAttr.Visible) {
+								goto skip;
 							}
-							string imageName = String.Concat(t.FullName, ".bmp");
-							if (images[imageName] == null) {
-								object[] attributes = t.GetCustomAttributes(false);
-								if (t.IsDefined(typeof(ToolboxBitmapAttribute), false)) {
-									foreach (object attr in attributes) {
-										if (attr is ToolboxBitmapAttribute) {
-											ToolboxBitmapAttribute toolboxBitmapAttribute = (ToolboxBitmapAttribute)attr;
-											Bitmap b = new Bitmap(toolboxBitmapAttribute.GetImage(t));
-											b.MakeTransparent();
-											il.Images.Add(b);
-											images[imageName] =b;
-											break;
-										}
+						}
+						string imageName = String.Concat(t.FullName, ".bmp");
+						if (images[imageName] == null) {
+							object[] attributes = t.GetCustomAttributes(false);
+							if (t.IsDefined(typeof(ToolboxBitmapAttribute), false)) {
+								foreach (object attr in attributes) {
+									if (attr is ToolboxBitmapAttribute) {
+										ToolboxBitmapAttribute toolboxBitmapAttribute = (ToolboxBitmapAttribute)attr;
+										Bitmap b = new Bitmap(toolboxBitmapAttribute.GetImage(t));
+										b.MakeTransparent();
+										il.Images.Add(b);
+										images[imageName] =b;
+										break;
 									}
 								}
 							}
-							
-							ToolboxItem item = new ToolboxItem(t);
-							
-							if (images[imageName] != null) {
-								try {
-									item.Bitmap = (Bitmap)images[imageName];
-								} catch (Exception ex) {
-									MessageService.ShowError(ex, "Exception converting bitmap : " + images[imageName] + " : ");
-								}
-							}
-							toolBoxItems.Add(item);
-							
-							skip:;
 						}
+
+						ToolboxItem item = new ToolboxItem(t);
+
+						if (images[imageName] != null) {
+							try {
+								if(images[imageName] is Bitmap)
+									item.Bitmap = (Bitmap)images[imageName];
+							} catch (Exception ex) {
+								MessageService.ShowError(ex, "Exception converting bitmap : " + images[imageName] + " : ");
+							}
+						}
+						toolBoxItems.Add(item);
+
+						skip:;
 					}
 				}
 			}
 			return toolBoxItems;
 		}
-			
+		
 		void SelectedTabItemChanged(object sender, EventArgs e)
 		{
 			AxSideTabItem item = (sender as AxSideTab).ChoosedItem;
