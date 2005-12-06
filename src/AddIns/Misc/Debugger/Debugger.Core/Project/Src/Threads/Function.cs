@@ -416,7 +416,7 @@ namespace Debugger
 		public IEnumerable<Variable> ContaingClassVariables {
 			get {
 				if (!IsStatic) {
-					foreach(Variable var in ThisValue.SubVariables) {
+					foreach(Variable var in ThisValue.GetSubVariables(delegate{return ThisValue;})) {
 						yield return var;
 					}
 				}

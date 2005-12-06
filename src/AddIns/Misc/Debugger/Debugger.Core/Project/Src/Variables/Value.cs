@@ -74,15 +74,26 @@ namespace Debugger
 			get;
 		}
 		
-		public virtual IEnumerable<Variable> SubVariables {
-			get {
-				yield break;
-			}
+		/// <summary>
+		/// Gets the subvariables of this value
+		/// </summary>
+		/// <param name="getter">Delegate that will be called to get the up-to-date value</param>
+		public virtual IEnumerable<Variable> GetSubVariables(ValueGetter getter)
+		{
+			yield break;
+		}
+		
+		/// <summary>
+		/// Gets whether the given value is equivalent to this one. (ie it is may be just its other instance)
+		/// </summary>
+		public virtual bool IsEquivalentValue(Value val)
+		{
+			return val.GetType() == this.GetType();
 		}
 		
 		public Variable this[string variableName] {
 			get {
-				foreach(Variable v in SubVariables) {
+				foreach(Variable v in GetSubVariables(delegate{return this;})) {
 					if (v.Name == variableName) return v;
 				}
 				throw new DebuggerException("Subvariable " + variableName + " does not exist");

@@ -120,40 +120,39 @@ namespace Debugger
 			}
 		}
 		
-		public override IEnumerable<Variable> SubVariables {
-			get {
-				if (HasBaseClass) {
-					yield return BaseClassVariable;
-				}
-				
-				// Current frame is necessary to resolve context specific static values (eg. ThreadStatic)
-				ICorDebugFrame curFrame;
-				if (debugger.CurrentThread == null || debugger.CurrentThread.LastFunction == null || debugger.CurrentThread.LastFunction.CorILFrame == null) {
-					curFrame = null;
-				} else {
-					curFrame = debugger.CurrentThread.LastFunction.CorILFrame;
-				}
-				
-				foreach(FieldProps field in metaData.EnumFields(classProps.Token)) {
-					Variable var;
-					try {
-						ICorDebugValue fieldValue;
-						if (field.IsStatic) {
-							if (field.IsLiteral) continue; // Try next field
-							
-							corClass.GetStaticFieldValue(field.Token, curFrame, out fieldValue);
-						} else {
-							if (corValue == null) continue; // Try next field
-							
-							((ICorDebugObjectValue)corValue).GetFieldValue(corClass, field.Token, out fieldValue);
-						}
+		public override IEnumerable<Variable> GetSubVariables(ValueGetter getter)
+		{
+			if (HasBaseClass) {
+				yield return BaseClassVariable;
+			}
+			
+			// Current frame is necessary to resolve context specific static values (eg. ThreadStatic)
+			ICorDebugFrame curFrame;
+			if (debugger.CurrentThread == null || debugger.CurrentThread.LastFunction == null || debugger.CurrentThread.LastFunction.CorILFrame == null) {
+				curFrame = null;
+			} else {
+				curFrame = debugger.CurrentThread.LastFunction.CorILFrame;
+			}
+			
+			foreach(FieldProps field in metaData.EnumFields(classProps.Token)) {
+				Variable var;
+				try {
+					ICorDebugValue fieldValue;
+					if (field.IsStatic) {
+						if (field.IsLiteral) continue; // Try next field
 						
-						var = new Variable(debugger, fieldValue, field.Name);
-					} catch {
-						var = new Variable(new UnavailableValue(debugger), field.Name);
+						corClass.GetStaticFieldValue(field.Token, curFrame, out fieldValue);
+					} else {
+						if (corValue == null) continue; // Try next field
+						
+						((ICorDebugObjectValue)corValue).GetFieldValue(corClass, field.Token, out fieldValue);
 					}
-					yield return var;
+					
+					var = new Variable(debugger, fieldValue, field.Name);
+				} catch {
+					var = new Variable(new UnavailableValue(debugger), field.Name);
 				}
+				yield return var;
 			}
 		}
 		

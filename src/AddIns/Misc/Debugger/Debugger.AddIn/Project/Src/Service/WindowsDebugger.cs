@@ -251,7 +251,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			DynamicTreeDebuggerRow row = (DynamicTreeDebuggerRow) sender;
 			row.ChildRows.Clear();
-			foreach(Variable variable in row.Variable.Value.SubVariables) {
+			foreach(Variable variable in row.Variable.SubVariables) {
 				DynamicTreeDebuggerRow newRow = new DynamicTreeDebuggerRow(variable);
 				DebuggerGridControl.AddColumns(newRow.ChildColumns);
 				newRow.Expanding += TooltipControlRowExpanding;

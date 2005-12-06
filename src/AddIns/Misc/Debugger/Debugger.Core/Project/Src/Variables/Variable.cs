@@ -11,7 +11,7 @@ using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {
-	public delegate Value ValueUpdatingEventHandler();
+	public delegate Value ValueGetter();
 	
 	public class Variable: RemotingObjectBase
 	{
@@ -21,7 +21,7 @@ namespace Debugger
 		Value val;
 		VariableCollection subVariables;
 		
-		event ValueUpdatingEventHandler updating;
+		event ValueGetter updating;
 		
 		public event EventHandler<VariableEventArgs> ValueChanged;
 		public event EventHandler<VariableCollectionEventArgs> ValueRemovedFromCollection;
@@ -94,11 +94,7 @@ namespace Debugger
 		
 		void OnSubVariablesUpdating(object sender, VariableCollectionEventArgs e)
 		{
-			VariableCollection newVariables = new VariableCollection(debugger);
-			foreach(Variable v in Value.SubVariables) {
-				newVariables.Add(v);
-			}
-			subVariables.UpdateTo(newVariables);
+			subVariables.UpdateTo(Value.GetSubVariables(delegate{return this.Value;}));
 		}
 		
 		protected internal virtual void OnValueRemovedFromCollection(VariableCollectionEventArgs e) {
@@ -112,7 +108,7 @@ namespace Debugger
 			
 		}
 		
-		public Variable(NDebugger debugger, string name, ValueUpdatingEventHandler updating):this(debugger, null, name, updating)
+		public Variable(NDebugger debugger, string name, ValueGetter updating):this(debugger, null, name, updating)
 		{
 			
 		}
@@ -122,7 +118,7 @@ namespace Debugger
 			
 		}
 		
-		Variable(NDebugger debugger, Value val, string name, ValueUpdatingEventHandler updating)
+		Variable(NDebugger debugger, Value val, string name, ValueGetter updating)
 		{
 			this.debugger = debugger;
 			if (val != null) {

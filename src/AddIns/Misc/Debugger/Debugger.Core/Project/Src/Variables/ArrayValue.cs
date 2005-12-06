@@ -88,49 +88,72 @@ namespace Debugger
 				return this[new uint[] {index1, index2, index3}];
 			}
 		}
-
-		public unsafe Variable this[uint[] indices] {
+		
+		public Variable this[uint[] indices] {
 			get {
-				if (indices.Length != rank) throw new DebuggerException("Given indicies does not match array size.");
-
-				string elementName = "[";
-				for (int i = 0; i < indices.Length; i++)
-					elementName += indices[i].ToString() + ",";
-				elementName = elementName.TrimEnd(new char[] {','}) + "]";
-
-				ICorDebugValue element;
-				fixed (void* pIndices = indices)
-					corArrayValue.GetElement(rank, new IntPtr(pIndices), out element);
-
-				return new Variable(debugger, element, elementName);
+				return GetItem(indices, delegate {return this;});
 			}
 		}
-
+		
+		Variable GetItem(uint[] indices, ValueGetter getter)
+		{
+			if (indices.Length != rank) throw new DebuggerException("Given indicies does not match array size.");
+			
+			string elementName = "[";
+			for (int i = 0; i < indices.Length; i++)
+				elementName += indices[i].ToString() + ",";
+			elementName = elementName.TrimEnd(new char[] {','}) + "]";
+			
+			return new Variable(debugger,
+			                    elementName,
+			                    delegate {
+			                    	ArrayValue updatedVal = getter() as ArrayValue;
+			                    	if (this.IsEquivalentValue(updatedVal)) {
+			                    		ICorDebugValue element;
+			                    		unsafe {
+			                    			fixed (void* pIndices = indices) {
+			                    				updatedVal.corArrayValue.GetElement(rank, new IntPtr(pIndices), out element);
+			                    			}
+			                    		}
+			                    		return Value.CreateValue(debugger, element);
+			                    	} else {
+			                    		return new UnavailableValue(debugger, "Value is not array");
+			                    	}
+			                    });
+		}
+		
 		public override bool MayHaveSubVariables {
 			get {
 				return true;
 			}
 		}
 		
-		public override IEnumerable<Variable> SubVariables {
-			get {
-				uint[] indices = new uint[rank];
+		public override IEnumerable<Variable> GetSubVariables(ValueGetter getter)
+		{
+			uint[] indices = new uint[rank];
+			
+			while(true) { // Go thought all combinations
+				for (uint i = rank - 1; i >= 1; i--)
+					if (indices[i] >= dimensions[i])
+					{
+						indices[i] = 0;
+						indices[i-1]++;
+					}
+				if (indices[0] >= dimensions[0]) break; // We are done
 				
-				for(;;) // Go thought all combinations
-				{
-					for (uint i = rank - 1; i >= 1; i--)
-						if (indices[i] >= dimensions[i])
-						{
-							indices[i] = 0;
-							indices[i-1]++;
-						}
-					if (indices[0] >= dimensions[0]) break; // We are done
-					
-					yield return this[indices];
-					
-					indices[rank - 1]++;
-				}
+				yield return GetItem(indices, getter);
+				
+				indices[rank - 1]++;
 			}
+		}
+		
+		public override bool IsEquivalentValue(Value val)
+		{
+			ArrayValue arrayVal = val as ArrayValue;
+			return arrayVal != null &&
+			       arrayVal.ElementsType == this.ElementsType &&
+			       arrayVal.Lenght == this.Lenght &&
+			       arrayVal.Rank == this.Rank;
 		}
 	}
 }

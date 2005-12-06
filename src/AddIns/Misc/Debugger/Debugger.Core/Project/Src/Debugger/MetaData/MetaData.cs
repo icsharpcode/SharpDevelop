@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -85,11 +85,9 @@ namespace Debugger
 
 			return typeRefProps;
 		}
-
-		public IList<FieldProps> EnumFields(uint typeToken)
+		
+		public IEnumerable<FieldProps> EnumFields(uint typeToken)
 		{
-			List<FieldProps> fields = new List<FieldProps>();
-
 			IntPtr enumerator = IntPtr.Zero;
 			while (true) {
 				uint fieldToken;
@@ -99,10 +97,8 @@ namespace Debugger
 					metaData.CloseEnum(enumerator);
 					break;
 				}
-				fields.Add(GetFieldProps(fieldToken));
+				yield return GetFieldProps(fieldToken);
 			}
-
-			return fields;
 		}
 
 		public FieldProps GetFieldProps(uint fieldToken)
@@ -147,11 +143,9 @@ namespace Debugger
 
 			return fieldProps;
 		}
-
-		public IList<MethodProps> EnumMethods(uint typeToken)
+		
+		public IEnumerable<MethodProps> EnumMethods(uint typeToken)
 		{
-			IList<MethodProps> methods = new List<MethodProps>();
-
 			IntPtr enumerator = IntPtr.Zero;
 			while(true) {
 				uint methodToken;
@@ -161,10 +155,8 @@ namespace Debugger
 					metaData.CloseEnum(enumerator);
 					break;
 				}
-				methods.Add(GetMethodProps(methodToken));
+				yield return GetMethodProps(methodToken);
 			}
-
-			return methods;
 		}
 
 		public unsafe MethodProps GetMethodProps(uint methodToken)

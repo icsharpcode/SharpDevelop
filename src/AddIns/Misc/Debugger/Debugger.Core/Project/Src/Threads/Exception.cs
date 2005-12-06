@@ -78,19 +78,13 @@ namespace Debugger
 			
 			type = runtimeValue.Type;
 		}
-	
-		public override string ToString() {
-			return "Exception data:\n" + runtimeValue.ToString() + "\n" +
-			       "---------------\n" +
-			       runtimeValueException.SubVariables.ToString();
-		}
-	
-	    public string Type {
+		
+		public string Type {
 			get {
 				return type;
 			}
 		}
-	
+		
 		public string Message {
 			get {
 				return message;
