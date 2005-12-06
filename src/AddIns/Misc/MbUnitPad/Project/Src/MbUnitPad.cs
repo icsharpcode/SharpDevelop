@@ -139,6 +139,9 @@ namespace ICSharpCode.MbUnitPad
 					ReferenceProjectItem reference = item as ReferenceProjectItem;
 					if (reference != null) {
 						string include = reference.Include;
+						if (reference is ProjectReferenceProjectItem) {
+							include = ((ProjectReferenceProjectItem)reference).ProjectName;
+						}
 						if (include.IndexOf(',') > 0) {
 							include = include.Substring(0, include.IndexOf(','));
 						}

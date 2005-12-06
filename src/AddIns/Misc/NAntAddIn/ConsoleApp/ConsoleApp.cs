@@ -13,7 +13,7 @@ using System.Threading;
 
 namespace ICSharpCode.NAntAddIn.Tests.ConsoleApp
 {
-	class ConsoleApp
+	public class ConsoleApp
 	{
 		/// <summary>
 		/// Command line argument telling the app to echo the parameter text

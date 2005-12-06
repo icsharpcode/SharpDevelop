@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.IO;
 using System.Configuration;
 
 namespace ICSharpCode.NAntAddIn.Tests
@@ -20,12 +21,12 @@ namespace ICSharpCode.NAntAddIn.Tests
 		}
 		
 		/// <summary>
-		/// Gets the console app exe we are going to use to test the 
+		/// Gets the console app exe we are going to use to test the
 		/// ProcessRunner.
 		/// </summary>
 		public static string ConsoleAppFilename	{
 			get	{
-				return ConfigurationManager.AppSettings["ConsoleApp"];
+				return typeof(ICSharpCode.NAntAddIn.Tests.ConsoleApp.ConsoleApp).Assembly.Location;
 			}
 		}
 	}
