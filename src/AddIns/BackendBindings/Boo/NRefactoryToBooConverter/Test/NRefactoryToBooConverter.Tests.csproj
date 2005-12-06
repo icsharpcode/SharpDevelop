@@ -20,7 +20,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="nunit.framework" />
     <Reference Include="Boo.Lang.Compiler">
       <HintPath>..\..\RequiredLibraries\Boo.Lang.Compiler.dll</HintPath>
       <SpecificVersion>False</SpecificVersion>
@@ -47,6 +46,11 @@
     <ProjectReference Include="..\Project\NRefactoryToBooConverter.csproj">
       <Project>{DBCF20A1-BA13-4582-BFA9-74DE4D987B73}</Project>
       <Name>NRefactoryToBooConverter</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\..\Libraries\NUnit.Framework\nunit.framework.dll.csproj">
+      <Project>{83DD7E12-A705-4DBA-9D71-09C8973D9382}</Project>
+      <Name>nunit.framework.dll</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

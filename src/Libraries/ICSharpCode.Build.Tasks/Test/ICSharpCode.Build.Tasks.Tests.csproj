@@ -35,7 +35,6 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Xml" />
-    <Reference Include="MbUnit.Framework, Version=2.24.0.0, Culture=neutral, PublicKeyToken=5e72ecd30bc408d5" />
     <Reference Include="Microsoft.Build.Utilities, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.Build.Framework, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
     <Reference Include="Microsoft.Build.Tasks, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
@@ -50,6 +49,11 @@
     <ProjectReference Include="..\Project\ICSharpCode.Build.Tasks.csproj">
       <Project>{4139CCF6-FB49-4A9D-B2CF-331E9EA3198D}</Project>
       <Name>ICSharpCode.Build.Tasks</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\NUnit.Framework\nunit.framework.dll.csproj">
+      <Project>{83DD7E12-A705-4DBA-9D71-09C8973D9382}</Project>
+      <Name>nunit.framework.dll</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

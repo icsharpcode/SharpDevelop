@@ -39,7 +39,6 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
-    <Reference Include="nunit.framework" />
     <Reference Include="System.Configuration" />
   </ItemGroup>
   <ItemGroup>
@@ -80,6 +79,11 @@
     <ProjectReference Include="..\Project\NAntAddIn.csproj">
       <Project>{1DB3CAD2-38E8-4C5E-8E1B-0E37B1A5C006}</Project>
       <Name>NAntAddIn</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Libraries\NUnit.Framework\nunit.framework.dll.csproj">
+      <Project>{83DD7E12-A705-4DBA-9D71-09C8973D9382}</Project>
+      <Name>nunit.framework.dll</Name>
+      <Private>False</Private>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />

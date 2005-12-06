@@ -64,6 +64,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
+		string AssemblyName {
+			get;
+		}
+		
 		string OutputAssemblyFullPath {
 			get;
 		}

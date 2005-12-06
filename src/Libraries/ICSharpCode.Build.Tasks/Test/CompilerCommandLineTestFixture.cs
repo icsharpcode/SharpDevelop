@@ -6,7 +6,7 @@
 // </file>
 
 using ICSharpCode.Build.Tasks;
-using MbUnit.Framework;
+using NUnit.Framework;
 using Microsoft.Build.Utilities;
 using System;
 using System.Collections.Generic;

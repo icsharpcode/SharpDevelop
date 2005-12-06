@@ -149,16 +149,16 @@ namespace NRefactoryToBooConverter
 		/// <summary>
 		/// Make a loop:
 		/// $initializers
-		/// goto ___converterGeneratedName#
+		/// goto converterGeneratedName#
 		/// while true:
 		///     $iterators
-		///     :___converterGeneratedName#
+		///     :converterGeneratedName#
 		///     break $conditionType $condition
 		/// 	$body
 		/// </summary>
 		ArrayList MakeManualLoop(INode node, ArrayList initializers, B.StatementModifierType conditionType, Expression condition, ArrayList iterators, Statement body)
 		{
-			// we use this "while true" form because "continue" may not skip the iterator.
+			// we use this "while true" form because "continue" must not skip the iterator.
 			
 			ArrayList list = ConvertStatements(initializers);
 			B.LabelStatement labelStatement = MakeLabel(GenerateName());
