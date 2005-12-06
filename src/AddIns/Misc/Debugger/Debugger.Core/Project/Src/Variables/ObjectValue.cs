@@ -126,33 +126,48 @@ namespace Debugger
 				yield return BaseClassVariable;
 			}
 			
-			// Current frame is necessary to resolve context specific static values (eg. ThreadStatic)
-			ICorDebugFrame curFrame;
-			if (debugger.CurrentThread == null || debugger.CurrentThread.LastFunction == null || debugger.CurrentThread.LastFunction.CorILFrame == null) {
-				curFrame = null;
-			} else {
+			foreach(FieldProps field in metaData.EnumFields(classProps.Token)) {
+				if (field.IsStatic && field.IsLiteral) continue; // Skip field
+				if (!field.IsStatic && corValue == null) continue; // Skip field
+				FieldProps fieldCpy = field; // TODO: Why do we need this!!!!????
+				yield return new Variable(debugger,
+				                          field.Name,
+				                          delegate {
+				                          	Value updatedVal = getter();
+				                          	if (this.IsEquivalentValue(updatedVal)) {
+				                          		return GetValue(updatedVal, fieldCpy);
+				                          	} else {
+				                          		return new UnavailableValue(debugger, "Object type changed");
+				                          	}
+				                          });
+			}
+		}
+		
+		public override bool IsEquivalentValue(Value val)
+		{
+			ObjectValue objVal = val as ObjectValue;
+			return objVal != null &&
+			       objVal.ClassToken == this.ClassToken;
+		}
+		
+		Value GetValue(Value val, FieldProps field)
+		{
+			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
+			ICorDebugFrame curFrame = null;
+			if (debugger.CurrentThread != null && debugger.CurrentThread.LastFunction != null && debugger.CurrentThread.LastFunction.CorILFrame != null) {
 				curFrame = debugger.CurrentThread.LastFunction.CorILFrame;
 			}
 			
-			foreach(FieldProps field in metaData.EnumFields(classProps.Token)) {
-				Variable var;
-				try {
-					ICorDebugValue fieldValue;
-					if (field.IsStatic) {
-						if (field.IsLiteral) continue; // Try next field
-						
-						corClass.GetStaticFieldValue(field.Token, curFrame, out fieldValue);
-					} else {
-						if (corValue == null) continue; // Try next field
-						
-						((ICorDebugObjectValue)corValue).GetFieldValue(corClass, field.Token, out fieldValue);
-					}
-					
-					var = new Variable(debugger, fieldValue, field.Name);
-				} catch {
-					var = new Variable(new UnavailableValue(debugger), field.Name);
+			try {
+				ICorDebugValue fieldValue;
+				if (field.IsStatic) {
+					corClass.GetStaticFieldValue(field.Token, curFrame, out fieldValue);
+				} else {
+					((ICorDebugObjectValue)val.CorValue).GetFieldValue(corClass, field.Token, out fieldValue);
 				}
-				yield return var;
+				return Value.CreateValue(debugger, fieldValue);
+			} catch {
+				return new UnavailableValue(debugger);
 			}
 		}
 		
