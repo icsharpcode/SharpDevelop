@@ -27,12 +27,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
 	public class ExportProjectToHtml : AbstractMenuCommand
 	{
-		public override bool IsEnabled {
-			get {
-				return false;
-			}
-		}
-		
 		public override void Run()
 		{
 			if (ProjectService.CurrentProject != null)
