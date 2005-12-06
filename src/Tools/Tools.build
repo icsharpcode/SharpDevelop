@@ -54,6 +54,7 @@
 	
 	<ItemGroup>
 		<CleanupFiles Include="..\..\bin\*"/>
+        <CleanupDirectories Include="..\..\bin\UnitTests"/>
 		<CleanupDirectories Include="..\..\bin\Tools"/>
 		<CleanupDirectories Include="..\..\bin\setup\help"/>
 		<CleanupDirectories Include="..\..\AddIns\Addins"/>
