@@ -499,7 +499,9 @@ namespace Debugger
 						if (debugger.PausedReason != PausedReason.AllEvalsComplete) {
 							debugger.AddEval(eval);
 						}
-						yield return new PropertyVariable(eval, method.Name.Remove(0, 4));
+						yield return new PropertyVariable(debugger,
+						                                  method.Name.Remove(0, 4),
+						                                  delegate {return eval;});
 					}
 				}
 			}

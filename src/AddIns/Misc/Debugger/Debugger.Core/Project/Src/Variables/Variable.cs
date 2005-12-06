@@ -11,6 +11,9 @@ using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {
+	/// <summary>
+	/// Delegate that is used to get value. This delegate may be called at any time and should never return null.
+	/// </summary>
 	public delegate Value ValueGetter();
 	
 	public class Variable: RemotingObjectBase
@@ -18,10 +21,10 @@ namespace Debugger
 		protected NDebugger debugger;
 		
 		string name;
-		Value val;
 		VariableCollection subVariables;
 		
-		event ValueGetter updating;
+		protected ValueGetter valueGetter;
+		Value cachedValue;
 		
 		public event EventHandler<VariableEventArgs> ValueChanged;
 		public event EventHandler<VariableCollectionEventArgs> ValueRemovedFromCollection;
@@ -39,33 +42,20 @@ namespace Debugger
 		}
 		
 		/// <summary>
-		/// Gets value of variable, which is safe to use.
+		/// Gets value of variable which is safe to use (it is not null and it is not expired)
 		/// </summary>
 		public Value Value {
 			get {
-				Value v = GetValue();
-				if (v == null) {
-					return new UnavailableValue(debugger);
+				if (cachedValue == null || cachedValue.IsExpired) {
+					cachedValue = valueGetter();
+					if (cachedValue == null) throw new DebuggerException("ValueGetter returned null");
+					cachedValue.ValueChanged += delegate { OnValueChanged(); };
 				}
-				if (v.IsExpired) {
+				if (cachedValue.IsExpired) {
 					return new UnavailableValue(debugger, "The value has expired");
-				} else {
-					return v;
 				}
+				return cachedValue;
 			}
-			internal set {
-				val = value;
-				val.ValueChanged += delegate { OnValueChanged(); };
-				OnValueChanged();
-			}
-		}
-		
-		protected virtual Value GetValue()
-		{
-			if ((val == null || val.IsExpired) && updating != null) {
-				val = updating();
-			}
-			return val;
 		}
 		
 		/// <summary>
@@ -81,7 +71,7 @@ namespace Debugger
 		
 		public bool MayHaveSubVariables {
 			get {
-				return val.MayHaveSubVariables;
+				return Value.MayHaveSubVariables;
 			}
 		}
 		
@@ -92,42 +82,34 @@ namespace Debugger
 			}
 		}
 		
-		void OnSubVariablesUpdating(object sender, VariableCollectionEventArgs e)
-		{
-			subVariables.UpdateTo(Value.GetSubVariables(delegate{return this.Value;}));
-		}
-		
 		protected internal virtual void OnValueRemovedFromCollection(VariableCollectionEventArgs e) {
 			if (ValueRemovedFromCollection != null) {
 				ValueRemovedFromCollection(this, e);
 			}
 		}
 		
-		public Variable(NDebugger debugger, ICorDebugValue corValue, string name):this(debugger, Value.CreateValue(debugger, corValue), name, null)
+		public Variable(NDebugger debugger, ICorDebugValue corValue, string name):this(Value.CreateValue(debugger, corValue), name)
 		{
 			
 		}
 		
-		public Variable(NDebugger debugger, string name, ValueGetter updating):this(debugger, null, name, updating)
+		public Variable(Value val, string name):this(val.Debugger, name, delegate {return val;})
 		{
 			
 		}
 		
-		public Variable(Value val, string name):this(val.Debugger, val, name, null)
-		{
-			
-		}
-		
-		Variable(NDebugger debugger, Value val, string name, ValueGetter updating)
+		public Variable(NDebugger debugger, string name, ValueGetter valueGetter)
 		{
 			this.debugger = debugger;
-			if (val != null) {
-				this.Value = val;
-			}
 			this.name = name;
-			this.updating = updating;
+			this.valueGetter = valueGetter;
 			this.subVariables = new VariableCollection(debugger);
 			this.subVariables.Updating += OnSubVariablesUpdating;
+		}
+		
+		void OnSubVariablesUpdating(object sender, VariableCollectionEventArgs e)
+		{
+			subVariables.UpdateTo(Value.GetSubVariables(delegate{return this.Value;}));
 		}
 	}
 }

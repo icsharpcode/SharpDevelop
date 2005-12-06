@@ -8,72 +8,40 @@
 using System;
 
 using Debugger.Interop.CorDebug;
-	
+
 namespace Debugger 
 {
-	public class PropertyVariable: Variable 
+	/// <summary>
+	/// Delegate that is used to get eval. This delegate may be called at any time and should never return null.
+	/// </summary>
+	public delegate Eval EvalCreator();
+	
+	public class PropertyVariable: Variable
 	{
-		Eval           eval;
+		EvalCreator evalCreator;
+		Eval cachedEval;
 		
-		public event EventHandler<DebuggerEventArgs> ValueEvaluated;
-		
-		internal PropertyVariable(Eval eval, string name):base(new UnavailableValue(eval.Debugger), name)
+		internal PropertyVariable(NDebugger debugger, string name, EvalCreator evalCreator):base(debugger, name, null)
 		{
-			this.Eval = eval;
+			this.evalCreator = evalCreator;
+			this.valueGetter = delegate{return Eval.Result;};
 		}
 		
 		public bool IsEvaluated {
 			get {
-				return eval.Completed;
-			}
-		}
-		
-		protected override Value GetValue()
-		{
-			if (IsEvaluated) {
-				if (eval.Result != null) {
-					return eval.Result;
-				} else {
-					return new UnavailableValue(debugger, "No return value");
-				}
-			} else {
-				if (eval.Evaluating) {
-					return new UnavailableValue(debugger, "Evaluating...");
-				} else {
-					return new UnavailableValue(debugger, "Evaluation pending");
-				}
+				return Eval.Evaluated;
 			}
 		}
 		
 		public Eval Eval {
 			get {
-				return eval;
-			}
-			set {
-				if (debugger.PausedReason != PausedReason.AllEvalsComplete) {
-					eval = value;
-					eval.EvalStarted += EvalStarted;
-					eval.EvalComplete += EvalComplete;
-					OnValueChanged();
+				if (cachedEval == null || cachedEval.Result.IsExpired) {
+					cachedEval = evalCreator();
+					if (cachedEval == null) throw new DebuggerException("EvalGetter returned null");
+					cachedEval.EvalStarted += delegate { OnValueChanged(); };
+					cachedEval.EvalComplete += delegate { OnValueChanged(); };
 				}
-			}
-		}
-		
-		void EvalStarted(object sender, EvalEventArgs args)
-		{
-			OnValueChanged();
-		}
-		
-		void EvalComplete(object sender, EvalEventArgs args)
-		{
-			OnValueEvaluated();
-			OnValueChanged();
-		}
-		
-		protected void OnValueEvaluated()
-		{
-			if (ValueEvaluated != null) {
-				ValueEvaluated(this, new DebuggerEventArgs(debugger));
+				return cachedEval;
 			}
 		}
 	}

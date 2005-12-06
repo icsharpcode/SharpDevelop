@@ -27,7 +27,7 @@ namespace Debugger
 		ICorDebugValue[]  args;
 		
 		bool              evaluating = false;
-		bool              completed = false;
+		bool              evaluated  = false;
 		bool              successful = false;
 		Value             result;
 		
@@ -43,9 +43,9 @@ namespace Debugger
 		/// <summary>
 		/// True if the evaluation has been completed.
 		/// </summary>
-		public bool Completed {
+		public bool Evaluated {
 			get {
-				return completed;
+				return evaluated;
 			}
 		}
 		
@@ -74,13 +74,17 @@ namespace Debugger
 		}
 		
 		/// <summary>
-		/// The result of the evaluation if the evaluation is complete and has returned a value. Null otherwise.
+		/// The result of the evaluation. Always non-null, but it may be UnavailableValue.
 		/// </summary>
 		public Value Result {
 			get {
-				if (completed) {
-					if (successful) {
-						return result;
+				if (Evaluated) {
+					if (Successful) {
+						if (result != null) {
+							return result;
+						} else {
+							return new UnavailableValue(debugger, "No return value");
+						}
 					} else {
 						ObjectValue exception = (ObjectValue)result;
 						while (exception.Type != "System.Exception") {
@@ -89,7 +93,11 @@ namespace Debugger
 						return new UnavailableValue(debugger, result.Type + ": " + exception["_message"].Value.AsString);
 					}
 				} else {
-					return null;
+					if (Evaluating) {
+						return new UnavailableValue(debugger, "Evaluating...");
+					} else {
+						return new UnavailableValue(debugger, "Evaluation pending");
+					}
 				}
 			}
 		}
@@ -134,7 +142,7 @@ namespace Debugger
 		protected internal virtual void OnEvalComplete(EvalEventArgs e) 
 		{
 			evaluating = false;
-			completed = true;
+			evaluated = true;
 			
 			ICorDebugValue corValue;
 			corEval.GetResult(out corValue);
