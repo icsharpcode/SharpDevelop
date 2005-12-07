@@ -80,8 +80,7 @@ namespace Debugger
 		{
 			Process createdProcess = null;
 			if (debugger.RequiredApartmentState == ApartmentState.STA) {
-				MTA2STA m2s = new MTA2STA();
-				createdProcess = (Process)m2s.CallInSTA(typeof(Process), "StartInternal", new Object[] {debugger, filename, workingDirectory, arguments});
+				createdProcess = (Process)debugger.MTA2STA.CallInSTA(typeof(Process), "StartInternal", new Object[] {debugger, filename, workingDirectory, arguments});
 			} else {
 				createdProcess = StartInternal(debugger, filename, workingDirectory, arguments);
 			}

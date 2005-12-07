@@ -226,6 +226,23 @@ namespace Debugger
 		}
 		
 		/// <summary>
+		/// Waits until all debugged precesses exit. Returns imideately if there are no running processes.
+		/// </summary>
+		public void WaitForPrecessExit()
+		{
+			// The process is removed first and then the even is called
+			
+			AutoResetEvent exitedEvent = new AutoResetEvent(false);
+			this.ProcessExited += delegate {
+				exitedEvent.Set();
+			};
+			// If it has not been removed yet, we will get an event later
+			while (Processes.Count > 0) {
+				this.MTA2STA.SoftWait(exitedEvent);
+			}
+		}
+		
+		/// <summary>
 		/// Wait handle, which will be set as long as the debugger is paused
 		/// </summary>
 		public WaitHandle WaitForPauseHandle {

@@ -24,6 +24,7 @@ namespace Debugger
 		ManagedCallbackProxy       managedCallbackProxy;
 		
 		ApartmentState requiredApartmentState;
+		MTA2STA mta2sta = new MTA2STA();
 		
 		VariableCollection localVariables;
 		
@@ -32,6 +33,12 @@ namespace Debugger
 		public ApartmentState RequiredApartmentState {
 			get  {
 				 return requiredApartmentState;
+			}
+		}
+		
+		internal MTA2STA MTA2STA {
+			get {
+				return mta2sta;
 			}
 		}
 

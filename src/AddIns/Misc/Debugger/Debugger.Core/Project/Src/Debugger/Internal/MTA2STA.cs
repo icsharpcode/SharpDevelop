@@ -19,6 +19,7 @@ namespace Debugger
 	{
 		Form hiddenForm;
 		IntPtr hiddenFormHandle;
+		AutoResetEvent staPump = new AutoResetEvent(false);
 		
 		public MTA2STA()
 		{
@@ -30,6 +31,22 @@ namespace Debugger
 		static void TraceMsg(string msg)
 		{
 			//System.Console.WriteLine("MTA2STA: " + msg);
+		}
+		
+		/// <summary>
+		/// SoftWait waits for the given WaitHandle and allows processing of CallInSTA during the wait
+		/// </summary>
+		public void SoftWait(WaitHandle waitFor)
+		{
+			if (System.Threading.Thread.CurrentThread.GetApartmentState() == System.Threading.ApartmentState.STA) {
+				staPump.Set();
+				// Wait until the waitFor handle is set
+				while(WaitHandle.WaitAny(new WaitHandle[] {staPump, waitFor}) != 1) {
+					Application.DoEvents();
+				}
+			} else {
+				waitFor.WaitOne();
+			}
 		}
 		
 		// Try to avoid this since it will catch exceptions and it is slow
@@ -55,6 +72,8 @@ namespace Debugger
 			if (hiddenForm.InvokeRequired == true) {
 				// Warrning: BeginInvoke will not pass exceptions if you do not use MethodInvoker delegate!
 				IAsyncResult async = hiddenForm.BeginInvoke(callDelegate);
+				// Pump a locked STA thread
+				staPump.Set();
 				// Give it 1 second to run
 				if (!async.AsyncWaitHandle.WaitOne(1000, true)) {
 					// Abandon the call if possible

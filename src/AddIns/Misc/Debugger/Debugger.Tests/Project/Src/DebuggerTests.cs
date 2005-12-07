@@ -90,17 +90,11 @@ namespace DebuggerLibrary.Tests
 		}
 		
 		
-		[Test, Ignore("Disabled because of deadlock problem")]
+		[Test]
 		public void RunSimpleProgram()
 		{
-			ManualResetEvent exitedEvent = new ManualResetEvent(false);
-			debugger.ProcessExited += delegate {
-				exitedEvent.Set();
-			};
 			debugger.Start((string)programs["SimpleProgram"], tempPath, "");
-			if (!exitedEvent.WaitOne(1000, false)) {
-				throw new System.Exception("Time out");
-			}
+			debugger.WaitForPrecessExit();
 		}
 	}
 }

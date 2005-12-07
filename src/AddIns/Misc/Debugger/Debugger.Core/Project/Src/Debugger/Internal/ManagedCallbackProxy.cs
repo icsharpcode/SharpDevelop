@@ -27,7 +27,6 @@ namespace Debugger
 	{
 		NDebugger debugger;
 		ManagedCallback realCallback;
-		MTA2STA mta2sta;
 		
 		public NDebugger Debugger {
 			get {
@@ -39,21 +38,15 @@ namespace Debugger
 		{
 			this.debugger = realCallback.Debugger;
 			this.realCallback = realCallback;
-			mta2sta = new MTA2STA();
 		}
 		
-		private void CallbackReceived (string function, object[] parameters)
+		void Call(MethodInvoker callback)
 		{
 			if (debugger.RequiredApartmentState == ApartmentState.STA) {
-				mta2sta.CallInSTA(realCallback, function, parameters);
+				debugger.MTA2STA.CallInSTA(callback);
 			} else {
-				MTA2STA.InvokeMethod(realCallback, function, parameters);
+				callback();
 			}
-		}
-		
-		void Call(MethodInvoker d)
-		{
-			mta2sta.CallInSTA(d);
 		}
 			
 		public void StepComplete(System.IntPtr pAppDomain, System.IntPtr pThread, System.IntPtr pStepper, Debugger.Interop.CorDebug.CorDebugStepReason reason)
