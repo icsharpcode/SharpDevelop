@@ -421,13 +421,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if ((e.AllowedEffect & DragDropEffects.Move) > 0 &&
 			    (e.AllowedEffect & DragDropEffects.Copy) > 0) {
-			    	return (e.KeyState & 8) > 0 ? DragDropEffects.Copy : DragDropEffects.Move;
-			    } else if ((e.AllowedEffect & DragDropEffects.Move) > 0) {
-			    	return DragDropEffects.Move;
-			    } else if ((e.AllowedEffect & DragDropEffects.Copy) > 0) {
-			    	return DragDropEffects.Copy;
-			    }
-			    return DragDropEffects.None;
+				return (e.KeyState & 8) > 0 ? DragDropEffects.Copy : DragDropEffects.Move;
+			} else if ((e.AllowedEffect & DragDropEffects.Move) > 0) {
+				return DragDropEffects.Move;
+			} else if ((e.AllowedEffect & DragDropEffects.Copy) > 0) {
+				return DragDropEffects.Copy;
+			}
+			return DragDropEffects.None;
 		}
 		
 		protected override void OnDragEnter(DragEventArgs e)
@@ -575,17 +575,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				
 				if (tab != -1) {
-					Tabs.DragOverTab = Tabs[tab];
-					DoDragDrop(Tabs.DragOverTab, DragDropEffects.All);
+					if (IsDragStarted(mouseDownPosition, e.Location)) {
+						Tabs.DragOverTab = Tabs[tab];
+						DoDragDrop(Tabs.DragOverTab, DragDropEffects.All);
+					}
 					Refresh();
 				}
 			}
 		}
 		
+		internal static bool IsDragStarted(Point mouseDownPos, Point mouseMovePos)
+		{
+			Size dragSize = SystemInformation.DragSize;
+			if (dragSize.Width < 3) dragSize.Width = 3;
+			if (dragSize.Height < 3) dragSize.Height = 3;
+			mouseDownPos.Offset(-dragSize.Width / 2, -dragSize.Width / 2);
+			Rectangle r = new Rectangle(mouseDownPos, dragSize);
+			return !r.Contains(mouseMovePos);
+		}
+		
 		//
 		//	protected override void OnLostFocus(EventArgs e)
 		//	{
-			//		base.OnLostFocus(e);
+		//		base.OnLostFocus(e);
 		//		ExitRenameMode();
 		//		Refresh();
 		//	}
@@ -605,10 +617,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 				ScrollBarScrolled(null, null);
 			}
 		}
+		
+		Point mouseDownPosition;
+		
 		protected override void OnMouseDown(MouseEventArgs e)
 		{
 			base.OnMouseDown(e);
 			if (e.Button == MouseButtons.Left) {
+				mouseDownPosition = e.Location;
+				
 				AxSideTab tab = GetTabAt(e.X, e.Y);
 				if (tab != null) {
 					mouseDownTab = tab;
@@ -812,19 +829,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 							sideBar.Refresh();
 						} else
 							if (item != sideBar.activeTab.ChoosedItem) {
-								if (item.SideTabItemStatus != SideTabItemStatus.Drag) {
-									sideBar.ClearDraggings(sideBar.activeTab);
-									item.SideTabItemStatus = SideTabItemStatus.Drag;
-									sideBar.Tabs.DragOverTab       = sideBar.activeTab;
-									sideBar.Refresh();
-								}
-							} else {
+							if (item.SideTabItemStatus != SideTabItemStatus.Drag) {
 								sideBar.ClearDraggings(sideBar.activeTab);
-								sideBar.activeTab.SideTabStatus = SideTabStatus.Dragged;
+								item.SideTabItemStatus = SideTabItemStatus.Drag;
+								sideBar.Tabs.DragOverTab       = sideBar.activeTab;
 								sideBar.Refresh();
 							}
-							
-							e.Effect = GetDragDropEffect(e);
+						} else {
+							sideBar.ClearDraggings(sideBar.activeTab);
+							sideBar.activeTab.SideTabStatus = SideTabStatus.Dragged;
+							sideBar.Refresh();
+						}
+						
+						e.Effect = GetDragDropEffect(e);
 					} else {
 						e.Effect = DragDropEffects.None;
 					}
@@ -836,9 +853,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				
 				//			else if (e.Data.GetDataPresent(typeof(SideTab))) {
-					//				int tabIndex = GetTabIndexAt(p.X, p.Y);
+				//				int tabIndex = GetTabIndexAt(p.X, p.Y);
 				//				if (tabIndex != -1) {
-					//					SideTab tab = Tabs.DragOverTab;
+				//					SideTab tab = Tabs.DragOverTab;
 				//					Tabs.Remove(tab);
 				//					Tabs.Insert(tabIndex, tab);
 				//					Refresh();
@@ -857,6 +874,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				Refresh();
 			}
 			
+			Point mouseDownPos;
+			
 			protected override void OnMouseMove(MouseEventArgs e)
 			{
 				base.OnMouseMove(e);
@@ -864,12 +883,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 					AxSideTabItem item = sideBar.activeTab.GetItemAt(e.X, e.Y);
 					
 					if (item != null) {
-						sideBar.Tabs.DragOverTab = sideBar.activeTab;
-						SpecialDataObject dataObject = new SpecialDataObject();
-						dataObject.SetData(item.Tag);
-						dataObject.SetData(item);
-						
-						DoDragDrop(dataObject, sideBar.activeTab.CanDragDrop ? DragDropEffects.All : (DragDropEffects.Copy | DragDropEffects.None));
+						if (IsDragStarted(mouseDownPos, e.Location)) {
+							sideBar.Tabs.DragOverTab = sideBar.activeTab;
+							SpecialDataObject dataObject = new SpecialDataObject();
+							dataObject.SetData(item.Tag);
+							dataObject.SetData(item);
+							
+							DoDragDrop(dataObject, sideBar.activeTab.CanDragDrop ? DragDropEffects.All : (DragDropEffects.Copy | DragDropEffects.None));
+						}
 						Refresh();
 					}
 				} else {
@@ -891,6 +912,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			protected override void OnMouseDown(MouseEventArgs e)
 			{
 				base.OnMouseDown(e);
+				mouseDownPos = e.Location;
 				sideBar.activeTab.ChoosedItem = sideBar.activeTab.SelectedItem;
 				Refresh();
 			}

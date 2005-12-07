@@ -42,7 +42,9 @@ namespace ICSharpCode.Core
 		
 		protected override TextMarker CreateMarker()
 		{
-			LineSegment lineSeg = Document.GetLineSegment(Math.Min(Document.TotalNumberOfLines, LineNumber));
+			if (LineNumber >= Document.TotalNumberOfLines)
+				LineNumber = Document.TotalNumberOfLines - 1;
+			LineSegment lineSeg = Document.GetLineSegment(LineNumber);
 			TextMarker marker = new TextMarker(lineSeg.Offset, lineSeg.Length, TextMarkerType.SolidBlock, Color.Red, Color.White);
 			Document.MarkerStrategy.AddMarker(marker);
 			return marker;
