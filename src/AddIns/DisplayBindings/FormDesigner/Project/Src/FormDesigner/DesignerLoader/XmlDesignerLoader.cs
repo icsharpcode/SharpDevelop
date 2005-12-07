@@ -59,7 +59,7 @@ namespace ICSharpCode.FormDesigner
 			Debug.Assert(host != null);
 			this.host = host;
 			host.AddService(typeof(INameCreationService), new NameCreationService(host));
-			
+			host.AddService(typeof(ComponentSerializationService), new CodeDomComponentSerializationService((IServiceProvider)host));
 			base.BeginLoad(host);
 		}
 		
