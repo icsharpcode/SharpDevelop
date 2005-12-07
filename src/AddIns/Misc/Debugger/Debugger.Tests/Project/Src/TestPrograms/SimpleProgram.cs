@@ -7,7 +7,7 @@
 
 using System;
 
-namespace DebuggerLibrary.Tests.TestPrograms
+namespace Debugger.Tests.TestPrograms
 {
 	public class SimpleProgram
 	{

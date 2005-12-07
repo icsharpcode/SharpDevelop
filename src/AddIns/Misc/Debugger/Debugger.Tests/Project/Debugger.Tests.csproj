@@ -1,6 +1,6 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
-    <OutputType>Library</OutputType>
+    <OutputType>WinExe</OutputType>
     <RootNamespace>Debugger.Tests</RootNamespace>
     <AssemblyName>Debugger.Tests</AssemblyName>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -9,11 +9,18 @@
     <OutputPath>..\..\..\..\..\..\bin\UnitTests\</OutputPath>
     <Optimize>False</Optimize>
     <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
-    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
     <NoStdLib>False</NoStdLib>
     <PlatformTarget>AnyCPU</PlatformTarget>
     <WarningLevel>4</WarningLevel>
     <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <DebugType>Full</DebugType>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <FileAlignment>4096</FileAlignment>
+    <DebugSymbols>true</DebugSymbols>
+    <StartupObject>Debugger.Tests.TestProgram</StartupObject>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DefineConstants>DEBUG;TRACE</DefineConstants>
@@ -32,9 +39,10 @@
   <ItemGroup>
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\DebuggerTests.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\SimpleProgram.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\ConsoleHelloWorld.cs" />
-    <EmbeddedResource Include="Src\TestPrograms\DiagnosticsDebugHelloWorld.cs" />
+    <Compile Include="Src\TestPrograms\SimpleProgram.cs" />
+    <Compile Include="Src\TestProgram.cs" />
+    <Compile Include="Src\TestPrograms\HelloWorld.cs" />
+    <Compile Include="Src\TestPrograms\Breakpoint.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />

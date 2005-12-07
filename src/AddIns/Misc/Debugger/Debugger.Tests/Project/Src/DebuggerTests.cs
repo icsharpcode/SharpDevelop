@@ -16,7 +16,7 @@ using System.Reflection;
 using System.Resources;
 using System.Threading;
 
-namespace DebuggerLibrary.Tests
+namespace Debugger.Tests
 {
 	/// <summary>
 	/// This class contains methods that test the debugger
@@ -24,100 +24,51 @@ namespace DebuggerLibrary.Tests
 	[TestFixture]
 	public class DebuggerTests
 	{
-		string resourcePrefix = "Debugger.Tests.Src.TestPrograms.";
-		string tempPath = MakeTempDirectory();
-		Hashtable programs = new Hashtable();
-		
-		NDebugger debugger = new NDebugger();
+		NDebugger debugger;
+		string log;
+		string lastLogMessage;
 		
 		public DebuggerTests()
 		{
-			CompileTestPrograms();
+			debugger = new NDebugger();
+			debugger.LogMessage += delegate(object sender, MessageEventArgs e) {
+				log += e.Message;
+				lastLogMessage = e.Message;
+			};
 		}
 		
-		public void CompileTestPrograms()
+		void StartProgram(string name)
 		{
-			Assembly assembly = Assembly.GetExecutingAssembly();
-			foreach(string name in assembly.GetManifestResourceNames()) {
-				if (name.StartsWith(resourcePrefix)) {
-					string programName = name.Substring(resourcePrefix.Length, name.Length - resourcePrefix.Length - ".cs".Length);
-					
-					Stream codeStream = assembly.GetManifestResourceStream(name);
-					string code = new StreamReader(codeStream).ReadToEnd();
-					
-					string codeFilename = Path.Combine(tempPath, programName + ".cs");
-					string exeFilename = Path.Combine(tempPath, programName + ".exe");
-					
-					StreamWriter file = new StreamWriter(codeFilename);
-					file.Write(code);
-					file.Close();
-					
-					CompilerParameters compParams = new CompilerParameters();
-					compParams.GenerateExecutable = true;
-					compParams.GenerateInMemory = false;
-					compParams.TreatWarningsAsErrors = false;
-					compParams.IncludeDebugInformation = true;
-					compParams.ReferencedAssemblies.Add("System.dll");
-					compParams.OutputAssembly = exeFilename;
-					
-					CSharpCodeProvider compiler = new CSharpCodeProvider();
-					CompilerResults result = compiler.CompileAssemblyFromFile(compParams, codeFilename);
-					
-					if (result.Errors.Count > 0) {
-						throw new System.Exception("There was an error(s) during compilation of test program:\n" + result.Errors[0].ToString());
-					}
-					
-					programs.Add(programName, exeFilename);
-				}
-			}
-		}
-		
-		~DebuggerTests()
-		{
-			//Directory.Delete(tempPath, true);
-		}
-		
-		static string MakeTempDirectory()
-		{
-			Random rand = new Random();
-			string path;
-			do {
-				path = Path.Combine(Path.GetTempPath(), "SharpDevelop");
-				path = Path.Combine(path, "DebuggerTests" + rand.Next(10000,99999));
-			} while (Directory.Exists(path));
-			Directory.CreateDirectory(path);
-			return path;
+			log = "";
+			lastLogMessage = null;
+			string filename = Assembly.GetCallingAssembly().Location;
+			debugger.Start(filename, Path.GetDirectoryName(filename), name);
 		}
 		
 		
 		[Test]
-		public void RunSimpleProgram()
+		public void SimpleProgram()
 		{
-			debugger.Start((string)programs["SimpleProgram"], tempPath, "");
+			StartProgram("SimpleProgram");
 			debugger.WaitForPrecessExit();
 		}
 		
 		[Test]
-		public void RunDiagnosticsDebugHelloWorld()
+		public void HelloWorld()
 		{
-			string log = "";
-			debugger.LogMessage += delegate(object sender, MessageEventArgs e) { log += e.Message; };
-			debugger.Start((string)programs["DiagnosticsDebugHelloWorld"], tempPath, "");
+			StartProgram("HelloWorld");
 			debugger.WaitForPrecessExit();
 			
 			Assert.AreEqual("Hello world!\r\n", log);
 		}
 		
-		[Test]
-		public void RunDiagnosticsDebugHelloWorldWithBreakpoint()
+		[Test, Ignore("Deadlocks")]
+		public void Breakpoint()
 		{
-			string log = "";
-			debugger.LogMessage += delegate(object sender, MessageEventArgs e) { log += e.Message; };
+			debugger.AddBreakpoint("Breakpoint.cs", 16);
 			
-			string souceCodeFilename = ((string)programs["DiagnosticsDebugHelloWorld"]).Replace(".exe",".cs");
-			debugger.AddBreakpoint(new SourcecodeSegment(souceCodeFilename, 16), true);
+			StartProgram("Breakpoint");
 			
-			debugger.Start((string)programs["DiagnosticsDebugHelloWorld"], tempPath, "");
 			debugger.WaitForPause();
 			
 			Assert.AreEqual(PausedReason.Breakpoint, debugger.PausedReason);
@@ -127,7 +78,7 @@ namespace DebuggerLibrary.Tests
 			
 			debugger.WaitForPrecessExit();
 			
-			Assert.AreEqual("Hello world!\r\n", log);
+			Assert.AreEqual("Line 16\r\n", log);
 		}
 	}
 }

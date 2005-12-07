@@ -221,7 +221,15 @@ namespace Debugger
 		public void WaitForPause()
 		{
 			if (IsRunning) {
+				EventHandler<ProcessEventArgs> throwError = delegate {
+					if (Processes.Count == 0) {
+						throw new DebuggerException("Process exited before pausing");
+					}
+				};
+				this.ProcessExited += throwError;
+				throwError(null, null);
 				this.MTA2STA.SoftWait(WaitForPauseHandle);
+				this.ProcessExited -= throwError;
 			}
 		}
 		

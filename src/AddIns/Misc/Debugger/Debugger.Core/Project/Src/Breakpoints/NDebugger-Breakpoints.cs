@@ -81,6 +81,11 @@ namespace Debugger
 			return breakpoint;
 		}
 
+		public Breakpoint AddBreakpoint(string filename, int line)
+		{
+			return AddBreakpoint(new SourcecodeSegment(filename, line), true);
+		}
+		
 		public Breakpoint AddBreakpoint(SourcecodeSegment segment, bool breakpointEnabled)
 		{
 			return AddBreakpoint(new Breakpoint(this, segment, breakpointEnabled));
