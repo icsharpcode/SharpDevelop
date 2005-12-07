@@ -126,16 +126,16 @@ namespace Debugger
 				yield return BaseClassVariable;
 			}
 			
-			foreach(FieldProps field in metaData.EnumFields(classProps.Token)) {
+			foreach(FieldProps f in metaData.EnumFields(classProps.Token)) {
+				FieldProps field = f; // One per scope/delegate
 				if (field.IsStatic && field.IsLiteral) continue; // Skip field
 				if (!field.IsStatic && corValue == null) continue; // Skip field
-				FieldProps fieldCpy = field; // TODO: Why do we need this!!!!????
 				yield return new Variable(debugger,
 				                          field.Name,
 				                          delegate {
 				                          	Value updatedVal = getter();
 				                          	if (this.IsEquivalentValue(updatedVal)) {
-				                          		return GetValue(updatedVal, fieldCpy);
+				                          		return GetValue(updatedVal, field);
 				                          	} else {
 				                          		return new UnavailableValue(debugger, "Object type changed");
 				                          	}

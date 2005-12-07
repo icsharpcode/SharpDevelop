@@ -484,8 +484,9 @@ namespace Debugger
 		
 		public IEnumerable<Variable> PropertyVariables {
 			get {
-				foreach(MethodProps method in module.MetaData.EnumMethods(methodProps.ClassToken)) {
-					if (method.Name.StartsWith("get_") && method.HasSpecialName) {					
+				foreach(MethodProps m in module.MetaData.EnumMethods(methodProps.ClassToken)) {
+					MethodProps method = m; // One per scope/delegate
+					if (method.Name.StartsWith("get_") && method.HasSpecialName) {
 						yield return new PropertyVariable(debugger,
 						                                  method.Name.Remove(0, 4),
 						                                  delegate {
