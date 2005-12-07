@@ -221,7 +221,7 @@ namespace Debugger
 		public void WaitForPause()
 		{
 			if (IsRunning) {
-				WaitForPauseHandle.WaitOne();
+				this.MTA2STA.SoftWait(WaitForPauseHandle);
 			}
 		}
 		

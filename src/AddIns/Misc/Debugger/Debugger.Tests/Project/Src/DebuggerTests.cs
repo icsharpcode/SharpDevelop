@@ -96,5 +96,38 @@ namespace DebuggerLibrary.Tests
 			debugger.Start((string)programs["SimpleProgram"], tempPath, "");
 			debugger.WaitForPrecessExit();
 		}
+		
+		[Test]
+		public void RunDiagnosticsDebugHelloWorld()
+		{
+			string log = "";
+			debugger.LogMessage += delegate(object sender, MessageEventArgs e) { log += e.Message; };
+			debugger.Start((string)programs["DiagnosticsDebugHelloWorld"], tempPath, "");
+			debugger.WaitForPrecessExit();
+			
+			Assert.AreEqual("Hello world!\r\n", log);
+		}
+		
+		[Test]
+		public void RunDiagnosticsDebugHelloWorldWithBreakpoint()
+		{
+			string log = "";
+			debugger.LogMessage += delegate(object sender, MessageEventArgs e) { log += e.Message; };
+			
+			string souceCodeFilename = ((string)programs["DiagnosticsDebugHelloWorld"]).Replace(".exe",".cs");
+			debugger.AddBreakpoint(new SourcecodeSegment(souceCodeFilename, 16), true);
+			
+			debugger.Start((string)programs["DiagnosticsDebugHelloWorld"], tempPath, "");
+			debugger.WaitForPause();
+			
+			Assert.AreEqual(PausedReason.Breakpoint, debugger.PausedReason);
+			Assert.AreEqual("", log);
+			
+			debugger.Continue();
+			
+			debugger.WaitForPrecessExit();
+			
+			Assert.AreEqual("Hello world!\r\n", log);
+		}
 	}
 }
