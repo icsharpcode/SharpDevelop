@@ -48,59 +48,59 @@
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Commands\FormsCommands.cs" />
     <Compile Include="Src\Commands\SideBarCommands.cs" />
-    <Compile Include="Src\FormDesigner\DesignerGenerator\CodeDOMGenerator.cs" />
-    <Compile Include="Src\FormDesigner\DesignerGenerator\CSharpDesignerGenerator.cs" />
-    <Compile Include="Src\FormDesigner\DesignerGenerator\IDesignerGenerator.cs" />
-    <Compile Include="Src\FormDesigner\DesignerGenerator\XmlDesignerGenerator.cs" />
-    <Compile Include="Src\FormDesigner\DesignerLoader\NRefactoryDesignerLoader.cs" />
-    <Compile Include="Src\FormDesigner\DesignerLoader\XmlDesignerLoader.cs" />
-    <Compile Include="Src\FormDesigner\SecondaryDisplayBinding.cs" />
-    <Compile Include="Src\FormDesigner\DesignerViewContent.cs" />
-    <Compile Include="Src\FormDesigner\FormKeyHandler.cs" />
-    <Compile Include="Src\FormDesigner\Gui\AddComponentsDialog.cs">
+    <Compile Include="Src\DesignerGenerator\CodeDOMGenerator.cs" />
+    <Compile Include="Src\DesignerGenerator\CSharpDesignerGenerator.cs" />
+    <Compile Include="Src\DesignerGenerator\IDesignerGenerator.cs" />
+    <Compile Include="Src\DesignerGenerator\XmlDesignerGenerator.cs" />
+    <Compile Include="Src\DesignerLoader\NRefactoryDesignerLoader.cs" />
+    <Compile Include="Src\DesignerLoader\XmlDesignerLoader.cs" />
+    <Compile Include="Src\SecondaryDisplayBinding.cs" />
+    <Compile Include="Src\DesignerViewContent.cs" />
+    <Compile Include="Src\FormKeyHandler.cs" />
+    <Compile Include="Src\Gui\AddComponentsDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\FormDesigner\Gui\ComponentLibraryLoader.cs" />
-    <Compile Include="Src\FormDesigner\Gui\ConfigureSideBarDialog.cs">
+    <Compile Include="Src\Gui\ComponentLibraryLoader.cs" />
+    <Compile Include="Src\Gui\ConfigureSideBarDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\FormDesigner\Gui\CustomComponentsSideTab.cs" />
-    <Compile Include="Src\FormDesigner\Gui\OptionPanels\GridOptions.cs">
+    <Compile Include="Src\Gui\CustomComponentsSideTab.cs" />
+    <Compile Include="Src\Gui\OptionPanels\GridOptions.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\FormDesigner\Gui\RenameCategoryDialog.cs">
+    <Compile Include="Src\Gui\RenameCategoryDialog.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\FormDesigner\Gui\ShowTabOrder\ITabOrder.cs" />
-    <Compile Include="Src\FormDesigner\Gui\ShowTabOrder\TabIndexControl.cs">
+    <Compile Include="Src\Gui\ShowTabOrder\ITabOrder.cs" />
+    <Compile Include="Src\Gui\ShowTabOrder\TabIndexControl.cs">
       <SubType>Component</SubType>
     </Compile>
-    <Compile Include="Src\FormDesigner\Gui\SideTabDesigner.cs" />
-    <Compile Include="Src\FormDesigner\Gui\SideTabItemDesigner.cs" />
-    <Compile Include="Src\FormDesigner\Services\DefaultServiceContainer.cs" />
-    <Compile Include="Src\FormDesigner\Services\DesignerEventService.cs" />
-    <Compile Include="Src\FormDesigner\Services\DesignerOptionService.cs" />
-    <Compile Include="Src\FormDesigner\Services\DesignerResourceService.cs" />
-    <Compile Include="Src\FormDesigner\Services\EventBindingService.cs" />
-    <Compile Include="Src\FormDesigner\Services\HelpService.cs" />
-    <Compile Include="Src\FormDesigner\Services\MenuCommandService.cs" />
-    <Compile Include="Src\FormDesigner\Services\PropertyValueUIService.cs" />
-    <Compile Include="Src\FormDesigner\Services\ToolboxService.cs" />
-    <Compile Include="Src\FormDesigner\Services\TypeDescriptorFilterService.cs" />
-    <Compile Include="Src\FormDesigner\Services\TypeResolutionService.cs" />
-    <Compile Include="Src\FormDesigner\Services\UIService.cs" />
-    <Compile Include="Src\FormDesigner\ToolboxProvider.cs" />
-    <EmbeddedResource Include="Src\FormDesigner\Gui\ICSharpCode.SharpDevelop.FormDesigner.Gui.AssemblyList.resources" />
-    <EmbeddedResource Include="Src\FormDesigner\Gui\ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.ControlLibrariesPanel.resources" />
+    <Compile Include="Src\Gui\SideTabDesigner.cs" />
+    <Compile Include="Src\Gui\SideTabItemDesigner.cs" />
+    <Compile Include="Src\Services\DefaultServiceContainer.cs" />
+    <Compile Include="Src\Services\DesignerEventService.cs" />
+    <Compile Include="Src\Services\DesignerOptionService.cs" />
+    <Compile Include="Src\Services\DesignerResourceService.cs" />
+    <Compile Include="Src\Services\EventBindingService.cs" />
+    <Compile Include="Src\Services\HelpService.cs" />
+    <Compile Include="Src\Services\MenuCommandService.cs" />
+    <Compile Include="Src\Services\PropertyValueUIService.cs" />
+    <Compile Include="Src\Services\ToolboxService.cs" />
+    <Compile Include="Src\Services\TypeDescriptorFilterService.cs" />
+    <Compile Include="Src\Services\TypeResolutionService.cs" />
+    <Compile Include="Src\Services\UIService.cs" />
+    <Compile Include="Src\ToolboxProvider.cs" />
+    <EmbeddedResource Include="Src\Gui\ICSharpCode.SharpDevelop.FormDesigner.Gui.AssemblyList.resources" />
+    <EmbeddedResource Include="Src\Gui\ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.ControlLibrariesPanel.resources" />
     <None Include="FormsDesigner.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <Compile Include="Src\FormDesigner\DesignerGenerator\VBNetDesignerGenerator.cs" />
-    <Compile Include="Src\FormDesigner\DesignerLoader\DesignerLoaderProvider.cs" />
-    <Compile Include="Src\FormDesigner\DesignerLoader\FormsDesignerLoadException.cs" />
-    <Compile Include="Src\FormDesigner\DesignerGenerator\AbstractDesignerGenerator.cs" />
-    <Compile Include="Src\FormDesigner\Services\TypeDiscoveryService.cs" />
-    <Compile Include="Src\FormDesigner\UndoRedo\UndoEngine.cs" />
+    <Compile Include="Src\DesignerGenerator\VBNetDesignerGenerator.cs" />
+    <Compile Include="Src\DesignerLoader\DesignerLoaderProvider.cs" />
+    <Compile Include="Src\DesignerLoader\FormsDesignerLoadException.cs" />
+    <Compile Include="Src\DesignerGenerator\AbstractDesignerGenerator.cs" />
+    <Compile Include="Src\Services\TypeDiscoveryService.cs" />
+    <Compile Include="Src\UndoRedo\UndoEngine.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">
