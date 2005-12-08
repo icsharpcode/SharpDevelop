@@ -16,7 +16,7 @@ using System.ComponentModel;
 using System.Drawing.Design;
 using System.Collections;
 
-namespace ICSharpCode.FormDesigner.Services
+namespace ICSharpCode.FormsDesigner.Services
 {
 	public class PropertyValueUIService : IPropertyValueUIService
 	{

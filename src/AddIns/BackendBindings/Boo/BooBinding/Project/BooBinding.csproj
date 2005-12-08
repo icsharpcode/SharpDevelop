@@ -75,7 +75,7 @@
     <Compile Include="Src\ConvertBuffer.cs" />
     <Compile Include="Src\Designer\BooDesignerGenerator.cs" />
     <Compile Include="Src\Designer\BooDesignerLoader.cs" />
-    <Compile Include="Src\Designer\FormDesignerBinding.cs" />
+    <Compile Include="Src\Designer\FormsDesignerBinding.cs" />
     <Compile Include="Src\Designer\CodeDomVisitor.cs" />
     <Compile Include="Src\BooCodeGenerator.cs" />
     <Compile Include="Src\CodeCompletion\ElementReturnType.cs" />

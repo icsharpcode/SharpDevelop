@@ -5,22 +5,6 @@
 //     <version>$Revision$</version>
 // </file>
 
-/*
- * Module : FormDesigner
- * 
- * Project : FormDesigner Loading Library Control.
- * 
- * Source code altering : A1
- * 
- * Description : Creation of the SideTabDesigner which load controls from an assembly
- * 				 Use for FromDesigner.
- * 
- * Denis ERCHOFF						22/01/2003
- */
-
-
-//		Denis ERCHOFF		22/01/2003		BEGIN		A1
-
 using System;
 using System.IO;
 using System.Windows.Forms;
@@ -32,10 +16,10 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 
 using ICSharpCode.Core;
-using ICSharpCode.FormDesigner.Services;
+using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.FormDesigner.Gui
+namespace ICSharpCode.FormsDesigner.Gui
 {
 	public class SideTabDesigner : AxSideTab
 	{

@@ -28,10 +28,10 @@ using System.Drawing;
 using System.ComponentModel.Design;
 
 using ICSharpCode.Core;
-using ICSharpCode.FormDesigner.Services;
+using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.FormDesigner.Gui
+namespace ICSharpCode.FormsDesigner.Gui
 {
 	public class SideTabItemDesigner : SharpDevelopSideTabItem
 	{

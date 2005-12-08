@@ -26,8 +26,8 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 using ICSharpCode.Core;
 
-using ICSharpCode.FormDesigner.Services;
-using ICSharpCode.FormDesigner.Gui;
+using ICSharpCode.FormsDesigner.Services;
+using ICSharpCode.FormsDesigner.Gui;
 
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -35,11 +35,11 @@ using System.CodeDom.Compiler;
 using Microsoft.CSharp;
 using Microsoft.VisualBasic;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
 	public class ToolboxProvider
 	{
-		static ICSharpCode.FormDesigner.Services.ToolboxService         toolboxService = null;
+		static ICSharpCode.FormsDesigner.Services.ToolboxService         toolboxService = null;
 		static ITypeResolutionService typeResolutionService = new TypeResolutionService();
 		public static ArrayList       SideTabs = new ArrayList();
 		
@@ -56,10 +56,10 @@ namespace ICSharpCode.FormDesigner
 				return componentLibraryLoader;
 			}
 		}
-		public static ICSharpCode.FormDesigner.Services.ToolboxService ToolboxService {
+		public static ICSharpCode.FormsDesigner.Services.ToolboxService ToolboxService {
 			get {
 				if (toolboxService == null) {
-					toolboxService = new ICSharpCode.FormDesigner.Services.ToolboxService();
+					toolboxService = new ICSharpCode.FormsDesigner.Services.ToolboxService();
 					ReloadSideTabs(false);
 					toolboxService.SelectedItemUsed += new EventHandler(SelectedToolUsedHandler);
 				}
@@ -141,7 +141,7 @@ namespace ICSharpCode.FormDesigner
 			AxSideTab tab = SharpDevelopSideBar.SideBar.ActiveTab;
 						
 			// try to add project reference
-			if (sender != null && sender is ICSharpCode.FormDesigner.Services.ToolboxService) {
+			if (sender != null && sender is ICSharpCode.FormsDesigner.Services.ToolboxService) {
 				ToolboxItem selectedItem = (sender as IToolboxService).GetSelectedToolboxItem();
 				if (tab is CustomComponentsSideTab) {
 					if (selectedItem != null && selectedItem.TypeName != null) {

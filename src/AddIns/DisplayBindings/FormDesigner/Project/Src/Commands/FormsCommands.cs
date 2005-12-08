@@ -25,14 +25,12 @@ using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor;
 
-using ICSharpCode.FormDesigner;
-
-namespace ICSharpCode.FormDesigner.Commands
+namespace ICSharpCode.FormsDesigner.Commands
 {
 	/// <summary>
 	/// This is the base class for all designer menu commands
 	/// </summary>
-	public abstract class AbstractFormDesignerCommand : AbstractMenuCommand
+	public abstract class AbstractFormsDesignerCommand : AbstractMenuCommand
 	{
 		public abstract CommandID CommandID {
 			get;
@@ -43,20 +41,20 @@ namespace ICSharpCode.FormDesigner.Commands
 			return true;
 		}
 		
-		FormDesignerViewContent FormDesigner {
+		FormsDesignerViewContent FormDesigner {
 			get {
 				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 				if (window == null) {
 					return null;
 				}
-				return window.ActiveViewContent as FormDesignerViewContent;
+				return window.ActiveViewContent as FormsDesignerViewContent;
 			}
 		}
 		public override void Run()
 		{
 		
 			try {
-				FormDesignerViewContent formDesigner = FormDesigner;
+				FormsDesignerViewContent formDesigner = FormDesigner;
 				if (formDesigner != null && CanExecuteCommand(formDesigner.Host)) {
 					IMenuCommandService menuCommandService = (IMenuCommandService)formDesigner.Host.GetService(typeof(IMenuCommandService));
 					menuCommandService.GlobalInvoke(CommandID);
@@ -69,13 +67,13 @@ namespace ICSharpCode.FormDesigner.Commands
 	
 	public class ViewCode : AbstractMenuCommand
 	{
-		 FormDesignerViewContent FormDesigner {
+		 FormsDesignerViewContent FormDesigner {
 			get {
 				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 				if (window == null) {
 					return null;
 				}
-				return window.ActiveViewContent as FormDesignerViewContent;
+				return window.ActiveViewContent as FormsDesignerViewContent;
 			}
 		}
 		public override void Run()
@@ -85,7 +83,7 @@ namespace ICSharpCode.FormDesigner.Commands
 				return;
 			}
 			
-			FormDesignerViewContent formDesigner = FormDesigner;
+			FormsDesignerViewContent formDesigner = FormDesigner;
 			if (formDesigner != null) {
 				formDesigner.ShowSourceCode();
 				
@@ -149,7 +147,7 @@ namespace ICSharpCode.FormDesigner.Commands
 	}
 	
 #region Align Commands	
-	public class AlignToGrid : AbstractFormDesignerCommand
+	public class AlignToGrid : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -158,7 +156,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class AlignLeft : AbstractFormDesignerCommand
+	public class AlignLeft : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -167,7 +165,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class AlignRight : AbstractFormDesignerCommand
+	public class AlignRight : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -176,7 +174,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class AlignTop : AbstractFormDesignerCommand
+	public class AlignTop : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -185,7 +183,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class AlignBottom : AbstractFormDesignerCommand
+	public class AlignBottom : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -194,7 +192,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class AlignHorizontalCenters : AbstractFormDesignerCommand
+	public class AlignHorizontalCenters : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -203,7 +201,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class AlignVerticalCenters : AbstractFormDesignerCommand
+	public class AlignVerticalCenters : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -214,7 +212,7 @@ namespace ICSharpCode.FormDesigner.Commands
 #endregion
 
 #region Make Same Size Commands
-	public class SizeToGrid : AbstractFormDesignerCommand
+	public class SizeToGrid : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -223,7 +221,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class SizeToControl : AbstractFormDesignerCommand
+	public class SizeToControl : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -232,7 +230,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class SizeToControlHeight : AbstractFormDesignerCommand
+	public class SizeToControlHeight : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -241,7 +239,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class SizeToControlWidth : AbstractFormDesignerCommand
+	public class SizeToControlWidth : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -252,7 +250,7 @@ namespace ICSharpCode.FormDesigner.Commands
 #endregion
 
 #region Horizontal Spacing Commands	
-	public class HorizSpaceMakeEqual : AbstractFormDesignerCommand
+	public class HorizSpaceMakeEqual : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -267,7 +265,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class HorizSpaceIncrease : AbstractFormDesignerCommand
+	public class HorizSpaceIncrease : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -276,7 +274,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class HorizSpaceDecrease : AbstractFormDesignerCommand
+	public class HorizSpaceDecrease : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -285,7 +283,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class HorizSpaceConcatenate : AbstractFormDesignerCommand
+	public class HorizSpaceConcatenate : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -296,7 +294,7 @@ namespace ICSharpCode.FormDesigner.Commands
 #endregion
 	
 #region Vertical Spacing Commands
-	public class VertSpaceMakeEqual : AbstractFormDesignerCommand
+	public class VertSpaceMakeEqual : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -312,7 +310,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		
 	}
 	
-	public class VertSpaceIncrease : AbstractFormDesignerCommand
+	public class VertSpaceIncrease : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -321,7 +319,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class VertSpaceDecrease : AbstractFormDesignerCommand
+	public class VertSpaceDecrease : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -330,7 +328,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class VertSpaceConcatenate : AbstractFormDesignerCommand
+	public class VertSpaceConcatenate : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -341,7 +339,7 @@ namespace ICSharpCode.FormDesigner.Commands
 #endregion
 
 #region Center Commands	
-	public class CenterHorizontally : AbstractFormDesignerCommand
+	public class CenterHorizontally : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -349,7 +347,7 @@ namespace ICSharpCode.FormDesigner.Commands
 			}
 		}
 	}
-	public class CenterVertically : AbstractFormDesignerCommand
+	public class CenterVertically : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -360,7 +358,7 @@ namespace ICSharpCode.FormDesigner.Commands
 #endregion
 	
 #region Order Commands
-	public class SendToBack : AbstractFormDesignerCommand
+	public class SendToBack : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -369,7 +367,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 	}
 	
-	public class BringToFront : AbstractFormDesignerCommand
+	public class BringToFront : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -381,7 +379,7 @@ namespace ICSharpCode.FormDesigner.Commands
 
 #region Tray Commands	
 	
-	public class LineUpIcons : AbstractFormDesignerCommand
+	public class LineUpIcons : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -392,13 +390,13 @@ namespace ICSharpCode.FormDesigner.Commands
 	
 	public class ShowLargeIcons : AbstractCheckableMenuCommand
 	{
-		FormDesignerViewContent FormDesigner {
+		FormsDesignerViewContent FormDesigner {
 			get {
 				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 				if (window == null) {
 					return null;
 				}
-				return window.ActiveViewContent as FormDesignerViewContent;
+				return window.ActiveViewContent as FormsDesignerViewContent;
 			}
 		}
 		public override bool IsChecked {
@@ -418,7 +416,7 @@ namespace ICSharpCode.FormDesigner.Commands
 		}
 		ComponentTray Tray {
 			get {
-				FormDesignerViewContent formDesigner = FormDesigner;
+				FormsDesignerViewContent formDesigner = FormDesigner;
 				if (formDesigner != null) {
 					return formDesigner.Host.GetService(typeof(ComponentTray)) as ComponentTray;
 				}
@@ -433,7 +431,7 @@ namespace ICSharpCode.FormDesigner.Commands
 #endregion
 
 #region Global Commands	
-	public class LockControls : AbstractFormDesignerCommand
+	public class LockControls : AbstractFormsDesignerCommand
 	{
 		public override CommandID CommandID {
 			get {
@@ -454,7 +452,7 @@ namespace ICSharpCode.FormDesigner.Commands
 					return false;
 				}
 				
-				FormDesignerViewContent formDesigner = FormDesigner;
+				FormsDesignerViewContent formDesigner = FormDesigner;
 				if (formDesigner != null) {
 					return formDesigner.IsTabOrderMode;
 				}
@@ -464,13 +462,13 @@ namespace ICSharpCode.FormDesigner.Commands
 				SetTabOrder(value);
 			}
 		}
-		FormDesignerViewContent FormDesigner {
+		FormsDesignerViewContent FormDesigner {
 			get {
 				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 				if (window == null) {
 					return null;
 				}
-				return window.ActiveViewContent as FormDesignerViewContent;
+				return window.ActiveViewContent as FormsDesignerViewContent;
 			}
 		}
 		
@@ -481,7 +479,7 @@ namespace ICSharpCode.FormDesigner.Commands
 				return;
 			}
 			
-			FormDesignerViewContent formDesigner = FormDesigner;
+			FormsDesignerViewContent formDesigner = FormDesigner;
 			if (formDesigner != null) {
 				if (show) {
 					formDesigner.ShowTabOrder();

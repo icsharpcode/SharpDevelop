@@ -17,13 +17,13 @@ using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
 
 
-namespace ICSharpCode.FormDesigner.Gui.OptionPanels
+namespace ICSharpCode.FormsDesigner.Gui.OptionPanels
 {
 	public class GridOptionsPanel : AbstractOptionPanel
 	{
 		public override void LoadPanelContents()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormDesigner.Resources.WindowsFormsGridOptions.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormsDesigner.Resources.WindowsFormsGridOptions.xfrm"));
 			
 			ControlDictionary["widthTextBox"].Text                      = PropertyService.Get("FormsDesigner.DesignerOptions.GridSizeWidth", 8).ToString();
 			ControlDictionary["heightTextBox"].Text                     = PropertyService.Get("FormsDesigner.DesignerOptions.GridSizeHeight", 8).ToString();

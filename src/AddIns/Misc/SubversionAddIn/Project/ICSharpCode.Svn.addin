@@ -17,10 +17,9 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id               = "FormDesigner"
+		<DisplayBinding id               = "SubversionHistoryView"
 		                type             = "Secondary"
 		                insertbefore     = "Text"
-		                supportedformats = "Forms/UserControls"
 		                class            = "ICSharpCode.Svn.HistoryViewDisplayBinding"/>
 	</Path>
 	

@@ -49,9 +49,9 @@ namespace ICSharpCode.Core
 	/// </example>
 	/// <example title="Secondary display binding: Form designer">
 	/// &lt;Path name = "/SharpDevelop/Workbench/DisplayBindings"&gt;
-	///   &lt;DisplayBinding id  = "FormDesigner"
+	///   &lt;DisplayBinding id  = "FormsDesigner"
 	///                   type  = "Secondary"
-	///                   class = "ICSharpCode.FormDesigner.FormDesignerSecondaryDisplayBinding"
+	///                   class = "ICSharpCode.FormsDesigner.FormsDesignerSecondaryDisplayBinding"
 	///                   fileNamePattern = "\.(cs|vb)$" /&gt;
 	/// &lt;/Path&gt;
 	/// </example>

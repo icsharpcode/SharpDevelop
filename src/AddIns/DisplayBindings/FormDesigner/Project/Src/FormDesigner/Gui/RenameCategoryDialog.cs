@@ -12,7 +12,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
-namespace ICSharpCode.FormDesigner.Gui
+namespace ICSharpCode.FormsDesigner.Gui
 {
 	public class RenameCategoryDialog : BaseSharpDevelopForm
 	{
@@ -26,7 +26,7 @@ namespace ICSharpCode.FormDesigner.Gui
 		
 		public RenameCategoryDialog(string categoryName, Form owner)
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormDesigner.Resources.RenameSidebarCategoryDialog.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormsDesigner.Resources.RenameSidebarCategoryDialog.xfrm"));
 			
 			this.Owner = owner;
 			

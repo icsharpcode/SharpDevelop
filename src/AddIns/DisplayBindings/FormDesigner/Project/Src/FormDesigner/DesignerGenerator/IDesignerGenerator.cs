@@ -14,14 +14,14 @@ using System.CodeDom.Compiler;
 
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
 	public interface IDesignerGenerator
 	{
 		CodeDomProvider CodeDomProvider {
 			get;
 		}
-		void Attach(FormDesignerViewContent viewContent);
+		void Attach(FormsDesignerViewContent viewContent);
 		void Detach();
 		void MergeFormChanges(CodeCompileUnit unit);
 		bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out int position);

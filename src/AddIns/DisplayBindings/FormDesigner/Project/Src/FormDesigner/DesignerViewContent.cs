@@ -29,8 +29,8 @@ using ICSharpCode.SharpDevelop.Internal.Undo;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 using ICSharpCode.Core;
-using ICSharpCode.FormDesigner.Services;
-using ICSharpCode.FormDesigner.FormDesigner.UndoRedo;
+using ICSharpCode.FormsDesigner.Services;
+using ICSharpCode.FormsDesigner.UndoRedo;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
@@ -44,9 +44,9 @@ using System.CodeDom.Compiler;
 using Microsoft.CSharp;
 using Microsoft.VisualBasic;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
-	public class FormDesignerViewContent : AbstractSecondaryViewContent, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider
+	public class FormsDesignerViewContent : AbstractSecondaryViewContent, IClipboardHandler, IUndoHandler, IHasPropertyContainer, IContextHelpProvider
 	{
 		protected bool failedDesignerInitialize;
 		
@@ -61,7 +61,7 @@ namespace ICSharpCode.FormDesigner
 		IDesignerLoaderProvider loaderProvider;
 		IDesignerGenerator generator;
 		DesignerResourceService designerResourceService;
-		FormDesignerUndoEngine undoEngine;
+		FormsDesignerUndoEngine undoEngine;
 		
 		public override Control Control {
 			get {
@@ -99,7 +99,7 @@ namespace ICSharpCode.FormDesigner
 				return (IDesignerHost)designSurface.GetService(typeof(IDesignerHost));
 			}
 		}
-		public FormDesignerViewContent(IViewContent viewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator)
+		public FormsDesignerViewContent(IViewContent viewContent, IDesignerLoaderProvider loaderProvider, IDesignerGenerator generator)
 		{
 			if (!FormKeyHandler.inserted) {
 				FormKeyHandler.Insert();
@@ -116,7 +116,7 @@ namespace ICSharpCode.FormDesigner
 		
 		public override void SwitchedTo()
 		{
-			if (IsFormDesignerVisible) {
+			if (IsFormsDesignerVisible) {
 				AddSideBars();
 			}
 		}
@@ -138,14 +138,14 @@ namespace ICSharpCode.FormDesigner
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
 			serviceContainer.AddService(typeof(ITypeResolutionService), ToolboxProvider.TypeResolutionService);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerEventService), new DesignerEventService());
-			serviceContainer.AddService(typeof(System.ComponentModel.Design.DesignerOptionService), new ICSharpCode.FormDesigner.Services.DesignerOptionService());
+			serviceContainer.AddService(typeof(System.ComponentModel.Design.DesignerOptionService), new ICSharpCode.FormsDesigner.Services.DesignerOptionService());
 			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService());
 			serviceContainer.AddService(typeof(MemberRelationshipService), new DefaultMemberRelationshipService());
 			
 			designSurface = new DesignSurface(serviceContainer);
 			
-			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormDesigner.Services.MenuCommandService(p, designSurface, serviceContainer));
-			ICSharpCode.FormDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormDesigner.Services.EventBindingService(designSurface);
+			serviceContainer.AddService(typeof(System.ComponentModel.Design.IMenuCommandService), new ICSharpCode.FormsDesigner.Services.MenuCommandService(p, designSurface, serviceContainer));
+			ICSharpCode.FormsDesigner.Services.EventBindingService eventBindingService = new ICSharpCode.FormsDesigner.Services.EventBindingService(designSurface);
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
 			designerResourceService.Host = Host;
@@ -156,7 +156,7 @@ namespace ICSharpCode.FormDesigner
 			
 			generator.Attach(this);
 			
-			undoEngine = new FormDesignerUndoEngine(Host);
+			undoEngine = new FormsDesignerUndoEngine(Host);
 			
 			IComponentChangeService componentChangeService = (IComponentChangeService)designSurface.GetService(typeof(IComponentChangeService));
 			componentChangeService.ComponentChanged += delegate { viewContent.IsDirty = true; };
@@ -215,9 +215,9 @@ namespace ICSharpCode.FormDesigner
 				failedDesignerInitialize = true;
 				TextBox errorText = new TextBox();
 				errorText.Multiline = true;
-				if (e.InnerException is FormDesignerLoadException)
+				if (e.InnerException is FormsDesignerLoadException)
 					errorText.Text = e.InnerException.Message;
-				else if (e is FormDesignerLoadException)
+				else if (e is FormsDesignerLoadException)
 					errorText.Text = e.Message;
 				else
 					errorText.Text = e.ToString();
@@ -287,7 +287,7 @@ namespace ICSharpCode.FormDesigner
 		{
 			PropertyPad.PropertyValueChanged += PropertyValueChanged;
 			Reload();
-			IsFormDesignerVisible = true;
+			IsFormsDesignerVisible = true;
 			AddSideBars();
 			propertyContainer.Host = Host;
 			UpdateSelectableObjects();
@@ -296,7 +296,7 @@ namespace ICSharpCode.FormDesigner
 		public override void Dispose()
 		{
 			disposing = true;
-			if (IsFormDesignerVisible) {
+			if (IsFormsDesignerVisible) {
 				Deselected();
 			}
 			base.Dispose();
@@ -307,7 +307,7 @@ namespace ICSharpCode.FormDesigner
 			LoggingService.Info("Deselected form designer, unloading...");
 			PropertyPad.PropertyValueChanged -= PropertyValueChanged;
 			propertyContainer.Clear();
-			IsFormDesignerVisible = false;
+			IsFormsDesignerVisible = false;
 			foreach(AxSideTab tab in ToolboxProvider.SideTabs) {
 				if (!SharpDevelopSideBar.SideBar.Tabs.Contains(tab)) {
 					return;
@@ -326,7 +326,7 @@ namespace ICSharpCode.FormDesigner
 		public override void NotifyBeforeSave()
 		{
 			base.NotifyBeforeSave();
-			if (IsFormDesignerVisible)
+			if (IsFormsDesignerVisible)
 				MergeFormChanges();
 		}
 		
@@ -348,7 +348,7 @@ namespace ICSharpCode.FormDesigner
 			}
 		}
 		
-		public bool IsFormDesignerVisible = false;
+		public bool IsFormsDesignerVisible = false;
 		
 		#region IUndoHandler implementation
 		public bool EnableUndo {

@@ -11,14 +11,14 @@ using System;
 using System.Collections.Generic;
 using System.ComponentModel.Design;
 
-namespace ICSharpCode.FormDesigner.FormDesigner.UndoRedo
+namespace ICSharpCode.FormsDesigner.UndoRedo
 {
-	public class FormDesignerUndoEngine : UndoEngine, IUndoHandler
+	public class FormsDesignerUndoEngine : UndoEngine, IUndoHandler
 	{		
 		Stack<UndoEngine.UndoUnit> undoStack = new Stack<UndoEngine.UndoUnit>();
 		Stack<UndoEngine.UndoUnit> redoStack = new Stack<UndoEngine.UndoUnit>();
 		
-		public FormDesignerUndoEngine(IServiceProvider provider) : base(provider)
+		public FormsDesignerUndoEngine(IServiceProvider provider) : base(provider)
 		{
 		}
 		

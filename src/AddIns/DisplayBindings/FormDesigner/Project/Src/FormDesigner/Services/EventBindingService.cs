@@ -15,7 +15,7 @@ using System.Globalization;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.FormDesigner.Services
+namespace ICSharpCode.FormsDesigner.Services
 {
 	public class EventBindingService : System.ComponentModel.Design.EventBindingService
 	{
@@ -34,7 +34,7 @@ namespace ICSharpCode.FormDesigner.Services
 		{
 			IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
 			if (window != null) {
-				FormDesignerViewContent formDesigner = window.ActiveViewContent as FormDesignerViewContent;
+				FormsDesignerViewContent formDesigner = window.ActiveViewContent as FormsDesignerViewContent;
 				
 				if (formDesigner != null) {
 					return formDesigner.GetCompatibleMethods(e);
@@ -50,7 +50,7 @@ namespace ICSharpCode.FormDesigner.Services
 				return false;
 			}
 
-			FormDesignerViewContent formDesigner = window.ActiveViewContent as FormDesignerViewContent;
+			FormsDesignerViewContent formDesigner = window.ActiveViewContent as FormsDesignerViewContent;
 
 			if (formDesigner != null) {
 				formDesigner.ShowSourceCode();
@@ -66,7 +66,7 @@ namespace ICSharpCode.FormDesigner.Services
 				return false;
 			}
 
-			FormDesignerViewContent formDesigner = window.ActiveViewContent as FormDesignerViewContent;
+			FormsDesignerViewContent formDesigner = window.ActiveViewContent as FormsDesignerViewContent;
 
 			if (formDesigner != null) {
 				formDesigner.ShowSourceCode(lineNumber);
@@ -81,7 +81,7 @@ namespace ICSharpCode.FormDesigner.Services
 			if (window == null || edesc == null || edesc.Name == null || edesc.Name.Length == 0) {
 				return false;
 			}
-			FormDesignerViewContent formDesigner = window.ActiveViewContent as FormDesignerViewContent;
+			FormsDesignerViewContent formDesigner = window.ActiveViewContent as FormsDesignerViewContent;
 			
 			if (formDesigner != null) {
 				formDesigner.ShowSourceCode(component, edesc, methodName);

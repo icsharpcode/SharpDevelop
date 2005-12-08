@@ -14,7 +14,7 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.FormDesigner.Services
+namespace ICSharpCode.FormsDesigner.Services
 {
 	public class TypeResolutionService : ITypeResolutionService
 	{

@@ -8,7 +8,7 @@
 using System;
 using System.Drawing;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
 	/// <summary>
 	/// Interface defining the tab order mode.ning the tab order mode.

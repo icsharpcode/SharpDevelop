@@ -19,7 +19,7 @@ using System.Windows.Forms.Design;
 
 using ICSharpCode.Core;
 
-namespace ICSharpCode.FormDesigner.Services
+namespace ICSharpCode.FormsDesigner.Services
 {
 	class MenuCommandService : IMenuCommandService
 	{

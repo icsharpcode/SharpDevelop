@@ -20,6 +20,6 @@ copy "%1\..\..\RequiredLibraries\Boo.Microsoft.Build.Tasks.dll" .
   </ItemGroup>
   <Target Name="MyPostBuildTarget">
     <Copy SourceFiles="@(MyCopyItem)" DestinationFolder="$(OutputPath)" />
-	<Delete Files="$(OutputPath)\FormDesigner.addin" ContinueOnError="True"/>
+	<Delete Files="$(OutputPath)\FormsDesigner.addin" ContinueOnError="True"/>
   </Target>
 </Project>

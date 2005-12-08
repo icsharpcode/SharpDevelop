@@ -10,7 +10,7 @@ using System.Collections;
 using System.ComponentModel;
 using System.ComponentModel.Design;
 
-namespace ICSharpCode.FormDesigner.Services
+namespace ICSharpCode.FormsDesigner.Services
 {
 	public class TypeDescriptorFilterService : ITypeDescriptorFilterService
 	{

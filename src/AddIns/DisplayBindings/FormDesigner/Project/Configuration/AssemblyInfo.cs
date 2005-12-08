@@ -14,7 +14,7 @@ using System.Runtime.CompilerServices;
 // change them to the information which is associated with the assembly
 // you compile.
 
-[assembly: AssemblyTitle("SharpDevelopFormDesigner")]
+[assembly: AssemblyTitle("SharpDevelop Windows.Forms Designer")]
 [assembly: AssemblyDescription("A Windows.Forms designer implementation")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("www.icsharpcode.net")]

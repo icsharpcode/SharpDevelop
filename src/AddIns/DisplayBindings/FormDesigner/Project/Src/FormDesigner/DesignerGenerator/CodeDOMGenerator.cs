@@ -24,9 +24,9 @@ using System.CodeDom;
 using System.CodeDom.Compiler;
 
 using ICSharpCode.Core;
-using ICSharpCode.FormDesigner.Services;
+using ICSharpCode.FormsDesigner.Services;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
 	/// <summary>
 	/// This class is able to generate a CodeDOM definition out of a XML file.

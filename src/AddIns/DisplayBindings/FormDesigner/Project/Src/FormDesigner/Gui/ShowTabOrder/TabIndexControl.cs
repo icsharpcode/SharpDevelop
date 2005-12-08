@@ -14,9 +14,9 @@ using System.ComponentModel;
 using System.ComponentModel.Design;
 using System.Windows.Forms;
 using System.Windows.Forms.Design;
-using ICSharpCode.FormDesigner.Services;
+using ICSharpCode.FormsDesigner.Services;
 
-namespace ICSharpCode.FormDesigner 
+namespace ICSharpCode.FormsDesigner 
 {
 	/// <summary>
 	/// This class represents a visual feedback for the current tab index of a

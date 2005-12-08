@@ -21,8 +21,8 @@ using ICSharpCode.Core;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
-using ICSharpCode.FormDesigner;
-using ICSharpCode.FormDesigner.Services;
+using ICSharpCode.FormsDesigner;
+using ICSharpCode.FormsDesigner.Services;
 using Boo.Lang.Parser;
 using Boo.Lang.Compiler.Ast;
 
@@ -102,7 +102,7 @@ namespace Grunwald.BooBinding.Designer
 				LoggingService.Debug("BooDesignerLoader.Parse() finished");
 				return ccu;
 			} catch (Boo.Lang.Compiler.CompilerError ex) {
-				throw new FormDesignerLoadException(ex.ToString(true));
+				throw new FormsDesignerLoadException(ex.ToString(true));
 			}
 		}
 		
@@ -119,7 +119,7 @@ namespace Grunwald.BooBinding.Designer
 			                                      });
 			
 			if (errors.Length > 0) {
-				throw new FormDesignerLoadException(errors.ToString());
+				throw new FormsDesignerLoadException(errors.ToString());
 			}
 			
 			// Try to fix the type names to fully qualified ones
@@ -129,7 +129,7 @@ namespace Grunwald.BooBinding.Designer
 			bool foundInitMethod = false;
 			//FixTypeNames(p.CompilationUnit, parseInfo.BestCompilationUnit, ref foundInitMethod);
 			if (!foundInitMethod)
-				throw new FormDesignerLoadException("The InitializeComponent method was not found. Designer cannot be loaded.");
+				throw new FormsDesignerLoadException("The InitializeComponent method was not found. Designer cannot be loaded.");
 			 */
 			
 			CodeDomVisitor visitor = new CodeDomVisitor(parseInfo.MostRecentCompilationUnit.ProjectContent);

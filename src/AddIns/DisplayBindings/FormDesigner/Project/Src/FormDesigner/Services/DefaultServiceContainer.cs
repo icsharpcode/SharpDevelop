@@ -15,7 +15,7 @@ using System.ComponentModel.Design;
 using System.Windows.Forms.Design;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.FormDesigner.Services
+namespace ICSharpCode.FormsDesigner.Services
 {
 	public class DefaultServiceContainer : IServiceContainer, IDisposable
 	{

@@ -13,7 +13,7 @@ using System.Drawing.Design;
 using System.ComponentModel.Design;
 using ICSharpCode.Core;
 
-namespace ICSharpCode.FormDesigner.Services
+namespace ICSharpCode.FormsDesigner.Services
 {
 	public delegate void ToolboxEventHandler(object sender, ToolboxEventArgs tea);
 	

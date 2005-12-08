@@ -709,7 +709,7 @@
 				<And>
 					<Or>
 						<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
-						<Condition name = "WindowActive" activewindow="ICSharpCode.FormDesigner.FormDesignerViewContent"/>
+						<Condition name = "WindowActive" activewindow="ICSharpCode.FormsDesigner.FormsDesignerViewContent"/>
 					</Or>
 					<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
 				</And>
@@ -1174,7 +1174,7 @@
 					<And>
 						<Or>
 							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
-							<Condition name = "WindowActive" activewindow="ICSharpCode.FormDesigner.FormDesignerViewContent"/>
+							<Condition name = "WindowActive" activewindow="ICSharpCode.FormsDesigner.FormsDesignerViewContent"/>
 						</Or>
 						<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
 					</And>
@@ -1219,7 +1219,7 @@
 					<And>
 						<Or>
 							<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
-							<Condition name = "WindowActive" activewindow="ICSharpCode.FormDesigner.FormDesignerViewContent"/>
+							<Condition name = "WindowActive" activewindow="ICSharpCode.FormsDesigner.FormsDesignerViewContent"/>
 						</Or>
 						<Condition name = "ActiveViewContentUntitled" activewindowuntitled="False"/>
 					</And>
@@ -1303,7 +1303,7 @@
 			
 			<ComplexCondition action = "Disable">
 				<Or>
-					<Condition name = "WindowActive" activewindow="ICSharpCode.FormDesigner.FormDesignerViewContent"/>
+					<Condition name = "WindowActive" activewindow="ICSharpCode.FormsDesigner.FormsDesignerViewContent"/>
 					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
 				</Or>
 				<Condition name="ActiveContentExtension" activeextension=".cs" action = "Disable">

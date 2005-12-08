@@ -27,13 +27,13 @@ using System.Xml;
 using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
-using ICSharpCode.FormDesigner.Services;
+using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
 using ICSharpCode.NRefactory.PrettyPrinter;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
 	
 	public class XmlDesignerLoader : BasicDesignerLoader, IObjectCreator

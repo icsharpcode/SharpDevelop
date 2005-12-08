@@ -13,7 +13,7 @@ using System.Windows.Forms;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
-namespace ICSharpCode.FormDesigner.Gui
+namespace ICSharpCode.FormsDesigner.Gui
 {
 	public class ConfigureSideBarDialog : BaseSharpDevelopForm
 	{
@@ -21,7 +21,7 @@ namespace ICSharpCode.FormDesigner.Gui
 		
 		public ConfigureSideBarDialog()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormDesigner.Resources.ConfigureSidebarDialog.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormsDesigner.Resources.ConfigureSidebarDialog.xfrm"));
 			
 			oldComponents = ToolboxProvider.ComponentLibraryLoader.CopyCategories();
 			

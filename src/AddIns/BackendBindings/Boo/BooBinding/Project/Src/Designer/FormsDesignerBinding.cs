@@ -12,12 +12,12 @@ using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.FormDesigner;
+using ICSharpCode.FormsDesigner;
 using ICSharpCode.TextEditor;
 
 namespace Grunwald.BooBinding.Designer
 {
-	public class FormDesignerDisplayBinding : ISecondaryDisplayBinding
+	public class FormsDesignerDisplayBinding : ISecondaryDisplayBinding
 	{
 		public bool CanAttachTo(IViewContent viewContent)
 		{
@@ -29,7 +29,7 @@ namespace Grunwald.BooBinding.Designer
 					return false;
 				if (Path.GetExtension(fileName).Equals(".boo", StringComparison.InvariantCultureIgnoreCase)) {
 					ParseInformation info = ParserService.ParseFile(fileName, textAreaControlProvider.TextEditorControl.Document.TextContent, false, true);
-					if (FormDesignerSecondaryDisplayBinding.IsDesignable(info))
+					if (FormsDesignerSecondaryDisplayBinding.IsDesignable(info))
 						return true;
 				}
 			}
@@ -40,7 +40,7 @@ namespace Grunwald.BooBinding.Designer
 		{
 			IDesignerLoaderProvider loader = new BooDesignerLoaderProvider(((ITextEditorControlProvider)viewContent).TextEditorControl);
 			IDesignerGenerator generator = new BooDesignerGenerator();
-			return new ISecondaryViewContent[] { new FormDesignerViewContent(viewContent, loader, generator) };
+			return new ISecondaryViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
 		}
 	}
 	

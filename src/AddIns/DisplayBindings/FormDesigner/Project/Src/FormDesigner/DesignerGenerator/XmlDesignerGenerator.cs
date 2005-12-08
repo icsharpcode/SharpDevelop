@@ -19,11 +19,11 @@ using System.CodeDom.Compiler;
 using System.Text;
 using System.Text.RegularExpressions;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
 	public class XmlDesignerGenerator : IDesignerGenerator
 	{
-		FormDesignerViewContent viewContent;
+		FormsDesignerViewContent viewContent;
 		
 		public CodeDomProvider CodeDomProvider {
 			get {
@@ -31,7 +31,7 @@ namespace ICSharpCode.FormDesigner
 			}
 		}
 		
-		public void Attach(FormDesignerViewContent viewContent)
+		public void Attach(FormsDesignerViewContent viewContent)
 		{
 			this.viewContent = viewContent;
 		}

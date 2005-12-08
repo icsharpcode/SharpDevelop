@@ -12,7 +12,7 @@ using System.Reflection;
 using System.CodeDom;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.FormDesigner;
+using ICSharpCode.FormsDesigner;
 
 namespace Grunwald.BooBinding.Designer
 {

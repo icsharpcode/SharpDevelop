@@ -24,14 +24,14 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Document;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
 	public abstract class AbstractDesignerGenerator : IDesignerGenerator
 	{
 		IClass  c;
 		IMethod initializeComponents;
 		
-		FormDesignerViewContent viewContent;
+		FormsDesignerViewContent viewContent;
 		bool failedDesignerInitialize = false;
 		
 		CodeDomProvider provider;
@@ -45,7 +45,7 @@ namespace ICSharpCode.FormDesigner
 			}
 		}
 		
-		public void Attach(FormDesignerViewContent viewContent)
+		public void Attach(FormsDesignerViewContent viewContent)
 		{
 			this.viewContent = viewContent;
 		}
@@ -248,8 +248,8 @@ namespace ICSharpCode.FormDesigner
 			ParseInformation info = ParserService.ParseFile(viewContent.TextEditorControl.FileName, content, false, true);
 			ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
 			foreach (IClass c in cu.Classes) {
-				if (FormDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
-					initializeComponents = FormDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
+				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
+					initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
 					if (initializeComponents != null) {
 						string designerFile = initializeComponents.DeclaringType.CompilationUnit.FileName;
 						string designerContent;

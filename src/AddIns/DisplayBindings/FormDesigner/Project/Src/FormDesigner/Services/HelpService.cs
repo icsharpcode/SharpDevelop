@@ -19,7 +19,7 @@ using Microsoft.Win32;
 
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.FormDesigner.Services
+namespace ICSharpCode.FormsDesigner.Services
 {
 	/// <summary>
 	/// BaseImlementation of IHelpService

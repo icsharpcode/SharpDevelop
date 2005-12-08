@@ -6,11 +6,11 @@
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.BooBinding"/>
-		<Dependency addin = "ICSharpCode.FormDesigner"/>
+		<Dependency addin = "ICSharpCode.FormsDesigner"/>
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "$ICSharpCode.FormDesigner/FormDesigner.dll"/>
+		<Import assembly = "$ICSharpCode.FormsDesigner/FormsDesigner.dll"/>
 		<Import assembly = "BooBinding.dll"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
@@ -57,11 +57,11 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id              = "BooFormDesigner"
+		<DisplayBinding id              = "BooFormsDesigner"
 		                type            = "Secondary"
 		                fileNamePattern = "\.boo$"
 		                languagePattern = "^Boo$"
-		                class           = "Grunwald.BooBinding.Designer.FormDesignerDisplayBinding" />
+		                class           = "Grunwald.BooBinding.Designer.FormsDesignerDisplayBinding" />
 	</Path>
 	
 	<Path path = "/SharpDevelop/BackendBindings/ProjectOptions/Boo">
@@ -100,7 +100,7 @@
 		<ComplexCondition action = "Disable">
 			<And>
 				<Or>
-					<Condition name = "WindowActive" activewindow="ICSharpCode.FormDesigner.FormDesignerViewContent"/>
+					<Condition name = "WindowActive" activewindow="ICSharpCode.FormsDesigner.FormsDesignerViewContent"/>
 					<Condition name = "WindowActive" activewindow="ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor.ITextEditorControlProvider"/>
 				</Or>
 				<Or>

@@ -26,7 +26,7 @@ using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
 
 using ICSharpCode.Core;
-using ICSharpCode.FormDesigner.Services;
+using ICSharpCode.FormsDesigner.Services;
 
 using System.CodeDom;
 using System.CodeDom.Compiler;
@@ -34,7 +34,7 @@ using System.CodeDom.Compiler;
 using Microsoft.CSharp;
 using Microsoft.VisualBasic;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
 	public class FormKeyHandler : IMessageFilter
 	{
@@ -93,13 +93,13 @@ namespace ICSharpCode.FormDesigner
 				return false;
 			}
 			
-			FormDesignerViewContent formDesigner = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as FormDesignerViewContent;
+			FormsDesignerViewContent formDesigner = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ActiveViewContent as FormsDesignerViewContent;
 			
 			if (formDesigner == null) {
 				return false;
 			}
 			
-			if (!formDesigner.IsFormDesignerVisible) {
+			if (!formDesigner.IsFormsDesignerVisible) {
 				return false;
 			}
 			

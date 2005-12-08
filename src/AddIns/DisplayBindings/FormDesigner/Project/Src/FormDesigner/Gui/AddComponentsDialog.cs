@@ -20,7 +20,7 @@ using MSjogren.GacTool.FusionNative;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui.XmlForms;
 
-namespace ICSharpCode.FormDesigner.Gui
+namespace ICSharpCode.FormsDesigner.Gui
 {
 	public class AddComponentsDialog : BaseSharpDevelopForm
 	{
@@ -34,7 +34,7 @@ namespace ICSharpCode.FormDesigner.Gui
 		
 		public AddComponentsDialog()
 		{
-			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormDesigner.Resources.AddSidebarComponentsDialog.xfrm"));
+			SetupFromXmlStream(this.GetType().Assembly.GetManifestResourceStream("ICSharpCode.FormsDesigner.Resources.AddSidebarComponentsDialog.xfrm"));
 			
 			Icon = null;
 			PrintGACCache();

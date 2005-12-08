@@ -24,8 +24,8 @@ using ICSharpCode.SharpDevelop;
 using ICSharpCode.SharpDevelop.Internal.Undo;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 
-using ICSharpCode.FormDesigner.Services;
-using ICSharpCode.FormDesigner.Gui;
+using ICSharpCode.FormsDesigner.Services;
+using ICSharpCode.FormsDesigner.Gui;
 using ICSharpCode.Core;
 
 using System.CodeDom;
@@ -34,7 +34,7 @@ using System.CodeDom.Compiler;
 using Microsoft.CSharp;
 using Microsoft.VisualBasic;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
 	public class CustomizeSideBar : AbstractMenuCommand
 	{

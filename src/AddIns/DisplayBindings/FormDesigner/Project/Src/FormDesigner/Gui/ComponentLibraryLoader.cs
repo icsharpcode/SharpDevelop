@@ -12,7 +12,7 @@ using System.Reflection;
 using System.Collections;
 using System.Xml;
 
-namespace ICSharpCode.FormDesigner.Gui
+namespace ICSharpCode.FormsDesigner.Gui
 {
 	public class ToolComponent
 	{

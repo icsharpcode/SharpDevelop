@@ -17,7 +17,7 @@ using System.ComponentModel.Design;
 using System.Reflection;
 using System.Windows.Forms;
 
-namespace ICSharpCode.FormDesigner.Services
+namespace ICSharpCode.FormsDesigner.Services
 {
 	public class TypeDiscoveryService : ITypeDiscoveryService
 	{

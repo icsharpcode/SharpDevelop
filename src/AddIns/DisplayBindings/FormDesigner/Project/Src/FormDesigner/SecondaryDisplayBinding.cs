@@ -13,12 +13,12 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.NRefactory.Parser;
-using ICSharpCode.FormDesigner.Services;
+using ICSharpCode.FormsDesigner.Services;
 using System.ComponentModel.Design;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
-	public class FormDesignerSecondaryDisplayBinding : ISecondaryDisplayBinding
+	public class FormsDesignerSecondaryDisplayBinding : ISecondaryDisplayBinding
 	{
 		public static IMethod GetInitializeComponents(IClass c)
 		{
@@ -123,7 +123,7 @@ namespace ICSharpCode.FormDesigner
 				default:
 					throw new ApplicationException("Cannot create content for " + fileExtension);
 			}
-			return new ISecondaryViewContent[] { new FormDesignerViewContent(viewContent, loader, generator) };
+			return new ISecondaryViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
 		}
 	}
 }

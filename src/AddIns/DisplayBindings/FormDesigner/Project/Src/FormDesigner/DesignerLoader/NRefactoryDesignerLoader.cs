@@ -22,12 +22,12 @@ using ICSharpCode.TextEditor;
 using ICSharpCode.TextEditor.Document;
 
 using ICSharpCode.SharpDevelop.Dom;
-using ICSharpCode.FormDesigner.Services;
+using ICSharpCode.FormsDesigner.Services;
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
 using ICSharpCode.NRefactory.PrettyPrinter;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
 	public class DefaultMemberRelationshipService : MemberRelationshipService
 	{
@@ -148,13 +148,13 @@ namespace ICSharpCode.FormDesigner
 			IClass formClass = null;
 			
 			foreach (IClass c in parseInfo.BestCompilationUnit.Classes) {
-				if (FormDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
+				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
 					formClass = c;
 					break;
 				}
 			}
 			if (formClass == null)
-				throw new FormDesignerLoadException("No class derived from Form or Control was found.");
+				throw new FormsDesignerLoadException("No class derived from Form or Control was found.");
 			
 			// Initialize designer for formClass
 			formClass = formClass.DefaultReturnType.GetUnderlyingClass();
@@ -184,7 +184,7 @@ namespace ICSharpCode.FormDesigner
 				ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(language, new StringReader(fileContent));
 				p.Parse();
 				if (p.Errors.count > 0) {
-					throw new FormDesignerLoadException("Syntax errors in " + fileName + ":\r\n" + p.Errors.ErrorOutput);
+					throw new FormsDesignerLoadException("Syntax errors in " + fileName + ":\r\n" + p.Errors.ErrorOutput);
 				}
 				
 				// Try to fix the type names to fully qualified ones
@@ -193,7 +193,7 @@ namespace ICSharpCode.FormDesigner
 			}
 			
 			if (!foundInitMethod)
-				throw new FormDesignerLoadException("The InitializeComponent method was not found. Designer cannot be loaded.");
+				throw new FormsDesignerLoadException("The InitializeComponent method was not found. Designer cannot be loaded.");
 			
 			CompilationUnit combinedCu = new CompilationUnit();
 			NamespaceDeclaration nsDecl = new NamespaceDeclaration(formClass.Namespace);

@@ -1,21 +1,21 @@
-<AddIn name        = "Form Designer"
+<AddIn name        = "Forms Designer"
        author      = "Mike Krueger"
        copyright   = "GPL"
-       description = "SharpDevelop Form Designer">
+       description = "Windows Forms Designer">
 	
 	<Manifest>
-		<Identity name = "ICSharpCode.FormDesigner"/>
+		<Identity name = "ICSharpCode.FormsDesigner"/>
 	</Manifest>
 	
 	<Runtime>
-		<Import assembly = "FormDesigner.dll"/>
+		<Import assembly = "FormsDesigner.dll"/>
 		<Import assembly = ":ICSharpCode.SharpDevelop"/>
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">
-		<DisplayBinding id    = "FormDesigner"
+		<DisplayBinding id    = "FormsDesigner"
 		                type  = "Secondary"
-		                class = "ICSharpCode.FormDesigner.FormDesignerSecondaryDisplayBinding"
+		                class = "ICSharpCode.FormsDesigner.FormsDesignerSecondaryDisplayBinding"
 		                fileNamePattern = "\.(cs|vb|xfrm)$"/>
 	</Path>
 	
@@ -23,32 +23,32 @@
 		<MenuItem id          = "ViewCode"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
 		          icon        = "Icons.16x16.FormsDesigner.ViewCode"
-		          class       = "ICSharpCode.FormDesigner.Commands.ViewCode"/>
+		          class       = "ICSharpCode.FormsDesigner.Commands.ViewCode"/>
 		<MenuItem id = "ViewCodeSeparator" type = "Separator"/>
 		<MenuItem id          = "BringToFront"
 		          label       = "${res:XML.MainMenu.FormatMenu.HorizontalSpacingMenu.BringToFront}"
 		          icon        = "Icons.16x16.FormsDesigner.BringToFront"
-		          class       = "ICSharpCode.FormDesigner.Commands.BringToFront"/>
+		          class       = "ICSharpCode.FormsDesigner.Commands.BringToFront"/>
 		<MenuItem id          = "SendToBack"
 		          label       = "${res:XML.MainMenu.FormatMenu.OrderMenu.SendToBack}"
 		          icon        = "Icons.16x16.FormsDesigner.SendToBack"
-		          class       = "ICSharpCode.FormDesigner.Commands.SendToBack"/>
+		          class       = "ICSharpCode.FormsDesigner.Commands.SendToBack"/>
 		<MenuItem id = "OrderSeparator" type = "Separator"/>
 		
 		<MenuItem id          = "AlignToGrid"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.SelectionMenu.AlignToGrid}"
 		          icon        = "Icons.16x16.FormsDesigner.AlignToGrid"
-		          class       = "ICSharpCode.FormDesigner.Commands.AlignToGrid"/>
+		          class       = "ICSharpCode.FormsDesigner.Commands.AlignToGrid"/>
 		<MenuItem id = "AlignSeparator" type = "Separator"/>
 		<MenuItem id          = "ViewTabOrder"
 		          label       = "${res:XML.MainMenu.FormatMenu.ShowTabOrder}"
-		          class       = "ICSharpCode.FormDesigner.Commands.ViewTabOrder"/>
+		          class       = "ICSharpCode.FormsDesigner.Commands.ViewTabOrder"/>
 		<MenuItem id          = "Lock"
 		          label       = "${res:XML.MainMenu.FormatMenu.Lock}"
 		          icon        = "Icons.16x16.FormsDesigner.LockControls"
-		          class = "ICSharpCode.FormDesigner.Commands.LockControls"/>
+		          class = "ICSharpCode.FormsDesigner.Commands.LockControls"/>
 		<MenuItem id = "LockSeparator" type = "Separator"/>
-		<MenuItem id = "DesignerVerbsBuilder" type="Builder" class = "ICSharpCode.FormDesigner.Commands.DesignerVerbSubmenuBuilder" />
+		<MenuItem id = "DesignerVerbsBuilder" type="Builder" class = "ICSharpCode.FormsDesigner.Commands.DesignerVerbSubmenuBuilder" />
 		<MenuItem id = "Cut"
 		          label = "${res:XML.MainMenu.EditMenu.Cut}"
 		          icon = "Icons.16x16.CutIcon"
@@ -69,22 +69,22 @@
 		<MenuItem id          = "ShowProperties"
 		          label       = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
 		          icon        = "Icons.16x16.Property"
-		          class       = "ICSharpCode.FormDesigner.Commands.ShowProperties"/>
+		          class       = "ICSharpCode.FormsDesigner.Commands.ShowProperties"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/FormsDesigner/ContextMenus/ContainerMenu">
 		<MenuItem id          = "ViewCode"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
 		          icon        = "Icons.16x16.FormsDesigner.ViewCode"
-		          class       = "ICSharpCode.FormDesigner.Commands.ViewCode"/>
+		          class       = "ICSharpCode.FormsDesigner.Commands.ViewCode"/>
 		<MenuItem id = "ViewCodeSeparator" type = "Separator"/>
 		<MenuItem id          = "ViewTabOrder"
 		          label       = "${res:XML.MainMenu.FormatMenu.ShowTabOrder}"
-		          class       = "ICSharpCode.FormDesigner.Commands.ViewTabOrder"/>
+		          class       = "ICSharpCode.FormsDesigner.Commands.ViewTabOrder"/>
 		<MenuItem id          = "Lock"
 		          label       = "${res:XML.MainMenu.FormatMenu.Lock}"
 		          icon        = "Icons.16x16.FormsDesigner.LockControls"
-		          class       = "ICSharpCode.FormDesigner.Commands.LockControls"/>
+		          class       = "ICSharpCode.FormsDesigner.Commands.LockControls"/>
 		<MenuItem id = "LockSeparator" type = "Separator"/>
 		<MenuItem id = "Paste"
 		          label = "${res:XML.MainMenu.EditMenu.Paste}"
@@ -94,16 +94,16 @@
 		<MenuItem id          = "ShowProperties"
 		          label       = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
 		          icon        = "Icons.16x16.Property"
-		          class       = "ICSharpCode.FormDesigner.Commands.ShowProperties"/>
+		          class       = "ICSharpCode.FormsDesigner.Commands.ShowProperties"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/FormsDesigner/ContextMenus/TraySelectionMenu">
 		<MenuItem id          = "ViewCode"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
 		          icon        = "Icons.16x16.FormsDesigner.ViewCode"
-		          class       = "ICSharpCode.FormDesigner.Commands.ViewCode"/>
+		          class       = "ICSharpCode.FormsDesigner.Commands.ViewCode"/>
 		<MenuItem id = "ViewCodeSeparator" type = "Separator"/>
-		<MenuItem id = "DesignerVerbsBuilder" type = "Builder" class = "ICSharpCode.FormDesigner.Commands.DesignerVerbSubmenuBuilder" />
+		<MenuItem id = "DesignerVerbsBuilder" type = "Builder" class = "ICSharpCode.FormsDesigner.Commands.DesignerVerbSubmenuBuilder" />
 		<MenuItem id = "Cut"
 		          label = "${res:XML.MainMenu.EditMenu.Cut}"
 		          icon = "Icons.16x16.CutIcon"
@@ -124,19 +124,19 @@
 		<MenuItem id          = "ShowProperties"
 		          label       = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
 		          icon        = "Icons.16x16.Property"
-		          class       = "ICSharpCode.FormDesigner.Commands.ShowProperties"/>
+		          class       = "ICSharpCode.FormsDesigner.Commands.ShowProperties"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/FormsDesigner/ContextMenus/ComponentTrayMenu">
 		<MenuItem id          = "ViewCode"
 		          label       = "${res:SharpDevelop.FormsDesigner.ContextMenus.ViewCodeCommand}"
 		          icon        = "Icons.16x16.FormsDesigner.ViewCode"
-		          class       = "ICSharpCode.FormDesigner.Commands.ViewCode"/>
+		          class       = "ICSharpCode.FormsDesigner.Commands.ViewCode"/>
 		<MenuItem id = "ViewCodeSeparator" type = "Separator"/>
 		<MenuItem id          = "Lock"
 		          label       = "${res:XML.MainMenu.FormatMenu.Lock}"
 		          icon        = "Icons.16x16.FormsDesigner.LockControls"
-		          class = "ICSharpCode.FormDesigner.Commands.LockControls"/>
+		          class = "ICSharpCode.FormsDesigner.Commands.LockControls"/>
 		<MenuItem id = "LockSeparator" type = "Separator"/>
 		<MenuItem id = "Paste"
 		          label = "${res:XML.MainMenu.EditMenu.Paste}"
@@ -145,14 +145,14 @@
 		<MenuItem id = "PasteSeparator" type = "Separator"/>
 		<MenuItem id          = "LineUpIcons"
 		          label       = "${res:XML.MainMenu.FormatMenu.LineUpIcons}"
-		          class = "ICSharpCode.FormDesigner.Commands.LineUpIcons"/>
+		          class = "ICSharpCode.FormsDesigner.Commands.LineUpIcons"/>
 		<MenuItem id          = "ShowLargeIcons"
 		          label       = "${res:XML.MainMenu.FormatMenu.ShowLargeIcons}"
-		          class = "ICSharpCode.FormDesigner.Commands.ShowLargeIcons"/>
+		          class = "ICSharpCode.FormsDesigner.Commands.ShowLargeIcons"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu">
-		<Condition name = "WindowActive" activewindow="ICSharpCode.FormDesigner.FormDesignerViewContent">
+		<Condition name = "WindowActive" activewindow="ICSharpCode.FormsDesigner.FormsDesignerViewContent">
 			<MenuItem id           = "Format"
 			          label        = "${res:XML.MainMenu.FormatMenu}"
 			          insertafter  = "Debug"
@@ -162,53 +162,53 @@
 					<MenuItem id          = "AlignHorizontalLeft"
 					          label       = "${res:XML.MainMenu.FormatMenu.AlignMenu.AlignHorizontalLeft}"
 					          icon        = "Icons.16x16.FormsDesigner.AlignLefts"
-					          class       = "ICSharpCode.FormDesigner.Commands.AlignLeft"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.AlignLeft"/>
 					<!-- The AlingVerticalCenters command is HERE correct!!! -->
 					<MenuItem id          = "AlignHorizontalCenters"
 					          label       = "${res:XML.MainMenu.FormatMenu.AlignMenu.AlignHorizontalCenters}"
 					          icon        = "Icons.16x16.FormsDesigner.AlignCenters"
-					          class       = "ICSharpCode.FormDesigner.Commands.AlignVerticalCenters"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.AlignVerticalCenters"/>
 					<MenuItem id          = "AlignHorizontalRight"
 					          label       = "${res:XML.MainMenu.FormatMenu.AlignMenu.AlignHorizontalRight}"
 					          icon        = "Icons.16x16.FormsDesigner.AlignRights"
-					          class       = "ICSharpCode.FormDesigner.Commands.AlignRight"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.AlignRight"/>
 					<MenuItem id = "HorizontalSeparator" type = "Separator"/>
 					<MenuItem id          = "AlignTop"
 					          label       = "${res:XML.MainMenu.FormatMenu.AlignMenu.AlignTop}"
 					          icon        = "Icons.16x16.FormsDesigner.AlignTops"
-					          class       = "ICSharpCode.FormDesigner.Commands.AlignTop"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.AlignTop"/>
 					<!-- The AlignHorizontalCenters command is HERE correct (was swapped internally ?)!!! -->
 					<MenuItem id          = "AlignVerticalCenters"
 					          label       = "${res:XML.MainMenu.FormatMenu.AlignMenu.AlignVerticalCenters}"
 					          icon        = "Icons.16x16.FormsDesigner.AlignMiddles"
-					          class       = "ICSharpCode.FormDesigner.Commands.AlignHorizontalCenters"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.AlignHorizontalCenters"/>
 					<MenuItem id          = "AlignBottom"
 					          label       = "${res:XML.MainMenu.FormatMenu.AlignMenu.AlignBottom}"
 					          icon        = "Icons.16x16.FormsDesigner.AlignBottoms"
-					          class       = "ICSharpCode.FormDesigner.Commands.AlignBottom"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.AlignBottom"/>
 					<MenuItem id = "VerticalSeparator" type = "Separator"/>
 					<MenuItem id          = "AlignToGrid"
 					          label       = "${res:XML.MainMenu.FormatMenu.AlignMenu.AlignToGrid}"
 					          icon        = "Icons.16x16.FormsDesigner.AlignToGrid"
-					          class       = "ICSharpCode.FormDesigner.Commands.AlignToGrid"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.AlignToGrid"/>
 				</MenuItem>
 				<MenuItem id = "SameSizeMenu" label = "${res:XML.MainMenu.FormatMenu.SameSizeMenu}" type = "Menu">
 					<MenuItem id          = "SizeToControlWidth"
 					          label       = "${res:XML.MainMenu.FormatMenu.SameSizeMenu.SizeToControlWidth}"
 					          icon        = "Icons.16x16.FormsDesigner.MakeSameWidth"
-					          class       = "ICSharpCode.FormDesigner.Commands.SizeToControlWidth"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.SizeToControlWidth"/>
 					<MenuItem id          = "SizeToGrid"
 					          label       = "${res:XML.MainMenu.FormatMenu.SameSizeMenu.SizeToGrid}"
 					          icon        = "Icons.16x16.FormsDesigner.SizeToGrid"
-					          class       = "ICSharpCode.FormDesigner.Commands.SizeToGrid"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.SizeToGrid"/>
 					<MenuItem id          = "SizeToControlHeight"
 					          label       = "${res:XML.MainMenu.FormatMenu.SameSizeMenu.SizeToControlHeight}"
 					          icon        = "Icons.16x16.FormsDesigner.MakeSameHeight"
-					          class       = "ICSharpCode.FormDesigner.Commands.SizeToControlHeight"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.SizeToControlHeight"/>
 					<MenuItem id          = "SizeToControl"
 					          label       = "${res:XML.MainMenu.FormatMenu.SameSizeMenu.SizeToControl}"
 					          icon        = "Icons.16x16.FormsDesigner.MakeSameSize"
-					          class       = "ICSharpCode.FormDesigner.Commands.SizeToControl"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.SizeToControl"/>
 				</MenuItem>
 				<MenuItem id = "FormatSeparator" type = "Separator"/>
 				
@@ -216,37 +216,37 @@
 					<MenuItem id          = "HorizSpaceMakeEqual"
 					          label       = "${res:XML.MainMenu.FormatMenu.HorizontalSpacingMenu.HorizSpaceMakeEqual}"
 					          icon        = "Icons.16x16.FormsDesigner.EqualizeHorizontalSpace"
-					          class       = "ICSharpCode.FormDesigner.Commands.HorizSpaceMakeEqual"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.HorizSpaceMakeEqual"/>
 					<MenuItem id          = "HorizSpaceIncrease"
 					          label       = "${res:XML.MainMenu.FormatMenu.HorizontalSpacingMenu.HorizSpaceIncrease}"
 					          icon        = "Icons.16x16.FormsDesigner.IncreaseHorizontalSpace"
-					          class       = "ICSharpCode.FormDesigner.Commands.HorizSpaceIncrease"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.HorizSpaceIncrease"/>
 					<MenuItem id          = "HorizSpaceDecrease"
 					          label       = "${res:XML.MainMenu.FormatMenu.HorizontalSpacingMenu.HorizSpaceDecrease}"
 					          icon        = "Icons.16x16.FormsDesigner.DecreaseHorizontalSpace"
-					          class       = "ICSharpCode.FormDesigner.Commands.HorizSpaceDecrease"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.HorizSpaceDecrease"/>
 					<MenuItem id          = "HorizSpaceConcatenate"
 					          label       = "${res:XML.MainMenu.FormatMenu.HorizontalSpacingMenu.HorizSpaceConcatenate}"
 					          icon        = "Icons.16x16.FormsDesigner.RemoveHorizontalSpace"
-					          class       = "ICSharpCode.FormDesigner.Commands.HorizSpaceConcatenate"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.HorizSpaceConcatenate"/>
 				</MenuItem>
 				<MenuItem id = "VerticalSpacingMenu" label = "${res:XML.MainMenu.FormatMenu.VerticalSpacingMenu}" type = "Menu">
 					<MenuItem id          = "VertSpaceMakeEqual"
 					          label       = "${res:XML.MainMenu.FormatMenu.VerticalSpacingMenu.VertSpaceMakeEqual}"
 					          icon        = "Icons.16x16.FormsDesigner.EqualizeVerticalSpace"
-					          class       = "ICSharpCode.FormDesigner.Commands.VertSpaceMakeEqual"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.VertSpaceMakeEqual"/>
 					<MenuItem id          = "VertSpaceIncrease"
 					          label       = "${res:XML.MainMenu.FormatMenu.VerticalSpacingMenu.VertSpaceIncrease}"
 					          icon        = "Icons.16x16.FormsDesigner.IncreaseVerticalSpace"
-					          class       = "ICSharpCode.FormDesigner.Commands.VertSpaceIncrease"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.VertSpaceIncrease"/>
 					<MenuItem id          = "VertSpaceDecrease"
 					          label       = "${res:XML.MainMenu.FormatMenu.VerticalSpacingMenu.VertSpaceDecrease}"
 					          icon        = "Icons.16x16.FormsDesigner.DecreaseVerticalSpace"
-					          class       = "ICSharpCode.FormDesigner.Commands.VertSpaceDecrease"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.VertSpaceDecrease"/>
 					<MenuItem id          = "VertSpaceConcatenate"
 					          label       = "${res:XML.MainMenu.FormatMenu.VerticalSpacingMenu.VertSpaceConcatenate}"
 					          icon        = "Icons.16x16.FormsDesigner.RemoveVerticalSpace"
-					          class       = "ICSharpCode.FormDesigner.Commands.VertSpaceConcatenate"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.VertSpaceConcatenate"/>
 				</MenuItem>
 				<MenuItem id = "SpacingSeparator" type = "Separator"/>
 				
@@ -254,11 +254,11 @@
 					<MenuItem id          = "CenterHorizontally"
 					          label       = "${res:XML.MainMenu.FormatMenu.CenterMenu.CenterHorizontally}"
 					          icon        = "Icons.16x16.FormsDesigner.CenterHorizontally"
-					          class       = "ICSharpCode.FormDesigner.Commands.CenterHorizontally"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.CenterHorizontally"/>
 					<MenuItem id          = "CenterVertically"
 					          label       = "${res:XML.MainMenu.FormatMenu.CenterMenu.CenterVertically}"
 					          icon        = "Icons.16x16.FormsDesigner.CenterVertically"
-					          class       = "ICSharpCode.FormDesigner.Commands.CenterVertically"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.CenterVertically"/>
 				</MenuItem>
 				<MenuItem id = "CenterSeparator" type = "Separator"/>
 				
@@ -266,20 +266,20 @@
 					<MenuItem id          = "BringToFront"
 					          label       = "${res:XML.MainMenu.FormatMenu.OrderMenu.BringToFront}"
 					          icon        = "Icons.16x16.FormsDesigner.BringToFront"
-					          class       = "ICSharpCode.FormDesigner.Commands.BringToFront"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.BringToFront"/>
 					<MenuItem id          = "SendToBack"
 					          label       = "${res:XML.MainMenu.FormatMenu.OrderMenu.SendToBack}"
 					          icon        = "Icons.16x16.FormsDesigner.SendToBack"
-					          class       = "ICSharpCode.FormDesigner.Commands.SendToBack"/>
+					          class       = "ICSharpCode.FormsDesigner.Commands.SendToBack"/>
 				</MenuItem>
 				<MenuItem id = "OrderSeparator" type = "Separator"/>
 				<MenuItem id          = "ViewTabOrder"
 				          label       = "${res:XML.MainMenu.FormatMenu.ShowTabOrder}"
-				          class       = "ICSharpCode.FormDesigner.Commands.ViewTabOrder"/>
+				          class       = "ICSharpCode.FormsDesigner.Commands.ViewTabOrder"/>
 				<MenuItem id          = "Lock"
 				          label       = "${res:XML.MainMenu.FormatMenu.Lock}"
 				          icon        = "Icons.16x16.FormsDesigner.LockControls"
-				          class = "ICSharpCode.FormDesigner.Commands.LockControls"/>
+				          class = "ICSharpCode.FormsDesigner.Commands.LockControls"/>
 			</MenuItem>
 		</Condition>
 	</Path>
@@ -291,7 +291,7 @@
 		<MenuItem id    = "CustomizeSideBar"
 		          label = "${res:XML.FormsDesigner.SideBar.CustomizeSidebar}"
 		          icon        = "Icons.16x16.Options"
-		          class = "ICSharpCode.FormDesigner.CustomizeSideBar"/>
+		          class = "ICSharpCode.FormsDesigner.CustomizeSideBar"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog">
@@ -301,7 +301,7 @@
 			
 			<DialogPanel id    = "GridOptions"
 			             label = "${res:ICSharpCode.SharpDevelop.FormDesigner.Gui.OptionPanels.GridOptionsPanel.PanelName}"
-			             class = "ICSharpCode.FormDesigner.Gui.OptionPanels.GridOptionsPanel"/>
+			             class = "ICSharpCode.FormsDesigner.Gui.OptionPanels.GridOptionsPanel"/>
 		
 		</DialogPanel>
 	</Path>

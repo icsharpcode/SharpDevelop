@@ -21,7 +21,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Project.Commands;
 
-namespace ICSharpCode.FormDesigner.Services
+namespace ICSharpCode.FormsDesigner.Services
 {
 	public class DesignerResourceService : System.ComponentModel.Design.IResourceService , IDisposable
 	{

@@ -12,7 +12,7 @@ using System.Reflection;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Dom;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
 	public class VBNetDesignerGenerator : AbstractDesignerGenerator
 	{

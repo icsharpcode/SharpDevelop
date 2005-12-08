@@ -10,7 +10,7 @@ using System.ComponentModel.Design.Serialization;
 using ICSharpCode.TextEditor;
 using ICSharpCode.NRefactory.Parser;
 
-namespace ICSharpCode.FormDesigner
+namespace ICSharpCode.FormsDesigner
 {
 	public interface IDesignerLoaderProvider
 	{

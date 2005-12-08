@@ -14,7 +14,7 @@ using System.Windows.Forms.Design;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
-namespace ICSharpCode.FormDesigner.Services
+namespace ICSharpCode.FormsDesigner.Services
 {
 	public class UIService : IUIService
 	{
