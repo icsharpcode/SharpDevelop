@@ -17,7 +17,8 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	public class FileOperationClipboardObject : System.MarshalByRefObject
+	[Serializable]
+	public class FileOperationClipboardObject
 	{
 		string fileName;
 		bool   performMove;
