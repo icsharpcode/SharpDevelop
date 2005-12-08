@@ -42,11 +42,7 @@ namespace Debugger
 		
 		void Call(MethodInvoker callback)
 		{
-			if (debugger.RequiredApartmentState == ApartmentState.STA) {
-				debugger.MTA2STA.CallInSTA(callback);
-			} else {
-				callback();
-			}
+			debugger.MTA2STA.Call(callback);
 		}
 			
 		public void StepComplete(System.IntPtr pAppDomain, System.IntPtr pThread, System.IntPtr pStepper, Debugger.Interop.CorDebug.CorDebugStepReason reason)

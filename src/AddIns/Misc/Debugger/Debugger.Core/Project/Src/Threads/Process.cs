@@ -78,16 +78,12 @@ namespace Debugger
 		
 		static public Process CreateProcess(NDebugger debugger, string filename, string workingDirectory, string arguments)
 		{
-			Process createdProcess = null;
-			if (debugger.RequiredApartmentState == ApartmentState.STA) {
-				createdProcess = (Process)debugger.MTA2STA.CallInSTA(typeof(Process), "StartInternal", new Object[] {debugger, filename, workingDirectory, arguments});
-			} else {
-				createdProcess = StartInternal(debugger, filename, workingDirectory, arguments);
-			}
-			return createdProcess;
+			return debugger.MTA2STA.Call<Process>(delegate{
+			                                      	return StartInternal(debugger, filename, workingDirectory, arguments);
+			                                      });
 		}
 		
-		static public unsafe Process StartInternal(NDebugger debugger, string filename, string workingDirectory, string arguments)
+		static unsafe Process StartInternal(NDebugger debugger, string filename, string workingDirectory, string arguments)
 		{
 			debugger.TraceMessage("Executing " + filename);
 			

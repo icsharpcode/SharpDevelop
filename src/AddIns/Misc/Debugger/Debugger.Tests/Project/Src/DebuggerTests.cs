@@ -31,6 +31,7 @@ namespace Debugger.Tests
 		public DebuggerTests()
 		{
 			debugger = new NDebugger();
+			debugger.MTA2STA.CallMethod = CallMethod.Manual;
 			debugger.LogMessage += delegate(object sender, MessageEventArgs e) {
 				log += e.Message;
 				lastLogMessage = e.Message;
@@ -62,7 +63,7 @@ namespace Debugger.Tests
 			Assert.AreEqual("Hello world!\r\n", log);
 		}
 		
-		[Test, Ignore("Deadlocks")]
+		[Test, Ignore("Does not work for first time")]
 		public void Breakpoint()
 		{
 			debugger.AddBreakpoint("Breakpoint.cs", 16);

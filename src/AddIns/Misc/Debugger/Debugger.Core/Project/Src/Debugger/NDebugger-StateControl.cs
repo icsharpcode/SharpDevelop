@@ -21,7 +21,7 @@ namespace Debugger
 	{
 		PausedReason? pausedReason = null;
 		bool pauseOnHandledException = false;
-		EventWaitHandle waitForPauseHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+		ManualResetEvent pausedHandle = new ManualResetEvent(false);
 		
 		object sessionID = new object();
 		object debugeeStateID = new object();
@@ -181,7 +181,7 @@ namespace Debugger
 			}
 			
 			if (IsPaused) {
-				waitForPauseHandle.Set();
+				pausedHandle.Set();
 			}
 		}
 		
@@ -201,7 +201,8 @@ namespace Debugger
 			}
 			
 			OnDebuggingResumed();
-			waitForPauseHandle.Reset();
+			
+			pausedHandle.Reset();
 			
 			pausedReason = null;
 			
@@ -220,16 +221,8 @@ namespace Debugger
 		/// </summary>
 		public void WaitForPause()
 		{
-			if (IsRunning) {
-				EventHandler<ProcessEventArgs> throwError = delegate {
-					if (Processes.Count == 0) {
-						throw new DebuggerException("Process exited before pausing");
-					}
-				};
-				this.ProcessExited += throwError;
-				throwError(null, null);
-				this.MTA2STA.SoftWait(WaitForPauseHandle);
-				this.ProcessExited -= throwError;
+			if (this.MTA2STA.SoftWait(PausedHandle, noProcessesHandle) == 1) {
+				throw new DebuggerException("Process exited before pausing");
 			}
 		}
 		
@@ -238,24 +231,15 @@ namespace Debugger
 		/// </summary>
 		public void WaitForPrecessExit()
 		{
-			// The process is removed first and then the even is called
-			
-			AutoResetEvent exitedEvent = new AutoResetEvent(false);
-			this.ProcessExited += delegate {
-				exitedEvent.Set();
-			};
-			// If it has not been removed yet, we will get an event later
-			while (Processes.Count > 0) {
-				this.MTA2STA.SoftWait(exitedEvent);
-			}
+			this.MTA2STA.SoftWait(noProcessesHandle);
 		}
 		
 		/// <summary>
 		/// Wait handle, which will be set as long as the debugger is paused
 		/// </summary>
-		public WaitHandle WaitForPauseHandle {
+		public WaitHandle PausedHandle {
 			get {
-				return waitForPauseHandle;
+				return pausedHandle;
 			}
 		}
 		

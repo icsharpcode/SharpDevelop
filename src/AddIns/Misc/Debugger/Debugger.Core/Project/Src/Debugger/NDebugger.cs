@@ -23,20 +23,13 @@ namespace Debugger
 		ManagedCallback            managedCallback;
 		ManagedCallbackProxy       managedCallbackProxy;
 		
-		ApartmentState requiredApartmentState;
 		MTA2STA mta2sta = new MTA2STA();
 		
 		VariableCollection localVariables;
 		
 		string debuggeeVersion;
 		
-		public ApartmentState RequiredApartmentState {
-			get  {
-				 return requiredApartmentState;
-			}
-		}
-		
-		internal MTA2STA MTA2STA {
+		public MTA2STA MTA2STA {
 			get {
 				return mta2sta;
 			}
@@ -62,7 +55,11 @@ namespace Debugger
 
 		public NDebugger()
 		{
-			requiredApartmentState = System.Threading.Thread.CurrentThread.GetApartmentState();
+			if (ApartmentState.STA == System.Threading.Thread.CurrentThread.GetApartmentState()) {
+				mta2sta.CallMethod = CallMethod.HiddenFormWithTimeout;
+			} else {
+				mta2sta.CallMethod = CallMethod.DirectCall;
+			}
 			
 			this.ModuleLoaded += SetBreakpointsInModule;
 			
@@ -135,7 +132,7 @@ namespace Debugger
 			
 			TraceMessage("Reset done");
 			
-			corDebug.Terminate();
+			//corDebug.Terminate();
 			
 			TraceMessage("ICorDebug terminated");
 		}

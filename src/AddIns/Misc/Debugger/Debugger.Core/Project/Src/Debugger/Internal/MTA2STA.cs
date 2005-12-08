@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Reflection;
 using System.Runtime.InteropServices;
 using System.Threading;
@@ -13,81 +14,133 @@ using System.Windows.Forms;
 
 namespace Debugger
 {
-	delegate object MethodInvokerWithReturnValue();
+	public delegate T MethodInvokerWithReturnValue<T>();
 	
-	class MTA2STA
+	public enum CallMethod {DirectCall, Manual, HiddenForm, HiddenFormWithTimeout};
+	
+	public class MTA2STA
 	{
 		Form hiddenForm;
 		IntPtr hiddenFormHandle;
-		AutoResetEvent staPump = new AutoResetEvent(false);
+		
+		System.Threading.Thread targetThread;
+		CallMethod callMethod = CallMethod.HiddenFormWithTimeout;
+		
+		Queue<MethodInvoker> pendingCalls = new Queue<MethodInvoker>();
+		ManualResetEvent pendingCallsNotEmpty = new ManualResetEvent(false);
+		
+		WaitHandle EnqueueCall(MethodInvoker callDelegate)
+		{
+			lock (pendingCalls) {
+				ManualResetEvent callDone = new ManualResetEvent(false);
+				pendingCalls.Enqueue(delegate{
+				                     	callDelegate();
+				                     	callDone.Set();
+				                     });
+				pendingCallsNotEmpty.Set();
+				return callDone;
+			}
+		}
+		
+		void PerformAllCalls()
+		{
+			lock (pendingCalls) {
+				while (pendingCalls.Count > 0) {
+					pendingCalls.Dequeue()();
+				}
+				pendingCallsNotEmpty.Reset();
+			}
+		}
+		
+		public CallMethod CallMethod {
+			get {
+				return callMethod;
+			}
+			set {
+				callMethod = value;
+			}
+		}
 		
 		public MTA2STA()
 		{
+			targetThread = System.Threading.Thread.CurrentThread;
+			
 			hiddenForm = new Form();
 			// Force handle creation
 			hiddenFormHandle = hiddenForm.Handle;
 		}
 		
-		static void TraceMsg(string msg)
+		/// <summary>
+		/// SoftWait waits for any of the given WaitHandles and allows processing of calls during the wait
+		/// </summary>
+		public int SoftWait(params WaitHandle[] waitFor)
 		{
-			//System.Console.WriteLine("MTA2STA: " + msg);
+			List<WaitHandle> waits = new List<WaitHandle> (waitFor);
+			waits.Add(pendingCallsNotEmpty);
+			while(true) {
+				int i = WaitHandle.WaitAny(waits.ToArray());
+				PerformAllCalls();
+				if (i < waits.Count - 1) { // If not pendingCallsNotEmpty
+					return i;
+				}
+			}
 		}
 		
 		/// <summary>
-		/// SoftWait waits for the given WaitHandle and allows processing of CallInSTA during the wait
+		/// Performs all waiting calls on the current thread
 		/// </summary>
-		public void SoftWait(WaitHandle waitFor)
+		public void Pulse()
 		{
-			if (System.Threading.Thread.CurrentThread.GetApartmentState() == System.Threading.ApartmentState.STA) {
-				staPump.Set();
-				// Wait until the waitFor handle is set
-				while(WaitHandle.WaitAny(new WaitHandle[] {staPump, waitFor}) != 1) {
-					Application.DoEvents();
-				}
-			} else {
-				waitFor.WaitOne();
-			}
+			PerformAllCalls();
 		}
 		
-		// Try to avoid this since it will catch exceptions and it is slow
-		public object CallInSTA(object targetObject, string functionName, object[] functionParameters)
+		public T Call<T>(MethodInvokerWithReturnValue<T> callDelegate)
 		{
-			return CallInSTA(delegate { return InvokeMethod(targetObject, functionName, functionParameters); });
-		}
-		
-		public void CallInSTA(MethodInvoker callDelegate)
-		{
-			CallInSTA(callDelegate, true);
-		}
-		
-		public object CallInSTA(MethodInvokerWithReturnValue callDelegate)
-		{
-			object returnValue = null;
-			CallInSTA(delegate { returnValue = callDelegate(); }, false);
+			T returnValue = default(T);
+			Call(delegate { returnValue = callDelegate(); }, true);
 			return returnValue;
 		}
-			
-		void CallInSTA(MethodInvoker callDelegate, bool mayAbandon)
+		
+		public void Call(MethodInvoker callDelegate)
 		{
-			if (hiddenForm.InvokeRequired == true) {
-				// Warrning: BeginInvoke will not pass exceptions if you do not use MethodInvoker delegate!
-				IAsyncResult async = hiddenForm.BeginInvoke(callDelegate);
-				// Pump a locked STA thread
-				staPump.Set();
-				// Give it 1 second to run
-				if (!async.AsyncWaitHandle.WaitOne(1000, true)) {
-					// Abandon the call if possible
-					if (mayAbandon) {
-						System.Console.WriteLine("Callback time out! Unleashing thread.");
-					} else {
-						System.Console.WriteLine("Warring: Call in STA is taking too long");
-						hiddenForm.EndInvoke(async); // Keep waiting
-					}
+			Call(callDelegate, false);
+		}
+		
+		void Call(MethodInvoker callDelegate, bool hasReturnValue)
+		{
+			// Enqueue the call
+			WaitHandle callDone = EnqueueCall(callDelegate);
+			
+			if (targetThread == System.Threading.Thread.CurrentThread) {
+				PerformAllCalls();
+				return;
+			}
+			
+			// We have the call waiting in queue, we need to call it (not waiting for it to finish)
+			switch (callMethod) {
+				case CallMethod.DirectCall:
+					PerformAllCalls();
+					break;
+				case CallMethod.Manual:
+					// Nothing we can do - someone else must call SoftWait or Pulse
+					break;
+				case CallMethod.HiddenForm:
+				case CallMethod.HiddenFormWithTimeout:
+					hiddenForm.BeginInvoke((MethodInvoker)PerformAllCalls);
+					break;
+			}
+			
+			// Wait for the call to finish
+			if (!hasReturnValue && callMethod == CallMethod.HiddenFormWithTimeout) {
+				// Give it 5 seconds to run
+				if (!callDone.WaitOne(5000, true)) {
+					System.Console.WriteLine("Call time out! Continuing...");
 				}
 			} else {
-				callDelegate();
+				callDone.WaitOne();
 			}
 		}
+		
 		
 		public static object MarshalParamTo(object param, Type outputType)
 		{
@@ -144,7 +197,6 @@ namespace Debugger
 				convertedParams[i] = MarshalParamTo(functionParameters[i], methodParamsInfo[i].ParameterType);
 			}
 			
-			TraceMsg ("Invoking " + functionName + "...");
 			try {
 				if (targetObject is Type) {
 					return method.Invoke(null, convertedParams);

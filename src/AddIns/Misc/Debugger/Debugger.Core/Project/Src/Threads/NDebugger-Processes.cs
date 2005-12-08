@@ -8,6 +8,7 @@
 using System;
 using System.Collections.Generic;
 using System.Text;
+using System.Threading;
 using Debugger.Interop.CorDebug;
 
 namespace Debugger
@@ -15,6 +16,9 @@ namespace Debugger
 	public partial class NDebugger
 	{
 		List<Process> processCollection = new List<Process>();
+		
+		// Is set as long as the process count is zero
+		ManualResetEvent noProcessesHandle = new ManualResetEvent(true);
 
 		public event EventHandler<ProcessEventArgs> ProcessStarted;
 		public event EventHandler<ProcessEventArgs> ProcessExited;
@@ -39,12 +43,16 @@ namespace Debugger
 		{
 			processCollection.Add(process);
 			OnProcessStarted(process);
+			noProcessesHandle.Reset();
 		}
 
 		internal void RemoveProcess(Process process)
 		{
 			processCollection.Remove(process);
 			OnProcessExited(process);
+			if (processCollection.Count == 0) {
+				noProcessesHandle.Set();
+			}
 		}
 
 		protected virtual void OnProcessStarted(Process process)
