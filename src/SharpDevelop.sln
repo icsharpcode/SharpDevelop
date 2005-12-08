@@ -10,7 +10,7 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Display Bindings", "Display
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "XmlEditor", "AddIns\DisplayBindings\XmlEditor\Project\XmlEditor.csproj", "{6B717BD1-CD5E-498C-A42E-9E6A4584DC48}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormDesigner", "AddIns\DisplayBindings\FormDesigner\Project\FormDesigner.csproj", "{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "FormsDesigner", "AddIns\DisplayBindings\FormsDesigner\Project\FormsDesigner.csproj", "{7D7E92DF-ACEB-4B69-92C8-8AC7A703CD57}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ResourceEditor", "AddIns\DisplayBindings\ResourceEditor\Project\ResourceEditor.csproj", "{CBC6C247-747B-4908-B09A-4D2E0F640B6B}"
 EndProject
