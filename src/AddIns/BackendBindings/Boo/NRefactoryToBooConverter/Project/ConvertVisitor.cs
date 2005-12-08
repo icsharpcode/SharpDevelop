@@ -113,11 +113,6 @@ namespace NRefactoryToBooConverter
 			} else if (currentType != null && currentType.IsStatic) {
 				if (!(node is TypeDeclaration))
 					r |= B.TypeMemberModifiers.Static;
-			} else {
-				if ((m & (Modifier.Abstract | Modifier.Virtual | Modifier.Override)) == 0) {
-					if (node is MethodDeclaration || node is PropertyDeclaration)
-						r |= B.TypeMemberModifiers.Final;
-				}
 			}
 			if ((m & Modifier.Override) != 0)
 				r |= B.TypeMemberModifiers.Override;

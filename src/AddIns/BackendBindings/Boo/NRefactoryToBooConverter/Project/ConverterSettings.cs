@@ -20,6 +20,7 @@ namespace NRefactoryToBooConverter
 		public const string DefaultNameGenerationPrefix = "converterGeneratedName";
 		public string NameGenerationPrefix = DefaultNameGenerationPrefix;
 		public bool SimplifyTypeNames = true;
+		public bool RemoveRedundantTypeReferences = true;
 		
 		static StringComparer GetComparer(string fileName)
 		{

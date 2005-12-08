@@ -89,37 +89,37 @@ namespace NRefactoryToBooConverter.Tests
 		[Test]
 		public void Method()
 		{
-			TestInClass("void Main() {}", "private final def Main() as System.Void:\n\tpass");
+			TestInClass("void Main() {}", "private def Main() as System.Void:\n\tpass");
 		}
 		
 		[Test]
 		public void MethodWithAttribute()
 		{
-			TestInClass("[Test] void Main() {}", "[Test]\nprivate final def Main() as System.Void:\n\tpass");
+			TestInClass("[Test] void Main() {}", "[Test]\nprivate def Main() as System.Void:\n\tpass");
 		}
 		
 		[Test]
 		public void MethodWithParameters()
 		{
-			TestInClass("void Main(int a, MyType b) {}", "private final def Main(a as System.Int32, b as MyType) as System.Void:\n\tpass");
+			TestInClass("void Main(int a, MyType b) {}", "private def Main(a as System.Int32, b as MyType) as System.Void:\n\tpass");
 		}
 		
 		[Test]
 		public void MethodWithRefParameters()
 		{
-			TestInClass("void Main(ref int a, out MyType b) {}", "private final def Main(ref a as System.Int32, ref b as MyType) as System.Void:\n\tpass");
+			TestInClass("void Main(ref int a, out MyType b) {}", "private def Main(ref a as System.Int32, ref b as MyType) as System.Void:\n\tpass");
 		}
 		
 		[Test]
 		public void MethodWithParamsParameters()
 		{
-			TestInClass("void Main(int a, params string[] args) {}", "private final def Main(a as System.Int32, *args as (System.String)) as System.Void:\n\tpass");
+			TestInClass("void Main(int a, params string[] args) {}", "private def Main(a as System.Int32, *args as (System.String)) as System.Void:\n\tpass");
 		}
 		
 		[Test]
 		public void MethodWithReturnType()
 		{
-			TestInClass("MyType Main() {}", "private final def Main() as MyType:\n\tpass");
+			TestInClass("MyType Main() {}", "private def Main() as MyType:\n\tpass");
 		}
 		
 		[Test]

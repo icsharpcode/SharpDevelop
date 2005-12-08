@@ -118,7 +118,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			MethodDeclaration method = node as MethodDeclaration;
 			if (method != null) {
 				method.Body.Children.Clear();
-				method.Body.AddChild(new ReturnStatement(CreateMethodCall(method)));
+				if (method.TypeReference.SystemType == "System.Void") {
+					method.Body.AddChild(new StatementExpression(CreateMethodCall(method)));
+				} else {
+					method.Body.AddChild(new ReturnStatement(CreateMethodCall(method)));
+				}
 			}
 			PropertyDeclaration property = node as PropertyDeclaration;
 			if (property != null) {

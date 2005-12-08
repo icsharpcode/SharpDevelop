@@ -48,6 +48,7 @@
     <Compile Include="VariableResolver.cs" />
     <Compile Include="ConverterSettings.cs" />
     <Compile Include="BooPrinterVisitorWithComments.cs" />
+    <Compile Include="RemoveRedundantTypeReferencesVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\..\Libraries\NRefactory\Project\NRefactory.csproj">

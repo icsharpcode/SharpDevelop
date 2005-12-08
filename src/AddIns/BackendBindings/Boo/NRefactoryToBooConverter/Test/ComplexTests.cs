@@ -17,7 +17,7 @@ namespace NRefactoryToBooConverter.Tests
 		public void MovingLocals()
 		{
 			TestInClass("public void Run() { if (a) { int b = 1; } else { int b = 2; } }",
-			            "public final def Run() as System.Void:\n" +
+			            "public def Run() as System.Void:\n" +
 			            "\tb as System.Int32\n" +
 			            "\tif a:\n" +
 			            "\t\tb = 1\n" +
@@ -29,7 +29,7 @@ namespace NRefactoryToBooConverter.Tests
 		public void RenamingLocals()
 		{
 			TestInClass("public void Run() { if (a) { int b = 1; } else { double b = 2; } }",
-			            "public final def Run() as System.Void:\n" +
+			            "public def Run() as System.Void:\n" +
 			            "\tif a:\n" +
 			            "\t\tb as System.Int32 = 1\n" +
 			            "\telse:\n" +

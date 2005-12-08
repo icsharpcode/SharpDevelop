@@ -48,6 +48,7 @@
     <Compile Include="ExpressionTests.cs" />
     <Compile Include="StatementTests.cs" />
     <Compile Include="ComplexTests.cs" />
+    <Compile Include="RemoveRedundantTypeReferencesTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\NRefactoryToBooConverter.csproj">

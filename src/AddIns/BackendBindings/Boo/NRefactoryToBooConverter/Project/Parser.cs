@@ -46,6 +46,9 @@ namespace NRefactoryToBooConverter
 			Module m = Converter.Convert(parser.CompilationUnit, settings);
 			if (m != null && cu != null) {
 				cu.Modules.Add(m);
+				if (settings.RemoveRedundantTypeReferences) {
+					cu.Accept(new RemoveRedundantTypeReferencesVisitor());
+				}
 			}
 			return m;
 		}

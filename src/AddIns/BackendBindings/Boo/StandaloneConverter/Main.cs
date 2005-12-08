@@ -60,6 +60,9 @@ namespace StandaloneConverter
 						case "--version":
 							Console.WriteLine("Version " + typeof(MainClass).Assembly.GetName().Version.ToString());
 							return 0;
+						case "--keepredundanttypereferences":
+							removeRedundantTypeReferences = false;
+							break;
 						case "--noprimitivenames":
 							simplifyTypeNames = false;
 							break;
@@ -112,6 +115,8 @@ namespace StandaloneConverter
 			Console.WriteLine("Switches:");
 			Console.WriteLine(" --overwrite or --force (short: -f)");
 			Console.WriteLine("    Overwrite existing .boo files.");
+			Console.WriteLine(" --keepredundanttypereferences");
+			Console.WriteLine("    Don't remove type declarations like 'as void' or in local variable declarations where the type is clearly inferred.");
 			Console.WriteLine(" --noPrimitiveNames");
 			Console.WriteLine("    Use the fully type names (System.Int32) instead of the short names (int).");
 			Console.WriteLine(" --help (short: -? or /?)");
@@ -119,11 +124,13 @@ namespace StandaloneConverter
 		}
 		
 		bool simplifyTypeNames = true;
+		bool removeRedundantTypeReferences = true;
 		
 		ConverterSettings ApplySettings(string fileName, CompilerErrorCollection errors, CompilerWarningCollection warnings)
 		{
 			ConverterSettings settings = new ConverterSettings(fileName, errors, warnings);
 			settings.SimplifyTypeNames = simplifyTypeNames;
+			settings.RemoveRedundantTypeReferences = removeRedundantTypeReferences;
 			return settings;
 		}
 		

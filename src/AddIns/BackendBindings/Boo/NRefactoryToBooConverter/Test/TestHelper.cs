@@ -15,10 +15,16 @@ namespace NRefactoryToBooConverter.Tests
 {
 	public class TestHelper
 	{
+		protected virtual void ApplySettings(ConverterSettings settings)
+		{
+			settings.SimplifyTypeNames = false;
+			settings.RemoveRedundantTypeReferences = false;
+		}
+		
 		protected string Convert(string program)
 		{
 			ConverterSettings settings = new ConverterSettings("prog.cs");
-			settings.SimplifyTypeNames = false;
+			ApplySettings(settings);
 			Module module = Parser.ParseModule(new CompileUnit(), new StringReader(program), settings);
 			return GetStringFromModule(module, settings);
 		}
@@ -26,7 +32,7 @@ namespace NRefactoryToBooConverter.Tests
 		protected string ConvertVB(string program)
 		{
 			ConverterSettings settings = new ConverterSettings("prog.vb");
-			settings.SimplifyTypeNames = false;
+			ApplySettings(settings);
 			Module module = Parser.ParseModule(new CompileUnit(), new StringReader(program), settings);
 			return GetStringFromModule(module, settings);
 		}
@@ -76,12 +82,20 @@ namespace NRefactoryToBooConverter.Tests
 		
 		protected void TestStatement(string input, string output)
 		{
-			TestInClass("public void Method() {\n" + input + "\n}", "public final def Method() as System.Void:\n\t" + output.Replace("\n", "\n\t"));
+			ConverterSettings dummySet = new ConverterSettings("dummy.cs");
+			ApplySettings(dummySet);
+			if (dummySet.RemoveRedundantTypeReferences) {
+				TestInClass("public void Method() {\n" + input + "\n}", "public def Method():\n\t" + output.Replace("\n", "\n\t"));
+			} else if (dummySet.SimplifyTypeNames) {
+				TestInClass("public void Method() {\n" + input + "\n}", "public def Method() as void:\n\t" + output.Replace("\n", "\n\t"));
+			} else {
+				TestInClass("public void Method() {\n" + input + "\n}", "public def Method() as System.Void:\n\t" + output.Replace("\n", "\n\t"));
+			}
 		}
 		
 		protected void TestStatementVB(string input, string output)
 		{
-			TestInClassVB("Public Sub Method()\n" + input + "\nEnd Sub", "public final def Method() as System.Void:\n\t" + output.Replace("\n", "\n\t"));
+			TestInClassVB("Public Sub Method()\n" + input + "\nEnd Sub", "public def Method() as System.Void:\n\t" + output.Replace("\n", "\n\t"));
 		}
 		
 		protected void TestExpr(string input, string output)
