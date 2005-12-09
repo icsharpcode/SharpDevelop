@@ -27,9 +27,14 @@ namespace Debugger.Tests
 		NDebugger debugger;
 		string log;
 		string lastLogMessage;
+		string assemblyFilename;
+		string assemblyDir;
 		
 		public DebuggerTests()
 		{
+			assemblyFilename = Assembly.GetExecutingAssembly().Location;
+			assemblyDir = Path.GetDirectoryName(assemblyFilename);
+			
 			debugger = new NDebugger();
 			debugger.MTA2STA.CallMethod = CallMethod.Manual;
 			debugger.LogMessage += delegate(object sender, MessageEventArgs e) {
@@ -42,8 +47,7 @@ namespace Debugger.Tests
 		{
 			log = "";
 			lastLogMessage = null;
-			string filename = Assembly.GetCallingAssembly().Location;
-			debugger.Start(filename, Path.GetDirectoryName(filename), name);
+			debugger.Start(assemblyFilename, assemblyDir, name);
 		}
 		
 		
@@ -51,6 +55,7 @@ namespace Debugger.Tests
 		public void SimpleProgram()
 		{
 			StartProgram("SimpleProgram");
+			
 			debugger.WaitForPrecessExit();
 		}
 		
@@ -58,28 +63,66 @@ namespace Debugger.Tests
 		public void HelloWorld()
 		{
 			StartProgram("HelloWorld");
+			
 			debugger.WaitForPrecessExit();
 			
 			Assert.AreEqual("Hello world!\r\n", log);
 		}
 		
-		[Test, Ignore("Does not work for first time")]
+		[Test]
+		public void Break()
+		{
+			StartProgram("Break");
+			
+			debugger.WaitForPause();
+			Assert.AreEqual(PausedReason.Break, debugger.PausedReason);
+			debugger.Continue();
+			
+			debugger.WaitForPrecessExit();
+		}
+		
+		[Test]
+		public void Symbols()
+		{
+			StartProgram("Symbols");
+			
+			debugger.WaitForPause();
+			Assert.AreEqual(PausedReason.Break, debugger.PausedReason);
+			Assert.AreEqual("debugger.tests.exe", Path.GetFileName(assemblyFilename).ToLower());
+			Assert.AreEqual(true, debugger.GetModule(Path.GetFileName(assemblyFilename)).SymbolsLoaded, "Module symbols not loaded");
+			debugger.Continue();
+			
+			debugger.WaitForPrecessExit();
+		}
+		
+		[Test]
 		public void Breakpoint()
 		{
-			debugger.AddBreakpoint("Breakpoint.cs", 16);
+			Breakpoint b = debugger.AddBreakpoint(@"D:\corsavy\SharpDevelop\src\AddIns\Misc\Debugger\Debugger.Tests\Project\Src\TestPrograms\Breakpoint.cs", 18);
 			
 			StartProgram("Breakpoint");
 			
 			debugger.WaitForPause();
-			
-			Assert.AreEqual(PausedReason.Breakpoint, debugger.PausedReason);
+			Assert.AreEqual(PausedReason.Break, debugger.PausedReason);
 			Assert.AreEqual("", log);
+			Assert.AreEqual(true, b.Enabled);
+			Assert.AreEqual(true, b.HadBeenSet, "Breakpoint is not set");
+			Assert.AreEqual(18, b.SourcecodeSegment.StartLine);
+			debugger.Continue();
 			
+			debugger.WaitForPause();
+			Assert.AreEqual(PausedReason.Breakpoint, debugger.PausedReason, "Breakpoint was not hit");
+			Assert.AreEqual("Mark 1\r\n", log);
+			debugger.Continue();
+			
+			debugger.WaitForPause();
+			Assert.AreEqual(PausedReason.Break, debugger.PausedReason);
+			Assert.AreEqual("Mark 1\r\nMark 2\r\n", log);
 			debugger.Continue();
 			
 			debugger.WaitForPrecessExit();
 			
-			Assert.AreEqual("Line 16\r\n", log);
+			Assert.AreEqual("Mark 1\r\nMark 2\r\n", log);
 		}
 	}
 }

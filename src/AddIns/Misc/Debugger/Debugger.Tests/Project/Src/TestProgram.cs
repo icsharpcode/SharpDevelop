@@ -19,9 +19,11 @@ namespace Debugger.Tests
 				return;
 			}
 			switch (args[0]) {
-				case "SimpleProgram": Progs.SimpleProgram.Main(); break;
-				case "HelloWorld": Progs.HelloWorld.Main(); break;
+				case "Break": Progs.Break.Main(); break;
 				case "Breakpoint": Progs.Breakpoint.Main(); break;
+				case "HelloWorld": Progs.HelloWorld.Main(); break;
+				case "SimpleProgram": Progs.SimpleProgram.Main(); break;
+				case "Symbols": Progs.Symbols.Main(); break;
 			}
 		}
 	}

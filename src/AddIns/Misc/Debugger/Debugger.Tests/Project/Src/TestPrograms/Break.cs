@@ -9,13 +9,10 @@ using System;
 
 namespace Debugger.Tests.TestPrograms
 {
-	public class Breakpoint
+	public class Break
 	{
 		public static void Main()
 		{
-			System.Diagnostics.Debugger.Break();
-			System.Diagnostics.Debug.WriteLine("Mark 1");
-			System.Diagnostics.Debug.WriteLine("Mark 2"); // Breakpoint
 			System.Diagnostics.Debugger.Break();
 		}
 	}
