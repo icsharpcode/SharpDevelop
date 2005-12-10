@@ -118,9 +118,6 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			expression = expression.TrimStart();
 			
-			if (expressionResult.Context.IsObjectCreation) {
-				expression = "new " + expression;
-			}
 			return expression;
 		}
 		
@@ -158,6 +155,21 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				expr = ParseExpression(expression);
 				if (expr == null) {
 					return null;
+				}
+				if (expressionResult.Context.IsObjectCreation) {
+					Expression tmp = expr;
+					while (tmp != null) {
+						if (tmp is IdentifierExpression)
+							return ResolveInternal(expr, ExpressionContext.Type);
+						if (tmp is FieldReferenceExpression)
+							tmp = (tmp as FieldReferenceExpression).TargetObject;
+						else
+							break;
+					}
+					expr = ParseExpression("new " + expression);
+					if (expr == null) {
+						return null;
+					}
 				}
 			}
 			
