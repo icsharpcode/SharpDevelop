@@ -26,6 +26,7 @@ namespace Debugger
 		ICorDebugILFrame  corILFrame;
 		object            corILFrameDebuggerSessionID;
 		
+		bool steppedOut;
 		Thread thread;
 		uint chainIndex;
 		uint frameIndex;
@@ -75,11 +76,7 @@ namespace Debugger
 		/// </summary>
 		public bool HasExpired {
 			get {
-				if (corILFrameDebuggerSessionID == debugger.SessionID) {
-					return false; // valid
-				} else {
-					return thread == null;
-				}
+				return steppedOut;
 			}
 		}
 
@@ -117,14 +114,12 @@ namespace Debugger
 			tracingStepper.CorStepper.StepOut();
 			tracingStepper.PauseWhenComplete = false;
 			tracingStepper.StepComplete += delegate {
-				thread = null;
+				steppedOut = true;
 			};
 		}
-
-		#region Helpping proprerties
-
+		
 		internal ICorDebugILFrame CorILFrame {
-			get	{
+			get {
 				if (HasExpired) throw new DebuggerException("Function has expired");
 				if (corILFrameDebuggerSessionID != debugger.SessionID) {
 					corILFrame = thread.GetFunctionAt(chainIndex, frameIndex).CorILFrame;
@@ -133,7 +128,7 @@ namespace Debugger
 				return corILFrame;
 			}
 		}
-
+		
 		internal uint corInstructionPtr {
 			get	{
 				uint corInstructionPtr;
@@ -143,8 +138,6 @@ namespace Debugger
 			}
 		}
 		
-		// Helpping properties for symbols
-
 		internal ISymbolReader symReader {
 			get	{
 				if (module.SymbolsLoaded == false) return null;
@@ -152,7 +145,7 @@ namespace Debugger
 				return module.SymReader;
 			}
 		}
-
+		
 		internal ISymbolMethod symMethod {
 			get	{
 				if (symReader == null) {
@@ -166,9 +159,7 @@ namespace Debugger
 				}
 			}
 		}
-
-		#endregion
-
+		
 		public void StepInto()
 		{
 			Step(true);

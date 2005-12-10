@@ -308,5 +308,39 @@ namespace Debugger.Tests
 			debugger.Continue();
 			debugger.WaitForPrecessExit();
 		}
+		
+		[Test]
+		public void FunctionLifetime()
+		{
+			Function function;
+			
+			StartProgram("FunctionLifetime");
+			WaitForPause(PausedReason.Break, null);
+			function = debugger.CurrentFunction;
+			Assert.IsNotNull(function);
+			Assert.AreEqual("Function", function.Name);
+			Assert.AreEqual(false, function.HasExpired);
+			Assert.AreEqual("1", function.GetArgumentVariable(0).Value.AsString);
+			
+			debugger.Continue(); // Go to the SubFunction
+			WaitForPause(PausedReason.Break, null);
+			Assert.AreEqual("SubFunction", debugger.CurrentFunction.Name);
+			Assert.AreEqual(false, function.HasExpired);
+			Assert.AreEqual("1", function.GetArgumentVariable(0).Value.AsString);
+			
+			debugger.Continue(); // Go back to Function
+			WaitForPause(PausedReason.Break, null);
+			Assert.AreEqual("Function", debugger.CurrentFunction.Name);
+			Assert.AreEqual(false, function.HasExpired);
+			Assert.AreEqual("1", function.GetArgumentVariable(0).Value.AsString);
+			
+			debugger.Continue(); // Setp out of function
+			WaitForPause(PausedReason.Break, null);
+			Assert.AreEqual("Main", debugger.CurrentFunction.Name);
+			Assert.AreEqual(true, function.HasExpired);
+			
+			debugger.Continue();
+			debugger.WaitForPrecessExit();
+		}
 	}
 }

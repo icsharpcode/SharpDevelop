@@ -24,6 +24,7 @@ namespace Debugger.Tests
 				case "Callstack": Progs.Callstack.Main(); break;
 				case "FileRelease": Progs.FileRelease.Main(); break;
 				case "FunctionArgumentVariables": Progs.FunctionArgumentVariables.Main(); break;
+				case "FunctionLifetime": Progs.FunctionLifetime.Main(); break;
 				case "FunctionLocalVariables": Progs.FunctionLocalVariables.Main(); break;
 				case "HelloWorld": Progs.HelloWorld.Main(); break;
 				case "SimpleProgram": Progs.SimpleProgram.Main(); break;
