@@ -46,6 +46,7 @@
     <Compile Include="Src\TestPrograms\Symbols.cs" />
     <Compile Include="Src\TestPrograms\Break.cs" />
     <Compile Include="Src\TestPrograms\FileRelease.cs" />
+    <Compile Include="Src\TestPrograms\Stepping.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />

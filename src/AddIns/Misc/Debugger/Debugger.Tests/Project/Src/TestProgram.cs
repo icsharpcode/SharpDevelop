@@ -24,6 +24,7 @@ namespace Debugger.Tests
 				case "FileRelease": Progs.FileRelease.Main(); break;
 				case "HelloWorld": Progs.HelloWorld.Main(); break;
 				case "SimpleProgram": Progs.SimpleProgram.Main(); break;
+				case "Stepping": Progs.Stepping.Main(); break;
 				case "Symbols": Progs.Symbols.Main(); break;
 			}
 		}
