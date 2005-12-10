@@ -21,9 +21,8 @@ using ICSharpCode.Core;
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.SharpDevelop.Project;
 
-namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
+namespace ICSharpCode.SharpDevelop.Project.Commands
 {
 	public class ExportProjectToHtml : AbstractMenuCommand
 	{

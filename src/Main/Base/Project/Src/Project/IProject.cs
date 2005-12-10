@@ -68,6 +68,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			get;
 		}
 		
+		string DocumentationFileName {
+			get;
+		}
+		
 		string OutputAssemblyFullPath {
 			get;
 		}

@@ -13,8 +13,8 @@
 	</ItemGroup>
 	
 	<Target Name="Build">
-		<!--
 		<Copy SourceFiles="@(NDocFiles)" DestinationFolder="..\..\bin\Tools\NDoc"/>
+		<!--
 		<Copy SourceFiles="@(WixFiles)" DestinationFolder="..\..\bin\Tools\Wix"/>
 		<Copy SourceFiles="@(WixCaFiles)" DestinationFolder="..\..\bin\Tools\Wix\ca"/>
 		<Copy SourceFiles="@(WixDocFiles)" DestinationFolder="..\..\bin\Tools\Wix\doc"/>

@@ -284,15 +284,7 @@
 		          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
 		<MenuItem id = "AddSeparator" type = "Separator"/>
-		<MenuItem id    = "SetAsStartupProject"
-		          label = "${res:ProjectComponent.ContextMenu.SetAsStartupProject}"
-		          class = "ICSharpCode.SharpDevelop.Project.Commands.SetAsStartupProject"/>
-		<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False" action="Disable">
-			<MenuItem id          = "Run"
-			          label       = "${res:ProjectComponent.ContextMenu.RunProject}"
-			          icon        = "Icons.16x16.RunProgramIcon"
-			          class       = "ICSharpCode.SharpDevelop.Project.Commands.RunProject"/>
-		</Condition>
+		<Include id = "ProjectActions" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions"/>
 		<MenuItem id = "Separator2" type = "Separator"/>
 		<MenuItem id = "Cut"
 		          label = "${res:XML.MainMenu.EditMenu.Cut}"
@@ -318,6 +310,24 @@
 		          icon  = "Icons.16x16.PropertiesIcon"
 		          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+	</Path>
+	
+	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
+		<Condition name="IsProcessRunning" isprocessrunning="False" isdebugging="False" action="Disable">
+			<MenuItem id          = "Run"
+			          label       = "${res:ProjectComponent.ContextMenu.RunProject}"
+			          icon        = "Icons.16x16.RunProgramIcon"
+			          class       = "ICSharpCode.SharpDevelop.Project.Commands.RunProject"/>
+		</Condition>
+		<MenuItem id    = "SetAsStartupProject"
+		          label = "${res:ProjectComponent.ContextMenu.SetAsStartupProject}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.SetAsStartupProject"/>
+		<MenuItem id = "ExportToHtml"
+		          label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.ExportProjectToHtml"/>
+		<MenuItem id = "GenerateDocumentation"
+		          label = "${res:ProjectComponent.ContextMenu.GenerateDocumentation}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.GenerateProjectDocumentation"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceFolderNode">
@@ -1151,16 +1161,11 @@
 		</MenuItem> <!-- end VIEW menu -->
 		
 		<Condition name = "ProjectActive" activeproject="*">
-			<MenuItem id = "Project" label = "${res:XML.MainMenu.ProjectMenu}"  type="Menu">
+			<MenuItem id = "Project" label = "${res:XML.MainMenu.ProjectMenu}" type="Menu">
 				<MenuItem id    = "AddReference"
 				          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
-				<MenuItem id    = "SetAsStartupProject"
-				          label = "${res:ProjectComponent.ContextMenu.SetAsStartupProject}"
-				          class = "ICSharpCode.SharpDevelop.Project.Commands.SetAsStartupProject"/>
-				<MenuItem id = "ExportToHtml"
-				          label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
-				          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ExportProjectToHtml"/>
+				<Include id = "ProjectActions" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions"/>
 				<MenuItem id = "Separator2" type = "Separator" />
 				<MenuItem id = "Options"
 				          label = "${res:XML.MainMenu.ProjectMenu.Options}"
@@ -1399,28 +1404,28 @@
 			<MenuItem id = "Web" label = "${res:XML.MainMenu.HelpMenu.WebMenu}" type="Menu">
 				<MenuItem id = "SharpDevelop" label = "SharpDevelop" type="Menu">
 					<MenuItem id = "Downloads" label = "Downloads" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SD/Download/" />
-					<MenuItem id = "Forum" label = "Community Forums" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SD/Forum/" />
+					<MenuItem id = "Forum" label = "Community Forums" icon = "Icons.16x16.WebSearchIcon" link = "http://community.sharpdevelop.net/forums/" />
 					<MenuItem id = "Announcement" label = "Announcement List" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SD/AnnouncementList.aspx" />
 					<MenuItem id = "Mail" label = "Send Us a Mail" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SD/ContactUs.asp" />
 				</MenuItem>
 				<MenuItem id = "C#" label = "C#" type="Menu">
-					<MenuItem id = "cshrp.net" label = "cshrp.net" icon = "Icons.16x16.WebSearchIcon" link = "http://www.cshrp.net/" />
 					<MenuItem id = "C# Help" label = "C# Help" icon = "Icons.16x16.WebSearchIcon" link = "http://www.csharphelp.com" />
+					<MenuItem id = "CodeProject" label = "CodeProject" icon = "Icons.16x16.WebSearchIcon" link = "http://www.codeproject.com" />
 					<MenuItem id = "C# Corner" label = "C# Corner" icon = "Icons.16x16.WebSearchIcon" link = "http://www.c-sharpcorner.com" />
 					<MenuItem id = "GotDotNet" label = "GotDotNet" icon = "Icons.16x16.WebSearchIcon" link = "http://www.gotdotnet.com/" />
 				</MenuItem>
 				<MenuItem id = "IntegratedProjects" label = "Integrated Projects" type="Menu">
-					<MenuItem id = "DockManager Control" label = "DockPanel Suite" icon = "Icons.16x16.WebSearchIcon" link = "http://www.freewebs.com/weifenluo/DockManager.htm" />
-					<MenuItem id = "NUnit" label = "NUnit" icon = "Icons.16x16.WebSearchIcon" link = "http://www.nunit.org/" />
-					<MenuItem id = "NProf" label = "NProf" icon = "Icons.16x16.WebSearchIcon" link = "http://nprof.sourceforge.net/Site/SiteHomeNews.html" />
-					<MenuItem id = "WiX" label = "WiX" icon = "Icons.16x16.WebSearchIcon" link = "http://sourceforge.net/projects/wix/" />
-					<MenuItem id = "NAnt" label = "NAnt" icon = "Icons.16x16.WebSearchIcon" link = "http://nant.sourceforge.net/" />
+					<MenuItem id = "DockManager Control" label = "DockPanel Suite" icon = "Icons.16x16.WebSearchIcon" link = "http://sourceforge.net/projects/dockpanelsuite/" />
+					<MenuItem id = "NUnit" label = "NUnit" icon = "PadIcons.NUnitTest" link = "http://www.nunit.org/" />
+					<MenuItem id = "MbUnit" label = "MbUnit" icon = "PadIcons.MbUnitTest" link = "http://www.mbunit.org/" />
+					<!--<MenuItem id = "WiX" label = "WiX" icon = "Icons.16x16.WebSearchIcon" link = "http://sourceforge.net/projects/wix/" />-->
+					<MenuItem id = "NAnt" label = "NAnt" icon = "NAntAddIn.Icons.16x16.NAntPad" link = "http://nant.sourceforge.net/" />
 					<MenuItem id = "NDoc" label = "NDoc" icon = "Icons.16x16.WebSearchIcon" link = "http://ndoc.sourceforge.net/" />
-					<MenuItem id = "#ZipLib" label = "#ZipLib" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SharpZipLib/Default.aspx" />
+					<MenuItem id = "#ZipLib" label = "#ZipLib" icon = "Icons.16x16.WebSearchIcon" link = "http://www.sharpdevelop.net/OpenSource/SharpZipLib/" />
 				</MenuItem>
 				<MenuItem id = "NETPlatforms" label = ".NET Platforms" type="Menu">
 					<MenuItem id = "MSNET"  label = "MS .NET" icon = "Icons.16x16.WebSearchIcon" link = "http://msdn.microsoft.com/net" />
-					<MenuItem id = "Mono"   label = "Mono Project" icon = "Icons.16x16.WebSearchIcon" link = "http://www.go-mono.com" />
+					<MenuItem id = "Mono"   label = "Mono Project" icon = "Icons.16x16.WebSearchIcon" link = "http://www.mono-project.com/" />
 					<MenuItem id = "DotGNU" label = "DotGNU" icon = "Icons.16x16.WebSearchIcon" link = "http://www.dotgnu.org" />
 				</MenuItem>
 			</MenuItem>
@@ -1443,14 +1448,6 @@
 	
 	<Path name = "/AddIns/DefaultTextEditor/Formatter/XML">
 		<Class id ="XmlFormatter" class = "ICSharpCode.SharpDevelop.DefaultEditor.XmlFormattingStrategy"/>
-	</Path>
-	
-	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
-		<MenuItem id = "ExportToHtml"
-		          insertafter = "AddSeparator"
-		          insertbefore = "Separator2"
-		          label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
-		          class = "ICSharpCode.SharpDevelop.DefaultEditor.Commands.ExportProjectToHtml"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/DisplayBindings">

@@ -40,7 +40,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			Assert.AreEqual(addIn.Properties["description"], "SharpDevelop core module");
 			Assert.AreEqual(addIn.Properties["version"], "1.0.0");
 		}
-		#endregion 
+		#endregion
 		
 		#region Runtime section tests
 		[Test]
@@ -48,7 +48,7 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 		{
 			string addInText = @"<AddIn><Runtime/></AddIn>";
 			AddIn addIn = AddIn.Load(new StringReader(addInText));
-		}		
+		}
 		
 		[Test]
 		public void TestEmtpyRuntimeSection2()
@@ -165,12 +165,40 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 		}
 		
 		[Test]
+		public void TestSubCodonsWithCondition()
+		{
+			string addInText = @"
+<AddIn>
+	<Path name = '/Path1'>
+		<Condition name='Equal' string='a' equal='b'>
+			<Sub id='Path2'>
+				<Codon2 id='Sub2'/>
+			</Sub>
+		</Condition>
+	</Path>
+</AddIn>";
+			AddIn addIn = AddIn.Load(new StringReader(addInText));
+			Assert.AreEqual(2, addIn.Paths.Count);
+			Assert.IsNotNull(addIn.Paths["/Path1"]);
+			Assert.AreEqual(1, addIn.Paths["/Path1"].Codons.Count);
+			Assert.AreEqual("Sub", addIn.Paths["/Path1"].Codons[0].Name);
+			Assert.AreEqual("Path2", addIn.Paths["/Path1"].Codons[0].Id);
+			Assert.AreEqual(1, addIn.Paths["/Path1"].Codons[0].Conditions.Length);
+			
+			Assert.IsNotNull(addIn.Paths["/Path1/Path2"]);
+			Assert.AreEqual(1, addIn.Paths["/Path1/Path2"].Codons.Count);
+			Assert.AreEqual("Codon2", addIn.Paths["/Path1/Path2"].Codons[0].Name);
+			Assert.AreEqual("Sub2", addIn.Paths["/Path1/Path2"].Codons[0].Id);
+			Assert.AreEqual(0, addIn.Paths["/Path1/Path2"].Codons[0].Conditions.Length);
+		}
+		
+		[Test]
 		public void TestSimpleCondition()
 		{
 			string addInText = @"
 <AddIn>
 	<Path name = '/Path1'>
-		<Condition name='Equal' string='a' equal='b'>		
+		<Condition name='Equal' string='a' equal='b'>
 			<Simple id ='Simple' attr='a' attr2='b'/>
 		</Condition>
 	</Path>
@@ -202,8 +230,8 @@ namespace ICSharpCode.Core.Tests.AddInTreeTests.Tests
 			string addInText = @"
 <AddIn>
 	<Path name = '/Path1'>
-		<Condition name='Equal' string='a' equal='b'>		
-			<Condition name='StackedCondition' string='1' equal='2'>		
+		<Condition name='Equal' string='a' equal='b'>
+			<Condition name='StackedCondition' string='1' equal='2'>
 				<Simple id ='Simple' attr='a' attr2='b'/>
 			</Condition>
 			<Simple id ='Simple2' attr='a' attr2='b'/>

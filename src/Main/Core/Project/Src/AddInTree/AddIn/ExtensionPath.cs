@@ -17,10 +17,9 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public class ExtensionPath
 	{
-		string           name;
-		AddIn            addIn;
-		List<Codon>      codons         = new List<Codon>();
-		Stack<ICondition> conditionStack = new Stack<ICondition>();
+		string      name;
+		AddIn       addIn;
+		List<Codon> codons = new List<Codon>();
 		
 		public AddIn AddIn {
 			get {
@@ -47,11 +46,12 @@ namespace ICSharpCode.Core
 		
 		public static void SetUp(ExtensionPath extensionPath, XmlTextReader reader, string endElement)
 		{
+			Stack<ICondition> conditionStack = new Stack<ICondition>();
 			while (reader.Read()) {
 				switch (reader.NodeType) {
 					case XmlNodeType.EndElement:
 						if (reader.LocalName == "Condition" || reader.LocalName == "ComplexCondition") {
-							extensionPath.conditionStack.Pop();
+							conditionStack.Pop();
 						} else if (reader.LocalName == endElement) {
 							return;
 						}
@@ -60,21 +60,21 @@ namespace ICSharpCode.Core
 						string elementName = reader.LocalName;
 						if (elementName == "Condition") {
 							ICondition newCondition = Condition.Read(reader);
-							extensionPath.conditionStack.Push(newCondition);
+							conditionStack.Push(newCondition);
 						} else if (elementName == "ComplexCondition") {
-							extensionPath.conditionStack.Push(Condition.ReadComplexCondition(reader));
+							conditionStack.Push(Condition.ReadComplexCondition(reader));
 						} else {
-							Codon newCodon = new Codon(extensionPath.AddIn, elementName, Properties.ReadFromAttributes(reader), extensionPath.conditionStack.ToArray());
+							Codon newCodon = new Codon(extensionPath.AddIn, elementName, Properties.ReadFromAttributes(reader), conditionStack.ToArray());
 							extensionPath.codons.Add(newCodon);
 							if (!reader.IsEmptyElement) {
 								ExtensionPath subPath = extensionPath.AddIn.GetExtensionPath(extensionPath.Name + "/" + newCodon.Id);
-								foreach (ICondition condition in extensionPath.conditionStack) {
-									subPath.conditionStack.Push(condition);
-								}
+								//foreach (ICondition condition in extensionPath.conditionStack) {
+								//	subPath.conditionStack.Push(condition);
+								//}
 								SetUp(subPath, reader, elementName);
-								foreach (ICondition condition in extensionPath.conditionStack) {
-									subPath.conditionStack.Pop();
-								}
+								//foreach (ICondition condition in extensionPath.conditionStack) {
+								//	subPath.conditionStack.Pop();
+								//}
 							}
 						}
 						break;

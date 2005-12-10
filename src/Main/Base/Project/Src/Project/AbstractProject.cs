@@ -244,6 +244,16 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
+		public string DocumentationFileName {
+			get {
+				string file = GetProperty("DocumentationFile");
+				if (file == null || file.Length == 0)
+					return null;
+				return Path.Combine(Directory, file);
+			}
+		}
+		
+		[Browsable(false)]
 		public string OutputAssemblyFullPath {
 			get {
 				string outputPath = GetProperty("OutputPath");

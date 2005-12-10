@@ -22,11 +22,11 @@
 	</Path>
 	
 	<!-- Menu options -->
-	<Path name = "/SharpDevelop/Workbench/MainMenu/Project">
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions">
 		<MenuItem id = "NAnt"
 		          label = "&amp;NAnt"
-			      insertbefore = "Separator2"
-			      type="Menu">
+		          icon="NAntAddIn.Icons.16x16.NAntPad"
+		          type="Menu">
 			<ComplexCondition action="Disable">
 				<And>
 					<Condition name="SolutionOpen"/>
@@ -63,50 +63,7 @@
 			</ComplexCondition>
 		</MenuItem>
 	</Path>
-
-	<!-- Context menu options -->
-	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
-		<MenuItem id = "NAnt"
-	              label = "&amp;NAnt"
-		          insertafter = "Properties"
-		          type="Menu">
-			<ComplexCondition action="Disable">
-				<And>
-					<Condition name="SolutionOpen"/>
-					<Not>
-						<Condition name="IsNAntRunning"/>
-					</Not>
-				</And>
-				<MenuItem id = "RunNAnt"
-				    icon         = "NAntAddIn.Icons.16x16.RunNAnt"
-				    label        = "${res:ICSharpCode.NAntAddIn.RunDefaultTargetMenuLabel}" 
-				    description  = "Runs a NAnt on the build file contained in a SharpDevelop project." 
-				    class        = "ICSharpCode.NAntAddIn.Commands.RunNAntCommand"
-				/>
-				<MenuItem id = "RunNAntCleanTarget"
-				    icon         = "NAntAddIn.Icons.16x16.RunNAntClean"
-				    insertafter  = "RunNAnt"
-				    label        = "${res:ICSharpCode.NAntAddIn.RunCleanTargetMenuLabel}" 
-				    description  = "Runs the clean target on the build file." 
-				    class        = "ICSharpCode.NAntAddIn.Commands.RunNAntCleanTargetCommand"
-				/>
-			</ComplexCondition>
-			<ComplexCondition action="Disable">
-				<And>
-					<Condition name="SolutionOpen"/>
-					<Condition name="IsNAntRunning"/>
-				</And>
-					<MenuItem id = "StopNAnt"
-					    icon         = "NAntAddIn.Icons.16x16.StopNAnt"
-					    insertafter  = "RunNAntCleanTarget"
-					    label        = "${res:ICSharpCode.NAntAddIn.StopNAntMenuLabel}" 
-					    description  = "Stops the currently running build." 
-					    class        = "ICSharpCode.NAntAddIn.Commands.StopNAntCommand"
-					/>
-			</ComplexCondition>
-		</MenuItem>
-	</Path>
-
+	
 	<!-- Project browser icons -->
 	<Path name = "/Workspace/Icons">
 		<Icon id         = "NAntBuildFileIcon"
