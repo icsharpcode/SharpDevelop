@@ -225,5 +225,11 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			            "Function InterfaceMethod2() As String\n" +
 			            "End Interface");
 		}
+		
+		[Test]
+		public void OnErrorStatement()
+		{
+			TestStatement("On Error Resume Next");
+		}
 	}
 }

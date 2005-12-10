@@ -179,7 +179,7 @@ namespace ICSharpCode.NRefactory.Parser
 				step = -step;
 			
 			BinaryOperatorExpression condition = forStatement.Condition as BinaryOperatorExpression;
-			if (!(condition.Left is IdentifierExpression))
+			if (condition == null || !(condition.Left is IdentifierExpression))
 				return;
 			if ((condition.Left as IdentifierExpression).Identifier != iteratorIdentifier.Identifier)
 				return;

@@ -26,7 +26,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		NodeTracker             nodeTracker;
 		TypeDeclaration         currentType;
 		
-		Stack  exitTokenStack = new Stack();
+		Stack<int> exitTokenStack = new Stack<int>();
 		
 		public string Text {
 			get {
@@ -120,7 +120,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				case "System.SByte":
 					return "SByte";
 			}
-			return typeString;
+			return null;
 		}
 
 		public object Visit(TypeReference typeReference, object data)
@@ -141,8 +141,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (typeReference.Type == null || typeReference.Type.Length ==0) {
 				outputFormatter.PrintText("Void");
 			} else {
-				if (typeReference.SystemType.Length > 0) {
-					outputFormatter.PrintText(ConvertTypeString(typeReference.SystemType));
+				string shortTypeName = ConvertTypeString(typeReference.SystemType);
+				if (shortTypeName != null) {
+					outputFormatter.PrintText(shortTypeName);
 				} else {
 					outputFormatter.PrintIdentifier(typeReference.Type);
 				}
@@ -1017,11 +1018,31 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		#region Statements
 		public object Visit(BlockStatement blockStatement, object data)
 		{
-			OnBlock(blockStatement.Children);
+			VisitStatementList(blockStatement.Children);
 			return null;
 		}
 		
-		void OnBlock(ArrayList statements)
+		void PrintIndentedBlock(Statement stmt)
+		{
+			outputFormatter.IndentationLevel += 1;
+			if (stmt is BlockStatement) {
+				nodeTracker.TrackedVisit(stmt, null);
+			} else {
+				outputFormatter.Indent();
+				nodeTracker.TrackedVisit(stmt, null);
+				outputFormatter.NewLine();
+			}
+			outputFormatter.IndentationLevel -= 1;
+		}
+		
+		void PrintIndentedBlock(ArrayList statements)
+		{
+			outputFormatter.IndentationLevel += 1;
+			VisitStatementList(statements);
+			outputFormatter.IndentationLevel -= 1;
+		}
+		
+		void VisitStatementList(ArrayList statements)
 		{
 			foreach (Statement stmt in statements) {
 				if (stmt is BlockStatement) {
@@ -1085,7 +1106,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(OnErrorStatement onErrorStatement, object data)
 		{
-			// TODO: implement me!
+			outputFormatter.PrintToken(Tokens.On);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Error);
+			outputFormatter.Space();
+			nodeTracker.TrackedVisit(onErrorStatement.EmbeddedStatement, data);
 			return null;
 		}
 		
@@ -1137,7 +1162,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			Debug.Assert(yieldStatement != null);
 			Debug.Assert(yieldStatement.Statement != null);
-			// TODO: yieldStatement
+			errors.Error(-1, -1, "Yield is not supported in Visual Basic");
 			return null;
 		}
 		
@@ -1159,9 +1184,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Then);
 			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
-			OnBlock(ifElseStatement.TrueStatement);
-			--outputFormatter.IndentationLevel;
+			PrintIndentedBlock(ifElseStatement.TrueStatement);
 			
 			foreach (ElseIfSection elseIfSection in ifElseStatement.ElseIfSections) {
 				nodeTracker.TrackedVisit(elseIfSection, data);
@@ -1171,9 +1194,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Indent();
 				outputFormatter.PrintToken(Tokens.Else);
 				outputFormatter.NewLine();
-				++outputFormatter.IndentationLevel;
-				OnBlock(ifElseStatement.FalseStatement);
-				--outputFormatter.IndentationLevel;
+				PrintIndentedBlock(ifElseStatement.FalseStatement);
 			}
 			
 			outputFormatter.Indent();
@@ -1191,24 +1212,24 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Then);
 			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
-			outputFormatter.Indent();
-			nodeTracker.TrackedVisit(elseIfSection.EmbeddedStatement, data);
-			outputFormatter.NewLine();
-			--outputFormatter.IndentationLevel;
+			PrintIndentedBlock(elseIfSection.EmbeddedStatement);
 			return null;
 		}
 		
 		public object Visit(ForStatement forStatement, object data)
-		{ // Is converted to {initializer} while <Condition> {Embedded} {Iterators} end while
+		{
+			// Is converted to {initializer} while <Condition> {Embedded} {Iterators} end while
 			exitTokenStack.Push(Tokens.While);
-			outputFormatter.NewLine();
+			bool isFirstLine = true;
 			foreach (INode node in forStatement.Initializers) {
-				outputFormatter.Indent();
+				if (!isFirstLine)
+					outputFormatter.Indent();
+				isFirstLine = false;
 				nodeTracker.TrackedVisit(node, data);
 				outputFormatter.NewLine();
 			}
-			outputFormatter.Indent();
+			if (!isFirstLine)
+				outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.While);
 			outputFormatter.Space();
 			if (forStatement.Condition.IsNull) {
@@ -1218,21 +1239,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.NewLine();
 			
-			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(forStatement.EmbeddedStatement, data);
-			
-			foreach (Statement stmt in forStatement.Iterator) {
-				outputFormatter.Indent();
-				nodeTracker.TrackedVisit(stmt, data);
-				outputFormatter.NewLine();
-			}
-			--outputFormatter.IndentationLevel;
+			PrintIndentedBlock(forStatement.EmbeddedStatement);
+			PrintIndentedBlock(forStatement.Iterator);
 			
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.End);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.While);
-			outputFormatter.NewLine();
 			exitTokenStack.Pop();
 			return null;
 		}
@@ -1280,14 +1293,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			this.AppendCommaSeparatedList(switchSection.SwitchLabels);
 			outputFormatter.NewLine();
 			
-			++outputFormatter.IndentationLevel;
+			PrintIndentedBlock(switchSection.Children);
 			
-			foreach (Statement stmt in switchSection.Children) {
-				outputFormatter.Indent();
-				nodeTracker.TrackedVisit(stmt, data);
-				outputFormatter.NewLine();
-			}
-			--outputFormatter.IndentationLevel;
 			return null;
 		}
 		
@@ -1339,7 +1346,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Exit);
 			if (exitTokenStack.Count > 0) {
 				outputFormatter.Space();
-				outputFormatter.PrintToken((int)exitTokenStack.Peek());
+				outputFormatter.PrintToken(exitTokenStack.Peek());
 			}
 			return null;
 		}
@@ -1382,7 +1389,6 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			} else {
 				nodeTracker.TrackedVisit(gotoCaseStatement.Expression, null);
 			}
-			outputFormatter.NewLine();
 			return null;
 		}
 		
@@ -1417,15 +1423,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			outputFormatter.NewLine();
 			
-			++outputFormatter.IndentationLevel;
-			if (doLoopStatement.EmbeddedStatement is BlockStatement) {
-				nodeTracker.TrackedVisit(doLoopStatement.EmbeddedStatement, false);
-			} else {
-				outputFormatter.Indent();
-				nodeTracker.TrackedVisit(doLoopStatement.EmbeddedStatement, data);
-				outputFormatter.NewLine();
-			}
-			--outputFormatter.IndentationLevel;
+			PrintIndentedBlock(doLoopStatement.EmbeddedStatement);
 			
 			outputFormatter.Indent();
 			if (doLoopStatement.ConditionType == ConditionType.While) {
@@ -1478,15 +1476,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			nodeTracker.TrackedVisit(foreachStatement.Expression, data);
 			outputFormatter.NewLine();
 			
-			++outputFormatter.IndentationLevel;
-			if (foreachStatement.EmbeddedStatement is BlockStatement) {
-				nodeTracker.TrackedVisit(foreachStatement.EmbeddedStatement, false);
-			} else {
-				outputFormatter.Indent();
-				nodeTracker.TrackedVisit(foreachStatement.EmbeddedStatement, data);
-				outputFormatter.NewLine();
-			}
-			--outputFormatter.IndentationLevel;
+			PrintIndentedBlock(foreachStatement.EmbeddedStatement);
+			
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.Next);
 			if (!foreachStatement.NextExpression.IsNull) {
@@ -1504,16 +1495,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			nodeTracker.TrackedVisit(lockStatement.LockExpression, data);
 			outputFormatter.NewLine();
 			
-			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(lockStatement.EmbeddedStatement, data);
-			--outputFormatter.IndentationLevel;
-			outputFormatter.NewLine();
+			PrintIndentedBlock(lockStatement.EmbeddedStatement);
 			
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.End);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.SyncLock);
-			outputFormatter.NewLine();
 			return null;
 		}
 		
@@ -1529,16 +1516,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			isUsingResourceAcquisition = false;
 			outputFormatter.NewLine();
 			
-			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(usingStatement.EmbeddedStatement, data);
-			--outputFormatter.IndentationLevel;
-			outputFormatter.NewLine();
+			PrintIndentedBlock(usingStatement.EmbeddedStatement);
 			
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.End);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Using);
-			outputFormatter.NewLine();
 			
 			return null;
 		}
@@ -1550,12 +1533,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			nodeTracker.TrackedVisit(withStatement.Expression, data);
 			outputFormatter.NewLine();
 			
-			nodeTracker.TrackedVisit(withStatement.Body, data);
-			outputFormatter.NewLine();
+			PrintIndentedBlock(withStatement.Body);
+			
 			outputFormatter.PrintToken(Tokens.End);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.With);
-			outputFormatter.NewLine();
 			return null;
 		}
 		
@@ -1565,9 +1547,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.Try);
 			outputFormatter.NewLine();
 			
-			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(tryCatchStatement.StatementBlock, data);
-			--outputFormatter.IndentationLevel;
+			PrintIndentedBlock(tryCatchStatement.StatementBlock);
 			
 			foreach (CatchClause catchClause in tryCatchStatement.CatchClauses) {
 				nodeTracker.TrackedVisit(catchClause, data);
@@ -1577,15 +1557,12 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Indent();
 				outputFormatter.PrintToken(Tokens.Finally);
 				outputFormatter.NewLine();
-				++outputFormatter.IndentationLevel;
-				nodeTracker.TrackedVisit(tryCatchStatement.FinallyBlock, data);
-				--outputFormatter.IndentationLevel;
+				PrintIndentedBlock(tryCatchStatement.FinallyBlock);
 			}
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.End);
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Try);
-			outputFormatter.NewLine();
 			exitTokenStack.Pop();
 			return null;
 		}
@@ -1615,10 +1592,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				nodeTracker.TrackedVisit(catchClause.Condition, data);
 			}
 			outputFormatter.NewLine();
-
-			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(catchClause.StatementBlock, data);
-			--outputFormatter.IndentationLevel;
+			
+			PrintIndentedBlock(catchClause.StatementBlock);
 			
 			return null;
 		}
@@ -1703,10 +1678,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			
 			outputFormatter.PrintIdentifier(forNextStatement.VariableName);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.As);
-			outputFormatter.Space();
-			nodeTracker.TrackedVisit(forNextStatement.TypeReference, data);
+			
+			if (!forNextStatement.TypeReference.IsNull) {
+				outputFormatter.Space();
+				outputFormatter.PrintToken(Tokens.As);
+				outputFormatter.Space();
+				nodeTracker.TrackedVisit(forNextStatement.TypeReference, data);
+			}
 			
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Assign);
@@ -1728,16 +1706,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			}
 			outputFormatter.NewLine();
 			
-			++outputFormatter.IndentationLevel;
-			if (forNextStatement.EmbeddedStatement is BlockStatement) {
-				nodeTracker.TrackedVisit(forNextStatement.EmbeddedStatement, false);
-			} else {
-				outputFormatter.Indent();
-				nodeTracker.TrackedVisit(forNextStatement.EmbeddedStatement, data);
-				
-			}
-			--outputFormatter.IndentationLevel;
-			outputFormatter.NewLine();
+			PrintIndentedBlock(forNextStatement.EmbeddedStatement);
 			
 			outputFormatter.Indent();
 			outputFormatter.PrintToken(Tokens.Next);
