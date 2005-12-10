@@ -130,11 +130,15 @@ namespace Debugger
 			
 			currentProcess = null;
 			
+			pendingEvalsCollection.Clear();
+			
 			TraceMessage("Reset done");
 			
-			//corDebug.Terminate();
+			corDebug.Terminate();
 			
 			TraceMessage("ICorDebug terminated");
+			
+			noProcessesHandle.Set();
 		}
 		
 		
@@ -197,6 +201,7 @@ namespace Debugger
 		
 		public VariableCollection LocalVariables { 
 			get {
+				localVariables.Update();
 				return localVariables;
 			}
 		}

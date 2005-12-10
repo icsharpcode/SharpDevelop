@@ -50,9 +50,7 @@ namespace Debugger
 		{
 			processCollection.Remove(process);
 			OnProcessExited(process);
-			if (processCollection.Count == 0) {
-				noProcessesHandle.Set();
-			}
+			// noProcessesHandle is set in NDebugger.TerminateDebugger
 		}
 
 		protected virtual void OnProcessStarted(Process process)

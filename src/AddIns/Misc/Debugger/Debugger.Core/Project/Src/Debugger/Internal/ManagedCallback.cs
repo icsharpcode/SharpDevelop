@@ -384,24 +384,31 @@ namespace Debugger
 
 			ExitCallback_Continue();
 		}
-
+		
 		public void ExitProcess(ICorDebugProcess pProcess)
 		{
 			EnterCallback("ExitProcess", pProcess);
-
+			
 			Process process = debugger.GetProcess(pProcess);
-
+			
 			debugger.RemoveProcess(process);
-
+			
 			if (debugger.Processes.Count == 0) {
-				debugger.TerminateDebugger();
+				// Exit callback and then terminate the debugger
+				new System.Threading.Thread(
+					delegate() {
+						debugger.MTA2STA.Call(
+							delegate {
+								debugger.TerminateDebugger();
+							});
+				}).Start();
 			}
 		}
-
+		
 		#endregion
-
+		
 		#region ICorDebugManagedCallback2 Members
-
+		
 		public void ChangeConnection(ICorDebugProcess pProcess, uint dwConnectionId)
 		{
 			EnterCallback("ChangeConnection", pProcess);

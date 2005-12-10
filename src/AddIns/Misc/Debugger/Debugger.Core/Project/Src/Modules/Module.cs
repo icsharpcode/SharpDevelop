@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.IO;
 using System.Diagnostics.SymbolStore;
 using System.Runtime.InteropServices;
 
@@ -19,13 +20,14 @@ namespace Debugger
 		NDebugger debugger;
 		
 		string fullPath;
+		string fullPathPDB;
 		ulong  baseAdress;
 		int    isDynamic;
 		int    isInMemory;
 		
 		int orderOfLoading = 0;
 		readonly ICorDebugModule corModule;
-		ISymbolReader symReader;
+		SymReader symReader;
 		IMetaDataImport metaDataInterface;
 		
 		public NDebugger Debugger {
@@ -40,7 +42,7 @@ namespace Debugger
 			}
 		}
 		
-		public ISymbolReader SymReader {
+		public SymReader SymReader {
 			get {
 				return symReader;
 			}
@@ -150,13 +152,26 @@ namespace Debugger
 			IntPtr ptr = IntPtr.Zero;
 			try {
 				ptr = Marshal.GetIUnknownForObject(metaDataInterface);
-				symReader = symBinder.GetReader(ptr, fullPath, string.Empty);
+				symReader = (SymReader)symBinder.GetReader(ptr, fullPath, string.Empty);
 			} catch (System.Exception) {
 				symReader = null;
 			} finally {
 				if (ptr != IntPtr.Zero) {
 					Marshal.Release(ptr);
 				}
+			}
+			
+			if (symReader != null) {
+				string tempPath = Path.Combine(Path.GetTempPath(), Path.Combine("DebeggerPdb", new Random().Next().ToString()));
+				string pdbFilename = Path.GetFileNameWithoutExtension(FullPath) + ".pdb";
+				string oldPdbPath = Path.Combine(Path.GetDirectoryName(FullPath), pdbFilename);
+				string newPdbPath = Path.Combine(tempPath, pdbFilename);
+				
+				Directory.CreateDirectory(tempPath);
+				File.Copy(oldPdbPath, newPdbPath);
+				symReader.UpdateSymbolStore(newPdbPath, IntPtr.Zero);
+				
+				fullPathPDB = newPdbPath;
 			}
 			
 			JMCStatus = SymbolsLoaded;
@@ -179,6 +194,11 @@ namespace Debugger
 					Console.WriteLine("symReader release failed. ({dtor})");
 				} finally {
 					symReader = null;
+				}
+				try {
+					File.Delete(fullPathPDB);
+				} catch {
+					Console.WriteLine("Could not delete pdb temp file");
 				}
 			}
 			

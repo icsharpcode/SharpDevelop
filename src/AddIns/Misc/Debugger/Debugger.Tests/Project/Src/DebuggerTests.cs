@@ -29,11 +29,13 @@ namespace Debugger.Tests
 		string lastLogMessage;
 		string assemblyFilename;
 		string assemblyDir;
+		string symbolsFilename;
 		
 		public DebuggerTests()
 		{
 			assemblyFilename = Assembly.GetExecutingAssembly().Location;
 			assemblyDir = Path.GetDirectoryName(assemblyFilename);
+			symbolsFilename = Path.Combine(assemblyDir, Path.GetFileNameWithoutExtension(assemblyFilename) + ".pdb");
 			
 			debugger = new NDebugger();
 			debugger.MTA2STA.CallMethod = CallMethod.Manual;
@@ -43,13 +45,17 @@ namespace Debugger.Tests
 			};
 		}
 		
-		void StartProgram(string name)
+		void StartProgram(string programName)
+		{
+			StartProgram(assemblyFilename, programName);
+		}
+		
+		void StartProgram(string exeFilename, string programName)
 		{
 			log = "";
 			lastLogMessage = null;
-			debugger.Start(assemblyFilename, assemblyDir, name);
+			debugger.Start(exeFilename, Path.GetDirectoryName(exeFilename), programName);
 		}
-		
 		
 		[Test]
 		public void SimpleProgram()
@@ -84,6 +90,8 @@ namespace Debugger.Tests
 		[Test]
 		public void Symbols()
 		{
+			Assert.IsTrue(File.Exists(symbolsFilename), "Symbols file not found (.pdb)");
+			
 			StartProgram("Symbols");
 			
 			debugger.WaitForPause();
@@ -123,6 +131,41 @@ namespace Debugger.Tests
 			debugger.WaitForPrecessExit();
 			
 			Assert.AreEqual("Mark 1\r\nMark 2\r\n", log);
+		}
+		
+		[Test, Ignore("Works only if run alone")]
+		public void FileRelease()
+		{
+			Assert.IsTrue(File.Exists(assemblyFilename), "Assembly file not found");
+			Assert.IsTrue(File.Exists(symbolsFilename), "Symbols file not found (.pdb)");
+			
+			string tempPath = Path.Combine(Path.GetTempPath(), Path.Combine("DebeggerTest", new Random().Next().ToString()));
+			Directory.CreateDirectory(tempPath);
+			
+			string newAssemblyFilename = Path.Combine(tempPath, Path.GetFileName(assemblyFilename));
+			string newSymbolsFilename = Path.Combine(tempPath, Path.GetFileName(symbolsFilename));
+			
+			File.Copy(assemblyFilename, newAssemblyFilename);
+			File.Copy(symbolsFilename, newSymbolsFilename);
+			
+			Assert.IsTrue(File.Exists(newAssemblyFilename), "Assembly file copying failed");
+			Assert.IsTrue(File.Exists(newSymbolsFilename), "Symbols file copying failed");
+			
+			StartProgram(newAssemblyFilename, "FileRelease");
+			
+			debugger.WaitForPrecessExit();
+			
+			try {
+				File.Delete(newAssemblyFilename);
+			} catch (System.Exception e) {
+				Assert.Fail("Assembly file not released\n" + e.ToString());
+			}
+			
+			try {
+				File.Delete(newSymbolsFilename);
+			} catch (System.Exception e) {
+				Assert.Fail("Symbols file not released\n" + e.ToString());
+			}
 		}
 	}
 }
