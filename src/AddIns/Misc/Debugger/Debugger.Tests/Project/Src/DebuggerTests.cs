@@ -223,5 +223,59 @@ namespace Debugger.Tests
 			debugger.Continue();
 			debugger.WaitForPrecessExit();
 		}
+		
+		[Test]
+		public void FunctionArgumentVariables()
+		{
+			List<Variable> args;
+			
+			StartProgram("FunctionArgumentVariables");
+			WaitForPause(PausedReason.Break, null);
+			
+			for(int i = 0; i < 2; i++) {
+				debugger.Continue();
+				WaitForPause(PausedReason.Break, null);
+				args = new List<Variable>(debugger.CurrentFunction.ArgumentVariables);
+				// Argument names
+				Assert.AreEqual("i", args[0].Name);
+				Assert.AreEqual("s", args[1].Name);
+				Assert.AreEqual("args", args[2].Name);
+				// Argument types
+				Assert.AreEqual(typeof(PrimitiveValue), args[0].Value.GetType());
+				Assert.AreEqual(typeof(PrimitiveValue), args[1].Value.GetType());
+				Assert.AreEqual(typeof(ArrayValue),     args[2].Value.GetType());
+				// Argument values
+				Assert.AreEqual("0", args[0].Value.AsString);
+				Assert.AreEqual("S", args[1].Value.AsString);
+				Assert.AreEqual(0 ,((ArrayValue)args[2].Value).Lenght);
+				
+				debugger.Continue();
+				WaitForPause(PausedReason.Break, null);
+				args = new List<Variable>(debugger.CurrentFunction.ArgumentVariables);
+				// Argument types
+				Assert.AreEqual(typeof(PrimitiveValue), args[0].Value.GetType());
+				Assert.AreEqual(typeof(PrimitiveValue), args[1].Value.GetType());
+				Assert.AreEqual(typeof(ArrayValue),     args[2].Value.GetType());
+				// Argument values
+				Assert.AreEqual("1", args[0].Value.AsString);
+				Assert.AreEqual("S", args[1].Value.AsString);
+				Assert.AreEqual(1 ,((ArrayValue)args[2].Value).Lenght);
+				
+				debugger.Continue();
+				WaitForPause(PausedReason.Break, null);
+				args = new List<Variable>(debugger.CurrentFunction.ArgumentVariables);
+				// Argument types
+				Assert.AreEqual(typeof(PrimitiveValue), args[0].Value.GetType());
+				Assert.AreEqual(typeof(NullValue), args[1].Value.GetType());
+				Assert.AreEqual(typeof(ArrayValue),     args[2].Value.GetType());
+				// Argument values
+				Assert.AreEqual("2", args[0].Value.AsString);
+				Assert.IsNotNull(args[1].Value.AsString);
+				Assert.AreEqual(2 ,((ArrayValue)args[2].Value).Lenght);
+			}
+			
+			debugger.Continue();
+			debugger.WaitForPrecessExit();
+		}
 	}
 }

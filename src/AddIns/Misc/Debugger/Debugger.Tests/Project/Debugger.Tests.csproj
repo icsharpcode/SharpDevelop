@@ -48,6 +48,7 @@
     <Compile Include="Src\TestPrograms\FileRelease.cs" />
     <Compile Include="Src\TestPrograms\Stepping.cs" />
     <Compile Include="Src\TestPrograms\Callstack.cs" />
+    <Compile Include="Src\TestPrograms\FunctionArgumentVariables.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />
