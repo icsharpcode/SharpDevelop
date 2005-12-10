@@ -36,6 +36,7 @@ namespace ICSharpCode.FormsDesigner
 		public static bool BaseClassIsFormOrControl(IClass c)
 		{
 			// Simple test for fully qualified name
+			c = c.DefaultReturnType.GetUnderlyingClass();
 			foreach (IReturnType baseType in c.BaseTypes) {
 				if (baseType.FullyQualifiedName == "System.Windows.Forms.Form"
 				    || baseType.FullyQualifiedName == "System.Windows.Forms.UserControl"

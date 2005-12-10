@@ -269,8 +269,13 @@ namespace ICSharpCode.FormsDesigner
 		public void ShowSourceCode(IComponent component, EventDescriptor edesc, string eventMethodName)
 		{
 			int position;
-			generator.InsertComponentEvent(component, edesc, eventMethodName, "", out position);
-			ShowSourceCode(position);
+			string file;
+			generator.InsertComponentEvent(component, edesc, eventMethodName, "", out file, out position);
+			if (FileUtility.IsEqualFileName(file, this.TextEditorControl.FileName)) {
+				ShowSourceCode(position);
+			} else {
+				FileService.JumpToFilePosition(file, position, 255);
+			}
 		}
 		
 		public ICollection GetCompatibleMethods(EventDescriptor edesc)

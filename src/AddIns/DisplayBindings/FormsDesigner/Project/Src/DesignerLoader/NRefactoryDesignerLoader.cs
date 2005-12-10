@@ -188,7 +188,7 @@ namespace ICSharpCode.FormsDesigner
 				}
 				
 				// Try to fix the type names to fully qualified ones
-				FixTypeNames(p.CompilationUnit, parseInfo.BestCompilationUnit, ref foundInitMethod);
+				FixTypeNames(p.CompilationUnit, part.CompilationUnit, ref foundInitMethod);
 				compilationUnits.Add(new KeyValuePair<string, CompilationUnit>(fileName, p.CompilationUnit));
 			}
 			

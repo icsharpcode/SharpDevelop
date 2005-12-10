@@ -59,9 +59,10 @@ namespace ICSharpCode.FormsDesigner
 			//xml.WriteEndDocument();
 			viewContent.Document.TextContent = writer.ToString();
 		}
-		public bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out int position)
+		public bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
 		{
 			position = 0;
+			file = this.viewContent.TextEditorControl.FileName;
 			return false;
 		}
 		

@@ -28,7 +28,12 @@ namespace ICSharpCode.FormsDesigner
 {
 	public abstract class AbstractDesignerGenerator : IDesignerGenerator
 	{
+		/// <summary>The currently open part of the class being designed.</summary>
 		IClass  c;
+		/// <summary>The complete class being designed.</summary>
+		IClass  completeClass;
+		/// <summary>The class part containing the designer code.</summary>
+		IClass  formClass;
 		IMethod initializeComponents;
 		
 		FormsDesignerViewContent viewContent;
@@ -63,11 +68,14 @@ namespace ICSharpCode.FormsDesigner
 			try {
 				LoggingService.Info("Remove field declaration: "+fieldName);
 				Reparse();
-				IField field = GetField(c, fieldName);
+				IField field = GetField(formClass, fieldName);
 				if (field != null) {
 					int startOffset = document.PositionToOffset(new Point(0, field.Region.BeginLine - 1));
 					int endOffset   = document.PositionToOffset(new Point(0, field.Region.EndLine));
 					document.Remove(startOffset, endOffset - startOffset);
+				} else if ((field = GetField(completeClass, fieldName)) != null) {
+					// TODO: Remove the field in the part where it is declared
+					LoggingService.Warn("Removing field declaration in non-designer part currently not supported");
 				}
 				SaveDocument();
 			} catch (Exception ex) {
@@ -98,14 +106,19 @@ namespace ICSharpCode.FormsDesigner
 		{
 			try {
 				Reparse();
-				IField oldField = GetField(c, newField.Name);
+				IField oldField = GetField(formClass, newField.Name);
 				if (oldField != null) {
 					int startOffset = document.PositionToOffset(new Point(0, oldField.Region.BeginLine - 1));
 					int endOffset   = document.PositionToOffset(new Point(0, oldField.Region.EndLine));
 					document.Replace(startOffset, endOffset - startOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
 				} else {
-					int endOffset = document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.EndLine));
-					document.Insert(endOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
+					if ((oldField = GetField(completeClass, newField.Name)) != null) {
+						// TODO: Replace the field in the part where it is declared
+						LoggingService.Warn("Field declaration replacement in non-designer part currently not supported");
+					} else {
+						int endOffset = document.PositionToOffset(new Point(0, initializeComponents.BodyRegion.EndLine));
+						document.Insert(endOffset, tabs + GenerateFieldDeclaration(domGenerator, newField) + Environment.NewLine);
+					}
 				}
 				SaveDocument();
 			} catch (Exception ex) {
@@ -162,7 +175,7 @@ namespace ICSharpCode.FormsDesigner
 			foreach (CodeTypeMember m in formClass.Members) {
 				if (m is CodeMemberField) {
 					CodeMemberField newField = (CodeMemberField)m;
-					IField oldField = GetField(c, newField.Name);
+					IField oldField = GetField(completeClass, newField.Name);
 					if (oldField == null || FieldChanged(oldField, newField)) {
 						AddOrReplaceField(domGenerator, newField);
 					}
@@ -171,7 +184,7 @@ namespace ICSharpCode.FormsDesigner
 			
 			// second loop looks for removed fields
 			List<string> removedFields = new List<string>();
-			foreach (IField field in c.Fields) {
+			foreach (IField field in completeClass.Fields) {
 				bool found = false;
 				foreach (CodeTypeMember m in formClass.Members) {
 					if (m is CodeMemberField && m.Name == field.Name) {
@@ -198,6 +211,7 @@ namespace ICSharpCode.FormsDesigner
 		{
 			// compare types
 			if (oldField.ReturnType.FullyQualifiedName != newField.Type.BaseType) {
+				LoggingService.Debug("FieldChanged: "+oldField.Name+", "+oldField.ReturnType.FullyQualifiedName+" -> "+newField.Type.BaseType);
 				return true;
 			}
 			
@@ -271,6 +285,7 @@ namespace ICSharpCode.FormsDesigner
 								designerContent = document.TextContent;
 							}
 							ParserService.ParseFile(designerFile, designerContent, false, true);
+							initializeComponents = FormsDesignerSecondaryDisplayBinding.GetInitializeComponents(c);
 						}
 						using (StringReader r = new StringReader(designerContent)) {
 							int count = initializeComponents.Region.BeginLine;
@@ -280,6 +295,8 @@ namespace ICSharpCode.FormsDesigner
 							tabs = line.Substring(0, line.Length - line.TrimStart().Length);
 						}
 						this.c = c;
+						this.completeClass = c.DefaultReturnType.GetUnderlyingClass();
+						this.formClass = initializeComponents.DeclaringType;
 						break;
 					}
 				}
@@ -294,18 +311,20 @@ namespace ICSharpCode.FormsDesigner
 		/// <param name="component"></param>
 		/// <param name="edesc"></param>
 		/// <returns></returns>
-		public bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out int position)
+		public bool InsertComponentEvent(IComponent component, EventDescriptor edesc, string eventMethodName, string body, out string file, out int position)
 		{
 			if (this.failedDesignerInitialize) {
 				position = 0;
+				file = c.CompilationUnit.FileName;
 				return false;
 			}
 
 			Reparse();
 			
-			foreach (IMethod method in c.Methods) {
+			foreach (IMethod method in completeClass.Methods) {
 				if (method.Name == eventMethodName) {
 					position = method.Region.BeginLine + 1;
+					file = method.DeclaringType.CompilationUnit.FileName;
 					return true;
 				}
 			}
@@ -313,6 +332,7 @@ namespace ICSharpCode.FormsDesigner
 			Reparse();
 			
 			position = c.Region.EndLine + 1;
+			file = c.CompilationUnit.FileName;
 			
 			int offset = viewContent.Document.GetLineSegment(GetEventHandlerInsertionLine(c) - 1).Offset;
 			
@@ -331,8 +351,7 @@ namespace ICSharpCode.FormsDesigner
 			Reparse();
 			ArrayList compatibleMethods = new ArrayList();
 			MethodInfo methodInfo = edesc.EventType.GetMethod("Invoke");
-			c = c.DefaultReturnType.GetUnderlyingClass();
-			foreach (IMethod method in c.Methods) {
+			foreach (IMethod method in completeClass.Methods) {
 				if (method.Parameters.Count == methodInfo.GetParameters().Length) {
 					bool found = true;
 					for (int i = 0; i < methodInfo.GetParameters().Length; ++i) {
@@ -360,8 +379,7 @@ namespace ICSharpCode.FormsDesigner
 			ParameterInfo pInfo = methodInfo.GetParameters()[0];
 			string eventName = pInfo.ParameterType.ToString().Replace("EventHandler", "EventArgs");
 			
-			c = c.DefaultReturnType.GetUnderlyingClass();
-			foreach (IMethod method in c.Methods) {
+			foreach (IMethod method in completeClass.Methods) {
 				if (method.Parameters.Count == 2) {
 					bool found = true;
 					
