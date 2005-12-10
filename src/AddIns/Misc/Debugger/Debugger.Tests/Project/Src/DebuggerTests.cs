@@ -342,5 +342,57 @@ namespace Debugger.Tests
 			debugger.Continue();
 			debugger.WaitForPrecessExit();
 		}
+		
+		[Test]
+		public void FunctionVariablesLifetime()
+		{
+			Function function = null;
+			Variable argument = null;
+			Variable local    = null;
+			Variable @class   = null;
+				
+			StartProgram("FunctionVariablesLifetime");
+			WaitForPause(PausedReason.Break, null);
+			function = debugger.CurrentFunction;
+			Assert.IsNotNull(function);
+			Assert.AreEqual("Function", function.Name);
+			argument = function.GetArgumentVariable(0);
+			foreach(Variable var in function.LocalVariables) {
+				local = var;
+			}
+			foreach(Variable var in function.ContaingClassVariables) {
+				@class = var;
+			}
+			Assert.IsNotNull(argument);
+			Assert.IsNotNull(local);
+			Assert.IsNotNull(@class);
+			Assert.AreEqual("argument", argument.Name);
+			Assert.AreEqual("local", local.Name);
+			Assert.AreEqual("class", @class.Name);
+			Assert.AreEqual("1", argument.Value.AsString);
+			Assert.AreEqual("2", local.Value.AsString);
+			Assert.AreEqual("3", @class.Value.AsString);
+			
+			debugger.Continue(); // Go to the SubFunction
+			WaitForPause(PausedReason.Break, null);
+			Assert.AreEqual("1", argument.Value.AsString);
+			Assert.AreEqual("2", local.Value.AsString);
+			Assert.AreEqual("3", @class.Value.AsString);
+			
+			debugger.Continue(); // Go back to Function
+			WaitForPause(PausedReason.Break, null);
+			Assert.AreEqual("1", argument.Value.AsString);
+			Assert.AreEqual("2", local.Value.AsString);
+			Assert.AreEqual("3", @class.Value.AsString);
+			
+			debugger.Continue(); // Setp out of function
+			WaitForPause(PausedReason.Break, null);
+			Assert.AreEqual(typeof(UnavailableValue), argument.Value.GetType());
+			Assert.AreEqual(typeof(UnavailableValue), local.Value.GetType());
+			Assert.AreEqual(typeof(UnavailableValue), @class.Value.GetType());
+			
+			debugger.Continue();
+			debugger.WaitForPrecessExit();
+		}
 	}
 }

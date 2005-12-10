@@ -12,7 +12,7 @@ using Debugger.Interop.CorDebug;
 namespace Debugger 
 {
 	/// <summary>
-	/// Delegate that is used to get eval. This delegate may be called at any time and should never return null.
+	/// Delegate that is used to get eval. This delegate may be called at any time and may return null.
 	/// </summary>
 	public delegate Eval EvalCreator();
 	
@@ -24,12 +24,22 @@ namespace Debugger
 		internal PropertyVariable(NDebugger debugger, string name, EvalCreator evalCreator):base(debugger, name, null)
 		{
 			this.evalCreator = evalCreator;
-			this.valueGetter = delegate{return Eval.Result;};
+			this.valueGetter = delegate {
+			                   	if (Eval != null) {
+			                   		return Eval.Result;
+			                   	} else {
+			                   		return new UnavailableValue(debugger, "Property has expired");
+			                   	}
+			                   };
 		}
 		
 		public bool IsEvaluated {
 			get {
-				return Eval.Evaluated;
+				if (Eval != null) {
+					return Eval.Evaluated;
+				} else {
+					return true;
+				}
 			}
 		}
 		
@@ -37,9 +47,10 @@ namespace Debugger
 			get {
 				if (cachedEval == null || cachedEval.HasExpired) {
 					cachedEval = evalCreator();
-					if (cachedEval == null) throw new DebuggerException("EvalGetter returned null");
-					cachedEval.EvalStarted += delegate { OnValueChanged(); };
-					cachedEval.EvalComplete += delegate { OnValueChanged(); };
+					if (cachedEval != null) {
+						cachedEval.EvalStarted += delegate { OnValueChanged(); };
+						cachedEval.EvalComplete += delegate { OnValueChanged(); };
+					}
 				}
 				return cachedEval;
 			}

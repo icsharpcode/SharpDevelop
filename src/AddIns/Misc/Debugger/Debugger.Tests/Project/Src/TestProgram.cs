@@ -26,6 +26,7 @@ namespace Debugger.Tests
 				case "FunctionArgumentVariables": Progs.FunctionArgumentVariables.Main(); break;
 				case "FunctionLifetime": Progs.FunctionLifetime.Main(); break;
 				case "FunctionLocalVariables": Progs.FunctionLocalVariables.Main(); break;
+				case "FunctionVariablesLifetime": Progs.FunctionVariablesLifetime.Main(); break;
 				case "HelloWorld": Progs.HelloWorld.Main(); break;
 				case "SimpleProgram": Progs.SimpleProgram.Main(); break;
 				case "Stepping": Progs.Stepping.Main(); break;

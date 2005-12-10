@@ -80,14 +80,18 @@ namespace Debugger
 			}
 		}
 
-		public ObjectValue ThisValue {
+		public Value ThisValue {
 			get {
 				if (IsStatic) {
 					throw new DebuggerException("Static method does not have 'this'.");
 				} else {
-					ICorDebugValue argThis = null;
-					CorILFrame.GetArgument(0, out argThis);
-					return new ObjectValue(debugger, argThis, ContaingClass);
+					if (this.HasExpired) {
+						return new UnavailableValue(debugger, "Function has expired");
+					} else {
+						ICorDebugValue argThis = null;
+						CorILFrame.GetArgument(0, out argThis);
+						return new ObjectValue(debugger, argThis, ContaingClass);
+					}
 				}
 			}
 		}
@@ -406,6 +410,7 @@ namespace Debugger
 		
 		public IEnumerable<Variable> ContaingClassVariables {
 			get {
+				// TODO: Should work for static
 				if (!IsStatic) {
 					foreach(Variable var in ThisValue.GetSubVariables(delegate{return ThisValue;})) {
 						yield return var;
@@ -450,7 +455,11 @@ namespace Debugger
 			return new Variable(debugger,
 			                    GetParameterName(index),
 			                    delegate {
-			                    	return Value.CreateValue(debugger, GetArgumentValue(index));
+			                    	if (this.HasExpired) {
+			                    		return new UnavailableValue(debugger, "Function has expired");
+			                    	} else {
+			                    		return Value.CreateValue(debugger, GetArgumentValue(index));
+			                    	}
 			                    });
 		}
 		
@@ -483,7 +492,11 @@ namespace Debugger
 						yield return new PropertyVariable(debugger,
 						                                  method.Name.Remove(0, 4),
 						                                  delegate {
-						                                  	return CreatePropertyEval(method);
+						                                  	if (this.HasExpired && !this.IsStatic) {
+						                                  		return null;
+						                                  	} else {
+						                                  		return CreatePropertyEval(method);
+						                                  	}
 						                                  });
 					}
 				}
@@ -522,9 +535,13 @@ namespace Debugger
 			return new Variable(debugger,
 			                    symVar.Name,
 			                    delegate {
-			                    	ICorDebugValue corValue;
-			                    	CorILFrame.GetLocalVariable((uint)symVar.AddressField1, out corValue);
-			                    	return Value.CreateValue(debugger, corValue);
+			                    	if (this.HasExpired) {
+			                    		return new UnavailableValue(debugger, "Function has expired");
+			                    	} else {
+			                    		ICorDebugValue corValue;
+			                    		CorILFrame.GetLocalVariable((uint)symVar.AddressField1, out corValue);
+			                    		return Value.CreateValue(debugger, corValue);
+			                    	}
 			                    });
 		}
 	}
