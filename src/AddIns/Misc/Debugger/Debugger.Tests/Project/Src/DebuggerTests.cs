@@ -11,6 +11,7 @@ using NUnit.Framework;
 using System;
 using System.CodeDom.Compiler;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
 using System.Reflection;
 using System.Resources;
@@ -57,7 +58,7 @@ namespace Debugger.Tests
 			debugger.Start(exeFilename, Path.GetDirectoryName(exeFilename), programName);
 		}
 		
-		public void WaitForPause(PausedReason expectedReason, string expectedLastLogMessage)
+		void WaitForPause(PausedReason expectedReason, string expectedLastLogMessage)
 		{
 			if (expectedLastLogMessage != null) expectedLastLogMessage += "\r\n";
 			debugger.WaitForPause();
@@ -66,11 +67,11 @@ namespace Debugger.Tests
 			Assert.AreEqual(expectedLastLogMessage, lastLogMessage);
 		}
 		
+		
 		[Test]
 		public void SimpleProgram()
 		{
 			StartProgram("SimpleProgram");
-			
 			debugger.WaitForPrecessExit();
 		}
 		
@@ -78,9 +79,7 @@ namespace Debugger.Tests
 		public void HelloWorld()
 		{
 			StartProgram("HelloWorld");
-			
 			debugger.WaitForPrecessExit();
-			
 			Assert.AreEqual("Hello world!\r\n", log);
 		}
 		
@@ -88,10 +87,9 @@ namespace Debugger.Tests
 		public void Break()
 		{
 			StartProgram("Break");
-			
 			WaitForPause(PausedReason.Break, null);
-			debugger.Continue();
 			
+			debugger.Continue();
 			debugger.WaitForPrecessExit();
 		}
 		
@@ -102,11 +100,10 @@ namespace Debugger.Tests
 			Assert.IsTrue(File.Exists(symbolsFilename), "Symbols file not found (.pdb)");
 			
 			StartProgram("Symbols");
-			
 			WaitForPause(PausedReason.Break, null);
 			Assert.AreEqual(true, debugger.GetModule(Path.GetFileName(assemblyFilename)).SymbolsLoaded, "Module symbols not loaded");
-			debugger.Continue();
 			
+			debugger.Continue();
 			debugger.WaitForPrecessExit();
 		}
 		
@@ -116,21 +113,19 @@ namespace Debugger.Tests
 			Breakpoint b = debugger.AddBreakpoint(@"D:\corsavy\SharpDevelop\src\AddIns\Misc\Debugger\Debugger.Tests\Project\Src\TestPrograms\Breakpoint.cs", 18);
 			
 			StartProgram("Breakpoint");
-			
 			WaitForPause(PausedReason.Break, null);
 			Assert.AreEqual(true, b.Enabled);
 			Assert.AreEqual(true, b.HadBeenSet, "Breakpoint is not set");
 			Assert.AreEqual(18, b.SourcecodeSegment.StartLine);
-			debugger.Continue();
 			
+			debugger.Continue();
 			WaitForPause(PausedReason.Breakpoint, "Mark 1");
-			debugger.Continue();
 			
+			debugger.Continue();
 			WaitForPause(PausedReason.Break, "Mark 2");
+			
 			debugger.Continue();
-			
 			debugger.WaitForPrecessExit();
-			
 			Assert.AreEqual("Mark 1\r\nMark 2\r\n", log);
 		}
 		
@@ -153,7 +148,6 @@ namespace Debugger.Tests
 			Assert.IsTrue(File.Exists(newSymbolsFilename), "Symbols file copying failed");
 			
 			StartProgram(newAssemblyFilename, "FileRelease");
-			
 			debugger.WaitForPrecessExit();
 			
 			try {
@@ -198,6 +192,33 @@ namespace Debugger.Tests
 			
 			debugger.StepOver(); // Method Sub2
 			WaitForPause(PausedReason.StepComplete, "5");
+			
+			debugger.Continue();
+			debugger.WaitForPrecessExit();
+		}
+		
+		[Test]
+		public void Callstack()
+		{
+			List<Function> callstack;
+			
+			StartProgram("Callstack");
+			WaitForPause(PausedReason.Break, null);
+			callstack = new List<Function>(debugger.CurrentThread.Callstack);
+			Assert.AreEqual("Sub2", callstack[0].Name);
+			Assert.AreEqual("Sub1", callstack[1].Name);
+			Assert.AreEqual("Main", callstack[2].Name);
+			
+			debugger.StepOut();
+			WaitForPause(PausedReason.StepComplete, null);
+			callstack = new List<Function>(debugger.CurrentThread.Callstack);
+			Assert.AreEqual("Sub1", callstack[0].Name);
+			Assert.AreEqual("Main", callstack[1].Name);
+			
+			debugger.StepOut();
+			WaitForPause(PausedReason.StepComplete, null);
+			callstack = new List<Function>(debugger.CurrentThread.Callstack);
+			Assert.AreEqual("Main", callstack[0].Name);
 			
 			debugger.Continue();
 			debugger.WaitForPrecessExit();

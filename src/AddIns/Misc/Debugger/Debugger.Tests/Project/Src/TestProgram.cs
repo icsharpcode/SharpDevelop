@@ -21,6 +21,7 @@ namespace Debugger.Tests
 			switch (args[0]) {
 				case "Break": Progs.Break.Main(); break;
 				case "Breakpoint": Progs.Breakpoint.Main(); break;
+				case "Callstack": Progs.Callstack.Main(); break;
 				case "FileRelease": Progs.FileRelease.Main(); break;
 				case "HelloWorld": Progs.HelloWorld.Main(); break;
 				case "SimpleProgram": Progs.SimpleProgram.Main(); break;

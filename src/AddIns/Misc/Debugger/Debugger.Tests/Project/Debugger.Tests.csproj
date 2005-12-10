@@ -47,6 +47,7 @@
     <Compile Include="Src\TestPrograms\Break.cs" />
     <Compile Include="Src\TestPrograms\FileRelease.cs" />
     <Compile Include="Src\TestPrograms\Stepping.cs" />
+    <Compile Include="Src\TestPrograms\Callstack.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />
