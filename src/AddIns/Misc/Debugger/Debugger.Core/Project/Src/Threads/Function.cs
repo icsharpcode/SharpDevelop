@@ -476,7 +476,9 @@ namespace Debugger
 				if (symMethod != null) { // TODO: Is this needed?
 					ISymbolScope symRootScope = symMethod.RootScope;
 					foreach(Variable var in GetLocalVariablesInScope(symRootScope)) {
-						yield return var;
+						if (!var.Name.StartsWith("CS$")) { // TODO: Generalize
+							yield return var;
+						}
 					}
 				}
 			}

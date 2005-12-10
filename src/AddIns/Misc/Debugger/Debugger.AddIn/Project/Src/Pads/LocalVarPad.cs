@@ -103,8 +103,6 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public static void AddVariableToTree(Variable variableToAdd, TreeListViewItemCollection tree)
 		{
-			if (variableToAdd.Name.StartsWith("CS$")) return;
-			
 			TreeListViewDebuggerItem newItem = new TreeListViewDebuggerItem(variableToAdd);
 			
 			tree.Add(newItem);
