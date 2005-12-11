@@ -586,7 +586,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			} else if (node.IsLink) {
 				string relFileName = FileUtility.GetRelativePath(Project.Directory, node.FileName);
-				FileNode fileNode = new FileNode(relFileName, FileNodeStatus.InProject);
+				FileNode fileNode = new FileNode(node.FileName, FileNodeStatus.InProject);
 				FileProjectItem fileProjectItem = new FileProjectItem(Project, IncludeFileInProject.GetDefaultItemType(Project, node.FileName));
 				fileProjectItem.Include = relFileName;
 				fileProjectItem.Properties.Set("Link", Path.Combine(RelativePath, Path.GetFileName(node.FileName)));

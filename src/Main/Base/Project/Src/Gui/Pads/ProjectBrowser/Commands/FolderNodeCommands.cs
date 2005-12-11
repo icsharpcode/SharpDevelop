@@ -122,7 +122,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 						if (res == 1) {
 							foreach (string fileName in fdiag.FileNames) {
 								string relFileName = FileUtility.GetRelativePath(node.Project.Directory, fileName);
-								FileNode fileNode = new FileNode(relFileName, FileNodeStatus.InProject);
+								FileNode fileNode = new FileNode(fileName, FileNodeStatus.InProject);
 								FileProjectItem fileProjectItem = new FileProjectItem(node.Project, IncludeFileInProject.GetDefaultItemType(node.Project, fileName));
 								fileProjectItem.Include = relFileName;
 								fileProjectItem.Properties.Set("Link", Path.Combine(node.RelativePath, Path.GetFileName(fileName)));

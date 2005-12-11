@@ -276,7 +276,7 @@ namespace ICSharpCode.TextEditor
 			return lineNumber == base.textArea.Caret.Line && textArea.MotherTextAreaControl.TextEditorProperties.LineViewerStyle == LineViewerStyle.FullRow;
 		}
 		
-			Brush GetBgColorBrush(int lineNumber)
+		Brush GetBgColorBrush(int lineNumber)
 		{
 			if (DrawLineMarkerAtLine(lineNumber)) {
 				HighlightColor caretLine = textArea.Document.HighlightingStrategy.GetColorFor("CaretMarker");
@@ -284,7 +284,7 @@ namespace ICSharpCode.TextEditor
 			}
 			HighlightBackground background = (HighlightBackground)textArea.Document.HighlightingStrategy.GetColorFor("DefaultBackground");
 			Color bgColor = background.BackgroundColor;
-			if (textArea.MotherTextAreaControl.TextEditorProperties.UseCustomLine == true) 
+			if (textArea.MotherTextAreaControl.TextEditorProperties.UseCustomLine == true)
 			{
 				bgColor = textArea.Document.CustomLineManager.GetCustomColor(lineNumber, bgColor);
 			}
@@ -581,6 +581,19 @@ namespace ICSharpCode.TextEditor
 				return 0f;
 			}
 			
+			if (word.Length > MaximumWordLength) {
+				float width = 0;
+				for (int i = 0; i < word.Length; i += MaximumWordLength) {
+					Point pos = position;
+					pos.X += (int)width;
+					if (i + MaximumWordLength < word.Length)
+						width += DrawDocumentWord(g, word.Substring(i, MaximumWordLength), pos, font, foreColor, backBrush);
+					else
+						width += DrawDocumentWord(g, word.Substring(i, word.Length - i), pos, font, foreColor, backBrush);
+				}
+				return width;
+			}
+			
 			float wordWidth = MeasureStringWidth(g, word, font);
 			
 			//num = ++num % 3;
@@ -616,11 +629,26 @@ namespace ICSharpCode.TextEditor
 		
 		Dictionary<WordFontPair, float> measureCache = new Dictionary<WordFontPair, float>();
 		
+		// split words after 1000 characters. Fixes GDI+ crash on very longs words, for example
+		// a 100 KB Base64-file without any line breaks.
+		const int MaximumWordLength = 1000;
+		
 		float MeasureStringWidth(Graphics g, string word, Font font)
 		{
+			float width;
+			
 			if (word == null || word.Length == 0)
 				return 0;
-			float width;
+			if (word.Length > MaximumWordLength) {
+				width = 0;
+				for (int i = 0; i < word.Length; i += MaximumWordLength) {
+					if (i + MaximumWordLength < word.Length)
+						width += MeasureStringWidth(g, word.Substring(i, MaximumWordLength), font);
+					else
+						width += MeasureStringWidth(g, word.Substring(i, word.Length - i), font);
+				}
+				return width;
+			}
 			if (measureCache.TryGetValue(new WordFontPair(word, font), out width)) {
 				return width;
 			}
