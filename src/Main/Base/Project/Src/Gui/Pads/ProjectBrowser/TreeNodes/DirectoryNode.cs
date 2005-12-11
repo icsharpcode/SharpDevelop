@@ -531,14 +531,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void CopyDirectoryHere(DirectoryNode node, bool performMove)
 		{
-			if (node.FileNodeStatus == FileNodeStatus.None) {
-				AddExistingItemsToProject.CopyDirectory(node.Directory, this, true);
-				if (performMove) {
-					FileService.RemoveFile(node.Directory, true);
-				}
-			} else {
-				CopyDirectoryHere(node.Directory, performMove);
-			}
+			CopyDirectoryHere(node.Directory, performMove);
 		}
 		
 		public void CopyFileHere(string fileName, bool performMove)

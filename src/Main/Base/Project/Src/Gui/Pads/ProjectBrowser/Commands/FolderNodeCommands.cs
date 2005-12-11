@@ -40,8 +40,40 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		
 		public static void CopyDirectory(string directoryName, DirectoryNode node, bool includeInProject)
 		{
+			directoryName = Path.GetFullPath(directoryName);
 			string copiedFileName = Path.Combine(node.Directory, Path.GetFileName(directoryName));
+			LoggingService.Debug("Copy " + directoryName + " to " + copiedFileName);
 			if (!FileUtility.IsEqualFileName(directoryName, copiedFileName)) {
+				if (includeInProject && ProjectService.OpenSolution != null) {
+					// get ProjectItems in source directory
+					foreach (IProject project in ProjectService.OpenSolution.Projects) {
+						if (!FileUtility.IsBaseDirectory(project.Directory, directoryName))
+							continue;
+						LoggingService.Debug("Searching for child items in " + project.Name);
+						foreach (ProjectItem item in project.Items.ToArray()) {
+							FileProjectItem fileItem = item as FileProjectItem;
+							if (fileItem == null)
+								continue;
+							string virtualFullName = Path.Combine(project.Directory, fileItem.VirtualName);
+							if (FileUtility.IsBaseDirectory(directoryName, virtualFullName)) {
+								LoggingService.Debug("Found file " + virtualFullName);
+								FileProjectItem newItem = new FileProjectItem(node.Project, fileItem.ItemType);
+								if (FileUtility.IsBaseDirectory(directoryName, fileItem.FileName)) {
+									newItem.FileName = FileUtility.RenameBaseDirectory(fileItem.FileName, directoryName, copiedFileName);
+								} else {
+									newItem.FileName = fileItem.FileName;
+								}
+								fileItem.CopyExtraPropertiesTo(newItem);
+								if (fileItem.IsLink) {
+									string newVirtualFullName = FileUtility.RenameBaseDirectory(virtualFullName, directoryName, copiedFileName);
+									fileItem.Properties["Link"] = FileUtility.GetRelativePath(node.Project.Directory, newVirtualFullName);
+								}
+								node.Project.Items.Add(newItem);
+							}
+						}
+					}
+				}
+				
 				FileUtility.DeepCopy(directoryName, copiedFileName, true);
 				DirectoryNode newNode = new DirectoryNode(copiedFileName);
 				newNode.AddTo(node);

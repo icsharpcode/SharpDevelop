@@ -147,8 +147,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					case ".resources":
 						return ItemType.EmbeddedResource;
 						
-					// HACK: This isn't really a solution. :-( Maybe in the near
-					// future we can use the known attributes in the XFT files, too.
+						// HACK: This isn't really a solution. :-( Maybe in the near
+						// future we can use the known attributes in the XFT files, too.
 					case ".xaml":
 						return ItemType.Page;
 
@@ -165,12 +165,10 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					IncludeDirectoryNode((DirectoryNode)directoryNode.Parent, false);
 				}
 			}
-			if (directoryNode.Nodes.Count == 0) {
-				FileProjectItem newItem = new FileProjectItem(directoryNode.Project, ItemType.Folder);
-				newItem.Include = FileUtility.GetRelativePath(directoryNode.Project.Directory, directoryNode.Directory);
-				ProjectService.AddProjectItem(directoryNode.Project, newItem);
-				directoryNode.ProjectItem = newItem;
-			}
+			FileProjectItem newItem = new FileProjectItem(directoryNode.Project, ItemType.Folder);
+			newItem.Include = FileUtility.GetRelativePath(directoryNode.Project.Directory, directoryNode.Directory);
+			ProjectService.AddProjectItem(directoryNode.Project, newItem);
+			directoryNode.ProjectItem = newItem;
 			directoryNode.FileNodeStatus = FileNodeStatus.InProject;
 			
 			if (includeSubNodes) {
