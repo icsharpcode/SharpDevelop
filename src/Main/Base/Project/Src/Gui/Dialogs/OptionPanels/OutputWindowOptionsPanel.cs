@@ -51,8 +51,5 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			PropertyService.Set(OutputWindowsProperty, properties);
 			return true;
 		}
-		
-		
-		
 	}
 }

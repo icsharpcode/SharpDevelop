@@ -5,7 +5,7 @@
 //     <version>$Revision$</version>
 // </file>
 
-// much of TaskView's code has been refactored from 
+// much of TaskView's code has been refactored from
 //  TaskList.cs (formerly OpenTaskView.cs) & ErrorList.cs
 
 using System;
@@ -120,7 +120,7 @@ namespace ICSharpCode.Core
 		}
 		
 		protected override void OnColumnClick(ColumnClickEventArgs e)
-		{	
+		{
 			SortBy(e.Column);
 			base.OnColumnClick(e);
 		}
@@ -130,7 +130,7 @@ namespace ICSharpCode.Core
 				System.Diagnostics.Debug.Assert(SelectedTask != null);
 				SelectedTask.JumpToPosition();
 			}
-			base.OnItemActivate(e);		
+			base.OnItemActivate(e);
 		}
 
 		ListViewItem currentListViewItem = null;
@@ -199,7 +199,7 @@ namespace ICSharpCode.Core
 			int right = this.Items.Count - 1;
 			while (left <= right) {
 				int m = left + (right - left) / 2;
-				if (this.ListViewItemSorter.Compare(item, this.Items[m]) > 0) {
+				if (this.mySorter.Compare(item, this.Items[m]) > 0) {
 					left = m + 1;
 				} else {
 					right = m - 1;
@@ -228,7 +228,7 @@ namespace ICSharpCode.Core
 					Items.RemoveAt(i);
 					break;
 				}
-			}			
+			}
 		}
 		
 		public void UpdateResults(System.Collections.Generic.IEnumerable<ICSharpCode.Core.Task> taskSet)
@@ -242,7 +242,6 @@ namespace ICSharpCode.Core
 			
 			this.EndUpdate();
 		}
-					
 		#endregion
 		
 		#region Custom IComparer for sorting TaskView.
@@ -251,8 +250,8 @@ namespace ICSharpCode.Core
 		SortOrder currentSortOrder = SortOrder.Ascending;
 		
 		/// <summary>
-		/// Applies the specified sort request by creating, 
-		/// configuring, and installing a 
+		/// Applies the specified sort request by creating,
+		/// configuring, and installing a
 		/// <see cref="TaskViewSorter"/>.
 		/// </summary>
 		private void SortBy(TaskViewCols col)
@@ -273,9 +272,12 @@ namespace ICSharpCode.Core
 				currentSortOrder = SortOrder.Ascending;
 			}
 			
-			this.ListViewItemSorter = 
-				new TaskViewSorter(currentSortColumn, currentSortOrder);
+			this.mySorter = new TaskViewSorter(currentSortColumn, currentSortOrder);
+			this.ListViewItemSorter = mySorter;
+			this.ListViewItemSorter = null;
 		}
+		
+		TaskViewSorter mySorter;
 		
 		/// <summary>
 		/// Custom <see cref="IComparer"/> for TaskView.
@@ -290,7 +292,7 @@ namespace ICSharpCode.Core
 				sortCol = col;
 				sortOrder = order;
 			}
-						
+			
 			protected int CompareLineNumbers(ListViewItem a, ListViewItem b)
 			{
 				return ((Task)a.Tag).Line.CompareTo(((Task)b.Tag).Line);
@@ -315,8 +317,8 @@ namespace ICSharpCode.Core
 			/// A signed integer indicating the relative sort ranking
 			/// of item <paramref name="x"/> relative to item
 			/// <paramref name="y"/>.
-			/// Return value greater than zero: x > y.  
-			/// Return value is zero: x == y.  
+			/// Return value greater than zero: x > y.
+			/// Return value is zero: x == y.
 			/// Return value is less than zero: x \< y.
 			/// </returns>
 			public int Compare(object x, object y) {

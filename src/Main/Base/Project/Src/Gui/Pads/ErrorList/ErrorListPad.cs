@@ -76,15 +76,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 			instance = this;
 			
 			RedrawContent();
-						
+			
 			TaskService.Cleared += new EventHandler(TaskServiceCleared);
 			TaskService.Added   += new TaskEventHandler(TaskServiceAdded);
 			TaskService.Removed += new TaskEventHandler(TaskServiceRemoved);
+			TaskService.InUpdateChanged += delegate {
+				if (!TaskService.InUpdate)
+					InternalShowResults();
+			};
 			
 			ProjectService.EndBuild       += ProjectServiceEndBuild;
 			ProjectService.SolutionLoaded += OnCombineOpen;
 			ProjectService.SolutionClosed += OnCombineClosed;
-						
+			
 			taskView.CreateControl();
 			contentPanel.Controls.Add(taskView);
 			
@@ -125,7 +129,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			UpdateToolstripStatus();
 		}
-				
+		
 		public CompilerResults CompilerResults = null;
 		
 		void AddTask(Task task)
@@ -149,25 +153,31 @@ namespace ICSharpCode.SharpDevelop.Gui
 				default:
 					return;
 			}
-		
+			
 			taskView.AddTask(task);
 		}
 		
 		
 		void TaskServiceCleared(object sender, EventArgs e)
 		{
+			if (TaskService.InUpdate)
+				return;
 			taskView.ClearTasks();
 			UpdateToolstripStatus();
 		}
 		
 		void TaskServiceAdded(object sender, TaskEventArgs e)
 		{
+			if (TaskService.InUpdate)
+				return;
 			AddTask(e.Task);
 			UpdateToolstripStatus();
 		}
 		
 		void TaskServiceRemoved(object sender, TaskEventArgs e)
 		{
+			if (TaskService.InUpdate)
+				return;
 			taskView.RemoveTask(e.Task);
 			UpdateToolstripStatus();
 		}

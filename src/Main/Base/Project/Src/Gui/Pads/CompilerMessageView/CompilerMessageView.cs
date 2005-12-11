@@ -37,8 +37,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		TextEditorControl textEditorControl = new TextEditorControl();
-		Panel             myPanel           = new Panel();
+		//TextEditorControl textEditorControl = new TextEditorControl();
+		RichTextBox textEditorControl = new RichTextBox();
+		Panel myPanel = new Panel();
+		ToolStrip toolStrip;
 		
 		List<MessageViewCategory> messageCategories = new List<MessageViewCategory>();
 		
@@ -51,7 +53,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (selectedCategory != value) {
 					selectedCategory = value;
 					textEditorControl.Text = (value < 0) ? "" : messageCategories[value].Text;
-					textEditorControl.Refresh();
+					//textEditorControl.Refresh();
 					OnSelectedCategoryIndexChanged(EventArgs.Empty);
 				}
 			}
@@ -76,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		
 		// The compiler message view properties.
-		Properties 	properties	      = null;
+		Properties properties  = null;
 		
 		public List<MessageViewCategory> MessageCategories {
 			get {
@@ -97,8 +99,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			AddCategory(TaskService.BuildMessageViewCategory);
 			
 			myPanel.SuspendLayout();
-			textEditorControl.Dock              = DockStyle.Fill;
-			textEditorControl.ShowLineNumbers   = false;
+			textEditorControl.Dock = DockStyle.Fill;
+			textEditorControl.BorderStyle = BorderStyle.FixedSingle;
+			textEditorControl.BackColor = SystemColors.Window;
+			/*textEditorControl.ShowLineNumbers   = false;
 			textEditorControl.ShowInvalidLines  = false;
 			textEditorControl.EnableFolding     = false;
 			textEditorControl.IsIconBarVisible  = false;
@@ -107,18 +111,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 			textEditorControl.ShowVRuler        = false;
 			textEditorControl.ShowSpaces        = false;
 			textEditorControl.ShowTabs          = false;
-			textEditorControl.ShowEOLMarkers    = false;
+			textEditorControl.ShowEOLMarkers    = false;*/
+			textEditorControl.ReadOnly = true;
 			
 			textEditorControl.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Pads/CompilerMessageView/ContextMenu");
 			
 			properties = (Properties)PropertyService.Get(OutputWindowOptionsPanel.OutputWindowsProperty, new Properties());
 			
-			textEditorControl.Font     = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", ResourceService.CourierNew10.ToString()).ToString());
+			textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", ResourceService.CourierNew10.ToString()).ToString());
 			properties.PropertyChanged += new PropertyChangedEventHandler(PropertyChanged);
 			
-			textEditorControl.ActiveTextAreaControl.TextArea.DoubleClick += TextEditorControlDoubleClick;
+			//textEditorControl.ActiveTextAreaControl.TextArea.DoubleClick += TextEditorControlDoubleClick;
+			textEditorControl.DoubleClick += TextEditorControlDoubleClick;
 			
-			ToolStrip toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/CompilerMessageView/Toolbar");
+			toolStrip = ToolbarService.CreateToolStrip(this, "/SharpDevelop/Pads/CompilerMessageView/Toolbar");
 			toolStrip.Stretch   = true;
 			toolStrip.GripStyle = System.Windows.Forms.ToolStripGripStyle.Hidden;
 			
@@ -131,13 +137,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void SetWordWrap()
 		{
-//			bool wordWrap = properties.Get("WordWrap", true);
-//			textEditorControl.WordWrap = wordWrap;
-//			if (wordWrap) {
-//				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedBoth;
-//			} else {
-//				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedVertical;
-//			}
+			bool wordWrap = this.WordWrap;
+			textEditorControl.WordWrap = wordWrap;
+			if (wordWrap) {
+				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedBoth;
+			} else {
+				textEditorControl.ScrollBars = RichTextBoxScrollBars.ForcedVertical;
+			}
 		}
 		
 		public override void RedrawContent()
@@ -167,7 +173,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (messageCategories[SelectedCategoryIndex] == category) {
 				textEditorControl.Text = String.Empty;
-				textEditorControl.Refresh();
+				//textEditorControl.Refresh();
 			}
 		}
 		
@@ -176,25 +182,67 @@ namespace ICSharpCode.SharpDevelop.Gui
 			WorkbenchSingleton.SafeThreadAsyncCall(this, "SetText", (MessageViewCategory)sender, e.Text);
 		}
 		
+		object appendCallLock = new object();
+		volatile int pendingAppendCalls = 0;
+		
 		void CategoryTextAppended(object sender, TextEventArgs e)
 		{
-			WorkbenchSingleton.SafeThreadAsyncCall(this, "AppendText", (MessageViewCategory)sender, ((MessageViewCategory)sender).Text, e.Text);
+			lock (appendCallLock) {
+				pendingAppendCalls += 1;
+				if (pendingAppendCalls < 5) {
+					WorkbenchSingleton.SafeThreadAsyncCall(this, "AppendText", sender, ((MessageViewCategory)sender).Text, e.Text);
+				} else if (pendingAppendCalls == 5) {
+					WorkbenchSingleton.SafeThreadAsyncCall(this, "AppendTextCombined", sender);
+				}
+			}
+		}
+		
+		const int WM_SETREDRAW = 0x00B;
+		
+		[System.Security.SuppressUnmanagedCodeSecurityAttribute]
+		[System.Runtime.InteropServices.DllImport("user32.dll")]
+		static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
+		
+		void SetUpdate(bool update)
+		{
+			SendMessage(textEditorControl.Handle, WM_SETREDRAW, update ? 1 : 0, IntPtr.Zero);
+		}
+		
+		void AppendTextCombined(MessageViewCategory category)
+		{
+			Application.DoEvents();
+			Thread.Sleep(50);
+			Application.DoEvents();
+			lock (appendCallLock) {
+				SetUpdate(false);
+				SetText(category, category.Text);
+				SetUpdate(true);
+				textEditorControl.SelectionStart = textEditorControl.TextLength;
+				LoggingService.Debug("Replaced " + pendingAppendCalls + " appends with one set call");
+				pendingAppendCalls = 0;
+			}
 		}
 		
 		void AppendText(MessageViewCategory category, string fullText, string text)
 		{
+			lock (appendCallLock) {
+				if (pendingAppendCalls >= 5) {
+					return;
+				}
+			}
 			if (messageCategories[SelectedCategoryIndex] != category) {
 				SelectCategory(category.Category, fullText);
 				return;
 			}
-			
 			if (text != null) {
 				text = StringParser.Parse(text);
-				textEditorControl.Document.ReadOnly = false;
+				textEditorControl.AppendText(text);
+				textEditorControl.SelectionStart = textEditorControl.TextLength;
+				/*textEditorControl.Document.ReadOnly = false;
 				textEditorControl.Document.Insert(textEditorControl.Document.TextLength, text);
 				textEditorControl.Document.ReadOnly = true;
 				textEditorControl.ActiveTextAreaControl.Caret.Position = new Point(0, textEditorControl.Document.TotalNumberOfLines);
-				textEditorControl.ActiveTextAreaControl.ScrollTo(textEditorControl.Document.TotalNumberOfLines);
+				textEditorControl.ActiveTextAreaControl.ScrollTo(textEditorControl.Document.TotalNumberOfLines);*/
 			}
 		}
 		
@@ -210,7 +258,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				text = StringParser.Parse(text);
 			}
 			textEditorControl.Text = text;
-			textEditorControl.Refresh();
+			//textEditorControl.Refresh();
 		}
 		
 		public void SelectCategory(string categoryName)
@@ -234,7 +282,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (category.Category == categoryName) {
 					selectedCategory = i;
 					textEditorControl.Text = text;
-					textEditorControl.Refresh();
+					//textEditorControl.Refresh();
 					OnSelectedCategoryIndexChanged(EventArgs.Empty);
 					break;
 				}
@@ -268,10 +316,20 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		void TextEditorControlDoubleClick(object sender, EventArgs e)
 		{
+			string fullText = textEditorControl.Text;
 			// Any text?
-			if (textEditorControl.Text.Length > 0) {
-				int line = textEditorControl.ActiveTextAreaControl.Caret.Line;
-				string textLine = TextUtilities.GetLineAsString(textEditorControl.Document, line);
+			if (fullText.Length > 0) {
+				//int line = textEditorControl.ActiveTextAreaControl.Caret.Line;
+				//string textLine = TextUtilities.GetLineAsString(textEditorControl.Document, line);
+				Point clickPos = textEditorControl.PointToClient(Control.MousePosition);
+				int index = textEditorControl.GetCharIndexFromPosition(clickPos);
+				int start = index;
+				// find start of current line
+				while (--start > 0 && fullText[start - 1] != '\n');
+				// find end of current line
+				while (++index < fullText.Length && fullText[index] != '\r');
+				
+				string textLine = fullText.Substring(start, index - start);
 				
 				FileLineReference lineReference = OutputTextLineParser.GetFileLineReference(textLine);
 				if (lineReference != null) {
@@ -288,6 +346,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			if (e.Key == "WordWrap") {
 				SetWordWrap();
+				ToolbarService.UpdateToolbar(toolStrip);
 			}
 			if (e.Key == "DefaultFont") {
 				textEditorControl.Font = FontSelectionPanel.ParseFont(properties.Get("DefaultFont", ResourceService.CourierNew10.ToString()).ToString());
@@ -320,7 +379,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public bool EnableCopy {
 			get {
-				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCopy;
+				//return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableCopy;
+				return textEditorControl.SelectionLength > 0;
 			}
 		}
 		
@@ -338,7 +398,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public bool EnableSelectAll {
 			get {
-				return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableSelectAll;
+				//return textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.EnableSelectAll;
+				return textEditorControl.TextLength > 0;
 			}
 		}
 		
@@ -348,7 +409,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void Copy()
 		{
-			textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.Copy(null, null);
+			//textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.Copy(null, null);
+			textEditorControl.Copy();
 		}
 		
 		public void Paste()
@@ -361,9 +423,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void SelectAll()
 		{
-			textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.SelectAll(null, null);
+			//textEditorControl.ActiveTextAreaControl.TextArea.ClipboardHandler.SelectAll(null, null);
+			textEditorControl.SelectAll();
 		}
 		#endregion
-		
 	}
 }

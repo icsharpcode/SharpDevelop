@@ -228,6 +228,24 @@ namespace ICSharpCode.Core
 		public static event TaskEventHandler Added;
 		public static event TaskEventHandler Removed;
 		public static event EventHandler     Cleared;
+		
+		static bool inUpdate;
+		
+		public static bool InUpdate {
+			get {
+				return inUpdate;
+			}
+			set {
+				if (inUpdate != value) {
+					inUpdate = value;
+					
+					if (InUpdateChanged != null) {
+						InUpdateChanged(null, EventArgs.Empty);
+					}
+				}
+			}
+		}
+		
+		public static event EventHandler InUpdateChanged;
 	}
-
 }

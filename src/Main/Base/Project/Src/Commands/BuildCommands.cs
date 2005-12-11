@@ -20,7 +20,9 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public static void BeforeBuild()
 		{
 			TaskService.BuildMessageViewCategory.ClearText();
+			TaskService.InUpdate = true;
 			TaskService.ClearExceptCommentTasks();
+			TaskService.InUpdate = false;
 			ICSharpCode.SharpDevelop.Commands.SaveAllFiles.SaveAll();
 		}
 		
@@ -32,6 +34,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (results != null) {
 				LastErrorCount = 0;
 				LastWarningCount = 0;
+				TaskService.InUpdate = true;
 				foreach (CompilerError error in results.Errors) {
 					TaskService.Add(new Task(error));
 					if (error.IsWarning)
@@ -39,6 +42,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 					else
 						LastErrorCount++;
 				}
+				TaskService.InUpdate = false;
 				if (results.Errors.Count > 0) {
 					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 				}
@@ -112,26 +116,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public class BuildProject : AbstractMenuCommand
 	{
-		
-		public static void ShowResults(CompilerResults results)
-		{
-			if (results != null) {
-				foreach (CompilerError error in results.Errors) {
-					TaskService.Add(new Task(error));
-				}
-				if (results.Errors.Count > 0) {
-					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
-				}
-			}
-		}
-		
 		public override void Run()
 		{
 			Build.BeforeBuild();
 			if (ProjectService.OpenSolution == null) {
 				Build.AddNoSingleFileCompilationError();
 			} else {
-				BuildProject.ShowResults(ProjectService.CurrentProject.Build());
+				Build.ShowResults(ProjectService.CurrentProject.Build());
 			}
 			Build.AfterBuild();
 		}
@@ -145,7 +136,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (ProjectService.OpenSolution == null) {
 				Build.AddNoSingleFileCompilationError();
 			} else {
-				BuildProject.ShowResults(ProjectService.CurrentProject.Rebuild());
+				Build.ShowResults(ProjectService.CurrentProject.Rebuild());
 			}
 			Build.AfterBuild();
 		}
@@ -159,7 +150,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (ProjectService.OpenSolution == null) {
 				Build.AddNoSingleFileCompilationError();
 			} else {
-				BuildProject.ShowResults(ProjectService.CurrentProject.Clean());
+				Build.ShowResults(ProjectService.CurrentProject.Clean());
 			}
 		}
 	}
@@ -172,7 +163,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			if (ProjectService.OpenSolution == null) {
 				Build.AddNoSingleFileCompilationError();
 			} else {
-				BuildProject.ShowResults(ProjectService.CurrentProject.Publish());
+				Build.ShowResults(ProjectService.CurrentProject.Publish());
 			}
 		}
 	}

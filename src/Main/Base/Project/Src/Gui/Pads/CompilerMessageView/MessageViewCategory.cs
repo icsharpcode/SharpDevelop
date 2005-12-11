@@ -20,7 +20,7 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
-	/// This class represents a category with its text content used in the 
+	/// This class represents a category with its text content used in the
 	/// output pad (CompilerMessageView).
 	/// </summary>
 	public class MessageViewCategory
@@ -43,7 +43,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public string Text {
 			get {
-				return textBuilder.ToString();
+				lock (textBuilder) {
+					return textBuilder.ToString();
+				}
 			}
 		}
 		
@@ -59,24 +61,30 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void AppendText(string text)
 		{
-			textBuilder.Append(text);
+			lock (textBuilder) {
+				textBuilder.Append(text);
+			}
 			OnTextAppended(new TextEventArgs(text));
 		}
 		
 		public void SetText(string text)
 		{
-			textBuilder.Length = 0;
-			textBuilder.Append(text);
+			lock (textBuilder) {
+				textBuilder.Length = 0;
+				textBuilder.Append(text);
+			}
 			OnTextSet(new TextEventArgs(text));
 		}
 		
 		public void ClearText()
 		{
-			textBuilder.Length = 0;
+			lock (textBuilder) {
+				textBuilder.Length = 0;
+			}
 			OnCleared(EventArgs.Empty);
 		}
 		
-		protected virtual void OnTextAppended(TextEventArgs e) 
+		protected virtual void OnTextAppended(TextEventArgs e)
 		{
 			if (TextAppended != null) {
 				TextAppended(this, e);
