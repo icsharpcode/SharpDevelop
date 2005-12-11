@@ -505,17 +505,19 @@ namespace Debugger
 		
 		Eval CreatePropertyEval(MethodProps method)
 		{
-			ICorDebugValue[] evalArgs;
 			ICorDebugFunction evalCorFunction;
 			Module.CorModule.GetFunctionFromToken(method.Token, out evalCorFunction);
+			
+			return new Eval(debugger, evalCorFunction, GetEvalArgs);
+		}
+		
+		ICorDebugValue[] GetEvalArgs()
+		{
 			if (IsStatic) {
-				evalArgs = new ICorDebugValue[0];
+				return new ICorDebugValue[0];
 			} else {
-				evalArgs = new ICorDebugValue[] {ThisValue.CorValue};
+				return new ICorDebugValue[] {ThisValue.CorValue};
 			}
-			Eval eval = new Eval(debugger, evalCorFunction, evalArgs);
-			debugger.AddEval(eval);
-			return eval;
 		}
 		
 		IEnumerable<Variable> GetLocalVariablesInScope(ISymbolScope symScope)

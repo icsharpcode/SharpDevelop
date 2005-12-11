@@ -23,55 +23,57 @@ namespace Debugger
 		MetaData metaData;
 		ICorDebugModule corModuleSuperclass;
 		ObjectValue baseClass;
-		internal string toString;
-		Eval toStringEval;
-
+		
 		TypeDefProps classProps;
 		
-		public override string AsString { 
-			get{
-				if (toString != null) {
-					return toString;
-				} else {
-					if (toStringEval == null) {
-						// Set up eval of ToString()
-						
-						ObjectValue baseClass = this;
-						while (baseClass.HasBaseClass) {
-							baseClass = baseClass.BaseClass;
-						}
-						foreach(MethodProps method in baseClass.Module.MetaData.EnumMethods(baseClass.ClassToken)) {
-							if (method.Name == "ToString") {
-								ICorDebugValue[] evalArgs;
-								ICorDebugFunction evalCorFunction;
-								baseClass.Module.CorModule.GetFunctionFromToken(method.Token, out evalCorFunction);
-								// We need to pass reference
-								ICorDebugHeapValue2 heapValue = this.CorValue as ICorDebugHeapValue2;
-								if (heapValue == null) {
-									toString = "{" + Type + "}";
-									return toString;
-								}
-								ICorDebugHandleValue corHandle;
-								heapValue.CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION, out corHandle);
-								evalArgs = new ICorDebugValue[] {corHandle};
-								toStringEval = new Eval(debugger, evalCorFunction, evalArgs);
-								// Do not add evals if we just evaluated them, otherwise we get infinite loop
-								if (debugger.IsPaused && debugger.PausedReason != PausedReason.AllEvalsComplete) {
-									debugger.AddEval(toStringEval);
-									//toStringEval.SetupEvaluation(debugger.CurrentThread);
-								}
-								toStringEval.EvalComplete += delegate {
-									toString = toStringEval.Result.AsString;
-									this.OnValueChanged();
-								};
-							}
-						}
-					}
-					return "{" + Type + "}";
-				}
+		public override string AsString {
+			get {
+				return "{" + Type + "}";
 			}
 		}
-
+		
+		public ObjectValue BaseClassObject {
+			get {
+				ObjectValue baseClass = this;
+				while (baseClass.HasBaseClass) {
+					baseClass = baseClass.BaseClass;
+				}
+				return baseClass;
+			}
+		}
+		
+		IEnumerable<MethodProps> Methods {
+			get {
+				return this.Module.MetaData.EnumMethods(this.ClassToken);
+			}
+		}
+		
+		/*
+		// May return null
+		public Eval ToStringEval { 
+			get {
+				ObjectValue baseClassObject = this.BaseClassObject;
+				foreach(MethodProps method in baseClassObject.Methods) {
+					if (method.Name == "ToString") {
+						ICorDebugValue[] evalArgs;
+						ICorDebugFunction evalCorFunction;
+						baseClassObject.Module.CorModule.GetFunctionFromToken(method.Token, out evalCorFunction);
+						// We need to pass reference
+						ICorDebugHeapValue2 heapValue = this.CorValue as ICorDebugHeapValue2;
+						if (heapValue == null) { // TODO: Investigate
+							return null;
+						}
+						ICorDebugHandleValue corHandle;
+						heapValue.CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION, out corHandle);
+						evalArgs = new ICorDebugValue[] {corHandle};
+						return new Eval(debugger, evalCorFunction, evalArgs);
+					}
+				}
+				throw new DebuggerException("ToString method not found");
+			}
+		}
+		*/
+		
 		public override string Type { 
 			get{ 
 				return classProps.Name;

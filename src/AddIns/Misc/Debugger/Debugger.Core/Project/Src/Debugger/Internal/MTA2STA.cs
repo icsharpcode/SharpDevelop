@@ -94,6 +94,16 @@ namespace Debugger
 			PerformAllCalls();
 		}
 		
+		/// <summary>
+		/// Schedules invocation of method and returns immediately
+		/// </summary>
+		public WaitHandle AsyncCall(MethodInvoker callDelegate)
+		{
+			WaitHandle callDone = EnqueueCall(callDelegate);
+			TriggerInvoke();
+			return callDone;
+		}
+		
 		public T Call<T>(MethodInvokerWithReturnValue<T> callDelegate)
 		{
 			T returnValue = default(T);
@@ -117,18 +127,7 @@ namespace Debugger
 			}
 			
 			// We have the call waiting in queue, we need to call it (not waiting for it to finish)
-			switch (callMethod) {
-				case CallMethod.DirectCall:
-					PerformAllCalls();
-					break;
-				case CallMethod.Manual:
-					// Nothing we can do - someone else must call SoftWait or Pulse
-					break;
-				case CallMethod.HiddenForm:
-				case CallMethod.HiddenFormWithTimeout:
-					hiddenForm.BeginInvoke((MethodInvoker)PerformAllCalls);
-					break;
-			}
+			TriggerInvoke();
 			
 			// Wait for the call to finish
 			if (!hasReturnValue && callMethod == CallMethod.HiddenFormWithTimeout) {
@@ -141,6 +140,21 @@ namespace Debugger
 			}
 		}
 		
+		void TriggerInvoke()
+		{
+			switch (callMethod) {
+				case CallMethod.DirectCall:
+					PerformAllCalls();
+					break;
+				case CallMethod.Manual:
+					// Nothing we can do - someone else must call SoftWait or Pulse
+					break;
+				case CallMethod.HiddenForm:
+				case CallMethod.HiddenFormWithTimeout:
+					hiddenForm.BeginInvoke((MethodInvoker)PerformAllCalls);
+					break;
+			}
+		}
 		
 		public static object MarshalParamTo(object param, Type outputType)
 		{

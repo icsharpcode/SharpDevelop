@@ -395,13 +395,7 @@ namespace Debugger
 			
 			if (debugger.Processes.Count == 0) {
 				// Exit callback and then terminate the debugger
-				new System.Threading.Thread(
-					delegate() {
-						debugger.MTA2STA.Call(
-							delegate {
-								debugger.TerminateDebugger();
-							});
-				}).Start();
+				debugger.MTA2STA.AsyncCall( delegate { debugger.TerminateDebugger(); } );
 			}
 		}
 		

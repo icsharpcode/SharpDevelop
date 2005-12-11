@@ -15,6 +15,8 @@ using Debugger.Interop.MetaData;
 
 namespace Debugger
 {
+	delegate ICorDebugValue[] CorValuesGetter();
+	
 	/// <summary>
 	/// This class holds information about function evaluation.
 	/// </summary>
@@ -26,7 +28,7 @@ namespace Debugger
 		
 		ICorDebugEval     corEval;
 		ICorDebugFunction corFunction;
-		ICorDebugValue[]  args;
+		CorValuesGetter   getArgs;
 		
 		bool              evaluating = false;
 		bool              evaluated  = false;
@@ -77,7 +79,8 @@ namespace Debugger
 		
 		public bool HasExpired {
 			get {
-				return debugeeStateIDatCreation != debugger.DebugeeStateID;
+				return debugeeStateIDatCreation != debugger.DebugeeStateID ||
+				       Result.IsExpired;
 			}
 		}
 		
@@ -116,18 +119,28 @@ namespace Debugger
 			}
 		}
 		
-		internal Eval(NDebugger debugger, ICorDebugFunction corFunction, ICorDebugValue[] args)
+		internal Eval(NDebugger debugger, ICorDebugFunction corFunction, CorValuesGetter getArgs)
 		{
 			this.debugger = debugger;
 			this.corFunction = corFunction;
-			this.args = args;
+			this.getArgs = getArgs;
 			this.debugeeStateIDatCreation = debugger.DebugeeStateID;
+			
+			// Schedule the eval for evaluation
+			debugger.AddEval(this);
+			debugger.MTA2STA.AsyncCall(delegate {
+			                           	if (debugger.IsPaused && !this.HasExpired) {
+			                           		debugger.StartEvaluation();
+			                           	}
+			                           });
 		}
 		
 		/// <returns>True is setup was successful</returns>
 		internal bool SetupEvaluation(Thread targetThread)
 		{
 			if (!debugger.ManagedCallback.HandlingCallback) debugger.AssertPaused();
+			
+			ICorDebugValue[] args = getArgs();
 			
 			// TODO: What if this thread is not suitable?
 			targetThread.CorThread.CreateEval(out corEval);
