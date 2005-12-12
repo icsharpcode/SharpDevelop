@@ -393,16 +393,13 @@ namespace Debugger
 		
 		public IEnumerable<Variable> Variables {
 			get {
-				foreach(Variable var in ContaingClassVariables) {
-					yield return var;
-				}
 				foreach(Variable var in ArgumentVariables) {
 					yield return var;
 				}
 				foreach(Variable var in LocalVariables) {
 					yield return var;
 				}
-				foreach(Variable var in PropertyVariables) {
+				foreach(Variable var in ContaingClassVariables) {
 					yield return var;
 				}
 			}
@@ -481,42 +478,6 @@ namespace Debugger
 						}
 					}
 				}
-			}
-		}
-		
-		public IEnumerable<Variable> PropertyVariables {
-			get {
-				foreach(MethodProps m in module.MetaData.EnumMethods(methodProps.ClassToken)) {
-					MethodProps method = m; // One per scope/delegate
-					if (method.Name.StartsWith("get_") && method.HasSpecialName) {
-						yield return new PropertyVariable(debugger,
-						                                  method.Name.Remove(0, 4),
-						                                  delegate {
-						                                  	if (this.HasExpired) {
-						                                  		return null;
-						                                  	} else {
-						                                  		return CreatePropertyEval(method);
-						                                  	}
-						                                  });
-					}
-				}
-			}
-		}
-		
-		Eval CreatePropertyEval(MethodProps method)
-		{
-			ICorDebugFunction evalCorFunction;
-			Module.CorModule.GetFunctionFromToken(method.Token, out evalCorFunction);
-			
-			return new Eval(debugger, evalCorFunction, GetEvalArgs);
-		}
-		
-		ICorDebugValue[] GetEvalArgs()
-		{
-			if (IsStatic) {
-				return new ICorDebugValue[0];
-			} else {
-				return new ICorDebugValue[] {ThisValue.CorValue};
 			}
 		}
 		

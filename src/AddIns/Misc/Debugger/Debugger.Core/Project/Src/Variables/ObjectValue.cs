@@ -128,7 +128,18 @@ namespace Debugger
 				yield return BaseClassVariable;
 			}
 			
-			foreach(FieldProps f in metaData.EnumFields(classProps.Token)) {
+			foreach(Variable var in GetFieldVariables(getter)) {
+				yield return var;
+			}
+			
+			foreach(Variable var in GetPropertyVariables(getter)) {
+				yield return var;
+			}
+		}
+		
+		public IEnumerable<Variable> GetFieldVariables(ValueGetter getter)
+		{
+			foreach(FieldProps f in metaData.EnumFields(ClassToken)) {
 				FieldProps field = f; // One per scope/delegate
 				if (field.IsStatic && field.IsLiteral) continue; // Skip field
 				if (!field.IsStatic && corValue == null) continue; // Skip field
@@ -136,6 +147,7 @@ namespace Debugger
 				                          field.Name,
 				                          delegate {
 				                          	Value updatedVal = getter();
+				                          	if (updatedVal is UnavailableValue) return updatedVal;
 				                          	if (this.IsEquivalentValue(updatedVal)) {
 				                          		return GetValue(updatedVal, field);
 				                          	} else {
@@ -143,6 +155,40 @@ namespace Debugger
 				                          	}
 				                          });
 			}
+		}
+		
+		public IEnumerable<Variable> GetPropertyVariables(ValueGetter getter)
+		{
+			foreach(MethodProps m in Methods) {
+				MethodProps method = m; // One per scope/delegate
+				if (method.Name.StartsWith("get_") && method.HasSpecialName) {
+					yield return new PropertyVariable(debugger,
+					                                  method.Name.Remove(0, 4),
+					                                  delegate {
+					                                  	Value updatedVal = getter();
+					                                  	if (updatedVal is UnavailableValue) return null;
+					                                  	if (this.IsEquivalentValue(updatedVal)) {
+					                                  		return CreatePropertyEval(method, getter);
+					                                  	} else {
+					                                  		return null;
+					                                  	}
+					                                  });
+				}
+			}
+		}
+		
+		Eval CreatePropertyEval(MethodProps method, ValueGetter getter)
+		{
+			ICorDebugFunction evalCorFunction;
+			Module.CorModule.GetFunctionFromToken(method.Token, out evalCorFunction);
+			
+			return new Eval(debugger, evalCorFunction, delegate {
+			                	if (method.IsStatic) {
+			                		return new ICorDebugValue[] {};
+			                	} else {
+			                		return new ICorDebugValue[] {getter().CorValue};
+			                	}
+			                });
 		}
 		
 		public override bool IsEquivalentValue(Value val)
