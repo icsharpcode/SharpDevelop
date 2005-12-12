@@ -125,7 +125,7 @@ namespace Debugger
 		public override IEnumerable<Variable> GetSubVariables(ValueGetter getter)
 		{
 			if (HasBaseClass) {
-				yield return BaseClassVariable;
+				yield return GetBaseClassVariable(getter);
 			}
 			
 			foreach(Variable var in GetFieldVariables(getter)) {
@@ -219,13 +219,22 @@ namespace Debugger
 			}
 		}
 		
-		public Variable BaseClassVariable {
-			get {
-				if (HasBaseClass) {
-					return new Variable(this.BaseClass, "<Base class>");
-				} else {
-					return null;
-				}
+		public Variable GetBaseClassVariable(ValueGetter getter)
+		{
+			if (HasBaseClass) {
+				return new Variable(debugger,
+				                    "<Base class>",
+				                    delegate {
+				                    	Value updatedVal = getter();
+				                    	if (updatedVal is UnavailableValue) return updatedVal;
+				                    	if (this.IsEquivalentValue(updatedVal)) {
+				                    		return ((ObjectValue)updatedVal).BaseClass;
+				                    	} else {
+				                    		return new UnavailableValue(debugger, "Object type changed");
+				                    	}
+				                    });
+			} else {
+				return null;
 			}
 		}
 		

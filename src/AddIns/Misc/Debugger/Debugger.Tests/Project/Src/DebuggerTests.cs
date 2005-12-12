@@ -411,11 +411,6 @@ namespace Debugger.Tests
 			Assert.AreEqual(true, local.MayHaveSubVariables);
 			Assert.AreEqual(typeof(ObjectValue), local.Value.GetType());
 			Assert.AreEqual("{Debugger.Tests.TestPrograms.ObjectValue}", local.Value.AsString);
-			Assert.AreEqual(true, ((ObjectValue)local.Value).HasBaseClass);
-			baseClass = ((ObjectValue)local.Value).BaseClassVariable;
-			Assert.AreEqual(typeof(ObjectValue), baseClass.Value.GetType());
-			Assert.AreEqual(false, baseClass.Value.IsExpired);
-			Assert.AreEqual("{Debugger.Tests.TestPrograms.BaseClass}", baseClass.Value.AsString);
 			foreach(Variable var in local.SubVariables) {
 				subVars.Add(var);
 			}
@@ -425,6 +420,11 @@ namespace Debugger.Tests
 			Assert.AreEqual(typeof(Variable), subVars[1].GetType());
 			Assert.AreEqual(typeof(Variable), subVars[2].GetType());
 			Assert.AreEqual(typeof(PropertyVariable), subVars[3].GetType());
+			Assert.AreEqual(true, ((ObjectValue)local.Value).HasBaseClass);
+			baseClass = subVars[0];
+			Assert.AreEqual(typeof(ObjectValue), baseClass.Value.GetType());
+			Assert.AreEqual(false, baseClass.Value.IsExpired);
+			Assert.AreEqual("{Debugger.Tests.TestPrograms.BaseClass}", baseClass.Value.AsString);
 			
 			debugger.Continue();
 			WaitForPause(PausedReason.Break, null);
