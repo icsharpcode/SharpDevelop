@@ -76,7 +76,7 @@ namespace Debugger
 		/// </summary>
 		public bool HasExpired {
 			get {
-				return steppedOut;
+				return steppedOut || Module.Unloaded;
 			}
 		}
 
@@ -492,7 +492,7 @@ namespace Debugger
 						yield return new PropertyVariable(debugger,
 						                                  method.Name.Remove(0, 4),
 						                                  delegate {
-						                                  	if (this.HasExpired && !this.IsStatic) {
+						                                  	if (this.HasExpired) {
 						                                  		return null;
 						                                  	} else {
 						                                  		return CreatePropertyEval(method);

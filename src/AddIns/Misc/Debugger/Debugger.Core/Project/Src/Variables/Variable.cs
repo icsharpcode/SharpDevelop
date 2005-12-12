@@ -26,8 +26,22 @@ namespace Debugger
 		protected ValueGetter valueGetter;
 		Value cachedValue;
 		
-		public event EventHandler<VariableEventArgs> ValueChanged;
+		event EventHandler<DebuggerEventArgs> valueChanged;
 		public event EventHandler<VariableCollectionEventArgs> ValueRemovedFromCollection;
+		
+		public event EventHandler<DebuggerEventArgs> ValueChanged {
+			add {
+				valueChanged += value;
+				debugger.DebuggeeStateChanged += value;
+				debugger.ProcessExited += delegate {
+					debugger.DebuggeeStateChanged -= value;
+				};
+			}
+			remove {
+				valueChanged -= value;
+				debugger.DebuggeeStateChanged -= value;
+			}
+		}
 		
 		public NDebugger Debugger {
 			get {
@@ -78,8 +92,8 @@ namespace Debugger
 		protected virtual void OnValueChanged()
 		{
 			cachedValue = null;
-			if (ValueChanged != null) {
-				ValueChanged(this, new VariableEventArgs(this));
+			if (valueChanged != null) {
+				valueChanged(this, new VariableEventArgs(this));
 			}
 		}
 		

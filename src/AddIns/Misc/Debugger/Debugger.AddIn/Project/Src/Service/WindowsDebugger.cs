@@ -238,24 +238,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				return null;
 			} else {
 				DynamicTreeDebuggerRow newRow = new DynamicTreeDebuggerRow(variable);
-				newRow.Expanding += TooltipControlRowExpanding;
 				return new DebuggerGridControl(newRow);
-			}
-		}
-		
-		/// <summary>
-		/// Called when plus is pressed in debugger tooltip.
-		/// Sets the data to be show in the next level.
-		/// </summary>
-		void TooltipControlRowExpanding(object sender, EventArgs args)
-		{
-			DynamicTreeDebuggerRow row = (DynamicTreeDebuggerRow) sender;
-			row.ChildRows.Clear();
-			foreach(Variable variable in row.Variable.SubVariables) {
-				DynamicTreeDebuggerRow newRow = new DynamicTreeDebuggerRow(variable);
-				DebuggerGridControl.AddColumns(newRow.ChildColumns);
-				newRow.Expanding += TooltipControlRowExpanding;
-				row.ChildRows.Add(newRow);
 			}
 		}
 		
@@ -298,12 +281,13 @@ namespace ICSharpCode.SharpDevelop.Services
 
 			debugger = new NDebugger();
 
-			debugger.LogMessage              += new EventHandler<MessageEventArgs>(LogMessage);
-			debugger.DebuggerTraceMessage    += new EventHandler<MessageEventArgs>(TraceMessage);
-			debugger.ProcessStarted          += new EventHandler<ProcessEventArgs>(ProcessStarted);
-			debugger.ProcessExited           += new EventHandler<ProcessEventArgs>(ProcessExited);
-			debugger.DebuggingPaused         += new EventHandler<DebuggingPausedEventArgs>(DebuggingPaused);
-			debugger.DebuggingResumed        += new EventHandler<DebuggerEventArgs>(DebuggingResumed);
+			debugger.LogMessage              += LogMessage;
+			debugger.DebuggerTraceMessage    += TraceMessage;
+			debugger.ProcessStarted          += ProcessStarted;
+			debugger.ProcessExited           += ProcessExited;
+			debugger.DebuggingPaused         += DebuggingPaused;
+			debugger.DebuggeeStateChanged    += DebuggeeStateChanged;
+			debugger.DebuggingResumed        += DebuggingResumed;
 
 			debugger.BreakpointStateChanged  += delegate (object sender, BreakpointEventArgs e) {
 				RestoreSharpdevelopBreakpoint(e.Breakpoint);
@@ -393,12 +377,12 @@ namespace ICSharpCode.SharpDevelop.Services
 				isProcessRunningCache = false;
 			}
 		}
-
+		
 		void DebuggingPaused(object sender, DebuggingPausedEventArgs e)
 		{
 			isProcessRunningCache = false;
 			OnIsProcessRunningChanged(EventArgs.Empty);
-
+			
 			if (e.Reason == PausedReason.Exception) {
 				exceptionHistory.Add(debugger.CurrentThread.CurrentException);
 				OnExceptionHistoryModified();
@@ -409,7 +393,7 @@ namespace ICSharpCode.SharpDevelop.Services
 				}
 				
 				JumpToCurrentLine();
-
+				
 				switch (ExceptionForm.Show(debugger.CurrentThread.CurrentException)) {
 					case ExceptionForm.Result.Break: 
 						break;
@@ -420,9 +404,12 @@ namespace ICSharpCode.SharpDevelop.Services
 						debugger.CurrentThread.InterceptCurrentException();
 						break;
 				}
-			} else {
-				JumpToCurrentLine();
 			}
+		}
+		
+		void DebuggeeStateChanged(object sender, DebuggerEventArgs e)
+		{
+			JumpToCurrentLine();
 		}
 		
 		void DebuggingResumed(object sender, DebuggerEventArgs e)

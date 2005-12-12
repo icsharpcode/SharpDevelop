@@ -19,6 +19,7 @@ namespace Debugger
 	{
 		NDebugger debugger;
 		
+		bool   unloaded = false;
 		string fullPath;
 		string fullPathPDB;
 		ulong  baseAdress;
@@ -39,6 +40,12 @@ namespace Debugger
 		internal MetaData MetaData {
 			get {
 				return new MetaData(metaDataInterface);
+			}
+		}
+		
+		public bool Unloaded {
+			get {
+				return unloaded;
 			}
 		}
 		
@@ -209,6 +216,8 @@ namespace Debugger
 			} finally {
 				metaDataInterface = null;
 			}
+			
+			unloaded = true;
 		}
 	}
 }

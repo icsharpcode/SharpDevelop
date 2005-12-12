@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -80,10 +80,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debuggerCore = debugger.DebuggerCore;
 
-			debuggerCore.DebuggingPaused += new EventHandler<DebuggingPausedEventArgs>(OnDebuggingPaused);
-			debuggerCore.ThreadStarted += new EventHandler<ThreadEventArgs>(ThreadStarted);
-			debuggerCore.ThreadStateChanged += new EventHandler<ThreadEventArgs>(ThreadStateChanged);
-			debuggerCore.ThreadExited += new EventHandler<ThreadEventArgs>(ThreadExited);
+			debuggerCore.DebuggeeStateChanged += DebuggeeStateChanged;
+			debuggerCore.ThreadStarted += ThreadStarted;
+			debuggerCore.ThreadStateChanged += ThreadStateChanged;
+			debuggerCore.ThreadExited += ThreadExited;
 
 			RefreshList();
 		}
@@ -166,7 +166,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 
-		void OnDebuggingPaused(object sender, DebuggingPausedEventArgs e)
+		void DebuggeeStateChanged(object sender, DebuggerEventArgs e)
 		{
 			RefreshList();
 		}

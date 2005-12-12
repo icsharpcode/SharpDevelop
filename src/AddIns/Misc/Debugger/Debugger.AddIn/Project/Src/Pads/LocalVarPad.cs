@@ -85,6 +85,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debuggerCore = debugger.DebuggerCore;
 			
+			debuggerCore.DebuggeeStateChanged += delegate { debuggerCore.LocalVariables.Update(); };
+			
 			localVarList.BeginUpdate();
 			AddVariableCollectionToTree(debuggerCore.LocalVariables, localVarList.Items);
 			localVarList.EndUpdate();

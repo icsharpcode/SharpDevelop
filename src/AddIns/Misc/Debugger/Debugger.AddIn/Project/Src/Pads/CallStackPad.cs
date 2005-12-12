@@ -74,8 +74,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			debuggerCore = debugger.DebuggerCore;
 
-			debuggerCore.DebuggingPaused += new EventHandler<DebuggingPausedEventArgs>(DebuggingPaused);
-			debuggerCore.DebuggingResumed += new EventHandler<DebuggerEventArgs>(DebuggingResumed);
+			debuggerCore.DebuggeeStateChanged += DebuggeeStateChanged;
+			debuggerCore.DebuggingResumed += DebuggingResumed;
 
 			RefreshList();
 		}
@@ -180,7 +180,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			}
 		}
 
-		void DebuggingPaused(object sender, DebuggingPausedEventArgs e)
+		void DebuggeeStateChanged(object sender, DebuggerEventArgs e)
 		{
 			RefreshList();
 		}

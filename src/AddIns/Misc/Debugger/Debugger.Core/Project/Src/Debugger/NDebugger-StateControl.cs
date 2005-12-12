@@ -28,8 +28,9 @@ namespace Debugger
 		
 		Process currentProcess;
 		
-		public event EventHandler<DebuggingPausedEventArgs> DebuggingPaused;
 		public event EventHandler<DebuggerEventArgs> DebuggingResumed;
+		public event EventHandler<DebuggingPausedEventArgs> DebuggingPaused;
+		public event EventHandler<DebuggerEventArgs> DebuggeeStateChanged;
 		
 		public bool PauseOnHandledException {
 			get {
@@ -39,24 +40,32 @@ namespace Debugger
 				pauseOnHandledException = value;
 			}
 		}
-
-		protected virtual void OnDebuggingPaused(PausedReason reason)
+		
+		protected virtual void OnDebuggingResumed()
 		{
-			TraceMessage ("Debugger event: OnDebuggingPaused(" + reason.ToString() + ")");
+			TraceMessage ("Debugger event: OnDebuggingResumed()");
+			if (DebuggingResumed != null) {
+				DebuggingResumed(this, new DebuggerEventArgs(this));
+			}
+		}
+		
+		protected virtual void OnDebuggingPaused()
+		{
+			TraceMessage ("Debugger event: OnDebuggingPaused (" + PausedReason.ToString() + ")");
 			if (DebuggingPaused != null) {
-				DebuggingPausedEventArgs args = new DebuggingPausedEventArgs(this, reason);
+				DebuggingPausedEventArgs args = new DebuggingPausedEventArgs(this, PausedReason);
 				DebuggingPaused(this, args);
 				if (args.ResumeDebugging) {
 					Continue();
 				}
 			}
 		}
-
-		protected virtual void OnDebuggingResumed()
+		
+		protected virtual void OnDebuggeeStateChanged()
 		{
-			TraceMessage ("Debugger event: OnDebuggingResumed()");
-			if (DebuggingResumed != null) {
-				DebuggingResumed(this, new DebuggerEventArgs(this));
+			TraceMessage ("Debugger event: OnDebuggeeStateChanged (" + PausedReason.ToString() + ")");
+			if (DebuggeeStateChanged != null) {
+				DebuggeeStateChanged(this, new DebuggerEventArgs(this));
 			}
 		}
 		
@@ -167,16 +176,19 @@ namespace Debugger
 			pausedReason = reason;
 			
 			sessionID = new object();
-			if (reason != PausedReason.AllEvalsComplete) {
-				debugeeStateID = new object();
-			}
-			
-			OnDebuggingPaused(reason);
+			OnDebuggingPaused();
 			
 			// Debugger state is unknown after calling OnDebuggingPaused (it may be resumed)
+			
+			if (IsPaused) {
+				if (reason != PausedReason.AllEvalsComplete) {
+					debugeeStateID = new object();
+					OnDebuggeeStateChanged();
+				}
+			}
+			
 			// This is a good point to autmaticaly evaluate evals from update of variables (if there are any)
 			if (IsPaused) {
-				localVariables.Update();
 				this.StartEvaluation();
 			}
 			

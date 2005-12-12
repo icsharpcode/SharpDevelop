@@ -66,7 +66,10 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			if (this.SubItems[2].Text != Variable.Value.Type)
 				this.SubItems[2].Text = Variable.Value.Type;
 			
-			this.ImageIndex = DebuggerIcons.GetImageListIndex(variable);
+			int imageIndex = DebuggerIcons.GetImageListIndex(variable);
+			if (this.ImageIndex != imageIndex) {
+				this.ImageIndex = imageIndex;
+			}
 			
 			if (IsExpanded) {
 				variable.SubVariables.Update();
