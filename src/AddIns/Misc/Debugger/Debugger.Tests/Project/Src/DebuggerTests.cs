@@ -350,7 +350,7 @@ namespace Debugger.Tests
 			Variable argument = null;
 			Variable local    = null;
 			Variable @class   = null;
-				
+			
 			StartProgram("FunctionVariablesLifetime");
 			WaitForPause(PausedReason.Break, null);
 			function = debugger.CurrentFunction;
@@ -390,6 +390,47 @@ namespace Debugger.Tests
 			Assert.AreEqual(typeof(UnavailableValue), argument.Value.GetType());
 			Assert.AreEqual(typeof(UnavailableValue), local.Value.GetType());
 			Assert.AreEqual(typeof(UnavailableValue), @class.Value.GetType());
+			
+			debugger.Continue();
+			debugger.WaitForPrecessExit();
+		}
+		
+		[Test]
+		public void ObjectValue()
+		{
+			Variable local = null;
+			Variable baseClass;
+			List<Variable> subVars = new List<Variable>();
+			
+			StartProgram("ObjectValue");
+			WaitForPause(PausedReason.Break, null);
+			foreach(Variable var in debugger.CurrentFunction.LocalVariables) {
+				local = var;
+			}
+			Assert.AreEqual("val", local.Name);
+			Assert.AreEqual(true, local.MayHaveSubVariables);
+			Assert.AreEqual(typeof(ObjectValue), local.Value.GetType());
+			Assert.AreEqual("{Debugger.Tests.TestPrograms.ObjectValue}", local.Value.AsString);
+			Assert.AreEqual(true, ((ObjectValue)local.Value).HasBaseClass);
+			baseClass = ((ObjectValue)local.Value).BaseClassVariable;
+			Assert.AreEqual(typeof(ObjectValue), baseClass.Value.GetType());
+			Assert.AreEqual(false, baseClass.Value.IsExpired);
+			Assert.AreEqual("{Debugger.Tests.TestPrograms.BaseClass}", baseClass.Value.AsString);
+			foreach(Variable var in local.SubVariables) {
+				subVars.Add(var);
+			}
+			Assert.AreEqual("privateField", subVars[1].Name);
+			Assert.AreEqual("publicFiled", subVars[2].Name);
+			Assert.AreEqual("PublicProperty", subVars[3].Name);
+			Assert.AreEqual(typeof(Variable), subVars[1].GetType());
+			Assert.AreEqual(typeof(Variable), subVars[2].GetType());
+			Assert.AreEqual(typeof(PropertyVariable), subVars[3].GetType());
+			
+			debugger.Continue();
+			WaitForPause(PausedReason.Break, null);
+			Assert.AreEqual(typeof(ObjectValue), baseClass.Value.GetType());
+			Assert.AreEqual(false, baseClass.Value.IsExpired);
+			Assert.AreEqual("{Debugger.Tests.TestPrograms.BaseClass}", baseClass.Value.AsString);
 			
 			debugger.Continue();
 			debugger.WaitForPrecessExit();
