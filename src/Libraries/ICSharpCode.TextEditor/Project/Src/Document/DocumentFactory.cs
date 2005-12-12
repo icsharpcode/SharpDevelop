@@ -7,7 +7,7 @@
 
 using System;
 using System.IO;
-
+using System.Text;
 
 namespace ICSharpCode.TextEditor.Document
 {
@@ -41,9 +41,8 @@ namespace ICSharpCode.TextEditor.Document
 		public IDocument CreateFromFile(string fileName)
 		{
 			IDocument document = CreateDocument();
-			StreamReader stream = File.OpenText(fileName);
-			document.TextContent = stream.ReadToEnd();
-			stream.Close();
+			Encoding encoding = Encoding.Default;
+			document.TextContent = Util.FileReader.ReadFileContent(fileName, ref encoding, encoding);
 			return document;
 		}
 	}

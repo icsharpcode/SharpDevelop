@@ -74,12 +74,15 @@ namespace SearchAndReplace
 			find.Reset();
 			if (!find.SearchStrategy.CompilePattern())
 				return;
-			while (true) {
+			for (int count = 0;; count++) {
 				SearchResult result = SearchReplaceManager.find.FindNext();
 				
 				if (result == null) {
-					
-					MessageService.ShowMessage("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.MarkAllDone}", "${res:Global.FinishedCaptionText}");
+					if (count == 0) {
+						ShowNotFoundMessage();
+					} else {
+						MessageService.ShowMessage("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.MarkAllDone}", "${res:Global.FinishedCaptionText}");
+					}
 					find.Reset();
 					return;
 				} else {
@@ -109,15 +112,19 @@ namespace SearchAndReplace
 				return;
 			
 			List<TextEditorControl> textAreas = new List<TextEditorControl>();
-			while (true) {
+			for (int count = 0;; count++) {
 				SearchResult result = SearchReplaceManager.find.FindNext();
 				
 				if (result == null) {
-					foreach (TextEditorControl textArea in textAreas) {
-						textArea.EndUpdate();
-						textArea.Refresh();
+					if (count == 0) {
+						ShowNotFoundMessage();
+					} else {
+						foreach (TextEditorControl textArea in textAreas) {
+							textArea.EndUpdate();
+							textArea.Refresh();
+						}
+						MessageService.ShowMessage("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone}", "${res:Global.FinishedCaptionText}");
 					}
-					MessageService.ShowMessage("${res:ICSharpCode.TextEditor.Document.SearchReplaceManager.ReplaceAllDone}", "${res:Global.FinishedCaptionText}");
 					find.Reset();
 					return;
 				} else {
@@ -130,9 +137,8 @@ namespace SearchAndReplace
 					}
 					
 					string transformedPattern = result.TransformReplacePattern(SearchOptions.ReplacePattern);
-					find.Replace(result.Offset,
-					             result.Length,
-					             transformedPattern);
+					find.Replace(result.Offset, result.Length, transformedPattern);
+					textArea.Document.Replace(result.Offset, result.Length, transformedPattern);
 				}
 			}
 		}
@@ -155,11 +161,7 @@ namespace SearchAndReplace
 			SearchResult result = find.FindNext();
 			
 			if (result == null) {
-				MessageBox.Show((Form)WorkbenchSingleton.Workbench,
-				                ResourceService.GetString("Dialog.NewProject.SearchReplace.SearchStringNotFound"),
-				                "Not Found",
-				                MessageBoxButtons.OK,
-				                MessageBoxIcon.Information);
+				ShowNotFoundMessage();
 				find.Reset();
 			} else {
 				TextEditorControl textArea = OpenTextArea(result.FileName);
@@ -179,6 +181,15 @@ namespace SearchAndReplace
 			}
 			
 			lastResult = result;
+		}
+		
+		static void ShowNotFoundMessage()
+		{
+			MessageBox.Show((Form)WorkbenchSingleton.Workbench,
+			                ResourceService.GetString("Dialog.NewProject.SearchReplace.SearchStringNotFound"),
+			                ResourceService.GetString("Dialog.NewProject.SearchReplace.SearchStringNotFound.Title"),
+			                MessageBoxButtons.OK,
+			                MessageBoxIcon.Information);
 		}
 		
 		static TextEditorControl OpenTextArea(string fileName)

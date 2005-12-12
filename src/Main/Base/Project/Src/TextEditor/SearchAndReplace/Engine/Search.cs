@@ -79,7 +79,6 @@ namespace SearchAndReplace
 		{
 			if (CurrentDocumentInformation != null && TextIterator != null) {
 				CurrentDocumentInformation.Replace(offset, length, pattern);
-				CurrentDocumentInformation.SaveBuffer();
 				TextIterator.InformReplace(offset, length, pattern.Length);
 			}
 		}

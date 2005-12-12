@@ -83,17 +83,6 @@ namespace SearchAndReplace
 			}
 		}
 		
-		public void SaveBuffer()
-		{
-			if (document != null) {
-				
-			} else {
-				StreamWriter streamWriter = File.CreateText(this.fileName);
-				streamWriter.Write(textBuffer.GetText(0, textBuffer.Length));
-				streamWriter.Close();
-			}
-		}
-		
 		public IDocument CreateDocument()
 		{
 			if (document != null) {

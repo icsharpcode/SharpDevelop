@@ -229,6 +229,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (pendingAppendCalls >= 5) {
 					return;
 				}
+				pendingAppendCalls -= 1;
 			}
 			if (messageCategories[SelectedCategoryIndex] != category) {
 				SelectCategory(category.Category, fullText);

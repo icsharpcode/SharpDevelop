@@ -36,20 +36,25 @@ namespace ICSharpCode.NAntAddIn.Tests
 		[Test]
 		public void StandardOutput()
 		{
-			Assert.AreEqual(String.Empty, runner.StandardOutput, "Standard output should be empty.");			
+			Assert.AreEqual(String.Empty, runner.StandardOutput, "Standard output should be empty.");
 		}
 		
 		[Test]
 		public void StandardError()
 		{
-			Assert.AreEqual(String.Empty, runner.StandardError, "Standard error should be empty.");			
-		}		
+			Assert.AreEqual(String.Empty, runner.StandardError, "Standard error should be empty.");
+		}
 		
 		[Test]
-		[ExpectedException(typeof(ProcessRunnerException), "No process running.")]
 		public void WaitForExit()
 		{
-			runner.WaitForExit();
+			try {
+				runner.WaitForExit();
+				Assert.Fail("Expected ProcessRunnerException");
+			} catch (ProcessRunnerException ex) {
+				Assert.AreEqual(ICSharpCode.Core.StringParser.Parse("${res:ICSharpCode.NAntAddIn.ProcessRunner.NoProcessRunningErrorText}"),
+				                ex.Message);
+			}
 		}
 	}
 }

@@ -8,6 +8,7 @@
 using System;
 using System.IO;
 using System.Diagnostics;
+using System.Text;
 using ICSharpCode.TextEditor.Undo;
 
 namespace ICSharpCode.TextEditor.Document
@@ -75,9 +76,8 @@ namespace ICSharpCode.TextEditor.Document
 		
 		StringTextBufferStrategy(string fileName)
 		{
-			StreamReader streamReader = File.OpenText(fileName);			
-			SetContent(streamReader.ReadToEnd());
-			streamReader.Close();
+			Encoding encoding = Encoding.Default;
+			SetContent(Util.FileReader.ReadFileContent(fileName, ref encoding, encoding));
 		}
 		
 		public static ITextBufferStrategy CreateTextBufferFromFile(string fileName)
