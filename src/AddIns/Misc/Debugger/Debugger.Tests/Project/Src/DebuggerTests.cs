@@ -481,5 +481,32 @@ namespace Debugger.Tests
 			debugger.Continue();
 			debugger.WaitForPrecessExit();
 		}
+		
+		[Test]
+		public void PropertyVariableForm()
+		{
+			Variable local = null;
+			
+			StartProgram("PropertyVariableForm");
+			WaitForPause(PausedReason.Break, null);
+			foreach(Variable var in debugger.CurrentFunction.LocalVariables) {
+				local = var;
+			}
+			Assert.AreEqual("form", local.Name);
+			Assert.AreEqual(typeof(Variable), local.GetType());
+			
+			foreach(Variable var in local.SubVariables) {
+				if (var is PropertyVariable) {
+					Assert.AreEqual(typeof(UnavailableValue), var.Value.GetType(), "Variable name: " + var.Name);
+					debugger.StartEvaluation();
+					WaitForPause(PausedReason.AllEvalsComplete, null);
+					Assert.AreEqual(false, var.Value.IsExpired, "Variable name: " + var.Name);
+					Assert.AreNotEqual(null, var.Value.AsString, "Variable name: " + var.Name);
+				}
+			}
+			
+			debugger.Continue();
+			debugger.WaitForPrecessExit();
+		}
 	}
 }
