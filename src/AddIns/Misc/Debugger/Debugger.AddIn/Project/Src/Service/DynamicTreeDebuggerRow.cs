@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using Debugger;
@@ -45,6 +46,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			
 			this.variable = variable;
 			this.variable.ValueChanged += delegate { Update(); };
+			
+			DebuggerGridControl.AddColumns(this.ChildColumns);
 			
 			this[1].Paint += OnIconPaint;
 			this[3].FinishLabelEdit += OnLabelEdited;
@@ -92,12 +95,66 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// </summary>
 		protected override void OnExpanding(DynamicListEventArgs e)
 		{
-			this.ChildRows.Clear();
+			List<Variable> publicStatic = new List<Variable>();
+			List<Variable> publicInstance = new List<Variable>();
+			List<Variable> privateStatic = new List<Variable>();
+			List<Variable> privateInstance = new List<Variable>();
+			
 			foreach(Variable variable in this.Variable.SubVariables) {
-				DynamicTreeDebuggerRow newRow = new DynamicTreeDebuggerRow(variable);
-				DebuggerGridControl.AddColumns(newRow.ChildColumns);
-				this.ChildRows.Add(newRow);
+				ClassVariable classVariable = variable as ClassVariable;
+				if (classVariable == null) {
+					publicInstance.Add(variable);
+				} else {
+					if (classVariable.IsPublic) {
+						if (classVariable.IsStatic) {
+							publicStatic.Add(variable);
+						} else {
+							publicInstance.Add(variable);
+						}
+					} else {
+						if (classVariable.IsStatic) {
+							privateStatic.Add(variable);
+						} else {
+							privateInstance.Add(variable);
+						}
+					}
+				}
 			}
+			
+			this.ChildRows.Clear();
+			// Private Members
+			if (privateInstance.Count > 0) {
+				this.ChildRows.Add(MakeSubMenu("Private Members",
+				                               RowsFromVariables(privateInstance)));
+			}
+			// Static Members
+			if (publicStatic.Count > 0 || privateStatic.Count > 0) {
+				DynamicTreeRow privateStaticSubMenu = MakeSubMenu("Private Static Members",
+				                                                  RowsFromVariables(privateStatic));
+				this.ChildRows.Add(MakeSubMenu("Static Members",
+				                               privateStatic.Count > 0 ? new DynamicListRow[]{privateStaticSubMenu} : new DynamicListRow[]{},
+				                               RowsFromVariables(publicStatic)));
+			}
+			// Public Members
+			this.ChildRows.AddRange(RowsFromVariables(publicInstance));
+		}
+		
+		IEnumerable<DynamicListRow> RowsFromVariables(IEnumerable<Variable> variables)
+		{
+			foreach(Variable variable in variables) {
+				yield return new DynamicTreeDebuggerRow(variable);
+			}
+		}
+		
+		DynamicTreeRow MakeSubMenu(string name, params IEnumerable<DynamicListRow>[] elements)
+		{
+			DynamicTreeRow rootRow = new DynamicTreeRow();
+			DebuggerGridControl.AddColumns(rootRow.ChildColumns);
+			rootRow[2].Text = name;
+			foreach(IEnumerable<DynamicListRow> rows in elements) {
+				rootRow.ChildRows.AddRange(rows);
+			}
+			return rootRow;
 		}
 	}
 }

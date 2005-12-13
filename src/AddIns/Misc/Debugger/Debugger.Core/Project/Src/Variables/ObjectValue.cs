@@ -148,17 +148,19 @@ namespace Debugger
 				FieldProps field = f; // One per scope/delegate
 				if (field.IsStatic && field.IsLiteral) continue; // Skip field
 				if (!field.IsStatic && corValue == null) continue; // Skip field
-				yield return new Variable(debugger,
-				                          field.Name,
-				                          delegate {
-				                          	Value updatedVal = getter();
-				                          	if (updatedVal is UnavailableValue) return updatedVal;
-				                          	if (this.IsEquivalentValue(updatedVal)) {
-				                          		return GetValue(updatedVal, field);
-				                          	} else {
-				                          		return new UnavailableValue(debugger, "Object type changed");
-				                          	}
-				                          });
+				yield return new ClassVariable(debugger,
+				                               field.Name,
+				                               field.IsStatic,
+				                               field.IsPublic,
+				                               delegate {
+				                               	Value updatedVal = getter();
+				                               	if (updatedVal is UnavailableValue) return updatedVal;
+				                               	if (this.IsEquivalentValue(updatedVal)) {
+				                               		return GetValue(updatedVal, field);
+				                               	} else {
+				                               		return new UnavailableValue(debugger, "Object type changed");
+				                               	}
+				                               });
 			}
 		}
 		
@@ -169,6 +171,8 @@ namespace Debugger
 				if (method.Name.StartsWith("get_") && method.HasSpecialName) {
 					yield return new PropertyVariable(debugger,
 					                                  method.Name.Remove(0, 4),
+					                                  method.IsStatic,
+					                                  method.IsPublic,
 					                                  delegate {
 					                                  	Value updatedVal = getter();
 					                                  	if (updatedVal is UnavailableValue) return null;

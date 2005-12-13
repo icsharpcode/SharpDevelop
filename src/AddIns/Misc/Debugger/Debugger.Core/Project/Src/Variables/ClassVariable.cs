@@ -6,34 +6,31 @@
 // </file>
 
 using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace Debugger
+namespace Debugger 
 {
-	struct FieldProps
+	public class ClassVariable: Variable
 	{
-		public uint Token;
-		public string Name;
-		public uint ClassToken;
-		public uint Flags;
+		bool isStatic;
+		bool isPublic;
 		
 		public bool IsStatic {
 			get {
-				return (Flags & (uint)ClassFieldAttribute.fdStatic) != 0;
+				return isStatic;
 			}
 		}
 		
 		public bool IsPublic {
 			get {
-				return (Flags & (uint)ClassFieldAttribute.fdPublic) != 0;
+				return isPublic;
 			}
 		}
 		
-		public bool IsLiteral {
-			get {
-				return (Flags & (uint)ClassFieldAttribute.fdLiteral) != 0;
-			}
+		public ClassVariable(NDebugger debugger, string name, bool isStatic, bool isPublic, ValueGetter valueGetter): base(debugger, name, valueGetter)
+		{
+			this.isStatic = isStatic;
+			this.isPublic = isPublic;
 		}
+		
 	}
 }

@@ -41,10 +41,10 @@ namespace Debugger
 		
 		public static int GetImageListIndex(Variable variable)
 		{
-			if (variable.Value is ObjectValue) {
-				return 0; // Class
-			} else if (variable is PropertyVariable){
+			if (variable is PropertyVariable){
 				return 2; // Property
+			} else if (variable.Value is ObjectValue) {
+				return 0; // Class
 			} else {
 				return 1; // Field
 			}

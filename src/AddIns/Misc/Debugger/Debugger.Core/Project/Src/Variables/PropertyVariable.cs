@@ -16,12 +16,12 @@ namespace Debugger
 	/// </summary>
 	public delegate Eval EvalCreator();
 	
-	public class PropertyVariable: Variable
+	public class PropertyVariable: ClassVariable
 	{
 		EvalCreator evalCreator;
 		Eval cachedEval;
 		
-		internal PropertyVariable(NDebugger debugger, string name, EvalCreator evalCreator):base(debugger, name, null)
+		internal PropertyVariable(NDebugger debugger, string name, bool isStatic, bool isPublic, EvalCreator evalCreator):base(debugger, name, isStatic, isPublic, null)
 		{
 			this.evalCreator = evalCreator;
 			this.valueGetter = delegate {

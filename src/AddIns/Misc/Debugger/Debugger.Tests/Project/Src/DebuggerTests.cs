@@ -417,9 +417,12 @@ namespace Debugger.Tests
 			Assert.AreEqual("privateField", subVars[1].Name);
 			Assert.AreEqual("publicFiled", subVars[2].Name);
 			Assert.AreEqual("PublicProperty", subVars[3].Name);
-			Assert.AreEqual(typeof(Variable), subVars[1].GetType());
-			Assert.AreEqual(typeof(Variable), subVars[2].GetType());
+			Assert.AreEqual(typeof(ClassVariable), subVars[1].GetType());
+			Assert.AreEqual(typeof(ClassVariable), subVars[2].GetType());
 			Assert.AreEqual(typeof(PropertyVariable), subVars[3].GetType());
+			Assert.AreEqual(false, ((ClassVariable)subVars[1]).IsPublic);
+			Assert.AreEqual(true, ((ClassVariable)subVars[2]).IsPublic);
+			Assert.AreEqual(true, ((ClassVariable)subVars[3]).IsPublic);
 			Assert.AreEqual(true, ((ObjectValue)local.Value).HasBaseClass);
 			baseClass = subVars[0];
 			Assert.AreEqual(typeof(ObjectValue), baseClass.Value.GetType());

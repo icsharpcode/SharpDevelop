@@ -98,6 +98,13 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			OnAdded(item);
 		}
 		
+		public void AddRange(IEnumerable<T> range)
+		{
+			foreach(T t in range) {
+				Add(t);
+			}
+		}
+		
 		public void Clear()
 		{
 			List<T> oldList = list;

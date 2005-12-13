@@ -57,8 +57,6 @@ namespace ICSharpCode.Core
 			
 			Rows.Add(row);
 			
-			AddColumns(row.ChildColumns);
-			
 			row.Expanded  += delegate { isExpanded = true; };
 			row.Collapsed += delegate { isExpanded = false; };
 			

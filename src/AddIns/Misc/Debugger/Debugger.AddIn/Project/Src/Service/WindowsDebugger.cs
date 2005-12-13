@@ -237,8 +237,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (variable == null) {
 				return null;
 			} else {
-				DynamicTreeDebuggerRow newRow = new DynamicTreeDebuggerRow(variable);
-				return new DebuggerGridControl(newRow);
+				return new DebuggerGridControl(new DynamicTreeDebuggerRow(variable));
 			}
 		}
 		
