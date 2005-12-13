@@ -161,7 +161,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		AssemblyName GetAssemblyName(string include)
 		{
 			try {
-				if (this.ItemType != ItemType.ProjectReference) {
+				if (this.ItemType == ItemType.Reference) {
 					return new AssemblyName(include);
 				}
 			} catch (ArgumentException) { }
