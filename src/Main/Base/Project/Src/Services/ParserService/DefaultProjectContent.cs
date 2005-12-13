@@ -757,11 +757,14 @@ namespace ICSharpCode.Core
 				}
 				
 				if (name.IndexOf('.') < 0) {
-					// Try inner classes of parent classes
-					while ((curType = curType.BaseClass) != null) {
-						foreach (IClass innerClass in curType.InnerClasses) {
-							if (language.NameComparer.Equals(innerClass.Name, name))
-								return innerClass.DefaultReturnType;
+					// Try inner classes (in full inheritance tree)
+					// Don't use loop with cur = cur.BaseType because of inheritance cycles
+					foreach (IClass baseClass in curType.ClassInheritanceTree) {
+						if (baseClass.ClassType == ClassType.Class) {
+							foreach (IClass innerClass in baseClass.InnerClasses) {
+								if (language.NameComparer.Equals(innerClass.Name, name))
+									return innerClass.DefaultReturnType;
+							}
 						}
 					}
 				}

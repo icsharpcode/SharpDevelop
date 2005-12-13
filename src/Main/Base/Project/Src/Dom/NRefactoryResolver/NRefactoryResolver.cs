@@ -202,7 +202,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					expr.AcceptVisitor(v, null);
 					if (v.result == null) return null;
 					v.result.TargetObject = innermost.Expression;
-					return ResolveInternal(v.result, ExpressionContext.Default);
+					return ResolveInternal(expr, ExpressionContext.Default);
 				} else {
 					return ResolveInternal(innermost.Expression, ExpressionContext.Default);
 				}

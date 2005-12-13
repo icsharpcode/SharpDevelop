@@ -432,17 +432,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public List<IClass> GetAccessibleTypes(IClass callingClass)
 		{
 			List<IClass> types = new List<IClass>();
+			List<IClass> visitedTypes = new List<IClass>();
 			
-			bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(this);
-			foreach (IClass c in InnerClasses) {
-				if (c.IsAccessible(callingClass, isClassInInheritanceTree)) {
-					types.Add(c);
+			IClass currentClass = this;
+			do {
+				if (visitedTypes.Contains(currentClass))
+					break;
+				visitedTypes.Add(currentClass);
+				bool isClassInInheritanceTree = callingClass.IsTypeInInheritanceTree(currentClass);
+				foreach (IClass c in currentClass.InnerClasses) {
+					if (c.IsAccessible(callingClass, isClassInInheritanceTree)) {
+						types.Add(c);
+					}
 				}
-			}
-			IClass baseClass = BaseClass;
-			if (baseClass != null) {
-				types.AddRange(baseClass.GetAccessibleTypes(callingClass));
-			}
+				currentClass = currentClass.BaseClass;
+			} while (currentClass != null);
 			return types;
 		}
 	}
