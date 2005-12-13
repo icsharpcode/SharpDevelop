@@ -468,7 +468,7 @@ namespace Debugger.Tests
 			Assert.AreEqual(typeof(UnavailableValue), subVars[3].Value.GetType());
 			debugger.StartEvaluation();
 			WaitForPause(PausedReason.AllEvalsComplete, null);
-			Assert.AreEqual(typeof(UnavailableValue), subVars[3].Value);
+			Assert.AreEqual(typeof(UnavailableValue), subVars[3].Value.GetType());
 			
 			Assert.AreEqual(typeof(UnavailableValue), subVars[4].Value.GetType());
 			debugger.StartEvaluation();

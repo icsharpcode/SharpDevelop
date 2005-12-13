@@ -58,14 +58,7 @@ namespace Debugger
 						ICorDebugValue[] evalArgs;
 						ICorDebugFunction evalCorFunction;
 						baseClassObject.Module.CorModule.GetFunctionFromToken(method.Token, out evalCorFunction);
-						// We need to pass reference
-						ICorDebugHeapValue2 heapValue = this.CorValue as ICorDebugHeapValue2;
-						if (heapValue == null) { // TODO: Investigate
-							return null;
-						}
-						ICorDebugHandleValue corHandle;
-						heapValue.CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION, out corHandle);
-						evalArgs = new ICorDebugValue[] {corHandle};
+						evalArgs = new ICorDebugValue[] {this.SoftReference};
 						return new Eval(debugger, evalCorFunction, evalArgs);
 					}
 				}
@@ -73,6 +66,18 @@ namespace Debugger
 			}
 		}
 		*/
+		
+		internal ICorDebugHandleValue SoftReference {
+			get {
+				ICorDebugHeapValue2 heapValue = this.CorValue as ICorDebugHeapValue2;
+				if (heapValue == null) { // TODO: Investigate
+					return null;
+				}
+				ICorDebugHandleValue corHandle;
+				heapValue.CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION, out corHandle);
+				return corHandle;
+			}
+		}
 		
 		public override string Type { 
 			get{ 
@@ -167,7 +172,7 @@ namespace Debugger
 					                                  delegate {
 					                                  	Value updatedVal = getter();
 					                                  	if (updatedVal is UnavailableValue) return null;
-					                                  	if (this.IsEquivalentValue(updatedVal)) {
+					                                  	if (this.IsEquivalentValue(updatedVal) && ((ObjectValue)updatedVal).SoftReference != null) {
 					                                  		return CreatePropertyEval(method, getter);
 					                                  	} else {
 					                                  		return null;
@@ -186,7 +191,7 @@ namespace Debugger
 			                	if (method.IsStatic) {
 			                		return new ICorDebugValue[] {};
 			                	} else {
-			                		return new ICorDebugValue[] {getter().CorValue};
+			                		return new ICorDebugValue[] {((ObjectValue)getter()).SoftReference};
 			                	}
 			                });
 		}

@@ -175,7 +175,6 @@ namespace Debugger
 			
 			pausedReason = reason;
 			
-			sessionID = new object();
 			OnDebuggingPaused();
 			
 			// Debugger state is unknown after calling OnDebuggingPaused (it may be resumed)
@@ -225,6 +224,8 @@ namespace Debugger
 			
 			// Clear current process
 			currentProcess = null;
+			
+			sessionID = new object();
 		}
 		
 		/// <summary>
