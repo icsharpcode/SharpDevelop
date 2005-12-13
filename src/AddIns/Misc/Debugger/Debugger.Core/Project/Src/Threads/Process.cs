@@ -143,6 +143,7 @@ namespace Debugger
 
 			debugger.Resume();
 			isProcessRunning = true;
+			debugger.SessionID = new object();
 			corProcess.Continue(0);
 		}
 		
@@ -153,6 +154,7 @@ namespace Debugger
 			}
 
 			isProcessRunning = true;
+			debugger.SessionID = new object();
 			corProcess.Continue(0);
 		}
 

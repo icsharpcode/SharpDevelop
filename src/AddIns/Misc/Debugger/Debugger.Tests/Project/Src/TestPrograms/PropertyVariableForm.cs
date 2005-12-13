@@ -16,6 +16,7 @@ namespace Debugger.Tests.TestPrograms
 		{
 			Form form = new Form();
 			System.Diagnostics.Debugger.Break();
+			System.Diagnostics.Debugger.Break();
 		}
 	}
 }

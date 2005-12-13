@@ -107,6 +107,9 @@ namespace Debugger
 			get {
 				return sessionID;
 			}
+			internal set {
+				sessionID = value;
+			}
 		}
 		
 		/// <summary>
@@ -224,8 +227,6 @@ namespace Debugger
 			
 			// Clear current process
 			currentProcess = null;
-			
-			sessionID = new object();
 		}
 		
 		/// <summary>

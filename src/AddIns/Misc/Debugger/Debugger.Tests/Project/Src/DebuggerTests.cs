@@ -506,6 +506,17 @@ namespace Debugger.Tests
 			}
 			
 			debugger.Continue();
+			WaitForPause(PausedReason.Break, null);
+			
+			foreach(Variable var in local.SubVariables) {
+				if (var is PropertyVariable) {
+					Assert.AreEqual(typeof(UnavailableValue), var.Value.GetType(), "Variable name: " + var.Name);
+				}
+			}
+			debugger.StartEvaluation();
+			WaitForPause(PausedReason.AllEvalsComplete, null);
+			
+			debugger.Continue();
 			debugger.WaitForPrecessExit();
 		}
 	}
