@@ -50,6 +50,7 @@
     <Compile Include="Src\TestPrograms\FunctionLifetime.cs" />
     <Compile Include="Src\TestPrograms\FunctionVariablesLifetime.cs" />
     <Compile Include="Src\TestPrograms\ObjectValue.cs" />
+    <Compile Include="Src\TestPrograms\PropertyVariable.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Src" />

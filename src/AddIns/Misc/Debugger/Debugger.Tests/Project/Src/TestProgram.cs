@@ -29,6 +29,7 @@ namespace Debugger.Tests
 				case "FunctionVariablesLifetime": Progs.FunctionVariablesLifetime.Main(); break;
 				case "HelloWorld": Progs.HelloWorld.Main(); break;
 				case "ObjectValue": Progs.ObjectValue.Main(); break;
+				case "PropertyVariable": Progs.PropertyVariable.Main(); break;
 				case "SimpleProgram": Progs.SimpleProgram.Main(); break;
 				case "Stepping": Progs.Stepping.Main(); break;
 				case "Symbols": Progs.Symbols.Main(); break;

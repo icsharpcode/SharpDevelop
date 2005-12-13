@@ -236,15 +236,15 @@ namespace Debugger.Tests
 				debugger.Continue();
 				WaitForPause(PausedReason.Break, null);
 				args = new List<Variable>(debugger.CurrentFunction.ArgumentVariables);
-				// Argument names
+				// names
 				Assert.AreEqual("i", args[0].Name);
 				Assert.AreEqual("s", args[1].Name);
 				Assert.AreEqual("args", args[2].Name);
-				// Argument types
+				// types
 				Assert.AreEqual(typeof(PrimitiveValue), args[0].Value.GetType());
 				Assert.AreEqual(typeof(PrimitiveValue), args[1].Value.GetType());
 				Assert.AreEqual(typeof(ArrayValue),     args[2].Value.GetType());
-				// Argument values
+				// values
 				Assert.AreEqual("0", args[0].Value.AsString);
 				Assert.AreEqual("S", args[1].Value.AsString);
 				Assert.AreEqual(0 ,((ArrayValue)args[2].Value).Lenght);
@@ -252,11 +252,11 @@ namespace Debugger.Tests
 				debugger.Continue();
 				WaitForPause(PausedReason.Break, null);
 				args = new List<Variable>(debugger.CurrentFunction.ArgumentVariables);
-				// Argument types
+				// types
 				Assert.AreEqual(typeof(PrimitiveValue), args[0].Value.GetType());
 				Assert.AreEqual(typeof(PrimitiveValue), args[1].Value.GetType());
 				Assert.AreEqual(typeof(ArrayValue),     args[2].Value.GetType());
-				// Argument values
+				// values
 				Assert.AreEqual("1", args[0].Value.AsString);
 				Assert.AreEqual("S", args[1].Value.AsString);
 				Assert.AreEqual(1 ,((ArrayValue)args[2].Value).Lenght);
@@ -264,11 +264,11 @@ namespace Debugger.Tests
 				debugger.Continue();
 				WaitForPause(PausedReason.Break, null);
 				args = new List<Variable>(debugger.CurrentFunction.ArgumentVariables);
-				// Argument types
+				// types
 				Assert.AreEqual(typeof(PrimitiveValue), args[0].Value.GetType());
 				Assert.AreEqual(typeof(NullValue), args[1].Value.GetType());
 				Assert.AreEqual(typeof(ArrayValue),     args[2].Value.GetType());
-				// Argument values
+				// values
 				Assert.AreEqual("2", args[0].Value.AsString);
 				Assert.IsNotNull(args[1].Value.AsString);
 				Assert.AreEqual(2 ,((ArrayValue)args[2].Value).Lenght);
@@ -286,19 +286,19 @@ namespace Debugger.Tests
 			StartProgram("FunctionLocalVariables");
 			WaitForPause(PausedReason.Break, null);
 			args = new List<Variable>(debugger.CurrentFunction.LocalVariables);
-			// Argument names
+			// names
 			Assert.AreEqual("i", args[0].Name);
 			Assert.AreEqual("s", args[1].Name);
 			Assert.AreEqual("args", args[2].Name);
 			Assert.AreEqual("n", args[3].Name);
 			Assert.AreEqual("o", args[4].Name);
-			// Argument types
+			// types
 			Assert.AreEqual(typeof(PrimitiveValue), args[0].Value.GetType());
 			Assert.AreEqual(typeof(PrimitiveValue), args[1].Value.GetType());
 			Assert.AreEqual(typeof(ArrayValue),     args[2].Value.GetType());
 			Assert.AreEqual(typeof(NullValue),     args[3].Value.GetType());
 			Assert.AreEqual(typeof(ObjectValue),     args[4].Value.GetType());
-			// Argument values
+			// values
 			Assert.AreEqual("0", args[0].Value.AsString);
 			Assert.AreEqual("S", args[1].Value.AsString);
 			Assert.AreEqual(1 ,((ArrayValue)args[2].Value).Lenght);
@@ -431,6 +431,52 @@ namespace Debugger.Tests
 			Assert.AreEqual(typeof(ObjectValue), baseClass.Value.GetType());
 			Assert.AreEqual(false, baseClass.Value.IsExpired);
 			Assert.AreEqual("{Debugger.Tests.TestPrograms.BaseClass}", baseClass.Value.AsString);
+			
+			debugger.Continue();
+			debugger.WaitForPrecessExit();
+		}
+		
+		[Test]
+		public void PropertyVariable()
+		{
+			Variable local = null;
+			List<Variable> subVars = new List<Variable>();
+			
+			StartProgram("PropertyVariable");
+			WaitForPause(PausedReason.Break, null);
+			foreach(Variable var in debugger.CurrentFunction.LocalVariables) {
+				local = var;
+			}
+			foreach(Variable var in local.SubVariables) {
+				subVars.Add(var);
+			}
+			Assert.AreEqual("PrivateProperty", subVars[1].Name);
+			Assert.AreEqual("PublicProperty", subVars[2].Name);
+			Assert.AreEqual("ExceptionProperty", subVars[3].Name);
+			Assert.AreEqual("StaticProperty", subVars[4].Name);
+			
+			Assert.AreEqual(typeof(UnavailableValue), subVars[1].Value.GetType());
+			debugger.StartEvaluation();
+			WaitForPause(PausedReason.AllEvalsComplete, null);
+			Assert.AreEqual("private", subVars[1].Value.AsString);
+			
+			Assert.AreEqual(typeof(UnavailableValue), subVars[2].Value.GetType());
+			debugger.StartEvaluation();
+			WaitForPause(PausedReason.AllEvalsComplete, null);
+			Assert.AreEqual("public", subVars[2].Value.AsString);
+			
+			Assert.AreEqual(typeof(UnavailableValue), subVars[3].Value.GetType());
+			debugger.StartEvaluation();
+			WaitForPause(PausedReason.AllEvalsComplete, null);
+			Assert.AreEqual(typeof(UnavailableValue), subVars[3].Value);
+			
+			Assert.AreEqual(typeof(UnavailableValue), subVars[4].Value.GetType());
+			debugger.StartEvaluation();
+			WaitForPause(PausedReason.AllEvalsComplete, null);
+			Assert.AreEqual("static", subVars[4].Value.AsString);
+			
+			debugger.Continue();
+			WaitForPause(PausedReason.Break, null);
 			
 			debugger.Continue();
 			debugger.WaitForPrecessExit();
