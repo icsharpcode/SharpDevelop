@@ -455,7 +455,12 @@ namespace Debugger
 			                    	if (this.HasExpired) {
 			                    		return new UnavailableValue(debugger, "Function has expired");
 			                    	} else {
-			                    		return Value.CreateValue(debugger, GetArgumentValue(index));
+			                    		try {
+			                    			return Value.CreateValue(debugger, GetArgumentValue(index));
+			                    		} catch (COMException e) {
+			                    			if ((uint)e.ErrorCode == 0x80131304) return new UnavailableValue(debugger, "Unavailable in optimized code");
+			                    			throw;
+			                    		}
 			                    	}
 			                    });
 		}
@@ -502,7 +507,12 @@ namespace Debugger
 			                    		return new UnavailableValue(debugger, "Function has expired");
 			                    	} else {
 			                    		ICorDebugValue corValue;
-			                    		CorILFrame.GetLocalVariable((uint)symVar.AddressField1, out corValue);
+			                    		try {
+			                    			CorILFrame.GetLocalVariable((uint)symVar.AddressField1, out corValue);
+			                    		} catch (COMException e) {
+			                    			if ((uint)e.ErrorCode == 0x80131304) return new UnavailableValue(debugger, "Unavailable in optimized code");
+			                    			throw;
+			                    		}
 			                    		return Value.CreateValue(debugger, corValue);
 			                    	}
 			                    });

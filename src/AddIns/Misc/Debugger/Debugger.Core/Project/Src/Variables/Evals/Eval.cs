@@ -124,7 +124,18 @@ namespace Debugger
 			// TODO: What if this thread is not suitable?
 			targetThread.CorThread.CreateEval(out corEval);
 			
-			corEval.CallFunction(corFunction, (uint)args.Length, args);
+			try {
+				corEval.CallFunction(corFunction, (uint)args.Length, args);
+			} catch (COMException e) {
+				if ((uint)e.ErrorCode == 0x80131C26) {
+					error = "Can not evaluate in optimized code";
+					evalState = EvalState.Error;
+					if (EvalComplete != null) {
+						EvalComplete(this, new EvalEventArgs(this));
+					}
+					return false;
+				}
+			}
 			
 			OnEvalStarted(new EvalEventArgs(this));
 			

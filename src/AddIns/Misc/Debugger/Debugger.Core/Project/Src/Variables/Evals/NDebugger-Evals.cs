@@ -83,7 +83,11 @@ namespace Debugger
 		internal bool SetupNextEvaluation(Thread targetThread)
 		{
 			if (pendingEvalsCollection.Count > 0) {
-				return pendingEvalsCollection[0].SetupEvaluation(targetThread);
+				if (pendingEvalsCollection[0].SetupEvaluation(targetThread)) {
+					return true;
+				} else {
+					return SetupNextEvaluation(targetThread);
+				}
 			} else {
 				return false;
 			}
