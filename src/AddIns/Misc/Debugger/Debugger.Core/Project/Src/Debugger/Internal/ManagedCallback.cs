@@ -230,8 +230,7 @@ namespace Debugger
 			// this will also remove the eval form PendingEvals collection
 			Eval eval = debugger.GetEval(corEval);
 			if (eval != null) {
-				eval.Successful = !exception;
-				eval.OnEvalComplete(new EvalEventArgs(eval));
+				eval.OnEvalComplete(!exception);
 			}
 			
 			if (debugger.PendingEvals.Count > 0) {

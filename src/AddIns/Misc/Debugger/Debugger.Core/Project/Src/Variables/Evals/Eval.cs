@@ -17,6 +17,8 @@ namespace Debugger
 {
 	delegate ICorDebugValue[] CorValuesGetter();
 	
+	public enum EvalState {Pending, Evaluating, EvaluatedSuccessfully, EvaluatedException, EvaluatedNoResult, Error, Expired};
+	
 	/// <summary>
 	/// This class holds information about function evaluation.
 	/// </summary>
@@ -30,10 +32,9 @@ namespace Debugger
 		ICorDebugFunction corFunction;
 		CorValuesGetter   getArgs;
 		
-		bool              evaluating = false;
-		bool              evaluated  = false;
-		bool              successful = false;
+		EvalState         evalState = EvalState.Pending;
 		Value             result;
+		string            error;
 		
 		public event EventHandler<EvalEventArgs> EvalStarted;
 		public event EventHandler<EvalEventArgs> EvalComplete;
@@ -44,43 +45,29 @@ namespace Debugger
 			}
 		}
 		
+		public EvalState EvalState {
+			get {
+				if (result != null && result.IsExpired) {
+					return EvalState.Expired;
+				} else {
+					return evalState;
+				}
+			}
+		}
+		
 		/// <summary>
 		/// True if the evaluation has been completed.
 		/// </summary>
 		public bool Evaluated {
 			get {
-				return evaluated;
-			}
-		}
-		
-		/// <summary>
-		/// True if the eval is being evaluated at the moment.
-		/// </summary>
-		public bool Evaluating {
-			get {
-				return evaluating;
-			}
-			set {
-				evaluating = value;
-			}
-		}
-		
-		/// <summary>
-		/// True if the evaluation was successful, false if it thown an exception (which is presented as the result)
-		/// </summary>
-		public bool Successful {
-			get {
-				return successful;
-			}
-			internal set {
-				successful = value;
+				return this.EvalState != EvalState.Pending &&
+				       this.EvalState != EvalState.Evaluating;
 			}
 		}
 		
 		public bool HasExpired {
 			get {
-				return debugeeStateIDatCreation != debugger.DebugeeStateID ||
-				       Result.IsExpired;
+				return this.EvalState == EvalState.Expired;
 			}
 		}
 		
@@ -89,26 +76,18 @@ namespace Debugger
 		/// </summary>
 		public Value Result {
 			get {
-				if (Evaluated) {
-					if (Successful) {
-						if (result != null) {
-							return result;
-						} else {
-							return new UnavailableValue(debugger, "No return value");
-						}
-					} else {
+				switch(this.EvalState) {
+					case EvalState.Pending: return new UnavailableValue(debugger, "Evaluation pending");
+					case EvalState.Evaluating: return new UnavailableValue(debugger, "Evaluating...");
+					case EvalState.EvaluatedSuccessfully: return result;
+					case EvalState.EvaluatedException:
 						ObjectValue exception = (ObjectValue)result;
-						while (exception.Type != "System.Exception") {
-							exception = exception.BaseClass;
-						}
+						while (exception.Type != "System.Exception") exception = exception.BaseClass;
 						return new UnavailableValue(debugger, result.Type + ": " + exception["_message"].Value.AsString);
-					}
-				} else {
-					if (Evaluating) {
-						return new UnavailableValue(debugger, "Evaluating...");
-					} else {
-						return new UnavailableValue(debugger, "Evaluation pending");
-					}
+					case EvalState.EvaluatedNoResult: return new UnavailableValue(debugger, "No return value");
+					case EvalState.Error: return new UnavailableValue(debugger, error);
+					case EvalState.Expired: return new UnavailableValue(debugger, "Result has expired");
+					default: throw new DebuggerException("Unknown state");
 				}
 			}
 		}
@@ -147,10 +126,9 @@ namespace Debugger
 			
 			corEval.CallFunction(corFunction, (uint)args.Length, args);
 			
-			evaluating = true;
-			
 			OnEvalStarted(new EvalEventArgs(this));
 			
+			evalState = EvalState.Evaluating;
 			return true;
 		}
 		
@@ -161,17 +139,24 @@ namespace Debugger
 			}
 		}
 		
-		protected internal virtual void OnEvalComplete(EvalEventArgs e) 
+		protected internal virtual void OnEvalComplete(bool successful) 
 		{
-			evaluating = false;
-			evaluated = true;
-			
 			ICorDebugValue corValue;
 			corEval.GetResult(out corValue);
 			result = Value.CreateValue(debugger, corValue);
-				
+			
+			if (result == null) {
+				evalState = EvalState.EvaluatedNoResult;
+			} else {
+				if (successful) {
+					evalState = EvalState.EvaluatedSuccessfully;
+				} else {
+					evalState = EvalState.EvaluatedException;
+				}
+			}
+			
 			if (EvalComplete != null) {
-				EvalComplete(this, e);
+				EvalComplete(this, new EvalEventArgs(this));
 			}
 		}
 	}
