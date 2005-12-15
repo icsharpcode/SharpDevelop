@@ -522,5 +522,22 @@ namespace Debugger.Tests
 			debugger.Continue();
 			debugger.WaitForPrecessExit();
 		}
+		
+		[Test]
+		public void SetIP()
+		{
+			StartProgram("SetIP");
+			WaitForPause(PausedReason.Break, "1");
+			
+			Assert.IsNotNull(debugger.CurrentFunction.CanSetIP("SetIP.cs", 16, 0));
+			Assert.IsNull(debugger.CurrentFunction.CanSetIP("SetIP.cs", 100, 0));
+			debugger.CurrentFunction.SetIP("SetIP.cs", 16, 0);
+			debugger.Continue();
+			WaitForPause(PausedReason.Break, "1");
+			Assert.AreEqual("1\r\n1\r\n", log);
+			
+			debugger.Continue();
+			debugger.WaitForPrecessExit();
+		}
 	}
 }

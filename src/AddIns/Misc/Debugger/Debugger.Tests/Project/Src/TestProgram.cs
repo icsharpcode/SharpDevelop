@@ -31,6 +31,7 @@ namespace Debugger.Tests
 				case "ObjectValue": Progs.ObjectValue.Main(); break;
 				case "PropertyVariable": Progs.PropertyVariable.Main(); break;
 				case "PropertyVariableForm": Progs.PropertyVariableForm.Main(); break;
+				case "SetIP": Progs.SetIP.Main(); break;
 				case "SimpleProgram": Progs.SimpleProgram.Main(); break;
 				case "Stepping": Progs.Stepping.Main(); break;
 				case "Symbols": Progs.Symbols.Main(); break;

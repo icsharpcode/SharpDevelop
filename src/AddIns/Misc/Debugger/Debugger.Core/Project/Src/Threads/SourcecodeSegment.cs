@@ -1,4 +1,4 @@
-// <file>
+﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
 //     <owner name="David Srbecký" email="dsrbecky@gmail.com"/>
@@ -191,9 +191,13 @@ namespace Debugger
 			if (symDoc == null) {
 				return false; //Not found
 			}
-
+			
 			int validLine;
-			validLine = symDoc.FindClosestLine(StartLine);
+			try {
+				validLine = symDoc.FindClosestLine(StartLine);
+			} catch {
+				return false; //Not found
+			}
 			if (validLine != StartLine) {
 				if (normailize) {
 					StartLine = validLine;
