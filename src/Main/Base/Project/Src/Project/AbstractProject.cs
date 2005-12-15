@@ -33,14 +33,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected string fileName;
 		protected string language;
 		
-		static string GetConfigurationNameFromKey(string key)
+		public static string GetConfigurationNameFromKey(string key)
 		{
 			return key.Substring(0, key.IndexOf('|'));
 		}
 		
-		static string GetPlatformNameFromKey(string key)
+		public static string GetPlatformNameFromKey(string key)
 		{
-			return key.Substring(key.LastIndexOf('|') + 1);
+			return key.Substring(key.IndexOf('|') + 1);
 		}
 		
 		public string[] GetConfigurationNames()

@@ -202,6 +202,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			if (disposing) {
 				this.textAreaControl.ActiveTextAreaControl.Caret.PositionChanged -= new EventHandler(CaretPositionChanged);
+				this.membersComboBox.Dispose();
+				this.classComboBox.Dispose();
 			}
 			base.Dispose(disposing);
 		}

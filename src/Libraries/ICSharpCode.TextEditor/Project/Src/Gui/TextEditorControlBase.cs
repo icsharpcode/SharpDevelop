@@ -724,6 +724,8 @@ namespace ICSharpCode.TextEditor
 		{
 			if (disposing) {
 				HighlightingManager.Manager.ReloadSyntaxHighlighting -= new EventHandler(ReloadHighlighting);
+				document.HighlightingStrategy = null;
+				document.UndoStack.TextEditorControl = null;
 			}
 			base.Dispose(disposing);
 		}

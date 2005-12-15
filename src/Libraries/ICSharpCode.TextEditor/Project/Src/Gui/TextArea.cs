@@ -614,9 +614,10 @@ namespace ICSharpCode.TextEditor
 			motherTextEditorControl.EndUpdate();
 		}
 		
-		public bool EnableCutOrPaste
-		{
+		public bool EnableCutOrPaste {
 			get {
+				if (motherTextAreaControl == null)
+					return false;
 				if (TextEditorProperties.UseCustomLine == true) {
 					if (SelectionManager.HasSomethingSelected == true) {
 						if (Document.CustomLineManager.IsReadOnly(SelectionManager.SelectionCollection[0], false))
@@ -759,10 +760,22 @@ namespace ICSharpCode.TextEditor
 			if (disposing) {
 				if (!disposed) {
 					disposed = true;
-					caret.PositionChanged -= new EventHandler(SearchMatchingBracket);
+					if (caret != null) {
+						caret.PositionChanged -= new EventHandler(SearchMatchingBracket);
+						caret.Dispose();
+					}
+					if (selectionManager != null) {
+						selectionManager.Dispose();
+					}
 					Document.TextContentChanged -= new EventHandler(TextContentChanged);
 					Document.FoldingManager.FoldingsChanged -= new EventHandler(DocumentFoldingsChanged);
-					caret.Dispose();
+					motherTextAreaControl = null;
+					motherTextEditorControl = null;
+					foreach (AbstractMargin margin in leftMargins) {
+						if (margin is IDisposable)
+							(margin as IDisposable).Dispose();
+					}
+					textView.Dispose();
 				}
 			}
 		}

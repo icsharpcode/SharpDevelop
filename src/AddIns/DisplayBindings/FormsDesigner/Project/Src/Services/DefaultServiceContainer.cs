@@ -8,7 +8,6 @@
 using System;
 using System.Reflection;
 using System.Collections;
-using System.Collections.Specialized;
 using System.Drawing;
 using System.ComponentModel;
 using System.ComponentModel.Design;
@@ -20,7 +19,8 @@ namespace ICSharpCode.FormsDesigner.Services
 	public class DefaultServiceContainer : IServiceContainer, IDisposable
 	{
 		IServiceContainer serviceContainer;
-		ArrayList         services = new ArrayList();
+		Hashtable         services = new Hashtable();
+		bool              inDispose = false;
 		
 		public DefaultServiceContainer()
 		{
@@ -35,12 +35,13 @@ namespace ICSharpCode.FormsDesigner.Services
 		#region System.IDisposable interface implementation
 		public virtual void Dispose()
 		{
-			foreach (object o in services) {
-				if (o == this) {
+			inDispose = true;
+			foreach (DictionaryEntry o in services) {
+				if (o.Value == this) {
 					continue;
 				}
 				//  || o.GetType().Assembly != Assembly.GetCallingAssembly()
-				IDisposable disposeMe = o as IDisposable;
+				IDisposable disposeMe = o.Value as IDisposable;
 				if (disposeMe != null) {
 					try {
 						disposeMe.Dispose();
@@ -51,18 +52,27 @@ namespace ICSharpCode.FormsDesigner.Services
 			}
 			services.Clear();
 			services = null;
+			inDispose = false;
 		}
 		#endregion
 		
 		#region System.ComponentModel.Design.IServiceContainer interface implementation
 		public void RemoveService(System.Type serviceType, bool promote)
 		{
+			if (inDispose)
+				return;
 			serviceContainer.RemoveService(serviceType, promote);
+			if (services.Contains(serviceType))
+				services.Remove(serviceType);
 		}
 		
 		public void RemoveService(System.Type serviceType)
 		{
+			if (inDispose == true)
+				return;
 			serviceContainer.RemoveService(serviceType);
+			if (services.Contains(serviceType))
+				services.Remove(serviceType);
 		}
 		
 		public void AddService(System.Type serviceType, System.ComponentModel.Design.ServiceCreatorCallback callback, bool promote)
@@ -83,7 +93,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			if (IsServiceMissing(serviceType)) {
 				serviceContainer.AddService(serviceType, serviceInstance, promote);
-				services.Add(serviceInstance);
+				services.Add(serviceType, serviceInstance);
 			}
 		}
 		
@@ -91,7 +101,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			if (IsServiceMissing(serviceType)) {
 				serviceContainer.AddService(serviceType, serviceInstance);
-				services.Add(serviceInstance);
+				services.Add(serviceType, serviceInstance);
 			}
 		}
 		#endregion

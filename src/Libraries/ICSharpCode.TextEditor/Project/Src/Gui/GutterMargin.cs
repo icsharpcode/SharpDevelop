@@ -21,7 +21,7 @@ namespace ICSharpCode.TextEditor
 	/// <summary>
 	/// This class views the line numbers and folding markers.
 	/// </summary>
-	public class GutterMargin : AbstractMargin
+	public class GutterMargin : AbstractMargin, IDisposable
 	{
 		StringFormat numberStringFormat = (StringFormat)StringFormat.GenericTypographic.Clone();
 		
@@ -34,6 +34,10 @@ namespace ICSharpCode.TextEditor
 			cursorStream.Close();
 		}
 		
+		public void Dispose()
+		{
+			numberStringFormat.Dispose();
+		}
 		
 		public override Cursor Cursor {
 			get {
@@ -59,7 +63,7 @@ namespace ICSharpCode.TextEditor
 		{
 			numberStringFormat.LineAlignment = StringAlignment.Far;
 			numberStringFormat.FormatFlags   = StringFormatFlags.MeasureTrailingSpaces | StringFormatFlags.FitBlackBox |
-			                                    StringFormatFlags.NoWrap | StringFormatFlags.NoClip;
+				StringFormatFlags.NoWrap | StringFormatFlags.NoClip;
 		}
 		
 		public override void Paint(Graphics g, Rectangle rect)
@@ -151,7 +155,7 @@ namespace ICSharpCode.TextEditor
 								}
 							}
 						}
-					
+						
 						textArea.Caret.Position = realmousepos;
 					}
 				} else {

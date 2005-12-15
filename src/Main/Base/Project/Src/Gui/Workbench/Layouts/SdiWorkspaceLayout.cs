@@ -542,6 +542,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void CloseWindowEvent(object sender, EventArgs e)
 		{
 			SdiWorkspaceWindow f = (SdiWorkspaceWindow)sender;
+			f.CloseEvent -= CloseWindowEvent;
 			if (f.ViewContent != null) {
 				((IWorkbench)wbForm).CloseContent(f.ViewContent);
 				if (f == oldSelectedWindow) {

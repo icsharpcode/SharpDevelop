@@ -95,9 +95,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Show();
 		}
 		
-		protected override void Dispose(bool isDisposing)
+		protected override void Dispose(bool disposing)
 		{
-			base.Dispose(isDisposing);
+			base.Dispose(disposing);
+			
+			if (disposing) {
+				if (content != null)
+					DetachContent();
+				if (this.TabPageContextMenu != null) {
+					this.TabPageContextMenu.Dispose();
+					this.TabPageContextMenu = null;
+				}
+			}
 		}
 		
 		public SdiWorkspaceWindow(IViewContent content)

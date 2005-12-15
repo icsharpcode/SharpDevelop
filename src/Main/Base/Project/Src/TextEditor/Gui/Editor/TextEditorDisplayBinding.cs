@@ -89,8 +89,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		}
 		
 		// KSL Start, New lines
-		FileSystemWatcher watcher;
-		bool wasChangedExternally = false;
+		protected FileSystemWatcher watcher;
+		protected bool wasChangedExternally = false;
 		// KSL End
 		
 		public bool EnableUndo {
@@ -223,7 +223,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			}
 		}
 		
-		void SetWatcher()
+		protected void SetWatcher()
 		{
 			try {
 				if (this.watcher == null) {
@@ -237,10 +237,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				this.watcher.NotifyFilter = NotifyFilters.LastWrite;
 				this.watcher.EnableRaisingEvents = true;
 			} catch (Exception) {
+				if (watcher != null) {
+					watcher.Dispose();
+				}
 				watcher = null;
 			}
 		}
-		void GotFocusEvent(object sender, EventArgs e)
+		protected virtual void GotFocusEvent(object sender, EventArgs e)
 		{
 			if (wasChangedExternally) {
 				wasChangedExternally = false;
@@ -288,12 +291,15 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		
 		public override void Dispose()
 		{
-			base.Dispose();
-			((Form)ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.Workbench).Activated -= new EventHandler(GotFocusEvent);
+			if (WorkbenchSingleton.MainForm != null) {
+				WorkbenchSingleton.MainForm.Activated -= new EventHandler(GotFocusEvent);
+			}
 			if (this.watcher != null) {
 				this.watcher.Dispose();
+				this.watcher = null;
 			}
 			textAreaControl.Dispose();
+			base.Dispose();
 		}
 		
 		public override bool IsReadOnly {

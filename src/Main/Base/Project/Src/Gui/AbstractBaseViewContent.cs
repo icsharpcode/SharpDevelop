@@ -53,6 +53,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public virtual void Dispose()
 		{
+			workbenchWindow = null;
 		}
 		
 		protected virtual void OnWorkbenchWindowChanged(EventArgs e)

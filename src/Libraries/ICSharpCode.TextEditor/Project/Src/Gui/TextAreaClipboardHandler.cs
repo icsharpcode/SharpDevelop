@@ -32,7 +32,7 @@ namespace ICSharpCode.TextEditor
 		
 		public bool EnableCut {
 			get {
-				return true; //textArea.SelectionManager.HasSomethingSelected;
+				return textArea.EnableCutOrPaste; //textArea.SelectionManager.HasSomethingSelected;
 			}
 		}
 		
@@ -54,7 +54,7 @@ namespace ICSharpCode.TextEditor
 		
 		public bool EnableDelete {
 			get {
-				return textArea.SelectionManager.HasSomethingSelected;
+				return textArea.SelectionManager.HasSomethingSelected && textArea.EnableCutOrPaste;
 			}
 		}
 		

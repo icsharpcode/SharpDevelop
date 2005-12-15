@@ -271,6 +271,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
 			document.CommitUpdate();
+			currentLine = null;
 		}
 		
 		bool MarkTokensInLine(IDocument document, int lineNumber, ref bool spanChanged)
@@ -412,6 +413,7 @@ namespace ICSharpCode.TextEditor.Document
 				
 			}
 			document.CommitUpdate();
+			currentLine = null;
 		}
 		
 		// Span state variables

@@ -132,6 +132,15 @@ namespace ICSharpCode.TextEditor
 			textArea.LostFocus += new EventHandler(LostFocus);
 		}
 		
+		public void Dispose()
+		{
+			textArea.GotFocus  -= new EventHandler(GotFocus);
+			textArea.LostFocus -= new EventHandler(LostFocus);
+			textArea = null;
+//			DestroyCaret();
+//			caretCreated = false;
+		}
+		
 		public Point ValidatePosition(Point pos)
 		{
 			int line   = Math.Max(0, Math.Min(textArea.Document.TotalNumberOfLines - 1, pos.Y));
@@ -257,12 +266,6 @@ namespace ICSharpCode.TextEditor
 				
 				currentPos = pos;
 			}
-		}
-		
-		public void Dispose()
-		{
-//			DestroyCaret();
-//			caretCreated = false;
 		}
 		
 		#region Native caret functions

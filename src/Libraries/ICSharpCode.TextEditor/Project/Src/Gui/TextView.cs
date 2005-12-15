@@ -29,13 +29,19 @@ namespace ICSharpCode.TextEditor
 	/// <summary>
 	/// This class paints the textarea.
 	/// </summary>
-	public class TextView : AbstractMargin
+	public class TextView : AbstractMargin, IDisposable
 	{
 		int          fontHeight;
 		//Hashtable    charWitdh           = new Hashtable();
 		StringFormat measureStringFormat = (StringFormat)StringFormat.GenericTypographic.Clone();
 		Highlight    highlight;
 		int          physicalColumn = 0; // used for calculating physical column during paint
+		
+		public void Dispose()
+		{
+			measureCache.Clear();
+			measureStringFormat.Dispose();
+		}
 		
 		public Highlight Highlight {
 			get {

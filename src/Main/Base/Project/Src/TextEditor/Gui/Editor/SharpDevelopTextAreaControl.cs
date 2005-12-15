@@ -50,7 +50,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			Document.BookmarkManager.Removed += new BookmarkEventHandler(BookmarkRemoved);
 			GenerateEditActions();
 			
-			TextAreaDragDropHandler dragDropHandler = new TextAreaDragDropHandler();
 			TextEditorProperties = new SharpDevelopTextEditorProperties();
 		}
 		
@@ -90,7 +89,14 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		{
 			base.Dispose(disposing);
 			if (disposing) {
-				errorDrawer.Dispose();
+				if (errorDrawer != null) {
+					errorDrawer.Dispose();
+					errorDrawer = null;
+				}
+				if (quickClassBrowserPanel != null) {
+					quickClassBrowserPanel.Dispose();
+					quickClassBrowserPanel = null;
+				}
 				CloseCodeCompletionWindow(this, EventArgs.Empty);
 				CloseInsightWindow(this, EventArgs.Empty);
 			}

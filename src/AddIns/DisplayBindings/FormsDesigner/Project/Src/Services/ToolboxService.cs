@@ -412,10 +412,21 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		public void RemoveCreator(string format)
 		{
+			RemoveCreator(format, null);
 		}
 		
 		public void RemoveCreator(string format, IDesignerHost host)
 		{
+			if (host == null) {
+				creators.Remove(format);
+			} else {
+				HybridDictionary creatorsDict = creatorsByHost[host] as HybridDictionary;
+				if (creatorsDict != null) {
+					creatorsDict.Remove(format);
+					if (creatorsDict.Count == 0)
+						creatorsByHost.Remove(host);
+				}
+			}
 		}
 		
 		public void RemoveToolboxItem(ToolboxItem toolboxItem)

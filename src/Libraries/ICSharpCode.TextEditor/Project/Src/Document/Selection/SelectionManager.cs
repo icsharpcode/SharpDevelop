@@ -16,7 +16,7 @@ namespace ICSharpCode.TextEditor.Document
 	/// <summary>
 	/// This class manages the selections in a document.
 	/// </summary>
-	public class SelectionManager
+	public class SelectionManager : IDisposable
 	{
 		IDocument document;
 		List<ISelection> selectionCollection = new List<ISelection>();
@@ -71,6 +71,14 @@ namespace ICSharpCode.TextEditor.Document
 			document.DocumentChanged += new DocumentEventHandler(DocumentChanged);
 		}
 		
+		public void Dispose()
+		{
+			if (this.document != null) {
+				document.DocumentChanged -= new DocumentEventHandler(DocumentChanged);
+				this.document = null;
+			}
+		}
+		
 		void DocumentChanged(object sender, DocumentEventArgs e)
 		{
 			if (e.Text == null) {
@@ -92,7 +100,7 @@ namespace ICSharpCode.TextEditor.Document
 		{
 //			autoClearSelection = false;
 			if (selection != null) {
-				if (SelectionCollection.Count == 1 && 
+				if (SelectionCollection.Count == 1 &&
 				    selection.StartPosition == SelectionCollection[0].StartPosition &&
 				    selection.EndPosition == SelectionCollection[0].EndPosition ) {
 					return;
@@ -153,7 +161,7 @@ namespace ICSharpCode.TextEditor.Document
 			} else {
 				if (oldPosition == selection.StartPosition) {
 					if (GreaterEqPos(newPosition, selection.EndPosition)) {
-						if (selection.StartPosition != selection.EndPosition || 
+						if (selection.StartPosition != selection.EndPosition ||
 						    selection.EndPosition   != newPosition) {
 							selection.StartPosition = selection.EndPosition;
 							selection.EndPosition   = newPosition;
@@ -180,13 +188,13 @@ namespace ICSharpCode.TextEditor.Document
 							changed = true;
 						}
 					}
-				} 
+				}
 			}
 			
 //			if (GreaterEqPos(selection.StartPosition, min) && GreaterEqPos(selection.EndPosition, max)) {
 //				if (oldIsGreater) {
 //					selection.StartPosition = min;
-//				} else {				
+//				} else {
 //					selection.StartPosition = max;
 //				}
 //			} else {
@@ -216,7 +224,7 @@ namespace ICSharpCode.TextEditor.Document
 		/// </remarks>
 		public void ClearSelection()
 		{
-			 ClearWithoutUpdate();
+			ClearWithoutUpdate();
 			document.CommitUpdate();
 		}
 		
@@ -247,7 +255,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 			ClearSelection();
 			if (offset >= 0) {
-//             TODO:
+				//             TODO:
 //				document.Caret.Offset = offset;
 			}
 			if (offset != -1) {
@@ -266,8 +274,8 @@ namespace ICSharpCode.TextEditor.Document
 		bool SelectionsOverlap(ISelection s1, ISelection s2)
 		{
 			return (s1.Offset <= s2.Offset && s2.Offset <= s1.Offset + s1.Length)                         ||
-			       (s1.Offset <= s2.Offset + s2.Length && s2.Offset + s2.Length <= s1.Offset + s1.Length) ||
-			       (s1.Offset >= s2.Offset && s1.Offset + s1.Length <= s2.Offset + s2.Length);
+				(s1.Offset <= s2.Offset + s2.Length && s2.Offset + s2.Length <= s1.Offset + s1.Length) ||
+				(s1.Offset >= s2.Offset && s1.Offset + s1.Length <= s2.Offset + s2.Length);
 		}
 		
 		/// <remarks>

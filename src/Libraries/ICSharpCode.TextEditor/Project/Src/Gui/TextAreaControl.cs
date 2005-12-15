@@ -62,13 +62,17 @@ namespace ICSharpCode.TextEditor
 		[Browsable(false)]
 		public IDocument Document {
 			get {
-				return motherTextEditorControl.Document;
+				if (motherTextEditorControl != null)
+					return motherTextEditorControl.Document;
+				return null;
 			}
 		}
 		
 		public ITextEditorProperties TextEditorProperties {
 			get {
-				return motherTextEditorControl.TextEditorProperties;
+				if (motherTextEditorControl != null)
+					return motherTextEditorControl.TextEditorProperties;
+				return null;
 			}
 		}
 		
@@ -117,6 +121,19 @@ namespace ICSharpCode.TextEditor
 				if (!disposed) {
 					disposed = true;
 					Document.DocumentChanged -= new DocumentEventHandler(AdjustScrollBars);
+					motherTextEditorControl = null;
+					if (vScrollBar != null) {
+						vScrollBar.Dispose();
+						vScrollBar = null;
+					}
+					if (hScrollBar != null) {
+						hScrollBar.Dispose();
+						hScrollBar = null;
+					}
+					if (hRuler != null) {
+						hRuler.Dispose();
+						hRuler = null;
+					}
 				}
 			}
 			base.Dispose(disposing);
@@ -133,11 +150,11 @@ namespace ICSharpCode.TextEditor
 			int y = 0;
 			int h = 0;
 			if (hRuler != null) {
-				hRuler.Bounds = new Rectangle(0, 
-				                              0, 
+				hRuler.Bounds = new Rectangle(0,
+				                              0,
 				                              Width - SystemInformation.HorizontalScrollBarArrowWidth,
 				                              textArea.TextView.FontHeight);
-							
+				
 				y = hRuler.Bounds.Bottom;
 				h = hRuler.Bounds.Height;
 			}
@@ -151,9 +168,9 @@ namespace ICSharpCode.TextEditor
 		public void SetScrollBarBounds()
 		{
 			vScrollBar.Bounds = new Rectangle(textArea.Bounds.Right, 0, SystemInformation.HorizontalScrollBarArrowWidth, Height - SystemInformation.VerticalScrollBarArrowHeight);
-			hScrollBar.Bounds = new Rectangle(0, 
+			hScrollBar.Bounds = new Rectangle(0,
 			                                  textArea.Bounds.Bottom,
-			                                  Width - SystemInformation.HorizontalScrollBarArrowWidth, 
+			                                  Width - SystemInformation.HorizontalScrollBarArrowWidth,
 			                                  SystemInformation.VerticalScrollBarArrowHeight);
 		}
 		public void AdjustScrollBars(object sender, DocumentEventArgs e)

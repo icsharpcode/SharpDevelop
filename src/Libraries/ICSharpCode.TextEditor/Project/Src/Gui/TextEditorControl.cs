@@ -23,7 +23,7 @@ using System.Text;
 
 using ICSharpCode.TextEditor.Document;
 using ICSharpCode.TextEditor.Actions;
- 
+
 namespace ICSharpCode.TextEditor
 {
 	/// <summary>
@@ -168,6 +168,32 @@ namespace ICSharpCode.TextEditor
 			Document.HighlightingStrategy = HighlightingStrategyFactory.CreateHighlightingStrategy(name);
 		}
 		
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing) {
+				if (printDocument != null) {
+					printDocument.BeginPrint -= new PrintEventHandler(this.BeginPrint);
+					printDocument.PrintPage  -= new PrintPageEventHandler(this.PrintPage);
+					printDocument = null;
+				}
+				Document.UndoStack.ClearAll();
+				Document.UpdateCommited -= new EventHandler(CommitUpdateRequested);
+				if (textAreaPanel != null) {
+					if (secondaryTextArea != null) {
+						secondaryTextArea.Dispose();
+						textAreaSplitter.Dispose();
+						secondaryTextArea = null;
+						textAreaSplitter  = null;
+					}
+					if (primaryTextArea != null) {
+						primaryTextArea.Dispose();
+					}
+					textAreaPanel.Dispose();
+					textAreaPanel = null;
+				}
+			}
+			base.Dispose(disposing);
+		}
 		
 		#region Update Methods
 		public override void EndUpdate()
