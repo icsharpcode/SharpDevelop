@@ -190,6 +190,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			ToolStripMenuItem item = (ToolStripMenuItem)sender;
 			ProjectService.OpenSolution.Preferences.ActiveConfiguration = item.Text;
+			ProjectService.OpenSolution.ApplySolutionConfigurationToProjects();
 		}
 	}
 }

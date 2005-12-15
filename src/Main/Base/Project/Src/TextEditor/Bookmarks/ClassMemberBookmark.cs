@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		}
 		
 		public ClassBookmark(IDocument document, IClass @class)
-			: base(document, @class.Region.BeginLine - 1)
+			: base(document, Math.Max(@class.Region.BeginLine - 1, 0))
 		{
 			this.@class = @class;
 		}

@@ -483,32 +483,37 @@ namespace ICSharpCode.SharpDevelop.Project
 			return true;
 		}
 		
-		public const string SolutionPlatformsSectionName = "SolutionConfigurationPlatforms";
-		public const string ProjectConfigurationSectionName = "ProjectConfigurationPlatforms";
+		public ProjectSection GetSolutionConfigurationsSection()
+		{
+			foreach (ProjectSection sec in Sections) {
+				if (sec.Name == "SolutionConfigurationPlatforms")
+					return sec;
+			}
+			ProjectSection newSec = new ProjectSection("SolutionConfigurationPlatforms", "preSolution");
+			Sections.Insert(0, newSec);
+			return newSec;
+		}
+		
+		public ProjectSection GetProjectConfigurationsSection()
+		{
+			foreach (ProjectSection sec in Sections) {
+				if (sec.Name == "ProjectConfigurationPlatforms")
+					return sec;
+			}
+			ProjectSection newSec = new ProjectSection("ProjectConfigurationPlatforms", "postSolution");
+			Sections.Add(newSec);
+			return newSec;
+		}
 		
 		public bool FixSolutionConfiguration(IEnumerable<IProject> projects)
 		{
-			ProjectSection solSec = null;
-			ProjectSection prjSec = null;
+			ProjectSection solSec = GetSolutionConfigurationsSection();
+			ProjectSection prjSec = GetProjectConfigurationsSection();
 			bool changed = false;
-			foreach (ProjectSection sec in Sections) {
-				if (sec.Name == SolutionPlatformsSectionName)
-					solSec = sec;
-				else if (sec.Name == ProjectConfigurationSectionName)
-					prjSec = sec;
-			}
-			if (solSec == null) {
-				solSec = new ProjectSection(SolutionPlatformsSectionName, "preSolution");
-				Sections.Insert(0, solSec);
+			if (solSec.Items.Count == 0) {
 				solSec.Items.Add(new SolutionItem("Debug|Any CPU", "Debug|Any CPU"));
 				solSec.Items.Add(new SolutionItem("Release|Any CPU", "Release|Any CPU"));
-				LoggingService.Warn("!! Inserted SolutionConfigurationPlatforms !!");
-				changed = true;
-			}
-			if (prjSec == null) {
-				prjSec = new ProjectSection(ProjectConfigurationSectionName, "postSolution");
-				Sections.Add(prjSec);
-				LoggingService.Warn("!! Inserted ProjectConfigurationPlatforms !!");
+				LoggingService.Warn("!! Inserted default SolutionConfigurationPlatforms !!");
 				changed = true;
 			}
 			foreach (IProject project in projects) {
@@ -538,14 +543,10 @@ namespace ICSharpCode.SharpDevelop.Project
 		public IList<string> GetConfigurationNames()
 		{
 			List<string> configurationNames = new List<string>();
-			foreach (ProjectSection sec in ProjectService.OpenSolution.Sections) {
-				if (sec.Name != SolutionPlatformsSectionName)
-					continue;
-				foreach (SolutionItem item in sec.Items) {
-					string name = AbstractProject.GetConfigurationNameFromKey(item.Name);
-					if (!configurationNames.Contains(name))
-						configurationNames.Add(name);
-				}
+			foreach (SolutionItem item in GetSolutionConfigurationsSection().Items) {
+				string name = AbstractProject.GetConfigurationNameFromKey(item.Name);
+				if (!configurationNames.Contains(name))
+					configurationNames.Add(name);
 			}
 			return configurationNames;
 		}
@@ -553,31 +554,27 @@ namespace ICSharpCode.SharpDevelop.Project
 		public IList<string> GetPlatformNames()
 		{
 			List<string> platformNames = new List<string>();
-			foreach (ProjectSection sec in ProjectService.OpenSolution.Sections) {
-				if (sec.Name != SolutionPlatformsSectionName)
-					continue;
-				foreach (SolutionItem item in sec.Items) {
-					string name = AbstractProject.GetPlatformNameFromKey(item.Name);
-					if (!platformNames.Contains(name))
-						platformNames.Add(name);
-				}
+			foreach (SolutionItem item in GetSolutionConfigurationsSection().Items) {
+				string name = AbstractProject.GetPlatformNameFromKey(item.Name);
+				if (!platformNames.Contains(name))
+					platformNames.Add(name);
 			}
 			return platformNames;
 		}
 		
-		public void ApplySolutionConfigurationToProjects(string configuration)
+		public void ApplySolutionConfigurationToProjects()
 		{
 			// TODO: Use assignments from project configuration section
 			foreach (IProject p in Projects) {
-				p.Configuration = configuration;
+				p.Configuration = preferences.ActiveConfiguration;
 			}
 		}
 		
-		public void ApplySolutionPlatformToProjects(string platform)
+		public void ApplySolutionPlatformToProjects()
 		{
 			// TODO: Use assignments from project configuration section
 			foreach (IProject p in Projects) {
-				p.Platform = platform;
+				p.Platform = preferences.ActivePlatform;
 			}
 		}
 		
@@ -595,7 +592,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			solutionBeingLoaded = newSolution;
 			newSolution.Name     = Path.GetFileNameWithoutExtension(fileName);
 			
-			string extension = Path.GetExtension(fileName).ToUpper();
+			string extension = Path.GetExtension(fileName).ToUpperInvariant();
 			if (extension == ".CMBX") {
 				if (!MessageService.AskQuestion("${res:SharpDevelop.Solution.ImportCmbx}")) {
 					return null;

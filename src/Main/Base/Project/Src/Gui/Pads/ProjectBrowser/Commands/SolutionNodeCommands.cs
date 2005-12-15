@@ -60,6 +60,8 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			solutionFolderNode.Container.AddFolder(newProject);
 			solutionFolderNode.Solution.FixSolutionConfiguration(new IProject[] { newProject });
 			NodeBuilders.AddProjectNode((TreeNode)solutionFolderNode, newProject).EnsureVisible();
+			solutionFolderNode.Solution.ApplySolutionConfigurationToProjects();
+			solutionFolderNode.Solution.ApplySolutionPlatformToProjects();
 		}
 		
 		public override void Run()

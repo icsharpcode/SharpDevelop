@@ -221,14 +221,21 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
 					openSolution.Preferences.SetMemento(Properties.Load(file));
 				}
-				foreach (IProject project in openSolution.Projects) {
-					file = GetPreferenceFileName(project.FileName);
-					if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
-						project.SetMemento(Properties.Load(file));
-					}
-				}
+				ApplyConfigurationAndReadPreferences();
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
+			}
+		}
+		
+		static void ApplyConfigurationAndReadPreferences()
+		{
+			openSolution.ApplySolutionConfigurationToProjects();
+			openSolution.ApplySolutionPlatformToProjects();
+			foreach (IProject project in openSolution.Projects) {
+				string file = GetPreferenceFileName(project.FileName);
+				if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
+					project.SetMemento(Properties.Load(file));
+				}
 			}
 		}
 		
@@ -254,13 +261,19 @@ namespace ICSharpCode.SharpDevelop.Project
 				return;
 			}
 			solution.AddFolder(project);
+			ProjectSection configSection = solution.GetSolutionConfigurationsSection();
+			foreach (string configuration in project.GetConfigurationNames()) {
+				foreach (string platform in project.GetPlatformNames()) {
+					string key = configuration + "|" + platform;
+					configSection.Items.Add(new SolutionItem(key, key));
+				}
+			}
+			solution.FixSolutionConfiguration(new IProject[] { project });
 			solution.Save(solutionFile);
+			
 			openSolution = solution;
 			OnSolutionLoaded(new SolutionEventArgs(openSolution));
-			string file = GetPreferenceFileName(project.FileName);
-			if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
-				project.SetMemento(Properties.Load(file));
-			}
+			ApplyConfigurationAndReadPreferences();
 		}
 		
 		public static void SaveSolution()

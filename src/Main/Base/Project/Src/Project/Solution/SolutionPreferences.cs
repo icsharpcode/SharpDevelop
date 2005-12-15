@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		Solution solution;
 		string startupProject = "";
 		string activeConfiguration = "Debug";
-		string activePlatform = "AnyCPU";
+		string activePlatform = "Any CPU";
 		
 		internal SolutionPreferences(Solution solution)
 		{
@@ -45,7 +45,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			set {
 				if (value == null) throw new ArgumentNullException();
 				activeConfiguration = value;
-				solution.ApplySolutionConfigurationToProjects(value);
 			}
 		}
 		
@@ -56,7 +55,6 @@ namespace ICSharpCode.SharpDevelop.Project
 			set {
 				if (value == null) throw new ArgumentNullException();
 				activePlatform = value;
-				solution.ApplySolutionPlatformToProjects(value);
 			}
 		}
 		

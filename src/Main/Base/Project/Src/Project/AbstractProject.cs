@@ -209,13 +209,21 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		string activeConfiguration, activePlatform;
+		string activeConfiguration = "Debug";
+		string activePlatform = "AnyCPU";
 		
 		public string Platform {
 			get {
 				return activePlatform;
 			}
 			set {
+				if (value == "Any CPU") {
+					// This seems to be a special case in MSBuild
+					List<string> platformNames = GetPlatformNames();
+					if (!platformNames.Contains("Any CPU") && platformNames.Contains("AnyCPU")) {
+						value = "AnyCPU";
+					}
+				}
 				activePlatform = value;
 			}
 		}

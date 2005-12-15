@@ -150,9 +150,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				SharpDevelopLogger logger = new SharpDevelopLogger(this.engine, results);
 				engine.RegisterLogger(logger);
-				// IMPORTANT: engine.GlobalProperties must be passed here.
-				// The properties must be available for both the scanning and building steps
-				engine.BuildProjectFile(buildFile, targets, engine.GlobalProperties);
+				
+				Microsoft.Build.BuildEngine.Project project = engine.CreateNewProject();
+				project.Load(buildFile);
+				engine.BuildProject(project, targets);
 				
 				LoggingService.Debug("MSBuild finished");
 			}

@@ -92,6 +92,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			set;
 		}
 		
+		List<string> GetConfigurationNames();
+		List<string> GetPlatformNames();
+		
 		bool CanCompile(string fileName);
 		
 		void Save();
