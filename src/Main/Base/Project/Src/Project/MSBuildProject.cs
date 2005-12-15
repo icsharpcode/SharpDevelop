@@ -422,11 +422,13 @@ namespace ICSharpCode.SharpDevelop.Project
 //			isDirty = TaskService.Errors != 0;
 //		}
 		
-		public static CompilerResults RunMSBuild(string fileName, string target)
+		public static CompilerResults RunMSBuild(string fileName, string target, string configuration, string platform)
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 //			BeforeBuild();
 			MSBuildEngine engine = new MSBuildEngine();
+			engine.Configuration = configuration;
+			engine.Platform = platform;
 			engine.MessageView = TaskService.BuildMessageViewCategory;
 			if (target == null) {
 				return engine.Run(fileName);
@@ -435,26 +437,31 @@ namespace ICSharpCode.SharpDevelop.Project
 //			AfterBuild();
 		}
 		
+		public CompilerResults RunMSBuild(string target)
+		{
+			return RunMSBuild(this.FileName, target, this.Configuration, this.Platform);
+		}
+		
 		public override CompilerResults Build()
 		{
-			return RunMSBuild(FileName, "Build");
+			return RunMSBuild("Build");
 		}
 		
 		public override CompilerResults Rebuild()
 		{
-			return RunMSBuild(FileName, "Rebuild");
+			return RunMSBuild("Rebuild");
 		}
 		
 		public override CompilerResults Clean()
 		{
-			CompilerResults result = RunMSBuild(FileName, "Clean");
+			CompilerResults result = RunMSBuild("Clean");
 			isDirty = true;
 			return result;
 		}
 		
 		public override CompilerResults Publish()
 		{
-			return RunMSBuild(FileName, "Publish");
+			return RunMSBuild("Publish");
 		}
 		
 		public override string ToString()

@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			return key.Substring(key.IndexOf('|') + 1);
 		}
 		
-		public string[] GetConfigurationNames()
+		public List<string> GetConfigurationNames()
 		{
 			List<string> configurationNames = new List<string>();
 			foreach (string key in configurations.Keys) {
@@ -61,11 +61,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!configurationNames.Contains(this.Configuration)) {
 				configurationNames.Add(this.Configuration);
 			}
-			configurationNames.Sort();
-			return configurationNames.ToArray();
+			return configurationNames;
 		}
 		
-		public string[] GetPlatformNames()
+		public List<string> GetPlatformNames()
 		{
 			List<string> platformNames = new List<string>();
 			foreach (string key in configurations.Keys) {
@@ -83,8 +82,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (!platformNames.Contains(this.Platform)) {
 				platformNames.Add(this.Platform);
 			}
-			platformNames.Sort();
-			return platformNames.ToArray();
+			return platformNames;
 		}
 		
 		/// <summary>
@@ -211,8 +209,28 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[Browsable(false)]
+		string activeConfiguration, activePlatform;
+		
+		public string Platform {
+			get {
+				return activePlatform;
+			}
+			set {
+				activePlatform = value;
+			}
+		}
+		
 		public string Configuration {
+			get {
+				return activeConfiguration;
+			}
+			set {
+				activeConfiguration = value;
+			}
+		}
+		
+		[Browsable(false)]
+		public string DefaultConfiguration {
 			get {
 				// is always stored in BaseConfiguration
 				return BaseConfiguration["Configuration"];
@@ -223,7 +241,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[Browsable(false)]
-		public string Platform {
+		public string DefaultPlatform {
 			get {
 				// is always stored in BaseConfiguration
 				return BaseConfiguration["Platform"];
@@ -513,8 +531,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				if (oldBaseValue != null) {
 					// copy old base value to all configurations
-					string[] configurationNames = GetConfigurationNames();
-					string[] platformNames      = GetPlatformNames();
+					IEnumerable<string> configurationNames = GetConfigurationNames();
+					IEnumerable<string> platformNames      = GetPlatformNames();
 					switch (location & PropertyStorageLocations.ConfigurationAndPlatformSpecific) {
 						case PropertyStorageLocations.ConfigurationAndPlatformSpecific:
 							foreach (string cN in configurationNames) {

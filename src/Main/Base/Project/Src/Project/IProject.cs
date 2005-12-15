@@ -58,10 +58,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		string Configuration {
 			get;
+			set;
 		}
-		
 		string Platform {
 			get;
+			set;
 		}
 		
 		string AssemblyName {

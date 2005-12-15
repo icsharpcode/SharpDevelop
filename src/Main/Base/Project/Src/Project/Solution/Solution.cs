@@ -18,9 +18,6 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
-	/// <summary>
-	/// Description of Solution.
-	/// </summary>
 	public class Solution : SolutionFolder, IDisposable
 	{
 		// contains <guid>, (IProject/ISolutionFolder) pairs.
@@ -486,19 +483,22 @@ namespace ICSharpCode.SharpDevelop.Project
 			return true;
 		}
 		
+		public const string SolutionPlatformsSectionName = "SolutionConfigurationPlatforms";
+		public const string ProjectConfigurationSectionName = "ProjectConfigurationPlatforms";
+		
 		public bool FixSolutionConfiguration(IEnumerable<IProject> projects)
 		{
 			ProjectSection solSec = null;
 			ProjectSection prjSec = null;
 			bool changed = false;
 			foreach (ProjectSection sec in Sections) {
-				if (sec.Name == "SolutionConfigurationPlatforms")
+				if (sec.Name == SolutionPlatformsSectionName)
 					solSec = sec;
-				else if (sec.Name == "ProjectConfigurationPlatforms")
+				else if (sec.Name == ProjectConfigurationSectionName)
 					prjSec = sec;
 			}
 			if (solSec == null) {
-				solSec = new ProjectSection("SolutionConfigurationPlatforms", "preSolution");
+				solSec = new ProjectSection(SolutionPlatformsSectionName, "preSolution");
 				Sections.Insert(0, solSec);
 				solSec.Items.Add(new SolutionItem("Debug|Any CPU", "Debug|Any CPU"));
 				solSec.Items.Add(new SolutionItem("Release|Any CPU", "Release|Any CPU"));
@@ -506,7 +506,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				changed = true;
 			}
 			if (prjSec == null) {
-				prjSec = new ProjectSection("ProjectConfigurationPlatforms", "postSolution");
+				prjSec = new ProjectSection(ProjectConfigurationSectionName, "postSolution");
 				Sections.Add(prjSec);
 				LoggingService.Warn("!! Inserted ProjectConfigurationPlatforms !!");
 				changed = true;
@@ -533,6 +533,52 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			return changed;
+		}
+		
+		public IList<string> GetConfigurationNames()
+		{
+			List<string> configurationNames = new List<string>();
+			foreach (ProjectSection sec in ProjectService.OpenSolution.Sections) {
+				if (sec.Name != SolutionPlatformsSectionName)
+					continue;
+				foreach (SolutionItem item in sec.Items) {
+					string name = AbstractProject.GetConfigurationNameFromKey(item.Name);
+					if (!configurationNames.Contains(name))
+						configurationNames.Add(name);
+				}
+			}
+			return configurationNames;
+		}
+		
+		public IList<string> GetPlatformNames()
+		{
+			List<string> platformNames = new List<string>();
+			foreach (ProjectSection sec in ProjectService.OpenSolution.Sections) {
+				if (sec.Name != SolutionPlatformsSectionName)
+					continue;
+				foreach (SolutionItem item in sec.Items) {
+					string name = AbstractProject.GetPlatformNameFromKey(item.Name);
+					if (!platformNames.Contains(name))
+						platformNames.Add(name);
+				}
+			}
+			return platformNames;
+		}
+		
+		public void ApplySolutionConfigurationToProjects(string configuration)
+		{
+			// TODO: Use assignments from project configuration section
+			foreach (IProject p in Projects) {
+				p.Configuration = configuration;
+			}
+		}
+		
+		public void ApplySolutionPlatformToProjects(string platform)
+		{
+			// TODO: Use assignments from project configuration section
+			foreach (IProject p in Projects) {
+				p.Platform = platform;
+			}
 		}
 		
 		static Solution solutionBeingLoaded;
@@ -582,25 +628,29 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
+		public CompilerResults RunMSBuild(string target)
+		{
+			return MSBuildProject.RunMSBuild(FileName, target, preferences.ActiveConfiguration, preferences.ActivePlatform);
+		}
+		
 		public CompilerResults Build()
 		{
-			return MSBuildProject.RunMSBuild(FileName, null);
+			return RunMSBuild(null);
 		}
 		
 		public CompilerResults Rebuild()
 		{
-			return MSBuildProject.RunMSBuild(FileName, "Rebuild");
+			return RunMSBuild("Rebuild");
 		}
 		
 		public CompilerResults Clean()
 		{
-			return MSBuildProject.RunMSBuild(FileName, "Clean");
+			return RunMSBuild("Clean");
 		}
 		
 		public CompilerResults Publish()
 		{
-			return MSBuildProject.RunMSBuild(FileName, "Publish");
+			return RunMSBuild("Publish");
 		}
-		
 	}
 }

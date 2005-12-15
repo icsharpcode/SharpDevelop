@@ -1,17 +1,18 @@
 ﻿// <file>
 //     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
 //     <license see="prj:///doc/license.txt">GNU General Public License</license>
-//     <owner name="Mike Krüger" email="mike@icsharpcode.net"/>
+//     <owner name="Daniel Grunwald" email="mike@icsharpcode.net"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
+using System.Collections.Generic;
 using System.Diagnostics;
 using System.CodeDom.Compiler;
+using System.Windows.Forms;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.Core;
-
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
 {
@@ -165,6 +166,30 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			} else {
 				Build.ShowResults(ProjectService.CurrentProject.Publish());
 			}
+		}
+	}
+	
+	public class SetConfigurationMenuBuilder : ISubmenuBuilder
+	{
+		public ToolStripItem[] BuildSubmenu(Codon codon, object owner)
+		{
+			if (ProjectService.OpenSolution == null)
+				return new ToolStripItem[0];
+			IList<string> configurationNames = ProjectService.OpenSolution.GetConfigurationNames();
+			string activeConfiguration = ProjectService.OpenSolution.Preferences.ActiveConfiguration;
+			ToolStripMenuItem[] items = new ToolStripMenuItem[configurationNames.Count];
+			for (int i = 0; i < items.Length; i++) {
+				items[i] = new ToolStripMenuItem(configurationNames[i]);
+				items[i].Click += SetConfigurationItemClick;
+				items[i].Checked = activeConfiguration == configurationNames[i];
+			}
+			return items;
+		}
+		
+		void SetConfigurationItemClick(object sender, EventArgs e)
+		{
+			ToolStripMenuItem item = (ToolStripMenuItem)sender;
+			ProjectService.OpenSolution.Preferences.ActiveConfiguration = item.Text;
 		}
 	}
 }

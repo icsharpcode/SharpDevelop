@@ -58,6 +58,36 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		string configuration;
+		
+		/// <summary>
+		/// The configuration of the solution or project that should be builded.
+		/// Use null to build the default configuration.
+		/// </summary>
+		public string Configuration {
+			get {
+				return configuration;
+			}
+			set {
+				configuration = value;
+			}
+		}
+		
+		string platform;
+		
+		/// <summary>
+		/// The platform of the solution or project that should be builded.
+		/// Use null to build the default platform.
+		/// </summary>
+		public string Platform {
+			get {
+				return platform;
+			}
+			set {
+				platform = value;
+			}
+		}
+		
 		public CompilerResults Run(string buildFile)
 		{
 			return Run(buildFile, null);
@@ -108,6 +138,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				LoggingService.Debug("Run MSBuild on " + buildFile);
 				
 				Engine engine = new Engine(System.Runtime.InteropServices.RuntimeEnvironment.GetRuntimeDirectory());
+				if (this.engine.Configuration != null) {
+					engine.GlobalProperties.SetProperty("Configuration", this.engine.Configuration);
+				}
+				if (this.engine.Platform != null) {
+					engine.GlobalProperties.SetProperty("Platform", this.engine.Platform);
+				}
 				foreach (KeyValuePair<string, string> entry in MSBuildProperties) {
 					engine.GlobalProperties.SetProperty(entry.Key, entry.Value);
 				}

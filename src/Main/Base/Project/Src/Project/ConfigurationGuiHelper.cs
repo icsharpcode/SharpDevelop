@@ -518,10 +518,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			void FillBoxes()
 			{
+				List<string> items;
 				configurationComboBox.Items.Clear();
-				configurationComboBox.Items.AddRange(helper.Project.GetConfigurationNames());
+				items = helper.Project.GetConfigurationNames();
+				items.Sort();
+				configurationComboBox.Items.AddRange(items.ToArray());
 				platformComboBox.Items.Clear();
-				platformComboBox.Items.AddRange(helper.Project.GetPlatformNames());
+				items = helper.Project.GetPlatformNames();
+				items.Sort();
+				platformComboBox.Items.AddRange(items.ToArray());
 				ResetIndex();
 			}
 			

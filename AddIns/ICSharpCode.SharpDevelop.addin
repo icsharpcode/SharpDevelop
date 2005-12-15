@@ -1173,7 +1173,7 @@
 			</MenuItem>
 		</Condition> <!-- end PROJECT menu -->
 		
-		<MenuItem id = "Run" label = "${res:XML.MainMenu.BuildMenu}" type="Menu">
+		<MenuItem id = "Build" label = "${res:XML.MainMenu.BuildMenu}" type="Menu">
 			<ComplexCondition action="Disable">
 				<Or>
 					<And>
@@ -1211,10 +1211,16 @@
 					<MenuItem id    = "Clean project"
 					          label = "${res:XML.MainMenu.BuildMenu.CleanProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.CleanProject"/>
-					<MenuItem id    = "Publis&amp;h project"
+					<MenuItem id    = "Publish project"
 					          label = "${res:XML.MainMenu.BuildMenu.PublishProject}"
 					          class = "ICSharpCode.SharpDevelop.Project.Commands.PublishProject"/>
 				</Condition>
+				<MenuItem id = "Separator2" type = "Separator" />
+				<MenuItem id = "SetConfiguration"
+				          label = "Set configuration"
+				          type = "Menu">
+					<MenuItem id = "ConfigurationBuilder" type = "Builder" class = "ICSharpCode.SharpDevelop.Project.Commands.SetConfigurationMenuBuilder"/>
+				</MenuItem>
 			</ComplexCondition>
 		</MenuItem> <!-- end RUN menu -->
 		
