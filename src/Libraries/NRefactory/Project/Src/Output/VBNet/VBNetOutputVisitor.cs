@@ -2001,7 +2001,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.Space();
 						outputFormatter.PrintToken(Tokens.AddressOf);
 						outputFormatter.Space();
-						nodeTracker.TrackedVisit(assignmentExpression.Right, data);
+						nodeTracker.TrackedVisit(GetEventHandlerMethod(assignmentExpression.Right), data);
 						return null;
 					}
 					break;
@@ -2015,7 +2015,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 						outputFormatter.Space();
 						outputFormatter.PrintToken(Tokens.AddressOf);
 						outputFormatter.Space();
-						nodeTracker.TrackedVisit(assignmentExpression.Right, data);
+						nodeTracker.TrackedVisit(GetEventHandlerMethod(assignmentExpression.Right), data);
 						return null;
 					}
 					break;
@@ -2463,25 +2463,16 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (expr is ObjectCreateExpression) {
 				ObjectCreateExpression oce = (ObjectCreateExpression) expr;
 				if (oce.Parameters.Count == 1) {
-					expr = (Expression)oce.Parameters[0];
-					string methodName = null;
-					if (expr is IdentifierExpression) {
-						methodName = ((IdentifierExpression)expr).Identifier;
-					} else if (expr is FieldReferenceExpression) {
-						methodName = ((FieldReferenceExpression)expr).FieldName;
-					}
-					if (methodName != null) {
-						foreach (object o in this.currentType.Children) {
-							if (o is MethodDeclaration && ((MethodDeclaration)o).Name == methodName) {
-								return true;
-							}
-						}
-					}
-					
+					return oce.CreateType.SystemType.EndsWith("Handler");
 				}
 			}
-			
 			return false;
+		}
+		
+		Expression GetEventHandlerMethod(Expression expr)
+		{
+			ObjectCreateExpression oce = (ObjectCreateExpression)expr;
+			return oce.Parameters[0];
 		}
 	}
 }

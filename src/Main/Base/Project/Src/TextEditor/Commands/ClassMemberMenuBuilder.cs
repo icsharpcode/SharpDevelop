@@ -175,7 +175,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			MenuCommand item = (MenuCommand)sender;
 			IMember member = (IMember)item.Tag;
 			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameMemberText}", member.Name);
-			if (!FindReferencesAndRenameHelper.CheckName(newName)) return;
+			if (!FindReferencesAndRenameHelper.CheckName(newName, member.Name)) return;
 			
 			List<Reference> list = RefactoringService.FindReferences(member, null);
 			if (list == null) return;

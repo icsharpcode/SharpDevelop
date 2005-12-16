@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		{
 			LocalResolveResult local = (LocalResolveResult)Owner;
 			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameMemberText}", local.Field.Name);
-			if (!FindReferencesAndRenameHelper.CheckName(newName)) return;
+			if (!FindReferencesAndRenameHelper.CheckName(newName, local.Field.Name)) return;
 			
 			List<Reference> list = RefactoringService.FindReferences(local, null);
 			if (list == null) return;

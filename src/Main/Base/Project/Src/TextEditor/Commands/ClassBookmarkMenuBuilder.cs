@@ -131,7 +131,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IClass c = (IClass)item.Tag;
 			c = c.DefaultReturnType.GetUnderlyingClass(); // get compound class if class is partial
 			string newName = MessageService.ShowInputBox("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameClassText}", c.Name);
-			if (!FindReferencesAndRenameHelper.CheckName(newName)) return;
+			if (!FindReferencesAndRenameHelper.CheckName(newName, c.Name)) return;
 			
 			List<Reference> list = RefactoringService.FindReferences(c, null);
 			if (list == null) return;

@@ -79,9 +79,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return (tecp == null) ? null : tecp.TextEditorControl;
 		}
 		
-		public static bool CheckName(string name)
+		public static bool CheckName(string name, string oldName)
 		{
-			if (name == null || name.Length == 0)
+			if (name == null || name.Length == 0 || name == oldName)
 				return false;
 			if (!char.IsLetter(name, 0) && name[0] != '_') {
 				MessageService.ShowError("${res:SharpDevelop.Refactoring.InvalidNameStart}");
