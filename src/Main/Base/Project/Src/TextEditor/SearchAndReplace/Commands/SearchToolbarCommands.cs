@@ -42,23 +42,24 @@ namespace SearchAndReplace
 				comboBox.Items.Add(findItem);
 			}
 			comboBox.Text = SearchOptions.FindPattern;
-			
-			comboBox.KeyDown += new System.Windows.Forms.KeyEventHandler(ComboBoxKeyDown);
+		}
+		
+		void OnKeyPress(object sender, KeyPressEventArgs e)
+		{
+			if (e.KeyChar == '\r') {
+				CommitSearch();
+				e.Handled = true;
+			}
 		}
 		
 		void CommitSearch()
 		{
 			if (comboBox.Text.Length > 0) {
+				LoggingService.Debug("FindComboBox.CommitSearch()");
+				SearchOptions.DocumentIteratorType = DocumentIteratorType.CurrentDocument;
 				SearchOptions.FindPattern = comboBox.Text;
 				SearchReplaceManager.FindNext();
 				comboBox.Focus();
-			}
-		}
-
-		void ComboBoxKeyDown(object sender, KeyEventArgs e)
-		{
-			if (e.KeyCode == Keys.ControlKey) {
-				CommitSearch();
 			}
 		}
 		
@@ -75,6 +76,7 @@ namespace SearchAndReplace
 			ToolBarComboBox toolbarItem = (ToolBarComboBox)Owner;
 			comboBox = toolbarItem.ComboBox;
 			comboBox.DropDownStyle = ComboBoxStyle.DropDown;
+			comboBox.KeyPress += OnKeyPress;
 			SearchOptions.Properties.PropertyChanged += new PropertyChangedEventHandler(SearchOptionsChanged);
 			
 			RefreshComboBox();

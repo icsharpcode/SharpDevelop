@@ -102,6 +102,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			textEditorControl.Dock = DockStyle.Fill;
 			textEditorControl.BorderStyle = BorderStyle.FixedSingle;
 			textEditorControl.BackColor = SystemColors.Window;
+			textEditorControl.LinkClicked += delegate(object sender, LinkClickedEventArgs e) {
+				FileService.OpenFile("browser://" + e.LinkText);
+			};
 			/*textEditorControl.ShowLineNumbers   = false;
 			textEditorControl.ShowInvalidLines  = false;
 			textEditorControl.EnableFolding     = false;

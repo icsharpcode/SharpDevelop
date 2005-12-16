@@ -103,27 +103,6 @@ namespace ICSharpCode.FormsDesigner
 				return false;
 			}
 			
-//			if (AbstractMenuEditorControl.MenuEditorFocused) {
-//				return false;
-//			}
-			
-//			if (m.Msg == leftMouseButtonDownMessage) {
-//				if (formDesigner.IsTabOrderMode) {
-//					Point p = new Point(m.LParam.ToInt32());
-//					Control c = Control.FromHandle(m.HWnd);
-//					try {
-//						if ((Control.ModifierKeys & Keys.Shift) == Keys.Shift) {
-//							formDesigner.SetPrevTabIndex(c.PointToScreen(p));
-//						} else {
-//							formDesigner.SetNextTabIndex(c.PointToScreen(p));
-//						}
-//					} catch (Exception e) {
-//						MessageService.ShowError(e);
-//					}
-//				}
-//				return false;
-//			}
-			
 			Keys keyPressed = (Keys)m.WParam.ToInt32() | Control.ModifierKeys;
 			
 			if (keyPressed == Keys.Escape) {
@@ -135,9 +114,18 @@ namespace ICSharpCode.FormsDesigner
 			
 			CommandWrapper commandWrapper = (CommandWrapper)keyTable[keyPressed];
 			if (commandWrapper != null) {
+				LoggingService.Debug("Run menu command: " + commandWrapper.CommandID);
+				Control ctl = WorkbenchSingleton.ActiveControl;
+				
 				IMenuCommandService menuCommandService = (IMenuCommandService)formDesigner.Host.GetService(typeof(IMenuCommandService));
 				ISelectionService   selectionService = (ISelectionService)formDesigner.Host.GetService(typeof(ISelectionService));
 				ICollection components = selectionService.GetSelectedComponents();
+				if (components.Count == 1) {
+					foreach (Component component in components) {
+						if (HandleMenuCommand(formDesigner, component, keyPressed))
+							return false;
+					}
+				}
 				
 				menuCommandService.GlobalInvoke(commandWrapper.CommandID);
 				
@@ -148,6 +136,44 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			return false;
+		}
+		
+		bool HandleMenuCommand(FormsDesignerViewContent formDesigner, Component activeComponent, Keys keyPressed)
+		{
+			Assembly asm = typeof(WindowsFormsDesignerOptionService).Assembly;
+			// Microsoft made ToolStripKeyboardHandlingService internal, so we need Reflection
+			Type keyboardType = asm.GetType("System.Windows.Forms.Design.ToolStripKeyboardHandlingService");
+			object keyboardService = formDesigner.Host.GetService(keyboardType);
+			if (keyboardService == null) {
+				LoggingService.Debug("no ToolStripKeyboardHandlingService found");
+				return false; // handle command normally
+			}
+			if (activeComponent is ToolStripItem) {
+				if (keyPressed == Keys.Up) {
+					keyboardType.InvokeMember("ProcessUpDown",
+					                          BindingFlags.Instance
+					                          | BindingFlags.Public
+					                          | BindingFlags.InvokeMethod,
+					                          null, keyboardService, new object[] { false });
+					return true; // command was handled specially
+				} else if (keyPressed == Keys.Down) {
+					keyboardType.InvokeMember("ProcessUpDown",
+					                          BindingFlags.Instance
+					                          | BindingFlags.Public
+					                          | BindingFlags.InvokeMethod,
+					                          null, keyboardService, new object[] { true });
+					return true; // command was handled specially
+				}
+			}
+			bool active = (bool)keyboardType.InvokeMember("TemplateNodeActive",
+			                                              BindingFlags.Instance
+			                                              | BindingFlags.NonPublic
+			                                              | BindingFlags.GetProperty,
+			                                              null, keyboardService, null);
+			if (active) {
+				return true; // command will handled specially by the text box, don't invoke the CommandID
+			}
+			return false; // invoke the CommandID
 		}
 		
 		class CommandWrapper
