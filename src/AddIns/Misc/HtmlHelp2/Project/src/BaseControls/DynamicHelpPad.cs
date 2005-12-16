@@ -444,10 +444,12 @@ namespace HtmlHelp2
 								if (!this.DoesLinkExist(contentSpan, topicName, topicUrl))
 								{
 									HtmlElement newLink = this.CreateNewLink(topicUrl, topicName);
+									HtmlElement br = this.CreateABreak();
+									
 									if (newLink != null)
 									{
 										contentSpan.AppendChild(newLink);
-										contentSpan.AppendChild(this.CreateABreak());
+										if (br != null) contentSpan.AppendChild(br);
 									}
 								}
 
@@ -456,8 +458,12 @@ namespace HtmlHelp2
 						}
 					}
 
-					axWebBrowser.Document.Body.InsertAdjacentElement(HtmlElementInsertionOrientation.BeforeEnd,
-					                                                 this.CreateABreak());
+					try
+					{
+						axWebBrowser.Document.Body.InsertAdjacentElement(HtmlElementInsertionOrientation.BeforeEnd,
+						                                                 this.CreateABreak());
+					}
+					catch {}
 				}
 
 				HtmlElement linkContent = null;
@@ -467,9 +473,13 @@ namespace HtmlHelp2
 				{
 					axWebBrowser.Document.Body.InsertAdjacentElement(HtmlElementInsertionOrientation.BeforeEnd,
 					                                                 htmlSection);
-					linkContent.AppendChild(this.CreateNewLink(topicUrl, topicName));
-					linkContent.AppendChild(this.CreateABreak());
-	
+
+					HtmlElement newLink = this.CreateNewLink(topicUrl, topicName);
+					HtmlElement br = this.CreateABreak();
+
+					if (newLink != null) linkContent.AppendChild(newLink);
+					if (br != null) linkContent.AppendChild(br);
+
 					this.internalIndex++;
 				}
 			}
