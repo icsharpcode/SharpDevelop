@@ -414,7 +414,9 @@ namespace ICSharpCode.SharpDevelop.Services
 		void DebuggingResumed(object sender, DebuggerEventArgs e)
 		{
 			isProcessRunningCache = true;
-			DebuggerService.RemoveCurrentLineMarker();
+			if (!debugger.Evaluating) {
+				DebuggerService.RemoveCurrentLineMarker();
+			}
 		}
 
 		public void JumpToCurrentLine()

@@ -15,6 +15,7 @@ namespace Debugger
 	public partial class NDebugger
 	{
 		List<Eval> pendingEvalsCollection = new List<Eval>();
+		bool evaluating = false;
 		
 		public event EventHandler<EvalEventArgs> EvalAdded;
 		public event EventHandler<EvalEventArgs> EvalCompleted;
@@ -47,7 +48,14 @@ namespace Debugger
 			}
 		}
 		
-		internal Eval GetEval(ICorDebugEval corEval) {
+		public bool Evaluating {
+			get {
+				return evaluating;
+			}
+		}
+		
+		internal Eval GetEval(ICorDebugEval corEval)
+		{
 			return pendingEvalsCollection.Find(delegate (Eval eval) {return eval.CorEval == corEval;});
 		}
 		
@@ -75,6 +83,7 @@ namespace Debugger
 			OnEvalCompleted(e);
 			
 			if (pendingEvalsCollection.Count == 0) {
+				evaluating = false;
 				OnAllEvelsCompleted(new DebuggerEventArgs(this));
 			}
 		}
@@ -102,6 +111,7 @@ namespace Debugger
 			
 			// TODO: Investigate other threads, are they alowed to run?
 			if (SetupNextEvaluation(CurrentThread)) {
+				evaluating = true;
 				this.Continue();
 				return true;
 			} else {
