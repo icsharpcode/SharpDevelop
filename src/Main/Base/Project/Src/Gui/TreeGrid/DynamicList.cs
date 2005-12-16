@@ -89,12 +89,30 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 		{
 			e.Item.HeightChanged += RowHeightChanged;
 			e.Item.ItemChanged   += RowItemChanged;
+			if (Visible && Parent != null)
+				e.Item.NotifyListVisibilityChange(this, true);
 		}
 		
 		void OnRowRemoved(object sender, CollectionItemEventArgs<DynamicListRow> e)
 		{
 			e.Item.HeightChanged -= RowHeightChanged;
 			e.Item.ItemChanged   -= RowItemChanged;
+			if (Visible)
+				e.Item.NotifyListVisibilityChange(this, false);
+		}
+		
+		bool oldVisible = false;
+		
+		protected override void OnVisibleChanged(EventArgs e)
+		{
+			base.OnVisibleChanged(e);
+			bool visible = Visible && Parent != null;
+			if (visible == oldVisible)
+				return;
+			oldVisible = visible;
+			foreach (DynamicListRow row in Rows) {
+				row.NotifyListVisibilityChange(this, visible);
+			}
 		}
 		
 		void ColumnMinimumWidthChanged(object sender, EventArgs e)

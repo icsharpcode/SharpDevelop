@@ -38,6 +38,31 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 			}
 		}
 		
+		public event EventHandler<DynamicListEventArgs> Shown;
+		public event EventHandler<DynamicListEventArgs> Hidden;
+		
+		protected virtual void OnShown(DynamicListEventArgs e)
+		{
+			if (Shown != null) {
+				Shown(this, e);
+			}
+		}
+		
+		protected virtual void OnHidden(DynamicListEventArgs e)
+		{
+			if (Hidden != null) {
+				Hidden(this, e);
+			}
+		}
+		
+		internal void NotifyListVisibilityChange(DynamicList list, bool visible)
+		{
+			if (visible)
+				OnShown(new DynamicListEventArgs(list));
+			else
+				OnHidden(new DynamicListEventArgs(list));
+		}
+		
 		/// <summary>
 		/// Fired when any item has changed.
 		/// </summary>
