@@ -44,16 +44,22 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			this.variable = variable;
 			
-			variable.ValueChanged += delegate {
-				Highlight = (Variable.Value.AsString != SubItems[1].Text);
-				Update();
+			variable.ValueChanged += Update;
+			
+			variable.ValueRemovedFromCollection += delegate {
+				variable.ValueChanged -= Update;
+				this.Remove();
 			};
 			
-			variable.ValueRemovedFromCollection += delegate { this.Remove(); };
-			
 			SubItems.Add("");
 			SubItems.Add("");
 			
+			Update();
+		}
+		
+		void Update(object sender, DebuggerEventArgs e)
+		{
+			Highlight = (Variable.Value.AsString != SubItems[1].Text);
 			Update();
 		}
 		

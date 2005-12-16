@@ -26,6 +26,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		
 		Variable variable;
 		Image image;
+		bool populated = false;
 		
 		public Variable Variable {
 			get {
@@ -45,21 +46,19 @@ namespace ICSharpCode.SharpDevelop.Services
 			if (variable == null) throw new ArgumentNullException("variable");
 			
 			this.variable = variable;
-			this.variable.ValueChanged += delegate { Update(); };
+			this.variable.ValueChanged += Update;
+			this.Hidden += delegate { this.variable.ValueChanged -= Update; };
 			
 			DebuggerGridControl.AddColumns(this.ChildColumns);
 			
 			this[1].Paint += OnIconPaint;
 			this[3].FinishLabelEdit += OnLabelEdited;
-			if (variable.Value is PrimitiveValue && variable.Value.ManagedType != typeof(string)) {
-				this[3].AllowLabelEdit = true;
-			}
 			
-			if (!variable.Value.MayHaveSubVariables) {
-				this.ShowPlus = false;
-			}
-			this.ShowMinusWhileExpanded = true;
-			
+			Update();
+		}
+		
+		void Update(object sender, DebuggerEventArgs e)
+		{
 			Update();
 		}
 		
@@ -69,6 +68,14 @@ namespace ICSharpCode.SharpDevelop.Services
 			this[1].Text = ""; // Icon
 			this[2].Text = variable.Name;
 			this[3].Text = variable.Value.AsString;
+			if (variable.Value is PrimitiveValue && variable.Value.ManagedType != typeof(string)) {
+				this[3].AllowLabelEdit = true;
+			}
+			
+			if (!variable.Value.MayHaveSubVariables) {
+				this.ShowPlus = false;
+			}
+			this.ShowMinusWhileExpanded = true;
 		}
 		
 		void OnIconPaint(object sender, ItemPaintEventArgs e)
@@ -94,6 +101,13 @@ namespace ICSharpCode.SharpDevelop.Services
 		/// Sets the data to be show in the next level.
 		/// </summary>
 		protected override void OnExpanding(DynamicListEventArgs e)
+		{
+			if (!populated) {
+				Populate();
+			}
+		}
+		
+		void Populate()
 		{
 			List<Variable> publicStatic = new List<Variable>();
 			List<Variable> publicInstance = new List<Variable>();
@@ -137,6 +151,8 @@ namespace ICSharpCode.SharpDevelop.Services
 			}
 			// Public Members
 			this.ChildRows.AddRange(RowsFromVariables(publicInstance));
+			
+			populated = true;
 		}
 		
 		IEnumerable<DynamicListRow> RowsFromVariables(IEnumerable<Variable> variables)

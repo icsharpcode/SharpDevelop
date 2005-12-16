@@ -239,7 +239,7 @@ namespace Debugger
 		
 		internal IEnumerable<Function> GetCallstackAt(uint firstChainIndex, uint firstFrameIndex)
 		{
-			if (process.IsRunning) yield break; // TODO: thow exception
+			process.AssertPaused();
 			
 			ICorDebugChainEnum corChainEnum;
 			corThread.EnumerateChains(out corChainEnum);
@@ -264,6 +264,9 @@ namespace Debugger
 				if (chainsFetched == 0) break; // We are done
 				
 				chainIndex--;
+				
+				CorDebugChainReason reason;
+				corChains[0].GetReason(out reason);
 				
 				int isManaged;
 				corChains[0].IsManaged(out isManaged);
