@@ -19,7 +19,7 @@
 	<Path name = "/SharpDevelop/Workbench/Pads">
 		<Pad id       = "MbUnitPad"
 		     category = "Tools"
-		     title    = "Unit Tests"
+		     title    = "${res:ICSharpCode.NUnitPad.NUnitPadContent.PadName}"
 		     icon     = "PadIcons.MbUnitTest"
 		     shortcut = "Control|Alt|T"
 		     class    = "ICSharpCode.MbUnitPad.MbUnitPadContent"/>

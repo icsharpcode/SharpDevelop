@@ -54,6 +54,8 @@ namespace ICSharpCode.AddInManager
 			installButton.Text = ResourceService.GetString("AddInManager.InstallButton");
 			uninstallButton.Text = ResourceService.GetString("AddInManager.ActionUninstall");
 			closeButton.Text = ResourceService.GetString("Global.CloseButtonText");
+			showPreinstalledAddInsCheckBox.Text = ResourceService.GetString("AddInManager.ShowPreinstalledAddIns");
+			this.Text = ResourceService.GetString("AddInManager.Title");
 			CreateAddInList();
 		}
 		

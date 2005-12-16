@@ -16,7 +16,7 @@
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
 		<MenuItem id = "ShowAddInManager"
 		          insertafter = "Separator1" insertbefore = "Separator2"
-		          label = "AddIn Manager"
+		          label = "${res:AddInManager.Title}"
 		          class = "ICSharpCode.AddInManager.ShowCommand"/>
 	</Path>
 	
