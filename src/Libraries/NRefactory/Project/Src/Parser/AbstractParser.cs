@@ -59,7 +59,6 @@ namespace ICSharpCode.NRefactory.Parser
 			this.errors = lexer.Errors;
 			this.lexer  = lexer;
 			errors.SynErr = new ErrorCodeProc(SynErr);
-			lexer.NextToken();			
 		}
 		
 		public abstract void Parse();

@@ -27,6 +27,8 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 			int nextChar;
 			while ((nextChar = ReaderRead()) != -1) {
 				char ch = (char)nextChar;
+				if (ch == ' ' || ch == '\t')
+					continue;
 				
 				if (Char.IsWhiteSpace(ch)) {
 					HandleLineEnd(ch);
@@ -112,17 +114,17 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		string ReadIdent(char ch)
 		{
+			int peek;
 			int curPos     = 1;
 			identBuffer[0] = ch;
-			int peek;
-			while ((peek = ReaderPeek()) != -1 && (Char.IsLetterOrDigit(ch = (char)peek) || ch == '_')) {
+			while (IsIdentifierPart(peek = ReaderPeek())) {
 				ReaderRead();
 				
 				if (curPos < MAX_IDENTIFIER_LENGTH) {
-					identBuffer[curPos++] = ch;
+					identBuffer[curPos++] = (char)peek;
 				} else {
 					errors.Error(Line, Col, String.Format("Identifier too long"));
-					while ((peek = ReaderPeek()) != -1 && (Char.IsLetterOrDigit(ch = (char)peek) || ch == '_')) {
+					while (IsIdentifierPart(ReaderPeek())) {
 						ReaderRead();
 					}
 					break;
@@ -160,7 +162,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					ReaderRead(); // skip 'x'
 					sb.Length = 0; // Remove '0' from 0x prefix from the stringvalue
 					while (IsHex((char)ReaderPeek())) {
-						sb.Append(Char.ToUpper((char)ReaderRead(), CultureInfo.InvariantCulture));
+						sb.Append((char)ReaderRead());
 					}
 					if (sb.Length == 0) {
 						sb.Append('0'); // dummy value to prevent exception
@@ -176,7 +178,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					peek = (char)ReaderPeek();
 				}
 				
-				Token nextToken = null; // if we accedently read a 'dot'
+				Token nextToken = null; // if we accidently read a 'dot'
 				if (peek == '.') { // read floating point number
 					ReaderRead();
 					peek = (char)ReaderPeek();
@@ -258,7 +260,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				}
 				if (isdecimal) {
 					try {
-						return new Token(Tokens.Literal, x, y, stringValue, Decimal.Parse(digit, CultureInfo.InvariantCulture));
+						return new Token(Tokens.Literal, x, y, stringValue, Decimal.Parse(digit, NumberStyles.Any, CultureInfo.InvariantCulture));
 					} catch (Exception) {
 						errors.Error(y, x, String.Format("Can't parse decimal {0}", digit));
 						return new Token(Tokens.Literal, x, y, stringValue, 0m);
@@ -702,8 +704,11 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		string ReadCommentToEOL()
 		{
+			if (specialCommentHash == null) {
+				return ReadToEOL();
+			}
 			sb.Length = 0;
-			StringBuilder curWord = specialCommentHash != null ? new StringBuilder() : null;
+			StringBuilder curWord = new StringBuilder();
 			
 			int nextChar;
 			while ((nextChar = ReaderRead()) != -1) {
@@ -714,19 +719,17 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 				}
 				
 				sb.Append(ch);
-				if (specialCommentHash != null) {
-					if (Char.IsLetter(ch)) {
-						curWord.Append(ch);
-					} else {
-						string tag = curWord.ToString();
-						curWord.Length = 0;
-						if (specialCommentHash.ContainsKey(tag)) {
-							Point p = new Point(Col, Line);
-							string comment = ch + ReadToEOL();
-							tagComments.Add(new TagComment(tag, comment, p, new Point(Col, Line)));
-							sb.Append(comment);
-							break;
-						}
+				if (IsIdentifierPart(nextChar)) {
+					curWord.Append(ch);
+				} else {
+					string tag = curWord.ToString();
+					curWord.Length = 0;
+					if (specialCommentHash.ContainsKey(tag)) {
+						Point p = new Point(Col, Line);
+						string comment = ch + ReadToEOL();
+						tagComments.Add(new TagComment(tag, comment, p, new Point(Col, Line)));
+						sb.Append(comment);
+						break;
 					}
 				}
 			}
@@ -735,32 +738,46 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		
 		void ReadSingleLineComment(CommentType commentType)
 		{
-			specialTracker.StartComment(commentType, new Point(Col, Line));
-			specialTracker.AddString(ReadCommentToEOL());
-			specialTracker.FinishComment(new Point(Col, Line));
+			if (skipAllComments) {
+				SkipToEOL();
+			} else {
+				specialTracker.StartComment(commentType, new Point(Col, Line));
+				specialTracker.AddString(ReadCommentToEOL());
+				specialTracker.FinishComment(new Point(Col, Line));
+			}
 		}
 		
 		void ReadMultiLineComment()
 		{
-			specialTracker.StartComment(CommentType.Block, new Point(Col, Line));
 			int nextChar;
-			while ((nextChar = ReaderRead()) != -1) {
-				char ch = (char)nextChar;
-				
-				if (HandleLineEnd(ch)) {
-					specialTracker.AddChar('\n');
-					continue;
+			if (skipAllComments) {
+				while ((nextChar = ReaderRead()) != -1) {
+					char ch = (char)nextChar;
+					if (ch == '*' && ReaderPeek() == '/') {
+						ReaderRead();
+						return;
+					}
 				}
-				
-				// End of multiline comment reached ?
-				if (ch == '*' && ReaderPeek() == '/') {
-					ReaderRead();
-					specialTracker.FinishComment(new Point(Col, Line));
-					return;
+			} else {
+				specialTracker.StartComment(CommentType.Block, new Point(Col, Line));
+				while ((nextChar = ReaderRead()) != -1) {
+					char ch = (char)nextChar;
+					
+					if (HandleLineEnd(ch)) {
+						specialTracker.AddChar('\n');
+						continue;
+					}
+					
+					// End of multiline comment reached ?
+					if (ch == '*' && ReaderPeek() == '/') {
+						ReaderRead();
+						specialTracker.FinishComment(new Point(Col, Line));
+						return;
+					}
+					specialTracker.AddChar(ch);
 				}
-				specialTracker.AddChar(ch);
+				specialTracker.FinishComment(new Point(Col, Line));
 			}
-			specialTracker.FinishComment(new Point(Col, Line));
 			// Reached EOF before end of multiline comment.
 			errors.Error(Line, Col, String.Format("Reached EOF before the end of a multiline comment"));
 		}
@@ -774,16 +791,58 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		public override void SkipCurrentBlock()
 		{
 			int braceCount = 0;
-			Token t;
-			while ((t = LookAhead).kind != Tokens.EOF) {
-				if (t.kind == Tokens.OpenCurlyBrace) {
+			while (curToken != null) {
+				if (curToken.kind == Tokens.OpenCurlyBrace) {
 					++braceCount;
-				} else if (t.kind == Tokens.CloseCurlyBrace) {
+				} else if (curToken.kind == Tokens.CloseCurlyBrace) {
 					if (--braceCount < 0)
 						return;
 				}
-				NextToken();
+				lastToken = curToken;
+				curToken = curToken.next;
 			}
+			int nextChar;
+			while ((nextChar = ReaderRead()) != -1) {
+				switch (nextChar) {
+					case '{':
+						braceCount++;
+						break;
+					case '}':
+						if (--braceCount < 0) {
+							curToken = new Token(Tokens.CloseCurlyBrace, Col, Line);
+							return;
+						}
+						break;
+					case '/':
+						int peek = ReaderPeek();
+						if (peek == '/' || peek == '*') {
+							ReadComment();
+						}
+						break;
+					case '#':
+						SkipToEOL();
+						break;
+					case '"':
+						ReadString();
+						break;
+					case '\'':
+						ReadChar();
+						break;
+					case '\r':
+					case '\n':
+						HandleLineEnd((char)nextChar);
+						break;
+					case '@':
+						int next = ReaderRead();
+						if (next == -1) {
+							errors.Error(Line, Col, String.Format("EOF after @"));
+						} else if (next == '"') {
+							ReadVerbatimString();
+						}
+						break;
+				}
+			}
+			curToken = new Token(Tokens.EOF, Col, Line);
 		}
 	}
 }

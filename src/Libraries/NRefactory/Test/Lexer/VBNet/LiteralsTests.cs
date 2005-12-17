@@ -28,6 +28,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 			Token t = lexer.NextToken();
 			Assert.AreEqual(Tokens.EOL, lexer.NextToken().kind, "Tokens.EOL");
 			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind, "Tokens.EOF");
+			Assert.AreEqual("", lexer.Errors.ErrorOutput);
 			return t;
 		}
 		

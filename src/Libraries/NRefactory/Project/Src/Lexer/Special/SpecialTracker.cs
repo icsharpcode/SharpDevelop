@@ -57,7 +57,7 @@ namespace ICSharpCode.NRefactory.Parser
 		{
 			this.currentCommentType = commentType;
 			this.startPosition      = startPosition;
-			this.sb.Length          = 0; 
+			this.sb.Length          = 0;
 		}
 		
 		public void AddChar(char c)

@@ -27,6 +27,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			ILexer lexer = GenerateLexer(new StringReader(text));
 			Token t = lexer.NextToken();
 			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind, "Tokens.EOF");
+			Assert.AreEqual("", lexer.Errors.ErrorOutput);
 			return t;
 		}
 		
@@ -34,6 +35,7 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		{
 			Token t = GetSingleToken(text);
 			Assert.AreEqual(Tokens.Literal, t.kind, "Tokens.Literal");
+			Assert.AreEqual(text, t.val, "value");
 			Assert.IsNotNull(t.literalValue, "literalValue is null");
 			Assert.AreEqual(val, t.literalValue, "literalValue");
 		}
@@ -90,12 +92,27 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 		public void TestDouble()
 		{
 			CheckToken("1.0", 1.0);
+			CheckToken("1.1", 1.1);
+			CheckToken("1.1e-2", 1.1e-2);
 		}
 		
 		[Test]
 		public void TestFloat()
 		{
+			CheckToken("1f", 1f);
 			CheckToken("1.0f", 1.0f);
+			CheckToken("1.1f", 1.1f);
+			CheckToken("1.1e-2f", 1.1e-2f);
+		}
+		
+		[Test]
+		public void TestDecimal()
+		{
+			CheckToken("1m", 1m);
+			CheckToken("1.0m", 1.0m);
+			CheckToken("1.1m", 1.1m);
+			CheckToken("1.1e-2m", 1.1e-2m);
+			CheckToken("2.0e-5m", 2.0e-5m);
 		}
 	}
 }

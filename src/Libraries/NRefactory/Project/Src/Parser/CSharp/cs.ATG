@@ -44,6 +44,7 @@ public void Error(string s)
 
 public override Expression ParseExpression()
 {
+	lexer.NextToken();
 	Expression expr;
 	Expr(out expr);
 	return expr;
@@ -648,7 +649,8 @@ PRODUCTIONS
 
 /*--- compilation unit: */
 CS
-(. compilationUnit = new CompilationUnit(); .)
+(. lexer.NextToken(); /* get the first token */
+   compilationUnit = new CompilationUnit(); .)
 =
 	{ UsingDirective }
 	{ IF (IsGlobalAttrTarget()) GlobalAttributeSection }

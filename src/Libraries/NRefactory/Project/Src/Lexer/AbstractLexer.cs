@@ -37,6 +37,17 @@ namespace ICSharpCode.NRefactory.Parser
 		// used for the original value of strings (with escape sequences).
 		protected StringBuilder originalValue = new StringBuilder();
 		
+		protected bool skipAllComments = false;
+		
+		public bool SkipAllComments {
+			get {
+				return skipAllComments;
+			}
+			set {
+				skipAllComments = value;
+			}
+		}
+		
 		protected int Line {
 			get {
 				return line;
@@ -170,7 +181,7 @@ namespace ICSharpCode.NRefactory.Parser
 			if (curToken == null) {
 				curToken = Next();
 				specialTracker.InformToken(curToken.kind);
-//				Console.WriteLine(ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString(curToken.kind) + " -- " + curToken.val + "(" + curToken.kind + ")");
+				//Console.WriteLine(ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString(curToken.kind) + " -- " + curToken.val + "(" + curToken.kind + ")");
 				return curToken;
 			}
 			
@@ -184,7 +195,7 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 			
 			curToken  = curToken.next;
-//			Console.WriteLine(ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString(curToken.kind) + " -- " + curToken.val + "(" + curToken.kind + ")");
+			//Console.WriteLine(ICSharpCode.NRefactory.Parser.CSharp.Tokens.GetTokenString(curToken.kind) + " -- " + curToken.val + "(" + curToken.kind + ")");
 			return curToken;
 		}
 		
@@ -201,9 +212,17 @@ namespace ICSharpCode.NRefactory.Parser
 			throw new NotSupportedException();
 		}
 		
-		protected bool IsIdentifierPart(char ch)
+		protected bool IsIdentifierPart(int ch)
 		{
-			return Char.IsLetterOrDigit(ch) || ch == '_';
+			// char.IsLetter is slow, so optimize for raw ASCII
+			if (ch < 48)  return false; // 48 = '0'
+			if (ch <= 57) return true;  // 57 = '9'
+			if (ch < 65)  return false; // 65 = 'A'
+			if (ch <= 90) return true;  // 90 = 'Z'
+			if (ch == 95) return true;  // 95 = '_'
+			if (ch < 97)  return false; // 97 = 'a'
+			if (ch <= 122) return true; // 97 = 'z'
+			return char.IsLetter((char)ch); // accept unicode letters
 		}
 		
 		protected bool IsHex(char digit)
@@ -250,6 +269,16 @@ namespace ICSharpCode.NRefactory.Parser
 			return false;
 		}
 		
+		protected void SkipToEOL()
+		{
+			int nextChar;
+			while ((nextChar = reader.Read()) != -1) {
+				if (HandleLineEnd((char)nextChar)) {
+					break;
+				}
+			}
+		}
+		
 		protected string ReadToEOL()
 		{
 			sb.Length = 0;
@@ -259,7 +288,7 @@ namespace ICSharpCode.NRefactory.Parser
 				
 				// Return read string, if EOL is reached
 				if (HandleLineEnd(ch)) {
-					return sb.ToString();;
+					return sb.ToString();
 				}
 				
 				sb.Append(ch);

@@ -43,6 +43,15 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		/// <summary>
+		/// Gets/Sets if the lexer should skip adding comments to the special tracker. Set this
+		/// property to true to improve lexing performance.
+		/// </summary>
+		bool SkipAllComments {
+			get;
+			set;
+		}
+		
+		/// <summary>
 		/// Returns the comments that had been read and containing tag key words.
 		/// </summary>
 		List<TagComment> TagComments {
