@@ -133,7 +133,7 @@ namespace ICSharpCode.TextEditor
 			return spaceSize;
 		}
 		
-		public void DrawLine(Graphics g, ref float xPos, float yPos)
+		public void DrawLine(Graphics g, ref float xPos, float xOffset, float yPos)
 		{
 			SizeF spaceSize = GetSpaceSize(g);
 			foreach (SimpleTextWord word in words) {
@@ -149,14 +149,36 @@ namespace ICSharpCode.TextEditor
 					case TextWordType.Word:
 						xPos += DrawDocumentWord(g,
 						                         word.Word,
-						                         new PointF(xPos, yPos),
+						                         new PointF(xPos + xOffset, yPos),
 						                         word.Bold ? boldMonospacedFont : monospacedFont,
 						                         word.Color
 						                        );
-
 						break;
 				}
 			}
+		}
+		
+		public float MeasureWidth(Graphics g, float xPos)
+		{
+			SizeF spaceSize = GetSpaceSize(g);
+			foreach (SimpleTextWord word in words) {
+				switch (word.Type) {
+					case TextWordType.Space:
+						xPos += spaceSize.Width;
+						break;
+					case TextWordType.Tab:
+						float tabWidth = spaceSize.Width * 4;
+						xPos += tabWidth;
+						xPos = (int)((xPos + 2) / tabWidth) * tabWidth;
+						break;
+					case TextWordType.Word:
+						if (word.Word != null && word.Word.Length > 0) {
+							xPos += g.MeasureString(word.Word, word.Bold ? boldMonospacedFont : monospacedFont, 32768, sf).Width;
+						}
+						break;
+				}
+			}
+			return xPos;
 		}
 	}
 }

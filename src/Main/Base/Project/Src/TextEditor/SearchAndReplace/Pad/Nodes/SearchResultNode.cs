@@ -94,11 +94,13 @@ namespace SearchAndReplace
 			if (specialText != null) {
 				DrawText(g, specialText, Brushes.Black, Font, ref x, e.Bounds.Y);
 			} else {
-				drawableLine.DrawLine(g, ref x, e.Bounds.Y);
+				x -= e.Bounds.X;
+				drawableLine.DrawLine(g, ref x, e.Bounds.X, e.Bounds.Y);
 			}
 			if (ShowFileName) {
 				float tabWidth = drawableLine.GetSpaceSize(g).Width * 6;
 				x = (int)((int)((x + 2 + tabWidth) / tabWidth) * tabWidth);
+				x += e.Bounds.X;
 				DrawText(g,
 				         FileNameText,
 				         Brushes.Gray,
