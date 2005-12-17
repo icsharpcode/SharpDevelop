@@ -295,9 +295,6 @@ namespace ICSharpCode.TextEditor
 			}
 			
 			if (shouldUpdate) {
-				textArea.BeginUpdate();
-				textArea.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-				textArea.EndUpdate();
 				textArea.Document.FoldingManager.NotifyFoldingsChanged(EventArgs.Empty);
 			}
 			

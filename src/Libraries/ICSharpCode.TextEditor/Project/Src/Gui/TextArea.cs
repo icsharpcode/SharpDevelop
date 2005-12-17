@@ -457,6 +457,7 @@ namespace ICSharpCode.TextEditor
 		}
 		void DocumentFoldingsChanged(object sender, EventArgs e)
 		{
+			Invalidate();
 			this.motherTextAreaControl.AdjustScrollBars(null, null);
 		}
 		

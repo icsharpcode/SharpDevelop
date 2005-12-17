@@ -229,8 +229,7 @@ namespace ICSharpCode.TextEditor
 			foreach (FoldMarker fm in foldMarkers) {
 				fm.IsFolded = !fm.IsFolded;
 			}
-			textArea.MotherTextAreaControl.AdjustScrollBars(null, null);
-			textArea.Refresh();
+			textArea.Document.FoldingManager.NotifyFoldingsChanged(EventArgs.Empty);
 		}
 		
 		public override void HandleMouseLeave(EventArgs e)

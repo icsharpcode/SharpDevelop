@@ -22,7 +22,6 @@ namespace ICSharpCode.TextEditor.Actions
 			foreach (FoldMarker fm in foldMarkers) {
 				fm.IsFolded = !fm.IsFolded;
 			}
-			textArea.Refresh();
 			textArea.Document.FoldingManager.NotifyFoldingsChanged(EventArgs.Empty);
 		}
 	}
@@ -41,7 +40,6 @@ namespace ICSharpCode.TextEditor.Actions
 			foreach (FoldMarker fm in  textArea.Document.FoldingManager.FoldMarker) {
 				fm.IsFolded = doFold;
 			}
-			textArea.Refresh();
 			textArea.Document.FoldingManager.NotifyFoldingsChanged(EventArgs.Empty);
 		}
 	}
@@ -53,7 +51,6 @@ namespace ICSharpCode.TextEditor.Actions
 			foreach (FoldMarker fm in  textArea.Document.FoldingManager.FoldMarker) {
 				fm.IsFolded = fm.FoldType == FoldType.MemberBody || fm.FoldType == FoldType.Region;
 			}
-			textArea.Refresh();
 			textArea.Document.FoldingManager.NotifyFoldingsChanged(EventArgs.Empty);
 		}
 	}
