@@ -93,7 +93,7 @@ namespace Debugger
 		
 		public Variable this[string variableName] {
 			get {
-				foreach(Variable v in GetSubVariables(delegate{return this;})) {
+				foreach(Variable v in GetSubVariables(delegate{ return this.IsExpired?new UnavailableValue(debugger, "Value has expired"):this;})) {
 					if (v.Name == variableName) return v;
 				}
 				throw new DebuggerException("Subvariable " + variableName + " does not exist");

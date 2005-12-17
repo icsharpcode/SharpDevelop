@@ -120,7 +120,7 @@ namespace Debugger
 				if (index != -1) {
 					string rootVariable = variableName.Substring(0, index);
 					string subVariable = variableName.Substring(index + 1);
-					return this[rootVariable].Value[subVariable];
+					return this[rootVariable].SubVariables[subVariable];
 				} else {
 					foreach (Variable v in InnerList) {
 						if (v.Name == variableName) {
