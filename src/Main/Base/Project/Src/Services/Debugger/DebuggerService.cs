@@ -238,8 +238,8 @@ namespace ICSharpCode.Core
 			if (e.Content.Control is TextEditor.TextEditorControl) {
 				TextArea textArea = ((TextEditor.TextEditorControl)e.Content.Control).ActiveTextAreaControl.TextArea;
 				
-				textArea.IconBarMargin.MouseDown += new MarginMouseEventHandler(IconBarMouseDown);
-				textArea.MouseMove               += new MouseEventHandler(TextAreaMouseMove);
+				textArea.IconBarMargin.MouseDown += IconBarMouseDown;
+				textArea.ToolTipRequest          += TextAreaToolTipRequest;
 			}
 		}
 		
@@ -248,8 +248,8 @@ namespace ICSharpCode.Core
 			if (e.Content.Control is TextEditor.TextEditorControl) {
 				TextArea textArea = ((TextEditor.TextEditorControl)e.Content.Control).ActiveTextAreaControl.TextArea;
 				
-				textArea.IconBarMargin.MouseDown -= new MarginMouseEventHandler(IconBarMouseDown);
-				textArea.MouseMove               -= new MouseEventHandler(TextAreaMouseMove);
+				textArea.IconBarMargin.MouseDown -= IconBarMouseDown;
+				textArea.ToolTipRequest          -= TextAreaToolTipRequest;
 			}
 		}
 		
@@ -277,18 +277,16 @@ namespace ICSharpCode.Core
 		}
 		
 		#region Tool tips
-		static string oldExpression, oldToolTip;
 		static DebuggerGridControl oldToolTipControl;
-		static int oldLine;
 		
 		/// <summary>
 		/// This function shows variable values as tooltips
 		/// </summary>
-		static void TextAreaMouseMove(object sender, MouseEventArgs args)
+		static void TextAreaToolTipRequest(object sender, ToolTipRequestEventArgs e)
 		{
 			try {
 				TextArea textArea = (TextArea)sender;
-				if (textArea.ToolTipVisible) return;
+				if (e.ToolTipShown) return;
 				if (oldToolTipControl != null && !oldToolTipControl.AllowClose) return;
 				if (!CodeCompletionOptions.TooltipsEnabled) return;
 				
@@ -297,64 +295,47 @@ namespace ICSharpCode.Core
 					if (!currentDebugger.IsDebugging) return;
 				}
 				
-				Point mousepos = textArea.PointToClient(Control.MousePosition);
-				Rectangle viewRect = textArea.TextView.DrawingPosition;
-				if (viewRect.Contains(mousepos)) {
-					Point logicPos = textArea.TextView.GetLogicalPosition(mousepos.X - viewRect.Left,
-					                                                      mousepos.Y - viewRect.Top);
-					if (logicPos.Y >= 0 && logicPos.Y < textArea.Document.TotalNumberOfLines) {
-						IDocument doc = textArea.Document;
-						IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textArea.MotherTextEditorControl.FileName);
-						if (expressionFinder == null)
-							return;
-						LineSegment seg = doc.GetLineSegment(logicPos.Y);
-						if (logicPos.X > seg.Length - 1)
-							return;
-						string textContent = doc.TextContent;
-						ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, seg.Offset + logicPos.X);
-						string expression = expressionResult.Expression;
-						if (expression != null && expression.Length > 0) {
-							if (expression == oldExpression && oldLine == logicPos.Y) {
-								// same expression in same line -> reuse old tooltip
-								if (oldToolTip != null) {
-									textArea.SetToolTip(oldToolTip, oldLine + 1);
-								}
-								// SetToolTip must be called in every mousemove event,
-								// otherwise textArea will close the tooltip.
-							} else {
-								// Look if it is variable
-								ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, logicPos.X + 1, textArea.MotherTextEditorControl.FileName, textContent);
-								bool debuggerCanShowValue;
-								string toolTipText = GetText(result, expression, out debuggerCanShowValue);
-								DebuggerGridControl toolTipControl = null;
-								if (toolTipText != null) {
-									if (Control.ModifierKeys == Keys.Control) {
-										toolTipText = "expr: " + expressionResult.ToString() + "\n" + toolTipText;
-									} else if (debuggerCanShowValue && currentDebugger != null) {
-										toolTipControl = currentDebugger.GetTooltipControl(expressionResult.ToString().Replace("<","").Replace(">",""));
-										toolTipText = null;
-									}
-								}
-								if (toolTipText != null) {
-									textArea.SetToolTip(toolTipText, logicPos.Y + 1);
-								}
-								if (oldToolTipControl != null) {
-									Form frm = oldToolTipControl.FindForm();
-									if (frm != null) frm.Close();
-								}
-								if (toolTipControl != null) {
-									toolTipControl.ShowForm(textArea, logicPos);
-								}
-								oldToolTip = toolTipText;
-								oldToolTipControl = toolTipControl;
+				if (e.InDocument) {
+					Point logicPos = e.LogicalPosition;
+					IDocument doc = textArea.Document;
+					IExpressionFinder expressionFinder = ParserService.GetExpressionFinder(textArea.MotherTextEditorControl.FileName);
+					if (expressionFinder == null)
+						return;
+					LineSegment seg = doc.GetLineSegment(logicPos.Y);
+					if (logicPos.X > seg.Length - 1)
+						return;
+					string textContent = doc.TextContent;
+					ExpressionResult expressionResult = expressionFinder.FindFullExpression(textContent, seg.Offset + logicPos.X);
+					string expression = expressionResult.Expression;
+					if (expression != null && expression.Length > 0) {
+						// Look if it is variable
+						ResolveResult result = ParserService.Resolve(expressionResult, logicPos.Y + 1, logicPos.X + 1, textArea.MotherTextEditorControl.FileName, textContent);
+						bool debuggerCanShowValue;
+						string toolTipText = GetText(result, expression, out debuggerCanShowValue);
+						DebuggerGridControl toolTipControl = null;
+						if (toolTipText != null) {
+							if (Control.ModifierKeys == Keys.Control) {
+								toolTipText = "expr: " + expressionResult.ToString() + "\n" + toolTipText;
+							} else if (debuggerCanShowValue && currentDebugger != null) {
+								toolTipControl = currentDebugger.GetTooltipControl(expressionResult.Expression);
+								toolTipText = null;
 							}
 						}
-						oldLine = logicPos.Y;
-						oldExpression = expression;
+						if (toolTipText != null) {
+							e.ShowToolTip(toolTipText);
+						}
+						if (oldToolTipControl != null) {
+							Form frm = oldToolTipControl.FindForm();
+							if (frm != null) frm.Close();
+						}
+						if (toolTipControl != null) {
+							toolTipControl.ShowForm(textArea, logicPos);
+						}
+						oldToolTipControl = toolTipControl;
 					}
 				}
-			} catch (Exception e) {
-				ICSharpCode.Core.MessageService.ShowError(e);
+			} catch (Exception ex) {
+				ICSharpCode.Core.MessageService.ShowError(ex);
 			}
 		}
 		

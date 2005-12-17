@@ -296,11 +296,14 @@ namespace ICSharpCode.TextEditor
 				lastMouseInMargin.HandleMouseLeave(EventArgs.Empty);
 				lastMouseInMargin = null;
 			}
+			CloseToolTip();
 		}
 		
 		protected override void OnMouseDown(System.Windows.Forms.MouseEventArgs e)
 		{
 			base.OnMouseDown(e);
+			
+			CloseToolTip();
 			
 			foreach (AbstractMargin margin in leftMargins) {
 				if (margin.DrawingPosition.Contains(e.X, e.Y)) {
@@ -314,23 +317,11 @@ namespace ICSharpCode.TextEditor
 		// tooltips of text areas from inactive tabs floating around.
 		static DeclarationViewWindow toolTip;
 		static string oldToolTip;
-		bool toolTipSet;
 		
-		public bool ToolTipVisible {
-			get {
-				return toolTipSet;
-			}
-		}
-		
-		public void SetToolTip(string text)
+		void SetToolTip(string text, int lineNumber)
 		{
-			SetToolTip(text, -1);
-		}
-		
-		public void SetToolTip(string text, int lineNumber)
-		{
-			if (toolTip == null || toolTip.IsDisposed) toolTip = new DeclarationViewWindow(this.FindForm());
-			toolTipSet = (text != null);
+			if (toolTip == null || toolTip.IsDisposed)
+				toolTip = new DeclarationViewWindow(this.FindForm());
 			if (oldToolTip == text)
 				return;
 			if (text == null) {
@@ -351,12 +342,79 @@ namespace ICSharpCode.TextEditor
 			oldToolTip = text;
 		}
 		
-		protected override void OnMouseMove(System.Windows.Forms.MouseEventArgs e)
+		public event ToolTipRequestEventHandler ToolTipRequest;
+		
+		protected virtual void OnToolTipRequest(ToolTipRequestEventArgs e)
 		{
-			toolTipSet = false;
+			if (ToolTipRequest != null) {
+				ToolTipRequest(this, e);
+			}
+		}
+		
+		bool toolTipActive;
+		/// <summary>
+		/// Rectangle in text area that caused the current tool tip.
+		/// Prevents tooltip from re-showing when it was closed because of a click or keyboard
+		/// input and the mouse was not used.
+		/// </summary>
+		Rectangle toolTipRectangle;
+		
+		void CloseToolTip()
+		{
+			if (toolTipActive) {
+				//Console.WriteLine("Closing tooltip");
+				toolTipActive = false;
+				SetToolTip(null, -1);
+			}
+			ResetMouseEventArgs();
+		}
+		
+		protected override void OnMouseHover(EventArgs e)
+		{
+			base.OnMouseHover(e);
+			//Console.WriteLine("Hover raised at " + PointToClient(Control.MousePosition));
+			if (MouseButtons == MouseButtons.None) {
+				RequestToolTip(PointToClient(Control.MousePosition));
+			} else {
+				CloseToolTip();
+			}
+		}
+		
+		protected void RequestToolTip(Point mousePos)
+		{
+			if (toolTipRectangle.Contains(mousePos)) {
+				if (!toolTipActive)
+					ResetMouseEventArgs();
+				return;
+			}
+			
+			//Console.WriteLine("Request tooltip for " + mousePos);
+			
+			toolTipRectangle = new Rectangle(mousePos.X - 4, mousePos.Y - 4, 8, 8);
+			
+			Point logicPos = textView.GetLogicalPosition(mousePos.X - textView.DrawingPosition.Left,
+			                                             mousePos.Y - textView.DrawingPosition.Top);
+			bool inDocument = textView.DrawingPosition.Contains(mousePos)
+				&& logicPos.Y >= 0 && logicPos.Y < Document.TotalNumberOfLines;
+			ToolTipRequestEventArgs args = new ToolTipRequestEventArgs(mousePos, logicPos, inDocument);
+			OnToolTipRequest(args);
+			if (args.ToolTipShown) {
+				//Console.WriteLine("Set tooltip to " + args.toolTipText);
+				toolTipActive = true;
+				SetToolTip(args.toolTipText, inDocument ? logicPos.Y + 1 : -1);
+			} else {
+				CloseToolTip();
+			}
+		}
+		
+		protected override void OnMouseMove(MouseEventArgs e)
+		{
 			base.OnMouseMove(e);
-			if (!toolTipSet)
-				SetToolTip(null);
+			if (!toolTipRectangle.Contains(e.Location)) {
+				toolTipRectangle = Rectangle.Empty;
+				if (toolTipActive)
+					RequestToolTip(e.Location);
+			}
 			foreach (AbstractMargin margin in leftMargins) {
 				if (margin.DrawingPosition.Contains(e.X, e.Y)) {
 					this.Cursor = margin.Cursor;
@@ -500,7 +558,7 @@ namespace ICSharpCode.TextEditor
 				HiddenMouseCursor = true;
 				Cursor.Hide();
 			}
-			SetToolTip(null);
+			CloseToolTip();
 			
 			motherTextEditorControl.BeginUpdate();
 			// INSERT char

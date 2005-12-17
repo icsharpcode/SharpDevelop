@@ -53,6 +53,45 @@ namespace ICSharpCode.TextEditor
 			textArea.MouseLeave  += new EventHandler(OnMouseLeave);
 			textArea.MouseUp     += new MouseEventHandler(OnMouseUp);
 			textArea.LostFocus   += new EventHandler(TextAreaLostFocus);
+			textArea.ToolTipRequest += new ToolTipRequestEventHandler(OnToolTipRequest);
+		}
+		
+		void OnToolTipRequest(object sender, ToolTipRequestEventArgs e)
+		{
+			if (e.ToolTipShown)
+				return;
+			Point mousepos = e.MousePosition;
+			FoldMarker marker = textArea.TextView.GetFoldMarkerFromPosition(mousepos.X - textArea.TextView.DrawingPosition.X,
+			                                                                mousepos.Y - textArea.TextView.DrawingPosition.Y);
+			if (marker != null && marker.IsFolded) {
+				StringBuilder sb = new StringBuilder(marker.InnerText);
+				
+				// max 10 lines
+				int endLines = 0;
+				for (int i = 0; i < sb.Length; ++i) {
+					if (sb[i] == '\n') {
+						++endLines;
+						if (endLines >= 10) {
+							sb.Remove(i + 1, sb.Length - i - 1);
+							sb.Append(Environment.NewLine);
+							sb.Append("...");
+							break;
+							
+						}
+					}
+				}
+				sb.Replace("\t", "    ");
+				e.ShowToolTip(sb.ToString());
+				return;
+			}
+			
+			List<TextMarker> markers = textArea.Document.MarkerStrategy.GetMarkers(e.LogicalPosition);
+			foreach (TextMarker tm in markers) {
+				if (tm.ToolTip != null) {
+					e.ShowToolTip(tm.ToolTip.Replace("\t", "    "));
+					return;
+				}
+			}
 		}
 		
 		void ShowHiddenCursor()
@@ -126,41 +165,6 @@ namespace ICSharpCode.TextEditor
 				}
 				
 				return;
-			}
-			if (e.Button == MouseButtons.None && !textArea.ToolTipVisible) {
-				FoldMarker marker = textArea.TextView.GetFoldMarkerFromPosition(mousepos.X - textArea.TextView.DrawingPosition.X,
-				                                                                mousepos.Y - textArea.TextView.DrawingPosition.Y);
-				if (marker != null && marker.IsFolded) {
-					StringBuilder sb = new StringBuilder(marker.InnerText);
-					
-					// max 10 lines
-					int endLines = 0;
-					for (int i = 0; i < sb.Length; ++i) {
-						if (sb[i] == '\n') {
-							++endLines;
-							if (endLines >= 10) {
-								sb.Remove(i + 1, sb.Length - i - 1);
-								sb.Append(Environment.NewLine);
-								sb.Append("...");
-								break;
-								
-							}
-						}
-					}
-					sb.Replace("\t", "    ");
-					textArea.SetToolTip(sb.ToString());
-					return;
-				}
-				
-				Point clickPosition2 = textArea.TextView.GetLogicalPosition(mousepos.X - textArea.TextView.DrawingPosition.X,
-				                                                            mousepos.Y - textArea.TextView.DrawingPosition.Y);
-				List<TextMarker> markers = textArea.Document.MarkerStrategy.GetMarkers(clickPosition2);
-				foreach (TextMarker tm in markers) {
-					if (tm.ToolTip != null) {
-						textArea.SetToolTip(tm.ToolTip.Replace("\t", "    "));
-						return;
-					}
-				}
 			}
 			
 			if (e.Button == MouseButtons.Left) {
