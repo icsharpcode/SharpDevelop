@@ -51,6 +51,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		string FileName {
 			get;
+			set;
 		}
 		string Directory {
 			get;
@@ -67,6 +68,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		string AssemblyName {
 			get;
+			set;
 		}
 		
 		string DocumentationFileName {

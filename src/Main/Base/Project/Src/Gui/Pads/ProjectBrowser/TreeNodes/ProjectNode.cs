@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				MessageService.ShowError("No installed project options panels were found.");
 			}
 		}
-			
+		
 		#region Drag & Drop
 		public override DataObject DragDropDataObject {
 			get {
@@ -124,12 +124,52 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void AfterLabelEdit(string newName)
 		{
-			throw new System.NotImplementedException();
+			RenameProject(project, newName);
+			Text = project.Name;
 		}
+		
+		public static void RenameProject(IProject project, string newName)
+		{
+			if (project.Name == newName)
+				return;
+			if (!FileService.CheckFileName(newName))
+				return;
+			// multiple projects with the same name shouldn't be a problem
+//			foreach (IProject p in ProjectService.OpenSolution.Projects) {
+//				if (string.Equals(p.Name, newName, StringComparison.OrdinalIgnoreCase)) {
+//					MessageService.ShowMessage("There is already a project with this name.");
+//					return;
+//				}
+//			}
+			string newFileName = Path.Combine(project.Directory, newName + Path.GetExtension(project.FileName));
+			if (File.Exists(newFileName)) {
+				MessageService.ShowError("The file " + newFileName + " already exists.");
+				return;
+			}
+			if (project.AssemblyName == project.Name)
+				project.AssemblyName = newName;
+			FileService.RenameFile(project.FileName, newFileName, false);
+			if (File.Exists(project.FileName + ".user"))
+				FileService.RenameFile(project.FileName + ".user", newFileName + ".user", false);
+			foreach (IProject p in ProjectService.OpenSolution.Projects) {
+				foreach (ProjectItem item in p.Items) {
+					if (item.ItemType == ItemType.ProjectReference) {
+						ProjectReferenceProjectItem refItem = (ProjectReferenceProjectItem)item;
+						if (refItem.ReferencedProject == project) {
+							refItem.ProjectName = newName;
+							refItem.Include = FileUtility.GetRelativePath(p.Directory, newFileName);
+						}
+					}
+				}
+			}
+			project.FileName = newFileName;
+			project.Name = newName;
+			ProjectService.SaveSolution();
+		}
+		
 		public override object AcceptVisitor(ProjectBrowserTreeNodeVisitor visitor, object data)
 		{
 			return visitor.Visit(this, data);
 		}
-
 	}
 }
