@@ -64,6 +64,13 @@ namespace ICSharpCode.SharpDevelop.Project
 			Tag = project;
 		}
 		
+		public override void ActivateItem()
+		{
+			if (project is UnknownProject && Nodes.Count == 0) {
+				FileService.OpenFile(project.FileName);
+			}
+		}
+		
 		public override void ShowProperties()
 		{
 			try {

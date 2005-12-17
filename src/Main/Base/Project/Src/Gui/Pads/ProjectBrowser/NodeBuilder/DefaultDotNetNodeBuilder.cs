@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using System.IO;
 using ICSharpCode.Core;
 using System.Windows.Forms;
 
@@ -20,7 +21,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public TreeNode AddProjectNode(TreeNode motherNode, IProject project)
 		{
-			AbstractProjectBrowserTreeNode projectNode = new ProjectNode(project);
+			ProjectNode projectNode = new ProjectNode(project);
 			projectNode.AddTo(motherNode);
 			
 			if (project is MissingProject) {
@@ -28,20 +29,23 @@ namespace ICSharpCode.SharpDevelop.Project
 				missingNode.SetIcon("Icons.16x16.Warning");
 				missingNode.Text = "The project file cannot be found.";
 				missingNode.AddTo(projectNode);
-				return missingNode;
 			} else if (project is UnknownProject) {
-				CustomNode unknownNode = new CustomNode();
-				unknownNode.SetIcon("Icons.16x16.Warning");
-				unknownNode.Text = "No backend for project type installed.";
-				unknownNode.AddTo(projectNode);
-				return unknownNode;
+				string ext = Path.GetExtension(project.FileName);
+				if (".proj".Equals(ext, StringComparison.OrdinalIgnoreCase)
+				    || ".build".Equals(ext, StringComparison.OrdinalIgnoreCase))
+				{
+					projectNode.OpenedImage = projectNode.ClosedImage = "Icons.16x16.XMLFileIcon";
+					projectNode.Nodes.Clear();
+				} else {
+					CustomNode unknownNode = new CustomNode();
+					unknownNode.SetIcon("Icons.16x16.Warning");
+					unknownNode.Text = "No backend for project type installed.";
+					unknownNode.AddTo(projectNode);
+				}
+			} else {
+				new ReferenceFolder(project).AddTo(projectNode);
 			}
-			
-			new ReferenceFolder(project).AddTo(projectNode);
 			return projectNode;
 		}
-		
-	
-		
 	}
 }
