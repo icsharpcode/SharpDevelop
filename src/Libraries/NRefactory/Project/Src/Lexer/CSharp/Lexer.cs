@@ -25,30 +25,18 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 		protected override Token Next()
 		{
 			int nextChar;
+			char ch;
 			while ((nextChar = ReaderRead()) != -1) {
-				char ch = (char)nextChar;
-				if (ch == ' ' || ch == '\t')
-					continue;
-				
-				if (Char.IsWhiteSpace(ch)) {
-					HandleLineEnd(ch);
-					continue;
-				}
-				
-				if (Char.IsLetter(ch) || ch == '_') {
-					int x = Col - 1; // Col was incremented above, but we want the start of the identifier
-					int y = Line;
-					string s = ReadIdent(ch);
-					int keyWordToken = Keywords.GetToken(s);
-					if (keyWordToken >= 0) {
-						return new Token(keyWordToken, x, y);
-					}
-					return new Token(Tokens.Identifier, x, y, s);
-				}
-				
 				Token token;
 				
-				switch (ch) {
+				switch (nextChar) {
+					case ' ':
+					case '\t':
+						continue;
+					case '\r':
+					case '\n':
+						HandleLineEnd((char)nextChar);
+						continue;
 					case '/':
 						int peek = ReaderPeek();
 						if (peek == '/' || peek == '*') {
@@ -90,7 +78,17 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 						}
 						break;
 					default:
-						if (Char.IsDigit(ch)) {
+						ch = (char)nextChar;
+						if (Char.IsLetter(ch) || ch == '_') {
+							int x = Col - 1; // Col was incremented above, but we want the start of the identifier
+							int y = Line;
+							string s = ReadIdent(ch);
+							int keyWordToken = Keywords.GetToken(s);
+							if (keyWordToken >= 0) {
+								return new Token(keyWordToken, x, y);
+							}
+							return new Token(Tokens.Identifier, x, y, s);
+						} else if (Char.IsDigit(ch)) {
 							token = ReadDigit(ch, Col - 1);
 						} else {
 							token = ReadOperator(ch);

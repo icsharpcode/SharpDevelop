@@ -152,7 +152,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// <summary>
 		/// Must be called before a peek operation.
 		/// </summary>
-		public virtual void StartPeek()
+		public void StartPeek()
 		{
 			peekToken = curToken;
 		}
@@ -161,7 +161,7 @@ namespace ICSharpCode.NRefactory.Parser
 		/// Gives back the next token. A second call to Peek() gives the next token after the last call for Peek() and so on.
 		/// </summary>
 		/// <returns>An <see cref="Token"/> object.</returns>
-		public virtual Token Peek()
+		public Token Peek()
 		{
 //			Console.WriteLine("Call to Peek");
 			if (peekToken.next == null) {
@@ -214,15 +214,9 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		protected bool IsIdentifierPart(int ch)
 		{
-			// char.IsLetter is slow, so optimize for raw ASCII
-			if (ch < 48)  return false; // 48 = '0'
-			if (ch <= 57) return true;  // 57 = '9'
-			if (ch < 65)  return false; // 65 = 'A'
-			if (ch <= 90) return true;  // 90 = 'Z'
 			if (ch == 95) return true;  // 95 = '_'
-			if (ch < 97)  return false; // 97 = 'a'
-			if (ch <= 122) return true; // 97 = 'z'
-			return char.IsLetter((char)ch); // accept unicode letters
+			if (ch == -1) return false;
+			return char.IsLetterOrDigit((char)ch); // accept unicode letters
 		}
 		
 		protected bool IsHex(char digit)
