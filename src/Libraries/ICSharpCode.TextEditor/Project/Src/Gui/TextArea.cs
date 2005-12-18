@@ -34,7 +34,7 @@ namespace ICSharpCode.TextEditor
 	/// This class paints the textarea.
 	/// </summary>
 	[ToolboxItem(false)]
-	public class TextArea : UserControl
+	public class TextArea : Control
 	{
 		public static bool HiddenMouseCursor = false;
 		
@@ -585,10 +585,11 @@ namespace ICSharpCode.TextEditor
 			}
 		}
 		
-		protected override void OnKeyPress(System.Windows.Forms.KeyPressEventArgs e)
+		protected override void OnKeyPress(KeyPressEventArgs e)
 		{
 			base.OnKeyPress(e);
 			SimulateKeyPress(e.KeyChar);
+			e.Handled = true;
 		}
 		
 		/// <summary>

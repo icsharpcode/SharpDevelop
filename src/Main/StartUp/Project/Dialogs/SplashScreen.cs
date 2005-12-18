@@ -7,6 +7,7 @@
 
 using System;
 using System.Collections;
+using System.IO;
 using System.Windows.Forms;
 using System.Drawing;
 using System.Reflection;
@@ -16,7 +17,7 @@ namespace ICSharpCode.SharpDevelop
 {
 	public class SplashScreenForm : Form
 	{
-		public const string VersionText = "Corsavy alpha rev. " + RevisionClass.Revision;
+		public const string VersionText = "Corsavy Beta 1, rev. " + RevisionClass.Revision;
 		
 		static SplashScreenForm splashScreen = new SplashScreenForm();
 		static ArrayList requestedFileList = new ArrayList();
@@ -37,17 +38,19 @@ namespace ICSharpCode.SharpDevelop
 			FormBorderStyle = FormBorderStyle.None;
 			StartPosition   = FormStartPosition.CenterScreen;
 			ShowInTaskbar   = false;
-			bitmap = new Bitmap(Assembly.GetEntryAssembly().GetManifestResourceStream("Resources.SplashScreen.jpg"));
-			Size            = bitmap.Size;
 			#if DEBUG
 			string versionText = VersionText + " (debug)";
 			#else
 			string versionText = VersionText;
 			#endif
-			using (Font font = new Font("Vrinda", 4)) {
+			using (Stream stream = Assembly.GetEntryAssembly().GetManifestResourceStream("Resources.SplashScreen.jpg")) {
+				bitmap = new Bitmap(stream);
+			}
+			this.ClientSize = bitmap.Size;
+			using (Font font = new Font("Sans Serif", 4)) {
 				using (Graphics g = Graphics.FromImage(bitmap)) {
 					g.DrawRectangle(Pens.Black, 0, 0, bitmap.Size.Width - 1, bitmap.Size.Height - 1);
-					g.DrawString(versionText, font, Brushes.Black, 116, 142);
+					g.DrawString(versionText, font, Brushes.Black, 106, 142);
 				}
 			}
 			BackgroundImage = bitmap;

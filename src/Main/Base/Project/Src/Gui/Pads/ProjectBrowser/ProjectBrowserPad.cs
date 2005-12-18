@@ -83,7 +83,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (WorkbenchSingleton.Workbench.ActiveContent == this) {
 				projectBrowserPanel.ProjectBrowserControl.PadActivated();
 			} else {
-				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow == null) {
+				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+				if (window == null) {
 					return;
 				}
 				string fileName = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.FileName;

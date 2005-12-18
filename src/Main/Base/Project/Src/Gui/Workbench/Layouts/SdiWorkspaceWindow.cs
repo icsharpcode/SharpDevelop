@@ -97,8 +97,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		protected override void Dispose(bool disposing)
 		{
-			base.Dispose(disposing);
-			
 			if (disposing) {
 				if (content != null)
 					DetachContent();
@@ -107,6 +105,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 					this.TabPageContextMenu = null;
 				}
 			}
+			// DetachContent must be called before the controls are disposed
+			base.Dispose(disposing);
 		}
 		
 		public SdiWorkspaceWindow(IViewContent content)

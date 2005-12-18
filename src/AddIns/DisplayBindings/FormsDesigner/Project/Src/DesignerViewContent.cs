@@ -149,7 +149,6 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IEventBindingService), eventBindingService);
 			
 			designerResourceService.Host = Host;
-			serviceContainer.AddService(typeof(IDesignerHost), Host);
 			
 			DesignerLoader designerLoader = loaderProvider.CreateLoader(generator);
 			designSurface.BeginLoad(designerLoader);
@@ -309,7 +308,10 @@ namespace ICSharpCode.FormsDesigner
 		
 		public override void Deselected()
 		{
-			LoggingService.Info("Deselected form designer, unloading...");
+			// can happen if form designer is disposed and then deselected
+			if (!IsFormsDesignerVisible)
+				return;
+			LoggingService.Info("Deselected form designer, unloading..." + viewContent.TitleName);
 			PropertyPad.PropertyValueChanged -= PropertyValueChanged;
 			propertyContainer.Clear();
 			IsFormsDesignerVisible = false;

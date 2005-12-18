@@ -587,13 +587,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 		IWorkbenchWindow oldSelectedWindow = null;
 		public virtual void OnActiveWorkbenchWindowChanged(EventArgs e)
 		{
-			if (ActiveWorkbenchWindowChanged != null) {
-				ActiveWorkbenchWindowChanged(this, e);
+			IWorkbenchWindow newWindow = this.ActiveWorkbenchwindow;
+			if (newWindow == null || newWindow.ViewContent != null) {
+				if (ActiveWorkbenchWindowChanged != null) {
+					ActiveWorkbenchWindowChanged(this, e);
+				}
+				//if (newWindow == null)
+				//	LoggingService.Debug("window change to null");
+				//else
+				//	LoggingService.Debug("window change to " + newWindow);
+			} else {
+				//LoggingService.Debug("ignore window change to disposed window");
 			}
 			if (oldSelectedWindow != null) {
 				oldSelectedWindow.OnWindowDeselected(EventArgs.Empty);
 			}
-			oldSelectedWindow = ActiveWorkbenchwindow;
+			oldSelectedWindow = newWindow;
 			if (oldSelectedWindow != null && oldSelectedWindow.ActiveViewContent != null && oldSelectedWindow.ActiveViewContent.Control != null) {
 				oldSelectedWindow.OnWindowSelected(EventArgs.Empty);
 				oldSelectedWindow.ActiveViewContent.SwitchedTo();

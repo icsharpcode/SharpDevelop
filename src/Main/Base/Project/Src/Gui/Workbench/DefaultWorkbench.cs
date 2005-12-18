@@ -75,20 +75,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		EventHandler windowChangeEventHandler;
-		
 		public IWorkbenchLayout WorkbenchLayout {
 			get {
 				return layout;
 			}
 			set {
 				if (layout != null) {
-					layout.ActiveWorkbenchWindowChanged -= windowChangeEventHandler;
+					layout.ActiveWorkbenchWindowChanged -= OnActiveWindowChanged;
 					layout.Detach();
 				}
 				value.Attach(this);
 				layout = value;
-				layout.ActiveWorkbenchWindowChanged += windowChangeEventHandler;
+				layout.ActiveWorkbenchWindowChanged += OnActiveWindowChanged;
 			}
 		}
 		
@@ -130,8 +128,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			RightToLeft = RightToLeftConverter.RightToLeft;
 			Text = ResourceService.GetString("MainWindow.DialogName");
 			Icon = ResourceService.GetIcon("Icons.SharpDevelopIcon");
-			
-			windowChangeEventHandler = new EventHandler(OnActiveWindowChanged);
 			
 			StartPosition = FormStartPosition.Manual;
 			AllowDrop     = true;
@@ -197,7 +193,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 			} finally {
 				closeAll = false;
-				OnActiveWindowChanged(null, null);
+				OnActiveWindowChanged(this, EventArgs.Empty);
 			}
 		}
 		

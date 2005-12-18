@@ -162,7 +162,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (viewContent == null && activeContent is ISecondaryViewContent) {
 				// required if one creates a new winforms app and then immediately switches to design mode
 				// without focussing the text editor
-				viewContent = ((ISecondaryViewContent)activeContent).WorkbenchWindow.ViewContent;
+				IWorkbenchWindow window = ((ISecondaryViewContent)activeContent).WorkbenchWindow;
+				if (window == null) // workbench window is being disposed
+					return;
+				viewContent = window.ViewContent;
 			}
 			if (OpenSolution == null || viewContent == null) {
 				return;
