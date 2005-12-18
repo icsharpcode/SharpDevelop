@@ -159,8 +159,32 @@ namespace ICSharpCode.FormsDesigner
 			
 			IComponentChangeService componentChangeService = (IComponentChangeService)designSurface.GetService(typeof(IComponentChangeService));
 			componentChangeService.ComponentChanged += delegate { viewContent.IsDirty = true; };
+			componentChangeService.ComponentAdded   += ComponentListChanged;
+			componentChangeService.ComponentRemoved += ComponentListChanged;
+			componentChangeService.ComponentRename  += ComponentListChanged;
+			this.Host.TransactionClosed += TransactionClose;
+			
+			ISelectionService selectionService = (ISelectionService)designSurface.GetService(typeof(ISelectionService));
+			selectionService.SelectionChanged  += SelectionChangedHandler;
 			
 			LoggingService.Info("Form Designer: END INITIALIZE");
+		}
+		
+		bool shouldUpdateSelectableObjects = false;
+		
+		void TransactionClose(object sender, DesignerTransactionCloseEventArgs e)
+		{
+			if (shouldUpdateSelectableObjects) {
+				// update the property pad after the transaction is *really* finished
+				// (including updating the selection)
+				p.BeginInvoke(new MethodInvoker(UpdatePropertyPad));
+				shouldUpdateSelectableObjects = false;
+			}
+		}
+		
+		void ComponentListChanged(object sender, EventArgs e)
+		{
+			shouldUpdateSelectableObjects = true;
 		}
 		
 		void UnloadDesigner()
@@ -293,8 +317,7 @@ namespace ICSharpCode.FormsDesigner
 			Reload();
 			IsFormsDesignerVisible = true;
 			AddSideBars();
-			propertyContainer.Host = Host;
-			UpdateSelectableObjects();
+			UpdatePropertyPad();
 		}
 		
 		public override void Dispose()
@@ -346,12 +369,26 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
-		protected void UpdateSelectableObjects()
+		void SelectionChangedHandler(object sender, EventArgs args)
 		{
+			UpdatePropertyPadSelection((ISelectionService)sender);
+		}
+		
+		void UpdatePropertyPadSelection(ISelectionService selectionService)
+		{
+			ICollection selection = selectionService.GetSelectedComponents();
+			object[] selArray = new object[selection.Count];
+			selection.CopyTo(selArray, 0);
+			propertyContainer.SelectedObjects = selArray;
+		}
+		
+		protected void UpdatePropertyPad()
+		{
+			propertyContainer.Host = Host;
 			propertyContainer.SelectableObjects = Host.Container.Components;
 			ISelectionService selectionService = (ISelectionService)Host.GetService(typeof(ISelectionService));
 			if (selectionService != null) {
-				propertyContainer.SelectedObject = selectionService.PrimarySelection;
+				UpdatePropertyPadSelection(selectionService);
 			}
 		}
 		
@@ -522,8 +559,7 @@ namespace ICSharpCode.FormsDesigner
 						}
 						UnloadDesigner();
 						Reload();
-						propertyContainer.Host = Host;
-						UpdateSelectableObjects();
+						UpdatePropertyPad();
 					}
 				}
 			}

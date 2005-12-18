@@ -31,70 +31,72 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		static PropertyContainer activeContainer;
+		PropertyContainer activeContainer;
 		
-		static void SetActiveContainer(PropertyContainer pc)
+		void SetActiveContainer(PropertyContainer pc)
 		{
 			if (activeContainer == pc)
 				return;
 			if (pc == null)
 				return;
 			activeContainer = pc;
-			UpdateSelectedObjectIfActive(pc);
 			UpdateHostIfActive(pc);
+			UpdateSelectedObjectIfActive(pc);
 			UpdateSelectableIfActive(pc);
 		}
 		
 		internal static void UpdateSelectedObjectIfActive(PropertyContainer container)
 		{
-			if (activeContainer != container) return;
+			if (instance == null) return;
+			if (instance.activeContainer != container)
+				return;
+			LoggingService.Debug("UpdateSelectedObjectIfActive");
 			if (container.SelectedObjects != null)
-				SetDesignableObjects(container.SelectedObjects);
+				instance.SetDesignableObjects(container.SelectedObjects);
 			else
-				SetDesignableObject(container.SelectedObject);
+				instance.SetDesignableObject(container.SelectedObject);
 		}
 		
 		internal static void UpdateHostIfActive(PropertyContainer container)
 		{
-			if (activeContainer != container)
+			if (instance == null) return;
+			if (instance.activeContainer != container)
 				return;
-			if (host == container.Host)
+			LoggingService.Debug("UpdateHostIfActive");
+			if (instance.host == container.Host)
 				return;
-			if (host != null)
-				RemoveHost(host);
+			if (instance.host != null)
+				instance.RemoveHost(instance.host);
 			if (container.Host != null)
-				SetDesignerHost(container.Host);
+				instance.SetDesignerHost(container.Host);
 		}
 		
 		internal static void UpdateSelectableIfActive(PropertyContainer container)
 		{
-			if (activeContainer != container)
+			if (instance == null) return;
+			if (instance.activeContainer != container)
 				return;
-			SetSelectableObjects(container.SelectableObjects);
+			LoggingService.Debug("UpdateSelectableIfActive");
+			instance.SetSelectableObjects(container.SelectableObjects);
 		}
 		
-		static Panel         panel   = null;
-		static ComboBox      comboBox = null;
-		static PropertyGrid  grid = new PropertyGrid();
-		static IDesignerHost host = null;
+		Panel         panel;
+		ComboBox      comboBox;
+		PropertyGrid  grid;
+		IDesignerHost host;
 		
 		public static PropertyGrid Grid {
 			get {
-				return grid;
+				if (instance == null)
+					return null;
+				else
+					return instance.grid;
 			}
 		}
 		
 		public static event PropertyValueChangedEventHandler PropertyValueChanged;
-		
-		public static event EventHandler SelectedObjectChanged {
-			add    { grid.SelectedObjectsChanged += value; }
-			remove { grid.SelectedObjectsChanged -= value; }
-		}
-
-		public static event SelectedGridItemChangedEventHandler SelectedGridItemChanged {
-			add    { grid.SelectedGridItemChanged += value; }
-			remove { grid.SelectedGridItemChanged -= value; }
-		}
+		public static event EventHandler SelectedObjectChanged;
+		public static event SelectedGridItemChangedEventHandler SelectedGridItemChanged;
 		
 		public override Control Control {
 			get {
@@ -102,25 +104,18 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		static PropertyPad()
-		{
-			grid.PropertySort = PropertyService.Get("FormsDesigner.DesignerOptions.PropertyGridSortAlphabetical", false) ? PropertySort.Alphabetical : PropertySort.CategorizedAlphabetical;
-			grid.Dock = DockStyle.Fill;
-
-			comboBox = new ComboBox();
-			comboBox.Dock = DockStyle.Top;
-			comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
-			comboBox.DrawMode = DrawMode.OwnerDrawFixed;
-			comboBox.Sorted = true;
-			
-			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += WorkbenchWindowChanged;
-		}
-		
-		static void WorkbenchWindowChanged(object sender, EventArgs e)
+		void WorkbenchWindowChanged(object sender, EventArgs e)
 		{
 			IHasPropertyContainer c = WorkbenchSingleton.Workbench.ActiveContent as IHasPropertyContainer;
-			if (c == null) return;
-			SetActiveContainer(c.PropertyContainer);
+			if (c == null) {
+				IWorkbenchWindow window = WorkbenchSingleton.Workbench.ActiveWorkbenchWindow;
+				if (window != null) {
+					c = window.ActiveViewContent as IHasPropertyContainer;
+				}
+			}
+			if (c != null) {
+				SetActiveContainer(c.PropertyContainer);
+			}
 		}
 		
 		public PropertyPad()
@@ -128,18 +123,40 @@ namespace ICSharpCode.SharpDevelop.Gui
 			instance = this;
 			panel = new Panel();
 			
+			grid = new PropertyGrid();
+			grid.PropertySort = PropertyService.Get("FormsDesigner.DesignerOptions.PropertyGridSortAlphabetical", false) ? PropertySort.Alphabetical : PropertySort.CategorizedAlphabetical;
+			grid.Dock = DockStyle.Fill;
+			
+			grid.SelectedObjectsChanged += delegate(object sender, EventArgs e) {
+				if (SelectedObjectChanged != null)
+					SelectedObjectChanged(sender, e);
+			};
+			grid.SelectedGridItemChanged += delegate(object sender, SelectedGridItemChangedEventArgs e) {
+				if (SelectedGridItemChanged != null)
+					SelectedGridItemChanged(sender, e);
+			};
+			
+			comboBox = new ComboBox();
+			comboBox.Dock = DockStyle.Top;
+			comboBox.DropDownStyle = ComboBoxStyle.DropDownList;
+			comboBox.DrawMode = DrawMode.OwnerDrawFixed;
+			comboBox.Sorted = true;
+			
 			comboBox.DrawItem += new DrawItemEventHandler(ComboBoxDrawItem);
 			comboBox.MeasureItem += new MeasureItemEventHandler(ComboBoxMeasureItem);
 			comboBox.SelectedIndexChanged += new EventHandler(ComboBoxSelectedIndexChanged);
 			
-			
 			panel.Controls.Add(grid);
 			panel.Controls.Add(comboBox);
 			
-			ProjectService.SolutionClosed += new EventHandler(CombineClosedEvent);
+			ProjectService.SolutionClosed += CombineClosedEvent;
 			
 			grid.PropertyValueChanged += new PropertyValueChangedEventHandler(PropertyChanged);
 			grid.ContextMenuStrip = MenuService.CreateContextMenu(this, "/SharpDevelop/Views/PropertyPad/ContextMenu");
+			
+			LoggingService.Debug("PropertyPad created");
+			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += WorkbenchWindowChanged;
+			WorkbenchWindowChanged(null, null);
 		}
 		
 		void CombineClosedEvent(object sender, EventArgs e)
@@ -206,7 +223,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			string typeString = item.GetType().ToString();
 			g.DrawString(typeString, comboBox.Font, stringColor, xPos, dea.Bounds.Y);
 		}
-		static bool inUpdate = false;
+		bool inUpdate = false;
 		
 		void ComboBoxSelectedIndexChanged(object sender, EventArgs e)
 		{
@@ -223,7 +240,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		static void SelectedObjectsChanged()
+		void SelectedObjectsChanged()
 		{
 			if (grid.SelectedObjects != null && grid.SelectedObjects.Length == 1) {
 				for (int i = 0; i < comboBox.Items.Count; ++i) {
@@ -245,78 +262,50 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			base.Dispose();
 			if (grid != null) {
+				ProjectService.SolutionClosed -= CombineClosedEvent;
 				try {
 					grid.SelectedObjects = null;
 				} catch {}
 				grid.Dispose();
 				grid = null;
+				instance = null;
 			}
 		}
 		
-		static void SetDesignableObject(object obj)
+		void SetDesignableObject(object obj)
 		{
-			if (grid != null) {
-				grid.SelectedObject  = obj;
-				SelectedObjectsChanged();
-			}
+			inUpdate = true;
+			grid.SelectedObject  = obj;
+			SelectedObjectsChanged();
+			inUpdate = false;
 		}
 		
-		static void SetDesignableObjects(object[] obj)
+		void SetDesignableObjects(object[] obj)
 		{
-			if (grid != null) {
-				grid.SelectedObjects = obj;
-				SelectedObjectsChanged();
-			}
+			inUpdate = true;
+			grid.SelectedObjects = obj;
+			SelectedObjectsChanged();
+			inUpdate = false;
 		}
 		
-		static void RemoveHost(IDesignerHost host)
+		void RemoveHost(IDesignerHost host)
 		{
-			PropertyPad.host = null;
+			this.host = null;
 			grid.Site = null;
-			
-			ISelectionService selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
-			if (selectionService != null) {
-				selectionService.SelectionChanging -= new EventHandler(SelectionChangingHandler);
-				selectionService.SelectionChanged  -= new EventHandler(SelectionChangedHandler);
-			}
-			
-			host.TransactionClosed -= new DesignerTransactionCloseEventHandler(TransactionClose);
-			
-			IComponentChangeService componentChangeService = (IComponentChangeService)host.GetService(typeof(IComponentChangeService));
-			if (componentChangeService != null) {
-				componentChangeService.ComponentAdded   -= new ComponentEventHandler(UpdateSelectedObjects);
-				componentChangeService.ComponentRemoved -= new ComponentEventHandler(UpdateSelectedObjects);
-				componentChangeService.ComponentRename  -= new ComponentRenameEventHandler(UpdateSelectedObjectsOnRename);
-			}
 		}
 		
-		static void SetDesignerHost(IDesignerHost host)
+		void SetDesignerHost(IDesignerHost host)
 		{
-			PropertyPad.host = host;
+			this.host = host;
 			if (host != null) {
 				grid.Site = (new IDEContainer(host)).CreateSite(grid);
 				grid.PropertyTabs.AddTabType(typeof(System.Windows.Forms.Design.EventsTab), PropertyTabScope.Document);
-				
-				ISelectionService selectionService = (ISelectionService)host.GetService(typeof(ISelectionService));
-				if (selectionService != null) {
-					selectionService.SelectionChanging += new EventHandler(SelectionChangingHandler);
-					selectionService.SelectionChanged  += new EventHandler(SelectionChangedHandler);
-				}
-				
-				host.TransactionClosed += new DesignerTransactionCloseEventHandler(TransactionClose);
-				
-				IComponentChangeService componentChangeService = (IComponentChangeService)host.GetService(typeof(IComponentChangeService));
-				if (componentChangeService != null) {
-					componentChangeService.ComponentAdded   += new ComponentEventHandler(UpdateSelectedObjects);
-					componentChangeService.ComponentRemoved += new ComponentEventHandler(UpdateSelectedObjects);
-					componentChangeService.ComponentRename  += new ComponentRenameEventHandler(UpdateSelectedObjectsOnRename);
-				}
 			} else {
 				grid.Site = null;
 			}
 		}
 		
-		static void SetSelectableObjects(ICollection coll)
+		void SetSelectableObjects(ICollection coll)
 		{
 			inUpdate = true;
 			try {
@@ -331,8 +320,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 				inUpdate = false;
 			}
 		}
-		
-		
 		
 		#region ICSharpCode.SharpDevelop.Gui.IHelpProvider interface implementation
 		public void ShowHelp()
@@ -357,54 +344,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		}
 		#endregion
 		
-		
-		static bool shouldUpdateSelectableObjects = false;
-		static void TransactionClose(object sender, DesignerTransactionCloseEventArgs e)
-		{
-			if (shouldUpdateSelectableObjects) {
-				if (host != null) {
-					SetSelectableObjects(host.Container.Components);
-				}
-				shouldUpdateSelectableObjects = false;
-			}
-			
-		}
-		
-		static void UpdateSelectedObjects(object sender, ComponentEventArgs e)
-		{
-			shouldUpdateSelectableObjects = true;
-		}
-		
-		static void UpdateSelectedObjectsOnRename(object sender, ComponentRenameEventArgs e)
-		{
-			shouldUpdateSelectableObjects = true;
-		}
-		
-		static void SelectionChangingHandler(object sender, EventArgs args)
-		{
-		}
-
-		static void SelectionChangedHandler(object sender, EventArgs args)
-		{
-			ISelectionService selectionService = sender as ISelectionService;
-			if (selectionService != null) {
-				ICollection selection = selectionService.GetSelectedComponents();
-				object[] selArray = new object[selection.Count];
-				selection.CopyTo(selArray, 0);
-				
-				inUpdate = true;
-				try {
-					grid.SelectedObjects = selArray;
-					
-					SelectedObjectsChanged();
-				} catch (Exception) {
-					
-				} finally {
-					inUpdate = false;
-				}
-			}
-		}
-		
 		void PropertyChanged(object sender, PropertyValueChangedEventArgs e)
 		{
 			OnPropertyValueChanged(sender, e);
@@ -412,7 +351,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		void OnPropertyValueChanged(object sender, PropertyValueChangedEventArgs e)
 		{
-			if(PropertyValueChanged != null) {
+			if (PropertyValueChanged != null) {
 				PropertyValueChanged(sender, e);
 			}
 		}
