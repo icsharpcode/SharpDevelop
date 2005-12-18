@@ -1,6 +1,6 @@
 <AddIn name        = "MbUnit-Addin"
        author      = "Daniel Grunwald"
-       copyright   = "GNU General Public License"
+       copyright   = "prj:///doc/copyright.txt"
        description = "Runs MbUnit and NUnit tests inside #Develop">
 	
 	<Manifest>

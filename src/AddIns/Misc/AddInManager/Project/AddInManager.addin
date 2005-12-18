@@ -1,6 +1,6 @@
 ﻿<AddIn name        = "AddInManager"
        author      = "Daniel Grunwald"
-       copyright   = "GNU General Public License"
+       copyright   = "prj:///doc/copyright.txt"
        description = "Can install, enable, disable and uninstall AddIns">
 	
 	<Manifest>

@@ -1,6 +1,6 @@
 ﻿<AddIn name        = "SharpDevelop"
        author      = "Mike Krueger"
-       copyright   = "GPL"
+       copyright   = "prj:///doc/copyright.txt"
        url         = "http://www.icsharpcode.net"
        description = "SharpDevelop main module">
 	

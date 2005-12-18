@@ -1,7 +1,7 @@
-<AddIn name        = "ICSharpCode.Svn"
+<AddIn name        = "Subversion AddIn"
        author      = "Mike Krueger"
-       copyright   = "GPL"
-       description = "Subversion plugin">
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Adds support for Subversion to the project browser">
 	
 	<Manifest>
 		<Identity name = "ICSharpCode.Svn"/>

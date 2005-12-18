@@ -1,6 +1,6 @@
 <AddIn name        = "VB Binding"
        author      = "Mike Krueger, Markus Palme"
-       copyright   = "GPL"
+       copyright   = "prj:///doc/copyright.txt"
        description = "Backing binding for VB.NET">
 	
 	<Manifest>

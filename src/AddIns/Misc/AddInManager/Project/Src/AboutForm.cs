@@ -46,8 +46,15 @@ namespace ICSharpCode.AddInManager
 			}
 			
 			if (addIn.Properties["copyright"].Length > 0) {
-				titles.Add("Copyright");
-				values.Add(addIn.Properties["copyright"]);
+				if (!addIn.Properties["copyright"].StartsWith("prj:")) {
+					titles.Add("Copyright");
+					values.Add(addIn.Properties["copyright"]);
+				}
+			}
+			
+			if (addIn.Properties["license"].Length > 0) {
+				titles.Add("License");
+				values.Add(addIn.Properties["license"]);
 			}
 			
 			if (addIn.Properties["url"].Length > 0) {

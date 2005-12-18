@@ -1,6 +1,6 @@
 <AddIn name        = "C# Binding"
        author      = "Mike Krueger"
-       copyright   = "GPL"
+       copyright   = "prj:///doc/copyright.txt"
        description = "Backing binding for C#">
 	
 	<Manifest>

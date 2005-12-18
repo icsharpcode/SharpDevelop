@@ -1,6 +1,6 @@
 <AddIn name        = "NAnt Add-in"
        author      = "Matt Ward"
-       copyright   = "GPL"
+       copyright   = "prj:///doc/copyright.txt"
        description = "NAnt integration for SharpDevelop.">
 
 	<Manifest>

@@ -1,6 +1,6 @@
 ﻿<AddIn name        = "Resource Editor"
        author      = "Mike Krueger"
-       copyright   = "GPL"
+       copyright   = "prj:///doc/copyright.txt"
        description = "A Display binding for *.resources and *.resx files.">
 	
 	<Runtime>

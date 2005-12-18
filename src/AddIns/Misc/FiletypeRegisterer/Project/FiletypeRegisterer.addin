@@ -1,6 +1,6 @@
 <AddIn name        = "Filetype Registerer"
        author      = "Georg Brandl"
-       copyright   = "GPL"
+       copyright   = "prj:///doc/copyright.txt"
        description = "Registers files in the Windows Explorer for #Develop">
 	
 	<Manifest>

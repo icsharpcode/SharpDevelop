@@ -1,6 +1,6 @@
 <AddIn name        = "Start Page"
        author      = "Georg Brandl"
-       copyright   = "GPL"
+       copyright   = "prj:///doc/copyright.txt"
        description = "VS like Start Page for #develop">
 	
 	<Manifest>

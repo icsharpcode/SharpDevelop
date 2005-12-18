@@ -1,6 +1,6 @@
 <AddIn name        = "Xml Editor"
        author      = "Matt Ward"
-       copyright   = "GPL"
+       copyright   = "prj:///doc/copyright.txt"
        description = "Xml Editor">
 	
 	<Manifest>

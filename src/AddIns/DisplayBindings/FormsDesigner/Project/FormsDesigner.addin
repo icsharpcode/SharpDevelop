@@ -1,6 +1,6 @@
 <AddIn name        = "Forms Designer"
        author      = "Mike Krueger"
-       copyright   = "GPL"
+       copyright   = "prj:///doc/copyright.txt"
        description = "Windows Forms Designer">
 	
 	<Manifest>

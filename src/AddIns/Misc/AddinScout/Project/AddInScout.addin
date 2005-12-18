@@ -1,6 +1,6 @@
 <AddIn name        = "AddInScout"
        author      = "Satguru P Srivastava"
-       copyright   = "GPL"
+       copyright   = "prj:///doc/copyright.txt"
        url         = "http://home.mchsi.com/~ssatguru"
        description = "Display AddIn Information">
 	

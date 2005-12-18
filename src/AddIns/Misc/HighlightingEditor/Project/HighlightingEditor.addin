@@ -1,6 +1,6 @@
 <AddIn name        = "Highlighting Editor"
        author      = "Georg Brandl"
-       copyright   = "GPL"
+       copyright   = "prj:///doc/copyright.txt"
        description = "Editor for syntax highlighting styles for the text editor">
 	
 	<Manifest>

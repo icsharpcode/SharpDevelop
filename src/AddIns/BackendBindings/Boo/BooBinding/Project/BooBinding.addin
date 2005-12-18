@@ -1,6 +1,6 @@
 <AddIn name        = "Boo Binding"
        author      = "Daniel Grunwald"
-       copyright   = "GPL"
+       copyright   = "prj:///doc/copyright.txt"
        url         = "http://boo.codehaus.org/Boo+AddIn+For+SharpDevelop"
        description = "Backing binding for Boo">
 	

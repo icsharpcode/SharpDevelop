@@ -8,7 +8,7 @@
 	</Runtime>
 	
 	<Path name = "/SharpDevelop/Views/Browser/SchemeExtensions">
-		<BrowserSchemeExtension id    = "ms-help" class = "HtmlHelp2.BrowserScheme"/>
+		<BrowserSchemeExtension id = "ms-help" class = "HtmlHelp2.BrowserScheme"/>
 	</Path>
 
 	<Path name = "/SharpDevelop/Services/HelpProvider">
@@ -45,8 +45,11 @@
 	</Path>
 	
 	<Path name = "/SharpDevelop/Workbench/MainMenu/Help">
+		<MenuItem id           = "HtmlHelp2Separator2"
+		          type         = "Separator"
+		          insertafter  = "TipOfTheDay"/>
 		<MenuItem id           = "TocPadCommand"
-		          insertafter  = "Separator1"
+		          insertafter  = "HtmlHelp2Separator2"
 		          label        = "${res:AddIns.HtmlHelp2.Contents}"
 		          icon         = "HtmlHelp2.16x16.Toc"
 		          shortcut     = "Control|Alt|F1"
@@ -68,11 +71,8 @@
 		          icon         = "HtmlHelp2.16x16.IndexResults"
 		          shortcut     = "Shift|Alt|F2"
 		          class        = "HtmlHelp2.ShowIndexResultsMenuCommand"
-		          insertafter  = "SearchPadCommand"/>
-		<MenuItem id           = "HtmlHelp2Separator2"
-		          type         = "Separator"
-		          insertafter  = "IndexResultsPadCommand"
-		          insertbefore = "ViewGPL"/>
+		          insertafter  = "SearchPadCommand"
+		          insertbefore = "Separator1"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/ViewContent/Browser/Toolbar">
