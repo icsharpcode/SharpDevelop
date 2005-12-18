@@ -73,14 +73,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public override void ShowProperties()
 		{
-			try {
-				AddInTreeNode projectOptionsNode = AddInTree.GetTreeNode("/SharpDevelop/BackendBindings/ProjectOptions/" + project.Language);
-				ProjectOptionsView projectOptions = new ProjectOptionsView(projectOptionsNode, project);
-				WorkbenchSingleton.Workbench.ShowView(projectOptions);
-			} catch (TreePathNotFoundException) {
-				// TODO: Translate me!
-				MessageService.ShowError("No installed project options panels were found.");
-			}
+			Commands.ViewProjectOptions.ShowProjectOptions(project);
 		}
 		
 		#region Drag & Drop

@@ -24,6 +24,12 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		TabControl tabControl = new TabControl();
 		IProject   project;
 		
+		public IProject Project {
+			get {
+				return project;
+			}
+		}
+		
 		public override string TitleName {
 			get {
 				return project.Name;

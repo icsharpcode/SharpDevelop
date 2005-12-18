@@ -384,11 +384,13 @@ namespace ICSharpCode.FormsDesigner
 		
 		protected void UpdatePropertyPad()
 		{
-			propertyContainer.Host = Host;
-			propertyContainer.SelectableObjects = Host.Container.Components;
-			ISelectionService selectionService = (ISelectionService)Host.GetService(typeof(ISelectionService));
-			if (selectionService != null) {
-				UpdatePropertyPadSelection(selectionService);
+			if (IsFormsDesignerVisible) {
+				propertyContainer.Host = Host;
+				propertyContainer.SelectableObjects = Host.Container.Components;
+				ISelectionService selectionService = (ISelectionService)Host.GetService(typeof(ISelectionService));
+				if (selectionService != null) {
+					UpdatePropertyPadSelection(selectionService);
+				}
 			}
 		}
 		

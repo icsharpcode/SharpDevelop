@@ -22,17 +22,24 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override void Run()
 		{
-			IProject selectedProject = ProjectService.CurrentProject;
-			if (selectedProject == null) {
+			ShowProjectOptions(ProjectService.CurrentProject);
+		}
+		
+		public static void ShowProjectOptions(IProject project)
+		{
+			if (project == null) {
 				return;
 			}
-			
+			foreach (IViewContent viewContent in WorkbenchSingleton.Workbench.ViewContentCollection) {
+				ProjectOptionsView projectOptions = viewContent as ProjectOptionsView;
+				if (projectOptions != null && projectOptions.Project == project) {
+					projectOptions.WorkbenchWindow.SelectWindow();
+					return;
+				}
+			}
 			try {
-				AddInTreeNode projectOptionsNode = AddInTree.GetTreeNode("/SharpDevelop/BackendBindings/ProjectOptions/" + selectedProject.Language);
-				Properties newProperties = new Properties();
-				newProperties.Set("Project", selectedProject);
-				
-				ProjectOptionsView projectOptions = new ProjectOptionsView(projectOptionsNode, selectedProject);
+				AddInTreeNode projectOptionsNode = AddInTree.GetTreeNode("/SharpDevelop/BackendBindings/ProjectOptions/" + project.Language);
+				ProjectOptionsView projectOptions = new ProjectOptionsView(projectOptionsNode, project);
 				WorkbenchSingleton.Workbench.ShowView(projectOptions);
 			} catch (TreePathNotFoundException) {
 				// TODO: Translate me!

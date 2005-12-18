@@ -408,10 +408,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			while (WorkbenchSingleton.Workbench.ViewContentCollection.Count > 0) {
 				IViewContent content = WorkbenchSingleton.Workbench.ViewContentCollection[0];
-				content.WorkbenchWindow.CloseWindow(false);
-				if (WorkbenchSingleton.Workbench.ViewContentCollection.IndexOf(content) >= 0) {
-					e.Cancel = true;
-					return;
+				if (content.WorkbenchWindow == null) {
+					LoggingService.Warn("Content with empty WorkbenchWindow found");
+					WorkbenchSingleton.Workbench.ViewContentCollection.RemoveAt(0);
+				} else {
+					content.WorkbenchWindow.CloseWindow(false);
+					if (WorkbenchSingleton.Workbench.ViewContentCollection.IndexOf(content) >= 0) {
+						e.Cancel = true;
+						return;
+					}
 				}
 			}
 			

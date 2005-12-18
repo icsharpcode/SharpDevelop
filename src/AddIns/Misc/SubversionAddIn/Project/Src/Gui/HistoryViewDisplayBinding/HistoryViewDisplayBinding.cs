@@ -40,13 +40,25 @@ namespace ICSharpCode.Svn
 {
 	public class HistoryViewDisplayBinding : ISecondaryDisplayBinding
 	{
-		#region ICSharpCode.Core.AddIns.Codons.ISecondaryDisplayBinding interface implementation
 		public ICSharpCode.SharpDevelop.Gui.ISecondaryViewContent[] CreateSecondaryViewContent(ICSharpCode.SharpDevelop.Gui.IViewContent viewContent)
 		{
 			return new ICSharpCode.SharpDevelop.Gui.ISecondaryViewContent[] { new HistoryView(viewContent) };
 		}
 		
-		static Client client;
+		private class SvnHelper {
+			// load NSvn.Core only when a directory actually contains the ".svn" folder
+			static Client client;
+			
+			internal static bool IsVersionControlled(string fileName)
+			{
+				if (client == null) {
+					LoggingService.Info("SVN: HistoryViewDisplayBinding initializes client");
+					client = new Client();
+				}
+				Status status = client.SingleStatus(Path.GetFullPath(fileName));
+				return status != null && status.Entry != null;
+			}
+		}
 		
 		public bool CanAttachTo(ICSharpCode.SharpDevelop.Gui.IViewContent content)
 		{
@@ -56,13 +68,7 @@ namespace ICSharpCode.Svn
 			string svnDir = Path.Combine(Path.GetDirectoryName(content.FileName), ".svn");
 			if (!Directory.Exists(svnDir))
 				return false;
-			if (client == null) {
-				LoggingService.Info("SVN: HistoryViewDisplayBinding initializes client");
-				client = new Client();
-			}
-			Status status = client.SingleStatus(Path.GetFullPath(content.FileName));
-			return status != null && status.Entry != null;
+			return SvnHelper.IsVersionControlled(content.FileName);
 		}
-		#endregion
 	}
 }
