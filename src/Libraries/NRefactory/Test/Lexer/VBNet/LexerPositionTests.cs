@@ -1,8 +1,8 @@
 // <file>
-//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
-//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
 //     <owner name="none" email=""/>
-//     <version>$Revision: 230 $</version>
+//     <version>$Revision$</version>
 // </file>
 
 using System;

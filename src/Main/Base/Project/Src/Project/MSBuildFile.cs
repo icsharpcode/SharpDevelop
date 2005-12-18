@@ -1,6 +1,6 @@
-﻿// <file>
-//     <copyright see="prj:///doc/copyright.txt">2002-2005 AlphaSierraPapa</copyright>
-//     <license see="prj:///doc/license.txt">GNU General Public License</license>
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
 //     <owner name="Scott Ferrett" email="surf@softvelocity.com"/>
 //     <version>$Revision$</version>
 // </file>

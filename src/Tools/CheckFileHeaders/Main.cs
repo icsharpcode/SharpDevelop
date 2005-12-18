@@ -130,8 +130,8 @@ namespace CheckFileHeaders
 			}
 			StringBuilder builder = new StringBuilder();
 			builder.AppendLine("// <file>");
-			builder.AppendLine("//     <copyright see=\"prj:///doc/copyright.txt\">2002-2005 AlphaSierraPapa</copyright>");
-			builder.AppendLine("//     <license see=\"prj:///doc/license.txt\">GNU General Public License</license>");
+			builder.AppendLine("//     <copyright see=\"prj:///doc/copyright.txt\"/>");
+			builder.AppendLine("//     <license see=\"prj:///doc/license.txt\"/>");
 			builder.Append("//     <owner name=\"");
 			builder.Append(author);
 			builder.Append("\" email=\"");
@@ -193,6 +193,10 @@ namespace CheckFileHeaders
 					return "g.brandl@gmx.net";
 				case "Ivo Kovacka":
 					return "ivok@internet.sk";
+				case "Scott Ferrett":
+					return "surf@softvelocity.com";
+				case "David Alpert":
+					return "david@spinthemoose.com";
 				case "none":
 					return "";
 				default:
