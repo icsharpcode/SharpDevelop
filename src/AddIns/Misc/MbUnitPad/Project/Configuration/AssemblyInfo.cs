@@ -19,7 +19,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("GNU General Public Licence")]
+[assembly: AssemblyCopyright("Daniel Grunwald, 2005")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
