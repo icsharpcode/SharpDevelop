@@ -17,9 +17,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("C#Binding")]
 [assembly: AssemblyDescription("C# language binding for #develop")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("www.icsharpcode.net")]
+[assembly: AssemblyCompany("ic#code")]
 [assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("(c) 2004-2005 Mike Krüger, 2005 Daniel Grunwald")]
+[assembly: AssemblyCopyright("2004-2005 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

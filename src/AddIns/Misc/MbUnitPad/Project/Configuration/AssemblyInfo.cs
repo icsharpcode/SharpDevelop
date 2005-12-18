@@ -17,9 +17,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("MbUnitPad")]
 [assembly: AssemblyDescription("Addin for SharpDevelop 2.0")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
+[assembly: AssemblyCompany("ic#code")]
 [assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("Daniel Grunwald, 2005")]
+[assembly: AssemblyCopyright("2005 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

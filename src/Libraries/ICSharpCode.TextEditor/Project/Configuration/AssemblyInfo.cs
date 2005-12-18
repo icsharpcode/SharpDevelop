@@ -11,9 +11,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("ICSharpCode.TextEditor")]
 [assembly: AssemblyDescription("A .NET text editor control")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ICSharpCode.net")]
-[assembly: AssemblyProduct("ICSharpCode.TextEditor")]
-[assembly: AssemblyCopyright("ICSharpCode")]
+[assembly: AssemblyCompany("ic#code")]
+[assembly: AssemblyProduct("SharpDevelop")]
+[assembly: AssemblyCopyright("2002-2005 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

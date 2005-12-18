@@ -17,9 +17,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("RegExpTk")]
 [assembly: AssemblyDescription("Regular expression toolkit")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("www.icsharpcode.net")]
+[assembly: AssemblyCompany("ic#code")]
 [assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("(c) 2004 Markus Palme")]
+[assembly: AssemblyCopyright("2004-2005 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

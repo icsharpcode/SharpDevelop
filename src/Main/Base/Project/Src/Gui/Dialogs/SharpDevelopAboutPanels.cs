@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Controls.Add(buildTextBox);
 			
 			sponsorLabel.Location = new System.Drawing.Point(8, 34);
-			sponsorLabel.Text = "Released under the GNU General Public license.";
+			sponsorLabel.Text = "Released under the terms of the GNU Lesser General Public License.";
 			sponsorLabel.Size = new System.Drawing.Size(362, 24);
 			sponsorLabel.TabIndex = 8;
 			Controls.Add(sponsorLabel);

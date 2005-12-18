@@ -17,7 +17,7 @@ namespace ICSharpCode.SharpDevelop
 {
 	public class SplashScreenForm : Form
 	{
-		public const string VersionText = "Corsavy Beta 1, rev. " + RevisionClass.Revision;
+		public const string VersionText = "SharpDevelop 2 build " + RevisionClass.Revision;
 		
 		static SplashScreenForm splashScreen = new SplashScreenForm();
 		static ArrayList requestedFileList = new ArrayList();

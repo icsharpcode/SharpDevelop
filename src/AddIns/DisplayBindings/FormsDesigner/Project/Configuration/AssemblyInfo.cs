@@ -17,9 +17,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("SharpDevelop Windows.Forms Designer")]
 [assembly: AssemblyDescription("A Windows.Forms designer implementation")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("www.icsharpcode.net")]
+[assembly: AssemblyCompany("ic#code")]
 [assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("(c) 2002-2005 by Mike Krüger")]
+[assembly: AssemblyCopyright("2002-2005 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

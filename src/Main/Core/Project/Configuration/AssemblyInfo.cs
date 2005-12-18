@@ -14,9 +14,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("ICSharpCode.Core")]
 [assembly: AssemblyDescription("The ICSharpCode Core containing the AddInTree and service Subsystem")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("www.icsharpcode.net")]
-[assembly: AssemblyProduct("ICSharpCode.Core")]
-[assembly: AssemblyCopyright("Mike Krüger 2000-2005")]
+[assembly: AssemblyCompany("ic#code")]
+[assembly: AssemblyProduct("SharpDevelop")]
+[assembly: AssemblyCopyright("2000-2005 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

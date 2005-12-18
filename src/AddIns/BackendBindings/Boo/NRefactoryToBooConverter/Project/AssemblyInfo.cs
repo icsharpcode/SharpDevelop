@@ -17,9 +17,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("NRefactoryToBooConverter")]
 [assembly: AssemblyDescription("Converts from NRefactory AST (C#, VB) to Boo AST")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Daniel Grunwald")]
-[assembly: AssemblyProduct("BooBinding")]
-[assembly: AssemblyCopyright("(C) 2005, Daniel Grunwald")]
+[assembly: AssemblyCompany("ic#code")]
+[assembly: AssemblyProduct("SharpDevelop")]
+[assembly: AssemblyCopyright("2005 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

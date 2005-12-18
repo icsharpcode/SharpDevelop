@@ -16,9 +16,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("Debugger Library")]
 [assembly: AssemblyDescription("Library for debugging .NET applications")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("www.icsharpcode.net")]
+[assembly: AssemblyCompany("ic#code")]
 [assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("")]
+[assembly: AssemblyCopyright("2005 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]		
 

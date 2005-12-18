@@ -17,9 +17,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("ICSharpCode.Build.Tasks")]
 [assembly: AssemblyDescription("MSBuild extensions for SharpDevelop")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("ICSharpCode.net")]
+[assembly: AssemblyCompany("ic#code")]
 [assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("Daniel Grunwald, 2005")]
+[assembly: AssemblyCopyright("2005 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -18,9 +18,9 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTitle("Microsoft Help 2.0 Environment")]
 [assembly: AssemblyDescription("Integrates Microsoft Help 2.0 in SharpDevelop")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("Cube")]
+[assembly: AssemblyCompany("ic#code")]
 [assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("Copyright ? 2005 Mathias Simmack")]
+[assembly: AssemblyCopyright("2005 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
