@@ -316,7 +316,7 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 		
 		public event EventHandler<DynamicListEventArgs> BeginLabelEdit;
 		public event EventHandler<DynamicListEventArgs> FinishLabelEdit;
-		public event EventHandler<DynamicListEventArgs> CancelledLabelEdit;
+		public event EventHandler<DynamicListEventArgs> CanceledLabelEdit;
 		
 		void HandleLabelEditClick(DynamicList list)
 		{
@@ -332,8 +332,8 @@ namespace ICSharpCode.SharpDevelop.Gui.TreeGrid
 				if (e2.KeyData == Keys.Enter || e2.KeyData == Keys.Escape) {
 					e2.Handled = true;
 					if (e2.KeyData == Keys.Escape) {
-						if (CancelledLabelEdit != null)
-							CancelledLabelEdit(this, new DynamicListEventArgs(list));
+						if (CanceledLabelEdit != null)
+							CanceledLabelEdit(this, new DynamicListEventArgs(list));
 						escape = true;
 					}
 					this.Control = null;

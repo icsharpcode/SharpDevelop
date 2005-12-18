@@ -35,17 +35,6 @@ namespace ICSharpCode.SharpDevelop.Commands
 		}
 	}
 	
-	public class ViewGPL : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			using (ViewGPLDialog totdd = new ViewGPLDialog()) {
-				totdd.Owner = (Form)WorkbenchSingleton.Workbench;
-				totdd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
-			}
-		}
-	}
-	
 	public class LinkCommand : AbstractMenuCommand
 	{
 		string site;

@@ -58,9 +58,9 @@ namespace ICSharpCode.TextEditor
 		private static extern IntPtr ImmGetDefaultIMEWnd(IntPtr hWnd);
 
 		[ DllImport("user32.dll") ]
-		private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, COMPOSITIONFORM lParam);
+		private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, COMPOSITIONFORM lParam);
 		[ DllImport("user32.dll") ]
-		private static extern int SendMessage(IntPtr hWnd, int msg, int wParam, [In, MarshalAs(UnmanagedType.LPStruct)] LOGFONT lParam);
+		private static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, [In, MarshalAs(UnmanagedType.LPStruct)] LOGFONT lParam);
 
 		[ StructLayout(LayoutKind.Sequential) ]
 		private class COMPOSITIONFORM
@@ -123,11 +123,11 @@ namespace ICSharpCode.TextEditor
 			}
 
 			SendMessage(
-						hIMEWnd,
-						WM_IME_CONTROL,
-						IMC_SETCOMPOSITIONFONT,
-						lf
-						);
+			            hIMEWnd,
+			            WM_IME_CONTROL,
+			            new IntPtr(IMC_SETCOMPOSITIONFONT),
+			            lf
+			           );
 		}
 
 		public void SetIMEWindowLocation(int x, int y)
@@ -143,11 +143,11 @@ namespace ICSharpCode.TextEditor
 			lParam.rcArea = new RECT();
 
 			SendMessage(
-						hIMEWnd,
-						WM_IME_CONTROL,
-						IMC_SETCOMPOSITIONWINDOW,
-						lParam
-						);
+			            hIMEWnd,
+			            WM_IME_CONTROL,
+			            new IntPtr(IMC_SETCOMPOSITIONWINDOW),
+			            lParam
+			           );
 		}
 	}
 }

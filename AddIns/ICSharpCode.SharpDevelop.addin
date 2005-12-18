@@ -1396,10 +1396,6 @@
 			          class = "ICSharpCode.SharpDevelop.Commands.ViewTipOfTheDay" />
 			
 			<MenuItem id = "Separator1" type = "Separator" />
-			<MenuItem id = "ViewGPL"
-			          label = "${res:XML.MainMenu.HelpMenu.GPL}"
-			          icon = "Icons.16x16.CopyLeftIcon"
-			          class = "ICSharpCode.SharpDevelop.Commands.ViewGPL" />
 			<MenuItem id    = "ViewReadme"
 			          label = "${res:XML.MainMenu.HelpMenu.ReadMe}"
 			          link  = "home://doc/ReadMe.rtf" />

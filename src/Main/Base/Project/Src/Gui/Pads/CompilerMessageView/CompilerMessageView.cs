@@ -204,11 +204,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		[System.Security.SuppressUnmanagedCodeSecurityAttribute]
 		[System.Runtime.InteropServices.DllImport("user32.dll")]
-		static extern IntPtr SendMessage(IntPtr hWnd, int msg, int wParam, IntPtr lParam);
+		static extern IntPtr SendMessage(IntPtr hWnd, int msg, IntPtr wParam, IntPtr lParam);
 		
 		void SetUpdate(bool update)
 		{
-			SendMessage(textEditorControl.Handle, WM_SETREDRAW, update ? 1 : 0, IntPtr.Zero);
+			SendMessage(textEditorControl.Handle, WM_SETREDRAW, update ? new IntPtr(1) : IntPtr.Zero, IntPtr.Zero);
 		}
 		
 		void AppendTextCombined(MessageViewCategory category)
