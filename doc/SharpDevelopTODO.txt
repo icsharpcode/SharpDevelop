@@ -1,6 +1,5 @@
 ++ ROADMAPS ++
 
-http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.SharpDevelop1xRoadmap
 http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.SharpDevelop2xRoadmap
 
 
@@ -20,10 +19,9 @@ http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.SharpDevelopWishList
 
 ++ DISCUSSION FORUM ++
 
-http://www.icsharpcode.net/opensource/sd/forum/
+http://community.sharpdevelop.net/forums/
 
-please also see:
+Please also see:
 
-http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.FrequentlyAskedQuestions1x
-http://wiki.sharpdevelop.net/default.aspx/SharpDevelop.BugList1x
+http://wiki.sharpdevelop.net/
 
