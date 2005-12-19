@@ -20,6 +20,6 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
-[assembly: AssemblyVersion("2.0.0.922")]
+[assembly: AssemblyVersion("2.0.0.1")]
 
 [assembly: AssemblyDelaySign(false)]
