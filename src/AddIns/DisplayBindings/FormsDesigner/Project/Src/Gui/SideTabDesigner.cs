@@ -153,9 +153,11 @@ namespace ICSharpCode.FormsDesigner.Gui
 								}
 							}
 						}
-
+						
 						ToolboxItem item = new ToolboxItem(t);
-
+						item.ComponentsCreating += ToolboxComponentsCreatingEventHandler;
+						item.ComponentsCreated += ToolboxComponentsCreatedEventHandler;
+						
 						if (images[imageName] != null) {
 							try {
 								if(images[imageName] is Bitmap)
@@ -165,13 +167,47 @@ namespace ICSharpCode.FormsDesigner.Gui
 							}
 						}
 						toolBoxItems.Add(item);
-
+						
 						skip:;
 					}
 				}
 			}
 			return toolBoxItems;
 		}
+		
+		void ToolboxComponentsCreatingEventHandler (
+		                                            Object sender,
+		                                            ToolboxComponentsCreatingEventArgs e)
+		{
+			AppDomain.CurrentDomain.AssemblyResolve += MyResolveEventHandler;
+		}
+		
+		void ToolboxComponentsCreatedEventHandler (
+		                                           Object sender,
+		                                           ToolboxComponentsCreatedEventArgs e)
+		{
+			AppDomain.CurrentDomain.AssemblyResolve -= MyResolveEventHandler;
+		}
+		
+		Assembly MyResolveEventHandler(object sender, ResolveEventArgs args)
+		{
+			LoggingService.Debug("Side Tab Designer: MyResolve: " + args.Name);
+			//skip already loaded
+			Assembly lastAssembly = null;
+			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
+				//LoggingService.Info("Assembly..." + asm.FullName);
+				if (asm.FullName == args.Name) {
+					lastAssembly = asm;
+				}
+			}
+			if (lastAssembly != null) {
+				LoggingService.Info("ICSharpAssemblyResolver found..." + args.Name);
+				return lastAssembly;
+			}
+			
+			return null;
+		}
+		
 		
 		void SelectedTabItemChanged(object sender, EventArgs e)
 		{

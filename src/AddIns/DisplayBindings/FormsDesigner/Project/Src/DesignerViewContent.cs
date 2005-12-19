@@ -121,6 +121,25 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		Assembly MyResolveEventHandler(object sender, ResolveEventArgs args)
+		{
+			LoggingService.Debug("FormsDesignerViewContent: MyResolve: " + args.Name);
+			//skip already loaded
+			Assembly lastAssembly = null;
+			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
+				//LoggingService.Info("Assembly..." + asm.FullName);
+				if (asm.FullName == args.Name) {
+					lastAssembly = asm;
+				}
+			}
+			if (lastAssembly != null) {
+				LoggingService.Info("ICSharpAssemblyResolver found..." + args.Name);
+				return lastAssembly;
+			}
+			
+			return null;
+		}
+		
 		void LoadDesigner()
 		{
 			LoggingService.Info("Form Designer: BEGIN INITIALIZE");
@@ -151,7 +170,9 @@ namespace ICSharpCode.FormsDesigner
 			designerResourceService.Host = Host;
 			
 			DesignerLoader designerLoader = loaderProvider.CreateLoader(generator);
+			AppDomain.CurrentDomain.AssemblyResolve += MyResolveEventHandler;
 			designSurface.BeginLoad(designerLoader);
+			AppDomain.CurrentDomain.AssemblyResolve -= MyResolveEventHandler;
 			
 			generator.Attach(this);
 			
@@ -545,7 +566,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		#endregion
-
+		
 		/// <summary>
 		/// Reloads the form designer if the language property has changed.
 		/// </summary>
