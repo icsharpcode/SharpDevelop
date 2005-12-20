@@ -1,0 +1,16 @@
+﻿Microsoft Visual Studio Solution File, Format Version 9.00
+# SharpDevelop 2.0.0.909
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PInvokeAddIn", "Project\PInvokeAddIn.csproj", "{5EEB99CF-EA2B-4733-80A6-CE9192D68170}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{5EEB99CF-EA2B-4733-80A6-CE9192D68170}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5EEB99CF-EA2B-4733-80A6-CE9192D68170}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5EEB99CF-EA2B-4733-80A6-CE9192D68170}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5EEB99CF-EA2B-4733-80A6-CE9192D68170}.Release|Any CPU.ActiveCfg = Release|Any CPU
+	EndGlobalSection
+EndGlobal

@@ -1,0 +1,122 @@
+<Components version="1.0">
+  <System.Windows.Forms.Form>
+    <Name value="InsertPInvokeSignaturesForm" />
+    <ShowInTaskbar value="False" />
+    <StartPosition value="CenterParent" />
+    <MinimumSize value="{Width=300, Height=200}" />
+    <ClientSize value="{Width=512, Height=294}" />
+    <MinimizeBox value="False" />
+    <DockPadding value="" />
+    <Text value="${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesForm.DialogName}" />
+    <AcceptButton value="FindButton [System.Windows.Forms.Button], Text: ${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesForm.FindButtonText}" />
+    <CancelButton value="CloseButton [System.Windows.Forms.Button], Text: ${res:Global.CloseButtonText}" />
+    <Controls>
+      <System.Windows.Forms.LinkLabel>
+        <Name value="MoreInfoLinkLabel" />
+        <Anchor value="Bottom, Left" />
+        <TabIndex value="4" />
+        <Location value="{X=8,Y=264}" />
+        <Size value="{Width=248, Height=16}" />
+        <Text value="${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesForm.MoreInfoLinkLabel}" />
+      </System.Windows.Forms.LinkLabel>
+      <System.Windows.Forms.Button>
+        <Name value="InsertButton" />
+        <Location value="{X=368,Y=264}" />
+        <Size value="{Width=64, Height=24}" />
+        <Text value="${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesForm.InsertButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="2" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Button>
+        <Name value="CloseButton" />
+        <Location value="{X=440,Y=264}" />
+        <Size value="{Width=64, Height=24}" />
+        <Text value="${res:Global.CloseButtonText}" />
+        <Anchor value="Bottom, Right" />
+        <TabIndex value="3" />
+        <DialogResult value="Cancel" />
+      </System.Windows.Forms.Button>
+      <System.Windows.Forms.Panel>
+        <Name value="BottomPanel" />
+        <Location value="{X=0,Y=88}" />
+        <Size value="{Width=512, Height=168}" />
+        <DockPadding value="" />
+        <Anchor value="Top, Bottom, Left, Right" />
+        <TabIndex value="1" />
+        <Controls>
+          <System.Windows.Forms.RichTextBox>
+            <Name value="SignatureRichTextBox" />
+            <Anchor value="Top, Bottom, Left, Right" />
+            <Size value="{Width=496, Height=152}" />
+            <Location value="{X=8,Y=8}" />
+            <Text value="" />
+            <TabIndex value="0" />
+          </System.Windows.Forms.RichTextBox>
+        </Controls>
+      </System.Windows.Forms.Panel>
+      <System.Windows.Forms.Panel>
+        <Name value="TopPanel" />
+        <Location value="{X=0,Y=0}" />
+        <Size value="{Width=512, Height=88}" />
+        <DockPadding value="" />
+        <Anchor value="Top, Left, Right" />
+        <TabIndex value="0" />
+        <Controls>
+          <System.Windows.Forms.ComboBox>
+            <Name value="ModuleNameComboBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="5" />
+            <Location value="{X=80,Y=32}" />
+            <Size value="{Width=352, Height=21}" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.ComboBox>
+            <Name value="FunctionNameComboBox" />
+            <Anchor value="Top, Left, Right" />
+            <TabIndex value="4" />
+            <Location value="{X=80,Y=8}" />
+            <Size value="{Width=352, Height=21}" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.ComboBox>
+            <Name value="LanguageComboBox" />
+            <TabIndex value="6" />
+            <Location value="{X=80,Y=56}" />
+            <Size value="{Width=72, Height=21}" />
+            <DropDownStyle value="DropDownList" />
+          </System.Windows.Forms.ComboBox>
+          <System.Windows.Forms.Label>
+            <Name value="LanguageLabel" />
+            <Text value="${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesForm.LanguageLabel}" />
+            <TextAlign value="MiddleLeft" />
+            <TabIndex value="3" />
+            <Size value="{Width=72, Height=16}" />
+            <Location value="{X=8,Y=56}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.Label>
+            <Name value="ModuleNameLabel" />
+            <Text value="${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesForm.ModuleNameLabel}" />
+            <TextAlign value="MiddleLeft" />
+            <TabIndex value="1" />
+            <Size value="{Width=72, Height=16}" />
+            <Location value="{X=8,Y=32}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.Label>
+            <Name value="FunctionNameLabel" />
+            <Text value="${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesForm.FunctionNameLabel}" />
+            <TextAlign value="MiddleLeft" />
+            <TabIndex value="0" />
+            <Size value="{Width=72, Height=16}" />
+            <Location value="{X=8,Y=8}" />
+          </System.Windows.Forms.Label>
+          <System.Windows.Forms.Button>
+            <Name value="FindButton" />
+            <Location value="{X=440,Y=8}" />
+            <Size value="{Width=64, Height=24}" />
+            <Text value="${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesForm.FindButtonText}" />
+            <Anchor value="Top, Right" />
+            <TabIndex value="7" />
+          </System.Windows.Forms.Button>
+        </Controls>
+      </System.Windows.Forms.Panel>
+    </Controls>
+  </System.Windows.Forms.Form>
+</Components>
