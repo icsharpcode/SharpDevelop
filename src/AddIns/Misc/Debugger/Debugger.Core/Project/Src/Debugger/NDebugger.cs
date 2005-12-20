@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 using Debugger.Interop.MetaData;
 using System.Collections.Generic;
 
@@ -105,13 +105,15 @@ namespace Debugger
 			}
 			this.debuggeeVersion = version;
 			
-			NativeMethods.CreateDebuggingInterfaceFromVersion(3, version, out corDebug);
+			Debugger.Interop.CorDebug.ICorDebug rawCorDebug;
+			NativeMethods.CreateDebuggingInterfaceFromVersion(3, version, out rawCorDebug);
+			corDebug = new ICorDebug(rawCorDebug);
 			
 			managedCallback = new ManagedCallback(this);
 			managedCallbackProxy = new ManagedCallbackProxy(managedCallback);
 			
 			corDebug.Initialize();
-			corDebug.SetManagedHandler(managedCallbackProxy);
+			corDebug.SetManagedHandler(new ICorDebugManagedCallback(managedCallbackProxy));
 			
 			localVariables.Updating += OnUpdatingLocalVariables;
 			

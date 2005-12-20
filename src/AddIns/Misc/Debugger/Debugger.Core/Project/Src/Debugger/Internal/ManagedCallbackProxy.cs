@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 using System.Threading;
 using System.Windows.Forms;
 
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 
 // Regular expresion:
 // ^{\t*}{(:Ll| )*{:i} *\(((.# {:i}, |\))|())^6\)*}\n\t*\{(.|\n)@\t\}
@@ -23,7 +23,7 @@ using Debugger.Interop.CorDebug;
 
 namespace Debugger
 {
-	class ManagedCallbackProxy :ICorDebugManagedCallback, ICorDebugManagedCallback2
+	class ManagedCallbackProxy : Debugger.Interop.CorDebug.ICorDebugManagedCallback, Debugger.Interop.CorDebug.ICorDebugManagedCallback2
 	{
 		NDebugger debugger;
 		ManagedCallback realCallback;
@@ -52,7 +52,7 @@ namespace Debugger
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugAppDomain>(pAppDomain),
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugThread>(pThread),
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugStepper>(pStepper),
-			     		reason
+			     		(CorDebugStepReason)reason
 			     	);
 			     });
 		}
@@ -357,7 +357,7 @@ namespace Debugger
 			     });
 		}
 		
-		public void Exception(IntPtr pAppDomain, IntPtr pThread, IntPtr pFrame, uint nOffset, CorDebugExceptionCallbackType dwEventType, uint dwFlags)
+		public void Exception(IntPtr pAppDomain, IntPtr pThread, IntPtr pFrame, uint nOffset, Debugger.Interop.CorDebug.CorDebugExceptionCallbackType dwEventType, uint dwFlags)
 		{
 			Call(delegate {
 			     	realCallback.Exception2(
@@ -365,19 +365,19 @@ namespace Debugger
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugThread>(pThread),
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugFrame>(pFrame),
 			     		nOffset,
-			     		dwEventType,
+			     		(CorDebugExceptionCallbackType)dwEventType,
 			     		dwFlags
 			     	);
 			     });
 		}
 		
-		public void ExceptionUnwind(IntPtr pAppDomain, IntPtr pThread, CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
+		public void ExceptionUnwind(IntPtr pAppDomain, IntPtr pThread, Debugger.Interop.CorDebug.CorDebugExceptionUnwindCallbackType dwEventType, uint dwFlags)
 		{
 			Call(delegate {
 			     	realCallback.ExceptionUnwind(
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugAppDomain>(pAppDomain),
 			     		MTA2STA.MarshalIntPtrTo<ICorDebugThread>(pThread),
-			     		dwEventType,
+			     		(CorDebugExceptionUnwindCallbackType)dwEventType,
 			     		dwFlags
 			     	);
 			     });

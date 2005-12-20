@@ -185,7 +185,8 @@ namespace Debugger
 				return Marshal.PtrToStringAuto((IntPtr)param);
 			}
 			// Marshal a COM object
-			return Marshal.GetTypedObjectForIUnknown((IntPtr)param, outputType);
+			object comObject = Marshal.GetObjectForIUnknown(param);
+			return Activator.CreateInstance(outputType, comObject);
 		}
 		
 		/// <summary>

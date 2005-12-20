@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Runtime.InteropServices;
 
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
@@ -160,13 +160,13 @@ namespace Debugger
 
 		internal static ICorDebugValue DereferenceUnbox(ICorDebugValue corValue)
 		{
-			if (corValue is ICorDebugReferenceValue) {
+			if (corValue.Is<ICorDebugReferenceValue>()) {
 				int isNull;
-				((ICorDebugReferenceValue)corValue).IsNull(out isNull);
+				(corValue.CastTo<ICorDebugReferenceValue>()).IsNull(out isNull);
 				if (isNull == 0) {
 					ICorDebugValue dereferencedValue;
 					try {
-						((ICorDebugReferenceValue)corValue).Dereference(out dereferencedValue);
+						(corValue.CastTo<ICorDebugReferenceValue>()).Dereference(out dereferencedValue);
 					} catch {
 						// Error during dereferencing
 						return null;
@@ -177,10 +177,10 @@ namespace Debugger
 				}
 			}
 
-			if (corValue is ICorDebugBoxValue) {
+			if (corValue.Is<ICorDebugBoxValue>()) {
 				ICorDebugObjectValue corUnboxedValue;
-				((ICorDebugBoxValue)corValue).GetObject(out corUnboxedValue);
-				return DereferenceUnbox(corUnboxedValue); // Try again
+				(corValue.CastTo<ICorDebugBoxValue>()).GetObject(out corUnboxedValue);
+				return DereferenceUnbox(corUnboxedValue.CastTo<ICorDebugValue>()); // Try again
 			}
 
 			return corValue;

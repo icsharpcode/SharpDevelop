@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 
 //TODO: Support for lower bound
 
@@ -57,7 +57,7 @@ namespace Debugger
 
 		internal unsafe ArrayValue(NDebugger debugger, ICorDebugValue corValue):base(debugger, corValue)
 		{
-            corArrayValue = (ICorDebugArrayValue)this.corValue;
+			corArrayValue = this.corValue.CastTo<ICorDebugArrayValue>();
 			uint corElementTypeRaw;
 			corArrayValue.GetElementType(out corElementTypeRaw);
 			corElementType = (CorElementType)corElementTypeRaw;

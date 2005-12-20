@@ -11,7 +11,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 using Debugger.Interop.MetaData;
 using System.Collections.Generic;
 

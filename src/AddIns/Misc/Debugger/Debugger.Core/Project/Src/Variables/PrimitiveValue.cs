@@ -9,7 +9,7 @@ using System;
 using System.ComponentModel;
 using System.Runtime.InteropServices;
 
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
@@ -32,7 +32,7 @@ namespace Debugger
 					IntPtr pString = Marshal.AllocHGlobal(2);
 					
 					// For some reason this function does not accept IntPtr.Zero
-					((ICorDebugStringValue)corValue).GetString(pStringLenght,
+					(corValue.CastTo<ICorDebugStringValue>()).GetString(pStringLenght,
 					                                           out pStringLenght,
 					                                           pString);
 					// Re-allocate string buffer
@@ -41,7 +41,7 @@ namespace Debugger
 					pStringLenght++;
 					pString = Marshal.AllocHGlobal((int)pStringLenght * 2);
 					
-					((ICorDebugStringValue)corValue).GetString(pStringLenght,
+					(corValue.CastTo<ICorDebugStringValue>()).GetString(pStringLenght,
 					                                           out pStringLenght,
 					                                           pString);
 					
@@ -53,7 +53,7 @@ namespace Debugger
 					
 					object retValue;
 					IntPtr pValue = Marshal.AllocHGlobal(8);
-					((ICorDebugGenericValue)corValue).GetValue(pValue);
+					(corValue.CastTo<ICorDebugGenericValue>()).GetValue(pValue);
 					switch(CorType)
 					{
 						case CorElementType.BOOLEAN: retValue = *((System.Boolean*)pValue); break;
@@ -107,7 +107,7 @@ namespace Debugger
 						case CorElementType.U:    *((uint*)pValue)          = (uint)newValue; break;
 						default: throw new NotSupportedException();
 					}
-					((ICorDebugGenericValue)corValue).SetValue(pValue);
+					(corValue.CastTo<ICorDebugGenericValue>()).SetValue(pValue);
 					Marshal.FreeHGlobal(pValue);
 				}
 				OnValueChanged();

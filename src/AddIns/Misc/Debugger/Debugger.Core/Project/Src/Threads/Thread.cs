@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 using Debugger.Interop.MetaData;
 
 namespace Debugger
@@ -141,8 +141,8 @@ namespace Debugger
 		
 		public void InterceptCurrentException()
 		{
-			if (corThread is ICorDebugThread2) { // Is the debuggee .NET 2.0?
-				((ICorDebugThread2)corThread).InterceptCurrentException(LastFunction.CorILFrame);
+			if (corThread.Is<ICorDebugThread2>()) { // Is the debuggee .NET 2.0?
+				corThread.CastTo<ICorDebugThread2>().InterceptCurrentException(LastFunction.CorILFrame.CastTo<ICorDebugFrame>());
 			}
 			process.Continue();
 		}
@@ -297,8 +297,8 @@ namespace Debugger
 					
 					Function function = null;
 					try {
-						if (corFrames[0] is ICorDebugILFrame) {
-							function = new Function(this, chainIndex, frameIndex, (ICorDebugILFrame)corFrames[0]);
+						if (corFrames[0].Is<ICorDebugILFrame>()) {
+							function = new Function(this, chainIndex, frameIndex, corFrames[0].CastTo<ICorDebugILFrame>());
 						}
 					} catch (COMException) {
 						// TODO

@@ -10,7 +10,7 @@ using System.Diagnostics.SymbolStore;
 using System.Collections;
 using System.Runtime.InteropServices;
 
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
@@ -100,7 +100,7 @@ namespace Debugger
 		
 		public override bool Equals(object obj) 
 		{
-			return base.Equals(obj) || corBreakpoint == obj;
+			return base.Equals(obj) || corBreakpoint == (obj as ICorDebugFunctionBreakpoint);
 		}
 		
 		public override int GetHashCode() 
@@ -134,7 +134,8 @@ namespace Debugger
 			
 			hadBeenSet = true;
 			corBreakpoint.Activate(enabled?1:0);
-			pBreakpoint = Marshal.GetComInterfaceForObject(corBreakpoint, typeof(ICorDebugFunctionBreakpoint));
+			pBreakpoint = Marshal.GetComInterfaceForObject(corBreakpoint.WrappedObject, typeof(Debugger.Interop.CorDebug.ICorDebugFunctionBreakpoint));
+			
 			OnBreakpointStateChanged();
 			
 			return true;

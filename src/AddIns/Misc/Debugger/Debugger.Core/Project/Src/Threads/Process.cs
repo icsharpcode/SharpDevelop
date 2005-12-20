@@ -10,7 +10,7 @@ using System.Collections.Generic;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 using Debugger.Interop.MetaData;
 
 namespace Debugger
@@ -87,10 +87,10 @@ namespace Debugger
 		{
 			debugger.TraceMessage("Executing " + filename);
 			
-			_SECURITY_ATTRIBUTES secAttr = new _SECURITY_ATTRIBUTES();
+			Debugger.Interop.CorDebug._SECURITY_ATTRIBUTES secAttr = new Debugger.Interop.CorDebug._SECURITY_ATTRIBUTES();
 			secAttr.bInheritHandle = 0;
 			secAttr.lpSecurityDescriptor = IntPtr.Zero;
-			secAttr.nLength = (uint)sizeof(_SECURITY_ATTRIBUTES); //=12?
+			secAttr.nLength = (uint)sizeof(Debugger.Interop.CorDebug._SECURITY_ATTRIBUTES); //=12?
 			
 			uint[] processStartupInfo = new uint[17];
 			processStartupInfo[0] = sizeof(uint) * 17;

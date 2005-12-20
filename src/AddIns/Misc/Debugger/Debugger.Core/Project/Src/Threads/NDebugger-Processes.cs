@@ -9,7 +9,7 @@ using System;
 using System.Collections.Generic;
 using System.Text;
 using System.Threading;
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {

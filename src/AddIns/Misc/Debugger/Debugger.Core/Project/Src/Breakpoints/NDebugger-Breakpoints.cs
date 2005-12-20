@@ -9,7 +9,7 @@ using System;
 using System.Runtime.InteropServices;
 using System.Collections.Generic;
 
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 using Debugger.Interop.MetaData;
 
 namespace Debugger
@@ -60,7 +60,7 @@ namespace Debugger
 		internal Breakpoint GetBreakpoint(ICorDebugBreakpoint corBreakpoint)
 		{
 			foreach(Breakpoint breakpoint in breakpointCollection) {
-				if (breakpoint == corBreakpoint) {
+				if (breakpoint.Equals(corBreakpoint)) {
 					return breakpoint;
 				}
 			}

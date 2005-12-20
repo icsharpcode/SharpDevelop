@@ -15,7 +15,7 @@
 using System;
 using System.Runtime.InteropServices;
 
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 
 namespace Debugger
 {
@@ -473,10 +473,10 @@ namespace Debugger
 
 		public void MDANotification(ICorDebugController c, ICorDebugThread t, ICorDebugMDA mda)
 		{
-			if (c is ICorDebugAppDomain) {
-				EnterCallback("MDANotification", (ICorDebugAppDomain)c);
-			} else if (c is ICorDebugProcess){
-				EnterCallback("MDANotification", (ICorDebugProcess)c);
+			if (c.Is<ICorDebugAppDomain>()) {
+				EnterCallback("MDANotification", c.CastTo<ICorDebugAppDomain>());
+			} else if (c.Is<ICorDebugProcess>()){
+				EnterCallback("MDANotification", c.CastTo<ICorDebugProcess>());
 			} else {
 				throw new System.Exception("Unknown callback argument");
 			}

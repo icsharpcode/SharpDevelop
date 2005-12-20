@@ -11,7 +11,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Runtime.InteropServices;
 
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 using Debugger.Interop.MetaData;
 
 namespace Debugger
@@ -69,7 +69,7 @@ namespace Debugger
 		
 		internal ICorDebugHandleValue SoftReference {
 			get {
-				ICorDebugHeapValue2 heapValue = this.CorValue as ICorDebugHeapValue2;
+				ICorDebugHeapValue2 heapValue = this.CorValue.As<ICorDebugHeapValue2>();
 				if (heapValue == null) { // TODO: Investigate
 					return null;
 				}
@@ -99,7 +99,7 @@ namespace Debugger
 		
 		internal unsafe ObjectValue(NDebugger debugger, ICorDebugValue corValue):base(debugger, corValue)
 		{
-			((ICorDebugObjectValue)this.corValue).GetClass(out corClass);
+			this.corValue.CastTo<ICorDebugObjectValue>().GetClass(out corClass);
 			InitObjectVariable();
 		}
 
@@ -195,7 +195,7 @@ namespace Debugger
 			                	if (method.IsStatic) {
 			                		return new ICorDebugValue[] {};
 			                	} else {
-			                		return new ICorDebugValue[] {((ObjectValue)getter()).SoftReference};
+			                		return new ICorDebugValue[] {((ObjectValue)getter()).SoftReference.CastTo<ICorDebugValue>()};
 			                	}
 			                });
 		}
@@ -212,7 +212,7 @@ namespace Debugger
 			// Current frame is used to resolve context specific static values (eg. ThreadStatic)
 			ICorDebugFrame curFrame = null;
 			if (debugger.CurrentThread != null && debugger.CurrentThread.LastFunction != null && debugger.CurrentThread.LastFunction.CorILFrame != null) {
-				curFrame = debugger.CurrentThread.LastFunction.CorILFrame;
+				curFrame = debugger.CurrentThread.LastFunction.CorILFrame.CastTo<ICorDebugFrame>();
 			}
 			
 			try {
@@ -220,7 +220,7 @@ namespace Debugger
 				if (field.IsStatic) {
 					corClass.GetStaticFieldValue(field.Token, curFrame, out fieldValue);
 				} else {
-					((ICorDebugObjectValue)val.CorValue).GetFieldValue(corClass, field.Token, out fieldValue);
+					(val.CorValue.CastTo<ICorDebugObjectValue>()).GetFieldValue(corClass, field.Token, out fieldValue);
 				}
 				return Value.CreateValue(debugger, fieldValue);
 			} catch {

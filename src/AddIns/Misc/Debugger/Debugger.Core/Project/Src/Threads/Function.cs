@@ -10,7 +10,7 @@ using System.Diagnostics.SymbolStore;
 using System.Runtime.InteropServices;
 using System.Threading;
 
-using Debugger.Interop.CorDebug;
+using Debugger.Wrappers.CorDebug;
 using Debugger.Interop.MetaData;
 using System.Collections.Generic;
 
@@ -203,9 +203,9 @@ namespace Debugger
 			if (stepIn) {
 				CorILFrame.CreateStepper(out stepper);
 				
-				if (stepper is ICorDebugStepper2) { // Is the debuggee .NET 2.0?
+				if (stepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
 					stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-					(stepper as ICorDebugStepper2).SetJMC(1 /* true */);
+					(stepper.CastTo<ICorDebugStepper2>()).SetJMC(1 /* true */);
 				}
 				
 				fixed (int* ranges = nextSt.StepRanges) {
@@ -220,9 +220,9 @@ namespace Debugger
 			
 			CorILFrame.CreateStepper(out stepper);
 			
-			if (stepper is ICorDebugStepper2) { // Is the debuggee .NET 2.0?
+			if (stepper.Is<ICorDebugStepper2>()) { // Is the debuggee .NET 2.0?
 				stepper.SetUnmappedStopMask(CorDebugUnmappedStop.STOP_NONE);
-				(stepper as ICorDebugStepper2).SetJMC(1 /* true */);
+				(stepper.CastTo<ICorDebugStepper2>()).SetJMC(1 /* true */);
 			}
 			
 			fixed (int* ranges = nextSt.StepRanges) {
