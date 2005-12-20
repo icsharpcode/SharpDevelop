@@ -422,11 +422,17 @@ namespace ICSharpCode.SharpDevelop.Project
 //			isDirty = TaskService.Errors != 0;
 //		}
 		
-		public static CompilerResults RunMSBuild(string fileName, string target, string configuration, string platform)
+		public static CompilerResults RunMSBuild(string fileName, string target, string configuration, string platform, bool isSingleProject)
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
 //			BeforeBuild();
 			MSBuildEngine engine = new MSBuildEngine();
+			if (isSingleProject) {
+				string dir = ProjectService.OpenSolution.Directory;
+				if (!dir.EndsWith("/") && !dir.EndsWith("\\"))
+					dir += Path.DirectorySeparatorChar;
+				engine.AdditionalProperties.Add("SolutionDir", dir);
+			}
 			engine.Configuration = configuration;
 			engine.Platform = platform;
 			engine.MessageView = TaskService.BuildMessageViewCategory;
@@ -439,7 +445,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public CompilerResults RunMSBuild(string target)
 		{
-			return RunMSBuild(this.FileName, target, this.Configuration, this.Platform);
+			return RunMSBuild(this.FileName, target, this.Configuration, this.Platform, true);
 		}
 		
 		public override CompilerResults Build()

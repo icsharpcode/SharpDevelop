@@ -627,7 +627,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public CompilerResults RunMSBuild(string target)
 		{
-			return MSBuildProject.RunMSBuild(FileName, target, preferences.ActiveConfiguration, preferences.ActivePlatform);
+			return MSBuildProject.RunMSBuild(FileName, target, preferences.ActiveConfiguration, preferences.ActivePlatform, false);
 		}
 		
 		public CompilerResults Build()

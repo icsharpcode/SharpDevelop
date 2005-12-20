@@ -58,6 +58,14 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		SortedList<string, string> additionalProperties = new SortedList<string, string>();
+		
+		public IDictionary<string, string> AdditionalProperties {
+			get {
+				return additionalProperties;
+			}
+		}
+		
 		string configuration;
 		
 		/// <summary>
@@ -145,6 +153,9 @@ namespace ICSharpCode.SharpDevelop.Project
 					engine.GlobalProperties.SetProperty("Platform", this.engine.Platform);
 				}
 				foreach (KeyValuePair<string, string> entry in MSBuildProperties) {
+					engine.GlobalProperties.SetProperty(entry.Key, entry.Value);
+				}
+				foreach (KeyValuePair<string, string> entry in this.engine.additionalProperties) {
 					engine.GlobalProperties.SetProperty(entry.Key, entry.Value);
 				}
 				
