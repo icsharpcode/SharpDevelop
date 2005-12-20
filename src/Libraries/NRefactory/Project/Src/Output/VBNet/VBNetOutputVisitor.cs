@@ -945,8 +945,121 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(OperatorDeclaration operatorDeclaration, object data)
 		{
-			// TODO: VB.NET 2.0 operators
-			errors.Error(-1, -1, String.Format("operators not supported."));
+			// TODO: widenting... operators
+			VisitAttributes(operatorDeclaration.Attributes, data);
+			outputFormatter.Indent();
+			OutputModifier(operatorDeclaration.Modifier);
+			outputFormatter.PrintToken(Tokens.Operator);
+			outputFormatter.Space();
+			
+			int op = -1;
+			
+			switch(operatorDeclaration.OverloadableOperator)
+			{
+				case OverloadableOperatorType.Add:
+					op = Tokens.Plus;
+					break;
+				case OverloadableOperatorType.Subtract:
+					op = Tokens.Minus;
+					break;
+				case OverloadableOperatorType.Multiply:
+					op = Tokens.Times;
+					break;
+				case OverloadableOperatorType.Divide:
+					op = Tokens.Div;
+					break;
+				case OverloadableOperatorType.Modulus:
+					op = Tokens.Mod;
+					break;
+				case OverloadableOperatorType.Concat:
+					op = Tokens.ConcatString;
+					break;
+				case OverloadableOperatorType.Not:
+					op = Tokens.Not;
+					break;
+				case OverloadableOperatorType.BitNot:
+					op = Tokens.Not;
+					break;
+				case OverloadableOperatorType.BitwiseAnd:
+					op = Tokens.And;
+					break;
+				case OverloadableOperatorType.BitwiseOr:
+					op = Tokens.Or;
+					break;
+				case OverloadableOperatorType.ExclusiveOr:
+					op = Tokens.Xor;
+					break;
+				case OverloadableOperatorType.ShiftLeft:
+					op = Tokens.ShiftLeft;
+					break;
+				case OverloadableOperatorType.ShiftRight:
+					op = Tokens.ShiftRight;
+					break;
+				case OverloadableOperatorType.GreaterThan:
+					op = Tokens.GreaterThan;
+					break;
+				case OverloadableOperatorType.GreaterThanOrEqual:
+					op = Tokens.GreaterEqual;
+					break;
+				case OverloadableOperatorType.Equality:
+					op = Tokens.Assign;
+					break;
+				case OverloadableOperatorType.InEquality:
+					op = Tokens.NotEqual;
+					break;
+				case OverloadableOperatorType.LessThan:
+					op = Tokens.LessThan;
+					break;
+				case OverloadableOperatorType.LessThanOrEqual:
+					op = Tokens.LessEqual;
+					break;
+				case OverloadableOperatorType.Increment:
+					errors.Error(-1, -1, "Increment operator is not supported in Visual Basic");
+					break;
+				case OverloadableOperatorType.Decrement:
+					errors.Error(-1, -1, "Decrement operator is not supported in Visual Basic");
+					break;
+				case OverloadableOperatorType.IsTrue:
+					outputFormatter.PrintText("IsTrue");
+					break;
+				case OverloadableOperatorType.IsFalse:
+					outputFormatter.PrintText("IsFalse");
+					break; 		
+				case OverloadableOperatorType.Like:
+					op = Tokens.Like;
+					break;
+				case OverloadableOperatorType.Power:
+					op = Tokens.Power;
+					break;
+				case OverloadableOperatorType.CType:
+					op = Tokens.CType;
+					break;
+				case OverloadableOperatorType.DivideInteger:
+					op = Tokens.DivInteger;
+					break;
+			}
+			
+			if(op != -1)  outputFormatter.PrintToken(op);
+			
+			PrintTemplates(operatorDeclaration.Templates);
+			
+			outputFormatter.PrintToken(Tokens.OpenParenthesis);
+			AppendCommaSeparatedList(operatorDeclaration.Parameters);
+			outputFormatter.PrintToken(Tokens.CloseParenthesis);
+			
+			outputFormatter.NewLine();
+			
+			++outputFormatter.IndentationLevel;
+			nodeTracker.TrackedVisit(operatorDeclaration.Body, data);
+			--outputFormatter.IndentationLevel;
+			
+			outputFormatter.NewLine();
+			outputFormatter.Indent();
+			outputFormatter.PrintToken(Tokens.End);
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Operator);
+			outputFormatter.NewLine();
+			
 			return null;
 		}
 		
