@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			new Build().Run();
-			if (Build.LastErrorCount == 0) {
+			if (MSBuildEngine.LastErrorCount == 0) {
 				IProject startupProject = ProjectService.OpenSolution.StartupProject;
 				if (startupProject != null) {
 					startupProject.Start(true);
@@ -31,7 +31,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		public override void Run()
 		{
 			new Build().Run();
-			if (Build.LastErrorCount == 0) {
+			if (MSBuildEngine.LastErrorCount == 0) {
 				IProject startupProject = ProjectService.OpenSolution.StartupProject;
 				if (startupProject != null) {
 					startupProject.Start(false);

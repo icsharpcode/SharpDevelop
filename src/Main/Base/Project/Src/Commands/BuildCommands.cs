@@ -16,9 +16,14 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Project.Commands
 {
-	public class Build : AbstractMenuCommand
+	public abstract class AbstractBuildMenuCommand : AbstractMenuCommand
 	{
-		public static void BeforeBuild()
+		public virtual bool CanRunBuild {
+			get {
+				return ProjectService.OpenSolution!=null;
+			}
+		}
+		public virtual void BeforeBuild()
 		{
 			TaskService.BuildMessageViewCategory.ClearText();
 			TaskService.InUpdate = true;
@@ -27,145 +32,102 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			ICSharpCode.SharpDevelop.Commands.SaveAllFiles.SaveAll();
 		}
 		
-		public static int LastErrorCount;
-		public static int LastWarningCount;
-		
-		public static void ShowResults(CompilerResults results)
-		{
-			if (results != null) {
-				LastErrorCount = 0;
-				LastWarningCount = 0;
-				TaskService.InUpdate = true;
-				foreach (CompilerError error in results.Errors) {
-					TaskService.Add(new Task(error));
-					if (error.IsWarning)
-						LastWarningCount++;
-					else
-						LastErrorCount++;
-				}
-				TaskService.InUpdate = false;
-				if (results.Errors.Count > 0) {
-					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
-				}
-			}
-		}
-		
-		public static void AddNoSingleFileCompilationError()
-		{
-			LastErrorCount = 1;
-			LastWarningCount = 0;
-			TaskService.Add(new Task(null, StringParser.Parse("${res:BackendBindings.ExecutionManager.NoSingleFileCompilation}"), 0, 0, TaskType.Error));
-			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
-		}
+		public virtual void AfterBuild() {}
 		
 		public override void Run()
 		{
-			Build.BeforeBuild();
-			if (ProjectService.OpenSolution == null) {
-				Build.AddNoSingleFileCompilationError();
+			if (CanRunBuild) {
+				BeforeBuild();
+				RunBuild();
+				AfterBuild();
 			} else {
-				Build.ShowResults(ProjectService.OpenSolution.Build());
+				MSBuildEngine.AddNoSingleFileCompilationError();
 			}
-			Build.AfterBuild();
+		}
+
+		public abstract void RunBuild();
+	}
+	
+	public class Build : AbstractBuildMenuCommand
+	{
+		public override void RunBuild()
+		{
+			MSBuildEngine.ShowResults(ProjectService.OpenSolution.Build());
 		}
 		
-		public static void AfterBuild()
+		public override void AfterBuild()
 		{
 			ProjectService.OnEndBuild();
 		}
 	}
 	
-	public class Rebuild : AbstractMenuCommand
+	public class Rebuild : Build
 	{
-		public override void Run()
+		public override void RunBuild()
 		{
-			Build.BeforeBuild();
-			if (ProjectService.OpenSolution == null) {
-				Build.AddNoSingleFileCompilationError();
-			} else {
-				Build.ShowResults(ProjectService.OpenSolution.Rebuild());
-			}
-			Build.AfterBuild();
+			MSBuildEngine.ShowResults(ProjectService.OpenSolution.Rebuild());
 		}
 	}
 	
-	public class Clean : AbstractMenuCommand
+	public class Clean : AbstractBuildMenuCommand
 	{
-		public override void Run()
+		public override void RunBuild()
 		{
-			Build.BeforeBuild();
-			if (ProjectService.OpenSolution == null) {
-				Build.AddNoSingleFileCompilationError();
-			} else {
-				Build.ShowResults(ProjectService.OpenSolution.Clean());
-			}
+			MSBuildEngine.ShowResults(ProjectService.OpenSolution.Clean());
 		}
 	}
 	
-	public class Publish : AbstractMenuCommand
+	public class Publish : AbstractBuildMenuCommand
 	{
-		public override void Run()
+		public override void RunBuild()
 		{
-			Build.BeforeBuild();
-			if (ProjectService.OpenSolution == null) {
-				Build.AddNoSingleFileCompilationError();
-			} else {
-				Build.ShowResults(ProjectService.OpenSolution.Publish());
-			}
+			MSBuildEngine.ShowResults(ProjectService.OpenSolution.Publish());
 		}
 	}
 	
-	public class BuildProject : AbstractMenuCommand
+	public abstract class AbstractProjectBuildMenuCommand : AbstractBuildMenuCommand
 	{
-		public override void Run()
-		{
-			Build.BeforeBuild();
-			if (ProjectService.OpenSolution == null) {
-				Build.AddNoSingleFileCompilationError();
-			} else {
-				Build.ShowResults(ProjectService.CurrentProject.Build());
-			}
-			Build.AfterBuild();
-		}
-	}
-	
-	public class RebuildProject : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			Build.BeforeBuild();
-			if (ProjectService.OpenSolution == null) {
-				Build.AddNoSingleFileCompilationError();
-			} else {
-				Build.ShowResults(ProjectService.CurrentProject.Rebuild());
-			}
-			Build.AfterBuild();
-		}
-	}
-	
-	public class CleanProject : AbstractMenuCommand
-	{
-		public override void Run()
-		{
-			Build.BeforeBuild();
-			if (ProjectService.OpenSolution == null) {
-				Build.AddNoSingleFileCompilationError();
-			} else {
-				Build.ShowResults(ProjectService.CurrentProject.Clean());
+		public override bool CanRunBuild {
+			get {
+				return base.CanRunBuild 
+					&& ProjectService.CurrentProject!=null;
 			}
 		}
 	}
-	
-	public class PublishProject : AbstractMenuCommand
+	public class BuildProject : AbstractProjectBuildMenuCommand
 	{
-		public override void Run()
+		public override void RunBuild()
 		{
-			Build.BeforeBuild();
-			if (ProjectService.OpenSolution == null) {
-				Build.AddNoSingleFileCompilationError();
-			} else {
-				Build.ShowResults(ProjectService.CurrentProject.Publish());
-			}
+			MSBuildEngine.ShowResults(ProjectService.CurrentProject.Build());
+		}
+		
+		public override void AfterBuild()
+		{
+			ProjectService.OnEndBuild();
+		}
+	}
+	
+	public class RebuildProject : BuildProject
+	{
+		public override void RunBuild()
+		{
+			MSBuildEngine.ShowResults(ProjectService.CurrentProject.Rebuild());
+		}
+	}
+	
+	public class CleanProject : AbstractProjectBuildMenuCommand
+	{
+		public override void RunBuild()
+		{
+			MSBuildEngine.ShowResults(ProjectService.CurrentProject.Clean());
+		}
+	}
+	
+	public class PublishProject : AbstractProjectBuildMenuCommand
+	{
+		public override void RunBuild()
+		{
+			MSBuildEngine.ShowResults(ProjectService.CurrentProject.Publish());
 		}
 	}
 	

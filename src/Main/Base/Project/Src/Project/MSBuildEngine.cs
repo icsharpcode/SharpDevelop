@@ -43,6 +43,46 @@ namespace ICSharpCode.SharpDevelop.Project
 			MSBuildProperties = new SortedList<string, string>();
 			MSBuildProperties.Add("SharpDevelopBinPath", Path.GetDirectoryName(typeof(MSBuildEngine).Assembly.Location));
 		}
+
+		#region relocated from ICSharpCode.SharpDevelop.Project.Commands.Build in BuildCommands.cs
+		public static int LastErrorCount;
+		public static int LastWarningCount;
+		
+		public static void ShowResults(CompilerResults results)
+		{
+			if (results != null) {
+				LastErrorCount = 0;
+				LastWarningCount = 0;
+				TaskService.InUpdate = true;
+				foreach (CompilerError error in results.Errors) {
+					TaskService.Add(new Task(error));
+					if (error.IsWarning)
+						LastWarningCount++;
+					else
+						LastErrorCount++;
+				}
+				TaskService.InUpdate = false;
+				if (results.Errors.Count > 0) {
+					WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+				}
+			}
+		}
+		
+		/// <summary>
+		/// Notifies the user that #develp's internal MSBuildEngine 
+		/// implementation only supports compiling solutions and projects;
+		/// it does not allow compiling individual files.
+		/// </summary>
+		/// <remarks>Adds a message to the <see cref="TaskService"/> and 
+		/// shows the <see cref="ErrorListPad"/>.</remarks>
+		public static void AddNoSingleFileCompilationError()
+		{
+			LastErrorCount = 1;
+			LastWarningCount = 0;
+			TaskService.Add(new Task(null, StringParser.Parse("${res:BackendBindings.ExecutionManager.NoSingleFileCompilation}"), 0, 0, TaskType.Error));
+			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
+		}
+		#endregion		
 		
 		MessageViewCategory messageView;
 		
