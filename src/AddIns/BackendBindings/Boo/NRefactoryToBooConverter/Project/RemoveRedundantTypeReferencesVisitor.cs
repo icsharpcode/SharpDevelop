@@ -18,6 +18,14 @@ namespace NRefactoryToBooConverter
 	/// </summary>
 	public class RemoveRedundantTypeReferencesVisitor : DepthFirstTransformer
 	{
+		protected override void OnError(Node node, Exception error)
+		{
+			if (error is CompilerError)
+				base.OnError(node, error);
+			else
+				throw new CompilerError(node, error.ToString());
+		}
+		
 		bool IsVoid(TypeReference typeRef)
 		{
 			SimpleTypeReference str = typeRef as SimpleTypeReference;
@@ -99,6 +107,8 @@ namespace NRefactoryToBooConverter
 		
 		TypeReference GetInferredType(Expression expr)
 		{
+			if (expr == null)
+				return null;
 			switch (expr.NodeType) {
 				case NodeType.TypeofExpression:
 					return new SimpleTypeReference("type");
