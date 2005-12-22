@@ -304,6 +304,11 @@ namespace ICSharpCode.NRefactory.Parser.VB
 				}
 			}
 			
+			if (digit.Length == 0) {
+				errors.Error(Line, Col, String.Format("digit expected"));
+				return new Token(Tokens.LiteralInteger, x, y, sb.ToString(), 0);
+			}
+			
 			if (ReaderPeek() != -1 && ("%&SILU".IndexOf(PeekUpperChar()) != -1 || ishex || isokt)) {
 				ch = (char)ReaderPeek();
 				sb.Append(ch);

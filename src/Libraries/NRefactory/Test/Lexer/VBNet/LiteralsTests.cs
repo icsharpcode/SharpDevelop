@@ -68,6 +68,20 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.VB
 		}
 		
 		[Test]
+		public void TestIncompleteHexadecimal()
+		{
+			ILexer lexer = GenerateLexer(new StringReader("&H\r\nabc"));
+			Token t = lexer.NextToken();
+			Assert.AreEqual(Tokens.LiteralInteger, t.kind);
+			Assert.AreEqual(0, (int)t.literalValue);
+			Assert.AreEqual(Tokens.EOL, lexer.NextToken().kind, "Tokens.EOL (1)");
+			Assert.AreEqual(Tokens.Identifier, lexer.NextToken().kind, "Tokens.Identifier");
+			Assert.AreEqual(Tokens.EOL, lexer.NextToken().kind, "Tokens.EOL (2)");
+			Assert.AreEqual(Tokens.EOF, lexer.NextToken().kind, "Tokens.EOF");
+			Assert.AreNotEqual("", lexer.Errors.ErrorOutput);
+		}
+		
+		[Test]
 		public void TestStringLiterals()
 		{
 			CheckToken("\"\"", Tokens.LiteralString, "");
