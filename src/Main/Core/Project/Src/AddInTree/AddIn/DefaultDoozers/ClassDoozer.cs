@@ -11,7 +11,7 @@ using System.Collections;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Creates object instances by invocing a type's parameterless constructor
+	/// Creates object instances by invocating a type's parameterless constructor
 	/// via System.Reflection.
 	/// </summary>
 	/// <attribute name="class" use="required">

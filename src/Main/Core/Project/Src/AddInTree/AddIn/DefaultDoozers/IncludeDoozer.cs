@@ -11,8 +11,9 @@ using System.Collections;
 namespace ICSharpCode.Core
 {
 	/// <summary>
-	/// Builds one or multiple items from another location in the addin tree.
-	/// This doozer can use the "item" OR the "path" attribute.
+	/// Includes one or multiple items from another location in the addin tree.
+	/// You can use the attribute "item" (to include a single item) OR the
+	/// attribute "path" (to include all items from the target path).
 	/// </summary>
 	/// <attribute name="item">
 	/// When this attribute is used, the include doozer builds the item that is at the

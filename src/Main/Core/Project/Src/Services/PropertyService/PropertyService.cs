@@ -106,7 +106,6 @@ namespace ICSharpCode.Core
 				properties.WriteProperties(writer);
 				writer.WriteEndElement();
 			}
-			
 		}
 		
 		static void PropertiesPropertyChanged(object sender, PropertyChangedEventArgs e)
@@ -115,7 +114,6 @@ namespace ICSharpCode.Core
 				PropertyChanged(null, e);
 			}
 		}
-		
 		
 		public static event PropertyChangedEventHandler PropertyChanged;
 	}

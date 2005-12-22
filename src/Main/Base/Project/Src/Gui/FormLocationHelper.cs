@@ -13,7 +13,8 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.Gui
 {
 	/// <summary>
-	/// Description of FormLocationHelper.
+	/// Static helper class that loads and stores the position and size of a Form in the
+	/// PropertyService.
 	/// </summary>
 	public static class FormLocationHelper
 	{

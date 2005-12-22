@@ -36,7 +36,6 @@
 			<Files>
 				<File name="${ProjectName}.addin" copyToOutputDirectory="Always"><![CDATA[<AddIn name        = "${ProjectName}"
        author      = "${USER}"
-       copyright   = "GNU General Public License"
        url         = ""
        description = "TODO: Put description here">
 	
@@ -54,21 +53,7 @@
 </AddIn>
 ]]></File>
 		<File name="Src/Command.cs">
-			<![CDATA[// Copyright (C) yyyy  name of author
-//
-// This program is free software; you can redistribute it and/or
-// modify it under the terms of the GNU General Public License
-// as published by the Free Software Foundation; either version 2
-// of the License, or (at your option) any later version.
-//
-// This program is distributed in the hope that it will be useful,
-// but WITHOUT ANY WARRANTY; without even the implied warranty of
-// MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-// GNU General Public License for more details.
-//
-// You should have received a copy of the GNU General Public License
-// along with this program; if not, write to the Free Software
-// Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
+			<![CDATA[${StandardHeader.C#}
 
 using System;
 using System.Text;
@@ -110,21 +95,14 @@ namespace Macro1
 }
 ]]></File>
 		<File name="Configuration/AssemblyInfo.cs">
-			<![CDATA[using System.Reflection;
-using System.Runtime.CompilerServices;
-
-// Information about this assembly is defined by the following
-// attributes.
-//
-// change them to the information which is associated with the assembly
-// you compile.
+			<![CDATA[${StandardHeader.C#}
 
 [assembly: AssemblyTitle("${ProjectName}")]
 [assembly: AssemblyDescription("Macro AddIn for SharpDevelop 2.0")]
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("GNU General Public Licence")]
+[assembly: AssemblyCopyright("")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

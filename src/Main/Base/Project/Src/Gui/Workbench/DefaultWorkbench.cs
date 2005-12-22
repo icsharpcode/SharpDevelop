@@ -140,6 +140,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			UpdateRenderer();
 			
 			MenuComplete                 += new EventHandler(SetStandardStatusBar);
+			
 			SetStandardStatusBar(null, null);
 			
 			ProjectService.CurrentProjectChanged += new ProjectEventHandler(SetProjectTitle);
@@ -513,15 +514,24 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-//		// Handle keyboard shortcuts
-//		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
-//		{
-//			if (this.ToolStripManager.PreProcessMessage(ref msg)) {
-//				return true;
-//			}
-//
-//			return base.ProcessCmdKey(ref msg, keyData);
-//		}
+		const int VK_RMENU = 0xA5; // right alt key
+		
+		[System.Runtime.InteropServices.DllImport("user32.dll", ExactSpelling=true)]
+		static extern short GetAsyncKeyState(int vKey);
+		
+		public bool IsAltGRPressed {
+			get {
+				return GetAsyncKeyState(VK_RMENU) < 0 && (Control.ModifierKeys & Keys.Control) == Keys.Control;
+			}
+		}
+		
+		// Handle keyboard shortcuts
+		protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+		{
+			if (IsAltGRPressed)
+				return false;
+			return base.ProcessCmdKey(ref msg, keyData);
+		}
 		
 		protected override void OnDragEnter(DragEventArgs e)
 		{
