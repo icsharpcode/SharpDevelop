@@ -90,21 +90,30 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.Continue(fIsOutOfBand);
 		}
 		
-		public void IsRunning(out int pbRunning)
+		public int IsRunning
 		{
-			this.WrappedObject.IsRunning(out pbRunning);
+			get
+			{
+				int pbRunning;
+				this.WrappedObject.IsRunning(out pbRunning);
+				return pbRunning;
+			}
 		}
 		
-		public void HasQueuedCallbacks(ICorDebugThread pThread, out int pbQueued)
+		public int HasQueuedCallbacks(ICorDebugThread pThread)
 		{
+			int pbQueued;
 			this.WrappedObject.HasQueuedCallbacks(pThread.WrappedObject, out pbQueued);
+			return pbQueued;
 		}
 		
-		public void EnumerateThreads(out ICorDebugThreadEnum ppThreads)
+		public ICorDebugThreadEnum EnumerateThreads()
 		{
+			ICorDebugThreadEnum ppThreads;
 			Debugger.Interop.CorDebug.ICorDebugThreadEnum out_ppThreads;
 			this.WrappedObject.EnumerateThreads(out out_ppThreads);
 			ppThreads = ICorDebugThreadEnum.Wrap(out_ppThreads);
+			return ppThreads;
 		}
 		
 		public void SetAllThreadsDebugState(CorDebugThreadState state, ICorDebugThread pExceptThisThread)
@@ -122,22 +131,26 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.Terminate(exitCode);
 		}
 		
-		public void CanCommitChanges(uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots, out ICorDebugErrorInfoEnum pError)
+		public ICorDebugErrorInfoEnum CanCommitChanges(uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots)
 		{
+			ICorDebugErrorInfoEnum pError;
 			Debugger.Interop.CorDebug.ICorDebugEditAndContinueSnapshot ref_pSnapshots = pSnapshots.WrappedObject;
 			Debugger.Interop.CorDebug.ICorDebugErrorInfoEnum out_pError;
 			this.WrappedObject.CanCommitChanges(cSnapshots, ref ref_pSnapshots, out out_pError);
 			pSnapshots = ICorDebugEditAndContinueSnapshot.Wrap(ref_pSnapshots);
 			pError = ICorDebugErrorInfoEnum.Wrap(out_pError);
+			return pError;
 		}
 		
-		public void CommitChanges(uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots, out ICorDebugErrorInfoEnum pError)
+		public ICorDebugErrorInfoEnum CommitChanges(uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots)
 		{
+			ICorDebugErrorInfoEnum pError;
 			Debugger.Interop.CorDebug.ICorDebugEditAndContinueSnapshot ref_pSnapshots = pSnapshots.WrappedObject;
 			Debugger.Interop.CorDebug.ICorDebugErrorInfoEnum out_pError;
 			this.WrappedObject.CommitChanges(cSnapshots, ref ref_pSnapshots, out out_pError);
 			pSnapshots = ICorDebugEditAndContinueSnapshot.Wrap(ref_pSnapshots);
 			pError = ICorDebugErrorInfoEnum.Wrap(out_pError);
+			return pError;
 		}
 	}
 }

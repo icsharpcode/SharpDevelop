@@ -80,13 +80,15 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetParameterizedType(uint elementType, uint nTypeArgs, ref ICorDebugType ppTypeArgs, out ICorDebugType ppType)
+		public ICorDebugType GetParameterizedType(uint elementType, uint nTypeArgs, ref ICorDebugType ppTypeArgs)
 		{
+			ICorDebugType ppType;
 			Debugger.Interop.CorDebug.ICorDebugType ref_ppTypeArgs = ppTypeArgs.WrappedObject;
 			Debugger.Interop.CorDebug.ICorDebugType out_ppType;
 			this.WrappedObject.GetParameterizedType(elementType, nTypeArgs, ref ref_ppTypeArgs, out out_ppType);
 			ppTypeArgs = ICorDebugType.Wrap(ref_ppTypeArgs);
 			ppType = ICorDebugType.Wrap(out_ppType);
+			return ppType;
 		}
 		
 		public void SetJMCStatus(int bIsJustMyCode)

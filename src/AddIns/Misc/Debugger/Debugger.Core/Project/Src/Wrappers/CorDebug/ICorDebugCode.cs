@@ -80,43 +80,72 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void IsIL(out int pbIL)
+		public int IsIL
 		{
-			this.WrappedObject.IsIL(out pbIL);
+			get
+			{
+				int pbIL;
+				this.WrappedObject.IsIL(out pbIL);
+				return pbIL;
+			}
 		}
 		
-		public void GetFunction(out ICorDebugFunction ppFunction)
+		public ICorDebugFunction Function
 		{
-			Debugger.Interop.CorDebug.ICorDebugFunction out_ppFunction;
-			this.WrappedObject.GetFunction(out out_ppFunction);
-			ppFunction = ICorDebugFunction.Wrap(out_ppFunction);
+			get
+			{
+				ICorDebugFunction ppFunction;
+				Debugger.Interop.CorDebug.ICorDebugFunction out_ppFunction;
+				this.WrappedObject.GetFunction(out out_ppFunction);
+				ppFunction = ICorDebugFunction.Wrap(out_ppFunction);
+				return ppFunction;
+			}
 		}
 		
-		public void GetAddress(out ulong pStart)
+		public ulong Address
 		{
-			this.WrappedObject.GetAddress(out pStart);
+			get
+			{
+				ulong pStart;
+				this.WrappedObject.GetAddress(out pStart);
+				return pStart;
+			}
 		}
 		
-		public void GetSize(out uint pcBytes)
+		public uint Size
 		{
-			this.WrappedObject.GetSize(out pcBytes);
+			get
+			{
+				uint pcBytes;
+				this.WrappedObject.GetSize(out pcBytes);
+				return pcBytes;
+			}
 		}
 		
-		public void CreateBreakpoint(uint offset, out ICorDebugFunctionBreakpoint ppBreakpoint)
+		public ICorDebugFunctionBreakpoint CreateBreakpoint(uint offset)
 		{
+			ICorDebugFunctionBreakpoint ppBreakpoint;
 			Debugger.Interop.CorDebug.ICorDebugFunctionBreakpoint out_ppBreakpoint;
 			this.WrappedObject.CreateBreakpoint(offset, out out_ppBreakpoint);
 			ppBreakpoint = ICorDebugFunctionBreakpoint.Wrap(out_ppBreakpoint);
+			return ppBreakpoint;
 		}
 		
-		public void GetCode(uint startOffset, uint endOffset, uint cBufferAlloc, System.IntPtr buffer, out uint pcBufferSize)
+		public uint GetCode(uint startOffset, uint endOffset, uint cBufferAlloc, System.IntPtr buffer)
 		{
+			uint pcBufferSize;
 			this.WrappedObject.GetCode(startOffset, endOffset, cBufferAlloc, buffer, out pcBufferSize);
+			return pcBufferSize;
 		}
 		
-		public void GetVersionNumber(out uint nVersion)
+		public uint VersionNumber
 		{
-			this.WrappedObject.GetVersionNumber(out nVersion);
+			get
+			{
+				uint nVersion;
+				this.WrappedObject.GetVersionNumber(out nVersion);
+				return nVersion;
+			}
 		}
 		
 		public void GetILToNativeMapping(uint cMap, out uint pcMap, System.IntPtr map)

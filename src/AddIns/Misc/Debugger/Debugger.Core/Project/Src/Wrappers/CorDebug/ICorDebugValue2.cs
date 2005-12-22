@@ -80,11 +80,16 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetExactType(out ICorDebugType ppType)
+		public ICorDebugType ExactType
 		{
-			Debugger.Interop.CorDebug.ICorDebugType out_ppType;
-			this.WrappedObject.GetExactType(out out_ppType);
-			ppType = ICorDebugType.Wrap(out_ppType);
+			get
+			{
+				ICorDebugType ppType;
+				Debugger.Interop.CorDebug.ICorDebugType out_ppType;
+				this.WrappedObject.GetExactType(out out_ppType);
+				ppType = ICorDebugType.Wrap(out_ppType);
+				return ppType;
+			}
 		}
 	}
 }

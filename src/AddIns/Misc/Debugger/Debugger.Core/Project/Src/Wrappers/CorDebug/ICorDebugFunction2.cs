@@ -85,21 +85,33 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.SetJMCStatus(bIsJustMyCode);
 		}
 		
-		public void GetJMCStatus(out int pbIsJustMyCode)
+		public int JMCStatus
 		{
-			this.WrappedObject.GetJMCStatus(out pbIsJustMyCode);
+			get
+			{
+				int pbIsJustMyCode;
+				this.WrappedObject.GetJMCStatus(out pbIsJustMyCode);
+				return pbIsJustMyCode;
+			}
 		}
 		
-		public void EnumerateNativeCode(out ICorDebugCodeEnum ppCodeEnum)
+		public ICorDebugCodeEnum EnumerateNativeCode()
 		{
+			ICorDebugCodeEnum ppCodeEnum;
 			Debugger.Interop.CorDebug.ICorDebugCodeEnum out_ppCodeEnum;
 			this.WrappedObject.EnumerateNativeCode(out out_ppCodeEnum);
 			ppCodeEnum = ICorDebugCodeEnum.Wrap(out_ppCodeEnum);
+			return ppCodeEnum;
 		}
 		
-		public void GetVersionNumber(out uint pnVersion)
+		public uint VersionNumber
 		{
-			this.WrappedObject.GetVersionNumber(out pnVersion);
+			get
+			{
+				uint pnVersion;
+				this.WrappedObject.GetVersionNumber(out pnVersion);
+				return pnVersion;
+			}
 		}
 	}
 }

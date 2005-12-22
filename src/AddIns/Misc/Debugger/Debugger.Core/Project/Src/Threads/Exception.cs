@@ -40,7 +40,7 @@ namespace Debugger
 			creationTime = DateTime.Now;
 			this.debugger = thread.Debugger;
 			this.thread = thread;
-			thread.CorThread.GetCurrentException(out corValue);
+			corValue = thread.CorThread.CurrentException;
 			exceptionType = thread.CurrentExceptionType;
 			runtimeValue = Value.CreateValue(debugger, corValue);
 			runtimeValueException = runtimeValue as ObjectValue;

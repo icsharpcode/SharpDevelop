@@ -80,9 +80,14 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetRegistersAvailable(out ulong pAvailable)
+		public ulong RegistersAvailable
 		{
-			this.WrappedObject.GetRegistersAvailable(out pAvailable);
+			get
+			{
+				ulong pAvailable;
+				this.WrappedObject.GetRegistersAvailable(out pAvailable);
+				return pAvailable;
+			}
 		}
 		
 		public void GetRegisters(ulong mask, uint regCount, System.IntPtr regBuffer)

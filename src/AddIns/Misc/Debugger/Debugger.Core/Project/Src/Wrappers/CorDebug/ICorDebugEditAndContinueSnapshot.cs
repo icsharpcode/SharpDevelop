@@ -80,24 +80,41 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void CopyMetaData(IStream pIStream, out System.Guid pMvid)
+		public System.Guid CopyMetaData(IStream pIStream)
 		{
+			System.Guid pMvid;
 			this.WrappedObject.CopyMetaData(pIStream.WrappedObject, out pMvid);
+			return pMvid;
 		}
 		
-		public void GetMvid(out System.Guid pMvid)
+		public System.Guid Mvid
 		{
-			this.WrappedObject.GetMvid(out pMvid);
+			get
+			{
+				System.Guid pMvid;
+				this.WrappedObject.GetMvid(out pMvid);
+				return pMvid;
+			}
 		}
 		
-		public void GetRoDataRVA(out uint pRoDataRVA)
+		public uint RoDataRVA
 		{
-			this.WrappedObject.GetRoDataRVA(out pRoDataRVA);
+			get
+			{
+				uint pRoDataRVA;
+				this.WrappedObject.GetRoDataRVA(out pRoDataRVA);
+				return pRoDataRVA;
+			}
 		}
 		
-		public void GetRwDataRVA(out uint pRwDataRVA)
+		public uint RwDataRVA
 		{
-			this.WrappedObject.GetRwDataRVA(out pRwDataRVA);
+			get
+			{
+				uint pRwDataRVA;
+				this.WrappedObject.GetRwDataRVA(out pRwDataRVA);
+				return pRwDataRVA;
+			}
 		}
 		
 		public void SetPEBytes(IStream pIStream)

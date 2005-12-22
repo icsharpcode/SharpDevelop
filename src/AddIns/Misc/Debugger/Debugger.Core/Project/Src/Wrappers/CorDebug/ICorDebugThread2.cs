@@ -85,19 +85,34 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.GetActiveFunctions(cFunctions, out pcFunctions, pFunctions);
 		}
 		
-		public void GetConnectionID(out uint pdwConnectionId)
+		public uint ConnectionID
 		{
-			this.WrappedObject.GetConnectionID(out pdwConnectionId);
+			get
+			{
+				uint pdwConnectionId;
+				this.WrappedObject.GetConnectionID(out pdwConnectionId);
+				return pdwConnectionId;
+			}
 		}
 		
-		public void GetTaskID(out ulong pTaskId)
+		public ulong TaskID
 		{
-			this.WrappedObject.GetTaskID(out pTaskId);
+			get
+			{
+				ulong pTaskId;
+				this.WrappedObject.GetTaskID(out pTaskId);
+				return pTaskId;
+			}
 		}
 		
-		public void GetVolatileOSThreadID(out uint pdwTid)
+		public uint VolatileOSThreadID
 		{
-			this.WrappedObject.GetVolatileOSThreadID(out pdwTid);
+			get
+			{
+				uint pdwTid;
+				this.WrappedObject.GetVolatileOSThreadID(out pdwTid);
+				return pdwTid;
+			}
 		}
 		
 		public void InterceptCurrentException(ICorDebugFrame pFrame)

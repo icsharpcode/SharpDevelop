@@ -208,13 +208,11 @@ namespace Debugger
 					return false;
 				}
 			}
-
+			
 			ISymbolMethod symMethod;
 			symMethod = symReader.GetMethodFromDocumentPosition(symDoc, StartLine, StartColumn);
-
-			ICorDebugFunction corFunction;
-			module.CorModule.GetFunctionFromToken((uint)symMethod.Token.GetToken(), out corFunction);
-			function = corFunction;
+			
+			function = module.CorModule.GetFunctionFromToken((uint)symMethod.Token.GetToken());
 			
 			ilOffset = symMethod.GetOffset(symDoc, StartLine, StartColumn);
 			

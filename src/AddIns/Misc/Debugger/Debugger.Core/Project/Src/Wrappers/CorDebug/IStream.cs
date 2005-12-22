@@ -80,19 +80,25 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void RemoteRead(out byte pv, uint cb, out uint pcbRead)
+		public uint RemoteRead(out byte pv, uint cb)
 		{
+			uint pcbRead;
 			this.WrappedObject.RemoteRead(out pv, cb, out pcbRead);
+			return pcbRead;
 		}
 		
-		public void RemoteWrite(ref byte pv, uint cb, out uint pcbWritten)
+		public uint RemoteWrite(ref byte pv, uint cb)
 		{
+			uint pcbWritten;
 			this.WrappedObject.RemoteWrite(ref pv, cb, out pcbWritten);
+			return pcbWritten;
 		}
 		
-		public void RemoteSeek(Debugger.Interop.CorDebug._LARGE_INTEGER dlibMove, uint dwOrigin, out Debugger.Interop.CorDebug._ULARGE_INTEGER plibNewPosition)
+		public Debugger.Interop.CorDebug._ULARGE_INTEGER RemoteSeek(Debugger.Interop.CorDebug._LARGE_INTEGER dlibMove, uint dwOrigin)
 		{
+			Debugger.Interop.CorDebug._ULARGE_INTEGER plibNewPosition;
 			this.WrappedObject.RemoteSeek(dlibMove, dwOrigin, out plibNewPosition);
+			return plibNewPosition;
 		}
 		
 		public void SetSize(Debugger.Interop.CorDebug._ULARGE_INTEGER libNewSize)
@@ -100,9 +106,11 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.SetSize(libNewSize);
 		}
 		
-		public void RemoteCopyTo(IStream pstm, Debugger.Interop.CorDebug._ULARGE_INTEGER cb, out Debugger.Interop.CorDebug._ULARGE_INTEGER pcbRead, out Debugger.Interop.CorDebug._ULARGE_INTEGER pcbWritten)
+		public Debugger.Interop.CorDebug._ULARGE_INTEGER RemoteCopyTo(IStream pstm, Debugger.Interop.CorDebug._ULARGE_INTEGER cb, out Debugger.Interop.CorDebug._ULARGE_INTEGER pcbRead)
 		{
+			Debugger.Interop.CorDebug._ULARGE_INTEGER pcbWritten;
 			this.WrappedObject.RemoteCopyTo(pstm.WrappedObject, cb, out pcbRead, out pcbWritten);
+			return pcbWritten;
 		}
 		
 		public void Commit(uint grfCommitFlags)
@@ -130,11 +138,13 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.Stat(out pstatstg, grfStatFlag);
 		}
 		
-		public void Clone(out IStream ppstm)
+		public IStream Clone()
 		{
+			IStream ppstm;
 			Debugger.Interop.CorDebug.IStream out_ppstm;
 			this.WrappedObject.Clone(out out_ppstm);
 			ppstm = IStream.Wrap(out_ppstm);
+			return ppstm;
 		}
 	}
 }

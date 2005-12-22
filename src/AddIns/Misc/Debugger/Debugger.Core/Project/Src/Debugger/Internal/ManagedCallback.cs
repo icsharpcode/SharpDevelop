@@ -58,11 +58,8 @@ namespace Debugger
 		void EnterCallback(string name, ICorDebugAppDomain pAppDomain)
 		{
 			EnterCallback(name);
-
-			ICorDebugProcess pProcess;
-			pAppDomain.GetProcess(out pProcess);
 			
-			callingProcess = debugger.GetProcess(pProcess);
+			callingProcess = debugger.GetProcess(pAppDomain.Process);
 			callingProcess.IsRunning = false;
 		}
 		

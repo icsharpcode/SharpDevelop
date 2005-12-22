@@ -73,9 +73,7 @@ namespace Debugger
 				if (heapValue == null) { // TODO: Investigate
 					return null;
 				}
-				ICorDebugHandleValue corHandle;
-				heapValue.CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION, out corHandle);
-				return corHandle;
+				return heapValue.CreateHandle(CorDebugHandleType.HANDLE_WEAK_TRACK_RESURRECTION);
 			}
 		}
 		
@@ -99,7 +97,7 @@ namespace Debugger
 		
 		internal unsafe ObjectValue(NDebugger debugger, ICorDebugValue corValue):base(debugger, corValue)
 		{
-			this.corValue.CastTo<ICorDebugObjectValue>().GetClass(out corClass);
+			corClass = this.corValue.CastTo<ICorDebugObjectValue>().Class;
 			InitObjectVariable();
 		}
 
@@ -111,13 +109,9 @@ namespace Debugger
 
 		void InitObjectVariable ()
 		{
-			uint classToken;
-			corClass.GetToken(out classToken);
-			corClass.GetModule(out corModule);
+			corModule = corClass.Module;
 			metaData = Module.MetaData;
-			
-			classProps = metaData.GetTypeDefProps(classToken);
-			
+			classProps = metaData.GetTypeDefProps(corClass.Token);
 			corModuleSuperclass = corModule;
 		}
 
@@ -188,8 +182,7 @@ namespace Debugger
 		
 		Eval CreatePropertyEval(MethodProps method, ValueGetter getter)
 		{
-			ICorDebugFunction evalCorFunction;
-			Module.CorModule.GetFunctionFromToken(method.Token, out evalCorFunction);
+			ICorDebugFunction evalCorFunction = Module.CorModule.GetFunctionFromToken(method.Token);
 			
 			return new Eval(debugger, evalCorFunction, delegate {
 			                	if (method.IsStatic) {
@@ -218,9 +211,9 @@ namespace Debugger
 			try {
 				ICorDebugValue fieldValue;
 				if (field.IsStatic) {
-					corClass.GetStaticFieldValue(field.Token, curFrame, out fieldValue);
+					fieldValue = corClass.GetStaticFieldValue(field.Token, curFrame);
 				} else {
-					(val.CorValue.CastTo<ICorDebugObjectValue>()).GetFieldValue(corClass, field.Token, out fieldValue);
+					fieldValue = (val.CorValue.CastTo<ICorDebugObjectValue>()).GetFieldValue(corClass, field.Token);
 				}
 				return Value.CreateValue(debugger, fieldValue);
 			} catch {
@@ -297,8 +290,7 @@ namespace Debugger
 			if ((classProps.SuperClassToken & 0x00FFFFFF) == 0)	{
 				throw new DebuggerException("Unable to get base class: " + fullTypeName);
 			} else {
-				ICorDebugClass superClass;
-				corModuleSuperclass.GetClassFromToken(classProps.SuperClassToken, out superClass);
+				ICorDebugClass superClass = corModuleSuperclass.GetClassFromToken(classProps.SuperClassToken);
 				return new ObjectValue(debugger, corValue, superClass);
 			}
 		}

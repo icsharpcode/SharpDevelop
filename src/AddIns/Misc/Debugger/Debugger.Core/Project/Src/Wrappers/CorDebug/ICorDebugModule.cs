@@ -80,23 +80,38 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetProcess(out ICorDebugProcess ppProcess)
+		public ICorDebugProcess Process
 		{
-			Debugger.Interop.CorDebug.ICorDebugProcess out_ppProcess;
-			this.WrappedObject.GetProcess(out out_ppProcess);
-			ppProcess = ICorDebugProcess.Wrap(out_ppProcess);
+			get
+			{
+				ICorDebugProcess ppProcess;
+				Debugger.Interop.CorDebug.ICorDebugProcess out_ppProcess;
+				this.WrappedObject.GetProcess(out out_ppProcess);
+				ppProcess = ICorDebugProcess.Wrap(out_ppProcess);
+				return ppProcess;
+			}
 		}
 		
-		public void GetBaseAddress(out ulong pAddress)
+		public ulong BaseAddress
 		{
-			this.WrappedObject.GetBaseAddress(out pAddress);
+			get
+			{
+				ulong pAddress;
+				this.WrappedObject.GetBaseAddress(out pAddress);
+				return pAddress;
+			}
 		}
 		
-		public void GetAssembly(out ICorDebugAssembly ppAssembly)
+		public ICorDebugAssembly Assembly
 		{
-			Debugger.Interop.CorDebug.ICorDebugAssembly out_ppAssembly;
-			this.WrappedObject.GetAssembly(out out_ppAssembly);
-			ppAssembly = ICorDebugAssembly.Wrap(out_ppAssembly);
+			get
+			{
+				ICorDebugAssembly ppAssembly;
+				Debugger.Interop.CorDebug.ICorDebugAssembly out_ppAssembly;
+				this.WrappedObject.GetAssembly(out out_ppAssembly);
+				ppAssembly = ICorDebugAssembly.Wrap(out_ppAssembly);
+				return ppAssembly;
+			}
 		}
 		
 		public void GetName(uint cchName, out uint pcchName, System.IntPtr szName)
@@ -114,71 +129,108 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.EnableClassLoadCallbacks(bClassLoadCallbacks);
 		}
 		
-		public void GetFunctionFromToken(uint methodDef, out ICorDebugFunction ppFunction)
+		public ICorDebugFunction GetFunctionFromToken(uint methodDef)
 		{
+			ICorDebugFunction ppFunction;
 			Debugger.Interop.CorDebug.ICorDebugFunction out_ppFunction;
 			this.WrappedObject.GetFunctionFromToken(methodDef, out out_ppFunction);
 			ppFunction = ICorDebugFunction.Wrap(out_ppFunction);
+			return ppFunction;
 		}
 		
-		public void GetFunctionFromRVA(ulong rva, out ICorDebugFunction ppFunction)
+		public ICorDebugFunction GetFunctionFromRVA(ulong rva)
 		{
+			ICorDebugFunction ppFunction;
 			Debugger.Interop.CorDebug.ICorDebugFunction out_ppFunction;
 			this.WrappedObject.GetFunctionFromRVA(rva, out out_ppFunction);
 			ppFunction = ICorDebugFunction.Wrap(out_ppFunction);
+			return ppFunction;
 		}
 		
-		public void GetClassFromToken(uint typeDef, out ICorDebugClass ppClass)
+		public ICorDebugClass GetClassFromToken(uint typeDef)
 		{
+			ICorDebugClass ppClass;
 			Debugger.Interop.CorDebug.ICorDebugClass out_ppClass;
 			this.WrappedObject.GetClassFromToken(typeDef, out out_ppClass);
 			ppClass = ICorDebugClass.Wrap(out_ppClass);
+			return ppClass;
 		}
 		
-		public void CreateBreakpoint(out ICorDebugModuleBreakpoint ppBreakpoint)
+		public ICorDebugModuleBreakpoint CreateBreakpoint()
 		{
+			ICorDebugModuleBreakpoint ppBreakpoint;
 			Debugger.Interop.CorDebug.ICorDebugModuleBreakpoint out_ppBreakpoint;
 			this.WrappedObject.CreateBreakpoint(out out_ppBreakpoint);
 			ppBreakpoint = ICorDebugModuleBreakpoint.Wrap(out_ppBreakpoint);
+			return ppBreakpoint;
 		}
 		
-		public void GetEditAndContinueSnapshot(out ICorDebugEditAndContinueSnapshot ppEditAndContinueSnapshot)
+		public ICorDebugEditAndContinueSnapshot EditAndContinueSnapshot
 		{
-			Debugger.Interop.CorDebug.ICorDebugEditAndContinueSnapshot out_ppEditAndContinueSnapshot;
-			this.WrappedObject.GetEditAndContinueSnapshot(out out_ppEditAndContinueSnapshot);
-			ppEditAndContinueSnapshot = ICorDebugEditAndContinueSnapshot.Wrap(out_ppEditAndContinueSnapshot);
+			get
+			{
+				ICorDebugEditAndContinueSnapshot ppEditAndContinueSnapshot;
+				Debugger.Interop.CorDebug.ICorDebugEditAndContinueSnapshot out_ppEditAndContinueSnapshot;
+				this.WrappedObject.GetEditAndContinueSnapshot(out out_ppEditAndContinueSnapshot);
+				ppEditAndContinueSnapshot = ICorDebugEditAndContinueSnapshot.Wrap(out_ppEditAndContinueSnapshot);
+				return ppEditAndContinueSnapshot;
+			}
 		}
 		
-		public void GetMetaDataInterface(ref System.Guid riid, out object ppObj)
+		public object GetMetaDataInterface(ref System.Guid riid)
 		{
+			object ppObj;
 			this.WrappedObject.GetMetaDataInterface(ref riid, out ppObj);
+			return ppObj;
 		}
 		
-		public void GetToken(out uint pToken)
+		public uint Token
 		{
-			this.WrappedObject.GetToken(out pToken);
+			get
+			{
+				uint pToken;
+				this.WrappedObject.GetToken(out pToken);
+				return pToken;
+			}
 		}
 		
-		public void IsDynamic(out int pDynamic)
+		public int IsDynamic
 		{
-			this.WrappedObject.IsDynamic(out pDynamic);
+			get
+			{
+				int pDynamic;
+				this.WrappedObject.IsDynamic(out pDynamic);
+				return pDynamic;
+			}
 		}
 		
-		public void GetGlobalVariableValue(uint fieldDef, out ICorDebugValue ppValue)
+		public ICorDebugValue GetGlobalVariableValue(uint fieldDef)
 		{
+			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
 			this.WrappedObject.GetGlobalVariableValue(fieldDef, out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
+			return ppValue;
 		}
 		
-		public void GetSize(out uint pcBytes)
+		public uint Size
 		{
-			this.WrappedObject.GetSize(out pcBytes);
+			get
+			{
+				uint pcBytes;
+				this.WrappedObject.GetSize(out pcBytes);
+				return pcBytes;
+			}
 		}
 		
-		public void IsInMemory(out int pInMemory)
+		public int IsInMemory
 		{
-			this.WrappedObject.IsInMemory(out pInMemory);
+			get
+			{
+				int pInMemory;
+				this.WrappedObject.IsInMemory(out pInMemory);
+				return pInMemory;
+			}
 		}
 	}
 }

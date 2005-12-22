@@ -102,9 +102,14 @@ namespace Debugger.Wrappers.CorDebug
 			pFlags = ((CorDebugMDAFlags)(ref_pFlags));
 		}
 		
-		public void GetOSThreadId(out uint pOsTid)
+		public uint OSThreadId
 		{
-			this.WrappedObject.GetOSThreadId(out pOsTid);
+			get
+			{
+				uint pOsTid;
+				this.WrappedObject.GetOSThreadId(out pOsTid);
+				return pOsTid;
+			}
 		}
 	}
 }

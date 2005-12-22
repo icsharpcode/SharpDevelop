@@ -80,9 +80,14 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void IsActive(out int pbActive)
+		public int IsActive
 		{
-			this.WrappedObject.IsActive(out pbActive);
+			get
+			{
+				int pbActive;
+				this.WrappedObject.IsActive(out pbActive);
+				return pbActive;
+			}
 		}
 		
 		public void Deactivate()

@@ -90,21 +90,30 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.Continue(fIsOutOfBand);
 		}
 		
-		public void IsRunning(out int pbRunning)
+		public int IsRunning
 		{
-			this.WrappedObject.IsRunning(out pbRunning);
+			get
+			{
+				int pbRunning;
+				this.WrappedObject.IsRunning(out pbRunning);
+				return pbRunning;
+			}
 		}
 		
-		public void HasQueuedCallbacks(ICorDebugThread pThread, out int pbQueued)
+		public int HasQueuedCallbacks(ICorDebugThread pThread)
 		{
+			int pbQueued;
 			this.WrappedObject.HasQueuedCallbacks(pThread.WrappedObject, out pbQueued);
+			return pbQueued;
 		}
 		
-		public void EnumerateThreads(out ICorDebugThreadEnum ppThreads)
+		public ICorDebugThreadEnum EnumerateThreads()
 		{
+			ICorDebugThreadEnum ppThreads;
 			Debugger.Interop.CorDebug.ICorDebugThreadEnum out_ppThreads;
 			this.WrappedObject.EnumerateThreads(out out_ppThreads);
 			ppThreads = ICorDebugThreadEnum.Wrap(out_ppThreads);
+			return ppThreads;
 		}
 		
 		public void SetAllThreadsDebugState(CorDebugThreadState state, ICorDebugThread pExceptThisThread)
@@ -122,56 +131,78 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.Terminate(exitCode);
 		}
 		
-		public void CanCommitChanges(uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots, out ICorDebugErrorInfoEnum pError)
+		public ICorDebugErrorInfoEnum CanCommitChanges(uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots)
 		{
+			ICorDebugErrorInfoEnum pError;
 			Debugger.Interop.CorDebug.ICorDebugEditAndContinueSnapshot ref_pSnapshots = pSnapshots.WrappedObject;
 			Debugger.Interop.CorDebug.ICorDebugErrorInfoEnum out_pError;
 			this.WrappedObject.CanCommitChanges(cSnapshots, ref ref_pSnapshots, out out_pError);
 			pSnapshots = ICorDebugEditAndContinueSnapshot.Wrap(ref_pSnapshots);
 			pError = ICorDebugErrorInfoEnum.Wrap(out_pError);
+			return pError;
 		}
 		
-		public void CommitChanges(uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots, out ICorDebugErrorInfoEnum pError)
+		public ICorDebugErrorInfoEnum CommitChanges(uint cSnapshots, ref ICorDebugEditAndContinueSnapshot pSnapshots)
 		{
+			ICorDebugErrorInfoEnum pError;
 			Debugger.Interop.CorDebug.ICorDebugEditAndContinueSnapshot ref_pSnapshots = pSnapshots.WrappedObject;
 			Debugger.Interop.CorDebug.ICorDebugErrorInfoEnum out_pError;
 			this.WrappedObject.CommitChanges(cSnapshots, ref ref_pSnapshots, out out_pError);
 			pSnapshots = ICorDebugEditAndContinueSnapshot.Wrap(ref_pSnapshots);
 			pError = ICorDebugErrorInfoEnum.Wrap(out_pError);
+			return pError;
 		}
 		
-		public void GetID(out uint pdwProcessId)
+		public uint ID
 		{
-			this.WrappedObject.GetID(out pdwProcessId);
+			get
+			{
+				uint pdwProcessId;
+				this.WrappedObject.GetID(out pdwProcessId);
+				return pdwProcessId;
+			}
 		}
 		
-		public void GetHandle(out uint phProcessHandle)
+		public uint Handle
 		{
-			this.WrappedObject.GetHandle(out phProcessHandle);
+			get
+			{
+				uint phProcessHandle;
+				this.WrappedObject.GetHandle(out phProcessHandle);
+				return phProcessHandle;
+			}
 		}
 		
-		public void GetThread(uint dwThreadId, out ICorDebugThread ppThread)
+		public ICorDebugThread GetThread(uint dwThreadId)
 		{
+			ICorDebugThread ppThread;
 			Debugger.Interop.CorDebug.ICorDebugThread out_ppThread;
 			this.WrappedObject.GetThread(dwThreadId, out out_ppThread);
 			ppThread = ICorDebugThread.Wrap(out_ppThread);
+			return ppThread;
 		}
 		
-		public void EnumerateObjects(out ICorDebugObjectEnum ppObjects)
+		public ICorDebugObjectEnum EnumerateObjects()
 		{
+			ICorDebugObjectEnum ppObjects;
 			Debugger.Interop.CorDebug.ICorDebugObjectEnum out_ppObjects;
 			this.WrappedObject.EnumerateObjects(out out_ppObjects);
 			ppObjects = ICorDebugObjectEnum.Wrap(out_ppObjects);
+			return ppObjects;
 		}
 		
-		public void IsTransitionStub(ulong address, out int pbTransitionStub)
+		public int IsTransitionStub(ulong address)
 		{
+			int pbTransitionStub;
 			this.WrappedObject.IsTransitionStub(address, out pbTransitionStub);
+			return pbTransitionStub;
 		}
 		
-		public void IsOSSuspended(uint threadID, out int pbSuspended)
+		public int IsOSSuspended(uint threadID)
 		{
+			int pbSuspended;
 			this.WrappedObject.IsOSSuspended(threadID, out pbSuspended);
+			return pbSuspended;
 		}
 		
 		public void GetThreadContext(uint threadID, uint contextSize, System.IntPtr context)
@@ -184,14 +215,18 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.SetThreadContext(threadID, contextSize, context);
 		}
 		
-		public void ReadMemory(ulong address, uint size, System.IntPtr buffer, out uint read)
+		public uint ReadMemory(ulong address, uint size, System.IntPtr buffer)
 		{
+			uint read;
 			this.WrappedObject.ReadMemory(address, size, buffer, out read);
+			return read;
 		}
 		
-		public void WriteMemory(ulong address, uint size, ref byte buffer, out uint written)
+		public uint WriteMemory(ulong address, uint size, ref byte buffer)
 		{
+			uint written;
 			this.WrappedObject.WriteMemory(address, size, ref buffer, out written);
+			return written;
 		}
 		
 		public void ClearCurrentException(uint threadID)
@@ -209,30 +244,44 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.ModifyLogSwitch(ref pLogSwitchName, lLevel);
 		}
 		
-		public void EnumerateAppDomains(out ICorDebugAppDomainEnum ppAppDomains)
+		public ICorDebugAppDomainEnum EnumerateAppDomains()
 		{
+			ICorDebugAppDomainEnum ppAppDomains;
 			Debugger.Interop.CorDebug.ICorDebugAppDomainEnum out_ppAppDomains;
 			this.WrappedObject.EnumerateAppDomains(out out_ppAppDomains);
 			ppAppDomains = ICorDebugAppDomainEnum.Wrap(out_ppAppDomains);
+			return ppAppDomains;
 		}
 		
-		public void GetObject(out ICorDebugValue ppObject)
+		public ICorDebugValue Object
 		{
-			Debugger.Interop.CorDebug.ICorDebugValue out_ppObject;
-			this.WrappedObject.GetObject(out out_ppObject);
-			ppObject = ICorDebugValue.Wrap(out_ppObject);
+			get
+			{
+				ICorDebugValue ppObject;
+				Debugger.Interop.CorDebug.ICorDebugValue out_ppObject;
+				this.WrappedObject.GetObject(out out_ppObject);
+				ppObject = ICorDebugValue.Wrap(out_ppObject);
+				return ppObject;
+			}
 		}
 		
-		public void ThreadForFiberCookie(uint fiberCookie, out ICorDebugThread ppThread)
+		public ICorDebugThread ThreadForFiberCookie(uint fiberCookie)
 		{
+			ICorDebugThread ppThread;
 			Debugger.Interop.CorDebug.ICorDebugThread out_ppThread;
 			this.WrappedObject.ThreadForFiberCookie(fiberCookie, out out_ppThread);
 			ppThread = ICorDebugThread.Wrap(out_ppThread);
+			return ppThread;
 		}
 		
-		public void GetHelperThreadID(out uint pThreadID)
+		public uint HelperThreadID
 		{
-			this.WrappedObject.GetHelperThreadID(out pThreadID);
+			get
+			{
+				uint pThreadID;
+				this.WrappedObject.GetHelperThreadID(out pThreadID);
+				return pThreadID;
+			}
 		}
 	}
 }

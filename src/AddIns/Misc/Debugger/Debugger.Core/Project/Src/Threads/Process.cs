@@ -104,21 +104,21 @@ namespace Debugger
 			
 			fixed (uint* pprocessStartupInfo = processStartupInfo)
 				fixed (uint* pprocessInfo = processInfo)
-					debugger.CorDebug.CreateProcess(
-						filename,   // lpApplicationName
-						  // If we do not prepend " ", the first argument migh just get lost
-						" " + arguments,                       // lpCommandLine
-						ref secAttr,                       // lpProcessAttributes
-						ref secAttr,                      // lpThreadAttributes
-						1,//TRUE                    // bInheritHandles
-						0,                          // dwCreationFlags
-						IntPtr.Zero,                       // lpEnvironment
-						workingDirectory,                       // lpCurrentDirectory
-						(uint)pprocessStartupInfo,        // lpStartupInfo
-						(uint)pprocessInfo,               // lpProcessInformation,
-						CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS,   // debuggingFlags
-						out outProcess      // ppProcess
-						);
+					outProcess =
+						debugger.CorDebug.CreateProcess(
+							filename,   // lpApplicationName
+							  // If we do not prepend " ", the first argument migh just get lost
+							" " + arguments,                       // lpCommandLine
+							ref secAttr,                       // lpProcessAttributes
+							ref secAttr,                      // lpThreadAttributes
+							1,//TRUE                    // bInheritHandles
+							0,                          // dwCreationFlags
+							IntPtr.Zero,                       // lpEnvironment
+							workingDirectory,                       // lpCurrentDirectory
+							(uint)pprocessStartupInfo,        // lpStartupInfo
+							(uint)pprocessInfo,               // lpProcessInformation,
+							CorDebugCreateProcessFlags.DEBUG_NO_SPECIAL_OPTIONS   // debuggingFlags
+							);
 			
 			return new Process(debugger, outProcess);
 		}
@@ -160,10 +160,8 @@ namespace Debugger
 
 		public void Terminate()
 		{
-			int running;
-			corProcess.IsRunning(out running);
 			// Resume stoped tread
-			if (running == 0) {
+			if (corProcess.IsRunning == 0) {
 				Continue(); // TODO: Remove this...
 			}
 			// Stop&terminate - both must be called

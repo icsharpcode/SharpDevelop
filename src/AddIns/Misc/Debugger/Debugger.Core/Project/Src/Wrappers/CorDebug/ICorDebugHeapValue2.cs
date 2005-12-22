@@ -80,11 +80,13 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void CreateHandle(CorDebugHandleType type, out ICorDebugHandleValue ppHandle)
+		public ICorDebugHandleValue CreateHandle(CorDebugHandleType type)
 		{
+			ICorDebugHandleValue ppHandle;
 			Debugger.Interop.CorDebug.ICorDebugHandleValue out_ppHandle;
 			this.WrappedObject.CreateHandle(((Debugger.Interop.CorDebug.CorDebugHandleType)(type)), out out_ppHandle);
 			ppHandle = ICorDebugHandleValue.Wrap(out_ppHandle);
+			return ppHandle;
 		}
 	}
 }

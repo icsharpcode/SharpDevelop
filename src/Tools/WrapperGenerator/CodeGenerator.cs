@@ -319,8 +319,9 @@ namespace WrapperGenerator
 		
 		class MethodContext
 		{
-			CodeMemberMethod codeMemberMethod = new CodeMemberMethod();
+			public CodeTypeMember CodeMemberMethod = new CodeMemberMethod();
 			CodeGenerator generator;
+			MethodInfo method;
 			
 			public string Name;
 			public bool IsReturnTypeWrapped;
@@ -329,12 +330,14 @@ namespace WrapperGenerator
 			
 			public List<CodeParameterDeclarationExpression> WrapperParams = new List<CodeParameterDeclarationExpression>();
 			public List<CodeStatement> DoBeforeInvoke = new List<CodeStatement>();
+			CodeStatement doInvoke;
 			public List<CodeExpression> BaseMethodInvokeParams = new List<CodeExpression>();
 			public List<CodeStatement> DoAfterInvoke = new List<CodeStatement>();
 			
 			public MethodContext(CodeGenerator generator, MethodInfo method)
 			{
 				this.generator = generator;
+				this.method = method;
 				Name = method.Name;
 				RawReturnType = method.ReturnType;
 				IsReturnTypeWrapped = generator.ShouldIncludeType(method.ReturnType);
@@ -343,28 +346,22 @@ namespace WrapperGenerator
 				} else {
 					WrappedReturnType = method.ReturnType.FullName;
 				}
-				
-				codeMemberMethod.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-				codeMemberMethod.ReturnType = new CodeTypeReference(WrappedReturnType);
-				codeMemberMethod.Name = method.Name;
 			}
 			
-			public CodeMemberMethod Emit()
+			void AddBaseInvokeCode()
 			{
 				CodeExpression baseInvoke = 
 					new CodeMethodInvokeExpression(
 						new CodeMethodReferenceExpression(
 							generator.ExpressionForWrappedObjectProperty,
-							Name),
+							method.Name),
 						BaseMethodInvokeParams.ToArray());
 				
 				if (IsReturnTypeWrapped) {
 					baseInvoke = generator.Wrap(RawReturnType, baseInvoke);
 				}
 				
-				CodeStatement doInvoke;
-				
-				if (WrappedReturnType != typeof(void).FullName) {
+				if (RawReturnType != typeof(void)) {
 					if (DoAfterInvoke.Count == 0) {
 						doInvoke = new CodeMethodReturnStatement(baseInvoke);
 					} else {
@@ -381,13 +378,31 @@ namespace WrapperGenerator
 				} else {
 					doInvoke = new CodeExpressionStatement(baseInvoke);
 				}
+			}
+			
+			public CodeTypeMember Emit()
+			{
+				AddBaseInvokeCode();
 				
-				codeMemberMethod.Statements.AddRange(DoBeforeInvoke.ToArray());
-				codeMemberMethod.Statements.Add(doInvoke);
-				codeMemberMethod.Statements.AddRange(DoAfterInvoke.ToArray());
-				codeMemberMethod.Parameters.AddRange(WrapperParams.ToArray());
+				List<CodeStatement> body = new List<CodeStatement>();
+				body.AddRange(DoBeforeInvoke);
+				body.Add(doInvoke);
+				body.AddRange(DoAfterInvoke);
 				
-				return codeMemberMethod;
+				CodeMemberMethod.Attributes = MemberAttributes.Public | MemberAttributes.Final;
+				CodeMemberMethod.Name = Name;
+				
+				if (CodeMemberMethod is CodeMemberMethod) {
+					((CodeMemberMethod)CodeMemberMethod).ReturnType = new CodeTypeReference(WrappedReturnType);
+					((CodeMemberMethod)CodeMemberMethod).Parameters.AddRange(WrapperParams.ToArray());
+					((CodeMemberMethod)CodeMemberMethod).Statements.AddRange(body.ToArray());
+				} else {
+					((CodeMemberProperty)CodeMemberMethod).Type = new CodeTypeReference(WrappedReturnType);
+					((CodeMemberProperty)CodeMemberMethod).HasGet = true;
+					((CodeMemberProperty)CodeMemberMethod).GetStatements.AddRange(body.ToArray());
+				}
+				
+				return CodeMemberMethod;
 			}
 		}
 		
@@ -435,16 +450,17 @@ namespace WrapperGenerator
 			}
 		}
 		
-		CodeMemberMethod MakeMember(MethodInfo method)
+		CodeTypeMember MakeMember(MethodInfo method)
 		{
 			MethodContext methodContext = new MethodContext(this, method);
 			
-			foreach(ParameterInfo par in method.GetParameters()) {
-				ParamContext parContext = new ParamContext(this, par);
+			ParameterInfo[] pars = method.GetParameters();
+			for(int i = 0; i < pars.Length; i++) {
+				ParamContext parContext = new ParamContext(this, pars[i]);
 				
 				if (parContext.IsWrapped) {
 					if (parContext.Direction == FieldDirection.In) {
-						if (par.ParameterType.IsArray) {
+						if (pars[i].ParameterType.IsArray) {
 							UnwrapArrayArgument(methodContext, parContext);
 						} else {
 							UnwrapArgument(methodContext, parContext);
@@ -454,6 +470,33 @@ namespace WrapperGenerator
 					}
 				} else {
 					PassArgument(methodContext, parContext);
+				}
+				
+				// If last parameter is 'out' and method returns void
+				if (i == pars.Length - 1 &&
+				    parContext.Direction == FieldDirection.Out &&
+				    methodContext.RawReturnType == typeof(void)) {
+					
+					// Placeholder for the parameter
+					methodContext.DoBeforeInvoke.Insert(0,
+						new CodeVariableDeclarationStatement(parContext.WrappedType, parContext.Name));
+					// Remove the parameter
+					methodContext.WrapperParams.RemoveAt(methodContext.WrapperParams.Count - 1);
+					
+					methodContext.WrappedReturnType = parContext.WrappedType;
+					methodContext.DoAfterInvoke.Add(
+						new CodeMethodReturnStatement(
+							new CodeVariableReferenceExpression(parContext.Name)));
+				}
+			}
+			
+			if (methodContext.WrapperParams.Count == 0) {
+				if (methodContext.Name.StartsWith("Is")) {
+					methodContext.CodeMemberMethod = new CodeMemberProperty();
+				}
+				if (methodContext.Name.StartsWith("Get")) {
+					methodContext.CodeMemberMethod = new CodeMemberProperty();
+					methodContext.Name = methodContext.Name.Remove(0, 3);
 				}
 			}
 			

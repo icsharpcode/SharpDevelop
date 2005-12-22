@@ -80,84 +80,138 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetThread(out ICorDebugThread ppThread)
+		public ICorDebugThread Thread
 		{
-			Debugger.Interop.CorDebug.ICorDebugThread out_ppThread;
-			this.WrappedObject.GetThread(out out_ppThread);
-			ppThread = ICorDebugThread.Wrap(out_ppThread);
+			get
+			{
+				ICorDebugThread ppThread;
+				Debugger.Interop.CorDebug.ICorDebugThread out_ppThread;
+				this.WrappedObject.GetThread(out out_ppThread);
+				ppThread = ICorDebugThread.Wrap(out_ppThread);
+				return ppThread;
+			}
 		}
 		
-		public void GetStackRange(out ulong pStart, out ulong pEnd)
+		public ulong GetStackRange(out ulong pStart)
 		{
+			ulong pEnd;
 			this.WrappedObject.GetStackRange(out pStart, out pEnd);
+			return pEnd;
 		}
 		
-		public void GetContext(out ICorDebugContext ppContext)
+		public ICorDebugContext Context
 		{
-			Debugger.Interop.CorDebug.ICorDebugContext out_ppContext;
-			this.WrappedObject.GetContext(out out_ppContext);
-			ppContext = ICorDebugContext.Wrap(out_ppContext);
+			get
+			{
+				ICorDebugContext ppContext;
+				Debugger.Interop.CorDebug.ICorDebugContext out_ppContext;
+				this.WrappedObject.GetContext(out out_ppContext);
+				ppContext = ICorDebugContext.Wrap(out_ppContext);
+				return ppContext;
+			}
 		}
 		
-		public void GetCaller(out ICorDebugChain ppChain)
+		public ICorDebugChain Caller
 		{
-			Debugger.Interop.CorDebug.ICorDebugChain out_ppChain;
-			this.WrappedObject.GetCaller(out out_ppChain);
-			ppChain = ICorDebugChain.Wrap(out_ppChain);
+			get
+			{
+				ICorDebugChain ppChain;
+				Debugger.Interop.CorDebug.ICorDebugChain out_ppChain;
+				this.WrappedObject.GetCaller(out out_ppChain);
+				ppChain = ICorDebugChain.Wrap(out_ppChain);
+				return ppChain;
+			}
 		}
 		
-		public void GetCallee(out ICorDebugChain ppChain)
+		public ICorDebugChain Callee
 		{
-			Debugger.Interop.CorDebug.ICorDebugChain out_ppChain;
-			this.WrappedObject.GetCallee(out out_ppChain);
-			ppChain = ICorDebugChain.Wrap(out_ppChain);
+			get
+			{
+				ICorDebugChain ppChain;
+				Debugger.Interop.CorDebug.ICorDebugChain out_ppChain;
+				this.WrappedObject.GetCallee(out out_ppChain);
+				ppChain = ICorDebugChain.Wrap(out_ppChain);
+				return ppChain;
+			}
 		}
 		
-		public void GetPrevious(out ICorDebugChain ppChain)
+		public ICorDebugChain Previous
 		{
-			Debugger.Interop.CorDebug.ICorDebugChain out_ppChain;
-			this.WrappedObject.GetPrevious(out out_ppChain);
-			ppChain = ICorDebugChain.Wrap(out_ppChain);
+			get
+			{
+				ICorDebugChain ppChain;
+				Debugger.Interop.CorDebug.ICorDebugChain out_ppChain;
+				this.WrappedObject.GetPrevious(out out_ppChain);
+				ppChain = ICorDebugChain.Wrap(out_ppChain);
+				return ppChain;
+			}
 		}
 		
-		public void GetNext(out ICorDebugChain ppChain)
+		public ICorDebugChain Next
 		{
-			Debugger.Interop.CorDebug.ICorDebugChain out_ppChain;
-			this.WrappedObject.GetNext(out out_ppChain);
-			ppChain = ICorDebugChain.Wrap(out_ppChain);
+			get
+			{
+				ICorDebugChain ppChain;
+				Debugger.Interop.CorDebug.ICorDebugChain out_ppChain;
+				this.WrappedObject.GetNext(out out_ppChain);
+				ppChain = ICorDebugChain.Wrap(out_ppChain);
+				return ppChain;
+			}
 		}
 		
-		public void IsManaged(out int pManaged)
+		public int IsManaged
 		{
-			this.WrappedObject.IsManaged(out pManaged);
+			get
+			{
+				int pManaged;
+				this.WrappedObject.IsManaged(out pManaged);
+				return pManaged;
+			}
 		}
 		
-		public void EnumerateFrames(out ICorDebugFrameEnum ppFrames)
+		public ICorDebugFrameEnum EnumerateFrames()
 		{
+			ICorDebugFrameEnum ppFrames;
 			Debugger.Interop.CorDebug.ICorDebugFrameEnum out_ppFrames;
 			this.WrappedObject.EnumerateFrames(out out_ppFrames);
 			ppFrames = ICorDebugFrameEnum.Wrap(out_ppFrames);
+			return ppFrames;
 		}
 		
-		public void GetActiveFrame(out ICorDebugFrame ppFrame)
+		public ICorDebugFrame ActiveFrame
 		{
-			Debugger.Interop.CorDebug.ICorDebugFrame out_ppFrame;
-			this.WrappedObject.GetActiveFrame(out out_ppFrame);
-			ppFrame = ICorDebugFrame.Wrap(out_ppFrame);
+			get
+			{
+				ICorDebugFrame ppFrame;
+				Debugger.Interop.CorDebug.ICorDebugFrame out_ppFrame;
+				this.WrappedObject.GetActiveFrame(out out_ppFrame);
+				ppFrame = ICorDebugFrame.Wrap(out_ppFrame);
+				return ppFrame;
+			}
 		}
 		
-		public void GetRegisterSet(out ICorDebugRegisterSet ppRegisters)
+		public ICorDebugRegisterSet RegisterSet
 		{
-			Debugger.Interop.CorDebug.ICorDebugRegisterSet out_ppRegisters;
-			this.WrappedObject.GetRegisterSet(out out_ppRegisters);
-			ppRegisters = ICorDebugRegisterSet.Wrap(out_ppRegisters);
+			get
+			{
+				ICorDebugRegisterSet ppRegisters;
+				Debugger.Interop.CorDebug.ICorDebugRegisterSet out_ppRegisters;
+				this.WrappedObject.GetRegisterSet(out out_ppRegisters);
+				ppRegisters = ICorDebugRegisterSet.Wrap(out_ppRegisters);
+				return ppRegisters;
+			}
 		}
 		
-		public void GetReason(out CorDebugChainReason pReason)
+		public CorDebugChainReason Reason
 		{
-			Debugger.Interop.CorDebug.CorDebugChainReason out_pReason;
-			this.WrappedObject.GetReason(out out_pReason);
-			pReason = ((CorDebugChainReason)(out_pReason));
+			get
+			{
+				CorDebugChainReason pReason;
+				Debugger.Interop.CorDebug.CorDebugChainReason out_pReason;
+				this.WrappedObject.GetReason(out out_pReason);
+				pReason = ((CorDebugChainReason)(out_pReason));
+				return pReason;
+			}
 		}
 	}
 }

@@ -82,27 +82,23 @@ namespace Debugger
 		{
 			this.debugger = debugger;
 			this.corThread = corThread;
-			corThread.GetID(out id);
-
-			ICorDebugProcess corProcess;
-			corThread.GetProcess(out corProcess);
-			this.process = debugger.GetProcess(corProcess);
+			id = corThread.ID;
+			
+			this.process = debugger.GetProcess(corThread.Process);
 		}
-
+		
 		public bool Suspended {
-			get	{
+			get {
 				if (process.IsRunning) return lastSuspendedState;
-
-				CorDebugThreadState state;
-				corThread.GetDebugState(out state);
-				lastSuspendedState = (state == CorDebugThreadState.THREAD_SUSPEND);
+				
+				lastSuspendedState = (corThread.DebugState == CorDebugThreadState.THREAD_SUSPEND);
 				return lastSuspendedState;
 			}
-			set	{
-                corThread.SetDebugState((value==true)?CorDebugThreadState.THREAD_SUSPEND:CorDebugThreadState.THREAD_RUN);
+			set {
+				corThread.SetDebugState((value==true)?CorDebugThreadState.THREAD_SUSPEND:CorDebugThreadState.THREAD_RUN);
 			}
 		}
-
+		
 		public ThreadPriority Priority {
 			get {
 				if (!HasBeenLoaded) return lastPriority;
@@ -119,10 +115,8 @@ namespace Debugger
 			get {
 				if (!HasBeenLoaded) throw new DebuggerException("Thread has not started jet");
 				process.AssertPaused();
-
-				ICorDebugValue corValue;
-				corThread.GetObject(out corValue);
-				return Value.CreateValue(debugger, corValue);
+				
+				return Value.CreateValue(debugger, corThread.Object);
 			}
 		}
 
@@ -149,10 +143,7 @@ namespace Debugger
 		
 		internal Stepper CreateStepper()
 		{
-			ICorDebugStepper corStepper;
-			corThread.CreateStepper(out corStepper);
-			
-			Stepper stepper = new Stepper(debugger, corStepper);
+			Stepper stepper = new Stepper(debugger, corThread.CreateStepper());
 			stepper.StepComplete += delegate {
 				steppers.Remove(stepper);
 			};
@@ -192,9 +183,7 @@ namespace Debugger
 		internal void DeactivateAllSteppers()
 		{
 			foreach(ICorDebugStepper stepper in activeSteppers) {
-				int active;
-				stepper.IsActive(out active);
-				if (active != 0) {
+				if (stepper.IsActive != 0) {
 					stepper.Deactivate();
 					debugger.TraceMessage("Stepper deactivated");
 				}
@@ -241,11 +230,9 @@ namespace Debugger
 		{
 			process.AssertPaused();
 			
-			ICorDebugChainEnum corChainEnum;
-			corThread.EnumerateChains(out corChainEnum);
+			ICorDebugChainEnum corChainEnum = corThread.EnumerateChains();
 			
-			uint chainCount;
-			corChainEnum.GetCount(out chainCount);
+			uint chainCount = corChainEnum.Count;
 			
 			uint chainIndex = chainCount;
 			
@@ -258,25 +245,19 @@ namespace Debugger
 			}
 			
 			while (true) {
-				uint chainsFetched;
 				ICorDebugChain[] corChains = new ICorDebugChain[1]; // One at time
-				corChainEnum.Next(1, corChains, out chainsFetched);
+				uint chainsFetched = corChainEnum.Next(1, corChains);
 				if (chainsFetched == 0) break; // We are done
 				
 				chainIndex--;
 				
-				CorDebugChainReason reason;
-				corChains[0].GetReason(out reason);
+				CorDebugChainReason reason = corChains[0].Reason;
 				
-				int isManaged;
-				corChains[0].IsManaged(out isManaged);
-				if (isManaged == 0) continue; // Only managed ones
+				if (corChains[0].IsManaged == 0) continue; // Only managed ones
 				
-				ICorDebugFrameEnum corFrameEnum;
-				corChains[0].EnumerateFrames(out corFrameEnum);
+				ICorDebugFrameEnum corFrameEnum = corChains[0].EnumerateFrames();
 				
-				uint frameCount;
-				corFrameEnum.GetCount(out frameCount);
+				uint frameCount = corFrameEnum.Count;
 				
 				uint frameIndex = frameCount;
 				
@@ -288,9 +269,8 @@ namespace Debugger
 				}
 				
 				while (true) {
-					uint framesFetched;
 					ICorDebugFrame[] corFrames = new ICorDebugFrame[1]; // Only one at time
-					corFrameEnum.Next(1, corFrames, out framesFetched);
+					uint framesFetched = corFrameEnum.Next(1, corFrames);
 					if (framesFetched == 0) break; // We are done
 					
 					frameIndex--;

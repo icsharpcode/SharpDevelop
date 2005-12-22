@@ -80,20 +80,24 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetArrayOrPointerType(uint elementType, uint nRank, ICorDebugType pTypeArg, out ICorDebugType ppType)
+		public ICorDebugType GetArrayOrPointerType(uint elementType, uint nRank, ICorDebugType pTypeArg)
 		{
+			ICorDebugType ppType;
 			Debugger.Interop.CorDebug.ICorDebugType out_ppType;
 			this.WrappedObject.GetArrayOrPointerType(elementType, nRank, pTypeArg.WrappedObject, out out_ppType);
 			ppType = ICorDebugType.Wrap(out_ppType);
+			return ppType;
 		}
 		
-		public void GetFunctionPointerType(uint nTypeArgs, ref ICorDebugType ppTypeArgs, out ICorDebugType ppType)
+		public ICorDebugType GetFunctionPointerType(uint nTypeArgs, ref ICorDebugType ppTypeArgs)
 		{
+			ICorDebugType ppType;
 			Debugger.Interop.CorDebug.ICorDebugType ref_ppTypeArgs = ppTypeArgs.WrappedObject;
 			Debugger.Interop.CorDebug.ICorDebugType out_ppType;
 			this.WrappedObject.GetFunctionPointerType(nTypeArgs, ref ref_ppTypeArgs, out out_ppType);
 			ppTypeArgs = ICorDebugType.Wrap(ref_ppTypeArgs);
 			ppType = ICorDebugType.Wrap(out_ppType);
+			return ppType;
 		}
 	}
 }

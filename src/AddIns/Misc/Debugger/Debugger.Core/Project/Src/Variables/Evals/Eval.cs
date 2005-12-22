@@ -122,7 +122,7 @@ namespace Debugger
 			ICorDebugValue[] args = getArgs();
 			
 			// TODO: What if this thread is not suitable?
-			targetThread.CorThread.CreateEval(out corEval);
+			corEval = targetThread.CorThread.CreateEval();
 			
 			try {
 				corEval.CallFunction(corFunction, (uint)args.Length, args);
@@ -152,9 +152,7 @@ namespace Debugger
 		
 		protected internal virtual void OnEvalComplete(bool successful) 
 		{
-			ICorDebugValue corValue;
-			corEval.GetResult(out corValue);
-			result = Value.CreateValue(debugger, corValue);
+			result = Value.CreateValue(debugger, corEval.Result);
 			
 			if (result == null) {
 				evalState = EvalState.EvaluatedNoResult;

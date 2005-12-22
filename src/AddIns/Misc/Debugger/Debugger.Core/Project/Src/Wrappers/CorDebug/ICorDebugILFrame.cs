@@ -80,63 +80,99 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetChain(out ICorDebugChain ppChain)
+		public ICorDebugChain Chain
 		{
-			Debugger.Interop.CorDebug.ICorDebugChain out_ppChain;
-			this.WrappedObject.GetChain(out out_ppChain);
-			ppChain = ICorDebugChain.Wrap(out_ppChain);
+			get
+			{
+				ICorDebugChain ppChain;
+				Debugger.Interop.CorDebug.ICorDebugChain out_ppChain;
+				this.WrappedObject.GetChain(out out_ppChain);
+				ppChain = ICorDebugChain.Wrap(out_ppChain);
+				return ppChain;
+			}
 		}
 		
-		public void GetCode(out ICorDebugCode ppCode)
+		public ICorDebugCode Code
 		{
-			Debugger.Interop.CorDebug.ICorDebugCode out_ppCode;
-			this.WrappedObject.GetCode(out out_ppCode);
-			ppCode = ICorDebugCode.Wrap(out_ppCode);
+			get
+			{
+				ICorDebugCode ppCode;
+				Debugger.Interop.CorDebug.ICorDebugCode out_ppCode;
+				this.WrappedObject.GetCode(out out_ppCode);
+				ppCode = ICorDebugCode.Wrap(out_ppCode);
+				return ppCode;
+			}
 		}
 		
-		public void GetFunction(out ICorDebugFunction ppFunction)
+		public ICorDebugFunction Function
 		{
-			Debugger.Interop.CorDebug.ICorDebugFunction out_ppFunction;
-			this.WrappedObject.GetFunction(out out_ppFunction);
-			ppFunction = ICorDebugFunction.Wrap(out_ppFunction);
+			get
+			{
+				ICorDebugFunction ppFunction;
+				Debugger.Interop.CorDebug.ICorDebugFunction out_ppFunction;
+				this.WrappedObject.GetFunction(out out_ppFunction);
+				ppFunction = ICorDebugFunction.Wrap(out_ppFunction);
+				return ppFunction;
+			}
 		}
 		
-		public void GetFunctionToken(out uint pToken)
+		public uint FunctionToken
 		{
-			this.WrappedObject.GetFunctionToken(out pToken);
+			get
+			{
+				uint pToken;
+				this.WrappedObject.GetFunctionToken(out pToken);
+				return pToken;
+			}
 		}
 		
-		public void GetStackRange(out ulong pStart, out ulong pEnd)
+		public ulong GetStackRange(out ulong pStart)
 		{
+			ulong pEnd;
 			this.WrappedObject.GetStackRange(out pStart, out pEnd);
+			return pEnd;
 		}
 		
-		public void GetCaller(out ICorDebugFrame ppFrame)
+		public ICorDebugFrame Caller
 		{
-			Debugger.Interop.CorDebug.ICorDebugFrame out_ppFrame;
-			this.WrappedObject.GetCaller(out out_ppFrame);
-			ppFrame = ICorDebugFrame.Wrap(out_ppFrame);
+			get
+			{
+				ICorDebugFrame ppFrame;
+				Debugger.Interop.CorDebug.ICorDebugFrame out_ppFrame;
+				this.WrappedObject.GetCaller(out out_ppFrame);
+				ppFrame = ICorDebugFrame.Wrap(out_ppFrame);
+				return ppFrame;
+			}
 		}
 		
-		public void GetCallee(out ICorDebugFrame ppFrame)
+		public ICorDebugFrame Callee
 		{
-			Debugger.Interop.CorDebug.ICorDebugFrame out_ppFrame;
-			this.WrappedObject.GetCallee(out out_ppFrame);
-			ppFrame = ICorDebugFrame.Wrap(out_ppFrame);
+			get
+			{
+				ICorDebugFrame ppFrame;
+				Debugger.Interop.CorDebug.ICorDebugFrame out_ppFrame;
+				this.WrappedObject.GetCallee(out out_ppFrame);
+				ppFrame = ICorDebugFrame.Wrap(out_ppFrame);
+				return ppFrame;
+			}
 		}
 		
-		public void CreateStepper(out ICorDebugStepper ppStepper)
+		public ICorDebugStepper CreateStepper()
 		{
+			ICorDebugStepper ppStepper;
 			Debugger.Interop.CorDebug.ICorDebugStepper out_ppStepper;
 			this.WrappedObject.CreateStepper(out out_ppStepper);
 			ppStepper = ICorDebugStepper.Wrap(out_ppStepper);
+			return ppStepper;
 		}
 		
-		public void GetIP(out uint pnOffset, out CorDebugMappingResult pMappingResult)
+		public CorDebugMappingResult GetIP(out uint pnOffset)
 		{
+			CorDebugMappingResult pMappingResult;
 			Debugger.Interop.CorDebug.CorDebugMappingResult out_pMappingResult;
 			this.WrappedObject.GetIP(out pnOffset, out out_pMappingResult);
 			pMappingResult = ((CorDebugMappingResult)(out_pMappingResult));
+			return pMappingResult;
 		}
 		
 		public void SetIP(uint nOffset)
@@ -144,44 +180,59 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.SetIP(nOffset);
 		}
 		
-		public void EnumerateLocalVariables(out ICorDebugValueEnum ppValueEnum)
+		public ICorDebugValueEnum EnumerateLocalVariables()
 		{
+			ICorDebugValueEnum ppValueEnum;
 			Debugger.Interop.CorDebug.ICorDebugValueEnum out_ppValueEnum;
 			this.WrappedObject.EnumerateLocalVariables(out out_ppValueEnum);
 			ppValueEnum = ICorDebugValueEnum.Wrap(out_ppValueEnum);
+			return ppValueEnum;
 		}
 		
-		public void GetLocalVariable(uint dwIndex, out ICorDebugValue ppValue)
+		public ICorDebugValue GetLocalVariable(uint dwIndex)
 		{
+			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
 			this.WrappedObject.GetLocalVariable(dwIndex, out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
+			return ppValue;
 		}
 		
-		public void EnumerateArguments(out ICorDebugValueEnum ppValueEnum)
+		public ICorDebugValueEnum EnumerateArguments()
 		{
+			ICorDebugValueEnum ppValueEnum;
 			Debugger.Interop.CorDebug.ICorDebugValueEnum out_ppValueEnum;
 			this.WrappedObject.EnumerateArguments(out out_ppValueEnum);
 			ppValueEnum = ICorDebugValueEnum.Wrap(out_ppValueEnum);
+			return ppValueEnum;
 		}
 		
-		public void GetArgument(uint dwIndex, out ICorDebugValue ppValue)
+		public ICorDebugValue GetArgument(uint dwIndex)
 		{
+			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
 			this.WrappedObject.GetArgument(dwIndex, out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
+			return ppValue;
 		}
 		
-		public void GetStackDepth(out uint pDepth)
+		public uint StackDepth
 		{
-			this.WrappedObject.GetStackDepth(out pDepth);
+			get
+			{
+				uint pDepth;
+				this.WrappedObject.GetStackDepth(out pDepth);
+				return pDepth;
+			}
 		}
 		
-		public void GetStackValue(uint dwIndex, out ICorDebugValue ppValue)
+		public ICorDebugValue GetStackValue(uint dwIndex)
 		{
+			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
 			this.WrappedObject.GetStackValue(dwIndex, out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
+			return ppValue;
 		}
 		
 		public void CanSetIP(uint nOffset)

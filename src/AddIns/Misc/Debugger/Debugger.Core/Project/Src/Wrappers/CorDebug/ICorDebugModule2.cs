@@ -95,9 +95,14 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.SetJITCompilerFlags(dwFlags);
 		}
 		
-		public void GetJITCompilerFlags(out uint pdwFlags)
+		public uint JITCompilerFlags
 		{
-			this.WrappedObject.GetJITCompilerFlags(out pdwFlags);
+			get
+			{
+				uint pdwFlags;
+				this.WrappedObject.GetJITCompilerFlags(out pdwFlags);
+				return pdwFlags;
+			}
 		}
 		
 		public void ResolveAssembly(uint tkAssemblyRef, ref ICorDebugAssembly ppAssembly)

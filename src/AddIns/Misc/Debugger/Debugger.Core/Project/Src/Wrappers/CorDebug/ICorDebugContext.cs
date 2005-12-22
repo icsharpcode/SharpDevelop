@@ -80,64 +80,105 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetType(out uint pType)
+		public uint Type
 		{
-			this.WrappedObject.GetType(out pType);
+			get
+			{
+				uint pType;
+				this.WrappedObject.GetType(out pType);
+				return pType;
+			}
 		}
 		
-		public void GetSize(out uint pSize)
+		public uint Size
 		{
-			this.WrappedObject.GetSize(out pSize);
+			get
+			{
+				uint pSize;
+				this.WrappedObject.GetSize(out pSize);
+				return pSize;
+			}
 		}
 		
-		public void GetAddress(out ulong pAddress)
+		public ulong Address
 		{
-			this.WrappedObject.GetAddress(out pAddress);
+			get
+			{
+				ulong pAddress;
+				this.WrappedObject.GetAddress(out pAddress);
+				return pAddress;
+			}
 		}
 		
-		public void CreateBreakpoint(out ICorDebugValueBreakpoint ppBreakpoint)
+		public ICorDebugValueBreakpoint CreateBreakpoint()
 		{
+			ICorDebugValueBreakpoint ppBreakpoint;
 			Debugger.Interop.CorDebug.ICorDebugValueBreakpoint out_ppBreakpoint;
 			this.WrappedObject.CreateBreakpoint(out out_ppBreakpoint);
 			ppBreakpoint = ICorDebugValueBreakpoint.Wrap(out_ppBreakpoint);
+			return ppBreakpoint;
 		}
 		
-		public void GetClass(out ICorDebugClass ppClass)
+		public ICorDebugClass Class
 		{
-			Debugger.Interop.CorDebug.ICorDebugClass out_ppClass;
-			this.WrappedObject.GetClass(out out_ppClass);
-			ppClass = ICorDebugClass.Wrap(out_ppClass);
+			get
+			{
+				ICorDebugClass ppClass;
+				Debugger.Interop.CorDebug.ICorDebugClass out_ppClass;
+				this.WrappedObject.GetClass(out out_ppClass);
+				ppClass = ICorDebugClass.Wrap(out_ppClass);
+				return ppClass;
+			}
 		}
 		
-		public void GetFieldValue(ICorDebugClass pClass, uint fieldDef, out ICorDebugValue ppValue)
+		public ICorDebugValue GetFieldValue(ICorDebugClass pClass, uint fieldDef)
 		{
+			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
 			this.WrappedObject.GetFieldValue(pClass.WrappedObject, fieldDef, out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
+			return ppValue;
 		}
 		
-		public void GetVirtualMethod(uint memberRef, out ICorDebugFunction ppFunction)
+		public ICorDebugFunction GetVirtualMethod(uint memberRef)
 		{
+			ICorDebugFunction ppFunction;
 			Debugger.Interop.CorDebug.ICorDebugFunction out_ppFunction;
 			this.WrappedObject.GetVirtualMethod(memberRef, out out_ppFunction);
 			ppFunction = ICorDebugFunction.Wrap(out_ppFunction);
+			return ppFunction;
 		}
 		
-		public void GetContext(out ICorDebugContext ppContext)
+		public ICorDebugContext Context
 		{
-			Debugger.Interop.CorDebug.ICorDebugContext out_ppContext;
-			this.WrappedObject.GetContext(out out_ppContext);
-			ppContext = ICorDebugContext.Wrap(out_ppContext);
+			get
+			{
+				ICorDebugContext ppContext;
+				Debugger.Interop.CorDebug.ICorDebugContext out_ppContext;
+				this.WrappedObject.GetContext(out out_ppContext);
+				ppContext = ICorDebugContext.Wrap(out_ppContext);
+				return ppContext;
+			}
 		}
 		
-		public void IsValueClass(out int pbIsValueClass)
+		public int IsValueClass
 		{
-			this.WrappedObject.IsValueClass(out pbIsValueClass);
+			get
+			{
+				int pbIsValueClass;
+				this.WrappedObject.IsValueClass(out pbIsValueClass);
+				return pbIsValueClass;
+			}
 		}
 		
-		public void GetManagedCopy(out object ppObject)
+		public object ManagedCopy
 		{
-			this.WrappedObject.GetManagedCopy(out ppObject);
+			get
+			{
+				object ppObject;
+				this.WrappedObject.GetManagedCopy(out ppObject);
+				return ppObject;
+			}
 		}
 		
 		public void SetFromManagedCopy(object pObject)

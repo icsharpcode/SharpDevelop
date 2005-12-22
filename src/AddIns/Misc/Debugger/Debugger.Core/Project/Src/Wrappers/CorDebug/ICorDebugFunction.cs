@@ -80,54 +80,91 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetModule(out ICorDebugModule ppModule)
+		public ICorDebugModule Module
 		{
-			Debugger.Interop.CorDebug.ICorDebugModule out_ppModule;
-			this.WrappedObject.GetModule(out out_ppModule);
-			ppModule = ICorDebugModule.Wrap(out_ppModule);
+			get
+			{
+				ICorDebugModule ppModule;
+				Debugger.Interop.CorDebug.ICorDebugModule out_ppModule;
+				this.WrappedObject.GetModule(out out_ppModule);
+				ppModule = ICorDebugModule.Wrap(out_ppModule);
+				return ppModule;
+			}
 		}
 		
-		public void GetClass(out ICorDebugClass ppClass)
+		public ICorDebugClass Class
 		{
-			Debugger.Interop.CorDebug.ICorDebugClass out_ppClass;
-			this.WrappedObject.GetClass(out out_ppClass);
-			ppClass = ICorDebugClass.Wrap(out_ppClass);
+			get
+			{
+				ICorDebugClass ppClass;
+				Debugger.Interop.CorDebug.ICorDebugClass out_ppClass;
+				this.WrappedObject.GetClass(out out_ppClass);
+				ppClass = ICorDebugClass.Wrap(out_ppClass);
+				return ppClass;
+			}
 		}
 		
-		public void GetToken(out uint pMethodDef)
+		public uint Token
 		{
-			this.WrappedObject.GetToken(out pMethodDef);
+			get
+			{
+				uint pMethodDef;
+				this.WrappedObject.GetToken(out pMethodDef);
+				return pMethodDef;
+			}
 		}
 		
-		public void GetILCode(out ICorDebugCode ppCode)
+		public ICorDebugCode ILCode
 		{
-			Debugger.Interop.CorDebug.ICorDebugCode out_ppCode;
-			this.WrappedObject.GetILCode(out out_ppCode);
-			ppCode = ICorDebugCode.Wrap(out_ppCode);
+			get
+			{
+				ICorDebugCode ppCode;
+				Debugger.Interop.CorDebug.ICorDebugCode out_ppCode;
+				this.WrappedObject.GetILCode(out out_ppCode);
+				ppCode = ICorDebugCode.Wrap(out_ppCode);
+				return ppCode;
+			}
 		}
 		
-		public void GetNativeCode(out ICorDebugCode ppCode)
+		public ICorDebugCode NativeCode
 		{
-			Debugger.Interop.CorDebug.ICorDebugCode out_ppCode;
-			this.WrappedObject.GetNativeCode(out out_ppCode);
-			ppCode = ICorDebugCode.Wrap(out_ppCode);
+			get
+			{
+				ICorDebugCode ppCode;
+				Debugger.Interop.CorDebug.ICorDebugCode out_ppCode;
+				this.WrappedObject.GetNativeCode(out out_ppCode);
+				ppCode = ICorDebugCode.Wrap(out_ppCode);
+				return ppCode;
+			}
 		}
 		
-		public void CreateBreakpoint(out ICorDebugFunctionBreakpoint ppBreakpoint)
+		public ICorDebugFunctionBreakpoint CreateBreakpoint()
 		{
+			ICorDebugFunctionBreakpoint ppBreakpoint;
 			Debugger.Interop.CorDebug.ICorDebugFunctionBreakpoint out_ppBreakpoint;
 			this.WrappedObject.CreateBreakpoint(out out_ppBreakpoint);
 			ppBreakpoint = ICorDebugFunctionBreakpoint.Wrap(out_ppBreakpoint);
+			return ppBreakpoint;
 		}
 		
-		public void GetLocalVarSigToken(out uint pmdSig)
+		public uint LocalVarSigToken
 		{
-			this.WrappedObject.GetLocalVarSigToken(out pmdSig);
+			get
+			{
+				uint pmdSig;
+				this.WrappedObject.GetLocalVarSigToken(out pmdSig);
+				return pmdSig;
+			}
 		}
 		
-		public void GetCurrentVersionNumber(out uint pnCurrentVersion)
+		public uint CurrentVersionNumber
 		{
-			this.WrappedObject.GetCurrentVersionNumber(out pnCurrentVersion);
+			get
+			{
+				uint pnCurrentVersion;
+				this.WrappedObject.GetCurrentVersionNumber(out pnCurrentVersion);
+				return pnCurrentVersion;
+			}
 		}
 	}
 }

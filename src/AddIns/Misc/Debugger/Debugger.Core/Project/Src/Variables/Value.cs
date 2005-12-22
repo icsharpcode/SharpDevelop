@@ -119,9 +119,7 @@ namespace Debugger
 			if (corValue == null) {
 				return (CorElementType)0;
 			}
-			uint typeRaw;
-			corValue.GetType(out typeRaw);
-			return (CorElementType)typeRaw;
+			return (CorElementType)corValue.Type;
 		}
 
 		internal static System.Type CorTypeToManagedType(CorElementType corType)
@@ -156,17 +154,16 @@ namespace Debugger
 			if (manType == null) return "<unknown>";
 			return manType.ToString();
 		}
-
-
+		
+		
 		internal static ICorDebugValue DereferenceUnbox(ICorDebugValue corValue)
 		{
 			if (corValue.Is<ICorDebugReferenceValue>()) {
-				int isNull;
-				(corValue.CastTo<ICorDebugReferenceValue>()).IsNull(out isNull);
+				int isNull = corValue.CastTo<ICorDebugReferenceValue>().IsNull;
 				if (isNull == 0) {
 					ICorDebugValue dereferencedValue;
 					try {
-						(corValue.CastTo<ICorDebugReferenceValue>()).Dereference(out dereferencedValue);
+						dereferencedValue = (corValue.CastTo<ICorDebugReferenceValue>()).Dereference();
 					} catch {
 						// Error during dereferencing
 						return null;
@@ -176,13 +173,11 @@ namespace Debugger
 					return null;
 				}
 			}
-
+			
 			if (corValue.Is<ICorDebugBoxValue>()) {
-				ICorDebugObjectValue corUnboxedValue;
-				(corValue.CastTo<ICorDebugBoxValue>()).GetObject(out corUnboxedValue);
-				return DereferenceUnbox(corUnboxedValue.CastTo<ICorDebugValue>()); // Try again
+				return DereferenceUnbox(corValue.CastTo<ICorDebugBoxValue>().Object.CastTo<ICorDebugValue>()); // Try again
 			}
-
+			
 			return corValue;
 		}
 		

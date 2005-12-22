@@ -80,53 +80,92 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetType(out uint pType)
+		public uint Type
 		{
-			this.WrappedObject.GetType(out pType);
+			get
+			{
+				uint pType;
+				this.WrappedObject.GetType(out pType);
+				return pType;
+			}
 		}
 		
-		public void GetSize(out uint pSize)
+		public uint Size
 		{
-			this.WrappedObject.GetSize(out pSize);
+			get
+			{
+				uint pSize;
+				this.WrappedObject.GetSize(out pSize);
+				return pSize;
+			}
 		}
 		
-		public void GetAddress(out ulong pAddress)
+		public ulong Address
 		{
-			this.WrappedObject.GetAddress(out pAddress);
+			get
+			{
+				ulong pAddress;
+				this.WrappedObject.GetAddress(out pAddress);
+				return pAddress;
+			}
 		}
 		
-		public void CreateBreakpoint(out ICorDebugValueBreakpoint ppBreakpoint)
+		public ICorDebugValueBreakpoint CreateBreakpoint()
 		{
+			ICorDebugValueBreakpoint ppBreakpoint;
 			Debugger.Interop.CorDebug.ICorDebugValueBreakpoint out_ppBreakpoint;
 			this.WrappedObject.CreateBreakpoint(out out_ppBreakpoint);
 			ppBreakpoint = ICorDebugValueBreakpoint.Wrap(out_ppBreakpoint);
+			return ppBreakpoint;
 		}
 		
-		public void IsValid(out int pbValid)
+		public int IsValid
 		{
-			this.WrappedObject.IsValid(out pbValid);
+			get
+			{
+				int pbValid;
+				this.WrappedObject.IsValid(out pbValid);
+				return pbValid;
+			}
 		}
 		
-		public void CreateRelocBreakpoint(out ICorDebugValueBreakpoint ppBreakpoint)
+		public ICorDebugValueBreakpoint CreateRelocBreakpoint()
 		{
+			ICorDebugValueBreakpoint ppBreakpoint;
 			Debugger.Interop.CorDebug.ICorDebugValueBreakpoint out_ppBreakpoint;
 			this.WrappedObject.CreateRelocBreakpoint(out out_ppBreakpoint);
 			ppBreakpoint = ICorDebugValueBreakpoint.Wrap(out_ppBreakpoint);
+			return ppBreakpoint;
 		}
 		
-		public void GetElementType(out uint pType)
+		public uint ElementType
 		{
-			this.WrappedObject.GetElementType(out pType);
+			get
+			{
+				uint pType;
+				this.WrappedObject.GetElementType(out pType);
+				return pType;
+			}
 		}
 		
-		public void GetRank(out uint pnRank)
+		public uint Rank
 		{
-			this.WrappedObject.GetRank(out pnRank);
+			get
+			{
+				uint pnRank;
+				this.WrappedObject.GetRank(out pnRank);
+				return pnRank;
+			}
 		}
 		
-		public void GetCount(out uint pnCount)
+		public uint Count
 		{
-			this.WrappedObject.GetCount(out pnCount);
+			get
+			{
+				uint pnCount;
+				this.WrappedObject.GetCount(out pnCount);
+				return pnCount;
+			}
 		}
 		
 		public void GetDimensions(uint cdim, System.IntPtr dims)
@@ -134,9 +173,11 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.GetDimensions(cdim, dims);
 		}
 		
-		public void HasBaseIndicies(out int pbHasBaseIndicies)
+		public int HasBaseIndicies()
 		{
+			int pbHasBaseIndicies;
 			this.WrappedObject.HasBaseIndicies(out pbHasBaseIndicies);
+			return pbHasBaseIndicies;
 		}
 		
 		public void GetBaseIndicies(uint cdim, System.IntPtr indicies)
@@ -144,18 +185,22 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.GetBaseIndicies(cdim, indicies);
 		}
 		
-		public void GetElement(uint cdim, System.IntPtr indices, out ICorDebugValue ppValue)
+		public ICorDebugValue GetElement(uint cdim, System.IntPtr indices)
 		{
+			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
 			this.WrappedObject.GetElement(cdim, indices, out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
+			return ppValue;
 		}
 		
-		public void GetElementAtPosition(uint nPosition, out ICorDebugValue ppValue)
+		public ICorDebugValue GetElementAtPosition(uint nPosition)
 		{
+			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
 			this.WrappedObject.GetElementAtPosition(nPosition, out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
+			return ppValue;
 		}
 	}
 }

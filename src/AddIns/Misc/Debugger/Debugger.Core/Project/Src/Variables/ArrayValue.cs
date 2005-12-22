@@ -53,18 +53,16 @@ namespace Debugger
 				return txt;
 			} 
 		}
-
-
+		
+		
 		internal unsafe ArrayValue(NDebugger debugger, ICorDebugValue corValue):base(debugger, corValue)
 		{
 			corArrayValue = this.corValue.CastTo<ICorDebugArrayValue>();
-			uint corElementTypeRaw;
-			corArrayValue.GetElementType(out corElementTypeRaw);
-			corElementType = (CorElementType)corElementTypeRaw;
-
-			corArrayValue.GetRank(out rank);
-			corArrayValue.GetCount(out lenght);
-
+			corElementType = (CorElementType)corArrayValue.ElementType;
+			
+			rank = corArrayValue.Rank;
+			lenght = corArrayValue.Count;
+			
 			dimensions = new uint[rank];
 			fixed (void* pDimensions = dimensions)
 				corArrayValue.GetDimensions(rank, new IntPtr(pDimensions));
@@ -112,7 +110,7 @@ namespace Debugger
 			                    		ICorDebugValue element;
 			                    		unsafe {
 			                    			fixed (void* pIndices = indices) {
-			                    				updatedVal.corArrayValue.GetElement(rank, new IntPtr(pIndices), out element);
+			                    				element = updatedVal.corArrayValue.GetElement(rank, new IntPtr(pIndices));
 			                    			}
 			                    		}
 			                    		return Value.CreateValue(debugger, element);

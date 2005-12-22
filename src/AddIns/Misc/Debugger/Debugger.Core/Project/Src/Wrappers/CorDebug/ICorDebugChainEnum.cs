@@ -90,20 +90,28 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.Reset();
 		}
 		
-		public void Clone(out ICorDebugEnum ppEnum)
+		public ICorDebugEnum Clone()
 		{
+			ICorDebugEnum ppEnum;
 			Debugger.Interop.CorDebug.ICorDebugEnum out_ppEnum;
 			this.WrappedObject.Clone(out out_ppEnum);
 			ppEnum = ICorDebugEnum.Wrap(out_ppEnum);
+			return ppEnum;
 		}
 		
-		public void GetCount(out uint pcelt)
+		public uint Count
 		{
-			this.WrappedObject.GetCount(out pcelt);
+			get
+			{
+				uint pcelt;
+				this.WrappedObject.GetCount(out pcelt);
+				return pcelt;
+			}
 		}
 		
-		public void Next(uint celt, ICorDebugChain[] chains, out uint pceltFetched)
+		public uint Next(uint celt, ICorDebugChain[] chains)
 		{
+			uint pceltFetched;
 			Debugger.Interop.CorDebug.ICorDebugChain[] array_chains = new Debugger.Interop.CorDebug.ICorDebugChain[chains.Length];
 			for (int i = 0; (i < chains.Length); i = (i + 1))
 			{
@@ -123,6 +131,7 @@ namespace Debugger.Wrappers.CorDebug
 					chains[i] = null;
 				}
 			}
+			return pceltFetched;
 		}
 	}
 }

@@ -85,11 +85,13 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.RemapFunction(newILOffset);
 		}
 		
-		public void EnumerateTypeParameters(out ICorDebugTypeEnum ppTyParEnum)
+		public ICorDebugTypeEnum EnumerateTypeParameters()
 		{
+			ICorDebugTypeEnum ppTyParEnum;
 			Debugger.Interop.CorDebug.ICorDebugTypeEnum out_ppTyParEnum;
 			this.WrappedObject.EnumerateTypeParameters(out out_ppTyParEnum);
 			ppTyParEnum = ICorDebugTypeEnum.Wrap(out_ppTyParEnum);
+			return ppTyParEnum;
 		}
 	}
 }

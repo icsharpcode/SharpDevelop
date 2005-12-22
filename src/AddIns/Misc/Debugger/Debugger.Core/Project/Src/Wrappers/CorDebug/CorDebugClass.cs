@@ -85,32 +85,40 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.CanLaunchOrAttach(dwProcessId, win32DebuggingEnabled);
 		}
 		
-		public void CreateProcess(string lpApplicationName, string lpCommandLine, ref Debugger.Interop.CorDebug._SECURITY_ATTRIBUTES lpProcessAttributes, ref Debugger.Interop.CorDebug._SECURITY_ATTRIBUTES lpThreadAttributes, int bInheritHandles, uint dwCreationFlags, System.IntPtr lpEnvironment, string lpCurrentDirectory, uint lpStartupInfo, uint lpProcessInformation, CorDebugCreateProcessFlags debuggingFlags, out ICorDebugProcess ppProcess)
+		public ICorDebugProcess CreateProcess(string lpApplicationName, string lpCommandLine, ref Debugger.Interop.CorDebug._SECURITY_ATTRIBUTES lpProcessAttributes, ref Debugger.Interop.CorDebug._SECURITY_ATTRIBUTES lpThreadAttributes, int bInheritHandles, uint dwCreationFlags, System.IntPtr lpEnvironment, string lpCurrentDirectory, uint lpStartupInfo, uint lpProcessInformation, CorDebugCreateProcessFlags debuggingFlags)
 		{
+			ICorDebugProcess ppProcess;
 			Debugger.Interop.CorDebug.ICorDebugProcess out_ppProcess;
 			this.WrappedObject.CreateProcess(lpApplicationName, lpCommandLine, ref lpProcessAttributes, ref lpThreadAttributes, bInheritHandles, dwCreationFlags, lpEnvironment, lpCurrentDirectory, lpStartupInfo, lpProcessInformation, ((Debugger.Interop.CorDebug.CorDebugCreateProcessFlags)(debuggingFlags)), out out_ppProcess);
 			ppProcess = ICorDebugProcess.Wrap(out_ppProcess);
+			return ppProcess;
 		}
 		
-		public void DebugActiveProcess(uint id, int win32Attach, out ICorDebugProcess ppProcess)
+		public ICorDebugProcess DebugActiveProcess(uint id, int win32Attach)
 		{
+			ICorDebugProcess ppProcess;
 			Debugger.Interop.CorDebug.ICorDebugProcess out_ppProcess;
 			this.WrappedObject.DebugActiveProcess(id, win32Attach, out out_ppProcess);
 			ppProcess = ICorDebugProcess.Wrap(out_ppProcess);
+			return ppProcess;
 		}
 		
-		public void EnumerateProcesses(out ICorDebugProcessEnum ppProcess)
+		public ICorDebugProcessEnum EnumerateProcesses()
 		{
+			ICorDebugProcessEnum ppProcess;
 			Debugger.Interop.CorDebug.ICorDebugProcessEnum out_ppProcess;
 			this.WrappedObject.EnumerateProcesses(out out_ppProcess);
 			ppProcess = ICorDebugProcessEnum.Wrap(out_ppProcess);
+			return ppProcess;
 		}
 		
-		public void GetProcess(uint dwProcessId, out ICorDebugProcess ppProcess)
+		public ICorDebugProcess GetProcess(uint dwProcessId)
 		{
+			ICorDebugProcess ppProcess;
 			Debugger.Interop.CorDebug.ICorDebugProcess out_ppProcess;
 			this.WrappedObject.GetProcess(dwProcessId, out out_ppProcess);
 			ppProcess = ICorDebugProcess.Wrap(out_ppProcess);
+			return ppProcess;
 		}
 		
 		public void Initialize()

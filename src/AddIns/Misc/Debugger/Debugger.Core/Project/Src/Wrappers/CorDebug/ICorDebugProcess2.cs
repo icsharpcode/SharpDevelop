@@ -80,21 +80,30 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetThreadForTaskID(ulong taskid, out ICorDebugThread2 ppThread)
+		public ICorDebugThread2 GetThreadForTaskID(ulong taskid)
 		{
+			ICorDebugThread2 ppThread;
 			Debugger.Interop.CorDebug.ICorDebugThread2 out_ppThread;
 			this.WrappedObject.GetThreadForTaskID(taskid, out out_ppThread);
 			ppThread = ICorDebugThread2.Wrap(out_ppThread);
+			return ppThread;
 		}
 		
-		public void GetVersion(out Debugger.Interop.CorDebug._COR_VERSION version)
+		public Debugger.Interop.CorDebug._COR_VERSION Version
 		{
-			this.WrappedObject.GetVersion(out version);
+			get
+			{
+				Debugger.Interop.CorDebug._COR_VERSION version;
+				this.WrappedObject.GetVersion(out version);
+				return version;
+			}
 		}
 		
-		public void SetUnmanagedBreakpoint(ulong address, uint bufsize, System.IntPtr buffer, out uint bufLen)
+		public uint SetUnmanagedBreakpoint(ulong address, uint bufsize, System.IntPtr buffer)
 		{
+			uint bufLen;
 			this.WrappedObject.SetUnmanagedBreakpoint(address, bufsize, buffer, out bufLen);
+			return bufLen;
 		}
 		
 		public void ClearUnmanagedBreakpoint(ulong address)
@@ -107,16 +116,23 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.SetDesiredNGENCompilerFlags(pdwFlags);
 		}
 		
-		public void GetDesiredNGENCompilerFlags(out uint pdwFlags)
+		public uint DesiredNGENCompilerFlags
 		{
-			this.WrappedObject.GetDesiredNGENCompilerFlags(out pdwFlags);
+			get
+			{
+				uint pdwFlags;
+				this.WrappedObject.GetDesiredNGENCompilerFlags(out pdwFlags);
+				return pdwFlags;
+			}
 		}
 		
-		public void GetReferenceValueFromGCHandle(uint handle, out ICorDebugReferenceValue pOutValue)
+		public ICorDebugReferenceValue GetReferenceValueFromGCHandle(uint handle)
 		{
+			ICorDebugReferenceValue pOutValue;
 			Debugger.Interop.CorDebug.ICorDebugReferenceValue out_pOutValue;
 			this.WrappedObject.GetReferenceValueFromGCHandle(handle, out out_pOutValue);
 			pOutValue = ICorDebugReferenceValue.Wrap(out_pOutValue);
+			return pOutValue;
 		}
 	}
 }

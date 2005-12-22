@@ -80,63 +80,102 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetChain(out ICorDebugChain ppChain)
+		public ICorDebugChain Chain
 		{
-			Debugger.Interop.CorDebug.ICorDebugChain out_ppChain;
-			this.WrappedObject.GetChain(out out_ppChain);
-			ppChain = ICorDebugChain.Wrap(out_ppChain);
+			get
+			{
+				ICorDebugChain ppChain;
+				Debugger.Interop.CorDebug.ICorDebugChain out_ppChain;
+				this.WrappedObject.GetChain(out out_ppChain);
+				ppChain = ICorDebugChain.Wrap(out_ppChain);
+				return ppChain;
+			}
 		}
 		
-		public void GetCode(out ICorDebugCode ppCode)
+		public ICorDebugCode Code
 		{
-			Debugger.Interop.CorDebug.ICorDebugCode out_ppCode;
-			this.WrappedObject.GetCode(out out_ppCode);
-			ppCode = ICorDebugCode.Wrap(out_ppCode);
+			get
+			{
+				ICorDebugCode ppCode;
+				Debugger.Interop.CorDebug.ICorDebugCode out_ppCode;
+				this.WrappedObject.GetCode(out out_ppCode);
+				ppCode = ICorDebugCode.Wrap(out_ppCode);
+				return ppCode;
+			}
 		}
 		
-		public void GetFunction(out ICorDebugFunction ppFunction)
+		public ICorDebugFunction Function
 		{
-			Debugger.Interop.CorDebug.ICorDebugFunction out_ppFunction;
-			this.WrappedObject.GetFunction(out out_ppFunction);
-			ppFunction = ICorDebugFunction.Wrap(out_ppFunction);
+			get
+			{
+				ICorDebugFunction ppFunction;
+				Debugger.Interop.CorDebug.ICorDebugFunction out_ppFunction;
+				this.WrappedObject.GetFunction(out out_ppFunction);
+				ppFunction = ICorDebugFunction.Wrap(out_ppFunction);
+				return ppFunction;
+			}
 		}
 		
-		public void GetFunctionToken(out uint pToken)
+		public uint FunctionToken
 		{
-			this.WrappedObject.GetFunctionToken(out pToken);
+			get
+			{
+				uint pToken;
+				this.WrappedObject.GetFunctionToken(out pToken);
+				return pToken;
+			}
 		}
 		
-		public void GetStackRange(out ulong pStart, out ulong pEnd)
+		public ulong GetStackRange(out ulong pStart)
 		{
+			ulong pEnd;
 			this.WrappedObject.GetStackRange(out pStart, out pEnd);
+			return pEnd;
 		}
 		
-		public void GetCaller(out ICorDebugFrame ppFrame)
+		public ICorDebugFrame Caller
 		{
-			Debugger.Interop.CorDebug.ICorDebugFrame out_ppFrame;
-			this.WrappedObject.GetCaller(out out_ppFrame);
-			ppFrame = ICorDebugFrame.Wrap(out_ppFrame);
+			get
+			{
+				ICorDebugFrame ppFrame;
+				Debugger.Interop.CorDebug.ICorDebugFrame out_ppFrame;
+				this.WrappedObject.GetCaller(out out_ppFrame);
+				ppFrame = ICorDebugFrame.Wrap(out_ppFrame);
+				return ppFrame;
+			}
 		}
 		
-		public void GetCallee(out ICorDebugFrame ppFrame)
+		public ICorDebugFrame Callee
 		{
-			Debugger.Interop.CorDebug.ICorDebugFrame out_ppFrame;
-			this.WrappedObject.GetCallee(out out_ppFrame);
-			ppFrame = ICorDebugFrame.Wrap(out_ppFrame);
+			get
+			{
+				ICorDebugFrame ppFrame;
+				Debugger.Interop.CorDebug.ICorDebugFrame out_ppFrame;
+				this.WrappedObject.GetCallee(out out_ppFrame);
+				ppFrame = ICorDebugFrame.Wrap(out_ppFrame);
+				return ppFrame;
+			}
 		}
 		
-		public void CreateStepper(out ICorDebugStepper ppStepper)
+		public ICorDebugStepper CreateStepper()
 		{
+			ICorDebugStepper ppStepper;
 			Debugger.Interop.CorDebug.ICorDebugStepper out_ppStepper;
 			this.WrappedObject.CreateStepper(out out_ppStepper);
 			ppStepper = ICorDebugStepper.Wrap(out_ppStepper);
+			return ppStepper;
 		}
 		
-		public void GetFrameType(out CorDebugInternalFrameType pType)
+		public CorDebugInternalFrameType FrameType
 		{
-			Debugger.Interop.CorDebug.CorDebugInternalFrameType out_pType;
-			this.WrappedObject.GetFrameType(out out_pType);
-			pType = ((CorDebugInternalFrameType)(out_pType));
+			get
+			{
+				CorDebugInternalFrameType pType;
+				Debugger.Interop.CorDebug.CorDebugInternalFrameType out_pType;
+				this.WrappedObject.GetFrameType(out out_pType);
+				pType = ((CorDebugInternalFrameType)(out_pType));
+				return pType;
+			}
 		}
 	}
 }

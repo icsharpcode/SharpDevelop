@@ -85,9 +85,14 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.Activate(bActive);
 		}
 		
-		public void IsActive(out int pbActive)
+		public int IsActive
 		{
-			this.WrappedObject.IsActive(out pbActive);
+			get
+			{
+				int pbActive;
+				this.WrappedObject.IsActive(out pbActive);
+				return pbActive;
+			}
 		}
 	}
 }

@@ -80,49 +80,78 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetType(out uint ty)
+		public uint Type
 		{
-			this.WrappedObject.GetType(out ty);
+			get
+			{
+				uint ty;
+				this.WrappedObject.GetType(out ty);
+				return ty;
+			}
 		}
 		
-		public void GetClass(out ICorDebugClass ppClass)
+		public ICorDebugClass Class
 		{
-			Debugger.Interop.CorDebug.ICorDebugClass out_ppClass;
-			this.WrappedObject.GetClass(out out_ppClass);
-			ppClass = ICorDebugClass.Wrap(out_ppClass);
+			get
+			{
+				ICorDebugClass ppClass;
+				Debugger.Interop.CorDebug.ICorDebugClass out_ppClass;
+				this.WrappedObject.GetClass(out out_ppClass);
+				ppClass = ICorDebugClass.Wrap(out_ppClass);
+				return ppClass;
+			}
 		}
 		
-		public void EnumerateTypeParameters(out ICorDebugTypeEnum ppTyParEnum)
+		public ICorDebugTypeEnum EnumerateTypeParameters()
 		{
+			ICorDebugTypeEnum ppTyParEnum;
 			Debugger.Interop.CorDebug.ICorDebugTypeEnum out_ppTyParEnum;
 			this.WrappedObject.EnumerateTypeParameters(out out_ppTyParEnum);
 			ppTyParEnum = ICorDebugTypeEnum.Wrap(out_ppTyParEnum);
+			return ppTyParEnum;
 		}
 		
-		public void GetFirstTypeParameter(out ICorDebugType value)
+		public ICorDebugType FirstTypeParameter
 		{
-			Debugger.Interop.CorDebug.ICorDebugType out_value;
-			this.WrappedObject.GetFirstTypeParameter(out out_value);
-			value = ICorDebugType.Wrap(out_value);
+			get
+			{
+				ICorDebugType value;
+				Debugger.Interop.CorDebug.ICorDebugType out_value;
+				this.WrappedObject.GetFirstTypeParameter(out out_value);
+				value = ICorDebugType.Wrap(out_value);
+				return value;
+			}
 		}
 		
-		public void GetBase(out ICorDebugType pBase)
+		public ICorDebugType Base
 		{
-			Debugger.Interop.CorDebug.ICorDebugType out_pBase;
-			this.WrappedObject.GetBase(out out_pBase);
-			pBase = ICorDebugType.Wrap(out_pBase);
+			get
+			{
+				ICorDebugType pBase;
+				Debugger.Interop.CorDebug.ICorDebugType out_pBase;
+				this.WrappedObject.GetBase(out out_pBase);
+				pBase = ICorDebugType.Wrap(out_pBase);
+				return pBase;
+			}
 		}
 		
-		public void GetStaticFieldValue(uint fieldDef, ICorDebugFrame pFrame, out ICorDebugValue ppValue)
+		public ICorDebugValue GetStaticFieldValue(uint fieldDef, ICorDebugFrame pFrame)
 		{
+			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
 			this.WrappedObject.GetStaticFieldValue(fieldDef, pFrame.WrappedObject, out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
+			return ppValue;
 		}
 		
-		public void GetRank(out uint pnRank)
+		public uint Rank
 		{
-			this.WrappedObject.GetRank(out pnRank);
+			get
+			{
+				uint pnRank;
+				this.WrappedObject.GetRank(out pnRank);
+				return pnRank;
+			}
 		}
 	}
 }

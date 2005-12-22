@@ -80,14 +80,18 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void RemoteRead(out byte pv, uint cb, out uint pcbRead)
+		public uint RemoteRead(out byte pv, uint cb)
 		{
+			uint pcbRead;
 			this.WrappedObject.RemoteRead(out pv, cb, out pcbRead);
+			return pcbRead;
 		}
 		
-		public void RemoteWrite(ref byte pv, uint cb, out uint pcbWritten)
+		public uint RemoteWrite(ref byte pv, uint cb)
 		{
+			uint pcbWritten;
 			this.WrappedObject.RemoteWrite(ref pv, cb, out pcbWritten);
+			return pcbWritten;
 		}
 	}
 }

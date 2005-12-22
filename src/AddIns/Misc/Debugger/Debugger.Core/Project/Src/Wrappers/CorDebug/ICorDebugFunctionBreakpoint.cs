@@ -85,21 +85,36 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.Activate(bActive);
 		}
 		
-		public void IsActive(out int pbActive)
+		public int IsActive
 		{
-			this.WrappedObject.IsActive(out pbActive);
+			get
+			{
+				int pbActive;
+				this.WrappedObject.IsActive(out pbActive);
+				return pbActive;
+			}
 		}
 		
-		public void GetFunction(out ICorDebugFunction ppFunction)
+		public ICorDebugFunction Function
 		{
-			Debugger.Interop.CorDebug.ICorDebugFunction out_ppFunction;
-			this.WrappedObject.GetFunction(out out_ppFunction);
-			ppFunction = ICorDebugFunction.Wrap(out_ppFunction);
+			get
+			{
+				ICorDebugFunction ppFunction;
+				Debugger.Interop.CorDebug.ICorDebugFunction out_ppFunction;
+				this.WrappedObject.GetFunction(out out_ppFunction);
+				ppFunction = ICorDebugFunction.Wrap(out_ppFunction);
+				return ppFunction;
+			}
 		}
 		
-		public void GetOffset(out uint pnOffset)
+		public uint Offset
 		{
-			this.WrappedObject.GetOffset(out pnOffset);
+			get
+			{
+				uint pnOffset;
+				this.WrappedObject.GetOffset(out pnOffset);
+				return pnOffset;
+			}
 		}
 	}
 }

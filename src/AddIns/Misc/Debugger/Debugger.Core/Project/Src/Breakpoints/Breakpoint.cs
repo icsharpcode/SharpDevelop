@@ -46,12 +46,10 @@ namespace Debugger
 			}
 		}
 		
-		public bool Enabled	{
+		public bool Enabled {
 			get {
 				if (HadBeenSet) {
-					int active;
-					corBreakpoint.IsActive(out active);
-					enabled = (active == 1);
+					enabled = (corBreakpoint.IsActive == 1);
 				}
 				return enabled;
 			}
@@ -126,11 +124,8 @@ namespace Debugger
 			if (!sourcecodeSegment.GetFunctionAndOffset(debugger, true, out corFunction, out ilOffset)) {
 				return false;
 			}
-
-			ICorDebugCode code;
-			corFunction.GetILCode(out code);
-
-			code.CreateBreakpoint((uint)ilOffset, out corBreakpoint);
+			
+			corBreakpoint = corFunction.ILCode.CreateBreakpoint((uint)ilOffset);
 			
 			hadBeenSet = true;
 			corBreakpoint.Activate(enabled?1:0);

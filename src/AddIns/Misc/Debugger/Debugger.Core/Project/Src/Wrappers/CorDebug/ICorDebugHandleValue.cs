@@ -80,36 +80,63 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetType(out uint pType)
+		public uint Type
 		{
-			this.WrappedObject.GetType(out pType);
+			get
+			{
+				uint pType;
+				this.WrappedObject.GetType(out pType);
+				return pType;
+			}
 		}
 		
-		public void GetSize(out uint pSize)
+		public uint Size
 		{
-			this.WrappedObject.GetSize(out pSize);
+			get
+			{
+				uint pSize;
+				this.WrappedObject.GetSize(out pSize);
+				return pSize;
+			}
 		}
 		
-		public void GetAddress(out ulong pAddress)
+		public ulong Address
 		{
-			this.WrappedObject.GetAddress(out pAddress);
+			get
+			{
+				ulong pAddress;
+				this.WrappedObject.GetAddress(out pAddress);
+				return pAddress;
+			}
 		}
 		
-		public void CreateBreakpoint(out ICorDebugValueBreakpoint ppBreakpoint)
+		public ICorDebugValueBreakpoint CreateBreakpoint()
 		{
+			ICorDebugValueBreakpoint ppBreakpoint;
 			Debugger.Interop.CorDebug.ICorDebugValueBreakpoint out_ppBreakpoint;
 			this.WrappedObject.CreateBreakpoint(out out_ppBreakpoint);
 			ppBreakpoint = ICorDebugValueBreakpoint.Wrap(out_ppBreakpoint);
+			return ppBreakpoint;
 		}
 		
-		public void IsNull(out int pbNull)
+		public int IsNull
 		{
-			this.WrappedObject.IsNull(out pbNull);
+			get
+			{
+				int pbNull;
+				this.WrappedObject.IsNull(out pbNull);
+				return pbNull;
+			}
 		}
 		
-		public void GetValue(out ulong pValue)
+		public ulong Value
 		{
-			this.WrappedObject.GetValue(out pValue);
+			get
+			{
+				ulong pValue;
+				this.WrappedObject.GetValue(out pValue);
+				return pValue;
+			}
 		}
 		
 		public void SetValue(ulong value)
@@ -117,25 +144,34 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.SetValue(value);
 		}
 		
-		public void Dereference(out ICorDebugValue ppValue)
+		public ICorDebugValue Dereference()
 		{
+			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
 			this.WrappedObject.Dereference(out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
+			return ppValue;
 		}
 		
-		public void DereferenceStrong(out ICorDebugValue ppValue)
+		public ICorDebugValue DereferenceStrong()
 		{
+			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
 			this.WrappedObject.DereferenceStrong(out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
+			return ppValue;
 		}
 		
-		public void GetHandleType(out CorDebugHandleType pType)
+		public CorDebugHandleType HandleType
 		{
-			Debugger.Interop.CorDebug.CorDebugHandleType out_pType;
-			this.WrappedObject.GetHandleType(out out_pType);
-			pType = ((CorDebugHandleType)(out_pType));
+			get
+			{
+				CorDebugHandleType pType;
+				Debugger.Interop.CorDebug.CorDebugHandleType out_pType;
+				this.WrappedObject.GetHandleType(out out_pType);
+				pType = ((CorDebugHandleType)(out_pType));
+				return pType;
+			}
 		}
 		
 		public void Dispose()

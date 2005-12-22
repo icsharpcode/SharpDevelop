@@ -85,16 +85,26 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.Activate(bActive);
 		}
 		
-		public void IsActive(out int pbActive)
+		public int IsActive
 		{
-			this.WrappedObject.IsActive(out pbActive);
+			get
+			{
+				int pbActive;
+				this.WrappedObject.IsActive(out pbActive);
+				return pbActive;
+			}
 		}
 		
-		public void GetModule(out ICorDebugModule ppModule)
+		public ICorDebugModule Module
 		{
-			Debugger.Interop.CorDebug.ICorDebugModule out_ppModule;
-			this.WrappedObject.GetModule(out out_ppModule);
-			ppModule = ICorDebugModule.Wrap(out_ppModule);
+			get
+			{
+				ICorDebugModule ppModule;
+				Debugger.Interop.CorDebug.ICorDebugModule out_ppModule;
+				this.WrappedObject.GetModule(out out_ppModule);
+				ppModule = ICorDebugModule.Wrap(out_ppModule);
+				return ppModule;
+			}
 		}
 	}
 }

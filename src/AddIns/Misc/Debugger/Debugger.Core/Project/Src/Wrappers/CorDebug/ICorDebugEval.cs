@@ -125,9 +125,14 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.NewArray(elementType, pElementClass.WrappedObject, rank, ref dims, ref lowBounds);
 		}
 		
-		public void IsActive(out int pbActive)
+		public int IsActive
 		{
-			this.WrappedObject.IsActive(out pbActive);
+			get
+			{
+				int pbActive;
+				this.WrappedObject.IsActive(out pbActive);
+				return pbActive;
+			}
 		}
 		
 		public void Abort()
@@ -135,25 +140,37 @@ namespace Debugger.Wrappers.CorDebug
 			this.WrappedObject.Abort();
 		}
 		
-		public void GetResult(out ICorDebugValue ppResult)
+		public ICorDebugValue Result
 		{
-			Debugger.Interop.CorDebug.ICorDebugValue out_ppResult;
-			this.WrappedObject.GetResult(out out_ppResult);
-			ppResult = ICorDebugValue.Wrap(out_ppResult);
+			get
+			{
+				ICorDebugValue ppResult;
+				Debugger.Interop.CorDebug.ICorDebugValue out_ppResult;
+				this.WrappedObject.GetResult(out out_ppResult);
+				ppResult = ICorDebugValue.Wrap(out_ppResult);
+				return ppResult;
+			}
 		}
 		
-		public void GetThread(out ICorDebugThread ppThread)
+		public ICorDebugThread Thread
 		{
-			Debugger.Interop.CorDebug.ICorDebugThread out_ppThread;
-			this.WrappedObject.GetThread(out out_ppThread);
-			ppThread = ICorDebugThread.Wrap(out_ppThread);
+			get
+			{
+				ICorDebugThread ppThread;
+				Debugger.Interop.CorDebug.ICorDebugThread out_ppThread;
+				this.WrappedObject.GetThread(out out_ppThread);
+				ppThread = ICorDebugThread.Wrap(out_ppThread);
+				return ppThread;
+			}
 		}
 		
-		public void CreateValue(uint elementType, ICorDebugClass pElementClass, out ICorDebugValue ppValue)
+		public ICorDebugValue CreateValue(uint elementType, ICorDebugClass pElementClass)
 		{
+			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
 			this.WrappedObject.CreateValue(elementType, pElementClass.WrappedObject, out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
+			return ppValue;
 		}
 	}
 }

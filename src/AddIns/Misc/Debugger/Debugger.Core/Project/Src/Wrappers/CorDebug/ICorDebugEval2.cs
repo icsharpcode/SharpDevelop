@@ -89,11 +89,13 @@ namespace Debugger.Wrappers.CorDebug
 			ppArgs = ICorDebugValue.Wrap(ref_ppArgs);
 		}
 		
-		public void CreateValueForType(ICorDebugType pType, out ICorDebugValue ppValue)
+		public ICorDebugValue CreateValueForType(ICorDebugType pType)
 		{
+			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
 			this.WrappedObject.CreateValueForType(pType.WrappedObject, out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
+			return ppValue;
 		}
 		
 		public void NewParameterizedObject(ICorDebugFunction pConstructor, uint nTypeArgs, ref ICorDebugType ppTypeArgs, uint nArgs, ref ICorDebugValue ppArgs)

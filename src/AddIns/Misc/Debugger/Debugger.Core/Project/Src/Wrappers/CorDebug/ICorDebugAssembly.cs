@@ -80,25 +80,37 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetProcess(out ICorDebugProcess ppProcess)
+		public ICorDebugProcess Process
 		{
-			Debugger.Interop.CorDebug.ICorDebugProcess out_ppProcess;
-			this.WrappedObject.GetProcess(out out_ppProcess);
-			ppProcess = ICorDebugProcess.Wrap(out_ppProcess);
+			get
+			{
+				ICorDebugProcess ppProcess;
+				Debugger.Interop.CorDebug.ICorDebugProcess out_ppProcess;
+				this.WrappedObject.GetProcess(out out_ppProcess);
+				ppProcess = ICorDebugProcess.Wrap(out_ppProcess);
+				return ppProcess;
+			}
 		}
 		
-		public void GetAppDomain(out ICorDebugAppDomain ppAppDomain)
+		public ICorDebugAppDomain AppDomain
 		{
-			Debugger.Interop.CorDebug.ICorDebugAppDomain out_ppAppDomain;
-			this.WrappedObject.GetAppDomain(out out_ppAppDomain);
-			ppAppDomain = ICorDebugAppDomain.Wrap(out_ppAppDomain);
+			get
+			{
+				ICorDebugAppDomain ppAppDomain;
+				Debugger.Interop.CorDebug.ICorDebugAppDomain out_ppAppDomain;
+				this.WrappedObject.GetAppDomain(out out_ppAppDomain);
+				ppAppDomain = ICorDebugAppDomain.Wrap(out_ppAppDomain);
+				return ppAppDomain;
+			}
 		}
 		
-		public void EnumerateModules(out ICorDebugModuleEnum ppModules)
+		public ICorDebugModuleEnum EnumerateModules()
 		{
+			ICorDebugModuleEnum ppModules;
 			Debugger.Interop.CorDebug.ICorDebugModuleEnum out_ppModules;
 			this.WrappedObject.EnumerateModules(out out_ppModules);
 			ppModules = ICorDebugModuleEnum.Wrap(out_ppModules);
+			return ppModules;
 		}
 		
 		public void GetCodeBase(uint cchName, out uint pcchName, System.IntPtr szName)

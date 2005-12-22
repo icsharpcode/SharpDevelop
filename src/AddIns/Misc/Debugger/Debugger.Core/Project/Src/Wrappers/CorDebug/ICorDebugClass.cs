@@ -80,23 +80,35 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetModule(out ICorDebugModule pModule)
+		public ICorDebugModule Module
 		{
-			Debugger.Interop.CorDebug.ICorDebugModule out_pModule;
-			this.WrappedObject.GetModule(out out_pModule);
-			pModule = ICorDebugModule.Wrap(out_pModule);
+			get
+			{
+				ICorDebugModule pModule;
+				Debugger.Interop.CorDebug.ICorDebugModule out_pModule;
+				this.WrappedObject.GetModule(out out_pModule);
+				pModule = ICorDebugModule.Wrap(out_pModule);
+				return pModule;
+			}
 		}
 		
-		public void GetToken(out uint pTypeDef)
+		public uint Token
 		{
-			this.WrappedObject.GetToken(out pTypeDef);
+			get
+			{
+				uint pTypeDef;
+				this.WrappedObject.GetToken(out pTypeDef);
+				return pTypeDef;
+			}
 		}
 		
-		public void GetStaticFieldValue(uint fieldDef, ICorDebugFrame pFrame, out ICorDebugValue ppValue)
+		public ICorDebugValue GetStaticFieldValue(uint fieldDef, ICorDebugFrame pFrame)
 		{
+			ICorDebugValue ppValue;
 			Debugger.Interop.CorDebug.ICorDebugValue out_ppValue;
 			this.WrappedObject.GetStaticFieldValue(fieldDef, pFrame.WrappedObject, out out_ppValue);
 			ppValue = ICorDebugValue.Wrap(out_ppValue);
+			return ppValue;
 		}
 	}
 }

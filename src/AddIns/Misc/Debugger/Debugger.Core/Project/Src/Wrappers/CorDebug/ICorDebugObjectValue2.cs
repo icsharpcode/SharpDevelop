@@ -80,13 +80,15 @@ namespace Debugger.Wrappers.CorDebug
 		}
 		
 		
-		public void GetVirtualMethodAndType(uint memberRef, out ICorDebugFunction ppFunction, out ICorDebugType ppType)
+		public ICorDebugType GetVirtualMethodAndType(uint memberRef, out ICorDebugFunction ppFunction)
 		{
+			ICorDebugType ppType;
 			Debugger.Interop.CorDebug.ICorDebugFunction out_ppFunction;
 			Debugger.Interop.CorDebug.ICorDebugType out_ppType;
 			this.WrappedObject.GetVirtualMethodAndType(memberRef, out out_ppFunction, out out_ppType);
 			ppFunction = ICorDebugFunction.Wrap(out_ppFunction);
 			ppType = ICorDebugType.Wrap(out_ppType);
+			return ppType;
 		}
 	}
 }
