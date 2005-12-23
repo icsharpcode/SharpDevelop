@@ -2072,32 +2072,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(AddressOfExpression addressOfExpression, object data)
 		{
-			// TODO: implement me
-			errors.Error(-1, -1, String.Format("Unsupported expression : {0}", addressOfExpression));
-//			DebugOutput(addressOfExpression);
-//			string procedureName    = addressOfExpression.Procedure.AcceptVisitor(this, data).ToString();
-//			string eventHandlerType = "EventHandler";
-//			bool   foundEventHandler = false;
-//			// try to resolve the type of the eventhandler using a little trick :)
-//			foreach (INode node in currentType.Children) {
-//				MethodDeclaration md = node as MethodDeclaration;
-//				if (md != null && md.Parameters != null && md.Parameters.Count > 0) {
-//					if (procedureName == md.Name || procedureName.EndsWith("." + md.Name)) {
-//						ParameterDeclarationExpression pde = (ParameterDeclarationExpression)md.Parameters[md.Parameters.Count - 1];
-//						string typeName = GetTypeString(pde.TypeReference);
-//						if (typeName.EndsWith("Args")) {
-//							eventHandlerType = typeName.Substring(0, typeName.Length - "Args".Length) + "Handler";
-//							foundEventHandler = true;
-//						}
-//					}
-//				}
-//			}
-//			return String.Concat(foundEventHandler ? "new " : "/* might be wrong, please check */ new ",
-//			                     eventHandlerType,
-//			                     "(",
-//			                     procedureName,
-//			                     ")");
-			return null;
+			// C# 2.0 can reference methods directly
+			return Visit(addressOfExpression.Expression, data);
 		}
 		
 		public object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)

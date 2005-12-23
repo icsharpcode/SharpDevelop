@@ -94,7 +94,8 @@ namespace NRefactoryToBooConverter
 		#region ICSharpCode.NRefactory.Parser.ISpecialVisitor interface implementation
 		int oldIndentation;
 		
-		struct DelayedSpecial {
+		struct DelayedSpecial
+		{
 			public readonly int Indentation;
 			public readonly string Format;
 			public readonly object[] Args;
@@ -182,7 +183,10 @@ namespace NRefactoryToBooConverter
 		
 		object ISpecialVisitor.Visit(PreProcessingDirective special, object data)
 		{
-			WriteSpecialText(false, "{0} {1}", special.Cmd, special.Arg);
+			if (string.IsNullOrEmpty(special.Arg))
+				WriteSpecialText(false, "{0}", special.Cmd);
+			else
+				WriteSpecialText(false, "{0} {1}", special.Cmd, special.Arg);
 			return null;
 		}
 		#endregion

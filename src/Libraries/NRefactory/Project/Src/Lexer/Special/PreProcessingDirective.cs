@@ -24,14 +24,21 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public static PreProcessingDirective VBToCSharp(PreProcessingDirective dir)
 		{
-			string cmd = dir.Cmd.ToLower(CultureInfo.InvariantCulture);
+			string cmd = dir.Cmd.ToLowerInvariant();
 			string arg = dir.Arg;
 			switch (cmd) {
 				case "#end":
-					if (arg.ToLower(CultureInfo.InvariantCulture).StartsWith("region")) {
+					if (arg.ToLowerInvariant().StartsWith("region")) {
 						cmd = "#endregion";
 						arg = "";
+					} else if ("if".Equals(arg, StringComparison.InvariantCultureIgnoreCase)) {
+						cmd = "#endif";
+						arg = "";
 					}
+					break;
+				case "#if":
+					if (arg.ToLowerInvariant().EndsWith(" then"))
+						arg = arg.Substring(0, arg.Length - 5);
 					break;
 			}
 			return new PreProcessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
@@ -51,7 +58,6 @@ namespace ICSharpCode.NRefactory.Parser
 			string arg = dir.Arg;
 			switch (cmd) {
 				case "#region":
-					cmd = "#Region";
 					if (!arg.StartsWith("\"")) {
 						arg = "\"" + arg.Trim() + "\"";
 					}
@@ -60,6 +66,16 @@ namespace ICSharpCode.NRefactory.Parser
 					cmd = "#End";
 					arg = "Region";
 					break;
+				case "#endif":
+					cmd = "#End";
+					arg = "If";
+					break;
+				case "#if":
+					arg += " Then";
+					break;
+			}
+			if (cmd.Length > 1) {
+				cmd = cmd.Substring(0, 2).ToUpperInvariant() + cmd.Substring(2);
 			}
 			return new PreProcessingDirective(cmd, arg, dir.StartPosition, dir.EndPosition);
 		}

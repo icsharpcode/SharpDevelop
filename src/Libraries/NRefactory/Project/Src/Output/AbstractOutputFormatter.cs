@@ -139,7 +139,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public virtual void PrintPreProcessingDirective(PreProcessingDirective directive)
 		{
-			WriteInPreviousLine(directive.Cmd + " " + directive.Arg);
+			if (string.IsNullOrEmpty(directive.Arg))
+				WriteInPreviousLine(directive.Cmd);
+			else
+				WriteInPreviousLine(directive.Cmd + " " + directive.Arg);
 		}
 		
 		public abstract void PrintToken(int token);
