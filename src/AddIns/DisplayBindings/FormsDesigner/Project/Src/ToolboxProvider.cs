@@ -187,7 +187,7 @@ namespace ICSharpCode.FormsDesigner
 				if (referenceItem != null) {
 					if (referenceItem.ItemType == ItemType.Reference) {
 						LoggingService.Debug("Checking project reference: " + referenceItem.Include);
-						if (referenceItem.HintPath.Length > 0) {
+						if (referenceItem.HintPath.Length > 0 && File.Exists(referenceItem.FileName)) {
 							LoggingService.Debug("Checking assembly reference");
 							AssemblyName assemblyName = AssemblyName.GetAssemblyName(referenceItem.FileName);
 							if (assemblyName != null && assemblyName.FullName == referenceName.FullName) {
@@ -199,7 +199,7 @@ namespace ICSharpCode.FormsDesigner
 							if (referenceItem.Include == referenceName.FullName || referenceItem.Include == referenceName.Name) {
 								LoggingService.Debug("Found existing GAC reference");
 								isAlreadyInRefFolder = true;
-								break;	
+								break;
 							}
 						}
 					}
