@@ -13,9 +13,8 @@
 		</Import>
 	</Runtime>
 	
-	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
+	<Path name = "/Workspace/Tools">
 		<MenuItem id = "ShowAddInManager"
-		          insertafter = "Separator1" insertbefore = "Separator2"
 		          label = "${res:AddInManager.Title}"
 		          class = "ICSharpCode.AddInManager.ShowCommand"/>
 	</Path>

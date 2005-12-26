@@ -5,6 +5,7 @@
 
 	<Manifest>
 		<Identity name = "ICSharpCode.PInvokeAddIn"/>
+		<Dependency addin = "SharpDevelop"/>
 	</Manifest>
 	
 	<Runtime>
@@ -12,14 +13,13 @@
 	</Runtime>
 
 	<!-- Menu options -->
-	<Path name="/SharpDevelop/Workbench/MainMenu/Tools">
+	<Path name="/Workspace/Tools">
 		<ComplexCondition action = "Disable">
 			<Or>
 				<Condition name = "ActiveContentExtension" activeextension = ".vb"/>
 				<Condition name = "ActiveContentExtension" activeextension = ".cs"/>
 			</Or>
 			<MenuItem id = "InsertPInvoke"
-				  insertafter = "Separator1" insertbefore = "Separator2"
 				  label = "${res:ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesMenuLabel}" 
 				  description = "Insert PInvoke signatures." 
 				  class = "ICSharpCode.PInvokeAddIn.InsertPInvokeSignaturesCommand"

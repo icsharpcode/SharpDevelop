@@ -2512,14 +2512,18 @@ EmbeddedStatement<out Statement statement>
 	| /* 10.10.2.1 */
 	"Error" Expr<out expr> 				(. statement = new ErrorStatement(expr); .)
 	| /* 10.12.1 */
-	"ReDim" (. Expression redimclause = null; bool isPreserve = false; .) [ "Preserve" (. isPreserve = true; .) ]
-	Expr<out redimclause>
+	"ReDim" (. bool isPreserve = false; .) [ "Preserve" (. isPreserve = true; .) ]
+	Expr<out expr>
 	(.
 		ReDimStatement reDimStatement = new ReDimStatement(isPreserve);
 		statement = reDimStatement;
-		reDimStatement.ReDimClauses.Add(redimclause as InvocationExpression);
+		InvocationExpression redimClause = expr as InvocationExpression;
+		if (redimClause != null) { reDimStatement.ReDimClauses.Add(redimClause); }
 	.)
-	{ "," Expr<out redimclause> (. reDimStatement.ReDimClauses.Add(redimclause as InvocationExpression); .) }
+	{ "," Expr<out expr>
+		(. redimClause = expr as InvocationExpression; .)
+		(. if (redimClause != null) { reDimStatement.ReDimClauses.Add(redimClause); } .)
+	}
 	| /* 10.12.2 */
 	"Erase"	
 	Expr<out expr>

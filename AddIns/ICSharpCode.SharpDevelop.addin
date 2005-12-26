@@ -1310,6 +1310,7 @@
 		<MenuItem id = "Tools" label = "${res:XML.MainMenu.ToolMenu}" type="Menu">
 			<MenuItem id = "ToolBuilder" type="Builder" class = "ICSharpCode.SharpDevelop.Commands.ToolMenuBuilder" />
 			<MenuItem id = "Separator1" type = "Separator" />
+			<Include id = "ToolList" path = "/Workspace/Tools" />
 			<MenuItem id = "Separator2" type = "Separator" />
 			
 			<ComplexCondition action = "Disable">

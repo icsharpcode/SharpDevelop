@@ -1,21 +1,20 @@
 // <file>
 //     <copyright see="prj:///doc/copyright.txt"/>
 //     <license see="prj:///doc/license.txt"/>
-//     <owner name="none" email=""/>
+//     <owner name="Daniel Grunwald" email="daniel@danielgrunwald.de"/>
 //     <version>$Revision$</version>
 // </file>
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
 	public class ReDimStatement : Statement
 	{
-//		List<Expression> reDimClauses = new List<Expression>(1);
-		ArrayList reDimClauses = new ArrayList(1);
-		bool              isPreserve   = false;
+		List<InvocationExpression> reDimClauses = new List<InvocationExpression>(1);
+		bool isPreserve   = false;
 		
 		public bool IsPreserve {
 			get {
@@ -25,7 +24,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				isPreserve = value;
 			}
 		}
-		public ArrayList ReDimClauses {
+		public List<InvocationExpression> ReDimClauses {
 			get {
 				return reDimClauses;
 			}

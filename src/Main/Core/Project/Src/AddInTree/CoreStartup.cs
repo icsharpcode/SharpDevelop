@@ -119,6 +119,7 @@ namespace ICSharpCode.Core
 			                                  propertiesName);
 			PropertyService.Load();
 			ResourceService.InitializeService(FileUtility.Combine(PropertyService.DataDirectory, "resources"));
+			StringParser.Properties["AppName"] = applicationName;
 		}
 	}
 }

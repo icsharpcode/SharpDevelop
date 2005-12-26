@@ -10,6 +10,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.AddInManager
 {
+	#if !STANDALONE
 	public class AddInInstallBinding : IDisplayBinding
 	{
 		public bool CanCreateContentForFile(string fileName)
@@ -34,4 +35,5 @@ namespace ICSharpCode.AddInManager
 			throw new NotImplementedException();
 		}
 	}
+	#endif
 }

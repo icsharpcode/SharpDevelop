@@ -11,9 +11,8 @@
 		<Import assembly="RegExpTk.dll" />
 	</Runtime>
 	
-	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
+	<Path name = "/Workspace/Tools">
 		<MenuItem id = "RegExpTk"
-		          insertafter = "Separator1" insertbefore = "Separator2"
 		          label       = "${res:XML.MainMenu.ToolsMenu.RegularExpressionToolkit}"
 		          class       = "Plugins.RegExpTk.RegExpTkCommand"
 		/>

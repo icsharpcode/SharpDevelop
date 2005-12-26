@@ -164,6 +164,7 @@ namespace BuildAddinDocumentation
 					foreach (string child in doozer["children"].GetAttribute("childTypes").Split(';')) {
 						CreateChild(choice, "element").SetAttribute("ref", child);
 					}
+                    CreateChild(choice, "element").SetAttribute("ref", "Include");
 				}
 				foreach (XmlElement doozerChild in doozer) {
 					if (doozerChild.Name != "attribute")

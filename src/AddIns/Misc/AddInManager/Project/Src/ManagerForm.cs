@@ -50,7 +50,12 @@ namespace ICSharpCode.AddInManager
 			ICSharpCode.SharpDevelop.Gui.FormLocationHelper.Apply(this, "AddInManager.WindowBounds", true);
 			#endif
 			
+			#if STANDALONE
+			actionFlowLayoutPanel.BackgroundImage = new Bitmap(typeof(ManagerForm).Assembly.GetManifestResourceStream("ICSharpCode.AddInManager.WizardBackground.png"));
+			#else
 			actionFlowLayoutPanel.BackgroundImage = ResourceService.GetBitmap("GeneralWizardBackground");
+			#endif
+			
 			installButton.Text = ResourceService.GetString("AddInManager.InstallButton");
 			uninstallButton.Text = ResourceService.GetString("AddInManager.ActionUninstall");
 			closeButton.Text = ResourceService.GetString("Global.CloseButtonText");
@@ -82,7 +87,7 @@ namespace ICSharpCode.AddInManager
 			               });
 			foreach (AddIn addIn in addInList) {
 				string identity = addIn.Manifest.PrimaryIdentity;
-				if (identity == null || identity == "SharpDevelop") // || identity == "ICSharpCode.AddInManager"
+				if (identity == null || addIn.Properties["addInManagerHidden"] == "true")
 					continue;
 				addInControl = new AddInControl(addIn);
 				addInControl.Dock = DockStyle.Top;
@@ -95,6 +100,10 @@ namespace ICSharpCode.AddInManager
 				splitContainer.Panel1.Controls.Add(stack.Pop());
 			}
 			ShowPreinstalledAddInsCheckBoxCheckedChanged(null, null);
+			#if SHOWALLADDINS
+			showPreinstalledAddInsCheckBox.Visible = false;
+			showPreinstalledAddInsCheckBox.Checked = true;
+			#endif
 			splitContainer.Panel2Collapsed = true;
 		}
 		
@@ -623,6 +632,12 @@ namespace ICSharpCode.AddInManager
 		{
 			switch (selectedAction) {
 				case AddInAction.Disable:
+					for (int i = 0; i < selected.Count; i++) {
+						if (selected[i].Manifest.PrimaryIdentity == "ICSharpCode.AddInManager") {
+							MessageService.ShowMessage("You cannot disable the AddInManager because you need it to re-enable AddIns!");
+							selected.RemoveAt(i--);
+						}
+					}
 					ICSharpCode.Core.AddInManager.Disable(selected);
 					break;
 				case AddInAction.Enable:

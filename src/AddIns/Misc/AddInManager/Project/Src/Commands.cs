@@ -15,8 +15,18 @@ namespace ICSharpCode.AddInManager
 {
 	public class ShowCommand : AbstractMenuCommand
 	{
+		#if STANDALONE
+		static bool resourcesRegistered;
+		#endif
+		
 		public override void Run()
 		{
+			#if STANDALONE
+			if (!resourcesRegistered) {
+				resourcesRegistered = true;
+				ResourceService.RegisterStrings("ICSharpCode.AddInManager.StringResources", typeof(ShowCommand).Assembly);
+			}
+			#endif
 			ManagerForm.ShowForm();
 		}
 	}
@@ -85,7 +95,13 @@ namespace ICSharpCode.AddInManager
 		
 		public override void Run()
 		{
+			#if STANDALONE
+			try {
+				System.Diagnostics.Process.Start(((AddInControl)Owner).AddIn.Properties["url"]);
+			} catch {}
+			#else
 			FileService.OpenFile(((AddInControl)Owner).AddIn.Properties["url"]);
+			#endif
 			ManagerForm.Instance.Close();
 		}
 	}
@@ -104,6 +120,7 @@ namespace ICSharpCode.AddInManager
 	{
 		public override bool IsEnabled {
 			get {
+				#if !STANDALONE
 				AddIn addIn = ((AddInControl)Owner).AddIn;
 				if (addIn.Enabled) {
 					foreach (KeyValuePair<string, ExtensionPath> pair in addIn.Paths) {
@@ -112,12 +129,14 @@ namespace ICSharpCode.AddInManager
 						}
 					}
 				}
+				#endif
 				return false;
 			}
 		}
 		
 		public override void Run()
 		{
+			#if !STANDALONE
 			AddIn addIn = ((AddInControl)Owner).AddIn;
 			AddInTreeNode dummyNode = new AddInTreeNode();
 			foreach (KeyValuePair<string, ExtensionPath> pair in addIn.Paths) {
@@ -127,6 +146,7 @@ namespace ICSharpCode.AddInManager
 			}
 			ICSharpCode.SharpDevelop.Commands.OptionsCommand.ShowTabbedOptions(addIn.Name + " " + ResourceService.GetString("AddInManager.Options"),
 			                                                                   dummyNode);
+			#endif
 		}
 	}
 }
