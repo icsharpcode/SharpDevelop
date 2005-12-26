@@ -144,6 +144,9 @@ namespace ICSharpCode.Core
 							if (!reader.IsEmptyElement) {
 								throw new AddInLoadException("Include nodes must be empty!");
 							}
+							if (hintPath == null) {
+								throw new AddInLoadException("Cannot use include nodes when hintPath was not specified (e.g. when AddInManager reads a .addin file)!");
+							}
 							string fileName = Path.Combine(hintPath, reader.GetAttribute(0));
 							using (XmlTextReader includeReader = new XmlTextReader(fileName)) {
 								SetupAddIn(includeReader, addIn, Path.GetDirectoryName(fileName));
@@ -179,7 +182,7 @@ namespace ICSharpCode.Core
 		
 		public static AddIn Load(TextReader textReader)
 		{
-			return Load(textReader, ".");
+			return Load(textReader, null);
 		}
 		
 		public static AddIn Load(TextReader textReader, string hintPath)

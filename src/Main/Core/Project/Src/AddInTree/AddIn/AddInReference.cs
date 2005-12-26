@@ -108,9 +108,16 @@ namespace ICSharpCode.Core
 						entryVersion = System.Reflection.Assembly.GetEntryAssembly().GetName().Version;
 					return entryVersion;
 				}
-				string fileName = Path.Combine(hintPath, version.Substring(1));
-				FileVersionInfo info = FileVersionInfo.GetVersionInfo(fileName);
-				return new Version(info.FileMajorPart, info.FileMinorPart, info.FileBuildPart, info.FilePrivatePart);
+				if (hintPath != null) {
+					string fileName = Path.Combine(hintPath, version.Substring(1));
+					try {
+						FileVersionInfo info = FileVersionInfo.GetVersionInfo(fileName);
+						return new Version(info.FileMajorPart, info.FileMinorPart, info.FileBuildPart, info.FilePrivatePart);
+					} catch (FileNotFoundException ex) {
+						throw new AddInLoadException("Cannot get version '" + version + "': " + ex.Message);
+					}
+				}
+				return new Version(0,0,0,0);
 			} else {
 				return new Version(version);
 			}
