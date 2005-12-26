@@ -16,7 +16,8 @@ namespace ICSharpCode.Core
 	public class PadDescriptor : IDisposable
 	{
 		Codon       codon;
-		IPadContent padContent = null;
+		IPadContent padContent;
+		bool        padContentCreated;
 		
 		/// <summary>
 		/// Returns the title of the pad.
@@ -64,17 +65,13 @@ namespace ICSharpCode.Core
 		
 		public bool HasFocus {
 			get {
-				if (padContent == null) {
-					return false;
-				}
-				return padContent.Control.ContainsFocus;
+				return (padContent != null) ? padContent.Control.ContainsFocus : false;
 			}
 		}
-			
 		
 		public IPadContent PadContent {
 			get {
-				if (padContent == null) CreatePad();
+				CreatePad();
 				return padContent;
 			}
 		}
@@ -96,7 +93,8 @@ namespace ICSharpCode.Core
 		
 		public void CreatePad()
 		{
-			if (padContent == null) {
+			if (!padContentCreated) {
+				padContentCreated = true;
 				padContent = (IPadContent)codon.AddIn.CreateObject(Class);
 			}
 		}

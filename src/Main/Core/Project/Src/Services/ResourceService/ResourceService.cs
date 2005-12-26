@@ -43,7 +43,16 @@ namespace ICSharpCode.Core
 			ResourceService.resourceDirectory = resourceDirectory;
 			
 			PropertyService.PropertyChanged += new PropertyChangedEventHandler(OnPropertyChange);
-			LoadLanguageResources(PropertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name));
+			LoadLanguageResources(ResourceService.Language);
+		}
+		
+		public static string Language {
+			get {
+				return PropertyService.Get(uiLanguageProperty, Thread.CurrentThread.CurrentUICulture.Name);
+			}
+			set {
+				PropertyService.Set(uiLanguageProperty, value);
+			}
 		}
 		
 		/// <summary>English strings (list of resource managers)</summary>
