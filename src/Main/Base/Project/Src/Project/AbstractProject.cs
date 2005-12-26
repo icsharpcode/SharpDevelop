@@ -695,24 +695,20 @@ namespace ICSharpCode.SharpDevelop.Project
 		#endregion
 		
 		
-		public virtual CompilerResults Build()
+		public virtual void Build(MSBuildEngineCallback callback)
 		{
-			return null;
 		}
 		
-		public virtual CompilerResults Rebuild()
+		public virtual void Rebuild(MSBuildEngineCallback callback)
 		{
-			return null;
 		}
 		
-		public virtual CompilerResults Clean()
+		public virtual void Clean(MSBuildEngineCallback callback)
 		{
-			return null;
 		}
 		
-		public virtual CompilerResults Publish()
+		public virtual void Publish(MSBuildEngineCallback callback)
 		{
-			return null;
 		}
 		
 		/// <summary>

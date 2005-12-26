@@ -396,36 +396,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		#endregion
 		
-//		static void BeforeBuild()
-//		{
-//			TaskService.NotifyTaskChange();
-//
-//			StatusBarService.SetMessage("${res:MainWindow.StatusBar.CompilingMessage}");
-//
-//			StringParser.Properties["Project"] = this.Name;
-//
-//			TaskService.BuildMessageViewCategory.AppendText(StringParser.Parse("${res:MainWindow.CompilerMessages.BuildStartedOutput}", new string[,] {
-//			                                                                 	{"PROJECT", this.Name},
-//			                                                                 	{"CONFIG", this.Configuration + "|" + this.Platform}
-//			                                                                   }) + Environment.NewLine);
-//			TaskService.BuildMessageViewCategory.AppendText(StringParser.Parse("${res:MainWindow.CompilerMessages.PerformingMainCompilationOutput}") + Environment.NewLine);
-//			// TODO :BEFORE COMPILE ACTION.
-//			//TaskService.CompilerOutput += StringParser.Parse("${res:MainWindow.CompilerMessages.ExecuteScript}", new string[,] { {"SCRIPT", conf.ExecuteBeforeBuild} }) + "\n";
-//		}
-//
-//		static void AfterBuild()
-//		{
-//			// TODO: After COMPILE ACTION.
-//			//TaskService.CompilerOutput += StringParser.Parse("${res:MainWindow.CompilerMessages.ExecuteScript}", new string[,] { {"SCRIPT", conf.ExecuteAfterBuild} }) + "\n";
-//
-//			TaskService.BuildMessageViewCategory.AppendText(StringParser.Parse("${res:MainWindow.CompilerMessages.ProjectStatsOutput}", new string[,] { {"ERRORS", TaskService.Errors.ToString()}, {"WARNINGS", TaskService.Warnings.ToString()} }) + Environment.NewLine + Environment.NewLine);
-//			isDirty = TaskService.Errors != 0;
-//		}
-		
-		public static CompilerResults RunMSBuild(string fileName, string target, string configuration, string platform, bool isSingleProject)
+		public static void RunMSBuild(string fileName, string target, string configuration, string platform, bool isSingleProject, MSBuildEngineCallback callback)
 		{
 			WorkbenchSingleton.Workbench.GetPad(typeof(CompilerMessageView)).BringPadToFront();
-//			BeforeBuild();
 			MSBuildEngine engine = new MSBuildEngine();
 			if (isSingleProject) {
 				string dir = ProjectService.OpenSolution.Directory;
@@ -437,37 +410,36 @@ namespace ICSharpCode.SharpDevelop.Project
 			engine.Platform = platform;
 			engine.MessageView = TaskService.BuildMessageViewCategory;
 			if (target == null) {
-				return engine.Run(fileName);
+				engine.Run(fileName, callback);
+			} else {
+				engine.Run(fileName, new string[] { target }, callback);
 			}
-			return engine.Run(fileName, new string[] { target });
-//			AfterBuild();
 		}
 		
-		public CompilerResults RunMSBuild(string target)
+		public void RunMSBuild(string target, MSBuildEngineCallback callback)
 		{
-			return RunMSBuild(this.FileName, target, this.Configuration, this.Platform, true);
+			RunMSBuild(this.FileName, target, this.Configuration, this.Platform, true, callback);
 		}
 		
-		public override CompilerResults Build()
+		public override void Build(MSBuildEngineCallback callback)
 		{
-			return RunMSBuild("Build");
+			RunMSBuild("Build", callback);
 		}
 		
-		public override CompilerResults Rebuild()
+		public override void Rebuild(MSBuildEngineCallback callback)
 		{
-			return RunMSBuild("Rebuild");
+			RunMSBuild("Rebuild", callback);
 		}
 		
-		public override CompilerResults Clean()
+		public override void Clean(MSBuildEngineCallback callback)
 		{
-			CompilerResults result = RunMSBuild("Clean");
+			RunMSBuild("Clean", callback);
 			isDirty = true;
-			return result;
 		}
 		
-		public override CompilerResults Publish()
+		public override void Publish(MSBuildEngineCallback callback)
 		{
-			return RunMSBuild("Publish");
+			RunMSBuild("Publish", callback);
 		}
 		
 		public override string ToString()

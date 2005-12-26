@@ -38,21 +38,26 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			if (CanRunBuild) {
 				BeforeBuild();
-				RunBuild();
-				AfterBuild();
+				StartBuild();
 			} else {
 				MSBuildEngine.AddNoSingleFileCompilationError();
 			}
 		}
-
-		public abstract void RunBuild();
+		
+		protected void CallbackMethod(CompilerResults results)
+		{
+			MSBuildEngine.ShowResults(results);
+			AfterBuild();
+		}
+		
+		public abstract void StartBuild();
 	}
 	
 	public class Build : AbstractBuildMenuCommand
 	{
-		public override void RunBuild()
+		public override void StartBuild()
 		{
-			MSBuildEngine.ShowResults(ProjectService.OpenSolution.Build());
+			ProjectService.OpenSolution.Build(CallbackMethod);
 		}
 		
 		public override void AfterBuild()
@@ -63,25 +68,25 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public class Rebuild : Build
 	{
-		public override void RunBuild()
+		public override void StartBuild()
 		{
-			MSBuildEngine.ShowResults(ProjectService.OpenSolution.Rebuild());
+			ProjectService.OpenSolution.Rebuild(CallbackMethod);
 		}
 	}
 	
 	public class Clean : AbstractBuildMenuCommand
 	{
-		public override void RunBuild()
+		public override void StartBuild()
 		{
-			MSBuildEngine.ShowResults(ProjectService.OpenSolution.Clean());
+			ProjectService.OpenSolution.Clean(CallbackMethod);
 		}
 	}
 	
 	public class Publish : AbstractBuildMenuCommand
 	{
-		public override void RunBuild()
+		public override void StartBuild()
 		{
-			MSBuildEngine.ShowResults(ProjectService.OpenSolution.Publish());
+			ProjectService.OpenSolution.Publish(CallbackMethod);
 		}
 	}
 	
@@ -89,16 +94,16 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	{
 		public override bool CanRunBuild {
 			get {
-				return base.CanRunBuild 
+				return base.CanRunBuild
 					&& ProjectService.CurrentProject!=null;
 			}
 		}
 	}
 	public class BuildProject : AbstractProjectBuildMenuCommand
 	{
-		public override void RunBuild()
+		public override void StartBuild()
 		{
-			MSBuildEngine.ShowResults(ProjectService.CurrentProject.Build());
+			ProjectService.CurrentProject.Build(CallbackMethod);
 		}
 		
 		public override void AfterBuild()
@@ -109,25 +114,25 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	
 	public class RebuildProject : BuildProject
 	{
-		public override void RunBuild()
+		public override void StartBuild()
 		{
-			MSBuildEngine.ShowResults(ProjectService.CurrentProject.Rebuild());
+			ProjectService.CurrentProject.Rebuild(CallbackMethod);
 		}
 	}
 	
 	public class CleanProject : AbstractProjectBuildMenuCommand
 	{
-		public override void RunBuild()
+		public override void StartBuild()
 		{
-			MSBuildEngine.ShowResults(ProjectService.CurrentProject.Clean());
+			ProjectService.CurrentProject.Clean(CallbackMethod);
 		}
 	}
 	
 	public class PublishProject : AbstractProjectBuildMenuCommand
 	{
-		public override void RunBuild()
+		public override void StartBuild()
 		{
-			MSBuildEngine.ShowResults(ProjectService.CurrentProject.Publish());
+			ProjectService.CurrentProject.Publish(CallbackMethod);
 		}
 	}
 	

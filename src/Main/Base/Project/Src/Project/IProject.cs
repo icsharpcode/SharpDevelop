@@ -131,9 +131,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// </summary>
 		ProjectItem CreateProjectItem(string itemType);
 
-		CompilerResults Build();
-		CompilerResults Rebuild();
-		CompilerResults Clean();
-		CompilerResults Publish();
+		void Build(MSBuildEngineCallback callback);
+		void Rebuild(MSBuildEngineCallback callback);
+		void Clean(MSBuildEngineCallback callback);
+		void Publish(MSBuildEngineCallback callback);
 	}
 }

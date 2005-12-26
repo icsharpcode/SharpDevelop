@@ -277,7 +277,9 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			Conversion conversion = new Conversion();
 			if (Path.GetExtension(fileName).ToLowerInvariant() == ".vbproj")
 				conversion.IsVisualBasic = true;
-			Solution.ReadSolutionInformation(Solution.SolutionBeingLoaded.FileName, conversion);
+			if (Solution.SolutionBeingLoaded != null) {
+				Solution.ReadSolutionInformation(Solution.SolutionBeingLoaded.FileName, conversion);
+			}
 			RunConverter(old, fileName, "vsnet2msbuild.xsl", conversion);
 			if (File.Exists(oldUserFile)) {
 				RunConverter(oldUserFile, userFile, "vsnet2msbuild_user.xsl", conversion);

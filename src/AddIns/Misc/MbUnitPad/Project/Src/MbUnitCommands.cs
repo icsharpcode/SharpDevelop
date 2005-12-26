@@ -96,20 +96,23 @@ namespace ICSharpCode.MbUnitPad
 				return;
 			}
 			IProject project = c.ProjectContent.Project;
-			if (project.Build().Errors.Count > 0) {
-				return;
-			}
-			string mbUnitDir = Path.GetDirectoryName(typeof(ReflectorTreeView).Assembly.Location);
-			ProcessStartInfo startInfo = new ProcessStartInfo(Path.Combine(mbUnitDir, "MbUnit.Cons.exe"));
-			string assemblyPath = project.OutputAssemblyFullPath;
-			StringBuilder sb = new StringBuilder();
-			sb.Append("\"/filter-type:" + c.FullyQualifiedName + "\"");
-			sb.Append(" \"/assembly-path:" + Path.GetDirectoryName(assemblyPath) + "\"");
-			sb.Append(" \"" + assemblyPath + "\"");
-			startInfo.Arguments = sb.ToString();
-			startInfo.WorkingDirectory = mbUnitDir;
-			LoggingService.Info("Run " + startInfo.FileName + " " + startInfo.Arguments);
-			DebuggerService.CurrentDebugger.Start(startInfo);
+			MSBuildEngineCallback callback = delegate(System.CodeDom.Compiler.CompilerResults results) {
+				if (results.Errors.Count > 0) {
+					return;
+				}
+				string mbUnitDir = Path.GetDirectoryName(typeof(ReflectorTreeView).Assembly.Location);
+				ProcessStartInfo startInfo = new ProcessStartInfo(Path.Combine(mbUnitDir, "MbUnit.Cons.exe"));
+				string assemblyPath = project.OutputAssemblyFullPath;
+				StringBuilder sb = new StringBuilder();
+				sb.Append("\"/filter-type:" + c.FullyQualifiedName + "\"");
+				sb.Append(" \"/assembly-path:" + Path.GetDirectoryName(assemblyPath) + "\"");
+				sb.Append(" \"" + assemblyPath + "\"");
+				startInfo.Arguments = sb.ToString();
+				startInfo.WorkingDirectory = mbUnitDir;
+				LoggingService.Info("Run " + startInfo.FileName + " " + startInfo.Arguments);
+				DebuggerService.CurrentDebugger.Start(startInfo);
+			};
+			project.Build(callback);
 		}
 	}
 	
@@ -159,7 +162,7 @@ namespace ICSharpCode.MbUnitPad
 		{
 			MbUnitPadContent.Instance.TreeView.ExpandAllFailures();
 		}
-	}	
+	}
 	
 	public class ExpandCurrentFailuresCommand : AbstractMenuCommand
 	{
@@ -167,7 +170,7 @@ namespace ICSharpCode.MbUnitPad
 		{
 			MbUnitPadContent.Instance.TreeView.ExpandCurrentFailures();
 		}
-	}	
+	}
 	
 	public class ExpandAllIgnoredCommand : AbstractMenuCommand
 	{
@@ -175,7 +178,7 @@ namespace ICSharpCode.MbUnitPad
 		{
 			MbUnitPadContent.Instance.TreeView.ExpandAllIgnored();
 		}
-	}	
+	}
 	
 	public class ExpandCurrentIgnoredCommand : AbstractMenuCommand
 	{
@@ -183,7 +186,7 @@ namespace ICSharpCode.MbUnitPad
 		{
 			MbUnitPadContent.Instance.TreeView.ExpandCurrentIgnored();
 		}
-	}		
+	}
 	
 	public class ClearResultsCommand : AbstractMenuCommand
 	{
@@ -191,5 +194,5 @@ namespace ICSharpCode.MbUnitPad
 		{
 			MbUnitPadContent.Instance.TreeView.ClearAllResults();
 		}
-	}	
+	}
 }

@@ -19,6 +19,8 @@ using Microsoft.Build.BuildEngine;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
+	public delegate void MSBuildEngineCallback(CompilerResults results);
+	
 	/// <summary>
 	/// Class responsible for building a project using MSBuild.
 	/// Is called by MSBuildProject.
@@ -69,11 +71,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		/// <summary>
-		/// Notifies the user that #develp's internal MSBuildEngine 
+		/// Notifies the user that #develp's internal MSBuildEngine
 		/// implementation only supports compiling solutions and projects;
 		/// it does not allow compiling individual files.
 		/// </summary>
-		/// <remarks>Adds a message to the <see cref="TaskService"/> and 
+		/// <remarks>Adds a message to the <see cref="TaskService"/> and
 		/// shows the <see cref="ErrorListPad"/>.</remarks>
 		public static void AddNoSingleFileCompilationError()
 		{
@@ -82,7 +84,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			TaskService.Add(new Task(null, StringParser.Parse("${res:BackendBindings.ExecutionManager.NoSingleFileCompilation}"), 0, 0, TaskType.Error));
 			WorkbenchSingleton.Workbench.GetPad(typeof(ErrorListPad)).BringPadToFront();
 		}
-		#endregion		
+		#endregion
 		
 		MessageViewCategory messageView;
 		
@@ -136,48 +138,41 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		public CompilerResults Run(string buildFile)
+		public void Run(string buildFile, MSBuildEngineCallback callback)
 		{
-			return Run(buildFile, null);
+			Run(buildFile, null, callback);
 		}
 		
-		static bool IsRunning = false;
+		volatile static bool isRunning = false;
 		
-		public CompilerResults Run(string buildFile, string[] targets)
+		public void Run(string buildFile, string[] targets, MSBuildEngineCallback callback)
 		{
-			CompilerResults results = new CompilerResults(null);
-			if (IsRunning) {
-				results.Errors.Add(new CompilerError(null, 0, 0, null, "MsBuild is already running!"));
-				return results;
-			}
-			IsRunning = true;
-			try {
-				Thread thread = new Thread(new ThreadStarter(results, buildFile, targets, this).Run);
+			if (isRunning) {
+				CompilerResults results = new CompilerResults(null);
+				results.Errors.Add(new CompilerError(null, 0, 0, null, "MSBuild is already running!"));
+				callback(results);
+			} else {
+				isRunning = true;
+				Thread thread = new Thread(new ThreadStarter(buildFile, targets, this, callback).Run);
 				thread.SetApartmentState(ApartmentState.STA);
 				thread.Start();
-				while (!thread.Join(10)) {
-					Application.DoEvents();
-					Application.DoEvents();
-				}
-				return results;
-			} finally {
-				IsRunning = false;
 			}
 		}
 		
 		class ThreadStarter
 		{
-			CompilerResults results;
+			CompilerResults results = new CompilerResults(null);
 			string buildFile;
 			string[] targets;
 			MSBuildEngine engine;
+			MSBuildEngineCallback callback;
 			
-			public ThreadStarter(CompilerResults results, string buildFile, string[] targets, MSBuildEngine engine)
+			public ThreadStarter(string buildFile, string[] targets, MSBuildEngine engine, MSBuildEngineCallback callback)
 			{
-				this.results = results;
 				this.buildFile = buildFile;
 				this.targets = targets;
 				this.engine = engine;
+				this.callback = callback;
 			}
 			
 			[STAThread]
@@ -207,6 +202,10 @@ namespace ICSharpCode.SharpDevelop.Project
 				engine.BuildProject(project, targets);
 				
 				LoggingService.Debug("MSBuild finished");
+				MSBuildEngine.isRunning = false;
+				if (callback != null) {
+					WorkbenchSingleton.MainForm.BeginInvoke(callback, results);
+				}
 			}
 		}
 		
