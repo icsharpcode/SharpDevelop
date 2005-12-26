@@ -297,6 +297,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (fileItem == null)
 					continue;
 				string virtualName = fileItem.VirtualName.Replace('\\', '/');
+				if (virtualName.EndsWith("/"))
+					virtualName = virtualName.Substring(0, virtualName.Length - 1);
 				string fileName = Path.GetFileName(virtualName);
 				if (!string.Equals(virtualName, relativeDirectoryPath + fileName, StringComparison.InvariantCultureIgnoreCase)) {
 					AddParentFolder(virtualName, relativeDirectoryPath, directoryNodeList);
