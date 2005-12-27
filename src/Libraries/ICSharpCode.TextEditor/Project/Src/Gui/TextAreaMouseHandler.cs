@@ -225,7 +225,9 @@ namespace ICSharpCode.TextEditor
 							if (textArea.Caret.Offset < textArea.Document.TextLength) {
 								int next = FindNext(textArea.Document, textArea.Caret.Offset + 1, '"');
 								minSelection = textArea.Caret.Position;
-								maxSelection = textArea.Document.OffsetToPosition(next > textArea.Caret.Offset ? next + 1 : next);
+								if (next > textArea.Caret.Offset && next < textArea.Document.TextLength)
+									next += 1;
+								maxSelection = textArea.Document.OffsetToPosition(next);
 							}
 							break;
 						default:
