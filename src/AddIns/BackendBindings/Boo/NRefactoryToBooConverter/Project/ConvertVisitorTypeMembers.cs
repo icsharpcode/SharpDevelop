@@ -59,24 +59,30 @@ namespace NRefactoryToBooConverter
 			return b;
 		}
 		
-		B.ExplicitMemberInfo ConvertInterfaceImplementations(List<InterfaceImplementation> implementations, AttributedNode node, string name)
+		B.ExplicitMemberInfo ConvertInterfaceImplementations(List<InterfaceImplementation> implementations, AttributedNode node, B.TypeMember targetMember)
 		{
 			if (implementations.Count == 0)
 				return null;
 			if (implementations.Count > 1) {
 				AddError(node, "Multiple explicit interface implementations are not supported");
 			}
-			if (implementations[0].MemberName != name) {
+			if (implementations[0].MemberName != targetMember.Name) {
 				AddError(node, "Explicit interface implementation: Implementing member with different name is not supported");
+			}
+			if (targetMember.Modifiers == B.TypeMemberModifiers.Private) {
+				targetMember.Modifiers = B.TypeMemberModifiers.None;
+			} else {
+				AddError(node, "Explicit interface implementation: Only private methods can explicitly implement interfaces");
 			}
 			B.TypeReference tr = ConvertTypeReference(implementations[0].InterfaceType);
 			if (tr is B.SimpleTypeReference) {
 				B.ExplicitMemberInfo explicitInfo = new B.ExplicitMemberInfo(GetLexicalInfo(node));
 				explicitInfo.InterfaceType = (B.SimpleTypeReference)tr;
 				return explicitInfo;
+			} else {
+				AddError(node, "Explicit interface implementation: invalid base type, expecting SimpleTypeReference");
+				return null;
 			}
-			AddError(node, "Explicit interface implementation: invalid base type, expecting SimpleTypeReference");
-			return null;
 		}
 		
 		B.Method entryPointMethod;
@@ -92,7 +98,7 @@ namespace NRefactoryToBooConverter
 				// TODO: Convert handles clauses to [Handles] attribute
 				AddError(methodDeclaration, "Handles-clause is not supported.");
 			}
-			m.ExplicitInfo = ConvertInterfaceImplementations(methodDeclaration.InterfaceImplementations, methodDeclaration, methodDeclaration.Name);
+			m.ExplicitInfo = ConvertInterfaceImplementations(methodDeclaration.InterfaceImplementations, methodDeclaration, m);
 			if (methodDeclaration.Templates.Count > 0) {
 				AddError(methodDeclaration, "Declaring generic methods is not supported.");
 			}
@@ -186,7 +192,7 @@ namespace NRefactoryToBooConverter
 			ConvertParameters(propertyDeclaration.Parameters, m.Parameters);
 			m.EndSourceLocation = GetLocation(propertyDeclaration.EndLocation);
 			m.Type = ConvertTypeReference(propertyDeclaration.TypeReference);
-			m.ExplicitInfo = ConvertInterfaceImplementations(propertyDeclaration.InterfaceImplementations, propertyDeclaration, propertyDeclaration.Name);
+			m.ExplicitInfo = ConvertInterfaceImplementations(propertyDeclaration.InterfaceImplementations, propertyDeclaration, m);
 			if (!propertyDeclaration.IsWriteOnly) {
 				m.Getter = new B.Method(GetLexicalInfo(propertyDeclaration.GetRegion));
 				if (propertyDeclaration.GetRegion != null) {
@@ -214,14 +220,15 @@ namespace NRefactoryToBooConverter
 			indexerDeclaration.Modifier |= Modifier.Default;
 			
 			B.Property m = new B.Property(GetLexicalInfo(indexerDeclaration));
-			m.Name = DefaultIndexerName;
 			m.Modifiers = ConvertModifier(indexerDeclaration, B.TypeMemberModifiers.Private);
 			ConvertAttributes(indexerDeclaration.Attributes, m.Attributes);
 			if (currentType != null) currentType.Members.Add(m);
 			ConvertParameters(indexerDeclaration.Parameters, m.Parameters);
 			m.EndSourceLocation = GetLocation(indexerDeclaration.EndLocation);
 			m.Type = ConvertTypeReference(indexerDeclaration.TypeReference);
-			m.ExplicitInfo = ConvertInterfaceImplementations(indexerDeclaration.InterfaceImplementations, indexerDeclaration, "this");
+			m.Name = "this";
+			m.ExplicitInfo = ConvertInterfaceImplementations(indexerDeclaration.InterfaceImplementations, indexerDeclaration, m);
+			m.Name = DefaultIndexerName;
 			if (!indexerDeclaration.IsWriteOnly) {
 				m.Getter = new B.Method(GetLexicalInfo(indexerDeclaration.GetRegion));
 				if (indexerDeclaration.GetRegion != null) {

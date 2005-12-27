@@ -69,7 +69,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			return list.ToArray();
 		}
 		
-		void AddImplementInterfaceCommandItems(List<ToolStripItem> subItems, IClass c, bool explicitImpl)
+		void AddImplementInterfaceCommandItems(List<ToolStripItem> subItems, IClass c, bool explicitImpl, ModifierEnum modifier)
 		{
 			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
 			foreach (IReturnType rt in c.BaseTypes) {
@@ -78,7 +78,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					EventHandler eh = delegate {
 						IDocument d = GetDocument(c);
 						if (d != null)
-							codeGen.ImplementInterface(rt, d, explicitImpl, c);
+							codeGen.ImplementInterface(rt, d, explicitImpl, modifier, c);
 						ParserService.ParseCurrentViewContent();
 					};
 					subItems.Add(new MenuCommand(interf.Name, eh));
@@ -91,14 +91,23 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			CodeGenerator codeGen = c.ProjectContent.Language.CodeGenerator;
 			if (codeGen == null) return;
 			List<ToolStripItem> subItems = new List<ToolStripItem>();
-			AddImplementInterfaceCommandItems(subItems, c, false);
-			if (subItems.Count > 0) {
-				list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceImplicit}", subItems.ToArray()));
-				subItems = new List<ToolStripItem>();
+			if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
+				AddImplementInterfaceCommandItems(subItems, c, false, ModifierEnum.Public);
+				if (subItems.Count > 0) {
+					list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceImplicit}", subItems.ToArray()));
+					subItems = new List<ToolStripItem>();
+				}
+				
+				AddImplementInterfaceCommandItems(subItems, c, true, ModifierEnum.None);
+			} else {
+				AddImplementInterfaceCommandItems(subItems, c, true, ModifierEnum.Public);
 			}
-			AddImplementInterfaceCommandItems(subItems, c, true);
 			if (subItems.Count > 0) {
-				list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}", subItems.ToArray()));
+				if (c.ProjectContent.Language.SupportsImplicitInterfaceImplementation) {
+					list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterfaceExplicit}", subItems.ToArray()));
+				} else {
+					list.Add(new ICSharpCode.Core.Menu("${res:SharpDevelop.Refactoring.ImplementInterface}", subItems.ToArray()));
+				}
 			}
 		}
 		

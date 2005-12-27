@@ -361,20 +361,20 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return member.DeclaringType.FullyQualifiedName;
 		}
 		
-		public virtual void ImplementInterface(IReturnType interf, IDocument document, bool explicitImpl, IClass targetClass)
+		public virtual void ImplementInterface(IReturnType interf, IDocument document, bool explicitImpl, ModifierEnum implModifier, IClass targetClass)
 		{
 			ClassFinder context = new ClassFinder(targetClass, targetClass.Region.BeginLine + 1, 0);
+			TypeReference interfaceReference = ConvertType(interf, context);
+			Modifier modifier = ConvertModifier(implModifier);
 			List<AbstractNode> nodes = new List<AbstractNode>();
 			List<IEvent> targetClassEvents = targetClass.DefaultReturnType.GetEvents();
 			foreach (IEvent e in interf.GetEvents()) {
 				if (targetClassEvents.Find(delegate(IEvent te) { return e.Name == te.Name; }) == null) {
 					EventDeclaration ed = ConvertMember(e, context);
 					if (explicitImpl) {
-						ed.Name = GetInterfaceName(interf, e, context) + "." + ed.Name;
-						ed.Modifier = Modifier.None;
-					} else {
-						ed.Modifier = Modifier.Public;
+						ed.InterfaceImplementations.Add(new InterfaceImplementation(interfaceReference, ed.Name));
 					}
+					ed.Modifier = modifier;
 					nodes.Add(ed);
 				}
 			}
@@ -383,16 +383,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				if (targetClassProperties.Find(delegate(IProperty tp) { return p.Name == tp.Name; }) == null) {
 					AttributedNode pd = ConvertMember(p, context);
 					if (explicitImpl) {
-						InterfaceImplementation impl = new InterfaceImplementation(ConvertType(interf, context), p.Name);
+						InterfaceImplementation impl = new InterfaceImplementation(interfaceReference, p.Name);
 						if (pd is IndexerDeclaration) {
 							((IndexerDeclaration)pd).InterfaceImplementations.Add(impl);
 						} else {
 							((PropertyDeclaration)pd).InterfaceImplementations.Add(impl);
 						}
-						pd.Modifier = Modifier.None;
-					} else {
-						pd.Modifier = Modifier.Public;
 					}
+					pd.Modifier = modifier;
 					nodes.Add(pd);
 				}
 			}
@@ -402,14 +400,14 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				                            	return m.Name == mp.Name && DiffUtility.Compare(m.Parameters, mp.Parameters) == 0;
 				                            }) == null)
 				{
-					ParametrizedNode md = ConvertMember(m, context);
-					if (explicitImpl) {
-						md.Name = GetInterfaceName(interf, m, context) + "." + md.Name;
-						md.Modifier = Modifier.None;
-					} else {
-						md.Modifier = Modifier.Public;
+					MethodDeclaration md = ConvertMember(m, context) as MethodDeclaration;
+					if (md != null) {
+						if (explicitImpl) {
+							md.InterfaceImplementations.Add(new InterfaceImplementation(interfaceReference, md.Name));
+						}
+						md.Modifier = modifier;
+						nodes.Add(md);
 					}
-					nodes.Add(md);
 				}
 			}
 			InsertCodeInClass(targetClass, document, nodes.ToArray());

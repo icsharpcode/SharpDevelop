@@ -552,6 +552,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			nodeTracker.TrackedVisit(propertyDeclaration.TypeReference, data);
 			
+			PrintInterfaceImplementations(propertyDeclaration.InterfaceImplementations);
+			
 			outputFormatter.NewLine();
 			
 			if (!IsAbstract(propertyDeclaration)) {
@@ -635,6 +637,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
 			nodeTracker.TrackedVisit(eventDeclaration.TypeReference, data);
+			
+			PrintInterfaceImplementations(eventDeclaration.InterfaceImplementations);
 			outputFormatter.NewLine();
 			
 			if (customEvent) {
@@ -653,6 +657,22 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.NewLine();
 			}
 			return null;
+		}
+		
+		void PrintInterfaceImplementations(IList<InterfaceImplementation> list)
+		{
+			if (list == null || list.Count == 0)
+				return;
+			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Implements);
+			for (int i = 0; i < list.Count; i++) {
+				if (i > 0)
+					outputFormatter.PrintToken(Tokens.Comma);
+				outputFormatter.Space();
+				nodeTracker.TrackedVisit(list[i].InterfaceType, null);
+				outputFormatter.PrintToken(Tokens.Dot);
+				outputFormatter.PrintIdentifier(list[i].MemberName);
+			}
 		}
 		
 		public object Visit(EventAddRegion eventAddRegion, object data)
@@ -791,6 +811,9 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 				nodeTracker.TrackedVisit(methodDeclaration.TypeReference, data);
 			}
+			
+			PrintInterfaceImplementations(methodDeclaration.InterfaceImplementations);
+			
 			outputFormatter.NewLine();
 			
 			if (!IsAbstract(methodDeclaration)) {
@@ -896,6 +919,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.As);
 			outputFormatter.Space();
 			nodeTracker.TrackedVisit(indexerDeclaration.TypeReference, data);
+			PrintInterfaceImplementations(indexerDeclaration.InterfaceImplementations);
 			
 			outputFormatter.NewLine();
 			++outputFormatter.IndentationLevel;
@@ -1024,7 +1048,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 					break;
 				case OverloadableOperatorType.IsFalse:
 					outputFormatter.PrintText("IsFalse");
-					break; 		
+					break;
 				case OverloadableOperatorType.Like:
 					op = Tokens.Like;
 					break;

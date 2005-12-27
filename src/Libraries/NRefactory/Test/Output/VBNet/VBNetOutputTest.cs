@@ -215,6 +215,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void InterfaceImplementingMethod()
+		{
+			TestTypeMember("Public Sub Run() Implements SomeInterface.Run\nEnd Sub");
+			TestTypeMember("Public Function Run() As Boolean Implements SomeInterface.Bla\nEnd Function");
+		}
+		
+		[Test]
 		public void Interface()
 		{
 			TestProgram("Interface ITest\n" +

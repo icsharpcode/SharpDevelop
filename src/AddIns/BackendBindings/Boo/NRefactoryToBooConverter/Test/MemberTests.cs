@@ -93,6 +93,12 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
+		public void ExplicitInterfaceImplementationMethod()
+		{
+			TestInClass("void IDisposable.Dispose() {}", "def IDisposable.Dispose() as System.Void:\n\tpass");
+		}
+		
+		[Test]
 		public void MethodWithAttribute()
 		{
 			TestInClass("[Test] void Main() {}", "[Test]\nprivate def Main() as System.Void:\n\tpass");

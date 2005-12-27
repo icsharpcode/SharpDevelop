@@ -49,6 +49,7 @@ namespace Grunwald.BooBinding
 						errorBuilder.AppendLine(warning.ToString());
 					}
 				}
+				booNode.Accept(new RemoveRedundantTypeReferencesVisitor());
 				using (StringWriter w = new StringWriter()) {
 					BooPrinterVisitor printer = new BooPrinterVisitor(w);
 					int indentCount = 0;

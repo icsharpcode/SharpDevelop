@@ -106,6 +106,15 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 		}
 		
+		/// <summary>
+		/// Gets if the language supports implicit interface implementations.
+		/// </summary>
+		public virtual bool SupportsImplicitInterfaceImplementation {
+			get {
+				return true;
+			}
+		}
+		
 		public virtual bool ShowInNamespaceCompletion(IClass c)
 		{
 			return true;
@@ -163,6 +172,12 @@ namespace ICSharpCode.SharpDevelop.Dom
 			public override bool ImportModules {
 				get {
 					return true;
+				}
+			}
+			
+			public override bool SupportsImplicitInterfaceImplementation {
+				get {
+					return false;
 				}
 			}
 			
