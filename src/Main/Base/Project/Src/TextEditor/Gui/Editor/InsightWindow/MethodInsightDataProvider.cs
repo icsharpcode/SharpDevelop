@@ -133,8 +133,12 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				expressionResult.Context = ExpressionContext.Type;
 			}
 			ResolveResult results = ParserService.Resolve(expressionResult, caretLineNumber, caretColumn, fileName, document.TextContent);
-			TypeResolveResult trr = results as TypeResolveResult;
 			LanguageProperties language = ParserService.CurrentProjectContent.Language;
+			TypeResolveResult trr = results as TypeResolveResult;
+			if (trr == null && language.AllowObjectConstructionOutsideContext) {
+				if (results is MixedResolveResult)
+					trr = (results as MixedResolveResult).TypeResult;
+			}
 			if (trr != null && !constructorInsight) {
 				if (language.AllowObjectConstructionOutsideContext)
 					constructorInsight = true;

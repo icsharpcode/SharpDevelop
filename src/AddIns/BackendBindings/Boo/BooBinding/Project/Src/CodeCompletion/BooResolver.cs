@@ -227,7 +227,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 			
 			ResolveVisitor visitor = new ResolveVisitor(this);
 			visitor.Visit(expr);
-			return visitor.ResolveResult;
+			ResolveResult result = visitor.ResolveResult;
+			if (expressionResult.Context == ExpressionContext.Type && result is MixedResolveResult)
+				result = (result as MixedResolveResult).TypeResult;
+			return result;
 		}
 		
 		public IReturnType ConvertType(AST.TypeReference typeRef)
