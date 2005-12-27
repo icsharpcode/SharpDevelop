@@ -7,7 +7,8 @@
 
 using System;
 using System.Collections;
-using ICSharpCode.TextEditor;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.Parser.AST;
 
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
@@ -22,20 +23,17 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		public override  string Hint {
+		public override string Hint {
 			get {
 				return "Choose fields to generate getters and setters";
 			}
 		}
 		
-		public GetterAndSetterCodeGenerator(IClass currentClass) : base(currentClass)
+		public override void GenerateCode(List<AbstractNode> nodes, IList items)
 		{
-		}
-		
-		protected override void GeneratePropertyBody(TextArea editActionHandler, FieldWrapper fw, string fileExtension)
-		{
-			GenerateGetter(editActionHandler, fw, fileExtension);
-			GenerateSetter(editActionHandler, fw, fileExtension);
+			foreach (FieldWrapper w in items) {
+				nodes.Add(codeGen.CreateProperty(w.Field, true, true));
+			}
 		}
 	}
 }

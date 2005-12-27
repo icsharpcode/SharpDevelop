@@ -258,5 +258,23 @@ namespace NRefactoryToBooConverter.Tests
 		{
 			TestStatementVB("Dim A As Integer()\nB = A(5)", "A as (System.Int32)\nB = A[5]");
 		}
+		
+		[Test]
+		public void VBRaiseEvent()
+		{
+			TestStatementVB("RaiseEvent Test(4)", "Test(4)");
+		}
+		
+		[Test]
+		public void VBAddEventHandler()
+		{
+			TestStatementVB("AddHandler someObject.Test, AddressOf HandlerMethod", "someObject.Test += HandlerMethod");
+		}
+		
+		[Test]
+		public void VBAddRemoveHandler()
+		{
+			TestStatementVB("RemoveHandler someObject.Test, AddressOf HandlerMethod", "someObject.Test -= HandlerMethod");
+		}
 	}
 }

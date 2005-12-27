@@ -278,18 +278,20 @@ namespace NRefactoryToBooConverter
 		
 		public object Visit(AddHandlerStatement addHandlerStatement, object data)
 		{
-			return new B.BinaryExpression(GetLexicalInfo(addHandlerStatement),
-			                              B.BinaryOperatorType.InPlaceAddition,
-			                              ConvertExpression(addHandlerStatement.EventExpression),
-			                              ConvertExpression(addHandlerStatement.HandlerExpression));
+			B.Expression expr = new B.BinaryExpression(GetLexicalInfo(addHandlerStatement),
+			                                           B.BinaryOperatorType.InPlaceAddition,
+			                                           ConvertExpression(addHandlerStatement.EventExpression),
+			                                           ConvertExpression(addHandlerStatement.HandlerExpression));
+			return new B.ExpressionStatement(expr);
 		}
 		
 		public object Visit(RemoveHandlerStatement removeHandlerStatement, object data)
 		{
-			return new B.BinaryExpression(GetLexicalInfo(removeHandlerStatement),
-			                              B.BinaryOperatorType.InPlaceSubtraction,
-			                              ConvertExpression(removeHandlerStatement.EventExpression),
-			                              ConvertExpression(removeHandlerStatement.HandlerExpression));
+			B.Expression expr = new B.BinaryExpression(GetLexicalInfo(removeHandlerStatement),
+			                                           B.BinaryOperatorType.InPlaceSubtraction,
+			                                           ConvertExpression(removeHandlerStatement.EventExpression),
+			                                           ConvertExpression(removeHandlerStatement.HandlerExpression));
+			return new B.ExpressionStatement(expr);
 		}
 		
 		public object Visit(RaiseEventStatement raiseEventStatement, object data)
@@ -297,7 +299,7 @@ namespace NRefactoryToBooConverter
 			B.MethodInvocationExpression mie = new B.MethodInvocationExpression(GetLexicalInfo(raiseEventStatement));
 			mie.Target = new B.ReferenceExpression(raiseEventStatement.EventName);
 			ConvertExpressions(raiseEventStatement.Arguments, mie.Arguments);
-			return mie;
+			return new B.ExpressionStatement(mie);
 		}
 		
 		public object Visit(EraseStatement eraseStatement, object data)

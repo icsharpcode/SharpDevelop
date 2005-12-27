@@ -6,14 +6,18 @@
 // </file>
 
 using System;
+using System.Collections;
+using System.Collections.Generic;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
+using ICSharpCode.TextEditor;
+using ICSharpCode.NRefactory.Parser.AST;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	public abstract class AbstractFieldCodeGenerator : OldCodeGeneratorBase
+	public abstract class AbstractFieldCodeGenerator : CodeGeneratorBase
 	{
-		public AbstractFieldCodeGenerator(IClass currentClass) : base(currentClass)
+		protected override void InitContent()
 		{
 			foreach (IField field in currentClass.Fields) {
 				Content.Add(new FieldWrapper(field));

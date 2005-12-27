@@ -7,14 +7,15 @@
 
 using System;
 using System.Collections;
-using ICSharpCode.TextEditor;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.Parser.AST;
 
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	public class OnXXXMethodsCodeGenerator : OldCodeGeneratorBase
+	public class OnXXXMethodsCodeGenerator : CodeGeneratorBase
 	{
 		public override string CategoryName {
 			get {
@@ -22,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		public override  string Hint {
+		public override string Hint {
 			get {
 				return "Choose events to generate OnXXX methods";
 			}
@@ -30,56 +31,21 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public override int ImageIndex {
 			get {
-				
 				return ClassBrowserIconService.EventIndex;
 			}
 		}
 		
-		public OnXXXMethodsCodeGenerator(IClass currentClass) : base(currentClass)
+		protected override void InitContent()
 		{
 			foreach (IEvent evt in currentClass.Events) {
 				Content.Add(new EventWrapper(evt));
 			}
 		}
 		
-		protected override void StartGeneration(IList items, string fileExtension)
+		public override void GenerateCode(List<AbstractNode> nodes, IList items)
 		{
-			for (int i = 0; i < items.Count; ++i) {
-				EventWrapper ew = (EventWrapper)items[i];
-				string eventArgsName = String.Empty;
-				if (ew.Event.ReturnType.FullyQualifiedName.EndsWith("Handler")) {
-					eventArgsName = ew.Event.ReturnType.FullyQualifiedName.Substring(0, ew.Event.ReturnType.FullyQualifiedName.Length - "Handler".Length);
-				} else {
-					eventArgsName = ew.Event.ReturnType.FullyQualifiedName;
-				}
-				eventArgsName += "Args";
-				
-				editActionHandler.InsertString("protected " + (ew.Event.IsStatic ? "static" : "virtual") + " void On" + ew.Event.Name + "(" + eventArgsName + " e)");++numOps;
-				if (StartCodeBlockInSameLine) {
-					editActionHandler.InsertString(" {");++numOps;
-				} else {
-					Return();
-					editActionHandler.InsertString("{");++numOps;
-				}
-				Return();
-				Indent();
-				editActionHandler.InsertString("if (" + ew.Event.Name + " != null)");++numOps;
-				if (StartCodeBlockInSameLine) {
-					editActionHandler.InsertString(" {");++numOps;
-				} else {
-					Return();
-					editActionHandler.InsertString("{");++numOps;
-				}
-				
-				Return();
-				Indent();
-				editActionHandler.InsertString(ew.Event.Name + "(this, e);");++numOps;
-				Return();
-				editActionHandler.InsertChar('}');++numOps;
-				Return();
-				editActionHandler.InsertChar('}');++numOps;
-				Return();
-				IndentLine();
+			foreach (EventWrapper ev in items) {
+				nodes.Add(codeGen.CreateOnEventMethod(ev.Event));
 			}
 		}
 		

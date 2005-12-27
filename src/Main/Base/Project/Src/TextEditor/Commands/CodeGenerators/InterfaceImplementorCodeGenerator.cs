@@ -7,23 +7,20 @@
 
 using System;
 using System.Collections;
-using ICSharpCode.TextEditor;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.Parser.AST;
 
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	public abstract class InterfaceOrAbstractClassCodeGenerator : OldCodeGeneratorBase
+	public abstract class InterfaceOrAbstractClassCodeGenerator : CodeGeneratorBase
 	{
 		public override int ImageIndex {
 			get {
 				return ClassBrowserIconService.InterfaceIndex;
 			}
-		}
-		
-		public InterfaceOrAbstractClassCodeGenerator(IClass currentClass) : base(currentClass)
-		{
 		}
 		
 		protected class ClassWrapper
@@ -46,221 +43,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				return ambience.Convert(c);
 			}
 		}
-		
-		protected override void StartGeneration(IList items, string fileExtension)
-		{
-			for (int i = 0; i < items.Count; ++i) {
-				ClassWrapper cw = (ClassWrapper)items[i];
-				GenerateInterface(cw.ClassType, fileExtension);
-			}
-		}
-		
-		protected bool useOverrideKeyword = false;
-		protected bool implementOnlyAbstractMembers = false;
-		
-		void GenerateInterface(IReturnType intf, string fileExtension)
-		{
-			Return();
-			Return();
-			editActionHandler.InsertString("#region " + intf.FullyQualifiedName + " interface implementation\n\t\t");++numOps;
-			
-			foreach (IProperty property in intf.GetProperties()) {
-				if (implementOnlyAbstractMembers && !property.IsAbstract) {
-					continue;
-				}
-				string returnType = (fileExtension == ".vb" ? vba : csa).Convert(property.ReturnType);
-				if (property.IsProtected) {
-					if (fileExtension == ".vb") {
-						editActionHandler.InsertString("Protected ");
-					} else {
-						editActionHandler.InsertString("protected ");
-					}
-					++numOps;
-				} else {
-					if (fileExtension == ".vb") {
-						editActionHandler.InsertString("Public ");
-					} else {
-						editActionHandler.InsertString("public ");
-					}
-					++numOps;
-				}
-				
-				if (fileExtension == ".vb") {
-					if (useOverrideKeyword) {
-						editActionHandler.InsertString("Overrides ");++numOps;
-					}
-					if (!property.CanSet) {
-						editActionHandler.InsertString("ReadOnly ");++numOps;
-					} else if (!property.CanGet) {
-						editActionHandler.InsertString("WriteOnly ");++numOps;
-					}
-					editActionHandler.InsertString("Property " + property.Name + " As " + returnType + "\n");
-				} else {
-					if (useOverrideKeyword) {
-						editActionHandler.InsertString("override ");++numOps;
-					}
-					editActionHandler.InsertString(returnType + " " + property.Name);
-					if (StartCodeBlockInSameLine) {
-						editActionHandler.InsertString(" {");++numOps;
-					} else {
-						Return();
-						editActionHandler.InsertString("{");++numOps;
-					}
-					Return();
-				}
-				++numOps;
-				if (property.CanGet) {
-					if (fileExtension == ".vb") {
-						editActionHandler.InsertString("\tGet");++numOps;
-						Return();
-						editActionHandler.InsertString("\t\tReturn " + GetReturnValue(returnType));++numOps;
-						Return();
-						editActionHandler.InsertString("\tEnd Get");++numOps;
-						Return();
-					} else {
-						editActionHandler.InsertString("\tget");++numOps;
-						if (StartCodeBlockInSameLine) {
-							editActionHandler.InsertString(" {");++numOps;
-						} else {
-							Return();
-							editActionHandler.InsertString("{");++numOps;
-						}
-						
-						Return();
-						editActionHandler.InsertString("\t\treturn " + GetReturnValue(returnType) +";");++numOps;
-						Return();
-						editActionHandler.InsertString("\t}");++numOps;
-						Return();
-					}
-				}
-				
-				if (property.CanSet) {
-					if (fileExtension == ".vb") {
-						editActionHandler.InsertString("\tSet");++numOps;
-						Return();
-						editActionHandler.InsertString("Throw New NotImplementedException()");++numOps;
-						Return();
-						editActionHandler.InsertString("\tEnd Set");++numOps;
-						Return();
-					} else {
-						editActionHandler.InsertString("\tset");++numOps;
-						if (StartCodeBlockInSameLine) {
-							editActionHandler.InsertString(" {");++numOps;
-						} else {
-							Return();
-							editActionHandler.InsertString("{");++numOps;
-						}
-						Return();
-						editActionHandler.InsertString("throw new NotImplementedException();");++numOps;
-						Return();
-						editActionHandler.InsertString("\t}");++numOps;
-						Return();
-					}
-				}
-				
-				if (fileExtension == ".vb") {
-					editActionHandler.InsertString("End Property");++numOps;
-				} else {
-					editActionHandler.InsertChar('}');++numOps;
-				}
-				
-				Return();
-				Return();
-				IndentLine();
-			}
-			
-			foreach (IMethod method in intf.GetMethods()) {
-				string parameters = String.Empty;
-				string returnType = (fileExtension == ".vb" ? vba : csa).Convert(method.ReturnType);
-				if (implementOnlyAbstractMembers && !method.IsAbstract) {
-					continue;
-				}
-				for (int j = 0; j < method.Parameters.Count; ++j) {
-					parameters += (fileExtension == ".vb" ? vba : csa).Convert(method.Parameters[j]);
-					if (j + 1 < method.Parameters.Count) {
-						parameters += ", ";
-					}
-				}
-				if (method.IsProtected) {
-					if (fileExtension == ".vb") {
-						editActionHandler.InsertString("Protected ");
-					} else {
-						editActionHandler.InsertString("protected ");
-					}
-				} else {
-					if (fileExtension == ".vb") {
-						editActionHandler.InsertString("Public ");
-					} else {
-						editActionHandler.InsertString("public ");
-					}
-				}
-				bool isSub = returnType == "void";
-				if (fileExtension == ".vb") {
-					if (useOverrideKeyword) {
-						editActionHandler.InsertString("Overrides ");++numOps;
-					}
-					editActionHandler.InsertString((isSub ? "Sub " : "Function ") + method.Name + "(" + parameters + ") As " + returnType);++numOps;
-					Return();
-				} else {
-					if (useOverrideKeyword) {
-						editActionHandler.InsertString("override ");++numOps;
-					}
-					editActionHandler.InsertString(returnType + " " + method.Name + "(" + parameters + ")");++numOps;
-					if (StartCodeBlockInSameLine) {
-						editActionHandler.InsertString(" {");++numOps;
-					} else {
-						Return();
-						editActionHandler.InsertString("{");++numOps;
-					}
-					Return();
-				}
-				
-				if (fileExtension == ".vb") {
-					editActionHandler.InsertString("Throw New NotImplementedException()");++numOps;
-				} else {
-					editActionHandler.InsertString("throw new NotImplementedException();");++numOps;
-				}
-				Return();
-				
-				if (fileExtension == ".vb") {
-					editActionHandler.InsertString("End " + (isSub ? "Sub" : "Function"));
-				} else {
-					editActionHandler.InsertChar('}');++numOps;
-				}
-				Return();
-				Return();
-				IndentLine();
-			}
-			
-			Return();
-			editActionHandler.InsertString("#endregion");++numOps;
-			Return();
-		}
-		
-		string GetReturnValue(string returnType)
-		{
-			switch (returnType) {
-				case "string":
-					return "String.Empty";
-				case "char":
-					return "'\\0'";
-				case "bool":
-					return "false";
-				case "int":
-				case "long":
-				case "short":
-				case "byte":
-				case "uint":
-				case "ulong":
-				case "ushort":
-				case "double":
-				case "float":
-				case "decimal":
-					return "0";
-				default:
-					return "null";
-			}
-		}
 	}
 	
 	public class InterfaceImplementorCodeGenerator : InterfaceOrAbstractClassCodeGenerator
@@ -271,18 +53,27 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		public override  string Hint {
+		public override string Hint {
 			get {
 				return "Choose interfaces to implement";
 			}
 		}
 		
-		public InterfaceImplementorCodeGenerator(IClass currentClass) : base(currentClass)
+		public override void GenerateCode(List<AbstractNode> nodes, IList items)
+		{
+			foreach (ClassWrapper w in items) {
+				codeGen.ImplementInterface(nodes, w.ClassType,
+				                           !currentClass.ProjectContent.Language.SupportsImplicitInterfaceImplementation,
+				                           ModifierEnum.Public, currentClass);
+			}
+		}
+		
+		protected override void InitContent()
 		{
 			for (int i = 0; i < currentClass.BaseTypes.Count; i++) {
 				IReturnType baseType = currentClass.GetBaseType(i);
 				IClass baseClass = (baseType != null) ? baseType.GetUnderlyingClass() : null;
-				if (baseClass != null && baseClass.ClassType == ClassType.Interface) {
+				if (baseClass != null && baseClass.ClassType == ICSharpCode.SharpDevelop.Dom.ClassType.Interface) {
 					Content.Add(new ClassWrapper(baseType));
 				}
 			}

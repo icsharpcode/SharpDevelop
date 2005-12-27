@@ -7,17 +7,15 @@
 
 using System;
 using System.Collections;
-using ICSharpCode.TextEditor;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.Parser.AST;
 
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	/// <summary>
-	/// Description of EqualsCodeGenerator.	
-	/// </summary>
-	public class EqualsCodeGenerator : OldCodeGeneratorBase
+	public class EqualsCodeGenerator : CodeGeneratorBase
 	{
 		public override string CategoryName {
 			get {
@@ -25,10 +23,64 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		public override  string Hint {
-			get {
-				return "no hint";
+		public override void GenerateCode(List<AbstractNode> nodes, IList items)
+		{
+			TypeReference intReference = new TypeReference("System.Int32");
+			MethodDeclaration method = new MethodDeclaration("GetHashCode", Modifier.Public | Modifier.Override, intReference, null, null);
+			Expression expr = CallGetHashCode(new IdentifierExpression(currentClass.Fields[0].Name));
+			for (int i = 1; i < currentClass.Fields.Count; i++) {
+				IdentifierExpression identifier = new IdentifierExpression(currentClass.Fields[i].Name);
+				expr = new BinaryOperatorExpression(expr, BinaryOperatorType.ExclusiveOr,
+				                                    CallGetHashCode(identifier));
 			}
+			method.Body = new BlockStatement();
+			method.Body.AddChild(new ReturnStatement(expr));
+			nodes.Add(method);
+			
+			TypeReference boolReference = new TypeReference("System.Boolean");
+			TypeReference objectReference = new TypeReference("System.Object");
+			
+			method = new MethodDeclaration("Equals", Modifier.Public | Modifier.Override, boolReference, null, null);
+			method.Parameters.Add(new ParameterDeclarationExpression(objectReference, "obj"));
+			method.Body = new BlockStatement();
+			
+			TypeReference currentType = ConvertType(currentClass.DefaultReturnType);
+			expr = new TypeOfIsExpression(new IdentifierExpression("obj"), currentType);
+			expr = new ParenthesizedExpression(expr);
+			expr = new UnaryOperatorExpression(expr, UnaryOperatorType.Not);
+			method.Body.AddChild(new IfElseStatement(expr, new ReturnStatement(new PrimitiveExpression(false, "false"))));
+			
+			expr = new BinaryOperatorExpression(new ThisReferenceExpression(),
+			                                    BinaryOperatorType.Equality,
+			                                    new IdentifierExpression("obj"));
+			method.Body.AddChild(new IfElseStatement(expr, new ReturnStatement(new PrimitiveExpression(true, "true"))));
+			
+			VariableDeclaration var = new VariableDeclaration("my" + currentClass.Name,
+			                                                  new CastExpression(currentType, new IdentifierExpression("obj")),
+			                                                  currentType);
+			method.Body.AddChild(new LocalVariableDeclaration(var));
+			
+			expr = TestEquality(var.Name, currentClass.Fields[0]);
+			for (int i = 1; i < currentClass.Fields.Count; i++) {
+				expr = new BinaryOperatorExpression(expr, BinaryOperatorType.LogicalAnd,
+				                                    TestEquality(var.Name, currentClass.Fields[i]));
+			}
+			
+			method.Body.AddChild(new ReturnStatement(expr));
+			
+			nodes.Add(method);
+		}
+		
+		static InvocationExpression CallGetHashCode(Expression expr)
+		{
+			return new InvocationExpression(new FieldReferenceExpression(expr, "GetHashCode"));
+		}
+		
+		static Expression TestEquality(string other, IField field)
+		{
+			return new BinaryOperatorExpression(new FieldReferenceExpression(new ThisReferenceExpression(), field.Name),
+			                                    BinaryOperatorType.Equality,
+			                                    new FieldReferenceExpression(new IdentifierExpression(other), field.Name));
 		}
 		
 		public override bool IsActive {
@@ -38,81 +90,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		}
 		public override int ImageIndex {
 			get {
-				
 				return ClassBrowserIconService.MethodIndex;
 			}
-		}
-		
-		public EqualsCodeGenerator(IClass currentClass) : base(currentClass)
-		{
-		}
-		
-		protected override void StartGeneration(IList items, string fileExtension)
-		{
-			editActionHandler.InsertString("public override bool Equals(object obj)");++numOps;
-			if (StartCodeBlockInSameLine) {
-				editActionHandler.InsertString(" {");++numOps;
-			} else {
-				Return();
-				editActionHandler.InsertString("{");++numOps;
-			}
-			Return();
-			Indent();
-			editActionHandler.InsertString("if (!(obj is " + currentClass.Name + ")) return false;");++numOps;
-			Return();
-			Indent();
-			editActionHandler.InsertString("if (this == obj) return true;");++numOps;
-			Return();
-			string className = "my" + currentClass.Name;
-			editActionHandler.InsertString(currentClass.Name + " " + className +  " = (" + currentClass.Name + ")obj;");++numOps;
-			Return();
-			
-			foreach (IField field in currentClass.Fields) {
-				Indent();
-				IClass cName = field.ReturnType.GetUnderlyingClass();
-				if (cName == null || cName.ClassType == ClassType.Struct || cName.ClassType == ClassType.Enum) {
-					editActionHandler.InsertString("if (" + field.Name + " != " + className + "." + field.Name + ") return false;");++numOps;
-				} else {
-					editActionHandler.InsertString("if (" + field.Name + " != null ? "+ field.Name + ".Equals(" + className + "." + field.Name + "): " + className + "." + field.Name + " != null) return false;");++numOps;
-				}
-				Return();
-			}
-			
-			Return();
-			Indent();
-			editActionHandler.InsertString("return true");++numOps;
-			Return();
-			editActionHandler.InsertString("}");++numOps;
-			Return();
-			Return();
-			editActionHandler.InsertString("public virtual int GetHashCode()");++numOps;
-			if (StartCodeBlockInSameLine) {
-				editActionHandler.InsertString(" {");++numOps;
-			} else {
-				Return();
-				editActionHandler.InsertString("{");++numOps;
-			}
-			Return();
-			Indent();
-			editActionHandler.InsertString("return ");++numOps;
-			for (int i = 0; i < currentClass.Fields.Count; ++i) {
-				IField field = currentClass.Fields[i];
-				IClass cName = field.ReturnType.GetUnderlyingClass();
-				if (cName == null || cName.ClassType == ClassType.Struct || cName.ClassType == ClassType.Enum) {
-					editActionHandler.InsertString(field.Name + ".GetHashCode()");++numOps;
-				} else {
-					editActionHandler.InsertString("(" + field.Name + " != null ? " + field.Name + ".GetHashCode() : 0)");++numOps;
-				}
-				if (i + 1 < currentClass.Fields.Count) {
-					editActionHandler.InsertString(" ^ ");
-				} else {
-					editActionHandler.InsertString(";");
-				}
-				++numOps;
-			}
-			Return();
-			editActionHandler.InsertString("}");++numOps;
-			Return();
 		}
 	}
 }

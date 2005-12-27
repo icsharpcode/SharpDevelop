@@ -97,7 +97,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			
 			CodeGenerator codeGen = ParserService.CurrentProjectContent.Language.CodeGenerator;
 			
-			string text = codeGen.GenerateCode(GetOverrideAST(member, context), indentation);
+			string text = codeGen.GenerateCode(codeGen.GetOverridingMethod(member, context), indentation);
 			text = text.TrimEnd(); // remove newline from end
 			textArea.Document.Replace(line.Offset, caretPosition - line.Offset, text);
 			
@@ -107,57 +107,6 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			textArea.MotherTextAreaControl.JumpTo(endLine, endPos - line.Offset);
 			textArea.Refresh();
 			return true;
-		}
-		
-		AttributedNode GetOverrideAST(IMember member, ClassFinder targetContext)
-		{
-			AttributedNode node = CodeGenerator.ConvertMember(member, targetContext);
-			node.Modifier &= ~(Modifier.Virtual | Modifier.Abstract);
-			node.Modifier |= Modifier.Override;
-			
-			MethodDeclaration method = node as MethodDeclaration;
-			if (method != null) {
-				method.Body.Children.Clear();
-				if (method.TypeReference.SystemType == "System.Void") {
-					method.Body.AddChild(new StatementExpression(CreateMethodCall(method)));
-				} else {
-					method.Body.AddChild(new ReturnStatement(CreateMethodCall(method)));
-				}
-			}
-			PropertyDeclaration property = node as PropertyDeclaration;
-			if (property != null) {
-				Expression field = new FieldReferenceExpression(new BaseReferenceExpression(),
-				                                                property.Name);
-				if (!property.GetRegion.Block.IsNull) {
-					property.GetRegion.Block.Children.Clear();
-					property.GetRegion.Block.AddChild(new ReturnStatement(field));
-				}
-				if (!property.SetRegion.Block.IsNull) {
-					property.SetRegion.Block.Children.Clear();
-					Expression expr = new AssignmentExpression(field,
-					                                           AssignmentOperatorType.Assign,
-					                                           new IdentifierExpression("value"));
-					property.SetRegion.Block.AddChild(new StatementExpression(expr));
-				}
-			}
-			return node;
-		}
-		
-		static InvocationExpression CreateMethodCall(MethodDeclaration method)
-		{
-			Expression methodName = new FieldReferenceExpression(new BaseReferenceExpression(),
-			                                                     method.Name);
-			InvocationExpression ie = new InvocationExpression(methodName, null);
-			foreach (ParameterDeclarationExpression param in method.Parameters) {
-				Expression expr = new IdentifierExpression(param.ParameterName);
-				if (param.ParamModifier == ParamModifier.Ref) {
-					expr = new DirectionExpression(FieldDirection.Ref, expr);
-				} else if (param.ParamModifier == ParamModifier.Out) {
-					expr = new DirectionExpression(FieldDirection.Out, expr);
-				}
-				ie.Arguments.Add(expr);
-			}
-			return ie;
 		}
 	}
 }

@@ -7,6 +7,8 @@
 
 using System;
 using System.Collections;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.Parser.AST;
 
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
@@ -21,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		public override  string Hint {
+		public override string Hint {
 			get {
 				return "Choose fields to initialize by constructor";
 			}
@@ -29,71 +31,24 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public override int ImageIndex {
 			get {
-				
 				return ClassBrowserIconService.MethodIndex;
 			}
 		}
 		
-		public ConstructorCodeGenerator(IClass currentClass) : base(currentClass)
+		public override void GenerateCode(List<AbstractNode> nodes, IList items)
 		{
-		}
-		
-		protected override void StartGeneration(IList items, string fileExtension)
-		{
-			if (fileExtension == ".vb") {
-				editActionHandler.InsertString("Public Sub New(");
-			} else {
-				editActionHandler.InsertString("public " + currentClass.Name + "(");
+			ConstructorDeclaration ctor = new ConstructorDeclaration(currentClass.Name, Modifier.Public, null, null);
+			ctor.Body = new BlockStatement();
+			foreach (FieldWrapper w in items) {
+				string parameterName = codeGen.GetParameterName(w.Field.Name);
+				ctor.Parameters.Add(new ParameterDeclarationExpression(ConvertType(w.Field.ReturnType),
+				                                                       parameterName));
+				Expression left  = new FieldReferenceExpression(new ThisReferenceExpression(), w.Field.Name);
+				Expression right = new IdentifierExpression(parameterName);
+				Expression expr  = new AssignmentExpression(left, AssignmentOperatorType.Assign, right);
+				ctor.Body.AddChild(new StatementExpression(expr));
 			}
-			++numOps;
-			
-			for (int i = 0; i < items.Count; ++i) {
-				FieldWrapper fw = (FieldWrapper)items[i];
-				if (fileExtension == ".vb") {
-					editActionHandler.InsertString(fw.Field.Name + " As " + vba.Convert(fw.Field.ReturnType));
-				} else {
-					editActionHandler.InsertString(csa.Convert(fw.Field.ReturnType) + " " + fw.Field.Name);
-				}
-				++numOps;
-				if (i + 1 < items.Count) {
-					editActionHandler.InsertString(", ");
-					++numOps;
-				}
-			}
-			
-			editActionHandler.InsertChar(')');++numOps;
-			Return();
-			if (fileExtension == ".vb") {
-				editActionHandler.InsertString("MyBase.New");
-			} else {
-				if (StartCodeBlockInSameLine) {
-					editActionHandler.InsertString(" {");
-				} else {
-					Return();
-					editActionHandler.InsertString("{");
-				}
-			}
-			++numOps;
-			Return();
-			for (int i = 0; i < items.Count; ++i) {
-				Indent();
-				FieldWrapper fw = (FieldWrapper)items[i];
-				if (fileExtension == ".vb") {
-					editActionHandler.InsertString("Me." + fw.Field.Name + " = " + fw.Field.Name);
-				} else {
-					editActionHandler.InsertString("this." + fw.Field.Name + " = " + fw.Field.Name + ";");
-				}
-				++numOps;
-				Return();
-			}
-			if (fileExtension == ".vb") {
-				editActionHandler.InsertString("End Sub");
-			} else {
-				editActionHandler.InsertChar('}');
-			}
-			++numOps;
-			Return();
-			IndentLine();
+			nodes.Add(ctor);
 		}
 	}
 }

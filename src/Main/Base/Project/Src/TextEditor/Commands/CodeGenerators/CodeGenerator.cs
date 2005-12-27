@@ -8,50 +8,43 @@
 using System;
 using System.IO;
 using System.Collections;
+using System.Collections.Generic;
 
-using ICSharpCode.TextEditor.Document;
-using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
-using ICSharpCode.SharpDevelop.Gui;
-using ICSharpCode.TextEditor.Actions;
+using ICSharpCode.NRefactory.Parser.AST;
 using ICSharpCode.TextEditor;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Refactoring;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	public abstract class OldCodeGeneratorBase
+	public abstract class CodeGeneratorBase
 	{
 		ArrayList content = new ArrayList();
-		protected int       numOps  = 0;
-		protected IAmbience csa;
-		protected IAmbience vba;
-		protected IClass    currentClass = null;
-		protected TextArea editActionHandler;
+		protected IClass currentClass;
+		protected ICSharpCode.SharpDevelop.Refactoring.CodeGenerator codeGen;
+		protected ClassFinder classFinderContext;
 		
-		public OldCodeGeneratorBase(IClass currentClass)
+		public void Initialize(IClass currentClass)
 		{
 			this.currentClass = currentClass;
-			try {
-				csa = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/C#", this);
-				csa.ConversionFlags = ConversionFlags.ShowAccessibility | ConversionFlags.ShowModifiers | ConversionFlags.QualifiedNamesOnlyForReturnTypes | ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterNames;
-			} catch (TreePathNotFoundException) {
-				LoggingService.Warn("CSharpAmbience not found -- is the C# backend binding loaded???");
-			}
-			
-			try {
-				vba = (IAmbience)AddInTree.BuildItem("/SharpDevelop/Workbench/Ambiences/VBNet", this);
-				vba.ConversionFlags = ConversionFlags.ShowAccessibility | ConversionFlags.ShowModifiers | ConversionFlags.QualifiedNamesOnlyForReturnTypes | ConversionFlags.ShowReturnType | ConversionFlags.ShowParameterNames;
-			} catch (TreePathNotFoundException) {
-				LoggingService.Warn("VBNet ambience not found -- is the VB.NET backend binding loaded???");
-			}
+			this.codeGen = currentClass.ProjectContent.Language.CodeGenerator;
+			this.classFinderContext = new ClassFinder(currentClass, currentClass.Region.BeginLine + 1, 0);
+			this.InitContent();
+		}
+		
+		protected virtual void InitContent()
+		{
 		}
 		
 		public abstract string CategoryName {
 			get;
 		}
 		
-		public abstract string Hint {
-			get;
+		public virtual string Hint {
+			get {
+				return "no hint";
+			}
 		}
 		
 		public abstract int ImageIndex {
@@ -70,83 +63,19 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		public static bool BlankLinesBetweenMembers {
-			get {
-				return AmbienceService.CodeGenerationProperties.Get("BlankLinesBetweenMembers", true);
-			}
-		}
-		
-		public static bool StartCodeBlockInSameLine {
-			get {
-				return AmbienceService.CodeGenerationProperties.Get("StartBlockOnSameLine", true);
-			}
-		}
-		
-		public void GenerateCode(TextArea editActionHandler, IList items)
+		protected TypeReference ConvertType(IReturnType type)
 		{
-			numOps = 0;
-			this.editActionHandler = editActionHandler;
-			editActionHandler.BeginUpdate();
-			
-			
-			bool save1         = editActionHandler.TextEditorProperties.AutoInsertCurlyBracket;
-			IndentStyle save2  = editActionHandler.TextEditorProperties.IndentStyle;
-			bool save3         = PropertyService.Get("VBBinding.TextEditor.EnableEndConstructs", true);
-			PropertyService.Set("VBBinding.TextEditor.EnableEndConstructs", false);
-			editActionHandler.TextEditorProperties.AutoInsertCurlyBracket = false;
-			editActionHandler.TextEditorProperties.IndentStyle            = IndentStyle.Smart;
-			
-			string extension = Path.GetExtension(editActionHandler.MotherTextEditorControl.FileName).ToLower();
-			StartGeneration(items, extension);
-			
-			if (numOps > 0) {
-				editActionHandler.Document.UndoStack.UndoLast(numOps);
-			}
-			// restore old property settings
-			editActionHandler.TextEditorProperties.AutoInsertCurlyBracket = save1;
-			editActionHandler.TextEditorProperties.IndentStyle            = save2;
-			PropertyService.Set("VBBinding.TextEditor.EnableEndConstructs", save3);
-			editActionHandler.EndUpdate();
-			
-			editActionHandler.Document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
-			editActionHandler.Document.CommitUpdate();
+			return CodeGenerator.ConvertType(type, classFinderContext);
 		}
 		
-		protected abstract void StartGeneration(IList items, string fileExtension);
-		
-		protected void Indent()
+		public virtual void GenerateCode(TextArea textArea, IList items)
 		{
-			
-			Properties p = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-			
-			bool tabsToSpaces = p.Get("TabsToSpaces", false);
-			
-			int  tabSize      = p.Get("TabIndent", 4);
-			int  indentSize   = p.Get("IndentationSize", 4);
-			
-			if (tabsToSpaces) {
-				editActionHandler.InsertString(new String(' ', indentSize));
-			} else {
-				editActionHandler.InsertString(new String('\t', indentSize / tabSize));
-				int trailingSpaces = indentSize % tabSize;
-				if (trailingSpaces > 0) {
-					editActionHandler.InsertString(new String(' ', trailingSpaces));
-					++numOps;
-				}
-			}
-			++numOps;
+			List<AbstractNode> nodes = new List<AbstractNode>();
+			GenerateCode(nodes, items);
+			codeGen.InsertCodeInClass(currentClass, textArea.Document, nodes.ToArray());
+			ParserService.ParseCurrentViewContent();
 		}
 		
-		protected void Return()
-		{
-			IndentLine();
-			new Return().Execute(editActionHandler);
-			++numOps;
-		}
-		
-		protected void IndentLine()
-		{
-			editActionHandler.Document.FormattingStrategy.IndentLine(editActionHandler, editActionHandler.Caret.Line);
-		}
+		public abstract void GenerateCode(List<AbstractNode> nodes, IList items);
 	}
 }

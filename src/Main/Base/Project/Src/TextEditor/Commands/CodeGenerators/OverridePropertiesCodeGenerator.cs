@@ -7,14 +7,15 @@
 
 using System;
 using System.Collections;
-using ICSharpCode.TextEditor;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.Parser.AST;
 
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	public class OverridePropertiesCodeGenerator : OldCodeGeneratorBase
+	public class OverridePropertiesCodeGenerator : CodeGeneratorBase
 	{
 		public override string CategoryName {
 			get {
@@ -22,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		public override  string Hint {
+		public override string Hint {
 			get {
 				return "Choose properties to override";
 			}
@@ -30,18 +31,26 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public override int ImageIndex {
 			get {
-				
 				return ClassBrowserIconService.PropertyIndex;
 			}
 		}
 		
-		public OverridePropertiesCodeGenerator(IClass currentClass) : base(currentClass)
+		protected override void InitContent()
 		{
 			foreach (IClass c in currentClass.ClassInheritanceTree) {
 				if (c.FullyQualifiedName != currentClass.FullyQualifiedName) {
 					foreach (IProperty property in c.Properties) {
 						if (!property.IsPrivate && (property.IsAbstract || property.IsVirtual || property.IsOverride)) {
-							Content.Add(new PropertyWrapper(property));
+							bool alreadyAdded = false;
+							foreach (PropertyWrapper w in Content) {
+								if (w.Property.Name == property.Name) {
+									alreadyAdded = true;
+									break;
+								}
+							}
+							if (!alreadyAdded) {
+								Content.Add(new PropertyWrapper(property));
+							}
 						}
 					}
 				}
@@ -49,117 +58,13 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			Content.Sort();
 		}
 		
-		protected override void StartGeneration(IList items, string fileExtension)
+		public override void GenerateCode(List<AbstractNode> nodes, IList items)
 		{
-			for (int i = 0; i < items.Count; ++i) {
-				PropertyWrapper pw = (PropertyWrapper)items[i];
-				
-				string parameters = String.Empty;
-				string paramList  = String.Empty;
-				string returnType = (fileExtension == ".vb" ? vba : csa).Convert(pw.Property.ReturnType);
-				
-				for (int j = 0; j < pw.Property.Parameters.Count; ++j) {
-					paramList  += pw.Property.Parameters[j].Name;
-					parameters += (fileExtension == ".vb" ? vba : csa).Convert(pw.Property.Parameters[j]);
-					if (j + 1 < pw.Property.Parameters.Count) {
-						parameters += ", ";
-						paramList  += ", ";
-					}
-				}
-				
-				
-				if (fileExtension == ".vb"){
-					editActionHandler.InsertString(vba.Convert(pw.Property.Modifiers) + "Overrides ");++numOps;
-					editActionHandler.InsertString("Property ");++numOps;
-					editActionHandler.InsertString(pw.Property.Name + "()");++numOps;
-				} else {
-					editActionHandler.InsertString(csa.Convert(pw.Property.Modifiers) + "override " + returnType + " " + pw.Property.Name);++numOps;
-					if (StartCodeBlockInSameLine) {
-						editActionHandler.InsertString(" {");
-					} else {
-						Return();
-						editActionHandler.InsertString("{");
-					}
-					++numOps;
-				}
-				
-				
-				Return();
-				
-				if(fileExtension == ".vb") {
-					editActionHandler.InsertString("Get");++numOps;
-				} else {
-					editActionHandler.InsertString("get");++numOps;
-					if (StartCodeBlockInSameLine) {
-						editActionHandler.InsertString(" {");
-					} else {
-						Return();
-						editActionHandler.InsertString("{");
-					}
-					++numOps;
-				}
-
-				Return();
-				
-				if(fileExtension == ".vb") {
-					editActionHandler.InsertString("Return MyBase." + pw.Property.Name); ++numOps;
-				} else {
-					editActionHandler.InsertString("return base." + pw.Property.Name); ++numOps;
-				}
-				
-				Return();
-
-				if(fileExtension == ".vb") {
-					editActionHandler.InsertString("End Get"); ++numOps;
-				} else {
-					editActionHandler.InsertChar('}'); ++numOps;
-				}
-
-				Return();
-				
-				if(fileExtension == ".vb") {
-					editActionHandler.InsertString("Set");++numOps;
-				} else {
-					editActionHandler.InsertString("set");++numOps;
-					if (StartCodeBlockInSameLine) {
-						editActionHandler.InsertString(" {");
-					} else {
-						Return();
-						editActionHandler.InsertString("{");
-					}
-					++numOps;
-				}
-
-				Return();
-				
-				if(fileExtension == ".vb") {
-					editActionHandler.InsertString("MyBase." + pw.Property.Name + " = value"); ++numOps;
-				} else {
-					editActionHandler.InsertString("base." + pw.Property.Name + " = value"); ++numOps;
-				}
-				
-				Return();
-
-				if(fileExtension == ".vb") {
-					editActionHandler.InsertString("End Set"); ++numOps;
-				} else {
-					editActionHandler.InsertChar('}'); ++numOps;
-				}
-
-				Return();
-
-				if(fileExtension == ".vb") {
-					editActionHandler.InsertString("End Property"); ++numOps;
-				} else {
-					editActionHandler.InsertChar('}'); ++numOps;
-				}
-				
-				Return();
-				Return();
-				IndentLine();
+			foreach (PropertyWrapper wrapper in items) {
+				nodes.Add(codeGen.GetOverridingMethod(wrapper.Property, this.classFinderContext));
 			}
 		}
-	
+		
 		class PropertyWrapper : IComparable
 		{
 			IProperty property;

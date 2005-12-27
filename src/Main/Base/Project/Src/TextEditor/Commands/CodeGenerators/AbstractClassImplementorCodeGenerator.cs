@@ -7,9 +7,11 @@
 
 using System;
 using System.Collections;
-using ICSharpCode.TextEditor;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.Parser.AST;
 
 using ICSharpCode.SharpDevelop.Dom;
+using ICSharpCode.SharpDevelop.Refactoring;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
@@ -22,20 +24,40 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		public override  string Hint {
+		public override string Hint {
 			get {
 				return "Choose abstract class to override";
 			}
 		}
 		
-		public AbstractClassImplementorCodeGenerator(IClass currentClass) : base(currentClass)
+		public override void GenerateCode(List<AbstractNode> nodes, IList items)
 		{
-			base.useOverrideKeyword = true;
-			base.implementOnlyAbstractMembers = true;
+			foreach (IProperty property in currentClass.DefaultReturnType.GetProperties()) {
+				if (property.IsAbstract) {
+					AttributedNode node = CodeGenerator.ConvertMember(property, classFinderContext);
+					node.Modifier &= ~Modifier.Abstract;
+					node.Modifier |= Modifier.Override;
+					nodes.Add(node);
+				}
+			}
+			foreach (IMethod method in currentClass.DefaultReturnType.GetMethods()) {
+				if (method.IsAbstract) {
+					AttributedNode node = CodeGenerator.ConvertMember(method, classFinderContext);
+					node.Modifier &= ~Modifier.Abstract;
+					node.Modifier |= Modifier.Override;
+					nodes.Add(node);
+				}
+			}
+		}
+		
+		protected override void InitContent()
+		{
+			if (currentClass.ClassType != ICSharpCode.SharpDevelop.Dom.ClassType.Class)
+				return;
 			for (int i = 0; i < currentClass.BaseTypes.Count; i++) {
 				IReturnType baseType = currentClass.GetBaseType(i);
 				IClass baseClass = (baseType != null) ? baseType.GetUnderlyingClass() : null;
-				if (baseClass != null && baseClass.ClassType == ClassType.Class && baseClass.IsAbstract) {
+				if (baseClass != null && baseClass.ClassType == ICSharpCode.SharpDevelop.Dom.ClassType.Class && baseClass.IsAbstract) {
 					Content.Add(new ClassWrapper(baseType));
 				}
 			}

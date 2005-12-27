@@ -61,9 +61,9 @@ namespace Grunwald.BooBinding.CodeCompletion
 			
 			if (m.IsStatic) r |= ModifierEnum.Static;
 			if (m is AST.Field) {
-				if (m.IsFinal)  r |= ModifierEnum.Readonly;
+				if (m.IsFinal) r |= ModifierEnum.Readonly;
 			} else {
-				if (!m.IsFinal) r |= ModifierEnum.Virtual;
+				if (m.IsFinal) r |= ModifierEnum.Sealed;
 			}
 			if (m.IsAbstract)  r |= ModifierEnum.Abstract;
 			if (m.IsOverride)  r |= ModifierEnum.Override;

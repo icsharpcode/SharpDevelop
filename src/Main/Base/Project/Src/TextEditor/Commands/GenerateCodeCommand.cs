@@ -57,19 +57,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			if (currentClass != null) {
 				ArrayList categories = new ArrayList();
-				using (FormVersion1 form = new FormVersion1(textEditorControl, new OldCodeGeneratorBase[] {
-					new ConstructorCodeGenerator(currentClass),
-					new GetterCodeGenerator(currentClass),
-					new SetterCodeGenerator(currentClass),
-					new GetterAndSetterCodeGenerator(currentClass),
-					new OnXXXMethodsCodeGenerator(currentClass),
-					new OverrideMethodsCodeGenerator(currentClass),
-					new OverridePropertiesCodeGenerator(currentClass),
-					new InterfaceImplementorCodeGenerator(currentClass),
-					new AbstractClassImplementorCodeGenerator(currentClass),
-					new ToStringCodeGenerator(currentClass),
-					new EqualsCodeGenerator(currentClass),
-				})) {
+				ArrayList generators = AddInTree.BuildItems("/AddIns/DefaultTextEditor/CodeGenerator", this, true);
+				using (FormVersion1 form = new FormVersion1(textEditorControl, (CodeGeneratorBase[])generators.ToArray(typeof(CodeGeneratorBase)), currentClass)) {
 					form.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm);
 				}
 			}
@@ -123,18 +112,22 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		TextEditorControl textEditorControl;
 		
-		OldCodeGeneratorBase SelectedCodeGenerator {
+		CodeGeneratorBase SelectedCodeGenerator {
 			get {
 				if (categoryListView.SelectedItems.Count <= 0) {
 					return null;
 				}
-				return (OldCodeGeneratorBase)categoryListView.SelectedItems[0].Tag;
+				return (CodeGeneratorBase)categoryListView.SelectedItems[0].Tag;
 			}
 		}
 		
-		public FormVersion1(TextEditorControl textEditorControl, OldCodeGeneratorBase[] codeGenerators)
+		public FormVersion1(TextEditorControl textEditorControl, CodeGeneratorBase[] codeGenerators, IClass currentClass)
 		{
 			this.textEditorControl = textEditorControl;
+			
+			foreach (CodeGeneratorBase generator in codeGenerators) {
+				generator.Initialize(currentClass);
+			}
 			
 			//  Must be called for initialization
 			this.InitializeComponents();
@@ -146,11 +139,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			int physicalline = textView.Document.GetVisibleLine(caretPos.Y);
 			visualPos = new Point(textView.GetDrawingXPos(caretPos.Y, caretPos.X) +
 			                      textView.DrawingPosition.X,
-			          (int)((1 + physicalline) * textView.FontHeight) - 
-			          textArea.VirtualTop.Y - 1 + textView.DrawingPosition.Y);
+			                      (int)((1 + physicalline) * textView.FontHeight) -
+			                      textArea.VirtualTop.Y - 1 + textView.DrawingPosition.Y);
 			
 			Point tempLocation = textEditorControl.ActiveTextAreaControl.TextArea.PointToScreen(visualPos);
-			tempLocation.Y = (tempLocation.Y + Height) > Screen.FromPoint(tempLocation).WorkingArea.Bottom ? 
+			tempLocation.Y = (tempLocation.Y + Height) > Screen.FromPoint(tempLocation).WorkingArea.Bottom ?
 				Screen.FromPoint(tempLocation).WorkingArea.Bottom - Height : tempLocation.Y;
 			tempLocation.X = (tempLocation.X + Width) > Screen.FromPoint(tempLocation).WorkingArea.Right ?
 				Screen.FromPoint(tempLocation).WorkingArea.Right - Width : tempLocation.X;
@@ -161,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			categoryListView.SmallImageList = categoryListView.LargeImageList = ClassBrowserIconService.ImageList;
 			
-			foreach (OldCodeGeneratorBase codeGenerator in codeGenerators) {
+			foreach (CodeGeneratorBase codeGenerator in codeGenerators) {
 				if (codeGenerator.IsActive) {
 					ListViewItem newItem = new ListViewItem(codeGenerator.CategoryName);
 					newItem.ImageIndex = codeGenerator.ImageIndex;
@@ -211,7 +204,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		void CategoryListViewItemChanged(object sender, EventArgs e)
 		{
-			OldCodeGeneratorBase codeGenerator = SelectedCodeGenerator;
+			CodeGeneratorBase codeGenerator = SelectedCodeGenerator;
 			if (codeGenerator == null) {
 				return;
 			}
@@ -226,10 +219,10 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 					if (!objs.Contains(o.ToString())) {
 						selectionListBox.Items.Add(o);
 						objs.Add(o.ToString(), "");
-					} 
+					}
 				}
 				selectionListBox.SelectedIndex = 0;
-			} 
+			}
 			selectionListBox.EndUpdate();
 			selectionListBox.Refresh();
 		}

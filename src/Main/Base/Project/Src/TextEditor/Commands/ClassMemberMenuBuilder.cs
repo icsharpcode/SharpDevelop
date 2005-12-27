@@ -133,7 +133,9 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			IField member = (IField)item.Tag;
 			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
 			
-			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateProperty(member, textEditor.Document, true, includeSetter);
+			CodeGenerator codeGen = member.DeclaringType.ProjectContent.Language.CodeGenerator;
+			codeGen.InsertCodeAfter(member, textEditor.Document,
+			                        codeGen.CreateProperty(member, true, includeSetter));
 			ParserService.ParseCurrentViewContent();
 		}
 		
@@ -151,7 +153,8 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			MenuCommand item = (MenuCommand)sender;
 			IEvent member = (IEvent)item.Tag;
 			TextEditorControl textEditor = FindReferencesAndRenameHelper.JumpBehindDefinition(member);
-			member.DeclaringType.ProjectContent.Language.CodeGenerator.CreateOnEventMethod(member, textEditor.Document);
+			CodeGenerator codeGen = member.DeclaringType.ProjectContent.Language.CodeGenerator;
+			codeGen.InsertCodeAfter(member, textEditor.Document, codeGen.CreateOnEventMethod(member));
 			ParserService.ParseCurrentViewContent();
 		}
 		
@@ -184,7 +187,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			if (member is IField) {
 				IProperty property = FindProperty((IField)member);
 				if (property != null) {
-					string newPropertyName = AbstractPropertyCodeGenerator.GetPropertyName(newName);
+					string newPropertyName = member.DeclaringType.ProjectContent.Language.CodeGenerator.GetPropertyName(newName);
 					if (newPropertyName != newName && newPropertyName != property.Name) {
 						if (MessageService.AskQuestionFormatted("${res:SharpDevelop.Refactoring.Rename}", "${res:SharpDevelop.Refactoring.RenameFieldAndProperty}", property.FullyQualifiedName, newPropertyName)) {
 							list = RefactoringService.FindReferences(property, null);

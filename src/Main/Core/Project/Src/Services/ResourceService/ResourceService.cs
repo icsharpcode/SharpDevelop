@@ -26,10 +26,10 @@ namespace ICSharpCode.Core
 	/// </summary>
 	public static class ResourceService
 	{
-		readonly static string uiLanguageProperty = "CoreProperties.UILanguage";
+		const string uiLanguageProperty = "CoreProperties.UILanguage";
 		
-		readonly static string stringResources = "StringResources";
-		readonly static string imageResources = "BitmapResources";
+		const string stringResources = "StringResources";
+		const string imageResources = "BitmapResources";
 		
 		static string resourceDirectory;
 		
@@ -165,21 +165,6 @@ namespace ICSharpCode.Core
 		public static void RegisterNeutralImages(ResourceManager imageManager)
 		{
 			icons.Add(imageManager);
-		}
-		
-		/// <summary>
-		/// Take string/bitmap resources from an assembly and merge them in the resource service
-		/// </summary>
-		[Obsolete("Use should use RegisterStrings or RegisterImages instead.")]
-		public static void RegisterAssembly(Assembly assembly)
-		{
-			if (assembly.GetManifestResourceInfo(stringResources+".resources") != null) {
-				strings.Add(new ResourceManager(stringResources, assembly));
-			}
-			
-			if (assembly.GetManifestResourceInfo(imageResources+".resources") != null) {
-				icons.Add(new ResourceManager(imageResources, assembly));
-			}
 		}
 		
 		static void OnPropertyChange(object sender, PropertyChangedEventArgs e)

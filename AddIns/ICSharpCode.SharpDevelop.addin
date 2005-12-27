@@ -421,9 +421,9 @@
 			          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
 			<MenuItem id = "RenameSeparator" type = "Separator" />
 			<MenuItem id    = "Properties"
-		  	          icon  = "Icons.16x16.PropertiesIcon"
-		   	          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
-		   	          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
+			          icon  = "Icons.16x16.PropertiesIcon"
+			          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
 		</ComplexCondition>
 	</Path>
 	
@@ -1934,6 +1934,31 @@
 	
 	<Path name = "/SharpDevelop/Views/ProjectBrowser/NodeBuilders">
 		<Class id = "DefaultBuilder"
-			class = "ICSharpCode.SharpDevelop.Project.DefaultDotNetNodeBuilder"/>
+		       class = "ICSharpCode.SharpDevelop.Project.DefaultDotNetNodeBuilder"/>
+	</Path>
+	
+	<Path name = "/AddIns/DefaultTextEditor/CodeGenerator">
+		<Class id="ConstructorCodeGenerator"
+		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ConstructorCodeGenerator"/>
+		<Class id="GetterCodeGenerator"
+		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GetterCodeGenerator"/>
+		<Class id="SetterCodeGenerator"
+		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.SetterCodeGenerator"/>
+		<Class id="GetterAndSetterCodeGenerator"
+		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.GetterAndSetterCodeGenerator"/>
+		<Class id="OnXXXMethodsCodeGenerator"
+		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.OnXXXMethodsCodeGenerator"/>
+		<Class id="OverrideMethodsCodeGenerator"
+		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.OverrideMethodsCodeGenerator"/>
+		<Class id="OverridePropertiesCodeGenerator"
+		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.OverridePropertiesCodeGenerator"/>
+		<Class id="InterfaceImplementorCodeGenerator"
+		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.InterfaceImplementorCodeGenerator"/>
+		<Class id="AbstractClassImplementorCodeGenerator"
+		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.AbstractClassImplementorCodeGenerator"/>
+		<Class id="ToStringCodeGenerator"
+		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.ToStringCodeGenerator"/>
+		<Class id="EqualsCodeGenerator"
+		       class="ICSharpCode.SharpDevelop.DefaultEditor.Commands.EqualsCodeGenerator"/>
 	</Path>
 </AddIn>

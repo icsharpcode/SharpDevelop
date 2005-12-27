@@ -7,14 +7,15 @@
 
 using System;
 using System.Collections;
-using ICSharpCode.TextEditor;
+using System.Collections.Generic;
+using ICSharpCode.NRefactory.Parser.AST;
 
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 {
-	public class OverrideMethodsCodeGenerator : OldCodeGeneratorBase
+	public class OverrideMethodsCodeGenerator : CodeGeneratorBase
 	{
 		public override string CategoryName {
 			get {
@@ -22,7 +23,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			}
 		}
 		
-		public override  string Hint {
+		public override string Hint {
 			get {
 				return "Choose methods to override";
 			}
@@ -30,18 +31,20 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		
 		public override int ImageIndex {
 			get {
-				
 				return ClassBrowserIconService.MethodIndex;
 			}
 		}
 		
-		public OverrideMethodsCodeGenerator(IClass currentClass) : base(currentClass)
+		protected override void InitContent()
 		{
 			foreach (IClass c in currentClass.ClassInheritanceTree) {
 				if (c.FullyQualifiedName != currentClass.FullyQualifiedName) {
 					foreach (IMethod method in c.Methods) {
 						if (!method.IsPrivate && (method.IsAbstract || method.IsVirtual || method.IsOverride)) {
-							Content.Add(new MethodWrapper(method));
+							MethodWrapper newWrapper = new MethodWrapper(method);
+							if (!Content.Contains(newWrapper)) {
+								Content.Add(newWrapper);
+							}
 						}
 					}
 				}
@@ -49,82 +52,11 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			Content.Sort();
 		}
 		
-		protected override void StartGeneration(IList items, string fileExtension)
+		public override void GenerateCode(List<AbstractNode> nodes, IList items)
 		{
-//			bool moveToMethod = sf.SelectedItems.Count == 1;
-//			int  caretPos     = 0;
-			for (int i = 0; i < items.Count; ++i) {
-				MethodWrapper mw = (MethodWrapper)items[i];
-				
-				string parameters = String.Empty;
-				string paramList  = String.Empty;
-				string returnType = (fileExtension == ".vb" ? vba : csa).Convert(mw.Method.ReturnType);
-				
-				for (int j = 0; j < mw.Method.Parameters.Count; ++j) {
-					paramList  += mw.Method.Parameters[j].Name;
-					parameters += (fileExtension == ".vb" ? vba : csa).Convert(mw.Method.Parameters[j]);
-					if (j + 1 < mw.Method.Parameters.Count) {
-						parameters += ", ";
-						paramList  += ", ";
-					}
-				}
-				if (fileExtension == ".vb"){
-					editActionHandler.InsertString(vba.Convert(mw.Method.Modifiers) + "Overrides ");++numOps;
-					if (mw.Method.ReturnType.FullyQualifiedName != "System.Void") {
-						editActionHandler.InsertString("Function ");++numOps;
-					} else {
-						editActionHandler.InsertString("Sub ");++numOps;
-					}
-					editActionHandler.InsertString(mw.Method.Name + "(" + parameters + ")");++numOps;
-					if (mw.Method.ReturnType.FullyQualifiedName != "System.Void") {
-						editActionHandler.InsertString(" As " + returnType);++numOps;
-					}
-				} else {
-					editActionHandler.InsertString(csa.Convert(mw.Method.Modifiers) + "override " + returnType + " " + mw.Method.Name + "(" + parameters + ")");++numOps;
-					if (StartCodeBlockInSameLine) {
-						editActionHandler.InsertString(" {");
-					} else {
-						Return();
-						editActionHandler.InsertString("{");
-					}
-					++numOps;
-				}
-				
-				
-				Return();
-				
-				if(fileExtension == ".vb") {
-					if (mw.Method.ReturnType.FullyQualifiedName != "System.Void") {
-						editActionHandler.InsertString("Return MyBase." + mw.Method.Name + "(" + paramList + ")");++numOps;
-						Return();
-						editActionHandler.InsertString("End Function");
-					} else {
-						editActionHandler.InsertString("MyBase." + mw.Method.Name + "(" + paramList + ")");++numOps;
-						Return();
-						editActionHandler.InsertString("End Sub");
-					}
-				} else {
-					if (mw.Method.ReturnType.FullyQualifiedName != "System.Void") {
-						string str = "return base." + mw.Method.Name + "(" + paramList + ");";
-						editActionHandler.InsertString(str);++numOps;
-					} else {
-						string str = "base." + mw.Method.Name + "(" + paramList + ");";
-						editActionHandler.InsertString(str);++numOps;
-					}
-					Return();
-					editActionHandler.InsertChar('}');
-				}
-				++numOps;
-				
-//				caretPos = editActionHandler.Document.Caret.Offset;
-
-				
-				Return();
-				IndentLine();
+			foreach (MethodWrapper wrapper in items) {
+				nodes.Add(codeGen.GetOverridingMethod(wrapper.Method, this.classFinderContext));
 			}
-//			if (moveToMethod) {
-//				editActionHandler.Document.Caret.Offset = caretPos;
-//			}
 		}
 		
 		class MethodWrapper : IComparable
@@ -139,20 +71,37 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			public int CompareTo(object other)
 			{
-				return method.Name.CompareTo(((MethodWrapper)other).method.Name);
+				return ToString().CompareTo(((MethodWrapper)other).ToString());
 			}
-			
 			
 			public MethodWrapper(IMethod method)
 			{
 				this.method = method;
 			}
 			
+			public override bool Equals(object obj)
+			{
+				MethodWrapper other = (MethodWrapper)obj;
+				if (method.Name != other.method.Name)
+					return false;
+				return 0 == ICSharpCode.SharpDevelop.DiffUtility.Compare(method.Parameters, other.method.Parameters);
+			}
+			
+			public override int GetHashCode()
+			{
+				return ToString().GetHashCode();
+			}
+			
+			string cachedStringRepresentation;
+			
 			public override string ToString()
 			{
-				IAmbience ambience = AmbienceService.CurrentAmbience;
-				ambience.ConversionFlags = ConversionFlags.ShowParameterNames;
-				return ambience.Convert(method);
+				if (cachedStringRepresentation == null) {
+					IAmbience ambience = AmbienceService.CurrentAmbience;
+					ambience.ConversionFlags = ConversionFlags.ShowParameterNames;
+					cachedStringRepresentation = ambience.Convert(method);
+				}
+				return cachedStringRepresentation;
 			}
 		}
 	}

@@ -273,7 +273,17 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return Char.ToUpper(fieldName[0]) + fieldName.Substring(1);
 		}
 		
-		public virtual void CreateProperty(IField field, IDocument document, bool createGetter, bool createSetter)
+		public virtual string GetParameterName(string fieldName)
+		{
+			if (fieldName.StartsWith("_") && fieldName.Length > 1)
+				return Char.ToLower(fieldName[1]) + fieldName.Substring(2);
+			else if (fieldName.StartsWith("m_") && fieldName.Length > 2)
+				return Char.ToLower(fieldName[2]) + fieldName.Substring(3);
+			else
+				return Char.ToLower(fieldName[0]) + fieldName.Substring(1);
+		}
+		
+		public virtual PropertyDeclaration CreateProperty(IField field, bool createGetter, bool createSetter)
 		{
 			string name = GetPropertyName(field.Name);
 			PropertyDeclaration property = new PropertyDeclaration(name,
@@ -293,8 +303,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			}
 			
 			property.Modifier = Modifier.Public | (property.Modifier & Modifier.Static);
-			
-			InsertCodeAfter(field, document, property);
+			return property;
 		}
 		#endregion
 		
@@ -319,7 +328,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		#endregion
 		
 		#region Generate OnEventMethod
-		public virtual void CreateOnEventMethod(IEvent e, IDocument document)
+		public virtual MethodDeclaration CreateOnEventMethod(IEvent e)
 		{
 			TypeReference type = ConvertType(e.ReturnType, new ClassFinder(e));
 			if (type.Type.EndsWith("Handler"))
@@ -348,7 +357,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			method.Body = new BlockStatement();
 			method.Body.AddChild(new RaiseEventStatement(e.Name, arguments));
 			
-			InsertCodeAfter(e, document, method);
+			return method;
 		}
 		#endregion
 		
@@ -361,12 +370,21 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 				return member.DeclaringType.FullyQualifiedName;
 		}
 		
-		public virtual void ImplementInterface(IReturnType interf, IDocument document, bool explicitImpl, ModifierEnum implModifier, IClass targetClass)
+		public void ImplementInterface(IReturnType interf, IDocument document, bool explicitImpl, ModifierEnum implModifier, IClass targetClass)
+		{
+			List<AbstractNode> nodes = new List<AbstractNode>();
+			InsertCodeInClass(targetClass, document, nodes.ToArray());
+		}
+		
+		/// <summary>
+		/// Adds the methods implementing the <paramref name="interf"/> to the list
+		/// <paramref name="nodes"/>.
+		/// </summary>
+		public virtual void ImplementInterface(IList<AbstractNode> nodes, IReturnType interf, bool explicitImpl, ModifierEnum implModifier, IClass targetClass)
 		{
 			ClassFinder context = new ClassFinder(targetClass, targetClass.Region.BeginLine + 1, 0);
 			TypeReference interfaceReference = ConvertType(interf, context);
 			Modifier modifier = ConvertModifier(implModifier);
-			List<AbstractNode> nodes = new List<AbstractNode>();
 			List<IEvent> targetClassEvents = targetClass.DefaultReturnType.GetEvents();
 			foreach (IEvent e in interf.GetEvents()) {
 				if (targetClassEvents.Find(delegate(IEvent te) { return e.Name == te.Name; }) == null) {
@@ -410,7 +428,59 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 					}
 				}
 			}
-			InsertCodeInClass(targetClass, document, nodes.ToArray());
+		}
+		#endregion
+		
+		#region Override member
+		public virtual AttributedNode GetOverridingMethod(IMember baseMember, ClassFinder targetContext)
+		{
+			AttributedNode node = ConvertMember(baseMember, targetContext);
+			node.Modifier &= ~(Modifier.Virtual | Modifier.Abstract);
+			node.Modifier |= Modifier.Override;
+			
+			MethodDeclaration method = node as MethodDeclaration;
+			if (method != null) {
+				method.Body.Children.Clear();
+				if (method.TypeReference.SystemType == "System.Void") {
+					method.Body.AddChild(new StatementExpression(CreateForwardingMethodCall(method)));
+				} else {
+					method.Body.AddChild(new ReturnStatement(CreateForwardingMethodCall(method)));
+				}
+			}
+			PropertyDeclaration property = node as PropertyDeclaration;
+			if (property != null) {
+				Expression field = new FieldReferenceExpression(new BaseReferenceExpression(),
+				                                                property.Name);
+				if (!property.GetRegion.Block.IsNull) {
+					property.GetRegion.Block.Children.Clear();
+					property.GetRegion.Block.AddChild(new ReturnStatement(field));
+				}
+				if (!property.SetRegion.Block.IsNull) {
+					property.SetRegion.Block.Children.Clear();
+					Expression expr = new AssignmentExpression(field,
+					                                           AssignmentOperatorType.Assign,
+					                                           new IdentifierExpression("value"));
+					property.SetRegion.Block.AddChild(new StatementExpression(expr));
+				}
+			}
+			return node;
+		}
+		
+		static InvocationExpression CreateForwardingMethodCall(MethodDeclaration method)
+		{
+			Expression methodName = new FieldReferenceExpression(new BaseReferenceExpression(),
+			                                                     method.Name);
+			InvocationExpression ie = new InvocationExpression(methodName, null);
+			foreach (ParameterDeclarationExpression param in method.Parameters) {
+				Expression expr = new IdentifierExpression(param.ParameterName);
+				if (param.ParamModifier == ParamModifier.Ref) {
+					expr = new DirectionExpression(FieldDirection.Ref, expr);
+				} else if (param.ParamModifier == ParamModifier.Out) {
+					expr = new DirectionExpression(FieldDirection.Out, expr);
+				}
+				ie.Arguments.Add(expr);
+			}
+			return ie;
 		}
 		#endregion
 	}
