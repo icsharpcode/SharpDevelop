@@ -20,16 +20,51 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class GacReferencePanel : ListView, IReferencePanel
 	{
+		
+		class ColumnSorter : IComparer
+		{
+			private int column = 0;
+			bool asc = true;
+			
+			public int CurrentColumn
+			{
+				get
+				{
+					return column;
+				}
+				set
+				{
+					if(column == value) asc = !asc;
+					else column = value;
+				}
+			}
+			
+			public int Compare(object x, object y)
+			{
+				ListViewItem rowA = (ListViewItem)x;
+				ListViewItem rowB = (ListViewItem)y;
+				int result = String.Compare(rowA.SubItems[CurrentColumn].Text, rowB.SubItems[CurrentColumn].Text);
+				if(asc) return result;
+				else return result * -1;
+			}
+		}
+
 		SelectReferenceDialog selectDialog;
+		ColumnSorter sorter;
 		
 		public GacReferencePanel(SelectReferenceDialog selectDialog)
 		{
+			sorter = new ColumnSorter();
+			this.ListViewItemSorter = sorter;
+			
 			this.selectDialog = selectDialog;
 			
 			ColumnHeader referenceHeader = new ColumnHeader();
 			referenceHeader.Text  = ResourceService.GetString("Dialog.SelectReferenceDialog.GacReferencePanel.ReferenceHeader");
 			referenceHeader.Width = 160;
 			Columns.Add(referenceHeader);
+			
+			Sorting = SortOrder.Ascending;
 			
 			ColumnHeader versionHeader = new ColumnHeader();
 			versionHeader.Text  = ResourceService.GetString("Dialog.SelectReferenceDialog.GacReferencePanel.VersionHeader");
@@ -45,8 +80,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Dock = DockStyle.Fill;
 			FullRowSelect = true;
 			ItemActivate += new EventHandler(AddReference);
-			
+			ColumnClick += new ColumnClickEventHandler(columnClick);
 			PrintCache();
+		}
+		
+		void columnClick(object sender, ColumnClickEventArgs e)
+		{
+			if(e.Column < 2)
+			{
+				sorter.CurrentColumn = e.Column;
+				Sort();
+			}
 		}
 		
 		public void AddReference(object sender, EventArgs e)
