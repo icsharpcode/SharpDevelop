@@ -80,24 +80,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			toolStripContainer.SuspendLayout();
 			toolStripContainer.Dock = DockStyle.Fill;
 			
-//			RaftingContainer topRaftingContainer = new System.Windows.Forms.RaftingContainer();
-//			RaftingContainer leftRaftingContainer = new System.Windows.Forms.RaftingContainer();
-//			RaftingContainer rightRaftingContainer = new System.Windows.Forms.RaftingContainer();
-//			RaftingContainer bottomRaftingContainer = new System.Windows.Forms.RaftingContainer();
-//
-//			((System.ComponentModel.ISupportInitialize)(leftRaftingContainer)).BeginInit();
-//			((System.ComponentModel.ISupportInitialize)(rightRaftingContainer)).BeginInit();
-//			((System.ComponentModel.ISupportInitialize)(topRaftingContainer)).BeginInit();
-//			topRaftingContainer.SuspendLayout();
-//			((System.ComponentModel.ISupportInitialize)(bottomRaftingContainer)).BeginInit();
-//			bottomRaftingContainer.SuspendLayout();
-//			leftRaftingContainer.Dock = System.Windows.Forms.DockStyle.Left;
-//			rightRaftingContainer.Dock = System.Windows.Forms.DockStyle.Right;
-			
-//			topRaftingContainer.Dock = System.Windows.Forms.DockStyle.Top;
-//			bottomRaftingContainer.Controls.Add(StatusBarService.Control);
-//			bottomRaftingContainer.Dock = System.Windows.Forms.DockStyle.Bottom;
-			
 			dockPanel = new WeifenLuo.WinFormsUI.DockPanel();
 			toolStripContainer.ContentPanel.Controls.Add(this.dockPanel);
 			
@@ -110,6 +92,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			statusStripContainer = new AutoHideStatusStripContainer((StatusStrip)StatusBarService.Control);
 			statusStripContainer.Dock = DockStyle.Bottom;
 			
+			
+			toolStripContainer.ContentPanel.Controls.Add(mainMenuContainer);
+			toolStripContainer.ContentPanel.Controls.Add(statusStripContainer);
+			wbForm.Controls.Add(toolStripContainer);
+			// dock panel has to be added to the form before LoadLayoutConfiguration is called to fix SD2-463
+			
 			LoadLayoutConfiguration();
 			ShowPads();
 			
@@ -120,22 +108,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			dockPanel.ActiveDocumentChanged += new EventHandler(ActiveMdiChanged);
 			dockPanel.ActiveContentChanged += new EventHandler(ActiveContentChanged);
 			ActiveMdiChanged(this, EventArgs.Empty);
-			
-//			wbForm.Controls.Add(this.dockPanel);
-			
-			toolStripContainer.ContentPanel.Controls.Add(mainMenuContainer);
-			toolStripContainer.ContentPanel.Controls.Add(statusStripContainer);
-			
-			wbForm.Controls.Add(toolStripContainer);
-			
-//			((System.ComponentModel.ISupportInitialize)(leftRaftingContainer)).EndInit();
-//			((System.ComponentModel.ISupportInitialize)(rightRaftingContainer)).EndInit();
-//			((System.ComponentModel.ISupportInitialize)(topRaftingContainer)).EndInit();
-//			topRaftingContainer.ResumeLayout(false);
-//			topRaftingContainer.PerformLayout();
-//			((System.ComponentModel.ISupportInitialize)(bottomRaftingContainer)).EndInit();
-//			bottomRaftingContainer.ResumeLayout(false);
-//			bottomRaftingContainer.PerformLayout();
 			
 			toolStripContainer.ResumeLayout(false);
 			wbForm.ResumeLayout(false);

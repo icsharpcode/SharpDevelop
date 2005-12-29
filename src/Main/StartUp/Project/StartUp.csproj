@@ -45,7 +45,6 @@
     <Compile Include="Dialogs\ExceptionBox.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Dialogs\AddInTreeSettingsHandler.cs" />
     <EmbeddedResource Include="Resources\BitmapResources.resources" />
     <None Include="Resources\StartUp.snk" />
     <None Include="SharpDevelop.exe.manifest">
