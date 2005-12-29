@@ -54,10 +54,11 @@ namespace ICSharpCode.SharpDevelop.Project
 			instance = this;
 			ProjectService.SolutionLoaded += ProjectServiceSolutionLoaded;
 			ProjectService.SolutionClosed += ProjectServiceSolutionClosed;
+			ProjectService.SolutionPreferencesSaving += ProjectServiceSolutionPreferencesSaving;
 			
 			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += ActiveWindowChanged;
 			if (ProjectService.OpenSolution != null) {
-				projectBrowserPanel.ViewSolution(ProjectService.OpenSolution);
+				ProjectServiceSolutionLoaded(null, new SolutionEventArgs(ProjectService.OpenSolution));
 			}
 		}
 		
@@ -66,9 +67,15 @@ namespace ICSharpCode.SharpDevelop.Project
 			ProjectBrowserControl.TreeView.StartLabelEdit(node);
 		}
 		
+		void ProjectServiceSolutionPreferencesSaving(object sender, SolutionEventArgs e)
+		{
+			projectBrowserPanel.StoreViewState(e.Solution.Preferences.Properties);
+		}
+		
 		void ProjectServiceSolutionLoaded(object sender, SolutionEventArgs e)
 		{
 			projectBrowserPanel.ViewSolution(e.Solution);
+			projectBrowserPanel.ReadViewState(e.Solution.Preferences.Properties);
 		}
 		
 		void ProjectServiceSolutionClosed(object sender, EventArgs e)
@@ -180,6 +187,5 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		#endregion
-		
 	}
 }

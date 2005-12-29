@@ -18,6 +18,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		static IProject currentProject;
 		
 		public static Solution OpenSolution {
+			[System.Diagnostics.DebuggerStepThrough]
 			get {
 				return openSolution;
 			}
@@ -218,16 +219,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			openSolution = Solution.Load(fileName);
 			if (openSolution == null)
 				return;
-			OnSolutionLoaded(new SolutionEventArgs(openSolution));
 			try {
 				string file = GetPreferenceFileName(openSolution.FileName);
 				if (FileUtility.IsValidFileName(file) && File.Exists(file)) {
-					openSolution.Preferences.SetMemento(Properties.Load(file));
+					(openSolution.Preferences as IMementoCapable).SetMemento(Properties.Load(file));
 				}
 				ApplyConfigurationAndReadPreferences();
 			} catch (Exception ex) {
 				MessageService.ShowError(ex);
 			}
+			// preferences must be read before OnSolutionLoad is called to enable
+			// the event listeners to read e.Solution.Preferences.Properties
+			OnSolutionLoaded(new SolutionEventArgs(openSolution));
 		}
 		
 		static void ApplyConfigurationAndReadPreferences()
@@ -275,8 +278,10 @@ namespace ICSharpCode.SharpDevelop.Project
 			solution.Save(solutionFile);
 			
 			openSolution = solution;
-			OnSolutionLoaded(new SolutionEventArgs(openSolution));
 			ApplyConfigurationAndReadPreferences();
+			// preferences must be read before OnSolutionLoad is called to enable
+			// the event listeners to read e.Solution.Preferences.Properties
+			OnSolutionLoaded(new SolutionEventArgs(openSolution));
 		}
 		
 		public static void SaveSolution()
@@ -307,14 +312,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				Directory.CreateDirectory(directory);
 			}
 			
-			string fullFileName;
-			Properties memento = openSolution.Preferences.CreateMemento();
-			if (memento != null) {
-				fullFileName = GetPreferenceFileName(openSolution.FileName);
-				
-				if (FileUtility.IsValidFileName(fullFileName)) {
-					FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
-				}
+			if (SolutionPreferencesSaving != null)
+				SolutionPreferencesSaving(null, new SolutionEventArgs(openSolution));
+			Properties memento = (openSolution.Preferences as IMementoCapable).CreateMemento();
+			
+			string fullFileName = GetPreferenceFileName(openSolution.FileName);
+			if (FileUtility.IsValidFileName(fullFileName)) {
+				FileUtility.ObservedSave(new NamedFileOperationDelegate(memento.Save), fullFileName, FileErrorPolicy.Inform);
 			}
 			
 			foreach (IProject project in OpenSolution.Projects) {
@@ -473,6 +477,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public static event EventHandler<SolutionEventArgs> SolutionClosing;
 		public static event EventHandler                    SolutionClosed;
+		
+		/// <summary>
+		/// Raised before the solution preferences are being saved. Allows you to save
+		/// your additional properties in the solution preferences.
+		/// </summary>
+		public static event EventHandler<SolutionEventArgs> SolutionPreferencesSaving;
 		
 		public static event ProjectEventHandler CurrentProjectChanged;
 		

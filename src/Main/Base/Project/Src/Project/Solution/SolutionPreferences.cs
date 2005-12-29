@@ -14,6 +14,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	public class SolutionPreferences : IMementoCapable
 	{
 		Solution solution;
+		Properties properties = new Properties();
 		string startupProject = "";
 		string activeConfiguration = "Debug";
 		string activePlatform = "Any CPU";
@@ -21,6 +22,12 @@ namespace ICSharpCode.SharpDevelop.Project
 		internal SolutionPreferences(Solution solution)
 		{
 			this.solution = solution;
+		}
+		
+		public Properties Properties {
+			get {
+				return properties;
+			}
 		}
 		
 		public IProject StartupProject {
@@ -61,9 +68,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Creates a new memento from the state.
 		/// </summary>
-		public Properties CreateMemento()
+		Properties IMementoCapable.CreateMemento()
 		{
-			Properties p = new Properties();
+			Properties p = properties;
 			p.Set("StartupProject",      startupProject);
 			p.Set("ActiveConfiguration", activeConfiguration);
 			p.Set("ActivePlatform",      activePlatform);
@@ -73,7 +80,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		/// <summary>
 		/// Sets the state to the given memento.
 		/// </summary>
-		public void SetMemento(Properties memento)
+		void IMementoCapable.SetMemento(Properties memento)
 		{
 			startupProject       = memento.Get("StartupProject", "");
 			string configuration = memento.Get("ActiveConfiguration", activeConfiguration);
@@ -89,6 +96,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			
 			this.ActiveConfiguration = configuration;
 			this.ActivePlatform = platform;
+
+			this.properties = memento;
 		}
 	}
 }
