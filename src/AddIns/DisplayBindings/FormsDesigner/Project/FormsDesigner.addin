@@ -284,7 +284,8 @@
 		</Condition>
 	</Path>
 	
-	<Path name = "/SharpDevelop/Workbench/SharpDevelopSideBar/ContextMenu">
+	<!-- common menu, for both tab captions and tab content -->
+	<Path name = "/SharpDevelop/Workbench/SharpDevelopSideBar/CommonContextMenu">
 		<MenuItem id    = "CustomizeSideBarSeparator"
 		          insertafter = "MoveTabDown"
 		          type = "Separator" />

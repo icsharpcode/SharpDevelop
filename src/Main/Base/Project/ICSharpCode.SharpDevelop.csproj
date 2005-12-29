@@ -734,6 +734,7 @@
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPad.cs" />
     <Compile Include="Src\Project\MSBuildFile.cs" />
     <Compile Include="Src\Gui\FormLocationHelper.cs" />
+    <Compile Include="Src\TextEditor\Commands\CodeGenerators\CodeGenerationForm.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

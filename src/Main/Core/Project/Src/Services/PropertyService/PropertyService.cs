@@ -73,9 +73,7 @@ namespace ICSharpCode.Core
 			}
 			
 			if (!LoadPropertiesFromStream(Path.Combine(configDirectory, propertyFileName))) {
-				if (!LoadPropertiesFromStream(FileUtility.Combine(DataDirectory, "options", propertyFileName))) {
-					MessageService.ShowError("Can't load properties file.");
-				}
+				LoadPropertiesFromStream(FileUtility.Combine(DataDirectory, "options", propertyFileName));
 			}
 		}
 		
@@ -84,15 +82,19 @@ namespace ICSharpCode.Core
 			if (!File.Exists(fileName)) {
 				return false;
 			}
-			using (XmlTextReader reader = new XmlTextReader(fileName)) {
-				while (reader.Read()){
-					if (reader.IsStartElement()) {
-						if (reader.LocalName == propertyXmlRootNodeName) {
-							properties.ReadProperties(reader, propertyXmlRootNodeName);
-							return true;
+			try {
+				using (XmlTextReader reader = new XmlTextReader(fileName)) {
+					while (reader.Read()){
+						if (reader.IsStartElement()) {
+							if (reader.LocalName == propertyXmlRootNodeName) {
+								properties.ReadProperties(reader, propertyXmlRootNodeName);
+								return true;
+							}
 						}
 					}
 				}
+			} catch (XmlException ex) {
+				MessageService.ShowError("Error loading properties: " + ex.Message + "\nSettings have been restored to default values.");
 			}
 			return false;
 		}
