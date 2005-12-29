@@ -46,18 +46,40 @@ namespace ICSharpCode.SharpDevelop.Project
 			Tag = solution;
 		}
 		
+		public override void BeforeLabelEdit()
+		{
+			Text = solution.Name;
+		}
+		
+		public override void AfterLabelEdit(string newName)
+		{
+			try {
+				if (solution.Name == newName)
+					return;
+				if (!FileService.CheckFileName(newName))
+					return;
+				string newFileName = Path.Combine(solution.Directory, newName + ".sln");
+				if (File.Exists(newFileName)) {
+					MessageService.ShowError("The file " + newFileName + " already exists.");
+					return;
+				}
+				FileService.RenameFile(solution.FileName, newFileName, false);
+				solution.FileName = newFileName;
+				solution.Name = newName;
+			} finally {
+				Text = "Solution " + solution.Name;
+			}
+		}
+		
 		public void AddItem(string fileName)
 		{
 			throw new NotImplementedException();
-//			string relativeFileName = FileUtility.GetRelativePath(Path.GetDirectoryName(solution.FileName), fileName);
-//			folder.SolutionItems.Items.Add(new SolutionItem(relativeFileName, relativeFileName));
-//			new FileNode(fileName, FileNodeStatus.InProject).AddTo(this);
+			
+			//string relativeFileName = FileUtility.GetRelativePath(solution.Directory, fileName);
+			//SolutionItem newItem = new SolutionItem(relativeFileName, relativeFileName);
+			//this.Container.SolutionItems.Items.Add(newItem);
+			//new SolutionItemNode(solution, newItem).AddTo(this);
 		}
-		
-//		protected override void Initialize()
-//		{
-//			base.Initialize();
-//		}
 		
 		#region Drag & Drop
 		public override DragDropEffects GetDragDropEffect(IDataObject dataObject, DragDropEffects proposedEffect)

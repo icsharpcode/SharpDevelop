@@ -211,7 +211,9 @@ namespace ICSharpCode.FormsDesigner
 		void UnloadDesigner()
 		{
 			generator.Detach();
+			bool savedIsDirty = viewContent.IsDirty;
 			p.Controls.Clear();
+			viewContent.IsDirty = savedIsDirty;
 			// We cannot dispose the design surface now because of SD2-451:
 			// When the switch to the source view was triggered by a double-click on an event
 			// in the PropertyPad, "InvalidOperationException: The container cannot be disposed
@@ -250,11 +252,13 @@ namespace ICSharpCode.FormsDesigner
 				failedDesignerInitialize = false;
 				LoadDesigner();
 				
+				bool savedIsDirty = viewContent.IsDirty;
 				if (designSurface != null && p.Controls.Count == 0) {
 					Control designer = designSurface.View as Control;
 					designer.Dock = DockStyle.Fill;
 					p.Controls.Add(designer);
 				}
+				viewContent.IsDirty = savedIsDirty;
 			} catch (Exception e) {
 				failedDesignerInitialize = true;
 				TextBox errorText = new TextBox();

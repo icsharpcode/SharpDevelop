@@ -142,6 +142,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			get {
 				return fileName;
 			}
+			set {
+				fileName = value;
+			}
 		}
 		
 		public string Directory {

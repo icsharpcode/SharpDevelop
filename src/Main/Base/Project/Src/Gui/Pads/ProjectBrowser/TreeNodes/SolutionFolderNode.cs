@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void AddItem(string fileName)
 		{
-			string relativeFileName = FileUtility.GetRelativePath(Path.GetDirectoryName(solution.FileName), fileName);
+			string relativeFileName = FileUtility.GetRelativePath(solution.Directory, fileName);
 			SolutionItem newItem = new SolutionItem(relativeFileName, relativeFileName);
 			folder.SolutionItems.Items.Add(newItem);
 			new SolutionItemNode(solution, newItem).AddTo(this);
