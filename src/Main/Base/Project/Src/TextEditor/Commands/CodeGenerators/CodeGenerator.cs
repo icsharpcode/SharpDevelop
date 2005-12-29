@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 		{
 			List<AbstractNode> nodes = new List<AbstractNode>();
 			GenerateCode(nodes, items);
-			codeGen.InsertCodeInClass(currentClass, textArea.Document, nodes.ToArray());
+			codeGen.InsertCodeInClass(currentClass, textArea.Document, textArea.Caret.Line, nodes.ToArray());
 			ParserService.ParseCurrentViewContent();
 		}
 		

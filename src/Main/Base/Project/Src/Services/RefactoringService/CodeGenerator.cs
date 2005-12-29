@@ -226,9 +226,10 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			                GetIndentation(document, region.BeginLine) + '\t', nodes);
 		}
 		
-		public virtual void InsertCodeInClass(IClass c, IDocument document, params AbstractNode[] nodes)
+		public virtual void InsertCodeInClass(IClass c, IDocument document, int targetLine, params AbstractNode[] nodes)
 		{
-			InsertCodeAtEnd(c.Region, document, nodes);
+			InsertCodeAfter(targetLine, document,
+			                GetIndentation(document, c.Region.BeginLine) + '\t', false, nodes);
 		}
 		
 		protected string GetIndentation(IDocument document, int line)
@@ -244,12 +245,22 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		/// </summary>
 		protected void InsertCodeAfter(int insertLine, IDocument document, string indentation, params AbstractNode[] nodes)
 		{
+			InsertCodeAfter(insertLine, document, indentation, true, nodes);
+		}
+		
+		/// <summary>
+		/// Generates code for <paramref name="nodes"/> and inserts it into <paramref name="document"/>
+		/// after the line <paramref name="insertLine"/>.
+		/// </summary>
+		protected void InsertCodeAfter(int insertLine, IDocument document, string indentation, bool startWithEmptyLine, params AbstractNode[] nodes)
+		{
 			// insert one line below field (text editor uses different coordinates)
 			LineSegment lineSegment = document.GetLineSegment(insertLine);
 			StringBuilder b = new StringBuilder();
-			foreach (AbstractNode node in nodes) {
-				b.AppendLine(indentation);
-				b.Append(GenerateCode(node, indentation));
+			for (int i = 0; i < nodes.Length; i++) {
+				if (startWithEmptyLine || i > 0)
+					b.AppendLine(indentation);
+				b.Append(GenerateCode(nodes[i], indentation));
 			}
 			document.Insert(lineSegment.Offset, b.ToString());
 			document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.WholeTextArea));
@@ -373,7 +384,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		public void ImplementInterface(IReturnType interf, IDocument document, bool explicitImpl, ModifierEnum implModifier, IClass targetClass)
 		{
 			List<AbstractNode> nodes = new List<AbstractNode>();
-			InsertCodeInClass(targetClass, document, nodes.ToArray());
+			InsertCodeAtEnd(targetClass.Region, document, nodes.ToArray());
 		}
 		
 		/// <summary>
