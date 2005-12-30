@@ -13,32 +13,30 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 {
 	public class Execute : AbstractMenuCommand
 	{
+		protected bool withDebugger = true;
+		
 		public override void Run()
 		{
-			new Build().Run();
-			if (MSBuildEngine.LastErrorCount == 0) {
-				IProject startupProject = ProjectService.OpenSolution.StartupProject;
-				if (startupProject != null) {
-					startupProject.Start(true);
-				} else {
-					MessageService.ShowError("${res:BackendBindings.ExecutionManager.CantExecuteDLLError}");
+			Build build = new Build();
+			build.BuildComplete += delegate {
+				if (MSBuildEngine.LastErrorCount == 0) {
+					IProject startupProject = ProjectService.OpenSolution.StartupProject;
+					if (startupProject != null) {
+						startupProject.Start(withDebugger);
+					} else {
+						MessageService.ShowError("${res:BackendBindings.ExecutionManager.CantExecuteDLLError}");
+					}
 				}
-			}
+			};
+			build.Run();
 		}
 	}
-	public class ExecuteWithoutDebugger : AbstractMenuCommand
+	public class ExecuteWithoutDebugger : Execute
 	{
 		public override void Run()
 		{
-			new Build().Run();
-			if (MSBuildEngine.LastErrorCount == 0) {
-				IProject startupProject = ProjectService.OpenSolution.StartupProject;
-				if (startupProject != null) {
-					startupProject.Start(false);
-				} else {
-					MessageService.ShowError("${res:BackendBindings.ExecutionManager.CantExecuteDLLError}");
-				}
-			}
+			withDebugger = false;
+			base.Run();
 		}
 	}
 	

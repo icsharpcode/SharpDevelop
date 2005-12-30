@@ -48,9 +48,13 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 		{
 			MSBuildEngine.ShowResults(results);
 			AfterBuild();
+			if (BuildComplete != null)
+				BuildComplete(this, EventArgs.Empty);
 		}
 		
 		public abstract void StartBuild();
+		
+		public event EventHandler BuildComplete;
 	}
 	
 	public class Build : AbstractBuildMenuCommand
