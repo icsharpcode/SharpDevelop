@@ -60,7 +60,40 @@ namespace ICSharpCode.SharpDevelop.Project
 		None,
 		AppDesigner,
 		WebReference,
-		WebReferenceFolder
+		WebReferencesFolder
+	}
+	
+	public class DirectoryNodeFactory
+	{
+		DirectoryNodeFactory()
+		{
+		}
+		
+		public static DirectoryNode CreateDirectoryNode(TreeNode parent, IProject project, string directory)
+		{
+			DirectoryNode node = new DirectoryNode(directory);
+			if (directory == Path.Combine(project.Directory, project.AppDesignerFolder)) {
+				node.SpecialFolder = SpecialFolder.AppDesigner;
+			} else if (DirectoryNode.IsWebReferencesFolder(project, directory)) {
+				node = new WebReferencesFolderNode(directory);
+			} else if (parent != null && parent is WebReferencesFolderNode) {
+				node = new WebReferenceNode(directory);
+			}
+			return node;
+		}
+		
+		public static DirectoryNode CreateDirectoryNode(ProjectItem item, FileNodeStatus status)
+		{
+			DirectoryNode node;
+			if (item is WebReferencesProjectItem) {
+				node = new WebReferencesFolderNode((WebReferencesProjectItem)item);
+				node.FileNodeStatus = status;
+			} else {
+				node = new DirectoryNode(item.FileName.Trim('\\', '/'), status);
+				node.ProjectItem = item;
+			}	
+			return node;
+		}
 	}
 	
 	public class DirectoryNode : AbstractProjectBrowserTreeNode, IOwnerState
@@ -79,9 +112,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public SpecialFolder SpecialFolder {
 			get {
-				if (Parent is DirectoryNode && ((DirectoryNode)Parent).SpecialFolder == SpecialFolder.WebReferenceFolder) {
-					return SpecialFolder.WebReference;
-				}
 				return specialFolder;
 			}
 			set {
@@ -110,6 +140,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 			set {
 				projectItem = value;
+				if (projectItem != null && projectItem.ItemType == ItemType.WebReferenceUrl) {
+					Tag = projectItem;
+				}
 			}
 		}
 		
@@ -174,7 +207,7 @@ namespace ICSharpCode.SharpDevelop.Project
 							OpenedImage = "ProjectBrowser.PropertyFolder.Open";
 							ClosedImage = "ProjectBrowser.PropertyFolder.Closed";
 							break;
-						case SpecialFolder.WebReferenceFolder:
+						case SpecialFolder.WebReferencesFolder:
 							OpenedImage = "ProjectBrowser.WebReferenceFolder.Open";
 							ClosedImage = "ProjectBrowser.WebReferenceFolder.Closed";
 							break;
@@ -231,6 +264,23 @@ namespace ICSharpCode.SharpDevelop.Project
 			SetIcon();
 		}
 		
+		/// <summary>
+		/// Determines if the specified <paramref name="folder"/> is a
+		/// web reference folder in the specified <paramref name="project"/>.
+		/// </summary>
+		/// <param name="folder">The full folder path.</param>
+		public static bool IsWebReferencesFolder(IProject project, string folder)
+		{
+			foreach (ProjectItem item in project.Items) {
+				if (item.ItemType == ItemType.WebReferences) {
+					if (FileUtility.IsEqualFileName(Path.Combine(project.Directory, item.Include), folder)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		
 		void RecreateSubNodes()
 		{
 			if (autoClearNodes) {
@@ -267,10 +317,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (System.IO.Directory.Exists(Directory)) {
 				foreach (string subDirectory in System.IO.Directory.GetDirectories(Directory)) {
 					if (Path.GetFileName(subDirectory) != ".svn") {
-						DirectoryNode newDirectoryNode = new DirectoryNode(subDirectory);
-						if (subDirectory == Path.Combine(Project.Directory, Project.AppDesignerFolder)) {
-							newDirectoryNode.SpecialFolder = SpecialFolder.AppDesigner;
-						}
+						DirectoryNode newDirectoryNode = DirectoryNodeFactory.CreateDirectoryNode(this, Project, subDirectory);
 						newDirectoryNode.AddTo(this);
 						directoryNodeList[Path.GetFileName(subDirectory)] = newDirectoryNode;
 					}
@@ -293,6 +340,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			// Add project items
 			
 			foreach (ProjectItem item in Project.Items) {
+				if (item.ItemType == ItemType.WebReferenceUrl) {
+					DirectoryNode node;
+					if (directoryNodeList.TryGetValue(Path.GetFileName(item.FileName), out node)) {
+						if (node.FileNodeStatus == FileNodeStatus.None) {
+							node.FileNodeStatus = FileNodeStatus.InProject;
+						}
+						node.ProjectItem = item;
+					}
+					continue;
+				}
 				FileProjectItem fileItem = item as FileProjectItem;
 				if (fileItem == null)
 					continue;
@@ -311,8 +368,9 @@ namespace ICSharpCode.SharpDevelop.Project
 						if (node.FileNodeStatus == FileNodeStatus.None) {
 							node.FileNodeStatus = FileNodeStatus.InProject;
 						}
+						node.ProjectItem = item;
 					} else {
-						node = new DirectoryNode(item.FileName.Trim('\\', '/'), FileNodeStatus.Missing);
+						node = DirectoryNodeFactory.CreateDirectoryNode(item, FileNodeStatus.Missing);
 						node.AddTo(this);
 						directoryNodeList[fileName] = node;
 					}

@@ -31,7 +31,6 @@ namespace ICSharpCode.SharpDevelop.Project
 				case "EmbeddedResource":
 				case "Resource":
 				case "Content":
-				case "WebReferences":
 				case "Folder":
 				case "BootstrapperFile":
 				case "ApplicationDefinition":
@@ -40,6 +39,9 @@ namespace ICSharpCode.SharpDevelop.Project
 				
 				case "WebReferenceUrl":
 					return new WebReferenceUrl(project);
+					
+				case "WebReferences":
+					return new WebReferencesProjectItem(project);
 					
 				default:
 					return new UnknownProjectItem(project, itemType);

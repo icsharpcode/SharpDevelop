@@ -1,287 +1,448 @@
-//// created on 10/11/2002 at 2:08 PM
-//
-//using System;
-//using System.Collections;
-//using System.IO;
-//using System.Text;
-//using System.Runtime.InteropServices;
-//using System.Diagnostics;
-//using System.Xml;
-//using System.Net;
-//using System.Web.Services.Description;
-//using System.CodeDom;
-//using System.CodeDom.Compiler;
-//using System.Reflection;
-//
-//using ICSharpCode.SharpDevelop.Project;
-//using ICSharpCode.Core;
-//
-//namespace ICSharpCode.SharpDevelop.Gui
-//{
-//	/// <summary>
-//	/// Summary description for WebReference.
-//	/// </summary>
-//	public class WebReference
-//	{	
-//		///
-//		/// <summary>Creates a ServiceDescription object from a valid URI</summary>
-//		/// 
-//		public static ServiceDescription ReadServiceDescription(string uri) {
-//			ServiceDescription desc = null;
-//			
-//			try {
-//				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-//				WebResponse response  = request.GetResponse();
-//			
-//				desc = ServiceDescription.Read(response.GetResponseStream());
-//				response.Close();
-//				desc.RetrievalUrl = uri;
-//			} catch (Exception) {				
-//				// possibly error reading WSDL?
-//				return null;
-//			} 		
-//			if(desc.Services.Count == 0)
-//				return null;
-//			
-//			return desc;
-//		}
-//		
-//		///
-//		/// <summary>Generates a valid directory from a URI</summary>
-//		/// 
-//		public static string GetDirectoryFromUri(string uri) {
-//			// TODO: construct the namespace using th URL in the WSDL
-//			string tmp = uri;
-//			if(uri.IndexOf("://") > -1) {
-//				tmp = uri.Substring(uri.IndexOf("://") + 3);
-//			}
-//			tmp = tmp.Substring(0, tmp.LastIndexOf("/"));			
-//			string[] dirs = tmp.Split(new Char[] {'/'});
-//						
-//			StringBuilder savedir = new StringBuilder();
-//			savedir.Append(dirs[0]);
-//		
-//			return savedir.ToString();
-//		}
-//		
-//		///
-//		/// <summary>Generates a valid Namespace from a URI</summary>
-//		/// 
-//		public static string GetNamespaceFromUri(string uri) {
-//			// TODO: construct the namespace using th URL in the WSDL
-//			string tmp = uri;
-//			if(uri.IndexOf("://") > -1) {
-//				tmp = uri.Substring(uri.IndexOf("://") + 3);
-//			}
-//			tmp = tmp.Substring(0, tmp.LastIndexOf("/"));			
-//			string[] dirs = tmp.Split(new Char[] {'/'});
-//											
-//			return(dirs[0]);			
-//		}
-//		
-////		public static ProjectReference GenerateWebProxyDLL(IProject project, ServiceDescription desc) {
-////			ProjectReference refInfo = null;
-////			
-////			string serviceName = String.Empty;
-////			if(desc.Services.Count > 0) {
-////				serviceName = desc.Services[0].Name;
-////			} else {
-////				serviceName = "UnknownService";
-////			}									
-////								
-////			string nmspace = GetNamespaceFromUri(desc.RetrievalUrl);
-////			
-////			StringBuilder savedir = new StringBuilder();
-////			savedir.Append(project.BaseDirectory);
-////			savedir.Append(Path.DirectorySeparatorChar);
-////			savedir.Append("WebReferences");			
-////			// second, create the path if it doesn't exist
-////			DirectoryInfo di;		
-////			if(!Directory.Exists(savedir.ToString()))
-////			{
-////				di = Directory.CreateDirectory(savedir.ToString());
-////			}
-////			
-////			// generate the assembly
-////			ServiceDescriptionImporter importer = new ServiceDescriptionImporter();
-////			importer.AddServiceDescription(desc, null, null);
-////			
-////			CodeNamespace codeNamespace = new CodeNamespace(nmspace);
-////			CodeCompileUnit codeUnit = new CodeCompileUnit();
-////			codeUnit.Namespaces.Add(codeNamespace);
-////			ServiceDescriptionImportWarnings warnings = importer.Import(codeNamespace, codeUnit);
-////			
-////			CodeDomProvider provider = new Microsoft.CSharp.CSharpCodeProvider();			
-////			System.CodeDom.Compiler.ICodeCompiler compiler;
-////			
-////			
-////			if(provider != null) {
-////				compiler = provider.CreateCompiler();
-////				CompilerParameters parms = new CompilerParameters();
-////				parms.ReferencedAssemblies.Add("System.Dll");
-////				parms.ReferencedAssemblies.Add("System.Xml.Dll");
-////				parms.ReferencedAssemblies.Add("System.Web.Services.Dll");
-////				parms.OutputAssembly = project.BaseDirectory + Path.DirectorySeparatorChar + "WebReferences" + Path.DirectorySeparatorChar + nmspace + ".Reference.Dll";
-////				CompilerResults results = compiler.CompileAssemblyFromDom(parms, codeUnit);
-////				Assembly assembly = results.CompiledAssembly;
-////				
-////				if(assembly != null) {
-////					refInfo = new ProjectReference();
-////					refInfo.ReferenceType = ReferenceType.Assembly;
-////					refInfo.Reference = parms.OutputAssembly;
-////				}
-////			}
-////			
-////			return refInfo;
-////		}
-////		
-////		///
-////		/// <summary>Generates a Web Service proxy DLL from a URI</summary>
-////		/// 
-////		public static ProjectReference GenerateWebProxyDLL(IProject project, string url) {
-////									
-////			ServiceDescription desc = ReadServiceDescription(url);						
-////			return GenerateWebProxyDLL(project, desc);
-////									
-////		}
-////		
-////		public static ArrayList GenerateWebProxyCode(IProject project, ServiceDescription desc) 
-////		{
-////			ArrayList fileList = null;
-////							 
-////			
-////			string serviceName = String.Empty;
-////			if(desc.Services.Count > 0) {
-////				serviceName = desc.Services[0].Name;
-////			} else {
-////				serviceName = "UnknownService";
-////			}									
-////			
-////			string webRefFolder = "Web References";
-////			string nmspace = GetNamespaceFromUri(desc.RetrievalUrl);
-////												
-////			StringBuilder savedir = new StringBuilder();
-////			savedir.Append(project.BaseDirectory);
-////			savedir.Append(Path.DirectorySeparatorChar);
-////			savedir.Append(webRefFolder);
-////			savedir.Append(Path.DirectorySeparatorChar);			
-////			savedir.Append(GetDirectoryFromUri(desc.RetrievalUrl) + Path.DirectorySeparatorChar + serviceName);
-////			
-////			// second, create the path if it doesn't exist
-////			DirectoryInfo di;		
-////			if(!Directory.Exists(savedir.ToString()))
-////			{
-////				di = Directory.CreateDirectory(savedir.ToString());
-////			}
-////			
-////			// generate the assembly
-////			ServiceDescriptionImporter importer = new ServiceDescriptionImporter();
-////			importer.AddServiceDescription(desc, null, null);
-////			
-////			CodeNamespace codeNamespace = new CodeNamespace(nmspace);
-////			CodeCompileUnit codeUnit = new CodeCompileUnit();
-////			codeUnit.Namespaces.Add(codeNamespace);
-////			ServiceDescriptionImportWarnings warnings = importer.Import(codeNamespace, codeUnit);
-////			
-////			CodeDomProvider provider;
-////			System.CodeDom.Compiler.ICodeGenerator generator;
-////			
-////			String ext = String.Empty;
-////			switch(project.ProjectType) {
-////				case "C#":
-////					provider = new Microsoft.CSharp.CSharpCodeProvider();
-////					ext = "cs";
-////					break;
-////				case "VBNET":
-////					provider = new Microsoft.VisualBasic.VBCodeProvider();					
-////					ext = "vb";
-////					break;
-////							
-////				default:
-////					// project type not supported error
-////					provider = null;			
-////					break;
-////			}
-////
-////			string filename = savedir.ToString() + Path.DirectorySeparatorChar + serviceName + "WebProxy." + ext;
-////			string wsdlfilename = savedir.ToString() + Path.DirectorySeparatorChar + serviceName + ".wsdl";
-////						
-////			if(provider != null) {				
-////				StreamWriter sw = new StreamWriter(filename);
-////
-////				generator = provider.CreateGenerator();
-////				CodeGeneratorOptions options = new CodeGeneratorOptions();
-////				options.BracingStyle = "C";
-////				generator.GenerateCodeFromCompileUnit(codeUnit, sw, options);
-////				sw.Close();
-////
-////				if(File.Exists(filename)) 
-////				{
-////					fileList = new ArrayList();
-////					
-////					// add project files to the list
-////					ProjectFile pfile = new ProjectFile();
-////					
-////					pfile.Name = project.BaseDirectory + Path.DirectorySeparatorChar + webRefFolder;
-////					pfile.BuildAction = BuildAction.Nothing;					
-////					pfile.Subtype = Subtype.WebReferences;
-////					pfile.DependsOn = String.Empty;
-////					pfile.Data = String.Empty;										
-////					fileList.Add(pfile);
-////					
-////					/*
-////					pfile = new ProjectFile();
-////					pfile.Name = project.BaseDirectory + @"\Web References\" + nmspace;
-////					pfile.BuildAction = BuildAction.Nothing;
-////					pfile.Subtype = Subtype.Directory;
-////					pfile.DependsOn = project.BaseDirectory + @"\Web References\";
-////					pfile.WebReferenceUrl = String.Empty;															
-////					fileList.Add(pfile);
-////					*/					
-////					/*
-////					pfile = new ProjectFile();
-////					pfile.Name = project.BaseDirectory + @"\Web References\" + nmspace + @"\" + serviceName;
-////					pfile.BuildAction = BuildAction.Nothing;
-////					pfile.Subtype = Subtype.Directory;
-////					pfile.DependsOn = project.BaseDirectory + @"\Web References\" + nmspace + @"\";
-////					pfile.WebReferenceUrl = desc.RetrievalUrl;
-////					fileList.Add(pfile);										
-////					*/
-////					// the Web Reference Proxy
-////					pfile = new ProjectFile();
-////					pfile.Name = filename;
-////					pfile.BuildAction = BuildAction.Compile;
-////					pfile.Subtype = Subtype.Code;
-////					pfile.DependsOn = project.BaseDirectory + Path.DirectorySeparatorChar + webRefFolder;
-////					pfile.Data = desc.RetrievalUrl;					
-////					fileList.Add(pfile);										
-////					
-////					// the WSDL File used to generate the Proxy
-////					desc.Write(wsdlfilename);
-////					pfile = new ProjectFile();
-////					pfile.Name = wsdlfilename;
-////					pfile.BuildAction = BuildAction.Nothing;
-////					pfile.Subtype = Subtype.Code;
-////					pfile.DependsOn = project.BaseDirectory + Path.DirectorySeparatorChar + webRefFolder;
-////					pfile.Data = desc.RetrievalUrl;
-////					fileList.Add(pfile);
-////				}
-////			}
-////			
-////			return fileList;
-////		}
-////		
-////		///
-////		/// <summary>Generates a Web Service proxy class from a URI</summary>
-////		/// 
-////		public static ArrayList GenerateWebProxyCode(IProject project, string url) {
-////			
-////			
-////			ServiceDescription desc = ReadServiceDescription(url);
-////			
-////			return GenerateWebProxyCode(project, desc);
-////			
-////			
-////		}
-//	}
-//}
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
+// </file>
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
+using System;
+using System.CodeDom;
+using System.CodeDom.Compiler;
+using System.Collections;
+using System.Collections.Generic;
+using System.IO;
+using System.Web.Services.Description;
+using System.Web.Services.Discovery;
+using System.Xml.Schema;
+using System.Xml.Serialization;
+
+namespace ICSharpCode.SharpDevelop.Gui
+{
+	public class WebReference
+	{	
+		List<ProjectItem> items;
+		string url = String.Empty;
+		string relativePath = String.Empty;
+		DiscoveryClientProtocol protocol;
+		IProject project;
+		string webReferencesDirectory = String.Empty;
+		string proxyNamespace = String.Empty;
+		string name = String.Empty;
+		WebReferenceUrl webReferenceUrl;
+		
+		public WebReference(IProject project, string url, string name, string proxyNamespace, DiscoveryClientProtocol protocol)
+		{
+			this.project = project;
+			this.url = url;
+			this.protocol = protocol;
+			this.proxyNamespace = proxyNamespace;
+			this.name = name;
+			GetRelativePath();
+		}
+			
+		public static bool ProjectContainsWebReferencesFolder(IProject project)
+		{
+			return GetWebReferencesProjectItem(project) != null;
+		}
+		
+		/// <summary>
+		/// Checks that the project has the System.Web.Services assembly referenced.
+		/// </summary>
+		/// <param name="project"></param>
+		/// <returns></returns>
+		public static bool ProjectContainsWebServicesReference(IProject project)
+		{
+			foreach (ProjectItem item in project.Items) {
+				if (item.ItemType == ItemType.Reference && item.Include != null) {
+					if (item.Include.Trim().StartsWith("System.Web.Services", StringComparison.InvariantCultureIgnoreCase)) {
+						return true;
+					}
+				}
+			}
+			return false;
+		}
+		
+		public static WebReferencesProjectItem GetWebReferencesProjectItem(IProject project)
+		{
+			return GetWebReferencesProjectItem(project.Items);
+		}
+		
+		/// <summary>
+		/// Returns the reference name.  If the folder that will contain the 
+		/// web reference already exists this method looks for a new folder by 
+		/// adding a digit to the end of the reference name.
+		/// </summary>
+		public static string GetReferenceName(string webReferenceFolder, string name)
+		{						
+			// If it is already in the project, or it does exists we get a new name.
+			int count = 1;
+			string referenceName = name;
+			string folder = Path.Combine(webReferenceFolder, name);
+			while (System.IO.Directory.Exists(folder)) {
+				referenceName = String.Concat(name, count.ToString());
+				folder = Path.Combine(webReferenceFolder, referenceName);
+				++count;
+			}	
+			return referenceName;
+		}
+		
+		/// <summary>
+		/// Gets all the file items that belong to the named web reference in
+		/// the specified project.
+		/// </summary>
+		/// <param name="name">The name of the web reference to look for.  This is
+		/// not the full path of the web reference, just the last folder's name.</param>
+		/// <remarks>
+		/// This method does not return the WebReferenceUrl project item only the 
+		/// files that are part of the web reference.
+		/// </remarks>
+		public static List<ProjectItem> GetFileItems(IProject project, string name)
+		{
+			List<ProjectItem> items = new List<ProjectItem>();
+						
+			// Find web references folder.
+			WebReferencesProjectItem webReferencesProjectItem = GetWebReferencesProjectItem(project);
+			if (webReferencesProjectItem != null) {
+				
+				// Look for files that are in the web reference folder.
+				string webReferenceDirectory = Path.Combine(Path.Combine(project.Directory, webReferencesProjectItem.Include), name);
+				foreach (ProjectItem item in project.Items) {
+					FileProjectItem fileItem = item as FileProjectItem;
+					if (fileItem != null) {
+						if (FileUtility.IsBaseDirectory(webReferenceDirectory, fileItem.FileName)) {
+							items.Add(fileItem);
+						}
+					}
+				}
+			}
+
+			return items;
+		}
+		
+		public WebReferencesProjectItem WebReferencesProjectItem {
+			get {
+				return GetWebReferencesProjectItem(Items);
+			}
+		}
+		
+		public WebReferenceUrl WebReferenceUrl {
+			get {
+				if (webReferenceUrl == null) {
+					items = CreateProjectItems();
+				}
+				return webReferenceUrl;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the web references directory which is the parent folder for 
+		/// this web reference.
+		/// </summary>
+		public string WebReferencesDirectory {
+			get {
+				return webReferencesDirectory;
+			}
+		}
+		
+		/// <summary>
+		/// Gets the directory where the web reference files will be saved.
+		/// </summary>
+		public string Directory {
+			get {
+				return Path.Combine(project.Directory, relativePath);
+			}
+		}
+		
+		/// <summary>
+		/// Gets or sets the name of the web reference.
+		/// </summary>
+		/// <remarks>
+		/// Changing the name will also change the directory where the
+		/// web reference files are saved.
+		/// </remarks>
+		public string Name {
+			get {
+				return name;
+			}
+			set {
+				name = value;
+				OnNameChanged();
+			}
+		}
+		
+		public List<ProjectItem> Items {
+			get {
+				if (items == null) {
+					items = CreateProjectItems();
+				}
+				return items;
+			}
+		}
+		
+		public string WebProxyFileName {
+			get {
+				return GetFullProxyFileName();
+			}
+		}
+		
+		/// <summary>
+		/// Gets the changes that this web reference has undergone after being
+		/// refreshed.
+		/// </summary>
+		public WebReferenceChanges GetChanges(IProject project)
+		{
+			WebReferenceChanges changes = new WebReferenceChanges();
+			
+			List<ProjectItem> existingItems = GetFileItems(project, name);
+			
+			// Check for new items.
+			changes.NewItems.AddRange(GetNewItems(existingItems));
+			
+			// Check for removed items.
+			changes.ItemsRemoved.AddRange(GetRemovedItems(existingItems));
+			
+			return changes;
+		}
+		
+		public void Save()
+		{
+			System.IO.Directory.CreateDirectory(Directory);
+			GenerateWebProxy();
+			protocol.WriteAll(Directory, "Reference.map");
+		}
+		
+		ServiceDescriptionCollection GetServiceDescriptionCollection(DiscoveryClientProtocol protocol)
+		{
+			ServiceDescriptionCollection services = new ServiceDescriptionCollection();
+			foreach (DictionaryEntry entry in protocol.References) {
+				ContractReference contractRef = entry.Value as ContractReference;
+				DiscoveryDocumentReference discoveryRef = entry.Value as DiscoveryDocumentReference;
+				if (contractRef != null) {
+					services.Add(contractRef.Contract);
+				}
+			}
+			return services;
+		}
+		
+		XmlSchemas GetXmlSchemas(DiscoveryClientProtocol protocol)
+		{
+			XmlSchemas schemas = new XmlSchemas();
+			foreach (DictionaryEntry entry in protocol.References) {
+				SchemaReference schemaRef = entry.Value as SchemaReference;
+				if (schemaRef != null) {
+					schemas.Add(schemaRef.Schema);
+				}
+			}
+			return schemas;
+		}
+		
+		void GenerateWebProxy()
+		{
+			GenerateWebProxy(proxyNamespace, GetFullProxyFileName(), GetServiceDescriptionCollection(protocol), GetXmlSchemas(protocol));
+		}
+		
+		static void GenerateWebProxy(string proxyNamespace, string fileName, ServiceDescriptionCollection serviceDescriptions, XmlSchemas schemas)
+		{
+			ServiceDescriptionImporter importer = new ServiceDescriptionImporter();
+			
+			foreach (ServiceDescription description in serviceDescriptions) {
+				importer.AddServiceDescription(description, null, null);
+			}
+			
+			foreach (XmlSchema schema in schemas) {
+				importer.Schemas.Add(schema);
+			}
+			
+			CodeNamespace codeNamespace = new CodeNamespace(proxyNamespace);
+			CodeCompileUnit codeUnit = new CodeCompileUnit();
+			codeUnit.Namespaces.Add(codeNamespace);
+			ServiceDescriptionImportWarnings warnings = importer.Import(codeNamespace, codeUnit);
+			
+			CodeDomProvider provider;
+			
+			switch(Path.GetExtension(fileName).ToLower()) {
+				case ".cs":
+					provider = new Microsoft.CSharp.CSharpCodeProvider();
+					break;
+				case ".vb":
+					provider = new Microsoft.VisualBasic.VBCodeProvider();					
+					break;
+							
+				default:
+					// extension not supported
+					provider = null;			
+					break;
+			}
+			
+			if(provider != null) {				
+				StreamWriter sw = new StreamWriter(fileName);
+				CodeGeneratorOptions options = new CodeGeneratorOptions();
+				options.BracingStyle = "C";
+				provider.GenerateCodeFromCompileUnit(codeUnit, sw, options);
+				sw.Close();
+			}
+		}
+		
+		string GetFullProxyFileName()
+		{
+			return Path.Combine(project.Directory, GetProxyFileName());
+		}
+		
+		string GetProxyFileName()
+		{
+			string fileName = String.Concat("Reference", GetProxyFileNameExtension(project.Language));
+			return Path.Combine(relativePath, fileName);
+		}
+		
+		string GetProxyFileNameExtension(string language)
+		{
+			switch (language) {
+				case "C#":
+					return ".cs";
+				case "VBNet":
+					return ".vb";
+				default:
+					throw new NotImplementedException(String.Concat("Unhandled language: ", language));
+			}
+		}
+		
+		static WebReferencesProjectItem GetWebReferencesProjectItem(List<ProjectItem> items)
+		{
+			foreach (ProjectItem item in items) {
+				if (item.ItemType == ItemType.WebReferences) {
+					return (WebReferencesProjectItem)item;
+				}
+			}
+			return null;
+		}
+		
+		/// <summary>
+		/// Updates the various relative paths due to the change in the web
+		/// reference name.
+		/// </summary>
+		void OnNameChanged()
+		{
+			GetRelativePath();
+			
+			if (items != null) {
+				items = CreateProjectItems();
+			}
+		}
+		
+		/// <summary>
+		/// Gets the web references relative path.
+		/// </summary>
+		void GetRelativePath()
+		{
+			ProjectItem webReferencesProjectItem = GetWebReferencesProjectItem(project);
+			string webReferencesDirectoryName;
+			if (webReferencesProjectItem != null) {
+				webReferencesDirectoryName = webReferencesProjectItem.Include.Trim('\\', '/');
+			} else {
+				webReferencesDirectoryName = "Web References";
+			}
+			webReferencesDirectory = Path.Combine(project.Directory, webReferencesDirectoryName);
+			relativePath = Path.Combine(webReferencesDirectoryName, name);
+		}
+		
+		List<ProjectItem> CreateProjectItems()
+		{
+			List<ProjectItem> items = new List<ProjectItem>();
+				
+			// Web references item.
+			if (!ProjectContainsWebReferencesFolder(project)) {
+				WebReferencesProjectItem webReferencesItem = new WebReferencesProjectItem(project);
+				webReferencesItem.Include = "Web References\\";
+				items.Add(webReferencesItem);
+			}
+			
+			// Web reference url.
+			webReferenceUrl = new WebReferenceUrl(project);
+			webReferenceUrl.Include = url;
+			webReferenceUrl.UpdateFromURL = url;
+			webReferenceUrl.RelPath = relativePath;
+			items.Add(webReferenceUrl);
+			
+			// References.
+			foreach (DictionaryEntry entry in protocol.References) {
+				DiscoveryReference discoveryRef = entry.Value as DiscoveryReference;
+				if (discoveryRef != null) {
+					FileProjectItem item = new FileProjectItem(project, ItemType.None);
+					item.Include = Path.Combine(relativePath, discoveryRef.DefaultFilename);
+					items.Add(item);
+				}
+			}
+			
+			// Proxy
+			FileProjectItem proxyItem = new FileProjectItem(project, ItemType.Compile);
+			proxyItem.Include = GetProxyFileName();
+			proxyItem.Properties.Set("AutoGen", "True");
+			proxyItem.Properties.Set("DesignTime", "True");
+			proxyItem.DependentUpon = "Reference.map";
+			items.Add(proxyItem);
+			
+			// Reference map.
+			FileProjectItem mapItem = new FileProjectItem(project, ItemType.None);
+			mapItem.Include = Path.Combine(relativePath, "Reference.map");
+			mapItem.Properties.Set("Generator", "MSDiscoCodeGenerator");
+			mapItem.Properties.Set("LastGenOutput", "Reference.cs");
+			items.Add(mapItem);
+			
+			// System.Web.Services reference.
+			if (!ProjectContainsWebServicesReference(project)) {
+				ReferenceProjectItem webServicesReferenceItem = new ReferenceProjectItem(project, "System.Web.Services");
+				items.Add(webServicesReferenceItem);
+			}
+			return items;
+		}
+		
+		/// <summary>
+		/// Checks the file project items against the file items this web reference
+		/// has and adds any items that do not exist in the project.
+		/// </summary>
+		List<ProjectItem> GetNewItems(List<ProjectItem> projectWebReferenceItems)
+		{
+			List<ProjectItem> newItems = new List<ProjectItem>();
+			
+			foreach (ProjectItem item in Items) {
+				if (item is WebReferenceUrl) {
+					// Ignore.
+				} else if (!ContainsFileName(projectWebReferenceItems, item.FileName)) {
+					newItems.Add(item);
+				}
+			}
+			
+			return newItems;
+		}
+		
+		/// <summary>
+		/// Checks the file project items against the file items this web reference
+		/// has and adds any items that have been removed but still exist in the 
+		/// project.
+		/// </summary>
+		List<ProjectItem> GetRemovedItems(List<ProjectItem> projectWebReferenceItems)
+		{
+			List<ProjectItem> removedItems = new List<ProjectItem>();
+			
+			foreach (ProjectItem item in projectWebReferenceItems) {
+				if (!ContainsFileName(Items, item.FileName)) {
+					removedItems.Add(item);
+				}
+			}
+			
+			return removedItems;
+		}
+		
+		static bool ContainsFileName(List<ProjectItem> items, string fileName)
+		{
+			foreach (ProjectItem item in items) {
+				if (FileUtility.IsEqualFileName(item.FileName, fileName)) {
+					return true;
+				}
+			}
+			return false;
+		}
+	}
+}

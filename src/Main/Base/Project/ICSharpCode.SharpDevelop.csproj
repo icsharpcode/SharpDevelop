@@ -235,7 +235,6 @@
     <Compile Include="Src\Gui\Dialogs\OptionPanels\IDEOptions\SelectStylePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AddWebReferenceDialog.cs" />
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AssemblyReferencePanel.cs">
       <SubType>Component</SubType>
     </Compile>
@@ -734,6 +733,13 @@
     <Compile Include="Src\Gui\Pads\TaskList\TaskListPad.cs" />
     <Compile Include="Src\Project\MSBuildFile.cs" />
     <Compile Include="Src\Gui\FormLocationHelper.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\AddWebReferenceDialog.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\WebServicesView.cs" />
+    <Compile Include="Src\Project\Items\WebReferencesProjectItem.cs" />
+    <Compile Include="Src\Gui\Pads\ProjectBrowser\NodeBuilder\WebReferenceNodeBuilder.cs" />
+    <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\WebReferencesFolderNode.cs" />
+    <Compile Include="Src\Gui\Pads\ProjectBrowser\TreeNodes\WebReferenceNode.cs" />
+    <Compile Include="Src\Gui\Dialogs\ReferenceDialog\WebReferenceChanges.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\CodeGenerationForm.cs" />
   </ItemGroup>
   <ItemGroup>

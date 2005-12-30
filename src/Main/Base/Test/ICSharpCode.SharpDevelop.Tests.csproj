@@ -36,6 +36,7 @@
     <Reference Include="System.Drawing" />
     <Reference Include="System.Windows.Forms" />
     <Reference Include="System.Xml" />
+    <Reference Include="System.Web.Services, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AssemblyInfo.cs" />
@@ -48,6 +49,20 @@
     <Compile Include="OverloadFinding.cs" />
     <Compile Include="SearchGenericClassTests.cs" />
     <Compile Include="MemberLookupHelperTests.cs" />
+    <Compile Include="WebReferences\WebReferenceProjectItemsTest.cs" />
+    <Compile Include="WebReferences\ProjectHasExistingWebRefFolderTest.cs" />
+    <Compile Include="WebReferences\VBNetWebReferenceTest.cs" />
+    <Compile Include="WebReferences\WebReferenceTestHelper.cs" />
+    <Compile Include="WebReferences\UnsupportedLanguageTest.cs" />
+    <Compile Include="WebReferences\WebReferenceFolderAlreadyExistsTest.cs" />
+    <Compile Include="WebReferences\RenamedWebReferencesFolderTest.cs" />
+    <Compile Include="WebReferences\IsWebReferencesFolderTests.cs" />
+    <Compile Include="WebReferences\WebReferenceProjectItemsCachedTest.cs" />
+    <Compile Include="WebReferences\DirectoryNodeFactoryTests.cs" />
+    <Compile Include="WebReferences\WebReferenceUrlTests.cs" />
+    <Compile Include="WebReferences\WebServicesReferenceExistsTests.cs" />
+    <Compile Include="WebReferences\ProjectWebReferenceItemsTests.cs" />
+    <Compile Include="WebReferences\WebReferenceChangesTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\ICSharpCode.SharpDevelop.csproj">
@@ -87,6 +102,7 @@
       <Link>ICSharpCode.TextEditor.dll</Link>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
+    <Folder Include="WebReferences" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

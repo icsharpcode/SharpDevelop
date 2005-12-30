@@ -283,6 +283,9 @@
 		<MenuItem id    = "AddReference"
 		          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
+		<MenuItem id    = "AddWebReference"
+		          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
 		<MenuItem id = "AddSeparator" type = "Separator"/>
 		<Include id = "ProjectActions" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions"/>
 		<MenuItem id = "Separator2" type = "Separator"/>
@@ -334,6 +337,9 @@
 		<MenuItem id    = "AddReference"
 		          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
+		<MenuItem id    = "AddWebReference"
+		          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
 	</Path>
 	
 	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/FileNode">
@@ -503,6 +509,68 @@
 			          label    = "${res:ProjectComponent.ContextMenu.Rename}"
 			          shortcut = "F2"
 			          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WebReferencesFolderNode">
+		<Condition name = "Ownerstate" ownerstate = "Missing">
+			<MenuItem id = "RemoveMissing"
+			          label = "${res:Global.RemoveButtonText}"
+			          type  = "Item"
+			          icon  = "Icons.16x16.DeleteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+		</Condition>
+		<ComplexCondition>
+			<Not>
+				<Condition name = "Ownerstate" ownerstate = "Missing"/>
+			</Not>			
+			<MenuItem id    = "AddWebReference"
+		              label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
+		              class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
+			<MenuItem id = "AddSeparator" type = "Separator"/>
+			<MenuItem id = "Delete"
+			          label = "${res:XML.MainMenu.EditMenu.Delete}"
+			          type = "Item"
+			          icon  = "Icons.16x16.DeleteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+			<MenuItem id = "Rename"
+			          label    = "${res:ProjectComponent.ContextMenu.Rename}"
+			          shortcut = "F2"
+			          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+		</ComplexCondition>
+	</Path>
+	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/WebReferenceNode">
+		<Condition name = "Ownerstate" ownerstate = "Missing">
+			<MenuItem id = "RemoveMissing"
+			          label = "${res:Global.RemoveButtonText}"
+			          type  = "Item"
+			          icon  = "Icons.16x16.DeleteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+		</Condition>
+		<ComplexCondition>
+			<Not>
+				<Condition name = "Ownerstate" ownerstate = "Missing"/>
+			</Not>		
+			<MenuItem id = "Refresh"
+	                  label = "${res:ProjectComponent.ContextMenu.RefreshWebReference}" 
+			          type = "Item"
+	                  class = "ICSharpCode.SharpDevelop.Project.Commands.RefreshWebReference"/>
+			<MenuItem id = "RefreshSeparator" type = "Separator" />
+			<MenuItem id = "Delete"
+			          label = "${res:XML.MainMenu.EditMenu.Delete}"
+			          type = "Item"
+			          icon  = "Icons.16x16.DeleteIcon"
+			          class = "ICSharpCode.SharpDevelop.Project.Commands.DeleteProjectBrowserNode"/>
+			<MenuItem id = "Rename"
+			          label    = "${res:ProjectComponent.ContextMenu.Rename}"
+			          shortcut = "F2"
+			          class    = "ICSharpCode.SharpDevelop.Project.Commands.RenameEntryEvent"/>
+			<MenuItem id = "PropertiesSeparator" type = "Separator" />
+			<MenuItem id = "Properties"
+		          icon  = "Icons.16x16.PropertiesIcon"
+		          label = "${res:XML.MainMenu.FormatMenu.ShowProperties}"
+		          class = "ICSharpCode.SharpDevelop.Project.Commands.ShowPropertiesForNode"/>
 		</ComplexCondition>
 	</Path>
 	

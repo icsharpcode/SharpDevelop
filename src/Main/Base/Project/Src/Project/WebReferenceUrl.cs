@@ -5,7 +5,10 @@
 //     <version>$Revision$</version>
 // </file>
 
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Gui;
 using System;
+using System.ComponentModel;
 using System.IO;
 using System.Reflection;
 using System.Net;
@@ -21,6 +24,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[ReadOnly(true)]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.UrlBehaviour}", 
+		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.UrlBehaviour.Description}")]
 		public string UrlBehavior {
 			get {
 				return base.Properties["UrlBehavior"];
@@ -30,6 +36,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string RelPath {
 			get {
 				return base.Properties["RelPath"];
@@ -39,6 +46,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[ReadOnly(true)]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.WebReferenceUrl}", 
+		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.WebReferenceUrl.Description}")]
 		public string UpdateFromURL {
 			get {
 				return base.Properties["UpdateFromURL"];
@@ -48,6 +58,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string ServiceLocationURL {
 			get {
 				return base.Properties["ServiceLocationURL"];
@@ -57,6 +68,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string CachedDynamicPropName {
 			get {
 				return base.Properties["CachedDynamicPropName"];
@@ -66,6 +78,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string CachedAppSettingsObjectName {
 			get {
 				return base.Properties["CachedAppSettingsObjectName"];
@@ -75,6 +88,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string CachedSettingsPropName {
 			get {
 				return base.Properties["CachedSettingsPropName"];
@@ -84,33 +98,23 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		public override string FileName {
+			get {
+				if (Project != null && RelPath != null) {
+					return Path.Combine(Project.Directory, RelPath.Trim('\\'));
+				}
+				return null;
+			}
+			set {
+				if (Project != null) {
+					RelPath = FileUtility.GetRelativePath(Project.Directory, value);
+				}
+			}
+		}
+		
 		public WebReferenceUrl(IProject project) : base(project)
 		{
+			UrlBehavior = "Static";
 		}
-		
-		/// <summary>
-		/// Creates a ServiceDescription object from a valid URI
-		/// </summary>
-		public static ServiceDescription ReadServiceDescription(string uri) 
-		{
-			ServiceDescription desc = null;
-			
-			try {
-				HttpWebRequest request = (HttpWebRequest)WebRequest.Create(uri);
-				WebResponse response  = request.GetResponse();
-			
-				desc = ServiceDescription.Read(response.GetResponseStream());
-				response.Close();
-				desc.RetrievalUrl = uri;
-			} catch (Exception) {				
-				// possibly error reading WSDL?
-				return null;
-			} 		
-			if(desc.Services.Count == 0)
-				return null;
-			
-			return desc;
-		}
-		
 	}
 }

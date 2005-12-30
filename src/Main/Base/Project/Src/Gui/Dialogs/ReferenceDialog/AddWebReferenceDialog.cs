@@ -1,640 +1,699 @@
-//// created on 10/11/2002 at 2:06 PM
-//
-//using System;
-//using System.IO;
-//using System.Drawing;
-//using System.Collections;
-//using System.ComponentModel;
-//using System.Windows.Forms;
-//using System.Data;
-//using System.Xml;
-//using System.Xml.Xsl;
-//using System.CodeDom.Compiler;
-//using WeifenLuo.WinFormsUI;
-//using System.Web.Services.Description;
-//
-//using ICSharpCode.SharpDevelop.Gui;
-//using ICSharpCode.Core;
-//using ICSharpCode.SharpDevelop.Project;
-//using ICSharpCode.SharpDevelop.BrowserDisplayBinding;
-//
-//namespace ICSharpCode.SharpDevelop.Gui
-//{
-//	/// <summary>
-//	/// Summary description for Form1.
-//	/// </summary>
-//	public class AddWebReferenceDialog : System.Windows.Forms.Form
-//	{
-//		private System.Windows.Forms.Panel panel1;
-//		private System.Windows.Forms.Panel panel2;		
-//		private System.Windows.Forms.Button btnBack;
-//		private System.Windows.Forms.Button btnForward;
-//		private System.Windows.Forms.Button btnRefresh;
-//		private System.Windows.Forms.Button btnAbort;
-//		private System.Windows.Forms.Button btnGo;
-//		private System.Windows.Forms.ComboBox cboUrl;
-//		private System.Windows.Forms.Button btnAdd;
-//		private System.Windows.Forms.Button btnCancel;
-////		private WeifenLuo.WinFormsUI.TabControl tabControl1;
-////		private WeifenLuo.WinFormsUI.TabPage tabPage1;
-////		private WeifenLuo.WinFormsUI.TabPage tabPage2;
-//		private System.Windows.Forms.Label label1;
-//		
-//		private System.Windows.Forms.Panel panel3;
-//		private System.Windows.Forms.PictureBox pictureBox2;
-//		private System.Windows.Forms.PictureBox pictureBox1;
-//		private System.Windows.Forms.TreeView treeView1;
-//		private System.Windows.Forms.Splitter splitter1;
-//		private System.Windows.Forms.ListView listView1;
-//		private System.Windows.Forms.ColumnHeader header1;
-//		private System.Windows.Forms.ColumnHeader header2;
-//		private System.Windows.Forms.ImageList imgList;
-//		private System.Windows.Forms.CheckBox checkBox1;
-//		
-//		System.Windows.Forms.WebBrowser axBrowser;
-//			
-//		private System.Windows.Forms.ToolTip tips;
-//		/// <summary>
-//		/// Required designer variable.
-//		/// </summary>
-//		private System.ComponentModel.Container components = null;
-//
-//		private IProject project = null;
-//		private TempFileCollection tempFiles = new TempFileCollection();
-//	
-//		ArrayList referenceInformations = new ArrayList();
-//		public ArrayList ReferenceInformations 
-//		{
-//			get {																		
-//				return referenceInformations;
-//			}
-//		}
-//
-//		public AddWebReferenceDialog(IProject p)
-//		{			
-//			//
-//			// Required for Windows Form Designer support
-//			//
-//			InitializeComponent();
-//
-//			//
-//			// TODO: Add any constructor code after InitializeComponent call
-//			//
-//			this.project = p;
-//		}
-//
-//		/// <summary>
-//		/// Clean up any resources being used.
-//		/// </summary>
-//		protected override void Dispose( bool disposing )
-//		{
-//			if( disposing )
-//			{
-//				if (components != null) 
-//				{
-//					components.Dispose();
-//				}
-//			}
-//			base.Dispose( disposing );
-//		}
-//				
-//		private void InitializeComponent()
-//		{
-//			this.tips = new System.Windows.Forms.ToolTip();
-//			this.panel1 = new System.Windows.Forms.Panel();
-//			this.cboUrl = new System.Windows.Forms.ComboBox();
-//			this.btnGo = new System.Windows.Forms.Button();
-//			this.btnRefresh = new System.Windows.Forms.Button();
-//			this.btnBack = new System.Windows.Forms.Button();
-//			this.btnForward = new System.Windows.Forms.Button();
-//			this.btnAbort = new System.Windows.Forms.Button();
-//			this.panel2 = new System.Windows.Forms.Panel();
-//			this.btnCancel = new System.Windows.Forms.Button();
-//			this.btnAdd = new System.Windows.Forms.Button();
-//			this.axBrowser = new WebBrowser();			
-//			this.tabControl1 = new WeifenLuo.WinFormsUI.TabControl();
-//			this.tabPage1 = new WeifenLuo.WinFormsUI.TabPage();
-//			this.tabPage2 = new WeifenLuo.WinFormsUI.TabPage();
-//			this.label1 = new System.Windows.Forms.Label();
-//			this.panel3 = new System.Windows.Forms.Panel();
-//			this.pictureBox2 = new System.Windows.Forms.PictureBox();
-//			this.pictureBox1 = new System.Windows.Forms.PictureBox();
-//			this.treeView1 = new System.Windows.Forms.TreeView();
-//			this.splitter1 = new System.Windows.Forms.Splitter();
-//			this.listView1 = new System.Windows.Forms.ListView();
-//			this.imgList = new System.Windows.Forms.ImageList();
-//			this.checkBox1 = new System.Windows.Forms.CheckBox();
-//						
-//			this.panel1.SuspendLayout();
-//			this.panel2.SuspendLayout();
-//			this.tabPage1.SuspendLayout();
-//			this.panel3.SuspendLayout();			
-//			((System.ComponentModel.ISupportInitialize)(this.axBrowser)).BeginInit();
-//			this.SuspendLayout();
-//									
-//			// 
-//			// panel1
-//			// 
-//			this.panel1.Controls.AddRange(new System.Windows.Forms.Control[] {
-//																				 this.cboUrl,
-//																				 this.label1,																				 
-//																				 this.btnGo,
-//																				 this.btnRefresh,
-//																				 this.btnAbort,
-//																				 this.btnForward,
-//																				 this.btnBack});
-//			this.panel1.Dock = System.Windows.Forms.DockStyle.Top;
-//			this.panel1.Name = "panel1";
-//			this.panel1.Size = new System.Drawing.Size(486, 23);
-//			this.panel1.TabIndex = 1;
-//			// 
-//			// label1
-//			// 
-//			this.label1.Dock = System.Windows.Forms.DockStyle.Left;
-//			this.label1.Location = new System.Drawing.Point(112, 0);
-//			this.label1.Name = "label1";
-//			this.label1.Size = new System.Drawing.Size(84, 23);
-//			this.label1.TabIndex = 5;
-//			this.label1.Text = "Address:";
-//			this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
-//			
-//			//
-//			// cboUrl
-//			// 
-//			this.cboUrl.Dock = System.Windows.Forms.DockStyle.Fill;
-//			//this.cboUrl.Location = new System.Drawing.Point(103, 0);
-//			this.cboUrl.Name = "cboUrl";
-//			//this.cboUrl.Size = new System.Drawing.Size(346, 23);
-//			this.cboUrl.TabIndex = 4;
-//			// for testing only
-//			this.cboUrl.Text = "http://www.learnxmlws.com/services/weatherRetriever.asmx?WSDL";
-//			// 
-//			// btnGo
-//			// 
-//			this.btnGo.Dock = System.Windows.Forms.DockStyle.Right;
-//			this.btnGo.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-//			this.btnGo.Location = new System.Drawing.Point(449, 0);
-//			this.btnGo.Image = ResourceService.GetBitmap("Icons.16x16.SelectionArrow");
-//			this.btnGo.Name = "btnGo";
-//			this.btnGo.Size = new System.Drawing.Size(28, 23);
-//			this.btnGo.TabIndex = 3;
-//			this.btnGo.Text = String.Empty;
-//			this.btnGo.Click += new System.EventHandler(this.btnGo_Click);
-//			this.tips.SetToolTip(btnGo, "GO");
-//			// 
-//			// btnRefresh
-//			// 
-//			this.btnRefresh.Dock = System.Windows.Forms.DockStyle.Left;
-//			this.btnRefresh.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-//			this.btnRefresh.Image = ResourceService.GetBitmap("Icons.16x16.BrowserRefresh");
-//			this.btnRefresh.Location = new System.Drawing.Point(75, 0);
-//			this.btnRefresh.Name = "btnRefresh";
-//			this.btnRefresh.Size = new System.Drawing.Size(28, 23);
-//			this.btnRefresh.TabIndex = 1;
-//			this.btnRefresh.Click += new System.EventHandler(this.btnRefresh_Click);
-//			this.tips.SetToolTip(btnRefresh, "Refresh");
-//			// 
-//			// btnBack
-//			// 
-//			this.btnBack.Dock = System.Windows.Forms.DockStyle.Left;
-//			this.btnBack.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-//			this.btnBack.Image = ResourceService.GetBitmap("Icons.16x16.BrowserBefore");
-//			this.btnBack.Name = "btnBack";
-//			this.btnBack.Size = new System.Drawing.Size(28,23);
-//			this.btnBack.TabIndex = 0;
-//			this.btnBack.Text = String.Empty;
-//			this.btnBack.Click += new System.EventHandler(this.btnBack_Click);
-//			this.tips.SetToolTip(btnBack, "Back");
-//			// 
-//			// btnForward
-//			// 
-//			this.btnForward.Dock = System.Windows.Forms.DockStyle.Left;
-//			this.btnForward.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-//			this.btnForward.Image = ResourceService.GetBitmap("Icons.16x16.BrowserAfter");
-//			this.btnForward.Name = "btnForward";
-//			this.btnForward.Size = new System.Drawing.Size(28,23);
-//			this.btnForward.TabIndex = 0;
-//			this.btnForward.Text = String.Empty;
-//			this.btnForward.Click += new System.EventHandler(this.btnForward_Click);
-//			this.tips.SetToolTip(btnForward, "Forward");
-//			// 
-//			// btnAbort
-//			// 
-//			this.btnAbort.Dock = System.Windows.Forms.DockStyle.Left;
-//			this.btnAbort.FlatStyle = System.Windows.Forms.FlatStyle.Popup;
-//			this.btnAbort.Image = ResourceService.GetBitmap("Icons.16x16.BrowserCancel");
-//			this.btnAbort.Name = "btnAbort";
-//			this.btnAbort.Size = new System.Drawing.Size(28,23);
-//			this.btnAbort.TabIndex = 0;
-//			this.btnAbort.Text = String.Empty;
-//			this.btnAbort.Click += new System.EventHandler(this.btnAbort_Click);
-//			this.tips.SetToolTip(btnAbort, "Stop");
-//			// 
-//			// panel2
-//			// 
-//			this.panel2.Controls.AddRange(new System.Windows.Forms.Control[] {
-//																				 this.checkBox1,
-//																				 this.btnCancel,
-//																				 this.btnAdd});
-//			this.panel2.Dock = System.Windows.Forms.DockStyle.Bottom;
-//			this.panel2.Location = new System.Drawing.Point(0, 303);
-//			this.panel2.Name = "panel2";
-//			this.panel2.Size = new System.Drawing.Size(486, 39);
-//			this.panel2.TabIndex = 2;
-//			// 
-//			// btnCancel
-//			// 
-//			this.btnCancel.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right);
-//			this.btnCancel.Location = new System.Drawing.Point(404, 10);
-//			this.btnCancel.FlatStyle = FlatStyle.Flat;
-//			this.btnCancel.Name = "btnCancel";
-//			this.btnCancel.TabIndex = 1;
-//			this.btnCancel.Text = "Cancel";
-//			this.btnCancel.Click += new System.EventHandler(this.btnCancel_Click);
-//			// 
-//			// btnAdd
-//			// 
-//			this.btnAdd.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right);
-//			this.btnAdd.Enabled = false;
-//			this.btnAdd.FlatStyle = FlatStyle.Flat;
-//			this.btnAdd.Location = new System.Drawing.Point(280, 10);
-//			this.btnAdd.Name = "btnAdd";
-//			this.btnAdd.Size = new System.Drawing.Size(120, 23);
-//			this.btnAdd.TabIndex = 0;
-//			this.btnAdd.Text = "Add Web Reference";
-//			this.btnAdd.Click += new System.EventHandler(this.btnAdd_Click);
-//			this.btnAdd.DialogResult = DialogResult.OK;
-//			// 
-//			// axBrowser
-//			// 
-//			this.axBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
-//			this.axBrowser.Enabled = true;
-//			this.axBrowser.Location = new System.Drawing.Point(0, 23);
-//			//this.axBrowser.OcxState = ((System.Windows.Forms.AxHost.State)(resources.GetObject("axBrowser.OcxState")));
-//			this.axBrowser.Size = new System.Drawing.Size(336, 280);
-//			this.axBrowser.TabIndex = 3;
-//			this.axBrowser.Navigated     += new WebBrowserNavigatedEventHandler(this.axBrowser_NavigateComplete2);
-////			this.axBrowser.NavigateError += new DWebBrowserEvents2_NavigateErrorEventHandler(this.axBrowser_NavigateError);
-//			this.axBrowser.Navigating    += new WebBrowserNavigatedEventHandler(this.axBrowser_BeforeNavigate2);
-//			
-//			// 
-//			// tabControl1
-//			// 
-//			this.tabControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-//			this.tabControl1.HideTabsMode = WeifenLuo.WinFormsUI.TabControl.HideTabsModes.ShowAlways;
-//			this.tabControl1.Location = new System.Drawing.Point(0, 23);
-//			this.tabControl1.Name = "tabControl1";
-//			this.tabControl1.SelectedIndex = 0;
-//			this.tabControl1.SelectedTab = this.tabPage1;
-//			this.tabControl1.Size = new System.Drawing.Size(486, 280);
-//			this.tabControl1.TabIndex = 4;
-//			this.tabControl1.TabPages.AddRange(new WeifenLuo.WinFormsUI.TabPage[] {
-//																						  this.tabPage1,
-//																						  this.tabPage2});
-//			
-//			// 
-//			// panel3
-//			// 
-//			this.panel3.Controls.AddRange(new System.Windows.Forms.Control[] {
-//																				 this.pictureBox2,
-//																				 this.pictureBox1});
-//			this.panel3.Dock = System.Windows.Forms.DockStyle.Top;
-//			this.panel3.Name = "panel3";
-//			this.panel3.Size = new System.Drawing.Size(759, 88);
-//			this.panel3.TabIndex = 2;
-//			// 
-//			// pictureBox2
-//			// 
-//			this.pictureBox2.BackgroundImage = ResourceService.GetBitmap("GradientTop");
-//			this.pictureBox2.Dock = System.Windows.Forms.DockStyle.Fill;
-//			this.pictureBox2.Location = new System.Drawing.Point(226, 0);
-//			this.pictureBox2.Name = "pictureBox2";
-//			this.pictureBox2.Size = new System.Drawing.Size(533, 88);
-//			this.pictureBox2.TabIndex = 3;
-//			this.pictureBox2.TabStop = false;
-//			// 
-//			// pictureBox1
-//			// 
-//			this.pictureBox1.Dock = System.Windows.Forms.DockStyle.Left;
-//			this.pictureBox1.Image = ResourceService.GetBitmap("WebReferencesDialog");
-//			this.pictureBox1.Name = "pictureBox1";
-//			this.pictureBox1.Size = new System.Drawing.Size(226, 88);
-//			this.pictureBox1.TabIndex = 2;
-//			this.pictureBox1.TabStop = false;
-//			//
-//			// imgList
-//			//
-//			this.imgList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Assembly"));
-//			this.imgList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Assembly"));
-//			this.imgList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Class"));
-//			this.imgList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Class"));
-//			this.imgList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Interface"));
-//			this.imgList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Interface"));
-//			this.imgList.Images.Add(ResourceService.GetBitmap("Icons.16x16.Library"));
-//			
-//			//
-//			// treeView1
-//			// 						
-//			this.treeView1.LabelEdit = false;			
-//			this.treeView1.ImageList = this.imgList;
-//			this.treeView1.ShowRootLines = false;
-//			this.treeView1.HotTracking = true;
-//			this.treeView1.Cursor = Cursors.Hand;
-//			this.treeView1.Dock = System.Windows.Forms.DockStyle.Left;
-//			this.treeView1.ImageIndex = -1;
-//			this.treeView1.Location = new System.Drawing.Point(0, 88);
-//			this.treeView1.Name = "treeView1";
-//			this.treeView1.SelectedImageIndex = -1;
-//			this.treeView1.Size = new System.Drawing.Size(280, 185);
-//			this.treeView1.TabIndex = 3;
-//			this.treeView1.AfterSelect += new System.Windows.Forms.TreeViewEventHandler(this.treeView1_AfterSelect);
-//			
-//			// 
-//			// splitter1
-//			// 
-//			this.splitter1.Dock = System.Windows.Forms.DockStyle.Left;
-//			this.splitter1.Name = "splitter1";
-//			this.splitter1.Size = new System.Drawing.Size(3, 180);
-//			this.splitter1.TabIndex = 4;
-//			this.splitter1.TabStop = false;
-//			// 
-//			// listView1
-//			// 
-//			this.header1 = new ColumnHeader();
-//			header1.Text = "Property";
-//			this.header2 = new ColumnHeader();
-//			header2.Text = "Value";
-//			
-//			this.listView1.Columns.Add(header1);
-//			this.listView1.Columns.Add(header2);
-//			this.listView1.View = View.Details;
-//			
-//			this.listView1.Dock = System.Windows.Forms.DockStyle.Fill;
-//			this.listView1.Location = new System.Drawing.Point(124, 88);
-//			this.listView1.Name = "listView1";
-//			this.listView1.Size = new System.Drawing.Size(635, 180);
-//			this.listView1.TabIndex = 5;
-//			this.listView1.Resize += new System.EventHandler(this.listView1_Resize);
-//			//
-//			// tabPage1
-//			// 						
-//			this.tabPage1.BackColor = System.Drawing.Color.White;
-//			this.tabPage1.Controls.AddRange(new System.Windows.Forms.Control[] {
-//																				   this.listView1,
-//																				   this.splitter1,
-//																				   this.treeView1});
-//			this.tabPage1.Icon = ResourceService.GetIcon("Icons.16x16.Class");
-//			this.tabPage1.Name = "tabPage1";
-//			this.tabPage1.Size = new System.Drawing.Size(486, 255);
-//			this.tabPage1.TabIndex = 0;
-//			this.tabPage1.Title = "Available Web Services";
-//			// 
-//			// tabPage2
-//			// 
-//			this.tabPage2.Controls.AddRange(new System.Windows.Forms.Control[] {
-//																				   this.axBrowser});
-//			this.tabPage2.Icon = ResourceService.GetIcon("Icons.16x16.HTMLIcon");
-//			this.tabPage2.Name = "tabPage2";
-//			this.tabPage2.Selected = false;
-//			this.tabPage2.Size = new System.Drawing.Size(486, 255);
-//			this.tabPage2.TabIndex = 1;
-//			this.tabPage2.Title = "WSDL";
-//			
-//			// 
-//			// checkBox1 for debugging only
-//			// 
-//			this.checkBox1.Anchor = (System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left);
-//			this.checkBox1.Location = new System.Drawing.Point(6, 9);
-//			this.checkBox1.Name = "checkBox1";
-//			this.checkBox1.TabIndex = 2;
-//			this.checkBox1.Text = "Generate Assembly";
-//			this.checkBox1.Enabled = false;
-//			this.checkBox1.Visible = false;
-//			
-//			// 
-//			// AddWebReferenceDialog
-//			// 
-//			this.Icon = ResourceService.GetIcon("Icons.16x16.ClosedWebReferenceFolder");			
-//			this.AcceptButton = this.btnGo;
-//			this.AutoScaleBaseSize = new System.Drawing.Size(5, 13);
-//			this.ClientSize = new System.Drawing.Size(722, 467);
-//			this.Controls.AddRange(new System.Windows.Forms.Control[] {																		  
-//																		  this.tabControl1,
-//																		  this.panel2,
-//																		  this.panel1,
-//																		  this.panel3});
-//			this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Sizable;
-//			this.StartPosition = FormStartPosition.CenterScreen;
-//			this.MaximizeBox = false;
-//			this.MinimizeBox = false;			
-//			this.Name = "AddWebReferenceDialog";
-//			this.ShowInTaskbar = false;
-//			this.Text = "Add Web Reference";
-//			this.panel1.ResumeLayout(false);
-//			this.panel2.ResumeLayout(false);
-//			this.tabPage1.ResumeLayout(false);
-//			this.panel3.ResumeLayout(false);
-//			((System.ComponentModel.ISupportInitialize)(this.axBrowser)).EndInit();
-//			this.ResumeLayout(false);
-//
-//		}
-//		
-//		private void btnBack_Click(object sender, System.EventArgs e)
-//		{
-//			axBrowser.GoBack();
-//		}
-//		
-//		private void btnForward_Click(object sender, System.EventArgs e)
-//		{
-//			axBrowser.GoForward();
-//		}
-//		
-//		private void btnAbort_Click(object sender, System.EventArgs e)
-//		{
-//			axBrowser.Stop();
-//			this.btnAdd.Enabled = false;
-//		}
-//
-//		private void btnRefresh_Click(object sender, System.EventArgs e)
-//		{
-//			axBrowser.Refresh();
-//			cboUrl.Text = axBrowser.LocationURL;
-//		}
-//
-//		private void btnGo_Click(object sender, System.EventArgs e)
-//		{							
-//			object url = (object)cboUrl.Text;
-//			object flags = null;
-//			object targetframename = (object)"_top";
-//			object headers = null;
-//			object postdata = null;
-//			
-//			axBrowser.Navigate2(ref url, ref flags, ref targetframename, ref postdata, ref headers);						
-//		}
-//
-//		ServiceDescription serviceDescription = null;
-//		ServiceDescription ServiceDescription {
-//			get {
-//				return serviceDescription;				
-//			}
-//			set {				
-//				this.btnAdd.Enabled = (value != null);
-//				serviceDescription = value;								
-//			}
-//		}
-//		private void btnAdd_Click(object sender, System.EventArgs e)
-//		{							
-//			if(!this.checkBox1.Checked) {
-//				ArrayList fileList = WebReference.GenerateWebProxyCode(project, cboUrl.Text);
-//				if(fileList != null) {
-//					this.referenceInformations.AddRange(fileList);					
-//				}
-//			} else {
-//				ProjectReference webRef = WebReference.GenerateWebProxyDLL(project, cboUrl.Text);
-//				if(webRef != null) {
-//					this.referenceInformations.Add(webRef);
-//				}
-//			}			
-//			this.Close();
-//		}
-//
-//		private void btnCancel_Click(object sender, System.EventArgs e)
-//		{
-//			this.Close();
-//		}
-//
-//		private void axBrowser_NavigateComplete2(object sender, WebBrowserNavigatedEventArgs e)
-//		{
-//			this.treeView1.BeginUpdate();
-//			
-//			//TODO: maybe do some validation on the WSDL url here
-//			ServiceDescription desc = WebReference.ReadServiceDescription(axBrowser.LocationURL);
-//			this.treeView1.Nodes.Clear();
-//			if(desc == null) 
-//				return;
-//			
-//			TreeNode rootNode = new TreeNode(WebReference.GetNamespaceFromUri(axBrowser.LocationURL));			
-//			rootNode.Tag = desc;
-//			rootNode.ImageIndex = 6;
-//			rootNode.SelectedImageIndex = 6;
-//			this.treeView1.Nodes.Add(rootNode);
-//			
-//			foreach(Service svc in desc.Services) 
-//			{
-//				// add a Service node
-//				TreeNode serviceNode = new TreeNode(svc.Name);				
-//				serviceNode.Tag = svc;
-//				serviceNode.ImageIndex = 0;
-//				serviceNode.SelectedImageIndex = 1;
-//				rootNode.Nodes.Add(serviceNode);
-//				
-//				foreach(Port port in svc.Ports) 
-//				{					
-//					TreeNode portNode = new TreeNode(port.Name);
-//					portNode.Tag = port;
-//					portNode.ImageIndex = 2;
-//					portNode.SelectedImageIndex = 3;
-//					serviceNode.Nodes.Add(portNode);
-//					
-//										
-//					// get the operations
-//					foreach(Operation operation in desc.PortTypes[port.Name].Operations) 
-//					{
-//						TreeNode operationNode = new TreeNode(operation.Name);
-//						operationNode.Tag = operation;
-//						operationNode.ImageIndex = 4;
-//						operationNode.SelectedImageIndex = 5;
-//						portNode.Nodes.Add(operationNode);
-//					}				
-//				}															
-//			}
-//			this.treeView1.ExpandAll();	
-//			this.treeView1.EndUpdate();
-//			
-//			this.ServiceDescription = desc;			
-//			this.Cursor = Cursors.Default;			
-//		}
-//		private void treeView1_AfterSelect(object sender, System.Windows.Forms.TreeViewEventArgs e)
-//		{						
-//			this.listView1.BeginUpdate();
-//						
-//			ListViewItem item;
-//			
-//			this.listView1.Items.Clear();
-//						
-//			if(e.Node.Tag is ServiceDescription) 
-//			{
-//				ServiceDescription desc = (ServiceDescription)e.Node.Tag;
-//				item = new ListViewItem();				
-//				item.Text = "Retrieval URI";
-//				item.SubItems.Add(desc.RetrievalUrl);
-//				this.listView1.Items.Add(item);
-//			}
-//			else if(e.Node.Tag is Service)
-//			{
-//				Service service = (Service)e.Node.Tag;
-//				item = new ListViewItem();				
-//				item.Text = "Documentation";
-//				item.SubItems.Add(service.Documentation);
-//				this.listView1.Items.Add(item);
-//
-//			}
-//			else if(e.Node.Tag is Port) 
-//			{
-//				Port port = (Port)e.Node.Tag;
-//
-//				item = new ListViewItem();				
-//				item.Text = "Documentation";
-//				item.SubItems.Add(port.Documentation);
-//				this.listView1.Items.Add(item);
-//				
-//				item = new ListViewItem();				
-//				item.Text = "Binding";
-//				item.SubItems.Add(port.Binding.Name);
-//				this.listView1.Items.Add(item);
-//				
-//				item = new ListViewItem();				
-//				item.Text = "Service";
-//				item.SubItems.Add(port.Service.Name);												
-//				this.listView1.Items.Add(item);
-//
-//			}
-//			else if(e.Node.Tag is Operation) 
-//			{
-//				Operation operation = (Operation)e.Node.Tag;
-//				
-//				item = new ListViewItem();
-//				item.Text = "Documentation";
-//				item.SubItems.Add(operation.Documentation);
-//				this.listView1.Items.Add(item);
-//
-//				item = new ListViewItem();
-//				item.Text = "Parameters";
-//				item.SubItems.Add(operation.ParameterOrderString);
-//				this.listView1.Items.Add(item);
-//			}
-//			
-//			this.listView1.EndUpdate();		
-//		}
-//		private void listView1_Resize(object sender, System.EventArgs e)
-//		{
-//			// resize the column headers
-//			this.header1.Width = this.listView1.Width / 2;
-//			this.header2.Width = this.listView1.Width / 2;
-//		}
-//		
-//		private void axBrowser_BeforeNavigate2(object sender, WebBrowserNavigatedEventArgs e)
-//		{
-//			this.Cursor = Cursors.WaitCursor;
-//			this.ServiceDescription = null;
-//		}
-//
-////		private void axBrowser_NavigateError(object sender, DWebBrowserEvents2_NavigateErrorEvent e)
-////		{
-////			this.Cursor = Cursors.Default;
-////			this.treeView1.Nodes.Clear();
-////			this.ServiceDescription = null;
-////		}
-//
-//	}
-//}
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Matthew Ward" email="mrward@users.sourceforge.net"/>
+//     <version>$Revision$</version>
+// </file>
+
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
+using Microsoft.Win32;
+using System;
+using System.Collections;
+using System.Drawing;
+using System.IO;
+using System.Runtime.Remoting.Messaging;
+using System.Net;
+using System.Web.Services.Description;
+using System.Web.Services.Discovery;
+using System.Windows.Forms;
+
+namespace ICSharpCode.SharpDevelop.Gui
+{
+	public class AddWebReferenceDialog : System.Windows.Forms.Form
+	{
+		DiscoveryClientProtocol discoveryClientProtocol;
+		int initialFormWidth;
+		int initialUrlComboBoxWidth;
+		string namespacePrefix = String.Empty;
+		Uri discoveryUri;
+		IProject project;
+		WebReference webReference;
+		
+		delegate DiscoveryDocument DiscoverAnyAsync(string url);
+		delegate void DiscoveredWebServicesHandler(DiscoveryClientProtocol protocol);
+
+		public AddWebReferenceDialog(IProject project)
+		{
+			InitializeComponent();
+			AddMruList();
+			AddImages();
+			AddStringResources();
+			initialFormWidth = Width;
+			initialUrlComboBoxWidth = urlComboBox.Width;
+			this.project = project;
+		}
+		
+		/// <summary>
+		/// The prefix that will be added to the web service's namespace 
+		/// (typically the project's namespace).
+		/// </summary>
+		public string NamespacePrefix {
+			get {
+				return namespacePrefix;
+			}
+			set {
+				namespacePrefix = value;
+			}
+		}
+		
+		/// <summary>
+		/// The discovered web reference to add to the project.
+		/// </summary>
+		public WebReference WebReference {
+			get {
+				return webReference;
+			}
+		}
+		
+		#region Windows Forms Designer generated code
+		/// <summary>
+		/// This method is required for Windows Forms designer support.
+		/// Do not change the method contents inside the source code editor. The Forms designer might
+		/// not be able to load this method if it was changed manually.
+		/// </summary>
+		private void InitializeComponent()
+		{
+			this.toolStrip = new System.Windows.Forms.ToolStrip();
+			this.backButton = new System.Windows.Forms.ToolStripButton();
+			this.forwardButton = new System.Windows.Forms.ToolStripButton();
+			this.refreshButton = new System.Windows.Forms.ToolStripButton();
+			this.stopButton = new System.Windows.Forms.ToolStripButton();
+			this.urlComboBox = new System.Windows.Forms.ToolStripComboBox();
+			this.goButton = new System.Windows.Forms.ToolStripButton();
+			this.tabControl = new System.Windows.Forms.TabControl();
+			this.webBrowserTabPage = new System.Windows.Forms.TabPage();
+			this.webBrowser = new System.Windows.Forms.WebBrowser();
+			this.webServicesTabPage = new System.Windows.Forms.TabPage();
+			this.referenceNameLabel = new System.Windows.Forms.Label();
+			this.referenceNameTextBox = new System.Windows.Forms.TextBox();
+			this.addButton = new System.Windows.Forms.Button();
+			this.cancelButton = new System.Windows.Forms.Button();
+			this.namespaceTextBox = new System.Windows.Forms.TextBox();
+			this.namespaceLabel = new System.Windows.Forms.Label();
+			this.webServicesView = new ICSharpCode.SharpDevelop.Gui.WebServicesView();
+			this.toolStrip.SuspendLayout();
+			this.tabControl.SuspendLayout();
+			this.webBrowserTabPage.SuspendLayout();
+			this.webServicesTabPage.SuspendLayout();
+			this.SuspendLayout();
+			// 
+			// toolStrip
+			// 
+			this.toolStrip.CanOverflow = false;
+			this.toolStrip.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
+									this.backButton,
+									this.forwardButton,
+									this.refreshButton,
+									this.stopButton,
+									this.urlComboBox,
+									this.goButton});
+			this.toolStrip.Location = new System.Drawing.Point(0, 0);
+			this.toolStrip.Name = "toolStrip";
+			this.toolStrip.Size = new System.Drawing.Size(515, 25);
+			this.toolStrip.Stretch = true;
+			this.toolStrip.TabIndex = 0;
+			this.toolStrip.Text = "toolStrip";
+			this.toolStrip.PreviewKeyDown += new System.Windows.Forms.PreviewKeyDownEventHandler(this.ToolStripPreviewKeyDown);
+			this.toolStrip.Enter += new System.EventHandler(this.ToolStripEnter);
+			this.toolStrip.Leave += new System.EventHandler(this.ToolStripLeave);
+			// 
+			// backButton
+			// 
+			this.backButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.backButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.backButton.Name = "backButton";
+			this.backButton.Size = new System.Drawing.Size(23, 22);
+			this.backButton.Text = "Back";
+			this.backButton.Enabled = false;
+			this.backButton.Click += new System.EventHandler(this.BackButtonClick);
+			// 
+			// forwardButton
+			// 
+			this.forwardButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.forwardButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.forwardButton.Name = "forwardButton";
+			this.forwardButton.Size = new System.Drawing.Size(23, 22);
+			this.forwardButton.Text = "forward";
+			this.forwardButton.Enabled = false;
+			this.forwardButton.Click += new System.EventHandler(this.ForwardButtonClick);
+			// 
+			// refreshButton
+			// 
+			this.refreshButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.refreshButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.refreshButton.Name = "refreshButton";
+			this.refreshButton.Size = new System.Drawing.Size(23, 22);
+			this.refreshButton.Text = "Refresh";
+			this.refreshButton.Click += new System.EventHandler(this.RefreshButtonClick);
+			// 
+			// stopButton
+			// 
+			this.stopButton.DisplayStyle = System.Windows.Forms.ToolStripItemDisplayStyle.Image;
+			this.stopButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.stopButton.Name = "stopButton";
+			this.stopButton.Size = new System.Drawing.Size(23, 22);
+			this.stopButton.Text = "Stop";
+			this.stopButton.ToolTipText = "Stop";
+			this.stopButton.Enabled = false;
+			this.stopButton.Click += new System.EventHandler(this.StopButtonClick);
+			// 
+			// urlComboBox
+			// 
+			this.urlComboBox.AutoCompleteMode = System.Windows.Forms.AutoCompleteMode.Suggest;
+			this.urlComboBox.AutoCompleteSource = System.Windows.Forms.AutoCompleteSource.AllUrl;
+			this.urlComboBox.AutoSize = false;
+			this.urlComboBox.FlatStyle = System.Windows.Forms.FlatStyle.Standard;
+			this.urlComboBox.Name = "urlComboBox";
+			this.urlComboBox.Size = new System.Drawing.Size(361, 21);
+			this.urlComboBox.KeyDown += new System.Windows.Forms.KeyEventHandler(this.UrlComboBoxKeyDown);
+			this.urlComboBox.SelectedIndexChanged += new System.EventHandler(this.UrlComboBoxSelectedIndexChanged);
+			// 
+			// goButton
+			// 
+			this.goButton.ImageTransparentColor = System.Drawing.Color.Magenta;
+			this.goButton.Name = "goButton";
+			this.goButton.Size = new System.Drawing.Size(24, 22);
+			this.goButton.Text = "Go";
+			this.goButton.Click += new System.EventHandler(this.GoButtonClick);
+			// 
+			// tabControl
+			// 
+			this.tabControl.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
+									| System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.tabControl.Controls.Add(this.webBrowserTabPage);
+			this.tabControl.Controls.Add(this.webServicesTabPage);
+			this.tabControl.Location = new System.Drawing.Point(0, 25);
+			this.tabControl.Name = "tabControl";
+			this.tabControl.SelectedIndex = 0;
+			this.tabControl.Size = new System.Drawing.Size(515, 245);
+			this.tabControl.TabIndex = 1;
+			// 
+			// webBrowserTabPage
+			// 
+			this.webBrowserTabPage.Controls.Add(this.webBrowser);
+			this.webBrowserTabPage.Location = new System.Drawing.Point(4, 22);
+			this.webBrowserTabPage.Name = "webBrowserTabPage";
+			this.webBrowserTabPage.Padding = new System.Windows.Forms.Padding(3);
+			this.webBrowserTabPage.Size = new System.Drawing.Size(507, 219);
+			this.webBrowserTabPage.TabIndex = 0;
+			this.webBrowserTabPage.Text = "WSDL";
+			this.webBrowserTabPage.UseVisualStyleBackColor = true;
+			// 
+			// webBrowser
+			// 
+			this.webBrowser.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.webBrowser.Location = new System.Drawing.Point(3, 3);
+			this.webBrowser.MinimumSize = new System.Drawing.Size(20, 20);
+			this.webBrowser.Name = "webBrowser";
+			this.webBrowser.Size = new System.Drawing.Size(501, 213);
+			this.webBrowser.TabIndex = 0;
+			this.webBrowser.TabStop = false;
+			this.webBrowser.Navigated += new System.Windows.Forms.WebBrowserNavigatedEventHandler(this.WebBrowserNavigated);
+			this.webBrowser.Navigating += new System.Windows.Forms.WebBrowserNavigatingEventHandler(this.WebBrowserNavigating);
+			this.webBrowser.CanGoBackChanged += new System.EventHandler(this.WebBrowserCanGoBackChanged);
+			this.webBrowser.CanGoForwardChanged += new System.EventHandler(this.WebBrowserCanGoForwardChanged);
+			// 
+			// webServicesTabPage
+			// 
+			this.webServicesTabPage.Controls.Add(this.webServicesView);
+			this.webServicesTabPage.Location = new System.Drawing.Point(4, 22);
+			this.webServicesTabPage.Name = "webServicesTabPage";
+			this.webServicesTabPage.Padding = new System.Windows.Forms.Padding(3);
+			this.webServicesTabPage.Size = new System.Drawing.Size(507, 219);
+			this.webServicesTabPage.TabIndex = 1;
+			this.webServicesTabPage.Text = "Available Web Services";
+			this.webServicesTabPage.UseVisualStyleBackColor = true;
+			// 
+			// webServicesView
+			// 
+			this.webServicesView.Dock = System.Windows.Forms.DockStyle.Fill;
+			this.webServicesView.Location = new System.Drawing.Point(3, 3);
+			this.webServicesView.Name = "webServicesView";
+			this.webServicesView.Size = new System.Drawing.Size(501, 213);
+			// 
+			// referenceNameLabel
+			// 
+			this.referenceNameLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.referenceNameLabel.Location = new System.Drawing.Point(9, 280);
+			this.referenceNameLabel.Name = "referenceNameLabel";
+			this.referenceNameLabel.Size = new System.Drawing.Size(128, 20);
+			this.referenceNameLabel.TabIndex = 2;
+			this.referenceNameLabel.Text = "&Reference Name:";
+			this.referenceNameLabel.UseCompatibleTextRendering = true;
+			// 
+			// referenceNameTextBox
+			// 
+			this.referenceNameTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.referenceNameTextBox.Location = new System.Drawing.Point(127, 281);
+			this.referenceNameTextBox.Name = "referenceNameTextBox";
+			this.referenceNameTextBox.Size = new System.Drawing.Size(305, 21);
+			this.referenceNameTextBox.TabIndex = 4;
+			// 
+			// addButton
+			// 
+			this.addButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.addButton.Enabled = false;
+			this.addButton.Location = new System.Drawing.Point(438, 281);
+			this.addButton.Name = "addButton";
+			this.addButton.Size = new System.Drawing.Size(73, 21);
+			this.addButton.TabIndex = 6;
+			this.addButton.Text = "&Add";
+			this.addButton.UseCompatibleTextRendering = true;
+			this.addButton.UseVisualStyleBackColor = true;
+			this.addButton.Click += new System.EventHandler(this.AddButtonClick);
+			// 
+			// cancelButton
+			// 
+			this.cancelButton.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
+			this.cancelButton.DialogResult = System.Windows.Forms.DialogResult.Cancel;
+			this.cancelButton.Location = new System.Drawing.Point(438, 303);
+			this.cancelButton.Name = "cancelButton";
+			this.cancelButton.Size = new System.Drawing.Size(73, 21);
+			this.cancelButton.TabIndex = 7;
+			this.cancelButton.Text = "Cancel";
+			this.cancelButton.UseCompatibleTextRendering = true;
+			this.cancelButton.UseVisualStyleBackColor = true;
+			this.cancelButton.Click += new System.EventHandler(this.CancelButtonClick);
+			// 
+			// namespaceTextBox
+			// 
+			this.namespaceTextBox.Anchor = ((System.Windows.Forms.AnchorStyles)(((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left) 
+									| System.Windows.Forms.AnchorStyles.Right)));
+			this.namespaceTextBox.Location = new System.Drawing.Point(127, 303);
+			this.namespaceTextBox.Name = "namespaceTextBox";
+			this.namespaceTextBox.Size = new System.Drawing.Size(305, 21);
+			this.namespaceTextBox.TabIndex = 5;
+			// 
+			// namespaceLabel
+			// 
+			this.namespaceLabel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Left)));
+			this.namespaceLabel.Location = new System.Drawing.Point(9, 302);
+			this.namespaceLabel.Name = "namespaceLabel";
+			this.namespaceLabel.Size = new System.Drawing.Size(128, 20);
+			this.namespaceLabel.TabIndex = 3;
+			this.namespaceLabel.Text = "&Namespace:";
+			this.namespaceLabel.UseCompatibleTextRendering = true;
+			// 
+			// AddWebReferenceDialog
+			// 
+			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
+			this.CancelButton = this.cancelButton;
+			this.ClientSize = new System.Drawing.Size(515, 336);
+			this.Controls.Add(this.cancelButton);
+			this.Controls.Add(this.namespaceTextBox);
+			this.Controls.Add(this.namespaceLabel);
+			this.Controls.Add(this.addButton);
+			this.Controls.Add(this.referenceNameTextBox);
+			this.Controls.Add(this.referenceNameLabel);
+			this.Controls.Add(this.tabControl);
+			this.Controls.Add(this.toolStrip);
+			this.MinimumSize = new System.Drawing.Size(300, 200);
+			this.Name = "AddWebReferenceDialog";
+			this.ShowInTaskbar = false;
+			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterParent;
+			this.Text = "Add Web Reference";
+			this.Resize += new System.EventHandler(this.AddWebReferenceDialogResize);
+			this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.AddWebReferenceDialogFormClosing);
+			this.toolStrip.ResumeLayout(false);
+			this.toolStrip.PerformLayout();
+			this.tabControl.ResumeLayout(false);
+			this.webBrowserTabPage.ResumeLayout(false);
+			this.webServicesTabPage.ResumeLayout(false);
+			this.ResumeLayout(false);
+			this.PerformLayout();
+		}
+		private System.Windows.Forms.Label namespaceLabel;
+		private System.Windows.Forms.TextBox namespaceTextBox;
+		private System.Windows.Forms.Button cancelButton;
+		private System.Windows.Forms.Button addButton;
+		private System.Windows.Forms.TextBox referenceNameTextBox;
+		private System.Windows.Forms.Label referenceNameLabel;
+		private System.Windows.Forms.TabPage webBrowserTabPage;
+		private System.Windows.Forms.TabPage webServicesTabPage;
+		private System.Windows.Forms.ToolStrip toolStrip;
+		private System.Windows.Forms.WebBrowser webBrowser;
+		private System.Windows.Forms.TabControl tabControl;
+		private System.Windows.Forms.ToolStripButton goButton;
+		private System.Windows.Forms.ToolStripComboBox urlComboBox;
+		private System.Windows.Forms.ToolStripButton stopButton;
+		private System.Windows.Forms.ToolStripButton refreshButton;
+		private System.Windows.Forms.ToolStripButton forwardButton;
+		private System.Windows.Forms.ToolStripButton backButton;
+		private ICSharpCode.SharpDevelop.Gui.WebServicesView webServicesView;
+		#endregion
+	
+		void AddMruList()
+		{
+			try {
+				RegistryKey key = Registry.CurrentUser.OpenSubKey(@"Software\Microsoft\Internet Explorer\TypedURLs");
+				if (key != null) {
+					foreach (string name in key.GetValueNames()) {
+						urlComboBox.Items.Add((string)key.GetValue(name));
+					}
+				}
+			} catch (Exception) { };
+		}
+		
+		/// <summary>
+		/// If the user presses the tab key, and the currently selected toolstrip
+		/// item is at the end or the beginning of the toolstip, then force the
+		/// tab to move to another control instead of staying on the toolstrip.
+		/// </summary>
+		void ToolStripPreviewKeyDown(object sender, PreviewKeyDownEventArgs e)
+		{
+			if (e.KeyCode == Keys.Tab) {
+				if (goButton.Selected && e.Modifiers != Keys.Shift) {
+					toolStrip.TabStop = true;
+				} else if (backButton.Selected && e.Modifiers == Keys.Shift) {
+					toolStrip.TabStop = true;
+				}
+			} 
+		}
+		
+		void ToolStripEnter(object sender, EventArgs e)
+		{
+			toolStrip.TabStop = false;
+		}
+		
+		void ToolStripLeave(object sender, EventArgs e)
+		{
+			toolStrip.TabStop = true;
+		}
+		
+		void BackButtonClick(object sender, EventArgs e)
+		{
+			try {
+				webBrowser.GoBack();
+			} catch (Exception) { }			
+		}
+		
+		void ForwardButtonClick(object sender, System.EventArgs e)
+		{
+			try {
+				webBrowser.GoForward();
+			} catch (Exception) { }
+		}
+		
+		void StopButtonClick(object sender, System.EventArgs e)
+		{
+			webBrowser.Stop();
+			StopDiscovery();
+			addButton.Enabled = false;		
+		}
+		
+		void RefreshButtonClick(object sender, System.EventArgs e)
+		{
+			webBrowser.Refresh();
+		}
+		
+		void GoButtonClick(object sender, System.EventArgs e)
+		{
+			BrowseUrl(urlComboBox.Text);
+		}
+		
+		void BrowseUrl(string url)
+		{
+			webBrowser.Focus();
+			webBrowser.Navigate(url);
+		}
+		
+		void CancelButtonClick(object sender, EventArgs e)
+		{
+			Close();
+		}
+		
+		void WebBrowserNavigating(object sender, WebBrowserNavigatingEventArgs e)
+		{
+			Cursor = Cursors.WaitCursor;
+			stopButton.Enabled = true;
+			webServicesView.Clear();
+			StartDiscovery(e.Url);
+		}
+		
+		void WebBrowserNavigated(object sender, WebBrowserNavigatedEventArgs e)
+		{
+			Cursor = Cursors.Default;	
+			stopButton.Enabled = false;
+			urlComboBox.Text = webBrowser.Url.ToString();
+		}
+		
+		void WebBrowserCanGoForwardChanged(object sender, EventArgs e)
+		{
+			forwardButton.Enabled = webBrowser.CanGoForward;
+		}
+		
+		void WebBrowserCanGoBackChanged(object sender, EventArgs e)
+		{
+			backButton.Enabled = webBrowser.CanGoBack;
+		}
+		
+		/// <summary>
+		/// Gets the namespace to be used with the generated web reference code.
+		/// </summary>
+		string GetDefaultNamespace()
+		{
+			if (namespacePrefix.Length > 0 && discoveryUri != null) {
+				return String.Concat(namespacePrefix, ".", discoveryUri.Host);
+			} else if (discoveryUri != null) {
+				return discoveryUri.Host;
+			}
+			return String.Empty;
+		}
+		
+		string GetReferenceName()
+		{
+			if (discoveryUri != null) {
+				return discoveryUri.Host;
+			} 
+			return String.Empty;
+		}
+
+		bool IsValidNamespace {
+			get {
+				bool valid = false;
+				
+				if (namespaceTextBox.Text.Length > 0) {
+					
+					// Can only begin with a letter or '_'
+					char ch = namespaceTextBox.Text[0];
+					if (Char.IsLetter(ch) || (ch == '_')) {
+						valid = true;
+						for (int i = 1; i < namespaceTextBox.Text.Length; ++i) {
+							ch = namespaceTextBox.Text[i];
+							// Can only contain letters, digits or '_'
+							if (!Char.IsLetterOrDigit(ch) && (ch != '.') && (ch != '_')) {
+								valid = false;
+								break;
+							}
+						}
+					}					
+				}
+				
+				return valid;
+			}
+		}
+		
+		bool IsValidReferenceName {
+			get {
+				if (referenceNameTextBox.Text.Length > 0) {
+					if (referenceNameTextBox.Text.IndexOf('\\') == -1) {
+						if (!ContainsInvalidDirectoryChar(referenceNameTextBox.Text)) {
+						    	return true;
+						}
+					}
+				}
+				return false;
+			}
+		}
+		
+		bool ContainsInvalidDirectoryChar(string item)
+		{
+			foreach (char ch in Path.GetInvalidPathChars()) {
+				if (item.IndexOf(ch) >= 0) {
+					return true;
+				}
+			}
+			return false;
+		}
+		
+		/// <summary>
+		/// Starts the search for web services at the specified url.
+		/// </summary>
+		void StartDiscovery(Uri uri)
+		{
+			// Abort previous discovery.
+			StopDiscovery();
+			
+			// Start new discovery.
+			discoveryUri = uri;
+			DiscoverAnyAsync asyncDelegate = new DiscoverAnyAsync(discoveryClientProtocol.DiscoverAny);
+			AsyncCallback callback = new AsyncCallback(DiscoveryCompleted);
+			discoveryClientProtocol.Credentials = CredentialCache.DefaultCredentials;
+			IAsyncResult result = asyncDelegate.BeginInvoke(uri.AbsoluteUri, callback, discoveryClientProtocol);
+		}
+		
+		/// <summary>
+		/// Called after an asynchronous web services search has
+		/// completed.
+		/// </summary>
+		void DiscoveryCompleted(IAsyncResult result)
+		{
+			DiscoveryClientProtocol protocol = (DiscoveryClientProtocol)result.AsyncState;
+					
+			// Check that we are still waiting for this particular callback.
+			bool wanted = false;
+			lock (this) {
+				wanted = Object.ReferenceEquals(discoveryClientProtocol, protocol);
+			}
+			
+			if (wanted) {
+				DiscoveredWebServicesHandler handler = new DiscoveredWebServicesHandler(DiscoveredWebServices);
+				try {
+					DiscoverAnyAsync asyncDelegate = (DiscoverAnyAsync)((AsyncResult)result).AsyncDelegate;
+					DiscoveryDocument doc = asyncDelegate.EndInvoke(result);
+					Invoke(handler, new object[] {protocol});
+				} catch (Exception ex) {
+					LoggingService.Error("DiscoveryCompleted", ex);
+					Invoke(handler, new object[] {null});
+				}
+			} 
+		}
+		
+		/// <summary>
+		/// Stops any outstanding asynchronous discovery requests.
+		/// </summary>
+		void StopDiscovery()
+		{
+			lock (this) {
+				if (discoveryClientProtocol != null) {
+					try {
+						discoveryClientProtocol.Abort();
+					} catch (NotImplementedException) {};
+					discoveryClientProtocol.Dispose();
+				}
+				discoveryClientProtocol = new DiscoveryClientProtocol();
+			}
+		}
+
+		void AddWebReferenceDialogFormClosing(object sender, FormClosingEventArgs e)
+		{
+			StopDiscovery();
+		}
+		
+		protected override void OnShown(EventArgs e)
+		{
+			base.OnShown(e);
+			urlComboBox.Focus();
+		}
+		
+		ServiceDescriptionCollection GetServiceDescriptions(DiscoveryClientProtocol protocol)
+		{
+			ServiceDescriptionCollection services = new ServiceDescriptionCollection();
+			protocol.ResolveOneLevel();
+			
+			foreach (DictionaryEntry entry in protocol.References) {
+				ContractReference contractRef = entry.Value as ContractReference;				
+				if (contractRef != null) {
+					services.Add(contractRef.Contract);
+				}
+			}
+			return services;
+		}
+		
+		void DiscoveredWebServices(DiscoveryClientProtocol protocol)
+		{			
+			if (protocol != null) {
+				addButton.Enabled = true;
+				namespaceTextBox.Text = GetDefaultNamespace();
+				referenceNameTextBox.Text = GetReferenceName();
+				webServicesView.Add(GetServiceDescriptions(protocol));
+				webReference = new WebReference(project, discoveryUri.AbsoluteUri, referenceNameTextBox.Text, namespaceTextBox.Text, protocol);
+			} else {
+				webReference = null;
+				addButton.Enabled = false;
+				webServicesView.Clear();
+			}
+		}
+		
+		void UrlComboBoxSelectedIndexChanged(object sender, EventArgs e)
+		{
+			BrowseUrl(urlComboBox.Text);
+		}
+		
+		void UrlComboBoxKeyDown(object sender, KeyEventArgs e)
+		{
+			if(e.KeyCode == Keys.Enter && urlComboBox.Text.Length > 0) {
+				BrowseUrl(urlComboBox.Text);
+			}
+		}
+		
+		void AddWebReferenceDialogResize(object sender, EventArgs e)
+		{
+			int widthChange = Width - initialFormWidth;
+			urlComboBox.Width = initialUrlComboBoxWidth + widthChange;	
+		}
+		
+		void AddButtonClick(object sender,EventArgs e)
+		{
+			try {
+				if (!IsValidReferenceName) {
+					MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.InvalidReferenceNameError}"));
+					return;					
+				}
+				
+				if (!IsValidNamespace) {
+					MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.InvalidNamespaceError}"));
+					return;										
+				}
+												
+				DialogResult = DialogResult.OK;
+				Close();
+			} catch (Exception ex) {
+				MessageService.ShowError(ex);
+			}
+		}
+		
+		void AddImages()
+		{
+			goButton.Image = ResourceService.GetBitmap("Icons.16x16.RunProgramIcon");
+			refreshButton.Image = ResourceService.GetBitmap("Icons.16x16.BrowserRefresh");
+			backButton.Image = ResourceService.GetBitmap("Icons.16x16.BrowserBefore");
+			forwardButton.Image = ResourceService.GetBitmap("Icons.16x16.BrowserAfter");
+			stopButton.Image = ResourceService.GetBitmap("Icons.16x16.BrowserCancel");
+			Icon = ResourceService.GetIcon("Icons.16x16.WebSearchIcon");
+		}
+		
+		void AddStringResources()
+		{
+			Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.DialogTitle}");
+			
+			refreshButton.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.RefreshButtonTooltip}");
+			refreshButton.ToolTipText = refreshButton.Text;
+			
+			backButton.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.BackButtonTooltip}");
+			backButton.ToolTipText = backButton.Text;
+			
+			forwardButton.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.ForwardButtonTooltip}");
+			forwardButton.ToolTipText = forwardButton.Text;
+
+			referenceNameLabel.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.ReferenceNameLabel}");
+			namespaceLabel.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.NamespaceLabel}");
+
+			goButton.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.GoButtonTooltip}");
+			goButton.ToolTipText = goButton.Text;
+			
+			addButton.Text = StringParser.Parse("${res:Global.AddButtonText}");
+			cancelButton.Text = StringParser.Parse("${res:Global.CancelButtonText}");
+			
+			stopButton.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.StopButtonTooltip}");
+			stopButton.ToolTipText = stopButton.Text;
+				
+			webServicesTabPage.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.WebServicesTabPageTitle}");
+			webServicesTabPage.ToolTipText = webServicesTabPage.Text;
+		}
+	}
+}

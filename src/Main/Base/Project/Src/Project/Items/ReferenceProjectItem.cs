@@ -36,8 +36,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[DefaultValue(false)]
-		[LocalizedProperty("Specific Version",
-		                   Description = "Indicates if this reference is bound to a specific version of the assembly.")]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.SpecificVersion}",
+		                   Description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.SpecificVersion.Description}")]
 		public bool SpecificVersion {
 			get {
 				return Properties.Get("SpecificVersion", true);
@@ -60,7 +60,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[ReadOnly(true)]
-		[LocalizedProperty("(Name)", Description="The reference name")]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Name}", 
+		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Name.Description}")]
 		public string Name {
 			get {
 				AssemblyName assemblyName = GetAssemblyName(Include);
@@ -72,8 +73,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[ReadOnly(true)]
-		[LocalizedProperty("Version", 
-		                   Description="The major, minor, revision and build numbers of the reference.")]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Version}", 
+		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Version.Description}")]
 		public Version Version { 
 			get {
 				AssemblyName assemblyName = GetAssemblyName(Include);
@@ -85,7 +86,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[ReadOnly(true)]
-		[LocalizedProperty("Culture", Description="The culture supported by the reference")]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Culture}",
+		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.Culture.Description}")]
 		public string Culture {
 			get {
 				AssemblyName assemblyName = GetAssemblyName(Include);
@@ -97,7 +99,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		}
 		
 		[ReadOnly(true)]
-		[LocalizedProperty("Public Key Token", Description="The public key token")]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.PublicKeyToken}", 
+		                   Description="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectReference.PublicKeyToken.Description}")]
 		public string PublicKeyToken {
 			get {
 				AssemblyName assemblyName = GetAssemblyName(Include);
