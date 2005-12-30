@@ -472,6 +472,11 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			}
 			if (bodyRegion.IsEmpty) return null;
 			int endLine = bodyRegion.EndLine;
+			
+			// Fix for SD2-511 (Code completion in inserted line)
+			if (caretLine > startLine && caretLine < endLine)
+				endLine = caretLine;
+			
 			int offset = 0;
 			for (int i = 0; i < startLine - 1; ++i) { // -1 because the startLine must be included
 				offset = fileContent.IndexOf('\n', offset) + 1;
