@@ -56,6 +56,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			if (FileUtility.IsEqualFileName(oldName, fileNode.FileName)) {
 				fileNode.FileName = FileUtility.RenameBaseDirectory(fileNode.FileName, oldName, newName);
+			} else if (FileUtility.IsBaseDirectory(oldName, fileNode.FileName)) {
+				fileNode.FileName = FileUtility.RenameBaseDirectory(fileNode.FileName, oldName, newName);
 			}
 			fileNode.AcceptChildren(this, data);
 			return data;
