@@ -152,7 +152,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 					return true;
 				}
 				
-				IMethodOrProperty method = resolver.CallingMember as IMethodOrProperty;
+				IMethodOrProperty method = resolver.CallingMember;
 				if (method != null) {
 					foreach (IParameter p in method.Parameters) {
 						if (IsSameName(p.Name, identifier)) {

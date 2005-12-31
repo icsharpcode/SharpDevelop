@@ -198,8 +198,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				engine.RegisterLogger(logger);
 				
 				Microsoft.Build.BuildEngine.Project project = engine.CreateNewProject();
-				project.Load(buildFile);
-				engine.BuildProject(project, targets);
+				try {
+					project.Load(buildFile);
+					engine.BuildProject(project, targets);
+				} catch (InvalidProjectFileException ex) {
+					results.Errors.Add(new CompilerError(ex.ProjectFile, ex.LineNumber, ex.ColumnNumber, ex.ErrorCode, ex.Message));
+				}
 				
 				LoggingService.Debug("MSBuild finished");
 				MSBuildEngine.isRunning = false;

@@ -474,8 +474,14 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			int endLine = bodyRegion.EndLine;
 			
 			// Fix for SD2-511 (Code completion in inserted line)
-			if (caretLine > startLine && caretLine < endLine)
-				endLine = caretLine;
+			if (language == SupportedLanguage.CSharp) {
+				// Do not do this for VB: the parser does not correct create the
+				// ForEachStatement when the method in truncated in the middle
+				// VB does not have the "inserted line looks like variable declaration"-problem
+				// anyways.
+				if (caretLine > startLine && caretLine < endLine)
+					endLine = caretLine;
+			}
 			
 			int offset = 0;
 			for (int i = 0; i < startLine - 1; ++i) { // -1 because the startLine must be included

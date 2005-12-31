@@ -26,7 +26,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		int caretLine;
 		int caretColumn;
 		IClass callingClass;
-		IMember callingMember;
+		IMethodOrProperty callingMember;
 		
 		public IClass CallingClass {
 			get {
@@ -34,7 +34,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			}
 		}
 		
-		public IMember CallingMember {
+		public IMethodOrProperty CallingMember {
 			get {
 				return callingMember;
 			}
@@ -107,28 +107,32 @@ namespace Grunwald.BooBinding.CodeCompletion
 			return callingClass;
 		}
 		
-		IMember ResolveCurrentMember(IClass callingClass)
+		IMethodOrProperty ResolveCurrentMember(IClass callingClass)
 		{
 			//LoggingService.DebugFormatted("Getting current method... caretLine = {0}, caretColumn = {1}", caretLine, caretColumn);
 			if (callingClass == null) return null;
-			IMember best = null;
+			IMethodOrProperty best = null;
 			int line = 0;
-			foreach (IMember m in callingClass.Methods) {
+			foreach (IMethod m in callingClass.Methods) {
 				if (m.Region.BeginLine <= caretLine && m.Region.BeginLine > line) {
 					line = m.Region.BeginLine;
 					best = m;
 				}
 			}
-			foreach (IMember m in callingClass.Properties) {
+			foreach (IProperty m in callingClass.Properties) {
 				if (m.Region.BeginLine <= caretLine && m.Region.BeginLine > line) {
 					line = m.Region.BeginLine;
 					best = m;
 				}
 			}
 			if (callingClass.Region.IsEmpty) {
-				foreach (IMember m in callingClass.Methods) {
-					if (best == null || best.Region.EndLine < caretLine)
-						return m;
+				// maybe we are in Main method?
+				foreach (IMethod m in callingClass.Methods) {
+					if (m.Region.IsEmpty && !m.IsSynthetic) {
+						// the main method
+						if (best == null || best.BodyRegion.EndLine < caretLine)
+							return m;
+					}
 				}
 			}
 			return best;
