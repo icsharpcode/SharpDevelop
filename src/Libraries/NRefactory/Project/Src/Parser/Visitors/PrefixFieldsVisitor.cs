@@ -142,29 +142,5 @@ namespace ICSharpCode.NRefactory.Parser
 			}
 			return curBlock.Contains(name);
 		}
-		
-		/*
-		public override object Visit(invocationExpression as InvocationExpression, object data)
-		{
-			// this method is a workaround for a bug in SharpRefactory
-			result = data
-			if invocationExpression.TargetObject != null:
-				result = invocationExpression.TargetObject.AcceptVisitor(self, data)
-			if invocationExpression.Parameters != null:
-				for n as INode in invocationExpression.Parameters:
-					n.AcceptVisitor(self, data)
-			return result
-		}
-		
-		public override object Visit(indexerExpression as IndexerExpression, object data)
-		{
-			// this method is a workaround for a bug in SharpRefactory
-			result = indexerExpression.TargetObject.AcceptVisitor(self, data)
-			for n as INode in indexerExpression.Indices {
-				n.AcceptVisitor(self, data)
-			}
-			return result
-		}
-		 */
 	}
 }

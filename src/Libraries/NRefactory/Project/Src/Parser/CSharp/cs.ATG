@@ -1883,7 +1883,7 @@ EmbeddedStatement<out Statement statement>
 	EmbeddedStatement<out embeddedStatement> (. statement = new DoLoopStatement(expr, embeddedStatement, ConditionType.While, ConditionPosition.Start);.)
 	| "do" EmbeddedStatement<out embeddedStatement> "while"
 	"(" Expr<out expr> ")" ";"  (. statement = new DoLoopStatement(expr, embeddedStatement, ConditionType.While, ConditionPosition.End); .)
-	| "for" (. ArrayList initializer = null; ArrayList iterator = null; .)
+	| "for" (. List<Statement> initializer = null; List<Statement> iterator = null; .)
 	  "(" [ ForInitializer<out initializer> ] ";"
 	  [ Expr<out expr> ] ";"
 	  [ ForIterator<out iterator> ] ")"
@@ -1929,20 +1929,20 @@ EmbeddedStatement<out Statement statement>
 	")" EmbeddedStatement<out embeddedStatement>  (. statement = new FixedStatement(type, pointerDeclarators, embeddedStatement); .)
 .
 
-ForInitializer<out ArrayList initializer>
+ForInitializer<out List<Statement> initializer>
 (.
 	Statement stmt; 
-	initializer = new ArrayList();
+	initializer = new List<Statement>();
 .)
 =
 	IF (IsLocalVarDecl()) LocalVariableDecl<out stmt> (. initializer.Add(stmt);.)
 	| StatementExpr<out stmt> (.initializer.Add(stmt);.) { "," StatementExpr<out stmt> (. initializer.Add(stmt);.) }
 .
 
-ForIterator<out ArrayList iterator>
+ForIterator<out List<Statement> iterator>
 (.
 	Statement stmt; 
-	iterator = new ArrayList();
+	iterator = new List<Statement>();
 .)
 =
 	StatementExpr<out stmt> (. iterator.Add(stmt);.) { "," StatementExpr<out stmt> (. iterator.Add(stmt); .) }

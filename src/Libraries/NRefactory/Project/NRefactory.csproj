@@ -200,6 +200,10 @@
     <Compile Include="Src\Output\CodeDOM\CodeDOMVerboseOutputGenerator.cs" />
     <Compile Include="Src\Parser\AST\CSharp\Expressions\DefaultValueExpression.cs" />
     <Compile Include="Src\Parser\AST\General\TypeLevel\InterfaceImplementation.cs" />
+    <Compile Include="Src\Parser\Visitors\VBNetConstructsConvertVisitor.cs" />
+    <Compile Include="Src\Parser\Visitors\CSharpConstructsVisitor.cs" />
+    <Compile Include="Src\Parser\Visitors\ToCSharpConvertVisitor.cs" />
+    <Compile Include="Src\Parser\Visitors\ToVBNetConvertVisitor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />

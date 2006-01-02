@@ -2495,14 +2495,14 @@ EmbeddedStatement<out Statement statement>
 			Expression start = null;
 			Expression end = null;
 			Expression step = null;
-			Expression nextExpr = null;ArrayList nextExpressions = null;
+			Expression nextExpr = null;List<Expression> nextExpressions = null;
 		.)
 		LoopControlVariable<out typeReference, out typeName>
 		"=" Expr<out start> "To" Expr<out end> [ "Step" Expr<out step> ]
 		EndOfStmt Block<out embeddedStatement>
 		"Next"
 		[
-			Expr<out nextExpr> (. nextExpressions = new ArrayList(); nextExpressions.Add(nextExpr); .) 
+			Expr<out nextExpr> (. nextExpressions = new List<Expression>(); nextExpressions.Add(nextExpr); .) 
 			{ "," Expr<out nextExpr> (. nextExpressions.Add(nextExpr); .) }
 		]
 		(.

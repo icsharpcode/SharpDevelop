@@ -5220,7 +5220,7 @@ out expr);
 				Expression start = null;
 				Expression end = null;
 				Expression step = null;
-				Expression nextExpr = null;ArrayList nextExpressions = null;
+				Expression nextExpr = null;List<Expression> nextExpressions = null;
 				
 				LoopControlVariable(
 #line  2500 "VBNET.ATG" 
@@ -5250,7 +5250,7 @@ out embeddedStatement);
 out nextExpr);
 
 #line  2505 "VBNET.ATG" 
-					nextExpressions = new ArrayList(); nextExpressions.Add(nextExpr); 
+					nextExpressions = new List<Expression>(); nextExpressions.Add(nextExpr); 
 					while (la.kind == 12) {
 						lexer.NextToken();
 						Expr(

@@ -3960,7 +3960,7 @@ out expr);
 			lexer.NextToken();
 
 #line  1886 "cs.ATG" 
-			ArrayList initializer = null; ArrayList iterator = null; 
+			List<Statement> initializer = null; List<Statement> iterator = null; 
 			Expect(20);
 			if (StartOf(5)) {
 				ForInitializer(
@@ -4196,11 +4196,11 @@ out label);
 
 	void ForInitializer(
 #line  1932 "cs.ATG" 
-out ArrayList initializer) {
+out List<Statement> initializer) {
 
 #line  1934 "cs.ATG" 
 		Statement stmt; 
-		initializer = new ArrayList();
+		initializer = new List<Statement>();
 		
 		if (
 #line  1938 "cs.ATG" 
@@ -4232,11 +4232,11 @@ out stmt);
 
 	void ForIterator(
 #line  1942 "cs.ATG" 
-out ArrayList iterator) {
+out List<Statement> iterator) {
 
 #line  1944 "cs.ATG" 
 		Statement stmt; 
-		iterator = new ArrayList();
+		iterator = new List<Statement>();
 		
 		StatementExpr(
 #line  1948 "cs.ATG" 

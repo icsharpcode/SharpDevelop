@@ -1172,14 +1172,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.IndentationLevel -= 1;
 		}
 		
-		void PrintIndentedBlock(ArrayList statements)
+		void PrintIndentedBlock(IEnumerable statements)
 		{
 			outputFormatter.IndentationLevel += 1;
 			VisitStatementList(statements);
 			outputFormatter.IndentationLevel -= 1;
 		}
 		
-		void VisitStatementList(ArrayList statements)
+		void VisitStatementList(IEnumerable statements)
 		{
 			foreach (Statement stmt in statements) {
 				if (stmt is BlockStatement) {
@@ -1321,6 +1321,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Then);
 			outputFormatter.NewLine();
+			
 			PrintIndentedBlock(ifElseStatement.TrueStatement);
 			
 			foreach (ElseIfSection elseIfSection in ifElseStatement.ElseIfSections) {

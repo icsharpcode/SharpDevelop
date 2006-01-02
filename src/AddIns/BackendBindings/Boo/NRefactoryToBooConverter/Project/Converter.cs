@@ -6,6 +6,7 @@
 // </file>
 
 using System;
+using ICSharpCode.NRefactory.Parser;
 using NR = ICSharpCode.NRefactory.Parser.AST;
 using Boo.Lang.Compiler;
 using Boo.Lang.Compiler.Ast;
@@ -23,7 +24,10 @@ namespace NRefactoryToBooConverter
 				throw new ArgumentNullException("cu");
 			if (settings == null)
 				throw new ArgumentNullException("settings");
-			cu.AcceptVisitor(new RefactoryVisitor(), null);
+			if (settings.IsVisualBasic)
+				cu.AcceptVisitor(new VBNetConstructsConvertVisitor(), null);
+			else
+				cu.AcceptVisitor(new CSharpConstructsVisitor(), null);
 			return (Module)cu.AcceptVisitor(new ConvertVisitor(settings), null);
 		}
 		

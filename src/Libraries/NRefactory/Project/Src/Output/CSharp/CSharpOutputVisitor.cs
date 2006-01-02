@@ -963,14 +963,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			for (int i = 0; i < localVariableDeclaration.Variables.Count; ++i) {
 				VariableDeclaration v = (VariableDeclaration)localVariableDeclaration.Variables[i];
-				outputFormatter.NewLine();
-				outputFormatter.Indent();
+				if (i > 0) {
+					outputFormatter.NewLine();
+					outputFormatter.Indent();
+				}
 				OutputModifier(localVariableDeclaration.Modifier);
 				nodeTracker.TrackedVisit(localVariableDeclaration.GetTypeForVariable(i), data);
 				outputFormatter.Space();
 				nodeTracker.TrackedVisit(v, data);
 				outputFormatter.PrintToken(Tokens.Semicolon);
-				outputFormatter.NewLine();
 			}
 			return null;
 		}
@@ -1011,12 +1012,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			nodeTracker.TrackedVisit(ifElseStatement.Condition, data);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
+			if (ifElseStatement.TrueStatement.Count > 1) {
+				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
+			}
 			foreach (Statement stmt in ifElseStatement.TrueStatement) {
 				nodeTracker.TrackedVisit(stmt, data);
 			}
-			--outputFormatter.IndentationLevel;
+			if (ifElseStatement.TrueStatement.Count > 1) {
+				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+			}
 			
 			foreach (ElseIfSection elseIfSection in ifElseStatement.ElseIfSections) {
 				nodeTracker.TrackedVisit(elseIfSection, data);
@@ -1025,12 +1029,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (ifElseStatement.HasElseStatements) {
 				outputFormatter.Indent();
 				outputFormatter.PrintToken(Tokens.Else);
-				outputFormatter.NewLine();
-				++outputFormatter.IndentationLevel;
+				if (ifElseStatement.FalseStatement.Count > 1) {
+					outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
+				}
 				foreach (Statement stmt in ifElseStatement.FalseStatement) {
 					nodeTracker.TrackedVisit(stmt, data);
 				}
-				--outputFormatter.IndentationLevel;
+				if (ifElseStatement.FalseStatement.Count > 1) {
+					outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+				}
 			}
 			
 			return null;
@@ -1362,13 +1369,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(TryCatchStatement tryCatchStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Try);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			outputFormatter.NewLine();
-			
-			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(tryCatchStatement.StatementBlock, data);
-			--outputFormatter.IndentationLevel;
+			WriteEmbeddedStatement(tryCatchStatement.StatementBlock);
 			
 			foreach (CatchClause catchClause in tryCatchStatement.CatchClauses) {
 				nodeTracker.TrackedVisit(catchClause, data);
@@ -1376,26 +1377,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			if (!tryCatchStatement.FinallyBlock.IsNull) {
 				outputFormatter.Indent();
-				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
-				outputFormatter.Space();
 				outputFormatter.PrintToken(Tokens.Finally);
-				outputFormatter.Space();
-				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-				outputFormatter.NewLine();
-				++outputFormatter.IndentationLevel;
-				nodeTracker.TrackedVisit(tryCatchStatement.FinallyBlock, data);
-				--outputFormatter.IndentationLevel;
+				WriteEmbeddedStatement(tryCatchStatement.FinallyBlock);
 			}
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
 			return null;
 		}
 		
 		public object Visit(CatchClause catchClause, object data)
 		{
 			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
-			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Catch);
 			
 			if (!catchClause.TypeReference.IsNull) {
@@ -1410,12 +1400,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				}
 				outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			}
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(catchClause.StatementBlock, data);
-			--outputFormatter.IndentationLevel;
+			WriteEmbeddedStatement(catchClause.StatementBlock);
 			return null;
 		}
 		
@@ -1441,53 +1426,29 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			AppendCommaSeparatedList(fixedStatement.PointerDeclarators);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
-			if (fixedStatement.EmbeddedStatement is BlockStatement) {
-				nodeTracker.TrackedVisit(fixedStatement.EmbeddedStatement, false);
-			} else {
-				nodeTracker.TrackedVisit(fixedStatement.EmbeddedStatement, data);
-			}
-			--outputFormatter.IndentationLevel;
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+			
+			WriteEmbeddedStatement(fixedStatement.EmbeddedStatement);
 			return null;
 		}
 		
 		public object Visit(UnsafeStatement unsafeStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Unsafe);
-			nodeTracker.TrackedVisit(unsafeStatement.Block, data);
+			WriteEmbeddedStatement(unsafeStatement.Block);
 			return null;
 		}
 		
 		public object Visit(CheckedStatement checkedStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Checked);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(checkedStatement.Block, false);
-			--outputFormatter.IndentationLevel;
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+			WriteEmbeddedStatement(checkedStatement.Block);
 			return null;
 		}
 		
 		public object Visit(UncheckedStatement uncheckedStatement, object data)
 		{
 			outputFormatter.PrintToken(Tokens.Unchecked);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			outputFormatter.NewLine();
-			++outputFormatter.IndentationLevel;
-			nodeTracker.TrackedVisit(uncheckedStatement.Block, false);
-			--outputFormatter.IndentationLevel;
-			outputFormatter.Indent();
-			outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+			WriteEmbeddedStatement(uncheckedStatement.Block);
 			return null;
 		}
 		

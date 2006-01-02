@@ -70,7 +70,7 @@ namespace NRefactoryToBooConverter
 		{
 			if (statement == null || statement.IsNull)
 				return null;
-			ArrayList statements = new ArrayList(1);
+			List<Statement> statements = new List<Statement>(1);
 			statements.Add(statement);
 			return ConvertBlock(statements);
 		}
@@ -83,7 +83,7 @@ namespace NRefactoryToBooConverter
 			return b;
 		}
 		
-		B.Block ConvertBlock(ArrayList statements)
+		B.Block ConvertBlock(List<Statement> statements)
 		{
 			if (statements.Count == 1) {
 				if (statements[0] is BlockStatement)
@@ -156,7 +156,7 @@ namespace NRefactoryToBooConverter
 		///     break $conditionType $condition
 		/// 	$body
 		/// </summary>
-		ArrayList MakeManualLoop(INode node, ArrayList initializers, B.StatementModifierType conditionType, Expression condition, ArrayList iterators, Statement body)
+		ArrayList MakeManualLoop(INode node, List<Statement> initializers, B.StatementModifierType conditionType, Expression condition, List<Statement> iterators, Statement body)
 		{
 			// we use this "while true" form because "continue" must not skip the iterator.
 			
@@ -183,9 +183,9 @@ namespace NRefactoryToBooConverter
 		ArrayList MakeManualLoop(ForNextStatement forNextStatement)
 		{
 			Expression var = new IdentifierExpression(forNextStatement.VariableName);
-			ArrayList initializers = new ArrayList(1);
+			List<Statement> initializers = new List<Statement>(1);
 			initializers.Add(new StatementExpression(new AssignmentExpression(var, AssignmentOperatorType.Assign, forNextStatement.Start)));
-			ArrayList iterators = new ArrayList(1);
+			List<Statement> iterators = new List<Statement>(1);
 			Expression step = forNextStatement.Step;
 			if (step == null || step.IsNull)
 				step = new PrimitiveExpression(1, "1");

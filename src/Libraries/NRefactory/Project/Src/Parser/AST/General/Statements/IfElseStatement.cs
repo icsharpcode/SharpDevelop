@@ -7,17 +7,17 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST 
 {
 	public class IfElseStatement : Statement
 	{
 		Expression condition;
-		ArrayList trueStatement; // List for stmt : stmt : stmt ... in VB.NET
-		ArrayList falseStatement; // [Statement]
+		List<Statement> trueStatement; // List for stmt : stmt : stmt ... in VB.NET
+		List<Statement> falseStatement; // [Statement]
 		
-		ArrayList elseIfSections = new ArrayList(1); // VB.NET only, [ElseIfSection]
+		List<Statement> elseIfSections = new List<Statement>(1); // VB.NET only, [ElseIfSection]
 		
 		public bool HasElseStatements {
 			get {
@@ -40,46 +40,46 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList ElseIfSections {
+		public List<Statement> ElseIfSections {
 			get {
 				return elseIfSections;
 			}
 			set {
-				elseIfSections = value == null ? new ArrayList(1) : value;
+				elseIfSections = value ?? new List<Statement>(1);
 			}
 		}
 		
-		public ArrayList TrueStatement {
+		public List<Statement> TrueStatement {
 			get {
 				return trueStatement;
 			}
 			set {
-				trueStatement = value == null ? new ArrayList(1) : value;
+				trueStatement = value ?? new List<Statement>(1);
 			}
 		}
 		
-		public ArrayList FalseStatement {
+		public List<Statement> FalseStatement {
 			get {
 				return falseStatement;
 			}
 			set {
-				falseStatement = value == null ? new ArrayList(1) : value;
+				falseStatement = value ?? new List<Statement>(1);
 			}
 		}
 		
 		public IfElseStatement(Expression condition, Statement trueStatement)
 		{
 			this.Condition      = condition;
-			this.trueStatement  = new ArrayList(1);
-			this.falseStatement = new ArrayList(1);
+			this.trueStatement  = new List<Statement>(1);
+			this.falseStatement = new List<Statement>(1);
 			this.trueStatement.Add(Statement.CheckNull(trueStatement));
 		}
 		
 		public IfElseStatement(Expression condition, Statement trueStatement, Statement falseStatement)
 		{
 			this.Condition      = condition;
-			this.trueStatement  = new ArrayList(1);
-			this.falseStatement = new ArrayList(1);
+			this.trueStatement  = new List<Statement>(1);
+			this.falseStatement = new List<Statement>(1);
 			this.trueStatement.Add(Statement.CheckNull(trueStatement));
 			this.falseStatement.Add(Statement.CheckNull(falseStatement));
 		}

@@ -2,7 +2,8 @@
        author      = "Mike Krueger"
        copyright   = "prj:///doc/copyright.txt"
        url         = "http://www.icsharpcode.net"
-       description = "SharpDevelop main module">
+       description = "SharpDevelop main module"
+       addInManagerHidden = "true">
 	
 	<Manifest>
 		<Identity name = "SharpDevelop" version = "@EntryAssemblyVersion"/>

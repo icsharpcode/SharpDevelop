@@ -14,14 +14,10 @@ namespace ICSharpCode.NRefactory.Parser.AST
 {
 	public class CompilationUnit : AbstractNode
 	{
-		// TODO: check if the LookUpTable here and the specials are still needed
-		// TODO: Are the childs still needed? Or should we put them in there own fields?
-		// Childs in C#: UsingAliasDeclaration, UsingDeclaration, AttributeSection, NamespaceDeclaration
-		// Childs in VB: OptionStatements, ImportsStatement, AttributeSection, NamespaceDeclaration
+		// Children in C#: UsingAliasDeclaration, UsingDeclaration, AttributeSection, NamespaceDeclaration
+		// Children in VB: OptionStatements, ImportsStatement, AttributeSection, NamespaceDeclaration
 		
 		Stack blockStack = new Stack();
-		INode lastChild = null;
-		ArrayList lookUpTable = new ArrayList(); // [VariableDeclaration]
 		
 		public CompilationUnit()
 		{
@@ -35,12 +31,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		
 		public void BlockEnd()
 		{
-			lastChild = (INode)blockStack.Pop();
-		}
-		
-		public INode TakeBlock()
-		{
-			return (INode)blockStack.Pop();
+			blockStack.Pop();
 		}
 		
 		public override void AddChild(INode childNode)
@@ -49,19 +40,9 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				INode parent = (INode)blockStack.Peek();
 				parent.Children.Add(childNode);
 				childNode.Parent = parent;
-				lastChild = childNode;
-				if (childNode is LocalVariableDeclaration) {
-					AddToLookUpTable((LocalVariableDeclaration)childNode);
-				}
 			}
 		}
 		
-		public void AddToLookUpTable(LocalVariableDeclaration v)
-		{
-			v.Block = (BlockStatement)blockStack.Peek();
-			lookUpTable.Add(v);
-		}
-					
 		public override object AcceptVisitor(IASTVisitor visitor, object data)
 		{
 			return visitor.Visit(this, data);

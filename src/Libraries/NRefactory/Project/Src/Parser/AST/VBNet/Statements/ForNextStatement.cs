@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -16,8 +16,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		Expression end;
 		Expression step;
 		
-//		List<Expression> nextExpressions;
-		ArrayList nextExpressions;
+		List<Expression> nextExpressions;
 		TypeReference typeReference;
 		string        variableName;
 		
@@ -39,12 +38,12 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList NextExpressions {
+		public List<Expression> NextExpressions {
 			get {
 				return nextExpressions;
 			}
 			set {
-				nextExpressions = value == null ? new ArrayList(1) : value;
+				nextExpressions = value ?? new List<Expression>(1);
 			}
 		}
 		
@@ -75,7 +74,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ForNextStatement(TypeReference typeReference, string variableName, Expression start, Expression end, Expression step, Statement embeddedStatement, ArrayList nextExpressions)
+		public ForNextStatement(TypeReference typeReference, string variableName, Expression start, Expression end, Expression step, Statement embeddedStatement, List<Expression> nextExpressions)
 		{
 			this.TypeReference     = typeReference;
 			this.VariableName      = variableName;

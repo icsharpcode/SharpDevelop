@@ -7,23 +7,23 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST 
 {
 	public class ForStatement : StatementWithEmbeddedStatement
 	{
-		ArrayList       initializers; // EmbeddedStatement OR list of StatmentExpressions
+		List<Statement> initializers; // EmbeddedStatement OR list of StatmentExpressions
 		Expression      condition;
-		ArrayList iterator; // [Statement]
+		List<Statement> iterator; // [Statement]
 		
-		public ArrayList Initializers {
+		public List<Statement> Initializers {
 			get {
 				return initializers;
 			}
 		}
 		
-		public ArrayList Iterator {
+		public List<Statement> Iterator {
 			get {
 				return iterator;
 			}
@@ -38,10 +38,10 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ForStatement(ArrayList initializers, Expression condition, ArrayList iterator, Statement embeddedStatement)
+		public ForStatement(List<Statement> initializers, Expression condition, List<Statement> iterator, Statement embeddedStatement)
 		{
-			this.initializers = initializers == null ? new ArrayList(1) : initializers;
-			this.iterator = iterator == null ? new ArrayList(1) : iterator;
+			this.initializers = initializers ?? new List<Statement>(1);
+			this.iterator = iterator ?? new List<Statement>(1);
 			
 			this.Condition         = condition;
 			this.EmbeddedStatement = embeddedStatement;
