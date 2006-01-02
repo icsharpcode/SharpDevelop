@@ -72,17 +72,25 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 		void FindKeys(string directory)
 		{
 			directory = Path.GetFullPath(directory);
-			foreach (string fileName in Directory.GetFiles(directory, "*.snk")) {
-				keyFile.Items.Add(FileUtility.GetRelativePath(baseDirectory, fileName));
-			}
-			foreach (string fileName in Directory.GetFiles(directory, "*.pfx")) {
-				keyFile.Items.Add(FileUtility.GetRelativePath(baseDirectory, fileName));
-			}
-			foreach (string fileName in Directory.GetFiles(directory, "*.key")) {
-				keyFile.Items.Add(FileUtility.GetRelativePath(baseDirectory, fileName));
-			}
-			if (directory.Length > 3) {
-				FindKeys(Path.Combine(directory, ".."));
+			while (true) {
+				try {
+					foreach (string fileName in Directory.GetFiles(directory, "*.snk")) {
+						keyFile.Items.Add(FileUtility.GetRelativePath(baseDirectory, fileName));
+					}
+					foreach (string fileName in Directory.GetFiles(directory, "*.pfx")) {
+						keyFile.Items.Add(FileUtility.GetRelativePath(baseDirectory, fileName));
+					}
+					foreach (string fileName in Directory.GetFiles(directory, "*.key")) {
+						keyFile.Items.Add(FileUtility.GetRelativePath(baseDirectory, fileName));
+					}
+				} catch {
+					// can happen for networked drives / network locations
+					break;
+				}
+				int pos = directory.LastIndexOf(Path.DirectorySeparatorChar);
+				if (pos < 0)
+					break;
+				directory = directory.Substring(0, pos);
 			}
 		}
 		
