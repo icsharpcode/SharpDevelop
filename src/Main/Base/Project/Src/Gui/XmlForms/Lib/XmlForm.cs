@@ -83,7 +83,7 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 			if (stream != null) {
 				xmlLoader.LoadObjectFromStream(this, stream);
 			}
-			RightToLeftConverter.Convert(this);
+			RightToLeftConverter.ConvertRecursive(this);
 			ResumeLayout(false);
 		}
 		

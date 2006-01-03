@@ -23,6 +23,7 @@
             <AcceptsTab value="True" />
             <AutoSize value="False" />
             <Text value="" />
+        	<RightToLeft value="No" />
           </System.Windows.Forms.TextBox>
         </Controls>
       </System.Windows.Forms.Panel>
@@ -58,6 +59,7 @@
         <Location value="{X=8,Y=72}" />
         <Size value="{Width=216, Height=112}" />
         <HideSelection value="False" />
+      	<RightToLeft value="No" />
         <Columns>
           <System.Windows.Forms.ColumnHeader>
             <Width value="70" />
@@ -92,6 +94,7 @@
         <Location value="{X=88,Y=8}" />
         <Size value="{Width=228, Height=21}" />
         <DropDownStyle value="DropDownList" />
+    	<RightToLeft value="No" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
         <Name value="extensionLabel" />
@@ -103,54 +106,4 @@
       </System.Windows.Forms.Label>
     </Controls>
   </System.Windows.Forms.UserControl>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="70" />
-    <Name value="columnHeader3" />
-    <Text value="Template" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="140" />
-    <Name value="columnHeader1" />
-    <Text value="${res:Dialog.Options.CodeTemplate.Description}" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="70" />
-    <Name value="columnHeader7" />
-    <Text value="${res:Dialog.Options.CodeTemplate.Template}" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="140" />
-    <Name value="columnHeader2" />
-    <Text value="${res:Dialog.Options.CodeTemplate.Description}" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="140" />
-    <Name value="columnHeader6" />
-    <Text value="Description" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="140" />
-    <Name value="columnHeader5" />
-    <Text value="${res:Dialog.Options.CodeTemplate.Description}" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="140" />
-    <Name value="columnHeader4" />
-    <Text value="${res:Dialog.Options.CodeTemplate.Description}" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="70" />
-    <Name value="columnHeader9" />
-    <Text value="${res:Dialog.Options.CodeTemplate.Template}" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="70" />
-    <Name value="columnHeader8" />
-    <Text value="${res:Dialog.Options.CodeTemplate.Template}" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Width value="70" />
-    <Name value="columnHeader" />
-    <Text value="${res:Dialog.Options.CodeTemplate.Template}" />
-  </System.Windows.Forms.ColumnHeader>
 </Components>

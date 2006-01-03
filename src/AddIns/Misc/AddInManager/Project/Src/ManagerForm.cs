@@ -61,6 +61,8 @@ namespace ICSharpCode.AddInManager
 			closeButton.Text = ResourceService.GetString("Global.CloseButtonText");
 			showPreinstalledAddInsCheckBox.Text = ResourceService.GetString("AddInManager.ShowPreinstalledAddIns");
 			this.Text = ResourceService.GetString("AddInManager.Title");
+			RightToLeftConverter.ConvertRecursive(this);
+			
 			CreateAddInList();
 		}
 		

@@ -82,6 +82,7 @@ namespace ICSharpCode.Core
 			}
 			label.Text = message;
 			
+			RightToLeftConverter.ConvertRecursive(this);
 			this.ResumeLayout(false);
 		}
 		

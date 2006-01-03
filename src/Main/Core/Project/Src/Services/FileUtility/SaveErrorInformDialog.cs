@@ -30,7 +30,7 @@ namespace ICSharpCode.Core
 			this.Text = StringParser.Parse(dialogName);
 			//  Must be called for initialization
 			this.InitializeComponent2();
-			RightToLeftConverter.Convert(this);
+			RightToLeftConverter.ConvertRecursive(this);
 			
 			displayMessage = StringParser.Parse(message, new string[,] {
 				{"FileName", fileName},

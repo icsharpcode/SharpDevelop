@@ -47,6 +47,7 @@ namespace SearchAndReplace
 				
 				Get<Button>("findNext").Click += new EventHandler(FindNextButtonClicked);
 				SetOptions();
+				RightToLeftConverter.ReConvertRecursive(this);
 				ResumeLayout(false);
 			}
 		}

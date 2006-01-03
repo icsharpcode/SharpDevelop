@@ -70,7 +70,6 @@
       </System.Windows.Forms.Button>
       <System.Windows.Forms.CheckBox>
         <Name value="matchWholeWordCheckBox" />
-        <RightToLeft value="No" />
         <Location value="{X=8,Y=248}" />
         <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
         <Text value="${res:Dialog.NewProject.SearchReplace.MatchWholeWord}" />

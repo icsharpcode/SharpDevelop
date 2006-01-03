@@ -80,6 +80,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public static void InitializeWorkbench()
 		{
 			workbench = new DefaultWorkbench();
+			MessageService.MainForm = workbench;
+			
 			caller = new STAThreadCaller(workbench);
 			
 			workbench.InitializeWorkspace();

@@ -56,8 +56,15 @@ namespace ICSharpCode.SharpDevelop
 			string str = "";
 			str += ".NET Version         : " + Environment.Version.ToString() + Environment.NewLine;
 			str += "OS Version           : " + Environment.OSVersion.ToString() + Environment.NewLine;
+			string cultureName = null;
 			try {
-				str += "Current culture      : " + CultureInfo.CurrentCulture.EnglishName + Environment.NewLine;
+				cultureName = CultureInfo.CurrentCulture.Name;
+				str += "Current culture      : " + CultureInfo.CurrentCulture.EnglishName + " (" + cultureName + ")" + Environment.NewLine;
+			} catch {}
+			try {
+				if (cultureName == null || !cultureName.StartsWith(ResourceService.Language)) {
+					str += "Current UI language  : " + ResourceService.Language + Environment.NewLine;
+				}
 			} catch {}
 			try {
 				if (SystemInformation.TerminalServerSession) {
@@ -122,7 +129,7 @@ namespace ICSharpCode.SharpDevelop
 					+ Uri.EscapeDataString("Write an English description on how to reproduce the error and paste the exception text.");
 				StartUrl(url);
 			}
-			*/
+			 */
 		}
 		
 		static void StartUrl(string url)

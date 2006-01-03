@@ -76,7 +76,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			throwExceptionButton.Click += new EventHandler(ThrowExceptionButtonClick);
 			throwExceptionButton.FlatStyle = FlatStyle.System;
 			Controls.Add(throwExceptionButton);
-			
 		}
 		
 		class ClownFishException : System.Exception
@@ -180,13 +179,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// 
 			// listView
 			// 
-			this.listView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-						| System.Windows.Forms.AnchorStyles.Left) 
-						| System.Windows.Forms.AnchorStyles.Right)));
+			this.listView.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom)
+			                                                              | System.Windows.Forms.AnchorStyles.Left)
+			                                                             | System.Windows.Forms.AnchorStyles.Right)));
 			this.listView.Columns.AddRange(new System.Windows.Forms.ColumnHeader[] {
-						this.columnHeader,
-						this.columnHeader2,
-						this.columnHeader3});
+			                               	this.columnHeader,
+			                               	this.columnHeader2,
+			                               	this.columnHeader3});
 			this.listView.FullRowSelect = true;
 			this.listView.GridLines = true;
 			this.listView.Sorting   = SortOrder.Ascending;
@@ -195,6 +194,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			this.listView.Size = new System.Drawing.Size(248, 176);
 			this.listView.TabIndex = 0;
 			this.listView.View = System.Windows.Forms.View.Details;
+			//this.listView.RightToLeftLayout = true;
+			//this.listView.RightToLeft = RightToLeft;
 			
 			// 
 			// columnHeader3

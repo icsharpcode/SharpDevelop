@@ -77,6 +77,8 @@ namespace SearchAndReplace
 			toolStrip.Items.Add(replaceButton);
 			
 			Controls.Add(toolStrip);
+			RightToLeftConverter.ConvertRecursive(this);
+			
 			SetSearchAndReplaceMode();
 			FormLocationHelper.Apply(this, "ICSharpCode.SharpDevelop.Gui.SearchAndReplaceDialog.Location", false);
 		}

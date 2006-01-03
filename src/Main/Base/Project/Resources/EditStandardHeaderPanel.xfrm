@@ -23,6 +23,7 @@
             <AcceptsTab value="True" />
             <AutoSize value="False" />
             <Text value="" />
+        	<RightToLeft value="No" />
           </System.Windows.Forms.TextBox>
         </Controls>
       </System.Windows.Forms.Panel>
@@ -50,6 +51,7 @@
         <Location value="{X=144,Y=8}" />
         <Size value="{Width=192, Height=21}" />
         <DropDownStyle value="DropDownList" />
+    	<RightToLeft value="No" />
       </System.Windows.Forms.ComboBox>
     </Controls>
   </System.Windows.Forms.UserControl>

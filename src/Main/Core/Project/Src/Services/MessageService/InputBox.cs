@@ -49,6 +49,7 @@ namespace ICSharpCode.Core
 			label.Text = text;
 			textBox.Text = defaultValue;
 			this.DialogResult = DialogResult.Cancel;
+			RightToLeftConverter.ConvertRecursive(this);
 		}
 		
 		#region Windows Forms Designer generated code

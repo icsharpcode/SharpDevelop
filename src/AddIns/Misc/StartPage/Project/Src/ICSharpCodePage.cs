@@ -264,7 +264,11 @@ namespace ICSharpCode.StartPage
 
 		public virtual void RenderHeaderSection(StringBuilder builder)
 		{
+			//if (RightToLeftConverter.IsRightToLeft) {
+			//	builder.Append("<html dir=\"rtl\"><head><title>");
+			//} else {
 			builder.Append("<html><head><title>");
+			//}
 			builder.Append(Title);
 			builder.Append("</title>\r\n");
 			builder.Append("<link rel='stylesheet' type='text/css' href='");

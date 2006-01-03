@@ -132,7 +132,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (node.IsExpanded) {
 					node.Collapse();
 				}  else {
-					node.Expand();			
+					node.Expand();
 				}
 			}
 		}
@@ -143,6 +143,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (descriptor != null && descriptor.DialogPanel != null && descriptor.DialogPanel.Control != null) {
 				descriptor.DialogPanel.ReceiveDialogMessage(DialogMessage.Activated);
 				ControlDictionary["optionControlPanel"].Controls.Clear();
+				RightToLeftConverter.ConvertRecursive(descriptor.DialogPanel.Control);
 				ControlDictionary["optionControlPanel"].Controls.Add(descriptor.DialogPanel.Control);
 				optionsPanelLabel.Text = descriptor.Label;
 			}
@@ -207,7 +208,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		public TreeViewOptions(Properties properties, AddInTreeNode node) 
+		public TreeViewOptions(Properties properties, AddInTreeNode node)
 		{
 			this.properties = properties;
 			
@@ -225,7 +226,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		protected void InitializeComponent() 
+		protected void InitializeComponent()
 		{
 			Owner = (Form)WorkbenchSingleton.Workbench;
 

@@ -83,11 +83,11 @@
             <FormattingEnabled value="True" />
             <DropDownStyle value="DropDownList" />
             <Location value="{X=8,Y=40}" />
+        	<RightToLeft value="No" />
           </System.Windows.Forms.ComboBox>
           <System.Windows.Forms.CheckBox>
             <Name value="mouseWheelZoomCheckBox" />
             <Location value="{X=192,Y=109}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.General.MouseWheelZoomCheckBoxCheckBox}" />
             <TabIndex value="6" />
             <Size value="{Width=160, Height=24}" />
@@ -104,7 +104,6 @@
           <System.Windows.Forms.CheckBox>
             <Name value="enableAAFontRenderingCheckBox" />
             <Location value="{X=8,Y=108}" />
-            <FlatAppearance value="System.Windows.Forms.FlatButtonAppearance" />
             <Text value="${res:Dialog.Options.IDEOptions.TextEditor.General.AntialiasedFontCheckBox}" />
             <TabIndex value="5" />
             <Size value="{Width=184, Height=24}" />
@@ -136,6 +135,7 @@
             <FormattingEnabled value="True" />
             <DropDownStyle value="DropDownList" />
             <Location value="{X=8,Y=40}" />
+        	<RightToLeft value="No" />
           </System.Windows.Forms.ComboBox>
         </Controls>
       </System.Windows.Forms.GroupBox>

@@ -47,6 +47,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				return fullscreen;
 			}
 			set {
+				if (fullscreen == value)
+					return;
 				fullscreen = value;
 				if (fullscreen) {
 					defaultWindowState = WindowState;
@@ -125,7 +127,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public DefaultWorkbench()
 		{
-			RightToLeft = RightToLeftConverter.RightToLeft;
 			Text = ResourceService.GetString("MainWindow.DialogName");
 			Icon = ResourceService.GetIcon("Icons.SharpDevelopIcon");
 			
@@ -168,6 +169,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			toolbarUpdateTimer.Interval = 500;
 			toolbarUpdateTimer.Start();
+			
+			RightToLeftConverter.Convert(this);
 		}
 		
 		public void CloseContent(IViewContent content)
@@ -241,7 +244,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		public void RedrawAllComponents()
 		{
-			RightToLeft = RightToLeftConverter.RightToLeft;
+			RightToLeftConverter.ConvertRecursive(this);
 			
 			foreach (ToolStripItem item in TopMenu.Items) {
 				if (item is IStatusUpdate)

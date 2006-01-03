@@ -138,6 +138,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			MaximizeBox  = MinimizeBox = false;
 			ShowInTaskbar = false;
+			RightToLeftConverter.ConvertRecursive(this);
 		}
 		
 		void ExitDialog(object sender, EventArgs e)

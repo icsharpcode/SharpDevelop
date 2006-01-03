@@ -108,6 +108,7 @@ namespace ICSharpCode.FormsDesigner
 			this.loaderProvider    = loaderProvider;
 			this.generator = generator;
 			p.BackColor    = Color.White;
+			p.RightToLeft = RightToLeft.No;
 			
 			this.viewContent             = viewContent;
 			this.textAreaControlProvider = viewContent as ITextEditorControlProvider;

@@ -100,7 +100,13 @@ namespace ICSharpCode.Core
 		{
 			message = StringParser.Parse(message);
 			LoggingService.Warn(message);
-			MessageBox.Show(MessageService.MainForm, message, StringParser.Parse("${res:Global.WarningText}"), MessageBoxButtons.OK, MessageBoxIcon.Warning);
+			MessageBox.Show(MessageService.MainForm,
+			                message,
+			                StringParser.Parse("${res:Global.WarningText}"),
+			                MessageBoxButtons.OK,
+			                MessageBoxIcon.Warning,
+			                MessageBoxDefaultButton.Button1,
+			                GetOptions(message, message));
 		}
 		
 		public static void ShowWarningFormatted(string formatstring, params string[] formatitems)
@@ -110,7 +116,30 @@ namespace ICSharpCode.Core
 		
 		public static bool AskQuestion(string question, string caption)
 		{
-			return MessageBox.Show(MessageService.MainForm, StringParser.Parse(question), StringParser.Parse(caption), MessageBoxButtons.YesNo, MessageBoxIcon.Question) == DialogResult.Yes;
+			return MessageBox.Show(MessageService.MainForm,
+			                       StringParser.Parse(question),
+			                       StringParser.Parse(caption),
+			                       MessageBoxButtons.YesNo,
+			                       MessageBoxIcon.Question,
+			                       MessageBoxDefaultButton.Button1,
+			                       GetOptions(question, caption))
+				== DialogResult.Yes;
+		}
+		
+		static MessageBoxOptions GetOptions(string text, string caption)
+		{
+			return IsRtlText(text) ? MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign : 0;
+		}
+		
+		static bool IsRtlText(string text)
+		{
+			if (!RightToLeftConverter.IsRightToLeft)
+				return false;
+			foreach (char c in StringParser.Parse(text)) {
+				if (char.GetUnicodeCategory(c) == System.Globalization.UnicodeCategory.OtherLetter)
+					return true;
+			}
+			return false;
 		}
 		
 		public static bool AskQuestionFormatted(string caption, string formatstring, params string[] formatitems)
@@ -179,7 +208,13 @@ namespace ICSharpCode.Core
 		{
 			message = StringParser.Parse(message);
 			LoggingService.Info(message);
-			MessageBox.Show(mainForm, message, StringParser.Parse(caption), MessageBoxButtons.OK, MessageBoxIcon.Information);
+			MessageBox.Show(mainForm,
+			                message,
+			                StringParser.Parse(caption),
+			                MessageBoxButtons.OK,
+			                MessageBoxIcon.Information,
+			                MessageBoxDefaultButton.Button1,
+			                GetOptions(message, caption));
 		}
 		
 		static string Format(string formatstring, string[] formatitems)

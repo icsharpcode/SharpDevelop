@@ -38,6 +38,7 @@
         <Location value="{X=8,Y=32}" />
         <Size value="{Width=216, Height=22}" />
         <DropDownStyle value="DropDownList" />
+    	<RightToLeft value="No" />
       </System.Windows.Forms.ComboBox>
       <System.Windows.Forms.Label>
         <Name value="CreatedObject9" />

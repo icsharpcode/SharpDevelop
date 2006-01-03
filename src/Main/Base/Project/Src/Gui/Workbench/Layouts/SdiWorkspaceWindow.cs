@@ -256,11 +256,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public bool CloseWindow(bool force)
 		{
 			if (!force && ViewContent != null && ViewContent.IsDirty) {
-				
-				DialogResult dr = MessageBox.Show(
-				                                  ResourceService.GetString("MainWindow.SaveChangesMessage"),
+				DialogResult dr = MessageBox.Show(ResourceService.GetString("MainWindow.SaveChangesMessage"),
 				                                  ResourceService.GetString("MainWindow.SaveChangesMessageHeader") + " " + Title + " ?",
-				                                  MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question);
+				                                  MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question,
+				                                  MessageBoxDefaultButton.Button3,
+				                                  RightToLeftConverter.IsRightToLeft ? MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign : 0);
 				switch (dr) {
 					case DialogResult.Yes:
 						if (content.FileName == null) {

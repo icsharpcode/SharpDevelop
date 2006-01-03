@@ -185,6 +185,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 		public TextEditorDisplayBindingWrapper()
 		{
 			textAreaControl = CreateSharpDevelopTextAreaControl();
+			textAreaControl.RightToLeft = RightToLeft.No;
 			textAreaControl.Document.DocumentChanged += new DocumentEventHandler(TextAreaChangedEvent);
 			textAreaControl.ActiveTextAreaControl.Caret.CaretModeChanged += new EventHandler(CaretModeChanged);
 			textAreaControl.ActiveTextAreaControl.Enter += new EventHandler(CaretUpdate);
