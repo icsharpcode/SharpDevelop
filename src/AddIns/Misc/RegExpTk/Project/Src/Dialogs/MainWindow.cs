@@ -225,7 +225,7 @@ namespace Plugins.RegExpTk {
 			try {
 				Regex re = new Regex(((TextBox)ControlDictionary["RegularExpressionCompileTextBox"]).Text, options);
 			} catch (ArgumentException ae) {
-				MessageService.Show(ResourceService.GetString("RegExpTk.Messages.CreationError") + " " + ae.Message);
+				MessageService.ShowError(ResourceService.GetString("RegExpTk.Messages.CreationError") + " " + ae.Message);
 				return;
 			}
 			
@@ -243,7 +243,7 @@ namespace Plugins.RegExpTk {
 			try {
 				Regex.CompileToAssembly(rciArray, asmName);
 			} catch (ArgumentException ae) {
-				MessageService.Show(ResourceService.GetString("RegExpTk.Messages.CompilationError") + " " + ae.Message);
+				MessageService.ShowError(ResourceService.GetString("RegExpTk.Messages.CompilationError") + " " + ae.Message);
 			}
 			
 			string aboluteFileName =  Path.GetFullPath(((TextBox)ControlDictionary["AssemblyFileCompileFileTextBox"]).Text);
