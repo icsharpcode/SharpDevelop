@@ -296,7 +296,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				if (((PrimitiveExpression)expr).Value is int)
 					return new IntegerLiteralResolveResult(callingClass, callingMember);
 			} else if (expr is InvocationExpression) {
-				IMethod method = typeVisitor.GetMethod(expr as InvocationExpression, null);
+				IMethodOrProperty method = typeVisitor.GetMethod(expr as InvocationExpression);
 				if (method != null) {
 					return CreateMemberResolveResult(method);
 				} else {
@@ -322,7 +322,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 					return invocationTarget;
 				}
 			} else if (expr is IndexerExpression) {
-				return CreateMemberResolveResult(typeVisitor.GetIndexer(expr as IndexerExpression, null));
+				return CreateMemberResolveResult(typeVisitor.GetIndexer(expr as IndexerExpression));
 			} else if (expr is FieldReferenceExpression) {
 				FieldReferenceExpression fieldReferenceExpression = (FieldReferenceExpression)expr;
 				if (fieldReferenceExpression.FieldName == null || fieldReferenceExpression.FieldName.Length == 0) {

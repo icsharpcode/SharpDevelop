@@ -2164,7 +2164,7 @@ PrimaryExpr<out Expression pexpr>
 		| "base"                              (. Expression retExpr = new BaseReferenceExpression(); .)
 		(
 			"." ident                         (. retExpr = new FieldReferenceExpression(retExpr, t.val); .)
-			| "[" Expr<out expr>              (. ArrayList indices = new ArrayList(); if (expr != null) { indices.Add(expr); } .)
+			| "[" Expr<out expr>              (. List<Expression> indices = new List<Expression>(); if (expr != null) { indices.Add(expr); } .)
 			{ "," Expr<out expr>              (. if (expr != null) { indices.Add(expr); } .) }
 			"]"                               (. retExpr = new IndexerExpression(retExpr, indices); .)
 		)                                     (. pexpr = retExpr; .)
@@ -2237,7 +2237,7 @@ PrimaryExpr<out Expression pexpr>
 			} ] ")"                  (. pexpr = new InvocationExpression(pexpr, parameters, typeList); .)
 		/*--- element access */
 		|  (. if (isArrayCreation) Error("element access not allow on array creation");
-		      ArrayList indices = new ArrayList();
+		      List<Expression> indices = new List<Expression>();
 		   .)
 		"[" Expr<out expr> (. if (expr != null) { indices.Add(expr); } .)
 		{ "," Expr<out expr> (. if (expr != null) { indices.Add(expr); } .)

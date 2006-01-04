@@ -7,15 +7,14 @@
 
 using System;
 using System.Diagnostics;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST 
 {
 	public class IndexerExpression : Expression
 	{
 		Expression       targetObject;
-//		List<Expression> indices;
-		ArrayList indices;
+		List<Expression> indices;
 		
 		public Expression TargetObject {
 			get {
@@ -26,16 +25,16 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList Indices {
+		public List<Expression> Indices {
 			get {
 				return indices;
 			}
 			set {
-				indices = value == null ? new ArrayList(1) : value;
+				indices = value ?? new List<Expression>(1);
 			}
 		}
 		
-		public IndexerExpression(Expression targetObject, ArrayList indices)
+		public IndexerExpression(Expression targetObject, List<Expression> indices)
 		{
 			this.TargetObject = targetObject;
 			this.Indices      = indices;

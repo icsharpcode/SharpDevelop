@@ -70,7 +70,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(InvocationExpression invocationExpression, object data)
 		{
-			IMethod m = GetMethod(invocationExpression, data);
+			IMethodOrProperty m = GetMethod(invocationExpression);
 			if (m == null) {
 				// This might also be a delegate invocation:
 				// get the delegate's Invoke method
@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		
 		public override object Visit(IndexerExpression indexerExpression, object data)
 		{
-			IProperty i = GetIndexer(indexerExpression, data);
+			IProperty i = GetIndexer(indexerExpression);
 			if (i != null)
 				return i.ReturnType;
 			else
@@ -196,28 +196,41 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 		}
 		 */
 		
-		public IMethod GetMethod(InvocationExpression invocationExpression, object data)
+		/// <summary>
+		/// Gets the method called by the InvocationExpression. In Visual Basic, the result
+		/// can also be an Indexer.
+		/// </summary>
+		public IMethodOrProperty GetMethod(InvocationExpression invocationExpression)
 		{
 			IReturnType[] typeParameters = CreateReturnTypes(invocationExpression.TypeArguments);
 			if (invocationExpression.TargetObject is FieldReferenceExpression) {
 				FieldReferenceExpression field = (FieldReferenceExpression)invocationExpression.TargetObject;
-				IReturnType type = field.TargetObject.AcceptVisitor(this, data) as IReturnType;
+				IReturnType type = field.TargetObject.AcceptVisitor(this, null) as IReturnType;
 				List<IMethod> methods = resolver.SearchMethod(type, field.FieldName);
-				return FindOverload(methods, typeParameters, invocationExpression.Arguments, data);
+				if (methods.Count == 0 && resolver.Language == SupportedLanguage.VBNet)
+					return GetVisualBasicIndexer(invocationExpression);
+				return FindOverload(methods, typeParameters, invocationExpression.Arguments, null);
 			} else if (invocationExpression.TargetObject is IdentifierExpression) {
 				string id = ((IdentifierExpression)invocationExpression.TargetObject).Identifier;
 				if (resolver.CallingClass == null) {
 					return null;
 				}
 				List<IMethod> methods = resolver.SearchMethod(id);
-				return FindOverload(methods, typeParameters, invocationExpression.Arguments, data);
+				if (methods.Count == 0 && resolver.Language == SupportedLanguage.VBNet)
+					return GetVisualBasicIndexer(invocationExpression);
+				return FindOverload(methods, typeParameters, invocationExpression.Arguments, null);
 			}
 			return null;
 		}
 		
-		public IProperty GetIndexer(IndexerExpression indexerExpression, object data)
+		IProperty GetVisualBasicIndexer(InvocationExpression invocationExpression)
 		{
-			IReturnType type = (IReturnType)indexerExpression.TargetObject.AcceptVisitor(this, data);
+			return GetIndexer(new IndexerExpression(invocationExpression.TargetObject, invocationExpression.Arguments));
+		}
+		
+		public IProperty GetIndexer(IndexerExpression indexerExpression)
+		{
+			IReturnType type = (IReturnType)indexerExpression.TargetObject.AcceptVisitor(this, null);
 			if (type == null) {
 				return null;
 			}
@@ -231,7 +244,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			for (int i = 0; i < parameters.Length; i++) {
 				Expression expr = indexerExpression.Indices[i] as Expression;
 				if (expr != null)
-					parameters[i] = (IReturnType)expr.AcceptVisitor(this, data);
+					parameters[i] = (IReturnType)expr.AcceptVisitor(this, null);
 			}
 			return MemberLookupHelper.FindOverload(indexers.ToArray(), parameters);
 		}

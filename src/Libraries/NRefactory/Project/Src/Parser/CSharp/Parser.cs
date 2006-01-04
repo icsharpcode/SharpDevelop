@@ -4771,7 +4771,7 @@ out expr);
 out expr);
 
 #line  2167 "cs.ATG" 
-				ArrayList indices = new ArrayList(); if (expr != null) { indices.Add(expr); } 
+				List<Expression> indices = new List<Expression>(); if (expr != null) { indices.Add(expr); } 
 				while (la.kind == 14) {
 					lexer.NextToken();
 					Expr(
@@ -5084,7 +5084,7 @@ out expr);
 
 #line  2239 "cs.ATG" 
 				if (isArrayCreation) Error("element access not allow on array creation");
-				ArrayList indices = new ArrayList();
+				List<Expression> indices = new List<Expression>();
 				
 				lexer.NextToken();
 				Expr(
