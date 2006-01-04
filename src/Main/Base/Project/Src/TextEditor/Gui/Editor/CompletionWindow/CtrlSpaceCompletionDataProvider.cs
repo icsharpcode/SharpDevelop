@@ -71,7 +71,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 			int idx = expression.LastIndexOf('.');
 			if (idx > 0) {
 				preSelection = expression.Substring(idx + 1);
-				expression = expression.Substring(0, idx);
+				expressionResult.Expression = expression.Substring(0, idx);
 				if (charTyped != '\0') {
 					preSelection = null;
 				}
