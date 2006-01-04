@@ -115,7 +115,7 @@ namespace ICSharpCode.FormsDesigner
 					if (pd.Name == "Name" && nameInserted) {
 						continue;
 					}
-					if (pd.Name == "DataBindings" ||
+					if (pd.Name == "DataBindings" || pd.Name == "FlatAppearance" ||
 					    // TabControl duplicate TabPages Workaround (TabPages got inserted twice : In Controls and in TabPages)
 					    (o.GetType().FullName == "System.Windows.Forms.TabControl" && pd.Name == "Controls")) {
 						continue;

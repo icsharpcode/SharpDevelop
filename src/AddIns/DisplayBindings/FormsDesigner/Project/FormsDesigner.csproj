@@ -90,8 +90,6 @@
     <Compile Include="Src\Services\TypeResolutionService.cs" />
     <Compile Include="Src\Services\UIService.cs" />
     <Compile Include="Src\ToolboxProvider.cs" />
-    <EmbeddedResource Include="Src\Gui\ICSharpCode.SharpDevelop.FormDesigner.Gui.AssemblyList.resources" />
-    <EmbeddedResource Include="Src\Gui\ICSharpCode.SharpDevelop.Gui.Dialogs.OptionPanels.ControlLibrariesPanel.resources" />
     <None Include="FormsDesigner.addin">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>

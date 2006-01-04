@@ -331,7 +331,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				// find start of current line
 				while (--start > 0 && fullText[start - 1] != '\n');
 				// find end of current line
-				while (++index < fullText.Length && fullText[index] != '\r');
+				while (++index < fullText.Length && fullText[index] != '\n');
 				
 				string textLine = fullText.Substring(start, index - start);
 				

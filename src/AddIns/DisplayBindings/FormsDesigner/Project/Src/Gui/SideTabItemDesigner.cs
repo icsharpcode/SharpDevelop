@@ -10,7 +10,7 @@
  * 
  * Project : FormDesigner Loading Library Control.
  * 
- * Source code altering : A1 
+ * Source code altering : A1
  * 
  * Description : création of the Tab item displayed into the AXSideTabDesigner control.
  * 				 the control's creator initialize the toolboxitem of the tab item
@@ -35,33 +35,23 @@ namespace ICSharpCode.FormsDesigner.Gui
 {
 	public class SideTabItemDesigner : SharpDevelopSideTabItem
 	{
-		
-		public void CreatedUserControl()
-		{
-			InitializeComponents();
-		}
-		
-		void InitializeComponents()
-		{
-		}
-		
 		///<summary>create a tabitem from a toolboxitem. It init Icon and name from the tag</summary>
 		public SideTabItemDesigner(ToolboxItem tag) : base(tag.DisplayName, tag)
 		{
-			this.Icon           = tag.Bitmap;
+			this.Icon = tag.Bitmap;
 			ReloadToolBox();
 		}
 		
 		///<summary>create a tabitem from a toolboxitem. It init Icon from the tag</summary>
 		public SideTabItemDesigner(string name, ToolboxItem tag) : base(name, tag)
 		{
-			this.Icon           = tag.Bitmap;
+			this.Icon = tag.Bitmap;
 			ReloadToolBox();
 		}
 		
 		///<summary>create a default tabitem : a pointer icon with an empty toolboxitem</summary>
 		public SideTabItemDesigner() : base("Pointer")
-		{	
+		{
 			
 			
 			
@@ -80,6 +70,6 @@ namespace ICSharpCode.FormsDesigner.Gui
 			if (this.Name != "Pointer") {
 				ToolboxProvider.ToolboxService.AddToolboxItem(this.Tag as ToolboxItem);
 			}
-		}				
+		}
 	}
 }

@@ -104,10 +104,16 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		public Assembly LoadAssembly()
 		{
+			//ICSharpCode.Core.LoggingService.Debug("ToolComponent.LoadAssembly(): " + AssemblyName);
+			Assembly assembly;
 			if (HintPath != null) {
-				return Assembly.LoadFrom(FileName);
-			} 
-			return Assembly.Load(AssemblyName);
+				assembly = Assembly.LoadFrom(FileName);
+			} else {
+				assembly = Assembly.Load(AssemblyName);
+			}
+			if (!ICSharpCode.FormsDesigner.Services.TypeResolutionService.DesignerAssemblies.Contains(assembly))
+				ICSharpCode.FormsDesigner.Services.TypeResolutionService.DesignerAssemblies.Add(assembly);
+			return assembly;
 		}
 		
 		public object Clone()
@@ -120,7 +126,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 		}
 	}
 	
-	public class Category 
+	public class Category
 	{
 		string    name;
 		bool      isEnabled  = true;
@@ -266,7 +272,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 						string name = node.Attributes["name"].InnerText;
 						Category newCategory = new Category(name);
 						foreach (XmlNode componentNode in node.ChildNodes) {
-														ToolComponent newToolComponent = new ToolComponent(componentNode.Attributes["class"].InnerText,
+							ToolComponent newToolComponent = new ToolComponent(componentNode.Attributes["class"].InnerText,
 							                                                   (ComponentAssembly)assemblies[Int32.Parse(componentNode.Attributes["assembly"].InnerText)]);
 							newCategory.ToolComponents.Add(newToolComponent);
 						}
@@ -298,11 +304,11 @@ namespace ICSharpCode.FormsDesigner.Gui
 			}
 			if (b == null) {
 				try {
-				 	Stream imageStream = asm.GetManifestResourceStream(component.FullName + ".bmp");
-				 	if (imageStream != null) {
-					 	b = new Bitmap(Image.FromStream(imageStream));
+					Stream imageStream = asm.GetManifestResourceStream(component.FullName + ".bmp");
+					if (imageStream != null) {
+						b = new Bitmap(Image.FromStream(imageStream));
 						b.MakeTransparent();
-				 	}
+					}
 				} catch (Exception e) {
 					ICSharpCode.Core.LoggingService.Warn("ComponentLibraryLoader.GetIcon: " + e.Message);
 				}

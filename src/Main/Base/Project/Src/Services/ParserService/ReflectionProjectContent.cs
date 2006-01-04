@@ -25,10 +25,23 @@ namespace ICSharpCode.SharpDevelop.Dom
 		AssemblyName[] referencedAssemblies;
 		ICompilationUnit assemblyCompilationUnit;
 		string assemblyLocation;
-
+		
 		public string AssemblyLocation {
 			get {
 				return assemblyLocation;
+			}
+		}
+		
+		public bool IsGacAssembly {
+			get {
+				return assemblyLocation == typeof(object).Assembly.Location
+					|| FileUtility.IsBaseDirectory(GacRootPath, assemblyLocation);
+			}
+		}
+		
+		public static string GacRootPath {
+			get {
+				return Path.GetFullPath(Path.Combine(Path.GetDirectoryName(ProjectContentRegistry.SystemAssembly.Location), "..\\..\\.."));
 			}
 		}
 		

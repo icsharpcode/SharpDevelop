@@ -57,6 +57,12 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public static IEnumerable<IProjectContent> LoadedProjectContents {
+			get {
+				return contents.Values;
+			}
+		}
+		
 		public static IProjectContent WinForms {
 			get {
 				lock (contents) {
@@ -173,13 +179,25 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		public static Assembly MscorlibAssembly {
+			get {
+				return typeof(object).Assembly;
+			}
+		}
+		
+		public static Assembly SystemAssembly {
+			get {
+				return typeof(Uri).Assembly;
+			}
+		}
+		
 		static Assembly GetDefaultAssembly(string shortName)
 		{
 			// These assemblies are already loaded by SharpDevelop, so we don't need to load
 			// them in a separate AppDomain.
 			switch (shortName) {
 				case "System": // System != mscorlib !!!
-					return typeof(Uri).Assembly;
+					return SystemAssembly;
 				case "System.Data":
 					return typeof(System.Data.DataException).Assembly;
 				case "System.Design":

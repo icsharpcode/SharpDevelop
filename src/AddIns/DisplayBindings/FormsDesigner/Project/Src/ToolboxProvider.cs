@@ -40,16 +40,9 @@ namespace ICSharpCode.FormsDesigner
 	public class ToolboxProvider
 	{
 		static ICSharpCode.FormsDesigner.Services.ToolboxService         toolboxService = null;
-		static ITypeResolutionService typeResolutionService = new TypeResolutionService();
 		public static ArrayList       SideTabs = new ArrayList();
 		
 		static ComponentLibraryLoader componentLibraryLoader = new ComponentLibraryLoader();
-		
-		public static ITypeResolutionService TypeResolutionService {
-			get {
-				return typeResolutionService;
-			}
-		}
 		
 		public static ComponentLibraryLoader ComponentLibraryLoader {
 			get {
@@ -210,7 +203,7 @@ namespace ICSharpCode.FormsDesigner
 		
 		static void AddReferenceToProject(IProject project, AssemblyName referenceName)
 		{
-			LoggingService.Debug("Adding reference to project: " + referenceName.FullName);
+			LoggingService.Warn("Adding reference to project: " + referenceName.FullName);
 			ReferenceProjectItem reference = new ReferenceProjectItem(project, "Reference");
 			ToolComponent toolComponent = ToolboxProvider.ComponentLibraryLoader.GetToolComponent(referenceName.FullName);
 			if (toolComponent == null || toolComponent.HintPath == null) {
@@ -250,7 +243,7 @@ namespace ICSharpCode.FormsDesigner
 
 		static void AddProjectReferenceToProject(IProject project, IProject referenceTo)
 		{
-			LoggingService.Debug("Adding project reference to project.");
+			LoggingService.Warn("Adding project reference to project.");
 			ProjectReferenceProjectItem reference = new ProjectReferenceProjectItem(project, referenceTo);
 			ProjectService.AddProjectItem(project, reference);
 			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();

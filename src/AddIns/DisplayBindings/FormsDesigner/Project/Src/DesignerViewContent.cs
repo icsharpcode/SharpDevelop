@@ -134,6 +134,8 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 			if (lastAssembly != null) {
+				if (!TypeResolutionService.DesignerAssemblies.Contains(lastAssembly))
+					TypeResolutionService.DesignerAssemblies.Add(lastAssembly);
 				LoggingService.Info("ICSharpAssemblyResolver found..." + args.Name);
 				return lastAssembly;
 			}
@@ -156,7 +158,7 @@ namespace ICSharpCode.FormsDesigner
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IResourceService), designerResourceService);
 			AmbientProperties ambientProperties = new AmbientProperties();
 			serviceContainer.AddService(typeof(AmbientProperties), ambientProperties);
-			serviceContainer.AddService(typeof(ITypeResolutionService), ToolboxProvider.TypeResolutionService);
+			serviceContainer.AddService(typeof(ITypeResolutionService), new TypeResolutionService(viewContent.FileName));
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.IDesignerEventService), new DesignerEventService());
 			serviceContainer.AddService(typeof(System.ComponentModel.Design.DesignerOptionService), new ICSharpCode.FormsDesigner.Services.DesignerOptionService());
 			serviceContainer.AddService(typeof(ITypeDiscoveryService), new TypeDiscoveryService());
@@ -264,29 +266,24 @@ namespace ICSharpCode.FormsDesigner
 				failedDesignerInitialize = true;
 				TextBox errorText = new TextBox();
 				errorText.Multiline = true;
-				if (e.InnerException is FormsDesignerLoadException)
+				if (e.InnerException is FormsDesignerLoadException) {
 					errorText.Text = e.InnerException.Message;
-				else if (e is FormsDesignerLoadException)
+				} else if (e is FormsDesignerLoadException) {
 					errorText.Text = e.Message;
-				else
-					errorText.Text = e.ToString();
-				//output loaderrors too
-				if(!designSurface.IsLoaded) {
-					errorText.Text += "\r\nDesignSurface not loaded :";
-					if(designSurface.LoadErrors != null) {
-						foreach(Exception le in designSurface.LoadErrors) {
-							errorText.Text += "\r\n";
-							errorText.Text += le.ToString();
-							errorText.Text += "\r\n";
-							errorText.Text += le.StackTrace;
-						}
+				} else if (!designSurface.IsLoaded && designSurface.LoadErrors != null) {
+					errorText.Text = "Error loading designer:\r\n\r\n";
+					foreach(Exception le in designSurface.LoadErrors) {
+						errorText.Text += le.ToString();
+						errorText.Text += "\r\n";
 					}
+				} else {
+					errorText.Text = e.ToString();
 				}
 				
 				errorText.Dock = DockStyle.Fill;
 				p.Controls.Add(errorText);
 				Control title = new Label();
-				title.Text = "Failed to load designer. Check the source code for syntax errors.";
+				title.Text = "Failed to load designer. Check the source code for syntax errors and check if all references are available.";
 				title.Dock = DockStyle.Top;
 				p.Controls.Add(title);
 			}
@@ -577,6 +574,8 @@ namespace ICSharpCode.FormsDesigner
 		/// </summary>
 		void PropertyValueChanged(object source, PropertyValueChangedEventArgs e)
 		{
+			if (e.ChangedItem == null || e.OldValue == null)
+				return;
 			if (e.ChangedItem.GridItemType == GridItemType.Property) {
 				if (e.ChangedItem.PropertyDescriptor.Name == "Language") {
 					if (!e.OldValue.Equals(e.ChangedItem.Value)) {

@@ -57,12 +57,28 @@ namespace ICSharpCode.Core
 			forcedContent = content;
 		}
 		
+		/// <summary>
+		/// Gets the list of project contents of all open projects.
+		/// </summary>
 		public static IEnumerable<IProjectContent> AllProjectContents {
 			get {
 				return projectContents.Values;
 			}
 		}
 		
+		/// <summary>
+		/// Gets the list of project contents of all open projects plus the referenced project contents.
+		/// </summary>
+		public static IEnumerable<IProjectContent> AllProjectContentsWithReferences {
+			get {
+				foreach (IProjectContent pc in AllProjectContents) {
+					yield return pc;
+				}
+				foreach (IProjectContent pc in ProjectContentRegistry.LoadedProjectContents) {
+					yield return pc;
+				}
+			}
+		}
 		
 		static ParserService()
 		{

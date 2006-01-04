@@ -35,13 +35,14 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			List<Type> types = new List<Type>();
 			if (baseType != null) {
-				LoggingService.Debug("TypeDiscoveryService.GetTypes baseType=" + baseType.FullName);
-				LoggingService.Debug("TypeDiscoveryService.GetTypes excludeGlobalTypes=" + excludeGlobalTypes.ToString());
+				LoggingService.Debug("TypeDiscoveryService.GetTypes for " + baseType.FullName
+				                     + "excludeGlobalTypes=" + excludeGlobalTypes.ToString());
 				//seek in all assemblies
 				//allow to work designers like columns editor in datagridview
-				foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
+				foreach (Assembly asm in TypeResolutionService.DesignerAssemblies) {
 					AddDerivedTypes(baseType, asm, types);
 				}
+				LoggingService.Debug("TypeDiscoveryService returns " + types.Count + " types");
 				
 				// TODO - Don't look in all assemblies.
 				// Should use the current project and its referenced assemblies
@@ -58,7 +59,7 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			foreach (Type t in assembly.GetExportedTypes()) {
 				if (t.IsSubclassOf(baseType)) {
-					LoggingService.Debug("TypeDiscoveryService.  Adding type=" + t.FullName);
+					//LoggingService.Debug("TypeDiscoveryService.  Adding type=" + t.FullName);
 					list.Add(t);
 				}
 			}

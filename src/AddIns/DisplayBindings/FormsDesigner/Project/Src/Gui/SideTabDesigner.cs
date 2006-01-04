@@ -26,28 +26,18 @@ namespace ICSharpCode.FormsDesigner.Gui
 		protected bool loadImages = true;
 		IToolboxService toolboxService;
 		
-		public void CreatedUserControl()
-		{
-			InitializeComponents();
-		}
-		
-		void InitializeComponents()
-		{
-		}
-		
 		protected SideTabDesigner(AxSideBar sideBar, string name, IToolboxService toolboxService) : base(sideBar, name)
 		{
 			this.toolboxService = toolboxService;
 			this.CanSaved = false;
 			
 			AddDefaultItem();
+			this.ChoosedItemChanged += SelectedTabItemChanged;
 		}
 		
 		protected void AddDefaultItem()
 		{
 			this.Items.Add(new SideTabItemDesigner());
-			//Event the user click on an another "control" itemin the current tab
-			this.ChoosedItemChanged += new EventHandler(SelectedTabItemChanged);
 		}
 		
 		///<summary>Load an assembly's controls</summary>
@@ -67,6 +57,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 			}
 		}
 		
+		/*
 		protected void LoadAssembly(string assemblyName)
 		{
 			Assembly assembly = FindAssembly(assemblyName);
@@ -202,12 +193,14 @@ namespace ICSharpCode.FormsDesigner.Gui
 			}
 			if (lastAssembly != null) {
 				LoggingService.Info("ICSharpAssemblyResolver found..." + args.Name);
+				if (!TypeResolutionService.DesignerAssemblies.Contains(lastAssembly))
+					TypeResolutionService.DesignerAssemblies.Add(lastAssembly);
 				return lastAssembly;
 			}
 			
 			return null;
 		}
-		
+		*/
 		
 		void SelectedTabItemChanged(object sender, EventArgs e)
 		{
