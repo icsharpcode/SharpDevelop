@@ -44,14 +44,15 @@ namespace ICSharpCode.TextEditor.Document
 		{
 		}
 		
-		public DefaultHighlightingStrategy(string name) 
+		public DefaultHighlightingStrategy(string name)
 		{
 			this.name = name;
 			
-			digitColor      = new HighlightBackground("WindowText", "Window", false, false);
+			digitColor       = new HighlightColor(SystemColors.WindowText, false, false);
+			defaultTextColor = new HighlightColor(SystemColors.WindowText, false, false);
 			
 			// set small 'default color environment'
-			environmentColors["DefaultBackground"]= new HighlightBackground("WindowText", "Window", false, false);
+			environmentColors["Default"]          = new HighlightBackground("WindowText", "Window", false, false);
 			environmentColors["Selection"]        = new HighlightColor("HighlightText", "Highlight", false, false);
 			environmentColors["VRuler"]           = new HighlightColor("ControlLight", "Window", false, false);
 			environmentColors["InvalidLines"]     = new HighlightColor(Color.Red, false, false);
@@ -119,7 +120,7 @@ namespace ICSharpCode.TextEditor.Document
 			ResolveExternalReferences();
 		}
 		
-		void ResolveRuleSetReferences() 
+		void ResolveRuleSetReferences()
 		{
 			foreach (HighlightRuleSet ruleSet in Rules) {
 				if (ruleSet.Name == null) {
@@ -151,7 +152,7 @@ namespace ICSharpCode.TextEditor.Document
 			}
 		}
 		
-		void ResolveExternalReferences() 
+		void ResolveExternalReferences()
 		{
 			foreach (HighlightRuleSet ruleSet in Rules) {
 				if (ruleSet.Reference != null) {
@@ -173,10 +174,20 @@ namespace ICSharpCode.TextEditor.Document
 //		{
 //			return (HighlightColor)environmentColors[name];
 //			defaultColor = color;
-//		}		
+//		}
+		
+		HighlightColor defaultTextColor;
+		
+		public HighlightColor DefaultTextColor {
+			get {
+				return defaultTextColor;
+			}
+		}
 		
 		internal void SetColorFor(string name, HighlightColor color)
 		{
+			if (name == "Default")
+				defaultTextColor = new HighlightColor(color.Color, color.Bold, color.Italic);
 			environmentColors[name] = color;
 		}
 
@@ -200,7 +211,7 @@ namespace ICSharpCode.TextEditor.Document
 					return ruleSet.Highlighter.GetColor(document, currentSegment, currentOffset, currentLength);
 				} else {
 					return (HighlightColor)ruleSet.KeyWords[document,  currentSegment, currentOffset, currentLength];
-				}				
+				}
 			}
 			return null;
 		}
@@ -348,7 +359,7 @@ namespace ICSharpCode.TextEditor.Document
 									done = true;
 									processNextLine = true;
 									spanChanged = true;
-								}											
+								}
 							} else {
 								spanChanged = true;
 								done = true;
@@ -364,7 +375,7 @@ namespace ICSharpCode.TextEditor.Document
 				processNextLine = false;
 			}
 			
-//// Alex: remove old words
+			//// Alex: remove old words
 			if (currentLine.Words!=null) currentLine.Words.Clear();
 			currentLine.Words = words;
 			currentLine.HighlightSpanStack = (currentSpanStack != null && currentSpanStack.Count > 0) ? currentSpanStack : null;
@@ -394,11 +405,11 @@ namespace ICSharpCode.TextEditor.Document
 							}
 							
 							processNextLine = MarkTokensInLine(document, lineNumber, ref spanChanged);
- 							processedLines[currentLine] = true;
+							processedLines[currentLine] = true;
 							++lineNumber;
 						}
 					}
-				} 
+				}
 			}
 			
 			if (spanChanged) {
@@ -406,7 +417,7 @@ namespace ICSharpCode.TextEditor.Document
 			} else {
 //				document.Caret.ValidateCaretPos();
 //				document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, document.GetLineNumberForOffset(document.Caret.Offset)));
-//				
+//
 				foreach (LineSegment lineToProcess in inputLines) {
 					document.RequestUpdate(new TextAreaUpdate(TextAreaUpdateType.SingleLine, document.GetLineNumberForOffset(lineToProcess.Offset)));
 				}
@@ -425,7 +436,7 @@ namespace ICSharpCode.TextEditor.Document
 		int currentOffset;
 		int currentLength;
 		
-		void UpdateSpanStateVariables() 
+		void UpdateSpanStateVariables()
 		{
 			inSpan = (currentSpanStack != null && currentSpanStack.Count > 0);
 			activeSpan = inSpan ? (Span)currentSpanStack.Peek() : null;
@@ -468,7 +479,7 @@ namespace ICSharpCode.TextEditor.Document
 						++currentOffset;
 						break;
 					case '\\': // handle escape chars
-						if ((activeRuleSet != null && activeRuleSet.NoEscapeSequences) || 
+						if ((activeRuleSet != null && activeRuleSet.NoEscapeSequences) ||
 						    (activeSpan != null && activeSpan.NoEscapeSequences)) {
 							goto default;
 						}
@@ -489,14 +500,14 @@ namespace ICSharpCode.TextEditor.Document
 								const string hex = "0123456789ABCDEF";
 								++currentLength;
 								++i; // skip 'x'
-								++currentLength; 
+								++currentLength;
 								ishex = true;
 								while (i + 1 < currentLine.Length && hex.IndexOf(Char.ToUpper(document.GetCharAt(currentLine.Offset + i + 1))) != -1) {
 									++i;
 									++currentLength;
 								}
 							} else {
-								++currentLength; 
+								++currentLength;
 								while (i + 1 < currentLine.Length && Char.IsDigit(document.GetCharAt(currentLine.Offset + i + 1))) {
 									++i;
 									++currentLength;
@@ -510,8 +521,8 @@ namespace ICSharpCode.TextEditor.Document
 									++i;
 									++currentLength;
 								}
-							} 
-								
+							}
+							
 							if (i + 1 < currentLine.Length && Char.ToUpper(document.GetCharAt(currentLine.Offset + i + 1)) == 'E') {
 								isfloatingpoint = true;
 								++i;
@@ -616,10 +627,10 @@ namespace ICSharpCode.TextEditor.Document
 				}
 			}
 			
-			PushCurWord(document, ref markNext, words);			
+			PushCurWord(document, ref markNext, words);
 			
 			return words;
-		}		
+		}
 		
 		/// <summary>
 		/// pushes the curWord string on the word list, with the
@@ -662,7 +673,7 @@ namespace ICSharpCode.TextEditor.Document
 					if (c == null) {
 						c = activeSpan.Color;
 						if (c.Color == Color.Transparent) {
-							c = GetColorFor("DefaultBackground");
+							c = this.DefaultTextColor;
 						}
 						hasDefaultColor = true;
 					}
@@ -670,7 +681,7 @@ namespace ICSharpCode.TextEditor.Document
 				} else {
 					HighlightColor c = markNext != null ? markNext : GetColor(activeRuleSet, document, currentLine, currentOffset, currentLength);
 					if (c == null) {
-						words.Add(new TextWord(document, currentLine, currentOffset, currentLength, GetColorFor("DefaultBackground"), true));
+						words.Add(new TextWord(document, currentLine, currentOffset, currentLength, this.DefaultTextColor, true));
 					} else {
 						words.Add(new TextWord(document, currentLine, currentOffset, currentLength, c, false));
 					}
@@ -689,8 +700,8 @@ namespace ICSharpCode.TextEditor.Document
 					}
 				}
 				currentOffset += currentLength;
-				currentLength = 0;					
+				currentLength = 0;
 			}
-		}		
+		}
 	}
 }
