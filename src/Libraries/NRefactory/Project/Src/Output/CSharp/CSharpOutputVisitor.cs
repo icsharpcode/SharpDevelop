@@ -2034,7 +2034,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		public object Visit(AddressOfExpression addressOfExpression, object data)
 		{
 			// C# 2.0 can reference methods directly
-			return Visit(addressOfExpression.Expression, data);
+			return nodeTracker.TrackedVisit(addressOfExpression.Expression, data);
 		}
 		
 		public object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)

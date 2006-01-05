@@ -136,7 +136,8 @@
     <Compile Include="Lexer\CSharp\CustomLexerTests.cs" />
     <Compile Include="Parser\Expressions\DefaultValueExpressionTests.cs" />
     <Compile Include="Output\VBNet\VBNetOutputTest.cs" />
-    <Compile Include="Output\VBNet\ConverterTest.cs" />
+    <Compile Include="Output\VBNet\CSharpToVBConverterTest.cs" />
+    <Compile Include="Output\CSharp\VBToCSharpConverterTest.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\NRefactory.csproj">
