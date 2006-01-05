@@ -31,6 +31,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate>(); // contains FileTemplate classes
 		List<ProjectItem> projectItems = new List<ProjectItem>();
 		List<string> projectImports = new List<string>();
+		List<PropertyGroup> propertyGroups = new List<PropertyGroup>();
 		
 		XmlElement projectOptions = null;
 		
@@ -38,6 +39,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public string LanguageName {
 			get {
 				return languageName;
+			}
+		}
+		
+		public List<PropertyGroup> PropertyGroups {
+			get {
+				return propertyGroups;
 			}
 		}
 		
@@ -136,7 +143,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				foreach(string projectImport in projectImports) {
 					((AbstractProject)project).Imports.Add(projectImport);
 				}
-
+				
+				foreach (PropertyGroup pg in propertyGroups) {
+					((AbstractProject)project).BaseConfiguration.Merge(pg);
+				}
+				
 				// Add Files
 				foreach (FileDescriptionTemplate file in files) {
 					string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} }));
@@ -243,23 +254,37 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			if (element["Imports"] != null) {
 				ReadProjectImports(projectDescriptor, element["Imports"]);
 			}
+			foreach (XmlNode node in element) {
+				if (node.NodeType == XmlNodeType.Element && node.Name == "PropertyGroup") {
+					ReadPropertyGroup(projectDescriptor, (XmlElement)node);
+				}
+			}
 			return projectDescriptor;
 		}
 		
 		static void ReadProjectItems(ProjectDescriptor projectDescriptor, XmlElement xml)
 		{
-			//projectDescriptor.references
 			foreach (XmlNode node in xml.ChildNodes) {
 				XmlElement el = node as XmlElement;
 				if (el != null) {
-					XmlTextReader reader = new XmlTextReader(new StringReader(el.OuterXml));
+					XmlReader reader = new XmlNodeReader(el);
 					reader.Read();
 					projectDescriptor.projectItems.Add(ProjectItem.ReadItem(reader, null, el.Name));
 					reader.Close();
 				}
 			}
 		}
-
+		
+		static void ReadPropertyGroup(ProjectDescriptor projectDescriptor, XmlElement xml)
+		{
+			XmlReader reader = new XmlNodeReader(xml);
+			reader.Read();
+			PropertyGroup pg = new PropertyGroup();
+			PropertyGroup.ReadProperties(reader, pg, xml.Name);
+			projectDescriptor.propertyGroups.Add(pg);
+			reader.Close();
+		}
+		
 		static void ReadProjectImports(ProjectDescriptor projectDescriptor, XmlElement xml)
 		{
 			XmlNodeList nodes = xml.SelectNodes("Import/@Project");

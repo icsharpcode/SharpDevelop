@@ -20,8 +20,60 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
 	public class CombineDescriptor
 	{
-		ArrayList projectDescriptors = new ArrayList();
-		ArrayList combineDescriptors = new ArrayList();
+		SolutionFolderDescriptor mainFolder = new SolutionFolderDescriptor("");
+		
+		class SolutionFolderDescriptor
+		{
+			internal string name;
+			internal List<ProjectDescriptor> projectDescriptors = new List<ProjectDescriptor>();
+			internal List<SolutionFolderDescriptor> solutionFoldersDescriptors = new List<SolutionFolderDescriptor>();
+			
+			internal void Read(XmlElement element)
+			{
+				name = element.GetAttribute("name");
+				foreach (XmlNode node in element.ChildNodes) {
+					if (node != null) {
+						switch (node.Name) {
+							case "Project":
+								projectDescriptors.Add(ProjectDescriptor.CreateProjectDescriptor((XmlElement)node));
+								break;
+							case "SolutionFolder":
+								solutionFoldersDescriptors.Add(new SolutionFolderDescriptor((XmlElement)node));
+								break;
+						}
+					}
+				}
+			}
+			
+			internal bool AddContents(Solution solution, ProjectCreateInformation projectCreateInformation, string defaultLanguage, ISolutionFolderContainer parentFolder)
+			{
+				// Create sub projects
+				foreach (SolutionFolderDescriptor folderDescriptor in solutionFoldersDescriptors) {
+					SolutionFolder folder = solution.CreateFolder(folderDescriptor.name);
+					parentFolder.AddFolder(folder);
+					folderDescriptor.AddContents(solution, projectCreateInformation, defaultLanguage, folder);
+				}
+				foreach (ProjectDescriptor projectDescriptor in projectDescriptors) {
+					IProject newProject = projectDescriptor.CreateProject(projectCreateInformation, defaultLanguage);
+					if (newProject == null)
+						return false;
+					newProject.Location = FileUtility.GetRelativePath(projectCreateInformation.CombinePath, newProject.FileName);
+					parentFolder.AddFolder(newProject);
+					projectCreateInformation.CreatedProjects.Add(newProject.FileName);
+				}
+				return true;
+			}
+			
+			public SolutionFolderDescriptor(XmlElement element)
+			{
+				Read(element);
+			}
+			
+			public SolutionFolderDescriptor(string name)
+			{
+				this.name = name;
+			}
+		}
 		
 		string name;
 		string startupProject    = null;
@@ -34,15 +86,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 		}
 
-		public ArrayList ProjectDescriptors {
+		public List<ProjectDescriptor> ProjectDescriptors {
 			get {
-				return projectDescriptors;
-			}
-		}
-
-		public ArrayList CombineDescriptors {
-			get {
-				return projectDescriptors;
+				return mainFolder.projectDescriptors;
 			}
 		}
 		#endregion
@@ -52,14 +98,14 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			this.name = name;
 		}
 		
-		public string CreateCombine(ProjectCreateInformation projectCreateInformation, string defaultLanguage)
+		public string CreateSolution(ProjectCreateInformation projectCreateInformation, string defaultLanguage)
 		{
-			Solution newCombine     = new Solution();
-			string  newCombineName = StringParser.Parse(name, new string[,] { 
-				{"ProjectName", projectCreateInformation.ProjectName}
-			});
+			Solution newSolution = new Solution();
+			string newCombineName = StringParser.Parse(name, new string[,] {
+			                                           	{"ProjectName", projectCreateInformation.ProjectName}
+			                                           });
 			
-			newCombine.Name = newCombineName;
+			newSolution.Name = newCombineName;
 			
 			string oldCombinePath = projectCreateInformation.CombinePath;
 			string oldProjectPath = projectCreateInformation.ProjectBasePath;
@@ -74,23 +120,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 			}
 			
-			// Create sub projects
-			foreach (ProjectDescriptor projectDescriptor in projectDescriptors) {
-				IProject newProject = projectDescriptor.CreateProject(projectCreateInformation, defaultLanguage);
-				if (newProject == null)
-					return null;
-				newProject.Location = FileUtility.GetRelativePath(oldCombinePath, newProject.FileName);
-				newCombine.AddFolder(newProject);
-				projectCreateInformation.CreatedProjects.Add(newProject.FileName);
-			}
-			
-//			// Create sub combines
-//			foreach (CombineDescriptor combineDescriptor in combineDescriptors) {
-//				newCombine.AddEntry(combineDescriptor.CreateCombine(projectCreateInformation, defaultLanguage));
-//			}
-			
 			projectCreateInformation.CombinePath = oldCombinePath;
 			projectCreateInformation.ProjectBasePath = oldProjectPath;
+			
+			if (!mainFolder.AddContents(newSolution, projectCreateInformation, defaultLanguage, newSolution)) {
+				newSolution.Dispose();
+				return null;
+			}
 			
 			string combineLocation = Path.Combine(projectCreateInformation.CombinePath, newCombineName + ".sln");
 			// Save combine
@@ -98,12 +134,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				
 				StringParser.Properties["combineLocation"] = combineLocation;
 				if (MessageService.AskQuestion("${res:ICSharpCode.SharpDevelop.Internal.Templates.CombineDescriptor.OverwriteProjectQuestion}")) {
-					newCombine.Save(combineLocation);
+					newSolution.Save(combineLocation);
 				}
 			} else {
-				newCombine.Save(combineLocation);
+				newSolution.Save(combineLocation);
 			}
-			newCombine.Dispose();
+			newSolution.Dispose();
 			return combineLocation;
 		}
 		
@@ -119,18 +155,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				combineDescriptor.startupProject = element["Options"]["StartupProject"].InnerText;
 			}
 			
-			foreach (XmlNode node in element.ChildNodes) {
-				if (node != null) {
-					switch (node.Name) {
-						case "Project":
-							combineDescriptor.projectDescriptors.Add(ProjectDescriptor.CreateProjectDescriptor((XmlElement)node));
-							break;
-						case "Combine":
-							combineDescriptor.combineDescriptors.Add(CreateCombineDescriptor((XmlElement)node));
-							break;
-					}
-				}
-			}
+			combineDescriptor.mainFolder.Read(element);
 			return combineDescriptor;
 		}
 	}

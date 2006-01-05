@@ -187,7 +187,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				icon = config["Icon"].InnerText;
 			}
 			
-			if (doc.DocumentElement["Combine"] != null) {
+			if (doc.DocumentElement["Solution"] != null) {
+				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(doc.DocumentElement["Solution"]);
+			} else if (doc.DocumentElement["Combine"] != null) {
 				combineDescriptor = CombineDescriptor.CreateCombineDescriptor(doc.DocumentElement["Combine"]);
 			}
 			
@@ -226,7 +228,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				WizardDialog wizard = new WizardDialog("Project Wizard", customizer, wizardpath);
 				if (wizard.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
 					if (combineDescriptor != null)
-						lastCombine = combineDescriptor.CreateCombine(projectCreateInformation, this.languagename);
+						lastCombine = combineDescriptor.CreateSolution(projectCreateInformation, this.languagename);
 					else if (projectDescriptor != null)
 						lastCombine = projectDescriptor.CreateProject(projectCreateInformation, this.languagename).FileName;
 				} else {
@@ -234,7 +236,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 			} else {
 				if (combineDescriptor != null)
-					lastCombine = combineDescriptor.CreateCombine(projectCreateInformation, this.languagename);
+					lastCombine = combineDescriptor.CreateSolution(projectCreateInformation, this.languagename);
 				else if (projectDescriptor != null)
 					lastCombine = projectDescriptor.CreateProject(projectCreateInformation, this.languagename).FileName;
 			}

@@ -7,9 +7,9 @@
 	<TemplateConfiguration>
 		<Name>Complex EXAMPLE</Name>
 		<Category>C#</Category>
-		<Icon>C#.Project.ConsoleCSharpProject</Icon>
+		<Icon>C#.Project.DOSProject</Icon>
 		<LanguageName>C#</LanguageName>
-		<Description>Creates a combine</Description>
+		<Description>Example template that tries to use every feature once</Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->
@@ -18,56 +18,118 @@
 	</Actions>
 	
 	<!-- Template Content -->
-	<Combine name = "${ProjectName}" directory = ".">
+	<!-- for compatibility reasons, the root node is allowed to be called either Solution or Combine -->
+	<Solution name = "${ProjectName}" directory = ".">
+		
+		<!-- the startup project can be specified like this: -->
 		<Options>
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
 		
-		<Combine name = "Empty Sub Combine" directory = "SubCombine1"/>
+		<!-- you can nest solution folders inside the Solution node -->
+		<SolutionFolder name = "Empty Sub Folder"/>
 		
-		<Combine name = "VB.NET Sub Combine" directory = "VBNetSubCombine">
-			<Project name = "VBNetProject" directory = "." language="VBNET">
+		<SolutionFolder name = "VB.NET Sub Folder">
+			<!-- Solution folders can contain: nested solution folders and projects -->
+			<SolutionFolder name = "Nested Sub Folder"/>
+			
+			<Project name = "VBNetProject" directory = "VBNetSubProject" language="VBNet">
+				<!-- you can use the Options node to set properties on the SharpDevelop "IProject". -->
+				<Options OutputType = "WinExe"/>
 				
-				<Options Target = "Exe" PauseConsoleOutput = "True"/>
+				<!-- add a PropertyGroup to the project to set MSBuild properties (not all MSBuild properties are exposed by the "IProject") -->
+				<PropertyGroup>
+					<RemoveIntegerChecks>True</RemoveIntegerChecks>
+				</PropertyGroup>
 				
-				<References>
-					<Reference type="Gac" refto="System, Version=1.0.3300.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
-				</References>
+				<!-- use PropertyItems to include MSBuild items -->
+				<ProjectItems>
+					<!-- create GAC references like this: -->
+					<Reference Include="System" />
+					<Reference Include="System.Data" />
+					<Reference Include="System.Drawing" />
+					<Reference Include="System.Deployment" />
+					<Reference Include="System.Windows.Forms" />
+					<Reference Include="System.Xml" />
+					
+					<!-- Visual Basic Default Imports work like this: -->
+					<Import Include="Microsoft.VisualBasic" />
+					<Import Include="System" />
+					<Import Include="System.Collections" />
+					<Import Include="System.Collections.Generic" />
+					<Import Include="System.Data" />
+					<Import Include="System.Drawing" />
+					<Import Include="System.Diagnostics" />
+					<Import Include="System.Windows.Forms" />
+				</ProjectItems>
+				
+				<Imports>
+					<!-- you can import additional MSBuild targets in the Imports-section of the project node -->
+					<Import Project="$(MSBuildBinPath)\Microsoft.WinFX.targets" />
+				</Imports>
 				
 				<Files>
-			<File name="Main.vb">
-				<![CDATA[' project created on ${Date} at ${Time}
-	Imports System
-	Module Main
-	    Sub Main()
-	        Console.WriteLine("Hello World!")
-	    End Sub
-	End Module
+					<!-- Here come the files of the project -->
+					<!-- Put the file content in a CDATA section. You can use all StringParser expressions. -->
+					<File name="Main.vb">
+				<![CDATA[${StandardHeader.VBNET}
+Public Partial Class MainForm
+	Inherits System.Windows.Forms.Form
+	
+	Public Sub New()
+		'
+		' The Me.InitializeComponent call is required for Windows Forms designer support.
+		'
+		Me.InitializeComponent
+		'
+		' TODO : Add constructor code after InitializeComponents
+		'
+	End Sub
+End Class
 	]]></File>
+					<!--
+					   The file element supports these attributes:
+					   language, buildAction, copyToOutputDirectory, dependentUpon, subType
+					-->
+					<File name="Main.Designer.vb" buildAction="Compile" dependentUpon="Main.vb" subType="Code"><![CDATA[
+Partial Class MainForm
+	' This file is required for Windows Forms designer support.
+	' Do not change the contents inside the source code editor. The Forms designer might
+	' not be able to load this method if it was changed manually.
+	Private Sub InitializeComponent()
+		'
+		'Form1
+		'
+		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
+		Me.ClientSize = New System.Drawing.Size(292, 266)
+		Me.Name = "MainForm"
+		Me.Text = "MainForm"
+	End Sub
+End Class
+]]>
+					</File>
 				</Files>
-			</Project>			
-		</Combine>
+			</Project>
+		</SolutionFolder>
 		
+		<!-- a project without language uses the language specified in the template header -->
 		<Project name = "${ProjectName}" directory = ".">
 			<Options/>
+			<ProjectItems>
+				<Reference Include="System" />
+				<Reference Include="System.Data" />
+				<Reference Include="System.Xml" />
+			</ProjectItems>
 			<Files>
 			<File name="Elements\Readme.txt"><![CDATA[// project ${ProjectName} and file ${FileName} created on ${Date}
 at ${Time}]]></File>
-<File name="Tables\Readme.txt"><![CDATA[// project created on ${Date} at
-${Time}]]></File>
-<File name="Forms\Readme.txt"><![CDATA[// project created on ${Date} at
-${Time}]]></File>
-<File name="Forms\Dialogs\Readme.txt"><![CDATA[// project created on
-${Date} at ${Time}]]></File>
-
-<File name="Forms\Controls\Readme.txt"><![CDATA[// project created on
-${Date} at ${Time}]]></File>
-<File name="Menu\Readme.txt"><![CDATA[// project created on ${Date} at
-${Time}]]></File>
-<File name="Reports\Readme.txt"><![CDATA[// project created on ${Date}
-at ${Time}]]></File>
-<File name="Batches\Readme.txt"><![CDATA[// project created on ${Date}
-at ${Time}]]></File>
+<File name="Tables\Readme.txt"><![CDATA[// project created on ${Date} at ${Time}]]></File>
+<File name="Forms\Readme.txt"><![CDATA[// project created on ${Date} at ${Time}]]></File>
+<File name="Forms\Dialogs\Readme.txt"><![CDATA[// project created on ${Date} at ${Time}]]></File>
+<File name="Forms\Controls\Readme.txt"><![CDATA[// project created on ${Date} at ${Time}]]></File>
+<File name="Menu\Readme.txt"><![CDATA[// project created on ${Date} at ${Time}]]></File>
+<File name="Reports\Readme.txt"><![CDATA[// project created on ${Date} at ${Time}]]></File>
+<File name="Batches\Readme.txt"><![CDATA[// project created on ${Date} at ${Time}]]></File>
 				<File name="Main.cs"><![CDATA[// project created on ${Date} at ${Time}
 using System;
 
@@ -105,13 +167,8 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion("1.0.*")]
 
-// The following attributes specify the key for the sign of your assembly. See the
-// .NET Framework documentation for more information about signing.
-// This is not required, if you don't want signing let these attributes like they're.
-[assembly: AssemblyDelaySign(false)]
-[assembly: AssemblyKeyFile("")]
 ]]></File>
 			</Files>
 		</Project>
-	</Combine>
+	</Solution>
 </Template>
