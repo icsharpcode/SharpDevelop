@@ -10,7 +10,7 @@ using System;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class Tag : MarshalByRefObject //Comment
+	public class Tag //Comment
 	{
 		string key;
 		

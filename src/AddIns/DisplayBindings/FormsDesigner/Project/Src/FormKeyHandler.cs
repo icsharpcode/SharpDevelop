@@ -121,7 +121,7 @@ namespace ICSharpCode.FormsDesigner
 				ISelectionService   selectionService = (ISelectionService)formDesigner.Host.GetService(typeof(ISelectionService));
 				ICollection components = selectionService.GetSelectedComponents();
 				if (components.Count == 1) {
-					foreach (Component component in components) {
+					foreach (IComponent component in components) {
 						if (HandleMenuCommand(formDesigner, component, keyPressed))
 							return false;
 					}
@@ -138,7 +138,7 @@ namespace ICSharpCode.FormsDesigner
 			return false;
 		}
 		
-		bool HandleMenuCommand(FormsDesignerViewContent formDesigner, Component activeComponent, Keys keyPressed)
+		bool HandleMenuCommand(FormsDesignerViewContent formDesigner, IComponent activeComponent, Keys keyPressed)
 		{
 			Assembly asm = typeof(WindowsFormsDesignerOptionService).Assembly;
 			// Microsoft made ToolStripKeyboardHandlingService internal, so we need Reflection

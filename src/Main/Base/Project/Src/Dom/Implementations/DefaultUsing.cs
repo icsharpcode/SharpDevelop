@@ -13,7 +13,7 @@ using ICSharpCode.Core;
 namespace ICSharpCode.SharpDevelop.Dom
 {
 	[Serializable]
-	public class DefaultUsing : MarshalByRefObject, IUsing
+	public class DefaultUsing : IUsing
 	{
 		DomRegion region;
 		IProjectContent projectContent;
@@ -61,7 +61,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			aliases.Add(alias, type);
 		}
 		
-		public string SearchNamespace(string partitialNamespaceName)
+		public string SearchNamespace(string partialNamespaceName)
 		{
 			if (HasAliases) {
 				foreach (KeyValuePair<string, IReturnType> entry in aliases) {
@@ -69,14 +69,14 @@ namespace ICSharpCode.SharpDevelop.Dom
 						continue;
 					string aliasString = entry.Key;
 					string nsName;
-					if (projectContent.Language.NameComparer.Equals(partitialNamespaceName, aliasString)) {
+					if (projectContent.Language.NameComparer.Equals(partialNamespaceName, aliasString)) {
 						nsName = entry.Value.FullyQualifiedName;
 						if (projectContent.NamespaceExists(nsName))
 							return nsName;
 					}
-					if (partitialNamespaceName.Length > aliasString.Length) {
-						if (projectContent.Language.NameComparer.Equals(partitialNamespaceName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
-							nsName = String.Concat(entry.Value.FullyQualifiedName, partitialNamespaceName.Remove(0, aliasString.Length));
+					if (partialNamespaceName.Length > aliasString.Length) {
+						if (projectContent.Language.NameComparer.Equals(partialNamespaceName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
+							nsName = String.Concat(entry.Value.FullyQualifiedName, partialNamespaceName.Remove(0, aliasString.Length));
 							if (projectContent.NamespaceExists(nsName)) {
 								return nsName;
 							}
@@ -86,7 +86,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (projectContent.Language.ImportNamespaces) {
 				foreach (string str in usings) {
-					string possibleNamespace = String.Concat(str, ".", partitialNamespaceName);
+					string possibleNamespace = String.Concat(str, ".", partialNamespaceName);
 					if (projectContent.NamespaceExists(possibleNamespace))
 						return possibleNamespace;
 				}
@@ -94,19 +94,19 @@ namespace ICSharpCode.SharpDevelop.Dom
 			return null;
 		}
 		
-		public IReturnType SearchType(string partitialTypeName, int typeParameterCount)
+		public IReturnType SearchType(string partialTypeName, int typeParameterCount)
 		{
 			if (HasAliases) {
 				foreach (KeyValuePair<string, IReturnType> entry in aliases) {
 					string aliasString = entry.Key;
-					if (projectContent.Language.NameComparer.Equals(partitialTypeName, aliasString)) {
+					if (projectContent.Language.NameComparer.Equals(partialTypeName, aliasString)) {
 						if (entry.Value.IsDefaultReturnType && entry.Value.GetUnderlyingClass() == null)
 							continue; // type not found, maybe entry was a namespace
 						return entry.Value;
 					}
-					if (partitialTypeName.Length > aliasString.Length) {
-						if (projectContent.Language.NameComparer.Equals(partitialTypeName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
-							string className = entry.Value.FullyQualifiedName + partitialTypeName.Remove(0, aliasString.Length);
+					if (partialTypeName.Length > aliasString.Length) {
+						if (projectContent.Language.NameComparer.Equals(partialTypeName.Substring(0, aliasString.Length + 1), aliasString + ".")) {
+							string className = entry.Value.FullyQualifiedName + partialTypeName.Remove(0, aliasString.Length);
 							IClass c = projectContent.GetClass(className, typeParameterCount);
 							if (c != null) {
 								return c.DefaultReturnType;
@@ -117,25 +117,25 @@ namespace ICSharpCode.SharpDevelop.Dom
 			}
 			if (projectContent.Language.ImportNamespaces) {
 				foreach (string str in usings) {
-					IClass c = projectContent.GetClass(str + "." + partitialTypeName, typeParameterCount);
+					IClass c = projectContent.GetClass(str + "." + partialTypeName, typeParameterCount);
 					if (c != null) {
 						return c.DefaultReturnType;
 					}
 				}
 			} else {
-				int pos = partitialTypeName.IndexOf('.');
+				int pos = partialTypeName.IndexOf('.');
 				string className, subClassName;
 				if (pos < 0) {
-					className = partitialTypeName;
+					className = partialTypeName;
 					subClassName = null;
 				} else {
-					className = partitialTypeName.Substring(0, pos);
-					subClassName = partitialTypeName.Substring(pos + 1);
+					className = partialTypeName.Substring(0, pos);
+					subClassName = partialTypeName.Substring(pos + 1);
 				}
 				foreach (string str in usings) {
 					IClass c = projectContent.GetClass(str + "." + className, typeParameterCount);
 					if (c != null) {
-						c = projectContent.GetClass(str + "." + partitialTypeName, typeParameterCount);
+						c = projectContent.GetClass(str + "." + partialTypeName, typeParameterCount);
 						if (c != null) {
 							return c.DefaultReturnType;
 						}

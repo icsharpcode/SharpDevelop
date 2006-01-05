@@ -135,9 +135,9 @@ namespace ICSharpCode.FormsDesigner.Services
 			ISelectionService selectionService = (ISelectionService)designSurface.GetService(typeof(ISelectionService));
 			IDesignerHost host = (IDesignerHost)serviceContainer.GetService(typeof(IDesignerHost));
 			if (host != null && selectionService != null && selectionService.SelectionCount == 1) {
-				IComponent selectedComponent = selectionService.PrimarySelection as Component;
+				IComponent selectedComponent = selectionService.PrimarySelection as IComponent;
 				if (selectedComponent != null) {
-					IDesigner designer = host.GetDesigner((IComponent)selectedComponent);
+					IDesigner designer = host.GetDesigner(selectedComponent);
 					if (designer != null) {
 						designerVerbCollection.AddRange(designer.Verbs);
 					}

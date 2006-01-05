@@ -11,7 +11,7 @@ using System.Collections.Generic;
 namespace ICSharpCode.SharpDevelop.Dom {
 	
 	[Serializable]
-	public class DefaultComment : System.MarshalByRefObject, IComment
+	public class DefaultComment : IComment
 	{
 		bool    isBlockComment;
 		string  commentTag;

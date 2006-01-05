@@ -583,6 +583,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override void OnArrayLiteralExpression(ArrayLiteralExpression node)
 		{
+			if (node.Type != null) {
+				MakeResult(ConvertType(node.Type));
+				return;
+			}
 			IReturnType elementType = null;
 			foreach (Expression expr in node.Items) {
 				ClearResult();
