@@ -293,6 +293,8 @@ namespace ICSharpCode.SharpDevelop.Project
 				case OutputType.WinExe:
 				case OutputType.Exe:
 					return ".exe";
+				case OutputType.Module:
+					return ".netmodule";
 				default:
 					return ".dll";
 			}

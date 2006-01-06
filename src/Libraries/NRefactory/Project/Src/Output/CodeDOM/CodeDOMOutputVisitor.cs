@@ -13,6 +13,7 @@ using System.Collections;
 using System.Collections.Generic;
 
 using ICSharpCode.NRefactory.Parser.AST;
+using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.NRefactory.Parser
 {
@@ -24,6 +25,17 @@ namespace ICSharpCode.NRefactory.Parser
 		List<CodeVariableDeclarationStatement> variables = new List<CodeVariableDeclarationStatement>();
 		
 		TypeDeclaration currentTypeDeclaration = null;
+		
+		IEnvironmentInformationProvider environmentInformationProvider = new DummyEnvironmentInformationProvider();
+		
+		public IEnvironmentInformationProvider EnvironmentInformationProvider {
+			get {
+				return environmentInformationProvider;
+			}
+			set {
+				environmentInformationProvider = value;
+			}
+		}
 		
 		// dummy collection used to swallow statements
 		CodeStatementCollection NullStmtCollection = new CodeStatementCollection();
@@ -821,11 +833,8 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		bool IsField(string type, string fieldName)
 		{
-			Type t       = null;
+			bool isField = environmentInformationProvider.HasField(type, fieldName);
 			
-			t = this.GetType(type); // search in all currently loaded assemblies
-			
-			bool isField = t != null && (t.IsEnum || t.GetField(fieldName) != null);
 			if (!isField) {
 				int idx = type.LastIndexOf('.');
 				if (idx >= 0) {
@@ -970,48 +979,6 @@ namespace ICSharpCode.NRefactory.Parser
 			return list;
 		}
 		
-		//copy from TypeResolutionService.cs because from this point impossible to access TypeResolutionService
-		//TODO create universal way for getting types
-		public Type GetType(string name)
-		{
-			bool throwOnError = false;
-			bool ignoreCase = false;
-			if (name == null || name.Length == 0) {
-				return null;
-			}
-			Assembly lastAssembly = null;
-			foreach (Assembly asm in AppDomain.CurrentDomain.GetAssemblies()) {
-				Type t = asm.GetType(name, throwOnError);
-				if (t != null) {
-					lastAssembly = asm;
-				}
-			}
-			if (lastAssembly != null) {
-				return lastAssembly.GetType(name, throwOnError, ignoreCase);
-			}
-			
-			Type type = Type.GetType(name, throwOnError, ignoreCase);
-			
-			// type lookup for typename, assembly, xyz style lookups
-			if (type == null) {
-				int idx = name.IndexOf(",");
-				if (idx > 0) {
-					string[] splitName = name.Split(',');
-					string typeName     = splitName[0];
-					string assemblyName = splitName[1].Substring(1);
-					Assembly assembly = null;
-					try {
-						assembly = Assembly.Load(assemblyName);
-					} catch (Exception) {}
-					if (assembly != null) {
-						type = assembly.GetType(typeName, throwOnError, ignoreCase);
-					} else {
-						type = Type.GetType(typeName, throwOnError, ignoreCase);
-					}
-				}
-			}
-			
-			return type;
-		}
+		
 	}
 }

@@ -204,6 +204,7 @@
     <Compile Include="Src\Parser\Visitors\CSharpConstructsVisitor.cs" />
     <Compile Include="Src\Parser\Visitors\ToCSharpConvertVisitor.cs" />
     <Compile Include="Src\Parser\Visitors\ToVBNetConvertVisitor.cs" />
+    <Compile Include="Src\Output\EnvironmentInformationProvider.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />

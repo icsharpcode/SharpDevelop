@@ -223,6 +223,7 @@ namespace ICSharpCode.FormsDesigner
 			}
 			
 			CodeDOMVisitor visitor = new CodeDOMVisitor();
+			visitor.EnvironmentInformationProvider = new ICSharpCode.SharpDevelop.Dom.NRefactoryResolver.NRefactoryInformationProvider(formClass.ProjectContent, formClass);
 			visitor.Visit(combinedCu, null);
 			
 			// output generated CodeDOM to the console :

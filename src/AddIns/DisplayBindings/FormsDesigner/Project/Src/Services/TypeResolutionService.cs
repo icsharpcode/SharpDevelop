@@ -16,6 +16,9 @@ using System.ComponentModel.Design;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
+using System.Diagnostics ;
+
+
 using HashFunction = System.Security.Cryptography.SHA1Managed;
 
 namespace ICSharpCode.FormsDesigner.Services
@@ -38,10 +41,38 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		static TypeResolutionService()
 		{
+			ClearMixedAssembliesTemporaryFiles();
 			DesignerAssemblies.Add(ProjectContentRegistry.MscorlibAssembly);
 			DesignerAssemblies.Add(ProjectContentRegistry.SystemAssembly);
 			DesignerAssemblies.Add(typeof(System.Drawing.Point).Assembly);
 		}
+		
+		[System.Runtime.InteropServices.DllImport("kernel32.dll")]
+		private static extern bool MoveFileEx(string lpExistingFileName, string lpNewFileName, int dwFlags);
+		const int MOVEFILE_DELAY_UNTIL_REBOOT = 0x00000004;
+		
+		static void MarkFileToDeleteOnReboot(string fileName)
+		{
+			MoveFileEx(fileName, null, MOVEFILE_DELAY_UNTIL_REBOOT);
+		}
+
+		static void ClearMixedAssembliesTemporaryFiles()
+		{
+			string[] files = Directory.GetFiles(Path.GetTempPath(), "*.sd_forms_designer_mixed_assembly.dll");
+			foreach (string fileName in files) {
+				try {
+					File.Delete(fileName);
+				} catch {}
+			}
+			/* We don't need to debug controls inside the forms designer
+			files = Directory.GetFiles(Path.GetTempPath(), "*.pdb");
+			foreach (string fileName in files) {
+				try {
+					File.Delete(fileName);
+				} catch {}
+			}*/
+		}
+
 		
 		string formSourceFileName;
 		IProjectContent callingProject;
@@ -79,6 +110,16 @@ namespace ICSharpCode.FormsDesigner.Services
 		/// </summary>
 		public static Assembly LoadAssembly(IProjectContent pc)
 		{
+			// load dependencies of current assembly
+			foreach (IProjectContent rpc in pc.ReferencedContents) {
+				if (rpc is ParseProjectContent) {
+					LoadAssembly(rpc);
+				} else if (rpc is ReflectionProjectContent) {
+					if (!(rpc as ReflectionProjectContent).IsGacAssembly)
+						LoadAssembly(rpc);
+				}
+			}
+			
 			if (pc.Project != null) {
 				return LoadAssembly(pc.Project.OutputAssemblyFullPath);
 			} else if (pc is ReflectionProjectContent) {
@@ -104,7 +145,66 @@ namespace ICSharpCode.FormsDesigner.Services
 				Assembly asm;
 				if (assemblyDict.TryGetValue(hash, out asm))
 					return asm;
-				asm = Assembly.Load(data);
+				try {
+					asm = Assembly.Load(data);
+				} catch (BadImageFormatException e) {
+					if (e.Message.Contains("HRESULT: 0x8013141D")) {
+						//netmodule
+						string tempPath = Path.GetTempFileName();
+						File.Delete(tempPath);
+						tempPath += ".sd_forms_designer_netmodule_assembly.dll";
+						
+						try {
+							//convert netmodule to assembly
+							Process p = new Process();
+							p.StartInfo.UseShellExecute = false;
+							p.StartInfo.FileName = Path.GetDirectoryName(typeof(object).Module.FullyQualifiedName) + Path.DirectorySeparatorChar + "al.exe";
+							p.StartInfo.Arguments = "\"" + fileName +"\" /out:\"" + tempPath + "\"";
+							p.StartInfo.CreateNoWindow = true;
+							p.Start();
+							p.WaitForExit();
+							
+							if(p.ExitCode == 0 && File.Exists(tempPath)) {
+								byte[] asm_data = File.ReadAllBytes(tempPath);
+								asm = Assembly.Load(asm_data);
+								asm.LoadModule(Path.GetFileName(fileName), data);
+								Type[] types = asm.GetTypes();
+							}
+						} catch (Exception ex) {
+							MessageService.ShowError(ex, "Error calling linker for netmodule");
+						}
+						try {
+							File.Delete(tempPath);
+						} catch {}
+					} else {
+						throw; // don't ignore other load errors
+					}
+				} catch (FileLoadException e) {
+					if (e.Message.Contains("HRESULT: 0x80131402")) {
+						//this is C++/CLI Mixed assembly which can only be loaded from disk, not in-memory
+						string tempPath = Path.GetTempFileName();
+						File.Delete(tempPath);
+						tempPath += ".sd_forms_designer_mixed_assembly.dll";
+						File.Copy(fileName, tempPath);
+						
+						/* We don't need to debug controls inside the forms designer
+						string pdbpath = Path.GetDirectoryName(fileName) + Path.DirectorySeparatorChar + Path.GetFileNameWithoutExtension(fileName) + ".pdb";
+						if (File.Exists(pdbpath)) {
+							string newpdbpath = Path.GetTempPath() + Path.DirectorySeparatorChar + Path.GetFileName(pdbpath);
+							try {
+								File.Copy(pdbpath, newpdbpath);
+								MarkFileToDeleteOnReboot(newpdbpath);
+							} catch {
+							}
+						}
+						 */
+						asm = Assembly.LoadFile(tempPath);
+						MarkFileToDeleteOnReboot(tempPath);
+					} else {
+						throw; // don't ignore other load errors
+					}
+				}
+
 				lock (designerAssemblies) {
 					if (!designerAssemblies.Contains(asm))
 						designerAssemblies.Add(asm);
