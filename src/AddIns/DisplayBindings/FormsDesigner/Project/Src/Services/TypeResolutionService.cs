@@ -168,7 +168,6 @@ namespace ICSharpCode.FormsDesigner.Services
 								byte[] asm_data = File.ReadAllBytes(tempPath);
 								asm = Assembly.Load(asm_data);
 								asm.LoadModule(Path.GetFileName(fileName), data);
-								Type[] types = asm.GetTypes();
 							}
 						} catch (Exception ex) {
 							MessageService.ShowError(ex, "Error calling linker for netmodule");

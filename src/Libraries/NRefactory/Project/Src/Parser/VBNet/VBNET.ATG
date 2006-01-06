@@ -1710,29 +1710,8 @@ EventMemberSpecifier<out string name>
 
 Expr<out Expression expr>
 =
-	ConditionalOrExpr<out expr>
+	DisjunctionExpr<out expr>
 .
-
-UnaryExpr<out Expression uExpr> 
-	(.
-		Expression expr;
-		UnaryOperatorType uop = UnaryOperatorType.None;
-		bool isUOp = false;
-	.) =
-	{ 	"+" 		(. uop = UnaryOperatorType.Plus; isUOp = true; .)
-		| "-" 		(. uop = UnaryOperatorType.Minus; isUOp = true; .)
-/*		| "Not"		(. uop = UnaryOperatorType.Not;  isUOp = true;.) */
-		| "*" 		(. uop = UnaryOperatorType.Star;  isUOp = true;.)
-	}
-	SimpleExpr<out expr>
-		(.
-			if (isUOp) {
-				uExpr = new UnaryOperatorExpression(expr, uop);
-			} else {
-				uExpr = expr;
-			}
-		.)
-	.
 
 AssignmentOperator<out AssignmentOperatorType op>
 	(. op = AssignmentOperatorType.None; .) =
@@ -1863,61 +1842,51 @@ CastTarget<out TypeReference type>
 	| "CStr"	(. type = new TypeReference("System.String"); .)
 	.
 
-ConditionalOrExpr<out Expression outExpr>
-	(. Expression expr; .) =
-	ConditionalAndExpr<out outExpr>  { "OrElse" ConditionalAndExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.LogicalOr, expr);  .) }
-	.
+DisjunctionExpr<out Expression outExpr>
+(.
+	Expression expr;
+	BinaryOperatorType op = BinaryOperatorType.None;
+.) =
+	ConjunctionExpr<out outExpr>
+	{
+		(
+			  "Or"     (. op = BinaryOperatorType.BitwiseOr; .)
+			| "OrElse" (. op = BinaryOperatorType.LogicalOr; .)
+			| "Xor"    (. op = BinaryOperatorType.ExclusiveOr; .)
+		)
+		ConjunctionExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
+	}
+.
 
-ConditionalAndExpr<out Expression outExpr>
-	(. Expression expr; .) =
-	InclusiveOrExpr<out outExpr>  { "AndAlso" InclusiveOrExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.LogicalAnd, expr);  .) }
-	.
-
-InclusiveOrExpr<out Expression outExpr>
-	(. Expression expr; .) =
-	ExclusiveOrExpr<out outExpr>  { "Xor" ExclusiveOrExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.ExclusiveOr, expr);  .) }
-	.
-
-ExclusiveOrExpr<out Expression outExpr>
-	(. Expression expr; .) =
-	AndExpr<out outExpr>  { "Or" AndExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.BitwiseOr, expr);  .) }
-	.
-
-AndExpr<out Expression outExpr>
-	(. Expression expr; .) =
-	NotExpr<out outExpr> { "And" NotExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.BitwiseAnd, expr);  .) }
-	.
+ConjunctionExpr<out Expression outExpr>
+(.
+	Expression expr;
+	BinaryOperatorType op = BinaryOperatorType.None;
+.) =
+	NotExpr<out outExpr>
+	{
+		(
+			  "And"     (. op = BinaryOperatorType.BitwiseAnd; .)
+			| "AndAlso" (. op = BinaryOperatorType.LogicalAnd; .)
+		)
+		NotExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
+	}
+.
 
 NotExpr<out Expression outExpr> 
 	(. UnaryOperatorType uop = UnaryOperatorType.None; .) =
 	{	"Not" (. uop = UnaryOperatorType.Not; .) }
-	EqualityExpr<out outExpr>
+	ComparisonExpr<out outExpr>
                 (. if (uop != UnaryOperatorType.None)
 	                   outExpr = new UnaryOperatorExpression(outExpr, uop);
                 .)
 	.
 
-EqualityExpr<out Expression outExpr>
-	(.
-		Expression expr;
-		BinaryOperatorType op = BinaryOperatorType.None;
-	.) =
-	RelationalExpr<out outExpr>
-	{
-		(
-			"<>"		(. op = BinaryOperatorType.InEquality; .)
-			| "=" 		(. op = BinaryOperatorType.Equality; .)
-			| "Like"	(. op = BinaryOperatorType.Like; .)
-		)
-		RelationalExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .) 
-	}
-	.
-
-RelationalExpr<out Expression outExpr>
-	(.
-		Expression expr;
-		BinaryOperatorType op = BinaryOperatorType.None;
-	.) =
+ComparisonExpr<out Expression outExpr>
+(.
+	Expression expr;
+	BinaryOperatorType op = BinaryOperatorType.None;
+.) =
 	ShiftExpr<out outExpr>
 	{
 		(
@@ -1925,46 +1894,63 @@ RelationalExpr<out Expression outExpr>
 			| ">"  (. op = BinaryOperatorType.GreaterThan; .)
 			| "<=" (. op = BinaryOperatorType.LessThanOrEqual; .)
 			| ">=" (. op = BinaryOperatorType.GreaterThanOrEqual; .)
+			| "<>"		(. op = BinaryOperatorType.InEquality; .)
+			| "=" 		(. op = BinaryOperatorType.Equality; .)
+			| "Like"	(. op = BinaryOperatorType.Like; .)
+			| "Is"	(. op = BinaryOperatorType.ReferenceEquality; .)
+			| "IsNot" (. op = BinaryOperatorType.ReferenceInequality; .)
 		)
 		ShiftExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
-		|
-		/* 11.5.3 */
-		("Is" (. op = BinaryOperatorType.ReferenceEquality; .) |
-		"IsNot" (. op = BinaryOperatorType.ReferenceInequality; .) )
-		Expr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr); .)
 	}
-	.
+.
 
 ShiftExpr<out Expression outExpr>
 	(.
 		Expression expr;
 		BinaryOperatorType op = BinaryOperatorType.None;
 	.) =
-	AdditiveExpr<out outExpr> 
+	ConcatenationExpr<out outExpr> 
 	{
 		(
 			"<<"   (. op = BinaryOperatorType.ShiftLeft; .)
 			| ">>" (. op = BinaryOperatorType.ShiftRight; .)
 		)
-		AdditiveExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .) 
+		ConcatenationExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .) 
 	}
 	.
 
+ConcatenationExpr<out Expression outExpr>
+(. Expression expr; .)
+=
+	AdditiveExpr<out outExpr> { "&" AdditiveExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.Concat, expr);  .) }
+.
+
 AdditiveExpr<out Expression outExpr>
-	(.
-		Expression expr;
-		BinaryOperatorType op = BinaryOperatorType.None;
-	.) =
-	MultiplicativeExpr<out outExpr>
+(.
+	Expression expr;
+	BinaryOperatorType op = BinaryOperatorType.None;
+.) =
+	ModuloExpr<out outExpr>
 	{
 		(
 			  "+"   (. op = BinaryOperatorType.Add; .)
 			| "-" (. op = BinaryOperatorType.Subtract; .)
-			| "&" (. op = BinaryOperatorType.Concat; .)
 		)
-		MultiplicativeExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
+		ModuloExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, op, expr);  .)
 	}
-	.
+.
+
+ModuloExpr<out Expression outExpr>
+(. Expression expr; .)
+=
+	IntegerDivisionExpr<out outExpr> { "Mod" IntegerDivisionExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.Modulus, expr);  .) }
+.
+
+IntegerDivisionExpr<out Expression outExpr>
+(. Expression expr; .)
+=
+	MultiplicativeExpr<out outExpr> { "\\" MultiplicativeExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.DivideInteger, expr);  .) }
+.
 
 MultiplicativeExpr<out Expression outExpr>
 (.
@@ -1976,12 +1962,35 @@ MultiplicativeExpr<out Expression outExpr>
 		(
 			"*"   (. op = BinaryOperatorType.Multiply; .)
 			| "/" (. op = BinaryOperatorType.Divide; .)
-			| "\\" (. op = BinaryOperatorType.DivideInteger; .)
-			| "Mod" (. op = BinaryOperatorType.Modulus; .)
-			| "^"	(. op = BinaryOperatorType.Power; .)
 		) 
 		UnaryExpr<out expr> (. outExpr = new BinaryOperatorExpression(outExpr, op, expr); .) 
 	}
+.
+
+UnaryExpr<out Expression uExpr> 
+(.
+	Expression expr;
+	UnaryOperatorType uop = UnaryOperatorType.None;
+	bool isUOp = false;
+.) =
+	{ 	"+" 		(. uop = UnaryOperatorType.Plus; isUOp = true; .)
+		| "-" 		(. uop = UnaryOperatorType.Minus; isUOp = true; .)
+		| "*" 		(. uop = UnaryOperatorType.Star;  isUOp = true;.)
+	}
+	ExponentiationExpr<out expr>
+	(.
+		if (isUOp) {
+			uExpr = new UnaryOperatorExpression(expr, uop);
+		} else {
+			uExpr = expr;
+		}
+	.)
+.
+
+ExponentiationExpr<out Expression outExpr>
+(. Expression expr; .)
+=
+	SimpleExpr<out outExpr> { "^" SimpleExpr<out expr> (.  outExpr = new BinaryOperatorExpression(outExpr, BinaryOperatorType.Power, expr);  .) }
 .
 	
 ObjectCreateExpression<out Expression oce>
@@ -2619,7 +2628,7 @@ EmbeddedStatement<out Statement statement>
 		bool mustBeAssignment = la.kind == Tokens.Plus  || la.kind == Tokens.Minus ||
 		                        la.kind == Tokens.Not   || la.kind == Tokens.Times;
 	.)
-	UnaryExpr<out expr>
+	SimpleExpr<out expr>
 		(
 		AssignmentOperator<out op> Expr<out val>	(. expr = new AssignmentExpression(expr, op, val); .)
 		| (. if (mustBeAssignment) Error("error in assignment."); .)
@@ -2632,7 +2641,7 @@ EmbeddedStatement<out Statement statement>
 			}
 			statement = new StatementExpression(expr);
 		.)
-	| "Call" UnaryExpr<out expr> (. statement = new StatementExpression(expr); .)
+	| "Call" SimpleExpr<out expr> (. statement = new StatementExpression(expr); .)
 	| "Using" Identifier (. 
 		string resourcename = t.val, typeName; 
 		Statement resourceAquisition = null, block = null;
