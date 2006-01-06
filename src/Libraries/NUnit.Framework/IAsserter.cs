@@ -15,9 +15,16 @@ namespace NUnit.Framework
 	public interface IAsserter
 	{
 		/// <summary>
-		/// Assert the truth of the condition, throwing an 
-		/// exception if the condition is false.
+		/// Test the condition for the assertion.
 		/// </summary>
-		void Assert();
+		/// <returns>True if the test succeeds</returns>
+		bool Test();
+
+		/// <summary>
+		/// Return the message giving the failure reason.
+		/// The return value is unspecified if no failure
+		/// has occured.
+		/// </summary>
+		string Message { get; }
 	}
 }

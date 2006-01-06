@@ -1,7 +1,7 @@
 ﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <ProjectType>Local</ProjectType>
-    <ProductVersion>8.0.41115</ProductVersion>
+    <ProductVersion>8.0.50727</ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{83DD7E12-A705-4DBA-9D71-09C8973D9382}</ProjectGuid>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -10,25 +10,27 @@
     <DefaultClientScript>JScript</DefaultClientScript>
     <DefaultHTMLPageLayout>Grid</DefaultHTMLPageLayout>
     <DefaultTargetSchema>IE50</DefaultTargetSchema>
-    <AssemblyOriginatorKeyFile>nunit.key</AssemblyOriginatorKeyFile>
+    <DelaySign>false</DelaySign>
     <OutputType>Library</OutputType>
     <RootNamespace>NUnit.Framework</RootNamespace>
     <RunPostBuildEvent>OnBuildSuccess</RunPostBuildEvent>
-    <SignAssembly>True</SignAssembly>
-    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+    <SignAssembly>true</SignAssembly>
     <OutputPath>..\..\..\bin\</OutputPath>
-    <AllowUnsafeBlocks>false</AllowUnsafeBlocks>
+    <AssemblyOriginatorKeyFile>nunit.key</AssemblyOriginatorKeyFile>
+    <AssemblyOriginatorKeyMode>File</AssemblyOriginatorKeyMode>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release2005|AnyCPU' ">
+    <DefineConstants>TRACE;VS2005</DefineConstants>
     <BaseAddress>285212672</BaseAddress>
-    <CheckForOverflowUnderflow>false</CheckForOverflowUnderflow>
-    <DefineConstants>TRACE;StronglyNamedAssembly</DefineConstants>
-    <DebugSymbols>false</DebugSymbols>
-    <FileAlignment>4096</FileAlignment>
-    <NoStdLib>false</NoStdLib>
+    <DocumentationFile>nunit.framework.xml</DocumentationFile>
     <Optimize>true</Optimize>
-    <RegisterForComInterop>false</RegisterForComInterop>
-    <RemoveIntegerChecks>false</RemoveIntegerChecks>
-    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
-    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug2005|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DefineConstants>TRACE;DEBUG;VS2005</DefineConstants>
+    <BaseAddress>285212672</BaseAddress>
+    <DocumentationFile>nunit.framework.xml</DocumentationFile>
+    <NoWarn>1701;1702;1699</NoWarn>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="System">
@@ -42,6 +44,9 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="CommonAssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
     <Compile Include="AbstractAsserter.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -81,6 +86,7 @@
     <Compile Include="ExplicitAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="GreaterAsserter.cs" />
     <Compile Include="IAsserter.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -90,6 +96,8 @@
     <Compile Include="IgnoreException.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="LessAsserter.cs" />
+    <Compile Include="ListContentsAsserter.cs" />
     <Compile Include="NotEqualAsserter.cs">
       <SubType>Code</SubType>
     </Compile>
@@ -108,19 +116,18 @@
     <Compile Include="SetUpAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SuiteAttribute.cs">
+    <Compile Include="SetUpFixtureAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="SuiteBuilderAttribute.cs">
+    <Compile Include="StringAssert.cs" />
+    <Compile Include="StringAsserters.cs" />
+    <Compile Include="SuiteAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TearDownAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TestAttribute.cs">
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="TestContext.cs">
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="TestFixtureAttribute.cs">
@@ -132,9 +139,7 @@
     <Compile Include="TestFixtureTearDownAttribute.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="TypeAsserters.cs" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Configuration\" />
-  </ItemGroup>
-  <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
 </Project>

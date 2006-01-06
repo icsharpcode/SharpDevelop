@@ -18,17 +18,22 @@ namespace NUnit.Framework
 			: base( expected, actual, message, args ) { }
 
 		/// <summary>
-		/// Assert that the objects are the same
+		/// Test that actual and expected reference the same object
 		/// </summary>
-		public override void Assert()
+		public override bool Test()
 		{
-			if ( ! object.ReferenceEquals( expected, actual ) )
-			{
-				string formatted = FormattedMessage;
-				if ( formatted.Length > 0 ) 
-					formatted += " ";
+			return object.ReferenceEquals( expected, actual );
+		}
 
-				throw new AssertionException( formatted + "expected same" );
+		/// <summary>
+		/// Provide error message when the objects are different.
+		/// </summary>
+		public override string Message
+		{
+			get
+			{
+				FailureMessage.Write( "expected same" );
+				return FailureMessage.ToString();
 			}
 		}
 	}

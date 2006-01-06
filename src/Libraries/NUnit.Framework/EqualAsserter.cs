@@ -18,18 +18,30 @@ namespace NUnit.Framework
 		public EqualAsserter( object expected, object actual, string message, params object[] args )
 			: base( expected, actual, message, args ) { }
 
-		public EqualAsserter( double expected, double actual, double delta, string message, params object[] args )
-			: base( expected, actual, delta, message, args ) { }
+		/// <summary>
+		/// Constructs an EqualAsserter for two doubles and a tolerance
+		/// </summary>
+		/// <param name="expected">The expected value</param>
+		/// <param name="actual">The actual value</param>
+		/// <param name="tolerance">The tolerance used in making the comparison</param>
+		/// <param name="message">The message to issue on failure</param>
+		/// <param name="args">Arguments to apply in formatting the message</param>
+		public EqualAsserter( double expected, double actual, double tolerance, string message, params object[] args )
+			: base( expected, actual, tolerance, message, args ) { }
 
 		/// <summary>
-		/// Assert that the objects are equal
+		/// Test whether the objects are equal, building up
+		/// the failure message for later use if they are not.
 		/// </summary>
-		/// <returns>True if they are equal, false if not</returns>
-		public override void Assert()
+		/// <returns>True if the objects are equal</returns>
+		public override bool Test()
 		{
-			if ( expected == null && actual == null ) return;
+			if ( expected == null && actual == null ) return true;
 			if ( expected == null || actual == null )
-				FailNotEqual();
+			{
+				DisplayDifferences();
+				return false;
+			}
 
 			// For now, dynamically call array assertion if necessary. Try to move
 			// this into the ObjectsEqual method later on.
@@ -39,42 +51,49 @@ namespace NUnit.Framework
 				Array actualArray = actual as Array;
 
 				if ( expectedArray.Rank != actualArray.Rank )
-					FailNotEqual();
+				{
+					DisplayDifferences();
+					return false;
+				}
 				
 				if ( expectedArray.Rank != 1 )
-					NUnit.Framework.Assert.Fail( "Multi-dimension array comparison is not supported" );
+					throw new ArgumentException( "Multi-dimension array comparison is not supported" );
 
 				int iLength = Math.Min( expectedArray.Length, actualArray.Length );
 				for( int i = 0; i < iLength; i++ )
 					if ( !ObjectsEqual( expectedArray.GetValue( i ), actualArray.GetValue( i ) ) )
-						FailArraysNotEqual( i );
+					{
+						DisplayArrayDifferences( i );
+						return false;
+					}
 	
 				if ( expectedArray.Length != actualArray.Length )
-					FailArraysNotEqual( iLength );
+				{
+					DisplayArrayDifferences( iLength );
+					return false;
+				}
 			}
 			else 
 			{
 				if ( !ObjectsEqual( expected, actual ) )
-					FailNotEqual();
+				{
+					DisplayDifferences();
+					return false;
+				}
 			}
+
+			return true;
 		}
 
-		private void FailNotEqual()
+		private void DisplayDifferences()
 		{
-			AssertionFailureMessage msg = new AssertionFailureMessage( message, args );
-			msg.DisplayDifferences( expected, actual, false );
-			throw new AssertionException( msg.ToString() );
+			FailureMessage.DisplayDifferences( expected, actual, false );
 		}
 
-		private void FailArraysNotEqual( int index )
+
+		private void DisplayArrayDifferences( int index )
 		{
-			throw new AssertionException( 
-				AssertionFailureMessage.FormatMessageForFailArraysNotEqual( 
-					index,
-					(Array)expected, 
-					(Array)actual, 
-					message,
-					args ) );
+			FailureMessage.DisplayArrayDifferences( (Array)expected, (Array)actual, index );
 		}
 	}
 }

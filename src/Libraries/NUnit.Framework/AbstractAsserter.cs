@@ -17,12 +17,17 @@ namespace NUnit.Framework
 		/// <summary>
 		/// The user-defined message for this asserter.
 		/// </summary>
-		protected readonly string message;
+		protected readonly string userMessage;
 		
 		/// <summary>
 		/// Arguments to use in formatting the user-defined message.
 		/// </summary>
 		protected readonly object[] args;
+
+		/// <summary>
+		/// Our failure message object, initialized as needed
+		/// </summary>
+		private AssertionFailureMessage failureMessage;
 
 		/// <summary>
 		/// Constructs an AbstractAsserter
@@ -31,28 +36,45 @@ namespace NUnit.Framework
 		/// <param name="args">Arguments to be used in formatting the message</param>
 		public AbstractAsserter( string message, params object[] args )
 		{
-			this.message = message;
+			this.userMessage = message;
 			this.args = args;
 		}
 
-		protected string FormattedMessage
+		/// <summary>
+		/// AssertionFailureMessage object used internally
+		/// </summary>
+		protected AssertionFailureMessage FailureMessage
 		{
 			get
 			{
-				if ( message == null ) 
-					return string.Empty;
-				
-				if ( args != null && args.Length > 0 )
-					return string.Format( message, args );
-
-				return message;
+				if ( failureMessage == null )
+					failureMessage = new AssertionFailureMessage( userMessage, args );
+				return failureMessage;
 			}
 		}
 
+		#region IAsserter Interface
 		/// <summary>
-		/// Assert on the condition this object is designed
-		/// to handle, throwing an exception if it fails.
+		/// Test method to be implemented by derived types.
+		/// Default always succeeds.
 		/// </summary>
-		public abstract void Assert();
+		/// <returns>True if the test succeeds</returns>
+		public virtual bool Test()
+		{
+			return true;
+		}
+
+		/// <summary>
+		/// Message related to a failure. If no failure has
+		/// occured, the result is unspecified.
+		/// </summary>
+		public virtual string Message
+		{
+			get
+			{
+				return FailureMessage.ToString();
+			}
+		}
+		#endregion
 	}
 }

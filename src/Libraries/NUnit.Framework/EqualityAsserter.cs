@@ -9,16 +9,32 @@ namespace NUnit.Framework
 	{
 		private double delta;
 
+		/// <summary>
+		/// Constructor taking expected and actual values and a user message with arguments.
+		/// </summary>
+		/// <param name="expected"></param>
+		/// <param name="actual"></param>
+		/// <param name="message"></param>
+		/// <param name="args"></param>
 		public EqualityAsserter( object expected, object actual, string message, params object[] args )
 			: base( expected, actual, message, args ) { }
 
+		/// <summary>
+		/// Constructor taking expected and actual values, a tolerance
+		/// and a user message and arguments.
+		/// </summary>
+		/// <param name="expected"></param>
+		/// <param name="actual"></param>
+		/// <param name="delta"></param>
+		/// <param name="message"></param>
+		/// <param name="args"></param>
 		public EqualityAsserter( double expected, double actual, double delta, string message, params object[] args )
 			: base( expected, actual, message, args )
-	{
-		this.delta = delta;
-	}
+		{
+			this.delta = delta;
+		}
 
-	/// <summary>
+		/// <summary>
 		/// Used to compare two objects.  Two nulls are equal and null
 		/// is not equal to non-null. Comparisons between the same
 		/// numeric types are fine (Int32 to Int32, or Int64 to Int64),
@@ -38,11 +54,13 @@ namespace NUnit.Framework
 
 			if ( expected is double && actual is double )
 			{
+				if ( double.IsNaN((double)expected) && double.IsNaN((double)actual) )
+					return true;
 				// handle infinity specially since subtracting two infinite values gives 
 				// NaN and the following test fails. mono also needs NaN to be handled
 				// specially although ms.net could use either method.
 				if (double.IsInfinity((double)expected) || double.IsNaN((double)expected) || double.IsNaN((double)actual))
-					return (double)expected == (double)actual;
+					return expected.Equals( actual );
 				else 
 					return Math.Abs((double)expected-(double)actual) <= this.delta;
 			}
@@ -109,6 +127,9 @@ namespace NUnit.Framework
 			return false;
 		}
 
+		/// <summary>
+		/// Helper method to compare two arrays
+		/// </summary>
 		protected virtual bool ArraysEqual( Array expected, Array actual )
 		{
 			if ( expected.Rank != actual.Rank )

@@ -31,6 +31,7 @@
 using System;
 using System.Text;
 using System.IO;
+using System.Collections;
 
 namespace NUnit.Framework
 {
@@ -55,11 +56,19 @@ namespace NUnit.Framework
 		/// </summary>
 		static public readonly int PostClipLength = 35;
 
-		static protected readonly string ExpectedText = "expected:<";
-		static protected readonly string ButWasText = " but was:<";
+		/// <summary>
+		/// Prefix used to start an expected value line.
+		/// Must be same length as actualPrefix.
+		/// </summary>
+		static protected readonly string expectedPrefix = "expected:";
+		
+		/// <summary>
+		/// Prefix used to start an actual value line.
+		/// Must be same length as expectedPrefix.
+		/// </summary>
+		static protected readonly string actualPrefix   = " but was:";
 
-		static private readonly string expectedFmt = "\texpected:<{0}>";
-		static private readonly string butWasFmt = "\t but was:<{0}>"; 
+		static private readonly string expectedAndActualFmt = "\t{0} {1}";
 		static private readonly string diffStringLengthsFmt 
 			= "\tString lengths differ.  Expected length={0}, but was length={1}.";
 		static private readonly string sameStringLengthsFmt
@@ -94,16 +103,75 @@ namespace NUnit.Framework
 		#endregion
 
 		/// <summary>
+		/// Add text to the message as a new line.
+		/// </summary>
+		/// <param name="text">The text to add</param>
+		public void AddLine( string text )
+		{
+			WriteLine();
+			Write( text );
+		}
+
+		/// <summary>
+		/// Add formatted text and arguments to the message as a new line.
+		/// </summary>
+		/// <param name="fmt">Format string</param>
+		/// <param name="args">Arguments to use with the format</param>
+		public void AddLine( string fmt, params object[] args )
+		{
+			WriteLine();
+			Write( fmt, args );
+		}
+
+		/// <summary>
+		/// Add an expected value line to the message containing
+		/// the text provided as an argument.
+		/// </summary>
+		/// <param name="text">Text describing what was expected.</param>
+		public void AddExpectedLine( string text )
+		{
+			AddLine( string.Format( expectedAndActualFmt, expectedPrefix, text ) );
+		}
+
+		/// <summary>
+		/// Add an actual value line to the message containing
+		/// the text provided as an argument.
+		/// </summary>
+		/// <param name="text">Text describing the actual value.</param>
+		public void AddActualLine( string text )
+		{
+			AddLine( string.Format( expectedAndActualFmt, actualPrefix, text ) );
+		}
+
+		/// <summary>
+		/// Add an expected value line to the message containing
+		/// a string representation of the object provided.
+		/// </summary>
+		/// <param name="expected">An object representing the expected value</param>
+		public void DisplayExpectedValue( object expected )
+		{
+			AddExpectedLine( FormatObjectForDisplay( expected ) );
+		}
+
+		/// <summary>
+		/// Add an actual value limne to the message containing
+		/// a string representation of the object provided.
+		/// </summary>
+		/// <param name="actual">An object representing what was actually found</param>
+		public void DisplayActualValue( object actual )
+		{
+			AddActualLine( FormatObjectForDisplay( actual ) );
+		}
+
+		/// <summary>
 		/// Display two lines that communicate the expected value, and the actual value
 		/// </summary>
 		/// <param name="expected">The expected value</param>
 		/// <param name="actual">The actual value found</param>
 		public void DisplayExpectedAndActual( Object expected, Object actual )
 		{
-			WriteLine();
-			Write( expectedFmt, DisplayString( expected ) );
-			WriteLine();
-			Write( butWasFmt, DisplayString( actual ) );
+			DisplayExpectedValue( expected );
+			DisplayActualValue( actual );
 		}
 
 		/// <summary>
@@ -113,13 +181,7 @@ namespace NUnit.Framework
 		/// <param name="iPosition">The position of the mismatch</param>
 		public void DisplayPositionMarker( int iPosition )
 		{
-			WriteLine();
-			Write( "\t" + new String( '-', ButWasText.Length + 1 ) );
-			if( iPosition > 0 )
-			{
-				Write( new string( '-', iPosition ) );
-			}
-			Write( "^" );
+			AddLine( "\t{0}^", new String( '-', expectedPrefix.Length + iPosition + 3 ) );
 		}
 
 		/// <summary>
@@ -130,11 +192,10 @@ namespace NUnit.Framework
 		/// <param name="sActual">The actual string value</param>
 		protected void BuildStringLengthReport( string sExpected, string sActual )
 		{
-			WriteLine();
 			if( sExpected.Length != sActual.Length )
-				Write( diffStringLengthsFmt, sExpected.Length, sActual.Length );
+				AddLine( diffStringLengthsFmt, sExpected.Length, sActual.Length );
 			else
-				Write( sameStringLengthsFmt, sExpected.Length );
+				AddLine( sameStringLengthsFmt, sExpected.Length );
 		}
 
 		/// <summary>
@@ -194,8 +255,7 @@ namespace NUnit.Framework
 			
 			BuildStringLengthReport( sExpected, sActual );
 
-			WriteLine();
-			Write( stringsDifferAtIndexFmt, iPosition );
+			AddLine( stringsDifferAtIndexFmt, iPosition );
 
 			//
 			// Clips the strings, then turns any hidden whitespace into visible
@@ -216,23 +276,58 @@ namespace NUnit.Framework
 				: FindMismatchPosition( sClippedExpected, sClippedActual, 0 ) );
 		}
 
-		private void DisplayAdditionalElements( string label, Array array, int index, int max )
+		/// <summary>
+		/// Display a standard message showing the differences found between 
+		/// two arrays that were expected to be equal.
+		/// </summary>
+		/// <param name="expected">The expected array value</param>
+		/// <param name="actual">The actual array value</param>
+		/// <param name="index">The index at which a difference was found</param>
+		public void DisplayArrayDifferences( Array expected, Array actual, int index )
 		{
-			WriteLine();
-			Write( "{0}<", label );
-
-			for( int i = 0; i < max; i++ )
-			{
-				Write( DisplayString( array.GetValue(index++) ) );
+			if( expected.Length != actual.Length )
+				AddLine( diffArrayLengthsFmt, expected.Length, actual.Length );
+			else
+				AddLine( sameArrayLengthsFmt, expected.Length );
+			
+			AddLine( arraysDifferAtIndexFmt, index );
 				
-				if ( index >= array.Length )
-					break;
+			if ( index < expected.Length && index < actual.Length )
+				DisplayDifferences( expected.GetValue( index ), actual.GetValue( index ), false );
+			else if( expected.Length < actual.Length )
+				DisplayListElements( "   extra:", actual, index, 3 );
+			else
+				DisplayListElements( " missing:", expected, index, 3 );
+		}
 
-				Write( "," );
+		/// <summary>
+		/// Displays elements from a list on a line
+		/// </summary>
+		/// <param name="label">Text to prefix the line with</param>
+		/// <param name="list">The list of items to display</param>
+		/// <param name="index">The index in the list of the first element to display</param>
+		/// <param name="max">The maximum number of elements to display</param>
+		public void DisplayListElements( string label, IList list, int index, int max )
+		{
+			AddLine( "{0}<", label );
+
+			if ( list == null )
+				Write( "null" );
+			else if ( list.Count == 0 )
+				Write( "empty" );
+			else
+			{
+				for( int i = 0; i < max && index < list.Count; i++ )
+				{
+					Write( FormatObjectForDisplay( list[index++] ) );
+				
+					if ( index < list.Count )
+						Write( "," );
+				}
+
+				if ( index < list.Count )
+					Write( "..." );
 			}
-
-			if ( index < array.Length )
-				Write( "..." );
 
 			Write( ">" );
 		}
@@ -240,28 +335,18 @@ namespace NUnit.Framework
 		#region Static Methods
 
 		/// <summary>
-		/// Display an object as a string
+		/// Formats an object for display in a message line
 		/// </summary>
-		/// <param name="obj"></param>
+		/// <param name="obj">The object to be displayed</param>
 		/// <returns></returns>
-		static protected string DisplayString( object  obj )
+		static protected string FormatObjectForDisplay( object  obj )
 		{
 			if ( obj == null ) 
-				return "(null)";
+				return "<(null)>";
 			else if ( obj is string )
-				return Quoted( (string)obj );
+				return string.Format( "<\"{0}\">", obj );
 			else
-				return obj.ToString();
-		}
-
-		/// <summary>
-		/// Quote a string
-		/// </summary>
-		/// <param name="text"></param>
-		/// <returns></returns>
-		static protected string Quoted( string text )
-		{
-			return string.Format( "\"{0}\"", text );
+				return string.Format( "<{0}>", obj );
 		}
 
 		/// <summary>
@@ -391,40 +476,6 @@ namespace NUnit.Framework
 			}
 			return sInput;
 		}
-
-		/// <summary>
-		/// Called to create a message when two arrays are not equal. 
-		/// </summary>
-		/// <param name="index"></param>
-		/// <param name="expected"></param>
-		/// <param name="actual"></param>
-		/// <param name="message"></param>
-		/// <param name="args"></param>
-		/// <returns></returns>
-		static public string FormatMessageForFailArraysNotEqual(int index, Array expected, Array actual, 
-			string message, params object[] args) 
-		{
-			AssertionFailureMessage msg = new AssertionFailureMessage( message, args );
-			
-			msg.WriteLine();
-			if( expected.Length != actual.Length )
-				msg.Write( diffArrayLengthsFmt, expected.Length, actual.Length );
-			else
-				msg.Write( sameArrayLengthsFmt, expected.Length );
-			
-			msg.WriteLine();
-			msg.Write( arraysDifferAtIndexFmt, index );
-				
-			if ( index < expected.Length && index < actual.Length )
-				msg.DisplayDifferences( expected.GetValue( index ), actual.GetValue( index ), false );
-			else if( expected.Length < actual.Length )
-				msg.DisplayAdditionalElements( "   extra:", actual, index, 3 );
-			else
-				msg.DisplayAdditionalElements( " missing:", expected, index, 3 );
-
-			return msg.ToString();
-		}
-
 		#endregion
 	}
 }

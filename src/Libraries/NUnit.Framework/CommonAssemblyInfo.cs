@@ -2,7 +2,7 @@
 /************************************************************************************
 '
 ' Copyright © 2002-2003 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov, Charlie Poole
-' Copyright © 2000-2003 Philip A. Craig
+' Copyright © 2000-2002 Philip A. Craig
 '
 ' This software is provided 'as-is', without any express or implied warranty. In no 
 ' event will the authors be held liable for any damages arising from the use of this 
@@ -16,8 +16,8 @@
 ' you wrote the original software. If you use this software in a product, an 
 ' acknowledgment (see the following) in the product documentation is required.
 '
-' Portions Copyright © 2003 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov, Charlie Poole
-' or Copyright © 2000-2003 Philip A. Craig
+' Portions Copyright © 2002-2003 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov, Charlie Poole
+' or Copyright © 2000-2002 Philip A. Craig
 '
 ' 2. Altered source versions must be plainly marked as such, and must not be 
 ' misrepresented as being the original software.
@@ -27,41 +27,31 @@
 '***********************************************************************************/
 #endregion
 
-namespace NUnit.Framework
-{
-	using System;
-	/// <summary>
-	/// IgnoreAttribute.
-	/// </summary>
-	/// 
-	[AttributeUsage(AttributeTargets.Method|AttributeTargets.Class, AllowMultiple=false)]
-	public sealed class IgnoreAttribute : Attribute
-	{
-		private string reason;
+using System.Reflection;
 
-		/// <summary>
-		/// Default constructor
-		/// </summary>
-		public IgnoreAttribute()
-		{
-			this.reason = "";
-		}
+//
+// Common Information about all NUnit assemblies is controlled through the following 
+// set of attributes. Change these attribute values to modify the information
+// associated with an assembly.
+//
+[assembly: AssemblyTitle("")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("NUnit.org")]
+[assembly: AssemblyProduct("NUnit")]
+[assembly: AssemblyCopyright("Copyright (C) 2002-2003 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov, Charlie Poole.\r\nCopyright (C) 2000-2003 Philip Craig.\r\nAll Rights Reserved.")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]		
 
-		/// <summary>
-		/// Constructor with a reason
-		/// </summary>
-		/// <param name="reason">The reason for ignoring the test</param>
-		public IgnoreAttribute(string reason)
-		{
-			this.reason = reason;
-		}
+//
+// Version information for an assembly consists of the following four values:
+//
+//      Major Version
+//      Minor Version 
+//      Build Number
+//      Revision
+//
+// You can specify all the values or you can default the Revision and Build Numbers 
+// by using the '*' as shown below:
 
-		/// <summary>
-		/// The reason for ignoring a test
-		/// </summary>
-		public string Reason
-		{
-			get { return reason; }
-		}
-	}
-}
+[assembly: AssemblyVersion("2.2.5.0")]
