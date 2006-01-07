@@ -222,6 +222,14 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void NamedAttributeArgument()
+		{
+			TestProgram("<Attribute(ArgName := \"value\")> _\n" +
+			            "Class Test\n" +
+			            "End Class");
+		}
+		
+		[Test]
 		public void Interface()
 		{
 			TestProgram("Interface ITest\n" +

@@ -75,6 +75,10 @@ namespace ICSharpCode.TextEditor
 				int fontHeight = textArea.TextView.FontHeight;
 				int yPos = lineNumber * fontHeight - textArea.VirtualTop.Y;
 				if (mousePos.Y >= yPos && mousePos.Y < yPos + fontHeight) {
+					if (lineNumber == textArea.Document.GetVisibleLine(mark.LineNumber - 1)) {
+						// marker is inside folded region, it cannot be clicked
+						continue;
+					}
 					mark.Click(textArea, new MouseEventArgs(mouseButtons, 1, mousePos.X, mousePos.Y, 0));
 					if (oldCount != marks.Count) {
 						textArea.UpdateLine(lineNumber);

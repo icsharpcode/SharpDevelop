@@ -230,6 +230,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintIdentifier(namedArgumentExpression.Name);
 			outputFormatter.Space();
+			outputFormatter.PrintToken(Tokens.Colon);
 			outputFormatter.PrintToken(Tokens.Assign);
 			outputFormatter.Space();
 			nodeTracker.TrackedVisit(namedArgumentExpression.Expression, data);
