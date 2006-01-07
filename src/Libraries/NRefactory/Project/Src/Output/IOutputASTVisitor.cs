@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	/// <summary>
 	/// Description of IOutputASTVisitor.
 	/// </summary>
-	public interface IOutputASTVisitor : IASTVisitor
+	public interface IOutputASTVisitor : IAstVisitor
 	{
 		string Text {
 			get;

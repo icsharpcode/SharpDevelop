@@ -1236,7 +1236,7 @@ StructMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	                                       .)
 	
 	| /*--- event declaration: */   (. m.Check(Modifier.PropertysEventsMethods); .)
-		"event"                     (. EventDeclaration eventDecl = new EventDeclaration(m.Modifier, attributes);
+		"event"                     (. EventDeclaration eventDecl = new EventDeclaration(null, null, m.Modifier, attributes, null);
 		                               eventDecl.StartLocation = t.Location;
 		                               compilationUnit.AddChild(eventDecl);
 		                               compilationUnit.BlockStart(eventDecl);
@@ -1511,7 +1511,7 @@ InterfaceMemberDecl
 				"{" (. Point bodyStart = t.Location;.) InterfaceAccessors<out getBlock, out setBlock> "}" (. id.GetRegion = getBlock; id.SetRegion = setBlock; id.StartLocation = startLocation;  id.EndLocation = bracketEndLocation; id.BodyStart = bodyStart; id.BodyEnd = t.EndLocation;.)
 			)
 			/*--- interface event declaration: */
-			| "event" (. if (startLocation.X == -1) startLocation = t.Location; .) Type<out type> ident (. EventDeclaration ed = new EventDeclaration(type, t.val, mod, attributes);
+			| "event" (. if (startLocation.X == -1) startLocation = t.Location; .) Type<out type> ident (. EventDeclaration ed = new EventDeclaration(type, t.val, mod, attributes, null);
 			                                  compilationUnit.AddChild(ed);
 			                               .)
 			";"                            (. ed.StartLocation = startLocation; ed.EndLocation = t.EndLocation; .)

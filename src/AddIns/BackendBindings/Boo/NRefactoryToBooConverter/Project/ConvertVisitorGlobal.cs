@@ -200,6 +200,11 @@ namespace NRefactoryToBooConverter
 			throw new ApplicationException("Visited NamedArgumentExpression.");
 		}
 		
+		public object Visit(InterfaceImplementation interfaceImplementation, object data)
+		{
+			throw new ApplicationException("Visited InterfaceImplementation.");
+		}
+		
 		public object Visit(OptionDeclaration optionDeclaration, object data)
 		{
 			AddError(optionDeclaration, "Option statement is not supported.");

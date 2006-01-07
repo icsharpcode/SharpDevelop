@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void YieldReturnStatementTest()
 		{
 			YieldStatement yieldStmt = ParseUtilCSharp.ParseStatement<YieldStatement>("yield return \"Foo\";");
-			Assert.IsTrue(yieldStmt.IsYieldReturn());
+			Assert.IsTrue(yieldStmt.IsYieldReturn);
 			ReturnStatement retStmt = (ReturnStatement)yieldStmt.Statement;
 			PrimitiveExpression expr =  (PrimitiveExpression)retStmt.Expression;
 			Assert.AreEqual("Foo", expr.Value);
@@ -30,7 +30,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		public void YieldBreakStatementTest()
 		{
 			YieldStatement yieldStmt = ParseUtilCSharp.ParseStatement<YieldStatement>("yield break;");
-			Assert.IsTrue(yieldStmt.IsYieldBreak());
+			Assert.IsTrue(yieldStmt.IsYieldBreak);
 		}
 		
 		[Test]

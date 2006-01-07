@@ -116,4 +116,244 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		Params = 8,
 		Optional = 16
 	}
+	
+	public enum AssignmentOperatorType
+	{
+		None,
+		Assign,
+		
+		Add,
+		Subtract,
+		Multiply,
+		Divide,
+		Modulus,
+		
+		Power,         // (VB only)
+		DivideInteger, // (VB only)
+		ConcatString,  // (VB only)
+		
+		ShiftLeft,
+		ShiftRight,
+		
+		BitwiseAnd,
+		BitwiseOr,
+		ExclusiveOr,
+	}
+	
+	public enum BinaryOperatorType
+	{
+		None,
+		
+		/// <summary>'&amp;' in C#, 'And' in VB.</summary>
+		BitwiseAnd,
+		/// <summary>'|' in C#, 'Or' in VB.</summary>
+		BitwiseOr,
+		/// <summary>'&amp;&amp;' in C#, 'AndAlso' in VB.</summary>
+		LogicalAnd,
+		/// <summary>'||' in C#, 'OrElse' in VB.</summary>
+		LogicalOr,
+		/// <summary>'^' in C#, 'Xor' in VB.</summary>
+		ExclusiveOr,
+		
+		/// <summary>&gt;</summary>
+		GreaterThan,
+		/// <summary>&gt;=</summary>
+		GreaterThanOrEqual,
+		/// <summary>'==' in C#, '=' in VB.</summary>
+		Equality,
+		/// <summary>'!=' in C#, '&lt;&gt;' in VB.</summary>
+		InEquality,
+		/// <summary>&lt;</summary>
+		LessThan,
+		/// <summary>&lt;=</summary>
+		LessThanOrEqual,
+		
+		/// <summary>+</summary>
+		Add,
+		/// <summary>-</summary>
+		Subtract,
+		/// <summary>*</summary>
+		Multiply,
+		/// <summary>/</summary>
+		Divide,
+		/// <summary>'%' in C#, 'Mod' in VB.</summary>
+		Modulus,
+		/// <summary>VB-only: \</summary>
+		DivideInteger,
+		/// <summary>VB-only: ^</summary>
+		Power,
+		/// <summary>VB-only: &amp;</summary>
+		Concat,
+		
+		/// <summary>C#: &lt;&lt;</summary>
+		ShiftLeft,
+		/// <summary>C#: &gt;&gt;</summary>
+		ShiftRight,
+		/// <summary>VB-only: Is</summary>
+		ReferenceEquality,
+		/// <summary>VB-only: IsNot</summary>
+		ReferenceInequality,
+		
+		/// <summary>VB-only: Like</summary>
+		Like,
+		/// <summary>C#: ??</summary>
+		NullCoalescing,
+	}
+	
+	public enum CastType
+	{
+		/// <summary>
+		/// direct cast (C#, VB "DirectCast")
+		/// </summary>
+		Cast,
+		/// <summary>
+		/// try cast (C# "as", VB "TryCast")
+		/// </summary>
+		TryCast,
+		/// <summary>
+		/// converting cast (VB "CType")
+		/// </summary>
+		Conversion,
+		/// <summary>
+		/// primitive converting cast (VB "CString" etc.)
+		/// </summary>
+		PrimitiveConversion
+	}
+	
+	public enum UnaryOperatorType
+	{
+		None,
+		Not,
+		BitNot,
+		
+		Minus,
+		Plus,
+		
+		Increment,
+		Decrement,
+		
+		PostIncrement,
+		PostDecrement,
+		
+		Star,
+		BitWiseAnd
+	}
+	
+	public enum ContinueType
+	{
+		None,
+		Do,
+		For,
+		While
+	}
+	
+	public enum ConditionType
+	{
+		None,
+		Until,
+		While,
+		DoWhile
+	}
+	
+	public enum ConditionPosition
+	{
+		None,
+		Start,
+		End
+	}
+	
+	public enum ExitType
+	{
+		None,
+		Sub,
+		Function,
+		Property,
+		Do,
+		For,
+		While,
+		Select,
+		Try
+	}
+	
+	public enum ConstructorInitializerType
+	{
+		None,
+		Base,
+		This
+	}
+	
+	public enum ConversionType
+	{
+		None,
+		Implicit,
+		Explicit
+	}
+	
+	public enum OverloadableOperatorType
+	{
+		None,
+		
+		Add,
+		Subtract,
+		Multiply,
+		Divide,
+		Modulus,
+		Concat,
+		
+		Not,
+		BitNot,
+		
+		BitwiseAnd,
+		BitwiseOr,
+		ExclusiveOr,
+		
+		ShiftLeft,
+		ShiftRight,
+		
+		GreaterThan,
+		GreaterThanOrEqual,
+		Equality,
+		InEquality,
+		LessThan,
+		LessThanOrEqual,
+		
+		Increment,
+		Decrement,
+		
+		True,
+		False,
+		
+		// VB specific
+		IsTrue,
+		IsFalse,
+		Like,
+		Power,
+		CType,
+		DivideInteger
+	}
+	
+	///<summary>
+	/// Charset types, used in external methods
+	/// declarations (VB only).
+	///</summary>
+	public enum CharsetModifier
+	{
+		None,
+		Auto,
+		Unicode,
+		ANSI
+	}
+	
+	///<summary>
+	/// Compare type, used in the <c>Option Compare</c>
+	/// pragma (VB only).
+	///</summary>
+	public enum OptionType
+	{
+		None,
+		Explicit,
+		Strict,
+		CompareBinary,
+		CompareText
+	}
 }

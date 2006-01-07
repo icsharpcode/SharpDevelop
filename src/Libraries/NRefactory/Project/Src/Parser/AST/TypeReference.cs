@@ -263,7 +263,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		protected TypeReference()
 		{}
 		
-		public override object AcceptVisitor(IASTVisitor visitor, object data)
+		public override object AcceptVisitor(IAstVisitor visitor, object data)
 		{
 			return visitor.Visit(this, data);
 		}
@@ -304,7 +304,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 				return true;
 			}
 		}
-		public override object AcceptVisitor(IASTVisitor visitor, object data)
+		public override object AcceptVisitor(IAstVisitor visitor, object data)
 		{
 			return data;
 		}
@@ -349,7 +349,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			this.baseType = outerClass;
 		}
 		
-		public override object AcceptVisitor(IASTVisitor visitor, object data)
+		public override object AcceptVisitor(IAstVisitor visitor, object data)
 		{
 			return visitor.Visit(this, data);
 		}

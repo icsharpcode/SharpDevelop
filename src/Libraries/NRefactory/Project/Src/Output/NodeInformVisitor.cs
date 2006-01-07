@@ -20,15 +20,15 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	
 	public class NodeTracker
 	{
-		IASTVisitor callVisitor;
+		IAstVisitor callVisitor;
 		
-		public IASTVisitor CallVisitor {
+		public IAstVisitor CallVisitor {
 			get {
 				return callVisitor;
 			}
 		}
 		
-		public NodeTracker(IASTVisitor callVisitor)
+		public NodeTracker(IAstVisitor callVisitor)
 		{
 			this.callVisitor = callVisitor;
 		}

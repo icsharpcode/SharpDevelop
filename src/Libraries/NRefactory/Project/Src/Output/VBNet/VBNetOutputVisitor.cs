@@ -837,6 +837,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		public object Visit(InterfaceImplementation interfaceImplementation, object data)
+		{
+			throw new InvalidOperationException();
+		}
+		
 		bool IsAbstract(AttributedNode node)
 		{
 			if ((node.Modifier & Modifier.Abstract) == Modifier.Abstract)

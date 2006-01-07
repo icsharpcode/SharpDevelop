@@ -639,6 +639,11 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			return null;
 		}
 		
+		public object Visit(InterfaceImplementation interfaceImplementation, object data)
+		{
+			throw new InvalidOperationException();
+		}
+		
 		public object Visit(ConstructorDeclaration constructorDeclaration, object data)
 		{
 			VisitAttributes(constructorDeclaration.Attributes, data);

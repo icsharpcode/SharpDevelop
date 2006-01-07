@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		public static List<AttributeSection> ConvertAttributes(IList<IAttribute> attributes, ClassFinder targetContext)
 		{
-			AttributeSection sec = new AttributeSection();
+			AttributeSection sec = new AttributeSection(null, null);
 			foreach (IAttribute att in attributes) {
 				sec.Attributes.Add(new ICSharpCode.NRefactory.Parser.AST.Attribute(att.Name, null, null));
 			}
@@ -204,7 +204,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			return new EventDeclaration(ConvertType(e.ReturnType, targetContext),
 			                            e.Name,
 			                            ConvertModifier(e.Modifiers),
-			                            ConvertAttributes(e.Attributes, targetContext));
+			                            ConvertAttributes(e.Attributes, targetContext),
+			                            null);
 		}
 		#endregion
 		
@@ -324,7 +325,7 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 			string name = property.Name + "Changed";
 			EventDeclaration ed = new EventDeclaration(new TypeReference("EventHandler"), name,
 			                                           ConvertModifier(property.Modifiers & (ModifierEnum.VisibilityMask | ModifierEnum.Static))
-			                                           , null);
+			                                           , null, null);
 			InsertCodeAfter(property, document, ed);
 			
 			List<Expression> arguments = new List<Expression>(2);

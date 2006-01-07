@@ -12,7 +12,7 @@ using ICSharpCode.NRefactory.Parser.AST;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	public abstract class AbstractASTVisitor : IASTVisitor
+	public abstract class AbstractASTVisitor : IAstVisitor
 	{
 		protected Stack blockStack = new Stack();
 		
@@ -23,6 +23,11 @@ namespace ICSharpCode.NRefactory.Parser
 				}
 				return (BlockStatement)blockStack.Peek();
 			}
+		}
+		
+		public virtual object Visit(InterfaceImplementation interfaceImplementation, object data)
+		{
+			return interfaceImplementation.InterfaceType.AcceptChildren(this, data);
 		}
 		
 		public virtual object Visit(INode node, object data)

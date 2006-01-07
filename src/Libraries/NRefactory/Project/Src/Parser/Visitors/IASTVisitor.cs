@@ -10,10 +10,12 @@ using ICSharpCode.NRefactory.Parser.AST;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	public interface IASTVisitor
+	public interface IAstVisitor
 	{
 		[Obsolete("Warning: you are visiting INode")]
 		object Visit(INode node, object data);
+		
+		object Visit(InterfaceImplementation interfaceImplementation, object data);
 		
 		object Visit(CompilationUnit compilationUnit, object data);
 		object Visit(TypeReference typeReference, object data);

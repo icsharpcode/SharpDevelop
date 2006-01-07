@@ -26,7 +26,9 @@ namespace ICSharpCode.FormsDesigner.Services
 	public class TypeResolutionService : ITypeResolutionService
 	{
 		readonly static List<Assembly> designerAssemblies = new List<Assembly>();
-		// hash of file content -> Assembly
+		/// <summary>
+		/// string "filename:size" -> Assembly
+		/// </summary>
 		readonly static Dictionary<string, Assembly> assemblyDict = new Dictionary<string, Assembly>();
 		
 		/// <summary>
@@ -137,7 +139,8 @@ namespace ICSharpCode.FormsDesigner.Services
 			if (!File.Exists(fileName))
 				return null;
 			byte[] data = File.ReadAllBytes(fileName);
-			string hash;
+			
+			string hash = fileName + ":" + File.GetLastWriteTimeUtc(fileName);
 			using (HashFunction hashFunction = new HashFunction()) {
 				hash = Convert.ToBase64String(hashFunction.ComputeHash(data));
 			}
@@ -262,18 +265,11 @@ namespace ICSharpCode.FormsDesigner.Services
 				return null;
 			}
 			try {
-				lock (designerAssemblies) {
-					foreach (Assembly asm in DesignerAssemblies) {
-						Type t = asm.GetType(name, false);
-						if (t != null) {
-							return t;
-						}
-					}
-				}
 				
-				Type type = Type.GetType(name, false, ignoreCase);
+				Type type = null;
+				int idx = name.IndexOf(",");
 				
-				if (type == null) {
+				if (idx < 0) {
 					IProjectContent pc = this.CallingProject;
 					if (pc != null) {
 						IClass foundClass = pc.GetClass(name);
@@ -287,26 +283,34 @@ namespace ICSharpCode.FormsDesigner.Services
 				}
 				
 				// type lookup for typename, assembly, xyz style lookups
-				if (type == null) {
-					int idx = name.IndexOf(",");
-					if (idx > 0) {
-						string[] splitName = name.Split(',');
-						string typeName     = splitName[0];
-						string assemblyName = splitName[1].Substring(1);
-						Assembly assembly = null;
-						try {
-							assembly = Assembly.Load(assemblyName);
-						} catch (Exception e) {
-							LoggingService.Error(e);
+				if (type == null && idx > 0) {
+					string[] splitName = name.Split(',');
+					string typeName     = splitName[0];
+					string assemblyName = splitName[1].Substring(1);
+					Assembly assembly = null;
+					try {
+						assembly = Assembly.Load(assemblyName);
+					} catch (Exception e) {
+						LoggingService.Error(e);
+					}
+					if (assembly != null) {
+						lock (designerAssemblies) {
+							if (!designerAssemblies.Contains(assembly))
+								designerAssemblies.Add(assembly);
 						}
-						if (assembly != null) {
-							lock (designerAssemblies) {
-								if (!designerAssemblies.Contains(assembly))
-									designerAssemblies.Add(assembly);
+						type = assembly.GetType(typeName, false, ignoreCase);
+					} else {
+						type = Type.GetType(typeName, false, ignoreCase);
+					}
+				}
+
+				if (type == null) {
+					lock (designerAssemblies) {
+						foreach (Assembly asm in DesignerAssemblies) {
+							Type t = asm.GetType(name, false);
+							if (t != null) {
+								return t;
 							}
-							type = assembly.GetType(typeName, false, ignoreCase);
-						} else {
-							type = Type.GetType(typeName, false, ignoreCase);
 						}
 					}
 				}

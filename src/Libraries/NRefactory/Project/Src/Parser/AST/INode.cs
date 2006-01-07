@@ -38,7 +38,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		/// <param name="visitor">The visitor to accept</param>
 		/// <param name="data">Additional data for the visitor</param>
 		/// <returns>The paremeter <paramref name="data"/></returns>
-		object AcceptChildren(IASTVisitor visitor, object data);
+		object AcceptChildren(IAstVisitor visitor, object data);
 		
 		/// <summary>
 		/// Accept the visitor
@@ -46,6 +46,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		/// <param name="visitor">The visitor to accept</param>
 		/// <param name="data">Additional data for the visitor</param>
 		/// <returns>The value the visitor returns after the visit</returns>
-		object AcceptVisitor(IASTVisitor visitor, object data);
+		object AcceptVisitor(IAstVisitor visitor, object data);
 	}
 }

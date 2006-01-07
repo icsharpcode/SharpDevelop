@@ -878,7 +878,10 @@ InterfaceMemberDecl
 				type = new TypeReference("System.Object");
 			}
 			MethodDeclaration md = new MethodDeclaration(name, mod.Modifier, type, p, attributes);
-			md.ReturnTypeAttributeSection = returnTypeAttributeSection;
+			if (returnTypeAttributeSection != null) {
+				returnTypeAttributeSection.AttributeTarget = "return";
+				md.Attributes.Add(returnTypeAttributeSection);
+			}
 			md.EndLocation = t.EndLocation;
 			md.Templates = templates;
 			compilationUnit.AddChild(md);
@@ -957,7 +960,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	(
 		(.
 			string name = String.Empty;
-			MethodDeclaration methodDeclaration; ArrayList handlesClause = null;
+			MethodDeclaration methodDeclaration; List<string> handlesClause = null;
 			List<InterfaceImplementation> implementsClause = null;
 		.)
 		Identifier
@@ -1035,7 +1038,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		m.Check(Modifier.VBMethods);
 		string name = String.Empty;
 		Point startPos = t.Location;
-		MethodDeclaration methodDeclaration;ArrayList handlesClause = null;
+		MethodDeclaration methodDeclaration;List<string> handlesClause = null;
 		List<InterfaceImplementation> implementsClause = null;
 		AttributeSection returnTypeAttributeSection = null;
 	.)
@@ -1067,7 +1070,10 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				methodDeclaration.HandlesClause = handlesClause;
 				methodDeclaration.Templates     = templates;
 				methodDeclaration.InterfaceImplementations = implementsClause;
-				methodDeclaration.ReturnTypeAttributeSection = returnTypeAttributeSection;
+				if (returnTypeAttributeSection != null) {
+					returnTypeAttributeSection.AttributeTarget = "return";
+					methodDeclaration.Attributes.Add(returnTypeAttributeSection);
+				}
 				compilationUnit.AddChild(methodDeclaration);
 			.)
 		|
@@ -1079,7 +1085,10 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 				methodDeclaration.Templates     = templates;
 				methodDeclaration.HandlesClause = handlesClause;
 				methodDeclaration.InterfaceImplementations = implementsClause;
-				methodDeclaration.ReturnTypeAttributeSection = returnTypeAttributeSection;
+				if (returnTypeAttributeSection != null) {
+					returnTypeAttributeSection.AttributeTarget = "return";
+					methodDeclaration.Attributes.Add(returnTypeAttributeSection);
+				}
 				
 				compilationUnit.AddChild(methodDeclaration);
 				compilationUnit.BlockStart(methodDeclaration);
@@ -1293,7 +1302,7 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 			Error("Need to provide RaiseEvent accessor.");
 		}
 	
-		EventDeclaration decl = new EventDeclaration(type, customEventName, m.Modifier, attributes);
+		EventDeclaration decl = new EventDeclaration(type, customEventName, m.Modifier, attributes, null);
 		decl.StartLocation = m.GetDeclarationLocation(startPos);
 		decl.EndLocation = t.EndLocation;
 		decl.AddRegion = addHandlerAccessorDeclaration;
@@ -1336,7 +1345,6 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		                                                                  returnType,
 		                                                                  operatorType
 		                                                                  );
-		operatorDeclaration.ConvertToType = returnType;
 		operatorDeclaration.ReturnTypeAttributes = returnTypeAttributes;
 		operatorDeclaration.Body = (BlockStatement)stmt;
 		operatorDeclaration.StartLocation = m.GetDeclarationLocation(startPos);
@@ -1637,9 +1645,9 @@ Charset<out CharsetModifier charsetModifier>
 	.
 
 /* 9.2.6 */
-HandlesClause<out ArrayList handlesClause>
+HandlesClause<out List<string> handlesClause>
 	(.
-		handlesClause = new ArrayList();
+		handlesClause = new List<string>();
 		string name;
 	.) =
 	"Handles" EventMemberSpecifier<out name>	(. handlesClause.Add(name); .)
@@ -2536,7 +2544,7 @@ EmbeddedStatement<out Statement statement>
 	| /* 10.12.2 */
 	"Erase"	
 	Expr<out expr>
-	(.ArrayList arrays = new ArrayList();
+	(.List<Expression> arrays = new List<Expression>();
 		if (expr != null) { arrays.Add(expr);}
 		EraseStatement eraseStatement = new EraseStatement(arrays);
 		

@@ -65,9 +65,9 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			children.Add(childNode);
 		}
 		
-		public abstract object AcceptVisitor(IASTVisitor visitor, object data);
+		public abstract object AcceptVisitor(IAstVisitor visitor, object data);
 		
-		public virtual object AcceptChildren(IASTVisitor visitor, object data)
+		public virtual object AcceptChildren(IAstVisitor visitor, object data)
 		{
 			foreach (INode child in children) {
 				Debug.Assert(child != null);

@@ -440,7 +440,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 			DomRegion region     = GetRegion(operatorDeclaration.StartLocation, operatorDeclaration.EndLocation);
 			DomRegion bodyRegion = GetRegion(operatorDeclaration.EndLocation, operatorDeclaration.Body != null ? operatorDeclaration.Body.EndLocation : new Point(-1, -1));
 			
-			DefaultMethod method = new DefaultMethod(operatorDeclaration.Name, CreateReturnType(operatorDeclaration.ConvertToType), ConvertModifier(operatorDeclaration.Modifier), region, bodyRegion, c);
+			DefaultMethod method = new DefaultMethod(operatorDeclaration.Name, CreateReturnType(operatorDeclaration.TypeReference), ConvertModifier(operatorDeclaration.Modifier), region, bodyRegion, c);
 			ConvertAttributes(operatorDeclaration, method);
 			if(operatorDeclaration.Parameters != null)
 			{

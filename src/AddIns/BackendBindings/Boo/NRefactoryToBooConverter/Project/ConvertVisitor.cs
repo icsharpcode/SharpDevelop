@@ -15,7 +15,7 @@ using B = Boo.Lang.Compiler.Ast;
 
 namespace NRefactoryToBooConverter
 {
-	public partial class ConvertVisitor : IASTVisitor
+	public partial class ConvertVisitor : IAstVisitor
 	{
 		string fileName;
 		CompilerErrorCollection errors;

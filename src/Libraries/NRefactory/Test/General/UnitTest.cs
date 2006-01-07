@@ -46,7 +46,7 @@ namespace ICSharpCode.NRefactory.Tests
 		public void TestIASTVisitor()
 		{
 			Type[] allTypes = typeof(AbstractNode).Assembly.GetTypes();
-			Type visitor = typeof(IASTVisitor);
+			Type visitor = typeof(IAstVisitor);
 			
 			foreach (Type type in allTypes) {
 				if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(INode).FullName) != null && !type.Name.StartsWith("Null")) {
@@ -93,7 +93,7 @@ namespace ICSharpCode.NRefactory.Tests
 				if (!type.IsInterface &&
 				    !type.IsEnum &&
 				    (type.BaseType == typeof(System.Delegate)) &&
-				    (type.GetInterface(typeof(IASTVisitor).FullName) == null) &&
+				    (type.GetInterface(typeof(IAstVisitor).FullName) == null) &&
 				    (type.FullName != "ICSharpCode.NRefactory.Parser.Error") &&
 				    (type.FullName != "ICSharpCode.NRefactory.Tests.StructuralTest")) {
 					Assert.IsNotNull(type.GetInterface(typeof(INode).FullName), type.FullName + " is not INode");

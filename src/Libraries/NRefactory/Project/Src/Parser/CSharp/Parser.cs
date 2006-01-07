@@ -2091,7 +2091,7 @@ out stmt);
 			lexer.NextToken();
 
 #line  1239 "cs.ATG" 
-			EventDeclaration eventDecl = new EventDeclaration(m.Modifier, attributes);
+			EventDeclaration eventDecl = new EventDeclaration(null, null, m.Modifier, attributes, null);
 			eventDecl.StartLocation = t.Location;
 			compilationUnit.AddChild(eventDecl);
 			compilationUnit.BlockStart(eventDecl);
@@ -2685,7 +2685,7 @@ out type);
 				Expect(1);
 
 #line  1514 "cs.ATG" 
-				EventDeclaration ed = new EventDeclaration(type, t.val, mod, attributes);
+				EventDeclaration ed = new EventDeclaration(type, t.val, mod, attributes, null);
 				compilationUnit.AddChild(ed);
 				
 				Expect(11);

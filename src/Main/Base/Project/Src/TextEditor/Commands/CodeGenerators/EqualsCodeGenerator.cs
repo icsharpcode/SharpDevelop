@@ -56,7 +56,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			method.Body.AddChild(new IfElseStatement(expr, new ReturnStatement(new PrimitiveExpression(true, "true"))));
 			
 			VariableDeclaration var = new VariableDeclaration("my" + currentClass.Name,
-			                                                  new CastExpression(currentType, new IdentifierExpression("obj")),
+			                                                  new CastExpression(currentType, new IdentifierExpression("obj"), CastType.Cast),
 			                                                  currentType);
 			method.Body.AddChild(new LocalVariableDeclaration(var));
 			
