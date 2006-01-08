@@ -20,7 +20,7 @@ namespace ICSharpCode.NRefactory.Parser
 	/// <summary>
 	/// Converts special VB constructs to use more general AST classes.
 	/// </summary>
-	public class VBNetConstructsConvertVisitor : AbstractASTVisitor
+	public class VBNetConstructsConvertVisitor : AbstractAstTransformer
 	{
 		// The following conversions are implemented:
 		//   MyBase.New() and MyClass.New() calls inside the constructor are converted to :base() and :this()

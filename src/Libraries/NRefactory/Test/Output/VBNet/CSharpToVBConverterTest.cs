@@ -137,6 +137,18 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void AnonymousMethodInVarDeclaration()
+		{
+			TestMember("void A() { SomeDelegate i = delegate(int argument) { return argument * 2; }; }",
+			           "Sub A()\n" +
+			           "\tDim i As SomeDelegate = AddressOf ConvertedAnonymousMethod1\n" +
+			           "End Sub\n" +
+			           "Private Sub ConvertedAnonymousMethod1(ByVal argument As Integer)\n" +
+			           "\tReturn argument * 2\n" +
+			           "End Sub");
+		}
+		
+		[Test]
 		public void RegisterEvent()
 		{
 			TestStatement("someEvent += tmp2;",

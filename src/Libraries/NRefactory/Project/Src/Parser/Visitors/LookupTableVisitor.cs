@@ -51,7 +51,7 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 	}
 	
-	public class LookupTableVisitor : AbstractASTVisitor
+	public class LookupTableVisitor : AbstractAstVisitor
 	{
 		Dictionary<string, List<LocalLookupVariable>> variables;
 		
@@ -94,6 +94,16 @@ namespace ICSharpCode.NRefactory.Parser
 			return base.Visit(withStatement, data);
 		}
 		
+		Stack<BlockStatement> blockStack = new Stack<BlockStatement>();
+		
+		public override object Visit(BlockStatement blockStatement, object data)
+		{
+			blockStack.Push(blockStatement);
+			base.Visit(blockStatement, data);
+			blockStack.Pop();
+			return null;
+		}
+		
 		public override object Visit(LocalVariableDeclaration localVariableDeclaration, object data)
 		{
 			for (int i = 0; i < localVariableDeclaration.Variables.Count; ++i) {
@@ -102,7 +112,7 @@ namespace ICSharpCode.NRefactory.Parser
 				AddVariable(localVariableDeclaration.GetTypeForVariable(i),
 				            varDecl.Name,
 				            localVariableDeclaration.StartLocation,
-				            CurrentBlock == null ? new Point(-1, -1) : CurrentBlock.EndLocation,
+				            (blockStack.Count == 0) ? new Point(-1, -1) : blockStack.Peek().EndLocation,
 				            (localVariableDeclaration.Modifier & Modifier.Const) == Modifier.Const);
 			}
 			return data;

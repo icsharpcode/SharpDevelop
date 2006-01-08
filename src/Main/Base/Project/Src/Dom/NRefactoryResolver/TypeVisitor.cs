@@ -19,7 +19,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
-	public class TypeVisitor : AbstractASTVisitor
+	public class TypeVisitor : AbstractAstVisitor
 	{
 		NRefactoryResolver resolver;
 		

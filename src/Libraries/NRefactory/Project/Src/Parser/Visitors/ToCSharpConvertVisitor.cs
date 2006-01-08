@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.Parser
 	/// Not all elements are converted here, most simple elements (e.g. StopStatement)
 	/// are converted in the output visitor.
 	/// </summary>
-	public class ToCSharpConvertVisitor : AbstractASTVisitor
+	public class ToCSharpConvertVisitor : AbstractAstTransformer
 	{
 		// The following conversions should be implemented in the future:
 		//   Public Event EventName(param As String) -> automatic delegate declaration

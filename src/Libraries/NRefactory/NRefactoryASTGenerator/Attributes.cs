@@ -100,7 +100,7 @@ namespace NRefactoryASTGenerator
 			prop.Name = name;
 			prop.Type = new CodeTypeReference(typeof(bool));
 			prop.Attributes = MemberAttributes.Public | MemberAttributes.Final;
-			prop.GetStatements.Add(new CodeSnippetStatement(code));
+			prop.GetStatements.Add(new CodeSnippetStatement("\t\t\t\t" + code));
 			ctd.Members.Add(prop);
 		}
 	}

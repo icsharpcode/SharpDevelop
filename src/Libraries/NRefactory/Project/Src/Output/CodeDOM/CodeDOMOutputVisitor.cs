@@ -17,7 +17,7 @@ using ICSharpCode.NRefactory.PrettyPrinter;
 
 namespace ICSharpCode.NRefactory.Parser
 {
-	public class CodeDOMVisitor : AbstractASTVisitor
+	public class CodeDOMVisitor : AbstractAstVisitor
 	{
 		Stack<CodeNamespace>  namespaceDeclarations = new Stack<CodeNamespace>();
 		Stack<CodeTypeDeclaration> typeDeclarations = new Stack<CodeTypeDeclaration>();

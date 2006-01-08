@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.Parser
 	/// <summary>
 	/// Prefixes the names of the specified fields with the prefix and replaces the use.
 	/// </summary>
-	public class PrefixFieldsVisitor : AbstractASTVisitor
+	public class PrefixFieldsVisitor : AbstractAstVisitor
 	{
 		List<VariableDeclaration> fields;
 		List<string> curBlock = new List<string>();

@@ -19,7 +19,7 @@ namespace ICSharpCode.NRefactory.Parser
 	/// <summary>
 	/// Converts special C# constructs to use more general AST classes.
 	/// </summary>
-	public class CSharpConstructsVisitor : AbstractASTVisitor
+	public class CSharpConstructsVisitor : AbstractAstTransformer
 	{
 		// The following conversions are implemented:
 		//   a == null -> a Is Nothing
@@ -77,24 +77,9 @@ namespace ICSharpCode.NRefactory.Parser
 		}
 		
 		
-		List<IfElseStatement> ifStatements = new List<IfElseStatement>();
-		
-		public override object Visit(IfElseStatement ifElseStatement, object data)
+		public override object Visit(IfElseStatement ifStatement, object data)
 		{
-			ifStatements.Add(ifElseStatement);
-			return base.Visit(ifElseStatement, data);
-		}
-		
-		void ConvertIfStatements()
-		{
-			foreach (IfElseStatement ifStatement in ifStatements) {
-				ConvertIfStatement(ifStatement);
-			}
-			ifStatements.Clear();
-		}
-		
-		void ConvertIfStatement(IfElseStatement ifStatement)
-		{
+			base.Visit(ifStatement, data);
 			BinaryOperatorExpression boe = ifStatement.Condition as BinaryOperatorExpression;
 			if (ifStatement.ElseIfSections.Count == 0
 			    && ifStatement.FalseStatement.Count == 0
@@ -117,28 +102,18 @@ namespace ICSharpCode.NRefactory.Parser
 				if (ident != null && se != null) {
 					InvocationExpression ie = se.Expression as InvocationExpression;
 					if (ie != null && (ie.TargetObject as IdentifierExpression).Identifier == ident.Identifier) {
-						Statement.Replace(ifStatement, new RaiseEventStatement(ident.Identifier, ie.Arguments));
+						ReplaceCurrentNode(new RaiseEventStatement(ident.Identifier, ie.Arguments));
 					}
 				}
 			}
+			return null;
 		}
-		
-		List<ForStatement> forStatements = new List<ForStatement>();
 		
 		public override object Visit(ForStatement forStatement, object data)
 		{
-			forStatements.Add(forStatement);
-			// post-pone conversion because the parent's collection cannot be modified while it
-			// is in use.
-			return base.Visit(forStatement, data);
-		}
-		
-		void ConvertForStatements()
-		{
-			foreach (ForStatement forStatement in forStatements) {
-				ConvertForStatement(forStatement);
-			}
-			forStatements.Clear();
+			base.Visit(forStatement, data);
+			ConvertForStatement(forStatement);
+			return null;
 		}
 		
 		void ConvertForStatement(ForStatement forStatement)
@@ -224,20 +199,10 @@ namespace ICSharpCode.NRefactory.Parser
 				start = assign.Right;
 			}
 			
-			ForNextStatement forNextStatement = new ForNextStatement(typeReference, iteratorIdentifier.Identifier,
-			                                                         start, end,
-			                                                         (step == 1) ? null : new PrimitiveExpression(step, step.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)),
-			                                                         forStatement.EmbeddedStatement, null);
-			
-			Statement.Replace(forStatement, forNextStatement);
-		}
-		
-		public override object Visit(TypeDeclaration td, object data)
-		{
-			object result = base.Visit(td, data);
-			ConvertForStatements();
-			ConvertIfStatements();
-			return result;
+			ReplaceCurrentNode(new ForNextStatement(typeReference, iteratorIdentifier.Identifier,
+			                                        start, end,
+			                                        (step == 1) ? null : new PrimitiveExpression(step, step.ToString(System.Globalization.NumberFormatInfo.InvariantInfo)),
+			                                        forStatement.EmbeddedStatement, null));
 		}
 	}
 }

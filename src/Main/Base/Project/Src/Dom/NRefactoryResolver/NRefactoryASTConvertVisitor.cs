@@ -20,7 +20,7 @@ using ICSharpCode.Core;
 
 namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 {
-	public class NRefactoryASTConvertVisitor : RefParser.AbstractASTVisitor
+	public class NRefactoryASTConvertVisitor : RefParser.AbstractAstVisitor
 	{
 		ICompilationUnit cu;
 		Stack currentNamespace = new Stack();

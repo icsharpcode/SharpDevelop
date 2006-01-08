@@ -210,7 +210,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				return null;
 			}
 		}
-		private class DummyFindVisitor : AbstractASTVisitor {
+		private class DummyFindVisitor : AbstractAstVisitor {
 			internal const string dummyName = "___withStatementExpressionDummy";
 			internal FieldReferenceExpression result;
 			public override object Visit(FieldReferenceExpression fieldReferenceExpression, object data)

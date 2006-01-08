@@ -67,7 +67,7 @@ namespace ICSharpCode.NRefactory.Tests
 		public void TestAbstractASTVisitorVisitor()
 		{
 			Type[] allTypes = typeof(AbstractNode).Assembly.GetTypes();
-			Type visitor = typeof(AbstractASTVisitor);
+			Type visitor = typeof(AbstractAstVisitor);
 			
 			foreach (Type type in allTypes) {
 				if (type.IsClass && !type.IsAbstract && type.GetInterface(typeof(INode).FullName) != null && !type.Name.StartsWith("Null")) {

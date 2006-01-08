@@ -28,19 +28,6 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		{
 			return statement == null ? NullStatement.Instance : statement;
 		}
-		
-		public static void Replace(Statement oldStatement, Statement newStatement)
-		{
-			INode parent = oldStatement.Parent;
-			StatementWithEmbeddedStatement parentStmt = parent as StatementWithEmbeddedStatement;
-			if (parentStmt != null && parentStmt.EmbeddedStatement == oldStatement)
-				parentStmt.EmbeddedStatement = newStatement;
-			int index = parent.Children.IndexOf(oldStatement);
-			if (index >= 0) {
-				parent.Children[index] = newStatement;
-				newStatement.Parent = parent;
-			}
-		}
 	}
 	
 	public abstract class StatementWithEmbeddedStatement : Statement

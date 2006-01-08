@@ -7,7 +7,7 @@
 
 using System;
 using System.Drawing;
-using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
@@ -18,7 +18,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			set;
 		}
 		
-		ArrayList Children {
+		List<INode> Children {
 			get;
 		}
 		

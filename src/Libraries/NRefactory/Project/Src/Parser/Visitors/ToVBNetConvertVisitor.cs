@@ -21,7 +21,7 @@ namespace ICSharpCode.NRefactory.Parser
 	/// Not all elements are converted here, most simple elements (e.g. ConditionalExpression)
 	/// are converted in the output visitor.
 	/// </summary>
-	public class ToVBNetConvertVisitor : AbstractASTVisitor
+	public class ToVBNetConvertVisitor : AbstractAstTransformer
 	{
 		// The following conversions are implemented:
 		//   Conflicting field/property names -> m_field
@@ -29,8 +29,6 @@ namespace ICSharpCode.NRefactory.Parser
 		//   Simple event handler creation is replaced with AddressOfExpression
 		
 		TypeDeclaration currentType;
-		readonly List<KeyValuePair<Statement, Statement>> replacements = new List<KeyValuePair<Statement, Statement>>();
-		readonly List<MethodDeclaration> newMethods = new List<MethodDeclaration>();
 		
 		public override object Visit(TypeDeclaration td, object data)
 		{
@@ -63,15 +61,6 @@ namespace ICSharpCode.NRefactory.Parser
 			base.Visit(td, data);
 			currentType = outerType;
 			
-			foreach (MethodDeclaration md in newMethods) {
-				td.AddChild(md);
-			}
-			newMethods.Clear();
-			foreach (KeyValuePair<Statement, Statement> pair in replacements) {
-				Statement.Replace(pair.Key, pair.Value);
-			}
-			replacements.Clear();
-			
 			return null;
 		}
 		
@@ -82,12 +71,6 @@ namespace ICSharpCode.NRefactory.Parser
 				bool ok = true;
 				foreach (object c in currentType.Children) {
 					MethodDeclaration method = c as MethodDeclaration;
-					if (method != null && method.Name == name) {
-						ok = false;
-						break;
-					}
-				}
-				foreach (MethodDeclaration method in newMethods) {
 					if (method != null && method.Name == name) {
 						ok = false;
 						break;
@@ -104,11 +87,9 @@ namespace ICSharpCode.NRefactory.Parser
 			AssignmentExpression ass = statementExpression.Expression as AssignmentExpression;
 			if (ass != null && ass.Right is AddressOfExpression) {
 				if (ass.Op == AssignmentOperatorType.Add) {
-					Statement st = new AddHandlerStatement(ass.Left, ass.Right);
-					replacements.Add(new KeyValuePair<Statement, Statement>(statementExpression, st));
+					ReplaceCurrentNode(new AddHandlerStatement(ass.Left, ass.Right));
 				} else if (ass.Op == AssignmentOperatorType.Subtract) {
-					Statement st = new RemoveHandlerStatement(ass.Left, ass.Right);
-					replacements.Add(new KeyValuePair<Statement, Statement>(statementExpression, st));
+					ReplaceCurrentNode(new RemoveHandlerStatement(ass.Left, ass.Right));
 				}
 			}
 			return null;
@@ -137,15 +118,17 @@ namespace ICSharpCode.NRefactory.Parser
 			return null;
 		}
 		
+		public override object Visit(AnonymousMethodExpression anonymousMethodExpression, object data)
+		{
+			MethodDeclaration method = new MethodDeclaration(GetAnonymousMethodName(), Modifier.Private, new TypeReference("System.Void"), anonymousMethodExpression.Parameters, null);
+			method.Body = anonymousMethodExpression.Body;
+			currentType.Children.Add(method);
+			ReplaceCurrentNode(new AddressOfExpression(new IdentifierExpression(method.Name)));
+			return null;
+		}
+		
 		public override object Visit(AssignmentExpression assignmentExpression, object data)
 		{
-			AnonymousMethodExpression ame = assignmentExpression.Right as AnonymousMethodExpression;
-			if (currentType != null && ame != null) {
-				MethodDeclaration method = new MethodDeclaration(GetAnonymousMethodName(), Modifier.Private, new TypeReference("System.Void"), ame.Parameters, null);
-				method.Body = ame.Body;
-				newMethods.Add(method);
-				assignmentExpression.Right = new AddressOfExpression(new IdentifierExpression(method.Name));
-			}
 			if (assignmentExpression.Op == AssignmentOperatorType.Add
 			    || assignmentExpression.Op == AssignmentOperatorType.Subtract)
 			{

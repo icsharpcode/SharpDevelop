@@ -10,14 +10,14 @@ using System.Text;
 using System.Drawing;
 using System.Diagnostics;
 using System.Collections;
+using System.Collections.Generic;
 
 namespace ICSharpCode.NRefactory.Parser.AST
 {
 	public abstract class AbstractNode : INode
 	{
 		INode       parent;
-//		List<INode> children = new List<INode>();
-		ArrayList children = new ArrayList();
+		List<INode> children = new List<INode>();
 		
 		Point startLocation;
 		Point endLocation;
@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.Parser.AST
 			}
 		}
 		
-		public ArrayList Children {
+		public List<INode> Children {
 			get {
 				return children;
 			}

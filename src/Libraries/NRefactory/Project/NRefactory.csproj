@@ -120,6 +120,7 @@
     <Compile Include="Src\Parser\AST\General\BlockStatement.cs" />
     <Compile Include="Src\Parser\AST\General\LocalVariableDeclaration.cs" />
     <Compile Include="Src\Parser\AST\General\PrimitiveExpression.cs" />
+    <Compile Include="Src\Parser\Visitors\AbstractAstTransformer.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Src\Lexer\CSharp\KeywordList.txt" />
