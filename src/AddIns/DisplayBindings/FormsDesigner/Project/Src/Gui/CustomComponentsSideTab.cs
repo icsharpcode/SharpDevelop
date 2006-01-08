@@ -81,7 +81,7 @@ namespace ICSharpCode.FormsDesigner.Gui
 	{
 		string className;
 		IProjectContent assemblyLocation;
-		bool initialized;
+		Assembly usedAssembly = null;
 		
 		public CustomComponentToolBoxItem(IClass c)
 		{
@@ -93,14 +93,12 @@ namespace ICSharpCode.FormsDesigner.Gui
 		
 		void Init()
 		{
-			if (initialized)
-				return;
-			initialized = true;
 			LoggingService.Debug("Initializing MyToolBoxItem: " + className);
 			if (assemblyLocation != null) {
 				Assembly asm = TypeResolutionService.LoadAssembly(assemblyLocation);
-				if (asm != null) {
+				if (asm != null && usedAssembly != asm) {
 					Initialize(asm.GetType(className));
+					usedAssembly = asm;
 				}
 			}
 		}

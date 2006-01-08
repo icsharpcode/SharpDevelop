@@ -16,10 +16,7 @@ using System.ComponentModel.Design;
 using ICSharpCode.SharpDevelop.Project;
 using ICSharpCode.SharpDevelop.Dom;
 using ICSharpCode.Core;
-using System.Diagnostics ;
-
-
-using HashFunction = System.Security.Cryptography.SHA1Managed;
+using System.Diagnostics;
 
 namespace ICSharpCode.FormsDesigner.Services
 {
@@ -123,7 +120,10 @@ namespace ICSharpCode.FormsDesigner.Services
 			if (pc.Project != null) {
 				return LoadAssembly(pc.Project.OutputAssemblyFullPath);
 			} else if (pc is ReflectionProjectContent) {
-				return LoadAssembly((pc as ReflectionProjectContent).AssemblyLocation);
+				if ((pc as ReflectionProjectContent).IsGacAssembly)
+					return LoadAssembly(new AssemblyName((pc as ReflectionProjectContent).AssemblyFullName), false);
+				else
+					return LoadAssembly((pc as ReflectionProjectContent).AssemblyLocation);
 			} else {
 				return null;
 			}
@@ -136,19 +136,17 @@ namespace ICSharpCode.FormsDesigner.Services
 		{
 			if (!File.Exists(fileName))
 				return null;
-			byte[] data = File.ReadAllBytes(fileName);
-			string hash;
-			using (HashFunction hashFunction = new HashFunction()) {
-				hash = Convert.ToBase64String(hashFunction.ComputeHash(data));
-			}
+			string hash = Path.GetFileName(fileName) + File.GetLastWriteTimeUtc(fileName).Ticks.ToString();
 			lock (assemblyDict) {
 				Assembly asm;
 				if (assemblyDict.TryGetValue(hash, out asm))
 					return asm;
+				LoggingService.Debug("Loading assembly " + fileName + " (hash " + hash + ")");
 				try {
-					asm = Assembly.Load(data);
+					asm = Assembly.Load(File.ReadAllBytes(fileName));
 				} catch (BadImageFormatException e) {
 					if (e.Message.Contains("HRESULT: 0x8013141D")) {
+						LoggingService.Debug("Get HRESULt 0x8013141D, loading netmodule");
 						//netmodule
 						string tempPath = Path.GetTempFileName();
 						File.Delete(tempPath);
@@ -167,7 +165,7 @@ namespace ICSharpCode.FormsDesigner.Services
 							if(p.ExitCode == 0 && File.Exists(tempPath)) {
 								byte[] asm_data = File.ReadAllBytes(tempPath);
 								asm = Assembly.Load(asm_data);
-								asm.LoadModule(Path.GetFileName(fileName), data);
+								asm.LoadModule(Path.GetFileName(fileName), File.ReadAllBytes(fileName));
 							}
 						} catch (Exception ex) {
 							MessageService.ShowError(ex, "Error calling linker for netmodule");
@@ -180,6 +178,7 @@ namespace ICSharpCode.FormsDesigner.Services
 					}
 				} catch (FileLoadException e) {
 					if (e.Message.Contains("HRESULT: 0x80131402")) {
+						LoggingService.Debug("Get HRESULt 0x80131402, loading mixed modes asm from disk");
 						//this is C++/CLI Mixed assembly which can only be loaded from disk, not in-memory
 						string tempPath = Path.GetTempFileName();
 						File.Delete(tempPath);
@@ -206,7 +205,7 @@ namespace ICSharpCode.FormsDesigner.Services
 
 				lock (designerAssemblies) {
 					if (!designerAssemblies.Contains(asm))
-						designerAssemblies.Add(asm);
+						designerAssemblies.Insert(0, asm);
 				}
 				assemblyDict[hash] = asm;
 				return asm;
@@ -215,16 +214,21 @@ namespace ICSharpCode.FormsDesigner.Services
 		
 		public Assembly GetAssembly(AssemblyName name)
 		{
-			return GetAssembly(name, false);
+			return LoadAssembly(name, false);
 		}
 		
 		public Assembly GetAssembly(AssemblyName name, bool throwOnError)
+		{
+			return LoadAssembly(name, throwOnError);
+		}
+		
+		static Assembly LoadAssembly(AssemblyName name, bool throwOnError)
 		{
 			try {
 				Assembly asm = Assembly.Load(name);
 				lock (designerAssemblies) {
 					if (!designerAssemblies.Contains(asm))
-						designerAssemblies.Add(asm);
+						designerAssemblies.Insert(0, asm);
 				}
 				return asm;
 			} catch (System.IO.FileLoadException) {
@@ -262,14 +266,6 @@ namespace ICSharpCode.FormsDesigner.Services
 				return null;
 			}
 			try {
-				lock (designerAssemblies) {
-					foreach (Assembly asm in DesignerAssemblies) {
-						Type t = asm.GetType(name, false);
-						if (t != null) {
-							return t;
-						}
-					}
-				}
 				
 				Type type = Type.GetType(name, false, ignoreCase);
 				
@@ -307,6 +303,17 @@ namespace ICSharpCode.FormsDesigner.Services
 							type = assembly.GetType(typeName, false, ignoreCase);
 						} else {
 							type = Type.GetType(typeName, false, ignoreCase);
+						}
+					}
+				}
+
+				if (type == null) {
+					lock (designerAssemblies) {
+						foreach (Assembly asm in DesignerAssemblies) {
+							Type t = asm.GetType(name, false);
+							if (t != null) {
+								return t;
+							}
 						}
 					}
 				}
