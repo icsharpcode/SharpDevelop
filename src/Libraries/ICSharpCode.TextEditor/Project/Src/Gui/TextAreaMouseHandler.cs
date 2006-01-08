@@ -383,6 +383,7 @@ namespace ICSharpCode.TextEditor
 		{
 			LineSegment line   = document.GetLineSegmentForOffset(offset);
 			int         endPos = line.Offset + line.Length;
+			offset = Math.Min(offset, endPos - 1);
 			
 			if (IsSelectableChar(document.GetCharAt(offset)))  {
 				while (offset < endPos && IsSelectableChar(document.GetCharAt(offset))) {
