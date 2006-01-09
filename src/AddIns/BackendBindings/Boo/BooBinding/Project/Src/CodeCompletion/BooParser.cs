@@ -178,7 +178,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 			visitor.Cu.FileName = fileName;
 			
 			// Remove unneccessary compiler steps
-			int num = 1 + compilePipe.Find(typeof(NormalizeTypeAndMemberDefinitions));
+			int num = 1 + compilePipe.Find(typeof(NormalizeStatementModifiers));
 			compilePipe[num] = visitor;
 			while (compilePipe.Count > num + 1)
 				compilePipe.RemoveAt(compilePipe.Count - 1);

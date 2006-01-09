@@ -27,7 +27,9 @@
 			</ProjectItems>
 			
 			<Files>
-				<File name="Program.boo"><![CDATA[import System
+				<File name="Program.boo"><![CDATA[namespace ${StandardNamespace}
+
+import System
 import System.Collections
 
 print "Hello, World!"

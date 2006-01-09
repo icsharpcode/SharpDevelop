@@ -58,6 +58,12 @@ namespace Grunwald.BooBinding.CodeCompletion
 			if (m.IsProtected) r |= ModifierEnum.Protected;
 			if (m.IsPrivate)   r |= ModifierEnum.Private;
 			if (m.IsInternal)  r |= ModifierEnum.Internal;
+			if (!m.IsVisibilitySet) {
+				if (m is AST.Field)
+					r |= ModifierEnum.Protected;
+				else
+					r |= ModifierEnum.Public;
+			}
 			
 			if (m.IsStatic) r |= ModifierEnum.Static;
 			if (m is AST.Field) {
@@ -329,6 +335,10 @@ namespace Grunwald.BooBinding.CodeCompletion
 		private void EnterTypeDefinition(AST.TypeDefinition node, ClassType classType)
 		{
 			//LoggingService.Debug("Enter " + node.GetType().Name + " (" + node.FullName + ")");
+			foreach (AST.Attribute att in node.Attributes) {
+				if (att.Name == "Boo.Lang.ModuleAttribute")
+					classType = ClassType.Module;
+			}
 			DomRegion region = GetClientRegion(node);
 			DefaultClass c = new DefaultClass(_cu, classType, GetModifier(node), region, OuterClass);
 			c.FullyQualifiedName = node.FullName;
@@ -378,7 +388,7 @@ namespace Grunwald.BooBinding.CodeCompletion
 		
 		public override void OnMethod(AST.Method node)
 		{
-			//LoggingService.Debug("Method: " + node.FullName);
+			//LoggingService.Debug("Method: " + node.FullName + " (" + node.Modifiers + ")");
 			DefaultMethod method = new DefaultMethod(node.Name, null, GetModifier(node), GetRegion(node), GetClientRegion(node), OuterClass);
 			if ((node.ImplementationFlags & AST.MethodImplementationFlags.Extension) == AST.MethodImplementationFlags.Extension) {
 				method.IsExtensionMethod = true;
