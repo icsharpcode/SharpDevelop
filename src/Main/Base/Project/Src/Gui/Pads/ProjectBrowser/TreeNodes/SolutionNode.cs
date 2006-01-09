@@ -73,12 +73,24 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public void AddItem(string fileName)
 		{
-			throw new NotImplementedException();
-			
-			//string relativeFileName = FileUtility.GetRelativePath(solution.Directory, fileName);
-			//SolutionItem newItem = new SolutionItem(relativeFileName, relativeFileName);
-			//this.Container.SolutionItems.Items.Add(newItem);
-			//new SolutionItemNode(solution, newItem).AddTo(this);
+			const string folderName = "Solution Items";
+			SolutionFolderNode node = null;
+			foreach (TreeNode n in Nodes) {
+				node = n as SolutionFolderNode;
+				if (node != null && node.Folder.Name == folderName) {
+					break;
+				}
+				node = null;
+			}
+			if (node == null) {
+				SolutionFolder newSolutionFolder = solution.CreateFolder(folderName);
+				solution.AddFolder(newSolutionFolder);
+				solution.Save();
+				
+				node = new SolutionFolderNode(solution, newSolutionFolder);
+				node.AddTo(this);
+			}
+			node.AddItem(fileName);
 		}
 		
 		#region Drag & Drop
