@@ -48,6 +48,13 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <Compile Include="MonoToolLocationHelper.cs" />
+    <Compile Include="MonoGlobalAssemblyCache.cs" />
+    <Compile Include="MonoAssemblyName.cs" />
+    <Compile Include="GetMonoFrameworkPath.cs" />
+    <Compile Include="GetMonoFrameworkSdkPath.cs" />
+    <Compile Include="TargetMonoFrameworkVersion.cs" />
+    <Compile Include="AddMonoAssemblySearchPaths.cs" />
+    <Compile Include="MonoGacDirectory.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="SharpDevelop.Build.CSharp.targets">

@@ -63,7 +63,8 @@
 					<Import Include="System.Windows.Forms" />
 				</ProjectItems>
 				
-				<Imports>
+				<!-- Set the clear attribute to true if you want any imports that are added by default removed. -->
+				<Imports clear="True">
 					<!-- you can import additional MSBuild targets in the Imports-section of the project node -->
 					<Import Project="$(MSBuildBinPath)\Microsoft.WinFX.targets" />
 				</Imports>

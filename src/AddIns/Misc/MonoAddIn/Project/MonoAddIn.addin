@@ -1,0 +1,36 @@
+<AddIn name        = "Mono AddIn"
+       author      = "Matt Ward"
+       copyright   = "prj:///doc/copyright.txt"
+       description = "Mono support for SharpDevelop">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.MonoAddIn"/>
+	</Manifest>
+
+	<Runtime>
+		<Import assembly="MonoAddIn.dll">
+			<ConditionEvaluator name="IsMonoInstalled" class="ICSharpCode.MonoAddIn.IsMonoInstalledCondition"/>
+			<ConditionEvaluator name="IsMonoProject" class="ICSharpCode.MonoAddIn.IsMonoProjectCondition"/>
+		</Import>
+	</Runtime>
+
+	<Path path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectNode">
+		<Condition name="IsMonoInstalled" action="Exclude">
+			<MenuItem id="AddMonoReference"
+		              label="Add Mono Reference"
+		              insertafter="AddReference"
+		              insertbefore="AddWebReference"
+		              class="ICSharpCode.MonoAddIn.AddMonoReferenceCommand"/>
+		</Condition>
+	</Path>
+
+	<Path name="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ReferenceFolderNode">
+		<Condition name="IsMonoInstalled" action="Exclude">
+			<MenuItem id="AddMonoReference"
+		              label="Add Mono Reference"
+		              insertafter="AddReference"
+		              insertbefore="AddWebReference"
+		              class="ICSharpCode.MonoAddIn.AddMonoReferenceCommand"/>
+		</Condition>
+	</Path>
+</AddIn>

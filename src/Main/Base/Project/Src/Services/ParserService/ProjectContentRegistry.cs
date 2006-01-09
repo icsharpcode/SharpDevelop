@@ -12,6 +12,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Reflection;
+using System.Windows.Forms;
 using System.Xml;
 using System.Text;
 
@@ -27,6 +28,13 @@ namespace ICSharpCode.Core
 	{
 		static Dictionary<string, IProjectContent> contents = new Dictionary<string, IProjectContent>(StringComparer.InvariantCultureIgnoreCase);
 		static ReflectionProjectContent mscorlibContent;
+		
+		public static void RunLocked(MethodInvoker method)
+		{
+			lock (contents) {
+				method();
+			}
+		}
 		
 		public static IProjectContent Mscorlib {
 			get {

@@ -49,10 +49,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 
-		SelectReferenceDialog selectDialog;
+		ISelectReferenceDialog selectDialog;
 		ColumnSorter sorter;
 		
-		public GacReferencePanel(SelectReferenceDialog selectDialog)
+		public GacReferencePanel(ISelectReferenceDialog selectDialog)
 		{
 			sorter = new ColumnSorter();
 			this.ListViewItemSorter = sorter;
@@ -103,7 +103,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}		
 		
-		void PrintCache()
+		protected virtual void PrintCache()
 		{
 			IApplicationContext applicationContext = null;
 			IAssemblyEnum assemblyEnum = null;

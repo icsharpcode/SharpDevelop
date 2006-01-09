@@ -20,9 +20,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class AssemblyReferencePanel : Panel, IReferencePanel
 	{
-		SelectReferenceDialog selectDialog;
+		ISelectReferenceDialog selectDialog;
 		
-		public AssemblyReferencePanel(SelectReferenceDialog selectDialog)
+		public AssemblyReferencePanel(ISelectReferenceDialog selectDialog)
 		{
 			this.selectDialog = selectDialog;
 			

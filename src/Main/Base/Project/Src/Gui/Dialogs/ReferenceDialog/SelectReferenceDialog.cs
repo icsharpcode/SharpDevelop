@@ -23,6 +23,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void AddReference(object sender, EventArgs e);
 	}
 	
+	public interface ISelectReferenceDialog
+	{
+		void AddReference(ReferenceType referenceType, string referenceName, string referenceLocation, object tag);
+	}
+	
 	public enum ReferenceType {
 		Assembly,
 		Typelib,
@@ -34,7 +39,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	/// Summary description for Form2.
 	/// </summary>
-	public class SelectReferenceDialog : System.Windows.Forms.Form
+	public class SelectReferenceDialog : System.Windows.Forms.Form, ISelectReferenceDialog
 	{
 		private System.Windows.Forms.ListView referencesListView;
 		private System.Windows.Forms.Button selectButton;

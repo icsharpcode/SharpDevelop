@@ -18,9 +18,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class ProjectReferencePanel : ListView, IReferencePanel
 	{
-		SelectReferenceDialog selectDialog;
+		ISelectReferenceDialog selectDialog;
 		
-		public ProjectReferencePanel(SelectReferenceDialog selectDialog)
+		public ProjectReferencePanel(ISelectReferenceDialog selectDialog)
 		{
 			this.selectDialog = selectDialog;
 			

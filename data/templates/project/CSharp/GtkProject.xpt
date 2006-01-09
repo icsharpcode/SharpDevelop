@@ -1,0 +1,110 @@
+<?xml version="1.0"?>
+<Template originator   = "Matt Ward"
+          created      = "01/01/2006"
+          lastModified = "09/01/2006">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>Gtk# Application</Name>
+		<Category>C#</Category>
+		<Icon>C#.Project.Form</Icon>
+		<LanguageName>C#</LanguageName>
+		<Description>A project that creates a Gtk# application</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MainWindow.cs"/>
+	</Actions>
+	
+	<Solution name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options OutputType = "WinExe"/>
+
+			<PropertyGroup>
+					<TargetFrameworkVersion>Mono v1.1</TargetFrameworkVersion>
+			</PropertyGroup>
+			
+			<Imports clear="True">
+				<Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets" />
+			</Imports>
+			
+			<ProjectItems>
+				<Reference Include="atk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="gdk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="glib-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="gtk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="pango-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+			</ProjectItems>
+			
+			<Files>
+				<File name="MainWindow.cs"><![CDATA[${StandardHeader.C#}
+using Gtk;
+using System;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of MainWindow.
+	/// </summary>
+	public class MainWindow : Window
+	{
+		public MainWindow() : base("MainWindow")
+		{
+			DeleteEvent += new DeleteEventHandler(MainWindowDeleteEvent);
+			ShowAll();
+		}
+		
+		[STAThread]
+		public static void Main(string[] arg)
+		{
+			Application.Init();
+			new MainWindow();
+			Application.Run();
+		}
+		
+		void MainWindowDeleteEvent(object o, DeleteEventArgs args)
+		{
+			Application.Quit();
+			args.RetVal = true;
+		}
+	}
+}]]></File>
+		<File name="AssemblyInfo.cs">
+			<![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+// Information about this assembly is defined by the following
+// attributes.
+//
+// change them to the information which is associated with the assembly
+// you compile.
+
+[assembly: AssemblyTitle("")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+
+// The assembly version has following format :
+//
+// Major.Minor.Build.Revision
+//
+// You can specify all values by your own or you can build default build and revision
+// numbers with the '*' character (the default):
+
+[assembly: AssemblyVersion("1.0.*")]
+
+]]></File>
+			</Files>
+		</Project>
+	</Solution>
+</Template>

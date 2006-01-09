@@ -27,6 +27,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string name;
 		string relativePath;
 		string languageName = null;
+		bool clearExistingImports;
 		
 		List<FileDescriptionTemplate> files = new List<FileDescriptionTemplate>(); // contains FileTemplate classes
 		List<ProjectItem> projectItems = new List<ProjectItem>();
@@ -140,6 +141,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 				}
 				
 				// Add Imports
+				if (clearExistingImports) {
+					((AbstractProject)project).Imports.Clear();
+				}
 				foreach(string projectImport in projectImports) {
 					((AbstractProject)project).Imports.Add(projectImport);
 				}
@@ -253,6 +257,9 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 			if (element["Imports"] != null) {
 				ReadProjectImports(projectDescriptor, element["Imports"]);
+				if (element["Imports"].HasAttribute("clear")) {
+					projectDescriptor.clearExistingImports = (String.Compare(element["Imports"].Attributes["clear"].InnerText, "true", StringComparison.InvariantCultureIgnoreCase) == 0);
+				}
 			}
 			foreach (XmlNode node in element) {
 				if (node.NodeType == XmlNodeType.Element && node.Name == "PropertyGroup") {

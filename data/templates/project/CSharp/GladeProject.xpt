@@ -1,0 +1,139 @@
+<?xml version="1.0"?>
+<Template originator   = "Matt Ward"
+          created      = "01/01/2006"
+          lastModified = "09/01/2006">
+	
+	<!-- Template Header -->
+	<TemplateConfiguration>
+		<Name>Glade# Application</Name>
+		<Category>C#</Category>
+		<Icon>C#.Project.Form</Icon>
+		<LanguageName>C#</LanguageName>
+		<Description>A project that creates a Glade# application</Description>
+	</TemplateConfiguration>
+	
+	<!-- Actions -->
+	<Actions>
+		<Open filename = "MainWindow.cs"/>
+	</Actions>
+	
+	<Solution name = "${ProjectName}" directory = ".">
+		<Options>
+			<StartupProject>${ProjectName}</StartupProject>
+		</Options>
+		
+		<Project name = "${ProjectName}" directory = ".">
+			<Options OutputType = "WinExe"/>
+			
+			<PropertyGroup>
+					<TargetFrameworkVersion>Mono v1.1</TargetFrameworkVersion>
+			</PropertyGroup>
+			
+			<Imports clear="True">
+				<Import Project="$(SharpDevelopBinPath)\SharpDevelop.Build.CSharp.targets" />
+			</Imports>
+			
+			<ProjectItems>
+				<Reference Include="atk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="gdk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="glade-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="glib-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="gtk-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="pango-sharp, Version=1.0.0.0, Culture=neutral, PublicKeyToken=35e10195dab3c99f" />
+				<Reference Include="System, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+			</ProjectItems>
+					
+			<Files>
+				<File name="MainWindow.cs"><![CDATA[${StandardHeader.C#}
+using Glade;
+using Gtk;
+using System;
+
+namespace ${StandardNamespace}
+{
+	/// <summary>
+	/// Description of MainWindow.
+	/// </summary>
+	public class MainWindow
+	{
+		public MainWindow()
+		{
+			Glade.XML gxml = new Glade.XML(null, "${StandardNamespace}.glade.xml", "MainWindow", null);
+			gxml.Autoconnect(this);
+		}
+		
+		[STAThread]
+		public static void Main(string[] args)
+		{
+			Application.Init();
+			new MainWindow();
+			Application.Run();
+		}
+
+		void MainWindowDeleteEvent(object o, DeleteEventArgs args) 
+		{
+			Application.Quit();
+			args.RetVal = true;
+		}
+	}
+}]]></File>
+			<File name="glade.xml" buildAction="EmbeddedResource"><![CDATA[<?xml version="1.0" standalone="no"?> <!--*- mode: xml -*-->
+<!DOCTYPE glade-interface SYSTEM "http://glade.gnome.org/glade-2.0.dtd">
+
+<glade-interface>
+
+<widget class="GtkWindow" id="MainWindow">
+  <property name="visible">True</property>
+  <property name="title" translatable="yes">MainWindow</property>
+  <property name="type">GTK_WINDOW_TOPLEVEL</property>
+  <property name="window_position">GTK_WIN_POS_NONE</property>
+  <property name="modal">False</property>
+  <property name="resizable">True</property>
+  <property name="destroy_with_parent">False</property>
+  <property name="decorated">True</property>
+  <property name="skip_taskbar_hint">False</property>
+  <property name="skip_pager_hint">False</property>
+  <property name="type_hint">GDK_WINDOW_TYPE_HINT_NORMAL</property>
+  <property name="gravity">GDK_GRAVITY_NORTH_WEST</property>
+  <signal name="delete_event" handler="MainWindowDeleteEvent" last_modification_time="Sun, 01 Jan 2006 13:24:18 GMT"/>
+
+  <child>
+    <placeholder/>
+  </child>
+</widget>
+
+</glade-interface>
+]]></File>
+		<File name="AssemblyInfo.cs">
+			<![CDATA[using System.Reflection;
+using System.Runtime.CompilerServices;
+
+// Information about this assembly is defined by the following
+// attributes.
+//
+// change them to the information which is associated with the assembly
+// you compile.
+
+[assembly: AssemblyTitle("")]
+[assembly: AssemblyDescription("")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("")]
+[assembly: AssemblyProduct("")]
+[assembly: AssemblyCopyright("")]
+[assembly: AssemblyTrademark("")]
+[assembly: AssemblyCulture("")]
+
+// The assembly version has following format :
+//
+// Major.Minor.Build.Revision
+//
+// You can specify all values by your own or you can build default build and revision
+// numbers with the '*' character (the default):
+
+[assembly: AssemblyVersion("1.0.*")]
+
+]]></File>
+			</Files>
+		</Project>
+	</Solution>
+</Template>
