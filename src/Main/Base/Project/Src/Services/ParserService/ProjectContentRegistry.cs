@@ -155,7 +155,7 @@ namespace ICSharpCode.Core
 		
 		static ReflectionProjectContent LoadProjectContent(string filename, string include)
 		{
-			ReflectionProjectContent pc = DomPersistence.LoadProjectContentByAssemblyName(filename);
+			ReflectionProjectContent pc = DomPersistence.LoadProjectContentByAssemblyName(Path.GetFullPath(filename));
 			if (pc != null) {
 				return pc;
 			}
