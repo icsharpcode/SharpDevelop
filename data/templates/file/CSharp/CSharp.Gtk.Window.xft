@@ -5,6 +5,7 @@
 		  name        = "Gtk# Window"
 		  icon        = "C#.File.Form"
 		  category    = "C#"
+		  subcategory = "Mono"
 		  defaultname = "Window${Number}.cs"
 		  language    = "C#"/>
 	 

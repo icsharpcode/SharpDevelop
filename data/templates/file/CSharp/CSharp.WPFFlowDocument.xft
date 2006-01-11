@@ -5,6 +5,7 @@
 		  name        = "WinFX Flow Document"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
+		  subcategory = "WinFX"
 		  defaultname = "FlowDocument${Number}.xaml"
 		  language    = "XML"/>
 	 

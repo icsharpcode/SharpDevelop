@@ -54,6 +54,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string    description  = null;
 		string    icon         = null;
 		string    wizardpath   = null;
+		string    subcategory  = null;
 		
 		int IComparable.CompareTo(object other)
 		{
@@ -105,6 +106,12 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public string Category {
 			get {
 				return category;
+			}
+		}
+		
+		public string Subcategory {
+			get {
+				return subcategory;
 			}
 		}
 		
@@ -178,6 +185,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			name         = config["Name"].InnerText;
 			category     = config["Category"].InnerText;
 			languagename = config["LanguageName"].InnerText;
+			
+			if (config["Subcategory"] != null) {
+				subcategory = config["Subcategory"].InnerText;
+			}
 			
 			if (config["Description"] != null) {
 				description  = config["Description"].InnerText;

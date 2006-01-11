@@ -103,13 +103,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			((ListView)ControlDictionary["templateListView"]).SmallImageList = smalllist;
 			
 			InsertCategories(null, categories);
+			((TreeView)ControlDictionary["categoryTreeView"]).Sort();
 			
-			for (int j = 0; j < categories.Count; ++j) {
-				if (((Category)categories[j]).Name == PropertyService.Get("Dialogs.NewFileDialog.LastSelectedCategory", "C#")) {
-					((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode = (TreeNode)((TreeView)ControlDictionary["categoryTreeView"]).Nodes[j];
-					break;
-				}
-			}
+			SelectLastSelectedCategoryNode(((TreeView)ControlDictionary["categoryTreeView"]).Nodes, PropertyService.Get("Dialogs.NewFileDialog.LastSelectedCategory", "C#"));
 		}
 		
 		void InsertCategories(TreeNode node, ArrayList catarray)
@@ -124,17 +120,50 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		// TODO : insert sub categories
-		Category GetCategory(string categoryname)
+		TreeNode SelectLastSelectedCategoryNode(TreeNodeCollection nodes, string name)
+		{
+			foreach (TreeNode node in nodes) {
+				if (node.Name == name) {
+					((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode = node;
+					node.ExpandAll();
+					return node;
+				}
+				TreeNode selectedNode = SelectLastSelectedCategoryNode(node.Nodes, name);
+				if (selectedNode != null) {
+					return selectedNode;
+				}
+			}
+			return null;
+		}
+		
+		Category GetCategory(string categoryname, string subcategoryname)
 		{
 			foreach (Category category in categories) {
 				if (category.Name == categoryname) {
-					return category;
+					if (subcategoryname == null) {
+						return category;
+					} else {
+						return GetSubcategory(category, subcategoryname);
+					}
 				}
 			}
 			Category newcategory = new Category(categoryname);
 			categories.Add(newcategory);
+			if (subcategoryname != null) {
+				return GetSubcategory(newcategory, subcategoryname);
+			}
 			return newcategory;
+		}
+		
+		Category GetSubcategory(Category parentCategory, string name)
+		{
+			foreach (Category subcategory in parentCategory.Categories) {
+				if (subcategory.Name == name)
+					return subcategory;
+			}
+			Category newsubcategory = new Category(name);
+			parentCategory.Categories.Add(newsubcategory);
+			return newsubcategory;
 		}
 		
 		void InitializeTemplates()
@@ -145,7 +174,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					icons[titem.Template.Icon] = 0; // "create template icon"
 				}
 				if (template.NewFileDialogVisible == true) {
-					Category cat = GetCategory(titem.Template.Category);
+					Category cat = GetCategory(titem.Template.Category, titem.Template.Subcategory);
 					cat.Templates.Add(titem); 
 				
 					if (cat.Selected == false && template.WizardPath == null) {

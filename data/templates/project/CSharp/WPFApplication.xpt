@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <Template originator   = "Mathias Simmack"
           created      = "26/10/2005"
-          lastModified = "20/11/2005">
+          lastModified = "11/01/2006">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>WinFX Application</Name>
 		<Category>C#</Category>
+		<Subcategory>WinFX</Subcategory>
 		<Icon>C#.Project.Form</Icon>
 		<LanguageName>C#</LanguageName>
 		<Description>Creates a simple WinFX application.</Description>

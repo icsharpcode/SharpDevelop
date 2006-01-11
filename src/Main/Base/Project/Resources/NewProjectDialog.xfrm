@@ -187,12 +187,12 @@
             <Name value="splitter" />
             <TabIndex value="1" />
             <Size value="{Width=3, Height=247}" />
-            <Location value="{X=124,Y=0}" />
+            <Location value="{X=174,Y=0}" />
           </System.Windows.Forms.Splitter>
           <System.Windows.Forms.Panel>
             <Name value="categoryPanel" />
             <Location value="{X=0,Y=0}" />
-            <Size value="{Width=124, Height=247}" />
+            <Size value="{Width=174, Height=247}" />
             <DockPadding value="" />
             <TabIndex value="0" />
             <Dock value="Left" />
@@ -205,7 +205,7 @@
                 <Scrollable value="False" />
                 <Location value="{X=0,Y=23}" />
                 <SelectedImageIndex value="-1" />
-                <Size value="{Width=124, Height=224}" />
+                <Size value="{Width=174, Height=224}" />
                 <HotTracking value="True" />
                 <HideSelection value="False" />
               </System.Windows.Forms.TreeView>
@@ -214,7 +214,7 @@
                 <Text value="${res:Dialog.NewProject.ProjectTypeLabelText}" />
                 <TextAlign value="BottomLeft" />
                 <TabIndex value="0" />
-                <Size value="{Width=124, Height=23}" />
+                <Size value="{Width=174, Height=23}" />
                 <Location value="{X=0,Y=0}" />
                 <Dock value="Top" />
               </System.Windows.Forms.Label>

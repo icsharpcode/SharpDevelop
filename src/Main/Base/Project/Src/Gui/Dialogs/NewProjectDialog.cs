@@ -99,12 +99,8 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			((ListView)ControlDictionary["templateListView"]).SmallImageList = smalllist;
 			
 			InsertCategories(null, categories);
-			for (int j = 0; j < categories.Count; ++j) {
-				if (((Category)categories[j]).Name == PropertyService.Get("Dialogs.NewProjectDialog.LastSelectedCategory", "C#")) {
-					((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode = (TreeNode)((TreeView)ControlDictionary["categoryTreeView"]).Nodes[j];
-					break;
-				}
-			}
+			((TreeView)ControlDictionary["categoryTreeView"]).Sort();
+			SelectLastSelectedCategoryNode(((TreeView)ControlDictionary["categoryTreeView"]).Nodes, PropertyService.Get("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
 		}
 		
 		void InsertCategories(TreeNode node, ArrayList catarray)
@@ -119,16 +115,34 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			}
 		}
 		
-		// TODO : insert sub categories
-		protected Category GetCategory(string categoryname)
+		protected Category GetCategory(string categoryname, string subcategoryname)
 		{
 			foreach (Category category in categories) {
-				if (category.Text == categoryname)
-					return category;
+				if (category.Text == categoryname) {
+					if (subcategoryname == null) {
+						return category;
+					} else {
+						return GetSubcategory(category, subcategoryname);
+					}
+				}
 			}
 			Category newcategory = new Category(categoryname);
 			categories.Add(newcategory);
+			if (subcategoryname != null) {
+				return GetSubcategory(newcategory, subcategoryname);
+			}
 			return newcategory;
+		}
+		
+		Category GetSubcategory(Category parentCategory, string name)
+		{
+			foreach (Category subcategory in parentCategory.Categories) {
+				if (subcategory.Text == name)
+					return subcategory;
+			}
+			Category newsubcategory = new Category(name);
+			parentCategory.Categories.Add(newsubcategory);
+			return newsubcategory;
 		}
 		
 		protected virtual void InitializeTemplates()
@@ -139,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					icons[titem.Template.Icon] = 0; // "create template icon"
 				}
 				if (template.NewProjectDialogVisible == true) {
-					Category cat = GetCategory(titem.Template.Category);
+					Category cat = GetCategory(titem.Template.Category, titem.Template.Subcategory);
 					cat.Templates.Add(titem);
 					if (cat.Templates.Count == 1)
 						titem.Selected = true;
@@ -365,6 +379,22 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				ControlDictionary["descriptionLabel"].Text = String.Empty;
 				ControlDictionary["openButton"].Enabled = false;
 			}
+		}
+		
+		TreeNode SelectLastSelectedCategoryNode(TreeNodeCollection nodes, string name)
+		{
+			foreach (TreeNode node in nodes) {
+				if (node.Name == name) {
+					((TreeView)ControlDictionary["categoryTreeView"]).SelectedNode = node;
+					node.ExpandAll();
+					return node;
+				}
+				TreeNode selectedNode = SelectLastSelectedCategoryNode(node.Nodes, name);
+				if (selectedNode != null) {
+					return selectedNode;
+				}
+			}
+			return null;
 		}
 		
 		protected void InitializeComponents()

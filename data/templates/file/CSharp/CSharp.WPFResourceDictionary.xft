@@ -4,6 +4,7 @@
 	<Config
 		  name        = "WinFX Resource Dictionary"
 		  icon        = "Icons.32x32.XMLFileIcon"
+		  subcategory = "WinFX"
 		  category    = "C#"
 		  defaultname = "Dictionary${Number}.xaml"
 		  language    = "XML"/>

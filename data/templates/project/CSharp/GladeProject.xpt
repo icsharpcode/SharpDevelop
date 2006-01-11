@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <Template originator   = "Matt Ward"
-          created      = "01/01/2006"
-          lastModified = "09/01/2006">
+          created      = "01/10/2001"
+          lastModified = "11/01/2006">
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
 		<Name>Glade# Application</Name>
 		<Category>C#</Category>
+		<Subcategory>Mono</Subcategory>
 		<Icon>C#.Project.Form</Icon>
 		<LanguageName>C#</LanguageName>
 		<Description>A project that creates a Glade# application</Description>

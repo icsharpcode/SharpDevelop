@@ -146,6 +146,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string description  = null;
 		string wizardpath   = null;
 		string defaultName  = null;
+		string subcategory  = null;
 
 		bool   newFileDialogVisible = true;
 		
@@ -178,6 +179,11 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		public string Category {
 			get {
 				return category;
+			}
+		}
+		public string Subcategory {
+			get {
+				return subcategory;
 			}
 		}
 		public string LanguageName {
@@ -265,6 +271,10 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			category     = config.GetAttribute("category");
 			defaultName  = config.GetAttribute("defaultname");
 			languagename = config.GetAttribute("language");
+			
+			if (config.HasAttribute("subcategory")) {
+				subcategory = config.GetAttribute("subcategory");
+			}
 
 			string newFileDialogVisibleAttr  = config.GetAttribute("newfiledialogvisible");
 			if (newFileDialogVisibleAttr != null && newFileDialogVisibleAttr.Length != 0) {

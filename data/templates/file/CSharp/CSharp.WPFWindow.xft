@@ -5,6 +5,7 @@
 		  name        = "WinFX Window"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
+		  subcategory = "WinFX"
 		  defaultname = "Window${Number}.xaml"
 		  language    = "C#"/>
 	 

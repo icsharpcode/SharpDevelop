@@ -5,6 +5,7 @@
 		  name        = "WinFX Page Function"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
+		  subcategory = "WinFX"
 		  defaultname = "PageFunction${Number}.xaml"
 		  language    = "XML"/>
 	 

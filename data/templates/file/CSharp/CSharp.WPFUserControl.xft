@@ -5,6 +5,7 @@
 		  name        = "WinFX User Control"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
+		  subcategory = "WinFX"
 		  defaultname = "UserControl${Number}.xaml"
 		  language    = "XML"/>
 	 
