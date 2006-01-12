@@ -63,10 +63,9 @@ namespace ICSharpCode.FormsDesigner
 				ICompilationUnit cu = (ICompilationUnit)info.BestCompilationUnit;
 				foreach (IClass c in cu.Classes) {
 					IMethod method = GetInitializeComponents(c);
-					if (method == null) {
-						return false;
+					if (method != null) {
+						return BaseClassIsFormOrControl(c);
 					}
-					return BaseClassIsFormOrControl(c);
 				}
 			}
 			return false;

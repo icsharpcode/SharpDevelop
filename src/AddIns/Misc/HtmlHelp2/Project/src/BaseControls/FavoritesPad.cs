@@ -1,10 +1,10 @@
-/* ***********************************************************
- *
- * Help 2.0 Environment for SharpDevelop
- * Favorites Pad
- * Copyright (c) 2005, Mathias Simmack. All rights reserved.
- *
- * ********************************************************* */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Mathias Simmack" email="mathias@simmack.de"/>
+//     <version>$Revision$</version>
+// </file>
+
 namespace HtmlHelp2
 {
 	using System;

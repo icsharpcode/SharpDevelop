@@ -19,7 +19,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ic#code")]
 [assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("2005 AlphaSierraPapa")]
+[assembly: AssemblyCopyright("2005-2006 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

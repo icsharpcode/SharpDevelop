@@ -1,14 +1,14 @@
-/* ***********************************************************
- * 
- * Help 2.0 Environment for SharpDevelop
- * ShowHelpBrowser Class
- * Copyright (c) 2005, Mathias Simmack. All rights reserved.
- * 
- * With a big "Thank you" to Robert_G (Delphi-PRAXiS)
- * 
- * ********************************************************* */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Mathias Simmack" email="mathias@simmack.de"/>
+//     <version>$Revision$</version>
+// </file>
+
 namespace HtmlHelp2
 {
+	// With a big "Thank you" to Robert_G (Delphi-PRAXiS)
+	
 	using System;
 	using ICSharpCode.SharpDevelop.Gui;
 	using ICSharpCode.SharpDevelop.BrowserDisplayBinding;

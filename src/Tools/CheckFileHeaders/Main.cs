@@ -66,8 +66,6 @@ namespace CheckFileHeaders
 					continue;
 				if (subdir.EndsWith("AddIns\\Misc\\Debugger\\TreeListView\\Project"))
 					continue;
-				if (subdir.EndsWith("AddIns\\Misc\\ProjectImporterExporter\\Project"))
-					continue;
 				count += Run(subdir);
 			}
 			return count;
@@ -85,6 +83,7 @@ namespace CheckFileHeaders
 			int lastLine;
 			int headerType = AnalyzeHeader(content, out author, out email, out lastLine);
 			if (headerType == 5) {
+				//Console.WriteLine("unknown file: " + file);
 				ignoreCount++;
 				return;
 			}
@@ -177,6 +176,8 @@ namespace CheckFileHeaders
 					return "andrea@icsharpcode.net";
 				case "Matthew Ward":
 					return "mrward@users.sourceforge.net";
+				case "Mathias Simmack":
+					return "mathias@simmack.de";
 				case "Poul Staugaard":
 					return "poul@staugaard.dk";
 				case "Roman Taranchenko":
@@ -227,7 +228,6 @@ namespace CheckFileHeaders
 		}
 		
 		#region AnalyzeHeader
-		Regex gplRegex = new Regex(@"// Copyright \(C\) 200\d(?:\s?-\s?200\d)?(?:\s?,\s?200\d)*\s+(\w+ \w+)( \(\w+@\w+\.\w+\))?", RegexOptions.IgnoreCase);
 		Regex xmlRegex = new Regex(@"<owner name=""(\w[\w\s]*\w)"" email=""([\w\s@\.]*)""\s?/>");
 		Regex sdRegex = new Regex(@"\* User: (.*)");
 		
@@ -235,7 +235,7 @@ namespace CheckFileHeaders
 		// 0 = no header
 		// 1 = XML header
 		// 2 = SharpDevelop header
-		// 3 = GPL header
+		// 3 = GPL header (unused)
 		// 4 = unknown header
 		// 5 = outcommented file
 		int AnalyzeHeader(string content, out string author, out string email, out int lastLine)
@@ -271,19 +271,10 @@ namespace CheckFileHeaders
 							return 5;
 						} else if (line == "/*") {
 							state = 4;
-						} else if (line == "/* ***********************************************************") {
-							// Mathias' style (preserve)
-							lastLine = -1;
-							return 5;
 						} else if (line == "//------------------------------------------------------------------------------") {
 							// TlbImp auto-generated style (preserve)
 							lastLine = -1;
 							return 5;
-						} else if (gplRegex.IsMatch(line)) {
-							Match m = gplRegex.Match(line);
-							author = m.Groups[1].Value;
-							email = m.Groups[2].Value;
-							state = 3;
 						} else if (line.StartsWith("//")) {
 							// ignore
 						} else {
@@ -297,8 +288,6 @@ namespace CheckFileHeaders
 							Match m = xmlRegex.Match(line);
 							author = m.Groups[1].Value;
 							email = m.Groups[2].Value;
-						} else if (line == @"//     <owner name=""Mike KrÃ¼ger"" email=""mike@icsharpcode.net""/>") {
-							author = "Mike Krueger";
 						}
 					} else if (state == 2) {
 						if (line == "*/") {

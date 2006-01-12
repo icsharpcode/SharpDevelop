@@ -1,10 +1,9 @@
-﻿/* ***********************************************************
- *
- * Help 2.0 Environment for SharpDevelop
- * Dynamic Help Pad
- * Copyright (c) 2005, Mathias Simmack. All rights reserved.
- *
- * ********************************************************* */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Mathias Simmack" email="mathias@simmack.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 using System.Reflection;
 using System.Runtime.CompilerServices;
@@ -20,7 +19,7 @@ using System.Runtime.CompilerServices;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("ic#code")]
 [assembly: AssemblyProduct("SharpDevelop")]
-[assembly: AssemblyCopyright("2005 AlphaSierraPapa")]
+[assembly: AssemblyCopyright("2005-2006 AlphaSierraPapa")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

@@ -1,10 +1,9 @@
-/* ***********************************************************
- *
- * Help 2.0 Environment for SharpDevelop
- * Table of Contents Pad
- * Copyright (c) 2005, Mathias Simmack. All rights reserved.
- *
- * ********************************************************* */
+// <file>
+//     <copyright see="prj:///doc/copyright.txt"/>
+//     <license see="prj:///doc/license.txt"/>
+//     <owner name="Mathias Simmack" email="mathias@simmack.de"/>
+//     <version>$Revision$</version>
+// </file>
 
 //#define DExplore8Style_NoTOCPictures
 

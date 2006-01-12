@@ -210,7 +210,7 @@ namespace ICSharpCode.StartPage
 			
 			StaticStyleSheet = startPageLocation + "/Layout/default.css";
 			MetaAuthor = "Christoph Wille - christophw@alphasierrapapa.com";
-			MetaCopyright = "(c) 2001-2005 AlphaSierraPapa";
+			MetaCopyright = "(c) 2001-2006 AlphaSierraPapa";
 
 			ShowLeftMenu = false;
 			ShowRightBox = false;
@@ -483,7 +483,7 @@ namespace ICSharpCode.StartPage
 			builder.Append(m_strMainColColor);
 			builder.Append("\" class=\"copy\"><img src=\""+ startPageLocation + "/Layout/Common/blind.gif\" width=15 height=1>");
 			builder.Append("<font size=\"-2\">");
-			builder.Append("Copyright &copy;2000-2005 <A HREF=\"mailto:webmaster@icsharpcode.net\" title=\"Contact Us\">IC#SharpCode</a>. Released under the terms of the GNU Lesser General Public License. </font></td>\r\n");
+			builder.Append("Copyright &copy;2000-2006 <A HREF=\"mailto:webmaster@icsharpcode.net\" title=\"Contact Us\">IC#SharpCode</a>. Released under the terms of the GNU Lesser General Public License. </font></td>\r\n");
 
 			if (ShowRightBox)
 			{
