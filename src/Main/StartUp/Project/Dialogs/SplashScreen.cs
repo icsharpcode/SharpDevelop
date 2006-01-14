@@ -19,13 +19,16 @@ namespace ICSharpCode.SharpDevelop
 	{
 		public const string VersionText = "SharpDevelop 2 build " + RevisionClass.Revision;
 		
-		static SplashScreenForm splashScreen = new SplashScreenForm();
+		static SplashScreenForm splashScreen;
 		static ArrayList requestedFileList = new ArrayList();
 		static ArrayList parameterList = new ArrayList();
 		Bitmap bitmap;
 		
 		public static SplashScreenForm SplashScreen {
 			get {
+				if (splashScreen == null) {
+					splashScreen = new SplashScreenForm();
+				}
 				return splashScreen;
 			}
 		}
