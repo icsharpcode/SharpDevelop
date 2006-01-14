@@ -33,7 +33,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			Match match = combineLinePattern.Match(content);
 			while (match.Success) {
 				string path = Path.Combine(solutionDirectory, match.Result("${FileName}"));
-				if (Path.GetExtension(path).ToUpper() == ".CMBX") {
+				if (".CMBX".Equals(Path.GetExtension(path), StringComparison.OrdinalIgnoreCase)) {
 					ReadProjects(newSolution, path, projectFiles);
 				} else {
 					projectFiles.Add(path);

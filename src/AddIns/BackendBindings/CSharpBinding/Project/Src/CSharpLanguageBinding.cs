@@ -42,7 +42,7 @@ namespace CSharpBinding
 			if (ext == null) {
 				return false;
 			}
-			return ext.ToUpper() == ".CS";
+			return ext.Equals(".CS", StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public string GetCompiledOutputName(string fileName)

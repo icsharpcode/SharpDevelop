@@ -30,7 +30,7 @@ namespace ICSharpCode.SharpDevelop.Services
 			string path = null;
 			foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
 				string fullFilename = assembly.Location;
-				if (Path.GetFileName(fullFilename).ToLower() == assemblyName.ToLower()) {
+				if (Path.GetFileName(fullFilename).Equals(assemblyName, StringComparison.OrdinalIgnoreCase)) {
 					path = Path.GetDirectoryName(fullFilename);
 					break;
 				}
@@ -67,7 +67,7 @@ namespace ICSharpCode.SharpDevelop.Services
 		{
 			foreach (System.Reflection.Assembly assembly in AppDomain.CurrentDomain.GetAssemblies()) {
 				string fullFilename = assembly.Location;
-				if (Path.GetFileNameWithoutExtension(fullFilename).ToLower() == args.Name.ToLower() ||
+				if (Path.GetFileNameWithoutExtension(fullFilename).Equals(args.Name, StringComparison.OrdinalIgnoreCase) ||
 					assembly.FullName == args.Name) {
 					return assembly;
 				}

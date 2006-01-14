@@ -104,7 +104,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			int pos = rootNamespace.IndexOf(',');
 			if (pos > 0)
 				rootNamespace = rootNamespace.Substring(0, pos);
-			if (directory.ToLower().StartsWith(rootNamespace.ToLower())) {
+			if (directory.ToLowerInvariant().StartsWith(rootNamespace.ToLowerInvariant())) {
 				directory = directory.Substring(rootNamespace.Length);
 			}
 			return directory;

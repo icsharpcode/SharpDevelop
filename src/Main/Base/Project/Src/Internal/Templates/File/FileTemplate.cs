@@ -278,7 +278,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 
 			string newFileDialogVisibleAttr  = config.GetAttribute("newfiledialogvisible");
 			if (newFileDialogVisibleAttr != null && newFileDialogVisibleAttr.Length != 0) {
-				if (newFileDialogVisibleAttr.ToLower() == "false")
+				if (newFileDialogVisibleAttr.Equals("false", StringComparison.OrdinalIgnoreCase))
 					newFileDialogVisible = false;
 			}
 

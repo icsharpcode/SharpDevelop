@@ -125,6 +125,7 @@ namespace ICSharpCode.SharpDevelop
 			commandLineArgs = args;
 			bool noLogo = false;
 			
+			Application.SetCompatibleTextRenderingDefault(false);
 			SplashScreenForm.SetCommandLineArgs(args);
 			
 			foreach (string parameter in SplashScreenForm.GetParameterList()) {

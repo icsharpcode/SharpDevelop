@@ -66,9 +66,9 @@ namespace ICSharpCode.Core
 		
 		public static LanguageBindingDescriptor GetCodonPerProjectFile(string fileName)
 		{
-			string ext = Path.GetExtension(fileName).ToUpper();
+			string ext = Path.GetExtension(fileName).ToUpperInvariant();
 			foreach (LanguageBindingDescriptor binding in bindings) {
-				if (binding.ProjectFileExtension.ToUpper() == ext) {
+				if (binding.ProjectFileExtension.ToUpperInvariant() == ext) {
 					return binding;
 				}
 			}

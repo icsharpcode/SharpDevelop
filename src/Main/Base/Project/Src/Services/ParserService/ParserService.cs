@@ -400,7 +400,9 @@ namespace ICSharpCode.Core
 			foreach (string defaultReference in defaultReferences) {
 				ReferenceProjectItem item = new ReferenceProjectItem(null, defaultReference);
 				IProjectContent pc = ProjectContentRegistry.GetProjectContentForReference(item);
-				defaultProjectContent.ReferencedContents.Add(pc);
+				if (pc != null) {
+					defaultProjectContent.ReferencedContents.Add(pc);
+				}
 			}
 			WorkbenchSingleton.Workbench.ActiveWorkbenchWindowChanged += delegate {
 				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow != null) {

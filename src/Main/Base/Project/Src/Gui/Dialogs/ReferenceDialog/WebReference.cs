@@ -262,7 +262,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			CodeDomProvider provider;
 			
-			switch(Path.GetExtension(fileName).ToLower()) {
+			switch(Path.GetExtension(fileName).ToLowerInvariant()) {
 				case ".cs":
 					provider = new Microsoft.CSharp.CSharpCodeProvider();
 					break;

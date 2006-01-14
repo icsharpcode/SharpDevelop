@@ -105,7 +105,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		{
 			if (reference != "")   return "\t\t<RuleSet name=\"" + ReplaceXmlChars(name) + "\" reference=\"" + ReplaceXmlChars(reference) + "\"></RuleSet>\n\n";
 			
-			string ret = "\t\t<RuleSet ignorecase=\"" + ignoreCase.ToString().ToLower() + "\" ";
+			string ret = "\t\t<RuleSet ignorecase=\"" + ignoreCase.ToString().ToLowerInvariant() + "\" ";
 			if (noEscapeSequences) ret += "noescapesequences=\"true\" ";
 			if (!isRoot)           ret += "name=\"" + ReplaceXmlChars(name) + "\" ";
 			ret += ">\n";

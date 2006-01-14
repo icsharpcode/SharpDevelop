@@ -191,7 +191,7 @@ namespace ICSharpCode.SharpDevelop.Dom.NRefactoryResolver
 				
 				AttributeTarget target = AttributeTarget.None;
 				if (section.AttributeTarget != null && section.AttributeTarget != "") {
-					switch (section.AttributeTarget.ToUpper()) {
+					switch (section.AttributeTarget.ToUpperInvariant()) {
 						case "ASSEMBLY":
 							target = AttributeTarget.Assembly;
 							break;

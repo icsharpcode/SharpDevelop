@@ -29,7 +29,7 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				LanguageBindingDescriptor languageCodon = LanguageBindingService.GetCodonPerLanguageName(project.Language);
 				for (int i = 0; i < fileFilters.Length; ++i) {
 					for (int j = 0; j < languageCodon.Supportedextensions.Length; ++j) {
-						if (fileFilters[i].ToUpper().IndexOf(languageCodon.Supportedextensions[j].ToUpper()) >= 0) {
+						if (fileFilters[i].ToUpperInvariant().IndexOf(languageCodon.Supportedextensions[j].ToUpperInvariant()) >= 0) {
 							return i + 1;
 						}
 					}

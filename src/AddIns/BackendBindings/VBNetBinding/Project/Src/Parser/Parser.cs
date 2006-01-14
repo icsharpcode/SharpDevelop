@@ -45,7 +45,7 @@ namespace VBNetBinding.Parser
 		
 		public bool CanParse(string fileName)
 		{
-			return Path.GetExtension(fileName).ToUpper() == ".VB";
+			return Path.GetExtension(fileName).Equals(".VB", StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public bool CanParse(IProject project)
@@ -60,7 +60,7 @@ namespace VBNetBinding.Parser
 				ICSharpCode.NRefactory.Parser.PreProcessingDirective directive = tracker.CurrentSpecials[i] as ICSharpCode.NRefactory.Parser.PreProcessingDirective;
 				if (directive != null)
 				{
-					if (directive.Cmd.ToLower() == "#region")
+					if (directive.Cmd.Equals("#region", StringComparison.OrdinalIgnoreCase))
 					{
 						int deep = 1;
 						for (int j = i + 1; j < tracker.CurrentSpecials.Count; ++j)
@@ -68,13 +68,13 @@ namespace VBNetBinding.Parser
 							ICSharpCode.NRefactory.Parser.PreProcessingDirective nextDirective = tracker.CurrentSpecials[j] as ICSharpCode.NRefactory.Parser.PreProcessingDirective;
 							if (nextDirective != null)
 							{
-								switch (nextDirective.Cmd.ToLower())
+								switch (nextDirective.Cmd.ToLowerInvariant())
 								{
 									case "#region":
 										++deep;
 										break;
 									case "#end":
-										if (nextDirective.Arg.ToLower() == "region") {
+										if (nextDirective.Arg.Equals("region", StringComparison.OrdinalIgnoreCase)) {
 											--deep;
 											if (deep == 0) {
 												cu.FoldingRegions.Add(new FoldingRegion(directive.Arg.Trim('"'), new DomRegion(directive.StartPosition, nextDirective.EndPosition)));

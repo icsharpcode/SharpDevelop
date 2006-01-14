@@ -34,7 +34,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected virtual void Create(ProjectCreateInformation information)
 		{
 			Name = information.ProjectName;
-			IdGuid = "{" + Guid.NewGuid().ToString().ToUpper() + "}";
+			IdGuid = "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}";
 			BaseConfiguration["OutputType"]    = "Exe";
 			BaseConfiguration["RootNamespace"] = information.ProjectName;
 			BaseConfiguration["AssemblyName"]  = information.ProjectName;

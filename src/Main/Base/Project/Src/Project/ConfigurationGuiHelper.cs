@@ -188,7 +188,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				string oldValue = Get("True");
 				if (oldValue == "true" || oldValue == "false") {
 					// keep value in lower case
-					Set(control.Checked.ToString().ToLower());
+					Set(control.Checked.ToString().ToLowerInvariant());
 				} else {
 					Set(control.Checked.ToString());
 				}

@@ -25,7 +25,7 @@ namespace Grunwald.BooBinding
 {
 	public class ConvertBuffer : AbstractMenuCommand
 	{
-		ConverterSettings ApplySettings(string fileName, CompilerErrorCollection errors, CompilerWarningCollection warnings)
+		public static ConverterSettings ApplySettings(string fileName, CompilerErrorCollection errors, CompilerWarningCollection warnings)
 		{
 			ConverterSettings settings = new ConverterSettings(fileName, errors, warnings);
 			settings.SimplifyTypeNames = true;
@@ -57,24 +57,30 @@ namespace Grunwald.BooBinding
 						}
 					}
 					MessageService.ShowError(errorBuilder.ToString());
-					return;
+				} else {
+					FileService.NewFile("Generated.boo", "Boo", CreateBooCode(errors, warnings, module, specials));
 				}
-				using (StringWriter w = new StringWriter()) {
-					foreach (CompilerError error in errors) {
-						w.WriteLine("ERROR: " + error.ToString());
-					}
-					if (errors.Count > 0)
-						w.WriteLine();
-					foreach (CompilerWarning warning in warnings) {
-						w.WriteLine("# WARNING: " + warning.ToString());
-					}
-					if (warnings.Count > 0)
-						w.WriteLine();
-					BooPrinterVisitorWithComments printer = new BooPrinterVisitorWithComments(specials, w);
-					printer.OnModule(module);
-					printer.Finish();
-					FileService.NewFile("Generated.boo", "Boo", w.ToString());
+			}
+		}
+		
+		public static string CreateBooCode(CompilerErrorCollection errors, CompilerWarningCollection warnings,
+		                                   Module module, IList<ICSharpCode.NRefactory.Parser.ISpecial> specials)
+		{
+			using (StringWriter w = new StringWriter()) {
+				foreach (CompilerError error in errors) {
+					w.WriteLine("ERROR: " + error.ToString());
 				}
+				if (errors.Count > 0)
+					w.WriteLine();
+				foreach (CompilerWarning warning in warnings) {
+					w.WriteLine("# WARNING: " + warning.ToString());
+				}
+				if (warnings.Count > 0)
+					w.WriteLine();
+				BooPrinterVisitorWithComments printer = new BooPrinterVisitorWithComments(specials, w);
+				printer.OnModule(module);
+				printer.Finish();
+				return w.ToString();
 			}
 		}
 	}

@@ -14,7 +14,7 @@ namespace ICSharpCode.NRefactory.Parser
 {
 	public class PreProcessingDirective : AbstractSpecial
 	{
-		public static void VBToCSharp(List<ISpecial> list)
+		public static void VBToCSharp(IList<ISpecial> list)
 		{
 			for (int i = 0; i < list.Count; ++i) {
 				if (list[i] is PreProcessingDirective)

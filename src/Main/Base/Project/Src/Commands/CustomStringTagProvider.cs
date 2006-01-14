@@ -75,7 +75,7 @@ namespace ICSharpCode.SharpDevelop.Commands
 					return ProjectService.CurrentProject == null ? "<empty>" : ProjectService.CurrentProject.Name;
 					
 			}
-			switch (tag.ToUpper()) {
+			switch (tag.ToUpperInvariant()) {
 				case "NETSDKDIR":
 					return FileUtility.NetSdkInstallRoot;
 				case "ITEMPATH":

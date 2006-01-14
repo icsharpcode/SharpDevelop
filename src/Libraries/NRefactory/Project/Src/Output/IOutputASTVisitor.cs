@@ -21,6 +21,10 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 	/// </summary>
 	public interface IOutputASTVisitor : IAstVisitor
 	{
+		NodeTracker NodeTracker {
+			get;
+		}
+		
 		string Text {
 			get;
 		}

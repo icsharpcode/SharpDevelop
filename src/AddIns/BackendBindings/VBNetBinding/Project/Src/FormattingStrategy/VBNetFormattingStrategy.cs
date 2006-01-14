@@ -221,7 +221,7 @@ namespace VBNetBinding.FormattingStrategy
 		
 		bool IsElseConstruct(string line)
 		{
-			string t = StripComment(line).ToLower();
+			string t = StripComment(line).ToLowerInvariant();
 			if (t.StartsWith("case ")) return true;
 			if (t == "else" || t.StartsWith("elseif ")) return true;
 			if (t == "catch" || t.StartsWith("catch ")) return true;

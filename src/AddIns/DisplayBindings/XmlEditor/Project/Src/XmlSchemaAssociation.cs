@@ -84,7 +84,7 @@ namespace ICSharpCode.XmlEditor
 		{
 			XmlSchemaAssociation association = null;
 			
-			switch (extension.ToLower()) {
+			switch (extension.ToLowerInvariant()) {
 				case ".wxs":
 					association = new XmlSchemaAssociation(extension, @"http://schemas.microsoft.com/wix/2003/01/wi");
 					break;

@@ -635,7 +635,7 @@ namespace ICSharpCode.StartPage
 		public string Render(string section)
 		{
 			startPageLocation = FileUtility.Combine(Application.StartupPath, "..", "data", "resources", "startpage");
-			switch (section.ToLower()) {
+			switch (section.ToLowerInvariant()) {
 				case "start":
 					ContentBarText = StringParser.Parse("${res:StartPage.StartMenu.BarNameName}");
 					break;
@@ -655,7 +655,7 @@ namespace ICSharpCode.StartPage
 			RenderPageTopSection(builder);
 			RenderFirstPageBodySection(builder);
 			
-			switch (section.ToLower()) {
+			switch (section.ToLowerInvariant()) {
 				case "start":
 					RenderSectionStartBody(builder);
 					break;

@@ -51,7 +51,7 @@ namespace AddInScout
 			
 			ListViewItem selectedItem = ((ListView)sender).SelectedItems[0];
 			
-			if (selectedItem.Text.ToLower().Equals("url")) {
+			if (selectedItem.Text.Equals("url", StringComparison.OrdinalIgnoreCase)) {
 				string url = selectedItem.SubItems[1].Text;
 				try	 {
 					System.Diagnostics.Process.Start(url);
@@ -59,7 +59,7 @@ namespace AddInScout
 					// Silent: On my System the browser starts but Process.Start throws an exception. Mike 2.11.2004/Notebook/ICE 1517 on the way to DevCon Europe 2004
 //					MessageBox.Show("Unable to Start Browser\n" + ex.ToString());
 				}
-			} else if (selectedItem.Text.ToLower().Equals("filename")) {
+			} else if (selectedItem.Text.Equals("filename", StringComparison.OrdinalIgnoreCase)) {
 				
 				FileService.OpenFile(selectedItem.SubItems[1].Text);
 			}

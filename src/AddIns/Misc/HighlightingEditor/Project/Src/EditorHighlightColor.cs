@@ -212,8 +212,8 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 		public string ToXml()
 		{
 			string str = "";
-			str += "bold=\"" + bold.ToString().ToLower() + "\" ";
-			str += "italic=\"" + italic.ToString().ToLower() + "\" ";
+			str += "bold=\"" + bold.ToString().ToLowerInvariant() + "\" ";
+			str += "italic=\"" + italic.ToString().ToLowerInvariant() + "\" ";
 			if (hasForeColor) {
 				str += "color=\"";
 				if (sysForeColor) {

@@ -117,7 +117,7 @@ namespace ICSharpCode.Core
 			string[] aPath = absPath.Split(separators);
 			int indx = 0;
 			for(; indx < Math.Min(bPath.Length, aPath.Length); ++indx){
-				if(!bPath[indx].ToUpper().Equals(aPath[indx].ToUpper()))
+				if(!bPath[indx].Equals(aPath[indx], StringComparison.OrdinalIgnoreCase))
 					break;
 			}
 			

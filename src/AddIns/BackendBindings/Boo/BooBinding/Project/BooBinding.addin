@@ -22,6 +22,19 @@
 		            extensions = "*.boo"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert">
+		<Condition name = "ProjectActive" activeproject="VBNet">
+			<MenuItem id = "VBToBooConverter"
+			          label = "From VB.NET to Boo"
+			          class = "Grunwald.BooBinding.ProjectToBooConverter"/>
+		</Condition>
+		<Condition name = "ProjectActive" activeproject="C#">
+			<MenuItem id = "CSharpToBooConverter"
+			          label = "From C# to Boo"
+			          class = "Grunwald.BooBinding.ProjectToBooConverter"/>
+		</Condition>
+	</Path>
+	
 	<Path name = "/Workspace/Icons">
 		<Icon id         = "BooPrj"
 		      language   = "Boo"

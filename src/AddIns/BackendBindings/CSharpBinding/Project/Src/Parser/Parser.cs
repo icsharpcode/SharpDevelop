@@ -45,7 +45,7 @@ namespace CSharpBinding.Parser
 		
 		public bool CanParse(string fileName)
 		{
-			return Path.GetExtension(fileName).ToUpper() == ".CS";
+			return Path.GetExtension(fileName).Equals(".CS", StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public bool CanParse(IProject project)

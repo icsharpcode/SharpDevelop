@@ -43,7 +43,7 @@ namespace VBNetBinding
 			if (ext == null) {
 				return false;
 			}
-			return ext.ToUpper() == ".VB";
+			return ext.Equals(".VB", StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public string GetCompiledOutputName(string fileName)

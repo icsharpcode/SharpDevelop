@@ -178,7 +178,7 @@ namespace NRefactoryToBooConverter
 		
 		public object Visit(AttributeSection s, object data)
 		{
-			if (s.AttributeTarget.ToLower() == "assembly") {
+			if (s.AttributeTarget.Equals("assembly", StringComparison.OrdinalIgnoreCase)) {
 				foreach (ICSharpCode.NRefactory.Parser.AST.Attribute a in s.Attributes) {
 					module.AssemblyAttributes.Add((B.Attribute)Visit(a, null));
 				}

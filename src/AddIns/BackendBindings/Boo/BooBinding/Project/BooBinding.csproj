@@ -80,6 +80,7 @@
     <Compile Include="Src\BooCodeGenerator.cs" />
     <Compile Include="Src\CodeCompletion\ElementReturnType.cs" />
     <Compile Include="Src\FormattingStrategy.cs" />
+    <Compile Include="Src\ConvertProject.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="BooBinding.addin">

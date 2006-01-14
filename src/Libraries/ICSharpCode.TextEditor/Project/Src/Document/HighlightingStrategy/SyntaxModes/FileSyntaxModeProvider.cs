@@ -58,7 +58,7 @@ namespace ICSharpCode.TextEditor.Document
 			string[] files = Directory.GetFiles(directory);
 			ArrayList modes = new ArrayList();
 			foreach (string file in files) {
-				if (Path.GetExtension(file).ToUpper() == ".XSHD") {
+				if (Path.GetExtension(file).Equals(".XSHD", StringComparison.OrdinalIgnoreCase)) {
 					XmlTextReader reader = new XmlTextReader(file);
 					while (reader.Read()) {
 						if (reader.NodeType == XmlNodeType.Element) {

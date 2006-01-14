@@ -675,7 +675,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void PropertyChanged(object sender, PropertyChangedEventArgs e)
 		{
-			string extension = Path.GetExtension(xmlEditor.FileName).ToLower();
+			string extension = Path.GetExtension(xmlEditor.FileName).ToLowerInvariant();
 			if (e.Key == extension) {
 				SetDefaultSchema(extension);
 			} else if (e.Key == XmlEditorAddInOptions.ShowAttributesWhenFoldedPropertyName) {
@@ -699,7 +699,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void UserSchemaAdded(object source, EventArgs e)
 		{
-			SetDefaultSchema(Path.GetExtension(xmlEditor.FileName).ToLower());
+			SetDefaultSchema(Path.GetExtension(xmlEditor.FileName).ToLowerInvariant());
 		}
 		
 		/// <summary>
@@ -708,7 +708,7 @@ namespace ICSharpCode.XmlEditor
 		/// </summary>
 		void UserSchemaRemoved(object source, EventArgs e)
 		{
-			SetDefaultSchema(Path.GetExtension(xmlEditor.FileName).ToLower());
+			SetDefaultSchema(Path.GetExtension(xmlEditor.FileName).ToLowerInvariant());
 		}
 		
 		/// <summary>

@@ -43,7 +43,7 @@ namespace ICSharpCode.ILAsmBinding
 			if (ext == null) {
 				return false;
 			}
-			return ext.ToUpper() == ".IL";
+			return ext.Equals(".IL", StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public string GetCompiledOutputName(string fileName)

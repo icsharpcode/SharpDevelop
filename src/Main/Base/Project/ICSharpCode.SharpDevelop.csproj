@@ -742,6 +742,7 @@
     <Compile Include="Src\Gui\Dialogs\ReferenceDialog\WebReferenceChanges.cs" />
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\CodeGenerationForm.cs" />
     <Compile Include="Src\Dom\NRefactoryResolver\NRefactoryInformationProvider.cs" />
+    <Compile Include="Src\Project\Converter\LanguageConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

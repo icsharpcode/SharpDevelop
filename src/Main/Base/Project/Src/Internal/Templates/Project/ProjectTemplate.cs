@@ -172,7 +172,7 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			
 			string newProjectDialogVisibleAttr  = doc.DocumentElement.GetAttribute("newprojectdialogvisible");
 			if (newProjectDialogVisibleAttr != null && newProjectDialogVisibleAttr.Length != 0) {
-				if (newProjectDialogVisibleAttr.ToLower() == "false")
+				if (newProjectDialogVisibleAttr.Equals("false", StringComparison.OrdinalIgnoreCase))
 					newProjectDialogVisible = false;
 			}
 			

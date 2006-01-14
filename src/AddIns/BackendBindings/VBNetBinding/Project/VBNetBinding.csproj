@@ -58,6 +58,7 @@
     <EmbeddedResource Include="Resources\ProjectImports.xfrm" />
     <Compile Include="Src\OptionPanels\TextEditorOptions.cs" />
     <EmbeddedResource Include="Resources\VBNetTextEditorOptions.xfrm" />
+    <Compile Include="Src\Project\CSharpToVBConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

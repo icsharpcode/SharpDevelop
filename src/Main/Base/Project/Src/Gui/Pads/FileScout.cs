@@ -188,8 +188,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			string key;
 			
 			// icon files and exe files can have their custom icons
-			if(Path.GetExtension(file).ToLower() == ".ico" ||
-			   Path.GetExtension(file).ToLower() == ".exe") {
+			if(Path.GetExtension(file).Equals(".ico", StringComparison.OrdinalIgnoreCase) ||
+			   Path.GetExtension(file).Equals(".exe", StringComparison.OrdinalIgnoreCase)) {
 				key = file;
 			} else {
 				key = Path.GetExtension(file).ToLower();
@@ -258,7 +258,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			foreach(FileListItem fileItem in Items)
 			{
-				if(fileItem.FullName.ToLower() == e.FullPath.ToLower()) {
+				if(fileItem.FullName.Equals(e.FullPath, StringComparison.OrdinalIgnoreCase)) {
 					Items.Remove(fileItem);
 					break;
 				}
@@ -269,7 +269,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			foreach(FileListItem fileItem in Items)
 			{
-				if(fileItem.FullName.ToLower() == e.FullPath.ToLower()) {
+				if(fileItem.FullName.Equals(e.FullPath, StringComparison.OrdinalIgnoreCase)) {
 					
 					FileInfo info = new FileInfo(e.FullPath);
 					
@@ -295,7 +295,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 			foreach(FileListItem fileItem in Items)
 			{
-				if(fileItem.FullName.ToLower() == e.OldFullPath.ToLower()) {
+				if(fileItem.FullName.Equals(e.OldFullPath, StringComparison.OrdinalIgnoreCase)) {
 					fileItem.FullName = e.FullPath;
 					fileItem.Text = e.Name;
 					break;
@@ -474,18 +474,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 		void FileSelected(object sender, EventArgs e)
 		{
 			foreach (FileList.FileListItem item in filelister.SelectedItems) {
-				
-				switch (Path.GetExtension(item.FullName).ToUpper()) {
-					case ".CMBX":
-					case ".SLN":
-						ProjectService.LoadSolution(item.FullName);
-						break;
-					case ".PRJX":
-						// TODO: Load old projects.
-						break;
-					default:
-						FileService.OpenFile(item.FullName);
-						break;
+				if (ProjectService.IsSolutionExtension(Path.GetExtension(item.FullName))) {
+					ProjectService.LoadSolution(item.FullName);
+				} else if (ProjectService.IsProjectExtension(Path.GetExtension(item.FullName))) {
+					ProjectService.LoadProject(item.FullName);
+				} else {
+					FileService.OpenFile(item.FullName);
 				}
 			}
 		}
@@ -619,7 +613,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			foreach(string dir in pathlist) {
 				
 				foreach(TreeNode childnode in curnode) {
-					if (((string)childnode.Tag).ToUpper().Equals(dir.ToUpper())) {
+					if (((string)childnode.Tag).Equals(dir, StringComparison.OrdinalIgnoreCase)) {
 						SelectedNode = childnode;
 						
 						PopulateSubDirectory(childnode, 2);

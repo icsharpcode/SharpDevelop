@@ -91,7 +91,7 @@ namespace ICSharpCode.Core
 		public void AddLastFile(string name)
 		{
 			for (int i = 0; i < lastfile.Count; ++i) {
-				if (lastfile[i].ToString().ToLower() == name.ToLower()) {
+				if (lastfile[i].ToString().Equals(name, StringComparison.OrdinalIgnoreCase)) {
 					lastfile.RemoveAt(i);
 				}
 			}
@@ -126,7 +126,7 @@ namespace ICSharpCode.Core
 		public void AddLastProject(string name)
 		{
 			for (int i = 0; i < lastproject.Count; ++i) {
-				if (lastproject[i].ToString().ToLower() == name.ToLower()) {
+				if (lastproject[i].ToString().Equals(name, StringComparison.OrdinalIgnoreCase)) {
 					lastproject.RemoveAt(i);
 				}
 			}

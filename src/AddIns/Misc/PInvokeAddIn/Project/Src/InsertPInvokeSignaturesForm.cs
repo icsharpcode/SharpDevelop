@@ -182,7 +182,7 @@ namespace ICSharpCode.PInvokeAddIn
 			StringBuilder signatureBuilder = new StringBuilder();
 			
 			foreach (SignatureInfo info in signatures) {
-				if (info.Language.ToLower() == language.ToLower()) {
+				if (info.Language.Equals(language, StringComparison.OrdinalIgnoreCase)) {
 					signatureBuilder.Append(GetSignature(info));
 					signatureBuilder.Append("\r\n");
 				}
@@ -212,7 +212,7 @@ namespace ICSharpCode.PInvokeAddIn
 			foreach (SignatureInfo info in signatures) {
 				
 				bool languageWanted = false;
-				if ((language == allLanguages) || (language.ToLower() == info.Language.ToLower())) {
+				if ((language == allLanguages) || (language.Equals(info.Language, StringComparison.OrdinalIgnoreCase))) {
 					languageWanted = true;
 				} 
 				
@@ -313,8 +313,8 @@ namespace ICSharpCode.PInvokeAddIn
 		{
 			TextEditorControl textEditor = GetTextEditorControl();
 			if (textEditor != null) {
-				string fileExtension = Path.GetExtension(textEditor.ActiveTextAreaControl.TextArea.MotherTextEditorControl.FileName).ToLower();	
-				if (fileExtension == ".vb") {
+				string fileExtension = Path.GetExtension(textEditor.ActiveTextAreaControl.TextArea.MotherTextEditorControl.FileName);
+				if (fileExtension.Equals(".vb", StringComparison.OrdinalIgnoreCase)) {
 					return "VB";
 				}
 			}

@@ -329,6 +329,11 @@
 		<MenuItem id = "ExportToHtml"
 		          label = "${res:ProjectComponent.ContextMenu.HtmlExport}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.ExportProjectToHtml"/>
+		<MenuItem id = "Convert"
+		          label = "${res:ICSharpCode.SharpDevelop.Commands.Convert}"
+		          type  = "Menu">
+			<!-- elements are added by backend bindings -->
+		</MenuItem>
 		<MenuItem id = "GenerateDocumentation"
 		          label = "${res:ProjectComponent.ContextMenu.GenerateDocumentation}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.GenerateProjectDocumentation"/>

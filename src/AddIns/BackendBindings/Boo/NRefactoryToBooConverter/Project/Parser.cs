@@ -40,6 +40,9 @@ namespace NRefactoryToBooConverter
 			parser.Errors.Error  = errorTrap.DefaultMsgError;
 			parser.Parse();
 			specials = parser.Lexer.SpecialTracker.CurrentSpecials;
+			if (settings.IsVisualBasic) {
+				PreProcessingDirective.VBToCSharp(specials);
+			}
 			// abort when file has errors
 			if (errorTrap.count > 0)
 				return null;

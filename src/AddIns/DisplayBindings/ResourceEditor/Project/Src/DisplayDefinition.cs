@@ -22,8 +22,8 @@ namespace ResourceEditor
 		// IDisplayBinding interface
 		public bool CanCreateContentForFile(string fileName)
 		{
-			return Path.GetExtension(fileName).ToUpper() == ".RESOURCES" || 
-			       Path.GetExtension(fileName).ToUpper() == ".RESX";
+			return Path.GetExtension(fileName).Equals(".RESOURCES", StringComparison.OrdinalIgnoreCase) ||
+				Path.GetExtension(fileName).Equals(".RESX", StringComparison.OrdinalIgnoreCase);
 		}
 		
 		public bool CanCreateContentForLanguage(string language)
@@ -87,7 +87,7 @@ namespace ResourceEditor
 		{
 			Save(FileName);
 		}
-	
+		
 		public override void Load(string filename)
 		{
 			resourceEditor.ResourceList.LoadFile(filename);
@@ -144,7 +144,7 @@ namespace ResourceEditor
 		
 		public void Cut()
 		{
-			if (resourceEditor.ResourceList.WriteProtected || resourceEditor.ResourceList.SelectedItems.Count < 1) 
+			if (resourceEditor.ResourceList.WriteProtected || resourceEditor.ResourceList.SelectedItems.Count < 1)
 				return;
 			
 			Hashtable tmphash = new Hashtable();
@@ -183,11 +183,11 @@ namespace ResourceEditor
 				Hashtable tmphash = (Hashtable)dob.GetData(typeof(Hashtable));
 				foreach (DictionaryEntry entry in tmphash) {
 					
-					object resourceValue = GetClonedResource(entry.Value);					
+					object resourceValue = GetClonedResource(entry.Value);
 					ResourceItem item;
 					
 					if (!resourceEditor.ResourceList.Resources.ContainsKey((string)entry.Key)) {
-						item  = new ResourceItem(entry.Key.ToString(), resourceValue);						
+						item  = new ResourceItem(entry.Key.ToString(), resourceValue);
 					} else {
 						int count = 1;
 						string newNameBase = entry.Key.ToString() + " ";
@@ -212,7 +212,7 @@ namespace ResourceEditor
 		/// </summary>
 		/// <param name="resource">A resource to clone.</param>
 		/// <returns>A cloned resource if the object implements
-		/// the ICloneable interface, otherwise the 
+		/// the ICloneable interface, otherwise the
 		/// <paramref name="resource"/> object.</returns>
 		object GetClonedResource(object resource)
 		{
@@ -224,7 +224,7 @@ namespace ResourceEditor
 			} else {
 				clonedResource = resource;
 			}
-				
+			
 			return clonedResource;
 		}
 		
@@ -238,7 +238,7 @@ namespace ResourceEditor
 			DialogResult rc;
 			
 			try {
-							
+				
 				rc=MessageBox.Show(ResourceService.GetString("ResourceEditor.DeleteEntry.Confirm"),ResourceService.GetString("ResourceEditor.DeleteEntry.Title"),MessageBoxButtons.OKCancel);
 			}
 			catch {
@@ -255,7 +255,7 @@ namespace ResourceEditor
 				////if (item.Text != null) {
 				resourceEditor.ResourceList.Resources.Remove(item.Text);
 				resourceEditor.ResourceList.Items.Remove(item);
-				// and set dirty flag	
+				// and set dirty flag
 				resourceEditor.ResourceList.OnChanged();
 			}
 		}

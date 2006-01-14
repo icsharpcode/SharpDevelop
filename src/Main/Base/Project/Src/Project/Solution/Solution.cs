@@ -218,7 +218,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		public SolutionFolder CreateFolder(string folderName)
 		{
-			return new SolutionFolder(folderName, folderName, "{" + Guid.NewGuid().ToString().ToUpper() + "}");
+			return new SolutionFolder(folderName, folderName, "{" + Guid.NewGuid().ToString().ToUpperInvariant() + "}");
 		}
 		
 		

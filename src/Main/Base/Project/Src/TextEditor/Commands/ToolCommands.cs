@@ -41,7 +41,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 			
 			using (ColorDialog cd = new ColorDialog()) {
 				if (cd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-					string ext = Path.GetExtension(textarea.FileName).ToLower();
+					string ext = Path.GetExtension(textarea.FileName).ToLowerInvariant();
 					string colorstr;
 					if (ext == ".cs" || ext == ".vb" || ext == ".boo") {
 						if (cd.Color.IsKnownColor) {
@@ -228,7 +228,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Commands
 				return;
 			}
 			
-			string newGuid = Guid.NewGuid().ToString().ToUpper();
+			string newGuid = Guid.NewGuid().ToString().ToUpperInvariant();
 			
 			textEditor.ActiveTextAreaControl.TextArea.InsertString(newGuid);
 		}

@@ -231,7 +231,7 @@ namespace ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor
 				xml.Read();
 				do {
 					if (xml.NodeType == XmlNodeType.Element) {
-						string elname = xml.Name.ToLower();
+						string elname = xml.Name.ToLowerInvariant();
 						switch (elname) {
 							case "filterpriority":
 								xml.Skip();

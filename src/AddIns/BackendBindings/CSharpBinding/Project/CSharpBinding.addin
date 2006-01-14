@@ -17,6 +17,14 @@
 		       class = "ICSharpCode.Core.CSharpAmbience"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert">
+		<Condition name = "ProjectActive" activeproject="VBNet">
+			<MenuItem id = "VBToCSharpConverter"
+			          label = "${res:ICSharpCode.SharpDevelop.Commands.VBConvertProjectToCSharp}"
+			          class = "CSharpBinding.VBToCSharpConverter"/>
+		</Condition>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "C#"
 		            insertbefore="AllFiles"

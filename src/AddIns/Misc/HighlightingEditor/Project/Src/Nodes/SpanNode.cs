@@ -65,7 +65,7 @@ namespace ICSharpCode.SharpDevelop.AddIns.HighlightingEditor.Nodes
 			ret = "\t\t\t<Span name=\"" + ReplaceXmlChars(name) + "\" ";
 			if (noEscapeSequences) ret += "noescapesequences=\"true\" ";
 			if (rule != "") ret += "rule=\"" + ReplaceXmlChars(rule) + "\" ";
-			ret += "stopateol=\"" + stopEOL.ToString().ToLower() + "\" ";
+			ret += "stopateol=\"" + stopEOL.ToString().ToLowerInvariant() + "\" ";
 			ret += color.ToXml();
 			ret += ">\n";
 			

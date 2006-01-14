@@ -31,6 +31,14 @@
 			class = "VBNetBinding.Parser.TParser"/>
 	</Path>
 	
+	<Path name = "/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions/Convert">
+		<Condition name = "ProjectActive" activeproject="C#">
+			<MenuItem id = "CSharpToVBConverter"
+			          label = "${res:ICSharpCode.SharpDevelop.Commands.CharpConvertProjectToVB}"
+			          class = "VBNetBinding.CSharpToVBConverter"/>
+		</Condition>
+	</Path>
+	
 	<Path name = "/SharpDevelop/Dialogs/OptionsDialog/TextEditorOptions">
 		<DialogPanel id = "VBSpecificOptions"
 			             label = "${res:Dialog.Options.IDEOptions.TextEditor.VB.PanelName}"

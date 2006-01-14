@@ -53,6 +53,7 @@
     </None>
     <Compile Include="Src\CSharpCompletionBinding.cs" />
     <Compile Include="Src\EventHandlerCompletitionDataProvider.cs" />
+    <Compile Include="Src\Project\VBToCSharpConverter.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\..\Libraries\ICSharpCode.TextEditor\Project\ICSharpCode.TextEditor.csproj">

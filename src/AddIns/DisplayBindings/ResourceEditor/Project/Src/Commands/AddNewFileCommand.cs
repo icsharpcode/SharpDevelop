@@ -67,7 +67,7 @@ namespace ResourceEditor
 		
 		object loadResource(string name)
 		{
-			switch (Path.GetExtension(name).ToUpper()) {
+			switch (Path.GetExtension(name).ToUpperInvariant()) {
 				case ".CUR":
 					try {
 						return new Cursor(name);
