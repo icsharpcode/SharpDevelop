@@ -7,7 +7,7 @@
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.Direct3DApplication.Name}</Name>
 		<Category>C#</Category>
-		<Subcategory>Windows Applications</Subcategory>
+		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>C#.Project.FullProject</Icon>
 		<LanguageName>C#</LanguageName>
 		<Description>${res:Templates.Project.Direct3DApplication.Description}</Description>

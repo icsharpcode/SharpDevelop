@@ -743,6 +743,8 @@
     <Compile Include="Src\TextEditor\Commands\CodeGenerators\CodeGenerationForm.cs" />
     <Compile Include="Src\Dom\NRefactoryResolver\NRefactoryInformationProvider.cs" />
     <Compile Include="Src\Project\Converter\LanguageConverter.cs" />
+    <Compile Include="Src\Gui\Dialogs\TemplateCategoryComparer.cs" />
+    <Compile Include="Src\Internal\Templates\TemplateCategorySortOrderFile.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\DockPanel_Src\WinFormsUI\WinFormsUI.csproj">

@@ -5,6 +5,7 @@
 		name        = "${res:Templates.File.WindowsUserControl.Name}"
 		icon        = "C#.File.Form"
 		category    = "C#"
+		subcategory = "${res:Templates.File.Categories.WindowsApplications}"
 		defaultname = "UserControl${Number}.cs"
 		language    = "C#"
 	/>

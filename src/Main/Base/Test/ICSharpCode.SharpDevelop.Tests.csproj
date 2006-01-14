@@ -63,6 +63,9 @@
     <Compile Include="WebReferences\WebServicesReferenceExistsTests.cs" />
     <Compile Include="WebReferences\ProjectWebReferenceItemsTests.cs" />
     <Compile Include="WebReferences\WebReferenceChangesTest.cs" />
+    <Compile Include="Templates\ProjectTemplateCategoryComparerTests.cs" />
+    <Compile Include="Templates\CategorySortOrderTests.cs" />
+    <Compile Include="Templates\FileTemplateCategoryComparerTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Project\ICSharpCode.SharpDevelop.csproj">
@@ -103,6 +106,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Folder Include="WebReferences" />
+    <Folder Include="Templates" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSHARP.Targets" />
 </Project>

@@ -103,6 +103,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			((ListView)ControlDictionary["templateListView"]).SmallImageList = smalllist;
 			
 			InsertCategories(null, categories);
+			((TreeView)ControlDictionary["categoryTreeView"]).TreeViewNodeSorter = new TemplateCategoryComparer();
 			((TreeView)ControlDictionary["categoryTreeView"]).Sort();
 			
 			SelectLastSelectedCategoryNode(((TreeView)ControlDictionary["categoryTreeView"]).Nodes, PropertyService.Get("Dialogs.NewFileDialog.LastSelectedCategory", "C#"));
@@ -147,7 +148,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					}
 				}
 			}
-			Category newcategory = new Category(categoryname);
+			Category newcategory = new Category(categoryname, TemplateCategorySortOrderFile.GetFileCategorySortOrder(categoryname));
 			categories.Add(newcategory);
 			if (subcategoryname != null) {
 				return GetSubcategory(newcategory, subcategoryname);
@@ -161,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				if (subcategory.Name == name)
 					return subcategory;
 			}
-			Category newsubcategory = new Category(name);
+			Category newsubcategory = new Category(name, TemplateCategorySortOrderFile.GetFileCategorySortOrder(parentCategory.Name, name));
 			parentCategory.Categories.Add(newsubcategory);
 			return newsubcategory;
 		}
@@ -174,7 +175,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					icons[titem.Template.Icon] = 0; // "create template icon"
 				}
 				if (template.NewFileDialogVisible == true) {
-					Category cat = GetCategory(titem.Template.Category, titem.Template.Subcategory);
+					Category cat = GetCategory(StringParser.Parse(titem.Template.Category), StringParser.Parse(titem.Template.Subcategory));
 					cat.Templates.Add(titem); 
 				
 					if (cat.Selected == false && template.WizardPath == null) {
@@ -469,25 +470,25 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// <summary>
 		///  Represents a category
 		/// </summary>
-		internal class Category : TreeNode
+		public class Category : TreeNode, ICategory
 		{
 			ArrayList categories = new ArrayList();
 			ArrayList templates  = new ArrayList();
-//			string name;
+			int sortOrder        = TemplateCategorySortOrderFile.UndefinedSortOrder;
 			public bool Selected = false;
 			public bool HasSelectedTemplate = false;
 			
-			public Category(string name) : base(StringParser.Parse(name))
+			public Category(string name, int sortOrder) : base(StringParser.Parse(name))
 			{
-				this.Name = name;
+				this.Name = StringParser.Parse(name);
 				ImageIndex = 1;
+				this.sortOrder = sortOrder;
 			}
 			
-//			public string Name {
-//				get {
-//					return name;
-//				}
-//			}
+			public Category(string name) : this(name, TemplateCategorySortOrderFile.UndefinedSortOrder)
+			{
+			}
+			
 			public ArrayList Categories {
 				get {
 					return categories;
@@ -496,6 +497,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			public ArrayList Templates {
 				get {
 					return templates;
+				}
+			}
+			
+			public int SortOrder {
+				get {
+					return sortOrder;
+				}
+				set {
+					sortOrder = value;
 				}
 			}
 		}

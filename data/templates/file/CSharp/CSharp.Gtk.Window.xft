@@ -2,14 +2,14 @@
 <Template author="Matt Ward" version="1.0">
 	
 	<Config
-		  name        = "Gtk# Window"
+		  name        = "${res:Templates.File.GtkSharpWindow.Name}"
 		  icon        = "C#.File.Form"
 		  category    = "C#"
 		  subcategory = "Mono"
 		  defaultname = "Window${Number}.cs"
 		  language    = "C#"/>
 	 
-	<Description>A window for a Gtk# application.</Description>
+	<Description>${res:Templates.File.GtkSharpWindow.Description}</Description>
 	
 	<!-- 
 	Special new file templates:

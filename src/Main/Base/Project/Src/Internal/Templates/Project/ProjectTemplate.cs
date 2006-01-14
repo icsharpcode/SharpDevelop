@@ -45,16 +45,16 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 	{
 		public static ArrayList ProjectTemplates = new ArrayList();
 		
-		string    originator   = null;
-		string    created      = null;
-		string    lastmodified = null;
-		string    name         = null;
-		string    category     = null;
-		string    languagename = null;
-		string    description  = null;
-		string    icon         = null;
-		string    wizardpath   = null;
-		string    subcategory  = null;
+		string    originator    = null;
+		string    created       = null;
+		string    lastmodified  = null;
+		string    name          = null;
+		string    category      = null;
+		string    languagename  = null;
+		string    description   = null;
+		string    icon          = null;
+		string    wizardpath    = null;
+		string    subcategory   = null;
 		
 		int IComparable.CompareTo(object other)
 		{

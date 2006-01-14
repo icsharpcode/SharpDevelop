@@ -99,6 +99,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 			((ListView)ControlDictionary["templateListView"]).SmallImageList = smalllist;
 			
 			InsertCategories(null, categories);
+			((TreeView)ControlDictionary["categoryTreeView"]).TreeViewNodeSorter = new TemplateCategoryComparer();
 			((TreeView)ControlDictionary["categoryTreeView"]).Sort();
 			SelectLastSelectedCategoryNode(((TreeView)ControlDictionary["categoryTreeView"]).Nodes, PropertyService.Get("Dialogs.NewProjectDialog.LastSelectedCategory", "C#"));
 		}
@@ -126,7 +127,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					}
 				}
 			}
-			Category newcategory = new Category(categoryname);
+			Category newcategory = new Category(categoryname, TemplateCategorySortOrderFile.GetProjectCategorySortOrder(categoryname));
 			categories.Add(newcategory);
 			if (subcategoryname != null) {
 				return GetSubcategory(newcategory, subcategoryname);
@@ -140,7 +141,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				if (subcategory.Text == name)
 					return subcategory;
 			}
-			Category newsubcategory = new Category(name);
+			Category newsubcategory = new Category(name, TemplateCategorySortOrderFile.GetProjectCategorySortOrder(parentCategory.Name, name));
 			parentCategory.Categories.Add(newsubcategory);
 			return newsubcategory;
 		}
@@ -153,7 +154,7 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 					icons[titem.Template.Icon] = 0; // "create template icon"
 				}
 				if (template.NewProjectDialogVisible == true) {
-					Category cat = GetCategory(titem.Template.Category, titem.Template.Subcategory);
+					Category cat = GetCategory(StringParser.Parse(titem.Template.Category), StringParser.Parse(titem.Template.Subcategory));
 					cat.Templates.Add(titem);
 					if (cat.Templates.Count == 1)
 						titem.Selected = true;
@@ -450,23 +451,31 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 		/// <summary>
 		///  Represents a category
 		/// </summary>
-		public class Category : TreeNode
+		public class Category : TreeNode, ICategory
 		{
 			ArrayList categories = new ArrayList();
 			ArrayList templates  = new ArrayList();
-			//			string name;
+			int sortOrder        = TemplateCategorySortOrderFile.UndefinedSortOrder;
 			
-			public Category(string name) : base(name)
+			public Category(string name) : this(name, TemplateCategorySortOrderFile.UndefinedSortOrder)
 			{
-				this.Name = name;
-				ImageIndex = 1;
 			}
 			
-			//			public string Name {
-			//				get {
-			//					return name;
-			//				}
-			//			}
+			public Category(string name, int sortOrder) : base(StringParser.Parse(name))
+			{
+				this.Name = StringParser.Parse(name);
+				ImageIndex = 1;
+				this.sortOrder = sortOrder;
+			}
+			
+			public int SortOrder {
+				get {
+					return sortOrder;
+				}
+				set {
+					sortOrder = value;
+				}
+			}
 			public ArrayList Categories {
 				get {
 					return categories;

@@ -102,12 +102,12 @@
             <Name value="splitter" />
             <TabIndex value="1" />
             <Size value="{Width=4, Height=290}" />
-            <Location value="{X=144,Y=0}" />
+            <Location value="{X=174,Y=0}" />
           </System.Windows.Forms.Splitter>
           <System.Windows.Forms.Panel>
             <Name value="categoryPanel" />
             <Location value="{X=0,Y=0}" />
-            <Size value="{Width=144, Height=290}" />
+            <Size value="{Width=174, Height=290}" />
             <DockPadding value="" />
             <TabIndex value="0" />
             <Dock value="Left" />
@@ -120,7 +120,7 @@
                 <Scrollable value="False" />
                 <Location value="{X=0,Y=23}" />
                 <SelectedImageIndex value="-1" />
-                <Size value="{Width=144, Height=267}" />
+                <Size value="{Width=174, Height=267}" />
                 <HotTracking value="True" />
                 <HideSelection value="False" />
               </System.Windows.Forms.TreeView>
@@ -129,7 +129,7 @@
                 <Text value="${res:Dialog.NewFile.CategoryText}" />
                 <TextAlign value="BottomLeft" />
                 <TabIndex value="0" />
-                <Size value="{Width=144, Height=23}" />
+                <Size value="{Width=174, Height=23}" />
                 <Location value="{X=0,Y=0}" />
                 <Dock value="Top" />
               </System.Windows.Forms.Label>

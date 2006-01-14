@@ -7,6 +7,8 @@
 	<TemplateConfiguration>
 		<Name>Complex EXAMPLE</Name>
 		<Category>C#</Category>
+		<!-- Optional subcategory -->
+		<Subcategory>Windows Applications</Subcategory>
 		<Icon>C#.Project.DOSProject</Icon>
 		<LanguageName>C#</LanguageName>
 		<Description>Example template that tries to use every feature once</Description>
