@@ -39,19 +39,19 @@
 	<!-- Xml file filter -->
 	<Path name = "/SharpDevelop/Workbench/FileFilter">
 		<FileFilter id = "Xml"
-	                insertbefore="AllFiles"
-	                name = "${res:SharpDevelop.FileFilter.XmlFiles}"
-	                extensions = "*.xml"/>
+		            insertbefore="AllFiles"
+		            name = "${res:SharpDevelop.FileFilter.XmlFiles}"
+		            extensions = "*.xml"/>
 		<FileFilter id = "Xsl"
 		            insertbefore="AllFiles"
 		            name = "XSL files (*.xsl;*.xslt)"
 		            extensions = "*.xsl;*.xslt"/>
 	</Path>
-
+	
 	<!-- XML menu -->
 	<Path name = "/SharpDevelop/Workbench/MainMenu">
 		<Condition name = "WindowActive" activewindow="ICSharpCode.XmlEditor.XmlView">
-	        <MenuItem id = "Xml" insertafter="View" insertbefore="Tools" label="&amp;XML" type = "Menu">
+			<MenuItem id = "Xml" insertafter="View" insertbefore="Tools" label="&amp;XML" type = "Menu">
 				<MenuItem id = "CreateSchema"
 				          label = "${res:ICSharpCode.XmlEditor.CreateSchemaMenuLabel}"
 				          class = "ICSharpCode.XmlEditor.CreateSchemaCommand" />
@@ -60,27 +60,32 @@
 				          class = "ICSharpCode.XmlEditor.ValidateXmlCommand"
 				          shortcut = "Control|Shift|V" />
 				<MenuItem id = "Separator1" type = "Separator"/>
-	        	<ComplexCondition action="Disable">
+				<ComplexCondition action="Disable">
 					<Not>
 						<Condition name = "WindowActive" activewindow = "ICSharpCode.XmlEditor.XslOutputView"/>
 					</Not>
 					<MenuItem id="AssignStylesheet"
-						      label="&amp;Assign XSLT..."
-						      class="ICSharpCode.XmlEditor.AssignStylesheetCommand"/>
-			        	<Condition name = "StylesheetAssigned" action="Disable">
-							<MenuItem id="OpenStylesheet"
-								      label="&amp;Open XSLT"
-								      class="ICSharpCode.XmlEditor.OpenStylesheetCommand"/>
-			        	</Condition>
+					          label="&amp;Assign XSLT..."
+					          class="ICSharpCode.XmlEditor.AssignStylesheetCommand"/>
+					<ComplexCondition action="Disable">
+						<!-- evaluate StylesheetAssigned only when XmlView is active - important for lazy loading! -->
+						<And>
+							<Condition name = "WindowActive" activewindow = "ICSharpCode.XmlEditor.XmlView"/>
+							<Condition name = "StylesheetAssigned" action="Disable"/>
+						</And>
+						<MenuItem id="OpenStylesheet"
+						          label="&amp;Open XSLT"
+						          class="ICSharpCode.XmlEditor.OpenStylesheetCommand"/>
+					</ComplexCondition>
 					<MenuItem id="RunTransform"
-						      label="Run XSL&amp;T"
-						      class="ICSharpCode.XmlEditor.RunXslTransformCommand"
-						      shortcut="Control|Shift|T"/>
+					          label="Run XSL&amp;T"
+					          class="ICSharpCode.XmlEditor.RunXslTransformCommand"
+					          shortcut="Control|Shift|T"/>
 				</ComplexCondition>
 			</MenuItem>
 		</Condition>
 	</Path>
-
+	
 	<!-- Right click menu -->
 	<Path name = "/SharpDevelop/ViewContent/XmlEditor/ContextMenu">
 		<MenuItem id = "Cut"

@@ -1,0 +1,13 @@
+Icons.16x16.SharpQuery.DatabaseConnectionClose		= Icons\Icons.16x16.SharpQuery.DatabaseConnectionClose.png
+Icons.16x16.SharpQuery.DatabaseConnection		= Icons\Icons.16x16.SharpQuery.DatabaseConnection.png
+Icons.16x16.SharpQuery.TablesRoot			= Icons\Icons.16x16.SharpQuery.TablesRoot.png
+Icons.16x16.SharpQuery.ViewsRoot			= Icons\Icons.16x16.SharpQuery.ViewsRoot.png
+Icons.16x16.SharpQuery.ProceduresRoot			= Icons\Icons.16x16.SharpQuery.ProceduresRoot.png
+Icons.16x16.SharpQuery.Table				= Icons\Icons.16x16.SharpQuery.Table.png
+Icons.16x16.SharpQuery.View				= Icons\Icons.16x16.SharpQuery.View.png
+Icons.16x16.SharpQuery.Procedure			= Icons\Icons.16x16.SharpQuery.Procedure.png
+Icons.16x16.SharpQuery.Column				= Icons\Icons.16x16.SharpQuery.Column.png
+Icons.16x16.SharpQuery.NodeError			= Icons\Icons.16x16.SharpQuery.NodeError.png
+Icons.16x16.SharpQuery.Refresh				= Icons\Icons.16x16.SharpQuery.Refresh.png
+Icons.16x16.SharpQuery.AddConnection			= Icons\Icons.16x16.SharpQuery.AddConnection.png
+Icons.16x16.SharpQuery.Remove				= Icons\Icons.16x16.SharpQuery.Remove.png

@@ -113,7 +113,8 @@ namespace ICSharpCode.SharpDevelop.Dom
 		}
 		
 		/// <summary>
-		/// Gets the underlying class of this return type.
+		/// Gets the underlying class of this return type. This method will return <c>null</c> for
+		/// generic return types and types that cannot be resolved.
 		/// </summary>
 		IClass GetUnderlyingClass();
 		

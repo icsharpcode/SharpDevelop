@@ -259,7 +259,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 				DialogResult dr = MessageBox.Show(ResourceService.GetString("MainWindow.SaveChangesMessage"),
 				                                  ResourceService.GetString("MainWindow.SaveChangesMessageHeader") + " " + Title + " ?",
 				                                  MessageBoxButtons.YesNoCancel, MessageBoxIcon.Question,
-				                                  MessageBoxDefaultButton.Button3,
+				                                  MessageBoxDefaultButton.Button1,
 				                                  RightToLeftConverter.IsRightToLeft ? MessageBoxOptions.RtlReading | MessageBoxOptions.RightAlign : 0);
 				switch (dr) {
 					case DialogResult.Yes:

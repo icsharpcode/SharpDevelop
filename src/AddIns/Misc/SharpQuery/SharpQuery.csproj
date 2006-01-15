@@ -1,0 +1,101 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{BDD03ECD-42AE-4B50-9805-9C19090A264F}</ProjectGuid>
+    <RootNamespace>SharpQuery</RootNamespace>
+    <AssemblyName>SharpQuery</AssemblyName>
+    <OutputType>Library</OutputType>
+    <WarningLevel>4</WarningLevel>
+    <NoStdLib>False</NoStdLib>
+    <NoConfig>False</NoConfig>
+    <RunPostBuildEvent>OnSuccessfulBuild</RunPostBuildEvent>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <StartAction>Program</StartAction>
+    <StartProgram>..\..\..\..\..\Corsavy\SharpDevelop\bin\SharpDevelop.exe</StartProgram>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\AddIns\AddIns\Misc\SharpQuery\</OutputPath>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <DefineConstants>DEBUG</DefineConstants>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Optimize>False</Optimize>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+    <DebugType>Full</DebugType>
+    <DebugSymbols>true</DebugSymbols>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>True</Optimize>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+    <DebugType>None</DebugType>
+    <DebugSymbols>false</DebugSymbols>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml" />
+    <Reference Include="ADODB, Version=7.0.3300.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="SharpQuery.addin">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <EmbeddedResource Include="Resources\BitmapResources.resources" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Src\Exceptions\ConnectionStringException.cs" />
+    <Compile Include="Src\Exceptions\ExecuteProcedureException.cs" />
+    <Compile Include="Src\Exceptions\ExecuteSQLException.cs" />
+    <Compile Include="Src\Exceptions\OpenConnectionException.cs" />
+    <Compile Include="Src\GUI\SharpQueryTree\SharpQueryDataNodes.cs" />
+    <Compile Include="Src\GUI\SharpQueryTree\SharpQueryNodesRoot.cs" />
+    <Compile Include="Src\GUI\SharpQueryTree\SharpQueryTree.cs">
+      <SubType>Component</SubType>
+    </Compile>
+    <Compile Include="Src\Connection\AbstractSharpQueryConnectionWrapper.cs" />
+    <Compile Include="Src\Connection\ADOConnectionWrapper.cs" />
+    <Compile Include="Src\Connection\IConnection.cs" />
+    <Compile Include="Src\Connection\OLEDBConnectionWrapper.cs" />
+    <Compile Include="Src\Exceptions\SharpQueryAbstractException.cs" />
+    <Compile Include="Src\GUI\AbstractSharpQueryNode.cs" />
+    <Compile Include="Src\GUI\SharpQueryDataView.cs" />
+    <Compile Include="Src\GUI\SQLParameterInput.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Src\GUI\ISharpQueryNode.cs" />
+    <Compile Include="Src\GUI\SharpQueryPad.cs" />
+    <Compile Include="Src\Collections.cs" />
+    <Compile Include="Src\AbstractSharpQueryCommand.cs" />
+    <Compile Include="Src\SharpQueryCommands.cs" />
+    <Compile Include="Src\AbstractSharpQuerySchemaClass.cs" />
+    <Compile Include="Src\ISchemaClass.cs" />
+    <Compile Include="Src\SharpQuerySchemaClass.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <COMReference Include="Microsoft OLE DB Service Component 1.0 Type Library">
+      <Guid>{2206CEB0-19C1-11D1-89E0-00C04FD7A829}</Guid>
+      <VersionMajor>1</VersionMajor>
+      <VersionMinor>0</VersionMinor>
+      <Lcid>0</Lcid>
+      <WrapperTool>tlbimp</WrapperTool>
+      <Isolated>False</Isolated>
+    </COMReference>
+    <ProjectReference Include="..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

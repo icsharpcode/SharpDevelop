@@ -1,0 +1,2 @@
+resasm BitmapResources.res
+pause
