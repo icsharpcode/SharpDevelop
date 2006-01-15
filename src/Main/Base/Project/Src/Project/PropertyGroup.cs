@@ -16,7 +16,7 @@ namespace ICSharpCode.SharpDevelop.Project
 	/// <summary>
 	/// Description of PropertyGroup.
 	/// </summary>
-	public class PropertyGroup
+	public class PropertyGroup : IEnumerable<KeyValuePair<string, string>>
 	{
 		// TODO: Isn't MSBuild case-insensitive ???
 		Dictionary<string, bool>   isGuardedProperty   = new Dictionary<string, bool>();
@@ -38,6 +38,16 @@ namespace ICSharpCode.SharpDevelop.Project
 			set {
 				Set(property, String.Empty, value);
 			}
+		}
+		
+		public IEnumerator<KeyValuePair<string, string>> GetEnumerator()
+		{
+			return properties.GetEnumerator();
+		}
+		
+		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
+		{
+			return properties.GetEnumerator();
 		}
 		
 		public T Get<T>(string property, T defaultValue)

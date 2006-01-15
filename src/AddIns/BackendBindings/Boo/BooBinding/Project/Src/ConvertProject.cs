@@ -47,6 +47,9 @@ namespace Grunwald.BooBinding
 		
 		protected override void ConvertFile(FileProjectItem sourceItem, FileProjectItem targetItem)
 		{
+			FixExtensionOfExtraProperties(targetItem, ".cs", ".boo");
+			FixExtensionOfExtraProperties(targetItem, ".vb", ".boo");
+			
 			string ext = Path.GetExtension(sourceItem.FileName);
 			if (".cs".Equals(ext, StringComparison.OrdinalIgnoreCase) || ".vb".Equals(ext, StringComparison.OrdinalIgnoreCase)) {
 				Module module;

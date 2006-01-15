@@ -40,6 +40,23 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 			
 		}
 		
+		protected virtual void FixExtensionOfExtraProperties(FileProjectItem item, string sourceExtension, string targetExtension)
+		{
+			sourceExtension = sourceExtension.ToLowerInvariant();
+			
+			List<KeyValuePair<string, string>> replacements = new List<KeyValuePair<string, string>>();
+			foreach (KeyValuePair<string, string> pair in item.Properties) {
+				if ("Include".Equals(pair.Key, StringComparison.OrdinalIgnoreCase))
+					continue;
+				if (pair.Value.ToLowerInvariant().EndsWith(sourceExtension)) {
+					replacements.Add(pair);
+				}
+			}
+			foreach (KeyValuePair<string, string> pair in replacements) {
+				item.Properties[pair.Key] = Path.ChangeExtension(pair.Value, targetExtension);
+			}
+		}
+		
 		protected virtual void CopyItems(IProject sourceProject, IProject targetProject)
 		{
 			foreach (ProjectItem item in sourceProject.Items) {
@@ -48,10 +65,12 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 					FileProjectItem targetItem = new FileProjectItem(targetProject, fileItem.ItemType);
 					fileItem.CopyExtraPropertiesTo(targetItem);
 					targetItem.Include = fileItem.Include;
-					if (!Directory.Exists(Path.GetDirectoryName(targetItem.FileName))) {
-						Directory.CreateDirectory(Path.GetDirectoryName(targetItem.FileName));
+					if (File.Exists(fileItem.FileName)) {
+						if (!Directory.Exists(Path.GetDirectoryName(targetItem.FileName))) {
+							Directory.CreateDirectory(Path.GetDirectoryName(targetItem.FileName));
+						}
+						ConvertFile(fileItem, targetItem);
 					}
-					ConvertFile(fileItem, targetItem);
 					targetProject.Items.Add(targetItem);
 				} else {
 					// Adding the same item to two projects is only allowed because we will save and reload
@@ -109,6 +128,7 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		                           string sourceExtension, string targetExtension,
 		                           SupportedLanguage sourceLanguage, IOutputASTVisitor outputVisitor)
 		{
+			FixExtensionOfExtraProperties(targetItem, sourceExtension, targetExtension);
 			if (sourceExtension.Equals(Path.GetExtension(sourceItem.FileName), StringComparison.OrdinalIgnoreCase)) {
 				string code = ParserService.GetParseableFileContent(sourceItem.FileName);
 				IParser p = ParserFactory.CreateParser(sourceLanguage, new StringReader(code));

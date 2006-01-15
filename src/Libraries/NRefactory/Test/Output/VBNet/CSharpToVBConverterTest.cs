@@ -145,6 +145,13 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			              "If FullImage IsNot Nothing Then\n" +
 			              "\te.DrawImage()\n" +
 			              "End If");
+			// another bug related to the IfStatement code:
+			TestStatement("if (Tiles != null) foreach (Tile t in Tiles) this.TileTray.Controls.Remove(t);",
+			              "If Tiles IsNot Nothing\n" +
+			              "\tFor Each t As Tile in Tiles\n" +
+			              "\t\tMe.TileTray.Controls.Remove(t)\n" +
+			              "\tNext\n" +
+			              "End If");
 		}
 		
 		[Test]

@@ -95,7 +95,7 @@ namespace ICSharpCode.NRefactory.Parser
 				StatementExpression se = ifStatement.TrueStatement[0] as StatementExpression;
 				if (se == null) {
 					BlockStatement block = ifStatement.TrueStatement[0] as BlockStatement;
-					if (block.Children.Count == 1) {
+					if (block != null && block.Children.Count == 1) {
 						se = block.Children[0] as StatementExpression;
 					}
 				}
