@@ -50,12 +50,16 @@ namespace HtmlHelp2.SharpDevLanguageClass
 
 		public static bool CheckTopicLanguage(IHxTopic topic)
 		{
-			return CheckTopicLanguage(topic, ProjectService.CurrentProject.Language);
+			if (ProjectService.CurrentProject != null) {
+				return CheckTopicLanguage(topic, ProjectService.CurrentProject.Language);
+			} else {
+				return true;
+			}
 		}
 
 		public static bool CheckTopicLanguage(IHxTopic topic, string expectedLanguage)
 		{
-			if (expectedLanguage == String.Empty) { return true; }
+			if (string.IsNullOrEmpty(expectedLanguage)) { return true; }
 			if (topic == null) { return false; }
 
 			string tempLanguage = String.Empty;
@@ -90,7 +94,7 @@ namespace HtmlHelp2.SharpDevLanguageClass
 		{
 			string tempLanguage = expectedLanguage;
 
-			if (tempLanguage != String.Empty)
+			if (!string.IsNullOrEmpty(tempLanguage))
 			{
 				if (!languages.ContainsKey(expectedLanguage) ||
 				    !languages.TryGetValue(expectedLanguage, out tempLanguage))
