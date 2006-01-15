@@ -101,7 +101,10 @@ namespace ICSharpCode.NRefactory.Parser
 				}
 				if (ident != null && se != null) {
 					InvocationExpression ie = se.Expression as InvocationExpression;
-					if (ie != null && (ie.TargetObject as IdentifierExpression).Identifier == ident.Identifier) {
+					if (ie != null &&
+					    ie.TargetObject is IdentifierExpression &&
+					    (ie.TargetObject as IdentifierExpression).Identifier == ident.Identifier)
+					{
 						ReplaceCurrentNode(new RaiseEventStatement(ident.Identifier, ie.Arguments));
 					}
 				}

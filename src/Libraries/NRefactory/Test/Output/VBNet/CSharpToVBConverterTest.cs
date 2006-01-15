@@ -125,6 +125,29 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void IfStatementSimilarToRaiseEvent()
+		{
+			TestStatement("if (FullImage != null) DrawImage();",
+			              "If FullImage IsNot Nothing Then\n" +
+			              "\tDrawImage()\n" +
+			              "End If");
+			// regression test:
+			TestStatement("if (FullImage != null) e.DrawImage();",
+			              "If FullImage IsNot Nothing Then\n" +
+			              "\te.DrawImage()\n" +
+			              "End If");
+			// with braces:
+			TestStatement("if (FullImage != null) { DrawImage(); }",
+			              "If FullImage IsNot Nothing Then\n" +
+			              "\tDrawImage()\n" +
+			              "End If");
+			TestStatement("if (FullImage != null) { e.DrawImage(); }",
+			              "If FullImage IsNot Nothing Then\n" +
+			              "\te.DrawImage()\n" +
+			              "End If");
+		}
+		
+		[Test]
 		public void AnonymousMethod()
 		{
 			TestMember("void A() { someEvent += delegate(int argument) { return argument * 2; }; }",
