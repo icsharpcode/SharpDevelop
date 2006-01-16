@@ -22,11 +22,18 @@ using ICSharpCode.SharpDevelop.Gui;
 
 namespace SearchAndReplace
 {
+	/// <summary>
+	/// Specifies the format for viewing search results in the <see cref="SearchResultPanel"/>.
+	/// </summary>
+	/// <remarks>
+	/// The members of this enumeration are used to auto-generate the 
+	/// 'Select Search Mode' drop-down menu in the <see cref="SearchResultPanel"/>.
+	/// </remarks>
 	public enum SearchResultPanelViewMode
 	{
 		Flat,
 		PerFile,
-		Structural
+		//Structural // TODO: what is this intended for?
 	}
 	
 	public class SearchResultPanel : AbstractPadContent, IOwnerState

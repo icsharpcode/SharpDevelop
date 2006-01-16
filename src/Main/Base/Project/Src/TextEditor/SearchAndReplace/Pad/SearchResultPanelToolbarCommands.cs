@@ -114,25 +114,37 @@ namespace SearchAndReplace
 			PadDescriptor searchResultPanel = WorkbenchSingleton.Workbench.GetPad(typeof(SearchResultPanel));
 			if (searchResultPanel != null) {
 				searchResultPanel.BringPadToFront();
-				SearchResultPanel.Instance.ViewMode = (SearchResultPanelViewMode)((ToolStripItem)sender).Tag;
+				SearchResultPanel.Instance.ViewMode = (SearchResultPanelViewMode)((ToolStripItem)sender).Tag;	;
+				UpdateDropDownItems();
 			} else {
 				MessageService.ShowError("SearchResultPanel can't be found.");
 			}
 		}
-		
+
+		void UpdateDropDownItems()
+		{
+			// Synchronize the Checked state of the menu items with 
+			// the current ViewMode of the SearchResultPanel.
+			foreach(ToolStripItem item in dropDownButton.DropDownItems) {
+				((ToolStripMenuItem)item).Checked =
+					(SearchResultPanelViewMode)item.Tag == SearchResultPanel.Instance.ViewMode;
+			}
+		}
+
 		void GenerateDropDownItems()
 		{
-			ToolStripItem newItem = new ToolStripMenuItem();
-			newItem.Text = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.PerFile}");
-			newItem.Tag  = SearchResultPanelViewMode.PerFile;
-			newItem.Click += new EventHandler(SetViewMode);
-			dropDownButton.DropDownItems.Add(newItem);
-			
-			newItem = new ToolStripMenuItem();
-			newItem.Text = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.Flat}");
-			newItem.Tag  = SearchResultPanelViewMode.Flat;
-			newItem.Click += new EventHandler(SetViewMode);
-			dropDownButton.DropDownItems.Add(newItem);
+			ToolStripMenuItem newItem = null;
+			string menuItemText = String.Empty;
+		
+			// Use SearchResultPanelViewMode enum to generate the menu choices automatically.
+			foreach (SearchResultPanelViewMode viewMode in System.Enum.GetValues(typeof(SearchResultPanelViewMode))) {			
+				newItem = new ToolStripMenuItem();
+				newItem.Text = StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel."+viewMode.ToString()+"}");
+				newItem.Tag = viewMode;
+				newItem.Click += new EventHandler(SetViewMode);
+				newItem.Checked = SearchResultPanel.Instance.ViewMode == viewMode;
+				dropDownButton.DropDownItems.Add(newItem);
+			}
 		}
 		
 		protected override void OnOwnerChanged(EventArgs e)
