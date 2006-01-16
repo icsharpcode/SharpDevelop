@@ -63,6 +63,10 @@ namespace SearchAndReplace
 		
 		public static void ShowSearchResults(string pattern, List<SearchResult> results)
 		{
+			SearchAndReplace.SearchAllFinishedEventArgs e = 
+				new SearchAllFinishedEventArgs(pattern, results);
+			OnSearchAllFinished(e);
+
 			PadDescriptor searchResultPanel = WorkbenchSingleton.Workbench.GetPad(typeof(SearchResultPanel));
 			if (searchResultPanel != null) {
 				searchResultPanel.BringPadToFront();
