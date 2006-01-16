@@ -44,7 +44,6 @@ namespace SharpQuery.Pads
 		/// </summary>
 		public SharpQueryPad()
 		{
-			ICSharpCode.Core.ResourceService.RegisterImages("SharpQuery.Resources.BitmapResources", GetType().Assembly);
 			CreateDefaultSharpQuery();
 			sharpQueryTree.Dock = DockStyle.Fill;
 		}

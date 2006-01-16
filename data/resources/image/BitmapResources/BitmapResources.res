@@ -245,7 +245,22 @@ PadIcons.LoadedModules							  = PadIcons\LoadedModules.png
 PadIcons.LocalVariables							  = PadIcons\LocalVariables.png
 PadIcons.Threads								  = PadIcons\Threads.png
 PadIcons.Exceptions								  = PadIcons\Exceptions.png
-Icons.16x16.SharpQuery.DataBaseRoot               = PadIcons\Database.png
+
+#SharpQuery icons
+Icons.16x16.SharpQuery.DataBaseRoot             = SharpQueryIcons\Icons.16x16.SharpQuery.Database.png
+Icons.16x16.SharpQuery.DatabaseConnectionClose  = SharpQueryIcons\Icons.16x16.SharpQuery.DatabaseConnectionClose.png
+Icons.16x16.SharpQuery.DatabaseConnection       = SharpQueryIcons\Icons.16x16.SharpQuery.DatabaseConnection.png
+Icons.16x16.SharpQuery.TablesRoot               = SharpQueryIcons\Icons.16x16.SharpQuery.TablesRoot.png
+Icons.16x16.SharpQuery.ViewsRoot                = SharpQueryIcons\Icons.16x16.SharpQuery.ViewsRoot.png
+Icons.16x16.SharpQuery.ProceduresRoot           = SharpQueryIcons\Icons.16x16.SharpQuery.ProceduresRoot.png
+Icons.16x16.SharpQuery.Table                    = SharpQueryIcons\Icons.16x16.SharpQuery.Table.png
+Icons.16x16.SharpQuery.View                     = SharpQueryIcons\Icons.16x16.SharpQuery.View.png
+Icons.16x16.SharpQuery.Procedure                = SharpQueryIcons\Icons.16x16.SharpQuery.Procedure.png
+Icons.16x16.SharpQuery.Column                   = SharpQueryIcons\Icons.16x16.SharpQuery.Column.png
+Icons.16x16.SharpQuery.NodeError                = SharpQueryIcons\Icons.16x16.SharpQuery.NodeError.png
+Icons.16x16.SharpQuery.Refresh                  = SharpQueryIcons\Icons.16x16.SharpQuery.Refresh.png
+Icons.16x16.SharpQuery.AddConnection            = SharpQueryIcons\Icons.16x16.SharpQuery.AddConnection.png
+Icons.16x16.SharpQuery.Remove                   = SharpQueryIcons\Icons.16x16.SharpQuery.Remove.png
 
 #classbrowser icons
 Icons.16x16.NameSpace                             = ClassBrowserIcons\Icons.16x16.NameSpace.png

@@ -4,7 +4,7 @@
        description = "Provides the database explorer pad">
 	
 	<Manifest>
-		<Identity name="ICSharpCode.SharpQuery" version="@SharpQuery.dll"/>
+		<Identity name="ICSharpCode.SharpQuery"/>
 	</Manifest>
 	
 	<Runtime>

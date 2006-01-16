@@ -1,0 +1,158 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SharpReportCore</RootNamespace>
+    <AssemblyName>SharpReportCore</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{4B2239FF-8FD6-431D-9D22-1B8049BA6917}</ProjectGuid>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpReport\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.Windows.Forms, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.ServiceProcess, Version=1.0.5000.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="BaseItems\BaseTextItem.cs" />
+    <Compile Include="BaseItems\BaseFunction.cs" />
+    <Compile Include="BaseItems\BaseGraphicItem.cs" />
+    <Compile Include="BaseItems\BaseReportItem.cs" />
+    <Compile Include="BaseItems\BaseReportObject.cs" />
+    <Compile Include="BaseItems\BaseSection.cs" />
+    <Compile Include="BaseItems\BaseDataItem.cs" />
+    <Compile Include="BaseItems\Functions\BaseToday.cs" />
+    <Compile Include="BaseItems\Functions\BasePageNumber.cs" />
+    <Compile Include="DataManager\Comparer\BaseComparer.cs" />
+    <Compile Include="DataManager\Comparer\GroupComparer.cs" />
+    <Compile Include="DataManager\Comparer\GroupSeperator.cs" />
+    <Compile Include="DataManager\Comparer\SortComparer.cs" />
+    <Compile Include="DataManager\ListHandling\ExtendedPropertyDescriptor.cs" />
+    <Compile Include="DataManager\ListHandling\ExtendedTypeDescriptor.cs" />
+    <Compile Include="DataManager\ListHandling\IExtendedList.cs" />
+    <Compile Include="DataManager\ListHandling\IHierarchicalArray.cs" />
+    <Compile Include="DataManager\ListHandling\PropertyTypeHash.cs" />
+    <Compile Include="DataManager\ListHandling\SharpArrayList.cs" />
+    <Compile Include="DataManager\ListStrategy\BaseListStrategy.cs" />
+    <Compile Include="DataManager\ListStrategy\CollectionStrategy.cs" />
+    <Compile Include="DataManager\ListStrategy\TableStrategy.cs" />
+    <Compile Include="DataManager\DataManager.cs" />
+    <Compile Include="Dialogs\PreviewControl.cs" />
+    <Compile Include="Events\AfterPrintEventArgs.cs" />
+    <Compile Include="Events\GroupChangedEventArgs.cs" />
+    <Compile Include="Events\ReportPageEventArgs.cs" />
+    <Compile Include="Events\SharpReportEventArgs.cs" />
+    <Compile Include="Events\SharpReportParametersEventArgs.cs" />
+    <Compile Include="Exceptions\IllegalFileFormat.cs" />
+    <Compile Include="Exceptions\MissingDataSourceException.cs" />
+    <Compile Include="Exceptions\SharpReportException.cs" />
+    <Compile Include="Exceptions\SharpReportWrongItemException.cs" />
+    <Compile Include="Factories\BaseItemFactory.cs" />
+    <Compile Include="Factories\DisplayNameAttribute.cs" />
+    <Compile Include="Factories\GenericFactory.cs" />
+    <Compile Include="Factories\RendererFactory.cs" />
+    <Compile Include="Factories\SectionFactory.cs" />
+    <Compile Include="Globals\AbstractSingleton.cs" />
+    <Compile Include="Globals\FontSingleton.cs" />
+    <Compile Include="Globals\GlobalEnums.cs" />
+    <Compile Include="Globals\GlobalValues.cs" />
+    <Compile Include="Interfaces\IBaseRenderer.cs" />
+    <Compile Include="Interfaces\IDataContainer.cs" />
+    <Compile Include="Interfaces\IDataViewStrategy.cs" />
+    <Compile Include="Interfaces\IHierarchyInterfaces.cs" />
+    <Compile Include="Interfaces\IItemRenderer.cs" />
+    <Compile Include="Interfaces\IOutputStrategy.cs" />
+    <Compile Include="Interfaces\IRender.cs" />
+    <Compile Include="Interfaces\ISectionRender.cs" />
+    <Compile Include="Interfaces\IStoreable.cs" />
+    <Compile Include="Printing\Formatter\AbstractFormatter.cs" />
+    <Compile Include="Printing\Formatter\DefaultFormatter.cs" />
+    <Compile Include="Printing\Graphics\BaseLine.cs" />
+    <Compile Include="Printing\Graphics\BaseShape.cs" />
+    <Compile Include="Printing\Graphics\Border.cs" />
+    <Compile Include="Printing\Graphics\EllipseShape.cs" />
+    <Compile Include="Printing\Graphics\FillPatterns.cs" />
+    <Compile Include="Printing\Graphics\LineShape.cs" />
+    <Compile Include="Printing\Graphics\RectangleShape.cs" />
+    <Compile Include="Printing\Text\TextDrawer.cs" />
+    <Compile Include="Printing\AbstractRenderer.cs" />
+    <Compile Include="Printing\FormatOutputEventArgs.cs" />
+    <Compile Include="Printing\PrintingUtilities.cs" />
+    <Compile Include="Printing\RenderDataReport.cs" />
+    <Compile Include="Printing\RenderFormSheetReport.cs" />
+    <Compile Include="Printing\ReportDocument.cs" />
+    <Compile Include="Visitors\AbstractModelVisitor.cs" />
+    <Compile Include="Visitors\IVisitor.cs" />
+    <Compile Include="Visitors\LoadModelVisitor.cs" />
+    <Compile Include="Xml\XmlFormReader.cs" />
+    <Compile Include="Xml\XmlHelper.cs" />
+    <Compile Include="BaseSettings.cs" />
+    <Compile Include="ConnectionObject.cs" />
+    <Compile Include="ReportModel.cs" />
+    <Compile Include="ReportParameters.cs" />
+    <Compile Include="ReportSettings.cs" />
+    <Compile Include="SharpReportEngine.cs" />
+    <Compile Include="BaseItems\Graphics\BaseRectangleItem.cs" />
+    <Compile Include="BaseItems\Graphics\BaseImageItem.cs" />
+    <Compile Include="BaseItems\Graphics\BaseLineItem.cs" />
+    <Compile Include="BaseItems\Graphics\BaseCircleItem.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="BaseClasses\AbstractColumn.cs" />
+    <Compile Include="BaseClasses\AbstractParameter.cs" />
+    <Compile Include="BaseClasses\GroupColumn.cs" />
+    <Compile Include="BaseClasses\SortColumn.cs" />
+    <Compile Include="BaseClasses\SqlParameter.cs" />
+    <Compile Include="Collections\Collections.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="BaseItems" />
+    <Folder Include="BaseItems\Functions" />
+    <Folder Include="BaseItems\Graphics" />
+    <Folder Include="Collections" />
+    <Folder Include="DataManager" />
+    <Folder Include="DataManager\Comparer" />
+    <Folder Include="DataManager\ListHandling" />
+    <Folder Include="DataManager\ListStrategy" />
+    <Folder Include="Dialogs" />
+    <Folder Include="Events" />
+    <Folder Include="Exceptions" />
+    <Folder Include="Factories" />
+    <Folder Include="Globals" />
+    <Folder Include="Interfaces" />
+    <Folder Include="Printing" />
+    <Folder Include="Printing\Formatter" />
+    <Folder Include="Printing\Graphics" />
+    <Folder Include="Printing\Text" />
+    <Folder Include="Visitors" />
+    <Folder Include="Xml" />
+    <Folder Include="Configuration" />
+    <Folder Include="BaseClasses" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

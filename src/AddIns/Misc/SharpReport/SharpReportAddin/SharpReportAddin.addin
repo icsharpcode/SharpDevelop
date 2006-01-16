@@ -1,0 +1,88 @@
+﻿<AddIn name        = "SharpReport"
+       author      = "Forstmeier Peter"
+       url         = ""
+       description = "Reporting tool for SharpDevelop">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.SharpReport"/>
+		<Dependency addin="ICSharpCode.SharpQuery"/>
+	</Manifest>
+	
+	<Runtime>
+		<!-- need to load from correct directory SharpQuery first -->
+		<Import assembly = "$ICSharpCode.SharpQuery/SharpQuery.dll" />
+		<Import assembly = "SharpReportAddin.dll"/>
+	</Runtime>
+	
+	<!-- DisplayBinding -->
+	
+	<Path name ="/SharpDevelop/Workbench/DisplayBindings">
+		<DisplayBinding id="SharpReportBinding"
+		                insertbefore="Text"
+		                fileNamePattern="\.srd$"
+		                languagePattern="^SharpReport$"
+		                class="SharpReportAddin.SharpReportDisplayBinding"/>
+	</Path>
+	
+	<!-- File Filter -->
+	<Path name ="/SharpDevelop/Workbench/FileFilter">
+		<FileFilter id="SharpReport"
+		            insertbefore="AllFiles"
+		            name="SharpReport (*.srd)"
+		            extensions="*.srd"/>
+	</Path>
+	
+	<!-- FieldsExplorer -->
+	<!--label="${res:SharpReport.FieldsExplorer.Title}"-->
+	<Path name ="/SharpDevelop/Workbench/Pads">
+			<Pad id="fieldsexplorer"
+			     category = "Tools"
+			     icon="Icons.16x16.SharpQuery.Refresh"
+			     title = "FieldsExplorer"
+			     shortcut = "Control|Alt|F"
+			     class="SharpReportAddin.FieldsExplorer"/>
+	</Path>
+	
+	<!-- ContectMenu Section -->
+	<Path name ="/SharpReport/ContextMenu/Section">
+		<MenuItem id="settings" label="${res:SharpReport.ContextMenu.Settings}" class="SharpReportAddin.Commands.ShowSettings"/>
+		<MenuItem id="preview" label="${res:SharpReport.ContextMenu.Preview}" class="SharpReportAddin.Commands.RunPreview"/>
+<!--
+		<MenuItem id="sep1" label="-"/>
+		<MenuItem id="visible" label="${res:SharpReport.ContextMenu.SectionVisible}" class="SharpReportAddin.Commands.SectionVisible"/>
+		<MenuItem id="function" label="${res:SharpReport.ContextMenu.Functions}" class="SharpReportAddin.Commands.InsertFunction"/>
+		
+   	<MenuItem id="fieldslist" label="${res:SharpReport.ContextMenu.FieldsList}" class="SharpReportAddin.Commands.ShowFieldsList"/>
+ 		-->
+	</Path>
+
+	 <!-- ContextMenu Items -->
+   <Path name ="/SharpReport/ContextMenu/Items">
+      <MenuItem id="cut" label="${res:SharpReport.ContextMenu.Cut}" class="SharpReportAddin.Commands.CutReportItem"/>
+      <MenuItem id="paste" label="${res:SharpReport.ContextMenu.Paste}" class="SharpReportAddin.Commands.PasteReportItem"/>
+   </Path>
+
+   <!-- Fields Explorer ContextMenu's -->
+	<Path name ="/SharpReport/ContextMenu/ContextMenu/FieldsExplorer/SectionTreeNode">
+		<MenuItem id="removenodes"
+		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Section.Clear}"
+		          class="SharpReportAddin.Commands.ClearNodes"/>
+	</Path>
+	
+	<Path name = "/SharpReport/ContextMenu/ContextMenu/FieldsExplorer/ColumnTreeNode">
+		<MenuItem id="removenode"
+		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.Remove}"
+		          class="SharpReportAddin.Commands.RemoveNode"/>
+		<MenuItem id="toggle"
+		          label="${res:SharpReport.FieldsExplorer.ContextMenu.Columns.ToggleSort}"
+		          class="SharpReportAddin.Commands.ToogleOrder"/>
+	</Path>
+
+	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
+		<MenuItem id       = "neuaddinPad"
+		          label = "ReportGenerator"
+		          
+		          shortcut = "Control|Alt|T"
+		          class    = "SharpReportAddin.RunSharpReport"/>
+	</Path>
+</AddIn>

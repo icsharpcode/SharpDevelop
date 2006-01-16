@@ -45,9 +45,8 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="SharpQuery.addin">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Never</CopyToOutputDirectory>
     </None>
-    <EmbeddedResource Include="Resources\BitmapResources.resources" />
     <Compile Include="Configuration\AssemblyInfo.cs" />
     <Compile Include="Src\Exceptions\ConnectionStringException.cs" />
     <Compile Include="Src\Exceptions\ExecuteProcedureException.cs" />
@@ -96,6 +95,8 @@
       <Name>ICSharpCode.Core</Name>
       <Private>False</Private>
     </ProjectReference>
+    <Content Include="PostBuildEvent.proj" />
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+  <Import Project="PostBuildEvent.proj" />
 </Project>

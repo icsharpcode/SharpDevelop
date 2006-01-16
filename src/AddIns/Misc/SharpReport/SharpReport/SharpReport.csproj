@@ -1,0 +1,123 @@
+﻿<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <OutputType>Library</OutputType>
+    <RootNamespace>SharpReport</RootNamespace>
+    <AssemblyName>SharpReport</AssemblyName>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{F5563727-8309-4AC3-BACA-EB28EFD8A1D0}</ProjectGuid>
+    <AllowUnsafeBlocks>False</AllowUnsafeBlocks>
+    <NoStdLib>False</NoStdLib>
+    <RegisterForComInterop>False</RegisterForComInterop>
+    <GenerateSerializationAssemblies>Auto</GenerateSerializationAssemblies>
+    <BaseAddress>4194304</BaseAddress>
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <FileAlignment>4096</FileAlignment>
+    <WarningLevel>4</WarningLevel>
+    <TreatWarningsAsErrors>false</TreatWarningsAsErrors>
+    <OutputPath>..\..\..\..\..\AddIns\AddIns\Misc\SharpReport\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Debug' ">
+    <Optimize>False</Optimize>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>Full</DebugType>
+    <CheckForOverflowUnderflow>True</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)' == 'Release' ">
+    <Optimize>True</Optimize>
+    <DefineConstants>TRACE</DefineConstants>
+    <DebugSymbols>False</DebugSymbols>
+    <DebugType>None</DebugType>
+    <CheckForOverflowUnderflow>False</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+    <Reference Include="System.Xml" />
+    <Reference Include="System.Data, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+    <Reference Include="System.Drawing, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+    <Reference Include="System.Windows.Forms, Version=2.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Designer\Ruler\ctrlRuler.cs" />
+    <Compile Include="Designer\Ruler\GdiHelper.cs" />
+    <Compile Include="Designer\SectionControls\BaseDesignerControl.cs" />
+    <Compile Include="Designer\SectionControls\ItemsDragDropEventArgs.cs" />
+    <Compile Include="Designer\SectionControls\ReportDetail.cs" />
+    <Compile Include="Designer\SectionControls\ReportFooter.cs" />
+    <Compile Include="Designer\SectionControls\ReportHeader.cs" />
+    <Compile Include="Designer\SectionControls\ReportPageFooter.cs" />
+    <Compile Include="Designer\SectionControls\ReportPageHeader.cs" />
+    <Compile Include="Designer\SectionControls\ReportSectionControlbase.cs" />
+    <Compile Include="Designer\SectionControls\SectionChangedEventArgs.cs" />
+    <Compile Include="Designer\VisualControls\AbstractGraphicControl.cs" />
+    <Compile Include="Designer\VisualControls\FunctionControl.cs" />
+    <Compile Include="Designer\VisualControls\ReportCircleControl.cs" />
+    <Compile Include="Designer\VisualControls\ReportControlBase.cs" />
+    <Compile Include="Designer\VisualControls\ReportDbTextControl.cs" />
+    <Compile Include="Designer\VisualControls\ReportImageControl.cs" />
+    <Compile Include="Designer\VisualControls\ReportLineControl.cs" />
+    <Compile Include="Designer\VisualControls\ReportObjectControlBase.cs" />
+    <Compile Include="Designer\VisualControls\ReportRectangleControl.cs" />
+    <Compile Include="Designer\VisualControls\ReportTextControl.cs" />
+    <Compile Include="Designer\Factories.cs" />
+    <Compile Include="Designer\IDesignable.cs" />
+    <Compile Include="Designer\IDesignerVisitor.cs" />
+    <Compile Include="Designer\IVisitor.cs" />
+    <Compile Include="Designer\NameService.cs" />
+    <Compile Include="Designer\Report.cs" />
+    <Compile Include="Designer\XmlHelpers.cs" />
+    <Compile Include="ReportItems\Functions\MiscFunctions\PageNumber.cs" />
+    <Compile Include="ReportItems\Functions\MiscFunctions\Today.cs" />
+    <Compile Include="ReportItems\GraphicBased\ReportCircleItem.cs" />
+    <Compile Include="ReportItems\GraphicBased\ReportImageItem.cs" />
+    <Compile Include="ReportItems\GraphicBased\ReportLineItem.cs" />
+    <Compile Include="ReportItems\GraphicBased\ReportRectangleItem.cs" />
+    <Compile Include="ReportItems\TextBased\ItemsHelper.cs" />
+    <Compile Include="ReportItems\TextBased\ReportDataItem.cs" />
+    <Compile Include="ReportItems\TextBased\ReportTextItem.cs" />
+    <Compile Include="Visitors\AbstractVisitor.cs" />
+    <Compile Include="Visitors\LoadReportVisitor.cs" />
+    <Compile Include="Visitors\SaveReportVisitor.cs" />
+    <Compile Include="AutoReport.cs" />
+    <Compile Include="SharpReportManager.cs" />
+    <Compile Include="Configuration\AssemblyInfo.cs" />
+    <Compile Include="Designer\SectionControls\ReportSection.cs" />
+    <Compile Include="Designer\SideTab\BuildSideTab.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Designer" />
+    <Folder Include="Designer\Ruler" />
+    <Folder Include="Designer\SectionControls" />
+    <Folder Include="Designer\VisualControls" />
+    <Folder Include="ReportItems" />
+    <Folder Include="ReportItems\Functions" />
+    <Folder Include="ReportItems\Functions\MiscFunctions" />
+    <Folder Include="ReportItems\GraphicBased" />
+    <Folder Include="ReportItems\TextBased" />
+    <Folder Include="Visitors" />
+    <Folder Include="Configuration" />
+    <Folder Include="Designer\SideTab" />
+    <ProjectReference Include="..\..\SharpQuery\SharpQuery.csproj">
+      <Project>{BDD03ECD-42AE-4B50-9805-9C19090A264F}</Project>
+      <Name>SharpQuery</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Base\Project\ICSharpCode.SharpDevelop.csproj">
+      <Project>{2748AD25-9C63-4E12-877B-4DCE96FBED54}</Project>
+      <Name>ICSharpCode.SharpDevelop</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\..\..\Main\Core\Project\ICSharpCode.Core.csproj">
+      <Project>{35CEF10F-2D4C-45F2-9DD1-161E0FEC583C}</Project>
+      <Name>ICSharpCode.Core</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\SharpReportCore\SharpReportCore.csproj">
+      <Project>{4B2239FF-8FD6-431D-9D22-1B8049BA6917}</Project>
+      <Name>SharpReportCore</Name>
+      <Private>False</Private>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.Targets" />
+</Project>

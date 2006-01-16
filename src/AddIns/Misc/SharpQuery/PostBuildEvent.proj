@@ -1,0 +1,14 @@
+﻿<?xml version="1.0"?>
+<Project xmlns="http://schemas.microsoft.com/developer/msbuild/2003" DefaultTarget="Build">
+	<PropertyGroup>
+		<PrepareForRunDependsOn>$(PrepareForRunDependsOn);MyPostBuildTarget</PrepareForRunDependsOn>
+	</PropertyGroup>
+	
+	<!-- we cannot use CopyToOutputDirectory because of a MSBuild bug -->
+	<ItemGroup>
+		<MyCopyItem Include="$(MSBuildProjectDirectory)\SharpQuery.addin" />
+	</ItemGroup>
+	<Target Name="MyPostBuildTarget">
+		<Copy SourceFiles="@(MyCopyItem)" DestinationFolder="$(OutputPath)" />
+	</Target>
+</Project>
