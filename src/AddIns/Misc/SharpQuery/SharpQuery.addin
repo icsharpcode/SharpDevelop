@@ -164,6 +164,10 @@
 		          icon = "Icons.16x16.SharpQuery.Refresh"
 		          class = "SharpQuery.Commands.SharpQueryRefreshCommand"
 		          loadclasslazy="false"/>
+		<MenuItem id = "ExtractData"
+		          label = "${res:SharpQuery.Label.ExtractData}"
+		          class = "SharpQuery.Commands.SharpQueryExecuteCommand"
+		          loadclasslazy="false"/>
 	</Path>
 	
 	
