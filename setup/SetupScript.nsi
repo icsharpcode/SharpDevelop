@@ -1,7 +1,7 @@
 !verbose 3
 
-!define PRODUCT_NAME "SharpDevelop 2.0"
-!define PRODUCT_VERSION "Corsavy Tech Preview"
+!define PRODUCT_NAME "SharpDevelop2"
+!define PRODUCT_VERSION "Beta 2"
 !define PRODUCT_PUBLISHER "ic#code"
 !define PRODUCT_WEB_SITE "http://www.icsharpcode.net/opensource/sd/"
 !define PRODUCT_DIR_REGKEY "Software\Microsoft\Windows\CurrentVersion\App Paths\SharpDevelop.exe"
@@ -11,12 +11,12 @@
 !define MUI_WELCOMEFINISHPAGE_BITMAP "wizard-image.bmp"
 !define MUI_UNWELCOMEFINISHPAGE_BITMAP "wizard-image.bmp"
 
-BrandingText "© 2000-2005 ic#code, http://www.icsharpcode.net/"
+BrandingText "© 2000-2006 ic#code, http://www.icsharpcode.net/"
 SetCompressor lzma
 CRCCheck on
 
 ; File Association defines
-!include "fileassoc.nsh"
+!include "FileAssociations.nsh"
 
 ; MUI 1.67 compatible ------
 !include "MUI.nsh"
