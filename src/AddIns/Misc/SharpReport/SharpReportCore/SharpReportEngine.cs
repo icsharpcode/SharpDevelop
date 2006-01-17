@@ -82,7 +82,6 @@ namespace SharpReportCore {
 		
 		
 		void GrapSqlParameters (ReportSettings settings) {
-			System.Console.WriteLine("GrapSqlParameters");
 			if (settings.SqlParametersCollection != null && settings.SqlParametersCollection.Count > 0) {
 				if (this.ParametersRequest != null) {
 					SharpReportParametersEventArgs e = new SharpReportParametersEventArgs();
@@ -134,7 +133,7 @@ namespace SharpReportCore {
 		}
 
 		private DataManager SetupDataContainer (ReportSettings settings) {
-			System.Console.WriteLine("SetupDataContainer");
+			
 			if (settings.ReportType == GlobalEnums.enmReportType.DataReport) {
 				if (settings.CommandText != null) {
 					try {
@@ -188,22 +187,17 @@ namespace SharpReportCore {
 		
 		
 		protected SharpReportCore.AbstractRenderer SetupStandartRenderer (ReportModel model) {
-			System.Console.WriteLine("Engine:SetupStandartRenderer");
 			AbstractRenderer abstr = null;
 			switch (model.ReportSettings.ReportType) {
 				//FormSheets reports
 				case GlobalEnums.enmReportType.FormSheet:
-				System.Console.WriteLine("\tFormSheet");
-					abstr = 	new RendererFactory().Create (model,null);			
+					abstr = new RendererFactory().Create (model,null);			
 					break;
 				//Databased reports
 				case GlobalEnums.enmReportType.DataReport :
-				System.Console.WriteLine("\tDatareport");
 					DataManager dataManager = SetupDataContainer (model.ReportSettings);
-				
 					if (dataManager != null) {
 						if (dataManager.DataSource != null) {	
-							System.Console.WriteLine("\t\tcreated");
 							abstr = new RendererFactory().Create (model,dataManager);
 						}
 						

@@ -83,6 +83,6 @@
 		          label = "ReportGenerator"
 		          
 		          shortcut = "Control|Alt|T"
-		          class    = "SharpReportAddin.RunSharpReport"/>
+		          class    = "SharpReportAddin.Commands.RunSharpReport"/>
 	</Path>
 </AddIn>

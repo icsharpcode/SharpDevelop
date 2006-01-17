@@ -42,8 +42,9 @@ namespace SharpReportCore{
 		public void ShowPreviewWithUserControl (AbstractRenderer renderer,double zoomFaktor) {
 			System.Console.WriteLine("PaintArea:WithUserControl");
 			
+			System.Drawing.Printing.PrintDocument  doc = renderer.ReportDocument;
 			
-			
+			/*
 			System.Drawing.Printing.PrintDocument  doc =
 				new System.Drawing.Printing.PrintDocument();
 
@@ -56,7 +57,7 @@ namespace SharpReportCore{
 			doc.QueryPageSettings += 
 				new QueryPageSettingsEventHandler (renderer.ReportDocument.ReportDocumentQueryPage);
 			System.Console.WriteLine("\t All events are set");
-			
+			*/
 			printPreviewControl1.Document = null;
 			printPreviewControl1.Document = doc;
 

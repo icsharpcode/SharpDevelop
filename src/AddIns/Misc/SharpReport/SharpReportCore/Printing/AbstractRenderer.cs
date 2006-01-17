@@ -55,7 +55,7 @@ namespace SharpReportCore {
 		
 		public AbstractRenderer(ReportModel model){
 			System.Console.WriteLine("");
-			System.Console.WriteLine("\t\t ABSTRACT RENDEREER");
+			System.Console.WriteLine("\t\t ABSTRACT RENDERER");
 			this.reportSettings = model.ReportSettings;
 			this.sections = model.SectionCollection;
 			Init();
@@ -334,6 +334,7 @@ namespace SharpReportCore {
 		#region property's
 		public ReportDocument ReportDocument {
 			get {
+				System.Console.WriteLine("Get the AbstractRenderer:ReportDocument");
 				return reportDocument;
 			}
 		}
@@ -395,17 +396,6 @@ namespace SharpReportCore {
 				detailStart = value;
 			}
 		}
-		
-//		protected IWriter Writer {
-//			get {
-//				return writer;
-//			}
-//		}
-//protected AbstractWriter Writer {
-//			get {
-//				return writer;
-//			}
-//		}
 		#endregion
 	}
 }

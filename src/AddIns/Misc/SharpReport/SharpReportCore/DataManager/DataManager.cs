@@ -60,7 +60,6 @@ namespace SharpReportCore {
 		#region Constructores
 		public DataManager(ConnectionObject connectionObject, ReportSettings reportSettings){
 			CheckAndSetReportSettings(reportSettings);
-			System.Console.WriteLine("DataManager");
 			if (connectionObject == null) {
 				throw new ArgumentNullException("DataManager:ConnectionObject");
 			}
@@ -197,7 +196,6 @@ namespace SharpReportCore {
 				}
 				connection.Open();
 				connection.Close();
-				System.Console.WriteLine("DataManager;CheckConnection");
 			} catch (Exception ) {
 				throw;
 			}
@@ -382,7 +380,6 @@ namespace SharpReportCore {
 		
 		
 		public bool DataBind() {
-			System.Console.WriteLine("Manager:Bind");
 			this.dataViewStrategy.Bind();
 			this.dataViewStrategy.GroupChanged += new GroupChangedEventHandler(OnGroupChange);
 			CheckReportColumns();

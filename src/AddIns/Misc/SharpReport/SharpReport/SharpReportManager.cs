@@ -110,7 +110,17 @@ namespace SharpReport{
 		}
 		
 		
-		void AddItemsToSection (BaseSection section,ReportItemCollection collection) {
+		private AbstractRenderer BuildRenderer (ReportModel model) {
+			
+			System.Console.WriteLine("BuildRenderer");
+			if (base.ConnectionObject == null) {
+				base.ConnectionObject = this.BuildConnectionObject(model.ReportSettings);
+			}
+			return  base.AbstractRenderer(model);
+		}
+		
+		
+		private void AddItemsToSection (BaseSection section,ReportItemCollection collection) {
 			
 			if ((section == null)|| (collection == null) ) {
 				throw new ArgumentNullException ("Sharpreportmanager:AddItemsToSection");
@@ -309,7 +319,10 @@ namespace SharpReport{
 		#endregion
 		
 		public  AbstractRenderer GetRenderer (ReportModel model) {
-			return base.AbstractRenderer(model);
+			if (model == null) {
+				throw new ArgumentException("SharpReportManager:GetRenderer 'ReportModel'");
+			}
+			return this.BuildRenderer (model);
 		}
 		
 		#region Preview
@@ -323,21 +336,13 @@ namespace SharpReport{
 			try {
 				System.Console.WriteLine("--------------------");
 				System.Console.WriteLine("Manager:ReportPreview");
-				
-				//Allways check for a valid ConnectionObject
-				if (base.ConnectionObject == null) {
-					base.ConnectionObject = this.BuildConnectionObject(baseDesignerControl.ReportModel.ReportSettings);
-				}
-			
-				AbstractRenderer abstr = base.AbstractRenderer(model);
+				AbstractRenderer abstr = this.BuildRenderer (model);
 				
 				if (abstr != null) {
 					if (abstr.Cancel == false) {
 						if (showInUserControl){
-							System.Console.WriteLine("\tShow with UserControl");
 							PreviewControl.ShowPreviewWithUserControl (abstr,1.5);
 						} else {
-							System.Console.WriteLine("\tShow wit Dialog");
 							PreviewControl.ShowPreviewWithDialog (abstr,1.5);
 						}
 					}
@@ -428,10 +433,8 @@ namespace SharpReport{
 			get {
 				if (this.baseDesignerControl.ReportModel.ReportSettings.AvailableFieldsCollection.Count == 0) {
 					this.availableFields = 	this.ReadColumnCollection();
-//					System.Console.WriteLine("Read from Database");
 				} else {
 					this.availableFields = this.baseDesignerControl.ReportModel.ReportSettings.AvailableFieldsCollection;
-//					System.Console.WriteLine("Read from XML File");
 				}
 				
 				this.baseDesignerControl.ReportModel.ReportSettings.AvailableFieldsCollection = this.availableFields;

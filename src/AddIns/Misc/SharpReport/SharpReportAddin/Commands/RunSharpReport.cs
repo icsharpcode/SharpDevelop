@@ -10,16 +10,13 @@ using System;
 using System.Windows.Forms;
 
 using ICSharpCode.Core;
-
 using ICSharpCode.SharpDevelop.Gui;
 
-//using SharpReport;
 
-
-//using SharpReportAddin.Commands;
-///<summary>Main Command to Run Sharpreport Addin
+///<summary>
+///Main Command to Run SharpReport Addin
 ///</summary>
-namespace SharpReportAddin {
+namespace SharpReportAddin.Commands {
 	
 	public class RunSharpReport: AbstractMenuCommand
 	{

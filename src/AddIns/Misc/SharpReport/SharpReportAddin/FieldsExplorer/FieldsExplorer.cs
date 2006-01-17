@@ -94,6 +94,7 @@ namespace SharpReportAddin {
 		/// Toggle the SortDirection
 		/// </summary>
 		public void ToogleSortDirection () {
+			System.Console.WriteLine("Toggle SortDirection");
 			if (this.SelectedNode is ColumnsTreeNode) {
 				ColumnsTreeNode cn = (ColumnsTreeNode)this.SelectedNode;
 				if (cn.SortDirection ==  ListSortDirection.Ascending) {
@@ -224,6 +225,7 @@ namespace SharpReportAddin {
 		
 		private void NotifyReportView() {
 			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is SharpReportView) {
+				System.Console.WriteLine("\tNotify View");
 				WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.IsDirty = true;
 			}
 		}
@@ -247,9 +249,8 @@ namespace SharpReportAddin {
 		private void OnViewSaving (object sender, EventArgs e) {
 			if (this.isFilled) {
 				UpdateSorting();
-			UpdateGrouping();
+				UpdateGrouping();
 			}
-			
 		}
 		
 		#endregion

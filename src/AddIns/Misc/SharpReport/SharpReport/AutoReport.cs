@@ -15,15 +15,12 @@ using System.Drawing;
 using System.Drawing.Printing;
 using System.Data;
 	
-//using ICSharpCode.Core.Services;
-//using ICSharpCode.SharpDevelop.Services;
-
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
 
 using SharpReport;
 using SharpReportCore;
-//using SharpReport.Globals;
+
 using SharpReport.ReportItems;
 	
 using System.Windows.Forms;
