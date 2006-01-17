@@ -47,7 +47,7 @@ namespace SharpReportAddin {
 		private TreeNode nodeParams;
 		
 		private ReportSettings reportSettings;
-		
+		private bool isFilled = false;
 		
 		#region Publics
 		
@@ -62,6 +62,7 @@ namespace SharpReportAddin {
 			BuildNodes();
 			this.FillTree();
 			this.ExpandAll();
+			isFilled = true;
 		}
 		
 		
@@ -107,6 +108,7 @@ namespace SharpReportAddin {
 				this.NotifyReportView();
 			}
 		}
+
 		#endregion
 		
 		#region TreeView Events
@@ -234,7 +236,6 @@ namespace SharpReportAddin {
 				}
 
 				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is SharpReportView) {
-					
 					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving -= new EventHandler (OnViewSaving);
 					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.Saving += new EventHandler (OnViewSaving);
 				}
@@ -244,8 +245,11 @@ namespace SharpReportAddin {
 		}
 		
 		private void OnViewSaving (object sender, EventArgs e) {
-			UpdateSorting();
+			if (this.isFilled) {
+				UpdateSorting();
 			UpdateGrouping();
+			}
+			
 		}
 		
 		#endregion

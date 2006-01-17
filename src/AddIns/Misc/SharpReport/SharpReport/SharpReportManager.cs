@@ -53,21 +53,19 @@ namespace SharpReport{
 		#region privates
 		
 		private ConnectionObject BuildConnectionObject (ReportSettings settings) {
-			System.Console.WriteLine("Manager:BuildConnectionObject");
-			try {
-				if (settings.ConnectionString.Length > 0) {
-			        System.Console.WriteLine("\tBuild from settings");
-					return new ConnectionObject(settings.ConnectionString);
-				} else {
-					System.Console.WriteLine("\tBuild from DataLink");
-			        IConnection ole = OLEDBConnectionWrapper.CreateFromDataConnectionLink();
-			        
-			        System.Console.WriteLine("\t Con Str {0}",ole.ConnectionString);
-			        return new ConnectionObject(ole.ConnectionString);
+			if (settings.ReportType == GlobalEnums.enmReportType.DataReport) {
+				try {
+					if (settings.ConnectionString.Length > 0) {
+						return new ConnectionObject(settings.ConnectionString);
+					} else {
+						IConnection ole = OLEDBConnectionWrapper.CreateFromDataConnectionLink();
+						return new ConnectionObject(ole.ConnectionString);
+					}
+				} catch (Exception) {
+					throw;
 				}
-			} catch (Exception) {
-				throw;
 			}
+			return null;
 		}
 	
 		/// <summary>
@@ -77,7 +75,7 @@ namespace SharpReport{
 		/// <returns><see cref="ColumnCollection"</returns>
 	
 		private ColumnCollection ReadColumnCollection() {
-		System.Console.WriteLine("ReadColumnCOllection");
+		
 			DataManager dataManager = null;
 			if (baseDesignerControl == null) {
 				return new ColumnCollection();
@@ -90,15 +88,13 @@ namespace SharpReport{
 			if (baseDesignerControl.ReportModel.ReportSettings.DataModel.Equals(GlobalEnums.enmPushPullModel.PushData)) {
 				return new ColumnCollection();
 			}
-			System.Console.WriteLine("\tConnectionObject == null {0}",(base.ConnectionObject == null));
 			// PullData, query the Datasource and ask for the available Fields
 			if (base.ConnectionObject == null) {
-				System.Console.WriteLine("\tlook for Connection");
 				base.ConnectionObject = this.BuildConnectionObject(baseDesignerControl.ReportModel.ReportSettings);
 			}
 			
 			if (this.baseDesignerControl.ReportModel.ReportSettings.DataModel.Equals(GlobalEnums.enmPushPullModel.PullData)){
-				System.Console.WriteLine("\t tryx to use DataManager");
+				
 				using (dataManager = new DataManager(base.ConnectionObject,
 				                                     baseDesignerControl.ReportModel.ReportSettings)) {
 					dataManager.DataBind();
@@ -327,6 +323,12 @@ namespace SharpReport{
 			try {
 				System.Console.WriteLine("--------------------");
 				System.Console.WriteLine("Manager:ReportPreview");
+				
+				//Allways check for a valid ConnectionObject
+				if (base.ConnectionObject == null) {
+					base.ConnectionObject = this.BuildConnectionObject(baseDesignerControl.ReportModel.ReportSettings);
+				}
+			
 				AbstractRenderer abstr = base.AbstractRenderer(model);
 				
 				if (abstr != null) {

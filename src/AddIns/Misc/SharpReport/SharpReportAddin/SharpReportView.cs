@@ -93,6 +93,7 @@ namespace SharpReportAddin{
 			try {
 				Type type = typeof(FieldsExplorer);
 				SharpReportAddin.FieldsExplorer fe = (SharpReportAddin.FieldsExplorer)WorkbenchSingleton.Workbench.GetPad(type).PadContent;
+				
 				if (fe != null) {
 					this.designerControl.ReportModel.ReportSettings.AvailableFieldsCollection = reportManager.AvailableFieldsCollection;
 					fe.Fill(this.designerControl.ReportModel.ReportSettings);
@@ -340,6 +341,7 @@ namespace SharpReportAddin{
 		//Something was dropped on the designer
 		private void OnItemDragDrop (object sender,ItemDragDropEventArgs e) {
 			base.IsDirty = true;
+			this.SetFieldsExplorer();
 		}
 		
 		public void OnPropertyChanged (object sender,

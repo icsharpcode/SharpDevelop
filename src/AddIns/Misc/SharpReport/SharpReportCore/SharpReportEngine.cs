@@ -53,7 +53,7 @@ namespace SharpReportCore {
 		}
 		
 		#region ParameterHandling
-		
+
 		private bool CheckReportParameters (ReportModel model,ReportParameters reportParameters) {
 			System.Console.WriteLine("Engine");
 			if (model.ReportSettings.ReportType != GlobalEnums.enmReportType.FormSheet) {
@@ -88,13 +88,11 @@ namespace SharpReportCore {
 					SharpReportParametersEventArgs e = new SharpReportParametersEventArgs();
 					e.SqlParametersCollection = settings.SqlParametersCollection;
 					e.ReportName = settings.ReportName;
-					System.Console.WriteLine("\tfire ParamsRequets");
 					ParametersRequest (this,e);
 				}
-			} else {
-				
-				System.Console.WriteLine("\t No Parameters");			}
+			} 
 		}
+		
 		
 		
 		
@@ -140,15 +138,13 @@ namespace SharpReportCore {
 			if (settings.ReportType == GlobalEnums.enmReportType.DataReport) {
 				if (settings.CommandText != null) {
 					try {
-						System.Console.WriteLine("\tcheck for params");
 						GrapSqlParameters (settings);
-						System.Console.WriteLine("\tParamRequest done");
-						System.Console.WriteLine("\t COnnection != null {0}",this.connectionObject != null);
+	
 						if (this.connectionObject != null) {
 							DataManager container = new DataManager(this.connectionObject,
 							                                        settings);
 							
-							
+							System.Console.WriteLine("\t No of Records to print {0}",container.Count);
 							if (container.DataBind() == true) {
 								return container;
 							} else {
