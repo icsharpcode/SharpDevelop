@@ -37,7 +37,39 @@ namespace ICSharpCode.SharpDevelop.Project.Converter
 		
 		protected virtual void CopyProperties(IProject sourceProject, IProject targetProject)
 		{
-			
+			AbstractProject sp = sourceProject as AbstractProject;
+			AbstractProject tp = targetProject as AbstractProject;
+			if (sp != null && tp != null) {
+				tp.Configurations.Clear();
+				tp.UserConfigurations.Clear();
+				foreach (KeyValuePair<string, PropertyGroup> pair in sp.Configurations) {
+					tp.Configurations.Add(pair.Key, pair.Value.Clone());
+				}
+				foreach (KeyValuePair<string, PropertyGroup> pair in sp.UserConfigurations) {
+					tp.UserConfigurations.Add(pair.Key, pair.Value.Clone());
+				}
+				tp.BaseConfiguration.Merge(sp.BaseConfiguration);
+				tp.UserBaseConfiguration.Merge(sp.UserBaseConfiguration);
+			}
+		}
+		
+		/// <summary>
+		/// Changes a property in the <paramref name="project"/> by applying a method to its value.
+		/// </summary>
+		protected void FixProperty(AbstractProject project, string propertyName, Converter<string, string> method)
+		{
+			if (project.BaseConfiguration.IsSet(propertyName))
+				project.BaseConfiguration[propertyName] = method(project.BaseConfiguration[propertyName]);
+			if (project.UserBaseConfiguration.IsSet(propertyName))
+				project.UserBaseConfiguration[propertyName] = method(project.UserBaseConfiguration[propertyName]);
+			foreach (PropertyGroup pg in project.Configurations.Values) {
+				if (pg.IsSet(propertyName))
+					pg[propertyName] = method(pg[propertyName]);
+			}
+			foreach (PropertyGroup pg in project.UserConfigurations.Values) {
+				if (pg.IsSet(propertyName))
+					pg[propertyName] = method(pg[propertyName]);
+			}
 		}
 		
 		protected virtual void FixExtensionOfExtraProperties(FileProjectItem item, string sourceExtension, string targetExtension)

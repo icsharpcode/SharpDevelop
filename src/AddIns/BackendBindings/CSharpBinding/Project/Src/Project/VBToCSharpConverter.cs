@@ -31,6 +31,13 @@ namespace CSharpBinding
 			ConvertFile(sourceItem, targetItem, ".vb", ".cs", SupportedLanguage.VBNet, new CSharpOutputVisitor());
 		}
 		
+		protected override void CopyProperties(IProject sourceProject, IProject targetProject)
+		{
+			base.CopyProperties(sourceProject, targetProject);
+			FixProperty((CSharpProject)targetProject, "DefineConstants",
+			            delegate(string v) { return v.Replace(',', ';'); });
+		}
+		
 		protected override void ConvertAst(CompilationUnit compilationUnit, List<ISpecial> specials)
 		{
 			PreProcessingDirective.VBToCSharp(specials);

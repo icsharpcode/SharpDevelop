@@ -14,9 +14,9 @@ using System.Xml;
 namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
-	/// Description of PropertyGroup.
+	/// Contains a set of MSBuild properties.
 	/// </summary>
-	public class PropertyGroup : IEnumerable<KeyValuePair<string, string>>
+	public sealed class PropertyGroup : IEnumerable<KeyValuePair<string, string>>, ICloneable
 	{
 		// TODO: Isn't MSBuild case-insensitive ???
 		Dictionary<string, bool>   isGuardedProperty   = new Dictionary<string, bool>();
@@ -48,6 +48,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		System.Collections.IEnumerator System.Collections.IEnumerable.GetEnumerator()
 		{
 			return properties.GetEnumerator();
+		}
+		
+		public PropertyGroup Clone()
+		{
+			PropertyGroup pg = new PropertyGroup();
+			pg.Merge(this);
+			return pg;
+		}
+		
+		object ICloneable.Clone()
+		{
+			return this.Clone();
 		}
 		
 		public T Get<T>(string property, T defaultValue)
@@ -97,10 +109,6 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void Set(string property, object value)
 		{
 			properties[property] = value.ToString();
-		}
-		
-		public PropertyGroup()
-		{
 		}
 		
 		public void Merge(PropertyGroup group)

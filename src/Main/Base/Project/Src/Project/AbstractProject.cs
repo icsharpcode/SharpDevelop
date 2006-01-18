@@ -33,6 +33,18 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected string fileName;
 		protected string language;
 		
+		public Dictionary<string, PropertyGroup> Configurations {
+			get {
+				return configurations;
+			}
+		}
+		
+		public Dictionary<string, PropertyGroup> UserConfigurations {
+			get {
+				return userConfigurations;
+			}
+		}
+		
 		public static string GetConfigurationNameFromKey(string key)
 		{
 			return key.Substring(0, key.IndexOf('|'));

@@ -37,6 +37,13 @@ namespace VBNetBinding
 			new CSharpToVBNetConvertVisitor().Visit(compilationUnit, null);
 		}
 		
+		protected override void CopyProperties(IProject sourceProject, IProject targetProject)
+		{
+			base.CopyProperties(sourceProject, targetProject);
+			FixProperty((VBNetProject)targetProject, "DefineConstants",
+			            delegate(string v) { return v.Replace(';', ','); });
+		}
+		
 		protected override IProject CreateProject(string targetProjectDirectory, IProject sourceProject)
 		{
 			ProjectCreateInformation info = new ProjectCreateInformation();
