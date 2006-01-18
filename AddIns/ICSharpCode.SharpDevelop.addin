@@ -1243,6 +1243,10 @@
 				<MenuItem id    = "AddReference"
 				          label = "${res:ProjectComponent.ContextMenu.AddReference}"
 				          class = "ICSharpCode.SharpDevelop.Project.Commands.AddReferenceToProject"/>
+				<MenuItem id    = "AddWebReference"
+		          	          label = "${res:ProjectComponent.ContextMenu.AddWebReference}"
+		          	          class = "ICSharpCode.SharpDevelop.Project.Commands.AddWebReferenceToProject"/>
+				<MenuItem id = "AddSeparator" type = "Separator"/>
 				<Include id = "ProjectActions" path="/SharpDevelop/Pads/ProjectBrowser/ContextMenu/ProjectActions"/>
 				<MenuItem id = "Separator2" type = "Separator" />
 				<MenuItem id = "Options"

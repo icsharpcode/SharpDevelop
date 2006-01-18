@@ -22,7 +22,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 {
 	public class AddWebReferenceDialog : System.Windows.Forms.Form
 	{
-		DiscoveryClientProtocol discoveryClientProtocol;
+		WebServiceDiscoveryClientProtocol discoveryClientProtocol;
+		CredentialCache credentialCache = new CredentialCache();
 		int initialFormWidth;
 		int initialUrlComboBoxWidth;
 		string namespacePrefix = String.Empty;
@@ -32,6 +33,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		
 		delegate DiscoveryDocument DiscoverAnyAsync(string url);
 		delegate void DiscoveredWebServicesHandler(DiscoveryClientProtocol protocol);
+		delegate void AuthenticationHandler(Uri uri, string authenticationType);
 
 		public AddWebReferenceDialog(IProject project)
 		{
@@ -431,7 +433,6 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Cursor = Cursors.WaitCursor;
 			stopButton.Enabled = true;
 			webServicesView.Clear();
-			StartDiscovery(e.Url);
 		}
 		
 		void WebBrowserNavigated(object sender, WebBrowserNavigatedEventArgs e)
@@ -439,6 +440,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Cursor = Cursors.Default;	
 			stopButton.Enabled = false;
 			urlComboBox.Text = webBrowser.Url.ToString();
+			StartDiscovery(e.Url);
 		}
 		
 		void WebBrowserCanGoForwardChanged(object sender, EventArgs e)
@@ -525,6 +527,11 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		void StartDiscovery(Uri uri)
 		{
+			StartDiscovery(uri, new DiscoveryNetworkCredential(CredentialCache.DefaultNetworkCredentials, DiscoveryNetworkCredential.DefaultAuthenticationType));
+		}
+		
+		void StartDiscovery(Uri uri, DiscoveryNetworkCredential credential)
+		{
 			// Abort previous discovery.
 			StopDiscovery();
 			
@@ -532,8 +539,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 			discoveryUri = uri;
 			DiscoverAnyAsync asyncDelegate = new DiscoverAnyAsync(discoveryClientProtocol.DiscoverAny);
 			AsyncCallback callback = new AsyncCallback(DiscoveryCompleted);
-			discoveryClientProtocol.Credentials = CredentialCache.DefaultCredentials;
-			IAsyncResult result = asyncDelegate.BeginInvoke(uri.AbsoluteUri, callback, discoveryClientProtocol);
+			discoveryClientProtocol.Credentials = credential;
+			IAsyncResult result = asyncDelegate.BeginInvoke(uri.AbsoluteUri, callback, new AsyncDiscoveryState(discoveryClientProtocol, uri, credential));
 		}
 		
 		/// <summary>
@@ -542,7 +549,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		/// </summary>
 		void DiscoveryCompleted(IAsyncResult result)
 		{
-			DiscoveryClientProtocol protocol = (DiscoveryClientProtocol)result.AsyncState;
+			AsyncDiscoveryState state = (AsyncDiscoveryState)result.AsyncState;
+			WebServiceDiscoveryClientProtocol protocol = state.Protocol;
 					
 			// Check that we are still waiting for this particular callback.
 			bool wanted = false;
@@ -555,10 +563,19 @@ namespace ICSharpCode.SharpDevelop.Gui
 				try {
 					DiscoverAnyAsync asyncDelegate = (DiscoverAnyAsync)((AsyncResult)result).AsyncDelegate;
 					DiscoveryDocument doc = asyncDelegate.EndInvoke(result);
+					if (!state.Credential.IsDefaultAuthenticationType) {
+						AddCredential(state.Uri, state.Credential);
+					}
 					Invoke(handler, new object[] {protocol});
 				} catch (Exception ex) {
-					LoggingService.Error("DiscoveryCompleted", ex);
-					Invoke(handler, new object[] {null});
+					if (protocol.IsAuthenticationRequired) {
+						HttpAuthenticationHeader authHeader = protocol.GetAuthenticationHeader();
+						AuthenticationHandler authHandler = new AuthenticationHandler(AuthenticateUser);
+						Invoke(authHandler, new object[] {state.Uri, authHeader.AuthenticationType});
+					} else {
+						LoggingService.Error("DiscoveryCompleted", ex);
+						Invoke(handler, new object[] {null});
+					}
 				}
 			} 
 		}
@@ -575,7 +592,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					} catch (NotImplementedException) {};
 					discoveryClientProtocol.Dispose();
 				}
-				discoveryClientProtocol = new DiscoveryClientProtocol();
+				discoveryClientProtocol = new WebServiceDiscoveryClientProtocol();
 			}
 		}
 
@@ -649,7 +666,10 @@ namespace ICSharpCode.SharpDevelop.Gui
 					MessageService.ShowError(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.InvalidNamespaceError}"));
 					return;										
 				}
-												
+											
+				webReference.Name = referenceNameTextBox.Text;
+				webReference.ProxyNamespace = namespaceTextBox.Text;
+				
 				DialogResult = DialogResult.OK;
 				Close();
 			} catch (Exception ex) {
@@ -694,6 +714,29 @@ namespace ICSharpCode.SharpDevelop.Gui
 				
 			webServicesTabPage.Text = StringParser.Parse("${res:ICSharpCode.SharpDevelop.Gui.Dialogs.AddWebReferenceDialog.WebServicesTabPageTitle}");
 			webServicesTabPage.ToolTipText = webServicesTabPage.Text;
+		}
+		
+		void AuthenticateUser(Uri uri, string authenticationType)
+		{
+			DiscoveryNetworkCredential credential = (DiscoveryNetworkCredential)credentialCache.GetCredential(uri, authenticationType);
+			if (credential != null) {
+				StartDiscovery(uri, credential);
+			} else {
+				using (UserCredentialsDialog credentialsForm = new UserCredentialsDialog(uri.ToString(), authenticationType)) {
+					if (DialogResult.OK == credentialsForm.ShowDialog()) {
+						StartDiscovery(uri, credentialsForm.Credential);
+					}
+				}
+			}
+		}
+		
+		void AddCredential(Uri uri, DiscoveryNetworkCredential credential)
+		{
+			NetworkCredential matchedCredential = credentialCache.GetCredential(uri, credential.AuthenticationType);
+			if (matchedCredential != null) {
+				credentialCache.Remove(uri, credential.AuthenticationType);
+			}
+			credentialCache.Add(uri, credential.AuthenticationType, credential);
 		}
 	}
 }

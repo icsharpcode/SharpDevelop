@@ -172,6 +172,15 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
+		public string ProxyNamespace {
+			get {
+				return proxyNamespace;
+			}
+			set {
+				proxyNamespace = value;
+			}
+		}
+		
 		public List<ProjectItem> Items {
 			get {
 				if (items == null) {

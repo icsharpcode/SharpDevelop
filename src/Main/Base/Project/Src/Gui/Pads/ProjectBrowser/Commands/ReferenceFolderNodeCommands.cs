@@ -53,36 +53,63 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 				WebReferenceUrl url = (WebReferenceUrl)node.ProjectItem;
 				try {
 					// Discover web services at url.
-					DiscoveryClientProtocol protocol = new DiscoveryClientProtocol();
-					protocol.DiscoverAny(url.UpdateFromURL);
-					protocol.ResolveOneLevel();
-					
-					// Save web services.
-					WebReference webReference = new WebReference(url.Project, url.UpdateFromURL, node.Text, url.Project.RootNamespace, protocol);
-					webReference.Save();
-					
-					// Update project.
-					WebReferenceChanges changes = webReference.GetChanges(url.Project);
-					if (changes.Changed) {
-						foreach (ProjectItem itemRemoved in changes.ItemsRemoved) {
-							ProjectService.RemoveProjectItem(url.Project, itemRemoved);
-							FileService.RemoveFile(itemRemoved.FileName, false);
+					DiscoveryClientProtocol protocol = DiscoverWebServices(url.UpdateFromURL);
+					if (protocol != null) {
+						// Save web services.
+						WebReference webReference = new WebReference(url.Project, url.UpdateFromURL, node.Text, url.Project.RootNamespace, protocol);
+						webReference.Save();
+						
+						// Update project.
+						WebReferenceChanges changes = webReference.GetChanges(url.Project);
+						if (changes.Changed) {
+							foreach (ProjectItem itemRemoved in changes.ItemsRemoved) {
+								ProjectService.RemoveProjectItem(url.Project, itemRemoved);
+								FileService.RemoveFile(itemRemoved.FileName, false);
+							}
+							foreach (ProjectItem newItem in changes.NewItems) {
+								ProjectService.AddProjectItem(url.Project, newItem);
+								FileNode fileNode = new FileNode(newItem.FileName, FileNodeStatus.InProject);
+								fileNode.AddTo(node);
+							}
+							ProjectBrowserPad.Instance.ProjectBrowserControl.TreeView.Sort();
+							url.Project.Save();
 						}
-						foreach (ProjectItem newItem in changes.NewItems) {
-							ProjectService.AddProjectItem(url.Project, newItem);
-							FileNode fileNode = new FileNode(newItem.FileName, FileNodeStatus.InProject);
-							fileNode.AddTo(node);
-						}
-						ProjectBrowserPad.Instance.ProjectBrowserControl.TreeView.Sort();
-						url.Project.Save();
+						
+						// Update code completion.
+						ParserService.ParseFile(webReference.WebProxyFileName);
 					}
-					
-					// Update code completion.
-					ParserService.ParseFile(webReference.WebProxyFileName);
 				} catch (WebException ex) {
 					MessageService.ShowError(ex, String.Format(StringParser.Parse("${res:ICSharpCode.SharpDevelop.Commands.ProjectBrowser.RefreshWebReference.ReadServiceDescriptionError}"), url.UpdateFromURL));
 				}
 			}
+		}
+		
+		DiscoveryClientProtocol DiscoverWebServices(string url)
+		{
+			WebServiceDiscoveryClientProtocol protocol = new WebServiceDiscoveryClientProtocol();
+			NetworkCredential credential = CredentialCache.DefaultNetworkCredentials;
+			bool retry = true;
+			while (retry) {
+				try {
+					protocol.Credentials = credential;
+					protocol.DiscoverAny(url);
+					protocol.ResolveOneLevel();
+					return protocol;
+				} catch (WebException ex) {
+					if (protocol.IsAuthenticationRequired) {
+						using (UserCredentialsDialog dialog = new UserCredentialsDialog(url, protocol.GetAuthenticationHeader().AuthenticationType)) {
+							if (dialog.ShowDialog() == DialogResult.OK) {
+								credential = dialog.Credential;
+							} else {
+								retry = false;
+							} 	
+						}
+					} else {
+						throw ex;
+					}
+				}
+			}
+			return null;
 		}
 	}
 	
