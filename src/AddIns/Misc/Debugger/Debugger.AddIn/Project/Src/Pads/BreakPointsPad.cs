@@ -85,8 +85,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RedrawContent()
 		{
-			name.Text        = "Name";
-			path.Text        = "Path";
+			name.Text = ResourceService.GetString("Global.Name");
+			path.Text = ResourceService.GetString("Global.Path");
 		}
 		
 		void BreakpointsListItemCheck(object sender, ItemCheckEventArgs e)

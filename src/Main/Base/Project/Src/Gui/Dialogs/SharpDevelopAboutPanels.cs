@@ -64,7 +64,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Controls.Add(buildTextBox);
 			
 			sponsorLabel.Location = new System.Drawing.Point(8, 34);
-			sponsorLabel.Text = "Released under the terms of the GNU Lesser General Public License.";
+			sponsorLabel.Text = LicenseSentence;
 			sponsorLabel.Size = new System.Drawing.Size(362, 24);
 			sponsorLabel.TabIndex = 8;
 			Controls.Add(sponsorLabel);
@@ -74,8 +74,14 @@ namespace ICSharpCode.SharpDevelop.Gui
 			throwExceptionButton.Text = ResourceService.GetString("Dialog.About.ThrowExceptionButton");
 			throwExceptionButton.Size = new System.Drawing.Size(96, 24);
 			throwExceptionButton.Click += new EventHandler(ThrowExceptionButtonClick);
-			throwExceptionButton.FlatStyle = FlatStyle.System;
 			Controls.Add(throwExceptionButton);
+		}
+		
+		public static string LicenseSentence {
+			get {
+				return StringParser.Parse("${res:Dialog.About.License}",
+				                          new string[,] {{"License", "GNU Lesser General Public License"}});
+			}
 		}
 		
 		class ClownFishException : System.Exception
@@ -156,7 +162,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// 
 			// columnHeader
 			// 
-			this.columnHeader.Text = ResourceService.GetString("Dialog.About.VersionInfoTabName.NameColumn");
+			this.columnHeader.Text = ResourceService.GetString("Global.Name");
 			this.columnHeader.Width = 130;
 			
 			// 
@@ -200,7 +206,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			// 
 			// columnHeader3
 			// 
-			this.columnHeader3.Text = ResourceService.GetString("Dialog.About.VersionInfoTabName.PathColumn");
+			this.columnHeader3.Text = ResourceService.GetString("Global.Path");
 			this.columnHeader3.Width = 150;
 			
 			//

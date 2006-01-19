@@ -46,7 +46,7 @@
 	<Path name = "/Workspace/Tools">
 		<MenuItem id = "${ProjectName}Command1"
 		          label = "${ProjectName}"
-		          class = "${ProjectName}.ToolCommand1"/>
+		          class = "${StandardNamespace}.ToolCommand1"/>
 	</Path>
 </AddIn>
 ]]></File>
@@ -61,7 +61,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor;
 
-namespace ${ProjectName}
+namespace ${StandardNamespace}
 {
 	public class ToolCommand1 : AbstractMenuCommand
 	{

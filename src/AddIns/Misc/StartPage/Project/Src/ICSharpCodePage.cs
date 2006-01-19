@@ -483,7 +483,9 @@ namespace ICSharpCode.StartPage
 			builder.Append(m_strMainColColor);
 			builder.Append("\" class=\"copy\"><img src=\""+ startPageLocation + "/Layout/Common/blind.gif\" width=15 height=1>");
 			builder.Append("<font size=\"-2\">");
-			builder.Append("Copyright &copy;2000-2006 <A HREF=\"mailto:webmaster@icsharpcode.net\" title=\"Contact Us\">IC#SharpCode</a>. Released under the terms of the GNU Lesser General Public License. </font></td>\r\n");
+			builder.Append("Copyright &copy;2000-2006 <A HREF=\"mailto:webmaster@icsharpcode.net\" title=\"Contact Us\">IC#SharpCode</a>. ");
+			builder.Append(ICSharpCode.SharpDevelop.Gui.AboutSharpDevelopTabPage.LicenseSentence);
+			builder.Append("</font></td>\r\n");
 
 			if (ShowRightBox)
 			{
@@ -531,7 +533,7 @@ namespace ICSharpCode.StartPage
 				projectSection = new StringBuilder();
 				projectSection.Append("<DIV class='tablediv'><TABLE CLASS='dtTABLE' CELLSPACING='0'>\n");
 				projectSection.Append(String.Format("<TR><TH>{0}</TH><TH>{1}</TH><TH>{2}</TH></TR>\n",
-				                                    StringParser.Parse("${res:StartPage.StartMenu.NameTable}"),
+				                                    StringParser.Parse("${res:Global.Name}"),
 				                                    StringParser.Parse("${res:StartPage.StartMenu.ModifiedTable}"),
 				                                    StringParser.Parse("${res:StartPage.StartMenu.LocationTable}")
 				                                   ));

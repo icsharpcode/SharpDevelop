@@ -37,7 +37,7 @@ namespace ICSharpCode.SharpDevelop.Bookmarks
 		{
 			drawDefault = false;
 			this.fileName = fileName;
-			fileNameText = Path.GetFileName(fileName) + " in " + Path.GetDirectoryName(fileName);
+			fileNameText = Path.GetFileName(fileName) + StringParser.Parse(" ${res:MainWindow.Windows.SearchResultPanel.In} ") + Path.GetDirectoryName(fileName);
 			icon = IconService.GetBitmap(IconService.GetImageForFile(fileName));
 			Nodes.Add(new TreeNode());
 		}

@@ -103,7 +103,7 @@
 			</And>
 					<ToolbarItem id      = "Stop"
 			                     icon    = "Icons.16x16.Debug.StopProcess"
-			                     tooltip = "Stop tests"
+			                     tooltip = "${res:NUnitPad.NUnitPadContent.StopTests}"
 			                     class   = "ICSharpCode.MbUnitPad.StopTestsCommand"/>
 		</ComplexCondition>
 	</Path>
@@ -128,7 +128,7 @@
 			</And>
 			<MenuItem id    = "Stop"
 			          icon  = "Icons.16x16.Debug.StopProcess"
-			          label = "Stop tests"
+			          label = "${res:NUnitPad.NUnitPadContent.StopTests}"
 			          class = "ICSharpCode.MbUnitPad.StopTestsCommand"/>
 		</ComplexCondition>
 		<Condition name="Ownerstate" ownerstate="SourceCodeItemSelected" action="Disable">
@@ -138,38 +138,38 @@
 			          class = "ICSharpCode.MbUnitPad.GotoDefinitionCommand"/>
 		</Condition>
 		<MenuItem id="Tree"
-		          label="Tree"
+		          label="${res:MainWindow.Windows.UnitTestsTreeView.TreeMenu}"
 		          type="Menu">
 			<MenuItem id = "ExpandAll"
-			          label = "Expand all"
+			          label = "${res:MainWindow.Windows.SearchResultPanel.ExpandAll.ToolTip}"
 			          class = "ICSharpCode.MbUnitPad.ExpandAllCommand"/>
 			<MenuItem id = "CollapseAll"
-			          label = "Collapse all"
+			          label = "${res:MainWindow.Windows.SearchResultPanel.CollapseAll.ToolTip}"
 			          class = "ICSharpCode.MbUnitPad.CollapseAllCommand"/>
 			<MenuItem id="Separator1" type = "Separator"/>
 			<MenuItem id = "ExpandCurrent"
-			          label = "Expand current"
+			          label = "${res:MainWindow.Windows.TreeView.ExpandCurrent}"
 			          class = "ICSharpCode.MbUnitPad.ExpandCurrentCommand"/>
 			<MenuItem id = "CollapseCurrent"
-			          label = "Collapse current"
+			          label = "${res:MainWindow.Windows.TreeView.CollapseCurrent}"
 			          class = "ICSharpCode.MbUnitPad.CollapseCurrentCommand"/>
 			<MenuItem id="Separator2" type = "Separator"/>
 			<MenuItem id = "ExpandAllFailures"
-			          label = "Expand all failures"
+			          label = "${res:MainWindow.Windows.UnitTestsTreeView.ExpandAllFailures}"
 			          class = "ICSharpCode.MbUnitPad.ExpandAllFailuresCommand"/>
 			<MenuItem id = "ExpandCurrentFailures"
-			          label = "Expand current failures"
+			          label = "${res:MainWindow.Windows.UnitTestsTreeView.ExpandCurrentFailures}"
 			          class = "ICSharpCode.MbUnitPad.ExpandCurrentFailuresCommand"/>
 			<MenuItem id="Separator3" type = "Separator"/>
 			<MenuItem id = "ExpandAllIgnored"
-			          label = "Expand all ignored"
+			          label = "${res:MainWindow.Windows.UnitTestsTreeView.ExpandAllIgnoredTests}"
 			          class = "ICSharpCode.MbUnitPad.ExpandAllIgnoredCommand"/>
 			<MenuItem id = "ExpandCurrentIgnored"
-			          label = "Expand current ignored"
+			          label = "${res:MainWindow.Windows.UnitTestsTreeView.ExpandCurrentIgnoredTests}"
 			          class = "ICSharpCode.MbUnitPad.ExpandCurrentIgnoredCommand"/>
 			<MenuItem id="Separator4" type = "Separator"/>
 			<MenuItem id = "ClearResults"
-			          label = "Clear results"
+			          label = "${res:MainWindow.Windows.UnitTestsTreeView.ClearResults}"
 			          class = "ICSharpCode.MbUnitPad.ClearResultsCommand"/>
 		</MenuItem>
 	</Path>

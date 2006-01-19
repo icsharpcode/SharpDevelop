@@ -2,7 +2,7 @@
 <Template author="Mathias Simmack" version="1.0">
 	
 	<Config
-		  name        = "WinFX Flow Document"
+		  name        = "${res:Templates.File.WinFXFlowDocument.Name}"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
 		  subcategory = "WinFX"

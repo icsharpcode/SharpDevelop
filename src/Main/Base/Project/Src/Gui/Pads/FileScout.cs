@@ -223,9 +223,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			ResourceManager resources = new ResourceManager("ProjectComponentResources", this.GetType().Module.Assembly);
 			
 			
-			Columns.Add("File", 100, HorizontalAlignment.Left);
-			Columns.Add("Size", -2, HorizontalAlignment.Right);
-			Columns.Add("Last modified", -2, HorizontalAlignment.Left);
+			Columns.Add(ResourceService.GetString("CompilerResultView.FileText"), 100, HorizontalAlignment.Left);
+			Columns.Add(ResourceService.GetString("MainWindow.Windows.FileScout.Size"), -2, HorizontalAlignment.Right);
+			Columns.Add(ResourceService.GetString("MainWindow.Windows.FileScout.LastModified"), -2, HorizontalAlignment.Left);
 			
 //			menu = new MagicMenus.PopupMenu();
 //			menu.MenuCommands.Add(new MagicMenus.MenuCommand("Delete file", new EventHandler(deleteFiles)));

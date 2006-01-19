@@ -79,7 +79,7 @@ namespace ResourceEditor
 			
 			
 			
-			name.Text     = ResourceService.GetString("ResourceEditor.ResourceEdit.NameColumn");
+			name.Text     = ResourceService.GetString("Global.Name");
 			name.Width    = 250;
 			
 			type.Text     = ResourceService.GetString("ResourceEditor.ResourceEdit.TypeColumn");

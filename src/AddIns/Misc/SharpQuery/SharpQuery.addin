@@ -61,7 +61,7 @@
 		<Pad id    = "SharpQuery"
 		     category = "Tools"
 		     icon = "Icons.16x16.SharpQuery.DataBaseRoot"
-		     title = "Database Explorer"
+		     title = "${res:SharpQuery.PadTitle}"
 		     shortcut = "Control|Alt|B"
 		     class = "SharpQuery.Pads.SharpQueryPad"/>
 	</Path>

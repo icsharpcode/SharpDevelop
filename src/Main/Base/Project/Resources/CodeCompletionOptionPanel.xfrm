@@ -6,7 +6,7 @@
       <System.Windows.Forms.GroupBox>
         <Name value="groupBox" />
         <Location value="{X=4,Y=55}" />
-        <Text value="Code completion detail settings" />
+        <Text value="${res:Dialog.Options.IDEOptions.CodeCompletion.DetailSettings}" />
         <Size value="{Width=369, Height=286}" />
         <TabIndex value="2" />
         <Anchor value="Top, Bottom, Left, Right" />

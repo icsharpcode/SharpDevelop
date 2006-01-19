@@ -149,9 +149,9 @@ namespace ICSharpCode.SharpDevelop.Gui.OptionPanels
 			
 			b = helper.BindStringEnum("generateSerializationAssemblyComboBox", "GenerateSerializationAssemblies",
 			                          "Auto",
-			                          new StringPair("Off", "Off"),
-			                          new StringPair("On", "On"),
-			                          new StringPair("Auto", "Auto"));
+			                          new StringPair("Off", "${res:Dialog.ProjectOptions.Build.Off}"),
+			                          new StringPair("On", "${res:Dialog.ProjectOptions.Build.On}"),
+			                          new StringPair("Auto", "${res:Dialog.ProjectOptions.Build.Auto}"));
 			b.DefaultLocation = PropertyStorageLocations.PlatformSpecific;
 			b.RegisterLocationButton(advancedLocationButton);
 			

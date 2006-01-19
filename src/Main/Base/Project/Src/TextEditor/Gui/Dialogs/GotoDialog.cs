@@ -222,7 +222,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 						display += ", line " + lineNumber;
 					}
 					if (item.Project != null) {
-						display += " in " + item.Project.Name;
+						display += StringParser.Parse(" ${res:MainWindow.Windows.SearchResultPanel.In} ") + item.Project.Name;
 					}
 					AddItem(display, ClassBrowserIconService.GotoArrowIndex, new FileLineReference(fileName, lineNumber), 0.5);
 				}

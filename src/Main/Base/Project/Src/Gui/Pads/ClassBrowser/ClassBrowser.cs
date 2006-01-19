@@ -32,7 +32,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		ShowPublic = 2,
 		ShowProtected = 4,
 		ShowPrivate = 8,
-		ShowOther = 16, 
+		ShowOther = 16,
 		
 		All = ShowProjectReferences | ShowPublic | ShowProtected | ShowPrivate | ShowOther | ShowBaseAndDerivedTypes
 	}
@@ -253,7 +253,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 			if (classBrowserTreeView.Nodes.Count == 0) {
 				ExtTreeNode notFoundMsg = new ExtTreeNode();
-				notFoundMsg.Text = "No search results found.";
+				notFoundMsg.Text = ResourceService.GetString("MainWindow.Windows.ClassBrowser.NoResultsFound");
 				notFoundMsg.AddTo(classBrowserTreeView);
 			}
 			classBrowserTreeView.Sort();

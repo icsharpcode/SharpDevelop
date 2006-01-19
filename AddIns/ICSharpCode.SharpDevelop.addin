@@ -161,8 +161,8 @@
 		          label = "${res:XML.MainMenu.BuildMenu.RebuildSolution}"
 		          shortcut = "Alt|F8"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Rebuild"/>
-		<MenuItem id = "${res:XML.MainMenu.BuildMenu.CleanSolution}"
-		          label = "Clean"
+		<MenuItem id = "Clean"
+		          label = "${res:XML.MainMenu.BuildMenu.CleanSolution}"
 		          class = "ICSharpCode.SharpDevelop.Project.Commands.Clean"/>
 		<MenuItem id = "CombineBuildGroupSeparator" type = "Separator"/>
 		
@@ -955,7 +955,7 @@
 			             label = "${res:Dialog.Options.IDEOptions.SelectVisualStyle.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.SelectStylePanel"/>
 			<DialogPanel id    = "Fullscreen"
-			             label = "Fullscreen"
+			             label = "${res:Dialog.Options.IDEOptions.FullScreen.Title}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.FullscreenPanel"/>
 			<DialogPanel id    = "LoadSave"
 			             label = "${res:Dialog.Options.IDEOptions.LoadSaveOptions.PanelName}"
@@ -964,7 +964,7 @@
 			             label = "${res:Dialog.Options.IDEOptions.TaskListOptions.PanelName}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.TaskListOptions"/>
 			<DialogPanel id    = "OutputWindowOptions"
-			             label = "Output Window"
+			             label = "${res:Dialog.Options.IDEOptions.OutputPanel.Title}"
 			             class = "ICSharpCode.SharpDevelop.Gui.OptionPanels.OutputWindowOptionsPanel"/>
 		</DialogPanel>
 		<DialogPanel id    = "CodingOptions"
@@ -1299,7 +1299,7 @@
 				</Condition>
 				<MenuItem id = "Separator2" type = "Separator" />
 				<MenuItem id = "SetConfiguration"
-				          label = "Set configuration"
+				          label = "${res:XML.MainMenu.BuildMenu.SetConfiguration}"
 				          type = "Menu">
 					<MenuItem id = "ConfigurationBuilder" type = "Builder" class = "ICSharpCode.SharpDevelop.Project.Commands.SetConfigurationMenuBuilder"/>
 				</MenuItem>
@@ -1837,7 +1837,7 @@
 		
 		<ToolbarItem id      = "URLComboBox"
 		             type    = "ComboBox"
-		             tooltip = "Enter URL"
+		             tooltip = "${res:AddIns.HtmlHelp2.EnterURL}"
 		             class   = "ICSharpCode.SharpDevelop.BrowserDisplayBinding.UrlComboBox"/>
 		
 		<ToolbarItem id      = "NewWindow"
@@ -1948,12 +1948,12 @@
 		<ToolbarItem id = "FindSeparator" type = "Separator" />
 		<ToolbarItem id      = "Find"
 		             icon    = "Icons.16x16.FindIcon"
-		             tooltip = "Search"
+		             tooltip = "${res:MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}"
 		             class   = "SearchAndReplace.Find"/>
 		
 		<ToolbarItem id      = "FindComboBox"
 		             type    = "ComboBox"
-		             tooltip = "Search"
+		             tooltip = "${res:MainWindow.Windows.ClassBrowser.CommitSearch.ToolTip}"
 		             class   = "SearchAndReplace.FindComboBox"/>
 	</Path>
 	

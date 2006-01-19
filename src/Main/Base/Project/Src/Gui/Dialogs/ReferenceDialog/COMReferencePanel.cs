@@ -33,12 +33,12 @@ namespace ICSharpCode.SharpDevelop.Gui
 			
 			
 			ColumnHeader nameHeader = new ColumnHeader();
-			nameHeader.Text  = ResourceService.GetString("Dialog.About.VersionInfoTabName.NameColumn");
+			nameHeader.Text  = ResourceService.GetString("Global.Name");
 			nameHeader.Width = 240;
 			Columns.Add(nameHeader);
 			
 			ColumnHeader directoryHeader = new ColumnHeader();
-			directoryHeader.Text  = ResourceService.GetString("Dialog.SelectReferenceDialog.GacReferencePanel.PathHeader");
+			directoryHeader.Text  = ResourceService.GetString("Global.Path");
 			directoryHeader.Width =200;
 			Columns.Add(directoryHeader);
 			

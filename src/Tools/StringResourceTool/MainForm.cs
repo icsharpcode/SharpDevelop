@@ -254,7 +254,7 @@ namespace StringResourceTool
 			outputTextBox.Text = b.ToString();
 		}
 		
-		string[] specialStarts = {"Dialog.HighlightingEditor.EnvColors.",
+		string[] specialStarts = {"Dialog.HighlightingEditor.",
 			"ICSharpCode.SharpDevelop.Commands.ChooseLayoutCommand."};
 		
 		/// <summary>Gets entries in t1 that are missing from t2.</summary>
@@ -288,7 +288,7 @@ namespace StringResourceTool
 		void FindUsedStrings(Hashtable t, string path)
 		{
 			foreach (string subPath in Directory.GetDirectories(path)) {
-				if (subPath.EndsWith(".svn")) {
+				if (subPath.EndsWith(".svn") || subPath.EndsWith("\\obj")) {
 					continue;
 				}
 				FindUsedStrings(t, subPath);
@@ -317,10 +317,12 @@ namespace StringResourceTool
 			string content = sr.ReadToEnd();
 			sr.Close();
 			foreach (Match m in pattern.Matches(content)) {
+				//Debug.WriteLine(fileName);
 				t[m.Groups[1].Captures[0].Value] = null;
 			}
 			if (resourceServicePattern) {
 				foreach (Match m in resourceService.Matches(content)) {
+					//Debug.WriteLine(fileName);
 					t[m.Groups[1].Captures[0].Value] = null;
 				}
 			}

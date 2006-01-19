@@ -47,7 +47,8 @@ namespace SearchAndReplace
 		
 		string FileNameText {
 			get {
-				return " in " + Path.GetFileName(result.FileName) + "(" + Path.GetDirectoryName(result.FileName) +")";
+				return StringParser.Parse(" ${res:MainWindow.Windows.SearchResultPanel.In} ")
+					+ Path.GetFileName(result.FileName) + "(" + Path.GetDirectoryName(result.FileName) +")";
 			}
 		}
 		

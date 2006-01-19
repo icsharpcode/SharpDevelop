@@ -5,12 +5,12 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>WinFX Navigation Application</Name>
+		<Name>${res:Templates.Project.WinFXNavigationApplication.Name}</Name>
 		<Category>C#</Category>
 		<Subcategory>WinFX</Subcategory>
 		<Icon>C#.Project.Form</Icon>
 		<LanguageName>C#</LanguageName>
-		<Description>Creates a simple WinFX application with one navigation page.</Description>
+		<Description>${res:Templates.Project.WinFXNavigationApplication.Description}</Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

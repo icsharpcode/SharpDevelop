@@ -103,7 +103,7 @@ namespace ICSharpCode.Core
 			line.Text        = ResourceService.GetString("CompilerResultView.LineText");
 			description.Text = ResourceService.GetString("CompilerResultView.DescriptionText");
 			file.Text        = ResourceService.GetString("CompilerResultView.FileText");
-			path.Text        = ResourceService.GetString("CompilerResultView.PathText");
+			path.Text        = ResourceService.GetString("Global.Path");
 		}
 		
 		#region Event Overrides

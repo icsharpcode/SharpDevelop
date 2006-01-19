@@ -6,8 +6,10 @@
  */
 
 using System;
+using System.Collections;
 using System.IO;
 using System.Diagnostics;
+using System.Resources;
 using System.Text;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop;
@@ -28,6 +30,7 @@ namespace StringResourceToolAddIn
 				// active content is not a text editor control
 				return;
 			}
+			
 			// Get the active text area from the control:
 			TextArea textArea = tecp.TextEditorControl.ActiveTextAreaControl.TextArea;
 			if (!textArea.SelectionManager.HasSomethingSelected)
@@ -35,15 +38,42 @@ namespace StringResourceToolAddIn
 			// get the selected text:
 			string text = textArea.SelectionManager.SelectedText;
 			
-			string resourceName = MessageService.ShowInputBox("Add Resource", "Enter the resource name", PropertyService.Get("ResourceToolLastResourceName"));
+			string sdSrcPath = Path.Combine(Path.GetDirectoryName(GetType().Assembly.Location),
+			                                "../../../..");
+			
+			using (ResourceReader r = new ResourceReader(Path.Combine(sdSrcPath,
+			                                                          "Main/StartUp/Project/Resources/StringResources.resources"))) {
+				IDictionaryEnumerator en = r.GetEnumerator();
+				// Goes through the enumerator, printing out the key and value pairs.
+				while (en.MoveNext()) {
+					if (object.Equals(en.Value, text)) {
+						SetText(textArea, en.Key.ToString(), text);
+						return;
+					}
+				}
+			}
+			
+			string resourceName = MessageService.ShowInputBox("Add Resource", "Please enter the name for the new resource.\n" +
+			                                                  "This should be a namespace-like construct, please see what the names of resources in the same component are.", PropertyService.Get("ResourceToolLastResourceName"));
 			if (resourceName == null || resourceName.Length == 0) return;
 			PropertyService.Set("ResourceToolLastResourceName", resourceName);
 			
 			string purpose = MessageService.ShowInputBox("Add Resource", "Enter resource purpose (may be empty)", "");
 			if (purpose == null) return;
 			
-			string newText = "${res:" + resourceName + "}";
+			SetText(textArea, resourceName, text);
 			
+			string path = Path.Combine(sdSrcPath, "Tools/StringResourceTool/bin/Debug");
+			ProcessStartInfo info = new ProcessStartInfo(path + "/StringResourceTool.exe",
+			                                             "\"" + resourceName + "\" "
+			                                             + "\"" + text + "\" "
+			                                             + "\"" + purpose + "\"");
+			info.WorkingDirectory = path;
+			Process.Start(info);
+		}
+		
+		void SetText(TextArea textArea, string resourceName, string oldText)
+		{
 			// ensure caret is at start of selection
 			textArea.Caret.Position = textArea.SelectionManager.SelectionCollection[0].StartPosition;
 			// deselect text
@@ -51,19 +81,10 @@ namespace StringResourceToolAddIn
 			// replace the selected text with the new text:
 			// Replace() takes the arguments: start offset to replace, length of the text to remove, new text
 			textArea.Document.Replace(textArea.Caret.Offset,
-			                          text.Length,
-			                          newText);
-			
+			                          oldText.Length,
+			                          "$" + "{res:" + resourceName + "}");
 			// Redraw:
 			textArea.Refresh();
-			
-			string path = Path.Combine(FileUtility.ApplicationRootPath, "src/Tools/StringResourceTool/bin/Debug");
-			ProcessStartInfo info = new ProcessStartInfo(path + "/StringResourceTool.exe",
-			                                             "\"" + resourceName + "\" "
-			                                             + "\"" + text + "\" "
-			                                             + "\"" + purpose + "\"");
-			info.WorkingDirectory = path;
-			Process.Start(info);
 		}
 	}
 }

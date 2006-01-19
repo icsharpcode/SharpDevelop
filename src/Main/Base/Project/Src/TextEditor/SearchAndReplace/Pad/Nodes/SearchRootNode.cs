@@ -61,7 +61,9 @@ namespace SearchAndReplace
 		{
 			return StringParser.Parse("${res:MainWindow.Windows.SearchResultPanel.OccurrencesOf}",
 			                          new string[,] {{ "Pattern", pattern }})
-				+ " (" + GetOccurencesString(results.Count) + " in " + GetFileCountString(fileCount) + ")";
+				+ " (" + GetOccurencesString(results.Count)
+				+ StringParser.Parse(" ${res:MainWindow.Windows.SearchResultPanel.In} ")
+				+ GetFileCountString(fileCount) + ")";
 		}
 		
 		protected override int MeasureItemWidth(DrawTreeNodeEventArgs e)

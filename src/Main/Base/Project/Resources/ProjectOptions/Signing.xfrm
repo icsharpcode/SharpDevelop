@@ -14,7 +14,7 @@
           <System.Windows.Forms.Label>
             <Name value="label2" />
             <Location value="{X=8,Y=17}" />
-            <Text value="ClickOnce signing is currently not supported." />
+            <Text value="${res:Dialog.ProjectOptions.Signing.ClickOnceNotSupported}" />
             <Size value="{Width=352, Height=23}" />
             <TabIndex value="0" />
           </System.Windows.Forms.Label>

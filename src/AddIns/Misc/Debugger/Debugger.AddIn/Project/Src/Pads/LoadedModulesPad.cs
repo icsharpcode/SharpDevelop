@@ -92,9 +92,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RedrawContent()
 		{
-			name.Text         = StringParser.Parse("${res:MainWindow.Windows.Debug.NameColumn}");
+			name.Text         = StringParser.Parse("${res:Global.Name}");
 			address.Text      = StringParser.Parse("${res:MainWindow.Windows.Debug.AddressColumn}");
-			path.Text         = StringParser.Parse("${res:MainWindow.Windows.Debug.PathColumn}");
+			path.Text         = StringParser.Parse("${res:Global.Path}");
 			order.Text        = StringParser.Parse("${res:MainWindow.Windows.Debug.OrderColumn}");
 			version.Text      = StringParser.Parse("${res:MainWindow.Windows.Debug.VersionColumn}");
 			program.Text      = StringParser.Parse("${res:MainWindow.Windows.Debug.ProgramColumn}");

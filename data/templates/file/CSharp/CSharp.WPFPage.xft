@@ -2,7 +2,7 @@
 <Template author="Mathias Simmack" version="1.0">
 	
 	<Config
-		  name        = "WinFX Page"
+		  name        = "${res:Templates.File.WinFXPage.Name}"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
 		  subcategory = "WinFX"

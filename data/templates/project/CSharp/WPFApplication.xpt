@@ -5,12 +5,12 @@
 	
 	<!-- Template Header -->
 	<TemplateConfiguration>
-		<Name>WinFX Application</Name>
+		<Name>${res:Templates.Project.WinFXApplication.Name}</Name>
 		<Category>C#</Category>
 		<Subcategory>WinFX</Subcategory>
 		<Icon>C#.Project.Form</Icon>
 		<LanguageName>C#</LanguageName>
-		<Description>Creates a simple WinFX application.</Description>
+		<Description>${res:Templates.Project.WinFXApplication.Description}</Description>
 	</TemplateConfiguration>
 	
 	<!-- Actions -->

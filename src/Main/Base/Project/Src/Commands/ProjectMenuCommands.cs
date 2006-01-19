@@ -58,16 +58,16 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			}
 			string assembly = project.OutputAssemblyFullPath;
 			if (!File.Exists(assembly)) {
-				MessageService.ShowMessage("You need to compile the project.");
+				MessageService.ShowMessage("${res:ProjectComponent.ContextMenu.GenerateDocumentation.ProjectNeedsToBeCompiled}");
 				return;
 			}
 			string xmlDocFile = project.DocumentationFileName;
 			if (xmlDocFile == null) {
-				MessageService.ShowMessage("You need to edit the project build options to generate a xml documentation file.");
+				MessageService.ShowMessage("${res:ProjectComponent.ContextMenu.GenerateDocumentation.NeedToEditBuildOptions}");
 				return;
 			}
 			if (!File.Exists(xmlDocFile)) {
-				MessageService.ShowMessage("The xml documentation file does not exist, you need to compile the project.");
+				MessageService.ShowMessage("${res:ProjectComponent.ContextMenu.GenerateDocumentation.ProjectNeedsToBeCompiled2}");
 				return;
 			}
 			string nDocProjectFile = Path.ChangeExtension(assembly, ".ndoc");

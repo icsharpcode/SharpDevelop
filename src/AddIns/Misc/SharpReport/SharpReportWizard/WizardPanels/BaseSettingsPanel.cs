@@ -59,7 +59,7 @@ namespace ReportGenerator{
 			this.radioFormSheet.Text = ResourceService.GetString("SharpReport.Wizard.BaseSettings.ReportModel.FormSheet");
 			
 			this.label1.Text = "Report Name";
-			this.label2.Text = ResourceService.GetString("SharpReport.Wizard.BaseSettings.Path");
+			this.label2.Text = ResourceService.GetString("Global.Path");
 			this.label3.Text = "Report Type ";
 			this.label4.Text = ResourceService.GetString("SharpReport.Wizard.BaseSettings.GraphicsUnit");
 			this.label5.Text = ResourceService.GetString("SharpReport.Wizard.BaseSettings.FileName");

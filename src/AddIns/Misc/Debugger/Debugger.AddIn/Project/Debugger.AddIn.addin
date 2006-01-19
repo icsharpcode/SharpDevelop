@@ -18,7 +18,7 @@
 		<Condition name = "IsProcessRunning" isdebugging="True" isprocessrunning="False">
 			<MenuItem id = "DebuggerSetCurrentStatement"
 			          insertbefore = "Refactoring"
-			          label = "Set current statement"
+			          label = "${res:MainWindow.Windows.Debug.SetCurrentStatement}"
 			          icon = "Icons.16x16.Debug.StepInto"
 			          class = "ICSharpCode.SharpDevelop.Services.SetCurrentStatementCommand"/>
 		</Condition>
@@ -36,42 +36,42 @@
     <Path name = "/SharpDevelop/Workbench/Pads">
         <Pad id    = "BreakPointsPad3" 
 		     category = "Debugger"
-		     title    = "Breakpoints"
+		     title    = "${res:MainWindow.Windows.Debug.Breakpoints}"
 		     icon     = "PadIcons.BreakPoints"
 		     shortcut = "Control|Alt|B"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.BreakPointsPad"/>
 
         <Pad id    = "CallStackPad3" 
 		     category = "Debugger"
-		     title    = "Callstack"
+		     title    = "${res:MainWindow.Windows.Debug.CallStack}"
 		     icon     = "PadIcons.CallStack"
 		     shortcut = "Control|Alt|C"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.CallStackPad"/>
 
         <Pad id    = "LoadedModulesPad3" 
 		     category = "Debugger"
-		     title    = "Loaded modules"
+		     title    = "${res:MainWindow.Windows.Debug.Modules}"
 		     icon     = "PadIcons.LoadedModules"
 		     shortcut = "Control|Alt|U"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LoadedModulesPad"/>
 
         <Pad id    = "RunningThreadsPad3"
 		     category = "Debugger"
-		     title    = "Threads"
+		     title    = "${res:MainWindow.Windows.Debug.Threads}"
 		     icon     = "PadIcons.Threads"
 		     shortcut = "Control|Alt|H"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.RunningThreadsPad"/>
 
         <Pad id    = "LocalVarPad3" 
 		     category = "Debugger"
-		     title    = "Local variables"
+		     title    = "${res:MainWindow.Windows.Debug.LocalVariables}"
 		     icon     = "PadIcons.LocalVariables"
 		     shortcut = "Control|Alt|V"
 		     class = "ICSharpCode.SharpDevelop.Gui.Pads.LocalVarPad"/>
 
         <Pad id    = "ExceptionHistoryPad" 
              category = "Debugger"
-             title    = "Exception history"
+             title    = "${res:MainWindow.Windows.Debug.ExceptionHistory}"
              icon     = "PadIcons.Exceptions"
              shortcut = "Control|Alt|E"
              class = "ICSharpCode.SharpDevelop.Gui.Pads.ExceptionHistoryPad"/>

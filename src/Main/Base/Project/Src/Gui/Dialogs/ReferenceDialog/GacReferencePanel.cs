@@ -72,7 +72,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Columns.Add(versionHeader);
 			
 			ColumnHeader pathHeader = new ColumnHeader();
-			pathHeader.Text  = ResourceService.GetString("Dialog.SelectReferenceDialog.GacReferencePanel.PathHeader");
+			pathHeader.Text  = ResourceService.GetString("Global.Path");
 			pathHeader.Width = 100;
 			Columns.Add(pathHeader);
 			

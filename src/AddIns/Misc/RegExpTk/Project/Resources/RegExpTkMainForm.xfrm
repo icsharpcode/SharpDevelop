@@ -3,7 +3,7 @@
     <Name value="MainForm" />
     <FormBorderStyle value="SizableToolWindow" />
     <ShowInTaskbar value="False" />
-    <Text value="Regular expression toolkit" />
+    <Text value="${res:XML.MainMenu.ToolsMenu.RegularExpressionToolkit}" />
     <ClientSize value="{Width=456, Height=526}" />
     <Font value="[Font: Name=Tahoma, Size=11, Units=3, GdiCharSet=1, GdiVerticalFont=False]" />
     <Controls>
@@ -362,24 +362,4 @@
       </System.Windows.Forms.TabControl>
     </Controls>
   </System.Windows.Forms.Form>
-  <System.Windows.Forms.ColumnHeader>
-    <Name value="columnHeader" />
-    <Text value="${res:RegExpTk.MainDialog.StringColumn}" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Name value="columnHeader2" />
-    <Text value="${res:RegExpTk.MainDialog.StartColumn}" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Name value="columnHeader3" />
-    <Text value="${res:RegExpTk.MainDialog.EndColumn}" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Name value="columnHeader4" />
-    <Text value="${res:RegExpTk.MainDialog.LengthColumn}" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Text value="${res:RegExpTk.MainDialog.GroupsColumn}" />
-    <Name value="columnHeader49" />
-  </System.Windows.Forms.ColumnHeader>
 </Components>

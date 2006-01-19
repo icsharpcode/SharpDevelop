@@ -45,21 +45,4 @@
       </System.Windows.Forms.ListView>
     </Controls>
   </System.Windows.Forms.Form>
-  <System.Windows.Forms.ColumnHeader>
-    <Name value="columnHeader" />
-    <Width value="205" />
-    <Text value="${res:RegExpTk.MainDialog.StringColumn}" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Name value="columnHeader2" />
-    <Text value="${res:RegExpTk.MainDialog.StartColumn}" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Text value="${res:RegExpTk.MainDialog.EndColumn}" />
-    <Name value="columnHeader3" />
-  </System.Windows.Forms.ColumnHeader>
-  <System.Windows.Forms.ColumnHeader>
-    <Name value="columnHeader4" />
-    <Text value="${res:RegExpTk.MainDialog.LengthColumn}" />
-  </System.Windows.Forms.ColumnHeader>
 </Components>

@@ -2,7 +2,7 @@
 <Template author="Mathias Simmack" version="1.0">
 	
 	<Config
-		  name        = "WinFX User Control"
+		  name        = "${res:Templates.File.WinFXUserControl.Name}"
 		  icon        = "Icons.32x32.XMLFileIcon"
 		  category    = "C#"
 		  subcategory = "WinFX"
