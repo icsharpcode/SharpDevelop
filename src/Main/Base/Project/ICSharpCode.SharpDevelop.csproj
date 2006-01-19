@@ -277,9 +277,6 @@
     <Compile Include="Src\Gui\Workbench\Layouts\SdiWorkspaceWindow.cs">
       <SubType>Form</SubType>
     </Compile>
-    <Compile Include="Src\Gui\XmlForms\SharpDevelopObjectCreator.cs">
-      <SubType>Component</SubType>
-    </Compile>
     <Compile Include="Src\Gui\XmlForms\SharpDevelopPropertyValueCreator.cs" />
     <Compile Include="Src\Gui\XmlForms\SharpDevelopStringValueFilter.cs" />
     <Compile Include="Src\Services\IconService.cs" />

@@ -140,13 +140,6 @@ namespace Plugins.RegExpTk {
 			}
 		}
 		
-		protected override void SetupXmlLoader()
-		{
-			xmlLoader.StringValueFilter    = new SharpDevelopStringValueFilter();
-			xmlLoader.PropertyValueCreator = new SharpDevelopPropertyValueCreator();
-			xmlLoader.ObjectCreator        = new SharpDevelopObjectCreator();
-		}
-		
 		private void quickInsert(object sender, EventArgs e)
 		{
 			//// Alex: changed to text box

@@ -27,7 +27,6 @@ namespace ICSharpCode.SharpDevelop.Gui.XmlForms
 		{
 			xmlLoader.StringValueFilter    = new SharpDevelopStringValueFilter();
 			xmlLoader.PropertyValueCreator = new SharpDevelopPropertyValueCreator();
-			xmlLoader.ObjectCreator        = new SharpDevelopObjectCreator();
 		}
 		
 		public void SetEnabledStatus(bool enabled, params string[] controlNames)

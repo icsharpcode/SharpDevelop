@@ -42,13 +42,6 @@ namespace ICSharpCode.FormsDesigner.Gui
 			ControlDictionary["okButton"].Click += new EventHandler(okButtonClick);
 		}
 		
-		protected override void SetupXmlLoader()
-		{
-			xmlLoader.StringValueFilter    = new SharpDevelopStringValueFilter();
-			xmlLoader.PropertyValueCreator = new SharpDevelopPropertyValueCreator();
-			xmlLoader.ObjectCreator        = new SharpDevelopObjectCreator();
-		}
-		
 		void ShowDuplicateErrorMessage()
 		{
 			

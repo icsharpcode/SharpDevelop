@@ -59,7 +59,6 @@ namespace ICSharpCode.XmlEditor
 		{
 			xmlLoader.StringValueFilter    = new SharpDevelopStringValueFilter();
 			xmlLoader.PropertyValueCreator = new SharpDevelopPropertyValueCreator();
-			xmlLoader.ObjectCreator        = new SharpDevelopObjectCreator();
 		}
 		
 		void Initialize()

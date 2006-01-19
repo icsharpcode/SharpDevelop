@@ -31,13 +31,6 @@ namespace Plugins.RegExpTk {
 			}
 		}
 		
-		protected override void SetupXmlLoader()
-		{
-			xmlLoader.StringValueFilter    = new SharpDevelopStringValueFilter();
-			xmlLoader.PropertyValueCreator = new SharpDevelopPropertyValueCreator();
-			xmlLoader.ObjectCreator        = new SharpDevelopObjectCreator();
-		}
-		
 		void CloseButton_Click(object sender, EventArgs e)
 		{
 			Close();
