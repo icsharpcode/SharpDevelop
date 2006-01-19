@@ -43,10 +43,8 @@
 		<Import assembly = "${ProjectName}.dll"/>
 	</Runtime>
 	
-	<Path name = "/SharpDevelop/Workbench/MainMenu/Tools">
+	<Path name = "/Workspace/Tools">
 		<MenuItem id = "${ProjectName}Command1"
-		          insertafter = "Separator1"
-		          insertbefore = "Separator2"
 		          label = "${ProjectName}"
 		          class = "${ProjectName}.ToolCommand1"/>
 	</Path>
@@ -63,7 +61,7 @@ using ICSharpCode.SharpDevelop.Gui;
 using ICSharpCode.SharpDevelop.DefaultEditor.Gui.Editor;
 using ICSharpCode.TextEditor;
 
-namespace Macro1
+namespace ${ProjectName}
 {
 	public class ToolCommand1 : AbstractMenuCommand
 	{
@@ -78,6 +76,8 @@ namespace Macro1
 			}
 			// Get the active text area from the control:
 			TextArea textArea = tecp.TextEditorControl.ActiveTextAreaControl.TextArea;
+			if (!textArea.SelectionManager.HasSomethingSelected)
+				return;
 			// get the selected text:
 			string text = textArea.SelectionManager.SelectedText;
 			// reverse the text:
@@ -85,9 +85,15 @@ namespace Macro1
 			for (int i = text.Length - 1; i >= 0; i--)
 				b.Append(text[i]);
 			string newText = b.ToString();
+			// ensure caret is at start of selection
+			textArea.Caret.Position = textArea.SelectionManager.SelectionCollection[0].StartPosition;
+			// deselect text
+			textArea.SelectionManager.ClearSelection();
 			// replace the selected text with the new text:
 			// Replace() takes the arguments: start offset to replace, length of the text to remove, new text
-			textArea.Document.Replace(textArea.Caret.Offset, text.Length, newText);
+			textArea.Document.Replace(textArea.Caret.Offset,
+			                          text.Length,
+			                          newText);
 			// Redraw:
 			textArea.Refresh();
 		}
@@ -96,6 +102,8 @@ namespace Macro1
 ]]></File>
 		<File name="Configuration/AssemblyInfo.cs">
 			<![CDATA[${StandardHeader.C#}
+
+using System.Reflection;
 
 [assembly: AssemblyTitle("${ProjectName}")]
 [assembly: AssemblyDescription("Macro AddIn for SharpDevelop 2.0")]

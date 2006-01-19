@@ -30,6 +30,16 @@ namespace ICSharpCode.NRefactory.Tests.AST
 		}
 		
 		[Test]
+		public void AnonymousMethodAfterCast()
+		{
+			CastExpression c = ParseUtilCSharp.ParseExpression<CastExpression>("(ThreadStart)delegate {}");
+			Assert.AreEqual("ThreadStart", c.CastTo.Type);
+			AnonymousMethodExpression ame = (AnonymousMethodExpression)c.Expression;
+			Assert.AreEqual(0, ame.Parameters.Count);
+			Assert.AreEqual(0, ame.Body.Children.Count);
+		}
+		
+		[Test]
 		public void EmptyAnonymousMethod()
 		{
 			AnonymousMethodExpression ame = Parse("delegate() {}");

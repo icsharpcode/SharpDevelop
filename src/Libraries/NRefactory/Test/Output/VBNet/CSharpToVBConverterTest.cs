@@ -147,8 +147,8 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			              "End If");
 			// another bug related to the IfStatement code:
 			TestStatement("if (Tiles != null) foreach (Tile t in Tiles) this.TileTray.Controls.Remove(t);",
-			              "If Tiles IsNot Nothing\n" +
-			              "\tFor Each t As Tile in Tiles\n" +
+			              "If Tiles IsNot Nothing Then\n" +
+			              "\tFor Each t As Tile In Tiles\n" +
 			              "\t\tMe.TileTray.Controls.Remove(t)\n" +
 			              "\tNext\n" +
 			              "End If");

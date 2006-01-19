@@ -2093,9 +2093,7 @@ UnaryExpr<out Expression uExpr>
 			/*--- cast expression: */
 			/* Problem:  "(" Type ")" from here and                     *
 			 *           "(" Expr ")" from PrimaryExpr                  *
-			 *           are not distinguishable                        *
-			 * Solution: (in IsTypeCast())                              *
-			 * use external information from compiled assembly or guess */
+			 * Solution: (in IsTypeCast())                              */
 			| IF (IsTypeCast()) "(" Type<out type> ")"  (.  expressions.Add(new CastExpression(type)); .)
 		)
 	}

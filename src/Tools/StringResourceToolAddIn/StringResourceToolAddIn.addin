@@ -1,0 +1,20 @@
+﻿<AddIn name        = "StringResourceToolAddIn"
+       author      = "Daniel Grunwald"
+       url         = ""
+       description = "TODO: Put description here">
+	
+	<Manifest>
+		<Identity name="ICSharpCode.Internal.StringResourceToolAddIn" version="@StringResourceToolAddIn.dll"/>
+	</Manifest>
+	
+	<Runtime>
+		<Import assembly = "StringResourceToolAddIn.dll"/>
+	</Runtime>
+	
+	<Path name = "/Workspace/Tools">
+		<MenuItem id = "StringResourceToolAddInCommand1"
+		          label = "StringResourceToolAddIn"
+		          shortcut = "Control|Shift|R"
+		          class = "StringResourceToolAddIn.ToolCommand1"/>
+	</Path>
+</AddIn>

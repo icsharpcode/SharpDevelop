@@ -54,17 +54,17 @@ namespace StringResourceTool
 			WebClient wc = new WebClient();
 			wc.Headers.Set("Cookie", cookieContainer.GetCookieHeader(new Uri(baseURL)));
 			wc.DownloadProgressChanged += delegate(object sender, DownloadProgressChangedEventArgs e) {
-				output.BeginInvoke(new MethodInvoker(delegate {
-				                                     	output.Text = "Download: " + e.ProgressPercentage + "%";
-				                                     }));
+				output.BeginInvoke((MethodInvoker)delegate {
+				                   	output.Text = "Download: " + e.ProgressPercentage + "%";
+				                   });
 			};
 			wc.DownloadDataCompleted += delegate(object sender, DownloadDataCompletedEventArgs e) {
-				output.BeginInvoke(new MethodInvoker(delegate {
-				                                     	if (e.Error != null)
-				                                     		output.Text = e.Error.ToString();
-				                                     	else
-				                                     		output.Text = "Download complete.";
-				                                     }));
+				output.BeginInvoke((MethodInvoker)delegate {
+				                   	if (e.Error != null)
+				                   		output.Text = e.Error.ToString();
+				                   	else
+				                   		output.Text = "Download complete.";
+				                   });
 				if (e.Error == null) {
 					using (FileStream fs = new FileStream(targetFile, FileMode.Create, FileAccess.Write)) {
 						fs.Write(e.Result, 0, e.Result.Length);
@@ -74,6 +74,17 @@ namespace StringResourceTool
 				wc.Dispose();
 			};
 			wc.DownloadDataAsync(new Uri(baseURL + "CompactNdownload.asp"));
+		}
+		
+		public void AddResourceString(string idx, string value, string purpose)
+		{
+			WebClient wc = new WebClient();
+			wc.Headers.Set("Cookie", cookieContainer.GetCookieHeader(new Uri(baseURL)));
+			wc.Headers.Set("Content-Type", "application/x-www-form-urlencoded");
+			wc.UploadString(new Uri(baseURL + "owners_AddNew.asp"),
+			                "Idx=" + Uri.EscapeDataString(idx)
+			                + "&PrimaryResLangValue=" + Uri.EscapeDataString(value)
+			                + "&PrimaryPurpose=" + Uri.EscapeDataString(purpose));
 		}
 		
 		public void DeleteResourceStrings(string[] idx)
@@ -90,10 +101,10 @@ namespace StringResourceTool
 					} else {
 						finishCount += 1;
 						if (finishCount == threadCount) {
-							output.BeginInvoke(new MethodInvoker(delegate {
-							                                     	output.Text += "\r\nFinished.";
-							                                     	output.Text += "\r\nYou have to re-download the database to see the changes.";
-							                                     }));
+							output.BeginInvoke((MethodInvoker)delegate {
+							                   	output.Text += "\r\nFinished.";
+							                   	output.Text += "\r\nYou have to re-download the database to see the changes.";
+							                   });
 						}
 					}
 				}
@@ -109,9 +120,9 @@ namespace StringResourceTool
 			wc.Headers.Set("Cookie", cookieContainer.GetCookieHeader(new Uri(baseURL)));
 			wc.Headers.Set("Content-Type", "application/x-www-form-urlencoded");
 			wc.UploadStringCompleted += delegate {
-				output.BeginInvoke(new MethodInvoker(delegate {
-				                                     	output.Text += "\r\nDeleted " + idx;
-				                                     }));
+				output.BeginInvoke((MethodInvoker)delegate {
+				                   	output.Text += "\r\nDeleted " + idx;
+				                   });
 				wc.Dispose();
 				if (callback != null)
 					callback(this, EventArgs.Empty);

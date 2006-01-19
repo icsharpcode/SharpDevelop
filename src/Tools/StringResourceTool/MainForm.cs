@@ -37,6 +37,25 @@ namespace StringResourceTool
 		[STAThread]
 		public static void Main(string[] args)
 		{
+			if (args.Length == 3) {
+				try {
+					string userName, password;
+					using (StreamReader r = new StreamReader("password.txt")) {
+						userName = r.ReadLine();
+						password = r.ReadLine();
+					}
+					TranslationServer server = new TranslationServer(new TextBox());
+					if (!server.Login(userName, password)) {
+						MessageBox.Show("Login failed");
+						return;
+					}
+					server.AddResourceString(args[0], args[1], args[2]);
+					MessageBox.Show("Resource string added to database on server");
+					return;
+				} catch (Exception ex) {
+					MessageBox.Show(ex.ToString());
+				}
+			}
 			Application.EnableVisualStyles();
 			Application.Run(new MainForm());
 		}
