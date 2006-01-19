@@ -56,7 +56,7 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <EmbeddedResource Include="Resources\BitmapResources.resources" />
-    <Compile Include="Commands\RunSharpReport.cs" />
+    <Compile Include="Commands\ViewCommands.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Commands" />

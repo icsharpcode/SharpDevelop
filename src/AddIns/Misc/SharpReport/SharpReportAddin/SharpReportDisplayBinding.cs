@@ -42,6 +42,8 @@ namespace SharpReportAddin {
 						cmd.Run();
 						view.FileName = view.DesignerControl.ReportModel.ReportSettings.FileName;
 						view.UpdateView(true);
+						view.UpdateFieldsExplorer();
+						view.Selected();
 						return view;
 					} catch (SharpReportException) {
 						if (view != null) {
@@ -58,7 +60,11 @@ namespace SharpReportAddin {
 				return null;
 			}
 			
-	
+		/// <summary>
+		/// We allways have to check for an installed printer
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns></returns>
 		public virtual bool CanCreateContentForLanguage(string languageName) {
 			// .addin file already does the language name check
 			return GlobalValues.IsValidPrinter();
@@ -70,6 +76,9 @@ namespace SharpReportAddin {
 				SharpReportView view = new SharpReportView();
 				try {
 					view.Load (fileName);
+					view.UpdateView (false);
+					view.UpdateFieldsExplorer();
+					view.Selected();
 					return view;
 				} catch (Exception) {
 					return new SharpReportView();
@@ -78,7 +87,11 @@ namespace SharpReportAddin {
 				return null;
 			}
 		}
-		
+		/// <summary>
+		/// We allways have to check for an installed printer
+		/// </summary>
+		/// <param name="fileName"></param>
+		/// <returns></returns>
 		public virtual bool CanCreateContentForFile(string fileName) {
 			// .addin file already does the language name check
 			return GlobalValues.IsValidPrinter();

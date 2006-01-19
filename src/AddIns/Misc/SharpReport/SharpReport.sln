@@ -1,5 +1,5 @@
 ﻿Microsoft Visual Studio Solution File, Format Version 9.00
-# SharpDevelop 2.0.0.1001
+# SharpDevelop 2.0.0.1004
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpReportCore", "SharpReportCore\SharpReportCore.csproj", "{4B2239FF-8FD6-431D-9D22-1B8049BA6917}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SharpReport", "SharpReport\SharpReport.csproj", "{F5563727-8309-4AC3-BACA-EB28EFD8A1D0}"

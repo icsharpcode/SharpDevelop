@@ -70,6 +70,7 @@ namespace SharpReportAddin {
 		/// Clear the selected Section
 		/// </summary>
 		public void ClearNodeSection () {
+			System.Console.WriteLine("ClearNodeSection");
 			if (this.SelectedNode is SectionTreeNode) {
 				if (this.SelectedNode.Nodes.Count > 0) {
 					this.SelectedNode.Nodes.Clear();
@@ -82,6 +83,7 @@ namespace SharpReportAddin {
 		/// Remove the selected Node from Sorting or Grouping Collection
 		/// </summary>
 		public void ClearSelectedNode() {
+			System.Console.WriteLine("ClearSelectedNode");
 			if (this.SelectedNode != null) {
 				TreeNode parent = this.SelectedNode.Parent;
 				this.SelectedNode.Remove();
@@ -146,7 +148,7 @@ namespace SharpReportAddin {
 		
 		
 		void TreeViewDragDrop (object sender,DragEventArgs e) {
-
+			System.Console.WriteLine("DragDrop");
 			if(e.Data.GetDataPresent("SharpReportAddin.ColumnsTreeNode", false)){
 				
 				Point pt = ((TreeView)sender).PointToClient(new Point(e.X, e.Y));
@@ -224,9 +226,11 @@ namespace SharpReportAddin {
 		#endregion
 		
 		private void NotifyReportView() {
-			if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is SharpReportView) {
-				System.Console.WriteLine("\tNotify View");
-				WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.IsDirty = true;
+			if (this.isFilled) {
+				if (WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent is SharpReportView) {
+					System.Console.WriteLine("NotifyReportView");
+					WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent.IsDirty = true;
+				}
 			}
 		}
 		
@@ -255,16 +259,12 @@ namespace SharpReportAddin {
 		
 		#endregion
 		
-		void ActivatePad (IWorkbenchLayout layout,PadDescriptor pad) {	
-		}
-		
 		
 		#region Build TreeControl
 		
 		private void UpdateSorting () {
+			this.reportSettings.SortColumnCollection.Clear();
 			if (this.nodeSorting.Nodes.Count > 0) {
-				this.reportSettings.SortColumnCollection.Clear();
-				
 				SortColumn sc;
 				AbstractColumn af;
 				for (int i = 0;i < this.nodeSorting.Nodes.Count ;i++ ) {
@@ -279,24 +279,19 @@ namespace SharpReportAddin {
 						                     cn.SortDirection,
 						                     typeof(System.String));
 					}
-					
 					reportSettings.SortColumnCollection.Add(sc);
 				}
 			}
 		}
 		
 		
-		
-		
 		private void UpdateGrouping () {
+			reportSettings.GroupColumnsCollection.Clear();
 			if (this.nodeGrouping.Nodes.Count > 0) {
-				reportSettings.GroupColumnsCollection.Clear();
 				GroupColumn gc;
-				
 				for (int i = 0;i < this.nodeGrouping.Nodes.Count ;i++ ) {
 					ColumnsTreeNode cn = (ColumnsTreeNode)this.nodeGrouping.Nodes[i];
 					gc = new GroupColumn (cn.Text,i,cn.SortDirection);
-					
 					reportSettings.GroupColumnsCollection.Add(gc);
 				}
 			}
@@ -332,7 +327,7 @@ namespace SharpReportAddin {
 					this.nodeAvailableFields.Nodes.Add(n);
 				}
 			} catch (Exception) {
-				
+				throw;
 			}
 		}
 			

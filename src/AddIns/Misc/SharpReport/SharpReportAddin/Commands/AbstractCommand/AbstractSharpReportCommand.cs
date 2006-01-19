@@ -29,9 +29,13 @@ namespace SharpReportAddin.Commands {
 		/// </summary>
 		/// 
 		protected AbstractSharpReportCommand() : base() {
-			view = (SharpReportView)WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent;
-			if (view == null) {
-				throw new NullReferenceException ("AbstractSharpCommand : No view available");
+			try {
+				view = (SharpReportView)WorkbenchSingleton.Workbench.ActiveWorkbenchWindow.ViewContent;
+				if (view == null) {
+					throw new NullReferenceException ("AbstractSharpCommand : No view available");
+				}
+			} catch (Exception) {
+				throw;
 			}
 		}
 		

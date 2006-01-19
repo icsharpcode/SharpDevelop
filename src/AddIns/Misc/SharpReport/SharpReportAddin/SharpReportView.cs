@@ -85,26 +85,7 @@ namespace SharpReportAddin{
 			}
 		}
 		
-		///<summary>
-		/// We have to tell the FieldsdsExplorer that we have loaded or created a new report
-		/// </summary>
-		/// 
-		private void SetFieldsExplorer() {
-			try {
-				Type type = typeof(FieldsExplorer);
-				SharpReportAddin.FieldsExplorer fe = (SharpReportAddin.FieldsExplorer)WorkbenchSingleton.Workbench.GetPad(type).PadContent;
-				
-				if (fe != null) {
-					this.designerControl.ReportModel.ReportSettings.AvailableFieldsCollection = reportManager.AvailableFieldsCollection;
-					fe.Fill(this.designerControl.ReportModel.ReportSettings);
-				} else {
-					MessageService.ShowError ("SharpReportView:SetFieldExplorer Unable to create FieldsExplorer");
-				}
-				
-			} catch (Exception e) {
-				MessageService.ShowError (e);
-			}
-		}
+		
 		#endregion
 		
 	
@@ -340,19 +321,24 @@ namespace SharpReportAddin{
 		
 		//Something was dropped on the designer
 		private void OnItemDragDrop (object sender,ItemDragDropEventArgs e) {
+			System.Console.WriteLine("View:DragDrop");
 			base.IsDirty = true;
-			this.SetFieldsExplorer();
+			SharpReportAddin.Commands.SetFieldsExplorer uf = new SharpReportAddin.Commands.SetFieldsExplorer();
+			uf.Run();
 		}
 		
 		public void OnPropertyChanged (object sender,
 		                               System.ComponentModel.PropertyChangedEventArgs e) {
+			System.Console.WriteLine("View:PorpChange");
 			base.IsDirty = true;
 		}
 		
 		private void OnSettingsChanged (object sender,EventArgs e) {
+			System.Console.WriteLine("View.SettingsChange");
 			base.IsDirty = true;
 		}
 		private void OnModelFileNameChanged (object sender,EventArgs e) {
+			System.Console.WriteLine("View:filenamechange");
 			base.FileName = designerControl.ReportModel.ReportSettings.FileName;
 			base.IsDirty = true;
 			this.OnFileNameChanged(e);
@@ -385,10 +371,7 @@ namespace SharpReportAddin{
 		/// <summary>
 		/// Show's Report in PreviewControl
 		/// </summary>
-		
-	
 		public void OnPreviewClick () {
-
 			reportManager.NoData -= new SharpReportEventHandler (OnNoDataForReport);
 			reportManager.NoData += new SharpReportEventHandler (OnNoDataForReport);
 		
@@ -406,15 +389,35 @@ namespace SharpReportAddin{
 		/// </summary>
 		/// <param name="setViewDirty">If true, set the DirtyFlag and Fire the PropertyChanged Event</param>
 		public void UpdateView(bool setViewDirty) {
+			System.Console.WriteLine("UpdateView with {0}",setViewDirty);
 			this.tabControl.SelectedIndex = 0;
 			this.OnTabPageChanged(this,EventArgs.Empty);
 			SetOnPropertyChangedEvents();
-			this.SetFieldsExplorer();
 			if (setViewDirty) {
 				this.OnPropertyChanged (this,new System.ComponentModel.PropertyChangedEventArgs("Fired from UpdateView"));
 			}
 		}
-
+		
+		///<summary>
+		/// We have to tell the FieldsdsExplorer that we have loaded or created a new report
+		/// </summary>
+		/// 
+		public void UpdateFieldsExplorer() {
+			try {
+				Type type = typeof(FieldsExplorer);
+				SharpReportAddin.FieldsExplorer fe = (SharpReportAddin.FieldsExplorer)WorkbenchSingleton.Workbench.GetPad(type).PadContent;
+				
+				if (fe != null) {
+					this.designerControl.ReportModel.ReportSettings.AvailableFieldsCollection = reportManager.AvailableFieldsCollection;
+					fe.Fill(designerControl.ReportModel.ReportSettings);
+				} else {
+					MessageService.ShowError ("SharpReportView:SetFieldExplorer Unable to create FieldsExplorer");
+				}
+				
+			} catch (Exception e) {
+				MessageService.ShowError (e);
+			}
+		}
 		
 		#endregion
 		
@@ -479,6 +482,17 @@ namespace SharpReportAddin{
 			}
 		}
 		
+		public override void Deselected(){
+			base.Deselected();
+			System.Console.WriteLine("Deselected");
+		}
+		
+		public override void Selected(){
+			base.Selected();
+			System.Console.WriteLine("Selected");
+		}
+		
+		
 		public override void Save() {
 			this.Save (designerControl.ReportModel.ReportSettings.FileName);
 		}
@@ -507,7 +521,6 @@ namespace SharpReportAddin{
 				designerControl.ReportControl.ObjectSelected += new SelectedEventHandler (OnObjectSelected);
 				PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
 				PropertyPad.Grid.Refresh();
-				UpdateView(false);
 			} catch (Exception e) {
 				MessageService.ShowError(e.Message);
 				throw ;
