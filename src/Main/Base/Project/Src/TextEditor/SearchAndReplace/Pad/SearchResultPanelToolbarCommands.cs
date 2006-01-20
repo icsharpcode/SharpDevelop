@@ -55,6 +55,12 @@ namespace SearchAndReplace
 		void SwitchSearchResults(object sender, EventArgs e)
 		{
 			SearchAllFinishedEventArgs args = (SearchAllFinishedEventArgs)((ToolStripItem)sender).Tag;
+
+			// "bubble" this saved search to the top of the list			
+			SearchReplaceInFilesManager.LastSearches.Remove(args);
+			SearchReplaceInFilesManager.LastSearches.Insert(0, args);
+			UpdateLastSearches(null, args);
+			
 			PadDescriptor searchResultPanel = WorkbenchSingleton.Workbench.GetPad(typeof(SearchResultPanel));
 			if (searchResultPanel != null) {
 				searchResultPanel.BringPadToFront();

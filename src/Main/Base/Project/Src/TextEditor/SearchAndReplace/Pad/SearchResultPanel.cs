@@ -33,7 +33,7 @@ namespace SearchAndReplace
 	{
 		Flat,
 		PerFile,
-		//Structural // TODO: what is this intended for?
+		//Structural // TODO: SearchAndReplace - develop Structural view
 	}
 	
 	public class SearchResultPanel : AbstractPadContent, IOwnerState

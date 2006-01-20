@@ -120,12 +120,12 @@ namespace SearchAndReplace
 			
 		static void OnSearchAllFinished(SearchAllFinishedEventArgs e)
 		{
-			lastSearches.Add(e);
+			lastSearches.Insert(0, e);
 			if (SearchAllFinished != null) {
 				SearchAllFinished(null, e);
 			}
 		}
-		
+				
 		public static event SearchAllFinishedEventHandler SearchAllFinished;
 	}
 }
