@@ -144,7 +144,7 @@ namespace ICSharpCode.TextEditor.Util
 										printWord = word.Word;
 									}
 									
-									rtf.Append(printWord.Replace("{", "\\{").Replace("}", "\\}"));
+									rtf.Append(printWord.Replace(@"\", @"\\").Replace("{", "\\{").Replace("}", "\\}"));
 								}
 								offset += word.Length;
 								break;
