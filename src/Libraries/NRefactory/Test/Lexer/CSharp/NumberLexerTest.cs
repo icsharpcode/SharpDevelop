@@ -114,5 +114,12 @@ namespace ICSharpCode.NRefactory.Tests.Lexer.CSharp
 			CheckToken("1.1e-2m", 1.1e-2m);
 			CheckToken("2.0e-5m", 2.0e-5m);
 		}
+		
+		[Test]
+		public void TestString()
+		{
+			CheckToken(@"@""-->""""<--""", @"-->""<--");
+			CheckToken(@"""-->\""<--""", "-->\"<--");
+		}
 	}
 }

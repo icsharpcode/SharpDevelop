@@ -391,8 +391,7 @@ namespace ICSharpCode.NRefactory.Parser.CSharp
 					originalValue.Append("\"\"");
 					sb.Append('"');
 					ReaderRead();
-				}
-				if (HandleLineEnd(ch)) {
+				} else if (HandleLineEnd(ch)) {
 					sb.Append("\r\n");
 					originalValue.Append("\r\n");
 				} else {
