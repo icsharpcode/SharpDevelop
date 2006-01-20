@@ -112,9 +112,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RedrawContent()
 		{
-			name.Text = "Name";
-			val.Text  = "Value";
-			type.Text = "Type";
+			name.Text = ResourceService.GetString("Global.Name");
+			val.Text  = ResourceService.GetString("Dialog.HighlightingEditor.Properties.Value");
+			type.Text = ResourceService.GetString("ResourceEditor.ResourceEdit.TypeColumn");
 		}
 
 		private void localVarList_BeforeExpand(object sender, TreeListViewCancelEventArgs e)

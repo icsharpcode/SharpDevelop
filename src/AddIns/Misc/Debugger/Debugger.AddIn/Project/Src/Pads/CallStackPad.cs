@@ -38,9 +38,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public CallStackPad()// : base("${res:MainWindow.Windows.Debug.CallStack}", null)
 		{
-			InitializeComponents();	
-		}		
-				
+			InitializeComponents();
+		}
+		
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
@@ -82,8 +82,8 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RedrawContent()
 		{
-			name.Text        = "Name";
-			language.Text    = "Language";
+			name.Text     = ResourceService.GetString("Global.Name");
+			language.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.Language");
 		}
 		
 		public bool ShowArgumentNames {
@@ -115,7 +115,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		ContextMenuStrip CreateContextMenuStrip()
 		{
-			ContextMenuStrip menu = new ContextMenuStrip();			
+			ContextMenuStrip menu = new ContextMenuStrip();
 			menu.Opening += FillContextMenuStrip;
 			return menu;
 		}
@@ -127,33 +127,33 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			ToolStripMenuItem argNamesItem;
 			argNamesItem = new ToolStripMenuItem();
-			argNamesItem.Text = "Show argument names";
-			argNamesItem.Checked = ShowArgumentNames;	
+			argNamesItem.Text = "${res:MainWindow.Windows.Debug.CallStack.ShowArgumentNames}";
+			argNamesItem.Checked = ShowArgumentNames;
 			argNamesItem.Click +=
 				delegate {
-					ShowArgumentNames = !ShowArgumentNames;
-					RefreshList();
-				};
+				ShowArgumentNames = !ShowArgumentNames;
+				RefreshList();
+			};
 			
 			ToolStripMenuItem argValuesItem;
 			argValuesItem = new ToolStripMenuItem();
-			argValuesItem.Text = "Show argument values";
-			argValuesItem.Checked = ShowArgumentValues;	
+			argValuesItem.Text = "${res:MainWindow.Windows.Debug.CallStack.ShowArgumentValues}";
+			argValuesItem.Checked = ShowArgumentValues;
 			argValuesItem.Click +=
 				delegate {
-					ShowArgumentValues = !ShowArgumentValues;
-					RefreshList();
-				};
+				ShowArgumentValues = !ShowArgumentValues;
+				RefreshList();
+			};
 			
 			ToolStripMenuItem extMethodsItem;
 			extMethodsItem = new ToolStripMenuItem();
-			extMethodsItem.Text = "Show external methods";
-			extMethodsItem.Checked = ShowExternalMethods;	
+			extMethodsItem.Text = "${res:MainWindow.Windows.Debug.CallStack.ShowExternalMethods}";
+			extMethodsItem.Checked = ShowExternalMethods;
 			extMethodsItem.Click +=
 				delegate {
-					ShowExternalMethods = !ShowExternalMethods;
-					RefreshList();
-				};
+				ShowExternalMethods = !ShowExternalMethods;
+				RefreshList();
+			};
 			
 			menu.Items.AddRange(new ToolStripItem[] {
 			                    	argNamesItem,
@@ -189,7 +189,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			RefreshList();
 		}
-			
+		
 		public void RefreshList()
 		{
 			bool showArgumentNames = ShowArgumentNames;

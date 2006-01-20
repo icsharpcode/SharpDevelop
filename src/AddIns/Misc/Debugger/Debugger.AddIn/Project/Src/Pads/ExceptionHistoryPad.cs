@@ -38,9 +38,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public ExceptionHistoryPad()
 		{
-			InitializeComponents();	
-		}		
-				
+			InitializeComponents();
+		}
+		
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
@@ -81,9 +81,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RedrawContent()
 		{
-			time.Text        = "Time";
-			exception.Text   = "Exception";
-			location.Text    = "Location";
+			time.Text      = ResourceService.GetString("MainWindow.Windows.Debug.ExceptionHistory.Time");
+			exception.Text = ResourceService.GetString("MainWindow.Windows.Debug.ExceptionHistory.Exception");
+			location.Text  = ResourceService.GetString("AddIns.HtmlHelp2.Location");
 		}
 		
 		void ExceptionHistoryListItemActivate(object sender, EventArgs e)
@@ -98,7 +98,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			IWorkbenchWindow window = FileService.GetOpenFile(nextStatement.SourceFullFilename);
 			if (window != null) {
 				IViewContent content = window.ViewContent;
-			
+				
 				if (content is IPositionable) {
 					((IPositionable)content).JumpTo((int)nextStatement.StartLine - 1, (int)nextStatement.StartColumn - 1);
 				}
@@ -120,12 +120,12 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			RefreshList();
 		}
-			
+		
 		public void RefreshList()
 		{
 			exceptionHistoryList.BeginUpdate();
 			exceptionHistoryList.Items.Clear();
-		
+			
 			foreach(Debugger.Exception exception in debugger.ExceptionHistory) {
 				string location;
 				if (exception.Location != null) {
@@ -141,9 +141,9 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					item.ForeColor = Color.Red;
 				}
 				if (exception.ExceptionType == ExceptionType.DEBUG_EXCEPTION_FIRST_CHANCE ||
-					exception.ExceptionType == ExceptionType.DEBUG_EXCEPTION_USER_FIRST_CHANCE) {
+				    exception.ExceptionType == ExceptionType.DEBUG_EXCEPTION_USER_FIRST_CHANCE) {
 					item.ForeColor = Color.Blue;
-				}				
+				}
 				exceptionHistoryList.Items.Add(item);
 			}
 

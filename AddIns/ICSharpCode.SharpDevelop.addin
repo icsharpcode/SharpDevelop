@@ -871,15 +871,15 @@
 						<ToolbarItem id = "SteppingSeparator" type = "Separator"  />
 						<ToolbarItem id      = "Step over"
 						             icon    = "Icons.16x16.Debug.StepOver"
-						             tooltip = "Step over"
+						             tooltip = "${res:XML.MainMenu.DebugMenu.StepOver.Description}"
 						             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepDebuggingCommand"/>
 						<ToolbarItem id      = "Step into"
 						             icon    = "Icons.16x16.Debug.StepInto"
-						             tooltip = "Step into"
+						             tooltip = "${res:XML.MainMenu.DebugMenu.StepInto}"
 						             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepIntoDebuggingCommand"/>
 						<ToolbarItem id      = "Step out"
 						             icon    = "Icons.16x16.Debug.StepOut"
-						             tooltip = "Step out"
+						             tooltip = "${res:XML.MainMenu.DebugMenu.StepOut}"
 						             class   = "ICSharpCode.SharpDevelop.Project.Commands.StepOutDebuggingCommand"/>
 					</Condition>
 				</Condition>

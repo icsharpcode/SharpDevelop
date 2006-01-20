@@ -45,7 +45,8 @@ namespace SearchAndReplace
 						break;
 				}
 				
-				Get<Button>("findNext").Click += new EventHandler(FindNextButtonClicked);
+				ControlDictionary["findNextButton"].Click     += FindNextButtonClicked;
+				ControlDictionary["lookInBrowseButton"].Click += LookInBrowseButtonClicked;
 				SetOptions();
 				RightToLeftConverter.ReConvertRecursive(this);
 				ResumeLayout(false);
@@ -54,6 +55,15 @@ namespace SearchAndReplace
 		
 		public SearchAndReplacePanel()
 		{
+		}
+		
+		void LookInBrowseButtonClicked(object sender, EventArgs e)
+		{
+			FolderDialog dlg = new FolderDialog();
+			if (dlg.DisplayDialog("${res:Dialog.NewProject.SearchReplace.LookIn.SelectDirectory}") == DialogResult.OK) {
+				Get<ComboBox>("lookIn").SelectedIndex = customDirectoryIndex;
+				Get<ComboBox>("lookIn").Text = dlg.Path;
+			}
 		}
 		
 		void FindNextButtonClicked(object sender, EventArgs e)
@@ -103,6 +113,8 @@ namespace SearchAndReplace
 				SearchOptions.DocumentIteratorType = (DocumentIteratorType)Get<ComboBox>("lookIn").SelectedIndex;
 			}
 		}
+		
+		const int customDirectoryIndex = 5;
 		
 		void SetOptions()
 		{
@@ -163,7 +175,7 @@ namespace SearchAndReplace
 		
 		void LookInSelectedIndexChanged(object sender, EventArgs e)
 		{
-			if (Get<ComboBox>("lookIn").SelectedIndex == 5) {
+			if (Get<ComboBox>("lookIn").SelectedIndex == customDirectoryIndex) {
 				Get<ComboBox>("lookIn").DropDownStyle = ComboBoxStyle.DropDown;
 				Get<CheckBox>("includeSubFolder").Enabled = true;
 				Get<ComboBox>("fileTypes").Enabled = true;

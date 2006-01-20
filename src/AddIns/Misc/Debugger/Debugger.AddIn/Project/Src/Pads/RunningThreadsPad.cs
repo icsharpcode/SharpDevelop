@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		{
 			InitializeComponents();
 		}
-			
+		
 		void InitializeComponents()
 		{
 			debugger = (WindowsDebugger)DebuggerService.CurrentDebugger;
@@ -90,16 +90,16 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 		
 		public override void RedrawContent()
 		{
-			id.Text          = "ID";
-			name.Text        = "Name";
-			location.Text    = "Location";
-			priority.Text    = "Priority";
-			breaked.Text     = "Frozen";
+			id.Text       = ResourceService.GetString("Global.ID");
+			name.Text     = ResourceService.GetString("Global.Name");
+			location.Text = ResourceService.GetString("AddIns.HtmlHelp2.Location");
+			priority.Text = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority");
+			breaked.Text  = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Frozen");
 		}
 		
 		ContextMenuStrip CreateContextMenuStrip()
 		{
-			ContextMenuStrip menu = new ContextMenuStrip();			
+			ContextMenuStrip menu = new ContextMenuStrip();
 			menu.Opening += FillContextMenuStrip;
 			return menu;
 		}
@@ -120,26 +120,26 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			ToolStripMenuItem freezeItem;
 			freezeItem = new ToolStripMenuItem();
-			freezeItem.Text = "Freeze";
+			freezeItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.Threads.Freeze");
 			freezeItem.Checked = (item.Tag as Thread).Suspended;
 			freezeItem.Click +=
 				delegate {
-					ListView.SelectedListViewItemCollection selItems = runningThreadsList.SelectedItems;
-					if (selItems.Count == 0) {
-						return;
-					}
-					bool suspended = (selItems[0].Tag as Thread).Suspended;
-					
-					if (!debuggerCore.IsPaused) {
-						MessageBox.Show("You can not freeze or thaw thread while the debugger is running.", "Thread freeze");
-						return;
-					}
-					
-					foreach(ListViewItem i in selItems) {
-						(i.Tag as Thread).Suspended = !suspended;
-					}
-					RefreshList();
-				};
+				ListView.SelectedListViewItemCollection selItems = runningThreadsList.SelectedItems;
+				if (selItems.Count == 0) {
+					return;
+				}
+				bool suspended = (selItems[0].Tag as Thread).Suspended;
+				
+				if (!debuggerCore.IsPaused) {
+					MessageBox.Show("You can not freeze or thaw thread while the debugger is running.", "Thread freeze");
+					return;
+				}
+				
+				foreach(ListViewItem i in selItems) {
+					(i.Tag as Thread).Suspended = !suspended;
+				}
+				RefreshList();
+			};
 			
 			menu.Items.AddRange(new ToolStripItem[] {
 			                    	freezeItem,
@@ -211,12 +211,31 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 					} else {
 						item.SubItems.Add("N/A");
 					}
-					item.SubItems.Add(thread.Priority.ToString());
-					item.SubItems.Add(thread.Suspended.ToString());
-                    return;
+					switch (thread.Priority) {
+						case System.Threading.ThreadPriority.Highest:
+							item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Highest"));
+							break;
+						case System.Threading.ThreadPriority.AboveNormal:
+							item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.AboveNormal"));
+							break;
+						case System.Threading.ThreadPriority.Normal:
+							item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Normal"));
+							break;
+						case System.Threading.ThreadPriority.BelowNormal:
+							item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.BelowNormal"));
+							break;
+						case System.Threading.ThreadPriority.Lowest:
+							item.SubItems.Add(ResourceService.GetString("MainWindow.Windows.Debug.Threads.Priority.Lowest"));
+							break;
+						default:
+							item.SubItems.Add(thread.Priority.ToString());
+							break;
+					}
+					item.SubItems.Add(StringParser.Parse(thread.Suspended ? "${res:Global.Yes}" : "${res:Global.No}"));
+					return;
 				}
-            }
-            AddThread(thread);
+			}
+			AddThread(thread);
 		}
 		
 		void RemoveThread(Thread thread)
