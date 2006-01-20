@@ -109,6 +109,22 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void IfStatement()
+		{
+			TestStatement("if (a) { m1(); } else { m2(); }");
+			
+			TestStatement("if (a) m1(); else m2(); ");
+			
+			TestStatement("if (a) {\n" +
+			              "\tm1();\n" +
+			              "} else if (b) {\n" +
+			              "\tm2();\n" +
+			              "} else {\n" +
+			              "\tm3();\n" +
+			              "}");
+		}
+		
+		[Test]
 		public void Assignment()
 		{
 			TestExpression("a = b");

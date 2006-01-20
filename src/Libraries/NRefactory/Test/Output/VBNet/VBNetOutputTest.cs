@@ -109,6 +109,18 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		}
 		
 		[Test]
+		public void IfStatement()
+		{
+			TestStatement("If a Then\n" +
+			              "\tm1()\n" +
+			              "ElseIf b Then\n" +
+			              "\tm2()\n" +
+			              "Else\n" +
+			              "\tm3()\n" +
+			              "End If");
+		}
+		
+		[Test]
 		public void Assignment()
 		{
 			TestExpression("a = b");

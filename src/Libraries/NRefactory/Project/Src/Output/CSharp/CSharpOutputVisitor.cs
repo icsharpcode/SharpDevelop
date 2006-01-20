@@ -1017,15 +1017,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
 			nodeTracker.TrackedVisit(ifElseStatement.Condition, data);
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			if (ifElseStatement.TrueStatement.Count > 1) {
-				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-			}
-			foreach (Statement stmt in ifElseStatement.TrueStatement) {
-				nodeTracker.TrackedVisit(stmt, data);
-			}
-			if (ifElseStatement.TrueStatement.Count > 1) {
-				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
-			}
+			
+			PrintIfSection(ifElseStatement.TrueStatement);
 			
 			foreach (ElseIfSection elseIfSection in ifElseStatement.ElseIfSections) {
 				nodeTracker.TrackedVisit(elseIfSection, data);
@@ -1034,18 +1027,29 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			if (ifElseStatement.HasElseStatements) {
 				outputFormatter.Indent();
 				outputFormatter.PrintToken(Tokens.Else);
-				if (ifElseStatement.FalseStatement.Count > 1) {
-					outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
-				}
-				foreach (Statement stmt in ifElseStatement.FalseStatement) {
-					nodeTracker.TrackedVisit(stmt, data);
-				}
-				if (ifElseStatement.FalseStatement.Count > 1) {
-					outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
-				}
+				PrintIfSection(ifElseStatement.FalseStatement);
 			}
 			
 			return null;
+		}
+		
+		void PrintIfSection(List<Statement> statements)
+		{
+			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
+				outputFormatter.Space();
+			}
+			if (statements.Count != 1) {
+				outputFormatter.PrintToken(Tokens.OpenCurlyBrace);
+			}
+			foreach (Statement stmt in statements) {
+				nodeTracker.TrackedVisit(stmt, null);
+			}
+			if (statements.Count != 1) {
+				outputFormatter.PrintToken(Tokens.CloseCurlyBrace);
+			}
+			if (statements.Count != 1 || !(statements[0] is BlockStatement)) {
+				outputFormatter.Space();
+			}
 		}
 		
 		public object Visit(ElseIfSection elseIfSection, object data)

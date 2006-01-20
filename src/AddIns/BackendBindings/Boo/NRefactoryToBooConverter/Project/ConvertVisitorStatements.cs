@@ -400,17 +400,25 @@ namespace NRefactoryToBooConverter
 		public object Visit(IfElseStatement ifElseStatement, object data)
 		{
 			B.IfStatement ifs = new B.IfStatement(GetLexicalInfo(ifElseStatement));
+			B.IfStatement outerIf = ifs;
 			ifs.EndSourceLocation = GetLocation(ifElseStatement.EndLocation);
 			ifs.Condition = ConvertExpression(ifElseStatement.Condition);
 			ifs.TrueBlock = ConvertBlock(ifElseStatement.TrueStatement);
 			if (ifElseStatement.HasElseIfSections) {
-				// TODO: implement elseif
-				AddError(ifElseStatement, "ElseIfSections are not supported (because Daniel was lazy)");
+				foreach (ElseIfSection sec in ifElseStatement.ElseIfSections) {
+					B.IfStatement elif = new B.IfStatement(GetLexicalInfo(sec));
+					elif.EndSourceLocation = GetLocation(sec.EndLocation);
+					elif.Condition = ConvertExpression(sec.Condition);
+					elif.TrueBlock = ConvertBlock(sec.EmbeddedStatement);
+					ifs.FalseBlock = new B.Block();
+					ifs.FalseBlock.Add(elif);
+					ifs = elif;
+				}
 			}
 			if (ifElseStatement.HasElseStatements) {
 				ifs.FalseBlock = ConvertBlock(ifElseStatement.FalseStatement);
 			}
-			return ifs;
+			return outerIf;
 		}
 		
 		public object Visit(ElseIfSection elseIfSection, object data)

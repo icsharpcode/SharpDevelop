@@ -1860,63 +1860,72 @@ EmbeddedStatement<out Statement statement>
 	statement = null;
 .)
 =
-	Block<out statement>
+  Block<out statement>
 	/*--- empty statement: */
-	| ";"                       (. statement = new EmptyStatement(); .)
+  | ";"                       (. statement = new EmptyStatement(); .)
 	/*--- checked / unchecked statement: */
-	| IF (UnCheckedAndLBrace()) (. Statement block; bool isChecked = true; .)
+  | IF (UnCheckedAndLBrace()) (. Statement block; bool isChecked = true; .)
 	("checked" | "unchecked"    (. isChecked = false;.) )
 	Block<out block>            (. statement = isChecked ? (Statement)new CheckedStatement(block) : (Statement)new UncheckedStatement(block); .)
 	/*--- selection statements (if, switch): */
-	| "if"                      (. Statement elseStatement = null; .)
+  | "if"                      (. Statement elseStatement = null; .)
 	"(" Expr<out expr> ")"
 	EmbeddedStatement<out embeddedStatement>
 	[ "else" EmbeddedStatement<out elseStatement> ]
-	                            (. statement = elseStatement != null ? (Statement)new IfElseStatement(expr, embeddedStatement, elseStatement) :  (Statement)new IfElseStatement(expr, embeddedStatement); .)
-	| "switch" (. List<SwitchSection> switchSections = new List<SwitchSection>(); SwitchSection switchSection; .)
+	(. statement = elseStatement != null ? new IfElseStatement(expr, embeddedStatement, elseStatement) : new IfElseStatement(expr, embeddedStatement); .)
+	(. if (elseStatement is IfElseStatement && (elseStatement as IfElseStatement).TrueStatement.Count == 1) {
+		/* else if-section (otherwise we would have a BlockStatment) */
+		(statement as IfElseStatement).ElseIfSections.Add(
+		             new ElseIfSection((elseStatement as IfElseStatement).Condition,
+		                               (elseStatement as IfElseStatement).TrueStatement[0]));
+		(statement as IfElseStatement).ElseIfSections.AddRange((elseStatement as IfElseStatement).ElseIfSections);
+		(statement as IfElseStatement).FalseStatement = (elseStatement as IfElseStatement).FalseStatement;
+	} .)
+  | "switch" (. List<SwitchSection> switchSections = new List<SwitchSection>(); SwitchSection switchSection; .)
 	  "(" Expr<out expr> ")"
 	  "{" { SwitchSection<out switchSection> (. switchSections.Add(switchSection); .) } 
 	  "}"  (. statement = new SwitchStatement(expr, switchSections); .)
 	/*--- iteration statements (while, do, for, foreach): */
-	| "while" "(" Expr<out expr> ")"
+  | "while" "(" Expr<out expr> ")"
 	
 	EmbeddedStatement<out embeddedStatement> (. statement = new DoLoopStatement(expr, embeddedStatement, ConditionType.While, ConditionPosition.Start);.)
-	| "do" EmbeddedStatement<out embeddedStatement> "while"
+  | "do" EmbeddedStatement<out embeddedStatement> "while"
 	"(" Expr<out expr> ")" ";"  (. statement = new DoLoopStatement(expr, embeddedStatement, ConditionType.While, ConditionPosition.End); .)
-	| "for" (. List<Statement> initializer = null; List<Statement> iterator = null; .)
+  | "for" (. List<Statement> initializer = null; List<Statement> iterator = null; .)
 	  "(" [ ForInitializer<out initializer> ] ";"
 	  [ Expr<out expr> ] ";"
 	  [ ForIterator<out iterator> ] ")"
 	  EmbeddedStatement<out embeddedStatement> (. statement = new ForStatement(initializer, expr, iterator, embeddedStatement); .)
-	| "foreach" "(" Type<out type> ident     (. string varName = t.val; Point start = t.Location;.)
+  | "foreach" "(" Type<out type> ident     (. string varName = t.val; Point start = t.Location;.)
 	"in" Expr<out expr> ")"
 	EmbeddedStatement<out embeddedStatement> (.  statement = new ForeachStatement(type, varName , expr, embeddedStatement); 
 	                                             statement.EndLocation = t.EndLocation;
 	                                         .)
 	/*--- jump statements (break, contine, goto, return, throw): */
-	| "break" ";"               (. statement = new BreakStatement(); .)
-	| "continue" ";"            (. statement = new ContinueStatement(); .)
-	| GotoStatement<out statement>
-	| IF (IsYieldStatement()) ident ( "return" Expr<out expr> (. statement = new YieldStatement(new ReturnStatement(expr)); .)
+  | "break" ";"               (. statement = new BreakStatement(); .)
+  | "continue" ";"            (. statement = new ContinueStatement(); .)
+  | GotoStatement<out statement>
+  | IF (IsYieldStatement()) ident ( "return" Expr<out expr> (. statement = new YieldStatement(new ReturnStatement(expr)); .)
 	                                | "break" (. statement = new YieldStatement(new BreakStatement()); .) ) ";"
-	| "return" [ Expr<out expr> ] ";"    (. statement = new ReturnStatement(expr); .)
-	| "throw" [ Expr<out expr> ] ";"     (. statement = new ThrowStatement(expr); .)
-	/*--- expression statement: */
-	| StatementExpr<out statement> ";"
-	/*--- try statement: */
-	| TryStatement<out statement>
-	/*--- lock satement: */
-	| "lock" "(" Expr<out expr> ")"
-	EmbeddedStatement<out embeddedStatement> (. statement = new LockStatement(expr, embeddedStatement); .)
-	/*--- using statement: */
-	| (.Statement resourceAcquisitionStmt = null; .)
+  | "return" [ Expr<out expr> ] ";"    (. statement = new ReturnStatement(expr); .)
+  | "throw" [ Expr<out expr> ] ";"     (. statement = new ThrowStatement(expr); .)
+  
+  /*--- expression statement: */
+  | StatementExpr<out statement> ";"
+  /*--- try statement: */
+  | TryStatement<out statement>
+  /*--- lock satement: */
+  | "lock" "(" Expr<out expr> ")"
+  EmbeddedStatement<out embeddedStatement> (. statement = new LockStatement(expr, embeddedStatement); .)
+  /*--- using statement: */
+  | (.Statement resourceAcquisitionStmt = null; .)
 	"using" "("
 	ResourceAcquisition<out resourceAcquisitionStmt> ")"
 	EmbeddedStatement<out embeddedStatement> (. statement = new UsingStatement(resourceAcquisitionStmt, embeddedStatement); .)
-	/*--- unsafe statement: */
-	| "unsafe" Block<out embeddedStatement>  (. statement = new UnsafeStatement(embeddedStatement); .)
-	/*--- fixed statement: */
-	| "fixed"
+  /*--- unsafe statement: */
+  | "unsafe" Block<out embeddedStatement>  (. statement = new UnsafeStatement(embeddedStatement); .)
+  /*--- fixed statement: */
+  | "fixed"
 	"(" Type<out type>     (. if (type.PointerNestingLevel == 0) Error("can only fix pointer types");
 	                          List<VariableDeclaration> pointerDeclarators = new List<VariableDeclaration>(1);
 	                       .)

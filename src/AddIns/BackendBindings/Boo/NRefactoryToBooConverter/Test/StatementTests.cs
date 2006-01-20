@@ -26,6 +26,13 @@ namespace NRefactoryToBooConverter.Tests
 		}
 		
 		[Test]
+		public void IfElseIfElseStatement()
+		{
+			TestStatement("if (a) C(); else if (b) D(); else E();",
+			              "if a:\n\tC()\nelse:\n\tif b:\n\t\tD()\n\telse:\n\t\tE()");
+		}
+		
+		[Test]
 		public void ForLoop()
 		{
 			TestStatement("for (int i = 0; i < 10; i++) {}", "for i in range(0, 10):\n\tpass");
