@@ -216,7 +216,6 @@ namespace ICSharpCode.FormsDesigner
 				LoggingService.Debug("Added assembly reference to project: " + reference.Include);
 			}
 			ProjectService.AddProjectItem(project, reference);
-			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 			project.Save();
 		}
 		
@@ -246,7 +245,6 @@ namespace ICSharpCode.FormsDesigner
 			LoggingService.Warn("Adding project reference to project.");
 			ProjectReferenceProjectItem reference = new ProjectReferenceProjectItem(project, referenceTo);
 			ProjectService.AddProjectItem(project, reference);
-			ProjectBrowserPad.Instance.ProjectBrowserControl.RefreshView();
 			project.Save();
 		}
 	}
