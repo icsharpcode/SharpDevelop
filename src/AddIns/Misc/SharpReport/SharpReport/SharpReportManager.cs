@@ -116,6 +116,7 @@ namespace SharpReport{
 			if (base.ConnectionObject == null) {
 				base.ConnectionObject = this.BuildConnectionObject(model.ReportSettings);
 			}
+			System.Console.WriteLine("BuildRenderer ok");
 			return  base.AbstractRenderer(model);
 		}
 		

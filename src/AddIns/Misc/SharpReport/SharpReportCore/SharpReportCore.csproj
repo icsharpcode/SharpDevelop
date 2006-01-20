@@ -129,6 +129,7 @@
     <Compile Include="BaseClasses\SortColumn.cs" />
     <Compile Include="BaseClasses\SqlParameter.cs" />
     <Compile Include="Collections\Collections.cs" />
+    <Compile Include="DataManager\SqlQueryChecker.cs" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="BaseItems" />

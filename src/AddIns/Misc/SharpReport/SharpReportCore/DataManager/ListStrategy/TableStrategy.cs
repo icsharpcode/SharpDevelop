@@ -75,7 +75,7 @@ namespace SharpReportCore {
 					for (int criteriaIndex = 0; criteriaIndex < col.Count; criteriaIndex++){
 						AbstractColumn c = (AbstractColumn)col[criteriaIndex];
 						object value = rowItem[c.ColumnName];
-//	System.Console.WriteLine("\t\t{0}",value.ToString());
+
 						if (value != null && value != DBNull.Value){
 							if (!(value is IComparable)){
 								throw new InvalidOperationException("ReportDataSource:BuildSortArray - > This type doesn't support IComparable." + value.ToString());
@@ -275,7 +275,7 @@ namespace SharpReportCore {
 			base.Sort();
 			ArrayList sortedArray = new ArrayList();
 			try {
-				if (base.ReportSettings.SortColumnCollection != null) {
+				if ((base.ReportSettings.SortColumnCollection != null)) {
 					if (base.ReportSettings.SortColumnCollection.Count > 0) {
 						SortColumn sc = (SortColumn)base.ReportSettings.SortColumnCollection[0];
 	
@@ -306,9 +306,8 @@ namespace SharpReportCore {
 				BaseDataItem baseDataItem = item as BaseDataItem;
 				if (baseDataItem != null) {
 					baseDataItem.DbValue = row[baseDataItem.ColumnName].ToString();
-				} 
+				}
 			} catch (Exception ) {
-				throw;
 			}
 		}
 			

@@ -81,7 +81,7 @@ namespace SharpReportCore {
 		}
 		
 		
-		void GrapSqlParameters (ReportSettings settings) {
+		void GrapSqlParameters (ReportSettings settings) {                              
 			if (settings.SqlParametersCollection != null && settings.SqlParametersCollection.Count > 0) {
 				if (this.ParametersRequest != null) {
 					SharpReportParametersEventArgs e = new SharpReportParametersEventArgs();
@@ -90,6 +90,7 @@ namespace SharpReportCore {
 					ParametersRequest (this,e);
 				}
 			} 
+			
 		}
 		
 		
@@ -133,7 +134,10 @@ namespace SharpReportCore {
 		}
 
 		private DataManager SetupDataContainer (ReportSettings settings) {
+			System.Console.WriteLine("SetupContainer");
 			
+			
+			System.Console.WriteLine("after check");
 			if (settings.ReportType == GlobalEnums.enmReportType.DataReport) {
 				if (settings.CommandText != null) {
 					try {
@@ -503,10 +507,17 @@ namespace SharpReportCore {
 			if (fileName.Length == 0) {
 				throw new ArgumentException("ModelfromFile:FileName");
 			}
-			ReportModel model = new ReportModel();
-			SharpReportCore.LoadModelVisitor modelVisitor = new SharpReportCore.LoadModelVisitor(model,fileName);
-			model.Accept (modelVisitor);
-			return model;
+			
+			try {
+				ReportModel model = new ReportModel();
+				SharpReportCore.LoadModelVisitor modelVisitor = new SharpReportCore.LoadModelVisitor(model,fileName);
+				model.Accept (modelVisitor);
+				return model;
+			} catch (Exception) {
+				
+			}
+			return null;
+			
 		}
 
 		

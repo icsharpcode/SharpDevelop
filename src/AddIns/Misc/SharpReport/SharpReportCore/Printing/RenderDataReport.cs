@@ -64,7 +64,6 @@ namespace SharpReportCore {
 			base.ReportBegin (sender,e);
 			//allways reset the dataManager before printing
 			if (this.dataManager != null) {
-				System.Console.WriteLine("\tReset DataManager");
 				this.dataManager.Reset();
 			}
 		}

@@ -59,7 +59,7 @@ namespace ReportGenerator{
 		
 		#region Fill data
 		private void FillGrid() {
-			
+			System.Console.WriteLine("FillGrid");
 			this.grdQuery.DataSource = null;
 			this.txtSqlString.Text = null;
 			ReportModel model = generator.FillReportModel(new ReportModel());
@@ -68,10 +68,11 @@ namespace ReportGenerator{
 			this.txtSqlString.Text = model.ReportSettings.CommandText;
 			
 			if (model.ReportSettings.CommandType == CommandType.StoredProcedure){
-
+				
 				if (generator.SharpQueryProcedure == null) {
 					throw new NullReferenceException("ResultPanel:FillGrid");
 				}
+				System.Console.WriteLine("\tStoredProcedure {0}",generator.SharpQueryProcedure.Name);
 				SharpQueryProcedure proc = generator.SharpQueryProcedure;
 				
 				// we have some Parameters, to get them we use the Dialogfrom SharpQuery
@@ -88,7 +89,9 @@ namespace ReportGenerator{
 						}
 					}
 //					SharpQueryParameterCollection parameters = new SharpQueryParameterCollection(tmp);
+					System.Console.WriteLine("\t\t # of params {0}",parameters.Count);
 					if (parameters != null && parameters.Count > 0){
+						
 						using (SQLParameterInput inputform = new SQLParameterInput(parameters)){
 							if ( inputform.ShowDialog() != DialogResult.OK ){
 								parametersClass = null;
@@ -103,6 +106,7 @@ namespace ReportGenerator{
 					}
 					
 				} else {
+					System.Console.WriteLine("\t\t No params");
 					try {
 						// Stored Proc without Parameters
 						resultDataSet = (DataSet) proc.Execute(0,proc.GetSchemaParameters());
@@ -115,6 +119,7 @@ namespace ReportGenerator{
 			
 			// from here we create from an SqlString like "Select...."
 			if (model.ReportSettings.CommandType == CommandType.Text){
+				System.Console.WriteLine("\tCommandText");
 				try {
 					generator.Parameters = null;
 					this.txtSqlString.Text = model.ReportSettings.CommandText;

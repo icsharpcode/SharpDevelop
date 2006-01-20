@@ -130,12 +130,21 @@ namespace SharpReportCore {
 			if (settings == null) {
 				throw new ArgumentNullException("DataManager:ReportSettings");
 			}
+			
+			try {
+				SqlQueryCkecker check = new SqlQueryCkecker();
+				check.Check(settings.CommandText);
+			} catch (Exception e) {
+				MessageBox.Show (e.Message);
+				throw e;
+			}
+			
 			this.reportSettings = settings;
 		}
 		
 		
 		void CheckAndSetSource(object source) {
-			
+			System.Console.WriteLine("CheckAndSetSource");
 			if (source == null) {
 				throw new MissingDataSourceException();
 				
@@ -146,7 +155,7 @@ namespace SharpReportCore {
 				if (source is DataTable) {
 					DataTable tbl = source as DataTable;
 					this.dataMember = tbl.TableName;
-
+					System.Console.WriteLine("\t Source = table with {0}",tbl.Rows.Count);
 					return;
 				}
 				
@@ -188,6 +197,7 @@ namespace SharpReportCore {
 		}
 		
 		void CheckConnection (ConnectionObject connectionObject) {
+			System.Console.WriteLine("CheckOnnection");
 			try {
 				
 				connection = connectionObject.Connection;
@@ -202,6 +212,7 @@ namespace SharpReportCore {
 		}
 		
 		private DataSet FillDataSet() {
+			System.Console.WriteLine("FillDataSet");
 			try {
 				if (this.connection.State == ConnectionState.Closed) {
 					this.connection.Open();
@@ -218,7 +229,7 @@ namespace SharpReportCore {
 				DataSet ds = new DataSet();
 				
 				adapter.Fill (ds);
-				
+				System.Console.WriteLine("\t {0} in Table",ds.Tables[0].Rows.Count);
 				return ds;
 			} catch (Exception) {
 				throw;
@@ -391,15 +402,13 @@ namespace SharpReportCore {
 			this.dataViewStrategy.CurrentRow ++;
 		}
 		
-		/*
-		public void Reset() {
-			this.dataViewStrategy.Reset();
-		}
-		*/
 		
 		public void FetchData(ReportItemCollection collection) {
-			foreach (IItemRenderer item in collection) {
-				this.dataViewStrategy.Fill(item);
+			try {
+				foreach (IItemRenderer item in collection) {
+					this.dataViewStrategy.Fill(item);
+				}
+			} catch (Exception) {	
 			}
 		}
 		
