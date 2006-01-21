@@ -63,7 +63,7 @@ namespace ICSharpCode.Core
 			{
 				IViewContent newContent = binding.CreateContentForFile(fileName);
 				if (newContent != null) {
-					DisplayBindingService.AttachSubWindows(newContent);
+					DisplayBindingService.AttachSubWindows(newContent, false);
 					WorkbenchSingleton.Workbench.ShowView(newContent);
 				}
 			}
@@ -108,7 +108,7 @@ namespace ICSharpCode.Core
 				}
 				newContent.UntitledName = defaultName;
 				newContent.IsDirty      = false;
-				DisplayBindingService.AttachSubWindows(newContent);
+				DisplayBindingService.AttachSubWindows(newContent, false);
 				
 				WorkbenchSingleton.Workbench.ShowView(newContent);
 				return newContent.WorkbenchWindow;

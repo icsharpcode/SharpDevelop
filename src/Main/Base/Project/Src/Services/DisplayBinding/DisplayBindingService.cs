@@ -64,12 +64,15 @@ namespace ICSharpCode.Core
 			return null;
 		}
 		
-		public static void AttachSubWindows(IViewContent viewContent)
+		public static void AttachSubWindows(IViewContent viewContent, bool isReattaching)
 		{
 			foreach (DisplayBindingDescriptor binding in bindings) {
 				if (binding.IsSecondary && binding.CanAttachToFile(viewContent.FileName ?? viewContent.UntitledName)) {
 					ISecondaryDisplayBinding displayBinding = binding.SecondaryBinding;
-					if (displayBinding != null && displayBinding.CanAttachTo(viewContent)) {
+					if (displayBinding != null
+					    && (!isReattaching || displayBinding.ReattachWhenParserServiceIsReady)
+					    && displayBinding.CanAttachTo(viewContent))
+					{
 						ISecondaryViewContent[] subViewContents = binding.SecondaryBinding.CreateSecondaryViewContent(viewContent);
 						if (subViewContents != null) {
 							viewContent.SecondaryViewContents.AddRange(subViewContents);
