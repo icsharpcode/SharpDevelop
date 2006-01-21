@@ -115,7 +115,6 @@ namespace SearchAndReplace
 				results.Add(result);
 			}
 			FinishSearchInFiles(results);
-			OnSearchAllFinished(new SearchAllFinishedEventArgs(SearchOptions.FindPattern, results));
 		}
 			
 		static void OnSearchAllFinished(SearchAllFinishedEventArgs e)
