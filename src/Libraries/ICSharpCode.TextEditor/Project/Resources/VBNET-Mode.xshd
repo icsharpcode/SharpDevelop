@@ -170,7 +170,6 @@
 				<Key word = "Continue" />
 				<Key word = "Dim" />
 				<Key word = "ReDim" />
-				<Key word = "Preserve" />
 				<Key word = "Erase" />
 				<Key word = "On" />
 				<Key word = "Error" />
@@ -188,7 +187,6 @@
 				<Key word = "Module" />
 				<Key word = "Structure" />
 				<Key word = "Enum" />
-				<Key word = "" />
 			</KeyWords>
 			
 			<KeyWords name = "TypeLevelConstructs" bold="false" italic="false" color="Blue">
@@ -212,7 +210,6 @@
 				<Key word = "Do" />
 				<Key word = "While" />
 				<Key word = "Loop" />
-				<Key word = "Until" />
 				<Key word = "Wend" />
 				
 				<Key word = "Try" />
@@ -235,6 +232,14 @@
 				
 				<Key word = "Select" />
 				<Key word = "Case" />
+			</KeyWords>
+			
+			<KeyWords name = "ContextKeywords" bold="false" italic="false" color="Blue">
+				<Key word = "Ansi" />
+				<Key word = "Auto" />
+				<Key word = "Unicode" />
+				<Key word = "Preserve" />
+				<Key word = "Until" />
 			</KeyWords>
 		</RuleSet>
 		

@@ -71,6 +71,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			Dock = DockStyle.Fill;
 			
 			throwExceptionButton.Location = new System.Drawing.Point(8, sponsorLabel.Bounds.Bottom + 1);
+			throwExceptionButton.AutoSize = true;
 			throwExceptionButton.Text = ResourceService.GetString("Dialog.About.ThrowExceptionButton");
 			throwExceptionButton.Size = new System.Drawing.Size(96, 24);
 			throwExceptionButton.Click += new EventHandler(ThrowExceptionButtonClick);

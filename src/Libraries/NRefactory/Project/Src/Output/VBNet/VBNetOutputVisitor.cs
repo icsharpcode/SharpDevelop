@@ -189,12 +189,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			Debug.Assert(attributeSection.Attributes != null);
-			for (int j = 0; j < attributeSection.Attributes.Count; ++j) {
-				nodeTracker.TrackedVisit((INode)attributeSection.Attributes[j], data);
-				if (j + 1 < attributeSection.Attributes.Count) {
-					outputFormatter.PrintToken(Tokens.Comma);
-				}
-			}
+			AppendCommaSeparatedList(attributeSection.Attributes);
+			
 			if ("assembly".Equals(attributeSection.AttributeTarget, StringComparison.InvariantCultureIgnoreCase)
 			    || "module".Equals(attributeSection.AttributeTarget, StringComparison.InvariantCultureIgnoreCase)) {
 				outputFormatter.PrintText(">");
@@ -209,18 +205,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		{
 			outputFormatter.PrintIdentifier(attribute.Name);
 			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			this.AppendCommaSeparatedList(attribute.PositionalArguments);
+			AppendCommaSeparatedList(attribute.PositionalArguments);
 			
 			if (attribute.NamedArguments != null && attribute.NamedArguments.Count > 0) {
 				if (attribute.PositionalArguments.Count > 0) {
 					outputFormatter.PrintToken(Tokens.Comma);
+					outputFormatter.Space();
 				}
-				for (int i = 0; i < attribute.NamedArguments.Count; ++i) {
-					nodeTracker.TrackedVisit((INode)attribute.NamedArguments[i], data);
-					if (i + 1 < attribute.NamedArguments.Count) {
-						outputFormatter.PrintToken(Tokens.Comma);
-					}
-				}
+				AppendCommaSeparatedList(attribute.NamedArguments);
 			}
 			outputFormatter.PrintToken(Tokens.CloseParenthesis);
 			return null;
@@ -1103,17 +1095,14 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			
 			switch (declareDeclaration.Charset) {
 				case CharsetModifier.Auto:
-					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.Auto);
 					outputFormatter.Space();
 					break;
 				case CharsetModifier.Unicode:
-					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.Unicode);
 					outputFormatter.Space();
 					break;
 				case CharsetModifier.ANSI:
-					outputFormatter.Space();
 					outputFormatter.PrintToken(Tokens.Ansi);
 					outputFormatter.Space();
 					break;
@@ -1131,13 +1120,13 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 			outputFormatter.Space();
 			outputFormatter.PrintToken(Tokens.Lib);
 			outputFormatter.Space();
-			outputFormatter.PrintText('"' + declareDeclaration.Library + '"');
+			outputFormatter.PrintText('"' + ConvertString(declareDeclaration.Library) + '"');
 			outputFormatter.Space();
 			
 			if (declareDeclaration.Alias.Length > 0) {
 				outputFormatter.PrintToken(Tokens.Alias);
 				outputFormatter.Space();
-				outputFormatter.PrintText('"' + declareDeclaration.Alias + '"');
+				outputFormatter.PrintText('"' + ConvertString(declareDeclaration.Alias) + '"');
 				outputFormatter.Space();
 			}
 			
@@ -2556,9 +2545,8 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 				outputFormatter.Space();
 			}
 			
-			// TODO : Extern
 			if ((modifier & Modifier.Extern) == Modifier.Extern) {
-				errors.Error(-1, -1, String.Format("'Extern' modifier not convertable"));
+				// not required in VB
 			}
 			
 			// TODO : Volatile

@@ -13,6 +13,7 @@ using System.Diagnostics;
 
 using ICSharpCode.NRefactory.Parser;
 using ICSharpCode.NRefactory.Parser.AST;
+using Attribute = ICSharpCode.NRefactory.Parser.AST.Attribute;
 
 namespace ICSharpCode.NRefactory.Parser
 {
@@ -145,6 +146,124 @@ namespace ICSharpCode.NRefactory.Parser
 				}
 			}
 			return base.Visit(assignmentExpression, data);
+		}
+		
+		public override object Visit(MethodDeclaration methodDeclaration, object data)
+		{
+			if ((methodDeclaration.Modifier & Modifier.Visibility) == 0)
+				methodDeclaration.Modifier |= Modifier.Private;
+			
+			base.Visit(methodDeclaration, data);
+			
+			const Modifier externStatic = Modifier.Static | Modifier.Extern;
+			if ((methodDeclaration.Modifier & externStatic) == externStatic
+			    && methodDeclaration.Body.IsNull)
+			{
+				foreach (AttributeSection sec in methodDeclaration.Attributes) {
+					foreach (Attribute att in sec.Attributes) {
+						if ("DllImport".Equals(att.Name, StringComparison.InvariantCultureIgnoreCase)) {
+							if (ConvertPInvoke(methodDeclaration, att)) {
+								sec.Attributes.Remove(att);
+								break;
+							}
+						}
+					}
+					if (sec.Attributes.Count == 0) {
+						methodDeclaration.Attributes.Remove(sec);
+						break;
+					}
+				}
+			}
+			return null;
+		}
+		
+		bool ConvertPInvoke(MethodDeclaration method, ICSharpCode.NRefactory.Parser.AST.Attribute att)
+		{
+			if (att.PositionalArguments.Count != 1)
+				return false;
+			PrimitiveExpression pe = att.PositionalArguments[0] as PrimitiveExpression;
+			if (pe == null || !(pe.Value is string))
+				return false;
+			string libraryName = (string)pe.Value;
+			string alias = null;
+			bool setLastError = false;
+			bool exactSpelling = false;
+			CharsetModifier charSet = CharsetModifier.Auto;
+			foreach (NamedArgumentExpression arg in att.NamedArguments) {
+				switch (arg.Name) {
+					case "SetLastError":
+						pe = arg.Expression as PrimitiveExpression;
+						if (pe != null && pe.Value is bool)
+							setLastError = (bool)pe.Value;
+						else
+							return false;
+						break;
+					case "ExactSpelling":
+						pe = arg.Expression as PrimitiveExpression;
+						if (pe != null && pe.Value is bool)
+							exactSpelling = (bool)pe.Value;
+						else
+							return false;
+						break;
+					case "CharSet":
+						{
+							FieldReferenceExpression fre = arg.Expression as FieldReferenceExpression;
+							if (fre == null || !(fre.TargetObject is IdentifierExpression))
+								return false;
+							if ((fre.TargetObject as IdentifierExpression).Identifier != "CharSet")
+								return false;
+							switch (fre.FieldName) {
+								case "Unicode":
+									charSet = CharsetModifier.Unicode;
+									break;
+								case "Auto":
+									charSet = CharsetModifier.Auto;
+									break;
+								case "Ansi":
+									charSet = CharsetModifier.ANSI;
+									break;
+								default:
+									return false;
+							}
+						}
+						break;
+					case "EntryPoint":
+						pe = arg.Expression as PrimitiveExpression;
+						if (pe != null)
+							alias = pe.Value as string;
+						break;
+					default:
+						return false;
+				}
+			}
+			if (setLastError && exactSpelling) {
+				// Only P/Invokes with SetLastError and ExactSpelling can be converted to a DeclareDeclaration
+				const Modifier removeModifiers = Modifier.Static | Modifier.Extern;
+				DeclareDeclaration decl = new DeclareDeclaration(method.Name, method.Modifier &~ removeModifiers,
+				                                                 method.TypeReference,
+				                                                 method.Parameters,
+				                                                 method.Attributes,
+				                                                 libraryName, alias, charSet);
+				ReplaceCurrentNode(decl);
+				base.Visit(decl, null);
+				return true;
+			} else {
+				return false;
+			}
+		}
+		
+		public override object Visit(PropertyDeclaration propertyDeclaration, object data)
+		{
+			if ((propertyDeclaration.Modifier & Modifier.Visibility) == 0)
+				propertyDeclaration.Modifier |= Modifier.Private;
+			return base.Visit(propertyDeclaration, data);
+		}
+		
+		public override object Visit(ConstructorDeclaration constructorDeclaration, object data)
+		{
+			if ((constructorDeclaration.Modifier & Modifier.Visibility) == 0)
+				constructorDeclaration.Modifier |= Modifier.Private;
+			return base.Visit(constructorDeclaration, data);
 		}
 	}
 }

@@ -49,18 +49,19 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		/// <summary>Only for VB properties.</summary>
 		WriteOnly  = 0x400000, // VB specific
 		
-		Classes                         = New | Public | Protected | Internal | Private | Abstract | Sealed | Partial | Static,
-		VBModules						= Private | Public | Protected | Internal,
-		VBStructures					= Private | Public | Protected | Internal | New,
-		VBEnums						    = Private | Public | Protected | Internal | New,
-		VBInterfacs					    = Private | Public | Protected | Internal | New,
-		VBDelegates					    = Private | Public | Protected | Internal | New,
-		VBMethods						= Private | Public | Protected | Internal | New | Static | Virtual | Sealed | Abstract | Override | Overloads,
-		VBExternalMethods				= Private | Public | Protected | Internal | New | Overloads,
-		VBEvents						= Private | Public | Protected | Internal | New | Overloads,
+		Visibility						= Private | Public | Protected | Internal,
+		Classes							= New | Visibility | Abstract | Sealed | Partial | Static,
+		VBModules						= Visibility,
+		VBStructures					= Visibility | New,
+		VBEnums						    = Visibility | New,
+		VBInterfacs					    = Visibility | New,
+		VBDelegates					    = Visibility | New,
+		VBMethods						= Visibility | New | Static | Virtual | Sealed | Abstract | Override | Overloads,
+		VBExternalMethods				= Visibility | New | Overloads,
+		VBEvents						= Visibility | New | Overloads,
 		VBProperties					= VBMethods | Default | ReadOnly | WriteOnly,
-		VBCustomEvents					= Private | Public | Protected | Internal | New | Overloads,
-		VBOperators						= Public  | Static | Overloads | New | Widening | Narrowing,
+		VBCustomEvents					= Visibility | New | Overloads,
+		VBOperators						= Public | Static | Overloads | New | Widening | Narrowing,
 		
 		
 		// this is not documented in the spec
@@ -69,15 +70,15 @@ namespace ICSharpCode.NRefactory.Parser.AST
 		VBInterfaceProperties			= New | Overloads | ReadOnly | WriteOnly | Default,
 		VBInterfaceEnums				= New,
 		
-		Fields                          = New | Public | Protected | Internal | Private | Static   | ReadOnly | Volatile,
-		PropertysEventsMethods          = New | Public | Protected | Internal | Private | Static   | Virtual  | Sealed   | Override | Abstract | Extern,
-		Indexers                        = New | Public | Protected | Internal | Private | Virtual  | Sealed   | Override | Abstract | Extern,
+		Fields                          = New | Visibility | Static   | ReadOnly | Volatile,
+		PropertysEventsMethods          = New | Visibility | Static   | Virtual  | Sealed   | Override | Abstract | Extern,
+		Indexers                        = New | Visibility | Virtual  | Sealed   | Override | Abstract | Extern,
 		Operators                       = Public | Static | Extern,
-		Constants                       = New | Public | Protected | Internal | Private,
-		StructsInterfacesEnumsDelegates = New | Public | Protected | Internal | Private | Partial,
+		Constants                       = New | Visibility,
+		StructsInterfacesEnumsDelegates = New | Visibility | Partial,
 		StaticConstructors              = Extern | Static | Unsafe,
 		Destructors                     = Extern | Unsafe,
-		Constructors                    = Public | Protected | Internal | Private | Extern,
+		Constructors                    = Visibility | Extern,
 	}
 	
 	public enum ClassType

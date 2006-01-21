@@ -301,8 +301,12 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (string.Equals(file, activeTaskName, StringComparison.InvariantCultureIgnoreCase)) {
 					file = "";
 				} else {
+					bool isShortFileName = file == Path.GetFileNameWithoutExtension(file);
 					if (projectFiles.Count > 0) {
 						file = Path.Combine(Path.GetDirectoryName(projectFiles.Peek()), file);
+					}
+					if (isShortFileName && !File.Exists(file)) {
+						file = "";
 					}
 				}
 				CompilerError error = new CompilerError(file, lineNumber, columnNumber, code, message);

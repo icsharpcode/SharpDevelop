@@ -32,7 +32,17 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		
 		public void TestMember(string input, string expectedOutput)
 		{
+			TestMember(input, expectedOutput, null);
+		}
+		
+		public void TestMember(string input, string expectedOutput, string expectedAutomaticImport)
+		{
 			StringBuilder b = new StringBuilder();
+			if (expectedAutomaticImport != null) {
+				b.Append("using ");
+				b.Append(expectedAutomaticImport);
+				b.AppendLine(";");
+			}
 			b.AppendLine("class tmp1");
 			b.AppendLine("{");
 			using (StringReader r = new StringReader(expectedOutput)) {
@@ -51,7 +61,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			StringBuilder b = new StringBuilder();
 			b.AppendLine("class tmp1");
 			b.AppendLine("{");
-			b.AppendLine("\tvoid tmp2()");
+			b.AppendLine("\tpublic void tmp2()");
 			b.AppendLine("\t{");
 			using (StringReader r = new StringReader(expectedOutput)) {
 				string line;
@@ -88,6 +98,33 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			TestStatement("RaiseEvent someEvent(Me, EventArgs.Empty)",
 			              "if (someEvent != null) {\n\tsomeEvent(this, EventArgs.Empty);\n}");
+		}
+		
+		[Test]
+		public void StaticMethod()
+		{
+			TestMember("Shared Sub A()\nEnd Sub",
+			           "public static void A()\n{\n}");
+		}
+		
+		[Test]
+		public void PInvoke()
+		{
+			TestMember("Declare Function SendMessage Lib \"user32.dll\" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As UIntPtr, ByVal lParam As IntPtr) As IntPtr",
+			           "[DllImport(\"user32.dll\", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]\n" +
+			           "static extern IntPtr SendMessage(IntPtr hWnd, int Msg, UIntPtr wParam, IntPtr lParam);",
+			           "System.Runtime.InteropServices");
+			
+			TestMember("Declare Unicode Function SendMessage Lib \"user32.dll\" Alias \"SendMessageW\" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As UIntPtr, ByVal lParam As IntPtr) As IntPtr",
+			           "[DllImport(\"user32.dll\", EntryPoint = \"SendMessageW\", CharSet = CharSet.Unicode, SetLastError = true, ExactSpelling = true)]\n" +
+			           "static extern IntPtr SendMessage(IntPtr hWnd, int Msg, UIntPtr wParam, IntPtr lParam);",
+			           "System.Runtime.InteropServices");
+			
+			TestMember("<DllImport(\"user32.dll\", CharSet:=CharSet.Auto)> _\n" +
+			           "Shared Function MessageBox(ByVal hwnd As IntPtr, ByVal t As String, ByVal caption As String, ByVal t2 As UInt32) As Integer\n" +
+			           "End Function",
+			           "[DllImport(\"user32.dll\", CharSet = CharSet.Auto)]\n" +
+			           "public static extern int MessageBox(IntPtr hwnd, string t, string caption, UInt32 t2);");
 		}
 	}
 }

@@ -794,44 +794,7 @@ namespace ICSharpCode.NRefactory.PrettyPrinter
 		
 		public object Visit(DeclareDeclaration declareDeclaration, object data)
 		{
-			VisitAttributes(declareDeclaration.Attributes, data);
-			outputFormatter.Indent();
-			outputFormatter.PrintText(String.Format("[System.Runtime.InteropServices.DllImport({0}", declareDeclaration.Library));
-			if (declareDeclaration.Alias != null && declareDeclaration.Alias.Length >0) {
-				outputFormatter.PrintText(String.Format(", EntryPoint={0}", declareDeclaration.Alias));
-			}
-			
-			switch (declareDeclaration.Charset) {
-				case CharsetModifier.ANSI:
-					outputFormatter.PrintText(", CharSet=System.Runtime.InteropServices.CharSet.Ansi");
-					break;
-				case CharsetModifier.Unicode:
-					outputFormatter.PrintText(", CharSet=System.Runtime.InteropServices.CharSet.Unicode");
-					break;
-				case CharsetModifier.Auto:
-					outputFormatter.PrintText(", CharSet=System.Runtime.InteropServices.CharSet.Auto");
-					break;
-			}
-			
-			outputFormatter.PrintText(")]");
-			outputFormatter.NewLine();
-			outputFormatter.Indent();
-			
-			OutputModifier(declareDeclaration.Modifier);
-			outputFormatter.PrintToken(Tokens.Static);
-			outputFormatter.Space();
-			outputFormatter.PrintToken(Tokens.Extern);
-			outputFormatter.Space();
-			
-			nodeTracker.TrackedVisit(declareDeclaration.TypeReference, data);
-			outputFormatter.Space();
-			outputFormatter.PrintIdentifier(declareDeclaration.Name);
-			
-			outputFormatter.PrintToken(Tokens.OpenParenthesis);
-			AppendCommaSeparatedList(declareDeclaration.Parameters);
-			outputFormatter.PrintToken(Tokens.CloseParenthesis);
-			outputFormatter.PrintToken(Tokens.Semicolon);
-			outputFormatter.NewLine();
+			errors.Error(-1, -1, "DeclareDeclaration is unsupported");
 			return null;
 		}
 		#endregion

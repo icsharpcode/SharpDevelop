@@ -1120,8 +1120,8 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 	(
 			"Sub"
 			Identifier				(. name = t.val; .)
-			"Lib" LiteralString		(. library = t.val.ToString(); .)
-			["Alias" LiteralString	(. alias = t.val.ToString(); .)]
+			"Lib" LiteralString		(. library = t.literalValue.ToString(); .)
+			["Alias" LiteralString	(. alias = t.literalValue.ToString(); .)]
 			[ "("	[ FormalParameterList<p> ] ")" ]
 			EOL
 			(.
@@ -1133,8 +1133,8 @@ StructureMemberDecl<Modifiers m, List<AttributeSection> attributes>
 		|
 			"Function" 
 			Identifier					(. name = t.val; .)
-			"Lib" LiteralString		(. library = t.val; .)
-			["Alias" LiteralString	(. alias = t.val; .)]
+			"Lib" LiteralString		(. library = t.literalValue.ToString(); .)
+			["Alias" LiteralString	(. alias = t.literalValue.ToString(); .)]
 			[ "("	[ FormalParameterList<p> ] ")" ]
 			["As" TypeName<out type> ]
 			EOL

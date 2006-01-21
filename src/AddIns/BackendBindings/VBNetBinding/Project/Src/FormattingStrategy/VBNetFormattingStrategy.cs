@@ -46,9 +46,9 @@ namespace VBNetBinding.FormattingStrategy
 			statements.Add(new VBStatement("\\bstructure \\w+$", "^end structure$", "End Structure", 1));
 			statements.Add(new VBStatement("^while ", "^end while$", "End While", 1));
 			statements.Add(new VBStatement("^select case", "^end select$", "End Select", 2));
-			statements.Add(new VBStatement("(?<!\\bmustoverride )\\bsub \\w+", "^end sub$", "End Sub", 1));
-			statements.Add(new VBStatement("(?<!\\bmustoverride (readonly |writeonly )?)\\bproperty \\w+", "^end property$", "End Property", 1));
-			statements.Add(new VBStatement("(?<!\\bmustoverride )\\bfunction \\w+", "^end function$", "End Function", 1));
+			statements.Add(new VBStatement(@"(?<!\b(mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bsub \w+", @"^end\s+sub$", "End Sub", 1));
+			statements.Add(new VBStatement(@"(?<!\bmustoverride (readonly |writeonly )?)\bproperty \w+", @"^end\s+property$", "End Property", 1));
+			statements.Add(new VBStatement(@"(?<!\b(mustoverride|declare(\s+(unicode|ansi|auto))?)\s+)\bfunction \w+", @"^end\s+function$", "End Function", 1));
 			statements.Add(new VBStatement("\\bfor .*?$", "^next( \\w+)?$", "Next", 1));
 			statements.Add(new VBStatement("^synclock .*?$", "^end synclock$", "End SyncLock", 1));
 			statements.Add(new VBStatement("^get$", "^end get$", "End Get", 1));

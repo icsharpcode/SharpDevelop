@@ -43,7 +43,7 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		public static int DataUsageCacheItemCount {
 			get {
-				return properties.Get("DataUsageCacheItemCount", 200);
+				return properties.Get("DataUsageCacheItemCount", 500);
 			}
 			set {
 				properties.Set("DataUsageCacheItemCount", value);

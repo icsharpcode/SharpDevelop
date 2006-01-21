@@ -129,7 +129,7 @@ namespace NRefactoryToBooConverter
 				r |= B.TypeMemberModifiers.Partial;
 			}
 			if ((m & Modifier.Extern) != 0) {
-				AddError(node, "Extern modifier is not supported");
+				// not necessary in Boo
 			}
 			if ((m & Modifier.Volatile) != 0) {
 				AddError(node, "Volatile modifier is not supported");

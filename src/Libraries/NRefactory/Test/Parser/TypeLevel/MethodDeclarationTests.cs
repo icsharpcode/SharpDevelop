@@ -227,6 +227,7 @@ namespace ICSharpCode.NRefactory.Tests.AST
 			end sub";
 			
 			MethodDeclaration md = ParseUtilVBNet.ParseTypeMember<MethodDeclaration>(program);
+			Assert.AreEqual(Modifier.Public | Modifier.Static, md.Modifier);
 			Assert.AreEqual(2, md.StartLocation.Y, "StartLocation.Y");
 			Assert.AreEqual(2, md.EndLocation.Y, "EndLocation.Y");
 			Assert.AreEqual(2, md.StartLocation.X, "StartLocation.X");

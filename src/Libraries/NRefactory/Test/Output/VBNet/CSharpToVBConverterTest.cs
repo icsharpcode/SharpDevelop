@@ -49,7 +49,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		{
 			StringBuilder b = new StringBuilder();
 			b.AppendLine("Class tmp1");
-			b.AppendLine("\tSub tmp2()");
+			b.AppendLine("\tPrivate Sub tmp2()");
 			using (StringReader r = new StringReader(expectedOutput)) {
 				string line;
 				while ((line = r.ReadLine()) != null) {
@@ -158,7 +158,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void AnonymousMethod()
 		{
 			TestMember("void A() { someEvent += delegate(int argument) { return argument * 2; }; }",
-			           "Sub A()\n" +
+			           "Private Sub A()\n" +
 			           "\tAddHandler someEvent, AddressOf ConvertedAnonymousMethod1\n" +
 			           "End Sub\n" +
 			           "Private Sub ConvertedAnonymousMethod1(ByVal argument As Integer)\n" +
@@ -170,7 +170,7 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 		public void AnonymousMethodInVarDeclaration()
 		{
 			TestMember("void A() { SomeDelegate i = delegate(int argument) { return argument * 2; }; }",
-			           "Sub A()\n" +
+			           "Private Sub A()\n" +
 			           "\tDim i As SomeDelegate = AddressOf ConvertedAnonymousMethod1\n" +
 			           "End Sub\n" +
 			           "Private Sub ConvertedAnonymousMethod1(ByVal argument As Integer)\n" +
@@ -189,6 +189,31 @@ namespace ICSharpCode.NRefactory.Tests.PrettyPrinter
 			              "AddHandler someEvent, AddressOf tmp2");
 			TestStatement("someEvent += new SomeDelegate(this.tmp2);",
 			              "AddHandler someEvent, AddressOf tmp2");
+		}
+		
+		[Test]
+		public void StaticMethod()
+		{
+			TestMember("static void A() {}",
+			           "Private Shared Sub A()\nEnd Sub");
+		}
+		
+		[Test]
+		public void PInvoke()
+		{
+			TestMember("[DllImport(\"user32.dll\", CharSet = CharSet.Auto)]\n" +
+			           "public static extern int MessageBox(IntPtr hwnd, string t, string caption, UInt32 t2);",
+			           "<DllImport(\"user32.dll\", CharSet := CharSet.Auto)> _\n" +
+			           "Public Shared Function MessageBox(ByVal hwnd As IntPtr, ByVal t As String, ByVal caption As String, ByVal t2 As UInt32) As Integer\n" +
+			           "End Function");
+			
+			TestMember("[DllImport(\"user32.dll\", CharSet = CharSet.Ansi, SetLastError = true, ExactSpelling = true)]\n" +
+			           "public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, UIntPtr wParam, IntPtr lParam);",
+			           "Public Declare Ansi Function SendMessage Lib \"user32.dll\" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As UIntPtr, ByVal lParam As IntPtr) As IntPtr");
+			
+			TestMember("[DllImport(\"user32.dll\", SetLastError = true, ExactSpelling = true, EntryPoint = \"SendMessageW\")]\n" +
+			           "public static extern IntPtr SendMessage(IntPtr hWnd, int Msg, UIntPtr wParam, IntPtr lParam);",
+			           "Public Declare Auto Function SendMessage Lib \"user32.dll\" Alias \"SendMessageW\" (ByVal hWnd As IntPtr, ByVal Msg As Integer, ByVal wParam As UIntPtr, ByVal lParam As IntPtr) As IntPtr");
 		}
 	}
 }

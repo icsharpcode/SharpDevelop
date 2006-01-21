@@ -1913,13 +1913,13 @@ out charsetModifer);
 				Expect(3);
 
 #line  1123 "VBNET.ATG" 
-				library = t.val.ToString(); 
+				library = t.literalValue.ToString(); 
 				if (la.kind == 44) {
 					lexer.NextToken();
 					Expect(3);
 
 #line  1124 "VBNET.ATG" 
-					alias = t.val.ToString(); 
+					alias = t.literalValue.ToString(); 
 				}
 				if (la.kind == 24) {
 					lexer.NextToken();
@@ -1948,13 +1948,13 @@ p);
 				Expect(3);
 
 #line  1136 "VBNET.ATG" 
-				library = t.val; 
+				library = t.literalValue.ToString(); 
 				if (la.kind == 44) {
 					lexer.NextToken();
 					Expect(3);
 
 #line  1137 "VBNET.ATG" 
-					alias = t.val; 
+					alias = t.literalValue.ToString(); 
 				}
 				if (la.kind == 24) {
 					lexer.NextToken();

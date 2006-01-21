@@ -250,5 +250,15 @@ namespace NRefactoryToBooConverter.Tests
 		{
 			TestInClass("[LookHere] event EventHandler Closed;", "[LookHere]\nprivate event Closed as EventHandler");
 		}
+		
+		[Test]
+		public void PInvoke()
+		{
+			TestInClass("[DllImport(\"User32.dll\", CharSet = CharSet.Auto)]\n" +
+			            "static extern IntPtr MessageBox(int etc);",
+			            "[DllImport('User32.dll', CharSet: CharSet.Auto)]\n" +
+			            "private static def MessageBox(etc as System.Int32) as IntPtr:\n" +
+			            "\tpass");
+		}
 	}
 }
