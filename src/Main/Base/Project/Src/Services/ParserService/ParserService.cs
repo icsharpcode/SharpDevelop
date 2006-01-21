@@ -132,6 +132,7 @@ namespace ICSharpCode.Core
 			} finally {
 				LoggingService.Info("LoadSolutionProjects thread ended");
 				loadSolutionProjectsThread = null;
+				OnLoadSolutionProjectsThreadEnded(EventArgs.Empty);
 			}
 		}
 		
@@ -609,6 +610,14 @@ namespace ICSharpCode.Core
 			}
 		}
 		
+		static void OnLoadSolutionProjectsThreadEnded(EventArgs e)
+		{
+			if (LoadSolutionProjectsThreadEnded != null) {
+				LoadSolutionProjectsThreadEnded(null, e);
+			}
+		}
+		
 		public static event ParseInformationEventHandler ParseInformationUpdated;
+		public static event EventHandler LoadSolutionProjectsThreadEnded;
 	}
 }

@@ -98,6 +98,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 		protected override void Dispose(bool disposing)
 		{
 			if (disposing) {
+				ParserService.LoadSolutionProjectsThreadEnded -= LoadSolutionProjectsThreadEndedEvent;
 				if (content != null)
 					DetachContent();
 				if (this.TabPageContextMenu != null) {
@@ -126,16 +127,22 @@ namespace ICSharpCode.SharpDevelop.Gui
 			SetTitleEvent(this, EventArgs.Empty);
 			this.TabPageContextMenu  = MenuService.CreateContextMenu(this, contextMenuPath);
 			InitControls();
+			
+			ParserService.LoadSolutionProjectsThreadEnded += LoadSolutionProjectsThreadEndedEvent;
+		}
+		
+		private void CreateViewTabControl()
+		{
+			viewTabControl = new TabControl();
+			viewTabControl.Alignment = TabAlignment.Bottom;
+			viewTabControl.Dock = DockStyle.Fill;
+			viewTabControl.SelectedIndexChanged += new EventHandler(viewTabControlIndexChanged);
 		}
 		
 		internal void InitControls()
 		{
 			if (content.SecondaryViewContents.Count > 0) {
-				viewTabControl		  = new TabControl();
-				viewTabControl.Alignment = TabAlignment.Bottom;
-				viewTabControl.Dock = DockStyle.Fill;
-				viewTabControl.SelectedIndexChanged += new EventHandler(viewTabControlIndexChanged);
-				
+				CreateViewTabControl();
 				AttachSecondaryViewContent(content);
 				foreach (ISecondaryViewContent subContent in content.SecondaryViewContents) {
 					AttachSecondaryViewContent(subContent);
@@ -155,6 +162,41 @@ namespace ICSharpCode.SharpDevelop.Gui
 			viewContent.Control.Dock = DockStyle.Fill;
 			newPage.Controls.Add(viewContent.Control);
 			viewTabControl.TabPages.Add(newPage);
+		}
+		
+		/// <summary>
+		/// Ensures that all possible secondary view contents are attached.
+		/// This is primarily used to add the FormsDesigner view content for files
+		/// containing partial classes after the designer file has been parsed if
+		/// the view content has been created too early on startup.
+		/// </summary>
+		void RefreshSecondaryViewContents()
+		{
+			if (content == null) {
+				return;
+			}
+			int oldSvcCount = content.SecondaryViewContents.Count;
+			DisplayBindingService.AttachSubWindows(content, true);
+			if (content.SecondaryViewContents.Count > oldSvcCount) {
+				LoggingService.Debug("Attaching new secondary view contents to '"+this.Title+"'");
+				if (viewTabControl == null) {
+					// The tab control needs to be created first.
+					Controls.Remove(content.Control);
+					CreateViewTabControl();
+					AttachSecondaryViewContent(content);
+					Controls.Add(viewTabControl);
+				}
+				foreach (ISecondaryViewContent svc in content.SecondaryViewContents) {
+					if (svc.WorkbenchWindow == null) {
+						AttachSecondaryViewContent(svc);
+					}
+				}
+			}
+		}
+		
+		void LoadSolutionProjectsThreadEndedEvent(object sender, EventArgs e)
+		{
+			this.BeginInvoke(new MethodInvoker(this.RefreshSecondaryViewContents));
 		}
 		
 		void LeaveTabPage(object sender, EventArgs e)

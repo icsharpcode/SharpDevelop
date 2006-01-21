@@ -20,6 +20,16 @@ namespace ICSharpCode.FormsDesigner
 {
 	public class FormsDesignerSecondaryDisplayBinding : ISecondaryDisplayBinding
 	{
+		/// <summary>
+		/// When you return true for this property, the CreateSecondaryViewContent method
+		/// is called again after the LoadSolutionProjects thread has finished.
+		/// </summary>
+		public bool ReattachWhenParserServiceIsReady {
+			get {
+				return true;
+			}
+		}
+		
 		public static IMethod GetInitializeComponents(IClass c)
 		{
 			c = c.DefaultReturnType.GetUnderlyingClass();
@@ -99,6 +109,10 @@ namespace ICSharpCode.FormsDesigner
 		
 		public ISecondaryViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
+			if (viewContent.SecondaryViewContents.Exists(delegate(ISecondaryViewContent c) { return c.GetType() == typeof(FormsDesignerViewContent); })) {
+				return new ISecondaryViewContent[0];
+			}
+			
 			string fileExtension = String.Empty;
 			string fileName      = viewContent.IsUntitled ? viewContent.UntitledName : viewContent.FileName;
 			

@@ -40,6 +40,16 @@ namespace ICSharpCode.Svn
 {
 	public class HistoryViewDisplayBinding : ISecondaryDisplayBinding
 	{
+		/// <summary>
+		/// When you return true for this property, the CreateSecondaryViewContent method
+		/// is called again after the LoadSolutionProjects thread has finished.
+		/// </summary>
+		public bool ReattachWhenParserServiceIsReady {
+			get {
+				return false;
+			}
+		}
+		
 		public ICSharpCode.SharpDevelop.Gui.ISecondaryViewContent[] CreateSecondaryViewContent(ICSharpCode.SharpDevelop.Gui.IViewContent viewContent)
 		{
 			return new ICSharpCode.SharpDevelop.Gui.ISecondaryViewContent[] { new HistoryView(viewContent) };

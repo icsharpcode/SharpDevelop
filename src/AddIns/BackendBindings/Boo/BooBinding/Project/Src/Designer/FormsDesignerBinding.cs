@@ -19,6 +19,16 @@ namespace Grunwald.BooBinding.Designer
 {
 	public class FormsDesignerDisplayBinding : ISecondaryDisplayBinding
 	{
+		/// <summary>
+		/// When you return true for this property, the CreateSecondaryViewContent method
+		/// is called again after the LoadSolutionProjects thread has finished.
+		/// </summary>
+		public bool ReattachWhenParserServiceIsReady {
+			get {
+				return true;
+			}
+		}
+		
 		public bool CanAttachTo(IViewContent viewContent)
 		{
 			if (viewContent is ITextEditorControlProvider) {
@@ -38,6 +48,10 @@ namespace Grunwald.BooBinding.Designer
 		
 		public ISecondaryViewContent[] CreateSecondaryViewContent(IViewContent viewContent)
 		{
+			if (viewContent.SecondaryViewContents.Exists(delegate(ISecondaryViewContent c) { return c.GetType() == typeof(FormsDesignerViewContent); })) {
+				return new ISecondaryViewContent[0];
+			}
+			
 			IDesignerLoaderProvider loader = new BooDesignerLoaderProvider(((ITextEditorControlProvider)viewContent).TextEditorControl);
 			IDesignerGenerator generator = new BooDesignerGenerator();
 			return new ISecondaryViewContent[] { new FormsDesignerViewContent(viewContent, loader, generator) };
