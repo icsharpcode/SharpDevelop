@@ -33,12 +33,14 @@ namespace ICSharpCode.SharpDevelop.Project
 		protected string fileName;
 		protected string language;
 		
+		[Browsable(false)]
 		public Dictionary<string, PropertyGroup> Configurations {
 			get {
 				return configurations;
 			}
 		}
 		
+		[Browsable(false)]
 		public Dictionary<string, PropertyGroup> UserConfigurations {
 			get {
 				return userConfigurations;
@@ -192,7 +194,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[Browsable(false)]
+		[ReadOnly(true)]
+		[LocalizedProperty("${res:MainWindow.Windows.Debug.CallStack.Language}")]
 		public string Language {
 			get {
 				return language;
@@ -224,6 +227,8 @@ namespace ICSharpCode.SharpDevelop.Project
 		string activeConfiguration = "Debug";
 		string activePlatform = "AnyCPU";
 		
+		[ReadOnly(true)]
+		[LocalizedProperty("${res:Dialog.ProjectOptions.Platform}")]
 		public string Platform {
 			get {
 				return activePlatform;
@@ -240,6 +245,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[ReadOnly(true)]
+		[LocalizedProperty("${res:Dialog.ProjectOptions.Configuration}")]
 		public string Configuration {
 			get {
 				return activeConfiguration;
@@ -382,6 +389,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 		}
 		
+		[Browsable(false)]
 		public virtual bool IsStartable {
 			get {
 				return false;

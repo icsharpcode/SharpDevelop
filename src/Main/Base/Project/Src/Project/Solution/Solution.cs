@@ -138,6 +138,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string FileName {
 			get {
 				return fileName;
@@ -147,6 +148,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string Directory {
 			get {
 				return Path.GetDirectoryName(fileName);
@@ -189,6 +191,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		SolutionPreferences preferences;
 		
+		[Browsable(false)]
 		public SolutionPreferences Preferences {
 			get {
 				return preferences;

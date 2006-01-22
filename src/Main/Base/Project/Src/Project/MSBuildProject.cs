@@ -6,7 +6,7 @@
 // </file>
 
 using System;
-using System.CodeDom.Compiler;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.IO;
 using System.Globalization;
@@ -350,6 +350,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string StartProgram {
 			get {
 				return GetProperty("StartProgram");
@@ -359,6 +360,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string StartUrl {
 			get {
 				return GetProperty("StartURL");
@@ -368,6 +370,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public StartAction StartAction {
 			get {
 				return GetProperty("StartAction", StartAction.Project);
@@ -377,6 +380,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string StartArguments {
 			get {
 				return GetProperty("StartArguments");
@@ -386,6 +390,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
+		[Browsable(false)]
 		public string StartWorkingDirectory {
 			get {
 				return GetProperty("StartWorkingDirectory");

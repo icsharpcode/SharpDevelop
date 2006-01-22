@@ -515,7 +515,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				FileService.RemoveFile(Directory, true);
 				Project.Save();
 			} else {
-				if (MessageService.AskQuestion("Delete '" + Text + "' and all its contents permanently ?")) {
+				if (MessageService.AskQuestion(GetQuestionText("${res:ProjectComponent.ContextMenu.DeleteWithContents.Question}"))) {
 					FileService.RemoveFile(Directory, true);
 					Project.Save();
 				}

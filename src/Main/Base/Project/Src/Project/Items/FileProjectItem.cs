@@ -13,6 +13,7 @@ using ICSharpCode.SharpDevelop.Gui;
 namespace ICSharpCode.SharpDevelop.Project
 {
 	public enum CopyToOutputDirectory {
+		[Description("test")]
 		Never,
 		Always,
 		PreserveNewest
@@ -51,8 +52,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[LocalizedProperty("Copy to output Directory",
-		                   Description ="Specifies if the file should be copied to the output directory")]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CopyToOutputDirectory}",
+		                   Description = "${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CopyToOutputDirectory.Description}")]
 		public CopyToOutputDirectory CopyToOutputDirectory {
 			get {
 				return base.Properties.Get("CopyToOutputDirectory", CopyToOutputDirectory.Never);
@@ -62,8 +63,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[LocalizedProperty("Custom Tool",
-		                   Description ="Specifies the tool that converts the file to the output.")]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomTool}",
+		                   Description ="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomTool.Description}")]
 		public string CustomTool {
 			get {
 				return base.Properties["Generator"];
@@ -73,8 +74,8 @@ namespace ICSharpCode.SharpDevelop.Project
 			}
 		}
 		
-		[LocalizedProperty("Custom Tool Namespace",
-		                   Description ="Specifies the namespace the custom tool places it's output.")]
+		[LocalizedProperty("${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace}",
+		                   Description ="${res:ICSharpCode.SharpDevelop.Internal.Project.ProjectFile.CustomToolNamespace.Description}")]
 		public string CustomToolNamespace {
 			get {
 				return base.Properties["CustomToolNamespace"];

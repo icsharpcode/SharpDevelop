@@ -182,13 +182,13 @@ namespace ICSharpCode.SharpDevelop.Project
 				ProjectService.SaveSolution();
 			} else {
 				if (Nodes.Count > 0) {
-					if (MessageService.AskQuestion("Delete '" + Text + "' and its dependent files permanently?")) {
+					if (MessageService.AskQuestion(GetQuestionText("${res:ProjectComponent.ContextMenu.DeleteWithDependentFiles.Question}"))) {
 						DeleteChildNodes();
 						FileService.RemoveFile(FileName, false);
 						ProjectService.SaveSolution();
 					}
 				}
-				else if (MessageService.AskQuestion("Delete '" + Text + "' permanently ?")) {
+				else if (MessageService.AskQuestion(GetQuestionText("${res:ProjectComponent.ContextMenu.Delete.Question}"))) {
 					FileService.RemoveFile(FileName, false);
 					ProjectService.SaveSolution();
 				}

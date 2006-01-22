@@ -7,13 +7,14 @@
 
 using System;
 using System.ComponentModel;
+using ICSharpCode.SharpDevelop.Gui;
 
 namespace ICSharpCode.SharpDevelop.Project
 {
 	/// <summary>
 	/// Description of ISolutionFolderContainer.
 	/// </summary>
-	public abstract class AbstractSolutionFolder : ISolutionFolder
+	public abstract class AbstractSolutionFolder : LocalizedObject, ISolutionFolder
 	{
 		ISolutionFolderContainer parent   = null;
 		string                   typeGuid = null;

@@ -85,7 +85,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 				return null;
 			}
-		}		
+		}
 		
 		public AbstractProjectBrowserTreeNode()
 		{
@@ -177,6 +177,11 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			return data;
+		}
+		
+		protected string GetQuestionText(string question)
+		{
+			return StringParser.Parse(question, new string[,] {{"FileName", Text}});
 		}
 	}
 }
