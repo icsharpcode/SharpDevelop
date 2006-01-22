@@ -127,7 +127,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			ToolStripMenuItem argNamesItem;
 			argNamesItem = new ToolStripMenuItem();
-			argNamesItem.Text = "${res:MainWindow.Windows.Debug.CallStack.ShowArgumentNames}";
+			argNamesItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowArgumentNames");
 			argNamesItem.Checked = ShowArgumentNames;
 			argNamesItem.Click +=
 				delegate {
@@ -137,7 +137,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			ToolStripMenuItem argValuesItem;
 			argValuesItem = new ToolStripMenuItem();
-			argValuesItem.Text = "${res:MainWindow.Windows.Debug.CallStack.ShowArgumentValues}";
+			argValuesItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowArgumentValues");
 			argValuesItem.Checked = ShowArgumentValues;
 			argValuesItem.Click +=
 				delegate {
@@ -147,7 +147,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			
 			ToolStripMenuItem extMethodsItem;
 			extMethodsItem = new ToolStripMenuItem();
-			extMethodsItem.Text = "${res:MainWindow.Windows.Debug.CallStack.ShowExternalMethods}";
+			extMethodsItem.Text = ResourceService.GetString("MainWindow.Windows.Debug.CallStack.ShowExternalMethods");
 			extMethodsItem.Checked = ShowExternalMethods;
 			extMethodsItem.Click +=
 				delegate {

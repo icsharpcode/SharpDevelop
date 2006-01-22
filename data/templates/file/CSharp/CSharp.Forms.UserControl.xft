@@ -34,7 +34,7 @@ namespace ${StandardNamespace}
 	/// <summary>
 	/// Description of ${ClassName}.
 	/// </summary>
-	public class ${ClassName} : System.Windows.Forms.UserControl
+	public partial class ${ClassName}
 	{
 		public ${ClassName}()
 		{
@@ -47,8 +47,33 @@ namespace ${StandardNamespace}
 			// TODO: Add constructor code after the InitializeComponent() call.
 			//
 		}
+	}
+}
+]]></File>
+<File name="${Path}/${FileNameWithoutExtension}.Designer.cs" dependentUpon="${FileName}" language="C#"><![CDATA[${StandardHeader.C#}
+namespace ${StandardNamespace}
+{
+	partial class ${ClassName} : System.Windows.Forms.UserControl
+	{
+		/// <summary>
+		/// Designer variable used to keep track of non-visual components.
+		/// </summary>
+		private System.ComponentModel.IContainer components = null;
 		
-		#region Windows Forms Designer generated code
+		/// <summary>
+		/// Disposes resources used by the form.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing) {
+				if (components != null) {
+					components.Dispose();
+				}
+			}
+			base.Dispose(disposing);
+		}
+		
 		/// <summary>
 		/// This method is required for Windows Forms designer support.
 		/// Do not change the method contents inside the source code editor. The Forms designer might
@@ -59,10 +84,9 @@ namespace ${StandardNamespace}
 			// 
 			// ${ClassName}
 			// 
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Name = "${ClassName}";
-			this.Size = new System.Drawing.Size(292, 266);
 		}
-		#endregion
 	}
 }
 ]]></File>

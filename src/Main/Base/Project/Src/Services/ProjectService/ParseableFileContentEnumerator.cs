@@ -74,8 +74,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			if (projectItems.Length > 0) {
 				nextItem = projectItems[0];
 			}
-			Properties textEditorProperties = PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties());
-			defaultEncoding = Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252));
+			defaultEncoding = ParserService.DefaultFileEncoding;
 		}
 		
 		string GetParseableFileContent(IProject project, string fileName)

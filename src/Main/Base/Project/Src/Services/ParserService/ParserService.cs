@@ -514,9 +514,15 @@ namespace ICSharpCode.Core
 			//	return res;
 			
 			// load file
-			Properties textEditorProperties = PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties());
-			Encoding tmp = Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252));
+			Encoding tmp = DefaultFileEncoding;
 			return ICSharpCode.TextEditor.Util.FileReader.ReadFileContent(fileName, ref tmp, tmp);
+		}
+		
+		public static Encoding DefaultFileEncoding {
+			get {
+				Properties textEditorProperties = PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties());
+				return Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252));
+			}
 		}
 		
 		public static ParseInformation GetParseInformation(string fileName)

@@ -16,6 +16,7 @@ using System.ComponentModel;
 using System.Windows.Forms;
 using System.Diagnostics;
 
+using ICSharpCode.SharpDevelop.Internal.Templates;
 using ICSharpCode.Core;
 using ICSharpCode.SharpDevelop.Gui;
 
@@ -181,15 +182,14 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 	public class AddNewItemsToProject : AbstractMenuCommand
 	{
 		
-		FileNode CreateNewFile(DirectoryNode upper, string fileName)
+		FileProjectItem CreateNewFile(DirectoryNode upper, string fileName)
 		{
 			upper.Expanding();
 			
 			FileNode fileNode = new FileNode(fileName, FileNodeStatus.InProject);
 			fileNode.AddTo(upper);
 			fileNode.EnsureVisible();
-			IncludeFileInProject.IncludeFileNode(fileNode);
-			return fileNode;
+			return IncludeFileInProject.IncludeFileNode(fileNode);
 		}
 		
 		public override void Run()
@@ -207,8 +207,17 @@ namespace ICSharpCode.SharpDevelop.Project.Commands
 			
 			using (NewFileDialog nfd = new NewFileDialog(node.Directory)) {
 				if (nfd.ShowDialog(ICSharpCode.SharpDevelop.Gui.WorkbenchSingleton.MainForm) == DialogResult.OK) {
-					foreach (string createdFile in nfd.CreatedFiles) {
-						CreateNewFile(node, createdFile);
+					bool additionalProperties = false;
+					foreach (KeyValuePair<string, PropertyGroup> createdFile in nfd.CreatedFiles) {
+						FileProjectItem item = CreateNewFile(node, createdFile.Key);
+						if (createdFile.Value.PropertyCount > 0) {
+							additionalProperties = true;
+							item.Properties.Merge(createdFile.Value);
+						}
+					}
+					if (additionalProperties) {
+						node.Project.Save();
+						node.RecreateSubNodes();
 					}
 				}
 			}

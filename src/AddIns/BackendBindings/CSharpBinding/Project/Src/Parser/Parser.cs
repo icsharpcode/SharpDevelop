@@ -85,8 +85,7 @@ namespace CSharpBinding.Parser
 		
 		public ICompilationUnit Parse(IProjectContent projectContent, string fileName)
 		{
-			Properties textEditorProperties = ((Properties)PropertyService.Get("ICSharpCode.TextEditor.Document.Document.DefaultDocumentAggregatorProperties", new Properties()));
-			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(fileName, Encoding.GetEncoding(textEditorProperties.Get("Encoding", 1252)))) {
+			using (ICSharpCode.NRefactory.Parser.IParser p = ICSharpCode.NRefactory.Parser.ParserFactory.CreateParser(fileName, ParserService.DefaultFileEncoding)) {
 				return Parse(p, fileName, projectContent);
 			}
 		}

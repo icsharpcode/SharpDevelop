@@ -91,7 +91,7 @@ namespace ICSharpCode.SharpDevelop.Project
 			} else {
 				node = new DirectoryNode(item.FileName.Trim('\\', '/'), status);
 				node.ProjectItem = item;
-			}	
+			}
 			return node;
 		}
 	}
@@ -281,8 +281,9 @@ namespace ICSharpCode.SharpDevelop.Project
 			return false;
 		}
 		
-		void RecreateSubNodes()
+		public void RecreateSubNodes()
 		{
+			invisibleNodes.Clear();
 			if (autoClearNodes) {
 				Nodes.Clear();
 			} else {
@@ -296,6 +297,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				}
 			}
 			Initialize();
+			UpdateVisibility();
 		}
 		
 		protected override void Initialize()

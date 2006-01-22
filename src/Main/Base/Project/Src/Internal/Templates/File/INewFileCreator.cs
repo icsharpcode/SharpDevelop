@@ -13,10 +13,5 @@ using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
-	public interface INewFileCreator
-	{
-		bool IsFilenameAvailable(string fileName);
-		
-		void SaveFile(string filename, string content, string languageName, bool showFile);
-	}
+
 }

@@ -153,7 +153,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		List<ExtTreeNode> invisibleNodes = new List<ExtTreeNode>();
+		protected List<ExtTreeNode> invisibleNodes = new List<ExtTreeNode>();
 		public virtual void UpdateVisibility()
 		{
 			for (int i = 0; i < invisibleNodes.Count;) {

@@ -157,6 +157,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 					string fileName = Path.Combine(projectCreateInformation.ProjectBasePath, StringParser.Parse(file.Name, new string[,] { {"ProjectName", projectCreateInformation.ProjectName} }));
 					FileProjectItem projectFile = new FileProjectItem(project, ItemType.Compile);
 					
+					projectFile.Properties.Merge(file.CreateMSBuildProperties());
+					
 					if (file.BuildAction.Length > 0) {
 						projectFile.BuildAction = (FileProjectItem.FileBuildAction)Enum.Parse(typeof(FileProjectItem.FileBuildAction), file.BuildAction);
 					} else {
@@ -164,18 +166,8 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 							projectFile.BuildAction = FileProjectItem.FileBuildAction.None;
 						}
 					}
-					if (file.CopyToOutputDirectory.Length > 0) {
-						projectFile.CopyToOutputDirectory = (CopyToOutputDirectory)Enum.Parse(typeof(CopyToOutputDirectory), file.CopyToOutputDirectory);
-					}
-					if (file.DependentUpon.Length > 0) {
-						projectFile.DependentUpon = file.DependentUpon;
-					}
-					if (file.SubType.Length > 0) {
-						projectFile.SubType = file.SubType;
-					}
 					
 					projectFile.Include = FileUtility.GetRelativePath(project.Directory, fileName);
-					
 					while (projectFile.Include.Length > 1 && projectFile.Include.StartsWith(".")) {
 						projectFile.Include = projectFile.Include.Substring(2);
 					}

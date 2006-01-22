@@ -10,6 +10,8 @@ using System.IO;
 using System.Xml;
 using System.Collections;
 using System.Diagnostics;
+using ICSharpCode.Core;
+using ICSharpCode.SharpDevelop.Project;
 
 namespace ICSharpCode.SharpDevelop.Internal.Templates
 {
@@ -22,7 +24,13 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 		string copyToOutputDirectory;
 		string dependentUpon;
 		string subType;
-
+		
+		public bool IsDependentFile {
+			get {
+				return !string.IsNullOrEmpty(dependentUpon);
+			}
+		}
+		
 		public FileDescriptionTemplate(XmlElement xml)
 		{
 			name = xml.GetAttribute("name");
@@ -32,6 +40,24 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			dependentUpon = xml.GetAttribute("dependentUpon");
 			subType = xml.GetAttribute("subType");
 			content = xml.InnerText;
+		}
+		
+		/// <summary>
+		/// Sets MSBuild properties.
+		/// </summary>
+		public PropertyGroup CreateMSBuildProperties()
+		{
+			PropertyGroup pg = new PropertyGroup();
+			if (!string.IsNullOrEmpty(copyToOutputDirectory)) {
+				pg.Set("CopyToOutputDirectory", StringParser.Parse(copyToOutputDirectory));
+			}
+			if (!string.IsNullOrEmpty(dependentUpon)) {
+				pg.Set("DependentUpon", StringParser.Parse(dependentUpon));
+			}
+			if (!string.IsNullOrEmpty(subType)) {
+				pg.Set("SubType", StringParser.Parse(subType));
+			}
+			return pg;
 		}
 		
 		public FileDescriptionTemplate(string name, string language, string content)
@@ -65,33 +91,6 @@ namespace ICSharpCode.SharpDevelop.Internal.Templates
 			}
 			set {
 				buildAction = value;
-			}
-		}
-		
-		public string CopyToOutputDirectory {
-			get {
-				return copyToOutputDirectory ?? "";
-			}
-			set {
-				copyToOutputDirectory = value;
-			}
-		}
-
-		public string DependentUpon {
-			get {
-				return dependentUpon ?? "";
-			}
-			set {
-				dependentUpon = value;
-			}
-		}
-
-		public string SubType {
-			get {
-				return subType ?? "";
-			}
-			set {
-				subType = value;
 			}
 		}
 	}

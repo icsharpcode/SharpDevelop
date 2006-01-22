@@ -32,16 +32,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 	/// <summary>
 	///  This class is for creating a new "empty" file
 	/// </summary>
-	public class NewFileDialog : BaseSharpDevelopForm, INewFileCreator
+	public class NewFileDialog : BaseSharpDevelopForm
 	{
 		ArrayList alltemplates = new ArrayList();
 		ArrayList categories   = new ArrayList();
 		Hashtable icons        = new Hashtable();
 		bool allowUntitledFiles;
 		string basePath;
-		List<string> createdFiles = new List<string>();
+		List<KeyValuePair<string, PropertyGroup>> createdFiles = new List<KeyValuePair<string, PropertyGroup>>();
 		
-		public List<string> CreatedFiles {
+		public List<KeyValuePair<string, PropertyGroup>> CreatedFiles {
 			get {
 				return createdFiles;
 			}
@@ -176,8 +176,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 				}
 				if (template.NewFileDialogVisible == true) {
 					Category cat = GetCategory(StringParser.Parse(titem.Template.Category), StringParser.Parse(titem.Template.Subcategory));
-					cat.Templates.Add(titem); 
-				
+					cat.Templates.Add(titem);
+					
 					if (cat.Selected == false && template.WizardPath == null) {
 						cat.Selected = true;
 					}
@@ -235,7 +235,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			if (localizedTypeDescriptor == null) {
 				localizedTypeDescriptor = new LocalizedTypeDescriptor();
 			}
-				
+			
 			if (!Controls.Contains(propertyGrid)) {
 				this.SuspendLayout();
 				propertyGrid.Location = new Point(Width - GridMargin, GridMargin);
@@ -367,16 +367,21 @@ namespace ICSharpCode.SharpDevelop.Gui
 			return true;
 		}
 		
-		public void SaveFile(string filename, string content, string languageName, bool showFile)
+		public void SaveFile(FileDescriptionTemplate newfile, string content)
 		{
-			string parsedFileName = StringParser.Parse(filename);
-			IWorkbenchWindow window = FileService.NewFile(Path.GetFileName(parsedFileName), StringParser.Parse(languageName), StringParser.Parse(content));
-			if (window != null) {
-				createdFiles.Add(parsedFileName);
+			string parsedFileName = StringParser.Parse(newfile.Name);
+			if (newfile.IsDependentFile && Path.IsPathRooted(parsedFileName)) {
+				File.WriteAllText(parsedFileName, StringParser.Parse(content), ParserService.DefaultFileEncoding);
+			} else {
+				IWorkbenchWindow window = FileService.NewFile(Path.GetFileName(parsedFileName), StringParser.Parse(newfile.Language), StringParser.Parse(content));
+				if (window == null) {
+					return;
+				}
 				if (Path.IsPathRooted(parsedFileName)) {
 					window.ViewContent.Save(parsedFileName);
 				}
 			}
+			createdFiles.Add(new KeyValuePair<string, PropertyGroup>(parsedFileName, newfile.CreateMSBuildProperties()));
 		}
 		
 		string GenerateValidClassName(string className)
@@ -460,7 +465,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 					ScriptRunner scriptRunner = new ScriptRunner();
 					
 					foreach (FileDescriptionTemplate newfile in item.Template.FileDescriptionTemplates) {
-						SaveFile(newfile.Name, scriptRunner.CompileScript(item.Template, newfile), newfile.Language, true);
+						SaveFile(newfile, scriptRunner.CompileScript(item.Template, newfile));
 					}
 					DialogResult = DialogResult.OK;
 				}
@@ -544,7 +549,7 @@ namespace ICSharpCode.SharpDevelop.Gui
 			imglist.Images.Add(IconService.GetBitmap("Icons.16x16.OpenFolderBitmap"));
 			imglist.Images.Add(IconService.GetBitmap("Icons.16x16.ClosedFolderBitmap"));
 			((TreeView)ControlDictionary["categoryTreeView"]).ImageList = imglist;
-		
+			
 			((TreeView)ControlDictionary["categoryTreeView"]).AfterSelect    += new TreeViewEventHandler(CategoryChange);
 			((TreeView)ControlDictionary["categoryTreeView"]).BeforeSelect   += new TreeViewCancelEventHandler(OnBeforeExpand);
 			((TreeView)ControlDictionary["categoryTreeView"]).BeforeExpand   += new TreeViewCancelEventHandler(OnBeforeExpand);

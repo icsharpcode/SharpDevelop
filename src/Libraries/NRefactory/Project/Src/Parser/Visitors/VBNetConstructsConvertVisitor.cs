@@ -54,7 +54,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public override object Visit(Using @using, object data)
 		{
-			if (!@using.IsAlias) {
+			if (usings != null && !@using.IsAlias) {
 				usings[@using.Name] = @using.Name;
 			}
 			return base.Visit(@using, data);
@@ -93,7 +93,7 @@ namespace ICSharpCode.NRefactory.Parser
 		
 		public override object Visit(DeclareDeclaration declareDeclaration, object data)
 		{
-			if (!usings.ContainsKey("System.Runtime.InteropServices")) {
+			if (usings != null && !usings.ContainsKey("System.Runtime.InteropServices")) {
 				UsingDeclaration @using = new UsingDeclaration("System.Runtime.InteropServices");
 				addedUsings.Add(@using);
 				base.Visit(@using, data);

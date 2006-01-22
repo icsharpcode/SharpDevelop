@@ -35,7 +35,8 @@
 			</ProjectItems>
 			
 			<Files>
-				<File name="MainForm.cs"><![CDATA[${StandardHeader.C#}
+		<File name="MainForm.cs" language="C#"><![CDATA[${StandardHeader.C#}
+
 using System;
 using System.Collections.Generic;
 using System.Drawing;
@@ -46,8 +47,16 @@ namespace ${StandardNamespace}
 	/// <summary>
 	/// Description of MainForm.
 	/// </summary>
-	public class MainForm : System.Windows.Forms.Form
+	public partial class MainForm
 	{
+		[STAThread]
+		public static void Main(string[] args)
+		{
+			Application.EnableVisualStyles();
+			Application.SetCompatibleTextRenderingDefault(false);
+			Application.Run(new MainForm());
+		}
+		
 		public MainForm()
 		{
 			//
@@ -59,16 +68,33 @@ namespace ${StandardNamespace}
 			// TODO: Add constructor code after the InitializeComponent() call.
 			//
 		}
+	}
+}
+]]></File>
+<File name="MainForm.Designer.cs" dependentUpon="MainForm.cs" language="C#"><![CDATA[${StandardHeader.C#}
+namespace ${StandardNamespace}
+{
+	partial class MainForm : System.Windows.Forms.Form
+	{
+		/// <summary>
+		/// Designer variable used to keep track of non-visual components.
+		/// </summary>
+		private System.ComponentModel.IContainer components = null;
 		
-		[STAThread]
-		public static void Main(string[] args)
+		/// <summary>
+		/// Disposes resources used by the form.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
 		{
-			Application.EnableVisualStyles();
-			Application.SetCompatibleTextRenderingDefault(false);
-			Application.Run(new MainForm());
+			if (disposing) {
+				if (components != null) {
+					components.Dispose();
+				}
+			}
+			base.Dispose(disposing);
 		}
 		
-		#region Windows Forms Designer generated code
 		/// <summary>
 		/// This method is required for Windows Forms designer support.
 		/// Do not change the method contents inside the source code editor. The Forms designer might
@@ -77,17 +103,16 @@ namespace ${StandardNamespace}
 		private void InitializeComponent()
 		{
 			// 
-			// Form1
+			// MainForm
 			// 
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(292, 266);
-			this.Text = "MainForm";
+			this.Text = "${ProjectName}";
 			this.Name = "MainForm";
 		}
-		#endregion
 	}
-}]]></File>
-		<File name="AssemblyInfo.cs">
+}
+]]></File>
+		<File name="AssemblyInfo.cs" language="C#">
 			<![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;
 

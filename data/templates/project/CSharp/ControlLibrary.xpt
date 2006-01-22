@@ -47,7 +47,7 @@ namespace ${StandardNamespace}
 	/// <summary>
 	/// Description of UserControl1.
 	/// </summary>
-	public class UserControl1 : System.Windows.Forms.UserControl
+	public partial class UserControl1
 	{
 		public UserControl1()
 		{
@@ -60,8 +60,32 @@ namespace ${StandardNamespace}
 			// TODO: Add constructor code after the InitializeComponent() call.
 			//
 		}
+	}
+}]]></File>
+<File name="UserControl1.Designer.cs" dependentUpon="UserControl1.cs" language="C#"><![CDATA[${StandardHeader.C#}
+namespace ${StandardNamespace}
+{
+	partial class UserControl1 : System.Windows.Forms.UserControl
+	{
+		/// <summary>
+		/// Designer variable used to keep track of non-visual components.
+		/// </summary>
+		private System.ComponentModel.IContainer components = null;
 		
-		#region Windows Forms Designer generated code
+		/// <summary>
+		/// Disposes resources used by the form.
+		/// </summary>
+		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+		protected override void Dispose(bool disposing)
+		{
+			if (disposing) {
+				if (components != null) {
+					components.Dispose();
+				}
+			}
+			base.Dispose(disposing);
+		}
+		
 		/// <summary>
 		/// This method is required for Windows Forms designer support.
 		/// Do not change the method contents inside the source code editor. The Forms designer might
@@ -72,12 +96,12 @@ namespace ${StandardNamespace}
 			// 
 			// UserControl1
 			// 
+			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
 			this.Name = "UserControl1";
-			this.Size = new System.Drawing.Size(292, 266);
 		}
-		#endregion
 	}
-}]]></File>
+}
+]]></File>
 		<File name="AssemblyInfo.cs">
 			<![CDATA[using System.Reflection;
 using System.Runtime.CompilerServices;

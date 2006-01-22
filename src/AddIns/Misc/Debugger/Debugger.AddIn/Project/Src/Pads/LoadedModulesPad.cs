@@ -119,7 +119,7 @@ namespace ICSharpCode.SharpDevelop.Gui.Pads
 			                                                      "",
 			                                                      "",
 			                                                      "",
-			                                                      e.Module.SymbolsLoaded.ToString(), //StringParser.Parse(m.symbolsLoaded ? "${res:MainWindow.Windows.Debug.HasSymbols}" : "${res:MainWindow.Windows.Debug.HasNoSymbols}")
+			                                                      StringParser.Parse(e.Module.SymbolsLoaded ? "${res:MainWindow.Windows.Debug.HasSymbols}" : "${res:MainWindow.Windows.Debug.HasNoSymbols}")
 			                                                     });
 			newItem.Tag = e.Module;
 			loadedModulesList.Items.Add(newItem);
