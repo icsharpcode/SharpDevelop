@@ -184,8 +184,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		{			
 			LoggingService.DebugFormatted("Selecting Deepest for '{0}'", fileName);
 			Solution solution = ProjectService.OpenSolution;
+			if (solution == null) {
+				return;
+			}
 
-			IProject project = ProjectService.OpenSolution.FindProjectContainingFile(fileName);
+			IProject project = solution.FindProjectContainingFile(fileName);
 			if (project == null) {
 				LoggingService.Debug("no IProject found");
 				return;
