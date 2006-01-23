@@ -52,9 +52,7 @@ namespace SharpReportCore {
 			reportSettings.GraphicsUnit = graphicsUnit;
 		}
 		
-		#region ReportType
 		
-		##endregion
 		
 		#region SharpReport.DelegatesInterfaces.IModel interface implementation
 		public void Accept(IModelVisitor visitor) {
