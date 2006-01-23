@@ -370,6 +370,8 @@ namespace ICSharpCode.SharpDevelop.Gui
 		public void SaveFile(FileDescriptionTemplate newfile, string content)
 		{
 			string parsedFileName = StringParser.Parse(newfile.Name);
+			if (parsedFileName.StartsWith("/") || parsedFileName.StartsWith("\\"))
+				parsedFileName = parsedFileName.Substring(1);
 			if (newfile.IsDependentFile && Path.IsPathRooted(parsedFileName)) {
 				File.WriteAllText(parsedFileName, StringParser.Parse(content), ParserService.DefaultFileEncoding);
 			} else {

@@ -303,6 +303,8 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		static ProjectItem FindItem(string fileName)
 		{
+			if (ProjectService.OpenSolution == null)
+				return null;
 			foreach (IProject p in ProjectService.OpenSolution.Projects) {
 				foreach (ProjectItem item in p.Items) {
 					if (FileUtility.IsEqualFileName(fileName, item.FileName)) {
@@ -315,6 +317,9 @@ namespace ICSharpCode.SharpDevelop.Refactoring
 		
 		static void GetPossibleFilesInternal(List<ProjectItem> resultList, IProjectContent ownerProjectContent, bool internalOnly)
 		{
+			if (ProjectService.OpenSolution == null) {
+				return;
+			}
 			foreach (IProject p in ProjectService.OpenSolution.Projects) {
 				IProjectContent pc = ParserService.GetProjectContent(p);
 				if (pc == null) continue;

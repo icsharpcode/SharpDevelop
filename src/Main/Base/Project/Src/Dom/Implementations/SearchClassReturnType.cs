@@ -51,19 +51,22 @@ namespace ICSharpCode.SharpDevelop.Dom
 		public override bool Equals(object o)
 		{
 			SearchClassReturnType rt = o as SearchClassReturnType;
-			if (rt == null) {
-				IReturnType rt2 = o as IReturnType;
-				if (rt2 != null && rt2.IsDefaultReturnType)
-					return rt2.FullyQualifiedName == this.FullyQualifiedName && rt2.TypeParameterCount == this.TypeParameterCount;
-				else
+			if (rt != null) {
+				if (name != rt.name)
 					return false;
+				if (declaringClass.FullyQualifiedName == rt.declaringClass.FullyQualifiedName
+				    && typeParameterCount == rt.typeParameterCount
+				    && caretLine == rt.caretLine
+				    && caretColumn == rt.caretColumn)
+				{
+					return true;
+				}
 			}
-			if (declaringClass.FullyQualifiedName != rt.declaringClass.FullyQualifiedName) return false;
-			if (typeParameterCount != rt.typeParameterCount) return false;
-			if (caretLine != rt.caretLine) return false;
-			if (caretColumn != rt.caretColumn) return false;
-			if (typeParameterCount != rt.typeParameterCount) return false;
-			return name == rt.name;
+			IReturnType rt2 = o as IReturnType;
+			if (rt2 != null && rt2.IsDefaultReturnType)
+				return rt2.FullyQualifiedName == this.FullyQualifiedName && rt2.TypeParameterCount == this.TypeParameterCount;
+			else
+				return false;
 		}
 		
 		public override int GetHashCode()

@@ -107,7 +107,6 @@ namespace ICSharpCode.Core
 					return null;
 				}
 				newContent.UntitledName = defaultName;
-				newContent.IsDirty      = false;
 				DisplayBindingService.AttachSubWindows(newContent, false);
 				
 				WorkbenchSingleton.Workbench.ShowView(newContent);
