@@ -17,10 +17,47 @@ namespace ICSharpCode.SharpDevelop.Gui
 		string untitledName = String.Empty;
 		string titleName    = null;
 		string fileName     = null;
-		
-		bool   isDirty  = false;
+
 		bool   isViewOnly = false;
+
+		List<ISecondaryViewContent> secondaryViewContents = new List<ISecondaryViewContent>();
 		
+		public AbstractViewContent()
+		{
+		}
+		
+		public AbstractViewContent(string titleName)
+		{
+			this.titleName = titleName;
+		}
+		
+		public AbstractViewContent(string titleName, string fileName)
+		{
+			this.titleName = titleName;
+			this.fileName  = fileName;
+		}
+
+		/// <summary>
+		/// Sets the file name to <paramref name="fileName"/> and the title to the file name without path. Sets dirty == false too.
+		/// </summary>
+		/// <param name="fileName">The name of the file currently inside the content.</param>
+		protected void SetTitleAndFileName(string fileName)
+		{
+			TitleName = Path.GetFileName(fileName);
+			FileName  = fileName;
+			IsDirty   = false;
+		}
+						
+		public event EventHandler FileNameChanged;
+		
+		protected virtual void OnFileNameChanged(EventArgs e)
+		{
+			if (FileNameChanged != null) {
+				FileNameChanged(this, e);
+			}
+		}
+		
+		#region IViewContent implementation
 		public virtual string UntitledName {
 			get {
 				return untitledName;
@@ -50,53 +87,9 @@ namespace ICSharpCode.SharpDevelop.Gui
 			}
 		}
 		
-		List<ISecondaryViewContent> secondaryViewContents = new List<ISecondaryViewContent>();
-		
-		/// <summary>
-		/// Gets the list of secondary view contents attached to this view content.
-		/// </summary>
-		public List<ISecondaryViewContent> SecondaryViewContents {
-			get {
-				return secondaryViewContents;
-			}
-		}
-		
-		public override void Dispose()
-		{
-			foreach (ISecondaryViewContent svc in secondaryViewContents) {
-				svc.Dispose();
-			}
-			base.Dispose();
-		}
-		
-		public AbstractViewContent()
-		{
-		}
-		
-		public AbstractViewContent(string titleName)
-		{
-			this.titleName = titleName;
-		}
-		
-		public AbstractViewContent(string titleName, string fileName)
-		{
-			this.titleName = titleName;
-			this.fileName  = fileName;
-		}
-		
 		public virtual bool IsUntitled {
 			get {
 				return titleName == null;
-			}
-		}
-		
-		public virtual bool IsDirty {
-			get {
-				return isDirty;
-			}
-			set {
-				isDirty = value;
-				OnDirtyChanged(EventArgs.Empty);
 			}
 		}
 		
@@ -114,7 +107,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 				isViewOnly = value;
 			}
 		}
-		
+	
+		/// <summary>
+		/// Gets the list of secondary view contents attached to this view content.
+		/// </summary>
+		public List<ISecondaryViewContent> SecondaryViewContents {
+			get {
+				return secondaryViewContents;
+			}
+		}
+
 		public virtual void Save()
 		{
 			if (IsDirty) {
@@ -132,38 +134,17 @@ namespace ICSharpCode.SharpDevelop.Gui
 			throw new System.NotImplementedException();
 		}
 		
-		/// <summary>
-		/// Sets the file name to <paramref name="fileName"/> and the title to the file name without path. Sets dirty == false too.
-		/// </summary>
-		/// <param name="fileName">The name of the file currently inside the content.</param>
-		protected void SetTitleAndFileName(string fileName)
-		{
-			TitleName = Path.GetFileName(fileName);
-			FileName  = fileName;
-			IsDirty   = false;
-		}
-		
-		protected virtual void OnDirtyChanged(EventArgs e)
-		{
-			if (DirtyChanged != null) {
-				DirtyChanged(this, e);
-			}
-		}
-		
+		public event EventHandler TitleNameChanged;
+		public event EventHandler     Saving;
+		public event SaveEventHandler Saved;
+
 		protected virtual void OnTitleNameChanged(EventArgs e)
 		{
 			if (TitleNameChanged != null) {
 				TitleNameChanged(this, e);
 			}
 		}
-		
-		protected virtual void OnFileNameChanged(EventArgs e)
-		{
-			if (FileNameChanged != null) {
-				FileNameChanged(this, e);
-			}
-		}
-		
+
 		protected virtual void OnSaving(EventArgs e)
 		{
 			foreach (ISecondaryViewContent svc in SecondaryViewContents) {
@@ -183,11 +164,42 @@ namespace ICSharpCode.SharpDevelop.Gui
 				Saved(this, e);
 			}
 		}
+
+		#region IBaseViewContent implementation
+		// handled in AbstractBaseViewContent
+
+		#region IDisposable implementation
+		public override void Dispose()
+		{
+			foreach (ISecondaryViewContent svc in secondaryViewContents) {
+				svc.Dispose();
+			}
+			base.Dispose();
+		}
+		#endregion
+		#endregion
 		
-		public event EventHandler TitleNameChanged;
-		public event EventHandler FileNameChanged;
+		#region ICanBeDirty implementation
+		public virtual bool IsDirty {
+			get {
+				return isDirty;
+			}
+			set {
+				isDirty = value;
+				OnDirtyChanged(EventArgs.Empty);
+			}
+		}
+		bool   isDirty  = false;
+		
 		public event EventHandler DirtyChanged;
-		public event EventHandler     Saving;
-		public event SaveEventHandler Saved;
+
+		protected virtual void OnDirtyChanged(EventArgs e)
+		{
+			if (DirtyChanged != null) {
+				DirtyChanged(this, e);
+			}
+		}		
+		#endregion
+		#endregion			
 	}
 }

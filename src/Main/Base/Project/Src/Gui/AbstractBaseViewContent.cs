@@ -14,6 +14,16 @@ namespace ICSharpCode.SharpDevelop.Gui
 	{
 		IWorkbenchWindow workbenchWindow = null;
 		
+		public event EventHandler WorkbenchWindowChanged;
+		
+		protected virtual void OnWorkbenchWindowChanged(EventArgs e)
+		{
+			if (WorkbenchWindowChanged != null) {
+				WorkbenchWindowChanged(this, e);
+			}
+		}
+		
+		#region IBaseViewContent implementation
 		public abstract Control Control {
 			get;
 		}
@@ -50,18 +60,13 @@ namespace ICSharpCode.SharpDevelop.Gui
 		{
 		}
 		
+		#region IDisposable implementation
 		public virtual void Dispose()
 		{
 			workbenchWindow = null;
 		}
+		#endregion
 		
-		protected virtual void OnWorkbenchWindowChanged(EventArgs e)
-		{
-			if (WorkbenchWindowChanged != null) {
-				WorkbenchWindowChanged(this, e);
-			}
-		}
-		
-		public event EventHandler WorkbenchWindowChanged;
+		#endregion		
 	}
 }
