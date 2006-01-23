@@ -79,6 +79,7 @@ namespace SharpReportCore {
 		
 		public DataManager(DataTable dataSource, ReportSettings reportSettings){
 			try {
+				System.Console.WriteLine("DataManager (table,model");
 				CheckAndSetReportSettings(reportSettings);
 				CheckAndSetSource(dataSource);
 				this.dataViewStrategy = new TableStrategy((DataTable)this.dataSource,
@@ -130,10 +131,14 @@ namespace SharpReportCore {
 			if (settings == null) {
 				throw new ArgumentNullException("DataManager:ReportSettings");
 			}
-			
+System.Console.WriteLine("CheckAndSetReportSettings");
 			try {
-				SqlQueryCkecker check = new SqlQueryCkecker();
-				check.Check(settings.CommandText);
+	System.Console.WriteLine("\t {0}",settings.DataModel.ToString());
+				if (settings.DataModel != GlobalEnums.enmPushPullModel.PushData) {
+					SqlQueryCkecker check = new SqlQueryCkecker();
+					check.Check(settings.CommandText);
+				}
+				
 			} catch (Exception e) {
 				MessageBox.Show (e.Message);
 				throw e;

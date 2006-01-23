@@ -116,7 +116,6 @@ namespace SharpReport{
 			if (base.ConnectionObject == null) {
 				base.ConnectionObject = this.BuildConnectionObject(model.ReportSettings);
 			}
-			System.Console.WriteLine("BuildRenderer ok");
 			return  base.AbstractRenderer(model);
 		}
 		
@@ -319,14 +318,17 @@ namespace SharpReport{
 		
 		#endregion
 		
+		
+		
+		#region Preview
+		
 		public  AbstractRenderer GetRenderer (ReportModel model) {
+			System.Console.WriteLine("Manager.GetRenderer");
 			if (model == null) {
 				throw new ArgumentException("SharpReportManager:GetRenderer 'ReportModel'");
 			}
 			return this.BuildRenderer (model);
 		}
-		
-		#region Preview
 		
 		/// <summary>
 		/// Run Preview with Designer
@@ -335,8 +337,9 @@ namespace SharpReport{
 		/// <param name="showInUserControl"></param>
 		public void ReportPreview (ReportModel model,bool showInUserControl) {
 			try {
-				System.Console.WriteLine("--------------------");
+				System.Console.WriteLine("");
 				System.Console.WriteLine("Manager:ReportPreview");
+				System.Console.WriteLine("");
 				AbstractRenderer abstr = this.BuildRenderer (model);
 				
 				if (abstr != null) {
@@ -358,10 +361,10 @@ namespace SharpReport{
 		                                   DataTable dataTable,
 		                                   bool showInUserControl) {
 			try {
-
+				System.Console.WriteLine("PreviewPushData with {0} Rows in Table",dataTable.Rows.Count);
 				AbstractRenderer abstr = base.SetupPushDataRenderer(model,dataTable);
-				try {
-					if (abstr != null) {
+				
+				if (abstr != null) {
 					if (abstr.Cancel == false) {
 						if (showInUserControl){
 							PreviewControl.ShowPreviewWithUserControl (abstr,1.5);
@@ -370,11 +373,6 @@ namespace SharpReport{
 						}
 					}
 				}
-				} catch (Exception e) {
-					MessageBox.Show("bb " + e.Message);
-				}
-				
-				
 				
 			} catch (Exception) {
 				throw;

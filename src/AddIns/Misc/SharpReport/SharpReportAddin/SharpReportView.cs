@@ -201,21 +201,27 @@ namespace SharpReportAddin{
 		
 		
 		#region Preview handling
-		private void RunPreview() {
+		
+		
+		private void RunPreview(bool standAlone) {
 			base.OnSaving(EventArgs.Empty);
-			System.Console.WriteLine("View:RunPreview {0}",designerControl.ReportModel.ReportSettings.DataModel);
+			
+			System.Console.WriteLine("View:RunPreview for <{0}>",designerControl.ReportModel.ReportSettings.DataModel);
 			try {
 				switch (designerControl.ReportModel.ReportSettings.DataModel) {
 					case GlobalEnums.enmPushPullModel.FormSheet : {
-						PreviewStandartReport();
+						System.Console.WriteLine("\tFormSheet");
+						PreviewStandartReport(standAlone);
 						break;
 					}
 					case GlobalEnums.enmPushPullModel.PullData:{
-						PreviewStandartReport();
+						System.Console.WriteLine("\tPullData");	
+						PreviewStandartReport(standAlone);
 						break;
 					}
 					case GlobalEnums.enmPushPullModel.PushData:{
-						PreviewPushReport ();
+						System.Console.WriteLine("\tPushData");
+						PreviewPushReport (standAlone);
 						break;
 					}
 				default:
@@ -230,7 +236,8 @@ namespace SharpReportAddin{
 	
 			
 		
-		private void PreviewPushReport (){
+		private void PreviewPushReport (bool standAlone){
+			System.Console.WriteLine("View:PreviewPushDataReport");
 			try {
 				using (OpenFileDialog openFileDialog = new OpenFileDialog()){
 					openFileDialog.Filter = GlobalValues.XsdFileFilter;
@@ -243,7 +250,7 @@ namespace SharpReportAddin{
 							ds.ReadXml (openFileDialog.FileName);
 							reportManager.ReportPreviewPushData(designerControl.ReportModel,
 							                                    ds.Tables[0],
-							                                    true);
+							                                    standAlone);
 						}
 					}
 				}
@@ -253,14 +260,14 @@ namespace SharpReportAddin{
 		}
 		
 		
-		private void PreviewStandartReport(){
-			System.Console.WriteLine("View:PreviewStadartreport");
+		private void PreviewStandartReport(bool standAlone){
+			System.Console.WriteLine("View:PreviewStandartReport");
 			reportManager.NoData -= new SharpReportEventHandler (OnNoDataForReport);
 			reportManager.NoData += new SharpReportEventHandler (OnNoDataForReport);
 			
 			reportManager.ParametersRequest -= new SharpReportParametersEventHandler (OnParametersRequest);
 			reportManager.ParametersRequest += new SharpReportParametersEventHandler (OnParametersRequest);
-			reportManager.ReportPreview (designerControl.ReportModel, true);
+			reportManager.ReportPreview (designerControl.ReportModel, standAlone);
 			
 		}
 		
@@ -302,6 +309,8 @@ namespace SharpReportAddin{
 		private void OnTabPageChanged (object sender, EventArgs e) {
 			string name = Path.GetFileName (base.FileName);
 			base.TitleName = name + "[" + tabControl.SelectedTab.Text + "]";
+			System.Console.WriteLine("");
+			System.Console.WriteLine("!! OnTabPageChange !!");
 			switch (tabControl.SelectedIndex) {
 				case 0 :
 					break;
@@ -310,7 +319,7 @@ namespace SharpReportAddin{
 					if (tabControl.SelectedTab.Controls.Count == 0 ){
 						tabControl.SelectedTab.Controls.Add(reportManager.PreviewControl);
 					}
-					RunPreview();
+					RunPreview(true);
 					this.previewPage.Visible = true;
 					break;
 				default:
@@ -378,8 +387,11 @@ namespace SharpReportAddin{
 			reportManager.ParametersRequest -= new SharpReportParametersEventHandler (OnParametersRequest);
 			reportManager.ParametersRequest += new SharpReportParametersEventHandler (OnParametersRequest);
 			base.OnSaving(EventArgs.Empty);
-			reportManager.ReportPreview (designerControl.ReportModel,
-			                             false);
+			System.Console.WriteLine("");
+			System.Console.WriteLine("!! OnPreviewClick !!");
+//			reportManager.ReportPreview (designerControl.ReportModel,
+//			                             false);
+			this.RunPreview(false);
 		}
 
 		
@@ -548,6 +560,12 @@ namespace SharpReportAddin{
 		#region ICSharpCode.SharpDevelop.Gui.IPrintable interface implementation
 		public System.Drawing.Printing.PrintDocument PrintDocument {
 			get {
+				System.Console.WriteLine("");
+				System.Console.WriteLine("!! PrintDocument  !!");
+				
+				 if (this.designerControl.ReportModel.ReportSettings.DataModel == GlobalEnums.enmPushPullModel.PushData) {
+					MessageService.ShowMessage("PushModel currently not supported");
+				}
 				AbstractRenderer renderer = reportManager.GetRenderer(this.designerControl.ReportModel);
 				return renderer.ReportDocument;
 			}

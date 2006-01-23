@@ -233,19 +233,25 @@ namespace SharpReportCore {
 		
 	
 		protected SharpReportCore.AbstractRenderer SetupPushDataRenderer (ReportModel model,
-		                                                                   DataTable dataTable) {
+		                                                                  DataTable dataTable) {
+			System.Console.WriteLine("SetupPushDataRenderer with {0}",dataTable.Rows.Count);
+			
 			if (model.ReportSettings.ReportType != GlobalEnums.enmReportType.DataReport) {
-				throw new ArgumentException("PrepareForPushDataReport No valid ReportModel");
+				throw new ArgumentException("SetupPushDataRenderer <No valid ReportModel>");
 			}
 			if (model.ReportSettings.DataModel != GlobalEnums.enmPushPullModel.PushData) {
-				throw new ArgumentException("PrepareForPushDataReport No valid ReportType");
+				throw new ArgumentException("SetupPushDataRenderer <No valid ReportType>");
 			}
+			
 			AbstractRenderer abstr = null;
 			DataManager dataManager = new DataManager (dataTable,model.ReportSettings);
-			dataManager.DataBind();
-				
+			System.Console.WriteLine("\tDataManager ok = {0}",(dataManager != null));
 			if (dataManager != null) {
-				abstr = new RendererFactory().Create (model,dataManager);
+				dataManager.DataBind();
+				if (dataManager.DataSource != null) {
+					abstr = new RendererFactory().Create (model,dataManager);
+				}
+				
 				return abstr;
 			}
 			return null;

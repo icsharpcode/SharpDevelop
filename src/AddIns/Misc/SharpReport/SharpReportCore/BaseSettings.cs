@@ -35,7 +35,7 @@ using System.Xml.Serialization;
 namespace SharpReportCore {	
 	public class BaseSettings : object {
 		private const string defaultReportName = "SharpReport1";
-//		private const string defaultFileName = "SharpReport1.srd";
+
 		
 		private string reportName;
 		private string fileName;

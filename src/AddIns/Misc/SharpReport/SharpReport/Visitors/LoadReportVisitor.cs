@@ -111,12 +111,9 @@ namespace SharpReport.Visitors {
 									try {
 										rpt = designableFactory.Create(ctrlElem.GetAttribute("type"));
 										BaseReportItem br = (BaseReportItem)rpt;
-//										br.SuspendLayout();
 										br.Parent = baseSection;
 										baseSection.Items.Add (rpt);
 										XmlHelper.BuildControl (xmlFormReader,ctrlElem,br);
-//										br.Visible = true;
-//										br.ResumeLayout();
 									}
 									catch (Exception ) {
 										string s = String.Format ("Unable to create <{0}>",ctrlElem.GetAttribute("type").ToString());

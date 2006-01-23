@@ -36,7 +36,7 @@ namespace SharpReportCore {
 		
 		
 		public ReportDocument():base() {
-			System.Console.WriteLine("ReportDocument COnstructor");
+			System.Console.WriteLine("ReportDocument Constructor");
 			base.BeginPrint += new PrintEventHandler (ReportDocumentBeginPrint);
 			
 			base.PrintPage += new PrintPageEventHandler (ReportDocumentPrintPage);
@@ -46,7 +46,7 @@ namespace SharpReportCore {
 		}
 		
 		void GeneratePage (SharpReportCore.ReportPageEventArgs page) {		
-			System.Console.WriteLine("GeneratePage");
+			System.Console.WriteLine("\tGeneratePage");
 			if (PrintPageBegin != null) {
 				PrintPageBegin (this,page);
 			}
@@ -74,19 +74,19 @@ namespace SharpReportCore {
 		#region events
 		//this events are also used by PrintPreviewControl
 		public  void ReportDocumentBeginPrint (object sender,PrintEventArgs e) {
-			System.Console.WriteLine("\tReportDocumentBeginPrint");
+			System.Console.WriteLine("\tReportDocument BeginPrint");
 			pageNr = 0;
 		}
 		
 		public void ReportDocumentQueryPage (object sender, QueryPageSettingsEventArgs e) {
-			System.Console.WriteLine("\tReportDocumentQueryPage");
+//			System.Console.WriteLine("\tReportDocument QueryPage");
 			if (QueryPage != null) {
 				QueryPage (this,e);
 			}
 		}
 		
 		public void ReportDocumentPrintPage (object sender, PrintPageEventArgs e) {
-			System.Console.WriteLine("\tReportDocumentPrintPage");
+//			System.Console.WriteLine("\tReportDocument PrintPage");
 			pageNr ++;
 			ReportPageEventArgs pea = new ReportPageEventArgs (e,pageNr,false,new PointF (0,0));
 			
@@ -110,7 +110,7 @@ namespace SharpReportCore {
 			
 		}
 		public void  ReportDocumentEndPrint (object sender,PrintEventArgs e) {
-			System.Console.WriteLine("\tReportDocumentEndPrint");
+//			System.Console.WriteLine("\tReportDocument EndPrint");
 			pageNr = 0;
 			if (ReportEnd != null) {
 				ReportEnd (this,null);

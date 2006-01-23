@@ -27,17 +27,19 @@ namespace SharpReportCore
 		}
 		
 		public void Check (string queryString) {
-			this.queryString = queryString.ToUpper(CultureInfo.CurrentCulture);
-		
-			if (this.queryString.IndexOf (this.UPDATE) > -1) {
-				string str = String.Format("{0} is no valid Member of SqlString",this.UPDATE);
-				this.Invalid (this.UPDATE);
-			}
-			
-			if (this.queryString.IndexOf(this.DELETE) > -1)  {
-				this.Invalid (this.DELETE);
-				string str = String.Format("{0} is no valid Member of SqlString",this.DELETE);
+			if (queryString != "") {
+				this.queryString = queryString.ToUpper(CultureInfo.CurrentCulture);
 				
+				if (this.queryString.IndexOf (this.UPDATE) > -1) {
+					string str = String.Format("{0} is no valid Member of SqlString",this.UPDATE);
+					this.Invalid (this.UPDATE);
+				}
+				
+				if (this.queryString.IndexOf(this.DELETE) > -1)  {
+					this.Invalid (this.DELETE);
+					string str = String.Format("{0} is no valid Member of SqlString",this.DELETE);
+					
+				}
 			}
 		}
 		

@@ -54,8 +54,7 @@ namespace SharpReportCore {
 		
 		
 		public AbstractRenderer(ReportModel model){
-			System.Console.WriteLine("");
-			System.Console.WriteLine("\t\t ABSTRACT RENDERER");
+//			System.Console.WriteLine("\tConstructor of ABstractRenderer");
 			this.reportSettings = model.ReportSettings;
 			this.sections = model.SectionCollection;
 			Init();

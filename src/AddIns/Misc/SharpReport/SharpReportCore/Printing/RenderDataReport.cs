@@ -60,7 +60,7 @@ namespace SharpReportCore {
 		}
 			
 		protected override void ReportBegin(object sender, ReportPageEventArgs e) {
-			System.Console.WriteLine("\t\tRenderDataReport:ReportBegin");
+			System.Console.WriteLine("\tRenderDataReport:ReportBegin");
 			base.ReportBegin (sender,e);
 			//allways reset the dataManager before printing
 			if (this.dataManager != null) {
@@ -180,15 +180,7 @@ namespace SharpReportCore {
 			return "RenderDataReport";
 		}
 		#endregion
-		public DataManager DatManager {
-//		public DataContainer DataContainer {
-			get {
-				return dataManager;
-			}
-			set {
-				dataManager = value;
-			}
-		}
+
 		
 	}
 }
