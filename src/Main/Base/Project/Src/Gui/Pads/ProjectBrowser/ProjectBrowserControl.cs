@@ -343,7 +343,9 @@ namespace ICSharpCode.SharpDevelop.Project
 		
 		void TreeViewAfterExpand(object sender, TreeViewEventArgs e)
 		{ // attempt to restore the last selection if its path has been reexpanded
-			SelectFile(lastSelectionTarget);
+			if (lastSelectionTarget != null) {
+				SelectFile(lastSelectionTarget);
+			}
 		}
 		
 		void TreeViewBeforeSelect(object sender, TreeViewCancelEventArgs e)
