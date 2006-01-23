@@ -30,6 +30,9 @@
 				<Reference Include="System.Drawing" />
 				<Reference Include="System.Windows.Forms" />
 				<Reference Include="System.Xml" />
+				<Import Include="System" />
+				<Import Include="System.Collections" />
+			    <Import Include="System.Windows.Forms" />			
 			</ProjectItems>
 			<Files>
 				<File name="${ProjectName}.addin" copyToOutputDirectory="Always"><![CDATA[<AddIn name        = "${ProjectName}"
@@ -85,69 +88,63 @@ Imports System
 Imports System.Windows.Forms
 Imports ICSharpCode.SharpDevelop.Gui.XmlForms
 
-Namespace ${ProjectName}
-	Public Class MyUserControl
-		Inherits BaseSharpDevelopUserControl
-		Public Sub New
-			SetupFromXmlStream(Me.GetType().Assembly.GetManifestResourceStream("test4.Resources.MyUserControl.xfrm"))
-			AddHandler (Me.Get(Of Button)("test")).Click, AddressOf ButtonClick
-		End Sub
-		
-		Sub ButtonClick(sender As Object, e As EventArgs)
-			System.Windows.Forms.MessageBox.Show("The button was clicked!")
-		End Sub
-	End Class
-End Namespace
+Public Class MyUserControl
+	Inherits BaseSharpDevelopUserControl
+	Public Sub New
+		SetupFromXmlStream(Me.GetType().Assembly.GetManifestResourceStream("${ProjectName}.Resources.MyUserControl.xfrm"))
+		AddHandler (Me.Get(Of Button)("test")).Click, AddressOf ButtonClick
+	End Sub
+	
+	Sub ButtonClick(sender As Object, e As EventArgs)
+		System.Windows.Forms.MessageBox.Show("The button was clicked!")
+	End Sub
+End Class
 ]]>
 		</File>
 		<File name="Src/TestPad.vb">
 			<![CDATA[${StandardHeader.VBNET}
 
-Imports System
-Imports System.Windows.Forms
 Imports ICSharpCode.Core
 Imports ICSharpCode.SharpDevelop.Gui
 
-Namespace ${ProjectName}
+''' <summary>
+''' Description of the pad content
+''' </summary>
+Public Class TestPad
+	Inherits AbstractPadContent
+	Private ctl As MyUserControl
+	
 	''' <summary>
-	''' Description of the pad content
+	''' Creates a new TestPad object
 	''' </summary>
-	Public Class TestPad
-		Inherits AbstractPadContent
-		Private ctl As MyUserControl
-		
-		''' <summary>
-		''' Creates a new TestPad object
-		''' </summary>
-		Public Sub New
-			ctl = new MyUserControl()
-		End Sub
-		
-		''' <summary>
-		''' The <see cref="System.Windows.Forms.Control"/> representing the pad
-		''' </summary>
-		Public Overrides ReadOnly Property Control As Control
-			Get
-				return ctl
-			End Get
-		End Property
-		
-		''' <summary>
-		''' Refreshes the pad
-		''' </summary>
-		Public Overrides Sub RedrawContent()
-			' TODO: Refresh the whole pad control here, renew all resource strings whatever
-			'       Note that you do not need to recreate the control.
-		End Sub
-		
-		''' <summary>
-		''' Cleans up all used resources
-		''' </summary>
-		Public Overrides Sub Dispose()
-			ctl.Dispose()
-		End Sub
-	End Class
-End Namespace
+	Public Sub New
+		ctl = new MyUserControl()
+	End Sub
+	
+	''' <summary>
+	''' The <see cref="System.Windows.Forms.Control"/> representing the pad
+	''' </summary>
+	Public Overrides ReadOnly Property Control As Control
+		Get
+			return ctl
+		End Get
+	End Property
+	
+	''' <summary>
+	''' Refreshes the pad
+	''' </summary>
+	Public Overrides Sub RedrawContent()
+		' TODO: Refresh the whole pad control here, renew all resource strings whatever
+		'       Note that you do not need to recreate the control.
+	End Sub
+	
+	''' <summary>
+	''' Cleans up all used resources
+	''' </summary>
+	Public Overrides Sub Dispose()
+		ctl.Dispose()
+	End Sub
+End Class
 ]]></File>
 		<File name="Configuration/AssemblyInfo.vb">
 			<![CDATA[Imports System.Reflection

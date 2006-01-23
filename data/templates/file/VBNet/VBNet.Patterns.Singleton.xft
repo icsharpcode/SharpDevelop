@@ -22,24 +22,18 @@
 	 -->
 	<Files>
 		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
-
-Imports System
-
-Namespace ${StandardNamespace}
-
-	''' <summary>
-	'' Description of ${ClassName}.
-	''' </summary>
-	Public NotInheritable Class ${ClassName}
-		Private Shared _instance As ${ClassName} = New ${ClassName}()
-		
-		Public Shared ReadOnly Property Instance As ${ClassName}
-			Get
-				Return _instance
-			End Get
-		End Property
-	End Class
-End Namespace
+''' <summary>
+'' Description of ${ClassName}.
+''' </summary>
+Public NotInheritable Class ${ClassName}
+	Private Shared _instance As ${ClassName} = New ${ClassName}()
+	
+	Public Shared ReadOnly Property Instance As ${ClassName}
+		Get
+			Return _instance
+		End Get
+	End Property
+End Class
 ]]></File>
 	</Files>
 	
