@@ -57,6 +57,7 @@ namespace ICSharpCode.SharpDevelop.Project
 		{
 			InitializeComponent();
 			treeView.BeforeSelect   += TreeViewBeforeSelect;
+			treeView.AfterExpand    += TreeViewAfterExpand;
 			FileService.FileRenamed += FileServiceFileRenamed;
 			FileService.FileRemoved += FileServiceFileRemoved;
 			
@@ -110,7 +111,7 @@ namespace ICSharpCode.SharpDevelop.Project
 				ViewSolution(((AbstractProjectBrowserTreeNode)treeView.Nodes[0]).Solution);
 			}
 		}
-		
+				
 		FileNode FindFileNode(TreeNodeCollection nodes, string fileName)
 		{
 			FileNode fn;
@@ -120,9 +121,11 @@ namespace ICSharpCode.SharpDevelop.Project
 					if (FileUtility.IsEqualFileName(fn.FileName, fileName))
 						return fn;
 				}
-				fn = FindFileNode(node.Nodes, fileName);
-				if (fn != null)
-					return fn;
+				if (node != null) {
+					fn = FindFileNode(node.Nodes, fileName);
+					if (fn != null)
+						return fn;
+				}
 			}
 			return null;
 		}
@@ -137,12 +140,18 @@ namespace ICSharpCode.SharpDevelop.Project
 			return FindFileNode(treeView.Nodes, fileName);
 		}
 		
+		// stores the fileName of the last selected target so 
+		// that we can select it again on opening a folder
+		string lastSelectionTarget;
+
 		/// <summary>
-		/// Selects the node of a file if it is visible
+		/// Selects the deepest node open on the path to a particular file.
 		/// </summary>
 		public void SelectFile(string fileName)
 		{
-			FileNode node = FindFileNode(fileName);
+			lastSelectionTarget = fileName;
+			TreeNode node = FindFileNode(fileName);
+			
 			if (node != null) {
 				// select first parent that is not collapsed
 				TreeNode nodeToSelect = node;
@@ -155,8 +164,154 @@ namespace ICSharpCode.SharpDevelop.Project
 				if (nodeToSelect != null) {
 					treeView.SelectedNode = nodeToSelect;
 				}
+			} else {
+				SelectDeepestOpenNodeForPath(fileName);
 			}
 		}
+
+		#region SelectDeepestOpenNode internals
+//				
+//		SolutionNode RootSolutionNode {
+//			get {
+//				if (treeView.Nodes != null && treeView.Nodes.Count>0) {
+//					return treeView.Nodes[0] as SolutionNode;
+//				}
+//				return null;
+//			}
+//		}
+//		
+		void SelectDeepestOpenNodeForPath(string fileName)
+		{			
+			LoggingService.DebugFormatted("Selecting Deepest for '{0}'", fileName);
+			Solution solution = ProjectService.OpenSolution;
+
+			IProject project = ProjectService.OpenSolution.FindProjectContainingFile(fileName);
+			if (project == null) {
+				LoggingService.Debug("no IProject found");
+				return;
+			}
+
+			string relativePath = String.Empty;
+			TreeNode targetNode = FindProjectNode(project);
+
+			if (targetNode == null) {
+			
+				// our project node is not yet created, 
+				// so start at the root and work down.
+				
+				if (treeView.Nodes == null || treeView.Nodes.Count<1) {
+					// the treeView is not yet prepared to assist in this request.
+					return;
+				
+				} else {
+					targetNode = treeView.Nodes[0];
+					if (fileName.StartsWith(solution.Directory)) {
+						relativePath = fileName.Replace(solution.Directory, "");				
+					} 
+				}
+				
+			} else {
+				// start from the project node and work upwards
+				// to the first visible node
+				TreeNode t = targetNode;
+				TreeNode p = targetNode.Parent;
+				while (p != null) {
+					if (!p.IsExpanded) {
+						t = p;
+					}
+					p = p.Parent;
+				}
+				
+				if (t != targetNode) {
+					// project node is instantiated but not visible
+					// so select the most visible parent node.
+					treeView.SelectedNode = t;
+					return;
+
+				} else {
+					// project node is instantiated and visible
+					// so we start here and work down
+					if (fileName.StartsWith((targetNode as ProjectNode).Directory)) {
+						relativePath = fileName.Replace((targetNode as ProjectNode).Directory, "");
+					}
+				}
+				
+			}
+			
+			if (!targetNode.IsExpanded) {
+				// the targetNode is not expanded so it's as deep as we can go
+				treeView.SelectedNode = targetNode; 
+				LoggingService.DebugFormatted("target node '{0};{1}' is not expanded.", targetNode, targetNode.Text);
+				return;
+			}
+
+			LoggingService.Debug("entering depth loop...");
+			LoggingService.DebugFormatted(@"\- looking for '{0}'", relativePath);
+			LoggingService.DebugFormatted(@"\- starting at '{0}'", targetNode != null ? targetNode.Text : "null");
+			
+			string[] targets = relativePath.Trim('/','\\').Split('/', '\\');
+			TreeNode nextNode = null;
+			foreach (string target in targets) {
+				LoggingService.Debug("-- looking for: "+target);
+				nextNode = null;
+				foreach (TreeNode node in targetNode.Nodes) {
+					if (node.Text == target) {
+						nextNode = node;
+						break;
+					}
+				}
+				if (nextNode == null) {
+					// targetNode is as deep as we can find
+					break;
+				} else {
+					targetNode = nextNode;
+				}
+			}
+			treeView.SelectedNode = targetNode;
+		}
+
+		ProjectNode FindProjectNode(IProject project)
+		{
+			if (project == null) {
+				return null;
+			}
+			return FindProjectNodeByName(treeView.Nodes, project.Name);
+		}
+		
+		// derived from FindFileNode
+		ProjectNode FindProjectNodeByName(TreeNodeCollection nodes, string projectName)
+		{
+			ProjectNode pn;
+			foreach (TreeNode node in nodes) {
+				pn = node as ProjectNode;
+				if (pn != null) {
+					if (pn.Text == projectName) {
+						return pn;
+					}
+				}
+				pn = FindProjectNodeByName(node.Nodes, projectName);
+				if (pn != null) 
+					return pn;
+			}
+			return null;
+		}		
+		
+		// TODO: remove this debug code
+//		void LogTreeViewPaths(TreeNodeCollection nodes, int depth)
+//		{
+//			System.Text.StringBuilder sb = null;
+//			
+//			foreach (TreeNode node in nodes) {
+//				sb = new System.Text.StringBuilder();
+//				for(int i = 0; i<depth; i++) {
+//					sb.Append("--");
+//				}
+//				sb.Append(node.Text+" ("+node.GetType().Name+")");
+//				LoggingService.Debug(sb.ToString());
+//				LogTreeViewPaths(node.Nodes, depth+1);
+//			}
+//		}
+		#endregion
 		
 		public void ViewSolution(Solution solution)
 		{
@@ -184,6 +339,11 @@ namespace ICSharpCode.SharpDevelop.Project
 		public void PadActivated()
 		{
 			TreeViewBeforeSelect(null, new TreeViewCancelEventArgs(treeView.SelectedNode, false, TreeViewAction.Unknown));
+		}
+		
+		void TreeViewAfterExpand(object sender, TreeViewEventArgs e)
+		{ // attempt to restore the last selection if its path has been reexpanded
+			SelectFile(lastSelectionTarget);
 		}
 		
 		void TreeViewBeforeSelect(object sender, TreeViewCancelEventArgs e)
