@@ -36,29 +36,36 @@ import System.Collections
 import System.Drawing
 import System.Windows.Forms
 
-
-class MainForm(System.Windows.Forms.Form):
-"""Description of MainForm."""
+partial class MainForm:
 	def constructor():
 		// The InitializeComponent() call is required for Windows Forms designer support.
 		InitializeComponent()
 		// TODO: Add constructor code after the InitializeComponent() call.
-		
+
+Application.EnableVisualStyles()
+Application.SetCompatibleTextRenderingDefault(false)
+Application.Run(MainForm())
+
+]]></File>
+<File name="MainForm.Designer.boo" dependentUpon="MainForm.boo"><![CDATA[namespace ${StandardNamespace}
+
+partial class MainForm(System.Windows.Forms.Form):
+	private components as System.ComponentModel.IContainer = null
 	
-	#region Windows Forms Designer generated code
+	protected override def Dispose(disposing as bool):
+		if disposing:
+			if components is not null:
+				components.Dispose()
+		super(disposing)
+	
 	// This method is required for Windows Forms designer support.
 	// Do not change the method contents inside the source code editor. The Forms designer might
 	// not be able to load this method if it was changed manually.
 	def InitializeComponent():
-		// Form1
+		// MainForm
 		self.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
-		self.ClientSize = System.Drawing.Size(292, 266)
 		self.Text = 'MainForm'
 		self.Name = 'MainForm'
-	#endregion
-
-Application.EnableVisualStyles()
-Application.Run(MainForm())
 
 ]]></File>
 		<File name="AssemblyInfo.boo">

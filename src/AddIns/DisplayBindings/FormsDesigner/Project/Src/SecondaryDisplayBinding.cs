@@ -30,13 +30,18 @@ namespace ICSharpCode.FormsDesigner
 			}
 		}
 		
+		public static bool IsInitializeComponentsMethodName(string name)
+		{
+			return name == "InitializeComponents" || name == "InitializeComponent";
+		}
+		
 		public static IMethod GetInitializeComponents(IClass c)
 		{
 			c = c.DefaultReturnType.GetUnderlyingClass();
 			if (c == null)
 				return null;
 			foreach (IMethod method in c.Methods) {
-				if ((method.Name == "InitializeComponents" || method.Name == "InitializeComponent") && method.Parameters.Count == 0) {
+				if (IsInitializeComponentsMethodName(method.Name) && method.Parameters.Count == 0) {
 					return method;
 				}
 			}

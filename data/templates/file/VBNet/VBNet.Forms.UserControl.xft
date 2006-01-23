@@ -22,29 +22,51 @@
 	 -->
 	<Files>
 		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
-
-Public Class ${ClassName}
-	Inherits System.Windows.Forms.UserControl
-	
+Public Partial Class ${ClassName}
 	Public Sub New()
-		' Must be called for initialization
+		' The Me.InitializeComponent call is required for Windows Forms designer support.
 		Me.InitializeComponent()
+		
 		'
 		' TODO : Add constructor code after InitializeComponents
 		'
 	End Sub
+End Class
+]]></File>
+<File name="${Path}/${FileNameWithoutExtension}.Designer.vb" dependentUpon="${FileName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
+Partial Class ${ClassName}
+	Inherits System.Windows.Forms.UserControl
 	
-	#Region " Windows Forms Designer generated code "
-	' This method is required for Windows Forms designer support.
-	' Do not change the method contents inside the source code editor. The Forms designer might
-	' not be able to load this method if it was changed manually.
+	''' <summary>
+	''' Designer variable used to keep track of non-visual components.
+	''' </summary>
+	Private components As System.ComponentModel.IContainer
+	
+	''' <summary>
+	''' Disposes resources used by the control.
+	''' </summary>
+	''' <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
+	Protected Overrides Sub Dispose(ByVal disposing As Boolean)
+		If disposing Then
+			If components IsNot Nothing Then
+				components.Dispose()
+			End If
+		End If
+		MyBase.Dispose(disposing)
+	End Sub
+	
+	''' <summary>
+	''' This method is required for Windows Forms designer support.
+	''' Do not change the method contents inside the source code editor. The Forms designer might
+	''' not be able to load this method if it was changed manually.
+	''' </summary>
 	Private Sub InitializeComponent()
 		'
 		'${ClassName}
 		'
+		Me.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font
 		Me.Name = "${ClassName}"
 	End Sub
-	#End Region
 End Class
 ]]></File>
 	</Files>

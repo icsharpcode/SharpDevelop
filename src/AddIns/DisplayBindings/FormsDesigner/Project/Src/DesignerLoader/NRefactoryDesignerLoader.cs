@@ -131,22 +131,15 @@ namespace ICSharpCode.FormsDesigner
 		
 		string lastTextContent;
 		
-		protected override CodeCompileUnit Parse()
+		public static List<IClass> FindFormClassParts(ParseInformation parseInfo, out IClass formClass)
 		{
-			LoggingService.Debug("NRefactoryDesignerLoader.Parse()");
-			
 			#if DEBUG
 			if ((Control.ModifierKeys & (Keys.Alt | Keys.Control)) == (Keys.Alt | Keys.Control)) {
 				System.Diagnostics.Debugger.Break();
 			}
 			#endif
 			
-			lastTextContent = TextContent;
-			
-			ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
-			
-			IClass formClass = null;
-			
+			formClass = null;
 			foreach (IClass c in parseInfo.BestCompilationUnit.Classes) {
 				if (FormsDesignerSecondaryDisplayBinding.BaseClassIsFormOrControl(c)) {
 					formClass = c;
@@ -154,7 +147,7 @@ namespace ICSharpCode.FormsDesigner
 				}
 			}
 			if (formClass == null)
-				throw new FormsDesignerLoadException("No class derived from Form or Control was found.");
+				throw new FormsDesignerLoadException("No class derived from Form or UserControl was found.");
 			
 			// Initialize designer for formClass
 			formClass = formClass.DefaultReturnType.GetUnderlyingClass();
@@ -165,6 +158,20 @@ namespace ICSharpCode.FormsDesigner
 				parts = new List<IClass>();
 				parts.Add(formClass);
 			}
+			return parts;
+		}
+		
+		protected override CodeCompileUnit Parse()
+		{
+			LoggingService.Debug("NRefactoryDesignerLoader.Parse()");
+			
+			lastTextContent = TextContent;
+			
+			ParseInformation parseInfo = ParserService.GetParseInformation(textEditorControl.FileName);
+			
+			IClass formClass;
+			List<IClass> parts = FindFormClassParts(parseInfo, out formClass);
+			
 			List<KeyValuePair<string, CompilationUnit>> compilationUnits = new List<KeyValuePair<string, CompilationUnit>>();
 			bool foundInitMethod = false;
 			foreach (IClass part in parts) {

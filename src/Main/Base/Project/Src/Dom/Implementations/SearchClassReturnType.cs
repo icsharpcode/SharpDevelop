@@ -91,8 +91,21 @@ namespace ICSharpCode.SharpDevelop.Dom
 		
 		static SearchClassReturnType()
 		{
-			cache = new Dictionary<SearchClassReturnType, IReturnType>();
+			cache = new Dictionary<SearchClassReturnType, IReturnType>(new ReferenceComparer());
 			ParserService.ParserUpdateStepFinished += OnParserUpdateStepFinished;
+		}
+		
+		class ReferenceComparer : IEqualityComparer<SearchClassReturnType>
+		{
+			public bool Equals(SearchClassReturnType x, SearchClassReturnType y)
+			{
+				return x == y; // don't use x.Equals(y) - Equals might cause a FullyQualifiedName lookup on its own
+			}
+			
+			public int GetHashCode(SearchClassReturnType obj)
+			{
+				return obj.GetHashCode();
+			}
 		}
 		
 		static void OnParserUpdateStepFinished(object sender, ParserUpdateStepEventArgs e)

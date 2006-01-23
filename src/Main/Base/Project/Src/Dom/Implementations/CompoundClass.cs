@@ -56,7 +56,11 @@ namespace ICSharpCode.SharpDevelop.Dom
 			this.Attributes.Clear();
 			foreach (IClass part in parts) {
 				modifier |= part.Modifiers;
-				this.BaseTypes.AddRange(part.BaseTypes);
+				foreach (IReturnType rt in part.BaseTypes) {
+					if (!rt.IsDefaultReturnType || rt.FullyQualifiedName != "System.Object") {
+						this.BaseTypes.Add(rt);
+					}
+				}
 				foreach (ITypeParameter typeParam in part.TypeParameters) {
 					this.TypeParameters.Add(typeParam);
 				}

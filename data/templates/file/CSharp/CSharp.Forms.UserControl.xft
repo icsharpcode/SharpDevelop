@@ -61,7 +61,7 @@ namespace ${StandardNamespace}
 		private System.ComponentModel.IContainer components = null;
 		
 		/// <summary>
-		/// Disposes resources used by the form.
+		/// Disposes resources used by the control.
 		/// </summary>
 		/// <param name="disposing">true if managed resources should be disposed; otherwise, false.</param>
 		protected override void Dispose(bool disposing)
