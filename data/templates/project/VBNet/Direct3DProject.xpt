@@ -7,6 +7,7 @@
 	<TemplateConfiguration>
 		<Name>${res:Templates.Project.Direct3DApplication.Name}</Name>
 		<Category>VBNet</Category>
+		<Subcategory>${res:Templates.File.Categories.WindowsApplications}</Subcategory>
 		<Icon>VBNet.Project.FullProject</Icon>
 		<LanguageName>VBNet</LanguageName>
 		<Description>${res:Templates.Project.Direct3DApplication.Description}</Description>

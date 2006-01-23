@@ -5,6 +5,7 @@
 		name        = "${res:Templates.File.WindowsForm.Name}"
 		icon        = "VBNet.File.Form"
 		category    = "VB"
+		subcategory = "${res:Templates.File.Categories.WindowsApplications}"
 		defaultname = "Form${Number}.vb"
 		language    = "VB"
 	/>

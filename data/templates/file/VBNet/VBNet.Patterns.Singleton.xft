@@ -1,0 +1,49 @@
+<?xml version="1.0"?>
+<Template author="Markus Palme" version="1.0">
+	
+	<Config
+		name        = "${res:Templates.File.SingletonClass.Name}"
+		icon        = "VBNet.File.NewClass"
+		category    = "VB"
+		defaultname = "SingletonClass${Number}.vb"
+		language    = "VB"
+	/>
+	 
+	<Description>${res:Templates.File.SingletonClass.Description}</Description>
+	
+	<!-- 
+	Special new file templates:
+		${StandardNamespace}        -> Standardnamespace of the current project or FileNameWithoutExtension
+		${FullName}                 -> Full generated path name
+		${FileName}                 -> File name with extension
+		${FileNameWithoutExtension} -> File name without extension
+		${Extension}                -> Extension in the form ".vb"
+		${Path}                     -> Full path of the file
+	 -->
+	<Files>
+		<File name="${FullName}" language="VBNET"><![CDATA[${StandardHeader.VBNET}
+
+Imports System
+
+Namespace ${StandardNamespace}
+
+	''' <summary>
+	'' Description of ${ClassName}.
+	''' </summary>
+	Public NotInheritable Class ${ClassName}
+		Private Shared _instance As ${ClassName} = New ${ClassName}()
+		
+		Public Shared ReadOnly Property Instance As ${ClassName}
+			Get
+				Return _instance
+			End Get
+		End Property
+	End Class
+End Namespace
+]]></File>
+	</Files>
+	
+	<AdditionalOptions/>
+</Template>
+
+
