@@ -22,7 +22,7 @@ using System;
 /// </remarks>
 	
 namespace SharpReportCore {	
-	public class MissingDataSourceException : System.ApplicationException {
+	public class MissingDataSourceException : System.Exception {
 		
 		string errorMessage = String.Empty;
 		

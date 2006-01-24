@@ -96,8 +96,8 @@ namespace SharpReportCore {
 					}
 					sortValues.Add(new SortComparer(col, rowIndex, values));
 				}
-			} catch (Exception e) {
-				throw e;
+			} catch (Exception) {
+				throw ;
 			}
 			
 			sortValues.Sort();
@@ -122,8 +122,8 @@ namespace SharpReportCore {
 					values[0] = rowIndex;
 					sortValues.Add(new BaseComparer(col, rowIndex, values));
 				}
-			} catch (Exception e) {
-				throw e;
+			} catch (Exception) {
+				throw ;
 			}
 			return sortValues;;
 		}

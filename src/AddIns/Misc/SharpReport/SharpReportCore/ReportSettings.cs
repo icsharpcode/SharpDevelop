@@ -38,7 +38,8 @@ namespace SharpReportCore{
 	/// This class stores all the basic settings of an Report
 	/// </summary>
 	/// 
-	public class ReportSettings : BaseSettings,SharpReportCore.IStoreable,SharpReportCore.ISectionRenderer{
+	public class ReportSettings : BaseSettings,SharpReportCore.IStoreable,
+	SharpReportCore.ISectionRenderer,IDisposable{
 
 		private string connectionString;
 		private string commandText;
@@ -109,8 +110,8 @@ namespace SharpReportCore{
 						}
 					}
 				}
-			} catch (Exception e) {
-				throw e;
+			} catch (Exception ) {
+				throw ;
 			}
 		}
 		
@@ -499,7 +500,7 @@ namespace SharpReportCore{
 			set {
 				if (reportType != value) {
 					reportType = value;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 				}
 			}
 		}
@@ -544,7 +545,7 @@ namespace SharpReportCore{
 				}
 				if (groupingsCollection != value) {
 					groupingsCollection = value;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 				}
 			}
 		}
@@ -565,7 +566,7 @@ namespace SharpReportCore{
 				}
 				if (reportParametersCollection != value) {
 					reportParametersCollection = value;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 				}
 			}
 		}
@@ -582,7 +583,7 @@ namespace SharpReportCore{
 			set {
 				if (connectionString != value) {
 					connectionString = value;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 				}
 			}
 		}
@@ -597,7 +598,7 @@ namespace SharpReportCore{
 			set {
 				if (commandText != value) {
 					commandText = value;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 				}
 			}
 		}
@@ -611,7 +612,7 @@ namespace SharpReportCore{
 			set {
 				if (commandType != value) {
 					commandType = value;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 				}
 			}
 		}
@@ -625,7 +626,7 @@ namespace SharpReportCore{
 			set {
 				if (dataModel != value) {
 					dataModel = value;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 				}
 			}
 		}
@@ -645,7 +646,7 @@ namespace SharpReportCore{
 			set {
 				if (defaultFont != value) {
 					defaultFont = value;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 				}
 			}
 		}
@@ -667,5 +668,15 @@ namespace SharpReportCore{
 		}
 		 */
 		#endregion
+		
+		#region IDisposable
+		public void Dispose(){
+			if (this.defaultFont != null) {
+				this.defaultFont.Dispose();
+			}
+		}
+		
+		#endregion
+		
 	}
 }

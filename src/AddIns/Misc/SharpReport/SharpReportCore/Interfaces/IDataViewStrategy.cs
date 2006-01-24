@@ -83,6 +83,6 @@ namespace SharpReportCore{
  		/// <summary>
  		/// Fired each tim the grouping will change, this means theGroupLevel changes up or down
  		/// </summary>
- 		event GroupChangedEventHandler GroupChanged;
+ 		event EventHandler <GroupChangedEventArgs> GroupChanged;
 	}
 }

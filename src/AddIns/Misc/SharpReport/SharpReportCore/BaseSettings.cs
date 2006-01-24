@@ -59,21 +59,23 @@ namespace SharpReportCore {
 		}
 		
 		public BaseSettings(PageSettings pageSettings , string reportName,string fileName){
-			if (reportName == "") {
+			if (pageSettings == null) {
+				throw new ArgumentException("BaseSettings:PageSettings");
+			}
+			
+			if (String.IsNullOrEmpty(reportName)) {
 				this.reportName = GlobalValues.SharpReportStandartFileName;
 			} else {
 				this.reportName = reportName;
 			}
 			
-			if (fileName == "") {
+			if (String.IsNullOrEmpty(fileName)) {
 				this.fileName = GlobalValues.SharpReportPlainFileName;
 			} else {
 				this.fileName = MakePoperFilename(fileName);
 			}
 			
-			if (pageSettings == null) {
-				throw new ArgumentException("BaseSettings:pageSettings");
-			}
+			
 			this.pageSettings = pageSettings;
 			
 			
@@ -101,7 +103,7 @@ namespace SharpReportCore {
 		}
 		#endregion
 		
-		protected void FirePropertyChanged() {
+		protected void NotifyPropertyChanged() {
 			if (this.initDone) {
 				if (PropertyChanged != null) {
 					PropertyChanged (this,new EventArgs());
@@ -144,7 +146,7 @@ namespace SharpReportCore {
 			set {
 				if (includeSettings != value) {
 					includeSettings = value;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 				}
 			}
 		}
@@ -161,7 +163,7 @@ namespace SharpReportCore {
 			set {
 				if (reportName != value) {
 					reportName = value;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 				}
 			}
 		}
@@ -179,7 +181,7 @@ namespace SharpReportCore {
 			set {
 				if (fileName != value) {
 					fileName = value;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 					if (FileNameChanged != null ){
 						FileNameChanged (this,EventArgs.Empty);
 					}
@@ -196,7 +198,7 @@ namespace SharpReportCore {
 			set {
 				if (useStandartPrinter != value) {
 					useStandartPrinter = value;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 				}
 			}
 		}
@@ -210,7 +212,7 @@ namespace SharpReportCore {
 			}
 			set {
 				this.pageSettings = value;
-				this.FirePropertyChanged();
+				this.NotifyPropertyChanged();
 			}
 		}
 		
@@ -224,7 +226,7 @@ namespace SharpReportCore {
 				if (defaultMargins != value) {
 					defaultMargins = value;
 					PageSettings.Margins = defaultMargins;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 				}
 				
 			}
@@ -238,7 +240,7 @@ namespace SharpReportCore {
 			set {
 				if (graphicsUnit != value) {
 					graphicsUnit = value;
-					this.FirePropertyChanged();
+					this.NotifyPropertyChanged();
 				}
 			}
 		}

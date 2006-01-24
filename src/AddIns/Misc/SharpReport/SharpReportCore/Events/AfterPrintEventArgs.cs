@@ -22,9 +22,6 @@ using System.Drawing;
 	/// </remarks>
 	
 namespace SharpReportCore {
-	
-	public delegate void BeforePrintEventHandler(object sender, EventArgs e);
-	public delegate void AfterPrintEventHandler(object sender, AfterPrintEventArgs e);
 		
 	public class AfterPrintEventArgs : System.EventArgs {
 		PointF toPoint;

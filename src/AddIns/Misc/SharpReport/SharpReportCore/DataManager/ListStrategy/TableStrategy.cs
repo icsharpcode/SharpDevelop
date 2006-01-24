@@ -24,7 +24,7 @@ namespace SharpReportCore {
 	/// 	created by - Forstmeier Peter
 	/// 	created on - 23.10.2005 15:12:06
 	/// </remarks>
-	public class TableStrategy : BaseListStrategy {
+	public class TableStrategy : BaseListStrategy,IDisposable {
 		
 		DataTable table;
 		DataView view = new DataView();
@@ -105,8 +105,8 @@ namespace SharpReportCore {
 					values[0] = rowIndex;
 					sortValues.Add(new BaseComparer(col, rowIndex, values));
 				}
-			} catch (Exception e) {
-				throw e;
+			} catch (Exception) {
+				throw ;
 			}
 			return sortValues;;
 		}
@@ -363,6 +363,15 @@ namespace SharpReportCore {
 		public override bool IsSorted {
 			get {
 				return (this.view.Sort.Length > 0);
+			}
+		}
+		
+		#endregion
+		
+		#region IDisposable
+		public void Dispose(){
+			if (this.view != null) {
+				this.view.Dispose();
 			}
 		}
 		

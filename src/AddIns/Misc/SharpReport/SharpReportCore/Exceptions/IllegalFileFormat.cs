@@ -19,7 +19,7 @@ using System;
 	/// </remarks>
 namespace SharpReportCore {	
 	
-	public class IllegalFileFormatException : System.ApplicationException {
+	public class IllegalFileFormatException : System.Exception {
 		static string errMess = "<aus code> Could not read file , file corrupt (SharpReportFile is improperly formatted)";
 		
 		private string localisedMessage = String.Empty;

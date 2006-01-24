@@ -49,7 +49,7 @@ namespace SharpReportCore {
 		private ListChangedEventArgs resetList = new ListChangedEventArgs(ListChangedType.Reset,-1,-1);
 		
 		public event ListChangedEventHandler ListChanged;
-		public event GroupChangedEventHandler GroupChanged;
+		public event EventHandler <GroupChangedEventArgs> GroupChanged;
 		
 		/// <summary>
 		/// use this Constructor for PullDataReports
@@ -141,7 +141,7 @@ System.Console.WriteLine("CheckAndSetReportSettings");
 				
 			} catch (Exception e) {
 				MessageBox.Show (e.Message);
-				throw e;
+				throw ;
 			}
 			
 			this.reportSettings = settings;
@@ -160,7 +160,6 @@ System.Console.WriteLine("CheckAndSetReportSettings");
 				if (source is DataTable) {
 					DataTable tbl = source as DataTable;
 					this.dataMember = tbl.TableName;
-					System.Console.WriteLine("\t Source = table with {0}",tbl.Rows.Count);
 					return;
 				}
 				
@@ -397,7 +396,7 @@ System.Console.WriteLine("CheckAndSetReportSettings");
 		
 		public bool DataBind() {
 			this.dataViewStrategy.Bind();
-			this.dataViewStrategy.GroupChanged += new GroupChangedEventHandler(OnGroupChange);
+			this.dataViewStrategy.GroupChanged += new EventHandler <GroupChangedEventArgs>(OnGroupChange);
 			CheckReportColumns();
 			return true;
 		}

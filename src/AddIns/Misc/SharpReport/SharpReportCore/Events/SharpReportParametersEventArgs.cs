@@ -21,8 +21,6 @@ namespace SharpReportCore {
 	/// 	created on - 23.06.2005 22:55:10
 	/// </remarks>
 	
-	public delegate void SharpReportParametersEventHandler (object sender,
-	                                                       SharpReportParametersEventArgs e);
 	
 	public class SharpReportParametersEventArgs : System.EventArgs {
 		

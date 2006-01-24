@@ -31,7 +31,7 @@ namespace SharpReportCore {
 		private Font font;
 		private ISite site;
 		
-		public event FormatOutputEventHandler FormatOutput;
+		public event EventHandler <FormatOutputEventArgs> FormatOutput;
 		public event EventHandler Disposed;
 		
 		public BaseReportItem() :base(){

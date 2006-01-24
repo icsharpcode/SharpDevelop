@@ -33,11 +33,11 @@ namespace SharpReportCore {
 			this.standartStringFormat = GlobalValues.StandartStringFormat();
 		}
 		
-		public override void Render(ReportPageEventArgs e) {
-			base.Render(e);
-			RectangleF rect = PrepareRectangle (e,this.Text);
-			PrintTheStuff (e,this.Text,rect);
-			base.OnAfterPrint (e.LocationAfterDraw);
+		public override void Render(ReportPageEventArgs rpea) {
+			base.Render(rpea);
+			RectangleF rect = PrepareRectangle (rpea,this.Text);
+			PrintTheStuff (rpea,this.Text,rect);
+			base.OnAfterPrint (rpea.LocationAfterDraw);
 		}
 		
 		public override string ToString() {
@@ -66,10 +66,10 @@ namespace SharpReportCore {
 		/// Measure the Size of the String rectangle
 		/// </summary>
 		
-		private SizeF MeasureReportItem (ReportPageEventArgs e,string text) {
+		private SizeF MeasureReportItem (ReportPageEventArgs rpea,string text) {
 			SizeF measureSizeF = new SizeF ();
-
-			measureSizeF = e.PrintPageEventArgs.Graphics.MeasureString(text,
+			
+			measureSizeF = rpea.PrintPageEventArgs.Graphics.MeasureString(text,
 			                                                          this.Font,
 			                                                          this.Size.Width,
 			                                                          StandartStringFormat);
@@ -83,22 +83,24 @@ namespace SharpReportCore {
 		/// <param name="toPrint">Formatted String toprint</param>
 		/// <param name="rectangle">rectangle where to draw the string</param>
 	
-		protected void PrintTheStuff (ReportPageEventArgs e,
+		protected void PrintTheStuff (ReportPageEventArgs rpea,
 		                              string toPrint,
 		                              RectangleF rectangle ) {
 			
-			
+			if (rpea == null) {
+				throw new ArgumentException (this.Name);
+			}
 			StringFormat fmt = StandartStringFormat;
 			fmt.Alignment = this.StringAlignment;
 			
-			textDrawer.DrawString(e.PrintPageEventArgs.Graphics,
+			textDrawer.DrawString(rpea.PrintPageEventArgs.Graphics,
 			                      toPrint,
 			                      this.Font,
 			                      new SolidBrush(this.ForeColor),
 			                      rectangle,
 			                      fmt);
 
-			e.LocationAfterDraw = new PointF (this.Location.X + this.Size.Width,
+			rpea.LocationAfterDraw = new PointF (this.Location.X + this.Size.Width,
 			                                  this.Location.Y + this.Size.Height);
 		}
 	

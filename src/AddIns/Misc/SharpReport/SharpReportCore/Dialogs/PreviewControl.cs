@@ -28,19 +28,21 @@ namespace SharpReportCore{
 		private System.Windows.Forms.PrintPreviewControl printPreviewControl1;
 		private System.Windows.Forms.PrintPreviewDialog previewDlg;
 
-		public PreviewControl()
-		{
+		public PreviewControl(){
 			InitializeComponent();
-			this.SetStyle(ControlStyles.DoubleBuffer |
-			              ControlStyles.UserPaint |
-			              ControlStyles.AllPaintingInWmPaint |
-			              ControlStyles.ResizeRedraw,
-			              true);
-			this.UpdateStyles();
 		}
-
-		public void ShowPreviewWithUserControl (AbstractRenderer renderer,double zoomFaktor) {
-			System.Console.WriteLine("PaintArea:WithUserControl");
+		
+		public void ShowPreview (AbstractRenderer renderer,double zoomFaktor,bool standAlone) {
+			if (renderer.Cancel == false) {
+				if (standAlone) {
+					this.ShowPreviewWithUserControl (renderer,1.5);
+				} else {
+					ShowPreviewWithDialog(renderer,1.5);
+				}
+			}
+		}
+		
+		private void ShowPreviewWithUserControl (AbstractRenderer renderer,double zoomFaktor) {
 			
 			System.Drawing.Printing.PrintDocument  doc = renderer.ReportDocument;
 			
@@ -66,7 +68,7 @@ namespace SharpReportCore{
 			printPreviewControl1.UseAntiAlias = true;
 		}
 		
-		public void ShowPreviewWithDialog (AbstractRenderer renderer,double zoomFaktor) {
+		private void ShowPreviewWithDialog (AbstractRenderer renderer,double zoomFaktor) {
 			System.Console.WriteLine("PaintArea:WithDialog");
 			System.Drawing.Printing.PrintDocument  doc = renderer.ReportDocument;
 		

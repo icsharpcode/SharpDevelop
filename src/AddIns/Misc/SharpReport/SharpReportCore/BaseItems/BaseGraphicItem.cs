@@ -32,8 +32,11 @@ namespace SharpReportCore {
 		}
 		
 		
-		protected  SizeF MeasureReportItem (SharpReportCore.ReportPageEventArgs e,IItemRenderer item) {
-				return new SizeF (item.Size.Width,item.Size.Height);
+		protected  SizeF MeasureReportItem (SharpReportCore.ReportPageEventArgs rpea,IItemRenderer item) {
+			if (item == null) {
+				throw new ArgumentException(this.Name);
+			}
+			return new SizeF (item.Size.Width,item.Size.Height);
 		}
 		
 		

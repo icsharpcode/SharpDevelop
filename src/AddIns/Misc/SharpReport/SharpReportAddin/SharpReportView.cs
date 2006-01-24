@@ -46,7 +46,7 @@ namespace SharpReportAddin{
 		private AxSideTab sideTabItem = null;
 		private AxSideTab sideTabFunctions = null;
 		private Panel panel = new Panel();
-	
+		
 		#region privates
 		
 		void InitView() {
@@ -88,7 +88,7 @@ namespace SharpReportAddin{
 		
 		#endregion
 		
-	
+		
 		
 		#region SideBar Handling
 		
@@ -120,7 +120,7 @@ namespace SharpReportAddin{
 			}
 		}
 		
-	
+		
 		
 		
 		void RemoveSideBarItem() {
@@ -202,58 +202,56 @@ namespace SharpReportAddin{
 		
 		#region Preview handling
 		
+		private DataSet DataSetFromFile () {
+			DataSet ds = new DataSet();
+			using (OpenFileDialog openFileDialog = new OpenFileDialog()){
+				openFileDialog.Filter = GlobalValues.XsdFileFilter;
+				openFileDialog.DefaultExt = GlobalValues.XsdExtension;
+				openFileDialog.AddExtension    = true;
+				if(openFileDialog.ShowDialog() == DialogResult.OK){
+					if (openFileDialog.FileName.Length > 0) {
+						
+						ds.ReadXml (openFileDialog.FileName);
+					}
+				}
+			}
+			return ds;
+		}
 		
 		private void RunPreview(bool standAlone) {
 			base.OnSaving(EventArgs.Empty);
-			
-			System.Console.WriteLine("View:RunPreview for <{0}>",designerControl.ReportModel.ReportSettings.DataModel);
 			try {
-				switch (designerControl.ReportModel.ReportSettings.DataModel) {
-					case GlobalEnums.enmPushPullModel.FormSheet : {
-						System.Console.WriteLine("\tFormSheet");
-						PreviewStandartReport(standAlone);
-						break;
-					}
-					case GlobalEnums.enmPushPullModel.PullData:{
-						System.Console.WriteLine("\tPullData");	
-						PreviewStandartReport(standAlone);
-						break;
-					}
-					case GlobalEnums.enmPushPullModel.PushData:{
-						System.Console.WriteLine("\tPushData");
-						PreviewPushReport (standAlone);
-						break;
-					}
-				default:
-					throw new SharpReportException("Wrong ReportType");
-					
-			}
+				switch (designerControl.ReportModel.DataModel) {
+						case GlobalEnums.enmPushPullModel.FormSheet : {
+							PreviewStandartReport(standAlone);
+							break;
+						}
+						case GlobalEnums.enmPushPullModel.PullData:{
+							PreviewStandartReport(standAlone);
+							break;
+						}
+						case GlobalEnums.enmPushPullModel.PushData:{
+							PreviewPushReport (standAlone);
+							break;
+						}
+					default:
+						throw new SharpReportException("Wrong ReportType");
+						
+				}
 			} catch (Exception e) {
 				MessageBox.Show("Error in RunPreview" + e.Message);
 			}
 			
 		}
-	
-			
+		
+		
 		
 		private void PreviewPushReport (bool standAlone){
-			System.Console.WriteLine("View:PreviewPushDataReport");
 			try {
-				using (OpenFileDialog openFileDialog = new OpenFileDialog()){
-					openFileDialog.Filter = GlobalValues.XsdFileFilter;
-					openFileDialog.DefaultExt = GlobalValues.XsdExtension;
-					openFileDialog.AddExtension    = true;
-					
-					if(openFileDialog.ShowDialog() == DialogResult.OK){
-						if (openFileDialog.FileName.Length > 0) {
-							DataSet ds = new DataSet();
-							ds.ReadXml (openFileDialog.FileName);
-							reportManager.ReportPreviewPushData(designerControl.ReportModel,
-							                                    ds.Tables[0],
-							                                    standAlone);
-						}
-					}
-				}
+				DataSet ds = DataSetFromFile ();
+				reportManager.ReportPreviewPushData(designerControl.ReportModel,
+				                                    ds,
+				                                    standAlone);
 			}catch (Exception e){
 				MessageService.ShowError (e,e.Message);
 			}
@@ -261,12 +259,12 @@ namespace SharpReportAddin{
 		
 		
 		private void PreviewStandartReport(bool standAlone){
-			System.Console.WriteLine("View:PreviewStandartReport");
-			reportManager.NoData -= new SharpReportEventHandler (OnNoDataForReport);
-			reportManager.NoData += new SharpReportEventHandler (OnNoDataForReport);
+			reportManager.NoData -= new EventHandler<SharpReportEventArgs> (OnNoDataForReport);
+			reportManager.NoData += new EventHandler<SharpReportEventArgs> (OnNoDataForReport);
 			
-			reportManager.ParametersRequest -= new SharpReportParametersEventHandler (OnParametersRequest);
-			reportManager.ParametersRequest += new SharpReportParametersEventHandler (OnParametersRequest);
+			reportManager.ParametersRequest -= new EventHandler<SharpReportParametersEventArgs> (OnParametersRequest);
+			reportManager.ParametersRequest +=  new EventHandler<SharpReportParametersEventArgs>(OnParametersRequest);
+			
 			reportManager.ReportPreview (designerControl.ReportModel, standAlone);
 			
 		}
@@ -359,7 +357,7 @@ namespace SharpReportAddin{
 				PropertyPad.Grid.SelectedObject = designerControl.ReportControl.SelectedObject;
 			}
 		}
-	
+		
 		protected override void OnFileNameChanged(System.EventArgs e) {
 			base.OnFileNameChanged(e);
 		}
@@ -375,22 +373,18 @@ namespace SharpReportAddin{
 			PropertyPad.Grid.SelectedObject = designerControl.ReportControl.ReportSettings;
 			PropertyPad.Grid.Refresh();
 		}
-	
+		
 		
 		/// <summary>
 		/// Show's Report in PreviewControl
 		/// </summary>
 		public void OnPreviewClick () {
-			reportManager.NoData -= new SharpReportEventHandler (OnNoDataForReport);
-			reportManager.NoData += new SharpReportEventHandler (OnNoDataForReport);
-		
-			reportManager.ParametersRequest -= new SharpReportParametersEventHandler (OnParametersRequest);
-			reportManager.ParametersRequest += new SharpReportParametersEventHandler (OnParametersRequest);
+			reportManager.NoData -= new EventHandler<SharpReportEventArgs> (OnNoDataForReport);
+			reportManager.NoData += new EventHandler<SharpReportEventArgs> (OnNoDataForReport);
+			
+			reportManager.ParametersRequest -= new EventHandler<SharpReportParametersEventArgs> (OnParametersRequest);
+			reportManager.ParametersRequest +=  new EventHandler<SharpReportParametersEventArgs>(OnParametersRequest);
 			base.OnSaving(EventArgs.Empty);
-			System.Console.WriteLine("");
-			System.Console.WriteLine("!! OnPreviewClick !!");
-//			reportManager.ReportPreview (designerControl.ReportModel,
-//			                             false);
 			this.RunPreview(false);
 		}
 
@@ -435,7 +429,7 @@ namespace SharpReportAddin{
 		
 		#region Propertys
 		/// <summary>
-		/// Returns the complete Designer 
+		/// Returns the complete Designer
 		/// </summary>
 		
 		public BaseDesignerControl DesignerControl {
@@ -526,9 +520,9 @@ namespace SharpReportAddin{
 		/// <param name="fileName">A valid Filename</param>
 		public override void Load(string fileName){
 			try {
-				designerControl.ReportControl.ObjectSelected -= new SelectedEventHandler (OnObjectSelected);			
-				reportManager.LoadFromFile (fileName);		
-				base.FileName = fileName;			
+				designerControl.ReportControl.ObjectSelected -= new SelectedEventHandler (OnObjectSelected);
+				reportManager.LoadFromFile (fileName);
+				base.FileName = fileName;
 				designerControl.ReportModel.ReportSettings.FileName = fileName;
 				designerControl.ReportControl.ObjectSelected += new SelectedEventHandler (OnObjectSelected);
 				PropertyPad.Grid.SelectedObject = designerControl.ReportModel.ReportSettings;
@@ -562,11 +556,14 @@ namespace SharpReportAddin{
 			get {
 				System.Console.WriteLine("");
 				System.Console.WriteLine("!! PrintDocument  !!");
-				
-				 if (this.designerControl.ReportModel.ReportSettings.DataModel == GlobalEnums.enmPushPullModel.PushData) {
-					MessageService.ShowMessage("PushModel currently not supported");
+				AbstractRenderer renderer;
+				if (this.designerControl.ReportModel.DataModel == GlobalEnums.enmPushPullModel.PushData) {
+					renderer = reportManager.GetRendererForPushDataReports(this.designerControl.ReportModel,
+					                                                       this.DataSetFromFile());
+					
+				} else {
+					renderer = reportManager.GetRendererForStandartReports(this.designerControl.ReportModel);
 				}
-				AbstractRenderer renderer = reportManager.GetRenderer(this.designerControl.ReportModel);
 				return renderer.ReportDocument;
 			}
 		}

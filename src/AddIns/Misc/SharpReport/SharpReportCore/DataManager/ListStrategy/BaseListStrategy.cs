@@ -37,7 +37,7 @@ namespace SharpReportCore {
 		private ListChangedEventArgs resetList = new ListChangedEventArgs(ListChangedType.Reset,-1,-1);
 		
 		public event ListChangedEventHandler ListChanged;
-		public event GroupChangedEventHandler GroupChanged;
+		public event EventHandler <GroupChangedEventArgs> GroupChanged;
 		
 		#region Constructor
 		public BaseListStrategy(ReportSettings reportSettings) {

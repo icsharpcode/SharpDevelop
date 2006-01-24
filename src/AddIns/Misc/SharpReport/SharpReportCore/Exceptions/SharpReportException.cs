@@ -21,7 +21,7 @@ using System.Windows.Forms;
 	/// </remarks>
 	/// 
 namespace SharpReportCore {	
-	public class SharpReportException : System.ApplicationException {
+	public class SharpReportException : System.Exception {
 		
 		
 		string errorMessage = String.Empty;

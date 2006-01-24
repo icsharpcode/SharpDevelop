@@ -17,11 +17,12 @@ using System.Drawing.Printing;
 	/// 
 	/// </summary>
 	/// <remarks>
-	/// 	created by - Forstmeier Helmut
+	/// 	created by - Forstmeier Peter
 	/// 	created on - 21.11.2004 14:59:06
 	/// </remarks>
 namespace SharpReportCore {	
-	public class ReportPageEventArgs : System.EventArgs {
+	
+		public class ReportPageEventArgs : System.EventArgs {
 		
 		/// <summary>
 		/// Default constructor - initializes all fields to default values

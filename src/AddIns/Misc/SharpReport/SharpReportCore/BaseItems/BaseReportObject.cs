@@ -42,8 +42,9 @@ namespace SharpReportCore {
 		private int  sectionOffset = 0;
 		private int sectionMargin = 0;
 
-		public event BeforePrintEventHandler BeforePrint;
-		public event AfterPrintEventHandler AfterPrint;
+		public event EventHandler<EventArgs> BeforePrint;
+		public event EventHandler<AfterPrintEventArgs> AfterPrint;
+		
 		
 		#region SharpReportCore.IPropertyChange interface implementation
 		public event PropertyChangedEventHandler PropertyChanged;

@@ -11,7 +11,6 @@ using System;
 	/// This Delegate is used to format the output from TextBased Items
 	/// </summary>
 namespace SharpReportCore {
-	public delegate void FormatOutputEventHandler (object sender,FormatOutputEventArgs e);
 	
 	public class FormatOutputEventArgs : System.EventArgs {
 		

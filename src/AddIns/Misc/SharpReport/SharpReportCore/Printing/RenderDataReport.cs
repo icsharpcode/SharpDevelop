@@ -21,6 +21,7 @@
 // Peter Forstmeier (Peter.Forstmeier@t-online.de)
 
 using System;
+using System.Globalization;
 using System.Data;
 using System.Drawing;
 using System.Drawing.Printing;
@@ -89,7 +90,7 @@ namespace SharpReportCore {
 			Rectangle detailRect;
 			
 			base.PrintBodyStart (sender,e);
-			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail);
+			base.SectionInUse = Convert.ToInt16(GlobalEnums.enmSection.ReportDetail,CultureInfo.InvariantCulture);
 			
 			BaseSection section = base.CurrentSection;
 			

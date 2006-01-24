@@ -17,7 +17,6 @@ using System;
 /// 	created on - 29.11.2005 16:48:53
 /// </remarks>
 namespace SharpReportCore {
-	public delegate void GroupChangedEventHandler(object sender, GroupChangedEventArgs e);
 	
 	public class GroupChangedEventArgs : System.EventArgs {
 		

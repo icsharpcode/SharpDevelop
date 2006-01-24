@@ -34,7 +34,7 @@ namespace SharpReportCore {
 	using SharpReportCore;
 	
 	
-	public class ReportModel : object,SharpReportCore.IModel{
+	public class ReportModel : object,SharpReportCore.IModel,IDisposable{
 		
 		ReportSettings reportSettings;
 		ReportSectionCollection sectionCollection;
@@ -104,7 +104,14 @@ namespace SharpReportCore {
 			}
 		}
 		
+		// this Property is only a shortcut,,otherwise we have
+		// to use 'ReportModel.reportSettings.DataModel'
 		
+		public GlobalEnums.enmPushPullModel DataModel {
+			get {
+				return reportSettings.DataModel;
+			}
+		}
 		
 		public ReportSectionCollection SectionCollection {
 			get {
@@ -115,6 +122,14 @@ namespace SharpReportCore {
 			}
 		}
 		
+		#endregion
+		
+		#region IDispoable
+		public void Dispose(){
+			if (this.reportSettings != null) {
+				this.reportSettings.Dispose();
+			}
+		}
 		#endregion
 	}
 }

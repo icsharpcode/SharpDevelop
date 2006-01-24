@@ -85,7 +85,7 @@ namespace SharpReport{
 				return new ColumnCollection();
 			}
 	
-			if (baseDesignerControl.ReportModel.ReportSettings.DataModel.Equals(GlobalEnums.enmPushPullModel.PushData)) {
+			if (baseDesignerControl.ReportModel.DataModel.Equals(GlobalEnums.enmPushPullModel.PushData)) {
 				return new ColumnCollection();
 			}
 			// PullData, query the Datasource and ask for the available Fields
@@ -93,7 +93,7 @@ namespace SharpReport{
 				base.ConnectionObject = this.BuildConnectionObject(baseDesignerControl.ReportModel.ReportSettings);
 			}
 			
-			if (this.baseDesignerControl.ReportModel.ReportSettings.DataModel.Equals(GlobalEnums.enmPushPullModel.PullData)){
+			if (this.baseDesignerControl.ReportModel.DataModel.Equals(GlobalEnums.enmPushPullModel.PullData)){
 				
 				using (dataManager = new DataManager(base.ConnectionObject,
 				                                     baseDesignerControl.ReportModel.ReportSettings)) {
@@ -103,21 +103,14 @@ namespace SharpReport{
 			}
 			
 			//Pushdata, we walk thru all sections and collect the ReportDataItems
-			if (this.baseDesignerControl.ReportModel.ReportSettings.DataModel == GlobalEnums.enmPushPullModel.PushData) {
+			if (this.baseDesignerControl.ReportModel.DataModel == GlobalEnums.enmPushPullModel.PushData) {
 				return base.CollectFieldsFromModel(this.baseDesignerControl.ReportModel);
 			}
 			throw new ArgumentOutOfRangeException("SharpReportManager:ReadColumnCollection");
 		}
 		
 		
-		private AbstractRenderer BuildRenderer (ReportModel model) {
-			
-			System.Console.WriteLine("BuildRenderer");
-			if (base.ConnectionObject == null) {
-				base.ConnectionObject = this.BuildConnectionObject(model.ReportSettings);
-			}
-			return  base.AbstractRenderer(model);
-		}
+		
 		
 		
 		private void AddItemsToSection (BaseSection section,ReportItemCollection collection) {
@@ -322,12 +315,13 @@ namespace SharpReport{
 		
 		#region Preview
 		
-		public  AbstractRenderer GetRenderer (ReportModel model) {
+		
+		public  AbstractRenderer GetRendererForStandartReports (ReportModel model) {
 			System.Console.WriteLine("Manager.GetRenderer");
 			if (model == null) {
-				throw new ArgumentException("SharpReportManager:GetRenderer 'ReportModel'");
+				throw new ArgumentException("SharpReportManager:GetRendererForStandartReports 'ReportModel'");
 			}
-			return this.BuildRenderer (model);
+			return this.BuildStandartRenderer (model);
 		}
 		
 		/// <summary>
@@ -335,21 +329,11 @@ namespace SharpReport{
 		/// </summary>
 		/// <param name="model"><see cref="">ReportModel</see></param>
 		/// <param name="showInUserControl"></param>
-		public void ReportPreview (ReportModel model,bool showInUserControl) {
+		public void ReportPreview (ReportModel model,bool standAlone) {
 			try {
-				System.Console.WriteLine("");
-				System.Console.WriteLine("Manager:ReportPreview");
-				System.Console.WriteLine("");
-				AbstractRenderer abstr = this.BuildRenderer (model);
-				
+				AbstractRenderer abstr = this.BuildStandartRenderer (model);
 				if (abstr != null) {
-					if (abstr.Cancel == false) {
-						if (showInUserControl){
-							PreviewControl.ShowPreviewWithUserControl (abstr,1.5);
-						} else {
-							PreviewControl.ShowPreviewWithDialog (abstr,1.5);
-						}
-					}
+					PreviewControl.ShowPreview (abstr,1.5,standAlone);
 				}
 				
 			} catch (Exception ) {
@@ -357,21 +341,41 @@ namespace SharpReport{
 			}
 		}
 		
+		private AbstractRenderer BuildStandartRenderer (ReportModel model) {
+			if (model == null) {
+				throw new ArgumentException("SharpReportManager:BuildStandartRenderer 'ReportModel'");
+			}
+			
+			if (base.ConnectionObject == null) {
+				base.ConnectionObject = this.BuildConnectionObject(model.ReportSettings);
+			}
+			return  base.AbstractRenderer(model);
+		}
+		
+		
+		public AbstractRenderer GetRendererForPushDataReports (ReportModel model,DataSet dataSet) {
+			if (model == null) {
+				throw new ArgumentException("SharpReportManager:GetRendererForPushDataReports 'ReportModel'");
+			}
+			if (dataSet == null) {
+				throw new ArgumentException("SharpReportManager:GetRendererForPushDataReports 'DataSet'");
+			}
+			return base.SetupPushDataRenderer(model,dataSet.Tables[0]);
+		}
+		
+		
 		public void ReportPreviewPushData (ReportModel model,
-		                                   DataTable dataTable,
-		                                   bool showInUserControl) {
+		                                   DataSet dataSet,
+		                                   bool standAlone) {
+			if (model == null) {
+				throw new ArgumentException("SharpReportManager:ReportPreviewPushData 'ReportModel'");
+			}
+			
 			try {
-				System.Console.WriteLine("PreviewPushData with {0} Rows in Table",dataTable.Rows.Count);
-				AbstractRenderer abstr = base.SetupPushDataRenderer(model,dataTable);
-				
+				AbstractRenderer abstr = GetRendererForPushDataReports (model,dataSet);
 				if (abstr != null) {
-					if (abstr.Cancel == false) {
-						if (showInUserControl){
-							PreviewControl.ShowPreviewWithUserControl (abstr,1.5);
-						} else {
-							PreviewControl.ShowPreviewWithDialog (abstr,1.5);
-						}
-					}
+					
+					PreviewControl.ShowPreview (abstr,1.5,standAlone);
 				}
 				
 			} catch (Exception) {

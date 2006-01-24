@@ -19,6 +19,7 @@ namespace SharpReportCore
 	internal class SqlQueryCkecker{
 		internal string UPDATE = "UPDATE";
 		internal string DELETE = "DELETE";
+		internal string INSERT = "INSERT";
 		internal string noValidMessage = "is no valid Member of SqlString";
 		private string queryString;
 		
@@ -38,7 +39,11 @@ namespace SharpReportCore
 				if (this.queryString.IndexOf(this.DELETE) > -1)  {
 					this.Invalid (this.DELETE);
 					string str = String.Format("{0} is no valid Member of SqlString",this.DELETE);
-					
+				}
+				
+				if (this.queryString.IndexOf(this.INSERT) > -1)  {
+					this.Invalid (this.INSERT);
+					string str = String.Format("{0} is no valid Member of SqlString",this.DELETE);
 				}
 			}
 		}

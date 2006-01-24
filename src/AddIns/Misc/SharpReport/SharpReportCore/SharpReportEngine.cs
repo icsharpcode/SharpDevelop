@@ -26,7 +26,7 @@ using System.Data;
 using System.Data.OleDb;
 
 using SharpReportCore;
-	
+
 /// <summary>
 /// This Class contains the basic Functions to handle reports
 /// </summary>
@@ -34,16 +34,18 @@ using SharpReportCore;
 /// 	created by - Forstmeier Peter
 /// 	created on - 31.08.2005 16:21:38
 /// </remarks>
-	
+
 namespace SharpReportCore {
-	public class SharpReportEngine : object {
+	public class SharpReportEngine : object,IDisposable {
 		
 		private PreviewControl previewControl = null;
 		
 		private ConnectionObject connectionObject = null;
 		
-		public event SharpReportEventHandler NoData;
-		public event SharpReportParametersEventHandler ParametersRequest;
+		public event EventHandler <SharpReportEventArgs> NoData;
+//		public event EventSharpReportEventHandler NoData;
+//		public event SharpReportParametersEventHandler ParametersRequest;
+		public event EventHandler <SharpReportParametersEventArgs> ParametersRequest;
 		
 		public SharpReportEngine() {
 			if (SharpReportCore.GlobalValues.IsValidPrinter() == false) {
@@ -81,7 +83,7 @@ namespace SharpReportCore {
 		}
 		
 		
-		void GrapSqlParameters (ReportSettings settings) {                              
+		void GrapSqlParameters (ReportSettings settings) {
 			if (settings.SqlParametersCollection != null && settings.SqlParametersCollection.Count > 0) {
 				if (this.ParametersRequest != null) {
 					SharpReportParametersEventArgs e = new SharpReportParametersEventArgs();
@@ -89,7 +91,7 @@ namespace SharpReportCore {
 					e.ReportName = settings.ReportName;
 					ParametersRequest (this,e);
 				}
-			} 
+			}
 			
 		}
 		
@@ -116,7 +118,7 @@ namespace SharpReportCore {
 		
 		private void ApplyReportParameters (ReportModel model,ReportParameters parameters){
 			if ((model == null)||(parameters == null )){
-			    	throw new ArgumentNullException("SharpReportEngine:ApplyReportParameters");
+				throw new ArgumentNullException("SharpReportEngine:ApplyReportParameters");
 			}
 			
 			SetSqlParameters (model,parameters.SqlParameters);
@@ -126,7 +128,7 @@ namespace SharpReportCore {
 		
 		#region Setup for print/preview
 		private bool CheckForPushModel (ReportModel model) {
-			if (model.ReportSettings.DataModel == GlobalEnums.enmPushPullModel.PushData) {				
+			if (model.ReportSettings.DataModel == GlobalEnums.enmPushPullModel.PushData) {
 				return true;
 			} else {
 				return false;
@@ -142,7 +144,7 @@ namespace SharpReportCore {
 				if (settings.CommandText != null) {
 					try {
 						GrapSqlParameters (settings);
-	
+						
 						if (this.connectionObject != null) {
 							DataManager container = new DataManager(this.connectionObject,
 							                                        settings);
@@ -181,7 +183,7 @@ namespace SharpReportCore {
 					BaseDataItem baseItem = item as BaseDataItem;
 					if (baseItem != null) {
 						col.Add(new AbstractColumn(baseItem.ColumnName));
-						                           
+						
 					}
 					
 				}
@@ -193,15 +195,15 @@ namespace SharpReportCore {
 		protected SharpReportCore.AbstractRenderer SetupStandartRenderer (ReportModel model) {
 			AbstractRenderer abstr = null;
 			switch (model.ReportSettings.ReportType) {
-				//FormSheets reports
+					//FormSheets reports
 				case GlobalEnums.enmReportType.FormSheet:
-					abstr = new RendererFactory().Create (model,null);			
+					abstr = new RendererFactory().Create (model,null);
 					break;
-				//Databased reports
+					//Databased reports
 				case GlobalEnums.enmReportType.DataReport :
 					DataManager dataManager = SetupDataContainer (model.ReportSettings);
 					if (dataManager != null) {
-						if (dataManager.DataSource != null) {	
+						if (dataManager.DataSource != null) {
 							abstr = new RendererFactory().Create (model,dataManager);
 						}
 						
@@ -223,7 +225,7 @@ namespace SharpReportCore {
 						}
 					}
 					
-				 break;
+					break;
 				default:
 					throw new SharpReportException ("SharpReportmanager:SetupRenderer -> Unknown Reporttype");
 			}
@@ -231,7 +233,7 @@ namespace SharpReportCore {
 			return abstr;
 		}
 		
-	
+		
 		protected SharpReportCore.AbstractRenderer SetupPushDataRenderer (ReportModel model,
 		                                                                  DataTable dataTable) {
 			System.Console.WriteLine("SetupPushDataRenderer with {0}",dataTable.Rows.Count);
@@ -256,11 +258,11 @@ namespace SharpReportCore {
 			}
 			return null;
 		}
-			
+		
 		#endregion
 		
 		/// <summary>
-		/// Creates an <see cref="AbstractRenderer"></see> 
+		/// Creates an <see cref="AbstractRenderer"></see>
 		/// any Class deriving from this can be
 		/// used to get a <see cref="System.Drawing.Printing.PrintDocument"></see>
 		/// </summary>
@@ -282,7 +284,7 @@ namespace SharpReportCore {
 		/// this is an easy way to ask the report for desired paramaters</see></summary>
 		
 		public ReportParameters LoadParameters (string fileName) {
-				if (fileName.Length == 0) {
+			if (fileName.Length == 0) {
 				throw new ArgumentNullException("PreviewPushDataReport FileName");
 			}
 			ReportModel model = null;
@@ -325,14 +327,12 @@ namespace SharpReportCore {
 
 			ReportModel model = null;
 			AbstractRenderer renderer = null;
-			PrintDocument  doc = null;
 			try {
 				model = ModelFromFile (fileName);
 				if (CheckReportParameters (model,reportParameters)) {
 					renderer = SetupStandartRenderer (model);
-					if (renderer.Cancel == false) {
-						doc = renderer.ReportDocument;
-						PreviewControl.ShowPreviewWithDialog (renderer,1.5);
+					if (renderer != null) {
+						PreviewControl.ShowPreview(renderer,1.5,false);
 					}
 				}
 			} catch (Exception) {
@@ -354,7 +354,7 @@ namespace SharpReportCore {
 			}
 			ReportModel model = null;
 			AbstractRenderer renderer = null;
-			PrintDocument  doc = null;
+//			PrintDocument  doc = null;
 			try {
 				model = ModelFromFile (fileName);
 				
@@ -363,10 +363,13 @@ namespace SharpReportCore {
 				}
 				
 				renderer = SetupPushDataRenderer (model,dataTable);
-				if (renderer.Cancel == false) {
-					doc = renderer.ReportDocument;
-					PreviewControl.ShowPreviewWithDialog (renderer,1.5);
+				if (renderer != null) {
+					PreviewControl.ShowPreview(renderer,1.5,false);
 				}
+//				if (renderer.Cancel == false) {
+//					doc = renderer.ReportDocument;
+//					PreviewControl.ShowPreviewWithDialog (renderer,1.5);
+//				}
 			} catch (Exception) {
 				
 			}
@@ -441,7 +444,7 @@ namespace SharpReportCore {
 		
 		public void PrintPushDataReport (string fileName,
 		                                 DataTable dataTable,
-		                                bool showPrintDialog) {
+		                                 bool showPrintDialog) {
 			
 			if (fileName.Length == 0) {
 				throw new ArgumentException("PreviewPushDataReport fileName");
@@ -455,7 +458,7 @@ namespace SharpReportCore {
 				model = ModelFromFile (fileName);
 				if (!this.CheckForPushModel(model)) {
 					throw new SharpReportException ("PrintPushdataReport: No valid ReportModel");
-				}		
+				}
 				
 				renderer = SetupPushDataRenderer (model,dataTable);
 				this.ReportToPrinter(renderer,model);
@@ -481,7 +484,7 @@ namespace SharpReportCore {
 			}
 			ReportModel model = null;
 			AbstractRenderer renderer = null;
-		
+			
 			try {
 				model = ModelFromFile (fileName);
 				if (!this.CheckForPushModel(model)) {
@@ -520,10 +523,8 @@ namespace SharpReportCore {
 				model.Accept (modelVisitor);
 				return model;
 			} catch (Exception) {
-				
+				throw;
 			}
-			return null;
-			
 		}
 
 		
@@ -553,6 +554,16 @@ namespace SharpReportCore {
 			}
 		}
 		
+		#endregion
+		#region IDisposable
+		public void Dispose(){
+			if (this.connectionObject == null) {
+				this.connectionObject.Dispose();
+			}
+			if (this.previewControl != null) {
+				this.previewControl.Dispose();
+			}
+		}
 		#endregion
 	}
 }

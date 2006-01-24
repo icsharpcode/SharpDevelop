@@ -17,7 +17,7 @@ using System.Windows.Forms;
 /// This class contains some basic methodes to handel Xml related stuff
 /// </summary>
 /// <remarks>
-/// 	created by - Forstmeier Helmut
+/// 	created by - Forstmeier Peter
 /// 	created on - 31.08.2005 17:14:18
 /// </remarks>
 /// 
@@ -48,8 +48,8 @@ namespace SharpReportCore {
 				if (elem.Name.Equals (SharpReportCore.GlobalValues.SharpReportString)) {
 			    	isOk = true;
 			 	}
-			} catch (Exception e) {
-				throw e;
+			} catch (Exception) {
+				throw ;
 			}
 			return isOk;
 		}

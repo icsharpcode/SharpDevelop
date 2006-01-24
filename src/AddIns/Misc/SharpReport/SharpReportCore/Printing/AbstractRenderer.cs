@@ -37,7 +37,7 @@ using SharpReportCore;
 	/// </remarks>
 	/// 
 namespace SharpReportCore {
-	public abstract class AbstractRenderer : object {
+	public abstract class AbstractRenderer : object,IDisposable {
 		private const int gap = 1;
 		
 		private ReportDocument reportDocument;
@@ -70,11 +70,11 @@ namespace SharpReportCore {
 			
 			reportDocument.QueryPage += new QueryPageSettingsEventHandler (ReportQueryPage);
 			
-			reportDocument.ReportBegin += new ReportPageEventHandler (ReportBegin);
-			reportDocument.PrintPageBegin += new ReportPageEventHandler (BeginPrintPage);
-			reportDocument.PrintPageBodyStart += new ReportPageEventHandler (PrintBodyStart);
-			reportDocument.PrintPageBodyEnd += new ReportPageEventHandler (PrintBodyEnd);
-			reportDocument.PrintPageEnd += new ReportPageEventHandler (PrintPageEnd);
+			reportDocument.ReportBegin += new EventHandler<ReportPageEventArgs> (ReportBegin);
+			reportDocument.PrintPageBegin +=  new EventHandler<ReportPageEventArgs>(BeginPrintPage);
+			reportDocument.PrintPageBodyStart += new EventHandler<ReportPageEventArgs> (PrintBodyStart);
+			reportDocument.PrintPageBodyEnd += new EventHandler<ReportPageEventArgs> (PrintBodyEnd);
+			reportDocument.PrintPageEnd += new EventHandler<ReportPageEventArgs> (PrintPageEnd);
 			reportDocument.DocumentName = reportSettings.ReportName;
 		}
 		
@@ -184,8 +184,8 @@ namespace SharpReportCore {
 					}
 					rItem.Offset = section.SectionOffset;
 
-					rItem.FormatOutput -= new FormatOutputEventHandler (FormatBaseReportItem);
-					rItem.FormatOutput += new FormatOutputEventHandler (FormatBaseReportItem);
+					rItem.FormatOutput -= new EventHandler<FormatOutputEventArgs> (FormatBaseReportItem);
+					rItem.FormatOutput += new EventHandler<FormatOutputEventArgs> (FormatBaseReportItem);
 					
 					rItem.Render(e);
 
@@ -393,6 +393,13 @@ namespace SharpReportCore {
 			}
 			set {
 				detailStart = value;
+			}
+		}
+		#endregion
+		#region IDispoable
+		public void Dispose(){
+			if (this.reportDocument != null) {
+				this.reportDocument.Dispose();
 			}
 		}
 		#endregion

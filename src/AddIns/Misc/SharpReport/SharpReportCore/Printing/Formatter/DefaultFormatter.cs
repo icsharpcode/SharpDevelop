@@ -69,8 +69,8 @@ namespace SharpReportCore{
 						retValue = item.DbValue;
 						break;
 				}
-			} catch (Exception e) {
-				throw e;
+			} catch (Exception) {
+				throw ;
 			}
 
 			return retValue;

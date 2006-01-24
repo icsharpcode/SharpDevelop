@@ -20,7 +20,7 @@ using System.Data.OleDb;
 /// </remarks>
 
 namespace SharpReportCore {
-	public class ConnectionObject : object {
+	public class ConnectionObject : object,IDisposable {
 		IDbConnection connection;
 		string password;
 		string username;
@@ -80,6 +80,14 @@ namespace SharpReportCore {
 //				return connectionString;
 //			}
 //		}
+		public void Dispose(){
+			if (this.connection != null) {
+				if (this.connection.State == ConnectionState.Open) {
+					this.connection.Close();
+				}
+				this.connection.Dispose();
+			}
+		}
 		
 	}
 }

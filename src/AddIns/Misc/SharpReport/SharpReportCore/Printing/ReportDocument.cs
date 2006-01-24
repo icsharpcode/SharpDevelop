@@ -16,20 +16,17 @@ using SharpReportCore;
 /// </remarks>
 	
 namespace SharpReportCore {
-	public delegate void ReportPageEventHandler (object sender,
-	                                             ReportPageEventArgs rpea);
 	
 	public class ReportDocument : PrintDocument {
 		
 		public event QueryPageSettingsEventHandler QueryPage;
-		
-		public event ReportPageEventHandler ReportBegin;
-		
-		public event ReportPageEventHandler PrintPageBegin;
-		public event ReportPageEventHandler PrintPageBodyStart;
-		public event ReportPageEventHandler PrintPageBodyEnd;
-		public event ReportPageEventHandler PrintPageEnd;
-		public event ReportPageEventHandler ReportEnd;
+
+		public event EventHandler<ReportPageEventArgs> ReportBegin;
+		public event EventHandler<ReportPageEventArgs> PrintPageBegin;
+		public event EventHandler<ReportPageEventArgs> PrintPageBodyStart;
+		public event EventHandler<ReportPageEventArgs> PrintPageBodyEnd;
+		public event EventHandler<ReportPageEventArgs> PrintPageEnd;
+		public event EventHandler<ReportPageEventArgs> ReportEnd;
 		
 		
 		int pageNr;
