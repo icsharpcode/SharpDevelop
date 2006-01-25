@@ -179,6 +179,16 @@ namespace ICSharpCode.Core
 		}
 		
 		static string defaultMessageBoxTitle = "MessageBox";
+		static string productName = "Application Name";
+		
+		public static string ProductName {
+			get {
+				return productName;
+			}
+			set {
+				productName = value;
+			}
+		}
 		
 		public static string DefaultMessageBoxTitle {
 			get {

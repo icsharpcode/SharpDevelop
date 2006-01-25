@@ -13,7 +13,7 @@ echo.
 echo.
 echo Uninstalling native images...
 echo.
-ngen uninstall SharpDevelop.exe
+%windir%\Microsoft.NET\Framework\v2.0.50727\ngen uninstall SharpDevelop.exe
 
 popd
 

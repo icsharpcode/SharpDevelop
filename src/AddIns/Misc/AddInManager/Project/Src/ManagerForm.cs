@@ -438,7 +438,7 @@ namespace ICSharpCode.AddInManager
 					switch (Path.GetExtension(file).ToLowerInvariant()) {
 						case ".addin":
 							if (FileUtility.IsBaseDirectory(FileUtility.ApplicationRootPath, file)) {
-								MessageService.ShowMessage("You cannot install AddIns inside the SharpDevelop directory, " +
+								MessageService.ShowMessage("You cannot install AddIns inside the ${ProductName} directory, " +
 								                           "they will be picked up as pre-installed AddIns automatically.");
 								return false;
 							}

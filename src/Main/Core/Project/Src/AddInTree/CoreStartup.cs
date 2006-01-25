@@ -73,6 +73,7 @@ namespace ICSharpCode.Core
 			this.applicationName = applicationName;
 			propertiesName = applicationName + "Properties";
 			MessageService.DefaultMessageBoxTitle = applicationName;
+			MessageService.ProductName = applicationName;
 		}
 		
 		public void AddAddInsFromDirectory(string addInDir)

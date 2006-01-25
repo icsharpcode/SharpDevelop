@@ -172,6 +172,8 @@ namespace ICSharpCode.Core
 				return DateTime.Today.ToShortDateString();
 			if (propertyName.Equals("TIME", StringComparison.OrdinalIgnoreCase))
 				return DateTime.Now.ToShortTimeString();
+			if (propertyName.Equals("ProductName", StringComparison.OrdinalIgnoreCase))
+				return MessageService.ProductName;
 			
 			if (customTags != null) {
 				for (int j = 0; j < customTags.GetLength(0); ++j) {

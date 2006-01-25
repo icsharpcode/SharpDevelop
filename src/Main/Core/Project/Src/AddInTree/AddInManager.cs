@@ -130,8 +130,8 @@ namespace ICSharpCode.Core
 					disabled.Add(addInName);
 					MessageService.ShowError("Error removing " + addInName + ":\n" +
 					                         ex.Message + "\nThe AddIn will be " +
-					                         "removed on the next start of SharpDevelop and is disabled " +
-					                         "for now.");
+					                         "removed on the next start of " + MessageService.ProductName +
+					                         " and is disabled for now.");
 					return false;
 				}
 			}

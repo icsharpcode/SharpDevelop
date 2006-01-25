@@ -20,7 +20,7 @@ echo.
 echo.
 echo Compiling SharpDevelop to native code to improve startup time...
 echo.
-ngen install SharpDevelop.exe
+%windir%\Microsoft.NET\Framework\v2.0.50727\ngen install SharpDevelop.exe
 
 popd
 
