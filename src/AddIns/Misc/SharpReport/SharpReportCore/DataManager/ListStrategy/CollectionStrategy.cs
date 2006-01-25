@@ -29,7 +29,7 @@ namespace SharpReportCore {
 		private object firstItem;
 		private object current;
 		
-		private PropertyDescriptorCollection listProperties = null;
+		private PropertyDescriptorCollection listProperties;
 		
 		public CollectionStrategy(IList list,string dataMember,ReportSettings reportSettings):base(reportSettings) {
 			if (list.Count > 0) {
@@ -211,7 +211,7 @@ namespace SharpReportCore {
 			
 			this.Sort ();
 			this.Reset();
-			base.FireResetList();
+			base.NotifyResetList();
 		}
 		
 		public override void Fill(IItemRenderer item) {

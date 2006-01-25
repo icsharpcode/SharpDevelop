@@ -25,7 +25,7 @@ using System.Drawing;
 namespace SharpReportCore {	
 	public class BaseRectangleItem : SharpReportCore.BaseGraphicItem,IContainer {
 		
-		private ArrayList arrayList = null;
+		private ArrayList arrayList;
 		RectangleShape shape = new RectangleShape();
 		
 		public BaseRectangleItem() {

@@ -32,8 +32,8 @@ namespace SharpReportCore {
 		
 		public ConnectionObject(string connectionString, string password, string username)
 		{
-			if (connectionString == "") {
-				throw new ArgumentNullException("ConnectionObject:ConnectionString");
+			if (String.IsNullOrEmpty(connectionString)) {
+				throw new ArgumentNullException("connectionString");
 			}
 			this.connectionString = connectionString;
 			this.password = password;

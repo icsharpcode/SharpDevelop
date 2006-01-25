@@ -12,6 +12,7 @@ using System.Data;
 using System.Data.OleDb;
 using System.Collections;
 using System.ComponentModel;
+using System.Globalization;
 
 using SharpReportCore;	
 using System.Windows.Forms;
@@ -39,14 +40,14 @@ namespace SharpReportCore {
 		int currentRow = -1;
 		
 		ReportSettings reportSettings;
-		object dataSource = null;
-		string dataMember = string.Empty;
+		object dataSource;
+		string dataMember;
 		ConnectionObject connectionObject;
-		IDbConnection connection = null;
-		IDataViewStrategy dataViewStrategy = null;
+		IDbConnection connection;
+		IDataViewStrategy dataViewStrategy;
 		
 		 
-		private ListChangedEventArgs resetList = new ListChangedEventArgs(ListChangedType.Reset,-1,-1);
+//		private ListChangedEventArgs resetList = new ListChangedEventArgs(ListChangedType.Reset,-1,-1);
 		
 		public event ListChangedEventHandler ListChanged;
 		public event EventHandler <GroupChangedEventArgs> GroupChanged;
@@ -169,7 +170,7 @@ System.Console.WriteLine("CheckAndSetReportSettings");
 					if (ds.Tables.Count > 0) {
 						
 						DataTable tbl;
-						if (this.dataMember == "") {
+						if (String.IsNullOrEmpty(this.dataMember)){
 							tbl = ds.Tables[0];
 						} else {
 							DataTableCollection tcol = ds.Tables;
@@ -231,7 +232,7 @@ System.Console.WriteLine("CheckAndSetReportSettings");
 				CheckForAndBuildParams(command,reportSettings);
 				OleDbDataAdapter adapter = new OleDbDataAdapter(command);
 				DataSet ds = new DataSet();
-				
+				ds.Locale = CultureInfo.CurrentCulture;
 				adapter.Fill (ds);
 				System.Console.WriteLine("\t {0} in Table",ds.Tables[0].Rows.Count);
 				return ds;
@@ -277,7 +278,8 @@ System.Console.WriteLine("CheckAndSetReportSettings");
 						string colName = col.ColumnName;
 						AbstractColumn c = this.dataViewStrategy.AvailableFields.Find (colName);
 						if (c == null) {
-							string str = String.Format ("<{0}> is not a member of <{1}>",colName,this.reportSettings.ReportName);
+							string str = String.Format (CultureInfo.CurrentCulture,
+							                            "<{0}> is not a member of <{1}>",colName,this.reportSettings.ReportName);
 							throw new SharpReportException(str);
 						}
 					}

@@ -27,7 +27,7 @@ namespace SharpReportCore {
 		/// Default constructor - initializes all fields to default values
 		/// </summary>
 		
-		bool cancel = false;
+		bool cancel;
 		int pageNumber ;
 		
 		

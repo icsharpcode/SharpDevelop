@@ -25,25 +25,25 @@ using System.Drawing;
 /// </remarks>
 	
 namespace SharpReportCore {	
-	public class BaseReportObject : ISectionRenderer,INotifyPropertyChanged {
+	public class BaseReportObject : IBaseRenderer,INotifyPropertyChanged {
 		
 		private string name;
-		private object parent = null;
+		private object parent;
 		private bool visible = true;
-		private bool  canGrow = false;
-		private bool canShrink = false;
-		private bool pageBreakBefore = false;
-		private bool pageBreakAfter = false;
+		private bool  canGrow ;
+		private bool canShrink ;
+		private bool pageBreakBefore;
+		private bool pageBreakAfter;
 		private bool suspend = true;
 		private Size size;
 		private Point location;
 		
 		private Color backColor;
-		private int  sectionOffset = 0;
-		private int sectionMargin = 0;
+		private int  sectionOffset;
+		private int sectionMargin;
 
-		public event EventHandler<EventArgs> BeforePrint;
-		public event EventHandler<AfterPrintEventArgs> AfterPrint;
+		public event EventHandler<EventArgs> BeforePrinting;
+		public event EventHandler<AfterPrintEventArgs> AfterPrinting;
 		
 		
 		#region SharpReportCore.IPropertyChange interface implementation
@@ -193,15 +193,15 @@ namespace SharpReportCore {
 		}
 		
 		public void OnAfterPrint (PointF afterPrint) {
-			if (this.AfterPrint != null) {
+			if (this.AfterPrinting != null) {
 				AfterPrintEventArgs rea = new AfterPrintEventArgs (afterPrint);
-				AfterPrint(this, rea);
+				AfterPrinting(this, rea);
 			}
 		}
 		
 		public void OnBeforePrint () {
-			if (this.BeforePrint != null) {
-				BeforePrint (this,EventArgs.Empty);
+			if (this.BeforePrinting != null) {
+				BeforePrinting (this,EventArgs.Empty);
 			}
 		}
 		

@@ -22,9 +22,9 @@ namespace SharpReportCore {
 	public class AbstractParameter : object {
 	
 		string parameterName;
-		string prompt = String.Empty;
-		bool nullable = false;
-		object defaultValue = null;
+		string prompt;
+		bool nullable;
+		object defaultValue;
 		
 		public AbstractParameter() {
 		}

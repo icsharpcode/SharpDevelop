@@ -29,7 +29,7 @@ namespace SharpReportCore {
 		/// </summary>
 		string fileName;
 		Image image;
-		bool scaleImageToSize = false;
+		bool scaleImageToSize;
 		
 		public BaseImageItem():base() {
 		}

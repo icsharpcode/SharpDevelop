@@ -23,9 +23,9 @@ namespace SharpReportCore {
 	public class BaseReportItem : SharpReportCore.BaseReportObject,
 											IItemRenderer,IComponent{
 		
-		private int offset = 0;
-		private int margin = 0;
-		private bool drawBorder = false;	
+		private int offset;
+		private int margin;
+		private bool drawBorder;	
 		private Color foreColor;
 		
 		private Font font;
@@ -35,7 +35,7 @@ namespace SharpReportCore {
 		public event EventHandler Disposed;
 		
 		public BaseReportItem() :base(){
-			site = null;
+			
 		}
 		
 		#region Event's handling
@@ -46,13 +46,13 @@ namespace SharpReportCore {
 		/// <param name="formatString">the formatString</param>
 		/// <param name="nullValue">Value to return when there is null in toFormat</param>
 		/// <returns></returns>
-		protected string FireFormatOutput(string toFormat,string formatString, string nullValue) {
+		protected string FireFormatOutput(string toFormat,string format, string nullValue) {
 			if (FormatOutput != null) {
 				FormatOutputEventArgs ea = new FormatOutputEventArgs (toFormat,
-				                                                      formatString,
+				                                                      format,
 				                                                      nullValue);
 				FormatOutput (this,ea);
-				return ea.FormatedString;
+				return ea.FormatedValue;
 			}
 			return toFormat;
 		}

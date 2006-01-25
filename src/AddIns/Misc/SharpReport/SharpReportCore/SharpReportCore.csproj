@@ -89,7 +89,6 @@
     <Compile Include="Interfaces\IItemRenderer.cs" />
     <Compile Include="Interfaces\IOutputStrategy.cs" />
     <Compile Include="Interfaces\IRender.cs" />
-    <Compile Include="Interfaces\ISectionRender.cs" />
     <Compile Include="Interfaces\IStoreable.cs" />
     <Compile Include="Printing\Formatter\AbstractFormatter.cs" />
     <Compile Include="Printing\Formatter\DefaultFormatter.cs" />

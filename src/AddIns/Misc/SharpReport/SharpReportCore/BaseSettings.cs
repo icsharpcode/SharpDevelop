@@ -45,7 +45,7 @@ namespace SharpReportCore {
 		private bool includeSettings;
 		
 		//if file is read, supress events
-		private bool initDone = false;
+		private bool initDone;
 		
 		private GraphicsUnit graphicsUnit;
 		private Margins defaultMargins = new Margins (50,50,50,50);

@@ -10,7 +10,7 @@
 
 
 using System;
-using System.Windows.Forms;	
+using System.Runtime.Serialization;
 	
 	/// <summary>
 	/// This Class throws the Standart SharpReport Error
@@ -21,7 +21,8 @@ using System.Windows.Forms;
 	/// </remarks>
 	/// 
 namespace SharpReportCore {	
-	public class SharpReportException : System.Exception {
+	[Serializable()]
+		public class SharpReportException : System.Exception {
 		
 		
 		string errorMessage = String.Empty;
@@ -36,6 +37,10 @@ namespace SharpReportCore {
 			
 		}
 		
+		protected SharpReportException(SerializationInfo info,
+         StreamingContext context) : base(info, context){
+         // Implement type-specific serialization constructor logic.
+      	}
 		public string ErrorMessage {
 			get {
 				return errorMessage;

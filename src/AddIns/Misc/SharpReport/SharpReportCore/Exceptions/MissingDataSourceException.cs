@@ -9,7 +9,7 @@
 //------------------------------------------------------------------------------
 
 using System;
-	
+using System.Runtime.Serialization;
 /// <summary>
 /// Throwen when no valid SharpReportCore is available or when SharpReportCore == null
 /// </summary>
@@ -22,6 +22,7 @@ using System;
 /// </remarks>
 	
 namespace SharpReportCore {	
+	[Serializable()]
 	public class MissingDataSourceException : System.Exception {
 		
 		string errorMessage = String.Empty;
@@ -38,6 +39,11 @@ namespace SharpReportCore {
 		                            Exception exception):base (errorMessage,exception){
 			
 		}
+		
+		protected MissingDataSourceException(SerializationInfo info, 
+         StreamingContext context) : base(info, context){
+         // Implement type-specific serialization constructor logic.
+      	}
 		public string ErrorMessage {
 			get {
 				return errorMessage;

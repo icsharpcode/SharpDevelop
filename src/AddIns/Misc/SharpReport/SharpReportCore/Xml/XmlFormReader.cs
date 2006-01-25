@@ -153,8 +153,8 @@ namespace SharpReportCore {
 			fontElement.Attributes.Append(att);
 		}
 		
-		public static Font MakeFont(string fontString) {
-			string s = fontString.Replace(';',',');
+		public static Font MakeFont(string font) {
+			string s = font.Replace(';',',');
 			return (Font)XmlFormReader.StringToTypedValue(s,typeof(Font),CultureInfo.InstalledUICulture);
 		}
 		/// <summary>

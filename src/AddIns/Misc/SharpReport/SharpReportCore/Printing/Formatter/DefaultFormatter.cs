@@ -76,9 +76,9 @@ namespace SharpReportCore{
 			return retValue;
 		}
 		
-		public string BoolValue (string toFormat, string formatString){
+		public string BoolValue (string toFormat, string format){
 			string str = String.Empty;
-			if (base.CheckFormat(formatString) == true) {
+			if (base.CheckFormat(format) == true) {
 				
 				if (base.CheckValue (toFormat)) {
 					try {
@@ -97,13 +97,13 @@ namespace SharpReportCore{
 			return str;
 		}
 		
-		public  string IntegerValues(string intType,string toFormat, string formatString) {
+		public  string IntegerValues(string valueType,string toFormat, string format) {
 			string str = String.Empty;
-			if (base.CheckFormat(formatString) == true) {
+			if (base.CheckFormat(format) == true) {
 				if (base.CheckValue (toFormat)) {
 					try {
 						int number;
-						switch (intType) {
+						switch (valueType) {
 							case "16":
 								number = Int16.Parse (toFormat,
 								                      System.Globalization.NumberStyles.Any,
@@ -121,7 +121,7 @@ namespace SharpReportCore{
 								throw new ArgumentException("DefaultFormater:IntegerValues Unknown intType ");
 								
 						}
-						str = number.ToString (formatString);
+						str = number.ToString (format);
 						
 					} catch (Exception e) {
 						string s = String.Format("\tDecimalValue < {0} > {1}",toFormat,e.Message);
@@ -138,9 +138,9 @@ namespace SharpReportCore{
 			return str;
 		}
 		
-		public  string DecimalValues(string toFormat, string formatString) {
+		public  string DecimalValues(string toFormat, string format) {
 			string str = String.Empty;
-			if (base.CheckFormat(formatString) == true) {
+			if (base.CheckFormat(format) == true) {
 				
 				if (base.CheckValue (toFormat)) {
 					try {
@@ -149,7 +149,7 @@ namespace SharpReportCore{
 						                            CultureInfo.CurrentCulture.NumberFormat);
 						
 //						decimal dec = Convert.ToDecimal (toFormat,NumberFormatInfo.InvariantInfo);
-						str = dec.ToString (formatString);
+						str = dec.ToString (format);
 						
 					} catch (Exception e) {
 						string s = String.Format("\tDecimalValue < {0} > {1}",toFormat,e.Message);
@@ -166,13 +166,13 @@ namespace SharpReportCore{
 			return str;
 		}
 		
-		public  string DateValues(string toFormat, string formatString) {
+		public  string DateValues(string toFormat, string format) {
 			
-			if (base.CheckFormat(formatString) == true) {
+			if (base.CheckFormat(format) == true) {
 				try {
 					DateTime date = DateTime.Parse (toFormat.Trim(),
 					                                CultureInfo.CurrentCulture.DateTimeFormat);
-					string str = date.ToString(formatString,
+					string str = date.ToString(format,
 					                           DateTimeFormatInfo.CurrentInfo);
 					
 					return str.Trim();

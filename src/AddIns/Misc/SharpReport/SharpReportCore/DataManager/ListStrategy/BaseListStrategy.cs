@@ -24,14 +24,14 @@ using SharpReportCore;
 
 namespace SharpReportCore {	
 	public abstract class BaseListStrategy :IDataViewStrategy {
-		private bool isSorted = false;
-		private bool isFiltered = false;
-		private bool isGrouped = false;
+		private bool isSorted;
+		private bool isFiltered;
+		private bool isGrouped;
 		
 		//Index to plain Datat
 		private SharpArrayList indexList;
-		private ReportSettings reportSettings = null;
-		private IHierarchicalArray hierarchicalList = null;
+		private ReportSettings reportSettings;
+		private IHierarchicalArray hierarchicalList;
 		
 		
 		private ListChangedEventArgs resetList = new ListChangedEventArgs(ListChangedType.Reset,-1,-1);
@@ -40,7 +40,8 @@ namespace SharpReportCore {
 		public event EventHandler <GroupChangedEventArgs> GroupChanged;
 		
 		#region Constructor
-		public BaseListStrategy(ReportSettings reportSettings) {
+		
+		protected BaseListStrategy(ReportSettings reportSettings) {
 			this.reportSettings = reportSettings;
 			this.indexList = new SharpArrayList(typeof(BaseComparer),"IndexList");
 		}
@@ -48,7 +49,7 @@ namespace SharpReportCore {
 		#endregion
 		
 		#region Event's
-		protected void FireGroupChange (object source,GroupSeperator groupSeperator) {
+		protected void NotifyGroupChange (object source,GroupSeperator groupSeperator) {
 			
 			if (this.GroupChanged != null) {
 				this.GroupChanged (source,new GroupChangedEventArgs(groupSeperator));
@@ -56,7 +57,7 @@ namespace SharpReportCore {
 		}
 			
 		
-		protected void FireResetList(){
+		protected void NotifyResetList(){
 			if (this.ListChanged != null) {
 				this.ListChanged (this,this.resetList);
 			}
@@ -81,9 +82,9 @@ namespace SharpReportCore {
 		
 		
 		protected void CheckSortArray (ArrayList arr,string text){
-			System.Console.WriteLine("");
+//			System.Console.WriteLine("");
 			System.Console.WriteLine("{0}",text);
-			string tabs = String.Empty;
+//			string tabs = String.Empty;
 			
 			if (arr != null) {
 				int row = 0;
@@ -157,6 +158,8 @@ namespace SharpReportCore {
 		public bool IsFiltered {
 			get {
 				return this.isFiltered;
+			} set {
+				this.isFiltered = value;
 			}
 		}
 		
@@ -175,7 +178,7 @@ namespace SharpReportCore {
 				this.isGrouped = true;
 				this.isSorted = true;
 			} else {
-				throw new NullReferenceException ("BaseListStrategy:Group Sorry, no IndexList");
+				throw new SharpReportException ("BaseListStrategy:Group Sorry, no IndexList");
 			}
 		}
 		
@@ -285,7 +288,7 @@ namespace SharpReportCore {
 		}
 		
 		public  virtual void Reset() {
-			this.FireResetList();
+			this.NotifyResetList();
 		}
 		
 		public virtual void Bind() {

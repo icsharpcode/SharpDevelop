@@ -33,7 +33,8 @@ namespace SharpReportCore {
 		
 		Color color;
 		Brush brush;
-		public AbstractFillPattern(Color color) {
+		
+		protected AbstractFillPattern(Color color) {
 			this.color = color;
 			
 		}

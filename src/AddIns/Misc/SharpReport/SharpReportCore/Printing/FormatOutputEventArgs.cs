@@ -17,25 +17,25 @@ namespace SharpReportCore {
 		/// <summary>
 		/// Default constructor - initializes all fields to default values
 		/// </summary>
-		private string formatString = String.Empty;
-		private string stringToFormat = String.Empty;
-		private string nullValue = String.Empty;
-		private string formatedString = String.Empty;
+		private string format;
+		private string valueToFormat;
+		private string nullValue;
+		private string formatedValue;
 		
 		public FormatOutputEventArgs() {
 		}
 		
-		public FormatOutputEventArgs(string stringToFormat,string formatString, string nullValue )
+		public FormatOutputEventArgs(string valueToFormat,string format, string nullValue )
 		{
-			this.formatString = formatString;
+			this.format = format;
 			this.nullValue = nullValue;
-			this.stringToFormat = stringToFormat;
+			this.valueToFormat = valueToFormat;
 		}
 		
 		#region Property's
-		public string FormatString {
+		public string Format {
 			get {
-				return formatString;
+				return format;
 			}
 		}
 		public string NullValue {
@@ -43,18 +43,18 @@ namespace SharpReportCore {
 				return nullValue;
 			}
 		}
-		public string StringToFormat {
+		public string ValueToFormat {
 			get {
-				return stringToFormat;
+				return valueToFormat;
 			}
 		}
 		
-		public string FormatedString {
+		public string FormatedValue {
 			get {
-				return formatedString;
+				return formatedValue;
 			}
 			set {
-				formatedString = value;
+				formatedValue = value;
 			}
 		}
 		

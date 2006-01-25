@@ -87,7 +87,7 @@ namespace SharpReportCore {
 											rpt.Visible = true;
 											rpt.ResumeLayout();
 										} else {
-											SharpReportUnkownItemException e = new SharpReportUnkownItemException();
+											UnkownItemException e = new UnkownItemException();
 											throw e;
 										}
 									} catch (Exception ) {

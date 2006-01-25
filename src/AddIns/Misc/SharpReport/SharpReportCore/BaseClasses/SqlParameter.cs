@@ -28,8 +28,8 @@ namespace SharpReportCore {
 	public class SqlParameter : AbstractParameter {
 	
 		DbType	dataType;
-		object defaultValue = null;
-		bool allowBlank = false;
+		object defaultValue;
+//		bool allowBlank;
 		ParameterDirection  parameterDirection = ParameterDirection.InputOutput;
 	
 		#region Constructor
@@ -183,25 +183,14 @@ namespace SharpReportCore {
 		}
 
 
-		/// <summary>
-		/// Is this parameter used in an Query
-		/// </summary>
-//		public bool UsedInQuery {
+//		/// <summary>
+//		/// Is a Blank value allowed
+//		/// </summary>
+//		public bool AllowBlank {
 //			get {
-//				return usedInQuery;
-//			}
-//			set {
-//				usedInQuery = value;
+//				return allowBlank;
 //			}
 //		}
-		/// <summary>
-		/// Is a Blank value allowed
-		/// </summary>
-		public bool AllowBlank {
-			get {
-				return allowBlank;
-			}
-		}
 		/// <summary>
 		/// When no value is entered, use this value
 		/// </summary>

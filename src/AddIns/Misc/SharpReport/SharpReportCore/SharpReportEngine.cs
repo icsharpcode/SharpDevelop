@@ -38,13 +38,11 @@ using SharpReportCore;
 namespace SharpReportCore {
 	public class SharpReportEngine : object,IDisposable {
 		
-		private PreviewControl previewControl = null;
+		private PreviewControl previewControl;
 		
-		private ConnectionObject connectionObject = null;
+		private ConnectionObject connectionObject;
 		
 		public event EventHandler <SharpReportEventArgs> NoData;
-//		public event EventSharpReportEventHandler NoData;
-//		public event SharpReportParametersEventHandler ParametersRequest;
 		public event EventHandler <SharpReportParametersEventArgs> ParametersRequest;
 		
 		public SharpReportEngine() {

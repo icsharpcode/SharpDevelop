@@ -259,7 +259,7 @@ namespace SharpReportCore {
 			if ((base.ReportSettings.GroupColumnsCollection != null) && (base.ReportSettings.GroupColumnsCollection.Count > 0)) {
 				this.Group ();
 				Reset();
-				base.FireResetList();
+				base.NotifyResetList();
 				return;
 			}
 			
@@ -267,7 +267,7 @@ namespace SharpReportCore {
 				this.Sort ();
 			}
 			Reset();
-			base.FireResetList();
+			base.NotifyResetList();
 		}
 	
 		
@@ -350,7 +350,7 @@ namespace SharpReportCore {
 					
 					GroupSeperator sep = bc as GroupSeperator;
 					if (sep != null) {
-						base.FireGroupChange(this,sep);
+						base.NotifyGroupChange(this,sep);
 					}
 					row = this.view[((BaseComparer)base.IndexList[value]).ListIndex];
 				}

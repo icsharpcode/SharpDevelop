@@ -38,9 +38,9 @@ namespace SharpReportCore{
 	/// This class stores all the basic settings of an Report
 	/// </summary>
 	/// 
-	public class ReportSettings : BaseSettings,SharpReportCore.IStoreable,
-	SharpReportCore.ISectionRenderer,IDisposable{
 
+	public class ReportSettings : BaseSettings,SharpReportCore.IStoreable,
+	IBaseRenderer,IDisposable{
 		private string connectionString;
 		private string commandText;
 		
@@ -90,7 +90,7 @@ namespace SharpReportCore{
 		
 
 		/// <summary>
-		/// Set the values for all Columns that inherit 
+		/// Set the values for all Columns that inherit
 		/// from <see cref="AbstractColumn"></see> like for sorting etc
 		/// </summary>
 		/// <param name="reader">See XMLFormReader</param>
@@ -379,7 +379,7 @@ namespace SharpReportCore{
 					SaveCollectionItems(ctrl,column,prop);
 					xmlSection.AppendChild(ctrl);
 				}
-				} catch (Exception) {
+			} catch (Exception) {
 				throw;
 			}
 		}

@@ -21,35 +21,33 @@ namespace SharpReportCore
 		internal string DELETE = "DELETE";
 		internal string INSERT = "INSERT";
 		internal string noValidMessage = "is no valid Member of SqlString";
-		private string queryString;
 		
 		
 		public SqlQueryCkecker(){
 		}
 		
 		public void Check (string queryString) {
-			if (queryString != "") {
-				this.queryString = queryString.ToUpper(CultureInfo.CurrentCulture);
+			if (!String.IsNullOrEmpty(queryString)) {
+				queryString = queryString.ToUpper(CultureInfo.CurrentCulture);
 				
-				if (this.queryString.IndexOf (this.UPDATE) > -1) {
-					string str = String.Format("{0} is no valid Member of SqlString",this.UPDATE);
+				if (queryString.IndexOf (this.UPDATE) > -1) {
 					this.Invalid (this.UPDATE);
 				}
 				
-				if (this.queryString.IndexOf(this.DELETE) > -1)  {
+				if (queryString.IndexOf(this.DELETE) > -1)  {
 					this.Invalid (this.DELETE);
-					string str = String.Format("{0} is no valid Member of SqlString",this.DELETE);
 				}
 				
-				if (this.queryString.IndexOf(this.INSERT) > -1)  {
+				if (queryString.IndexOf(this.INSERT) > -1)  {
 					this.Invalid (this.INSERT);
-					string str = String.Format("{0} is no valid Member of SqlString",this.DELETE);
 				}
 			}
 		}
 		
 		private void Invalid (string invalidArgument) {
-			string str = String.Format("{0} {1}",invalidArgument,this.noValidMessage);
+			
+			string str = String.Format(CultureInfo.CurrentCulture,
+			                           "{0} {1}",invalidArgument,this.noValidMessage);
 			throw new SharpReportCore.SharpReportException(str);
 		}
 	}

@@ -24,7 +24,7 @@ namespace SharpReportCore {
 	
 	public class SharpReportParametersEventArgs : System.EventArgs {
 		
-		AbstractParametersCollection sqlParametersCollection = null;
+		AbstractParametersCollection sqlParametersCollection;
 		string reportName;
 		
 		public SharpReportParametersEventArgs () {

@@ -27,7 +27,7 @@ namespace SharpReportCore {
 		
 		int groupLevel = 0;
 //		GroupSeperator parent = null;
-		IHierarchicalArray childs = null;
+		IHierarchicalArray childs ;
 		
 		public GroupSeperator(ColumnCollection owner, int listIndex, object[] values,int groupLevel):
 			base(owner,listIndex,values) {

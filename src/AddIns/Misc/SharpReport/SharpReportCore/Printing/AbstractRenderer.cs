@@ -50,11 +50,10 @@ namespace SharpReportCore {
 		private Point detailEnds;
 	
 		private DefaultFormatter defaultFormatter;
-		private bool cancel = false;
+		private bool cancel;
 		
 		
-		public AbstractRenderer(ReportModel model){
-//			System.Console.WriteLine("\tConstructor of ABstractRenderer");
+		protected AbstractRenderer(ReportModel model){
 			this.reportSettings = model.ReportSettings;
 			this.sections = model.SectionCollection;
 			Init();
@@ -208,7 +207,7 @@ namespace SharpReportCore {
 		void FormatBaseReportItem (object sender, FormatOutputEventArgs e) {
 			if (sender is BaseDataItem) {
 				BaseDataItem i = (BaseDataItem)sender;
-				e.FormatedString = defaultFormatter.FormatItem (i);
+				e.FormatedValue = defaultFormatter.FormatItem (i);
 			}
 		}
 		

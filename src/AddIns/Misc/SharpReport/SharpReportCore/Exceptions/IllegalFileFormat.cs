@@ -9,6 +9,7 @@
 //------------------------------------------------------------------------------
 
 using System;
+using System.Runtime.Serialization;
 	
 	/// <summary>
 	/// This exception is throw'n when something is wrong with the File Format
@@ -18,20 +19,30 @@ using System;
 	/// 	created on - 25.04.2005 14:29:20
 	/// </remarks>
 namespace SharpReportCore {	
-	
+	[Serializable()]
 	public class IllegalFileFormatException : System.Exception {
 		static string errMess = "<aus code> Could not read file , file corrupt (SharpReportFile is improperly formatted)";
 		
 		private string localisedMessage = String.Empty;
 		
 		public IllegalFileFormatException():base (errMess){
-
 		}
 		
+		public IllegalFileFormatException(string errorMessage,
+		                            Exception exception):base (errorMessage,exception){
+			
+		}
 		public IllegalFileFormatException(string localisedMessage):base(localisedMessage)
 		{
 			this.localisedMessage = localisedMessage;
 		}
+		
+		
+		protected IllegalFileFormatException(SerializationInfo info, 
+         StreamingContext context) : base(info, context){
+         // Implement type-specific serialization constructor logic.
+      	}
+
 		
 		public string LocalisedMessage {
 			get {

@@ -40,8 +40,8 @@ using SharpReportCore;
 namespace SharpReportCore {
 	public class RenderDataReport : SharpReportCore.AbstractRenderer {
 		
-		private DataManager dataManager = null;
-		private PointF currentPoint = new PointF (0,0);
+		private DataManager dataManager;
+		private PointF currentPoint;
 		
 		public RenderDataReport(ReportModel model):base (model){
 		}

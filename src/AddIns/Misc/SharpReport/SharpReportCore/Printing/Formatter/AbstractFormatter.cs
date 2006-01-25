@@ -38,8 +38,8 @@ namespace SharpReportCore {
 		public AbstractFormatter() {
 		}
 		
-		protected bool CheckFormat (string formatString) {
-			if (formatString.Length > 0) {
+		protected bool CheckFormat (string format) {
+			if (format.Length > 0) {
 				return true;
 			} else {
 				return false;
