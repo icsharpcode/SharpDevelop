@@ -5,8 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+
+[assembly: CLSCompliant(false)]
+[assembly: StringFreezing()]
 
 [assembly: AssemblyTitle("ICSharpCode.TextEditor")]
 [assembly: AssemblyDescription("A .NET text editor control")]
@@ -19,6 +23,3 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion("2.0.0.1")]
 
-[assembly: AssemblyDelaySign(false)]
-//[assembly: AssemblyKeyFile("ICSharpCode.TextEditor.key")]
-//[assembly: AssemblyKeyName("")]

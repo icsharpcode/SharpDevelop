@@ -5,8 +5,12 @@
 //     <version>$Revision$</version>
 // </file>
 
+using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
+
+[assembly: CLSCompliant(false)]
+[assembly: StringFreezing()]
 
 // Information about this assembly is defined by the following
 // attributes.
@@ -32,8 +36,3 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion("2.0.0.1")]
 
-// The following attributes specify the key for the sign of your assembly. See the
-// .NET Framework documentation for more information about signing.
-// This is not required, if you don't want signing let these attributes like they're.
-[assembly: AssemblyDelaySign(false)]
-//[assembly: AssemblyKeyFile("ICSharpCode.NRefactory.key")]

@@ -41,7 +41,9 @@ namespace ICSharpCode.SharpDevelop.Project.Dialogs
 				return project.FileName;
 			}
 			set {
-				throw new NotSupportedException();
+				// possible when project is renamed by the user, project.FileName will be changed by the
+				// renaming code
+				OnTitleNameChanged(EventArgs.Empty);
 			}
 		}
 		

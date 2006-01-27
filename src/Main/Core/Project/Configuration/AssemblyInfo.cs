@@ -9,7 +9,8 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
-[assembly:CLSCompliant(false)]
+[assembly: CLSCompliant(true)]
+[assembly: StringFreezing()]
 
 [assembly: AssemblyTitle("ICSharpCode.Core")]
 [assembly: AssemblyDescription("The ICSharpCode Core containing the AddInTree and service Subsystem")]
@@ -22,4 +23,3 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion("2.0.0.1")]
 
-[assembly: AssemblyDelaySign(false)]

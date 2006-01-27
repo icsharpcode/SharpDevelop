@@ -23,7 +23,7 @@
 			<StartupProject>${ProjectName}</StartupProject>
 		</Options>
 		<Project name = "${ProjectName}" directory = ".">
-			<Options />
+			<Options OutputType = "Exe" />
 			
 			<ProjectItems>
 				<Reference Include="System" />

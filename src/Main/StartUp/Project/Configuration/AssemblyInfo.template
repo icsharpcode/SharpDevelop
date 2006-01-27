@@ -10,6 +10,7 @@ using System.Reflection;
 using System.Runtime.CompilerServices;
 
 [assembly: CLSCompliant(true)]
+[assembly: StringFreezing()]
 
 // DO NOT EDIT AssemblyInfo.cs, it is recreated using AssemblyInfo.template whenever
 // StartUp is compiled.

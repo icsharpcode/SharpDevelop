@@ -10,6 +10,9 @@ using System;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 
+[assembly: CLSCompliant(false)]
+[assembly: StringFreezing()]
+
 [assembly: AssemblyTitle("SharpDevelopBase")]
 [assembly: AssemblyDescription("The base add-in of SharpDevelop")]
 [assembly: AssemblyConfiguration("")]
@@ -21,4 +24,3 @@ using System.Runtime.CompilerServices;
 
 [assembly: AssemblyVersion("2.0.0.1")]
 
-[assembly: AssemblyDelaySign(false)]
